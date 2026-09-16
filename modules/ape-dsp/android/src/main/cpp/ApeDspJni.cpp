@@ -663,6 +663,12 @@ Java_expo_modules_apedsp_ApeDspModule_nativeGenSetStereo(JNIEnv*, jobject, jlong
                                                          jdouble fL, jdouble fR) {
   eng(h)->gen_.setStereo(on == JNI_TRUE, fL, fR);
 }
+// Dual mono pair (engine 8, GenMode::Dual): B frequency + level relative to A.
+JNIEXPORT void JNICALL
+Java_expo_modules_apedsp_ApeDspModule_nativeGenSetDual(JNIEnv*, jobject, jlong h, jdouble freqB,
+                                                       jdouble levelB) {
+  eng(h)->gen_.setDual(freqB, levelB);
+}
 // ---- Effects chain (one scalar setter for the whole roster; see fx::Id) ----
 JNIEXPORT void JNICALL
 Java_expo_modules_apedsp_ApeDspModule_nativeFxSet(JNIEnv*, jobject, jlong h, jint effectId,

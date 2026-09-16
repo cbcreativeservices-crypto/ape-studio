@@ -76,6 +76,7 @@ enum class GenMode : int {
   Burst = 11,
   Additive = 12,  // HV-2: 12-harmonic additive synth (never renumber)
   Fm = 13,        // wave-2: carrier+modulator FM voice (never renumber)
+  Dual = 14,      // cymatics (engine 8): two independent sines summed MONO (never renumber)
 };
 
 class Generator {
@@ -138,6 +139,20 @@ class Generator {
     stereoOn_.store(on);
   }
   bool stereoOn() const { return stereoOn_.load(); }
+  /// DUAL (engine 8, Cymatics Lab 2026-09-16): GenMode::Dual renders TWO
+  /// independent, phase-continuous sines SUMMED INTO ONE MONO SIGNAL —
+  /// A = freq_ (the ordinary `frequency`), B = freqB at relative level levelB
+  /// (0..1 of A). Unlike the hard-panned STEREO pair, both tones share a
+  /// channel, so acoustic BEATS (|fA − fB| Hz) and dual-frequency plate/liquid
+  /// drive are physically real through a single speaker. The sum is
+  /// normalised by 1/(1 + levelB) so |sample| ≤ 1 — the Q4 cap chain still
+  /// bounds the output with no level logic here. No retrigger: a running dual
+  /// tone glides (both accumulators step phase-continuously), so this is safe
+  /// at UI rate (a detune fader). NaN-proofed (the !(x>=k) form).
+  void setDual(double freqB, double levelB) {
+    dualFreqB_.store(!(freqB >= 1.0) ? 1.0 : freqB);
+    dualLevelB_.store(!(levelB > 0.0) ? 0.0 : (levelB > 1.0 ? 1.0 : levelB));
+  }
   /// ADDITIVE (HV-2): flat layout [f0, a1..a12, p1..p12] — 25 doubles. The
   /// SAME ordering crosses every bridge (JSI/JNI) verbatim; amps are relative
   /// 0..1, phases in degrees. These are TARGETS only: the render thread ramps
@@ -374,6 +389,7 @@ class Generator {
     hpfR_.reset();
     stereoPhL_ = 0.0;
     stereoPhR_ = 0.0;
+    dualPhB_ = 0.0;  // B rides its own accumulator; A reuses phase_ (stepSine)
     hpfMix_ = (hpfHz_.load() > 0.0) ? 1.0 : 0.0;
     // Open the route gate and sync the change detector: a fresh tone starts at
     // full level with the correct filter, and its initial hpfHz (set before the
@@ -458,6 +474,16 @@ class Generator {
         return additiveSample(fs);
       case GenMode::Fm:
         return fmSample(fs);
+      case GenMode::Dual: {
+        // Two phase-continuous sines summed mono; normalised so the peak can
+        // never exceed unit level (|A| + |B|·levelB ≤ 1 + levelB).
+        const double b = dualLevelB_.load();
+        const double a = stepSine(freq_.load(), fs);
+        dualPhB_ += dualFreqB_.load() / fs;
+        if (dualPhB_ >= 1.0) dualPhB_ -= std::floor(dualPhB_);
+        const double sb = std::sin(2.0 * kPi * dualPhB_);
+        return (a + b * sb) / (1.0 + b);
+      }
       case GenMode::Off:
       default:
         return 0.0;
@@ -681,6 +707,8 @@ class Generator {
   // Stereo dual-oscillator (hard-panned L/R) — off by default (mono, L == R).
   std::atomic<bool> stereoOn_{false};
   std::atomic<double> stereoFreqL_{440.0}, stereoFreqR_{440.0};
+  // Dual (engine 8): second sine frequency + its level relative to A (0..1).
+  std::atomic<double> dualFreqB_{444.0}, dualLevelB_{1.0};
 
   // Additive (HV-2) control atomics — TARGETS only; render ramps toward them.
   // Defaults: fundamental only (a1=1), phases 0, f0 1 kHz.
@@ -734,6 +762,7 @@ class Generator {
   double hpfDesignedFs_ = 0.0;
   double hpfMix_ = 0.0;  // raw↔filtered crossfade (0 = bypassed, 1 = filtered)
   double stereoPhL_ = 0.0, stereoPhR_ = 0.0;  // stereo sine accumulators (cycles)
+  double dualPhB_ = 0.0;                      // dual-mode B accumulator (cycles)
   // Route-change GATE: a mid-tone cutoff change (headphone plug/unplug) mutes
   // the output fast, holds silent while the HPF swaps + the OS route settles,
   // then fades back in slowly — masking the filter transition AND the hardware

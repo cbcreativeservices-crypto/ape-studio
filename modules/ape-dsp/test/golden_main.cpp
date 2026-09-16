@@ -5,6 +5,7 @@
 // ballistics time constants, octave banding + Q2 resolvable flags, YIN pitch,
 // generator levels incl. the Q4 cap, noise spectral tilts, clip detection,
 // and the integrated EngineHub. Exit code 0 = all pass.
+#include <algorithm>
 #include <cmath>
 #include <cstdio>
 #include <string>
@@ -729,6 +730,52 @@ int main() {
     std::vector<float> Lh(static_cast<size_t>(fs * 0.4)), Rh(static_cast<size_t>(fs * 0.4));
     gh.renderStereo(Lh.data(), Rh.data(), (uint32_t)Lh.size());
     truthy("Stereo HPF attenuates the low L channel", magAtCh(Lh, skip, len, 90.0) < magAtCh(Rh, skip, len, 660.0));
+
+    // DUAL (engine 8, Cymatics Lab): two sines summed MONO. Both tones are in
+    // the ONE channel (unlike the hard-panned stereo pair), the peak stays
+    // bounded by the 1/(1+levelB) norm, and a 4 Hz detune produces a real
+    // amplitude-envelope beat at |fA − fB|.
+    {
+      Generator gd;
+      gd.configure(fs);
+      gd.setMode(GenMode::Dual);
+      gd.setFrequency(440.0);
+      gd.setDual(444.0, 1.0);
+      gd.setLevelDb(-20.0);
+      gd.start();
+      std::vector<float> D(static_cast<size_t>(fs * 1.2));
+      gd.render(D.data(), (uint32_t)D.size());
+      const size_t ds = static_cast<size_t>(fs * 0.2), dl = D.size() - ds;
+      truthy("Dual mono has tone A (440 Hz)", magAtCh(D, ds, dl, 440.0) > 0.03);
+      truthy("Dual mono has tone B (444 Hz)", magAtCh(D, ds, dl, 444.0) > 0.03);
+      // Peak bound: −20 dBFS = 0.1 linear; the normalised sum never exceeds it.
+      float pk = 0.0f;
+      for (size_t i = ds; i < D.size(); ++i) pk = std::max(pk, std::fabs(D[i]));
+      truthy("Dual peak stays within the Q4 level (norm 1/(1+levelB))", pk <= 0.1005f);
+      // Beat: the 4 Hz envelope has a null every 0.25 s — measure the RMS in a
+      // 20 ms window at an envelope peak vs at a null (peaks at t = k/4 s from
+      // the coincident-phase start, nulls at t = k/4 + 1/8 s).
+      auto rmsWin = [&](double tSec) {
+        const size_t c = static_cast<size_t>(fs * tSec), hw = static_cast<size_t>(fs * 0.010);
+        double s = 0.0;
+        for (size_t i = c - hw; i < c + hw; ++i) s += (double)D[i] * D[i];
+        return std::sqrt(s / (2.0 * hw));
+      };
+      truthy("Dual 4 Hz beat: envelope peak ≫ envelope null", rmsWin(1.0) > 6.0 * rmsWin(1.125));
+      // levelB = 0 collapses to a plain sine at A (regression on the norm).
+      // B sits at 660 Hz here — well outside the 0.2 s window's ~5 Hz bin
+      // leakage from A, so an absent tone reads absent.
+      Generator g1;
+      g1.configure(fs);
+      g1.setMode(GenMode::Dual);
+      g1.setFrequency(440.0);
+      g1.setDual(660.0, 0.0);
+      g1.setLevelDb(-20.0);
+      g1.start();
+      std::vector<float> D1(static_cast<size_t>(fs * 0.4));
+      g1.render(D1.data(), (uint32_t)D1.size());
+      truthy("Dual with levelB=0 excludes tone B", magAtCh(D1, ds, D1.size() - ds, 660.0) < 0.005);
+    }
 
     // A mono caller (R = nullptr) still works and equals the mono path — stereo
     // OFF leaves the existing behavior byte-for-byte (regression).

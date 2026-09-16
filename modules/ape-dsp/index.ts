@@ -147,6 +147,7 @@ export const GEN_MODES = {
   burst: 11,
   additive: 12, // engineVersion ≥ 3 — 12-harmonic additive (HV-2)
   fm: 13, // engineVersion ≥ 7 — carrier+modulator FM voice (wave-2)
+  dual: 14, // engineVersion ≥ 8 — two independent sines summed MONO (Cymatics Lab)
 } as const;
 export type GenModeName = keyof typeof GEN_MODES;
 
@@ -176,6 +177,14 @@ export type GenParams = {
    *  pluck "brightness fades"; 0 = sustained). A genStart on a running tone is
    *  the STRIKE (click-free retrigger restarts the decay). No-op below v7. */
   fm?: { ratio: number; index: number; decaySec?: number };
+  /** DUAL mono pair (engineVersion ≥ 8, GEN_MODES.dual — Cymatics Lab
+   *  2026-09-16): A = `frequency`, B = `freqB` at `levelB` (0..1, relative to
+   *  A; default 1). Both sines are summed into ONE channel — unlike `stereo`
+   *  (hard-panned L/R) this makes acoustic BEATS |fA−fB| and dual-frequency
+   *  plate/liquid drive physically real through a single speaker. Normalised
+   *  native-side so the Q4 cap still bounds the peak. Phase-continuous
+   *  retune (no retrigger) — safe at UI rate. No-op below v8. */
+  dual?: { freqB: number; levelB?: number };
 };
 
 export type GenStatus = {

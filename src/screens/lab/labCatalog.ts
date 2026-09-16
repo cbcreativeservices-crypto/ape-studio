@@ -314,7 +314,10 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     section: 'training',
     kind: 'list',
     labs: [
-      { name: 'Cymatics Lab', blurb: 'Sound made visible — the standing-wave patterns that appear when a tone vibrates a plate or membrane.', status: 'development' },
+      // LIVE Phase 1 (owner GO 2026-09-16, spec docs/APE_CYMATICS_LAB_SPEC_2026_09_16.md):
+      // standalone lab home + Chladni Plate Studio + theory/integrity modules
+      // + guided experiments. Liquid / membrane / harmony / art phases follow.
+      { name: 'Cymatics Lab: Sound Made Visible', blurb: 'Chladni plates, resonance and normal modes — build a plate, drive it with a tone, watch sand find the still lines. Why a frequency has no shape of its own.', route: 'CymaticsLab' },
     ],
   },
   {

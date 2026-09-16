@@ -83,6 +83,9 @@ import { CalcProjectsScreen } from '../screens/lab/calc/CalcProjectsScreen';
 import { CalcResultsScreen } from '../screens/lab/calc/CalcResultsScreen';
 import { DigitalLabHomeScreen } from '../screens/lab/digital/DigitalLabHomeScreen';
 import { DigitalModuleScreen } from '../screens/lab/digital/DigitalModuleScreen';
+import { CymaticsHomeScreen } from '../screens/lab/cymatics/CymaticsHomeScreen';
+import { CymaticsModuleScreen } from '../screens/lab/cymatics/CymaticsModuleScreen';
+import { PlateStudioScreen } from '../screens/lab/cymatics/PlateStudioScreen';
 import { WaveLabHomeScreen } from '../screens/lab/wave/WaveLabHomeScreen';
 import { WaveModuleScreen } from '../screens/lab/wave/WaveModuleScreen';
 // Ear Training Lab (owner brief 2026-09-02) — home + generic module shell.
@@ -177,6 +180,8 @@ const Gated = {
   SpeakerLab: withAmplitudeOrientation(SpeakerCoverageLabScreen),
   TubeLab: withAmplitudeOrientation(VacuumTubeLabScreen),
   DigitalModule: withAmplitudeOrientation(DigitalModuleScreen),
+  CymaticsModule: withAmplitudeOrientation(CymaticsModuleScreen),
+  CymaticsPlateStudio: withAmplitudeOrientation(PlateStudioScreen),
   WaveModule: withAmplitudeOrientation(WaveModuleScreen),
   MeterModule: withAmplitudeOrientation(MeterModuleScreen),
   EqModule: withAmplitudeOrientation(EqModuleScreen),
@@ -207,6 +212,7 @@ const MemberGated = {
   TubeLab: withMembershipPreview(Gated.TubeLab),
   CableInstallLab: withMembershipPreview(Gated.CableInstallLab),
   DigitalLab: withMembershipPreview(DigitalLabHomeScreen),
+  CymaticsLab: withMembershipPreview(CymaticsHomeScreen),
 } as const;
 
 export function RootNavigator() {
@@ -395,6 +401,9 @@ export function RootNavigator() {
       <Stack.Screen name="CalcResults" component={CalcResultsScreen} />
       <Stack.Screen name="DigitalLab" component={MemberGated.DigitalLab} />
       <Stack.Screen name="DigitalModule" component={Gated.DigitalModule} />
+      <Stack.Screen name="CymaticsLab" component={MemberGated.CymaticsLab} />
+      <Stack.Screen name="CymaticsModule" component={Gated.CymaticsModule} />
+      <Stack.Screen name="CymaticsPlateStudio" component={Gated.CymaticsPlateStudio} />
       <Stack.Screen name="WaveLab" component={WaveLabHomeScreen} />
       <Stack.Screen name="WaveModule" component={Gated.WaveModule} />
       <Stack.Screen name="EarTrainingLab" component={EarTrainingLabScreen} />

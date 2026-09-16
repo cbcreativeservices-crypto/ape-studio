@@ -53,7 +53,10 @@ namespace apedsp {
 /// the nativeEngineVersion() JNI getter (ApeDspJni.cpp) that ApeDspModule.kt
 /// calls for getInfo()/getFrame(). Bumping it here bumps every platform;
 /// nothing hardcodes the value downstream.
-constexpr uint32_t kEngineVersion = 7;
+/// 8 (2026-09-16, Cymatics Lab): GenMode::Dual — two independent sines summed
+/// MONO (real acoustic beats / dual-frequency drive through one speaker), set
+/// via genSet({ dual: { freqB, levelB } }). JS gates the dual surface on >= 8.
+constexpr uint32_t kEngineVersion = 8;
 
 struct EngineConfig {
   uint32_t fftSize = 4096;      // ≤16384 (Q5 ruling)

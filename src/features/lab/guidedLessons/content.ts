@@ -1190,6 +1190,53 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     ],
     formula: 'Crest factor = peak dB − RMS dB · VU ≈ 300 ms average · momentary/short-term = 400 ms / 3 s windows · correlation = Σlr/√(Σl²·Σr²) · waterfall slice(f,t) = spectrum(f) − 60·t/RT60(f).',
   },
+
+  // ─────────────────────── Cymatics Lab: Sound Made Visible (owner GO 2026-09-16) ──
+  cymatics: {
+  id: 'cymatics',
+  num: 28,
+  name: 'Cymatics Lab: Sound Made Visible',
+  tier: 'T1',
+  tagline: 'A frequency has no shape of its own.',
+  whatItIs:
+    'Drive a thin plate with a tone and sand walks off the moving regions onto the still lines — the nodal lines of one ' +
+    'of the plate’s normal modes. Stable Chladni figures appear only near those resonances, and WHICH resonances a plate ' +
+    'has depends on its shape, size, thickness, material, support, excitation point and damping — not on the frequency alone.',
+  controls: [
+    { key: 'display', name: 'What the display shows', definition: 'The plate from above. PARTICLES: sand on the plate. HEAT MAP: displacement amplitude in the Academy ramp (dark blue still → red maximum). PHASE: amber regions rise while blue regions fall. NODE LINES: the finished figure. 3D PLATE and CROSS-SECTION: the motion, strobed to a few hertz — the real plate moves at the drive frequency. Every view is derived from the same simulated field; the badge names the approximation.' },
+    { key: 'frequency', name: 'Drive frequency', definition: 'The tone the driver pushes the plate with, in hertz, with its nearest note and cents. Tap FREQ to jump straight to one of the plate’s excitable modes, drag the lane to sweep by hand, or run SWEEP to walk 40 → 2500 Hz and watch resonances arrive.' },
+    { key: 'amplitude', name: 'Drive level', definition: 'How hard the driver pushes (and how loud the tone plays). Level changes how far the plate moves — it does not change WHICH pattern appears. That is set by frequency and the plate.' },
+    { key: 'resonance', name: 'Resonance readout', definition: 'BELOW: under the first excitable mode — the plate only flexes as a whole. APPROACHING: a mode is within reach. AT: on a mode — motion is large, the figure is sharp. BETWEEN: off every mode — small motion, the sand shivers but does not organise. The bar is the plate’s response relative to a perfect resonance.' },
+    { key: 'modes', name: 'Modes', definition: 'A plate’s natural ways of flexing, each with its own frequency and pattern of still lines. Higher modes generally carry more nodal lines. The label (2,0)+(0,2) names the two beam-like components a square plate combines into one figure; a disc mode is named by its nodal diameters and circles.' },
+    { key: 'plate', name: 'The plate', definition: 'Shape, material, size, thickness and edge condition together set the mode frequencies through f ∝ (h/L²)·√(E/ρ(1−ν²)). Change any one and the same drive frequency may stop being a resonance.' },
+    { key: 'shape', name: 'Shape', definition: 'Square, rectangle or disc. Shape sets the FAMILY of figures: crossed and diagonal lines on a square, nodal circles and diameters on a disc. Triangles, hexagons, rings and instrument plates need a numerically solved mode library and are planned.' },
+    { key: 'material', name: 'Material', definition: 'Stiffness (E) raises every mode; density (ρ) lowers it — frequency follows √(E/ρ). Steel is ~3× stiffer AND ~3× denser than aluminum, so its modes land close by. Acrylic and wood are soft and heavily damped: lower, blurrier figures. Solid wood is orthotropic — rotate the grain and the modes re-order.' },
+    { key: 'size', name: 'Size', definition: 'Modal frequency scales as 1/L². Doubling every horizontal dimension quarters the frequency of a corresponding mode — the same tone no longer selects the same relative pattern.' },
+    { key: 'thickness', name: 'Thickness', definition: 'Modal frequency scales with thickness h: doubling it doubles each mode’s frequency. Thicker plates are stiffer out of plane.' },
+    { key: 'edges', name: 'Edge condition', definition: 'Free edges give the classic Chladni figures. Supporting or clamping the edge stiffens the plate, raises every mode, and changes the patterns — boundary conditions matter as much as shape.' },
+    { key: 'exciter', name: 'Exciter position', definition: 'A mode is excited in proportion to how much it moves under the driver. Put the driver on a nodal line of a mode and that mode cannot be driven — a centre-driven plate only shows centre-antinode modes. Drag the driver on the plate and watch modes appear and vanish.' },
+    { key: 'support', name: 'Support / clamp', definition: 'A clamp forces a node where it sits. Modes with an antinode at the clamp are suppressed. Free on the driver post = the modern rig; clamp centre = the classic bowed-plate rig.' },
+    { key: 'damping', name: 'Damping', definition: 'Damping does not move a resonance — it broadens it and reduces its peak. Low damping (metals): sharp figures that need exact frequencies. High damping (acrylic, wood): blurred figures over a wider band.' },
+    { key: 'multi', name: 'Second tone', definition: 'Drives the plate at two frequencies at once; the linear plate superposes both responses. Heard as a true two-tone sum on engine 8; shown only on earlier builds.' },
+    { key: 'particles', name: 'Sand', definition: 'Amount, grain size and friction change how quickly and cleanly the figure forms — not where its lines are. Finer, lighter sand resolves finer figures; friction slows migration.' },
+    { key: 'silent', name: 'Silent drive', definition: 'Shakes the plate without playing the tone — for quiet rooms and clients without the audio engine. The physics is identical.' },
+    { key: 'harmonics', name: 'Harmonics vs modes', definition: 'A string or open pipe has modes at f, 2f, 3f… — a harmonic series with a clear pitch. Membranes and plates do not: their modes are inharmonic, which is why Chladni figures are not pictures of chords.' },
+  ],
+  commonMistakes: [
+    'Believing a frequency has a shape — the pattern belongs to the whole system (plate + support + driver + damping), not to the hertz value.',
+    'Expecting the pattern to morph smoothly as frequency changes — it does not; stable figures snap in near modes and dissolve between them.',
+    'Reading amplitude as pattern — level changes how far the plate moves, not which mode it is on.',
+    'Driving from a node and concluding the plate has no such mode — move the driver.',
+    'Treating Chladni figures as harmonics or chords — plate modes are inharmonic.',
+    'Treating a simulation as a measurement — every figure here is labelled Simulation with its approximation named.',
+  ],
+  proTips: [
+    'Run the SWEEP once with the heat map on: you will see the response peaks arrive one by one, then repeat it with sand to watch each figure form.',
+    'Do the diameter experiment: park on a mode, double the size, then lower the frequency to about a quarter to find the same figure again.',
+    'Switch to PHASE at any figure — the lobes across every nodal line move in opposite directions.',
+  ],
+  formula: 'f_mn = (λ²_mn / 2π L²) · √( E h² / 12 ρ (1 − ν²) )  — f ∝ h/L² · √(E/ρ); response per mode 1/√((1−r²)² + (r/Q)²), r = f/f_mn.',
+  },
 };
 
 /** Lab lessons in spec order (1..16) — for menus/indexes. */

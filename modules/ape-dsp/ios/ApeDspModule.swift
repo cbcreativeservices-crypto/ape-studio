@@ -190,6 +190,11 @@ public class ApeDspModule: Module {
          let fL = st["fL"] as? Double, let fR = st["fR"] as? Double {
         self.core.genSetStereo((st["on"] as? Bool) ?? false, freqL: fL, freqR: fR)
       }
+      // DUAL mono pair (engine 8, GenMode::Dual) — { freqB, levelB }. Targets-
+      // first like the rest (before mode). Same shape on Android/JS.
+      if let d = params["dual"] as? [String: Any], let fB = d["freqB"] as? Double {
+        self.core.genSetDual(fB, levelB: (d["levelB"] as? Double) ?? 1.0)
+      }
       // FM voice (wave-2, engineVersion 7) — { ratio, index, decaySec }.
       // Targets-first like the rest (before mode). Same shape on Android/JS.
       if let fm = params["fm"] as? [String: Any],

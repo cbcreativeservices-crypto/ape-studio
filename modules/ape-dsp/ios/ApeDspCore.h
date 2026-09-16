@@ -78,6 +78,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)genSetClickBpm:(double)bpm;
 - (void)genSetHpf:(double)hz;
 - (void)genSetStereo:(BOOL)on freqL:(double)fL freqR:(double)fR;
+/// Dual mono pair (engine 8): second sine frequency + level relative to A.
+- (void)genSetDual:(double)freqB levelB:(double)levelB;
 /// ADDITIVE (HV-2): flat layout [f0, a1..a12, p1..p12] — 25 numbers. f0 in Hz,
 /// amps relative 0..1, phases in DEGREES. Same ordering crosses every bridge
 /// verbatim; the core validates/clamps and ramps toward the new targets

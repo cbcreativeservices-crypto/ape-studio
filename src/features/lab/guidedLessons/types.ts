@@ -45,7 +45,8 @@ export type LabId =
   | 'tube' // Vacuum Tube Fundamentals — visual-first (owner 2026-07-29)
   | 'digital' // Digital Audio Sampling & Conversion Lab — standalone (owner 2026-07-29)
   | 'wave' // Wave Physics Laboratory — Pillar C Room Builder + 15 modules (launch 2026-07-29)
-  | 'meter'; // Visual Audio Analysis Lab — reading professional meters (owner 2026-07-29)
+  | 'meter' // Visual Audio Analysis Lab — reading professional meters (owner 2026-07-29)
+  | 'cymatics'; // Cymatics Lab: Sound Made Visible — Chladni plates, resonance, modes (owner GO 2026-09-16)
 
 /** Native-engine feasibility tier (v4 MASTER §12) — informational. */
 export type LabTier = 'T1' | 'T2' | 'T3';

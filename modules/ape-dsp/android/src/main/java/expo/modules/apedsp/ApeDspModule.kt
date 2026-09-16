@@ -72,6 +72,8 @@ class ApeDspModule : Module() {
   private external fun nativeGenSetClickBpm(h: Long, bpm: Double)
   private external fun nativeGenSetHpf(h: Long, hz: Double)
   private external fun nativeGenSetStereo(h: Long, on: Boolean, fL: Double, fR: Double)
+  // DUAL mono pair (engine 8): second sine frequency + level relative to A.
+  private external fun nativeGenSetDual(h: Long, freqB: Double, levelB: Double)
   private external fun nativeFxSet(h: Long, effectId: Int, paramId: Int, v: Double)
   private external fun nativeFxReset(h: Long)
   private external fun nativeFxGrStatus(h: Long): DoubleArray
@@ -334,6 +336,12 @@ class ApeDspModule : Module() {
         val fL = (st["fL"] as? Number)?.toDouble()
         val fR = (st["fR"] as? Number)?.toDouble()
         if (fL != null && fR != null) nativeGenSetStereo(handle, (st["on"] as? Boolean) ?: false, fL, fR)
+      }
+      // DUAL mono pair (engine 8, GenMode::Dual) — { freqB, levelB }. Targets-
+      // first like the rest (before mode). Same shape on iOS/JS.
+      (params["dual"] as? Map<*, *>)?.let { d ->
+        val fB = (d["freqB"] as? Number)?.toDouble()
+        if (fB != null) nativeGenSetDual(handle, fB, (d["levelB"] as? Number)?.toDouble() ?: 1.0)
       }
       // FM voice (wave-2, engineVersion 7) — { ratio, index, decaySec }.
       // Targets-first like the rest (before mode). Same shape on iOS/JS.

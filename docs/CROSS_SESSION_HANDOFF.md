@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-16 13:47 · ccode · 98f070dd
+changed: Home Study-Area cards' EXPLORE → certificate/program picker (src/screens/courses/StudyAreaExplore.tsx; mapping src/data/studyAreaCredentials.ts; 1 match opens the popup directly). 3 NEW cards: Mixing & Mastering / Audio Restoration & Archiving / Acoustics Science (owner art pending in course-cards bucket as area_*.webp). Also committed docs/APE_CYMATICS_LAB_SPEC_2026_09_16.md — owner GO'd Phase 1 of the Cymatics Lab (members-only, Sound Visualization).
+affects other side: nothing DB-side. FYI Computer B will get a handoff for the non-analytic plate modal library (triangle/hexagon/ring/bell/guitar/violin) after Phase 1 proves the JSON schema (spec §1.3).
+needs: nothing.
+
+
 ### 2026-09-16 12:30 · ccode · d5bc4ee6
 changed: Pro Registry: the guest/no-account placeholder tile reads "YOUR QR CODE" (owner copy tweak; registered users' real QR unchanged).
 affects other side: nothing.

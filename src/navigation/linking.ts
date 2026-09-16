@@ -77,6 +77,7 @@ export const linking: LinkingOptions<RootStackParamList> = {
       TubeLab: 'labs/tubes',
       CalcLab: 'labs/calculator',
       DigitalLab: 'labs/digital',
+      CymaticsLab: 'labs/cymatics',
       CableInstallLab: 'labs/cable-installation',
       LabCategory: 'labs/:id', // unknown ids render the screen's own "not available" state
       // Glossary — the public browse path; works signed-in or anonymous.

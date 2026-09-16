@@ -354,6 +354,10 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
 - (void)genSetStereo:(BOOL)on freqL:(double)fL freqR:(double)fR {
   _gen->setStereo(on == YES, fL, fR);
 }
+// Dual mono pair (engine 8, GenMode::Dual): B frequency + level relative to A.
+- (void)genSetDual:(double)freqB levelB:(double)levelB {
+  _gen->setDual(freqB, levelB);
+}
 // ADDITIVE (HV-2): flat [f0, a1..a12, p1..p12] — 25 doubles (Hz, 0..1, degrees).
 // Copy out of the NSArray and forward; the core NaN-proofs/clamps and ignores
 // short arrays (count < 25). NOTE: genSetFrequency does NOT retune the additive

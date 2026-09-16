@@ -252,6 +252,11 @@ export type RootStackParamList = {
    *  laboratory with its own home + 8 modules. */
   DigitalLab: undefined;
   DigitalModule: { id: import('../screens/lab/digital/modules/registry').DigitalModuleId };
+  /** Cymatics Lab: Sound Made Visible (owner GO 2026-09-16) — standalone
+   *  home + the Chladni Plate Studio (optional experiment preset) + modules. */
+  CymaticsLab: undefined;
+  CymaticsModule: { id: import('../screens/lab/cymatics/modules/registry').CymaticsModuleId };
+  CymaticsPlateStudio: { preset?: string } | undefined;
   /** Wave Physics Laboratory (v4 Pillar C, launch 2026-07-29) — Room Builder
    *  engine + 15 preset modules, geometric/analytic launch path. */
   WaveLab: undefined;
