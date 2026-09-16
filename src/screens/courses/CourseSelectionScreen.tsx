@@ -68,8 +68,6 @@ type Card =
   | { kind: 'lab'; id: 'lab' }
   /** Free-topic taster card (Booth 2026-07-11) — gs0 / gs36, after Glossary. */
   | { kind: 'freeTopic'; id: string; gs: number; name: string; courseOrder: number }
-  /** CM2/CM3: a public catalog course (commercialMode). */
-  | { kind: 'public'; id: string; order: number; name: string; topicCount: number; hasFreeTopic: boolean }
   /** Audio-field topic card (legacy kind name 'comingTopic'; owner 2026-08-10):
    *  a real audio-field TOPIC with its own course-card image. Membership-locked
    *  for non-members — shown but gated, never labeled "coming soon". */
@@ -267,7 +265,6 @@ function rawCardTitle(item: Card): string | null {
     case 'lab':
       return 'Audio Fundamentals & Advanced Training Labs';
     case 'freeTopic':
-    case 'public':
     case 'comingTopic':
     case 'showcase':
     case 'programStub':
@@ -294,8 +291,6 @@ function dotColorFor(card: Card): string {
     case 'comingTopic':
     case 'showcase':
       return colors.amber; // standalone topic / study-area showcase
-    case 'public':
-      return card.topicCount > 1 ? colors.purple : colors.amber; // course vs single topic
     case 'programStub':
       return colors.purple; // purple program placeholder
     case 'course':
@@ -503,7 +498,7 @@ function CourseCardView({
 }) {
   // CM3: the card RENDERS entitlement capabilities (server-owned once live) —
   // it never decides them. Flag OFF ⇒ everything unlocked-looking as today.
-  const { commercialMode, caps, entitlement, isMember } = useEntitlement();
+  const { commercialMode, caps, isMember } = useEntitlement();
 
   // "+ XX other" tally card — its own compact look, far right of the deck.
   // (After the hook above so hook order stays stable.)
@@ -738,7 +733,6 @@ function CourseCardView({
   const isTools = item.kind === 'tools';
   const isGlossary = item.kind === 'glossary';
   const free = item.kind === 'freeTopic' ? item : null;
-  const pub = item.kind === 'public' ? item : null;
   const coming = item.kind === 'comingTopic' ? item : null;
   const course = item.kind === 'course' ? item : null;
   const key = isTools
@@ -747,31 +741,18 @@ function CourseCardView({
       ? 'glossary'
       : free
         ? `free${free.gs}`
-        : pub
-          ? `pub${pub.order}`
-          : coming
-            ? coming.name
-            : course!.code;
+        : coming
+          ? coming.name
+          : course!.code;
   const url = cardImageUrl(key);
   // Dev diagnostic (owner report 2026-09-05: topic cards on a placeholder) —
   // a card with NO art url never even requests an image, so CardArt's own
   // load log stays silent. Name the key here so the Metro log shows the gap.
   if (__DEV__ && !url) console.log(`[cardart] NO URL for card key="${key}" (kind=${item.kind})`);
-  // Free-tier nuance (§3): a SINGLE-topic taster card containing a free topic is
-  // OPENABLE for free/lapsed users. Any other public card — multi-topic
-  // Professional Program Certificates AND single-topic non-free cards like
-  // Podcasting/Broadcast + Film/Game — is paid content: it opens ONLY with full
-  // (academy) access. Gate on ENTITLEMENT, never caps: the dev bypass forces
-  // caps=academy for everyone, so caps read those paid cards as open in dev
-  // (owner 2026-08-01). In production capsFor(entitlement) matches this exactly.
-  const pubOpenable =
-    !!pub &&
-    (entitlement === 'academy' ||
-      (entitlement !== 'anonymous' && pub.hasFreeTopic && pub.topicCount <= 1));
   // Free-topic tasters are ALWAYS unlocked + full-color (Booth 2026-07-11).
   // Audio-field topic cards are membership-locked for non-members (owner
   // 2026-08-10) — shown, but gated behind Academy access, never "coming soon".
-  const locked = (!!course && !course.enrolled) || (!!pub && !pubOpenable) || !!coming;
+  const locked = (!!course && !course.enrolled) || !!coming;
   const completed = !!course && course.enrolled && course.completed;
 
   // Whole-card tap (user request): pressing anywhere on the card does what its
@@ -787,49 +768,38 @@ function CourseCardView({
           ? isMember
             ? () => notify('Coming soon', `${coming.name} is on the way — it'll appear here when it's ready.`)
             : onLockedPress
-          : pub
-            ? pubOpenable
-              ? () => onOpenPublic(pub.order)
-              : onLockedPress
-            : locked
-              ? null
-              : () => onOpenCourse(course!);
+          : locked
+            ? null
+            : () => onOpenCourse(course!);
 
   // A locked TOPIC is GOLD; a locked COURSE stays PURPLE (Booth 2026-07-11).
-  // Topic = a single-topic public card, or an audio-field topic card.
-  const isTopicCard = !!coming || (!!pub && pub.topicCount === 1);
+  const isTopicCard = !!coming;
   const lockedAccent = isTopicCard ? 'rgba(255,180,0,.6)' : 'rgba(150,90,220,.6)';
   const lockedEyebrow = isTopicCard ? '#ffc64d' : '#c4a2ff';
 
-  // Certificate cards match the Awards colours (user request 2026-07-18):
-  // Professional Certificate (multi-topic) = PURPLE; Specialization Certificate
-  // (single-topic / audio-field topic) = BLUE — border + eyebrow, locked or not.
-  const isProfCert = !!pub && pub.topicCount > 1;
-  const isSpecCert = (!!pub && pub.topicCount === 1) || !!coming;
+  // Audio-field topic cards match the Awards' Specialization Certificate BLUE
+  // (user request 2026-07-18) — border + eyebrow, locked or not.
+  const isSpecCert = !!coming;
 
   const accent = isGlossary
     ? 'rgba(91,176,255,.65)'
     : // Measurement tools now share the free topics' GREEN (Booth 2026-07-11 #5).
       free || isTools
       ? 'rgba(55,224,95,.6)'
-      : isProfCert
-        ? 'rgba(196,162,255,.65)'
-        : isSpecCert
-          ? 'rgba(91,176,255,.65)'
-          : locked
-            ? lockedAccent
-            : 'rgba(255,180,0,.6)';
+      : isSpecCert
+        ? 'rgba(91,176,255,.65)'
+        : locked
+          ? lockedAccent
+          : 'rgba(255,180,0,.6)';
   const eyebrowColor = isGlossary
     ? '#7fd4ff'
     : free || isTools
       ? '#5bff85'
-      : isProfCert
-        ? '#c4a2ff'
-        : isSpecCert
-          ? '#5bb0ff'
-          : locked
-            ? lockedEyebrow
-            : '#ffc64d';
+      : isSpecCert
+        ? '#5bb0ff'
+        : locked
+          ? lockedEyebrow
+          : '#ffc64d';
   // Cards the student can mark into their own deck (academy mode).
   const eyebrow = isTools
     ? 'INCLUDED FOR EVERYONE'
@@ -837,22 +807,15 @@ function CourseCardView({
       ? 'INCLUDED FOR EVERYONE'
       : free
         ? 'FREE TOPIC' // keep the free-topic subtitle in every mode (2026-07-18 fix)
-        : pub
-          ? // Category labels — SINGULAR per card (user request 2026-07-18):
-            // multi-topic = 'Professional Certificate'; single-topic =
-            // 'Specialization Certificate'.
-            pub.topicCount > 1
-            ? 'Professional Program Certificate'
-            : 'Specialization Certificate'
-          : coming
-            ? // NEW COPY 2026-09-03, owner review. These cards used to read
-              // "Specialization Certificate", which the carousel rule now
-              // forbids: only topic cards belong here. They are topic cards, so
-              // they say so. Matches the "FREE TOPIC" eyebrow on the tasters.
-              'TOPIC'
-            : course!.isPrereq
-              ? 'SAFETY'
-              : course!.code;
+        : coming
+          ? // NEW COPY 2026-09-03, owner review. These cards used to read
+            // "Specialization Certificate", which the carousel rule now
+            // forbids: only topic cards belong here. They are topic cards, so
+            // they say so. Matches the "FREE TOPIC" eyebrow on the tasters.
+            'TOPIC'
+          : course!.isPrereq
+            ? 'SAFETY'
+            : course!.code;
   // Title with the 2026-07-22 card renames applied (Career → "+ N programs").
   const title = displayCardTitle(item);
   const inner = (
@@ -877,7 +840,7 @@ function CourseCardView({
         {/* COURSE cards show their topic count below the title, in blue
             (Booth 2026-07-15). */}
         {(() => {
-          const n = course ? course.achievement_count : pub && pub.topicCount > 1 ? pub.topicCount : null;
+          const n = course ? course.achievement_count : null;
           return n ? <Text style={styles.cardTopicCount}>{n} TOPICS</Text> : null;
         })()}
       </View>
@@ -919,14 +882,6 @@ function CourseCardView({
                     : onLockedPress
                 }
               />
-            </View>
-          ) : pub ? (
-            <View style={{ width: CARD_BTN_W }}>
-              {pubOpenable ? (
-                <GlassButton label="OPEN" tint="gold" height={50} onPress={() => onOpenPublic(pub.order)} />
-              ) : (
-                <GlassButton label="🔒 ACADEMY MODE" tint="steel" height={50} fontSize={13} onPress={onLockedPress} />
-              )}
             </View>
           ) : locked ? (
             // Sized to match the glass keys (Booth 2026-07-09r).
