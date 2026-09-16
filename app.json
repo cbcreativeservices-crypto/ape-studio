@@ -173,7 +173,14 @@
       "expo-asset",
       "expo-secure-store",
       "expo-image",
-      "expo-iap"
+      "expo-iap",
+      [
+        "@sentry/react-native/expo",
+        {
+          "project": "ape-studio",
+          "url": "https://sentry.io/"
+        }
+      ]
     ],
     "extra": {
       "eas": {

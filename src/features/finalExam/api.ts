@@ -25,6 +25,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Crypto from 'expo-crypto';
 import { supabase } from '../../lib/supabase';
+import { trackEvent } from '../telemetry/telemetry';
 
 export type AwardType = 'certificate' | 'program';
 
@@ -161,6 +162,8 @@ export async function startFinalExam(awardType: AwardType, awardId: string): Pro
     p_client_attempt_id: intentId,
   });
   if (error) throw new ExamStartFailure(parseStartError(error.message));
+  // Anonymous count only — award kind, never the award/attempt id.
+  trackEvent('exam_start', { award: awardType });
   return data as ExamPayload;
 }
 
@@ -198,7 +201,9 @@ export async function submitFinalExam(args: SubmitArgs): Promise<ExamResult> {
     p_focus_loss_duration: args.focusLossDuration,
   });
   if (error) throw new Error(error.message);
-  return data as ExamResult;
+  const result = data as ExamResult;
+  trackEvent('exam_finish', { passed: result.passed, offline: args.submittedOffline });
+  return result;
 }
 
 /* ---------------- offline submit queue (AsyncStorage) ---------------- */

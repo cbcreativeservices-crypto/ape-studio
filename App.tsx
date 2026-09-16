@@ -83,7 +83,13 @@ import { LowLightProductionGate } from './src/features/settings/LowLightLayer';
 import { registerLowLightTap, touchLowLight } from './src/features/settings/lowLight';
 import { useAccountLocalSync } from './src/features/account/accountLocalSync';
 import { lockPortrait } from './src/lib/screenOrientationSafe';
+import { initTelemetry, trackScreen, wrapRoot } from './src/features/telemetry/telemetry';
 import { colors, fontAssets } from './src/theme/tokens';
+
+// Crash reporting + anonymous analytics (owner-approved 2026-09-16), booted
+// FIRST so a failure anywhere below is already caught. Privacy contract +
+// the single kill switch: src/features/telemetry/telemetry.ts.
+initTelemetry();
 
 // Prime the accessibility runtime from storage at boot so anything that reads
 // it synchronously (motion, haptics) has the user's real choice, not defaults.
@@ -128,7 +134,7 @@ function routeLocalDest(dest: string): void {
   }
 }
 
-export default function App() {
+function App() {
   // Capture the error tuple: a font-load failure must NOT hang the app forever on
   // the dark surface — fall through to render with system fonts (bug audit 2026-09-09).
   const [fontsLoaded, fontError] = useFonts(fontAssets);
@@ -201,6 +207,8 @@ export default function App() {
   // wrong screen (owner 2026-08-02).
   useEffect(() => {
     const unsub = navigationRef.addListener('state', () => {
+      // Anonymous screen-view count (route NAME only — never params).
+      trackScreen(navigationRef.getCurrentRoute()?.name);
       const p = getLabPreview();
       // A deliberate leave (leaveLab) keeps its own scrim through the pop and
       // clears it after 350ms — the safety net must not preempt that (B-066).
@@ -522,3 +530,7 @@ export default function App() {
     </RootErrorBoundary>
   );
 }
+
+// Sentry's root wrap (touch-event breadcrumbs + profiler); the bare App when
+// telemetry is off.
+export default wrapRoot(App);

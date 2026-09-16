@@ -2,9 +2,13 @@
 // components via react-native-svg-transformer (added 2026-08-17 for the
 // Measurement Tools card strips). This is a JS-layer transform only; no native
 // change. Recipe: react-native-svg-transformer README (Expo SDK 41+).
-const { getDefaultConfig } = require('expo/metro-config');
+// Sentry (2026-09-16): getSentryExpoConfig = Expo's getDefaultConfig plus the
+// Debug-ID serializer that lets EAS builds upload matching source maps
+// (SENTRY_AUTH_TOKEN at build time). Everything below customises the same
+// config object it always did.
+const { getSentryExpoConfig } = require('@sentry/react-native/metro');
 
-const config = getDefaultConfig(__dirname);
+const config = getSentryExpoConfig(__dirname);
 
 config.transformer = {
   ...config.transformer,

@@ -30,6 +30,7 @@
  */
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { captureError } from '../features/telemetry/telemetry';
 
 type Props = { children: ReactNode };
 type State = { error: Error | null };
@@ -45,11 +46,14 @@ export class RootErrorBoundary extends Component<Props, State> {
     // CORRECTION (security pass 2026-09-11): this used to claim "release builds
     // stay quiet". They do NOT — there is no babel.config.js, so
     // transform-remove-console is not applied and this line runs in the shipped
-    // binary, writing to logcat / os_log. It stays because a render-crash trace
-    // is the only breadcrumb we have (no crash reporter is installed), but be
-    // aware any thrown message that embeds user text is logged with it.
-    // Readable only with physical/ADB access, not by other apps.
+    // binary, writing to logcat / os_log. It stays as the local trace; be aware
+    // any thrown message that embeds user text is logged with it. Readable
+    // only with physical/ADB access, not by other apps.
     console.error('[app] uncaught render error:', error, info.componentStack);
+    // Crash reporter (2026-09-16): a render-phase crash is exactly the class
+    // Sentry's global handlers miss, so hand it over here. No-op when
+    // telemetry is off. The component stack is diagnostic, not user text.
+    captureError(error, { boundary: 'root' });
   }
 
   render(): ReactNode {

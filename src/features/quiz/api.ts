@@ -19,6 +19,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Crypto from 'expo-crypto';
 import { supabase } from '../../lib/supabase';
+import { trackEvent } from '../telemetry/telemetry';
 import {
   deleteQueuedSubmission,
   getQueuedSubmissions,
@@ -152,7 +153,10 @@ export async function startQuizAttempt(achievementId: string): Promise<AttemptPa
     p_client_attempt_id: intentId,
   });
   if (error) throw new QuizStartFailure(parseStartError(error.message));
-  return data as AttemptPayload;
+  const payload = data as AttemptPayload;
+  // Anonymous count only — no topic/attempt ids leave the app.
+  trackEvent('quiz_start', { practice: payload.is_practice });
+  return payload;
 }
 
 export async function clearQuizIntent(achievementId: string): Promise<void> {
@@ -187,7 +191,9 @@ export async function submitQuiz(args: {
     p_focus_loss_duration: args.focusLossDuration,
   });
   if (error) throw new Error(error.message);
-  return data as SubmitResult;
+  const result = data as SubmitResult;
+  trackEvent('quiz_finish', { outcome: result.outcome, offline: args.submittedOffline });
+  return result;
 }
 
 /* ---------------- offline submit queue (Code brief §6) ---------------- */
