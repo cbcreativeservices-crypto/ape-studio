@@ -11,6 +11,7 @@
  * scrub.ts is import-free by design so this file needs no module stubs.
  */
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import {
   MAX_PROPS,
@@ -84,7 +85,7 @@ test('scrubBreadcrumb drops console lines and de-queries http URLs', () => {
   assert.deepEqual(scrubBreadcrumb(nav), nav);
 });
 
-test('scrubEvent keeps only the app user id and removes request context', () => {
+test('scrubEvent removes the user object entirely (signed-in) and the request context', () => {
   const out = scrubEvent({
     user: { id: 'uuid-1', email: 'pat@example.com', username: 'pat', ip_address: '1.2.3.4' },
     request: { url: 'https://h/?token=abc', headers: { cookie: 'x' } },
@@ -94,13 +95,26 @@ test('scrubEvent keeps only the app user id and removes request context', () => 
     ],
     message: 'boom',
   });
-  assert.deepEqual(out.user, { id: 'uuid-1' });
+  assert.equal('user' in out, false);
   assert.equal('request' in out, false);
   assert.deepEqual(out.breadcrumbs, [{ category: 'xhr', data: { url: 'https://h/a' } }]);
   assert.equal(out.message, 'boom');
 });
 
-test('scrubEvent clears the user entirely when there is no app id', () => {
+test('scrubEvent removes the user object entirely (guest / no id)', () => {
   const out = scrubEvent({ user: { email: 'pat@example.com', ip_address: '1.2.3.4' } });
+  assert.equal('user' in out, false);
   assert.equal(out.user, undefined);
+});
+
+// Sentry is FULLY ANONYMOUS (owner ruling 2026-09-16, "Option B"): the
+// telemetry module must never bind an identity. A behavioural test cannot see
+// this without stubbing the whole SDK, so pin the source: no setUser call and
+// no auth import may exist in telemetry.ts. If this fails, the privacy form
+// Computer A filed ("not linked to you") is now wrong.
+test('telemetry.ts never calls Sentry.setUser and never reads the auth session', () => {
+  const src = readFileSync(new URL('../src/features/telemetry/telemetry.ts', import.meta.url), 'utf8');
+  assert.equal(/setUser/.test(src), false, 'Sentry.setUser must not appear');
+  assert.equal(/lib\/supabase/.test(src), false, 'must not import the Supabase client');
+  assert.equal(/onAuthStateChange|getSession/.test(src), false, 'must not observe auth state');
 });

@@ -6,11 +6,14 @@
  * THE CONTRACT (mirrored in docs/TELEMETRY_DATA_INVENTORY_2026_09_16.md):
  *   • NO advertising id (IDFA/GAID), NO App Tracking Transparency prompt, NO
  *     cross-app tracking — nothing here reads a device identifier at all.
- *   • Sentry: `sendDefaultPii: false`; NO Session Replay (the integration is
- *     never added); NO performance tracing; NO screenshots / view hierarchy;
- *     the ONLY user field is the app's own user id (`Sentry.setUser({ id })`)
- *     for real accounts, cleared on sign-out; breadcrumbs + events pass
- *     through scrub.ts (no console lines, no query strings, no email/IP).
+ *   • Sentry: FULLY ANONYMOUS (owner ruling 2026-09-16, "Option B"). NO user
+ *     binding of any kind — the SDK's user-binding API is never called (this
+ *     module has no auth access; test/telemetry.test.ts pins the source), and
+ *     beforeSend strips any `user` object an integration might attach, so no
+ *     crash is linkable to an account. `sendDefaultPii: false`; NO Session Replay (the
+ *     integration is never added); NO performance tracing; NO screenshots /
+ *     view hierarchy; breadcrumbs + events pass through scrub.ts (no console
+ *     lines, no query strings, no email/IP).
  *   • Aptabase: anonymous events only — screen views, feature usage, quiz /
  *     exam start + finish counts. Props are whitelist-filtered to enum-shaped
  *     values (scrub.ts); free text cannot get through. Aptabase itself adds
@@ -28,8 +31,6 @@ import * as Sentry from '@sentry/react-native';
 import * as Aptabase from '@aptabase/react-native';
 import type { ComponentType } from 'react';
 import { TELEMETRY_ENABLED } from '../../config/telemetry';
-import { supabase } from '../../lib/supabase';
-import { isRealAccount } from '../commercial/realAccount';
 import { sanitizeProps, scrubBreadcrumb, scrubEvent } from './scrub';
 
 const SENTRY_DSN = process.env.EXPO_PUBLIC_SENTRY_DSN ?? '';
@@ -90,33 +91,15 @@ export function initTelemetry(): void {
 
   if (!sentryOn && !aptabaseOn) return;
 
-  // Bind the app's OWN user id to Sentry for real accounts only (a guest's
-  // anonymous glossary session is NOT an account — realAccount.ts). Cleared on
-  // sign-out so a later crash on the same device is not attributed to them.
-  try {
-    void supabase.auth
-      .getSession()
-      .then(({ data }) => bindUser(data.session))
-      .catch(() => {});
-    supabase.auth.onAuthStateChange((_event, session) => bindUser(session));
-  } catch {
-    /* auth binding is best-effort — never let it break boot */
-  }
+  // Deliberately NO auth binding here: Sentry never learns who the user is
+  // (see the header). If someone later needs per-account crash lookup, that is
+  // a privacy-form change for Computer A first, not a one-line addition.
 
   // One-shot verification hook (dev only, opt-in via .env): proves the pipes
   // end-to-end without leaving a test path in the app.
   if (__DEV__ && process.env.EXPO_PUBLIC_TELEMETRY_SELFTEST === '1') {
     selfTest();
   }
-}
-
-/** Structural subset of a Supabase session — what user-binding needs. */
-type SessionLike = { user?: { id?: string; is_anonymous?: boolean | null } | null } | null | undefined;
-
-function bindUser(session: SessionLike): void {
-  if (!sentryOn) return;
-  const id = isRealAccount(session) ? session?.user?.id : undefined;
-  Sentry.setUser(id ? { id } : null);
 }
 
 /** Wrap the root component (Sentry touch-event boundary + profiler). */

@@ -12,8 +12,9 @@
  *   • Breadcrumbs never carry a query string (a Supabase REST filter can embed
  *     a uid or an email) and console output is dropped outright (console lines
  *     are the one place user-typed text routinely appears).
- *   • Events never carry email / username / IP; the only user field that
- *     survives is the app's own user id (set explicitly, never inferred).
+ *   • Events never carry a `user` object at all — no id, email, username or
+ *     IP. Sentry is fully anonymous (owner ruling 2026-09-16, "Option B");
+ *     the field is removed here as a backstop even though nothing sets it.
  */
 
 export type Primitive = string | number | boolean;
@@ -93,16 +94,15 @@ export type EventLike = {
 };
 
 /**
- * Sentry `beforeSend`. Keeps `user.id` (the app's own id, set explicitly by
- * telemetry.ts) and removes every other user field; drops any request
- * context; re-applies the breadcrumb rules to the breadcrumbs attached to the
- * event (they may have been added before the hook was installed).
+ * Sentry `beforeSend`. Removes the `user` object entirely (no id, email,
+ * username or IP — telemetry.ts never calls setUser, this is the backstop);
+ * drops any request context; re-applies the breadcrumb rules to the
+ * breadcrumbs attached to the event (they may have been added before the hook
+ * was installed).
  */
 export function scrubEvent<T extends EventLike>(event: T): T {
   const out: EventLike = { ...event };
-  if (out.user) {
-    out.user = out.user.id != null && out.user.id !== '' ? { id: out.user.id } : undefined;
-  }
+  if ('user' in out) delete out.user;
   if ('request' in out) delete out.request;
   if (Array.isArray(out.breadcrumbs)) {
     out.breadcrumbs = out.breadcrumbs
