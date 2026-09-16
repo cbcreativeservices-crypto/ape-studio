@@ -56,6 +56,7 @@ import { isFreeEnrollGs, setActiveMany, useEnrollment } from '../../features/enr
 import { BookIcon } from '../../components/BookIcon';
 import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 import { AboutHomeSheet } from '../about/AboutHomeSheet';
+import { StudyAreaExplore } from './StudyAreaExplore';
 import { AttractRing, AttractText } from '../../features/onboarding/AttractCue';
 import { useHomeAttract, noteHomeSeen, markExploreOpened, markAboutOpened, markEnrolled } from '../../features/onboarding/attractStore';
 
@@ -193,6 +194,11 @@ const SHOWCASE_CARDS: readonly string[] = [
   'Audio Technician',
   'Road Crew & Touring',
   'Career & Business',
+  // Owner 2026-09-16 — three added areas so their credentials get their own
+  // menus instead of bloating the originals. Art: owner-produced card images.
+  'Mixing & Mastering',
+  'Audio Restoration & Archiving',
+  'Acoustics Science',
 ];
 
 /** Course-card art in the public `course-cards` bucket — STANDARDIZED WebP set
@@ -245,6 +251,11 @@ const CARD_IMAGE: Record<string, string> = {
   'HiFi & Consumer Audio': 'topic_hifi.webp',
   'Road Crew & Touring': 'topic_road-crew.webp',
   'Career & Business': 'course_career-and-business.webp',
+  // Owner-produced card art (2026-09-16) — uploaded to the same bucket under
+  // these names; the card renders its dark fallback until the file lands.
+  'Mixing & Mastering': 'area_mixing-and-mastering.webp',
+  'Audio Restoration & Archiving': 'area_audio-restoration-and-archiving.webp',
+  'Acoustics Science': 'area_acoustics-science.webp',
 };
 /** Scroll-dot color by card TYPE (Booth 2026-07-15): free = green, course =
  *  purple, topic = amber — so the dot row reads as a color-coded map of the
@@ -488,7 +499,8 @@ function CourseCardView({
   /** The "+ XX other" tally card → open the full Curriculum. */
   onOpenMore: () => void;
   /** Showcase card key → the curriculum browser. */
-  onOpenShowcase: () => void;
+  /** EXPLORE on a Study Area card — opens that area's credential picker. */
+  onOpenShowcase: (area: string) => void;
   /** A user-placed Home topic card → open study for that topic gs (2026-07-22). */
   onOpenTopic: (gs: number) => void;
   /** A user-placed Home bundle card → load its topics + study (2026-07-22). */
@@ -700,17 +712,19 @@ function CourseCardView({
     );
   }
   // SHOWCASE (owner 2026-09-05): an advertisement for an area of study, in
-  // full colour for everyone — it tempts, it does not gate. The key opens the
-  // curriculum browser where the real topics live.
+  // full colour for everyone — it tempts, it does not gate. EXPLORE (owner
+  // 2026-09-16) opens the area's certificate/program picker — or the single
+  // credential's popup when there is only one (StudyAreaExplore).
   if (item.kind === 'showcase') {
     const showUrl = cardImageUrl(item.name);
+    const openArea = () => onOpenShowcase(item.name);
     return (
       <View style={styles.cardOuter}>
         <View style={styles.cardAbove}>
           <Text style={[styles.cardAboveText, { color: '#ffc64d' }]}>STUDY AREA</Text>
           <View style={[styles.cardAboveRule, { backgroundColor: '#ffc64d' }]} />
         </View>
-        <Pressable onPress={onOpenShowcase} accessible={false}>
+        <Pressable onPress={openArea} accessible={false}>
           <CardArt uri={showUrl} style={[styles.card, { borderColor: 'rgba(255,198,77,.55)' }]} imageStyle={styles.cardImg}>
             <LinearGradient
               colors={['rgba(8,8,10,0.55)', 'rgba(8,8,10,0)', 'rgba(8,8,10,0.45)', 'rgba(8,8,10,0.95)']}
@@ -722,7 +736,7 @@ function CourseCardView({
             </View>
             <View style={{ alignItems: 'center' }}>
               <View style={{ width: CARD_BTN_W }}>
-                <GlassButton label="EXPLORE ›" tint="gold" height={50} fontSize={13} onPress={onOpenShowcase} />
+                <GlassButton label="EXPLORE ›" tint="gold" height={50} fontSize={13} onPress={openArea} />
               </View>
             </View>
           </CardArt>
@@ -965,6 +979,8 @@ export function CourseSelectionScreen() {
   const navigation = useNavigation();
   const [cards, setCards] = useState<Card[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // The Study Area whose EXPLORE picker/popup is open (owner 2026-09-16).
+  const [exploreArea, setExploreArea] = useState<string | null>(null);
   // M7 (2026-09-07): gs → { name, subject } from the LIVE v3 curriculum, so a
   // member's custom Home cards show their real topic name/subject.
   // officialTopicName(gs, liveName) stays the final fallback in displayDeck.
@@ -1550,7 +1566,7 @@ export function CourseSelectionScreen() {
               onOpenPublic={openPublicCourse}
               onLockedPress={() => setUpgradeOpen(true)}
               onOpenMore={openMore}
-              onOpenShowcase={() => (navigation as any).navigate('Awards', { category: 'curriculum' })}
+              onOpenShowcase={setExploreArea}
               onOpenTopic={openTopic}
               onOpenBundle={openBundle}
               academy={academy}
@@ -1560,6 +1576,18 @@ export function CourseSelectionScreen() {
             <CardShimmer active={index === activeIdx} />
           </View>
         )}
+      />
+
+      {/* Study Area EXPLORE (owner 2026-09-16): the area's credential picker /
+          popup. Fallback = the curriculum browser EXPLORE opened before. */}
+      <StudyAreaExplore
+        area={exploreArea}
+        onClose={() => setExploreArea(null)}
+        onProgress={(c) => (navigation as any).navigate('AwardProgress', { awardType: c.kind, awardId: c.id, awardName: c.name })}
+        onFallback={() => {
+          setExploreArea(null);
+          (navigation as any).navigate('Awards', { category: 'curriculum' });
+        }}
       />
 
       {/* Push the scroll dots down to sit just above the bottom nav bar. */}
