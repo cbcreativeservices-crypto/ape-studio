@@ -266,6 +266,7 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
           <View style={styles.qrSquare}>
             <View style={styles.qrBlack}>
               <QrArt />
+              <Text style={styles.qrText}>YOUR</Text>
               <Text style={styles.qrText}>QR</Text>
               <Text style={styles.qrText}>CODE</Text>
             </View>
