@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-16 15:59 · ccode · 2b0778f6
+changed: docs/ now carries the recent handoff record in-repo — SESSION_HANDOFF_2026-09-14 / -09-16 / -09-16_B, the CCODE work orders (v1 purge, Sentry+Aptabase wiring, 09-14 bucket-upload + Pixel workflow), and lab-audio.edge-fn.reference.ts. Docs only, no code.
+affects other side: nothing to adjust — but these are readable from git now, so A can be pointed at a path instead of a Downloads copy. No keys in them (env var names only).
+needs: nothing from A. (Standing: the service_role key the owner pasted in chat on 09-16 still wants rotating.)
+
+
 ### 2026-09-16 15:55 · ccode · 47bb3c99
 changed: Study Area picker: swipe down to close + explicit ✕ — the StudyAreaExplore bottom sheet now drags with the finger (past 90 dp or a downward flick dismisses), plus a 44×44 ✕ in the header, a grabbable grip, and "Swipe down to close." in the hint. Client-only (src/screens/courses/StudyAreaExplore.tsx). Owner-verified on Pixel.
 affects other side: nothing — no tables, RPC, or content touched.
