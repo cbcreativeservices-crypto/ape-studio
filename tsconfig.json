@@ -13,6 +13,9 @@
     "supabase",
     "shared",
     "audio_app_archive",
-    "test"
+    "test",
+    // Reference copies of Deno edge functions live here for the record; they are
+    // never bundled and do not typecheck against the app's lib/types.
+    "docs"
   ]
 }

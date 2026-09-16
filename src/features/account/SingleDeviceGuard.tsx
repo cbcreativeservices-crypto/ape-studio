@@ -101,20 +101,40 @@ export function SingleDeviceGuard() {
     // change means another device may have claimed → re-run the same vetted
     // check() so a displaced device signs out within ~1s instead of waiting for
     // the poll. Reuses check() so realtime + poll share one sign-out path.
-    const channel = supabase
-      .channel('active_device_watch')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'active_device' },
-        () => void check(),
-      )
-      .subscribe();
+    //
+    // CRASH FIX (owner-reported 2026-09-16): supabase-js `channel(topic)` returns
+    // the EXISTING channel when one with that topic is still registered, and
+    // `.on('postgres_changes', …)` THROWS on an already-joined channel ("cannot
+    // add `postgres_changes` callbacks … after `subscribe()`"). Our cleanup's
+    // removeChannel() is async, so a remount that beats the unsubscribe — Fast
+    // Refresh, or the root re-rendering this guard on an auth change — got the
+    // live channel back and took the whole app to the RootErrorBoundary. So:
+    // drop any stale same-topic channel synchronously first, and treat realtime
+    // as best-effort — if it cannot be set up we keep the poll and carry on,
+    // which is the same fail-OPEN posture as the rest of this guard.
+    const TOPIC = 'active_device_watch';
+    let channel: ReturnType<typeof supabase.channel> | undefined;
+    try {
+      for (const c of supabase.getChannels()) {
+        if (c.topic === `realtime:${TOPIC}`) void supabase.removeChannel(c);
+      }
+      channel = supabase
+        .channel(TOPIC)
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'active_device' },
+          () => void check(),
+        )
+        .subscribe();
+    } catch {
+      channel = undefined; // poll-only; never crash the app root over realtime.
+    }
 
     return () => {
       alive = false;
       stopPolling();
       sub.remove();
-      void supabase.removeChannel(channel);
+      if (channel) void supabase.removeChannel(channel);
     };
   }, []);
 
