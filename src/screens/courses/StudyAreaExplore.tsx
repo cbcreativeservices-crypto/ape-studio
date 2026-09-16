@@ -15,8 +15,8 @@
  * AwardsScreen gives it (bundle store + cores + the no-account heads-up).
  * Nested inside the picker modal so iOS layers it on top (AwardsScreen grammar).
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Animated, PanResponder, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Modal } from '../../components/DimModal';
 import { CardArt } from '../../components/CardArt';
@@ -145,6 +145,56 @@ export function StudyAreaExplore({
   const visible = !!area && list.length > 0;
   const sheetMax = Math.round(height * 0.72);
 
+  // SWIPE DOWN TO CLOSE (owner 2026-09-16: "they do not wish to swipe down
+  // close — it is a struggle"). The sheet follows the finger; a drag past
+  // DISMISS_PX or a downward flick dismisses, anything less springs back.
+  // Claims the gesture from the header always, and from the list ONLY when
+  // the list is scrolled to the top and the finger moves down — so scrolling
+  // the options still works and an upward drag never closes anything.
+  const DISMISS_PX = 90;
+  const dragY = useRef(new Animated.Value(0)).current;
+  const atTop = useRef(true);
+  // ANDROID: a native ScrollView intercepts any vertical drag past ~8 dp
+  // before JS can claim it, so a drag that starts on a row only reaches the
+  // sheet's PanResponder when the list is NOT scrollable. Most areas fit
+  // without scrolling (≤ 6 options) — for those the whole sheet drags. Long
+  // lists keep scrolling and close from the header, the ✕, or the scrim.
+  const [listScrollable, setListScrollable] = useState(false);
+  const listSize = useRef({ content: 0, view: 0 });
+  const updateScrollable = () => {
+    const { content, view } = listSize.current;
+    setListScrollable(view > 0 && content > view + 1);
+  };
+  const closing = useRef(false);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+  const sheetMaxRef = useRef(sheetMax);
+  sheetMaxRef.current = sheetMax;
+  useEffect(() => {
+    // Fresh open: sheet back at rest.
+    if (area) {
+      closing.current = false;
+      dragY.setValue(0);
+    }
+  }, [area, dragY]);
+  const pan = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_e, g) => !closing.current && g.dy > 6 && Math.abs(g.dy) > Math.abs(g.dx) * 1.5,
+      onMoveShouldSetPanResponderCapture: (_e, g) =>
+        !closing.current && atTop.current && g.dy > 6 && Math.abs(g.dy) > Math.abs(g.dx) * 1.5,
+      onPanResponderMove: (_e, g) => dragY.setValue(Math.max(0, g.dy)),
+      onPanResponderRelease: (_e, g) => {
+        if (g.dy > DISMISS_PX || g.vy > 0.6) {
+          closing.current = true;
+          Animated.timing(dragY, { toValue: sheetMaxRef.current, duration: 180, useNativeDriver: true }).start(() => onCloseRef.current());
+        } else {
+          Animated.spring(dragY, { toValue: 0, useNativeDriver: true, bounciness: 4 }).start();
+        }
+      },
+      onPanResponderTerminate: () => Animated.spring(dragY, { toValue: 0, useNativeDriver: true }).start(),
+    }),
+  ).current;
+
   return (
     <>
       <Modal accessibilityViewIsModal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
@@ -153,12 +203,40 @@ export function StudyAreaExplore({
         <View style={styles.scrim}>
           <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityRole="button" accessibilityLabel="Close" />
           {!single && area ? (
-            <View style={[styles.sheet, { maxHeight: sheetMax, paddingBottom: Math.max(insets.bottom, 12) + 6 }]}>
-              <View style={styles.grip} />
-              <Text style={styles.eyebrow}>STUDY AREA</Text>
-              <Text style={styles.title}>{area}</Text>
-              <Text style={styles.hint}>Choose a certificate or program to inspect.</Text>
-              <ScrollView style={{ flexGrow: 0 }} contentContainerStyle={styles.rows} showsVerticalScrollIndicator={false}>
+            <Animated.View
+              style={[styles.sheet, { maxHeight: sheetMax, paddingBottom: Math.max(insets.bottom, 12) + 6, transform: [{ translateY: dragY }] }]}
+              {...pan.panHandlers}
+            >
+              <View style={styles.grip} accessible accessibilityRole="button" accessibilityLabel="Swipe down to close" />
+              <View style={styles.headRow}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.eyebrow}>STUDY AREA</Text>
+                  <Text style={styles.title}>{area}</Text>
+                </View>
+                {/* Explicit close — no gesture needed (owner 2026-09-16). */}
+                <Pressable onPress={onClose} hitSlop={10} style={styles.closeBtn} accessibilityRole="button" accessibilityLabel="Close">
+                  <Text style={styles.closeX}>✕</Text>
+                </Pressable>
+              </View>
+              <Text style={styles.hint}>Choose a certificate or program to inspect. Swipe down to close.</Text>
+              <ScrollView
+                style={{ flexGrow: 0 }}
+                contentContainerStyle={styles.rows}
+                showsVerticalScrollIndicator={false}
+                scrollEnabled={listScrollable}
+                scrollEventThrottle={16}
+                onScroll={(e) => {
+                  atTop.current = e.nativeEvent.contentOffset.y <= 0;
+                }}
+                onLayout={(e) => {
+                  listSize.current.view = e.nativeEvent.layout.height;
+                  updateScrollable();
+                }}
+                onContentSizeChange={(_w, h) => {
+                  listSize.current.content = h;
+                  updateScrollable();
+                }}
+              >
                 {list.map((c) => {
                   const accent = c.kind === 'certificate' ? CERT_BLUE : PROGRAM_PURPLE;
                   return (
@@ -181,7 +259,7 @@ export function StudyAreaExplore({
                   );
                 })}
               </ScrollView>
-            </View>
+            </Animated.View>
           ) : null}
         </View>
         <CredentialDetailModal
@@ -223,7 +301,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingTop: 10,
   },
-  grip: { alignSelf: 'center', width: 38, height: 4, borderRadius: 2, backgroundColor: '#3a3a3a', marginBottom: 12 },
+  // A grip you can actually see and grab (was a 38×4 hairline).
+  grip: { alignSelf: 'center', width: 56, height: 5, borderRadius: 3, backgroundColor: '#5a5a62', marginTop: 2, marginBottom: 12 },
+  headRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
+  closeBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', marginTop: -6, marginRight: -8 },
+  closeX: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, color: colors.textSecondary },
   eyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 2, color: AREA_AMBER },
   title: { fontFamily: fonts.oswaldMedium, fontSize: 22, lineHeight: 26, color: colors.textPrimary, marginTop: 2 },
   hint: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textSub, marginTop: 4, marginBottom: 8 },
