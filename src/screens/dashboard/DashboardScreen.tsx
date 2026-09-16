@@ -751,11 +751,8 @@ export function DashboardScreen() {
         d = await guestFetch();
       } else {
         try {
-          // Owner 2026-09-03: the v1 commercial-course branch is gone. It asked
-          // fetchCommercialDashboard for a public_courses course, and those are
-          // the college courses that were removed. The two arms it sat between
-          // both build from v3 enrollments, so an empty enrollment list now
-          // falls to the same free-topic view a guest sees.
+          // Both arms build from v3 enrollments (owner 2026-09-03): an empty
+          // enrollment list falls to the same free-topic view a guest sees.
           d =
             viewModeRef.current === 'enrollment' && enrolledGsRef.current.length > 0
               ? await fetchEnrollmentDashboard(enrolledGsRef.current)

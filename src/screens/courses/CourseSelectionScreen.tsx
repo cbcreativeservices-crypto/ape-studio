@@ -49,7 +49,6 @@ import { confirmDialog, notify } from '../../lib/confirm';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { UpgradeSheet } from '../../features/commercial/UpgradeSheet';
 import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
-import { SPECIALIZED_CERTIFICATES } from '../awards/awardsData';
 import { fetchV3Certs, fetchV3Curriculum, fetchV3Programs } from '../../data/v3Curriculum';
 import { useDefaultHomeGs, useHomeBundles, useHomeGs } from '../../features/home/homeCardsStore';
 import { setBundleLoaded, useBundles } from '../../features/enrollment/enrolledBundlesStore';
@@ -184,7 +183,7 @@ const SHOWCASE_CARDS: readonly string[] = [
   'Theatrical Sound Design',
   'Podcasting & Broadcast',
   'Sound for Film & Games',
-  'Sound Reinforcement Systems',
+  'Sound Reinforcement',
   'System Design & Maintenance',
   'Corporate & Event AV',
   'Architectural Acoustics',
@@ -201,42 +200,20 @@ const SHOWCASE_CARDS: readonly string[] = [
 /** Course-card art in the public `course-cards` bucket — STANDARDIZED WebP set
  *  (backend handoff 2026-07-16): filename = card_id with ':' -> '_' + '.webp',
  *  941x1672 portrait. Full map: ape_course_card_map_FINAL_STANDARDIZED_2026_07_16.json.
- *  Keys below are the CLIENT's card keys (course codes, pub<order>, free<gs>,
- *  coming-topic names); values are the standardized filenames. Missing → plain
- *  fallback card. */
+ *  Keys below are the CLIENT's card keys (utility cards, free<gs> tasters,
+ *  field/showcase names); values are the standardized filenames. Missing →
+ *  plain fallback card. */
 const CARD_IMAGE: Record<string, string> = {
   tools: 'free_tools.webp',
   glossary: 'free_glossary.webp',
   lab: 'AudioLab.webp',
-  // Institutional courses → their commercial-card equivalents.
-  SAFE: 'free_safety.webp',
-  MUSI190: 'course_intro-to-audio.webp',
-  AUDI201: 'course_sound-reinforcement-systems.webp',
-  AUDI204: 'course_audio-system-design-and-maintenance.webp',
-  MUSI108: 'course_career-and-business.webp',
-  MUSI201: 'course_recording-arts.webp',
-  MUSI202: 'course_music-production.webp',
-  MUSI205A: 'topic_podcast.webp',
-  MUSI205B: 'topic_film.webp',
-  // CM2 — public catalog, keyed pub<order> (seed order 1-9).
-  pub1: 'free_safety.webp',
-  pub2: 'course_intro-to-audio.webp',
-  pub3: 'course_sound-reinforcement-systems.webp',
-  pub4: 'course_audio-system-design-and-maintenance.webp',
-  pub5: 'course_recording-arts.webp',
-  pub6: 'course_music-production.webp',
-  pub7: 'topic_podcast.webp',
-  pub8: 'topic_film.webp',
-  pub9: 'course_career-and-business.webp',
-  // Free-topic taster cards (gs0 Safety · gs36 DAW Skills).
-  // Free tasters. Keyed `free<gs>`, so these moved with the topics when the
-  // tasters became v3 (owner 2026-09-03): gs0 → 3060, gs36 → 3970. The old
-  // keys are kept so the art still resolves if anything is still handing out
-  // v1 numbers; the artwork files themselves are unchanged.
+  /** Generic topic art — the fallback for a member Home topic card whose
+   *  topic has no taster art of its own. */
+  topic: 'course_intro-to-audio.webp',
+  // Free-topic taster cards, keyed `free<gs>` (v3 gs: 3060 Pro Audio Safety ·
+  // 3970 DAW taster).
   free3060: 'free_safety.webp',
   free3970: 'free_daw.webp',
-  free0: 'free_safety.webp',
-  free36: 'free_daw.webp',
   // Audio-field topic cards, keyed by DISPLAY NAME (unique).
   'Assisted Listening Systems': 'topic_assist.webp',
   'Commercial 70/100V Systems': 'topic_commercial.webp',
@@ -261,7 +238,7 @@ const CARD_IMAGE: Record<string, string> = {
   'Recording Arts': 'course_recording-arts.webp',
   'Podcasting & Broadcast': 'topic_podcast.webp',
   'Sound for Film & Games': 'topic_film.webp',
-  'Sound Reinforcement Systems': 'course_sound-reinforcement-systems.webp',
+  'Sound Reinforcement': 'course_sound-reinforcement-systems.webp',
   'System Design & Maintenance': 'course_audio-system-design-and-maintenance.webp',
   'Corporate & Event AV': 'topic_corporate.webp',
   'Architectural Acoustics': 'topic_architectural.webp',
@@ -274,23 +251,10 @@ const CARD_IMAGE: Record<string, string> = {
 /** Scroll-dot color by card TYPE (Booth 2026-07-15): free = green, course =
  *  purple, topic = amber — so the dot row reads as a color-coded map of the
  *  carousel. */
-/** Far-right tally card count (user request 2026-07-22): the number of
- *  Specialization Certificates a student can earn — the card links to the
- *  Certificates screen. */
-const OTHER_CERTS_COUNT = SPECIALIZED_CERTIFICATES.length;
 
-// Course-select card TITLE overrides (user request 2026-07-22). Keyed by the
-// title as it renders today (commercial catalog name / course name). NOTE: the
-// 'DAW Skills' → 'DAW Fundamentals & Session Management' entry overrides the
-// earlier "gs36 card is always DAW Skills" ruling — but ONLY the marketing card
-// label; the underlying gs36 topic name (curriculum/glossary/dashboard) is
-// unchanged.
-// Owner 2026-09-03: the college-course renames are gone with the courses they
-// renamed (Sound Reinforcement Systems, Audio System Design and Maintenance,
-// Recording Arts, Intro to Audio, and the Career and Business card that carried
-// the "+ N other programs" tally). Only the free DAW taster is still retitled.
-// Empty since 2026-09-03: the last entry re-titled the v1 "DAW Skills" taster,
-// and the tasters are v3 topics now whose codified names are already correct.
+// Course-select card TITLE overrides (user request 2026-07-22), keyed by the
+// title as it renders. Empty since 2026-09-03: the tasters are v3 topics whose
+// codified names are already correct.
 const CARD_TITLE_RENAMES: Record<string, string> = {};
 
 /** The card's title BEFORE the 2026-07-22 overrides (null for the tally card). */
@@ -637,8 +601,8 @@ function CourseCardView({
     // therefore looked like broken image placeholders next to the image-backed
     // Lab / Tools / Glossary cards. It now carries real art like every other
     // card: the topic's own taster art where it exists (free3060 / free3970),
-    // otherwise the generic course art, so no topic card is ever bare.
-    const topicArt = cardImageUrl(`free${item.gs}`) ?? cardImageUrl('MUSI190');
+    // otherwise the generic topic art, so no topic card is ever bare.
+    const topicArt = cardImageUrl(`free${item.gs}`) ?? cardImageUrl('topic');
     return (
       <View style={styles.cardOuter}>
         <View style={styles.cardAbove}>
@@ -1047,10 +1011,8 @@ export function CourseSelectionScreen() {
   const [cards, setCards] = useState<Card[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   // M7 (2026-09-07): gs → { name, subject } from the LIVE v3 curriculum, so a
-  // member's custom Home cards show their real topic name/subject. Replaces the
-  // retired v2 MATRIX_SUBJECTS index (which returned 'this topic' + a blank
-  // subject for any v3 gs it didn't carry). officialTopicName(gs, liveName) stays
-  // the final fallback in displayDeck.
+  // member's custom Home cards show their real topic name/subject.
+  // officialTopicName(gs, liveName) stays the final fallback in displayDeck.
   const [v3NameIndex, setV3NameIndex] = useState<Map<number, { name: string; subject: string }>>(new Map());
   // A persisted session with no student record / no enrollment: self-healed to
   // the public catalog, with a non-blocking banner (register or sign out).
@@ -1121,11 +1083,8 @@ export function CourseSelectionScreen() {
     // The PUBLIC-catalog builder — used for guests/commercial mode AND as the
     // self-heal fallback when an authed load fails on a broken session.
     const buildPublicCatalog = async () => {
-      // M7 Fix B (2026-09-07): the v1 getPublicCatalog()/freeTopicsFrom() call
-      // was vestigial — freeTopicsFrom ignored its argument and returned the
-      // fixed v3 tasters. The one taster the carousel shows (Pro Audio Safety,
-      // gs 3060) is now built directly from officialTopicName(3060), so the whole
-      // v1 publicCourses module is gone.
+      // The one taster the carousel shows (Pro Audio Safety, gs 3060) is built
+      // directly from officialTopicName(3060) (M7 Fix B, 2026-09-07).
       // OWNER RULING 2026-09-03: the carousel is a MARKETING surface, not a
       // catalogue of everything the app holds. Only TOPIC cards belong here —
       // no certificate, course or programme cards. That removed the purple

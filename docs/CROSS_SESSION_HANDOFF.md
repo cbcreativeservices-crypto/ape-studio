@@ -26,6 +26,22 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-16 18:08 · A · study gates restored 360s + analytics SDK approved
+changed: study_methods time-gates (flashcards/fill_in_blank/matching/scenarios) restored 0→360s, verified live (backup public._study_methods_gate_backup_20260916). Owner approved Sentry (crash) + Aptabase (analytics), privacy-first.
+affects other side: wire per docs/CCODE_WIRE_SENTRY_APTABASE_2026_09_16.md — BLOCKED until owner supplies Sentry DSN + Aptabase App Key. Config must stay privacy-safe (no IDFA/GAID, no ATT, no cross-app tracking; Sentry user id = app user id only). Return the exact "what each SDK sends" table to A for the Apple/Google privacy forms.
+needs: owner keys → ccode wires → report-back table to A.
+
+### 2026-09-16 10:50 · ccode · a9100fd5
+changed: Academy Explore redesign + per-credential copy with education disclosure
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-16 14:40 · A · v1 public_courses PURGE
+changed: Dropped ALL v1 DB tables+backups (archive.public_course*/v1remnants_*, 7 objects; final sweep 0 left). Scrubbed the v1 course-list from Cowork memory. publicCourses.ts/seed already gone.
+affects other side: CLIENT still carries v1 name-strings + the retired v2 matrix. Purge per docs/CCODE_PURGE_V1_COURSES_2026_09_16.md (courseTopicMatrix v2 + MATRIX_SUBJECTS consumers AwardsScreen:35/HomeSetupSheet:31; CourseSelectionScreen SPECIALIZED_CERTIFICATES ~L180-199 + CARD_IMAGE ~L235-300 v1 course names/MUSI###/pub# keys; dead comments). Not launch-blocking (strings/art-keys, no gate).
+needs: ccode apply the purge; done-when tsc+test+ git grep clean in src/.
+
 ### 2026-09-15 10:35 · ccode · 21e97566
 changed: Hooks: PreToolUse Bash rule-guard (build / no-verify / images)
 affects other side: nothing — local dev tooling (.claude/ hooks) for the ccode session only; no app/DB impact.

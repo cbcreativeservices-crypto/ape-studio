@@ -1,7 +1,6 @@
 /**
  * v3 curriculum (owner 2026-08-06) — the LIVE curriculum the app browses/enrolls.
- * The old bundled v2 matrix (courseTopicMatrix.ts) + the public_courses catalog
- * are RETIRED. v3 topics are organized FIELD → SUBJECT → TOPIC and enrolled per
+ * v3 topics are organized FIELD → SUBJECT → TOPIC and enrolled per
  * topic via "My Enrollments" (user_topic_enrollments), which is the master list
  * the backend gates study/quiz on. Fetched at runtime from Supabase so the client
  * doesn't carry a 171-topic static file; topic identity is `gs`

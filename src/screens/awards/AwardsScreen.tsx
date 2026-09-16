@@ -32,7 +32,6 @@ import { EnrollmentView } from '../enrollment/EnrollmentScreen';
 import { addTopics, setActiveMany } from '../../features/enrollment/enrollmentStore';
 import { addBundle, bundleKey, removeBundle, useBundles, type BundleKind } from '../../features/enrollment/enrolledBundlesStore';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
-import { MATRIX_SUBJECTS } from '../../data/courseTopicMatrix';
 import {
   awardPage,
   AWARD_ORDER,
@@ -475,9 +474,7 @@ export function AwardsScreen({ navigation, route }: Props) {
   const [v3Programs, setV3Programs] = useState<V3Credential[]>([]);
   const [v3Certs, setV3Certs] = useState<V3Credential[]>([]);
   // v3 gs → topic name (same source Explore uses). The award tables store only
-  // gs numbers; the retired v2 MATRIX_SUBJECTS map doesn't cover v3 gs, so
-  // topics rendered as "Topic gs#". Resolve names off the live v3 curriculum
-  // instead (owner 2026-08-11).
+  // gs numbers; names resolve off the live v3 curriculum (owner 2026-08-11).
   const [v3TopicNames, setV3TopicNames] = useState<Map<number, string>>(new Map());
   // Distinguishes "still loading" from "genuinely empty" so the pickers can show
   // an honest empty state instead of just the REQUIRED-CORE banner over blank.
@@ -593,15 +590,11 @@ export function AwardsScreen({ navigation, route }: Props) {
   };
 
   // Topic name lookup: v3 curriculum first (the award tables use v3 gs), then
-  // the retired v2 matrix as a fallback, then a last-resort placeholder.
-  const topicNameByGs = useRef(
-    new Map(MATRIX_SUBJECTS.flatMap((s) => s.topics.map((t) => [t.gs, t.name] as const))),
-  ).current;
+  // the codified-name fallback.
   // gs3081 is the lab-proxy topic that exists only server-side (owner
   // 2026-08-30 core swap) — without this fallback the REQUIRED CORE banner
   // read "Topic gs3081" (QA night 2026-08-31).
-  const nameForGs = (gs: number) =>
-    officialTopicName(gs, v3TopicNames.get(gs) ?? topicNameByGs.get(gs));
+  const nameForGs = (gs: number) => officialTopicName(gs, v3TopicNames.get(gs));
 
   const summaryForTier = (tier: AwardTier): string | undefined => {
     if (tier.builder === 'specializations') return specCert ? `Certificate: ${specCert}` : undefined;
