@@ -119,10 +119,14 @@ export function PlateView(p: PlateViewProps) {
   const availW = width - pad * 2;
   const availH = height - pad * 2;
   const is3d = view === 'plate3d';
-  const plateW = Math.min(availW, availH / aspect) * (is3d ? 0.78 : 1);
+  const isSection = view === 'section';
+  // 3D tilts the plate; CROSS-SECTION needs room UNDER the plate for the
+  // profile trace (device pass 2026-09-16: at full size the trace fell below
+  // the stage). Both shrink the plate and shift it up.
+  const plateW = Math.min(availW, availH / aspect) * (is3d ? 0.78 : isSection ? 0.7 : 1);
   const plateH = plateW * aspect;
   const ox = (width - plateW) / 2;
-  const oy = (height - plateH) / 2 + (is3d ? plateH * 0.08 : 0);
+  const oy = (height - plateH) / 2 + (is3d ? plateH * 0.08 : isSection ? -height * 0.13 : 0);
 
   // ── shared frame clock (strobed / slow-mo) ────────────────────────────────
   const clock = useSharedValue(0);
@@ -196,10 +200,20 @@ export function PlateView(p: PlateViewProps) {
     const damp = Math.exp(-dt * (2.5 + 9 * frictionSV.value));
     const h = 1 / N;
     const fr = tick.value;
+    // STATIC FRICTION (device pass 2026-09-16): a grain that has reached a
+    // still line is no longer shaken, so it stays put — real sand sits ON the
+    // nodal line. Without this the residual gradient along the line crept
+    // every grain to the crossings and the figure dissolved into dots.
+    const settle = 0.035 + 0.05 * frictionSV.value;
     for (let i = 0; i < n; i++) {
       const x = P[i * 2];
       const y = P[i * 2 + 1];
       const A = ampAt(G, N, x, y, aspect);
+      if (A < settle) {
+        V[i * 2] = 0;
+        V[i * 2 + 1] = 0;
+        continue;
+      }
       const gx = (ampAt(G, N, x + h, y, aspect) - ampAt(G, N, x - h, y, aspect)) / (2 * h);
       const gy = (ampAt(G, N, x, y + h, aspect) - ampAt(G, N, x, y - h, aspect)) / (2 * h);
       // Sand is thrown harder where the plate moves more: kick ∝ A·∇A.

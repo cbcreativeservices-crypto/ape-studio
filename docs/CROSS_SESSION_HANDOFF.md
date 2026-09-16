@@ -26,6 +26,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-16 14:30 · ccode · 83d4bb76
+changed: CYMATICS LAB Phase 1 BUILT (owner GO) — members-only "Cymatics Lab: Sound Made Visible" in Sound Visualization: lab home, Chladni Plate Studio (rack faceplate; analytic square/rect/disc plate modes + exact scaling law, sand point-cloud, heat/phase/node/3D/section views, native sine drive), 5 modules, 8 guided experiments. NEW NATIVE ape-dsp GEN_MODES.dual (engine 7→8, mono two-sine sum for beats / dual drive; goldens 171/171) — rides the NEXT build. tsc clean, 1189 tests, device-verified home + studio.
+affects other side: nothing DB-side (no tables/RPC). Engine version is now 8 in source — any A-side doc that lists the engine features should add "8 = dual mono sine pair (Cymatics)". Comp B handoff for the non-analytic plate shapes DELIVERED to the OneDrive project: `2026-09-16_COMPUTER_B_CYMATICS_MODAL_LIBRARY/` (START_HERE + brief + scope + template).
+needs: nothing from A. (Owner: three Home study-area card WebPs are converted and waiting for the bucket upload — `node scripts/upload-menu-cards.mjs` with the service key.)
+
 ### 2026-09-16 13:47 · ccode · 98f070dd
 changed: Home Study-Area cards' EXPLORE → certificate/program picker (src/screens/courses/StudyAreaExplore.tsx; mapping src/data/studyAreaCredentials.ts; 1 match opens the popup directly). 3 NEW cards: Mixing & Mastering / Audio Restoration & Archiving / Acoustics Science (owner art pending in course-cards bucket as area_*.webp). Also committed docs/APE_CYMATICS_LAB_SPEC_2026_09_16.md — owner GO'd Phase 1 of the Cymatics Lab (members-only, Sound Visualization).
 affects other side: nothing DB-side. FYI Computer B will get a handoff for the non-analytic plate modal library (triangle/hexagon/ring/bell/guitar/violin) after Phase 1 proves the JSON schema (spec §1.3).
