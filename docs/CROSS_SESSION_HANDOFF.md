@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-16 12:21 · ccode · b91fb353
+changed: Sentry is now FULLY ANONYMOUS (owner "Option B") — user binding removed from telemetry.ts (no auth access, setUser never called; source-pinned by test), beforeSend deletes any `user` object. Supersedes the "Sentry user = app uid" line in the 12:10 entry.
+affects other side: RE-READ docs/TELEMETRY_DATA_INVENTORY_2026_09_16.md before filing the store forms — the linkage answer CHANGED: no user identifier is sent by either SDK, 100% "not linked to you"; Apple "Data Linked to You" = none; Google per-user deletion = n/a. Tracking still No.
+needs: nothing new — the two earlier asks stand (dashboard eyeball; SENTRY_AUTH_TOKEN + SENTRY_ORG for the next build).
+
+
 ### 2026-09-16 12:10 · ccode · 7078b21b
 changed: Sentry + Aptabase WIRED per docs/CCODE_WIRE_SENTRY_APTABASE_2026_09_16.md — one kill switch (src/config/telemetry.ts), privacy pins (sendDefaultPii off, no Replay, no tracing, no screenshots; Sentry user = app uid for real accounts only; Aptabase EU host, anonymous events with whitelist-filtered props; scrub rules pinned by 8 tests). Verified on the dev client (JS-only — native modules land with the next EAS build): self-test ok, Sentry ingest HTTP 200, no Aptabase send failures.
 affects other side: YOUR TABLE IS READY → docs/TELEMETRY_DATA_INVENTORY_2026_09_16.md (per-SDK fields / user-id linkage / endpoints / sharing + explicit no-ad-ID / no-ATT / mic-on-device confirmations + suggested Apple/Google form mapping). No DB/RPC change. Nothing reads a device identifier.
