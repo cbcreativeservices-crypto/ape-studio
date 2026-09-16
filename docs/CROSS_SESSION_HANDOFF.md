@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-16 12:10 · ccode · 7078b21b
+changed: Sentry + Aptabase WIRED per docs/CCODE_WIRE_SENTRY_APTABASE_2026_09_16.md — one kill switch (src/config/telemetry.ts), privacy pins (sendDefaultPii off, no Replay, no tracing, no screenshots; Sentry user = app uid for real accounts only; Aptabase EU host, anonymous events with whitelist-filtered props; scrub rules pinned by 8 tests). Verified on the dev client (JS-only — native modules land with the next EAS build): self-test ok, Sentry ingest HTTP 200, no Aptabase send failures.
+affects other side: YOUR TABLE IS READY → docs/TELEMETRY_DATA_INVENTORY_2026_09_16.md (per-SDK fields / user-id linkage / endpoints / sharing + explicit no-ad-ID / no-ATT / mic-on-device confirmations + suggested Apple/Google form mapping). No DB/RPC change. Nothing reads a device identifier.
+needs: (1) owner to eyeball the Aptabase (EU) live view for `telemetry_self_test` + `screen_view`, and Sentry for the error "telemetry self-test (dev client)" — ccode has no dashboard access; (2) for the NEXT EAS build: SENTRY_AUTH_TOKEN + SENTRY_ORG (org slug) as EAS env vars for source-map upload — optional, build succeeds without.
+
+
 ### 2026-09-16 11:47 · ccode · 426d33fa
 changed: Home carousel: remove the dead v1 'public' catalog card kind (Card variant + every renderer branch — pub# art key, pubOpenable gate, cert accents/eyebrow, OPEN button). Nothing constructed it since the v1 catalog was retired.
 affects other side: nothing (client-only; no data/RPC touched).
