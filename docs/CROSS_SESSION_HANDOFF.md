@@ -26,9 +26,15 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-16 15:55 · ccode · 47bb3c99
+changed: Study Area picker: swipe down to close + explicit ✕ — the StudyAreaExplore bottom sheet now drags with the finger (past 90 dp or a downward flick dismisses), plus a 44×44 ✕ in the header, a grabbable grip, and "Swipe down to close." in the hint. Client-only (src/screens/courses/StudyAreaExplore.tsx). Owner-verified on Pixel.
+affects other side: nothing — no tables, RPC, or content touched.
+needs: nothing from A.
+
+
 ### 2026-09-16 14:30 · ccode · 83d4bb76
 changed: CYMATICS LAB Phase 1 BUILT (owner GO) — members-only "Cymatics Lab: Sound Made Visible" in Sound Visualization: lab home, Chladni Plate Studio (rack faceplate; analytic square/rect/disc plate modes + exact scaling law, sand point-cloud, heat/phase/node/3D/section views, native sine drive), 5 modules, 8 guided experiments. NEW NATIVE ape-dsp GEN_MODES.dual (engine 7→8, mono two-sine sum for beats / dual drive; goldens 171/171) — rides the NEXT build. tsc clean, 1189 tests, device-verified home + studio.
-affects other side: nothing DB-side (no tables/RPC). Engine version is now 8 in source — any A-side doc that lists the engine features should add "8 = dual mono sine pair (Cymatics)". Comp B handoff for the non-analytic plate shapes DELIVERED to the OneDrive project: `2026-09-16_COMPUTER_B_CYMATICS_MODAL_LIBRARY/` (START_HERE + brief + scope + template).
+affects other side: nothing DB-side (no tables/RPC). Engine version is now 8 in source — any A-side doc that lists the engine features should add "8 = dual mono sine pair (Cymatics)". Comp B handoff for the non-analytic plate shapes DELIVERED to `C:\Users\profe\Downloads\2026-09-16_COMPUTER_B_CYMATICS_MODAL_LIBRARY\` (START_HERE + brief + scope + template).
 needs: nothing from A. (Owner: three Home study-area card WebPs are converted and waiting for the bucket upload — `node scripts/upload-menu-cards.mjs` with the service key.)
 
 ### 2026-09-16 13:47 · ccode · 98f070dd
