@@ -26,15 +26,26 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-16 11:47 · ccode · 426d33fa
+changed: Home carousel: remove the dead v1 'public' catalog card kind (Card variant + every renderer branch — pub# art key, pubOpenable gate, cert accents/eyebrow, OPEN button). Nothing constructed it since the v1 catalog was retired.
+affects other side: nothing (client-only; no data/RPC touched).
+needs: nothing.
+
+### 2026-09-16 11:31 · ccode · e7589ecd
+changed: v1 client purge APPLIED per docs/CCODE_PURGE_V1_COURSES_2026_09_16.md — courseTopicMatrix.ts + course_topic_matrix_v2.json DELETED (AwardsScreen/HomeSetupSheet now resolve names off live v3 only + officialTopicName fallback); CourseSelectionScreen CARD_IMAGE lost MUSI###/AUDI###/SAFE/pub1-9/free0/free36 keys (member Home topic fallback art under neutral `topic` key, same bucket file); unused SPECIALIZED_CERTIFICATES tally dropped; showcase card "Sound Reinforcement Systems" → "Sound Reinforcement" (same art); dead v1 comments cleaned. Done-when met: tsc clean, 1171 tests, done-when grep empty. Verified live on Pixel (carousel + Enrollments names).
+affects other side: nothing — DB side was already clean per A's 14:40 entry. The "Sound Reinforcement Systems" string no longer exists anywhere client-side; if any A-side copy/marketing still uses the v1 course title, that is the last place it lives.
+needs: nothing.
+
+
 ### 2026-09-16 18:08 · A · study gates restored 360s + analytics SDK approved
 changed: study_methods time-gates (flashcards/fill_in_blank/matching/scenarios) restored 0→360s, verified live (backup public._study_methods_gate_backup_20260916). Owner approved Sentry (crash) + Aptabase (analytics), privacy-first.
 affects other side: wire per docs/CCODE_WIRE_SENTRY_APTABASE_2026_09_16.md — BLOCKED until owner supplies Sentry DSN + Aptabase App Key. Config must stay privacy-safe (no IDFA/GAID, no ATT, no cross-app tracking; Sentry user id = app user id only). Return the exact "what each SDK sends" table to A for the Apple/Google privacy forms.
 needs: owner keys → ccode wires → report-back table to A.
 
 ### 2026-09-16 10:50 · ccode · a9100fd5
-changed: Academy Explore redesign + per-credential copy with education disclosure
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+changed: Academy Explore redesign + per-credential copy with education disclosure (Explore "Academy at a Glance" hero; src/data/credentialCopy.ts 124 certs + 36 programs; careerRequirement.ts education labels; topicCopy.ts regenerated w/ audit fixes; CredentialDetailModal in-place enroll; Pro Registry sample cert).
+affects other side: one DB fix was applied during this work — achievements gs 4500 name em-dash → hyphen. Credential/topic copy lives CLIENT-side (credentialCopy.ts / topicCopy.ts), regenerated from D:\credential_copy_template_2026-09-15.FILLED.json — A should not author copy in the DB for these.
+needs: nothing.
 
 
 ### 2026-09-16 14:40 · A · v1 public_courses PURGE
