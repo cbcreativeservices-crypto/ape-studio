@@ -1,0 +1,267 @@
+/**
+ * ExportPanel — the Gallery's export surface (spec §4; Phase 4 design §5).
+ * The visible CARD is the capture target (GlossaryShareCard / Harmonograph
+ * idiom: what you see is the PNG), and every control is real code behind a
+ * gate — never a stub, never a lie:
+ *
+ *   SHARE (PNG)      view-shot + expo-sharing        harmoExport.isShareAvailable
+ *   SAVE (Photos)    view-shot + expo-media-library  harmoExport.isSaveAvailable
+ *   PRINT            expo-print                      galleryExport.isPrintHtmlAvailable
+ *   PDF              expo-print + expo-sharing       galleryExport.isPdfAvailable
+ *   SVG              nothing (text) / sharing (file) always enabled
+ *
+ * Unavailable controls render DISABLED with an accessibility label that says
+ * why and ONE footer line "… need the next app build" (Harmonograph pattern;
+ * the owner asked for the buttons to be visible). The PDF page-size picker is
+ * built now (owner decision 4) and rides the same gate.
+ *
+ * ART PRINT hides every number; LAB PRINT prints the settings block and
+ * always says Simulation.
+ */
+import { useMemo, useRef, useState } from 'react';
+import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { colors, fonts } from '../../../theme/tokens';
+import { BRAND, shareFooterLines } from '../../../features/commercial/brand';
+import { patternReadout, type PatternGeometry } from '../../../features/cymatics/patternField';
+import type { Artwork, SavedPattern } from '../../../features/cymatics/patternStore';
+import { PAGES, compareHtml, figureSvg, sheetHtml, type PageId, type SheetKind } from '../../../features/cymatics/svgExport';
+import * as shareImage from '../calc/shareImage';
+import { isPrintAvailable, isSaveAvailable, isShareAvailable, saveToPhotos } from '../harmoExport';
+import { LabChip } from '../LabShell';
+import { CompareCanvas, type CompareItem } from './GalleryCompare';
+import { isPdfAvailable, isPrintHtmlAvailable, printHtml, sharePdf, shareSvg } from './galleryExport';
+import { PatternFigure } from './PatternFigure';
+
+export type ExportSubject =
+  | { kind: 'pattern'; pattern: SavedPattern; geometry: PatternGeometry; artwork: Artwork | null }
+  | { kind: 'compare'; items: CompareItem[] };
+
+type Format = 'png' | 'transparent' | 'pdf' | 'svg';
+const FORMATS: { id: Format; label: string }[] = [
+  { id: 'png', label: 'PNG card' },
+  { id: 'transparent', label: 'Transparent PNG' },
+  { id: 'pdf', label: 'PDF' },
+  { id: 'svg', label: 'SVG' },
+];
+const TITLE = 'Cymatics Lab: Sound Made Visible';
+const today = () => new Date().toISOString().slice(0, 10);
+
+export function ExportPanel({ subject, onHelp }: { subject: ExportSubject; onHelp?: (key: string) => void }) {
+  const { width: ww } = useWindowDimensions();
+  const cardRef = useRef<View>(null);
+  const [sheet, setSheet] = useState<SheetKind>('art');
+  const [format, setFormat] = useState<Format>('png');
+  const [page, setPage] = useState<PageId>('letter');
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState('');
+
+  // Native-module availability — resolved once (the optional-require caches).
+  const avail = useMemo(() => ({ share: isShareAvailable(), save: isSaveAvailable(), print: isPrintHtmlAvailable() || isPrintAvailable(), pdf: isPdfAvailable() }), []);
+  const missing = useMemo(() => [!avail.share && 'SHARE', !avail.save && 'SAVE', !avail.print && 'PRINT', !avail.pdf && 'PDF'].filter(Boolean) as string[], [avail]);
+
+  const cardW = Math.min(ww - 32, 520);
+  const inner = cardW - 28;
+  const transparent = format === 'transparent';
+  const isPattern = subject.kind === 'pattern';
+  const readout = useMemo(() => (subject.kind === 'pattern' ? patternReadout(subject.pattern.state) : null), [subject]);
+  const footer = shareFooterLines();
+
+  // The SVG document — the same string the SVG export writes and the PDF embeds.
+  const svgDoc = () => {
+    if (subject.kind !== 'pattern') return '';
+    const paper = transparent ? 'transparent' : (subject.artwork?.background ?? 'plate');
+    return figureSvg(subject.geometry, subject.artwork, { size: 1000, background: paper === 'plate' ? 'plate' : paper === 'transparent' ? null : paper, face: paper === 'plate' });
+  };
+  const html = () => {
+    if (subject.kind === 'pattern' && readout) {
+      return sheetHtml(sheet, page, svgDoc(), { name: subject.pattern.name, notes: subject.pattern.notes, badge: subject.pattern.badge, date: today(), readout, brand: footer, title: TITLE });
+    }
+    if (subject.kind === 'compare') {
+      return compareHtml(
+        page,
+        subject.items.map((it) => ({ svg: figureSvg(it.geometry, it.artwork, { size: 800, background: 'plate', face: true }), caption: `${it.pattern.name} · ${patternReadout(it.pattern.state).title}` })),
+        { title: 'Cymatics Lab · Compare', brand: footer, date: today() },
+      );
+    }
+    return '';
+  };
+  const name = subject.kind === 'pattern' ? subject.pattern.name : 'cymatics-compare';
+
+  const run = (job: () => Promise<string>) => {
+    if (busy) return;
+    setBusy(true);
+    setMsg('');
+    void job()
+      .then(setMsg)
+      .finally(() => setBusy(false));
+  };
+  const doShare = () =>
+    run(async () => {
+      const ok = await shareImage.captureAndShare(cardRef.current, `${name} — Cymatics Lab`);
+      return ok ? 'Shared ✓' : 'Sharing as an image needs the next app build.';
+    });
+  const doSave = () =>
+    run(async () => {
+      const r = await saveToPhotos(cardRef.current);
+      return r === 'saved' ? 'Saved to Photos ✓' : r === 'denied' ? 'Photos permission denied — allow access in Settings to save.' : r === 'unavailable' ? 'Saving to Photos is available after the next app build.' : 'Saving failed — please try again.';
+    });
+  const doPrint = () =>
+    run(async () => {
+      const ok = await printHtml(html(), page);
+      return ok ? 'Sent to the printer.' : avail.print ? "Printing didn't complete." : 'Printing is available after the next app build.';
+    });
+  const doPdf = () =>
+    run(async () => {
+      const r = await sharePdf(html(), page, `${name} — ${PAGES[page].label} PDF`);
+      return r === 'shared' ? 'PDF ready — pick where to send it.' : r === 'unavailable' ? 'PDF export is available after the next app build.' : "The PDF didn't complete.";
+    });
+  const doSvg = () =>
+    run(async () => {
+      if (subject.kind !== 'pattern') return 'SVG export is per pattern — open one to export it.';
+      const r = await shareSvg(svgDoc(), name, `${name}.svg`);
+      return r === 'file' ? 'Shared as an SVG file ✓' : r === 'text' ? 'Shared the SVG source as text — paste it into a file named .svg and open it in a vector editor.' : "The SVG share didn't complete.";
+    });
+
+  return (
+    <View style={styles.root}>
+      <View style={styles.rowBetween}>
+        <Text style={styles.h}>EXPORT</Text>
+        {onHelp ? (
+          <Pressable onPress={() => onHelp('art_export')} hitSlop={8} accessibilityRole="button" accessibilityLabel="What the exports are">
+            <Text style={styles.help}>ⓘ</Text>
+          </Pressable>
+        ) : null}
+      </View>
+      {isPattern ? (
+        <View style={styles.chips}>
+          <LabChip label="Art print" selected={sheet === 'art'} onPress={() => setSheet('art')} onLongPress={() => onHelp?.('art_export')} />
+          <LabChip label="Lab print" selected={sheet === 'lab'} onPress={() => setSheet('lab')} onLongPress={() => onHelp?.('lab_print')} />
+        </View>
+      ) : null}
+      <View style={styles.chips}>
+        {FORMATS.filter((f) => isPattern || f.id === 'png' || f.id === 'pdf').map((f) => (
+          <LabChip key={f.id} label={f.label} selected={format === f.id} onPress={() => setFormat(f.id)} />
+        ))}
+      </View>
+      {/* The page-size picker is always built (owner decision 4) — it drives PRINT and PDF. */}
+      <View style={styles.pageRow}>
+        <Text style={styles.pageLabel}>PAGE</Text>
+        {(Object.keys(PAGES) as PageId[]).map((p) => (
+          <LabChip key={p} label={PAGES[p].label} selected={page === p} onPress={() => setPage(p)} />
+        ))}
+      </View>
+
+      {/* ── The card — visible AND captured ── */}
+      <View ref={cardRef} collapsable={false} style={[styles.card, { width: cardW }, transparent && styles.cardTransparent]}>
+        {!transparent ? (
+          <>
+            <Text style={styles.company}>{BRAND.name.toUpperCase()}</Text>
+            <Text style={styles.source}>{TITLE}</Text>
+          </>
+        ) : null}
+        {subject.kind === 'pattern' ? (
+          <PatternFigure geometry={subject.geometry} artwork={subject.artwork} width={inner} height={Math.round(inner * Math.max(1, subject.geometry.aspect))} paper={transparent ? 'transparent' : undefined} />
+        ) : (
+          <CompareCanvas items={subject.items} width={inner} />
+        )}
+        {!transparent && subject.kind === 'pattern' && sheet === 'lab' && readout ? (
+          <View style={styles.block}>
+            <Text style={styles.name}>{subject.pattern.name}</Text>
+            <Text style={styles.sub}>
+              {readout.studioLabel} · {readout.title}
+            </Text>
+            {readout.rows.map((r) => (
+              <View key={r.k} style={styles.tr}>
+                <Text style={styles.th}>{r.k}</Text>
+                <Text style={styles.td}>{r.v}</Text>
+              </View>
+            ))}
+            <View style={styles.tr}>
+              <Text style={styles.th}>Date</Text>
+              <Text style={styles.td}>{today()}</Text>
+            </View>
+            {subject.pattern.notes ? (
+              <View style={styles.tr}>
+                <Text style={styles.th}>Notes</Text>
+                <Text style={styles.td}>{subject.pattern.notes}</Text>
+              </View>
+            ) : null}
+            <Text style={styles.badge}>{/^SIMULATION/i.test(subject.pattern.badge) ? subject.pattern.badge : `SIMULATION · ${subject.pattern.badge}`}</Text>
+          </View>
+        ) : null}
+        {!transparent ? (
+          <>
+            <View style={styles.rule} />
+            {footer.map((line, i) => (
+              <Text key={i} style={i === footer.length - 1 ? styles.footSite : styles.foot}>
+                {line}
+              </Text>
+            ))}
+          </>
+        ) : null}
+      </View>
+
+      {/* ── Actions (outside the card — never captured) ── */}
+      <View style={styles.btnRow}>
+        {format === 'png' || format === 'transparent' ? (
+          <>
+            <ExportButton label="SHARE" on={avail.share && !busy} onPress={doShare} why="Share as an image — needs the next app build" />
+            <ExportButton label="SAVE" on={avail.save && !busy} onPress={doSave} why="Save to Photos — needs the next app build" />
+          </>
+        ) : null}
+        {format === 'pdf' ? (
+          <>
+            <ExportButton label="PRINT" on={avail.print && !busy} onPress={doPrint} why="Print — needs the next app build" />
+            <ExportButton label={`PDF · ${PAGES[page].label.toUpperCase()}`} on={avail.pdf && !busy} onPress={doPdf} why="PDF — needs the next app build" />
+          </>
+        ) : null}
+        {format === 'svg' ? <ExportButton label="SHARE SVG" on={!busy && isPattern} onPress={doSvg} why="SVG export is per pattern" /> : null}
+        {format === 'png' ? <ExportButton label="PRINT" on={avail.print && !busy} onPress={doPrint} why="Print — needs the next app build" /> : null}
+      </View>
+      {missing.length > 0 ? (
+        <Text style={styles.note}>
+          {missing.join(' · ')} {missing.length > 1 ? 'need' : 'needs'} the next app build. SVG works now.
+        </Text>
+      ) : null}
+      {msg ? <Text style={styles.msg}>{msg}</Text> : null}
+    </View>
+  );
+}
+
+function ExportButton({ label, on, onPress, why }: { label: string; on: boolean; onPress: () => void; why: string }) {
+  return (
+    <Pressable style={[styles.btn, !on && styles.btnDisabled]} onPress={onPress} disabled={!on} accessibilityRole="button" accessibilityState={{ disabled: !on }} accessibilityLabel={on ? label : why}>
+      <Text style={styles.btnText}>{label}</Text>
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  root: { gap: 10 },
+  rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  h: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: colors.amber },
+  help: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, color: colors.amber },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  pageRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, alignItems: 'center' },
+  pageLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.textSub, marginRight: 2 },
+  card: { alignSelf: 'center', borderRadius: 12, borderWidth: 1, borderColor: '#2a2a32', backgroundColor: '#0f0f14', padding: 14, gap: 6 },
+  cardTransparent: { backgroundColor: 'transparent', borderColor: 'transparent', padding: 0 },
+  company: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 2, color: colors.textPrimary },
+  source: { fontFamily: fonts.barlowRegular, fontSize: 12, color: colors.textSub, marginBottom: 4 },
+  block: { gap: 3, marginTop: 4 },
+  name: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, color: colors.textPrimary },
+  sub: { fontFamily: fonts.barlowRegular, fontSize: 12, color: colors.textSub, marginBottom: 4 },
+  tr: { flexDirection: 'row', gap: 8, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: '#2a2a32', paddingVertical: 3 },
+  th: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.6, color: colors.textSub, width: 84 },
+  td: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSecondary, flex: 1 },
+  badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: 'rgba(255,255,255,0.6)', marginTop: 6 },
+  rule: { height: 1, backgroundColor: '#2a2a32', marginTop: 8, marginBottom: 4 },
+  foot: { fontFamily: fonts.barlowRegular, fontSize: 12, color: colors.textSub, textAlign: 'center' },
+  footSite: { fontFamily: fonts.barlowMedium, fontSize: 12, color: colors.amber, textAlign: 'center' },
+  btnRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  btn: { borderRadius: 8, borderWidth: 1.5, borderColor: 'rgba(255,198,77,.65)', backgroundColor: '#1a1409', paddingHorizontal: 14, paddingVertical: 10, minHeight: 44, justifyContent: 'center' },
+  btnDisabled: { opacity: 0.35 },
+  btnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.amber },
+  note: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
+  msg: { fontFamily: fonts.barlowMedium, fontSize: 13, color: colors.textPrimary },
+});

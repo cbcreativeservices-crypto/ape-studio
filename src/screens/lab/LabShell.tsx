@@ -131,6 +131,25 @@ export function HeaderPlayButton({
   );
 }
 
+/** Compact header TEXT control beside the play button — a labelled pill of the
+ *  same height (Cymatics SAVE, 2026-09-17). Labs compose it with
+ *  HeaderPlayButton in a row inside `headerAction`. */
+export function HeaderTextButton({ label, onPress, disabled, accessibilityLabel }: { label: string; onPress: () => void; disabled?: boolean; accessibilityLabel?: string }) {
+  return (
+    <Pressable
+      style={[styles.headerPill, disabled && styles.headerPlayOff]}
+      onPress={onPress}
+      disabled={disabled}
+      hitSlop={8}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: !!disabled }}
+      accessibilityLabel={accessibilityLabel ?? label}
+    >
+      <Text style={styles.headerPillText}>{label}</Text>
+    </Pressable>
+  );
+}
+
 /** Collapsible content section (owner 2026-07-29: every section collapsible).
  *  Standard section titles across labs: DESCRIPTION · READOUTS · DISPLAY ·
  *  CONTROLS · ACTIONS — but any title works. */
@@ -492,6 +511,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  headerPill: {
+    height: 38,
+    borderRadius: 19,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,198,77,.6)',
+    backgroundColor: '#17171c',
+    paddingHorizontal: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerPillText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.amber },
   headerPlayOn: { borderColor: 'rgba(255,198,77,.8)', backgroundColor: '#1a1409' },
   headerPlayOff: { opacity: 0.35 },
   headerPlayGlyph: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: colors.textSecondary, marginLeft: 2 },

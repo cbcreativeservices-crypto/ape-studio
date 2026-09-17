@@ -104,13 +104,17 @@ export function CymaticsHomeScreen() {
           <Text style={[styles.studioBtnText, { color: '#e2c48a' }]}>OPEN THE MEMBRANE &amp; LOUDSPEAKER STUDIO ›</Text>
           <Text style={styles.studioBtnSub}>Tune and strike a drumhead · why a timpani has a pitch · a loudspeaker cone from piston to breakup</Text>
         </Pressable>
+        <Pressable style={[styles.studioBtn, styles.studioBtnGallery]} onPress={() => navigation.navigate('CymaticsGallery', {})} accessibilityRole="button" accessibilityLabel="Open the Pattern Gallery and Art Studio">
+          <Text style={[styles.studioBtnText, { color: colors.programPurple }]}>OPEN THE PATTERN GALLERY &amp; ART STUDIO ›</Text>
+          <Text style={styles.studioBtnSub}>Save a pattern from any studio · colour it · compare 2 or 4 · art print or lab sheet</Text>
+        </Pressable>
 
         <Text style={styles.sectionTitle}>LEARN &amp; EXPERIMENT</Text>
         {CYMATICS_MODULES.map((m, i) => (
           <ModuleAccordionRow key={m.id} num={i + 1} name={m.title} blurb={m.blurb} expanded={openId === m.id} onToggle={() => setOpenId(openId === m.id ? null : m.id)} onOpen={() => open(m.id)} />
         ))}
 
-        <Text style={styles.sectionTitle}>PLANNED AREAS</Text>
+        {PLANNED_AREAS.length > 0 ? <Text style={styles.sectionTitle}>PLANNED AREAS</Text> : null}
         {PLANNED_AREAS.map((p) => (
           <View key={p.title} style={styles.planned}>
             <Text style={styles.plannedTitle}>{p.title}</Text>
@@ -143,6 +147,7 @@ const styles = StyleSheet.create({
   studioBtn: { borderRadius: 12, borderWidth: 1.5, borderColor: 'rgba(255,198,77,.75)', backgroundColor: '#1a1409', paddingVertical: 14, paddingHorizontal: 16, gap: 3 },
   studioBtnLiquid: { borderColor: 'rgba(127,212,255,.7)', backgroundColor: '#0a1520' },
   studioBtnMembrane: { borderColor: 'rgba(226,196,138,.7)', backgroundColor: '#17130b' },
+  studioBtnGallery: { borderColor: 'rgba(196,162,255,.7)', backgroundColor: '#120f1c' },
   studioBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1.2, color: colors.amber },
   studioBtnSub: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub },
   sectionTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: colors.amber, marginTop: 8 },

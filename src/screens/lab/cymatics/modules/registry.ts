@@ -16,10 +16,9 @@ export const CYMATICS_MODULES: { id: CymaticsModuleId; title: string; blurb: str
   { id: 'experiments', title: 'Guided Experiments', blurb: 'Seventeen structured activities — predict first, then open the studio in exactly the situation each step describes.' },
 ];
 
-/** Later phases — shown on the lab home as planned rows (no promises, no dates). */
-export const PLANNED_AREAS: { title: string; blurb: string }[] = [
-  // Liquid Cymatics Studio — LIVE (Phase 2, 2026-09-16); removed from here.
-  // Membrane & Loudspeaker, Harmony in Motion, Other Cymatic Systems, Change
-  // One Thing — LIVE (Phase 3, 2026-09-17); removed from here.
-  { title: 'Pattern Gallery & Art Studio', blurb: 'Save, colour, compare and print patterns — art prints and lab sheets.' },
-];
+/** Later phases — shown on the lab home as planned rows (no promises, no dates).
+ *  EMPTY since Phase 4 (2026-09-17): every area of the spec is live —
+ *  Liquid (Phase 2), Membrane / Harmony / Systems / Change One Thing
+ *  (Phase 3), Pattern Gallery & Art Studio (Phase 4). The home hides the
+ *  section while this is empty; a future area goes back in as a dimmed row. */
+export const PLANNED_AREAS: { title: string; blurb: string }[] = [];

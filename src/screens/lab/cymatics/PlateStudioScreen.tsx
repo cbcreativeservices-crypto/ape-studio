@@ -30,13 +30,15 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { heatColor, levelColor, rampColors } from '../../../features/tools/levelColor';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { EngineGate } from '../../tools/EngineGate';
-import { LabChip, LabShell, HeaderPlayButton } from '../LabShell';
+import { LabChip, LabShell, HeaderPlayButton, HeaderTextButton } from '../LabShell';
 import type { DockParam } from '../rack/rackTypes';
 import { MATERIALS, type MaterialId } from '../../../features/cymatics/materials';
 import { DEFAULT_PLATE, effectiveQ, plateAspect, plateModes, readResonance, sampleField, type EdgeCondition, type PlateShape, type PlateSpec } from '../../../features/cymatics/plateModes';
 import { LIBRARY_SHAPES, isLibraryShape, loadLibraryShape } from '../../../features/cymatics/modalLibrary';
 import { formatHz, formatWavelength, nearestNote, wavelengthAir } from '../../../features/cymatics/music';
 import { EXPERIMENT_BY_PRESET, PRESET_BY_ID, type FreqStrategy } from '../../../features/cymatics/presets';
+import { newPattern, patternStore } from '../../../features/cymatics/patternStore';
+import { defaultPatternName } from '../../../features/cymatics/patternField';
 import { ExperimentWell } from './ExperimentWell';
 import type { RootStackParamList } from '../../../navigation/types';
 import { requireVizPlate, skiaAvailable } from './skiaGate';
@@ -124,6 +126,8 @@ export function PlateStudioScreen() {
   const [dragTarget, setDragTarget] = useState<'exciter' | 'support' | 'section' | null>(null);
   const [lessonKey, setLessonKey] = useState<string | undefined>();
   const [lessonOpen, setLessonOpen] = useState(false);
+  const [savedMsg, setSavedMsg] = useState<{ id: string; name: string } | 'failed' | null>(null);
+  const [reopened, setReopened] = useState<string | null>(null);
   const openLesson = (k?: string) => {
     setLessonKey(k);
     setLessonOpen(true);
@@ -162,6 +166,33 @@ export function PlateStudioScreen() {
     const target = excitable[Math.min(preset.freq.index, excitable.length - 1)];
     if (target) setFreq(target.hz * ((preset.freq as Extract<FreqStrategy, { kind: 'mode' }>).detuneRatio ?? 1));
   }, [preset, modes]);
+
+  // Reopen a saved pattern's EXACT configuration (Gallery → OPEN IN STUDIO).
+  // Every field lands in one batch; the preset landing is disarmed first.
+  const savedId = route.params?.saved;
+  useEffect(() => {
+    if (!savedId) return;
+    let alive = true;
+    void patternStore()
+      .getPattern(savedId)
+      .then((p) => {
+        if (!alive || !p || p.state.studio !== 'plate') return;
+        const s = p.state;
+        landed.current = true;
+        setSpec(s.spec);
+        setFreq(s.hz);
+        setAmplitude(s.amplitude);
+        setView(s.view as PlateViewMode);
+        setMulti(s.multi);
+        setSandCount(s.sandCount);
+        setSandSize(s.sandSize);
+        setFriction(s.friction);
+        setReopened(p.name);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [savedId]);
 
   // ── sound ────────────────────────────────────────────────────────────────
   const tone = useDriveTone(freq, freqB, amplitude);
@@ -448,6 +479,20 @@ export function PlateStudioScreen() {
   ];
 
   const togglePlay = () => (tone.running ? tone.stop() : void tone.start());
+  const badge = lib
+    ? `SIMULATION · ${lib.validated ? 'CALCULATED · VALIDATED' : 'CALCULATED'} — ${lib.info.label} FEM modal library`
+    : spec.shape === 'circle'
+      ? 'SIMULATION · APPROXIMATED — Bessel disc modes, tabulated eigenvalues'
+      : 'SIMULATION · APPROXIMATED — Ritz free-plate modes';
+  // SAVE → the Pattern Gallery (Phase 4): numbers, not a picture — the full
+  // state, so the figure is reproducible; the badge it carried rides along.
+  const savePattern = () => {
+    const state = { studio: 'plate' as const, spec, hz: freq, amplitude, view, multi, sandCount, sandSize, friction };
+    const p = newPattern(state, badge, defaultPatternName(state));
+    void patternStore()
+      .upsertPattern(p)
+      .then((ok) => setSavedMsg(ok ? { id: p.id, name: p.name } : 'failed'));
+  };
 
   return (
     <>
@@ -457,17 +502,18 @@ export function PlateStudioScreen() {
         subtitle="Cymatics Lab: Sound Made Visible"
         intro="Build a plate, drive it with a tone, and watch sand find the lines where the plate stands still. Patterns snap in only near the plate’s own resonances — and which resonances those are depends on the whole plate, not on the frequency alone."
         exploreCaption="Sweep the frequency, or jump straight to a mode from the FREQ key. Change the plate and watch the same frequency stop being a resonance."
-        headerAction={<HeaderPlayButton playing={tone.running} onPress={togglePlay} disabled={!tone.engineReady} label={tone.running ? 'Stop the drive tone' : 'Play the drive tone'} />}
+        headerAction={
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <HeaderTextButton label="SAVE" onPress={savePattern} accessibilityLabel="Save this pattern to the gallery" />
+            <HeaderPlayButton playing={tone.running} onPress={togglePlay} disabled={!tone.engineReady} label={tone.running ? 'Stop the drive tone' : 'Play the drive tone'} />
+          </View>
+        }
         rack={{
           initialParam: 'freq',
           onHelp: openLesson,
           stage: {
             size: 'L',
-            badge: lib
-              ? `SIMULATION · ${lib.validated ? 'CALCULATED · VALIDATED' : 'CALCULATED'} — ${lib.info.label} FEM modal library`
-              : spec.shape === 'circle'
-                ? 'SIMULATION · APPROXIMATED — Bessel disc modes, tabulated eigenvalues'
-                : 'SIMULATION · APPROXIMATED — Ritz free-plate modes',
+            badge,
             onGuide: () => openLesson('display'),
             bezel,
             hideDragTag: true,
@@ -506,6 +552,13 @@ export function PlateStudioScreen() {
       >
         {!tone.engineReady ? <EngineGate state={tone.gate} /> : null}
         {tone.error ? <Text style={styles.err}>{tone.error}</Text> : null}
+        {reopened ? <Text style={styles.savedText}>REOPENED FROM THE GALLERY · {reopened}</Text> : null}
+        {savedMsg ? (
+          <View style={styles.savedRow}>
+            <Text style={styles.savedText}>{savedMsg === 'failed' ? 'SAVE FAILED — TRY AGAIN' : 'SAVED TO THE GALLERY ✓'}</Text>
+            {savedMsg !== 'failed' ? <LabChip label="Open the gallery ›" selected={false} onPress={() => navigation.navigate('CymaticsGallery', { id: savedMsg.id })} /> : null}
+          </View>
+        ) : null}
         {view === 'heat' || view === 'overlay' || view === 'plate3d' || view === 'section' ? (
           <View style={styles.keyRow} accessible accessibilityLabel="Colour key: black is still, red is the most motion">
             <Text style={styles.keyText}>STILL</Text>
@@ -606,6 +659,8 @@ const styles = StyleSheet.create({
   nudgeText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.amber },
   honest: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub, marginTop: 4 },
   err: { fontFamily: fonts.barlowRegular, fontSize: 13, color: '#ff6b5e' },
+  savedRow: { flexDirection: 'row', alignItems: 'center', gap: 10, flexWrap: 'wrap' },
+  savedText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.green },
   noSkia: { alignItems: 'center', justifyContent: 'center', padding: 20 },
   noSkiaText: { fontFamily: fonts.barlowRegular, fontSize: 13.5, color: colors.textSub, textAlign: 'center' },
 });

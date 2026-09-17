@@ -1,0 +1,126 @@
+/**
+ * cymatics/svgExport — string generation for the Gallery's exports: the SVG
+ * document (opens in any vector editor), and the HTML sheets expo-print
+ * renders to PDF / the print dialog — ART PRINT (the figure alone, no data)
+ * and LAB PRINT (the figure plus the settings block, "Simulation" included).
+ * Pure strings: testable in node, and the SVG needs no native half at all.
+ */
+import { LINE_REF_W, figureLayers, fitFrame, shade } from './figure';
+import type { PatternGeometry, PatternReadout } from './patternField';
+import type { Artwork } from './patternStore';
+
+export type PageId = 'letter' | 'a4' | 'square';
+/** Page sizes in PDF points (72 per inch) — expo-print's html width/height. */
+export const PAGES: Record<PageId, { label: string; w: number; h: number }> = {
+  letter: { label: 'Letter', w: 612, h: 792 },
+  a4: { label: 'A4', w: 595, h: 842 },
+  square: { label: 'Square', w: 612, h: 612 },
+};
+
+const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+export type FigureSvgOptions = {
+  /** Canvas size in user units. */
+  size: number;
+  /** null → transparent page; 'plate' → the object's face colour. */
+  background: string | null;
+  /** Draw the object face (material / head / liquid tint) under the figure. */
+  face: boolean;
+};
+
+/** The figure as a standalone SVG document (viewBox = size × size·aspect fit). */
+export function figureSvg(g: PatternGeometry, art: Artwork | null, opts: FigureSvgOptions): string {
+  const W = opts.size;
+  const H = Math.round(opts.size * Math.max(1, g.aspect));
+  const frame = fitFrame(g.aspect, W, H, Math.round(opts.size * 0.03));
+  const L = figureLayers(g, frame, art);
+  // Weights are authored at the on-screen figure width; scale them to the export size.
+  const lineW = (art ? art.lineWeight : 1.5) * (frame.w / LINE_REF_W);
+  const lineC = art ? art.lineColor : '#ffffff';
+  const bg = opts.background === 'plate' ? null : opts.background;
+  const parts: string[] = [];
+  parts.push(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">`);
+  parts.push('<defs>');
+  parts.push(`<clipPath id="plate"><path d="${L.outlineD}" clip-rule="evenodd"/></clipPath>`);
+  for (const f of L.fills) {
+    if (f.style === 'gradient') {
+      parts.push(`<radialGradient id="g${f.region}" gradientUnits="userSpaceOnUse" cx="${f.cx.toFixed(1)}" cy="${f.cy.toFixed(1)}" r="${f.r.toFixed(1)}"><stop offset="0" stop-color="${f.color}"/><stop offset="1" stop-color="${shade(f.color, 0.45)}"/></radialGradient>`);
+    }
+  }
+  parts.push('</defs>');
+  if (bg && bg !== 'transparent') parts.push(`<rect width="${W}" height="${H}" fill="${bg}"/>`);
+  if (opts.face) parts.push(`<path d="${L.outlineD}" fill="${g.face}" fill-rule="evenodd"/>`);
+  parts.push('<g clip-path="url(#plate)">');
+  for (const f of L.fills) {
+    parts.push(`<path d="${f.d}" fill="${f.style === 'gradient' ? `url(#g${f.region})` : f.color}" fill-rule="evenodd"/>`);
+  }
+  if (lineW > 0 && L.linesD) parts.push(`<path d="${L.linesD}" fill="none" stroke="${lineC}" stroke-width="${lineW}" stroke-linecap="round" stroke-linejoin="round"/>`);
+  parts.push('</g>');
+  parts.push(`<path d="${L.outlineD}" fill="none" stroke="${g.edge}" stroke-width="${Math.max(1.5, opts.size / 260)}" fill-rule="evenodd"/>`);
+  parts.push('</svg>');
+  return parts.join('');
+}
+
+export type SheetKind = 'art' | 'lab';
+
+/** The printable page. ART hides every number; LAB prints the settings block. */
+export function sheetHtml(
+  kind: SheetKind,
+  page: PageId,
+  svg: string,
+  meta: { name: string; notes: string; badge: string; date: string; readout: PatternReadout; brand: string[]; title: string },
+): string {
+  const { w, h } = PAGES[page];
+  const margin = 36;
+  const figSize = Math.min(w - margin * 2, kind === 'lab' ? h * 0.48 : h - margin * 2 - 60);
+  const rows = meta.readout.rows.map((r) => `<tr><th>${esc(r.k)}</th><td>${esc(r.v)}</td></tr>`).join('');
+  const head = kind === 'lab' ? `<div class="head"><div class="brand">${esc(meta.brand[0] ?? '')}</div><div class="src">${esc(meta.title)}</div></div>` : '';
+  const block =
+    kind === 'lab'
+      ? `<h1>${esc(meta.name)}</h1>
+<div class="sub">${esc(meta.readout.studioLabel)} · ${esc(meta.readout.title)}</div>
+<table>${rows}<tr><th>Date</th><td>${esc(meta.date)}</td></tr>${meta.notes ? `<tr><th>Notes</th><td>${esc(meta.notes)}</td></tr>` : ''}</table>
+<div class="badge">SIMULATION — ${esc(meta.badge.replace(/^SIMULATION\s*[·—-]?\s*/i, ''))}</div>`
+      : '';
+  const foot = meta.brand.slice(kind === 'lab' ? 1 : 0).map((l) => `<div>${esc(l)}</div>`).join('');
+  return `<!doctype html><html><head><meta charset="utf-8"><style>
+@page { size: ${w}pt ${h}pt; margin: 0; }
+html, body { margin: 0; padding: 0; width: ${w}pt; height: ${h}pt; }
+body { font-family: -apple-system, Helvetica, Arial, sans-serif; color: #111; background: #fff; }
+.page { box-sizing: border-box; width: ${w}pt; height: ${h}pt; padding: ${margin}pt; display: flex; flex-direction: column; align-items: center; }
+.fig { width: ${figSize}pt; height: ${figSize}pt; display: flex; align-items: center; justify-content: center; }
+.fig svg { width: 100%; height: 100%; }
+.head { width: 100%; display: flex; justify-content: space-between; font-size: 9pt; letter-spacing: 1.5pt; text-transform: uppercase; color: #555; margin-bottom: 10pt; }
+h1 { font-size: 16pt; margin: 12pt 0 2pt; width: 100%; }
+.sub { font-size: 9.5pt; color: #444; width: 100%; margin-bottom: 8pt; }
+table { width: 100%; border-collapse: collapse; font-size: 9.5pt; }
+th { text-align: left; width: 22%; padding: 3pt 6pt 3pt 0; color: #555; font-weight: 600; vertical-align: top; border-top: 0.5pt solid #ddd; }
+td { padding: 3pt 0; border-top: 0.5pt solid #ddd; }
+.badge { margin-top: 8pt; font-size: 8.5pt; letter-spacing: 1pt; text-transform: uppercase; color: #666; }
+.foot { margin-top: auto; text-align: center; font-size: 8pt; color: #777; line-height: 1.5; }
+</style></head><body><div class="page">${head}<div class="fig">${svg}</div>${block}<div class="foot">${foot}</div></div></body></html>`;
+}
+
+/** A compare sheet: 2 or 4 figures on one page with their captions. */
+export function compareHtml(page: PageId, items: { svg: string; caption: string }[], meta: { title: string; brand: string[]; date: string }): string {
+  const { w, h } = PAGES[page];
+  const margin = 30;
+  const cols = items.length <= 2 ? 2 : 2;
+  const cell = Math.min((w - margin * 2 - 12) / cols, (h - margin * 2 - 90) / (items.length <= 2 ? 1 : 2));
+  const cells = items
+    .map((it) => `<div class="cell"><div class="fig" style="width:${cell}pt;height:${cell}pt">${it.svg}</div><div class="cap">${esc(it.caption)}</div></div>`)
+    .join('');
+  const foot = meta.brand.map((l) => `<div>${esc(l)}</div>`).join('');
+  return `<!doctype html><html><head><meta charset="utf-8"><style>
+@page { size: ${w}pt ${h}pt; margin: 0; }
+html, body { margin: 0; padding: 0; width: ${w}pt; height: ${h}pt; }
+body { font-family: -apple-system, Helvetica, Arial, sans-serif; color: #111; background: #fff; }
+.page { box-sizing: border-box; width: ${w}pt; height: ${h}pt; padding: ${margin}pt; display: flex; flex-direction: column; }
+h1 { font-size: 13pt; margin: 0 0 8pt; letter-spacing: 1pt; text-transform: uppercase; }
+.grid { display: flex; flex-wrap: wrap; gap: 12pt; justify-content: center; }
+.cell { display: flex; flex-direction: column; align-items: center; }
+.fig svg { width: 100%; height: 100%; }
+.cap { font-size: 8.5pt; color: #333; margin-top: 4pt; text-align: center; max-width: ${cell}pt; }
+.foot { margin-top: auto; text-align: center; font-size: 8pt; color: #777; line-height: 1.5; }
+</style></head><body><div class="page"><h1>${esc(meta.title)} · ${esc(meta.date)}</h1><div class="grid">${cells}</div><div class="foot">${foot}</div></div></body></html>`;
+}

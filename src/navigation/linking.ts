@@ -84,6 +84,8 @@ export const linking: LinkingOptions<RootStackParamList> = {
       CymaticsPlateStudio: 'labs/cymatics/plate',
       CymaticsLiquidStudio: 'labs/cymatics/liquid',
       CymaticsMembraneStudio: 'labs/cymatics/membrane',
+      // Phase 4 (2026-09-17): the gallery (the art board is a mode inside it).
+      CymaticsGallery: 'labs/cymatics/gallery',
       CymaticsModule: 'labs/cymatics/module/:id',
       CableInstallLab: 'labs/cable-installation',
       LabCategory: 'labs/:id', // unknown ids render the screen's own "not available" state

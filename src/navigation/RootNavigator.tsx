@@ -88,6 +88,7 @@ import { CymaticsModuleScreen } from '../screens/lab/cymatics/CymaticsModuleScre
 import { PlateStudioScreen } from '../screens/lab/cymatics/PlateStudioScreen';
 import { LiquidStudioScreen } from '../screens/lab/cymatics/LiquidStudioScreen';
 import { MembraneStudioScreen } from '../screens/lab/cymatics/MembraneStudioScreen';
+import { GalleryScreen } from '../screens/lab/cymatics/GalleryScreen';
 import { WaveLabHomeScreen } from '../screens/lab/wave/WaveLabHomeScreen';
 import { WaveModuleScreen } from '../screens/lab/wave/WaveModuleScreen';
 // Ear Training Lab (owner brief 2026-09-02) — home + generic module shell.
@@ -186,6 +187,7 @@ const Gated = {
   CymaticsPlateStudio: withAmplitudeOrientation(PlateStudioScreen),
   CymaticsLiquidStudio: withAmplitudeOrientation(LiquidStudioScreen),
   CymaticsMembraneStudio: withAmplitudeOrientation(MembraneStudioScreen),
+  CymaticsGallery: withAmplitudeOrientation(GalleryScreen),
   WaveModule: withAmplitudeOrientation(WaveModuleScreen),
   MeterModule: withAmplitudeOrientation(MeterModuleScreen),
   EqModule: withAmplitudeOrientation(EqModuleScreen),
@@ -410,6 +412,7 @@ export function RootNavigator() {
       <Stack.Screen name="CymaticsPlateStudio" component={Gated.CymaticsPlateStudio} />
       <Stack.Screen name="CymaticsLiquidStudio" component={Gated.CymaticsLiquidStudio} />
       <Stack.Screen name="CymaticsMembraneStudio" component={Gated.CymaticsMembraneStudio} />
+      <Stack.Screen name="CymaticsGallery" component={Gated.CymaticsGallery} />
       <Stack.Screen name="WaveLab" component={WaveLabHomeScreen} />
       <Stack.Screen name="WaveModule" component={Gated.WaveModule} />
       <Stack.Screen name="EarTrainingLab" component={EarTrainingLabScreen} />

@@ -33,7 +33,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { heatColor, levelColor, rampColors } from '../../../features/tools/levelColor';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { EngineGate } from '../../tools/EngineGate';
-import { LabChip, LabShell, HeaderPlayButton } from '../LabShell';
+import { LabChip, LabShell, HeaderPlayButton, HeaderTextButton } from '../LabShell';
 import type { DockParam } from '../rack/rackTypes';
 import {
   CONE_STAGE_LABEL,
@@ -56,6 +56,8 @@ import {
 } from '../../../features/cymatics/membrane';
 import { formatHz, nearestNote } from '../../../features/cymatics/music';
 import { EXPERIMENT_BY_PRESET, MEMBRANE_PRESET_BY_ID } from '../../../features/cymatics/presets';
+import { newPattern, patternStore } from '../../../features/cymatics/patternStore';
+import { defaultPatternName } from '../../../features/cymatics/patternField';
 import type { RootStackParamList } from '../../../navigation/types';
 import { ExperimentWell } from './ExperimentWell';
 import { requireVizMembrane, skiaAvailable } from './skiaGate';
@@ -120,6 +122,8 @@ export function MembraneStudioScreen() {
   const [dragTarget, setDragTarget] = useState<'strike' | 'section' | null>(null);
   const [lessonKey, setLessonKey] = useState<string | undefined>();
   const [lessonOpen, setLessonOpen] = useState(false);
+  const [savedMsg, setSavedMsg] = useState<{ id: string; name: string } | 'failed' | null>(null);
+  const [reopened, setReopened] = useState<string | null>(null);
   const openLesson = (k?: string) => {
     setLessonKey(k);
     setLessonOpen(true);
@@ -150,6 +154,29 @@ export function MembraneStudioScreen() {
     landed.current = true;
     setFreq(Math.round(m.hz * 10) / 10);
   }, [preset, modes]);
+
+  // Reopen a saved pattern's EXACT configuration (Gallery → OPEN IN STUDIO).
+  const savedId = route.params?.saved;
+  useEffect(() => {
+    if (!savedId) return;
+    let alive = true;
+    void patternStore()
+      .getPattern(savedId)
+      .then((p) => {
+        if (!alive || !p || p.state.studio !== 'membrane') return;
+        const s = p.state;
+        landed.current = true;
+        setSpec(s.spec);
+        setFreq(s.hz);
+        setAmplitude(s.amplitude);
+        setView(s.view as MembraneViewMode);
+        setDriverId(s.driverId as DriverId);
+        setReopened(p.name);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [savedId]);
 
   // ── sound ────────────────────────────────────────────────────────────────
   const tone = useDriveTone(freq, null, amplitude);
@@ -369,6 +396,19 @@ export function MembraneStudioScreen() {
       ];
 
   const togglePlay = () => (tone.running ? tone.stop() : void tone.start());
+  const badge = isSpeaker
+    ? `SIMULATION · ILLUSTRATIVE cone stages · CALCULATED f_s, ka, 1/f² excursion — ${cone.label === 'CALCULATED' ? 'this stage is calculated' : 'this stage is illustrative'}`
+    : spec.kettle
+      ? 'SIMULATION · CALCULATED Bessel head modes · APPROXIMATED kettle loading (Rossing)'
+      : 'SIMULATION · CALCULATED — clamped-membrane Bessel modes';
+  // SAVE → the Pattern Gallery (Phase 4): the full state, never a picture.
+  const savePattern = () => {
+    const state = { studio: 'membrane' as const, spec, hz: freq, amplitude, view, driverId };
+    const p = newPattern(state, badge, defaultPatternName(state));
+    void patternStore()
+      .upsertPattern(p)
+      .then((ok) => setSavedMsg(ok ? { id: p.id, name: p.name } : 'failed'));
+  };
   const ref11 = modes.find((m) => m.n === 1 && m.s === 1);
   const ratioBase = spec.kettle && ref11 ? ref11 : ex[0];
 
@@ -380,17 +420,18 @@ export function MembraneStudioScreen() {
         subtitle="Cymatics Lab: Sound Made Visible"
         intro="A drumhead is a membrane: it has no stiffness of its own, only tension, so its modes are the exact Bessel patterns — and their frequencies are NOT a harmonic series, which is why a drum has no clear pitch and a timpani (with its kettle) does. A loudspeaker cone is the opposite bargain: a stiff shell asked to move as one piston until, at its breakup frequency, it stops obeying."
         exploreCaption="Tune the head, move the mallet, sweep the modes. Then show the loudspeaker and sweep from its resonance up through breakup."
-        headerAction={<HeaderPlayButton playing={tone.running} onPress={togglePlay} disabled={!tone.engineReady} label={tone.running ? 'Stop the drive tone' : 'Play the drive tone'} />}
+        headerAction={
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <HeaderTextButton label="SAVE" onPress={savePattern} accessibilityLabel="Save this pattern to the gallery" />
+            <HeaderPlayButton playing={tone.running} onPress={togglePlay} disabled={!tone.engineReady} label={tone.running ? 'Stop the drive tone' : 'Play the drive tone'} />
+          </View>
+        }
         rack={{
           initialParam: 'freq',
           onHelp: openLesson,
           stage: {
             size: 'L',
-            badge: isSpeaker
-              ? `SIMULATION · ILLUSTRATIVE cone stages · CALCULATED f_s, ka, 1/f² excursion — ${cone.label === 'CALCULATED' ? 'this stage is calculated' : 'this stage is illustrative'}`
-              : spec.kettle
-                ? 'SIMULATION · CALCULATED Bessel head modes · APPROXIMATED kettle loading (Rossing)'
-                : 'SIMULATION · CALCULATED — clamped-membrane Bessel modes',
+            badge,
             onGuide: () => openLesson('membrane_display'),
             bezel,
             hideDragTag: true,
@@ -426,6 +467,13 @@ export function MembraneStudioScreen() {
       >
         {!tone.engineReady ? <EngineGate state={tone.gate} /> : null}
         {tone.error ? <Text style={styles.err}>{tone.error}</Text> : null}
+        {reopened ? <Text style={styles.savedText}>REOPENED FROM THE GALLERY · {reopened}</Text> : null}
+        {savedMsg ? (
+          <View style={styles.savedRow}>
+            <Text style={styles.savedText}>{savedMsg === 'failed' ? 'SAVE FAILED — TRY AGAIN' : 'SAVED TO THE GALLERY ✓'}</Text>
+            {savedMsg !== 'failed' ? <LabChip label="Open the gallery ›" selected={false} onPress={() => navigation.navigate('CymaticsGallery', { id: savedMsg.id })} /> : null}
+          </View>
+        ) : null}
         {view === 'heat' || view === 'head3d' || view === 'section' || view === 'speaker' ? (
           <View style={styles.keyRow} accessible accessibilityLabel="Colour key: black is still, red is the most motion">
             <Text style={styles.keyText}>STILL</Text>
@@ -536,6 +584,8 @@ const styles = StyleSheet.create({
   readK: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub, flexShrink: 1 },
   honest: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub, marginTop: 4 },
   err: { fontFamily: fonts.barlowRegular, fontSize: 13, color: '#ff6b5e' },
+  savedRow: { flexDirection: 'row', alignItems: 'center', gap: 10, flexWrap: 'wrap' },
+  savedText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.green },
   noSkia: { alignItems: 'center', justifyContent: 'center', padding: 20 },
   noSkiaText: { fontFamily: fonts.barlowRegular, fontSize: 13.5, color: colors.textSub, textAlign: 'center' },
 });

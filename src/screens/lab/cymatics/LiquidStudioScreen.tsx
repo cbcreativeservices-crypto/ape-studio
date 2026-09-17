@@ -30,7 +30,7 @@ import { heatColor } from '../../../features/tools/levelColor';
 import { LinearGradient } from 'expo-linear-gradient';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { EngineGate } from '../../tools/EngineGate';
-import { LabChip, LabShell, HeaderPlayButton } from '../LabShell';
+import { LabChip, LabShell, HeaderPlayButton, HeaderTextButton } from '../LabShell';
 import type { DockParam } from '../rack/rackTypes';
 import { CONTROL_PAIRS, LIQUIDS, LIQUID_BY_ID, TEMPERATURES, kinematicViscosity, surfaceTension, type LiquidId } from '../../../features/cymatics/liquids';
 import {
@@ -51,6 +51,8 @@ import {
 } from '../../../features/cymatics/faraday';
 import { formatHz, nearestNote } from '../../../features/cymatics/music';
 import { EXPERIMENT_BY_PRESET, LIQUID_PRESET_BY_ID } from '../../../features/cymatics/presets';
+import { newPattern, patternStore } from '../../../features/cymatics/patternStore';
+import { defaultPatternName } from '../../../features/cymatics/patternField';
 import { ExperimentWell } from './ExperimentWell';
 import type { RootStackParamList } from '../../../navigation/types';
 import { requireVizLiquid, skiaAvailable } from './skiaGate';
@@ -139,6 +141,8 @@ export function LiquidStudioScreen() {
   const [sectionY, setSectionY] = useState(0.5);
   const [lessonKey, setLessonKey] = useState<string | undefined>();
   const [lessonOpen, setLessonOpen] = useState(false);
+  const [savedMsg, setSavedMsg] = useState<{ id: string; name: string } | 'failed' | null>(null);
+  const [reopened, setReopened] = useState<string | null>(null);
   const openLesson = (k?: string) => {
     setLessonKey(k);
     setLessonOpen(true);
@@ -177,6 +181,30 @@ export function LiquidStudioScreen() {
     landed.current = true;
     setAccel(Math.min(A_MAX, Math.max(A_MIN, fr.thresholdG * 1.3)));
   }, [preset, fr.thresholdG]);
+
+  // Reopen a saved pattern's EXACT configuration (Gallery → OPEN IN STUDIO).
+  const savedId = route.params?.saved;
+  useEffect(() => {
+    if (!savedId) return;
+    let alive = true;
+    void patternStore()
+      .getPattern(savedId)
+      .then((p) => {
+        if (!alive || !p || p.state.studio !== 'liquid') return;
+        const s = p.state;
+        landedF.current = true;
+        landed.current = true;
+        setSpec(s.spec);
+        setFreq(s.hz);
+        setAccel(s.accelG);
+        setView(s.view as LiquidViewMode);
+        setDualId(s.dualId);
+        setReopened(p.name);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [savedId]);
 
   // ── sound ────────────────────────────────────────────────────────────────
   const freqB = ratio ? freq * ratio : null;
@@ -412,6 +440,19 @@ export function LiquidStudioScreen() {
   ];
 
   const togglePlay = () => (tone.running ? tone.stop() : void tone.start());
+  const badge =
+    st.stage === 'flat' || st.stage === 'sloshing' || st.stage === 'ripples' || st.stage === 'damped'
+      ? 'SIMULATION · CALCULATED dish modes · APPROXIMATED threshold'
+      : `SIMULATION · APPROXIMATED — Faraday pattern map (${FAMILY_LABEL[st.family].toLowerCase()})`;
+  // SAVE → the Pattern Gallery (Phase 4): the full state (dualRatio rides in
+  // specLive), never a picture; the badge it carried rides along.
+  const savePattern = () => {
+    const state = { studio: 'liquid' as const, spec: specLive, hz: freq, accelG: accel, view, dualId };
+    const p = newPattern(state, badge, defaultPatternName(state));
+    void patternStore()
+      .upsertPattern(p)
+      .then((ok) => setSavedMsg(ok ? { id: p.id, name: p.name } : 'failed'));
+  };
   const stageNum = STAGE_NUM[st.stage];
   const dampTotal = fr.damping.total || 1;
 
@@ -423,16 +464,18 @@ export function LiquidStudioScreen() {
         subtitle="Cymatics Lab: Sound Made Visible"
         intro="A shallow dish on a shaker. Below a threshold the liquid just rides the platform; above it the surface breaks into standing Faraday waves that oscillate at HALF the drive frequency. Which pattern appears depends on the liquid, the depth, the dish and how hard it is shaken — not on the frequency alone."
         exploreCaption="Raise SHAKE past the threshold and watch the stage ladder climb. Swap the liquid, the depth or the dish and the same drive stops working — or works differently."
-        headerAction={<HeaderPlayButton playing={tone.running} onPress={togglePlay} disabled={!tone.engineReady} label={tone.running ? 'Stop the drive tone' : 'Play the drive tone'} />}
+        headerAction={
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <HeaderTextButton label="SAVE" onPress={savePattern} accessibilityLabel="Save this pattern to the gallery" />
+            <HeaderPlayButton playing={tone.running} onPress={togglePlay} disabled={!tone.engineReady} label={tone.running ? 'Stop the drive tone' : 'Play the drive tone'} />
+          </View>
+        }
         rack={{
           initialParam: 'shake',
           onHelp: openLesson,
           stage: {
             size: 'L',
-            badge:
-              st.stage === 'flat' || st.stage === 'sloshing' || st.stage === 'ripples' || st.stage === 'damped'
-                ? 'SIMULATION · CALCULATED dish modes · APPROXIMATED threshold'
-                : `SIMULATION · APPROXIMATED — Faraday pattern map (${FAMILY_LABEL[st.family].toLowerCase()})`,
+            badge,
             onGuide: () => openLesson('liquid_display'),
             bezel,
             hideDragTag: true, // SHAKE (the bound lane) is printed on the bezel
@@ -471,6 +514,13 @@ export function LiquidStudioScreen() {
       >
         {!tone.engineReady ? <EngineGate state={tone.gate} /> : null}
         {tone.error ? <Text style={styles.err}>{tone.error}</Text> : null}
+        {reopened ? <Text style={styles.savedText}>REOPENED FROM THE GALLERY · {reopened}</Text> : null}
+        {savedMsg ? (
+          <View style={styles.savedRow}>
+            <Text style={styles.savedText}>{savedMsg === 'failed' ? 'SAVE FAILED — TRY AGAIN' : 'SAVED TO THE GALLERY ✓'}</Text>
+            {savedMsg !== 'failed' ? <LabChip label="Open the gallery ›" selected={false} onPress={() => navigation.navigate('CymaticsGallery', { id: savedMsg.id })} /> : null}
+          </View>
+        ) : null}
         {view === 'height' || view === 'contours' || view === 'liquid3d' || view === 'section' ? (
           <View style={styles.keyRow} accessible accessibilityLabel="Colour key: black is still, red is the largest motion">
             <Text style={styles.keyText}>STILL</Text>
@@ -572,6 +622,8 @@ const styles = StyleSheet.create({
   nudgeText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.amber },
   honest: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub, marginTop: 4 },
   err: { fontFamily: fonts.barlowRegular, fontSize: 13, color: '#ff6b5e' },
+  savedRow: { flexDirection: 'row', alignItems: 'center', gap: 10, flexWrap: 'wrap' },
+  savedText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.green },
   noSkia: { alignItems: 'center', justifyContent: 'center', padding: 20 },
   noSkiaText: { fontFamily: fonts.barlowRegular, fontSize: 13.5, color: colors.textSub, textAlign: 'center' },
 });
