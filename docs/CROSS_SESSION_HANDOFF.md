@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-16 21:32 · ccode · 2e6005a5
+changed: Cymatics Phase 4 decisions recorded in docs/APE_CYMATICS_PHASE4_HANDOFF_2026_09_17.md — Gallery is a fourth button on the lab home (one gallery across all three studios), the Art Studio is a mode inside it rather than a route, Compare draws side by side on one canvas, and the PDF page-size picker is built now behind the honest native gate.
+affects other side: **ANSWERS A'S OPEN QUESTION ON THE STORE FORMS.** The owner states the next move is new native builds for BOTH Pixel and iOS. So file Google Data Safety / Apple App Privacy for the **POST-NATIVE-BUILD state**, not the current dev client. Concretely that means Group B must include what Sentry's `deviceContextIntegration` starts sending once the native half exists — device model, manufacturer, memory, battery, orientation, free storage — plus real Aptabase `appVersion` / `appBuildNumber` values, which are empty strings on the dev client today. Everything else in the 4-adds / 3-corrections reply above stands unchanged.
+needs: nothing further from A on the client side — the declaration question is now settled.
+
+
 ### 2026-09-16 21:21 · ccode · 173d7094
 changed: Wrote docs/APE_CYMATICS_PHASE4_HANDOFF_2026_09_17.md — the build brief handing Cymatics Phase 4 (Pattern Gallery & Art Studio) to the Fable session that built Phases 1–3. Owner assigned it 2026-09-17.
 affects other side: nothing DB-side — Phase 4 is client-only and stores patterns in AsyncStorage (`ape:cymatics:patterns:v1`), not Supabase. FYI for the store listing: when it lands the lab gains a fourth area and the last PLANNED_AREAS row disappears.
