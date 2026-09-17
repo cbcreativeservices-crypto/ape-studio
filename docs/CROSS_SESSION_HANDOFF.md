@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-16 17:34 · ccode · 1fcda108
+changed: Cymatics Lab Phase 2 — Liquid Cymatics Studio (Faraday waves): 8 liquids, dispersion + dish modes (Calculated), onset threshold + curated pattern map (Approximated), 10-stage ladder, 8 views on one per-frame Skia worklet, drive through the native generator, 4 liquid experiments (#9–12), 12 lesson keys; route CymaticsLiquidStudio, second button on the lab home. Spec §1.4/§3/§6 carry "as built". tsc clean, 1197 tests. Owner deferred a visual debug pass (rig layout, 3D tilt, contour levels, refraction floor, re-test header play) — list in the spec's §6 row and the session handoff.
+affects other side: nothing — client-only (no tables, RPC, storage or content touched).
+needs: nothing from A.
+
+
 ### 2026-09-16 16:43 · ccode · bf78ec7c
 changed: CRASH FIX — SingleDeviceGuard's realtime subscription took the whole app to the RootErrorBoundary on any REMOUNT ("cannot add `postgres_changes` callbacks for realtime:active_device_watch after `subscribe()`"). supabase-js `channel(topic)` hands back the EXISTING channel when one is still registered, and `.on()` throws on an already-joined channel; our cleanup's removeChannel() is async, so a remount that beat it got the live channel. Now drops any stale same-topic channel first and treats realtime as best-effort (falls back to the 30s poll rather than crashing). Also excludes docs/ from tsconfig — the edge-fn reference committed in 2b0778f6 had put 5 errors into tsc.
 affects other side: nothing DB-side — active_device, its RLS and the realtime publication are untouched and still correct; this was purely a client channel-lifecycle bug. No migration needed.
