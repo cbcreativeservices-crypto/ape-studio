@@ -1,3 +1,5 @@
+> **STATUS 2026-09-17: DELIVERED by Computer B (`D:\cymatics_modal_library.zip`) and INGESTED** — see spec §1.3 "as built" and `src/data/cymatics/README_COMPB_2026_09_16.md`.
+
 # Computer B handoff — Cymatics Lab plate MODAL LIBRARY (2026-09-16)
 
 **Ask:** numerically solved free-vibration modes for the plate shapes that have no closed form, delivered as JSON the app loads by lookup. Owner decision 2026-09-16: "complex shapes → Comp B". The app's analytic shapes (square, rectangle, disc) are already live in Phase 1; these plug into the same studio as extra SHAPE options.

@@ -25,8 +25,21 @@
  *    and suppressed by |W_k| at the support (a clamp forces a node there).
  */
 import { MATERIAL_BY_ID, type MaterialId } from './materials';
+import { isLibraryShape, libraryInside, libraryShapeFn, librarySnapInside, loadLibraryShape, type LibraryShapeId } from './modalLibrary';
 
-export type PlateShape = 'square' | 'rect' | 'circle';
+/** Analytic shapes (square / rect / disc) plus the eight numerically solved
+ *  MODAL-LIBRARY shapes (spec §1.3, Computer B 2026-09-16 — modalLibrary.ts). */
+export type PlateShape = 'square' | 'rect' | 'circle' | LibraryShapeId;
+
+/** The plate's y-extent / x-extent in plate-normalised units: 1 for a square
+ *  or disc, the short/long ratio for a rectangle, and the solved grid's bbox
+ *  ratio for a library shape (a violin is taller than wide → > 1). The grid,
+ *  the viz and the exciter/support coordinates all use y ∈ [0, aspect]. */
+export function plateAspect(spec: Pick<PlateSpec, 'shape' | 'aspect'>): number {
+  if (spec.shape === 'rect') return Math.max(0.5, Math.min(1, spec.aspect));
+  if (isLibraryShape(spec.shape)) return loadLibraryShape(spec.shape).aspect;
+  return 1;
+}
 export type EdgeCondition = 'free' | 'supported' | 'clamped';
 
 export type PlateSpec = {
@@ -151,7 +164,27 @@ export function plateModes(spec: PlateSpec, count = 14): PlateMode[] {
   const iso = mat.Eperp == null;
 
   const modes: PlateMode[] = [];
-  if (spec.shape === 'circle') {
+  if (isLibraryShape(spec.shape)) {
+    // MODAL LIBRARY (spec §1.3): solved modes, looked up. λ² is given against
+    // L = 1 = the shape's unit dimension (side / flat-to-flat / outer Ø / body
+    // length), which is exactly what SIZE means for that shape, so the exact
+    // scaling law applies with a = SIZE. The files are isotropic (ν = 0.33);
+    // wood uses the geometric-mean stiffness like the disc does, so the grain
+    // angle does not re-order library modes (said in the tray).
+    const lib = loadLibraryShape(spec.shape);
+    const D = iso ? Dpar : Math.sqrt(Dx * Dy);
+    for (const m of lib.modes) {
+      modes.push({
+        id: `lib-${lib.id}-${m.id}`,
+        label: m.label,
+        lam2: m.lambda2,
+        hz: modeHz(m.lambda2, D, rho, h, a),
+        drive: 1,
+        nodalLines: m.nodalLines,
+        shape: libraryShapeFn(lib, m.W),
+      });
+    }
+  } else if (spec.shape === 'circle') {
     const R = a / 2;
     const edgeF = CIRCLE_EDGE_FACTOR[spec.edge];
     const D = iso ? Dpar : Math.sqrt(Dx * Dy); // wood disc: geometric-mean stiffness
@@ -215,10 +248,22 @@ export function plateModes(spec: PlateSpec, count = 14): PlateMode[] {
   // Driver / support weighting. A mode is driven in proportion to its motion
   // under the driver (a node there = silent) and suppressed by its motion at a
   // clamp (support = null → a plate resting free on the driver post only).
-  const ex = spec.exciter;
+  // Positions live in grid units (y ∈ [0, aspect]); shape() takes y normalised
+  // to the plate's own height. (Rectangles used to skip this division, so an
+  // exciter at "centre" (0.5, 0.35) read as cos(nπ·0.35) — off-centre.) On a
+  // library shape a point in the corner box or the hole is snapped to the
+  // nearest plate, so a driver never sits where there is no plate.
+  const asp = plateAspect(spec);
+  const lib = isLibraryShape(spec.shape) ? loadLibraryShape(spec.shape) : null;
+  const toShape = (p: { x: number; y: number }) => {
+    const q = { x: p.x, y: p.y / asp };
+    return lib ? librarySnapInside(lib, q.x, q.y) : q;
+  };
+  const ex = toShape(spec.exciter);
+  const sp = spec.support ? toShape(spec.support) : null;
   for (const md of modes) {
     const atDrive = Math.abs(md.shape(ex.x, ex.y));
-    const atSupport = spec.support ? Math.abs(md.shape(spec.support.x, spec.support.y)) : 0;
+    const atSupport = sp ? Math.abs(md.shape(sp.x, sp.y)) : 0;
     md.drive = Math.max(0, Math.min(1, atDrive * (1 - atSupport) ** 2));
   }
   modes.sort((p, q) => p.hz - q.hz);
@@ -304,21 +349,26 @@ export function sampleField(spec: PlateSpec, modes: PlateMode[], f: number, Q: n
     .filter((e) => Math.abs(e.w) > 1e-3);
   let peak = 1e-9;
   const circle = spec.shape === 'circle';
-  const aspect = spec.shape === 'rect' ? Math.max(0.5, Math.min(1, spec.aspect)) : 1;
+  const aspect = plateAspect(spec);
+  const lib = isLibraryShape(spec.shape) ? loadLibraryShape(spec.shape) : null;
+  // The grid always spans y ∈ [0, aspect] — for a tall plate (aspect > 1) that
+  // means the N×N cells are taller than wide; the viz stretches them back.
   for (let j = 0; j < N; j++) {
-    const y = (j + 0.5) / N;
+    const y = ((j + 0.5) / N) * aspect;
     for (let i = 0; i < N; i++) {
       const x = (i + 0.5) / N;
-      if (circle) {
+      if (lib) {
+        if (!libraryInside(lib, x, y / aspect)) {
+          out[j * N + i] = NaN;
+          continue;
+        }
+      } else if (circle) {
         const dx = (x - 0.5) * 2;
         const dy = (y - 0.5) * 2;
         if (dx * dx + dy * dy > 1) {
           out[j * N + i] = NaN;
           continue;
         }
-      } else if (y > aspect + 1e-6) {
-        out[j * N + i] = NaN;
-        continue;
       }
       let v = 0;
       for (const e of active) v += e.w * e.m.shape(x, y / aspect);

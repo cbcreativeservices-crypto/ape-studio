@@ -4,7 +4,7 @@
  * shared LabShell RACK faceplate.
  *
  *   STAGE  the dish (vizLiquid) — rig side view, lit surface, height map,
- *          contours, refraction (caustics), monochrome, 3D, cross-section.
+ *          contours, refraction (caustics), 3D, cross-section.
  *   BEZEL  DRIVE Hz · RESPONSE Hz (f/2) · λ · a/a_c.
  *   DOCK   FREQ (lane + "drive at twice a dish mode" chooser) · SHAKE ·
  *          LIQUID · DISH · DRIVE · VIEW.
@@ -98,9 +98,8 @@ const VIEWS: { id: LiquidViewMode; label: string; blurb: string }[] = [
   { id: 'rig', label: 'The rig', blurb: 'Side view of the apparatus: lamp, dish, liquid layer, coupling platform, shaker. The platform bobs at the drive frequency; the surface answers at half of it.' },
   { id: 'surface', label: 'Liquid surface', blurb: 'The lit, glossy surface as a camera above the dish would see it.' },
   { id: 'height', label: 'Height map', blurb: 'Surface displacement in the Academy ramp: dark = still, red = the highest crests and deepest troughs.' },
-  { id: 'contours', label: 'Contours', blurb: 'Iso-height lines of the standing pattern: amber = crests, blue = troughs.' },
+  { id: 'contours', label: 'Contours', blurb: 'Iso-height lines over the dimmed height map: amber = crests, blue = troughs.' },
   { id: 'refraction', label: 'Refraction', blurb: 'The classic cymatics photograph: light through the liquid focuses into a bright web where the surface is concave.' },
-  { id: 'mono', label: 'Monochrome', blurb: 'Plain scientific greyscale — no lighting, just height.' },
   { id: 'liquid3d', label: '3D surface', blurb: 'Exaggerated surface height, strobed to a few hertz so you can see it (the real surface moves at the response frequency).' },
   { id: 'section', label: 'Cross-section', blurb: 'A slice through the surface. Drag on the dish to move the slice.' },
 ];

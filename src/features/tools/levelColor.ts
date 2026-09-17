@@ -161,6 +161,30 @@ export function heatColor(t01: number): string {
 }
 
 /**
+ * WORKLET twin of `heatColor` (owner colour standard, enforced 2026-09-17).
+ * Reanimated worklets on the UI thread cannot call the JS `heatColor` (it
+ * closes over the stop tables and string parsing), so per-frame shaders used
+ * to carry their own copy of the ramp — a copy that could drift from the
+ * standard. This is the ONE worklet-safe ramp: the same FIELD_STOPS colours,
+ * evenly spaced, with the same black fade over the bottom 10 %. Returns RGB
+ * 0..255. `test/heatRampWorklet.test.ts` pins it to `heatColor` sample-for-
+ * sample, so a change to either without the other fails the build.
+ */
+export function heatRgbW(t01: number): [number, number, number] {
+  'worklet';
+  const x = t01 < 0 ? 0 : t01 > 1 ? 1 : t01;
+  // FIELD_STOPS in LEVEL order (quiet → loud): blue, green, yellow, orange, red.
+  const R = [47, 63, 232, 230, 255];
+  const G = [116, 174, 195, 144, 95];
+  const B = [255, 82, 65, 47, 78];
+  const p = x * 4;
+  const i = p >= 4 ? 3 : Math.floor(p);
+  const f = p - i;
+  const k = x < 0.1 ? x / 0.1 : 1;
+  return [(R[i] + (R[i + 1] - R[i]) * f) * k, (G[i] + (G[i + 1] - G[i]) * f) * k, (B[i] + (B[i + 1] - B[i]) * f) * k];
+}
+
+/**
  * SVG gradient stops for a zero-centred waveform: symmetric about the middle so
  * amplitude MAGNITUDE drives the colour — MIDI-0 blue at the centre (zero line),
  * climbing through green/yellow/orange to red at ±full scale (top AND bottom).

@@ -6,8 +6,10 @@
  * loudspeaker-style shaker, a coupling platform on its rod, the shallow dish
  * with its liquid layer and a lamp — never a diagram of boxes. The top views
  * render the liquid itself: a lit, glossy surface, the Academy height ramp,
- * contour lines, the classic light-through-water caustic web, or a plain
- * scientific greyscale.
+ * contour lines, or the classic light-through-water caustic web. Every
+ * amplitude drawing is on the house heat ramp (levelColor.heatRgbW, the
+ * worklet twin of heatColor) — colour standard 2026-07-31; the former
+ * greyscale MONOCHROME view was retired for that reason (2026-09-17).
  *
  * PERFORMANCE: the two standing-wave BASIS fields (A = the pattern, B = its
  * quadrature partner or the competing pattern) are sampled once per control
@@ -46,11 +48,11 @@ import {
   type SkImage,
 } from '@shopify/react-native-skia';
 import { useDerivedValue, useFrameCallback, useSharedValue } from 'react-native-reanimated';
-import { heatColor } from '../../../features/tools/levelColor';
+import { heatColor, heatRgbW } from '../../../features/tools/levelColor';
 import type { LiquidSpec, LiquidState, Stage } from '../../../features/cymatics/faraday';
 import { colors, fonts } from '../../../theme/tokens';
 
-export type LiquidViewMode = 'rig' | 'surface' | 'height' | 'contours' | 'refraction' | 'mono' | 'liquid3d' | 'section';
+export type LiquidViewMode = 'rig' | 'surface' | 'height' | 'contours' | 'refraction' | 'liquid3d' | 'section';
 
 export const LIQUID_VIEW_LABELS: Record<LiquidViewMode, string> = {
   rig: 'THE RIG',
@@ -58,34 +60,18 @@ export const LIQUID_VIEW_LABELS: Record<LiquidViewMode, string> = {
   height: 'HEIGHT MAP',
   contours: 'CONTOURS',
   refraction: 'REFRACTION',
-  mono: 'MONOCHROME',
   liquid3d: '3D SURFACE',
   section: 'CROSS-SECTION',
 };
 
 const STAGE_CODE: Record<Stage, number> = { flat: 0, damped: 0, sloshing: 1, ripples: 1, onset: 2, stable: 2, transition: 3, mixed: 4, unstable: 5, chaotic: 6, splash: 7 };
-const VIEW_CODE: Record<LiquidViewMode, number> = { rig: 0, surface: 1, height: 2, contours: 3, refraction: 4, mono: 5, liquid3d: 6, section: 7 };
+const VIEW_CODE: Record<LiquidViewMode, number> = { rig: 0, surface: 1, height: 2, contours: 3, refraction: 4, liquid3d: 6, section: 7 };
 
 // ── worklet helpers ──────────────────────────────────────────────────────────
 function hashW(n: number): number {
   'worklet';
   const s = Math.sin(n * 12.9898 + 78.233) * 43758.5453123;
   return s - Math.floor(s);
-}
-/** The Academy field ramp (levelColor.ts FIELD_STOPS, level order) with the
- *  black floor of heatColor — worklet copy so the UI thread can shade. */
-function rampW(t: number): [number, number, number] {
-  'worklet';
-  const x = t < 0 ? 0 : t > 1 ? 1 : t;
-  // stops: blue #2f74ff → green #3fae52 → yellow #e8c341 → orange #e6902f → red #ff5f4e
-  const R = [47, 63, 232, 230, 255];
-  const G = [116, 174, 195, 144, 95];
-  const B = [255, 82, 65, 47, 78];
-  const p = x * 4;
-  const i = p >= 4 ? 3 : Math.floor(p);
-  const f = p - i;
-  const k = x < 0.1 ? x / 0.1 : 1;
-  return [(R[i] + (R[i + 1] - R[i]) * f) * k, (G[i] + (G[i + 1] - G[i]) * f) * k, (B[i] + (B[i + 1] - B[i]) * f) * k];
 }
 /** Stage → (wA, wB) blend weights at strobed response phase t and raw time tr. */
 function weightsW(stage: number, blend: number, t: number, tr: number): [number, number] {
@@ -257,16 +243,14 @@ export function LiquidView(p: LiquidViewProps) {
           R = tint[0] * base * depthShade + 255 * spec;
           G = tint[1] * base * depthShade + 255 * spec;
           Bc = tint[2] * base * depthShade + 255 * spec;
-        } else if (v === 2 || v === 7) {
-          const rgb = rampW(Math.abs(c));
-          R = rgb[0];
-          G = rgb[1];
-          Bc = rgb[2];
-          if (v === 7) {
-            R *= 0.6;
-            G *= 0.6;
-            Bc *= 0.6;
-          }
+        } else if (v === 2 || v === 7 || v === 3) {
+          // HEIGHT MAP, and the field under CROSS-SECTION / CONTOURS: the house
+          // heat ramp (worklet twin of heatColor), dimmed where lines draw on top.
+          const rgb = heatRgbW(Math.abs(c));
+          const dim = v === 2 ? 1 : v === 7 ? 0.6 : 0.5;
+          R = rgb[0] * dim;
+          G = rgb[1] * dim;
+          Bc = rgb[2] * dim;
         } else if (v === 4) {
           // Caustics: light focuses where the surface is concave.
           //
@@ -288,12 +272,10 @@ export function LiquidView(p: LiquidViewProps) {
           G = 14 + tint[1] * 0.22 * k + 250 * web;
           Bc = 22 + tint[2] * 0.22 * k + 235 * web;
         } else {
-          // Monochrome scientific / contour base.
-          const g = 128 + 110 * c;
-          const dim = v === 3 ? 0.55 : 1;
-          R = g * dim;
-          G = g * dim;
-          Bc = g * dim;
+          // Unreachable view code — draw the floor, never a stray colour.
+          R = 0;
+          G = 0;
+          Bc = 0;
         }
         px[o] = R > 255 ? 255 : R < 0 ? 0 : R;
         px[o + 1] = G > 255 ? 255 : G < 0 ? 0 : G;

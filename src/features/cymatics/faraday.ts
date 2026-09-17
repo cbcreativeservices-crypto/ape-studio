@@ -103,8 +103,9 @@ const JP_ZEROS: number[][] = [
   [6.4156, 10.5199, 13.9872, 17.3128],
   [7.5013, 11.7349, 15.2682, 18.6374],
 ];
-/** Zeros of J_n (pinned contact line — the surface is held at the wall). */
-const J_ZEROS: number[][] = [
+/** Zeros of J_n (pinned contact line — the surface is held at the wall).
+ *  Exported: the same zeros are the clamped-membrane eigenvalues (membrane.ts). */
+export const J_ZEROS: number[][] = [
   [2.4048, 5.5201, 8.6537, 11.7915],
   [3.8317, 7.0156, 10.1735, 13.3237],
   [5.1356, 8.4172, 11.6198, 14.796],

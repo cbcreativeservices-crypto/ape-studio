@@ -32,7 +32,8 @@ import { EngineGate } from '../../tools/EngineGate';
 import { LabChip, LabShell, HeaderPlayButton } from '../LabShell';
 import type { DockParam } from '../rack/rackTypes';
 import { MATERIALS, type MaterialId } from '../../../features/cymatics/materials';
-import { DEFAULT_PLATE, effectiveQ, plateModes, readResonance, sampleField, type EdgeCondition, type PlateShape, type PlateSpec } from '../../../features/cymatics/plateModes';
+import { DEFAULT_PLATE, effectiveQ, plateAspect, plateModes, readResonance, sampleField, type EdgeCondition, type PlateShape, type PlateSpec } from '../../../features/cymatics/plateModes';
+import { LIBRARY_SHAPES, isLibraryShape, loadLibraryShape } from '../../../features/cymatics/modalLibrary';
 import { formatHz, formatWavelength, nearestNote, wavelengthAir } from '../../../features/cymatics/music';
 import { PRESET_BY_ID, type FreqStrategy } from '../../../features/cymatics/presets';
 import type { RootStackParamList } from '../../../navigation/types';
@@ -46,10 +47,13 @@ const GRID_N = 56;
 const hzFromPos = (v: number) => F_MIN * Math.pow(F_MAX / F_MIN, Math.max(0, Math.min(1, v)));
 const posFromHz = (hz: number) => Math.log(Math.max(F_MIN, Math.min(F_MAX, hz)) / F_MIN) / Math.log(F_MAX / F_MIN);
 
+// Analytic shapes first, then the eight solved MODAL-LIBRARY shapes (spec
+// 1.3; Computer B 2026-09-16) - no longer planned rows.
 const SHAPES: { id: PlateShape; label: string }[] = [
   { id: 'square', label: 'Square' },
   { id: 'rect', label: 'Rectangle' },
   { id: 'circle', label: 'Circle' },
+  ...LIBRARY_SHAPES.map((s) => ({ id: s.id as PlateShape, label: s.label })),
 ];
 const SIZES = [100, 160, 240, 320, 400];
 const THICKS = [0.5, 1, 2, 3, 4];
@@ -174,6 +178,8 @@ export function PlateStudioScreen() {
 
   const note = nearestNote(freq);
   const mat = MATERIALS.find((m) => m.id === spec.material)!;
+  const lib = isLibraryShape(spec.shape) ? loadLibraryShape(spec.shape) : null;
+  const asp = plateAspect(spec);
   const patch = (o: Partial<PlateSpec>) => setSpec((s) => ({ ...s, ...o }));
   const nudge = (pct: number) => setFreq((f) => Math.max(F_MIN, Math.min(F_MAX, Math.round(f * (1 + pct) * 10) / 10)));
 
@@ -236,6 +242,7 @@ export function PlateStudioScreen() {
               <LabChip key={s.id} label={s.label} selected={spec.shape === s.id} onPress={() => patch({ shape: s.id })} onLongPress={() => openLesson('shape')} />
             ))}
           </View>
+          {lib ? <Text style={styles.trayBlurb}>{lib.info.blurb} Solved numerically (finite elements) — {lib.validated ? 'validated against the exact solution' : 'calculated'}.</Text> : null}
           <Text style={styles.trayHead}>MATERIAL</Text>
           <View style={styles.chips}>
             {MATERIALS.map((m) => (
@@ -243,7 +250,7 @@ export function PlateStudioScreen() {
             ))}
           </View>
           <Text style={styles.trayBlurb}>{mat.blurb}</Text>
-          <Text style={styles.trayHead}>SIZE (mm){spec.shape === 'circle' ? ' — diameter' : spec.shape === 'rect' ? ' — long side' : ''}</Text>
+          <Text style={styles.trayHead}>SIZE (mm){lib ? ` — ${lib.info.unitLabel}` : spec.shape === 'circle' ? ' — diameter' : spec.shape === 'rect' ? ' — long side' : ''}</Text>
           <View style={styles.chips}>
             {SIZES.map((s) => (
               <LabChip key={s} label={`${s}`} selected={spec.sizeMm === s} onPress={() => patch({ sizeMm: s })} onLongPress={() => openLesson('size')} />
@@ -266,11 +273,20 @@ export function PlateStudioScreen() {
             ))}
           </View>
           <Text style={styles.trayHead}>EDGES</Text>
-          <View style={styles.chips}>
-            {EDGES.map((e) => (
-              <LabChip key={e.id} label={e.label} selected={spec.edge === e.id} onPress={() => patch({ edge: e.id })} onLongPress={() => openLesson('edges')} />
-            ))}
-          </View>
+          {lib ? (
+            <>
+              <View style={styles.chips}>
+                <LabChip label={lib.info.boundaryLabel} selected onPress={() => openLesson('edges')} onLongPress={() => openLesson('edges')} />
+              </View>
+              <Text style={styles.trayBlurb}>For a solved shape the edge condition is part of the solution, not a control — the modes were computed with exactly this boundary.</Text>
+            </>
+          ) : (
+            <View style={styles.chips}>
+              {EDGES.map((e) => (
+                <LabChip key={e.id} label={e.label} selected={spec.edge === e.id} onPress={() => patch({ edge: e.id })} onLongPress={() => openLesson('edges')} />
+              ))}
+            </View>
+          )}
           {spec.material === 'wood' ? (
             <>
               <Text style={styles.trayHead}>GRAIN ANGLE</Text>
@@ -279,7 +295,11 @@ export function PlateStudioScreen() {
                   <LabChip key={g} label={`${g}°`} selected={spec.grainDeg === g} onPress={() => patch({ grainDeg: g })} onLongPress={() => openLesson('material')} />
                 ))}
               </View>
-              <Text style={styles.trayBlurb}>Solid wood is ~10× stiffer along the grain than across it. Rotating the grain changes which modes come first.</Text>
+              <Text style={styles.trayBlurb}>
+                {lib
+                  ? 'Solid wood is ~10× stiffer along the grain than across it. The solved shapes are isotropic, so here wood takes the geometric-mean stiffness and the grain angle does not re-order the modes — use the square or rectangle to see that.'
+                  : 'Solid wood is ~10× stiffer along the grain than across it. Rotating the grain changes which modes come first.'}
+              </Text>
             </>
           ) : null}
         </View>
@@ -296,7 +316,7 @@ export function PlateStudioScreen() {
           <Text style={styles.trayHead}>EXCITER POSITION</Text>
           <View style={styles.chips}>
             {EXCITERS.map((e) => (
-              <LabChip key={e.id} label={e.label} selected={Math.abs(spec.exciter.x - e.p.x) < 0.02 && Math.abs(spec.exciter.y - e.p.y * (spec.shape === 'rect' ? spec.aspect : 1)) < 0.02} onPress={() => patch({ exciter: { x: e.p.x, y: e.p.y * (spec.shape === 'rect' ? spec.aspect : 1) } })} onLongPress={() => openLesson('exciter')} />
+              <LabChip key={e.id} label={e.label} selected={Math.abs(spec.exciter.x - e.p.x) < 0.02 && Math.abs(spec.exciter.y - e.p.y * asp) < 0.02} onPress={() => patch({ exciter: { x: e.p.x, y: e.p.y * asp } })} onLongPress={() => openLesson('exciter')} />
             ))}
             <LabChip label="Drag on plate" selected={dragTarget === 'exciter'} onPress={() => setDragTarget(dragTarget === 'exciter' ? null : 'exciter')} />
           </View>
@@ -304,7 +324,7 @@ export function PlateStudioScreen() {
           <Text style={styles.trayHead}>SUPPORT / CLAMP</Text>
           <View style={styles.chips}>
             <LabChip label="None (free on post)" selected={spec.support == null} onPress={() => patch({ support: null })} onLongPress={() => openLesson('support')} />
-            <LabChip label="Clamp centre" selected={!!spec.support && Math.abs(spec.support.x - 0.5) < 0.02} onPress={() => patch({ support: { x: 0.5, y: 0.5 * (spec.shape === 'rect' ? spec.aspect : 1) } })} onLongPress={() => openLesson('support')} />
+            <LabChip label="Clamp centre" selected={!!spec.support && Math.abs(spec.support.x - 0.5) < 0.02} onPress={() => patch({ support: { x: 0.5, y: 0.5 * asp } })} onLongPress={() => openLesson('support')} />
             <LabChip label="Drag on plate" selected={dragTarget === 'support'} onPress={() => setDragTarget(dragTarget === 'support' ? null : 'support')} />
           </View>
           <Text style={styles.trayHead}>DAMPING</Text>
@@ -410,7 +430,11 @@ export function PlateStudioScreen() {
           onHelp: openLesson,
           stage: {
             size: 'L',
-            badge: spec.shape === 'circle' ? 'SIMULATION — DISC MODES: BESSEL SHAPES, TABULATED EIGENVALUES (APPROXIMATED)' : 'SIMULATION — FREE-PLATE MODES: RITZ APPROXIMATION (APPROXIMATED)',
+            badge: lib
+              ? `SIMULATION — ${lib.info.label.toUpperCase()}: FEM MODAL LIBRARY (${lib.validated ? 'CALCULATED · VALIDATED' : 'CALCULATED'})`
+              : spec.shape === 'circle'
+                ? 'SIMULATION — DISC MODES: BESSEL SHAPES, TABULATED EIGENVALUES (APPROXIMATED)'
+                : 'SIMULATION — FREE-PLATE MODES: RITZ APPROXIMATION (APPROXIMATED)',
             onGuide: () => openLesson('display'),
             bezel,
             hideDragTag: true,
@@ -493,7 +517,7 @@ export function PlateStudioScreen() {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>WHAT THIS PLATE IS</Text>
           <Text style={styles.body}>
-            {mat.label} · {spec.shape === 'circle' ? `Ø ${spec.sizeMm} mm` : spec.shape === 'rect' ? `${spec.sizeMm} × ${Math.round(spec.sizeMm * spec.aspect)} mm` : `${spec.sizeMm} × ${spec.sizeMm} mm`} · {spec.thicknessMm} mm thick · {EDGES.find((e) => e.id === spec.edge)!.label.toLowerCase()} · driven at ({spec.exciter.x.toFixed(2)}, {spec.exciter.y.toFixed(2)}){spec.support ? ' · clamped' : ''}.
+            {mat.label} · {lib ? `${lib.info.label.toLowerCase()}, ${lib.info.unitLabel} ${spec.sizeMm} mm` : spec.shape === 'circle' ? `Ø ${spec.sizeMm} mm` : spec.shape === 'rect' ? `${spec.sizeMm} × ${Math.round(spec.sizeMm * spec.aspect)} mm` : `${spec.sizeMm} × ${spec.sizeMm} mm`} · {spec.thicknessMm} mm thick · {lib ? lib.info.boundaryLabel.replace(' (solved)', '').toLowerCase() : EDGES.find((e) => e.id === spec.edge)!.label.toLowerCase()} · driven at ({spec.exciter.x.toFixed(2)}, {spec.exciter.y.toFixed(2)}){spec.support ? ' · clamped' : ''}.
           </Text>
           <Text style={styles.body}>
             Lowest excitable modes: {modes.filter((m) => m.drive > 0.05).slice(0, 4).map((m) => formatHz(m.hz)).join(' · ')}. Ratios to the first: {(() => {
@@ -509,7 +533,7 @@ export function PlateStudioScreen() {
           <LabChip label="Evidence vs myth ›" selected={false} onPress={() => navigation.navigate('CymaticsModule', { id: 'myth' })} />
         </View>
         <Text style={styles.honest}>
-          SIMULATION. Rectangular free plates have no exact solution — these figures use the standard Ritz approximation; disc modes use Bessel shapes with tabulated free-edge eigenvalues. The size / thickness / material scaling law is exact. A real plate’s figures also depend on its flatness, mounting and the sand itself.
+          SIMULATION. Rectangular free plates have no exact solution — these figures use the standard Ritz approximation; disc modes use Bessel shapes with tabulated free-edge eigenvalues. Triangle, hexagon, ring, bell and instrument plates are solved numerically (finite elements, 16 modes each) and looked up — Calculated{lib ? `; this shape: ${lib.validationNote}` : ''}. The size / thickness / material scaling law is exact. A real plate’s figures also depend on its flatness, mounting and the sand itself.
         </Text>
       </LabShell>
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('cymatics')} controlKey={lessonKey} onClose={() => setLessonOpen(false)} />

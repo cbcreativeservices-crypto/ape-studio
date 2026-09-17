@@ -29,11 +29,12 @@
  */
 import { useEffect, useMemo, useRef } from 'react';
 import { PanResponder, StyleSheet, View } from 'react-native';
-import { Canvas, Circle, Group, Line as SkLine, LinearGradient, Path, Points, RadialGradient, Rect, Skia, Vertices, vec } from '@shopify/react-native-skia';
+import { Canvas, Circle, FillType, Group, Line as SkLine, LinearGradient, Path, Points, RadialGradient, Rect, Skia, Vertices, vec } from '@shopify/react-native-skia';
 import { useDerivedValue, useFrameCallback, useSharedValue, type SharedValue } from 'react-native-reanimated';
 import { heatColor } from '../../../features/tools/levelColor';
 import { MATERIAL_BY_ID } from '../../../features/cymatics/materials';
-import type { PlateSpec } from '../../../features/cymatics/plateModes';
+import { plateAspect, type PlateSpec } from '../../../features/cymatics/plateModes';
+import { isLibraryShape, libraryInside, librarySnapInside, loadLibraryShape } from '../../../features/cymatics/modalLibrary';
 
 export type PlateViewMode = 'particles' | 'heat' | 'overlay' | 'phase' | 'nodes' | 'plate3d' | 'section';
 
@@ -79,6 +80,18 @@ function ampAt(grid: Float32Array, N: number, x: number, y: number, aspect: numb
   return (va * (1 - fx) + vb * fx) * (1 - fy) + (vc * (1 - fx) + vd * fx) * fy;
 }
 
+/** Is (x, y in [0,aspect]) on a library plate? Nearest-cell mask lookup (worklet). */
+function insideW(mask: Uint8Array, nx: number, ny: number, x: number, y: number, aspect: number): boolean {
+  'worklet';
+  if (nx === 0) return true;
+  const yN = y / aspect;
+  if (x < 0 || x > 1 || yN < 0 || yN > 1) return false;
+  const i = Math.max(0, Math.min(nx - 1, Math.round(x * (nx - 1))));
+  const j = Math.max(0, Math.min(ny - 1, Math.round(yN * (ny - 1))));
+  return mask[j * nx + i] === 1;
+}
+const EMPTY_MASK = new Uint8Array(0);
+
 export type PlateViewProps = {
   width: number;
   height: number;
@@ -112,7 +125,10 @@ export function PlateView(p: PlateViewProps) {
   const { width, height, spec, grid, N, view } = p;
   const mat = MATERIAL_BY_ID[spec.material];
   const circle = spec.shape === 'circle';
-  const aspect = spec.shape === 'rect' ? Math.max(0.5, Math.min(1, spec.aspect)) : 1;
+  // MODAL-LIBRARY shapes (spec 1.3): the plate is a solved mask + outline,
+  // drawn, clipped and walked on exactly like the analytic shapes.
+  const lib = isLibraryShape(spec.shape) ? loadLibraryShape(spec.shape) : null;
+  const aspect = plateAspect(spec);
 
   // Plate rectangle in canvas px (padded, aspect-correct).
   const pad = 14;
@@ -145,6 +161,14 @@ export function PlateView(p: PlateViewProps) {
   const ampSV = useSharedValue(p.amplitude);
   const frictionSV = useSharedValue(p.friction);
   const runningSV = useSharedValue(p.running);
+  const maskSV = useSharedValue<Uint8Array>(lib ? lib.mask : EMPTY_MASK);
+  const maskNxSV = useSharedValue(lib ? lib.nx : 0);
+  const maskNySV = useSharedValue(lib ? lib.ny : 0);
+  useEffect(() => {
+    maskSV.value = lib ? lib.mask : EMPTY_MASK;
+    maskNxSV.value = lib ? lib.nx : 0;
+    maskNySV.value = lib ? lib.ny : 0;
+  }, [lib, maskSV, maskNxSV, maskNySV]);
   const seedRef = useRef(1);
   useEffect(() => {
     gridSV.value = grid;
@@ -165,7 +189,9 @@ export function PlateView(p: PlateViewProps) {
       const x = hashW(seed * 7919 + k * 2 + 1);
       const y = hashW(seed * 7919 + k * 2 + 2) * aspect;
       k++;
-      if (circle) {
+      if (lib) {
+        if (!libraryInside(lib, x, y / aspect)) continue;
+      } else if (circle) {
         const dx = (x - 0.5) * 2;
         const dy = (y - 0.5) * 2;
         if (dx * dx + dy * dy > 0.94) continue;
@@ -177,7 +203,7 @@ export function PlateView(p: PlateViewProps) {
     pos.value = arr;
     vel.value = new Float32Array(count * 2);
     tick.value += 1;
-  }, [count, circle, aspect, p.resetToken, pos, vel, tick]);
+  }, [count, circle, lib, aspect, p.resetToken, pos, vel, tick]);
 
   const wantParticles = view === 'particles' || view === 'overlay';
   const cb = useFrameCallback((info) => {
@@ -205,6 +231,9 @@ export function PlateView(p: PlateViewProps) {
     // nodal line. Without this the residual gradient along the line crept
     // every grain to the crossings and the figure dissolved into dots.
     const settle = 0.035 + 0.05 * frictionSV.value;
+    const M = maskSV.value;
+    const mnx = maskNxSV.value;
+    const mny = maskNySV.value;
     for (let i = 0; i < n; i++) {
       const x = P[i * 2];
       const y = P[i * 2 + 1];
@@ -230,7 +259,16 @@ export function PlateView(p: PlateViewProps) {
       let nx = x + vx * dt;
       let ny = y + vy * dt;
       // Keep the sand on the plate.
-      if (circle) {
+      if (mnx > 0) {
+        // Library shape: a step off the plate (over an edge, into the ring's
+        // hole or an f-hole) is refused; the grain stays and loses its run.
+        if (!insideW(M, mnx, mny, nx, ny, aspect)) {
+          nx = x;
+          ny = y;
+          vx *= -0.2;
+          vy *= -0.2;
+        }
+      } else if (circle) {
         const dx = (nx - 0.5) * 2;
         const dy = (ny - 0.5) * 2;
         const r2 = dx * dx + dy * dy;
@@ -313,6 +351,7 @@ export function PlateView(p: PlateViewProps) {
   const grid3d = useMemo(() => {
     // Downsample the field to M×M for the surface + static heat colours.
     const vals = new Float32Array(M * M);
+    const inside = new Uint8Array(M * M);
     const cols: string[] = [];
     const idx: number[] = [];
     for (let j = 0; j < M; j++) {
@@ -321,11 +360,18 @@ export function PlateView(p: PlateViewProps) {
         const gj = Math.min(N - 1, Math.floor(((j + 0.5) / M) * N));
         const v = grid[gj * N + gi];
         vals[j * M + i] = v !== v ? 0 : v;
+        inside[j * M + i] = v === v ? 1 : 0;
         cols.push(heatColor(Math.abs(vals[j * M + i])));
-        if (i < M - 1 && j < M - 1) {
-          const k0 = j * M + i;
-          idx.push(k0, k0 + 1, k0 + M, k0 + 1, k0 + M + 1, k0 + M);
-        }
+      }
+    }
+    // A quad is emitted only when all four corners are on the plate, so the
+    // 3D mesh is plate-shaped (a disc, a triangle, a violin) rather than the
+    // bounding square with a flat navy margin.
+    for (let j = 0; j < M - 1; j++) {
+      for (let i = 0; i < M - 1; i++) {
+        const k0 = j * M + i;
+        if (!inside[k0] || !inside[k0 + 1] || !inside[k0 + M] || !inside[k0 + M + 1]) continue;
+        idx.push(k0, k0 + 1, k0 + M, k0 + 1, k0 + M + 1, k0 + M);
       }
     }
     return { vals, cols, idx };
@@ -389,10 +435,27 @@ export function PlateView(p: PlateViewProps) {
   // ── plate outline + finish ───────────────────────────────────────────────
   const outline = useMemo(() => {
     const path = Skia.Path.Make();
-    if (circle) path.addCircle(ox + plateW / 2, oy + plateH / 2, plateW / 2);
+    if (lib) {
+      // The solved outline (plate-normalised) to canvas; interior boundaries
+      // (the ring's hole, the f-holes) cut out with even-odd filling.
+      const toCanvas = (q: { x: number; y: number }) => ({ x: ox + q.x * plateW, y: oy + (q.y / aspect) * plateH });
+      const poly = (pts: { x: number; y: number }[]) => {
+        pts.forEach((q, k) => {
+          const c = toCanvas(q);
+          if (k === 0) path.moveTo(c.x, c.y);
+          else path.lineTo(c.x, c.y);
+        });
+        path.close();
+      };
+      poly(lib.outline);
+      for (const h of lib.holes) poly(h);
+      path.setFillType(FillType.EvenOdd);
+    } else if (circle) path.addCircle(ox + plateW / 2, oy + plateH / 2, plateW / 2);
     else path.addRRect({ rect: { x: ox, y: oy, width: plateW, height: plateH }, rx: 6, ry: 6 });
     return path;
-  }, [circle, ox, oy, plateW, plateH]);
+  }, [lib, circle, ox, oy, plateW, plateH, aspect]);
+  // Bell plate: the centre post the plate is clamped on (drawn as an object).
+  const post = lib?.clampedPatch ? { cx: ox + lib.clampedPatch.x * plateW, cy: oy + (lib.clampedPatch.y / aspect) * plateH, r: Math.max(5, lib.clampedPatch.r * plateW) } : null;
   const finishLines = useMemo(() => {
     const path = Skia.Path.Make();
     const cx = ox + plateW / 2;
@@ -418,8 +481,8 @@ export function PlateView(p: PlateViewProps) {
   dragRef.current = p.dragTarget;
   const cbRef = useRef({ onPlace: p.onPlace, onSection: p.onSection });
   cbRef.current = { onPlace: p.onPlace, onSection: p.onSection };
-  const geom = useRef({ ox, oy, plateW, plateH, aspect, circle });
-  geom.current = { ox, oy, plateW, plateH, aspect, circle };
+  const geom = useRef({ ox, oy, plateW, plateH, aspect, circle, lib });
+  geom.current = { ox, oy, plateW, plateH, aspect, circle, lib };
   const pan = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => dragRef.current != null,
@@ -440,7 +503,11 @@ export function PlateView(p: PlateViewProps) {
     }
     x = Math.max(0.03, Math.min(0.97, x));
     y = Math.max(0.03, Math.min(g.aspect - 0.03, y));
-    if (g.circle) {
+    if (g.lib) {
+      const q = librarySnapInside(g.lib, x, y / g.aspect);
+      x = q.x;
+      y = q.y * g.aspect;
+    } else if (g.circle) {
       const dx = (x - 0.5) * 2;
       const dy = (y - 0.5) * 2;
       const r = Math.sqrt(dx * dx + dy * dy);
@@ -502,6 +569,15 @@ export function PlateView(p: PlateViewProps) {
           <Group>
             <SkLine p1={vec(ox, oy + plateH + 54)} p2={vec(ox + plateW, oy + plateH + 54)} color="#2f74ff" strokeWidth={1} />
             <Path path={sectionPath} style="stroke" strokeWidth={3} color="#ffc64d" strokeJoin="round" strokeCap="round" />
+          </Group>
+        ) : null}
+        {/* Bell plate: the centre post it is clamped on */}
+        {!is3d && post ? (
+          <Group>
+            <Circle cx={post.cx} cy={post.cy} r={post.r + 2} color="rgba(0,0,0,0.5)" />
+            <Circle cx={post.cx} cy={post.cy} r={post.r} color="#2b2b30" />
+            <Circle cx={post.cx} cy={post.cy} r={post.r} style="stroke" strokeWidth={2} color="#5bb0ff" />
+            <Circle cx={post.cx} cy={post.cy} r={Math.max(2, post.r * 0.35)} color="#5bb0ff" />
           </Group>
         ) : null}
         {/* Driver puck (magnet + coil) and clamp */}

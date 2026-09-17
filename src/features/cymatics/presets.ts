@@ -26,7 +26,7 @@ export type LiquidPreset = {
   hz: number;
   /** Vertical acceleration, g. `'onset'` = land just above this setup's threshold; a number = absolute. */
   accelG: number | 'onset';
-  view?: 'rig' | 'surface' | 'height' | 'contours' | 'refraction' | 'mono' | 'liquid3d' | 'section';
+  view?: 'rig' | 'surface' | 'height' | 'contours' | 'refraction' | 'liquid3d' | 'section';
 };
 
 export type Experiment = {
