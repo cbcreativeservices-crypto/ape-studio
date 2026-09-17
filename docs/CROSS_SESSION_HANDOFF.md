@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-16 22:12 · ccode · cabe58fb
+changed: Fixed the env sync script after it aborted mid-run on the owner's machine, having pushed the Sentry DSN but not the Aptabase key. Two Windows PowerShell 5.1 traps, both now documented in the script header: (1) redirecting a native exe's stderr with 2>&1 under $ErrorActionPreference='Stop' turns the eas CLI's routine "new version available" notice into a terminating NativeCommandError even though eas exits 0; (2) a BOM-less .ps1 is decoded as CP1252, so a UTF-8 em dash inside a quoted string ends the string early and throws a bogus "Missing closing '}'" parse error. Script is now pure ASCII, UTF-8 with BOM, and judges success by $LASTEXITCODE. Re-run by the owner: all four EXPO_PUBLIC_* variables are now present in production, preview and development.
+affects other side: nothing — tooling only.
+needs: nothing from A.
+
+
 ### 2026-09-16 21:59 · ccode · 75c410e4
 changed: OTA capability added ahead of the Pixel/iOS builds (owner: "yes i want over-the-air-update capability"). expo-updates ~57.0.22 installed; app.json gains the EAS Update endpoint + `runtimeVersion: {policy: fingerprint}`; eas.json gains a channel on all three profiles. Fingerprint was chosen over appVersion because this project has custom native code and JS that gates on the audio engine version — under appVersion the runtime version would sit at 1.0.0 and a JS bundle built for engine 8 could reach an engine 7 binary. Also ran expo install --fix: 20 packages were on stale SDK-57 patch versions, four of them modules this build switches on. expo-doctor now 21/21, tsc clean, 1212 tests green.
 affects other side: **JS-only fixes can now ship without a store release** once these builds are out (`npx eas update --branch production`). Anything native — new modules, permissions, app.json native config, icons — still needs a real build, because those move the fingerprint and retire old binaries from the update stream by design.
