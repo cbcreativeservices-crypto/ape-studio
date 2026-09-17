@@ -337,7 +337,7 @@ export function ProfileScreen() {
     // and member contact runs through in-app requests addressed by an
     // anonymous token, which is the route we keep.
     const g: { key: 'name' | 'registryName' | 'email'; label: string; done: boolean }[] = [
-      { key: 'name', label: 'Your name', done: pub.name.trim().length > 0 },
+      { key: 'name', label: 'Your user name', done: pub.name.trim().length > 0 },
       {
         key: 'registryName',
         label: 'Name on your certificates',
@@ -420,7 +420,7 @@ export function ProfileScreen() {
       const consent = (adult?: boolean) =>
         askPublish(
           'Publish your profile?',
-          'Your name, your certificates, your work areas and your About you line become visible to anyone with your link or QR code. Your email, your progress and your notes stay private. Switching this off later removes the page and deletes what was published.',
+          'The name on your certificates, your certificates, your work areas and your About you line become visible to anyone with your link or QR code. Your user name, your email, your progress and your notes stay private. Switching this off later removes the page and deletes what was published.',
           () => apply(adult),
         );
       // AGE GATE. A public page carrying a real name and work history is a
@@ -728,6 +728,28 @@ export function ProfileScreen() {
 
           {/* —— PUBLIC PROFILE — the fields. Opens itself while something is
               missing, so the fix is already in front of you. —— */}
+          {/* YOUR USER NAME lives OUTSIDE the public profile (owner 2026-09-17):
+              it is never published and never shown to another member, so
+              sitting under a heading that says PUBLIC was misleading. */}
+          <Section title="YOUR USER NAME" summary={pub.name.trim() ? 'set' : 'not set'}>
+            <Text style={styles.fieldLabel}>Your user name</Text>
+            <TextInput
+              ref={nameRef}
+              style={styles.input}
+              value={pub.name}
+              onChangeText={(t) => setPubKey('name', t)}
+              placeholder="Your user name"
+              placeholderTextColor={colors.textMuted}
+              autoCapitalize="words"
+              returnKeyType="done"
+              accessibilityLabel="Your user name"
+            />
+            <Text style={styles.rowHint}>
+              Private. Used to greet you in the app. It is never published and never shown to
+              other members.
+            </Text>
+          </Section>
+
           <Section
             key={`public-profile-${ppSeq}-${hydrated}`}
             title="PUBLIC PROFILE"
@@ -740,27 +762,13 @@ export function ProfileScreen() {
                 : 'Changes save as you type.'}
             </Text>
 
-            <Text style={styles.fieldLabel}>Your name</Text>
-            <TextInput
-              ref={nameRef}
-              style={styles.input}
-              value={pub.name}
-              onChangeText={(t) => setPubKey('name', t)}
-              placeholder="Your name"
-              placeholderTextColor={colors.textMuted}
-              autoCapitalize="words"
-              returnKeyType="done"
-              accessibilityLabel="Your name"
-            />
-            <Text style={styles.rowHint}>Private. Used to greet you in the app.</Text>
-
             <Text style={styles.fieldLabel}>Name on your certificates</Text>
             <TextInput
               ref={registryNameRef}
               style={styles.input}
               value={pub.registryName}
               onChangeText={(t) => setPubKey('registryName', t)}
-              placeholder="e.g. Rachel A. Booth"
+              placeholder="Your Preferred Name"
               placeholderTextColor={colors.textMuted}
               autoCapitalize="words"
               returnKeyType="done"

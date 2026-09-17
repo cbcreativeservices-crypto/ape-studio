@@ -184,8 +184,10 @@ const SECTIONS = [
  *  the subject is a single hub lab; a plain label when it heads a list of labs. */
 function CategoryLabel({ cat, onPress, locked }: { cat: LabCategory; onPress?: () => void; locked?: boolean }) {
   // Purple marks the Calculator Laboratory, matching the purple sigma the
-  // glossary already uses to open it (owner 2026-09-17). Every other subject
-  // stays amber.
+  // glossary already uses to open it (owner 2026-09-17). TEXT AND ICON ONLY:
+  // the owner asked for the title and the sigma in purple and everything else
+  // left exactly as it was — the card frame, the count subtitle, the chevron
+  // and the icon's circle all stay amber. Do not re-widen this.
   const purple = cat.accent === 'purple';
   const inner = (
     <>
@@ -193,19 +195,15 @@ function CategoryLabel({ cat, onPress, locked }: { cat: LabCategory; onPress?: (
           every other category carried a generic, unapproved emoji, so the
           badge renders only for an accented category. */}
       {purple ? (
-        <View style={[styles.iconBadgeSm, styles.iconBadgeSmPurple]}>
+        <View style={styles.iconBadgeSm}>
           <Text style={[styles.iconGlyphSm, styles.iconGlyphSmPurple]}>{cat.glyph}</Text>
         </View>
       ) : null}
       <View style={{ flex: 1 }}>
         <Text style={[styles.catName, purple && styles.catNamePurple]}>{cat.name}</Text>
-        <Text style={[styles.catCount, purple && styles.catCountPurple]}>{categoryCountLabel(cat)}</Text>
+        <Text style={styles.catCount}>{categoryCountLabel(cat)}</Text>
       </View>
-      {onPress ? (
-        <Text style={locked ? styles.lock : [styles.rowChevron, purple && styles.rowChevronPurple]}>
-          {locked ? '🔒' : '›'}
-        </Text>
-      ) : null}
+      {onPress ? <Text style={locked ? styles.lock : styles.rowChevron}>{locked ? '🔒' : '›'}</Text> : null}
     </>
   );
   return onPress ? (
@@ -213,7 +211,7 @@ function CategoryLabel({ cat, onPress, locked }: { cat: LabCategory; onPress?: (
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={`${cat.name}, ${categoryCountLabel(cat)}${locked ? ', Academy members only' : ''}`}
-      style={({ pressed }) => [styles.catLabel, styles.catCard, purple && styles.catCardPurple, pressed && styles.rowPressed]}
+      style={({ pressed }) => [styles.catLabel, styles.catCard, pressed && styles.rowPressed]}
     >
       {inner}
     </Pressable>
@@ -361,11 +359,7 @@ const styles = StyleSheet.create({
   iconGlyphSm: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: colors.amber },
   // Sigma reads better a shade larger than a 14pt emoji did.
   iconGlyphSmPurple: { color: colors.purple, fontSize: 16 },
-  iconBadgeSmPurple: { borderColor: 'rgba(180,91,255,.45)', backgroundColor: 'rgba(180,91,255,.08)' },
   catNamePurple: { color: colors.purple },
-  catCountPurple: { color: 'rgba(180,91,255,.75)' },
-  catCardPurple: { borderColor: 'rgba(180,91,255,.42)', backgroundColor: '#150e1c' },
-  rowChevronPurple: { color: colors.purple },
   // Category names are AMBER and larger to read as titles (owner 2026-08-10) —
   // Sound, Signal, Equalization…
   catName: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1, color: colors.amber },
