@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-16 21:21 · ccode · 173d7094
+changed: Wrote docs/APE_CYMATICS_PHASE4_HANDOFF_2026_09_17.md — the build brief handing Cymatics Phase 4 (Pattern Gallery & Art Studio) to the Fable session that built Phases 1–3. Owner assigned it 2026-09-17.
+affects other side: nothing DB-side — Phase 4 is client-only and stores patterns in AsyncStorage (`ape:cymatics:patterns:v1`), not Supabase. FYI for the store listing: when it lands the lab gains a fourth area and the last PLANNED_AREAS row disappears.
+needs: nothing from A.
+
+
 ### 2026-09-16 21:16 · ccode · c249d441
 changed: Handoff §5 refreshed — branch is pushed and in sync at 77b807bb; the course-cards art gap is assigned to Computer B, with the full 62-title breakdown (54 ready to upload, 8 needing new art) delivered to the owner's Downloads.
 affects other side: nothing new beyond the art gap already logged above.
