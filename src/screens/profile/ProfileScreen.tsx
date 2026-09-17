@@ -793,8 +793,9 @@ export function ProfileScreen() {
               <Text style={styles.fieldError}>Add a full address, like you@studio.com</Text>
             ) : (
               <Text style={styles.rowHint}>
-                How employers reach you if you switch on contact below. Never shown on your
-                public page.
+                Saved on this device only — never sent to us, never shown on your public
+                page. Members who find you in the directory reach you through in-app
+                contact requests, which never reveal your address.
               </Text>
             )}
 
