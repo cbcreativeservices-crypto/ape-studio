@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-16 20:12 · ccode · 79237167
+changed: CYMATICS RACK PASS — re-ran the APE_LAB_UX_PROPOSAL judge panel (pedagogy / engineering / design language) over the eight modules + three studios. Nodes, Harmony in Motion, Change One Thing and Other Cymatic Systems now sit on the Rack Unit (stage pinned, bezel readouts, lane pre-bound to the teaching parameter, sticky trays, LAB NOTES collapsible with the first-move caption outside it) via the new modules/rackLayout.tsx; Intro / Harmonics / Myth / Experiments stay documents. Studios: ≤5-char dock values, well action chips folded into DRIVE / STRIKE / SAND trays, TAP TO LAND → tap the RES bezel cell, RackUnit stage reserve 300→350, section traces on MIDLINE_BLUE + WAVE_LEVEL_STOPS, MIN_FONT 12 across the lab. tsc clean, 1212 tests, four racked modules verified on the Pixel.
+affects other side: nothing — client-only layout work, no data or copy contract changed.
+needs: nothing from A.
+
+
 ### 2026-09-16 19:03 · ccode · db4fe88b
 changed: CYMATICS PHASE 3 BUILT (owner GO, Fable) — Membrane & Loudspeaker Studio (route CymaticsMembraneStudio; membrane.ts + vizMembrane.tsx), modules Harmony in Motion / Other Cymatic Systems / Change One Thing, experiments #13–17, 12 lesson keys, deep links labs/cymatics/{plate,liquid,membrane,module/:id}. PLUS the owner-requested design + cognitive-learning expert pass over the whole lab (off-resonance displays now dark, dwell sweep + ±0.1 % nudges + TAP TO LAND, PREDICT-FIRST experiment cards in the studio wells, Myth verdict-first, colour-standard fixes on meters / strips / section traces, illustrated puck / clamp / edge, promise-word purge, shorter badges). FIX: modeResponseSigned zeroed a mode exactly AT resonance. tsc clean, 1212 tests, device-verified.
 affects other side: nothing DB-side — client only. FYI for the store listing: the lab now has THREE studios and eight modules; the catalog blurb was widened.

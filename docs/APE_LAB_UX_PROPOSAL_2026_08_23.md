@@ -130,6 +130,7 @@ DragSlider/ReadoutGrid/CheckQuestion/GuidedLessons untouched at their existing c
 | 2 | **LiveSpectrumEq** (host flag) | Worst inversion; proves live-mic pinned stage | M |
 | 3 | **Wave via WaveLayout**, then **Room Builder** by hand | 15 modules in one file; the stress test | M–L |
 | 4 | Playground (banks), meter host, digital host, MicPrinciples (10 chips → 1 tray), rest of EQ | Steady rollout | M each |
+| 5 | **Cymatics** (4 modules via `cymatics/modules/rackLayout.tsx`; 3 studios already on LabShell `rack`) — **DONE 2026-09-17** after a judge-panel re-run; Intro / Harmonics / Myth / Experiments stay documents | The lab was built rack-native; the pass tightened dock budgets, moved well actions into trays, and pinned the four interactive modules | M |
 | — | LabModuleHost extraction (5 copy-pasted hosts → 1) | AFTER two proven converts — cleanup, not dependency *(graft B, resequenced)* | M |
 
 **Never converted:** Cable wizard, Calc, Tube pager, prose-only modules, hub menus, tools.
