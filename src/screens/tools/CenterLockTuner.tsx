@@ -749,8 +749,18 @@ const LiveReadout = memo(function LiveReadout({
   // leading and never showed it. 0.14 em cleared flat-topped caps but ROUND
   // glyphs overshoot the cap height — the giant G rendered with a shaved-flat
   // top on the owner's phone (2026-09-10) — so native gets 0.19 em of room.
-  const NOTE_TOP_EM = Platform.OS === 'web' ? 0 : 0.19;
-  const NOTE_ROW_EM = 1.05 + NOTE_TOP_EM;
+  // iOS CLIPPED THE NOTE (owner 2026-09-17, seen on the iPhone but never on the
+  // Pixel). The glyph is clipped by its OWN line box, not by the row: a
+  // lineHeight of 1.05em is shorter than Oswald Bold's ascent, and iOS centres
+  // the glyph in that box and crops the overflow. `includeFontPadding: false`
+  // on the note style is Android-only, so Android never had the problem and the
+  // 0.19em row padding that compensated there does nothing for iOS — it moves
+  // the row down, it does not make the line box taller.
+  // So: give iOS a line box tall enough for the glyph and drop its now-unneeded
+  // top padding. Android keeps the values it already rendered correctly with.
+  const NOTE_LINE_EM = Platform.OS === 'ios' ? 1.26 : 1.05;
+  const NOTE_TOP_EM = Platform.OS === 'web' ? 0 : Platform.OS === 'ios' ? 0.03 : 0.19;
+  const NOTE_ROW_EM = NOTE_LINE_EM + NOTE_TOP_EM;
   // 229 = identity 24 + direction row 48 + main gap 18 + meter block 139.
   const FIXED_ABOVE_NOTE = 24 + dirRowH + 18 + 139;
   // Space left for the note block: measured when the platform reports it,
@@ -892,7 +902,7 @@ const LiveReadout = memo(function LiveReadout({
         ) : null}
       </View>
       <View style={[styles.noteRow, { paddingTop: Math.round(bigSize * NOTE_TOP_EM) }]}>
-        <Text style={[styles.note, { fontSize: bigSize, lineHeight: Math.round(bigSize * 1.05), color: view.confirmed ? '#37e05f' : colors.textPrimary }]}>{noteName}</Text>
+        <Text style={[styles.note, { fontSize: bigSize, lineHeight: Math.round(bigSize * NOTE_LINE_EM), color: view.confirmed ? '#37e05f' : colors.textPrimary }]}>{noteName}</Text>
         {octave ? (
           <Text style={[styles.octave, { fontSize: Math.round(bigSize * 0.42), marginBottom: Math.round(bigSize * 0.08), color: view.confirmed ? '#37e05f' : colors.textSecondary }]}>{octave}</Text>
         ) : null}

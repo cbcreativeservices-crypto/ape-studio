@@ -160,7 +160,18 @@ export function useHubPreviewEngine(): HubPreview {
   // previews from a stream iOS reports as running but has stopped feeding
   // (rev 24). The hub→tool handoff still adopts (the tool omits freshStart).
   const { state, start, stop } = useDspEngine(HUB_ENGINE_CFG, {}, { freshStart: true });
-  const navLockRef = useRef(false);
+  // NAV LOCK IS STATE, NOT A REF (owner 2026-09-17: "returning to the audio
+  // tools menu the readouts go static").
+  //
+  // It guards the auto-start effect below but was cleared from useFocusEffect,
+  // OUTSIDE that effect's dependency list. A ref change re-renders nothing, so
+  // once the lock was set on navigating to a tool, the ordering on return
+  // decided everything: if the auto-start effect evaluated while the lock was
+  // still set it bailed, and clearing the lock afterwards could not re-run it —
+  // no dependency had changed. The hub then sat at 'idle' with static artwork
+  // until something else happened to change isFocused/appActive/state.
+  // As state, clearing it re-runs the effect and previews resume deterministically.
+  const [navLocked, setNavLocked] = useState(false);
   // One dead-capture recovery attempt per focus session (watchdog below).
   const deadRetryRef = useRef(false);
 
@@ -191,7 +202,7 @@ export function useHubPreviewEngine(): HubPreview {
   // Regaining focus clears the locks so previews resume on return.
   useFocusEffect(
     useCallback(() => {
-      navLockRef.current = false;
+      setNavLocked(false);
       deadRetryRef.current = false;
       return undefined;
     }, []),
@@ -204,13 +215,13 @@ export function useHubPreviewEngine(): HubPreview {
   // global ApeDsp.stop() at pop-animation end) land BEFORE our start, instead
   // of after it (which would leave us 'running' on a dead session).
   useEffect(() => {
-    if (!(isFocused && appActive && state === 'idle' && !navLockRef.current)) return undefined;
+    if (!(isFocused && appActive && state === 'idle' && !navLocked)) return undefined;
     const t = setTimeout(() => start(), 400);
     return () => clearTimeout(t);
-  }, [isFocused, appActive, state, start]);
+  }, [isFocused, appActive, state, start, navLocked]);
 
   const stopForNavigation = useCallback(() => {
-    navLockRef.current = true;
+    setNavLocked(true);
     stop();
   }, [stop]);
 
@@ -256,7 +267,7 @@ export function useHubPreviewEngine(): HubPreview {
           return;
         }
         if (stalledTicks > 60) {
-          navLockRef.current = true;
+          setNavLocked(true);
           markHubWatchdog('lock', stalledTicks);
           stop();
           return;

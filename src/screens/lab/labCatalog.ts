@@ -51,6 +51,10 @@ type Common = {
   id: string;
   /** Short glyph icon in the design language's tag-badge. */
   glyph: string;
+  /** Category tint. Amber is the default for every subject; 'purple' marks
+   *  the Calculator Laboratory, matching the purple Σ the glossary already
+   *  uses to open it (owner 2026-09-17). */
+  accent?: 'amber' | 'purple';
   name: string;
   /** One-sentence description shown on the category card. */
   description: string;
@@ -397,7 +401,12 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
   },
   {
     id: 'calculators',
-    glyph: '🖩',
+    // SIGMA, not the pocket-calculator emoji: U+1F5A9 has no glyph in the
+    // Android system font and rendered as a tofu box on the Pixel. Sigma is
+    // also the app's established calculator mark (the purple Σ in the
+    // glossary opens this same lab).
+    glyph: 'Σ',
+    accent: 'purple',
     name: 'Audio Calculator Laboratory',
     description: 'Professional audio math — with the reasoning, not just the result.',
     section: 'training',

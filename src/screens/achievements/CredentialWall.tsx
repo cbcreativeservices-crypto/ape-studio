@@ -25,6 +25,9 @@ import { exportCertificate, isAvailable as certificateExportAvailable } from '..
 import { fetchEarnedCredentialsByType, fetchNearestCredential, type NearestCredentialResult } from '../../features/achievements/api';
 import type { EarnedCredentialRow } from '../../features/credentials/api';
 
+/** Slugs whose art 404s (not every credential has a file uploaded yet). Held
+ *  per-mount so a failed load falls back to the badge instead of an empty
+ *  frame, and a later upload lights up on the next visit without a code change. */
 const KIND_ACCENT: Record<CredentialKind, string> = {
   certificate: colors.cyan,
   program: colors.programPurple,
@@ -58,6 +61,9 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
   const [rows, setRows] = useState<EarnedCredentialRow[] | null>(null);
   const [nearest, setNearest] = useState<NearestCredentialResult | null>(null);
   const [open, setOpen] = useState<EarnedCredentialRow | null>(null);
+  const [artFailed, setArtFailed] = useState<ReadonlySet<string>>(() => new Set());
+  const markArtFailed = (slug: string) =>
+    setArtFailed((prev) => (prev.has(slug) ? prev : new Set(prev).add(slug)));
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   // Distinguish a failed fetch from a genuinely empty wall: a rejection used to
@@ -118,7 +124,7 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
 
             {/* Earned credentials — newest first. Image only appears here. */}
             {(rows ?? []).map((c) => {
-          const art = credentialArtFor(c.slug);
+          const art = c.slug && artFailed.has(c.slug) ? null : credentialArtFor(c.slug);
           return (
             <Pressable
               key={c.id}
@@ -132,7 +138,13 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
             >
               <View style={styles.art}>
                 {art ? (
-                  <Image source={art} style={styles.artImg} resizeMode="contain" accessibilityIgnoresInvertColors />
+                  <Image
+                    source={art}
+                    style={styles.artImg}
+                    resizeMode="contain"
+                    onError={() => c.slug && markArtFailed(c.slug)}
+                    accessibilityIgnoresInvertColors
+                  />
                 ) : (
                   <CredentialBadge kind={kind} size={48} />
                 )}
@@ -164,11 +176,12 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
         }
         onClose={() => setOpen(null)}
       >
-        {open && credentialArtFor(open.slug) ? (
+        {open && open.slug && !artFailed.has(open.slug) && credentialArtFor(open.slug) ? (
           <Image
             source={credentialArtFor(open.slug)!}
             style={styles.artImg}
             resizeMode="contain"
+            onError={() => open.slug && markArtFailed(open.slug)}
             accessibilityRole="image"
             accessibilityLabel={open.name}
             accessibilityIgnoresInvertColors
