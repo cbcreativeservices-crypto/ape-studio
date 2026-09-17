@@ -77,6 +77,7 @@ import {
 } from '../../features/dashboard/api';
 import { getDashboardCache, setDashboardCache } from '../../features/dashboard/dashboardCache';
 import { FREE_ENROLL_GS, useEnrollment } from '../../features/enrollment/enrollmentStore';
+import { officialTopicName } from '../../data/officialTopicNames';
 import { customListLocked as customListLockedFn, studyMethodLocked } from '../../features/commercial/studyGate';
 import { supabase } from '../../lib/supabase';
 import { isRealAccount } from '../../features/commercial/realAccount';
@@ -1283,6 +1284,30 @@ export function DashboardScreen() {
   // DISPLAYED topic while this panel renders on the COMMITTED one. See the
   // docblocks in features/commercial/studyGate.ts.
   const customListLocked = customListLockedFn({ resolved, entitlement });
+  // The free topics that are actually in THIS deck, with their index, so the
+  // study-access sheet can offer a real jump (owner 2026-09-17). Order follows
+  // FREE_ENROLL_GS, not deck order, so the offer reads the same every time.
+  // The free topics offered on the study-access sheet (owner 2026-09-17).
+  //
+  // The NAMES always come from the codified constants, never from the deck:
+  // FREE_ENROLL_GS is the definition of "free", officialTopicName() is the
+  // ratified name, and both are true whether or not this particular deck
+  // happens to contain them. An earlier version derived the names from the deck
+  // and the offer silently vanished for the very users it exists for — a guest
+  // whose deck was three unrelated topics saw the old pay-or-leave sheet.
+  //
+  // Deck membership decides only the ACTION: jump if the topic is already in
+  // this deck (the normal case, since these two are auto-enrolled), otherwise
+  // send the user to the Home tab where the free topic card lives.
+  const freeTopicOffer = useMemo(() => {
+    const official = (gs: number) => officialTopicName(gs);
+    return FREE_ENROLL_GS.map((gs) => {
+      let idx = topics.findIndex((t) => t.global_sequence === gs);
+      // A GUEST deck is not enrollment-driven, so `global_sequence` can be null.
+      if (idx < 0) idx = topics.findIndex((t) => t.name.trim() === official(gs));
+      return { gs, idx, name: idx >= 0 ? officialTopicName(gs, topics[idx].name) : official(gs) };
+    });
+  }, [topics]);
   const dispTopicInactive =
     viewMode === 'enrollment' &&
     dispTopic.global_sequence != null &&
@@ -1965,6 +1990,19 @@ export function DashboardScreen() {
         onUnlock={() => {
           setUpgradeOpen(false);
           (navigation as any).navigate('Paywall');
+        }}
+        // Always name both free topics; the action adapts to where they are.
+        freeTopicNames={freeTopicOffer.map((f) => f.name)}
+        onTryFree={() => {
+          setUpgradeOpen(false);
+          const inDeck = freeTopicOffer.find((f) => f.idx >= 0);
+          if (inDeck) {
+            goTo(inDeck.idx);
+            return;
+          }
+          // Not in this deck: the Home tab carries the free-topic card, which is
+          // the enrolment path. Better than a dead button or a silent no-op.
+          (navigation as any).navigate('Home');
         }}
       />
 
