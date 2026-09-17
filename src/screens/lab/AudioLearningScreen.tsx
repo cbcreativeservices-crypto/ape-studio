@@ -92,10 +92,7 @@ export function AudioLearningScreen({ navigation }: Props) {
               />
             ) : null}
             <View style={styles.cardHead}>
-              <View style={[styles.iconBadge, styles.iconBadgeFree]}>
-                <Text style={styles.iconGlyph}>📘</Text>
-              </View>
-              <View style={{ flex: 1, gap: 6 }}>
+              <View style={{ gap: 6 }}>
                 <Text style={styles.cardTitle}>Audio Fundamentals</Text>
                 <View style={[styles.badge, styles.badgeFree]}>
                   <Text style={styles.badgeFreeText}>FREE TO START</Text>
@@ -138,10 +135,7 @@ export function AudioLearningScreen({ navigation }: Props) {
               />
             ) : null}
             <View style={styles.cardHead}>
-              <View style={[styles.iconBadge, styles.iconBadgeMember]}>
-                <Text style={styles.iconGlyph}>🧪</Text>
-              </View>
-              <View style={{ flex: 1, gap: 6 }}>
+              <View style={{ gap: 6 }}>
                 <Text style={styles.cardTitle}>Advanced Training Labs</Text>
                 <View style={[styles.badge, styles.badgeMember]}>
                   <Text style={styles.badgeMemberText}>
@@ -187,18 +181,9 @@ const styles = StyleSheet.create({
   cardBg: { padding: 16, gap: 12 },
   cardImg: { borderRadius: 14 },
 
-  cardHead: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  iconBadge: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconBadgeFree: { borderColor: 'rgba(55,224,95,.45)', backgroundColor: 'rgba(55,224,95,.08)' },
-  iconBadgeMember: { borderColor: 'rgba(180,91,255,.45)', backgroundColor: 'rgba(180,91,255,.08)' },
-  iconGlyph: { fontSize: 22 },
+  // The icon circles were removed (owner 2026-09-17: "no icon, no circle"),
+  // so the head is no longer a row wrapping a badge and a text column.
+  cardHead: { gap: 6 },
 
   cardTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 19, letterSpacing: 0.6, color: colors.textPrimary },
 
