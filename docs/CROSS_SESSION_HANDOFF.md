@@ -26,6 +26,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-16 21:16 · ccode · c249d441
+changed: Handoff §5 refreshed — branch is pushed and in sync at 77b807bb; the course-cards art gap is assigned to Computer B, with the full 62-title breakdown (54 ready to upload, 8 needing new art) delivered to the owner's Downloads.
+affects other side: nothing new beyond the art gap already logged above.
+needs: A to say whether the store forms are being filed for the CURRENT dev client or the NEXT EAS build — Sentry's device context turns on with the native build and changes Group B. That is the one open blocker on the data-safety reply.
+
+
+### 2026-09-16 21:13 · ccode · 237e80b1
+changed: web: expose /privacy /terms /support past the site gate (store compliance)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-16 20:54 · ccode · fe25220f
 changed: Repo hygiene + a STORAGE finding A should know. Credential/programme art resolves by slug from the Supabase `course-cards` bucket, never from the app bundle, so the local image folders are originals, not repo assets; credential-squares (102/102), Program_Squares (36/36) and a pen rescue copy (102/102) are already uploaded and are now git-ignored. Deleted the unreferenced certificate SVG pair (superseded by cert-sample.webp on 09-16). Also commits A's own CCODE_DATA_SAFETY_VERIFY_2026_09_17.md so the verification reply above resolves to a file in the repo.
 affects other side: **CATALOG ART GAP** — of 128 rows in `certificates`, only 66 have a matching object in `course-cards`; 62 render with no art. 54 of those files exist locally and are queued for upload (owner deferred); the remaining 8 have no art anywhere and need art made: astroacoustics-and-sonification, cubase-nuendo-for-post, digital-performer-reason-producer, effects-and-pedal-design, home-studio-starter, reaper-power-user, studio-one-producer, system-tuning-and-alignment. Naming contract is exactly `<certificates.slug>.webp`.
