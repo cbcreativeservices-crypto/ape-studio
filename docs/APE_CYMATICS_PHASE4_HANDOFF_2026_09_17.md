@@ -20,8 +20,9 @@
 `package.json` but their native halves ride the NEXT EAS build. Everything resolves through
 `optionalModule()` at runtime and returns an honest failure.
 
-This is not a blocker — it is the design. The Harmonograph already solved it and you copy that
-solution exactly:
+This is not a blocker — it is the design, and it is temporary: the owner's next move is a native
+build for Pixel and iOS (§7), so these controls flip on shortly after you write them. The
+Harmonograph already solved the gating and you copy that solution exactly:
 
 - `src/screens/lab/harmoExport.ts` — `isShareAvailable()` / `isSaveAvailable()` / `isPrintAvailable()`
   probe the modules; `saveToPhotos(ref)` returns `'saved' | 'denied' | 'unavailable' | 'failed'`;
@@ -204,19 +205,51 @@ theirs collide.
 
 ---
 
-## 7. Open questions for the owner (ask before building past them)
+## 7. DECIDED by the owner, 2026-09-17 — build to these
 
-1. **Where does the Gallery live** — a fourth button on the Cymatics home beside the three
-   studios, or a tab inside each studio? Spec implies its own screen; the home button is the
-   safer read.
-2. **Is the Art Studio a separate route from the Gallery**, or a mode inside it? The spec names
-   them as one area ("Pattern Gallery & Art Studio").
-3. **Compare 2/4** — side-by-side on one canvas, or a pager? Phase 3's Change One Thing already
-   draws two plates on one glass and is the obvious precedent.
-4. **PDF page sizes** (Letter / A4 / square) need `expo-print`, which is native-gated. Build the
-   size picker now and gate the action, or defer the picker until the build?
+All four open questions are answered. Do not re-litigate them; build to this.
 
----
+1. **The Gallery is a FOURTH BUTTON on the Cymatics lab home**, beside Plate, Liquid and
+   Membrane. ONE gallery for all three studios, not a per-studio list. Remove the
+   `Pattern Gallery & Art Studio` row from `PLANNED_AREAS` and put the real button in its place.
+   *Why it matters to the build:* a plate pattern and a drum pattern must be able to sit side by
+   side in Compare, so the saved-pattern record needs a `studio` discriminator from day one and
+   the gallery must render a thumbnail for any of the three.
+
+2. **The Art Studio is a MODE INSIDE the Gallery, not its own route.** Open a pattern, tap
+   COLOUR, and the same screen becomes the art board. One route, no state handed across a
+   navigation boundary. Deep-link `labs/cymatics/gallery` only.
+
+3. **Compare draws SIDE BY SIDE ON ONE CANVAS**, following Change One Thing (`modChange.tsx`),
+   which already puts two plates on one glass and is device-proven. Compare 4 is the same
+   component in a 2×2 grid. No pager.
+
+4. **Build the PDF page-size picker NOW**, rendered disabled with the honest
+   "available after the next app build" note — the Harmonograph pattern. See the build note below.
+
+### Build context added by the owner with decision 4
+
+> "next thing we are going to do is do new builds for both pixel and ios"
+
+**A native build for Pixel and iOS is the owner's next move.** That means the export natives
+(`react-native-view-shot`, `expo-sharing`, `expo-media-library`, `expo-print`) are about to
+exist, and every gated control you write will flip on shortly after you write it.
+
+Consequences for you:
+
+- Build the FULL export surface now — share, save-to-Photos, print, page sizes, Art Print vs
+  Lab Print. Gate each one through `harmoExport`, never behind a hard-coded flag, so the build
+  alone turns them on with no code change.
+- Write the gating so the enabled path is real code you believe in, not a stub. It will run for
+  real within days, and a stub behind a disabled button is how you ship a broken feature.
+- **Re-verify on-device AFTER that build:** an actual save to Photos, an actual print sheet, and
+  the add-only Photos permission prompt (`requestPermissionsAsync(true)` — the narrower iOS
+  "add to Photos" question, matching `savePhotosPermission` in `app.json`).
+- **You do not start the build.** `eas build` runs only when the owner says, in that moment, to
+  start it now (`AGENTS.md`, written in nine places after two violations). When your work reaches
+  the build step: ask one line, then wait.
+- SVG export needs no native half at all — it is string generation. It will work in the current
+  dev client, so use it as your export smoke test while the rest is gated.
 
 ## 8. Everything else on the lab's open list (context, not your job)
 
