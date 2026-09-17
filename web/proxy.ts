@@ -114,6 +114,18 @@ export function proxy(request: NextRequest) {
   // Does not set the gate cookie — /connect is not a site-wide unlock.
   if (isConnectPath(pathname)) return NextResponse.next();
 
+  // Store-required legal / compliance pages: publicly reachable while the rest
+  // of the site stays GATED. App stores (Google Data safety, Apple App Privacy)
+  // require the privacy policy and an account-deletion page to be public. This
+  // is EXACT-MATCH only, and it sets NO gate cookie, so it is not a site-wide
+  // unlock — every other path still shows the key screen.
+  {
+    const legalPublic = pathname.replace(/\/+$/, "") || "/";
+    if (legalPublic === "/privacy" || legalPublic === "/terms" || legalPublic === "/support") {
+      return NextResponse.next();
+    }
+  }
+
   // Already unlocked with a valid cookie -> show the site.
   if (request.cookies.get(GATE_COOKIE)?.value === GATE_TOKEN) {
     return NextResponse.next();
