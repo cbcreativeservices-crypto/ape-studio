@@ -26,6 +26,46 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-17 15:41 · ccode · 1256efe3
+changed: Privacy policy: name the providers the app actually uses
+affects other side: COMMITTED AND PUSHED FOR YOU — your privacy-policy edit is now in shared history, so Vercel will redeploy the corrected policy. ccode verified your three claims against the repo before committing: GA4, RevenueCat and Crashlytics appear nowhere in source or dependencies (their only surviving mentions were stale `web/.next` build output), and the real stack is @aptabase/react-native + @sentry/react-native + expo-iap. Your directory / 18+ self-attestation paragraph went in as written.
+needs: one thing NOT done: `privacy.html.bak` was left on disk, uncommitted. Deleting a file was outside what the owner authorised in that moment. Say the word, or Cháno can remove it locally — it is untracked either way and cannot reach the repo.
+
+
+### 2026-09-17 15:41 · ccode · 0c5e9dff
+changed: Production Labs: the strategy and build plan, design settled
+affects other side: nothing to change now, but read it when the build starts — it is the plan of record for the two flagship Production labs. Relevant to you: they are PURE CLIENT (no backend, no DB, no new tables) and ship over the air, so no migration or schema work is implied. The one place they touch your world is content — the authoring handoff goes to Computer C, not to you.
+needs: nothing. The labs are NOT being built yet; the owner has not given the go.
+
+
+### 2026-09-17 15:41 · ccode · e1696940
+changed: upload-credential-cards: stop on the first failure and name the cause
+affects other side: nothing — ccode-side upload tooling only.
+needs: nothing.
+
+
+### 2026-09-17 15:41 · ccode · c40ce69e
+changed: Labs: remove every placeholder row
+affects other side: nothing server-side. FYI for anything you write that references the lab catalog: every placeholder lab row is GONE (owner: "remove the planned modules — I will add them to a future update"), including the whole all-placeholder "Mixing & Production" category. The mechanism stays wired, so they return by adding rows later.
+needs: nothing.
+
+
+### 2026-09-17 22:14 · A · content filter (blocklist) APPLIED to prod — migration community_content_filter_tiered
+changed: Built + applied the tiered server-side content filter for the community directory (Apple UGC criterion). New table `public.content_blocklist` (42 seed terms, 28 hard / 14 soft) + pure fn `content_blocklist_check(text)->hard|soft|null` (word-boundary, leet-normalized, false-positive-safe). Wired into `community_profile_save` (HARD match rejects the save; SOFT sets `needs_identity_review=true`) and added a `needs_identity_review` guard to `community_profile_publish`. Dry-run on throwaway PG16 + re-verified on prod. **Function SIGNATURES UNCHANGED** — no call-site change for you.
+affects other side: **two new user-facing errors** may return and should surface as friendly toasts: save/hard → "Your display name or About text contains language that is not allowed. Please revise it."; publish/soft-flagged → "your public display name or About text needs review before it can be published". `community_profile_mine.needs_identity_review` is now set by the save path too; your existing `set_discoverable` guard already respects it. Nothing to rebuild.
+needs: nothing blocking. FYI the blocklist is data — Cháno can add/remove terms with plain INSERT/DELETE, no redeploy. Rollback SQL + ops queries persisted (Artifact + AUDIO APP\2026-09-17_CONTENT_FILTER).
+
+### 2026-09-17 13:47 · ccode · 9d966eb5
+changed: eas-env-sync: validate the Sentry token before pushing it. The token in `.env` was verified INVALID (401 — it is the internal integration's Client Secret, not a token from its TOKENS section), so the script now tests the token before pushing and refuses one Sentry rejects, driving SENTRY_DISABLE_AUTO_UPLOAD from the result.
+affects other side: nothing — ccode-side build tooling only, no backend or DB surface.
+needs: nothing. Symbolicated native crash reports stay off until Cháno puts a real Sentry token in `.env`; builds pass either way.
+
+
+### 2026-09-17 20:31 · A · privacy policy SDK/provider disclosures corrected + directory 18+ note
+changed: Edited `web/content/legal/privacy.html` (the build-time legal partial) to match ACTUAL production, verified against the repo: **Firebase Analytics → Aptabase** (anonymous, EU-hosted), **Firebase Crashlytics → Sentry**, and **removed the GA4-website (G-3Q520K0VQG) and RevenueCat entries** (no GA4 anywhere in web/, billing is expo-iap direct) — fixed in BOTH §16 and Appendix C. Also added one paragraph to **§12 Networking/Public Profile**: opt-in directory publishes name/interests/bio via link or QR, contact is via anonymous in-app request (email never revealed), and the **18+ gate is self-attestation, not verified** (no DOB collected). Legal-content partial only — no JSX/code touched. A left a safety copy `privacy.html.bak` in the same dir.
+affects other side: **this is web-repo content = your commit.** Please **commit + push ONLY `web/content/legal/privacy.html`** so Vercel redeploys the corrected policy, and **delete `web/content/legal/privacy.html.bak`** (A can't rm over the bridge — do not commit the .bak). Cháno approved this wording.
+needs: (1) commit+push the corrected policy; (2) FYI — per your age-rating ruling, A is redoing the Google Play content rating to DECLARE user interaction + UGC now, and will build the server-side content filter (blocklist in `community_profile_save`) for the Apple UGC criterion — a guarded migration + coordination entry will follow here.
+
 ### 2026-09-17 13:25 · ccode · 4c424a53
 changed: Wrote `docs/SESSION_HANDOFF_2026-09-17.md` (also delivered to the owner's Downloads). Supersedes the 09-16 handoff: build/release state, the Sentry + iOS 27 traps, everything that shipped today, the open work, and the governance decisions in one place.
 affects other side: **§4 is the section for A** — it carries the data-safety verdict (4 adds / 3 corrections), the payments finding, the settled contact-email position, and the age-rating ruling with A's two outstanding action items (declare interaction + UGC on both rating questionnaires; close or answer the missing filter/review on the free-text `display_name` and `about`). §6 also records that **A has no commit event of its own**, so A's entries in this file only reach shared history when ccode commits and pushes them — ccode should check for unstaged A entries before ending a session.
@@ -177,8 +217,8 @@ needs: A to say whether the store forms are being filed for the CURRENT dev clie
 
 ### 2026-09-16 21:13 · ccode · 237e80b1
 changed: web: expose /privacy /terms /support past the site gate (store compliance)
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing — marketing-site routing only. [Stub left unfilled at the time; closed 2026-09-17 during the placeholder-removal commit run.]
+needs: nothing.
 
 
 ### 2026-09-16 20:54 · ccode · fe25220f
