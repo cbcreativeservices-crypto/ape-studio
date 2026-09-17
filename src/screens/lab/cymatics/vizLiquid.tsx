@@ -269,10 +269,21 @@ export function LiquidView(p: LiquidViewProps) {
           }
         } else if (v === 4) {
           // Caustics: light focuses where the surface is concave.
-          const lap = (l + r + u + d - 4 * c) * (n / 24);
+          //
+          // The 5-point Laplacian of a fixed surface scales as 1/n^2 with the
+          // sample count, so the old linear (n / 24) under-read the curvature
+          // badly once the grid went to N = 64 — the web all but vanished.
+          // Scale by n^2 (864 = 36^2 / 1.5, the factor this was tuned at) and it
+          // is resolution-independent (owner debug 2026-09-17).
+          const lap = (l + r + u + d - 4 * c) * ((n * n) / 864);
           const inten = 0.5 / (1 + 0.9 * lap);
           const k = Math.max(0, Math.min(1.6, inten));
-          const web = Math.max(0, k - 0.45) * 2.2;
+          // A FLAT surface gives lap = 0, hence k = 0.5 exactly — and the old
+          // threshold of 0.45 sat BELOW that, so every still pixel got a
+          // constant white wash and the liquid read mid-grey instead of dark.
+          // The knee now starts just above the flat value: flat is truly dark,
+          // and only real focusing lights the web up.
+          const web = Math.max(0, k - 0.52) * 3;
           R = 8 + tint[0] * 0.22 * k + 255 * web;
           G = 14 + tint[1] * 0.22 * k + 250 * web;
           Bc = 22 + tint[2] * 0.22 * k + 235 * web;
@@ -299,11 +310,54 @@ export function LiquidView(p: LiquidViewProps) {
     const pos = Skia.PathBuilder.Make();
     const neg = Skia.PathBuilder.Make();
     if (view !== 'contours') return { pos: pos.detach(), neg: neg.detach() };
-    const levels = [-0.65, -0.3, 0.3, 0.65];
+    // DECAY COMPENSATION (owner debug 2026-09-17): only the centre rings drew,
+    // because a dish mode is a Bessel function — it decays outward, so the outer
+    // rings never reached a fixed ±0.3 / ±0.65 level. Normalise by a smoothed
+    // RADIAL envelope before contouring: zero crossings (the nodal rings, which
+    // are the physics on show) are untouched, but every ring now reaches the
+    // levels. For a rectangular dish the modes do not decay, the envelope comes
+    // out flat, and this is a no-op.
+    // ONE level per sign. Once the radial normalisation above makes every ring
+    // reach full scale, six levels drew ~60 concentric bands and the dish read
+    // as a solid dartboard — denser, but no more legible than the old version
+    // that drew almost nothing. One amber line down each crest ring and one blue
+    // line down each trough ring is exactly what the view promises.
+    const levels = [-0.55, 0.55];
     const n = N;
     const cw = dishW / n;
     const ch = dishH / n;
-    const at = (i: number, j: number) => gridA[j * n + i];
+    const BINS = 24;
+    const env = new Float32Array(BINS);
+    const mid = (n - 1) / 2;
+    const rMax = Math.SQRT2 * mid;
+    const binOf = (i: number, j: number) => {
+      const dx = i - mid;
+      const dy = j - mid;
+      const b = Math.floor((Math.sqrt(dx * dx + dy * dy) / rMax) * BINS);
+      return b < 0 ? 0 : b >= BINS ? BINS - 1 : b;
+    };
+    let gmax = 0;
+    for (let j = 0; j < n; j++) {
+      for (let i = 0; i < n; i++) {
+        const v = gridA[j * n + i];
+        if (Number.isNaN(v)) continue;
+        const a = Math.abs(v);
+        if (a > gmax) gmax = a;
+        const b = binOf(i, j);
+        if (a > env[b]) env[b] = a;
+      }
+    }
+    // Smooth the envelope and floor it, so a near-empty bin cannot blow small
+    // numerical noise up into a spurious ring.
+    const floor = Math.max(1e-6, gmax * 0.15);
+    const sm = new Float32Array(BINS);
+    for (let b = 0; b < BINS; b++) {
+      const a = env[b > 0 ? b - 1 : 0];
+      const c = env[b];
+      const d = env[b < BINS - 1 ? b + 1 : BINS - 1];
+      sm[b] = Math.max(floor, (a + 2 * c + d) / 4);
+    }
+    const at = (i: number, j: number) => gridA[j * n + i] / sm[binOf(i, j)];
     const lerp = (a: number, b: number, c: number) => (c - a) / (b - a || 1e-9);
     for (const lv of levels) {
       const path = lv > 0 ? pos : neg;
@@ -345,7 +399,9 @@ export function LiquidView(p: LiquidViewProps) {
   }, [gridA, N, view, ox, oy, dishW, dishH]);
 
   // ── 3D surface (angled) ──────────────────────────────────────────────────
-  const M = 30;
+  // 40, not 30: quads are dropped where they fall outside the dish (see below),
+  // and at 30 that mask left a visibly stair-stepped rim.
+  const M = 40;
   const grid3d = useMemo(() => {
     const cols: string[] = [];
     const idx: number[] = [];
@@ -357,11 +413,20 @@ export function LiquidView(p: LiquidViewProps) {
         const v = gridA[gj * N + gi];
         const inside = !Number.isNaN(v);
         mask.push(inside ? 1 : 0);
-        cols.push(inside ? heatColor(Math.abs(v)) : 'rgba(0,0,0,0)');
-        if (i < M - 1 && j < M - 1) {
-          const k0 = j * M + i;
-          idx.push(k0, k0 + 1, k0 + M, k0 + 1, k0 + M + 1, k0 + M);
-        }
+        // Outside-the-dish vertices keep an OPAQUE edge colour rather than a
+        // transparent one: they are never drawn (see the quad test below), and a
+        // transparent vertex bled to black across the shared edge, which is what
+        // put the dark corners on the mesh (owner debug 2026-09-17).
+        cols.push(heatColor(inside ? Math.abs(v) : 0));
+      }
+    }
+    // Emit a quad ONLY when all four of its corners are inside the dish, so the
+    // mesh is dish-shaped instead of a square with black corners.
+    for (let j = 0; j < M - 1; j++) {
+      for (let i = 0; i < M - 1; i++) {
+        const k0 = j * M + i;
+        if (!mask[k0] || !mask[k0 + 1] || !mask[k0 + M] || !mask[k0 + M + 1]) continue;
+        idx.push(k0, k0 + 1, k0 + M, k0 + 1, k0 + M + 1, k0 + M);
       }
     }
     return { cols, idx, mask };
@@ -377,7 +442,11 @@ export function LiquidView(p: LiquidViewProps) {
     const cy = height / 2 + height * 0.06;
     const sx = dishW * 0.95;
     const sy = dishH * 0.42;
-    const zs = height * 0.14;
+    // RELIEF (owner debug 2026-09-17): height * 0.14 read as a flat sheet once
+    // the stage-3 envelope shrank the field, so the dish is given more vertical
+    // gain AND the gain is referred to the envelope actually on screen — a small
+    // envelope is still legible relief, a large one still cannot leave the dish.
+    const zs = height * 0.3 * (0.45 + 0.55 * Math.min(1, env / 0.55));
     for (let j = 0; j < M; j++) {
       for (let i = 0; i < M; i++) {
         const gi = Math.min(n - 1, Math.floor(((i + 0.5) / M) * n));
@@ -387,11 +456,26 @@ export function LiquidView(p: LiquidViewProps) {
         const hv = a !== a ? 0 : env * (wA * a + wB * (b !== b ? 0 : b));
         const u = (i + 0.5) / M - 0.5;
         const w = (j + 0.5) / M - 0.5;
-        out[j * M + i] = { x: cx + u * sx + w * sx * 0.32, y: cy + w * sy - hv * zs };
+        // A TILT, not a shear. The old `x + w * sx * 0.32` skewed every row
+        // sideways, which turned a round dish into a parallelogram; an
+        // orthographic tilt just foreshortens y (sy already carries that), so a
+        // circular dish projects to the ellipse it should be.
+        out[j * M + i] = { x: cx + u * sx, y: cy + w * sy - hv * zs };
       }
     }
     return out;
   }, [width, height, dishW, dishH, N]);
+
+  // ── 3D dish body (rim + wall, so the mesh sits IN something) ─────────────
+  // Matches the projection in verts3d exactly: same centre, same sx/sy.
+  const dish3d = useMemo(() => {
+    const cx = width / 2;
+    const cy = height / 2 + height * 0.06;
+    const sx = dishW * 0.95;
+    const sy = dishH * 0.42;
+    const wall = Math.max(10, Math.min(28, dishH * 0.1));
+    return { x: cx - sx / 2, y: cy - sy / 2, w: sx, h: sy, wall };
+  }, [width, height, dishW, dishH]);
 
   // ── cross-section profile ────────────────────────────────────────────────
   const sectionPath = useDerivedValue(() => {
@@ -435,20 +519,41 @@ export function LiquidView(p: LiquidViewProps) {
   const rig = useMemo(() => {
     const cx = width / 2;
     const groundY = height - 22;
-    const dishRimY = height * 0.5;
-    const dishHalfW = Math.min(width * 0.36, 150);
+    // STAGE BUDGET (owner debug 2026-09-17): the rig used to put the dish rim at
+    // half height, which left the shaker ~80 dp to live in — a sliver, not a
+    // driver — while the lamp cone owned the top half. The apparatus is now laid
+    // out the way it sits on a bench: lamp in the top ~8 %, dish rim at 38 %,
+    // and the whole bottom 40 % for the shaker.
+    const lampY = Math.round(height * 0.045);
+    const coneTop = lampY + 13;
+    const dishRimY = Math.round(height * 0.38);
+    // Narrower dish (was 0.36w/150) so BOTH label gutters have room to live —
+    // measured on a Pixel: at 0.30w the left-hand "LIQUID · N mm" still
+    // ellipsized, 0.27w clears it.
+    const dishHalfW = Math.min(width * 0.27, 110);
     const dishDepthPx = Math.max(34, Math.min(70, 18 + spec.wallMm * 1.1 + spec.depthMm * 1.1));
     const liquidPx = Math.max(6, dishDepthPx * (spec.depthMm / (spec.depthMm + spec.wallMm)));
     const platformY = dishRimY + dishDepthPx + 8;
     // Shaker basket: the trapezoid from the platform skirt down to the magnet.
+    const basketTop = platformY + 14;
+    const basketBot = groundY - 40;
     const basket = Skia.PathBuilder.Make()
-      .moveTo(cx - 70, platformY + 14)
-      .lineTo(cx + 70, platformY + 14)
-      .lineTo(cx + 24, groundY - 40)
-      .lineTo(cx - 24, groundY - 40)
+      .moveTo(cx - 70, basketTop)
+      .lineTo(cx + 70, basketTop)
+      .lineTo(cx + 24, basketBot)
+      .lineTo(cx - 24, basketBot)
       .close()
       .detach();
-    return { cx, groundY, dishRimY, dishHalfW, dishDepthPx, liquidPx, platformY, basket };
+    // The lamp throws a real cone — narrow at the aperture, dish-wide at the
+    // liquid — not the constant-width column it was drawn as before.
+    const cone = Skia.PathBuilder.Make()
+      .moveTo(cx - 11, coneTop)
+      .lineTo(cx + 11, coneTop)
+      .lineTo(cx + dishHalfW * 0.94, dishRimY - 4)
+      .lineTo(cx - dishHalfW * 0.94, dishRimY - 4)
+      .close()
+      .detach();
+    return { cx, groundY, lampY, coneTop, dishRimY, dishHalfW, dishDepthPx, liquidPx, platformY, basketTop, basketBot, basket, cone };
   }, [width, height, spec.wallMm, spec.depthMm]);
   const bob = useDerivedValue(() => {
     const a = Math.min(12, 1.5 + dispSV.value / 45);
@@ -512,12 +617,17 @@ export function LiquidView(p: LiquidViewProps) {
       <Canvas style={{ width, height }}>
         {isRig ? (
           <Group>
-            {/* Lamp + light cone */}
-            <Rect x={rig.cx - rig.dishHalfW * 0.9} y={8} width={rig.dishHalfW * 1.8} height={rig.dishRimY - 14}>
-              <LinearGradient start={vec(rig.cx, 8)} end={vec(rig.cx, rig.dishRimY)} colors={['rgba(255,235,180,0.20)', 'rgba(255,235,180,0.0)']} />
-            </Rect>
-            <Rect x={rig.cx - 18} y={4} width={36} height={8} color="#3a3a40" />
-            <Rect x={rig.cx - 10} y={12} width={20} height={4} color="#ffe6a8" />
+            {/* Lamp + light cone (a real cone, brightest at the aperture) */}
+            <Path path={rig.cone}>
+              <LinearGradient
+                start={vec(rig.cx, rig.coneTop)}
+                end={vec(rig.cx, rig.dishRimY)}
+                colors={['rgba(255,235,180,0.19)', 'rgba(255,235,180,0.03)']}
+              />
+            </Path>
+            <Rect x={rig.cx - 20} y={rig.lampY} width={40} height={9} color="#3a3a40" />
+            <Rect x={rig.cx - 20} y={rig.lampY} width={40} height={9} style="stroke" strokeWidth={1} color="#55555e" />
+            <Rect x={rig.cx - 11} y={rig.lampY + 9} width={22} height={4} color="#ffe6a8" />
             {/* Bench */}
             <Rect x={0} y={rig.groundY} width={width} height={22} color="#151518" />
             <SkLine p1={vec(0, rig.groundY)} p2={vec(width, rig.groundY)} color="#2b2b30" strokeWidth={1.5} />
@@ -557,8 +667,8 @@ export function LiquidView(p: LiquidViewProps) {
               ) : null}
               {view === 'contours' ? (
                 <Group>
-                  <Path path={contours.pos} style="stroke" strokeWidth={1.6} color="#ffc64d" />
-                  <Path path={contours.neg} style="stroke" strokeWidth={1.6} color="#5bb0ff" />
+                  <Path path={contours.pos} style="stroke" strokeWidth={1.3} color="#ffc64d" />
+                  <Path path={contours.neg} style="stroke" strokeWidth={1.3} color="#5bb0ff" />
                 </Group>
               ) : null}
               {isSection ? <SkLine p1={vec(ox, oy + p.sectionY * dishH)} p2={vec(ox + dishW, oy + p.sectionY * dishH)} color="#ffc64d" strokeWidth={1.5} /> : null}
@@ -579,17 +689,34 @@ export function LiquidView(p: LiquidViewProps) {
 
         {is3d ? (
           <Group>
+            {/* Dish wall: the lower ellipse shows below the rim as depth. */}
+            <Oval x={dish3d.x} y={dish3d.y + dish3d.wall} width={dish3d.w} height={dish3d.h} color="#15171d" />
+            <Oval x={dish3d.x} y={dish3d.y + dish3d.wall} width={dish3d.w} height={dish3d.h} style="stroke" strokeWidth={1.5} color="#3a3f47" />
+            {/* Dish floor, then the liquid mesh, then the rim over the top. */}
+            <Oval x={dish3d.x} y={dish3d.y} width={dish3d.w} height={dish3d.h} color="#0b0d12" />
             <Vertices vertices={verts3d} colors={grid3d.cols} indices={grid3d.idx} mode="triangles" />
+            <Oval x={dish3d.x} y={dish3d.y} width={dish3d.w} height={dish3d.h} style="stroke" strokeWidth={3} color={rimColor} />
+            <Oval x={dish3d.x} y={dish3d.y} width={dish3d.w} height={dish3d.h} style="stroke" strokeWidth={1} color="rgba(255,255,255,0.4)" />
           </Group>
         ) : null}
       </Canvas>
       {isRig ? (
         <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-          <Text style={[styles.lbl, { left: rig.cx + rig.dishHalfW + 6, top: rig.dishRimY - 2 }]}>DISH</Text>
-          <Text style={[styles.lbl, { left: rig.cx + rig.dishHalfW + 6, top: rig.dishRimY + rig.dishDepthPx - rig.liquidPx - 8 }]}>LIQUID · {spec.depthMm} mm</Text>
-          <Text style={[styles.lbl, { left: rig.cx + 84, top: rig.platformY - 6 }]}>PLATFORM</Text>
-          <Text style={[styles.lbl, { left: rig.cx + 40, top: rig.groundY - 30 }]}>SHAKER · {p.driveHz.toFixed(0)} Hz</Text>
-          <Text style={[styles.lbl, { left: rig.cx + 24, top: 6 }]}>LAMP</Text>
+          {/* Right-hand labels are width-capped; the long LIQUID caption hangs off
+              the LEFT rim instead (it used to run off the right edge). */}
+          <Text numberOfLines={1} style={[styles.lbl, { left: rig.cx + rig.dishHalfW + 6, maxWidth: width - (rig.cx + rig.dishHalfW + 12), top: rig.dishRimY - 2 }]}>DISH</Text>
+          <Text
+            numberOfLines={1}
+            style={[
+              styles.lblR,
+              { right: width - (rig.cx - rig.dishHalfW) + 6, maxWidth: rig.cx - rig.dishHalfW - 10, top: rig.dishRimY + rig.dishDepthPx - rig.liquidPx - 8 },
+            ]}
+          >
+            LIQUID · {spec.depthMm} mm
+          </Text>
+          <Text numberOfLines={1} style={[styles.lbl, { left: rig.cx + 84, maxWidth: width - (rig.cx + 90), top: rig.platformY - 6 }]}>PLATFORM</Text>
+          <Text numberOfLines={1} style={[styles.lbl, { left: rig.cx + 40, maxWidth: width - (rig.cx + 46), top: rig.groundY - 30 }]}>SHAKER · {p.driveHz.toFixed(0)} Hz</Text>
+          <Text numberOfLines={1} style={[styles.lbl, { left: rig.cx + 26, maxWidth: width - (rig.cx + 32), top: rig.lampY - 1 }]}>LAMP</Text>
           <Text style={[styles.lbl, { left: 12, top: rig.groundY - 30, color: colors.textSub }]}>{p.accelG.toFixed(2)} g · {p.displacementUm < 1000 ? `${p.displacementUm.toFixed(0)} µm` : `${(p.displacementUm / 1000).toFixed(2)} mm`} travel</Text>
         </View>
       ) : null}
@@ -599,4 +726,5 @@ export function LiquidView(p: LiquidViewProps) {
 
 const styles = StyleSheet.create({
   lbl: { position: 'absolute', fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2, color: 'rgba(255,255,255,0.6)' },
+  lblR: { position: 'absolute', textAlign: 'right', fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2, color: 'rgba(255,255,255,0.6)' },
 });
