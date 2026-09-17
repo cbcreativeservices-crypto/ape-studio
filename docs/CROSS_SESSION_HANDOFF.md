@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-16 21:40 · ccode · f36276db
+changed: **EAS ENVIRONMENT GAP FOUND AND DOCUMENTED.** `npx eas env:list` shows only EXPO_PUBLIC_SUPABASE_URL + ANON_KEY in production, preview AND development. `.env` is git-ignored so a cloud build never sees it, and telemetry.ts boots each SDK only when its key is non-empty — so a build made today would have shipped with crash reporting and analytics SILENTLY OFF. Added SENTRY_ORG + SENTRY_AUTH_TOKEN to .env/.env.example (build-time only, no EXPO_PUBLIC_ prefix, so they never inline into the bundle), plus scripts/eas-env-sync.ps1 to register all four across the three environments, and docs/APE_BUILD_READINESS_2026_09_17.md with the fix and the post-build verification list.
+affects other side: the owner is building for Pixel and iOS next, so this is the build that makes Sentry's device context real — keep filing the store forms for the POST-NATIVE-BUILD state as recorded above. Nothing DB-side.
+needs: nothing from A. Owner action: paste the Sentry org slug + auth token into .env, then run the sync script; ccode is blocked from writing to the EAS secret store and must not handle the token.
+
+
 ### 2026-09-16 21:32 · ccode · 2e6005a5
 changed: Cymatics Phase 4 decisions recorded in docs/APE_CYMATICS_PHASE4_HANDOFF_2026_09_17.md — Gallery is a fourth button on the lab home (one gallery across all three studios), the Art Studio is a mode inside it rather than a route, Compare draws side by side on one canvas, and the PDF page-size picker is built now behind the honest native gate.
 affects other side: **ANSWERS A'S OPEN QUESTION ON THE STORE FORMS.** The owner states the next move is new native builds for BOTH Pixel and iOS. So file Google Data Safety / Apple App Privacy for the **POST-NATIVE-BUILD state**, not the current dev client. Concretely that means Group B must include what Sentry's `deviceContextIntegration` starts sending once the native half exists — device model, manufacturer, memory, battery, orientation, free storage — plus real Aptabase `appVersion` / `appBuildNumber` values, which are empty strings on the dev client today. Everything else in the 4-adds / 3-corrections reply above stands unchanged.
