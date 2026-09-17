@@ -56,12 +56,61 @@ foreach ($line in Get-Content $EnvFile) {
     $vals[$t.Substring(0, $i).Trim()] = $t.Substring($i + 1).Trim()
 }
 
+# --- validate the Sentry auth token BEFORE pushing it -----------------------
+# WHY THIS EXISTS (2026-09-17): a WRONG token is worse than no token. Its mere
+# presence makes the Sentry source-map upload MANDATORY in
+# node_modules/@sentry/react-native/sentry.gradle, so a build runs ~21 minutes
+# of Gradle and THEN dies on "401 Invalid token". That has already cost two
+# builds. The Client Secret of the Sentry internal integration is NOT an auth
+# token - pasting it is exactly what produced the 401. A real token comes from
+# the TOKENS section of that integration.
+#
+# Verified 2026-09-17: the token then sitting in .env was REJECTED (401). So we
+# now test it in two seconds and refuse to push one Sentry rejects, and we drive
+# SENTRY_DISABLE_AUTO_UPLOAD from the result so EAS can never be left in the
+# broken combination (upload demanded + no usable token).
+$tokenOk = $false
+if ($vals.ContainsKey("SENTRY_AUTH_TOKEN") -and -not [string]::IsNullOrWhiteSpace($vals["SENTRY_AUTH_TOKEN"])) {
+    Write-Host "validating SENTRY_AUTH_TOKEN against sentry.io ..." -NoNewline
+    # Same PowerShell 5.1 stderr trap as the push loop below: judge by exit code.
+    $prev = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    $null = & npx --yes @sentry/cli@latest --auth-token $vals["SENTRY_AUTH_TOKEN"] info
+    $code = $LASTEXITCODE
+    $ErrorActionPreference = $prev
+    if ($code -eq 0) {
+        $tokenOk = $true
+        Write-Host " valid" -ForegroundColor Green
+    }
+    else {
+        Write-Host " REJECTED BY SENTRY - not pushing it" -ForegroundColor Red
+    }
+}
+
+if ($tokenOk) {
+    # Real token: allow the upload, so crash reports arrive symbolicated.
+    $vals["SENTRY_DISABLE_AUTO_UPLOAD"] = "false"
+}
+else {
+    # No usable token: turn the upload OFF so the build cannot fail on it.
+    # Crash reports still arrive, just unsymbolicated.
+    $vals["SENTRY_DISABLE_AUTO_UPLOAD"] = "true"
+    if ($vals.ContainsKey("SENTRY_AUTH_TOKEN")) { $vals.Remove("SENTRY_AUTH_TOKEN") }
+    Write-Host ""
+    Write-Host "SENTRY_DISABLE_AUTO_UPLOAD will be pushed as 'true' (upload off)." -ForegroundColor Yellow
+    Write-Host "Builds will PASS; native crash reports arrive UNSYMBOLICATED." -ForegroundColor Yellow
+    Write-Host "To get symbolication: put a token from the TOKENS section of the" -ForegroundColor Yellow
+    Write-Host "Sentry internal integration in .env, then re-run this script." -ForegroundColor Yellow
+    Write-Host ""
+}
+
 # name -> visibility
 $plan = [ordered]@{
-    "EXPO_PUBLIC_SENTRY_DSN"       = "sensitive"
-    "EXPO_PUBLIC_APTABASE_APP_KEY" = "sensitive"
-    "SENTRY_ORG"                   = "plaintext"
-    "SENTRY_AUTH_TOKEN"            = "secret"
+    "EXPO_PUBLIC_SENTRY_DSN"        = "sensitive"
+    "EXPO_PUBLIC_APTABASE_APP_KEY"  = "sensitive"
+    "SENTRY_ORG"                    = "plaintext"
+    "SENTRY_AUTH_TOKEN"             = "secret"
+    "SENTRY_DISABLE_AUTO_UPLOAD"    = "plaintext"
 }
 
 $missing = @()
@@ -72,8 +121,18 @@ foreach ($name in $plan.Keys) {
 }
 if ($missing.Count -gt 0) {
     Write-Host ""
-    Write-Host "BLANK in $EnvFile, so they will be SKIPPED:" -ForegroundColor Yellow
-    $missing | ForEach-Object { Write-Host "  - $_" -ForegroundColor Yellow }
+    Write-Host "NOT SET in $EnvFile, so they will be SKIPPED:" -ForegroundColor Yellow
+    $missing | ForEach-Object {
+        # SENTRY_AUTH_TOKEN can land here for either reason: genuinely absent, or
+        # dropped just above because Sentry rejected it. Say which, so nobody
+        # goes hunting in .env for a blank that is not there.
+        if ($_ -eq "SENTRY_AUTH_TOKEN" -and -not $tokenOk) {
+            Write-Host "  - $_  (present but REJECTED by Sentry, or blank)" -ForegroundColor Yellow
+        }
+        else {
+            Write-Host "  - $_" -ForegroundColor Yellow
+        }
+    }
     Write-Host ""
     Write-Host "SENTRY_ORG / SENTRY_AUTH_TOKEN only affect whether native crash" -ForegroundColor Yellow
     Write-Host "stack traces arrive readable. The build succeeds without them." -ForegroundColor Yellow
@@ -82,6 +141,11 @@ if ($missing.Count -gt 0) {
 
 $envArgs = @()
 foreach ($e in $Environments) { $envArgs += "--environment"; $envArgs += $e }
+
+# Counts real push failures only. Without this the script exits with whatever
+# the LAST native command happened to return - e.g. the sentry-cli 401 above
+# made a completely successful sync report exit 1.
+$pushFailures = 0
 
 foreach ($name in $plan.Keys) {
     if ($missing -contains $name) { continue }
@@ -115,6 +179,7 @@ foreach ($name in $plan.Keys) {
         }
         else {
             Write-Host " FAILED (exit $code) - see the CLI output above" -ForegroundColor Red
+            $pushFailures++
         }
     }
 }
@@ -125,3 +190,10 @@ Write-Host "  npx eas env:list production" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "A 'secret' variable is write-only: EAS will show the name but never" -ForegroundColor DarkGray
 Write-Host "the value again, including to you. That is expected." -ForegroundColor DarkGray
+
+if ($pushFailures -gt 0) {
+    Write-Host ""
+    Write-Host "$pushFailures variable(s) FAILED to push." -ForegroundColor Red
+    exit 1
+}
+exit 0
