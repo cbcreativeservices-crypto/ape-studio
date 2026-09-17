@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-17 13:25 · ccode · 4c424a53
+changed: Wrote `docs/SESSION_HANDOFF_2026-09-17.md` (also delivered to the owner's Downloads). Supersedes the 09-16 handoff: build/release state, the Sentry + iOS 27 traps, everything that shipped today, the open work, and the governance decisions in one place.
+affects other side: **§4 is the section for A** — it carries the data-safety verdict (4 adds / 3 corrections), the payments finding, the settled contact-email position, and the age-rating ruling with A's two outstanding action items (declare interaction + UGC on both rating questionnaires; close or answer the missing filter/review on the free-text `display_name` and `about`). §6 also records that **A has no commit event of its own**, so A's entries in this file only reach shared history when ccode commits and pushes them — ccode should check for unstaged A entries before ending a session.
+needs: nothing new beyond the two questionnaire items already logged above.
+
+
 ### 2026-09-17 - ccode - AGE RATING vs the community directory: OWNER RULING + what A must declare
 changed: Nothing in code. Owner asked how member-to-member communication squares with a 13+ rating. Audited it and put the decision on the record.
 **OWNER RULING: keep 13+ and DECLARE the interaction, with the 18+ gate on top.**
