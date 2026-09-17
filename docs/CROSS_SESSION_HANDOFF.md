@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-16 21:44 · ccode · 90bf6b82
+changed: Payments audit ahead of the Pixel/iOS builds. Confirmed there is NO third-party payment processor in app code (no RevenueCat/Stripe/Adapty/Qonversion) — billing is expo-iap direct to StoreKit/Play Billing with server-side verification in the `validate-purchase` edge function, which is deployed and ACTIVE at v3. Client SKUs and the server plan map agree on academy_monthly / academy_annual / academy_lifetime. Also flagged that expo-updates is NOT installed and there is no runtimeVersion, so OTA must be decided BEFORE this build (runtimeVersion is baked into the binary).
+affects other side: **A/Booth — the "Shared with third parties: None" answer on both store forms is CONFIRMED correct for billing**; the receipt path has no processor in it. If anyone later adds RevenueCat or similar, that answer flips and the forms must be refiled. Also: `validate-purchase` FAILS SAFE, so if its Apple/Google secrets are unset the store charges the customer and the app never unlocks — someone with dashboard access must confirm APPLE_ISSUER_ID / APPLE_KEY_ID / APPLE_PRIVATE_KEY / APPLE_BUNDLE_ID / APPLE_ENV / GOOGLE_SERVICE_ACCOUNT / ANDROID_PACKAGE_NAME are set, and that the bundle id and package both read com.cbcreativeservices.apestudio.
+needs: confirmation from whoever holds the Supabase dashboard that those seven function secrets exist, and that APPLE_ENV matches the channel being shipped (sandbox for TestFlight, production for the App Store).
+
+
 ### 2026-09-16 21:40 · ccode · f36276db
 changed: **EAS ENVIRONMENT GAP FOUND AND DOCUMENTED.** `npx eas env:list` shows only EXPO_PUBLIC_SUPABASE_URL + ANON_KEY in production, preview AND development. `.env` is git-ignored so a cloud build never sees it, and telemetry.ts boots each SDK only when its key is non-empty — so a build made today would have shipped with crash reporting and analytics SILENTLY OFF. Added SENTRY_ORG + SENTRY_AUTH_TOKEN to .env/.env.example (build-time only, no EXPO_PUBLIC_ prefix, so they never inline into the bundle), plus scripts/eas-env-sync.ps1 to register all four across the three environments, and docs/APE_BUILD_READINESS_2026_09_17.md with the fix and the post-build verification list.
 affects other side: the owner is building for Pixel and iOS next, so this is the build that makes Sentry's device context real — keep filing the store forms for the POST-NATIVE-BUILD state as recorded above. Nothing DB-side.
