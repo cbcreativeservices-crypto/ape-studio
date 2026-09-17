@@ -22,6 +22,7 @@ import { ActivityIndicator, FlatList, Image, Modal, PanResponder, Pressable, Scr
 import { confirmDialog } from '../../lib/confirm';
 import Svg, { Circle, Ellipse, Path } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { TopicWelcomeSheet } from '../../features/intro/TopicWelcomeSheet';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
@@ -1206,6 +1207,11 @@ export function FlashcardsScreen({ navigation, route }: Props) {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]} {...pan.panHandlers}>
+      {/* First open of THIS topic's flashcards: Computer B's welcome, once per
+          user per topic (copy lives on achievements.flashcard_welcome_*).
+          Skipped for the flagged-terms pseudo-topic, which is the user's own
+          list and has no welcome row. Self-suppressing in Low-Light mode. */}
+      <TopicWelcomeSheet topicId={achievementId} enabled={!flaggedMode} />
       <View style={styles.body}>
         {/* No pace timer on Flashcards (owner 2026-08-13) — the pace timer is a
             HOMEWORK-method aid (Fill-in-Blank / Matching / Scenarios). */}

@@ -26,6 +26,28 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-17 - ccode - TOPIC FLASHCARD WELCOME MODAL BUILT (read path confirmed)
+changed: Built the first-open welcome modal A asked for. New `src/features/intro/TopicWelcomeSheet.tsx`, rendered from `FlashcardsScreen`.
+**READ PATH CONFIRMED, as requested:** it selects `flashcard_welcome_title, flashcard_welcome_body` from `achievements` filtered by `id = <achievementId>` (the topic id the flashcards route already carries), via `maybeSingle()`. It renders ONLY when BOTH columns are non-null and non-empty - a half-filled row is treated as no welcome.
+Behaviour: shown once per user per topic, dismissible by the button, by tapping the scrim, or by the Android back gesture. **Seen flag is client-local**, per A's suggestion: AsyncStorage key `ape:welcome:seen:<uid>:<topicId>`, where uid is the Supabase auth user id or 'guest' when signed out, so two accounts on one device each get their welcome.
+Three deliberate choices worth recording: (1) the seen flag is checked BEFORE any network call, so a returning learner costs one AsyncStorage read and NO query - the query only ever runs on a genuine first open; (2) the flag is written only on an explicit dismiss, so a learner who never actually saw it (Low-Light mode, or the app died first) still gets it next time rather than silently losing it; (3) it fetches itself rather than riding the shared dashboard/study query, keeping the feature out of a data path every topic screen depends on. Also gated on screen focus so it cannot flash over a screen that merely mounted underneath, hard-suppressed by Low-Light Production Mode (house rule: nothing may auto-appear), skipped for the flagged-terms pseudo-topic which has no welcome row, and fail-open throughout - any error means no modal and the cards behave exactly as before.
+tsc clean, 1222 tests. NOT yet device-verified and no update published.
+affects other side: nothing to change. The columns are read exactly as A specified and no other query was touched. If A re-loads copy for some ids later (B's optional tone/sentence polish), it lands automatically - the modal reads live and caches nothing but the seen flag.
+needs: nothing from A. One thing A may want to know: because the seen flag is per-device, a learner who reinstalls or switches devices will see a topic's welcome again. That is the trade for not adding a table to a growing schema; say so if you would rather it were server-side.
+
+
+### 2026-09-17 11:28 · ccode · afc9b33a
+changed: Device-pass fixes: removed the generic emoji icons from every lab category on both lab lists (only the Calculator Laboratory's sigma remains); made the Calculator row purple with a sigma mark (the old pocket-calculator emoji has no glyph in Android's font and rendered as a tofu box); fixed the tuner's big note being CLIPPED ON iOS ONLY (lineHeight 1.05em was shorter than Oswald Bold's ascent and iOS crops the overflow inside the line box - `includeFontPadding:false` is Android-only, which is why the Pixel was fine); fixed the Audio Tools hub previews going STATIC after returning from a tool (the nav lock guarding auto-start was a ref cleared outside that effect's dependency list, so once set it could never re-open - it is state now); and WIRED IN CERTIFICATE + PROGRAM ART on the Progress screens.
+affects other side: **the credential-art fix is the one A should note.** `credentialArt.ts` shipped as an EMPTY registry of BUNDLED assets, so every earned certificate/program fell back to the plain badge disc even though the art already existed in the public `course-cards` bucket. It now resolves `course-cards/<slug>.webp` - the same URL the chooser's CredentialThumb already used - with bundled entries still taking precedence, and falls back to the badge on load error. So the 62 certificates still missing a file degrade gracefully and light up the moment the file is uploaded, with no code change. Topic art needed nothing: it was already wired via `achievements.icon_url`, and all 166 active topics have that column populated (verified).
+needs: nothing from A.
+
+
+### 2026-09-17 11:10 · ccode · 211813a8
+changed: Removed the emoji-in-a-circle badges from the Audio Fundamentals and Advanced Training Labs cards on the Audio Learning screen (owner: generic, unapproved art).
+affects other side: nothing.
+needs: nothing from A.
+
+
 ### 2026-09-17 10:54 · ccode · fdacc7d6
 changed: The study-access sheet (shown when a non-member taps a study method on a gated topic) now names the two auto-enrolled FREE topics - Pro Audio Safety and DAW Fundamentals & Session Management - in a green card and offers a START A FREE TOPIC button beside the gold unlock button. Those topics are already fully studyable at every tier including guests (`studyMethodLocked` only gates a gs outside FREE_ENROLL_GS), so the sheet was telling people "no" while a complete free run sat one tap away unmentioned. Names come from the codified constants, never the current deck; deck membership decides only whether the button jumps or routes to the Home tab.
 affects other side: nothing DB-side. Worth knowing for funnel/analytics reading: the paywall sheet now has a second, non-paying exit, so sheet-to-paywall conversion will move and is not a regression.
