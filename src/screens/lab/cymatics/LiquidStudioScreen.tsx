@@ -98,15 +98,15 @@ const DUALS: { id: string; label: string; ratio: number | null }[] = [
 ];
 const VIEWS: { id: LiquidViewMode; label: string; short: string; blurb: string }[] = [
   { id: 'rig', label: 'The rig', short: 'Rig', blurb: 'Side view of the apparatus: lamp, dish, liquid layer, coupling platform, shaker. The platform bobs at the drive frequency; the surface answers at half of it.' },
-  { id: 'surface', label: 'Liquid surface', short: 'Surface', blurb: 'The lit, glossy surface as a camera above the dish would see it.' },
+  { id: 'surface', label: 'Liquid surface', short: 'Surf', blurb: 'The lit, glossy surface as a camera above the dish would see it.' },
   { id: 'height', label: 'Height map', short: 'Height', blurb: 'Surface displacement in the Academy ramp: dark = still, red = the highest crests and deepest troughs.' },
-  { id: 'contours', label: 'Contours', short: 'Contours', blurb: 'Iso-height lines over the dimmed height map: amber = crests, blue = troughs.' },
-  { id: 'refraction', label: 'Refraction', short: 'Refract', blurb: 'The classic cymatics photograph: light through the liquid focuses into a bright web where the surface is concave.' },
+  { id: 'contours', label: 'Contours', short: 'Cont', blurb: 'Iso-height lines over the dimmed height map: amber = crests, blue = troughs.' },
+  { id: 'refraction', label: 'Refraction', short: 'Refr', blurb: 'The classic cymatics photograph: light through the liquid focuses into a bright web where the surface is concave.' },
   { id: 'liquid3d', label: '3D surface', short: '3D', blurb: 'Exaggerated surface height, strobed to a few hertz so you can see it (the real surface moves at the response frequency).' },
-  { id: 'section', label: 'Cross-section', short: 'Section', blurb: 'A slice through the surface. Drag on the dish to move the slice.' },
+  { id: 'section', label: 'Cross-section', short: 'Slice', blurb: 'A slice through the surface. Drag on the dish to move the slice.' },
 ];
 
-const LIQUID_SHORT: Record<string, string> = { water: 'Water', saltwater: 'Salt', glycerin50: 'Glyc 50', silicone10: 'Silic 10', lightoil: 'Lt oil', thickoil: 'Thk oil', gel: 'Gel', cornstarch: 'Starch' };
+const LIQUID_SHORT: Record<string, string> = { water: 'Water', saltwater: 'Salt', glycerin50: 'Glyc', silicone10: 'Sil10', lightoil: 'LtOil', thickoil: 'Thick', gel: 'Gel', cornstarch: 'Strch' };
 const HEAT_KEY = Array.from({ length: 9 }, (_, i) => heatColor(i / 8)) as [string, string, ...string[]];
 const STAGE_TINT: Record<Stage, string> = {
   flat: colors.textSub,
@@ -190,7 +190,7 @@ export function LiquidStudioScreen() {
     const id = setInterval(() => {
       const u = ((Date.now() - t0) % 40000) / 40000;
       setFreq(Math.round(15 * Math.pow(10, u) * 10) / 10);
-    }, 60);
+    }, 125);
     return () => clearInterval(id);
   }, [sweeping]);
 
@@ -219,7 +219,7 @@ export function LiquidStudioScreen() {
         setFreq(Math.round(hzFromPos(v) * 10) / 10);
       },
       format: () => (st.subharmonic ? `${formatHz(freq)} drive → ${formatHz(freq / 2)} response (f/2)` : `${formatHz(freq)} drive · no half-frequency response yet`),
-      formatShort: () => formatHz(freq),
+      formatShort: () => (freq >= 100 ? `${Math.round(freq)}Hz` : `${freq.toFixed(1)}Hz`),
       helpKey: 'frequency',
       chooser: {
         title: 'DRIVE AT TWICE A DISH MODE',
@@ -283,7 +283,7 @@ export function LiquidStudioScreen() {
       kind: 'group',
       id: 'dish',
       label: 'DISH',
-      valueLabel: `${spec.shape === 'circle' || spec.shape === 'ring' ? 'Ø' : '□'}${spec.sizeMm} ${spec.depthMm}mm`,
+      valueLabel: `${spec.shape === 'circle' || spec.shape === 'ring' ? 'Ø' : '□'}${spec.sizeMm}`,
       helpKey: 'dish',
       render: () => (
         <View style={styles.tray}>
@@ -341,7 +341,7 @@ export function LiquidStudioScreen() {
       kind: 'group',
       id: 'drive',
       label: 'DRIVE',
-      valueLabel: `${WAVES.find((w) => w.id === spec.waveform)!.label}${dualId !== 'off' ? ' +2' : ''}`,
+      valueLabel: `${WAVES.find((w) => w.id === spec.waveform)!.label.slice(0, 4)}${dualId !== 'off' ? '+' : ''}`,
       helpKey: 'waveform',
       render: () => (
         <View style={styles.tray}>
@@ -358,6 +358,13 @@ export function LiquidStudioScreen() {
                 ? 'Tone bursts (four per second) at the drive frequency — the surface builds and relaxes each burst.'
                 : `A ${spec.waveform} adds odd harmonics of the drive (${tone.additiveReady ? 'played by the additive engine' : 'shown only on this build'}). Faraday onset still keys on the fundamental.`}
           </Text>
+          <Text style={styles.trayHead}>RUN</Text>
+          <View style={styles.chips}>
+            <LabChip label={sweeping ? '■ Stop sweep' : '▶ Sweep 15 → 150 Hz'} selected={sweeping} onPress={() => setSweeping((s) => !s)} />
+            <LabChip label={slowMo ? 'Slow motion ON' : 'Slow motion'} selected={slowMo} onPress={() => setSlowMo((s) => !s)} />
+            <LabChip label={silentDrive ? 'Silent drive ON' : 'Silent drive'} selected={silentDrive} onPress={() => setSilentDrive((s) => !s)} onLongPress={() => openLesson('silent')} />
+          </View>
+          <Text style={styles.trayBlurb}>The sweep loops every 40 s. SILENT shakes the dish without the tone.</Text>
           <Text style={styles.trayHead}>SECOND FREQUENCY</Text>
           <View style={styles.chips}>
             {DUALS.map((d) => (
@@ -400,7 +407,7 @@ export function LiquidStudioScreen() {
   const bezel = [
     { k: 'DRIVE', v: formatHz(freq), helpKey: 'frequency' },
     { k: 'RESP', v: st.subharmonic ? `${formatHz(fr.responseHz)} f/2` : `${formatHz(freq)} f`, helpKey: 'faraday' },
-    { k: 'λ', v: `${fr.lambdaMm.toFixed(fr.lambdaMm < 10 ? 1 : 0)} mm`, helpKey: 'faraday' },
+    { k: 'SHAKE', v: `${accel.toFixed(2)} g`, helpKey: 'acceleration' },
     { k: 'a/a꜀', v: ratioLabel, tint, helpKey: 'threshold', flex: 1.1 },
   ];
 
@@ -428,7 +435,7 @@ export function LiquidStudioScreen() {
                 : `SIMULATION · APPROXIMATED — Faraday pattern map (${FAMILY_LABEL[st.family].toLowerCase()})`,
             onGuide: () => openLesson('liquid_display'),
             bezel,
-            hideDragTag: true,
+            hideDragTag: true, // SHAKE (the bound lane) is printed on the bezel
             render: (w, h) =>
               viz ? (
                 <viz.LiquidView
@@ -502,12 +509,7 @@ export function LiquidStudioScreen() {
           </Text>
         </View>
 
-        <View style={styles.chips}>
-          <LabChip label={sweeping ? '■ Stop sweep' : '▶ Sweep 15 → 150 Hz'} selected={sweeping} onPress={() => setSweeping((s) => !s)} />
-          <LabChip label={slowMo ? 'Slow motion ON' : 'Slow motion'} selected={slowMo} onPress={() => setSlowMo((s) => !s)} />
-          <LabChip label={silentDrive ? 'Silent drive ON' : 'Silent drive'} selected={silentDrive} onPress={() => setSilentDrive((s) => !s)} onLongPress={() => openLesson('silent')} />
-        </View>
-        <Text style={styles.caption}>The dish moves only while it is driven — press ▶ to play the tone, or SILENT DRIVE to shake it without sound. Displays are strobed to a few hertz; the real surface moves at the response frequency.</Text>
+        <Text style={styles.caption}>The dish moves only while it is driven — press ▶ to play the tone, or DRIVE › SILENT to shake it without sound. DRIVE › SWEEP walks 15 → 150 Hz. Displays are strobed to a few hertz; the real surface moves at the response frequency.</Text>
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>WHAT THIS RIG IS</Text>
@@ -515,7 +517,7 @@ export function LiquidStudioScreen() {
             {liquid.label}, {spec.depthMm} mm deep, in a {spec.shape === 'circle' ? `Ø ${spec.sizeMm} mm` : spec.shape === 'ring' ? `Ø ${spec.sizeMm} mm ring` : spec.shape === 'rect' ? `${spec.sizeMm} × ${Math.round(spec.sizeMm * spec.aspect)} mm` : `${spec.sizeMm} mm square`} dish with a {spec.contact === 'pinned' ? 'pinned' : 'free'} rim and a {spec.bottom} bottom, on a platform shaken vertically at {formatHz(freq)} and {accel.toFixed(2)} g. Dish / wavelength ≈ {fr.sizeOverLambda.toFixed(1)} — {fr.sizeOverLambda < 2.5 ? 'the dish’s own modes shape the pattern' : 'bulk Faraday lattice regime'}. Above threshold the surface answers at half the drive frequency (the subharmonic).
           </Text>
           <Text style={styles.body}>
-            Lowest dish modes: {modes.slice(0, 4).map((m) => `${m.hz.toFixed(1)} Hz`).join(' · ')}. Drive at twice a mode frequency to land the half-frequency response on it.
+            Surface wavelength λ = {fr.lambdaMm.toFixed(fr.lambdaMm < 10 ? 1 : 0)} mm. Lowest dish modes: {modes.slice(0, 4).map((m) => `${m.hz.toFixed(1)} Hz`).join(' · ')}. Drive at twice a mode frequency to land the half-frequency response on it.
           </Text>
         </View>
 
@@ -543,12 +545,12 @@ export function LiquidStudioScreen() {
 
 const styles = StyleSheet.create({
   tray: { gap: 6, paddingBottom: 4 },
-  trayHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.textSub, marginTop: 6 },
+  trayHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.textSub, marginTop: 6 },
   trayBlurb: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSecondary },
-  trayMono: { fontFamily: fonts.mono, fontSize: 11.5, color: colors.textSub, marginTop: 4 },
+  trayMono: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub, marginTop: 4 },
   pairRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 10, paddingVertical: 2 },
   pairStudent: { fontFamily: fonts.barlowMedium, fontSize: 13, color: colors.textPrimary },
-  pairScience: { fontFamily: fonts.mono, fontSize: 11.5, color: colors.textSub, flexShrink: 1, textAlign: 'right' },
+  pairScience: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub, flexShrink: 1, textAlign: 'right' },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   card: { borderRadius: 10, borderWidth: 1, borderColor: '#232329', backgroundColor: '#101014', padding: 12, gap: 8 },
   cardTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: colors.amber },
@@ -560,10 +562,10 @@ const styles = StyleSheet.create({
   rungOn: { height: 12, marginTop: -2 },
   keyRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   keyBar: { flex: 1, height: 8, borderRadius: 4 },
-  keyText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: colors.textSub },
+  keyText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textSub },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSub },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
-  readK: { fontFamily: fonts.mono, fontSize: 11.5, color: colors.textSub, flexShrink: 1 },
+  readK: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub, flexShrink: 1 },
   nudgeRow: { flexDirection: 'row', gap: 8 },
   nudge: { borderRadius: 8, borderWidth: 1, borderColor: '#3a3a44', paddingHorizontal: 10, paddingVertical: 6, minHeight: 32, justifyContent: 'center' },
   nudgeText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.amber },

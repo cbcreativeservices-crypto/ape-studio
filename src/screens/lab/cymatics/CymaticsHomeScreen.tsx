@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
   scroll: { padding: 16, paddingTop: 8, paddingBottom: 32, gap: 12 },
   hero: { borderRadius: 12, overflow: 'hidden', borderWidth: 1, borderColor: '#2a2a32', backgroundColor: '#0b0b10' },
-  heroBadge: { position: 'absolute', left: 10, bottom: 8, fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2, color: 'rgba(255,255,255,0.55)' },
+  heroBadge: { position: 'absolute', left: 10, bottom: 8, fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: 'rgba(255,255,255,0.55)' },
   heroFallback: { alignItems: 'center', justifyContent: 'center' },
   heroFallbackText: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textSub },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14.5, lineHeight: 21, color: colors.textSecondary },
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
   planned: { borderRadius: 10, borderWidth: 1, borderColor: '#1f1f26', backgroundColor: '#0e0e12', padding: 12, gap: 3, opacity: 0.55 },
   plannedTitle: { fontFamily: fonts.oswaldMedium, fontSize: 15, color: colors.textPrimary },
   plannedBlurb: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSecondary },
-  plannedNote: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.textSub, marginTop: 2 },
+  plannedNote: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textSub, marginTop: 2 },
   lessonRow: { marginTop: 10, borderRadius: 10, borderWidth: 1, borderColor: '#232329', paddingVertical: 12, paddingHorizontal: 14 },
   lessonRowText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textSecondary },
 });

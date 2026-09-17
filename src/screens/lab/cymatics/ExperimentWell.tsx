@@ -51,11 +51,11 @@ export function ExperimentWell({ experiment }: { experiment: Experiment }) {
 
 const styles = StyleSheet.create({
   card: { borderRadius: 10, borderWidth: 1.5, borderColor: 'rgba(255,198,77,.55)', backgroundColor: '#15120a', padding: 12, gap: 8 },
-  eyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.6, color: colors.amber },
+  eyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: colors.amber },
   title: { fontFamily: fonts.oswaldMedium, fontSize: 16, color: colors.textPrimary, marginTop: -4 },
   goal: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
   predict: { borderRadius: 8, borderWidth: 1, borderColor: 'rgba(127,212,255,.5)', backgroundColor: '#0a1520', padding: 10, gap: 3 },
-  predictHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: '#7fd4ff' },
+  predictHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: '#7fd4ff' },
   predictBody: { fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 20, color: colors.textPrimary },
   step: { flexDirection: 'row', gap: 10, alignItems: 'flex-start', minHeight: 32 },
   box: { width: 24, height: 24, borderRadius: 6, borderWidth: 1, borderColor: '#3a3a44', textAlign: 'center', lineHeight: 22, fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.amber },

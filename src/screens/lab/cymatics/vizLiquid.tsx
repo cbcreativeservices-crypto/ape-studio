@@ -675,7 +675,9 @@ export function LiquidView(p: LiquidViewProps) {
               ) : null}
               {/* Liquid (profile from the surface field) */}
               <Path path={rigSurface} color={p.tint} opacity={0.85} />
-              <Path path={rigSurface} style="stroke" strokeWidth={1.5} color="rgba(255,255,255,0.55)" />
+              <Path path={rigSurface} style="stroke" strokeWidth={1.8}>
+                <LinearGradient start={vec(0, rig.dishRimY + rig.dishDepthPx - rig.liquidPx - 10)} end={vec(0, rig.dishRimY + rig.dishDepthPx - rig.liquidPx + 10)} colors={WAVE_LEVEL_STOPS.map((q) => q.color)} positions={WAVE_LEVEL_STOPS.map((q) => q.offset)} />
+              </Path>
             </Group>
           </Group>
         ) : null}
@@ -753,6 +755,6 @@ export function LiquidView(p: LiquidViewProps) {
 }
 
 const styles = StyleSheet.create({
-  lbl: { position: 'absolute', fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2, color: 'rgba(255,255,255,0.6)' },
-  lblR: { position: 'absolute', textAlign: 'right', fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2, color: 'rgba(255,255,255,0.6)' },
+  lbl: { position: 'absolute', fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.1, color: 'rgba(255,255,255,0.6)' },
+  lblR: { position: 'absolute', textAlign: 'right', fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.1, color: 'rgba(255,255,255,0.6)' },
 });

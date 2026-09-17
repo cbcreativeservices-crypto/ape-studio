@@ -85,11 +85,11 @@ const SAND_AMOUNTS = [1500, 3000, 5000];
 const VIEWS: { id: PlateViewMode; label: string; short: string; blurb: string }[] = [
   { id: 'particles', label: 'Particles', short: 'Sand', blurb: 'Sand on the plate — it walks off the moving regions and settles on the still lines.' },
   { id: 'heat', label: 'Heat map', short: 'Heat', blurb: 'How much each point moves, on the Academy ramp: black = still, blue = a little, red = the most. Off a resonance the whole map goes dark — the plate is barely moving.' },
-  { id: 'overlay', label: 'Particles + heat', short: 'Sand+heat', blurb: 'Both at once: the prediction (heat) under the confirmation (sand).' },
+  { id: 'overlay', label: 'Particles + heat', short: 'S+H', blurb: 'Both at once: the prediction (heat) under the confirmation (sand).' },
   { id: 'phase', label: 'Phase', short: 'Phase', blurb: 'Amber regions rise while blue regions fall — opposite sides of a nodal line move in opposite directions. Fades between resonances.' },
   { id: 'nodes', label: 'Node lines', short: 'Nodes', blurb: 'The nodal pattern of the nearest mode — the Chladni figure that WOULD form. Fades between resonances.' },
   { id: 'plate3d', label: '3D plate', short: '3D', blurb: 'Exaggerated vertical motion, strobed to a few hertz so you can see it (the real plate moves at the drive frequency).' },
-  { id: 'section', label: 'Cross-section', short: 'Section', blurb: 'A slice through the plate. Drag on the plate to move the slice.' },
+  { id: 'section', label: 'Cross-section', short: 'Slice', blurb: 'A slice through the plate. Drag on the plate to move the slice.' },
 ];
 const MAT_SHORT: Record<MaterialId, string> = { aluminum: 'Al', steel: 'Steel', brass: 'Brass', copper: 'Cu', acrylic: 'Acryl', glass: 'Glass', plywood: 'Ply', wood: 'Wood' };
 const HEAT_KEY = Array.from({ length: 9 }, (_, i) => heatColor(i / 8)) as [string, string, ...string[]];
@@ -227,7 +227,7 @@ export function PlateStudioScreen() {
         setFreq(Math.round(hzFromPos(v) * 10) / 10);
       },
       format: () => `${formatHz(freq)} · ${note.label} ${note.centsLabel}`,
-      formatShort: () => formatHz(freq),
+      formatShort: () => (freq >= 1000 ? `${(freq / 1000).toFixed(1)}k` : `${Math.round(freq)}Hz`),
       helpKey: 'frequency',
       chooser: {
         title: 'JUMP TO A MODE',
@@ -246,7 +246,7 @@ export function PlateStudioScreen() {
       kind: 'group',
       id: 'plate',
       label: 'PLATE',
-      valueLabel: `${MAT_SHORT[spec.material]} ${spec.sizeMm}`,
+      valueLabel: `${MAT_SHORT[spec.material]}${spec.sizeMm}`,
       helpKey: 'plate',
       render: () => (
         <View style={styles.tray}>
@@ -329,7 +329,7 @@ export function PlateStudioScreen() {
       kind: 'group',
       id: 'drive',
       label: 'DRIVE',
-      valueLabel: multi === 'off' ? 'single' : MULTI.find((m) => m.id === multi)!.label.slice(2, 8),
+      valueLabel: multi === 'off' ? 'one' : MULTI.find((m) => m.id === multi)!.label.slice(-3),
       helpKey: 'exciter',
       render: () => (
         <View style={styles.tray}>
@@ -347,6 +347,13 @@ export function PlateStudioScreen() {
             <LabChip label="Clamp centre" selected={!!spec.support && Math.abs(spec.support.x - 0.5) < 0.02} onPress={() => patch({ support: { x: 0.5, y: 0.5 * asp } })} onLongPress={() => openLesson('support')} />
             <LabChip label="Drag on plate" selected={dragTarget === 'support'} onPress={() => setDragTarget(dragTarget === 'support' ? null : 'support')} />
           </View>
+          <Text style={styles.trayHead}>RUN</Text>
+          <View style={styles.chips}>
+            <LabChip label={sweeping ? '■ Stop sweep' : '▶ Sweep the modes'} selected={sweeping} onPress={() => setSweeping((s) => !s)} />
+            <LabChip label={slowMo ? 'Slow motion ON' : 'Slow motion'} selected={slowMo} onPress={() => setSlowMo((s) => !s)} />
+            <LabChip label={silentDrive ? 'Silent drive ON' : 'Silent drive'} selected={silentDrive} onPress={() => setSilentDrive((s) => !s)} onLongPress={() => openLesson('silent')} />
+          </View>
+          <Text style={styles.trayBlurb}>SWEEP glides from mode to mode and dwells on each. SILENT drives the plate without the tone.</Text>
           <Text style={styles.trayHead}>SECOND TONE</Text>
           <View style={styles.chips}>
             {MULTI.map((m) => (
@@ -414,6 +421,9 @@ export function PlateStudioScreen() {
               <LabChip key={g.l} label={g.l} selected={Math.abs(sandSize - g.v) < 1e-6} onPress={() => setSandSize(g.v)} />
             ))}
           </View>
+          <View style={styles.chips}>
+            <LabChip label="⟲ Reset sand" selected={false} onPress={() => setResetToken((t) => t + 1)} />
+          </View>
           <Text style={styles.trayHead}>FRICTION</Text>
           <View style={styles.chips}>
             {[
@@ -433,7 +443,8 @@ export function PlateStudioScreen() {
     { k: 'DRIVE', v: formatHz(freq), helpKey: 'frequency' },
     { k: 'RESPONSE', v: `${Math.round(strength * 100)} %`, tint: levelColor(strength), helpKey: 'resonance' },
     { k: 'MODE', v: res.dominant && res.state !== 'below' && res.state !== 'between' ? res.dominant.label : '—', helpKey: 'modes' },
-    { k: 'RES', v: res.state.toUpperCase(), tint: RES_TINT[res.state], helpKey: 'resonance', flex: 1.2 },
+    // Tap the RES cell to land on the nearest mode (the bezel-cell verb; no control in the scroller).
+    { k: 'RES', v: res.state.toUpperCase(), tint: RES_TINT[res.state], helpKey: 'resonance', flex: 1.2, onPress: res.state !== 'at' && res.next ? () => land(res.next!.hz) : undefined },
   ];
 
   const togglePlay = () => (tone.running ? tone.stop() : void tone.start());
@@ -519,13 +530,8 @@ export function PlateStudioScreen() {
                 ? `Next resonance: ${res.next.label} at ${formatHz(res.next.hz)}.`
                 : res.state === 'below'
                   ? `First excitable resonance is at ${res.next ? formatHz(res.next.hz) : '—'} — below it the plate only flexes as a whole.`
-                  : `Off resonance — small motion, no stable figure; the sand shivers but does not organise.${res.next ? ` Nearest: ${res.next.label} at ${formatHz(res.next.hz)}.` : ''}`}
+                  : `Off resonance — small motion, no stable figure; the sand shivers but does not organise.${res.next ? ` Nearest: ${res.next.label} at ${formatHz(res.next.hz)} — tap RES on the bezel to land on it.` : ''}`}
           </Text>
-          {res.state !== 'at' && res.next ? (
-            <Pressable onPress={() => land(res.next!.hz)} style={styles.landBtn} accessibilityRole="button" accessibilityLabel={`Land on ${res.next.label} at ${formatHz(res.next.hz)}`}>
-              <Text style={styles.landText}>TAP TO LAND ON {res.next.label.toUpperCase()} · {formatHz(res.next.hz)} ›</Text>
-            </Pressable>
-          ) : null}
           <View style={styles.rowBetween}>
             <Text style={styles.readK}>Q ≈ {Math.round(Q)} · {tone.running && freqB ? `B: ${formatHz(freqB)} ${resB?.state ?? ''}` : `λ in air ${formatWavelength(wavelengthAir(freq))}`}</Text>
             <View style={styles.nudgeRow}>
@@ -539,15 +545,8 @@ export function PlateStudioScreen() {
           </View>
         </View>
 
-        {/* Actions */}
-        <View style={styles.chips}>
-          <LabChip label={sweeping ? '■ Stop sweep' : '▶ Sweep the modes'} selected={sweeping} onPress={() => setSweeping((s) => !s)} />
-          <LabChip label="⟲ Reset sand" selected={false} onPress={() => setResetToken((t) => t + 1)} />
-          <LabChip label={slowMo ? 'Slow motion ON' : 'Slow motion'} selected={slowMo} onPress={() => setSlowMo((s) => !s)} />
-          <LabChip label={silentDrive ? 'Silent drive ON' : 'Silent drive'} selected={silentDrive} onPress={() => setSilentDrive((s) => !s)} onLongPress={() => openLesson('silent')} />
-        </View>
         <Text style={styles.caption}>
-          The sand moves only while the plate is driven — press ▶ to play the tone, or SILENT DRIVE to shake the plate without sound. SWEEP glides from mode to mode and dwells on each so you can watch every figure form.
+          The sand moves only while the plate is driven — press ▶ to play the tone, or DRIVE › SILENT to shake the plate without sound. DRIVE › SWEEP glides from mode to mode and dwells on each. 3D and CROSS-SECTION are strobed to a few hertz.
         </Text>
 
         <View style={styles.card}>
@@ -583,7 +582,7 @@ export function PlateStudioScreen() {
 
 const styles = StyleSheet.create({
   tray: { gap: 6, paddingBottom: 4 },
-  trayHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.textSub, marginTop: 6 },
+  trayHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.textSub, marginTop: 6 },
   trayBlurb: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSecondary },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   card: { borderRadius: 10, borderWidth: 1, borderColor: '#232329', backgroundColor: '#101014', padding: 12, gap: 8 },
@@ -594,10 +593,10 @@ const styles = StyleSheet.create({
   meterTrack: { height: 8, borderRadius: 4, backgroundColor: '#1b1c22', overflow: 'hidden' },
   meterFill: { height: 8, borderRadius: 4 },
   landBtn: { alignSelf: 'flex-start', borderRadius: 8, borderWidth: 1, borderColor: 'rgba(255,198,77,.6)', backgroundColor: 'rgba(255,198,77,.08)', paddingHorizontal: 10, paddingVertical: 6 },
-  landText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.amber },
+  landText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.amber },
   keyRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   keyBar: { flex: 1, height: 8, borderRadius: 4 },
-  keyText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: colors.textSub },
+  keyText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textSub },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSub },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   readK: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub },

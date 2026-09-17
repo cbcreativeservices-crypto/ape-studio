@@ -1,21 +1,23 @@
 /**
- * Module — Harmony in Motion (spec §3 item 7, Phase 3): frequency RATIOS made
- * visible and audible, kept honestly separate from plate modes. Two tones at
- * a locked ratio: their waves, their sum, the Lissajous figure they draw
- * together, their spectrum — and, when the pair is nearly a unison, BEATS.
+ * Module — Harmony in Motion (spec §3 item 7, Phase 3), on the RACK (judge
+ * panel 2026-09-17: three displays of one parameter were spread over ~700 px
+ * below the ratio chips). One pinned glass, VIEW-switched — WAVES (A, B,
+ * A+B), LISSAJOUS, SPECTRUM. BASE rides the lane: both tones climb while the
+ * figure stays identical — "harmony is a ratio, not a frequency" as a thumb
+ * gesture. DETUNE is the second lane (beats). RATIO is a sticky tray. PLAY
+ * is a dock toggle.
  *
  * SOUND (spec §2, the Harmonograph idiom): a locked small-integer ratio is
- * rendered EXACTLY by the additive engine as harmonics n₁ and n₂ of a shared
- * base — heard end-to-end on engine ≥ 3. A detuned pair needs two free sines
- * (GEN_MODES.dual, engine ≥ 8); on this client beats are visual-only and the
- * module says so — never an untrue stand-in.
+ * rendered EXACTLY by the additive engine as harmonics n₁ and n₂ of the base;
+ * a detuned pair needs two free sines (GEN_MODES.dual, engine ≥ 8) — on this
+ * client beats are visual-only and the module says so.
  *
- * COLOUR STANDARD: every waveform is drawn on the ± amplitude ramp
- * (WAVE_LEVEL_STOPS: MIDI-0 blue at the zero line → red at ± full scale) with
- * a MIDLINE_BLUE zero line; spectrum bars carry the ramp base → tip.
+ * COLOUR STANDARD: every waveform on the ± amplitude ramp (WAVE_LEVEL_STOPS)
+ * with a MIDLINE_BLUE zero line; spectrum bars carry the ramp base → tip at
+ * the level the pair actually plays.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Svg, { Defs, Line, LinearGradient as SvgGradient, Path, Stop } from 'react-native-svg';
@@ -28,44 +30,59 @@ import { MIDLINE_BLUE, WAVE_LEVEL_STOPS, rampColors } from '../../../../features
 import { formatHz, nearestNote } from '../../../../features/cymatics/music';
 import { colors, fonts } from '../../../../theme/tokens';
 import { LabChip } from '../../LabShell';
+import type { DockParam } from '../../rack/rackTypes';
 import type { RootStackParamList } from '../../../../navigation/types';
 import type { CymaticsModuleProps } from '../CymaticsModuleScreen';
+import { CymaticsRackLayout } from './rackLayout';
 import { P } from './shared';
 
-const BASE_F0 = 110;
-type Ratio = { id: string; n1: number; n2: number; label: string; interval: string; detune?: number };
+const B_MIN = 55;
+const B_MAX = 440;
+const bFromPos = (v: number) => B_MIN * Math.pow(B_MAX / B_MIN, Math.max(0, Math.min(1, v)));
+const posFromB = (b: number) => Math.log(Math.max(B_MIN, Math.min(B_MAX, b)) / B_MIN) / Math.log(B_MAX / B_MIN);
+const DETUNE_MAX = 0.03;
+/** The pair plays at −18 dBFS; on the meters' −60…0 window that is this fraction — the bars show THAT level. */
+const LEVEL_FRAC = (60 - 18) / 60;
+
+type Ratio = { id: string; n1: number; n2: number; label: string; interval: string; short: string };
 const RATIOS: Ratio[] = [
-  { id: 'unison', n1: 1, n2: 1, label: '1 : 1', interval: 'unison' },
-  { id: 'octave', n1: 1, n2: 2, label: '1 : 2', interval: 'octave' },
-  { id: 'fifth', n1: 2, n2: 3, label: '2 : 3', interval: 'perfect fifth' },
-  { id: 'fourth', n1: 3, n2: 4, label: '3 : 4', interval: 'perfect fourth' },
-  { id: 'majthird', n1: 4, n2: 5, label: '4 : 5', interval: 'major third' },
-  { id: 'minthird', n1: 5, n2: 6, label: '5 : 6', interval: 'minor third' },
-  { id: 'tritone', n1: 5, n2: 7, label: '5 : 7', interval: 'tritone (near)' },
-  { id: 'beats', n1: 1, n2: 1, label: '1 : 1.02', interval: 'detuned unison → BEATS', detune: 0.02 },
+  { id: 'unison', n1: 1, n2: 1, label: '1 : 1', interval: 'unison', short: 'unison' },
+  { id: 'octave', n1: 1, n2: 2, label: '1 : 2', interval: 'octave', short: 'octave' },
+  { id: 'fifth', n1: 2, n2: 3, label: '2 : 3', interval: 'perfect fifth', short: 'P5' },
+  { id: 'fourth', n1: 3, n2: 4, label: '3 : 4', interval: 'perfect fourth', short: 'P4' },
+  { id: 'majthird', n1: 4, n2: 5, label: '4 : 5', interval: 'major third', short: 'M3' },
+  { id: 'minthird', n1: 5, n2: 6, label: '5 : 6', interval: 'minor third', short: 'm3' },
+  { id: 'tritone', n1: 5, n2: 7, label: '5 : 7', interval: 'tritone (near)', short: 'tritone' },
+];
+type ViewId = 'waves' | 'lissajous' | 'spectrum';
+const VIEWS: { id: ViewId; label: string; short: string; blurb: string }[] = [
+  { id: 'waves', label: 'Wave addition', short: 'Waves', blurb: 'A, B and A + B, sines added point by point. A locked ratio repeats; a detuned pair swells and cancels — that envelope IS the beat.' },
+  { id: 'lissajous', label: 'Lissajous figure', short: 'Lissa', blurb: 'x = A, y = B. A locked ratio closes into a stable figure; a detuned pair precesses at the beat rate.' },
+  { id: 'spectrum', label: 'Spectrum', short: 'Spec', blurb: 'Two lines, nothing else. Consonance is a relationship between the lines — and a beat adds no line.' },
 ];
 
-function ratioPayload(n1: number, n2: number): number[] {
+function ratioPayload(f0: number, n1: number, n2: number): number[] {
   const amps = new Array(12).fill(0);
   const phases = new Array(12).fill(0);
   if (n1 >= 1 && n1 <= 12) amps[n1 - 1] = 1;
   if (n2 >= 1 && n2 <= 12) amps[n2 - 1] = 1;
-  return [BASE_F0, ...amps, ...phases];
+  return [f0, ...amps, ...phases];
 }
 
-/** Locked-ratio audio through the additive engine (engine ≥ 3); detune is visual-only. */
-function useRatioTone(n1: number, n2: number, detuned: boolean) {
+/** Locked-ratio audio through the additive engine (engine ≥ 3); a detuned pair needs dual (engine ≥ 8). */
+function useRatioTone(f0: number, n1: number, n2: number, detune: number) {
   const { requestAudioOutput } = useAudioOutputGate();
   const engineReady = ApeDsp.isAvailable() && ApeDsp.engineVersion() >= 2;
   const additiveReady = engineReady && ApeDsp.engineVersion() >= 3;
   const dualReady = engineReady && ApeDsp.engineVersion() >= 8;
+  const detuned = detune > 0.0005;
   const playable = detuned ? dualReady : additiveReady;
   const [running, setRunning] = useState(false);
   const gen = useRef(0);
   const params = useCallback(() => {
-    if (detuned) return { mode: GEN_MODES.dual, frequency: BASE_F0 * n1, dual: { freqB: BASE_F0 * n2 * 1.02, levelB: 1 }, levelDb: -18 };
-    return { mode: GEN_MODES.additive, additive: guardAdditiveForEngine(ratioPayload(n1, n2)), levelDb: -18 };
-  }, [n1, n2, detuned]);
+    if (detuned) return { mode: GEN_MODES.dual, frequency: f0 * n1, dual: { freqB: f0 * n2 * (1 + detune), levelB: 1 }, levelDb: -18 };
+    return { mode: GEN_MODES.additive, additive: guardAdditiveForEngine(ratioPayload(f0, n1, n2)), levelDb: -18 };
+  }, [f0, n1, n2, detune, detuned]);
   const start = useCallback(async () => {
     if (!playable) return;
     const g = ++gen.current;
@@ -104,144 +121,217 @@ function useRatioTone(n1: number, n2: number, detuned: boolean) {
     const id = setInterval(noteAudioActivity, 500);
     return () => clearInterval(id);
   }, [running]);
-  return { running, start, stop, playable, additiveReady, dualReady, engineReady };
+  return { running, start, stop, playable, additiveReady, dualReady, engineReady, detuned };
 }
 
 const STOPS = WAVE_LEVEL_STOPS.map((s) => ({ offset: `${Math.round(s.offset * 100)}%`, color: s.color }));
 
-function wavePath(f: (t: number) => number, w: number, h: number, amp: number): string {
+function wavePath(f: (t: number) => number, w: number, y0: number, amp: number): string {
   const n = 180;
   let d = '';
   for (let i = 0; i <= n; i++) {
     const t = i / n;
     const x = 8 + t * (w - 16);
-    const y = h / 2 - f(t) * amp;
+    const y = y0 - f(t) * amp;
     d += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ' ' + y.toFixed(1) + ' ';
   }
   return d;
 }
 
-/** A ± waveform on the amplitude ramp, zero line in MIDI-0 blue. */
-function Wave({ id, width, height, f, amp, label }: { id: string; width: number; height: number; f: (t: number) => number; amp: number; label: string }) {
-  const d = useMemo(() => wavePath(f, width, height, amp), [f, width, height, amp]);
+/** Three ± waveforms on one glass, each on the amplitude ramp about its own MIDI-0 blue zero line. */
+function WavesStage({ w, h, fA, fB, fSum, labels }: { w: number; h: number; fA: (t: number) => number; fB: (t: number) => number; fSum: (t: number) => number; labels: [string, string, string] }) {
+  const rowH = h / 3;
+  const amp = rowH * 0.36;
+  const rows = useMemo(
+    () => [
+      { id: 'wA', f: fA, y0: rowH * 0.5, a: amp },
+      { id: 'wB', f: fB, y0: rowH * 1.5, a: amp },
+      { id: 'wS', f: fSum, y0: rowH * 2.5, a: amp * 1.15 },
+    ],
+    [fA, fB, fSum, rowH, amp],
+  );
+  const paths = useMemo(() => rows.map((r) => wavePath(r.f, w, r.y0, r.a)), [rows, w]);
   return (
-    <View style={{ width, height }}>
-      <Svg width={width} height={height}>
+    <View style={{ width: w, height: h }}>
+      <Svg width={w} height={h}>
         <Defs>
-          <SvgGradient id={id} x1="0" y1={height / 2 - amp} x2="0" y2={height / 2 + amp} gradientUnits="userSpaceOnUse">
-            {STOPS.map((s, k) => (
-              <Stop key={k} offset={s.offset} stopColor={s.color} />
-            ))}
-          </SvgGradient>
+          {rows.map((r) => (
+            <SvgGradient key={r.id} id={r.id} x1="0" y1={r.y0 - r.a} x2="0" y2={r.y0 + r.a} gradientUnits="userSpaceOnUse">
+              {STOPS.map((s, k) => (
+                <Stop key={k} offset={s.offset} stopColor={s.color} />
+              ))}
+            </SvgGradient>
+          ))}
         </Defs>
-        <Line x1={8} y1={height / 2} x2={width - 8} y2={height / 2} stroke={MIDLINE_BLUE} strokeWidth={1} />
-        <Path d={d} stroke={`url(#${id})`} strokeWidth={2} fill="none" />
+        {rows.map((r) => (
+          <Line key={r.id + 'z'} x1={8} y1={r.y0} x2={w - 8} y2={r.y0} stroke={MIDLINE_BLUE} strokeWidth={1} />
+        ))}
+        {rows.map((r, i) => (
+          <Path key={r.id + 'p'} d={paths[i]} stroke={`url(#${r.id})`} strokeWidth={2} fill="none" />
+        ))}
       </Svg>
-      <Text style={[P.badge, { position: 'absolute', left: 8, bottom: 2, backgroundColor: 'rgba(11,11,16,0.75)', paddingHorizontal: 4, borderRadius: 3 }]}>{label}</Text>
+      {rows.map((r, i) => (
+        <Text key={r.id + 'l'} numberOfLines={1} style={[styles.lbl, { top: r.y0 - rowH * 0.5 + 4, maxWidth: w - 20 }]}>
+          {labels[i]}
+        </Text>
+      ))}
     </View>
   );
 }
 
-export function HarmonyModule({ width, help }: CymaticsModuleProps) {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const [ratioId, setRatioId] = useState('fifth');
-  const ratio = RATIOS.find((r) => r.id === ratioId)!;
-  const detuned = !!ratio.detune;
-  const f1 = BASE_F0 * ratio.n1;
-  const f2 = BASE_F0 * ratio.n2 * (1 + (ratio.detune ?? 0));
-  const tone = useRatioTone(ratio.n1, ratio.n2, detuned);
-  const [phaseT, setPhaseT] = useState(0);
-  // Lissajous / beat envelope idle animation runs on a slow JS tick (no meter,
-  // no per-frame state churn — 6 Hz is plenty for a still figure to breathe).
+/** The Lissajous figure — its own slow phase clock, so the precession never re-renders the rack. */
+function LissajousStage({ w, h, n1, n2, detune, running }: { w: number; h: number; n1: number; n2: number; detune: number; running: boolean }) {
+  const [phase, setPhase] = useState(0);
   useEffect(() => {
-    if (!detuned && ratioId !== 'unison') return;
-    const id = setInterval(() => setPhaseT((t) => (t + 0.04) % 1), 160);
+    if (!running || detune <= 0.0005) return;
+    const id = setInterval(() => setPhase((t) => (t + 0.05) % 1), 100);
     return () => clearInterval(id);
-  }, [detuned, ratioId]);
-
-  // Two cycles of the SLOWER tone across the strip so the ratio is readable.
-  const cycles = 2;
-  const kA = cycles * (ratio.n1 / Math.min(ratio.n1, ratio.n2));
-  const kB = cycles * ((ratio.n2 * (1 + (ratio.detune ?? 0))) / Math.min(ratio.n1, ratio.n2));
-  const waveA = useCallback((t: number) => Math.sin(2 * Math.PI * kA * t), [kA]);
-  const waveB = useCallback((t: number) => Math.sin(2 * Math.PI * kB * t), [kB]);
-  const waveSum = useCallback((t: number) => (Math.sin(2 * Math.PI * kA * t) + Math.sin(2 * Math.PI * kB * t)) / 2, [kA, kB]);
-  // Beats: 2 % detune → the sum over a longer window shows the envelope.
-  const beatHz = Math.abs(f2 - f1);
-  const beatWindow = 2.5 / (beatHz || 1); // seconds → ~2.5 beats
-  const beatSum = useCallback((t: number) => (Math.sin(2 * Math.PI * f1 * t * beatWindow) + Math.sin(2 * Math.PI * f2 * t * beatWindow)) / 2, [f1, f2, beatWindow]);
-
-  const lissajous = useMemo(() => {
+  }, [running, detune]);
+  const R = Math.min(w, h) / 2 - 10;
+  const d = useMemo(() => {
     const n = 720;
-    const R = Math.min(width * 0.36, 130);
-    let d = '';
+    let s = '';
     for (let i = 0; i <= n; i++) {
       const t = (i / n) * 2 * Math.PI;
-      const x = R + 6 + R * Math.sin(ratio.n1 * t + phaseT * Math.PI);
-      const y = R + 6 + R * Math.sin((ratio.n2 * (1 + (ratio.detune ?? 0)) / 1) * t);
-      d += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ' ' + y.toFixed(1) + ' ';
+      const x = w / 2 + R * Math.sin(n1 * t + phase * Math.PI);
+      const y = h / 2 + R * Math.sin(n2 * (1 + detune) * t);
+      s += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ' ' + y.toFixed(1) + ' ';
     }
-    return { d, size: 2 * R + 12 };
-  }, [ratio, width, phaseT]);
+    return s;
+  }, [w, h, R, n1, n2, detune, phase]);
+  return (
+    <Svg width={w} height={h}>
+      <Line x1={w / 2} y1={h / 2 - R} x2={w / 2} y2={h / 2 + R} stroke="#2a2b33" strokeWidth={1} />
+      <Line x1={w / 2 - R} y1={h / 2} x2={w / 2 + R} y2={h / 2} stroke="#2a2b33" strokeWidth={1} />
+      <Path d={d} stroke={colors.amber} strokeWidth={1.6} fill="none" />
+    </Svg>
+  );
+}
 
-  const stripW = width - 26;
+function SpectrumStage({ w, h, f1, f2 }: { w: number; h: number; f1: number; f2: number }) {
+  const lo = 40;
+  const hi = 3000;
+  const x = (f: number) => (Math.log(f / lo) / Math.log(hi / lo)) * (w - 40) + 20;
+  return (
+    <View style={{ width: w, height: h }}>
+      <View style={{ position: 'absolute', left: 20, right: 20, bottom: 26, height: 1, backgroundColor: MIDLINE_BLUE }} />
+      {[f1, f2].map((f, k) => (
+        <View key={k} style={{ position: 'absolute', left: x(f) - 9, bottom: 26 }}>
+          <LinearGradient colors={rampColors(LEVEL_FRAC, 4)} start={{ x: 0, y: 1 }} end={{ x: 0, y: 0 }} style={{ width: 18, height: (h - 60) * LEVEL_FRAC, borderRadius: 2 }} />
+        </View>
+      ))}
+      {[f1, f2].map((f, k) => (
+        <Text key={'t' + k} style={[styles.lbl, { left: x(f) - 30, width: 60, textAlign: 'center', bottom: 6 }]}>
+          {formatHz(f)}
+        </Text>
+      ))}
+    </View>
+  );
+}
+
+export function HarmonyModule({ help, focused }: CymaticsModuleProps) {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const [ratioId, setRatioId] = useState('fifth');
+  const [base, setBase] = useState(110);
+  const [detune, setDetune] = useState(0);
+  const [view, setView] = useState<ViewId>('waves');
+  const ratio = RATIOS.find((r) => r.id === ratioId)!;
+  const f1 = base * ratio.n1;
+  const f2 = base * ratio.n2 * (1 + detune);
+  const tone = useRatioTone(base, ratio.n1, ratio.n2, detune);
+  const beatHz = Math.abs(f2 - f1);
+
+  // Two cycles of the slower tone across the strip so the ratio is readable;
+  // a detuned pair is drawn over ~2.5 beats so the envelope shows.
+  const cycles = 2;
+  const kA = cycles * (ratio.n1 / Math.min(ratio.n1, ratio.n2));
+  const kB = cycles * ((ratio.n2 * (1 + detune)) / Math.min(ratio.n1, ratio.n2));
+  const beatWindow = tone.detuned ? 2.5 / Math.max(0.2, beatHz) : 0;
+  const fA = useCallback((t: number) => (beatWindow ? Math.sin(2 * Math.PI * f1 * t * beatWindow) : Math.sin(2 * Math.PI * kA * t)), [kA, f1, beatWindow]);
+  const fB = useCallback((t: number) => (beatWindow ? Math.sin(2 * Math.PI * f2 * t * beatWindow) : Math.sin(2 * Math.PI * kB * t)), [kB, f2, beatWindow]);
+  const fSum = useCallback((t: number) => (fA(t) + fB(t)) / 2, [fA, fB]);
+
+  const params: DockParam[] = [
+    {
+      kind: 'fader',
+      id: 'base',
+      label: 'BASE',
+      value: posFromB(base),
+      onChange: (v) => setBase(Math.round(bFromPos(v))),
+      format: () => `${formatHz(base)} · ${nearestNote(base).label} — both tones climb, the figure stays`,
+      formatShort: () => `${Math.round(base)}Hz`,
+      home: posFromB(110),
+      helpKey: 'ratio',
+    },
+    {
+      kind: 'fader',
+      id: 'detune',
+      label: 'DETUNE',
+      value: detune / DETUNE_MAX,
+      onChange: (v) => setDetune(Math.round(Math.max(0, Math.min(1, v)) * DETUNE_MAX * 1000) / 1000),
+      format: () => (detune > 0.0005 ? `+${(detune * 100).toFixed(1)} % on B → beats at ${beatHz.toFixed(1)} Hz` : 'locked — no beats'),
+      formatShort: () => (detune > 0.0005 ? `+${(detune * 100).toFixed(1)}%` : 'lock'),
+      home: 0,
+      helpKey: 'beats',
+    },
+    {
+      kind: 'options',
+      id: 'ratio',
+      label: 'RATIO',
+      valueLabel: ratio.label.replace(/ /g, ''),
+      options: RATIOS.map((r) => ({ id: r.id, label: `${r.label} — ${r.interval}`, blurb: `${r.n1} : ${r.n2}. Played exactly as harmonics ${r.n1} and ${r.n2} of the base.` })),
+      selectedId: ratioId,
+      onSelect: setRatioId,
+      sticky: true,
+      helpKey: 'ratio',
+    },
+    { kind: 'options', id: 'view', label: 'VIEW', valueLabel: VIEWS.find((v) => v.id === view)!.short, options: VIEWS.map((v) => ({ id: v.id, label: v.label, blurb: v.blurb })), selectedId: view, onSelect: (id) => setView(id as ViewId), sticky: true, helpKey: 'lissajous' },
+    ...(tone.playable ? [{ kind: 'toggle', id: 'play', label: 'PLAY', value: tone.running, onToggle: () => (tone.running ? tone.stop() : void tone.start()) } as DockParam] : []),
+  ];
 
   return (
-    <View style={{ gap: 12 }}>
+    <CymaticsRackLayout
+      rack={{
+        size: 'L',
+        badge: view === 'spectrum' ? 'CALCULATED — two lines, at the level the pair plays' : view === 'lissajous' ? 'CALCULATED — the Harmonograph’s geometry' : 'CALCULATED — sines added point by point, amplitude on the Academy ramp',
+        onHelp: help,
+        onGuide: () => help(view === 'lissajous' ? 'lissajous' : 'ratio'),
+        initialParam: 'base',
+        bezel: [
+          { k: 'A', v: `${formatHz(f1)} ${nearestNote(f1).label}`, helpKey: 'ratio', flex: 1.2 },
+          { k: 'B', v: `${formatHz(f2)} ${nearestNote(f2).label}`, helpKey: 'ratio', flex: 1.2 },
+          { k: 'INTERVAL', v: tone.detuned ? 'detuned' : ratio.short, helpKey: 'ratio', flex: 1.2 },
+          { k: 'BEAT', v: tone.detuned ? `${beatHz.toFixed(1)} Hz` : '—', tint: tone.detuned ? colors.amber : undefined, helpKey: 'beats' },
+        ],
+        stage: (w, h) =>
+          view === 'waves' ? (
+            <WavesStage w={w} h={h} fA={fA} fB={fB} fSum={fSum} labels={[`A · ${formatHz(f1)}`, `B · ${formatHz(f2)}`, tone.detuned ? `A + B over ${beatWindow.toFixed(2)} s — the envelope is the beat` : 'A + B']} />
+          ) : view === 'lissajous' ? (
+            <LissajousStage w={w} h={h} n1={ratio.n1} n2={ratio.n2} detune={detune} running={focused} />
+          ) : (
+            <SpectrumStage w={w} h={h} f1={f1} f2={f2} />
+          ),
+        params,
+      }}
+      caption="Ride BASE: both tones climb and the figure does not change — harmony is the ratio. Then ride DETUNE and watch the beat appear."
+    >
       <Text style={P.body}>
-        Musical harmony is about <Text style={P.strong}>ratios</Text> between frequencies, not about any one frequency. Two tones at a small-
-        integer ratio line up again and again; detune them slightly and they drift in and out of step — you hear that as <Text style={P.strong}>beats</Text>.
-        This module keeps that idea honest: ratios draw stable figures and sound consonant; plate modes are a different subject (they are inharmonic), so the two are never mixed here.
+        Musical harmony is about <Text style={P.strong}>ratios</Text> between frequencies, not about any one frequency. Two tones at a small-integer
+        ratio line up again and again; detune them slightly and they drift in and out of step — you hear that as <Text style={P.strong}>beats</Text>.
+        Ratios draw stable figures and sound consonant; plate modes are a different subject (they are inharmonic), so the two are never mixed here.
       </Text>
-
-      <Text style={P.h}>PICK A RATIO</Text>
-      <View style={P.chips}>
-        {RATIOS.map((r) => (
-          <LabChip key={r.id} label={r.label} selected={ratioId === r.id} onPress={() => setRatioId(r.id)} onLongPress={() => help(r.detune ? 'beats' : 'ratio')} />
-        ))}
-      </View>
-      <View style={[P.card, { borderColor: 'rgba(255,198,77,.5)' }]}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-          <View style={{ flex: 1 }}>
-            <Text style={P.strong}>
-              {ratio.label} — {ratio.interval}
-            </Text>
-            <Text style={P.caption}>
-              {formatHz(f1)} ({nearestNote(f1).label}) and {formatHz(f2)} ({nearestNote(f2).label}
-              {detuned ? ` ${nearestNote(f2).centsLabel}` : ''})
-            </Text>
-          </View>
-          <Pressable
-            onPress={() => (tone.running ? tone.stop() : void tone.start())}
-            disabled={!tone.playable}
-            style={[styles.play, !tone.playable && { opacity: 0.4 }]}
-            accessibilityRole="button"
-            accessibilityLabel={tone.running ? 'Stop the pair' : 'Play the pair'}
-          >
-            <Text style={styles.playText}>{tone.running ? '■ STOP' : '▶ PLAY'}</Text>
-          </Pressable>
-        </View>
-        <Text style={P.caption}>
-          {!tone.engineReady
-            ? 'Sound needs the native engine.'
-            : detuned
-              ? tone.dualReady
-                ? 'Two free sines summed in one channel — the beats you see are the beats you hear.'
-                : 'Beats are SHOWN only — this build’s sound engine plays one locked pair at a time, not two free tones.'
-              : tone.additiveReady
-                ? `Played EXACTLY: harmonics ${ratio.n1} and ${ratio.n2} of ${BASE_F0} Hz through the additive engine.`
-                : 'Locked ratios need the additive engine (engine 3).'}
-        </Text>
-      </View>
-
-      <Text style={P.h}>WAVE ADDITION</Text>
-      <View style={[P.card, { padding: 6, gap: 4 }]}>
-        <Wave id="wA" width={stripW} height={64} f={waveA} amp={24} label={`A · ${formatHz(f1)}`} />
-        <Wave id="wB" width={stripW} height={64} f={waveB} amp={24} label={`B · ${formatHz(f2)}`} />
-        <Wave id="wS" width={stripW} height={84} f={detuned ? beatSum : waveSum} amp={34} label={detuned ? `A + B over ${beatWindow.toFixed(2)} s — the envelope IS the beat` : 'A + B'} />
-        <Text style={P.badge}>CALCULATED — SINES ADDED POINT BY POINT · AMPLITUDE ON THE ACADEMY RAMP</Text>
-      </View>
-      {detuned ? (
+      <Text style={P.caption}>
+        {!tone.engineReady
+          ? 'Sound needs the native engine.'
+          : tone.detuned
+            ? tone.dualReady
+              ? 'PLAY: two free sines summed in one channel — the beats you see are the beats you hear.'
+              : 'A detuned pair is SHOWN only — this build’s sound engine plays one locked pair at a time, not two free tones. Set DETUNE back to lock to hear the ratio.'
+            : tone.additiveReady
+              ? `PLAY renders the pair EXACTLY: harmonics ${ratio.n1} and ${ratio.n2} of ${formatHz(base)} through the additive engine.`
+              : 'Locked ratios need the additive engine (engine 3).'}
+      </Text>
+      {tone.detuned ? (
         <View style={P.card}>
           <Text style={P.strong}>Beat frequency = |f₂ − f₁| = {beatHz.toFixed(1)} Hz</Text>
           <Text style={P.body}>
@@ -250,35 +340,6 @@ export function HarmonyModule({ width, help }: CymaticsModuleProps) {
           </Text>
         </View>
       ) : null}
-
-      <Text style={P.h}>LISSAJOUS FIGURE</Text>
-      <View style={[P.card, { alignItems: 'center' }]}>
-        <Svg width={lissajous.size} height={lissajous.size}>
-          <Path d={lissajous.d} stroke="#ffc64d" strokeWidth={1.6} fill="none" />
-        </Svg>
-        <Text style={P.caption}>
-          x = A, y = B. A locked ratio closes into a stable figure with {ratio.n2} lobes across and {ratio.n1} down; a detuned pair precesses — the figure
-          rolls over at the beat rate.
-        </Text>
-        <Text style={P.badge}>CALCULATED · THE HARMONOGRAPH’S SAME GEOMETRY</Text>
-      </View>
-
-      <Text style={P.h}>SPECTRUM</Text>
-      <View style={[P.card, { paddingBottom: 6 }]}>
-        <View style={{ height: 70, position: 'relative' }}>
-          {[f1, f2].map((f, k) => {
-            const x = (Math.log(f / 80) / Math.log(1200 / 80)) * (stripW - 24) + 12;
-            return (
-              <View key={k} style={{ position: 'absolute', left: x - 8, bottom: 0, alignItems: 'center' }}>
-                <LinearGradient colors={rampColors(0.8, 4)} start={{ x: 0, y: 1 }} end={{ x: 0, y: 0 }} style={{ width: 16, height: 52, borderRadius: 2 }} />
-                <Text style={[P.badge, { marginTop: 2 }]}>{formatHz(f)}</Text>
-              </View>
-            );
-          })}
-        </View>
-        <Text style={P.caption}>Two lines, nothing else. Consonance is a relationship between the lines, not a property of either one — and a beat adds no line.</Text>
-      </View>
-
       <Text style={P.h}>DRIVE THE SIMULATION</Text>
       <Text style={P.body}>
         A linear plate driven by two tones simply superposes both responses — each tone finds (or fails to find) its own mode. In the Plate
@@ -290,11 +351,10 @@ export function HarmonyModule({ width, help }: CymaticsModuleProps) {
         <LabChip label="Liquid studio · two frequencies ›" selected={false} onPress={() => navigation.navigate('CymaticsLiquidStudio', {})} />
         <LabChip label="Harmonograph lab ›" selected={false} onPress={() => navigation.navigate('HarmonographLab' as never)} />
       </View>
-    </View>
+    </CymaticsRackLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  play: { borderRadius: 8, borderWidth: 1.5, borderColor: 'rgba(255,198,77,.7)', backgroundColor: 'rgba(255,198,77,.10)', paddingHorizontal: 14, paddingVertical: 9 },
-  playText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.1, color: colors.amber },
+  lbl: { position: 'absolute', left: 10, fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.1, color: 'rgba(255,255,255,0.65)', backgroundColor: 'rgba(11,11,16,0.7)', paddingHorizontal: 4, borderRadius: 3 },
 });

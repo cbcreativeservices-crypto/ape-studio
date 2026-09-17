@@ -128,7 +128,11 @@ export function RackUnit({
   // never resizes under a drag or an open tray (never resize a live canvas).
   const size = stage.size ?? 'M';
   const effSize = winH < 700 ? (size === 'L' ? 'M' : 'S') : size;
-  const targetH = Math.min(STAGE_HEIGHTS[effSize], Math.max(100, winH - 300));
+  // Reserve = the chrome that must fit around the glass: safe-top + header +
+  // tabs/nav (~125) + bezel + badge (~65) + dock (119) + a usable well (~40).
+  // 300 under-counted it (judge panel 2026-09-17): on a 550 dp phone the well
+  // shrank to 0-40 dp and every tray became a ~120 dp scrolling card.
+  const targetH = Math.min(STAGE_HEIGHTS[effSize], Math.max(100, winH - 350));
   const [glassH, setGlassH] = useState(targetH);
   const interacting = laneActive || trayParam != null;
   useEffect(() => {

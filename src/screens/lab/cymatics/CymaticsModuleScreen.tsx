@@ -2,6 +2,13 @@
  * CymaticsModuleScreen — routes one Cymatics Lab module id to its component
  * (Digital Lab host idiom): header (back + title), prev/next module nav,
  * scroll well, and the shared GuidedLessonSheet on the 'cymatics' lesson.
+ *
+ * RACK MODULES (APE_LAB_UX_PROPOSAL 2026-08-23; the Wave host precedent): an
+ * interactive module in RACK_MODULES renders the Rack Unit itself
+ * (CymaticsRackLayout — pinned stage + dock, its own scroll well with the
+ * LAB NOTES disclosure and the lesson row), so the host gives it the full
+ * height, no ScrollView, and no bottom lesson row. Prose-only modules keep
+ * the document layout — the spec never converts them.
  */
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -28,6 +35,9 @@ export type CymaticsModuleProps = {
   help: (key?: string) => void;
   lockScroll?: (v: boolean) => void;
 };
+
+/** Modules that declare a Rack Unit (see rackLayout.tsx). */
+const RACK_MODULES = new Set<CymaticsModuleId>(['nodes', 'harmony', 'systems', 'change']);
 
 const COMPONENTS: Record<CymaticsModuleId, (p: CymaticsModuleProps) => React.JSX.Element> = {
   intro: IntroModule,
@@ -86,14 +96,22 @@ export function CymaticsModuleScreen() {
         </Pressable>
       </View>
       <ScrollLockProvider value={setScrollLocked}>
-        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" scrollEnabled={!scrollLocked}>
-          <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width))}>
+        {RACK_MODULES.has(meta.id) ? (
+          // Rack module: full height — its RackUnit pins stage + dock and owns
+          // the scroll well (incl. the LAB NOTES disclosure and the lesson row).
+          <View style={styles.rackFill} onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 24)}>
             {width > 0 ? <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} /> : null}
           </View>
-          <Pressable style={styles.lessonRow} onPress={() => help()} accessibilityRole="button" accessibilityLabel="Open the guided lesson">
-            <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
-          </Pressable>
-        </ScrollView>
+        ) : (
+          <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" scrollEnabled={!scrollLocked}>
+            <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width))}>
+              {width > 0 ? <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} /> : null}
+            </View>
+            <Pressable style={styles.lessonRow} onPress={() => help()} accessibilityRole="button" accessibilityLabel="Open the guided lesson">
+              <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
+            </Pressable>
+          </ScrollView>
+        )}
       </ScrollLockProvider>
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('cymatics')} controlKey={lessonKey} onClose={() => setLessonOpen(false)} />
     </View>
@@ -109,8 +127,9 @@ const styles = StyleSheet.create({
   topNav: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingBottom: 6 },
   navBtn: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.amber },
   navBtnDisabled: { opacity: 0.3 },
-  navPos: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.textSub },
+  navPos: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.textSub },
   scroll: { padding: 16, paddingTop: 6, paddingBottom: 32, gap: 12 },
+  rackFill: { flex: 1 },
   lessonRow: { marginTop: 10, borderRadius: 10, borderWidth: 1, borderColor: '#232329', paddingVertical: 12, paddingHorizontal: 14 },
   lessonRowText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textSecondary },
 });

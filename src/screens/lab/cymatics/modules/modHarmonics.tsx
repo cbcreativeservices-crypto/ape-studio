@@ -94,8 +94,8 @@ const styles = StyleSheet.create({
   axis: { position: 'absolute', left: 12, right: 12, height: 2, backgroundColor: '#3a3a44', borderRadius: 1 },
   rung: { position: 'absolute', top: 3, width: 14, height: 28, borderRadius: 4, backgroundColor: '#ffc64d', borderWidth: 1, borderColor: '#8a6a1f' },
   rungOn: { backgroundColor: '#ffffff' },
-  tick: { position: 'absolute', top: 30, fontFamily: fonts.mono, fontSize: 8.5, color: colors.textSub, width: 16, textAlign: 'center' },
-  tag: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.2, borderWidth: 1, borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2 },
+  tick: { position: 'absolute', top: 30, fontFamily: fonts.mono, fontSize: 12, color: colors.textSub, width: 16, textAlign: 'center' },
+  tag: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, borderWidth: 1, borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2 },
   stop: { alignSelf: 'flex-start', borderRadius: 8, borderWidth: 1, borderColor: '#3a3a44', paddingHorizontal: 12, paddingVertical: 7 },
   stopText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.amber },
 });

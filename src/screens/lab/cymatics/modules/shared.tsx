@@ -18,7 +18,7 @@ export const P = StyleSheet.create({
   strong: { fontFamily: fonts.barlowMedium, fontSize: 14.5, lineHeight: 21, color: colors.textPrimary },
   card: { borderRadius: 10, borderWidth: 1, borderColor: '#232329', backgroundColor: '#101014', padding: 12, gap: 8 },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
-  badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: 'rgba(255,255,255,0.6)' },
+  badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: 'rgba(255,255,255,0.6)' },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   bullet: { flexDirection: 'row', gap: 8, alignItems: 'flex-start' },
   dot: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: colors.amber, lineHeight: 21 },

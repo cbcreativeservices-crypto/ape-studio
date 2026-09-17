@@ -44,7 +44,7 @@ import {
   type SkImage,
 } from '@shopify/react-native-skia';
 import { useDerivedValue, useFrameCallback, useSharedValue } from 'react-native-reanimated';
-import { MIDLINE_BLUE, heatColor, heatRgbW } from '../../../features/tools/levelColor';
+import { MIDLINE_BLUE, WAVE_LEVEL_STOPS, heatColor, heatRgbW } from '../../../features/tools/levelColor';
 import { HEAD_BY_ID, type ConeRead, type Driver, type MembraneSpec } from '../../../features/cymatics/membrane';
 import { colors, fonts } from '../../../theme/tokens';
 
@@ -194,6 +194,8 @@ export function MembraneView(p: MembraneViewProps) {
   }, [N, view]);
 
   // ── static meshes: heat / phase / nodes (plate idiom) ────────────────────
+  // Heat / 3D encode the RESPONSE, not a +/-1 shape (Plate parity): dark between resonances.
+  const strengthK = 0.12 + 0.88 * Math.max(0, Math.min(1, p.strength));
   const mesh = useMemo(() => {
     if (view !== 'heat' && view !== 'phase' && view !== 'nodes' && view !== 'section') return null;
     const verts: { x: number; y: number }[] = [];
@@ -209,7 +211,7 @@ export function MembraneView(p: MembraneViewProps) {
         let c: string;
         if (view === 'phase') c = v > 0 ? mixHex('#0b0b10', PHASE_UP, Math.min(1, a * 1.15)) : mixHex('#0b0b10', PHASE_DOWN, Math.min(1, a * 1.15));
         else if (view === 'nodes') c = a < 0.06 ? NODE_LINE : a < 0.12 ? '#8aa0bf' : '#101216';
-        else c = heatColor(a);
+        else c = heatColor(a * strengthK);
         cols.push(c);
       }
     }
@@ -221,7 +223,7 @@ export function MembraneView(p: MembraneViewProps) {
       }
     }
     return { verts, cols, idx };
-  }, [grid, N, view, ox, oy, D]);
+  }, [grid, N, view, ox, oy, D, strengthK]);
 
   // ── 3D head (tilted, strobed, head-shaped) ───────────────────────────────
   const M = 40;
@@ -237,7 +239,7 @@ export function MembraneView(p: MembraneViewProps) {
         const v = grid[gj * N + gi];
         vals[j * M + i] = v !== v ? 0 : v;
         inside[j * M + i] = v === v ? 1 : 0;
-        cols.push(heatColor(Math.abs(vals[j * M + i])));
+        cols.push(heatColor(Math.abs(vals[j * M + i]) * strengthK));
       }
     }
     for (let j = 0; j < M - 1; j++) {
@@ -248,7 +250,7 @@ export function MembraneView(p: MembraneViewProps) {
       }
     }
     return { vals, cols, idx };
-  }, [grid, N]);
+  }, [grid, N, strengthK]);
   const vals3dSV = useSharedValue(grid3d.vals);
   useEffect(() => {
     vals3dSV.value = grid3d.vals;
@@ -473,7 +475,7 @@ export function MembraneView(p: MembraneViewProps) {
                   <RadialGradient c={vec(cx - R * 0.35, cy - R * 0.4)} r={R * 1.1} colors={['rgba(255,255,255,0.22)', 'rgba(255,255,255,0)']} />
                 </Circle>
               ) : null}
-              {showMesh && mesh ? <Vertices vertices={mesh.verts} colors={mesh.cols} indices={mesh.idx} mode="triangles" opacity={view === 'section' ? 0.6 : 0.96} /> : null}
+              {showMesh && mesh ? <Vertices vertices={mesh.verts} colors={mesh.cols} indices={mesh.idx} mode="triangles" opacity={view === 'section' ? 0.6 : view === 'phase' || view === 'nodes' ? 0.35 + 0.61 * strengthK : 0.96} /> : null}
               {isSection ? <SkLine p1={vec(ox, oy + p.sectionY * D)} p2={vec(ox + D, oy + p.sectionY * D)} color="#ffc64d" strokeWidth={1.5} /> : null}
             </Group>
             {/* Bearing edge */}
@@ -485,8 +487,11 @@ export function MembraneView(p: MembraneViewProps) {
             <Circle cx={strikeX} cy={strikeY} r={2.4} color="#ff6b5e" />
             {isSection ? (
               <Group>
-                <SkLine p1={vec(ox, oy + D + 54)} p2={vec(ox + D, oy + D + 54)} color="#2f74ff" strokeWidth={1} />
-                <Path path={sectionPath} style="stroke" strokeWidth={3} color="#ffc64d" strokeJoin="round" strokeCap="round" />
+                <SkLine p1={vec(ox, oy + D + 54)} p2={vec(ox + D, oy + D + 54)} color={MIDLINE_BLUE} strokeWidth={1} />
+                {/* The trace is a +/- waveform: blue at the zero line, the ramp to +/- full excursion (colour standard). */}
+                <Path path={sectionPath} style="stroke" strokeWidth={3} strokeJoin="round" strokeCap="round">
+                  <LinearGradient start={vec(0, oy + D + 54 - 26)} end={vec(0, oy + D + 54 + 26)} colors={WAVE_LEVEL_STOPS.map((q) => q.color)} positions={WAVE_LEVEL_STOPS.map((q) => q.offset)} />
+                </Path>
               </Group>
             ) : null}
           </Group>
@@ -560,5 +565,5 @@ export function MembraneView(p: MembraneViewProps) {
 }
 
 const styles = StyleSheet.create({
-  lbl: { position: 'absolute', fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2, color: 'rgba(255,255,255,0.6)' },
+  lbl: { position: 'absolute', fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: 'rgba(255,255,255,0.6)' },
 });

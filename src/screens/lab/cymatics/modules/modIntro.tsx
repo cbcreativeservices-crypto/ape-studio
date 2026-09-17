@@ -47,6 +47,7 @@ export function IntroModule({ width, focused }: CymaticsModuleProps) {
           <LabChip label={`At resonance · ${formatHz(f1)}`} selected={atResonance} onPress={() => setAtResonance(true)} />
           <LabChip label={`Off resonance · ${formatHz(f1 * 0.78)}`} selected={!atResonance} onPress={() => setAtResonance(false)} />
         </View>
+        {!atResonance ? <Text style={P.caption}>Now tap AT RESONANCE — the drive level does not change, only the frequency.</Text> : null}
         <View style={{ borderRadius: 8, overflow: 'hidden' }}>
           <PlateDemo width={width - 26} spec={spec} hz={hz} view="particles" running={focused} />
           <Text style={[P.badge, { position: 'absolute', left: 8, bottom: 6 }]}>SIMULATION · 240 mm ALUMINUM · CENTRE-DRIVEN</Text>
@@ -55,7 +56,7 @@ export function IntroModule({ width, focused }: CymaticsModuleProps) {
         <Text style={P.caption}>
           {atResonance
             ? 'On a resonance the plate moves a lot for very little drive, and the sand snaps into a stable figure within seconds.'
-            : 'A little way off resonance the same drive barely moves the plate: the sand shivers in place and no figure forms. Now tap AT RESONANCE — the drive level does not change, only the frequency.'}
+            : 'A little way off resonance the same drive barely moves the plate: the sand shivers in place and no figure forms.'}
         </Text>
       </View>
 

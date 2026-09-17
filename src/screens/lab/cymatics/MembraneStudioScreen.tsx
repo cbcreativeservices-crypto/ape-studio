@@ -93,10 +93,13 @@ const VIEWS: { id: MembraneViewMode; label: string; short: string; blurb: string
   { id: 'phase', label: 'Phase', short: 'Phase', blurb: 'Amber rises while blue falls — the lobes either side of a nodal diameter move in opposite directions.' },
   { id: 'nodes', label: 'Node lines', short: 'Nodes', blurb: 'The nodal diameters and circles of the nearest mode — the lines a pinch of sand would gather on.' },
   { id: 'head3d', label: '3D head', short: '3D', blurb: 'Exaggerated head motion, strobed so you can see it (the real head moves at the drive frequency).' },
-  { id: 'section', label: 'Cross-section', short: 'Section', blurb: 'A slice through the head. Drag on the drum to move the slice.' },
+  { id: 'section', label: 'Cross-section', short: 'Slice', blurb: 'A slice through the head. Drag on the drum to move the slice.' },
   { id: 'speaker', label: 'Loudspeaker', short: 'Cone', blurb: 'A cutaway of a driver playing this frequency, plus the cone seen from the front: piston, edge flexing, radial modes, breakup.' },
 ];
 const HEAT_KEY = Array.from({ length: 9 }, (_, i) => heatColor(i / 8)) as [string, string, ...string[]];
+const RES_TINT = { below: colors.textSub, approaching: '#ffc64d', at: '#37e05f', between: '#7fbfff' } as const;
+// The cone stage is ORDINAL, not an amplitude: categorical tints (the Liquid ladder idiom), never the ramp.
+const CONE_TINT: Record<number, string> = { 1: colors.textSub, 2: '#37e05f', 3: '#37e05f', 4: '#ffc64d', 5: '#ff9f43', 6: '#ff6b5e' };
 const HEAD_SHORT: Record<HeadId, string> = { mylar10: 'M10', mylar7: 'M7', calfskin: 'Calf', latex: 'Ltx', kevlar: 'Kev' };
 
 export function MembraneStudioScreen() {
@@ -214,7 +217,7 @@ export function MembraneStudioScreen() {
         setFreq(Math.round(hzFromPos(v) * 10) / 10);
       },
       format: () => `${formatHz(freq)} · ${note.label} ${note.centsLabel}`,
-      formatShort: () => formatHz(freq),
+      formatShort: () => (freq >= 1000 ? `${(freq / 1000).toFixed(1)}k` : `${Math.round(freq)}Hz`),
       helpKey: 'frequency',
       chooser: {
         title: isSpeaker ? 'JUMP TO A CONE STAGE' : 'JUMP TO A MODE',
@@ -230,7 +233,7 @@ export function MembraneStudioScreen() {
       kind: 'group',
       id: 'head',
       label: 'HEAD',
-      valueLabel: `${Math.round(spec.diameterMm / 25.4)}″ ${HEAD_SHORT[spec.head]}`,
+      valueLabel: `${Math.round(spec.diameterMm / 25.4)}″${HEAD_SHORT[spec.head]}`,
       helpKey: 'head',
       render: () => (
         <View style={styles.tray}>
@@ -244,7 +247,7 @@ export function MembraneStudioScreen() {
           <Text style={styles.trayHead}>DIAMETER</Text>
           <View style={styles.chips}>
             {DIAMETERS.map((d) => (
-              <LabChip key={d.mm} label={d.label} selected={spec.diameterMm === d.mm} onPress={() => patch({ diameterMm: d.mm, kettle: d.mm >= 600 ? spec.kettle : spec.kettle })} onLongPress={() => openLesson('tension')} />
+              <LabChip key={d.mm} label={d.label} selected={spec.diameterMm === d.mm} onPress={() => patch({ diameterMm: d.mm })} onLongPress={() => openLesson('tension')} />
             ))}
           </View>
           <Text style={styles.trayHead}>TENSION (N/m)</Text>
@@ -277,10 +280,16 @@ export function MembraneStudioScreen() {
       kind: 'group',
       id: 'strike',
       label: 'STRIKE',
-      valueLabel: `r ${spec.strike.r.toFixed(2)}`,
+      valueLabel: STRIKES.find((x) => Math.abs(spec.strike.r - x.r) < 0.02 && Math.abs(spec.strike.thetaDeg - x.theta) < 1)?.id === 'quarter' ? 'Qtr' : spec.strike.r < 0.05 ? 'Ctr' : spec.strike.r > 0.7 ? 'Rim' : 'Half',
       helpKey: 'strike',
       render: () => (
         <View style={styles.tray}>
+          <Text style={styles.trayHead}>RUN</Text>
+          <View style={styles.chips}>
+            <LabChip label={sweeping ? '■ Stop sweep' : isSpeaker ? '▶ Sweep the cone stages' : '▶ Sweep the modes'} selected={sweeping} onPress={() => setSweeping((s) => !s)} />
+            <LabChip label={slowMo ? 'Slow motion ON' : 'Slow motion'} selected={slowMo} onPress={() => setSlowMo((s) => !s)} />
+            <LabChip label={silentDrive ? 'Silent drive ON' : 'Silent drive'} selected={silentDrive} onPress={() => setSilentDrive((s) => !s)} onLongPress={() => openLesson('silent')} />
+          </View>
           <Text style={styles.trayHead}>WHERE THE MALLET LANDS</Text>
           <View style={styles.chips}>
             {STRIKES.map((s) => (
@@ -296,7 +305,7 @@ export function MembraneStudioScreen() {
       kind: 'group',
       id: 'speaker',
       label: 'CONE',
-      valueLabel: driver.label.split(' ')[0],
+      valueLabel: driver.label.split(' ')[0].replace(' mm', ''),
       helpKey: 'cone',
       render: () => (
         <View style={styles.tray}>
@@ -343,22 +352,23 @@ export function MembraneStudioScreen() {
     },
   ];
 
+  const ex = modes.filter((m) => m.drive > 0.05);
   const bezel = isSpeaker
     ? [
         { k: 'DRIVE', v: formatHz(freq), helpKey: 'frequency' },
         { k: 'f_s', v: formatHz(driver.fs), helpKey: 'cone' },
         { k: 'ka', v: cone.ka.toFixed(2), helpKey: 'cone' },
-        { k: 'STAGE', v: `${CONE_STAGE_NUM[cone.stage]} / 6`, tint: levelColor(CONE_STAGE_NUM[cone.stage] / 6), helpKey: 'breakup', flex: 1.1 },
+        { k: 'STAGE', v: `${CONE_STAGE_NUM[cone.stage]} / 6`, tint: CONE_TINT[CONE_STAGE_NUM[cone.stage]], helpKey: 'breakup', flex: 1.1 },
       ]
     : [
         { k: 'DRIVE', v: formatHz(freq), helpKey: 'frequency' },
         { k: 'FUNDAMENTAL', v: formatHz(f01), helpKey: 'tension', flex: 1.2 },
         { k: 'MODE', v: st.dominant && st.strength > 0.5 ? st.dominant.label.split(' · ')[0] : '—', helpKey: 'modes' },
-        { k: 'RESPONSE', v: `${Math.round(st.strength * 100)} %`, tint: levelColor(st.strength), helpKey: 'resonance' },
+        // Tap the cell to land on the nearest driven mode (the bezel-cell verb).
+        { k: 'RESPONSE', v: `${Math.round(st.strength * 100)} %`, tint: levelColor(st.strength), helpKey: 'resonance', onPress: ex.length && st.strength <= 0.5 ? () => land(ex.reduce((a, b) => (Math.abs(a.hz - freq) < Math.abs(b.hz - freq) ? a : b)).hz) : undefined },
       ];
 
   const togglePlay = () => (tone.running ? tone.stop() : void tone.start());
-  const ex = modes.filter((m) => m.drive > 0.05);
   const ref11 = modes.find((m) => m.n === 1 && m.s === 1);
   const ratioBase = spec.kettle && ref11 ? ref11 : ex[0];
 
@@ -426,7 +436,7 @@ export function MembraneStudioScreen() {
         {!isSpeaker ? (
           <View style={styles.card}>
             <View style={styles.rowBetween}>
-              <Text style={[styles.resLabel, { color: levelColor(st.strength) }]}>{st.strength > 0.5 ? 'AT RESONANCE' : st.strength > 0.15 ? 'APPROACHING' : 'BETWEEN RESONANCES'}</Text>
+              <Text style={[styles.resLabel, { color: RES_TINT[st.strength > 0.5 ? 'at' : st.strength > 0.15 ? 'approaching' : 'between'] }]}>{st.strength > 0.5 ? 'AT RESONANCE' : st.strength > 0.15 ? 'APPROACHING' : 'BETWEEN RESONANCES'}</Text>
               <Text style={styles.resPct}>{Math.round(st.strength * 100)} %</Text>
             </View>
             <View style={styles.meterTrack}>
@@ -439,11 +449,6 @@ export function MembraneStudioScreen() {
                   ? `Nearest driven mode: ${ex.reduce((a, b) => (Math.abs(a.hz - freq) < Math.abs(b.hz - freq) ? a : b)).label} at ${formatHz(ex.reduce((a, b) => (Math.abs(a.hz - freq) < Math.abs(b.hz - freq) ? a : b)).hz)}.`
                   : 'No mode is driven from this strike point.'}
             </Text>
-            {ex.length && st.strength <= 0.5 ? (
-              <Pressable onPress={() => land(ex.reduce((a, b) => (Math.abs(a.hz - freq) < Math.abs(b.hz - freq) ? a : b)).hz)} style={styles.landBtn} accessibilityRole="button" accessibilityLabel="Land on the nearest mode">
-                <Text style={styles.landText}>TAP TO LAND ON THE NEAREST MODE ›</Text>
-              </Pressable>
-            ) : null}
           </View>
         ) : null}
 
@@ -467,12 +472,12 @@ export function MembraneStudioScreen() {
         {isSpeaker ? (
           <View style={styles.card}>
             <View style={styles.rowBetween}>
-              <Text style={[styles.stageLabel, { color: levelColor(CONE_STAGE_NUM[cone.stage] / 6) }]}>{CONE_STAGE_LABEL[cone.stage]}</Text>
+              <Text style={[styles.stageLabel, { color: CONE_TINT[CONE_STAGE_NUM[cone.stage]] }]}>{CONE_STAGE_LABEL[cone.stage]}</Text>
               <Text style={styles.stageNum}>STAGE {CONE_STAGE_NUM[cone.stage]} / 6</Text>
             </View>
             <View style={styles.ladder}>
               {[1, 2, 3, 4, 5, 6].map((n) => (
-                <View key={n} style={[styles.rung, n <= CONE_STAGE_NUM[cone.stage] && { backgroundColor: n === CONE_STAGE_NUM[cone.stage] ? levelColor(n / 6) : '#2c2e38' }, n === CONE_STAGE_NUM[cone.stage] && styles.rungOn]} />
+                <View key={n} style={[styles.rung, n <= CONE_STAGE_NUM[cone.stage] && { backgroundColor: n === CONE_STAGE_NUM[cone.stage] ? CONE_TINT[n] : '#2c2e38' }, n === CONE_STAGE_NUM[cone.stage] && styles.rungOn]} />
               ))}
             </View>
             <Text style={styles.caption}>{cone.why}</Text>
@@ -485,12 +490,7 @@ export function MembraneStudioScreen() {
           </View>
         ) : null}
 
-        <View style={styles.chips}>
-          <LabChip label={sweeping ? '■ Stop sweep' : isSpeaker ? '▶ Sweep the cone stages' : '▶ Sweep the modes'} selected={sweeping} onPress={() => setSweeping((s) => !s)} />
-          <LabChip label={slowMo ? 'Slow motion ON' : 'Slow motion'} selected={slowMo} onPress={() => setSlowMo((s) => !s)} />
-          <LabChip label={silentDrive ? 'Silent drive ON' : 'Silent drive'} selected={silentDrive} onPress={() => setSilentDrive((s) => !s)} onLongPress={() => openLesson('silent')} />
-        </View>
-        <Text style={styles.caption}>Nothing moves without a drive — press ▶ to play the tone, or SILENT DRIVE to shake without sound. Displays are strobed to a few hertz; the real head and cone move at the drive frequency.</Text>
+        <Text style={styles.caption}>Nothing moves without a drive — press ▶ to play the tone, or STRIKE › SILENT to shake without sound. STRIKE › SWEEP walks the modes (or the cone stages). Displays are strobed to a few hertz; the real head and cone move at the drive frequency.</Text>
 
         <View style={styles.chips}>
           <LabChip label="Guided experiments ›" selected={false} onPress={() => navigation.navigate('CymaticsModule', { id: 'experiments' })} />
@@ -509,9 +509,9 @@ export function MembraneStudioScreen() {
 
 const styles = StyleSheet.create({
   tray: { gap: 6, paddingBottom: 4 },
-  trayHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.textSub, marginTop: 6 },
+  trayHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.textSub, marginTop: 6 },
   trayBlurb: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSecondary },
-  trayMono: { fontFamily: fonts.mono, fontSize: 11.5, color: colors.textSub, marginTop: 4 },
+  trayMono: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub, marginTop: 4 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   card: { borderRadius: 10, borderWidth: 1, borderColor: '#232329', backgroundColor: '#101014', padding: 12, gap: 8 },
   cardTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: colors.amber },
@@ -521,10 +521,10 @@ const styles = StyleSheet.create({
   meterTrack: { height: 8, borderRadius: 4, backgroundColor: '#1b1c22', overflow: 'hidden' },
   meterFill: { height: 8, borderRadius: 4 },
   landBtn: { alignSelf: 'flex-start', borderRadius: 8, borderWidth: 1, borderColor: 'rgba(255,198,77,.6)', backgroundColor: 'rgba(255,198,77,.08)', paddingHorizontal: 10, paddingVertical: 6 },
-  landText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.amber },
+  landText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.amber },
   keyRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   keyBar: { flex: 1, height: 8, borderRadius: 4 },
-  keyText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: colors.textSub },
+  keyText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textSub },
   stageLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.4, flexShrink: 1 },
   stageNum: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub },
   ladder: { flexDirection: 'row', gap: 4 },
@@ -532,7 +532,7 @@ const styles = StyleSheet.create({
   rungOn: { height: 12, marginTop: -2 },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSub },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
-  readK: { fontFamily: fonts.mono, fontSize: 11.5, color: colors.textSub, flexShrink: 1 },
+  readK: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub, flexShrink: 1 },
   honest: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub, marginTop: 4 },
   err: { fontFamily: fonts.barlowRegular, fontSize: 13, color: '#ff6b5e' },
   noSkia: { alignItems: 'center', justifyContent: 'center', padding: 20 },
