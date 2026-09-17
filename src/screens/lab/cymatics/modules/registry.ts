@@ -15,7 +15,7 @@ export const CYMATICS_MODULES: { id: CymaticsModuleId; title: string; blurb: str
 
 /** Later phases — shown on the lab home as planned rows (no promises, no dates). */
 export const PLANNED_AREAS: { title: string; blurb: string }[] = [
-  { title: 'Liquid Cymatics Studio', blurb: 'A shallow dish on a shaker: Faraday waves, onset threshold, the half-frequency response, liquid presets.' },
+  // Liquid Cymatics Studio — LIVE (Phase 2, 2026-09-16); removed from here.
   { title: 'Membrane & Loudspeaker', blurb: 'Circular membrane modes and a loudspeaker cone from piston motion to breakup.' },
   { title: 'Harmony in Motion', blurb: 'Ratios, beats, wave addition, Lissajous figures and spectra — driving the physical simulation.' },
   { title: 'Other Cymatic Systems', blurb: 'Strings, water surfaces, air columns, bells, gongs and cymbals — what is actually vibrating in each.' },

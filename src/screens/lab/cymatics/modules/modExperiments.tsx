@@ -16,8 +16,8 @@ export function ExperimentsModule(_p: CymaticsModuleProps) {
   return (
     <View style={{ gap: 12 }}>
       <Text style={P.body}>
-        Eight structured activities. Each one opens the Plate Studio already set up for that step, so you can go straight to the
-        observation.
+        Twelve structured activities — eight on the Chladni plate, four in the liquid dish. Each one opens the studio already set up
+        for that step, so you can go straight to the observation.
       </Text>
       {EXPERIMENTS.map((e) => (
         <View key={e.id} style={P.card}>
@@ -38,8 +38,17 @@ export function ExperimentsModule(_p: CymaticsModuleProps) {
             <Text style={{ fontFamily: fonts.oswaldSemiBold, color: colors.amber }}>LOOK FOR · </Text>
             {e.lookFor}
           </Text>
-          <Pressable style={styles.btn} onPress={() => navigation.navigate('CymaticsPlateStudio', { preset: e.preset.id })} accessibilityRole="button" accessibilityLabel={`Set up the plate for experiment ${e.num}`}>
-            <Text style={styles.btnText}>SET UP THE PLATE ›</Text>
+          <Pressable
+            style={styles.btn}
+            onPress={() =>
+              e.studio === 'liquid'
+                ? navigation.navigate('CymaticsLiquidStudio', { preset: e.liquid!.id })
+                : navigation.navigate('CymaticsPlateStudio', { preset: e.preset!.id })
+            }
+            accessibilityRole="button"
+            accessibilityLabel={`Set up the ${e.studio === 'liquid' ? 'dish' : 'plate'} for experiment ${e.num}`}
+          >
+            <Text style={styles.btnText}>{e.studio === 'liquid' ? 'SET UP THE DISH ›' : 'SET UP THE PLATE ›'}</Text>
           </Pressable>
         </View>
       ))}

@@ -317,7 +317,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       // LIVE Phase 1 (owner GO 2026-09-16, spec docs/APE_CYMATICS_LAB_SPEC_2026_09_16.md):
       // standalone lab home + Chladni Plate Studio + theory/integrity modules
       // + guided experiments. Liquid / membrane / harmony / art phases follow.
-      { name: 'Cymatics Lab: Sound Made Visible', blurb: 'Chladni plates, resonance and normal modes — build a plate, drive it with a tone, watch sand find the still lines. Why a frequency has no shape of its own.', route: 'CymaticsLab' },
+      { name: 'Cymatics Lab: Sound Made Visible', blurb: 'Chladni plates and a liquid dish on a shaker — build a plate, drive it with a tone, watch sand find the still lines; shake a liquid past its Faraday threshold and watch the surface answer at half the frequency. Why a frequency has no shape of its own.', route: 'CymaticsLab' },
     ],
   },
   {

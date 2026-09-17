@@ -95,6 +95,10 @@ export function CymaticsHomeScreen() {
           <Text style={styles.studioBtnText}>OPEN THE CHLADNI PLATE STUDIO ›</Text>
           <Text style={styles.studioBtnSub}>Build a plate · drive it with a tone · seven synchronised views</Text>
         </Pressable>
+        <Pressable style={[styles.studioBtn, styles.studioBtnLiquid]} onPress={() => navigation.navigate('CymaticsLiquidStudio', {})} accessibilityRole="button" accessibilityLabel="Open the Liquid Cymatics Studio">
+          <Text style={[styles.studioBtnText, { color: '#7fd4ff' }]}>OPEN THE LIQUID CYMATICS STUDIO ›</Text>
+          <Text style={styles.studioBtnSub}>A dish on a shaker · Faraday waves at half the drive frequency · eight liquids</Text>
+        </Pressable>
 
         <Text style={styles.sectionTitle}>LEARN &amp; EXPERIMENT</Text>
         {CYMATICS_MODULES.map((m, i) => (
@@ -132,6 +136,7 @@ const styles = StyleSheet.create({
   heroFallbackText: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textSub },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14.5, lineHeight: 21, color: colors.textSecondary },
   studioBtn: { borderRadius: 12, borderWidth: 1.5, borderColor: 'rgba(255,198,77,.75)', backgroundColor: '#1a1409', paddingVertical: 14, paddingHorizontal: 16, gap: 3 },
+  studioBtnLiquid: { borderColor: 'rgba(127,212,255,.7)', backgroundColor: '#0a1520' },
   studioBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1.2, color: colors.amber },
   studioBtnSub: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub },
   sectionTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: colors.amber, marginTop: 8 },

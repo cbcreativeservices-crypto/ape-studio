@@ -5,6 +5,7 @@
  * exactly the situation the step describes.
  */
 import type { PlateSpec } from './plateModes';
+import type { LiquidSpec } from './faraday';
 
 export type FreqStrategy =
   | { kind: 'hz'; hz: number }
@@ -18,6 +19,16 @@ export type StudioPreset = {
   view?: 'particles' | 'heat' | 'overlay' | 'phase' | 'nodes' | 'plate3d' | 'section';
 };
 
+/** Liquid Studio preset (Phase 2): dish + liquid + drive frequency + acceleration. */
+export type LiquidPreset = {
+  id: string;
+  spec: Partial<LiquidSpec>;
+  hz: number;
+  /** Vertical acceleration, g. `'onset'` = land just above this setup's threshold; a number = absolute. */
+  accelG: number | 'onset';
+  view?: 'rig' | 'surface' | 'height' | 'contours' | 'refraction' | 'mono' | 'liquid3d' | 'section';
+};
+
 export type Experiment = {
   id: string;
   num: number;
@@ -26,7 +37,10 @@ export type Experiment = {
   steps: string[];
   /** What the learner should notice — shown after they open the setup. */
   lookFor: string;
-  preset: StudioPreset;
+  /** Which studio the experiment opens (plate = Phase 1, liquid = Phase 2). */
+  studio: 'plate' | 'liquid';
+  preset?: StudioPreset;
+  liquid?: LiquidPreset;
 };
 
 export const EXPERIMENTS: readonly Experiment[] = [
@@ -42,6 +56,7 @@ export const EXPERIMENTS: readonly Experiment[] = [
       'Stop when the figure holds still. Read the mode label.',
     ],
     lookFor: 'Between resonances the plate barely moves and the sand only shivers. Near a mode the motion grows fast and the sand walks to the still lines within a second or two.',
+    studio: 'plate',
     preset: { id: 'first-resonance', spec: { shape: 'square', material: 'aluminum', sizeMm: 240, thicknessMm: 1 }, freq: { kind: 'hz', hz: 60 } },
   },
   {
@@ -56,6 +71,7 @@ export const EXPERIMENTS: readonly Experiment[] = [
       'Watch it migrate onto the blue lines.',
     ],
     lookFor: 'Sand collects on the nodal lines (minimum motion) and is thrown off the red antinodes (maximum motion). The heat map is the prediction; the sand is the confirmation.',
+    studio: 'plate',
     preset: { id: 'predict', spec: { shape: 'square', material: 'aluminum', sizeMm: 240, thicknessMm: 1 }, freq: { kind: 'mode', index: 2 }, view: 'heat' },
   },
   {
@@ -69,6 +85,7 @@ export const EXPERIMENTS: readonly Experiment[] = [
       'Switch to CROSS-SECTION and drag the slice through a nodal line.',
     ],
     lookFor: 'The nodal line is a hinge: zero displacement on the line, opposite signs either side. Each stable figure is one normal mode of the plate.',
+    studio: 'plate',
     preset: { id: 'nodes-antinodes', spec: { shape: 'circle', material: 'aluminum', sizeMm: 240, thicknessMm: 1, exciter: { x: 0.85, y: 0.5 } }, freq: { kind: 'mode', index: 0 }, view: 'phase' },
   },
   {
@@ -83,6 +100,7 @@ export const EXPERIMENTS: readonly Experiment[] = [
       'Lower FREQUENCY until the same figure returns. Compare the two numbers.',
     ],
     lookFor: 'Doubling every horizontal dimension quarters the modal frequency (f ∝ 1/L²). The figure comes back at about one quarter of the original Hz.',
+    studio: 'plate',
     preset: { id: 'diameter', spec: { shape: 'circle', material: 'aluminum', sizeMm: 200, thicknessMm: 1, exciter: { x: 0.85, y: 0.5 } }, freq: { kind: 'mode', index: 0 } },
   },
   {
@@ -96,6 +114,7 @@ export const EXPERIMENTS: readonly Experiment[] = [
       'Sweep upward until the same figure returns.',
     ],
     lookFor: 'Doubling thickness doubles the modal frequency (f ∝ h). Thicker plates are stiffer out of plane, so every mode moves up together.',
+    studio: 'plate',
     preset: { id: 'thickness', spec: { shape: 'square', material: 'aluminum', sizeMm: 240, thicknessMm: 1 }, freq: { kind: 'mode', index: 1 } },
   },
   {
@@ -110,6 +129,7 @@ export const EXPERIMENTS: readonly Experiment[] = [
       'Switch to solid wood and rotate the GRAIN: the modes re-order.',
     ],
     lookFor: 'Frequency follows √(E/ρ): stiffness raises it, density lowers it. Damping does not move the resonance — it broadens and blurs it.',
+    studio: 'plate',
     preset: { id: 'materials', spec: { shape: 'square', material: 'aluminum', sizeMm: 240, thicknessMm: 1.5 }, freq: { kind: 'mode', index: 1 } },
   },
   {
@@ -124,6 +144,7 @@ export const EXPERIMENTS: readonly Experiment[] = [
       'Drag it to a corner: different modes light up.',
     ],
     lookFor: 'Modes are excited in proportion to how much they move under the driver. Centre-driven plates only show centre-antinode modes.',
+    studio: 'plate',
     preset: { id: 'exciter', spec: { shape: 'square', material: 'aluminum', sizeMm: 240, thicknessMm: 1, exciter: { x: 0.5, y: 0.5 } }, freq: { kind: 'mode', index: 0 } },
   },
   {
@@ -137,8 +158,67 @@ export const EXPERIMENTS: readonly Experiment[] = [
       'Divide each by the first: they are not 2, 3, 4…',
     ],
     lookFor: 'A string’s modes are f, 2f, 3f… A free plate’s are inharmonic (≈ 1, 1.73, 2.33, 3.9…). Chladni figures show resonance and normal modes — not musical harmony.',
+    studio: 'plate',
     preset: { id: 'harmonic-vs-modes', spec: { shape: 'circle', material: 'aluminum', sizeMm: 240, thicknessMm: 1, exciter: { x: 0.85, y: 0.5 } }, freq: { kind: 'mode', index: 0 } },
+  },
+  // ── Phase 2 — Liquid Studio (spec §5 P2: 8–11) ────────────────────────────
+  {
+    id: 'liquid-first-pattern',
+    num: 9,
+    title: 'Create a circular liquid pattern',
+    goal: 'Take a dish of water past the Faraday threshold and watch a standing pattern lock in at HALF the drive frequency.',
+    steps: [
+      'The dish starts just above threshold at 40 Hz. Watch the RESPONSE readout: 20 Hz.',
+      'Switch VIEW to REFRACTION — the classic “light through the water” look.',
+      'Nudge SHAKE up a little: the pattern sharpens; too far and it starts to break up.',
+    ],
+    lookFor: 'The surface oscillates at half the drive frequency — the subharmonic signature of Faraday waves. The pattern family depends on the dish size versus the wavelength: small dish → the dish’s own rings and lobes.',
+    studio: 'liquid',
+    liquid: { id: 'liquid-first-pattern', spec: { liquid: 'water', sizeMm: 100, depthMm: 4 }, hz: 40, accelG: 'onset', view: 'surface' },
+  },
+  {
+    id: 'liquid-threshold',
+    num: 10,
+    title: 'Find the Faraday onset threshold',
+    goal: 'Raise the shaking from zero until the flat surface first breaks into a pattern, and read the threshold.',
+    steps: [
+      'Start with SHAKE near zero: the surface is flat and only rides the platform.',
+      'Raise SHAKE slowly. Note the stages: sloshing or edge ripples first, all AT the drive frequency.',
+      'The moment the readout flips to PATTERN ONSET, compare your acceleration with the THRESHOLD readout.',
+    ],
+    lookFor: 'Below threshold nothing organises — the drive is not strong enough to pump the subharmonic wave against damping. The threshold rises with viscosity, and with a pinned (wetting) rim.',
+    studio: 'liquid',
+    liquid: { id: 'liquid-threshold', spec: { liquid: 'water', sizeMm: 150, depthMm: 5 }, hz: 50, accelG: 0.02, view: 'surface' },
+  },
+  {
+    id: 'liquid-viscosity',
+    num: 11,
+    title: 'Compare water and a glycerin mixture',
+    goal: 'Same dish, same frequency, same shaking — swap the liquid.',
+    steps: [
+      'Water at 45 Hz is well above threshold with a square-ish lattice.',
+      'In LIQUID, choose Glycerin–water 50/50. The pattern dims or vanishes: the threshold has climbed.',
+      'Raise SHAKE until the pattern returns. Notice it now prefers stripes.',
+    ],
+    lookFor: 'Viscosity damps the wave, so onset needs more acceleration; higher viscosity also shifts the preferred lattice from squares toward stripes (the published phase map).',
+    studio: 'liquid',
+    liquid: { id: 'liquid-viscosity', spec: { liquid: 'water', sizeMm: 200, depthMm: 5 }, hz: 45, accelG: 0.35, view: 'surface' },
+  },
+  {
+    id: 'liquid-depth',
+    num: 12,
+    title: 'Change the depth without changing the frequency',
+    goal: 'Pour more liquid in and watch the wavelength and threshold move at a fixed drive.',
+    steps: [
+      'A 2 mm layer of water at 30 Hz: short waves, strongly damped by the bottom.',
+      'In DISH, raise DEPTH to 8 mm, then 15 mm. Read λ and THRESHOLD each time.',
+      'Bring SHAKE back to the same value and compare the patterns.',
+    ],
+    lookFor: 'In a thin layer the bottom boundary layer steals energy (higher threshold) and tanh(kd) shortens the wave. Deeper liquid approaches the deep-water dispersion and the threshold falls.',
+    studio: 'liquid',
+    liquid: { id: 'liquid-depth', spec: { liquid: 'water', sizeMm: 150, depthMm: 2 }, hz: 30, accelG: 0.3, view: 'height' },
   },
 ];
 
-export const PRESET_BY_ID: Record<string, StudioPreset> = Object.fromEntries(EXPERIMENTS.map((e) => [e.preset.id, e.preset]));
+export const PRESET_BY_ID: Record<string, StudioPreset> = Object.fromEntries(EXPERIMENTS.filter((e) => e.preset).map((e) => [e.preset!.id, e.preset!]));
+export const LIQUID_PRESET_BY_ID: Record<string, LiquidPreset> = Object.fromEntries(EXPERIMENTS.filter((e) => e.liquid).map((e) => [e.liquid!.id, e.liquid!]));

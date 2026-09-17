@@ -44,6 +44,13 @@ The app scales λ with the same `h/L²·√(E/ρ(1−ν²))` law and evaluates W
 - Behaviour stages 1–10 are driven by `(a/a_c, f)` bands — flat → slosh → ripples → onset → stable pattern → mode transition → mixed → unstable → chaotic → splash/atomisation warning.
 - Pattern family (rings, spokes, lobes, stripes, squares, hexagons, stars, quasiperiodic, travelling) from a **curated stable-pattern map** in (depth, viscosity, f, a) space — labelled **Approximated** (physics-constrained, not CFD). The app never promises a pattern outside its region.
 - Liquid presets (water, salt water, glycerin mix, silicone oil, light/thick mineral oil, gel, cornstarch non-Newtonian) as (ρ, μ, σ) rows; descriptive ↔ scientific control pairs shown together.
+- **Phase 2 as built (2026-09-16)** — `src/features/cymatics/liquids.ts` (8 liquids with ρ/μ/σ, tint + gloss for the renderer, `kinematicViscosity(l, T)` with a −2.5 %/°C thinning law, `CONTROL_PAIRS`) and `src/features/cymatics/faraday.ts`:
+  - dispersion solved for k at the response frequency by bisection (**Calculated**); container modes for circle / ring (J_n zeros pinned, J_n′ zeros free), square and rectangle (Fourier) up to 200 Hz (**Calculated**);
+  - onset threshold `a_c = 4γω_r / (k·tanh kd)` with γ = bulk `2νk²` + bottom boundary layer `k√(νω/2)/sinh(2kd)` + contact-line `c√(νω)/R` (c = 4 pinned, 1.2 free); cornstarch uses an effective ν that rises with a (shear-thickening) — **Approximated**; gel/thick oil report "no pattern in this rig's range" when a_c > 2.5 g;
+  - stage ladder from a/a_c bands (< 0.15 flat · < 0.6 sloshing / ripples · < 1 ripples · < 1.15 onset · < 1.8 stable · < 2.6 transition · < 3.5 mixed · < 5 unstable · else chaotic; splash when the crest reaches 80 % of the wall or a/a_c > 7) — **Illustrative** divisions, stated on screen;
+  - pattern family: dish modes when dish/λ < 2.5, else the bulk map (ν ≤ 4 cSt → squares below 90 Hz else stripes; ν ≤ 15 cSt → hexagons below 50 Hz else stripes; thicker → stripes; two-frequency drive → quasiperiodic) — **Approximated**, from Kudrolli & Gollub / Binks & van de Water / Edwards & Fauve;
+  - `sampleSurface` returns the standing basis A and its partner B (quadrature or competing family) on a 64×64 grid; `src/screens/lab/cymatics/vizLiquid.tsx` composes h = env·(wA·A + wB·B) per frame in a reanimated worklet (stage-dependent weights: standing / crossfade / travelling / two drifting envelopes), shades a 64×64 RGBA buffer, and draws it as an SkImage with linear sampling — no React state per frame;
+  - 8 tests in `test/cymaticsFaraday.test.ts` (dispersion limits, f/2 response, threshold ordering water < glycerin, shallow > deep, pinned > free, Bessel zeros, monotonic stages, family map, damped liquids, surface basis).
 
 ### 1.5 Membrane + loudspeaker (Phase 3)
 Circular membrane: exact `J_n(k r) cos(nθ)` modes with tension/surface-density scaling. Loudspeaker cone: piston → resonance → cone flexing → radial modes → breakup → surround/dust-cap motion, as an illustrated cutaway driven by the membrane engine with a stiffness profile.
@@ -64,7 +71,7 @@ Circular membrane: exact `J_n(k r) cos(nθ)` modes with tension/surface-density 
 CymaticsHome  (lab home, LabShell)
  ├─ 1 What Is Cymatics?           animated intro (pressure → vibration → material moves; node vs antinode; why resonance)
  ├─ 2 Chladni Plate Studio        THE central experience
- ├─ 3 Liquid Cymatics Studio      Phase 2
+ ├─ 3 Liquid Cymatics Studio      Phase 2 — BUILT (route CymaticsLiquidStudio; second button on the lab home)
  ├─ 4 Membrane & Loudspeaker      Phase 3
  ├─ 5 Nodes, Antinodes & Modes    teaching panel (interactive)
  ├─ 6 Harmonics vs Plate Modes    string / air column / membrane / plate comparison
@@ -81,6 +88,8 @@ READOUTS (Hz · nearest note · octave · cents · wavelength where relevant · 
 
 ### Views (synchronised, same state)
 Particle (sand/powder) · Amplitude heat map (`heatColor`) · Particle ⊕ heat overlay · 3D exaggerated plate (Skia, tilted) · Slow-motion ± displacement · Cross-section slice (movable) · Phase view (opposite-sign regions) · Node-only · Resonance-response graph · Spectrum. Liquid adds reflective surface, height-map, contour, refraction, monochrome.
+
+**Liquid Studio as built (Phase 2):** views = THE RIG (side elevation: lamp, dish + liquid layer, coupling platform bobbing at the DRIVE rate while the surface answers at half of it, shaker basket, bench; travel readout) · LIQUID SURFACE (lit Blinn-Phong surface, liquid tint + gloss) · HEIGHT MAP (Academy ramp) · CONTOURS (marching-squares iso-lines, amber crests / blue troughs) · REFRACTION (caustic web from the surface Laplacian) · MONOCHROME · 3D SURFACE (Vertices mesh, strobed) · CROSS-SECTION (drag on the dish). Bezel: DRIVE · RESP (f/2, or f* before onset) · λ · a/a꜀ tinted by stage. Dock: FREQ (10–200 Hz, chooser "drive at twice a dish mode") · SHAKE (0.02–1.5 g, level ramp, platform-travel readout) · LIQUID (8 presets + temperature + plain-words ↔ property table + ν/σ/ρ line) · DISH (circle/square/rect/ring, 60–300 mm, depth 2–15 mm, wall 10–40 mm, flat/bowl bottom, pinned/free rim) · DRIVE (sine/square/triangle/pulse via the native additive/burst modes; second tone 2:1 / 3:2 / 4:3 via GEN_MODES.dual on engine ≥ 8, shown-only before; slow motion) · VIEW (sticky). Well: stage ladder 1–10 with the physics "why", onset vs current g with ±5 % nudges, damping breakdown (bulk/bottom/rim) + family, sweep 15→150 Hz, silent drive, "what this rig is" (dish/λ, lowest dish modes), RIG SAFETY (never pour liquid into a loudspeaker), honesty note. Displays are strobed to ~1.4 Hz (0.3 Hz slow-mo) and say so. Guided lesson keys: `liquid_display, faraday, threshold, acceleration, liquid, viscosity, depth, dish, contact_line, stages, waveform, dual_liquid`.
 
 ### Frequency readout everywhere
 Hz · nearest note + octave · cents · λ (in the medium where meaningful) · mode · resonance strength.
@@ -107,7 +116,7 @@ P4: 14 reproduce a saved pattern from its settings · 15 design, colour, save, p
 | Phase | Deliverable | Verify |
 |---|---|---|
 | 1 | Home, intro, Plate Studio (rect/square/circle, 8 materials, orthotropic wood, all controls, 8 views), Nodes/Modes, Harmonics vs Modes, Evidence vs Myth, 8 experiments, catalog row live | Pixel: sweep finds modes at predicted Hz; square (1,1)± diagonal figure; size/thickness scaling matches formula; exciter-at-node suppression; 60 fps particle view; tone plays through gate |
-| 2 | Liquid Studio + stages + curated patterns + liquid views + 4 experiments | Threshold + ½f behaviour visible; no pattern outside its region |
+| 2 | Liquid Studio + stages + curated patterns + liquid views + 4 experiments — **BUILT 2026-09-16** (experiments #9–12 in the app's numbering route to the Liquid Studio with `SET UP THE DISH ›`; the Liquid row left PLANNED AREAS) | Threshold + ½f behaviour visible; no pattern outside its region — Pixel: RESP shows f* below onset and f/2 above; a/a꜀ bezel tints by stage; silicone 10 cSt at 40 Hz reports onset ≈ 1.2 g vs water ≈ 0.16 g; gel/thick oil report out-of-range instead of inventing a pattern |
 | 3 | Harmony in Motion, Membrane/Speaker, Other Systems, Change-One-Thing, remaining experiments; `dual` generator proposal | ratio audio exact via additive; detune visual-only until build |
 | 4 | Gallery + Art Studio + exports | export parity with Harmonograph; SVG opens in a vector editor |
 
