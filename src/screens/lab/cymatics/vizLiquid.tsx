@@ -48,7 +48,7 @@ import {
   type SkImage,
 } from '@shopify/react-native-skia';
 import { useDerivedValue, useFrameCallback, useSharedValue } from 'react-native-reanimated';
-import { heatColor, heatRgbW } from '../../../features/tools/levelColor';
+import { MIDLINE_BLUE, WAVE_LEVEL_STOPS, heatColor, heatRgbW } from '../../../features/tools/levelColor';
 import type { LiquidSpec, LiquidState, Stage } from '../../../features/cymatics/faraday';
 import { colors, fonts } from '../../../theme/tokens';
 
@@ -246,11 +246,13 @@ export function LiquidView(p: LiquidViewProps) {
         } else if (v === 2 || v === 7 || v === 3) {
           // HEIGHT MAP, and the field under CROSS-SECTION / CONTOURS: the house
           // heat ramp (worklet twin of heatColor), dimmed where lines draw on top.
+          // The ramp is never multiplied (that turns blue into the "still"
+          // navy and loses the hue's meaning) — CONTOURS / CROSS-SECTION dim
+          // the drawn image by opacity instead (learning pass A4).
           const rgb = heatRgbW(Math.abs(c));
-          const dim = v === 2 ? 1 : v === 7 ? 0.6 : 0.5;
-          R = rgb[0] * dim;
-          G = rgb[1] * dim;
-          Bc = rgb[2] * dim;
+          R = rgb[0];
+          G = rgb[1];
+          Bc = rgb[2];
         } else if (v === 4) {
           // Caustics: light focuses where the surface is concave.
           //
@@ -388,18 +390,24 @@ export function LiquidView(p: LiquidViewProps) {
     const cols: string[] = [];
     const idx: number[] = [];
     const mask: number[] = [];
+    // Colour tracks the amplitude actually drawn: the envelope times the
+    // stage's blend of A and B at the crest (learning pass A6) — an onset
+    // ripple at env 0.25 reads a quarter of the way up the ramp, not red.
+    const env = state.envelope;
+    const [wA, wB] = weightsW(STAGE_CODE[state.stage], state.blend, 0, 0);
     for (let j = 0; j < M; j++) {
       for (let i = 0; i < M; i++) {
         const gi = Math.min(N - 1, Math.floor(((i + 0.5) / M) * N));
         const gj = Math.min(N - 1, Math.floor(((j + 0.5) / M) * N));
         const v = gridA[gj * N + gi];
+        const b = gridB[gj * N + gi];
         const inside = !Number.isNaN(v);
         mask.push(inside ? 1 : 0);
         // Outside-the-dish vertices keep an OPAQUE edge colour rather than a
         // transparent one: they are never drawn (see the quad test below), and a
         // transparent vertex bled to black across the shared edge, which is what
         // put the dark corners on the mesh (owner debug 2026-09-17).
-        cols.push(heatColor(inside ? Math.abs(v) : 0));
+        cols.push(heatColor(inside ? Math.min(1, Math.abs(env * (wA * v + wB * (Number.isNaN(b) ? 0 : b)))) : 0));
       }
     }
     // Emit a quad ONLY when all four of its corners are inside the dish, so the
@@ -412,7 +420,7 @@ export function LiquidView(p: LiquidViewProps) {
       }
     }
     return { cols, idx, mask };
-  }, [gridA, N]);
+  }, [gridA, gridB, N, state.envelope, state.stage, state.blend]);
   const verts3d = useDerivedValue(() => {
     const A = gridASV.value;
     const B = gridBSV.value;
@@ -595,7 +603,12 @@ export function LiquidView(p: LiquidViewProps) {
   const showImage = !isRig && !is3d;
 
   return (
-    <View style={{ width, height }} {...pan.panHandlers}>
+    <View
+      style={{ width, height }}
+      accessible
+      accessibilityLabel={`Liquid display, ${LIQUID_VIEW_LABELS[view].toLowerCase()} view, ${state.stage}${p.dragTarget ? ', drag on the dish to move the slice' : ''}`}
+      {...pan.panHandlers}
+    >
       <Canvas style={{ width, height }}>
         {isRig ? (
           <Group>
@@ -610,25 +623,56 @@ export function LiquidView(p: LiquidViewProps) {
             <Rect x={rig.cx - 20} y={rig.lampY} width={40} height={9} color="#3a3a40" />
             <Rect x={rig.cx - 20} y={rig.lampY} width={40} height={9} style="stroke" strokeWidth={1} color="#55555e" />
             <Rect x={rig.cx - 11} y={rig.lampY + 9} width={22} height={4} color="#ffe6a8" />
-            {/* Bench */}
+            {/* Lamp glow around the aperture */}
+            <Circle cx={rig.cx} cy={rig.lampY + 11} r={26}>
+              <RadialGradient c={vec(rig.cx, rig.lampY + 11)} r={26} colors={['rgba(255,230,168,0.35)', 'rgba(255,230,168,0)']} />
+            </Circle>
+            {/* Bench, with the shaker's shadow */}
             <Rect x={0} y={rig.groundY} width={width} height={22} color="#151518" />
             <SkLine p1={vec(0, rig.groundY)} p2={vec(width, rig.groundY)} color="#2b2b30" strokeWidth={1.5} />
-            {/* Shaker: magnet + basket + surround (a loudspeaker-style driver) */}
-            <Rect x={rig.cx - 34} y={rig.groundY - 26} width={68} height={26} color="#2d2d33" />
-            <Rect x={rig.cx - 34} y={rig.groundY - 26} width={68} height={26} style="stroke" strokeWidth={1} color="#4a4a52" />
-            <Rect x={rig.cx - 22} y={rig.groundY - 40} width={44} height={14} color="#26262b" />
-            <Path path={rig.basket} color="#1f1f24" />
-            <Path path={rig.basket} style="stroke" strokeWidth={1.2} color="#4a4a52" />
+            <Oval x={rig.cx - 96} y={rig.groundY - 6} width={200} height={14} color="rgba(0,0,0,0.45)" />
+            {/* Shaker: magnet + basket + surround (a loudspeaker-style driver), lit from the upper-left */}
+            <Rect x={rig.cx - 34} y={rig.groundY - 26} width={68} height={26}>
+              <LinearGradient start={vec(rig.cx - 34, rig.groundY - 26)} end={vec(rig.cx + 34, rig.groundY)} colors={['#45454d', '#2d2d33', '#1a1a1e']} />
+            </Rect>
+            <Rect x={rig.cx - 34} y={rig.groundY - 26} width={68} height={26} style="stroke" strokeWidth={1} color="#5a5a62" />
+            <Rect x={rig.cx - 22} y={rig.groundY - 40} width={44} height={14}>
+              <LinearGradient start={vec(rig.cx - 22, rig.groundY - 40)} end={vec(rig.cx + 22, rig.groundY - 26)} colors={['#3a3a42', '#26262b']} />
+            </Rect>
+            <Path path={rig.basket}>
+              <LinearGradient start={vec(rig.cx - 70, rig.basketTop)} end={vec(rig.cx + 40, rig.basketBot)} colors={['#34343b', '#1f1f24', '#141417']} />
+            </Path>
+            <Path path={rig.basket} style="stroke" strokeWidth={1.2} color="#55555e" />
             {/* Moving assembly: cone dust-cap → rod → platform → dish → liquid */}
             <Group transform={rigTransform}>
               <Oval x={rig.cx - 74} y={rig.platformY + 6} width={148} height={16} color="#3a3a42" />
-              <Rect x={rig.cx - 5} y={rig.platformY + 14} width={10} height={rig.groundY - 40 - rig.platformY - 14} color="#55555e" />
-              <Oval x={rig.cx - 80} y={rig.platformY - 4} width={160} height={18} color="#5b5b66" />
-              <Oval x={rig.cx - 80} y={rig.platformY - 4} width={160} height={18} style="stroke" strokeWidth={1} color="#8a8a96" />
+              <Rect x={rig.cx - 5} y={rig.platformY + 14} width={10} height={rig.groundY - 40 - rig.platformY - 14}>
+                <LinearGradient start={vec(rig.cx - 5, 0)} end={vec(rig.cx + 5, 0)} colors={['#8a8a96', '#55555e', '#3a3a42']} />
+              </Rect>
+              <Oval x={rig.cx - 80} y={rig.platformY - 4} width={160} height={18}>
+                <LinearGradient start={vec(rig.cx - 80, rig.platformY - 4)} end={vec(rig.cx + 80, rig.platformY + 14)} colors={['#7c7c88', '#5b5b66', '#3f3f48']} />
+              </Oval>
+              <Oval x={rig.cx - 80} y={rig.platformY - 4} width={160} height={18} style="stroke" strokeWidth={1} color="#9a9aa6" />
               {/* Dish body */}
               <Rect x={rig.cx - rig.dishHalfW} y={rig.dishRimY} width={rig.dishHalfW * 2} height={rig.dishDepthPx} color="rgba(190,205,215,0.10)" />
               <Rect x={rig.cx - rig.dishHalfW} y={rig.dishRimY} width={rig.dishHalfW * 2} height={rig.dishDepthPx} style="stroke" strokeWidth={2} color={rimColor} />
               <Oval x={rig.cx - rig.dishHalfW} y={rig.dishRimY - 5} width={rig.dishHalfW * 2} height={10} style="stroke" strokeWidth={1.2} color="#c4cad2" />
+              {/* Bowl bottom (the model shortens the wave toward the rim when the floor curves) */}
+              {spec.bottom === 'bowl' ? (
+                <Path
+                  path={(() => {
+                    const pb = Skia.PathBuilder.Make();
+                    const y0 = rig.dishRimY + rig.dishDepthPx;
+                    pb.moveTo(rig.cx - rig.dishHalfW + 2, y0 - rig.liquidPx * 0.9);
+                    pb.quadTo(rig.cx, y0 + 2, rig.cx + rig.dishHalfW - 2, y0 - rig.liquidPx * 0.9);
+                    return pb.detach();
+                  })()}
+                  style="stroke"
+                  strokeWidth={2}
+                  color="#c4cad2"
+                  opacity={0.8}
+                />
+              ) : null}
               {/* Liquid (profile from the surface field) */}
               <Path path={rigSurface} color={p.tint} opacity={0.85} />
               <Path path={rigSurface} style="stroke" strokeWidth={1.5} color="rgba(255,255,255,0.55)" />
@@ -641,7 +685,7 @@ export function LiquidView(p: LiquidViewProps) {
             <Path path={outline} color="rgba(0,0,0,0.55)" transform={[{ translateY: 6 }]} />
             <Group clip={outline}>
               <Rect x={ox} y={oy} width={dishW} height={dishH} color="#0b0d12" />
-              <SkiaImage image={surface} x={ox} y={oy} width={dishW} height={dishH} fit="fill" sampling={{ filter: FilterMode.Linear, mipmap: MipmapMode.None }} />
+              <SkiaImage image={surface} x={ox} y={oy} width={dishW} height={dishH} fit="fill" sampling={{ filter: FilterMode.Linear, mipmap: MipmapMode.None }} opacity={view === 'contours' ? 0.5 : isSection ? 0.6 : 1} />
               {view === 'surface' ? (
                 <Rect x={ox} y={oy} width={dishW} height={dishH}>
                   <RadialGradient c={vec(ox + dishW * 0.3, oy + dishH * 0.22)} r={dishW * 0.75} colors={['rgba(255,255,255,0.16)', 'rgba(255,255,255,0)']} />
@@ -650,7 +694,7 @@ export function LiquidView(p: LiquidViewProps) {
               {view === 'contours' ? (
                 <Group>
                   <Path path={contours.pos} style="stroke" strokeWidth={1.3} color="#ffc64d" />
-                  <Path path={contours.neg} style="stroke" strokeWidth={1.3} color="#5bb0ff" />
+                  <Path path={contours.neg} style="stroke" strokeWidth={1.3} color={MIDLINE_BLUE} />
                 </Group>
               ) : null}
               {isSection ? <SkLine p1={vec(ox, oy + p.sectionY * dishH)} p2={vec(ox + dishW, oy + p.sectionY * dishH)} color="#ffc64d" strokeWidth={1.5} /> : null}
@@ -662,8 +706,10 @@ export function LiquidView(p: LiquidViewProps) {
             {spec.shape === 'ring' ? <Circle cx={ox + dishW / 2} cy={oy + dishH / 2} r={dishW * 0.175} style="stroke" strokeWidth={3} color={rimColor} /> : null}
             {isSection ? (
               <Group>
-                <SkLine p1={vec(ox, oy + dishH + 54)} p2={vec(ox + dishW, oy + dishH + 54)} color="#2f74ff" strokeWidth={1} />
-                <Path path={sectionPath} style="stroke" strokeWidth={3} color="#ffc64d" strokeJoin="round" strokeCap="round" />
+                <SkLine p1={vec(ox, oy + dishH + 54)} p2={vec(ox + dishW, oy + dishH + 54)} color={MIDLINE_BLUE} strokeWidth={1} />
+                <Path path={sectionPath} style="stroke" strokeWidth={3} strokeJoin="round" strokeCap="round">
+                  <LinearGradient start={vec(0, oy + dishH + 54 - 24)} end={vec(0, oy + dishH + 54 + 24)} colors={WAVE_LEVEL_STOPS.map((q) => q.color)} positions={WAVE_LEVEL_STOPS.map((q) => q.offset)} />
+                </Path>
               </Group>
             ) : null}
           </Group>

@@ -1,7 +1,9 @@
 /**
  * Module 4 — Evidence vs Myth (spec: scientific-integrity panel).
  */
-import { Text, View } from 'react-native';
+import { useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { colors, fonts } from '../../../../theme/tokens';
 import type { CymaticsModuleProps } from '../CymaticsModuleScreen';
 import { P } from './shared';
 
@@ -16,20 +18,45 @@ const ROWS: { claim: string; verdict: 'EVIDENCE' | 'MYTH' | 'DEPENDS'; why: stri
 
 const TINT = { EVIDENCE: '#37e05f', MYTH: '#ff6b5e', DEPENDS: '#ffc64d' } as const;
 
+const VERDICTS = ['EVIDENCE', 'DEPENDS', 'MYTH'] as const;
+
 export function MythModule(_p: CymaticsModuleProps) {
+  // Retrieval, not reading (learning pass D8): commit to a verdict, then see.
+  const [picked, setPicked] = useState<Record<string, (typeof VERDICTS)[number]>>({});
+  const score = ROWS.filter((r) => picked[r.claim] === r.verdict).length;
+  const answered = ROWS.filter((r) => picked[r.claim]).length;
   return (
     <View style={{ gap: 12 }}>
       <Text style={P.body}>
-        Cymatics is a genuine branch of vibration physics with a large online mythology attached. Here is what the evidence supports,
-        what it does not, and where the honest answer is “it depends”.
+        Cymatics is a genuine branch of vibration physics with a large online mythology attached. For each claim, commit to a verdict
+        first — then read what the evidence says.
       </Text>
-      {ROWS.map((r) => (
-        <View key={r.claim} style={[P.card, { borderColor: TINT[r.verdict] + '66' }]}>
-          <Text style={[P.badge, { color: TINT[r.verdict] }]}>{r.verdict}</Text>
-          <Text style={P.strong}>{r.claim}</Text>
-          <Text style={P.body}>{r.why}</Text>
-        </View>
-      ))}
+      {ROWS.map((r) => {
+        const mine = picked[r.claim];
+        return (
+          <View key={r.claim} style={[P.card, mine && { borderColor: TINT[r.verdict] + '66' }]}>
+            <Text style={P.strong}>{r.claim}</Text>
+            {!mine ? (
+              <View style={P.chips}>
+                {VERDICTS.map((v) => (
+                  <Pressable key={v} onPress={() => setPicked((m) => ({ ...m, [r.claim]: v }))} style={[styles.pick, { borderColor: TINT[v] + '99' }]} accessibilityRole="button" accessibilityLabel={`${v} for: ${r.claim}`}>
+                    <Text style={[styles.pickText, { color: TINT[v] }]}>{v}</Text>
+                  </Pressable>
+                ))}
+              </View>
+            ) : (
+              <>
+                <Text style={[P.badge, { color: TINT[r.verdict] }]}>
+                  {r.verdict}
+                  {mine === r.verdict ? ' · YOU HAD IT' : ` · YOU SAID ${mine}`}
+                </Text>
+                <Text style={P.body}>{r.why}</Text>
+              </>
+            )}
+          </View>
+        );
+      })}
+      {answered === ROWS.length ? <Text style={[P.strong, { color: colors.amber }]}>{score} of {ROWS.length} — the misses are the ones worth re-reading.</Text> : null}
       <Text style={P.h}>HOW THIS LAB STAYS HONEST</Text>
       <Text style={P.body}>
         Every rendered plate carries a label — Calculated, Approximated or Illustrative Simulation — naming the model behind it. The size,
@@ -40,3 +67,8 @@ export function MythModule(_p: CymaticsModuleProps) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  pick: { borderRadius: 8, borderWidth: 1.5, paddingHorizontal: 12, paddingVertical: 8, minHeight: 36, justifyContent: 'center' },
+  pickText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2 },
+});

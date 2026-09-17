@@ -5,8 +5,9 @@
  */
 import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts } from '../../../../theme/tokens';
-import { levelColor } from '../../../../features/tools/levelColor';
+import { rampColors } from '../../../../features/tools/levelColor';
 import { effectiveQ, modeResponse, plateModes, readResonance, sampleField, type PlateMode, type PlateSpec } from '../../../../features/cymatics/plateModes';
 import { requireVizPlate, skiaAvailable } from '../skiaGate';
 import type { PlateViewMode } from '../vizPlate';
@@ -17,7 +18,7 @@ export const P = StyleSheet.create({
   strong: { fontFamily: fonts.barlowMedium, fontSize: 14.5, lineHeight: 21, color: colors.textPrimary },
   card: { borderRadius: 10, borderWidth: 1, borderColor: '#232329', backgroundColor: '#101014', padding: 12, gap: 8 },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
-  badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2, color: 'rgba(255,255,255,0.55)' },
+  badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: 'rgba(255,255,255,0.6)' },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   bullet: { flexDirection: 'row', gap: 8, alignItems: 'flex-start' },
   dot: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: colors.amber, lineHeight: 21 },
@@ -106,13 +107,14 @@ export function ResponseStrip({ width, modes, Q, hz, fMin, fMax }: { width: numb
     <View style={{ width, height: 54 }}>
       <View style={{ flexDirection: 'row', alignItems: 'flex-end', height: 44, gap: 1, paddingHorizontal: 2 }}>
         {vals.map((v, i) => (
-          <View key={i} style={{ width: bw - 1, height: 4 + v * 40, backgroundColor: levelColor(Math.max(0.05, v)), borderRadius: 1 }} />
+          // A bar whose HEIGHT is a level shows the ramp climbing from silence-blue to the level's colour at its tip (colour standard 2026-08-16).
+          <LinearGradient key={i} colors={rampColors(Math.max(0.05, v), 4)} start={{ x: 0, y: 1 }} end={{ x: 0, y: 0 }} style={{ width: bw - 1, height: 4 + v * 40, borderRadius: 1 }} />
         ))}
       </View>
       <View style={{ position: 'absolute', left: 2 + mark * (width - 4) - 1, top: 0, width: 2, height: 46, backgroundColor: '#ffffff' }} />
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
         <Text style={P.badge}>{Math.round(fMin)} Hz</Text>
-        <Text style={P.badge}>RESPONSE vs FREQUENCY</Text>
+        <Text style={P.badge}>RESPONSE vs FREQUENCY · CALCULATED</Text>
         <Text style={P.badge}>{Math.round(fMax)} Hz</Text>
       </View>
     </View>

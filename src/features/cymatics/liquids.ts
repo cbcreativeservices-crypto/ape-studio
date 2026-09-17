@@ -34,7 +34,7 @@ export type Liquid = {
 export const LIQUIDS: readonly Liquid[] = [
   { id: 'water', label: 'Water', rho: 998, mu: 0.001, sigma: 0.0728, consistency: 'thin', blurb: 'The reference liquid: low viscosity, high surface tension — patterns appear at modest shaking and hold sharp edges.', tint: '#1d5f8f', gloss: 0.95 },
   { id: 'saltwater', label: 'Salt water', rho: 1025, mu: 0.00108, sigma: 0.0735, consistency: 'thin', blurb: 'Slightly denser and a touch more viscous than fresh water — nearly identical patterns, a hair higher threshold.', tint: '#1b5a86', gloss: 0.95 },
-  { id: 'glycerin50', label: 'Glycerin–water 50/50', rho: 1126, mu: 0.006, sigma: 0.067, consistency: 'medium', blurb: 'Six times water’s viscosity: the onset threshold climbs and stripes replace squares.', tint: '#3a5f7a', gloss: 0.8 },
+  { id: 'glycerin50', label: 'Glycerin–water 50/50', rho: 1126, mu: 0.006, sigma: 0.067, consistency: 'medium', blurb: 'Six times water’s viscosity: the onset threshold climbs and stripes replace squares (above ~50 Hz; hexagons below).', tint: '#3a5f7a', gloss: 0.8 },
   { id: 'silicone10', label: 'Silicone oil (10 cSt)', rho: 930, mu: 0.0093, sigma: 0.0201, consistency: 'medium', blurb: 'Low surface tension shortens the wavelength; moderate viscosity gives clean stripes near onset.', tint: '#6b6f6a', gloss: 0.85 },
   { id: 'mineral_light', label: 'Light mineral oil', rho: 850, mu: 0.02, sigma: 0.03, consistency: 'medium', blurb: 'Twenty times water’s viscosity — you need a strong shake, and the patterns are broad, soft stripes.', tint: '#8a7a3c', gloss: 0.8 },
   { id: 'oil_thick', label: 'Thick oil', rho: 900, mu: 0.2, sigma: 0.032, consistency: 'thick', blurb: 'Two hundred times water: the surface mostly follows the platform. Faraday patterns need more acceleration than this rig provides.', tint: '#6d5a1f', gloss: 0.7 },
@@ -64,6 +64,6 @@ export const CONTROL_PAIRS: { student: string; science: string }[] = [
   { student: 'Liquid amount', science: 'Depth d (mm)' },
   { student: 'Surface “tightness”', science: 'Surface tension σ (N/m)' },
   { student: 'Liquid weight', science: 'Density ρ (kg/m³)' },
-  { student: 'Speaker strength', science: 'Vertical acceleration a (g)' },
+  { student: 'Shake', science: 'Vertical acceleration a (g)' },
   { student: 'Frequency', science: 'Driving frequency f (Hz)' },
 ];

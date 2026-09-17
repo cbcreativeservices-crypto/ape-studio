@@ -291,11 +291,15 @@ export function modeResponseSigned(f: number, fk: number, Q: number): number {
   const re = 1 - r * r;
   const im = r / Q;
   const mag2 = re * re + im * im;
-  // Real part of 1/(re + i·im) = re / |.|² — in phase below resonance,
-  // anti-phase above, passing through zero AT resonance where the quadrature
-  // (imaginary) part carries the motion. Callers that need the amplitude use
-  // modeResponse(); this signed form drives the phase view.
-  return mag2 > 0 ? re / mag2 : 0;
+  // SIGNED MAGNITUDE: the full response |1/(re + i·im)| with the sign of the
+  // real part (in phase below resonance, anti-phase above). It used to return
+  // the real part alone, which passes through ZERO exactly at resonance — so
+  // a drive landed exactly on a mode's hertz dropped that mode out of the
+  // drawn field and the neighbours' leak was normalised up in its place
+  // (caught by the membrane tests, 2026-09-17). The relative sign between
+  // modes is all the phase view needs; the strobe supplies the time phase.
+  if (!(mag2 > 0)) return 0;
+  return (re >= 0 ? 1 : -1) / Math.sqrt(mag2);
 }
 
 export type ResonanceState = 'below' | 'approaching' | 'at' | 'between';

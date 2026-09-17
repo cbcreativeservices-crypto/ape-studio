@@ -76,7 +76,7 @@ export function CymaticsHomeScreen() {
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>CYMATICS LAB: SOUND MADE VISIBLE</Text>
-          <Text style={styles.subtitle}>Chladni plates, liquids, membranes, resonance, frequency, and harmonic relationships.</Text>
+          <Text style={styles.subtitle}>Chladni plates, liquids, membranes, resonance, frequency and harmonic relationships.</Text>
         </View>
         <AccuracyNote compact />
       </View>
@@ -86,9 +86,10 @@ export function CymaticsHomeScreen() {
           <Text style={styles.heroBadge}>SIMULATION · 240 mm ALUMINUM · FREE EDGES · CENTRE-DRIVEN</Text>
         </View>
         <Text style={styles.body}>
-          A visible pattern does not belong to a frequency by itself. 440 Hz has no shape. The figure that appears depends on the whole
-          physical system — the plate’s shape, size, thickness, material, how it is held, where it is driven, and how much it is damped.
-          That is this lab’s central discovery, and everything in it is built so you can see it for yourself.
+          Does 440 Hz have a shape? Play a tone into a plate and sand walks into a figure — so it is tempting to say the figure belongs to
+          the note. Every experiment in this lab lets you test that idea: keep the frequency exactly where it is and change the plate, the
+          liquid, the driver or the support, and watch what happens to the pattern. The answer is the lab’s central discovery, and you get
+          to find it yourself.
         </Text>
 
         <Pressable style={styles.studioBtn} onPress={() => navigation.navigate('CymaticsPlateStudio', {})} accessibilityRole="button" accessibilityLabel="Open the Chladni Plate Studio">
@@ -98,6 +99,10 @@ export function CymaticsHomeScreen() {
         <Pressable style={[styles.studioBtn, styles.studioBtnLiquid]} onPress={() => navigation.navigate('CymaticsLiquidStudio', {})} accessibilityRole="button" accessibilityLabel="Open the Liquid Cymatics Studio">
           <Text style={[styles.studioBtnText, { color: '#7fd4ff' }]}>OPEN THE LIQUID CYMATICS STUDIO ›</Text>
           <Text style={styles.studioBtnSub}>A dish on a shaker · Faraday waves at half the drive frequency · eight liquids</Text>
+        </Pressable>
+        <Pressable style={[styles.studioBtn, styles.studioBtnMembrane]} onPress={() => navigation.navigate('CymaticsMembraneStudio', {})} accessibilityRole="button" accessibilityLabel="Open the Membrane and Loudspeaker Studio">
+          <Text style={[styles.studioBtnText, { color: '#e2c48a' }]}>OPEN THE MEMBRANE &amp; LOUDSPEAKER STUDIO ›</Text>
+          <Text style={styles.studioBtnSub}>Tune and strike a drumhead · why a timpani has a pitch · a loudspeaker cone from piston to breakup</Text>
         </Pressable>
 
         <Text style={styles.sectionTitle}>LEARN &amp; EXPERIMENT</Text>
@@ -137,6 +142,7 @@ const styles = StyleSheet.create({
   body: { fontFamily: fonts.barlowRegular, fontSize: 14.5, lineHeight: 21, color: colors.textSecondary },
   studioBtn: { borderRadius: 12, borderWidth: 1.5, borderColor: 'rgba(255,198,77,.75)', backgroundColor: '#1a1409', paddingVertical: 14, paddingHorizontal: 16, gap: 3 },
   studioBtnLiquid: { borderColor: 'rgba(127,212,255,.7)', backgroundColor: '#0a1520' },
+  studioBtnMembrane: { borderColor: 'rgba(226,196,138,.7)', backgroundColor: '#17130b' },
   studioBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1.2, color: colors.amber },
   studioBtnSub: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub },
   sectionTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: colors.amber, marginTop: 8 },

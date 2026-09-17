@@ -3,22 +3,23 @@
  * studio itself is its own route (CymaticsPlateStudio). Planned phases are
  * listed on the home as dimmed rows, never as modules.
  */
-export type CymaticsModuleId = 'intro' | 'nodes' | 'harmonics' | 'myth' | 'experiments';
+export type CymaticsModuleId = 'intro' | 'nodes' | 'harmonics' | 'harmony' | 'systems' | 'change' | 'myth' | 'experiments';
 
 export const CYMATICS_MODULES: { id: CymaticsModuleId; title: string; blurb: string }[] = [
   { id: 'intro', title: 'What Is Cymatics?', blurb: 'Sound as pressure and vibration; how vibration moves sand, powder and liquid; nodes, antinodes and why stable patterns appear at resonance.' },
   { id: 'nodes', title: 'Nodes, Antinodes & Modes', blurb: 'Interactive: pick a mode, see its still lines, its opposite-phase regions and its shape — every stable figure is one normal mode.' },
   { id: 'harmonics', title: 'Harmonics vs Plate Modes', blurb: 'String · air column · membrane · plate — why only the first two form a harmonic series, and why Chladni figures are not pictures of chords.' },
+  { id: 'harmony', title: 'Harmony in Motion', blurb: 'Frequency ratios made visible and audible — wave addition, Lissajous figures, spectra and beats — kept honestly apart from plate modes.' },
+  { id: 'systems', title: 'Other Cymatic Systems', blurb: 'Strings, air columns, water surfaces, a loudspeaker with particles, bells and gongs, acoustic levitation — what is actually vibrating in each.' },
+  { id: 'change', title: 'Change One Thing', blurb: 'Two plates, one locked tone, every control identical but one — the discovery tool for the lab’s central principle.' },
   { id: 'myth', title: 'Evidence vs Myth', blurb: 'What the patterns genuinely show, what they do not, and why every pattern in this lab is labelled Simulation.' },
-  { id: 'experiments', title: 'Guided Experiments', blurb: 'Eight structured activities that open the studio in exactly the situation each step describes.' },
+  { id: 'experiments', title: 'Guided Experiments', blurb: 'Seventeen structured activities — predict first, then open the studio in exactly the situation each step describes.' },
 ];
 
 /** Later phases — shown on the lab home as planned rows (no promises, no dates). */
 export const PLANNED_AREAS: { title: string; blurb: string }[] = [
   // Liquid Cymatics Studio — LIVE (Phase 2, 2026-09-16); removed from here.
-  { title: 'Membrane & Loudspeaker', blurb: 'Circular membrane modes and a loudspeaker cone from piston motion to breakup.' },
-  { title: 'Harmony in Motion', blurb: 'Ratios, beats, wave addition, Lissajous figures and spectra — driving the physical simulation.' },
-  { title: 'Other Cymatic Systems', blurb: 'Strings, water surfaces, air columns, bells, gongs and cymbals — what is actually vibrating in each.' },
-  { title: 'Change One Thing', blurb: 'Split-screen comparisons with every control locked but one.' },
+  // Membrane & Loudspeaker, Harmony in Motion, Other Cymatic Systems, Change
+  // One Thing — LIVE (Phase 3, 2026-09-17); removed from here.
   { title: 'Pattern Gallery & Art Studio', blurb: 'Save, colour, compare and print patterns — art prints and lab sheets.' },
 ];

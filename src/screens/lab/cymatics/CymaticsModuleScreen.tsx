@@ -17,6 +17,9 @@ import { IntroModule } from './modules/modIntro';
 import { NodesModule } from './modules/modNodes';
 import { HarmonicsModule } from './modules/modHarmonics';
 import { MythModule } from './modules/modMyth';
+import { HarmonyModule } from './modules/modHarmony';
+import { SystemsModule } from './modules/modSystems';
+import { ChangeModule } from './modules/modChange';
 import { ExperimentsModule } from './modules/modExperiments';
 
 export type CymaticsModuleProps = {
@@ -30,6 +33,9 @@ const COMPONENTS: Record<CymaticsModuleId, (p: CymaticsModuleProps) => React.JSX
   intro: IntroModule,
   nodes: NodesModule,
   harmonics: HarmonicsModule,
+  harmony: HarmonyModule,
+  systems: SystemsModule,
+  change: ChangeModule,
   myth: MythModule,
   experiments: ExperimentsModule,
 };

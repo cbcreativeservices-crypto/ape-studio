@@ -58,7 +58,7 @@ export function HarmonicsModule({ width, help }: CymaticsModuleProps) {
               const x = (Math.log(r) / Math.log(AXIS_MAX)) * (width - 26 - 24) + 12;
               const on = sel?.ladder === l.id && sel.ratio === r;
               return (
-                <Pressable key={r} onPress={() => void play(l.id, r)} onLongPress={() => help('harmonics')} hitSlop={8} style={[styles.rung, { left: x - 7 }, on && styles.rungOn]} accessibilityRole="button" accessibilityLabel={`${formatHz(F0 * r)}`} />
+                <Pressable key={r} onPress={() => void play(l.id, r)} onLongPress={() => help('harmonics')} hitSlop={8} style={[styles.rung, { left: x - 7 }, on && styles.rungOn]} accessibilityRole="button" accessibilityLabel={`${l.name}, ratio ${r.toFixed(2)}, ${formatHz(F0 * r)}`} />
               );
             })}
             {[1, 2, 3, 4, 5, 6].map((n) => (
@@ -66,6 +66,7 @@ export function HarmonicsModule({ width, help }: CymaticsModuleProps) {
             ))}
           </View>
           <Text style={P.caption}>{l.note}</Text>
+          <Text style={P.badge}>CALCULATED — RATIOS OF NATURAL FREQUENCIES{l.id === 'plate' ? ' (THIS LAB’S PLATE MODEL, APPROXIMATED)' : ''}</Text>
         </View>
       ))}
       <View style={[P.card, { borderColor: 'rgba(255,198,77,.5)' }]}>
@@ -83,14 +84,14 @@ export function HarmonicsModule({ width, help }: CymaticsModuleProps) {
       <Text style={P.body}>
         Resonance and normal modes. A plate’s modes are not spaced like a string’s harmonics, so a Chladni figure is not a picture of a
         musical interval or chord. Musical ratios and plate modes are related through vibration and resonance — but a chord does not own a
-        cymatic symbol. The Harmony in Motion area (planned) is where frequency ratios are visualised honestly.
+        cymatic symbol. Frequency ratios are a separate subject from plate modes; this lab keeps them apart on purpose.
       </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  axis: { position: 'absolute', left: 12, right: 12, height: 2, backgroundColor: '#2f74ff', borderRadius: 1 },
+  axis: { position: 'absolute', left: 12, right: 12, height: 2, backgroundColor: '#3a3a44', borderRadius: 1 },
   rung: { position: 'absolute', top: 3, width: 14, height: 28, borderRadius: 4, backgroundColor: '#ffc64d', borderWidth: 1, borderColor: '#8a6a1f' },
   rungOn: { backgroundColor: '#ffffff' },
   tick: { position: 'absolute', top: 30, fontFamily: fonts.mono, fontSize: 8.5, color: colors.textSub, width: 16, textAlign: 'center' },

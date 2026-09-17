@@ -16,8 +16,8 @@ export function ExperimentsModule(_p: CymaticsModuleProps) {
   return (
     <View style={{ gap: 12 }}>
       <Text style={P.body}>
-        Twelve structured activities — eight on the Chladni plate, four in the liquid dish. Each one opens the studio already set up
-        for that step, so you can go straight to the observation.
+        Seventeen structured activities — ten on the Chladni plate, four in the liquid dish, three on the drumhead and loudspeaker. Each one asks for a prediction first, then
+        opens the studio already set up for that step, with the steps kept in the studio’s notes so you can tick them off as you go.
       </Text>
       {EXPERIMENTS.map((e) => (
         <View key={e.id} style={P.card}>
@@ -28,6 +28,12 @@ export function ExperimentsModule(_p: CymaticsModuleProps) {
               <Text style={P.caption}>{e.goal}</Text>
             </View>
           </View>
+          {e.predict ? (
+            <Text style={[P.caption, { color: '#7fd4ff' }]}>
+              <Text style={{ fontFamily: fonts.oswaldSemiBold }}>PREDICT FIRST · </Text>
+              {e.predict}
+            </Text>
+          ) : null}
           {e.steps.map((s, i) => (
             <View key={i} style={P.bullet}>
               <Text style={P.dot}>{i + 1}.</Text>
@@ -43,12 +49,14 @@ export function ExperimentsModule(_p: CymaticsModuleProps) {
             onPress={() =>
               e.studio === 'liquid'
                 ? navigation.navigate('CymaticsLiquidStudio', { preset: e.liquid!.id })
-                : navigation.navigate('CymaticsPlateStudio', { preset: e.preset!.id })
+                : e.studio === 'membrane'
+                  ? navigation.navigate('CymaticsMembraneStudio', { preset: e.membrane!.id })
+                  : navigation.navigate('CymaticsPlateStudio', { preset: e.preset!.id })
             }
             accessibilityRole="button"
-            accessibilityLabel={`Set up the ${e.studio === 'liquid' ? 'dish' : 'plate'} for experiment ${e.num}`}
+            accessibilityLabel={`Set up the ${e.studio === 'liquid' ? 'dish' : e.studio === 'membrane' ? 'drum' : 'plate'} for experiment ${e.num}`}
           >
-            <Text style={styles.btnText}>{e.studio === 'liquid' ? 'SET UP THE DISH ›' : 'SET UP THE PLATE ›'}</Text>
+            <Text style={styles.btnText}>{e.studio === 'liquid' ? 'SET UP THE DISH ›' : e.studio === 'membrane' ? 'SET UP THE DRUM ›' : 'SET UP THE PLATE ›'}</Text>
           </Pressable>
         </View>
       ))}

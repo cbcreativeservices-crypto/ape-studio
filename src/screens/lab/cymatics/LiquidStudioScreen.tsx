@@ -26,7 +26,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
-import { levelColor } from '../../../features/tools/levelColor';
+import { heatColor } from '../../../features/tools/levelColor';
+import { LinearGradient } from 'expo-linear-gradient';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { EngineGate } from '../../tools/EngineGate';
 import { LabChip, LabShell, HeaderPlayButton } from '../LabShell';
@@ -49,7 +50,8 @@ import {
   type Waveform,
 } from '../../../features/cymatics/faraday';
 import { formatHz, nearestNote } from '../../../features/cymatics/music';
-import { LIQUID_PRESET_BY_ID } from '../../../features/cymatics/presets';
+import { EXPERIMENT_BY_PRESET, LIQUID_PRESET_BY_ID } from '../../../features/cymatics/presets';
+import { ExperimentWell } from './ExperimentWell';
 import type { RootStackParamList } from '../../../navigation/types';
 import { requireVizLiquid, skiaAvailable } from './skiaGate';
 import type { LiquidViewMode } from './vizLiquid';
@@ -94,16 +96,18 @@ const DUALS: { id: string; label: string; ratio: number | null }[] = [
   { id: 'fifth', label: '+ 3:2', ratio: 1.5 },
   { id: 'fourth', label: '+ 4:3', ratio: 4 / 3 },
 ];
-const VIEWS: { id: LiquidViewMode; label: string; blurb: string }[] = [
-  { id: 'rig', label: 'The rig', blurb: 'Side view of the apparatus: lamp, dish, liquid layer, coupling platform, shaker. The platform bobs at the drive frequency; the surface answers at half of it.' },
-  { id: 'surface', label: 'Liquid surface', blurb: 'The lit, glossy surface as a camera above the dish would see it.' },
-  { id: 'height', label: 'Height map', blurb: 'Surface displacement in the Academy ramp: dark = still, red = the highest crests and deepest troughs.' },
-  { id: 'contours', label: 'Contours', blurb: 'Iso-height lines over the dimmed height map: amber = crests, blue = troughs.' },
-  { id: 'refraction', label: 'Refraction', blurb: 'The classic cymatics photograph: light through the liquid focuses into a bright web where the surface is concave.' },
-  { id: 'liquid3d', label: '3D surface', blurb: 'Exaggerated surface height, strobed to a few hertz so you can see it (the real surface moves at the response frequency).' },
-  { id: 'section', label: 'Cross-section', blurb: 'A slice through the surface. Drag on the dish to move the slice.' },
+const VIEWS: { id: LiquidViewMode; label: string; short: string; blurb: string }[] = [
+  { id: 'rig', label: 'The rig', short: 'Rig', blurb: 'Side view of the apparatus: lamp, dish, liquid layer, coupling platform, shaker. The platform bobs at the drive frequency; the surface answers at half of it.' },
+  { id: 'surface', label: 'Liquid surface', short: 'Surface', blurb: 'The lit, glossy surface as a camera above the dish would see it.' },
+  { id: 'height', label: 'Height map', short: 'Height', blurb: 'Surface displacement in the Academy ramp: dark = still, red = the highest crests and deepest troughs.' },
+  { id: 'contours', label: 'Contours', short: 'Contours', blurb: 'Iso-height lines over the dimmed height map: amber = crests, blue = troughs.' },
+  { id: 'refraction', label: 'Refraction', short: 'Refract', blurb: 'The classic cymatics photograph: light through the liquid focuses into a bright web where the surface is concave.' },
+  { id: 'liquid3d', label: '3D surface', short: '3D', blurb: 'Exaggerated surface height, strobed to a few hertz so you can see it (the real surface moves at the response frequency).' },
+  { id: 'section', label: 'Cross-section', short: 'Section', blurb: 'A slice through the surface. Drag on the dish to move the slice.' },
 ];
 
+const LIQUID_SHORT: Record<string, string> = { water: 'Water', saltwater: 'Salt', glycerin50: 'Glyc 50', silicone10: 'Silic 10', lightoil: 'Lt oil', thickoil: 'Thk oil', gel: 'Gel', cornstarch: 'Starch' };
+const HEAT_KEY = Array.from({ length: 9 }, (_, i) => heatColor(i / 8)) as [string, string, ...string[]];
 const STAGE_TINT: Record<Stage, string> = {
   flat: colors.textSub,
   damped: colors.textSub,
@@ -122,6 +126,7 @@ export function LiquidStudioScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'CymaticsLiquidStudio'>>();
   const preset = route.params?.preset ? LIQUID_PRESET_BY_ID[route.params.preset] : undefined;
+  const experiment = preset ? EXPERIMENT_BY_PRESET[preset.id] : undefined;
 
   const [spec, setSpec] = useState<LiquidSpec>(() => ({ ...DEFAULT_LIQUID, ...(preset?.spec ?? {}) }));
   const [freq, setFreq] = useState(preset?.hz ?? 40);
@@ -155,10 +160,20 @@ export function LiquidStudioScreen() {
     return sampleSurface(specLive, st.family, kUsed, st.mode, GRID_N, true, 1);
   }, [specLive, st.stage, st.family, st.family2, st.mode, kUsed]);
 
-  // Preset "land just above onset" resolves once the threshold is known.
+  // Preset "drive at twice dish mode k" resolves once the modes exist, then
+  // "land just above onset" once the threshold at that frequency is known.
+  const landedF = useRef(false);
+  useEffect(() => {
+    if (landedF.current || preset?.driveMode == null) return;
+    const m = modes[Math.min(preset.driveMode, modes.length - 1)];
+    if (!m) return;
+    landedF.current = true;
+    setFreq(Math.round(2 * m.hz * 10) / 10);
+  }, [preset, modes]);
   const landed = useRef(false);
   useEffect(() => {
     if (landed.current || preset?.accelG !== 'onset') return;
+    if (preset.driveMode != null && !landedF.current) return;
     landed.current = true;
     setAccel(Math.min(A_MAX, Math.max(A_MIN, fr.thresholdG * 1.3)));
   }, [preset, fr.thresholdG]);
@@ -190,7 +205,7 @@ export function LiquidStudioScreen() {
   const modeOptions = modes.slice(0, 10).map((m) => ({
     id: m.id,
     label: `${formatHz(2 * m.hz)} · ${m.label}`,
-    blurb: `Dish mode ${m.label} lives at ${m.hz.toFixed(1)} Hz. Driving at TWICE that (${formatHz(2 * m.hz)}) lets the subharmonic response land on it.`,
+    blurb: `Dish mode ${m.label} lives at ${m.hz.toFixed(1)} Hz. Driving at TWICE that (${formatHz(2 * m.hz)}) lets the half-frequency (subharmonic) response land on it.`,
   }));
 
   const params: DockParam[] = [
@@ -203,7 +218,7 @@ export function LiquidStudioScreen() {
         setSweeping(false);
         setFreq(Math.round(hzFromPos(v) * 10) / 10);
       },
-      format: () => `${formatHz(freq)} drive → ${formatHz(freq / 2)} response · ${note.label}`,
+      format: () => (st.subharmonic ? `${formatHz(freq)} drive → ${formatHz(freq / 2)} response (f/2)` : `${formatHz(freq)} drive · no half-frequency response yet`),
       formatShort: () => formatHz(freq),
       helpKey: 'frequency',
       chooser: {
@@ -234,7 +249,7 @@ export function LiquidStudioScreen() {
       kind: 'group',
       id: 'liquid',
       label: 'LIQUID',
-      valueLabel: liquid.label.split(' ')[0].slice(0, 8),
+      valueLabel: LIQUID_SHORT[spec.liquid] ?? liquid.label.split(' ')[0].slice(0, 8),
       helpKey: 'liquid',
       render: () => (
         <View style={styles.tray}>
@@ -268,7 +283,7 @@ export function LiquidStudioScreen() {
       kind: 'group',
       id: 'dish',
       label: 'DISH',
-      valueLabel: `Ø${spec.sizeMm} ${spec.depthMm}mm`,
+      valueLabel: `${spec.shape === 'circle' || spec.shape === 'ring' ? 'Ø' : '□'}${spec.sizeMm} ${spec.depthMm}mm`,
       helpKey: 'dish',
       render: () => (
         <View style={styles.tray}>
@@ -364,11 +379,8 @@ export function LiquidStudioScreen() {
               ? 'One drive frequency. Two-frequency forcing is how the quasiperiodic “superlattice” patterns are made.'
               : tone.dualReady
                 ? `Two tones summed in one channel (${formatHz(freq)} + ${formatHz(freqB!)}) — heard AND shown. The surface prefers a quasiperiodic lattice.`
-                : 'The second tone is SHOWN only on this build — playing two tones at once needs the next app build (engine 8).'}
+                : 'The second tone is SHOWN only — this build’s sound engine plays one tone at a time.'}
           </Text>
-          <View style={styles.chips}>
-            <LabChip label={slowMo ? 'Slow motion ON' : 'Slow motion'} selected={slowMo} onPress={() => setSlowMo((s) => !s)} />
-          </View>
         </View>
       ),
     },
@@ -376,7 +388,7 @@ export function LiquidStudioScreen() {
       kind: 'options',
       id: 'view',
       label: 'VIEW',
-      valueLabel: VIEWS.find((v) => v.id === view)!.label.slice(0, 9),
+      valueLabel: VIEWS.find((v) => v.id === view)!.short,
       options: VIEWS.map((v) => ({ id: v.id, label: v.label, blurb: v.blurb })),
       selectedId: view,
       onSelect: (id) => setView(id as LiquidViewMode),
@@ -387,7 +399,7 @@ export function LiquidStudioScreen() {
 
   const bezel = [
     { k: 'DRIVE', v: formatHz(freq), helpKey: 'frequency' },
-    { k: 'RESP', v: st.subharmonic ? formatHz(fr.responseHz) : `${formatHz(freq)}*`, helpKey: 'faraday' },
+    { k: 'RESP', v: st.subharmonic ? `${formatHz(fr.responseHz)} f/2` : `${formatHz(freq)} f`, helpKey: 'faraday' },
     { k: 'λ', v: `${fr.lambdaMm.toFixed(fr.lambdaMm < 10 ? 1 : 0)} mm`, helpKey: 'faraday' },
     { k: 'a/a꜀', v: ratioLabel, tint, helpKey: 'threshold', flex: 1.1 },
   ];
@@ -412,8 +424,8 @@ export function LiquidStudioScreen() {
             size: 'L',
             badge:
               st.stage === 'flat' || st.stage === 'sloshing' || st.stage === 'ripples' || st.stage === 'damped'
-                ? 'SIMULATION — DISH MODES: BESSEL / FOURIER (CALCULATED) · THRESHOLD (APPROXIMATED)'
-                : `SIMULATION — FARADAY ${FAMILY_LABEL[st.family].toUpperCase()}: CURATED PATTERN MAP (APPROXIMATED)`,
+                ? 'SIMULATION · CALCULATED dish modes · APPROXIMATED threshold'
+                : `SIMULATION · APPROXIMATED — Faraday pattern map (${FAMILY_LABEL[st.family].toLowerCase()})`,
             onGuide: () => openLesson('liquid_display'),
             bezel,
             hideDragTag: true,
@@ -450,6 +462,14 @@ export function LiquidStudioScreen() {
       >
         {!tone.engineReady ? <EngineGate state={tone.gate} /> : null}
         {tone.error ? <Text style={styles.err}>{tone.error}</Text> : null}
+        {experiment ? <ExperimentWell experiment={experiment} /> : null}
+        {view === 'height' || view === 'contours' || view === 'liquid3d' || view === 'section' ? (
+          <View style={styles.keyRow} accessible accessibilityLabel="Colour key: black is still, red is the largest motion">
+            <Text style={styles.keyText}>STILL</Text>
+            <LinearGradient colors={HEAT_KEY} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.keyBar} />
+            <Text style={styles.keyText}>LARGEST MOTION</Text>
+          </View>
+        ) : null}
 
         {/* Stage ladder */}
         <View style={styles.card}>
@@ -459,13 +479,13 @@ export function LiquidStudioScreen() {
           </View>
           <View style={styles.ladder}>
             {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
-              <View key={n} style={[styles.rung, n <= stageNum && { backgroundColor: levelColor(n / 10) }, n === stageNum && styles.rungOn]} />
+              <View key={n} style={[styles.rung, n <= stageNum && { backgroundColor: n === stageNum ? tint : '#2c2e38' }, n === stageNum && styles.rungOn]} />
             ))}
           </View>
           <Text style={styles.caption}>{st.why}</Text>
           <View style={styles.rowBetween}>
             <Text style={styles.readK}>
-              onset ≈ {fr.thresholdG > 2.5 ? `${fr.thresholdG.toFixed(0)} g (out of range)` : `${fr.thresholdG.toFixed(2)} g`} · now {accel.toFixed(2)} g
+              THRESHOLD ≈ {fr.thresholdG > 2.5 ? `${fr.thresholdG.toFixed(0)} g (out of range)` : `${fr.thresholdG.toFixed(2)} g`} · NOW {accel.toFixed(2)} g
             </Text>
             <View style={styles.nudgeRow}>
               <Pressable onPress={() => setAccel((a) => Math.max(A_MIN, Math.round(a * 0.95 * 1000) / 1000))} hitSlop={8} style={styles.nudge} accessibilityRole="button" accessibilityLabel="Shake a little less">
@@ -492,10 +512,10 @@ export function LiquidStudioScreen() {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>WHAT THIS RIG IS</Text>
           <Text style={styles.body}>
-            {liquid.label}, {spec.depthMm} mm deep, in a {spec.shape === 'circle' ? `Ø ${spec.sizeMm} mm` : spec.shape === 'ring' ? `Ø ${spec.sizeMm} mm ring` : spec.shape === 'rect' ? `${spec.sizeMm} × ${Math.round(spec.sizeMm * spec.aspect)} mm` : `${spec.sizeMm} mm square`} dish with a {spec.contact === 'pinned' ? 'pinned' : 'free'} rim and a {spec.bottom} bottom, on a platform shaken vertically at {formatHz(freq)} and {accel.toFixed(2)} g. Dish / wavelength ≈ {fr.sizeOverLambda.toFixed(1)} — {fr.sizeOverLambda < 2.5 ? 'the dish’s own modes shape the pattern' : 'bulk Faraday lattice regime'}.
+            {liquid.label}, {spec.depthMm} mm deep, in a {spec.shape === 'circle' ? `Ø ${spec.sizeMm} mm` : spec.shape === 'ring' ? `Ø ${spec.sizeMm} mm ring` : spec.shape === 'rect' ? `${spec.sizeMm} × ${Math.round(spec.sizeMm * spec.aspect)} mm` : `${spec.sizeMm} mm square`} dish with a {spec.contact === 'pinned' ? 'pinned' : 'free'} rim and a {spec.bottom} bottom, on a platform shaken vertically at {formatHz(freq)} and {accel.toFixed(2)} g. Dish / wavelength ≈ {fr.sizeOverLambda.toFixed(1)} — {fr.sizeOverLambda < 2.5 ? 'the dish’s own modes shape the pattern' : 'bulk Faraday lattice regime'}. Above threshold the surface answers at half the drive frequency (the subharmonic).
           </Text>
           <Text style={styles.body}>
-            Lowest dish modes: {modes.slice(0, 4).map((m) => `${m.hz.toFixed(1)} Hz`).join(' · ')}. Drive at twice a mode frequency to land the subharmonic response on it.
+            Lowest dish modes: {modes.slice(0, 4).map((m) => `${m.hz.toFixed(1)} Hz`).join(' · ')}. Drive at twice a mode frequency to land the half-frequency response on it.
           </Text>
         </View>
 
@@ -511,9 +531,10 @@ export function LiquidStudioScreen() {
           <LabChip label="Chladni plate studio ›" selected={false} onPress={() => navigation.navigate('CymaticsPlateStudio', {})} />
           <LabChip label="Evidence vs myth ›" selected={false} onPress={() => navigation.navigate('CymaticsModule', { id: 'myth' })} />
         </View>
-        <Text style={styles.honest}>
-          SIMULATION. Dispersion and dish modes are calculated; the onset threshold is the low-viscosity Faraday estimate with bottom and rim damping (Approximated); which lattice forms above onset follows the published phase maps, blended by hand for the transition stages (Approximated). No fluid-dynamics solver runs on the phone. Real dishes also depend on cleanliness, meniscus shape and the shaker’s true motion.
-        </Text>
+        <Text style={styles.honest}>SIMULATION — no fluid-dynamics solver runs on the phone.</Text>
+        <Text style={styles.honest}>· Calculated: the dispersion relation and the dish’s own modes.</Text>
+        <Text style={styles.honest}>· Approximated: the onset threshold (low-viscosity Faraday estimate with bottom and rim damping) and which lattice forms above it (the published phase maps, blended by hand for the transition stages).</Text>
+        <Text style={styles.honest}>· A real dish also depends on cleanliness, the meniscus and the shaker’s true motion.</Text>
       </LabShell>
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('cymatics')} controlKey={lessonKey} onClose={() => setLessonOpen(false)} />
     </>
@@ -537,6 +558,9 @@ const styles = StyleSheet.create({
   ladder: { flexDirection: 'row', gap: 4 },
   rung: { flex: 1, height: 8, borderRadius: 3, backgroundColor: '#1b1c22' },
   rungOn: { height: 12, marginTop: -2 },
+  keyRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  keyBar: { flex: 1, height: 8, borderRadius: 4 },
+  keyText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: colors.textSub },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSub },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   readK: { fontFamily: fonts.mono, fontSize: 11.5, color: colors.textSub, flexShrink: 1 },

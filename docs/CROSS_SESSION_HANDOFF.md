@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-16 18:29 · ccode · ea03d73c
+changed: Cymatics: Computer B's MODAL LIBRARY INGESTED (8 solved plate shapes → src/data/cymatics/*.json + modalLibrary.ts; plateModes() library branch; vizPlate clips to the solved outline incl. holes, masks the sand, plate-shaped 3D, bell post; Plate Studio SHAPE tray has 11 shapes, badge CALCULATED / CALCULATED · VALIDATED) + a rect exciter-weighting fix + COLOUR STANDARD: liquid shader now uses levelColor.heatRgbW (worklet twin of heatColor, pinned by test), MONOCHROME view retired, contours base on the ramp. tsc clean, 1212 tests, violin verified on the Pixel.
+affects other side: nothing DB-side. The Computer B deliverable is closed — brief marked DELIVERED + INGESTED; spec §1.3 carries "as built".
+needs: nothing from A.
+
+
 ### 2026-09-16 17:50 · ccode · a1009a9b
 changed: Cymatics Phase 2 DEBUG PASS done (the list the owner deferred), all in vizLiquid.tsx: RIG re-budgeted (lamp ~8 % / dish rim 38 % / shaker bottom 40 %, real light cone, dish 0.36w→0.27w, the clipped "LIQUID · N mm" caption moved to the left gutter, every label width-capped); 3D shear→true tilt, relief referred to the on-screen envelope, outside-dish quads dropped (black corners were transparent→opaque vertex bleed), M 30→40, mesh now sits in a dish floor+wall+rim; CONTOURS radius-normalised (Bessel decay hid every outer ring) and cut to one level per sign; REFRACTION knee moved above the flat-field value (0.45 sat BELOW it, so still liquid got a constant white wash) and the Laplacian scaled ∝ n² for N = 64. tsc clean, 1197 tests, each view device-verified.
 affects other side: nothing — client-only rendering, no tables, RPC, storage or content touched.

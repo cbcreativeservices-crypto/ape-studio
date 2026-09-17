@@ -259,6 +259,8 @@ export type RootStackParamList = {
   CymaticsPlateStudio: { preset?: string } | undefined;
   /** Phase 2 (2026-09-16): the Liquid / Faraday-wave studio (optional experiment preset). */
   CymaticsLiquidStudio: { preset?: string } | undefined;
+  /** Phase 3 (2026-09-17): the Membrane & Loudspeaker studio (optional experiment preset). */
+  CymaticsMembraneStudio: { preset?: string } | undefined;
   /** Wave Physics Laboratory (v4 Pillar C, launch 2026-07-29) — Room Builder
    *  engine + 15 preset modules, geometric/analytic launch path. */
   WaveLab: undefined;

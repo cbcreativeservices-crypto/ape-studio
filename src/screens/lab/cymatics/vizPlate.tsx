@@ -29,9 +29,9 @@
  */
 import { useEffect, useMemo, useRef } from 'react';
 import { PanResponder, StyleSheet, View } from 'react-native';
-import { Canvas, Circle, FillType, Group, Line as SkLine, LinearGradient, Path, Points, RadialGradient, Rect, Skia, Vertices, vec } from '@shopify/react-native-skia';
+import { Canvas, Circle, FillType, Group, Line as SkLine, LinearGradient, Oval, Path, Points, RadialGradient, Rect, Skia, Vertices, vec } from '@shopify/react-native-skia';
 import { useDerivedValue, useFrameCallback, useSharedValue, type SharedValue } from 'react-native-reanimated';
-import { heatColor } from '../../../features/tools/levelColor';
+import { MIDLINE_BLUE, WAVE_LEVEL_STOPS, heatColor } from '../../../features/tools/levelColor';
 import { MATERIAL_BY_ID } from '../../../features/cymatics/materials';
 import { plateAspect, type PlateSpec } from '../../../features/cymatics/plateModes';
 import { isLibraryShape, libraryInside, librarySnapInside, loadLibraryShape } from '../../../features/cymatics/modalLibrary';
@@ -49,9 +49,9 @@ export const VIEW_LABELS: Record<PlateViewMode, string> = {
 };
 
 const SAND = '#efe2b8';
-const SAND_DIM = '#b8ac86';
 const PHASE_UP = '#ffc64d';
-const PHASE_DOWN = '#4f8cff';
+// "Down" is the house MIDI-0 blue (colour standard) — one blue app-wide.
+const PHASE_DOWN = MIDLINE_BLUE;
 const NODE_LINE = '#e9f2ff';
 
 // ── worklet helpers ──────────────────────────────────────────────────────────
@@ -209,8 +209,11 @@ export function PlateView(p: PlateViewProps) {
   const cb = useFrameCallback((info) => {
     const dtRaw = info.timeSincePreviousFrame ?? 16;
     const dt = Math.min(dtRaw, 48) / 1000;
+    // Nothing moves without a drive (owner caption + Low-Light): the strobed
+    // clock only advances while the plate is driven (learning pass B8).
+    if (!runningSV.value) return;
     clock.value += dt * rate.value;
-    if (!wantParticles || !runningSV.value) return;
+    if (!wantParticles) return;
     const P = pos.value;
     const V = vel.value;
     const G = gridSV.value;
@@ -317,6 +320,14 @@ export function PlateView(p: PlateViewProps) {
   }, [ox, oy, plateW, plateH, aspect]);
 
   // ── static-per-state meshes (heat / phase / nodes) ────────────────────────
+  // The field is normalised to ±1 so its SHAPE is always legible, but the
+  // HEAT ramp must tell amplitude: off resonance the plate barely moves, so
+  // the heat map is scaled by the response strength and reads dark between
+  // modes (learning pass A5/D2 — a full-red map at every frequency taught
+  // "there is a pattern at every frequency", the lab's own misconception).
+  // PHASE and NODES keep the shape — "which figure WOULD form" — and fade
+  // with strength instead (opacity, below).
+  const strengthK = 0.12 + 0.88 * Math.max(0, Math.min(1, p.strength));
   const mesh = useMemo(() => {
     if (view === 'particles' || view === 'plate3d') return null;
     const verts: { x: number; y: number }[] = [];
@@ -334,7 +345,7 @@ export function PlateView(p: PlateViewProps) {
         } else if (view === 'nodes') {
           c = a < 0.06 ? NODE_LINE : a < 0.12 ? '#8aa0bf' : '#101216';
         } else {
-          c = heatColor(a);
+          c = heatColor(a * strengthK);
         }
         cols.push(c);
         if (i < N - 1 && j < N - 1) {
@@ -344,7 +355,7 @@ export function PlateView(p: PlateViewProps) {
       }
     }
     return { verts, cols, idx };
-  }, [grid, N, view, ox, oy, plateW, plateH]);
+  }, [grid, N, view, ox, oy, plateW, plateH, strengthK]);
 
   // ── 3D plate (strobed) ───────────────────────────────────────────────────
   const M = 30;
@@ -361,7 +372,7 @@ export function PlateView(p: PlateViewProps) {
         const v = grid[gj * N + gi];
         vals[j * M + i] = v !== v ? 0 : v;
         inside[j * M + i] = v === v ? 1 : 0;
-        cols.push(heatColor(Math.abs(vals[j * M + i])));
+        cols.push(heatColor(Math.abs(vals[j * M + i]) * strengthK));
       }
     }
     // A quad is emitted only when all four corners are on the plate, so the
@@ -375,7 +386,7 @@ export function PlateView(p: PlateViewProps) {
       }
     }
     return { vals, cols, idx };
-  }, [grid, N]);
+  }, [grid, N, strengthK]);
   const vals3dSV = useSharedValue(grid3d.vals);
   useEffect(() => {
     vals3dSV.value = grid3d.vals;
@@ -476,6 +487,27 @@ export function PlateView(p: PlateViewProps) {
     return path;
   }, [mat.texture, spec.grainDeg, ox, oy, plateW, plateH]);
 
+  // Edge condition, drawn (learning pass B4): a clamped plate wears a dark
+  // frame with screw heads; a supported one sits on a thin ledge. Library
+  // shapes carry their own solved boundary and draw nothing extra.
+  const edgeScrews = useMemo(() => {
+    if (lib || spec.edge !== 'clamped') return [] as { x: number; y: number }[];
+    const out: { x: number; y: number }[] = [];
+    if (circle) {
+      for (let k = 0; k < 8; k++) {
+        const a = (k / 8) * Math.PI * 2 + Math.PI / 8;
+        out.push({ x: ox + plateW / 2 + Math.cos(a) * (plateW / 2 + 1), y: oy + plateH / 2 + Math.sin(a) * (plateH / 2 + 1) });
+      }
+    } else {
+      const xs = [ox + 10, ox + plateW / 2, ox + plateW - 10];
+      const ys = [oy + 10, oy + plateH / 2, oy + plateH - 10];
+      for (const x of xs) for (const y of ys) if (x === ox + plateW / 2 && y === oy + plateH / 2) continue; else out.push({ x, y: y === oy + plateH / 2 ? y : y });
+      // Keep the edge ring: mid points only on the edges, corners at the corners.
+      return out.filter((q) => q.x === ox + 10 || q.x === ox + plateW - 10 || q.y === oy + 10 || q.y === oy + plateH - 10);
+    }
+    return out;
+  }, [lib, spec.edge, circle, ox, oy, plateW, plateH]);
+
   // ── touch: drag the exciter / support / section ──────────────────────────
   const dragRef = useRef(p.dragTarget);
   dragRef.current = p.dragTarget;
@@ -527,7 +559,12 @@ export function PlateView(p: PlateViewProps) {
   const showMesh = mesh != null && (view === 'heat' || view === 'overlay' || view === 'phase' || view === 'nodes' || view === 'section');
 
   return (
-    <View style={{ width, height }} {...pan.panHandlers}>
+    <View
+      style={{ width, height }}
+      accessible
+      accessibilityLabel={`Plate display, ${VIEW_LABELS[view].toLowerCase()} view, response ${Math.round(p.strength * 100)} percent${p.dragTarget ? `, drag on the plate to move the ${p.dragTarget === 'section' ? 'slice' : p.dragTarget}` : ''}`}
+      {...pan.panHandlers}
+    >
       <Canvas style={{ width, height }}>
         {/* Bench shadow under the plate */}
         <Group>
@@ -547,28 +584,56 @@ export function PlateView(p: PlateViewProps) {
             <Path path={finishLines} style="stroke" strokeWidth={1} color={mat.texture === 'grain' ? 'rgba(80,50,20,0.28)' : 'rgba(255,255,255,0.07)'} />
             {/* Field mesh */}
             {showMesh && mesh ? (
-              <Vertices vertices={mesh.verts} colors={mesh.cols} indices={mesh.idx} mode="triangles" opacity={view === 'overlay' ? 0.78 : view === 'section' ? 0.55 : 0.96} />
+              <Vertices
+                vertices={mesh.verts}
+                colors={mesh.cols}
+                indices={mesh.idx}
+                mode="triangles"
+                opacity={view === 'overlay' ? 0.78 : view === 'section' ? 0.55 : view === 'phase' || view === 'nodes' ? 0.35 + 0.61 * strengthK : 0.96}
+              />
             ) : null}
             {/* Section slice marker */}
             {view === 'section' ? (
               <SkLine p1={vec(ox, oy + p.sectionY * plateH)} p2={vec(ox + plateW, oy + p.sectionY * plateH)} color="#ffc64d" strokeWidth={1.5} />
             ) : null}
             {/* Sand */}
-            {wantParticles ? <Points points={points} mode="points" strokeWidth={dotR * 2} strokeCap="round" color={view === 'overlay' ? SAND : SAND} /> : null}
+            {wantParticles ? <Points points={points} mode="points" strokeWidth={dotR * 2} strokeCap="round" color={SAND} /> : null}
           </Group>
         ) : (
           <Group>
+            {/* Shadow on the bench, the plate's edge slab, then the face */}
+            <Oval x={width / 2 - plateW * 0.5} y={height / 2 + height * 0.06 - plateH * 0.21 + 14} width={plateW} height={plateH * 0.42} color="rgba(0,0,0,0.45)" />
+            <Vertices vertices={verts3d} indices={grid3d.idx} mode="triangles" color={mat.edge} transform={[{ translateY: 7 }]} />
             <Vertices vertices={verts3d} colors={grid3d.cols} indices={grid3d.idx} mode="triangles" />
           </Group>
         )}
         {/* Bevelled edge */}
         {!is3d ? <Path path={outline} style="stroke" strokeWidth={2.5} color={mat.edge} /> : null}
         {!is3d ? <Path path={outline} style="stroke" strokeWidth={1} color="rgba(255,255,255,0.35)" /> : null}
+        {/* Edge condition: clamp frame + screws, or a support ledge */}
+        {!is3d && !lib && spec.edge === 'clamped' ? (
+          <Group>
+            <Path path={outline} style="stroke" strokeWidth={10} color="#26262b" />
+            <Path path={outline} style="stroke" strokeWidth={10} color="#3a3a42" opacity={0.5} />
+            <Path path={outline} style="stroke" strokeWidth={1} color="#6a6a74" />
+            {edgeScrews.map((q, k) => (
+              <Group key={k}>
+                <Circle cx={q.x} cy={q.y} r={3.4} color="#8e8e96" />
+                <Circle cx={q.x} cy={q.y} r={3.4} style="stroke" strokeWidth={0.8} color="#c4cad2" />
+                <SkLine p1={vec(q.x - 2, q.y)} p2={vec(q.x + 2, q.y)} color="#2b2b30" strokeWidth={1} />
+              </Group>
+            ))}
+          </Group>
+        ) : null}
+        {!is3d && !lib && spec.edge === 'supported' ? <Path path={outline} style="stroke" strokeWidth={6} color="#7a7a84" opacity={0.75} /> : null}
         {/* Cross-section profile */}
         {view === 'section' ? (
           <Group>
-            <SkLine p1={vec(ox, oy + plateH + 54)} p2={vec(ox + plateW, oy + plateH + 54)} color="#2f74ff" strokeWidth={1} />
-            <Path path={sectionPath} style="stroke" strokeWidth={3} color="#ffc64d" strokeJoin="round" strokeCap="round" />
+            <SkLine p1={vec(ox, oy + plateH + 54)} p2={vec(ox + plateW, oy + plateH + 54)} color={MIDLINE_BLUE} strokeWidth={1} />
+            {/* The trace is a ± waveform: blue at the zero line, climbing the ramp to ± full excursion (colour standard). */}
+            <Path path={sectionPath} style="stroke" strokeWidth={3} strokeJoin="round" strokeCap="round">
+              <LinearGradient start={vec(0, oy + plateH + 54 - 26)} end={vec(0, oy + plateH + 54 + 26)} colors={WAVE_LEVEL_STOPS.map((q) => q.color)} positions={WAVE_LEVEL_STOPS.map((q) => q.offset)} />
+            </Path>
           </Group>
         ) : null}
         {/* Bell plate: the centre post it is clamped on */}
@@ -583,16 +648,25 @@ export function PlateView(p: PlateViewProps) {
         {/* Driver puck (magnet + coil) and clamp */}
         {!is3d ? (
           <Group>
-            <Circle cx={exX} cy={exY} r={11} color="rgba(0,0,0,0.5)" />
-            <Circle cx={exX} cy={exY} r={9} color="#2b2b30" />
-            <Circle cx={exX} cy={exY} r={9} style="stroke" strokeWidth={2} color={p.dragTarget === 'exciter' ? '#ffc64d' : '#8e8e96'} />
-            <Circle cx={exX} cy={exY} r={3.2} color="#ff6b5e" />
+            {/* Driver puck: a steel magnet cup lit from the upper-left, its copper coil ring, a drop shadow lower-right */}
+            <Circle cx={exX + 2} cy={exY + 3} r={11} color="rgba(0,0,0,0.55)" />
+            <Circle cx={exX} cy={exY} r={10}>
+              <RadialGradient c={vec(exX - 3.5, exY - 3.5)} r={13} colors={['#7c7c88', '#3a3a42', '#17171b']} />
+            </Circle>
+            <Circle cx={exX} cy={exY} r={10} style="stroke" strokeWidth={1.2} color={p.dragTarget === 'exciter' ? '#ffc64d' : 'rgba(255,255,255,0.35)'} />
+            <Circle cx={exX} cy={exY} r={6.2} style="stroke" strokeWidth={2.2} color="#b8743a" />
+            <Circle cx={exX} cy={exY} r={6.2} style="stroke" strokeWidth={0.8} color="#e2a565" opacity={0.7} />
+            <Circle cx={exX} cy={exY} r={2.6} color="#ff6b5e" />
             {spX != null && spY != null ? (
               <Group>
-                <Circle cx={spX} cy={spY} r={8} color="rgba(0,0,0,0.5)" />
-                <Circle cx={spX} cy={spY} r={6.5} style="stroke" strokeWidth={2.5} color={p.dragTarget === 'support' ? '#ffc64d' : '#5bb0ff'} />
-                <SkLine p1={vec(spX - 5, spY)} p2={vec(spX + 5, spY)} color="#5bb0ff" strokeWidth={2} />
-                <SkLine p1={vec(spX, spY - 5)} p2={vec(spX, spY + 5)} color="#5bb0ff" strokeWidth={2} />
+                {/* Clamp pad: a rubber-faced foot with a screw head */}
+                <Circle cx={spX + 1.5} cy={spY + 2.5} r={9} color="rgba(0,0,0,0.5)" />
+                <Circle cx={spX} cy={spY} r={8.5}>
+                  <RadialGradient c={vec(spX - 3, spY - 3)} r={11} colors={['#5c6470', '#2f343c', '#15171b']} />
+                </Circle>
+                <Circle cx={spX} cy={spY} r={8.5} style="stroke" strokeWidth={1.2} color={p.dragTarget === 'support' ? '#ffc64d' : MIDLINE_BLUE} />
+                <Circle cx={spX} cy={spY} r={3.2} color="#8e8e96" />
+                <SkLine p1={vec(spX - 2.2, spY)} p2={vec(spX + 2.2, spY)} color="#1c1c20" strokeWidth={1} />
               </Group>
             ) : null}
           </Group>

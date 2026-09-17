@@ -26,7 +26,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
-import { levelColor } from '../../../features/tools/levelColor';
+import { LinearGradient } from 'expo-linear-gradient';
+import { heatColor, levelColor, rampColors } from '../../../features/tools/levelColor';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { EngineGate } from '../../tools/EngineGate';
 import { LabChip, LabShell, HeaderPlayButton } from '../LabShell';
@@ -35,7 +36,8 @@ import { MATERIALS, type MaterialId } from '../../../features/cymatics/materials
 import { DEFAULT_PLATE, effectiveQ, plateAspect, plateModes, readResonance, sampleField, type EdgeCondition, type PlateShape, type PlateSpec } from '../../../features/cymatics/plateModes';
 import { LIBRARY_SHAPES, isLibraryShape, loadLibraryShape } from '../../../features/cymatics/modalLibrary';
 import { formatHz, formatWavelength, nearestNote, wavelengthAir } from '../../../features/cymatics/music';
-import { PRESET_BY_ID, type FreqStrategy } from '../../../features/cymatics/presets';
+import { EXPERIMENT_BY_PRESET, PRESET_BY_ID, type FreqStrategy } from '../../../features/cymatics/presets';
+import { ExperimentWell } from './ExperimentWell';
 import type { RootStackParamList } from '../../../navigation/types';
 import { requireVizPlate, skiaAvailable } from './skiaGate';
 import type { PlateViewMode } from './vizPlate';
@@ -64,7 +66,7 @@ const EDGES: { id: EdgeCondition; label: string }[] = [
 ];
 const GRAINS = [0, 30, 60, 90];
 const DAMPS: { id: number; label: string }[] = [
-  { id: 0.05, label: 'Low' },
+  { id: 0.1, label: 'Low' },
   { id: 0.4, label: 'Medium' },
   { id: 0.85, label: 'High' },
 ];
@@ -80,15 +82,17 @@ const MULTI: { id: string; label: string; ratio: number | null }[] = [
   { id: 'fourth', label: '+ fourth 4:3', ratio: 4 / 3 },
 ];
 const SAND_AMOUNTS = [1500, 3000, 5000];
-const VIEWS: { id: PlateViewMode; label: string; blurb: string }[] = [
-  { id: 'particles', label: 'Particles', blurb: 'Sand on the plate — it walks off the moving regions and settles on the still lines.' },
-  { id: 'heat', label: 'Heat map', blurb: 'Displacement amplitude in the Academy ramp: dark blue = still, red = maximum motion.' },
-  { id: 'overlay', label: 'Particles + heat', blurb: 'Both at once: the prediction (heat) under the confirmation (sand).' },
-  { id: 'phase', label: 'Phase', blurb: 'Amber regions rise while blue regions fall — opposite sides of a nodal line move in opposite directions.' },
-  { id: 'nodes', label: 'Node lines', blurb: 'Only the finished nodal pattern — the Chladni figure itself.' },
-  { id: 'plate3d', label: '3D plate', blurb: 'Exaggerated vertical motion, strobed to a few hertz so you can see it (the real plate moves at the drive frequency).' },
-  { id: 'section', label: 'Cross-section', blurb: 'A slice through the plate. Drag on the plate to move the slice.' },
+const VIEWS: { id: PlateViewMode; label: string; short: string; blurb: string }[] = [
+  { id: 'particles', label: 'Particles', short: 'Sand', blurb: 'Sand on the plate — it walks off the moving regions and settles on the still lines.' },
+  { id: 'heat', label: 'Heat map', short: 'Heat', blurb: 'How much each point moves, on the Academy ramp: black = still, blue = a little, red = the most. Off a resonance the whole map goes dark — the plate is barely moving.' },
+  { id: 'overlay', label: 'Particles + heat', short: 'Sand+heat', blurb: 'Both at once: the prediction (heat) under the confirmation (sand).' },
+  { id: 'phase', label: 'Phase', short: 'Phase', blurb: 'Amber regions rise while blue regions fall — opposite sides of a nodal line move in opposite directions. Fades between resonances.' },
+  { id: 'nodes', label: 'Node lines', short: 'Nodes', blurb: 'The nodal pattern of the nearest mode — the Chladni figure that WOULD form. Fades between resonances.' },
+  { id: 'plate3d', label: '3D plate', short: '3D', blurb: 'Exaggerated vertical motion, strobed to a few hertz so you can see it (the real plate moves at the drive frequency).' },
+  { id: 'section', label: 'Cross-section', short: 'Section', blurb: 'A slice through the plate. Drag on the plate to move the slice.' },
 ];
+const MAT_SHORT: Record<MaterialId, string> = { aluminum: 'Al', steel: 'Steel', brass: 'Brass', copper: 'Cu', acrylic: 'Acryl', glass: 'Glass', plywood: 'Ply', wood: 'Wood' };
+const HEAT_KEY = Array.from({ length: 9 }, (_, i) => heatColor(i / 8)) as [string, string, ...string[]];
 
 const RES_LABEL = {
   below: 'BELOW FIRST RESONANCE',
@@ -102,10 +106,11 @@ export function PlateStudioScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'CymaticsPlateStudio'>>();
   const preset = route.params?.preset ? PRESET_BY_ID[route.params.preset] : undefined;
+  const experiment = preset ? EXPERIMENT_BY_PRESET[preset.id] : undefined;
 
   const [spec, setSpec] = useState<PlateSpec>(() => ({ ...DEFAULT_PLATE, ...(preset?.spec ?? {}) }));
   const [freq, setFreq] = useState(preset?.freq.kind === 'hz' ? preset.freq.hz : 240);
-  const [amplitude, setAmplitude] = useState(0.7);
+  const [amplitude, setAmplitude] = useState(preset?.id === 'turn-it-up' ? 0.2 : 0.7);
   const [view, setView] = useState<PlateViewMode>(preset?.view ?? 'particles');
   const [multi, setMulti] = useState('off');
   const [sandCount, setSandCount] = useState(3000);
@@ -162,26 +167,47 @@ export function PlateStudioScreen() {
   const tone = useDriveTone(freq, freqB, amplitude);
   const driving = tone.running || silentDrive;
 
-  // ── sweep: log 40 → 2500 Hz over 45 s, loops; the audio follows the same f
+  // ── sweep: a DWELL sweep (learning pass 2026-09-17, D1). Metal plates have
+  // Q in the hundreds, so a plain log sweep crossed each resonance in ~20 ms
+  // and never read AT. This one glides 1.5 s from mode to mode and HOLDS 3 s
+  // on each, so every excitable resonance is seen forming. The audio follows
+  // the same frequency. 8 Hz ticks (B7) — each tick re-samples the field.
   useEffect(() => {
     if (!sweeping) return;
+    const ex = modes.filter((m) => m.drive > 0.05 && m.hz >= F_MIN && m.hz <= F_MAX).map((m) => m.hz);
+    if (ex.length === 0) {
+      setSweeping(false);
+      return;
+    }
+    const GLIDE = 1500;
+    const HOLD = 3000;
+    const segs = ex.map((f, i) => ({ from: i === 0 ? Math.max(F_MIN, f * 0.8) : ex[i - 1], to: f }));
+    const period = segs.length * (GLIDE + HOLD);
     const t0 = Date.now();
-    const f0 = 40;
-    const f1 = 2500;
-    const dur = 45000;
     const id = setInterval(() => {
-      const u = ((Date.now() - t0) % dur) / dur;
-      setFreq(Math.round(f0 * Math.pow(f1 / f0, u) * 10) / 10);
-    }, 60);
+      const t = (Date.now() - t0) % period;
+      const k = Math.floor(t / (GLIDE + HOLD));
+      const u = t - k * (GLIDE + HOLD);
+      const sg = segs[k];
+      const f = u < GLIDE ? sg.from * Math.pow(sg.to / sg.from, u / GLIDE) : sg.to;
+      setFreq(Math.round(f * 10) / 10);
+    }, 125);
     return () => clearInterval(id);
-  }, [sweeping]);
+  }, [sweeping, modes]);
 
   const note = nearestNote(freq);
   const mat = MATERIALS.find((m) => m.id === spec.material)!;
   const lib = isLibraryShape(spec.shape) ? loadLibraryShape(spec.shape) : null;
   const asp = plateAspect(spec);
   const patch = (o: Partial<PlateSpec>) => setSpec((s) => ({ ...s, ...o }));
-  const nudge = (pct: number) => setFreq((f) => Math.max(F_MIN, Math.min(F_MAX, Math.round(f * (1 + pct) * 10) / 10)));
+  const nudge = (pct: number) => {
+    setSweeping(false);
+    setFreq((f) => Math.max(F_MIN, Math.min(F_MAX, Math.round(f * (1 + pct) * 10) / 10)));
+  };
+  const land = (hz: number) => {
+    setSweeping(false);
+    setFreq(Math.round(hz * 10) / 10);
+  };
 
   const viz = skiaAvailable ? requireVizPlate() : null;
 
@@ -217,22 +243,10 @@ export function PlateStudioScreen() {
       },
     },
     {
-      kind: 'fader',
-      id: 'level',
-      label: 'LEVEL',
-      value: amplitude,
-      onChange: setAmplitude,
-      format: (v) => `Drive ${Math.round(v * 100)} %`,
-      formatShort: (v) => `${Math.round(v * 100)}%`,
-      level: true,
-      home: 0.7,
-      helpKey: 'amplitude',
-    },
-    {
       kind: 'group',
       id: 'plate',
       label: 'PLATE',
-      valueLabel: `${mat.label.slice(0, 5)} ${spec.sizeMm}`,
+      valueLabel: `${MAT_SHORT[spec.material]} ${spec.sizeMm}`,
       helpKey: 'plate',
       render: () => (
         <View style={styles.tray}>
@@ -266,6 +280,12 @@ export function PlateStudioScreen() {
               </View>
             </>
           ) : null}
+          <Text style={styles.trayHead}>DAMPING</Text>
+          <View style={styles.chips}>
+            {DAMPS.map((d) => (
+              <LabChip key={d.id} label={d.label} selected={Math.abs(spec.damping - d.id) < 1e-6} onPress={() => patch({ damping: d.id })} onLongPress={() => openLesson('damping')} />
+            ))}
+          </View>
           <Text style={styles.trayHead}>THICKNESS (mm)</Text>
           <View style={styles.chips}>
             {THICKS.map((t) => (
@@ -313,7 +333,7 @@ export function PlateStudioScreen() {
       helpKey: 'exciter',
       render: () => (
         <View style={styles.tray}>
-          <Text style={styles.trayHead}>EXCITER POSITION</Text>
+          <Text style={styles.trayHead}>DRIVER POSITION</Text>
           <View style={styles.chips}>
             {EXCITERS.map((e) => (
               <LabChip key={e.id} label={e.label} selected={Math.abs(spec.exciter.x - e.p.x) < 0.02 && Math.abs(spec.exciter.y - e.p.y * asp) < 0.02} onPress={() => patch({ exciter: { x: e.p.x, y: e.p.y * asp } })} onLongPress={() => openLesson('exciter')} />
@@ -327,12 +347,6 @@ export function PlateStudioScreen() {
             <LabChip label="Clamp centre" selected={!!spec.support && Math.abs(spec.support.x - 0.5) < 0.02} onPress={() => patch({ support: { x: 0.5, y: 0.5 * asp } })} onLongPress={() => openLesson('support')} />
             <LabChip label="Drag on plate" selected={dragTarget === 'support'} onPress={() => setDragTarget(dragTarget === 'support' ? null : 'support')} />
           </View>
-          <Text style={styles.trayHead}>DAMPING</Text>
-          <View style={styles.chips}>
-            {DAMPS.map((d) => (
-              <LabChip key={d.id} label={d.label} selected={Math.abs(spec.damping - d.id) < 1e-6} onPress={() => patch({ damping: d.id })} onLongPress={() => openLesson('damping')} />
-            ))}
-          </View>
           <Text style={styles.trayHead}>SECOND TONE</Text>
           <View style={styles.chips}>
             {MULTI.map((m) => (
@@ -344,7 +358,7 @@ export function PlateStudioScreen() {
               ? 'One drive frequency. Add a second to see two modes share the plate.'
               : tone.dualReady
                 ? `Two tones summed in one channel (${formatHz(freq)} + ${formatHz(freqB!)}) — heard AND shown.`
-                : `Second tone is SHOWN only on this build — playing two tones at once needs the next app build (engine 8).`}
+                : 'Second tone is SHOWN only — this build’s sound engine plays one tone at a time.'}
           </Text>
         </View>
       ),
@@ -353,7 +367,7 @@ export function PlateStudioScreen() {
       kind: 'options',
       id: 'view',
       label: 'VIEW',
-      valueLabel: VIEWS.find((v) => v.id === view)!.label.slice(0, 9),
+      valueLabel: VIEWS.find((v) => v.id === view)!.short,
       options: VIEWS.map((v) => ({ id: v.id, label: v.label, blurb: v.blurb })),
       selectedId: view,
       onSelect: (id) => {
@@ -363,6 +377,18 @@ export function PlateStudioScreen() {
       },
       sticky: true,
       helpKey: 'display',
+    },
+    {
+      kind: 'fader',
+      id: 'level',
+      label: 'LEVEL',
+      value: amplitude,
+      onChange: setAmplitude,
+      format: (v) => `Drive ${Math.round(v * 100)} %`,
+      formatShort: (v) => `${Math.round(v * 100)}%`,
+      level: true,
+      home: 0.7,
+      helpKey: 'amplitude',
     },
     {
       kind: 'group',
@@ -398,10 +424,6 @@ export function PlateStudioScreen() {
               <LabChip key={g.l} label={g.l} selected={Math.abs(friction - g.v) < 1e-6} onPress={() => setFriction(g.v)} />
             ))}
           </View>
-          <View style={styles.chips}>
-            <LabChip label="⟲ Reset sand" selected={false} onPress={() => setResetToken((t) => t + 1)} />
-            <LabChip label={slowMo ? 'Slow motion ON' : 'Slow motion'} selected={slowMo} onPress={() => setSlowMo((s) => !s)} />
-          </View>
         </View>
       ),
     },
@@ -409,7 +431,7 @@ export function PlateStudioScreen() {
 
   const bezel = [
     { k: 'DRIVE', v: formatHz(freq), helpKey: 'frequency' },
-    { k: 'NOTE', v: `${note.label} ${note.centsLabel}`, helpKey: 'frequency' },
+    { k: 'RESPONSE', v: `${Math.round(strength * 100)} %`, tint: levelColor(strength), helpKey: 'resonance' },
     { k: 'MODE', v: res.dominant && res.state !== 'below' && res.state !== 'between' ? res.dominant.label : '—', helpKey: 'modes' },
     { k: 'RES', v: res.state.toUpperCase(), tint: RES_TINT[res.state], helpKey: 'resonance', flex: 1.2 },
   ];
@@ -431,10 +453,10 @@ export function PlateStudioScreen() {
           stage: {
             size: 'L',
             badge: lib
-              ? `SIMULATION — ${lib.info.label.toUpperCase()}: FEM MODAL LIBRARY (${lib.validated ? 'CALCULATED · VALIDATED' : 'CALCULATED'})`
+              ? `SIMULATION · ${lib.validated ? 'CALCULATED · VALIDATED' : 'CALCULATED'} — ${lib.info.label} FEM modal library`
               : spec.shape === 'circle'
-                ? 'SIMULATION — DISC MODES: BESSEL SHAPES, TABULATED EIGENVALUES (APPROXIMATED)'
-                : 'SIMULATION — FREE-PLATE MODES: RITZ APPROXIMATION (APPROXIMATED)',
+                ? 'SIMULATION · APPROXIMATED — Bessel disc modes, tabulated eigenvalues'
+                : 'SIMULATION · APPROXIMATED — Ritz free-plate modes',
             onGuide: () => openLesson('display'),
             bezel,
             hideDragTag: true,
@@ -471,6 +493,14 @@ export function PlateStudioScreen() {
       >
         {!tone.engineReady ? <EngineGate state={tone.gate} /> : null}
         {tone.error ? <Text style={styles.err}>{tone.error}</Text> : null}
+        {experiment ? <ExperimentWell experiment={experiment} /> : null}
+        {view === 'heat' || view === 'overlay' || view === 'plate3d' || view === 'section' ? (
+          <View style={styles.keyRow} accessible accessibilityLabel="Colour key: black is still, red is the most motion">
+            <Text style={styles.keyText}>STILL</Text>
+            <LinearGradient colors={HEAT_KEY} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.keyBar} />
+            <Text style={styles.keyText}>MOST MOTION</Text>
+          </View>
+        ) : null}
 
         {/* Resonance strength — the honest readout of how hard the plate moves */}
         <View style={styles.card}>
@@ -478,26 +508,32 @@ export function PlateStudioScreen() {
             <Text style={[styles.resLabel, { color: RES_TINT[res.state] }]}>{RES_LABEL[res.state]}</Text>
             <Text style={styles.resPct}>{Math.round(strength * 100)} %</Text>
           </View>
+          {/* A bar whose SIZE is a level shows the ramp climbing to the level's colour (colour standard 2026-08-16). */}
           <View style={styles.meterTrack}>
-            <View style={[styles.meterFill, { width: `${Math.max(2, Math.round(strength * 100))}%`, backgroundColor: levelColor(strength) }]} />
+            <LinearGradient colors={rampColors(strength)} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[styles.meterFill, { width: `${Math.max(2, Math.round(strength * 100))}%` }]} />
           </View>
           <Text style={styles.caption}>
             {res.state === 'at' && res.dominant
-              ? `Mode ${res.dominant.label} at ${formatHz(res.dominant.hz)} · Q ≈ ${Math.round(Q)} · ${res.dominant.nodalLines} nodal line${res.dominant.nodalLines === 1 ? '' : 's'}.`
+              ? `Mode ${res.dominant.label} at ${formatHz(res.dominant.hz)} · ${res.dominant.nodalLines} nodal line${res.dominant.nodalLines === 1 ? '' : 's'}. LEVEL ${Math.round(amplitude * 100)} % sets how far it moves — not which mode.`
               : res.state === 'approaching' && res.next
                 ? `Next resonance: ${res.next.label} at ${formatHz(res.next.hz)}.`
                 : res.state === 'below'
                   ? `First excitable resonance is at ${res.next ? formatHz(res.next.hz) : '—'} — below it the plate only flexes as a whole.`
-                  : 'The plate is being pushed off-resonance — small motion, no stable figure. The sand shivers but does not organise.'}
+                  : `Off resonance — small motion, no stable figure; the sand shivers but does not organise.${res.next ? ` Nearest: ${res.next.label} at ${formatHz(res.next.hz)}.` : ''}`}
           </Text>
+          {res.state !== 'at' && res.next ? (
+            <Pressable onPress={() => land(res.next!.hz)} style={styles.landBtn} accessibilityRole="button" accessibilityLabel={`Land on ${res.next.label} at ${formatHz(res.next.hz)}`}>
+              <Text style={styles.landText}>TAP TO LAND ON {res.next.label.toUpperCase()} · {formatHz(res.next.hz)} ›</Text>
+            </Pressable>
+          ) : null}
           <View style={styles.rowBetween}>
-            <Text style={styles.readK}>λ in air {formatWavelength(wavelengthAir(freq))}</Text>
+            <Text style={styles.readK}>Q ≈ {Math.round(Q)} · {tone.running && freqB ? `B: ${formatHz(freqB)} ${resB?.state ?? ''}` : `λ in air ${formatWavelength(wavelengthAir(freq))}`}</Text>
             <View style={styles.nudgeRow}>
-              <Pressable onPress={() => nudge(-0.005)} hitSlop={8} style={styles.nudge} accessibilityRole="button" accessibilityLabel="Fine down">
-                <Text style={styles.nudgeText}>‹ −½%</Text>
+              <Pressable onPress={() => nudge(-0.001)} onLongPress={() => nudge(-0.005)} hitSlop={8} style={styles.nudge} accessibilityRole="button" accessibilityLabel="Fine down 0.1 percent; hold for half a percent">
+                <Text style={styles.nudgeText}>‹ −0.1%</Text>
               </Pressable>
-              <Pressable onPress={() => nudge(0.005)} hitSlop={8} style={styles.nudge} accessibilityRole="button" accessibilityLabel="Fine up">
-                <Text style={styles.nudgeText}>+½% ›</Text>
+              <Pressable onPress={() => nudge(0.001)} onLongPress={() => nudge(0.005)} hitSlop={8} style={styles.nudge} accessibilityRole="button" accessibilityLabel="Fine up 0.1 percent; hold for half a percent">
+                <Text style={styles.nudgeText}>+0.1% ›</Text>
               </Pressable>
             </View>
           </View>
@@ -505,13 +541,13 @@ export function PlateStudioScreen() {
 
         {/* Actions */}
         <View style={styles.chips}>
-          <LabChip label={sweeping ? '■ Stop sweep' : '▶ Sweep 40 → 2.5k Hz'} selected={sweeping} onPress={() => setSweeping((s) => !s)} />
+          <LabChip label={sweeping ? '■ Stop sweep' : '▶ Sweep the modes'} selected={sweeping} onPress={() => setSweeping((s) => !s)} />
           <LabChip label="⟲ Reset sand" selected={false} onPress={() => setResetToken((t) => t + 1)} />
           <LabChip label={slowMo ? 'Slow motion ON' : 'Slow motion'} selected={slowMo} onPress={() => setSlowMo((s) => !s)} />
           <LabChip label={silentDrive ? 'Silent drive ON' : 'Silent drive'} selected={silentDrive} onPress={() => setSilentDrive((s) => !s)} onLongPress={() => openLesson('silent')} />
         </View>
         <Text style={styles.caption}>
-          The sand moves only while the plate is driven — press ▶ to play the tone, or SILENT DRIVE to shake the plate without sound.
+          The sand moves only while the plate is driven — press ▶ to play the tone, or SILENT DRIVE to shake the plate without sound. SWEEP glides from mode to mode and dwells on each so you can watch every figure form.
         </Text>
 
         <View style={styles.card}>
@@ -532,9 +568,13 @@ export function PlateStudioScreen() {
           <LabChip label="Nodes & modes ›" selected={false} onPress={() => navigation.navigate('CymaticsModule', { id: 'nodes' })} />
           <LabChip label="Evidence vs myth ›" selected={false} onPress={() => navigation.navigate('CymaticsModule', { id: 'myth' })} />
         </View>
+        <Text style={styles.honest}>SIMULATION.</Text>
+        <Text style={styles.honest}>· Exact: the size / thickness / material scaling law.</Text>
         <Text style={styles.honest}>
-          SIMULATION. Rectangular free plates have no exact solution — these figures use the standard Ritz approximation; disc modes use Bessel shapes with tabulated free-edge eigenvalues. Triangle, hexagon, ring, bell and instrument plates are solved numerically (finite elements, 16 modes each) and looked up — Calculated{lib ? `; this shape: ${lib.validationNote}` : ''}. The size / thickness / material scaling law is exact. A real plate’s figures also depend on its flatness, mounting and the sand itself.
+          · Calculated: triangle, hexagon, ring, bell and instrument plates — solved numerically (finite elements, 16 modes each) and looked up{lib ? `; this shape: ${lib.validationNote}` : ''}.
         </Text>
+        <Text style={styles.honest}>· Approximated: rectangular free plates (no exact solution — the standard Ritz form) and disc modes (Bessel shapes, tabulated eigenvalues).</Text>
+        <Text style={styles.honest}>· A real plate’s figures also depend on its flatness, its mounting and the sand itself.</Text>
       </LabShell>
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('cymatics')} controlKey={lessonKey} onClose={() => setLessonOpen(false)} />
     </>
@@ -553,6 +593,11 @@ const styles = StyleSheet.create({
   resPct: { fontFamily: fonts.mono, fontSize: 13, color: colors.textPrimary },
   meterTrack: { height: 8, borderRadius: 4, backgroundColor: '#1b1c22', overflow: 'hidden' },
   meterFill: { height: 8, borderRadius: 4 },
+  landBtn: { alignSelf: 'flex-start', borderRadius: 8, borderWidth: 1, borderColor: 'rgba(255,198,77,.6)', backgroundColor: 'rgba(255,198,77,.08)', paddingHorizontal: 10, paddingVertical: 6 },
+  landText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.amber },
+  keyRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  keyBar: { flex: 1, height: 8, borderRadius: 4 },
+  keyText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: colors.textSub },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSub },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   readK: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub },

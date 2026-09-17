@@ -18,7 +18,8 @@ export function IntroModule({ width, focused }: CymaticsModuleProps) {
   const modes = useMemo(() => excitableModes(spec), [spec]);
   const Q = useMemo(() => effectiveQ(spec.material, spec.damping), [spec]);
   const f1 = modes[0]?.hz ?? 300;
-  const [atResonance, setAtResonance] = useState(true);
+  // Start OFF resonance (learning pass D13): expectation first, then the surprise.
+  const [atResonance, setAtResonance] = useState(false);
   const hz = atResonance ? f1 : f1 * 0.78;
 
   return (
@@ -54,7 +55,7 @@ export function IntroModule({ width, focused }: CymaticsModuleProps) {
         <Text style={P.caption}>
           {atResonance
             ? 'On a resonance the plate moves a lot for very little drive, and the sand snaps into a stable figure within seconds.'
-            : 'A little way off resonance the same drive barely moves the plate: the sand shivers in place and no figure forms.'}
+            : 'A little way off resonance the same drive barely moves the plate: the sand shivers in place and no figure forms. Now tap AT RESONANCE — the drive level does not change, only the frequency.'}
         </Text>
       </View>
 

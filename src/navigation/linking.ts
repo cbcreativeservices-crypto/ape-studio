@@ -78,6 +78,13 @@ export const linking: LinkingOptions<RootStackParamList> = {
       CalcLab: 'labs/calculator',
       DigitalLab: 'labs/digital',
       CymaticsLab: 'labs/cymatics',
+      // Phase 3 (2026-09-17): the studios and modules are linkable too —
+      // labs/cymatics/plate?preset=…, labs/cymatics/liquid, labs/cymatics/membrane,
+      // labs/cymatics/module/harmony.
+      CymaticsPlateStudio: 'labs/cymatics/plate',
+      CymaticsLiquidStudio: 'labs/cymatics/liquid',
+      CymaticsMembraneStudio: 'labs/cymatics/membrane',
+      CymaticsModule: 'labs/cymatics/module/:id',
       CableInstallLab: 'labs/cable-installation',
       LabCategory: 'labs/:id', // unknown ids render the screen's own "not available" state
       // Glossary — the public browse path; works signed-in or anonymous.

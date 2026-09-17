@@ -55,6 +55,8 @@ The app scales λ with the same `h/L²·√(E/ρ(1−ν²))` law and evaluates W
 
 ### 1.5 Membrane + loudspeaker (Phase 3)
 Circular membrane: exact `J_n(k r) cos(nθ)` modes with tension/surface-density scaling. Loudspeaker cone: piston → resonance → cone flexing → radial modes → breakup → surround/dust-cap motion, as an illustrated cutaway driven by the membrane engine with a stiffness profile.
+- **Phase 3 as built (2026-09-17)** — `src/features/cymatics/membrane.ts`: clamped-membrane modes from the J_n zero table (`faraday.J_ZEROS`), `f_ns = (j_ns / 2πR)·√(T/σ)` (**Calculated**, exact scaling pinned by test); five heads (σ, Q); strike weighting |W| at the mallet (centre → ring modes only); **kettle** = Rossing's measured timpani ratios on the principal (n,1) series + a plain air-mass factor elsewhere (**Approximated**, stated); `sampleMembrane` (signed ±1, NaN off the head). Loudspeaker: six drivers (f_s, Q_ts, D, breakup); `readCone` stage ladder stiffness → resonance → piston → edge flex → radial → breakup (**Illustrative**) with f_s response, `ka = πfD/c` and the 1/f² piston excursion (**Calculated**); `sampleCone` draws piston / J₀ flex / J_n radial / multi-mode breakup. `vizMembrane.tsx`: illustrated drum (shell, hoop, lugs, translucent lit head shaded per frame via `heatRgbW`), heat / phase / nodes / 3D head / section, and a loudspeaker cutaway (magnet, basket, spider, coil, cone, surround, dust cap) with a front view of the cone field. `MembraneStudioScreen`: FREQ (jump to a mode / a cone stage) · HEAD · STRIKE · CONE · VIEW · LEVEL; tuning card with the mode ratios; cone stage ladder; dwell sweep. Experiments #15–17. Lesson keys `membrane_display, head, tension, strike, kettle, cone, breakup, ratio, beats, lissajous, systems, change_one`. Pinned by `test/cymaticsMembrane.test.ts`.
+- **Signed response fix (2026-09-17):** `plateModes.modeResponseSigned` now returns the signed MAGNITUDE; it used to return the real part alone, which is zero exactly at resonance, so a drive landed exactly on a mode's hertz dropped that mode from the drawn field.
 
 ---
 
@@ -73,12 +75,12 @@ CymaticsHome  (lab home, LabShell)
  ├─ 1 What Is Cymatics?           animated intro (pressure → vibration → material moves; node vs antinode; why resonance)
  ├─ 2 Chladni Plate Studio        THE central experience
  ├─ 3 Liquid Cymatics Studio      Phase 2 — BUILT (route CymaticsLiquidStudio; second button on the lab home)
- ├─ 4 Membrane & Loudspeaker      Phase 3
+ ├─ 4 Membrane & Loudspeaker      Phase 3 — BUILT 2026-09-17 (route CymaticsMembraneStudio; third button on the lab home)
  ├─ 5 Nodes, Antinodes & Modes    teaching panel (interactive)
  ├─ 6 Harmonics vs Plate Modes    string / air column / membrane / plate comparison
- ├─ 7 Harmony in Motion           Phase 3 (ratios, beats, wave addition, Lissajous, spectrum → drives the sim)
- ├─ 8 Other Cymatic Systems       Phase 3 (string, water surface, speaker+particles, air column, bells/gongs, levitation)
- ├─ 9 Change One Thing            Phase 3 split-screen
+ ├─ 7 Harmony in Motion           Phase 3 — BUILT 2026-09-17 (module `harmony`: locked ratios via additive, beats visual-only until engine 8, wave addition, Lissajous, spectrum, links into both studios' second tone)
+ ├─ 8 Other Cymatic Systems       Phase 3 — BUILT 2026-09-17 (module `systems`: live string / pipe / levitation drawings on the amplitude ramp; water, speaker and bells link into the studios)
+ ├─ 9 Change One Thing            Phase 3 — BUILT 2026-09-17 (module `change`: two plates, one locked tone, one variable — the §0 discovery tool)
  ├─ 10 Guided Experiments         15 activities (Phase 1 ships #1–7 & 13)
  ├─ 11 Pattern Gallery & Art Studio   Phase 4
  └─ Evidence vs Myth              integrity panel (Phase 1)
@@ -118,7 +120,7 @@ P4: 14 reproduce a saved pattern from its settings · 15 design, colour, save, p
 |---|---|---|
 | 1 | Home, intro, Plate Studio (rect/square/circle, 8 materials, orthotropic wood, all controls, 8 views), Nodes/Modes, Harmonics vs Modes, Evidence vs Myth, 8 experiments, catalog row live | Pixel: sweep finds modes at predicted Hz; square (1,1)± diagonal figure; size/thickness scaling matches formula; exciter-at-node suppression; 60 fps particle view; tone plays through gate |
 | 2 | Liquid Studio + stages + curated patterns + liquid views + 4 experiments — **BUILT 2026-09-16** (experiments #9–12 in the app's numbering route to the Liquid Studio with `SET UP THE DISH ›`; the Liquid row left PLANNED AREAS) | Threshold + ½f behaviour visible; no pattern outside its region — Pixel: RESP shows f* below onset and f/2 above; a/a꜀ bezel tints by stage; silicone 10 cSt at 40 Hz reports onset ≈ 1.2 g vs water ≈ 0.16 g; gel/thick oil report out-of-range instead of inventing a pattern |
-| 3 | Harmony in Motion, Membrane/Speaker, Other Systems, Change-One-Thing, remaining experiments; `dual` generator proposal | ratio audio exact via additive; detune visual-only until build |
+| 3 | Harmony in Motion, Membrane/Speaker, Other Systems, Change-One-Thing, remaining experiments; `dual` generator proposal — **BUILT 2026-09-17** (experiments #15–17 in the drum studio; #13–14 "Turn it up" / "One frequency, three plates" from the learning pass; beats visual-only until engine 8 lands with the next build) | ratio audio exact via additive ✓ (Harmony module through GEN_MODES.additive); detune visual-only until build ✓ — Pixel: drum studio renders shell/hoop/lugs/head, bezel FUNDAMENTAL 200 Hz for a 14" Mylar head at 3 kN/m |
 | 4 | Gallery + Art Studio + exports | export parity with Harmonograph; SVG opens in a vector editor |
 
 Each phase: owner GO → build → tsc + tests → device-verify → commit on "commit". Comp B modal library plugs into Phase 1's shape list whenever it arrives.
