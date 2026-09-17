@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-16 21:59 · ccode · 75c410e4
+changed: OTA capability added ahead of the Pixel/iOS builds (owner: "yes i want over-the-air-update capability"). expo-updates ~57.0.22 installed; app.json gains the EAS Update endpoint + `runtimeVersion: {policy: fingerprint}`; eas.json gains a channel on all three profiles. Fingerprint was chosen over appVersion because this project has custom native code and JS that gates on the audio engine version — under appVersion the runtime version would sit at 1.0.0 and a JS bundle built for engine 8 could reach an engine 7 binary. Also ran expo install --fix: 20 packages were on stale SDK-57 patch versions, four of them modules this build switches on. expo-doctor now 21/21, tsc clean, 1212 tests green.
+affects other side: **JS-only fixes can now ship without a store release** once these builds are out (`npx eas update --branch production`). Anything native — new modules, permissions, app.json native config, icons — still needs a real build, because those move the fingerprint and retire old binaries from the update stream by design.
+needs: nothing from A.
+
+
 ### 2026-09-16 21:44 · ccode · 90bf6b82
 changed: Payments audit ahead of the Pixel/iOS builds. Confirmed there is NO third-party payment processor in app code (no RevenueCat/Stripe/Adapty/Qonversion) — billing is expo-iap direct to StoreKit/Play Billing with server-side verification in the `validate-purchase` edge function, which is deployed and ACTIVE at v3. Client SKUs and the server plan map agree on academy_monthly / academy_annual / academy_lifetime. Also flagged that expo-updates is NOT installed and there is no runtimeVersion, so OTA must be decided BEFORE this build (runtimeVersion is baked into the binary).
 affects other side: **A/Booth — the "Shared with third parties: None" answer on both store forms is CONFIRMED correct for billing**; the receipt path has no processor in it. If anyone later adds RevenueCat or similar, that answer flips and the forms must be refiled. Also: `validate-purchase` FAILS SAFE, so if its Apple/Google secrets are unset the store charges the customer and the app never unlocks — someone with dashboard access must confirm APPLE_ISSUER_ID / APPLE_KEY_ID / APPLE_PRIVATE_KEY / APPLE_BUNDLE_ID / APPLE_ENV / GOOGLE_SERVICE_ACCOUNT / ANDROID_PACKAGE_NAME are set, and that the bundle id and package both read com.cbcreativeservices.apestudio.
