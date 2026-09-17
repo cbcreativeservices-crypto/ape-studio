@@ -59,3 +59,14 @@ _bughunt_tmp/
 .agents/
 .claude/skills/
 skills-lock.json
+
+# Local image-source folders whose contents are ALREADY in the Supabase
+# `course-cards` storage bucket (owner 2026-09-17). The app resolves this art
+# by slug from that bucket (screens/awards/CredentialThumb.tsx credentialArtUrl),
+# never from the app bundle — so these are your local originals, not repo
+# assets. Kept on disk, ignored by git. Verified redundant: credential-squares
+# 102/102, Program_Squares 36/36, and the pen rescue copy 102/102 all present
+# in the bucket.
+assets/credential-squares/
+assets/Program_Squares/
+save here before pen erases it!/
