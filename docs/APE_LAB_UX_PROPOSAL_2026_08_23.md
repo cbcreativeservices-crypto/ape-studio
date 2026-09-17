@@ -110,6 +110,8 @@ any new component under MIN_FONT 12 (the tools' 9.5px is legacy, not precedent).
 in-tree overlays (never native Modal); MIN_FONT 12; guided-lesson long-press + photoHint +
 honesty badges survive; ratified copy untouched; notices at bottom; reset in-tray.
 
+**Well-top slot (added 2026-09-17, owner report).** The rack well is ONE collapsible, which is right for reading and wrong for the task the learner arrived to perform: a guided-experiment step sheet folded inside LAB NOTES sends them out of the lab to find it, and back again for the next step. `LabShell`'s `rack.wellTop` renders above the caption and outside every disclosure. It takes what the learner is DOING; everything they are reading stays in the notes.
+
 ## 4. Components (all extraction, not invention)
 
 New under `src/screens/lab/rack/`: **RackUnit** (frame: stage/well/dock),

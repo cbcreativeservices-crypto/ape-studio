@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-16 20:29 · ccode · a698e0e2
+changed: MODULE 8 FLOW FIX (owner report: the guided experiments made you leave the studio, hunt for the instructions, and leave again — once per experiment). Cause: in rack mode LabShell nests every child INSIDE the LAB NOTES collapsible, which is where the experiment step sheet was hiding. LabShell gains an additive `rack.wellTop` slot — pinned at the top of the well, above the caption and outside every disclosure — and the three Cymatics studios render ExperimentWell there. ExperimentWell now also carries the series: EXPERIMENT n / 17 with PREV / ALL 17 / NEXT, replacing the studio route in place and crossing studios when the next experiment lives in another one (NEXT · DISH); back still exits to module 8 from anywhere in the run. New shared `experimentRoute()` in presets.ts. Module 8 leads with START THE SERIES. tsc clean, 1212 tests; walked 1 to 9 on the Pixel and crossed into the Liquid Studio.
+affects other side: nothing — client-only. `rack.wellTop` is additive, so every other lab is untouched.
+needs: nothing from A.
+
+
 ### 2026-09-16 20:12 · ccode · 79237167
 changed: CYMATICS RACK PASS — re-ran the APE_LAB_UX_PROPOSAL judge panel (pedagogy / engineering / design language) over the eight modules + three studios. Nodes, Harmony in Motion, Change One Thing and Other Cymatic Systems now sit on the Rack Unit (stage pinned, bezel readouts, lane pre-bound to the teaching parameter, sticky trays, LAB NOTES collapsible with the first-move caption outside it) via the new modules/rackLayout.tsx; Intro / Harmonics / Myth / Experiments stay documents. Studios: ≤5-char dock values, well action chips folded into DRIVE / STRIKE / SAND trays, TAP TO LAND → tap the RES bezel cell, RackUnit stage reserve 300→350, section traces on MIDLINE_BLUE + WAVE_LEVEL_STOPS, MIN_FONT 12 across the lab. tsc clean, 1212 tests, four racked modules verified on the Pixel.
 affects other side: nothing — client-only layout work, no data or copy contract changed.
