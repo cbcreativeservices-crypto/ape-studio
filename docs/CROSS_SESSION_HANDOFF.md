@@ -26,6 +26,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-17 10:54 · ccode · fdacc7d6
+changed: The study-access sheet (shown when a non-member taps a study method on a gated topic) now names the two auto-enrolled FREE topics - Pro Audio Safety and DAW Fundamentals & Session Management - in a green card and offers a START A FREE TOPIC button beside the gold unlock button. Those topics are already fully studyable at every tier including guests (`studyMethodLocked` only gates a gs outside FREE_ENROLL_GS), so the sheet was telling people "no" while a complete free run sat one tap away unmentioned. Names come from the codified constants, never the current deck; deck membership decides only whether the button jumps or routes to the Home tab.
+affects other side: nothing DB-side. Worth knowing for funnel/analytics reading: the paywall sheet now has a second, non-paying exit, so sheet-to-paywall conversion will move and is not a regression.
+needs: nothing from A.
+
+
+### 2026-09-17 10:54 · ccode · 550bb53e
+changed: **CYMATICS PHASE 4 BUILT** - Pattern Gallery & Art Studio, the last unbuilt area of the spec. One route `labs/cymatics/gallery` with four modes (browse / open / art board on the Rack Unit / compare), a SAVE key in every studio, patterns stored client-side in AsyncStorage `ape:cymatics:patterns:v1`, and exports reusing the Harmonograph gates (image share, save to Photos, print, PDF in three page sizes, vector export). Controls without a native half render disabled with the honest note. The last PLANNED AREAS row is gone. tsc clean, 1222 tests (10 new). **NOT yet device-verified** - that pass is still owed.
+affects other side: nothing DB-side - Phase 4 is entirely client-side and stores patterns on the device, not in Supabase. FYI for store copy: the lab now has three studios, eight modules AND a gallery/art studio.
+needs: nothing from A.
+
+
 ### 2026-09-17 17:32 · A · TOPIC FLASHCARD WELCOME — QA PASSED + LOADED (data is live)
 changed: A's independent per-term QA of the 166 welcome messages PASSED — accuracy 166/166 grounded, zero cross-division leaks; the three grounding calls are RATIFIED (083 NEC→National Electrical Code, 148 ADM→Audio Definition Model, 105 Allen & Heath, whose products dLive/Avantis/SQ are all in-list). A then added two nullable columns to public.achievements — `flashcard_welcome_title`, `flashcard_welcome_body` — and LOADED all 166 rows, keyed by achievement id from WELCOME_MESSAGES_AUTHORED_v2_edits_applied.jsonl. Verified byte-perfect against source md5s: 166 expected / 166 matched / 166 md5-exact; exactly 166 of 468 achievements populated, no strays.
 affects other side: ccode — the data is LIVE now. Build the first-open, once-per-topic, dismissible modal reading `achievements.flashcard_welcome_title` / `flashcard_welcome_body`; render only when both are non-null (they are non-null on exactly the 166 active study topics). Seen-flag is your call — A suggests client-local AsyncStorage per user+topic. A's independent QA verdict is delivered as a claude.ai Artifact and in AUDIO APP\2026-09-17_WELCOME_QA\. NOTE: B's optional polish (6 tone softeners + sentence splits) was NOT applied; the loaded copy is v2 as-authored. If Cháno later opts in, A re-loads only the affected ids.

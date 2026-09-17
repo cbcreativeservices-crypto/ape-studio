@@ -63,6 +63,74 @@ cd C:\Users\profe\dev\ape-studio; npx eas env:list production
 
 ---
 
+## 1b. BUILD FAILURE 2026-09-17 - a bad Sentry token KILLS the whole build
+
+**Build `ef634146` (Android, preview) FAILED after 21m27s of Gradle.** Root cause, from the
+"Run gradlew" phase:
+
+```
+Script '/node_modules/@sentry/react-native/sentry.gradle' line: 132
+Execution failed for task ':app:createBundleReleaseJsAndAssets_SentryUpload_...'
+> Process 'command '.../@sentry/cli/bin/sentry-cli'' finished with non-zero exit value 1
+    error: API request failed
+    Caused by:
+        sentry reported an error: Invalid token (http status: 401)
+```
+
+### THE LESSON, and it is not obvious
+
+**Adding `SENTRY_AUTH_TOKEN` makes the source-map upload MANDATORY.**
+
+- **No token** (how every build before this one worked): the Sentry Gradle script SKIPS the upload.
+  Build succeeds. Crash reports arrive unsymbolicated.
+- **Valid token:** upload runs, build succeeds, stack traces are readable.
+- **INVALID token:** `sentry-cli` returns 401, the Gradle task FAILS, and **the entire build dies** -
+  at the very end, after every native module has compiled. The most expensive possible place to fail.
+
+So the token is not the harmless optional extra it appears to be. A wrong value is strictly worse
+than no value at all.
+
+### Most likely cause of the 401
+
+A Sentry internal integration page shows a **Client ID**, a **Client Secret**, AND a separate
+**Tokens** section. The source-map upload needs the **auth token from the Tokens section**. The
+Client Secret looks equally token-shaped and is the easy thing to copy by mistake - it returns
+exactly this 401. Also check for a trailing space or newline on the pasted value.
+
+### Two ways out
+
+**A. Unblock immediately (no Sentry trip, restores the previously-working behaviour):**
+
+```bash
+cd C:\Users\profe\dev\ape-studio; npx eas env:delete --variable-name SENTRY_AUTH_TOKEN --variable-environment production --non-interactive
+cd C:\Users\profe\dev\ape-studio; npx eas env:delete --variable-name SENTRY_AUTH_TOKEN --variable-environment preview --non-interactive
+cd C:\Users\profe\dev\ape-studio; npx eas env:delete --variable-name SENTRY_AUTH_TOKEN --variable-environment development --non-interactive
+```
+
+Then rebuild. The upload step is skipped again, the build completes, and crash capture still works -
+only the stack traces stay unreadable. `SENTRY_ORG` can stay; it is inert without a token.
+
+**B. Fix the value:** copy the auth token from the **Tokens** section of the integration page,
+paste it into `.env`, re-run `./scripts/eas-env-sync.ps1`, rebuild.
+
+### Verify a token BEFORE spending another 21 minutes of Gradle on it
+
+```bash
+cd C:\Users\profe\dev\ape-studio; npx @sentry/cli --auth-token <TOKEN> info
+```
+
+It prints the authenticated org on success and the same 401 on failure. Cheap, instant, and it
+would have caught this before the build.
+
+### Also worth fixing while here
+
+The project archive uploaded at **705 MB and took 8m43s**. EAS uploads everything git does not
+ignore, which includes the untracked `assets/Certificate_Squares` and `assets/Menu Course Cards`
+image folders. An `.easignore` excluding local image originals and `docs/` would cut upload time
+substantially on every future build.
+
+---
+
 ## 2. What turns on with this build
 
 Everything below is already written, committed and waiting on its native half. No further code is
