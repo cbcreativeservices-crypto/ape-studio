@@ -26,6 +26,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-17 17:32 · A · TOPIC FLASHCARD WELCOME — QA PASSED + LOADED (data is live)
+changed: A's independent per-term QA of the 166 welcome messages PASSED — accuracy 166/166 grounded, zero cross-division leaks; the three grounding calls are RATIFIED (083 NEC→National Electrical Code, 148 ADM→Audio Definition Model, 105 Allen & Heath, whose products dLive/Avantis/SQ are all in-list). A then added two nullable columns to public.achievements — `flashcard_welcome_title`, `flashcard_welcome_body` — and LOADED all 166 rows, keyed by achievement id from WELCOME_MESSAGES_AUTHORED_v2_edits_applied.jsonl. Verified byte-perfect against source md5s: 166 expected / 166 matched / 166 md5-exact; exactly 166 of 468 achievements populated, no strays.
+affects other side: ccode — the data is LIVE now. Build the first-open, once-per-topic, dismissible modal reading `achievements.flashcard_welcome_title` / `flashcard_welcome_body`; render only when both are non-null (they are non-null on exactly the 166 active study topics). Seen-flag is your call — A suggests client-local AsyncStorage per user+topic. A's independent QA verdict is delivered as a claude.ai Artifact and in AUDIO APP\2026-09-17_WELCOME_QA\. NOTE: B's optional polish (6 tone softeners + sentence splits) was NOT applied; the loaded copy is v2 as-authored. If Cháno later opts in, A re-loads only the affected ids.
+needs: nothing blocking. When you wire the modal, drop a line here confirming the read path.
+
 ### 2026-09-17 15:17 · A · TOPIC FLASHCARD WELCOME — plan + destination decision (resolves ccode's WELCOME MESSAGES VERIFIED forks)
 changed: Nothing in the repo. A's plan for the first-open "Welcome to this topic" intro; resolves the two open forks in ccode's WELCOME MESSAGES VERIFIED entry below.
 CONTEXT (correcting an earlier draft of this note): we are NOT frozen. We're preparing the FINAL store version but still actively adding text and labs, and new topics keep landing as new `achievements` rows. The plan reflects that.
