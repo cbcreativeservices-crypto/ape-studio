@@ -117,6 +117,89 @@ code change. Nothing needs a flag toggled.
 
 ---
 
+## 4b. PAYMENTS — there is no "paycat", and here is what can silently fail
+
+**This app has no third-party payment processor.** A repo-wide search for RevenueCat, Stripe,
+Adapty, Qonversion and react-native-purchases returns nothing in app code. Billing is
+**`expo-iap` talking directly to StoreKit and Play Billing**, with server-side receipt
+verification in the Supabase edge function `validate-purchase` (deployed, ACTIVE, version 3).
+That is also what the store privacy declaration asserts, and it is why "Shared with third
+parties" is **No**. Introducing RevenueCat or similar later would be an architecture change AND
+would flip that answer on both store forms.
+
+Verified by ccode, both sides agree:
+
+| | |
+|---|---|
+| Client SKUs (`src/features/commercial/iapProducts.ts:20-22`) | `academy_monthly` (subs), `academy_annual` (subs), `academy_lifetime` (in-app) |
+| Server plan map (`supabase/functions/validate-purchase/index.ts:22-24`) | the same three, mapped to monthly / annual / lifetime |
+| Purchase flow | `PaywallScreen` → `purchase.ts:83` → edge function → `entitlements` row |
+| Entitlement read | real, under RLS; the only mock is `__DEV__`-gated and returns early in release |
+
+### The dangerous failure mode — check these before you sell anything
+
+`validate-purchase` **fails safe**: if a secret is missing it returns `{ ok:false }` and grants
+nothing. Safe for your data, bad for a customer — **the store still takes their money and the app
+still does not unlock.** ccode cannot see Supabase function secrets, so verify these by hand in
+Dashboard → Edge Functions → Secrets:
+
+```
+APPLE_ISSUER_ID        APPLE_KEY_ID        APPLE_PRIVATE_KEY
+APPLE_BUNDLE_ID        APPLE_ENV           (production | sandbox)
+GOOGLE_SERVICE_ACCOUNT ANDROID_PACKAGE_NAME
+```
+
+`APPLE_BUNDLE_ID` and `ANDROID_PACKAGE_NAME` must both equal **`com.cbcreativeservices.apestudio`**
+(from `app.json`), or every receipt is rejected as belonging to another app.
+
+### Store-side prerequisites ccode cannot see
+
+- **App Store Connect:** the three products created with exactly those ids, plus the **Paid Apps
+  agreement** signed and banking and tax complete. Until that agreement is active, product lookup
+  returns an empty list and the paywall shows nothing to buy — with no error.
+- **Google Play:** the same three ids, and the app uploaded to a track at least once. Play
+  Billing will not resolve products for an app that has never been uploaded. Add licence testers
+  so you can test a purchase without being charged.
+- **Sandbox vs production:** `APPLE_ENV` decides which Apple endpoint is used. A TestFlight build
+  needs `sandbox`; the live App Store build needs `production`. Getting this backwards makes every
+  real purchase fail verification.
+
+---
+
+## 4c. Other things that belong in THIS build, not the next one
+
+**Over-the-air updates are not set up, and this is the one decision you cannot defer.**
+`expo-updates` is not a dependency, and `app.json` has no `updates` block and no
+`runtimeVersion`. Consequences:
+
+- Every JavaScript fix, copy change or lab tweak needs a **full store release**, with review.
+- `runtimeVersion` is **baked into the binary**. Adding OTA after this build does not help the
+  builds you are about to ship; it only takes effect from the build after that.
+
+So: decide now. If you want to ship JS fixes without waiting on review, `expo-updates` has to go
+in before you build. If you are content shipping through review every time, do nothing — but know
+that is the choice being made.
+
+**Push notification credentials (EAS-side, ccode cannot see them).** Tokens register only if the
+build has valid credentials: an **APNs key** for iOS and an **FCM v1 service account** for
+Android. `app.json` references no `googleServicesFile`, so confirm the Android credential lives in
+EAS. Without these, `getExpoPushTokenAsync` may still hand back a token while delivery silently
+fails. Check with `npx eas credentials`.
+
+**Already correct, no action needed** (ccode verified):
+
+- Bundle id and package are both `com.cbcreativeservices.apestudio`, consistent across platforms.
+- `ITSAppUsesNonExemptEncryption` is declared, so iOS will not stall on the export-compliance
+  question.
+- `eas.json` uses `appVersionSource: remote` with `autoIncrement`, so build numbers manage
+  themselves.
+- The EAS project id is present in `app.json`.
+- Permission strings exist for microphone, camera, speech recognition and add-only Photos, and
+  each matches what the code actually does.
+- Dev bypass flags are inert in release builds.
+
+---
+
 ## 5. Not in this build
 
 - **Cymatics Phase 4** (Gallery & Art Studio) is assigned to the lab's Fable session and is not
