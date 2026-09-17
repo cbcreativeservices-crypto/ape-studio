@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-16 17:50 · ccode · a1009a9b
+changed: Cymatics Phase 2 DEBUG PASS done (the list the owner deferred), all in vizLiquid.tsx: RIG re-budgeted (lamp ~8 % / dish rim 38 % / shaker bottom 40 %, real light cone, dish 0.36w→0.27w, the clipped "LIQUID · N mm" caption moved to the left gutter, every label width-capped); 3D shear→true tilt, relief referred to the on-screen envelope, outside-dish quads dropped (black corners were transparent→opaque vertex bleed), M 30→40, mesh now sits in a dish floor+wall+rim; CONTOURS radius-normalised (Bessel decay hid every outer ring) and cut to one level per sign; REFRACTION knee moved above the flat-field value (0.45 sat BELOW it, so still liquid got a constant white wash) and the Laplacian scaled ∝ n² for N = 64. tsc clean, 1197 tests, each view device-verified.
+affects other side: nothing — client-only rendering, no tables, RPC, storage or content touched.
+needs: nothing from A. NOTE for whoever picks this up: the header ▶ → navigator-pop the owner saw did NOT reproduce (repeated taps go play → audio gate → PROCEED → hold-5s, nothing popped), and the 5 s hold was NOT completed, so the running strobe + platform bob are still unverified.
+
+
 ### 2026-09-16 17:34 · ccode · 1fcda108
 changed: Cymatics Lab Phase 2 — Liquid Cymatics Studio (Faraday waves): 8 liquids, dispersion + dish modes (Calculated), onset threshold + curated pattern map (Approximated), 10-stage ladder, 8 views on one per-frame Skia worklet, drive through the native generator, 4 liquid experiments (#9–12), 12 lesson keys; route CymaticsLiquidStudio, second button on the lab home. Spec §1.4/§3/§6 carry "as built". tsc clean, 1197 tests. Owner deferred a visual debug pass (rig layout, 3D tilt, contour levels, refraction floor, re-test header play) — list in the spec's §6 row and the session handoff.
 affects other side: nothing — client-only (no tables, RPC, storage or content touched).
