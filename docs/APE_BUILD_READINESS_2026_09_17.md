@@ -231,6 +231,61 @@ fails. Check with `npx eas credentials`.
 
 ---
 
+## 4d. iOS 27 - WHY WE ARE SAFE, AND WHAT MUST BE TESTED ANYWAY
+
+The owner's iPhone runs **iOS 27.0**, released September 2026. Researched 2026-09-17.
+
+### The trap we are avoiding by doing nothing
+
+iOS 27 requires the **UIScene lifecycle** for apps *built with the iOS 27 SDK*. Expo SDK 57 /
+React Native 0.86.0 has an **open, unresolved bug** under that lifecycle: the app launches, the
+JS bundle loads from Metro, and the screen stays blank because `RCTReactNativeFactory.startReactNative()`
+never attaches the React Native root view to the UIWindow.
+See [expo/expo#47570](https://github.com/expo/expo/issues/47570) (open, assigned, no fix, no
+documented workaround) and [expo/expo#46664](https://github.com/expo/expo/issues/46664).
+
+**We are not exposed**, because EAS builds SDK 57 with the default image
+`macos-tahoe-26.5-xcode-26.6` - Xcode 26.6, targeting the **iOS 26 SDK**. An app built against the
+iOS 26 SDK runs on an iOS 27 device in compatibility mode and the UIScene requirement does not
+apply to it.
+
+> **DO NOT pin a Xcode 27 image on SDK 57.** Opting in to "support iOS 27" is precisely what
+> triggers the blank screen. There is no benefit to it today and a total failure mode if you do.
+
+**App Store is unaffected.** Since 2026-04-28 submissions must be built with Xcode 26 or later
+against the iOS 26 SDK; this build meets that, and no deadline requiring the iOS 27 SDK has been
+announced. The iOS 27 SDK path is **Expo SDK 58**, which is built for iOS 27 and currently in
+beta - a deliberate upgrade project, not a build-night change.
+
+### EXTRA TESTING REQUIRED ON THE iOS 27 DEVICE
+
+The Pixel proves nothing here. This app does real measurement through custom native modules
+(`ape-dsp` audio, `ape-optical` camera), and iOS 26/27 carry reported audio-session behaviour
+changes. Test these **on the iOS 27 iPhone specifically**:
+
+1. **Audio session / buffer duration.** Developers report problems when an app requests a
+   `setPreferredIOBufferDuration` **smaller than the default** on iOS 26+. `ape-dsp` sets a
+   preferred buffer duration, so exercise every meter and confirm no dropouts, silence or
+   stalls: SPL, RTA, spectrogram, RT60, tuner.
+2. **Audio route changes when recording starts.** Reported behaviour: beginning a recording can
+   force a voice-call style route and mute unrelated audio. Start a measurement tool while music
+   or another audio source is playing and watch what happens to both.
+3. **Interruptions and backgrounding.** Take a call or background the app mid-measurement, return,
+   and confirm capture resumes rather than silently dying.
+4. **Bluetooth / AirPods.** Route to AirPods and back. Sleep Detection on AirPods since iOS 26 has
+   been reported to stop long sessions after 15-20 minutes on iOS 26 AND 27.
+5. **Camera frequency counter** (`ape-optical`, AVCaptureVideoDataOutput luma path) - confirm it
+   still reports a rate.
+6. **Speech recognition dictation** in the glossary, which must stay on-device.
+7. **The newly enabled natives:** save to Photos and the add-only permission prompt, the print
+   sheet, and share as image.
+8. **Audible beats** in Cymatics Harmony in Motion - engine 8 arriving for the first time.
+
+Log anything odd against the iOS 27 context rather than assuming it is an app bug; several of
+these are platform behaviour changes rather than regressions in our code.
+
+---
+
 ## 5. Not in this build
 
 - **Cymatics Phase 4** (Gallery & Art Studio) is assigned to the lab's Fable session and is not
