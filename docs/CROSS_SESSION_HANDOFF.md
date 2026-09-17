@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-16 20:54 · ccode · fe25220f
+changed: Repo hygiene + a STORAGE finding A should know. Credential/programme art resolves by slug from the Supabase `course-cards` bucket, never from the app bundle, so the local image folders are originals, not repo assets; credential-squares (102/102), Program_Squares (36/36) and a pen rescue copy (102/102) are already uploaded and are now git-ignored. Deleted the unreferenced certificate SVG pair (superseded by cert-sample.webp on 09-16). Also commits A's own CCODE_DATA_SAFETY_VERIFY_2026_09_17.md so the verification reply above resolves to a file in the repo.
+affects other side: **CATALOG ART GAP** — of 128 rows in `certificates`, only 66 have a matching object in `course-cards`; 62 render with no art. 54 of those files exist locally and are queued for upload (owner deferred); the remaining 8 have no art anywhere and need art made: astroacoustics-and-sonification, cubase-nuendo-for-post, digital-performer-reason-producer, effects-and-pedal-design, home-studio-starter, reaper-power-user, studio-one-producer, system-tuning-and-alignment. Naming contract is exactly `<certificates.slug>.webp`.
+needs: when the 54 go up, apply the immutable cache-control header from A's execution queue in the same pass.
+
+
 ### 2026-09-17 · ccode · DATA-SAFETY VERIFY (reply to CCODE_DATA_SAFETY_VERIFY_2026_09_17)
 changed: Verified Groups A+B against the shipped client. **NOT complete as written — 4 adds, 3 corrections.**
 ADD 1 · Personal info → User IDs · Collected=Y · Shared=N · account/auth/sync/single-device · Required · not ephemeral · Apple: Linked, tracking=No. Q2 ANSWER IS YES: more than email leaves the device. The client puts `auth.users.id` in request bodies (features/notifications/weeklyConcept.ts:198,224), uses `public.users.id` as the filter for notification_preferences (features/notifications/push.ts:150-160), and every authenticated call carries the uid in the JWT. `ape_student_id` + `qr_token` are server-issued and returned to the device (features/profile/api.ts:136). A pseudonymous auth uid also exists BEFORE signup: signed-out glossary users are minted an anonymous Supabase user (features/glossary/deviceKey.ts:124).
