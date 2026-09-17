@@ -5,6 +5,15 @@
  * session, so this persists to AsyncStorage and the server sync is pending
  * (ROUTE TO GOVERNANCE). We deliberately collect NO sensitive data beyond an
  * email — name, audio interests, and a single contact-consent flag only.
+ *
+ * DECIDED 2026-09-17 (owner): the email STAYS device-local, permanently. There
+ * is no direct-email route and none is planned, because employer and member
+ * contact already works through in-app requests addressed by an anonymous
+ * token, with accept / decline / block / report. Syncing the address would add
+ * a weaker second route and turn a value that never leaves the phone into
+ * stored, account-linked personal data on the store privacy forms. So the
+ * pending "server sync" referred to above applies to the LISTING fields (bio,
+ * interests, primary interest), never to the email.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -49,8 +58,10 @@ export type PublicProfile = {
   /** Consent to be listed for employers/networking contact. Default OFF. */
   contactConsent: boolean;
   /** User opt-in to appear in the public Pro Registry directory (user request
-   *  2026-07-23). Can only be turned ON once name + registryName + email are
-   *  filled; must be ON for the user to be shown. Default OFF. */
+   *  2026-07-23). Can only be turned ON once name + registryName are filled;
+   *  must be ON for the user to be shown. Default OFF.
+   *  Email is NOT part of that gate (owner 2026-09-17) — it never leaves the
+   *  device and nothing reads it, so it cannot be a requirement for listing. */
   showInRegistry: boolean;
 };
 

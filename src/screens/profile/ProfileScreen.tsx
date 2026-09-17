@@ -331,6 +331,11 @@ export function ProfileScreen() {
   /** Per-field gaps, not one boolean: a dimmed switch is not a message, so the
    *  UI has to be able to say WHICH detail is missing and jump to it. */
   const gaps = useMemo(() => {
+    // Contact email is deliberately NOT a gate (owner 2026-09-17). It never
+    // leaves the device and nothing reads it, so requiring it to switch the
+    // listing on made people fill in an address that goes nowhere. Employer
+    // and member contact runs through in-app requests addressed by an
+    // anonymous token, which is the route we keep.
     const g: { key: 'name' | 'registryName' | 'email'; label: string; done: boolean }[] = [
       { key: 'name', label: 'Your name', done: pub.name.trim().length > 0 },
       {
@@ -338,10 +343,9 @@ export function ProfileScreen() {
         label: 'Name on your certificates',
         done: pub.registryName.trim().length > 0 && registryNameFits,
       },
-      { key: 'email', label: 'Contact email', done: emailValid },
     ];
     return g;
-  }, [pub.name, pub.registryName, registryNameFits, emailValid]);
+  }, [pub.name, pub.registryName, registryNameFits]);
   const missing = gaps.filter((g) => !g.done);
   const profileComplete = missing.length === 0;
   const registryActive = pub.showInRegistry && profileComplete;
@@ -793,9 +797,9 @@ export function ProfileScreen() {
               <Text style={styles.fieldError}>Add a full address, like you@studio.com</Text>
             ) : (
               <Text style={styles.rowHint}>
-                Saved on this device only — never sent to us, never shown on your public
-                page. Members who find you in the directory reach you through in-app
-                contact requests, which never reveal your address.
+                Optional, and kept on this device only — never sent to us, never shown on
+                your public page. Members who find you in the directory reach you through
+                in-app contact requests, which never reveal your address.
               </Text>
             )}
 
