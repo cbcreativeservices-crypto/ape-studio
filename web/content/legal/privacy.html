@@ -216,6 +216,7 @@
 <li>Whether removal affects previously issued Certificates.</li>
 </ul>
 <p>Users are responsible for ensuring that voluntarily published profile information is accurate, lawful, and appropriate. We may remove content that violates our Terms of Service, infringes rights, contains unlawful material, or threatens the integrity or safety of the community.</p>
+<p>Where a public profile or directory listing is offered, publication is strictly opt-in and off by default. Enabling it makes the selected information — such as the name shown on your Certificates, your professional interests, and your biography — visible to anyone who has your public link or scans your code. Other members reach you only through in-app contact requests addressed to an anonymous identifier; your email address is never revealed through this feature, and you may decline, block, or report any contact. Public listing is limited to users who confirm they are 18 or older; because we do not collect a date of birth, this age confirmation is a self-attestation and is not independently verified. You may unpublish at any time, which simultaneously removes the public page, its search visibility, and the ability of others to contact you.</p>
 <h2>13. Microphone, Notifications, and Device Permissions</h2>
 <h3>13.1 Microphone</h3>
 <p>Microphone permission is requested only for a user-selected tool that requires live audio input. A user may deny or revoke permission through device settings. Doing so will disable microphone-dependent tools but should not prevent access to unrelated glossary or learning features.</p>
@@ -252,12 +253,10 @@
 <p>We use or may use Service Providers to operate the Services. Depending on the final production configuration, these may include:</p>
 <ul>
 <li><strong>Supabase:</strong> authentication, database, storage, synchronization, and backend infrastructure.  </li>
-<li><strong>Google Analytics for Firebase:</strong> in-app analytics and feature-usage measurement.  </li>
-<li><strong>Google Analytics 4 (website):</strong> website traffic and usage measurement.  </li>
-<li><strong>Firebase Crashlytics:</strong> crash reporting and technical diagnostics.  </li>
+<li><strong>Aptabase:</strong> anonymous, privacy-first in-app analytics and feature-usage measurement, hosted in the European Union; no advertising identifiers and no cross-application tracking.  </li>
+<li><strong>Sentry:</strong> crash and error reporting and technical diagnostics, configured without personal identifiers.  </li>
 <li><strong>Apple App Store:</strong> application distribution, billing, receipt validation, and subscription management for Apple platforms.  </li>
 <li><strong>Google Play:</strong> application distribution, billing, licensing, and purchase management for Android.  </li>
-<li><strong>RevenueCat:</strong> cross-platform subscription management and entitlement synchronization, if implemented.  </li>
 <li><strong>Email, hosting, security, customer-support, or notification providers:</strong> as identified in the production Service Directory.</li>
 </ul>
 <p>Service Providers may process information only to the extent reasonably necessary to perform their contracted functions, subject to applicable agreements and law. We periodically review provider need, access, and configuration.</p>
@@ -524,28 +523,20 @@
 <p><strong>Purpose:</strong> Authentication, database services, cloud storage, synchronization, and backend infrastructure.  </p>
 <p><strong>Possible information processed:</strong> Account information, learning records, authentication data, profile content, subscription entitlements, and security logs.  </p>
 <p><strong>Status:</strong> In active production use for authentication, database, cloud storage, and synchronization.</p>
-<h2>Google Analytics for Firebase</h2>
-<p><strong>Purpose:</strong> Product analytics, feature usage, application improvement, and engagement measurement.  </p>
-<p><strong>Possible information processed:</strong> Pseudonymous identifiers, Device Data, session information, and feature-interaction events.  </p>
-<p><strong>Status:</strong> Enabled through the application’s Firebase integration for in-app analytics and feature-usage measurement. Advertising features are not enabled.</p>
-<h2>Google Analytics 4 (Website)</h2>
-<p><strong>Purpose:</strong> Website traffic measurement, page and session analytics, and understanding how visitors use the website.  </p>
-<p><strong>Possible information processed:</strong> Pseudonymous identifiers, Device and browser data, page views, session information, and interaction events on the website.  </p>
-<p><strong>Status:</strong> In active production use on the website (Google Analytics 4, measurement ID G-3Q520K0VQG). Advertising features are not enabled.</p>
-<h2>Firebase Crashlytics</h2>
-<p><strong>Purpose:</strong> Crash reporting, technical diagnostics, and reliability improvement.  </p>
-<p><strong>Possible information processed:</strong> Device information, application version, crash traces, diagnostic logs, and related identifiers.  </p>
-<p><strong>Status:</strong> In active production use for crash reporting and technical diagnostics.</p>
+<h2>Aptabase</h2>
+<p><strong>Purpose:</strong> Anonymous product analytics, feature usage, and engagement measurement.  </p>
+<p><strong>Possible information processed:</strong> Non-identifying event names, coarse application and device attributes, and app-version and session counters. No advertising identifiers; no cross-application tracking.  </p>
+<p><strong>Status:</strong> In active production use for privacy-first, anonymous in-app analytics, hosted in the European Union.</p>
+<h2>Sentry</h2>
+<p><strong>Purpose:</strong> Crash and error reporting, technical diagnostics, and reliability improvement.  </p>
+<p><strong>Possible information processed:</strong> Application version, crash and error traces, diagnostic logs, and coarse device information; configured without personal identifiers (no user identifier is attached to reports).  </p>
+<p><strong>Status:</strong> In active production use for crash and error reporting and technical diagnostics.</p>
 <h2>Apple App Store</h2>
 <p><strong>Purpose:</strong> Application distribution, billing, receipt validation, purchase processing, and subscription administration.  </p>
 <p><strong>Possible information processed:</strong> Entitlement information, transaction identifiers, subscription status, and marketplace metadata.</p>
 <h2>Google Play</h2>
 <p><strong>Purpose:</strong> Application distribution, billing, licensing, purchase processing, and subscription administration.  </p>
 <p><strong>Possible information processed:</strong> Entitlement information, transaction identifiers, subscription status, and marketplace metadata.</p>
-<h2>RevenueCat</h2>
-<p><strong>Purpose:</strong> Cross-platform subscription management, receipt validation, entitlement synchronization, and subscription analytics.  </p>
-<p><strong>Possible information processed:</strong> User or application identifier, transaction and receipt information, entitlement status, and subscription events.  </p>
-<p><strong>Status:</strong> Planned; do not list as an active provider until implemented.</p>
 <h2>Additional Providers</h2>
 <p>Before publication, add any provider used for:</p>
 <ul>
