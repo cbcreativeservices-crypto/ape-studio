@@ -168,17 +168,42 @@ GOOGLE_SERVICE_ACCOUNT ANDROID_PACKAGE_NAME
 
 ## 4c. Other things that belong in THIS build, not the next one
 
-**Over-the-air updates are not set up, and this is the one decision you cannot defer.**
-`expo-updates` is not a dependency, and `app.json` has no `updates` block and no
-`runtimeVersion`. Consequences:
+**Over-the-air updates — DONE 2026-09-17, owner said yes.** `expo-updates@~57.0.22` is installed
+and configured, so this build ships with OTA capability baked in.
 
-- Every JavaScript fix, copy change or lab tweak needs a **full store release**, with review.
-- `runtimeVersion` is **baked into the binary**. Adding OTA after this build does not help the
-  builds you are about to ship; it only takes effect from the build after that.
+What was added:
 
-So: decide now. If you want to ship JS fixes without waiting on review, `expo-updates` has to go
-in before you build. If you are content shipping through review every time, do nothing — but know
-that is the choice being made.
+| Where | What |
+|---|---|
+| `package.json` | `expo-updates@~57.0.22` (the version Expo pins for SDK 57) |
+| `app.json` | `updates.url` = `https://u.expo.dev/72f69470-fe12-4ecb-a10b-e8331d53812d` |
+| `app.json` | `runtimeVersion: { "policy": "fingerprint" }` |
+| `eas.json` | `channel` on all three build profiles: `development`, `preview`, `production` |
+
+**Why the `fingerprint` policy and not `appVersion`.** This project has custom native code
+(`ape-dsp`, `ape-optical`) and adds native modules build to build — the telemetry SDKs and the
+export modules are going in right now, and the audio engine is version-gated in JS. With the
+`appVersion` policy the runtime version is just the `version` field, which stays `1.0.0` unless
+somebody remembers to bump it; `autoIncrement` in `eas.json` only moves the build number. That
+would let you push a JS bundle built against engine 8 to a binary carrying engine 7.
+`fingerprint` computes the runtime version from the actual native project, so **any native change
+automatically produces a new runtime version and old binaries simply stop receiving updates**,
+which is the correct and safe behaviour. It removes a manual step that this project is unusually
+likely to forget.
+
+**How to ship a JS-only fix once the build is out:**
+
+```bash
+cd C:\Users\profe\dev\ape-studio; npx eas update --branch production --message "what changed"
+```
+
+The branch maps to the channel of the same name, which is baked into the build profile. Devices
+pick the update up on the next cold start. No code is needed in the app: `expo-updates` checks on
+load by default, and it is inert in development.
+
+**What OTA cannot do.** Anything native still needs a real build: new native modules, permission
+changes, `app.json` native config, icons and splash, and any change that moves the fingerprint.
+JavaScript, copy, styling, lab logic and data files all go over the air.
 
 **Push notification credentials (EAS-side, ccode cannot see them).** Tokens register only if the
 build has valid credentials: an **APNs key** for iOS and an **FCM v1 service account** for
@@ -197,6 +222,12 @@ fails. Check with `npx eas credentials`.
 - Permission strings exist for microphone, camera, speech recognition and add-only Photos, and
   each matches what the code actually does.
 - Dev bypass flags are inert in release builds.
+- **All 21 `expo-doctor` checks pass** as of 2026-09-17. Twenty Expo packages were sitting on
+  stale patch versions within SDK 57 (for example `expo-print@57.0.1` where SDK 57 expects
+  `~57.0.2`), including four of the modules this build switches on: media-library, print,
+  sharing and notifications. `npx expo install --fix` aligned them. Patch-level only, no SDK
+  change; tsc clean and 1212 tests green afterwards. Mismatched patch versions are a common
+  cause of native build failures, so this was worth doing before building rather than after.
 
 ---
 

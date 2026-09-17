@@ -8,6 +8,12 @@
     "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
+    "updates": {
+      "url": "https://u.expo.dev/72f69470-fe12-4ecb-a10b-e8331d53812d"
+    },
+    "runtimeVersion": {
+      "policy": "fingerprint"
+    },
     "backgroundColor": "#0c0c0c",
     "ios": {
       "supportsTablet": true,
