@@ -324,3 +324,14 @@ export const PRESET_BY_ID: Record<string, StudioPreset> = Object.fromEntries(EXP
 export const MEMBRANE_PRESET_BY_ID: Record<string, MembranePreset> = Object.fromEntries(EXPERIMENTS.filter((e) => e.membrane).map((e) => [e.membrane!.id, e.membrane!]));
 export const EXPERIMENT_BY_PRESET: Record<string, Experiment> = Object.fromEntries(EXPERIMENTS.map((e) => [e.preset?.id ?? e.liquid?.id ?? e.membrane?.id ?? e.id, e]));
 export const LIQUID_PRESET_BY_ID: Record<string, LiquidPreset> = Object.fromEntries(EXPERIMENTS.filter((e) => e.liquid).map((e) => [e.liquid!.id, e.liquid!]));
+
+/**
+ * Where an experiment opens — the one place that maps an experiment to its
+ * studio route + preset param. Used by the experiments module (module 8) and
+ * by the in-studio PREV / NEXT, so the series can be run without going back.
+ */
+export function experimentRoute(e: Experiment): { route: 'CymaticsPlateStudio' | 'CymaticsLiquidStudio' | 'CymaticsMembraneStudio'; params: { preset: string } } {
+  if (e.studio === 'liquid') return { route: 'CymaticsLiquidStudio', params: { preset: e.liquid!.id } };
+  if (e.studio === 'membrane') return { route: 'CymaticsMembraneStudio', params: { preset: e.membrane!.id } };
+  return { route: 'CymaticsPlateStudio', params: { preset: e.preset!.id } };
+}

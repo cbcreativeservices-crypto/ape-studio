@@ -258,6 +258,12 @@ export function LabShell({
     initialParam: string;
     /** Guided-lesson router for dock/bezel long-presses (helpKey → lesson). */
     onHelp?: (helpKey?: string) => void;
+    /** PINNED at the very top of the well, above the caption and OUTSIDE every
+     *  disclosure — for the task the learner arrived to perform (the guided
+     *  experiment). Owner 2026-09-17: a step sheet folded inside LAB NOTES is a
+     *  step sheet the learner hunts for, leaves, and comes back to. Keep this
+     *  slot short; everything that is reading, not doing, belongs in the notes. */
+    wellTop?: ReactNode;
   };
   /** The lab's interactive Explore content. A function child receives the
    *  shell API (scroll-lock control for drag editors); a plain node renders
@@ -368,6 +374,7 @@ export function LabShell({
                   {/* The first-move instruction stays OUTSIDE the disclosure
                       (house rule, design pass 2026-08-31): an instruction
                       inside a collapsed section is an instruction unread. */}
+                  {rack.wellTop}
                   <Text style={styles.caption}>{exploreCaption}</Text>
                   <CollapsibleSection title="LAB NOTES">
                     <Text style={styles.intro}>{intro}</Text>

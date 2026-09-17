@@ -465,11 +465,12 @@ export function LiquidStudioScreen() {
               ),
           },
           params,
+          // The experiment the learner arrived to run — pinned above the notes.
+          wellTop: experiment ? <ExperimentWell experiment={experiment} /> : undefined,
         }}
       >
         {!tone.engineReady ? <EngineGate state={tone.gate} /> : null}
         {tone.error ? <Text style={styles.err}>{tone.error}</Text> : null}
-        {experiment ? <ExperimentWell experiment={experiment} /> : null}
         {view === 'height' || view === 'contours' || view === 'liquid3d' || view === 'section' ? (
           <View style={styles.keyRow} accessible accessibilityLabel="Colour key: black is still, red is the largest motion">
             <Text style={styles.keyText}>STILL</Text>
