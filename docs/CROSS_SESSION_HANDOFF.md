@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-17 12:09 · ccode · 7138ead0
+changed: Added an expo-web launch config so the app can be previewed in a browser at localhost:8091. Copy and layout changes show live there, which removes the publish round-trip from every small wording fix. Note the web build cannot exercise the mic, camera or audio engine.
+affects other side: nothing.
+needs: nothing from A.
+
+
 ### 2026-09-17 - ccode - CONTACT EMAIL: SETTLED, device-local forever (closes the trigger below)
 changed: Owner ruling: the profile Contact email **stays device-local permanently and there will be no direct-email route**. The trigger I logged an hour ago is therefore CLOSED, not pending.
 Reasoning, recorded so nobody reopens it: employer/member contact ALREADY works through in-app requests addressed by an anonymous token, with accept / decline / block / report, and that module states no address crosses the boundary. Syncing the email would not fix anything broken - it would add a weaker second route beside a working one, and convert a value that never leaves the phone into stored, account-linked personal data.
