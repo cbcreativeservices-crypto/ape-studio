@@ -26,6 +26,21 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-17 - ccode - AGE RATING vs the community directory: OWNER RULING + what A must declare
+changed: Nothing in code. Owner asked how member-to-member communication squares with a 13+ rating. Audited it and put the decision on the record.
+**OWNER RULING: keep 13+ and DECLARE the interaction, with the 18+ gate on top.**
+**What is actually enforced today** (verified in the DB, not inferred): `community_profile_publish` refuses to publish unless an age attestation exists, writes `adult_confirmed_at` + `adult_attestation_version`, and logs every publish/update/unpublish to `registry_consent_events` with a policy version. Unpublishing sets published=false, discoverable=false AND contact_enabled=false in one statement, so the public page, search visibility and contact all stop together. The visibility model is three independent opt-ins (published -> discoverable -> contact), all enforced in SECURITY DEFINER functions with no table reachable by direct PostgREST. Block is symmetric, report exists on both profiles and threads, and no email crosses the boundary in either direction - members are addressed by a `publicToken` that is deliberately NOT users.qr_token.
+**THE GAP, stated plainly:** `public.directory_known_minor(uuid)` is a STUB - its body is `select false`, so it never catches anyone. The 18+ barrier is therefore SELF-ATTESTATION ONLY (a checkbox reading "I am 18+"), not verification, because the app collects no birthdate. The hook is correctly placed and wired into the publish path; it simply has nothing to consult. If a birthdate is ever collected, implementing that one function switches on a real check with no other change.
+affects other side: **A + Booth own the rating questionnaires, and this is the action item.** Both store questionnaires MUST declare user interaction / user-generated content. If either was answered "no user interaction", that is a misdeclaration of the kind that gets an app pulled or forcibly re-rated AFTER launch. Apple additionally expects four things for user content: a filter for objectionable material, a report mechanism, a way to block abusive users, and published contact details. We have report, block and contact. **We do NOT have any filtering or review of the free-text `display_name` and `about` fields** - that is the one Apple criterion currently unmet, and it needs either an answer or a control before submission.
+needs: (1) confirm both rating questionnaires declare user interaction + UGC; (2) a decision on the missing content filter/review for display_name and about - a blocklist on write inside `community_profile_save` would satisfy it server-side and is A's to build if we go that way; (3) note for the privacy/store docs that the 18+ gate is attestation, not verification.
+
+
+### 2026-09-17 12:54 · ccode · 05b7b0d7
+changed: Device-pass copy fixes. Calculator row narrowed to purple TEXT + ICON only (the frame, count subtitle, chevron and icon circle go back to amber). Certificate-name placeholder "e.g. Rachel A. Booth" -> "Your Preferred Name". "Your name" relabelled "Your user name", lifted OUT of the PUBLIC PROFILE section into its own section, hint now says private AND never shown to other members.
+affects other side: **one CONSENT-COPY correction A should know about.** The publish-consent text read "Your name, your certificates, your work areas and your About you line become visible to anyone with your link or QR code." That was wrong: the user name is never published - it is the NAME ON YOUR CERTIFICATES that becomes visible. Corrected, and the user name is now listed among the things that stay private. This matters because that string is what the user is consenting to, and `registry_consent_events` records the consent against a policy version.
+needs: A may want to bump the registry policy_version, since the consent wording changed.
+
+
 ### 2026-09-17 12:09 · ccode · 7138ead0
 changed: Added an expo-web launch config so the app can be previewed in a browser at localhost:8091. Copy and layout changes show live there, which removes the publish round-trip from every small wording fix. Note the web build cannot exercise the mic, camera or audio engine.
 affects other side: nothing.
