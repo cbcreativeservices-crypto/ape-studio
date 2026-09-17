@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-16 19:03 · ccode · db4fe88b
+changed: CYMATICS PHASE 3 BUILT (owner GO, Fable) — Membrane & Loudspeaker Studio (route CymaticsMembraneStudio; membrane.ts + vizMembrane.tsx), modules Harmony in Motion / Other Cymatic Systems / Change One Thing, experiments #13–17, 12 lesson keys, deep links labs/cymatics/{plate,liquid,membrane,module/:id}. PLUS the owner-requested design + cognitive-learning expert pass over the whole lab (off-resonance displays now dark, dwell sweep + ±0.1 % nudges + TAP TO LAND, PREDICT-FIRST experiment cards in the studio wells, Myth verdict-first, colour-standard fixes on meters / strips / section traces, illustrated puck / clamp / edge, promise-word purge, shorter badges). FIX: modeResponseSigned zeroed a mode exactly AT resonance. tsc clean, 1212 tests, device-verified.
+affects other side: nothing DB-side — client only. FYI for the store listing: the lab now has THREE studios and eight modules; the catalog blurb was widened.
+needs: nothing from A. Owner: beats / detuned pairs stay visual-only until engine 8 rides the next build (never started by ccode).
+
+
 ### 2026-09-16 18:29 · ccode · ea03d73c
 changed: Cymatics: Computer B's MODAL LIBRARY INGESTED (8 solved plate shapes → src/data/cymatics/*.json + modalLibrary.ts; plateModes() library branch; vizPlate clips to the solved outline incl. holes, masks the sand, plate-shaped 3D, bell post; Plate Studio SHAPE tray has 11 shapes, badge CALCULATED / CALCULATED · VALIDATED) + a rect exciter-weighting fix + COLOUR STANDARD: liquid shader now uses levelColor.heatRgbW (worklet twin of heatColor, pinned by test), MONOCHROME view retired, contours base on the ramp. tsc clean, 1212 tests, violin verified on the Pixel.
 affects other side: nothing DB-side. The Computer B deliverable is closed — brief marked DELIVERED + INGESTED; spec §1.3 carries "as built".
