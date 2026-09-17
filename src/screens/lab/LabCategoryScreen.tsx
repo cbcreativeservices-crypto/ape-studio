@@ -133,7 +133,7 @@ function LabRow({
             accessibilityRole="button"
             accessibilityState={{ expanded }}
             aria-expanded={expanded}
-            accessibilityLabel={`${leaf.name}${done ? ', completed' : ''}${dev ? ', planned, not open yet' : ''}, ${expanded ? 'expanded' : 'collapsed'}`}
+            accessibilityLabel={`${leaf.name}${done ? ', completed' : ''}${dev ? `, ${DEV_NOTE}` : ''}, ${expanded ? 'expanded' : 'collapsed'}`}
           >
             {leaf.name}
           </Text>

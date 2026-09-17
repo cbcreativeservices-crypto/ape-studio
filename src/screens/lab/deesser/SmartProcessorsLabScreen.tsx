@@ -1,7 +1,8 @@
 /**
  * Smart Processors Lab — the family hub (owner brief 2026-09-02). V1 opens
  * with the De-Esser & Sibilance Control lab; the other members are listed
- * as planned rows with the catalog's DEV_NOTE (no timeline, no promise).
+ * as planned rows with the catalog's DEV_NOTE (owner changed that note to
+ * "Coming Soon" on 2026-09-17 — see labCatalog).
  */
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';

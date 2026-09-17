@@ -6,9 +6,11 @@
  * (Equalization, Dynamics, Time Effects, … Calculators). Each subject shows a
  * header + its labs; a subject that IS one big lab environment (the Calculator
  * Lab) is a tappable header that opens its own drill-down. Planned labs show as
- * non-tappable, dimmed rows with a neutral, timeline-free DEV_NOTE (owner
- * 2026-08-10: show the plan, never promise a feature or a date). Fully
- * data-driven from labCatalog.
+ * non-tappable, dimmed rows carrying the catalog's DEV_NOTE — which the owner
+ * changed to "Coming Soon" on 2026-09-17, reversing the 2026-08-10 no-promise
+ * rule. The wording lives ONLY in labCatalog.DEV_NOTE; the row and its
+ * accessibility label both read from it, so it never has to be changed twice.
+ * Fully data-driven from labCatalog.
  */
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -270,7 +272,7 @@ function LabRow({
           accessibilityRole="button"
           accessibilityState={{ expanded }}
           aria-expanded={expanded}
-          accessibilityLabel={`${leaf.name}${dev ? ', planned, not open yet' : ''}${freeIncluded ? ', included free' : ''}, ${expanded ? 'expanded' : 'collapsed'}`}
+          accessibilityLabel={`${leaf.name}${dev ? `, ${DEV_NOTE}` : ''}${freeIncluded ? ', included free' : ''}, ${expanded ? 'expanded' : 'collapsed'}`}
         >
           {leaf.name}
         </Text>

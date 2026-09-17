@@ -71,10 +71,25 @@ type Common = {
   extraLabs?: LabLeaf[];
 };
 
-/** Note shown on a planned-lab row (owner 2026-08-10): states the present fact
- *  only — it is part of the curriculum but not open yet. NO timeline, NO promise
- *  ("soon", "later", "coming", "in development" are all forbidden). */
-export const DEV_NOTE = 'Planned lab — not open yet.';
+/** Note shown on a planned-lab row.
+ *
+ *  CURRENTLY UNUSED, ON PURPOSE. The owner removed every placeholder row on
+ *  2026-09-17 ("remove the planned modules — I will add them to a future
+ *  update"), so no leaf carries `status: 'development'` and this string renders
+ *  nowhere. The MECHANISM is kept, not deleted: the `status` field, this note
+ *  and the three screens that read it are all still wired, so the future update
+ *  switches them back on by adding rows — no new plumbing. Same shape as
+ *  cymatics'
+ *  `PLANNED_AREAS = []`.
+ *
+ *  Its wording was changed to "Coming Soon" earlier the same day, reversing the
+ *  2026-08-10 no-promise rule. That reversal now affects nothing visible, but
+ *  the caution survives for whoever re-adds a row: App Store review has
+ *  historically read "coming soon" placeholders as an incomplete-app signal
+ *  under guideline 2.1, and the older wording ("Planned lab — not open yet.")
+ *  carried the same meaning without the forward promise. See
+ *  docs/APE_PRODUCTION_LABS_PLAN_2026_09_17.md §11. */
+export const DEV_NOTE = 'Coming Soon';
 
 /** A category is either a HUB (opens an existing lab home that owns its own
  *  drill-down; count = that lab's module registry length) or a LIST (opens a
@@ -173,9 +188,10 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     // React key in EarLabScreen (which also builds per-leaf state as
     // `${cat.id}:${leaf.name}`), so the two categories could omit or duplicate
     // each other's rows. Caught by the 2026-09-11 QA sweep.
-    // NOTE FOR THE OWNER: there are now TWO mixing categories in the TRAINING
-    // section — this live one and the all-placeholder "Mixing & Production".
-    // Worth deciding whether to fold the placeholders in here.
+    // SETTLED 2026-09-17: the duplicate is gone. The all-placeholder "Mixing &
+    // Production" category was removed with the rest of the placeholders, so
+    // this is now the only mixing category. The id stays 'mixingworkflow' —
+    // renaming it would change its `labs/:id` deep link for no gain.
     id: 'mixingworkflow',
     glyph: '🎛',
     name: 'Mixing',
@@ -275,7 +291,8 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       { name: 'Modular Synth', blurb: 'VCO · VCF · VCA · LFO · envelope · sequencer — signal flow and patching.', route: 'ModularLab' },
       // LIVE (owner brief 2026-09-02): the Sound Envelope & Transients Lab.
       { name: 'Sound Envelope & Transients Lab', blurb: 'Attack, transient, decay, sustain, release, duration — how a sound evolves over time at its source.', route: 'EnvelopeLab' },
-      { name: 'Sample Lab', blurb: 'Sampling, looping, slicing, time-stretch.', status: 'development' },
+      // REMOVED 2026-09-17 (owner): 'Sample Lab' placeholder — returns in a
+      // future update. See the note on DEV_NOTE.
     ],
   },
   {
@@ -333,26 +350,22 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     kind: 'list',
     labs: [
       { name: 'Bass Guitar Physics', blurb: 'String division, wavelength, harmonics, fret fractions ↔︎ intervals.', route: 'BassLab' },
-      { name: 'Instrument Recording Lab', blurb: 'Mic choice and placement per instrument.', status: 'development' },
+      // REMOVED 2026-09-17 (owner): 'Instrument Recording Lab' placeholder —
+      // returns in a future update. See the note on DEV_NOTE.
       // LIVE (owner spec 2026-08-12): 9 lessons + Choose-the-Mic challenge +
       // optional mic-locker exercise. Selection & characteristics only — the
       // physics/technique labs stay separate.
       { name: 'Microphone Selection Lab', blurb: 'Read the specs, weigh the job, make a defensible choice — types, characteristics, patterns, and the Choose-the-Mic challenge.', route: 'MicSelectLab' },
     ],
   },
-  {
-    id: 'mixing',
-    glyph: '🎛',
-    name: 'Mixing & Production',
-    description: 'Putting it together — balance, depth, and treating the room.',
-    section: 'training',
-    kind: 'list',
-    labs: [
-      { name: 'Mixing Principle Lab', blurb: 'Balance, panning, depth, bus structure.', status: 'development' },
-      { name: 'Room Mode Testing Lab', blurb: 'Find and tame axial / tangential / oblique modes.', status: 'development' },
-      { name: 'Custom Room Treatment Design Lab', blurb: 'Design absorption, diffusion and bass trapping for a room from its dimensions and use.', status: 'development' },
-    ],
-  },
+  // REMOVED 2026-09-17 (owner): the whole "Mixing & Production" category
+  // (id 'mixing'). All three of its rows were placeholders — Mixing Principle,
+  // Room Mode Testing, Custom Room Treatment Design — so dropping them would
+  // have left an empty category card reading "0 Labs". They return in a future
+  // update. This also settles the duplicate flagged in the note on
+  // 'mixingworkflow' above: the live "Mixing" category is now the only one.
+  // A stale `labs/mixing` deep link degrades to the category screen's own
+  // "not available" state (linking.ts), so no dead link is created.
   {
     id: 'voice',
     glyph: '🗣',
