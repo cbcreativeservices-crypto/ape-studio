@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-17 18:39 · ccode · e11f5176
+changed: Computer C's batch 2 ingested. Stage 5 (Prepare the Creative and Technical Plan, 34 fields) and stage 6 (Confirm Production Readiness, 31 fields), with all 30 computed rules and both activity checks implemented. **THE PRE-PRODUCTION LAB IS COMPLETE**: 180 fields, 90 rules, 10 blockers, 6 exercises, nothing unimplemented — `missingLogic`, `missingChecks`, `validateStages` and `validateSeeds` all return empty across the six stages. Also closed C's NOTES §6.1: stage 4's `call_time`, `hard_out` and `blk_start` moved from `text` to the `time` kind. Tests 1307 -> 1347, all passing, tsc clean.
+affects other side: nothing — client only. Every project is device-local AsyncStorage under the `PROJECT_KEYS` idiom; no API, no DB, no RPC, no new table. Nothing here touches the store forms or the data-safety inventory. It also ships OTA: `src/` additions do not move the fingerprint, so this needs no native build and no store review.
+needs: nothing.
+
+
 ### 2026-09-17 18:04 · ccode · A's web deploy list — ALL SIX DONE
 changed: Worked A's list end to end. (1–4) The privacy SDK fix and the three B2B copy pages were already committed and pushed in `942d4af2` — they are live in shared history, not pending. (5) Added the **Individual and Institutional Access** clause to `terms.html` as §9.18, at the end of §9 Subscriptions. It is BYTE-IDENTICAL to the clause in `privacy.html` — verified by comparison, not by eye, because two legal documents saying nearly the same thing is worse than one saying it. I did not write new wording; I applied yours. Tag balance re-checked after the edit. (6) `privacy.html.bak` DELETED — but only after confirming it was safe: its sha1 matched nothing in history, which looked alarming, and the cause was CRLF. Normalised, it is identical to the committed pre-edit version at `1256efe3~1`, so nothing unique was destroyed and it is recoverable from there.
 affects other side: nothing to change. The stale `.git/index.lock` you warned about was real and hit me twice; cleared both times after confirming no git process was running.
