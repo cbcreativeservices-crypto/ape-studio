@@ -174,23 +174,50 @@ export function ProductionActivityScreen() {
           </>
         ) : null}
 
-        {done ? (
-          debriefOpen ? (
-            <View style={styles.debrief}>
-              <Text style={styles.debriefHead}>WHAT THAT WAS REALLY TEACHING</Text>
-              <Text style={styles.debriefText}>{activity.debrief}</Text>
-            </View>
-          ) : (
+        {/* ── THE DEBRIEF IS NOT A PRIZE (owner ruling 2026-09-18) ──────────
+            "We need to allow the user to learn without completing."
+
+            This was inside `{done ? ... : null}`, so the writing that explains
+            what the exercise was actually teaching — the best writing in the
+            lab — was shown only to people who had already worked it out. The
+            learner it was written for could not reach it.
+
+            It is now always available, and the framing changes with the state:
+            somebody who has solved it gets "what that was really teaching";
+            somebody still working gets an explicit warning that it gives the
+            reasoning away, so reading it is their choice and not an accident.
+            Nothing is hidden and nothing is spoiled by surprise. */}
+        {debriefOpen ? (
+          <View style={styles.debrief}>
+            <Text style={styles.debriefHead}>
+              {done ? 'WHAT THAT WAS REALLY TEACHING' : 'THE REASONING BEHIND THIS EXERCISE'}
+            </Text>
+            <Text style={styles.debriefText}>{activity.debrief}</Text>
+          </View>
+        ) : (
+          <>
             <Pressable
               style={styles.debriefBtn}
               onPress={() => setDebriefOpen(true)}
               accessibilityRole="button"
-              accessibilityLabel="Read the debrief"
+              accessibilityLabel={
+                done
+                  ? 'Read the debrief'
+                  : 'Read the reasoning. This explains the answer before you have finished.'
+              }
             >
-              <Text style={styles.debriefBtnText}>READ THE DEBRIEF</Text>
+              <Text style={styles.debriefBtnText}>
+                {done ? 'READ THE DEBRIEF' : 'READ THE REASONING'}
+              </Text>
             </Pressable>
-          )
-        ) : null}
+            {!done ? (
+              <Text style={styles.debriefWarn}>
+                This explains what the exercise is testing, including what is wrong with the plan. Read
+                it whenever you want — you learn either way.
+              </Text>
+            ) : null}
+          </>
+        )}
 
         <Pressable
           style={styles.restart}
@@ -275,6 +302,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   debriefBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1, color: colors.textSub },
+  debriefWarn: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 16, marginTop: 6 },
   debrief: {
     borderLeftWidth: 3,
     borderLeftColor: colors.green,

@@ -6,7 +6,7 @@
  * §2.1). If this file ever grows a `if (stageId === ...)`, the design has been
  * broken and should be fixed here rather than worked around.
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -51,6 +51,9 @@ export function ProductionStageScreen() {
     [authored, project],
   );
   const report = useMemo(() => (stage && project ? readStage(stage, project) : null), [stage, project]);
+  /** So the summary at the top can jump to the list at the bottom. */
+  const scrollRef = useRef<ScrollView>(null);
+  const blockerCount = report ? report.findings.filter((f) => f.severity === 'blocker').length : 0;
 
   /**
    * A write that did not land, said out loud.
@@ -143,6 +146,7 @@ export function ProductionStageScreen() {
         </View>
       ) : (
         <ScrollView
+          ref={scrollRef}
           contentContainerStyle={[styles.body, { paddingBottom: insets.bottom + 40 }]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
@@ -164,6 +168,42 @@ export function ProductionStageScreen() {
               {report.answeredRequired} of {report.totalRequired} required decisions made
             </Text>
           </View>
+
+          {/* ── THE PAYOFF, WHERE IT CAN BE SEEN (owner ruling 2026-09-18) ────
+              The findings list is what this whole engine is FOR — it is the
+              thing that tells a planner what is still wrong — and it sat at the
+              bottom of fourteen phone screens of form, so most people never
+              reached it. This is a summary at the top that says how many there
+              are and how bad, and jumps to the detail.
+
+              The full list stays at the bottom rather than moving: read in
+              place, each finding sits near the fields it is about, and a wall
+              of problems above an empty form is discouraging rather than
+              useful. */}
+          {report.findings.length > 0 ? (
+            <Pressable
+              onPress={() => scrollRef.current?.scrollToEnd({ animated: true })}
+              style={[styles.findingsJump, blockerCount > 0 && styles.findingsJumpBlocker]}
+              accessibilityRole="button"
+              accessibilityLabel={
+                blockerCount > 0
+                  ? `${blockerCount} blocker${blockerCount === 1 ? '' : 's'} and ${report.findings.length - blockerCount} other findings. Jump to the list.`
+                  : `${report.findings.length} finding${report.findings.length === 1 ? '' : 's'}. Jump to the list.`
+              }
+            >
+              <Text
+                style={[styles.findingsJumpText, blockerCount > 0 && styles.findingsJumpTextBlocker]}
+              >
+                {blockerCount > 0
+                  ? `⚠ ${blockerCount} blocker${blockerCount === 1 ? '' : 's'}`
+                  : `${report.findings.length} thing${report.findings.length === 1 ? '' : 's'} to look at`}
+                {blockerCount > 0 && report.findings.length > blockerCount
+                  ? ` · ${report.findings.length - blockerCount} more`
+                  : ''}
+              </Text>
+              <Text style={styles.findingsJumpArrow}>SEE THEM ↓</Text>
+            </Pressable>
+          ) : null}
 
           {stage.sections.map((section) => (
             <View key={section.sectionId} style={styles.section}>
@@ -281,6 +321,22 @@ const styles = StyleSheet.create({
   sectionIntro: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.textSub, marginBottom: 12 },
 
   findings: { marginTop: 6, gap: 9 },
+  findingsJump: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: '#3a3a3a',
+    backgroundColor: '#17181a',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    marginTop: 8,
+  },
+  findingsJumpBlocker: { borderColor: '#ff6b5e', backgroundColor: 'rgba(255,107,94,0.09)' },
+  findingsJumpText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 0.6, color: colors.textSecondary },
+  findingsJumpTextBlocker: { color: '#ff9a90' },
+  findingsJumpArrow: { fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1, color: colors.textMuted },
   findingsHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textMuted },
   finding: {
     borderLeftWidth: 3,
