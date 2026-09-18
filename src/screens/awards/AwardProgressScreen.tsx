@@ -263,6 +263,19 @@ export function AwardProgressScreen({ navigation, route }: Props) {
             <Text style={styles.examNote}>
               30 questions · 10 minutes · one sitting
             </Text>
+            {/* The grant rule, said where the exam is actually taken (owner
+                2026-09-17). It has been on the Awards screen since 2026-07-22,
+                but that is a different screen from this one, and a member who
+                completes every topic in their first fortnight meets the gate
+                here rather than there. Stated as a fact up front, so nobody
+                finishes the work and only then learns about it.
+
+                Deliberately no date: the server owns the arithmetic, and the
+                clock restarts if a membership lapses, so anything computed on
+                this side would be wrong for exactly the people it matters to. */}
+            <Text style={styles.grantNote}>
+              Credentials are granted after one complete month of paid membership.
+            </Text>
           </View>
         )}
       </ScrollView>
@@ -317,6 +330,15 @@ const styles = StyleSheet.create({
   actions: { gap: 10, marginTop: 22 },
   gateNote: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 20, color: colors.textSubAlt, textAlign: 'center' },
   examNote: { fontFamily: fonts.mono, fontSize: 11, letterSpacing: 1.2, color: colors.textSubAlt, textAlign: 'center' },
+  /** Matches the AwardsScreen grant note, so the rule reads the same in both places. */
+  grantNote: {
+    fontFamily: fonts.barlowRegular,
+    fontSize: 12,
+    lineHeight: 18,
+    color: colors.textMuted,
+    textAlign: 'center',
+    marginTop: 6,
+  },
   credentialBox: {
     borderWidth: 1,
     borderColor: 'rgba(55,224,95,.5)',
