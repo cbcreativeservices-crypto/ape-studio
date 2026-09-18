@@ -33,6 +33,7 @@ import * as Speech from 'expo-speech';
 import { ApeDsp } from '../../../modules/ape-dsp';
 import { isAudioOutputEnabled, isMicActive } from './audioOutputStore';
 import { getSplCalibration } from '../tools/measure/calibrationStore';
+import { areOverlaysSuppressed } from '../dev/popupSuppressStore';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -475,7 +476,21 @@ function tick(): void {
     }
 
     // Critical dose warnings — separate control, once each per day (§17).
-    if (settings.criticalWarnings) {
+    //
+    // ── THE ONCE-A-DAY LATCH MUST NOT BE SPENT ON A WARNING NOBODY SAW ──────
+    //
+    // These set their flag BEFORE emitting, and `ExposureCheckin` drops the
+    // event outright while overlays are suppressed. So in Low-Light Production
+    // Mode the daily hearing-dose warning was consumed without ever being
+    // shown, and could not fire again that day — in the mode used during live
+    // shows, which is exactly when a full dose is most likely and matters most.
+    //
+    // Low-Light's rule stands: nothing auto-appears. But "do not interrupt right
+    // now" is not "never mention it". Holding the latch means the warning is
+    // still waiting, and fires on the next tick after the mode is turned off.
+    // This is also the one place in the app that gated at EMIT time rather than
+    // at render time, which is why it burned rather than waited.
+    if (settings.criticalWarnings && !areOverlaysSuppressed()) {
       if (!approachingFiredToday && d.dose >= 0.8 && d.dose < 1) {
         approachingFiredToday = true;
         d.warnings += 1;

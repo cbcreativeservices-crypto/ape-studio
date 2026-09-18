@@ -131,6 +131,35 @@ export function entryPoints(familyId: string, n = 3): Career[] {
     .map((x) => x.c);
 }
 
+/**
+ * Is this job title a licensed, credentialed or restricted-entry occupation?
+ *
+ * ── THE DISCLOSURE RULE (owner, hard rule) ──────────────────────────
+ *
+ * "We must be clear when other education — degrees, certifications, etc. — is
+ * required for careers. Always. Every time."
+ *
+ * The Career Finder RESULTS screen prints three example job titles per family as
+ * plain text, and a 2026-09-17 audit found no disclosure anywhere on it: a
+ * learner was shown Audiologist, Speech-Language Pathologist and Diagnostic
+ * Medical Sonographer as things this family leads to, with nothing to say those
+ * need a clinical doctorate, a master's and a licence respectively. The correct
+ * warning existed one screen deeper, where most people never go.
+ *
+ * The family `examples` are hand-written strings rather than index rows, so they
+ * are matched back to the index by title (and by alternate title, since the copy
+ * does not always use the index's exact wording).
+ */
+export function isRegulatedTitle(title: string): boolean {
+  const t = title.trim().toLowerCase();
+  if (!t) return false;
+  return all().some(
+    (c) =>
+      c.regulated &&
+      (c.title.toLowerCase() === t || c.alternates.some((a) => a.toLowerCase() === t)),
+  );
+}
+
 /** Case-insensitive title / alternate-title search across the whole index. */
 export function searchCareers(query: string, limit = 40): Career[] {
   const q = query.trim().toLowerCase();

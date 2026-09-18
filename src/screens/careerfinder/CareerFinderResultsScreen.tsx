@@ -18,7 +18,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { sendFeedback } from '../../lib/feedback';
 import { DIMENSIONS } from '../../features/careerfinder/dimensions';
 import { CLARITY_LABEL, clarityCopy, computeResult, explainFamily, type FamilyScore } from '../../features/careerfinder/scoring';
-import { familyFieldOf, familyMetaOf } from '../../features/careerfinder/careerIndex';
+import { familyFieldOf, familyMetaOf, isRegulatedTitle } from '../../features/careerfinder/careerIndex';
 import { FAMILY_COUNT } from '../../features/careerfinder/families';
 import { QUESTION_COUNT } from '../../features/careerfinder/questions';
 import { LAB_FOR_DIMENSION } from '../../features/careerfinder/labsForDimension';
@@ -80,9 +80,33 @@ export function CareerFinderResultsScreen() {
         {size === 'large' ? <Body>{f.description}</Body> : null}
         <View style={styles.chips}>{f.dimensions.map((c, i) => <DimChip key={c} code={c} dims={result.dims} primary={i === 0} />)}</View>
         {why ? <Text style={styles.why}>{why}</Text> : null}
-        <Text style={styles.examples} accessibilityLabel={`For example: ${f.examples.join(', ')}`}>
-          <Text style={styles.examplesLabel}>FOR EXAMPLE  </Text>{f.examples.join(' · ')}
+        {/* DISCLOSE THE GATED ONES (2026-09-17). These three titles were printed
+            as plain text with nothing to say that some of them are licensed or
+            credentialed occupations — Audiologist, Speech-Language Pathologist
+            and Diagnostic Medical Sonographer among them. The hard rule is that
+            required education is stated always and every time, and this screen
+            is where most people stop. */}
+        <Text
+          style={styles.examples}
+          accessibilityLabel={`For example: ${f.examples
+            .map((e) => (isRegulatedTitle(e) ? `${e}, licensed or credentialed occupation` : e))
+            .join(', ')}`}
+        >
+          <Text style={styles.examplesLabel}>FOR EXAMPLE  </Text>
+          {f.examples.map((e, i) => (
+            <Text key={e}>
+              {i > 0 ? ' · ' : ''}
+              {e}
+              {isRegulatedTitle(e) ? <Text style={styles.gated}> ⚠</Text> : null}
+            </Text>
+          ))}
         </Text>
+        {f.examples.some(isRegulatedTitle) ? (
+          <Text style={styles.gatedNote}>
+            ⚠ Licensed or credentialed occupation. Academy study does not lead to that licence or
+            credential — check what is required where you live.
+          </Text>
+        ) : null}
         <View style={styles.cardActions}>
           <Pressable onPress={() => openFamily(f.id)} style={[styles.actBtn, styles.actExplore]} accessibilityRole="button" accessibilityLabel={`Explore ${f.name}`}>
             <Text style={[styles.actText, { color: colors.green }]}>EXPLORE FAMILY ›</Text>
@@ -241,6 +265,10 @@ const styles = StyleSheet.create({
   why: { color: colors.textSecondary, fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 20 },
   examples: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18 },
   examplesLabel: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 1.4 },
+  /** The marker on a gated title, and the line that explains it. Amber rather
+   *  than red: this is a real career worth wanting, not a warning off it. */
+  gated: { color: '#ffb060' },
+  gatedNote: { color: '#ffb060', fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 16 },
   cardActions: { flexDirection: 'row', gap: 8, marginTop: 2 },
   actBtn: { minHeight: 44, paddingHorizontal: 14, borderRadius: 10, borderWidth: 1, borderColor: colors.hairline, justifyContent: 'center', backgroundColor: '#131315' },
   actExplore: { flex: 1, borderColor: colors.green, backgroundColor: '#173021', alignItems: 'center' },

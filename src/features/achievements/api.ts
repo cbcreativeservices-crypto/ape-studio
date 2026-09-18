@@ -13,7 +13,12 @@
  * (which joined the retired `courses` table).
  */
 import { supabase } from '../../lib/supabase';
-import { fetchV3Curriculum, fetchV3Certs, fetchV3Programs, V3_CURRICULUM_VERSION_ID } from '../../data/v3Curriculum';
+import {
+  fetchV3Curriculum,
+  fetchV3CertsStrict,
+  fetchV3ProgramsStrict,
+  V3_CURRICULUM_VERSION_ID,
+} from '../../data/v3Curriculum';
 import { fetchMyCredentials, type EarnedCredentialRow } from '../credentials/api';
 import { fetchAwardProgress } from '../awards/api';
 import { topicImagePath } from '../../data/topicImages';
@@ -209,7 +214,11 @@ export async function fetchNearestCredential(
   type: 'certificate' | 'program',
 ): Promise<NearestCredentialResult> {
   const [catalog, earned, topicData] = await Promise.all([
-    type === 'certificate' ? fetchV3Certs() : fetchV3Programs(),
+    // STRICT (2026-09-17). The lenient variants resolve to `[]` on any failure,
+    // and an empty catalog here returns `none_published` — which the wall renders
+    // as "COMING SOON — No certificates available yet". So an outage read as a
+    // product decision, and the caller's own error branch was unreachable.
+    type === 'certificate' ? fetchV3CertsStrict() : fetchV3ProgramsStrict(),
     fetchMyCredentials(),
     fetchTopicAchievements(),
   ]);

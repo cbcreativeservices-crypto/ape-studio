@@ -43,7 +43,16 @@ export async function fetchMyCredentials(): Promise<EarnedCredentialRow[]> {
       .select('credential_type, credential_id, earned_at, issued_at')
       .eq('user_id', userId)
       .is('revoked_at', null);
-    if (error || !awards?.length) return [];
+    // A FAILED READ IS NOT AN EMPTY TROPHY CASE (2026-09-17, bug-hunt pass 2).
+    //
+    // `error || !awards?.length` collapsed both into `[]`, so a dropped
+    // connection or an RLS denial told a member they had earned nothing — the
+    // exact failure this repo already fixed once on the v3 catalog reads, where
+    // a `catch → []` hid an RLS denial for weeks and showed an empty catalog as
+    // fact. CredentialWall even has an error card for it, which could never
+    // appear because nothing ever rejected.
+    if (error) throw new Error(`credential awards read failed: ${error.message}`);
+    if (!awards?.length) return [];
 
     const rows = awards as {
       credential_type: string;
@@ -94,7 +103,11 @@ export async function fetchMyCredentials(): Promise<EarnedCredentialRow[]> {
       return tb - ta;
     });
     return out;
-  } catch {
-    return [];
+  } catch (e) {
+    // Rethrown, not swallowed. Every caller already handles a rejection —
+    // CredentialWall shows its error card, Profile and MyProfileView fall back
+    // — and "we could not read this" is a different thing to say than "you have
+    // none", which is the whole point.
+    throw e instanceof Error ? e : new Error('credential read failed');
   }
 }
