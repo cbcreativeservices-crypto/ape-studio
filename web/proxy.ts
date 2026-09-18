@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { GATE_ENABLED, GATE_COOKIE, GATE_TOKEN } from "@/lib/gate";
+import { gateActive, GATE_COOKIE, GATE_TOKEN } from "@/lib/gate";
 import { isConnectPath } from "@/lib/connect";
 
 /* ============================================================
@@ -99,8 +99,9 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(target, 308);
   }
 
-  // Gate turned off (launch) -> everything public.
-  if (!GATE_ENABLED) return NextResponse.next();
+  // Gate turned off (launch), or inside a temporary unlock window -> public.
+  // Evaluated per request so the window can expire on a warm instance.
+  if (!gateActive()) return NextResponse.next();
 
   // Local dev on your computer -> always show the real site.
   if (process.env.NODE_ENV === "development") return NextResponse.next();
