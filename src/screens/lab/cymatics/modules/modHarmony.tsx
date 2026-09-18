@@ -152,7 +152,14 @@ function WavesStage({ w, h, fA, fB, fSum, labels }: { w: number; h: number; fA: 
   );
   const paths = useMemo(() => rows.map((r) => wavePath(r.f, w, r.y0, r.a)), [rows, w]);
   return (
-    <View style={{ width: w, height: h }}>
+    // ANNOUNCE THE STAGE (2026-09-18, design review #8). This module had no
+    // accessibility labels anywhere, so the three stacked waveforms — the whole
+    // demonstration that harmony is a RATIO — were silent.
+    <View
+      style={{ width: w, height: h }}
+      accessible
+      accessibilityLabel={`Three stacked waveforms: ${labels[0]}, ${labels[1]}, and their sum ${labels[2]}`}
+    >
       <Svg width={w} height={h}>
         <Defs>
           {rows.map((r) => (

@@ -96,6 +96,23 @@ export function CymaticsHomeScreen() {
           {width > 0 ? <HeroPlate width={width} /> : null}
           <Text style={styles.heroBadge}>SIMULATION · 240 mm ALUMINUM · FREE EDGES · CENTRE-DRIVEN</Text>
         </View>
+        {/* ── ONE RECOMMENDED PATH (2026-09-18, design review #11) ─────────────
+            The home offers thirteen entry points — four studio buttons ABOVE
+            eight learn modules — so the default gesture is "open an instrument"
+            before any framing, and the lab's actual designed path (the
+            seventeen-experiment series) is buried inside module 8 where nobody
+            finds it. One primary row orients the 80% and costs nothing. */}
+        <Pressable
+          style={styles.startHere}
+          onPress={() => open('intro')}
+          accessibilityRole="button"
+          accessibilityLabel="New here? Start with What Is Cymatics"
+        >
+          <Text style={styles.startHereHead}>NEW HERE? START HERE ›</Text>
+          <Text style={styles.startHereSub}>
+            What Is Cymatics first, then Change One Thing — then run the seventeen experiments.
+          </Text>
+        </Pressable>
         <Text style={styles.body}>
           Does 440 Hz have a shape? Play a tone into a plate and sand walks into a figure — so it is tempting to say the figure belongs to
           the note. Every experiment in this lab lets you test that idea: keep the frequency exactly where it is and change the plate, the
@@ -151,6 +168,19 @@ const styles = StyleSheet.create({
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
   scroll: { padding: 16, paddingTop: 8, paddingBottom: 32, gap: 12 },
   hero: { borderRadius: 12, overflow: 'hidden', borderWidth: 1, borderColor: '#2a2a32', backgroundColor: '#0b0b10' },
+  startHere: {
+    borderRadius: 10,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,198,77,.7)',
+    backgroundColor: 'rgba(255,198,77,.12)',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    gap: 4,
+    minHeight: 44,
+    justifyContent: 'center',
+  },
+  startHereHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.2, color: colors.amber },
+  startHereSub: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSecondary },
   heroBadge: { position: 'absolute', left: 10, bottom: 8, fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: 'rgba(255,255,255,0.55)' },
   heroFallback: { alignItems: 'center', justifyContent: 'center' },
   heroFallbackText: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textSub },

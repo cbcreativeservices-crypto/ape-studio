@@ -60,6 +60,9 @@ const SHAPES: { id: PlateShape; label: string }[] = [
   { id: 'circle', label: 'Circle' },
   ...LIBRARY_SHAPES.map((s) => ({ id: s.id as PlateShape, label: s.label })),
 ];
+/** The three shapes with closed-form solutions; everything else is the solved
+ *  FEM library, which behaves differently (fixed edge, no grain). */
+const ANALYTIC_SHAPE_IDS = new Set<PlateShape>(['square', 'rect', 'circle']);
 const SIZES = [100, 160, 240, 320, 400];
 const THICKS = [0.5, 1, 2, 3, 4];
 const EDGES: { id: EdgeCondition; label: string }[] = [
@@ -282,9 +285,23 @@ export function PlateStudioScreen() {
       helpKey: 'plate',
       render: () => (
         <View style={styles.tray}>
+          {/* ── THE TWO KINDS OF SHAPE ARE NOT THE SAME KIND (2026-09-18, #13) ──
+              Eleven chips used to sit in one undifferentiated wrap: three
+              analytic shapes and eight solved FEM library shapes. The
+              distinction is load-bearing — the solved shapes carry a FIXED edge
+              condition and wood loses its grain behaviour on them — and it was
+              discoverable only by picking one and reading the blurb underneath.
+              A sub-head costs a line and makes the group visible before the
+              choice rather than after it. */}
           <Text style={styles.trayHead}>SHAPE</Text>
           <View style={styles.chips}>
-            {SHAPES.map((s) => (
+            {SHAPES.filter((s) => ANALYTIC_SHAPE_IDS.has(s.id)).map((s) => (
+              <LabChip key={s.id} label={s.label} selected={spec.shape === s.id} onPress={() => patch({ shape: s.id })} onLongPress={() => openLesson('shape')} />
+            ))}
+          </View>
+          <Text style={styles.trayHead}>SOLVED SHAPES — fixed edges, no wood grain</Text>
+          <View style={styles.chips}>
+            {SHAPES.filter((s) => !ANALYTIC_SHAPE_IDS.has(s.id)).map((s) => (
               <LabChip key={s.id} label={s.label} selected={spec.shape === s.id} onPress={() => patch({ shape: s.id })} onLongPress={() => openLesson('shape')} />
             ))}
           </View>

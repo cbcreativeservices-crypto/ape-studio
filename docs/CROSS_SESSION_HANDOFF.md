@@ -26,6 +26,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 13:53 · ccode · 4d29c4f3
+changed: Employer accounts: auto-decision and a filterable review email
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-18 13:53 · ccode · d875abd6
+changed: Employer accounts: auto-decision and a filterable review email
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-18 13:44 · ccode · db15e261
 changed: Employer accounts: the database layer
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">

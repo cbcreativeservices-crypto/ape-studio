@@ -22,7 +22,17 @@ export function CompareCanvas({ items, width }: { items: CompareItem[]; width: n
   const rows: CompareItem[][] = [];
   for (let i = 0; i < items.length; i += cols) rows.push(items.slice(i, i + cols));
   return (
-    <View style={{ width, gap }}>
+    // ANNOUNCE WHAT IS BEING COMPARED (2026-09-18, design review #8). This file
+    // carried no accessibility labels at all, so a screen-reader user was told
+    // there were some views and nothing about what was in them — on the one
+    // surface in the lab whose entire job is a side-by-side.
+    <View
+      style={{ width, gap }}
+      accessible
+      accessibilityLabel={`Comparing ${items.length} saved patterns: ${items
+        .map((it) => it.pattern.name)
+        .join(', ')}`}
+    >
       {rows.map((row, r) => (
         <View key={r} style={{ flexDirection: 'row', gap }}>
           {row.map((it) => {
