@@ -117,6 +117,15 @@ export function CredentialDetailModal({
   const artH = Math.min(Math.round(pageW * 0.72), Math.round(height * 0.34));
   // Card budget = 88% of the window, but never more than the scrim ACTUALLY on
   // screen; the ScrollView is bounded by that budget minus the measured footer.
+  /**
+   * Did the credential's artwork fail to load? Only 66 of 128 certificates have
+   * art uploaded, so for the MAJORITY this well used to render an empty dark
+   * rectangle with "Simulated possible work environment" floating on it — and
+   * announce "<name> artwork" to a screen reader for artwork that is not there.
+   * CredentialWall already does this; the chooser did not, so the same
+   * credential looked finished in one place and broken in the other.
+   */
+  const [artFailed, setArtFailed] = useState(false);
   const [scrimH, setScrimH] = useState(0);
   const [footerH, setFooterH] = useState(FOOTER_SEED);
   const budget = Math.min(Math.round(height * 0.88), scrimH > 0 ? scrimH - SCRIM_PAD * 2 : Infinity);
@@ -148,9 +157,28 @@ export function CredentialDetailModal({
       >
         {/* Art head — full bleed, seated into the card by the fade. Not tappable:
             this popup already IS the expanded view. */}
-        <View style={[styles.artWell, { height: artH }]} accessible accessibilityLabel={`${c.name} artwork`}>
-          <CardArt uri={credentialArtUrl(c.slug)} style={styles.artFill} imageStyle={styles.artImg} />
-          <Text style={styles.artWatermark}>Simulated possible work environment</Text>
+        <View
+          style={[styles.artWell, { height: artH }]}
+          accessible
+          // Do not announce artwork that is not there.
+          accessibilityLabel={artFailed ? `${c.name}` : `${c.name} artwork`}
+        >
+          <CardArt
+            uri={credentialArtUrl(c.slug)}
+            style={styles.artFill}
+            imageStyle={styles.artImg}
+            onExhausted={() => setArtFailed(true)}
+          />
+          {artFailed ? (
+            // A deliberate, labelled placeholder rather than a blank well. The
+            // credential is real even when its picture has not been made yet.
+            <Text style={styles.artPlaceholder} numberOfLines={2}>
+              {c.name}
+            </Text>
+          ) : (
+            // The watermark describes the PICTURE, so it goes with the picture.
+            <Text style={styles.artWatermark}>Simulated possible work environment</Text>
+          )}
         </View>
 
         <View style={styles.body}>
@@ -313,6 +341,20 @@ const styles = StyleSheet.create({
   artFill: { width: '100%', height: '100%' },
   artImg: { borderRadius: 0 },
   // Faint disclaimer over the art: the pictures are illustrative, not real rooms.
+  artPlaceholder: {
+    position: 'absolute',
+    left: 16,
+    right: 16,
+    top: 0,
+    bottom: 0,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 15,
+    letterSpacing: 0.8,
+    lineHeight: 22,
+    color: 'rgba(220,228,238,0.45)',
+  },
   artWatermark: {
     position: 'absolute',
     bottom: 6,

@@ -148,7 +148,23 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       {
         id: 'enroll-progress',
         q: 'What do the progress meters on my enrollments show?',
-        a: 'Each enrolled topic’s meter is your study progress in that topic; an award card’s meter averages the topics it requires. 100% marks the topic complete.',
+        // CORRECTED 2026-09-18. Both sentences described an earlier design, and
+        // together they told a learner the opposite of what they will see.
+        //
+        // "averages the topics it requires" is false: every award figure is
+        // completeCount / totalCount over WHOLE topics (awards/api.ts:132,
+        // AwardProgressScreen.tsx:169, CredentialWall.tsx:232) — a step
+        // function, not a mean. And "100% marks the topic complete" is false
+        // too: the topic meter is the mean of the four STUDY METHODS, while
+        // `status` becomes 'complete' server-side when the quiz is passed (the
+        // status enum even carries a distinct 'passed_incomplete').
+        //
+        // So a learner 90% through all five topics of a certificate was told the
+        // award meter averages them, opened Award Progress, saw 0% and 0 of 5 —
+        // and the Help they checked to make sense of it confirmed the wrong
+        // model. That is the one number showing how close they are to the
+        // credential they are paying for.
+        a: 'Each enrolled topic’s meter is your study progress in that topic — the average of its four study methods. An award’s meter is different: it counts the required topics you have finished OUTRIGHT, so it moves a whole topic at a time. A topic counts once its quiz is passed, not when its study meters reach 100%.',
       },
       {
         id: 'enroll-home',

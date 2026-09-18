@@ -20,6 +20,7 @@ import { READINESS_LABEL, VERDICT_LABEL, valueKey } from './types';
 import type { ResolvedStage, ResolvedField } from './schema';
 import { STATUS_OPTIONS } from './schema';
 import type { ReadinessReport } from './readiness';
+import { localDay } from '../../lib/localDate';
 
 type PrintLib = {
   printToFileAsync: (opts: { html: string; width?: number; height?: number; base64?: false }) => Promise<{ uri: string }>;
@@ -103,7 +104,11 @@ export function docControl(project: ProductionProject, report: ReadinessReport):
   return {
     projectName: project.name,
     revision: project.revision,
-    revisionDate: new Date(project.updatedAt).toISOString().slice(0, 10),
+    // LOCAL, not UTC (2026-09-18). `toISOString` converts first, so an evening
+    // in the Americas stamped this revision block with TOMORROW'S date — on a
+    // document handed to a paying client, whose revision history would then
+    // read out of order against their own records.
+    revisionDate: localDay(project.updatedAt),
     author: String(project.values[valueKey('define', 'project_lead')] ?? 'Unattributed'),
     approvalStatus: VERDICT_LABEL[project.lab][report.verdict],
   };

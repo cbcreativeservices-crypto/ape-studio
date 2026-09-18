@@ -31,6 +31,7 @@ import { LabChip } from '../LabShell';
 import { CompareCanvas, type CompareItem } from './GalleryCompare';
 import { isPdfAvailable, isPrintHtmlAvailable, printHtml, sharePdf, shareSvg } from './galleryExport';
 import { PatternFigure } from './PatternFigure';
+import { localDay } from '../../../lib/localDate';
 
 export type ExportSubject =
   | { kind: 'pattern'; pattern: SavedPattern; geometry: PatternGeometry; artwork: Artwork | null }
@@ -44,7 +45,9 @@ const FORMATS: { id: Format; label: string }[] = [
   { id: 'svg', label: 'SVG' },
 ];
 const TITLE = 'Cymatics Lab: Sound Made Visible';
-const today = () => new Date().toISOString().slice(0, 10);
+// LOCAL, not UTC (2026-09-18): `toISOString` converts first, so an evening in
+// the Americas dated a printed sheet tomorrow.
+const today = () => localDay();
 
 export function ExportPanel({ subject, onHelp }: { subject: ExportSubject; onHelp?: (key: string) => void }) {
   const { width: ww } = useWindowDimensions();

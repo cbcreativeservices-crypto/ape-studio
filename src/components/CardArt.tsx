@@ -65,6 +65,7 @@ export function CardArt({
   imageStyle,
   children,
   onLoad,
+  onExhausted,
 }: {
   uri: string | null | undefined;
   style?: StyleProp<ViewStyle>;
@@ -72,18 +73,51 @@ export function CardArt({
   children?: ReactNode;
   /** Fires once the image has decoded and is on screen (either loader). */
   onLoad?: () => void;
+  /**
+   * Fires ONCE per uri when every retry has failed and no image will appear.
+   *
+   * ── WHY THIS EXISTS (2026-09-18) ──────────────────────────────────────────
+   *
+   * This component retries three times and then simply stays blank, by design —
+   * so the fallback has always been each caller's job. Only ONE of the four
+   * callers actually did it (CredentialWall's `artFailed` set). The others drew
+   * an empty dark rectangle, and CredentialDetailModal painted the words
+   * "Simulated possible work environment" across it as a watermark and
+   * announced "<name> artwork" to a screen reader — for artwork that is not
+   * there. Only 66 of 128 certificates have art uploaded, so that is the
+   * MAJORITY of credentials, and the same credential read as a proper badge on
+   * the Achievements wall and an empty box on the chooser.
+   *
+   * Callers cannot detect this themselves: `onError` fires on every attempt,
+   * including the ones that will be retried, so reacting to it would flash a
+   * fallback over an image that is about to load.
+   */
+  onExhausted?: () => void;
 }) {
   const [attempt, setAttempt] = useState(0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /** Guards `onExhausted` against the several onError events one failure can
+   *  produce. Reset per uri, alongside the attempt counter. */
+  const exhausted = useRef(false);
   useEffect(() => {
     setAttempt(0); // a new uri starts fresh
+    exhausted.current = false;
     return () => {
       if (timer.current) clearTimeout(timer.current);
     };
   }, [uri]);
 
   const retry = () => {
-    if (attempt >= MAX_ATTEMPTS - 1 || timer.current) return;
+    // A retry is already queued — this error belongs to an attempt we have
+    // already responded to.
+    if (timer.current) return;
+    if (attempt >= MAX_ATTEMPTS - 1) {
+      if (!exhausted.current) {
+        exhausted.current = true;
+        onExhausted?.();
+      }
+      return;
+    }
     timer.current = setTimeout(() => {
       timer.current = null;
       setAttempt((a) => a + 1);
