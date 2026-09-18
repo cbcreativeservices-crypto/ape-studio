@@ -1,5 +1,5 @@
 /**
- * AccuracyNote — the app-wide honesty chip. TWO standards, two variants:
+ * AccuracyNote — the app-wide honesty chip. THREE standards, three variants:
  *
  * • variant "tool" (default) — LABS & LIVE-INPUT TOOLS. Owner rule 2026-08-09:
  *   these are for TEACHING and UNDERSTANDING, and live tools read through the
@@ -13,6 +13,12 @@
  *   weight, and hazardous work. Its note must SIGNAL TRUST and point to the
  *   cited method — it must NEVER tell a field pro to distrust the math. Green ✓
  *   "VERIFIED" chip → a trust-forward explainer that points to the formula shown.
+ *
+ * • variant "practice" — PLANNING LABS (the Production labs). Owner standard
+ *   2026-09-17: "legal and safety notices at each." States a BOUNDARY rather
+ *   than an accuracy claim — planning education, not legal or safety advice,
+ *   requirements vary by jurisdiction, and rigging and electrical distribution
+ *   belong to licensed people. "SCOPE" chip. See PRACTICE_TITLE below.
  *
  * Self-contained (owns its open state) so any screen adds it in one line.
  */
@@ -36,6 +42,28 @@ export const ACCURACY_TOOLS: { job: string; use: string }[] = [
 ];
 export const ACCURACY_CLOSER = 'Learn the concept here; measure with the right tool.';
 
+/**
+ * PLANNING copy (variant "practice") — owner 2026-09-17, added for the
+ * Production labs and made an APP STANDARD: "legal and safety notices at each."
+ *
+ * Neither existing variant fits. "tool" steers you to a calibrated instrument;
+ * "calc" says the arithmetic is trustworthy. The production labs instead walk a
+ * user through rights, licensing, clearance, consent, insurance, hearing
+ * exposure, electrical distribution and rigging — areas where being wrong has
+ * legal or physical consequences and the correct answer changes by jurisdiction.
+ * So this variant states a BOUNDARY rather than an accuracy claim.
+ *
+ * It is the header chip. Per-section notices (schema.ts NoticeDef) carry the
+ * specific wording at each point where one applies.
+ */
+export const PRACTICE_TITLE = 'PLANNING EDUCATION — NOT LEGAL OR SAFETY ADVICE';
+export const PRACTICE_BODY = [
+  'These labs teach you how to plan a production and what to ask for at each step. They do not give legal advice, and they are not a substitute for a qualified professional.',
+  'Rights, licensing, clearance, releases, consent, insurance and employment requirements vary by country, union, venue and production type. Confirm what applies to your own work before you rely on it.',
+  'Rigging, electrical distribution and structural loading must be designed and approved by people licensed or certified for that work. Studying here does not qualify you to do it.',
+];
+export const PRACTICE_CLOSER = 'Plan here; confirm the requirements that apply where you work.';
+
 /** CALCULATOR copy (variant "calc") — trust-forward, method-cited. */
 export const CALC_TITLE = 'VERIFIED CALCULATION';
 export const CALC_BODY = [
@@ -52,8 +80,9 @@ export function AccuracyNote({
   style,
 }: {
   /** "tool" = labs & live-input tools (teaching / uncalibrated caveat);
-   *  "calc" = calculators & equations (verified / source-of-truth). */
-  variant?: 'tool' | 'calc';
+   *  "calc" = calculators & equations (verified / source-of-truth);
+   *  "practice" = planning labs (boundary: not legal or safety advice). */
+  variant?: 'tool' | 'calc' | 'practice';
   /** Context-specific caveat shown emphasised at the top (live-input tools). */
   detail?: string;
   /** Chip label; hidden when `compact`. Defaults per variant. */
@@ -64,7 +93,16 @@ export function AccuracyNote({
 }) {
   const [open, setOpen] = useState(false);
   const isCalc = variant === 'calc';
-  const chipLabel = label ?? (isCalc ? 'VERIFIED' : 'ACCURACY');
+  const isPractice = variant === 'practice';
+  const chipLabel = label ?? (isCalc ? 'VERIFIED' : isPractice ? 'SCOPE' : 'ACCURACY');
+
+  // Content per variant, resolved once. The style toggles below stay as they
+  // were: calc is green, tool and practice share the amber treatment.
+  const sheetTitle = isCalc ? CALC_TITLE : isPractice ? PRACTICE_TITLE : ACCURACY_TITLE;
+  const sheetBody = isCalc ? CALC_BODY : isPractice ? PRACTICE_BODY : ACCURACY_BODY;
+  const sheetCloser = isCalc ? CALC_CLOSER : isPractice ? PRACTICE_CLOSER : ACCURACY_CLOSER;
+  // The "use a calibrated instrument" list belongs to the tool variant alone.
+  const showToolList = !isCalc && !isPractice;
 
   return (
     <>
@@ -73,7 +111,13 @@ export function AccuracyNote({
         onPress={() => setOpen(true)}
         hitSlop={8}
         accessibilityRole="button"
-        accessibilityLabel={isCalc ? 'How this calculation is verified' : 'About accuracy and calibration'}
+        accessibilityLabel={
+          isCalc
+            ? 'How this calculation is verified'
+            : isPractice
+              ? 'What this lab does and does not cover'
+              : 'About accuracy and calibration'
+        }
       >
         <Text style={[styles.chipGlyph, isCalc && styles.chipGlyphCalc]}>{isCalc ? '✓' : 'ⓘ'}</Text>
         {compact ? null : <Text style={styles.chipLabel}>{chipLabel}</Text>}
@@ -84,7 +128,7 @@ export function AccuracyNote({
           {/* Swallow taps on the card so they don't close the sheet. */}
           <Pressable accessible={false} style={styles.card} onPress={() => {}}>
             <ScrollView contentContainerStyle={styles.cardBody} showsVerticalScrollIndicator={false}>
-              <Text style={[styles.title, isCalc && styles.titleCalc]}>{isCalc ? CALC_TITLE : ACCURACY_TITLE}</Text>
+              <Text style={[styles.title, isCalc && styles.titleCalc]}>{sheetTitle}</Text>
 
               {detail ? (
                 <View style={[styles.detailWrap, isCalc && styles.detailWrapCalc]}>
@@ -92,13 +136,13 @@ export function AccuracyNote({
                 </View>
               ) : null}
 
-              {(isCalc ? CALC_BODY : ACCURACY_BODY).map((p, i) => (
+              {sheetBody.map((p, i) => (
                 <Text key={i} style={styles.body}>
                   {p}
                 </Text>
               ))}
 
-              {isCalc ? null : (
+              {showToolList ? (
                 <>
                   <Text style={styles.subhead}>FOR ACCURATE WORK, USE</Text>
                   {ACCURACY_TOOLS.map((t) => (
@@ -110,9 +154,9 @@ export function AccuracyNote({
                     </View>
                   ))}
                 </>
-              )}
+              ) : null}
 
-              <Text style={[styles.closer, isCalc && styles.closerCalc]}>{isCalc ? CALC_CLOSER : ACCURACY_CLOSER}</Text>
+              <Text style={[styles.closer, isCalc && styles.closerCalc]}>{sheetCloser}</Text>
 
               <Pressable
                 style={[styles.gotIt, isCalc && styles.gotItCalc]}

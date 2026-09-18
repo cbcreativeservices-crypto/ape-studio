@@ -84,6 +84,8 @@ import { CalcResultsScreen } from '../screens/lab/calc/CalcResultsScreen';
 import { DigitalLabHomeScreen } from '../screens/lab/digital/DigitalLabHomeScreen';
 import { DigitalModuleScreen } from '../screens/lab/digital/DigitalModuleScreen';
 import { CymaticsHomeScreen } from '../screens/lab/cymatics/CymaticsHomeScreen';
+import { PreProdLabScreen } from '../screens/lab/preprod/PreProdLabScreen';
+import { PreProdStageScreen } from '../screens/lab/preprod/PreProdStageScreen';
 import { CymaticsModuleScreen } from '../screens/lab/cymatics/CymaticsModuleScreen';
 import { PlateStudioScreen } from '../screens/lab/cymatics/PlateStudioScreen';
 import { LiquidStudioScreen } from '../screens/lab/cymatics/LiquidStudioScreen';
@@ -188,6 +190,7 @@ const Gated = {
   CymaticsLiquidStudio: withAmplitudeOrientation(LiquidStudioScreen),
   CymaticsMembraneStudio: withAmplitudeOrientation(MembraneStudioScreen),
   CymaticsGallery: withAmplitudeOrientation(GalleryScreen),
+  PreProdStage: PreProdStageScreen,
   WaveModule: withAmplitudeOrientation(WaveModuleScreen),
   MeterModule: withAmplitudeOrientation(MeterModuleScreen),
   EqModule: withAmplitudeOrientation(EqModuleScreen),
@@ -219,6 +222,7 @@ const MemberGated = {
   CableInstallLab: withMembershipPreview(Gated.CableInstallLab),
   DigitalLab: withMembershipPreview(DigitalLabHomeScreen),
   CymaticsLab: withMembershipPreview(CymaticsHomeScreen),
+  PreProdLab: withMembershipPreview(PreProdLabScreen),
 } as const;
 
 export function RootNavigator() {
@@ -408,6 +412,8 @@ export function RootNavigator() {
       <Stack.Screen name="DigitalLab" component={MemberGated.DigitalLab} />
       <Stack.Screen name="DigitalModule" component={Gated.DigitalModule} />
       <Stack.Screen name="CymaticsLab" component={MemberGated.CymaticsLab} />
+      <Stack.Screen name="PreProdLab" component={MemberGated.PreProdLab} />
+      <Stack.Screen name="PreProdStage" component={Gated.PreProdStage} />
       <Stack.Screen name="CymaticsModule" component={Gated.CymaticsModule} />
       <Stack.Screen name="CymaticsPlateStudio" component={Gated.CymaticsPlateStudio} />
       <Stack.Screen name="CymaticsLiquidStudio" component={Gated.CymaticsLiquidStudio} />

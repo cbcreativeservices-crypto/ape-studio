@@ -204,6 +204,22 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       { name: 'Advanced Mixing', blurb: 'Complex routing, parallel paths, phase, translation, stems and professional delivery — repair and ship real mixes.', route: 'AdvancedMixingLab', member: true },
     ],
   },
+  // Production Workflow (owner GO 2026-09-17). The two flagship labs: what
+  // happens BEFORE anything is recorded, and what happens after. Plan of record:
+  // docs/APE_PRODUCTION_LABS_PLAN_2026_09_17.md. Audio Post-Production is not
+  // listed until it is built — placeholder rows were removed app-wide the same
+  // day, and adding one back here would undo that.
+  {
+    id: 'production',
+    glyph: '🎬',
+    name: 'Production Workflow',
+    description: 'Planning a production before it starts, and finishing it after the recording stops.',
+    section: 'training',
+    kind: 'list',
+    labs: [
+      { name: 'Audio Pre-Production', blurb: 'Turn a vague brief into a production a crew can actually run — scope, deliverables, people, schedule and budget — and leave with a Production Packet that shows its own gaps.', route: 'PreProdLab', member: true },
+    ],
+  },
   {
     id: 'equalization',
     glyph: '🎚',

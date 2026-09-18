@@ -255,6 +255,9 @@ export type RootStackParamList = {
   /** Cymatics Lab: Sound Made Visible (owner GO 2026-09-16) — standalone
    *  home + the Chladni Plate Studio (optional experiment preset) + modules. */
   CymaticsLab: undefined;
+  /** Production Workflow labs (plan: docs/APE_PRODUCTION_LABS_PLAN_2026_09_17.md). */
+  PreProdLab: undefined;
+  PreProdStage: { projectId: string; stageId: string };
   CymaticsModule: { id: import('../screens/lab/cymatics/modules/registry').CymaticsModuleId };
   CymaticsPlateStudio: { preset?: string; saved?: string } | undefined;
   /** Phase 2 (2026-09-16): the Liquid / Faraday-wave studio (optional experiment preset). */
