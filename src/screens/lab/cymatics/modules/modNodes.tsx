@@ -18,6 +18,7 @@ import { requireVizPlate, skiaAvailable } from '../skiaGate';
 import { useDriveTone } from '../useDriveTone';
 import { CymaticsRackLayout } from './rackLayout';
 import { P, excitableModes } from './shared';
+import { RES_TINT } from '../../../../features/cymatics/resTint';
 
 const F_MIN = 30;
 const F_MAX = 3000;
@@ -26,12 +27,12 @@ const hzFromPos = (v: number) => F_MIN * Math.pow(F_MAX / F_MIN, Math.max(0, Mat
 const posFromHz = (hz: number) => Math.log(Math.max(F_MIN, Math.min(F_MAX, hz)) / F_MIN) / Math.log(F_MAX / F_MIN);
 const VIEWS: { id: PlateViewMode; label: string; short: string; blurb: string }[] = [
   { id: 'nodes', label: 'Node lines', short: 'Nodes', blurb: 'The still lines of the nearest mode — the Chladni figure that would form. Fades between resonances.' },
-  { id: 'phase', label: 'Phase', short: 'Phase', blurb: 'Amber rises while blue falls — neighbours across a nodal line move in opposite directions.' },
+  { id: 'phase', label: 'Phase', short: 'Phase', blurb: 'Amber rises while violet falls — neighbours across a nodal line move in opposite directions. Neither colour is on the amplitude ramp: this is direction, not level.' },
   { id: 'heat', label: 'Heat map', short: 'Heat', blurb: 'How far each point moves, on the Academy ramp: black = still, red = the most. Dark between resonances.' },
   { id: 'particles', label: 'Sand', short: 'Sand', blurb: 'Sand walks off the moving regions and settles on the still lines.' },
   { id: 'plate3d', label: '3D plate', short: '3D', blurb: 'Exaggerated motion, strobed to a few hertz so you can see it.' },
 ];
-const RES_TINT = { below: '#8a8f99', approaching: '#ffc64d', at: '#37e05f', between: '#7fbfff' } as const;
+
 
 export function NodesModule({ width, focused, help }: CymaticsModuleProps) {
   const [shape, setShape] = useState<PlateSpec['shape']>('square');

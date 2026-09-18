@@ -99,7 +99,7 @@ export const EXPERIMENTS: readonly Experiment[] = [
     goal: 'See that regions on opposite sides of a nodal line move in opposite directions.',
     predict: 'Two patches sit either side of one nodal line. At any instant, are they moving the same way, opposite ways, or unrelated?',
     steps: [
-      'Open the PHASE view: amber regions move up while blue regions move down.',
+      'Open the PHASE view: amber regions move up while violet regions move down.',
       'Switch to 3D PLATE and slow motion to watch them rock against each other.',
       'Switch to CROSS-SECTION and drag the slice through a nodal line.',
     ],

@@ -19,6 +19,7 @@ import type { CymaticsModuleProps } from '../CymaticsModuleScreen';
 import { requireVizPlate, skiaAvailable } from '../skiaGate';
 import { CymaticsRackLayout } from './rackLayout';
 import { P } from './shared';
+import { RES_TINT } from '../../../../features/cymatics/resTint';
 
 type VarId = 'material' | 'size' | 'thickness' | 'shape' | 'driver' | 'support' | 'damping';
 type Variable = { id: VarId; label: string; short: string; question: string; options: { label: string; short: string; patch: Partial<PlateSpec> }[] };
@@ -53,7 +54,7 @@ const VIEWS: { id: PlateViewMode; label: string; short: string }[] = [
   { id: 'particles', label: 'Sand', short: 'Sand' },
 ];
 const BASE: PlateSpec = { ...DEFAULT_PLATE };
-const RES_TINT = { below: '#8a8f99', approaching: '#ffc64d', at: '#37e05f', between: '#7fbfff' } as const;
+
 const N = 44;
 
 function useSide(spec: PlateSpec, hz: number) {

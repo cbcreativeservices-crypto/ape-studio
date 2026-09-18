@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 13:44 · ccode · db15e261
+changed: Employer accounts: the database layer
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-18 13:24 · ccode · 567aecc3
 changed: Cymatics: make the discovery discoverable, and make REVEAL cost something
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">

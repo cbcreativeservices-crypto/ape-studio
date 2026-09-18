@@ -44,6 +44,7 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { requireVizPlate, skiaAvailable } from './skiaGate';
 import type { PlateViewMode } from './vizPlate';
 import { useDriveTone } from './useDriveTone';
+import { RES_TINT } from '../../../features/cymatics/resTint';
 
 const F_MIN = 30;
 const F_MAX = 3000;
@@ -88,7 +89,7 @@ const VIEWS: { id: PlateViewMode; label: string; short: string; blurb: string }[
   { id: 'particles', label: 'Particles', short: 'Sand', blurb: 'Sand on the plate — it walks off the moving regions and settles on the still lines.' },
   { id: 'heat', label: 'Heat map', short: 'Heat', blurb: 'How much each point moves, on the Academy ramp: black = still, blue = a little, red = the most. Off a resonance the whole map goes dark — the plate is barely moving.' },
   { id: 'overlay', label: 'Particles + heat', short: 'S+H', blurb: 'Both at once: the prediction (heat) under the confirmation (sand).' },
-  { id: 'phase', label: 'Phase', short: 'Phase', blurb: 'Amber regions rise while blue regions fall — opposite sides of a nodal line move in opposite directions. Fades between resonances.' },
+  { id: 'phase', label: 'Phase', short: 'Phase', blurb: 'Amber regions rise while violet regions fall — opposite sides of a nodal line move in opposite directions. Neither colour is on the amplitude ramp: this view shows DIRECTION, not level. Fades between resonances.' },
   { id: 'nodes', label: 'Node lines', short: 'Nodes', blurb: 'The nodal pattern of the nearest mode — the Chladni figure that WOULD form. Fades between resonances.' },
   { id: 'plate3d', label: '3D plate', short: '3D', blurb: 'Exaggerated vertical motion, strobed to a few hertz so you can see it (the real plate moves at the drive frequency).' },
   { id: 'section', label: 'Cross-section', short: 'Slice', blurb: 'A slice through the plate. Drag on the plate to move the slice.' },
@@ -102,7 +103,7 @@ const RES_LABEL = {
   at: 'AT RESONANCE',
   between: 'BETWEEN RESONANCES',
 } as const;
-const RES_TINT = { below: colors.textSub, approaching: '#ffc64d', at: '#37e05f', between: '#7fbfff' } as const;
+
 
 export function PlateStudioScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();

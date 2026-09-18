@@ -63,6 +63,7 @@ import { ExperimentWell } from './ExperimentWell';
 import { requireVizMembrane, skiaAvailable } from './skiaGate';
 import type { MembraneViewMode } from './vizMembrane';
 import { useDriveTone } from './useDriveTone';
+import { RES_TINT } from '../../../features/cymatics/resTint';
 
 const F_MIN = 20;
 const F_MAX = 6000;
@@ -92,14 +93,14 @@ const STRIKES: { id: string; label: string; r: number; theta: number }[] = [
 const VIEWS: { id: MembraneViewMode; label: string; short: string; blurb: string }[] = [
   { id: 'head', label: 'The drum', short: 'Drum', blurb: 'The head from above, lit — it bulges and dips in the mode you are driving, strobed to a few hertz.' },
   { id: 'heat', label: 'Heat map', short: 'Heat', blurb: 'How much each point of the head moves, on the Academy ramp: black = still, red = the most. Dark between resonances.' },
-  { id: 'phase', label: 'Phase', short: 'Phase', blurb: 'Amber rises while blue falls — the lobes either side of a nodal diameter move in opposite directions.' },
+  { id: 'phase', label: 'Phase', short: 'Phase', blurb: 'Amber rises while violet falls — the lobes either side of a nodal diameter move in opposite directions. Neither colour is on the amplitude ramp: this is direction, not level.' },
   { id: 'nodes', label: 'Node lines', short: 'Nodes', blurb: 'The nodal diameters and circles of the nearest mode — the lines a pinch of sand would gather on.' },
   { id: 'head3d', label: '3D head', short: '3D', blurb: 'Exaggerated head motion, strobed so you can see it (the real head moves at the drive frequency).' },
   { id: 'section', label: 'Cross-section', short: 'Slice', blurb: 'A slice through the head. Drag on the drum to move the slice.' },
   { id: 'speaker', label: 'Loudspeaker', short: 'Cone', blurb: 'A cutaway of a driver playing this frequency, plus the cone seen from the front: piston, edge flexing, radial modes, breakup.' },
 ];
 const HEAT_KEY = Array.from({ length: 9 }, (_, i) => heatColor(i / 8)) as [string, string, ...string[]];
-const RES_TINT = { below: colors.textSub, approaching: '#ffc64d', at: '#37e05f', between: '#7fbfff' } as const;
+
 // The cone stage is ORDINAL, not an amplitude: categorical tints (the Liquid ladder idiom), never the ramp.
 const CONE_TINT: Record<number, string> = { 1: colors.textSub, 2: '#37e05f', 3: '#37e05f', 4: '#ffc64d', 5: '#ff9f43', 6: '#ff6b5e' };
 const HEAD_SHORT: Record<HeadId, string> = { mylar10: 'M10', mylar7: 'M7', calfskin: 'Calf', latex: 'Ltx', kevlar: 'Kev' };

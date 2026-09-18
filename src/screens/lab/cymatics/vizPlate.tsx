@@ -49,9 +49,26 @@ export const VIEW_LABELS: Record<PlateViewMode, string> = {
 };
 
 const SAND = '#efe2b8';
+/**
+ * ── PHASE SIGN IS CATEGORICAL, SO IT IS OFF THE RAMP (2026-09-18) ────────────
+ *
+ * `PHASE_DOWN` used to be `MIDLINE_BLUE`, with a comment saying "the house
+ * MIDI-0 blue — one blue app-wide". The intent was right and the result was the
+ * opposite: `levelColor.ts` defines that blue as "silence / mid line", and here
+ * it was painted on a lobe at MAXIMUM DOWNWARD displacement, mixed toward black
+ * only as amplitude FELL.
+ *
+ * So a learner who had just been taught the heat map — black = still, blue = a
+ * little, red = the most — read a blue phase lobe as a quiet region. It is the
+ * exact inverse of the truth: that lobe is moving as hard as the amber one.
+ *
+ * The standing colour rule is that the velocity ramp means AMPLITUDE and only
+ * amplitude, and categorical states must not borrow its hues. Up/down is a
+ * sign, not a level. Violet appears nowhere on the ramp, so it cannot be
+ * misread as one, and it keeps a strong warm/cool split against the amber.
+ */
 const PHASE_UP = '#ffc64d';
-// "Down" is the house MIDI-0 blue (colour standard) — one blue app-wide.
-const PHASE_DOWN = MIDLINE_BLUE;
+const PHASE_DOWN = '#a97bff';
 const NODE_LINE = '#e9f2ff';
 
 // ── worklet helpers ──────────────────────────────────────────────────────────
