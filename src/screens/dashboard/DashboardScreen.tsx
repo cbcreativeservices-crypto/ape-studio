@@ -1129,6 +1129,33 @@ export function DashboardScreen() {
     });
   }, []);
 
+  // ── THE LAST HOOK, AND IT MUST STAY ABOVE THE EARLY RETURNS ───────────────
+  //
+  // Moved here 2026-09-17. It used to sit ~200 lines below, AFTER the two
+  // returns under this comment, which made it conditional: a render that took
+  // the loading branch ran 99 hooks and the next one ran 100, so React threw
+  // "Rendered more hooks than during the previous render" and ScreenErrorBoundary
+  // caught the Dashboard.
+  //
+  // It was latent rather than harmless. On a device with cached progress the
+  // instant-landing seed means `data` is already present on the first render and
+  // the loading branch never runs — so the bug hides. It fires on a COLD load
+  // with no cache, which is a new install, a signed-out session, and every load
+  // of the web preview. Found by the browser preview, not by tsc or the suite:
+  // neither can see a hook order that only diverges at runtime.
+  //
+  // KEEP EVERY HOOK ABOVE THIS LINE. Anything below the returns must be a plain
+  // computation.
+  const freeTopicOffer = useMemo(() => {
+    const official = (gs: number) => officialTopicName(gs);
+    return FREE_ENROLL_GS.map((gs) => {
+      let idx = topics.findIndex((t) => t.global_sequence === gs);
+      // A GUEST deck is not enrollment-driven, so `global_sequence` can be null.
+      if (idx < 0) idx = topics.findIndex((t) => t.name.trim() === official(gs));
+      return { gs, idx, name: idx >= 0 ? officialTopicName(gs, topics[idx].name) : official(gs) };
+    });
+  }, [topics]);
+
   if (loading && !data) {
     return (
       <View style={styles.center}>
@@ -1325,15 +1352,6 @@ export function DashboardScreen() {
   // Deck membership decides only the ACTION: jump if the topic is already in
   // this deck (the normal case, since these two are auto-enrolled), otherwise
   // send the user to the Home tab where the free topic card lives.
-  const freeTopicOffer = useMemo(() => {
-    const official = (gs: number) => officialTopicName(gs);
-    return FREE_ENROLL_GS.map((gs) => {
-      let idx = topics.findIndex((t) => t.global_sequence === gs);
-      // A GUEST deck is not enrollment-driven, so `global_sequence` can be null.
-      if (idx < 0) idx = topics.findIndex((t) => t.name.trim() === official(gs));
-      return { gs, idx, name: idx >= 0 ? officialTopicName(gs, topics[idx].name) : official(gs) };
-    });
-  }, [topics]);
   const dispTopicInactive =
     viewMode === 'enrollment' &&
     dispTopic.global_sequence != null &&
