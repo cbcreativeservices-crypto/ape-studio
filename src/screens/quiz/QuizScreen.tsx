@@ -592,6 +592,14 @@ export function QuizScreen({ navigation, route }: Props) {
                     minHeight={48}
                     numberOfLines={3}
                     state={leftState(i)}
+                    // PAIRED-OFF MUST BE ANNOUNCED, NOT JUST DIMMED (2026-09-17,
+                    // bug-hunt pass 4/5). `dimmed` is opacity only, so to a
+                    // screen reader an already-paired term and an available one
+                    // were identical — and tapping the paired one was a silent
+                    // no-op. This is a GRADED question, so a learner without
+                    // sight could not complete it at all. `disabled` makes the
+                    // state part of what is spoken.
+                    disabled={pairs.some((pr) => pr[0] === i)}
                     onPress={() => pickMatch('left', i)}
                   />
                 ))}
@@ -606,6 +614,7 @@ export function QuizScreen({ navigation, route }: Props) {
                     minHeight={48}
                     numberOfLines={3}
                     state={rightState(i)}
+                    disabled={pairs.some((pr) => pr[1] === i)}
                     onPress={() => pickMatch('right', i)}
                   />
                 ))}

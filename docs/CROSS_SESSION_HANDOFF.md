@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 01:34 · ccode · db87c85a
+changed: brief: pass 5 outcome
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-18 01:17 · ccode · 695caf8d
 changed: pass 4 part 2: stale entitlement reads, a lost exam, and a shake that did two jobs
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">

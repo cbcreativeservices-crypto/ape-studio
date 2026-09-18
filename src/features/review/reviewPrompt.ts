@@ -16,6 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import { optionalModule } from '../tools/capture/optionalModule';
 import { isMicActive } from '../audio/audioOutputStore';
+import { areOverlaysSuppressed } from '../dev/popupSuppressStore';
 import {
   EMPTY_REVIEW_STATE,
   evaluateReviewEligibility,
@@ -78,6 +79,15 @@ export async function recordAppSession(): Promise<void> {
 function currentBlockers(): ReviewBlocker[] {
   const b: ReviewBlocker[] = [];
   if (isMicActive()) b.push('measuring'); // never interrupt a live measurement
+  // Low-Light Production Mode: nothing may auto-appear. This is a full-screen
+  // OS sheet and the mode is used in dark rooms during shows — it was the only
+  // auto-appearing surface in the app with no such gate (2026-09-17).
+  //
+  // Blocking here rather than at the moment of asking also protects the
+  // once-per-version allowance: `recordRequested` is written just before the
+  // sheet is requested, so a prompt fired into a suppressed app would have
+  // spent that allowance permanently without anyone seeing it.
+  if (areOverlaysSuppressed()) b.push('low_light');
   return b;
 }
 

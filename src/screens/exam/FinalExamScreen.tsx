@@ -592,6 +592,11 @@ export function FinalExamScreen({ navigation, route }: Props) {
                     minHeight={48}
                     numberOfLines={3}
                     state={leftState(i)}
+                    // Same as the quiz twin (2026-09-17): `dimmed` is opacity
+                    // only, so a paired term and an available one sounded
+                    // identical and the tap was a silent no-op — on the GRADED
+                    // capstone, where it is least recoverable.
+                    disabled={pairs.some((pr) => pr[0] === i)}
                     onPress={() => pickMatch('left', i)}
                   />
                 ))}
@@ -606,6 +611,7 @@ export function FinalExamScreen({ navigation, route }: Props) {
                     minHeight={48}
                     numberOfLines={3}
                     state={rightState(i)}
+                    disabled={pairs.some((pr) => pr[1] === i)}
                     onPress={() => pickMatch('right', i)}
                   />
                 ))}

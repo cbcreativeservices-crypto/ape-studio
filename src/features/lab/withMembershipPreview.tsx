@@ -122,6 +122,38 @@ export function withMembershipPreview<P extends object>(
     if (memberOnly && !resolved) return <GateHold onBack={goBack} />;
     if (gated && !armedForThis) return <GateHold onBack={goBack} />;
 
+    // ── A SCRIM STOPS FINGERS, NOT A SCREEN READER ────────────────────
+    //
+    // The free-user preview draws `UpgradeSheet` over the live lab and relies on
+    // that overlay to stop interaction. It does, for touch. It does NOT for
+    // assistive technology (2026-09-17, bug-hunt pass 5):
+    //
+    //   Android — TalkBack's ACTION_CLICK goes through
+    //   ReactAccessibilityDelegate.performAccessibilityAction →
+    //   View.performClick() → the Pressable's onPress. That path NEVER HIT-TESTS,
+    //   so the scrim is simply irrelevant to it: a free user with TalkBack on
+    //   could read AND operate the whole paid lab.
+    //
+    //   iOS — accessibilityActivate synthesises a tap at the element's
+    //   activation point, which the scrim does intercept; but the lab was still
+    //   fully READABLE through it.
+    //
+    // Hiding the subtree from the accessibility tree fixes both, and it is the
+    // correct thing regardless: a lab you are not allowed to use should not be
+    // something a screen reader walks you through. The scrim itself stays
+    // visible and focusable, so the upgrade path is still reachable.
+    if (gated) {
+      return (
+        <View
+          style={{ flex: 1 }}
+          accessibilityElementsHidden
+          importantForAccessibility="no-hide-descendants"
+        >
+          <Screen {...props} />
+        </View>
+      );
+    }
+
     return <Screen {...props} />;
   }
   Guarded.displayName = `WithMembershipPreview(${Screen.displayName ?? Screen.name ?? 'Screen'})`;

@@ -76,7 +76,16 @@ export type ReviewBlocker =
   | 'measuring'
   | 'after_purchase'
   | 'after_error'
-  | 'after_permission_denied';
+  | 'after_permission_denied'
+  /**
+   * Low-Light Production Mode is on (2026-09-17, bug-hunt pass 5).
+   *
+   * The standing rule is absolute: in that mode NOTHING may auto-appear or
+   * flash. Every other auto-overlay in the app gates on it; the store-review
+   * sheet was the one that did not — and it is an OS sheet that lights the whole
+   * screen, in the mode used in dark control rooms during live shows.
+   */
+  | 'low_light';
 
 export type EligibilityInput = {
   state: ReviewState;
