@@ -33,7 +33,7 @@
  * to compose over any lab screen.
  */
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, ActivityIndicator, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { colors, fonts } from '../../theme/tokens';
 import { useEntitlement } from '../commercial/EntitlementProvider';
@@ -63,6 +63,17 @@ function GateHold({ onBack }: { onBack?: () => void }) {
     const t = setTimeout(() => setSlow(true), 4000);
     return () => clearTimeout(t);
   }, []);
+
+  // W16 (2026-09-18): `accessibilityLiveRegion` is Android-only. On iOS a
+  // VoiceOver user sat on a spinner with no spoken reason and no idea a GO
+  // BACK had appeared. Announced only once the wait turns slow — the ordinary
+  // sub-second hold should stay silent, exactly as it stays visually quiet.
+  useEffect(() => {
+    if (!slow || Platform.OS !== 'ios') return;
+    AccessibilityInfo.announceForAccessibility(
+      'Still checking your membership. A go back button is available.',
+    );
+  }, [slow]);
 
   return (
     <View style={styles.hold}>

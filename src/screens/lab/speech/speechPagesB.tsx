@@ -1,6 +1,6 @@
 /** Speech & Voice Lab — modules 6–10 + checks: pop filters, sibilance, distance, voices, problem simulator. */
-import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { AccessibilityInfo, Platform, StyleSheet, Text, View } from 'react-native';
 import Svg, { G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
 import {
@@ -269,6 +269,13 @@ const PASS_MARK = 5;
 export function PageSpeechChecks({ ctx }: { ctx: PageCtx }) {
   const [n, setN] = useState(0);
   const bump = () => setN((c) => { if (c + 1 >= PASS_MARK) ctx.markDone(); return c + 1; });
+
+  // W16 (2026-09-18): Android-only live region; on iOS the score never reached
+  // a screen reader on a page that GATES on it. One answer at a time.
+  useEffect(() => {
+    if (Platform.OS !== 'ios' || n === 0) return;
+    AccessibilityInfo.announceForAccessibility(`${n} of ${FINAL_CHECKS.length} correct`);
+  }, [n]);
   return (
     <View style={{ gap: 12 }}>
       <Lead>Seven checks, one per idea, in a fresh order each visit. Wrong picks explain themselves — read the note, then try again.</Lead>

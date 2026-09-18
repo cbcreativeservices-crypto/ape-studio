@@ -4,8 +4,8 @@
  * ALL COPY IS NEW — owner ratification pending
  * (docs/APE_MIXING_LAB_COPY_2026_09_11.md).
  */
-import { useMemo, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useEffect, useMemo, useState } from 'react';
+import { AccessibilityInfo, Platform, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { Body, Btn, Card, Eyebrow, Lead, Prompt, Row } from '../tuning/components/primitives';
 import { UnderstandingCheck } from '../tuning/components/check';
@@ -169,6 +169,15 @@ function PagePanning({ ctx }: { ctx: PageCtx }) {
   const risks = TRACK_IDS.map((id) => ({ id, risk: panRisk(track(id), mix[id]?.pan ?? 0) }));
   const offCentre = risks.filter((r) => (mix[r.id]?.pan ?? 0) !== 0).length;
   const badRisks = risks.filter((r) => r.risk === 'lowEndOffCentre' || r.risk === 'focalOffCentre');
+
+  // W16 (2026-09-18): Android-only live region; silent on iOS. The pan warnings
+  // are the feedback for this page; keyed on WHICH risks, so adjusting a pan
+  // without changing the verdict stays quiet.
+  const riskKey = badRisks.map((r) => r.risk).join('|');
+  useEffect(() => {
+    if (Platform.OS !== 'ios' || !riskKey) return;
+    AccessibilityInfo.announceForAccessibility(`${badRisks.length} panning problem${badRisks.length === 1 ? '' : 's'}`);
+  }, [riskKey]);
   const [checkDone, setCheckDone] = useState(false);
   const goals = [
     { label: 'Place three supports off-centre', hit: offCentre >= 3 && badRisks.length === 0 },

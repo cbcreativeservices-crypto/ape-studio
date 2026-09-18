@@ -10,8 +10,8 @@
  * the same place). Gated by HELP_HUB_ENABLED until the owner ratifies the FAQ
  * copy; `#helppreview` renders it in the web harness regardless.
  */
-import { useEffect, useMemo, useState } from 'react';
-import { LayoutAnimation, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { AccessibilityInfo, LayoutAnimation, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { colors, fonts } from '../../theme/tokens';
@@ -43,6 +43,24 @@ export function HelpScreen() {
   const categories = useMemo(() => filterHelp(query), [query]);
   const searching = query.trim().length > 0;
   const noResults = searching && categories.length === 0;
+
+  /**
+   * W16 (2026-09-18): the panel below is `accessibilityLiveRegion`, which is
+   * Android-only, so on iOS a VoiceOver user typed into total silence and had
+   * no way to know the manual had come up empty.
+   *
+   * Latched on the TRANSITION into the empty state rather than announced on
+   * change: the query updates on every keystroke, and re-announcing per letter
+   * would talk over the user while they are still typing.
+   */
+  const wasEmptyRef = useRef(false);
+  useEffect(() => {
+    if (Platform.OS !== 'ios') return;
+    if (noResults && !wasEmptyRef.current) {
+      AccessibilityInfo.announceForAccessibility('Nothing in the manual matches. Try another word.');
+    }
+    wasEmptyRef.current = noResults;
+  }, [noResults]);
 
   const toggle = (id: string) => {
     if (animationsAllowed()) LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);

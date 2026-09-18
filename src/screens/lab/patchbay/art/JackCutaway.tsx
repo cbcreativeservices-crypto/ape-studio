@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 /**
  * JackCutaway — the inside of one normalled patch point, side cutaway
  * (spec §6 + the §21 X-ray insertion model). The single most important
@@ -18,7 +19,7 @@
  * the visible lift begins exactly THERE (never before — the picture must not
  * contradict the readout), and the panel carries a CONCEPTUAL MODEL badge.
  */
-import { StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, Platform, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
 import { CONTACT_OPEN_AT, contactsOpen } from '../engine/patchbay';
@@ -46,6 +47,16 @@ export function JackCutaway({ insertion, reduceMotion, showConductors }: {
   showConductors?: boolean;
 }) {
   const open = contactsOpen(insertion);
+
+  // W16 (2026-09-18): Android-only live region; silent on iOS. `insertion` is a DRAG,
+  // so this keys on the derived boolean: the contacts opening is the event,
+  // not the millimetre. Nothing is said while sliding between states.
+  useEffect(() => {
+    if (Platform.OS !== 'ios') return;
+    AccessibilityInfo.announceForAccessibility(
+      open ? 'Contacts open, normal broken' : 'Contacts touching, normal intact',
+    );
+  }, [open]);
   const tipX = 26 + insertion * 122; // plug tip travel; max 148 — wedges under the leaf mid-span
   const leafY = leafTipY(insertion);
   const phase = useFlowPhase(true, reduceMotion);

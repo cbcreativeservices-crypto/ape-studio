@@ -4,8 +4,8 @@
  * ALL COPY IS NEW — owner ratification pending
  * (docs/APE_MIXING_LAB_COPY_2026_09_11.md).
  */
-import { useMemo, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useEffect, useMemo, useState } from 'react';
+import { AccessibilityInfo, Platform, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { Body, Btn, Card, Eyebrow, Lead, Prompt, Row, useStableShuffle } from '../tuning/components/primitives';
 import { UnderstandingCheck } from '../tuning/components/check';
@@ -130,6 +130,15 @@ function PagePrepare({ ctx }: { ctx: PageCtx }) {
 function PageSignalFlow({ ctx }: { ctx: PageCtx }) {
   const { shuffled } = useStableShuffle(CHANNEL_PATH, 'mix-flow');
   const [placed, setPlaced] = useState<StationId[]>([]);
+
+  // W16 (2026-09-18): Android-only live region; silent on iOS. Building the signal
+  // path is the whole exercise and the path read back to nobody.
+  useEffect(() => {
+    if (Platform.OS !== 'ios' || placed.length === 0) return;
+    AccessibilityInfo.announceForAccessibility(
+      placed.map((id) => CHANNEL_PATH.find((s) => s.id === id)!.name).join(', then '),
+    );
+  }, [placed]);
   const [solved, setSolved] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
   const remaining = shuffled.filter((s) => !placed.includes(s.id));

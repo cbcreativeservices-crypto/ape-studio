@@ -23,7 +23,7 @@
  * thing in this file.
  */
 import { useEffect } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { AccessibilityInfo, Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
@@ -65,6 +65,15 @@ export function Celebration({
   const body = (
     <CelebrationBody def={def} values={values} extra={extra} onAction={onAction} form={form} />
   );
+
+  // W16 (2026-09-18): the `notice` form draws INLINE with an Android-only live
+  // region, so on iOS an award or an encouragement appeared and said nothing.
+  // It is a one-shot event, so it is safe to speak; keyed on the definition so
+  // a re-render does not repeat it.
+  useEffect(() => {
+    if (form !== 'notice' || Platform.OS !== 'ios') return;
+    AccessibilityInfo.announceForAccessibility(fill(def.title, values));
+  }, [def, form, values]);
 
   if (form === 'notice') {
     return (

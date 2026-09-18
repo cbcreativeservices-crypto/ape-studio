@@ -25,7 +25,7 @@
  * drag); verdicts announce via VerdictBanner; targets ≥44dp.
  */
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
 import { CiSection, RuleFeedback, announceComplete } from '../bits';
@@ -267,6 +267,15 @@ function TypeCard({ t, open, viewed, onPress }: { t: CiCableType; open: boolean;
 export function KnowScene({ completed, onComplete, openSources }: CiModuleProps) {
   const [openId, setOpenId] = useState<CiCableClass | null>(null);
   const [viewed, setViewed] = useState<Set<CiCableClass>>(() => new Set(completed ? CI_CABLE_TYPES.map((t) => t.id) : []));
+
+  // W16 (2026-09-18): Android-only live region; on iOS the browse count never
+  // reached a screen reader. One tap at a time, so safe to speak verbatim.
+  useEffect(() => {
+    if (Platform.OS !== 'ios') return;
+    AccessibilityInfo.announceForAccessibility(
+      `${viewed.size} of ${CI_CABLE_TYPES.length} cable types reviewed`,
+    );
+  }, [viewed.size]);
   const [ans, setAns] = useState<Record<string, DrillAnswers>>({});
   const [fired, setFired] = useState(completed);
 

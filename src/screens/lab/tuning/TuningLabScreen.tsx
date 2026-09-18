@@ -6,7 +6,7 @@
  * chapter (the chapter component is the same element, only ctx changes).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
@@ -25,6 +25,24 @@ export function TuningLabScreen() {
   const { requestAudioOutput } = useAudioOutputGate();
   const player = useMemo(() => new TuningPlayer(requestAudioOutput), [requestAudioOutput]);
   const [status, setStatus] = useState<PlayerStatus>({ playing: false, label: null });
+
+  /**
+   * W16 (2026-09-18): the sound line in the footer is `accessibilityLiveRegion`
+   * — Android-only, a no-op on iOS. This lab's whole subject is AUDIO, and a
+   * VoiceOver user got no confirmation that a tone had started, what it was,
+   * or that it had stopped. Transport changes are discrete events, so the
+   * string is safe to speak as written; keyed on the rendered text so a
+   * re-render with the same status stays quiet.
+   */
+  const soundLine = status.rendering
+    ? `Rendering: ${status.rendering}…`
+    : status.playing
+      ? `Playing ${status.label}`
+      : 'Sound stopped';
+  useEffect(() => {
+    if (Platform.OS !== 'ios') return;
+    AccessibilityInfo.announceForAccessibility(soundLine);
+  }, [soundLine]);
   const [progress, setProgress] = useState<TuningProgress | null>(null);
   const [chapter, setChapter] = useState(0);
   const [rootHz, setRootHz] = useState(C4_ET);

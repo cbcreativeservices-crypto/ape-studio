@@ -4,8 +4,8 @@
  * ALL COPY IS NEW — owner ratification pending
  * (docs/APE_MIXING_LAB_COPY_2026_09_11.md).
  */
-import { useMemo, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useEffect, useMemo, useState } from 'react';
+import { AccessibilityInfo, Platform, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { Body, Btn, Card, Eyebrow, Lead, Prompt, Row } from '../tuning/components/primitives';
 import { UnderstandingCheck } from '../tuning/components/check';
@@ -286,6 +286,18 @@ function PagePrePost({ ctx }: { ctx: PageCtx }) {
   const ch = { ...CUE_CONSOLE.channels[0], faderDb: faderPulled ? -60 : 0 };
   const verbGain = sendPathGain(ch, 'verb', CUE_CONSOLE);
   const cueGain = sendPathGain(ch, 'cue', CUE_CONSOLE);
+
+  // W16 (2026-09-18): Android-only live region. Pre versus post IS this page's
+  // lesson, and the proof is this line changing when the fader moves — which a
+  // screen reader was never told. Keyed on the two booleans, so only a real
+  // change in what is receiving speaks.
+  const busKey = `${verbGain > 0}|${cueGain > 0}`;
+  useEffect(() => {
+    if (Platform.OS !== 'ios') return;
+    AccessibilityInfo.announceForAccessibility(
+      `Reverb post fader ${verbGain > 0 ? 'receiving' : 'silent'}. Headphones pre fader ${cueGain > 0 ? 'receiving' : 'silent'}.`,
+    );
+  }, [busKey]);
 
   const goals = [
     { label: 'Pull the fader on the cue rig', hit: faderPulled },

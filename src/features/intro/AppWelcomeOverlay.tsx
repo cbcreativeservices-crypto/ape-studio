@@ -9,7 +9,7 @@
  *    greeting can't be skipped instantly.
  */
 import { useEffect, useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../theme/tokens';
 import { LowLightDim } from '../settings/LowLightLayer';
 import { SCREEN_INTROS } from './screenIntros';
@@ -23,6 +23,21 @@ const WELCOME_DELAY_MS = 9000;
 export function AppWelcomeOverlay() {
   const { visible, dismiss } = useScreenIntro('appWelcome');
   const [canContinue, setCanContinue] = useState(false);
+
+  /**
+   * W16 (2026-09-18): the "ONE MOMENT…" dwell text is `accessibilityLiveRegion`
+   * — Android-only, silent on iOS. This is the FIRST screen a new user sees,
+   * it holds for nine seconds, and the button does not exist until it ends.
+   * So a VoiceOver user met the app with a screen that had no button and no
+   * explanation, which is indistinguishable from a freeze.
+   *
+   * Announce the ARRIVAL of the button rather than the waiting: the wait is
+   * visible dwell, the button appearing is the event worth speaking.
+   */
+  useEffect(() => {
+    if (!canContinue || Platform.OS !== 'ios') return;
+    AccessibilityInfo.announceForAccessibility("Ready. Let's get started button is now available.");
+  }, [canContinue]);
 
   useEffect(() => {
     if (!visible) {

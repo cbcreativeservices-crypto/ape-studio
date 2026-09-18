@@ -28,7 +28,7 @@
  * VoiceOver — design pass 2026-09-10).
  */
 import { useEffect, useMemo, useRef } from 'react';
-import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, Animated, Easing, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
 import { resolvePair, type PairState } from '../engine/patchbay';
@@ -252,6 +252,17 @@ export function PatchPairView({
               : flow.topFeedsPatch
                 ? `PATCHED — ${sourceLabel} goes only into the cord`
                 : `NO CONNECTION — thru pair, nothing patched`;
+
+  // W16 (2026-09-18): Android-only live region. This status line is the answer
+  // to the whole patchbay exercise — what is connected to what, and whether
+  // anything is actually flowing — and on iOS it was silent. `status` is
+  // derived from the resolved flow booleans, so it only changes when a cord
+  // actually moves; keying on the string is enough.
+  useEffect(() => {
+    if (Platform.OS !== 'ios') return;
+    AccessibilityInfo.announceForAccessibility(status);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status]);
 
   const a11y =
     `Patch pair, ${state.config === 'thru' ? 'thru' : state.config === 'full' ? 'full normal' : 'half normal'} configuration. ` +

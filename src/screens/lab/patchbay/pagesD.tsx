@@ -8,8 +8,8 @@
  * "requires proper system design", never a blanket "never patch microphones" —
  * professional installations designed for mic patching exist.
  */
-import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { AccessibilityInfo, Platform, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import type { PageCtx, PageDef } from '../kit/PagedLab';
 import { Body, Btn, Card, Eyebrow, Lead, Row, useMarkWhen } from '../tuning/components/primitives';
@@ -165,6 +165,13 @@ function DesignRowCard({ row, onSettled }: { row: (typeof DESIGN_ROWS)[number]; 
   const [picked, setPicked] = useState<PairKind | null>(null);
   const [settled, setSettled] = useState(false);
   const verdict = picked ? row.verdicts[picked] : null;
+
+  // W16 (2026-09-18): Android-only live region; silent on iOS. The verdict
+  // is the teaching in this drill — it appeared and said nothing.
+  useEffect(() => {
+    if (!verdict || Platform.OS !== 'ios') return;
+    AccessibilityInfo.announceForAccessibility(`${verdict.ok ? 'Correct' : 'Not quite'}. ${verdict.note}`);
+  }, [verdict]);
   // Rows stay EXPLORABLE after settling (cognition pass 2026-09-10): the
   // multi-acceptable tradeoff notes are the content, so a learner who settled
   // on FULL must still be able to read what HALF would have bought them. The

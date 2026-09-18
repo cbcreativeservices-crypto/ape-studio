@@ -42,8 +42,8 @@
  * Modal), driven by the published tuner frames, opened by TAPPING the meter
  * display (like the other audio tools — no icon key).
  */
-import { useEffect, useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { AccessibilityInfo, Image, Platform, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { Easing, cancelAnimation, useAnimatedStyle, useSharedValue, withRepeat, withTiming, type SharedValue } from 'react-native-reanimated';
 import { animationsAllowed } from '../../features/settings/a11y';
@@ -487,6 +487,36 @@ export function VuTunerFullScreen() {
   const note = frame.accepted && frame.freq != null ? fsNoteFor(frame.freq, frame.a4) : null;
   const cents = note != null ? note.cents : null;
   const inTune = note != null && Math.abs(note.cents) < 1;
+
+  /**
+   * W16 (2026-09-18) — the cents stream must NEVER be spoken.
+   *
+   * The note row below is `accessibilityLiveRegion` (Android-only, no-op on
+   * iOS) and its label recomputes every analysis frame. Android throttles a
+   * live region; `announceForAccessibility` does not, so announcing on change
+   * would produce unbroken speech and make the tuner unusable rather than
+   * accessible.
+   *
+   * Two things are worth hearing and neither is continuous: WHICH NOTE you are
+   * on, and the moment it goes IN TUNE. Everything between those is the needle,
+   * and the needle is what the meter is for. Debounced because a pitch being
+   * hunted flickers across adjacent notes, which would chatter.
+   */
+  const a11yKey = note == null ? 'none' : `${note.name}${note.octave}|${inTune ? 'in' : 'out'}`;
+  const spokenRef = useRef('');
+  useEffect(() => {
+    if (Platform.OS !== 'ios') return;
+    if (a11yKey === spokenRef.current) return;
+    const t = setTimeout(() => {
+      if (a11yKey === spokenRef.current) return;
+      spokenRef.current = a11yKey;
+      AccessibilityInfo.announceForAccessibility(
+        note == null ? 'No stable pitch' : `${note.name}${note.octave}${inTune ? ', in tune' : ''}`,
+      );
+    }, 600);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [a11yKey]);
   const hzText = frame.freq != null ? `${frame.freq < 10 ? frame.freq.toFixed(2) : frame.freq.toFixed(1)} Hz` : '— Hz';
   const tuneInk = tunerColor ?? colors.green;
   // The face is 2.71:1 — size it to whichever axis binds, leaving room for

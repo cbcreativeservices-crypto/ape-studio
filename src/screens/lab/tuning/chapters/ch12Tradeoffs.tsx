@@ -3,8 +3,8 @@
  * each system as a design choice (no rankings), the nine misconception
  * cards, and where these ideas meet professional audio.
  */
-import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { AccessibilityInfo, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { TUNING_SYSTEMS, type TuningSystemId } from '../../../../features/tuning/tuningMath';
 import type { ChapterProps } from '../labCtx';
@@ -48,6 +48,18 @@ const MIN_OPENED = 3;
 export function Ch12Tradeoffs({ ctx }: ChapterProps) {
   const [open, setOpen] = useState<number | null>(null);
   const [opened, setOpened] = useState<Set<number>>(() => new Set());
+
+  // W16 (2026-09-18): the progress line below is `accessibilityLiveRegion`,
+  // which is an ANDROID attribute and a no-op on iOS — so a VoiceOver user
+  // opening corrections was never told the count moved, on a chapter that
+  // GATES on reaching it. Safe to say verbatim: this changes once per tap, not
+  // continuously. iOS only, because Android's live region already speaks.
+  useEffect(() => {
+    if (Platform.OS !== 'ios') return;
+    AccessibilityInfo.announceForAccessibility(
+      `${opened.size} of ${MYTHS.length} corrections opened`,
+    );
+  }, [opened.size]);
   const toggle = (i: number) => {
     setOpen(open === i ? null : i);
     setOpened((s) => (s.has(i) ? s : new Set(s).add(i)));

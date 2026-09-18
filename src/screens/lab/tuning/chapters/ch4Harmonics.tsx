@@ -4,8 +4,8 @@
  * Pythagorean thirds; full tones vs isolated partials (labeled); a beating
  * model; a 380–410 ¢ alignment slider with fine steps and Show Me.
  */
-import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { AccessibilityInfo, Platform, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { PulseThumb } from '../../../../features/lab/attentionPulse';
 import {
@@ -39,6 +39,25 @@ export function Ch4Harmonics({ ctx }: ChapterProps) {
   const diff = partialDifferenceHz(p4, p5);
   const fromJust = cents - JUST_MAJOR_THIRD.cents;
   const aligned = Math.abs(fromJust) < 0.05;
+
+  /**
+   * W16 (2026-09-18) — and NOT a verbatim announce.
+   *
+   * The readout below is `accessibilityLiveRegion` (Android-only, no-op on
+   * iOS) and it recomputes on every frame of a slider drag. Android's live
+   * region is system-throttled; `announceForAccessibility` is NOT, so saying
+   * this string whenever it changes would talk over itself continuously and
+   * make the chapter worse, not better.
+   *
+   * What a learner actually needs to hear is the ARRIVAL — the moment the
+   * third lands on 5/4 — which is the whole point of the exercise and is the
+   * one thing colour alone was carrying. So this latches on the transition,
+   * and says nothing while dragging.
+   */
+  useEffect(() => {
+    if (Platform.OS !== 'ios' || !aligned) return;
+    AccessibilityInfo.announceForAccessibility('Just major third, 5 to 4. Zero beats.');
+  }, [aligned]);
   // Completion: the learner aligned the slider (not just pressed a preset).
   useMarkWhen(aligned && useSlider, ctx.markDone);
 
