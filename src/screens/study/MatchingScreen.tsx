@@ -468,6 +468,7 @@ export function MatchingScreen({ navigation, route }: Props) {
             <Animated.View key={it.id} layout={motionOk ? LinearTransition.duration(COLLAPSE_MS) : undefined} exiting={motionOk ? FadeOut.duration(COLLAPSE_MS) : undefined}>
               <AnswerCell
                 label={text}
+                side="Definition"
                 state={leftState(it.id)}
                 fontSize={17}
                 borderWidth={1.5}
@@ -484,6 +485,7 @@ export function MatchingScreen({ navigation, route }: Props) {
             <Animated.View key={it.id} layout={motionOk ? LinearTransition.duration(COLLAPSE_MS) : undefined} exiting={motionOk ? FadeOut.duration(COLLAPSE_MS) : undefined}>
               <AnswerCell
                 label={it.term}
+                side="Term"
                 state={rightState(it.id)}
                 fontSize={18}
                 borderWidth={1.5}

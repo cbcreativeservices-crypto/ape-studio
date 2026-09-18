@@ -42,6 +42,8 @@ export function AnswerCell({
   numberOfLines,
   onPress,
   disabled,
+  side,
+  stateNote,
 }: {
   label: string;
   state?: AnswerCellState;
@@ -52,6 +54,25 @@ export function AnswerCell({
   numberOfLines?: number;
   onPress?: () => void;
   disabled?: boolean;
+  /**
+   * Which side of a two-column board this cell is on (2026-09-18, pass 5 · W14).
+   *
+   * Matching draws two columns with a visual divider between them. A screen
+   * reader walks them as ONE flat list, so a definition and a term announced
+   * identically and the whole instruction — "match these to those" — had no
+   * referent. Spoken first, because it is what tells you which list you are in.
+   */
+  side?: string;
+  /**
+   * What this cell's STATE means in the caller's context (2026-09-18, pass 5 · W6).
+   *
+   * `dimmed` is drawn with opacity and nothing else, and it means different
+   * things in different methods — "already paired" in matching, "not the one
+   * you chose" in single-answer. The component cannot know which, so the
+   * caller says it, and a state that was previously conveyed by opacity alone
+   * becomes something a screen reader and a low-vision user can both get.
+   */
+  stateNote?: string;
 }) {
   const s = STATE_STYLES[state];
   const showCheck = check !== 'none';
@@ -76,7 +97,7 @@ export function AnswerCell({
       onPress={onPress}
       disabled={isDisabled}
       accessibilityRole={showCheck ? 'checkbox' : 'button'}
-      accessibilityLabel={`${label}${verdict}`}
+      accessibilityLabel={`${side ? `${side}. ` : ''}${label}${verdict}${stateNote ? `, ${stateNote}` : ''}`}
       accessibilityState={
         showCheck
           ? { checked, disabled: isDisabled }

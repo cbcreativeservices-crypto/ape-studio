@@ -520,8 +520,42 @@ function BrightnessSlider({
         draggingRef.current = false;
         onCommit(posRef.current);
       }}
+      /* ── AN ADJUSTABLE YOU CANNOT ADJUST (2026-09-18, pass 5 · W15) ──────
+         The role and the label were here, but three things were not, and
+         without them the control is unreachable rather than merely awkward:
+
+         `accessible`       — this is a <View> with children, so on iOS the
+                              label never became an element at all.
+         accessibilityValue — "adjustable" with no value announces no position;
+                              the user cannot tell dim from bright.
+         accessibilityActions — role "adjustable" is a PROMISE that increment
+                              and decrement work. Without handlers the swipe
+                              gestures do nothing, so the only way to change
+                              brightness was a drag, which is the one gesture a
+                              screen-reader user does not have.
+
+         This slider also reaches RED NIGHT MODE at the far left, which is the
+         accessibility feature of this screen — unreachable by the people most
+         likely to want it. */
+      accessible
       accessibilityRole="adjustable"
       accessibilityLabel="Screen brightness — slide left to dim, far left for red night mode"
+      accessibilityValue={{
+        min: 0,
+        max: 100,
+        now: Math.round(pos * 100),
+        text: pos <= 0.02 ? 'Red night mode' : `${Math.round(pos * 100)} percent`,
+      }}
+      accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
+      onAccessibilityAction={(e) => {
+        const step = e.nativeEvent.actionName === 'increment' ? 0.1 : -0.1;
+        const np = Math.max(0, Math.min(1, posRef.current + step));
+        posRef.current = np;
+        setPos(np);
+        onLive(np);
+        onCommit(np);
+        onInteract();
+      }}
     >
       <View style={styles.brightBase} />
       <View style={[styles.brightThumb, { left: thumbLeft }]} />

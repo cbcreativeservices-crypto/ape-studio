@@ -411,6 +411,19 @@ export function QuizScreen({ navigation, route }: Props) {
       const nextPairs: [number, number][] = [...pairs, [leftSel, idx]];
       setPairs(nextPairs);
       setLeftSel(null);
+      /* W6 (2026-09-18): making a pair changed only two cells' OPACITY. Pass 4
+         made the resulting state speakable (`disabled`), but the act itself was
+         still silent, so a screen-reader user had to go back and re-read both
+         columns to learn whether their second tap had landed. Say what was
+         just joined to what, and how far along the question is. */
+      {
+        const o = question.options as MatchingOptions;
+        const ls = Array.isArray(o?.lefts) ? o.lefts : [];
+        const rs = Array.isArray(o?.rights) ? o.rights : [];
+        AccessibilityInfo.announceForAccessibility(
+          `Paired ${ls[leftSel] ?? ''} with ${rs[idx] ?? ''}. ${nextPairs.length} of ${ls.length}.`,
+        );
+      }
       const opts = question.options as MatchingOptions;
       const lefts = Array.isArray(opts?.lefts) ? opts.lefts : [];
       const rights = Array.isArray(opts?.rights) ? opts.rights : [];
@@ -603,6 +616,7 @@ export function QuizScreen({ navigation, route }: Props) {
                     borderWidth={1.5}
                     minHeight={48}
                     numberOfLines={3}
+                    side="Prompt"
                     state={leftState(i)}
                     // PAIRED-OFF MUST BE ANNOUNCED, NOT JUST DIMMED (2026-09-17,
                     // bug-hunt pass 4/5). `dimmed` is opacity only, so to a
@@ -625,6 +639,7 @@ export function QuizScreen({ navigation, route }: Props) {
                     borderWidth={1.5}
                     minHeight={48}
                     numberOfLines={3}
+                    side="Match"
                     state={rightState(i)}
                     disabled={pairs.some((pr) => pr[1] === i)}
                     onPress={() => pickMatch('right', i)}
