@@ -459,8 +459,11 @@ export function interpretTypedNumber(raw: string): number | null {
   let t = raw.trim();
   if (t === '') return null;
 
+  // A minus is a SIGN, not a character that may appear anywhere. Stripping all
+  // of them meant a pasted "1-2" became 12 (2026-09-17, pass 6).
   const neg = t.startsWith('-');
-  t = t.replace(/-/g, '');
+  if (neg) t = t.slice(1);
+  if (t.includes('-')) return null;
 
   const dots = (t.match(/\./g) ?? []).length;
   const commas = (t.match(/,/g) ?? []).length;
@@ -500,8 +503,12 @@ function NumberField({
 }) {
   const [draft, setDraft] = useState<string | null>(null);
   const committed = value === null || value === undefined ? '' : String(value);
+  // What is on screen cannot be read as a number, so nothing is being recorded.
+  // Silence here is what made the earlier bugs in this field invisible.
+  const unreadable = draft != null && draft.trim() !== '' && interpretTypedNumber(draft) === null;
 
   return (
+    <View style={styles.unitCol}>
     <View style={styles.unitRow}>
       <TextInput
         style={[styles.input, styles.flex]}
@@ -525,7 +532,17 @@ function NumberField({
           // the whole string, not from a prefix of it.
           const raw = t.replace(/[^0-9.,\-]/g, '');
           setDraft(raw);
-          onChange(interpretTypedNumber(raw));
+          const n = interpretTypedNumber(raw);
+          // AN UNREADABLE ENTRY IS NOT AN ERASURE (2026-09-17, pass 6).
+          //
+          // Committing null on every unreadable keystroke threw away the
+          // learner's PREVIOUS answer as well as the text they were typing — and
+          // `onBlur` then cleared the draft, so both vanished with nothing on
+          // screen to explain it. An empty field genuinely means "no answer";
+          // "1,234,5" means "I am not sure what you mean", and those are
+          // different. The value is left alone and the field says so.
+          if (n === null && raw.trim() !== '') return;
+          onChange(n);
         }}
         onBlur={() => setDraft(null)}
         keyboardType="decimal-pad"
@@ -534,6 +551,13 @@ function NumberField({
         accessibilityLabel={field.label}
       />
       {field.unit ? <Text style={styles.unit}>{field.unit}</Text> : null}
+    </View>
+    {unreadable ? (
+      <Text style={styles.unreadable}>
+        ⚠ Not recorded — enter digits with at most one decimal separator (a thousands separator like
+        12,000 is fine).
+      </Text>
+    ) : null}
     </View>
   );
 }
@@ -560,6 +584,8 @@ const styles = StyleSheet.create({
   multiline: { minHeight: 74, textAlignVertical: 'top' },
   flex: { flex: 1 },
   unitRow: { flexDirection: 'row', alignItems: 'center', gap: 9 },
+  unitCol: { flexDirection: 'column' },
+  unreadable: { color: '#ff9a90', fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 16, marginTop: 4 },
   unit: { fontFamily: fonts.barlowMedium, fontSize: 13, color: colors.textSub },
 
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 },

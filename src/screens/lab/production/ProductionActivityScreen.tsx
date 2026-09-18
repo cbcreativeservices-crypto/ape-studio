@@ -87,12 +87,20 @@ export function ProductionActivityScreen() {
 
   const restart = useCallback(async () => {
     if (!activity || !project) return;
-    // SEED FIRST, THEN REPLACE (2026-09-17). This removed the exercise and then
-    // wrote the fresh one, so a failure in between left the learner with NO
-    // project at all — a delete that succeeded and a create that did not. The
-    // ids match, so `upsert` overwrites in place and the remove is unnecessary;
-    // dropping it removes the window entirely.
-    const seeded = seedActivityProject(lab, pathway, activity);
+    // SEED FIRST, THEN REPLACE IN PLACE (2026-09-17, corrected by pass 6).
+    //
+    // This used to `remove()` then `upsert()`, so a failure in between left the
+    // learner with no project at all — a delete that succeeded and a create that
+    // did not. Dropping the remove closes that window, but my first attempt
+    // claimed "the ids match" and they do NOT: `seedActivityProject` calls
+    // `newProjectId()`, so every restart `unshift`ed a NEW row and the old one
+    // survived forever. The lab screen lists every project with no filter, so
+    // restarts piled up identically-named chips, the list has no cap, and
+    // `projectStore.remove` had no callers left to clean them up.
+    //
+    // Reusing the id makes `upsert` genuinely replace in place, which is what
+    // the comment always claimed.
+    const seeded = { ...seedActivityProject(lab, pathway, activity), id: project.id };
     const ok = await projectStore().upsert(seeded);
     if (!ok) {
       notify(

@@ -87,8 +87,6 @@ const MAX_SYNC_RETRIES = 4;
  * enrollment master list".
  */
 let reconciled = false;
-/** True only when the server's list was actually READ. */
-let reconcileConfirmed = false;
 
 /** Is the local list still the untouched new-device default? */
 function isPristineSeed(l: EnrollTopic[]): boolean {
@@ -110,7 +108,7 @@ function isPristineSeed(l: EnrollTopic[]): boolean {
  * holding the phone, and their intent wins.
  */
 async function reconcileFromServer(): Promise<boolean> {
-  if (reconciled) return reconcileConfirmed;
+  if (reconciled) return false;
   try {
     const { data, error } = await supabase
       .from('user_topic_enrollments')
@@ -132,7 +130,6 @@ async function reconcileFromServer(): Promise<boolean> {
     // An empty result is therefore indistinguishable from a denial, and both are
     // treated as NOT CONFIRMED. Only rows we actually read count.
     if (rows.length === 0) return false;
-    reconcileConfirmed = true;
     if (!isPristineSeed(list)) return true; // the user has edited this device's list
 
     list = rows
@@ -185,7 +182,16 @@ function scheduleServerSync(delayMs = 800) {
         // (it currently cannot — the table is in the deny-all RLS set, and a
         // client select returns zero rows rather than an error, which is why the
         // pull below is best-effort and never load-bearing).
-        await reconcileFromServer();
+        //
+        // BOUNDED (2026-09-17, pass 6). The pull is a convenience; the push is
+        // the thing that matters. There is no request timeout anywhere in this
+        // app, so awaiting an untimed select would park the push indefinitely —
+        // the same hazard the exam-queue fix in this same batch argues against.
+        // Four seconds, then go.
+        await Promise.race([
+          reconcileFromServer(),
+          new Promise((r) => setTimeout(r, 4000)),
+        ]);
         // supabase-js RESOLVES with { error } — the old dead catch never saw RPC
         // errors, so a failed FINAL sync left the server master list stale with
         // no retry until the user next edited enrollment (backend gates v3
@@ -379,7 +385,6 @@ export function resetLocal(): void {
   // The next identity must reconcile against ITS OWN server list, not inherit
   // the departing user's "already checked".
   reconciled = false;
-  reconcileConfirmed = false;
   list = [];
   hydrated = false;
   hydrating = null;

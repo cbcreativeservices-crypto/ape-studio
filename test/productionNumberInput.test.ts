@@ -127,6 +127,15 @@ describe('what it refuses rather than guesses', () => {
     assert.equal(interpretTypedNumber('.'), null);
   });
 
+  it('a minus is a SIGN, not a character that may appear anywhere', () => {
+    // A pasted "1-2" used to commit 12, because every minus was stripped before
+    // parsing (found by the pass-6 verifier).
+    assert.equal(interpretTypedNumber('1-2'), null);
+    assert.equal(interpretTypedNumber('1-'), null);
+    assert.equal(interpretTypedNumber('--1'), null);
+    assert.equal(interpretTypedNumber('-1'), -1);
+  });
+
   it('never returns a non-finite number', () => {
     for (const s of ['1e999', '99999999999999999999999999']) {
       const n = interpretTypedNumber(s);
