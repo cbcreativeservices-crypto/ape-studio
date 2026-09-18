@@ -18,30 +18,45 @@
 --     └─ source='auto'   (topic completion) ... 125
 --     └─ source='earned' (exam pass) ..........   0
 --
--- Nobody has ever sat a Final Exam. Every credential this product has ever
--- issued came from finishing topics. The exam has awarded nothing, ever.
+-- Nobody has ever sat a Final Exam. And all 125 awards belong to ONE user
+-- (1f7d568e-…, the seeded graduate test account).
 --
--- AND HERE IS WHY IT CANNOT. `start_final_exam` contains:
+-- ── WHY THAT ONE ACCOUNT, AND NOBODY ELSE ───────────────────────────
 --
---     IF EXISTS(SELECT 1 FROM credential_awards WHERE user_id=v_user
---                AND credential_type=p_award_type AND credential_id=p_award_id
---                AND revoked_at IS NULL) THEN RAISE EXCEPTION 'already_earned'; END IF;
+-- `evaluate_user_credentials` gates everything behind four HARDCODED
+-- achievement ids. Looked up, they are:
 --
--- and it sits BELOW `award_complete(...)`, which requires every topic to be
--- finished. So the sequence is:
+--   e5451add  Pro Audio Safety      is_active=false  0 methods  curriculum DRAFT
+--   041c8d66  Grounding & Electrical is_active=false 0 methods  curriculum DRAFT
+--   89bd470d  Workplace Skills      is_active=false  0 methods  curriculum DRAFT
+--   7387db19  Foundations of Sound  is_active=false  0 methods  curriculum ARCHIVED
 --
---     finish the last topic
---       → the trigger fires evaluate_user_credentials
---       → it inserts the certificate with source='auto'
---       → the learner opens the Final Exam
---       → start_final_exam sees that award and raises 'already_earned'
+-- Those belong to the pre-v3 curriculum. The ACTIVE v3 curriculum has the same
+-- four requirements under DIFFERENT ids, and they are the ones
+-- `award_standing_requirements` actually lists:
 --
--- The exam is refused because the thing it leads to has already been given
--- away. It is not that the exam is optional — it is UNREACHABLE, by
--- construction, for exactly the people qualified to sit it.
+--   32129be7  Pro Audio Safety       active, 4 methods
+--   c2681246  Grounding & Electrical active, 4 methods
+--   697b1bd1  Workplace Skills       active, 4 methods
+--   acc16ff3  Audio Fundamentals     the LAB proxy (0 methods, is_active false)
 --
--- That single INSERT is the whole problem, and removing it fixes the exam, the
--- tenure rule and the owner's policy in one move.
+-- The two sets are completely disjoint. So `v_core` can never reach 4 for
+-- anybody studying the live curriculum, the function RETURNs early, and NO
+-- CERTIFICATE IS EVER AUTO-AWARDED to a real v3 user. The 125 belong to the one
+-- account carrying legacy completions from before the v3 switch.
+--
+-- ── WHAT THAT MEANS FOR THE EXAM ───────────────────────────────
+--
+-- `start_final_exam` raises 'already_earned' when a credential_awards row
+-- exists. For the legacy account that fires and the exam is unreachable. For a
+-- REAL v3 user no auto-award ever happens, so the exam IS reachable today, and
+-- `submit_final_exam` would award on a pass.
+--
+-- In other words the live behaviour is already closer to the owner's policy
+-- than it looks — but only by ACCIDENT, resting on a gate that is broken. Fix
+-- the ids without the rest of this and auto-awards resume for every v3 user,
+-- which would then make the exam unreachable for all of them. That is why the
+-- id fix below lives ONLY in the flagged branch.
 --
 -- GOOD NEWS IN THE OTHER DIRECTION: `submit_final_exam` ALREADY awards on a
 -- pass, with source='earned'. The award path the policy needs is built and
@@ -53,8 +68,11 @@
 -- ─────────────────────────────────────────────────────────────────────────
 -- 1 · evaluate_user_credentials — record eligibility, do not award
 --
--- Preserved byte-for-byte from the live function: the four co-requisite ids,
--- the certificate topic test, and the ENTIRE programs branch.
+-- Preserved byte-for-byte in the UNFLAGGED branch: the four co-requisite ids,
+-- the certificate topic test, and the ENTIRE programs branch. The flagged
+-- branch corrects the co-requisite ids to follow the active curriculum — see
+-- the note inside the function for why that correction cannot live anywhere
+-- else without breaking the exam.
 --
 -- ⚠️ PROGRAMS ARE DELIBERATELY UNCHANGED. The owner's policy statement was
 --    about the certificate path and the Final Exam that gates it. Extending it
@@ -77,15 +95,41 @@ BEGIN
                     WHERE key = 'certificate_requires_exam'), false)
     INTO v_requires_exam;
 
-  -- requisites: Safety + Grounding + Workplace (draft) + Foundations lab (active) all complete
-  SELECT (SELECT count(*) FROM student_achievement_progress p
-          WHERE p.user_id=p_user AND p.status='complete'
-            AND p.achievement_id IN (
-              'e5451add-87f8-47f0-ba06-9a53d70bebe9',
-              '041c8d66-5280-40b9-abdc-7b18202b684a',
-              '89bd470d-e7fb-464b-874c-753f1d1db912',
-              '7387db19-2fa5-4536-af25-25a5f725a484')) = 4
-  INTO v_core;
+  IF v_requires_exam THEN
+    -- THE CO-REQUISITES, READ FROM THE ACTIVE CURRICULUM (2026-09-18).
+    --
+    -- The hardcoded list below belongs to a DRAFT/ARCHIVED curriculum and can
+    -- never be satisfied by a v3 learner — see the header. This asks the same
+    -- question `award_required_topics` already asks, so it follows the
+    -- curriculum instead of needing an edit every time one is published.
+    --
+    -- The lab proxy is included and MUST be: it is a standing requirement with
+    -- no study methods, completed by mark_lab_complete, and it is how "required
+    -- labs" enters the rule at all.
+    SELECT NOT EXISTS (
+      SELECT 1
+        FROM award_standing_requirements asr
+        JOIN curriculum_versions cv ON cv.id = asr.curriculum_version_id AND cv.status = 'active'
+        LEFT JOIN student_achievement_progress sap
+               ON sap.user_id = p_user AND sap.achievement_id = asr.achievement_id
+       WHERE COALESCE(sap.status,'') <> 'complete'
+    ) INTO v_core;
+  ELSE
+    -- requisites: Safety + Grounding + Workplace (draft) + Foundations lab (active) all complete
+    -- UNCHANGED, and deliberately still the stale ids: this branch exists to
+    -- reproduce today's behaviour exactly, including the fact that it does not
+    -- fire for v3 users. Correcting it here would START auto-awarding on topic
+    -- completion, which would make the Final Exam unreachable for everyone.
+    SELECT (SELECT count(*) FROM student_achievement_progress p
+            WHERE p.user_id=p_user AND p.status='complete'
+              AND p.achievement_id IN (
+                'e5451add-87f8-47f0-ba06-9a53d70bebe9',
+                '041c8d66-5280-40b9-abdc-7b18202b684a',
+                '89bd470d-e7fb-464b-874c-753f1d1db912',
+                '7387db19-2fa5-4536-af25-25a5f725a484')) = 4
+    INTO v_core;
+  END IF;
+
   IF NOT v_core THEN RETURN; END IF;
 
   IF v_requires_exam THEN
