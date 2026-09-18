@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 09:03 · ccode · c52f3102
+changed: production labs: learn without completing (owner ruling)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-18 08:31 · ccode · a216153c
 changed: the printed cymatics sheets say SIMULATION too
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">

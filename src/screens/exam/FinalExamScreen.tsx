@@ -33,6 +33,7 @@ import { AnswerCell, type AnswerCellState } from '../../components/AnswerCell';
 import { StudioButton } from '../../components/StudioButton';
 import { colors, fonts } from '../../theme/tokens';
 import { clearAttemptDraft, loadAttemptDraft, saveAttemptDraft } from '../../features/assess/attemptDraft';
+import { ExamBriefing } from './ExamBriefing';
 import { confirmDialog, notify } from '../../lib/confirm';
 import {
   clearExamIntent,
@@ -63,6 +64,21 @@ export function FinalExamScreen({ navigation, route }: Props) {
   const { awardType, awardId, awardName } = route.params;
   const insets = useSafeAreaInsets();
 
+  /**
+   * The briefing gates the ATTEMPT, not just the view (owner ruling 2026-09-18).
+   *
+   * `start_final_exam` sets `started_at` server-side and the deadline runs from
+   * it, so calling it before the learner has read the rules would spend their
+   * exam time on the reading. Nothing exists until BEGIN is pressed; NOT YET
+   * costs them nothing.
+   *
+   * Deliberately NOT persisted. The owner's instruction is that the rules are
+   * stated "up front, every time" — a briefing you can dismiss once is a
+   * briefing nobody reads, and the whole point is that a voided attempt should
+   * be recognised rather than discovered.
+   */
+  const [begun, setBegun] = useState(false);
+
   const [payload, setPayload] = useState<ExamPayload | null>(null);
   const [startError, setStartError] = useState<string | null>(null);
   // Port of the quiz twin's [47]: the CODE decides whether an in-place retry is
@@ -92,6 +108,8 @@ export function FinalExamScreen({ navigation, route }: Props) {
 
   /* ---- attempt start (online-only; idempotent resume) ---- */
   useEffect(() => {
+    // No attempt, no clock, until the briefing has been read and accepted.
+    if (!begun) return;
     let alive = true;
     (async () => {
       try {
@@ -121,7 +139,7 @@ export function FinalExamScreen({ navigation, route }: Props) {
     return () => {
       alive = false;
     };
-  }, [awardType, awardId, startNonce]);
+  }, [awardType, awardId, startNonce, begun]);
 
   const deadline = useMemo(
     () =>
@@ -420,6 +438,19 @@ export function FinalExamScreen({ navigation, route }: Props) {
   }, [payload, submitting]);
 
   /* ---- states ---- */
+  // BEFORE ANYTHING ELSE. Above the error and loading states on purpose: those
+  // can only be reached once an attempt exists, and an attempt cannot exist
+  // until this has been accepted.
+  if (!begun) {
+    return (
+      <ExamBriefing
+        awardName={awardName}
+        onBegin={() => setBegun(true)}
+        onBack={() => navigation.goBack()}
+      />
+    );
+  }
+
   if (startError) {
     // Only the transient codes get a retry. A lockout, an already-earned
     // credential or an incomplete award are STATES, not failures — offering
