@@ -50,7 +50,11 @@ registerHooks({
       return {
         format: 'module',
         shortCircuit: true,
-        source: 'export const supabase = { rpc: (fn) => globalThis.__apeTenureRpc(fn) };',
+        source:
+          'export const supabase = {' +
+          '  auth: { getSession: async () => globalThis.__apeTenureSession() },' +
+          '  rpc: (fn, args) => globalThis.__apeTenureRpc(fn, args),' +
+          '};',
       };
     }
     return next(url, context);
@@ -59,9 +63,14 @@ registerHooks({
 
 const { readTenureState } = await import('../src/features/finalExam/tenure.ts');
 
-type Rpc = (fn: string) => Promise<{ data: unknown; error: unknown }>;
-function withRpc(impl: Rpc): void {
+type Rpc = (fn: string, args?: unknown) => Promise<{ data: unknown; error: unknown }>;
+
+/** A signed-in session by default; the no-session case is tested explicitly. */
+function withRpc(impl: Rpc, session: unknown = { session: { user: { id: 'auth-uid-1' } } }): void {
   (globalThis as unknown as { __apeTenureRpc: Rpc }).__apeTenureRpc = impl;
+  (globalThis as unknown as { __apeTenureSession: () => unknown }).__apeTenureSession = () => ({
+    data: session,
+  });
 }
 
 describe('readTenureState — the answer the briefing is built on', () => {
@@ -107,6 +116,27 @@ describe("what it does when it cannot know — the state that must not be collap
       withRpc(async () => ({ data, error: null }));
       assert.equal(await readTenureState(), 'unknown', `${JSON.stringify(data)} should be unknown`);
     }
+  });
+});
+
+describe('the argument it passes', () => {
+  it('sends the AUTH id as p_uid', async () => {
+    // The deployed signature resolves identity by joining
+    // `users u on u.auth_id = p_uid`, because entitlements.user_id is
+    // users.id and NOT the auth id. Calling it with no argument — which the
+    // first version did — fails forever and lands silently in 'unknown'.
+    let seen: unknown = undefined;
+    withRpc(async (_fn, args) => {
+      seen = args;
+      return { data: true, error: null };
+    });
+    await readTenureState();
+    assert.deepEqual(seen, { p_uid: 'auth-uid-1' });
+  });
+
+  it('a guest has no tenure to read, and is not accused of failing the rule', async () => {
+    withRpc(async () => ({ data: false, error: null }), { session: null });
+    assert.equal(await readTenureState(), 'unknown');
   });
 });
 

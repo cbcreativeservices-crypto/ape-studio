@@ -19,9 +19,9 @@
  * ── WHY THIS RETURNS 'unknown' TODAY ─────────────────────────────────────────
  *
  * The rule cannot be evaluated yet. `entitlements` has no `member_since` and no
- * `refunded_at` column — the migration that adds them has never been applied
- * (verified against production 2026-09-18) — so `member_month_complete` either
- * does not exist or cannot answer.
+ * `refunded_at` column — `supabase/migrations/2026091801_paid_month_before_credential.sql`
+ * adds them and has never been applied (verified against production
+ * 2026-09-18) — so `member_month_complete` does not exist to be called.
  *
  * That is a real state and it is neither 'yes' nor 'no', so it is its own value.
  * Guessing either way is worse than admitting it:
@@ -58,7 +58,26 @@ export type TenureState =
  */
 export async function readTenureState(): Promise<TenureState> {
   try {
-    const { data, error } = await supabase.rpc('member_month_complete');
+    // THE ARGUMENT IS THE AUTH ID, AND IT IS NOT OPTIONAL (corrected 2026-09-18).
+    //
+    // The deployed signature is `member_month_complete(p_uid uuid)` and it
+    // resolves identity by joining `users u on u.auth_id = p_uid`, because
+    // `entitlements.user_id` is `public.users.id` and NOT the auth id
+    // (validate-purchase/index.ts:213 makes that explicit).
+    //
+    // My first version called it with no argument and would have failed
+    // forever — landing in 'unknown', which is safe but silently permanent.
+    // Worse, my first draft of the migration defined it against `auth.uid()`
+    // directly, which would have matched nothing and told every member their
+    // month was incomplete.
+    const { data: sess } = await supabase.auth.getSession();
+    const authUid = sess.session?.user?.id ?? null;
+    // No session is not a failure to read tenure — it is a guest, who has none.
+    // Still 'unknown' rather than 'incomplete': the briefing should state the
+    // policy, not accuse someone who is not a member of failing it.
+    if (!authUid) return 'unknown';
+
+    const { data, error } = await supabase.rpc('member_month_complete', { p_uid: authUid });
     if (error) {
       const fault = classifyGatewayError(error);
       if (fault === 'not-deployed') {
