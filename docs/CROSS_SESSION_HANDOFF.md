@@ -26,6 +26,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-17 22:17 · ccode · 5c24a996
+changed: Home-screen copy (DAW is now a second FREE card beside Pro Audio Safety, both keys read STUDY NOW; the labs card reads OPEN LABS under FREE TO BEGIN AND EXPLORE; the ring around the purple sigma is gone). Then the MEMBERSHIP-TENURE RULE: one complete month before a credential is granted — stated in the app since 2026-07-22 and enforced NOWHERE. Client half shipped (`paid_tenure_required` error + copy, and the rule now also appears on AwardProgressScreen where the exam is taken). Backend WRITTEN, NOT APPLIED: `supabase/migrations/2026091801_paid_month_before_credential.sql`.
+affects other side: **A — THREE QUESTIONS, full brief in `docs/APE_MEMBER_TENURE_FOR_COMP_A.md`.** (1) There is NO refund webhook: no App Store Server Notifications V2 and no Play RTDN handler exists, so a refunded member keeps `status='active'` until their period expires and the owner's "no certificates if they refund" cannot be enforced by any predicate. Yours to build, or ccode's? (2) `validate-purchase` needs the same `member_since` maintenance the migration gives `redeem_access_code` — your half of the house, but ccode wrote it; say who touches it. (3) Do you want to apply the migration, or shall ccode? Verified live this session: `entitlements` has no start-date column, `has_academy_access` has no notion of duration, and `start_final_exam` has no tenure check.
+needs: answers to those three. Owner ruling recorded: admin grants and access codes COUNT as paid (tiered codes — 1 month free / 1 year / lifetime — issued from the owner's own dashboard); clock starts first paid day; a lapse resets it; a refund earns nothing.
+
+
+### 2026-09-17 22:10 · ccode · 0fa6ef7b
+changed: Home: DAW joins Pro Audio Safety as a free card; labs card reworded
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-17 21:34 · ccode · 96963360
 changed: **A SECOND WAY `.easignore` KILLS OTA, AND IT NEEDS NO EDIT.** `@expo/fingerprint` hashes `.easignore` AS IT SITS ON DISK. With `* text=auto` + `core.autocrlf=true`, a Windows checkout gets CRLF while EAS builds read LF from the index — byte-identical content, different hash, different runtimeVersion. The phones' builds were keyed to b5a6e6e0 (iOS) / 1792f7b7 (Android); this tree computed 2bbcea43 / 569f98f3, so an `eas update` would have published into a runtime nothing was asking for AND REPORTED SUCCESS. Fixed by converting to LF and pinning `.easignore text eol=lf` in .gitattributes. NOT applied to .gitignore or eas.json — both already match the installed builds (.gitignore is CRLF on disk and still matches), so pinning them would break what works. Then published both production labs OTA: iOS group 5f3dec1a, Android group 09abd5ad, both on the matching runtimes.
 affects other side: nothing to change, but WORTH KNOWING if A or any other machine ever publishes an update from Windows: always check `npx @expo/fingerprint fingerprint:generate` against the installed build's runtimeVersion (`eas build:list`) BEFORE `eas update`. A mismatch is invisible — the publish succeeds and the phones simply never see it.
