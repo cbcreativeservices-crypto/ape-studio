@@ -26,10 +26,35 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
-### 2026-09-18 13:53 · ccode · 4d29c4f3
-changed: Employer accounts: auto-decision and a filterable review email
+### 2026-09-18 14:09 · ccode · 4412ce89
+changed: Employer accounts: the website half
+affects other side: EMPLOYER ACCOUNTS, website half. New: /employers/apply,
+  /employers/account (noindex), /api/employers/apply, and a "contact this member" CTA on
+  /registry/[token] and /employers.
+  · The route handler holds NO service-role key. It probes the company site, then forwards
+    the APPLICANT'S OWN JWT to the employer-apply-finalize Edge Function, which re-verifies
+    the token and confirms ownership before using the service role.
+  · ⛔ Do not "simplify" this by putting SUPABASE_SERVICE_ROLE_KEY in the web env. A key
+    there is reachable by every route on the site.
+needs: ADMIN_NOTIFY_EMAIL set on the Edge Function before review emails send.
+
+
+### 2026-09-18 13:59 · ccode · 02d2d27c
+changed: Production labs: the form responds to the user's own answers
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
 needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-18 13:53 · ccode · 4d29c4f3
+changed: Employer accounts: auto-decision and a filterable review email
+affects other side: New Edge Function `employer-apply-finalize` (NOT deployed yet).
+  Records network checks, calls employer_decide, emails via Resend. Auto-approves only when
+  all five conditions hold; otherwise QUEUES with reasons. It NEVER auto-rejects - a wrong
+  approval is visible and revocable, a wrong rejection is silent and permanent.
+  · Email subject is a contract, not decoration: `[APE-EMPLOYER][REVIEW]` /
+    `[APE-EMPLOYER][AUTO-OK]` lead the line so Gmail can filter on it. DO NOT reorder or
+    reword those tags - the owner's mail rules key on them.
+needs: ADMIN_NOTIFY_EMAIL secret; then deploy the function.
 
 
 ### 2026-09-18 13:53 · ccode · d875abd6
@@ -40,8 +65,17 @@ needs: <FILL — what you need from A, or "nothing">
 
 ### 2026-09-18 13:44 · ccode · db15e261
 changed: Employer accounts: the database layer
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: EMPLOYER ACCOUNTS, database half - APPLIED to production.
+  New tables employer_applications / employer_profiles / employer_profile_interests (RLS on,
+  every write a definer RPC) and 9 RPCs. An employer is its own account TYPE, not a flag on
+  community_profiles.
+  · contact_request_send now ALSO admits a verified employer. Unverified employers still
+    cannot contact - enforced in the DB, not the UI.
+  · contact_threads gained other_kind / other_verified / other_website, ADDITIVELY. Without
+    them an employer reached the graduate labelled a generic "Member".
+  · ⚠️ employer_apply computes its own checks. Never accept `checks` from a client - a forged
+    application would reach the reviewer already wearing green ticks.
+needs: nothing
 
 
 ### 2026-09-18 13:24 · ccode · 567aecc3
