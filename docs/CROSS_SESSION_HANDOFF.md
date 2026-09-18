@@ -26,6 +26,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-17 22:57 · ccode · 5d2d7c34
+changed: Fixed the detail-pager skip-and-jump between expanded certificate/program cards (the recentre was a frame late, and a slow drag could leave the pager off-centre). Then the SOUND SAFETY GATE: a once-ever, versioned acknowledgment in front of the existing per-session audio flow (safety -> explain -> hold 5s -> sound), plus a HARD CEILING on file playback. The native generator was already capped (-20 default / -12 ceiling, ape-dsp "Q4 cap chain"); FILE playback had none at all — expo-audio defaults volume to 1.0, so a normalised clip played ~20 dB hotter than the generator's default tone. Now capped at -12 dBFS with no unlock. 12 new tests, 1402 total.
+affects other side: **A — one backend item when you have a moment.** The sound-safety acknowledgment is currently DEVICE-LOCAL (AsyncStorage), so it is lost on reinstall — which is exactly when someone would want to produce it. It is an evidence artifact about a hearing-damage warning, not a preference, and it belongs in a server table keyed by user id: version, accepted_at, app_version, and the EXACT text accepted (stored verbatim, because the wording is the thing agreed to). Deliberate exception to the "contact email stays device-local" rule — different purpose. Not urgent, but it should land before launch.
+needs: that table, eventually. Nothing blocking.
+
+
+### 2026-09-17 22:50 · ccode · 661d2f03
+changed: Detail pager: fix the skip-and-jump between expanded cards
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-17 22:46 · ccode · 8e1929ad
 changed: **ccode NOW OWNS THE REFUND WEBHOOK** (owner reassigned it this session — question 1 from the tenure brief is answered, and so is question 2: ccode also patched `validate-purchase`). Built `supabase/functions/store-notifications/index.ts`, handling Apple App Store Server Notifications V2 + Google Play RTDN in one endpoint. Security model: the endpoint is public, so it treats every body as a RUMOUR — a notification is a trigger only, and the function then asks Apple/Google directly with our own authenticated call and acts on that alone. Reuses the same server APIs `validate-purchase` uses, so there is one way of establishing truth rather than two. On a confirmed refund: `status='refunded'`, `refunded_at=now()`, `member_since=NULL`. Google EXPIRED does nothing — a lapse is not a refund. Also moved the Harmonograph lab into Sound Visualization beside Cymatics (owner).
 affects other side: **A — STAND DOWN on the tenure work; it is ccode's now.** Nothing here is deployed: the production-deploy permission was declined mid-session, so the tenure migration, both edge functions and the `start_final_exam` gate are written and waiting on the owner. Runbook: `docs/APE_REFUND_WEBHOOK_DEPLOY.md`. The only thing still genuinely yours is the one-character `admin-codes` console fix (`d===30` → `d===35`) so a month code lists as "month" rather than "35d".
