@@ -45,6 +45,21 @@ function hydrate(): Promise<void> {
 void hydrate();
 
 /** Current value (sync). Triggers hydration if it hasn't happened yet. */
+/**
+ * Forget the in-memory state — the account-wipe entry point.
+ *
+ * Low-Light Production Mode is a working preference: it suppresses every
+ * auto-appearing overlay in the app, including safety notices. It survived an
+ * account switch in memory, so the next person could be handed a silenced app
+ * without ever having turned it on (2026-09-17). Re-hydrates from the (now
+ * cleared) storage on the next read, which is the correct default of OFF.
+ */
+export function resetPopupSuppression(): void {
+  suppressed = false;
+  hydrated = false;
+  hydrating = null;
+}
+
 export function arePopupsSuppressed(): boolean {
   void hydrate();
   return suppressed;

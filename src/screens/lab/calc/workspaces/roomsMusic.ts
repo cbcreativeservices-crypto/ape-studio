@@ -113,7 +113,7 @@ const WS_BPM: Workspace = {
       key: 'noteValues',
       name: 'Note values from BPM',
       inputs: ['bpm'],
-      formula: 'beat (ms) = 60000 / BPM · dotted ×1.5 · triplet ×2/3',
+      formula: 'beat (ms) = 60000 / BPM; dotted ×1.5; triplet ×2/3',
       plainFormula:
         'The beat in milliseconds equals 60000 divided by the tempo; a dotted value is 1.5 times its straight length, and a triplet is two-thirds.',
       explain:

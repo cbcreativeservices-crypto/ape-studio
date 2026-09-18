@@ -90,8 +90,8 @@ export const QUIZ_START_ERROR_COPY: Record<QuizStartError, string> = {
   topic_locked: 'This topic is locked.',
   not_enrolled: 'You are not enrolled in this course.',
   version_mismatch: 'Course content was updated — return to the Dashboard.',
-  pool_too_small: 'Quiz unavailable for this topic — report this to your professor.',
-  user_not_found: 'Account not linked to a student record — report this to your professor.',
+  pool_too_small: 'This quiz is not available yet — please contact support so we can look at it.',
+  user_not_found: 'We could not find your account record. Sign out and back in, and contact support if it continues.',
   offline: 'Quiz start requires a connection. Reconnect and try again.',
   unknown: 'Could not start the quiz. Try again.',
 };

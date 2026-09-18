@@ -970,7 +970,7 @@ const WS_QBW: Workspace = {
       key: 'paramReach',
       name: 'Parametric band reach',
       inputs: ['fc', 'q', 'gain'],
-      formula: 'f1–f2 from fc & Q · audibility widens with |gain|',
+      formula: 'f1–f2 from fc & Q; audibility widens with |gain|',
       plainFormula:
         'The affected range runs from the lower edge to the upper edge set by the center frequency and Q; the audible reach widens as the absolute gain grows.',
       explain:

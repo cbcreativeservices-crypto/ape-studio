@@ -105,9 +105,9 @@ export const EXAM_START_ERROR_COPY: Record<ExamStartError, string> = {
   award_incomplete: 'Complete every required topic and the Audio Fundamentals labs before taking the Final Exam.',
   award_not_found: 'That award could not be found.',
   invalid_award_type: 'That award type is not recognized.',
-  pool_too_small: 'Final Exam unavailable for this award — report this to your professor.',
+  pool_too_small: 'This Final Exam is not available yet — please contact support so we can look at it.',
   under_lockout: 'This Final Exam is locked out after a voided attempt. Try again when the lockout ends.',
-  user_not_found: 'Account not linked to a student record — report this to your professor.',
+  user_not_found: 'We could not find your account record. Sign out and back in, and contact support if it continues.',
   offline: 'Starting the Final Exam requires a connection. Reconnect and try again.',
   unknown: 'Could not start the Final Exam. Try again.',
 };

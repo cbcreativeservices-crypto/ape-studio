@@ -145,7 +145,7 @@ const LINEARRAY: Workspace = {
       key: 'directivity',
       name: 'Directivity control from array length',
       inputs: ['arrayLen', 'temp'],
-      formula: 'onset ≈ c/L · tight control ≈ 2c/L',
+      formula: 'onset ≈ c/L; tight control ≈ 2c/L',
       plainFormula:
         'Directivity control begins around the speed of sound divided by the array length, and becomes tight around twice that.',
       explain:
@@ -196,7 +196,7 @@ const LINEARRAY: Workspace = {
       key: 'distanceLoss',
       name: 'Point vs line-source distance loss',
       inputs: ['splRef', 'refDist', 'farDist'],
-      formula: 'point: −20·log₁₀(r₂/r₁) · line (near field): −10·log₁₀(r₂/r₁)',
+      formula: 'point: −20·log₁₀(r₂/r₁); line (near field): −10·log₁₀(r₂/r₁)',
       plainFormula:
         'A point source loses twenty times the base-ten log of the distance ratio; a line source in its near field loses only ten times that log.',
       explain:

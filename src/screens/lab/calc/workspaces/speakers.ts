@@ -736,7 +736,7 @@ const WS_CV70: Workspace = {
       key: 'load',
       name: 'System load, amp fit, and line current',
       inputs: ['taps', 'prated', 'vline', 'hr'],
-      formula: 'load = Σtaps · amp ≥ Σtaps × 10^(headroom/10); I = Σtaps / Vline',
+      formula: 'load = Σtaps; amp ≥ Σtaps × 10^(headroom/10); I = Σtaps / Vline',
       plainFormula:
         'The line load equals the sum of the tap settings; the recommended amplifier is at least that sum times ten raised to the headroom over ten; the line current is the load divided by the line voltage.',
       explain:

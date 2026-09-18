@@ -563,6 +563,22 @@ const MEMBER_ONLY_EXTRA_ROUTES: Record<string, string> = {
   ProductionLab: 'Production Labs',
   ProductionStage: 'Production Labs',
   ProductionActivity: 'Production Labs',
+  // ── THE SAME SHAPE, FOUND BY THE PASS-4 VERIFIER ────────────────────
+  //
+  // Eight more routes sit inside or behind a paid lab and were equally invisible
+  // to the catalog. None is reachable today — none appears in `linking.ts`,
+  // `isClaimedPath` rejects them, and there is no navigation-state persistence —
+  // so this is not a live hole. It is the identical CONFIGURATION that produced
+  // the one that was live, and the whole lesson of that bug is that the gap
+  // between "not currently reachable" and "gated" is one commit.
+  DigitalModule: 'Digital Audio Lab',
+  EqModule: 'EQ Lab',
+  GainModule: 'Gain Staging Lab',
+  EarModule: 'Ear Training Lab',
+  AmpModule: 'Amplifier Lab',
+  TubeReference: 'Tube Reference',
+  TubeCard: 'Tube Reference',
+  DeEsserLab: 'De-Esser & Sibilance Control',
 };
 
 /** True when EVERY catalog appearance of this screen route is members-only —

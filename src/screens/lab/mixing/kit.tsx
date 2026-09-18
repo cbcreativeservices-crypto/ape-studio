@@ -56,6 +56,23 @@ void AsyncStorage.getItem(FOCAL_KEY)
 
 /** The song's declared focal point — a COMMITMENT, not a correct answer.
  *  Persisted so later pages (static-mix anchor) can honour it. */
+/**
+ * Forget both Mixing-lab commitments — the account-wipe entry point.
+ *
+ * `focalCurrent` and `prioritiesCurrent` are the LEARNER'S OWN decisions: the
+ * focal point they chose on page 1 and the mix priorities they committed to on
+ * page 2, both echoed back to them later in the lab as "what you said". They
+ * are module-level, so the stored keys were swept on an account change and the
+ * values were not — and the next person was shown a stranger's answers as their
+ * own (2026-09-17, caught by the registry test rather than by eye).
+ */
+export function resetMixingCommitments(): void {
+  focalCurrent = null;
+  prioritiesCurrent = [];
+  focalListeners.forEach((l) => l());
+  prioritiesListeners.forEach((l) => l());
+}
+
 export function useFocalChoice(): [string | null, (id: string) => void] {
   const [, force] = useState(0);
   useEffect(() => {

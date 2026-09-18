@@ -289,6 +289,31 @@ export function cancelTimeTrial(method: PaceMethodKey): void {
   dismissTimeTrial(method);
 }
 
+/**
+ * Drop EVERY method's trial — the account-wipe entry point.
+ *
+ * ── A RUNNING TRIAL OUTLIVED THE USER WHO STARTED IT (2026-09-17) ────────
+ *
+ * This module keeps its state in module-level Maps and holds live intervals, and
+ * it was not in `clearLocalAccountData`'s reset registry. So a trial started by
+ * user A kept ticking through a sign-out and fired `credit_time_trial` under
+ * whoever signed in next — crediting study work to the wrong account, which is
+ * the one thing the registry exists to prevent. `cancelTimeTrial` was written
+ * for exactly this hazard and had no callers at all.
+ *
+ * Clearing the timers is the part that matters: the Maps alone would be
+ * harmless, but an armed interval is not.
+ */
+export function resetTimeTrials(): void {
+  for (const method of [...timers.keys()]) clearTimer(method);
+  states.clear();
+  snapshots.clear();
+  timers.clear();
+  // Listeners are the mounted screens' own subscriptions and are not ours to
+  // drop; emitting lets each re-read the (now idle) state.
+  for (const set of listeners.values()) set.forEach((l) => l());
+}
+
 /** True when a method has a trial running OR a result still on screen. */
 export function isTimeTrialLive(method: PaceMethodKey): boolean {
   const st = getState(method);

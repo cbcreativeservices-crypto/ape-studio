@@ -87,6 +87,8 @@ const MAX_SYNC_RETRIES = 4;
  * enrollment master list".
  */
 let reconciled = false;
+/** True only when the server's list was actually READ. */
+let reconcileConfirmed = false;
 
 /** Is the local list still the untouched new-device default? */
 function isPristineSeed(l: EnrollTopic[]): boolean {
@@ -107,31 +109,45 @@ function isPristineSeed(l: EnrollTopic[]): boolean {
  * seed. Anyone who has actually edited their enrollments on this phone is
  * holding the phone, and their intent wins.
  */
-async function reconcileFromServer(): Promise<void> {
-  if (reconciled) return;
-  reconciled = true; // one attempt per identity; resetLocal clears it
+async function reconcileFromServer(): Promise<boolean> {
+  if (reconciled) return reconcileConfirmed;
   try {
     const { data, error } = await supabase
       .from('user_topic_enrollments')
       .select('gs, favorite, active, position')
       .order('position', { ascending: true });
     if (error) {
-      // No read path (or an outage). Say so once rather than silently — if this
-      // is a missing grant, it is worth someone seeing.
       console.warn('[enrollment] could not read the server list:', error.message);
-      return;
+      return false;
     }
     const rows = (data ?? []) as { gs: number; favorite: boolean | null; active: boolean | null }[];
-    if (rows.length === 0) return; // the server has nothing to teach us
-    if (!isPristineSeed(list)) return; // the user has edited this device's list
+    // ZERO ROWS IS NOT AN ANSWER (corrected 2026-09-17 by a verification pass).
+    //
+    // `user_topic_enrollments` is in the deny-all RLS set, and the repo's own
+    // security review records that a direct client select on it returns ZERO
+    // ROWS RATHER THAN AN ERROR. So the first version of this treated a denial
+    // as "the server has nothing to teach us", returned, and let the push
+    // proceed — which is the exact overwrite it was written to prevent.
+    //
+    // An empty result is therefore indistinguishable from a denial, and both are
+    // treated as NOT CONFIRMED. Only rows we actually read count.
+    if (rows.length === 0) return false;
+    reconcileConfirmed = true;
+    if (!isPristineSeed(list)) return true; // the user has edited this device's list
 
     list = rows
       .filter((r) => typeof r.gs === 'number')
       .map((r) => ({ gs: r.gs, favorite: !!r.favorite, active: r.active !== false }));
     persist();
     emit();
+    return true;
   } catch (e) {
     console.warn('[enrollment] server list read threw:', (e as Error)?.message);
+    return false;
+  } finally {
+    // Latched only AFTER the attempt, so a throw on the way in does not disable
+    // the pull for the rest of the run.
+    reconciled = true;
   }
 }
 function scheduleServerSync(delayMs = 800) {
@@ -143,9 +159,22 @@ function scheduleServerSync(delayMs = 800) {
         // Guests (incl. an anonymous device key) keep enrollment device-local:
         // syncing would write a master list for a uid deleted within the week.
         if (!isRealAccount(data.session)) return;
-        // PULL BEFORE PUSH. Without this the first sync after a reinstall
-        // overwrites the master list with a two-topic seed — see reconciled.
-        await reconcileFromServer();
+        // PULL BEFORE PUSH — AND DO NOT PUSH IF THE PULL FAILED.
+        //
+        // The first version awaited this and pushed regardless, which left the
+        // destructive half of the bug completely intact: on a device that cannot
+        // read the list (which, given the deny-all RLS, is every device today) a
+        // reinstall still overwrote a member's master list with the two-topic
+        // seed, and the backend gates v3 study and quizzes on that list.
+        //
+        // So the rule is now: a list we have not confirmed is a list we do not
+        // overwrite with a default. A user who has actually chosen topics on
+        // this device still syncs normally — that is a real edit, not a seed.
+        const confirmed = await reconcileFromServer();
+        if (!confirmed && isPristineSeed(list)) {
+          console.warn('[enrollment] server list unconfirmed and this device holds only the default seed — not pushing');
+          return;
+        }
         // supabase-js RESOLVES with { error } — the old dead catch never saw RPC
         // errors, so a failed FINAL sync left the server master list stale with
         // no retry until the user next edited enrollment (backend gates v3
@@ -339,6 +368,7 @@ export function resetLocal(): void {
   // The next identity must reconcile against ITS OWN server list, not inherit
   // the departing user's "already checked".
   reconciled = false;
+  reconcileConfirmed = false;
   list = [];
   hydrated = false;
   hydrating = null;

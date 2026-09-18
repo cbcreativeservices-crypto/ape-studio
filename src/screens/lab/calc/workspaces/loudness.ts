@@ -152,7 +152,7 @@ const LOUDTP: Workspace = {
       key: 'loudnessDelta',
       name: 'Loudness difference & perceived ratio',
       inputs: ['lufsA', 'lufsB'],
-      formula: 'ΔLU = A − B · perceived ≈ 2^(ΔLU/10)',
+      formula: 'ΔLU = A − B; perceived ≈ 2^(ΔLU/10)',
       plainFormula:
         'The loudness difference in LU equals A minus B; the perceived loudness ratio is about two raised to that difference divided by ten.',
       explain:

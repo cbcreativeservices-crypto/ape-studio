@@ -48,6 +48,19 @@ export async function setAskMode(cap: CapabilityKey, mode: AskMode): Promise<voi
   }
 }
 
+/**
+ * Forget the in-memory cache only — the account-wipe entry point.
+ *
+ * The stored keys are under `ape:` and the sweep deletes them, but `cache` is a
+ * module-level object that survives it, so the NEXT person on this device
+ * inherited the departing user's "never ask me again" for the camera,
+ * microphone, photos and location (2026-09-17). Those are consent decisions;
+ * they belong to a person, not to a handset.
+ */
+export function resetAskModeCache(): void {
+  for (const c of Object.keys(cache) as CapabilityKey[]) delete cache[c];
+}
+
 /** Settings "Reset permission prompts" — clears every remembered choice so the
  *  explainer shows again (the OS grant itself is untouched). */
 export async function resetAskModes(): Promise<void> {

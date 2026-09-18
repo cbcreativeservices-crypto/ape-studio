@@ -39,6 +39,11 @@ import { setChainValue } from '../../screens/lab/calc/chainStore';
 import { resetLocal as resetDetectiveSolved } from '../../screens/lab/meter/modules/modMeterC';
 import { resetLocal as resetCareerFinderStore } from '../careerfinder/store';
 import { resetSoundSafetyAck } from '../audio/soundSafetyAck';
+import { resetTimeTrials } from '../study/timeTrial';
+import { resetAskModeCache } from '../permissions/permissionStore';
+import { resetPopupSuppression } from '../dev/popupSuppressStore';
+import { resetLowLight } from '../settings/lowLight';
+import { resetMixingCommitments } from '../../screens/lab/mixing/kit';
 import { resetCelebrationsSeen } from '../celebration/celebrationSeen';
 
 /**
@@ -173,6 +178,26 @@ export function resetAllLocalStores(): void {
   // is not - so the NEXT person on this phone got sound with no warning, and no
   // acceptance record of their own was ever written. This is the safety gate;
   // it is the one entry here that must never be missed.
+  // A LIVE TIMER, not just a cache (2026-09-17). A time trial started by the
+  // departing user kept ticking through the sign-out and fired
+  // `credit_time_trial` under whoever arrived next — study credit written to the
+  // wrong account, which is the exact failure this registry exists to prevent.
+  resetTimeTrials();
+  // Consent decisions belong to a PERSON, not a handset: the departing user's
+  // "never ask me again" for the camera, mic, photos or location was inherited
+  // by the next account (2026-09-17).
+  resetAskModeCache();
+  // Low-Light Production Mode silences every auto-appearing overlay in the app,
+  // safety notices included. The next person must not be handed a silenced app
+  // they never switched on.
+  resetPopupSuppression();
+  // The dim-and-silence mode itself, which is a different module from the
+  // overlay suppression above and was missed for the same reason.
+  resetLowLight();
+  // The Mixing labs echo the learner's own focal point and mix priorities back
+  // at them later in the lab. Left in memory, the next person was shown a
+  // stranger's answers as their own.
+  resetMixingCommitments();
   resetSoundSafetyAck();
   // The "already celebrated" set is the departing user's. Left in memory it was
   // re-persisted under the new account, and the next member lost the

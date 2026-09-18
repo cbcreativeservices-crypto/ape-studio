@@ -64,7 +64,10 @@ export type RegisterErrorCode =
  * that code to the "not found" message (it names the recovery path: professor).
  */
 export const REGISTER_ERROR_COPY: Record<RegisterErrorCode, string> = {
-  student_not_found_or_registered: 'ID or code not found. Check with your professor.',
+  // COMMERCIAL WORDING (2026-09-17). The institutional mode is retired and
+  // these are paying customers with no professor to check with — a support
+  // route they do not have reads as the app not knowing who they are.
+  student_not_found_or_registered: 'That ID or code was not found. Check it and try again, or contact support.',
   code_invalid_or_used: 'Registration code is incorrect or already used.',
   not_authenticated: 'Something went wrong. Please try again.',
   internal_error: 'Something went wrong. Please try again.',
@@ -98,7 +101,7 @@ export async function ensureSession(email: string, password: string): Promise<st
   if (!error) {
     if (data.session) return null;
     console.warn('[auth] signUp returned no session — email confirmation appears ENABLED (model-A violation).');
-    return 'Account created but sign-in is blocked by email confirmation. Report this to your professor.';
+    return 'Your account was created, but sign-in needs email confirmation first. Check your inbox, then sign in — or contact support if nothing arrives.';
   }
 
   // Email already registered → try signing in with the provided credentials.

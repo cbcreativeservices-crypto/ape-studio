@@ -441,6 +441,20 @@ export function FinalExamScreen({ navigation, route }: Props) {
               }}
             />
           )}
+          {/* A WALL NEEDS A DOOR (2026-09-17, bug-hunt pass 3). The membership
+              refusal told the learner they need a membership and then offered
+              only Back — on the capstone of a credential they have worked
+              through, which is the single best moment in the app to offer the
+              thing that unlocks it. MembershipGateHost already does this
+              properly elsewhere; this screen was the one that did not. */}
+          {startErrorCode === 'academy_required' && (
+            <StudioButton
+              label="See membership plans"
+              variant="primary"
+              small
+              onPress={() => (navigation as any).navigate('Paywall')}
+            />
+          )}
           <StudioButton label="Back" variant="secondary" small onPress={() => navigation.goBack()} />
         </View>
       </View>

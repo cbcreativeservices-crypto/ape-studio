@@ -47,6 +47,24 @@ export function getLowLight(): boolean {
   return on;
 }
 
+/**
+ * Forget the mode — the account-wipe entry point.
+ *
+ * Low-Light Production Mode dims the app and suppresses every auto-appearing
+ * overlay in it, safety notices included. `on` is module state and the stored
+ * key is swept, so without this the next person on the device inherited a
+ * silenced, dimmed app they never switched on and could not obviously explain
+ * (2026-09-17). Re-hydrates to the correct new-user default of OFF.
+ */
+export function resetLowLight(): void {
+  on = false;
+  touchedAt = 0;
+  hydrated = false;
+  gatePending = false;
+  tapTimes = [];
+  emit();
+}
+
 async function hydrate(): Promise<void> {
   if (hydrated) return;
   try {

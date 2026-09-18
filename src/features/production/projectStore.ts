@@ -170,18 +170,50 @@ export function createProjectStore(kv: KeyValueStore): ProjectStore {
   const list = (lab: LabKind) => loadList(kv, PROJECT_KEYS[lab]);
   const write = (lab: LabKind, l: ProductionProject[]) => saveList(kv, PROJECT_KEYS[lab], l);
 
-  async function mutate(
+  /**
+   * Every mutation of a lab's list runs strictly after the previous one.
+   *
+   * ── A LOST-UPDATE RACE ON EVERY KEYSTROKE (2026-09-17, bug-hunt pass 4) ───
+   *
+   * `mutate` is a read-modify-write of the WHOLE project list, and the stage
+   * screen calls it from `onChangeText` — once per character. Three keystrokes
+   * in flight all read the same pre-write snapshot and the last `setItem` wins,
+   * so characters vanished as they were typed (the screen is controlled from the
+   * snapshot the store returns) and, across fields, a finished answer was simply
+   * dropped from storage.
+   *
+   * That is worse than the failed-write case fixed earlier the same day, because
+   * nothing fails: `saved` comes back non-null, the banner stays quiet, and the
+   * readiness meter and the exported client packet are computed from a file that
+   * is missing an answer the user watched themselves give.
+   *
+   * Serialising is the whole fix. These writes are small, per-lab and already
+   * asynchronous, so a queue costs nothing a user can perceive — and it makes
+   * the read-modify-write atomic with respect to every other mutation, which is
+   * the property the code always assumed it had.
+   */
+  const queues: Partial<Record<LabKind, Promise<unknown>>> = {};
+  function serialize<T>(lab: LabKind, job: () => Promise<T>): Promise<T> {
+    // A failed job must not poison the chain for every later one.
+    const run = (queues[lab] ?? Promise.resolve()).then(job, job);
+    queues[lab] = run.catch(() => undefined);
+    return run;
+  }
+
+  function mutate(
     lab: LabKind,
     id: string,
     fn: (p: ProductionProject) => ProductionProject,
   ): Promise<ProductionProject | null> {
-    const all = await list(lab);
-    const i = all.findIndex((p) => p.id === id);
-    if (i < 0) return null;
-    const next = { ...fn(all[i]), updatedAt: Date.now() };
-    all[i] = next;
-    const ok = await write(lab, all);
-    return ok ? next : null;
+    return serialize(lab, async () => {
+      const all = await list(lab);
+      const i = all.findIndex((p) => p.id === id);
+      if (i < 0) return null;
+      const next = { ...fn(all[i]), updatedAt: Date.now() };
+      all[i] = next;
+      const ok = await write(lab, all);
+      return ok ? next : null;
+    });
   }
 
   return {
@@ -189,13 +221,17 @@ export function createProjectStore(kv: KeyValueStore): ProjectStore {
     async get(lab, id) {
       return (await list(lab)).find((p) => p.id === id) ?? null;
     },
-    async upsert(p) {
-      const all = await list(p.lab);
-      const i = all.findIndex((x) => x.id === p.id);
-      const row = { ...p, updatedAt: Date.now() };
-      if (i >= 0) all[i] = row;
-      else all.unshift(row);
-      return write(p.lab, all);
+    upsert(p) {
+      // Same queue as `mutate`: an upsert racing a keystroke would drop whichever
+      // read the older snapshot.
+      return serialize(p.lab, async () => {
+        const all = await list(p.lab);
+        const i = all.findIndex((x) => x.id === p.id);
+        const row = { ...p, updatedAt: Date.now() };
+        if (i >= 0) all[i] = row;
+        else all.unshift(row);
+        return write(p.lab, all);
+      });
     },
     async remove(lab, id) {
       return write(lab, (await list(lab)).filter((p) => p.id !== id));

@@ -513,7 +513,13 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
       refreshEntitlement,
       tierKnown,
     }),
-    [commercialMode, entitlement, resolved, setCommercialMode, setEntitlement, refreshEntitlement],
+    // `tierKnown` MUST be here (2026-09-17). It was added to the value and not to
+    // the deps, so `setTierKnown(true)` re-rendered but handed consumers the
+    // cached object with tierKnown still false. Masked whenever `resolved` or
+    // `entitlement` flips in the same batch — and NOT masked on the
+    // getSession()-rejects path this file documents, where it stuck false for the
+    // whole run and Settings showed CHECKING… forever.
+    [commercialMode, entitlement, resolved, tierKnown, setCommercialMode, setEntitlement, refreshEntitlement],
   );
 
   return <EntitlementContext.Provider value={value}>{children}</EntitlementContext.Provider>;

@@ -453,9 +453,30 @@ function NumberField({
         style={[styles.input, styles.flex]}
         value={draft ?? committed}
         onChangeText={(t) => {
+          // A COMMA IS NOT NOISE (2026-09-17, bug-hunt pass 4).
+          //
+          // This stripped every non-digit before looking at it, so a comma just
+          // VANISHED: "1,5" — one and a half, to most of the world, and typed on
+          // a keypad that puts a comma right there — was committed as 15. A
+          // tenfold error, made on the keystroke, across 45 fields, and carried
+          // into the client-facing packet. "12,000" became 12000, which is
+          // right by luck rather than by rule.
+          //
+          // A comma between digits is now a decimal point when nothing else in
+          // the field is, and a grouping separator when it is followed by three
+          // digits. Ambiguity resolves towards the decimal reading, because a
+          // grouping separator is cosmetic and a decimal point is not.
+          let t2 = t;
+          if (t2.includes(',') && !t2.includes('.')) {
+            t2 = /(^|\D)\d{1,3}(,\d{3})+(\D|$)/.test(t2)
+              ? t2.replace(/,/g, '') // 12,000 → 12000
+              : t2.replace(',', '.'); // 1,5 → 1.5
+          } else {
+            t2 = t2.replace(/,/g, ''); // a comma beside a point is grouping
+          }
           // One optional leading sign, digits, at most one point. Anything else
           // the keyboard or a paste produces is simply not accepted.
-          let cleaned = t.replace(/[^0-9.\-]/g, '');
+          let cleaned = t2.replace(/[^0-9.\-]/g, '');
           cleaned = (cleaned.startsWith('-') ? '-' : '') + cleaned.replace(/-/g, '');
           const firstDot = cleaned.indexOf('.');
           if (firstDot >= 0) {
