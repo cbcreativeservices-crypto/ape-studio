@@ -40,3 +40,20 @@
 *.wasm           binary
 *.keystore       binary
 *.jks            binary
+
+# ── EAS fingerprint inputs ───────────────────────────────────────────────────
+# `.easignore` is fingerprint source #1 (reason `easBuild`), and @expo/fingerprint
+# hashes it AS IT SITS ON DISK. With `* text=auto` and core.autocrlf=true, a
+# Windows checkout gets CRLF while the EAS build machine sees the LF version from
+# the index — so the two compute DIFFERENT runtimeVersions, and an `eas update`
+# published from Windows lands on a runtime no installed build is asking for.
+# It fails silently: the publish succeeds and the phones never see it.
+#
+# Found 2026-09-17 while publishing the production labs: the iPhone's build was
+# keyed to `.easignore` @ c2666b4a (LF) and the working copy hashed 9fdb1aa7
+# (CRLF, byte-identical otherwise).
+#
+# ONLY .easignore is pinned. `.gitignore` and `eas.json` already agree with the
+# installed builds as they are — .gitignore is CRLF on disk and still matches —
+# so forcing them to LF would break the thing this rule exists to protect.
+.easignore       text eol=lf
