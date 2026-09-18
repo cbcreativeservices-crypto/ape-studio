@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 14:53 · ccode · aacde5bd
+changed: Cymatics: draw the other three systems; production: make "not applicable" look tappable
+affects other side: nothing. Client-only — RN-SVG drawings plus one style/a11y change in the production form. No schema, no RPC, no native dep. OTA-safe.
+needs: nothing.
+
+
 ### 2026-09-18 14:41 · ccode · 86967bdf
 changed: web: close the temporary unlock window — gate locked
 affects other side: nothing. Website gate is LOCKED again and verified live (401, key screen up).
