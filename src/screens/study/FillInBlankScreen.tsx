@@ -321,6 +321,12 @@ export function FillInBlankScreen({ navigation, route }: Props) {
         // so a completed topic doesn't keep cycling cards on every tap.
         if (displayPctRef.current >= 100) return;
         setQIdx((i) => i + 1);
+        // A11Y (2026-09-18, pass 5 · §3.2): the verdict above is announced and
+        // then the whole question changes in silence — new sentence, four new
+        // cells — with focus still sitting on a grid POSITION that now belongs
+        // to a different question. Say that it moved; the sibling QuizScreen
+        // one directory away already did.
+        AccessibilityInfo.announceForAccessibility('Next question.');
       }, FEEDBACK_MS);
     },
     [question, picked],

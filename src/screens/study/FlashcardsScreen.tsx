@@ -1705,7 +1705,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                       onError={() => setBadImages((prev) => new Set(prev).add(card.id))}
                     />
                   ) : null}
-                  <Text style={styles.fsTermSmall}>{card.term}</Text>
+                  <Text accessibilityRole="header" style={styles.fsTermSmall}>{card.term}</Text>
                   {enabledLevels.map((lvl) => (
                     <View key={lvl} style={styles.fsSheetSection}>
                       <Text style={styles.linkedEyebrow}>{LEVEL_LABELS[lvl - 1]}</Text>
@@ -1720,7 +1720,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                       <CautionBadge />
                     </View>
                   ) : null}
-                  <Text style={styles.fsTerm}>{card.term}</Text>
+                  <Text accessibilityRole="header" style={styles.fsTerm}>{card.term}</Text>
                 </View>
               ) : (
                 <ScrollView style={styles.fsScrollView} contentContainerStyle={styles.fsScroll} showsVerticalScrollIndicator={false}>
@@ -1729,7 +1729,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                       <CautionBadge />
                     </View>
                   ) : null}
-                  <Text style={styles.fsTermSmall}>{card.term}</Text>
+                  <Text accessibilityRole="header" style={styles.fsTermSmall}>{card.term}</Text>
                   {/* Term image in the full-screen reveal too (user request
                       2026-07-18) — it only rendered in the study sheet before. */}
                   {showMedia && mediaByItem[card.id] && !badImages.has(card.id) ? (

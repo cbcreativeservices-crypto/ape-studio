@@ -16,6 +16,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { screenReaderOn } from '../../features/settings/a11y';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -298,10 +299,19 @@ export function ScenariosScreen({ route }: Props) {
 
          Said as one utterance so the verdict cannot be cut off by the
          explanation starting. */
+      /* W18 (2026-09-18): EXPLANATION_MS is three seconds, which is how long a
+         SIGHTED learner needs to register a colour. It is not how long a screen
+         reader needs to read the explanation — and in this method the
+         explanation IS the lesson, so the teaching was being cut off mid-word
+         by the next question. With a reader on, the banner waits; it is already
+         a Pressable onPress={advance}, so there is a way onward and nobody is
+         stranded. */
       AccessibilityInfo.announceForAccessibility(
-        `${correct ? 'Correct' : 'Incorrect'}. ${item.explanation}`,
+        `${correct ? 'Correct' : 'Incorrect'}. ${item.explanation}${
+          screenReaderOn() ? ' Double tap to continue.' : ''
+        }`,
       );
-      advanceTimer.current = setTimeout(advance, EXPLANATION_MS);
+      if (!screenReaderOn()) advanceTimer.current = setTimeout(advance, EXPLANATION_MS);
     },
     [item, activeRound, achievementId, advance],
   );
@@ -612,7 +622,9 @@ export function ScenariosScreen({ route }: Props) {
             <View style={[styles.banner, feedback.correct ? styles.bannerOk : styles.bannerWrong]}>
               <Text style={[styles.bannerText, { color: feedback.correct ? '#7dffa1' : '#ffb3a8' }]}>
                 {feedback.correct ? '✓ Correct — ' : '✕ Not quite — '}
-                {feedback.text} <Text style={styles.bannerHint}>(auto-advance in 3s · tap to skip)</Text>
+                {feedback.text} <Text style={styles.bannerHint}>
+                  {screenReaderOn() ? '(tap to continue)' : '(auto-advance in 3s · tap to skip)'}
+                </Text>
               </Text>
             </View>
           </Pressable>

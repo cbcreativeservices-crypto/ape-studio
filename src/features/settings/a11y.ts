@@ -71,6 +71,43 @@ AccessibilityInfo.addEventListener?.('reduceMotionChanged', (v: boolean) => {
   listeners.forEach((l) => l());
 });
 
+/**
+ * ── IS A SCREEN READER ON? (2026-09-18, pass 5 · W18) ────────────────────────
+ *
+ * The study methods auto-advance on timers — 3000 ms in Scenarios, 950 ms in
+ * Fill in the Blank, HIGHLIGHT_MS in the quiz and exam. Those numbers are how
+ * long a SIGHTED learner needs to register a colour. They are not how long
+ * VoiceOver or TalkBack needs to speak a sentence, and in Scenarios the
+ * sentence is the entire lesson: the explanation of what you got wrong is cut
+ * off mid-word by the next question.
+ *
+ * Same shape as osReduceMotion above: seeded once, kept current by the OS
+ * event, read synchronously by callers.
+ */
+let osScreenReader = false;
+void AccessibilityInfo.isScreenReaderEnabled?.()
+  .then((v) => {
+    osScreenReader = !!v;
+    listeners.forEach((l) => l());
+  })
+  .catch(() => {
+    /* older platforms simply do not report it */
+  });
+AccessibilityInfo.addEventListener?.('screenReaderChanged', (v: boolean) => {
+  osScreenReader = !!v;
+  listeners.forEach((l) => l());
+});
+
+/**
+ * True when VoiceOver/TalkBack is on.
+ *
+ * Callers use this to HOLD an auto-advance, so only use it where the learner
+ * has a manual way onward — otherwise holding strands them.
+ */
+export function screenReaderOn(): boolean {
+  return osScreenReader;
+}
+
 /** Should this animation run at all? Honours the app toggle AND the OS. */
 export function animationsAllowed(): boolean {
   return !state.reduceAnimations && !osReduceMotion;
