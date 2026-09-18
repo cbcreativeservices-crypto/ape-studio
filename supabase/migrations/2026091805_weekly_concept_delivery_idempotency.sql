@@ -1,0 +1,41 @@
+-- ============================================================================
+-- APE STUDIO · 2026-09-18 · APPLIED TO PRODUCTION
+--   migration name: weekly_concept_delivery_idempotency
+--
+-- Q8 from the hygiene pass. notification_concept_deliveries had only a primary
+-- key on `id`. get_due_concept_subscriptions dedupes by day in its `not exists`
+-- clause, so ordinary runs are fine — but that is a read-then-write: two
+-- overlapping runs both see "nothing sent today" and both insert. Double push.
+--
+-- Table was empty (0 rows) when applied, so nothing could conflict.
+--
+-- NOTE: this is protective only. Nothing sends today — there is no cron job
+-- calling on-weekly-concept at all (see HYGIENE_ANSWERS.md). The index is here
+-- so that whenever that cron IS turned on, the first retry cannot double-send.
+--
+-- ── TWO CORRECTIONS TO THE VERSION FIRST WRITTEN IN HYGIENE_ANSWERS.md ──────
+--
+-- 1 · `(scheduled_at::date)` WOULD HAVE BEEN REJECTED. scheduled_at is
+--     timestamptz, and casting timestamptz to date depends on the session
+--     TimeZone, making the expression STABLE rather than IMMUTABLE — Postgres
+--     refuses a non-immutable expression in an index. Going through
+--     `at time zone 'UTC'` first is immutable and pins the day boundary.
+--
+--     Fine here: a subscription sends at most once per week per category, so
+--     two rows in the same UTC day IS the double-send being stopped. There is
+--     no legitimate second send for the index to block.
+--
+-- 2 · A FULL INDEX WOULD HAVE BROKEN RETRIES, which is worse than the bug it
+--     fixes. status is CHECK ('pending','delivered','failed'), and the
+--     function's own dedupe deliberately excludes only 'pending' and
+--     'delivered' — a FAILED send is meant to be retried. A unique index over
+--     all statuses would reject that retry and turn one transient failure into
+--     a permanent skip for that user, that category, that day.
+--
+--     So the index is PARTIAL, on exactly the predicate the function already
+--     uses. The constraint and the query now agree by construction rather than
+--     by coincidence.
+create unique index if not exists notification_concept_deliveries_daily
+  on public.notification_concept_deliveries
+     (user_id, category, ((scheduled_at at time zone 'UTC')::date))
+  where status in ('pending', 'delivered');
