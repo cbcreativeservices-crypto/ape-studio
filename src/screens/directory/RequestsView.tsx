@@ -80,7 +80,7 @@ const IncomingCard = memo(function IncomingCard({
 }) {
   return (
     <View style={st.card}>
-      <Text style={st.name}>{t.otherDisplayName}</Text>
+      <ThreadWho t={t} />
       <Text style={st.purpose}>{t.purposeLabel}</Text>
       <Text style={st.msg}>{t.message}</Text>
       <Text style={st.status}>{STATUS_LABEL[t.status]}</Text>
@@ -132,7 +132,7 @@ const OutgoingCard = memo(function OutgoingCard({
 }) {
   return (
     <View style={st.card}>
-      <Text style={st.name}>{t.otherDisplayName}</Text>
+      <ThreadWho t={t} />
       <Text style={st.purpose}>{t.purposeLabel}</Text>
       <Text style={st.msg}>{t.message}</Text>
       <Text style={st.status}>{STATUS_LABEL[t.status]}</Text>
@@ -274,6 +274,50 @@ export function RequestsView() {
           sits in the tree, and this keeps it mounted across cell recycling. */}
       <ThreadSheet thread={open} onClose={() => setOpen(null)} />
     </>
+  );
+}
+
+
+/**
+ * WHO is on the other end of this thread.
+ *
+ * ── WHY THIS IS NOT JUST A NAME (2026-09-18) ────────────────────────────────
+ *
+ * An employer has no community profile — that is the design — so before the
+ * employer fields existed, `contact_threads` fell through to a generic
+ * "Member". A company asking a graduate about work rendered exactly like a
+ * peer, with the app implicitly vouching for them by saying nothing.
+ *
+ * The person deciding whether to accept is being asked to trust a stranger, so
+ * they get three things: that it IS an organisation, that a human verified it,
+ * and the site — so the claim is checkable by them and not only by us.
+ *
+ * The badge is drawn ONLY when `otherVerified` is true. An employer row that
+ * somehow arrives unverified reads as a plain name, which is the honest
+ * rendering: an unverified badge is worse than none.
+ */
+function ThreadWho({ t }: { t: ContactThread }) {
+  const employer = t.otherKind === 'employer';
+  return (
+    <View style={st.whoWrap}>
+      <View style={st.whoRow}>
+        <Text style={st.name}>{t.otherDisplayName}</Text>
+        {employer && t.otherVerified ? (
+          <View
+            style={st.verifiedTag}
+            accessible
+            accessibilityLabel="Verified employer. We checked this organisation."
+          >
+            <Text style={st.verifiedTagText}>VERIFIED EMPLOYER</Text>
+          </View>
+        ) : null}
+      </View>
+      {employer && t.otherWebsite ? (
+        <Text style={st.whoSite} numberOfLines={1}>
+          {t.otherWebsite}
+        </Text>
+      ) : null}
+    </View>
   );
 }
 
@@ -470,6 +514,23 @@ const st = StyleSheet.create({
     marginBottom: 10,
   },
   name: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, color: colors.textPrimary },
+  whoWrap: { gap: 2 },
+  whoRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
+  verifiedTag: {
+    borderWidth: 1,
+    borderColor: 'rgba(125,255,161,.55)',
+    backgroundColor: 'rgba(125,255,161,.12)',
+    borderRadius: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  verifiedTagText: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 9.5,
+    letterSpacing: 1,
+    color: '#7dffa1',
+  },
+  whoSite: { fontFamily: fonts.mono, fontSize: 11.5, color: colors.textSub },
   purpose: { fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.4, color: colors.amber, marginTop: 4 },
   msg: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary, marginTop: 8 },
   status: { fontFamily: fonts.barlowMedium, fontSize: 12, color: colors.textMutedDeep, marginTop: 8 },

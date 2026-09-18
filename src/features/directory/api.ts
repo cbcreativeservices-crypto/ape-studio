@@ -427,6 +427,23 @@ export type ContactThread = {
   createdAt: string;
   respondedAt: string | null;
   messageCount: number;
+  /**
+   * Who is on the other end — a fellow MEMBER, or a verified EMPLOYER
+   * (2026-09-18, employer accounts).
+   *
+   * This matters more than it looks. An employer has no community profile by
+   * design, so before these fields existed `contact_threads` fell through to a
+   * generic "Member" with a null token: a stranger asking a graduate about
+   * work, rendered exactly like a peer, with the app implicitly vouching for
+   * them. Someone deciding whether to accept has to know which they are
+   * talking to.
+   */
+  otherKind: 'member' | 'employer';
+  /** A human approved this organisation. Only ever true for an employer. */
+  otherVerified: boolean;
+  /** The employer's own site, so the claim is checkable by the person being
+   *  asked rather than only by us. */
+  otherWebsite: string | null;
 };
 
 /** A list fetch that can FAIL loudly. Swallowing the error and returning []
@@ -449,6 +466,11 @@ export async function fetchContactThreads(): Promise<ListResult<ContactThread>> 
       createdAt: r.created_at as string,
       respondedAt: (r.responded_at as string) ?? null,
       messageCount: Number(r.unread_hint ?? 0),
+      // Defaults to 'member': an older server that does not return these
+      // columns must not silently label everyone an employer.
+      otherKind: (r.other_kind === 'employer' ? 'employer' : 'member') as ContactThread['otherKind'],
+      otherVerified: r.other_verified === true,
+      otherWebsite: (r.other_website as string) ?? null,
     }));
     return { ok: true, rows };
   } catch {

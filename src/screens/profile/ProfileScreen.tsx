@@ -19,6 +19,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { AlbumDisc } from '../../components/AlbumDisc';
 import { CredentialQr } from '../../components/CredentialQr';
 import { CredentialShareRow } from '../../features/credentials/CredentialShareRow';
+import { EmployerSection } from './EmployerSection';
 import { fetchMyCredentials, type EarnedCredentialRow } from '../../features/credentials/api';
 import {
   exportCertificate,
@@ -540,6 +541,11 @@ export function ProfileScreen() {
               <Text style={styles.idScan}>SCAN TO VERIFY</Text>
             </View>
           </Pressable>
+
+          {/* Employer account (2026-09-18). Renders NOTHING for a member — it
+              returns null unless there is an application or a verified employer
+              profile — so a learner never scrolls past a recruiting panel. */}
+          <EmployerSection />
 
           {/* Share the record itself — the link, and the QR as an image (owner
               2026-09-18). This is where a member looks for their own ID, and
