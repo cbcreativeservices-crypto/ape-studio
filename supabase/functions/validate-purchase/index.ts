@@ -217,7 +217,41 @@ Deno.serve(async (req) => {
   const computed = expiresAtFor(plan, verified);
   // MUST match the entitlements_source_check constraint (app_store / play_store).
   const source = isApple ? 'app_store' : 'play_store';
-  const store_ref = body.transactionId || body.purchaseToken || sku;
+  // ── store_ref MUST BE THE ID THAT STORE'S REFUND FEED NAMES ────────────────
+  //
+  // This is the key a refund is matched on later, and the two stores do not use
+  // the same identifier:
+  //
+  //   Apple  · refund notifications carry TRANSACTION IDS
+  //   Google · purchases/voidedpurchases and SUBSCRIPTION_REVOKED carry the
+  //            PURCHASE TOKEN, and store-notifications matches on that alone
+  //
+  // The old line was `body.transactionId || body.purchaseToken || sku` for both
+  // platforms. react-native-iap populates BOTH fields on Android, where
+  // `transactionId` is the Google ORDER ID (GPA.xxxx-xxxx-xxxx-xxxxx) — so the
+  // order id won, and every Android row was keyed on an id that appears in no
+  // refund feed.
+  //
+  // The consequence was silent and permanent: markRefunded's
+  // `.in('store_ref', [purchaseToken])` matched ZERO rows, the function still
+  // returned 200 so Google never retried, and a refunded Android member kept
+  // paid access AND kept accruing tenure toward a certificate they had been
+  // refunded for. Nothing logged an error, because nothing failed.
+  //
+  // ⛔ DO NOT "fix" this instead by matching on the order id in
+  //    store-notifications. That was considered and deliberately rejected on
+  //    2026-09-17: that endpoint is public, the order id is attacker-controlled,
+  //    and store_ref is not a namespace — `redeem_access_code` writes the CODE
+  //    ITSELF there, so a forged notification naming a known code would mark
+  //    every user who ever redeemed it as refunded. See markRefunded's comment.
+  //
+  // Safe by construction: verifyGoogle returns invalid without a purchaseToken
+  // and verifyApple without a transactionId, and we have already returned on
+  // `!verified.valid` above — so the field each branch needs is guaranteed
+  // present here. The fallbacks are belt-and-braces, not load-bearing.
+  const store_ref = isApple
+    ? body.transactionId || body.purchaseToken || sku
+    : body.purchaseToken || body.transactionId || sku;
 
   // There is a UNIQUE (user_id, product); read the one row if it exists.
   const { data: existing } = await admin
