@@ -15,7 +15,7 @@
  * amplitude colour standard (owner 2026-09-05): MIDI-0 blue at silence →
  * green → yellow → orange → red at the rail (`features/tools/levelColor`).
  */
-import { useCallback, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, LayoutChangeEvent, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -116,6 +116,24 @@ export function MisconceptionCard({ m }: { m: Misconception }) {
 /* ── fault banner (Part 3 §7: cause, action, check) ─────────────────────── */
 
 export function FaultBanner({ primary, secondary }: { primary: FaultId | null; secondary?: FaultId[] }) {
+  /**
+   * ── role="alert" IS NOT AN ANNOUNCEMENT (2026-09-18, pass 5 · W17) ────────
+   *
+   * The children here are <Text>, so the copy has always been readable by
+   * swipe. What was missing is the part that makes it an ALERT: nothing was
+   * ever spoken when a fault appeared. A learner working the amp by ear got no
+   * notice that the rig had faulted — they would find out by eventually
+   * swiping into a banner that had been there for a while.
+   *
+   * The announcement carries the cause and the action, which is what the
+   * banner is for. Keyed on `primary` so a change of fault re-announces and a
+   * re-render does not.
+   */
+  useEffect(() => {
+    if (!primary) return;
+    const f = FAULT_COPY[primary];
+    AccessibilityInfo.announceForAccessibility(`${f.title}. ${f.detected} ${f.action}`);
+  }, [primary]);
   if (!primary) return null;
   const c = FAULT_COPY[primary];
   return (

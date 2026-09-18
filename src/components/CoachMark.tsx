@@ -5,7 +5,7 @@
  * the screen root, positioned above the content bottom / nav.
  */
 import { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, Text } from 'react-native';
+import { AccessibilityInfo, Animated, StyleSheet, Text } from 'react-native';
 import { fonts } from '../theme/tokens';
 
 export function CoachMark({ text, bottom = 16 }: { text: string; bottom?: number }) {
@@ -14,6 +14,20 @@ export function CoachMark({ text, bottom = 16 }: { text: string; bottom?: number
   useEffect(() => {
     Animated.timing(fade, { toValue: 1, duration: 400, useNativeDriver: true }).start();
   }, [fade]);
+
+  /**
+   * role="alert" with pointerEvents="none" reaches nobody (pass 5 · W17).
+   *
+   * A coach mark is a gentle instruction that fades in beside whatever it is
+   * telling you to do. It is not focusable, nothing moves focus to it, and the
+   * role alone speaks nothing — so the one kind of user most likely to need
+   * telling what to do next was the one user who never got told. Announcing is
+   * the right fix here rather than `accessible`: the pill should still not be
+   * something you can land on while swiping through the screen behind it.
+   */
+  useEffect(() => {
+    if (text) AccessibilityInfo.announceForAccessibility(text);
+  }, [text]);
 
   // Subtle by design (Booth 2026-07-09): a quiet dark pill with muted text —
   // a gentle instruction, not a highlighted callout. Slightly translucent.

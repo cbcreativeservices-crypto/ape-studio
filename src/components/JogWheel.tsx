@@ -675,6 +675,9 @@ export function JogOverlay({
       <View
         {...pan.panHandlers}
         style={StyleSheet.absoluteFill}
+        // Without `accessible` a <View> is not an element on iOS, so the role,
+        // the label and the two actions below reached nothing (pass 5 · W17).
+        accessible
         accessibilityRole="adjustable"
         accessibilityLabel="Topic wheel"
         accessibilityHint={Platform.OS === 'web' ? undefined : 'Swipe up or down to change topic'}

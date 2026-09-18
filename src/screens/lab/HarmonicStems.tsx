@@ -549,6 +549,9 @@ export function HarmonicStems({
                   style={styles.phaseTrack}
                   onLayout={(e) => setPhaseTrackW(Math.round(e.nativeEvent.layout.width))}
                   {...phasePan.panHandlers}
+                  // Same as the jog wheel: everything below was already right
+                  // and none of it existed on iOS without this (pass 5 · W17).
+                  accessible
                   accessibilityRole="adjustable"
                   accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
                   onAccessibilityAction={(e) => {

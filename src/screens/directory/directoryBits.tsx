@@ -110,9 +110,14 @@ export function Banner({ tone, children }: { tone: 'info' | 'warn' | 'good'; chi
 
 export function Loading({ label = 'Loading…' }: { label?: string }) {
   return (
-    <View style={s.center} accessibilityRole="progressbar" accessibilityLabel={label}>
+    // `accessible` so the progressbar role and label are an element at all on
+    // iOS; the visible Text repeats the label word for word, so it opts out
+    // rather than saying it twice on Android (pass 5 · W17).
+    <View accessible style={s.center} accessibilityRole="progressbar" accessibilityLabel={label}>
       <ActivityIndicator color={colors.amber} />
-      <Text style={s.helper}>{label}</Text>
+      <Text accessible={false} importantForAccessibility="no-hide-descendants" style={s.helper}>
+        {label}
+      </Text>
     </View>
   );
 }
