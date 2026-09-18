@@ -908,3 +908,65 @@ describe('the activity runner', () => {
     }
   });
 });
+
+describe('accepting a blocker as a condition', () => {
+  it('completes the path to Ready With Approved Conditions', async () => {
+    // The verdict existed in the engine from the start and was unreachable,
+    // because nothing could create an accepted condition.
+    const store = createProjectStore(memoryStore());
+    // Stage 1 only: the deadline blocker lives there, and resolving all four
+    // stages would measure whole-lab completeness rather than this path.
+    const stages = [stage('live')];
+    const now = Date.parse('2026-09-17T16:00:00Z');
+
+    const blocked = { ...completeProject('live'), values: { ...completeProject('live').values, 'define.target_date': '2020-01-01' } };
+    await store.upsert(blocked);
+    assert.equal(readProject(stages, blocked, now).verdict, 'not_ready');
+
+    const accepted = await store.acceptCondition('preprod', blocked.id, {
+      ruleId: 'define-deadline-past',
+      acceptedBy: 'Priya Raman',
+      reason: 'Date renegotiated with the venue by email; the brief has not caught up.',
+      at: now,
+    });
+    assert.ok(accepted);
+    const after = readProject(stages, accepted!, now);
+    assert.equal(after.verdict, 'ready_with_conditions');
+    assert.equal(after.blockers.length, 0);
+    assert.equal(after.acceptedBlockers.length, 1);
+  });
+
+  it('the acceptance prints in the packet with who and why', async () => {
+    const store = createProjectStore(memoryStore());
+    const stages = [stage('live')];
+    const now = Date.parse('2026-09-17T16:00:00Z');
+    const p = { ...completeProject('live'), values: { ...completeProject('live').values, 'define.target_date': '2020-01-01' } };
+    await store.upsert(p);
+    const accepted = await store.acceptCondition('preprod', p.id, {
+      ruleId: 'define-deadline-past',
+      acceptedBy: 'Priya Raman',
+      reason: 'Renegotiated by email',
+      at: now,
+    });
+    const html = buildPacketHtml({ project: accepted!, stages, report: readProject(stages, accepted!, now) });
+    assert.ok(html.includes('Accepted conditions'));
+    assert.ok(html.includes('Priya Raman'));
+    assert.ok(html.includes('Renegotiated by email'));
+  });
+
+  it('an acceptance can be withdrawn, and the blocker returns', async () => {
+    const store = createProjectStore(memoryStore());
+    const stages = [stage('live')];
+    const now = Date.parse('2026-09-17T16:00:00Z');
+    const p = { ...completeProject('live'), values: { ...completeProject('live').values, 'define.target_date': '2020-01-01' } };
+    await store.upsert(p);
+    await store.acceptCondition('preprod', p.id, {
+      ruleId: 'define-deadline-past',
+      acceptedBy: 'Priya Raman',
+      reason: 'Renegotiated by email',
+      at: now,
+    });
+    const cleared = await store.clearCondition('preprod', p.id, 'define-deadline-past');
+    assert.equal(readProject(stages, cleared!, now).verdict, 'not_ready');
+  });
+});

@@ -9,14 +9,23 @@
  * Low-Light Production Mode: nothing here auto-appears. It is drawn inline as
  * part of the screen, never pushed over one.
  */
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { READINESS_LABEL, VERDICT_LABEL } from '../../../features/production/types';
-import type { LabKind, ReadinessState } from '../../../features/production/types';
+import type { Finding, LabKind, ReadinessState } from '../../../features/production/types';
 import type { ReadinessReport, StageReadiness } from '../../../features/production/readiness';
 import { STATE_TINT } from './FieldRow';
 
-export function ReadinessMeter({ report, lab }: { report: ReadinessReport; lab: LabKind }) {
+export function ReadinessMeter({
+  report,
+  lab,
+  onAcceptBlocker,
+}: {
+  report: ReadinessReport;
+  lab: LabKind;
+  /** Tapping a blocker offers to record an accepted condition. */
+  onAcceptBlocker?: (f: Finding) => void;
+}) {
   const verdictTint =
     report.verdict === 'ready' ? colors.green : report.verdict === 'ready_with_conditions' ? colors.amber : colors.red;
 
@@ -53,13 +62,27 @@ export function ReadinessMeter({ report, lab }: { report: ReadinessReport; lab: 
           <Text style={styles.blockerHead}>
             {report.blockers.length === 1 ? 'ONE THING BLOCKS THIS PROJECT' : `${report.blockers.length} THINGS BLOCK THIS PROJECT`}
           </Text>
-          {report.blockers.map((b) => (
-            <Text key={b.ruleId} style={styles.blockerItem}>
-              {b.title}
-            </Text>
-          ))}
+          {report.blockers.map((b) =>
+            onAcceptBlocker ? (
+              <Pressable
+                key={b.ruleId}
+                onPress={() => onAcceptBlocker(b)}
+                accessibilityRole="button"
+                accessibilityLabel={`${b.title}. Record an accepted condition.`}
+              >
+                <Text style={styles.blockerItemTappable}>{b.title}</Text>
+              </Pressable>
+            ) : (
+              <Text key={b.ruleId} style={styles.blockerItem}>
+                {b.title}
+              </Text>
+            ),
+          )}
           {/* Stated plainly so a high score never reads as a contradiction. */}
-          <Text style={styles.blockerWhy}>A score cannot clear these. Fix them, or record who accepted them and why.</Text>
+          <Text style={styles.blockerWhy}>
+            A score cannot clear these. Fix them, or{onAcceptBlocker ? ' tap one to ' : ' '}record who
+            accepted it and why.
+          </Text>
         </View>
       ) : null}
 
@@ -122,6 +145,13 @@ const styles = StyleSheet.create({
   },
   blockerHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.9, color: colors.red },
   blockerItem: { fontFamily: fonts.barlowMedium, fontSize: 13, color: colors.textSecondary },
+  blockerItemTappable: {
+    fontFamily: fonts.barlowMedium,
+    fontSize: 13,
+    color: colors.textSecondary,
+    textDecorationLine: 'underline',
+    paddingVertical: 2,
+  },
   blockerWhy: { fontFamily: fonts.barlowRegular, fontSize: 12, color: colors.textSub, marginTop: 3 },
 
   condBox: {

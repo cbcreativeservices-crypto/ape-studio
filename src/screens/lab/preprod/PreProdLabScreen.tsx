@@ -22,10 +22,11 @@ import { resolveStage } from '../../../features/production/schema';
 import { readProject } from '../../../features/production/readiness';
 import { buildPacketHtml, exportPacketPdf, isPdfAvailable } from '../../../features/production/packet';
 import { createProjectStore, newProject, projectStore } from '../../../features/production/projectStore';
-import type { PathwayId, ProductionProject } from '../../../features/production/types';
+import type { Finding, PathwayId, ProductionProject } from '../../../features/production/types';
 import { LAUNCH_PATHWAYS, PATHWAY_LABEL } from '../../../features/production/types';
 import { PREPROD_OUTLINE, PREPROD_STAGES, authoredStage } from '../../../features/production/preprod';
 import { ReadinessMeter, StageProgressRow } from './ReadinessMeter';
+import { AcceptConditionSheet } from './AcceptConditionSheet';
 import { STATE_TINT } from './FieldRow';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
@@ -35,6 +36,8 @@ export function PreProdLabScreen() {
   const navigation = useNavigation<Nav>();
   const [projects, setProjects] = useState<ProductionProject[] | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
+  /** The blocker the user is choosing to accept rather than fix. */
+  const [accepting, setAccepting] = useState<Finding | null>(null);
 
   const reload = useCallback(async () => {
     const list = await projectStore().load('preprod');
@@ -68,6 +71,25 @@ export function PreProdLabScreen() {
       setOpenId(p.id);
     },
     [reload],
+  );
+
+  /**
+   * Record an accepted condition. The store refuses one without a name AND a
+   * reason, so this cannot become a dismiss button even by accident.
+   */
+  const acceptCondition = useCallback(
+    async (acceptedBy: string, reason: string) => {
+      if (!project || !accepting) return;
+      const saved = await projectStore().acceptCondition('preprod', project.id, {
+        ruleId: accepting.ruleId,
+        acceptedBy,
+        reason,
+        at: Date.now(),
+      });
+      setAccepting(null);
+      if (saved) await reload();
+    },
+    [project, accepting, reload],
   );
 
   const sharePacket = useCallback(async () => {
@@ -149,7 +171,9 @@ export function PreProdLabScreen() {
             <Text style={styles.projectName}>{project.name}</Text>
             <Text style={styles.projectMeta}>{PATHWAY_LABEL[project.pathway]}</Text>
 
-            {report ? <ReadinessMeter report={report} lab="preprod" /> : null}
+            {report ? (
+              <ReadinessMeter report={report} lab="preprod" onAcceptBlocker={setAccepting} />
+            ) : null}
 
             <Text style={styles.sectionTitle}>THE SIX STAGES</Text>
             {PREPROD_OUTLINE.map((o) => {
@@ -236,6 +260,12 @@ export function PreProdLabScreen() {
           </>
         )}
       </ScrollView>
+
+      <AcceptConditionSheet
+        finding={accepting}
+        onCancel={() => setAccepting(null)}
+        onAccept={(name, reason) => void acceptCondition(name, reason)}
+      />
     </View>
   );
 }
