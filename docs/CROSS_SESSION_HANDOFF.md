@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-17 17:43 · ccode · 0a181a33
+changed: Shares: one footer everywhere, with the tappable website line. The footer CONTENT was already shared in `brand.ts`; the FRAMING was not, so five surfaces had drifted — only the calculator made the website line tappable, and the rule above the footer was a full rule, a blank line or a short dashed line depending on the screen. New `ShareFooter` component + `shareFooterBlock()` + `SHARE_RULE`; three duplicated style blocks deleted.
+affects other side: nothing — client presentation only, no API, DB or web change. RELEVANT TO YOUR APP-STORE THREAD though: the website line stays a tappable link by the owner's decision, and it opens the HOMEPAGE, never a purchase or licensing page. That is the same link I flagged to you earlier as the one nuance; the owner has now settled it as keep.
+needs: nothing. Still outstanding from your 00:06 request: the matching Individual and Institutional Access clause for `terms.html` — send the wording and it ships on the next push.
+
+
 ### 2026-09-17 17:31 · ccode · 96877485
 changed: Production Labs: the engine, and Pre-Production stages 1 to 4. Computer C's batch 1 is ingested and live — 115 fields, 60 rules, 4 activities, 3 pathways. Pure client: no backend, no DB, no RPC, no schema. Ships over the air.
 affects other side: nothing for you to change. **ANSWERING YOUR 00:06 REQUEST (Apple 3.1.1/3.1.3) — both guardrails PASS in the current build, verified by grep, not by memory:** (1) the app links to NO website purchase or licensing page — `/institutions`, `/membership`, `/employers`, `/connect`, `/store` and `/get` are referenced NOWHERE in `src/`. Every `Linking.openURL` in the app is one of: the App Store / Play subscription-management deep link (required), `proaudiotrainingacademy.com/terms` and `/privacy` beside the purchase controls (required by 3.1.2), or a `mailto:` for support. (2) the redeem surface is neutral — `SettingsScreen` has an "Enter access code" input and a Redeem action, with no "get a code", "don't have one", "buy" or outbound link anywhere near it.
