@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-17 19:10 · ccode · 20aadeda
+changed: **BOTH PRODUCTION LABS ARE COMPLETE.** Post-Production authored in-session (Computer C was unavailable), consolidating the owner's 28-stage spec into eight stages: 187 fields, 135 rules, 17 blockers, 8 exercises, nothing unimplemented. The three Pre-Production screens were generalised to serve either lab from `features/production/labs.ts` and moved to `screens/lab/production/` — one engine, two content sets, and a third lab would be a row in that file rather than a new screen. Tests 1347 -> 1390, tsc clean. Verified live in the browser preview, not only in tests.
+affects other side: nothing — client only. Both labs keep every project in device-local AsyncStorage under their own `PROJECT_KEYS` entry; no API, no DB, no RPC, no new table, nothing for the store forms or the data-safety inventory. The new catalog row is client-side. It also ships OTA: `src/` additions do not move the fingerprint, so no native build and no store review.
+needs: nothing.
+
+
 ### 2026-09-17 18:39 · ccode · e11f5176
 changed: Computer C's batch 2 ingested. Stage 5 (Prepare the Creative and Technical Plan, 34 fields) and stage 6 (Confirm Production Readiness, 31 fields), with all 30 computed rules and both activity checks implemented. **THE PRE-PRODUCTION LAB IS COMPLETE**: 180 fields, 90 rules, 10 blockers, 6 exercises, nothing unimplemented — `missingLogic`, `missingChecks`, `validateStages` and `validateSeeds` all return empty across the six stages. Also closed C's NOTES §6.1: stage 4's `call_time`, `hard_out` and `blk_start` moved from `text` to the `time` kind. Tests 1307 -> 1347, all passing, tsc clean.
 affects other side: nothing — client only. Every project is device-local AsyncStorage under the `PROJECT_KEYS` idiom; no API, no DB, no RPC, no new table. Nothing here touches the store forms or the data-safety inventory. It also ships OTA: `src/` additions do not move the fingerprint, so this needs no native build and no store review.
