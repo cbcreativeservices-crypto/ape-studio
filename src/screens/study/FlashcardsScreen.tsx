@@ -1164,11 +1164,21 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [idx]);
-  // Shake to mark the current card KNOWN, in full screen only. No-ops until a
-  // build includes expo-sensors (flagged).
-  useShake(() => {
-    if (card) toggleKnown();
-  }, fullscreen);
+  // Shake to mark the current card KNOWN, in full screen only.
+  //
+  // `yieldToMute` (2026-09-17): the same gesture is the app's advertised
+  // emergency mute, and this fires at a LOWER threshold — so any shake hard
+  // enough to mute also wrote study credit and hid the card, and on an
+  // already-known card it un-knew it locally while the server credit stayed.
+  // With sound on, the mute owns the gesture; with sound off there is nothing
+  // to mute and this still works.
+  useShake(
+    () => {
+      if (card) toggleKnown();
+    },
+    fullscreen,
+    { yieldToMute: true },
+  );
 
   if (error) {
     return (

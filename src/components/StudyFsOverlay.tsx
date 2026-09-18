@@ -62,7 +62,10 @@ export function StudyFsOverlay({
     wasVisible.current = visible;
   }, [visible, guideKey]);
 
-  useShake(onShakePrev, visible);
+  // `yieldToMute` (2026-09-17): shake is the app's emergency mute first — see
+  // useShake. Stepping back a question on the same gesture, at a lower
+  // threshold, meant reaching for the mute also moved the learner backwards.
+  useShake(onShakePrev, visible, { yieldToMute: true });
 
   // Whole-screen swipe ‹ › (user feedback 2026-07-17). Callbacks live in a ref
   // so the once-created responder always calls the latest closures. Short

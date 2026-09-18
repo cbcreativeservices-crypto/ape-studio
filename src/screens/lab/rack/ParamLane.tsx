@@ -136,6 +136,16 @@ export function ParamLane({
       style={styles.lane}
       onLayout={(e) => (wRef.current = e.nativeEvent.layout.width)}
       {...pan.panHandlers}
+      // `accessible` IS REQUIRED ON iOS (2026-09-17, bug-hunt pass 4). React
+      // Native's AccessibilityProps defaults it to FALSE on a View, and iOS
+      // drives `isAccessibilityElement` from that prop and nothing else — so
+      // everything below, all of which is correct and carefully done, did not
+      // exist to VoiceOver. This is the one continuous control of every rack
+      // lab in the app (foundations, digital, EQ, meter, tube, wave, FX,
+      // modular, oscillator), so the omission silently removed the faders from
+      // all of them on iOS. Nine of the codebase's fifteen `adjustable` sites
+      // already set it; this was not one.
+      accessible
       accessibilityRole="adjustable"
       accessibilityLabel={`${label}: ${readout}`}
       // The label carries the reading, which VoiceOver/TalkBack do announce —

@@ -890,7 +890,9 @@ export function DashboardScreen() {
         e?.message === 'not_enrolled'
           ? 'No enrolled courses found for this account.'
           : e?.message === 'user_not_found'
-            ? 'This account is not linked to a student record. Complete registration first.'
+            // COMMERCIAL WORDING (2026-09-17). "Student record" is the retired
+            // institutional vocabulary and means nothing to a customer.
+            ? 'Your account setup is not finished yet — finish it to save your progress.'
             : 'Could not load the dashboard. Check your connection and pull to retry.',
       );
     } finally {
@@ -1484,12 +1486,13 @@ export function DashboardScreen() {
         {strandedSession ? (
           <View style={styles.strandedBanner}>
             <Text style={styles.strandedText}>
-              You’re signed in, but this account isn’t linked to a student record yet — showing the free
-              topics. Finish setting up to save progress, or sign out to switch accounts.
+              You’re signed in, but your account setup isn’t finished — showing the free topics for now.
+              Finish setting up to save your progress, or sign out to switch accounts.
             </Text>
             <View style={styles.strandedRow}>
               <StudioButton
-                label="Complete Registration"
+                // Matches the sentence above it, which said "Finish setting up".
+                label="Finish Setting Up"
                 variant="primary"
                 small
                 onPress={() => (navigation as any).navigate('Auth')}

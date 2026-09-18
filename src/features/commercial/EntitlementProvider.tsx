@@ -261,11 +261,24 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
     // from the previous one (a SIGNED_OUT must never be overwritten seconds
     // later by a retry belonging to the signed-OUT user's read).
     let generation = 0;
-    /** @returns true when a DEFINITIVE tier was obtained (or the read was moot). */
-    const deriveAndApply = async (hasSession: boolean): Promise<boolean> => {
+    /**
+     * @returns true when a DEFINITIVE tier was obtained (or the read was moot).
+     *
+     * `gen` is the auth generation this call belongs to. It is NOT optional in
+     * spirit: the retry loop below already refuses to apply a superseded read,
+     * and this closes the same hole on the FIRST attempt, which had no check at
+     * all (2026-09-17, bug-hunt pass 4).
+     *
+     * Without it, a slow read belonging to the previous session lands after a
+     * sign-out or an account switch and applies that session's tier: a
+     * signed-out device reporting `isMember: true` with full Academy caps, or a
+     * paying customer silently downgraded to free.
+     */
+    const deriveAndApply = async (hasSession: boolean, gen: number): Promise<boolean> => {
       if (!alive || devOverrode.current) return true;
+      const current = () => alive && generation === gen && !devOverrode.current;
       if (!hasSession) {
-        setEntitlementState('anonymous');
+        if (current()) setEntitlementState('anonymous');
         return true;
       }
       const { data, error } = await supabase
@@ -280,7 +293,10 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
         return false;
       }
       const tier = academyTierFromRows((data ?? []) as EntRow[]);
-      if (alive && !devOverrode.current) setEntitlementState(tier);
+      // Re-checked AFTER the await: the session may have changed while this
+      // read was in flight, and applying its answer would be applying the
+      // previous user's standing to the current one.
+      if (current()) setEntitlementState(tier);
       return true;
     };
     // BOUNDED RETRY for a failed read (entitlement audit 2026-09-11).
@@ -302,7 +318,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
       const markKnown = () => {
         if (alive && generation === mine) setTierKnown(true);
       };
-      if (await deriveAndApply(hasSession)) {
+      if (await deriveAndApply(hasSession, mine)) {
         markKnown();
         return;
       }
@@ -312,7 +328,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
           // A newer sign-in/sign-out supersedes this retry — never let a stale
           // read re-apply a tier the user has since left.
           if (!alive || generation !== mine || devOverrode.current) return;
-          if (await deriveAndApply(hasSession)) {
+          if (await deriveAndApply(hasSession, mine)) {
             markKnown();
             return;
           }

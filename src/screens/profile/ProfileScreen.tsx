@@ -640,7 +640,10 @@ export function ProfileScreen() {
             {/* Full Course Certification — a progress readout, not a link. */}
             <View style={styles.readoutRow}>
               <View style={styles.readoutHead}>
-                <Text style={styles.rowLabel}>Full Course Certification</Text>
+                {/* RENAMED 2026-09-17: this is completed-topics ÷ 171, and there
+                    is no "Full Course Certification" award in the app — the label
+                    promised a credential that is never issued. */}
+                <Text style={styles.rowLabel}>Whole-curriculum progress</Text>
                 <Text style={styles.rowHint}>
                   {(profile?.overallPct ?? 0) > 0 ? `${profile?.overallPct ?? 0}% complete` : 'Not started yet'}
                 </Text>
@@ -1152,7 +1155,7 @@ export function ProfileScreen() {
           <View style={{ flexShrink: 1 }}>
             {/* Subtitle sits ABOVE the album-level title (Booth 2026-07-11). */}
             <Text style={styles.tierMeta}>
-              {profile?.overallPct ?? 0}% - Full Course Certification
+              {profile?.overallPct ?? 0}% of the whole curriculum
             </Text>
             <Text style={styles.tierName}>
               ALBUM LEVEL: {albumTitleFor(profile?.tierName ?? 'Black').toUpperCase()}

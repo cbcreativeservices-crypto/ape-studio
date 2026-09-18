@@ -313,14 +313,38 @@ async function writeQueue(rows: QueuedExam[]): Promise<boolean> {
   }
 }
 
+/**
+ * Every read-modify-write of the queue runs strictly after the last one.
+ *
+ * ── ENQUEUEING DURING A REPLAY DELETED THE NEW EXAM (2026-09-17, pass 4) ──
+ *
+ * `replayExamSubmissions` reads the queue, spends time on the network, then
+ * writes back the survivors. `enqueueExamSubmission` reads, appends and writes.
+ * A submission queued while a replay was in flight was appended to the OLD
+ * snapshot's successor and then overwritten by the replay's write — gone,
+ * moments after the screen said "your exam is saved and will be submitted
+ * automatically".
+ *
+ * The queue is the last copy of a graded capstone, so this is the one collection
+ * in the app where a lost update is unrecoverable.
+ */
+let queueChain: Promise<unknown> = Promise.resolve();
+function withQueueLock<T>(job: () => Promise<T>): Promise<T> {
+  const run = queueChain.then(job, job); // a failure must not poison the chain
+  queueChain = run.catch(() => undefined);
+  return run;
+}
+
 /** Queue a submission that failed for network reasons. Keyed by attempt_id. */
-export async function enqueueExamSubmission(row: QueuedExam): Promise<boolean> {
-  const rows = await readQueue();
-  const next = rows.filter((r) => r.attemptId !== row.attemptId);
-  next.push({ ...row, userId: row.userId ?? (await currentUserId()) });
-  // The boolean is the point: the caller must not tell the learner their exam
-  // is safely queued when it is not.
-  return writeQueue(next);
+export function enqueueExamSubmission(row: QueuedExam): Promise<boolean> {
+  return withQueueLock(async () => {
+    const rows = await readQueue();
+    const next = rows.filter((r) => r.attemptId !== row.attemptId);
+    next.push({ ...row, userId: row.userId ?? (await currentUserId()) });
+    // The boolean is the point: the caller must not tell the learner their exam
+    // is safely queued when it is not.
+    return writeQueue(next);
+  });
 }
 
 /**
@@ -329,7 +353,11 @@ export async function enqueueExamSubmission(row: QueuedExam): Promise<boolean> {
  * returns its frozen result_payload rather than erroring, so a reject here
  * means the row can never succeed).
  */
-export async function replayExamSubmissions(): Promise<{ awardId: string; result: ExamResult }[]> {
+export function replayExamSubmissions(): Promise<{ awardId: string; result: ExamResult }[]> {
+  return withQueueLock(replayExamSubmissionsLocked);
+}
+
+async function replayExamSubmissionsLocked(): Promise<{ awardId: string; result: ExamResult }[]> {
   const rows = await readQueue();
   if (rows.length === 0) return [];
   const done: { awardId: string; result: ExamResult }[] = [];

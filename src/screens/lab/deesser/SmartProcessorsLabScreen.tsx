@@ -14,14 +14,27 @@ import { DEV_NOTE } from '../labCatalog';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
+/**
+ * ── NO PLACEHOLDER ROWS (owner rule; enforced here 2026-09-17) ───────────
+ *
+ * Six of these seven had no `route` and rendered as "Coming Soon" — inside a
+ * lab a member has paid for. The owner's standing ruling removed every
+ * `status:'development'` row from the catalog for exactly this reason ("they
+ * return in a future update"), and this screen was missed because it builds its
+ * own list instead of reading the catalog.
+ *
+ * The six are kept HERE, commented out rather than deleted, so whoever builds
+ * them has the blurbs — which are good — and so nobody re-derives the list:
+ *
+ *   Dynamic EQ            EQ bands that move only when the signal asks them to.
+ *   Multiband Compressor  Several compressors, each owning a slice of the spectrum.
+ *   Spectral Processor    Hundreds of narrow bands deciding independently.
+ *   Resonance Suppressor  Finding and taming ringing frequencies as they appear.
+ *   Feedback Suppressor   Detecting a building howl and notching it before it takes off.
+ *   Ducking & Auto-Mixing One signal deciding the level of another.
+ */
 const FAMILY: { name: string; blurb: string; route?: keyof RootStackParamList }[] = [
   { name: 'De-Esser & Sibilance Control', blurb: 'A compressor that listens only to the hiss — detection path, threshold, frequency, range, broadband vs split-band, and what over-doing it sounds like.', route: 'DeEsserLab' },
-  { name: 'Dynamic EQ', blurb: 'EQ bands that move only when the signal asks them to.' },
-  { name: 'Multiband Compressor', blurb: 'Several compressors, each owning a slice of the spectrum.' },
-  { name: 'Spectral Processor', blurb: 'Hundreds of narrow bands deciding independently.' },
-  { name: 'Resonance Suppressor', blurb: 'Finding and taming ringing frequencies as they appear.' },
-  { name: 'Feedback Suppressor', blurb: 'Detecting a building howl and notching it before it takes off.' },
-  { name: 'Ducking & Auto-Mixing', blurb: 'One signal deciding the level of another.' },
 ];
 
 export function SmartProcessorsLabScreen() {
