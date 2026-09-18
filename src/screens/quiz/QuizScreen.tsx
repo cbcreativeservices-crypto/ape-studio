@@ -195,8 +195,11 @@ export function QuizScreen({ navigation, route }: Props) {
           });
         }
       } catch (e) {
-        if (/network|fetch/i.test((e as Error).message)) {
-          enqueueSubmission({ ...args, achievementId });
+        // Widened to the shared transient pattern (2026-09-17): a timeout
+        // matched neither "network" nor "fetch", so a finished attempt was
+        // never queued at all.
+        if (/network|fetch failed|failed to fetch|fetch|timeout|timed out|abort|socket|econn|offline/i.test((e as Error).message)) {
+          const queued = enqueueSubmission({ ...args, achievementId });
           // notify / confirmDialog, not Alert.alert: RN-web's Alert is a no-op,
           // so these were silent on the web preview (B-148).
           // [49] (2026-09-11): the web queue is session-scoped and in-memory
@@ -204,13 +207,25 @@ export function QuizScreen({ navigation, route }: Props) {
           // wa-sqlite wasm setup that is alpha in SDK 57), so a reload before
           // reconnecting loses a FINISHED attempt. Native persists to SQLite and
           // needs no such warning. Say so rather than let it vanish silently.
-          notify(
-            'Offline',
-            Platform.OS === 'web'
-              ? 'Offline — please reconnect to submit. Keep this tab open until you reconnect; your finished attempt is held in this browser session only.'
-              : 'Offline — please reconnect to submit.',
-            () => navigation.goBack(),
-          );
+          if (queued) {
+            notify(
+              'Offline',
+              Platform.OS === 'web'
+                ? 'Offline — please reconnect to submit. Keep this tab open until you reconnect; your finished attempt is held in this browser session only.'
+                : 'Offline — please reconnect to submit.',
+              () => navigation.goBack(),
+            );
+          } else {
+            // The queue write failed, so "reconnect to submit" would be a lie.
+            // Release the latch and keep the learner here: their answers are
+            // still in memory and retrying is the only way they survive.
+            submitted.current = false;
+            notify(
+              'Could not save your answers',
+              'You are offline and this device could not store your finished quiz. Stay on this screen and try again once you are back online.',
+              () => {},
+            );
+          }
         } else {
           // Port of the exam twin's [31] (2026-09-11): release the
           // double-submit latch on a NON-network failure, or a transient

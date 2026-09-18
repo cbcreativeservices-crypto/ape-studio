@@ -41,10 +41,27 @@ function rootTopRouteName(): string | undefined {
   return state?.routes?.[state.index]?.name;
 }
 
+/**
+ * The parked switch, as a COMPONENT BOUNDARY rather than an early return.
+ *
+ * This used to be `if (!FIRST_RUN_ENABLED) return null;` at the top of the
+ * component, above every hook, with a comment explaining that it was safe
+ * because the flag is a module constant. That was true, and it was still a
+ * landmine: the day anyone makes the flag dynamic — a remote config, a dev
+ * toggle, an A/B — the guard starts and stops running hooks between renders and
+ * React throws "rendered more hooks than during the previous render". The app
+ * has already been bitten by exactly that once (DashboardScreen, 2026-09-17),
+ * where it only showed up on a cold load.
+ *
+ * A wrapper costs one function and makes the mistake unavailable: `FirstRunFlow`
+ * has no conditional above its hooks, and an unmounted component runs none.
+ */
 export function FirstRunCoordinator() {
-  // Parked — never mount the first-run walkthrough on entry (owner 2026-09-08).
-  // Constant every render, so hook order stays consistent.
   if (!FIRST_RUN_ENABLED) return null;
+  return <FirstRunFlow />;
+}
+
+function FirstRunFlow() {
   const { complete, visited, hydrated } = useOnboardingFlow();
   const insets = useSafeAreaInsets();
   const [onMain, setOnMain] = useState(false);

@@ -203,6 +203,76 @@ async function googleTruth(
   return { revoked: body.purchaseState === 1, expiresAtMs: null };
 }
 
+/** The products we sell. A voided-purchase notification does not say which one
+ *  a token belongs to, and the purchases API demands one, so we try ours. */
+const GOOGLE_SUBS = ['academy_monthly', 'academy_annual'];
+const GOOGLE_INAPP = ['academy_lifetime'];
+
+/**
+ * Ask Google's VOIDED PURCHASES feed whether this token really was voided.
+ *
+ * ── WHY THIS FUNCTION HAD TO EXIST (2026-09-17, bug-hunt pass 2) ─────────────
+ *
+ * The voided-purchase branch below called `markRefunded` UNCONDITIONALLY. It
+ * computed a `truth` first and then ignored it — and `truth` was always null in
+ * any case, because the SKU it needed was read from `subscriptionNotification`,
+ * which a voided-purchase RTDN never carries.
+ *
+ * So on a public, unauthenticated endpoint, the JSON body alone could set a
+ * member's row to `status='refunded'` AND `member_since=null`. Nulling tenure is
+ * not a reversible flag: it destroys the evidence that the member ever held a
+ * paid month, which is the input to their certificate eligibility. This file's
+ * own banner says it "treats EVERY request body as a rumour" and "never as
+ * evidence of WHAT changed". On this one path that was simply not true.
+ *
+ * `purchases/voidedpurchases` is the authoritative list of refunds, read with
+ * OUR service-account credential, and it is keyed by exactly what we have: the
+ * purchase token. It is the right question to ask.
+ */
+async function googleWasVoided(purchaseToken: string): Promise<boolean | null> {
+  const pkg = Deno.env.get('ANDROID_PACKAGE_NAME');
+  const token = await googleAccessToken();
+  if (!pkg || !token || !purchaseToken) return null;
+  const base = `https://androidpublisher.googleapis.com/androidpublisher/v3/applications/${pkg}/purchases/voidedpurchases`;
+  let pageToken = '';
+  // The feed defaults to the last 30 days, which comfortably covers a refund we
+  // are being notified about right now. Bounded so a long feed cannot hang the
+  // request forever; five pages is 5,000 refunds.
+  for (let page = 0; page < 5; page++) {
+    const url = `${base}?maxResults=1000${pageToken ? `&token=${encodeURIComponent(pageToken)}` : ''}`;
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+    // An error is NOT an answer. Returning null (rather than false) keeps the
+    // caller in its "could not verify, change nothing" branch.
+    if (!res.ok) return null;
+    const body = (await res.json()) as {
+      voidedPurchases?: { purchaseToken?: string }[];
+      tokenPagination?: { nextPageToken?: string };
+    };
+    if ((body.voidedPurchases ?? []).some((v) => v.purchaseToken === purchaseToken)) return true;
+    pageToken = body.tokenPagination?.nextPageToken ?? '';
+    if (!pageToken) return false;
+  }
+  return false;
+}
+
+/** Second opinion: resolve the token against each product we actually sell and
+ *  report whether any of them says revoked. The token only resolves against the
+ *  SKU it was really bought with, so this identifies the product as a side
+ *  effect of verifying it. */
+async function googleTruthAnySku(
+  purchaseToken: string,
+): Promise<{ revoked: boolean; expiresAtMs: number | null } | null> {
+  for (const sku of GOOGLE_SUBS) {
+    const t = await googleTruth(purchaseToken, sku, 'subs');
+    if (t) return t;
+  }
+  for (const sku of GOOGLE_INAPP) {
+    const t = await googleTruth(purchaseToken, sku, 'in-app');
+    if (t) return t;
+  }
+  return null;
+}
+
 // ── the one thing this function exists to do ─────────────────────────────────
 type Store = ReturnType<typeof createClient>;
 
@@ -339,23 +409,37 @@ async function handleGoogle(admin: Store, body: unknown): Promise<Response> {
 
   // A voided purchase is Google's refund signal.
   if (voided?.purchaseToken) {
-    // CORRECTED 2026-09-17: this passed `packageName` where the SKU belongs, so
-    // the lookup built a URL with the package name as the product id and always
-    // 404'd — meaning it never verified anything. A voided notification does not
-    // carry the SKU, so try the subscription resource without one and fall back
-    // to the product resource; either resolving is evidence.
-    const sku = decoded.subscriptionNotification?.subscriptionId ?? '';
-    const truth =
-      (sku ? await googleTruth(voided.purchaseToken, sku, 'subs') : null) ??
-      (sku ? await googleTruth(voided.purchaseToken, sku, 'in-app') : null);
+    // VERIFY BEFORE REVOKING (rewritten 2026-09-17 — see googleWasVoided).
+    //
+    // Ask the voided-purchases feed first, since it is the authoritative record
+    // of this exact event and needs nothing the notification failed to give us.
+    // If it cannot answer, resolve the token against each product we sell and
+    // accept a revoked purchase state as the second opinion.
+    const listed = await googleWasVoided(voided.purchaseToken);
+    const truth = listed === true ? null : await googleTruthAnySku(voided.purchaseToken);
+    const confirmed = listed === true || truth?.revoked === true;
+
+    if (!confirmed) {
+      // Deliberately does nothing. `markRefunded` nulls `member_since`, which
+      // destroys the record of a paid month and with it the member's
+      // certificate eligibility — that is not a write to make on a rumour.
+      // Google re-sends a genuine voided purchase, and the feed is queryable
+      // for 30 days, so a transient failure here is recoverable; a wrongly
+      // cleared tenure is not.
+      console.warn('[store-notifications] google voided purchase NOT confirmed by the store — nothing changed');
+      return ok('google: voided purchase could not be confirmed with the store, nothing changed', {
+        listed,
+        resolved: truth ? truth.revoked : null,
+      });
+    }
 
     // The ORDER ID IS NOT USED as a match key. It is attacker-controlled on a
     // public endpoint and shares a namespace with access codes; only the
     // purchase token identifies a real purchase. See markRefunded.
     const n = await markRefunded(admin, [voided.purchaseToken], 'google voided purchase');
-    return ok('google: voided purchase', {
+    return ok('google: voided purchase confirmed by the store', {
       rows: n,
-      verified: truth ? truth.revoked : 'token did not resolve; refund applied on the voided-purchases feed alone',
+      via: listed === true ? 'voided-purchases feed' : 'purchase state',
     });
   }
 
@@ -365,7 +449,14 @@ async function handleGoogle(admin: Store, body: unknown): Promise<Response> {
     if (sub.notificationType !== 12) {
       return ok(`google: subscription notification ${sub.notificationType} is not a revocation, ignored`);
     }
-    const truth = await googleTruth(sub.purchaseToken, sub.subscriptionId ?? '', 'subs');
+    // The SKU comes from the body, which is a rumour like everything else in it.
+    // Try it first because it is usually right and is one call, then fall back
+    // to resolving against every product we sell rather than giving up — a
+    // missing or wrong subscriptionId used to mean this branch could never
+    // verify a real revocation.
+    const truth =
+      (sub.subscriptionId ? await googleTruth(sub.purchaseToken, sub.subscriptionId, 'subs') : null) ??
+      (await googleTruthAnySku(sub.purchaseToken));
     if (!truth) return ok('google: could not verify with the store, nothing changed');
     if (!truth.revoked) return ok('google: store reports no revocation, nothing changed');
     const n = await markRefunded(admin, [sub.purchaseToken], 'google SUBSCRIPTION_REVOKED');

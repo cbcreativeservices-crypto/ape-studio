@@ -96,7 +96,21 @@ export function markSeen(scope: string, id: CelebrationId): void {
   }
 }
 
-/** Test seam. Not called by the app. */
+/**
+ * Drop the in-memory set. Called by `resetAllLocalStores()` on every account
+ * change, and by the tests.
+ *
+ * Without it the departing user's "already celebrated" set survived the wipe
+ * and was then re-persisted under the NEW account on its next write - so the
+ * next member silently lost the celebration for their first certificate,
+ * because somebody else had already had it on this phone.
+ */
+export function resetCelebrationsSeen(): void {
+  seen = null;
+  loading = null;
+}
+
+/** Test seam, with the preload the tests use. */
 export function __resetCelebrationsSeenForTests(preload?: string[]): void {
   seen = preload ? new Set(preload) : null;
   loading = null;

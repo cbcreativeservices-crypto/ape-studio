@@ -6,7 +6,7 @@
  */
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
@@ -22,6 +22,17 @@ const HERO_N = 48;
 
 function HeroPlate({ width }: { width: number }) {
   const viz = skiaAvailable ? requireVizPlate() : null;
+  // RUN ONLY WHEN THE HOME IS ACTUALLY IN FRONT (design pass, 2026-09-17).
+  //
+  // `running` was a literal `true`, so this 2,200-particle physics simulation
+  // kept stepping every frame while the learner was two screens deep in a
+  // studio — which is where they spend most of their time in this lab. Every
+  // module already does this (CymaticsModuleScreen passes `focused`); the home,
+  // the heaviest surface of the lot, was the one that did not.
+  //
+  // It is also the lab's only Low-Light concern: this is the one thing in
+  // cymatics that starts moving before the learner asks for anything.
+  const focused = useIsFocused();
   // The classic square aluminum plate parked on its second excitable mode.
   const spec = DEFAULT_PLATE;
   const { grid, strength } = useMemo(() => {
@@ -48,7 +59,7 @@ function HeroPlate({ width }: { width: number }) {
       strength={strength}
       amplitude={0.8}
       view="particles"
-      running
+      running={focused}
       slowMo={false}
       particleCount={2200}
       particleSize={0.4}

@@ -18,6 +18,8 @@ import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { requireOptionalNativeModule } from 'expo-modules-core';
+import { useAudioOutputGate } from '../features/audio/AudioOutputGate';
+import { noteAudioActivity } from '../features/audio/audioOutputStore';
 import { unregisterFilePlayer } from '../features/audio/filePlayers';
 import { applyCeiling } from '../features/audio/outputCeiling';
 import { fonts } from '../theme/tokens';
@@ -52,6 +54,7 @@ function LivePlayer({ uri }: { uri: string }) {
   const player = expoAudio!.useAudioPlayer({ uri });
   const status = expoAudio!.useAudioPlayerStatus(player);
   const [plays, setPlays] = useState(0);
+  const { requestAudioOutput } = useAudioOutputGate();
 
   // THE THIRD PLAYER, AND THE ONE THAT WAS MISSED (2026-09-17).
   //
@@ -77,12 +80,27 @@ function LivePlayer({ uri }: { uri: string }) {
     if (!ready) return;
     if (playing) {
       player.pause();
-    } else {
+      return;
+    }
+    // THROUGH THE SAFETY GATE (2026-09-17, bug-hunt pass 2).
+    //
+    // This called `player.play()` directly. The Scenarios audio was therefore
+    // the one sound in the app that could be produced on a fresh install with
+    // the hearing-damage warning never having been shown — while that warning's
+    // own text says "Nothing plays until you turn it on deliberately."
+    //
+    // `requestAudioOutput()` resolves true straight away once output is already
+    // on, so this costs a returning user nothing; it resolves false for a free
+    // user behind the lab-preview glass and when the person declines, and in
+    // both cases the right outcome is simply not to play.
+    void requestAudioOutput().then((allowed) => {
+      if (!allowed) return;
       // A finished track restarts from the top; count each fresh start.
       if (status.didJustFinish || pos >= dur - 0.05) player.seekTo(0);
       player.play();
+      noteAudioActivity();
       setPlays((n) => n + 1);
-    }
+    });
   };
 
   return (

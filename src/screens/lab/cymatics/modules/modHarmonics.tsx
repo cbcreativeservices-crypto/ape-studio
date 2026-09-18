@@ -19,6 +19,40 @@ const AXIS_MAX = 6.5;
 
 type Ladder = { id: string; name: string; what: string; ratios: number[]; harmonic: boolean; note: string };
 
+/** Rung width, and the closest two rung CENTRES may sit and still be tappable
+ *  apart. 14 px of rung plus a couple of px of daylight. */
+const RUNG_W = 14;
+const MIN_GAP = RUNG_W + 3;
+
+/**
+ * Where each rung sits on the shared log axis — with overlapping neighbours
+ * pushed apart (design pass, 2026-09-17).
+ *
+ * The true log positions are correct and they are also, for one ladder, not
+ * usable: the circular membrane's 2.136 and 2.296 land about 11 px apart on a
+ * 390 pt phone and about 10 px apart on a 360 pt one, for 14 px targets. They
+ * overlapped, so the rung on top ate both taps and one of the six modes could
+ * not be heard at all — in the module whose entire argument is that these
+ * ratios are NOT the neat integers above them.
+ *
+ * The nudge is a single forward sweep: keep the first, and move any rung that
+ * is too close to its predecessor just far enough to clear it. Displacement is
+ * a couple of pixels at most and only ever where the axis is unreadable
+ * anyway — the ladder still reads as "bunched up here, spread out there",
+ * which is the fact being taught. If a nudge were ever large enough to distort
+ * that, the honest fix would be two rows, not a bigger shove.
+ */
+function rungPositions(ratios: number[], width: number): { r: number; x: number }[] {
+  const span = width - 26 - 24;
+  const out: { r: number; x: number }[] = [];
+  for (const r of ratios) {
+    const x = (Math.log(r) / Math.log(AXIS_MAX)) * span + 12;
+    const prev = out[out.length - 1];
+    out.push({ r, x: prev && x - prev.x < MIN_GAP ? prev.x + MIN_GAP : x });
+  }
+  return out;
+}
+
 export function HarmonicsModule({ width, help }: CymaticsModuleProps) {
   const plateRatios = useMemo(() => {
     const spec: PlateSpec = { ...DEFAULT_PLATE, shape: 'circle', exciter: { x: 0.85, y: 0.5 } };
@@ -54,8 +88,7 @@ export function HarmonicsModule({ width, help }: CymaticsModuleProps) {
           <Text style={P.caption}>What vibrates: {l.what}.</Text>
           <View style={{ height: 34, justifyContent: 'center' }}>
             <View style={styles.axis} />
-            {l.ratios.map((r) => {
-              const x = (Math.log(r) / Math.log(AXIS_MAX)) * (width - 26 - 24) + 12;
+            {rungPositions(l.ratios, width).map(({ r, x }) => {
               const on = sel?.ladder === l.id && sel.ratio === r;
               return (
                 <Pressable key={r} onPress={() => void play(l.id, r)} onLongPress={() => help('harmonics')} hitSlop={8} style={[styles.rung, { left: x - 7 }, on && styles.rungOn]} accessibilityRole="button" accessibilityLabel={`${l.name}, ratio ${r.toFixed(2)}, ${formatHz(F0 * r)}`} />

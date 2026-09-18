@@ -441,7 +441,16 @@ export function MembraneView(p: MembraneViewProps) {
   const showMesh = mesh != null && (view === 'heat' || view === 'phase' || view === 'nodes' || view === 'section');
 
   return (
-    <View style={{ width, height }} {...pan.panHandlers}>
+    // ANNOUNCE THE STAGE (design pass, 2026-09-17). The plate and liquid views
+    // both describe themselves; this one said nothing at all, so the drum and
+    // the loudspeaker were the only instruments in the lab invisible to a
+    // screen reader. Same sentence shape as vizPlate, so the three read alike.
+    <View
+      style={{ width, height }}
+      accessible
+      accessibilityLabel={`${isSpeaker ? 'Loudspeaker' : 'Drum head'} display, ${MEMBRANE_VIEW_LABELS[view].toLowerCase()} view, response ${Math.round(p.strength * 100)} percent`}
+      {...pan.panHandlers}
+    >
       <Canvas style={{ width, height }}>
         {!isSpeaker && !is3d ? (
           <Group>

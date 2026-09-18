@@ -143,8 +143,25 @@ export async function recordSoundSafetyAck(input: {
   }
 }
 
-/** Test seam. Not called by the app. */
-export function __resetSoundSafetyAckForTests(): void {
+/**
+ * Drop the in-memory record. Called by `resetAllLocalStores()` on every account
+ * change, and by the tests.
+ *
+ * WHY THIS IS NOT MERELY TIDY (2026-09-17, bug-hunt pass 2). The account wipe
+ * deletes the stored key, but `cached` is a module-level variable that survives
+ * it, and `isAcknowledged()` reads `cached` and nothing else. So after user A
+ * signed out, user B - or a guest - turned on audio and the hearing-damage
+ * warning did not appear, because the app still believed A's acceptance.
+ *
+ * It is worse than a skipped dialog. This module exists to produce an evidence
+ * record of exactly what text a person accepted before sound was allowed, and
+ * no record was written for B at all - so the one person who actually used the
+ * app has no acceptance on file.
+ */
+export function resetSoundSafetyAck(): void {
   cached = null;
   loaded = false;
 }
+
+/** Test seam, kept as the name the existing tests import. */
+export const __resetSoundSafetyAckForTests = resetSoundSafetyAck;

@@ -116,6 +116,14 @@ export function FinalExamScreen({ navigation, route }: Props) {
     [payload],
   );
 
+  /**
+   * Set when a submit failed AND could not be queued. While it holds a finish
+   * time, the screen retries on a timer with that ORIGINAL time — the learner
+   * finished when they finished, and a retry must not cost them the minutes
+   * they spent offline.
+   */
+  const [retryFinishMs, setRetryFinishMs] = useState<number | null>(null);
+
   const doSubmit = useCallback(
     async (submittedAtMs?: number) => {
       if (!payload || submitted.current) return;
@@ -132,6 +140,7 @@ export function FinalExamScreen({ navigation, route }: Props) {
       };
       try {
         const result = await submitFinalExam(args);
+        setRetryFinishMs(null); // a retry loop, if one was running, has done its job
         await clearExamIntent(awardType, awardId);
         // REPLACE the exam with its result rather than popToTop()+navigate
         // (launch audit 2026-09-09). FinalExam/FinalExamResult live on the ROOT
@@ -161,11 +170,22 @@ export function FinalExamScreen({ navigation, route }: Props) {
               () => navigation.goBack(),
             );
           } else {
-            // Do NOT release the latch and do NOT leave the screen: staying here
-            // with the answers in memory is the only remaining chance to submit.
+            // THE QUEUE WRITE FAILED. Storage is full, or the queue could not be
+            // read and we refused to clobber it. The answers now exist in
+            // exactly one place: `answers.current`, in memory, on this screen.
+            //
+            // An earlier version of this branch told the learner to keep the app
+            // open and it would submit — while holding `submitted.current` at
+            // true, which makes `doSubmit` a no-op forever. Nothing could ever
+            // have submitted. Telling someone their graded capstone is being
+            // retried while nothing is retrying is the worst outcome in this
+            // file, so the retry is now real: release the latch and keep trying
+            // on a timer for as long as they leave the screen open.
+            submitted.current = false;
+            setRetryFinishMs(submittedAtMs ?? Date.parse(submittedAt));
             notify(
               'Could not save your exam',
-              'You are offline and this device could not store your answers. Stay on this screen and keep the app open — reconnect and it will submit. Do not close the app.',
+              'You are offline and this device could not store your answers. Keep this screen open — it will keep trying and will submit the moment you reconnect. Your finish time is preserved.',
               () => {},
             );
           }
@@ -183,6 +203,20 @@ export function FinalExamScreen({ navigation, route }: Props) {
     },
     [payload, awardType, awardId, awardName, navigation],
   );
+
+  /* ---- the retry loop that makes the "keep this screen open" promise true ----
+     Held through a ref so the interval never closes over a stale doSubmit, and
+     so re-creating doSubmit does not restart the timer. Unmounting clears it,
+     which is correct: there is nothing left in memory to submit. ---- */
+  const doSubmitRef = useRef(doSubmit);
+  doSubmitRef.current = doSubmit;
+  useEffect(() => {
+    if (retryFinishMs == null) return;
+    const t = setInterval(() => {
+      void doSubmitRef.current(retryFinishMs);
+    }, 15000);
+    return () => clearInterval(t);
+  }, [retryFinishMs]);
 
   /* ---- countdown (never pauses; force-submit at 0:00) ---- */
   useEffect(() => {

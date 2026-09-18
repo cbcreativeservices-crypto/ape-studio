@@ -70,9 +70,20 @@ export function stopAllFilePlayers(): number {
   let stopped = 0;
   for (const p of [...live]) {
     try {
-      // Drop the level as well as pausing. If a platform ignores a pause on a
-      // player mid-buffer, a zero volume still means silence.
-      if (typeof p.volume === 'number') p.volume = 0;
+      // PAUSE ONLY — do NOT zero the volume (corrected 2026-09-17).
+      //
+      // This used to also set `volume = 0` as belt and braces, on the theory
+      // that a platform might ignore a pause mid-buffer. Nothing ever set it
+      // back: `applyCeiling` runs on the CREATE branch of all three player
+      // owners, and expo-audio's `volume` survives `replace()`, so a player
+      // reused for the next clip stayed silent. The result was that using the
+      // emergency mute — or simply leaving the app idle for twenty minutes —
+      // permanently broke playback until the learner left the screen and came
+      // back, with the transport still showing the progress bar moving.
+      //
+      // A speculative guard that certainly breaks playback is worse than the
+      // rare platform quirk it was guarding against. `pause()` is the contract
+      // expo-audio actually gives us, so that is what this asks for.
       p.pause?.();
       stopped += 1;
     } catch {

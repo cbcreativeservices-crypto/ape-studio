@@ -38,6 +38,8 @@ import { resetLocal as resetPublicProfile } from '../profile/publicProfile';
 import { setChainValue } from '../../screens/lab/calc/chainStore';
 import { resetLocal as resetDetectiveSolved } from '../../screens/lab/meter/modules/modMeterC';
 import { resetLocal as resetCareerFinderStore } from '../careerfinder/store';
+import { resetSoundSafetyAck } from '../audio/soundSafetyAck';
+import { resetCelebrationsSeen } from '../celebration/celebrationSeen';
 
 /**
  * Keys that MUST survive an account wipe: device-hardware calibration (per
@@ -45,6 +47,20 @@ import { resetLocal as resetCareerFinderStore } from '../careerfinder/store';
  * overrides. Everything else under `ape:*` is user data and is removed.
  */
 const KEEP: ReadonlySet<string> = new Set<string>([
+  // A GRADED FINAL EXAM THAT HAS NOT REACHED THE SERVER (2026-09-17).
+  //
+  // This was being swept by the generic `ape:*` rule, with nothing anywhere
+  // mentioning it — unlike the quiz and study queues, which are dropped
+  // deliberately and by name, each with a written reason. So a learner who sat
+  // the capstone offline, was told "your exam is saved and will be submitted
+  // automatically", and then signed out, lost it silently.
+  //
+  // Keeping it is now safe: every queued row records the user it belongs to and
+  // `replayExamSubmissions` submits only the current session's rows, so it can
+  // no longer be credited to whoever signs in next. A guest `total` wipe still
+  // removes it below — a guest cannot sit a graded exam in the first place.
+  'ape:finalExamQueue',
+  'ape:finalExamQueue:damaged', // its quarantine copy, for the same reason
   'ape:splCalOffset', // device mic calibration — hardware (governance R1)
   'ape:deviceId', // stable per-install id for single-device login (survives switch)
   'ape:dev:commercialMode', // dev-only override
@@ -87,7 +103,13 @@ export async function clearLocalAccountData(opts?: { total?: boolean }): Promise
     // either way: it is device hardware calibration, the install id the
     // single-device login needs, and dev-only overrides — never user memory.
     const toRemove = keys.filter(
-      (k) => k.startsWith('ape:') && !KEEP.has(k) && (opts?.total === true || !isOnboardingFlag(k)),
+      (k) =>
+        k.startsWith('ape:') &&
+        // A guest is wiped 100% clean, so `total` overrides the exam-queue
+        // entries too — but never the hardware calibration, the install id or
+        // the dev overrides, which are not user memory.
+        !(KEEP.has(k) && !(opts?.total === true && k.startsWith('ape:finalExamQueue'))) &&
+        (opts?.total === true || !isOnboardingFlag(k)),
     );
     if (toRemove.length > 0) {
       await AsyncStorage.multiRemove(toRemove);
@@ -146,4 +168,14 @@ export function resetAllLocalStores(): void {
   // consistent (owner debug audit 2026-08-21).
   clearQueuedBatches();
   clearQueuedSubmissions();
+  // The hearing-damage warning acceptance (2026-09-17). The stored key is swept
+  // by the sweep above, but `isAcknowledged()` reads a module-level mirror that
+  // is not - so the NEXT person on this phone got sound with no warning, and no
+  // acceptance record of their own was ever written. This is the safety gate;
+  // it is the one entry here that must never be missed.
+  resetSoundSafetyAck();
+  // The "already celebrated" set is the departing user's. Left in memory it was
+  // re-persisted under the new account, and the next member lost the
+  // celebration for their first certificate to somebody else's history.
+  resetCelebrationsSeen();
 }

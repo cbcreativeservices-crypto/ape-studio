@@ -35,7 +35,25 @@ const IDLE_CUTOFF_MS = 10_000;
 
 function isNetworkError(e: unknown): boolean {
   const msg = e instanceof Error ? e.message : String(e);
-  return /network|fetch failed|Failed to fetch|timeout|abort/i.test(msg);
+  return /network|fetch failed|failed to fetch|fetch|timeout|timed out|abort|socket|econn|offline/i.test(msg);
+}
+
+/**
+ * A failure the server will never accept, however many times we send it.
+ *
+ * Only these drop a queued batch. Anything else — an expired JWT, a 500, a
+ * rejected enrolment that a re-sync will fix, an error shape nobody anticipated
+ * — is KEPT and retried on the next loop.
+ *
+ * This inverts the old rule, which dropped anything that was not recognisably a
+ * network error. That made an ordinary recoverable server error indistinguishable
+ * from a poisoned batch, and it deleted the learner's study time either way.
+ * Keeping a bad row costs one retry a minute; deleting a good one costs work the
+ * person actually did and cannot get back.
+ */
+function isPermanentRejection(e: unknown): boolean {
+  const msg = e instanceof Error ? e.message : String(e);
+  return /invalid_event|invalid_method|invalid_achievement|unknown_method|not_enrolled_permanently|malformed|constraint/i.test(msg);
 }
 
 // ---- Study-progress bus (Booth 2026-07-15) ----
@@ -136,8 +154,14 @@ export async function replayQueue(): Promise<void> {
       emitStudyProgress(); // queued progress landed — refresh any dashboards
     } catch (e) {
       if (isNetworkError(e)) return; // still offline — try next loop
+      if (!isPermanentRejection(e)) {
+        // Recoverable, or simply unrecognised. Keep it and move on to the next
+        // group so one bad batch cannot wedge the queue either.
+        console.warn('[study-sync] keeping queued batch after a retryable error:', (e as Error).message);
+        continue;
+      }
       // Poisoned batch (e.g. invalid_event): drop it rather than wedging the queue.
-      console.warn('[study-sync] dropping rejected queued batch:', (e as Error).message);
+      console.warn('[study-sync] dropping permanently rejected queued batch:', (e as Error).message);
       deleteQueuedBatches(g.map((r) => r.id));
     }
   }

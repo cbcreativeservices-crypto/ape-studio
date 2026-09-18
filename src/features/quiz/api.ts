@@ -205,18 +205,32 @@ export function enqueueSubmission(args: {
   submittedAt: string;
   focusLossCount: number;
   focusLossDuration: number;
-}): void {
-  upsertQueuedSubmission(
-    {
-      attempt_id: args.attemptId,
-      achievement_id: args.achievementId,
-      answers_json: JSON.stringify(args.answers),
-      submitted_at: args.submittedAt,
-      focus_loss_count: args.focusLossCount,
-      focus_loss_duration: args.focusLossDuration,
-    },
-    Date.now(),
-  );
+}): boolean {
+  // RETURNS WHETHER IT STORED (2026-09-17, bug-hunt pass 2).
+  //
+  // This was `void` and `upsertQueuedSubmission` is a bare synchronous SQLite
+  // write, so a throw — a full disk, a locked database — escaped through the
+  // caller's `catch` block, skipped its dialog entirely, and surfaced as an
+  // unhandled rejection off a `void doSubmit()`. The learner saw NO message at
+  // all and their finished attempt was gone. The final-exam twin was given this
+  // same treatment; the quiz was left behind.
+  try {
+    upsertQueuedSubmission(
+      {
+        attempt_id: args.attemptId,
+        achievement_id: args.achievementId,
+        answers_json: JSON.stringify(args.answers),
+        submitted_at: args.submittedAt,
+        focus_loss_count: args.focusLossCount,
+        focus_loss_duration: args.focusLossDuration,
+      },
+      Date.now(),
+    );
+    return true;
+  } catch (e) {
+    console.error('[quiz] could not queue the offline submission:', (e as Error)?.message);
+    return false;
+  }
 }
 
 /**
@@ -242,10 +256,24 @@ export async function replayQuizSubmissions(): Promise<
       await clearQuizIntent(r.achievement_id);
       results.push({ achievementId: r.achievement_id, result });
     } catch (e) {
-      if (/network|fetch/i.test((e as Error).message)) break; // still offline
-      // Finalized/errored attempt: idempotent replay already handled by the
-      // server; a hard reject means the row can't ever succeed — drop it.
-      console.warn('[quiz] dropping rejected queued submission:', (e as Error).message);
+      const msg = (e as Error)?.message ?? '';
+      // SAME RULE AS THE FINAL EXAM (2026-09-17). This tested only
+      // /network|fetch/, so a TIMEOUT, an ABORT or an expired JWT — none of
+      // which contains either word — fell straight through to the delete and
+      // permanently destroyed a graded attempt the server had never seen.
+      //
+      // A row is dropped ONLY on a positive, permanent rejection. Keeping an
+      // unrecognised one costs a duplicate call, which the server answers
+      // idempotently with the frozen result; dropping one costs the learner
+      // the work.
+      const transient = /network|fetch failed|failed to fetch|fetch|timeout|timed out|abort|socket|econn|offline/i.test(msg);
+      const permanent = /attempt_not_found|already_finalized|invalid_attempt|not_authenticated|user_not_found/i.test(msg);
+      if (transient) break; // still offline — leave this row and every row after it
+      if (!permanent) {
+        console.warn('[quiz] keeping queued submission after an unrecognised error:', msg);
+        continue;
+      }
+      console.warn('[quiz] dropping permanently rejected queued submission:', msg);
       deleteQueuedSubmission(r.attempt_id);
     }
   }

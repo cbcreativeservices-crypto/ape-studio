@@ -66,15 +66,26 @@ function fakePlayer(opts: { throwOnPause?: boolean } = {}) {
 describe('file players can be silenced', () => {
   beforeEach(() => __resetFilePlayersForTests());
 
-  it('a registered player is paused AND taken to zero', () => {
+  it('a registered player is paused', () => {
     const p = fakePlayer();
     registerFilePlayer(p);
     assert.equal(stopAllFilePlayers(), 1);
     assert.equal(p.paused, 1);
     assert.equal(p.playing, false);
-    // Belt and braces: a platform that ignores a pause mid-buffer still goes
-    // silent, which is the outcome the warning text promised.
-    assert.equal(p.volume, 0);
+  });
+
+  it('stopping does NOT touch the volume — nothing would ever restore it', () => {
+    // Regression guard. The first version of this also set `volume = 0` as belt
+    // and braces. Nothing ever set it back: the ceiling is applied on the CREATE
+    // branch of all three player owners and expo-audio's volume survives
+    // `replace()`, so a shake-mute or a 20-minute idle auto-mute left the next
+    // clip playing silently with its progress bar moving. Silence that outlives
+    // the mute is a bug, not extra safety.
+    const p = fakePlayer();
+    p.volume = 0.25;
+    registerFilePlayer(p);
+    stopAllFilePlayers();
+    assert.equal(p.volume, 0.25);
   });
 
   it('EVERY player is stopped even when one of them throws', () => {

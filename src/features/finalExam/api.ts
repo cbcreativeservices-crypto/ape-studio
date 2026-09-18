@@ -220,7 +220,31 @@ export async function submitFinalExam(args: SubmitArgs): Promise<ExamResult> {
 
 const QUEUE_KEY = 'ape:finalExamQueue';
 
-type QueuedExam = SubmitArgs & { awardType: AwardType; awardId: string };
+/**
+ * A queued exam now records WHOSE it is (2026-09-17).
+ *
+ * The queue used to be anonymous, which forced a choice between two bad
+ * outcomes on an account switch: drop it, and a learner who signs out loses a
+ * graded capstone they were promised was saved; keep it, and it replays under
+ * whoever signs in next and is credited to the wrong person.
+ *
+ * Stamping the row removes the dilemma. The queue survives an account change,
+ * and the replay submits only the rows belonging to the session doing the
+ * replaying. `userId` is optional so a queue written by an older build still
+ * parses; those rows are treated as the current user's, which is what they were.
+ */
+type QueuedExam = SubmitArgs & { awardType: AwardType; awardId: string; userId?: string | null };
+
+/** The signed-in user, or null. Never throws: a failed read must not stop a
+ *  submission being queued, so an unknown owner is recorded as null. */
+async function currentUserId(): Promise<string | null> {
+  try {
+    const { data } = await supabase.auth.getUser();
+    return data?.user?.id ?? null;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Read the queue, QUARANTINING anything unreadable rather than discarding it.
@@ -293,7 +317,7 @@ async function writeQueue(rows: QueuedExam[]): Promise<boolean> {
 export async function enqueueExamSubmission(row: QueuedExam): Promise<boolean> {
   const rows = await readQueue();
   const next = rows.filter((r) => r.attemptId !== row.attemptId);
-  next.push(row);
+  next.push({ ...row, userId: row.userId ?? (await currentUserId()) });
   // The boolean is the point: the caller must not tell the learner their exam
   // is safely queued when it is not.
   return writeQueue(next);
@@ -311,8 +335,17 @@ export async function replayExamSubmissions(): Promise<{ awardId: string; result
   const done: { awardId: string; result: ExamResult }[] = [];
   const remaining: QueuedExam[] = [];
   let offline = false;
+  const me = await currentUserId();
 
   for (const r of rows) {
+    // NOT THIS ACCOUNT'S EXAM — keep it, do not submit it. The other user may
+    // sign back in on this device, and their answers are still the only copy;
+    // submitting them here would credit a graded capstone to the wrong person.
+    // A row with no owner predates the stamp, so it belongs to whoever is here.
+    if (r.userId != null && me != null && r.userId !== me) {
+      remaining.push(r);
+      continue;
+    }
     if (offline) {
       remaining.push(r);
       continue;
