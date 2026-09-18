@@ -81,6 +81,7 @@ import { officialTopicName } from '../../data/officialTopicNames';
 import { Celebration } from '../../features/celebration/Celebration';
 import { celebration } from '../../features/celebration/catalog';
 import { useMethodCelebration } from '../../features/celebration/useMethodCelebration';
+import { useCredentialCelebration } from '../../features/celebration/useCredentialCelebration';
 import { customListLocked as customListLockedFn, studyMethodLocked } from '../../features/commercial/studyGate';
 import { supabase } from '../../lib/supabase';
 import { isRealAccount } from '../../features/commercial/realAccount';
@@ -560,6 +561,16 @@ export function DashboardScreen() {
   // attempt did, caught in the browser. The hook takes no arguments and hands
   // back `pick`, an ordinary function called later once the gates exist.
   const { pick: pickCelebration, dismiss: dismissCelebration } = useMethodCelebration();
+  // CREDENTIAL CELEBRATIONS (2026-09-17). The engine shipped with five of them
+  // and `credentialCelebration()` to choose between them, and NOTHING CALLED IT
+  // — so the biggest moment in the app passed in silence. Credentials are
+  // awarded server-side, so there is no client event to hook; this notices a
+  // credential that was not there last time. The Dashboard is where a learner
+  // lands after the quiz or exam that earns one.
+  //
+  // Same hook discipline as above: no arguments, called unconditionally at the
+  // top, and the work happens in a callback later.
+  const { check: checkCredentials } = useCredentialCelebration();
   const navigation = useNavigation<NativeStackNavigationProp<StudyStackParamList>>();
   const route = useRoute<RouteProp<StudyStackParamList, 'Dashboard'>>();
   // Topic → trophy art by NAME (owner 2026-08-07): v3 topic rows carry no
@@ -696,6 +707,23 @@ export function DashboardScreen() {
     useCallback(() => {
       scrollRef.current?.scrollTo({ y: 0, animated: false });
     }, []),
+  );
+
+  // Look for a newly earned credential each time this screen comes forward.
+  // `alive` matters: the check is a network read, and by the time it answers the
+  // learner may have navigated on — congratulating them over some other screen
+  // would be worse than congratulating them a moment later.
+  useFocusEffect(
+    useCallback(() => {
+      let alive = true;
+      void checkCredentials().then((c) => {
+        if (!alive || !c) return;
+        (navigation as any).navigate('Celebration', { id: c.event.id, values: c.values });
+      });
+      return () => {
+        alive = false;
+      };
+    }, [checkCredentials, navigation]),
   );
 
   // Record that the learner last sat on the Dashboard, so the Enrollments
