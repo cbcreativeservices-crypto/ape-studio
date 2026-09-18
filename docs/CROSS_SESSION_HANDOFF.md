@@ -26,6 +26,47 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 10:32 · ccode · fcd051ae
+changed: Close the two PUBLIC-execute holes and make weekly-concept delivery idempotent
+affects other side: YES — production grants and one new index changed.
+  · `refresh_academy_stats()` and `member_month_complete(uuid)` had Postgres's DEFAULT
+    EXECUTE grant to PUBLIC, so both were anon-callable with the shipped publishable key.
+    Revoked FROM PUBLIC (revoking from `anon` is a no-op while PUBLIC holds it — that was
+    tried first, 2026091803, and did nothing). ACLs now: refresh_academy_stats
+    {postgres} matching refresh_glossary_stats; member_month_complete {postgres,
+    authenticated}. `get_academy_stats` deliberately UNTOUCHED — its anon grant is how the
+    client reads the counters.
+  · ⚠️ WHEN YOU ADD A SECURITY DEFINER FUNCTION, REVOKE FROM PUBLIC, not from anon. Several
+    others still carry the default grant; the harmless ones are listed at the bottom of
+    SQL_REVOKE_public_execute.sql (2026091804 in the repo).
+  · New PARTIAL unique index `notification_concept_deliveries_daily` on
+    (user_id, category, ((scheduled_at at time zone 'UTC')::date)) WHERE status in
+    ('pending','delivered'). Partial on purpose: a 'failed' row must stay retryable, and a
+    full index would turn one transient failure into a permanent skip for that day.
+needs: nothing
+
+
+### 2026-09-18 10:12 · ccode · 6f7a89e7
+changed: Stage 2 applied — a certificate needs the Final Exam, and one complete paid month
+affects other side: YES — FOUR production functions were replaced. Flag is OFF, so behaviour
+  is unchanged today, but do not re-deploy older copies of any of these over the top:
+    evaluate_user_credentials      both branches gated on app_flags.certificate_requires_exam
+    submit_final_exam              grades at submit, RELEASES on tenure; writes 'held'
+    release_pending_credentials    NEW — awards + un-redacts when the month completes
+    discard_unreleased_credentials NEW — server-only; wipes held papers on an early exit
+    start_final_exam               now also refuses a HELD paper ('result_held')
+  · The cutover is ONE line: update app_flags set enabled=true where
+    key='certificate_requires_exam'. Rollback is the same line with false. DO NOT flip it
+    until the client ships — phones without the 'held' handling render a result screen that
+    does not know the outcome.
+  · attempt_status gained 'held' and 'discarded'. There is no CHECK on that column (verified);
+    if you ever add one, include both or every exam submit inside a first month will fail.
+  · release_pending_credentials should be called from validate-purchase after it writes
+    member_since, and from a daily cron. discard_unreleased_credentials from
+    store-notifications on a confirmed refund. NEITHER IS WIRED YET.
+needs: nothing
+
+
 ### 2026-09-18 09:27 · ccode · 88f2bcc1
 changed: correct the credential diagnosis: the auto-award gate is keyed to a dead curriculum
 affects other side: YES — read this before touching credentials. `evaluate_user_credentials`
