@@ -17,6 +17,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../theme/tokens';
+import { AccuracyNote } from '../../components/AccuracyNote';
 import type { RootStackParamList } from '../../navigation/types';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { startLabPreview } from '../../features/lab/labPreviewStore';
@@ -127,6 +128,11 @@ export function EarLabScreen({ navigation, route }: Props) {
         <View style={{ flexShrink: 1 }}>
           <Text style={styles.title}>{headerTitle}</Text>
           <Text style={styles.subtitle}>{headerSub}</Text>
+          {/* Standing rule: every lab steers the user to a dedicated CALIBRATED
+              instrument for real measurement — this app teaches, and the phone's
+              mic and audio path are uncalibrated. Added 2026-09-17 after a
+              bug-hunt pass found this lab had no note at all. */}
+          <AccuracyNote style={styles.accuracyNote} />
         </View>
       </View>
 
@@ -316,6 +322,7 @@ const styles = StyleSheet.create({
   back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 15.5, letterSpacing: 0.8, color: colors.textPrimary },
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
+  accuracyNote: { marginTop: 8, alignSelf: 'flex-start' },
   scroll: { padding: 16, paddingBottom: 28, gap: 16 },
   intro: { fontFamily: fonts.barlowRegular, fontSize: 14.5, lineHeight: 21, color: colors.textSecondary, marginBottom: 2 },
 

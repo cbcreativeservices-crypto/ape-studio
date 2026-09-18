@@ -20,6 +20,7 @@ import { ScrollLockProvider } from '../scrollLock';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
+import { AccuracyNote } from '../../../components/AccuracyNote';
 import { animationsAllowed } from '../../../features/settings/a11y';
 import { loadPagedProgress, resetPagedProgress, savePagedProgress, type PagedProgress } from '../../../features/lab/pagedProgress';
 
@@ -193,7 +194,21 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone }: {
       ) : null}
       <ScrollView ref={scrollRef} scrollEnabled={!dragLocked} contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 24 }]}>
         <ScrollLockProvider value={setDragLocked}>
-        {page === 0 ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+        {page === 0 ? (
+          <>
+            <Text style={styles.subtitle}>{subtitle}</Text>
+            {/* THE HONESTY CHIP, ON EVERY LAB BUILT ON THIS SHELL (2026-09-17).
+                Standing rule: every lab and tool steers the user to a dedicated
+                CALIBRATED instrument for real measurement — the app teaches, the
+                phone's mic and audio path are uncalibrated. A bug-hunt pass found
+                thirteen labs with no <AccuracyNote/> at all and seven of them were
+                these, all missing it for the same reason: the shell they share
+                never drew one, so each lab would have had to remember
+                separately. Putting it in the shell is why it is now true of all
+                of them, including any lab added later. */}
+            <AccuracyNote style={styles.accuracy} />
+          </>
+        ) : null}
         <Page ctx={ctx} />
         </ScrollLockProvider>
       </ScrollView>
@@ -234,6 +249,7 @@ const styles = StyleSheet.create({
   kicker: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1.5 },
   title: { color: colors.textPrimary, fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.5 },
   subtitle: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12.5, marginBottom: 2 },
+  accuracy: { marginTop: 6, marginBottom: 4, alignSelf: 'flex-start' },
   dots: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 16, paddingVertical: 6 },
   dot: { width: 14, height: 6, borderRadius: 3, backgroundColor: '#26262b' },
   dotDone: { backgroundColor: colors.green },

@@ -25,6 +25,7 @@ import { GlassButton } from '../../../components/GlassButton';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { registerLabUnits, useLabCompletion } from '../../../features/lab/labCompletion';
 import { colors, fonts } from '../../../theme/tokens';
+import { AccuracyNote } from '../../../components/AccuracyNote';
 import { CABLE_LESSONS, CABLE_UNITS, CORE_QUESTION } from './data/lessons';
 import { CableStepNavCtx } from './lessons/bits';
 import { LESSON_BODIES } from './lessons';
@@ -93,6 +94,11 @@ export function CableLabScreen() {
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>CABLE & CONNECTOR FUNDAMENTALS</Text>
           <Text style={styles.subtitle}>Identify it. Understand it. Connect it safely.</Text>
+          {/* Standing rule: every lab steers the user to a dedicated CALIBRATED
+              instrument for real measurement — this app teaches, and the phone's
+              mic and audio path are uncalibrated. Added 2026-09-17 after a
+              bug-hunt pass found this lab had no note at all. */}
+          <AccuracyNote style={styles.accuracyNote} />
         </View>
       </View>
       <Text style={styles.coreQ}>{CORE_QUESTION}</Text>
@@ -169,6 +175,7 @@ const styles = StyleSheet.create({
   back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.2, color: colors.textPrimary },
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
+  accuracyNote: { marginTop: 8, alignSelf: 'flex-start' },
   coreQ: {
     fontFamily: fonts.barlowMedium,
     fontSize: 13,

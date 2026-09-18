@@ -71,6 +71,50 @@ describe('fmt() — the one gate between a bad number and the student', () => {
   it('the smallest denormal does not collapse to "0"', () => assert.notEqual(fmt(5e-324), '0'));
 });
 
+describe('fmt() — the numbers an audio engineer actually reads', () => {
+  // toPrecision switches to exponent form once the exponent reaches the
+  // precision, and the old code let that through: 48000 printed as "4.800e4".
+  // Every sample rate, every frequency above 10 kHz and every impedance in the
+  // tens of thousands came out in a notation nobody uses for 48 kHz.
+  it('THE BUG: sample rates print as sample rates', () => {
+    assert.equal(fmt(48000), '48000');
+    assert.equal(fmt(44100), '44100');
+    assert.equal(fmt(96000), '96000');
+    assert.equal(fmt(192000), '192000');
+  });
+
+  it('the whole 1e4–1e7 band stays decimal', () => {
+    assert.equal(fmt(10000), '10000');
+    assert.equal(fmt(13640), '13640');
+    assert.equal(fmt(999999), '1000000'); // 4 significant figures, still decimal
+    assert.ok(!fmt(5000000).includes('e'), `got ${fmt(5000000)}`);
+  });
+
+  it('significant figures are still respected', () => {
+    // 4 sig figs of 123456 is 123500, not 123456.
+    assert.equal(fmt(123456), '123500');
+    assert.equal(fmt(123456, 6), '123456');
+  });
+
+  it('small and ordinary numbers are untouched', () => {
+    assert.equal(fmt(9999), '9999');
+    assert.equal(fmt(1000), '1000');
+    assert.equal(fmt(100.5), '100.5');
+    assert.equal(fmt(0.001), '0.001');
+    assert.equal(fmt(0), '0');
+  });
+
+  it('scientific notation is kept where it earns its place', () => {
+    // Outside the range these calculators work in, it is the right answer.
+    assert.ok(fmt(1e9).includes('e'), `got ${fmt(1e9)}`);
+    assert.ok(fmt(1e-6).includes('e'), `got ${fmt(1e-6)}`);
+  });
+
+  it('negatives behave the same', () => {
+    assert.equal(fmt(-48000), '-48000');
+  });
+});
+
 describe('fmtInt() — the helper for counts interpolated into prose', () => {
   it('NaN → "—", so a step never reads "NaN taps"', () => assert.equal(fmtInt(NaN), '—'));
   it('Infinity → "—"', () => assert.equal(fmtInt(Infinity), '—'));

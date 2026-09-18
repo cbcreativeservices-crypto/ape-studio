@@ -136,17 +136,32 @@ export function unitsFor(q: QuantityKind, subset?: string[]): UnitDef[] {
   return picked.length ? picked : all;
 }
 
-/** Format a number at `sig` significant figures, engineering-friendly. */
+/**
+ * Format a number at `sig` significant figures, engineering-friendly.
+ *
+ * ── EVERY SAMPLE RATE USED TO PRINT AS SCIENTIFIC NOTATION (2026-09-17) ────
+ *
+ * `toPrecision(4)` switches to exponent form as soon as the exponent reaches the
+ * precision — so 48000 came out as "4.800e4", 44100 as "4.410e4" and 192000 as
+ * "1.920e5". The previous code SAW the exponent form (it normalised "e+" to "e")
+ * and let it through, so every frequency, impedance and data size above 10,000
+ * was displayed to an audio engineer in a notation nobody uses for 48 kHz.
+ *
+ * Scientific notation is kept where it earns its place — very large and very
+ * small values, outside the range these calculators work in.
+ */
 export function fmt(x: number, sig = 4): string {
   if (!Number.isFinite(x)) return '—';
   if (x === 0) return '0';
   const ax = Math.abs(x);
   if (ax >= 1e7 || ax < 1e-4) return x.toExponential(Math.max(0, sig - 1)).replace('e+', 'e');
-  // toPrecision can also emit exponent form (13640 @ 4 sig figs →
-  // "1.364e+4") — keep the house 'e' style consistent with the branch above.
-  const s = x.toPrecision(sig).replace('e+', 'e');
+  const p = x.toPrecision(sig);
+  // Between 1e4 and 1e7, toPrecision gives exponent form. Round-tripping through
+  // Number brings it back to plain decimal at the same significant figures:
+  // "4.800e+4" → 48000. This band is where the app's real numbers live.
+  if (p.includes('e')) return String(Number(p));
   // Strip trailing zeros after a decimal point (keep integers intact).
-  return s.includes('.') ? s.replace(/\.?0+$/, '') : s;
+  return p.includes('.') ? p.replace(/\.?0+$/, '') : p;
 }
 
 /** Format a whole-number count for interpolation into text/steps/labels —

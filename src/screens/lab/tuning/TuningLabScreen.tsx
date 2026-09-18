@@ -10,6 +10,7 @@ import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-nati
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
+import { AccuracyNote } from '../../../components/AccuracyNote';
 import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
 import { animationsAllowed } from '../../../features/settings/a11y';
 import { C4_ET } from '../../../features/tuning/tuningMath';
@@ -136,6 +137,11 @@ export function TuningLabScreen() {
       ) : null}
 
       <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 24 }]}>
+        {/* This lab LISTENS through the phone's microphone, so the uncalibrated
+            caveat is the substance rather than a formality — a tuner is exactly
+            the thing someone would otherwise trust as a measurement. It had no
+            note at all until 2026-09-17. */}
+        <AccuracyNote style={styles.accuracyNote} detail="Pitch is read through this phone's microphone and audio path, neither of which is calibrated. Use a dedicated tuner for work that has to be right." />
         {def.objective ? (
           <View style={styles.objective} accessible accessibilityLabel={`In this chapter: ${def.objective}`}>
             <Text style={styles.objectiveKicker}>IN THIS CHAPTER</Text>
@@ -192,6 +198,7 @@ const styles = StyleSheet.create({
   listRow: { minHeight: 44, justifyContent: 'center', paddingHorizontal: 12 },
   listText: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 13 },
   scroll: { paddingHorizontal: 16, paddingTop: 6, gap: 10 },
+  accuracyNote: { marginBottom: 10, alignSelf: 'flex-start' },
   objective: { borderLeftWidth: 2, borderLeftColor: colors.amberLabel, paddingLeft: 10, paddingVertical: 2, gap: 2 },
   objectiveKicker: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1.5 },
   objectiveText: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18 },

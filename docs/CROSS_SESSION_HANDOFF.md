@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 00:35 · ccode · 25dc9923
+changed: bug-hunt brief: what pass 2 fixed and what is still open
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-18 00:33 · ccode · 6b335c22
 changed: disclosure, the dose warning, and a failed read that read as "you have none"
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">

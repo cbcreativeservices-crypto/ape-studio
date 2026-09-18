@@ -9,6 +9,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
+import { AccuracyNote } from '../../../components/AccuracyNote';
 import { confirmDialog } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
@@ -63,6 +64,11 @@ export function AmpLabHomeScreen() {
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>AMPLIFIER PRINCIPLES LAB</Text>
           <Text style={styles.subtitle}>From transistors and transformers to amplifier classes</Text>
+          {/* Standing rule: every lab steers the user to a dedicated CALIBRATED
+              instrument for real measurement — this app teaches, and the phone's
+              mic and audio path are uncalibrated. Added 2026-09-17 after a
+              bug-hunt pass found this lab had no note at all. */}
+          <AccuracyNote style={styles.accuracyNote} />
         </View>
       </View>
       <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 24 }]}>
@@ -131,6 +137,7 @@ const styles = StyleSheet.create({
   back: { color: colors.textPrimary, fontSize: 30, lineHeight: 32, paddingHorizontal: 4 },
   title: { color: colors.textPrimary, fontFamily: fonts.oswaldSemiBold, fontSize: 18, letterSpacing: 1.2 },
   subtitle: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12.5 },
+  accuracyNote: { marginTop: 8, alignSelf: 'flex-start' },
   scroll: { paddingHorizontal: 16, gap: 10 },
   body: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19 },
   progressRow: { flexDirection: 'row', justifyContent: 'space-between' },
