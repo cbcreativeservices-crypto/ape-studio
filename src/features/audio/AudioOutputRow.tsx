@@ -10,14 +10,27 @@
  *
  * Styling follows features/settings/LowLightLayer.tsx so it sits consistently in
  * the Profile row stack.
+ *
+ * ── THE FIRST-USE SAFETY GATE APPLIES HERE TOO (fixed 2026-09-17) ────────────
+ *
+ * This row used to call `enableAudioOutput()` directly, which meant the Profile
+ * screen was a way to turn sound on WITHOUT ever seeing the Sound Safety
+ * Warning — defeating the entire point of a mandatory first-use gate. Found by
+ * clicking through the app; no test or typecheck could see it, because the call
+ * is perfectly valid code.
+ *
+ * It now asks the gate. On a first use the gate raises the safety warning and
+ * then its own 5-second hold, so the hold here becomes the user's INTENT to
+ * enable rather than the enabling itself. Once acknowledged, the gate's fast
+ * path enables immediately and the extra step is invisible.
  */
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { HoldToActivate } from '../../components/HoldToActivate';
 import { colors, fonts } from '../../theme/tokens';
+import { useAudioOutputGate } from './AudioOutputGate';
 import {
   IDLE_MS,
   disableAudioOutput,
-  enableAudioOutput,
   noteAudioActivity,
   useAudioOutputEnabled,
 } from './audioOutputStore';
@@ -31,6 +44,7 @@ const IDLE_MIN = Math.round(IDLE_MS / 60000);
 const RED = '#e0342f';
 
 export function AudioOutputRow() {
+  const { requestAudioOutput } = useAudioOutputGate();
   const on = useAudioOutputEnabled();
 
   if (on) {
@@ -69,8 +83,11 @@ export function AudioOutputRow() {
       <HoldToActivate
         label="HOLD 5s TO TURN ON AUDIO OUTPUT"
         onComplete={() => {
-          enableAudioOutput();
-          noteAudioActivity();
+          // Through the gate, never around it — the gate owns the first-use
+          // safety warning, and it is the only thing entitled to enable sound.
+          void requestAudioOutput().then((ok) => {
+            if (ok) noteAudioActivity();
+          });
         }}
       />
     </View>
