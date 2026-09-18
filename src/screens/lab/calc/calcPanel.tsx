@@ -16,7 +16,7 @@ import { memo, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import type { CalcFunction, CalcTable, CalcValues, FieldDef, OutputVal } from './calcTypes';
-import { fmt, parseList, unitsFor } from './calcUnits';
+import { fmt, parseList, parseQuantity, unitsFor } from './calcUnits';
 
 export function defaultUnitIdx(f: FieldDef): number {
   if (!f.defaultUnit) return 0;
@@ -41,7 +41,12 @@ export function buildValues(
     } else {
       const units = unitsFor(f.quantity, f.unitIds);
       const u = units[(unitIdx[f.key] ?? defaultUnitIdx(f)) % units.length];
-      const x = u.toBase(parseFloat(text));
+      // `parseQuantity`, not `parseFloat` — see its comment. Returning null here
+      // means the panel shows no result, which is the correct outcome for input
+      // we cannot read with certainty.
+      const typed = parseQuantity(text);
+      if (typed === null) return null;
+      const x = u.toBase(typed);
       if (!Number.isFinite(x)) return null;
       out[f.key] = x;
     }

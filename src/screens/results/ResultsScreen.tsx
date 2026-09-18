@@ -121,6 +121,24 @@ export function ResultsScreen({ navigation, route }: Props) {
   }
 
   /* ---- scored states ---- */
+  //
+  // THE DENOMINATOR IS WHAT WAS ACTUALLY SERVED (2026-09-17, bug-hunt pass 2).
+  //
+  // This printed the hardcoded QUIZ_SIZE / QUIZ_PASS. Those describe the
+  // ratified 30-question shape, and the live server does not require it for v3:
+  // `submit_quiz` accepts any size 1-30 and grades `pass_mark = greatest(1,
+  // n - 2)`, while the draw is capped at the topic's quizzable term count. So an
+  // 18-question topic counted "QUESTION 1 OF 18" during the quiz and then
+  // reported "16 / 30" here — and told the learner to "Score 28+" on a quiz
+  // that cannot produce 28.
+  //
+  // `questions` is the array actually served, handed to this screen by
+  // QuizScreen. Falling back to QUIZ_SIZE covers a restored navigation state
+  // that arrives without it, where the 30-question shape is the best guess we
+  // have.
+  const servedCount = questions.length > 0 ? questions.length : QUIZ_SIZE;
+  const passMark = questions.length > 0 ? Math.max(1, questions.length - 2) : QUIZ_PASS;
+
   const partial = result.outcome === 'partial_pass' && !isPractice;
   const timedOut = result.outcome === 'timed_out';
 
@@ -131,7 +149,7 @@ export function ResultsScreen({ navigation, route }: Props) {
           <Text style={styles.resultsEyebrow}>{isPractice ? 'RESULTS · PRACTICE' : 'RESULTS'}</Text>
           <View style={styles.scoreRow}>
             <Text style={styles.scoreBig}>{result.score}</Text>
-            <Text style={styles.scoreOf}>/ {QUIZ_SIZE}</Text>
+            <Text style={styles.scoreOf}>/ {servedCount}</Text>
           </View>
           {timedOut && <Text style={styles.timedOut}>Time expired — not passed</Text>}
         </View>
@@ -144,7 +162,7 @@ export function ResultsScreen({ navigation, route }: Props) {
                   from the retired 25-question quiz. The ratified pass mark is
                   QUIZ_PASS (28 of 30) — interpolate it so the copy can never
                   misstate the requirement on a graded surface again. */}
-              Score {QUIZ_PASS}+ on the previous topic to earn the trophy and continue further.
+              Score {passMark}+ on the previous topic to earn the trophy and continue further.
             </Text>
           </View>
         )}

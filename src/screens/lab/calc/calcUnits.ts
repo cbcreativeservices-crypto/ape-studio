@@ -161,9 +161,84 @@ export function speedOfSoundAir(tempC: number): number {
   return 331.3 * Math.sqrt(1 + tempC / 273.15);
 }
 
+/**
+ * Parse ONE typed quantity, strictly. Returns null for anything it cannot read
+ * with certainty — the caller then shows no result at all.
+ *
+ * ── WHY THIS IS NOT `parseFloat` (2026-09-17, bug-hunt pass 2) ────────────
+ *
+ * Every calculator field ran through `parseFloat`, which stops at the first
+ * character it does not understand and returns what it has. So a user typing a
+ * resistance the way people write resistances — `10,000` — got **10 ohms**, and
+ * the RC cutoff came back a thousand times wrong with nothing on screen to
+ * suggest it. `12k`, `47 uF` and `1 234` failed the same way, each silently.
+ *
+ * These calculators are the owner's stated SOURCE OF TRUTH, used in the field
+ * around high voltage and rigging loads. A wrong answer delivered confidently is
+ * the worst thing this code can do, and it is strictly worse than no answer.
+ * So: read what is unambiguous, and refuse everything else.
+ *
+ *   "10,000"      → 10000    grouping, the separator is followed by three digits
+ *   "1,234,567.8" → 1234567.8  grouping plus a decimal point
+ *   "1.234,5"     → 1234.5   the LAST separator is the decimal one
+ *   "10.5"        → 10.5
+ *   "-3e-4"       → -0.0003
+ *   "10,5"        → null     decimal comma or a typo'd group? do not guess
+ *   "12abc"       → null     parseFloat said 12
+ *   ""            → null
+ */
+export function parseQuantity(raw: string): number | null {
+  // Spaces, underscores and narrow no-break spaces are all used as grouping
+  // separators by real keyboards and real paste sources; none of them can mean
+  // anything else inside a number, so they are simply removed.
+  const t = raw.replace(/[\s_\u00a0\u202f']/g, '');
+  if (t === '') return null;
+
+  const dots = (t.match(/\./g) ?? []).length;
+  const commas = (t.match(/,/g) ?? []).length;
+  let normalised = t;
+
+  if (dots > 0 && commas > 0) {
+    // Both present: whichever comes LAST is the decimal separator.
+    const decimal = t.lastIndexOf('.') > t.lastIndexOf(',') ? '.' : ',';
+    const grouping = decimal === '.' ? ',' : '.';
+    if ((decimal === '.' ? dots : commas) > 1) return null; // two decimal points
+    normalised = t.split(grouping).join('');
+    if (decimal === ',') normalised = normalised.replace(',', '.');
+  } else if (commas > 0) {
+    // Commas only. Grouping if EVERY comma is followed by exactly three digits;
+    // otherwise it is a decimal comma or a typo, and both are ambiguous here.
+    const groupsOk = /^[+-]?\d{1,3}(,\d{3})+$/.test(t);
+    if (!groupsOk) return null;
+    normalised = t.split(',').join('');
+  } else if (dots > 1) {
+    return null;
+  }
+
+  // Nothing but a number may remain — this is what rejects `12abc`, `47uF` and
+  // a lone `-` or `.`, all of which `parseFloat` was happy to interpret.
+  if (!/^[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?$/.test(normalised)) return null;
+
+  const n = Number(normalised);
+  return Number.isFinite(n) ? n : null;
+}
+
+/**
+ * A list field, e.g. several distances to average.
+ *
+ * Separators are commas, semicolons and whitespace — so a GROUPED number cannot
+ * be written here, and `parseQuantity` is applied per token with that in mind.
+ * A token that does not parse makes the whole list invalid rather than being
+ * dropped: silently discarding one of five measurements changes the answer and
+ * says nothing.
+ */
 export function parseList(raw: string): number[] {
-  return raw
-    .split(/[,;\s]+/)
-    .map((t) => parseFloat(t))
-    .filter((n) => Number.isFinite(n));
+  const tokens = raw.split(/[,;\s]+/).filter((t) => t !== '');
+  const out: number[] = [];
+  for (const t of tokens) {
+    const n = parseQuantity(t);
+    if (n === null) return [];
+    out.push(n);
+  }
+  return out;
 }

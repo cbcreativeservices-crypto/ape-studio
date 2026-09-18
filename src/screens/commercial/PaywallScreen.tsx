@@ -9,7 +9,7 @@
  * the source of truth at purchase. Store product IDs: features/commercial/
  * iapProducts.ts. Owner setup: docs/APE_IAP_PLAN_2026_08_21.md.
  */
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -42,6 +42,11 @@ export function PaywallScreen({ navigation }: Props) {
   // Whether in-app purchasing is usable in THIS build (native module present +
   // store connection). Assume true until init says otherwise.
   const [available, setAvailable] = useState(true);
+  /** The latest tier, readable from inside the purchase callbacks — which were
+   *  created before the refresh they are reacting to, so the `entitlement`
+   *  they close over is always the pre-purchase one. */
+  const tierRef = useRef(entitlement);
+  tierRef.current = entitlement;
 
   useEffect(() => {
     let alive = true;
@@ -72,7 +77,14 @@ export function PaywallScreen({ navigation }: Props) {
         .then((ok) => {
           if (!alive) return;
           setBusy(false);
-          if (ok) {
+          // `ok` ONLY MEANS A READ COMPLETED (2026-09-17). It resolves true for
+          // 'anonymous', 'free' and 'lapsed' as well, so this congratulated
+          // people whose membership had not landed — including the guest above,
+          // who has just been charged and has no entitlement at all. The
+          // welcome now requires the tier to actually say academy; anything
+          // else falls through to the honest retry below, which is the correct
+          // place for "the money moved but we cannot see it yet".
+          if (ok && tierRef.current === 'academy') {
             welcome();
             return;
           }
@@ -133,6 +145,31 @@ export function PaywallScreen({ navigation }: Props) {
       );
       return;
     }
+    // NO ACCOUNT, NO PURCHASE (2026-09-17, bug-hunt pass 2).
+    //
+    // This checked `resolved`, `isMember` and `available` and never whether
+    // there was an account to attach the purchase to. A guest could therefore be
+    // CHARGED: the store takes the money, `validate-purchase` answers
+    // `not_authenticated`, and the buyer is shown "check your connection and
+    // retry" — which will never work, because the problem is not the
+    // connection. Restore fails identically, and nothing anywhere suggests
+    // making an account. `finishTransaction` only runs on success, so on Play
+    // the charge sits unacknowledged and auto-refunds after 72 hours; on the
+    // App Store it does not.
+    //
+    // 'anonymous' is the tier for a guest or a device-key session, and `resolved`
+    // above already guarantees this is a real read and not a not-known-yet.
+    if (entitlement === 'anonymous') {
+      Alert.alert(
+        'Create an account first',
+        'Membership is attached to your account, so you need one before you can buy. Creating it takes a moment, and your progress on this device comes with you.',
+        [
+          { text: 'Not now', style: 'cancel' },
+          { text: 'Create account', onPress: () => (navigation as any).navigate('Auth') },
+        ],
+      );
+      return;
+    }
     if (!available) {
       Alert.alert(
         'Purchasing unavailable',
@@ -152,6 +189,21 @@ export function PaywallScreen({ navigation }: Props) {
   // purchase was found" on a network failure, and the old catch just stopped
   // the spinner with no message).
   const onRestore = () => {
+    // Restoring re-grants a purchase to an ACCOUNT, so a guest has nowhere to
+    // put it: the receipt verifies, `validate-purchase` answers
+    // `not_authenticated`, and the person is told to check their connection for
+    // a problem that is not their connection (2026-09-17). Say the true thing.
+    if (resolved && entitlement === 'anonymous') {
+      Alert.alert(
+        'Sign in to restore',
+        'A previous purchase is restored to the account it was bought with, so sign in or create your account first — then try Restore again.',
+        [
+          { text: 'Not now', style: 'cancel' },
+          { text: 'Sign in', onPress: () => (navigation as any).navigate('Auth') },
+        ],
+      );
+      return;
+    }
     setBusy(true);
     restorePurchases()
       .then(async (result) => {

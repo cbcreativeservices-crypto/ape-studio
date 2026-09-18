@@ -227,6 +227,29 @@ const MemberGated = {
   CymaticsLab: withMembershipPreview(CymaticsHomeScreen),
   ProductionLab: withMembershipPreview(ProductionLabScreen),
 
+  // ── THE CHILD ROUTES OF THE TWO FLAGSHIP LABS (2026-09-17) ────────────────
+  //
+  // `CymaticsLab` and `ProductionLab` are members-only and gated above. These
+  // are the screens INSIDE them, and they were registered through the
+  // orientation wrapper alone, which checks nothing — the same confusion that
+  // left 31 lab routes open in pass 1, one level deeper.
+  //
+  // Nobody reaches them without passing the parent today only because
+  // `isClaimedPath` happens to reject `labs/` URLs of more than two segments —
+  // and that rejection is itself filed as a bug to fix. Fixing it without this
+  // would hand a non-member both flagship labs, fully unlocked, by URL.
+  //
+  // `membershipGating.test.ts` derives its set from catalog LEAVES, so it
+  // structurally cannot see a child route. They are listed here by hand, and
+  // the test's own second assertion still proves each one really wraps.
+  CymaticsModule: withMembershipPreview(withAmplitudeOrientation(CymaticsModuleScreen)),
+  CymaticsPlateStudio: withMembershipPreview(withAmplitudeOrientation(PlateStudioScreen)),
+  CymaticsLiquidStudio: withMembershipPreview(withAmplitudeOrientation(LiquidStudioScreen)),
+  CymaticsMembraneStudio: withMembershipPreview(withAmplitudeOrientation(MembraneStudioScreen)),
+  CymaticsGallery: withMembershipPreview(withAmplitudeOrientation(GalleryScreen)),
+  ProductionStage: withMembershipPreview(ProductionStageScreen),
+  ProductionActivity: withMembershipPreview(ProductionActivityScreen),
+
   // ── ADDED 2026-09-17, after a bug-hunt pass found the hole ────────────────
   //
   // These are members-only in labCatalog.ts and were registered with `Gated.X`
@@ -477,13 +500,13 @@ export function RootNavigator() {
         initialParams={{ lab: 'postprod' }}
       />
       <Stack.Screen name="ProductionLab" component={MemberGated.ProductionLab} />
-      <Stack.Screen name="ProductionStage" component={Gated.ProductionStage} />
-      <Stack.Screen name="ProductionActivity" component={Gated.ProductionActivity} />
-      <Stack.Screen name="CymaticsModule" component={Gated.CymaticsModule} />
-      <Stack.Screen name="CymaticsPlateStudio" component={Gated.CymaticsPlateStudio} />
-      <Stack.Screen name="CymaticsLiquidStudio" component={Gated.CymaticsLiquidStudio} />
-      <Stack.Screen name="CymaticsMembraneStudio" component={Gated.CymaticsMembraneStudio} />
-      <Stack.Screen name="CymaticsGallery" component={Gated.CymaticsGallery} />
+      <Stack.Screen name="ProductionStage" component={MemberGated.ProductionStage} />
+      <Stack.Screen name="ProductionActivity" component={MemberGated.ProductionActivity} />
+      <Stack.Screen name="CymaticsModule" component={MemberGated.CymaticsModule} />
+      <Stack.Screen name="CymaticsPlateStudio" component={MemberGated.CymaticsPlateStudio} />
+      <Stack.Screen name="CymaticsLiquidStudio" component={MemberGated.CymaticsLiquidStudio} />
+      <Stack.Screen name="CymaticsMembraneStudio" component={MemberGated.CymaticsMembraneStudio} />
+      <Stack.Screen name="CymaticsGallery" component={MemberGated.CymaticsGallery} />
       <Stack.Screen name="WaveLab" component={WaveLabHomeScreen} />
       <Stack.Screen name="WaveModule" component={Gated.WaveModule} />
       <Stack.Screen name="EarTrainingLab" component={MemberGated.EarTrainingLab} />

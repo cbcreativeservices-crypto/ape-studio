@@ -302,6 +302,24 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
     // EXCEPT a guest launch (no session at app start): a no-account user is
     // factory-reset every session, our stated no-tracking promise (owner
     // 2026-08-17), so the mirror from any previous guest run is wiped too.
+    /**
+     * The DEVICE IDENTITY for a session: a real account's uid, or null for a
+     * guest — including an anonymous session, which has a uid of its own.
+     *
+     * ⚠️ This is the twin of `accountLocalSync.syncLocalToIdentity`, which
+     * carries the same warning and got this fix on its own. This one passed
+     * `session.user.id` straight through, so the glossary's TEMPORARY DEVICE KEY
+     * read as "a different user signed in" and wiped every `ape:localMethod:*`
+     * key — which for a guest is their only record of anything they have
+     * studied. It fired once on accepting the key and again every time the
+     * 7-day purge issued a new one.
+     *
+     * The dialog the person has just agreed to says, in as many words, that
+     * none of their progress is stored with it (2026-09-17).
+     */
+    const identityOf = (session: { user?: { id?: string } } | null | undefined): string | null =>
+      isRealAccount(session as never) ? (session?.user?.id ?? null) : null;
+
     const clearLocalOnUserChange = (uid: string | null) => {
       if ((uidSeeded.current && uid !== lastUid.current) || (!uidSeeded.current && uid === null)) {
         void clearAllLocalMethodStates();
@@ -313,7 +331,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
     void supabase.auth
       .getSession()
       .then(async ({ data }) => {
-        clearLocalOnUserChange(data.session?.user?.id ?? null);
+        clearLocalOnUserChange(identityOf(data.session));
         await deriveWithRetry(isRealAccount(data.session));
       })
       .catch(() => {
@@ -350,7 +368,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
             }).catch(() => {});
           }
         }
-        clearLocalOnUserChange(session?.user?.id ?? null);
+        clearLocalOnUserChange(identityOf(session));
         void deriveWithRetry(isRealAccount(session));
       }
     });

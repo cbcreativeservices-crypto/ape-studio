@@ -105,7 +105,7 @@ import { HelpKey } from '../../components/HelpKey';
 import { COACH_KEYS, useCoachMark } from '../../lib/coachMark';
 import { LearningIntroSheet } from '../../features/intro/LearningIntroSheet';
 import { getCourseIntro, getTopicIntro, isIntroEmpty } from '../../features/intro/learningIntros';
-import { replayQuizSubmissions, QUIZ_SIZE, QUIZ_PASS} from '../../features/quiz/api';
+import { replayQuizSubmissions } from '../../features/quiz/api';
 import { replayExamSubmissions } from '../../features/finalExam/api';
 import { onStudyProgress } from '../../features/study/sync';
 import { useScenarioExempt } from '../../features/study/scenarioExempt';
@@ -723,7 +723,11 @@ export function DashboardScreen() {
       for (const { result } of replayed) {
         notify(
           'Offline quiz submitted',
-          `Score ${result.score}/${QUIZ_SIZE} — ${result.outcome.replace(/_/g, ' ')}.`,
+          // No denominator: a replayed submission carries the score and the
+          // outcome, not the number of questions that were served, and v3
+          // quizzes are variable-size (see ResultsScreen). Printing "/30" here
+          // was simply wrong on any topic with fewer than 30 quizzable terms.
+          `Score ${result.score} — ${result.outcome.replace(/_/g, ' ')}.`,
         );
       }
       const examReplayed = await replayExamSubmissions().catch(() => []);
@@ -1604,15 +1608,18 @@ export function DashboardScreen() {
           </View>
           {/* Topic/course intro buttons removed (user request 2026-07-18) — the
               intros still auto-show once before beginning (when content exists). */}
-          {/* [46b] (2026-09-11): the twin of the [46] fix on ResultsScreen —
-              this one was missed. The threshold was the literal "28+", which
-              only happens to be right because QUIZ_PASS is 28 today; it would
-              have survived the 25→30 / 24→28 migration silently the same way
-              ResultsScreen's stale "24+" did. Interpolate so the copy can
-              never drift from the ratified pass mark. */}
+          {/* [46b] (2026-09-11) interpolated QUIZ_PASS here so the copy could not
+              drift from the ratified pass mark. 2026-09-17 supersedes that: there
+              is no single ratified pass mark any more. The server grades v3 at
+              `greatest(1, served - 2)` and the draw is capped by the topic's
+              quizzable term count, so an 18-question topic passes at 16 — and
+              this screen does not know the count, because `best_genuine_score`
+              arrives without it. A number we cannot source is worse than no
+              number, so the requirement is now stated without one. Results,
+              which does know the size, prints the exact figure. */}
           {provisional && (
             <Text style={styles.provisionalNote}>
-              Provisional access — score {QUIZ_PASS}+ on the previous topic to earn its trophy and
+              Provisional access — pass the previous topic's quiz to earn its trophy and
               continue further.
             </Text>
           )}
@@ -1854,9 +1861,15 @@ export function DashboardScreen() {
                 : quizState === 'partial'
                   ? '#ffc04a'
                   : '#ff6a5e';
+            // SCORE WITHOUT AN INVENTED DENOMINATOR (2026-09-17). The rack
+            // reads `best_genuine_score` out of the progress row, which does not
+            // carry how many questions that attempt served — and v3 quizzes are
+            // variable-size, so `/30` was a guess presented as a fact. Showing
+            // the score alone is less informative and true; the exact figure is
+            // one tap away on Results, which does know the size.
             const qShort =
               quizState === 'passed' || quizState === 'partial'
-                ? `${score}/${QUIZ_SIZE}`
+                ? `${score}`
                 : quizState === 'ready'
                   ? 'READY'
                   : 'LOCKED';
@@ -1866,8 +1879,8 @@ export function DashboardScreen() {
                 : quizState === 'ready'
                   ? 'ALL GATES MET'
                   : quizState === 'passed'
-                    ? `PASSED ${score}/${QUIZ_SIZE}`
-                    : `RETRY FOR ${QUIZ_PASS}+`;
+                    ? `PASSED · ${score}`
+                    : 'RETRY TO PASS';
             return (
               <>
                 <View style={styles.methodRow}>

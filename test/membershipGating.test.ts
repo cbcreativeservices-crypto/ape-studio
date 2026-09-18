@@ -102,6 +102,31 @@ describe('members-only labs are gated at the navigator', () => {
     assert.deepEqual(ungated, [], `members-only routes with no membership check:\n  ${ungated.join('\n  ')}`);
   });
 
+  it('the CHILD routes of the two flagship labs are gated too', () => {
+    // The set above is derived from catalog LEAVES, and a lab's inner screens
+    // are not leaves — so this whole family was invisible to it. They were
+    // found in pass 2, one level below the 31 that pass 1 found, registered
+    // through the orientation wrapper that checks nothing.
+    //
+    // They are safe today only because `isClaimedPath` happens to reject
+    // `labs/` URLs of more than two segments, which is itself filed as a bug to
+    // fix — so this is written down rather than left to that accident.
+    const children = [
+      'CymaticsModule',
+      'CymaticsPlateStudio',
+      'CymaticsLiquidStudio',
+      'CymaticsMembraneStudio',
+      'CymaticsGallery',
+      'ProductionStage',
+      'ProductionActivity',
+    ];
+    const ungated = children
+      .map((r) => [r, reg.get(r)] as const)
+      .filter(([, c]) => !c || !/MemberGated\./.test(c))
+      .map(([r, c]) => `${r} — ${c ?? 'NOT REGISTERED'}`);
+    assert.deepEqual(ungated, [], `paid-lab child routes with no membership check:\n  ${ungated.join('\n  ')}`);
+  });
+
   it('every MemberGated entry really wraps with withMembershipPreview', () => {
     // Guards the other direction: an entry added to the map without the wrapper
     // would satisfy the test above while gating nothing.
