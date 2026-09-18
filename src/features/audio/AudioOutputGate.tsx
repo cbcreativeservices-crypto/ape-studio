@@ -165,7 +165,18 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
       // it needs no cooperation from seventeen screens that have each forgotten
       // to ask. Re-locking is consistent with the app's rule that sound is
       // always turned on deliberately.
-      if (state === 'background' || state === 'inactive') {
+      //
+      // 'background' ONLY, NOT 'inactive' (corrected 2026-09-17 after a
+      // verification pass). On iOS `inactive` also fires for Control Centre,
+      // the app switcher, a notification banner and — worst — the microphone
+      // permission prompt. Since this re-locks the gate, treating those as
+      // "the user left" would silence a lab the user is still looking at and
+      // demand another five-second hold to get it back; in the permission-prompt
+      // case it would kill the very lab that raised the prompt.
+      //
+      // 'background' is the state that actually means they have gone, and it is
+      // the one where the Android Oboe stream would otherwise play on forever.
+      if (state === 'background') {
         if (isAudioOutputEnabled()) panicMuteAudio();
         return;
       }

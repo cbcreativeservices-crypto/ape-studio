@@ -138,6 +138,11 @@ export function FinalExamScreen({ navigation, route }: Props) {
    * they spent offline.
    */
   const [retryFinishMs, setRetryFinishMs] = useState<number | null>(null);
+  /** Readable from inside `doSubmit`, which closes over the value as it was
+   *  when it was created — so the state alone cannot tell it whether a retry
+   *  loop is already running. */
+  const retryFinishMsRef = useRef<number | null>(null);
+  retryFinishMsRef.current = retryFinishMs;
 
   const doSubmit = useCallback(
     async (submittedAtMs?: number) => {
@@ -156,6 +161,7 @@ export function FinalExamScreen({ navigation, route }: Props) {
       try {
         const result = await submitFinalExam(args);
         setRetryFinishMs(null); // a retry loop, if one was running, has done its job
+        retryFinishMsRef.current = null;
         // The server has it — the local copy has done its job and must not be
         // restorable into anything.
         await clearAttemptDraft(args.attemptId);
@@ -200,12 +206,21 @@ export function FinalExamScreen({ navigation, route }: Props) {
             // file, so the retry is now real: release the latch and keep trying
             // on a timer for as long as they leave the screen open.
             submitted.current = false;
+            const already = retryFinishMsRef.current != null;
             setRetryFinishMs(submittedAtMs ?? Date.parse(submittedAt));
-            notify(
-              'Could not save your exam',
-              'You are offline and this device could not store your answers. Keep this screen open — it will keep trying and will submit the moment you reconnect. Your finish time is preserved.',
-              () => {},
-            );
+            // TELL THEM ONCE (corrected 2026-09-17). The retry fires every 15
+            // seconds, and `notify` QUEUES — so on a disk-full device this put
+            // the learner in an un-escapable dialog storm on the one screen they
+            // had just been told to keep open. The first failure explains the
+            // situation; the rest retry silently, which is what the message
+            // already promised would happen.
+            if (!already) {
+              notify(
+                'Could not save your exam',
+                'You are offline and this device could not store your answers. Keep this screen open — it will keep trying and will submit the moment you reconnect. Your finish time is preserved.',
+                () => {},
+              );
+            }
           }
         } else {
           // [31] (2026-09-07): release the double-submit latch on a non-network

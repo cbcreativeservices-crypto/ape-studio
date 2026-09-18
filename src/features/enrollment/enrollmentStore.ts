@@ -67,6 +67,73 @@ function persist() {
 let syncTimer: ReturnType<typeof setTimeout> | null = null;
 let syncRetries = 0;
 const MAX_SYNC_RETRIES = 4;
+
+/**
+ * Has this identity's list been reconciled against the server yet?
+ *
+ * ── THE SYNC ONLY EVER WENT ONE WAY (2026-09-17, bug-hunt pass 2) ─────────
+ *
+ * `sync_my_enrollments` pushes the device's list up and nothing anywhere reads
+ * it back — a repo-wide search for the table returns only the write. That is
+ * fine for the case it was designed for (one device, editing its own list) and
+ * quietly destructive for the case nobody wrote down: a REINSTALL, or a second
+ * device. The fresh install seeds the two free topics, signs in, pushes that
+ * seed over the master list, and per governance R3 the backend gates v3 study
+ * and quizzes on exactly that list — so a paying member loses access to topics
+ * they enrolled in, and the app shows them as enrolled while the server refuses.
+ *
+ * The store's own history records the same shape happening once already, when a
+ * sign-out/sign-in inside the retry window pushed an empty list and "wiped THEIR
+ * enrollment master list".
+ */
+let reconciled = false;
+
+/** Is the local list still the untouched new-device default? */
+function isPristineSeed(l: EnrollTopic[]): boolean {
+  if (l.length === 0) return true;
+  if (l.length !== FREE_ENROLL_GS.length) return false;
+  return l.every((e) => FREE_ENROLL_GS.includes(e.gs) && !e.favorite && e.active);
+}
+
+/**
+ * Read the server's list once per identity, BEFORE the first push.
+ *
+ * Deliberately defensive. There is no documented read path for this table, so a
+ * missing policy or grant simply means the select errors — in which case this
+ * does nothing at all and the behaviour is exactly what it was. If the read does
+ * work, a reinstalling member gets their enrollments back.
+ *
+ * It adopts the server list ONLY when the device's list is still the untouched
+ * seed. Anyone who has actually edited their enrollments on this phone is
+ * holding the phone, and their intent wins.
+ */
+async function reconcileFromServer(): Promise<void> {
+  if (reconciled) return;
+  reconciled = true; // one attempt per identity; resetLocal clears it
+  try {
+    const { data, error } = await supabase
+      .from('user_topic_enrollments')
+      .select('gs, favorite, active, position')
+      .order('position', { ascending: true });
+    if (error) {
+      // No read path (or an outage). Say so once rather than silently — if this
+      // is a missing grant, it is worth someone seeing.
+      console.warn('[enrollment] could not read the server list:', error.message);
+      return;
+    }
+    const rows = (data ?? []) as { gs: number; favorite: boolean | null; active: boolean | null }[];
+    if (rows.length === 0) return; // the server has nothing to teach us
+    if (!isPristineSeed(list)) return; // the user has edited this device's list
+
+    list = rows
+      .filter((r) => typeof r.gs === 'number')
+      .map((r) => ({ gs: r.gs, favorite: !!r.favorite, active: r.active !== false }));
+    persist();
+    emit();
+  } catch (e) {
+    console.warn('[enrollment] server list read threw:', (e as Error)?.message);
+  }
+}
 function scheduleServerSync(delayMs = 800) {
   if (syncTimer) clearTimeout(syncTimer);
   syncTimer = setTimeout(() => {
@@ -76,6 +143,9 @@ function scheduleServerSync(delayMs = 800) {
         // Guests (incl. an anonymous device key) keep enrollment device-local:
         // syncing would write a master list for a uid deleted within the week.
         if (!isRealAccount(data.session)) return;
+        // PULL BEFORE PUSH. Without this the first sync after a reinstall
+        // overwrites the master list with a two-topic seed — see reconciled.
+        await reconcileFromServer();
         // supabase-js RESOLVES with { error } — the old dead catch never saw RPC
         // errors, so a failed FINAL sync left the server master list stale with
         // no retry until the user next edited enrollment (backend gates v3
@@ -266,6 +336,9 @@ export function resetLocal(): void {
   if (syncTimer) clearTimeout(syncTimer);
   syncTimer = null;
   syncRetries = 0;
+  // The next identity must reconcile against ITS OWN server list, not inherit
+  // the departing user's "already checked".
+  reconciled = false;
   list = [];
   hydrated = false;
   hydrating = null;

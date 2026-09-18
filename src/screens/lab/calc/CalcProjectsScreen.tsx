@@ -17,7 +17,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
-import { QUANTITIES, fmt, type QuantityKind } from './calcUnits';
+import { QUANTITIES, fmt, parseQuantity, type QuantityKind } from './calcUnits';
 import type { Project } from './workflowModel';
 import { workflowLimitsFor } from './workflowModel';
 import { workflowStore } from './workflowStore';
@@ -127,7 +127,14 @@ export function CalcProjectsScreen() {
       const label = v.label.trim();
       const kind = PROJECT_KINDS[v.kindIdx].kind;
       const units = QUANTITIES[kind];
-      const base = units[v.unitIdx % units.length].toBase(parseFloat(v.raw));
+      // `parseQuantity`, not `parseFloat` (2026-09-17). A saved project value is
+      // WORSE than a typed one: `10,000 Ω` persisted as 10 Ω under a name the
+      // user chose, and CalcWorkflowRunScreen imports that `baseValue` straight
+      // into calculator fields — so a 1000× error became a named, reusable
+      // record that looks deliberate. A row we cannot read is skipped, exactly
+      // as an incomplete one already was.
+      const typed = parseQuantity(v.raw);
+      const base = typed === null ? Number.NaN : units[v.unitIdx % units.length].toBase(typed);
       if (!label || !Number.isFinite(base)) continue; // skip incomplete rows honestly
       if (out.some((x) => x.label === label)) continue; // labels stay unique
       out.push({ label, quantity: kind, baseValue: base });

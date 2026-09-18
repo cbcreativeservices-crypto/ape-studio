@@ -36,7 +36,7 @@ registerHooks({
   },
 });
 
-const { LAB_CATEGORIES } = await import('../src/screens/lab/labCatalog.ts');
+const { LAB_CATEGORIES, isMemberOnlyLabRoute } = await import('../src/screens/lab/labCatalog.ts');
 
 const NAV = readFileSync(new URL('../src/navigation/RootNavigator.tsx', import.meta.url), 'utf8');
 
@@ -102,6 +102,27 @@ describe('members-only labs are gated at the navigator', () => {
     assert.deepEqual(ungated, [], `members-only routes with no membership check:\n  ${ungated.join('\n  ')}`);
   });
 
+  it('THE WRAPPER IS NOT THE GATE — the predicate it calls must agree', () => {
+    // ── THE MOST IMPORTANT ASSERTION IN THIS FILE ───────────────────────
+    //
+    // The tests around it check the SOURCE TEXT of RootNavigator for
+    // `MemberGated.`, which is how the original 31-route hole was found. But
+    // `withMembershipPreview` does not gate on being wrapped — it gates on
+    // `isMemberOnlyLabRoute(route.name)`, which reads a map derived from the
+    // catalog and returns false for any route the catalog cannot name.
+    //
+    // So on 2026-09-17 eight routes were wrapped, passed this file's text
+    // check, and gated NOTHING: the four Cymatics studios, its gallery and
+    // module routes, and the two Production child screens. The deep links for
+    // them were then opened on the strength of that wrapping, removing the
+    // accidental protection that had been covering it. A pass-3 sweep found it.
+    //
+    // Asserting on the predicate itself is the only version of this test that
+    // could not have passed while the app was open.
+    const ungated = [...needed].filter((r) => !isMemberOnlyLabRoute(r));
+    assert.deepEqual(ungated, [], `routes wrapped but NOT members-only to the gate:\n  ${ungated.join('\n  ')}`);
+  });
+
   it('the CHILD routes of the two flagship labs are gated too', () => {
     // The set above is derived from catalog LEAVES, and a lab's inner screens
     // are not leaves — so this whole family was invisible to it. They were
@@ -119,11 +140,17 @@ describe('members-only labs are gated at the navigator', () => {
       'CymaticsGallery',
       'ProductionStage',
       'ProductionActivity',
+      // The shared target both named production routes point at. The catalog
+      // names PreProdLab / PostProdLab and has no row for this one.
+      'ProductionLab',
     ];
     const ungated = children
       .map((r) => [r, reg.get(r)] as const)
-      .filter(([, c]) => !c || !/MemberGated\./.test(c))
-      .map(([r, c]) => `${r} — ${c ?? 'NOT REGISTERED'}`);
+      // BOTH halves, because either alone is insufficient: the wrapper without
+      // the predicate gates nothing, and the predicate without the wrapper is
+      // never consulted.
+      .filter(([r, c]) => !c || !/MemberGated\./.test(c) || !isMemberOnlyLabRoute(r))
+      .map(([r, c]) => `${r} — ${c ?? 'NOT REGISTERED'}${isMemberOnlyLabRoute(r) ? '' : ' (predicate says NOT members-only)'}`);
     assert.deepEqual(ungated, [], `paid-lab child routes with no membership check:\n  ${ungated.join('\n  ')}`);
   });
 

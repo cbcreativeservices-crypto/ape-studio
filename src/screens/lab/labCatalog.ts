@@ -528,16 +528,54 @@ export function getCategory(id: string): LabCategory | undefined {
 // The derivation lives in ./labMembership (node-testable — no calc import).
 const LAB_ROUTE_MEMBERSHIP = computeLabRouteMembership(LAB_CATEGORIES);
 
+/**
+ * Members-only routes the CATALOG CANNOT NAME.
+ *
+ * ── WHY THIS EXISTS, AND WHY THE ABSENCE OF IT WAS A BLOCKER ─────────────
+ *
+ * `LAB_ROUTE_MEMBERSHIP` is derived from the catalog, and the catalog lists
+ * LABS. It has no vocabulary for the screens INSIDE a lab, or for a route that
+ * exists only as a shared target — so `isMemberOnlyLabRoute` returned false for
+ * every one of them, and `withMembershipPreview` (which asks exactly that
+ * question) let them straight through.
+ *
+ * Wrapping those routes in `MemberGated.*` in the navigator therefore did
+ * NOTHING, and on 2026-09-17 I compounded it: having "gated" them, I opened the
+ * matching deep links in `isClaimedPath`, retiring the accidental protection
+ * that had been covering the hole. A non-member opening
+ * `proaudio://labs/cymatics/plate` got the live members-only lab — no scrim,
+ * audio ungated, completion credited — in both flagship paid labs. Found by a
+ * pass-3 pattern sweep looking for exactly this shape of inert gate.
+ *
+ * The lesson is that the wrapper is not the gate; this predicate is. A route
+ * belongs here when it is reachable on its own and lives behind a paid lab.
+ */
+const MEMBER_ONLY_EXTRA_ROUTES: Record<string, string> = {
+  // Inside the Cymatics Lab (its own catalog row is `CymaticsLab`).
+  CymaticsModule: 'Cymatics Lab',
+  CymaticsPlateStudio: 'Cymatics Lab',
+  CymaticsLiquidStudio: 'Cymatics Lab',
+  CymaticsMembraneStudio: 'Cymatics Lab',
+  CymaticsGallery: 'Cymatics Lab',
+  // The production labs. The catalog names `PreProdLab` / `PostProdLab`; the
+  // navigator ALSO registers the shared `ProductionLab` target and the two
+  // child screens, none of which the catalog can see.
+  ProductionLab: 'Production Labs',
+  ProductionStage: 'Production Labs',
+  ProductionActivity: 'Production Labs',
+};
+
 /** True when EVERY catalog appearance of this screen route is members-only —
  *  so a non-member reaching it by any route (deep link, pendingLink resume, an
  *  Ear Lab row) should get the preview, never the live lab. */
 export function isMemberOnlyLabRoute(route: string): boolean {
+  if (route in MEMBER_ONLY_EXTRA_ROUTES) return true;
   return LAB_ROUTE_MEMBERSHIP.get(route)?.memberOnly ?? false;
 }
 
 /** The lab's display name for a screen route (for the preview upgrade sheet). */
 export function labRouteName(route: string): string | undefined {
-  return LAB_ROUTE_MEMBERSHIP.get(route)?.name;
+  return LAB_ROUTE_MEMBERSHIP.get(route)?.name ?? MEMBER_ONLY_EXTRA_ROUTES[route];
 }
 
 /** Grand total across everything (for the landing subtitle). */

@@ -173,11 +173,18 @@ type EntitlementContextValue = {
    *  or completing a purchase). Real read on every build — unlike
    *  setEntitlement, which is dev-only. NEVER REJECTS (error-triad audit
    *  2026-09-13: the un-guarded getSession here stranded three callers).
-   *  Resolves TRUE when a definitive tier was applied (or the refresh was
-   *  moot), FALSE when the read failed and the current tier was kept — a
-   *  caller that just took the user's money branches on this to offer an
-   *  honest retry instead of a spinner forever. */
-  refreshEntitlement: () => Promise<boolean>;
+   *  Resolves to THE TIER when a definitive one was applied (or the refresh
+   *  was moot), and FALSE when the read failed and the current tier was kept —
+   *  a caller that just took the user's money branches on this to offer an
+   *  honest retry instead of a spinner forever.
+   *
+   *  It returned a bare boolean until 2026-09-17. That let a caller ask "did a
+   *  read happen?" but not "is this person a member NOW?", which is the only
+   *  question worth asking after a charged purchase — and reading the
+   *  `entitlement` state instead cannot work, because the caller's `.then` runs
+   *  before React has applied the update. Every tier is truthy, so existing
+   *  truthiness checks are unchanged. */
+  refreshEntitlement: () => Promise<Entitlement | false>;
 };
 
 const EntitlementContext = createContext<EntitlementContextValue | null>(null);
@@ -191,6 +198,10 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
   // dead institutional path for inspection.
   const [commercialMode, setCommercialModeState] = useState<boolean>(FLAG_DEFAULTS.commercialMode);
   const [entitlement, setEntitlementState] = useState<Entitlement>('anonymous');
+  /** The current tier, readable synchronously — `refreshEntitlement` needs it
+   *  when a dev override is driving, and state is not readable in time there. */
+  const entitlementRef = useRef<Entitlement>('anonymous');
+  entitlementRef.current = entitlement;
   const [resolved, setResolved] = useState(false);
   /** DIFFERENT from `resolved`. `resolved` means "the first attempt finished,
    *  first paint may proceed" — it flips in a .finally() even when the read
@@ -381,8 +392,18 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
   // Re-read the server entitlement on demand (after redeeming an access code, a
   // purchase, etc.). Mirrors the effect's derive logic but is callable anytime.
   // Respects a dev tier override so it doesn't clobber the wordmark toggle.
-  const refreshEntitlement = useCallback(async (): Promise<boolean> => {
-    if (devOverrode.current) return true; // dev is driving — nothing to refresh
+  //
+  // RETURNS THE TIER (2026-09-17, after a verification pass). It used to return
+  // a bare boolean meaning "a read completed", and the Paywall had no way to ask
+  // the only question that matters after a charged purchase: is this person a
+  // member NOW? Reading the `entitlement` state instead does not work — the
+  // caller's `.then` is a microtask and React schedules the state update on a
+  // later task, so the value is always the pre-purchase one.
+  //
+  // Every tier is truthy and `false` still means "the read failed, tier kept",
+  // so existing truthiness checks are unaffected.
+  const refreshEntitlement = useCallback(async (): Promise<Entitlement | false> => {
+    if (devOverrode.current) return entitlementRef.current; // dev is driving
     // WHOLE BODY GUARDED (error-triad audit 2026-09-13). getSession() here was
     // the one un-guarded await on the purchase path: a secure-store read error
     // rejecting RIGHT AFTER a charged purchase propagated up through three
@@ -395,7 +416,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
       // Same test as the effect above — an ANONYMOUS session is still a guest.
       if (!isRealAccount(sess.session)) {
         setEntitlementState('anonymous');
-        return true;
+        return 'anonymous';
       }
       const { data, error } = await supabase
         .from('entitlements')
@@ -408,7 +429,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
       }
       const tier = academyTierFromRows((data ?? []) as EntRow[]);
       if (!devOverrode.current) setEntitlementState(tier);
-      return true;
+      return tier;
     } catch (e) {
       console.warn('[entitlement] refresh threw, keeping current tier:', (e as Error)?.message);
       return false;

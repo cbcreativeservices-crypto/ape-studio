@@ -123,8 +123,19 @@ export const FieldRow = memo(
     const units = unitsFor(field.quantity, field.unitIds);
     const unit = units[unitIdx % units.length];
     const isList = field.quantity === 'list';
-    const baseVal = isList ? NaN : unit.toBase(parseFloat(raw));
+    // `parseQuantity`, the SAME parser the answer uses (2026-09-17). While this
+    // was still `parseFloat`, the safety WARNING was computed from a different
+    // number than the result — so a value the calculator had refused could
+    // still be tested against the warn rule, and `10,000` warned as if it were
+    // 10. A warning and an answer that disagree about the input is worse than
+    // either being absent.
+    const typed = parseQuantity(raw);
+    const baseVal = isList || typed === null ? NaN : unit.toBase(typed);
     const warn = field.warn && Number.isFinite(baseVal) && field.warn.test(baseVal) ? field.warn.msg : null;
+    // Say WHY nothing is being calculated. The strict parser is deliberately
+    // silent about input it cannot read, and silence on its own reads as a
+    // broken calculator to someone who has just filled the field in.
+    const unreadable = !isList && raw.trim() !== '' && typed === null;
     return (
       <View style={styles.fieldRow}>
         <View style={styles.fieldHead}>
@@ -161,6 +172,15 @@ export const FieldRow = memo(
           ) : null}
         </View>
         {footer ?? null}
+        {unreadable ? (
+          // The parser is strict on purpose — these calculators are a source of
+          // truth and a confident wrong answer is the worst thing they can do —
+          // but refusing in silence just looks broken. Name the problem.
+          <Text style={styles.warnText}>
+            ⚠ Check this value — enter digits only (a thousands separator like 10,000 is fine; units go in the
+            selector).
+          </Text>
+        ) : null}
         {warn ? <Text style={styles.warnText}>⚠ {warn}</Text> : null}
       </View>
     );

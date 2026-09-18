@@ -717,7 +717,13 @@ export function DashboardScreen() {
     useCallback(() => {
       let alive = true;
       void checkCredentials().then((c) => {
+        // Nothing has been recorded yet: `confirmShown` is what spends the
+        // celebration, and it is called only on the branch that actually shows
+        // it. Dropping the result here (the learner navigated away during the
+        // read) leaves the credential un-celebrated, so the next visit finds it
+        // again — which is the whole point.
         if (!alive || !c) return;
+        c.confirmShown();
         (navigation as any).navigate('Celebration', { id: c.event.id, values: c.values });
       });
       return () => {

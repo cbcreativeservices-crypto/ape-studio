@@ -72,6 +72,17 @@ export type CredentialCelebration = {
   event: CelebrationEvent;
   /** Filled into the catalog's `{certificate_name}` / `{program_name}`. */
   values: Record<string, string | number>;
+  /**
+   * Call this at the moment the celebration is actually put on screen.
+   *
+   * Nothing is recorded until you do. The first version of this hook wrote the
+   * new set BEFORE handing the result back, and the caller drops the result when
+   * the screen has since lost focus — so navigating away during the network read
+   * marked the credential celebrated forever and it was never shown. That is the
+   * same "burned, not shown" shape as the hearing-dose warning fixed two commits
+   * earlier, on the one moment in the app that is hardest to give back.
+   */
+  confirmShown: () => void;
 };
 
 /**
@@ -106,11 +117,6 @@ export function useCredentialCelebration(): { check: () => Promise<CredentialCel
       const fresh = rows.filter((r) => !knownIds.has(r.id));
       if (fresh.length === 0) return null;
 
-      // Record BEFORE showing. A celebration the user dismisses, or an app that
-      // is killed while it is on screen, must not bring it back every launch —
-      // a repeated congratulation reads as a bug and devalues the real one.
-      await writeKnown({ ids, certificates, programs });
-
       const event = credentialCelebration({
         certificates: fresh.filter((r) => r.type === 'certificate').length,
         programs: fresh.filter((r) => r.type === 'program').length,
@@ -130,6 +136,12 @@ export function useCredentialCelebration(): { check: () => Promise<CredentialCel
           ...event.values,
           certificate_name: firstCert?.name ?? 'Your certificate',
           program_name: firstProg?.name ?? 'Your program',
+        },
+        // Recorded on SHOW, not on discovery — and recorded as the screen is
+        // presented rather than when it is dismissed, so a dismissal or an app
+        // kill mid-celebration still cannot bring it back every launch.
+        confirmShown: () => {
+          void writeKnown({ ids, certificates, programs });
         },
       };
     } catch {

@@ -9,7 +9,7 @@
  * the source of truth at purchase. Store product IDs: features/commercial/
  * iapProducts.ts. Owner setup: docs/APE_IAP_PLAN_2026_08_21.md.
  */
-import { Fragment, useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -42,11 +42,6 @@ export function PaywallScreen({ navigation }: Props) {
   // Whether in-app purchasing is usable in THIS build (native module present +
   // store connection). Assume true until init says otherwise.
   const [available, setAvailable] = useState(true);
-  /** The latest tier, readable from inside the purchase callbacks — which were
-   *  created before the refresh they are reacting to, so the `entitlement`
-   *  they close over is always the pre-purchase one. */
-  const tierRef = useRef(entitlement);
-  tierRef.current = entitlement;
 
   useEffect(() => {
     let alive = true;
@@ -74,17 +69,22 @@ export function PaywallScreen({ navigation }: Props) {
     const reflectPurchase = () => {
       refreshEntitlement()
         .catch(() => false) // belt-and-braces; the provider guards internally
-        .then((ok) => {
+        .then((tier) => {
           if (!alive) return;
           setBusy(false);
-          // `ok` ONLY MEANS A READ COMPLETED (2026-09-17). It resolves true for
-          // 'anonymous', 'free' and 'lapsed' as well, so this congratulated
-          // people whose membership had not landed — including the guest above,
-          // who has just been charged and has no entitlement at all. The
-          // welcome now requires the tier to actually say academy; anything
-          // else falls through to the honest retry below, which is the correct
-          // place for "the money moved but we cannot see it yet".
-          if (ok && tierRef.current === 'academy') {
+          // THE READ COMPLETING IS NOT THE SAME AS BEING A MEMBER (2026-09-17).
+          // The old boolean resolved true for 'anonymous', 'free' and 'lapsed'
+          // too, so this congratulated people whose membership had not landed —
+          // including a guest who had just been charged and had no entitlement
+          // at all. It now asks for the tier itself.
+          //
+          // The first attempt at this fix read a ref updated during render,
+          // which a verification pass caught: the caller's `.then` is a
+          // microtask and React schedules the state update on a later task, so
+          // the ref still held the PRE-purchase tier and every successful
+          // purchase reported as a failure. The value has to come back from the
+          // call, which is what it now does.
+          if (tier === 'academy') {
             welcome();
             return;
           }
@@ -207,8 +207,14 @@ export function PaywallScreen({ navigation }: Props) {
     setBusy(true);
     restorePurchases()
       .then(async (result) => {
+        // `refreshed` means "their access is live on this device", so it asks
+        // for the tier rather than for a completed read (2026-09-17) — telling
+        // someone their access is restored when the tier still says free is the
+        // same mistake the purchase path made.
         let refreshed = true;
-        if (result === 'restored') refreshed = await refreshEntitlement().catch(() => false);
+        if (result === 'restored') {
+          refreshed = (await refreshEntitlement().catch(() => false)) === 'academy';
+        }
         setBusy(false);
         switch (result) {
           case 'restored':
