@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-17 17:58 · ccode · 52829501
+changed: Pre-Production: let an authorised person accept a blocker rather than fix it, with a named person and a written reason that print in the Production Packet. Completes the "Ready With Approved Conditions" verdict, which the engine computed and no user could reach. PRE-PRODUCTION IS NOW FEATURE-COMPLETE for stages 1–4: plan, warnings, readiness, exercises, accepted conditions, packet.
+affects other side: nothing — client only, device-local, no API/DB/RPC.
+needs: nothing. Stages 5 and 6 are with Computer C; the handoff is at Downloads6-09-17_COMPUTER_C_PREPROD_BATCH2.
+
+
 ### 2026-09-17 17:48 · ccode · 2227e82d
 changed: Pre-Production: run the exercises. Four authored activities existed with checks and nothing ran them; there is a screen now. An exercise seeds a REAL project into a broken state and sends the user to the ordinary stage screen to repair it, so practice happens on the same screens as the work.
 affects other side: nothing — client only, device-local AsyncStorage, no API/DB/RPC.
