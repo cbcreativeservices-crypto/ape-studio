@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import RegistryResult from "@/components/RegistryResult";
+import ContactThisMember from "@/components/ContactThisMember";
 
 /**
  * Academy Registry credential lookup — the target of every member's QR code
@@ -28,6 +29,12 @@ export default function Page() {
       </div>
 
       <RegistryResult token={token} />
+
+      {/* The verification page used to end here, and so did the conversation:
+          the app never publishes a member's contact details, so a hiring
+          manager who had just confirmed a credential had nowhere to go
+          (owner 2026-09-18: "tell them to contact, not just confirm"). */}
+      <ContactThisMember />
     </div>
   );
 }

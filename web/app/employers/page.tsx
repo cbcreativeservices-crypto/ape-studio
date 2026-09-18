@@ -28,6 +28,26 @@ export default function Page() {
             their verification directly.
           </p>
         </div>
+
+        {/* Verifying is only half of what an employer wants. Owner 2026-09-18:
+            tell them they can CONTACT, and what that takes. */}
+        <div className="mt-6 rounded-xl border border-amber/40 bg-amber/5 p-6 sm:p-8">
+          <p className="font-display text-sm font-semibold uppercase tracking-wide text-amber">
+            Want to reach the person, not just check the certificate?
+          </p>
+          <p className="mt-3 text-sm text-text-muted">
+            Verified employers can contact members directly through the app. We never publish a
+            member’s email or phone number — you send a request, and they decide whether to reply.
+            It takes an Academy account and the app; if your work email is at your company’s own
+            domain, verification is immediate.
+          </p>
+          <a
+            href="/employers/apply"
+            className="mt-5 inline-block rounded-md bg-amber px-6 py-3 text-sm font-semibold text-background transition-colors hover:bg-amber-deep"
+          >
+            Apply for an employer account
+          </a>
+        </div>
       </div>
 
       <Section title="What a credential represents">
