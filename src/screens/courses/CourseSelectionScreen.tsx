@@ -319,10 +319,14 @@ function dotColorFor(card: Card): string {
 
 /** The Audio Fundamentals lab-proxy achievement (mirrors DashboardScreen). */
 const LAB_PROXY_GS = 3081;
-/** Prerequisite topics kept OFF the carousel (owner 2026-09-05: "only include
- *  Pro Audio Safety from the prereqs"): the DAW taster and the other core
- *  co-requisites stay enrolled and studyable, just not advertised here. */
-const CAROUSEL_HIDDEN_PREREQ_GS: readonly number[] = [3970, 3070, 4370];
+/** Prerequisite topics kept OFF the carousel.
+ *
+ *  Owner 2026-09-05 hid all four ("only include Pro Audio Safety from the
+ *  prereqs"). Owner 2026-09-17 brought gs3970 BACK: DAW Fundamentals & Session
+ *  Management is free in exactly the way Pro Audio Safety is, and carries its
+ *  own card beside it. The remaining two stay enrolled and studyable, just not
+ *  advertised here. */
+const CAROUSEL_HIDDEN_PREREQ_GS: readonly number[] = [3070, 4370];
 
 function cardImageUrl(key: string): string | null {
   const f = CARD_IMAGE[key];
@@ -676,7 +680,12 @@ function CourseCardView({
     return (
       <View style={styles.cardOuter}>
         <View style={styles.cardAbove}>
-          <Text style={[styles.cardAboveText, { color: '#5bff85' }]}>INCLUDED FOR EVERYONE</Text>
+          {/* Owner 2026-09-17: this card's eyebrow is no longer the same
+              sentence as Tools and Glossary. Those two are free outright; the
+              labs are free to START — the Fundamentals core opens to everyone
+              and the Advanced labs come with membership — so the wording says
+              that rather than implying the whole shelf is included. */}
+          <Text style={[styles.cardAboveText, { color: '#5bff85' }]}>FREE TO BEGIN AND EXPLORE</Text>
           <View style={[styles.cardAboveRule, { backgroundColor: '#5bff85' }]} />
         </View>
         {/* Whole-card tap, but NOT announced as a button: the real button is
@@ -703,7 +712,8 @@ function CourseCardView({
           </View>
           <View style={{ alignItems: 'center' }}>
             <View style={{ width: CARD_BTN_W }}>
-              <GlassButton label="OPEN LAB" tint="green" height={50} onPress={onOpenLab} />
+              {/* Plural (owner 2026-09-17): the card opens a shelf of labs. */}
+              <GlassButton label="OPEN LABS" tint="green" height={50} onPress={onOpenLab} />
             </View>
           </View>
         </CardArt>
@@ -865,9 +875,12 @@ function CourseCardView({
             amber continue · green review · blue glossary. */}
         <View style={{ alignItems: 'center' }}>
           {free ? (
-            // Always unlocked, full color, INCLUDED FREE (Booth 2026-07-11).
+            // Always unlocked, full colour. The key read INCLUDED FREE from
+            // Booth 2026-07-11 until the owner changed it on 2026-09-17: the
+            // eyebrow above already says FREE TOPIC, so the button should say
+            // what it DOES rather than repeat the price.
             <View style={{ width: CARD_BTN_W }}>
-              <GlassButton label="INCLUDED FREE" tint="green" height={50} onPress={() => onOpenPublic(free.courseOrder, true, free.gs)} />
+              <GlassButton label="STUDY NOW" tint="green" height={50} onPress={() => onOpenPublic(free.courseOrder, true, free.gs)} />
             </View>
           ) : isTools ? (
             // Audio Tools is ALWAYS FREE to open (Booth 2026-07-11 #4); the
@@ -1080,16 +1093,23 @@ export function CourseSelectionScreen() {
         { kind: 'lab', id: 'lab' },
         { kind: 'tools', id: 'tools' },
         { kind: 'glossary', id: 'glossary' },
-        // 2 free-topic taster cards, right after Glossary (Booth 2026-07-11).
-        // Names come straight from the v3 codified names now; the screen-side
-        // re-title the v1 pair needed is gone.
-        // Only Pro Audio Safety from the prerequisites (owner 2026-09-05); the
-        // DAW taster stays enrolled and studyable, just not on the carousel.
+        // The two FREE topics, right after Glossary (Booth 2026-07-11), in this
+        // order: Pro Audio Safety then DAW Fundamentals & Session Management
+        // (owner 2026-09-17 — "the DAW card to the right of the pro audio
+        // card"). Both are genuinely free, both green, both identical apart
+        // from title and art. Names come straight from the v3 codified names.
         {
           kind: 'freeTopic' as const,
           id: 'free-3060',
           gs: 3060,
           name: officialTopicName(3060),
+          courseOrder: 1,
+        },
+        {
+          kind: 'freeTopic' as const,
+          id: 'free-3970',
+          gs: 3970,
+          name: officialTopicName(3970),
           courseOrder: 1,
         },
         // A–Z topic group (empty since 2026-09-03).

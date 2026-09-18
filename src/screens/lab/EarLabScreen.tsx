@@ -348,13 +348,17 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 12,
   },
+  /**
+   * The sigma's slot. Owner 2026-09-17 removed the ring around it: the badge
+   * was an amber circle from when every category carried an emoji, and a lone
+   * purple sigma inside an amber ring read as two brands arguing.
+   *
+   * The 30×30 box stays, without border or fill, so the sigma keeps its gutter
+   * and the category names below it stay on the same left edge.
+   */
   iconBadgeSm: {
     width: 30,
     height: 30,
-    borderRadius: 15,
-    borderWidth: 1,
-    borderColor: 'rgba(255,198,77,.45)',
-    backgroundColor: 'rgba(255,198,77,.08)',
     alignItems: 'center',
     justifyContent: 'center',
   },
