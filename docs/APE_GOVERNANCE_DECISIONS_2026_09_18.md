@@ -10,7 +10,9 @@ Decisions of record made by the owner on 2026-09-18. Where this document and mem
 
 Every contact path in the Audio Community Directory — sending a request, replying, opening a thread — sits behind the 18+ attestation, not just publishing a listing.
 
-**Open:** whether `contact_request_send` is server-gated on the attestation, or only the UI is. A live-DB question, not answered this session.
+**ANSWERED same day (see D9).** It IS server-gated, not UI-only. `contact_request_send` refuses unless the sender is signed in, **email-verified**, and holds a profile that is `published AND adult_confirmed_at IS NOT NULL`; the recipient must be `published AND contact_enabled`; and `community_profile_publish` itself requires the attestation. So both ends of any conversation are adult-attested at the database level.
+
+**⚠️ But the attestation is a self-declared checkbox.** `directory_known_minor()` is a stub whose entire body is `select false` — no date of birth, no verification. A 13-year-old who ticks the box passes every one of those checks. The gate is real; the age claim behind it is not verified.
 
 ---
 
@@ -114,6 +116,50 @@ Delivered, shipping OTA: COPY LINK / SHARE LINK / SHARE QR on each credential an
 Where the app INTERACTS with that work, say so once and move on — e.g. `validate-purchase`'s store secrets decide whether purchases verify, but verifying them is A's job, not a task for this lane.
 
 **ccode's lane:** the app, its client code, its server functions and migrations, and the device pass.
+
+---
+
+## D9 — Community interaction: confirmed AS BUILT, and employer accounts are a FUTURE feature
+
+**Ruling (owner):** *"A. for B keep it how it is, but we need to add in at the website and at the app profile level employer accounts, data, etc. — will need a verification system."*
+
+### What is confirmed, and what A's store forms must say
+
+The Community Directory works **as built**, and it is NOT display-only. The 2026-09-17 product note saying *"community is DISPLAY-ONLY — no user-to-user messaging"* is **wrong and superseded by this entry.** The Google IARC saved with **users-interact = No is a misdeclaration** and must be corrected.
+
+Established from the code and the live database, not from either note:
+
+- `contact_request_send(to_token, purpose, message)` → row in `contact_requests` with a **free-text `message`**; the purpose must match a slug the recipient declared under "Open to".
+- Recipient Accepts / Declines / Blocks from the **Requests** tab. Nothing becomes a conversation until they accept.
+- On accept both sides get a real chat — message bubbles, a "Write a reply" box (2,000 chars), SEND — via `contact_message_send` → `contact_messages.body`.
+- Limits: **10 requests/week, 40 messages/day.** Plus block, report, a content-safety filter, and URLs rejected in message text.
+- Reachable: route `AudioCommunityDirectory`, deep link `/directory`, tabs Explore · My Profile · Requests.
+
+**Values for the store forms** (behaviour is fact; the mapping was ccode's recommendation and A owns the forms):
+
+| Form | Value |
+|---|---|
+| Apple Age Rating → Messaging and Chat | **Yes** |
+| Google IARC "users interact" | **Yes** — correct the saved "No" |
+| Apple App Privacy → User Content | "Emails or Text Messages" + "Other User Content" |
+| Google Data Safety → Messages → "Other in-app messages" | **KEEP** — that row was right; the IARC "No" was the error |
+
+### Two facts A and the owner should both hold
+
+1. **The Directory is NOT members-only.** `AudioCommunityDirectoryScreen` is not behind the membership gate and `community_profile_publish` has no entitlement check. Any signed-in, email-verified free account can publish a profile and message.
+2. **The 18+ gate is a self-attested checkbox.** `directory_known_minor()` is a stub — its entire body is `select false`. No date of birth, no verification.
+
+### The gap this ruling names
+
+There is **no employer** in the system today. The only participant is an app account with a published profile, so for an "employer" to message a graduate they would have to install the app, verify an email, fill in a community profile and publish themselves into the directory. They will not.
+
+What an employer CAN do is receive a verification link or QR from the graduate and view the verified record — **one-directional, and outside the app.** No reply path, by design: the app never hands out contact details.
+
+### What is being added LATER (not now, not scoped, not started)
+
+**Employer accounts**, at BOTH the website and the app-profile level, with their own data model and **a verification system** — so an employer is a real, verified party rather than an ordinary member pretending to be one.
+
+⚠️ This is a substantial build: a second account TYPE (not a flag on an existing one), identity/organisation verification, and a website half. It is **post-launch**. Member-to-member messaging stays exactly as it is in the meantime — the owner's "for B keep it how it is".
 
 ---
 
