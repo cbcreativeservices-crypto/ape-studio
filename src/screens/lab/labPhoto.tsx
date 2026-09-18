@@ -52,7 +52,7 @@ export function LabPhotoLightbox({ children }: { children: ReactNode }) {
         >
           <View style={styles.lbCard}>
             {target ? (
-              <Image
+              <Image accessible
                 source={{ uri: target.url }}
                 style={styles.lbImage}
                 resizeMode="contain"
@@ -106,7 +106,7 @@ export function LabPhoto({
   const sized = { width: w ?? '100%', height: h } as const;
   const tile = (
     <View style={[styles.tile, sized, style]}>
-      <Image
+      <Image accessible
         source={{ uri: url }}
         style={styles.photo}
         resizeMode="contain"

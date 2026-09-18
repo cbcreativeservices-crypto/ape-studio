@@ -202,7 +202,7 @@ function SystemArt({ w, labeled, found }: { w: number; labeled: boolean; found: 
   const h = Math.round(w * 0.42);
   const veil = useVeil(found, 0.74);
   return (
-    <Svg
+    <Svg accessible
       width={w}
       height={h}
       viewBox="0 0 360 150"
@@ -345,7 +345,7 @@ function DocTable({ highlight }: { highlight: string }) {
           const hot = r.cableId === highlight;
           return (
             <Stagger key={r.cableId} index={ri}>
-              <View
+              <View accessible
                 style={styles.docRow}
                 accessibilityLabel={`${r.cableId}: ${r.source} to ${r.destination}, ${r.type}, pathway ${r.pathway}${r.note ? `, note: ${r.note}` : ''}${hot ? '. The traced cable.' : ''}`}
               >
@@ -422,7 +422,7 @@ function SlackArt({ w, v }: { w: number; v: number }) {
   });
 
   return (
-    <Svg width={w} height={h} viewBox="0 0 220 110" accessibilityLabel={`Rack-end service loop visualization. ${CI_SLACK_SCENARIO.notes[zone]}`}>
+    <Svg accessible width={w} height={h} viewBox="0 0 220 110" accessibilityLabel={`Rack-end service loop visualization. ${CI_SLACK_SCENARIO.notes[zone]}`}>
       <Rect x={2} y={2} width={216} height={106} rx={8} fill="#101014" />
       {/* rack + termination */}
       <Rect x={8} y={10} width={56} height={92} rx={4} fill="#17171c" stroke="#3a3c42" strokeWidth={1.4} />

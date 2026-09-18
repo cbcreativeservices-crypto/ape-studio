@@ -483,7 +483,7 @@ const TensionMeter = memo(function TensionMeter({ w, target }: { w: number; targ
   const restW = Math.max(0, ((MET_X1 - MET_X0) * Math.max(0, Math.min(150, target))) / 150);
 
   return (
-    <Svg
+    <Svg accessible
       width={w}
       height={h}
       viewBox="0 0 320 74"

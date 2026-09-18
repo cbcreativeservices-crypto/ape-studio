@@ -470,7 +470,7 @@ function RouteMap({ scenario, xray, picked, w }: { scenario: CiRouteScenario; xr
   const hazard = picked ? HAZARD_POINTS[scenario.id]?.[picked] : undefined;
   const showHazard = !!hazard && !!mine && mine.flags.some((f) => !f.positive && f.cost >= HAZARD_COST);
   return (
-    <View
+    <View accessible
       style={styles.mapFrame}
       accessibilityRole="image"
       accessibilityLabel={`${MAP_A11Y[scenario.id]}${
@@ -561,7 +561,7 @@ function DimRow({ dim, value, delay }: { dim: CiDim; value: number; delay: numbe
   const barTint = value >= 85 ? colors.green : value >= 55 ? colors.amber : '#ff8a6b';
 
   return (
-    <View style={styles.dimRow} accessibilityLabel={`${DIM_LABELS[dim]}: ${value} out of 100`}>
+    <View accessible style={styles.dimRow} accessibilityLabel={`${DIM_LABELS[dim]}: ${value} out of 100`}>
       <Text style={styles.dimLabel} numberOfLines={1}>
         {DIM_LABELS[dim]}
       </Text>

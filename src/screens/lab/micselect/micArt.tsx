@@ -306,7 +306,7 @@ export function MicPhotoLightbox({ children }: { children: ReactNode }) {
         <Pressable style={styles.lbBackdrop} onPress={() => setKind(null)} accessibilityRole="button" accessibilityLabel="Close photo">
           <View style={styles.lbCard}>
             {url ? (
-              <Image
+              <Image accessible
                 source={{ uri: url }}
                 style={styles.lbImage}
                 resizeMode="contain"
@@ -356,7 +356,7 @@ export function MicVisual({
   if (!url || failed) return <MicArt kind={kind} w={w} h={h} />;
   const tile = (
     <View style={[styles.photoTile, { width: w, height: h }]}>
-      <Image
+      <Image accessible
         source={{ uri: url }}
         style={styles.photo}
         resizeMode="contain"

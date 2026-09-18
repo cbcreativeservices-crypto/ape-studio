@@ -205,7 +205,7 @@ export function ScoreBars({ dims }: { dims: CiDimScores }) {
         if (v == null) return null;
         const blocks = masteryBlocks(v);
         return (
-          <View key={d} style={styles.dimRow} accessibilityLabel={`${CI_DIM_META[d].label}: ${v} out of 100`}>
+          <View accessible key={d} style={styles.dimRow} accessibilityLabel={`${CI_DIM_META[d].label}: ${v} out of 100`}>
             <Text style={styles.dimLabel}>{CI_DIM_META[d].label}</Text>
             <View style={styles.dimBlocks}>
               {[0, 1, 2, 3, 4].map((i) => (

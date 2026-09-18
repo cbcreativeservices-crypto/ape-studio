@@ -228,7 +228,7 @@ export function HarmonographViewer(props: {
             </Text>
             <Text style={styles.sourceLine}>Harmonograph Lab</Text>
 
-            <View
+            <View accessible
               style={[styles.paper, { width: paper, height: paper }]}
               accessibilityLabel="Harmonograph drawing"
             >

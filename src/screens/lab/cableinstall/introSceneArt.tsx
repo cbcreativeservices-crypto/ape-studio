@@ -159,7 +159,7 @@ export function IntroSceneArt({ w, run, reduce }: { w: number; run: boolean; red
   const serviceLoop = useMemo(() => catenary({ x: 292, y: 48 }, { x: 300, y: 58 }, 9, 6), []);
 
   return (
-    <Canvas
+    <Canvas accessible
       style={{ width: w, height: h }}
       accessibilityLabel="Installation scene: stage, floor run, wall pathway, ceiling tray and equipment rack"
     >

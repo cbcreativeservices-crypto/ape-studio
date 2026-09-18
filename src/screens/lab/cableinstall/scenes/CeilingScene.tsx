@@ -659,7 +659,7 @@ function AboveSvg({
 function FinishedShellSvg({ w }: { w: number }) {
   const h = Math.round((w * VB_H) / VB_W);
   return (
-    <Svg
+    <Svg accessible
       width={w}
       height={h}
       viewBox={`0 0 ${VB_W} ${VB_H}`}

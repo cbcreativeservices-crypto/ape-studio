@@ -322,7 +322,14 @@ export function QuizScreen({ navigation, route }: Props) {
     else {
       setQIdx((i) => i + 1);
       // A11Y (2026-09-06): the counter changed silently — say where we are.
-      AccessibilityInfo.announceForAccessibility(`Question ${qIdx + 2} of ${payload.questions.length}`);
+      // W10 (2026-09-18): the counter alone told a screen-reader user that
+      // SOMETHING changed but never what — the question text is redrawn in
+      // place and was never spoken, so they had to hunt for it by swipe on
+      // every single question. Position and question go out together.
+      const nextQ = payload.questions[qIdx + 1];
+      AccessibilityInfo.announceForAccessibility(
+        `Question ${qIdx + 2} of ${payload.questions.length}. ${nextQ?.question_text ?? ''}`,
+      );
     }
   }, [payload, qIdx, doSubmit]);
 
@@ -542,11 +549,16 @@ export function QuizScreen({ navigation, route }: Props) {
           Each answer locks when you move on — you can’t return to a question.
         </Text>
 
+        {/* RN <Image> does NOT default `accessible` (Image.ios.js:170-171), so
+            without it this label never reached the iOS tree and the figure —
+            which the question can depend on — was simply absent for a VoiceOver
+            user. (2026-09-18, pass 5 · W9) */}
         {question.media_url ? (
           <Image
               source={{ uri: question.media_url }}
               style={styles.media}
               resizeMode="contain"
+              accessible
               accessibilityRole="image"
               accessibilityLabel="Figure for this question"
             />

@@ -312,7 +312,7 @@ function BuildingArt({
   const route = sel ? ROUTES[sel] : null;
   const hl = sel ? HL[sel] : null;
   return (
-    <Svg
+    <Svg accessible
       width={w}
       height={h}
       viewBox="0 0 360 224"

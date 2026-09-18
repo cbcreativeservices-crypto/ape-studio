@@ -349,7 +349,14 @@ export function FinalExamScreen({ navigation, route }: Props) {
       // exam did not. The counter is redrawn in place, so without this the
       // question silently becomes a different question — in the one place in
       // the app where a lost question costs the attempt.
-      AccessibilityInfo.announceForAccessibility(`Question ${qIdx + 2} of ${payload.items.length}`);
+      // W10 (2026-09-18): the counter alone told a screen-reader user that
+      // SOMETHING changed but never what — the question text is redrawn in
+      // place and was never spoken, so they had to hunt for it by swipe on
+      // every single question. Position and question go out together.
+      const nextQ = payload.items[qIdx + 1];
+      AccessibilityInfo.announceForAccessibility(
+        `Question ${qIdx + 2} of ${payload.items.length}. ${nextQ?.question_text ?? ''}`,
+      );
     }
   }, [payload, qIdx, doSubmit]);
 
@@ -600,11 +607,16 @@ export function FinalExamScreen({ navigation, route }: Props) {
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll}>
+        {/* RN <Image> does NOT default `accessible` (Image.ios.js:170-171), so
+            without it this label never reached the iOS tree and the figure —
+            which the question can depend on — was simply absent for a VoiceOver
+            user. (2026-09-18, pass 5 · W9) */}
         {question.media_url ? (
           <Image
               source={{ uri: question.media_url }}
               style={styles.media}
               resizeMode="contain"
+              accessible
               accessibilityRole="image"
               accessibilityLabel="Figure for this exam question"
             />

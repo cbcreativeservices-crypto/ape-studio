@@ -396,7 +396,7 @@ function RoomSvg({
   };
   const markerTint = (i: number) => (i < wallIdx ? colors.green : wallsActive && i === wallIdx ? colors.amber : '#55555e');
   return (
-    <Svg
+    <Svg accessible
       width={w}
       height={h}
       viewBox={`0 0 ${VB_W} ${VB_H}`}

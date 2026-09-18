@@ -1142,7 +1142,7 @@ export function ProfileScreen() {
           <View style={[styles.pilotDot, { left: 7 }]} />
           <View style={[styles.pilotDot, { right: 7 }]} />
           {profile?.photoUrl ? (
-            <Image
+            <Image accessible
               source={{ uri: profile.photoUrl }}
               style={styles.avatarImg}
               accessibilityRole="image"

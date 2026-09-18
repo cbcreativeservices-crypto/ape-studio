@@ -2712,7 +2712,7 @@ ${COPY.glossaryFreeAllowance}`,
                 {/* When expanded, the term's media image sits right after the
                     term for identification (user request 2026-07-18). */}
                 {expanded && mediaUrl ? (
-                  <Image
+                  <Image accessible
                     source={{ uri: mediaUrl }}
                     style={styles.inlineMedia}
                     resizeMode="contain"
@@ -2895,7 +2895,7 @@ ${COPY.glossaryFreeAllowance}`,
                       </View>
                       {/* Media image right after the term (user request 2026-07-18). */}
                       {mediaById[item.id] ? (
-                        <Image
+                        <Image accessible
                     source={{ uri: mediaById[item.id] }}
                     style={styles.inlineMedia}
                     resizeMode="contain"
@@ -3082,7 +3082,7 @@ ${COPY.glossaryFreeAllowance}`,
       <Modal accessibilityViewIsModal visible={!!mediaPopup} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setMediaPopup(null)}>
         <Pressable style={styles.mediaBackdrop} onPress={() => setMediaPopup(null)} accessibilityRole="button" accessibilityLabel="Close image">
           {mediaPopup ? (
-            <Image
+            <Image accessible
               source={{ uri: mediaPopup }}
               style={styles.mediaFull}
               resizeMode="contain"

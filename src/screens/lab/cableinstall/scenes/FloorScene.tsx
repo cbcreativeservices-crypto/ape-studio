@@ -344,7 +344,7 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
   const mic = CI_CLASS_TINTS.analog;
   const spk = CI_CLASS_TINTS.speaker;
   return (
-    <Svg
+    <Svg accessible
       width={w}
       height={h}
       viewBox="0 0 360 205"
@@ -514,7 +514,7 @@ const phaseFor = (i: number, pick: number | null): RoutePhase => (pick == null ?
 function FohPlan({ w, pick }: { w: number; pick: number | null }) {
   const h = Math.round(w * (210 / 360));
   return (
-    <Svg
+    <Svg accessible
       width={w}
       height={h}
       viewBox="0 0 360 210"
@@ -568,7 +568,7 @@ function FohPlan({ w, pick }: { w: number; pick: number | null }) {
 function BackstagePlan({ w, pick }: { w: number; pick: number | null }) {
   const h = Math.round(w * (210 / 360));
   return (
-    <Svg
+    <Svg accessible
       width={w}
       height={h}
       viewBox="0 0 360 210"
@@ -649,7 +649,7 @@ function DimRow({ dim, v, shown, tint }: { dim: (typeof CI_DIMS)[number]; v: num
   }, [v, m.reduce]);
   const fill = useAnimatedStyle(() => ({ width: `${Math.max(0, Math.min(100, v * t.value))}%` }));
   return (
-    <View style={s.miniRow} accessibilityLabel={`${CI_DIM_META[dim].label}: ${v} out of 100`}>
+    <View accessible style={s.miniRow} accessibilityLabel={`${CI_DIM_META[dim].label}: ${v} out of 100`}>
       <Text style={s.miniLabel} numberOfLines={1}>{CI_DIM_META[dim].label}</Text>
       <View style={s.miniTrack}>
         <Animated.View style={[s.miniFill, { backgroundColor: tint }, fill]} />
@@ -946,7 +946,7 @@ function CoilArt({ w, signs, done }: { w: number; signs: number[]; done: boolean
   }, [done, m.reduce]);
 
   return (
-    <Svg
+    <Svg accessible
       width={w}
       height={h}
       viewBox="0 0 360 150"
@@ -1175,7 +1175,7 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
         <CoilArt w={artW} signs={signs} done={coilDone} />
         {!coilDone && !coilFullWrong ? <Text style={s.coach}>{CI_OVERUNDER_STEPS[stepIdx]}</Text> : null}
         <Text style={s.loopCount} accessibilityLiveRegion="polite">{`LOOP ${signs.length} / 6`}</Text>
-        <View
+        <View accessible
           style={s.twistRow}
           accessibilityLabel={`Twist stored in the cable: ${twistInfo.label}`}
           accessibilityLiveRegion="polite"

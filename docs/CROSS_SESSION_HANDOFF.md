@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 15:05 · ccode · 92f112bd
+changed: a11y pass 5: W1 sheets, W4 Scenarios, W5 Final Exam, W7, W12 flashcards
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-18 14:53 · ccode · aacde5bd
 changed: Cymatics: draw the other three systems; production: make "not applicable" look tappable
 affects other side: nothing. Client-only — RN-SVG drawings plus one style/a11y change in the production form. No schema, no RPC, no native dep. OTA-safe.

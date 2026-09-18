@@ -1214,7 +1214,7 @@ export function CiArtCanvas({
   const h = (w * vh) / vw;
   const k = w / vw;
   return (
-    <Canvas style={{ width: w, height: h }} accessibilityLabel={accessibilityLabel}>
+    <Canvas accessible style={{ width: w, height: h }} accessibilityLabel={accessibilityLabel}>
       <Group transform={[{ scaleX: k }, { scaleY: k }]}>{children}</Group>
     </Canvas>
   );

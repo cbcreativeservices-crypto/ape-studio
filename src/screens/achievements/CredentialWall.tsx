@@ -178,7 +178,7 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
         onClose={() => setOpen(null)}
       >
         {open && open.slug && !artFailed.has(open.slug) && credentialArtFor(open.slug) ? (
-          <Image
+          <Image accessible
             source={credentialArtFor(open.slug)!}
             style={styles.artImg}
             resizeMode="contain"

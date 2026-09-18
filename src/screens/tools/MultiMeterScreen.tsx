@@ -1630,7 +1630,7 @@ export function MultiMeterScreen({ navigation }: Props) {
             {photoAvailable ? (
               photoUri ? (
                 <View style={styles.captureRow}>
-                  <Image
+                  <Image accessible
                     source={{ uri: photoUri }}
                     style={styles.captureThumb}
                     accessibilityRole="image"

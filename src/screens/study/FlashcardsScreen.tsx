@@ -1463,7 +1463,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                         it — one group, centered both ways (Booth 2026-07-16). */}
                     <View style={styles.termWrap}>
                       {showMedia && mediaByItem[card.id] && !badImages.has(card.id) ? (
-                        <Image
+                        <Image accessible
                           source={{ uri: mediaByItem[card.id] }}
                           style={styles.termImage}
                           resizeMode="contain"
@@ -1697,7 +1697,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                     </View>
                   ) : null}
                   {showMedia && mediaByItem[card.id] && !badImages.has(card.id) ? (
-                    <Image
+                    <Image accessible
                       source={{ uri: mediaByItem[card.id] }}
                       style={styles.fsSheetImage}
                       resizeMode="contain"
@@ -1733,7 +1733,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                   {/* Term image in the full-screen reveal too (user request
                       2026-07-18) — it only rendered in the study sheet before. */}
                   {showMedia && mediaByItem[card.id] && !badImages.has(card.id) ? (
-                    <Image
+                    <Image accessible
                       source={{ uri: mediaByItem[card.id] }}
                       style={styles.fsSheetImage}
                       resizeMode="contain"

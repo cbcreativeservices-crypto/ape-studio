@@ -551,7 +551,7 @@ export function ScenariosScreen({ route }: Props) {
 
         {item.media?.kind === 'audio' && <AudioPlayer uri={item.media.url} />}
         {item.media?.kind === 'image' && (
-          <Image
+          <Image accessible
               source={{ uri: item.media.url }}
               style={styles.mediaImage}
               resizeMode="contain"

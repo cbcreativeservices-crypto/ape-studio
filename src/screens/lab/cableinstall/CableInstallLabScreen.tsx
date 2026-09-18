@@ -283,6 +283,11 @@ export function CableInstallLabScreen() {
               <Text style={[styles.navBtn, !modDone && !canEnter(step + 1) && styles.navBtnDisabled]}>NEXT ›</Text>
             </Pressable>
           </View>
+          {/* NO `accessible` HERE, deliberately (2026-09-18, pass 5 · W8): this row's
+              children are the twelve unit-navigation buttons. Collapsing it into a
+              single a11y element would read the summary and make every unit
+              unreachable — the opposite of the fix. The label stays; the buttons
+              stay focusable. */}
           <View style={styles.dotsRow} accessibilityLabel={`${cleared} of ${total} units complete`}>
             {CI_MODULES.map((m, i) => {
               const n = i + 1;
@@ -527,7 +532,7 @@ function MasteryProfile({ dims }: { dims: CiDimScores }) {
           const blocks = masteryBlocks(v);
           return (
             <Stagger key={d} index={ri} from={8}>
-              <View style={styles.dimRow} accessibilityLabel={`${CI_DIM_META[d].label}: ${v} out of 100`}>
+              <View accessible style={styles.dimRow} accessibilityLabel={`${CI_DIM_META[d].label}: ${v} out of 100`}>
                 <Text style={styles.dimLabel}>{CI_DIM_META[d].label}</Text>
                 <View style={styles.dimBlocks}>
                   {[0, 1, 2, 3, 4].map((i) => (
