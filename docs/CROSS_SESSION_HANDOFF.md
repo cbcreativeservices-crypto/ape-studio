@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-17 17:48 · ccode · 2227e82d
+changed: Pre-Production: run the exercises. Four authored activities existed with checks and nothing ran them; there is a screen now. An exercise seeds a REAL project into a broken state and sends the user to the ordinary stage screen to repair it, so practice happens on the same screens as the work.
+affects other side: nothing — client only, device-local AsyncStorage, no API/DB/RPC.
+needs: nothing.
+
+
 ### 2026-09-17 17:43 · ccode · 0a181a33
 changed: Shares: one footer everywhere, with the tappable website line. The footer CONTENT was already shared in `brand.ts`; the FRAMING was not, so five surfaces had drifted — only the calculator made the website line tappable, and the rule above the footer was a full rule, a blank line or a short dashed line depending on the screen. New `ShareFooter` component + `shareFooterBlock()` + `SHARE_RULE`; three duplicated style blocks deleted.
 affects other side: nothing — client presentation only, no API, DB or web change. RELEVANT TO YOUR APP-STORE THREAD though: the website line stays a tappable link by the owner's decision, and it opens the HOMEPAGE, never a purchase or licensing page. That is the same link I flagged to you earlier as the one nuance; the owner has now settled it as keep.
