@@ -312,7 +312,25 @@ export function celebration(id: CelebrationId): CelebrationDef {
 /** Every definition, for tests and the dev index. */
 export const ALL_CELEBRATIONS: CelebrationDef[] = Object.values(CELEBRATIONS);
 
-// Kept exported so the Trophy Case empty-state copy and these stay in step.
+/**
+ * The Trophy Case's own words, in ONE place.
+ *
+ * This was exported "so the copy stays in step" and then had ZERO consumers —
+ * the screen carried its own hardcoded duplicates, which is exactly the drift
+ * this constant exists to prevent. AchievementsHomeScreen now reads it, so
+ * there is one definition again (2026-09-18).
+ *
+ * ── NO FEATURING (owner ruling 2026-09-18) ──────────────────────────────────
+ *
+ * This used to be headed FEATURED ACHIEVEMENT and offered to "select an
+ * accomplishment to feature and share". Featuring does not exist and is not
+ * being built — "remove feature, user can only share" — so the word is gone
+ * from the heading too, because the heading WAS the promise.
+ *
+ * What is left is true today: open any certificate or program and the share row
+ * offers the verification link, the QR as an image, and the printed
+ * certificate.
+ */
 export const TROPHY_CASE_EMPTY = {
   title: 'TROPHY CASE',
   tagline: 'YOUR WORK, RECOGNIZED.',
@@ -321,9 +339,10 @@ export const TROPHY_CASE_EMPTY = {
   topics: 'Your completed topics will appear here.',
   certificates: 'Your earned specialization certificates will appear here.',
   programs: 'Your completed professional program credentials will appear here.',
-  featured: 'Your first achievement will take center stage here.',
-  featuredHint:
-    'As your Trophy Case grows, you can select an accomplishment to feature and share.',
+  shareHead: 'SHARE YOUR ACHIEVEMENTS',
+  shareLead: 'Your first achievement will appear here.',
+  shareHint:
+    'As your Trophy Case grows, you can share any accomplishment — your QR code, your verification link, or your printed certificate.',
 } as const;
 
 /**

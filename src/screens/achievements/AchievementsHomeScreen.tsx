@@ -19,6 +19,7 @@ import { TrophyImage } from '../../components/TrophyImage';
 import { StudioButton } from '../../components/StudioButton';
 import { CredentialBadge, type CredentialKind } from '../../components/CredentialBadge';
 import { fetchAchievementsHub, type HubData } from '../../features/achievements/api';
+import { TROPHY_CASE_EMPTY } from '../../features/celebration/catalog';
 import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
 
 const MINI = 44;
@@ -104,16 +105,13 @@ export function AchievementsHomeScreen() {
               <Text style={styles.back}>‹</Text>
             </Pressable>
           ) : null}
-          <Text style={styles.title}>TROPHY CASE</Text>
+          <Text style={styles.title}>{TROPHY_CASE_EMPTY.title}</Text>
         </View>
 
         {/* Owner copy 2026-09-18. Sits above the error branch so the case still
             introduces itself when the counts cannot be read. */}
-        <Text style={styles.tagline}>YOUR WORK, RECOGNIZED.</Text>
-        <Text style={styles.intro}>
-          Everything you accomplish across Pro Audio Training Academy is collected here—creating a
-          lasting record of your progress, knowledge, and earned credentials.
-        </Text>
+        <Text style={styles.tagline}>{TROPHY_CASE_EMPTY.tagline}</Text>
+        <Text style={styles.intro}>{TROPHY_CASE_EMPTY.intro}</Text>
 
         {error && !hub ? (
           <View style={styles.errorCard}>
@@ -144,7 +142,7 @@ export function AchievementsHomeScreen() {
           <RecentStrip
             loading={!t}
             empty={!!t && t.recent.length === 0}
-            emptyLabel="Your completed topics will appear here."
+            emptyLabel={TROPHY_CASE_EMPTY.topics}
           >
             {(t?.recent ?? []).map((topic) => (
               <MiniTopic key={topic.achievementId} iconUrl={topic.iconUrl} />
@@ -170,7 +168,7 @@ export function AchievementsHomeScreen() {
           <RecentStrip
             loading={!c}
             empty={!!c && c.recent.length === 0}
-            emptyLabel="Your earned specialization certificates will appear here."
+            emptyLabel={TROPHY_CASE_EMPTY.certificates}
           >
             {(c?.recent ?? []).map((cred) => (
               <MiniCredential key={cred.id} kind="certificate" />
@@ -198,7 +196,7 @@ export function AchievementsHomeScreen() {
           <RecentStrip
             loading={!p}
             empty={!!p && p.recent.length === 0}
-            emptyLabel="Your completed professional program credentials will appear here."
+            emptyLabel={TROPHY_CASE_EMPTY.programs}
           >
             {(p?.recent ?? []).map((cred) => (
               <MiniCredential key={cred.id} kind="program" />
@@ -206,17 +204,20 @@ export function AchievementsHomeScreen() {
           </RecentStrip>
         </Pressable>
 
-        {/* ── FEATURED ACHIEVEMENT (owner copy 2026-09-18) ────────────────────
-            Rendered as an empty state only. Selecting an accomplishment to
-            feature is NOT built — there is no featured-achievement anything in
-            the codebase — so this describes what the section is for and does
-            not present a control that would do nothing. */}
+        {/* ── SHARING, NOT FEATURING (owner 2026-09-18) ───────────────────────
+            The first draft of this section was headed FEATURED ACHIEVEMENT and
+            said an accomplishment could be selected "to feature and share".
+            Featuring does not exist and is not being built — the owner's ruling
+            was "remove feature, user can only share" — so every trace of it is
+            gone, heading included: that word WAS the promise.
+
+            What is left is true today. Sharing is real and shipped: open any
+            certificate or program and the share row offers the link, the QR as
+            an image, and the printed certificate. */}
         <View style={styles.featured} accessibilityRole="summary">
-          <Text style={styles.cardName}>FEATURED ACHIEVEMENT</Text>
-          <Text style={styles.featuredLead}>Your first achievement will take center stage here.</Text>
-          <Text style={styles.emptyText}>
-            As your Trophy Case grows, you can select an accomplishment to feature and share.
-          </Text>
+          <Text style={styles.cardName}>{TROPHY_CASE_EMPTY.shareHead}</Text>
+          <Text style={styles.featuredLead}>{TROPHY_CASE_EMPTY.shareLead}</Text>
+          <Text style={styles.emptyText}>{TROPHY_CASE_EMPTY.shareHint}</Text>
         </View>
         </>
         )}
