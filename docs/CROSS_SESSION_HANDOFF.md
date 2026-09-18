@@ -26,6 +26,28 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 · ccode · 7291b418
+changed: Weekly switch can no longer claim to be on with nothing behind it
+affects other side: FYI, client-side fix — but the DATA STATE is worth your knowing.
+  · Sending needs BOTH halves, in different tables on DIFFERENT IDS:
+    notification_preferences.notify_weekly_concept (keyed public.users.id) AND an ACTIVE
+    notification_concept_subscriptions row (keyed AUTH uid). setWeeklyOn wrote the pref
+    first and discarded the row-write result, so a failed row write left pref=true with 0
+    rows — silent and PERMANENT, because get_due_concept_subscriptions reads only the
+    subscriptions table. Fixed: rows first, pref last, both checked, rollback on either.
+  · ⚠️ RIGHT NOW NOBODY CAN RECEIVE ONE. could_ever_receive is false for EVERY account.
+    profechano@yahoo.com: pref TRUE, 0 sub rows (the bug above, pre-existing — the fix does
+    not retro-repair it; that account must toggle the switch again). anorak: 7 rows, 1
+    active, pref FALSE. The other five have nothing set. There are no real subscribers.
+  · ⚠️ DO NOT READ "7 subscriptions" AS 7 PEOPLE. It is 7 CATEGORY ROWS for one account.
+    The table deliberately keeps a row per category so each retains its own day/time when
+    switched off (weeklyConcept.ts:120). sub_rows=7 / active=1 is the DESIGNED shape.
+  · If you ever bulk-fix mismatched accounts server-side, write the subscription rows and
+    the pref in ONE transaction. They are two tables on two id spaces; that is the whole
+    trap.
+needs: nothing
+
+
 ### 2026-09-18 · ccode · f1587749
 changed: Weekly concept cron — pg_net + dispatcher + job 5
 affects other side: YES, and there is ONE ACTION WAITING FOR A HUMAN.
