@@ -32,25 +32,66 @@
  * can never disagree. A route that is not members-only no-ops, so this is safe
  * to compose over any lab screen.
  */
-import { useEffect } from 'react';
-import { View } from 'react-native';
-import { useRoute } from '@react-navigation/native';
-import { colors } from '../../theme/tokens';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { colors, fonts } from '../../theme/tokens';
 import { useEntitlement } from '../commercial/EntitlementProvider';
 import { isMemberOnlyLabRoute, labRouteName } from '../../screens/lab/labCatalog';
 import { endLabPreview, getLabPreview, startLabPreview, useLabPreview } from './labPreviewStore';
 
-/** Full-bleed hold shown for the sub-second beat before the lab may mount. Never
- *  the live lab — see the cold-boot flash note above. */
-function GateHold() {
-  return <View style={{ flex: 1, backgroundColor: colors.screenBg }} />;
+/**
+ * The hold shown before the lab may mount.
+ *
+ * ── IT USED TO BE AN EMPTY VIEW, AND THAT WAS A TRAP (2026-09-17) ─────────
+ *
+ * "Sub-second beat" is the happy path. The condition is `!resolved`, the
+ * entitlement read has no timeout of its own, and these routes are registered
+ * with `gestureEnabled: false` and no header — so on a connection that accepts
+ * the request and never answers, a blank screen with no text, no spinner and no
+ * way back was the whole app until a force-quit. It hits PAYING MEMBERS, whose
+ * read is exactly as likely to hang, and it is reachable on ~40 routes.
+ *
+ * So: say what is happening, and after a few seconds offer the way out. Nothing
+ * about the gate's caution changes — the lab still never mounts in this window;
+ * the user simply stops being trapped in it.
+ */
+function GateHold({ onBack }: { onBack?: () => void }) {
+  // Only after a beat, so the ordinary sub-second hold stays clean.
+  const [slow, setSlow] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setSlow(true), 4000);
+    return () => clearTimeout(t);
+  }, []);
+
+  return (
+    <View style={styles.hold}>
+      <ActivityIndicator color={colors.textSub} />
+      <Text style={styles.holdText} accessibilityLiveRegion="polite">
+        {slow ? 'Still checking your membership…' : 'Checking your membership…'}
+      </Text>
+      {slow && onBack ? (
+        <Pressable onPress={onBack} style={styles.holdBtn} accessibilityRole="button" accessibilityLabel="Go back">
+          <Text style={styles.holdBtnText}>GO BACK</Text>
+        </Pressable>
+      ) : null}
+    </View>
+  );
 }
+
+const styles = StyleSheet.create({
+  hold: { flex: 1, backgroundColor: colors.screenBg, alignItems: 'center', justifyContent: 'center', gap: 14, padding: 24 },
+  holdText: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13.5, textAlign: 'center' },
+  holdBtn: { borderWidth: 1, borderColor: '#3a3a3a', borderRadius: 9, paddingVertical: 11, paddingHorizontal: 22 },
+  holdBtnText: { color: colors.textSecondary, fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 0.8 },
+});
 
 export function withMembershipPreview<P extends object>(
   Screen: React.ComponentType<P>,
 ): React.ComponentType<P> {
   function Guarded(props: P) {
     const route = useRoute();
+    const navigation = useNavigation();
     // Real academy standing; `resolved` false until the first server read lands.
     const { isMember, resolved } = useEntitlement();
     const memberOnly = isMemberOnlyLabRoute(route.name);
@@ -75,8 +116,11 @@ export function withMembershipPreview<P extends object>(
     // Unknown beat: hold rather than flash the paid lab (or a paywall at a
     // member). Non-member: hold until the scrim is actually up, so the lab
     // mounts behind it, never in front of it.
-    if (memberOnly && !resolved) return <GateHold />;
-    if (gated && !armedForThis) return <GateHold />;
+    const goBack = () => {
+      if (navigation.canGoBack()) navigation.goBack();
+    };
+    if (memberOnly && !resolved) return <GateHold onBack={goBack} />;
+    if (gated && !armedForThis) return <GateHold onBack={goBack} />;
 
     return <Screen {...props} />;
   }

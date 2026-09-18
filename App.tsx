@@ -11,6 +11,8 @@ import { DarkTheme, NavigationContainer, type Theme } from '@react-navigation/na
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { KeyboardProvider, KeyboardToolbar } from './src/features/keyboard/keyboardControllerSafe';
 import { RootNavigator } from './src/navigation/RootNavigator';
+import { setMeasurementFailureReporter } from './src/features/tools/measure/measurementStore';
+import { notify } from './src/lib/confirm';
 import { RootErrorBoundary } from './src/components/RootErrorBoundary';
 import { Spl3dGaugePreview } from './src/screens/tools/Spl3dGaugePreview';
 import { PatchbayPreview } from './src/screens/lab/patchbay/PatchbayPreview';
@@ -133,6 +135,12 @@ function routeLocalDest(dest: string): void {
     navigationRef.navigate('Awards', { category: 'curriculum' });
   }
 }
+
+// A failed measurement write has to reach a HUMAN (2026-09-17). The store is
+// deliberately free of react-native so its node test can load it, so it calls
+// out through this hook instead. Set once, at module scope, before any tool can
+// run — not in an effect, because the first save could beat the effect.
+setMeasurementFailureReporter((title, body) => notify(title, body));
 
 function App() {
   // Capture the error tuple: a font-load failure must NOT hang the app forever on

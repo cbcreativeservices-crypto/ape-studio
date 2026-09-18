@@ -172,7 +172,7 @@ const DIFFUSER: Workspace = {
       key: 'qrd',
       name: 'Well depths & diffusion bandwidth',
       inputs: ['N', 'f0', 'w', 'temp'],
-      formula: 'dₙ = (n² mod N)·λ₀/(2N) · high edge = c/(2·width)',
+      formula: 'dₙ = (n² mod N)·λ₀/(2N); high edge = c/(2·width)',
       plainFormula:
         'Each well depth equals its residue (n squared, modulo N) times the design wavelength, divided by twice N; the high-frequency edge is the speed of sound divided by twice the well width.',
       explain:

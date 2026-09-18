@@ -894,7 +894,7 @@ export function MultiMeterScreen({ navigation }: Props) {
           }
         : {}),
     };
-    saveMeasurement({
+    void saveMeasurement({
       id: Crypto.randomUUID(),
       tool_type: 'multimeter',
       created_at: new Date().toISOString(),
@@ -1166,7 +1166,7 @@ export function MultiMeterScreen({ navigation }: Props) {
 
       <ScrollView contentContainerStyle={styles.scroll} scrollEnabled={scrollEnabled}>
         {/* Honest not-ready card (absent/spike/denied/error). */}
-        <EngineGate state={state} lastError={lastError} />
+        <EngineGate state={state} lastError={lastError} onRetry={start} />
 
         {!micPaused && (state === 'idle' || state === 'starting') && (
           <>

@@ -48,7 +48,7 @@ const CROSSOVER: Workspace = {
       key: 'firstOrder',
       name: 'First-order (6 dB/oct) components',
       inputs: ['fx', 'z'],
-      formula: 'C = 0.1592/(f·R) · L = 0.1592·R/f',
+      formula: 'C = 0.1592/(f·R); L = 0.1592·R/f',
       plainFormula:
         'The capacitor equals 0.1592 divided by the crossover frequency times the impedance; the inductor equals 0.1592 times the impedance divided by the frequency.',
       explain:
@@ -77,7 +77,7 @@ const CROSSOVER: Workspace = {
       key: 'secondOrder',
       name: 'Second-order Butterworth (12 dB/oct) components',
       inputs: ['fx', 'z'],
-      formula: 'C = 0.1125/(f·R) · L = 0.2251·R/f',
+      formula: 'C = 0.1125/(f·R); L = 0.2251·R/f',
       plainFormula:
         'The capacitor equals 0.1125 divided by the frequency times the impedance; the inductor equals 0.2251 times the impedance divided by the frequency.',
       explain:
@@ -272,7 +272,7 @@ const DRIVER: Workspace = {
       key: 'excursionSPL',
       name: 'Displacement-limited SPL',
       inputs: ['sd', 'xmax', 'f', 'dist'],
-      formula: 'p = 1.2·2π·f²·Sd·(Xpk/√2) / r · SPL = 20·log₁₀(p / 20µPa)',
+      formula: 'p = 1.2·2π·f²·Sd·(Xpk/√2) / r; SPL = 20·log₁₀(p / 20µPa)',
       plainFormula:
         'The radiated pressure equals 1.2 times two pi times the frequency squared times the cone area times the peak excursion over root two, divided by the distance; the SPL is twenty times the base-ten log of that pressure over 20 micropascals.',
       explain:
@@ -300,7 +300,7 @@ const DRIVER: Workspace = {
       key: 'sealed',
       name: 'Sealed box resonance & Q',
       inputs: ['fs', 'qts', 'vas', 'vb'],
-      formula: 'fc = fs·√(1 + Vas/Vb) · Qtc = Qts·√(1 + Vas/Vb)',
+      formula: 'fc = fs·√(1 + Vas/Vb); Qtc = Qts·√(1 + Vas/Vb)',
       plainFormula:
         'The sealed-box resonance equals the driver’s free-air resonance times the square root of one plus the compliance-volume-to-box-volume ratio; the system Q equals the driver’s total Q times the same factor.',
       explain:
@@ -327,7 +327,7 @@ const DRIVER: Workspace = {
       key: 'portLength',
       name: 'Vented port length for a target tuning',
       inputs: ['fbTarget', 'av', 'vb', 'temp'],
-      formula: 'L_eff = c²·Av / ((2π·fb)²·Vb) · Lv = L_eff − 1.46·√(Av/π)',
+      formula: 'L_eff = c²·Av / ((2π·fb)²·Vb); Lv = L_eff − 1.46·√(Av/π)',
       plainFormula:
         'The effective port length equals the speed of sound squared times the port area, divided by the square of two pi times the tuning frequency times the box volume; the physical length subtracts the end correction — 1.46 times the square root of the port area over pi.',
       explain:

@@ -295,7 +295,7 @@ export function WaveformScreen({ navigation }: Props) {
       return;
     }
     if (!meter || displayBuckets.length === 0) return;
-    saveMeasurement({
+    void saveMeasurement({
       id: Crypto.randomUUID(),
       tool_type: 'waveform',
       created_at: new Date().toISOString(),
@@ -545,7 +545,7 @@ export function WaveformScreen({ navigation }: Props) {
 
       <ScrollView contentContainerStyle={styles.scroll}>
         {/* Honest not-ready states (absent / spike / denied / error). */}
-        <EngineGate state={state} lastError={lastError} />
+        <EngineGate state={state} lastError={lastError} onRetry={start} />
         {state === 'error' ? (
           <GlassButton label="TRY AGAIN" tint="teal" height={52} fontSize={15} onPress={() => void start()} />
         ) : null}

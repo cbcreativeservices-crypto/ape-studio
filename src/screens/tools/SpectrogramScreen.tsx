@@ -407,7 +407,7 @@ export function SpectrogramScreen({ navigation }: Props) {
     const flags = meterWarningFlags(frames.meter);
     const meta = ApeDsp.getSpectrumMeta();
     const routeName = ApeDsp.getInfo()?.routeName;
-    saveMeasurement({
+    void saveMeasurement({
       id: Crypto.randomUUID(),
       tool_type: 'spectrogram',
       created_at: new Date().toISOString(),
@@ -462,7 +462,7 @@ export function SpectrogramScreen({ navigation }: Props) {
       <ScrollView contentContainerStyle={styles.scroll}>
         {/* Honest not-ready card (absent/spike/denied/error) — renders nothing
             when the engine is usable. */}
-        <EngineGate state={state} lastError={lastError} />
+        <EngineGate state={state} lastError={lastError} onRetry={start} />
 
         {/* Opens straight into the live spectrogram (auto-start, owner
             2026-08-01 — no redundant START screen on the normal path). */}

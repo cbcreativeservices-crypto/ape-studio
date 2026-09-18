@@ -361,7 +361,7 @@ const FIRLEN: Workspace = {
       key: 'sizeTaps',
       name: 'Taps & latency for a transition',
       inputs: ['sr', 'trans', 'atten'],
-      formula: 'N ≈ (fs/Δf)·(A/22) · latency = (N−1)/2',
+      formula: 'N ≈ (fs/Δf)·(A/22); latency = (N−1)/2',
       plainFormula:
         'The number of taps is about the sample rate divided by the transition width, times the stopband attenuation over 22; the latency is the taps minus one, over two.',
       explain:
@@ -451,7 +451,7 @@ const CONVOLUTION: Workspace = {
       key: 'cost',
       name: 'Direct-form compute & memory',
       inputs: ['irSec', 'sr', 'channels'],
-      formula: 'taps = IR·fs · MAC/s = taps·fs·ch · mem = taps·4·ch',
+      formula: 'taps = IR·fs; MAC/s = taps·fs·ch; mem = taps·4·ch',
       plainFormula:
         'The tap count equals the impulse-response length times the sample rate; the multiply-accumulates per second equal the taps times the sample rate times the channels; and the memory equals the taps times four bytes times the channels.',
       explain:
@@ -545,7 +545,7 @@ const BITDEPTH: Workspace = {
       key: 'fromBits',
       name: 'SNR, dynamic range & levels from bit depth',
       inputs: ['bits'],
-      formula: 'SNR = 6.02·N + 1.76 dB · range = 6.02·N · levels = 2^N',
+      formula: 'SNR = 6.02·N + 1.76 dB; range = 6.02·N; levels = 2^N',
       plainFormula:
         'The signal-to-noise ratio equals 6.02 times the number of bits plus 1.76 dB; the dynamic range equals 6.02 times the bits; and the number of levels equals two raised to the bits.',
       explain:

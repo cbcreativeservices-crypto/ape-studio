@@ -88,7 +88,13 @@ export function SettingsScreen({ navigation }: Props) {
 
   // Access / promo code redemption (owner 2026-08-21) — for users who already
   // have an account (e.g. an influencer comped after signing up free).
-  const { entitlement, refreshEntitlement, resolved } = useEntitlement();
+  // `tierKnown`, NOT `resolved`, for anything that ASSERTS an identity
+  // (2026-09-17). `resolved` flips after the first ATTEMPT even when it failed,
+  // so offline this screen told a paying member "GUEST — NO ACCOUNT", offered
+  // the members-only upsell, replaced Log out with "Sign in / create account"
+  // and hid DELETE ACCOUNT entirely — the one control a store reviewer looks
+  // for. `resolved` still governs the first-paint neutral beat.
+  const { entitlement, refreshEntitlement, resolved, tierKnown } = useEntitlement();
   const [redeemOpen, setRedeemOpen] = useState(false);
   const [redeemCode, setRedeemCode] = useState('');
   const [redeemBusy, setRedeemBusy] = useState(false);
@@ -183,13 +189,32 @@ export function SettingsScreen({ navigation }: Props) {
   const confirmLogout = useCallback(() => {
     // confirmDialog: Alert.alert is a no-op on RN-web — Log out was a dead
     // button on the web preview (QA night 2026-09-01).
-    confirmDialog('Log out?', 'You can sign in as a different user afterward.', 'Log out', () => {
+    // SAY WHAT LOGGING OUT ACTUALLY DOES (2026-09-17, bug-hunt pass 3).
+    //
+    // The old copy — "You can sign in as a different user afterward." — named
+    // the one consequence that is NOT destructive and omitted every one that is.
+    // Signing out runs the full `ape:*` wipe plus a DELETE over the measurements
+    // table, and it runs even when you sign back into the SAME account. That
+    // takes: up to 200 saved measurements (device-local by design, never
+    // server-backed), all four personal term lists, every preference on this
+    // screen, and the user's own dosimeter calibration.
+    //
+    // Study progress and credentials are on the server and do come back. The
+    // rest does not, and someone who has calibrated a meter against a real SPL
+    // reference would never guess that Log out throws it away.
+    confirmDialog(
+      'Log out?',
+      'Your progress and credentials are safe on your account. But this device will lose anything kept only on it — saved measurements, your term lists, your settings, and your microphone calibration. Signing back into the same account does not bring them back.',
+      'Log out',
+      () => {
       void (async () => {
         markIntentionalSignOut();
         await supabase.auth.signOut();
         navigation.reset({ index: 0, routes: [{ name: 'Splash' }] });
       })();
-    }, { destructive: true });
+      },
+      { destructive: true },
+    );
   }, [navigation]);
 
   // The whole reminders group is inert while the master switch is off —
@@ -626,12 +651,20 @@ export function SettingsScreen({ navigation }: Props) {
             "GUEST — NO ACCOUNT" on every launch. */}
         <SettingsSection
           title="MEMBERSHIP"
-          summary={!resolved ? '…' : isMember ? 'ACADEMY' : entitlement === 'lapsed' ? 'LAPSED' : isGuest ? 'GUEST' : 'FREE'}
+          summary={!tierKnown ? '…' : isMember ? 'ACADEMY' : entitlement === 'lapsed' ? 'LAPSED' : isGuest ? 'GUEST' : 'FREE'}
         >
           <View style={[styles.row, styles.rowBorder]}>
             <Text style={styles.rowLabel}>Status</Text>
             <Text style={[styles.mono, { color: isMember ? colors.green : colors.textSubAlt }]}>
-              {!resolved ? 'CHECKING…' : isMember ? 'ACADEMY — ACTIVE' : entitlement === 'lapsed' ? 'LAPSED' : isGuest ? 'GUEST — NO ACCOUNT' : 'FREE'}
+              {!tierKnown
+                ? 'CHECKING…'
+                : isMember
+                  ? 'ACADEMY — ACTIVE'
+                  : entitlement === 'lapsed'
+                    ? 'LAPSED'
+                    : isGuest
+                      ? 'GUEST — NO ACCOUNT'
+                      : 'FREE'}
             </Text>
           </View>
           <Pressable
@@ -681,7 +714,13 @@ export function SettingsScreen({ navigation }: Props) {
               is the safe neutral — for an actual guest the log-out path is a
               no-op signOut followed by the same bounce to Splash that the sign-in
               row performs (entitlement audit 2026-09-11). */}
-          {resolved && isGuest ? (
+          {/* `tierKnown`, not `resolved` (2026-09-17): `resolved` flips after the
+              first ATTEMPT even when it FAILED, so an offline member was shown
+              "Sign in / create account" and lost the Log out row. The member
+              view is the safe neutral either way — for an actual guest, Log out
+              is a no-op signOut followed by the same bounce to Splash that the
+              sign-in row performs. */}
+          {tierKnown && isGuest ? (
             <Pressable
               style={styles.row}
               onPress={() => navigation.reset({ index: 0, routes: [{ name: 'Splash' }] })}
@@ -740,7 +779,16 @@ export function SettingsScreen({ navigation }: Props) {
             Hold 5s → final confirm → erase personal data via delete_my_account, then
             sign out and bounce to Splash. Collapsed AND red-keyed: it should take a
             deliberate tap to even see the control. */}
-        {isGuest ? null : (
+        {/* HIDDEN ONLY FOR A KNOWN GUEST (2026-09-17). `isGuest` is true for
+            EVERYONE before a tier is known — the provider boots at 'anonymous' —
+            so an account holder whose entitlement read failed, which is every
+            member who opens Settings offline, found no DELETE ACCOUNT control at
+            all. It is an app-store requirement and the first thing a reviewer
+            looks for, and it is the one row that must not disappear on a bad
+            connection. When the tier is not known, show it: a guest who taps it
+            gets an honest failure, which is far better than a member who cannot
+            find it. */}
+        {tierKnown && isGuest ? null : (
         <SettingsSection title="DELETE ACCOUNT" danger>
           <View style={{ paddingVertical: 10 }}>
             <Text style={[styles.rowHint, { marginBottom: 10 }]}>

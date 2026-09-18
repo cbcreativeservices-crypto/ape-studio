@@ -78,7 +78,7 @@ export const WS_WAVE: Workspace = {
       key: 'freq',
       name: 'Frequency from period',
       inputs: ['t'],
-      formula: 'f = 1 / T · ω = 2π·f',
+      formula: 'f = 1 / T; ω = 2π·f',
       plainFormula:
         'Frequency equals one divided by the period; angular frequency equals two pi times the frequency.',
       explain:
@@ -192,7 +192,7 @@ export const WS_WAVE: Workspace = {
       key: 'cycles',
       name: 'Cycles fitting in a distance',
       inputs: ['fKnown', 'dist', 'temp'],
-      formula: 'cycles = d / λ · phase = cycles × 360°',
+      formula: 'cycles = d / λ; phase = cycles × 360°',
       plainFormula:
         'The number of cycles equals the distance divided by the wavelength; the phase equals that number of cycles times 360 degrees.',
       explain:

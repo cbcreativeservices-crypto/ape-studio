@@ -114,7 +114,16 @@ export function CareerFamilyScreen() {
         <Text style={styles.pathLine}>{fam.field} › {fam.subject}</Text>
         {fam.topicGs.length ? (
           <>
-            <Body muted>These Academy topics lead into this family. Tap one to add it to your study list — free to add, and the first free topics are open to everyone.</Body>
+            {/* CORRECTED 2026-09-17. This said "the first free topics are open to
+                everyone", which a pass-3 check measured as false on 42 of 42
+                families AS DISPLAYED: only gs3060 and gs3970 are free, gs3060
+                appears in no family at all, and the one family containing gs3970
+                has it at index 4 while this list shows the first three. So the
+                default view of every single family showed zero free topics under
+                a line promising some. Adding to the study list IS free and does
+                work for everyone, which is what the sentence now says and all it
+                says. */}
+            <Body muted>These Academy topics lead into this family. Tap one to add it to your study list — adding is free, and studying a topic needs Academy membership unless it is marked free.</Body>
             <Text style={styles.startHere}>START HERE</Text>
             {topicsToShow.map((gs) => {
               const on = enrolledGs.has(gs);

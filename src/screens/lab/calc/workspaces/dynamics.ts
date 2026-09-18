@@ -63,7 +63,7 @@ const WS_COMPRESSOR: Workspace = {
       key: 'outFromRatio',
       name: 'Output & gain reduction from threshold, ratio, input',
       inputs: ['thr', 'ratio', 'inLvl'],
-      formula: 'out = thr + (in − thr)/ratio · GR = in − out',
+      formula: 'out = thr + (in − thr)/ratio; GR = in − out',
       plainFormula:
         'The output equals the threshold plus the input’s amount above the threshold divided by the ratio; the gain reduction equals the input minus the output.',
       explain:

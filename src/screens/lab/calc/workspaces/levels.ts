@@ -157,7 +157,7 @@ const WS_LEVEL: Workspace = {
       key: 'dbuDbv',
       name: 'dBu ↔︎ dBV',
       inputs: ['dbx'],
-      formula: 'dBV = dBu − 2.218 · dBu = dBV + 2.218',
+      formula: 'dBV = dBu − 2.218; dBu = dBV + 2.218',
       plainFormula:
         'A dBV reading equals the dBu reading minus 2.218; a dBu reading equals the dBV reading plus 2.218.',
       explain:
@@ -372,7 +372,7 @@ const WS_OHMS: Workspace = {
       key: 'powerFromPeak',
       name: 'Amplifier power from PEAK voltage',
       inputs: ['vpk', 'z'],
-      formula: 'Vrms = Vpeak/√2 · P = Vrms² / Z',
+      formula: 'Vrms = Vpeak/√2; P = Vrms² / Z',
       plainFormula:
         'The RMS voltage equals the peak voltage over root two; the power equals that RMS voltage squared over the impedance.',
       explain:
@@ -473,7 +473,7 @@ const WS_OHMS: Workspace = {
       key: 'rmsToPeak',
       name: 'RMS → peak · peak-to-peak',
       inputs: ['vrms'],
-      formula: 'Vpeak = Vrms · √2 · Vpp = 2 · Vpeak',
+      formula: 'Vpeak = Vrms · √2; Vpp = 2 · Vpeak',
       plainFormula:
         'The peak voltage equals the RMS voltage times root two; the peak-to-peak voltage is twice the peak.',
       explain:
@@ -501,7 +501,7 @@ const WS_OHMS: Workspace = {
       key: 'peakToRms',
       name: 'Peak → RMS · peak-to-peak (reverse)',
       inputs: ['vpk'],
-      formula: 'Vrms = Vpeak / √2 · Vpp = 2 · Vpeak',
+      formula: 'Vrms = Vpeak / √2; Vpp = 2 · Vpeak',
       plainFormula:
         'The RMS voltage equals the peak voltage over root two; the peak-to-peak voltage is twice the peak.',
       explain:
@@ -852,7 +852,7 @@ const WS_QBW: Workspace = {
       key: 'bwFromQ',
       name: 'Bandwidth & band edges from Q',
       inputs: ['fc', 'q'],
-      formula: 'BW = fc / Q · f1,f2 = fc·(√(1+1/4Q²) ∓ 1/2Q)',
+      formula: 'BW = fc / Q; f1,f2 = fc·(√(1+1/4Q²) ∓ 1/2Q)',
       plainFormula:
         'The bandwidth equals the center frequency over Q; the edges equal the center times the square root of one plus one over four Q squared, minus or plus one over two Q.',
       explain:

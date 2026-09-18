@@ -50,7 +50,7 @@ const STEREOMIC: Workspace = {
       key: 'pathDelay',
       name: 'Arrival delay & first comb null',
       inputs: ['spacing', 'angle', 'temp'],
-      formula: 'path = spacing·sin(θ) · Δt = path/c · null = c/(2·path)',
+      formula: 'path = spacing·sin(θ); Δt = path/c; null = c/(2·path)',
       plainFormula:
         'The path difference equals the mic spacing times the sine of the source angle; the arrival delay equals that path divided by the speed of sound; and the first mono comb null is the speed of sound divided by twice the path difference.',
       explain:
@@ -267,7 +267,7 @@ const RFLINK: Workspace = {
       key: 'budget',
       name: 'Received power & link margin',
       inputs: ['ptx', 'gtx', 'grx', 'dist', 'freqMHz', 'rxsens'],
-      formula: 'Prx = Ptx + Gtx + Grx − FSPL · margin = Prx − Rx sens',
+      formula: 'Prx = Ptx + Gtx + Grx − FSPL; margin = Prx − Rx sens',
       plainFormula:
         'The received power equals the transmit power plus the transmit and receive antenna gains minus the path loss; the link margin equals the received power minus the receiver sensitivity.',
       explain:

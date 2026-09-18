@@ -1298,7 +1298,7 @@ export function SplMeterScreen({ navigation }: Props) {
       peakDb: shown(m.peakHoldDb),
       avgDb,
     };
-    saveMeasurement({
+    void saveMeasurement({
       id: Crypto.randomUUID(),
       tool_type: 'spl',
       created_at: new Date().toISOString(),
@@ -1356,7 +1356,7 @@ export function SplMeterScreen({ navigation }: Props) {
 
       <ScrollView contentContainerStyle={styles.scroll}>
         {/* Honest not-ready states: absent / spike / denied / error. */}
-        <EngineGate state={state} lastError={lastError} />
+        <EngineGate state={state} lastError={lastError} onRetry={start} />
 
         {/* Opens straight into the live meter (auto-start). */}
         {!micPaused && (state === 'idle' || state === 'starting') && (
@@ -1661,7 +1661,7 @@ export function SplMeterScreen({ navigation }: Props) {
             </Pressable>
           </View>
           <ScrollView contentContainerStyle={styles.vuScroll}>
-            <EngineGate state={state} lastError={lastError} />
+            <EngineGate state={state} lastError={lastError} onRetry={start} />
 
             {!micPaused && (state === 'idle' || state === 'starting') && (
               <>

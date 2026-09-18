@@ -502,7 +502,7 @@ const WS_CABLE: Workspace = {
       key: 'loss',
       name: 'Loss from a given gauge and length',
       inputs: ['len', 'awg', 'z', 'pamp'],
-      formula: 'Rloop = 2·L·R/m · loss = 20·log10(Z/(Z+Rloop))',
+      formula: 'Rloop = 2·L·R/m; loss = 20·log10(Z/(Z+Rloop))',
       plainFormula:
         'The loop resistance equals two times the length times the resistance per metre; the level loss is twenty times the log of the load impedance divided by the load plus the loop resistance.',
       explain:
@@ -551,7 +551,7 @@ const WS_CABLE: Workspace = {
       key: 'maxlen',
       name: 'Maximum cable length for a loss budget (reverse)',
       inputs: ['awg', 'z', 'maxloss'],
-      formula: 'Rloop_max = Z·(10^(loss/20) − 1) · Lmax = Rloop_max / (2·R/m)',
+      formula: 'Rloop_max = Z·(10^(loss/20) − 1); Lmax = Rloop_max / (2·R/m)',
       plainFormula:
         'The maximum loop resistance equals the impedance times (ten raised to the loss over twenty, minus one); the maximum length is that resistance divided by twice the resistance per metre.',
       explain:
@@ -736,7 +736,7 @@ const WS_CV70: Workspace = {
       key: 'load',
       name: 'System load, amp fit, and line current',
       inputs: ['taps', 'prated', 'vline', 'hr'],
-      formula: 'load = Σtaps · amp ≥ Σtaps × 10^(headroom/10) · I = Σtaps / Vline',
+      formula: 'load = Σtaps · amp ≥ Σtaps × 10^(headroom/10); I = Σtaps / Vline',
       plainFormula:
         'The line load equals the sum of the tap settings; the recommended amplifier is at least that sum times ten raised to the headroom over ten; the line current is the load divided by the line voltage.',
       explain:

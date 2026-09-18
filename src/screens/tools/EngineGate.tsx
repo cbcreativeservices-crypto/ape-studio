@@ -25,6 +25,26 @@ function openSystemSettings(): void {
   });
 }
 
+/**
+ * ── EVERY HOST MUST PASS `onRetry` (2026-09-17, bug-hunt pass 3) ──────────
+ *
+ * Until that date NONE of the mic tools did, and the consequences were larger
+ * than an optional prop suggests:
+ *
+ *   • TRY AGAIN never rendered, so the engine's own 12-second start watchdog —
+ *     added precisely because "'starting' froze forever with no TRY AGAIN" —
+ *     landed the user on a card whose only advice was to leave the tool and
+ *     come back. A microphone held by another app is the most likely failure in
+ *     the field, and it routes here.
+ *   • On Android ALLOW MICROPHONE never rendered either, because `canReRequest`
+ *     depends on `onRetry`, even though Android will happily re-show the OS
+ *     dialog.
+ *   • On the RT60 screen the gate card is the ONLY thing in the scroll area, so
+ *     the tool's entire recovery path was a sentence telling the user to leave.
+ *
+ * The component shipped with the fix; the wiring did not. A new tool that
+ * renders this without `onRetry` is a bug, not a style choice.
+ */
 export function EngineGate({
   state,
   lastError,

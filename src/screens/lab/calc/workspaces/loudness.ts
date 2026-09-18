@@ -49,7 +49,7 @@ const LOUDNORM: Workspace = {
       key: 'normalize',
       name: 'Gain to hit a target & peak check',
       inputs: ['measured', 'target', 'truePeak', 'ceiling'],
-      formula: 'gain = target − measured · new TP = TP + gain',
+      formula: 'gain = target − measured; new TP = TP + gain',
       plainFormula:
         'The gain change equals the target loudness minus your measured loudness; the new true peak equals the old true peak plus that same gain.',
       explain:
@@ -130,7 +130,7 @@ const LOUDTP: Workspace = {
       key: 'windows',
       name: 'Measurement window sizes',
       inputs: ['sr'],
-      formula: 'momentary = 0.4 s · short-term = 3 s (× sample rate)',
+      formula: 'momentary = 0.4 s; short-term = 3 s (× sample rate)',
       plainFormula:
         'The momentary window is 0.4 seconds and the short-term window is 3 seconds, each multiplied by the sample rate to get a length in samples.',
       explain:

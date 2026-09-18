@@ -319,7 +319,7 @@ const WS_PITCH: Workspace = {
       key: 'freqToNote',
       name: 'Note name from frequency',
       inputs: ['f', 'ref'],
-      formula: 'm = 69 + 12·log₂(f / A4) · cents = (m − round m) × 100',
+      formula: 'm = 69 + 12·log₂(f / A4); cents = (m − round m) × 100',
       plainFormula:
         'The MIDI number equals 69 plus twelve times the base-two log of the frequency over the A4 reference; the cents offset is the fractional part times 100.',
       explain:
@@ -400,7 +400,7 @@ const WS_PITCH: Workspace = {
       key: 'interval',
       name: 'Interval between two frequencies',
       inputs: ['f', 'f2'],
-      formula: 'semitones = 12·log₂(f₂/f₁) · cents = 1200·log₂(f₂/f₁)',
+      formula: 'semitones = 12·log₂(f₂/f₁); cents = 1200·log₂(f₂/f₁)',
       plainFormula:
         'The interval in semitones equals twelve times the base-two log of the ratio of the two frequencies; in cents it is 1200 times that log.',
       explain:
@@ -893,7 +893,7 @@ const WS_SABINE: Workspace = {
       key: 'rtFromSurfaces',
       name: 'RT60 from a surface list',
       inputs: ['vol', 'surfaces', 'coeffs'],
-      formula: 'A = Σ (Sᵢ · αᵢ) · RT60 = 0.161 · V / A',
+      formula: 'A = Σ (Sᵢ · αᵢ); RT60 = 0.161 · V / A',
       plainFormula:
         'The total absorption is the sum over surfaces of each area times its absorption coefficient; the reverberation time is then 0.161 times the volume over that total.',
       explain:
@@ -1039,7 +1039,7 @@ const WS_TREATMENT: Workspace = {
       key: 'panels',
       name: 'Panels needed for the target RT',
       inputs: ['vol', 'rtCur', 'rtTgt', 'panelArea', 'alpha'],
-      formula: 'ΔA = 0.161·V/RT_target − 0.161·V/RT_current · panels = ceil(ΔA / (S_panel · α))',
+      formula: 'ΔA = 0.161·V/RT_target − 0.161·V/RT_current; panels = ceil(ΔA / (S_panel · α))',
       plainFormula:
         'The absorption to add is 0.161 times the volume over the target RT minus the same over the current RT; the panel count is that shortfall divided by each panel’s area times its coefficient, rounded up.',
       explain:

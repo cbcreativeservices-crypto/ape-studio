@@ -363,7 +363,7 @@ const WS_PHASE: Workspace = {
       key: 'phaseFromDist',
       name: 'Phase from path difference',
       inputs: ['pathDiff', 'f', 'temp'],
-      formula: 'Δt = d / c · φ = 360 · f · Δt',
+      formula: 'Δt = d / c; φ = 360 · f · Δt',
       plainFormula:
         'The time offset equals the path difference over the speed of sound; the phase is then 360 degrees times the frequency times that offset.',
       explain:
@@ -394,7 +394,7 @@ const WS_PHASE: Workspace = {
       key: 'alignFreqs',
       name: 'Alignment frequencies from a delay',
       inputs: ['dt'],
-      formula: 'f₉₀ = 1/(4Δt) · f₁₈₀ = 1/(2Δt) · f₃₆₀ = 1/Δt',
+      formula: 'f₉₀ = 1/(4Δt); f₁₈₀ = 1/(2Δt); f₃₆₀ = 1/Δt',
       plainFormula:
         'The 90-degree frequency is one over four times the offset; the 180-degree frequency (first cancellation) is one over twice the offset; and the 360-degree frequency is one over the offset.',
       explain:
@@ -486,7 +486,7 @@ const WS_COMB: Workspace = {
       key: 'combFromDelay',
       name: 'Comb from time delay',
       inputs: ['dt'],
-      formula: 'f_null = (2k+1)/(2Δt) · f_peak = k/Δt · spacing = 1/Δt',
+      formula: 'f_null = (2k+1)/(2Δt); f_peak = k/Δt; spacing = 1/Δt',
       plainFormula:
         'Nulls fall at odd multiples of one over twice the delay; peaks fall at whole multiples of one over the delay; and the comb spacing is one over the delay.',
       explain:
@@ -525,7 +525,7 @@ const WS_COMB: Workspace = {
       key: 'combFromPath',
       name: 'Comb from path-length difference',
       inputs: ['pathDiff', 'temp'],
-      formula: 'Δt = d / c · then f_null = (2k+1)/(2Δt)',
+      formula: 'Δt = d / c; then f_null = (2k+1)/(2Δt)',
       plainFormula:
         'The delay equals the path difference over the speed of sound; then the nulls fall at odd multiples of one over twice that delay.',
       explain:
@@ -834,7 +834,7 @@ const WS_FFT: Workspace = {
       key: 'resFromSize',
       name: 'Resolution from FFT size',
       inputs: ['N', 'sr', 'fInterest'],
-      formula: 'Δf = sr / N · T = N / sr · cycles = f · N / sr',
+      formula: 'Δf = sr / N; T = N / sr; cycles = f · N / sr',
       plainFormula:
         'The bin spacing equals the sample rate over the FFT size; the window duration equals the FFT size over the sample rate; and the cycles in the window equal the frequency times the FFT size over the sample rate.',
       explain:

@@ -224,7 +224,7 @@ const BOUNDARY: Workspace = {
       key: 'sbir',
       name: 'Cancellations & reinforcements from boundary distance',
       inputs: ['d', 'temp'],
-      formula: 'f_null = (2k−1)·c/(4d) · f_peak = k·c/(2d)',
+      formula: 'f_null = (2k−1)·c/(4d); f_peak = k·c/(2d)',
       plainFormula:
         'Cancellations fall at odd multiples of the speed of sound over four times the boundary distance; reinforcements fall at whole multiples of the speed of sound over twice the distance.',
       explain:
@@ -317,7 +317,7 @@ const REFLECTION: Workspace = {
       key: 'comb',
       name: 'Comb pattern from two path lengths',
       inputs: ['dDirect', 'dReflected', 'temp'],
-      formula: 'Δd = d₂ − d₁ · Δt = Δd/c · Δf = c/Δd · first null = c/(2Δd)',
+      formula: 'Δd = d₂ − d₁; Δt = Δd/c; Δf = c/Δd; first null = c/(2Δd)',
       plainFormula:
         'The path difference equals the reflected path minus the direct path; the delay equals that difference over the speed of sound; the comb teeth are spaced by the speed of sound over the path difference; and the first null sits at half that spacing.',
       explain:

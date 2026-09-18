@@ -52,13 +52,36 @@ export function ProductionStageScreen() {
   );
   const report = useMemo(() => (stage && project ? readStage(stage, project) : null), [stage, project]);
 
+  /**
+   * A write that did not land, said out loud.
+   *
+   * ── WHY THIS EXISTS (2026-09-17, bug-hunt pass 3) ───────────────────
+   *
+   * `projectStore().mutate()` returns null when the write fails, and every call
+   * site here discarded it — while `setValue` had ALREADY updated the screen
+   * optimistically. So on a full disk the answer looked saved, the readiness
+   * meter went green off state that never reached storage, and the exported
+   * packet was computed from it. Nothing in the file surfaced an error at all.
+   *
+   * This is the flagship paid feature and the artefact is a document somebody
+   * hands to a client. A plan that silently loses a field is the one failure the
+   * whole readiness engine exists to prevent, so it is now impossible for a
+   * failed write to stay quiet.
+   */
+  const [saveFailed, setSaveFailed] = useState(false);
+
   const setValue = useCallback(
     async (fieldId: string, v: FieldValue) => {
       if (!project) return;
       // Optimistic: the field must feel immediate, and the store is the record.
       setProject((cur) => (cur ? { ...cur, values: { ...cur.values, [valueKey(stageId, fieldId)]: v } } : cur));
       const saved = await projectStore().setValue(lab, project.id, stageId, fieldId, v);
-      if (saved) setProject(saved);
+      if (saved) {
+        setProject(saved);
+        setSaveFailed(false);
+      } else {
+        setSaveFailed(true);
+      }
     },
     [project, stageId, lab],
   );
@@ -67,7 +90,12 @@ export function ProductionStageScreen() {
     async (fieldId: string, reason: string) => {
       if (!project) return;
       const saved = await projectStore().setNa(lab, project.id, stageId, fieldId, reason);
-      if (saved) setProject(saved);
+      if (saved) {
+        setProject(saved);
+        setSaveFailed(false);
+      } else {
+        setSaveFailed(true);
+      }
     },
     [project, stageId, lab],
   );
@@ -93,6 +121,19 @@ export function ProductionStageScreen() {
         </View>
         <AccuracyNote variant="practice" compact />
       </View>
+
+      {/* A FAILED WRITE IS NEVER SILENT (2026-09-17). The field updates
+          optimistically so typing feels immediate, which means the only thing
+          standing between a full disk and a plan that quietly lost an answer is
+          this banner. It stays until a later write succeeds. */}
+      {saveFailed ? (
+        <View style={styles.saveFailed} accessibilityRole="alert" accessibilityLiveRegion="assertive">
+          <Text style={styles.saveFailedText}>
+            ⚠ THIS DEVICE COULD NOT SAVE YOUR LAST ANSWER. What you see here has not been written down — free up
+            some space and re-enter it before you rely on this plan or export the packet.
+          </Text>
+        </View>
+      ) : null}
 
       {!project || !stage || !report ? (
         <View style={styles.empty}>
@@ -184,6 +225,17 @@ function Notice({ notice }: { notice: NoticeDef }) {
 }
 
 const styles = StyleSheet.create({
+  /** Loud on purpose: the screen has already shown the answer as accepted. */
+  saveFailed: {
+    marginHorizontal: 14,
+    marginTop: 8,
+    padding: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ff6b5e',
+    backgroundColor: 'rgba(255,107,94,0.10)',
+  },
+  saveFailedText: { color: '#ff9a90', fontFamily: fonts.barlowMedium, fontSize: 12, lineHeight: 17 },
   root: { flex: 1, backgroundColor: colors.screenBg },
   header: {
     flexDirection: 'row',

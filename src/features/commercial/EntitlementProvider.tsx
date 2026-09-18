@@ -185,6 +185,20 @@ type EntitlementContextValue = {
    *  before React has applied the update. Every tier is truthy, so existing
    *  truthiness checks are unchanged. */
   refreshEntitlement: () => Promise<Entitlement | false>;
+  /**
+   * A read actually PRODUCED a tier (or there is definitively no session).
+   *
+   * Exported 2026-09-17. `resolved` flips in a `.finally()`, i.e. after the
+   * first ATTEMPT whether it succeeded or failed — it means "first paint may
+   * proceed", not "we know who this is". Settings gated its identity block on
+   * `resolved`, so a paying member whose boot read failed (offline, a venue with
+   * no signal) was shown "GUEST — NO ACCOUNT", the members-only upsell, "Sign in
+   * / create account" in place of Log out, and — worst — no DELETE ACCOUNT row
+   * at all, which is a control an app-store reviewer looks for.
+   *
+   * Anything that must not assert an identity should gate on THIS.
+   */
+  tierKnown: boolean;
 };
 
 const EntitlementContext = createContext<EntitlementContextValue | null>(null);
@@ -497,6 +511,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
       setCommercialMode,
       setEntitlement,
       refreshEntitlement,
+      tierKnown,
     }),
     [commercialMode, entitlement, resolved, setCommercialMode, setEntitlement, refreshEntitlement],
   );

@@ -554,7 +554,7 @@ function LivePitchMode({
     const saveFlags = meterWarningFlags(state === 'running' ? frames.meter : null);
     if (s.stabilityLabel === 'Unstable' && !saveFlags.includes('unstable_measurement'))
       saveFlags.push('unstable_measurement');
-    saveMeasurement({
+    void saveMeasurement({
       id: Crypto.randomUUID(),
       tool_type: 'hzcounter',
       created_at: new Date().toISOString(),
@@ -592,7 +592,7 @@ function LivePitchMode({
   }, [state, frames.pitch, frames.meter]);
 
   if (state === 'absent' || state === 'spike' || state === 'denied' || state === 'error') {
-    return <EngineGate state={state} lastError={lastError} />;
+    return <EngineGate state={state} lastError={lastError} onRetry={start} />;
   }
   if (state !== 'running' && !micPaused) {
     // Opens straight into the live counter/tuner (auto-start).
@@ -1096,7 +1096,7 @@ function TapMode({ onOpenLibrary, help, helpAll }: { onOpenLibrary: () => void; 
       return;
     }
     if (!stats) return;
-    saveMeasurement({
+    void saveMeasurement({
       id: Crypto.randomUUID(),
       tool_type: 'hzcounter',
       created_at: new Date().toISOString(),

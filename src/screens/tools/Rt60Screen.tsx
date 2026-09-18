@@ -355,7 +355,7 @@ export function Rt60Screen({ navigation }: Props) {
     // Downsample the stored curve to ≤200 numeric points (ceil so the cap holds).
     const stride = Math.max(1, Math.ceil(rt60.curveDb.length / 200));
     const decayDb = rt60.curveDb.filter((_, i) => i % stride === 0);
-    saveMeasurement({
+    void saveMeasurement({
       id: Crypto.randomUUID(),
       tool_type: 'rt60',
       created_at: new Date().toISOString(),
@@ -413,7 +413,7 @@ export function Rt60Screen({ navigation }: Props) {
 
       <ScrollView contentContainerStyle={styles.scroll}>
         {state === 'absent' || state === 'spike' || state === 'denied' || state === 'error' ? (
-          <EngineGate state={state} lastError={lastError} />
+          <EngineGate state={state} lastError={lastError} onRetry={start} />
         ) : showResults && broadband ? (
           <>
             {/* Headline — method + ITS fit's R², always labeled (spec §13).

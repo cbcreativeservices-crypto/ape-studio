@@ -222,7 +222,11 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       {
         id: 'pv-leaves',
         q: 'What does the app send off my phone?',
-        a: 'Your account’s study progress and enrollments sync so they survive a new phone. Audio from the tools is never uploaded, and saved measurements stay on the device.',
+        // COMPLETED 2026-09-17: this listed the sync and omitted the two things
+        // a person asking this question most wants named — crash reporting and
+        // usage analytics, both of which are ON. Answering "what does the app
+        // send off my phone?" with a partial list is worse than not answering.
+        a: 'Your account’s study progress and enrollments sync so they survive a new phone. The app also sends crash reports and anonymous usage counts (which screens are opened, whether a quiz was passed) so we can find faults and see what is used — never your answers, your notes, your measurements or anything that identifies you. Audio from the tools is never uploaded, and saved measurements stay on this device.',
       },
       {
         id: 'pv-calibration',
@@ -237,7 +241,12 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       {
         id: 'pv-delete',
         q: 'How do I delete my account?',
-        a: 'Email us — the ASK A QUESTION button at the bottom of the full manual opens a pre-addressed message — and we will delete your account and its data.',
+        // CORRECTED 2026-09-17. This told people to email support, which is both
+        // wrong — the app has had a working in-app Delete Account control for
+        // months — and the exact pattern App Review guideline 5.1.1(v) exists to
+        // stop: an account that can be created in the app must be deletable in
+        // the app, without contacting anyone.
+        a: 'Settings → DELETE ACCOUNT, at the very bottom. Hold the button for five seconds and confirm; it permanently erases your personal data and signs you out. You do not need to contact us.',
       },
     ],
   },

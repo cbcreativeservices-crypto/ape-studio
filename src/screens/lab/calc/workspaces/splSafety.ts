@@ -454,7 +454,7 @@ const WS_DOSE: Workspace = {
       key: 'doseNiosh',
       name: 'Daily dose from intervals — NIOSH-style (85 dBA, 3 dB exchange)',
       inputs: ['doseLevels', 'doseMins'],
-      formula: 'dose% = Σ (tᵢ / Tᵢ) × 100 · Tᵢ = 480 / 2^((Lᵢ−85)/3)',
+      formula: 'dose% = Σ (tᵢ / Tᵢ) × 100; Tᵢ = 480 / 2^((Lᵢ−85)/3)',
       plainFormula:
         'The daily dose in percent is the sum over intervals of each duration divided by its allowable time, times 100; each allowable time is 480 divided by two raised to the interval level minus 85, over three.',
       explain:
@@ -524,7 +524,7 @@ const WS_DOSE: Workspace = {
       key: 'doseOsha',
       name: 'Daily dose from intervals — OSHA-style (90 dBA, 5 dB exchange)',
       inputs: ['doseLevels', 'doseMins'],
-      formula: 'dose% = Σ (tᵢ / Tᵢ) × 100 · Tᵢ = 480 / 2^((Lᵢ−90)/5)',
+      formula: 'dose% = Σ (tᵢ / Tᵢ) × 100; Tᵢ = 480 / 2^((Lᵢ−90)/5)',
       plainFormula:
         'The daily dose in percent is the sum over intervals of each duration divided by its allowable time, times 100; each allowable time is 480 divided by two raised to the interval level minus 90, over five.',
       explain:
@@ -683,7 +683,7 @@ const WS_MIC_GAIN: Workspace = {
       key: 'micout',
       name: 'Mic output voltage from SPL',
       inputs: ['sens', 'spl'],
-      formula: 'p = 10^((SPL−94)/20) Pa · V = sens/1000 × p',
+      formula: 'p = 10^((SPL−94)/20) Pa; V = sens/1000 × p',
       plainFormula:
         'The pressure equals ten raised to the SPL minus 94, over twenty, in pascals; the voltage equals the sensitivity over 1000 times that pressure.',
       explain:

@@ -199,8 +199,38 @@ export function getMeasurements(toolKey?: ToolKey): SavedMeasurement[] {
 // Saving one 119 KB snapshot used to rewrite every other record with it, so the
 // cost of a save grew with the size of the library it was being added to.
 
-export function saveMeasurement(m: SavedMeasurement): void {
-  void hydrate().then(() => {
+/**
+ * Save a measurement. RESOLVES FALSE IF IT DID NOT REACH DISK.
+ *
+ * ── "SAVED ✓" USED TO BE UNCONDITIONAL (2026-09-17, bug-hunt pass 3) ──────
+ *
+ * This was `void` and fire-and-forget: the write went through `guard()`, whose
+ * entire failure path is a `console.warn` — and this file's own header says a
+ * failed write "must be AUDIBLE". It was audible to a developer. Every one of
+ * the eight call sites then set its success state on the next line, so the user
+ * saw SAVED ✓, the record appeared in the in-memory library, and it was gone on
+ * the next launch. That is exactly how the 2026-09-11 SQLITE_FULL loss stayed
+ * invisible.
+ *
+ * The in-memory list is still updated first, because the record IS valid and the
+ * user should see it for this session; what changes is that the caller can now
+ * tell them the truth about whether it will still be there tomorrow.
+ */
+/**
+ * How this module tells a HUMAN that a write failed.
+ *
+ * Injected rather than imported: the dialog helper pulls in react-native, and
+ * this store is covered by a node test that cannot load it. Defaults to nothing
+ * so the store stays usable headless; `App` wires the real one once at start-up.
+ */
+let reportSaveFailure: ((title: string, body: string) => void) | null = null;
+
+export function setMeasurementFailureReporter(fn: (title: string, body: string) => void): void {
+  reportSaveFailure = fn;
+}
+
+export function saveMeasurement(m: SavedMeasurement): Promise<boolean> {
+  return hydrate().then(async () => {
     const next = [...list, m];
     // Enforce the cap oldest-first (by created_at).
     let dropped: SavedMeasurement[] = [];
@@ -209,9 +239,27 @@ export function saveMeasurement(m: SavedMeasurement): void {
       dropped = next.splice(0, next.length - MAX_SAVED);
     }
     list = next;
-    guard('save', putRow(rowOf(m)));
+    let ok = true;
+    try {
+      await putRow(rowOf(m));
+    } catch (e) {
+      console.warn('[measurements] save FAILED — the library on screen is not persisted:', e);
+      ok = false;
+      // SAID OUT LOUD, FROM HERE (2026-09-17). Eight tools call this and every
+      // one of them showed "SAVED ✓" on the next line, so the message lives in
+      // the store rather than in eight screens that would each have to remember.
+      // A measurement is often taken once, on site, in a room the person will
+      // not be standing in again — finding out tomorrow is not good enough.
+      reportSaveFailure?.(
+        'Measurement not saved',
+        'This device could not write the measurement to storage — it is on screen for now, but it will be gone when you close the app. Free up some space and take it again.',
+      );
+    }
+    // A failed TRIM is not a failed save: the record the user asked for is on
+    // disk, and an over-long library is self-correcting on the next write.
     if (dropped.length > 0) guard('trim', deleteRows(dropped.map((d) => d.id)));
     emit();
+    return ok;
   });
 }
 

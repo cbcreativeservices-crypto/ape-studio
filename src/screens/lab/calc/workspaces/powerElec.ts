@@ -144,7 +144,7 @@ const PADS: Workspace = {
       key: 'tpad',
       name: 'T-pad resistor values',
       inputs: ['atten', 'z'],
-      formula: 'R1=R2 = Z·(K−1)/(K+1) · R3 = Z·2K/(K²−1) · K = 10^(dB/20)',
+      formula: 'R1=R2 = Z·(K−1)/(K+1); R3 = Z·2K/(K²−1); K = 10^(dB/20)',
       plainFormula:
         'The series arms equal the impedance times (the multiplier minus one) over (the multiplier plus one); the shunt equals the impedance times twice the multiplier over (the multiplier squared minus one); the multiplier is ten raised to the attenuation over twenty.',
       explain:
@@ -173,7 +173,7 @@ const PADS: Workspace = {
       key: 'pipad',
       name: 'Pi-pad resistor values',
       inputs: ['atten', 'z'],
-      formula: 'series R = Z·(K²−1)/(2K) · each shunt R = Z·(K+1)/(K−1)',
+      formula: 'series R = Z·(K²−1)/(2K); each shunt R = Z·(K+1)/(K−1)',
       plainFormula:
         'The series resistor equals the impedance times (the multiplier squared minus one) over twice the multiplier; each shunt resistor equals the impedance times (the multiplier plus one) over (the multiplier minus one).',
       explain:
@@ -239,7 +239,7 @@ const VDROP: Workspace = {
       key: 'drop',
       name: 'Voltage drop over a run',
       inputs: ['awg', 'len', 'current', 'vsrc'],
-      formula: 'R = ρ·2L/A · Vdrop = I·R · loss = I²·R',
+      formula: 'R = ρ·2L/A; Vdrop = I·R; loss = I²·R',
       plainFormula:
         'The round-trip resistance equals the resistivity times twice the length over the cross-section area; the voltage drop equals the current times that resistance; and the power lost equals the current squared times the resistance.',
       explain:
@@ -341,7 +341,7 @@ const RACK: Workspace = {
       key: 'heatLoad',
       name: 'Current, heat & airflow',
       inputs: ['watts', 'mains', 'dTempF'],
-      formula: 'I = P/V · BTU/hr = W·3.412 · CFM = BTU/hr / (1.08·ΔT)',
+      formula: 'I = P/V; BTU/hr = W·3.412; CFM = BTU/hr / (1.08·ΔT)',
       plainFormula:
         'The mains current equals the power over the voltage; the heat output equals the wattage times 3.412 BTU per hour; and the cooling airflow equals the heat output divided by 1.08 times the temperature rise.',
       explain:
@@ -434,7 +434,7 @@ const COMPLEXZ: Workspace = {
       key: 'impedance',
       name: 'Impedance magnitude & phase at a frequency',
       inputs: ['r', 'indmH', 'capuF', 'f'],
-      formula: '|Z| = √(R² + (XL − XC)²) · φ = atan((XL − XC)/R)',
+      formula: '|Z| = √(R² + (XL − XC)²); φ = atan((XL − XC)/R)',
       plainFormula:
         'The impedance magnitude equals the square root of resistance squared plus the net reactance squared; the phase angle is the arctangent of the net reactance over the resistance.',
       explain:

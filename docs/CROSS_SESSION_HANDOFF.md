@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 00:48 · ccode · 0407b131
+changed: pass 3 verification: three of my own fixes were broken, plus an inert gate
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-18 00:35 · ccode · 25dc9923
 changed: bug-hunt brief: what pass 2 fixed and what is still open
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
