@@ -482,7 +482,18 @@ export function ScenariosScreen({ route }: Props) {
     if (isSeq) return sequence.includes(opt) ? 'selectedBlue' : 'default';
     if (isMulti) return multiSel.has(opt) ? 'selectedOrange' : 'default';
     if (!picked) return 'default';
-    if (opt === picked) return feedback?.correct ? 'selectedBlue' : 'wrongRed';
+    // A CORRECT ANSWER MUST READ AS CORRECT (2026-09-17, bug-hunt pass 4).
+    //
+    // This returned 'selectedBlue' — the "you have chosen this" colour — for a
+    // RIGHT answer, where every other method returns 'correctGreen'. So the
+    // green card and the ✓ never appeared, and, worse, `AnswerCell` appends
+    // ", correct" to its accessibility label only for 'correctGreen': a learner
+    // using a screen reader was told nothing at all about whether they were
+    // right, on a method that auto-advances in three seconds.
+    //
+    // Fill-in-Blank and Matching were both fixed for this on 2026-09-05.
+    // Scenarios was missed.
+    if (opt === picked) return feedback?.correct ? 'correctGreen' : 'wrongRed';
     return 'dimmed';
   };
 

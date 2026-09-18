@@ -19,6 +19,7 @@ import { useFocusEffect, useNavigation, useRoute, type RouteProp } from '@react-
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
+import { notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { checkActivity, seedActivityProject, type ActivityResult } from '../../../features/production/activities';
@@ -57,7 +58,17 @@ export function ProductionActivityScreen() {
       return;
     }
     const seeded = seedActivityProject(lab, pathway, activity);
-    await projectStore().upsert(seeded);
+    // A failed seed means the exercise cannot record anything the learner does.
+    // Showing it anyway would waste their work silently, which is the whole
+    // failure class this lab keeps producing.
+    const ok = await projectStore().upsert(seeded);
+    if (!ok) {
+      notify(
+        'Could not start the exercise',
+        'This device could not create the practice project. Free up some space and open the exercise again.',
+      );
+      return;
+    }
     setProject(seeded);
   }, [activity, activityId, pathway, lab]);
 
@@ -76,9 +87,20 @@ export function ProductionActivityScreen() {
 
   const restart = useCallback(async () => {
     if (!activity || !project) return;
-    await projectStore().remove(lab, project.id);
+    // SEED FIRST, THEN REPLACE (2026-09-17). This removed the exercise and then
+    // wrote the fresh one, so a failure in between left the learner with NO
+    // project at all — a delete that succeeded and a create that did not. The
+    // ids match, so `upsert` overwrites in place and the remove is unnecessary;
+    // dropping it removes the window entirely.
     const seeded = seedActivityProject(lab, pathway, activity);
-    await projectStore().upsert(seeded);
+    const ok = await projectStore().upsert(seeded);
+    if (!ok) {
+      notify(
+        'Could not restart the exercise',
+        'This device could not save the reset. Check your storage and try again — your current attempt is untouched.',
+      );
+      return;
+    }
     setProject(seeded);
     setDebriefOpen(false);
   }, [activity, project, pathway, lab]);

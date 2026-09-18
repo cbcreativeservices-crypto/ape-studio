@@ -233,10 +233,16 @@ export function createProjectStore(kv: KeyValueStore): ProjectStore {
         return write(p.lab, all);
       });
     },
-    async remove(lab, id) {
-      return write(lab, (await list(lab)).filter((p) => p.id !== id));
+    // Both of these are read-modify-writes of the SAME list as `mutate`, so both
+    // belong in its queue (2026-09-17, pass 5). The first version of the
+    // serialization covered `mutate` and `upsert` and left these racing — a
+    // concrete hazard on the activity screen's RESTART, which deletes and
+    // recreates back to back.
+    remove(lab, id) {
+      return serialize(lab, async () => write(lab, (await list(lab)).filter((p) => p.id !== id)));
     },
-    async duplicate(lab, id) {
+    duplicate(lab, id) {
+      return serialize(lab, async () => {
       const all = await list(lab);
       const src = all.find((p) => p.id === id);
       if (!src) return null;
@@ -254,6 +260,7 @@ export function createProjectStore(kv: KeyValueStore): ProjectStore {
       };
       all.unshift(copy);
       return (await write(lab, all)) ? copy : null;
+      });
     },
     setValue(lab, id, stageId, fieldId, value) {
       return mutate(lab, id, (p) => ({

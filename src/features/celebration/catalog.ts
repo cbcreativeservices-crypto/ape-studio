@@ -13,7 +13,23 @@ import type { CelebrationDef, CelebrationId } from './types';
 
 const VIEW_TROPHY = { label: 'VIEW IN TROPHY CASE', kind: 'trophy-case' } as const;
 const DONE = { label: 'DONE', kind: 'dismiss' } as const;
+/**
+ * ⚠ NOT OFFERED ANYWHERE (2026-09-17, pass 5).
+ *
+ * This sat on all five credential celebrations, and `CelebrationScreen` maps
+ * 'share' to the same exit as DONE — so tapping SHARE silently reset to the
+ * Study dashboard AND spent the one-time celebration, on the highest-stakes
+ * screen in the app. The honest options were to wire it or to remove it, and
+ * the celebration does not carry the credential row that `certificatePdf.ts`
+ * would need, so it is removed.
+ *
+ * The VIEW CERTIFICATE / VIEW CREDENTIAL button beside it leads to the screen
+ * where sharing genuinely works, so nothing is lost but the dead button.
+ *
+ * Kept here, unused, so that whoever wires it has the label and this note.
+ */
 const SHARE = { label: 'SHARE', kind: 'share' } as const;
+void SHARE;
 
 export const CELEBRATIONS: Record<CelebrationId, CelebrationDef> = {
   // ── step · an activity inside a topic ──────────────────────────────────────
@@ -221,7 +237,7 @@ export const CELEBRATIONS: Record<CelebrationId, CelebrationDef> = {
       'Congratulations—you have earned your first Pro Audio Training Academy certificate.',
       'This credential recognizes your focused achievement in a specialized area of professional audio. It has been added to your permanent credential record and can be viewed, shared, and independently verified.',
     ],
-    actions: [{ label: 'VIEW CERTIFICATE', kind: 'view-credential', primary: true }, SHARE],
+    actions: [{ label: 'VIEW CERTIFICATE', kind: 'view-credential', primary: true }],
   },
 
   'certificate-earned': {
@@ -233,7 +249,7 @@ export const CELEBRATIONS: Record<CelebrationId, CelebrationDef> = {
       'Excellent work. You have added another specialization certificate to your professional record.',
       'Your new credential is now displayed in your Trophy Case and is available to view, share, and verify.',
     ],
-    actions: [{ label: 'VIEW CERTIFICATE', kind: 'view-credential', primary: true }, SHARE],
+    actions: [{ label: 'VIEW CERTIFICATE', kind: 'view-credential', primary: true }],
   },
 
   'first-program': {
@@ -246,7 +262,7 @@ export const CELEBRATIONS: Record<CelebrationId, CelebrationDef> = {
       'You have completed a comprehensive program of study and earned your first professional program credential from Pro Audio Training Academy.',
       'Your credential has been added to your permanent record and can be viewed, shared, and independently verified.',
     ],
-    actions: [{ label: 'VIEW CREDENTIAL', kind: 'view-credential', primary: true }, SHARE],
+    actions: [{ label: 'VIEW CREDENTIAL', kind: 'view-credential', primary: true }],
   },
 
   'program-complete': {
@@ -259,7 +275,7 @@ export const CELEBRATIONS: Record<CelebrationId, CelebrationDef> = {
       'You have added a comprehensive professional program credential to your record. Your Trophy Case now reflects achievement across multiple areas of professional audio.',
       'Your new credential is ready to view, share, and verify.',
     ],
-    actions: [{ label: 'VIEW CREDENTIAL', kind: 'view-credential', primary: true }, SHARE],
+    actions: [{ label: 'VIEW CREDENTIAL', kind: 'view-credential', primary: true }],
   },
 
   /**
@@ -277,7 +293,7 @@ export const CELEBRATIONS: Record<CelebrationId, CelebrationDef> = {
       'Your completed work fulfilled the requirements for {credential_count} credentials.',
       'Each new credential has been added to your Trophy Case and permanent credential record.',
     ],
-    actions: [{ label: 'VIEW CREDENTIALS', kind: 'view-credential', primary: true }, SHARE],
+    actions: [{ label: 'VIEW CREDENTIALS', kind: 'view-credential', primary: true }],
   },
 };
 

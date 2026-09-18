@@ -442,7 +442,21 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
     // reports FALSE so callers can retry honestly. A failed read still never
     // downgrades the current tier (see deriveAndApply).
     try {
+      // WHOSE SESSION IS THIS? (2026-09-17, pass 5.) `deriveAndApply` was given a
+      // generation check the same day and this, its twin on the purchase /
+      // restore / redeem path, was left with the identical hole: a slow read
+      // landing after the user has signed out or switched accounts applies the
+      // PREVIOUS session's standing to the current one.
+      //
+      // There is no generation counter reachable from here, so it re-reads the
+      // session identity after the await and refuses to apply an answer that
+      // belongs to somebody else.
       const { data: sess } = await supabase.auth.getSession();
+      const uidAtStart = sess.session?.user?.id ?? null;
+      const stillSameUser = async () => {
+        const { data: now } = await supabase.auth.getSession();
+        return (now.session?.user?.id ?? null) === uidAtStart;
+      };
       // Same test as the effect above — an ANONYMOUS session is still a guest.
       if (!isRealAccount(sess.session)) {
         setEntitlementState('anonymous');
@@ -458,6 +472,10 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
         return false;
       }
       const tier = academyTierFromRows((data ?? []) as EntRow[]);
+      if (!(await stillSameUser())) {
+        console.warn('[entitlement] refresh answer belongs to a previous session, discarded');
+        return false;
+      }
       if (!devOverrode.current) setEntitlementState(tier);
       return tier;
     } catch (e) {

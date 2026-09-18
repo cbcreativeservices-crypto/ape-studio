@@ -22,6 +22,7 @@ import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
+import { notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { resolveStage } from '../../../features/production/schema';
@@ -79,7 +80,16 @@ export function ProductionLabScreen() {
   const start = useCallback(
     async (pathway: PathwayId) => {
       const p = newProject(lab, pathway, `${PATHWAY_LABEL[pathway]} ${def.newProjectNoun}`);
-      await projectStore().upsert(p);
+      // A new project that did not reach storage looks identical to one that
+      // did, right up until the learner closes the app (2026-09-17).
+      const ok = await projectStore().upsert(p);
+      if (!ok) {
+        notify(
+          'Could not create the project',
+          'This device could not save a new project. Free up some space and try again.',
+        );
+        return;
+      }
       await reload();
       setOpenId(p.id);
     },

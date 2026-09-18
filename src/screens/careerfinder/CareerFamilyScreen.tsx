@@ -16,6 +16,7 @@ import type { RootStackParamList } from '../../navigation/types';
 import { colors, fonts } from '../../theme/tokens';
 import { sendFeedback } from '../../lib/feedback';
 import { officialTopicName } from '../../data/officialTopicNames';
+import { isRegulatedTitle } from '../../features/careerfinder/careerIndex';
 import { fetchV3Curriculum, flattenV3 } from '../../data/v3Curriculum';
 import { toggleTopic, useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { computeResult, explainFamily } from '../../features/careerfinder/scoring';
@@ -153,7 +154,25 @@ export function CareerFamilyScreen() {
 
       <Card>
         <SectionLabel>REPRESENTATIVE CAREERS</SectionLabel>
-        {fam.examples.map((e) => <Text key={e} style={styles.example}>▸ {e}</Text>)}
+        {/* DISCLOSE THE GATED ONES (2026-09-17, pass 5). These are canonical
+            titles — Audiologist, Speech-Language Pathologist, Entertainment
+            Rigger, Music Therapist — and ten of them across the families are
+            licensed occupations. They were printed bare, fifty lines above this
+            same screen's own LICENSED badge and warning, which only appears
+            once a career row is expanded. Pass 2 fixed the RESULTS screen and
+            missed this one. */}
+        {fam.examples.map((e) => (
+          <Text key={e} style={styles.example}>
+            ▸ {e}
+            {isRegulatedTitle(e) ? <Text style={styles.exampleGated}> ⚠</Text> : null}
+          </Text>
+        ))}
+        {fam.examples.some(isRegulatedTitle) ? (
+          <Text style={styles.exampleGatedNote}>
+            ⚠ Licensed or credentialed occupation. Academy study supports it but does not lead to that
+            licence or credential — check what is required where you live.
+          </Text>
+        ) : null}
         <SectionLabel>WHERE THE WORK HAPPENS</SectionLabel>
         <Body>{fam.settings.map((s, i) => (i === 0 ? s.charAt(0).toUpperCase() + s.slice(1) : s)).join(' · ')}</Body>
         <SectionLabel>HOW CENTRAL AUDIO IS</SectionLabel>
@@ -234,6 +253,8 @@ const styles = StyleSheet.create({
   rankLine: { color: colors.green, fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.8 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   example: { color: colors.textSecondary, fontFamily: fonts.barlowMedium, fontSize: 15, lineHeight: 22 },
+  exampleGated: { color: '#ffb060' },
+  exampleGatedNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: '#ffb060', marginTop: 6 },
   pathLine: { color: colors.textPrimary, fontFamily: fonts.oswaldMedium, fontSize: 15 },
   startHere: { color: colors.green, fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.8, marginTop: 2 },
   topicRow: { flexDirection: 'row', gap: 10, alignItems: 'flex-start', paddingVertical: 4, minHeight: 32 },

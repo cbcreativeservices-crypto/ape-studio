@@ -11,7 +11,8 @@ import type { Career } from './careerRequirement';
 
 export type TopicCopy = { description: string; roles: readonly Career[] };
 
-const BY_GS: Record<number, TopicCopy> = {
+/** Exposed for `gatedRoles.ts` — see the note there. */
+export const TOPIC_COPY_BY_GS: Record<number, TopicCopy> = {
   3420: { description: "How sound behaves in rooms — reflection, absorption, diffusion, standing waves and room modes, and reverberation time as they shape what you hear.", roles: [{ name: "Acoustic consultant" }, { name: "studio designer" }, { name: "live sound engineer" }] },
   3430: { description: "Placing absorbers, diffusers and bass traps to control reflections and modal buildup — treatment types, placement strategy, and coverage trade-offs.", roles: [{ name: "Acoustic consultant" }, { name: "studio designer" }, { name: "AV installer" }] },
   3440: { description: "Designing studios and audio facilities — sound isolation and transmission control, room geometry and ratios, HVAC noise, and control-room monitoring layout.", roles: [{ name: "Studio designer" }, { name: "acoustic consultant" }] },
@@ -183,5 +184,5 @@ const BY_GS: Record<number, TopicCopy> = {
 /** Per-topic copy for a gs, or null if none. */
 export function topicCopy(gs: number | null | undefined): TopicCopy | null {
   if (gs == null) return null;
-  return BY_GS[gs] ?? null;
+  return TOPIC_COPY_BY_GS[gs] ?? null;
 }

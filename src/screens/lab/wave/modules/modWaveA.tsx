@@ -481,11 +481,11 @@ export function AbsorptionModule(p: WaveModuleProps) {
   const readouts = [
     { k: `α @ ${fmtHz(freq)}`, v: alpha.toFixed(2) },
     { k: 'ENERGY AFTER 1 BOUNCE', v: `${((1 - alpha) * 100).toFixed(0)} %` },
-    { k: 'α @ 125 HZ', v: alphaAt(mat, 125).toFixed(2) },
-    { k: 'α @ 4 KHZ', v: alphaAt(mat, 4000).toFixed(2) },
-    { k: 'RT60 @ 125 HZ', v: `${sabineRT(scene, 125).toFixed(2)} s` },
-    { k: 'RT60 @ 500 HZ', v: `${sabineRT(scene, 500).toFixed(2)} s` },
-    { k: 'RT60 @ 2 KHZ', v: `${sabineRT(scene, 2000).toFixed(2)} s` },
+    { k: 'α @ 125 Hz', v: alphaAt(mat, 125).toFixed(2) },
+    { k: 'α @ 4 kHz', v: alphaAt(mat, 4000).toFixed(2) },
+    { k: 'RT60 @ 125 Hz', v: `${sabineRT(scene, 125).toFixed(2)} s` },
+    { k: 'RT60 @ 500 Hz', v: `${sabineRT(scene, 500).toFixed(2)} s` },
+    { k: 'RT60 @ 2 kHz', v: `${sabineRT(scene, 2000).toFixed(2)} s` },
   ];
 
   return (
@@ -499,8 +499,8 @@ export function AbsorptionModule(p: WaveModuleProps) {
         bezel: [
           { k: `α @ ${fmtHz(freq)}`, v: alpha.toFixed(2), flex: 1.2, helpKey: 'absorption' },
           { k: '1 BOUNCE', v: `${((1 - alpha) * 100).toFixed(0)} %`, helpKey: 'absorption' },
-          { k: 'α 125 HZ', v: alphaAt(mat, 125).toFixed(2), helpKey: 'absorption' },
-          { k: 'α 4 KHZ', v: alphaAt(mat, 4000).toFixed(2), helpKey: 'absorption' },
+          { k: 'α 125 Hz', v: alphaAt(mat, 125).toFixed(2), helpKey: 'absorption' },
+          { k: 'α 4 kHz', v: alphaAt(mat, 4000).toFixed(2), helpKey: 'absorption' },
         ],
         stage: (w, h) =>
           viz ? (
@@ -910,7 +910,7 @@ const DIFFRACTION_CHECK: CheckSpec = {
   ],
   correctIdx: 1,
   reveal:
-    'Wavelength decides. An 80 Hz rumble is ~4.3 m long — comparable to the barrier itself — and wraps over the edge nearly unbothered. A 4 kHz hiss is 8.6 cm and casts a real shadow. Compare the LOSS @ 80 HZ and LOSS @ 8 KHZ readouts: the shadow zone is a high-frequency dimmer, never an off switch.',
+    'Wavelength decides. An 80 Hz rumble is ~4.3 m long — comparable to the barrier itself — and wraps over the edge nearly unbothered. A 4 kHz hiss is 8.6 cm and casts a real shadow. Compare the LOSS @ 80 Hz and LOSS @ 8 kHz readouts: the shadow zone is a high-frequency dimmer, never an off switch.',
   wrongHint: 'Which wavelength is comparable to the barrier — the rumble’s or the hiss’s?',
 };
 
@@ -935,8 +935,8 @@ export function DiffractionModule(p: WaveModuleProps) {
     { k: 'DETOUR OVER TOP δ', v: `+${delta.toFixed(2)} m` },
     { k: 'FRESNEL N (2δ/λ)', v: N.toFixed(2) },
     { k: `LOSS @ ${fmtHz(freq)}`, v: `${loss.toFixed(1)} dB` },
-    { k: 'LOSS @ 80 HZ', v: `${maekawaAttenuationDb(pathOver, pathDirect, 80, tempC).toFixed(1)} dB` },
-    { k: 'LOSS @ 8 KHZ', v: `${maekawaAttenuationDb(pathOver, pathDirect, 8000, tempC).toFixed(1)} dB` },
+    { k: 'LOSS @ 80 Hz', v: `${maekawaAttenuationDb(pathOver, pathDirect, 80, tempC).toFixed(1)} dB` },
+    { k: 'LOSS @ 8 kHz', v: `${maekawaAttenuationDb(pathOver, pathDirect, 8000, tempC).toFixed(1)} dB` },
   ];
 
   return (

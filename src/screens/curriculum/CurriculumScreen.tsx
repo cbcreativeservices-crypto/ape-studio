@@ -36,6 +36,7 @@ import { InsideStats, fmt, lighten, SILVER, type InsideStat } from './InsideStat
 // (fmt is still used by the Career Finder blurb and the subject term totals.)
 import { useNavigation } from '@react-navigation/native';
 import { CAREER_COUNT, familyFieldOf } from '../../features/careerfinder/careerIndex';
+import { namesGatedRole } from '../../data/gatedRoles';
 import { QUESTIONS, QUESTION_COUNT } from '../../features/careerfinder/questions';
 import { FAMILY_COUNT } from '../../features/careerfinder/families';
 import { computeResult } from '../../features/careerfinder/scoring';
@@ -487,6 +488,22 @@ export function CurriculumView({
                     <>
                       <Text style={styles.subLabel}>CAREER APPLICATIONS</Text>
                       <Text style={styles.careers}>{meta.careers}</Text>
+                      {/* REQUIRED-EDUCATION DISCLOSURE (hard rule; added here
+                          2026-09-17, pass 5). This list is plain prose — it has
+                          no `requires` codes and no per-role labels — and six
+                          of the fifty name roles the app's OWN COPY classifies
+                          as gated: acoustician, research acoustician,
+                          bioacoustics researcher, archivist and rigger. The rule
+                          is that required education is stated ALWAYS and EVERY
+                          time, so the line goes on the whole list rather than
+                          leaving five roles bare. */}
+                      {namesGatedRole(meta.careers) ? (
+                        <Text style={styles.careersNote}>
+                          ⚠ Some of these are licensed, certified or degree-entry occupations. Academy
+                          study supports them but does not lead to that credential — check what is
+                          required where you live.
+                        </Text>
+                      ) : null}
                     </>
                   ) : null}
                 </View>
@@ -690,6 +707,7 @@ const styles = StyleSheet.create({
   topicText: { flex: 1, fontFamily: fonts.barlowMedium, fontSize: 14.5, lineHeight: 22, color: colors.textPrimary },
   topicTextOn: { color: '#7dffa1' },
   careers: { fontFamily: fonts.barlowMedium, fontSize: 14.5, lineHeight: 22, color: colors.textSecondary },
+  careersNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: '#ffb060', marginTop: 6 },
 
   // Academic goals.
   section: { gap: 10 },

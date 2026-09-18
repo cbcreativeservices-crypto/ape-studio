@@ -435,6 +435,60 @@ function TableEditor({
  * a value set from anywhere else (a seed, a reset, the other lab) still shows
  * through immediately.
  */
+/**
+ * Read a number out of text somebody is part-way through typing.
+ *
+ * Returns null while the text is not yet a number, which the caller records as
+ * "no answer" rather than as zero.
+ *
+ * The comma rule, which is the whole reason this exists:
+ *
+ *   "12,000"   → 12000   every comma is followed by exactly three digits
+ *   "1,234,5"  → null    not a consistent grouping, and not one decimal comma
+ *   "1,5"      → 1.5     a lone comma between digits is a decimal comma
+ *   "12,"      → 12      trailing separator: they are still typing
+ *   "1,5.5"    → null    a comma AND a point that cannot both be right
+ *   "7."       → 7       trailing point: still typing, the value is known
+ *   "-"        → null
+ *
+ * Deliberately refuses the ambiguous cases instead of guessing. These values go
+ * into a budget and a schedule that get exported to a client, so a number the
+ * app is not sure about is worse than a blank the person can see and fill in.
+ */
+export function interpretTypedNumber(raw: string): number | null {
+  let t = raw.trim();
+  if (t === '') return null;
+
+  const neg = t.startsWith('-');
+  t = t.replace(/-/g, '');
+
+  const dots = (t.match(/\./g) ?? []).length;
+  const commas = (t.match(/,/g) ?? []).length;
+  if (dots > 1) return null;
+
+  if (commas > 0) {
+    if (dots > 0) {
+      // Both present: a comma can only be grouping, and only if it groups.
+      if (!/^\d{1,3}(,\d{3})*\.\d*$/.test(t)) return null;
+      t = t.replace(/,/g, '');
+    } else if (/^\d{1,3}(,\d{3})+$/.test(t)) {
+      t = t.replace(/,/g, ''); // 12,000
+    } else if (/^\d+,$/.test(t)) {
+      t = t.slice(0, -1); // still typing: "12,"
+    } else if (commas === 1 && /^\d+,\d+$/.test(t)) {
+      t = t.replace(',', '.'); // 1,5
+    } else {
+      return null; // "1,234,5", "1,,2", ",5"
+    }
+  }
+
+  if (t === '' || t === '.') return null;
+  if (!/^\d*\.?\d*$/.test(t)) return null;
+  const n = Number(t);
+  if (!Number.isFinite(n)) return null;
+  return neg ? -n : n;
+}
+
 function NumberField({
   field,
   value,
@@ -453,47 +507,25 @@ function NumberField({
         style={[styles.input, styles.flex]}
         value={draft ?? committed}
         onChangeText={(t) => {
-          // A COMMA IS NOT NOISE (2026-09-17, bug-hunt pass 4).
+          // THE DRAFT KEEPS WHAT THE PERSON TYPED (rewritten 2026-09-17 after a
+          // verification pass found the first attempt was a REGRESSION).
           //
-          // This stripped every non-digit before looking at it, so a comma just
-          // VANISHED: "1,5" — one and a half, to most of the world, and typed on
-          // a keypad that puts a comma right there — was committed as 15. A
-          // tenfold error, made on the keystroke, across 45 fields, and carried
-          // into the client-facing packet. "12,000" became 12000, which is
-          // right by luck rather than by rule.
+          // That attempt rewrote the text on every keystroke and fed the result
+          // back as the controlled `value`. So the comma in "12,000" became a
+          // decimal point the instant it was typed — before the three digits
+          // that identify it as grouping could arrive — and the field committed
+          // 12. The old code at least gave 12000. Worse, PASTING the same
+          // characters still gave 12000, so identical input produced two
+          // answers a thousand apart depending on how it arrived.
           //
-          // A comma between digits is now a decimal point when nothing else in
-          // the field is, and a grouping separator when it is followed by three
-          // digits. Ambiguity resolves towards the decimal reading, because a
-          // grouping separator is cosmetic and a decimal point is not.
-          let t2 = t;
-          if (t2.includes(',') && !t2.includes('.')) {
-            t2 = /(^|\D)\d{1,3}(,\d{3})+(\D|$)/.test(t2)
-              ? t2.replace(/,/g, '') // 12,000 → 12000
-              : t2.replace(',', '.'); // 1,5 → 1.5
-          } else {
-            t2 = t2.replace(/,/g, ''); // a comma beside a point is grouping
-          }
-          // One optional leading sign, digits, at most one point. Anything else
-          // the keyboard or a paste produces is simply not accepted.
-          let cleaned = t2.replace(/[^0-9.\-]/g, '');
-          cleaned = (cleaned.startsWith('-') ? '-' : '') + cleaned.replace(/-/g, '');
-          const firstDot = cleaned.indexOf('.');
-          if (firstDot >= 0) {
-            cleaned =
-              cleaned.slice(0, firstDot + 1) + cleaned.slice(firstDot + 1).replace(/\./g, '');
-          }
-          setDraft(cleaned);
-          if (cleaned === '' || cleaned === '-' || cleaned === '.' || cleaned === '-.') {
-            // Not a number yet — and an empty field means empty, not zero.
-            onChange(null);
-            return;
-          }
-          const n = Number(cleaned);
-          // A trailing point ("7.") is a valid number to `Number` and an
-          // in-progress one to the user; publish the number, keep showing the
-          // point.
-          onChange(Number.isFinite(n) ? n : null);
+          // The lesson is the one the calculators already learned: do not
+          // transform text while it is being typed. Keep the raw characters in
+          // the draft, and INTERPRET only when deciding what to commit. The
+          // person sees exactly what they typed; the number is worked out from
+          // the whole string, not from a prefix of it.
+          const raw = t.replace(/[^0-9.,\-]/g, '');
+          setDraft(raw);
+          onChange(interpretTypedNumber(raw));
         }}
         onBlur={() => setDraft(null)}
         keyboardType="decimal-pad"

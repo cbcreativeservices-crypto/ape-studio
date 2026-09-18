@@ -143,6 +143,18 @@ describe('members-only labs are gated at the navigator', () => {
       // The shared target both named production routes point at. The catalog
       // names PreProdLab / PostProdLab and has no row for this one.
       'ProductionLab',
+      // Added 2026-09-17 (pass 5). These were put in the members-only predicate
+      // and left registered with the orientation wrapper, so the predicate
+      // answered a question nobody asked — which is why this list must be
+      // extended in the SAME change that extends the predicate.
+      'DigitalModule',
+      'EqModule',
+      'GainModule',
+      'EarModule',
+      'AmpModule',
+      'TubeReference',
+      'TubeCard',
+      'DeEsserLab',
     ];
     const ungated = children
       .map((r) => [r, reg.get(r)] as const)

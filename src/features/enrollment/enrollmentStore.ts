@@ -159,22 +159,33 @@ function scheduleServerSync(delayMs = 800) {
         // Guests (incl. an anonymous device key) keep enrollment device-local:
         // syncing would write a master list for a uid deleted within the week.
         if (!isRealAccount(data.session)) return;
-        // PULL BEFORE PUSH — AND DO NOT PUSH IF THE PULL FAILED.
+        // PULL FIRST, THEN PUSH REGARDLESS.
         //
-        // The first version awaited this and pushed regardless, which left the
-        // destructive half of the bug completely intact: on a device that cannot
-        // read the list (which, given the deny-all RLS, is every device today) a
-        // reinstall still overwrote a member's master list with the two-topic
-        // seed, and the backend gates v3 study and quizzes on that list.
+        // ── WHY THERE IS NO "REFUSE TO PUSH" GUARD HERE ───────────────────
         //
-        // So the rule is now: a list we have not confirmed is a list we do not
-        // overwrite with a default. A user who has actually chosen topics on
-        // this device still syncs normally — that is a real edit, not a seed.
-        const confirmed = await reconcileFromServer();
-        if (!confirmed && isPristineSeed(list)) {
-          console.warn('[enrollment] server list unconfirmed and this device holds only the default seed — not pushing');
-          return;
-        }
+        // I added one on 2026-09-17 — skip the push when the server list could
+        // not be confirmed and this device holds only the default seed — to stop
+        // a REINSTALL overwriting a member's master list. A regression review
+        // the same night showed it was worse than the problem:
+        //
+        //   `sync_my_enrollments` is the ONLY writer of `user_topic_enrollments`
+        //   in the entire repo, and a brand-new account's server list is
+        //   legitimately empty, so it can never be "confirmed". The guard
+        //   therefore never pushed for a new user — and `start_quiz_attempt`,
+        //   `record_study_progress` and `credit_time_trial` all raise
+        //   `not_enrolled` without a row. Every new and free-tier user would
+        //   have been told "You are not enrolled in this course" on a topic the
+        //   Dashboard showed as enrolled.
+        //
+        // Certain breakage for every new user is worse than a narrower loss that
+        // the member can repair by re-adding topics from Browse. So the push is
+        // unconditional again, and the reinstall case needs the fix it always
+        // needed, which is on the SERVER: either `sync_my_enrollments` merges
+        // rather than replaces, or the client is given a way to READ the list
+        // (it currently cannot — the table is in the deny-all RLS set, and a
+        // client select returns zero rows rather than an error, which is why the
+        // pull below is best-effort and never load-bearing).
+        await reconcileFromServer();
         // supabase-js RESOLVES with { error } — the old dead catch never saw RPC
         // errors, so a failed FINAL sync left the server master list stale with
         // no retry until the user next edited enrollment (backend gates v3

@@ -353,8 +353,27 @@ export function enqueueExamSubmission(row: QueuedExam): Promise<boolean> {
  * returns its frozen result_payload rather than erroring, so a reject here
  * means the row can never succeed).
  */
+let replayInFlight = false;
+
 export function replayExamSubmissions(): Promise<{ awardId: string; result: ExamResult }[]> {
-  return withQueueLock(replayExamSubmissionsLocked);
+  // THE REPLAY MUST NOT BLOCK A NEW SUBMISSION (2026-09-17, pass 5).
+  //
+  // Holding the queue lock across the replay's network loop was the obvious
+  // reading of "one queue operation at a time", and it was wrong in the one way
+  // that matters: there is no request timeout anywhere in this app, so a hung
+  // replay would block `enqueueExamSubmission` — which `FinalExamScreen` awaits
+  // before it tells the learner anything. A graded capstone would never be
+  // queued and the screen would sit on a spinner.
+  //
+  // So the replay is guarded by its own re-entrancy flag rather than the lock,
+  // and takes the lock only for the WRITE at the end, which is the part that
+  // actually races. A row queued mid-replay is then read by that final write
+  // rather than overwritten by it.
+  if (replayInFlight) return Promise.resolve([]);
+  replayInFlight = true;
+  return replayExamSubmissionsLocked().finally(() => {
+    replayInFlight = false;
+  });
 }
 
 async function replayExamSubmissionsLocked(): Promise<{ awardId: string; result: ExamResult }[]> {
@@ -416,7 +435,14 @@ async function replayExamSubmissionsLocked(): Promise<{ awardId: string; result:
       }
     }
   }
-  await writeQueue(remaining);
+  // Re-read under the lock and keep anything queued WHILE we were replaying:
+  // those rows are not in `rows` and must not be lost to this write.
+  await withQueueLock(async () => {
+    const latest = await readQueue();
+    const attempted = new Set(rows.map((r) => r.attemptId));
+    const arrivedMeanwhile = latest.filter((r) => !attempted.has(r.attemptId));
+    return writeQueue([...remaining, ...arrivedMeanwhile]);
+  });
   return done;
 }
 

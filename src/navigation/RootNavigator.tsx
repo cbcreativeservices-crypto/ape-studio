@@ -250,6 +250,26 @@ const MemberGated = {
   ProductionStage: withMembershipPreview(ProductionStageScreen),
   ProductionActivity: withMembershipPreview(ProductionActivityScreen),
 
+  // ── THE PREDICATE IS NOT THE GATE EITHER (2026-09-17, pass 5) ──────────
+  //
+  // Pass 4 added these eight to `MEMBER_ONLY_EXTRA_ROUTES` so the predicate
+  // would answer correctly — and left them registered with `Gated.X` or bare, so
+  // NOTHING ASKED IT. `isMemberOnlyLabRoute` has exactly one consumer, which is
+  // `withMembershipPreview`; a route that is not wrapped never reaches it.
+  //
+  // That is the third time this week the same mistake has been made from a
+  // different direction: the wrapper without the predicate gates nothing, and
+  // the predicate without the wrapper is never consulted. Both halves are
+  // needed, and `membershipGating.test.ts` now asserts both for every one.
+  DigitalModule: withMembershipPreview(withAmplitudeOrientation(DigitalModuleScreen)),
+  EqModule: withMembershipPreview(withAmplitudeOrientation(EqModuleScreen)),
+  GainModule: withMembershipPreview(withAmplitudeOrientation(GainModuleScreen)),
+  EarModule: withMembershipPreview(EarModuleScreen),
+  AmpModule: withMembershipPreview(AmpModuleScreen),
+  TubeReference: withMembershipPreview(TubeReferenceScreen),
+  TubeCard: withMembershipPreview(TubeCardScreen),
+  DeEsserLab: withMembershipPreview(DeEsserLabScreen),
+
   // ── ADDED 2026-09-17, after a bug-hunt pass found the hole ────────────────
   //
   // These are members-only in labCatalog.ts and were registered with `Gated.X`
@@ -474,8 +494,8 @@ export function RootNavigator() {
       <Stack.Screen name="CableInstallLab" component={MemberGated.CableInstallLab} />
       <Stack.Screen name="SpeakerLab" component={MemberGated.SpeakerLab} />
       <Stack.Screen name="TubeLab" component={MemberGated.TubeLab} />
-      <Stack.Screen name="TubeReference" component={TubeReferenceScreen} options={swipe} />
-      <Stack.Screen name="TubeCard" component={TubeCardScreen} options={swipe} />
+      <Stack.Screen name="TubeReference" component={MemberGated.TubeReference} options={swipe} />
+      <Stack.Screen name="TubeCard" component={MemberGated.TubeCard} options={swipe} />
       <Stack.Screen name="CalcLab" component={CalcLabScreen} />
       <Stack.Screen name="CalcWorkspace" component={CalcWorkspaceScreen} />
       <Stack.Screen name="CalcSymbolsKey" component={CalcSymbolsKeyScreen} />
@@ -485,7 +505,7 @@ export function RootNavigator() {
       <Stack.Screen name="CalcProjects" component={CalcProjectsScreen} />
       <Stack.Screen name="CalcResults" component={CalcResultsScreen} />
       <Stack.Screen name="DigitalLab" component={MemberGated.DigitalLab} />
-      <Stack.Screen name="DigitalModule" component={Gated.DigitalModule} />
+      <Stack.Screen name="DigitalModule" component={MemberGated.DigitalModule} />
       <Stack.Screen name="CymaticsLab" component={MemberGated.CymaticsLab} />
       {/* Both production labs share one screen; the route just fixes the param.
           Named entries exist so each lab can be linked to on its own. */}
@@ -510,9 +530,9 @@ export function RootNavigator() {
       <Stack.Screen name="WaveLab" component={WaveLabHomeScreen} />
       <Stack.Screen name="WaveModule" component={Gated.WaveModule} />
       <Stack.Screen name="EarTrainingLab" component={MemberGated.EarTrainingLab} />
-      <Stack.Screen name="EarModule" component={EarModuleScreen} />
+      <Stack.Screen name="EarModule" component={MemberGated.EarModule} />
       <Stack.Screen name="AmpLab" component={MemberGated.AmpLab} />
-      <Stack.Screen name="AmpModule" component={AmpModuleScreen} />
+      <Stack.Screen name="AmpModule" component={MemberGated.AmpModule} />
       <Stack.Screen name="TuningLab" component={MemberGated.TuningLab} />
       <Stack.Screen name="EnvelopeLab" component={MemberGated.EnvelopeLab} />
       <Stack.Screen name="PatchbayLab" component={MemberGated.PatchbayLab} />
@@ -521,13 +541,13 @@ export function RootNavigator() {
       <Stack.Screen name="AdvancedMixingLab" component={MemberGated.AdvancedMixingLab} />
       <Stack.Screen name="SpeechLab" component={MemberGated.SpeechLab} />
       <Stack.Screen name="SmartProcessorsLab" component={MemberGated.SmartProcessorsLab} />
-      <Stack.Screen name="DeEsserLab" component={DeEsserLabScreen} />
+      <Stack.Screen name="DeEsserLab" component={MemberGated.DeEsserLab} />
       <Stack.Screen name="MeterLab" component={MemberGated.MeterLab} />
       <Stack.Screen name="MeterModule" component={MemberGated.MeterModule} />
       <Stack.Screen name="EqLabHome" component={MemberGated.EqLabHome} />
-      <Stack.Screen name="EqModule" component={Gated.EqModule} />
+      <Stack.Screen name="EqModule" component={MemberGated.EqModule} />
       <Stack.Screen name="GainLabHome" component={MemberGated.GainLabHome} />
-      <Stack.Screen name="GainModule" component={Gated.GainModule} />
+      <Stack.Screen name="GainModule" component={MemberGated.GainModule} />
       {/* Understanding Level & Amplitude — the first lab in Audio Fundamentals
           (owner 2026-08-12). UNGATED: it IS the orientation, so it must never
           be wrapped in withAmplitudeOrientation (that would gate it behind

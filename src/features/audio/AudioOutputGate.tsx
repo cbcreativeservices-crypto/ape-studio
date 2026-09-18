@@ -311,14 +311,17 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
                    they will simply hold again. Shake-to-mute is already stated
                    in the red card above — saying it twice is not clearer.
 
-                The clause about switching away exists because the OLD wording
-                caused exactly that misreading: leaving the app does NOT mute it
-                inside the window (AppState only mutes when now − lastActivity >
-                IDLE_MS). */}
+                CORRECTED 2026-09-17. The clause about switching away was true
+                when it was written: leaving the app did NOT mute it inside the
+                idle window. It does now — backgrounding runs panicMuteAudio(),
+                which was added because seventeen labs could otherwise leave a
+                tone playing indefinitely after the user pressed Home. The
+                sentence had become a promise the app no longer keeps, on the
+                dialog where the user decides to allow sound at all. */}
             <Text style={styles.body}>
               Hold the button for 5 seconds to allow sound. It stays on while you're using the app,
-              including if you switch away and come back, and mutes itself after 20 minutes
-              untouched.
+              mutes itself after 20 minutes untouched, and mutes when you leave the app — so nothing
+              is left playing behind you.
             </Text>
             <HoldToActivate
               label="HOLD 5s TO ENABLE AUDIO OUTPUT"

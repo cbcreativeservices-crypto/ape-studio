@@ -22,6 +22,7 @@ export type RequireKind =
 /** A career/role. `requires` is set only when the role needs further education. */
 export type Career = { name: string; requires?: RequireKind };
 
+
 /** Short, plain label shown beneath a gated career's name. */
 export const REQUIRES_LABEL: Record<RequireKind, string> = {
   DEGREE: 'College degree required',

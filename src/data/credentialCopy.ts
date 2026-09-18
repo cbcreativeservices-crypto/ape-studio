@@ -11,7 +11,9 @@ import type { Career } from './careerRequirement';
 
 export type CredentialCopy = { description: string; whereApplies: readonly string[]; careers: readonly Career[] };
 
-const BY_SLUG: Record<string, CredentialCopy> = {
+/** Exposed for `gatedRoles.ts`, which derives the set of roles the app itself
+ *  classifies as needing further education. */
+export const CREDENTIAL_COPY_BY_SLUG: Record<string, CredentialCopy> = {
   "cert-drum-mixing-v3": { description: "Mixing drums and percussion from the ground up: balancing the kit, shaping each element with EQ, and using multiband, parallel and transient processing to control dynamics while keeping the groove intact.", whereApplies: ["Studio recording", "Music production", "Post-production"], careers: [{ name: "Mix engineer" }, { name: "Assistant mix engineer" }, { name: "Drum editor" }] },
   "cert-compression-and-dynamics-v3": { description: "How compressors, limiters, gates and expanders shape dynamics, from threshold and ratio basics through multiband, parallel and sidechain techniques, and applying them across bus and mix-bus processing toward a sensible loudness.", whereApplies: ["Studio mixing", "Music production", "Mastering prep"], careers: [{ name: "Mix engineer" }, { name: "Mixing assistant" }, { name: "Audio editor" }] },
   "cert-horn-and-waveguide-design-v3": { description: "Designing horn-loaded and waveguide loudspeakers: enclosure and radiation behavior, directivity control, dividing the spectrum with passive and active crossovers, and verifying performance through response, impedance and Thiele-Small measurement.", whereApplies: ["Loudspeaker R&D", "Manufacturing", "Acoustic engineering"], careers: [{ name: "Loudspeaker design engineer", requires: "ENG_DEGREE" }, { name: "Transducer engineer", requires: "ENG_DEGREE" }, { name: "Acoustic test technician" }] },
@@ -176,5 +178,5 @@ const BY_SLUG: Record<string, CredentialCopy> = {
 
 /** Per-credential copy by slug, or null if none. */
 export function credentialCopy(slug: string): CredentialCopy | null {
-  return BY_SLUG[slug] ?? null;
+  return CREDENTIAL_COPY_BY_SLUG[slug] ?? null;
 }

@@ -194,19 +194,16 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone }: {
       ) : null}
       <ScrollView ref={scrollRef} scrollEnabled={!dragLocked} contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 24 }]}>
         <ScrollLockProvider value={setDragLocked}>
+        {/* THE NOTE IS NOT PAGE-ONE FURNITURE (corrected 2026-09-17). It was
+            inside the `page === 0` block with the subtitle — and this shell
+            RESTORES `lastPage`, so a learner returning to the lab, which is most
+            of them after the first sitting, never saw it again. The subtitle is
+            genuinely a first-page thing; the calibration note is a standing
+            statement about every page. */}
+        <AccuracyNote style={styles.accuracy} />
         {page === 0 ? (
           <>
             <Text style={styles.subtitle}>{subtitle}</Text>
-            {/* THE HONESTY CHIP, ON EVERY LAB BUILT ON THIS SHELL (2026-09-17).
-                Standing rule: every lab and tool steers the user to a dedicated
-                CALIBRATED instrument for real measurement — the app teaches, the
-                phone's mic and audio path are uncalibrated. A bug-hunt pass found
-                thirteen labs with no <AccuracyNote/> at all and seven of them were
-                these, all missing it for the same reason: the shell they share
-                never drew one, so each lab would have had to remember
-                separately. Putting it in the shell is why it is now true of all
-                of them, including any lab added later. */}
-            <AccuracyNote style={styles.accuracy} />
           </>
         ) : null}
         <Page ctx={ctx} />
