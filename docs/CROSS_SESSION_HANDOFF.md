@@ -26,16 +26,32 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 13:02 · ccode · 45476ca6
+changed: Remove featuring from the Trophy Case, and stop duplicating its copy
+affects other side: nothing — client copy only. NOTE for anyone editing Trophy Case
+  wording: it now lives ONLY in `TROPHY_CASE_EMPTY` (features/celebration/catalog.ts) and
+  AchievementsHomeScreen reads it. Do not re-hardcode strings into the screen; that is what
+  caused the featuring language to need deleting in two places.
+needs: nothing
+
+
 ### 2026-09-18 12:56 · ccode · dbc7c1ef
 changed: Share your QR, your link, and your certificate
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: FYI — new client share paths, no schema change. They read
+  `my_identity().qr_token` and `registryUrl()`, and resolve through
+  `public_verify_by_token`, so the link, the QR and the printed certificate all address the
+  SAME record. ⚠️ If the registry host or the token shape ever changes, all three move
+  together — `registryUrl()` in features/profile/registry.ts is the single place.
+needs: nothing
 
 
 ### 2026-09-18 12:27 · ccode · 223ec21f
 changed: Dates on client documents, a Help answer that taught the wrong model, and the empty art well
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing server-side. One note worth carrying: the Production
+  Packet's revision date and the Cymatics sheet date are now LOCAL (src/lib/localDate.ts),
+  not UTC — `toISOString().slice(0,10)` printed TOMORROW for any evening west of Greenwich,
+  on a document handed to a paying client.
+needs: nothing
 
 
 ### 2026-09-18 · ccode · 413710a6 + follow-ups
@@ -83,8 +99,19 @@ needs: someone to confirm those 7 secrets in the dashboard before anything is so
 
 ### 2026-09-18 11:47 · ccode · 3d616750
 changed: Android refunds can actually match a row now
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: YES — this is the Android refund fix, now DEPLOYED as
+  validate-purchase v4. `store_ref` is written per-platform: purchaseToken for Google,
+  transactionId for Apple. Google's voidedpurchases feed and SUBSCRIPTION_REVOKED name the
+  TOKEN, and react-native-iap fills BOTH fields on Android where transactionId is the ORDER
+  ID — so every Android row was keyed on an id that appears in no refund feed, and every
+  refund matched ZERO rows while returning 200.
+  ⛔ DO NOT "fix" a future refund problem by matching on the order id in store-notifications.
+  That endpoint is public, the order id is attacker-controlled, and store_ref is not a
+  namespace — redeem_access_code writes THE CODE ITSELF there, so one forged notification
+  naming a known code would mark every redeemer of it as refunded. Fix the WRITE key.
+  Zero real store purchases existed when this landed (3 rows, all admin_grant), so no
+  backfill was needed. After launch the same fix needs live rows reconciled against Google.
+needs: nothing
 
 
 ### 2026-09-18 · ccode · 7291b418
