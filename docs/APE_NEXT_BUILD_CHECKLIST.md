@@ -165,3 +165,49 @@ a `WebView` is unreliable on Android: the WebView can be a surface the snapshot
 does not see, and it comes back blank. If that happens, the fallback is the PDF
 that already works — so the control must be gated on a successful capture and
 never offered as a dead button.
+
+---
+
+## 📦 PARKED FOR THE NEXT NATIVE BUILD: exclude `.git` from the upload (found 2026-09-18)
+
+The 2026-09-18 build uploaded a **572 MB** archive and spent ~8 minutes on it.
+Measured, not guessed — the included set after `.easignore` is 836 MB, and:
+
+| | |
+|---|---|
+| `.git` | **667.8 MB — 80% of everything uploaded** |
+| assets | 122.4 MB |
+| `save here before pen erases it!` | 18.8 MB |
+| src | 15.8 MB |
+| everything else | ~10 MB |
+
+`git count-objects -vH` reports `size-pack: 572.28 MiB`, which is the archive
+size almost exactly: **the upload IS the git pack.** A native build has no use
+for it.
+
+**Why `.git` is that big** — three website demo videos in history:
+`web/public/app-screens/home.mp4` (65.5 MB), `tools.mov` (42.8 MB),
+`lab.mp4` (23.7 MB). `web/` is excluded from the UPLOAD, but its history lives
+in `.git` forever, so excluding the folder never helped and never will.
+
+**The fix is one line in `.easignore`:**
+
+```
+.git/
+```
+
+Expected effect: 572 MB → roughly 150 MB, and several minutes off every build.
+
+⛔ **DO NOT ADD IT ON ITS OWN.** `.easignore` is @expo/fingerprint source #1, so
+editing it changes the runtimeVersion — every `eas update` after that would
+publish to a runtime the installed phones do not have, succeeding silently and
+delivering nothing. It must land in the SAME commit as a native build, exactly
+like the native deps. See memory `reference_easignore_breaks_ota`.
+
+**Also worth doing, separately and safely** (no fingerprint impact, local only):
+`.git` holds 709 loose objects, ~350 stray `tmp_obj_*` files from interrupted
+operations, and a `.rev` with no matching pack. A `git gc` cleans that up. It
+does not shrink the pack — the videos are reachable history, and removing those
+needs a history rewrite plus a force push, which is a coordinated decision, not
+maintenance.
+

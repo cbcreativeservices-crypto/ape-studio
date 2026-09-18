@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 16:53 · ccode · 8bc8fe94
+changed: docs: close the gain-ramp defect — verified on device, no crackle
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-18 16:35 · ccode · 66e19aed
 changed: a11y pass 5 · W16: every Android-only live region now has an iOS path
 affects other side: nothing from this commit (client-only a11y). BUT the native builds from d40d9a1e are now FINISHED — Android bd02e15d, iOS 9aa9e995. OTA stays dead to both phones until those are INSTALLED; after that it works again. Fingerprints verified local == build: iOS 26383739…, Android 3fbe2d39…. NOTE they are PER-PLATFORM — a bare `fingerprint:generate` gives a third hash that matches neither, so always pass --platform when comparing.
