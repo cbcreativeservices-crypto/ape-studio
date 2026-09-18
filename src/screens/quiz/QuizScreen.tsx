@@ -52,6 +52,7 @@ import {
   type QuizStartError,
   type ServedQuestion,
 } from '../../features/quiz/api';
+import { clearAttemptDraft, loadAttemptDraft, saveAttemptDraft } from '../../features/assess/attemptDraft';
 import type { StudyStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<StudyStackParamList, 'Quiz'>;
@@ -103,7 +104,23 @@ export function QuizScreen({ navigation, route }: Props) {
     (async () => {
       try {
         const p = await startQuizAttempt(achievementId);
-        if (alive) setPayload(p);
+        if (!alive) return;
+        // RESTORE WHAT WAS ALREADY ANSWERED (2026-09-17). The ATTEMPT already
+        // survives a relaunch — `startQuizAttempt` keeps a client attempt id so
+        // a crash rejoins the same attempt and the same served questions — but
+        // the answers did not, so the learner came back to question 1 of a paper
+        // they had half finished. The clock, meanwhile, never restarted: if the
+        // limit had passed while the app was closed, the first countdown tick
+        // force-submitted an empty attempt and recorded it as a real sitting.
+        const draft = await loadAttemptDraft(p.attempt_id);
+        if (!alive) return;
+        if (draft) {
+          answers.current = draft.answers as Record<string, AnswerValue>;
+          // Clamped: a draft from a payload with more questions must not index
+          // past the end of this one.
+          setQIdx(Math.min(draft.qIdx, Math.max(0, p.questions.length - 1)));
+        }
+        setPayload(p);
       } catch (e) {
         if (!alive) return;
         const code = e instanceof QuizStartFailure ? e.code : 'unknown';
@@ -140,6 +157,9 @@ export function QuizScreen({ navigation, route }: Props) {
       };
       try {
         const result = await submitQuiz(args);
+        // The server has it — drop the local copy so nothing can be restored
+        // into a finished attempt.
+        await clearAttemptDraft(args.attemptId);
         await clearQuizIntent(achievementId);
         // Route per Code brief §2.2: genuine full pass → trophy loop first;
         // everything else (incl. practice, voided, timed_out) → Results (S7).
@@ -332,10 +352,13 @@ export function QuizScreen({ navigation, route }: Props) {
   const recordAndAdvance = useCallback(
     (slot: number, value: AnswerValue) => {
       answers.current[String(slot)] = value; // F4: slot-keyed VALUES
+      // Persist after every answer. Fire-and-forget — an answer must never wait
+      // on a disk write to register.
+      if (payload) saveAttemptDraft(payload.attempt_id, { answers: answers.current, qIdx });
       if (advanceTimer.current) clearTimeout(advanceTimer.current);
       advanceTimer.current = setTimeout(advance, HIGHLIGHT_MS);
     },
-    [advance],
+    [advance, payload, qIdx],
   );
 
   const pickSingle = useCallback(

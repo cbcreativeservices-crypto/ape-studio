@@ -78,7 +78,19 @@ export function SplashScreen({ navigation }: Props) {
         .routes.filter((r) => r.name !== 'Splash')
         .map((r) => ({ key: r.key, name: r.name, params: r.params }));
       const baseRoute = pushed.find((r) => r.name === base) ?? { name: base };
-      const above = pushed.filter((r) => r !== baseRoute && (signedIn || r.name !== 'Main'));
+      // NOTHING SITS ABOVE `Auth` (2026-09-17, bug-hunt pass 2).
+      //
+      // This filtered out only `Main`, so a deep link that had already pushed
+      // its destination — say a members-only lab — stayed on the stack ABOVE the
+      // login screen, and a signed-out person landed on the destination instead
+      // of being asked to sign in. That was also the shortest real route into
+      // the guest-purchase bug: link → members-only lab → SEE PLANS → charged
+      // with no account to attach the purchase to.
+      //
+      // Dropping them loses nothing: the URL is still held in `pendingLink`
+      // (which is deliberately NOT cleared on this branch) and is resumed after
+      // sign-in, which is the behaviour the paywall's welcome already assumes.
+      const above = signedIn ? pushed.filter((r) => r !== baseRoute) : [];
       navigation.reset({
         index: above.length,
         routes: [baseRoute, ...above],

@@ -53,6 +53,7 @@ import {
   noteAudioActivity,
   setIdleBypass,
 } from './audioOutputStore';
+import { panicMuteAudio } from './panicMute';
 
 type GateApi = { requestAudioOutput: () => Promise<boolean> };
 
@@ -147,6 +148,27 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
       if (event === 'SIGNED_IN' && isRealAccount(session)) disableAudioOutput();
     });
     const appSub = AppState.addEventListener('change', (state) => {
+      // ── LEAVING THE APP SILENCES IT (2026-09-17, bug-hunt pass 2) ──────────
+      //
+      // This listener had exactly one branch, `state === 'active'`, and there
+      // is no AppState handling anywhere under src/screens/lab — in seventeen
+      // labs that can start a native voice. So pressing Home during a lab left
+      // the tone playing: on Android the ape-dsp Oboe stream holds no audio
+      // focus and is not bound to the activity, so it simply continues, with no
+      // notification, nothing to pause, and no way to stop it short of force-
+      // quitting. `tuningAudio.ts` is the only class in the app that handled
+      // this on its own.
+      //
+      // `panicMuteAudio()` is the right call rather than a per-lab teardown:
+      // it stops the generator, the binaural bus, the modular voice, speech and
+      // every file player in one synchronous pass, and re-locks the gate — and
+      // it needs no cooperation from seventeen screens that have each forgotten
+      // to ask. Re-locking is consistent with the app's rule that sound is
+      // always turned on deliberately.
+      if (state === 'background' || state === 'inactive') {
+        if (isAudioOutputEnabled()) panicMuteAudio();
+        return;
+      }
       if (
         state === 'active' &&
         isAudioOutputEnabled() &&

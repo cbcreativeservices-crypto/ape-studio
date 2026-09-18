@@ -32,6 +32,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AnswerCell, type AnswerCellState } from '../../components/AnswerCell';
 import { StudioButton } from '../../components/StudioButton';
 import { colors, fonts } from '../../theme/tokens';
+import { clearAttemptDraft, loadAttemptDraft, saveAttemptDraft } from '../../features/assess/attemptDraft';
 import { confirmDialog, notify } from '../../lib/confirm';
 import {
   clearExamIntent,
@@ -95,7 +96,21 @@ export function FinalExamScreen({ navigation, route }: Props) {
     (async () => {
       try {
         const p = await startFinalExam(awardType, awardId);
-        if (alive) setPayload(p);
+        if (!alive) return;
+        // RESTORE WHAT WAS ALREADY ANSWERED (2026-09-17) — see attemptDraft.
+        // This does NOT pause the exam: the deadline still runs from the
+        // server's `started_at`, so a relaunch buys no time, and choosing
+        // "Leave & wipe" still wipes. It removes only the case nobody chose —
+        // a crash or a low-memory kill — after which the learner previously
+        // returned to question one with an hour's work gone and, if the limit
+        // had passed meanwhile, watched the first tick submit a blank paper.
+        const draft = await loadAttemptDraft(p.attempt_id);
+        if (!alive) return;
+        if (draft) {
+          answers.current = draft.answers as Record<string, AnswerValue>;
+          setQIdx(Math.min(draft.qIdx, Math.max(0, p.items.length - 1)));
+        }
+        setPayload(p);
       } catch (e) {
         if (!alive) return;
         const code = e instanceof ExamStartFailure ? e.code : 'unknown';
@@ -141,6 +156,9 @@ export function FinalExamScreen({ navigation, route }: Props) {
       try {
         const result = await submitFinalExam(args);
         setRetryFinishMs(null); // a retry loop, if one was running, has done its job
+        // The server has it — the local copy has done its job and must not be
+        // restorable into anything.
+        await clearAttemptDraft(args.attemptId);
         await clearExamIntent(awardType, awardId);
         // REPLACE the exam with its result rather than popToTop()+navigate
         // (launch audit 2026-09-09). FinalExam/FinalExamResult live on the ROOT
@@ -280,10 +298,11 @@ export function FinalExamScreen({ navigation, route }: Props) {
   const recordAndAdvance = useCallback(
     (slot: number, value: AnswerValue) => {
       answers.current[String(slot)] = value; // F4: slot-keyed VALUES
+      if (payload) saveAttemptDraft(payload.attempt_id, { answers: answers.current, qIdx });
       if (advanceTimer.current) clearTimeout(advanceTimer.current);
       advanceTimer.current = setTimeout(advance, HIGHLIGHT_MS);
     },
-    [advance],
+    [advance, payload, qIdx],
   );
 
   const pickSingle = useCallback(
@@ -349,6 +368,11 @@ export function FinalExamScreen({ navigation, route }: Props) {
       'Leave & wipe',
       () => {
         answers.current = {};
+        // The learner CHOSE to wipe, so the saved draft goes with it — otherwise
+        // the next arrival would restore exactly what this dialog promised to
+        // destroy. The draft only exists to survive a crash, never to soften
+        // this decision.
+        if (payload) void clearAttemptDraft(payload.attempt_id);
         navigation.goBack();
       },
       { cancelText: 'Keep going', destructive: true },

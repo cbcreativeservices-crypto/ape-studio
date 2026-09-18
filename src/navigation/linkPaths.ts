@@ -125,6 +125,35 @@ export function linkPath(url: string): string {
 /** True for the paths this app claims (mirrors app.json intentFilters and the
  *  website's AASA `paths`). Website-only pages (`verify`, `registry`, `u`,
  *  `subjects`, …) return false so the browser keeps them. */
+/**
+ * The lab sub-paths the navigator actually declares, beyond a plain `labs/<id>`.
+ *
+ * ── WHY THESE HAD TO BE WRITTEN DOWN (2026-09-17, bug-hunt pass 2) ────────
+ *
+ * `isClaimedPath` rejected every `labs/` URL of more than two segments, while
+ * `linking.ts` declared seven of them — the four Cymatics studios, its module
+ * route, and the two Production lab routes. On Android that combination is the
+ * worst of both: `app.json` claims `/labs` with `autoVerify`, so the OS DID open
+ * the app, and this filter then dropped the URL, leaving the person on Home with
+ * no explanation of why the link they tapped went nowhere.
+ *
+ * Claiming them was only safe once those seven routes checked membership, which
+ * they now do (`MemberGated` in RootNavigator, pinned by membershipGating.test).
+ * Before that, honouring these URLs would have handed a non-member both flagship
+ * labs fully unlocked.
+ *
+ * `test/deepLinks.test.ts` asserts this list and the navigator's config agree,
+ * because they are two files that drifted apart once already.
+ */
+const LAB_DEEP_PATHS: RegExp[] = [
+  /^cymatics\/(plate|liquid|membrane|gallery)$/,
+  /^cymatics\/module\/[^/]+$/,
+  // labs/production/:lab/:projectId/:stageId
+  /^production\/[^/]+\/[^/]+\/[^/]+$/,
+  // labs/production/:lab/exercise/:activityId/:pathway
+  /^production\/[^/]+\/exercise\/[^/]+\/[^/]+$/,
+];
+
 export function isClaimedPath(path: string): boolean {
   const [head, second, ...more] = path.split('/');
   switch (head) {
@@ -139,6 +168,10 @@ export function isClaimedPath(path: string): boolean {
         (more.length === 0 && (TOOL_INFO_KEYS.includes(second) || TOOL_DIRECT_KEYS.includes(second)))
       );
     case 'labs':
+      return (
+        more.length === 0 ||
+        LAB_DEEP_PATHS.some((re) => re.test([second, ...more].filter(Boolean).join('/')))
+      );
     case 'glossary':
     case 'topics':
       return more.length === 0;
