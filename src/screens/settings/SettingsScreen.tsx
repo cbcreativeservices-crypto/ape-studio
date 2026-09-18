@@ -254,6 +254,37 @@ export function SettingsScreen({ navigation }: Props) {
     });
   }, []);
 
+  /**
+   * The master Weekly-concept switch. TWO SEPARATE WRITES, TO TWO TABLES.
+   *
+   * ── WHY THE ORDER AND THE CHECKS MATTER (fixed 2026-09-18) ────────────────
+   *
+   * A weekly concept is sent only when BOTH halves are true:
+   *
+   *   notification_preferences.notify_weekly_concept = true   (keyed on app id)
+   *   an ACTIVE notification_concept_subscriptions row         (keyed on auth id)
+   *
+   * They live in different tables, are written by different calls, and either
+   * can fail on its own. Of the two possible mismatches, only one is harmful:
+   *
+   *   rows but no pref  →  nothing sends, switch reads OFF.  Consistent.
+   *   PREF BUT NO ROWS  →  nothing sends, switch reads ON.   A LIE.
+   *
+   * That second state is permanent and completely silent:
+   * `get_due_concept_subscriptions` reads only the subscriptions table, so a
+   * user with no rows never appears in it, ever. Settings says it is on, no
+   * error is raised, and they never receive anything.
+   *
+   * It was reachable because the old code wrote the pref FIRST and then threw
+   * away `saveAllCategorySchedules`'s return value — so a failed row write was
+   * invisible and the pref stayed true. One live account was found in exactly
+   * that state (0 rows, pref true) during the 2026-09-18 trace.
+   *
+   * So: write the ROWS first and the PREF last, because the pref is the half
+   * the switch renders. If the rows fail we never claim to be on; if the pref
+   * fails we put the rows back. The switch can no longer promise something
+   * nothing is behind.
+   */
   const setWeeklyOn = useCallback(
     async (on: boolean) => {
       if (!prefs) return;
@@ -264,7 +295,7 @@ export function SettingsScreen({ navigation }: Props) {
         // off (groupLocked), so setWeeklyOn never runs with push_enabled false.
         // Removed. (If push is ever allowed off here, re-add the persist.)
         const token = await registerAndSavePushToken();
-        const prefOk = await setWeeklyConceptPref(true);
+
         // Make sure every category has a row carrying its own schedule. If the
         // user has never picked any, start ONE on so the switch does something
         // — silently subscribing to all seven would be presumptuous.
@@ -274,11 +305,35 @@ export function SettingsScreen({ navigation }: Props) {
           seeded[first] = { ...seeded[first], active: true };
           setCatSched(seeded);
         }
-        await saveAllCategorySchedules(seeded);
-        if (!prefOk) {
+
+        // ROWS FIRST. Its result is checked now — discarding it is the bug.
+        const rowsOk = await saveAllCategorySchedules(seeded);
+        if (!rowsOk) {
           setPrefs((p) => (p ? { ...p, notify_weekly_concept: false } : p));
+          notify(
+            'Notifications',
+            'Your weekly concept schedule could not be saved, so the switch has been left off. Check your connection and try again.',
+          );
           return;
         }
+
+        // PREF LAST — the half the switch renders.
+        const prefOk = await setWeeklyConceptPref(true);
+        if (!prefOk) {
+          setPrefs((p) => (p ? { ...p, notify_weekly_concept: false } : p));
+          // Put the rows back, so we do not leave subscriptions armed behind a
+          // switch that reads off.
+          await deactivateAllWeeklySubscriptions();
+          setCatSched((prev) =>
+            Object.fromEntries(Object.entries(prev).map(([k, v]) => [k, { ...v, active: false }])),
+          );
+          notify(
+            'Notifications',
+            'Weekly concepts could not be switched on. Check your connection and try again.',
+          );
+          return;
+        }
+
         if (!token) {
           notify(
             'Notifications',
@@ -286,13 +341,26 @@ export function SettingsScreen({ navigation }: Props) {
           );
         }
       } else {
+        // PREF FIRST going off: it alone stops every send, so the switch tells
+        // the truth from that moment on even if the row write then fails.
         const prefOk = await setWeeklyConceptPref(false);
-        await deactivateAllWeeklySubscriptions();
+        if (!prefOk) {
+          setPrefs((p) => (p ? { ...p, notify_weekly_concept: true } : p));
+          notify(
+            'Notifications',
+            'Weekly concepts could not be switched off. Check your connection and try again.',
+          );
+          return;
+        }
+        const rowsOk = await deactivateAllWeeklySubscriptions();
         // Mirror the server: the rows keep their day/time, they just go quiet.
-        setCatSched((prev) =>
-          Object.fromEntries(Object.entries(prev).map(([k, v]) => [k, { ...v, active: false }])),
-        );
-        if (!prefOk) setPrefs((p) => (p ? { ...p, notify_weekly_concept: true } : p));
+        // Only claim that locally if the server agreed — otherwise leave the
+        // UI alone and let the next fetch reconcile it.
+        if (rowsOk) {
+          setCatSched((prev) =>
+            Object.fromEntries(Object.entries(prev).map(([k, v]) => [k, { ...v, active: false }])),
+          );
+        }
       }
     },
     [prefs, catSched],

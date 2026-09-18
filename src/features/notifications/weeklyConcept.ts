@@ -237,14 +237,24 @@ export async function saveAllCategorySchedules(
   return !error;
 }
 
-export async function deactivateAllWeeklySubscriptions(): Promise<void> {
+/**
+ * Returns whether the server actually accepted it (2026-09-18).
+ *
+ * It used to return void, which made the failure invisible to the only caller
+ * that matters — the master Weekly switch in Settings. See the note on
+ * `setWeeklyOn` in SettingsScreen: this pref and these rows are two separate
+ * writes, and a toggle that reports success on one of them is how an account
+ * ends up claiming to be subscribed to something that can never send.
+ */
+export async function deactivateAllWeeklySubscriptions(): Promise<boolean> {
   const uid = await authUserId();
-  if (!uid) return;
+  if (!uid) return false;
   const { error } = await supabase
     .from('notification_concept_subscriptions')
     .update({ active: false, updated_at: new Date().toISOString() })
     .eq('user_id', uid);
   if (error) console.warn('[weekly-concept] deactivate failed:', error.message);
+  return !error;
 }
 
 export function payloadFromUnknown(raw: unknown): WeeklyConceptPayload | null {
