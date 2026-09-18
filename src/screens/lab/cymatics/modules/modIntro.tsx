@@ -4,8 +4,12 @@
  * vs antinode; why stable patterns appear only at resonance.
  */
 import { useMemo, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { LabChip } from '../../LabShell';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../../../navigation/types';
+import { colors, fonts } from '../../../../theme/tokens';
 import { DEFAULT_PLATE, effectiveQ } from '../../../../features/cymatics/plateModes';
 import { formatHz } from '../../../../features/cymatics/music';
 import { requireVizPlate, skiaAvailable } from '../skiaGate';
@@ -13,6 +17,7 @@ import type { CymaticsModuleProps } from '../CymaticsModuleScreen';
 import { P, PlateDemo, ResponseStrip, excitableModes } from './shared';
 
 export function IntroModule({ width, focused }: CymaticsModuleProps) {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const viz = skiaAvailable ? requireVizPlate() : null;
   const spec = DEFAULT_PLATE;
   const modes = useMemo(() => excitableModes(spec), [spec]);
@@ -78,14 +83,55 @@ export function IntroModule({ width, focused }: CymaticsModuleProps) {
         is sharp. Between them, several modes respond weakly at once and nothing organises.
       </Text>
 
+      {/* ── THE QUESTION, NOT THE ANSWER (2026-09-18, design review) ────────────
+          This card used to END the module by handing over the lab's whole
+          conclusion in prose — geometry, dimensions, material, thickness,
+          support, drive point, damping, the lot — and module 6 then asked the
+          learner to discover it. A conclusion already read cannot be
+          discovered, only confirmed, and confirmation produces none of the
+          retention a violated prediction does. The spec's §0 asks for discovery
+          in so many words.
+
+          So it now asks, and hands them the instrument that answers it. The old
+          text is not lost: it is what Change One Thing lets them find, and it
+          belongs at the END of the series (design review #20). */}
       <View style={P.card}>
-        <Text style={P.h}>THE ONE THING TO CARRY WITH YOU</Text>
+        <Text style={P.h}>BEFORE YOU GO ON — A QUESTION</Text>
         <Text style={P.body}>
-          Sound does not have one universal shape. The figure you see also depends on the object’s geometry, dimensions, material,
-          thickness, how it is supported, where it is driven, and how much it is damped. The same 440 Hz makes a strong pattern on one
-          plate, no stable pattern on another, and a different pattern on a third.
+          You have just seen a plate answer one tone. Here is the question this whole lab turns on:{' '}
+          <Text style={P.strong}>
+            if you played that exact same tone at a different plate, would you get the same figure?
+          </Text>
         </Text>
+        <Text style={P.body}>
+          Decide before you look. Change One Thing puts two plates side by side, locks the tone, and lets you alter
+          exactly one thing about the object — so whatever happens next, the sound was not what changed.
+        </Text>
+        <Pressable
+          style={styles.goBtn}
+          onPress={() => navigation.navigate('CymaticsModule', { id: 'change' })}
+          accessibilityRole="button"
+          accessibilityLabel="Open Change One Thing and test your prediction"
+        >
+          <Text style={styles.goText}>OPEN CHANGE ONE THING ›</Text>
+          <Text style={styles.goSub}>Two plates, one locked tone, one difference.</Text>
+        </Pressable>
       </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  goBtn: {
+    borderRadius: 10,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,198,77,.7)',
+    backgroundColor: 'rgba(255,198,77,.12)',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    gap: 4,
+    marginTop: 4,
+  },
+  goText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.2, color: colors.amber },
+  goSub: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSecondary },
+});

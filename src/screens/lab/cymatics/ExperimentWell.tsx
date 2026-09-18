@@ -18,20 +18,83 @@
  * Teaching order is unchanged: PREDICT first, steps as tick-off rows, LOOK FOR
  * only on reveal.
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { StackActions, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { colors, fonts } from '../../../theme/tokens';
 import { EXPERIMENTS, experimentRoute, type Experiment } from '../../../features/cymatics/presets';
 import type { RootStackParamList } from '../../../navigation/types';
 
+/* ── tick-off persistence ───────────────────────────────────────────────────
+   One key for the whole series, `{ [experimentId]: number[] }`. Never throws:
+   a device that cannot persist simply behaves as it did before. Swept by
+   clearLocalAccountData's `ape:*` rule, so it does not follow an account
+   switch. */
+const TICKS_KEY = 'ape:cymatics:experimentTicks:v1';
+
+async function readAllTicks(): Promise<Record<string, number[]>> {
+  try {
+    const raw = await AsyncStorage.getItem(TICKS_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw) as unknown;
+    return parsed && typeof parsed === 'object' ? (parsed as Record<string, number[]>) : {};
+  } catch {
+    return {};
+  }
+}
+
+async function loadTicks(id: string): Promise<number[]> {
+  const all = await readAllTicks();
+  const t = all[id];
+  return Array.isArray(t) ? t.filter((n) => typeof n === 'number') : [];
+}
+
+async function saveTicks(id: string, ticks: number[]): Promise<void> {
+  try {
+    const all = await readAllTicks();
+    all[id] = ticks;
+    await AsyncStorage.setItem(TICKS_KEY, JSON.stringify(all));
+  } catch {
+    /* best-effort */
+  }
+}
+
 export function ExperimentWell({ experiment }: { experiment: Experiment }) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  /**
+   * Tick-offs, PERSISTED per experiment (2026-09-18, design review #3).
+   *
+   * These lived in local state and were cleared on every PREV/NEXT, so running
+   * the seventeen across two sittings lost everything — and even inside one
+   * sitting, stepping forward and back wiped the ticks. Seventeen experiments
+   * with no memory is not a course, it is a pile: the learner cannot answer
+   * "where was I?", which is the question that decides whether they come back.
+   */
   const [done, setDone] = useState<number[]>([]);
   const [revealed, setRevealed] = useState(false);
+  /** Has the learner committed to a prediction? See the PREDICT card below. */
+  const [committed, setCommitted] = useState(false);
   const [open, setOpen] = useState(true);
-  const toggle = (i: number) => setDone((d) => (d.includes(i) ? d.filter((k) => k !== i) : [...d, i]));
+  const toggle = (i: number) =>
+    setDone((d) => {
+      const next = d.includes(i) ? d.filter((k) => k !== i) : [...d, i];
+      void saveTicks(experiment.id, next);
+      return next;
+    });
+
+  // Load this experiment's ticks whenever the well switches experiment.
+  useEffect(() => {
+    let alive = true;
+    void loadTicks(experiment.id).then((t) => {
+      if (alive) setDone(t);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [experiment.id]);
 
   const index = EXPERIMENTS.findIndex((e) => e.id === experiment.id);
   const prev = index > 0 ? EXPERIMENTS[index - 1] : undefined;
@@ -40,12 +103,34 @@ export function ExperimentWell({ experiment }: { experiment: Experiment }) {
   // back always lands on the experiments list however far the learner ran.
   const go = (e: Experiment) => {
     const r = experimentRoute(e);
-    setDone([]);
+    // Ticks are NOT cleared here any more: they are per-experiment and
+    // persisted, and the effect above loads the next one's.
     setRevealed(false);
+    setCommitted(false);
     setOpen(true);
     navigation.dispatch(StackActions.replace(r.route, r.params));
   };
   const where = (e: Experiment) => (e.studio === 'liquid' ? 'dish' : e.studio === 'membrane' ? 'drum' : 'plate');
+
+  /**
+   * REVEAL has to be EARNED (2026-09-18, design review #2).
+   *
+   * It used to be available as the very first action in the well: a learner
+   * could open an experiment and read the answer before touching anything, at
+   * no cost. The asymmetry between a prediction-error you FELT and an
+   * explanation you READ is the entire retention mechanism, and the lab offered
+   * both and let people take the cheap one.
+   *
+   * Two cheap conditions, not a puzzle: commit a prediction where the
+   * experiment asks for one, and tick at least one step. Both are one tap. The
+   * point is not difficulty, it is ORDER.
+   */
+  const predicted = !experiment.predict || committed;
+  const started = done.length > 0;
+  const earned = predicted && started;
+  const lockedWhy = !predicted
+    ? 'MAKE YOUR PREDICTION FIRST'
+    : 'TICK A STEP FIRST';
 
   return (
     <View style={styles.card}>
@@ -63,6 +148,28 @@ export function ExperimentWell({ experiment }: { experiment: Experiment }) {
             <View style={styles.predict}>
               <Text style={styles.predictHead}>PREDICT FIRST</Text>
               <Text style={styles.predictBody}>{experiment.predict}</Text>
+              {/* ── COMMIT, DO NOT JUST READ (2026-09-18, design review #2) ──
+                  A prediction only works if it is committed BEFORE the answer
+                  is reachable. This used to be a paragraph to read, with REVEAL
+                  one tap away and free — so the cheap path (read the answer)
+                  and the expensive one (be wrong, then find out) sat side by
+                  side and nothing pushed anyone toward the second.
+
+                  Tapping this is the commitment. It is not graded and it is not
+                  stored: what it buys is the half-second of actually deciding,
+                  which is the whole mechanism. */}
+              {committed ? (
+                <Text style={styles.committedNote}>Prediction locked in — now run the steps.</Text>
+              ) : (
+                <Pressable
+                  onPress={() => setCommitted(true)}
+                  style={styles.commit}
+                  accessibilityRole="button"
+                  accessibilityLabel="I have made my prediction"
+                >
+                  <Text style={styles.commitText}>I’VE MADE MY PREDICTION</Text>
+                </Pressable>
+              )}
             </View>
           ) : null}
           {experiment.steps.map((s, i) => {
@@ -74,14 +181,50 @@ export function ExperimentWell({ experiment }: { experiment: Experiment }) {
               </Pressable>
             );
           })}
+          {/* ── THE SERIES HAS AN ENDING NOW (2026-09-18, design review #3/#20) ─
+              At experiment 17, NEXT was simply disabled and greyed. Eight
+              modules, three studios and seventeen experiments, and nothing
+              anywhere said "here is the answer to the question the home asked
+              you" — and the lab's ONLY retrieval instrument, Evidence vs Myth,
+              sat at position 7 of 8 where most learners never reach it.
+              Retrieval placed AFTER the experience is worth several times
+              retrieval placed before it, so the series now delivers them to it. */}
+          {!next ? (
+            <View style={styles.finale}>
+              <Text style={styles.finaleHead}>THAT IS THE SERIES — ALL {EXPERIMENTS.length}</Text>
+              <Text style={styles.finaleBody}>
+                Here is what you found. Sound does not have one universal shape. The figure depends on the
+                object — its geometry, size, material, thickness, how it is held, where it is driven and how
+                much it is damped. The same tone makes a strong pattern on one plate, nothing on another, and
+                a different pattern on a third. That was the question the very first module asked you.
+              </Text>
+              <Pressable
+                style={styles.finaleBtn}
+                onPress={() => navigation.navigate('CymaticsModule', { id: 'myth' })}
+                accessibilityRole="button"
+                accessibilityLabel="Check yourself with Evidence versus Myth"
+              >
+                <Text style={styles.finaleBtnText}>NOW CHECK YOURSELF · EVIDENCE VS MYTH ›</Text>
+              </Pressable>
+            </View>
+          ) : null}
           {revealed ? (
             <Text style={styles.lookFor}>
               <Text style={styles.lookForHead}>LOOK FOR · </Text>
               {experiment.lookFor}
             </Text>
           ) : (
-            <Pressable onPress={() => setRevealed(true)} style={styles.reveal} accessibilityRole="button" accessibilityLabel="Reveal what to look for">
-              <Text style={styles.revealText}>REVEAL LOOK FOR ›</Text>
+            <Pressable
+              onPress={() => setRevealed(true)}
+              disabled={!earned}
+              style={[styles.reveal, !earned && styles.revealLocked]}
+              accessibilityRole="button"
+              accessibilityState={{ disabled: !earned }}
+              accessibilityLabel={earned ? 'Reveal what to look for' : lockedWhy}
+            >
+              <Text style={[styles.revealText, !earned && styles.revealTextLocked]}>
+                {earned ? 'REVEAL LOOK FOR ›' : lockedWhy}
+              </Text>
             </Pressable>
           )}
         </>
@@ -124,6 +267,16 @@ const styles = StyleSheet.create({
   title: { fontFamily: fonts.oswaldMedium, fontSize: 16, color: colors.textPrimary, marginTop: -4 },
   goal: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
   predict: { borderRadius: 8, borderWidth: 1, borderColor: 'rgba(127,212,255,.5)', backgroundColor: '#0a1520', padding: 10, gap: 3 },
+  commit: { alignSelf: 'flex-start', marginTop: 6, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(127,212,255,.6)', paddingHorizontal: 12, paddingVertical: 9, minHeight: 44, justifyContent: 'center' },
+  commitText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.1, color: '#7fd4ff' },
+  committedNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: '#7fd4ff', marginTop: 4 },
+  finale: { marginTop: 10, borderRadius: 10, borderWidth: 1.5, borderColor: 'rgba(55,224,95,.55)', backgroundColor: 'rgba(55,224,95,.08)', padding: 12, gap: 8 },
+  finaleHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.2, color: '#37e05f' },
+  finaleBody: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 20, color: colors.textPrimary },
+  finaleBtn: { alignSelf: 'flex-start', borderRadius: 8, borderWidth: 1, borderColor: 'rgba(55,224,95,.7)', paddingHorizontal: 12, paddingVertical: 10, minHeight: 44, justifyContent: 'center' },
+  finaleBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.1, color: '#37e05f' },
+  revealLocked: { borderColor: '#2a2a32', opacity: 0.75 },
+  revealTextLocked: { color: colors.textSub },
   predictHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: '#7fd4ff' },
   predictBody: { fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 20, color: colors.textPrimary },
   step: { flexDirection: 'row', gap: 10, alignItems: 'flex-start', minHeight: 32 },

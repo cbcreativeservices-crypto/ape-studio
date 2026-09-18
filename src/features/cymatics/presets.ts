@@ -65,6 +65,7 @@ export const EXPERIMENTS: readonly Experiment[] = [
     num: 1,
     title: 'Find the first visible resonance',
     goal: 'Sweep upward from a low frequency until the sand first snaps into a stable figure.',
+    predict: 'Before you sweep: as the tone rises, will the sand organise gradually — a bit more order at every step — or stay scattered and then snap into a figure all at once?',
     steps: [
       'Start the tone at 60 Hz with the particles scattered.',
       'Run the SWEEP — it glides between the plate’s modes and dwells on each — or raise FREQ by hand and use the ±0.1 % nudges.',
@@ -80,6 +81,7 @@ export const EXPERIMENTS: readonly Experiment[] = [
     num: 2,
     title: 'Predict where the particles will gather',
     goal: 'Use the heat map to call the pattern before the sand shows it.',
+    predict: 'Look at the heat map and COMMIT: point at where the sand will end up. On the dark lines, or on the bright ones?',
     steps: [
       'Switch VIEW to HEAT MAP and look at the dark lines — that is where the plate is still.',
       'Say out loud where the sand will end up.',
@@ -95,6 +97,7 @@ export const EXPERIMENTS: readonly Experiment[] = [
     num: 3,
     title: 'Nodes versus antinodes',
     goal: 'See that regions on opposite sides of a nodal line move in opposite directions.',
+    predict: 'Two patches sit either side of one nodal line. At any instant, are they moving the same way, opposite ways, or unrelated?',
     steps: [
       'Open the PHASE view: amber regions move up while blue regions move down.',
       'Switch to 3D PLATE and slow motion to watch them rock against each other.',
@@ -172,6 +175,7 @@ export const EXPERIMENTS: readonly Experiment[] = [
     num: 8,
     title: 'A string’s harmonics vs a plate’s modes',
     goal: 'Hear and see why plate modes are not a harmonic series.',
+    predict: 'A guitar string’s modes land on 1 : 2 : 3 : 4. Write down what you expect this plate’s first four to be — then read the real ratios.',
     steps: [
       'Run the SWEEP and read the mode frequencies as it dwells on each.',
       'Divide each by the first: they are not 2, 3, 4… (WHAT THIS PLATE IS prints the ratios).',
@@ -187,6 +191,7 @@ export const EXPERIMENTS: readonly Experiment[] = [
     num: 9,
     title: 'Create a circular liquid pattern',
     goal: 'Take a dish of water past the Faraday threshold and watch a standing pattern lock in at HALF the drive frequency.',
+    predict: 'A liquid has no edges to hold still the way a plate does. Will it still form a repeating pattern, or just churn?',
     steps: [
       'The dish starts just above threshold, driven at TWICE its lowest mode. Watch the RESP readout: half the drive.',
       'Switch VIEW to REFRACTION — the classic “light through the water” look.',
@@ -201,6 +206,7 @@ export const EXPERIMENTS: readonly Experiment[] = [
     num: 10,
     title: 'Find the Faraday onset threshold',
     goal: 'Raise the shaking from zero until the flat surface first breaks into a pattern, and read the threshold.',
+    predict: 'Raise the shake slowly from zero. Will the pattern fade in gradually, or appear suddenly at some level and not below it?',
     steps: [
       'Start with SHAKE near zero: the surface is flat and only rides the platform.',
       'Raise SHAKE slowly. Note the stages: sloshing or edge ripples first, all AT the drive frequency.',
@@ -230,6 +236,7 @@ export const EXPERIMENTS: readonly Experiment[] = [
     num: 12,
     title: 'Change the depth without changing the frequency',
     goal: 'Pour more liquid in and watch the wavelength and threshold move at a fixed drive.',
+    predict: 'Same tone, deeper liquid — will the pattern get coarser, finer, or stay the same size?',
     steps: [
       'A 2 mm layer of water at 30 Hz: short waves, strongly damped by the bottom.',
       'In DISH, raise DEPTH to 8 mm, then 15 mm. Read λ on the bezel and THRESHOLD in the ladder card each time.',

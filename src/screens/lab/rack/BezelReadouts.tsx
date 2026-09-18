@@ -26,7 +26,7 @@ export function BezelReadouts({
       {items.map((it, i) => (
         <Pressable
           key={`${it.k}${i}`}
-          style={[styles.cell, { flex: it.flex ?? 1 }, i === 0 && styles.cellFirst]}
+          style={[styles.cell, { flex: it.flex ?? 1 }, i === 0 && styles.cellFirst, it.onPress && styles.cellTappable]}
           onPress={it.onPress}
           onLongPress={it.helpKey ? () => onHelp?.(it.helpKey) : undefined}
           delayLongPress={350}
@@ -36,6 +36,18 @@ export function BezelReadouts({
         >
           <Text style={styles.k} numberOfLines={1}>
             {it.k}
+            {/* ── A TAPPABLE CELL MUST LOOK TAPPABLE (2026-09-18) ────────────
+                Interactive and static cells were pixel-identical: same border,
+                same padding, same type, no affordance of any kind. In Cymatics
+                the RES cell's tap-to-land is the primary escape from "I turned
+                the knob and nothing is happening", and it was invisible — the
+                only hint was a sentence in the well, below the experiment card
+                and the colour key, a scroll away from the control it described.
+
+                A caret on the KEY line, not the value: the value is a live
+                readout and often near its width limit, and this must not push
+                it into an ellipsis. */}
+            {it.onPress ? <Text style={styles.tapMark}> ›</Text> : null}
           </Text>
           <Text style={[styles.v, it.tint ? { color: it.tint } : null]} numberOfLines={1}>
             {it.v}
@@ -79,6 +91,9 @@ const styles = StyleSheet.create({
     gap: 1,
   },
   cellFirst: { borderLeftWidth: 0 },
+  /** Interactive cells read as slightly lifted glass, not as a different control. */
+  cellTappable: { backgroundColor: 'rgba(255,198,77,0.05)' },
+  tapMark: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, color: colors.amber },
   k: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.6, color: colors.textSub },
   v: { fontFamily: fonts.mono, fontSize: 13.5, color: colors.amber },
   guide: {

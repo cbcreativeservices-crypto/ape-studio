@@ -557,6 +557,18 @@ export function PlateStudioScreen() {
           <View style={styles.savedRow}>
             <Text style={styles.savedText}>{savedMsg === 'failed' ? 'SAVE FAILED — TRY AGAIN' : 'SAVED TO THE GALLERY ✓'}</Text>
             {savedMsg !== 'failed' ? <LabChip label="Open the gallery ›" selected={false} onPress={() => navigation.navigate('CymaticsGallery', { id: savedMsg.id })} /> : null}
+            {/* ── SAY WHY YOU WOULD COMPARE (2026-09-18, design review #12) ──
+                The gallery offers browse / colour / compare and never says what
+                compare is FOR. Its verdict line states the lab's whole thesis in
+                data form, and nothing routed a learner to it — they had to
+                stumble on it. The moment they have just saved is the moment the
+                next move is obvious, so it is said here. */}
+            {savedMsg !== 'failed' ? (
+              <Text style={styles.compareHint}>
+                Now change ONE thing — the plate, the material, the thickness — save that too, and compare the
+                two side by side.
+              </Text>
+            ) : null}
           </View>
         ) : null}
         {view === 'heat' || view === 'overlay' || view === 'plate3d' || view === 'section' ? (
@@ -655,7 +667,10 @@ const styles = StyleSheet.create({
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   readK: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub },
   nudgeRow: { flexDirection: 'row', gap: 8 },
-  nudge: { borderRadius: 8, borderWidth: 1, borderColor: '#3a3a44', paddingHorizontal: 10, paddingVertical: 6, minHeight: 32, justifyContent: 'center' },
+  // 44pt: the smallest control in the lab and a precision one used one-handed
+  // (a11y worklist / design review #15). hitSlop stays as well.
+  nudge: { borderRadius: 8, borderWidth: 1, borderColor: '#3a3a44', paddingHorizontal: 10, paddingVertical: 6, minHeight: 44, justifyContent: 'center' },
+  compareHint: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.textSecondary, marginTop: 6 },
   nudgeText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.amber },
   honest: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub, marginTop: 4 },
   err: { fontFamily: fonts.barlowRegular, fontSize: 13, color: '#ff6b5e' },

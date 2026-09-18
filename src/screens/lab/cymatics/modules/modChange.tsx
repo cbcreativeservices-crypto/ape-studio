@@ -70,6 +70,16 @@ export function ChangeModule({ focused, help }: CymaticsModuleProps) {
   const variable = VARIABLES.find((v) => v.id === varId)!;
   const [a, setA] = useState(0);
   const [b, setB] = useState(1);
+  /**
+   * Has B actually been moved? (2026-09-18, design review #17.)
+   *
+   * REVEAL used to unlock on arrival, so the explanation could be read before a
+   * single comparison had been made — and this module's entire value is the
+   * moment B goes dark unexpectedly. The explanation getting there first
+   * replaces a felt prediction-error with a paragraph, which is the cheap
+   * version of the same information and the one with no retention.
+   */
+  const [bMoved, setBMoved] = useState(false);
   const [view, setView] = useState<PlateViewMode>('overlay');
   const [revealed, setRevealed] = useState(false);
   const specA = useMemo<PlateSpec>(() => ({ ...BASE, ...variable.options[Math.min(a, variable.options.length - 1)].patch }), [variable, a]);
@@ -104,7 +114,7 @@ export function ChangeModule({ focused, help }: CymaticsModuleProps) {
       helpKey: 'change_one',
     },
     { kind: 'options', id: 'a', label: 'A', valueLabel: optA.short, options: variable.options.map((o, i) => ({ id: `${i}`, label: o.label })), selectedId: `${a}`, onSelect: (id) => setA(Number(id)), sticky: true, helpKey: 'change_one' },
-    { kind: 'options', id: 'b', label: 'B', valueLabel: optB.short, options: variable.options.map((o, i) => ({ id: `${i}`, label: o.label })), selectedId: `${b}`, onSelect: (id) => setB(Number(id)), sticky: true, helpKey: 'change_one' },
+    { kind: 'options', id: 'b', label: 'B', valueLabel: optB.short, options: variable.options.map((o, i) => ({ id: `${i}`, label: o.label })), selectedId: `${b}`, onSelect: (id) => { setB(Number(id)); setBMoved(true); }, sticky: true, helpKey: 'change_one' },
     { kind: 'options', id: 'view', label: 'VIEW', valueLabel: VIEWS.find((v) => v.id === view)!.short, options: VIEWS.map((v) => ({ id: v.id, label: v.label })), selectedId: view, onSelect: (id) => setView(id as PlateViewMode), sticky: true, helpKey: 'display' },
   ];
 
@@ -157,7 +167,7 @@ export function ChangeModule({ focused, help }: CymaticsModuleProps) {
         <Text style={[P.badge, { color: '#7fd4ff' }]}>PREDICT FIRST · {variable.label.toUpperCase()}</Text>
         <Text style={P.strong}>{variable.question}</Text>
       </View>
-      {revealed ? (
+      {revealed && bMoved ? (
         <>
           <Text style={P.h}>READ IT</Text>
           <View style={P.bullet}><Text style={P.dot}>•</Text><Text style={[P.body, { flex: 1 }]}>AT RESONANCE with a bright, full heat map: this plate has a mode at the locked frequency. BETWEEN with a dark map: the same tone finds nothing to excite.</Text></View>
@@ -165,8 +175,21 @@ export function ChangeModule({ focused, help }: CymaticsModuleProps) {
           <View style={P.bullet}><Text style={P.dot}>•</Text><Text style={[P.body, { flex: 1 }]}>Damping is the exception worth noticing: it does not move the resonance, it blurs and weakens it. Steel is the other: three times stiffer and three times denser, so it lands almost where aluminum does.</Text></View>
         </>
       ) : (
-        <Pressable onPress={() => setRevealed(true)} style={styles.reveal} accessibilityRole="button" accessibilityLabel="Reveal how to read the comparison">
-          <Text style={styles.revealText}>REVEAL HOW TO READ IT ›</Text>
+        <Pressable
+          onPress={() => setRevealed(true)}
+          disabled={!bMoved}
+          style={[styles.reveal, !bMoved && styles.revealLocked]}
+          accessibilityRole="button"
+          accessibilityState={{ disabled: !bMoved }}
+          accessibilityLabel={
+            bMoved
+              ? 'Reveal how to read the comparison'
+              : 'Change plate B first, then the explanation unlocks'
+          }
+        >
+          <Text style={[styles.revealText, !bMoved && styles.revealTextLocked]}>
+            {bMoved ? 'REVEAL HOW TO READ IT ›' : 'CHANGE B FIRST — THEN READ IT'}
+          </Text>
         </Pressable>
       )}
       <Text style={P.caption}>Both plates run whenever this module is open — a comparison, not a drive. The scaling law behind every comparison is exact.</Text>
@@ -178,4 +201,6 @@ const styles = StyleSheet.create({
   tag: { position: 'absolute', left: 6, top: 4, fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.1, color: colors.amber, backgroundColor: 'rgba(11,11,16,0.7)', paddingHorizontal: 4, borderRadius: 3 },
   reveal: { alignSelf: 'flex-start', borderRadius: 8, borderWidth: 1, borderColor: '#3a3a44', paddingHorizontal: 12, paddingVertical: 7 },
   revealText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.1, color: colors.amber },
+  revealLocked: { borderColor: '#2a2a32', opacity: 0.75 },
+  revealTextLocked: { color: colors.textSub },
 });

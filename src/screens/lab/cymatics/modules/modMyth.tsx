@@ -69,6 +69,7 @@ export function MythModule(_p: CymaticsModuleProps) {
 }
 
 const styles = StyleSheet.create({
-  pick: { borderRadius: 8, borderWidth: 1.5, paddingHorizontal: 12, paddingVertical: 8, minHeight: 36, justifyContent: 'center' },
+  // 44pt (a11y worklist / design review #15).
+  pick: { borderRadius: 8, borderWidth: 1.5, paddingHorizontal: 12, paddingVertical: 8, minHeight: 44, justifyContent: 'center' },
   pickText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2 },
 });

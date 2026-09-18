@@ -5,13 +5,32 @@
  */
 export type CymaticsModuleId = 'intro' | 'nodes' | 'harmonics' | 'harmony' | 'systems' | 'change' | 'myth' | 'experiments';
 
+/**
+ * ── ORDER IS THE TEACHING (2026-09-18, design review) ────────────────────────
+ *
+ * `change` sits THIRD, not sixth, and that is deliberate.
+ *
+ * The spec's §0 says the learner should *discover* the central principle rather
+ * than read it. As first built, module 1 handed over the whole conclusion in
+ * prose — "the figure also depends on geometry, dimensions, material…" — and
+ * module 6 then asked them to find it. A conclusion already read cannot be
+ * discovered, only confirmed, and confirmation produces none of the retention
+ * that a violated prediction does.
+ *
+ * It also put two CONTRAST modules (Harmonics vs Plate Modes, Harmony in
+ * Motion) before the claim they contrast with: a learner met Lissajous figures
+ * before ever seeing the same tone fail on a different plate.
+ *
+ * The home badge number derives from this index, and PREV/NEXT is index-driven,
+ * so reordering here moves everything with it.
+ */
 export const CYMATICS_MODULES: { id: CymaticsModuleId; title: string; blurb: string }[] = [
   { id: 'intro', title: 'What Is Cymatics?', blurb: 'Sound as pressure and vibration; how vibration moves sand, powder and liquid; nodes, antinodes and why stable patterns appear at resonance.' },
   { id: 'nodes', title: 'Nodes, Antinodes & Modes', blurb: 'Interactive: pick a mode, see its still lines, its opposite-phase regions and its shape — every stable figure is one normal mode.' },
+  { id: 'change', title: 'Change One Thing', blurb: 'Two plates, one locked tone, every control identical but one — the discovery tool for the lab’s central principle.' },
   { id: 'harmonics', title: 'Harmonics vs Plate Modes', blurb: 'String · air column · membrane · plate — why only the first two form a harmonic series, and why Chladni figures are not pictures of chords.' },
   { id: 'harmony', title: 'Harmony in Motion', blurb: 'Frequency ratios made visible and audible — wave addition, Lissajous figures, spectra and beats — kept honestly apart from plate modes.' },
   { id: 'systems', title: 'Other Cymatic Systems', blurb: 'Strings, air columns, water surfaces, a loudspeaker with particles, bells and gongs, acoustic levitation — what is actually vibrating in each.' },
-  { id: 'change', title: 'Change One Thing', blurb: 'Two plates, one locked tone, every control identical but one — the discovery tool for the lab’s central principle.' },
   { id: 'myth', title: 'Evidence vs Myth', blurb: 'What the patterns genuinely show, what they do not, and why every pattern in this lab is labelled Simulation.' },
   { id: 'experiments', title: 'Guided Experiments', blurb: 'Seventeen structured activities — predict first, then open the studio in exactly the situation each step describes.' },
 ];
