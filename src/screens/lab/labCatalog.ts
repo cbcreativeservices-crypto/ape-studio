@@ -333,9 +333,6 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     kind: 'list',
     labs: [
       { name: 'Autotune', blurb: 'Pitch correction on the cents grid — amount, retune speed.', route: 'AutotuneLab' },
-      // Moved here from Sound Visualization (owner 2026-08-23): it teaches
-      // frequency ratios ↔ musical intervals, so it lives with Pitch & Tuning.
-      { name: 'Harmonograph', blurb: 'Frequency ratios ↔︎ musical intervals, drawn as living Lissajous curves.', route: 'HarmonographLab' },
       // LIVE (owner build spec 2026-09-02): the former 'Tunings Lab'
       // placeholder, built as the fourteen-chapter Tuning & Temperament Lab.
       { name: 'Tuning & Temperament Lab', blurb: 'How musical scales are built, heard, and compared — pure fifths, the comma, Just, meantone, and equal temperament.', route: 'TuningLab' },
@@ -343,8 +340,13 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
   },
   {
     // Sound Visualization (owner 2026-08-10): a members-only area for seeing
-    // sound take shape — cymatics and other visual forms. (Harmonograph moved
-    // to Pitch & Tuning on 2026-08-23.)
+    // sound take shape — cymatics and other visual forms.
+    //
+    // Harmonograph has been in both places. It went to Pitch & Tuning on
+    // 2026-08-23 (it does teach frequency ratios as musical intervals) and came
+    // back here on 2026-09-17 at the owner's instruction: what a user actually
+    // does in it is WATCH a drawing appear, which is this category's whole
+    // subject, and it belongs beside Cymatics rather than beside Autotune.
     id: 'visualization',
     glyph: '👁',
     name: 'Sound Visualization',
@@ -356,6 +358,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       // standalone lab home + Chladni Plate Studio + theory/integrity modules
       // + guided experiments. Liquid / membrane / harmony / art phases follow.
       { name: 'Cymatics Lab: Sound Made Visible', blurb: 'Chladni plates, a liquid dish on a shaker, a drumhead and a loudspeaker cone — build a plate, drive it with a tone, watch sand find the still lines; shake a liquid past its Faraday threshold; tune a drum and hear why a timpani has a pitch; sweep a cone into breakup; save, colour, compare and print your patterns. Why a frequency has no shape of its own.', route: 'CymaticsLab' },
+      { name: 'Harmonograph', blurb: 'Frequency ratios ↔︎ musical intervals, drawn as living Lissajous curves.', route: 'HarmonographLab' },
     ],
   },
   {

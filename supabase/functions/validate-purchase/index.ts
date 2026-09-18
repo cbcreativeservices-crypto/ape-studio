@@ -222,20 +222,45 @@ Deno.serve(async (req) => {
   // There is a UNIQUE (user_id, product); read the one row if it exists.
   const { data: existing } = await admin
     .from('entitlements')
-    .select('id, expires_at')
+    .select('id, expires_at, member_since, refunded_at')
     .eq('user_id', userId)
     .eq('product', ACADEMY_PRODUCT)
     .maybeSingle();
 
   // Never SHORTEN access a user already has (e.g. a lifetime comp who also
   // buys a month): keep the later expiry.
-  const priorMs = existing?.expires_at ? Date.parse((existing as { expires_at: string }).expires_at) : 0;
+  const prior = existing as { id: string; expires_at: string; member_since: string | null; refunded_at: string | null } | null;
+  const priorMs = prior?.expires_at ? Date.parse(prior.expires_at) : 0;
   const computedMs = Date.parse(computed);
-  const expires_at = priorMs > computedMs ? (existing as { expires_at: string }).expires_at : computed;
+  const expires_at = priorMs > computedMs ? prior!.expires_at : computed;
 
-  const row = { status: 'active', source, store_ref, expires_at, updated_at: new Date().toISOString() };
+  // ── the tenure clock (owner 2026-09-17) ──────────────────────────────────
+  // A credential needs one complete month of unbroken membership, so this has
+  // to record when the CURRENT run began — and must not restart it on a
+  // renewal, or nobody on a monthly plan would ever reach a month.
+  //
+  // It restarts in exactly three cases: there was no run before; the previous
+  // run had already lapsed; or the previous run ended in a refund. A refund
+  // buys no tenure, which is the owner's rule — "no certificates if they refund
+  // and I never get paid anything".
+  const nowIso = new Date().toISOString();
+  const lapsed = !!prior?.expires_at && Date.parse(prior.expires_at) < Date.now();
+  const member_since =
+    !prior || !prior.member_since || prior.refunded_at || lapsed ? nowIso : prior.member_since;
+
+  const row = {
+    status: 'active',
+    source,
+    store_ref,
+    expires_at,
+    member_since,
+    // Paying again clears a prior refund flag; the clock above has already been
+    // restarted for it, so this cannot hand back tenure that was never earned.
+    refunded_at: null,
+    updated_at: nowIso,
+  };
   const write = existing
-    ? await admin.from('entitlements').update(row).eq('id', (existing as { id: string }).id)
+    ? await admin.from('entitlements').update(row).eq('id', prior!.id)
     : await admin.from('entitlements').insert({ user_id: userId, product: ACADEMY_PRODUCT, ...row });
 
   // The receipt verified but the grant did not land — do NOT tell the client
