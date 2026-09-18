@@ -26,6 +26,16 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 14:10 · ccode · 545feec4
+changed: D9 corrected: employer accounts ship WITH launch, and most of it is built
+affects other side: doc-of-record correction only. D9 in
+  APE_GOVERNANCE_DECISIONS_2026_09_18.md said employer accounts were "post-launch, not
+  started"; the owner reversed that the same hour and most of it is built, so the document
+  said the opposite of reality. It now carries the live state, the auto-approve rule, and
+  the three things that must not be "simplified" later.
+needs: nothing
+
+
 ### 2026-09-18 14:09 · ccode · 4412ce89
 changed: Employer accounts: the website half
 affects other side: EMPLOYER ACCOUNTS, website half. New: /employers/apply,
