@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 15:52 · ccode · d40d9a1e
+changed: Native build payload: the parked items, landed together
+affects other side: ⚠️ YES — READ THIS. Native deps + app.json changed, so the @expo/fingerprint runtimeVersion MOVED: 1792f7b7… → 9eaf459a…. Every phone in the field is still on the OLD runtime, so **`eas update` now delivers NOTHING to them, silently** (publish succeeds, phones see nothing). Any OTA-able work — employer app surfaces included — is stranded until the `preview` builds finish and are INSTALLED. Do not diagnose that as a bug. After installing, re-compare the local fingerprint against `eas build:list` runtimeVersion before the next `eas update`.
+needs: nothing from A. FYI only: `expo-audio` background playback is now false and four photo-library READ permissions are gone — both are store-form relevant, so the data-safety / permissions answers may need a re-read.
+
+
 ### 2026-09-18 · ccode · 9d84ea57
 changed: a11y pass 5: W13 focus repair, and the half of W18 that needs no new UI
 affects other side: nothing. Client-only accessibility work — announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
