@@ -52,3 +52,43 @@ so you do not repeat it, then go somewhere it did not.
 - Every lab/tool must carry `<AccuracyNote/>` — learn here, measure with a
   calibrated instrument.
 - Fail CLOSED on entitlement, fail OPEN on infrastructure errors.
+
+---
+
+## FIXED in pass 2 — do NOT re-report; VERIFY instead
+- Google refund path revoked a member on the request body alone (store-notifications).
+- Offline queues: quiz replay dropped rows on a timeout; enqueueSubmission was
+  void over a bare SQLite write; study/sync dropped on any non-network error;
+  signing out swept `ape:finalExamQueue`.
+- `stopAllFilePlayers()` zeroed volume and nothing restored it (my own pass-1 bug).
+- FinalExamScreen promised a retry while holding the submit latch (also mine).
+- Paywall could charge someone with no account; "access is active" fired on a
+  completed read rather than on membership.
+- Anonymous device key read as a new user and wiped guest progress.
+- soundSafetyAck + celebrationSeen in-memory mirrors survived the account wipe.
+- Scenarios audio bypassed the sound safety gate.
+- Backgrounding the app left lab tones playing (no AppState anywhere in labs).
+- Quiz/exam answers were lost on a crash → `attemptDraft.ts`.
+- Quiz score printed out of a hardcoded 30 on variable-size v3 quizzes.
+- Calculators used `parseFloat`: `10,000` became 10 → `parseQuantity`.
+- Production labs: a decimal point could not be typed; a blank table row read as
+  a complete required answer (incl. the hazard and rights registers).
+- 7 child routes of the paid labs were ungated; 7 declared deep links were
+  rejected by `isClaimedPath`; a signed-out deep link landed above `Auth`.
+- Required-education disclosure added to the Career Finder results screen and to
+  Rigger / Production electrician / Sonar Systems Technician.
+- Low-Light burned the once-a-day hearing-dose warning without showing it.
+- `fetchMyCredentials` reported a failed read as "you have earned nothing".
+- Credential celebrations had no caller at all.
+
+## KNOWN and still open — do NOT re-report unless you can add something new
+- Certificates appear to be awarded by a DB trigger on topic completion, which
+  would bypass the Final Exam and the paid-month rule. Server-side; needs the
+  owner and a live DB check.
+- The tenure migration and both edge functions are not deployed.
+- Enrollments are pushed to the server but never pulled back.
+- 13 labs carry no `<AccuracyNote/>`; the Community Directory's 8 modals omit
+  `accessibilityViewIsModal`; CareerFamilyScreen promises free first topics on
+  41 of 42 families; `fmt()` prints scientific notation from 10,000 up;
+  calculators open a QWERTY keyboard on Android; production dates are parsed
+  with `Date.parse`; the printed certificate's ID is the user's registry token.
