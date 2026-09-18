@@ -159,14 +159,250 @@ function LevitationDemo({ w, h, running }: { w: number; h: number; running: bool
   );
 }
 
+/**
+ * ── THE OTHER THREE GOT A DRAWING (2026-09-18, design review #6) ─────────────
+ *
+ * Three of the six systems — the dish, the loudspeaker and the bell — used to
+ * put a SENTENCE on the rack stage: "the full simulation lives in the Liquid
+ * Studio", and a button. In a lab whose entire premise is SOUND MADE VISIBLE,
+ * half the systems were invisible, and the one panel built to hold a picture
+ * held an apology for not having one.
+ *
+ * These three are deliberately smaller than the studios they point at — they
+ * are the thumbnail that makes you want to open the studio, not a second copy
+ * of it. The link stays underneath; it just is no longer the whole panel.
+ */
+
+/** A dish on a shaker. The DISH moves at the drive rate; the SURFACE ripples at HALF it. */
+function WaterDemo({ w, h, running }: { w: number; h: number; running: boolean }) {
+  const phase = usePhase(running);
+  const lobes = 6;
+  /** The two clocks are the teaching point, so they are written as two numbers. */
+  const shake = Math.sin(phase) * 3;
+  const surf = Math.cos(phase / 2);
+  const left = 30;
+  const right = w - 30;
+  const rim = h * 0.34 + shake;
+  const floor = h * 0.68 + shake;
+  const restY = (rim + floor) / 2;
+  const amp = Math.min(h * 0.1, 14);
+
+  const surface = useMemo(() => {
+    let s = '';
+    for (let i = 0; i <= 120; i++) {
+      const u = i / 120;
+      const x = left + u * (right - left);
+      const y = restY - Math.sin(lobes * Math.PI * u) * surf * amp;
+      s += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ' ' + y.toFixed(1) + ' ';
+    }
+    return s;
+  }, [left, right, restY, surf, amp]);
+
+  return (
+    <Svg width={w} height={h}>
+      <Defs>
+        <SvgGradient id="watg" x1="0" y1={restY - amp} x2="0" y2={restY + amp} gradientUnits="userSpaceOnUse">
+          {STOPS.map((s, k) => (
+            <Stop key={k} offset={s.offset} stopColor={s.color} />
+          ))}
+        </SvgGradient>
+        <SvgGradient id="liq" x1="0" y1="0" x2="0" y2="1">
+          <Stop offset="0%" stopColor="rgba(90,160,220,.42)" />
+          <Stop offset="100%" stopColor="rgba(30,70,120,.30)" />
+        </SvgGradient>
+        <SvgGradient id="shk" x1="0" y1="0" x2="1" y2="1">
+          <Stop offset="0%" stopColor="#6a6f78" />
+          <Stop offset="100%" stopColor="#26282e" />
+        </SvgGradient>
+      </Defs>
+
+      {/* The liquid body, filled from the rippling surface down to the dish floor */}
+      <Path d={`${surface} L ${right} ${floor} L ${left} ${floor} Z`} fill="url(#liq)" />
+      <Path d={surface} stroke="url(#watg)" strokeWidth={2.2} fill="none" />
+
+      {/* The dish: glass walls and a floor, drawn over the liquid so it reads as containing it */}
+      <Path
+        d={`M ${left - 6} ${rim} L ${left - 6} ${floor} L ${right + 6} ${floor} L ${right + 6} ${rim}`}
+        fill="none"
+        stroke="#8a8f99"
+        strokeWidth={2}
+        strokeLinejoin="round"
+      />
+      <Line x1={left - 12} y1={rim} x2={left} y2={rim} stroke="#b9bec8" strokeWidth={2} />
+      <Line x1={right} y1={rim} x2={right + 12} y2={rim} stroke="#b9bec8" strokeWidth={2} />
+
+      {/* The shaker underneath, and the post that drives the dish */}
+      <Rect x={w / 2 - 5} y={floor} width={10} height={h - 18 - floor} fill="url(#shk)" stroke="#8a8f99" strokeWidth={1} />
+      <Rect x={w / 2 - 46} y={h - 18} width={92} height={14} rx={3} fill="url(#shk)" stroke="#8a8f99" />
+
+      {/* The still points between the lobes — where the surface never moves */}
+      {Array.from({ length: lobes + 1 }, (_, k) => k).map((k) => (
+        <Circle key={k} cx={left + (k / lobes) * (right - left)} cy={restY} r={2.8} fill={MIDLINE_BLUE} />
+      ))}
+    </Svg>
+  );
+}
+
+/** A loudspeaker in section, face up, with grains on the cone: piston below breakup, modes above it. */
+function SpeakerDemo({ w, h, running }: { w: number; h: number; running: boolean }) {
+  const phase = usePhase(running);
+  const cx = w / 2;
+  const R = Math.min(w * 0.36, 130);
+  const rimY = h * 0.34;
+  const depth = Math.min(h * 0.2, 34);
+  const amp = Math.min(h * 0.07, 10);
+
+  /** Radial mode with nodes at the centre, mid-radius and the surround. */
+  const disp = (r: number) => Math.sin(2 * Math.PI * r) * Math.cos(phase) * amp;
+  const coneY = (r: number) => rimY + (1 - r) * depth + disp(r);
+
+  const cone = useMemo(() => {
+    let s = '';
+    for (let i = 0; i <= 80; i++) {
+      const u = i / 80; // -1 … +1 across the diameter
+      const t = u * 2 - 1;
+      const r = Math.abs(t);
+      const x = cx + t * R;
+      const y = coneY(r);
+      s += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ' ' + y.toFixed(1) + ' ';
+    }
+    return s;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [w, h, phase, R, rimY, depth, amp]);
+
+  /** Grains: the two at an antinode bounce, the one at the node sits still. */
+  const grains = [-0.75, -0.5, -0.25, 0.25, 0.5, 0.75];
+
+  return (
+    <Svg width={w} height={h}>
+      <Defs>
+        <SvgGradient id="spkg" x1="0" y1={rimY - amp} x2="0" y2={rimY + depth + amp} gradientUnits="userSpaceOnUse">
+          {STOPS.map((s, k) => (
+            <Stop key={k} offset={s.offset} stopColor={s.color} />
+          ))}
+        </SvgGradient>
+        <SvgGradient id="mag" x1="0" y1="0" x2="1" y2="1">
+          <Stop offset="0%" stopColor="#4a4e57" />
+          <Stop offset="100%" stopColor="#1b1d22" />
+        </SvgGradient>
+      </Defs>
+
+      {/* Basket rim and surround roll on both sides */}
+      <Path d={`M ${cx - R - 16} ${rimY - 6} L ${cx - R - 4} ${rimY - 6} A 7 7 0 0 1 ${cx - R + 2} ${rimY}`} fill="none" stroke="#8a8f99" strokeWidth={2.4} />
+      <Path d={`M ${cx + R + 16} ${rimY - 6} L ${cx + R + 4} ${rimY - 6} A 7 7 0 0 0 ${cx + R - 2} ${rimY}`} fill="none" stroke="#8a8f99" strokeWidth={2.4} />
+
+      {/* The cone itself, tinted by the amplitude ramp */}
+      <Path d={cone} stroke="url(#spkg)" strokeWidth={3} fill="none" strokeLinejoin="round" />
+
+      {/* Motor: former, magnet and backplate hanging under the apex */}
+      <Rect x={cx - 11} y={rimY + depth + 2} width={22} height={18} fill="url(#mag)" stroke="#8a8f99" strokeWidth={1} />
+      <Rect x={cx - 26} y={rimY + depth + 20} width={52} height={20} rx={2} fill="url(#mag)" stroke="#8a8f99" />
+      <Rect x={cx - 32} y={rimY + depth + 40} width={64} height={8} rx={2} fill="url(#mag)" stroke="#8a8f99" />
+
+      {/* Grains, and the still ring they collect on */}
+      {grains.map((t) => {
+        const r = Math.abs(t);
+        const still = Math.abs(Math.sin(2 * Math.PI * r)) < 0.02;
+        const hop = still ? 0 : Math.abs(Math.sin(phase * 2)) * 7;
+        return <Circle key={t} cx={cx + t * R} cy={coneY(r) - 4 - hop} r={3} fill={still ? MIDLINE_BLUE : '#efe2b8'} stroke="#8a7a50" strokeWidth={0.6} />;
+      })}
+      <Line x1={cx - R} y1={rimY + depth * 0.5} x2={cx + R} y2={rimY + depth * 0.5} stroke="transparent" />
+    </Svg>
+  );
+}
+
+/** A bell, with its mouth flexing in the (2,0) mode — the lowest way a bell can ring. */
+function BellDemo({ w, h, running }: { w: number; h: number; running: boolean }) {
+  const phase = usePhase(running);
+  const cx = w / 2;
+  const topY = 22;
+  const mouthY = h - 40;
+  const halfMouth = Math.min(w * 0.26, 76);
+  const halfCrown = halfMouth * 0.3;
+  /** The (2,0) mode: one diameter grows while the one at right angles shrinks. */
+  const flex = Math.cos(phase) * 6;
+  const span = mouthY - topY;
+
+  /**
+   * Two cubics a side, not one: shoulder down to a WAIST, then the flare out to
+   * the mouth. A single curve gives a cone, and a cone is a lampshade.
+   */
+  const waistX = halfMouth * 0.5;
+  const waistY = topY + span * 0.62;
+  const body =
+    `M ${cx - halfCrown} ${topY} ` +
+    `C ${cx - halfCrown * 1.35} ${topY + span * 0.3}, ${cx - waistX * 0.92} ${topY + span * 0.4}, ${cx - waistX} ${waistY} ` +
+    `C ${cx - waistX * 1.1} ${topY + span * 0.82}, ${cx - halfMouth * 0.82} ${mouthY - 8}, ${cx - halfMouth - flex} ${mouthY} ` +
+    `L ${cx + halfMouth + flex} ${mouthY} ` +
+    `C ${cx + halfMouth * 0.82} ${mouthY - 8}, ${cx + waistX * 1.1} ${topY + span * 0.82}, ${cx + waistX} ${waistY} ` +
+    `C ${cx + waistX * 0.92} ${topY + span * 0.4}, ${cx + halfCrown * 1.35} ${topY + span * 0.3}, ${cx + halfCrown} ${topY} ` +
+    `Z`;
+
+  return (
+    <Svg width={w} height={h}>
+      <Defs>
+        <SvgGradient id="bellg" x1="0" y1="0" x2="1" y2="0" gradientUnits="objectBoundingBox">
+          <Stop offset="0%" stopColor="#8a6a2e" />
+          <Stop offset="38%" stopColor="#d9b268" />
+          <Stop offset="72%" stopColor="#9c7a38" />
+          <Stop offset="100%" stopColor="#5d4620" />
+        </SvgGradient>
+      </Defs>
+
+      {/* Headstock and canons */}
+      <Rect x={cx - 16} y={8} width={32} height={7} rx={3} fill="#4a4e57" stroke="#8a8f99" strokeWidth={1} />
+      <Path d={`M ${cx - 9} ${topY} L ${cx - 7} 15 M ${cx + 9} ${topY} L ${cx + 7} 15`} stroke="#8a8f99" strokeWidth={3} />
+
+      {/* The bell, flexing */}
+      <Path d={body} fill="url(#bellg)" stroke="#e6c887" strokeWidth={1.4} />
+      {/* The soundbow — the thick ring at the mouth a clapper strikes */}
+      <Path
+        d={`M ${cx - halfMouth - flex} ${mouthY} L ${cx + halfMouth + flex} ${mouthY}`}
+        stroke="#f3dca6"
+        strokeWidth={4}
+        strokeLinecap="round"
+      />
+      {/* The mouth seen in perspective: the ellipse that grows one way as it shrinks the other */}
+      <Path
+        d={`M ${cx - halfMouth - flex} ${mouthY} A ${halfMouth + flex} ${12 - flex * 0.6} 0 0 0 ${cx + halfMouth + flex} ${mouthY}`}
+        fill="none"
+        stroke="#c9ced8"
+        strokeWidth={1.6}
+      />
+
+      {/* Clapper */}
+      <Line x1={cx} y1={topY + 10} x2={cx} y2={mouthY - 14} stroke="#8a8f99" strokeWidth={2} />
+      <Circle cx={cx} cy={mouthY - 10} r={7} fill="#4a4e57" stroke="#8a8f99" strokeWidth={1.2} />
+
+      {/* The four nodal meridians: the places on the rim that stay still while the rest flexes */}
+      {[-0.7, -0.24, 0.24, 0.7].map((t) => (
+        <Circle key={t} cx={cx + t * halfMouth} cy={mouthY + 5 - Math.abs(t) * 3} r={3} fill={MIDLINE_BLUE} />
+      ))}
+    </Svg>
+  );
+}
+
 type SystemId = 'string' | 'pipe' | 'water' | 'speaker' | 'bells' | 'levitation';
-const SYSTEMS: { id: SystemId; title: string; short: string; vibrates: string; pattern: string; family: string; harmonic: boolean | null; label: string; link?: { label: string; go: (nav: NativeStackNavigationProp<RootStackParamList>) => void } }[] = [
+const SYSTEMS: {
+  id: SystemId;
+  title: string;
+  short: string;
+  vibrates: string;
+  pattern: string;
+  family: string;
+  harmonic: boolean | null;
+  label: string;
+  /** What the drawing on the stage is showing, for the MODE / NODES readouts. */
+  modeLabel?: string;
+  nodesLabel?: string;
+  link?: { label: string; go: (nav: NativeStackNavigationProp<RootStackParamList>) => void };
+}[] = [
   { id: 'string', title: 'A string', short: 'Strng', vibrates: 'the string itself, transversely, fixed at both ends', pattern: 'the standing wave: still points (nodes) and swinging loops (antinodes) along its length', family: 'harmonic series f, 2f, 3f… — this is why a string has a pitch', harmonic: true, label: 'CALCULATED — standing wave on the amplitude ramp' },
   { id: 'pipe', title: 'An air column', short: 'Pipe', vibrates: 'the air inside a pipe, longitudinally — pressure rising and falling', pattern: 'pressure nodes and antinodes along the pipe; a flame or cork dust along the tube shows them', family: 'harmonic (open pipe) or odd harmonics only (closed at one end)', harmonic: true, label: 'CALCULATED — pressure standing wave, open pipe' },
-  { id: 'water', title: 'A water surface', short: 'Water', vibrates: 'the free surface of a liquid, driven vertically', pattern: 'Faraday standing waves at HALF the drive frequency once a threshold is passed', family: 'container modes or a bulk lattice — the Liquid Studio', harmonic: false, label: 'CALCULATED / APPROXIMATED — in the Liquid Studio', link: { label: 'Open the Liquid Studio ›', go: (nav) => nav.navigate('CymaticsLiquidStudio', {}) } },
-  { id: 'speaker', title: 'A loudspeaker with particles on it', short: 'Spkr', vibrates: 'a stiff cone meant to move as one piston — and, above breakup, the cone flexing in modes', pattern: 'grains on a cone dance in the antinodes and gather where the cone is still; below breakup that is nowhere', family: 'piston, then bell-like radial modes — the Membrane & Loudspeaker Studio', harmonic: false, label: 'ILLUSTRATIVE / CALCULATED — in the Loudspeaker view', link: { label: 'Open the Loudspeaker ›', go: (nav) => nav.navigate('CymaticsMembraneStudio', { preset: 'speaker-breakup' }) } },
-  { id: 'bells', title: 'Bells, gongs and cymbals', short: 'Bells', vibrates: 'a curved shell — plate-like modes wrapped around a curve', pattern: 'nodal meridians and circles; a bell’s hum, prime, tierce, quint and nominal are its lowest modes', family: 'inharmonic, tuned by the founder toward near-harmonic partials — try the bell plate and the ring in the Plate Studio', harmonic: false, label: 'APPROXIMATED — bell plate and ring in the Plate Studio', link: { label: 'Open the Plate Studio ›', go: (nav) => nav.navigate('CymaticsPlateStudio', {}) } },
-  { id: 'levitation', title: 'Acoustic levitation', short: 'Levit', vibrates: 'the air between a transducer and a reflector, as a standing wave', pattern: 'small beads hang at the pressure nodes, a half-wavelength apart', family: 'a one-dimensional standing wave — the same nodes as the pipe', harmonic: null, label: 'ILLUSTRATIVE — a 40 kHz standing wave, beads at the nodes' },
+  { id: 'water', title: 'A water surface', short: 'Water', vibrates: 'the free surface of a liquid, driven vertically', pattern: 'Faraday standing waves at HALF the drive frequency once a threshold is passed', family: 'container modes or a bulk lattice — the Liquid Studio', harmonic: false, label: 'CALCULATED / APPROXIMATED — in the Liquid Studio', modeLabel: 'Faraday f/2', nodesLabel: '7', link: { label: 'Open the Liquid Studio ›', go: (nav) => nav.navigate('CymaticsLiquidStudio', {}) } },
+  { id: 'speaker', title: 'A loudspeaker with particles on it', short: 'Spkr', vibrates: 'a stiff cone meant to move as one piston — and, above breakup, the cone flexing in modes', pattern: 'grains on a cone dance in the antinodes and gather where the cone is still; below breakup that is nowhere', family: 'piston, then bell-like radial modes — the Membrane & Loudspeaker Studio', harmonic: false, label: 'ILLUSTRATIVE / CALCULATED — in the Loudspeaker view', modeLabel: 'breakup', nodesLabel: 'rim·mid·apex', link: { label: 'Open the Loudspeaker ›', go: (nav) => nav.navigate('CymaticsMembraneStudio', { preset: 'speaker-breakup' }) } },
+  { id: 'bells', title: 'Bells, gongs and cymbals', short: 'Bells', vibrates: 'a curved shell — plate-like modes wrapped around a curve', pattern: 'nodal meridians and circles; a bell’s hum, prime, tierce, quint and nominal are its lowest modes', family: 'inharmonic, tuned by the founder toward near-harmonic partials — try the bell plate and the ring in the Plate Studio', harmonic: false, label: 'APPROXIMATED — bell plate and ring in the Plate Studio', modeLabel: '(2,0) hum', nodesLabel: '4 meridians', link: { label: 'Open the Plate Studio ›', go: (nav) => nav.navigate('CymaticsPlateStudio', {}) } },
+  { id: 'levitation', title: 'Acoustic levitation', short: 'Levit', vibrates: 'the air between a transducer and a reflector, as a standing wave', pattern: 'small beads hang at the pressure nodes, a half-wavelength apart', family: 'a one-dimensional standing wave — the same nodes as the pipe', harmonic: null, label: 'ILLUSTRATIVE — a 40 kHz standing wave, beads at the nodes', modeLabel: '5 nodes', nodesLabel: '4 beads' },
 ];
 
 export function SystemsModule({ focused, help }: CymaticsModuleProps) {
@@ -214,8 +450,13 @@ export function SystemsModule({ focused, help }: CymaticsModuleProps) {
         initialParam: 'harmonic',
         bezel: [
           { k: 'SYSTEM', v: s.short.toUpperCase(), helpKey: 'systems' },
-          { k: 'MODE', v: hasHarmonic ? (n === 1 ? 'fund.' : `${n}f`) : sys === 'levitation' ? '5 nodes' : '—', helpKey: 'systems' },
-          { k: 'NODES', v: hasHarmonic ? `${n + 1}` : sys === 'levitation' ? '4 beads' : '—', helpKey: 'systems' },
+          // ── NO MORE EM-DASHES (2026-09-18, design review #6) ────────────────
+          // These two cells read "—" for the three systems that now have a
+          // drawing on the stage. A live picture beside two blank readouts
+          // looks like the readouts are broken; each drawing states the mode
+          // it is actually showing.
+          { k: 'MODE', v: hasHarmonic ? (n === 1 ? 'fund.' : `${n}f`) : (s.modeLabel ?? '—'), helpKey: 'systems' },
+          { k: 'NODES', v: hasHarmonic ? `${n + 1}` : (s.nodesLabel ?? '—'), helpKey: 'systems' },
           { k: 'FAMILY', v: s.harmonic === null ? '1-D wave' : s.harmonic ? 'HARMONIC' : 'INHARM.', tint: s.harmonic === null ? undefined : s.harmonic ? '#37e05f' : '#ff6b5e', helpKey: 'harmonics', flex: 1.2 },
         ],
         stage: (w, h) =>
@@ -226,10 +467,25 @@ export function SystemsModule({ focused, help }: CymaticsModuleProps) {
           ) : sys === 'levitation' ? (
             <LevitationDemo w={w} h={h} running={focused} />
           ) : (
-            <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center', padding: 16, gap: 10 }}>
-              <Text style={[P.body, { textAlign: 'center' }]}>{sys === 'water' ? 'The full simulation lives in the Liquid Studio.' : sys === 'speaker' ? 'The full simulation lives in the Membrane & Loudspeaker Studio.' : 'Bell-like shapes live in the Plate Studio: BELL PLATE and RING · CLAMPED HUB.'}</Text>
+            // The drawing takes the stage; the pointer to the full studio sits
+            // under it rather than in place of it.
+            <View style={{ width: w, height: h }}>
+              <View style={{ flex: 1 }}>
+                {sys === 'water' ? (
+                  <WaterDemo w={w} h={h - 34} running={focused} />
+                ) : sys === 'speaker' ? (
+                  <SpeakerDemo w={w} h={h - 34} running={focused} />
+                ) : (
+                  <BellDemo w={w} h={h - 34} running={focused} />
+                )}
+              </View>
               {s.link ? (
-                <Pressable onPress={() => s.link!.go(navigation)} style={styles.go} accessibilityRole="button" accessibilityLabel={s.link.label}>
+                <Pressable
+                  onPress={() => s.link!.go(navigation)}
+                  style={[styles.go, styles.goStage]}
+                  accessibilityRole="button"
+                  accessibilityLabel={s.link.label}
+                >
                   <Text style={styles.goText}>{s.link.label.toUpperCase()}</Text>
                 </Pressable>
               ) : null}
@@ -263,5 +519,7 @@ export function SystemsModule({ focused, help }: CymaticsModuleProps) {
 
 const styles = StyleSheet.create({
   go: { borderRadius: 9, borderWidth: 1.5, borderColor: 'rgba(255,198,77,.7)', backgroundColor: 'rgba(255,198,77,.10)', paddingHorizontal: 14, paddingVertical: 9 },
+  /** On the stage the link is a footer under the drawing, not a centred button. */
+  goStage: { alignSelf: 'center', paddingVertical: 6, marginBottom: 4 },
   goText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.1, color: colors.amber },
 });

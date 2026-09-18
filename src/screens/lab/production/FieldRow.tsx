@@ -102,7 +102,12 @@ export function FieldRow({
             </Pressable>
           </View>
         ) : (
-          <Pressable onPress={() => setNaOpen(true)} hitSlop={6} accessibilityRole="button">
+          <Pressable
+            onPress={() => setNaOpen(true)}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={`Mark "${field.label}" not applicable to this project`}
+          >
             <Text style={styles.naLink}>Not applicable to this project</Text>
           </Pressable>
         )
@@ -614,7 +619,26 @@ const styles = StyleSheet.create({
   },
   naText: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, fontStyle: 'italic' },
   naUndo: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8, color: colors.amber },
-  naLink: { fontFamily: fonts.barlowRegular, fontSize: 12, color: colors.textMuted, marginTop: 7 },
+  /**
+   * ── A TAP TARGET HAS TO LOOK LIKE ONE (2026-09-18, browser pass) ───────────
+   *
+   * This was plain muted text with no underline and no border, sitting under
+   * EVERY field — twenty of them on stage 1 alone. It reads as a caption
+   * stating a fact about the field ("not applicable to this project"), not as
+   * something you press to declare that. The blockers in ReadinessMeter are
+   * underlined for exactly this reason; this is the same control in the same
+   * feature and was not.
+   *
+   * It was also about 34pt tall including hitSlop, under the 44pt minimum.
+   */
+  naLink: {
+    fontFamily: fonts.barlowRegular,
+    fontSize: 12,
+    color: colors.textMuted,
+    marginTop: 7,
+    textDecorationLine: 'underline',
+    paddingVertical: 8,
+  },
   naEdit: { flexDirection: 'row', gap: 8, alignItems: 'center', marginTop: 8 },
   naInput: { flex: 1 },
   naSave: {
