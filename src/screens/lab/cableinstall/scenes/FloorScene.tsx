@@ -649,7 +649,7 @@ function DimRow({ dim, v, shown, tint }: { dim: (typeof CI_DIMS)[number]; v: num
   }, [v, m.reduce]);
   const fill = useAnimatedStyle(() => ({ width: `${Math.max(0, Math.min(100, v * t.value))}%` }));
   return (
-    <View accessible style={s.miniRow} accessibilityLabel={`${CI_DIM_META[dim].label}: ${v} out of 100`}>
+    <View style={s.miniRow} accessibilityLabel={`${CI_DIM_META[dim].label}: ${v} out of 100`}>
       <Text style={s.miniLabel} numberOfLines={1}>{CI_DIM_META[dim].label}</Text>
       <View style={s.miniTrack}>
         <Animated.View style={[s.miniFill, { backgroundColor: tint }, fill]} />
@@ -1175,7 +1175,7 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
         <CoilArt w={artW} signs={signs} done={coilDone} />
         {!coilDone && !coilFullWrong ? <Text style={s.coach}>{CI_OVERUNDER_STEPS[stepIdx]}</Text> : null}
         <Text style={s.loopCount} accessibilityLiveRegion="polite">{`LOOP ${signs.length} / 6`}</Text>
-        <View accessible
+        <View
           style={s.twistRow}
           accessibilityLabel={`Twist stored in the cable: ${twistInfo.label}`}
           accessibilityLiveRegion="polite"

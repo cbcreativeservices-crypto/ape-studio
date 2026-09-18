@@ -652,7 +652,7 @@ export function EmiScene({ width, completed, onComplete, openSources }: CiModule
           The glow marks a conceptual coupling-risk region — not measured values, and no universal separation distance
           exists. Training colors — field cable colors vary.
         </Text>
-        <View accessible style={s.exposureRow} accessibilityLiveRegion="polite" accessibilityLabel={`Exposure ${band.word}. ${src.label}, ${balanced ? 'balanced' : 'unbalanced'}, ${distWord(dist)} spacing.`}>
+        <View style={s.exposureRow} accessibilityLiveRegion="polite" accessibilityLabel={`Exposure ${band.word}. ${src.label}, ${balanced ? 'balanced' : 'unbalanced'}, ${distWord(dist)} spacing.`}>
           <Text style={s.exposureLabel}>EXPOSURE</Text>
           <BandWord key={band.word} word={band.word} tint={band.tint} />
           <Text style={s.exposureCtx} numberOfLines={1}>

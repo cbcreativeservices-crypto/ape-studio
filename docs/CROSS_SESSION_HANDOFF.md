@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 15:12 · ccode · 95f33cf4
+changed: a11y pass 5: W6 matching pairs, W14 two-sided boards, W15 the SPL slider
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-18 15:05 · ccode · 92f112bd
 changed: a11y pass 5: W1 sheets, W4 Scenarios, W5 Final Exam, W7, W12 flashcards
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">

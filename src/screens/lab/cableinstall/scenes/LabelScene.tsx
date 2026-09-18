@@ -350,8 +350,19 @@ function DocTable({ highlight }: { highlight: string }) {
                 accessibilityLabel={`${r.cableId}: ${r.source} to ${r.destination}, ${r.type}, pathway ${r.pathway}${r.note ? `, note: ${r.note}` : ''}${hot ? '. The traced cable.' : ''}`}
               >
                 {hot ? <HotFill delay={CI_CABLE_SCHEDULE.length * CI_MOTION.stepDelay + 140} /> : null}
+                {/* The row above is `accessible`, so it reads as ONE sentence
+                    instead of six bare cells — reading the cable schedule IS
+                    this exercise. RN <Text> is accessible by default, though,
+                    so on Android the container and every cell would both take
+                    focus and the row would be announced twice. Opting the cells
+                    out is the other half of that fix (2026-09-18, pass 5). */}
                 {DOC_COLS.map((c) => (
-                  <Text key={c.key} style={[styles.docCell, { width: c.w }, hot && c.key === 'cableId' && { color: colors.amber }]}>
+                  <Text
+                    key={c.key}
+                    accessible={false}
+                    importantForAccessibility="no-hide-descendants"
+                    style={[styles.docCell, { width: c.w }, hot && c.key === 'cableId' && { color: colors.amber }]}
+                  >
                     {r[c.key] ?? '—'}
                   </Text>
                 ))}

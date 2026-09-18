@@ -532,7 +532,7 @@ function MasteryProfile({ dims }: { dims: CiDimScores }) {
           const blocks = masteryBlocks(v);
           return (
             <Stagger key={d} index={ri} from={8}>
-              <View accessible style={styles.dimRow} accessibilityLabel={`${CI_DIM_META[d].label}: ${v} out of 100`}>
+              <View style={styles.dimRow} accessibilityLabel={`${CI_DIM_META[d].label}: ${v} out of 100`}>
                 <Text style={styles.dimLabel}>{CI_DIM_META[d].label}</Text>
                 <View style={styles.dimBlocks}>
                   {[0, 1, 2, 3, 4].map((i) => (
