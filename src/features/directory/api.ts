@@ -345,9 +345,35 @@ export type PublicCredential = {
   verifyToken: string | null;
 };
 
+/**
+ * Why the credentials come back as a THREE-state value (2026-09-18).
+ *
+ * `c.error` used to be dropped on the floor: a failed credentials RPC left
+ * `c.data` null, `?? []` turned that into an empty array, and the screen —
+ * which gates the VERIFIED CREDENTIALS block on `credentials.length` — simply
+ * omitted the section.
+ *
+ * So a member who shares their directory link was presented to a prospective
+ * employer as holding NO CREDENTIALS AT ALL. Stated as fact, with no error, no
+ * retry, and no way for either party to tell it was a failure. On the one
+ * screen whose entire purpose is to vouch for what somebody has earned.
+ *
+ * And the likely trigger is not a blip. It is the failure this project has
+ * already been bitten by once: a public-catalog RPC with an RLS policy but no
+ * GRANT returns zero rows rather than an error, so EVERY profile would show
+ * zero credentials, permanently, and the credentials directory would quietly
+ * stop being one.
+ *
+ * 'unavailable' is therefore not the same as an empty list, and the screen must
+ * not render one as the other.
+ */
+export type PublicCredentialsResult =
+  | { state: 'ok'; items: PublicCredential[] }
+  | { state: 'unavailable' };
+
 export async function fetchPublicProfile(
   token: string,
-): Promise<{ profile: PublicProfile; credentials: PublicCredential[] } | null> {
+): Promise<{ profile: PublicProfile; credentials: PublicCredential[]; credentialsState: 'ok' | 'unavailable' } | null> {
   try {
     const [p, c] = await Promise.all([
       supabase.rpc('community_profile_public', { p_token: token }),
@@ -372,6 +398,9 @@ export async function fetchPublicProfile(
         languages: arr(r.languages),
         contactEnabled: !!r.contact_enabled,
       },
+      // An empty list means "this member has earned nothing yet". A failed read
+      // means "we do not know". Only the first may be shown as a fact.
+      credentialsState: c.error ? 'unavailable' : 'ok',
       credentials: ((c.data ?? []) as Record<string, unknown>[]).map((x) => ({
         credentialType: (x.credential_type as string) ?? 'certificate',
         credentialName: (x.credential_name as string) ?? 'Credential',

@@ -106,7 +106,11 @@ function MemberSheet({
   /** [77]: tell the host a token was blocked so Explore drops it right away. */
   onBlocked?: (token: string) => void;
 }) {
-  const [data, setData] = useState<{ profile: PublicProfile; credentials: PublicCredential[] } | null>(null);
+  const [data, setData] = useState<{
+    profile: PublicProfile;
+    credentials: PublicCredential[];
+    credentialsState: 'ok' | 'unavailable';
+  } | null>(null);
   const [busy, setBusy] = useState(false);
   // M19 (2026-09-07): distinguish "loaded but null" (not-found / error) from
   // "still loading" — fetchPublicProfile resolves null on both, so the old
@@ -190,7 +194,22 @@ function MemberSheet({
                   .join('  ·  ')}
               </Text>
 
-              {data.credentials.length ? (
+              {/* ── "WE DO NOT KNOW" IS NOT "NONE" (2026-09-18) ──────────────
+                  This block used to be gated on `credentials.length` alone, so
+                  a FAILED credentials read rendered identically to a member who
+                  has earned nothing — and this page is what somebody sends a
+                  prospective employer. Saying nothing, in a section headed
+                  VERIFIED CREDENTIALS, reads as a statement that there are
+                  none. */}
+              {data.credentialsState === 'unavailable' ? (
+                <>
+                  <Text style={st.credHead}>VERIFIED CREDENTIALS</Text>
+                  <Text style={st.cred}>
+                    Couldn’t load this member’s credentials just now. This is not a statement that
+                    they hold none — please try again shortly.
+                  </Text>
+                </>
+              ) : data.credentials.length ? (
                 <>
                   <Text style={st.credHead}>VERIFIED CREDENTIALS</Text>
                   {data.credentials.map((c, i) => (

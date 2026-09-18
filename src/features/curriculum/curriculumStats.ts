@@ -75,8 +75,40 @@ export function useCurriculumStats(gsList: number[]): CurriculumStats {
         );
         const ids = [...gsById.keys()];
 
+        // ── ONE REQUEST, NOT TWENTY-SEVEN (2026-09-18) ────────────────────
+        //
+        // This used to PAGE THE ENTIRE glossary→topic join table, a thousand
+        // rows at a time, in a SERIAL loop — 26,855+ rows means ~27 HTTP round
+        // trips awaited one after another, ~37 KB each, 5–10 seconds of
+        // continuous network on 4G. It started the instant Explore mounted,
+        // competing with the curriculum fetch, the certificate fetch and the
+        // topic tile images.
+        //
+        // All of it to fill ONE LINE — "{n} topics · {terms} terms" — inside a
+        // SUBJECTS accordion that is collapsed when the screen opens.
+        //
+        // `topic_term_counts` does the grouping in Postgres and returns one
+        // small row per topic. The paged walk is kept as a fallback so a client
+        // reaching a server without the function still shows real numbers
+        // rather than blanks.
         const termsByGs = new Map<number, number>();
+        let counted = false;
         if (ids.length) {
+          const agg = await supabase.rpc('topic_term_counts', { p_ids: ids });
+          if (!agg.error && Array.isArray(agg.data)) {
+            for (const r of agg.data as { achievement_id: string; n: number }[]) {
+              if (typeof r?.n !== 'number' || !Number.isFinite(r.n)) {
+                counted = false;
+                termsByGs.clear();
+                break;
+              }
+              const gs = gsById.get(r.achievement_id);
+              if (gs != null) termsByGs.set(gs, r.n);
+              counted = true;
+            }
+          }
+        }
+        if (ids.length && !counted) {
           for (let from = 0; ; from += PAGE) {
             const { data, error } = await supabase
               .from('glossary_topics')

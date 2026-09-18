@@ -26,6 +26,26 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 · ccode · 413710a6 + follow-ups
+changed: Production parsers, dead exam buttons, reduce-animations, directory credentials,
+  and the two big read paths
+affects other side: ONE NEW RPC, applied to production.
+  · `public.topic_term_counts(p_ids uuid[]) returns table(achievement_id uuid, n integer)` —
+    SECURITY INVOKER (deliberately: the client already reads glossary_topics directly, so
+    the caller's own RLS is the right visibility and a definer would be a new way to probe
+    the mapping table). Granted to `authenticated` only, revoked from PUBLIC.
+  · It replaces two client-side row-counting loops: the Dashboard downloaded 100 KB–1.5 MB
+    of uuids on EVERY Study-tab focus and after every study write, and Explore PAGED THE
+    WHOLE join table — ~27 serial round trips, 5–10 s on 4G — to fill one line inside a
+    collapsed accordion. Verified equal to the row counts on real ids before switching.
+  · Both callers KEEP the old row-download as a fallback, so a client reaching a server
+    without the function still shows real numbers rather than 0%.
+  · ⚠️ If you ever drop or rename it, the app degrades quietly to the slow path rather than
+    breaking — which is intended, but means nothing will alert you.
+  · No schema changes. app_flags.certificate_requires_exam is still false.
+needs: nothing
+
+
 ### 2026-09-18 · ccode · DEPLOYED (no commit — server state only)
 changed: validate-purchase v4 and tube-image v5 are now LIVE
 affects other side: YES — the tree and production now agree for these two, which they

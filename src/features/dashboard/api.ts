@@ -136,12 +136,48 @@ async function resolveItemCounts(
 
   // Direct counts (glossary_topics is a unique (achievement_id, glossary_id)
   // mapping, so row count == distinct term count for a single achievement_id).
-  const { data: direct } = await supabase
-    .from('glossary_topics')
-    .select('achievement_id')
-    .in('achievement_id', topicIds);
-  for (const r of (direct ?? []) as { achievement_id: string }[]) {
-    counts.set(r.achievement_id, (counts.get(r.achievement_id) ?? 0) + 1);
+  //
+  // ── COUNT ON THE SERVER, NOT BY DOWNLOADING THE ROWS (2026-09-18) ─────────
+  //
+  // This used to fetch EVERY mapping row for every enrolled topic and count
+  // them in a loop — 100 KB to 1.5 MB of uuids whose only purpose was to be
+  // tallied. It runs on every focus of the Study tab AND after every study
+  // write, so a member on mobile data paid for it repeatedly, for a handful of
+  // integers.
+  //
+  // `topic_term_counts(p_ids)` does the grouping in Postgres and answers with
+  // one small row per topic. (PostgREST's native aggregates would also work but
+  // `db-aggregates-enabled` is not set on this project — checked 2026-09-18 —
+  // so a function it is.)
+  //
+  // The old row-download is KEPT as a fallback: this RPC is new, and a client
+  // that reaches a server without it must still draw a correct dashboard rather
+  // than a silent 0%. That fallback is the previous behaviour exactly, so this
+  // can never be worse than before.
+  let counted = false;
+  const agg = await supabase.rpc('topic_term_counts', { p_ids: topicIds });
+  if (!agg.error && Array.isArray(agg.data)) {
+    for (const r of agg.data as { achievement_id: string; n: number }[]) {
+      // Guard the shape. Silently recording a NaN here would zero a denominator
+      // and freeze the whole dashboard at 0% — the exact failure the sibling
+      // name-union below exists to prevent.
+      if (typeof r?.n !== 'number' || !Number.isFinite(r.n)) {
+        counted = false;
+        counts.clear();
+        break;
+      }
+      counts.set(r.achievement_id, r.n);
+      counted = true;
+    }
+  }
+  if (!counted) {
+    const { data: direct } = await supabase
+      .from('glossary_topics')
+      .select('achievement_id')
+      .in('achievement_id', topicIds);
+    for (const r of (direct ?? []) as { achievement_id: string }[]) {
+      counts.set(r.achievement_id, (counts.get(r.achievement_id) ?? 0) + 1);
+    }
   }
 
   // Topics with zero direct terms → resolve siblings by name and union, deduping
