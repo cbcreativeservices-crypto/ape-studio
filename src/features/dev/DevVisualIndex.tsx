@@ -52,7 +52,7 @@ const MOCK_INTRO: LearningIntro = {
 // which auto-opens the popup (see devPreview.ts).
 const INLINE_POPUPS: ScreenEntry[] = [
   {
-    label: 'Awards · Specialized Certificate picker',
+    label: 'Awards · Specialization Certificate picker',
     go: (n) => {
       requestDevPreview('awards:specPicker');
       n.navigate('Awards', { category: 'specialization' });

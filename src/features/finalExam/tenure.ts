@@ -16,15 +16,15 @@
  *   • If they close their membership before the month ends, the exam is wiped:
  *     not graded, not applied. That has to be said BEFORE they sit it, not after.
  *
- * ── WHY THIS RETURNS 'unknown' TODAY ─────────────────────────────────────────
+ * ── WHY 'unknown' IS A FIRST-CLASS ANSWER ────────────────────────────────────
  *
- * The rule cannot be evaluated yet. `entitlements` has no `member_since` and no
- * `refunded_at` column — `supabase/migrations/2026091801_paid_month_before_credential.sql`
- * adds them and has never been applied (verified against production
- * 2026-09-18) — so `member_month_complete` does not exist to be called.
+ * The server can answer this now: `member_since` and `refunded_at` landed with
+ * `2026091801_paid_month_before_credential.sql`, applied to production
+ * 2026-09-18, and `member_month_complete(p_uid uuid)` went with it.
  *
- * That is a real state and it is neither 'yes' nor 'no', so it is its own value.
- * Guessing either way is worse than admitting it:
+ * 'unknown' remains, because a read can still fail — an offline start, a
+ * timeout, a denial, a future schema change. It is neither 'yes' nor 'no', so
+ * it stays its own value. Guessing either way is worse than admitting it:
  *
  *   • Guess 'incomplete' and a member of two years is told their results will be
  *     held. That is alarming, wrong, and generates a support email.
@@ -81,7 +81,9 @@ export async function readTenureState(): Promise<TenureState> {
     if (error) {
       const fault = classifyGatewayError(error);
       if (fault === 'not-deployed') {
-        // Expected until the migration lands. Not worth a warning every time.
+        // The function IS deployed (2026-09-18), so this now means the gateway
+        // could not reach it rather than "not built yet". Still 'unknown', and
+        // still not worth a warning on every offline exam start.
         return 'unknown';
       }
       console.warn('[tenure] could not read member_month_complete:', error.message);

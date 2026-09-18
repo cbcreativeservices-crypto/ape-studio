@@ -126,10 +126,14 @@ export function isReleased(r: ExamResult): boolean {
 /** Every exception start_final_exam can raise (read from the live body). */
 export type ExamStartError =
   | 'academy_required'
-  /** One complete month of PAID membership, unbroken, before a credential is
-   *  granted (owner 2026-07-22, restated 2026-09-17). Raised by
-   *  start_final_exam after the academy check. */
-  | 'paid_tenure_required'
+  /** A previous paper is graded and WITHHELD pending the one-month rule, so a
+   *  new sitting is refused. Added with the tenure rule, 2026-09-18.
+   *
+   *  Without this the hold became an unlimited-retry window: a held attempt
+   *  sets no lockout, so start_final_exam would happily serve another paper,
+   *  and another — while the member who waited out their month gets exactly one
+   *  before 'already_earned' closes it. */
+  | 'result_held'
   | 'already_earned'
   | 'award_content_incomplete'
   | 'award_incomplete'
@@ -143,11 +147,17 @@ export type ExamStartError =
 
 export const EXAM_START_ERROR_COPY: Record<ExamStartError, string> = {
   academy_required: 'Academy membership is required to take a Final Exam.',
-  // States the rule and what to do about it. It deliberately does NOT promise a
-  // date: the eligibility date is the server's to compute, and a client that
-  // guessed it would be wrong for anyone whose membership lapsed and restarted.
-  paid_tenure_required:
-    'A Final Exam opens after one complete month of paid membership. Your study progress is saved — come back when the month is up.',
+  // Reassurance first: nothing is wrong and nothing is required of them. The
+  // old copy here said a Final Exam "opens after one complete month", which the
+  // owner's 2026-09-18 ruling reversed — they may SIT it whenever they qualify;
+  // it is the RESULT that waits. Saying otherwise would contradict the briefing
+  // they read on the way in.
+  //
+  // No date is promised: the release date is the server's to compute, and a
+  // client that guessed would be wrong for anyone whose membership lapsed and
+  // restarted.
+  result_held:
+    'Your Final Exam has been marked and is being held until your first month of membership completes. There is nothing more to do — you do not need to sit it again.',
   already_earned: 'You have already earned this credential.',
   award_content_incomplete: 'This award is not open for examination yet — its topics are still being published.',
   award_incomplete: 'Complete every required topic and the Audio Fundamentals labs before taking the Final Exam.',
@@ -162,7 +172,7 @@ export const EXAM_START_ERROR_COPY: Record<ExamStartError, string> = {
 
 const KNOWN_ERRORS: ExamStartError[] = [
   'academy_required',
-  'paid_tenure_required',
+  'result_held',
   'already_earned',
   'award_content_incomplete',
   'award_incomplete',

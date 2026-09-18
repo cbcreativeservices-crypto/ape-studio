@@ -50,7 +50,7 @@ export type AwardTier = {
   /** Long-form policy section rendered at the bottom of the tier. */
   policy?: AwardPolicy;
   /** Interactive builder shown in this tier (user request 2026-07-18):
-   *  'specializations' = pick 1 of the 68 Specialized Certificates;
+   *  'specializations' = pick 1 of the 68 Specialization Certificates;
    *  'programs' = pick 1 of the 15 Academy Program Certificates. */
   builder?: 'specializations' | 'programs';
 };
@@ -91,7 +91,7 @@ const SPECIALIZATION: AwardPage = {
       title: 'Academy Specialization Certificate',
       corequisite: ['Pro Audio Safety', 'Grounding & Electrical', 'Workplace Skills'],
       requirements: ['Complete the 3 specialization topics', 'Audio Fundamentals'],
-      // Catalog of the 68 predefined Specialized Certificates (choose one).
+      // Catalog of the 68 predefined Specialization Certificates (choose one).
       builder: 'specializations',
     },
   ],
@@ -265,7 +265,7 @@ export const PROGRAM_PATHS: ProgramPath[] = [
 ];
 
 /**
- * Specialized Certificates — the 68 three-topic certificates (CCODE handoff
+ * Specialization Certificates — the 68 three-topic certificates (CCODE handoff
  * 2026-07-18; Architectural Audio added 2026-07-22). Each = the shared core
  * requisites (COREQ_TOPIC_GS, plus the
  * Foundations lab, surfaced separately) + exactly 3 specialization topics that

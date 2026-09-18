@@ -37,7 +37,7 @@ function artSize(w: number, h: number): number {
 
 /** Eyebrow shown over the title in the viewer / detail popup. */
 export function credentialEyebrow(kind: 'certificate' | 'program' | undefined): string | null {
-  return kind === 'certificate' ? 'SPECIALIZED CERTIFICATE' : kind === 'program' ? 'PROGRAM CERTIFICATE' : null;
+  return kind === 'certificate' ? 'SPECIALIZATION CERTIFICATE' : kind === 'program' ? 'PROGRAM CERTIFICATE' : null;
 }
 
 export function CredentialThumb({
@@ -51,7 +51,7 @@ export function CredentialThumb({
   title: string;
   accent: string;
   size?: number;
-  /** Optional eyebrow over the title in the viewer ("SPECIALIZED CERTIFICATE"
+  /** Optional eyebrow over the title in the viewer ("SPECIALIZATION CERTIFICATE"
    *  / "PROGRAM CERTIFICATE"). Omit for no eyebrow. */
   kind?: 'certificate' | 'program';
 }) {

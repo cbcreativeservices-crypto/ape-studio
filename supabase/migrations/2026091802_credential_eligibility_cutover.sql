@@ -2,6 +2,15 @@
 -- APE STUDIO · STAGE 2 — who awards a certificate, and when.
 -- 2026-09-18 · Run AFTER Stage 0 and Stage 1 have committed and verified.
 --
+-- ✅ APPLIED TO PRODUCTION 2026-09-18, in four named migrations:
+--      stage2_evaluate_user_credentials_flagged
+--      stage2_submit_final_exam_tenure_hold
+--      stage2_release_and_discard_held_credentials
+--      stage2_start_final_exam_blocks_held_paper
+--    Verified after: flag=false, awards=0, eligibility=0, held=0 — unchanged.
+--    The flag was NOT flipped. Section 5 (the held-paper guard) was written
+--    after the rest, when the review below turned it up; it is in production.
+--
 -- ⚠️ RUNNING THIS FILE STILL CHANGES NOTHING.
 --
 -- Every behavioural branch below is gated on `app_flags.certificate_requires_exam`,
@@ -306,6 +315,25 @@ set search_path = public
 as $$
 DECLARE v_user uuid; v_released integer := 0; r record; v_payload jsonb;
 BEGIN
+  -- A CLIENT MAY ONLY RELEASE ITS OWN (added 2026-09-18, before first apply).
+  --
+  -- The parameter exists for the SERVER callers — validate-purchase after it
+  -- writes member_since, and the daily cron — which run with no auth context.
+  -- But the function is granted to `authenticated`, so without this a signed-in
+  -- user could pass any auth id they could obtain and act on that person's
+  -- held papers.
+  --
+  -- It cannot award anything undeserved (member_month_complete still gates it),
+  -- so this is not an escalation. It is still somebody else's record, and a
+  -- function that touches it on request from a stranger is not one I want in
+  -- front of a credential.
+  --
+  -- auth.uid() IS NULL means service-role/definer context: the server callers,
+  -- which are allowed to name anyone.
+  IF auth.uid() IS NOT NULL AND p_uid IS DISTINCT FROM auth.uid() THEN
+    RAISE EXCEPTION 'not_owner';
+  END IF;
+
   SELECT id INTO v_user FROM users WHERE auth_id = p_uid;
   IF v_user IS NULL THEN RETURN 0; END IF;
 
@@ -396,6 +424,88 @@ $$;
 
 revoke all on function public.discard_unreleased_credentials(uuid) from public;
 -- Server-side only: no client may discard anybody's work.
+
+
+-- ─────────────────────────────────────────────────────────────────────────
+-- 5 · start_final_exam — a HELD paper blocks a new sitting
+--
+-- ⛔ THIS IS THE ONE THAT WOULD HAVE BROKEN THE POLICY. Found before first
+--    apply, 2026-09-18.
+--
+-- The live start_final_exam refuses four things: an attempt already
+-- in_progress, a credential already earned, an incomplete award, and an active
+-- lockout. It does NOT look at attempt_status='held', because until this
+-- migration no such status existed.
+--
+-- So with the flag ON and nothing else changed:
+--
+--   sit the exam inside your first month
+--     -> outcome 'held', no award, and lockout_until is NULL
+--     -> start_final_exam is perfectly happy to start another one
+--     -> and another, and another
+--
+-- The month-long hold would become an unlimited-retry window. Someone could
+-- sit it thirty times before their month completed, and at release
+-- release_pending_credentials loops over EVERY held attempt and awards on the
+-- first pass it finds. Meanwhile the member who waited out the month gets one
+-- sitting before 'already_earned' shuts the door.
+--
+-- That inverts the rule: the fast user is rewarded for being early with
+-- unlimited attempts, and the patient one is penalised. Against D3's whole
+-- point — "Employers must trust our grads that they earned it". A credential
+-- earned on the twenty-ninth try is not the same credential.
+--
+-- ── HOW THIS IS EDITED, AND WHY NOT BY RETYPING ────────────────────────────
+--
+-- start_final_exam is ~60 lines of question-selection SQL that must not be
+-- perturbed by a single character. So this does NOT retype it. It reads the
+-- deployed definition with pg_get_functiondef, splices ONE guard in at a named
+-- anchor, and executes the result. Everything else is preserved byte-for-byte
+-- by construction rather than by my care.
+--
+-- It asserts the anchor matched, and it is idempotent: re-running is a no-op
+-- once the guard is present.
+--
+-- NOT flag-gated, deliberately. The guard can only ever fire when a 'held' row
+-- exists, and 'held' can only be written by the flagged branch — so with the
+-- flag off it is unreachable. It also stays correct after a rollback: held
+-- papers survive a rollback (by design), and they should still block.
+-- ─────────────────────────────────────────────────────────────────────────
+do $outer$
+declare
+  v_def  text;
+  v_anchor text := '  IF NOT public.award_complete(v_user,p_award_type,p_award_id) THEN RAISE EXCEPTION ''award_incomplete''; END IF;';
+  v_guard text :=
+'  -- A HELD PAPER BLOCKS A NEW SITTING (2026-09-18).
+  -- Their paper is marked and waiting on the calendar, not on them. Letting
+  -- them sit again would turn the hold into unlimited retries.
+  IF EXISTS(SELECT 1 FROM final_exam_attempts WHERE user_id=v_user AND award_type=p_award_type
+             AND award_id=p_award_id AND attempt_status=''held'') THEN RAISE EXCEPTION ''result_held''; END IF;
+';
+begin
+  select pg_get_functiondef(p.oid) into v_def
+    from pg_proc p
+   where p.pronamespace = 'public'::regnamespace
+     and p.proname = 'start_final_exam';
+
+  if v_def is null then
+    raise exception 'start_final_exam not found — Stage 2 expects it to exist';
+  end if;
+
+  if position('result_held' in v_def) > 0 then
+    raise notice 'start_final_exam already carries the held guard — nothing to do';
+    return;
+  end if;
+
+  -- Exactly one anchor, or we do not touch it.
+  if (length(v_def) - length(replace(v_def, v_anchor, ''))) / length(v_anchor) <> 1 then
+    raise exception 'expected the award_incomplete line exactly once in start_final_exam; refusing to edit blindly';
+  end if;
+
+  execute replace(v_def, v_anchor, v_guard || v_anchor);
+  raise notice 'start_final_exam now refuses to start over a held paper';
+end
+$outer$;
 
 
 -- ============================================================================

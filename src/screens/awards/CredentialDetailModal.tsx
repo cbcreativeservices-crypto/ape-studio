@@ -9,7 +9,7 @@
  *      card surface. The art is a HEAD, not a button: this popup already is
  *      the expanded view, so it opens no second full-screen viewer (owner
  *      2026-09-15 — the tap-to-open + corner tick were removed as redundant).
- *   2. Identity block, left-aligned: eyebrow (SPECIALIZED CERTIFICATE in amber /
+ *   2. Identity block, left-aligned: eyebrow (SPECIALIZATION CERTIFICATE in amber /
  *      PROGRAM CERTIFICATE in purple) › credential title. The accent colour is
  *      the ONLY thing that says cert-vs-program at this level; no glyphs.
  *   3. Info readout: mono green number + stacked label in an inset panel — the

@@ -1,0 +1,30 @@
+-- ============================================================================
+-- APE STUDIO · 2026-09-18 · applied to production
+--
+-- ⚠️ THIS MIGRATION DID NOT DO WHAT IT SAYS. It is recorded here because it IS
+--    in production's migration history and the repo has to match — not because
+--    it accomplished anything. The real fix is the one below it.
+-- ============================================================================
+--
+-- Postgres grants EXECUTE on every new function to PUBLIC by default, and
+-- `anon` is a member of PUBLIC. So `anon` held EXECUTE through PUBLIC, not
+-- through any grant of its own, and revoking from `anon` removed a grant that
+-- was never there.
+--
+-- Verified after applying:
+--   has_function_privilege('anon', 'member_month_complete(uuid)', 'EXECUTE')
+--     → still true
+--
+-- The ACL showed why:
+--   {=X/postgres, postgres=X/postgres, authenticated=X/postgres}
+--    ^^ empty grantee = PUBLIC
+--
+-- Compare a function that IS locked down correctly:
+--   start_final_exam  {postgres=X/postgres, authenticated=X/postgres}
+--
+-- The working revoke is in SQL_REVOKE_public_execute.sql (delivered to the
+-- owner 2026-09-18; blocked from being applied from here). It takes the grant
+-- off PUBLIC and re-states the `authenticated` grant explicitly, and it does
+-- the same for refresh_academy_stats, which has the same default-grant hole
+-- and matters considerably more.
+revoke execute on function public.member_month_complete(uuid) from anon;

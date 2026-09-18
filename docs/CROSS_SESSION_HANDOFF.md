@@ -26,6 +26,21 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 09:27 · ccode · 88f2bcc1
+changed: correct the credential diagnosis: the auto-award gate is keyed to a dead curriculum
+affects other side: YES — read this before touching credentials. `evaluate_user_credentials`
+  gated on four HARDCODED achievement ids belonging to the pre-v3 DRAFT/ARCHIVED curriculum
+  (e5451add, 041c8d66, 89bd470d, 7387db19). The ACTIVE v3 curriculum carries the same four
+  requirements under DIFFERENT ids (32129be7, c2681246, 697b1bd1, acc16ff3), and those are what
+  `award_standing_requirements` lists. The sets are disjoint, so `v_core` never reached 4 and NO
+  v3 learner was ever auto-awarded. All 125 existing awards belonged to one seeded account
+  carrying legacy completions. ⛔ DO NOT "fix" those ids on their own: correcting them without
+  the rest of the exam policy resumes auto-awarding for every v3 user, which then makes the
+  Final Exam unreachable for all of them via start_final_exam's 'already_earned'. The corrected
+  ids now live ONLY in the flag-gated branch.
+needs: nothing
+
+
 ### 2026-09-18 09:19 · ccode · 856beeed
 changed: finish the credential SQL from the live database
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">

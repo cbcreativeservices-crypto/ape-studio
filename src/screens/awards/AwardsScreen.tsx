@@ -45,7 +45,7 @@ import { credentialArtUrl } from './CredentialThumb';
 import { CredentialDetailModal, type CredentialDetail } from './CredentialDetailModal';
 import type { RootStackParamList } from '../../navigation/types';
 
-const SPEC_CERT_KEY = 'ape:specCert'; // chosen Specialized Certificate name (Level 1)
+const SPEC_CERT_KEY = 'ape:specCert'; // chosen Specialization Certificate name (Level 1)
 const PROGRAM_PATH_KEY = 'ape:programPath'; // chosen program path name (Level 2)
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Awards'>;
@@ -63,7 +63,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Awards'>;
  */
 
 // Glossary blue — matches the Glossary card on Course Selection (user request
-// 2026-07-18); used for the Specialized Certificate builder + its top button.
+// 2026-07-18); used for the Specialization Certificate builder + its top button.
 const GLOSSARY_BLUE = '#5bb0ff';
 // Academy amber (the specialization gold) — reused for the Program title +
 // tier frame (user request 2026-07-18).
@@ -154,11 +154,11 @@ function TierBlock({
               onPress={() => onBuild(tier.builder!)}
               accessibilityRole="button"
               accessibilityLabel={
-                tier.builder === 'specializations' ? 'Choose a specialized certificate' : 'Choose a program path'
+                tier.builder === 'specializations' ? 'Choose a specialization certificate' : 'Choose a program path'
               }
             >
               <Text style={[styles.buildBtnText, { color: buildTint }]}>
-                {tier.builder === 'specializations' ? 'CHOOSE A SPECIALIZED CERTIFICATE' : 'CHOOSE A PROGRAM PATH'}
+                {tier.builder === 'specializations' ? 'CHOOSE A SPECIALIZATION CERTIFICATE' : 'CHOOSE A PROGRAM PATH'}
               </Text>
               <Text style={styles.buildBtnSummary}>{buildSummary ?? 'Tap to choose ›'}</Text>
             </Pressable>
@@ -458,7 +458,7 @@ export function AwardsScreen({ navigation, route }: Props) {
   const { entitlement, resolved } = useEntitlement();
   const hasAccount = resolved && entitlement !== 'anonymous';
 
-  // Builder selections (user request 2026-07-18): a Specialized Certificate
+  // Builder selections (user request 2026-07-18): a Specialization Certificate
   // (Level 1) + an Academy Program Certificate (Level 2) — each chosen from its
   // catalog. Persisted only when there's an account.
   const [specCert, setSpecCert] = useState<string | null>(null);
@@ -828,7 +828,7 @@ export function AwardsScreen({ navigation, route }: Props) {
         }
       />
 
-      {/* LEVEL 1 — choose one Specialized Certificate (user request 2026-07-18):
+      {/* LEVEL 1 — choose one Specialization Certificate (user request 2026-07-18):
           each = the COREQ_TOPIC_GS core courses + that certificate's own
           specialization topics. NOTE: the list rendered here is `specCertsAZ`,
           which comes from the LIVE v3 backend (fetchV3Certs) — NOT the legacy
@@ -850,7 +850,7 @@ export function AwardsScreen({ navigation, route }: Props) {
             accent={GLOSSARY_BLUE}
             backTint={GLOSSARY_BLUE}
             backTo="Certificates"
-            title="CHOOSE A SPECIALIZED CERTIFICATE"
+            title="CHOOSE A SPECIALIZATION CERTIFICATE"
             sub={`A focused credential: the ${COREQ_TOPIC_GS.length} core courses every student completes (shown below), plus a short, specialized topic set. Choose one to work toward.`}
             count={v3Loaded ? specCertsAZ.length : null}
             noun="certificates"
