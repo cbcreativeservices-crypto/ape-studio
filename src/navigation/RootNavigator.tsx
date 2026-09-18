@@ -226,6 +226,51 @@ const MemberGated = {
   DigitalLab: withMembershipPreview(DigitalLabHomeScreen),
   CymaticsLab: withMembershipPreview(CymaticsHomeScreen),
   ProductionLab: withMembershipPreview(ProductionLabScreen),
+
+  // ── ADDED 2026-09-17, after a bug-hunt pass found the hole ────────────────
+  //
+  // These are members-only in labCatalog.ts and were registered with `Gated.X`
+  // (which is the ORIENTATION wrapper) or with a bare screen — so nothing
+  // checked membership. Tapping them from the catalog looked correct because
+  // the catalog draws its own padlock, but every OTHER way in opened the lab
+  // fully unlocked: the `labs/:id` deep link, Career Finder's "try a lab",
+  // the Glossary's "Launch Lab", and any restored navigation state.
+  //
+  // The list was derived mechanically — every catalog leaf with `member: true`
+  // or in the `training` section, minus the alwaysFree Calculator Lab, diffed
+  // against the components actually registered — rather than by eye, because
+  // by eye is how 31 of them were missed.
+  AdvancedMixingLab: withMembershipPreview(AdvancedMixingLabScreen),
+  AmpLab: withMembershipPreview(AmpLabHomeScreen),
+  AutotuneLab: withMembershipPreview(Gated.AutotuneLab),
+  BassLab: withMembershipPreview(Gated.BassLab),
+  BeginningMixingLab: withMembershipPreview(BeginningMixingLabScreen),
+  BinauralLab: withMembershipPreview(Gated.BinauralLab),
+  CableLab: withMembershipPreview(Gated.CableLab),
+  ChorusLab: withMembershipPreview(Gated.ChorusLab),
+  ConnectorSelectLab: withMembershipPreview(ConnectorSelectLabScreen),
+  DistortionLab: withMembershipPreview(Gated.DistortionLab),
+  EarTrainingLab: withMembershipPreview(EarTrainingLabScreen),
+  EnvelopeLab: withMembershipPreview(EnvelopeLabScreen),
+  EqLabHome: withMembershipPreview(EqLabHomeScreen),
+  FlangerLab: withMembershipPreview(Gated.FlangerLab),
+  FmLab: withMembershipPreview(Gated.FmLab),
+  FoundationsPlayground: withMembershipPreview(Gated.FoundationsPlayground),
+  GainLabHome: withMembershipPreview(GainLabHomeScreen),
+  GateLab: withMembershipPreview(Gated.GateLab),
+  LimiterLab: withMembershipPreview(Gated.LimiterLab),
+  MeterLab: withMembershipPreview(MeterLabHomeScreen),
+  MeterModule: withMembershipPreview(Gated.MeterModule),
+  MicSelectLab: withMembershipPreview(Gated.MicSelectLab),
+  ModularLab: withMembershipPreview(Gated.ModularLab),
+  PatchbayLab: withMembershipPreview(PatchbayLabScreen),
+  PhaseLab: withMembershipPreview(Gated.PhaseLab),
+  PhaserLab: withMembershipPreview(Gated.PhaserLab),
+  SignalChainLab: withMembershipPreview(Gated.SignalChainLab),
+  SmartProcessorsLab: withMembershipPreview(SmartProcessorsLabScreen),
+  SpeechLab: withMembershipPreview(SpeechLabScreen),
+  StereoLab: withMembershipPreview(Gated.StereoLab),
+  TuningLab: withMembershipPreview(TuningLabScreen),
 } as const;
 
 export function RootNavigator() {
@@ -382,27 +427,27 @@ export function RootNavigator() {
       <Stack.Screen name="EqLab" component={MemberGated.EqLab} />
       <Stack.Screen name="DelayLab" component={MemberGated.DelayLab} />
       <Stack.Screen name="ReverbLab" component={MemberGated.ReverbLab} />
-      <Stack.Screen name="ChorusLab" component={Gated.ChorusLab} />
-      <Stack.Screen name="FlangerLab" component={Gated.FlangerLab} />
-      <Stack.Screen name="PhaserLab" component={Gated.PhaserLab} />
+      <Stack.Screen name="ChorusLab" component={MemberGated.ChorusLab} />
+      <Stack.Screen name="FlangerLab" component={MemberGated.FlangerLab} />
+      <Stack.Screen name="PhaserLab" component={MemberGated.PhaserLab} />
       <Stack.Screen name="CompressionLab" component={MemberGated.CompressionLab} />
-      <Stack.Screen name="GateLab" component={Gated.GateLab} />
-      <Stack.Screen name="LimiterLab" component={Gated.LimiterLab} />
-      <Stack.Screen name="DistortionLab" component={Gated.DistortionLab} />
-      <Stack.Screen name="PhaseLab" component={Gated.PhaseLab} />
-      <Stack.Screen name="StereoLab" component={Gated.StereoLab} />
-      <Stack.Screen name="SignalChainLab" component={Gated.SignalChainLab} />
+      <Stack.Screen name="GateLab" component={MemberGated.GateLab} />
+      <Stack.Screen name="LimiterLab" component={MemberGated.LimiterLab} />
+      <Stack.Screen name="DistortionLab" component={MemberGated.DistortionLab} />
+      <Stack.Screen name="PhaseLab" component={MemberGated.PhaseLab} />
+      <Stack.Screen name="StereoLab" component={MemberGated.StereoLab} />
+      <Stack.Screen name="SignalChainLab" component={MemberGated.SignalChainLab} />
       {/* Expansion labs (owner 2026-07-26). */}
-      <Stack.Screen name="BassLab" component={Gated.BassLab} />
-      <Stack.Screen name="AutotuneLab" component={Gated.AutotuneLab} />
-      <Stack.Screen name="FmLab" component={Gated.FmLab} />
-      <Stack.Screen name="BinauralLab" component={Gated.BinauralLab} />
-      <Stack.Screen name="ModularLab" component={Gated.ModularLab} />
+      <Stack.Screen name="BassLab" component={MemberGated.BassLab} />
+      <Stack.Screen name="AutotuneLab" component={MemberGated.AutotuneLab} />
+      <Stack.Screen name="FmLab" component={MemberGated.FmLab} />
+      <Stack.Screen name="BinauralLab" component={MemberGated.BinauralLab} />
+      <Stack.Screen name="ModularLab" component={MemberGated.ModularLab} />
       <Stack.Screen name="MicLab" component={MemberGated.MicLab} />
       {/* Microphone Selection Lab (owner spec 2026-08-12) — selection &
           characteristics, no audio/engine dependency. */}
-      <Stack.Screen name="MicSelectLab" component={Gated.MicSelectLab} />
-      <Stack.Screen name="CableLab" component={Gated.CableLab} />
+      <Stack.Screen name="MicSelectLab" component={MemberGated.MicSelectLab} />
+      <Stack.Screen name="CableLab" component={MemberGated.CableLab} />
       <Stack.Screen name="CableInstallLab" component={MemberGated.CableInstallLab} />
       <Stack.Screen name="SpeakerLab" component={MemberGated.SpeakerLab} />
       <Stack.Screen name="TubeLab" component={MemberGated.TubeLab} />
@@ -441,24 +486,24 @@ export function RootNavigator() {
       <Stack.Screen name="CymaticsGallery" component={Gated.CymaticsGallery} />
       <Stack.Screen name="WaveLab" component={WaveLabHomeScreen} />
       <Stack.Screen name="WaveModule" component={Gated.WaveModule} />
-      <Stack.Screen name="EarTrainingLab" component={EarTrainingLabScreen} />
+      <Stack.Screen name="EarTrainingLab" component={MemberGated.EarTrainingLab} />
       <Stack.Screen name="EarModule" component={EarModuleScreen} />
-      <Stack.Screen name="AmpLab" component={AmpLabHomeScreen} />
+      <Stack.Screen name="AmpLab" component={MemberGated.AmpLab} />
       <Stack.Screen name="AmpModule" component={AmpModuleScreen} />
-      <Stack.Screen name="TuningLab" component={TuningLabScreen} />
-      <Stack.Screen name="EnvelopeLab" component={EnvelopeLabScreen} />
-      <Stack.Screen name="PatchbayLab" component={PatchbayLabScreen} />
-      <Stack.Screen name="ConnectorSelectLab" component={ConnectorSelectLabScreen} />
-      <Stack.Screen name="BeginningMixingLab" component={BeginningMixingLabScreen} />
-      <Stack.Screen name="AdvancedMixingLab" component={AdvancedMixingLabScreen} />
-      <Stack.Screen name="SpeechLab" component={SpeechLabScreen} />
-      <Stack.Screen name="SmartProcessorsLab" component={SmartProcessorsLabScreen} />
+      <Stack.Screen name="TuningLab" component={MemberGated.TuningLab} />
+      <Stack.Screen name="EnvelopeLab" component={MemberGated.EnvelopeLab} />
+      <Stack.Screen name="PatchbayLab" component={MemberGated.PatchbayLab} />
+      <Stack.Screen name="ConnectorSelectLab" component={MemberGated.ConnectorSelectLab} />
+      <Stack.Screen name="BeginningMixingLab" component={MemberGated.BeginningMixingLab} />
+      <Stack.Screen name="AdvancedMixingLab" component={MemberGated.AdvancedMixingLab} />
+      <Stack.Screen name="SpeechLab" component={MemberGated.SpeechLab} />
+      <Stack.Screen name="SmartProcessorsLab" component={MemberGated.SmartProcessorsLab} />
       <Stack.Screen name="DeEsserLab" component={DeEsserLabScreen} />
-      <Stack.Screen name="MeterLab" component={MeterLabHomeScreen} />
-      <Stack.Screen name="MeterModule" component={Gated.MeterModule} />
-      <Stack.Screen name="EqLabHome" component={EqLabHomeScreen} />
+      <Stack.Screen name="MeterLab" component={MemberGated.MeterLab} />
+      <Stack.Screen name="MeterModule" component={MemberGated.MeterModule} />
+      <Stack.Screen name="EqLabHome" component={MemberGated.EqLabHome} />
       <Stack.Screen name="EqModule" component={Gated.EqModule} />
-      <Stack.Screen name="GainLabHome" component={GainLabHomeScreen} />
+      <Stack.Screen name="GainLabHome" component={MemberGated.GainLabHome} />
       <Stack.Screen name="GainModule" component={Gated.GainModule} />
       {/* Understanding Level & Amplitude — the first lab in Audio Fundamentals
           (owner 2026-08-12). UNGATED: it IS the orientation, so it must never
@@ -467,7 +512,7 @@ export function RootNavigator() {
       <Stack.Screen name="AmplitudeLab" component={AmplitudeLabScreen} options={swipe} />
       {/* Foundations of Sound — the Ear Lab's first module (course + sandbox). */}
       <Stack.Screen name="FoundationsCourse" component={FoundationsCourseScreen} />
-      <Stack.Screen name="FoundationsPlayground" component={Gated.FoundationsPlayground} />
+      <Stack.Screen name="FoundationsPlayground" component={MemberGated.FoundationsPlayground} />
       {/* Audio Career Finder (owner brief 2026-09-03). No audio visualizer, so
           NOT behind the amplitude orientation; read-only pages take swipe-back,
           the questions do not (a stray swipe mid-answer is the one gesture
