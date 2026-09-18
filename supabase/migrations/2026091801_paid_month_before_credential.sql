@@ -20,8 +20,8 @@
 -- never been ENFORCED. This migration is the enforcement.
 --
 -- NOT YET APPLIED — see docs/APE_MEMBER_TENURE_FOR_COMP_A.md. One question is
--- outstanding for Computer A (the refund webhook), and one is the owner's (the
--- 1-month code tier can never reach a full month; see MEMBER_MONTH below).
+-- outstanding for Computer A: the refund webhook, which does not exist, so the
+-- refund half of this rule is unenforceable until somebody builds it.
 
 begin;
 
@@ -60,13 +60,14 @@ update public.entitlements
 
 -- ── 2 · the predicate ────────────────────────────────────────────────────────
 --
--- MEMBER_MONTH is one calendar month. NOTE FOR THE OWNER: a code with
--- grant_days = 30 can NEVER satisfy this — in a 31-day month, `now() - interval
--- '1 month'` is 31 days ago, so a 30-day grant runs out before it qualifies,
--- and even in a 30-day month it is a photo finish against its own expiry. If
--- the "1 month free" tier is meant to be able to earn a credential, issue it
--- with grant_days = 35 or so. If it is meant as a taster, leave it at 30 and
--- this comment is the record of that being deliberate.
+-- One calendar month.
+--
+-- SETTLED 2026-09-17: the 'month' code tier grants 35 DAYS, not 30, and that
+-- change is already live (migration `month_plan_35_days_so_it_can_earn_a_credential`).
+-- A 30-day grant could never satisfy this rule — in a 31-day month
+-- `now() - interval '1 month'` is 31 days ago, so the code expired before it
+-- qualified. At 35 days a member becomes eligible on day 28-31 and keeps access
+-- to day 35, which is a 4-7 day window to actually sit the exam.
 create or replace function public.member_month_complete(p_uid uuid)
 returns boolean
 language sql

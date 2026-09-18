@@ -94,14 +94,24 @@ live DB is yours.
 
 ---
 
-## One thing for the owner, not for you
+## Already done — the month tier is 35 days
 
-**A `grant_days = 30` code can never earn a credential.** In a 31-day month,
-`now() - interval '1 month'` is 31 days ago, so a 30-day grant expires before it
-qualifies — and even in a 30-day month it is a photo finish against its own
-expiry.
+**Was:** a `grant_days = 30` code could never earn a credential. In a 31-day
+month `now() - interval '1 month'` is 31 days ago, so the code expired before it
+qualified.
 
-If the "1 month free" tier is meant to be able to earn a certificate, it should
-be issued with `grant_days = 35` or so. If it is meant as a taster, 30 is right
-and the mismatch is deliberate. **This should be decided before any 1-month
-codes are printed or handed out.**
+**Now:** owner ruled 35 days and it is APPLIED to production —
+`admin_mint_access_code` migration `month_plan_35_days_so_it_can_earn_a_credential`.
+Verified live: `when 'month' then 35`. Safe, because no month code had ever been
+minted (the three existing codes are two lifetime and one year).
+
+A member on a month code now becomes eligible on day 28-31 and keeps access to
+day 35: a 4-7 day window to sit the exam.
+
+### One small thing that follows from it
+
+The `admin-codes` console page still labels plans with
+`(d===30 ? "month" : d+"d")`, so a newly minted month code will list as
+**"35d"** rather than **"month"**. Cosmetic and honest, but it is in your edge
+function and needs a redeploy, so ccode has not touched it. One character:
+`d===35`.
