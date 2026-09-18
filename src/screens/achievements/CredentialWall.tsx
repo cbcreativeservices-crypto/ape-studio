@@ -22,6 +22,7 @@ import { StudioButton } from '../../components/StudioButton';
 import { TrophyModal } from '../../components/TrophyModal';
 import { credentialArtFor } from '../../features/credentials/credentialArt';
 import { exportCertificate, isAvailable as certificateExportAvailable } from '../../features/credentials/certificatePdf';
+import { CredentialShareRow } from '../../features/credentials/CredentialShareRow';
 import { fetchEarnedCredentialsByType, fetchNearestCredential, type NearestCredentialResult } from '../../features/achievements/api';
 import type { EarnedCredentialRow } from '../../features/credentials/api';
 
@@ -195,6 +196,10 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
         {!certificateExportAvailable() ? (
           <Text style={styles.exportNote}>Certificate download needs the next app build.</Text>
         ) : null}
+        {/* Copy / share the verified-record link, and share the QR as an image
+            (owner 2026-09-18). The printed certificate keeps the button above:
+            that path builds a PDF and already existed. */}
+        {open ? <CredentialShareRow credentialName={open.name} onMessage={setMessage} /> : null}
       </TrophyModal>
     </View>
   );

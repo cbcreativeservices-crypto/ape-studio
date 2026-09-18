@@ -18,6 +18,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { AlbumDisc } from '../../components/AlbumDisc';
 import { CredentialQr } from '../../components/CredentialQr';
+import { CredentialShareRow } from '../../features/credentials/CredentialShareRow';
 import { fetchMyCredentials, type EarnedCredentialRow } from '../../features/credentials/api';
 import {
   exportCertificate,
@@ -156,6 +157,7 @@ export function ProfileScreen() {
   // [39] (2026-09-07): a transient profile-read failure must not silently render
   // as a blank ID (no number, pending QR) — track it and offer a retry.
   const [profileError, setProfileError] = useState(false);
+  const [shareMessage, setShareMessage] = useState<string | null>(null);
   // CM7 (Booth 2026-07-11): commercial variant — nickname · Album · trophies ·
   // completion records; HIDE the student-ID card (QR, AP&E ID) + MIC/PA/REC/MIX
   // certs. Institutional users keep Screen 10 exactly.
@@ -538,6 +540,14 @@ export function ProfileScreen() {
               <Text style={styles.idScan}>SCAN TO VERIFY</Text>
             </View>
           </Pressable>
+
+          {/* Share the record itself — the link, and the QR as an image (owner
+              2026-09-18). This is where a member looks for their own ID, and
+              until now the QR could only leave the phone by somebody
+              photographing the screen. `credentialName` is null: this shares
+              the whole verified record, not one credential. */}
+          <CredentialShareRow credentialName={null} onMessage={setShareMessage} />
+          {shareMessage ? <Text style={styles.shareMessage}>{shareMessage}</Text> : null}
 
           {/* [39] (2026-09-07): the ID card renders blank (no ID, pending QR) when
               the profile read fails — say so and offer a retry instead of a
@@ -1224,6 +1234,13 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   idRight: { alignItems: 'center', gap: 6 },
+  shareMessage: {
+    fontFamily: fonts.barlowRegular,
+    fontSize: 12.5,
+    color: colors.textSub,
+    textAlign: 'center',
+    marginTop: 6,
+  },
   idScan: {
     fontFamily: fonts.oswaldMedium,
     fontSize: 9,
