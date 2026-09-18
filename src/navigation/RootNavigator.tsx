@@ -16,6 +16,7 @@ import { SplashScreen } from '../screens/SplashScreen';
 import { AuthScreen } from '../screens/auth/AuthScreen';
 import { ResultsScreen } from '../screens/results/ResultsScreen';
 import { TrophyScreen } from '../screens/results/TrophyScreen';
+import { CelebrationScreen } from '../screens/results/CelebrationScreen';
 import { AwardProgressScreen } from '../screens/awards/AwardProgressScreen';
 import { FinalExamScreen } from '../screens/exam/FinalExamScreen';
 import { FinalExamResultScreen } from '../screens/exam/FinalExamResultScreen';
@@ -309,6 +310,10 @@ export function RootNavigator() {
       {/* Reward loop — exits are explicit buttons/auto-advance, never a back gesture. */}
       <Stack.Screen name="Results" component={ResultsScreen} options={{ gestureEnabled: false }} />
       <Stack.Screen name="Trophy" component={TrophyScreen} options={{ gestureEnabled: false }} />
+      {/* Celebrations replace the quiz-win trophy (owner 2026-09-17). Back is
+          disabled for the same reason Trophy disables it: the attempt behind
+          this screen is finished and returning to it is meaningless. */}
+      <Stack.Screen name="Celebration" component={CelebrationScreen} options={{ gestureEnabled: false }} />
       {/* Final Exam (R6b capstone) — one sitting, no back gesture, no pause. */}
       <Stack.Screen name="AwardProgress" component={AwardProgressScreen} options={swipe} />
       <Stack.Screen name="FinalExam" component={FinalExamScreen} options={{ gestureEnabled: false }} />

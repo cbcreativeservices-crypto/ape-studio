@@ -1,18 +1,24 @@
 /**
- * PreProdLabScreen — the Audio Pre-Production lab home.
+ * ProductionLabScreen — the home of EITHER production lab.
+ *
+ * One screen, two labs. Which one it is arrives in the route params, and
+ * everything else — the title, the stage list, the exercises, what the export
+ * is called — is read from `labs.ts`. A third lab would be a row in that file
+ * and no new screen at all.
  *
  * Two states: no project yet (pick a project type and start one), or a project
  * open (its readiness, its stages, and the packet).
  *
- * The stage list shows the WHOLE process, including the stages not authored
- * yet, because a user planning a production should see the shape of the work
- * rather than only the parts that happen to be finished. Unauthored stages are
- * plainly not open — with no timeline and no promise attached, per the standing
- * copy rule.
+ * The stage list shows the WHOLE process, including any stage not authored yet,
+ * because a user should see the shape of the work rather than only the parts
+ * that happen to be finished. An unauthored stage is plainly not open — with no
+ * timeline and no promise attached, per the standing copy rule. Both labs are
+ * fully authored as of 2026-09-17, so today that path draws nothing.
  */
-import { useCallback, useMemo, useState } from 'react';
+import { Fragment, useCallback, useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
+import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
@@ -24,26 +30,32 @@ import { buildPacketHtml, exportPacketPdf, isPdfAvailable } from '../../../featu
 import { createProjectStore, newProject, projectStore } from '../../../features/production/projectStore';
 import type { Finding, PathwayId, ProductionProject } from '../../../features/production/types';
 import { LAUNCH_PATHWAYS, PATHWAY_LABEL } from '../../../features/production/types';
-import { PREPROD_OUTLINE, PREPROD_STAGES, authoredStage } from '../../../features/production/preprod';
+import { authoredStage, labDef } from '../../../features/production/labs';
 import { ReadinessMeter, StageProgressRow } from './ReadinessMeter';
 import { AcceptConditionSheet } from './AcceptConditionSheet';
 import { STATE_TINT } from './FieldRow';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
+type R = RouteProp<RootStackParamList, 'ProductionLab'>;
 
-export function PreProdLabScreen() {
+/** Small numbers read better as words in a heading. */
+const NUMBER_WORD: Record<number, string> = { 4: 'FOUR', 5: 'FIVE', 6: 'SIX', 7: 'SEVEN', 8: 'EIGHT', 9: 'NINE' };
+
+export function ProductionLabScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<Nav>();
+  const { lab } = useRoute<R>().params;
+  const def = labDef(lab);
   const [projects, setProjects] = useState<ProductionProject[] | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
   /** The blocker the user is choosing to accept rather than fix. */
   const [accepting, setAccepting] = useState<Finding | null>(null);
 
   const reload = useCallback(async () => {
-    const list = await projectStore().load('preprod');
+    const list = await projectStore().load(lab);
     setProjects(list);
     setOpenId((cur) => cur ?? list[0]?.id ?? null);
-  }, []);
+  }, [lab]);
 
   // Re-read on focus: a stage screen writes through the store, so coming back
   // must show the new readiness rather than a stale snapshot.
@@ -57,20 +69,21 @@ export function PreProdLabScreen() {
 
   const { stages, report } = useMemo(() => {
     if (!project) return { stages: [], report: null };
-    const resolved = PREPROD_OUTLINE.map((o) => authoredStage(o.stageId))
+    const resolved = def.outline
+      .map((o) => authoredStage(lab, o.stageId))
       .filter((s): s is NonNullable<typeof s> => Boolean(s))
       .map((s) => resolveStage(s, project.pathway));
     return { stages: resolved, report: readProject(resolved, project) };
-  }, [project]);
+  }, [project, def, lab]);
 
   const start = useCallback(
     async (pathway: PathwayId) => {
-      const p = newProject('preprod', pathway, `${PATHWAY_LABEL[pathway]} project`);
+      const p = newProject(lab, pathway, `${PATHWAY_LABEL[pathway]} ${def.newProjectNoun}`);
       await projectStore().upsert(p);
       await reload();
       setOpenId(p.id);
     },
-    [reload],
+    [reload, lab, def],
   );
 
   /**
@@ -80,7 +93,7 @@ export function PreProdLabScreen() {
   const acceptCondition = useCallback(
     async (acceptedBy: string, reason: string) => {
       if (!project || !accepting) return;
-      const saved = await projectStore().acceptCondition('preprod', project.id, {
+      const saved = await projectStore().acceptCondition(lab, project.id, {
         ruleId: accepting.ruleId,
         acceptedBy,
         reason,
@@ -89,7 +102,7 @@ export function PreProdLabScreen() {
       setAccepting(null);
       if (saved) await reload();
     },
-    [project, accepting, reload],
+    [project, accepting, reload, lab],
   );
 
   const sharePacket = useCallback(async () => {
@@ -114,7 +127,7 @@ export function PreProdLabScreen() {
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text style={styles.kicker}>PRODUCTION WORKFLOW</Text>
-          <Text style={styles.title}>Audio Pre-Production</Text>
+          <Text style={styles.title}>{def.title}</Text>
         </View>
         <AccuracyNote variant="practice" compact />
       </View>
@@ -123,10 +136,7 @@ export function PreProdLabScreen() {
         contentContainerStyle={[styles.body, { paddingBottom: insets.bottom + 34 }]}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.blurb}>
-          Everything that should happen before recording, filming, broadcasting or presenting begins. Build a plan,
-          find what is missing, and leave with a packet a crew could actually work from.
-        </Text>
+        <Text style={styles.blurb}>{def.blurb}</Text>
 
         {projects === null ? null : projects.length === 0 || !project ? (
           <View style={styles.startBlock}>
@@ -172,19 +182,34 @@ export function PreProdLabScreen() {
             <Text style={styles.projectMeta}>{PATHWAY_LABEL[project.pathway]}</Text>
 
             {report ? (
-              <ReadinessMeter report={report} lab="preprod" onAcceptBlocker={setAccepting} />
+              <ReadinessMeter report={report} lab={lab} onAcceptBlocker={setAccepting} />
             ) : null}
 
-            <Text style={styles.sectionTitle}>THE SIX STAGES</Text>
-            {PREPROD_OUTLINE.map((o) => {
+            <Text style={styles.sectionTitle}>
+              {`THE ${NUMBER_WORD[def.outline.length] ?? def.outline.length} STAGES`}
+            </Text>
+            {def.outline.map((o, i) => {
               const sr = report?.stages.find((s) => s.stageId === o.stageId);
-              const open = Boolean(authoredStage(o.stageId));
+              const open = Boolean(authoredStage(lab, o.stageId));
+              // Post-Production groups its eight stages into the owner's three
+              // chapters; Pre-Production has none and draws no headings.
+              const chapter =
+                def.chapters && o.chapter && def.outline[i - 1]?.chapter !== o.chapter
+                  ? def.chapters.find((c) => c.num === o.chapter)
+                  : undefined;
               return (
-                <Pressable
-                  key={o.stageId}
+                <Fragment key={o.stageId}>
+                  {chapter ? (
+                    <Text style={styles.chapter}>
+                      {`CHAPTER ${chapter.num} · ${chapter.title.toUpperCase()}`}
+                    </Text>
+                  ) : null}
+                  <Pressable
                   style={[styles.stage, !open && styles.stageClosed]}
                   disabled={!open}
-                  onPress={() => navigation.navigate('PreProdStage', { projectId: project.id, stageId: o.stageId })}
+                  onPress={() =>
+                    navigation.navigate('ProductionStage', { lab, projectId: project.id, stageId: o.stageId })
+                  }
                   accessibilityRole="button"
                   accessibilityState={{ disabled: !open }}
                   accessibilityLabel={
@@ -201,7 +226,8 @@ export function PreProdLabScreen() {
                       <Text style={styles.closedNote}>Not open yet</Text>
                     </View>
                   )}
-                </Pressable>
+                  </Pressable>
+                </Fragment>
               );
             })}
 
@@ -218,14 +244,15 @@ export function PreProdLabScreen() {
               A plan that has already gone wrong, for you to repair. Each one checks your work decision by
               decision and tells you what is still outstanding.
             </Text>
-            {PREPROD_STAGES.filter(
-              (s) => s.activity && (!s.activity.onlyFor || s.activity.onlyFor.includes(project.pathway)),
-            ).map((s) => (
+            {def.stages
+              .filter((s) => s.activity && (!s.activity.onlyFor || s.activity.onlyFor.includes(project.pathway)))
+              .map((s) => (
               <Pressable
                 key={s.activity!.activityId}
                 style={styles.exercise}
                 onPress={() =>
-                  navigation.navigate('PreProdActivity', {
+                  navigation.navigate('ProductionActivity', {
+                    lab,
                     activityId: s.activity!.activityId,
                     pathway: project.pathway,
                   })
@@ -237,9 +264,9 @@ export function PreProdLabScreen() {
                 <Text style={styles.exerciseName}>{s.activity!.title}</Text>
                 <Text style={styles.exerciseGo}>›</Text>
               </Pressable>
-            ))}
+              ))}
 
-            <Text style={styles.sectionTitle}>PRODUCTION PACKET</Text>
+            <Text style={styles.sectionTitle}>{def.packetName.toUpperCase()}</Text>
             <Text style={styles.sectionIntro}>
               Everything decided so far, as one document, with the gaps and any accepted conditions printed rather
               than hidden.
@@ -297,6 +324,15 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   sectionIntro: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.textSub },
+  /** Chapter heading above the first stage of each of Post-Production's three. */
+  chapter: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 12,
+    letterSpacing: 1,
+    color: colors.textSub,
+    marginTop: 10,
+    marginBottom: 2,
+  },
   pathway: {
     flexDirection: 'row',
     alignItems: 'center',

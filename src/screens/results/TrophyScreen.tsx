@@ -1,11 +1,24 @@
 /**
- * S8 — Trophy (visuals from 14-s8-trophy.dc.html): amber radial ground,
- * success haptic only ([48], 2026-09-07: confetti/award animation was removed
- * per owner 2026-07-18), trophy image slot (512² placeholder until artwork
- * ships), achievement title, badge callout when earned ("You earned [Badge]
- * — View on Profile", notification only, no routing button).
- * Exit by entry_source: quiz_win → [Next] + auto-advance 5s; gallery /
- * achievements_grid / practice → [Back], no auto-advance (M7 wires those).
+ * S8 — Trophy: the VIEWER for a trophy the user already earned. Amber radial
+ * ground, success haptic, trophy image, achievement title, and the badge
+ * callout when one was earned (notification only, no routing button).
+ *
+ * ── NO LONGER THE QUIZ-WIN SCREEN (owner 2026-09-17) ─────────────────────────
+ *
+ * This route used to do two unrelated jobs behind one `entrySource` flag:
+ * celebrate a freshly passed quiz, and let someone open a trophy from the
+ * Gallery weeks later. The first is now the celebration engine's
+ * ('topic-complete' / 'perfect-score' → CelebrationScreen), which is where the
+ * congratulation, the tiering and the low-light rule belong.
+ *
+ * What remains is the second job, and it is a real one — so this screen was
+ * NOT deleted. It simply stopped pretending to be two screens: there is no
+ * auto-advance, the button always reads Back, and it always goes back to
+ * wherever the trophy was tapped.
+ *
+ * `TrophyEntrySource` keeps 'quiz_win' in its union because saved navigation
+ * state and any older deep link may still carry it; arriving here with it now
+ * behaves exactly like the gallery, which is the safe reading.
  */
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -21,21 +34,27 @@ import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Trophy'>;
 
-const AUTO_ADVANCE_MS = 5000;
-
 export function TrophyScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
-  const { topicName, achievementId, badgeEarned, entrySource } = route.params;
+  // `entrySource` is still in the params (older navigation state may carry it)
+  // but nothing reads it any more — every entry behaves the same now.
+  const { topicName, achievementId, badgeEarned } = route.params;
   const [badgeName, setBadgeName] = useState<string | null>(null);
   const [iconUrl, setIconUrl] = useState<string | null>(null);
-  const isQuizWin = entrySource === 'quiz_win';
 
+  /** Always back to whatever opened this trophy. */
   const exit = () => {
-    if (isQuizWin) {
-      navigation.reset({ index: 0, routes: [{ name: 'Main', params: { screen: 'Study', params: { screen: 'Dashboard' } } }] }); // → Study/Dashboard
-    } else {
+    if (navigation.canGoBack()) {
       navigation.goBack();
+      return;
     }
+    // Reached with no history — a deep link, or restored navigation state.
+    navigation.reset({
+      index: 0,
+      routes: [
+        { name: 'Main', params: { screen: 'Achievements', params: { screen: 'AchievementsHome' } } },
+      ],
+    });
   };
 
   useEffect(() => {
@@ -56,10 +75,9 @@ export function TrophyScreen({ navigation, route }: Props) {
 
   useEffect(() => {
     void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    if (!isQuizWin) return;
-    const t = setTimeout(exit, AUTO_ADVANCE_MS);
-    return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // No auto-advance. This is a trophy the user deliberately opened, so it
+    // stays open until they close it — the 5-second timer existed only for the
+    // quiz-win path, which is now the celebration engine's.
   }, []);
 
   return (
@@ -100,7 +118,7 @@ export function TrophyScreen({ navigation, route }: Props) {
       )}
 
       <View style={styles.buttonWrap}>
-        <StudioButton label={isQuizWin ? 'Next' : 'Back'} variant="white" onPress={exit} />
+        <StudioButton label="Back" variant="white" onPress={exit} />
       </View>
     </View>
   );

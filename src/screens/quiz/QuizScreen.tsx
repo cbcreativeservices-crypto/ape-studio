@@ -153,13 +153,23 @@ export function QuizScreen({ navigation, route }: Props) {
           // A passed quiz is a genuine success — the store-review eligibility
           // counter (launch readiness, 2026-09-06). Never prompts by itself.
           void noteHighValueEvent('quiz_passed');
-          // Straight to the Trophy result — the animated reveal (TrophyAnim) is
-          // removed; no award animation is used (user request 2026-07-18).
-          (navigation as any).navigate('Trophy', {
-            topicName,
-            achievementId,
-            badgeEarned: result.badge_earned,
-            entrySource: 'quiz_win',
+          // CELEBRATION (owner 2026-09-17): topic-complete replaces the
+          // quiz-win Trophy screen. TrophyScreen itself survives as the VIEWER
+          // for a trophy opened from the Gallery — that is a different job.
+          //
+          // A perfect score gets its own celebration rather than the ordinary
+          // one. Only ONE of the two is raised here: they are both true, and
+          // the queue's rule is that one screen shows, the strongest first —
+          // so choosing here is the same decision made earlier, and cheaper.
+          const perfect = result.score >= 100;
+          (navigation as any).navigate('Celebration', {
+            id: perfect ? 'perfect-score' : 'topic-complete',
+            values: { topic_name: topicName, score: Math.round(result.score) },
+            // REVIEW RESULTS must reach the graded attempt without asking the
+            // server for it again.
+            context: {
+              results: { result, topicName, achievementId, isPractice: payload.is_practice, questions },
+            },
           });
         } else {
           (navigation as any).navigate('Results', {

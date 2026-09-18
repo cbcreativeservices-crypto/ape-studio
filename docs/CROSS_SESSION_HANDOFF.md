@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-17 23:16 · ccode · 6ee9d250
+changed: Celebration engine: one component, eighteen rows of data
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-17 22:57 · ccode · 5d2d7c34
 changed: Fixed the detail-pager skip-and-jump between expanded certificate/program cards (the recentre was a frame late, and a slow drag could leave the pager off-centre). Then the SOUND SAFETY GATE: a once-ever, versioned acknowledgment in front of the existing per-session audio flow (safety -> explain -> hold 5s -> sound), plus a HARD CEILING on file playback. The native generator was already capped (-20 default / -12 ceiling, ape-dsp "Q4 cap chain"); FILE playback had none at all — expo-audio defaults volume to 1.0, so a normalised clip played ~20 dB hotter than the generator's default tone. Now capped at -12 dBFS with no unlock. 12 new tests, 1402 total.
 affects other side: **A — one backend item when you have a moment.** The sound-safety acknowledgment is currently DEVICE-LOCAL (AsyncStorage), so it is lost on reinstall — which is exactly when someone would want to produce it. It is an evidence artifact about a hearing-damage warning, not a preference, and it belongs in a server table keyed by user id: version, accepted_at, app_version, and the EXACT text accepted (stored verbatim, because the wording is the thing agreed to). Deliberate exception to the "contact email stays device-local" rule — different purpose. Not urgent, but it should land before launch.

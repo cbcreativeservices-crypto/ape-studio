@@ -78,6 +78,9 @@ import {
 import { getDashboardCache, setDashboardCache } from '../../features/dashboard/dashboardCache';
 import { FREE_ENROLL_GS, useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { officialTopicName } from '../../data/officialTopicNames';
+import { Celebration } from '../../features/celebration/Celebration';
+import { celebration } from '../../features/celebration/catalog';
+import { useMethodCelebration } from '../../features/celebration/useMethodCelebration';
 import { customListLocked as customListLockedFn, studyMethodLocked } from '../../features/commercial/studyGate';
 import { supabase } from '../../lib/supabase';
 import { isRealAccount } from '../../features/commercial/realAccount';
@@ -549,6 +552,14 @@ const STUDY_ROUTES: Partial<
 
 export function DashboardScreen() {
   const insets = useSafeAreaInsets();
+  // CELEBRATIONS (owner 2026-09-17). Called HERE, at the very top, because this
+  // component has two early returns (loading, and error/no-topic) before the
+  // method percentages are computed — a hook placed down there runs on some
+  // renders and not others, and React tears the tree down with "Rendered more
+  // hooks than during the previous render". That is exactly what the first
+  // attempt did, caught in the browser. The hook takes no arguments and hands
+  // back `pick`, an ordinary function called later once the gates exist.
+  const { pick: pickCelebration, dismiss: dismissCelebration } = useMethodCelebration();
   const navigation = useNavigation<NativeStackNavigationProp<StudyStackParamList>>();
   const route = useRoute<RouteProp<StudyStackParamList, 'Dashboard'>>();
   // Topic → trophy art by NAME (owner 2026-08-07): v3 topic rows carry no
@@ -1227,6 +1238,21 @@ export function DashboardScreen() {
   // Stage 4 gate: the quiz powers on only when every method before it is complete.
   const allMethodsComplete = flashcardsSeenAll && coreHomeworkComplete && scenariosComplete;
 
+  // The gates are known now, so the celebration can be chosen. NOT a hook —
+  // see the note at the top of this component and in useMethodCelebration.
+  const celebrationProgress = {
+    topicId: topic.id,
+    topicName: officialTopicName(topic.global_sequence ?? 0, topic.name),
+    pct: {
+      flashcards: methodPct('flashcards'),
+      matching: methodPct('matching'),
+      fill_in_blank: methodPct('fill_in_blank'),
+      scenarios: methodPct('scenarios'),
+    },
+    allMethodsComplete,
+  };
+  const pendingCelebration = pickCelebration(celebrationProgress);
+
   // Topic "overall progress" = mean of the applicable methods' smooth display
   // progress (creeps with every pass, consistent with the per-method meters).
   const topicItemCount = data.itemCountByTopic.get(topic.id) ?? 0;
@@ -1371,6 +1397,30 @@ export function DashboardScreen() {
             </View>
           }
         />
+
+        {/* CELEBRATION NOTICE (owner 2026-09-17) — the step/stage tier, inline.
+            It sits ABOVE the rack rather than over it: this is the same screen
+            whose meters just moved, so the notice explains what the user is
+            already looking at instead of covering it.
+
+            The Celebration component handles Low-Light Production Mode itself
+            (every tier collapses to this quiet form and no modal is mounted),
+            so there is no suppression check to repeat here. */}
+        {pendingCelebration ? (
+          <View style={styles.celebrationSlot}>
+            <Celebration
+              def={celebration(pendingCelebration.id)}
+              values={pendingCelebration.values}
+              onAction={(kind) => {
+                dismissCelebration(celebrationProgress, pendingCelebration);
+                // START FINAL QUIZ is the only action that goes anywhere: the
+                // quiz switch is on this very screen, so the notice dismisses
+                // and leaves the user looking at it, lit.
+                if (kind === 'start-quiz') scrollRef.current?.scrollToEnd({ animated: true });
+              }}
+            />
+          </View>
+        ) : null}
 
         {/* Stranded-session banner (owner 2026-08-06): shown when a persisted
             session had no student record and we self-healed to the free view.
@@ -2078,6 +2128,8 @@ export function DashboardScreen() {
 }
 
 const styles = StyleSheet.create({
+  /** Breathing room around the inline celebration notice. */
+  celebrationSlot: { marginHorizontal: 14, marginTop: 10 },
   root: { flex: 1, backgroundColor: colors.screenBg },
   center: {
     flex: 1,

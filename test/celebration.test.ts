@@ -202,3 +202,60 @@ describe('choosing the credential celebration', () => {
     assert.equal(out?.values.credential_count, 3);
   });
 });
+
+// ── the once-ever record ─────────────────────────────────────────────────────
+
+const {
+  wasSeen,
+  markSeen,
+  hasLoaded,
+  __resetCelebrationsSeenForTests,
+} = await import('../src/features/celebration/celebrationSeen.ts');
+
+describe('a celebration fires once, ever', () => {
+  it('reports nothing as seen before the record has loaded', () => {
+    // The critical guard: `wasSeen` answers false for everything until the
+    // load resolves, so a caller that skipped `hasLoaded()` would congratulate
+    // the user for every topic they have ever finished, on every cold start.
+    __resetCelebrationsSeenForTests();
+    assert.equal(hasLoaded(), false);
+    assert.equal(wasSeen('topic-1', 'flashcards-complete'), false);
+  });
+
+  it('remembers per scope, so the same celebration can fire for another topic', () => {
+    __resetCelebrationsSeenForTests([]);
+    assert.equal(hasLoaded(), true);
+    markSeen('topic-1', 'flashcards-complete');
+    assert.equal(wasSeen('topic-1', 'flashcards-complete'), true);
+    assert.equal(wasSeen('topic-2', 'flashcards-complete'), false, 'a different topic still celebrates');
+    assert.equal(wasSeen('topic-1', 'matching-complete'), false, 'a different method still celebrates');
+  });
+
+  it('marking twice is harmless', () => {
+    __resetCelebrationsSeenForTests([]);
+    markSeen('t', 'topic-complete');
+    markSeen('t', 'topic-complete');
+    assert.equal(wasSeen('t', 'topic-complete'), true);
+  });
+});
+
+describe('the quiz win reaches the celebration, and the trophy is only a viewer', () => {
+  const quiz = readFileSync(new URL('../src/screens/quiz/QuizScreen.tsx', import.meta.url), 'utf8');
+  const trophy = readFileSync(new URL('../src/screens/results/TrophyScreen.tsx', import.meta.url), 'utf8');
+
+  it('a passed quiz navigates to Celebration, not Trophy', () => {
+    assert.match(quiz, /navigate\('Celebration'/);
+    assert.ok(!/navigate\('Trophy'/.test(quiz), 'the quiz must no longer route to Trophy');
+  });
+
+  it('a perfect score gets its own celebration', () => {
+    assert.match(quiz, /perfect \? 'perfect-score' : 'topic-complete'/);
+  });
+
+  it('TrophyScreen kept its viewer job rather than being deleted', () => {
+    // Deleting it would have broken opening a trophy from the Gallery.
+    assert.ok(trophy.includes('export function TrophyScreen'));
+    assert.ok(!trophy.includes('AUTO_ADVANCE_MS'), 'the quiz-win auto-advance is gone');
+    assert.ok(!/isQuizWin/.test(trophy), 'the quiz-win branch is gone');
+  });
+});

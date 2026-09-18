@@ -1,5 +1,5 @@
 /**
- * PreProdActivityScreen — runs ONE interactive exercise.
+ * ProductionActivityScreen — runs ONE interactive exercise, in either lab.
  *
  * The design decision that matters: an activity does NOT get its own editor.
  * It seeds a real project into a deliberately broken state and sends the user
@@ -25,22 +25,22 @@ import { checkActivity, seedActivityProject, type ActivityResult } from '../../.
 import { projectStore } from '../../../features/production/projectStore';
 import type { ProductionProject } from '../../../features/production/types';
 import { PATHWAY_LABEL } from '../../../features/production/types';
-import { PREPROD_STAGES } from '../../../features/production/preprod';
+import { stageForActivity } from '../../../features/production/labs';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
-type R = RouteProp<RootStackParamList, 'PreProdActivity'>;
+type R = RouteProp<RootStackParamList, 'ProductionActivity'>;
 
-export function PreProdActivityScreen() {
+export function ProductionActivityScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<Nav>();
-  const { activityId, pathway } = useRoute<R>().params;
+  const { lab, activityId, pathway } = useRoute<R>().params;
 
   const [project, setProject] = useState<ProductionProject | null>(null);
   const [debriefOpen, setDebriefOpen] = useState(false);
 
   const stage = useMemo(
-    () => PREPROD_STAGES.find((s) => s.activity?.activityId === activityId),
-    [activityId],
+    () => stageForActivity(lab, activityId),
+    [lab, activityId],
   );
   const activity = stage?.activity;
 
@@ -51,15 +51,15 @@ export function PreProdActivityScreen() {
    */
   const load = useCallback(async () => {
     if (!activity) return;
-    const existing = (await projectStore().load('preprod')).find((p) => p.scenarioId === activityId);
+    const existing = (await projectStore().load(lab)).find((p) => p.scenarioId === activityId);
     if (existing) {
       setProject(existing);
       return;
     }
-    const seeded = seedActivityProject('preprod', pathway, activity);
+    const seeded = seedActivityProject(lab, pathway, activity);
     await projectStore().upsert(seeded);
     setProject(seeded);
-  }, [activity, activityId, pathway]);
+  }, [activity, activityId, pathway, lab]);
 
   // Re-read on focus: the repair happens on the stage screen, so coming back
   // must re-run the check rather than show a stale verdict.
@@ -76,12 +76,12 @@ export function PreProdActivityScreen() {
 
   const restart = useCallback(async () => {
     if (!activity || !project) return;
-    await projectStore().remove('preprod', project.id);
-    const seeded = seedActivityProject('preprod', pathway, activity);
+    await projectStore().remove(lab, project.id);
+    const seeded = seedActivityProject(lab, pathway, activity);
     await projectStore().upsert(seeded);
     setProject(seeded);
     setDebriefOpen(false);
-  }, [activity, project, pathway]);
+  }, [activity, project, pathway, lab]);
 
   if (!activity || !stage) {
     return (
@@ -110,7 +110,7 @@ export function PreProdActivityScreen() {
         <Pressable
           style={styles.openBtn}
           onPress={() =>
-            project && navigation.navigate('PreProdStage', { projectId: project.id, stageId: stage.stageId })
+            project && navigation.navigate('ProductionStage', { lab, projectId: project.id, stageId: stage.stageId })
           }
           accessibilityRole="button"
           accessibilityLabel={`Open ${stage.title} and work on the exercise`}

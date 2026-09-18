@@ -84,6 +84,29 @@ export type RootStackParamList = {
     badgeEarned: boolean;
     entrySource: TrophyEntrySource;
   };
+  /**
+   * A full-screen celebration (owner 2026-09-17). Carries an ID and the values
+   * to fill it with, NEVER rendered copy — the wording lives in
+   * features/celebration/catalog.ts so it can be edited in one place, and a
+   * deep link, the dev menu and the quiz all produce the same screen.
+   *
+   * `context` is what the celebration's buttons need in order to go somewhere
+   * real: the graded quiz result for REVIEW RESULTS, the award identity for
+   * VIEW CREDENTIAL. Absent context degrades to the Dashboard rather than
+   * dead-ending.
+   */
+  Celebration: {
+    id: import('../features/celebration/types').CelebrationId;
+    values: import('../features/celebration/types').CelebrationValues;
+    context?: {
+      results?: ResultsParams;
+      award?: {
+        awardType: import('../features/finalExam/api').AwardType;
+        awardId: string;
+        awardName: string;
+      };
+    };
+  };
   /** Award earn path (R6b, A4) — required-topic checklist, Final Exam gate,
    *  and the earned-credential panel for one certificate or program. */
   AwardProgress: {

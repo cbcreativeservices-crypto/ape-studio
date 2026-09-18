@@ -1,5 +1,5 @@
 /**
- * PreProdStageScreen — ONE screen that draws ANY stage of either production lab.
+ * ProductionStageScreen — ONE screen that draws ANY stage of EITHER production lab.
  *
  * Every stage, every pathway, every field goes through here. That is the whole
  * point of the schema: adding Stage 4 is a content file, not a screen (plan
@@ -20,32 +20,32 @@ import { readStage } from '../../../features/production/readiness';
 import { projectStore } from '../../../features/production/projectStore';
 import type { ProductionProject, FieldValue } from '../../../features/production/types';
 import { valueKey } from '../../../features/production/types';
-import { authoredStage } from '../../../features/production/preprod';
+import { authoredStage, labDef } from '../../../features/production/labs';
 import { FieldRow, STATE_TINT } from './FieldRow';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
-type R = RouteProp<RootStackParamList, 'PreProdStage'>;
+type R = RouteProp<RootStackParamList, 'ProductionStage'>;
 
-export function PreProdStageScreen() {
+export function ProductionStageScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<Nav>();
-  const { projectId, stageId } = useRoute<R>().params;
+  const { lab, projectId, stageId } = useRoute<R>().params;
 
   const [project, setProject] = useState<ProductionProject | null>(null);
 
   useEffect(() => {
     let alive = true;
     void projectStore()
-      .get('preprod', projectId)
+      .get(lab, projectId)
       .then((p) => {
         if (alive) setProject(p);
       });
     return () => {
       alive = false;
     };
-  }, [projectId]);
+  }, [lab, projectId]);
 
-  const authored = authoredStage(stageId);
+  const authored = authoredStage(lab, stageId);
   const stage = useMemo(
     () => (authored && project ? resolveStage(authored, project.pathway) : null),
     [authored, project],
@@ -57,19 +57,19 @@ export function PreProdStageScreen() {
       if (!project) return;
       // Optimistic: the field must feel immediate, and the store is the record.
       setProject((cur) => (cur ? { ...cur, values: { ...cur.values, [valueKey(stageId, fieldId)]: v } } : cur));
-      const saved = await projectStore().setValue('preprod', project.id, stageId, fieldId, v);
+      const saved = await projectStore().setValue(lab, project.id, stageId, fieldId, v);
       if (saved) setProject(saved);
     },
-    [project, stageId],
+    [project, stageId, lab],
   );
 
   const setNa = useCallback(
     async (fieldId: string, reason: string) => {
       if (!project) return;
-      const saved = await projectStore().setNa('preprod', project.id, stageId, fieldId, reason);
+      const saved = await projectStore().setNa(lab, project.id, stageId, fieldId, reason);
       if (saved) setProject(saved);
     },
-    [project, stageId],
+    [project, stageId, lab],
   );
 
   return (
@@ -83,7 +83,10 @@ export function PreProdStageScreen() {
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
-          <Text style={styles.kicker}>PRE-PRODUCTION{stage ? ` · STAGE ${stage.num}` : ''}</Text>
+          <Text style={styles.kicker}>
+            {`${labDef(lab).title.replace(/^Audio /, '').toUpperCase()}`}
+            {stage ? ` · STAGE ${stage.num}` : ''}
+          </Text>
           <Text style={styles.title} numberOfLines={1}>
             {stage?.title ?? 'Stage'}
           </Text>
