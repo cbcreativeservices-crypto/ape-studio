@@ -141,3 +141,52 @@ so you do not repeat it, then go somewhere it did not.
   threshold is stated backwards; the Lissajous vertical-vs-45° contradiction.
 - Certificates appear to be awarded by a DB trigger, bypassing the Final Exam
   and the paid-month rule (server-side; needs the owner).
+
+---
+
+## FIXED in pass 5 — VERIFY, do not re-report
+- The enrollment push guard (pass 4) broke every new user; reverted, reasoning
+  recorded in the source. The reinstall overwrite is a SERVER fix.
+- The comma handling (pass 4) made typed `12,000` into `12`; rewritten to keep
+  raw text and interpret at commit. `test/productionNumberInput.test.ts`.
+- The 8 routes added to the members-only predicate (pass 4) were never wrapped,
+  so nothing consulted it. Wrapped; test extended.
+- The curriculum required-education disclosure was inert (matched the index's
+  canonical titles against short-form prose). Now reads the app's own `requires`
+  codes; `test/gatedRoleDisclosure.test.ts` asserts it FIRES on real copy.
+- CareerFamilyScreen printed ten licensed occupations bare.
+- The SHARE button on five credential celebrations did nothing and spent the
+  celebration. Removed.
+- `refreshEntitlement` had the same stale-read hole as `deriveAndApply`.
+- The exam queue lock was held across the replay's network loop.
+- `projectStore.remove`/`duplicate` bypassed the serialization.
+- The enable-audio popup promised sound survives backgrounding; it no longer does.
+- Scenarios showed a correct answer in the "selected" colour, so neither the ✓
+  nor the spoken ", correct" ever appeared.
+- The accuracy note only rendered on page 1 of a paged lab, which restores the
+  last page.
+- Production lab/activity screens discarded failed writes (the stage screen was
+  fixed in pass 3; these two are its siblings).
+
+## NEW and unfixed after pass 5 — highest value first
+- **`.gitignore` is CRLF on disk and LF in the index.** It is fingerprint source
+  #2. This is the exact trap that silently broke OTA before. DO NOT TOUCH IT
+  until the local fingerprint is compared with the installed build's
+  runtimeVersion — fixing it could equally restore or break OTA.
+- `status='refunded'` is likely rejected by a CHECK constraint (`active`,
+  `lapsed`, `revoked`), so every refund may silently no-op.
+- Deploy ORDER matters: both edge functions read columns the unapplied migration
+  adds. Deploy the function first and a real purchase charges the customer and
+  returns `grant_failed`.
+- Google refunds match on purchase token while `validate-purchase` stores the
+  order id — permanently unmatchable.
+- The paid-lab scrim is a **BLOCKER on Android**: TalkBack's ACTION_CLICK never
+  hit-tests, so a free user can operate the whole paid lab through the scrim.
+- Quiz/exam **matching questions are unusable without sight, and graded**.
+- RN `<Image>` does not default `accessible`, so the quiz and exam question
+  figures are invisible to VoiceOver.
+- The glossary's 14-a-week cap resets every time a guest re-enters Guest Mode.
+- The store-review prompt is the only auto-overlay with no Low-Light gate, and
+  it burns its once-per-version allowance when suppressed.
+- `subjectMeta`'s `SUBJECT_META_RATIFIED` was flipped to true inside an unrelated
+  commit; 50 subjects of unratified copy are live.
