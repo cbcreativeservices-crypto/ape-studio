@@ -92,3 +92,52 @@ so you do not repeat it, then go somewhere it did not.
   41 of 42 families; `fmt()` prints scientific notation from 10,000 up;
   calculators open a QWERTY keyboard on Android; production dates are parsed
   with `Date.parse`; the printed certificate's ID is the user's registry token.
+
+---
+
+## FIXED in pass 3 — do NOT re-report; VERIFY instead
+- `isMemberOnlyLabRoute` returned false for routes the catalog cannot name, so
+  `MemberGated` was INERT on 8 paid-lab routes — and the deep links had been
+  opened on the assumption it worked. Both flagship labs were reachable by URL.
+- `refreshEntitlement` returned a boolean, so the paywall's "welcome" check read
+  a stale ref and every successful purchase reported as a failure.
+- `useCredentialCelebration` recorded the credential before the caller showed it.
+- `panicMuteAudio` on AppState `inactive` (Control Centre, the mic permission
+  prompt) → `background` only.
+- The exam retry notified every 15s and `notify` queues → tells them once.
+- `parseFloat` survived in `CalcProjectsScreen` (persisting 10,000 Ω as 10 Ω into
+  a named record) and in `calcPanel`'s warning line.
+- ProductionStageScreen discarded a failed write while showing the answer saved.
+- `saveMeasurement` showed "SAVED ✓" on failure, at all 8 tools.
+- `EngineGate`'s `onRetry` was passed by nothing, at all 9 mic tools.
+- `GateHold` was a blank buttonless screen on ~40 paid routes with no timeout.
+- Log out did not say it destroys measurements, term lists, settings and the
+  user's microphone calibration.
+- Settings asserted identity from `resolved`, so offline a member read as GUEST
+  and lost the DELETE ACCOUNT row.
+- Help told users to email support to delete their account (App Review 5.1.1(v))
+  and omitted telemetry from "what does the app send off my phone?".
+- 43 calculator formulas used `·` as both multiply and an equation separator.
+- CareerFamilyScreen's "first free topics are open to everyone" (false on 42/42).
+- `fmt()` printed every value above 10,000 in scientific notation.
+- 13 labs had no `<AccuracyNote/>`; enrollments were pushed but never pulled.
+
+## STILL OPEN after pass 3 — confirmed, not yet fixed
+- The time trial keeps running after sign-out and credits the arriving user.
+- Permission ask-modes, Low-Light mode and the audio cap unlock survive an
+  account switch.
+- Production budget maths reads "12,000" as zero, into a client-facing PDF.
+- "Reduce animations" leaves 11 of 17 `withRepeat` files running.
+- The paywall states hardcoded USD prices; `loadStoreProducts()` has no callers.
+- The Final Exam's membership wall offers only Back; six error strings tell a
+  paying customer to "report this to your professor".
+- "Manage My Learning" has a permanently disabled TAKE FINAL EXAM.
+- Android: no audio focus anywhere; the Oboe OUTPUT stream has no error callback
+  or watchdog; hardware BACK escapes the Celebration screen; no
+  `ios.associatedDomains`.
+- Perf: the Study tab counts by downloading ~27k rows; Explore pages the whole
+  join table serially; Awards mounts 5 pages per tap; TOPICS pulls 33 MB.
+- Teaching: the 144-vs-146 dB attribution in modDac; the binaural ~800 Hz
+  threshold is stated backwards; the Lissajous vertical-vs-45° contradiction.
+- Certificates appear to be awarded by a DB trigger, bypassing the Final Exam
+  and the paid-month rule (server-side; needs the owner).
