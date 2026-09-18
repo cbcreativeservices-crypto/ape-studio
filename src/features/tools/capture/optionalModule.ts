@@ -49,6 +49,17 @@ const LOADERS: Record<string, () => unknown> = {
   // back to "verification unavailable". Now a direct dependency, so the
   // require below always resolves.
   qrcode: () => require('qrcode'),
+  // Certificate as an IMAGE (installed 2026-09-18, with the build that carries
+  // it — a native dep changes the fingerprint runtimeVersion, so installing it
+  // on its own would have silently stranded every later OTA).
+  //
+  // `certificateHtml.ts` is the ONE definition of what a certificate looks
+  // like; this renders that same HTML offscreen so a PNG cannot drift from the
+  // PDF. ⚠ view-shot over a WebView is unreliable on Android — the WebView can
+  // be a surface the snapshot does not see and the capture comes back blank —
+  // so the caller must gate the control on a SUCCESSFUL capture and fall back
+  // to the PDF, never offer it as a dead button. Untested on a device.
+  'react-native-webview': () => require('react-native-webview'),
 };
 /* eslint-enable @typescript-eslint/no-var-requires */
 

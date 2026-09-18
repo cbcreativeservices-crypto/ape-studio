@@ -52,6 +52,14 @@ constexpr uint32_t kHarmonics = 12;  // fixed HV-2 model size (matches JS MODEL_
 // takes ~8 ms; smaller changes finish proportionally faster (the rate is
 // fixed, not the duration — the click-free guarantee is the bounded slope).
 constexpr double kRampSec = 0.008;
+// Gain is the ONE ramp that is duration-based, not slope-based (2026-09-13).
+// A fader is not a 0->1 jump: at M9's -44..-20 dBFS the whole sweep spans
+// 0.0063..0.100 amplitude, so a touch write moves ~0.0016 -- which the fixed
+// slope above crosses in 0.6 samples. The limiter never engaged, so every one
+// of ~120 writes/s was a true discontinuity under the tone: the level steps
+// WERE the crackle the owner heard. A fixed reach-time is what a mixer fader
+// does, and it makes small moves smooth instead of instant.
+constexpr double kGainRampSec = 0.015;
 // Phase-offset slew cap: a slewing harmonic may be detuned by at most this
 // fraction of its OWN frequency. The fixed-rate slew alone is a constant
 // 1/(2·kRampSec) = 62.5 Hz instantaneous offset — fine at 1 kHz+, but at a
@@ -239,12 +247,16 @@ class Generator {
     const double ampTarget = std::pow(10.0, effectiveLevelDb() / 20.0);
     // One atomic load per render call (review 2026-07-23).
     const double fadeStep = 1.0 / static_cast<double>(fadeSamples_.load(std::memory_order_relaxed));
-    // HV-2: level (gain) changes glide instead of stepping — slope-limited at
-    // the kRampSec full-scale rate — same Q4 cap chain as before, only the
-    // capped TARGET is ramped. While silent there is nothing to glide from,
-    // so snap.
-    const double rampSamples = fs * genadd::kRampSec;
-    const double gainStep = 1.0 / (rampSamples < 1.0 ? 1.0 : rampSamples);
+    // HV-2: level (gain) changes glide instead of stepping. DURATION-based,
+    // recomputed each render block from the distance still to travel, so any
+    // new target is reached in ~kGainRampSec no matter how small the step —
+    // see the note on kGainRampSec for why the old fixed slope was inaudible
+    // at fader distances and therefore let every write click through.
+    // Same Q4 cap chain as before, only the capped TARGET is ramped. While
+    // silent there is nothing to glide from, so snap.
+    const double gainRampSamples = fs * genadd::kGainRampSec;
+    const double gainStep = std::fabs(ampTarget - ampCur_) /
+                            (gainRampSamples < 1.0 ? 1.0 : gainRampSamples);
     if (env_ <= 0.0) ampCur_ = ampTarget;
     // Prepare when EITHER side of a pending switch is additive: targets must
     // be hoisted before a mid-block applyTrigger adopts the mode.

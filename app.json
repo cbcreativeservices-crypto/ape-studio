@@ -21,7 +21,8 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSMicrophoneUsageDescription": "Used to measure sound levels in the measurement tools, and — only when you tap the mic — to dictate a glossary search. Audio is processed on this device and is not recorded or uploaded.",
-        "NSCameraUsageDescription": "Used by the Light-Pulse frequency counter to measure how fast a light flashes (overall image brightness only), and to add an optional photo to a measurement snapshot. No photo or video is uploaded."
+        "NSCameraUsageDescription": "Used by the Light-Pulse frequency counter to measure how fast a light flashes (overall image brightness only). No photo or video is recorded or uploaded.",
+        "NSMotionUsageDescription": "Used only for the shake-to-mute gesture, so you can silence a tone by shaking the phone. Motion is read on this device and is never recorded or uploaded."
       }
     },
     "android": {
@@ -137,6 +138,11 @@
       ],
       "permissions": [
         "android.permission.CAMERA"
+      ],
+      "blockedPermissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_IMAGES"
       ]
     },
     "web": {
@@ -168,16 +174,26 @@
         "expo-media-library",
         {
           "savePhotosPermission": "Used only when you tap SAVE on a lab drawing or a measurement snapshot, to add that image to your Photos. Nothing is read from your library.",
-          "photosPermission": "Used only when you tap SAVE on a lab drawing or a measurement snapshot, to add that image to your Photos. Nothing is uploaded.",
+          "photosPermission": false,
           "isAccessMediaLocationEnabled": false,
           "granularPermissions": [
             "photo"
           ]
         }
       ],
-      "expo-audio",
+      [
+        "expo-audio",
+        {
+          "enableBackgroundPlayback": false
+        }
+      ],
       "expo-asset",
-      "expo-secure-store",
+      [
+        "expo-secure-store",
+        {
+          "faceIDPermission": false
+        }
+      ],
       "expo-image",
       "expo-iap",
       [
