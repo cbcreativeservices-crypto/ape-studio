@@ -14,10 +14,12 @@
  * Visuals (design-reference 20-s12-ear-training panel): 48px play/pause cap,
  * recessed progress bar, "N PLAYS" (left) + "m:ss / m:ss" mono (right).
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { requireOptionalNativeModule } from 'expo-modules-core';
+import { unregisterFilePlayer } from '../features/audio/filePlayers';
+import { applyCeiling } from '../features/audio/outputCeiling';
 import { fonts } from '../theme/tokens';
 
 const AUDIO_AVAILABLE = requireOptionalNativeModule('ExpoAudio') != null;
@@ -50,6 +52,20 @@ function LivePlayer({ uri }: { uri: string }) {
   const player = expoAudio!.useAudioPlayer({ uri });
   const status = expoAudio!.useAudioPlayerStatus(player);
   const [plays, setPlays] = useState(0);
+
+  // THE THIRD PLAYER, AND THE ONE THAT WAS MISSED (2026-09-17).
+  //
+  // `earPlayer` and `LabAudioPlayer` construct their players and call
+  // applyCeiling; this one is created by a HOOK, so it had neither the -12 dBFS
+  // ceiling (it played whatever the asset was mastered at, full scale) nor any
+  // registration, so shake-to-mute could not stop it.
+  //
+  // expo-audio owns this instance's lifetime, so the cleanup only unregisters:
+  // removing it here would pull the player out from under the hook.
+  useEffect(() => {
+    applyCeiling(player);
+    return () => unregisterFilePlayer(player);
+  }, [player]);
 
   const ready = status.isLoaded;
   const playing = status.playing;

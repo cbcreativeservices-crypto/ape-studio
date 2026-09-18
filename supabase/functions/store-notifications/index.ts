@@ -227,6 +227,18 @@ async function markRefunded(admin: Store, storeRefs: string[], why: string): Pro
       updated_at: new Date().toISOString(),
     })
     .in('store_ref', refs)
+    // SCOPED TO STORE PURCHASES (hardened 2026-09-17, found by a bug-hunt pass).
+    //
+    // `store_ref` is not a namespace: a purchase writes a transaction id there,
+    // and `redeem_access_code` writes THE CODE ITSELF — so every holder of one
+    // access code shares a single store_ref. Without this filter, a forged
+    // notification naming a known code as its orderId would mark every user who
+    // ever redeemed it as refunded, clearing member_since for all of them. The
+    // endpoint is public, so "forged" is the normal case to design for.
+    //
+    // Apple and Google can only refund what Apple and Google sold. A comp or a
+    // code is the owner's gift and no store notification may revoke it.
+    .in('source', ['app_store', 'play_store'])
     .select('id');
   if (error) {
     console.error('[store-notifications] refund write failed:', error.message, why);
@@ -250,7 +262,15 @@ async function markReinstated(admin: Store, storeRefs: string[], expiresAtMs: nu
     updated_at: new Date().toISOString(),
   };
   if (expiresAtMs) patch.expires_at = new Date(expiresAtMs).toISOString();
-  const { data, error } = await admin.from('entitlements').update(patch).in('store_ref', refs).select('id');
+  const { data, error } = await admin
+    .from('entitlements')
+    .update(patch)
+    .in('store_ref', refs)
+    // Same scope as markRefunded: only a store purchase can be reinstated by a
+    // store, and only one it previously refunded.
+    .in('source', ['app_store', 'play_store'])
+    .not('refunded_at', 'is', null)
+    .select('id');
   if (error) {
     console.error('[store-notifications] reinstate failed:', error.message);
     return 0;
@@ -317,14 +337,26 @@ async function handleGoogle(admin: Store, body: unknown): Promise<Response> {
   const voided = decoded.voidedPurchaseNotification;
   const sub = decoded.subscriptionNotification;
 
-  // A voided purchase IS the refund signal on Google. Still verified below.
+  // A voided purchase is Google's refund signal.
   if (voided?.purchaseToken) {
-    const truth = await googleTruth(voided.purchaseToken, decoded.packageName ?? '', 'subs');
-    // Google's voided-purchases feed is itself authoritative and the token may
-    // no longer resolve, so a failed lookup does NOT block the refund here —
-    // unlike Apple, where the lookup IS the evidence.
-    const n = await markRefunded(admin, [voided.purchaseToken, voided.orderId ?? ''], 'google voided purchase');
-    return ok('google: voided purchase', { rows: n, verified: truth ? truth.revoked : 'token no longer resolvable' });
+    // CORRECTED 2026-09-17: this passed `packageName` where the SKU belongs, so
+    // the lookup built a URL with the package name as the product id and always
+    // 404'd — meaning it never verified anything. A voided notification does not
+    // carry the SKU, so try the subscription resource without one and fall back
+    // to the product resource; either resolving is evidence.
+    const sku = decoded.subscriptionNotification?.subscriptionId ?? '';
+    const truth =
+      (sku ? await googleTruth(voided.purchaseToken, sku, 'subs') : null) ??
+      (sku ? await googleTruth(voided.purchaseToken, sku, 'in-app') : null);
+
+    // The ORDER ID IS NOT USED as a match key. It is attacker-controlled on a
+    // public endpoint and shares a namespace with access codes; only the
+    // purchase token identifies a real purchase. See markRefunded.
+    const n = await markRefunded(admin, [voided.purchaseToken], 'google voided purchase');
+    return ok('google: voided purchase', {
+      rows: n,
+      verified: truth ? truth.revoked : 'token did not resolve; refund applied on the voided-purchases feed alone',
+    });
   }
 
   if (sub?.purchaseToken) {

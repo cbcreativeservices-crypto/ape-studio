@@ -222,29 +222,81 @@ const QUEUE_KEY = 'ape:finalExamQueue';
 
 type QueuedExam = SubmitArgs & { awardType: AwardType; awardId: string };
 
+/**
+ * Read the queue, QUARANTINING anything unreadable rather than discarding it.
+ *
+ * Fixed 2026-09-17. This used to `return []` on a parse failure, and the very
+ * next thing the replay does is write the survivors back — so one malformed
+ * byte permanently destroyed a graded final exam that had not reached the
+ * server yet. The house idiom (patternStore, projectStore, soundSafetyAck)
+ * moves a damaged row to a `:damaged` key precisely so nothing that might still
+ * be recoverable is deleted by a parse error. The highest-stakes collection in
+ * the app was the one collection not doing it.
+ */
 async function readQueue(): Promise<QueuedExam[]> {
+  let raw: string | null = null;
   try {
-    const raw = await AsyncStorage.getItem(QUEUE_KEY);
-    return raw ? (JSON.parse(raw) as QueuedExam[]) : [];
+    raw = await AsyncStorage.getItem(QUEUE_KEY);
   } catch {
+    // Storage unreadable. Returning [] is right — but do NOT let the caller
+    // write an empty queue over data it could not read, which is what
+    // `queueReadable` below prevents.
+    queueReadable = false;
+    return [];
+  }
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw) as QueuedExam[];
+    if (Array.isArray(parsed)) return parsed;
+    throw new Error('not an array');
+  } catch {
+    try {
+      await AsyncStorage.setItem(`${QUEUE_KEY}:damaged`, raw);
+      await AsyncStorage.removeItem(QUEUE_KEY);
+      console.warn('[final-exam] queue was unreadable; parked at :damaged rather than deleted');
+    } catch {
+      // Could not park it — then do not let it be overwritten either.
+      queueReadable = false;
+    }
     return [];
   }
 }
 
-async function writeQueue(rows: QueuedExam[]): Promise<void> {
+/** False once a read failed, so nothing overwrites a queue we could not see. */
+let queueReadable = true;
+
+/**
+ * Persist the queue. Returns whether it actually landed.
+ *
+ * Fixed 2026-09-17: this swallowed every error, so "Your exam is saved and will
+ * be submitted automatically" could be false at the moment it was shown, and
+ * the learner would never find out. A caller that cannot tell cannot warn.
+ */
+async function writeQueue(rows: QueuedExam[]): Promise<boolean> {
+  if (!queueReadable) {
+    // We could not read the existing queue, so writing would clobber whatever
+    // is there. Refusing is the safe direction: a duplicate replay is harmless
+    // (the server returns the frozen result_payload), a lost exam is not.
+    console.warn('[final-exam] refusing to overwrite a queue that could not be read');
+    return false;
+  }
   try {
     await AsyncStorage.setItem(QUEUE_KEY, JSON.stringify(rows));
-  } catch {
-    // storage full / unavailable — nothing further we can do here.
+    return true;
+  } catch (e) {
+    console.error('[final-exam] QUEUE WRITE FAILED — a submission may be lost:', (e as Error)?.message);
+    return false;
   }
 }
 
 /** Queue a submission that failed for network reasons. Keyed by attempt_id. */
-export async function enqueueExamSubmission(row: QueuedExam): Promise<void> {
+export async function enqueueExamSubmission(row: QueuedExam): Promise<boolean> {
   const rows = await readQueue();
   const next = rows.filter((r) => r.attemptId !== row.attemptId);
   next.push(row);
-  await writeQueue(next);
+  // The boolean is the point: the caller must not tell the learner their exam
+  // is safely queued when it is not.
+  return writeQueue(next);
 }
 
 /**
@@ -277,11 +329,29 @@ export async function replayExamSubmissions(): Promise<{ awardId: string; result
       await clearExamIntent(r.awardType, r.awardId);
       done.push({ awardId: r.awardId, result });
     } catch (e) {
-      if (/network|fetch/i.test((e as Error).message)) {
+      const msg = (e as Error)?.message ?? '';
+      // WIDENED 2026-09-17. This tested only /network|fetch/, so a TIMEOUT or an
+      // ABORT — neither of which contains either word — fell through to the
+      // `else` and PERMANENTLY DELETED a graded capstone the server had never
+      // seen. `study/sync.ts` already used the broader pattern, so the least
+      // valuable data in the app had the best protection and the final exam had
+      // the worst.
+      //
+      // The rule now: a row is dropped ONLY on a positive, permanent server
+      // rejection. Anything unrecognised is kept and retried, because keeping a
+      // row costs one duplicate call (the server returns the frozen
+      // result_payload for a finalized attempt) and dropping one costs the
+      // user their credential.
+      const transient = /network|fetch failed|failed to fetch|timeout|timed out|abort|socket|econn|offline/i.test(msg);
+      const permanent = /attempt_not_found|already_finalized|invalid_attempt|not_authenticated|user_not_found/i.test(msg);
+      if (transient) {
         offline = true;
         remaining.push(r);
+      } else if (permanent) {
+        console.warn('[final-exam] dropping permanently rejected submission:', msg);
       } else {
-        console.warn('[final-exam] dropping rejected queued submission:', (e as Error).message);
+        console.warn('[final-exam] keeping queued submission after an unrecognised error:', msg);
+        remaining.push(r);
       }
     }
   }

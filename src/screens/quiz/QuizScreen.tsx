@@ -161,14 +161,28 @@ export function QuizScreen({ navigation, route }: Props) {
           // one. Only ONE of the two is raised here: they are both true, and
           // the queue's rule is that one screen shows, the strongest first —
           // so choosing here is the same decision made earlier, and cheaper.
-          const perfect = result.score >= 100;
+          // `result.score` is a COUNT of correct answers (the server does
+          // `v_score := v_score + 1`), NOT a percentage — ResultsScreen renders
+          // it as "28 / 30". The celebration says "FINAL QUIZ: {score}%", so it
+          // has to be converted here or a 28/30 pass reads as 28%.
+          //
+          // Found by a bug-hunting pass on 2026-09-17, hours after this wiring
+          // landed. The same mistake made `perfect-score` UNREACHABLE: the test
+          // was `score >= 100` against a number whose maximum is the question
+          // count.
+          const total = questions.length;
+          const pct = total > 0 ? Math.round((result.score / total) * 100) : 0;
+          const perfect = total > 0 && result.score >= total;
           (navigation as any).navigate('Celebration', {
             id: perfect ? 'perfect-score' : 'topic-complete',
-            values: { topic_name: topicName, score: Math.round(result.score) },
+            values: { topic_name: topicName, score: pct },
             // REVIEW RESULTS must reach the graded attempt without asking the
-            // server for it again.
+            // server for it again. `badgeEarned` is carried because the Trophy
+            // screen this replaced announced the badge, and dropping it silently
+            // would lose something the user earned.
             context: {
               results: { result, topicName, achievementId, isPractice: payload.is_practice, questions },
+              badge: result.badge_earned ? { achievementId } : undefined,
             },
           });
         } else {

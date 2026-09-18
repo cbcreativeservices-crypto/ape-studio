@@ -15,8 +15,15 @@
 import * as Speech from 'expo-speech';
 import { ApeDsp } from '../../../modules/ape-dsp';
 import { disableAudioOutput } from './audioOutputStore';
+import { stopAllFilePlayers } from './filePlayers';
 
 export function panicMuteAudio(): void {
+  // FILE PLAYBACK FIRST (2026-09-17). Until this line existed, shaking the
+  // phone stopped every native voice and left an ear-training clip, a tuning
+  // reference or a mix stem playing to its end - the one thing most likely to
+  // be loud, and the thing the safety warning names. It is first and it is
+  // synchronous: no await stands between the gesture and the silence.
+  stopAllFilePlayers();
   // This is the shake-to-mute SAFETY path. A native rejection here must not
   // become an unhandled rejection at the exact moment a safety feature fires —
   // and it must not stop the synchronous silencing below from running.

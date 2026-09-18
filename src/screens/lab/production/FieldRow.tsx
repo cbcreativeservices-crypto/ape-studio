@@ -259,6 +259,121 @@ function Editor({
   }
 }
 
+/**
+ * One table cell, drawn according to its COLUMN KIND.
+ *
+ * ── WHY THIS EXISTS (fixed 2026-09-17) ───────────────────────────────────────
+ *
+ * Every cell used to be a bare TextInput, and `ColumnDef.options` was never
+ * read. Across the two Production labs that is 74 `choice` columns, 3
+ * `multiChoice`, 4 `status` and 11 `date` rendered as empty text boxes.
+ *
+ * That did not merely look wrong — it SILENTLY DEFEATED THE RULES, which is the
+ * whole product. The engine compares exact machine values
+ * (`cell(r, 'in_capture') === 'condenser_mic'`, `RATE()` returning null for
+ * anything `Number()` cannot read), so a user typing "Condenser" or "48 kHz" —
+ * the obviously correct answers — produced a row no rule could match, and the
+ * readiness meter reported a healthy plan precisely because the user had filled
+ * it in properly.
+ *
+ * `validateSeeds()` already existed to force authored seeds to use real option
+ * values. The editor was simply never taught the same contract. Two independent
+ * bug-hunting passes found it on the same day.
+ */
+function Cell({
+  col,
+  value,
+  rowNum,
+  onChange,
+}: {
+  col: NonNullable<ResolvedField['columns']>[number];
+  value: TableRow[string];
+  rowNum: number;
+  onChange: (v: string) => void;
+}) {
+  const text = value === undefined || value === null ? '' : String(value);
+
+  if (col.kind === 'choice' || col.kind === 'status') {
+    const options =
+      col.kind === 'status'
+        ? STATUS_OPTIONS.map((o) => ({ value: o, label: o }))
+        : (col.options ?? []);
+    // A choice column with no options authored would render as nothing and trap
+    // the user in an unfillable row — fall back to text rather than to a blank.
+    if (options.length > 0) {
+      return (
+        <View style={styles.chips}>
+          {options.map((o) => {
+            const on = text === o.value;
+            return (
+              <Pressable
+                key={o.value}
+                style={[styles.chip, on && styles.chipOn]}
+                onPress={() => onChange(on ? '' : o.value)}
+                accessibilityRole="button"
+                accessibilityState={{ selected: on }}
+                accessibilityLabel={`${col.label}, ${o.label}, row ${rowNum}`}
+              >
+                <Text style={[styles.chipText, on && styles.chipTextOn]}>{o.label}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      );
+    }
+  }
+
+  if (col.kind === 'multiChoice' && (col.options?.length ?? 0) > 0) {
+    // A TableRow cell is a scalar, so several picks are stored comma-separated
+    // — which is exactly what the logic's `cellMany()` reads back.
+    const picked = text
+      .split(/[,;|]/)
+      .map((t) => t.trim())
+      .filter(Boolean);
+    return (
+      <View style={styles.chips}>
+        {(col.options ?? []).map((o) => {
+          const on = picked.includes(o.value);
+          return (
+            <Pressable
+              key={o.value}
+              style={[styles.chip, on && styles.chipOn]}
+              onPress={() =>
+                onChange(
+                  (on ? picked.filter((v) => v !== o.value) : [...picked, o.value]).join(', '),
+                )
+              }
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: on }}
+              aria-checked={on}
+              accessibilityLabel={`${col.label}, ${o.label}, row ${rowNum}`}
+            >
+              <Text style={[styles.chipText, on && styles.chipTextOn]}>{o.label}</Text>
+            </Pressable>
+          );
+        })}
+      </View>
+    );
+  }
+
+  const numeric = col.kind === 'number' || col.kind === 'currency';
+  return (
+    <TextInput
+      style={[styles.input, styles.cellInput]}
+      value={text}
+      onChangeText={onChange}
+      keyboardType={numeric ? 'numeric' : 'default'}
+      placeholder={
+        col.kind === 'date' ? 'YYYY-MM-DD' : col.kind === 'time' ? 'e.g. 16:00' : undefined
+      }
+      placeholderTextColor={colors.textMuted}
+      autoCapitalize={col.kind === 'date' || col.kind === 'time' ? 'none' : 'sentences'}
+      autoCorrect={!(col.kind === 'date' || col.kind === 'time')}
+      accessibilityLabel={`${col.label}, row ${rowNum}`}
+    />
+  );
+}
+
 /** Repeating rows — input lists, team members, budget lines. */
 function TableEditor({
   field,
@@ -285,13 +400,11 @@ function TableEditor({
             {cols.map((c) => (
               <View key={c.columnId} style={styles.cellRow}>
                 <Text style={styles.cellLabel}>{c.label}</Text>
-                <TextInput
-                  style={[styles.input, styles.cellInput]}
-                  value={row[c.columnId] === undefined || row[c.columnId] === null ? '' : String(row[c.columnId])}
-                  onChangeText={(t) => setCell(i, c.columnId, t)}
-                  keyboardType={c.kind === 'number' || c.kind === 'currency' ? 'numeric' : 'default'}
-                  placeholderTextColor={colors.textMuted}
-                  accessibilityLabel={`${c.label}, row ${i + 1}`}
+                <Cell
+                  col={c}
+                  value={row[c.columnId]}
+                  rowNum={i + 1}
+                  onChange={(v) => setCell(i, c.columnId, v)}
                 />
               </View>
             ))}

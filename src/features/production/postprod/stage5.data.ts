@@ -539,6 +539,17 @@ export const STAGE5_BUILD: StageDef = {
   activity: {
     activityId: "add-without-erasing",
     title: "Add without erasing",
+    // PATHWAY-LOCKED 2026-09-17, after a bug-hunt pass proved it UNPASSABLE on
+    // music. Its `music-and-speech-managed` criterion reads
+    // `build.music_speech_relationship`, which is itself onlyFor podcast/live —
+    // so on music the field never renders, the criterion is a constant false,
+    // and the learner can do everything right and still never pass.
+    //
+    // The prompt is a podcast episode anyway ("An episode has come back from
+    // the edit"), so restricting it costs nothing. `validateStages` and
+    // `validateSeeds` could not catch this: they check the BASE schema, never a
+    // criterion body against a RESOLVED stage.
+    onlyFor: ["podcast", "live"],
     prompt: "An episode has come back from the edit with a list of additions already made: a re-recorded line, a music bed, an atmosphere track and some tuning on the theme's sung tag. Everything on the list is defensible on its own. Played end to end, the programme sounds slightly wrong in four places and nobody can say why. Find what each addition did to the material around it, and fix the decisions rather than the symptoms.",
     seed: {
       "build.replacement_needed": "yes",
@@ -549,7 +560,11 @@ export const STAGE5_BUILD: StageDef = {
       "build.perspective_handled": "no",
       "build.correction_decision": "not_discussed",
       "build.correction_scope": ["pitch"],
-      "build.correction_target": "",
+      // `correction_target` is NOT seeded: it is onlyFor music/live, so on the
+      // podcast pathway the field does not render and a seeded value would be
+      // unreachable. The seed was "" — nothing — so dropping it changes no
+      // starting state anywhere; on live the field simply starts empty, which
+      // is what the `correction-settled` criterion is asking the learner to fix.
       "build.correction_amount": "heavy",
       "build.correction_guards": [],
       "build.correction_compared": "no",

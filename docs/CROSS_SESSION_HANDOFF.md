@@ -26,6 +26,24 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-17 23:49 · ccode · 70694099
+changed: Gate the 31 members-only labs that had no membership check
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-17 23:44 · ccode · 41efaded
+changed: Sound safety: the Profile toggle was a way around the gate
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-17 23:40 · ccode · 213736bd
+changed: Dashboard: hoist the last conditional hook — it crashed every cold load
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-17 23:16 · ccode · 6ee9d250
 changed: Celebration engine: one component, eighteen rows of data
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">

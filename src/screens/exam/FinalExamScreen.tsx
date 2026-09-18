@@ -142,15 +142,33 @@ export function FinalExamScreen({ navigation, route }: Props) {
         // returns there (the award's progress, now showing the credential).
         (navigation as any).replace('FinalExamResult', { result, awardName, awardType, awardId });
       } catch (e) {
-        if (/network|fetch/i.test((e as Error).message)) {
-          await enqueueExamSubmission({ ...args, awardType, awardId });
+        // WIDENED 2026-09-17 to match the replay path: a timeout or an abort
+        // contains neither "network" nor "fetch", so a graded capstone that
+        // merely timed out fell into the `else` and was never queued at all.
+        if (/network|fetch failed|failed to fetch|fetch|timeout|timed out|abort|socket|econn|offline/i.test((e as Error).message)) {
+          const queued = await enqueueExamSubmission({ ...args, awardType, awardId });
           // notify / confirmDialog, not Alert.alert: RN-web's Alert is a no-op,
           // so these were silent on the web preview (B-148).
-          notify(
-            'Offline',
-            'Your exam is saved and will be submitted automatically when you reconnect. Your finish time is preserved.',
-            () => navigation.goBack(),
-          );
+          //
+          // TELL THE TRUTH ABOUT WHETHER IT SAVED (2026-09-17). The queue write
+          // can fail — storage full, or a queue we could not read and refused to
+          // clobber — and this promised success unconditionally. A learner who
+          // is told their capstone is safe, and closes the app, has no way back.
+          if (queued) {
+            notify(
+              'Offline',
+              'Your exam is saved and will be submitted automatically when you reconnect. Your finish time is preserved.',
+              () => navigation.goBack(),
+            );
+          } else {
+            // Do NOT release the latch and do NOT leave the screen: staying here
+            // with the answers in memory is the only remaining chance to submit.
+            notify(
+              'Could not save your exam',
+              'You are offline and this device could not store your answers. Stay on this screen and keep the app open — reconnect and it will submit. Do not close the app.',
+              () => {},
+            );
+          }
         } else {
           // [31] (2026-09-07): release the double-submit latch on a non-network
           // failure so the attempt can be retried (offline path stays queued).

@@ -28,7 +28,7 @@
  * same screen, and the wording can be edited in one file without touching any
  * caller.
  */
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -36,6 +36,7 @@ import { Celebration } from '../../features/celebration/Celebration';
 import { celebration } from '../../features/celebration/catalog';
 import type { CelebrationActionKind } from '../../features/celebration/types';
 import { colors } from '../../theme/tokens';
+import { supabase } from '../../lib/supabase';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Celebration'>;
@@ -44,6 +45,34 @@ export function CelebrationScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
   const { id, values, context } = route.params;
   const def = celebration(id);
+
+  // The badge line. TrophyScreen announced a badge when the attempt earned one,
+  // and the first version of this replacement dropped it silently — a bug-hunt
+  // pass caught it the same day. Fetched exactly as TrophyScreen did.
+  //
+  // It renders only once the name arrives, so a slow or failed lookup costs the
+  // line rather than blocking the celebration. Saying "you earned a badge"
+  // without being able to name it would be worse than saying nothing.
+  const [badgeName, setBadgeName] = useState<string | null>(null);
+  useEffect(() => {
+    const achievementId = context?.badge?.achievementId;
+    if (!achievementId) return;
+    let alive = true;
+    void supabase
+      .from('achievements')
+      .select('badge_trigger')
+      .eq('id', achievementId)
+      .single()
+      .then(
+        ({ data }) => {
+          if (alive) setBadgeName(data?.badge_trigger?.toUpperCase() ?? null);
+        },
+        () => {},
+      );
+    return () => {
+      alive = false;
+    };
+  }, [context]);
 
   /** Where the user lands when a celebration is over. */
   const toStudy = useCallback(() => {
@@ -121,7 +150,12 @@ export function CelebrationScreen({ navigation, route }: Props) {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
-      <Celebration def={def} values={values} onAction={onAction} />
+      <Celebration
+        def={def}
+        values={values}
+        extra={badgeName ? `You also earned the ${badgeName} badge — see it on your Profile.` : null}
+        onAction={onAction}
+      />
     </View>
   );
 }

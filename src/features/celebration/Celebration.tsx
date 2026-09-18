@@ -34,10 +34,18 @@ import { fill, formFor } from './types';
 export function Celebration({
   def,
   values,
+  extra,
   onAction,
 }: {
   def: CelebrationDef;
   values: CelebrationValues;
+  /**
+   * One instance-specific line under the body — something true of THIS
+   * occurrence rather than of the celebration itself, e.g. "You also earned the
+   * Signal Flow badge." It lives here rather than in the catalog because the
+   * catalog is per-definition and this is per-event.
+   */
+  extra?: string | null;
   /** Every button routes here; the host maps the kind to a real action. */
   onAction: (kind: CelebrationActionKind) => void;
 }) {
@@ -55,7 +63,7 @@ export function Celebration({
   }, [def.tier, def.encouragement, suppressed]);
 
   const body = (
-    <CelebrationBody def={def} values={values} onAction={onAction} form={form} />
+    <CelebrationBody def={def} values={values} extra={extra} onAction={onAction} form={form} />
   );
 
   if (form === 'notice') {
@@ -88,11 +96,13 @@ export function Celebration({
 function CelebrationBody({
   def,
   values,
+  extra,
   onAction,
   form,
 }: {
   def: CelebrationDef;
   values: CelebrationValues;
+  extra?: string | null;
   onAction: (kind: CelebrationActionKind) => void;
   form: 'notice' | 'screen';
 }) {
@@ -127,6 +137,10 @@ function CelebrationBody({
           </Text>
         ) : null;
       })}
+
+      {extra ? (
+        <Text style={[styles.extra, { borderColor: accent, color: accent }]}>{extra}</Text>
+      ) : null}
 
       <View style={form === 'notice' ? styles.actionsRow : styles.actionsCol}>
         {def.actions.map((a) => (
@@ -225,6 +239,18 @@ const styles = StyleSheet.create({
   },
   bodySm: { fontSize: 12.5, lineHeight: 18, textAlign: 'left' },
 
+  /** The per-event line (a badge, say) — set apart so it reads as an extra
+   *  thing that happened, not as more of the same paragraph. */
+  extra: {
+    fontFamily: fonts.oswaldMedium,
+    fontSize: 13,
+    lineHeight: 19,
+    textAlign: 'center',
+    borderTopWidth: 1,
+    paddingTop: 10,
+    marginTop: 4,
+    alignSelf: 'stretch',
+  },
   actionsCol: { width: '100%', gap: 9, marginTop: 10 },
   actionsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 8 },
   btn: {

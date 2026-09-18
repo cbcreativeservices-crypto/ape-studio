@@ -34,6 +34,8 @@
  * with its own gesture — do not quietly raise this constant.
  */
 
+import { registerFilePlayer, type StoppablePlayer } from './filePlayers';
+
 /** −12 dBFS as a linear amplitude: 10^(−12/20). */
 export const PLAYBACK_CEILING_DB = -12;
 export const PLAYBACK_CEILING = 10 ** (PLAYBACK_CEILING_DB / 20); // ≈ 0.2512
@@ -60,6 +62,19 @@ export function playbackVolume(relative = 1): number {
  */
 export function applyCeiling(player: { volume?: number } | null, relative = 1): void {
   if (!player) return;
+  // ADOPT IT INTO THE SAFETY REGISTRY TOO (2026-09-17).
+  //
+  // Registration is deliberately fused to the ceiling rather than left as a
+  // second call at each site, because the bug this closes was exactly that
+  // somebody had to remember a second call and nobody did: shake-to-mute could
+  // not stop any file playback, while the Sound Safety Warning promised in
+  // writing that it could.
+  //
+  // Both are the same concern - what this player is allowed to do to the user's
+  // ears - and every caller of this function is a player-creation site. Release
+  // sites call `unregisterFilePlayer` themselves; a handle that escapes that is
+  // dropped from the set the first time it throws.
+  registerFilePlayer(player as StoppablePlayer);
   try {
     player.volume = playbackVolume(relative);
   } catch (e) {

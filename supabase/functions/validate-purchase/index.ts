@@ -239,14 +239,35 @@ Deno.serve(async (req) => {
   // to record when the CURRENT run began — and must not restart it on a
   // renewal, or nobody on a monthly plan would ever reach a month.
   //
-  // It restarts in exactly three cases: there was no run before; the previous
-  // run had already lapsed; or the previous run ended in a refund. A refund
-  // buys no tenure, which is the owner's rule — "no certificates if they refund
-  // and I never get paid anything".
+  // ── WHY A LAPSE IS NOT INFERRED FROM OUR OWN expires_at ──────────────────
+  //
+  // The first version restarted the clock whenever `prior.expires_at` was in
+  // the past. That is absence of evidence, not evidence of a lapse: this row is
+  // only written when the app happens to call us, so a perfectly good monthly
+  // subscription looks expired here for as long as no renewal has reached the
+  // server. A bug-hunt pass on 2026-09-17 found the consequence and it was
+  // severe — a monthly subscriber's clock restarted on every restore, so they
+  // could NEVER satisfy member_month_complete and were permanently denied every
+  // credential. It hit the cheapest plan only, which is the worst possible
+  // group to quietly punish.
+  //
+  // So the clock now restarts only on POSITIVE evidence that the run ended:
+  //   • there was no run before (a genuinely new member), or
+  //   • the previous run ended in a refund — the owner's rule, money returned
+  //     buys no tenure, or
+  //   • the gap since expiry is long enough that no renewal could explain it.
+  //
+  // The grace window errs towards KEEPING tenure, deliberately. Wrongly denying
+  // a paying customer the certificate they earned is a far worse failure than
+  // wrongly granting one a few weeks early, and only the first generates a
+  // support ticket nobody can resolve.
+  const LAPSE_GRACE_DAYS = 60;
   const nowIso = new Date().toISOString();
-  const lapsed = !!prior?.expires_at && Date.parse(prior.expires_at) < Date.now();
+  const priorEnd = prior?.expires_at ? Date.parse(prior.expires_at) : 0;
+  const reallyLapsed =
+    priorEnd > 0 && Date.now() - priorEnd > LAPSE_GRACE_DAYS * 24 * 60 * 60 * 1000;
   const member_since =
-    !prior || !prior.member_since || prior.refunded_at || lapsed ? nowIso : prior.member_since;
+    !prior || !prior.member_since || prior.refunded_at || reallyLapsed ? nowIso : prior.member_since;
 
   const row = {
     status: 'active',

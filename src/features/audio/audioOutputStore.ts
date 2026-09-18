@@ -15,6 +15,7 @@
  * stays a pure state cell that guards can read synchronously.
  */
 import { useSyncExternalStore } from 'react';
+import { stopAllFilePlayers } from './filePlayers';
 
 /** Idle auto-mute window (owner 2026-07-30): DON'T auto-mute unless the app has
  *  been left UNTOUCHED for 20 minutes. The timer re-arms on any real user touch
@@ -100,6 +101,18 @@ export function enableAudioOutput(now: number = Date.now()): void {
 /** Mute audio output and disarm the idle timer. Also clears the idle-bypass so a
  *  later re-enable starts fresh (the checkbox must be re-ticked each time). */
 export function disableAudioOutput(): void {
+  // Silence the FILE players, not just the flag (2026-09-17).
+  //
+  // This is the auto-mute: on login, on foreground-after-idle, on relaunch. It
+  // used to flip a boolean and nothing else, which was actively dangerous -
+  // ShakeToMute tears down its accelerometer when this fires and exposureMonitor
+  // disarms its dose poller, so a file that kept playing did so with the panic
+  // gesture dead and the dose no longer counted.
+  //
+  // Unconditional, and before the `enabled` check: if a player is somehow live
+  // while the gate already reads muted, that is precisely the state worth
+  // fixing rather than skipping.
+  stopAllFilePlayers();
   clearIdleTimer();
   idleBypass = false;
   if (enabled) {

@@ -14,6 +14,7 @@
 import { Platform } from 'react-native';
 import * as FileSystem from 'expo-file-system/legacy';
 import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-audio';
+import { unregisterFilePlayer } from '../audio/filePlayers';
 import { applyCeiling } from '../audio/outputCeiling';
 import { encodeWav, type Buf } from './earDsp';
 
@@ -157,6 +158,9 @@ export class EarClipPlayer {
       if (i >= uris.length) {
         this.subs.get(i)?.remove();
         this.subs.delete(i);
+        // Off the safety registry BEFORE the handle dies, so a later
+        // shake-to-mute is not iterating a released player (2026-09-17).
+        unregisterFilePlayer(p);
         p.remove();
         this.players.delete(i);
       }
@@ -193,7 +197,10 @@ export class EarClipPlayer {
     this.disposed = true;
     for (const [, s] of this.subs) s.remove();
     this.subs.clear();
-    for (const [, p] of this.players) p.remove();
+    for (const [, p] of this.players) {
+      unregisterFilePlayer(p);
+      p.remove();
+    }
     this.players.clear();
     void this.unloadFiles();
   }
