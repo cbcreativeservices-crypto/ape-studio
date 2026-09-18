@@ -26,6 +26,30 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 14:41 · ccode · 86967bdf
+changed: web: close the temporary unlock window — gate locked
+affects other side: nothing. Website gate is LOCKED again and verified live (401, key screen up).
+needs: the gate password. It is `GATE_UNLOCK_KEY` in the Vercel dashboard — the owner has lost it, and the gate fails closed so the live site cannot tell a wrong key from an unset one.
+
+
+### 2026-09-18 14:33 · ccode · 4eb177ae
+changed: web: self-expiring temporary unlock window on the site gate
+affects other side: nothing — web-only. Mechanism note: to open the pre-launch site temporarily, set `UNLOCK_UNTIL` in web/lib/gate.ts to a UTC instant; it re-locks itself with no second deploy. Do NOT flip GATE_ENABLED off, a forgotten second deploy leaves the site public silently.
+needs: nothing
+
+
+### 2026-09-18 14:28 · ccode · c8441946
+changed: Production labs: progress you can see, and a project you own
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-18 14:23 · ccode · a94888dc
+changed: Employer accounts: the app surfaces
+affects other side: employer app surfaces are BUILT (EmployerSection on the profile, interest selections, employer badge on contact threads). The DB side A applied is now consumed. Still outstanding on A/deploy side: `employer-apply-finalize` is NOT deployed and `ADMIN_NOTIFY_EMAIL` is unset — until both, an approval sends no email.
+needs: deploy `employer-apply-finalize` + set `ADMIN_NOTIFY_EMAIL`, then one real application run end to end. The flow has never been exercised with a live applicant.
+
+
 ### 2026-09-18 14:10 · ccode · 545feec4
 changed: D9 corrected: employer accounts ship WITH launch, and most of it is built
 affects other side: doc-of-record correction only. D9 in
