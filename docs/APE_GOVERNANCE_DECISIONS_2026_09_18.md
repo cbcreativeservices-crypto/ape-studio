@@ -155,7 +155,42 @@ There is **no employer** in the system today. The only participant is an app acc
 
 What an employer CAN do is receive a verification link or QR from the graduate and view the verified record — **one-directional, and outside the app.** No reply path, by design: the app never hands out contact details.
 
-### What is being added LATER (not now, not scoped, not started)
+### SUPERSEDED THE SAME DAY — this ships WITH launch, and is BUILT
+
+The owner reversed the "post-launch" framing within the hour: *"it has to be included now with launch - critical things like this HAVE to be included. it has to be built into the app and into the website... This needs to be built now."*
+
+Then, on the review load: *"only queue the ambiguous ones yes. send it to email with traceable heading so gmail can filter and process for me into buckets."*
+
+**What is live:**
+
+| Layer | State |
+|---|---|
+| Database — 3 tables, 9 RPCs, RLS, `contact_request_send` widened | **applied to production** |
+| `employer-apply-finalize` Edge Function (decide + email) | written, **NOT deployed** |
+| Website — `/employers/apply`, `/employers/account`, `/api/employers/apply`, contact CTAs | **built, builds clean** |
+| App — employer fields, interest selections, employer badge on threads | **not started** |
+
+**The verification rule.** Auto-approve only when all five hold: work email at the company's own domain · not a consumer mailbox · domain resolves · site answers over https · a real company name. Everything else QUEUES, with the failed conditions attached so the email explains itself.
+
+**It never auto-rejects, deliberately.** A wrong approval is visible and revocable; a wrong rejection is silent and permanent — a real studio owner on a Gmail address, or a company whose site is down that morning, is turned away and never comes back. Those errors are not symmetrical, so only the recoverable one is automated.
+
+**The email subject is a contract, not decoration:**
+
+```
+[APE-EMPLOYER][REVIEW]  Acme Ltd - acme.com - APP-a1b2c3d4
+[APE-EMPLOYER][AUTO-OK] Acme Ltd - acme.com - APP-a1b2c3d4
+```
+
+⛔ Do not reorder or reword those tags — the owner's Gmail rules key on them. Subject was chosen over custom headers because Gmail filters on headers unreliably.
+
+**Two things that must not be "simplified" later:**
+
+1. `employer_apply` computes its own checks. Never accept `checks` from a client — a forged application would reach the reviewer already wearing green ticks, and the human step would be reviewing a lie.
+2. The service-role key stays OUT of the Next.js server. The route handler probes the company site and forwards the applicant's own JWT; the Edge Function re-verifies it and confirms ownership before using the service role.
+
+**Still needed:** `ADMIN_NOTIFY_EMAIL` on the Edge Function, the function deployed, and the app-side surfaces.
+
+### The original scope note, kept for the record
 
 **Employer accounts**, at BOTH the website and the app-profile level, with their own data model and **a verification system** — so an employer is a real, verified party rather than an ordinary member pretending to be one.
 
