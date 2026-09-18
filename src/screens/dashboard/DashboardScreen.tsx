@@ -766,6 +766,24 @@ export function DashboardScreen() {
       }
       const examReplayed = await replayExamSubmissions().catch(() => []);
       for (const { result } of examReplayed) {
+        // A HELD PAPER HAS NO SCORE TO REPORT (2026-09-18). Interpolating
+        // `result.score` on a held or discarded result printed
+        // "Score undefined/30" — and worse, it would have announced a result
+        // the one-month rule says is not released.
+        if (result.outcome === 'held') {
+          notify(
+            'Offline exam submitted',
+            'Your exam reached us and has been marked. Your result is held until your first month of membership completes, and your certificate is issued then.',
+          );
+          continue;
+        }
+        if (result.outcome === 'discarded') {
+          notify(
+            'Offline exam not applied',
+            'Your membership ended before your first month completed, so this exam was not graded and has not been applied.',
+          );
+          continue;
+        }
         const awarded = result.credential_awarded ? ' Credential awarded.' : '';
         notify(
           'Offline exam submitted',

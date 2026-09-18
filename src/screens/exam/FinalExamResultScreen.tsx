@@ -2,11 +2,21 @@
  * Final Exam result — the terminal screen of the R6b capstone flow.
  *
  * Renders the server's result_payload verbatim; it computes nothing itself.
- * The four outcomes come straight from submit_final_exam:
+ * The outcomes come straight from submit_final_exam:
  *   pass      → credential issued (credential_awarded true on the first pass)
  *   no_pass   → retake allowed immediately, no cooldown (owner ruling D3)
  *   timed_out → past the 602-second grace
  *   voided    → 2+ app switches; lockout_until carries the 15-minute release
+ *   held      → graded and WITHHELD pending the one-month membership rule
+ *   discarded → the membership ended before that month completed
+ *
+ * ── THE TWO NEW ONES CARRY NO SCORE, AND MUST NOT INVENT ONE ────────────
+ *
+ * `held` and `discarded` arrive with a deliberately redacted payload — no score,
+ * no pass mark, no wrong answers. Everything below that reads those fields is
+ * gated on `released`, because the alternative is telling a learner they scored
+ * `undefined`, or coercing it to a zero they did not earn, on the last screen of
+ * the hardest thing in the product.
  */
 import { useEffect, useMemo } from 'react';
 import { noteHighValueEvent } from '../../features/review/reviewPrompt';
@@ -16,6 +26,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StudioButton } from '../../components/StudioButton';
 import { colors, fonts } from '../../theme/tokens';
 import type { RootStackParamList } from '../../navigation/types';
+import { isReleased } from '../../features/finalExam/api';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'FinalExamResult'>;
 
@@ -40,6 +51,16 @@ const COPY: Record<string, { title: string; body: string; tone: 'good' | 'bad' |
     body: 'This attempt was voided because the app was switched away from during the exam. The Final Exam is locked briefly before you can try again.',
     tone: 'warn',
   },
+  held: {
+    title: 'PAPER RECEIVED',
+    body: 'Your exam has been marked and sealed. A certificate requires one complete month of membership, so your result is held until your first month completes — then it is released and, if you have passed, your certificate is issued. You do not need to do anything, and you do not need to sit it again.',
+    tone: 'warn',
+  },
+  discarded: {
+    title: 'NOT APPLIED',
+    body: 'Your membership ended before your first month completed, so this exam was not graded and has not been applied to your record. It does not count as an attempt you have used — rejoin and you may sit it again.',
+    tone: 'warn',
+  },
 };
 
 function fmtLockout(iso: string | null): string | null {
@@ -55,11 +76,18 @@ export function FinalExamResultScreen({ navigation, route }: Props) {
 
   const copy = COPY[result.outcome] ?? COPY.no_pass;
   const lockout = useMemo(() => fmtLockout(result.lockout_until), [result.lockout_until]);
-  const graded = result.outcome === 'pass' || result.outcome === 'no_pass';
+  // Has the learner been TOLD their result? A held paper is graded; they simply
+  // have not been shown it. Everything score-shaped hangs off this.
+  const released = isReleased(result);
+  const graded = released && (result.outcome === 'pass' || result.outcome === 'no_pass');
   // M13 (2026-09-07): no_pass / timed_out invite a retake in the copy, but the
   // only control was Done. Offer an explicit Retake that relaunches the exam
   // (voided stays lockout-gated; pass has nothing to retake). Replaces the
   // result so the finished attempt doesn't linger beneath the fresh one.
+  //
+  // NOT on `held`: the paper is sitting there marked, and sitting it again would
+  // burn an attempt to replace a result they cannot see. `discarded` is not
+  // offered either — there is no membership to sit it under.
   const canRetake = result.outcome === 'no_pass' || result.outcome === 'timed_out';
 
   // A newly issued credential is the strongest success moment in the app —

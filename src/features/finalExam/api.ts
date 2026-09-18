@@ -59,21 +59,69 @@ export type ExamPayload = {
 /** F4-safe answer shapes — identical contract to the quiz. */
 export type AnswerValue = string | string[] | [string, string][];
 
-export type ExamOutcome = 'pass' | 'no_pass' | 'voided' | 'timed_out';
+export type ExamOutcome =
+  | 'pass'
+  | 'no_pass'
+  | 'voided'
+  | 'timed_out'
+  /**
+   * Graded, but NOT RELEASED (owner rule, 2026-09-18).
+   *
+   * A certificate requires one complete paid month. A learner who reaches the
+   * capstone before that may sit it — the paper is marked at submit, while the
+   * served questions and correct answers are still on the attempt — and the
+   * RESULT is withheld until the month completes. Then it is released and, on a
+   * pass, the credential is issued.
+   *
+   * It covers a fail as well as a pass. Releasing a failure early would leak the
+   * result the rule says is not released, and would let somebody learn their
+   * score and cancel before the month was up.
+   *
+   * `submit_final_exam` sends a deliberately REDACTED payload for this outcome:
+   * no score, no pass mark, no wrong answers. The true values are kept
+   * server-side and `release_pending_credentials` rebuilds the real payload.
+   */
+  | 'held'
+  /**
+   * The membership ended before the month completed, so the paper was discarded:
+   * not graded, not applied, and not counted as an attempt they have used.
+   */
+  | 'discarded';
 
+/**
+ * ⚠️ THE SCORE FIELDS ARE OPTIONAL, AND THAT IS THE POINT.
+ *
+ * They were required until 2026-09-18. A `held` or `discarded` payload carries
+ * none of them, so typing them as `number` would have let every screen read
+ * `result.score` off a result that has no score and render `undefined / undefined`
+ * — or worse, coerce it to 0 and show the learner a zero they did not earn, on
+ * the highest-stakes screen in the product.
+ *
+ * Making them optional turns that into a compile error at every call site, which
+ * is how it was caught in the result screen. Read them only after narrowing on
+ * `outcome`.
+ */
 export type ExamResult = {
   attempt_id: string;
   award_type: AwardType;
   award_id: string;
-  score: number;
   size: number;
-  pass_mark: number;
-  passed: boolean;
   outcome: ExamOutcome;
   credential_awarded: boolean;
-  wrong_answers: Record<string, { correct: unknown; selected: unknown }>;
   lockout_until: string | null;
+  /** Present only when the result has been released — see the note above. */
+  score?: number;
+  pass_mark?: number;
+  passed?: boolean;
+  wrong_answers?: Record<string, { correct: unknown; selected: unknown }>;
+  /** True when the paper is graded and withheld pending the one-month rule. */
+  held?: boolean;
 };
+
+/** Has this result actually been released to the learner? */
+export function isReleased(r: ExamResult): boolean {
+  return r.outcome !== 'held' && r.outcome !== 'discarded';
+}
 
 /** Every exception start_final_exam can raise (read from the live body). */
 export type ExamStartError =
@@ -212,7 +260,14 @@ export async function submitFinalExam(args: SubmitArgs): Promise<ExamResult> {
   });
   if (error) throw new Error(error.message);
   const result = data as ExamResult;
-  trackEvent('exam_finish', { passed: result.passed, offline: args.submittedOffline });
+  // `passed` is undefined on a held or discarded result, and this pipeline
+  // takes enum-shaped props only — sending undefined would land as a hole in
+  // the funnel rather than as the distinct state it is (2026-09-18).
+  trackEvent('exam_finish', {
+    passed: result.passed === true,
+    outcome: result.outcome,
+    offline: args.submittedOffline,
+  });
   return result;
 }
 
