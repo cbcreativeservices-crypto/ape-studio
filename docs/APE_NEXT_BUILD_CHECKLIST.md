@@ -22,6 +22,7 @@ The installed dev client predates several native modules and engine versions. Ev
 
 | **Deep links** — `proaudio://…` scheme; App Links for `proaudiotrainingacademy.com` (2026-09-05 discoverability pass) | `app.json` `scheme` + `android.intentFilters` (native config → needs the build); the URL→screen map is JS (`src/navigation/linking.ts`) | n/a | ✅ added 2026-09-05 | scheme works in any build after 2026-09-05; https links stay inert until the website hosts `/.well-known/apple-app-site-association` + `assetlinks.json`. **iOS `associatedDomains` is NOT in the build yet** — needs one interactive `eas build` (Apple login) to add the capability; step in `docs/APE_WEBSITE_SEO_NOTES_2026_09_05.md` §A |
 | Light-Pulse frequency counter (camera luma) + MultiMeter snapshot photo | camera path inside `ape-dsp` (no `expo-camera` package) | in-tree module | `NSCameraUsageDescription` + `android.permission.CAMERA` ✅ | ready |
+| **Certificate shared as an IMAGE** (owner 2026-09-18: "their printed certificate (image)"; the QR card and the link ship OTA and work now — this is only the certificate itself as a PNG) | `react-native-webview` + the existing `react-native-view-shot`: render `certificateHtml.ts`'s HTML in an offscreen WebView and photograph it | ❌ **not installed** — and deliberately NOT installed yet, see the note under this table | none expected (autolinked) | **parked — needs a decision on ORDERING, not on design** |
 | **MultiMeter snapshot — TAG LOCATION** (`src/features/tools/capture/location.ts`, wired in `MultiMeterScreen`) | `expo-location` | ❌ **not installed** — `optionalModule()` resolves it to `null`, so `isAvailable()` is false and the control stays hidden | **permissions REMOVED from `app.json` 2026-09-11** — see below | **parked** — needs the package installed AND the manifest keys put back |
 | **Store review prompt** — asks for a rating only after real successes (lab completed, quiz passed, certificate earned), thresholds in `src/features/review/reviewEligibility.ts` | `expo-store-review` ~57.0.2 + `expo-application` ~57.0.2 (version for once-per-version) | ✅ installed 2026-09-06 | none required | **needs the next build** — no-op on current clients |
 | **In-app purchases** — the paywall's real store connection (OpenIAP) | `expo-iap` ^5.5.1 (plugin auto-added); loader re-enabled in `features/commercial/purchase.ts` | ✅ installed 2026-09-06 | `expo-iap` plugin ✅ | **needs the next build** — purchases report "unavailable" on current clients; store products + validate-purchase must be configured before a real purchase can succeed |
@@ -119,3 +120,40 @@ NEVER run `eas build` (any profile, any platform), `eas submit`, or any other bi
 
 ## Rule for optional modules (2026-09-06)
 A package behind `optionalModule()` is only usable if it has a LITERAL `require` in the `LOADERS` table in `src/features/tools/capture/optionalModule.ts`. The old eval-only path hid packages from Metro so their JavaScript was never bundled, and the Harmonograph SAVE/SHARE/PRINT keys said "next app build" even on the build that carried them. Install → LOADERS line → checklist row, always together.
+
+---
+
+## Certificate-as-an-image: why the package is NOT installed yet (2026-09-18)
+
+The owner picked the WebView route over re-drawing the certificate in React, and
+that is the right call: `certificateHtml.ts` is the ONE definition of what a
+certificate looks like, and a second React version would drift from it the first
+time either was edited — the app already carries three bugs of exactly that
+shape, found this week.
+
+**But installing it now would stop every OTA fix reaching the phones.**
+
+`react-native-webview` is a native dependency, so adding it changes the
+`@expo/fingerprint` runtimeVersion. Every OTA published after that computes a
+runtime the installed builds do not have, so `eas update` succeeds and the
+phones see nothing — silently, which is the trap already documented for
+`.easignore`. Everything landed this week (the credential policy, the refund
+key, the entitlement cache, the production parsers, the share row, the Trophy
+Case copy) is OTA-eligible and would be stranded.
+
+So the ordering is: **keep shipping OTA, and install this in the SAME commit as
+the next native build.** One line at that point:
+
+```
+npx expo install react-native-webview
+```
+…then add `'react-native-webview': () => require('react-native-webview')` to
+`LOADERS` in `src/features/tools/capture/optionalModule.ts`. The code cannot be
+written before the install — a literal `require` of an absent package fails the
+whole bundle, which that file's own header explains.
+
+**One risk to test on a real device, not to assume away.** `view-shot` capturing
+a `WebView` is unreliable on Android: the WebView can be a surface the snapshot
+does not see, and it comes back blank. If that happens, the fallback is the PDF
+that already works — so the control must be gated on a successful capture and
+never offered as a dead button.
