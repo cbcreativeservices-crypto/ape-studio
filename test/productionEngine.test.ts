@@ -6,7 +6,7 @@
  * users for opening screens, and that is asserted directly rather than assumed.
  */
 import assert from 'node:assert/strict';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { registerHooks } from 'node:module';
 import { describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -506,13 +506,18 @@ describe('catalog wiring', () => {
     assert.equal(pre.member, true);
   });
 
-  it('carries no placeholder row — Post-Production is absent until it is built', () => {
+  it('both labs are real rows with real routes, and neither is a placeholder', () => {
+    // Post-Production landed 2026-09-17; this test used to assert its ABSENCE,
+    // which was the honest thing to say while it did not exist.
     const labs = ('labs' in production ? production.labs : []) ?? [];
     for (const l of labs) {
       assert.equal(l.status, undefined, `${l.name} must not be a placeholder`);
       assert.ok(l.route, `${l.name} must have a route`);
     }
-    assert.ok(!labs.some((l: { name: string }) => /post-production/i.test(l.name)));
+    const post = labs.find((l: { name: string }) => /post-production/i.test(l.name));
+    assert.ok(post, 'expected the Post-Production lab');
+    assert.equal(post.route, 'PostProdLab');
+    assert.equal(post.member, true);
   });
 
   it('no category anywhere still carries a development row', () => {
@@ -1641,5 +1646,604 @@ describe('the two batch-2 exercises', () => {
       values: { ...seeded.values, 'readiness.conditions': [] },
     });
     assert.ok(result.unmet.some((c) => c.id === 'accepted-risk-recorded'));
+  });
+});
+
+// ── Post-Production ──────────────────────────────────────────────────────────
+
+const { POSTPROD_STAGES, POSTPROD_OUTLINE } = await import(
+  '../src/features/production/postprod/index.ts'
+);
+const { LABS, ALL_LABS, labDef, stageForActivity } = await import(
+  '../src/features/production/labs.ts'
+);
+
+describe('Post-Production — the authored content', () => {
+  it('all eight stages are structurally valid on their own', () => {
+    for (const s of POSTPROD_STAGES) assert.deepEqual(validateStage(s), [], s.stageId);
+  });
+
+  it('every cross-stage watch resolves to a real field', () => {
+    // Post-Production reads across stages even more than Pre- does: the brief's
+    // specification is checked from four stages away. A typo never fires.
+    assert.deepEqual(validateStages(POSTPROD_STAGES), []);
+  });
+
+  it('every seeded table row and choice value is real', () => {
+    assert.deepEqual(validateSeeds(POSTPROD_STAGES), []);
+  });
+
+  it('every computed rule is implemented and every activity has a check', () => {
+    assert.deepEqual(missingLogic(POSTPROD_STAGES), []);
+    assert.deepEqual(missingChecks(POSTPROD_STAGES), []);
+  });
+
+  it('no authored copy anywhere contains a promise word', () => {
+    for (const s of POSTPROD_STAGES) assert.deepEqual(findBannedCopy(s), [], s.stageId);
+  });
+
+  it('the lab is the size the consolidation says it is', () => {
+    const fields = POSTPROD_STAGES.flatMap((s) => s.sections.flatMap((sec) => sec.fields));
+    const rules = POSTPROD_STAGES.flatMap((s) => s.rules);
+    assert.equal(POSTPROD_STAGES.length, 8, 'eight stages carry the spec’s twenty-eight');
+    assert.equal(fields.length, 187);
+    assert.equal(rules.length, 135);
+    assert.equal(rules.filter((r) => r.severity === 'blocker').length, 17);
+    assert.equal(POSTPROD_STAGES.filter((s) => s.activity).length, 8, 'one exercise per stage');
+  });
+
+  it('the outline and the authored stages agree, and cover all three chapters', () => {
+    assert.deepEqual(
+      POSTPROD_OUTLINE.map((o) => o.stageId),
+      POSTPROD_STAGES.map((s) => s.stageId),
+    );
+    for (const o of POSTPROD_OUTLINE) {
+      const stage = POSTPROD_STAGES.find((s) => s.stageId === o.stageId)!;
+      assert.equal(stage.num, o.num, o.stageId);
+      assert.equal(stage.title, o.title, o.stageId);
+    }
+    assert.deepEqual([...new Set(POSTPROD_OUTLINE.map((o) => o.chapter))], [1, 2, 3]);
+  });
+
+  it('NO blocker fires on a brand-new, untouched project', () => {
+    // The same invariant Pre-Production holds. A blocker cannot be outscored,
+    // so one that fires before the user types anything makes the meter
+    // meaningless from the first screen. Every one of the seventeen waits on
+    // something explicitly entered.
+    for (const pw of ['music', 'podcast', 'live'] as const) {
+      const stages = POSTPROD_STAGES.map((s) => resolveStage(s, pw));
+      const blockers = evaluateAll(stages, project({ lab: 'postprod', pathway: pw })).filter(
+        (f) => f.severity === 'blocker',
+      );
+      assert.deepEqual(blockers.map((b) => b.ruleId), [], `${pw} starts blocked`);
+    }
+  });
+
+  it('every rule that links to another lab links to a route that exists', () => {
+    // The no-dead-links standard, checked against the real param list rather
+    // than against a copy of it. This caught `GainLab` — the route is actually
+    // `GainLabHome` — before a user could tap into nothing.
+    const src = readFileSync(new URL('../src/navigation/types.ts', import.meta.url), 'utf8');
+    const body = src.slice(src.indexOf('export type RootStackParamList'));
+    const registered = new Set([...body.matchAll(/^\s{2}([A-Z][A-Za-z0-9_]*)\s*[?:]/gm)].map((m) => m[1]));
+    assert.ok(registered.size > 30, 'the param list was parsed');
+
+    const routes = new Set(
+      [...POSTPROD_STAGES, ...PREPROD_STAGES]
+        .flatMap((s) => s.rules)
+        .flatMap((r) => (r.learnMore ? [r.learnMore.route] : [])),
+    );
+    assert.ok(routes.size > 0, 'there are learn-more links to check');
+    for (const r of routes) {
+      assert.ok(registered.has(r), `${r} is not a registered route`);
+    }
+  });
+});
+
+describe('Post-Production — the rules that carry the spec’s warnings', () => {
+  const st = (id: string, pw: 'music' | 'podcast' | 'live' = 'podcast') =>
+    resolveStage(POSTPROD_STAGES.find((s) => s.stageId === id)!, pw);
+
+  const fire = (
+    stageId: string,
+    values: Record<string, unknown>,
+    pw: 'music' | 'podcast' | 'live' = 'podcast',
+  ) =>
+    evaluateStage(
+      st(stageId, pw),
+      project({ lab: 'postprod', pathway: pw, values: values as never }),
+    ).map((f) => f.ruleId);
+
+  it('an approver who is a committee is caught, and one person is not', () => {
+    assert.ok(fire('brief', { 'brief.approval_authority': 'The label' }).includes('brief-approver-is-a-committee'));
+    assert.ok(fire('brief', { 'brief.approval_authority': 'Dana and Priya' }).includes('brief-approver-is-a-committee'));
+    assert.ok(!fire('brief', { 'brief.approval_authority': 'Dana Okonkwo' }).includes('brief-approver-is-a-committee'));
+  });
+
+  it('a picture job with no frame rate blocks, and an audio-only job does not', () => {
+    const blocked = evaluateStage(
+      st('brief'),
+      project({ lab: 'postprod', pathway: 'podcast', values: { 'brief.frame_rate': 'unknown' } as never }),
+    ).find((f) => f.ruleId === 'brief-no-frame-rate');
+    assert.ok(blocked);
+    assert.equal(blocked?.severity, 'blocker');
+    assert.ok(
+      !fire('brief', { 'brief.frame_rate': 'none' }).includes('brief-no-frame-rate'),
+      '"no picture on this job" is an answer, not a gap',
+    );
+  });
+
+  it('clearing the cards before verifying the copy blocks', () => {
+    const ids = fire('media', {
+      'media.source_still_intact': 'no',
+      'media.verify_method': ['file_count'],
+      'media.verify_coverage': 'sample',
+    });
+    assert.ok(ids.includes('media-sources-cleared-early'));
+  });
+
+  it('counting files is not verifying them', () => {
+    assert.ok(
+      fire('media', { 'media.verify_method': ['file_count'], 'media.verify_coverage': 'all' }).includes(
+        'media-verification-is-names-only',
+      ),
+    );
+    assert.ok(
+      !fire('media', {
+        'media.verify_method': ['file_count', 'checksum'],
+        'media.verify_coverage': 'all',
+      }).includes('media-verification-is-names-only'),
+    );
+  });
+
+  it('a backup on the same volume is not a backup', () => {
+    const ids = fire('media', {
+      'media.working_location': '/Volumes/Work/Show/WORKING',
+      'media.backup_location': '/Volumes/Work/Show/BACKUP',
+    });
+    assert.ok(ids.includes('media-no-real-backup'));
+
+    const real = fire('media', {
+      'media.working_location': '/Volumes/Work/Show/WORKING',
+      'media.backup_location': '/Volumes/Archive/Show',
+    });
+    assert.ok(!real.includes('media-no-real-backup'));
+  });
+
+  it('drop-frame and non-drop are different answers', () => {
+    const ids = fire('media', {
+      'brief.frame_rate': '29_97_df',
+      'media.media_inventory': [
+        { mi_file: 'a.mov', mi_type: 'video', mi_frame_rate: '29_97_ndf', mi_status: 'online' },
+      ],
+    });
+    assert.ok(ids.includes('media-frame-rate-conflict'));
+  });
+
+  it('a session frame rate that differs from the delivery blocks', () => {
+    const f = evaluateStage(
+      st('session'),
+      project({
+        lab: 'postprod',
+        pathway: 'podcast',
+        values: { 'brief.frame_rate': '25', 'session.session_frame_rate': '29_97_ndf' } as never,
+      }),
+    ).find((x) => x.ruleId === 'session-frame-rate-mismatch');
+    assert.ok(f);
+    assert.equal(f?.severity, 'blocker');
+  });
+
+  it('the cure has to match the cause of the drift', () => {
+    const moved = fire('session', {
+      'session.drift_diagnosis': 'clock_drift',
+      'session.drift_action': 'move',
+    });
+    assert.ok(moved.includes('session-drift-wrong-cure'), 'a steady drift cannot be moved into place');
+
+    const stretched = fire('session', {
+      'session.drift_diagnosis': 'clock_drift',
+      'session.drift_action': 'stretch',
+    });
+    assert.ok(!stretched.includes('session-drift-wrong-cure'));
+
+    const overdone = fire('session', {
+      'session.drift_diagnosis': 'constant_offset',
+      'session.drift_action': 'stretch',
+    });
+    assert.ok(overdone.includes('session-drift-wrong-cure'), 'an offset does not need stretching');
+  });
+
+  it('takes chosen only on cleanliness are flagged', () => {
+    const ids = fire('edit', {
+      'edit.take_log': [
+        { tk_item: 'Answer 2', tk_verdict: 'preferred', tk_reason: 'Quietest', tk_chosen_on: 'technical, noise' },
+      ],
+    });
+    assert.ok(ids.includes('edit-chosen-on-technical-only'));
+
+    const musical = fire('edit', {
+      'edit.take_log': [
+        { tk_item: 'Answer 2', tk_verdict: 'preferred', tk_reason: 'Best delivery', tk_chosen_on: 'performance, technical' },
+      ],
+    });
+    assert.ok(!musical.includes('edit-chosen-on-technical-only'));
+  });
+
+  it('heavy repair on something barely audible is flagged', () => {
+    const ids = fire('edit', {
+      'edit.problem_list': [{ pb_where: '18:03', pb_problem: 'mouth', pb_severity: 'subtle', pb_action: 'rerecord' }],
+    });
+    assert.ok(ids.includes('edit-over-repair-on-subtle'));
+  });
+
+  it('restoration without listening to what is removed is flagged', () => {
+    const ids = fire('edit', {
+      'edit.problem_list': [{ pb_where: '11:40', pb_problem: 'hvac', pb_severity: 'noticeable', pb_action: 'reduce' }],
+      'edit.artifact_check': 'no',
+    });
+    assert.ok(ids.includes('edit-repair-without-comparison'));
+
+    const careful = fire('edit', {
+      'edit.problem_list': [{ pb_where: '11:40', pb_problem: 'hvac', pb_severity: 'noticeable', pb_action: 'reduce' }],
+      'edit.artifact_check': 'yes',
+      'edit.comparison_method': ['difference', 'level_matched'],
+    });
+    assert.ok(!careful.includes('edit-repair-without-comparison'));
+  });
+
+  it('material in the production with missing rights blocks', () => {
+    const f = evaluateStage(
+      st('build'),
+      project({
+        lab: 'postprod',
+        pathway: 'podcast',
+        values: {
+          'build.music_cues': [{ mu_cue: 'Bed', mu_type: 'score', mu_rights: 'Missing' }],
+        } as never,
+      }),
+    ).find((x) => x.ruleId === 'build-rights-unresolved');
+    assert.ok(f);
+    assert.equal(f?.severity, 'blocker');
+
+    const restricted = fire('build', {
+      'build.music_cues': [{ mu_cue: 'Bed', mu_type: 'score', mu_rights: 'Restricted' }],
+    });
+    assert.ok(!restricted.includes('build-rights-unresolved'), 'Restricted needs reading, not blocking');
+  });
+
+  it('altering a performance nobody agreed to alter is flagged', () => {
+    const ids = fire('build', {
+      'build.correction_scope': ['pitch'],
+      'build.correction_decision': 'not_discussed',
+    });
+    assert.ok(ids.includes('build-correction-not-agreed'));
+  });
+
+  it('a send with no return, and a group that misses the stems', () => {
+    const noReturn = fire('mix', {
+      'mix.bus_structure': [
+        { bs_name: 'Vocal plate send', bs_kind: 'aux', bs_feeds: 'Plate return', bs_in_stems: 'na' },
+      ],
+    });
+    assert.ok(noReturn.includes('mix-send-without-return'));
+
+    const wired = fire('mix', {
+      'mix.bus_structure': [
+        { bs_name: 'Vocal plate send', bs_kind: 'aux', bs_feeds: 'Plate return', bs_in_stems: 'na' },
+        { bs_name: 'Plate return', bs_kind: 'return', bs_feeds: 'Master', bs_in_stems: 'yes' },
+      ],
+    });
+    assert.ok(!wired.includes('mix-send-without-return'));
+
+    const orphan = evaluateStage(
+      st('mix', 'music'),
+      project({
+        lab: 'postprod',
+        pathway: 'music',
+        values: {
+          'mix.bus_structure': [
+            { bs_name: 'Guitars and keys', bs_kind: 'group', bs_feeds: 'Master', bs_in_stems: 'no' },
+          ],
+        } as never,
+      }),
+    ).find((x) => x.ruleId === 'mix-bus-not-in-stems');
+    assert.ok(orphan);
+    assert.equal(orphan?.severity, 'blocker', 'the instrumental would be missing them');
+  });
+
+  it('stems that do not recombine block, and an undescribed "close" counts as untested', () => {
+    assert.ok(fire('mix', { 'mix.recombination_test': 'differs' }).includes('mix-stems-do-not-recombine'));
+    assert.ok(
+      fire('mix', { 'mix.recombination_test': 'close' }).includes('mix-stems-do-not-recombine'),
+      'an accepted difference nobody has described is an untested one',
+    );
+    assert.ok(
+      !fire('mix', {
+        'mix.recombination_test': 'close',
+        'mix.recombination_difference': 'Master bus compressor, 0.3 dB at the loudest point. Accepted.',
+      }).includes('mix-stems-do-not-recombine'),
+    );
+  });
+
+  it('loudness is judged against the brief and never against a built-in target', () => {
+    const out = fire('finish', {
+      'brief.loudness_target': -16,
+      'brief.loudness_tolerance': 1,
+      'finish.measured_integrated': -13.2,
+    });
+    assert.ok(out.includes('finish-loudness-out-of-spec'));
+
+    const inSpec = fire('finish', {
+      'brief.loudness_target': -16,
+      'brief.loudness_tolerance': 1,
+      'finish.measured_integrated': -16.4,
+    });
+    assert.ok(!inSpec.includes('finish-loudness-out-of-spec'));
+
+    // No target in the brief means no judgement — the lab supplies none.
+    const noTarget = fire('finish', { 'finish.measured_integrated': -13.2 });
+    assert.ok(!noTarget.includes('finish-loudness-out-of-spec'));
+    assert.ok(noTarget.includes('finish-no-target-to-hit'), 'it asks for one instead');
+  });
+
+  it('true peak over the ceiling blocks', () => {
+    const f = evaluateStage(
+      st('finish'),
+      project({
+        lab: 'postprod',
+        pathway: 'podcast',
+        values: { 'brief.true_peak_max': -1, 'finish.measured_true_peak': 0.4 } as never,
+      }),
+    ).find((x) => x.ruleId === 'finish-true-peak-over');
+    assert.ok(f);
+    assert.equal(f?.severity, 'blocker');
+  });
+
+  it('squeezing a flat programme flatter is caught, and taking gain off is not', () => {
+    const squeezed = fire('finish', { 'finish.measured_lra': 2, 'finish.loudness_action': 'limiting' });
+    assert.ok(squeezed.includes('finish-over-limited'));
+
+    const gain = fire('finish', { 'finish.measured_lra': 2, 'finish.loudness_action': 'gain' });
+    assert.ok(!gain.includes('finish-over-limited'));
+  });
+
+  it('nobody listening to the deliverable all the way through blocks', () => {
+    const f = evaluateStage(
+      st('finish'),
+      project({
+        lab: 'postprod',
+        pathway: 'podcast',
+        values: { 'finish.full_playback_review': 'session' } as never,
+      }),
+    ).find((x) => x.ruleId === 'finish-no-full-listen');
+    assert.ok(f, 'automated checks assist QC, they do not replace it');
+    assert.equal(f?.severity, 'blocker');
+  });
+
+  it('captions timed against a cut that no longer exists are caught', () => {
+    const ids = fire('finish', {
+      'finish.access_deliverables': ['captions'],
+      'finish.access_timing_checked': 'earlier_version',
+    });
+    assert.ok(ids.includes('finish-access-timing-stale'));
+  });
+
+  it('revising over the approved version blocks', () => {
+    const f = evaluateStage(
+      st('deliver', 'music'),
+      project({
+        lab: 'postprod',
+        pathway: 'music',
+        values: {
+          'deliver.approved_version_preserved': 'no',
+          'deliver.notes_log': [{ nt_num: '1', nt_where: '02:14', nt_owner: 'Ade', nt_status: 'in_progress' }],
+        } as never,
+      }),
+    ).find((x) => x.ruleId === 'deliver-approved-version-lost');
+    assert.ok(f);
+    assert.equal(f?.severity, 'blocker');
+  });
+
+  it('a deliverable that misses the specification blocks', () => {
+    const f = evaluateStage(
+      st('deliver', 'music'),
+      project({
+        lab: 'postprod',
+        pathway: 'music',
+        values: {
+          'brief.target_sample_rate': '48000',
+          'brief.target_bit_depth': '24',
+          'brief.channel_config': 'stereo',
+          'deliver.deliverables': [
+            { dl_filename: 'mix.wav', dl_kind: 'full_mix', dl_format: 'wav', dl_rate: '44100', dl_depth: '16', dl_channels: 2, dl_state: 'uploaded' },
+          ],
+        } as never,
+      }),
+    ).find((x) => x.ruleId === 'deliver-spec-mismatch');
+    assert.ok(f);
+    assert.equal(f?.severity, 'blocker');
+  });
+
+  it('an upload nobody opened blocks, and a caption file is not held to an audio spec', () => {
+    const sent = {
+      'deliver.deliverables': [
+        { dl_filename: 'mix.wav', dl_kind: 'full_mix', dl_format: 'wav', dl_rate: '48000', dl_depth: '24', dl_channels: 2, dl_state: 'uploaded' },
+      ],
+      'deliver.verify_steps': ['transfer', 'count'],
+      'deliver.verified_from_destination': 'local',
+    };
+    const f = evaluateStage(
+      st('deliver', 'music'),
+      project({ lab: 'postprod', pathway: 'music', values: sent as never }),
+    ).find((x) => x.ruleId === 'deliver-upload-is-not-delivery');
+    assert.ok(f, 'sending is not delivering');
+    assert.equal(f?.severity, 'blocker');
+
+    const captions = fire(
+      'deliver',
+      {
+        'brief.target_sample_rate': '48000',
+        'deliver.deliverables': [
+          { dl_filename: 'captions.vtt', dl_kind: 'accessibility', dl_format: 'text', dl_rate: '', dl_depth: '', dl_state: 'planned' },
+        ],
+      },
+      'music',
+    );
+    assert.ok(!captions.includes('deliver-spec-mismatch'));
+  });
+
+  it('one archive copy, and an archive nobody has restored', () => {
+    assert.ok(fire('deliver', { 'deliver.archive_copies': 1 }).includes('deliver-archive-one-copy'));
+    assert.ok(
+      fire('deliver', {
+        'deliver.archive_contents': ['mixes', 'stems'],
+        'deliver.restore_tested': 'no',
+      }).includes('deliver-archive-untested'),
+    );
+    assert.ok(
+      fire('deliver', {
+        'deliver.archive_contents': ['mixes', 'stems'],
+        'deliver.restore_tested': 'no',
+      }).includes('deliver-archive-incomplete'),
+      'no session, no originals, no masters, no README',
+    );
+  });
+});
+
+describe('Post-Production — the eight exercises', () => {
+  const byId = (id: string) => POSTPROD_STAGES.find((s) => s.activity?.activityId === id)!.activity!;
+
+  it('every exercise starts failing and says which criteria are unmet', () => {
+    for (const stage of POSTPROD_STAGES) {
+      const a = stage.activity!;
+      const pathway = a.onlyFor?.[0] ?? 'podcast';
+      const seeded = seedActivityProject('postprod', pathway, a);
+      const result = checkActivity(a.activityId, seeded);
+      assert.equal(result.passed, false, `${a.activityId} passes before any repair`);
+      assert.ok(result.unmet.length > 0, a.activityId);
+      for (const c of result.unmet) assert.ok(c.label.length > 10, `${a.activityId}/${c.id}`);
+    }
+  });
+
+  it('a seeded project is marked as an exercise and belongs to this lab', () => {
+    const seeded = seedActivityProject('postprod', 'podcast', byId('safe-ingest'));
+    assert.equal(seeded.scenarioId, 'safe-ingest');
+    assert.equal(seeded.lab, 'postprod');
+  });
+
+  it('the ingest can be made safe, and then it passes', () => {
+    const seeded = seedActivityProject('postprod', 'podcast', byId('safe-ingest'));
+    const inventory = (seeded.values['media.media_inventory'] as Record<string, unknown>[])
+      // The duplicate comes out; the truncated room tone is re-requested.
+      .filter((r) => r.mi_status !== 'duplicate')
+      .map((r) => ({ ...r, mi_status: r.mi_status === 'truncated' ? 'online' : 'online' }));
+    const repaired = {
+      ...seeded,
+      values: {
+        ...seeded.values,
+        'media.originals_read_only': 'locked',
+        'media.copy_procedure': 'verified_tool',
+        'media.verify_method': ['file_count', 'checksum', 'playback'],
+        'media.verify_coverage': 'all',
+        'media.verify_findings': '211 of 211 matched. The room tone was re-requested and re-copied.',
+        'media.ingest_owner': 'Ade Balogun',
+        'media.conversion_policy': 'on_ingest',
+        'media.problem_plan': 'Duplicate removed from the working copy; room tone re-recorded and re-ingested.',
+        'media.media_inventory': inventory,
+      },
+    };
+    const result = checkActivity('safe-ingest', repaired);
+    assert.equal(result.passed, true, result.unmet.map((c) => c.id).join(', '));
+  });
+
+  it('the delivery can be put right, and then it passes', () => {
+    const seeded = seedActivityProject('postprod', 'music', byId('the-upload-succeeded'));
+    const repaired = {
+      ...seeded,
+      values: {
+        ...seeded.values,
+        'deliver.approved_version_preserved': 'yes',
+        'deliver.final_approval': 'Approved',
+        'deliver.approval_record': 'v04 approved by Priya Raman, 14 Oct.',
+        'deliver.naming_matches_spec': 'yes',
+        'deliver.conversion_needed': 'planned',
+        'deliver.manifest_contents': ['files', 'sizes', 'checksums', 'specs', 'contact', 'date'],
+        'deliver.verify_steps': ['transfer', 'count', 'size', 'reopen', 'receipt', 'acceptance'],
+        'deliver.verified_from_destination': 'destination',
+        'deliver.receipt_confirmed_by': 'Priya Raman',
+        'deliver.revision_reqc': ['affected_deliverables', 'qc', 'approval'],
+        'deliver.archive_contents': ['session', 'originals', 'masters', 'readme', 'mixes', 'stems'],
+        'deliver.archive_copies': 2,
+        'deliver.archive_locations': 'LTO in the studio safe; second drive at the producer’s office.',
+        'deliver.restore_tested': 'full',
+        'deliver.retention_period': 'agreed',
+        'deliver.notes_log': [
+          { nt_num: '1', nt_from: 'Priya', nt_where: '02:14', nt_request: 'Vocal up a little', nt_reason: 'Lost under the guitars', nt_priority: 'must', nt_owner: 'Ade', nt_status: 'completed', nt_verified: 'Checked in v04 export' },
+        ],
+        'deliver.deliverables': [
+          { dl_filename: 'NG_S01E04_MIX_STEREO_48k24_v04.wav', dl_kind: 'full_mix', dl_format: 'wav', dl_rate: '48000', dl_depth: '24', dl_channels: 2, dl_state: 'accepted' },
+          { dl_filename: 'NG_S01E04_INST_STEREO_48k24_v04.wav', dl_kind: 'instrumental', dl_format: 'wav', dl_rate: '48000', dl_depth: '24', dl_channels: 2, dl_state: 'accepted' },
+          { dl_filename: 'NG_S01E04_STEM_DRUMS_v04.wav', dl_kind: 'stem', dl_format: 'wav', dl_rate: '48000', dl_depth: '24', dl_channels: 2, dl_state: 'accepted' },
+        ],
+      },
+    };
+    const result = checkActivity('the-upload-succeeded', repaired);
+    assert.equal(result.passed, true, result.unmet.map((c) => c.id).join(', '));
+  });
+
+  it('an exercise is only offered on a pathway its seed fits', () => {
+    for (const stage of POSTPROD_STAGES) {
+      const a = stage.activity!;
+      if (!a.onlyFor) continue;
+      // Every seeded key must belong to a field that exists on that pathway.
+      for (const pw of a.onlyFor) {
+        const keys = new Set(
+          POSTPROD_STAGES.flatMap((s) =>
+            resolveStage(s, pw).sections.flatMap((sec) => sec.fields.map((f) => `${s.stageId}.${f.fieldId}`)),
+          ),
+        );
+        for (const k of Object.keys(a.seed)) {
+          assert.ok(keys.has(k), `${a.activityId} seeds ${k}, which does not exist on ${pw}`);
+        }
+      }
+    }
+  });
+});
+
+describe('the two labs share one engine', () => {
+  it('both labs are registered, and each knows its own stages', () => {
+    assert.deepEqual(ALL_LABS.map((l) => l.lab), ['preprod', 'postprod']);
+    assert.equal(labDef('preprod').stages.length, 6);
+    assert.equal(labDef('postprod').stages.length, 8);
+    assert.equal(LABS.preprod.packetName, 'Production Packet');
+    assert.equal(LABS.postprod.packetName, 'Delivery Package');
+  });
+
+  it('an activity is looked up within its own lab, not across both', () => {
+    // Two labs could one day author the same activityId. Scoping the lookup is
+    // what stops one lab seeding the other lab's project.
+    assert.ok(stageForActivity('postprod', 'safe-ingest'));
+    assert.equal(stageForActivity('preprod', 'safe-ingest'), undefined);
+    assert.ok(stageForActivity('preprod', 'repair-the-brief'));
+    assert.equal(stageForActivity('postprod', 'repair-the-brief'), undefined);
+  });
+
+  it('no activityId collides across the two labs', () => {
+    const ids = [...LABS.preprod.stages, ...LABS.postprod.stages]
+      .flatMap((s) => (s.activity ? [s.activity.activityId] : []));
+    assert.equal(new Set(ids).size, ids.length, 'duplicate activityId across the labs');
+  });
+
+  it('the two labs keep their projects in separate stores', () => {
+    assert.notEqual(PROJECT_KEYS.preprod, PROJECT_KEYS.postprod);
+  });
+
+  it('each lab titles its packet its own way', () => {
+    for (const lab of ALL_LABS) {
+      const stages = lab.stages.map((s) => resolveStage(s, 'music'));
+      const p = project({ lab: lab.lab, pathway: 'music' });
+      const html = buildPacketHtml({ project: p, stages, report: readProject(stages, p) });
+      assert.ok(html.includes(lab.packetName), `${lab.lab} packet is titled ${lab.packetName}`);
+    }
   });
 });

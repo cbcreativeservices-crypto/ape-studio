@@ -255,10 +255,27 @@ export type RootStackParamList = {
   /** Cymatics Lab: Sound Made Visible (owner GO 2026-09-16) — standalone
    *  home + the Chladni Plate Studio (optional experiment preset) + modules. */
   CymaticsLab: undefined;
-  /** Production Workflow labs (plan: docs/APE_PRODUCTION_LABS_PLAN_2026_09_17.md). */
-  PreProdLab: undefined;
-  PreProdStage: { projectId: string; stageId: string };
-  PreProdActivity: { activityId: string; pathway: import('../features/production/types').PathwayId };
+  /**
+   * Production Workflow labs (plan: docs/APE_PRODUCTION_LABS_PLAN_2026_09_17.md).
+   *
+   * Two labs, three screens. The `lab` param is what makes that possible: the
+   * stage and activity screens are lab-agnostic and read everything else from
+   * `features/production/labs.ts`. The two home entries exist so each lab has
+   * its own route to link and deep-link to.
+   */
+  ProductionLab: { lab: import('../features/production/types').LabKind };
+  PreProdLab: { lab: import('../features/production/types').LabKind };
+  PostProdLab: { lab: import('../features/production/types').LabKind };
+  ProductionStage: {
+    lab: import('../features/production/types').LabKind;
+    projectId: string;
+    stageId: string;
+  };
+  ProductionActivity: {
+    lab: import('../features/production/types').LabKind;
+    activityId: string;
+    pathway: import('../features/production/types').PathwayId;
+  };
   CymaticsModule: { id: import('../screens/lab/cymatics/modules/registry').CymaticsModuleId };
   CymaticsPlateStudio: { preset?: string; saved?: string } | undefined;
   /** Phase 2 (2026-09-16): the Liquid / Faraday-wave studio (optional experiment preset). */

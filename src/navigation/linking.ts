@@ -79,8 +79,9 @@ export const linking: LinkingOptions<RootStackParamList> = {
       DigitalLab: 'labs/digital',
       CymaticsLab: 'labs/cymatics',
       PreProdLab: 'labs/pre-production',
-      PreProdStage: 'labs/pre-production/:projectId/:stageId',
-      PreProdActivity: 'labs/pre-production/exercise/:activityId/:pathway',
+      PostProdLab: 'labs/post-production',
+      ProductionStage: 'labs/production/:lab/:projectId/:stageId',
+      ProductionActivity: 'labs/production/:lab/exercise/:activityId/:pathway',
       // Phase 3 (2026-09-17): the studios and modules are linkable too —
       // labs/cymatics/plate?preset=…, labs/cymatics/liquid, labs/cymatics/membrane,
       // labs/cymatics/module/harmony.

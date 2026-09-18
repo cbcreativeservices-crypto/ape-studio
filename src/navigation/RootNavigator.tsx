@@ -84,9 +84,9 @@ import { CalcResultsScreen } from '../screens/lab/calc/CalcResultsScreen';
 import { DigitalLabHomeScreen } from '../screens/lab/digital/DigitalLabHomeScreen';
 import { DigitalModuleScreen } from '../screens/lab/digital/DigitalModuleScreen';
 import { CymaticsHomeScreen } from '../screens/lab/cymatics/CymaticsHomeScreen';
-import { PreProdLabScreen } from '../screens/lab/preprod/PreProdLabScreen';
-import { PreProdStageScreen } from '../screens/lab/preprod/PreProdStageScreen';
-import { PreProdActivityScreen } from '../screens/lab/preprod/PreProdActivityScreen';
+import { ProductionLabScreen } from '../screens/lab/production/ProductionLabScreen';
+import { ProductionStageScreen } from '../screens/lab/production/ProductionStageScreen';
+import { ProductionActivityScreen } from '../screens/lab/production/ProductionActivityScreen';
 import { CymaticsModuleScreen } from '../screens/lab/cymatics/CymaticsModuleScreen';
 import { PlateStudioScreen } from '../screens/lab/cymatics/PlateStudioScreen';
 import { LiquidStudioScreen } from '../screens/lab/cymatics/LiquidStudioScreen';
@@ -191,8 +191,8 @@ const Gated = {
   CymaticsLiquidStudio: withAmplitudeOrientation(LiquidStudioScreen),
   CymaticsMembraneStudio: withAmplitudeOrientation(MembraneStudioScreen),
   CymaticsGallery: withAmplitudeOrientation(GalleryScreen),
-  PreProdStage: PreProdStageScreen,
-  PreProdActivity: PreProdActivityScreen,
+  ProductionStage: ProductionStageScreen,
+  ProductionActivity: ProductionActivityScreen,
   WaveModule: withAmplitudeOrientation(WaveModuleScreen),
   MeterModule: withAmplitudeOrientation(MeterModuleScreen),
   EqModule: withAmplitudeOrientation(EqModuleScreen),
@@ -224,7 +224,7 @@ const MemberGated = {
   CableInstallLab: withMembershipPreview(Gated.CableInstallLab),
   DigitalLab: withMembershipPreview(DigitalLabHomeScreen),
   CymaticsLab: withMembershipPreview(CymaticsHomeScreen),
-  PreProdLab: withMembershipPreview(PreProdLabScreen),
+  ProductionLab: withMembershipPreview(ProductionLabScreen),
 } as const;
 
 export function RootNavigator() {
@@ -414,9 +414,21 @@ export function RootNavigator() {
       <Stack.Screen name="DigitalLab" component={MemberGated.DigitalLab} />
       <Stack.Screen name="DigitalModule" component={Gated.DigitalModule} />
       <Stack.Screen name="CymaticsLab" component={MemberGated.CymaticsLab} />
-      <Stack.Screen name="PreProdLab" component={MemberGated.PreProdLab} />
-      <Stack.Screen name="PreProdStage" component={Gated.PreProdStage} />
-      <Stack.Screen name="PreProdActivity" component={Gated.PreProdActivity} />
+      {/* Both production labs share one screen; the route just fixes the param.
+          Named entries exist so each lab can be linked to on its own. */}
+      <Stack.Screen
+        name="PreProdLab"
+        component={MemberGated.ProductionLab}
+        initialParams={{ lab: 'preprod' }}
+      />
+      <Stack.Screen
+        name="PostProdLab"
+        component={MemberGated.ProductionLab}
+        initialParams={{ lab: 'postprod' }}
+      />
+      <Stack.Screen name="ProductionLab" component={MemberGated.ProductionLab} />
+      <Stack.Screen name="ProductionStage" component={Gated.ProductionStage} />
+      <Stack.Screen name="ProductionActivity" component={Gated.ProductionActivity} />
       <Stack.Screen name="CymaticsModule" component={Gated.CymaticsModule} />
       <Stack.Screen name="CymaticsPlateStudio" component={Gated.CymaticsPlateStudio} />
       <Stack.Screen name="CymaticsLiquidStudio" component={Gated.CymaticsLiquidStudio} />

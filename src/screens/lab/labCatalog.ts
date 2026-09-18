@@ -217,7 +217,8 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     section: 'training',
     kind: 'list',
     labs: [
-      { name: 'Audio Pre-Production', blurb: 'Turn a vague brief into a production a crew can actually run — scope, deliverables, people, schedule and budget — and leave with a Production Packet that shows its own gaps.', route: 'PreProdLab', member: true },
+      { name: 'Audio Pre-Production', blurb: 'Turn a vague brief into a production a crew can actually run — scope, deliverables, people, schedule and budget — and leave with a Production Packet that shows its own gaps.', route: 'PreProdLab', params: { lab: 'preprod' }, member: true },
+      { name: 'Audio Post-Production', blurb: 'Take a folder of recordings through to a delivery somebody has accepted — ingest, sync, edit, mix, finish to specification, and prove the files arrived intact — leaving a Delivery Package and an archive that can still be opened years later.', route: 'PostProdLab', params: { lab: 'postprod' }, member: true },
     ],
   },
   {
