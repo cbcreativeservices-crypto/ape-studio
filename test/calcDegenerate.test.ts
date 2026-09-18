@@ -86,13 +86,32 @@ describe('parseList() — the comma-separated field', () => {
   it('an empty string yields no numbers (the screen then refuses to compute)', () =>
     assert.deepEqual(parseList(''), []));
   it('pure punctuation yields no numbers', () => assert.deepEqual(parseList(',,, ; ,'), []));
-  it('garbage tokens are dropped, not turned into NaN entries', () =>
-    assert.deepEqual(parseList('8, abc, 4'), [8, 4]));
-  it('a typed "Infinity" is rejected — the filter is finite, not just non-NaN', () =>
-    assert.deepEqual(parseList('Infinity, 4'), [4]));
-  it('a lone minus sign is dropped', () => assert.deepEqual(parseList('-, 2'), [2]));
-  it('1e400 overflows to Infinity and is dropped rather than passed on', () =>
-    assert.deepEqual(parseList('1e400, 3'), [3]));
+  // ── CONTRACT CHANGED 2026-09-17 ────────────────────────────────────────────
+  //
+  // These four used to assert that a bad token is DROPPED and the rest of the
+  // list still computes: '8, abc, 4' gave [8, 4]. The concern at the time was
+  // that a bad token must not become a NaN entry, and it does not.
+  //
+  // But dropping it is its own failure. A list field is a set of MEASUREMENTS —
+  // several distances, several readings — and quietly computing the average of
+  // two of the three numbers the user entered gives a different answer with
+  // nothing on screen to say so. Under the owner's standing rule that these
+  // calculators are a source of truth used in the field, a silently different
+  // answer is exactly what must not happen; showing no answer is fine, because
+  // the user can see that and fix their input.
+  //
+  // So a list is now all-or-nothing. The NaN guarantee the old tests were
+  // really protecting is unchanged and stronger: nothing non-finite can reach a
+  // formula, because nothing reaches it at all.
+  it('ONE unreadable token invalidates the list rather than being dropped', () =>
+    assert.deepEqual(parseList('8, abc, 4'), []));
+  it('a typed "Infinity" is rejected, and takes the list with it', () =>
+    assert.deepEqual(parseList('Infinity, 4'), []));
+  it('a lone minus sign invalidates the list', () => assert.deepEqual(parseList('-, 2'), []));
+  it('1e400 overflows to Infinity and is never passed on', () =>
+    assert.deepEqual(parseList('1e400, 3'), []));
+  it('a trailing separator is not a token, so a normal list still computes', () =>
+    assert.deepEqual(parseList('8, 4, '), [8, 4]));
 });
 
 describe('speedOfSoundAir() — the temperature field accepts anything typed', () => {
