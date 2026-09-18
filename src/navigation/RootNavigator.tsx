@@ -86,6 +86,7 @@ import { DigitalModuleScreen } from '../screens/lab/digital/DigitalModuleScreen'
 import { CymaticsHomeScreen } from '../screens/lab/cymatics/CymaticsHomeScreen';
 import { PreProdLabScreen } from '../screens/lab/preprod/PreProdLabScreen';
 import { PreProdStageScreen } from '../screens/lab/preprod/PreProdStageScreen';
+import { PreProdActivityScreen } from '../screens/lab/preprod/PreProdActivityScreen';
 import { CymaticsModuleScreen } from '../screens/lab/cymatics/CymaticsModuleScreen';
 import { PlateStudioScreen } from '../screens/lab/cymatics/PlateStudioScreen';
 import { LiquidStudioScreen } from '../screens/lab/cymatics/LiquidStudioScreen';
@@ -191,6 +192,7 @@ const Gated = {
   CymaticsMembraneStudio: withAmplitudeOrientation(MembraneStudioScreen),
   CymaticsGallery: withAmplitudeOrientation(GalleryScreen),
   PreProdStage: PreProdStageScreen,
+  PreProdActivity: PreProdActivityScreen,
   WaveModule: withAmplitudeOrientation(WaveModuleScreen),
   MeterModule: withAmplitudeOrientation(MeterModuleScreen),
   EqModule: withAmplitudeOrientation(EqModuleScreen),
@@ -414,6 +416,7 @@ export function RootNavigator() {
       <Stack.Screen name="CymaticsLab" component={MemberGated.CymaticsLab} />
       <Stack.Screen name="PreProdLab" component={MemberGated.PreProdLab} />
       <Stack.Screen name="PreProdStage" component={Gated.PreProdStage} />
+      <Stack.Screen name="PreProdActivity" component={Gated.PreProdActivity} />
       <Stack.Screen name="CymaticsModule" component={Gated.CymaticsModule} />
       <Stack.Screen name="CymaticsPlateStudio" component={Gated.CymaticsPlateStudio} />
       <Stack.Screen name="CymaticsLiquidStudio" component={Gated.CymaticsLiquidStudio} />

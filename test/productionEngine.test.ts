@@ -855,3 +855,56 @@ describe('the four activities', () => {
     assert.equal(seeded.scenarioId, 'save-the-production');
   });
 });
+
+describe('the activity runner', () => {
+  it('only offers an exercise on a pathway its seed actually fits', () => {
+    // The stage 3 scenario is a recorded live show and seeds live-only fields.
+    const live = PREPROD_STAGES.filter(
+      (s) => s.activity && (!s.activity.onlyFor || s.activity.onlyFor.includes('live')),
+    );
+    const podcast = PREPROD_STAGES.filter(
+      (s) => s.activity && (!s.activity.onlyFor || s.activity.onlyFor.includes('podcast')),
+    );
+    assert.equal(live.length, 4, 'every exercise suits a live project');
+    assert.equal(podcast.length, 3, 'the live-only one is withheld from a podcast');
+    assert.ok(!podcast.some((s) => s.activity?.activityId === 'who-owns-this-task'));
+  });
+
+  it('a resumed exercise is found by its scenario id, not re-seeded', async () => {
+    // A learner who leaves mid-repair must come back to their own work.
+    const store = createProjectStore(memoryStore());
+    const activity = PREPROD_STAGES.find((s) => s.activity?.activityId === 'repair-the-brief')!.activity!;
+    const seeded = seedActivityProject('preprod', 'music', activity);
+    await store.upsert(seeded);
+    await store.setValue('preprod', seeded.id, 'define', 'approver', 'Priya Raman');
+
+    const found = (await store.load('preprod')).find((p) => p.scenarioId === 'repair-the-brief');
+    assert.ok(found, 'the exercise is found by scenarioId');
+    assert.equal(found?.values['define.approver'], 'Priya Raman', 'and the repair survived');
+  });
+
+  it('every seeded exercise starts unsolved', () => {
+    // An exercise that is already passing teaches nothing.
+    for (const s of PREPROD_STAGES) {
+      const a = s.activity;
+      if (!a) continue;
+      const pathway = a.onlyFor?.[0] ?? 'music';
+      const seeded = seedActivityProject('preprod', pathway, a);
+      assert.equal(checkActivity(a.activityId, seeded).passed, false, a.activityId);
+    }
+  });
+
+  it('every criterion carries a label a learner can act on', () => {
+    for (const s of PREPROD_STAGES) {
+      const a = s.activity;
+      if (!a) continue;
+      const pathway = a.onlyFor?.[0] ?? 'music';
+      const r = checkActivity(a.activityId, seedActivityProject('preprod', pathway, a));
+      const all = [...r.met, ...r.unmet];
+      assert.ok(all.length >= 4, `${a.activityId} should check several things`);
+      for (const c of all) {
+        assert.ok(c.label.length > 15, `${a.activityId}/${c.id} label is too terse to act on`);
+      }
+    }
+  });
+});

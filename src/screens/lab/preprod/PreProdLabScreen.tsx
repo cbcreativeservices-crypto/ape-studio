@@ -24,7 +24,7 @@ import { buildPacketHtml, exportPacketPdf, isPdfAvailable } from '../../../featu
 import { createProjectStore, newProject, projectStore } from '../../../features/production/projectStore';
 import type { PathwayId, ProductionProject } from '../../../features/production/types';
 import { LAUNCH_PATHWAYS, PATHWAY_LABEL } from '../../../features/production/types';
-import { PREPROD_OUTLINE, authoredStage } from '../../../features/production/preprod';
+import { PREPROD_OUTLINE, PREPROD_STAGES, authoredStage } from '../../../features/production/preprod';
 import { ReadinessMeter, StageProgressRow } from './ReadinessMeter';
 import { STATE_TINT } from './FieldRow';
 
@@ -181,6 +181,40 @@ export function PreProdLabScreen() {
               );
             })}
 
+            {/* Exercises. Each one seeds a REAL project into a broken state and
+                sends the user to the ordinary stage screen to repair it, so the
+                practice happens on the same screens as the work.
+
+                An activity declares the pathways it makes sense on (the stage 3
+                scenario is a recorded live show and seeds live-only fields), so
+                offering it on a podcast project would seed values into fields
+                that are not there. Filtered here rather than hidden later. */}
+            <Text style={styles.sectionTitle}>EXERCISES</Text>
+            <Text style={styles.sectionIntro}>
+              A plan that has already gone wrong, for you to repair. Each one checks your work decision by
+              decision and tells you what is still outstanding.
+            </Text>
+            {PREPROD_STAGES.filter(
+              (s) => s.activity && (!s.activity.onlyFor || s.activity.onlyFor.includes(project.pathway)),
+            ).map((s) => (
+              <Pressable
+                key={s.activity!.activityId}
+                style={styles.exercise}
+                onPress={() =>
+                  navigation.navigate('PreProdActivity', {
+                    activityId: s.activity!.activityId,
+                    pathway: project.pathway,
+                  })
+                }
+                accessibilityRole="button"
+                accessibilityLabel={`Exercise, ${s.activity!.title}, from stage ${s.num}`}
+              >
+                <Text style={styles.exerciseNum}>{s.num}</Text>
+                <Text style={styles.exerciseName}>{s.activity!.title}</Text>
+                <Text style={styles.exerciseGo}>›</Text>
+              </Pressable>
+            ))}
+
             <Text style={styles.sectionTitle}>PRODUCTION PACKET</Text>
             <Text style={styles.sectionIntro}>
               Everything decided so far, as one document, with the gaps and any accepted conditions printed rather
@@ -287,6 +321,21 @@ const styles = StyleSheet.create({
   },
   packetBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.1, color: colors.amber },
   packetNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted },
+
+  exercise: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    borderWidth: 1,
+    borderColor: colors.hairline,
+    borderRadius: 9,
+    backgroundColor: '#121215',
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+  },
+  exerciseNum: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: colors.textMuted, width: 15 },
+  exerciseName: { flex: 1, fontFamily: fonts.barlowMedium, fontSize: 14, color: colors.textPrimary },
+  exerciseGo: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, color: colors.amber },
 });
 
 /** Exported for tests: the packet HTML for a project, without touching native. */
