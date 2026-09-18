@@ -26,6 +26,29 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 · ccode · DEPLOYED (no commit — server state only)
+changed: validate-purchase v4 and tube-image v5 are now LIVE
+affects other side: YES — the tree and production now agree for these two, which they
+  did not this morning.
+  · validate-purchase v4 carries: store_ref keyed on purchaseToken for Google (the refund
+    feed names the TOKEN; the order id matched zero rows forever), the prior-entitlement
+    read error no longer discarded (a failed read used to RESTART a member's tenure clock
+    and permanently deny them every credential), and an upsert when that read is
+    unreadable so the grant still lands against UNIQUE (user_id, product).
+  · tube-image v5: judges every entitlement row instead of `[0]`.
+  · verify_jwt stayed TRUE on both.
+  · Deployed source was read back with get_edge_function and compared against the repo —
+    identical. NOT executed: no purchase has been made against v4.
+  · ⛔ store-notifications is STILL NOT DEPLOYED. It is the refund receiver, it is fixed in
+    the tree, and it needs verify_jwt FALSE (Apple/Google post to it as a webhook and it
+    does its own verification against the store). Deploy it when the store webhooks are
+    configured — it receives nothing until then.
+  · ⚠️ A7 IS STILL OPEN AND OUTRANKS ALL OF THIS: the 7 validate-purchase store secrets
+    have never been verified as set. Unset means every buyer gets "we couldn't verify that
+    purchase", finishTransaction never runs, and Google auto-refunds after 72 hours.
+needs: someone to confirm those 7 secrets in the dashboard before anything is sold.
+
+
 ### 2026-09-18 11:47 · ccode · 3d616750
 changed: Android refunds can actually match a row now
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
