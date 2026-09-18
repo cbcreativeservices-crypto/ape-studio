@@ -32,7 +32,7 @@ export const GATE_ENABLED = true;
  *
  *  Set to "" (empty) when there is no window — that is the normal state.
  * ------------------------------------------------------------------ */
-const UNLOCK_UNTIL = "2026-09-18T21:45:00Z";
+const UNLOCK_UNTIL = "";
 
 /**
  * Is the gate standing guard for THIS request?
