@@ -137,5 +137,6 @@ h1 { font-size: 13pt; margin: 0 0 8pt; letter-spacing: 1pt; text-transform: uppe
 .fig svg { width: 100%; height: 100%; }
 .cap { font-size: 8.5pt; color: #333; margin-top: 4pt; text-align: center; max-width: ${cell}pt; }
 .foot { margin-top: auto; text-align: center; font-size: 8pt; color: #777; line-height: 1.5; }
+.badge { font-size: 8.5pt; letter-spacing: 1pt; text-transform: uppercase; color: #666; margin-bottom: 4pt; }
 </style></head><body><div class="page"><h1>${esc(meta.title)} · ${esc(meta.date)}</h1><div class="grid">${cells}</div><div class="foot">${foot}</div></div></body></html>`;
 }
