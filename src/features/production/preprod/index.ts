@@ -14,18 +14,30 @@ import { STAGE1_DEFINE } from './stage1.data';
 import { STAGE2_DELIVER } from './stage2.data';
 import { STAGE3_PEOPLE } from './stage3.data';
 import { STAGE4_SCHEDULE } from './stage4.data';
+import { STAGE5_TECHNICAL } from './stage5.data';
+import { STAGE6_READINESS } from './stage6.data';
 
-// Side-effect import: registers the rule logic and the activity checks.
+// Side-effect imports: register the rule logic and the activity checks.
+// Split by batch, not by concern — `logic.ts` is stages 1–4, `logic2.ts` is
+// stages 5–6. Both must be imported or a rule silently has no implementation,
+// which `missingLogic()` reports and the tests fail on.
 import './logic';
+import './logic2';
 
 /** Every authored Pre-Production stage, in order. */
-export const PREPROD_STAGES: StageDef[] = [STAGE1_DEFINE, STAGE2_DELIVER, STAGE3_PEOPLE, STAGE4_SCHEDULE];
+export const PREPROD_STAGES: StageDef[] = [
+  STAGE1_DEFINE,
+  STAGE2_DELIVER,
+  STAGE3_PEOPLE,
+  STAGE4_SCHEDULE,
+  STAGE5_TECHNICAL,
+  STAGE6_READINESS,
+];
 
 /**
- * The six stages the lab navigates by (owner's spec). Stages 5 and 6 are not
- * authored yet; the home screen shows the whole shape and opens what exists, so
- * a user planning a production sees the process rather than only the finished
- * parts.
+ * The six stages the lab navigates by (owner's spec). ALL SIX are authored as of
+ * 2026-09-17, so the outline and PREPROD_STAGES now agree — the home screen no
+ * longer has a closed row to show.
  */
 export const PREPROD_OUTLINE: { stageId: string; num: number; title: string }[] = [
   { stageId: 'define', num: 1, title: 'Define the Project' },

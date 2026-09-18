@@ -171,6 +171,26 @@ function Editor({
         />
       );
 
+    /**
+     * A clock time on the production day. Free text on purpose — `clockMinutes`
+     * reads "16:00", "4pm" and "9:30am" alike, and a picker would be slower than
+     * typing for someone laying out a day. The placeholder and the accessibility
+     * label do the teaching instead.
+     */
+    case 'time':
+      return (
+        <TextInput
+          style={styles.input}
+          value={typeof value === 'string' ? value : ''}
+          onChangeText={onChange}
+          placeholder={field.placeholder ?? 'e.g. 16:00 or 4pm'}
+          placeholderTextColor={colors.textMuted}
+          autoCapitalize="none"
+          autoCorrect={false}
+          accessibilityLabel={`${field.label}, clock time`}
+        />
+      );
+
     case 'choice':
     case 'status': {
       const options =

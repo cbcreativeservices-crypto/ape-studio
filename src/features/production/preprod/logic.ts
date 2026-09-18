@@ -36,6 +36,9 @@ import {
   when,
 } from '../rules';
 import { registerActivityChecks } from '../activities';
+// Stage 5's capacity test, borrowed by stage 4 so the two cannot both fire.
+// One-way: logic2 knows nothing about this file, so there is no import cycle.
+import { inputsExceedCapacity } from './logic2';
 
 // ── thresholds (ccode's judgements, per C's notes) ───────────────────────────
 
@@ -512,6 +515,10 @@ registerRuleLogic({
   },
 
   'schedule-channels-insufficient': (ctx) => {
+    // Stand down when stage 5 is making the same comparison from better
+    // evidence. C's intent for `technical-inputs-exceed-capacity` is explicit:
+    // the two rules say the same thing, so only one of them may say it.
+    if (inputsExceedCapacity(ctx)) return false;
     const sources = num(ctx.get('define', 'source_count'));
     if (sources === null) return false;
     const channels = num(ctx.get('schedule', 'available_channels'));
@@ -861,3 +868,4 @@ registerActivityChecks({
 
 /** Exported so the rules and the activity checks cannot drift apart. */
 export { SIMULTANEOUS_ROLES, LONG_DAY_HOURS, TIGHT_CHANNEL_MARGIN, STORAGE_MARGIN, nameList };
+

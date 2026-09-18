@@ -529,8 +529,8 @@ describe('catalog wiring', () => {
 
 const { STAGE3_PEOPLE } = await import('../src/features/production/preprod/stage3.data.ts');
 
-describe('Computer C batch 1', () => {
-  it('all four stages are structurally valid on their own', () => {
+describe('the authored content, both batches', () => {
+  it('all six stages are structurally valid on their own', () => {
     for (const s of PREPROD_STAGES) assert.deepEqual(validateStage(s), [], s.stageId);
   });
 
@@ -560,6 +560,17 @@ describe('Computer C batch 1', () => {
       'deliver.review_rounds',
       'deliver.review_period',
       'define.source_count',
+      // Batch 2 reads these from four stages away; a rename breaks a rule in
+      // silence, which is exactly what this list exists to prevent.
+      'schedule.available_inputs',
+      'schedule.monitor_mixes_available',
+      'deliver.timecode_required',
+      'people.wireless_channels',
+      'people.rigging_required',
+      'people.power_source',
+      'technical.input_list',
+      'technical.level_plan',
+      'technical.click_playback',
     ]) {
       assert.ok(keys.has(k), `${k} is referenced across stages and must exist`);
     }
@@ -577,14 +588,18 @@ describe('Computer C batch 1', () => {
     for (const s of PREPROD_STAGES) assert.deepEqual(findBannedCopy(s), [], s.stageId);
   });
 
-  it('the batch is the size C reported', () => {
+  it('both batches are the size C reported', () => {
     const fields = PREPROD_STAGES.flatMap((s) => s.sections.flatMap((sec) => sec.fields));
     const rules = PREPROD_STAGES.flatMap((s) => s.rules);
-    assert.equal(fields.length, 115);
-    assert.equal(rules.length, 60);
-    // Five, not C's seven: define-approver-missing and deliver-list-empty were
-    // demoted to warnings because they fired on empty fields (owner, 2026-09-17).
-    assert.equal(rules.filter((r) => r.severity === 'blocker').length, 5);
+    // Batch 1 (stages 1–4) 115 fields / 60 rules, batch 2 (stages 5–6) 65 / 30.
+    assert.equal(fields.length, 180);
+    assert.equal(rules.length, 90);
+    // Ten: five surviving from batch 1 — define-approver-missing and
+    // deliver-list-empty were demoted to warnings because they fired on empty
+    // fields (owner, 2026-09-17) — plus five from batch 2, one in stage 5 and
+    // four in stage 6. None of the batch-2 five fires on an empty field; each
+    // waits on something explicitly entered, which the next test proves.
+    assert.equal(rules.filter((r) => r.severity === 'blocker').length, 10);
   });
 
   it('NO blocker fires on a brand-new, untouched project', () => {
@@ -858,16 +873,22 @@ describe('the four activities', () => {
 
 describe('the activity runner', () => {
   it('only offers an exercise on a pathway its seed actually fits', () => {
-    // The stage 3 scenario is a recorded live show and seeds live-only fields.
+    // Three scenarios are recorded live shows and seed live-only fields: the
+    // stage 3 one, and both of batch 2's. A podcast keeps the three that fit it.
     const live = PREPROD_STAGES.filter(
       (s) => s.activity && (!s.activity.onlyFor || s.activity.onlyFor.includes('live')),
     );
     const podcast = PREPROD_STAGES.filter(
       (s) => s.activity && (!s.activity.onlyFor || s.activity.onlyFor.includes('podcast')),
     );
-    assert.equal(live.length, 4, 'every exercise suits a live project');
-    assert.equal(podcast.length, 3, 'the live-only one is withheld from a podcast');
-    assert.ok(!podcast.some((s) => s.activity?.activityId === 'who-owns-this-task'));
+    assert.equal(live.length, 6, 'every exercise suits a live project');
+    assert.equal(podcast.length, 3, 'the live-only ones are withheld from a podcast');
+    for (const withheld of ['who-owns-this-task', 'build-the-input-list', 'production-emergency']) {
+      assert.ok(
+        !podcast.some((s) => s.activity?.activityId === withheld),
+        `${withheld} is not offered on a podcast`,
+      );
+    }
   });
 
   it('a resumed exercise is found by its scenario id, not re-seeded', async () => {
@@ -968,5 +989,657 @@ describe('accepting a blocker as a condition', () => {
     });
     const cleared = await store.clearCondition('preprod', p.id, 'define-deadline-past');
     assert.equal(readProject(stages, cleared!, now).verdict, 'not_ready');
+  });
+});
+
+describe('Computer C batch 2 — the stage 5 and 6 rules', () => {
+  const st = (id: string, pw: 'music' | 'podcast' | 'live' = 'music') =>
+    resolveStage(PREPROD_STAGES.find((s) => s.stageId === id)!, pw);
+
+  const fire = (stageId: string, values: Record<string, unknown>, pw: 'music' | 'podcast' | 'live' = 'music') =>
+    evaluateStage(st(stageId, pw), project({ pathway: pw, values: values as never })).map((f) => f.ruleId);
+
+  /** A production date this many days out, as the date fields store it. */
+  const inDays = (n: number) => new Date(Date.now() + n * 864e5).toISOString().slice(0, 10);
+
+  const row = (over: Record<string, unknown> = {}) => ({
+    in_source: 'Kick', in_capture: 'dynamic_mic', in_phantom: 'off',
+    in_channels: '1', in_connection: 'xlr', in_console: '1', in_track: '1', in_notes: '',
+    ...over,
+  });
+
+  it('a seventeen-row list on a sixteen-channel desk blocks, and stage 4 stands down', () => {
+    // The one cross-stage suppression C asked for by name: two rules making the
+    // same comparison must not both speak, and the input list is the better
+    // evidence, so it wins.
+    const values = {
+      'define.source_count': 24,
+      'schedule.available_channels': 16,
+      'technical.input_list': [row({ in_channels: '2' }), ...Array.from({ length: 15 }, () => row())],
+    };
+    assert.ok(fire('technical', values).includes('technical-inputs-exceed-capacity'));
+    assert.ok(
+      !fire('schedule', values).includes('schedule-channels-insufficient'),
+      'the stage 4 rule stands down while stage 5 is saying it better',
+    );
+  });
+
+  it('a row with the channel column empty still counts as one channel', () => {
+    const list = Array.from({ length: 17 }, () => row({ in_channels: '' }));
+    const ids = fire('technical', { 'schedule.available_channels': 16, 'technical.input_list': list });
+    assert.ok(ids.includes('technical-inputs-exceed-capacity'));
+  });
+
+  it('a list that fits says nothing, and stage 4 gets its voice back', () => {
+    const values = {
+      'define.source_count': 24,
+      'schedule.available_channels': 16,
+      'technical.input_list': [row(), row()],
+    };
+    assert.ok(!fire('technical', values).includes('technical-inputs-exceed-capacity'));
+    assert.ok(
+      fire('schedule', values).includes('schedule-channels-insufficient'),
+      'suppression is conditional, not permanent',
+    );
+  });
+
+  it('a stereo source given one console channel is caught, and an empty column is not', () => {
+    const one = fire('technical', {
+      'technical.input_list': [row({ in_source: 'Overheads', in_channels: '2', in_console: '4', in_track: '4' })],
+    });
+    assert.ok(one.includes('technical-stereo-one-channel'));
+
+    const two = fire('technical', {
+      'technical.input_list': [row({ in_channels: '2', in_console: '4-5', in_track: '4 and 5' })],
+    });
+    assert.ok(!two.includes('technical-stereo-one-channel'), 'a range or a pair is two');
+
+    const blank = fire('technical', {
+      'technical.input_list': [row({ in_channels: '2', in_console: '', in_track: '' })],
+    });
+    assert.ok(!blank.includes('technical-stereo-one-channel'), 'an unfilled column is not yet a mistake');
+  });
+
+  it('phantom is checked in both directions, and left alone where it varies', () => {
+    const off = fire('technical', {
+      'technical.input_list': [row({ in_capture: 'condenser_mic', in_phantom: 'off' })],
+    });
+    assert.ok(off.includes('technical-phantom-mismatch'), 'a condenser with no phantom');
+
+    const on = fire('technical', {
+      'technical.input_list': [row({ in_capture: 'ribbon_mic', in_phantom: 'on' })],
+    });
+    assert.ok(on.includes('technical-phantom-mismatch'), 'a ribbon with phantom on');
+
+    for (const capture of ['di', 'wireless']) {
+      const quiet = fire('technical', { 'technical.input_list': [row({ in_capture: capture, in_phantom: 'on' })] });
+      assert.ok(!quiet.includes('technical-phantom-mismatch'), `${capture} varies by device`);
+    }
+
+    const unanswered = fire('technical', {
+      'technical.input_list': [row({ in_capture: 'condenser_mic', in_phantom: '' })],
+    });
+    assert.ok(!unanswered.includes('technical-phantom-mismatch'), 'an unanswered column says nothing');
+  });
+
+  it('a microphone chosen for no stated reason is caught, including an empty multi-choice', () => {
+    const ids = fire('technical', {
+      'technical.mic_choices': [{ mc_source: 'Kick', mc_mic: 'D112', mc_reason: [] }],
+    });
+    assert.ok(ids.includes('technical-mic-no-reason'));
+
+    const given = fire('technical', {
+      'technical.mic_choices': [{ mc_source: 'Kick', mc_mic: 'D112', mc_reason: ['level', 'tone'] }],
+    });
+    assert.ok(!given.includes('technical-mic-no-reason'));
+  });
+
+  it('a signal path that never reaches a recorder is caught', () => {
+    const ids = fire('technical', {
+      'define.services': ['live_recording'],
+      'technical.signal_path': [{ sp_from: 'Stage box', sp_level: 'mic', sp_via: 'Splitter', sp_to: 'Front of house console' }],
+    });
+    assert.ok(ids.includes('technical-path-ends-nowhere'));
+
+    const arrives = fire('technical', {
+      'define.services': ['live_recording'],
+      'technical.signal_path': [{ sp_from: 'Stage box', sp_level: 'mic', sp_via: 'Splitter', sp_to: 'Multitrack recorder' }],
+    });
+    assert.ok(!arrives.includes('technical-path-ends-nowhere'));
+  });
+
+  it('a path with an empty destination is caught whatever the services say', () => {
+    const ids = fire('technical', {
+      'technical.signal_path': [{ sp_from: 'Bass amp', sp_level: 'line', sp_via: '', sp_to: '' }],
+    });
+    assert.ok(ids.includes('technical-path-ends-nowhere'));
+  });
+
+  it('an instrument-level source with no DI, and a line source on an unbalanced jack', () => {
+    const noDi = fire('technical', {
+      'technical.signal_path': [{ sp_from: 'Bass', sp_level: 'instrument', sp_via: 'Long cable', sp_to: 'Console channel 6' }],
+    });
+    assert.ok(noDi.includes('technical-level-format-conflict'));
+
+    const withDi = fire('technical', {
+      'technical.signal_path': [{ sp_from: 'Bass', sp_level: 'instrument', sp_via: 'Active DI', sp_to: 'Console channel 6' }],
+    });
+    assert.ok(!withDi.includes('technical-level-format-conflict'));
+
+    const unbalanced = fire('technical', {
+      'technical.input_list': [row({ in_capture: 'line', in_connection: 'ts' })],
+    });
+    assert.ok(unbalanced.includes('technical-level-format-conflict'));
+  });
+
+  it('a recorded show with no backup capture and nothing marked unrepeatable is caught', () => {
+    const ids = fire('technical', {
+      'define.services': ['live_recording'],
+      'technical.mic_choices': [{ mc_source: 'Lead vocal', mc_mic: 'SM58', mc_reason: ['level'], mc_backup: 'none' }],
+    });
+    assert.ok(ids.includes('technical-no-safety-capture'));
+
+    const safe = fire('technical', {
+      'define.services': ['live_recording'],
+      'technical.mic_choices': [{ mc_source: 'Lead vocal', mc_mic: 'SM58', mc_reason: ['level'], mc_backup: 'safety_track' }],
+    });
+    assert.ok(!safe.includes('technical-no-safety-capture'));
+
+    const noTable = fire('technical', { 'define.services': ['live_recording'] });
+    assert.ok(!noTable.includes('technical-no-safety-capture'), 'an empty table is a question, not a fault');
+  });
+
+  it('a click with nowhere to go is caught', () => {
+    const noMix = fire('technical', { 'technical.click_playback': 'yes', 'technical.cue_mixes': [] });
+    assert.ok(noMix.includes('technical-click-no-cue'));
+
+    const noSource = fire('technical', {
+      'technical.click_playback': 'yes',
+      'technical.cue_mixes': [{ cm_who: 'Drummer', cm_type: 'iem_wired' }],
+      'technical.input_list': [row()],
+    });
+    assert.ok(noSource.includes('technical-click-no-cue'), 'the click has to enter the desk somewhere');
+
+    const complete = fire('technical', {
+      'technical.click_playback': 'yes',
+      'technical.cue_mixes': [{ cm_who: 'Drummer', cm_type: 'iem_wired' }],
+      'technical.input_list': [row({ in_capture: 'playback' })],
+    });
+    assert.ok(!complete.includes('technical-click-no-cue'));
+  });
+
+  it('more independent cue mixes than the desk has outputs is caught, and shared ones do not count', () => {
+    const ids = fire('technical', {
+      'schedule.monitor_mixes_available': 2,
+      'technical.cue_mixes': [
+        { cm_who: 'Drums', cm_type: 'iem_wired' },
+        { cm_who: 'Bass', cm_type: 'wedge' },
+        { cm_who: 'Keys', cm_type: 'iem_wireless' },
+      ],
+    });
+    assert.ok(ids.includes('technical-cue-mix-no-output'));
+
+    const shared = fire('technical', {
+      'schedule.monitor_mixes_available': 2,
+      'technical.cue_mixes': [
+        { cm_who: 'Drums', cm_type: 'iem_wired' },
+        { cm_who: 'Everyone else', cm_type: 'shared' },
+        { cm_who: 'Guest', cm_type: 'shared' },
+      ],
+    });
+    assert.ok(!shared.includes('technical-cue-mix-no-output'), 'a shared mix is one output, not three');
+  });
+
+  it('the clock is unsettled three different ways, and settled leaves it quiet', () => {
+    assert.ok(fire('technical', { 'technical.recorder_count': 'several_free' }).includes('technical-clock-unsettled'));
+    assert.ok(
+      fire('technical', { 'technical.recorder_count': 'several_clocked', 'technical.clock_master': 'unknown' })
+        .includes('technical-clock-unsettled'),
+    );
+    assert.ok(
+      fire('technical', { 'deliver.session_sample_rate': '48000', 'technical.device_rates_checked': 'no' })
+        .includes('technical-clock-unsettled'),
+    );
+    assert.ok(
+      !fire('technical', {
+        'technical.recorder_count': 'one',
+        'deliver.session_sample_rate': '48000',
+        'technical.device_rates_checked': 'yes',
+      }).includes('technical-clock-unsettled'),
+      'one recorder whose rate was checked is settled',
+    );
+  });
+
+  it('timecode required with no plan is caught', () => {
+    assert.ok(fire('technical', { 'deliver.timecode_required': 'yes' }).includes('technical-timecode-no-plan'));
+    assert.ok(!fire('technical', { 'deliver.timecode_required': 'no' }).includes('technical-timecode-no-plan'));
+  });
+
+  it('a space nobody has been to is caught, and an unanswered question is not', () => {
+    assert.ok(fire('technical', { 'technical.space_assessed': 'not_assessed' }).includes('technical-space-not-assessed'));
+    assert.ok(
+      fire('technical', { 'technical.space_assessed': 'remote', 'technical.acoustic_character': 'unknown' })
+        .includes('technical-space-not-assessed'),
+      'seen on a video call and still unknown',
+    );
+    assert.ok(
+      !fire('technical', { 'technical.space_assessed': 'visited', 'technical.acoustic_character': 'unknown' })
+        .includes('technical-space-not-assessed'),
+      'someone who has stood in the room may still be deciding',
+    );
+    assert.ok(!fire('technical', {}).includes('technical-space-not-assessed'), 'empty says nothing');
+  });
+
+  it('a naming convention that is really a hope is caught', () => {
+    for (const name of ['Final mix', 'use this one', 'Song names']) {
+      assert.ok(
+        fire('technical', { 'technical.naming_convention': name }).includes('technical-naming-not-convention'),
+        name,
+      );
+    }
+    const real = fire('technical', { 'technical.naming_convention': 'YYYY-MM-DD_project_song_take' });
+    assert.ok(!real.includes('technical-naming-not-convention'), 'a pattern with parts in an order');
+  });
+
+  it('a decided sample rate with no storage estimate is pointed at', () => {
+    const ids = fire('technical', {
+      'technical.input_list': [row()],
+      'deliver.session_sample_rate': '96000',
+    });
+    assert.ok(ids.includes('technical-storage-unestimated'));
+
+    const undecided = fire('technical', {
+      'technical.input_list': [row()],
+      'deliver.session_sample_rate': 'undecided',
+    });
+    assert.ok(!undecided.includes('technical-storage-unestimated'), 'nothing to estimate from yet');
+  });
+
+  it('draft material close to the day is caught, and the same draft far out is not', () => {
+    const close = fire('technical', {
+      'schedule.production_date': inDays(10),
+      'technical.material_status': 'draft',
+    });
+    assert.ok(close.includes('technical-material-not-final'));
+
+    const far = fire('technical', {
+      'schedule.production_date': inDays(120),
+      'technical.material_status': 'draft',
+    });
+    assert.ok(!far.includes('technical-material-not-final'), 'a draft four months out is just a draft');
+
+    const noDate = fire('technical', { 'technical.material_status': 'not_started' });
+    assert.ok(!noDate.includes('technical-material-not-final'), 'no date, no deadline');
+  });
+
+  it('a stage plot still in draft only matters on the live pathway', () => {
+    const values = { 'schedule.production_date': inDays(7), 'technical.material_status': 'final', 'technical.stage_plot': 'draft' };
+    assert.ok(fire('technical', values, 'live').includes('technical-material-not-final'));
+    assert.ok(!fire('technical', values, 'music').includes('technical-material-not-final'));
+  });
+});
+
+describe('Computer C batch 2 — readiness, where a plan says it is ready', () => {
+  const st = (id: string, pw: 'music' | 'podcast' | 'live' = 'live') =>
+    resolveStage(PREPROD_STAGES.find((s) => s.stageId === id)!, pw);
+
+  const fire = (values: Record<string, unknown>, pw: 'music' | 'podcast' | 'live' = 'live') =>
+    evaluateStage(st('readiness', pw), project({ pathway: pw, values: values as never })).map((f) => f.ruleId);
+
+  const inDays = (n: number) => new Date(Date.now() + n * 864e5).toISOString().slice(0, 10);
+
+  const contingency = (over: Record<string, unknown> = {}) => ({
+    ct_system: 'Multitrack recorder', ct_primary: 'Main recorder', ct_backup: 'Laptop and interface',
+    ct_switch: 'Repatch the split to the laptop', ct_switch_time: '5 min', ct_owner: 'Ade', ct_tested: 'yes',
+    ...over,
+  });
+
+  it('a backup nobody can reach is caught, one missing column at a time', () => {
+    for (const gap of ['ct_switch', 'ct_switch_time', 'ct_owner']) {
+      const ids = fire({ 'readiness.contingency_table': [contingency({ [gap]: '' })] });
+      assert.ok(ids.includes('readiness-backup-unreachable'), `${gap} missing`);
+    }
+    const untested = fire({ 'readiness.contingency_table': [contingency({ ct_tested: 'no' })] });
+    assert.ok(untested.includes('readiness-backup-unreachable'), 'a switch nobody has tried');
+
+    const complete = fire({ 'readiness.contingency_table': [contingency()] });
+    assert.ok(!complete.includes('readiness-backup-unreachable'));
+  });
+
+  it('a switch time written in words counts as answered', () => {
+    // ct_switch_time is a duration, and "5 min" is how people write it. Asking
+    // for a number here would fire on a perfectly good answer.
+    const ids = fire({ 'readiness.contingency_table': [contingency({ ct_switch_time: 'about two minutes' })] });
+    assert.ok(!ids.includes('readiness-backup-unreachable'));
+  });
+
+  it('"none" in the backup column is an absent backup, not an unreachable one', () => {
+    // The two rules must never both fire on the same row.
+    for (const wording of ['', 'none', 'N/A', 'no backup']) {
+      const ids = fire({ 'readiness.contingency_table': [contingency({ ct_backup: wording })] });
+      assert.ok(ids.includes('readiness-critical-system-no-backup'), `"${wording}" is no backup`);
+      assert.ok(!ids.includes('readiness-backup-unreachable'), `"${wording}" is not the other rule's business`);
+    }
+  });
+
+  it('a recorded show whose contingency table never mentions a recorder is caught', () => {
+    const ids = fire({
+      'define.services': ['live_recording'],
+      'readiness.contingency_table': [contingency({ ct_system: 'Front-of-house console' })],
+    });
+    assert.ok(ids.includes('readiness-critical-system-no-backup'));
+  });
+
+  it('wireless in use and nothing in the table about it is caught', () => {
+    const ids = fire({
+      'people.wireless_channels': 4,
+      'readiness.contingency_table': [contingency()],
+    });
+    assert.ok(ids.includes('readiness-critical-system-no-backup'));
+
+    const covered = fire({
+      'people.wireless_channels': 4,
+      'readiness.contingency_table': [contingency(), contingency({ ct_system: 'Lead vocal wireless' })],
+    });
+    assert.ok(!covered.includes('readiness-critical-system-no-backup'));
+  });
+
+  it('a severe hazard with no control or no owner blocks', () => {
+    const findings = evaluateStage(
+      st('readiness'),
+      project({
+        pathway: 'live',
+        values: {
+          'readiness.hazard_register': [
+            { hz_hazard: 'Cable run crosses the entrance', hz_likelihood: 'high', hz_severity: 'severe', hz_control: '', hz_owner: '', hz_status: 'open' },
+          ],
+        } as never,
+      }),
+    );
+    const blocker = findings.find((f) => f.ruleId === 'readiness-hazard-uncontrolled');
+    assert.ok(blocker, 'the rule fires');
+    assert.equal(blocker?.severity, 'blocker', 'and it is a blocker, because someone can be hurt');
+  });
+
+  it('a hazard still open near the day is caught, and the same one months out is not', () => {
+    const open = {
+      'readiness.hazard_register': [
+        { hz_hazard: 'Trip hazard', hz_likelihood: 'low', hz_severity: 'minor', hz_control: 'Ramp', hz_owner: 'Ade', hz_status: 'open' },
+      ],
+    };
+    assert.ok(fire({ ...open, 'schedule.production_date': inDays(5) }).includes('readiness-hazard-open'));
+    assert.ok(!fire({ ...open, 'schedule.production_date': inDays(120) }).includes('readiness-hazard-open'));
+    assert.ok(!fire(open).includes('readiness-hazard-open'), 'no date, no deadline');
+  });
+
+  it('equipment marked packed with no system test is caught', () => {
+    const ids = fire({
+      'readiness.manifest': [{ eq_item: 'Console', eq_qty: 1, eq_source: 'hired', eq_prep: 'packed', eq_owner: 'Ade' }],
+      'readiness.system_test': 'none',
+    });
+    assert.ok(ids.includes('readiness-equipment-ready-untested'));
+
+    const tested = fire({
+      'readiness.manifest': [{ eq_item: 'Console', eq_qty: 1, eq_source: 'hired', eq_prep: 'packed', eq_owner: 'Ade' }],
+      'readiness.system_test': 'done',
+      'readiness.bench_test': 'done',
+    });
+    assert.ok(!tested.includes('readiness-equipment-ready-untested'));
+  });
+
+  it('a show with a changeover and no rehearsal of any kind is caught', () => {
+    const ids = fire({ 'schedule.day_schedule': [{ blk_type: 'changeover', blk_duration: 20 }] });
+    assert.ok(ids.includes('readiness-no-dress-rehearsal'));
+
+    const planned = fire({
+      'schedule.day_schedule': [{ blk_type: 'changeover', blk_duration: 20 }],
+      'readiness.rehearsal_plan': [{ rh_type: 'tech_rehearsal', rh_date: inDays(2), rh_owner: 'Dana', rh_status: 'planned' }],
+    });
+    assert.ok(!planned.includes('readiness-no-dress-rehearsal'));
+
+    const skipped = fire({
+      'schedule.day_schedule': [{ blk_type: 'changeover', blk_duration: 20 }],
+      'readiness.rehearsal_plan': [{ rh_type: 'dress_rehearsal', rh_date: inDays(2), rh_owner: 'Dana', rh_status: 'skipped' }],
+    });
+    assert.ok(skipped.includes('readiness-no-dress-rehearsal'), 'a rehearsal that was skipped did not happen');
+
+    const simple = fire({ 'schedule.day_schedule': [{ blk_type: 'soundcheck', blk_duration: 60 }] });
+    assert.ok(!simple.includes('readiness-no-dress-rehearsal'), 'a straightforward day needs no dress rehearsal');
+  });
+
+  it('permissions still pending with a date on the calendar are surfaced', () => {
+    const ids = fire({
+      'schedule.production_date': inDays(30),
+      'readiness.rights_register': [{ rt_item: 'Cover song', rt_type: 'composition', rt_holder: 'Publisher', rt_status: 'Pending' }],
+    });
+    assert.ok(ids.includes('readiness-permission-pending'));
+  });
+
+  it('missing music rights block a release, but not a night in a venue', () => {
+    const missing = [{ rt_item: 'Cover song', rt_type: 'composition', rt_holder: 'Publisher', rt_status: 'Missing' }];
+
+    const released = fire({ 'define.platform': ['streaming_music'], 'readiness.rights_register': missing });
+    assert.ok(released.includes('readiness-rights-missing'));
+
+    const venueOnly = fire({ 'define.platform': ['live_venue'], 'readiness.rights_register': missing });
+    assert.ok(
+      !venueOnly.includes('readiness-rights-missing'),
+      'a performance is commonly covered by the venue, so this is not ours to block',
+    );
+
+    const restricted = fire({
+      'define.platform': ['streaming_music'],
+      'readiness.rights_register': [{ rt_item: 'Cover song', rt_type: 'composition', rt_holder: 'Publisher', rt_status: 'Restricted' }],
+    });
+    assert.ok(!restricted.includes('readiness-rights-missing'), 'Restricted needs reading, not blocking');
+  });
+
+  it('rigging and temporary power need a sign-off, and only where they apply', () => {
+    assert.ok(fire({ 'people.rigging_required': 'yes' }).includes('readiness-rigging-not-signed'));
+    assert.ok(
+      !fire({ 'people.rigging_required': 'yes', 'readiness.rigging_signoff': 'Approved' })
+        .includes('readiness-rigging-not-signed'),
+    );
+    assert.ok(!fire({ 'people.rigging_required': 'no' }).includes('readiness-rigging-not-signed'));
+
+    assert.ok(fire({ 'people.power_source': 'temporary_distro' }).includes('readiness-power-not-signed'));
+    for (const source of ['existing_outlets', 'house_distro', 'generator_direct', 'unknown']) {
+      assert.ok(
+        !fire({ 'people.power_source': source }).includes('readiness-power-not-signed'),
+        `${source} is not a distribution system to sign off`,
+      );
+    }
+  });
+
+  it('the remaining four fire on what they were asked to watch', () => {
+    assert.ok(
+      fire({ 'define.location_type': ['outdoor'] }).includes('readiness-outdoor-no-weather-plan'),
+    );
+    assert.ok(fire({}).includes('readiness-no-decision-authority'), 'somebody has to be able to call it');
+    assert.ok(fire({}).includes('readiness-hearing-plan-missing'));
+    assert.ok(
+      !fire({ 'technical.level_plan': 'Monitor engineer holds 100 dBA; ear protection at the desk.' })
+        .includes('readiness-hearing-plan-missing'),
+      'a level plan in stage 5 answers it',
+    );
+  });
+
+  it('a document pack with no revisions, and an issued call sheet nobody distributed', () => {
+    const noRevision = fire({
+      'readiness.packet_docs': [{ doc_type: 'call_sheet', doc_revision: '', doc_location: 'Shared drive', doc_approver: '' }],
+    });
+    assert.ok(noRevision.includes('readiness-packet-no-revision'));
+
+    const undistributed = fire({
+      'readiness.packet_docs': [{ doc_type: 'call_sheet', doc_revision: 'v2', doc_location: 'Shared drive', doc_approver: 'Dana' }],
+      'readiness.call_sheet_status': 'issued',
+    });
+    assert.ok(undistributed.includes('readiness-packet-no-revision'), 'issued to whom?');
+  });
+
+  it('an open condition with no owner, and open conditions nobody declared', () => {
+    const unowned = fire({
+      'readiness.conditions': [{ cond_item: 'Console has no backup', cond_owner: '', cond_resolve_by: '', cond_approved_by: '', cond_status: 'open' }],
+    });
+    assert.ok(unowned.includes('readiness-condition-unowned'));
+
+    const undeclared = fire({
+      'readiness.conditions': [
+        { cond_item: 'Console has no backup', cond_owner: 'Ade', cond_resolve_by: inDays(3), cond_approved_by: 'Dana', cond_status: 'open' },
+      ],
+    });
+    assert.ok(undeclared.includes('readiness-condition-unowned'), 'a whole plan accepted by nobody');
+
+    const declared = fire({
+      'readiness.conditions': [
+        { cond_item: 'Console has no backup', cond_owner: 'Ade', cond_resolve_by: inDays(3), cond_approved_by: 'Dana', cond_status: 'open' },
+      ],
+      'readiness.declared_by': 'Dana Okonkwo',
+    });
+    assert.ok(!declared.includes('readiness-condition-unowned'));
+  });
+});
+
+describe('the two batch-2 exercises', () => {
+  const byId = (id: string) => PREPROD_STAGES.find((s) => s.activity?.activityId === id)!.activity!;
+
+  it('the input list starts wrong in exactly the ways the exercise promises', () => {
+    const seeded = seedActivityProject('preprod', 'live', byId('build-the-input-list'));
+    const result = checkActivity('build-the-input-list', seeded);
+    assert.equal(result.passed, false);
+    assert.deepEqual(
+      result.unmet.map((c) => c.id).sort(),
+      ['click-has-a-cue-mix', 'di-on-instruments', 'fits-the-channels', 'phantom-correct', 'stereo-has-two'],
+      'all five faults are live in the seed',
+    );
+  });
+
+  it('the input list can be repaired into something that would actually work', () => {
+    const seeded = seedActivityProject('preprod', 'live', byId('build-the-input-list'));
+    const r = (n: number, source: string, capture: string, phantom: string, channels: string,
+               connection: string, cons: string, track: string, notes = '') => ({
+      in_num: n, in_source: source, in_capture: capture, in_phantom: phantom, in_channels: channels,
+      in_connection: connection, in_stand: '', in_console: cons, in_track: track, in_notes: notes,
+    });
+    const repaired = {
+      ...seeded,
+      values: {
+        ...seeded.values,
+        // Sixteen channels exactly: the audience pair and the spare vocal were
+        // dropped, the backing vocals summed, and the playback monoed and said so.
+        'technical.input_list': [
+          r(1, 'Kick', 'dynamic_mic', 'off', '1', 'xlr', '1', '1'),
+          r(2, 'Snare top', 'dynamic_mic', 'off', '1', 'xlr', '2', '2'),
+          r(3, 'Hi-hat', 'condenser_mic', 'on', '1', 'xlr', '3', '3'),
+          r(4, 'Overheads (pair)', 'condenser_mic', 'on', '2', 'xlr', '4-5', '4-5'),
+          r(5, 'Floor tom', 'dynamic_mic', 'off', '1', 'xlr', '6', '6'),
+          r(6, 'Bass', 'di', 'off', '1', 'xlr', '7', '7'),
+          r(7, 'Guitar amp', 'dynamic_mic', 'off', '1', 'xlr', '8', '8'),
+          r(8, 'Keys (stereo)', 'di', 'off', '2', 'xlr', '9-10', '9-10'),
+          r(9, 'Lead vocal', 'condenser_mic', 'on', '1', 'xlr', '11', '11'),
+          r(10, 'Backing vocals (pair)', 'dynamic_mic', 'off', '2', 'xlr', '12-13', '12-13'),
+          r(11, 'Acoustic guitar pickup', 'di', 'off', '1', 'xlr', '14', '14'),
+          r(12, 'Playback (stereo)', 'playback', 'off', '1', 'trs', '15', '15',
+            'Monoed to one channel to fit sixteen; agreed with the band.'),
+          r(13, 'Talkback', 'dynamic_mic', 'off', '1', 'xlr', '16', ''),
+        ],
+        'technical.cue_mixes': [
+          { cm_who: 'Drummer', cm_type: 'iem_wired', cm_output: 'Aux 1', cm_content: 'Click, bass, guide vocal' },
+        ],
+      },
+    };
+    const result = checkActivity('build-the-input-list', repaired);
+    assert.equal(result.passed, true, result.unmet.map((c) => c.id).join(', '));
+  });
+
+  it('monoing a stereo source is allowed, but only if the change is written down', () => {
+    // The exercise says so in as many words. A silent mono is the fault this
+    // criterion exists to catch; a noted one is a decision.
+    const seeded = seedActivityProject('preprod', 'live', byId('build-the-input-list'));
+    const silent = {
+      ...seeded,
+      values: { ...seeded.values, 'technical.input_list': [
+        { in_source: 'Keys (stereo)', in_capture: 'di', in_phantom: 'off', in_channels: '1',
+          in_connection: 'xlr', in_console: '1', in_track: '1', in_notes: '' },
+      ] },
+    };
+    assert.ok(
+      checkActivity('build-the-input-list', silent).unmet.some((c) => c.id === 'stereo-has-two'),
+    );
+
+    const noted = {
+      ...silent,
+      values: { ...silent.values, 'technical.input_list': [
+        { in_source: 'Keys (stereo)', in_capture: 'di', in_phantom: 'off', in_channels: '1',
+          in_connection: 'xlr', in_console: '1', in_track: '1', in_notes: 'Monoed; the part is centred anyway.' },
+      ] },
+    };
+    assert.ok(
+      !checkActivity('build-the-input-list', noted).unmet.some((c) => c.id === 'stereo-has-two'),
+    );
+  });
+
+  it('the production emergency starts with every criterion unmet', () => {
+    const seeded = seedActivityProject('preprod', 'live', byId('production-emergency'));
+    const result = checkActivity('production-emergency', seeded);
+    assert.equal(result.passed, false);
+    assert.equal(result.met.length, 0, 'nothing in the seed is already handled');
+    for (const c of result.unmet) assert.ok(c.label.length > 10, c.id);
+  });
+
+  it('the emergency is survivable, and the accepted risk is what makes it so', () => {
+    const seeded = seedActivityProject('preprod', 'live', byId('production-emergency'));
+    const repaired = {
+      ...seeded,
+      values: {
+        ...seeded.values,
+        'readiness.contingency_table': [
+          {
+            ct_system: 'Multitrack recorder', ct_primary: 'Main recorder, internal drive',
+            ct_backup: 'Laptop with interface', ct_switch: 'Move the split to the laptop at the desk',
+            ct_switch_time: '5 min', ct_owner: 'Ade Balogun', ct_tested: 'yes',
+          },
+          {
+            ct_system: 'Lead vocal wireless', ct_primary: 'Handheld wireless, channel 1',
+            ct_backup: 'Wired SM58 on a stand, stage left', ct_switch: 'Singer swaps; monitor engineer opens channel 12',
+            ct_switch_time: '30 sec', ct_owner: 'Priya Raman', ct_tested: 'yes',
+          },
+          {
+            ct_system: 'Front-of-house console', ct_primary: 'Digital console',
+            ct_backup: 'none', ct_switch: '', ct_switch_time: '', ct_owner: '', ct_tested: 'no',
+          },
+        ],
+        'readiness.hazard_register': [
+          {
+            hz_hazard: 'Main cable run crosses the audience entrance', hz_likelihood: 'high', hz_severity: 'severe',
+            hz_control: 'Cable ramp laid and taped before doors; walked at door check',
+            hz_owner: 'Ade Balogun', hz_status: 'controlled',
+          },
+        ],
+        'readiness.decision_authority': 'Dana Okonkwo, production manager',
+        'readiness.decision_triggers': 'Any failure that stops the recording, or any hazard reopening after doors.',
+        'readiness.minimum_viable': 'Reinforcement plus a stereo desk capture, so the recording survives even if the multitrack does not.',
+        'readiness.conditions': [
+          {
+            cond_item: 'Front-of-house console has no backup', cond_owner: 'Ade Balogun',
+            cond_resolve_by: new Date(Date.now() + 3 * 864e5).toISOString().slice(0, 10),
+            cond_approved_by: 'Dana Okonkwo', cond_status: 'open',
+          },
+        ],
+        'readiness.declared_by': 'Dana Okonkwo',
+      },
+    };
+    const result = checkActivity('production-emergency', repaired);
+    assert.equal(result.passed, true, result.unmet.map((c) => c.id).join(', '));
+  });
+
+  it('a console left without a backup and without an accepted condition does not pass', () => {
+    // The debrief's whole point: unresolved is fine, unexamined is not.
+    const seeded = seedActivityProject('preprod', 'live', byId('production-emergency'));
+    const result = checkActivity('production-emergency', {
+      ...seeded,
+      values: { ...seeded.values, 'readiness.conditions': [] },
+    });
+    assert.ok(result.unmet.some((c) => c.id === 'accepted-risk-recorded'));
   });
 });

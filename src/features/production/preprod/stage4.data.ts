@@ -192,14 +192,14 @@ export const STAGE4_SCHEDULE: StageDef = {
         {
           fieldId: "call_time",
           label: "Crew call time",
-          kind: "text",
+          kind: "time",
           help: "When the first crew member is expected on site. Write it as a clock time.",
           required: true
         },
         {
           fieldId: "hard_out",
           label: "Hard out or curfew",
-          kind: "text",
+          kind: "time",
           help: "The time the venue, the room or the crew must be finished, as a clock time. Everything below has to fit between the call and this.",
           required: true
         },
@@ -300,7 +300,7 @@ export const STAGE4_SCHEDULE: StageDef = {
             {
               columnId: "blk_start",
               label: "Start (clock time)",
-              kind: "text"
+              kind: "time"
             },
             {
               columnId: "blk_duration",
