@@ -29,6 +29,20 @@ import { getLabPreview } from '../lab/labPreviewStore';
 import { supabase } from '../../lib/supabase';
 import { isRealAccount } from '../commercial/realAccount';
 import { colors, fonts } from '../../theme/tokens';
+import { SoundSafetyWarning } from './SoundSafetyWarning';
+import { soundSafetyFullText } from './soundSafetyText';
+import { isAcknowledged, loadSoundSafetyAck, recordSoundSafetyAck } from './soundSafetyAck';
+import { optionalModule } from '../tools/capture/optionalModule';
+
+/** The running build's version, for the acknowledgment record.
+ *
+ *  Behind `optionalModule` in the house idiom: expo-application ships in builds
+ *  after 2026-09-06, and a record with a null version is far better than a gate
+ *  that throws and leaves the user unable to enable sound at all. */
+function appVersion(): string | null {
+  return optionalModule<{ nativeApplicationVersion: string | null }>('expo-application')
+    ?.nativeApplicationVersion ?? null;
+}
 import {
   disableAudioOutput,
   enableAudioOutput,
@@ -51,7 +65,12 @@ export function useAudioOutputGate(): GateApi {
   return ctx;
 }
 
-type Phase = 'closed' | 'explain' | 'hold';
+/**
+ * 'safety' is the FIRST-USE step (owner 2026-09-17) and runs once ever, before
+ * the per-session explain → hold. Declining it leaves the app muted exactly as
+ * declining any other step does.
+ */
+type Phase = 'closed' | 'safety' | 'explain' | 'hold';
 
 export function AudioOutputGate({ children }: { children: React.ReactNode }) {
   const [phase, setPhase] = useState<Phase>('closed');
@@ -60,6 +79,8 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
   const [bypassTimer, setBypassTimer] = useState(false);
   // The resolver for the promise handed to the current requester.
   const resolver = useRef<((ok: boolean) => void) | null>(null);
+  /** Re-render once the persisted acknowledgment has been read at start-up. */
+  const [, setAckLoaded] = useState(false);
 
   const settle = (ok: boolean) => {
     const r = resolver.current;
@@ -93,11 +114,29 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
           }
           resolver.current = resolve;
           setBypassTimer(false); // checkbox resets every time the popup opens
-          setPhase('explain');
+          // FIRST USE: the Sound Safety Warning comes before anything else.
+          // isAcknowledged() is false until loadSoundSafetyAck() has resolved,
+          // so the very first request of a launch may show the warning to
+          // someone who has already accepted it — which is why the load is
+          // kicked off at mount below, long before any sound is asked for.
+          setPhase(isAcknowledged() ? 'explain' : 'safety');
         }),
     }),
     [],
   );
+
+  // Read the persisted Sound Safety acknowledgment once, at mount — well
+  // before any screen asks for sound, so a returning user never sees the
+  // warning again just because the read had not finished.
+  useEffect(() => {
+    let alive = true;
+    void loadSoundSafetyAck().then(() => {
+      if (alive) setAckLoaded(true);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   // AUTO-RE-MUTE (login + foreground-after-idle). Registered once at root.
   useEffect(() => {
@@ -126,6 +165,31 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
   return (
     <AudioOutputGateContext.Provider value={api}>
       {children}
+
+      {/* POPUP 0 — the first-use Sound Safety Warning. Once ever, until the
+          warning's version changes. */}
+      <SoundSafetyWarning
+        visible={phase === 'safety'}
+        onDecline={() => settle(false)}
+        onAccept={() => {
+          // Record FIRST. If the acknowledgment cannot be written we do not
+          // enable sound: an acknowledgment nobody wrote down did not happen,
+          // and proceeding would leave audio on with no evidence of consent.
+          void (async () => {
+            const stored = await recordSoundSafetyAck({
+              text: soundSafetyFullText(),
+              appVersion: appVersion(),
+              userId: (await supabase.auth.getUser()).data.user?.id ?? null,
+            });
+            if (!stored) {
+              settle(false);
+              return;
+            }
+            // Accepted and recorded — now the ordinary per-session steps.
+            setPhase('explain');
+          })();
+        }}
+      />
 
       {/* POPUP 1 — explain the setting. */}
       <Modal accessibilityViewIsModal

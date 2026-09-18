@@ -14,6 +14,7 @@
 import { Platform } from 'react-native';
 import * as FileSystem from 'expo-file-system/legacy';
 import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-audio';
+import { applyCeiling } from '../audio/outputCeiling';
 import { encodeWav, type Buf } from './earDsp';
 
 /** RN lacks btoa on some engines — tiny local base64 for Uint8Array.
@@ -131,6 +132,11 @@ export class EarClipPlayer {
       if (existing) existing.replace({ uri });
       else {
         const p = createAudioPlayer({ uri });
+        // Hard output ceiling (owner 2026-09-17). expo-audio defaults volume to
+        // 1.0, so without this a normalised clip plays ~20 dB hotter than the
+        // native generator's default tone — a large, sudden jump with nothing
+        // between it and the user's ears.
+        applyCeiling(p);
         this.players.set(i, p);
         try {
           const sub = p.addListener('playbackStatusUpdate', (st: { didJustFinish?: boolean }) => {
