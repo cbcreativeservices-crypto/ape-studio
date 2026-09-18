@@ -181,13 +181,44 @@ export function valueKey(stageId: string, fieldId: string): string {
  * reward decisions, not visits (plan §2.3), and this predicate is where that
  * begins.
  */
-export function isAnswered(v: FieldValue | undefined): boolean {
+/** One cell, or one entry of a multi-choice. */
+function scalarAnswered(v: unknown): boolean {
   if (v === undefined || v === null) return false;
   if (typeof v === 'string') return v.trim().length > 0;
   if (typeof v === 'number') return Number.isFinite(v);
   if (typeof v === 'boolean') return true;
-  if (Array.isArray(v)) return v.length > 0;
   return false;
+}
+
+/**
+ * Has this field been answered?
+ *
+ * ── A TABLE WITH A BLANK ROW IN IT IS NOT AN ANSWER (2026-09-17) ──────────
+ *
+ * This used to accept any non-empty array, and a table field's value is an array
+ * of ROW OBJECTS. Tapping "add row" appends a row whose cells are all empty — so
+ * `length > 0` was true, the field read COMPLETE, and the stage's progress
+ * counted it as a decision the user had made.
+ *
+ * A bug-hunt pass measured it: 11 of 16 required pre-production tables and 5 of
+ * 6 post-production tables went green from one blank row. Among them were the
+ * HAZARD REGISTER and the RIGHTS REGISTER — the two tables whose entire purpose
+ * is that somebody looked, and the two whose emptiness is most expensive later.
+ * A plan that reports itself ready when it is not is the one failure this whole
+ * feature exists to prevent.
+ *
+ * A row counts once any cell in it carries something. Multi-choice values are
+ * arrays of plain strings and are unaffected.
+ */
+export function isAnswered(v: FieldValue | undefined): boolean {
+  if (Array.isArray(v)) {
+    return v.some((item) =>
+      item !== null && typeof item === 'object'
+        ? Object.values(item as Record<string, unknown>).some(scalarAnswered)
+        : scalarAnswered(item),
+    );
+  }
+  return scalarAnswered(v);
 }
 
 /** Stable id for a new project. */

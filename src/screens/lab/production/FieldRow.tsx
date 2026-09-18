@@ -137,25 +137,7 @@ function Editor({
     case 'number':
     case 'currency':
     case 'duration':
-      return (
-        <View style={styles.unitRow}>
-          <TextInput
-            style={[styles.input, styles.flex]}
-            value={value === null || value === undefined ? '' : String(value)}
-            onChangeText={(t) => {
-              const cleaned = t.replace(/[^0-9.\-]/g, '');
-              if (cleaned === '') return onChange(null);
-              const n = Number(cleaned);
-              onChange(Number.isFinite(n) ? n : cleaned);
-            }}
-            keyboardType="numeric"
-            placeholder={field.placeholder}
-            placeholderTextColor={colors.textMuted}
-            accessibilityLabel={field.label}
-          />
-          {field.unit ? <Text style={styles.unit}>{field.unit}</Text> : null}
-        </View>
-      );
+      return <NumberField field={field} value={value} onChange={onChange} />;
 
     case 'date':
       return (
@@ -427,6 +409,78 @@ function TableEditor({
       >
         <Text style={styles.addRowText}>+ ADD ROW</Text>
       </Pressable>
+    </View>
+  );
+}
+
+/**
+ * A number, currency or duration field.
+ *
+ * ── WHY THIS IS NOT A ONE-LINE `onChangeText` ──────────────────────────
+ *
+ * It used to be, and A DECIMAL POINT COULD NOT BE TYPED (found 2026-09-17).
+ * The input was value={String(value)} with a handler that did
+ * `onChange(Number(cleaned))` on every keystroke — so typing "7." produced
+ * Number("7.") = 7, the value became 7, the field re-rendered as "7", and the
+ * point the user had just typed was gone before the next digit arrived.
+ *
+ * "7.5" hours was therefore recorded as 75. "1250.50" became 125050. It affects
+ * 45 fields across the two production labs, it drives real rules, and it rides
+ * into the exported packet, so nobody would see it as a typo — they would see a
+ * budget or a runtime that was simply wrong.
+ *
+ * The fix is the standard one for a numeric text field: hold the text the user
+ * is actually typing while they are typing it, and publish a number only when
+ * the text is one. `draft` is the in-progress string and is dropped on blur, so
+ * a value set from anywhere else (a seed, a reset, the other lab) still shows
+ * through immediately.
+ */
+function NumberField({
+  field,
+  value,
+  onChange,
+}: {
+  field: ResolvedField;
+  value: FieldValue | undefined;
+  onChange: (v: FieldValue) => void;
+}) {
+  const [draft, setDraft] = useState<string | null>(null);
+  const committed = value === null || value === undefined ? '' : String(value);
+
+  return (
+    <View style={styles.unitRow}>
+      <TextInput
+        style={[styles.input, styles.flex]}
+        value={draft ?? committed}
+        onChangeText={(t) => {
+          // One optional leading sign, digits, at most one point. Anything else
+          // the keyboard or a paste produces is simply not accepted.
+          let cleaned = t.replace(/[^0-9.\-]/g, '');
+          cleaned = (cleaned.startsWith('-') ? '-' : '') + cleaned.replace(/-/g, '');
+          const firstDot = cleaned.indexOf('.');
+          if (firstDot >= 0) {
+            cleaned =
+              cleaned.slice(0, firstDot + 1) + cleaned.slice(firstDot + 1).replace(/\./g, '');
+          }
+          setDraft(cleaned);
+          if (cleaned === '' || cleaned === '-' || cleaned === '.' || cleaned === '-.') {
+            // Not a number yet — and an empty field means empty, not zero.
+            onChange(null);
+            return;
+          }
+          const n = Number(cleaned);
+          // A trailing point ("7.") is a valid number to `Number` and an
+          // in-progress one to the user; publish the number, keep showing the
+          // point.
+          onChange(Number.isFinite(n) ? n : null);
+        }}
+        onBlur={() => setDraft(null)}
+        keyboardType="decimal-pad"
+        placeholder={field.placeholder}
+        placeholderTextColor={colors.textMuted}
+        accessibilityLabel={field.label}
+      />
+      {field.unit ? <Text style={styles.unit}>{field.unit}</Text> : null}
     </View>
   );
 }
