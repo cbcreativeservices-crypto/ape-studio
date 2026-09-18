@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 16:35 · ccode · 66e19aed
+changed: a11y pass 5 · W16: every Android-only live region now has an iOS path
+affects other side: nothing from this commit (client-only a11y). BUT the native builds from d40d9a1e are now FINISHED — Android bd02e15d, iOS 9aa9e995. OTA stays dead to both phones until those are INSTALLED; after that it works again. Fingerprints verified local == build: iOS 26383739…, Android 3fbe2d39…. NOTE they are PER-PLATFORM — a bare `fingerprint:generate` gives a third hash that matches neither, so always pass --platform when comparing.
+needs: nothing.
+
+
 ### 2026-09-18 15:52 · ccode · d40d9a1e
 changed: Native build payload: the parked items, landed together
 affects other side: ⚠️ YES — READ THIS. Native deps + app.json changed, so the @expo/fingerprint runtimeVersion MOVED: 1792f7b7… → 9eaf459a…. Every phone in the field is still on the OLD runtime, so **`eas update` now delivers NOTHING to them, silently** (publish succeeds, phones see nothing). Any OTA-able work — employer app surfaces included — is stranded until the `preview` builds finish and are INSTALLED. Do not diagnose that as a bug. After installing, re-compare the local fingerprint against `eas build:list` runtimeVersion before the next `eas update`.
