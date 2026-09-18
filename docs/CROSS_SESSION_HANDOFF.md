@@ -28,20 +28,20 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ### 2026-09-18 15:17 · ccode · 028bd4e7
 changed: a11y pass 5 · W17: the last five Table B sites
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing. Client-only accessibility work — announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
+needs: nothing.
 
 
 ### 2026-09-18 15:12 · ccode · 95f33cf4
 changed: a11y pass 5: W6 matching pairs, W14 two-sided boards, W15 the SPL slider
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing. Client-only accessibility work — announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
+needs: nothing.
 
 
 ### 2026-09-18 15:05 · ccode · 92f112bd
 changed: a11y pass 5: W1 sheets, W4 Scenarios, W5 Final Exam, W7, W12 flashcards
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing. Client-only accessibility work — announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
+needs: nothing.
 
 
 ### 2026-09-18 14:53 · ccode · aacde5bd
@@ -64,8 +64,8 @@ needs: nothing
 
 ### 2026-09-18 14:28 · ccode · c8441946
 changed: Production labs: progress you can see, and a project you own
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing. Client-only accessibility work — announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
+needs: nothing.
 
 
 ### 2026-09-18 14:23 · ccode · a94888dc
@@ -99,8 +99,8 @@ needs: ADMIN_NOTIFY_EMAIL set on the Edge Function before review emails send.
 
 ### 2026-09-18 13:59 · ccode · 02d2d27c
 changed: Production labs: the form responds to the user's own answers
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing. Client-only accessibility work — announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
+needs: nothing.
 
 
 ### 2026-09-18 13:53 · ccode · 4d29c4f3
@@ -117,8 +117,8 @@ needs: ADMIN_NOTIFY_EMAIL secret; then deploy the function.
 
 ### 2026-09-18 13:53 · ccode · d875abd6
 changed: Employer accounts: auto-decision and a filterable review email
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing. Client-only accessibility work — announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
+needs: nothing.
 
 
 ### 2026-09-18 13:44 · ccode · db15e261
@@ -138,8 +138,8 @@ needs: nothing
 
 ### 2026-09-18 13:24 · ccode · 567aecc3
 changed: Cymatics: make the discovery discoverable, and make REVEAL cost something
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing. Client-only accessibility work — announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
+needs: nothing.
 
 
 ### 2026-09-18 13:02 · ccode · 45476ca6
@@ -333,110 +333,110 @@ needs: nothing
 
 ### 2026-09-18 09:19 · ccode · 856beeed
 changed: finish the credential SQL from the live database
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing. Client-only accessibility work — announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
+needs: nothing.
 
 
 ### 2026-09-18 09:11 · ccode · 55607234
 changed: SQL for the credential policy, staged and reversible
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing. Client-only accessibility work — announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
+needs: nothing.
 
 
 ### 2026-09-18 09:03 · ccode · c52f3102
 changed: production labs: learn without completing (owner ruling)
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing. Client-only accessibility work — announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
+needs: nothing.
 
 
 ### 2026-09-18 08:31 · ccode · a216153c
 changed: the printed cymatics sheets say SIMULATION too
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing. Client-only accessibility work — announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
+needs: nothing.
 
 
 ### 2026-09-18 01:39 · ccode · 20dbd724
 changed: the free glossary cap survives re-entering guest mode
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing. Client-only accessibility work — announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
+needs: nothing.
 
 
 ### 2026-09-18 01:34 · ccode · db87c85a
 changed: brief: pass 5 outcome
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing. Client-only accessibility work — announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
+needs: nothing.
 
 
 ### 2026-09-18 01:17 · ccode · 695caf8d
 changed: pass 4 part 2: stale entitlement reads, a lost exam, and a shake that did two jobs
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing. Client-only accessibility work — announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
+needs: nothing.
 
 
 ### 2026-09-18 01:01 · ccode · 2cdcd53b
 changed: brief: pass 3 outcome
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing. Client-only accessibility work — announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
+needs: nothing.
 
 
 ### 2026-09-18 00:48 · ccode · 0407b131
 changed: pass 3 verification: three of my own fixes were broken, plus an inert gate
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing. Client-only accessibility work — announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
+needs: nothing.
 
 
 ### 2026-09-18 00:35 · ccode · 25dc9923
 changed: bug-hunt brief: what pass 2 fixed and what is still open
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing. Client-only accessibility work — announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
+needs: nothing.
 
 
 ### 2026-09-18 00:33 · ccode · 6b335c22
 changed: disclosure, the dose warning, and a failed read that read as "you have none"
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing. Client-only accessibility work — announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
+needs: nothing.
 
 
 ### 2026-09-18 00:22 · ccode · 16fe14bc
 changed: production labs: a decimal point, and a blank row that claimed to be an answer
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing. Client-only accessibility work — announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
+needs: nothing.
 
 
 ### 2026-09-18 00:18 · ccode · 26f5dac9
 changed: pass 2 blockers, part 2: money, identity, and confident wrong answers
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing. Client-only accessibility work — announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
+needs: nothing.
 
 
 ### 2026-09-17 23:57 · ccode · 6d59781c
 changed: bug-hunt brief for pass 2
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing. Client-only accessibility work — announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
+needs: nothing.
 
 
 ### 2026-09-17 23:49 · ccode · 70694099
 changed: Gate the 31 members-only labs that had no membership check
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing. Client-only accessibility work — announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
+needs: nothing.
 
 
 ### 2026-09-17 23:44 · ccode · 41efaded
 changed: Sound safety: the Profile toggle was a way around the gate
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing. Client-only accessibility work — announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
+needs: nothing.
 
 
 ### 2026-09-17 23:40 · ccode · 213736bd
 changed: Dashboard: hoist the last conditional hook — it crashed every cold load
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing. Client-only accessibility work — announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
+needs: nothing.
 
 
 ### 2026-09-17 23:16 · ccode · 6ee9d250
 changed: Celebration engine: one component, eighteen rows of data
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing. Client-only accessibility work — announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
+needs: nothing.
 
 
 ### 2026-09-17 22:57 · ccode · 5d2d7c34
@@ -447,8 +447,8 @@ needs: that table, eventually. Nothing blocking.
 
 ### 2026-09-17 22:50 · ccode · 661d2f03
 changed: Detail pager: fix the skip-and-jump between expanded cards
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing. Client-only accessibility work — announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
+needs: nothing.
 
 
 ### 2026-09-17 22:46 · ccode · 8e1929ad
@@ -471,8 +471,8 @@ needs: answers to those three. Owner ruling recorded: admin grants and access co
 
 ### 2026-09-17 22:10 · ccode · 0fa6ef7b
 changed: Home: DAW joins Pro Audio Safety as a free card; labs card reworded
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing. Client-only accessibility work — announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
+needs: nothing.
 
 
 ### 2026-09-17 21:34 · ccode · 96963360
