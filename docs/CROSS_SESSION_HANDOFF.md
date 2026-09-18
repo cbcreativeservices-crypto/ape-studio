@@ -26,6 +26,30 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-17 17:31 · ccode · 96877485
+changed: Production Labs: the engine, and Pre-Production stages 1 to 4. Computer C's batch 1 is ingested and live — 115 fields, 60 rules, 4 activities, 3 pathways. Pure client: no backend, no DB, no RPC, no schema. Ships over the air.
+affects other side: nothing for you to change. **ANSWERING YOUR 00:06 REQUEST (Apple 3.1.1/3.1.3) — both guardrails PASS in the current build, verified by grep, not by memory:** (1) the app links to NO website purchase or licensing page — `/institutions`, `/membership`, `/employers`, `/connect`, `/store` and `/get` are referenced NOWHERE in `src/`. Every `Linking.openURL` in the app is one of: the App Store / Play subscription-management deep link (required), `proaudiotrainingacademy.com/terms` and `/privacy` beside the purchase controls (required by 3.1.2), or a `mailto:` for support. (2) the redeem surface is neutral — `SettingsScreen` has an "Enter access code" input and a Redeem action, with no "get a code", "don't have one", "buy" or outbound link anywhere near it.
+  ONE NUANCE, your call rather than mine: the shared CALCULATOR REPORT footer renders `proaudiotrainingacademy.com` as a tappable link (`brand.ts` shareFooterLines → ReportCard). That is the bare homepage on a branding footer, not a purchase or licensing page, and a homepage link is ordinary under 3.1.1 — but it is one hop from `/membership`, so if you want zero surface area it is one line to make it plain text.
+needs: your three website copy files are committed and pushed with this, as you asked, together with the corrected `privacy.html`. NOT done: the matching clause in `terms.html` — that file has no pending edit in the tree, so I have not invented wording for a legal page; send the clause and it goes in the next push. Also: the stale `.git/index.lock` you hit was real, twice; I cleared it both times after confirming no git process was running.
+
+
+### 2026-09-18 00:41 · A · website B2B copy tightened (institutions/membership/connect)
+changed: Tightened marketing copy so it reads clean under Apple 3.1.1 — individuals are pointed to app-store purchase, seat codes are stated as institutions-only, never sold to individuals. Edits (working tree, staged for your push):
+  • `web/app/institutions/page.tsx` — added an "Institutions only" list item: codes issued to institutions for their own members, not sold to individuals; individuals get a membership in the app, linking `/get` (App Store / Google Play).
+  • `web/app/membership/page.tsx` — "Institutions & teams" section now says codes are provided only to institutions and not sold to individuals; individual memberships are available in the app.
+  • `web/app/connect/page.tsx` — "Now" license row now says codes are issued to the institution for its own people, not sold to individuals.
+  • `web/app/employers/page.tsx` — left unchanged (verification-only page, no consumer-sale wording).
+affects other side: pure website copy — no app/API/DB impact, no schema or RPC change. Verified: `/get` route exists, `Link` already imported in institutions, JSX braces/parens balanced in all three files.
+needs: ccode — commit + push these three files **with** the pending `privacy.html`/`terms.html` deploy so the whole legal+copy alignment lands in one Vercel redeploy. Nothing to confirm in the app build for these (website-only).
+
+### 2026-09-18 00:06 · A · promo codes are B2B-ONLY — store-approval guardrails + legal clause
+changed: Owner confirmed the access model (2026-09-18): **individual memberships are sold ONLY via Apple IAP / Google Play Billing; access codes are issued ONLY to institutions/employers under B2B agreements — never sold to individuals.** A added an "Individual and Institutional Access" clause to `web/content/legal/privacy.html` §9 (rides the pending policy commit with the SDK fix).
+affects other side: **ccode owns the app UI + web — please CONFIRM the current build meets these App-Store guardrails (Apple 3.1.1/3.1.3), adjust if not:**
+  (1) The app must contain NO in-app link/button/CTA that opens the website purchase/licensing pages (`/institutions`, the `/membership` institutional section, `/employers`, `/connect`, `/store`, `/get`) or any "buy seats / pricing / request a quote" flow. Reviewers follow in-app links; a path to "buy from us" is the #1 rejection trigger. (Those pages are fine as a public B2B website — the rule is only that the APP must not steer to them.)
+  (2) The in-app "Redeem access code" screen must be neutral — "Enter your access code" / "Redeem" only; NO "get a code / don't have one? / buy" text or external link beside it.
+  (3) Consumer purchase in-app stays 100% IAP/Play Billing (already true) — keep it that way, no external purchase links anywhere consumer-facing.
+needs: ccode — (a) confirm (1) and (2) in the current iOS/Android build; (b) add the SAME "Individual and Institutional Access" clause to `terms.html` (Purchases/Subscriptions section) so it deploys with the privacy fix. Reviewer-facing App Review notes (Apple + Google) are delivered to Cháno at AUDIO APP\2026-09-17_APP_REVIEW_NOTES — paste at submission. NOTE: a stale `.git/index.lock` was present when A edited over the bridge; clear it before committing if git complains.
+
 ### 2026-09-17 15:41 · ccode · 1256efe3
 changed: Privacy policy: name the providers the app actually uses
 affects other side: COMMITTED AND PUSHED FOR YOU — your privacy-policy edit is now in shared history, so Vercel will redeploy the corrected policy. ccode verified your three claims against the repo before committing: GA4, RevenueCat and Crashlytics appear nowhere in source or dependencies (their only surviving mentions were stale `web/.next` build output), and the real stack is @aptabase/react-native + @sentry/react-native + expo-iap. Your directory / 18+ self-attestation paragraph went in as written.

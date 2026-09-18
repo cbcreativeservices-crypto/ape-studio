@@ -61,9 +61,12 @@ export default function Page() {
       <Section title="Institutions & teams">
         <p>
           Educational and industry institutions get discounts on bulk/multi-seat
-          orders. Buy seats directly and we issue unique login codes — one per
-          user — to activate each account. Custom topics, certificates,
-          programs, and analytics are coming soon for the Institutional tier.
+          orders. An institution buys seats and we issue unique login codes
+          — one per user — for its own students, staff, or members to
+          activate access. Codes are provided only to institutions and are
+          not sold to individuals; individual memberships are available in
+          the app. Custom topics, certificates, programs, and analytics are
+          coming soon for the Institutional tier.
         </p>
         <p>
           <Link href="/institutions">Licensing for schools, studios, and industry</Link>

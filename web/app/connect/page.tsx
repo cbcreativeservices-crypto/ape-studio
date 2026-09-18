@@ -69,9 +69,10 @@ export default async function Page({
                 Now
               </p>
               <p>
-                Site licenses, bought from us. Unique login codes, one per seat.
-                Discounted for education and industry — the more seats, the
-                better the rate.
+                Site licenses, bought from us. Unique login codes, one per seat,
+                issued to the institution for its own people — not sold to
+                individuals. Discounted for education and industry — the
+                more seats, the better the rate.
               </p>
             </div>
             <div className="connect-sheet-row">

@@ -36,6 +36,12 @@ export default function Page() {
               create an account, which activates their access.
             </>,
             <>
+              <strong>Institutions only.</strong> Access codes are issued to
+              institutions for their own students, staff, or members — they are
+              not sold to individuals. Individuals get a membership in the app:{" "}
+              <Link href="/get">download it from the App Store or Google Play</Link>.
+            </>,
+            <>
               <strong>Get a quote.</strong> Tell us how many seats you need and
               we’ll send pricing. Contact{" "}
               <a href={QUOTE_MAIL}>{EMAIL}</a>.
