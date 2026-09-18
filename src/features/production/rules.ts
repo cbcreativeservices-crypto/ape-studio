@@ -24,6 +24,7 @@ import type {
 import { isAnswered, valueKey } from './types';
 import type { ResolvedStage, RuleDef } from './schema';
 import { stageFields } from './schema';
+import { parseQuantity } from '../../screens/lab/calc/calcUnits';
 
 /**
  * What a computed rule receives. Everything it needs to decide, and nothing it
@@ -100,13 +101,108 @@ export function many(v: FieldValue | undefined): string[] {
 export function when(v: FieldValue | undefined): number | null {
   const s = str(v);
   if (!s) return null;
-  const dateOnly = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
-  if (dateOnly) {
-    const [, y, m, d] = dateOnly;
-    return new Date(Number(y), Number(m) - 1, Number(d)).getTime();
+  return readDate(s);
+}
+
+/** Month names and the usual abbreviations, lower-cased. */
+const MONTHS = [
+  'january', 'february', 'march', 'april', 'may', 'june',
+  'july', 'august', 'september', 'october', 'november', 'december',
+];
+function monthFromName(word: string): number | null {
+  const w = word.toLowerCase().replace(/\.$/, '');
+  if (w.length < 3) return null;
+  const i = MONTHS.findIndex((m) => m === w || m.slice(0, 3) === w.slice(0, 3));
+  return i < 0 ? null : i + 1;
+}
+
+/** Build a LOCAL date, rejecting impossible days (31 February, month 15). */
+function localDate(y: number, m: number, d: number): number | null {
+  if (m < 1 || m > 12 || d < 1 || d > 31 || y < 1000 || y > 9999) return null;
+  const dt = new Date(y, m - 1, d);
+  // Rolls over on an impossible day (Feb 31 -> Mar 3), which we refuse.
+  if (dt.getFullYear() !== y || dt.getMonth() !== m - 1 || dt.getDate() !== d) return null;
+  return dt.getTime();
+}
+
+/**
+ * Read a typed date, or refuse.
+ *
+ * ── WHY `Date.parse` IS GONE (2026-09-18) ────────────────────────────────────
+ *
+ * Anything that was not a bare `YYYY-MM-DD` fell through to `Date.parse`, whose
+ * behaviour for non-ISO input is IMPLEMENTATION-DEFINED. That gave this field
+ * two different bugs on two different engines, from the same keystrokes:
+ *
+ *   V8 (the ape-web browser preview)  "01/04/2026" -> 4 January
+ *   Hermes (the device build)         "01/04/2026" -> null
+ *
+ * A UK user meaning 1 April got a silently WRONG date in the preview and a
+ * silently ABSENT one on the phone — and every date rule short-circuits on
+ * null, so a plan whose delivery precedes its production date passed clean.
+ * Failing open, differently depending on where you tested it, which is why this
+ * could not be reproduced reliably.
+ *
+ * So the ambiguity is now resolved explicitly, and refused when it cannot be:
+ *
+ *   "2026-04-01" / "2026/04/01"  -> 1 April    year first is unambiguous
+ *   "15/03/2026"                 -> 15 March   15 cannot be a month
+ *   "03/15/2026"                 -> 15 March   same, the other way round
+ *   "1 April 2026" / "Apr 1, 2026" -> 1 April  a named month settles it
+ *   "01/04/2026"                 -> null       1 Apr or 4 Jan? DO NOT GUESS
+ *   "31/02/2026"                 -> null       not a real day
+ *
+ * Refusing `01/04/2026` is deliberate and is the whole point: this is a
+ * production schedule, and a date silently read as three months early is worse
+ * than a date the plan says it could not read. `cellUnreadable`'s sibling
+ * `dateUnreadable` lets callers tell "refused" from "empty".
+ */
+export function readDate(raw: string): number | null {
+  const s = raw.trim();
+  if (!s) return null;
+
+  // Year first: ISO order, no ambiguity possible. A time part is accepted and
+  // discarded — a value stored as a full ISO timestamp is still naming a
+  // calendar day, and refusing it would lose dates already saved in projects.
+  const iso = /^(\d{4})[-/](\d{1,2})[-/](\d{1,2})(?:[T ][\d:.]+(?:Z|[+-]\d{2}:?\d{2})?)?$/.exec(s);
+  if (iso) return localDate(Number(iso[1]), Number(iso[2]), Number(iso[3]));
+
+  // A named month settles the order wherever it sits.
+  const named = /^(\d{1,2})\s+([A-Za-z.]+)\s+(\d{4})$/.exec(s);
+  if (named) {
+    const m = monthFromName(named[2]);
+    return m === null ? null : localDate(Number(named[3]), m, Number(named[1]));
   }
-  const t = Date.parse(s);
-  return Number.isNaN(t) ? null : t;
+  const namedFirst = /^([A-Za-z.]+)\s+(\d{1,2}),?\s+(\d{4})$/.exec(s);
+  if (namedFirst) {
+    const m = monthFromName(namedFirst[1]);
+    return m === null ? null : localDate(Number(namedFirst[3]), m, Number(namedFirst[2]));
+  }
+
+  // Two numbers then a year. Determined ONLY when one of them cannot be a month.
+  const slashed = /^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/.exec(s);
+  if (slashed) {
+    const a = Number(slashed[1]);
+    const b = Number(slashed[2]);
+    const y = Number(slashed[3]);
+    if (a > 12 && b <= 12) return localDate(y, b, a); // D/M
+    if (b > 12 && a <= 12) return localDate(y, a, b); // M/D
+    return null; // both could be a month — ambiguous, and we do not guess
+  }
+
+  return null;
+}
+
+/**
+ * Was something typed here that we could not read as a date?
+ *
+ * The difference between "no date yet" and "a date we refused" is the
+ * difference between a plan that is incomplete and a plan whose schedule rules
+ * are all silently standing down.
+ */
+export function dateUnreadable(v: FieldValue | undefined): boolean {
+  const s = str(v);
+  return s.length > 0 && readDate(s) === null;
 }
 
 /** Local midnight of the day `at` falls in. */
@@ -132,14 +228,58 @@ export function cell(row: Record<string, unknown>, columnId: string): string {
   return String(c).trim();
 }
 
-/** One cell as a finite number, or null. */
+/**
+ * One cell as a finite number, or null.
+ *
+ * ── WHY NOT `Number()` (2026-09-18) ──────────────────────────────────────────
+ *
+ * Scalar currency fields are rendered by `NumberField`, which strips every
+ * non-`[0-9.\-]` character as you type, so `12,000` becomes `12000` and is
+ * safe. TABLE cells are not: they fall through `Cell()` to a bare `TextInput`
+ * that stores the raw string verbatim, with `keyboardType="numeric"` — which on
+ * iOS is `UIKeyboardTypeNumbersAndPunctuation`, so the comma is right there on
+ * the keypad.
+ *
+ * `Number("12,000")` is `NaN`, this returned null, and every consumer spells
+ * `?? 0`. So one comma, typed the way every professional writes a budget, did
+ * two contradictory things at once:
+ *
+ *   • `schedule-budget-exceeded` summed that line as ZERO, so a real overspend
+ *     never raised the advisory — failing OPEN on money
+ *   • `schedule-no-contingency` announced "no contingency" to someone who had
+ *     just typed one
+ *
+ * And both ride into the exported packet, which is client-facing.
+ *
+ * `parseQuantity` is the calculators' parser and already solves exactly this:
+ * it reads unambiguous grouping (`12,000`, `1,234,567.8`, `1.234,5`) and
+ * REFUSES anything it cannot read with certainty rather than guessing. That
+ * refusal matters as much as the parsing — `10,5` stays null, because a decimal
+ * comma and a typo'd group are indistinguishable and inventing a number for a
+ * client's budget is worse than admitting we could not read it.
+ */
 export function cellNum(row: Record<string, unknown>, columnId: string): number | null {
   const c = row[columnId];
   if (typeof c === 'number' && Number.isFinite(c)) return c;
   const s = String(c ?? '').trim();
   if (!s) return null;
-  const n = Number(s);
-  return Number.isFinite(n) ? n : null;
+  return parseQuantity(s);
+}
+
+/**
+ * Did this cell hold something that LOOKS like a number but could not be read?
+ *
+ * The difference between "empty" and "unreadable" is the difference between a
+ * line item nobody filled in and a line item whose amount we silently treated
+ * as zero. Rules that sum money use this to refuse to draw a conclusion rather
+ * than draw a wrong one.
+ */
+export function cellUnreadable(row: Record<string, unknown>, columnId: string): boolean {
+  const c = row[columnId];
+  if (typeof c === 'number') return !Number.isFinite(c);
+  const s = String(c ?? '').trim();
+  if (!s) return false;
+  return parseQuantity(s) === null;
 }
 
 /**

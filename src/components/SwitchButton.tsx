@@ -18,6 +18,8 @@
  */
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+
+import { animationsAllowed } from '../features/settings/a11y';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../features/settings/store';
@@ -108,6 +110,23 @@ export function SwitchButton({
   const flicker = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
+    // ── DECORATIVE, SO IT HONOURS "Reduce animations" (2026-09-18) ───────────
+    //
+    // This is the lamp FLICKER: an infinite loop with no informational content,
+    // and there are seven SwitchButtons on the Dashboard alone — so with the
+    // setting on, a user who asked the app (or the whole phone) to stop moving
+    // still had seven perpetual animations in front of them.
+    //
+    // Deliberately NOT applied to the lab visualisations that also use repeats.
+    // A wave that does not move teaches nothing; there the motion IS the
+    // content, and silencing it would remove the lesson rather than the
+    // distraction. This setting is about decoration.
+    //
+    // The lamp still lights and still reads on/off — only the flicker stops.
+    if (!animationsAllowed()) {
+      flicker.setValue(0.8);
+      return;
+    }
     const loop = Animated.loop(
       Animated.sequence([
         Animated.timing(flicker, { toValue: 1, duration: 1400, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),

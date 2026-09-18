@@ -33,8 +33,7 @@ import {
   sameName,
   startOfDay,
   str,
-  when,
-} from '../rules';
+  when, cellUnreadable } from '../rules';
 import { registerActivityChecks } from '../activities';
 // Stage 5's capacity test, borrowed by stage 4 so the two cannot both fire.
 // One-way: logic2 knows nothing about this file, so there is no import cycle.
@@ -510,6 +509,15 @@ registerRuleLogic({
     const total = num(ctx.get('schedule', 'budget_total'));
     const lines = rows(ctx.get('schedule', 'budget_lines'));
     if (total === null || lines.length === 0) return false;
+    // `cellNum` now reads grouped money (`12,000`), which is what this rule was
+    // actually missing — a comma made a line contribute ZERO and a real
+    // overspend never raised the advisory.
+    //
+    // An UNREADABLE line still contributes 0, so `sum` remains a LOWER BOUND.
+    // That is sound for an advisory in the direction it fires: if the readable
+    // lines alone already exceed the total, they exceed it. It can still stay
+    // quiet when an unreadable line would have tipped it — which the gate below
+    // catches instead, by refusing to certify a budget it cannot add up.
     const sum = lines.reduce((t, l) => t + (cellNum(l, 'bl_amount') ?? 0), 0);
     return sum > total;
   },
@@ -853,6 +861,15 @@ registerActivityChecks({
         const lines = rows(c.get('schedule', 'budget_lines'));
         const total = num(c.get('schedule', 'budget_total'));
         if (lines.length === 0 || total === null) return false;
+        // A GATE MAY NOT CERTIFY A SUM IT COULD NOT ADD UP (2026-09-18).
+        //
+        // Unreadable amounts used to count as 0, so a budget containing a line
+        // nobody could parse still passed as "balances" — and that verdict is
+        // carried into the exported packet a client reads. Refusing here is
+        // failing CLOSED, which is the right direction for a gate: the learner
+        // is told to fix the line, rather than handed a certification of
+        // arithmetic that never happened.
+        if (lines.some((l) => cellUnreadable(l, 'bl_amount'))) return false;
         const contingency = lines.find((l) => cell(l, 'bl_category') === 'contingency');
         if (!contingency || (cellNum(contingency, 'bl_amount') ?? 0) <= 0) return false;
         return lines.reduce((t, l) => t + (cellNum(l, 'bl_amount') ?? 0), 0) <= total;

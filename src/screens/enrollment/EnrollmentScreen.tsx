@@ -1111,21 +1111,28 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
         <Text style={styles.bundleMeta}>
           {b.topics.length} topics · {b.loaded ? 'Loaded on Dashboard' : 'Not loaded'}
         </Text>
-        {/* Final exam — placeholder for the award's exam quiz; gray + inactive
-            for now (user request 2026-07-23). Certs/programs only. */}
+        {/* ── WAS A DEAD BUTTON (replaced 2026-09-18) ────────────────────────
+            This was a hardcoded `disabled` TAKE FINAL EXAM placeholder from
+            2026-07-23 that NEVER enabled, not even at 100%. Meanwhile the Final
+            Exam works — AwardProgressScreen routes to it whenever the award is
+            complete. So a member at 100% was looking at a grey dead control
+            here while the working one sat behind a different tap, with the
+            visible button giving no reason at all (only the accessibility label
+            said "not available yet").
+
+            It now goes where the exam actually is. It does NOT route straight
+            to AwardProgress because EnrolledBundle carries no award id — only a
+            name — and matching names to award UUIDs to open a graded exam is
+            exactly the kind of guess this app should not make. Awards is one
+            tap away and is correct for every case. */}
         {b.kind !== 'subject' ? (
           <Pressable
             style={styles.finalExamBtn}
-            disabled
+            onPress={() => navigation.navigate('Awards', { category: b.kind === 'program' ? 'program' : 'specialization' })}
             accessibilityRole="button"
-            accessibilityState={{ disabled: true }}
-            // RN-web 0.21 drops accessibilityState — aria-disabled reaches the DOM.
-            aria-disabled
-            // The button is a placeholder that never enables (not even at 100%),
-            // so the label must not promise it unlocks on completion (2026-09-11).
-            accessibilityLabel="Take Final Exam — not available yet"
+            accessibilityLabel={`Open the ${b.name} award page to see its Final Exam`}
           >
-            <Text style={styles.finalExamText}>TAKE FINAL EXAM</Text>
+            <Text style={styles.finalExamText}>FINAL EXAM · ON THE AWARD PAGE →</Text>
           </Pressable>
         ) : null}
         {/* The SAME 3-card deck icon loads/unloads ALL topics (the per-topic
@@ -1212,9 +1219,14 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
         <Text style={styles.bundleMeta}>
           {done ? 'You’ve completed all topics for this award' : 'You already have all topics for this award'}
         </Text>
-        {/* Final exam placeholder — gray + inactive for now (user request 2026-07-23). */}
-        <Pressable style={styles.finalExamBtn} disabled accessibilityRole="button" accessibilityState={{ disabled: true }} aria-disabled accessibilityLabel="Take Final Exam — not available yet">
-          <Text style={styles.finalExamText}>TAKE FINAL EXAM</Text>
+        {/* The second dead TAKE FINAL EXAM button — same replacement as above. */}
+        <Pressable
+          style={styles.finalExamBtn}
+          onPress={() => navigation.navigate('Awards', { category: d.kind === 'program' ? 'program' : 'specialization' })}
+          accessibilityRole="button"
+          accessibilityLabel={`Open the ${d.name} award page to see its Final Exam`}
+        >
+          <Text style={styles.finalExamText}>FINAL EXAM · ON THE AWARD PAGE →</Text>
         </Pressable>
         {/* STUDY ALL (blue) loads the award's topics into the deck; ADD TOPICS
             (gray) formalizes the award in the list (→ becomes REMOVE TOPICS) —
