@@ -24,7 +24,7 @@ import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { Alert, FlatList, Modal, Pressable, Share, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { confirmDialog } from '../../lib/confirm';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { BRAND, shareFooterLines, shareHeaderLines } from '../../features/commercial/brand';
+import { BRAND, SHARE_RULE, shareFooterBlock, shareHeaderLines } from '../../features/commercial/brand';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { compareCompatibility } from '../../features/tools/measure/compare';
 import { MeasurementPreview, hasPreview } from '../../features/tools/measure/previews/MeasurementPreview';
@@ -83,7 +83,7 @@ function measurementToText(m: SavedMeasurement): string {
  */
 function measurementShareText(m: SavedMeasurement): string {
   const header = shareHeaderLines('Saved Measurement').join('\n');
-  const footer = shareFooterLines().join('\n');
+  const footer = shareFooterBlock().join('\n');
   return `${header}\n\n${m.title}\n\n${footer}`;
 }
 
@@ -96,8 +96,12 @@ async function shareMeasurements(ms: SavedMeasurement[]): Promise<void> {
   const middle =
     ms.length === 1
       ? measurementToText(ms[0])
-      : ms.map(measurementToText).join('\n\n──────────\n\n');
-  const footer = ['──────────', ...shareFooterLines()].join('\n');
+      // Between measurements, the same rule that frames the footer — a share
+      // with two different horizontal rules in it reads as two documents.
+      : ms.map(measurementToText).join(`\n\n${SHARE_RULE}\n\n`);
+  // Was a hand-rolled 10-dash line; now the shared rule, so this matches every
+  // other share surface (owner 2026-09-17).
+  const footer = shareFooterBlock().join('\n');
   const body = `${header}\n\n${middle}\n\n${footer}`;
   try {
     await Share.share({

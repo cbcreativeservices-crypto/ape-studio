@@ -10,7 +10,7 @@
  * only arranges hierarchy, cleans recipient-facing language, and stamps
  * branding + a reference report id.
  */
-import { BRAND, brandName, shareFooterLines } from '../../../features/commercial/brand';
+import { BRAND, brandName, SHARE_RULE, shareFooterLines } from '../../../features/commercial/brand';
 import type { SavedRunSummary } from './workflowModel';
 
 export type SharedReportValue = {
@@ -240,7 +240,10 @@ export function buildReportFromCalc(p: {
 // Plain-text rendering — Messages/Mail/Notes/Slack safe (no proportional tables)
 // ---------------------------------------------------------------------------
 
-const RULE = '────────────────────────';
+// The share rule now lives in brand.ts so every surface frames its footer
+// identically (owner 2026-09-17). This report's own section rules use the
+// same character, which is why it reads as one document.
+const RULE = SHARE_RULE;
 const LEADER_WIDTH = 26;
 
 /** "Label ........... value" — dot leaders that still read fine if a

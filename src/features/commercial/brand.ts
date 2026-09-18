@@ -63,3 +63,29 @@ export function shareHeaderLines(subtitle: string): string[] {
 export function shareFooterLines(): string[] {
   return [`${BRAND.generatedWith} ${brandName()}`, BRAND.productLine, websiteUrl()];
 }
+
+/**
+ * The horizontal rule that separates a share's content from its footer.
+ *
+ * Owner 2026-09-17: the CALCULATOR report's footer is the one to copy — it is
+ * framed by this rule, and the others were not. Before this, the glossary share
+ * ran the footer on after a blank line and the measurement share hand-rolled a
+ * shorter dashed line, so the same footer looked like three different footers
+ * depending on which screen sent it.
+ */
+export const SHARE_RULE = '────────────────────────';
+
+/**
+ * The ONE text footer for every outgoing share: the rule, then the credit line,
+ * the product line and the tappable website.
+ *
+ * Callers used to share only the LINES and then frame them differently, which
+ * is exactly how the inconsistency happened. Share the framing too, and there is
+ * nothing left to get wrong.
+ *
+ * Returns lines rather than a joined string so a caller can splice it into a
+ * list it is already building.
+ */
+export function shareFooterBlock(): string[] {
+  return [SHARE_RULE, ...shareFooterLines()];
+}

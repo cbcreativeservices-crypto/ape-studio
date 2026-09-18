@@ -11,7 +11,7 @@
  * Branding is restrained and comes from the single BRAND source of truth; the
  * old sign-off "— from the Pro Audio Training Academy glossary" is retired.
  */
-import { BRAND, shareFooterLines, websiteUrl } from '../commercial/brand';
+import { BRAND, shareFooterBlock, websiteUrl } from '../commercial/brand';
 
 // --- Sections the user can include ------------------------------------------
 export type ShareSections = {
@@ -141,10 +141,10 @@ export function singleTermText(t: GlossaryShareTerm, s: ShareSections): string {
     if (related.length) L.push('', 'RELATED TERMS', ...bulletList(related));
   }
 
-  // The ONE shared footer (owner 2026-08-10) — identical across glossary, calc
-  // and measurement shares. NO trailing company wordmark (the source line at
-  // the top already names us).
-  L.push('', ...shareFooterLines());
+  // The ONE shared footer BLOCK (owner 2026-09-17) — the rule as well as the
+  // lines, so a glossary share is framed exactly like a calculator report. It
+  // used to run on after a blank line, which is what made it look different.
+  L.push('', ...shareFooterBlock());
   return L.join('\n');
 }
 
@@ -169,7 +169,7 @@ export function multiTermText(terms: GlossaryShareTerm[], s: ShareSections): str
     if (related.length) L.push('', 'RELATED TERMS', ...bulletList(related));
   }
 
-  L.push('', ...shareFooterLines());
+  L.push('', ...shareFooterBlock());
   return L.join('\n');
 }
 

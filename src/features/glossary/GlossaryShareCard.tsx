@@ -12,7 +12,8 @@
 import { forwardRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../theme/tokens';
-import { BRAND, shareFooterLines } from '../commercial/brand';
+import { BRAND } from '../commercial/brand';
+import { ShareFooter } from '../../components/ShareFooter';
 import {
   dedupeRelated,
   termHeading,
@@ -112,20 +113,9 @@ export const GlossaryShareCard = forwardRef<
         </>
       ) : null}
 
-      {/* Footer — the ONE shared branding block (owner 2026-08-10): product line
-          + website, identical across every share surface. No trailing wordmark. */}
-      <View style={styles.rule} />
-      {shareFooterLines().map((line, i) =>
-        i === shareFooterLines().length - 1 ? (
-          <Text key={i} style={styles.footWebsite}>
-            {line}
-          </Text>
-        ) : (
-          <Text key={i} style={styles.footLine}>
-            {line}
-          </Text>
-        ),
-      )}
+      {/* Footer — <ShareFooter/>. Its website line is now TAPPABLE, which it
+          was not here before (owner 2026-09-17: match the calculator's). */}
+      <ShareFooter />
     </View>
   );
 });
@@ -147,6 +137,4 @@ const styles = StyleSheet.create({
   bullet: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 20, color: '#c7ccd6', marginTop: 3 },
 
   footBrand: { fontFamily: fonts.oswaldSemiBold, fontSize: 13.5, letterSpacing: 0.8, color: colors.amber, textAlign: 'center' },
-  footLine: { fontFamily: fonts.barlowRegular, fontSize: 12, color: '#9aa0ad', textAlign: 'center', marginTop: 2 },
-  footWebsite: { fontFamily: fonts.barlowSemiBold, fontSize: 12.5, color: '#7fa8ff', textAlign: 'center', marginTop: 2 },
 });

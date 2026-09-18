@@ -25,7 +25,8 @@ import { Modal } from '../../components/DimModal';
 import Svg, { Path } from 'react-native-svg';
 import { ColorWheel } from '../../components/ColorWheelButton';
 import { SpectrumColorPicker } from '../../components/SpectrumColorPicker';
-import { BRAND, shareFooterLines } from '../../features/commercial/brand';
+import { BRAND } from '../../features/commercial/brand';
+import { ShareFooter } from '../../components/ShareFooter';
 import { WAVE_COLOR_SWATCHES } from '../../features/tools/waveColorPref';
 import { colors, fonts } from '../../theme/tokens';
 import * as shareImage from './calc/shareImage';
@@ -240,20 +241,9 @@ export function HarmonographViewer(props: {
 
             <Text style={styles.caption}>{caption}</Text>
 
-            {/* Footer — the ONE shared branding block (owner 2026-08-10),
-                identical wording to every other share surface. */}
-            <View style={styles.rule} />
-            {shareFooterLines().map((line, i) =>
-              i === shareFooterLines().length - 1 ? (
-                <Text key={i} style={styles.footWebsite}>
-                  {line}
-                </Text>
-              ) : (
-                <Text key={i} style={styles.footLine}>
-                  {line}
-                </Text>
-              ),
-            )}
+            {/* Footer — <ShareFooter/>. `stretch` keeps the hairline full
+                width in this card, which lays its children out centred. */}
+            <ShareFooter stretch />
           </View>
 
           {/* ── Actions (outside the card — never captured) ── */}
@@ -417,9 +407,6 @@ const styles = StyleSheet.create({
     maxWidth: 520,
   },
 
-  rule: { height: 1, alignSelf: 'stretch', backgroundColor: '#23252d', marginVertical: 12 },
-  footLine: { fontFamily: fonts.barlowRegular, fontSize: 12, color: '#9aa0ad', textAlign: 'center', marginTop: 2 },
-  footWebsite: { fontFamily: fonts.barlowSemiBold, fontSize: 12.5, color: '#7fa8ff', textAlign: 'center', marginTop: 2 },
 
   // Value-button skin (tools idiom: dark chip, hairline border, Oswald caps).
   btnRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center', marginTop: 16 },
