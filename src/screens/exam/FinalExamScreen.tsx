@@ -42,6 +42,8 @@ import {
   EXAM_START_ERROR_COPY,
   startFinalExam,
   submitFinalExam,
+  EXAM_SUBMIT_ERROR_COPY,
+  parseSubmitError,
   type AnswerValue,
   type ExamItem,
   type ExamStartError,
@@ -244,7 +246,12 @@ export function FinalExamScreen({ navigation, route }: Props) {
           // [31] (2026-09-07): release the double-submit latch on a non-network
           // failure so the attempt can be retried (offline path stays queued).
           submitted.current = false;
-          notify('Submit failed', (e as Error).message, () => navigation.goBack());
+          // SAY IT IN WORDS (2026-09-18). This printed `(e as Error).message`,
+          // which on a server refusal is the RAW POSTGRES STRING — a learner who
+          // had just finished the capstone that issues their credential was
+          // shown `attempt_not_open`. The start path six lines away has had a
+          // vocabulary since it was written; this one never got one.
+          notify('Submit failed', EXAM_SUBMIT_ERROR_COPY[parseSubmitError((e as Error).message ?? '')], () => navigation.goBack());
         }
       } finally {
         // [32] (2026-09-07): the success path replace()s (unmounts) this screen,

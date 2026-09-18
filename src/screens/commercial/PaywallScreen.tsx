@@ -19,7 +19,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { consumePendingLink } from '../../navigation/pendingLink';
 import { navigateToPath } from '../../navigation/linking';
-import { buyPlan, initPurchases, restorePurchases, teardownPurchases } from '../../features/commercial/purchase';
+import { buyPlan, detachPaywallHandlers, initPurchases, restorePurchases } from '../../features/commercial/purchase';
 import type { PlanId } from '../../features/commercial/iapProducts';
 import type { RootStackParamList } from '../../navigation/types';
 
@@ -123,7 +123,10 @@ export function PaywallScreen({ navigation }: Props) {
     });
     return () => {
       alive = false;
-      void teardownPurchases();
+      // Detach only THIS SCREEN'S callbacks. The listeners themselves belong to
+      // PurchaseListenerRoot and must outlive the paywall — tearing them down
+      // here is what left Ask-to-Buy and SCA purchases with nowhere to land.
+      detachPaywallHandlers();
     };
   }, [refreshEntitlement, navigation]);
 

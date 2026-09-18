@@ -70,6 +70,9 @@ const TOOL_COUNT = TOOLS.filter((t) => !t.planned).length;
  *  row (image or title) opens the standard expanded viewer (TrophyModal).
  *  Explore is browse-only — no enrollment happens here. Shared by the TOPICS tab
  *  and the SUBJECTS expansion so the two lists stay identical. */
+/** Rows rendered per page in the A–Z TOPICS list. See `topicsShown`. */
+const TOPICS_PAGE = 40;
+
 function TopicRow({ gs, name, onView }: { gs: number; name: string; onView: () => void }) {
   return (
     <Pressable
@@ -110,6 +113,17 @@ export function CurriculumView({
   // Curriculum view split (owner 2026-09-15): TOPICS (flat list of every topic)
   // vs SUBJECTS (the expandable subject → topics tree).
   const [curTab, setCurTab] = useState<'topics' | 'subjects'>('subjects');
+  /**
+   * How many TOPICS rows are rendered. 171 were rendered at once, each mounting
+   * a TrophyImage that fetches a 1024×1024 WebP to draw it at 34pt — about 166
+   * concurrent requests and ~33 MB of mobile data from one tap, unvirtualized,
+   * on a new customer's first look at the curriculum (pass 3, G4).
+   *
+   * Paginated rather than virtualized because this list lives inside a
+   * ScrollView, and nesting a FlatList there trades a data problem for a
+   * scrolling one. Same SHOW MORE pattern as CareerFamilyScreen.
+   */
+  const [topicsShown, setTopicsShown] = useState(TOPICS_PAGE);
   // Tapping the study-topics / subject-categories readouts jumps down to the
   // curriculum list with that tab open (owner 2026-09-15).
   const scrollRef = useRef<ScrollView>(null);
@@ -441,9 +455,21 @@ export function CurriculumView({
       {/* TOPICS tab — flat A–Z list of every topic; tap to enroll. */}
       {curTab === 'topics' ? (
         <View style={styles.tree}>
-          {allTopics.map((t) => (
+          {allTopics.slice(0, topicsShown).map((t) => (
             <TopicRow key={t.gs} gs={t.gs} name={t.name} onView={() => setViewTopic({ gs: t.gs, name: t.name, list: 'az' })} />
           ))}
+          {topicsShown < allTopics.length ? (
+            <Pressable
+              style={styles.topicsMore}
+              onPress={() => setTopicsShown((n) => n + TOPICS_PAGE)}
+              accessibilityRole="button"
+              accessibilityLabel={`Show ${Math.min(TOPICS_PAGE, allTopics.length - topicsShown)} more topics, ${allTopics.length - topicsShown} remaining`}
+            >
+              <Text style={styles.topicsMoreText}>
+                {`SHOW ${Math.min(TOPICS_PAGE, allTopics.length - topicsShown)} MORE · ${allTopics.length - topicsShown} LEFT`}
+              </Text>
+            </Pressable>
+          ) : null}
         </View>
       ) : (
       /* SUBJECTS tab — each subject expands inline. */
@@ -697,6 +723,20 @@ const styles = StyleSheet.create({
   subLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.6, color: colors.amberLabel, marginTop: 4 },
   topicRow: { flexDirection: 'row', gap: 10, alignItems: 'center', paddingVertical: 4 },
   // Small topic-art thumbnail placeholder while the image is absent/loading.
+  topicsMore: {
+    marginTop: 10,
+    paddingVertical: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.hairline,
+    alignItems: 'center',
+  },
+  topicsMoreText: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 12,
+    letterSpacing: 1,
+    color: colors.textSecondary,
+  },
   topicThumbFallback: { width: 34, height: 34, borderRadius: 6, backgroundColor: '#20232b' },
   topicBullet: { fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 22, color: colors.textSub, width: 12 },
   // Tap-to-enroll affordance (mirrors the Enrollments Browse & Add list): '+'

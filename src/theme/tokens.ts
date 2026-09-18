@@ -89,6 +89,8 @@ export const fonts = {
   cinzelSemiBold: 'Cinzel_600SemiBold',
   cinzelBold: 'Cinzel_700Bold',
   // Yellowtail — bold retro badge script (legacy engraved legend look).
+  // ⚠️ NOT PRELOADED (2026-09-18) — unreferenced, and useFonts blocks the splash.
+  // Add it back to `fontAssets` below before using this token anywhere.
   script: 'Yellowtail_400Regular',
   // Chakra Petch — squared retro-technical / control-panel face used for the
   // debossed method-card legends (user request 2026-07-18). SemiBold cuts a
@@ -97,6 +99,9 @@ export const fonts = {
   panelBold: 'ChakraPetch_700Bold',
   // Bravura — SMuFL music-notation font (Steinberg, OFL). Used for engraved
   // musical glyphs, e.g. the dynamics marks on the amplitude scale.
+  // ⚠️ NOT PRELOADED (2026-09-18) — 889 KB blocking every cold start for a token
+  // nothing referenced. The amplitude lab loads the .otf directly through Skia.
+  // Add it back to `fontAssets` below before using this token as a fontFamily.
   bravura: 'Bravura',
 } as const;
 
@@ -114,10 +119,28 @@ export const fontAssets = {
   ShareTechMono_400Regular: require('@expo-google-fonts/share-tech-mono/400Regular/ShareTechMono_400Regular.ttf'),
   Cinzel_600SemiBold: require('@expo-google-fonts/cinzel/600SemiBold/Cinzel_600SemiBold.ttf'),
   Cinzel_700Bold: require('@expo-google-fonts/cinzel/700Bold/Cinzel_700Bold.ttf'),
-  Yellowtail_400Regular: require('@expo-google-fonts/yellowtail/400Regular/Yellowtail_400Regular.ttf'),
   ChakraPetch_600SemiBold: require('@expo-google-fonts/chakra-petch/600SemiBold/ChakraPetch_600SemiBold.ttf'),
   ChakraPetch_700Bold: require('@expo-google-fonts/chakra-petch/700Bold/ChakraPetch_700Bold.ttf'),
-  Bravura: require('../../assets/fonts/Bravura.otf'),
+  // ── TWO FONTS REMOVED FROM THE PRELOAD (2026-09-18) ────────────────────────
+  //
+  // `useFonts` BLOCKS THE SPLASH until every entry here has loaded, so anything
+  // in this map is paid for on every cold start by every user.
+  //
+  //   Bravura     889 KB. Not referenced as a fontFamily ANYWHERE — verified by
+  //               grep for `fonts.bravura`, zero hits outside this file. Its one
+  //               real use is AmplitudeOrientation.tsx:577, which loads the .otf
+  //               DIRECTLY through Skia's `useFont(require(...))` and never
+  //               touches this map. So the app waited on 889 KB at every launch
+  //               for a font nothing here was going to use.
+  //
+  //   Yellowtail  60 KB. Same story: `fonts.script` has zero references.
+  //
+  // ⚠️ THE ASSET FILE STAYS. assets/fonts/Bravura.otf is still required by the
+  //    amplitude lab and must not be deleted — only the preload entry is gone.
+  //
+  // The `fonts.bravura` / `fonts.script` tokens are left in place above with a
+  // warning, rather than removed, so a future caller gets a comment instead of a
+  // silently unrendered glyph.
 };
 
 /**

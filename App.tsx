@@ -71,6 +71,7 @@ import { ProfilePreview } from './src/screens/profile/ProfilePreview';
 import { LabPreviewOverlay } from './src/features/lab/LabPreviewOverlay';
 import { endLabPreview, getLabPreview } from './src/features/lab/labPreviewStore';
 import { EntitlementProvider } from './src/features/commercial/EntitlementProvider';
+import { PurchaseListenerRoot } from './src/features/commercial/PurchaseListenerRoot';
 import { AudioOutputGate } from './src/features/audio/AudioOutputGate';
 import { touchAudioActivity } from './src/features/audio/audioOutputStore';
 import { AudioBorderFrame } from './src/features/audio/AudioBorderFrame';
@@ -441,6 +442,12 @@ function App() {
       {/* Commercial entitlement context (CM1) — inert while commercialMode is
           OFF; no consumers yet, so app behavior is unchanged. */}
       <EntitlementProvider>
+        {/* Store purchases are listened for from BOOT, not just while the
+            paywall is open (2026-09-18). Ask-to-Buy, SCA challenges and any
+            purchase the store completes later used to land nowhere, so
+            finishTransaction never ran — and an unacknowledged Google purchase
+            is auto-refunded after 72 hours. Renders nothing. */}
+        <PurchaseListenerRoot />
         {/* Global audio-output gate (owner request 2026-07-25): the app is
             silent by default; this provider owns the enable popups and wires the
             login / foreground-idle auto-re-mute. Mounted once at the root. */}

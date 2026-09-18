@@ -100,6 +100,32 @@ async function validateWithServer(p: IapPurchase): Promise<boolean> {
 }
 
 /**
+ * Called after a purchase is validated and finished, so the app can re-read the
+ * member's tier without a paywall on screen. Set once, at app root.
+ */
+let onEntitlementMayHaveChanged: (() => void) | null = null;
+
+/**
+ * Start listening for store events for the lifetime of the process.
+ *
+ * Call ONCE from the app root. Idempotent: `initPurchases` only registers
+ * listeners when none exist, so a second call is harmless.
+ *
+ * Returns false when IAP is unavailable in this build (missing native module,
+ * store not prepared) — the app carries on, it simply cannot sell anything.
+ */
+export async function startPurchaseListeners(onChanged: () => void): Promise<boolean> {
+  onEntitlementMayHaveChanged = onChanged;
+  // No UI callbacks: nothing is on screen. The listener handles that case.
+  return initPurchases({ onSuccess: () => {}, onError: () => {} }).then((ok) => {
+    // initPurchases sets `handlers` to the no-ops above; drop them so a later
+    // paywall's handlers are the only UI callbacks that ever fire.
+    handlers = null;
+    return ok;
+  });
+}
+
+/**
  * Open the store connection and register the purchase listeners. Returns false
  * if IAP isn't available in this build (native module missing / store not
  * prepared) so the UI can explain.
@@ -118,6 +144,19 @@ export async function initPurchases(h: PurchaseHandlers): Promise<boolean> {
     listeners.push(
       iap.purchaseUpdatedListener((purchase) => {
         void (async () => {
+          // THIS RUNS WITH OR WITHOUT A PAYWALL ON SCREEN (2026-09-18).
+          //
+          // `handlers` is the paywall's UI callbacks and is null whenever the
+          // paywall is not mounted — but validating and FINISHING the
+          // transaction must happen regardless. An Ask-to-Buy approval, an SCA
+          // challenge, or any purchase the store completes after the sheet is
+          // gone arrives here with handlers null. Previously the listeners did
+          // not even exist by then; now they do, and this path must not depend
+          // on them.
+          //
+          // finishTransaction is the part that matters: unacknowledged Google
+          // purchases are AUTO-REFUNDED after 72 hours, so a customer who paid
+          // silently loses both the money and the access.
           const ok = await validateWithServer(purchase);
           if (ok) {
             try {
@@ -125,6 +164,10 @@ export async function initPurchases(h: PurchaseHandlers): Promise<boolean> {
             } catch (e) {
               console.warn('[iap] finishTransaction failed:', (e as Error).message);
             }
+            // Tell the app its tier changed even when nothing is listening for a
+            // UI callback, or the member stays on the free experience until the
+            // next cold start.
+            onEntitlementMayHaveChanged?.();
             handlers?.onSuccess();
           } else {
             handlers?.onError('We couldn’t verify that purchase. If you were charged, use Restore Purchases.');
@@ -147,7 +190,31 @@ export async function initPurchases(h: PurchaseHandlers): Promise<boolean> {
   return true;
 }
 
-/** Tear down listeners + connection (call when the paywall closes). */
+/**
+ * Detach the PAYWALL'S UI callbacks. Does not stop listening.
+ *
+ * ── WHY THIS NO LONGER TEARS ANYTHING DOWN (2026-09-18) ──────────────────────
+ *
+ * It used to remove the listeners and end the store connection, and the paywall
+ * was the only caller of `initPurchases` — so outside that one screen the app
+ * was not listening for purchase events at all.
+ *
+ * Anything the store completes asynchronously therefore landed nowhere:
+ * Ask-to-Buy (a parent approves hours later), SCA / 3-D Secure challenges, a
+ * purchase interrupted by a crash or a backgrounded app. `finishTransaction`
+ * never ran for those, and an unacknowledged Google purchase is AUTO-REFUNDED
+ * after 72 hours — the customer is charged, gets nothing, and then gets a
+ * refund they did not ask for, with no trace in the app.
+ *
+ * Listeners are now started once at app root by `startPurchaseListeners` and
+ * stay for the process lifetime. This only clears the UI callbacks so a closed
+ * paywall cannot be called back.
+ */
+export function detachPaywallHandlers(): void {
+  handlers = null;
+}
+
+/** Full shutdown — listeners and connection. Not used in normal operation. */
 export async function teardownPurchases(): Promise<void> {
   handlers = null;
   for (const l of listeners) {

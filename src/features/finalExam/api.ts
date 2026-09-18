@@ -259,6 +259,59 @@ export type SubmitArgs = {
   focusLossDuration: number;
 };
 
+/**
+ * Every exception `submit_final_exam` can raise, read from the deployed body.
+ *
+ * ── WHY THIS EXISTS (2026-09-18) ─────────────────────────────────────────────
+ *
+ * The screen did `notify('Submit failed', (e as Error).message)` — so a learner
+ * who had just finished the hardest assessment in the product was shown the raw
+ * Postgres string, e.g. `attempt_not_open`. On the capstone that issues the
+ * credential they are paying for.
+ *
+ * The start path has had a vocabulary since it was written; the submit path,
+ * six lines away, never got one.
+ */
+export type ExamSubmitError =
+  | 'attempt_not_found'
+  | 'attempt_not_open'
+  | 'bad_serve_set'
+  | 'not_owner'
+  | 'user_not_found'
+  | 'unknown';
+
+export const EXAM_SUBMIT_ERROR_COPY: Record<ExamSubmitError, string> = {
+  // Already graded, or already voided/timed-out. submit_final_exam returns the
+  // stored payload when one exists, so reaching this means the attempt was
+  // closed by something else — a second device, or a lockout.
+  attempt_not_open:
+    'This attempt has already been closed. Open the Final Exam again to see your result.',
+  attempt_not_found:
+    'We could not find this exam attempt. Open the Final Exam again — if it keeps happening, contact support and quote the time you finished.',
+  // The serve set is written inside start_final_exam's transaction, so an empty
+  // one means the attempt never fully started. Nothing the learner did.
+  bad_serve_set:
+    'This exam was not set up correctly and could not be marked. Nothing you did caused this, and this attempt will not be counted — please contact support.',
+  not_owner: 'This exam belongs to a different account. Sign in as the account that started it.',
+  user_not_found:
+    'We could not find your account record. Sign out and back in, and contact support if it continues.',
+  unknown: 'Your exam could not be submitted. Your answers are still here — try again.',
+};
+
+/** Map a thrown Postgres message onto the vocabulary above. */
+export function parseSubmitError(message: string): ExamSubmitError {
+  const codes: ExamSubmitError[] = [
+    'attempt_not_found',
+    'attempt_not_open',
+    'bad_serve_set',
+    'not_owner',
+    'user_not_found',
+  ];
+  // Longest-first, so 'attempt_not_found' cannot be shadowed by a shorter code
+  // that happens to be a substring of the same message.
+  return [...codes].sort((a, b) => b.length - a.length).find((c) => message.includes(c)) ?? 'unknown';
+}
+
 export async function submitFinalExam(args: SubmitArgs): Promise<ExamResult> {
   const { data, error } = await supabase.rpc('submit_final_exam', {
     p_attempt_id: args.attemptId,

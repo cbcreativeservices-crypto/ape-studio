@@ -173,7 +173,7 @@ export async function fetchTubePageUri(stem: string, page: 1 | 2): Promise<strin
 export async function fetchTubePage(
   stem: string,
   page: 1 | 2,
-): Promise<{ url: string | null; reason: 'ok' | 'auth' | 'network' }> {
+): Promise<{ url: string | null; reason: 'ok' | 'auth' | 'network' | 'missing' }> {
   const { data: sess } = await supabase.auth.getSession().catch(() => ({ data: { session: null } }));
   // An anonymous device key would pass a bare session check and then collect a
   // 4xx from the member-gated function; short-circuit it as what it is.
@@ -183,9 +183,23 @@ export async function fetchTubePage(
       body: { stem, page },
     });
     if (error) {
-      // The gated fn refuses non-members with a 4xx — surface it as auth.
+      // ── ONLY 401/403 MEAN "NOT A MEMBER" (narrowed 2026-09-18) ────────────
+      //
+      // This treated EVERY 4xx as an auth failure, so a paying member hit by a
+      // 404 (that stem has no page 2), a 429 (rate limit) or a 400 (a bad
+      // request we sent) was told their Academy sign-in was the problem and
+      // asked to sign in again — which would not have helped, and which tells
+      // a customer they are not a member when they are.
+      //
+      // tube-image returns 403 for a non-member and 401 with no session. Those
+      // two are the auth answer. Everything else is not about who they are.
       const status = (error as { context?: { status?: number } }).context?.status;
-      return { url: null, reason: status != null && status >= 400 && status < 500 ? 'auth' : 'network' };
+      if (status === 401 || status === 403) return { url: null, reason: 'auth' };
+      // A genuinely absent asset is not a connection problem either, and
+      // "check your connection" sends them to retry something that will never
+      // succeed.
+      if (status === 404) return { url: null, reason: 'missing' };
+      return { url: null, reason: 'network' };
     }
     const url = (data as { url?: string } | null)?.url;
     return url ? { url, reason: 'ok' } : { url: null, reason: 'network' };

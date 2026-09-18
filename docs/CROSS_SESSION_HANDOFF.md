@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 11:47 · ccode · 3d616750
+changed: Android refunds can actually match a row now
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-18 · ccode · 7291b418
 changed: Weekly switch can no longer claim to be on with nothing behind it
 affects other side: FYI, client-side fix — but the DATA STATE is worth your knowing.

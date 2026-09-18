@@ -45,6 +45,7 @@ import { resetPopupSuppression } from '../dev/popupSuppressStore';
 import { resetLowLight } from '../settings/lowLight';
 import { resetMixingCommitments } from '../../screens/lab/mixing/kit';
 import { resetCelebrationsSeen } from '../celebration/celebrationSeen';
+import { resetGenCapSession } from '../tools/genCapSession';
 
 /**
  * Keys that MUST survive an account wipe: device-hardware calibration (per
@@ -213,6 +214,18 @@ export function resetAllLocalStores(): void {
   // stranger's answers as their own.
   resetMixingCommitments();
   resetSoundSafetyAck();
+  // ⚠️ HEARING SAFETY. The generator's output-cap unlock is a SAFETY gate: the
+  // departing user confirmed a prompt accepting louder-than-capped output, and
+  // that confirmation is theirs alone. `resetGenCapSession` was written for
+  // exactly this ("e.g. on explicit sign-out") and then had ZERO callers, so
+  // the unlock survived an account switch — the next person, who was never
+  // shown the prompt and never agreed to anything, got an already-unlocked
+  // generator and no second ask (the screen restores the native unlock
+  // silently on re-entry, by design).
+  //
+  // Of everything in this function this is the only one that can hurt somebody
+  // rather than confuse them.
+  resetGenCapSession();
   // The "already celebrated" set is the departing user's. Left in memory it was
   // re-persisted under the new account, and the next member lost the
   // celebration for their first certificate to somebody else's history.

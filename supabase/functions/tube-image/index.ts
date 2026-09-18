@@ -76,11 +76,20 @@ Deno.serve(async (req) => {
     .from("entitlements")
     .select("status, expires_at")
     .eq("product", "academy");
-  const acad = (ents ?? [])[0] as { status?: string; expires_at?: string | null } | undefined;
-  const entitled =
-    !!acad &&
-    acad.status === "active" &&
-    (!acad.expires_at || new Date(acad.expires_at).getTime() > Date.now());
+  // ── ASK "IS ANY ROW GOOD?", NOT "IS THE FIRST ROW GOOD?" (2026-09-18) ─────
+  //
+  // This took `[0]` and judged the member on whichever row the database
+  // happened to return first. That is the exact bug EntitlementProvider was
+  // fixed to stop doing: with a lapsed row ordered ahead of an active one, a
+  // paying member is told they are not a member and the image 403s.
+  //
+  // UNIQUE (user_id, product) makes two academy rows impossible today, so this
+  // is defensive rather than live — but the constraint is one migration away
+  // from someone adding a second product, and a silent 403 on a paid asset is
+  // not a failure worth leaving to a constraint elsewhere.
+  const entitled = ((ents ?? []) as { status?: string; expires_at?: string | null }[]).some(
+    (e) => e.status === "active" && (!e.expires_at || new Date(e.expires_at).getTime() > Date.now()),
+  );
   if (!entitled) return json({ error: "forbidden" }, 403);
 
   // 3) Validate the stem against the catalog (only real tubes).

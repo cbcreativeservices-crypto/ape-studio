@@ -254,12 +254,45 @@ Deno.serve(async (req) => {
     : body.purchaseToken || body.transactionId || sku;
 
   // There is a UNIQUE (user_id, product); read the one row if it exists.
-  const { data: existing } = await admin
+  //
+  // ── A FAILED READ IS NOT "NO PRIOR ROW" (fixed 2026-09-18) ────────────────
+  //
+  // The error was discarded here. Every consumer below treats a null `prior` as
+  // "brand new member", and the tenure clock's first condition is literally
+  // `!prior → member_since = now`. So ANY transient read failure — a timeout, a
+  // pool exhaustion, a duplicate row making maybeSingle throw — silently
+  // RESTARTED the paid month of an existing member.
+  //
+  // That is the same severe failure already fixed once on 2026-09-17 by a
+  // different route (inferring a lapse from our own expires_at): a member is
+  // permanently denied every credential, in silence, with no support path,
+  // because nothing anywhere records that their clock was reset.
+  //
+  // Retried once, because most of these are transient and a retry costs one
+  // round trip on a path that already made two HTTPS calls to a store.
+  let { data: existing, error: readErr } = await admin
     .from('entitlements')
     .select('id, expires_at, member_since, refunded_at')
     .eq('user_id', userId)
     .eq('product', ACADEMY_PRODUCT)
     .maybeSingle();
+  if (readErr) {
+    console.warn('[validate-purchase] prior entitlement read failed, retrying:', readErr.message);
+    ({ data: existing, error: readErr } = await admin
+      .from('entitlements')
+      .select('id, expires_at, member_since, refunded_at')
+      .eq('user_id', userId)
+      .eq('product', ACADEMY_PRODUCT)
+      .maybeSingle());
+  }
+  // Still unreadable. We do NOT fail the request — the customer has already been
+  // charged, and refusing here means finishTransaction never runs and the store
+  // auto-refunds them in 72 hours. Instead we grant access and leave the tenure
+  // clock strictly alone; see `member_since` below.
+  const priorUnknown = !!readErr;
+  if (priorUnknown) {
+    console.error('[validate-purchase] prior entitlement UNREADABLE — granting access, leaving member_since untouched:', readErr?.message);
+  }
 
   // Never SHORTEN access a user already has (e.g. a lifetime comp who also
   // buys a month): keep the later expiry.
@@ -300,23 +333,44 @@ Deno.serve(async (req) => {
   const priorEnd = prior?.expires_at ? Date.parse(prior.expires_at) : 0;
   const reallyLapsed =
     priorEnd > 0 && Date.now() - priorEnd > LAPSE_GRACE_DAYS * 24 * 60 * 60 * 1000;
-  const member_since =
-    !prior || !prior.member_since || prior.refunded_at || reallyLapsed ? nowIso : prior.member_since;
+  //
+  // `undefined` when the prior row could not be read: the key is then OMITTED
+  // from the write below, so an existing clock is preserved untouched rather
+  // than guessed at. A genuinely new member simply gets no tenure this call —
+  // the next one (renewal, restore, or app launch) reads the row successfully,
+  // sees `member_since` null, and sets it. Late is recoverable; restarted is
+  // not.
+  const member_since = priorUnknown
+    ? undefined
+    : !prior || !prior.member_since || prior.refunded_at || reallyLapsed
+      ? nowIso
+      : prior.member_since;
 
   const row = {
     status: 'active',
     source,
     store_ref,
     expires_at,
-    member_since,
+    // Omitted entirely when the prior row was unreadable — see above. Spreading
+    // `undefined` would send an explicit null and wipe the very clock this is
+    // protecting.
+    ...(member_since === undefined ? {} : { member_since }),
     // Paying again clears a prior refund flag; the clock above has already been
     // restarted for it, so this cannot hand back tenure that was never earned.
     refunded_at: null,
     updated_at: nowIso,
   };
+  // When the prior row could not be READ, we still do not know whether one
+  // exists — and a plain insert would hit UNIQUE (user_id, product), fail the
+  // grant, and hand the customer "we couldn't verify that purchase" for a
+  // purchase that verified perfectly. Upsert lands either way.
   const write = existing
     ? await admin.from('entitlements').update(row).eq('id', prior!.id)
-    : await admin.from('entitlements').insert({ user_id: userId, product: ACADEMY_PRODUCT, ...row });
+    : priorUnknown
+      ? await admin
+          .from('entitlements')
+          .upsert({ user_id: userId, product: ACADEMY_PRODUCT, ...row }, { onConflict: 'user_id,product' })
+      : await admin.from('entitlements').insert({ user_id: userId, product: ACADEMY_PRODUCT, ...row });
 
   // The receipt verified but the grant did not land — do NOT tell the client
   // it succeeded, or it will finishTransaction and the paid user gets nothing.

@@ -152,7 +152,12 @@ export function CalcWorkspaceScreen() {
   // for THIS exact input set; uncapped users always see the live answer.
   const resultUnlocked = !capped || consumedSig === inputSig;
   const counterText =
-    capped && usage && !usage.unavailable ? `${usage.used} / ${usage.limit} free calculations this week` : null;
+    // SHOWN EVEN WHEN THE SERVER IS UNREACHABLE (2026-09-18). The counter used
+    // to disappear on `unavailable`, which is precisely what made the offline
+    // bypass discoverable: the limit visibly stopped existing. There is now a
+    // device-local window behind that case, so the number is real — it is just
+    // provisional until the server confirms it.
+    capped && usage ? `${usage.used} / ${usage.limit} free calculations this week` : null;
 
   const runCappedCalc = async () => {
     if (!values || consuming || consumingRef.current || consumedSig === inputSig) return;
@@ -162,11 +167,18 @@ export function CalcWorkspaceScreen() {
     consumingRef.current = false;
     setConsuming(false);
     setUsage(u);
-    if (u.unavailable) {
-      // Server unreachable / RPC not yet deployed → fail open: reveal, no count.
-      setConsumedSig(inputSig);
-      return;
-    }
+    // ⚠️ NO LONGER SHORT-CIRCUITS ON `unavailable` (2026-09-18).
+    //
+    // This returned early whenever the server could not be reached, revealing
+    // the result without spending anything. Calculators compute LOCALLY — the
+    // RPC is only the meter — so a free account in aeroplane mode had unlimited
+    // calculations across all 53 workspaces, permanently, by flipping a switch
+    // on the home screen.
+    //
+    // `consumeCalc` now falls back to a device-local rolling week (the pattern
+    // glossaryCap.ts already uses for guests), so `allowed` is meaningful even
+    // when `unavailable` is true. The check below is therefore the ONLY gate,
+    // and it applies in both cases.
     const seePlans = () => (navigation as unknown as { navigate: (r: string) => void }).navigate('Paywall');
     if (!u.allowed) {
       confirmDialog(

@@ -13,6 +13,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { loadLastTier, saveLastTier } from './lastTierCache';
 import { devBypass } from '../../config/devMode';
 import { DEV_COMMERCIAL_FLAG_KEY, DEV_ENTITLEMENT_KEY, FLAG_DEFAULTS } from '../../config/flags';
 import { supabase } from '../../lib/supabase';
@@ -296,7 +297,13 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
       // Re-checked AFTER the await: the session may have changed while this
       // read was in flight, and applying its answer would be applying the
       // previous user's standing to the current one.
-      if (current()) setEntitlementState(tier);
+      if (current()) {
+        setEntitlementState(tier);
+        // REMEMBER IT, so a later boot with no network does not start this
+        // member at 'anonymous' and lock them out of everything they paid for.
+        // Only ever written from a read the server actually answered.
+        void saveLastTier(lastUid.current, tier);
+      }
       return true;
     };
     // BOUNDED RETRY for a failed read (entitlement audit 2026-09-11).
@@ -373,6 +380,24 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
       .getSession()
       .then(async ({ data }) => {
         clearLocalOnUserChange(identityOf(data.session));
+        // ── START FROM WHAT THE SERVER LAST CONFIRMED (2026-09-18) ───────────
+        //
+        // Before this, a member opening the app with no network started at
+        // 'anonymous', every retry failed, `resolved` flipped true anyway, and
+        // ~40 paid routes showed them the non-member experience. In a venue or
+        // a rack room — where this app is used — the product simply locked out
+        // the person who had paid for it.
+        //
+        // This is PROVISIONAL: `tierKnown` stays false, and the very next
+        // successful read overwrites it in `deriveAndApply`. It is keyed to the
+        // auth uid, so an account switch cannot inherit it, and 'anonymous' is
+        // never cached — so this can only ever restore standing somebody
+        // genuinely had, never invent it.
+        if (isRealAccount(data.session)) {
+          const uid = data.session?.user?.id ?? null;
+          const remembered = await loadLastTier(uid);
+          if (remembered && alive && !devOverrode.current) setEntitlementState(remembered);
+        }
         await deriveWithRetry(isRealAccount(data.session));
       })
       .catch(() => {

@@ -64,7 +64,7 @@ export function TubeCardScreen() {
   const [page, setPage] = useState<1 | 2>(1);
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
-  const [failReason, setFailReason] = useState<'auth' | 'network'>('network');
+  const [failReason, setFailReason] = useState<'auth' | 'network' | 'missing'>('network');
   const [retryKey, setRetryKey] = useState(0);
   // Secured card URLs are fetched from the tube-image Edge Function (signed,
   // short-lived), so the visible page's URI resolves asynchronously.
@@ -328,7 +328,7 @@ export function TubeCardScreen() {
         if (!alive) return;
         if (r.url) setPageUri(r.url);
         else {
-          setFailReason(r.reason === 'auth' ? 'auth' : 'network');
+          setFailReason(r.reason === 'auth' || r.reason === 'missing' ? r.reason : 'network');
           setFailed(true);
         }
       })
@@ -486,7 +486,9 @@ export function TubeCardScreen() {
             <Text style={styles.loadText}>
               {failReason === 'auth'
                 ? `The ${tube.short} card needs an active Academy sign-in — sign in and try again.`
-                : `Couldn’t load the ${tube.short} card — check your connection.`}
+                : failReason === 'missing'
+                  ? `This page of the ${tube.short} card isn’t available. Nothing is wrong with your account — please let us know so we can add it.`
+                  : `Couldn’t load the ${tube.short} card — check your connection.`}
             </Text>
             <Pressable
               style={styles.retryBtn}

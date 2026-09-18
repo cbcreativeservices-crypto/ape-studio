@@ -14,6 +14,7 @@
  */
 import { useEffect, useRef, useState } from 'react';
 import {
+  AccessibilityInfo,
   ActivityIndicator,
   Platform,
   Pressable,
@@ -75,6 +76,31 @@ export function AuthScreen({ navigation }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  /**
+   * SPEAK THE RESULT ON iOS (2026-09-18).
+   *
+   * Every message on this screen is marked `accessibilityLiveRegion`, which
+   * React Native implements on ANDROID ONLY — it maps to the android:
+   * attribute of the same name and is a no-op on iOS. So a VoiceOver user who
+   * typed a wrong password got silence: the text appeared on screen, focus
+   * stayed in the field, and nothing was announced. Six surfaces, all of them
+   * on the front door of the app.
+   *
+   * `announceForAccessibility` is the iOS equivalent. It is guarded to iOS
+   * rather than run everywhere, because on Android the live region already
+   * speaks and announcing again would say it twice.
+   *
+   * Errors are the ones that matter — an unspoken failure is indistinguishable
+   * from a tap that did not register — but `info` carries "check your email to
+   * confirm", which is just as useless unheard.
+   */
+  useEffect(() => {
+    if (Platform.OS !== 'ios') return;
+    const message = error ?? info;
+    if (!message) return;
+    AccessibilityInfo.announceForAccessibility(message);
+  }, [error, info]);
 
   /* A deep link the user followed BEFORE signing in is resumed here (owner SEO
    * brief §3: preserve the requested destination through login/registration).
