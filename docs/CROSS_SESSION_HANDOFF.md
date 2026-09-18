@@ -26,6 +26,29 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 · ccode · f1587749
+changed: Weekly concept cron — pg_net + dispatcher + job 5
+affects other side: YES, and there is ONE ACTION WAITING FOR A HUMAN.
+  · The weekly concept had NEVER sent: no pg_net extension, no dispatcher, no cron job.
+    All three now exist. cron.job 5 'on-weekly-concept', */10 * * * *, as postgres.
+  · ⛔ IT IS STILL INERT. on-weekly-concept requires `Bearer <service role key>` and 401s
+    otherwise. ccode may not handle that key, so public.dispatch_weekly_concept() reads it
+    from `vault.decrypted_secrets` where name='service_role_key' and RETURNS
+    'skipped: no service_role_key in vault' when absent. To activate:
+      select vault.create_secret('<key>', 'service_role_key', 'Used by dispatch_weekly_concept');
+  · ⚠️ BEFORE ACTIVATING, note the precondition written into the Edge Function itself:
+    "Do not run the cron until concept sequence is reviewed." ccode did not treat the
+    owner's "add the cron" as an answer to that. The Vault secret is now the gate.
+  · ⚠️ THE EDGE FUNCTION'S OWN HEADER COMMENT IS WRONG. It says "every 15 minutes".
+    get_due_concept_subscriptions matches within ±420s of send_time — a 14-minute window —
+    so */15 (900s) leaves 60s of every window unreachable and those users NEVER send.
+    The job is */10. Do not "correct" it back to 15.
+  · Blast radius on activation: 7 subscriptions, 1 active, 1 user with notify_weekly_concept.
+  · Off switch: select cron.unschedule('on-weekly-concept'); or just delete the Vault secret.
+needs: someone with the service-role key to decide whether the concept sequence is reviewed,
+  then create the Vault secret. ccode cannot and should not do this step.
+
+
 ### 2026-09-18 10:32 · ccode · fcd051ae
 changed: Close the two PUBLIC-execute holes and make weekly-concept delivery idempotent
 affects other side: YES — production grants and one new index changed.
