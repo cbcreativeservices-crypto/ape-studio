@@ -36,14 +36,26 @@ function MiniTopic({ iconUrl }: { iconUrl: string | null }) {
   );
 }
 
-function RecentStrip({ children, empty, loading }: { children: ReactNode; empty: boolean; loading?: boolean }) {
+function RecentStrip({
+  children,
+  empty,
+  loading,
+  emptyLabel,
+}: {
+  children: ReactNode;
+  empty: boolean;
+  loading?: boolean;
+  /** Owner copy 2026-09-18 — each category says what WILL appear here, rather
+   *  than all three sharing one generic "nothing earned yet". */
+  emptyLabel: string;
+}) {
   // While loading, render the same-height placeholder row (no text) so the
   // cards don't jump taller once the data lands (Bug+Hater night A1-04).
   if (loading || empty) {
     return (
       <View style={styles.stripEmpty}>
         <View style={styles.miniPlaceholder} />
-        {loading ? null : <Text style={styles.emptyText}>Nothing earned yet — tap to explore.</Text>}
+        {loading ? null : <Text style={styles.emptyText}>{emptyLabel}</Text>}
       </View>
     );
   }
@@ -95,6 +107,14 @@ export function AchievementsHomeScreen() {
           <Text style={styles.title}>TROPHY CASE</Text>
         </View>
 
+        {/* Owner copy 2026-09-18. Sits above the error branch so the case still
+            introduces itself when the counts cannot be read. */}
+        <Text style={styles.tagline}>YOUR WORK, RECOGNIZED.</Text>
+        <Text style={styles.intro}>
+          Everything you accomplish across Pro Audio Training Academy is collected here—creating a
+          lasting record of your progress, knowledge, and earned credentials.
+        </Text>
+
         {error && !hub ? (
           <View style={styles.errorCard}>
             <Text style={styles.errorText}>
@@ -116,12 +136,16 @@ export function AchievementsHomeScreen() {
           <View style={styles.cardHead}>
             <Text style={styles.cardName}>TOPICS</Text>
             <Text style={[styles.count, { color: colors.amber, textShadowColor: `${colors.amber}66` }]}>
-              {t ? `${t.earned} / ${t.total}` : '— / —'}
+              {t ? `${t.earned} / ${t.total} COMPLETED` : '— / —'}
             </Text>
             <View style={styles.flex} />
             <Text style={styles.chevron}>›</Text>
           </View>
-          <RecentStrip loading={!t} empty={!!t && t.recent.length === 0}>
+          <RecentStrip
+            loading={!t}
+            empty={!!t && t.recent.length === 0}
+            emptyLabel="Your completed topics will appear here."
+          >
             {(t?.recent ?? []).map((topic) => (
               <MiniTopic key={topic.achievementId} iconUrl={topic.iconUrl} />
             ))}
@@ -143,7 +167,11 @@ export function AchievementsHomeScreen() {
             <View style={styles.flex} />
             <Text style={styles.chevron}>›</Text>
           </View>
-          <RecentStrip loading={!c} empty={!!c && c.recent.length === 0}>
+          <RecentStrip
+            loading={!c}
+            empty={!!c && c.recent.length === 0}
+            emptyLabel="Your earned specialization certificates will appear here."
+          >
             {(c?.recent ?? []).map((cred) => (
               <MiniCredential key={cred.id} kind="certificate" />
             ))}
@@ -160,17 +188,36 @@ export function AchievementsHomeScreen() {
           <View style={styles.cardHead}>
             <Text style={styles.cardName}>PROGRAMS</Text>
             <Text style={[styles.count, { color: colors.programPurple, textShadowColor: `${colors.programPurple}66` }]}>
-              {p ? `${p.earned} EARNED` : '—'}
+              {/* COMPLETED, not EARNED — owner copy 2026-09-18. Certificates are
+                  "earned", programs are "completed". */}
+              {p ? `${p.earned} COMPLETED` : '—'}
             </Text>
             <View style={styles.flex} />
             <Text style={styles.chevron}>›</Text>
           </View>
-          <RecentStrip loading={!p} empty={!!p && p.recent.length === 0}>
+          <RecentStrip
+            loading={!p}
+            empty={!!p && p.recent.length === 0}
+            emptyLabel="Your completed professional program credentials will appear here."
+          >
             {(p?.recent ?? []).map((cred) => (
               <MiniCredential key={cred.id} kind="program" />
             ))}
           </RecentStrip>
         </Pressable>
+
+        {/* ── FEATURED ACHIEVEMENT (owner copy 2026-09-18) ────────────────────
+            Rendered as an empty state only. Selecting an accomplishment to
+            feature is NOT built — there is no featured-achievement anything in
+            the codebase — so this describes what the section is for and does
+            not present a control that would do nothing. */}
+        <View style={styles.featured} accessibilityRole="summary">
+          <Text style={styles.cardName}>FEATURED ACHIEVEMENT</Text>
+          <Text style={styles.featuredLead}>Your first achievement will take center stage here.</Text>
+          <Text style={styles.emptyText}>
+            As your Trophy Case grows, you can select an accomplishment to feature and share.
+          </Text>
+        </View>
         </>
         )}
       </ScrollView>
@@ -206,6 +253,34 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   cardPressed: { opacity: 0.85 },
+  tagline: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 13,
+    letterSpacing: 1.6,
+    color: colors.amber,
+    marginTop: 2,
+  },
+  intro: {
+    fontFamily: fonts.barlowRegular,
+    fontSize: 14,
+    lineHeight: 21,
+    color: colors.textSecondary,
+    marginBottom: 2,
+  },
+  featured: {
+    backgroundColor: '#141414',
+    borderWidth: 1,
+    borderColor: colors.hairlineDim,
+    borderRadius: 12,
+    padding: 16,
+    gap: 8,
+  },
+  featuredLead: {
+    fontFamily: fonts.barlowMedium,
+    fontSize: 14,
+    lineHeight: 21,
+    color: colors.textPrimary,
+  },
   cardHead: { flexDirection: 'row', alignItems: 'baseline', gap: 10 },
   cardName: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1.4, color: colors.textPrimary },
   count: {
