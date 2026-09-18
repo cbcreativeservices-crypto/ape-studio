@@ -156,7 +156,20 @@ export function readProject(
   const base = totalRequired === 0 ? 0 : answeredRequired / totalRequired;
   // Outstanding attention findings cost something, but cannot zero a real plan.
   const attention = findings.filter((f) => f.severity === 'attention').length;
-  const penalty = Math.min(0.2, attention * 0.02);
+  // ── THE PENALTY MAY NOT SWALLOW THE WORK (2026-09-18, design review #4) ────
+  //
+  // This was a FLAT cap of 0.2. A blank Pre-Production project fires well over
+  // ten attention findings immediately, so the penalty pegged at 0.2 on the
+  // first render and the headline score stayed at ZERO until roughly a fifth of
+  // the required decisions were made. The first session of a 180-field task
+  // produced no visible movement at all — in a tool whose only motivator IS
+  // the number moving.
+  //
+  // It is now capped at a FRACTION OF WHAT HAS BEEN EARNED, so a penalty can
+  // reduce progress but can never erase it. Ten findings against 5% done costs
+  // a sliver; ten findings against a finished plan still costs the full fifth,
+  // which is the point of having a penalty at all.
+  const penalty = Math.min(0.2, attention * 0.02, base * 0.4);
   const score = Math.max(0, Math.round((base - penalty) * 100));
 
   let verdict: ProjectVerdict;

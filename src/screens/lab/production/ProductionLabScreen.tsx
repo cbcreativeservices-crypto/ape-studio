@@ -16,13 +16,13 @@
  * fully authored as of 2026-09-17, so today that path draws nothing.
  */
 import { Fragment, useCallback, useMemo, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
-import { notify } from '../../../lib/confirm';
+import { confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { resolveStage } from '../../../features/production/schema';
@@ -35,6 +35,7 @@ import { authoredStage, labDef } from '../../../features/production/labs';
 import { ReadinessMeter, StageProgressRow } from './ReadinessMeter';
 import { AcceptConditionSheet } from './AcceptConditionSheet';
 import { STATE_TINT } from './FieldRow';
+import { isActivityProject } from '../../../features/production/activities';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type R = RouteProp<RootStackParamList, 'ProductionLab'>;
@@ -54,8 +55,19 @@ export function ProductionLabScreen() {
 
   const reload = useCallback(async () => {
     const list = await projectStore().load(lab);
-    setProjects(list);
-    setOpenId((cur) => cur ?? list[0]?.id ?? null);
+    // ── EXERCISES ARE NOT THE USER'S PLAN (2026-09-18, design review #5c) ────
+    //
+    // `ProductionActivityScreen` upserts the seeded exercise into the same
+    // store, and `projectStore` unshifts it to index 0 — so after running one
+    // exercise the lab home opened on "Repair the vague brief", showing that
+    // exercise's readiness as though it were the user's own project.
+    //
+    // `isActivityProject` was written for exactly this and had ZERO callers.
+    // Practice material is kept out of the list and out of the default open;
+    // the exercises are still reachable from where they belong.
+    const own = list.filter((p) => !isActivityProject(p));
+    setProjects(own);
+    setOpenId((cur) => (cur && own.some((p) => p.id === cur) ? cur : own[0]?.id ?? null));
   }, [lab]);
 
   // Re-read on focus: a stage screen writes through the store, so coming back
@@ -67,6 +79,41 @@ export function ProductionLabScreen() {
   );
 
   const project = useMemo(() => projects?.find((p) => p.id === openId) ?? null, [projects, openId]);
+  /** Local edit buffer for the name. Null = showing the stored name. */
+  const [nameDraft, setNameDraft] = useState<string | null>(null);
+
+  const commitName = useCallback(() => {
+    const next = (nameDraft ?? '').trim();
+    setNameDraft(null);
+    // An empty name is not a rename — it would leave an unidentifiable row in
+    // the switcher and an untitled packet.
+    if (!project || !next || next === project.name) return;
+    void projectStore()
+      .upsert({ ...project, name: next, updatedAt: Date.now() })
+      .then((ok) => {
+        if (ok) void reload();
+        else notify('Not saved', 'That new name could not be saved. Try again.');
+      });
+  }, [nameDraft, project, reload]);
+
+  const confirmDelete = useCallback(() => {
+    if (!project) return;
+    confirmDialog(
+      'Delete this project?',
+      `"${project.name}" and every answer in it will be removed from this device. This cannot be undone.`,
+      'Delete',
+      () => {
+        void projectStore()
+          .remove(lab, project.id)
+          .then((ok) => {
+            if (!ok) return notify('Not deleted', 'That project could not be removed. Try again.');
+            setOpenId(null);
+            void reload();
+          });
+      },
+      { destructive: true },
+    );
+  }, [project, lab, reload]);
 
   const { stages, report } = useMemo(() => {
     if (!project) return { stages: [], report: null };
@@ -191,7 +238,37 @@ export function ProductionLabScreen() {
               </View>
             ) : null}
 
-            <Text style={styles.projectName}>{project.name}</Text>
+            {/* ── THE USER OWNS THIS PLAN (2026-09-18, design review #5b) ────────
+                The name was static Text, every project was born "Music
+                recording project", and projectStore.remove / .duplicate were
+                written and reachable from NO screen. A lab the user cannot
+                name or tidy does not feel like their plan, which is the whole
+                premise of these labs.
+
+                Inline edit rather than a dialog: RN's Alert.prompt is
+                iOS-ONLY, and lib/confirm has no text prompt — a rename that
+                worked on one platform would be worse than none. */}
+            <View style={styles.nameRow}>
+              <TextInput
+                style={styles.projectNameInput}
+                value={nameDraft ?? project.name}
+                onChangeText={setNameDraft}
+                onBlur={commitName}
+                onSubmitEditing={commitName}
+                returnKeyType="done"
+                selectTextOnFocus
+                accessibilityLabel="Project name — edit to rename"
+              />
+              <Pressable
+                onPress={confirmDelete}
+                hitSlop={8}
+                style={styles.deleteBtn}
+                accessibilityRole="button"
+                accessibilityLabel={`Delete the project ${project.name}`}
+              >
+                <Text style={styles.deleteText}>DELETE</Text>
+              </Pressable>
+            </View>
             <Text style={styles.projectMeta}>{PATHWAY_LABEL[project.pathway]}</Text>
 
             {report ? (
@@ -373,6 +450,29 @@ const styles = StyleSheet.create({
   switchTextOn: { color: colors.amber },
 
   projectName: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, color: colors.textPrimary, marginTop: 6 },
+  nameRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 6 },
+  projectNameInput: {
+    flex: 1,
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 17,
+    color: colors.textPrimary,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    borderRadius: 7,
+    borderWidth: 1,
+    borderColor: colors.hairlineDim,
+    backgroundColor: '#121212',
+    minHeight: 44,
+  },
+  deleteBtn: {
+    paddingHorizontal: 12,
+    borderRadius: 7,
+    borderWidth: 1,
+    borderColor: '#4a2a2a',
+    minHeight: 44,
+    justifyContent: 'center',
+  },
+  deleteText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, color: '#ff8a7a' },
   projectMeta: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textMuted, marginBottom: 4 },
 
   stage: {

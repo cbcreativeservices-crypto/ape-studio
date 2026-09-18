@@ -42,13 +42,23 @@ export function ReadinessMeter({
         </View>
       </View>
 
+      {/* ── THE BAR IS PROGRESS, NOT VERDICT (2026-09-18, design review #4) ────
+          It used to fill with `verdictTint`, and the verdict stays `not_ready`
+          while a single required decision is outstanding — so the bar read
+          red at 5%, red at 60%, red at 95%, then green in one jump after hours
+          of work. A progress bar that is red until the instant it is finished
+          is not reporting progress, it is reporting incompleteness, which the
+          user already knows.
+
+          The verdict still owns the verdict TEXT and the score above. The bar
+          now owns progress, in amber, which reads as "underway". */}
       <View style={styles.barTrack}>
         <View
           style={[
             styles.barFill,
             {
               width: `${report.totalRequired === 0 ? 0 : (report.answeredRequired / report.totalRequired) * 100}%`,
-              backgroundColor: verdictTint,
+              backgroundColor: report.verdict === 'ready' ? verdictTint : colors.amber,
             },
           ]}
         />
@@ -110,12 +120,25 @@ export function StageProgressRow({ stage }: { stage: StageReadiness }) {
       <Text style={styles.stageTitle} numberOfLines={1}>
         {stage.title}
       </Text>
+      {/* ── "COMPLETE" WAS OVERSTATING (2026-09-18, design review #4) ─────────
+          A stage is measured on its REQUIRED fields only. Pre-production stage
+          5 has 34 fields and about 7 required, so seven answers turned a
+          34-field stage green while 27 stayed blank — and those 27 print
+          "Not decided" in the packet the user hands a client.
+
+          The state word is still the state word; it now carries the real count
+          beside it, so green never means "nothing left here" when 27 things
+          are left. */}
+      <Text style={styles.stageCounts}>
+        {stage.answeredAll}/{stage.totalAll}
+      </Text>
       <Text style={[styles.stageState, { color: tint }]}>{READINESS_LABEL[stage.state]}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  stageCounts: { fontFamily: fonts.mono, fontSize: 11.5, color: colors.textSub, marginRight: 8 },
   wrap: {
     borderWidth: 1,
     borderColor: colors.hairline,
