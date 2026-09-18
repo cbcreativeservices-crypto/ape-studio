@@ -17,6 +17,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  AccessibilityInfo,
   ActivityIndicator,
   AppState,
   BackHandler,
@@ -90,6 +91,8 @@ export function FinalExamScreen({ navigation, route }: Props) {
   const [startNonce, setStartNonce] = useState(0);
   const [qIdx, setQIdx] = useState(0);
   const [msLeft, setMsLeft] = useState<number>(600_000);
+  /** Latch so the one-minute warning is announced once, not every 250 ms tick. */
+  const minuteWarnedRef = useRef(false);
   // Selection is tracked by OPTION INDEX, never by the value string (C1): two
   // options with the same display text must remain independently selectable.
   const [selIdx, setSelIdx] = useState<number | null>(null);
@@ -288,6 +291,14 @@ export function FinalExamScreen({ navigation, route }: Props) {
     const t = setInterval(() => {
       const left = deadline - Date.now();
       setMsLeft(left);
+      // A11Y (2026-09-18, pass 5 · W5): the quiz warns at one minute; the exam,
+      // which is the graded one, did not. The clock is a visual-only readout —
+      // a screen-reader user's first notice of the deadline was the forced
+      // submit. Latched so it is said once, not four times a second.
+      if (left < 60_000 && left > 0 && !minuteWarnedRef.current) {
+        minuteWarnedRef.current = true;
+        AccessibilityInfo.announceForAccessibility('One minute left');
+      }
       if (left <= 0) {
         clearInterval(t);
         void doSubmit(deadline);
@@ -332,7 +343,14 @@ export function FinalExamScreen({ navigation, route }: Props) {
     setPairs([]);
     if (!payload) return;
     if (qIdx + 1 >= payload.items.length) void doSubmit();
-    else setQIdx((i) => i + 1);
+    else {
+      setQIdx((i) => i + 1);
+      // A11Y (2026-09-18, pass 5 · W5): the quiz says where you are and the
+      // exam did not. The counter is redrawn in place, so without this the
+      // question silently becomes a different question — in the one place in
+      // the app where a lost question costs the attempt.
+      AccessibilityInfo.announceForAccessibility(`Question ${qIdx + 2} of ${payload.items.length}`);
+    }
   }, [payload, qIdx, doSubmit]);
 
   const recordAndAdvance = useCallback(

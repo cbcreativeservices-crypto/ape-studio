@@ -47,7 +47,10 @@ export function StudyAccessSheet({
       ? `${freeTopicNames.slice(0, -1).join(', ')} and ${freeTopicNames[freeTopicNames.length - 1]}`
       : freeTopicNames[0];
   return (
-    <View style={styles.backdrop}>
+    // accessibilityViewIsModal keeps VoiceOver inside the sheet (pass 5, W1):
+    // this backdrop is a plain sibling, so without it VoiceOver walks straight
+    // past the sheet into the screen the sheet is covering.
+    <View style={styles.backdrop} accessibilityViewIsModal>
       <Pressable style={{ flex: 1 }} onPress={onClose} accessibilityRole="button" accessibilityLabel="Dismiss" />
       <View style={styles.sheet}>
         <Text style={styles.eyebrow}>ACADEMY STUDY</Text>

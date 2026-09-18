@@ -7,7 +7,7 @@
  * broken and should be fixed here rather than worked around.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -74,6 +74,25 @@ export function ProductionStageScreen() {
    * failed write to stay quiet.
    */
   const [saveFailed, setSaveFailed] = useState(false);
+
+  /**
+   * ── THE DATA-LOSS WARNING WAS SILENT ON iOS (2026-09-18, pass 5 · W7) ──────
+   *
+   * The banner below carries `accessibilityLiveRegion`, which is an ANDROID
+   * attribute and a no-op on iOS. So a VoiceOver user whose device could not
+   * write their answer got nothing at all — they kept typing into a plan that
+   * was not being saved, and would only find out when the packet came out
+   * wrong. Of everything in this screen this is the one message that must not
+   * be missable.
+   *
+   * iOS-only, because on Android the live region already speaks it.
+   */
+  useEffect(() => {
+    if (!saveFailed || Platform.OS !== 'ios') return;
+    AccessibilityInfo.announceForAccessibility(
+      'This device could not save your last answer. What you see has not been written down.',
+    );
+  }, [saveFailed]);
 
   const setValue = useCallback(
     async (fieldId: string, v: FieldValue) => {

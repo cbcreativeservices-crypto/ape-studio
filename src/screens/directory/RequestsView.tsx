@@ -344,7 +344,7 @@ function ReportLink({
       >
         <Text style={st.linkText}>REPORT</Text>
       </Pressable>
-      <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
+      <Modal accessibilityViewIsModal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
         <View style={st.sheetRoot}>
           <View style={st.sheet}>
             <Text accessibilityRole="header" style={st.sheetTitle}>
@@ -442,7 +442,7 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
 
   if (!thread) return null;
   return (
-    <Modal visible transparent animationType="slide" onRequestClose={onClose}>
+    <Modal accessibilityViewIsModal visible transparent animationType="slide" onRequestClose={onClose}>
       <View style={st.sheetRoot}>
         <View style={[st.sheet, { maxHeight: '88%' }]}>
           <View style={st.sheetHead}>

@@ -18,7 +18,7 @@
  *  - Controls pinned to the bottom; card flexes to fill.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactElement, type ReactNode } from 'react';
-import { ActivityIndicator, FlatList, Image, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, ActivityIndicator, FlatList, Image, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { confirmDialog } from '../../lib/confirm';
 import Svg, { Circle, Ellipse, Path } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -884,6 +884,30 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     // reveal only registers activity — it no longer gates completion.
     session.current?.touch();
   }, [card, enabledLevels]);
+
+  /**
+   * ── THE CARD WAS SILENT (2026-09-18, pass 5 · W12) ────────────────────────
+   *
+   * Flashcards are the one method that is ENTIRELY gesture-driven: a swipe
+   * flips to a section, a swipe moves to the next term, and neither changed
+   * anything a screen reader was told about. The card's text is redrawn in
+   * place, so VoiceOver and TalkBack keep announcing whatever they focused
+   * first. A blind learner swiping through a deck heard nothing change — the
+   * report measured fourteen swipes to hear one definition.
+   *
+   * One announcement covers both gestures, because both end in "the visible
+   * face of the card is now X". Level 0 is the term; any other level is that
+   * section's label and body. There is no live region anywhere in this screen,
+   * so unlike the other W-items this announces on BOTH platforms.
+   */
+  useEffect(() => {
+    if (!card) return;
+    const message =
+      level === 0
+        ? card.term
+        : `${LEVEL_LABELS[level - 1]}. ${levelText(card, level, isMember)}`;
+    if (message) AccessibilityInfo.announceForAccessibility(message);
+  }, [card, level, isMember]);
 
   const goCard = useCallback(
     (dir: 1 | -1) => {

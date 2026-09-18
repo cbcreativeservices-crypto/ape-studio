@@ -151,7 +151,7 @@ function MemberSheet({
   const p = data?.profile;
 
   return (
-    <Modal visible transparent animationType="slide" onRequestClose={onClose}>
+    <Modal accessibilityViewIsModal visible transparent animationType="slide" onRequestClose={onClose}>
       <View style={st.sheetRoot}>
         <View style={st.sheet}>
           <View style={st.sheetHead}>
@@ -325,7 +325,7 @@ function ContactSheet({
       .replace(/^-+|-+$/g, '');
 
   return (
-    <Modal visible={open} transparent animationType="slide" onRequestClose={onClose}>
+    <Modal accessibilityViewIsModal visible={open} transparent animationType="slide" onRequestClose={onClose}>
       <View style={st.sheetRoot}>
         <View style={st.sheet}>
           <Text accessibilityRole="header" style={st.sheetTitle}>
@@ -383,7 +383,7 @@ function ReportSheet({
   const [reason, setReason] = useState<ReportReason>('spam');
   const [detail, setDetail] = useState('');
   return (
-    <Modal visible={open} transparent animationType="slide" onRequestClose={onClose}>
+    <Modal accessibilityViewIsModal visible={open} transparent animationType="slide" onRequestClose={onClose}>
       <View style={st.sheetRoot}>
         <View style={st.sheet}>
           <Text accessibilityRole="header" style={st.sheetTitle}>

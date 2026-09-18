@@ -15,7 +15,7 @@
  * (Booth 2026-07-26).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -261,7 +261,13 @@ export function ScenariosScreen({ route }: Props) {
     clearInteraction();
     const nextI = nextUnanswered(idx + 1);
     if (nextI === -1) finishRound(roundQuestions, activeRound);
-    else setIdx(nextI);
+    else {
+      setIdx(nextI);
+      // The card is redrawn in place, so say that it is a new one (W4).
+      AccessibilityInfo.announceForAccessibility(
+        `Scenario ${nextI + 1} of ${roundQuestions.length}`,
+      );
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [idx, roundQuestions, activeRound, finishRound]);
 
@@ -280,6 +286,21 @@ export function ScenariosScreen({ route }: Props) {
       registerTrialAnswer('scenarios', correct); // time trial: only correct advances pace
       if (correct) incBrainOutput('scenarios');
       setFeedback({ correct, text: item.explanation });
+      /* ── THE VERDICT AND THE TEACHING WERE BOTH SILENT ───────────────────
+         (2026-09-18, pass 5 · W4)
+
+         Scenarios shows the verdict and the explanation, then auto-advances in
+         three seconds. Neither is announced and neither moves focus, so a
+         screen-reader user answered, heard nothing, and the question changed
+         underneath them. The explanation IS the teaching in this method — a
+         scenario you got wrong and were never told why about is worth less
+         than not answering it.
+
+         Said as one utterance so the verdict cannot be cut off by the
+         explanation starting. */
+      AccessibilityInfo.announceForAccessibility(
+        `${correct ? 'Correct' : 'Incorrect'}. ${item.explanation}`,
+      );
       advanceTimer.current = setTimeout(advance, EXPLANATION_MS);
     },
     [item, activeRound, achievementId, advance],

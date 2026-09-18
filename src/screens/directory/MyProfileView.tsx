@@ -661,7 +661,7 @@ function SpecialtyPicker({
   }, [areas, pool, q]);
 
   return (
-    <Modal visible={open} transparent animationType="slide" onRequestClose={onClose}>
+    <Modal accessibilityViewIsModal visible={open} transparent animationType="slide" onRequestClose={onClose}>
       <View style={st.sheetRoot}>
         <View style={st.sheet}>
           <View style={st.sheetHead}>
@@ -729,7 +729,7 @@ function PreviewSheet({
   creds: EarnedCredentialRow[];
 }) {
   return (
-    <Modal visible={open} transparent animationType="slide" onRequestClose={onClose}>
+    <Modal accessibilityViewIsModal visible={open} transparent animationType="slide" onRequestClose={onClose}>
       <View style={st.sheetRoot}>
         <View style={st.sheet}>
           <View style={st.sheetHead}>
