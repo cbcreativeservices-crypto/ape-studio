@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-17 21:34 · ccode · 96963360
+changed: **A SECOND WAY `.easignore` KILLS OTA, AND IT NEEDS NO EDIT.** `@expo/fingerprint` hashes `.easignore` AS IT SITS ON DISK. With `* text=auto` + `core.autocrlf=true`, a Windows checkout gets CRLF while EAS builds read LF from the index — byte-identical content, different hash, different runtimeVersion. The phones' builds were keyed to b5a6e6e0 (iOS) / 1792f7b7 (Android); this tree computed 2bbcea43 / 569f98f3, so an `eas update` would have published into a runtime nothing was asking for AND REPORTED SUCCESS. Fixed by converting to LF and pinning `.easignore text eol=lf` in .gitattributes. NOT applied to .gitignore or eas.json — both already match the installed builds (.gitignore is CRLF on disk and still matches), so pinning them would break what works. Then published both production labs OTA: iOS group 5f3dec1a, Android group 09abd5ad, both on the matching runtimes.
+affects other side: nothing to change, but WORTH KNOWING if A or any other machine ever publishes an update from Windows: always check `npx @expo/fingerprint fingerprint:generate` against the installed build's runtimeVersion (`eas build:list`) BEFORE `eas update`. A mismatch is invisible — the publish succeeds and the phones simply never see it.
+needs: nothing.
+
+
 ### 2026-09-17 19:10 · ccode · 20aadeda
 changed: **BOTH PRODUCTION LABS ARE COMPLETE.** Post-Production authored in-session (Computer C was unavailable), consolidating the owner's 28-stage spec into eight stages: 187 fields, 135 rules, 17 blockers, 8 exercises, nothing unimplemented. The three Pre-Production screens were generalised to serve either lab from `features/production/labs.ts` and moved to `screens/lab/production/` — one engine, two content sets, and a third lab would be a row in that file rather than a new screen. Tests 1347 -> 1390, tsc clean. Verified live in the browser preview, not only in tests.
 affects other side: nothing — client only. Both labs keep every project in device-local AsyncStorage under their own `PROJECT_KEYS` entry; no API, no DB, no RPC, no new table, nothing for the store forms or the data-safety inventory. The new catalog row is client-side. It also ships OTA: `src/` additions do not move the fingerprint, so no native build and no store review.
