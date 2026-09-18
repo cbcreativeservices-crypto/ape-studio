@@ -47,7 +47,9 @@ export function ProductionStageScreen() {
 
   const authored = authoredStage(lab, stageId);
   const stage = useMemo(
-    () => (authored && project ? resolveStage(authored, project.pathway) : null),
+    // `project.values` in the deps: answering the controlling field must
+    // reveal or hide its dependants immediately, not on the next mount.
+    () => (authored && project ? resolveStage(authored, project.pathway, project.values) : null),
     [authored, project],
   );
   const report = useMemo(() => (stage && project ? readStage(stage, project) : null), [stage, project]);

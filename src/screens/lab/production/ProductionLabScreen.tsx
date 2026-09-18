@@ -73,7 +73,10 @@ export function ProductionLabScreen() {
     const resolved = def.outline
       .map((o) => authoredStage(lab, o.stageId))
       .filter((s): s is NonNullable<typeof s> => Boolean(s))
-      .map((s) => resolveStage(s, project.pathway));
+      // Values are passed so `showWhen` can hide conditional fields — and,
+      // crucially, so readiness counts the SAME set the user was asked. A
+      // hidden field must never count as missing.
+      .map((s) => resolveStage(s, project.pathway, project.values));
     return { stages: resolved, report: readProject(resolved, project) };
   }, [project, def, lab]);
 

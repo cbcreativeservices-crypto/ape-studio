@@ -420,6 +420,7 @@ export const STAGE6_READINESS: StageDef = {
         },
         {
           fieldId: "freeze_date",
+          showWhen: { field: "change_freeze", equals: ["frozen"] },
           label: "Freeze date",
           kind: "date",
           help: "The date after which nothing is updated. Any test done before it was a test of a different system.",

@@ -10,7 +10,7 @@
  * forty schema entries plus a few conditional keys, which is ordinary content
  * work. A pathway NEVER forks a screen.
  */
-import type { FieldValue, PathwayId, Severity, FindingKind } from './types';
+import type { FieldValue, PathwayId, Severity, FindingKind, ValueMap } from './types';
 import { isAnswered, valueKey } from './types';
 
 export type FieldKind =
@@ -72,6 +72,44 @@ export type FieldDef = {
   columns?: ColumnDef[];
   /** May the user mark this "not applicable" with a reason? Default true. */
   allowNa?: boolean;
+  /**
+   * Show this field only when another answer says so.
+   *
+   * ── WHY (2026-09-18, design review #1) ────────────────────────────────────
+   *
+   * Both labs asked every question of everyone. A user who is not rigging was
+   * still asked who the rigger is; a user who said "no correction needed" was
+   * still walked through five correction fields. Their own help text already
+   * said "if" or "only if" — the form knew the question was conditional and
+   * asked it anyway.
+   *
+   * Gating them cuts what a typical user sees without deleting a word of
+   * content, and it makes the form RESPOND to their answers: say "yes, we are
+   * rigging" and three questions appear, which teaches the consequence of the
+   * decision better than any help text can.
+   *
+   * ⚠️ A hidden field must not count as missing. `resolveStage` drops it from
+   * the resolved stage entirely, and `readiness.ts` derives its denominator
+   * from those resolved fields — so the meter falls with it automatically
+   * rather than punishing someone for a question they were never asked.
+   */
+  showWhen?: ShowWhen;
+};
+
+/**
+ * A condition on another field's answer, within the SAME stage.
+ *
+ * Deliberately not a general expression language: a `field` plus a list of
+ * values is enough for every case the labs have, and it stays readable in the
+ * content files where it is authored.
+ */
+export type ShowWhen = {
+  /** `fieldId` of another field in this stage. */
+  field: string;
+  /** Show when the answer is one of these. */
+  equals?: string[];
+  /** Show unless the answer is one of these. */
+  notEquals?: string[];
 };
 
 /**
@@ -90,6 +128,8 @@ export type SectionDef = {
   notices?: NoticeDef[];
   fields: FieldDef[];
   onlyFor?: PathwayId[];
+  /** Same conditional rule as a field's — hides the whole section. */
+  showWhen?: ShowWhen;
 };
 
 /**
@@ -172,13 +212,37 @@ function resolveRequired(req: FieldDef['required'], p: PathwayId): boolean {
  * overrides, and settle required-ness. Screens only ever see the result, which
  * is why they contain no pathway logic at all.
  */
-export function resolveStage(stage: StageDef, pathway: PathwayId): ResolvedStage {
+/**
+ * Does this `showWhen` pass, given the project's current answers?
+ *
+ * UNKNOWN IS VISIBLE. When the controlling field has not been answered yet, the
+ * condition cannot be evaluated and the dependent field SHOWS. Hiding on
+ * unknown would mean a fresh project opens with half its questions missing and
+ * no way to discover them — the opposite of the point.
+ */
+function showWhenPasses(rule: ShowWhen | undefined, stageId: string, values: ValueMap | undefined): boolean {
+  if (!rule) return true;
+  if (!values) return true; // no values supplied — resolve everything (used by previews/tests)
+  const raw = values[valueKey(stageId, rule.field)];
+  if (!isAnswered(raw)) return true;
+  const answers = (Array.isArray(raw) ? raw : [raw])
+    .filter((v): v is string => typeof v === 'string')
+    .map((v) => v.toLowerCase());
+  if (answers.length === 0) return true;
+  if (rule.equals && !rule.equals.some((e) => answers.includes(e.toLowerCase()))) return false;
+  if (rule.notEquals && rule.notEquals.some((e) => answers.includes(e.toLowerCase()))) return false;
+  return true;
+}
+
+export function resolveStage(stage: StageDef, pathway: PathwayId, values?: ValueMap): ResolvedStage {
   const sections: ResolvedSection[] = [];
   for (const s of stage.sections) {
     if (!appliesTo(s.onlyFor, pathway)) continue;
+    if (!showWhenPasses(s.showWhen, stage.stageId, values)) continue;
     const fields: ResolvedField[] = [];
     for (const f of s.fields) {
       if (!appliesTo(f.onlyFor, pathway)) continue;
+      if (!showWhenPasses(f.showWhen, stage.stageId, values)) continue;
       const { required, labelBy, helpBy, onlyFor, ...rest } = f;
       fields.push({
         ...rest,

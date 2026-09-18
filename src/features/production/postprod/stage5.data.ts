@@ -46,6 +46,7 @@ export const STAGE5_BUILD: StageDef = {
         },
         {
           fieldId: "cue_list",
+          showWhen: { field: "replacement_needed", notEquals: ["no"] },
           label: "Replacement cue list",
           kind: "table",
           help: "One row per line, phrase or part to be re-recorded. The reason column decides whether it is worth doing at all.",
@@ -87,6 +88,7 @@ export const STAGE5_BUILD: StageDef = {
         },
         {
           fieldId: "match_plan",
+          showWhen: { field: "replacement_needed", notEquals: ["no"] },
           label: "How the replacement is matched to the original",
           kind: "multiChoice",
           help: "A clean studio recording dropped into a room that was never clean is the most recognisable sound in post-production. Everything on this list is an attempt to hide the join.",
@@ -102,6 +104,7 @@ export const STAGE5_BUILD: StageDef = {
         },
         {
           fieldId: "match_verified",
+          showWhen: { field: "replacement_needed", notEquals: ["no"] },
           label: "Has the join been checked in context",
           kind: "choice",
           help: "Soloed, a replacement almost always sounds better than the original. In the scene it usually sounds wrong.",
@@ -286,6 +289,7 @@ export const STAGE5_BUILD: StageDef = {
         },
         {
           fieldId: "correction_scope",
+          showWhen: { field: "correction_decision", notEquals: ["none_needed", "prohibited"] },
           label: "What is being corrected",
           kind: "multiChoice",
           options: [
@@ -299,6 +303,7 @@ export const STAGE5_BUILD: StageDef = {
         },
         {
           fieldId: "correction_target",
+          showWhen: { field: "correction_decision", notEquals: ["none_needed", "prohibited"] },
           label: "Key and scale used",
           kind: "text",
           help: "The most common cause of obviously wrong tuning is the right tool set to the wrong scale.",
@@ -307,6 +312,7 @@ export const STAGE5_BUILD: StageDef = {
         },
         {
           fieldId: "correction_amount",
+          showWhen: { field: "correction_decision", notEquals: ["none_needed", "prohibited"] },
           label: "How much",
           kind: "choice",
           options: [
@@ -318,6 +324,7 @@ export const STAGE5_BUILD: StageDef = {
         },
         {
           fieldId: "correction_guards",
+          showWhen: { field: "correction_decision", notEquals: ["none_needed", "prohibited"] },
           label: "What is being protected",
           kind: "multiChoice",
           help: "The things correction removes by default unless somebody stops it.",
@@ -333,6 +340,7 @@ export const STAGE5_BUILD: StageDef = {
         },
         {
           fieldId: "correction_compared",
+          showWhen: { field: "correction_decision", notEquals: ["none_needed", "prohibited"] },
           label: "Has it been compared with the original",
           kind: "choice",
           required: true,

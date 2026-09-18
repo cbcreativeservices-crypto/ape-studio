@@ -138,6 +138,7 @@ export const STAGE3_PEOPLE: StageDef = {
         },
         {
           fieldId: "rigger",
+          showWhen: { field: "rigging_required", notEquals: ["no"] },
           label: "Certified rigger",
           kind: "text",
           help: "Rigging is certified work: venues, unions and insurers require a recognised certification and state which they accept. Name the qualified person and confirm it before the day. This app does not qualify anyone to rig.",
