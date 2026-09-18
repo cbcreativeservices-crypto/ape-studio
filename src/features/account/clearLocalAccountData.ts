@@ -66,6 +66,20 @@ const KEEP: ReadonlySet<string> = new Set<string>([
   // removes it below — a guest cannot sit a graded exam in the first place.
   'ape:finalExamQueue',
   'ape:finalExamQueue:damaged', // its quarantine copy, for the same reason
+  // THE FREE-TIER GLOSSARY METER (2026-09-17, bug-hunt pass 5).
+  //
+  // This is the ONLY limit on free access to 26,855 definitions, and the sweep
+  // was resetting it: a guest who hit the lock tapped "Exit to menu" → any sign-in
+  // button → GUEST MODE and had fourteen fresh lookups, for as long as they cared
+  // to repeat it. The post-gateway half resets too (a new anonymous uid has no
+  // usage row), so both meters died in the same wipe.
+  //
+  // Keeping it does NOT break the owner's "a guest is remembered in no way"
+  // ruling: it holds a count and a week-start, no identity and nothing about
+  // what was looked up — the same standing as the device id it sits beside. A
+  // guest `total` wipe still removes it below, which is the deliberate escape
+  // for someone genuinely starting over.
+  'ape:glossaryUsageLocal',
   'ape:splCalOffset', // device mic calibration — hardware (governance R1)
   'ape:deviceId', // stable per-install id for single-device login (survives switch)
   'ape:dev:commercialMode', // dev-only override
@@ -113,7 +127,7 @@ export async function clearLocalAccountData(opts?: { total?: boolean }): Promise
         // A guest is wiped 100% clean, so `total` overrides the exam-queue
         // entries too — but never the hardware calibration, the install id or
         // the dev overrides, which are not user memory.
-        !(KEEP.has(k) && !(opts?.total === true && k.startsWith('ape:finalExamQueue'))) &&
+        !(KEEP.has(k) && !(opts?.total === true && (k.startsWith('ape:finalExamQueue') || k === 'ape:glossaryUsageLocal'))) &&
         (opts?.total === true || !isOnboardingFlag(k)),
     );
     if (toRemove.length > 0) {
