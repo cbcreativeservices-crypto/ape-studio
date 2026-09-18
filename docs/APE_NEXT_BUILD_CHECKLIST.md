@@ -32,7 +32,17 @@ The installed dev client predates several native modules and engine versions. Ev
 
 `expo-print` and `react-native-view-shot` autolink; no plugin entry exists for them by design.
 
-### Generator gain ramp — level faders TICK, found 2026-09-13 (needs this build)
+### ✅ Generator gain ramp — level faders TICK — FIXED AND VERIFIED ON DEVICE 2026-09-18
+
+**Closed.** Shipped in the `preview` builds of 2026-09-18 (Android `bd02e15d`,
+iOS `9aa9e995`) and confirmed by the owner on the phone: *"No crackle!"* The
+change is the duration-based gain ramp described below, in
+`modules/ape-dsp/ios/core/Generator.hpp` (`kGainRampSec`). 171 golden vectors
+passed with it. Kept here for the reasoning, which generalises: a slope limiter
+expressed in ABSOLUTE amplitude does nothing for small moves at low levels, and
+a fader is exactly that case.
+
+### (original finding)
 
 Not a gated feature; a **native DEFECT** whose fix only lands with a build.
 
@@ -77,10 +87,8 @@ Keep the `if (env_ <= 0.0) ampCur_ = ampTarget;` snap (nothing to glide from
 while silent). ONE file fixes both phones — Android's `CMakeLists.txt` compiles
 `../ios/core`. Re-run the core's golden tests with it.
 
-⚠️ Deliberately NOT written into `Generator.hpp` yet (owner 2026-09-13: "we will
-build later"): editing native source the installed dev client does not run would
-leave the repo claiming a fix the device cannot show, which is the confusion this
-checklist exists to prevent. Apply it as part of the build.
+✅ Applied 2026-09-18 as part of the build, which is exactly how this was meant
+to land — the note below was the standing reason not to write it earlier.
 
 
 ### Location permissions removed 2026-09-11 — exactly what to put back
