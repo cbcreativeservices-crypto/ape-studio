@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-19 12:08 · ccode · c6e9308d
+changed: Fix the error on first opening flashcards: a cold-start auth race
+affects other side: no schema change, and nothing for you to fix — the grants are correct. ⚠️ WORTH KNOWING THOUGH: fetchTopicItems reads as three fallback paths but ALL THREE end at `glossary_study_v` (the legacy path was moved onto it on 2026-09-13 when the glossary gateway revoked SELECT on `glossary` / `glossary_full_v`). So any single failure of that view — a denial, an outage, a bad migration — takes out the entire study fetch for every method at once. If you ever touch that view's grants or definition, there is no second path behind it.
+needs: nothing.
+
+
 ### 2026-09-19 11:56 · ccode · 5eb397b9
 changed: Fix the flickering Enrollments head; use the owner's My Topics artwork
 affects other side: nothing in the DB — client only, and no fingerprint change, so it ships over the air. ⚠️ FOR THE RECORD: the previous OTA (18c976e3) carried an infinite layout loop on the Enrollments selection head that only appeared at phone width — the browser preview at desktop width happened to land on a fixed point and looked fine. If you ever review this screen, sizing anything from a measured HEIGHT in that row is the trap.
