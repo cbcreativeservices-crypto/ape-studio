@@ -76,6 +76,14 @@ import { fetchGlossaryItemsByIds } from '../../features/study/api';
 import { useLastStudyLocation } from '../../features/study/lastStudyLocation';
 import { confirmDialog } from '../../lib/confirm';
 import { EnrollmentSelection, type CarouselCard } from './EnrollmentSelection';
+
+/**
+ * Audio Fundamentals — the one REQUIRED LAB in the shared core (the other
+ * three co-requisites are ordinary study topics). It is gs 3081 within
+ * COREQ_TOPIC_GS; named here so the lab-row branch and the ordering do not
+ * each carry a bare number.
+ */
+const LAB_REQUIREMENT_GS = 3081;
 import { CentredRequirements } from './CentredRequirements';
 
 const GREEN = '#37e05f';
@@ -1157,11 +1165,13 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
     ];
   }, [bundles, derivedBundles, enrolled, prog, activeGs, slugByName, deckKind]);
 
-  // Changing the filter re-seats the deck at its first card; otherwise the
-  // index survives into a shorter list and points at the wrong credential.
-  useEffect(() => {
-    setDeckIndex(0);
-  }, [deckKind]);
+  /**
+   * ⛔ CLAMP IN RENDER, NOT IN AN EFFECT. An effect resetting this runs one
+   * render too late: the render that follows a filter change has already read
+   * deckCards[safeDeckIndex], found undefined, drawn no selection and fallen
+   * through to the ALL TOPICS list. Derived, it can never be out of range.
+   */
+  const safeDeckIndex = Math.min(Math.max(deckIndex, 0), Math.max(0, deckCards.length - 1));
 
   // Removing the credential you were looking at must not leave the deck
   // pointing past the end — fall back to ALL TOPICS.
@@ -1188,6 +1198,32 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
    * state, however many lists it appears in.
    */
   const renderTopicRow = (e: EnrollTopic) => {
+    /**
+     * ⛔ THE LAB IS NOT A STUDY TOPIC (owner 2026-09-19). Audio Fundamentals
+     * is a required LAB: it sits on the enrollment checklist because every
+     * credential needs it, but it is completed by working through the Audio
+     * Fundamentals labs, NOT from the study dashboard. So it gets the meter
+     * and nothing else — no deck toggle and no STUDY, because both would
+     * send the member somewhere that cannot advance it. Framed blue to say
+     * plainly that it is a different kind of thing from the rows around it,
+     * and pinned to the top of every requirement list.
+     */
+    if (e.gs === LAB_REQUIREMENT_GS) {
+      const labPct = pctFor(e.gs);
+      return (
+        <View key={e.gs} style={[styles.card, styles.labCard]}>
+          <View style={styles.labTop}>
+            <Text style={styles.labTag}>LAB</Text>
+            <Text style={styles.labTitle} numberOfLines={1}>
+              {nameFor(e.gs)}
+            </Text>
+            <Text style={styles.cardPct}>{labPct}%</Text>
+          </View>
+          <LedMeter filled={segmentsForPct(labPct)} fullWidth />
+          <Text style={styles.labHint}>Completed in the Audio Fundamentals labs, not from the dashboard.</Text>
+        </View>
+      );
+    }
           const free = isFreeEnrollGs(e.gs);
           const acc = paid || free;
           // Required core courses (Safety, Grounding, Workplace Skills) are
@@ -1375,9 +1411,22 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
    * instead would hide a requirement, which is the one thing this list must
    * never do.
    */
+  /**
+   * The required LAB leads every list it appears in (owner 2026-09-19: "keep
+   * it at top"). ALL TOPICS has its own ordering — custom order, or whatever
+   * the chips sorted — so pinning it in requirementRows alone left it sitting
+   * seventh here.
+   */
+  const labFirst = (rows: EnrollTopic[]): EnrollTopic[] => {
+    const i = rows.findIndex((r) => r.gs === LAB_REQUIREMENT_GS);
+    return i <= 0 ? rows : [rows[i], ...rows.slice(0, i), ...rows.slice(i + 1)];
+  };
+
   const requirementRows = (b: EnrolledBundle): EnrollTopic[] => {
     const seen = new Set<number>();
-    const order = [...COREQ_TOPIC_GS, ...b.topics].filter((gs) => {
+    // LAB FIRST (owner 2026-09-19: "put audio fundamentals at the top of the
+    // list"), then the rest of the shared core, then the credential's own.
+    const order = [LAB_REQUIREMENT_GS, ...COREQ_TOPIC_GS, ...b.topics].filter((gs) => {
       if (seen.has(gs)) return false;
       seen.add(gs);
       return true;
@@ -1387,7 +1436,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   };
 
   const centredBundle = (() => {
-    const card = deckCards[deckIndex];
+    const card = deckCards[safeDeckIndex];
     if (!card || card.kind === 'topics' || card.kind === 'placeholder') return null;
     const enrolledMatch = bundles.find((b) => b.key === card.key);
     if (enrolledMatch) return enrolledMatch;
@@ -1602,31 +1651,31 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
               sense of where you are in it. The count between them replaces
               the dots the deck used to carry. */}
           <Pressable
-            style={[styles.deckStep, deckIndex <= 0 && styles.deckStepOff]}
-            onPress={() => setDeckIndex((i) => Math.max(0, i - 1))}
-            disabled={deckIndex <= 0}
+            style={[styles.deckStep, safeDeckIndex <= 0 && styles.deckStepOff]}
+            onPress={() => setDeckIndex(Math.max(0, safeDeckIndex - 1))}
+            disabled={safeDeckIndex <= 0}
             hitSlop={8}
             accessibilityRole="button"
-            accessibilityState={{ disabled: deckIndex <= 0 }}
+            accessibilityState={{ disabled: safeDeckIndex <= 0 }}
             accessibilityLabel="Previous"
           >
-            <Text style={[styles.deckStepText, deckIndex <= 0 && styles.deckStepTextOff]}>‹</Text>
+            <Text style={[styles.deckStepText, safeDeckIndex <= 0 && styles.deckStepTextOff]}>‹</Text>
           </Pressable>
           {deckCards.length > 1 ? (
-            <Text style={styles.deckCount} accessibilityLabel={`${deckIndex + 1} of ${deckCards.length}`}>
-              {deckIndex + 1}/{deckCards.length}
+            <Text style={styles.deckCount} accessibilityLabel={`${safeDeckIndex + 1} of ${deckCards.length}`}>
+              {safeDeckIndex + 1}/{deckCards.length}
             </Text>
           ) : null}
           <Pressable
-            style={[styles.deckStep, deckIndex >= deckCards.length - 1 && styles.deckStepOff]}
-            onPress={() => setDeckIndex((i) => Math.min(deckCards.length - 1, i + 1))}
-            disabled={deckIndex >= deckCards.length - 1}
+            style={[styles.deckStep, safeDeckIndex >= deckCards.length - 1 && styles.deckStepOff]}
+            onPress={() => setDeckIndex(Math.min(deckCards.length - 1, safeDeckIndex + 1))}
+            disabled={safeDeckIndex >= deckCards.length - 1}
             hitSlop={8}
             accessibilityRole="button"
-            accessibilityState={{ disabled: deckIndex >= deckCards.length - 1 }}
+            accessibilityState={{ disabled: safeDeckIndex >= deckCards.length - 1 }}
             accessibilityLabel="Next"
           >
-            <Text style={[styles.deckStepText, deckIndex >= deckCards.length - 1 && styles.deckStepTextOff]}>›</Text>
+            <Text style={[styles.deckStepText, safeDeckIndex >= deckCards.length - 1 && styles.deckStepTextOff]}>›</Text>
           </Pressable>
         </View>
 
@@ -1665,7 +1714,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             selected owns the list below, and the ‹ › above move between
             them — there is no deck to swipe and nothing off to the sides. */}
         <EnrollmentSelection
-          card={deckCards[deckIndex] ?? null}
+          card={deckCards[safeDeckIndex] ?? null}
           onToggleLoad={(card) => {
             if (card.kind === 'topics') {
               setActiveMany(enrolled.map((e) => e.gs), !card.allLoaded);
@@ -1724,7 +1773,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
               : 'Nothing matches those filters.'}
           </Text>
         ) : (
-          displayed.map(renderTopicRow)
+          labFirst(displayed).map(renderTopicRow)
         )}
 
         {/* MY RECORD — the completion folder, pinned to the bottom of the My
@@ -2273,6 +2322,24 @@ const styles = StyleSheet.create({
   collapseTri: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: colors.textSub },
   collapsedCard: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 11 },
   collapsedTitle: { flex: 1, fontFamily: fonts.oswaldMedium, fontSize: 14.5, color: colors.textPrimary },
+  /* The required LAB — blue frame so it reads as a different kind of thing
+     from the study topics it sits above. Meter only: see renderTopicRow. */
+  labCard: { borderColor: 'rgba(47,155,255,.7)', gap: 7 },
+  labTop: { flexDirection: 'row', alignItems: 'center', gap: 9 },
+  labTag: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 9.5,
+    letterSpacing: 1.1,
+    color: colors.blue,
+    borderWidth: 1,
+    borderColor: colors.blue,
+    borderRadius: 4,
+    paddingHorizontal: 5,
+    paddingVertical: 1.5,
+    overflow: 'hidden',
+  },
+  labTitle: { flex: 1, fontFamily: fonts.oswaldMedium, fontSize: 14.5, color: colors.textPrimary },
+  labHint: { fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 15, color: colors.textSub },
   // Enrollment TOPIC cards — WHITE border (border key: cert=blue · program=purple
   // · topic=white · subject=amber) — user request 2026-07-23.
   card: { borderWidth: 1, borderColor: 'rgba(255,255,255,.5)', borderRadius: 11, backgroundColor: '#161616', paddingVertical: 9, paddingHorizontal: 11, gap: 4 },

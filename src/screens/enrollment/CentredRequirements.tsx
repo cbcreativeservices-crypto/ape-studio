@@ -62,8 +62,12 @@ export function CentredRequirements({
         </Text>
       </View>
 
+      {/* Full width like the selection head above and the rows below — a
+          stub meter between two full ones reads as unfinished. */}
       <View style={s.meterRow}>
-        <LedMeter filled={segmentsForPct(pct)} segWidth={5} />
+        <View style={{ flex: 1 }}>
+          <LedMeter filled={segmentsForPct(pct)} fullWidth />
+        </View>
         <Text style={s.pct}>{pct}%</Text>
       </View>
 

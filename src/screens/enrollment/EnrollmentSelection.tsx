@@ -125,18 +125,29 @@ export function EnrollmentSelection({
           <MyTopicsIcon size={78} color={accent} framed={false} />
         )}
         <View style={s.headText}>
-          <Text style={[s.kind, { color: accent }]}>{labelFor(card.kind)}</Text>
+          {/* Eyebrow and count share the top line: the count is metadata about
+              the same thing the eyebrow names, and stacking it under the title
+              was the third short line crowding the top-left corner. */}
+          <View style={s.eyebrowRow}>
+            <Text style={[s.kind, { color: accent }]}>{labelFor(card.kind)}</Text>
+            <View style={{ flex: 1 }} />
+            <Text style={s.count}>
+              {card.topicCount} topic{card.topicCount === 1 ? '' : 's'}
+            </Text>
+          </View>
           <Text style={s.title} numberOfLines={2}>
             {card.title}
-          </Text>
-          <Text style={s.count}>
-            {card.topicCount} topic{card.topicCount === 1 ? '' : 's'}
           </Text>
         </View>
       </View>
 
+      {/* Full width (owner 2026-09-19: "use the space better"). A progress bar
+          that stops a third of the way across reads as a stub, and the panel
+          had the room. */}
       <View style={s.meterRow}>
-        <LedMeter filled={segmentsForPct(card.pct)} segWidth={6} />
+        <View style={{ flex: 1 }}>
+          <LedMeter filled={segmentsForPct(card.pct)} fullWidth />
+        </View>
         <Text style={s.pct}>{card.pct}%</Text>
       </View>
 
@@ -185,10 +196,11 @@ const s = StyleSheet.create({
   wrap: { gap: 8, paddingTop: 4, paddingBottom: 14, borderBottomWidth: 1, borderBottomColor: colors.hairline },
   head: { flexDirection: 'row', alignItems: 'flex-start', gap: 14 },
   headText: { flex: 1, paddingTop: 3 },
+  eyebrowRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 3 },
   // Not a pill. It is a label, and a box on it reads as a button that is not.
-  kind: { alignSelf: 'flex-start', fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.3, marginBottom: 3 },
+  kind: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.3 },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 21, lineHeight: 25, color: colors.textPrimary },
-  count: { fontFamily: fonts.mono, fontSize: 13, color: colors.textSub, marginTop: 5 },
+  count: { fontFamily: fonts.mono, fontSize: 12.5, color: colors.textSub },
   meterRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   pct: { fontFamily: fonts.mono, fontSize: 14, color: colors.textSecondary },
   actionRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 6 },
