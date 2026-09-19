@@ -26,6 +26,114 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-19 11:01 · ccode · 3fa51d12
+changed: Sweeps travel right to left, waveform orientation unchanged
+affects other side: nothing in the DB — client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
+needs: nothing.
+
+
+### 2026-09-19 10:56 · ccode · 188d0239
+changed: Both sweeps run left to right, at 7s per screen width
+affects other side: nothing in the DB — client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
+needs: nothing.
+
+
+### 2026-09-19 10:54 · ccode · bb4151a5
+changed: Sweep stays in the container, runs linear, at 4s per screen width
+affects other side: nothing in the DB — client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
+needs: nothing.
+
+
+### 2026-09-19 10:52 · ccode · 5b7532f5
+changed: Waveform letters reshaped from the labelled sheet; trace straddles the frame
+affects other side: nothing in the DB — client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
+needs: nothing.
+
+
+### 2026-09-19 10:49 · ccode · 6e04c821
+changed: Scope sweep spells: S-T-U-D-Y across the top, A-U-D-I-O along the bottom
+affects other side: nothing in the DB — client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
+needs: nothing.
+
+
+### 2026-09-19 10:42 · ccode · e4a431bd
+changed: Square credential art, lab row matched to the topic rows, and a scope sweep
+affects other side: nothing in the DB — client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
+needs: nothing.
+
+
+### 2026-09-19 10:32 · ccode · 02e76433
+changed: Head takes the panel: full-height art, corner actions, requirements box gone
+affects other side: nothing in the DB — client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
+needs: nothing.
+
+
+### 2026-09-19 10:20 · ccode · 458051a8
+changed: Audio Fundamentals is a LAB, the head uses its width, and a stale index bug
+affects other side: nothing in the DB — client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
+needs: nothing.
+
+
+### 2026-09-19 10:11 · ccode · 63410364
+changed: Requirements ARE the topic list: same rows, no disclosure, meter always visible
+affects other side: nothing in the DB — client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
+needs: nothing.
+
+
+### 2026-09-19 09:56 · ccode · 60d8df1d
+changed: Certificates become horizontal selections with their own requirement list
+affects other side: nothing in the DB — client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
+needs: nothing.
+
+
+### 2026-09-19 09:51 · ccode · bb58f746
+changed: Turn off the pre-login welcome popup
+affects other side: nothing in the DB — client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
+needs: nothing.
+
+
+### 2026-09-19 09:45 · ccode · 8fa65912
+changed: Enrollments design pass: alignment, one button ladder, a mark that holds its slot
+affects other side: nothing in the DB — client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
+needs: nothing.
+
+
+### 2026-09-19 09:38 · ccode · 8a4596ca
+changed: My Topics mark: heavier heart, no box around it
+affects other side: nothing in the DB — client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
+needs: nothing.
+
+
+### 2026-09-19 09:34 · ccode · 5d2ee4cb
+changed: Enrollments: no carousel, no nested card, and a proper My Topics mark
+affects other side: nothing in the DB — client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
+needs: nothing.
+
+
+### 2026-09-19 09:26 · ccode · 10ab4494
+changed: Deck card is two thirds of the screen
+affects other side: nothing in the DB — client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
+needs: nothing.
+
+
+### 2026-09-19 09:22 · ccode · b430c7e5
+changed: Deck stays inside the green frame
+affects other side: nothing in the DB — client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
+needs: nothing.
+
+
+### 2026-09-19 09:18 · ccode · a0817b7b
+changed: Deck: menu card geometry, chips up, and a ghost card for the empty state
+affects other side: nothing in the DB — client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
+needs: nothing.
+
+
+### 2026-09-19 09:09 · ccode · 82cc1448
+changed: Enrollments: frameless header + deck nav, viewer thumb, action labels, all collapsed
+affects other side: nothing in the DB — client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
+needs: nothing.
+
+
 ### 2026-09-19 08:46 · ccode · 6b805c77
 changed: Deck: use a horizontal ScrollView; FlatList would not go horizontal
 affects other side: nothing in the DB — client only. Enrollments MY ENROLLMENT is now a horizontal deck (EnrollmentCarousel + CentredRequirements); the per-credential container renderer is gone. Device-verified on the Pixel.

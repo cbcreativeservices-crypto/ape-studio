@@ -8,14 +8,18 @@
  * another line of copy competing with the rows around it.
  *
  * ── IT SPELLS ───────────────────────────────────────────────────────────────
- * Each pass carries ONE letter, and successive passes on the same edge step
- * through that edge's word, so the row spells over time rather than shouting:
+ * ONE TRACE AT A TIME, ALTERNATING TOP AND BOTTOM, one letter per pass:
  *
  *     TOP     :  S · T · U · D · Y
  *     BOTTOM  :  A · U · D · I · O
  *
- * Each edge keeps its own position in its own word, so they stay legible even
- * though the edge for each pass is chosen at random.
+ * so the row goes S, A, T, U, U, D, D, I, Y, O — the two words advancing
+ * together, a letter at a time, spelling STUDY AUDIO between them.
+ *
+ * ⛔ STRICT ALTERNATION, NOT A COIN FLIP. An earlier version picked the edge
+ * at random and the top line could sit out several turns in a row, so the
+ * phrase was never reliably there to read. Alternating guarantees each edge
+ * gets every other pass.
  *
  * ── BOTH EDGES TRAVEL RIGHT → LEFT ──────────────────────────────────────────
  * Owner 2026-09-19: "like a DAW playback screen scroll going by". In that
@@ -51,9 +55,10 @@
  * time. Nothing outside `WAVEFORMS` knows their shape, so replacing them with
  * real sampled data is an edit to that one table.
  *
- * ⏱ `IDLE_MS` is 3 s WHILE THIS IS BEING REVIEWED. The owner's standing value
- * is 17 s, to be set once the look is approved — at 3 s it is deliberately too
- * frequent to live with, so that it can be judged at all.
+ * ⏱ THE WAIT BETWEEN PASSES IS RANDOM, 3–19 s (owner 2026-09-19). It replaces
+ * the earlier fixed interval: a trace that appears exactly on the beat reads
+ * as a UI tic you start timing, while an irregular one reads as an instrument
+ * doing something of its own.
  *
  * ⛔ MOTION GATES. It does not run under reduced motion (`animationsAllowed`),
  * and not in Low-Light Production Mode, where nothing may draw attention to
@@ -78,8 +83,14 @@ const TRACE_H = 22;
  * rather than as a thing that flew past.
  */
 const CROSS_SCREEN_MS = 7000;
-/** ⏱ REVIEW VALUE. 17_000 once the look is signed off. */
-const IDLE_MS = 3000;
+/**
+ * ⏱ The wait between passes, randomised per pass (owner 2026-09-19) so the
+ * trace never settles into a rhythm you can anticipate — an exactly periodic
+ * flicker reads as a UI tic; an irregular one reads as instrumentation.
+ */
+const IDLE_MIN_MS = 3000;
+const IDLE_MAX_MS = 19000;
+const idleWait = () => IDLE_MIN_MS + Math.random() * (IDLE_MAX_MS - IDLE_MIN_MS);
 const TOP_WORD = ['S', 'T', 'U', 'D', 'Y'] as const;
 const BOTTOM_WORD = ['A', 'U', 'D', 'I', 'O'] as const;
 
@@ -159,7 +170,8 @@ export function LabScopeSweep({ color }: { color: string }) {
   const [letter, setLetter] = useState<string>(TOP_WORD[0]);
   const x = useRef(new Animated.Value(0)).current;
   const opacity = useRef(new Animated.Value(0)).current;
-  /** Each edge walks its own word, independently of which edge comes up. */
+  /** Which edge is next, and how far each word has got. */
+  const turn = useRef(0);
   const at = useRef({ top: 0, bottom: 0 });
   const suppressed = useOverlaysSuppressed();
 
@@ -170,43 +182,39 @@ export function LabScopeSweep({ color }: { color: string }) {
 
     const runOnce = () => {
       if (!alive) return;
-      // The EDGE alternates at random; the DIRECTION never does.
-      const top = Math.random() < 0.5;
-      const word = top ? TOP_WORD : BOTTOM_WORD;
+      // Strict alternation: every other pass belongs to each edge.
+      const top = turn.current % 2 === 0;
+      turn.current += 1;
       const key = top ? 'top' : 'bottom';
+      const word = top ? TOP_WORD : BOTTOM_WORD;
       const i = at.current[key] % word.length;
       at.current[key] = i + 1;
-
       setEdge(key);
       setLetter(word[i]);
 
       /**
-       * ⛔ WITHIN THE CONTAINER, END TO END (owner 2026-09-19). It used to
-       * start a full trace-width off-card and finish the same distance past
-       * the far side, so part of every pass happened outside the row it
-       * belongs to. It now runs edge to edge and no further; the fades at
-       * each end are what keep it from appearing abruptly.
+       * Right to left: enters at the far edge and runs off the near one. The
+       * waveform itself is NOT mirrored — the onset stays on the left, as it
+       * would sit in an editor. Only the container moves, which is what makes
+       * it a scroll rather than a reversed clip.
        */
       const travel = Math.max(0, w - TRACE_W);
-      // Right to left: enters at the far edge and runs off the near one.
-      const from = travel;
-      const to = 0;
-      // Steady: linear, at the owner's screen-width pace.
       const duration = Math.max(500, Math.round((travel / Math.max(1, windowW)) * CROSS_SCREEN_MS));
-      x.setValue(from);
+      x.setValue(travel);
+
       Animated.sequence([
         Animated.parallel([
           Animated.timing(opacity, { toValue: 1, duration: 260, useNativeDriver: true }),
-          Animated.timing(x, { toValue: to, duration, easing: Easing.linear, useNativeDriver: true }),
+          Animated.timing(x, { toValue: 0, duration, easing: Easing.linear, useNativeDriver: true }),
         ]),
         Animated.timing(opacity, { toValue: 0, duration: 240, useNativeDriver: true }),
       ]).start(({ finished }) => {
         if (!finished || !alive) return;
-        timer = setTimeout(runOnce, IDLE_MS);
+        timer = setTimeout(runOnce, idleWait());
       });
     };
 
-    timer = setTimeout(runOnce, IDLE_MS);
+    timer = setTimeout(runOnce, idleWait());
     return () => {
       alive = false;
       if (timer) clearTimeout(timer);
@@ -223,13 +231,7 @@ export function LabScopeSweep({ color }: { color: string }) {
         style={[s.trace, edge === 'top' ? s.onTop : s.onBottom, { opacity, transform: [{ translateX: x }] }]}
       >
         <Svg width={TRACE_W} height={TRACE_H} viewBox={`0 0 ${TRACE_W} ${TRACE_H}`}>
-          <G
-            stroke={color}
-            strokeWidth={1.5}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            fill="none"
-          >
+          <G stroke={color} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" fill="none">
             <Path d={LEAD} strokeWidth={1} strokeOpacity={0.35} />
             <Path d={WAVEFORMS[letter] ?? ''} strokeWidth={0.75} />
           </G>

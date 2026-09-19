@@ -26,18 +26,19 @@ import Svg, { G, Path, Rect } from 'react-native-svg';
  * of lines at icon size. Leaving them open lets the heart sit in clean space,
  * exactly as it does in the reference.
  */
-const LEFT_PAGE = 'M50 70C41.5 63.5 32.5 60.5 21 60.5L21 31C32.5 31 41.5 34 50 40.5';
-const RIGHT_PAGE = 'M50 70C58.5 63.5 67.5 60.5 79 60.5L79 31C67.5 31 58.5 34 50 40.5';
+const LEFT_PAGE = 'M50 78C42 70 35 66.5 27 66.5L27 26C35 26 42 29.5 50 37.5';
+const RIGHT_PAGE = 'M50 78C58 70 65 66.5 73 66.5L73 26C65 26 58 29.5 50 37.5';
 /** The thin cover edge standing behind each leaf. */
-const LEFT_COVER = 'M21 34.5L14 38.5L14 65L21 60.5';
-const RIGHT_COVER = 'M79 34.5L86 38.5L86 65L79 60.5';
+const LEFT_COVER = 'M27 29.5L21 33.5L21 70L27 66.5';
+const RIGHT_COVER = 'M73 29.5L79 33.5L79 70L73 66.5';
 /**
- * The heart in the gutter, point down the spine. Bigger than the first pass —
- * in the reference it is the thing you see first, not a detail tucked between
- * the pages.
+ * The heart in the gutter, point down the spine. It is the thing you see
+ * first, not a detail tucked between the pages — but it narrowed along with
+ * the book, so it still reads as sitting IN the gutter rather than lying
+ * across both leaves.
  */
 const HEART =
-  'M50 66C50 66 32.5 54 32.5 44C32.5 37.8 37 33.8 42 33.8C45.5 33.8 48.4 35.7 50 38.5C51.6 35.7 54.5 33.8 58 33.8C63 33.8 67.5 37.8 67.5 44C67.5 54 50 66 50 66Z';
+  'M50 63.8C50 63.8 35 53.4 35 44.8C35 39.5 38.8 36.1 43.1 36.1C46.1 36.1 48.6 37.7 50 40.1C51.4 37.7 53.9 36.1 56.9 36.1C61.2 36.1 65.1 39.5 65.1 44.8C65.1 53.4 50 63.8 50 63.8Z';
 
 export function MyTopicsIcon({
   size = 72,
@@ -66,7 +67,7 @@ export function MyTopicsIcon({
 
   const pass = (wide: boolean) => (
     <G stroke={color} strokeOpacity={wide ? 0.16 : 1} strokeLinecap="round" strokeLinejoin="round" fill="none">
-      <G strokeWidth={compact ? 6 : wide ? 5.3 : 2.3}>
+      <G strokeWidth={compact ? 5.2 : wide ? 4.6 : 2}>
         {framed ? <Rect x={5} y={5} width={90} height={90} rx={19} /> : null}
         {/* The cover edges are the first thing to go when small: they carry no
             meaning, and at 24px the 7-unit gap holding them is under a pixel,
@@ -81,18 +82,28 @@ export function MyTopicsIcon({
   );
 
   /**
-   * UNFRAMED, THE DRAWING MUST HOLD ITS SLOT. The ink spans x 14→86, y 31→70,
-   * so in a 0–100 box it rendered 58×33px inside a 78×78 slot — 42% the mass
-   * of the CredentialThumb that sits in the same position for every other
-   * selection, which made ALL TOPICS (the default, the first thing anyone
-   * sees here) look like the weakest one. Cropping the viewBox to the ink
-   * fixes it; the stroke widths above are pre-compensated for the 1.32×.
+   * ⛔ THE BOOK IS DRAWN SQUARE, AND THAT IS A GEOMETRY FIX, NOT A VIEWBOX ONE.
+   *
+   * It used to span x 14→86 by y 31→70 — 72 wide by 39 tall, nearly 2:1. Sat
+   * in the square slot beside the credential art it read as stretched: the
+   * leaves ran out to the edges while half the height went unused, so the
+   * pages looked splayed rather than open. Cropping the viewBox could only
+   * make that wider shape bigger, never better balanced.
+   *
+   * The leaves are now pulled in (x 21→79) and the book made taller (y 26→78)
+   * — 58 by 52, near enough square — and the heart scaled with them so the
+   * proportions inside hold. The viewBox is then cropped to that ink and
+   * centred on it, so the drawing fills its square slot with the same visual
+   * mass as the CredentialThumb that replaces it for every other selection.
+   *
+   * ⚠️ The stroke widths above are pre-compensated for the 1.52× the crop
+   * applies; change the crop and they need changing with it.
    */
   return (
     <Svg
       width={size}
       height={size}
-      viewBox={framed ? '0 0 100 100' : '12 12.5 76 76'}
+      viewBox={framed ? '0 0 100 100' : '17 19 66 66'}
       // The eyebrow and title beside it already name this; a focusable node
       // that announces "image" only adds a stop for a screen reader.
       accessibilityElementsHidden
