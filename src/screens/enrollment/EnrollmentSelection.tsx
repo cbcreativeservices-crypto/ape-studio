@@ -120,9 +120,9 @@ export function EnrollmentSelection({
             kind={card.kind === 'program' ? 'program' : 'certificate'}
           />
         ) : (
-          <View style={[s.iconBox, { borderColor: `${accent}55` }]}>
-            <MyTopicsIcon size={66} color={accent} framed={false} />
-          </View>
+          /* No box around it (owner 2026-09-19) — the mark stands on its
+             own, the way the book does in the reference. */
+          <MyTopicsIcon size={78} color={accent} framed={false} />
         )}
         <View style={s.headText}>
           <Text style={[s.kind, { color: accent, borderColor: accent }]}>{labelFor(card.kind)}</Text>
@@ -184,7 +184,6 @@ const s = StyleSheet.create({
   // card sitting inside it.
   wrap: { gap: 12, paddingBottom: 12, borderBottomWidth: 1, borderBottomColor: colors.hairline },
   head: { flexDirection: 'row', alignItems: 'center', gap: 14 },
-  iconBox: { width: 78, height: 78, borderRadius: 12, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
   headText: { flex: 1, gap: 6 },
   kind: {
     alignSelf: 'flex-start',

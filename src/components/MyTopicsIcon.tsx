@@ -51,21 +51,19 @@ export function MyTopicsIcon({
 }) {
   // One geometry, drawn twice: a soft wide pass for the glow, a crisp pass on
   // top. Stroke widths are in viewBox units so they scale with `size`.
+  // The HEART is drawn heavier than the book (owner 2026-09-19). It is the
+  // subject of the mark, and at icon size an equal weight let it recede into
+  // the page lines around it.
   const pass = (wide: boolean) => (
-    <G
-      stroke={color}
-      strokeWidth={wide ? 7 : 3}
-      strokeOpacity={wide ? 0.16 : 1}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      fill="none"
-    >
-      {framed ? <Rect x={5} y={5} width={90} height={90} rx={19} /> : null}
-      <Path d={LEFT_COVER} />
-      <Path d={RIGHT_COVER} />
-      <Path d={LEFT_PAGE} />
-      <Path d={RIGHT_PAGE} />
-      <Path d={HEART} />
+    <G stroke={color} strokeOpacity={wide ? 0.16 : 1} strokeLinecap="round" strokeLinejoin="round" fill="none">
+      <G strokeWidth={wide ? 7 : 3}>
+        {framed ? <Rect x={5} y={5} width={90} height={90} rx={19} /> : null}
+        <Path d={LEFT_COVER} />
+        <Path d={RIGHT_COVER} />
+        <Path d={LEFT_PAGE} />
+        <Path d={RIGHT_PAGE} />
+      </G>
+      <Path d={HEART} strokeWidth={wide ? 10 : 5} />
     </G>
   );
 
