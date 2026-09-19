@@ -145,6 +145,30 @@ function LoadPill({ on, small, dim }: { on: boolean; small?: boolean; dim?: bool
   );
 }
 const PURPLE = '#c4a2ff';
+
+/**
+ * ⛔ THE CUSTOM HOME-SCREEN SETUP IS HIDDEN FOR LAUNCH (owner 2026-09-19:
+ * "remove the home setup button… leave the function and screens behind, but
+ * do not have any button showing that goes to it… after launch we will work
+ * on this and get that function going").
+ *
+ * NOTHING IS DELETED. `HomeSetupSheet`, the home store, `toggleOnHome`, the
+ * 'home' filter branch and every piece of state behind them are untouched
+ * and still compile — only the three things a member could SEE are gone:
+ *
+ *   1. the ⌂ HOME SETUP button beside MY ENROLLMENT
+ *   2. the ⌂ On Home filter chip
+ *   3. the per-topic ⌂ toggle in an expanded card
+ *
+ * Search this constant to find all three. Flipping it back on is putting
+ * three JSX blocks back; the logic underneath never stopped working, so
+ * there is nothing to re-derive and no data to migrate.
+ *
+ * ⚠️ The Help answers about HOME SETUP are pulled too — see helpContent.ts,
+ * same marker. A searchable answer describing a control nobody can find is
+ * worse than no answer.
+ */
+const HOME_SETUP_HIDDEN_FOR_LAUNCH = true;
 /** '#rrggbb' + alpha -> 'rgba(r,g,b,a)'. Used for the deck chips' lit wash so
  *  one tint constant drives both the border and the fill behind it. */
 function withAlpha(hex: string, a: number): string {
@@ -1034,7 +1058,10 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   // in the MY RECORD folder at the bottom.
   const FILTER_CHIPS: { key: FilterKey; label: string }[] = [
     { key: 'az', label: 'A–Z' },
-    { key: 'home', label: '⌂ On Home' },
+    // ⌂ On Home — hidden for launch; see HOME_SETUP_HIDDEN_FOR_LAUNCH. The
+    // 'home' FilterKey and both of its filter branches are left intact, so
+    // restoring the chip is restoring this one line.
+    ...(HOME_SETUP_HIDDEN_FOR_LAUNCH ? [] : [{ key: 'home' as FilterKey, label: '⌂ On Home' }]),
     { key: 'new', label: 'Not started' },
   ];
 
@@ -1421,8 +1448,11 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                 <Text style={[styles.cardPct, !showActive && styles.dimMore]}>{pct}%</Text>
                 <View style={{ flex: 1 }} />
                 {/* Cores carry NO manual Home toggle — their slots are auto-
-                    reserved/freed (user request 2026-07-22). */}
-                {!isCore ? (
+                    reserved/freed (user request 2026-07-22). And for launch
+                    NOBODY does: hidden with the rest of the Home setup, see
+                    HOME_SETUP_HIDDEN_FOR_LAUNCH. `toggleOnHome` is still
+                    here and still correct. */}
+                {!isCore && !HOME_SETUP_HIDDEN_FOR_LAUNCH ? (
                   <Pressable
                     style={[styles.homeToggle, !showActive && styles.dimMore]}
                     onPress={() => toggleOnHome(e.gs)}
@@ -1662,14 +1692,19 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           >
             <Text style={styles.jumpText}>BROWSE & ADD ▾</Text>
           </Pressable>
-          <Pressable
-            style={styles.homeSetupBtn}
-            onPress={() => setHomeSetupOpen(true)}
-            accessibilityRole="button"
-            accessibilityLabel="Customize your Home screen"
-          >
-            <Text style={styles.homeSetupText}>⌂ HOME SETUP ›</Text>
-          </Pressable>
+          {/* ⌂ HOME SETUP — hidden for launch; see
+              HOME_SETUP_HIDDEN_FOR_LAUNCH. The sheet it opened is still
+              mounted below and still works; this is the only way in. */}
+          {!HOME_SETUP_HIDDEN_FOR_LAUNCH ? (
+            <Pressable
+              style={styles.homeSetupBtn}
+              onPress={() => setHomeSetupOpen(true)}
+              accessibilityRole="button"
+              accessibilityLabel="Home setup — choose which topics appear on the Home screen"
+            >
+              <Text style={styles.homeSetupText}>⌂ HOME SETUP ›</Text>
+            </Pressable>
+          ) : null}
         </View>
 
         {/* ── DECK NAVIGATION (owner 2026-09-19) ─────────────────────────

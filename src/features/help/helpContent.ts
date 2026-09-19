@@ -143,7 +143,10 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       {
         id: 'enroll-reorder',
         q: 'Can I reorder my enrolled topics?',
-        a: 'Yes — press and hold a topic card until it pops up, then drag it up or down and let go to drop it. Reordering works while no filter chip (A–Z, On Home, Not started) is active.',
+        // ⌂ On Home dropped from this list 2026-09-19 with the rest of the
+        // Home setup — see HOME_SETUP_HIDDEN_FOR_LAUNCH in EnrollmentScreen.
+        // Naming a chip that is not on screen sends the reader hunting.
+        a: 'Yes — press and hold a topic card until it pops up, then drag it up or down and let go to drop it. Reordering works while no filter chip (A–Z, Not started) is active.',
       },
       {
         id: 'enroll-progress',
@@ -166,11 +169,20 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         // credential they are paying for.
         a: 'Each enrolled topic’s meter is your study progress in that topic — the average of its four study methods. An award’s meter is different: it counts the required topics you have finished OUTRIGHT, so it moves a whole topic at a time. A topic counts once its quiz is passed, not when its study meters reach 100%.',
       },
-      {
-        id: 'enroll-home',
-        q: 'What is HOME SETUP and the ⌂ house mark?',
-        a: 'HOME SETUP chooses which of your enrolled topics appear as cards on the Home screen (the Glossary and Audio Tools are always there). A ⌂ mark on a topic card means that topic is on Home.',
-      },
+      /**
+       * ⛔ 'enroll-home' PULLED FOR LAUNCH 2026-09-19, with the controls it
+       * described — see HOME_SETUP_HIDDEN_FOR_LAUNCH in EnrollmentScreen.
+       * A searchable answer explaining a button nobody can find is worse
+       * than no answer: it reads as a feature the reader has failed to
+       * locate. Restore it in the same change that restores the button.
+       *
+       *   id: 'enroll-home'
+       *   q:  'What is HOME SETUP and the ⌂ house mark?'
+       *   a:  'HOME SETUP chooses which of your enrolled topics appear as
+       *        cards on the Home screen (the Glossary and Audio Tools are
+       *        always there). A ⌂ mark on a topic card means that topic is
+       *        on Home.'
+       */
     ],
   },
   {

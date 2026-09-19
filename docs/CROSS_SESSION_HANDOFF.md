@@ -193,8 +193,8 @@ needs: nothing.
 
 ### 2026-09-19 08:39 · ccode · 7b6a10db
 changed: Deck rendered VERTICALLY on device despite `horizontal`
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing in the DB — Enrollments chips, client side only.
+needs: nothing.
 
 
 ### 2026-09-19 08:35 · ccode · 0a30c456
