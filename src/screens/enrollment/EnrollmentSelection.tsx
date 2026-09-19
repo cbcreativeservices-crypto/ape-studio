@@ -28,6 +28,7 @@ import { CredentialThumb } from '../awards/CredentialThumb';
 import { MyTopicsIcon } from '../../components/MyTopicsIcon';
 import { LedMeter, segmentsForPct } from '../../components/LedMeter';
 import { colors, fonts } from '../../theme/tokens';
+import { artSideLen } from './selectionLayout';
 
 /** The Study tab's own icon, so the control looks like where it sends you. */
 const STUDY_ICON = require('../../../assets/icons/nav/nav-study.png');
@@ -88,21 +89,35 @@ export function EnrollmentSelection({
   onRemove?: () => void;
 }) {
   /**
-   * The art is a SQUARE as tall as the column beside it (owner 2026-09-19:
-   * "make the left prog/cert image area a square to match the image square
-   * always"). The credential art IS square, so a stretched frame letterboxed
-   * it.
+   * The art is a SQUARE (owner 2026-09-19: "make the left prog/cert image
+   * area a square to match the image square always"), sized from the ROW'S
+   * WIDTH.
    *
-   * ⛔ MEASURE THE TEXT COLUMN, NOT THE ROW. The row's height is
-   * max(text, art); feeding that back into the art's size is a loop that can
-   * only grow. The text column's height does not depend on the art, so
-   * side = textH is stable in one pass.
+   * ⛔ NEVER SIZE IT FROM A HEIGHT. THIS SHIPPED AS AN INFINITE LOOP.
+   *
+   * It measured the text column's height and used that as the square's side,
+   * on the reasoning that the row's height is max(text, art) and so feeding
+   * the row back in could only grow — but the text column's height was safe.
+   * That was wrong, and the comment saying so was the bug's own alibi. The
+   * square's SIDE is also its WIDTH, and the text column is `flex: 1` beside
+   * it in the same row: a wider square leaves a narrower column, a narrower
+   * column wraps more and gets TALLER, and that taller height became the next
+   * side. Every pass grew. On a phone it never converged — the owner saw the
+   * head balloon to most of the screen with the buttons pushed off the right
+   * edge, re-rendering continuously, which reads as a violent flicker.
+   *
+   * Width is the only input that is safe, because nothing the art does can
+   * change it: the row's width is set by the panel above. One measurement,
+   * one pass, no feedback path at all.
    */
-  const [sideLen, setSideLen] = useState(96);
-  const onBodyLayout = (e: LayoutChangeEvent) => {
-    const h = Math.round(e.nativeEvent.layout.height);
-    if (h > 0 && h !== sideLen) setSideLen(h);
+  const [rowW, setRowW] = useState(0);
+  const onHeadLayout = (e: LayoutChangeEvent) => {
+    const w = Math.round(e.nativeEvent.layout.width);
+    if (w > 0 && w !== rowW) setRowW(w);
   };
+  // Derived in render, not stored — state that mirrors a prop is state that
+  // can be one render stale, which is its own class of bug on this screen.
+  const sideLen = artSideLen(rowW);
 
   if (!card) return null;
   const accent = accentFor(card.kind);
@@ -140,7 +155,7 @@ export function EnrollmentSelection({
         art's edge. `alignSelf: 'stretch'` inside the row does that without
         measuring anything: the text column sets the height, the art takes it.
       */}
-      <View style={s.head}>
+      <View style={s.head} onLayout={onHeadLayout}>
         {card.slug ? (
           <CredentialThumb
             slug={card.slug}
@@ -151,11 +166,11 @@ export function EnrollmentSelection({
           />
         ) : (
           <View style={[s.markBox, { width: sideLen, height: sideLen }]}>
-            <MyTopicsIcon size={Math.round(sideLen * 0.92)} color={accent} framed={false} />
+            <MyTopicsIcon size={Math.round(sideLen * 0.92)} />
           </View>
         )}
 
-        <View style={s.body} onLayout={onBodyLayout}>
+        <View style={s.body}>
           {/* TOP — identity on the left, STUDY ALL in the corner, LOAD ALL
               directly beneath it. The two actions that move topics live
               together, away from the two that concern the credential. */}
