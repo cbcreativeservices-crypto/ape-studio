@@ -33,8 +33,8 @@ needs: nothing — just keep the string.
 
 ### 2026-09-18 17:45 · ccode · a0cebc2d
 changed: Cable Install: the capstone's score no longer vanishes on resume
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (docs only).
+needs: nothing.
 
 
 ### 2026-09-18 17:40 · ccode · 3a5a6831
