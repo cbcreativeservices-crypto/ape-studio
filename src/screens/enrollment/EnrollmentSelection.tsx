@@ -152,25 +152,28 @@ export function EnrollmentSelection({
   return (
     <View style={s.wrap}>
       {/*
-        ── WHAT SITS BESIDE THE ART, AND WHAT SITS UNDER IT ──────────────────
-        Only the identity and the two topic actions are in the column beside
-        the art. The credential's own two buttons and the progress meter are
-        FULL-WIDTH ROWS BENEATH the whole head.
+        ── ART LEFT, EVERYTHING ELSE IN ONE COLUMN TO ITS RIGHT ──────────────
+        Owner 2026-09-19, choosing between two ways of closing the empty
+        space they had circled: "I would rather have the LED meter and the
+        final exam button narrower and to the right with the image on the
+        left, than have the image smaller and the button and LED so wide
+        across." So every control is back in the right-hand column, and the
+        art is the big thing on the left.
 
-        ⛔ THAT IS WHY THERE IS NO LONGER A HOLE UNDER THE ART (owner
-        2026-09-19, with the empty space circled). The row's height is
-        max(art, column), so every extra control stacked in that column made
-        it taller than the square and left dead space to the left of it —
-        about 100pt on a phone. Moving the two widest, shortest-lived
-        controls out drops the column to roughly the art's own height, and
-        they are better full-width anyway: the meter reads across the whole
-        card, and FINAL EXAM stops being a button squeezed into a third of
-        the screen.
+        ⛔ THE ART RUNS THE FULL HEIGHT OF THE ROW, and that is what closes
+        the gap. A fixed square could not: the column holds four controls
+        and is always taller than a square of any width that leaves room for
+        them, so the space beside them was empty by construction.
 
-        ⛔ AND THE ART IS STILL SIZED FROM WIDTH. The obvious fix — stretch
-        the art to the row's height — is the infinite loop that shipped and
-        flickered on a phone. See selectionLayout.ts. Shortening the column
-        is the fix that cannot come back.
+        ⛔ AND IT IS STILL A WIDTH THAT DRIVES IT. `fillHeight` takes a fixed
+        WIDTH and stretches only the cross axis, so nothing measures a height
+        and feeds it back — the infinite loop that shipped last week and
+        flickered on a phone came from doing exactly that. See
+        selectionLayout.ts.
+
+        ⚠️ The art is therefore a tall rectangle rather than a square now.
+        The image is not letterboxed — CardArt covers the box — so it is
+        cropped instead, and tapping still opens the whole thing full screen.
       */}
       <View style={s.head} onLayout={onHeadLayout}>
         {card.slug ? (
@@ -178,11 +181,14 @@ export function EnrollmentSelection({
             slug={card.slug}
             title={card.title}
             accent={accent}
-            size={sideLen}
+            fillHeight
+            width={sideLen}
             kind={card.kind === 'program' ? 'program' : 'certificate'}
           />
         ) : (
-          <View style={[s.markBox, { width: sideLen, height: sideLen }]}>
+          <View style={[s.markBox, { width: sideLen }]}>
+            {/* The mark is line art, not a photo: it must NOT stretch or
+                crop, so it stays a centred square inside the tall box. */}
             <MyTopicsIcon size={Math.round(sideLen * 0.92)} />
           </View>
         )}
@@ -238,48 +244,49 @@ export function EnrollmentSelection({
               </Pressable>
             </View>
           </View>
+
+          {/* MIDDLE — the two that are about the CREDENTIAL rather than about
+              moving topics around. Absent on ALL TOPICS, which is neither an
+              award nor an enrollment you can drop. */}
+          {onOpenAward || onRemove ? (
+            <View style={s.credActions}>
+              {onOpenAward ? (
+                <Pressable
+                  style={s.awardBtn}
+                  onPress={onOpenAward}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Open the ${card.title} award page to see its Final Exam`}
+                >
+                  <Text style={s.awardText}>FINAL EXAM · ON THE AWARD PAGE →</Text>
+                </Pressable>
+              ) : (
+                <View style={{ flex: 1 }} />
+              )}
+              {onRemove ? (
+                <Pressable
+                  style={s.removeBtn}
+                  onPress={onRemove}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Remove ${card.title} and its topics from the list`}
+                >
+                  <Text style={s.removeText}>REMOVE</Text>
+                </Pressable>
+              ) : null}
+            </View>
+          ) : null}
+
+          {/* BOTTOM — one meter for this selection. The requirements panel
+              that used to sit below carried a second copy of exactly this
+              (owner: "the LED is a repeat of the LED above it"), so that
+              panel is gone and its two buttons moved up here. */}
+          <View style={s.meterRow}>
+            <View style={{ flex: 1 }}>
+              <LedMeter filled={segmentsForPct(card.pct)} fullWidth />
+            </View>
+            <Text style={s.pct}>{card.pct}%</Text>
         </View>
       </View>
 
-        {/* MIDDLE — the two that are about the CREDENTIAL rather than about
-            moving topics around. Absent on ALL TOPICS, which is neither an
-            award nor an enrollment you can drop. */}
-        {onOpenAward || onRemove ? (
-          <View style={s.credActions}>
-            {onOpenAward ? (
-              <Pressable
-                style={s.awardBtn}
-                onPress={onOpenAward}
-                accessibilityRole="button"
-                accessibilityLabel={`Open the ${card.title} award page to see its Final Exam`}
-              >
-                <Text style={s.awardText}>FINAL EXAM · ON THE AWARD PAGE →</Text>
-              </Pressable>
-            ) : (
-              <View style={{ flex: 1 }} />
-            )}
-            {onRemove ? (
-              <Pressable
-                style={s.removeBtn}
-                onPress={onRemove}
-                accessibilityRole="button"
-                accessibilityLabel={`Remove ${card.title} and its topics from the list`}
-              >
-                <Text style={s.removeText}>REMOVE</Text>
-              </Pressable>
-            ) : null}
-          </View>
-        ) : null}
-
-        {/* BOTTOM — one meter for this selection. The requirements panel
-            that used to sit below carried a second copy of exactly this
-            (owner: "the LED is a repeat of the LED above it"), so that
-            panel is gone and its two buttons moved up here. */}
-        <View style={s.meterRow}>
-          <View style={{ flex: 1 }}>
-            <LedMeter filled={segmentsForPct(card.pct)} fullWidth />
-          </View>
-          <Text style={s.pct}>{card.pct}%</Text>
         </View>
     </View>
   );
@@ -287,11 +294,10 @@ export function EnrollmentSelection({
 
 const s = StyleSheet.create({
   // No frame and no background: this IS the green panel's heading.
-  wrap: { paddingBottom: 12, borderBottomWidth: 1, borderBottomColor: colors.hairline, gap: 10 },
+  wrap: { paddingBottom: 12, borderBottomWidth: 1, borderBottomColor: colors.hairline },
   head: { flexDirection: 'row', alignItems: 'flex-start', gap: 14 },
-  markBox: { alignItems: 'center', justifyContent: 'center' },
-  /* Only the identity row lives here now — see the note above the head. */
-  body: { flex: 1, paddingTop: 2 },
+  markBox: { alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' },
+  body: { flex: 1, gap: 10, paddingTop: 2 },
   topRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
   /* Narrow column: the same controls in the same order, stacked. See
      actionsFitBesideIdentity — side by side, the title breaks mid-word. */

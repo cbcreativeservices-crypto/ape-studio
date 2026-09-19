@@ -93,14 +93,23 @@ describe('artSideLen', () => {
     }
   });
 
-  it('gives the art the larger share exactly when the column stacks', () => {
-    // The fix for the empty space the owner circled: a stacked column is
-    // taller and needs less width, so the square grows into the gap.
+  it('keeps one share, with no jump where the buttons re-flow', () => {
+    /**
+     * An earlier version used two shares — a smaller square when the buttons
+     * sat beside the identity, a bigger one when they stacked — so that a
+     * SQUARE art could grow tall enough to cover the controls next to it.
+     * The art visibly jumped size at the width where the layout re-flowed.
+     * It is unnecessary now the art stretches to the row instead, and this
+     * holds that it does not come back.
+     */
     for (const row of ROWS) {
-      const share = artSideLen(row) / row;
-      if (!actionsFitBesideIdentity(row) && artSideLen(row) > 84 && artSideLen(row) < 240) {
-        assert.ok(share > 0.4, `row ${row}: stacked but the art only took ${(share * 100).toFixed(0)}%`);
-      }
+      const side = artSideLen(row);
+      if (side <= 84 || side >= 240) continue; // clamped ends are not the rule
+      const share = side / row;
+      assert.ok(
+        Math.abs(share - 0.4) < 0.005,
+        `row ${row}: share ${(share * 100).toFixed(1)}% — the art must not change share with the layout mode`,
+      );
     }
   });
 

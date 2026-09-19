@@ -33,26 +33,31 @@
 const clampSide = (n: number) => Math.max(84, Math.min(240, Math.round(n)));
 
 /**
- * The art's share of the row, which depends on WHAT ELSE IS IN THE ROW.
+ * The art's WIDTH as a share of the row. Its height is not set here at all —
+ * the art stretches to the row (see EnrollmentSelection's `fillHeight`), which
+ * is what leaves no empty space beside the controls.
  *
- * ⛔ BOTH ARE STILL FUNCTIONS OF WIDTH ALONE — that is the invariant that
- * stops the flicker coming back, and branching on another width-derived
- * value does not break it.
+ * ⛔ A WIDTH, ALWAYS. Deriving this from any height is the infinite layout
+ * loop that shipped and flickered on a real phone: the side is also the
+ * width, the column beside it is `flex: 1`, so a bigger art made the column
+ * narrower, which made it taller, which made the art bigger again.
  *
- * 0.34 when the identity and buttons sit side by side: the column has to
- * hold two things across, so it needs the larger share.
+ * 0.40 is the owner's preference expressed as a number — "I would rather
+ * have the LED meter and the final exam button narrower and to the right
+ * with the image on the left, than have the image smaller and the button and
+ * LED so wide across". The art gets the bigger half of the card's attention;
+ * the controls get a column they still fit in.
  *
- * 0.46 when they stack. The owner circled the empty space under the art, and
- * this is most of the answer: a stacked column is TALLER (the buttons are
- * below the title, not beside it) while needing less width, so the square
- * can grow into the height that was previously dead space.
+ * ⚠️ An earlier version varied this between 0.34 and 0.46 to make a SQUARE
+ * art tall enough to cover the controls beside it. That is unnecessary now
+ * the art stretches, and two shares meant the art jumped size at the width
+ * where the buttons re-flowed.
  */
-const SHARE_BESIDE = 0.34;
-const SHARE_STACKED = 0.46;
+const ART_SHARE = 0.4;
 
 export function artSideLen(rowWidth: number): number {
   if (!(rowWidth > 0)) return 96; // pre-measurement; replaced on first layout
-  return clampSide(rowWidth * (actionsFitBesideIdentity(rowWidth) ? SHARE_BESIDE : SHARE_STACKED));
+  return clampSide(rowWidth * ART_SHARE);
 }
 
 /** The gap between the art and the text column in `head`. */
@@ -85,7 +90,5 @@ export const HEAD_GAP = 14;
  * for a readable title + 12 gap + ~150 for the buttons.
  */
 export function actionsFitBesideIdentity(rowWidth: number): boolean {
-  // ⚠️ Measured against the BESIDE share, not against artSideLen — asking
-  // artSideLen here would make the two functions define each other.
-  return rowWidth - clampSide(rowWidth * SHARE_BESIDE) - HEAD_GAP >= 260;
+  return rowWidth - artSideLen(rowWidth) - HEAD_GAP >= 260;
 }
