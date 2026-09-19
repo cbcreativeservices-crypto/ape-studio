@@ -26,6 +26,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-19 · A · badge-removal handoff (client) — ACTION FOR CCODE
+changed: nothing in the DB yet. New handoff: docs/CCODE_BADGE_REMOVAL_HANDOFF_2026-09-19.md.
+affects other side: CCODE — remove the V1 badge feature from the CLIENT per that file (quiz/api, QuizScreen, TrophyScreen, GalleryScreen, Celebration, profile/api, settings notify_badge, navigation/types). Keep CredentialBadge/CautionBadge/OS-notification badge. Do NOT touch DB functions/tables — A runs the guarded SQL.
+needs: from ccode — (1) do the client strip, (2) CONFIRM whether notify_badge is the badge-earn toggle (remove) or the OS app-icon count (keep); reply here with the commit sha + that answer so A finalizes the matching DB migration.
+
 ### 2026-09-18 20:57 · ccode · 132f08ba
 changed: Sound labs open at 30%, and the Help filter stops dead-ending
 affects other side: contact_limits() changed shape (7 columns now) and the numbers are much stricter; new RPC contact_allowance. All client-side, OTA-safe.

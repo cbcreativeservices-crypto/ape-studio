@@ -12,7 +12,7 @@ import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
 import { Banner, Chip, ChipWrap, EmptyState, Eyebrow, Helper, Loading, PrimaryButton } from './directoryBits';
 import {
-  blockMember,
+  blockThread,
   fetchContactThreads,
   fetchContactAllowance,
   fetchThreadMessages,
@@ -32,6 +32,17 @@ const REASONS: { key: ReportReason; label: string }[] = [
   { key: 'impersonation', label: 'Impersonation' },
   { key: 'other', label: 'Something else' },
 ];
+
+/** Acknowledge something, in the same idiom as confirmThen below. */
+function notify(title: string, body: string): void {
+  if (Platform.OS === 'web') {
+    if (typeof window !== 'undefined') window.alert(`${title}
+
+${body}`);
+    return;
+  }
+  Alert.alert(title, body);
+}
 
 function confirmThen(title: string, body: string, yes: string, onYes: () => void): void {
   if (Platform.OS === 'web') {
@@ -103,8 +114,16 @@ const IncomingCard = memo(function IncomingCard({
               `Block ${t.otherDisplayName}?`,
               'They will not be able to contact you again, and neither of you will see the other in the directory. Any open conversation closes.',
               'Block',
+              // ── THREAD-SCOPED, NOT TOKEN-SCOPED (2026-09-19) ─────────
+              // This sent `t.otherToken ?? ''`. An EMPLOYER has no community
+              // profile, so contact_threads returns a null token and '' was
+              // cast to uuid — the button threw `invalid input syntax for
+              // type uuid: ""` at the member. "Block an abusive user" was
+              // simply not true for the one party who can message you
+              // without publishing anything. The request id identifies the
+              // counterparty for every kind of thread.
               () =>
-                void blockMember(t.otherToken ?? '', true).then((r) =>
+                void blockThread(t.id, true).then((r) =>
                   r.ok ? onReload() : onError(r.error),
                 ),
             )
@@ -335,6 +354,8 @@ function ReportLink({
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState<ReportReason>('spam');
   const [detail, setDetail] = useState('');
+  /** On by default — see the note by the chip. */
+  const [alsoBlock, setAlsoBlock] = useState(true);
   return (
     <>
       <Pressable
@@ -371,6 +392,19 @@ function ReportLink({
               maxLength={1000}
               accessibilityLabel="Report details"
             />
+            {/* ── BLOCK IN THE SAME STEP (2026-09-19) ─────────────────────
+                Apple 1.2 looks for report AND block together, and a person who
+                has to perform two separate actions usually performs one. On by
+                default: somebody upset enough to report is rarely hoping to
+                keep hearing from them. */}
+            <ChipWrap>
+              <Chip
+                label={alsoBlock ? 'Also blocking them ✓' : 'Also block them'}
+                on={alsoBlock}
+                onPress={() => setAlsoBlock((v) => !v)}
+              />
+            </ChipWrap>
+
             <PrimaryButton
               label="SEND REPORT"
               tone="danger"
@@ -384,6 +418,20 @@ function ReportLink({
                   setOpen(false);
                   if (!r.ok) return onError(r.error);
                   setDetail('');
+                  // Thread-scoped, so this works against an employer too.
+                  if (alsoBlock) {
+                    const b2 = await blockThread(thread.id, true);
+                    if (!b2.ok) onError(b2.error);
+                  }
+                  // Acknowledge it. A report that vanishes silently reads as
+                  // one that was not received, and the person is left
+                  // wondering whether to report again.
+                  notify(
+                    'Report received',
+                    alsoBlock
+                      ? 'We review reports and act on them. You will not hear from this member again, and they are not told that you reported them.'
+                      : 'We review reports and act on them. The other member is not told that you reported them.',
+                  );
                   await onDone();
                 })
               }

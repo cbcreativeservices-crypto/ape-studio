@@ -166,6 +166,9 @@ export type RootStackParamList = {
   AudioCommunityDirectory: undefined;
   /** Admin-only: the employer application queue. Guarded by is_admin() in the DB. */
   EmployerAdmin: undefined;
+  /** Admin-only: the abuse-report queue. Guarded by is_admin() in the DB.
+   *  Deliberately NOT in linking.ts — an admin deep link is a URL worth guessing. */
+  ReportsAdmin: undefined;
   // Measurement & Analysis tools module (Booth 2026-07-09; MVP = hub + info
   // screens — the native DSP engine is Spike 0, a separate ruling/build).
   ToolsHub: undefined;

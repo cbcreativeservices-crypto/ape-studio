@@ -580,6 +580,33 @@ export async function sendThreadMessage(requestId: string, body: string): Promis
   }
 }
 
+/**
+ * Block whoever is on the other end of a THREAD.
+ *
+ * `blockMember` below resolves its target from a community_profiles token,
+ * and an EMPLOYER has no community profile — so `contact_threads` returns a
+ * null token and the old call sent '' straight into a uuid cast. The member
+ * saw `invalid input syntax for type uuid: ""` and the block never happened.
+ * "Block an abusive user" was untrue for the one counterparty who can message
+ * you without publishing anything about themselves.
+ *
+ * A request id identifies both parties for every kind of thread, so this
+ * works for members and employers alike.
+ */
+export async function blockThread(requestId: string, on = true): Promise<SaveResult> {
+  try {
+    const { error } = await supabase.rpc('contact_block_thread', {
+      p_request_id: requestId,
+      p_on: on,
+    });
+    return error ? { ok: false, error: readableError(error.message) } : { ok: true };
+  } catch {
+    return { ok: false, error: 'No connection. Try again.' };
+  }
+}
+
+/** Token-scoped block. Still used where a token is genuinely in hand (the
+ *  member sheet in the directory); prefer `blockThread` from a conversation. */
 export async function blockMember(token: string, on = true): Promise<SaveResult> {
   try {
     const { error } = await supabase.rpc('contact_block', { p_token: token, p_on: on });

@@ -42,8 +42,23 @@ suspend, no ban, no removal, and nothing an admin can act on a report WITH.
 and a moderation response for user-to-user content, and the Community
 directory is declared as user-to-user interaction.
 
-Status: **agent designing it** — what exists, what is missing, DB + admin
-surface + the app-side consequences of a suspended account.
+Status: ✅ **PHASE 0 DONE.** States (warn/suspend/ban/remove) in
+`account_standing` + an append-only `moderation_actions` audit; the report
+queue is readable and actionable for the first time (`ReportsAdminScreen`);
+enforcement on both the sender and target sides; the employer BLOCK hole
+closed with `contact_block_thread`; reporter acknowledgement with
+block-by-default; `AccountStandingNotice` tells a restricted member the fact
+and the reason.
+
+⚠️ **NEEDS OWNER, and these are not engineering questions:**
+1. Does a ban REVOKE earned credentials? (`credential_awards.revoked_at`
+   exists, so it is one UPDATE either way.) Revoking a credential someone
+   passed an exam for is a different act from removing them from a directory.
+2. Does a ban terminate PAID membership? You cannot refund an IAP yourself —
+   Apple and Google own that — so banning a paid member without a refund is a
+   consumer-law and chargeback question.
+3. Retention period for reports, messages and moderation records after a
+   removal.
 
 ## 4 · The Help search promises intelligence it does not have
 

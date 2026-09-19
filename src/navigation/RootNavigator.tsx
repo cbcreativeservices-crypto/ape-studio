@@ -28,6 +28,7 @@ import { AboutScreen } from '../screens/about/AboutScreen';
 import { AwardsScreen } from '../screens/awards/AwardsScreen';
 import { AudioCommunityDirectoryScreen } from '../screens/directory/AudioCommunityDirectoryScreen';
 import { EmployerAdminScreen } from '../screens/admin/EmployerAdminScreen';
+import { ReportsAdminScreen } from '../screens/admin/ReportsAdminScreen';
 import { ToolsHubScreen } from '../screens/tools/ToolsHubScreen';
 import { ToolInfoScreen } from '../screens/tools/ToolInfoScreen';
 import { ToolLearnScreen } from '../screens/tools/ToolLearnScreen';
@@ -426,6 +427,7 @@ export function RootNavigator() {
           hit before. */}
       <Stack.Screen name="AudioCommunityDirectory" component={AudioCommunityDirectoryScreen} />
       <Stack.Screen name="EmployerAdmin" component={EmployerAdminScreen} />
+      <Stack.Screen name="ReportsAdmin" component={ReportsAdminScreen} />
       {/* Measurement & Analysis tools (Booth 2026-07-09v) — bottom nav hidden.
           The TOOLS AREA root (Dashboard ⇄ Tools) → fade; everything inside it
           pushes. */}

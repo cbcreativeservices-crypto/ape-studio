@@ -21,6 +21,7 @@ import { CredentialQr } from '../../components/CredentialQr';
 import { CredentialShareRow } from '../../features/credentials/CredentialShareRow';
 import { EmployerSection } from './EmployerSection';
 import { AdminSection } from './AdminSection';
+import { AccountStandingNotice } from '../../features/account/AccountStandingNotice';
 import { fetchMyCredentials, type EarnedCredentialRow } from '../../features/credentials/api';
 import {
   exportCertificate,
@@ -546,6 +547,11 @@ export function ProfileScreen() {
           {/* Employer account (2026-09-18). Renders NOTHING for a member — it
               returns null unless there is an application or a verified employer
               profile — so a learner never scrolls past a recruiting panel. */}
+          {/* Standing comes FIRST: if something is wrong with the account,
+              that is the most important thing on the screen. Renders nothing
+              for an account in good standing. */}
+          <AccountStandingNotice />
+
           <EmployerSection />
 
           {/* Admin-only, and renders nothing for anyone else. The is_admin()

@@ -51,6 +51,19 @@ export function AdminSection() {
         </View>
         <Text style={s.chev}>›</Text>
       </Pressable>
+
+      <Pressable
+        onPress={() => navigation.navigate('ReportsAdmin')}
+        style={s.row}
+        accessibilityRole="button"
+        accessibilityLabel="Open the abuse report queue"
+      >
+        <View style={{ flex: 1 }}>
+          <Text style={s.title}>Abuse reports</Text>
+          <Text style={s.sub}>Reports awaiting a decision, and account standing</Text>
+        </View>
+        <Text style={s.chev}>›</Text>
+      </Pressable>
     </View>
   );
 }
