@@ -1110,7 +1110,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
     const all: CarouselCard = {
       key: '__topics__',
       kind: 'topics',
-      title: 'My topics',
+      title: 'My Enrolled Topics',
       slug: null,
       pct: topicPct,
       topicCount: enrolled.length,

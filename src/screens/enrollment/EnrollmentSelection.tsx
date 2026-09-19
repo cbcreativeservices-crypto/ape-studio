@@ -58,9 +58,18 @@ export function accentFor(kind: CarouselCard['kind']): string {
   return kind === 'program' ? PROGRAM_PURPLE : kind === 'cert' ? CERT_BLUE : colors.amber;
 }
 
+/**
+ * The eyebrow over the selection's name.
+ *
+ * ⚠️ The topics one is a SENTENCE, not a label (owner 2026-09-19). "ALL
+ * TOPICS" named the card but never said what the card was for; this says
+ * what the list underneath actually is. It is the only eyebrow that runs
+ * long, which is why `kind` below drops the label letter-spacing when the
+ * text is a sentence — tracked-out capitals are for two words, not ten.
+ */
 function labelFor(kind: CarouselCard['kind']): string {
   return kind === 'topics'
-    ? 'ALL TOPICS'
+    ? 'TOPICS AVAILABLE FOR LOADING IN YOUR STUDY DASHBOARD'
     : kind === 'program'
       ? 'PROGRAM'
       : kind === 'cert'
@@ -199,7 +208,7 @@ export function EnrollmentSelection({
               together, away from the two that concern the credential. */}
           <View style={[s.topRow, !actionsBeside && s.topRowStacked]}>
             <View style={s.identity}>
-              <Text style={[s.kind, { color: accent }]}>{labelFor(card.kind)}</Text>
+              <Text style={[s.kind, isTopics && s.kindLong, { color: accent }]}>{labelFor(card.kind)}</Text>
               <Text style={s.title} numberOfLines={2}>
                 {card.title}
               </Text>
@@ -304,6 +313,10 @@ const s = StyleSheet.create({
   topRowStacked: { flexDirection: 'column', gap: 10 },
   identity: { flex: 1, gap: 4 },
   kind: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.3 },
+  /* The topics eyebrow is a full sentence: 1.3 of tracking across fifty
+     characters is unreadable and wraps badly, so it keeps the size and
+     loses the spacing. */
+  kindLong: { letterSpacing: 0.4, lineHeight: 14 },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 21, lineHeight: 25, color: colors.textPrimary },
   count: { fontFamily: fonts.mono, fontSize: 12.5, color: colors.textSub },
   /* The two controls that move topics, stacked in the corner. */

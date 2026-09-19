@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-19 13:35 · ccode · eab7fdfd
+changed: Tint the lab and co-requisite rows, breathing very slowly
+affects other side: nothing in the DB — Enrollments screen only, client side, no fingerprint change.
+needs: nothing.
+
+
 ### 2026-09-19 13:23 · ccode · 48f0247f
 changed: Enrollments: big art on the left, every control in the column beside it
 affects other side: nothing in the DB — Enrollments screen layout only, client side, no fingerprint change.
