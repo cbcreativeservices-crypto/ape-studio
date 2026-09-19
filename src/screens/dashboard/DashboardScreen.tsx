@@ -42,6 +42,7 @@ import { slugify } from '../../navigation/linkPaths';
 import { animationsAllowed } from '../../features/settings/a11y';
 import Svg, { Circle, Rect, Defs, LinearGradient as SvgLinearGradient, Stop, Line } from 'react-native-svg';
 import { AppHeader } from '../../components/AppHeader';
+import { MyTopicsIcon } from '../../components/MyTopicsIcon';
 import { NavIcon } from '../../components/nav/NavIcon';
 import { FundamentalsCreditBanner } from '../../features/lab/FundamentalsCreditBanner';
 import { StudyAccessSheet } from '../../features/commercial/StudyAccessSheet';
@@ -1573,7 +1574,18 @@ export function DashboardScreen() {
                   accessibilityLabel={isCustom ? `List terms in ${topic.name}` : `Expand ${topic.name}`}
                   accessibilityHint={isCustom ? undefined : 'Hold to list every term in this topic'}
                 >
-                  <Text style={styles.topicEyebrow}>{dispTopicInactive ? 'CURRENT TOPIC · INACTIVE' : 'CURRENT TOPIC'}</Text>
+                  {/* The ALL TOPICS mark, small, beside the eyebrow (owner
+                      2026-09-19) — the same drawing that heads the enrolled
+                      list on Enrollments, so the two screens name the same
+                      thing the same way. Decorative: the eyebrow already
+                      says "CURRENT TOPIC", and MyTopicsIcon hides itself
+                      from screen readers, so this adds no second stop. */}
+                  <View style={styles.eyebrowRow}>
+                    <MyTopicsIcon size={15} />
+                    <Text style={styles.topicEyebrow}>
+                      {dispTopicInactive ? 'CURRENT TOPIC · INACTIVE' : 'CURRENT TOPIC'}
+                    </Text>
+                  </View>
                   <Text style={[styles.topicName, dispTopicInactive && styles.topicNameDim]} numberOfLines={2}>
                     {dispTopic.name}
                   </Text>
@@ -2391,6 +2403,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#222222',
   },
+  /* Keeps the little mark on the eyebrow's baseline rather than its box. */
+  eyebrowRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   topicEyebrow: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 11,

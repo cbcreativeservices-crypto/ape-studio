@@ -169,20 +169,25 @@ export function EnrollmentSelection({
         across." So every control is back in the right-hand column, and the
         art is the big thing on the left.
 
-        ⛔ THE ART RUNS THE FULL HEIGHT OF THE ROW, and that is what closes
-        the gap. A fixed square could not: the column holds four controls
-        and is always taller than a square of any width that leaves room for
-        them, so the space beside them was empty by construction.
+        ⛔ THE ART IS A SQUARE, AND THAT IS NOT NEGOTIABLE — THE SOURCE ART
+        IS SQUARE. It ran the full height of the row for one commit, to close
+        the empty space beside the controls, and that was wrong: `cover` in a
+        150×289 frame crops a square photo to its middle vertical third and
+        magnifies it ~2×, so every credential became an unreadable zoomed
+        strip. The owner saw it immediately ("the program image has become
+        distorted on the left, and this continues onto other certs"). A gap
+        is a blemish; ruined artwork is a broken feature.
 
-        ⛔ AND IT IS STILL A WIDTH THAT DRIVES IT. `fillHeight` takes a fixed
-        WIDTH and stretches only the cross axis, so nothing measures a height
-        and feeds it back — the infinite loop that shipped last week and
-        flickered on a phone came from doing exactly that. See
-        selectionLayout.ts.
+        ⚠️ SO THE EMPTY SPACE UNDER THE ART IS BACK, and it cannot be fixed
+        from here. The column holds four controls and is always taller than a
+        square wide enough to leave room for them — with everything on the
+        right, square art and no gap cannot all be true. Closing it means
+        choosing one: some controls go full-width beneath, or the art is
+        allowed to crop. Owner's call; the artwork wins until they make it.
 
-        ⚠️ The art is therefore a tall rectangle rather than a square now.
-        The image is not letterboxed — CardArt covers the box — so it is
-        cropped instead, and tapping still opens the whole thing full screen.
+        ⛔ THE SIDE IS STILL DERIVED FROM A WIDTH. Never from a height — see
+        selectionLayout.ts for the infinite loop that shipped and flickered
+        on a real phone.
       */}
       <View style={s.head} onLayout={onHeadLayout}>
         {card.slug ? (
@@ -190,14 +195,11 @@ export function EnrollmentSelection({
             slug={card.slug}
             title={card.title}
             accent={accent}
-            fillHeight
-            width={sideLen}
+            size={sideLen}
             kind={card.kind === 'program' ? 'program' : 'certificate'}
           />
         ) : (
-          <View style={[s.markBox, { width: sideLen }]}>
-            {/* The mark is line art, not a photo: it must NOT stretch or
-                crop, so it stays a centred square inside the tall box. */}
+          <View style={[s.markBox, { width: sideLen, height: sideLen }]}>
             <MyTopicsIcon size={Math.round(sideLen * 0.92)} />
           </View>
         )}
@@ -305,7 +307,7 @@ const s = StyleSheet.create({
   // No frame and no background: this IS the green panel's heading.
   wrap: { paddingBottom: 12, borderBottomWidth: 1, borderBottomColor: colors.hairline },
   head: { flexDirection: 'row', alignItems: 'flex-start', gap: 14 },
-  markBox: { alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' },
+  markBox: { alignItems: 'center', justifyContent: 'center' },
   body: { flex: 1, gap: 10, paddingTop: 2 },
   topRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
   /* Narrow column: the same controls in the same order, stacked. See
