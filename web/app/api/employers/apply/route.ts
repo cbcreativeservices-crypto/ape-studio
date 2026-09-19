@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { isPublicHostname } from "../../../../lib/publicHostname";
 
 /**
  * POST /api/employers/apply — the network half of employer verification.
@@ -24,6 +25,27 @@ import { NextResponse } from "next/server";
  */
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+const SUPABASE_ANON = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
+
+/** Vercel's default can be shorter than probe + finalize + mail. */
+export const maxDuration = 30;
+
+/**
+ * ── SSRF GUARD (2026-09-19, audit) ─────────────────────────────────────────
+ *
+ * This route makes the SERVER fetch a URL, so whatever decides that URL is a
+ * security control. It used to be `body.domain`, validated only against
+ * /^[a-z0-9.-]{3,253}$/ — which accepts `localhost`, `metadata`, and bare
+ * literals like `169.254.169.254` or `10.0.0.5`. Any signed-in user could
+ * make our Vercel server issue an HTTPS GET to an arbitrary host and read
+ * back the status and up to 200 characters of <title>, which then travelled
+ * into the reviewer email. An internal probe with an exfiltration channel.
+ *
+ * The domain now comes from the APPLICATION, computed by employer_domain_of
+ * in Postgres, which the applicant cannot forge. This guard is the second
+ * line: a public hostname has a dot and a letter-initial TLD, and is never an
+ * IP literal or a private range.
+ */
 
 /** Give up quickly. A slow site is a QUEUE reason, not a reason to hang. */
 const PROBE_TIMEOUT_MS = 6000;
@@ -99,9 +121,56 @@ export async function POST(req: Request) {
   }
 
   const appId = String(body.application_id ?? "");
-  const domain = String(body.domain ?? "").toLowerCase();
-  if (!/^[0-9a-f-]{36}$/i.test(appId) || !/^[a-z0-9.-]{3,253}$/.test(domain)) {
+  if (!/^[0-9a-f-]{36}$/i.test(appId)) {
     return NextResponse.json({ ok: false, error: "bad_request" }, { status: 400 });
+  }
+
+  // ── THE DOMAIN COMES FROM THE APPLICATION, NOT THE REQUEST ───────────────
+  //
+  // Read with the applicant's OWN token: employer_application_mine is RLS-
+  // scoped to them, so this both fetches the server-computed domain and
+  // re-proves the application is theirs before we fetch anything.
+  //
+  // It also fixes a second, quieter bug: the browser's domain normalisation
+  // is not the same algorithm as employer_domain_of, which strips whitespace
+  // globally. A trailing space from a paste ("acme.com ") passed the DATABASE
+  // and created the application, then failed this route's regex — 400,
+  // finalize never ran, application stranded pending with nobody told.
+  if (!SUPABASE_ANON) {
+    return NextResponse.json({ ok: false, error: "misconfigured" }, { status: 500 });
+  }
+  const mineRes = await fetch(`${SUPABASE_URL}/rest/v1/rpc/employer_application_mine`, {
+    method: "POST",
+    headers: {
+      Authorization: auth,
+      apikey: SUPABASE_ANON,
+      "Content-Type": "application/json",
+    },
+    body: "{}",
+  });
+  const mine = await mineRes.json().catch(() => null);
+  const row = (Array.isArray(mine) ? mine[0] : mine) as
+    | { id?: string; checks?: { site_domain?: string } }
+    | null;
+  if (!row || row.id !== appId) {
+    return NextResponse.json({ ok: false, error: "not_found" }, { status: 404 });
+  }
+
+  const domain = String(row.checks?.site_domain ?? "").toLowerCase();
+  if (!isPublicHostname(domain)) {
+    // The application exists and is theirs; we simply will not probe this.
+    // Recorded as "did not resolve" so the reviewer sees a queue reason
+    // rather than the application silently going nowhere.
+    const res0 = await fetch(`${SUPABASE_URL}/functions/v1/employer-apply-finalize`, {
+      method: "POST",
+      headers: { Authorization: auth, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        application_id: appId,
+        remote: { domain_resolves: false, site_reachable: false, site_status: null, site_title: null },
+      }),
+    });
+    const out0 = await res0.json().catch(() => ({ ok: false, error: "finalize_failed" }));
+    return NextResponse.json(out0, { status: res0.ok ? 200 : res0.status });
   }
 
   const remote = await probe(domain);

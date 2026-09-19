@@ -1,0 +1,75 @@
+-- 2026-09-19 · employers must CONFIRM the work email; admin can review/revoke
+--
+-- APPLIED TO PRODUCTION 2026-09-19 (mcp apply_migration, three statements:
+-- employer_work_email_verification, employer_decide_requires_confirmed_email,
+-- employer_admin_list_and_revoke).
+--
+-- Owner: "require employers to confirm with a registered email reply like
+-- everyone has to now days."
+--
+-- ═══ WHY ═══════════════════════════════════════════════════════════════════
+--
+-- Nothing was ever sent to work_email. employer_decide auto-approved on a
+-- STRING COMPARISON of the email domain against the website domain, plus a
+-- public probe of a site the applicant need not own. Anyone with an account
+-- could apply as "Abbey Road Studios / abbeyroad.com / hiring@abbeyroad.com",
+-- be auto-approved, and carry a VERIFIED EMPLOYER badge into graduates'
+-- inboxes with the app vouching for them. Possession of the mailbox is the
+-- ONLY signal in the application an impostor cannot supply, and it was the
+-- only one not checked.
+--
+-- ═══ WHY A SEPARATE, UNREACHABLE TABLE ═════════════════════════════════════
+--
+-- The applicant CAN read their own employer_applications row (RLS policy
+-- own_employer_application). A six-digit code is 10^6 possibilities, so a
+-- hash stored on a row they can read is brute-forceable offline in
+-- milliseconds -- the check would be theatre.
+--
+-- employer_email_verifications therefore has RLS enabled, NO policies and NO
+-- grants to anon, authenticated OR service_role. It is reachable only through
+-- the SECURITY DEFINER functions, which run as the owner.
+--   Verified live: reading it as `authenticated` fails with
+--   "permission denied for table employer_email_verifications".
+--
+-- ═══ THE FUNCTIONS, AND WHY EACH IS SHAPED THAT WAY ════════════════════════
+--
+--   employer_issue_email_code(id, code, sent_to)      service_role only
+--       Stores sha256(application_id || ':' || code), so the same code on two
+--       applications hashes differently. 30-minute expiry. Re-issuing RESETS
+--       the attempt counter: "send me another one" must not run into a
+--       lockout the user cannot see or explain.
+--
+--   employer_confirm_work_email(id, code)             authenticated
+--       Proves ownership itself, counts the attempt BEFORE comparing (a wrong
+--       guess costs one either way), caps at 6, marks confirmed, then calls
+--       employer_decide. Being SECURITY DEFINER is exactly how it reaches
+--       employer_decide -- which is service_role only -- without granting the
+--       applicant anything at all.
+--
+--   employer_decide                                   +1 condition, listed FIRST
+--       'work email not confirmed' now queues an application. A missing
+--       confirmation QUEUES and never rejects: only employer_review can
+--       reject, and only an admin can call that.
+--
+--   employer_pending_list() / employer_active_list() / employer_revoke()
+--       There was previously NO way to approve, reject or revoke through any
+--       client. employer_review existed with ZERO callers, there was no
+--       list-pending RPC, and employer_profiles has no UPDATE grant, so its
+--       admin RLS policy was dead -- the GRANT refuses before a policy is
+--       ever consulted. Meanwhile the reviewer email promised "the same id
+--       the admin list shows" and "the badge can be revoked at any time";
+--       neither of those existed.
+--
+--       All three carry the same is_admin() guard employer_review uses.
+--       Verified live: called as `authenticated`, employer_pending_list and
+--       employer_revoke both refuse with "not permitted".
+--
+--   employer_revoke is separate from employer_review on purpose: review
+--   decides a pending application ONCE, revoke governs a live badge forever.
+--   Revoking deliberately does not touch the application row -- the record of
+--   what was decided, and by whom, must not be rewritten by a later change of
+--   mind.
+--
+-- The executable statements live in the mcp migration history under the three
+-- names at the top of this file; this note is the reasoning, kept with the
+-- code it explains.
