@@ -24,14 +24,43 @@ import type { EnrolledBundle } from '../../features/enrollment/enrolledBundlesSt
 const CERT_BLUE = '#2f9bff';
 const PROGRAM_PURPLE = '#b06cff';
 
+/** One requirement line. Shared by both groups so they cannot drift apart. */
+function TopicRow({
+  gs,
+  nameFor,
+  pctFor,
+}: {
+  gs: number;
+  nameFor: (gs: number) => string;
+  pctFor: (gs: number) => number;
+}) {
+  const p = pctFor(gs);
+  return (
+    <View style={s.row}>
+      <Text style={[s.rowDot, p >= 100 && { color: colors.green }]}>{p >= 100 ? '✓' : '•'}</Text>
+      <Text style={s.rowName} numberOfLines={1}>
+        {nameFor(gs)}
+      </Text>
+      <Text style={[s.rowPct, p >= 100 && { color: colors.green }]}>{p}%</Text>
+    </View>
+  );
+}
+
 export function CentredRequirements({
   bundle,
+  derived = false,
+  coreGs = [],
   nameFor,
   pctFor,
   onRemove,
   onOpenAward,
 }: {
   bundle: EnrolledBundle;
+  /** True when this credential is one the member QUALIFIES for rather than
+   *  one they enrolled in. It has no enrollment to remove. */
+  derived?: boolean;
+  /** The core topics every credential shares — shown as its pre-requisites. */
+  coreGs?: number[];
   nameFor: (gs: number) => string;
   pctFor: (gs: number) => number;
   onRemove: () => void;
@@ -44,10 +73,12 @@ export function CentredRequirements({
   }, [bundle.key]);
 
   const accent = bundle.kind === 'program' ? PROGRAM_PURPLE : bundle.kind === 'cert' ? CERT_BLUE : colors.amber;
-  const done = bundle.topics.filter((gs) => pctFor(gs) >= 100).length;
-  const pct = bundle.topics.length
-    ? Math.round(bundle.topics.reduce((sum, gs) => sum + pctFor(gs), 0) / bundle.topics.length)
-    : 0;
+  // Everything the credential actually requires — core plus its own topics —
+  // because a member reading "3 of 3 complete" while four pre-requisites are
+  // outstanding has been told something false.
+  const allGs = [...coreGs, ...bundle.topics];
+  const done = allGs.filter((gs) => pctFor(gs) >= 100).length;
+  const pct = allGs.length ? Math.round(allGs.reduce((sum, gs) => sum + pctFor(gs), 0) / allGs.length) : 0;
 
   return (
     <View style={[s.wrap, { borderColor: `${accent}55` }]}>
@@ -55,7 +86,7 @@ export function CentredRequirements({
         <Text style={[s.head, { color: accent }]}>REQUIREMENTS</Text>
         <View style={{ flex: 1 }} />
         <Text style={s.summary}>
-          {done} of {bundle.topics.length} complete
+          {done} of {allGs.length} complete
         </Text>
       </View>
 
@@ -72,30 +103,36 @@ export function CentredRequirements({
         accessibilityState={{ expanded: open }}
         accessibilityLabel={
           open
-            ? `Hide the ${bundle.topics.length} topics of ${bundle.name}`
-            : `Show the ${bundle.topics.length} topics of ${bundle.name}`
+            ? `Hide the ${allGs.length} requirements of ${bundle.name}`
+            : `Show the ${allGs.length} requirements of ${bundle.name}`
         }
       >
         <Text style={[s.toggleTri, { color: accent }]}>{open ? '▾' : '▸'}</Text>
         <Text style={s.toggleText}>
-          {open ? 'HIDE TOPICS' : `SHOW ${bundle.topics.length} TOPIC${bundle.topics.length === 1 ? '' : 'S'}`}
+          {open ? 'HIDE REQUIREMENTS' : `SHOW ${allGs.length} REQUIREMENT${allGs.length === 1 ? '' : 'S'}`}
         </Text>
       </Pressable>
 
       {open ? (
         <View style={s.list}>
-          {bundle.topics.map((gs) => {
-            const p = pctFor(gs);
-            return (
-              <View key={gs} style={s.row}>
-                <Text style={[s.rowDot, p >= 100 && { color: colors.green }]}>{p >= 100 ? '✓' : '•'}</Text>
-                <Text style={s.rowName} numberOfLines={1}>
-                  {nameFor(gs)}
-                </Text>
-                <Text style={[s.rowPct, p >= 100 && { color: colors.green }]}>{p}%</Text>
-              </View>
-            );
-          })}
+          {/* PRE-REQUISITES first, because they are the gate: the same core
+              every credential shares, and no specialization counts until they
+              are done. Labelled so it is never mistaken for part of this
+              credential's own subject matter. */}
+          {coreGs.length > 0 ? (
+            <>
+              <Text style={s.groupHead}>PRE-REQUISITES · REQUIRED FOR EVERY CREDENTIAL</Text>
+              {coreGs.map((gs) => (
+                <TopicRow key={`core-${gs}`} gs={gs} nameFor={nameFor} pctFor={pctFor} />
+              ))}
+              <Text style={[s.groupHead, s.groupHeadSecond]}>
+                {bundle.kind === 'program' ? 'REQUIRED TOPICS' : 'SPECIALIZATION TOPICS'}
+              </Text>
+            </>
+          ) : null}
+          {bundle.topics.map((gs) => (
+            <TopicRow key={gs} gs={gs} nameFor={nameFor} pctFor={pctFor} />
+          ))}
         </View>
       ) : null}
 
@@ -112,14 +149,18 @@ export function CentredRequirements({
         ) : (
           <View style={{ flex: 1 }} />
         )}
-        <Pressable
-          style={s.removeBtn}
-          onPress={onRemove}
-          accessibilityRole="button"
-          accessibilityLabel={`Remove ${bundle.name} and its topics from the list`}
-        >
-          <Text style={s.removeText}>REMOVE</Text>
-        </Pressable>
+        {/* Nothing to remove when the member never enrolled — they simply
+            happen to hold every topic. A REMOVE here would do nothing. */}
+        {derived ? null : (
+          <Pressable
+            style={s.removeBtn}
+            onPress={onRemove}
+            accessibilityRole="button"
+            accessibilityLabel={`Remove ${bundle.name} and its topics from the list`}
+          >
+            <Text style={s.removeText}>REMOVE</Text>
+          </Pressable>
+        )}
       </View>
     </View>
   );
@@ -136,6 +177,14 @@ const s = StyleSheet.create({
   toggleTri: { fontFamily: fonts.oswaldMedium, fontSize: 14 },
   toggleText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.3, color: colors.textSecondary },
   list: { gap: 2 },
+  groupHead: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 10.5,
+    letterSpacing: 1.1,
+    color: colors.textSub,
+    marginBottom: 2,
+  },
+  groupHeadSecond: { marginTop: 12 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 9, paddingVertical: 7, borderTopWidth: 1, borderTopColor: colors.hairline },
   rowDot: { fontFamily: fonts.oswaldMedium, fontSize: 13, color: colors.textSub, width: 14, textAlign: 'center' },
   rowName: { flex: 1, fontFamily: fonts.barlowMedium, fontSize: 13.5, color: colors.textPrimary },

@@ -927,15 +927,10 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
     .filter((b) => !(b.topics.length > 0 && b.topics.every((gs) => (prog.get(gs)?.pct ?? 0) >= 100)))
     .map((b) => b.key);
 
-  const displayedDerived = useMemo(() => {
-    let ds = derivedBundles;
-    if (filters.has('home')) ds = [];
-    if (filters.has('done')) ds = ds.filter((d) => d.topics.length > 0 && d.topics.every((gs) => (prog.get(gs)?.pct ?? 0) >= 100));
-    if (filters.has('new')) ds = ds.filter((d) => d.topics.every((gs) => (prog.get(gs)?.pct ?? 0) === 0));
-    if (filters.has('az')) ds = [...ds].sort((a, b) => a.name.localeCompare(b.name));
-    return ds;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [derivedBundles, filters, prog]);
+  // displayedDerived (the chip-filtered copy of derivedBundles) went with the
+  // vertical list it fed, 2026-09-19. The chips filter the TOPIC list; the
+  // deck deliberately does not answer to them, so derivedBundles goes into
+  // deckCards unfiltered.
 
   // MY RECORD — every fully-completed topic/award/subject, moved out of the main
   // list into the completion folder at the bottom (user request 2026-07-23).
@@ -1111,7 +1106,23 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
       topicCount: enrolled.length,
       allLoaded: enrolled.length > 0 && enrolled.every((e) => activeGs.has(e.gs)),
     };
-    const credentials = bundles.filter((b) => (deckKind === 'all' ? true : b.kind === deckKind));
+    /**
+     * ⛔ ENROLLED **AND** DERIVED (owner 2026-09-19). The derived ones — the
+     * credentials you already hold every topic for — used to render as a
+     * VERTICAL stack of containers below the deck, which is exactly the list
+     * the owner asked to make horizontal. They are credentials; they belong
+     * in the same run of selections you step through with ‹ ›, not in a
+     * second list underneath with a different shape.
+     *
+     * Enrolled first, then derived, each in its own order. `bundleKeySet`
+     * already keeps derivedBundles free of anything enrolled, so no dedupe
+     * is needed here — but the key space is shared (`cert:<name>`), so if
+     * that ever changes this is where it would show up as a duplicate card.
+     */
+    const credentials = [
+      ...bundles.map((b) => ({ b, derived: false })),
+      ...derivedBundles.map((d) => ({ b: { ...d, loaded: false } as EnrolledBundle, derived: true })),
+    ].filter(({ b }) => (deckKind === 'all' ? true : b.kind === deckKind));
     // ALL TOPICS is column 0 only in the unfiltered view: under Programs or
     // Certificates the deck is that kind and nothing else, so leaving it in
     // would make the filter look broken.
@@ -1127,9 +1138,10 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
       allLoaded: false,
     };
     if (credentials.length === 0) return deckKind === 'all' ? [all, ghost] : [ghost];
+    // (ghost is otherwise unused — a kind with credentials never shows it)
     return [
       ...(deckKind === 'all' ? [all] : []),
-      ...credentials.map((b) => ({
+      ...credentials.map(({ b, derived }) => ({
         key: b.key,
         kind: b.kind as CarouselCard['kind'],
         title: b.name,
@@ -1139,9 +1151,10 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           : 0,
         topicCount: b.topics.length,
         allLoaded: b.topics.length > 0 && b.topics.every((gs) => activeGs.has(gs)),
+        derived,
       })),
     ];
-  }, [bundles, enrolled, prog, activeGs, slugByName, deckKind]);
+  }, [bundles, derivedBundles, enrolled, prog, activeGs, slugByName, deckKind]);
 
   // Changing the filter re-seats the deck at its first card; otherwise the
   // index survives into a shorter list and points at the wrong credential.
@@ -1159,106 +1172,20 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
    *  deck, since a filter changes what index 1, 2, 3 mean. */
   const centredBundle = (() => {
     const card = deckCards[deckIndex];
-    if (!card || card.kind === 'topics') return null;
-    return bundles.find((b) => b.key === card.key) ?? null;
+    if (!card || card.kind === 'topics' || card.kind === 'placeholder') return null;
+    const enrolledMatch = bundles.find((b) => b.key === card.key);
+    if (enrolledMatch) return enrolledMatch;
+    const derivedMatch = derivedBundles.find((d) => d.key === card.key);
+    return derivedMatch ? ({ ...derivedMatch, loaded: false } as EnrolledBundle) : null;
   })();
 
   // renderBundle (the old per-credential container) was removed with the
   // carousel on 2026-09-19 -- the deck replaced every one of its call
   // sites. It is in git if the deck is ever reverted.
 
-  // A read-only "you qualify" cert/program container (accumulated but not added).
-  const renderDerived = (d: { key: string; kind: 'cert' | 'program'; name: string; topics: number[] }) => {
-    const tint = d.kind === 'cert' ? BLUE : PURPLE;
-    const kindLabel = d.kind === 'cert' ? 'CERTIFICATE' : 'PROGRAM';
-    const kindCard = d.kind === 'cert' ? styles.bundleCert : styles.bundleProgram;
-    const dpct = d.topics.length
-      ? Math.round(d.topics.reduce((sum, gs) => sum + (prog.get(gs)?.pct ?? 0), 0) / d.topics.length)
-      : 0;
-    const done = isBundleDone(d.topics);
-    const allLoaded = d.topics.length > 0 && d.topics.every((gs) => activeGs.has(gs));
-    if (collapsed.has(d.key)) {
-      return (
-        <View key={d.key} {...containerPan(d.key, null).panHandlers}>
-        <Pressable style={[styles.bundleCard, kindCard, done && styles.bundleDone, styles.collapsedCard]} onPress={() => toggleCollapse(d.key)} accessibilityRole="button" accessibilityLabel={`Expand ${d.name}`}>
-          <Text style={styles.collapseTri}>▸</Text>
-          <Text style={[styles.bundleTag, { color: tint, borderColor: tint }]}>{kindLabel}</Text>
-          <Text style={styles.collapsedTitle} numberOfLines={1}>
-            {d.name}
-          </Text>
-          <Text style={styles.cardPct}>{dpct}%</Text>
-        </Pressable>
-        </View>
-      );
-    }
-    return (
-      <View key={d.key} style={[styles.bundleCard, kindCard, done && styles.bundleDone]} {...containerPan(d.key, null).panHandlers}>
-        <View style={styles.cardTop}>
-          <Pressable style={styles.collapseBtn} onPress={() => toggleCollapse(d.key)} hitSlop={6} accessibilityRole="button" accessibilityLabel={`Collapse ${d.name}`}>
-            <Text style={styles.collapseTri}>▾</Text>
-          </Pressable>
-          <Text style={[styles.bundleTag, { color: tint, borderColor: tint }]}>{kindLabel}</Text>
-          <Text style={styles.cardName} numberOfLines={1}>
-            {d.name}
-          </Text>
-        </View>
-        <Text style={styles.bundleMeta}>
-          {done ? 'You’ve completed all topics for this award' : 'You already have all topics for this award'}
-        </Text>
-        {/* The second dead TAKE FINAL EXAM button — same replacement as above. */}
-        <Pressable
-          style={styles.finalExamBtn}
-          onPress={() => navigation.navigate('Awards', { category: d.kind === 'program' ? 'program' : 'specialization' })}
-          accessibilityRole="button"
-          accessibilityLabel={`Open the ${d.name} award page to see its Final Exam`}
-        >
-          <Text style={styles.finalExamText}>FINAL EXAM · ON THE AWARD PAGE →</Text>
-        </Pressable>
-        {/* STUDY ALL (blue) loads the award's topics into the deck; ADD TOPICS
-            (gray) formalizes the award in the list (→ becomes REMOVE TOPICS) —
-            user request 2026-07-23. Each button on its own row so nothing
-            overflows on narrow phones. */}
-        <View style={styles.cardActionRow}>
-          {done ? <Text style={styles.doneBadge}>COMPLETED ✓</Text> : null}
-          <View style={{ flex: 1 }} />
-          <Pressable hitSlop={6}
-            style={styles.bookToggle}
-            onPress={() => setActiveMany(d.topics, !allLoaded)}
-            accessibilityRole="button"
-            accessibilityState={{ selected: allLoaded }}
-            aria-pressed={allLoaded}
-            accessibilityLabel={allLoaded ? 'Remove all topics from the study deck' : 'Load all topics into the study deck'}
-          >
-            <LoadPill on={allLoaded} />
-          </Pressable>
-          <Pressable hitSlop={6}
-            style={styles.studyNavBtn}
-            onPress={allLoaded ? () => goStudy(d.topics[0]) : undefined}
-            disabled={!allLoaded}
-            accessibilityRole="button"
-            accessibilityState={{ disabled: !allLoaded }}
-            aria-disabled={!allLoaded}
-            accessibilityLabel={allLoaded ? `Study ${d.name}` : 'Load topics to study'}
-          >
-            <NavIcon icon="Study" lit={allLoaded} />
-          </Pressable>
-        </View>
-        <View style={styles.cardMeterRow}>
-          <LedMeter filled={segmentsForPct(dpct)} segWidth={5} />
-          <Text style={styles.cardPct}>{dpct}%</Text>
-          <View style={{ flex: 1 }} />
-          <Pressable
-            style={styles.addTopicsBtn}
-            onPress={() => (d.kind === 'cert' ? addWholeCert(d.name, d.topics) : addWholeProgram(d.name, d.topics))}
-            accessibilityRole="button"
-            accessibilityLabel={`Add ${d.name} to the list`}
-          >
-            <Text style={styles.addTopicsText}>ADD TOPICS ›</Text>
-          </Pressable>
-        </View>
-      </View>
-    );
-  };
+  // renderDerived (the vertical "you qualify for this" container) was
+  // removed 2026-09-19: those credentials are deck selections now, so the
+  // list it drew no longer exists. In git if it is ever needed.
 
   // Shared BROWSE & ADD tab row — used both in-flow and in the pinned overlay.
   const renderBrowseTabs = () => (
@@ -1548,6 +1475,8 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
         {centredBundle ? (
           <CentredRequirements
             bundle={centredBundle}
+            derived={!bundles.some((b) => b.key === centredBundle.key)}
+            coreGs={COREQ_TOPIC_GS}
             nameFor={nameFor}
             pctFor={pctFor}
             onRemove={() => confirmRemoveWhole(centredBundle)}
@@ -1558,10 +1487,6 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             }
           />
         ) : null}
-
-        {/* Completed-but-unclaimed credentials the user QUALIFIES for stay a
-            list: they are not enrolled, so they are not deck positions. */}
-        {centredBundle ? null : displayedDerived.filter((d) => !isBundleDone(d.topics)).map(renderDerived)}
 
         {centredBundle ? null : displayed.length === 0 && displayedBundles.length === 0 ? (
           <Text style={styles.empty}>
