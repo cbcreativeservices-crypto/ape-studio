@@ -170,20 +170,19 @@ export function EnrollmentSelection({
         art is the big thing on the left.
 
         ⛔ THE ART IS A SQUARE, AND THAT IS NOT NEGOTIABLE — THE SOURCE ART
-        IS SQUARE. It ran the full height of the row for one commit, to close
-        the empty space beside the controls, and that was wrong: `cover` in a
-        150×289 frame crops a square photo to its middle vertical third and
-        magnifies it ~2×, so every credential became an unreadable zoomed
-        strip. The owner saw it immediately ("the program image has become
-        distorted on the left, and this continues onto other certs"). A gap
-        is a blemish; ruined artwork is a broken feature.
+        IS SQUARE. It ran the full height of the row for one commit and
+        `cover` cropped a square photo to its middle vertical third at ~2×,
+        so every credential became an unreadable zoomed strip. A gap is a
+        blemish; ruined artwork is a broken feature.
 
-        ⚠️ SO THE EMPTY SPACE UNDER THE ART IS BACK, and it cannot be fixed
-        from here. The column holds four controls and is always taller than a
-        square wide enough to leave room for them — with everything on the
-        right, square art and no gap cannot all be true. Closing it means
-        choosing one: some controls go full-width beneath, or the art is
-        allowed to crop. Owner's call; the artwork wins until they make it.
+        ⛔ AND THAT IS WHY THESE TWO ROWS ARE FULL WIDTH. Square art and no
+        gap cannot both be true while four controls share the column beside
+        it — the column is simply always taller. Given the choice, the owner
+        took the full-width rows (2026-09-19) rather than let the art crop.
+        So only the identity and the two topic actions stay beside the art;
+        FINAL EXAM / REMOVE and the meter sit beneath the whole head, where
+        they are better anyway: the meter reads across the card, and the
+        award button stops being a long label in a narrow box.
 
         ⛔ THE SIDE IS STILL DERIVED FROM A WIDTH. Never from a height — see
         selectionLayout.ts for the infinite loop that shipped and flickered
@@ -255,60 +254,60 @@ export function EnrollmentSelection({
               </Pressable>
             </View>
           </View>
-
-          {/* MIDDLE — the two that are about the CREDENTIAL rather than about
-              moving topics around. Absent on ALL TOPICS, which is neither an
-              award nor an enrollment you can drop. */}
-          {onOpenAward || onRemove ? (
-            <View style={s.credActions}>
-              {onOpenAward ? (
-                <Pressable
-                  style={s.awardBtn}
-                  onPress={onOpenAward}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Open the ${card.title} award page to see its Final Exam`}
-                >
-                  <Text style={s.awardText}>FINAL EXAM - EARN CERTIFICATE AWARD</Text>
-                </Pressable>
-              ) : (
-                <View style={{ flex: 1 }} />
-              )}
-              {onRemove ? (
-                <Pressable
-                  style={s.removeBtn}
-                  onPress={onRemove}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Remove ${card.title} and its topics from the list`}
-                >
-                  <Text style={s.removeText}>REMOVE</Text>
-                </Pressable>
-              ) : null}
-            </View>
-          ) : null}
-
-          {/* BOTTOM — one meter for this selection. The requirements panel
-              that used to sit below carried a second copy of exactly this
-              (owner: "the LED is a repeat of the LED above it"), so that
-              panel is gone and its two buttons moved up here. */}
-          <View style={s.meterRow}>
-            <View style={{ flex: 1 }}>
-              <LedMeter filled={segmentsForPct(card.pct)} fullWidth />
-            </View>
-            <Text style={s.pct}>{card.pct}%</Text>
         </View>
       </View>
 
+      {/* MIDDLE — the two that are about the CREDENTIAL rather than about
+          moving topics around. Absent on ALL TOPICS, which is neither an
+          award nor an enrollment you can drop. */}
+      {onOpenAward || onRemove ? (
+        <View style={s.credActions}>
+          {onOpenAward ? (
+            <Pressable
+              style={s.awardBtn}
+              onPress={onOpenAward}
+              accessibilityRole="button"
+              accessibilityLabel={`Open the ${card.title} award page to see its Final Exam`}
+            >
+              <Text style={s.awardText}>FINAL EXAM - EARN CERTIFICATE AWARD</Text>
+            </Pressable>
+          ) : (
+            <View style={{ flex: 1 }} />
+          )}
+          {onRemove ? (
+            <Pressable
+              style={s.removeBtn}
+              onPress={onRemove}
+              accessibilityRole="button"
+              accessibilityLabel={`Remove ${card.title} and its topics from the list`}
+            >
+              <Text style={s.removeText}>REMOVE</Text>
+            </Pressable>
+          ) : null}
         </View>
+      ) : null}
+
+      {/* BOTTOM — one meter for this selection. The requirements panel
+          that used to sit below carried a second copy of exactly this
+          (owner: "the LED is a repeat of the LED above it"), so that
+          panel is gone and its two buttons moved up here. */}
+      <View style={s.meterRow}>
+        <View style={{ flex: 1 }}>
+          <LedMeter filled={segmentsForPct(card.pct)} fullWidth />
+        </View>
+        <Text style={s.pct}>{card.pct}%</Text>
+    </View>
     </View>
   );
 }
 
 const s = StyleSheet.create({
   // No frame and no background: this IS the green panel's heading.
-  wrap: { paddingBottom: 12, borderBottomWidth: 1, borderBottomColor: colors.hairline },
+  wrap: { paddingBottom: 12, borderBottomWidth: 1, borderBottomColor: colors.hairline, gap: 10 },
   head: { flexDirection: 'row', alignItems: 'flex-start', gap: 14 },
   markBox: { alignItems: 'center', justifyContent: 'center' },
-  body: { flex: 1, gap: 10, paddingTop: 2 },
+  /* Only the identity row lives here now — see the note above the head. */
+  body: { flex: 1, paddingTop: 2 },
   topRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
   /* Narrow column: the same controls in the same order, stacked. See
      actionsFitBesideIdentity — side by side, the title breaks mid-word. */

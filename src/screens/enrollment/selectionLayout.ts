@@ -33,31 +33,32 @@
 const clampSide = (n: number) => Math.max(84, Math.min(240, Math.round(n)));
 
 /**
- * The art's WIDTH as a share of the row. Its height is not set here at all —
- * the art stretches to the row (see EnrollmentSelection's `fillHeight`), which
- * is what leaves no empty space beside the controls.
+ * The art's WIDTH as a share of the row — and its height, since it is square.
  *
  * ⛔ A WIDTH, ALWAYS. Deriving this from any height is the infinite layout
  * loop that shipped and flickered on a real phone: the side is also the
  * width, the column beside it is `flex: 1`, so a bigger art made the column
  * narrower, which made it taller, which made the art bigger again.
  *
- * 0.40 is the owner's preference expressed as a number — "I would rather
- * have the LED meter and the final exam button narrower and to the right
- * with the image on the left, than have the image smaller and the button and
- * LED so wide across". The art gets the bigger half of the card's attention;
- * the controls get a column they still fit in.
+ * TWO SHARES, because the column's job changes with the layout:
  *
- * ⚠️ An earlier version varied this between 0.34 and 0.46 to make a SQUARE
- * art tall enough to cover the controls beside it. That is unnecessary now
- * the art stretches, and two shares meant the art jumped size at the width
- * where the buttons re-flowed.
+ *   0.34 when the identity and the two buttons sit side by side. The column
+ *        has to hold two things across, so it needs the larger width.
+ *   0.46 when they stack. A stacked column is TALLER and needs less width,
+ *        so the square grows into the height that would otherwise be empty
+ *        beside the controls — which is most of how the gap gets closed.
+ *
+ * ⚠️ The art jumps size at the width where the buttons re-flow. That is the
+ * price of a SQUARE that also fills the height: the alternative was letting
+ * the frame stretch, which cropped the square source artwork into a zoomed
+ * vertical strip and had to be reverted the same day.
  */
-const ART_SHARE = 0.4;
+const SHARE_BESIDE = 0.34;
+const SHARE_STACKED = 0.46;
 
 export function artSideLen(rowWidth: number): number {
   if (!(rowWidth > 0)) return 96; // pre-measurement; replaced on first layout
-  return clampSide(rowWidth * ART_SHARE);
+  return clampSide(rowWidth * (actionsFitBesideIdentity(rowWidth) ? SHARE_BESIDE : SHARE_STACKED));
 }
 
 /** The gap between the art and the text column in `head`. */
@@ -90,5 +91,7 @@ export const HEAD_GAP = 14;
  * for a readable title + 12 gap + ~150 for the buttons.
  */
 export function actionsFitBesideIdentity(rowWidth: number): boolean {
-  return rowWidth - artSideLen(rowWidth) - HEAD_GAP >= 260;
+  // ⚠️ Measured against the BESIDE share, not against artSideLen — asking
+  // artSideLen here would make the two functions define each other.
+  return rowWidth - clampSide(rowWidth * SHARE_BESIDE) - HEAD_GAP >= 260;
 }

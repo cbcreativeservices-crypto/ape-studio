@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-19 14:47 · ccode · fc8fa67f
+changed: Square the credential art again; My Topics mark beside CURRENT TOPIC
+affects other side: 🚨 NOT nothing this time — see Downloads/2026-09-19_A_FREE_TOPICS_BLOCKED_anon_grant.md. `anon` has NO SELECT grant on `glossary_study_v` (42501, reproduced against production), so signed-out users cannot study the FREE topics either; the view's free-topic exception never gets to run. Client change here is unrelated (Enrollments layout).
+needs: A to confirm the common_mistakes mask holds for `anon`, then grant SELECT — and tell me which way it went.
+
+
 ### 2026-09-19 14:24 · ccode · 5b7ac881
 changed: Apply OTA updates on the launch that finds them
 affects other side: nothing in the DB. Worth knowing though: the client now APPLIES an OTA on the launch that finds it, instead of the launch after. So a client publish reaches devices roughly a launch sooner than it used to — relevant if you are ever timing a backend change against a client one.

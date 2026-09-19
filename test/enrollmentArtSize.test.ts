@@ -93,23 +93,25 @@ describe('artSideLen', () => {
     }
   });
 
-  it('keeps one share, with no jump where the buttons re-flow', () => {
+  it('gives the art the larger share exactly when the column stacks', () => {
     /**
-     * An earlier version used two shares — a smaller square when the buttons
-     * sat beside the identity, a bigger one when they stacked — so that a
-     * SQUARE art could grow tall enough to cover the controls next to it.
-     * The art visibly jumped size at the width where the layout re-flowed.
-     * It is unnecessary now the art stretches to the row instead, and this
-     * holds that it does not come back.
+     * ⚠️ THE JUMP AT THE RE-FLOW WIDTH IS DELIBERATE, and it was briefly
+     * removed. When the art stretched to the row's height one share was
+     * enough — but stretching cropped the SQUARE source artwork into a
+     * zoomed vertical strip and was reverted. With a square back, the only
+     * way to fill the height is to widen it, and only the stacked layout has
+     * the spare width to give. So: two shares, and a visible size change
+     * where the buttons re-flow, which is the price of an uncropped square.
      */
     for (const row of ROWS) {
       const side = artSideLen(row);
-      if (side <= 84 || side >= 240) continue; // clamped ends are not the rule
+      if (side <= 84 || side >= 240) continue; // the clamped ends are not the rule
       const share = side / row;
-      assert.ok(
-        Math.abs(share - 0.4) < 0.005,
-        `row ${row}: share ${(share * 100).toFixed(1)}% — the art must not change share with the layout mode`,
-      );
+      if (actionsFitBesideIdentity(row)) {
+        assert.ok(Math.abs(share - 0.34) < 0.005, `row ${row}: side-by-side share ${(share * 100).toFixed(1)}%`);
+      } else {
+        assert.ok(Math.abs(share - 0.46) < 0.005, `row ${row}: stacked share ${(share * 100).toFixed(1)}%`);
+      }
     }
   });
 
