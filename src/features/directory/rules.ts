@@ -186,7 +186,20 @@ export function readableError(message: string | undefined): string {
     return 'This member is not open to that. Pick another reason.';
   if (m.includes('links and contact details')) return 'Remove links and contact details from your message.';
   if (m.includes('contact requests per week')) return message ?? 'Weekly contact limit reached.';
+  // ── ORDER MATTERS (2026-09-19) ──────────────────────────────────────────
+  // The per-conversation message contains the words "daily limit", so it must
+  // be tested BEFORE the all-threads one or it is swallowed and the person is
+  // told the wrong thing about why they were stopped.
+  if (m.includes('daily limit for this conversation'))
+    return 'You have reached today’s limit for this conversation. It resets tomorrow.';
   if (m.includes('daily message limit')) return 'You have reached today’s message limit.';
+  if (m.includes('weekly message limit')) return 'You have reached this week’s message limit.';
+  if (m.includes('wait for a reply'))
+    return 'Wait for a reply before sending more.';
+  if (m.includes('already have an open conversation'))
+    return 'You already have an open conversation with this member — continue it under Requests.';
+  if (m.includes('message is longer than'))
+    return message ?? 'That message is too long.';
   if (m.includes('already answered')) return 'That request has already been answered.';
   if (m.includes('review your public display name'))
     return 'Review your public display name before appearing in search.';

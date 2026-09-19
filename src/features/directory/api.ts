@@ -525,6 +525,49 @@ export async function respondToRequest(
   }
 }
 
+/**
+ * What the member has LEFT, not what the limits are.
+ *
+ * Every cap in this system used to be discovered by hitting it and reading an
+ * error — `contact_limits()` has been callable since it was written and was
+ * called by nothing. With the caps tightened (owner 2026-09-19) that goes from
+ * mildly rude to confusing, so the UI now shows the remaining allowance and
+ * disables SEND at zero. The DATABASE is still the enforcement; this only
+ * moves the news earlier.
+ *
+ * Returns null on any failure — the caller must treat "unknown" as "allowed"
+ * and let the server refuse, never as "blocked". Guessing blocked on a dropped
+ * connection would lock someone out of their own conversation.
+ */
+export type ContactAllowance = {
+  requestsLeftThisWeek: number;
+  messagesLeftToday: number;
+  messagesLeftThisWeek: number;
+  messagesLeftHereToday: number;
+  messageMaxChars: number;
+  awaitingReply: boolean;
+};
+
+export async function fetchContactAllowance(requestId?: string): Promise<ContactAllowance | null> {
+  try {
+    const { data, error } = await supabase.rpc('contact_allowance', {
+      p_request_id: requestId ?? null,
+    });
+    const r = (data as Record<string, unknown>[] | null)?.[0];
+    if (error || !r) return null;
+    return {
+      requestsLeftThisWeek: Number(r.requests_left_this_week ?? 0),
+      messagesLeftToday: Number(r.messages_left_today ?? 0),
+      messagesLeftThisWeek: Number(r.messages_left_this_week ?? 0),
+      messagesLeftHereToday: Number(r.messages_left_here_today ?? 0),
+      messageMaxChars: Number(r.message_max_chars ?? 1000),
+      awaitingReply: r.awaiting_reply === true,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function sendThreadMessage(requestId: string, body: string): Promise<SaveResult> {
   try {
     const { error } = await supabase.rpc('contact_message_send', {

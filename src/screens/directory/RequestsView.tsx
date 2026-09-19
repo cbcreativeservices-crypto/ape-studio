@@ -14,7 +14,9 @@ import { Banner, Chip, ChipWrap, EmptyState, Eyebrow, Helper, Loading, PrimaryBu
 import {
   blockMember,
   fetchContactThreads,
+  fetchContactAllowance,
   fetchThreadMessages,
+  type ContactAllowance,
   reportMember,
   respondToRequest,
   sendThreadMessage,
@@ -411,6 +413,8 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
   const [msgs, setMsgs] = useState<ThreadMessage[]>([]);
   const [body, setBody] = useState('');
   const [err, setErr] = useState<string | null>(null);
+  /** Remaining allowance. null = unknown, which must read as ALLOWED. */
+  const [allow, setAllow] = useState<ContactAllowance | null>(null);
 
   // [75] (2026-09-07): a failed message fetch used to render as an empty
   // conversation; surface it instead (the reply box still works).
@@ -423,6 +427,9 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
     }
     setErr(null);
     setMsgs(r.rows);
+    // Allowance rides along with the messages so the count is right after
+    // every send, and a failure leaves it null (= unknown = allowed).
+    setAllow(await fetchContactAllowance(thread.id));
   }, [thread]);
 
   // Clear the previous conversation BEFORE fetching the next one (network audit
@@ -434,6 +441,7 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
     setMsgs([]);
     setErr(null);
     setBody('');
+    setAllow(null);
   }, [threadId]);
 
   useEffect(() => {
@@ -481,13 +489,37 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
             placeholder="Write a reply"
             placeholderTextColor={colors.textMuted}
             multiline
-            maxLength={2000}
+            maxLength={allow?.messageMaxChars ?? 1000}
             accessibilityLabel="Write a reply"
           />
+
+          {/* ── SAY THE LIMIT BEFORE THE WALL (owner 2026-09-19) ───────────
+              Every cap here used to be discovered by hitting it. `allow` is
+              null when the read failed, and null must read as ALLOWED — the
+              server is the enforcement, and guessing "blocked" on a dropped
+              connection would lock someone out of their own conversation. */}
+          {allow?.awaitingReply ? (
+            <Text style={st.allowance}>
+              Wait for a reply before sending more.
+            </Text>
+          ) : allow && allow.messagesLeftHereToday <= 3 ? (
+            <Text style={st.allowance}>
+              {allow.messagesLeftHereToday === 0
+                ? 'No replies left in this conversation today. It resets tomorrow.'
+                : `${allow.messagesLeftHereToday} ${allow.messagesLeftHereToday === 1 ? 'reply' : 'replies'} left in this conversation today.`}
+            </Text>
+          ) : null}
+
           <PrimaryButton
             label="SEND"
             tone="green"
-            disabled={!body.trim()}
+            disabled={
+              !body.trim() ||
+              allow?.awaitingReply === true ||
+              allow?.messagesLeftHereToday === 0 ||
+              allow?.messagesLeftToday === 0 ||
+              allow?.messagesLeftThisWeek === 0
+            }
             onPress={() =>
               void sendThreadMessage(thread.id, body.trim()).then(async (r) => {
                 if (!r.ok) return setErr(r.error);
@@ -504,6 +536,7 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
 }
 
 const st = StyleSheet.create({
+  allowance: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 6 },
   body: { padding: 14, paddingBottom: 40 },
   card: {
     backgroundColor: '#181818',

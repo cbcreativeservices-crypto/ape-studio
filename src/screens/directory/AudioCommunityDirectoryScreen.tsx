@@ -22,7 +22,9 @@ import {
   blockMember,
   fetchPublicProfile,
   reportMember,
+  fetchContactAllowance,
   sendContactRequest,
+  type ContactAllowance,
   type PublicCredential,
   type PublicProfile,
   type ReportReason,
@@ -315,6 +317,22 @@ function ContactSheet({
 }) {
   const [purpose, setPurpose] = useState<string | null>(null);
   const [message, setMessage] = useState('');
+  /**
+   * Requests left this week. null = unknown, which reads as ALLOWED: the
+   * server enforces, and guessing "blocked" on a failed read would stop
+   * someone contacting anybody at all (owner 2026-09-19).
+   */
+  const [allow, setAllow] = useState<ContactAllowance | null>(null);
+  useEffect(() => {
+    if (!open) return;
+    let alive = true;
+    void fetchContactAllowance().then((a2) => {
+      if (alive) setAllow(a2);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [open]);
   // The labels come back from the server; the RPC wants the slug. Rebuilding it
   // the same way the database does keeps the two in step.
   const slug = (label: string) =>
@@ -350,10 +368,20 @@ function ContactSheet({
             maxLength={500}
             accessibilityLabel="Your message"
           />
+          {/* The weekly cap is worth naming only as it gets close — a
+              counter on every open would read as a warning about the user. */}
+          {allow && allow.requestsLeftThisWeek <= 3 ? (
+            <Text style={st.allowance}>
+              {allow.requestsLeftThisWeek === 0
+                ? 'No contact requests left this week.'
+                : `${allow.requestsLeftThisWeek} contact ${allow.requestsLeftThisWeek === 1 ? 'request' : 'requests'} left this week.`}
+            </Text>
+          ) : null}
+
           <PrimaryButton
             label="SEND REQUEST"
             tone="green"
-            disabled={!purpose || !message.trim()}
+            disabled={!purpose || !message.trim() || allow?.requestsLeftThisWeek === 0}
             onPress={() => void onSend(purpose ?? '', message.trim()).then((ok) => ok && setMessage(''))}
           />
           <PrimaryButton label="CANCEL" onPress={onClose} />
@@ -414,6 +442,7 @@ function ReportSheet({
 }
 
 const st = StyleSheet.create({
+  allowance: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 4 },
   root: { flex: 1, backgroundColor: colors.screenBg },
   header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 10 },
   back: { width: 40, height: 44, alignItems: 'center', justifyContent: 'center' },

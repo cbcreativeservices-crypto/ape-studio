@@ -16,7 +16,7 @@ first open of that lab screen. Not remembered-loud, not 100%. A lab may still
 start SILENT where that is the design — the rule is about where the fader
 sits when sound is turned on, so nobody is ambushed.
 
-Status: **agent surveying every audio lab** for how level is initialised.
+Status: ✅ **DONE.** One constant `src/features/audio/startLevel.ts`, eight initialisers. Three levels deliberately excluded because they are not volumes — Liquid SHAKE (acceleration in g, Faraday threshold is the lesson), the Signal Generator (−20 dBFS already IS 10% of full scale), and the Mixing faders (unity is the lesson).
 
 ## 2 · Cap how many messages a user can send
 
@@ -27,8 +27,7 @@ Contact requests are already capped (`contact_limits()`); per-message volume
 inside an accepted thread is the gap. The intent is that this is a
 professional contact channel, not a chat app.
 
-Status: **agent auditing the current limits** and proposing numbers.
-**NEEDS OWNER** on the final numbers once proposed.
+Status: ✅ **DONE at the owner's STRICTER setting.** 10 msgs/day, 30/week, 5 per PARTNER per day, 5 unanswered, 1000 chars, plus a 90-day cooldown after a decline and no second thread with the same person. Counted per PAIR so a second request cannot reset it.
 
 ## 3 · Report abuse, and suspend / remove / ban accounts
 
@@ -52,7 +51,7 @@ surface + the app-side consequences of a suspended account.
 need to limit or not have the field help search since it just returns that it
 cant find anything anyway (remove this frustration)."*
 
-Status: **being done now.**
+Status: ✅ **DONE.** Tokenised filter, honest label, and the empty state no longer renders INSTEAD of the manual it tells you to browse. ⚠️ Separately: the manual has no CANCELLATION entry, so that search still finds nothing — a content gap, pinned in a test.
 
 ## 5 · Legal: liability and refunds if the LLC closes
 

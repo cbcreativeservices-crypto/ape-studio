@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 20:57 · ccode · 132f08ba
+changed: Sound labs open at 30%, and the Help filter stops dead-ending
+affects other side: contact_limits() changed shape (7 columns now) and the numbers are much stricter; new RPC contact_allowance. All client-side, OTA-safe.
+needs: nothing.
+
+
 ### 2026-09-18 20:42 · ccode · cd54030d
 changed: Pro Registry: use the owner's certificate sample art
 affects other side: nothing (docs only).
