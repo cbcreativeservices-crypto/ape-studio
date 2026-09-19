@@ -347,6 +347,7 @@ export function CurriculumView({
           <Text style={styles.aboutCtaText} numberOfLines={1}>About the Academy</Text>
         </Pressable>
         <Pressable
+          hitSlop={6}
           style={[styles.membershipCta, styles.halfFlex]}
           onPress={() => (navigation as { navigate: (name: 'Paywall') => void }).navigate('Paywall')}
           accessibilityRole="button"
@@ -372,6 +373,7 @@ export function CurriculumView({
       {/* Audio Career Finder — its own thin full-width row below the hero
           (owner 2026-09-15). */}
       <Pressable
+        hitSlop={6}
         style={styles.finderContainer}
         onPress={() => setShowFinder(true)}
         accessibilityRole="button"

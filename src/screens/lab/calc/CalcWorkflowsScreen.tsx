@@ -147,7 +147,7 @@ export function CalcWorkflowsScreen() {
               style={[styles.orderBtn, index === 0 && styles.orderBtnDisabled]}
               onPress={() => moveMine(w.id, -1)}
               disabled={index === 0}
-              hitSlop={4}
+              hitSlop={8}
               accessibilityRole="button"
               accessibilityState={{ disabled: index === 0 }}
               aria-disabled={index === 0}
@@ -159,7 +159,7 @@ export function CalcWorkflowsScreen() {
               style={[styles.orderBtn, index === count - 1 && styles.orderBtnDisabled]}
               onPress={() => moveMine(w.id, 1)}
               disabled={index === count - 1}
-              hitSlop={4}
+              hitSlop={8}
               accessibilityRole="button"
               accessibilityState={{ disabled: index === count - 1 }}
               aria-disabled={index === count - 1}

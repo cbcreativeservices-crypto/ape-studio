@@ -258,7 +258,7 @@ function StepBtn({ label, a11y, onPress, disabled, danger }: { label: string; a1
       style={[styles.stepBtn, danger && styles.stepBtnDanger, disabled && styles.stepBtnDisabled]}
       onPress={onPress}
       disabled={disabled}
-      hitSlop={4}
+      hitSlop={8}
       accessibilityRole="button"
       accessibilityState={{ disabled: !!disabled }}
       aria-disabled={!!disabled}

@@ -175,7 +175,7 @@ export function ExperimentWell({ experiment }: { experiment: Experiment }) {
           {experiment.steps.map((s, i) => {
             const on = done.includes(i);
             return (
-              <Pressable key={i} onPress={() => toggle(i)} style={styles.step} accessibilityRole="checkbox" accessibilityState={{ checked: on }} accessibilityLabel={`Step ${i + 1}: ${s}`}>
+              <Pressable key={i} hitSlop={8} onPress={() => toggle(i)} style={styles.step} accessibilityRole="checkbox" accessibilityState={{ checked: on }} accessibilityLabel={`Step ${i + 1}: ${s}`}>
                 <Text style={[styles.box, on && styles.boxOn]}>{on ? '✓' : `${i + 1}`}</Text>
                 <Text style={[styles.stepText, on && styles.stepDone]}>{s}</Text>
               </Pressable>

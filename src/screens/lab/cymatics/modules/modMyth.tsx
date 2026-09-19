@@ -39,7 +39,7 @@ export function MythModule(_p: CymaticsModuleProps) {
             {!mine ? (
               <View style={P.chips}>
                 {VERDICTS.map((v) => (
-                  <Pressable key={v} onPress={() => setPicked((m) => ({ ...m, [r.claim]: v }))} style={[styles.pick, { borderColor: TINT[v] + '99' }]} accessibilityRole="button" accessibilityLabel={`${v} for: ${r.claim}`}>
+                  <Pressable key={v} hitSlop={6} onPress={() => setPicked((m) => ({ ...m, [r.claim]: v }))} style={[styles.pick, { borderColor: TINT[v] + '99' }]} accessibilityRole="button" accessibilityLabel={`${v} for: ${r.claim}`}>
                     <Text style={[styles.pickText, { color: TINT[v] }]}>{v}</Text>
                   </Pressable>
                 ))}

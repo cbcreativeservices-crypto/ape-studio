@@ -366,7 +366,7 @@ function Chip({ label, active, onPress, a11yLabel }: { label: string; active: bo
   return (
     <Pressable
       onPress={onPress}
-      hitSlop={6}
+      hitSlop={8}
       accessibilityRole="button"
       accessibilityLabel={a11yLabel ?? label}
       accessibilityState={{ selected: active }}

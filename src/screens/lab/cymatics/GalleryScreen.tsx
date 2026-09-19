@@ -236,6 +236,7 @@ export function GalleryScreen() {
                 />
                 {selecting ? (
                   <Pressable
+                    hitSlop={4}
                     style={[styles.go, compareIds.length < 2 && styles.goOff]}
                     disabled={compareIds.length < 2}
                     onPress={() => setMode('compare')}

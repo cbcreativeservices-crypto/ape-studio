@@ -102,7 +102,7 @@ export function useScreenHelp(content: ScreenHelpContent): { open: () => void; s
 /** The "?" button to place in a screen header. Amber ring, generous tap target. */
 export function HelpDot({ onPress, label = 'Help for this screen' }: { onPress: () => void; label?: string }) {
   return (
-    <Pressable onPress={onPress} hitSlop={8} accessibilityRole="button" accessibilityLabel={label} style={styles.dot}>
+    <Pressable onPress={onPress} hitSlop={10} accessibilityRole="button" accessibilityLabel={label} style={styles.dot}>
       <Text style={styles.dotText}>?</Text>
     </Pressable>
   );

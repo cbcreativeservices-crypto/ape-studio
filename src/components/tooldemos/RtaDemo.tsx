@@ -224,7 +224,7 @@ function DemoChip({ label, active, onPress }: { label: string; active: boolean; 
       accessibilityState={{ selected: active }}
       aria-pressed={active}
       onPress={onPress}
-      hitSlop={6}
+      hitSlop={9}
       style={[styles.innerChip, active && styles.innerChipActive]}
     >
       <Text style={[styles.innerChipText, active && styles.innerChipTextActive]}>{label}</Text>

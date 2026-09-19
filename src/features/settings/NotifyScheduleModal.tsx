@@ -129,6 +129,7 @@ export function NotifyScheduleModal({
                   return (
                     <Pressable
                       key={d}
+                      hitSlop={4}
                       style={[styles.dayChip, on && styles.dayChipOn]}
                       onPress={() => onSetDay(d)}
                       accessibilityRole="button"

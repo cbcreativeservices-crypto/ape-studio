@@ -281,7 +281,7 @@ export function CalcProjectsScreen() {
                     <Pressable
                       style={styles.removeBtn}
                       onPress={() => setValues((vs) => vs.filter((_, k) => k !== i))}
-                      hitSlop={4}
+                      hitSlop={8}
                       accessibilityRole="button"
                       accessibilityLabel={`Remove value ${i + 1}`}
                     >

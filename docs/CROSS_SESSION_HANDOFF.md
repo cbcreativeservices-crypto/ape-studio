@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 17:40 · ccode · 3a5a6831
+changed: Teaching accuracy: three content errors the app was stating as fact
+affects other side: nothing. Client-only copy and touch-target changes. OTA-safe.
+needs: nothing.
+
+
 ### 2026-09-18 · A · TestFlight build handoff — Apple side fully prepped; the iOS build is the only blocker to internal testers
 changed: Owner (Cháno) is standing up INTERNAL TestFlight testers. A completed the entire App Store Connect side today, so the ONLY thing gating testers from installing is the first iOS build (yours).
 Apple side DONE today (A drove it in App Store Connect):
