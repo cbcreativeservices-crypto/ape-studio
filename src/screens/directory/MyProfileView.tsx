@@ -44,6 +44,7 @@ import {
   type WorkPref,
 } from '../../features/directory/api';
 import { alreadyMigrated, buildLegacyDraft, markMigrated, type LegacyDraft } from '../../features/directory/legacyMigration';
+import { ProfileSetupFlow } from './ProfileSetupFlow';
 
 const WORK_PREFS: { key: WorkPref; label: string }[] = [
   { key: 'remote', label: 'Remote' },
@@ -138,6 +139,18 @@ export function MyProfileView() {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [legacy, setLegacy] = useState<LegacyDraft | null>(null);
+  /**
+   * Guided setup vs the full form (owner 2026-09-19).
+   *
+   * `null` means "nobody has chosen", so the DEFAULT is derived from the
+   * profile itself: a member with nothing set gets the guide, a member who
+   * already has one gets their editor back exactly as before. Once they choose
+   * — either way — the choice sticks for the visit.
+   *
+   * Deliberately NOT persisted. It is a presentation preference, and a stored
+   * "skip the guide" flag would silently outlive the reason for it.
+   */
+  const [useGuide, setUseGuide] = useState<boolean | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -327,6 +340,33 @@ export function MyProfileView() {
   }
 
   const specialtyPool = tax.specialties.filter((s) => s.areas.some((a) => p.areas.includes(a)));
+
+  /**
+   * Show the guide while the profile is genuinely unstarted-or-unfinished and
+   * not yet public. A published member NEVER gets a wizard in front of their
+   * own profile, whatever else is true.
+   */
+  const setupUnfinished =
+    !p.published && (!p.displayName.trim() || !p.areas.length || !p.roles.length);
+
+  if ((useGuide ?? setupUnfinished) && !p.published) {
+    return (
+      <ProfileSetupFlow
+        tax={tax}
+        p={p}
+        saving={saving}
+        err={err}
+        gaps={gaps}
+        label={label}
+        onToggleArea={toggleArea}
+        onToggle={toggleIn}
+        onEdit={setP}
+        onCommit={(next) => void persist(next)}
+        onPublish={() => onPublish(true)}
+        onExit={() => setUseGuide(false)}
+      />
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={st.body} keyboardShouldPersistTaps="handled">
