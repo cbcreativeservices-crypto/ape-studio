@@ -223,6 +223,10 @@ function HoldToRemove({
 // the user comes back to exactly the collapse/expand layout they left.
 const enrollUi = {
   collapsed: [] as string[],
+  /** Topic rows that have already been given their default collapsed state.
+   *  Lives here, beside the collapse set it guards, so returning to the
+   *  screen does not re-collapse rows the user deliberately opened. */
+  collapseSeeded: [] as string[],
   recordOpen: false,
   browseOpen: false,
   browseTab: 'cert' as 'cert' | 'program' | 'subject' | 'field' | 'topic',
@@ -322,6 +326,13 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
    * never swipes sees exactly the list they saw before this redesign.
    */
   const [deckIndex, setDeckIndex] = useState(0);
+  /**
+   * The deck's own filter (owner 2026-09-19): All / Programs / Certificates.
+   * Separate from the chips below, which filter the TOPIC list — these two
+   * were deliberately not merged because they act on different things and
+   * sharing one control would make each of them lie about the other.
+   */
+  const [deckKind, setDeckKind] = useState<'all' | 'program' | 'cert'>('all');
   const dragAccum = useRef(0);
   // Reorder step = the REAL measured height of each container (owner 2026-08-05
   // "reorder not working"): the old fixed DRAG_ROW_H=84 mismatched the true card
@@ -399,6 +410,34 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   // Per-container collapse (thin title + % only) — keyed by `t:<gs>` for topics
   // and by bundle key for awards (user request 2026-07-22).
   const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set(enrollUi.collapsed));
+
+  /**
+   * ⛔ EVERYTHING BELOW THE DECK OPENS COLLAPSED (owner 2026-09-19) — topics,
+   * the required co-requisites and the free topics alike, with no exceptions.
+   * The old screen opened as a wall of expanded cards, which is the reason
+   * the deck exists at all; letting the list underneath do the same thing
+   * would hand the problem straight back.
+   *
+   * PER TOPIC, not once per run. A single one-shot seed looked right on the
+   * first render and then failed the moment it mattered: enrolling in a
+   * certificate adds its topics, and on the preview those arrived EXPANDED
+   * while everything around them was closed (caught 2026-09-19). So each gs
+   * is collapsed the first time it is ever seen, and remembered in
+   * `enrollUi.collapseSeeded` — which means a row the user deliberately
+   * opened stays open when they navigate away and back, while anything newly
+   * enrolled still arrives closed.
+   */
+  useEffect(() => {
+    const seen = new Set(enrollUi.collapseSeeded);
+    const fresh = enrolled.map((e) => `t:${e.gs}`).filter((k) => !seen.has(k));
+    if (fresh.length === 0) return;
+    enrollUi.collapseSeeded = [...seen, ...fresh];
+    setCollapsed((prev) => {
+      const next = new Set(prev);
+      for (const k of fresh) next.add(k);
+      return next;
+    });
+  }, [enrolled]);
   // MY RECORD folder — the completion archive at the bottom (user request
   // 2026-07-23). Collapsed by default.
   const [recordOpen, setRecordOpen] = useState(enrollUi.recordOpen);
@@ -1072,9 +1111,13 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
       topicCount: enrolled.length,
       allLoaded: enrolled.length > 0 && enrolled.every((e) => activeGs.has(e.gs)),
     };
+    const credentials = bundles.filter((b) => (deckKind === 'all' ? true : b.kind === deckKind));
+    // ALL TOPICS is column 0 only in the unfiltered view: under Programs or
+    // Certificates the deck is that kind and nothing else, so leaving it in
+    // would make the filter look broken.
     return [
-      all,
-      ...bundles.map((b) => ({
+      ...(deckKind === 'all' ? [all] : []),
+      ...credentials.map((b) => ({
         key: b.key,
         kind: b.kind as CarouselCard['kind'],
         title: b.name,
@@ -1086,7 +1129,13 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
         allLoaded: b.topics.length > 0 && b.topics.every((gs) => activeGs.has(gs)),
       })),
     ];
-  }, [bundles, enrolled, prog, activeGs, slugByName]);
+  }, [bundles, enrolled, prog, activeGs, slugByName, deckKind]);
+
+  // Changing the filter re-seats the deck at its first card; otherwise the
+  // index survives into a shorter list and points at the wrong credential.
+  useEffect(() => {
+    setDeckIndex(0);
+  }, [deckKind]);
 
   // Removing the credential you were looking at must not leave the deck
   // pointing past the end — fall back to ALL TOPICS.
@@ -1094,7 +1143,13 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
     if (deckIndex > deckCards.length - 1) setDeckIndex(0);
   }, [deckCards.length, deckIndex]);
 
-  const centredBundle = deckIndex > 0 ? (bundles[deckIndex - 1] ?? null) : null;
+  /** The credential the deck is sitting on — resolved through the VISIBLE
+   *  deck, since a filter changes what index 1, 2, 3 mean. */
+  const centredBundle = (() => {
+    const card = deckCards[deckIndex];
+    if (!card || card.kind === 'topics') return null;
+    return bundles.find((b) => b.key === card.key) ?? null;
+  })();
 
   // renderBundle (the old per-credential container) was removed with the
   // carousel on 2026-09-19 -- the deck replaced every one of its call
@@ -1325,7 +1380,10 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             screen customizer (user request 2026-07-22). The whole My Enrollment
             area (title → last container) is framed in a green border (user
             request 2026-07-22). */}
-        <View style={styles.myEnrollArea}>
+        {/* ── FRAMELESS HEADER (owner 2026-09-19) ────────────────────────
+            The title and its two buttons sit ABOVE the green container now,
+            with no frame of their own: they act on the whole area, so being
+            boxed inside it read as if they belonged to the list. */}
         <View style={styles.listHead}>
           <View>
             <Text style={styles.sectionHead}>MY ENROLLMENT</Text>
@@ -1355,6 +1413,60 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             <Text style={styles.homeSetupText}>⌂ HOME SETUP ›</Text>
           </Pressable>
         </View>
+
+        {/* ── DECK NAVIGATION (owner 2026-09-19) ─────────────────────────
+            What the deck shows, and a way to step it without swiping. Also
+            frameless, directly above the container it drives. */}
+        <View style={styles.deckNav}>
+          {([
+            { k: 'all', label: 'All' },
+            { k: 'program', label: 'Programs' },
+            { k: 'cert', label: 'Certificates' },
+          ] as const).map((t) => {
+            const on = deckKind === t.k;
+            return (
+              <Pressable
+                key={t.k}
+                style={[styles.deckNavBtn, on && styles.deckNavBtnOn]}
+                onPress={() => setDeckKind(t.k)}
+                accessibilityRole="button"
+                accessibilityState={{ selected: on }}
+                aria-pressed={on}
+                accessibilityLabel={`Show ${t.label}`}
+              >
+                <Text style={[styles.deckNavText, on && styles.deckNavTextOn]}>{t.label}</Text>
+              </Pressable>
+            );
+          })}
+          <View style={{ flex: 1 }} />
+          {/* Arrows are disabled at the ends rather than wrapping — a deck
+              that jumps from the last card back to the first loses the sense
+              of where you are in it. */}
+          <Pressable
+            style={[styles.deckStep, deckIndex <= 0 && styles.deckStepOff]}
+            onPress={() => setDeckIndex((i) => Math.max(0, i - 1))}
+            disabled={deckIndex <= 0}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityState={{ disabled: deckIndex <= 0 }}
+            accessibilityLabel="Previous"
+          >
+            <Text style={[styles.deckStepText, deckIndex <= 0 && styles.deckStepTextOff]}>‹</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.deckStep, deckIndex >= deckCards.length - 1 && styles.deckStepOff]}
+            onPress={() => setDeckIndex((i) => Math.min(deckCards.length - 1, i + 1))}
+            disabled={deckIndex >= deckCards.length - 1}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityState={{ disabled: deckIndex >= deckCards.length - 1 }}
+            accessibilityLabel="Next"
+          >
+            <Text style={[styles.deckStepText, deckIndex >= deckCards.length - 1 && styles.deckStepTextOff]}>›</Text>
+          </Pressable>
+        </View>
+
+        <View style={styles.myEnrollArea}>
         {/* The chips filter the TOPIC list. With a credential centred they
             would appear to work and change nothing, so they are not shown. */}
         {centredBundle ? null : (
@@ -2120,6 +2232,16 @@ const styles = StyleSheet.create({
   jumpBtn: { borderWidth: 1, borderColor: 'rgba(55,224,95,.6)', backgroundColor: 'rgba(55,224,95,.1)', borderRadius: 8, paddingVertical: 6, paddingHorizontal: 10 },
   jumpText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.6, color: GREEN },
   filterRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  /* Deck navigation — frameless, above the green container it drives. */
+  deckNav: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 10, marginBottom: 8 },
+  deckNavBtn: { borderWidth: 1, borderColor: colors.hairline, borderRadius: 7, paddingVertical: 6, paddingHorizontal: 11, minHeight: 34, justifyContent: 'center' },
+  deckNavBtnOn: { borderColor: GREEN, backgroundColor: 'rgba(55,224,95,.12)' },
+  deckNavText: { fontFamily: fonts.oswaldMedium, fontSize: 12.5, color: colors.textSub },
+  deckNavTextOn: { color: GREEN },
+  deckStep: { width: 40, minHeight: 40, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.hairline, borderRadius: 7 },
+  deckStepOff: { opacity: 0.35 },
+  deckStepText: { fontFamily: fonts.oswaldSemiBold, fontSize: 19, color: colors.textSecondary, lineHeight: 22 },
+  deckStepTextOff: { color: colors.textSub },
   chip: { borderWidth: 1, borderColor: '#333', borderRadius: 14, paddingVertical: 4, paddingHorizontal: 11, backgroundColor: '#161616' },
   chipOn: { borderColor: colors.amber, backgroundColor: 'rgba(255,198,77,.12)' },
   chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.6, color: colors.textSub },

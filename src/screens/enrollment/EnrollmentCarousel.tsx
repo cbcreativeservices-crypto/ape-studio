@@ -34,8 +34,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
-import { CardArt } from '../../components/CardArt';
-import { credentialArtUrl } from '../awards/CredentialThumb';
+import { CredentialThumb } from '../awards/CredentialThumb';
 import { LedMeter, segmentsForPct } from '../../components/LedMeter';
 import { colors, fonts } from '../../theme/tokens';
 
@@ -170,12 +169,19 @@ export function EnrollmentCarousel({
         <View style={s.cardHead}>
           {/* Column 1 has no artwork — it is the whole list, not one award. */}
           {item.slug ? (
-            <View style={[s.thumb, { borderColor: `${accent}66` }]}>
-              {/* Same slug → same file as the Certificates / Programs screens
-                  (credentialArtUrl). Not every slug has art uploaded yet, so the
-                  frame simply stays dark until it does. */}
-              <CardArt uri={credentialArtUrl(item.slug)} style={s.thumbArt} />
-            </View>
+            /* The SAME framed viewer box the Dashboard gives a topic (owner
+               2026-09-19) — tap it and the credential's artwork opens
+               full-screen. CredentialThumb already owns that viewer, so this
+               is the existing component rather than a second one that would
+               drift from it. Same slug ⇒ same file as the Certificates and
+               Programs screens. */
+            <CredentialThumb
+              slug={item.slug}
+              title={item.title}
+              accent={accent}
+              size={58}
+              kind={item.kind === 'program' ? 'program' : 'certificate'}
+            />
           ) : (
             <View style={[s.thumb, s.thumbPlain, { borderColor: `${accent}66` }]}>
               <Text style={[s.thumbGlyph, { color: accent }]}>☰</Text>
@@ -197,7 +203,7 @@ export function EnrollmentCarousel({
         <View style={s.actionRow}>
           {/* LOADED / UNLOADED covers ALL of this card's topics at once. */}
           <Pressable
-            style={[s.loadPill, item.allLoaded && { borderColor: colors.green, backgroundColor: 'rgba(55,224,95,.14)' }]}
+            style={[s.loadPill, s.loadPillWide, item.allLoaded && { borderColor: colors.green, backgroundColor: 'rgba(55,224,95,.14)' }]}
             onPress={() => onToggleLoad(item)}
             hitSlop={6}
             accessibilityRole="button"
@@ -209,23 +215,33 @@ export function EnrollmentCarousel({
                 : `Load all ${item.topicCount} topics of ${item.title} into the study deck`
             }
           >
+            {/* Owner 2026-09-19: name the ACTION, not the state — one tap
+                moves every topic of this credential in or out of the deck. */}
             <Text style={[s.loadText, item.allLoaded && { color: colors.green }]}>
-              {item.allLoaded ? 'LOADED' : 'UNLOADED'}
+              {item.allLoaded ? 'UNLOAD ALL TOPICS' : 'LOAD ALL TOPICS'}
             </Text>
           </Pressable>
-          <Text style={s.count}>
-            {item.topicCount} topic{item.topicCount === 1 ? '' : 's'}
-          </Text>
+          {isTopics ? (
+            <Text style={s.count}>
+              {item.topicCount} topic{item.topicCount === 1 ? '' : 's'}
+            </Text>
+          ) : null}
           <View style={{ flex: 1 }} />
           <Pressable
             style={s.studyBtn}
             onPress={() => onStudy(item)}
             hitSlop={6}
             accessibilityRole="button"
-            accessibilityLabel={isTopics ? 'Study — open your dashboard' : `Study ${item.title}`}
+            accessibilityLabel={
+              isTopics
+                ? 'Study — open your dashboard'
+                : `Study all of ${item.title} — loads its ${item.topicCount} topics and opens your dashboard`
+            }
           >
             <Image source={STUDY_ICON} style={s.studyIcon} resizeMode="contain" />
-            <Text style={s.studyText}>STUDY</Text>
+            {/* STUDY ALL, because it loads the whole credential into the
+                dashboard and goes there — not one topic (owner 2026-09-19). */}
+            <Text style={s.studyText}>{isTopics ? 'STUDY' : 'STUDY ALL'}</Text>
           </Pressable>
         </View>
       </Pressable>
@@ -313,6 +329,7 @@ const s = StyleSheet.create({
   meterRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   pct: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSecondary },
   actionRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  loadPillWide: { flexShrink: 1 },
   loadPill: {
     borderWidth: 1,
     borderColor: colors.hairline,
