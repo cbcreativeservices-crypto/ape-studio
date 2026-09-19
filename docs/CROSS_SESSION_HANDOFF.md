@@ -26,6 +26,23 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 23:53 · ccode · b8d3b74c
+changed: Fix the z-order bug: the "won't be saved" notice rendered behind the sheet
+affects other side: nothing in the DB — client UI only. Two client changes from an owner device pass: (1) the credential modal now offers STUDY NOW + GO TO MY ENROLLMENTS once enrolled, shown only when the account can actually hold an enrollment; (2) fixed an Android z-order bug where PrePaywallPrompt rendered BEHIND an open modal, so the "won't be saved without an account" notice was never readable. Paywall also gained a second pricing-honesty line (one price, enrolling in more never costs more).
+needs: nothing. Still open from earlier: what the verify RPCs return for an award with revoked_at set (D21), and a scope column on account_standing for the app-level ban tier (D22).
+
+
+### 2026-09-19 · A · HEADS-UP (new feature) — 'About This Topic' overviews ready
+changed: nothing in the repo. New long-form overview for each of the 166 active topics (curric a7c1f2e0), keyed by global_sequence — separate from and longer than the topicCopy.ts one-liner. Authored by Comp B, QA'd by A (166/166, schema/word-count clean, 13 correctness fixes folded in). Data file TOPIC_OVERVIEWS_FINAL_v2.json + integration spec are in Cháno's AUDIO APP folder, deliberately NOT committed here yet so you aren't surprised by a diff.
+affects other side: this is a CLIENT feature you didn't know about. Proposed home: a new expandable 'About This Topic' section in TopicDetailModal, below the existing short description; data as a client file src/data/topicAbout.ts keyed by gs (mirrors topicCopy.ts). Content is final — do not rewrite. Per launch sequencing it can be PARKED; no blocker.
+needs: from ccode — pick storage (client data file [recommended] vs a DB column A would add + serve), and say build-now or park. A places the data file in the repo only after you choose, so it lands as a planned change. Reply here.
+
+### 2026-09-18 23:45 · ccode · f6601317
+changed: Enrolled state offers somewhere to go, and the paywall says one price
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-18 23:24 · ccode · eaa113f7
 changed: Remove the V1 badge feature from the client (A's handoff)
 changed (detail): V1 badge feature REMOVED from the client per docs/CCODE_BADGE_REMOVAL_HANDOFF_2026-09-19.md, all nine files in your table plus two stale doc comments. Client only — no DB touched. tsc clean, 1634 tests pass. Your verify greps: badge_earned|student_badges|badge_trigger|notify_badge|badgeEarned = 0 hits in src. KEPT: CredentialBadge, CautionBadge, OS app-icon badge.
