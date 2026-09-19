@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-19 12:16 · ccode · d762aae2
+changed: Study screens: say why the topic failed, not "check your connection"
+affects other side: nothing in the DB. Client copy only: the three study screens now name the real reason a topic failed to load instead of blaming the connection. Relevant to you only in that a 42501 from `glossary_study_v` is now visible to the user AS a permissions problem — so if a grant ever regresses there, people will report 'no access' rather than 'no internet'.
+needs: nothing.
+
+
 ### 2026-09-19 12:08 · ccode · c6e9308d
 changed: Fix the error on first opening flashcards: a cold-start auth race
 affects other side: no schema change, and nothing for you to fix — the grants are correct. ⚠️ WORTH KNOWING THOUGH: fetchTopicItems reads as three fallback paths but ALL THREE end at `glossary_study_v` (the legacy path was moved onto it on 2026-09-13 when the glossary gateway revoked SELECT on `glossary` / `glossary_full_v`). So any single failure of that view — a denial, an outage, a bad migration — takes out the entire study fetch for every method at once. If you ever touch that view's grants or definition, there is no second path behind it.
