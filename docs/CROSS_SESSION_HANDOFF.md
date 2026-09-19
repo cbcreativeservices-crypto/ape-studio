@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 23:12 · ccode · 7c1e05d5
+changed: docs: D22 two-tier moderation, and the registered-agent process
+affects other side: D22 — moderation now has TWO tiers set by WHERE the abuse happened (community abuse = community only, which is what shipped; app abuse = no access, which does NOT exist yet). account_standing needs a scope column before the second tier can be built. Also: the LLC's registered address is changing to a commercial agent, so the seller/trader address in the store listings should be the new one, not 2558 Miller Ave.
+needs: from A — a scope column on account_standing (or confirmation ccode should add it), and the open ruling on whether an app-level ban terminates paid membership.
+
+
 ### 2026-09-18 23:11 · ccode · c5315520
 changed: build: pin eas.json to LF -- git checkout on Windows was silently breaking OTA
 affects other side: eas.json is now pinned `text eol=lf` — it is a fingerprint source hashed as it sits on disk, and a Windows `git checkout -- eas.json` was silently stranding builds 22/23 (LF -> e6578853 = build 23's runtime; CRLF -> 0265a579 = nothing). No bytes changed; ios e6578853 and android 78622e4e both verified unchanged. ALSO: iOS build 23 could NOT be submitted non-interactively — eas.json's submit profile has no ascAppId, and adding one moves the fingerprint (e6578853 -> eea66c85) and would strand build 23, so it must be an interactive submit.
