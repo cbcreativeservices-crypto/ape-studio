@@ -26,6 +26,30 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-19 08:46 · ccode · 6b805c77
+changed: Deck: use a horizontal ScrollView; FlatList would not go horizontal
+affects other side: nothing in the DB — client only. Enrollments MY ENROLLMENT is now a horizontal deck (EnrollmentCarousel + CentredRequirements); the per-credential container renderer is gone. Device-verified on the Pixel.
+needs: nothing.
+
+
+### 2026-09-19 08:39 · ccode · 7b6a10db
+changed: Deck rendered VERTICALLY on device despite `horizontal`
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-19 08:35 · ccode · 0a30c456
+changed: Deck pass 1 on device: card was off-centre and too tall
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-19 08:04 · ccode · 06ce7ebd
+changed: Remove the dead per-credential container renderer
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-19 07:47 · ccode · cc702d52
 changed: Enrollments: the credential stack becomes a deck
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
