@@ -11,19 +11,19 @@
  * Each pass carries ONE letter, and successive passes on the same edge step
  * through that edge's word, so the row spells over time rather than shouting:
  *
- *     TOP,    left → right :  S · T · U · D · Y
- *     BOTTOM, right → left :  A · U · D · I · O
+ *     TOP     :  S · T · U · D · Y
+ *     BOTTOM  :  A · U · D · I · O
  *
  * Each edge keeps its own position in its own word, so they stay legible even
  * though the edge for each pass is chosen at random.
  *
- * ── WHY THE BOTTOM ONES ARE MIRRORED ────────────────────────────────────────
- * Because these are WAVEFORMS, not letterforms. The owner's reference ("The
- * Waveform Alphabet") is each spoken letter as a time-domain envelope, and a
- * waveform has a direction: time runs along the sweep. Carried right-to-left
- * unmirrored it would run backwards — the audio equivalent of reversed text.
- * Mirroring the geometry keeps time flowing the way the trace travels, which
- * is exactly what the owner asked for.
+ * ── BOTH EDGES RUN LEFT → RIGHT ─────────────────────────────────────────────
+ * Owner 2026-09-19: it should read like a DAW playhead scrolling past —
+ * attack at the LEFT, tail trailing to the RIGHT, travelling one way only.
+ * The bottom edge used to run right-to-left with the geometry mirrored to
+ * keep time pointing the way it moved; with both edges going the same way
+ * there is nothing to mirror, and the envelopes already put the onset on the
+ * left, so the waveform is simply drawn as it is.
  *
  * ── THE WAVEFORMS ───────────────────────────────────────────────────────────
  * Synthesised here rather than traced off the reference: an envelope per
@@ -67,17 +67,17 @@ import { useOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
 const TRACE_W = 40;
 const TRACE_H = 22;
 /**
- * SPEED, not duration. The owner set it as "4 seconds to cross the screen
- * width", which is a velocity — so a narrower container takes proportionally
+ * SPEED, not duration. The owner set it as seconds to cross the SCREEN
+ * WIDTH, which is a velocity — so a narrower container takes proportionally
  * less time and the trace moves at the same pace wherever it appears. A fixed
  * duration would make it crawl on a wide panel and dart across a narrow one.
+ *
+ * 7 s (owner 2026-09-19, up from 4). Slow enough to read as a playhead
+ * rather than as a thing that flew past.
  */
-const CROSS_SCREEN_MS = 4000;
+const CROSS_SCREEN_MS = 7000;
 /** ⏱ REVIEW VALUE. 17_000 once the look is signed off. */
 const IDLE_MS = 3000;
-/** ⛔ ON. A waveform runs in time; see the note above. */
-const MIRROR_BOTTOM = true;
-
 const TOP_WORD = ['S', 'T', 'U', 'D', 'Y'] as const;
 const BOTTOM_WORD = ['A', 'U', 'D', 'I', 'O'] as const;
 
@@ -168,6 +168,7 @@ export function LabScopeSweep({ color }: { color: string }) {
 
     const runOnce = () => {
       if (!alive) return;
+      // The EDGE alternates at random; the DIRECTION never does.
       const top = Math.random() < 0.5;
       const word = top ? TOP_WORD : BOTTOM_WORD;
       const key = top ? 'top' : 'bottom';
@@ -185,8 +186,8 @@ export function LabScopeSweep({ color }: { color: string }) {
        * each end are what keep it from appearing abruptly.
        */
       const travel = Math.max(0, w - TRACE_W);
-      const from = top ? 0 : travel;
-      const to = top ? travel : 0;
+      const from = 0;
+      const to = travel;
       // Steady: linear, at the owner's screen-width pace.
       const duration = Math.max(500, Math.round((travel / Math.max(1, windowW)) * CROSS_SCREEN_MS));
       x.setValue(from);
@@ -212,7 +213,6 @@ export function LabScopeSweep({ color }: { color: string }) {
   }, [w, windowW, suppressed, x, opacity]);
 
   const onLayout = (e: LayoutChangeEvent) => setW(Math.round(e.nativeEvent.layout.width));
-  const flip = MIRROR_BOTTOM && edge === 'bottom';
 
   return (
     <View style={s.host} pointerEvents="none" onLayout={onLayout}>
@@ -226,7 +226,6 @@ export function LabScopeSweep({ color }: { color: string }) {
             strokeLinecap="round"
             strokeLinejoin="round"
             fill="none"
-            transform={flip ? `translate(${TRACE_W},0) scale(-1,1)` : undefined}
           >
             <Path d={LEAD} strokeWidth={1} strokeOpacity={0.35} />
             <Path d={WAVEFORMS[letter] ?? ''} strokeWidth={0.75} />
