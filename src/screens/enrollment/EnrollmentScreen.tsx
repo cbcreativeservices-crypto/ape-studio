@@ -47,6 +47,7 @@ import {
   toggleActive,
   toggleTopic,
   useEnrollment,
+  type EnrollTopic,
 } from '../../features/enrollment/enrollmentStore';
 import {
   addBundle,
@@ -1170,6 +1171,221 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
 
   /** The credential the deck is sitting on — resolved through the VISIBLE
    *  deck, since a filter changes what index 1, 2, 3 mean. */
+  /**
+   * ONE TOPIC ROW — collapsed or expanded, with its deck toggle, its study
+   * icon and its meter.
+   *
+   * ⛔ THE SAME FUNCTION FOR EVERY LIST ON THIS SCREEN (owner 2026-09-19:
+   * "just how under ALL TOPICS it has the topics that can be expanded and
+   * collapsed, that is exactly what is supposed to happen under each of the
+   * programs and certs"). ALL TOPICS and each credential's requirement list
+   * render through here, so a topic looks and behaves identically wherever
+   * it appears.
+   *
+   * That also gives the owner's other requirement for free: a topic shared
+   * by several credentials shows the SAME progress everywhere, because the
+   * row reads `pctFor(gs)` and the collapse key is `t:<gs>` — one topic, one
+   * state, however many lists it appears in.
+   */
+  const renderTopicRow = (e: EnrollTopic) => {
+          const free = isFreeEnrollGs(e.gs);
+          const acc = paid || free;
+          // Required core courses (Safety, Grounding, Workplace Skills) are
+          // LOCKED into the Dashboard deck and can't be deactivated OR removed
+          // until completed — then they unlock (user request 2026-07-24). All
+          // other topics can always be removed.
+          const pct = pctFor(e.gs);
+          const isCore = COREQ_TOPIC_GS.includes(e.gs);
+          const coreLocked = isCore && pct < 100;
+          const showActive = coreLocked || e.active;
+          const activeGreen = acc && showActive;
+          // Reorder (custom order only): hold 2 s to lift, drag to sort. The
+          // gesture lives on the container wrapper via containerPan/reorderTouch.
+          const tid = `t:${e.gs}`;
+          const moveThis = (dir: -1 | 1) => moveTopicVisible(e.gs, dir);
+          if (collapsed.has(tid)) {
+            return (
+              <Animated.View
+                key={e.gs}
+                {...containerPan(tid, moveThis).panHandlers}
+                {...(customOrder ? reorderTouchProps(tid) : {})}
+                {...rowLayoutProps(tid)}
+                style={liftStyle(tid)}
+              >
+              <Pressable style={[styles.card, !e.active && styles.cardInactive, isCore && styles.cardCore, styles.collapsedCard]} onPress={() => toggleCollapse(tid)} accessibilityRole="button" accessibilityLabel={`Expand ${nameFor(e.gs)}`}>
+                <Text style={styles.collapseTri}>▸</Text>
+                <Text style={styles.collapsedTitle} numberOfLines={1}>
+                  {nameFor(e.gs)}
+                </Text>
+                {/* Owner 2026-09-19: a topic shows its meter whether collapsed
+                    or expanded. The bare % was the only progress a collapsed
+                    row carried, and a number is not a glance. */}
+                <LedMeter filled={segmentsForPct(pct)} segWidth={3} />
+                <Text style={styles.cardPct}>{pct}%</Text>
+                {/* Deck toggle right in the collapsed row (user request 2026-07-24):
+                    add/remove from the study deck without expanding. Core-locked
+                    topics stay on and can't be toggled. */}
+                <Pressable
+                  onPress={coreLocked ? undefined : () => toggleActive(e.gs)}
+                  disabled={coreLocked}
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityState={{ disabled: coreLocked, selected: showActive }}
+                  aria-disabled={coreLocked}
+                  aria-pressed={showActive}
+                  accessibilityLabel={coreLocked ? 'Locked in your study deck' : showActive ? 'Remove from study deck' : 'Add to study deck'}
+                >
+                  <LoadPill on={showActive} small dim={coreLocked} />
+                </Pressable>
+                {/* Study icon alongside the 3-card icon (owner 2026-08-01): lit +
+                    opens the Dashboard when the topic is in the deck. */}
+                <Pressable
+                  onPress={showActive ? () => goStudy(e.gs) : undefined}
+                  disabled={!showActive}
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityState={{ disabled: !showActive }}
+                  aria-disabled={!showActive}
+                  accessibilityLabel={showActive ? `Study ${nameFor(e.gs)}` : 'Load into the deck to study'}
+                >
+                  <NavIcon icon="Study" lit={showActive} showLabel={false} />
+                </Pressable>
+              </Pressable>
+              </Animated.View>
+            );
+          }
+          return (
+            <Animated.View
+              key={e.gs}
+              {...containerPan(tid, moveThis).panHandlers}
+              {...(customOrder ? reorderTouchProps(tid) : {})}
+              {...rowLayoutProps(tid)}
+              style={liftStyle(tid)}
+            >
+            <View
+              style={[
+                styles.card,
+                !e.active && styles.cardInactive,
+                isCore && styles.cardCore,
+              ]}
+            >
+              {/* Row 1 — collapse triangle · white title. Press-HOLD the card
+                  still (500 ms) to lift it, then drag up/down to reorder (user
+                  request 2026-07-23; the ☰ handle was removed). */}
+              <View style={styles.cardTop}>
+                <Pressable style={styles.collapseBtn} onPress={() => toggleCollapse(tid)} hitSlop={6} accessibilityRole="button" accessibilityLabel={`Collapse ${nameFor(e.gs)}`}>
+                  <Text style={styles.collapseTri}>▾</Text>
+                </Pressable>
+                <Text style={[styles.cardName, !e.active && styles.dim]} numberOfLines={2}>
+                  {nameFor(e.gs)}
+                  {/* Completed (100%) → amber SPECIALIST after the name (user
+                      request 2026-07-25). */}
+                  {pct >= 100 ? <Text style={styles.specialistTag}>  SPECIALIST</Text> : null}
+                </Text>
+              </View>
+              {/* Row 2 — subject on the left; ACTIVE + Study dropped BELOW the
+                  title on the right (user request 2026-07-22). */}
+              <View style={styles.cardActionRow}>
+                <Text style={[styles.cardSubject, !showActive && styles.dimMore]} numberOfLines={1}>
+                  {subjectFor(e.gs)}
+                  {free && !isCore ? '  ·  Free' : ''}
+                </Text>
+                {/* Required core courses labelled in green (user request
+                    2026-07-22). */}
+                {isCore ? <Text style={styles.requiredTag}>Required</Text> : null}
+                <View style={{ flex: 1 }} />
+                {/* Core required courses are LOCKED into the deck until completed
+                    (user request 2026-07-24): a "🔒 until completed" caption sits
+                    beside the 3-card icon, and the toggle can't turn them off. */}
+                {coreLocked ? (
+                  <Text style={styles.lockCaption} numberOfLines={1}>
+                    🔒 until completed
+                  </Text>
+                ) : null}
+                {/* Deck-of-cards = loaded into the Dashboard deck. Green when in
+                    the deck, gray when not; tap toggles (user request 2026-07-23). */}
+                <Pressable hitSlop={6}
+                  style={styles.bookToggle}
+                  onPress={coreLocked ? undefined : () => toggleActive(e.gs)}
+                  disabled={coreLocked}
+                  accessibilityRole="button"
+                  accessibilityState={{ disabled: coreLocked, selected: showActive }}
+                  aria-disabled={coreLocked}
+                  aria-pressed={showActive}
+                  accessibilityLabel={
+                    coreLocked ? 'Locked in your study deck until completed' : showActive ? 'Remove from study deck' : 'Add to study deck'
+                  }
+                >
+                  <LoadPill on={showActive} dim={coreLocked} />
+                </Pressable>
+                {/* Study icon LINKED to the deck toggle (user request 2026-07-23):
+                    blue when the topic is loaded into the deck, gray when not;
+                    blue = tap to open the Dashboard with it loaded. */}
+                <Pressable hitSlop={6}
+                  style={[styles.studyNavBtn, !showActive && styles.dimMore]}
+                  onPress={showActive ? () => goStudy(e.gs) : undefined}
+                  disabled={!showActive}
+                  accessibilityRole="button"
+                  accessibilityState={{ disabled: !showActive }}
+                  aria-disabled={!showActive}
+                  accessibilityLabel={showActive ? `Study ${nameFor(e.gs)}` : 'Load into the deck to study'}
+                >
+                  <NavIcon icon="Study" lit={showActive} />
+                </Pressable>
+              </View>
+              {/* Row 3 — progress meter, Home toggle, and the LOWERED, press-
+                  HOLD-to-confirm Remove (safe from accidental taps near Study,
+                  user request 2026-07-22). */}
+              <View style={styles.cardMeterRow}>
+                <View style={!showActive && styles.dimMore}>
+                  <LedMeter filled={segmentsForPct(pct)} segWidth={5} />
+                </View>
+                <Text style={[styles.cardPct, !showActive && styles.dimMore]}>{pct}%</Text>
+                <View style={{ flex: 1 }} />
+                {/* Cores carry NO manual Home toggle — their slots are auto-
+                    reserved/freed (user request 2026-07-22). */}
+                {!isCore ? (
+                  <Pressable
+                    style={[styles.homeToggle, !showActive && styles.dimMore]}
+                    onPress={() => toggleOnHome(e.gs)}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: homeSet.has(e.gs) }}
+                    aria-pressed={homeSet.has(e.gs)}
+                    accessibilityLabel={homeSet.has(e.gs) ? 'Remove from Home screen' : 'Add to Home screen'}
+                  >
+                    <HomeIcon color={homeSet.has(e.gs) ? colors.amber : GRAY} filled={homeSet.has(e.gs)} size={20} />
+                  </Pressable>
+                ) : null}
+                {!coreLocked ? (
+                  <HoldToRemove onComplete={() => removeTopic(e.gs)} accessibilityLabel="Remove from enrollment" />
+                ) : null}
+              </View>
+            </View>
+            </Animated.View>
+          );
+  };
+  /**
+   * The rows a credential's requirement list is made of: the shared core
+   * first, then the credential's own topics, de-duplicated (a credential may
+   * legitimately list a core topic among its own).
+   *
+   * A gs the member has not enrolled in has no EnrollTopic, so one is
+   * synthesised as inactive — the row still renders, still shows its meter,
+   * and still says honestly that it is not in the study deck. Dropping it
+   * instead would hide a requirement, which is the one thing this list must
+   * never do.
+   */
+  const requirementRows = (b: EnrolledBundle): EnrollTopic[] => {
+    const seen = new Set<number>();
+    const order = [...COREQ_TOPIC_GS, ...b.topics].filter((gs) => {
+      if (seen.has(gs)) return false;
+      seen.add(gs);
+      return true;
+    });
+    const byGs = new Map(enrolled.map((e) => [e.gs, e]));
+    return order.map((gs) => byGs.get(gs) ?? { gs, favorite: false, active: false });
+  };
+
   const centredBundle = (() => {
     const card = deckCards[deckIndex];
     if (!card || card.kind === 'topics' || card.kind === 'placeholder') return null;
@@ -1473,19 +1689,32 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             default expanded") — the old screen opened as a wall of expanded
             containers. */}
         {centredBundle ? (
-          <CentredRequirements
-            bundle={centredBundle}
-            derived={!bundles.some((b) => b.key === centredBundle.key)}
-            coreGs={COREQ_TOPIC_GS}
-            nameFor={nameFor}
-            pctFor={pctFor}
-            onRemove={() => confirmRemoveWhole(centredBundle)}
-            onOpenAward={() =>
-              navigation.navigate('Awards', {
-                category: centredBundle.kind === 'program' ? 'program' : 'specialization',
-              })
-            }
-          />
+          <>
+            <CentredRequirements
+              bundle={centredBundle}
+              derived={!bundles.some((b) => b.key === centredBundle.key)}
+              coreGs={COREQ_TOPIC_GS}
+              pctFor={pctFor}
+              onRemove={() => confirmRemoveWhole(centredBundle)}
+              onOpenAward={() =>
+                navigation.navigate('Awards', {
+                  category: centredBundle.kind === 'program' ? 'program' : 'specialization',
+                })
+              }
+            />
+            {/* ⛔ THE SAME ROWS AS ALL TOPICS, not a second list idiom (owner
+                2026-09-19). Every requirement expands and collapses exactly
+                like a topic does above, because it IS a topic — rendered by
+                renderTopicRow, so the deck toggle, the study icon, the meter
+                and the collapse state all behave identically wherever a topic
+                appears. Shared topics therefore read the same in every
+                credential that requires them.
+
+                PRE-REQUISITES ALWAYS FIRST: they gate every credential, so
+                they head the list rather than sitting wherever the credential
+                happens to order them. */}
+            {requirementRows(centredBundle).map(renderTopicRow)}
+          </>
         ) : null}
 
         {centredBundle ? null : displayed.length === 0 && displayedBundles.length === 0 ? (
@@ -1495,179 +1724,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
               : 'Nothing matches those filters.'}
           </Text>
         ) : (
-          displayed.map((e) => {
-            const free = isFreeEnrollGs(e.gs);
-            const acc = paid || free;
-            // Required core courses (Safety, Grounding, Workplace Skills) are
-            // LOCKED into the Dashboard deck and can't be deactivated OR removed
-            // until completed — then they unlock (user request 2026-07-24). All
-            // other topics can always be removed.
-            const pct = pctFor(e.gs);
-            const isCore = COREQ_TOPIC_GS.includes(e.gs);
-            const coreLocked = isCore && pct < 100;
-            const showActive = coreLocked || e.active;
-            const activeGreen = acc && showActive;
-            // Reorder (custom order only): hold 2 s to lift, drag to sort. The
-            // gesture lives on the container wrapper via containerPan/reorderTouch.
-            const tid = `t:${e.gs}`;
-            const moveThis = (dir: -1 | 1) => moveTopicVisible(e.gs, dir);
-            if (collapsed.has(tid)) {
-              return (
-                <Animated.View
-                  key={e.gs}
-                  {...containerPan(tid, moveThis).panHandlers}
-                  {...(customOrder ? reorderTouchProps(tid) : {})}
-                  {...rowLayoutProps(tid)}
-                  style={liftStyle(tid)}
-                >
-                <Pressable style={[styles.card, !e.active && styles.cardInactive, isCore && styles.cardCore, styles.collapsedCard]} onPress={() => toggleCollapse(tid)} accessibilityRole="button" accessibilityLabel={`Expand ${nameFor(e.gs)}`}>
-                  <Text style={styles.collapseTri}>▸</Text>
-                  <Text style={styles.collapsedTitle} numberOfLines={1}>
-                    {nameFor(e.gs)}
-                  </Text>
-                  <Text style={styles.cardPct}>{pct}%</Text>
-                  {/* Deck toggle right in the collapsed row (user request 2026-07-24):
-                      add/remove from the study deck without expanding. Core-locked
-                      topics stay on and can't be toggled. */}
-                  <Pressable
-                    onPress={coreLocked ? undefined : () => toggleActive(e.gs)}
-                    disabled={coreLocked}
-                    hitSlop={8}
-                    accessibilityRole="button"
-                    accessibilityState={{ disabled: coreLocked, selected: showActive }}
-                    aria-disabled={coreLocked}
-                    aria-pressed={showActive}
-                    accessibilityLabel={coreLocked ? 'Locked in your study deck' : showActive ? 'Remove from study deck' : 'Add to study deck'}
-                  >
-                    <LoadPill on={showActive} small dim={coreLocked} />
-                  </Pressable>
-                  {/* Study icon alongside the 3-card icon (owner 2026-08-01): lit +
-                      opens the Dashboard when the topic is in the deck. */}
-                  <Pressable
-                    onPress={showActive ? () => goStudy(e.gs) : undefined}
-                    disabled={!showActive}
-                    hitSlop={8}
-                    accessibilityRole="button"
-                    accessibilityState={{ disabled: !showActive }}
-                    aria-disabled={!showActive}
-                    accessibilityLabel={showActive ? `Study ${nameFor(e.gs)}` : 'Load into the deck to study'}
-                  >
-                    <NavIcon icon="Study" lit={showActive} showLabel={false} />
-                  </Pressable>
-                </Pressable>
-                </Animated.View>
-              );
-            }
-            return (
-              <Animated.View
-                key={e.gs}
-                {...containerPan(tid, moveThis).panHandlers}
-                {...(customOrder ? reorderTouchProps(tid) : {})}
-                {...rowLayoutProps(tid)}
-                style={liftStyle(tid)}
-              >
-              <View
-                style={[
-                  styles.card,
-                  !e.active && styles.cardInactive,
-                  isCore && styles.cardCore,
-                ]}
-              >
-                {/* Row 1 — collapse triangle · white title. Press-HOLD the card
-                    still (500 ms) to lift it, then drag up/down to reorder (user
-                    request 2026-07-23; the ☰ handle was removed). */}
-                <View style={styles.cardTop}>
-                  <Pressable style={styles.collapseBtn} onPress={() => toggleCollapse(tid)} hitSlop={6} accessibilityRole="button" accessibilityLabel={`Collapse ${nameFor(e.gs)}`}>
-                    <Text style={styles.collapseTri}>▾</Text>
-                  </Pressable>
-                  <Text style={[styles.cardName, !e.active && styles.dim]} numberOfLines={2}>
-                    {nameFor(e.gs)}
-                    {/* Completed (100%) → amber SPECIALIST after the name (user
-                        request 2026-07-25). */}
-                    {pct >= 100 ? <Text style={styles.specialistTag}>  SPECIALIST</Text> : null}
-                  </Text>
-                </View>
-                {/* Row 2 — subject on the left; ACTIVE + Study dropped BELOW the
-                    title on the right (user request 2026-07-22). */}
-                <View style={styles.cardActionRow}>
-                  <Text style={[styles.cardSubject, !showActive && styles.dimMore]} numberOfLines={1}>
-                    {subjectFor(e.gs)}
-                    {free && !isCore ? '  ·  Free' : ''}
-                  </Text>
-                  {/* Required core courses labelled in green (user request
-                      2026-07-22). */}
-                  {isCore ? <Text style={styles.requiredTag}>Required</Text> : null}
-                  <View style={{ flex: 1 }} />
-                  {/* Core required courses are LOCKED into the deck until completed
-                      (user request 2026-07-24): a "🔒 until completed" caption sits
-                      beside the 3-card icon, and the toggle can't turn them off. */}
-                  {coreLocked ? (
-                    <Text style={styles.lockCaption} numberOfLines={1}>
-                      🔒 until completed
-                    </Text>
-                  ) : null}
-                  {/* Deck-of-cards = loaded into the Dashboard deck. Green when in
-                      the deck, gray when not; tap toggles (user request 2026-07-23). */}
-                  <Pressable hitSlop={6}
-                    style={styles.bookToggle}
-                    onPress={coreLocked ? undefined : () => toggleActive(e.gs)}
-                    disabled={coreLocked}
-                    accessibilityRole="button"
-                    accessibilityState={{ disabled: coreLocked, selected: showActive }}
-                    aria-disabled={coreLocked}
-                    aria-pressed={showActive}
-                    accessibilityLabel={
-                      coreLocked ? 'Locked in your study deck until completed' : showActive ? 'Remove from study deck' : 'Add to study deck'
-                    }
-                  >
-                    <LoadPill on={showActive} dim={coreLocked} />
-                  </Pressable>
-                  {/* Study icon LINKED to the deck toggle (user request 2026-07-23):
-                      blue when the topic is loaded into the deck, gray when not;
-                      blue = tap to open the Dashboard with it loaded. */}
-                  <Pressable hitSlop={6}
-                    style={[styles.studyNavBtn, !showActive && styles.dimMore]}
-                    onPress={showActive ? () => goStudy(e.gs) : undefined}
-                    disabled={!showActive}
-                    accessibilityRole="button"
-                    accessibilityState={{ disabled: !showActive }}
-                    aria-disabled={!showActive}
-                    accessibilityLabel={showActive ? `Study ${nameFor(e.gs)}` : 'Load into the deck to study'}
-                  >
-                    <NavIcon icon="Study" lit={showActive} />
-                  </Pressable>
-                </View>
-                {/* Row 3 — progress meter, Home toggle, and the LOWERED, press-
-                    HOLD-to-confirm Remove (safe from accidental taps near Study,
-                    user request 2026-07-22). */}
-                <View style={styles.cardMeterRow}>
-                  <View style={!showActive && styles.dimMore}>
-                    <LedMeter filled={segmentsForPct(pct)} segWidth={5} />
-                  </View>
-                  <Text style={[styles.cardPct, !showActive && styles.dimMore]}>{pct}%</Text>
-                  <View style={{ flex: 1 }} />
-                  {/* Cores carry NO manual Home toggle — their slots are auto-
-                      reserved/freed (user request 2026-07-22). */}
-                  {!isCore ? (
-                    <Pressable
-                      style={[styles.homeToggle, !showActive && styles.dimMore]}
-                      onPress={() => toggleOnHome(e.gs)}
-                      accessibilityRole="button"
-                      accessibilityState={{ selected: homeSet.has(e.gs) }}
-                      aria-pressed={homeSet.has(e.gs)}
-                      accessibilityLabel={homeSet.has(e.gs) ? 'Remove from Home screen' : 'Add to Home screen'}
-                    >
-                      <HomeIcon color={homeSet.has(e.gs) ? colors.amber : GRAY} filled={homeSet.has(e.gs)} size={20} />
-                    </Pressable>
-                  ) : null}
-                  {!coreLocked ? (
-                    <HoldToRemove onComplete={() => removeTopic(e.gs)} accessibilityLabel="Remove from enrollment" />
-                  ) : null}
-                </View>
-              </View>
-              </Animated.View>
-            );
-          })
+          displayed.map(renderTopicRow)
         )}
 
         {/* MY RECORD — the completion folder, pinned to the bottom of the My
