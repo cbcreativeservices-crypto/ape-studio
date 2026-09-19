@@ -133,6 +133,7 @@ drifts again, which is what happened to the three hand-copies. HOME's
 | screen | state |
 |---|---|
 | `tools/ToolsHubScreen` | ✅ adopted. GLOSSARY and STUDY keys removed at the owner's instruction; the back chevron went with them (HOME is where it led, and the hub is entered from the Course Select card). The hub's `HUB_MAX_CONTENT_W` cap stayed at the CALL SITE rather than becoming a prop. |
+| `lab/EarLabScreen` (the Lab Menu) | ✅ adopted. It had NO brand row before — straight to a back arrow and a title. The bar was ADDED above that block, not swapped for it, and ⛔ the back chevron STAYS: unlike the hub, this screen is entered from the Audio Learning fork, so HOME would skip the page the user came from. |
 | `curriculum/CurriculumScreen` | ⬜ still its own copy — brand-row-only, so adopting is the fix for its spacing drift |
 | `directory/DirectoryScreen` | ⬜ still its own copy — same |
 | `awards/AwardsScreen` | ⬜ still its own copy. Fiddlier: its brand row sits above the title and tab rows, which are NOT part of this pattern, and it renders `BrandLogo size={30}` in two sub-views that are also not. |
