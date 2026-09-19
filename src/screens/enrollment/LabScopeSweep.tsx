@@ -90,6 +90,25 @@ const CROSS_SCREEN_MS = 7000;
  */
 const IDLE_MIN_MS = 3000;
 const IDLE_MAX_MS = 19000;
+/**
+ * Where the trace starts fading out, as a fraction of the container measured
+ * from the LEFT edge — the end it is travelling towards (owner 2026-09-19:
+ * "fade out sooner… begin the fade" — 1/6, then 1/10 on review).
+ *
+ * ⛔ THIS IS A POSITION, NOT A DURATION, and it has to be. The fade used to
+ * be the tail of a timed sequence, which meant it began at whatever moment
+ * the travel happened to end — so on a wide container it started late and
+ * the trace ran almost into the corner before dimming. Tying it to x makes
+ * it the same distance from the edge on every card, which is what "1/6 away
+ * from the left edge" actually asks for.
+ *
+ * 1/6 first, then 1/10 once the owner had watched it: a sixth began dimming
+ * while the trace was still plainly mid-card. A tenth keeps it solid for
+ * most of the run and takes it out close to the edge.
+ */
+const FADE_OUT_AT = 1 / 10;
+/** Matching entry, kept short: it should arrive already moving. */
+const FADE_IN_OVER = 0.08;
 const idleWait = () => IDLE_MIN_MS + Math.random() * (IDLE_MAX_MS - IDLE_MIN_MS);
 const TOP_WORD = ['S', 'T', 'U', 'D', 'Y'] as const;
 const BOTTOM_WORD = ['A', 'U', 'D', 'I', 'O'] as const;
@@ -169,7 +188,8 @@ export function LabScopeSweep({ color }: { color: string }) {
   const [edge, setEdge] = useState<'top' | 'bottom'>('top');
   const [letter, setLetter] = useState<string>(TOP_WORD[0]);
   const x = useRef(new Animated.Value(0)).current;
-  const opacity = useRef(new Animated.Value(0)).current;
+  /** How far the trace has to travel — drives BOTH the motion and the fade. */
+  const [travel, setTravel] = useState(0);
   /** Which edge is next, and how far each word has got. */
   const turn = useRef(0);
   const at = useRef({ top: 0, bottom: 0 });
@@ -198,20 +218,19 @@ export function LabScopeSweep({ color }: { color: string }) {
        * would sit in an editor. Only the container moves, which is what makes
        * it a scroll rather than a reversed clip.
        */
-      const travel = Math.max(0, w - TRACE_W);
-      const duration = Math.max(500, Math.round((travel / Math.max(1, windowW)) * CROSS_SCREEN_MS));
-      x.setValue(travel);
+      const dist = Math.max(0, w - TRACE_W);
+      setTravel(dist);
+      const duration = Math.max(500, Math.round((dist / Math.max(1, windowW)) * CROSS_SCREEN_MS));
+      x.setValue(dist);
 
-      Animated.sequence([
-        Animated.parallel([
-          Animated.timing(opacity, { toValue: 1, duration: 260, useNativeDriver: true }),
-          Animated.timing(x, { toValue: 0, duration, easing: Easing.linear, useNativeDriver: true }),
-        ]),
-        Animated.timing(opacity, { toValue: 0, duration: 240, useNativeDriver: true }),
-      ]).start(({ finished }) => {
-        if (!finished || !alive) return;
-        timer = setTimeout(runOnce, idleWait());
-      });
+      // ONE timing now. The opacity is interpolated from x below, so there is
+      // no second animation to keep in step with it and no sequence tail.
+      Animated.timing(x, { toValue: 0, duration, easing: Easing.linear, useNativeDriver: true }).start(
+        ({ finished }) => {
+          if (!finished || !alive) return;
+          timer = setTimeout(runOnce, idleWait());
+        },
+      );
     };
 
     timer = setTimeout(runOnce, idleWait());
@@ -219,11 +238,29 @@ export function LabScopeSweep({ color }: { color: string }) {
       alive = false;
       if (timer) clearTimeout(timer);
       x.stopAnimation();
-      opacity.stopAnimation();
     };
-  }, [w, windowW, suppressed, x, opacity]);
+  }, [w, windowW, suppressed, x]);
 
   const onLayout = (e: LayoutChangeEvent) => setW(Math.round(e.nativeEvent.layout.width));
+
+  /**
+   * Opacity straight off the position: invisible at both edges, solid in the
+   * middle, and already fading a sixth of the way out from the left.
+   *
+   * ⚠️ `inputRange` MUST be strictly increasing or Animated throws, and a
+   * very narrow card can collapse these four stops onto each other — hence
+   * the guard rather than trusting the arithmetic.
+   */
+  const fadeOutAt = travel * FADE_OUT_AT;
+  const fadeInEnd = travel * (1 - FADE_IN_OVER);
+  const opacity =
+    travel > 0 && fadeOutAt > 0 && fadeInEnd > fadeOutAt
+      ? x.interpolate({
+          inputRange: [0, fadeOutAt, fadeInEnd, travel],
+          outputRange: [0, 1, 1, 0],
+          extrapolate: 'clamp',
+        })
+      : 1;
 
   return (
     <View style={s.host} pointerEvents="none" onLayout={onLayout}>

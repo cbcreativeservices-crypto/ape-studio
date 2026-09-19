@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-19 13:23 · ccode · 48f0247f
+changed: Enrollments: big art on the left, every control in the column beside it
+affects other side: nothing in the DB — Enrollments screen layout only, client side, no fingerprint change.
+needs: nothing.
+
+
 ### 2026-09-19 13:05 · ccode · b4fd1439
 changed: Enrollments: All/Programs/Certificates jump into the deck, never cut it down
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">

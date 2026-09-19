@@ -1208,11 +1208,12 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
      * ⛔ THE LAB IS NOT A STUDY TOPIC (owner 2026-09-19). Audio Fundamentals
      * is a required LAB: it sits on the enrollment checklist because every
      * credential needs it, but it is completed by working through the Audio
-     * Fundamentals labs, NOT from the study dashboard. So it gets the meter
-     * and nothing else — no deck toggle and no STUDY, because both would
-     * send the member somewhere that cannot advance it. Framed blue to say
-     * plainly that it is a different kind of thing from the rows around it,
-     * and pinned to the top of every requirement list.
+     * Fundamentals labs, NOT from the study dashboard. So it gets no deck
+     * toggle and no STUDY — both would send the member somewhere that cannot
+     * advance it — and in that space an OPEN LABS button that goes where the
+     * work actually happens. Framed blue to say plainly that it is a
+     * different kind of thing from the rows around it, and pinned to the top
+     * of every requirement list.
      */
     if (e.gs === LAB_REQUIREMENT_GS) {
       const labPct = pctFor(e.gs);
@@ -1232,6 +1233,22 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             </Text>
             <LedMeter filled={segmentsForPct(labPct)} segWidth={3} />
             <Text style={styles.cardPct}>{labPct}%</Text>
+            {/* ⛔ ALWAYS FULL BLUE, NEVER DISABLED (owner 2026-09-19). It sits
+                where every other row carries LOADED / UNLOADED, and that chip
+                is a STATE — it dims, it toggles, it tells you where the topic
+                is. This is not: the labs are open whatever this row's progress
+                says, so anything that greys out here would read as the lab
+                being closed to you. Same size and slot as the pill so the
+                column still lines up. */}
+            <Pressable
+              style={styles.openLabsBtn}
+              onPress={() => navigation.navigate('AudioLearning')}
+              hitSlop={6}
+              accessibilityRole="button"
+              accessibilityLabel="Open the Audio Fundamentals labs"
+            >
+              <Text style={styles.openLabsText}>OPEN LABS</Text>
+            </Pressable>
           </View>
           <Text style={styles.labHint}>Completed in the Audio Fundamentals labs, not from the dashboard.</Text>
         </View>
@@ -2399,6 +2416,17 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   labHint: { fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 15, color: colors.textSub },
+  /* Matches loadPill's box so the LAB row lines up with the topic rows, but
+     solid blue and with no dim/off variant — see the note at the call site. */
+  openLabsBtn: {
+    borderWidth: 1,
+    borderColor: BLUE,
+    backgroundColor: 'rgba(127,191,255,0.18)',
+    borderRadius: 7,
+    paddingVertical: 5,
+    paddingHorizontal: 9,
+  },
+  openLabsText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.6, color: BLUE },
   // Enrollment TOPIC cards — WHITE border (border key: cert=blue · program=purple
   // · topic=white · subject=amber) — user request 2026-07-23.
   card: { borderWidth: 1, borderColor: 'rgba(255,255,255,.5)', borderRadius: 11, backgroundColor: '#161616', paddingVertical: 9, paddingHorizontal: 11, gap: 4 },
