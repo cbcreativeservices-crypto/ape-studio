@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-19 00:12 · ccode · a9d4d2ab
+changed: docs: Enrollments carousel spec (NOT built -- awaiting go + the Fable call)
+affects other side: nothing — a design spec, no code. docs/APE_ENROLLMENTS_CAROUSEL_SPEC_2026_09_19.md, owner-dictated Enrollments redesign, NOT built pending an explicit go.
+needs: nothing.
+
+
 ### 2026-09-19 00:11 · ccode · 3cbf072d
 changed: Every popup is the app's own dialog now, and a test keeps it that way
 affects other side: nothing in the DB — client presentation only. 33 raw Alert.alert call sites across 13 files now route through the app themed dialog (confirmDialog / notify). No user-facing STRING changed; PaywallScreen copy is owner-ratified and is byte-identical. New guard test/noRawAlert.test.ts fails on any new raw Alert.
