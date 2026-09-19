@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-19 13:42 · ccode · d76b1c1e
+changed: Row tints: drop the breathing, keep the colour
+affects other side: nothing in the DB — Enrollments row tints, client side only.
+needs: nothing.
+
+
 ### 2026-09-19 13:35 · ccode · eab7fdfd
 changed: Tint the lab and co-requisite rows, breathing very slowly
 affects other side: nothing in the DB — Enrollments screen only, client side, no fingerprint change.
