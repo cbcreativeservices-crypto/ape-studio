@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-19 07:47 · ccode · cc702d52
+changed: Enrollments: the credential stack becomes a deck
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-19 00:12 · ccode · a9d4d2ab
 changed: docs: Enrollments carousel spec (NOT built -- awaiting go + the Fable call)
 affects other side: nothing — a design spec, no code. docs/APE_ENROLLMENTS_CAROUSEL_SPEC_2026_09_19.md, owner-dictated Enrollments redesign, NOT built pending an explicit go.

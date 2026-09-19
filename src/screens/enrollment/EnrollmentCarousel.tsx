@@ -31,7 +31,7 @@
  * (window − CARD_W) / 2, snapToInterval): the owner asked for it to feel like
  * that deck, and a second hand-rolled carousel would drift from it.
  */
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { FlatList, Image, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { CardArt } from '../../components/CardArt';
@@ -100,14 +100,31 @@ export function EnrollmentCarousel({
   const sidePad = Math.max(0, Math.round((windowW - cardW) / 2));
   const listRef = useRef<FlatList<CarouselCard>>(null);
 
+  /** The index the USER last landed on by scrolling. */
+  const scrolledTo = useRef(activeIndex);
+
   const onMomentumEnd = useCallback(
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
       const i = Math.round(e.nativeEvent.contentOffset.x / interval);
       const clamped = Math.max(0, Math.min(cards.length - 1, i));
+      scrolledTo.current = clamped;
       if (clamped !== activeIndex) onIndexChange(clamped);
     },
     [interval, cards.length, activeIndex, onIndexChange],
   );
+
+  /**
+   * Follow an index the PARENT changed. Removing the credential you were
+   * looking at resets the parent to column 0, but the list itself stays
+   * scrolled where it was — so the card under the centre line would be one
+   * thing while the panel below described another. Only scrolls when the
+   * change did not come from the user, so it never fights a swipe.
+   */
+  useEffect(() => {
+    if (scrolledTo.current === activeIndex) return;
+    scrolledTo.current = activeIndex;
+    listRef.current?.scrollToOffset({ offset: activeIndex * interval, animated: true });
+  }, [activeIndex, interval]);
 
   const renderItem = ({ item, index }: { item: CarouselCard; index: number }) => {
     const accent = accentFor(item.kind);
@@ -220,7 +237,11 @@ export function EnrollmentCarousel({
       {cards.length > 1 ? (
         <View style={s.dots} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
           {cards.map((c, i) => (
-            <View key={c.key} style={[s.dot, i === activeIndex && { backgroundColor: accentFor(cards[activeIndex].kind) }]} />
+            // `c.kind`, NOT cards[activeIndex].kind: removing the credential you
+            // were looking at shortens this list, and the parent's index reset
+            // only runs AFTER this render — so indexing by activeIndex would
+            // dereference undefined and take the screen down on the way out.
+            <View key={c.key} style={[s.dot, i === activeIndex && { backgroundColor: accentFor(c.kind) }]} />
           ))}
         </View>
       ) : null}
