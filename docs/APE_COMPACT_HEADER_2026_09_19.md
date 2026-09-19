@@ -122,8 +122,20 @@ Notes for whoever does it:
 
 ---
 
-## 4. Status
+## 4. Status — ✅ EXTRACTED, partially adopted
 
-**Noted, not built.** The owner asked for a note while we were in the file.
-Extraction is a separate piece of work — three screens for the brand row —
-and wants its own go-ahead.
+`src/components/CompactBrandBar.tsx` exists (2026-09-19). It is
+almost propless on purpose — the only slot is `right`, for the Pillar C help
+key — because a component that takes a size or a colour is a component that
+drifts again, which is what happened to the three hand-copies. HOME's
+`popTo` rule lives inside it.
+
+| screen | state |
+|---|---|
+| `tools/ToolsHubScreen` | ✅ adopted. GLOSSARY and STUDY keys removed at the owner's instruction; the back chevron went with them (HOME is where it led, and the hub is entered from the Course Select card). The hub's `HUB_MAX_CONTENT_W` cap stayed at the CALL SITE rather than becoming a prop. |
+| `curriculum/CurriculumScreen` | ⬜ still its own copy — brand-row-only, so adopting is the fix for its spacing drift |
+| `directory/DirectoryScreen` | ⬜ still its own copy — same |
+| `awards/AwardsScreen` | ⬜ still its own copy. Fiddlier: its brand row sits above the title and tab rows, which are NOT part of this pattern, and it renders `BrandLogo size={30}` in two sub-views that are also not. |
+
+⚠️ Each remaining adoption is a visible change to a screen the owner has
+signed off, so take them one at a time and show the result.

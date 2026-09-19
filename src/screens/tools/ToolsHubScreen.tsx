@@ -39,8 +39,7 @@ import ToolStripRt60 from '../../../assets/tool-strips/tool_05_rt60_reverb_decay
 import ToolStripSignalgen from '../../../assets/tool-strips/tool_06_tone_noise_generator_strip.svg';
 import ToolStripHzcounter from '../../../assets/tool-strips/tool_07_frequency_counter_tuner_strip.svg';
 import ToolStripMultimeter from '../../../assets/tool-strips/tool_08_pro_audio_multimeter_strip.svg';
-import { BrandLogo } from '../../components/BrandLogo';
-import { GlassButton } from '../../components/GlassButton';
+import { CompactBrandBar } from '../../components/CompactBrandBar';
 import { NavIcon, type NavIconName } from '../../components/nav/NavIcon';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { CONCEPT_MODULES } from '../../features/tools/learn';
@@ -1002,59 +1001,25 @@ export function ToolsHubScreen({ navigation }: Props) {
     <View style={styles.root}>
       <View style={{ paddingTop: insets.top + 10, flex: 1 }}>
         {/* Header — back + brand, TOOLS module tag right. */}
-        <View style={styles.header}>
-          <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
-            <Text style={styles.back}>‹</Text>
-          </Pressable>
-          {/* Tapping the logo returns to Course Select (Booth 2026-07-11).
-              popTo, not navigate: under React Navigation 7 navigate('Main')
-              PUSHES a second tab shell on top of the hub (leaving this hub and
-              its mic-preview engine mounted); popTo returns to the existing Main. */}
-          <Pressable
-            onPress={() => navigation.popTo('Main', { screen: 'Home' } as never)}
-            hitSlop={8}
-            accessibilityRole="button"
-            accessibilityLabel="Back to course selection"
-          >
-            <BrandLogo size={40} />
-          </Pressable>
-          <View style={{ flexShrink: 1 }}>
-            <Text style={styles.wordmark}>
-              Pro Audio <Text style={styles.wordmarkAccent}>Training Academy</Text>
-            </Text>
-            <Text style={styles.eyebrow}>PROFESSIONAL AUDIO TOOLS</Text>
-          </View>
-          <View style={{ flex: 1 }} />
-          {/* Consistent per-screen help (Pillar C). */}
-          <HelpKey search="tool" />
-          {/* GLOSSARY key, like the other screens (Booth 2026-07-11), with STUDY
-              stacked under it (owner 2026-09-13) as a direct way back to the
-              study dashboard. GOLD against the glossary's blue: the two keys now
-              share an edge, so they need to be told apart at a glance, and gold
-              is the Academy's own accent (the wordmark above uses it) while blue
-              belongs to the Glossary wherever it appears. popTo, not navigate —
-              under React Navigation 7, navigate('Main') PUSHES a second tab
-              shell on top of this screen. */}
-          <View style={{ width: 96, gap: 6 }}>
-            <GlassButton
-              label="GLOSSARY"
-              tint="blue"
-              height={38}
-              fontSize={13}
-              onPress={() =>
-                navigation.popTo('Main', { screen: 'Study', params: { screen: 'Glossary' } } as never)
-              }
-            />
-            <GlassButton
-              label="STUDY"
-              tint="gold"
-              height={38}
-              fontSize={13}
-              onPress={() =>
-                navigation.popTo('Main', { screen: 'Study', params: { screen: 'Dashboard' } } as never)
-              }
-            />
-          </View>
+        {/* ⛔ THE SHARED COMPACT HEADER (owner 2026-09-19): logo, wordmark,
+            HOME. The GLOSSARY and STUDY keys are GONE from here at the
+            owner's instruction — this screen's top row is brand and nothing
+            else now. Both destinations are still one tap away on the bottom
+            tab bar, so nothing became unreachable.
+
+            The back chevron went with them: HOME is where back led anyway
+            (the hub is entered from the Course Select card), and the shared
+            bar has no chevron slot by design.
+
+            HelpKey stays — per-screen help is a Pillar C requirement, not
+            decoration, and it is the one thing the bar takes a slot for. */}
+        {/* ⚠️ The width cap lives HERE, not in the component. The hub
+            centres its content at HUB_MAX_CONTENT_W on a wide screen; the
+            old header carried that itself. Pushing it into CompactBrandBar
+            would be the first of the props that made the last three copies
+            of this row drift apart. */}
+        <View style={styles.brandBarCap}>
+          <CompactBrandBar right={<HelpKey search="tool" />} />
         </View>
 
         <ScrollView
@@ -1232,21 +1197,9 @@ const styles = StyleSheet.create({
   //  panel floated in the middle - three things on a wide screen with no shared
   //  edge. The bottom nav deliberately stays full width: a nav bar spanning the
   //  screen is the convention, and it reads as the app's frame, not the page.
-  header: {
-    flexDirection: 'row', alignItems: 'center', gap: 10,
-    paddingHorizontal: 14, paddingBottom: 10,
-    width: '100%', maxWidth: HUB_MAX_CONTENT_W, alignSelf: 'center',
-  },
-  back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
-  wordmark: { fontFamily: fonts.oswaldBold, fontSize: 17, letterSpacing: 0.4, color: colors.textPrimary },
-  wordmarkAccent: {
-    fontFamily: fonts.oswaldMedium,
-    color: colors.amber,
-    textShadowColor: 'rgba(255,180,0,.4)',
-    textShadowRadius: 8,
-    textShadowOffset: { width: 0, height: 0 },
-  },
-  eyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 2.2, color: '#7a7a7a', marginTop: 2 },
+  /* Was `header` plus its own brand type — all of it now lives in
+     CompactBrandBar. Only the width cap is still this screen's business. */
+  brandBarCap: { width: '100%', maxWidth: HUB_MAX_CONTENT_W, alignSelf: 'center' },
   moduleTag: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 12,
