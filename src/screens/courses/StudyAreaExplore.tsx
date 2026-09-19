@@ -56,6 +56,8 @@ export function StudyAreaExplore({
   area,
   onClose,
   onProgress,
+  onStudy,
+  onEnrollments,
   onFallback,
 }: {
   /** The open Study Area's card name, or null when closed. */
@@ -63,6 +65,12 @@ export function StudyAreaExplore({
   onClose: () => void;
   /** VIEW PROGRESS inside the popup — the parent navigates (needs the stack). */
   onProgress: (c: CredentialDetail) => void;
+  /** STUDY NOW and GO TO MY ENROLLMENTS, shown only once a credential is
+   *  enrolled (owner 2026-09-19). The parent navigates, as with onProgress.
+   *  Both are withheld from an anonymous account below — the same account that
+   *  gets the "won't be saved" prompt must not be offered an enrollments list. */
+  onStudy: (c: CredentialDetail) => void;
+  onEnrollments: () => void;
   /** Nothing resolvable for this area → what EXPLORE did before (curriculum browser). */
   onFallback: () => void;
 }) {
@@ -72,6 +80,10 @@ export function StudyAreaExplore({
   const [detail, setDetail] = useState<CredentialDetail | null>(null);
   const [payPrompt, setPayPrompt] = useState<{ label: string } | null>(null);
   const { entitlement, resolved } = useEntitlement();
+  /** Can this account actually HOLD an enrollment? Gates the two onward doors:
+   *  an anonymous pick does not survive, so offering "my enrollments" would
+   *  send them to a list their choice will never appear in. */
+  const hasAccount = resolved && entitlement !== 'anonymous';
 
   useEffect(() => {
     if (!area) return;
@@ -276,6 +288,22 @@ export function StudyAreaExplore({
             onClose();
             onProgress(c);
           }}
+          onStudy={
+            hasAccount
+              ? (c) => {
+                  onClose();
+                  onStudy(c);
+                }
+              : undefined
+          }
+          onEnrollments={
+            hasAccount
+              ? () => {
+                  onClose();
+                  onEnrollments();
+                }
+              : undefined
+          }
           onClose={closeDetail}
         />
       </Modal>
@@ -283,7 +311,10 @@ export function StudyAreaExplore({
         visible={!!payPrompt}
         onClose={() => setPayPrompt(null)}
         title="Heads up"
-        lines={['Your choices won’t be saved without an account.']}
+        lines={[
+          'Your choices won’t be saved without an account.',
+          'Enrolling is free to do and always included — one membership covers every topic and certificate, however many you pick.',
+        ]}
       />
     </>
   );

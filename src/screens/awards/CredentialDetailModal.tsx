@@ -39,7 +39,7 @@
  * scrolls fully into view above the fixed footer, on small screens too.
  */
 import { useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Image, Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { DetailPager } from '../../components/detailSwipe';
 import { CardArt } from '../../components/CardArt';
 import { LowLightDim } from '../../features/settings/LowLightLayer';
@@ -74,8 +74,12 @@ const CARD_MAX_W = 380;
 const SCRIM_PAD = 22;
 const CARD_BG = '#141416';
 const CARD_BORDER = 1;
-/** Footer height before its first onLayout (two buttons + CLOSE row). */
+/** Footer height before its first onLayout (two buttons + CLOSE row). Enrolled
+ *  adds two more, but the footer re-measures on layout — this is only the seed. */
 const FOOTER_SEED = 152;
+
+/** The Study tab's own icon, so STUDY NOW looks like where it sends you. */
+const STUDY_ICON = require('../../../assets/icons/nav/nav-study.png');
 
 export function CredentialDetailModal({
   credential,
@@ -84,6 +88,8 @@ export function CredentialDetailModal({
   nameForGs,
   onEnroll,
   onProgress,
+  onStudy,
+  onEnrollments,
   onClose,
   isEnrolled,
   prev,
@@ -100,6 +106,12 @@ export function CredentialDetailModal({
    *  2026-09-16, matching the topic view). */
   onEnroll: (c: CredentialDetail) => void;
   onProgress: (c: CredentialDetail) => void;
+  /** Open the dashboard already loaded with this credential's first topic.
+   *  Omit for an account that cannot hold an enrollment — the button is then
+   *  not rendered at all rather than rendered and lying. */
+  onStudy?: (c: CredentialDetail) => void;
+  /** Open My Enrollments. Same rule as `onStudy`. */
+  onEnrollments?: () => void;
   onClose: () => void;
   /** Whether this credential is already enrolled (parent-owned, reactive). */
   isEnrolled?: (c: CredentialDetail) => boolean;
@@ -298,6 +310,40 @@ export function CredentialDetailModal({
                 >
                   <Text style={styles.enrollBtnText}>{enrollLabel}</Text>
                 </Pressable>
+
+                {/* ── ONCE ENROLLED, WHERE DO I GO? ────────────────────────────
+                    Owner 2026-09-19, watching an enrol on the Pixel: the button
+                    flipped to ENROLLED ✓ and the screen offered nothing to do
+                    next. Enrolling is a commitment, and the moment right after
+                    it is when someone is most willing to start.
+
+                    Both are OPTIONAL and the HOST decides whether to pass them.
+                    They are only handed in when the account can actually hold
+                    an enrollment — offering "go to my enrollments" to someone
+                    whose pick will not survive the session is a lie, and this
+                    modal deliberately knows nothing about entitlement. */}
+                {enrolled && onStudy ? (
+                  <Pressable
+                    style={({ pressed }) => [styles.studyBtn, pressed && styles.btnPressed]}
+                    onPress={() => onStudy(credential)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Study ${credential.name} now — opens your dashboard`}
+                  >
+                    <Image source={STUDY_ICON} style={styles.studyIcon} resizeMode="contain" />
+                    <Text style={styles.studyBtnText}>STUDY NOW ›</Text>
+                  </Pressable>
+                ) : null}
+                {enrolled && onEnrollments ? (
+                  <Pressable
+                    style={({ pressed }) => [styles.enrollmentsBtn, pressed && styles.btnPressed]}
+                    onPress={onEnrollments}
+                    accessibilityRole="button"
+                    accessibilityLabel="Go to my enrollments"
+                  >
+                    <Text style={styles.enrollmentsBtnText}>GO TO MY ENROLLMENTS ›</Text>
+                  </Pressable>
+                ) : null}
+
                 <Pressable
                   style={({ pressed }) => [styles.progressBtn, pressed && styles.btnPressed]}
                   onPress={() => onProgress(credential)}
@@ -435,6 +481,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   progressBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: colors.amber },
+  /* STUDY NOW — the Study tab's own blue and its own icon, so the button looks
+     like the place it sends you. */
+  studyBtn: {
+    marginTop: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 9,
+    borderWidth: 1.5,
+    borderColor: 'rgba(47,155,255,.7)',
+    backgroundColor: 'rgba(47,155,255,.12)',
+    borderRadius: 9,
+    paddingVertical: 11,
+  },
+  studyIcon: { width: 19, height: 19 },
+  studyBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: colors.blue },
+  /* Quieter than the other three: a useful onward door, not the main one. */
+  enrollmentsBtn: {
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: colors.hairline,
+    borderRadius: 9,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  enrollmentsBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.textSecondary },
   btnPressed: { opacity: 0.7 },
   close: { minHeight: 46, alignItems: 'center', justifyContent: 'center', marginTop: 4, marginHorizontal: -14 },
   closePressed: { backgroundColor: '#1a1a1d' },

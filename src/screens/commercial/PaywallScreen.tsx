@@ -372,6 +372,17 @@ export function PaywallScreen({ navigation }: Props) {
           <Text style={styles.promiseCheck}>✓</Text>
           <Text style={styles.valueLine}>One membership. Not a series of extra charges.</Text>
         </View>
+        {/* Second promise (owner 2026-09-19, after watching an enrol on device):
+            the first line says there are no extra charges, but a member choosing
+            topics and certificates is choosing things that LOOK priced, and
+            nothing told them otherwise. Say it about the thing they are actually
+            doing — enrolling — not in the abstract. */}
+        <View style={styles.promiseRow}>
+          <Text style={styles.promiseCheck}>✓</Text>
+          <Text style={styles.valueLine}>
+            Every topic, certificate and lab is included. Enrol in as many as you like — choosing more never costs more.
+          </Text>
+        </View>
 
         {/* Single consolidated pricing/deadline note (Booth 2026-07-18; owner
             2026-08-21 made it the ONE place the end-of-year deadline appears). */}

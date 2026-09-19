@@ -673,6 +673,34 @@ export function AwardsScreen({ navigation, route }: Props) {
     },
     [bundleKeys, credKey, resolved, entitlement],
   );
+  /**
+   * STUDY NOW / GO TO MY ENROLLMENTS — the two onward doors that open once a
+   * credential is enrolled (owner 2026-09-19). Both close the modal AND the
+   * picker first, or the pushed screen lands behind them.
+   *
+   * `focusGs` takes the credential's FIRST topic: the dashboard opens already
+   * loaded rather than on whatever was last viewed, which is the whole point
+   * of the button.
+   */
+  const studyFromDetail = useCallback(
+    (c: CredentialDetail) => {
+      setDetail(null);
+      setPicker(null);
+      const first = c.topics[0];
+      navigation.navigate('Main', {
+        screen: 'Study',
+        params: { screen: 'Dashboard', params: first != null ? { focusGs: first } : undefined },
+      } as never);
+    },
+    [navigation],
+  );
+
+  const enrollmentsFromDetail = useCallback(() => {
+    setDetail(null);
+    setPicker(null);
+    (navigation as any).navigate('Awards', { category: 'enrollment' });
+  }, [navigation]);
+
   const progressFromDetail = useCallback(
     (c: CredentialDetail) => {
       setDetail(null);
@@ -901,6 +929,8 @@ export function AwardsScreen({ navigation, route }: Props) {
           onEnroll={toggleEnrollInPlace}
           isEnrolled={isCredEnrolled}
           onProgress={progressFromDetail}
+          onStudy={hasAccount ? studyFromDetail : undefined}
+          onEnrollments={hasAccount ? enrollmentsFromDetail : undefined}
           onClose={() => setDetail(null)}
         />
         <LowLightDim />
@@ -970,6 +1000,8 @@ export function AwardsScreen({ navigation, route }: Props) {
           onEnroll={toggleEnrollInPlace}
           isEnrolled={isCredEnrolled}
           onProgress={progressFromDetail}
+          onStudy={hasAccount ? studyFromDetail : undefined}
+          onEnrollments={hasAccount ? enrollmentsFromDetail : undefined}
           onClose={() => setDetail(null)}
         />
         <LowLightDim />

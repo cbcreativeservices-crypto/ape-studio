@@ -1604,6 +1604,16 @@ export function CourseSelectionScreen() {
         area={exploreArea}
         onClose={() => setExploreArea(null)}
         onProgress={(c) => (navigation as any).navigate('AwardProgress', { awardType: c.kind, awardId: c.id, awardName: c.name })}
+        // Once enrolled: straight into the dashboard with this credential's
+        // FIRST topic already loaded, or across to My Enrollments.
+        onStudy={(c) => {
+          const first = c.topics[0];
+          (navigation as any).navigate('Study', {
+            screen: 'Dashboard',
+            params: first != null ? { focusGs: first } : undefined,
+          });
+        }}
+        onEnrollments={() => (navigation as any).navigate('Awards', { category: 'enrollment' })}
         onFallback={() => {
           setExploreArea(null);
           (navigation as any).navigate('Awards', { category: 'curriculum' });
