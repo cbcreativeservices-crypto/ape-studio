@@ -1581,7 +1581,7 @@ export function DashboardScreen() {
                       says "CURRENT TOPIC", and MyTopicsIcon hides itself
                       from screen readers, so this adds no second stop. */}
                   <View style={styles.eyebrowRow}>
-                    <MyTopicsIcon size={15} />
+                    <MyTopicsIcon size={21} />
                     <Text style={styles.topicEyebrow}>
                       {dispTopicInactive ? 'CURRENT TOPIC · INACTIVE' : 'CURRENT TOPIC'}
                     </Text>
@@ -2405,10 +2405,14 @@ const styles = StyleSheet.create({
   },
   /* Keeps the little mark on the eyebrow's baseline rather than its box. */
   eyebrowRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  /* 11 → 14 (owner 2026-09-19): the eyebrow sets the height the ALL TOPICS
+     mark beside it can be drawn at, so the text had to grow for the icon to.
+     Tracking eases from 2 to 1.6 — letter-spacing that reads as deliberate at
+     11px reads as gappy at 14. */
   topicEyebrow: {
     fontFamily: fonts.oswaldSemiBold,
-    fontSize: 11,
-    letterSpacing: 2,
+    fontSize: 14,
+    letterSpacing: 1.6,
     color: colors.amber,
     textShadowColor: 'rgba(255,180,0,.4)',
     textShadowRadius: 6,
@@ -2500,13 +2504,16 @@ const styles = StyleSheet.create({
   pctBlock: { alignItems: 'flex-start', marginTop: 6, gap: 1 },
   // Prev/next topic arrows — absolute, top-right of the glass, on the CURRENT
   // TOPIC eyebrow line (owner 2026-08-12).
-  topicNavArrows: { position: 'absolute', top: 3, right: 8, flexDirection: 'row', alignItems: 'center', gap: 8, zIndex: 4 },
+  topicNavArrows: { position: 'absolute', top: 0, right: 6, flexDirection: 'row', alignItems: 'center', gap: 10, zIndex: 4 },
+  /* 30 → 38 with the eyebrow (owner 2026-09-19). These are the only way to
+     change topic from here, so they should not be the smallest thing on the
+     line. `top` eases to 0 because the taller glyph needs the room back. */
   topicNavArrow: {
     fontFamily: fonts.oswaldSemiBold,
-    fontSize: 30,
-    lineHeight: 32,
+    fontSize: 38,
+    lineHeight: 40,
     color: colors.amber,
-    paddingHorizontal: 5,
+    paddingHorizontal: 6,
   },
   pctArrowDisabled: { color: '#45454d' },
   pctBig: {
