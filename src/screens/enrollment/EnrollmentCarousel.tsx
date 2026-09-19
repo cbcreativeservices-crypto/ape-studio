@@ -32,7 +32,7 @@
  * that deck, and a second hand-rolled carousel would drift from it.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { FlatList, Image, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { CardArt } from '../../components/CardArt';
 import { credentialArtUrl } from '../awards/CredentialThumb';
@@ -114,7 +114,7 @@ export function EnrollmentCarousel({
   const gap = 12;
   const interval = cardW + gap;
   const sidePad = Math.max(0, Math.round((availW - cardW) / 2));
-  const listRef = useRef<FlatList<CarouselCard>>(null);
+  const listRef = useRef<ScrollView>(null);
 
   /** The index the USER last landed on by scrolling. */
   const scrolledTo = useRef(activeIndex);
@@ -139,15 +139,16 @@ export function EnrollmentCarousel({
   useEffect(() => {
     if (scrolledTo.current === activeIndex) return;
     scrolledTo.current = activeIndex;
-    listRef.current?.scrollToOffset({ offset: activeIndex * interval, animated: true });
+    listRef.current?.scrollTo({ x: activeIndex * interval, animated: true });
   }, [activeIndex, interval]);
 
-  const renderItem = ({ item, index }: { item: CarouselCard; index: number }) => {
+  const renderCard = (item: CarouselCard, index: number) => {
     const accent = accentFor(item.kind);
     const centred = index === activeIndex;
     const isTopics = item.kind === 'topics';
     return (
       <Pressable
+        key={item.key}
         style={[
           s.card,
           { width: cardW, height: CARD_H, borderColor: centred ? accent : colors.hairline },
@@ -156,7 +157,7 @@ export function EnrollmentCarousel({
         onPress={() => {
           if (!centred) {
             onIndexChange(index);
-            listRef.current?.scrollToOffset({ offset: index * interval, animated: true });
+            listRef.current?.scrollTo({ x: index * interval, animated: true });
           }
         }}
         accessibilityRole="button"
@@ -235,40 +236,38 @@ export function EnrollmentCarousel({
     // onLayout gives the deck its real available width (see `trackW` above).
     <View onLayout={(e) => setTrackW(Math.round(e.nativeEvent.layout.width))}>
       {/*
-        ⛔ DO NOT "TIDY" THE LAYOUT PROPS BELOW.
-        On the first device pass (2026-09-19) this list rendered VERTICALLY
-        despite `horizontal` — both cards stacked, same x, and a horizontal
-        swipe moved nothing (confirmed by uiautomator bounds, not by eye). The
-        props are now written to match the main-menu deck in
-        CourseSelectionScreen, which has always worked, prop for prop:
-        spacing via the container's `gap` rather than a per-item marginRight,
-        `alignItems: 'center'`, and an explicit row direction. `flexGrow: 0`
-        keeps the list from being stretched by the vertical ScrollView it
-        lives in.
+        ⛔ A PLAIN HORIZONTAL ScrollView, DELIBERATELY — DO NOT "UPGRADE" IT
+        BACK TO A FlatList.
+
+        On the device pass of 2026-09-19 a FlatList here rendered VERTICALLY
+        despite `horizontal`: both cards at the same x, stacked, and a
+        horizontal swipe moved nothing. Measured from uiautomator bounds, not
+        judged by eye —
+            [75,1207][799,1617]  ALL TOPICS
+            [75,1617][799,2026]  CERTIFICATE
+        — and the only scrollable node on screen was the screen's own vertical
+        ScrollView. Making the row explicit (horizontal={true}, flexDirection
+        row, gap, alignItems center, flexGrow 0) did NOT fix it.
+
+        Rather than keep guessing at a virtualized list nested in a vertical
+        ScrollView, this uses the primitive that plainly does the job. The deck
+        holds one card per credential the user enrolled in — a handful, tens at
+        most — so virtualization buys nothing here. (The main menu's deck keeps
+        its FlatList: that one is 20+ cards and it works.)
       */}
-      <FlatList
+      <ScrollView
         ref={listRef}
-        data={cards}
-        horizontal={true}
-        keyExtractor={(c) => c.key}
-        renderItem={renderItem}
-        extraData={activeIndex}
+        horizontal
         showsHorizontalScrollIndicator={false}
         snapToInterval={interval}
         decelerationRate="fast"
         disableIntervalMomentum
         style={{ flexGrow: 0 }}
-        contentContainerStyle={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap,
-          paddingHorizontal: sidePad,
-        }}
+        contentContainerStyle={{ alignItems: 'center', gap, paddingHorizontal: sidePad }}
         onMomentumScrollEnd={onMomentumEnd}
-        // Every card is a fixed width, so the list can place them without
-        // measuring — which is what keeps the snap honest on a cold render.
-        getItemLayout={(_, index) => ({ length: interval, offset: interval * index, index })}
-      />
+      >
+        {cards.map((c, i) => renderCard(c, i))}
+      </ScrollView>
       {/* Position dots. One card means there is nothing to page through. */}
       {cards.length > 1 ? (
         <View style={s.dots} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
