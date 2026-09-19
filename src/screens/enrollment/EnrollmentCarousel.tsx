@@ -291,8 +291,7 @@ export function EnrollmentCarousel({
   };
 
   return (
-    // onLayout gives the deck its real available width (see `trackW` above).
-    <View onLayout={(e) => setTrackW(Math.round(e.nativeEvent.layout.width))}>
+    <View>
       {/*
         ⛔ A PLAIN HORIZONTAL ScrollView, DELIBERATELY — DO NOT "UPGRADE" IT
         BACK TO A FlatList.
@@ -316,6 +315,11 @@ export function EnrollmentCarousel({
       <ScrollView
         ref={listRef}
         horizontal
+        /* Measure the SCROLLER, not a wrapper around it: the wrapper reported
+           the full window while the track was inset inside the green frame,
+           so the centring pad was 28px too wide and the card sat right of
+           centre (caught in the preview, 2026-09-19). */
+        onLayout={(e) => setTrackW(Math.round(e.nativeEvent.layout.width))}
         showsHorizontalScrollIndicator={false}
         snapToInterval={interval}
         decelerationRate="fast"
