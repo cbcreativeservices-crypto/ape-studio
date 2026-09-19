@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 20:34 · ccode · 52d31283
+changed: Stop anonymous enumeration of employer user ids
+affects other side: nothing (docs only).
+needs: nothing.
+
+
 ### 2026-09-18 20:28 · ccode · 99746e7f
 changed: docs: lessons, D10-D16 and the 2026-09-19 session handoff
 affects other side: docs only.
