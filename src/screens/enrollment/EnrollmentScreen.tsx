@@ -77,7 +77,7 @@ import { useLastStudyLocation } from '../../features/study/lastStudyLocation';
 import { confirmDialog } from '../../lib/confirm';
 import { EnrollmentSelection, type CarouselCard } from './EnrollmentSelection';
 import { chipForKind, firstIndexOfKind, stepDeck } from './deckNav';
-import { RowTint, LAB_TINT, COREQ_TINT, tintPhase } from './RowTint';
+import { RowTint, LAB_TINT, COREQ_TINT } from './RowTint';
 import { LabScopeSweep } from './LabScopeSweep';
 
 /**
@@ -1223,8 +1223,8 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           {/* An oscilloscope trace crosses the frame now and then — the one
               row here that is instrumentation rather than reading. Gated on
               reduced motion and Low-Light mode; see LabScopeSweep. */}
-          {/* Light blue wash, breathing very slowly — see RowTint. It is the
-              FIRST child so it sits behind the trace and the text. */}
+          {/* Light blue wash — see RowTint. FIRST child, so it sits behind
+              the trace and the text. */}
           <RowTint color={LAB_TINT} />
           <LabScopeSweep color={colors.blue} />
           {/* Title, meter and % are the SAME sizes as a collapsed topic row
@@ -1283,7 +1283,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                 style={liftStyle(tid)}
               >
               <Pressable style={[styles.card, !e.active && styles.cardInactive, isCore && styles.cardCore, styles.collapsedCard]} onPress={() => toggleCollapse(tid)} accessibilityRole="button" accessibilityLabel={`Expand ${nameFor(e.gs)}`}>
-                {isCore ? <RowTint color={COREQ_TINT} phase={tintPhase(e.gs)} /> : null}
+                {isCore ? <RowTint color={COREQ_TINT} /> : null}
                 <Text style={styles.collapseTri}>▸</Text>
                 <Text style={styles.collapsedTitle} numberOfLines={1}>
                   {nameFor(e.gs)}
@@ -1340,7 +1340,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                 isCore && styles.cardCore,
               ]}
             >
-              {isCore ? <RowTint color={COREQ_TINT} phase={tintPhase(e.gs)} /> : null}
+              {isCore ? <RowTint color={COREQ_TINT} /> : null}
               {/* Row 1 — collapse triangle · white title. Press-HOLD the card
                   still (500 ms) to lift it, then drag up/down to reorder (user
                   request 2026-07-23; the ☰ handle was removed). */}
