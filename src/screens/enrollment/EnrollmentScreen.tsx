@@ -75,7 +75,7 @@ import { TermSelectIcons } from '../../features/flags/TermSelectIcons';
 import { fetchGlossaryItemsByIds } from '../../features/study/api';
 import { useLastStudyLocation } from '../../features/study/lastStudyLocation';
 import { confirmDialog } from '../../lib/confirm';
-import { EnrollmentSelection, type CarouselCard } from './EnrollmentSelection';
+import { CERT_BLUE, EnrollmentSelection, PROGRAM_PURPLE, type CarouselCard } from './EnrollmentSelection';
 import { chipForKind, firstIndexOfKind, stepDeck } from './deckNav';
 import { RowTint, LAB_TINT, COREQ_TINT } from './RowTint';
 import { LabScopeSweep } from './LabScopeSweep';
@@ -145,6 +145,12 @@ function LoadPill({ on, small, dim }: { on: boolean; small?: boolean; dim?: bool
   );
 }
 const PURPLE = '#c4a2ff';
+/** '#rrggbb' + alpha -> 'rgba(r,g,b,a)'. Used for the deck chips' lit wash so
+ *  one tint constant drives both the border and the fill behind it. */
+function withAlpha(hex: string, a: number): string {
+  const n = parseInt(hex.slice(1), 16);
+  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`;
+}
 const DRAG_ROW_H = 84; // drag distance per reorder step (tuned for collapsed + expanded cards)
 
 type FilterKey = 'az' | 'home' | 'done' | 'new';
@@ -1670,10 +1676,23 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             What the deck shows, and a way to step it without swiping. Also
             frameless, directly above the container it drives. */}
         <View style={styles.deckNav}>
+          {/*
+             ⛔ EACH CHIP WEARS ITS OWN KIND'S COLOUR (owner 2026-09-19:
+             "the Program button should be purple and the certificates
+             button blue to match their assigned colors"). Purple and blue
+             are what a program and a certificate ARE everywhere else on
+             this screen — the card eyebrow, the selection accent, the
+             deck. A row of identically green chips said only "filter",
+             and made the one thing the chips are about invisible.
+
+             ⚠️ The SAME constants the cards use, imported rather than
+             re-typed. Two hex strings for one meaning is how a palette
+             comes apart.
+          */}
           {([
-            { k: 'all', label: 'All' },
-            { k: 'program', label: 'Programs' },
-            { k: 'cert', label: 'Certificates' },
+            { k: 'all', label: 'All', tint: GREEN },
+            { k: 'program', label: 'Programs', tint: PROGRAM_PURPLE },
+            { k: 'cert', label: 'Certificates', tint: CERT_BLUE },
           ] as const).map((t) => {
             /**
              * A JUMP, and a readout of where you are — not a filter. The chip
@@ -1687,7 +1706,14 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             return (
               <Pressable
                 key={t.k}
-                style={[styles.deckNavBtn, on && styles.deckNavBtnOn, none && styles.deckNavBtnOff]}
+                style={[
+                  styles.deckNavBtn,
+                  // The colour is on the LABEL at all times; the lit state
+                  // adds the outline and wash, so the chip says what it is
+                  // and, separately, whether you are there.
+                  on && { borderColor: t.tint, backgroundColor: withAlpha(t.tint, 0.12) },
+                  none && styles.deckNavBtnOff,
+                ]}
                 onPress={() => setDeckIndex(target)}
                 disabled={none}
                 accessibilityRole="button"
@@ -1695,9 +1721,12 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                 aria-pressed={on}
                 accessibilityLabel={none ? `No ${t.label.toLowerCase()} yet` : `Jump to ${t.label}`}
               >
-                <Text style={[styles.deckNavText, on && styles.deckNavTextOn, none && styles.deckNavTextOff]}>
-                  {t.label}
-                </Text>
+                {/* ⚠️ The disabled chip keeps its colour and only loses
+                    brightness — the 0.4 on the container does that. Greying
+                    the text as well threw the purple away entirely on an
+                    account with no programs yet, which is exactly when
+                    "Programs is the purple one" most needs saying. */}
+                <Text style={[styles.deckNavText, { color: t.tint }]}>{t.label}</Text>
               </Pressable>
             );
           })}
@@ -2373,13 +2402,11 @@ const styles = StyleSheet.create({
   /* Deck navigation — frameless, above the green container it drives. */
   deckNav: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12 },
   deckNavBtn: { borderWidth: 1, borderColor: colors.hairline, borderRadius: 9, backgroundColor: '#131313', paddingVertical: 6, paddingHorizontal: 11, minHeight: 36, justifyContent: 'center' },
-  deckNavBtnOn: { borderColor: GREEN, backgroundColor: 'rgba(55,224,95,.12)' },
   deckNavText: { fontFamily: fonts.oswaldMedium, fontSize: 12.5, color: colors.textSub },
-  deckNavTextOn: { color: GREEN },
   /* Nothing of that kind enrolled yet — the chip has nowhere to jump, so it
-     reads as unavailable rather than looking live and moving nothing. */
+     reads as unavailable rather than looking live and moving nothing. Opacity
+     only: it dims, it does not lose its kind's colour. */
   deckNavBtnOff: { opacity: 0.4 },
-  deckNavTextOff: { color: colors.textSub },
   deckStep: {
     width: 54,
     height: 48,

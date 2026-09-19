@@ -46,8 +46,8 @@ needs: nothing.
 
 ### 2026-09-19 13:05 · ccode · b4fd1439
 changed: Enrollments: All/Programs/Certificates jump into the deck, never cut it down
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing in the DB — Enrollments screen, client side only.
+needs: nothing.
 
 
 ### 2026-09-19 12:16 · ccode · d762aae2

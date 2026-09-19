@@ -4,8 +4,16 @@
 screen — we need to use this smaller header in some other screens, so while
 here make note of it."*
 
-This is that note. **Nothing was changed to write it.** It records what the
-header is, where it lives, and what reusing it will actually cost.
+**Scope, narrowed by the owner immediately after:** *"just the logo and pro
+audio training academy part and home on the right."*
+
+So the thing to reuse is the **BRAND ROW ONLY** — logo, wordmark, HOME. NOT
+the amber title and NOT the five tabs. Those stay where they are; they belong
+to the Awards screen's own paging, and no other screen wants them. The rest
+of this note still records the full stack, because the brand row has to be
+lifted out of it without disturbing the two rows below.
+
+This note changed nothing to write it.
 
 ---
 
@@ -80,30 +88,35 @@ even within one file the compact header is not one size.
 
 ## 3. What reuse should actually do
 
-⛔ **Do not copy it a fourth time.** Extract it, then adopt.
+⛔ **Do not copy it a fourth time.** Extract the brand row, then adopt.
 
-Suggested shape — `src/components/CompactHeader.tsx`:
+Suggested shape — `src/components/CompactBrandBar.tsx` (named for the row it
+is, not for a whole header it is not):
 
 ```tsx
-<CompactHeader
-  title="Manage My Learning"      // amber headline, 2 lines, shrink-to-fit
-  onTitlePress={...}              // the Return; omit to make the title inert
-  right={<HelpKey search="enroll" />}
-  tabs={...}                      // optional; omit for screens with no tab strip
-/>
+<CompactBrandBar />                      // logo + wordmark + HOME
+<CompactBrandBar right={<Something />} /> // for a screen whose top-right is not HOME
 ```
+
+That is nearly the whole component. It takes almost no props precisely
+because it is the same on every screen — the moment it takes a size or a
+colour it is back to drifting.
 
 Notes for whoever does it:
 
-- The **tab row is separable**. Screens that want the smaller header may not
-  want five tabs; keep it an optional slot rather than baking the five pages
-  into the component.
-- **HOME belongs in the component**, with the `popTo` rule inside it. It is
-  the single most copyable mistake here.
-- Adopt `AwardsScreen` first — it is the version the owner pointed at, and it
-  is the only one with the title row and tabs, so it exercises every slot.
-- Then reconcile Curriculum and Directory onto it; both are brand-row-only
-  today, so adopting the component IS the fix for their spacing drift.
+- **HOME belongs inside it**, with the `popTo` rule. That is the single most
+  copyable mistake in the pattern, and the only reason this is a component
+  rather than a style.
+- **Leave the title row and the tab row alone.** They are the Awards screen's
+  own paging, they only make sense with five pages behind them, and the owner
+  scoped them out. Extracting them "while we are here" would be the kind of
+  widening nobody asked for.
+- **Curriculum and Directory are the easy adoptions** — both are brand-row-
+  only today, so swapping them onto the component IS the fix for their
+  spacing drift, with nothing else to disturb.
+- **AwardsScreen is the fiddly one**: its brand row sits above the title and
+  tabs, and it also renders `BrandLogo size={30}` in two sub-views that are
+  NOT this pattern. Do not sweep those into it.
 - `AppHeader` stays as it is. Two sizes is a deliberate hierarchy: big on
   Home/Dashboard, compact on the interior pages. Do not merge them.
 
@@ -111,6 +124,6 @@ Notes for whoever does it:
 
 ## 4. Status
 
-**Noted, not built.** The owner asked for a note while we were in the file;
-extraction is a separate piece of work and touches four screens, so it wants
-its own go-ahead.
+**Noted, not built.** The owner asked for a note while we were in the file.
+Extraction is a separate piece of work — three screens for the brand row —
+and wants its own go-ahead.
