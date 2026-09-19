@@ -28,7 +28,7 @@ import { CredentialThumb } from '../awards/CredentialThumb';
 import { MyTopicsIcon } from '../../components/MyTopicsIcon';
 import { LedMeter, segmentsForPct } from '../../components/LedMeter';
 import { colors, fonts } from '../../theme/tokens';
-import { artSideLen } from './selectionLayout';
+import { actionsFitBesideIdentity, artSideLen } from './selectionLayout';
 
 /** The Study tab's own icon, so the control looks like where it sends you. */
 const STUDY_ICON = require('../../../assets/icons/nav/nav-study.png');
@@ -118,6 +118,8 @@ export function EnrollmentSelection({
   // Derived in render, not stored — state that mirrors a prop is state that
   // can be one render stale, which is its own class of bug on this screen.
   const sideLen = artSideLen(rowW);
+  /** Corner placement only while the column is wide enough to hold both. */
+  const actionsBeside = actionsFitBesideIdentity(rowW);
 
   if (!card) return null;
   const accent = accentFor(card.kind);
@@ -150,10 +152,25 @@ export function EnrollmentSelection({
   return (
     <View style={s.wrap}>
       {/*
-        ⛔ THE ART RUNS THE FULL HEIGHT OF THE PANEL (owner 2026-09-19) and
-        everything else is one column to its right, left-justified to the
-        art's edge. `alignSelf: 'stretch'` inside the row does that without
-        measuring anything: the text column sets the height, the art takes it.
+        ── WHAT SITS BESIDE THE ART, AND WHAT SITS UNDER IT ──────────────────
+        Only the identity and the two topic actions are in the column beside
+        the art. The credential's own two buttons and the progress meter are
+        FULL-WIDTH ROWS BENEATH the whole head.
+
+        ⛔ THAT IS WHY THERE IS NO LONGER A HOLE UNDER THE ART (owner
+        2026-09-19, with the empty space circled). The row's height is
+        max(art, column), so every extra control stacked in that column made
+        it taller than the square and left dead space to the left of it —
+        about 100pt on a phone. Moving the two widest, shortest-lived
+        controls out drops the column to roughly the art's own height, and
+        they are better full-width anyway: the meter reads across the whole
+        card, and FINAL EXAM stops being a button squeezed into a third of
+        the screen.
+
+        ⛔ AND THE ART IS STILL SIZED FROM WIDTH. The obvious fix — stretch
+        the art to the row's height — is the infinite loop that shipped and
+        flickered on a phone. See selectionLayout.ts. Shortening the column
+        is the fix that cannot come back.
       */}
       <View style={s.head} onLayout={onHeadLayout}>
         {card.slug ? (
@@ -174,7 +191,7 @@ export function EnrollmentSelection({
           {/* TOP — identity on the left, STUDY ALL in the corner, LOAD ALL
               directly beneath it. The two actions that move topics live
               together, away from the two that concern the credential. */}
-          <View style={s.topRow}>
+          <View style={[s.topRow, !actionsBeside && s.topRowStacked]}>
             <View style={s.identity}>
               <Text style={[s.kind, { color: accent }]}>{labelFor(card.kind)}</Text>
               <Text style={s.title} numberOfLines={2}>
@@ -186,7 +203,7 @@ export function EnrollmentSelection({
               </Text>
             </View>
 
-            <View style={s.deckActions}>
+            <View style={[s.deckActions, !actionsBeside && s.deckActionsStacked]}>
               <Pressable
                 style={s.studyBtn}
                 onPress={() => onStudy(card)}
@@ -221,66 +238,71 @@ export function EnrollmentSelection({
               </Pressable>
             </View>
           </View>
-
-          {/* MIDDLE — the two that are about the CREDENTIAL rather than about
-              moving topics around. Absent on ALL TOPICS, which is neither an
-              award nor an enrollment you can drop. */}
-          {onOpenAward || onRemove ? (
-            <View style={s.credActions}>
-              {onOpenAward ? (
-                <Pressable
-                  style={s.awardBtn}
-                  onPress={onOpenAward}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Open the ${card.title} award page to see its Final Exam`}
-                >
-                  <Text style={s.awardText}>FINAL EXAM · ON THE AWARD PAGE →</Text>
-                </Pressable>
-              ) : (
-                <View style={{ flex: 1 }} />
-              )}
-              {onRemove ? (
-                <Pressable
-                  style={s.removeBtn}
-                  onPress={onRemove}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Remove ${card.title} and its topics from the list`}
-                >
-                  <Text style={s.removeText}>REMOVE</Text>
-                </Pressable>
-              ) : null}
-            </View>
-          ) : null}
-
-          {/* BOTTOM — one meter for this selection. The requirements panel
-              that used to sit below carried a second copy of exactly this
-              (owner: "the LED is a repeat of the LED above it"), so that
-              panel is gone and its two buttons moved up here. */}
-          <View style={s.meterRow}>
-            <View style={{ flex: 1 }}>
-              <LedMeter filled={segmentsForPct(card.pct)} fullWidth />
-            </View>
-            <Text style={s.pct}>{card.pct}%</Text>
-          </View>
         </View>
       </View>
+
+        {/* MIDDLE — the two that are about the CREDENTIAL rather than about
+            moving topics around. Absent on ALL TOPICS, which is neither an
+            award nor an enrollment you can drop. */}
+        {onOpenAward || onRemove ? (
+          <View style={s.credActions}>
+            {onOpenAward ? (
+              <Pressable
+                style={s.awardBtn}
+                onPress={onOpenAward}
+                accessibilityRole="button"
+                accessibilityLabel={`Open the ${card.title} award page to see its Final Exam`}
+              >
+                <Text style={s.awardText}>FINAL EXAM · ON THE AWARD PAGE →</Text>
+              </Pressable>
+            ) : (
+              <View style={{ flex: 1 }} />
+            )}
+            {onRemove ? (
+              <Pressable
+                style={s.removeBtn}
+                onPress={onRemove}
+                accessibilityRole="button"
+                accessibilityLabel={`Remove ${card.title} and its topics from the list`}
+              >
+                <Text style={s.removeText}>REMOVE</Text>
+              </Pressable>
+            ) : null}
+          </View>
+        ) : null}
+
+        {/* BOTTOM — one meter for this selection. The requirements panel
+            that used to sit below carried a second copy of exactly this
+            (owner: "the LED is a repeat of the LED above it"), so that
+            panel is gone and its two buttons moved up here. */}
+        <View style={s.meterRow}>
+          <View style={{ flex: 1 }}>
+            <LedMeter filled={segmentsForPct(card.pct)} fullWidth />
+          </View>
+          <Text style={s.pct}>{card.pct}%</Text>
+        </View>
     </View>
   );
 }
 
 const s = StyleSheet.create({
   // No frame and no background: this IS the green panel's heading.
-  wrap: { paddingBottom: 12, borderBottomWidth: 1, borderBottomColor: colors.hairline },
+  wrap: { paddingBottom: 12, borderBottomWidth: 1, borderBottomColor: colors.hairline, gap: 10 },
   head: { flexDirection: 'row', alignItems: 'flex-start', gap: 14 },
   markBox: { alignItems: 'center', justifyContent: 'center' },
-  body: { flex: 1, gap: 10, paddingTop: 2 },
+  /* Only the identity row lives here now — see the note above the head. */
+  body: { flex: 1, paddingTop: 2 },
   topRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
+  /* Narrow column: the same controls in the same order, stacked. See
+     actionsFitBesideIdentity — side by side, the title breaks mid-word. */
+  topRowStacked: { flexDirection: 'column', gap: 10 },
   identity: { flex: 1, gap: 4 },
   kind: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.3 },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 21, lineHeight: 25, color: colors.textPrimary },
   count: { fontFamily: fonts.mono, fontSize: 12.5, color: colors.textSub },
   /* The two controls that move topics, stacked in the corner. */
   deckActions: { alignItems: 'flex-end', gap: 8 },
+  deckActionsStacked: { alignSelf: 'stretch', alignItems: 'stretch' },
   studyBtn: {
     flexDirection: 'row',
     alignItems: 'center',

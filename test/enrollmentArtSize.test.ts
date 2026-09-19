@@ -31,7 +31,8 @@ registerHooks({
   },
 });
 
-const { artSideLen, HEAD_GAP } = await import('../src/screens/enrollment/selectionLayout.ts');
+const { artSideLen, HEAD_GAP, actionsFitBesideIdentity } =
+  await import('../src/screens/enrollment/selectionLayout.ts');
 
 /** Panel widths for the narrowest phone we support up to a large tablet. */
 const ROWS = [280, 300, 320, 343, 360, 390, 412, 430, 600, 834, 1024];
@@ -56,24 +57,50 @@ describe('artSideLen', () => {
     // PAGE →" wrapped to one character per line and STUDY ALL ran off-screen.
     for (const row of ROWS) {
       const column = row - artSideLen(row) - GAP;
-      assert.ok(column >= 150, `row ${row}: text column only ${column}pt`);
-      assert.ok(column > artSideLen(row), `row ${row}: art is wider than the column beside it`);
+      if (actionsFitBesideIdentity(row)) {
+        // Identity AND buttons across: the column must stay the wider half.
+        assert.ok(column >= 260, `row ${row}: side-by-side column only ${column}pt`);
+        assert.ok(column > artSideLen(row), `row ${row}: art is wider than the column beside it`);
+      } else {
+        // Stacked: the art takes the larger share ON PURPOSE (it is what
+        // fills the space the owner circled), but the column must still hold
+        // a full-width button and a readable title.
+        assert.ok(column >= 120, `row ${row}: stacked column only ${column}pt`);
+      }
     }
   });
 
   it('stays within its clamp at absurd widths', () => {
     assert.equal(artSideLen(1), 84);
     assert.equal(artSideLen(100), 84);
-    assert.equal(artSideLen(4000), 176);
+    assert.equal(artSideLen(4000), 240);
     for (const row of ROWS) {
       const side = artSideLen(row);
-      assert.ok(side >= 84 && side <= 176, `row ${row}: side ${side} outside the clamp`);
+      assert.ok(side >= 84 && side <= 240, `row ${row}: side ${side} outside the clamp`);
     }
   });
 
-  it('grows with the row, never shrinks', () => {
-    for (let i = 1; i < ROWS.length; i++) {
-      assert.ok(artSideLen(ROWS[i]) >= artSideLen(ROWS[i - 1]), `not monotonic at ${ROWS[i]}`);
+  it('grows with the row inside each layout mode', () => {
+    // NOT monotonic across the whole range, and deliberately so: at the width
+    // where the buttons stop stacking the share drops from 0.46 to 0.34,
+    // because the column suddenly has to hold two things across instead of
+    // one. Monotonic WITHIN a mode is the property that matters.
+    const modes = [ROWS.filter((r) => !actionsFitBesideIdentity(r)), ROWS.filter(actionsFitBesideIdentity)];
+    for (const group of modes) {
+      for (let i = 1; i < group.length; i++) {
+        assert.ok(artSideLen(group[i]) >= artSideLen(group[i - 1]), `not monotonic at ${group[i]}`);
+      }
+    }
+  });
+
+  it('gives the art the larger share exactly when the column stacks', () => {
+    // The fix for the empty space the owner circled: a stacked column is
+    // taller and needs less width, so the square grows into the gap.
+    for (const row of ROWS) {
+      const share = artSideLen(row) / row;
+      if (!actionsFitBesideIdentity(row) && artSideLen(row) > 84 && artSideLen(row) < 240) {
+        assert.ok(share > 0.4, `row ${row}: stacked but the art only took ${(share * 100).toFixed(0)}%`);
+      }
     }
   });
 

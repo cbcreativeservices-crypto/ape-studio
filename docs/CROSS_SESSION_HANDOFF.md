@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-19 13:05 · ccode · b4fd1439
+changed: Enrollments: All/Programs/Certificates jump into the deck, never cut it down
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-19 12:16 · ccode · d762aae2
 changed: Study screens: say why the topic failed, not "check your connection"
 affects other side: nothing in the DB. Client copy only: the three study screens now name the real reason a topic failed to load instead of blaming the connection. Relevant to you only in that a 42501 from `glossary_study_v` is now visible to the user AS a permissions problem — so if a grant ever regresses there, people will report 'no access' rather than 'no internet'.
