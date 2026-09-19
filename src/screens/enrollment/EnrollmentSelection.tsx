@@ -22,7 +22,8 @@
  * No enrollment state and no rules: loading, navigation and progress arrive as
  * props from EnrollmentScreen, which stays the one place those happen.
  */
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View, type LayoutChangeEvent } from 'react-native';
+import { useState } from 'react';
 import { CredentialThumb } from '../awards/CredentialThumb';
 import { MyTopicsIcon } from '../../components/MyTopicsIcon';
 import { LedMeter, segmentsForPct } from '../../components/LedMeter';
@@ -86,6 +87,23 @@ export function EnrollmentSelection({
   /** Credential-only, and omitted for a DERIVED one — nothing to remove. */
   onRemove?: () => void;
 }) {
+  /**
+   * The art is a SQUARE as tall as the column beside it (owner 2026-09-19:
+   * "make the left prog/cert image area a square to match the image square
+   * always"). The credential art IS square, so a stretched frame letterboxed
+   * it.
+   *
+   * ⛔ MEASURE THE TEXT COLUMN, NOT THE ROW. The row's height is
+   * max(text, art); feeding that back into the art's size is a loop that can
+   * only grow. The text column's height does not depend on the art, so
+   * side = textH is stable in one pass.
+   */
+  const [sideLen, setSideLen] = useState(96);
+  const onBodyLayout = (e: LayoutChangeEvent) => {
+    const h = Math.round(e.nativeEvent.layout.height);
+    if (h > 0 && h !== sideLen) setSideLen(h);
+  };
+
   if (!card) return null;
   const accent = accentFor(card.kind);
   const isTopics = card.kind === 'topics';
@@ -128,17 +146,16 @@ export function EnrollmentSelection({
             slug={card.slug}
             title={card.title}
             accent={accent}
-            fillHeight
-            width={96}
+            size={sideLen}
             kind={card.kind === 'program' ? 'program' : 'certificate'}
           />
         ) : (
-          <View style={s.markBox}>
-            <MyTopicsIcon size={88} color={accent} framed={false} />
+          <View style={[s.markBox, { width: sideLen, height: sideLen }]}>
+            <MyTopicsIcon size={Math.round(sideLen * 0.92)} color={accent} framed={false} />
           </View>
         )}
 
-        <View style={s.body}>
+        <View style={s.body} onLayout={onBodyLayout}>
           {/* TOP — identity on the left, STUDY ALL in the corner, LOAD ALL
               directly beneath it. The two actions that move topics live
               together, away from the two that concern the credential. */}
@@ -239,8 +256,8 @@ export function EnrollmentSelection({
 const s = StyleSheet.create({
   // No frame and no background: this IS the green panel's heading.
   wrap: { paddingBottom: 12, borderBottomWidth: 1, borderBottomColor: colors.hairline },
-  head: { flexDirection: 'row', alignItems: 'stretch', gap: 14 },
-  markBox: { width: 96, alignItems: 'center', justifyContent: 'center' },
+  head: { flexDirection: 'row', alignItems: 'flex-start', gap: 14 },
+  markBox: { alignItems: 'center', justifyContent: 'center' },
   body: { flex: 1, gap: 10, paddingTop: 2 },
   topRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
   identity: { flex: 1, gap: 4 },

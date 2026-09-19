@@ -76,6 +76,7 @@ import { fetchGlossaryItemsByIds } from '../../features/study/api';
 import { useLastStudyLocation } from '../../features/study/lastStudyLocation';
 import { confirmDialog } from '../../lib/confirm';
 import { EnrollmentSelection, type CarouselCard } from './EnrollmentSelection';
+import { LabScopeSweep } from './LabScopeSweep';
 
 /**
  * Audio Fundamentals — the one REQUIRED LAB in the shared core (the other
@@ -1211,14 +1212,21 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
       const labPct = pctFor(e.gs);
       return (
         <View key={e.gs} style={[styles.card, styles.labCard]}>
+          {/* An oscilloscope trace crosses the frame now and then — the one
+              row here that is instrumentation rather than reading. Gated on
+              reduced motion and Low-Light mode; see LabScopeSweep. */}
+          <LabScopeSweep color={colors.blue} />
+          {/* Title, meter and % are the SAME sizes as a collapsed topic row
+              below it (owner 2026-09-19), so the lab reads as one of the list
+              rather than as a panel that wandered in. */}
           <View style={styles.labTop}>
             <Text style={styles.labTag}>LAB</Text>
-            <Text style={styles.labTitle} numberOfLines={1}>
+            <Text style={styles.collapsedTitle} numberOfLines={1}>
               {nameFor(e.gs)}
             </Text>
+            <LedMeter filled={segmentsForPct(labPct)} segWidth={3} />
             <Text style={styles.cardPct}>{labPct}%</Text>
           </View>
-          <LedMeter filled={segmentsForPct(labPct)} fullWidth />
           <Text style={styles.labHint}>Completed in the Audio Fundamentals labs, not from the dashboard.</Text>
         </View>
       );
@@ -2338,7 +2346,7 @@ const styles = StyleSheet.create({
   /* The required LAB — blue frame so it reads as a different kind of thing
      from the study topics it sits above. Meter only: see renderTopicRow. */
   labCard: { borderColor: 'rgba(47,155,255,.7)', gap: 7 },
-  labTop: { flexDirection: 'row', alignItems: 'center', gap: 9 },
+  labTop: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   labTag: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 9.5,
@@ -2351,7 +2359,6 @@ const styles = StyleSheet.create({
     paddingVertical: 1.5,
     overflow: 'hidden',
   },
-  labTitle: { flex: 1, fontFamily: fonts.oswaldMedium, fontSize: 14.5, color: colors.textPrimary },
   labHint: { fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 15, color: colors.textSub },
   // Enrollment TOPIC cards — WHITE border (border key: cert=blue · program=purple
   // · topic=white · subject=amber) — user request 2026-07-23.
