@@ -1,0 +1,51 @@
+-- 2026-09-19 · stop anonymous enumeration of employer user ids
+--
+-- APPLIED TO PRODUCTION 2026-09-19 (mcp apply_migration).
+-- Found by running get_advisors after the employer DDL, then checking the
+-- grant directly rather than trusting the lint's summary.
+--
+-- `anon` held SELECT on public.employer_profiles, whose columns include
+-- `user_id` -- the raw public.users.id -- and `public_token`. So an
+-- unauthenticated caller could list every verified employer's internal join
+-- key alongside the token that is supposed to gate access to their profile.
+--
+-- Two things wrong with that:
+--   * The member side deliberately hides public.users.id behind public_token.
+--     Exposing it here is inconsistent, and an internal id is exactly the sort
+--     of handle that quietly becomes load-bearing for something later.
+--   * A capability token readable next to the data it protects is not a
+--     capability. employer_profile_public(p_token) exists to serve a profile
+--     to someone who was GIVEN a token; enumerating tokens defeats the point.
+--
+-- Nothing reads this table from a client: `grep -rn employer_profiles src/ web/`
+-- returns nothing at all. Every consumer goes through a SECURITY DEFINER
+-- function (is_verified_employer, contact_threads, employer_active_list,
+-- employer_profile_public), and those run as the owner, so none of them needs
+-- this grant.
+--
+-- The table is also still EMPTY, so this can break nothing today -- which is
+-- exactly when to tighten it.
+--
+-- `authenticated` is deliberately left alone: the public_employer_profiles
+-- policy still backs a signed-in read, and removing that is a product
+-- decision about whether employers have a browsable profile at all, not a
+-- security fix.
+--
+-- Verified after applying:
+--   employer_profiles           anon=f  authenticated=t
+--   employer_applications       anon=f
+--   employer_email_verifications anon=f  (no grants to anyone, by design)
+
+revoke select on public.employer_profiles from anon;
+
+notify pgrst, 'reload schema';
+
+-- ── NOTED, NOT CHANGED ─────────────────────────────────────────────────────
+--
+-- employer_profile_public(p_token) is SECURITY DEFINER and anon-callable, and
+-- has ZERO call sites in src/ or web/ (only a mention in a migration
+-- comment). It is dead code and a small unused surface. Left in place because
+-- its token is no longer enumerable after the revoke above, and because
+-- deleting a function somebody may be about to wire up is a product call. If
+-- an employer public page is not coming, drop the function and the
+-- `about` column it is the only reader of.
