@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 20:42 · ccode · cd54030d
+changed: Pro Registry: use the owner's certificate sample art
+affects other side: nothing (docs only).
+needs: nothing.
+
+
 ### 2026-09-18 20:34 · ccode · 52d31283
 changed: Stop anonymous enumeration of employer user ids
 affects other side: nothing (docs only).
