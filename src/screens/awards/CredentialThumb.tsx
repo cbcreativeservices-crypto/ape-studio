@@ -45,12 +45,21 @@ export function CredentialThumb({
   title,
   accent,
   size = 84,
+  fillHeight = false,
+  width,
   kind,
 }: {
   slug: string | null | undefined;
   title: string;
   accent: string;
   size?: number;
+  /** Stretch to the parent row instead of being a fixed square — the thumb
+   *  then takes `width` across and whatever height the row gives it. Added
+   *  2026-09-19 for the Enrollments head, where the art runs the full height
+   *  of the panel beside the text. */
+  fillHeight?: boolean;
+  /** Width when `fillHeight`; ignored otherwise. */
+  width?: number;
   /** Optional eyebrow over the title in the viewer ("SPECIALIZATION CERTIFICATE"
    *  / "PROGRAM CERTIFICATE"). Omit for no eyebrow. */
   kind?: 'certificate' | 'program';
@@ -66,7 +75,13 @@ export function CredentialThumb({
         accessibilityRole="imagebutton"
         accessibilityLabel={`View the ${title} artwork full screen`}
         hitSlop={6}
-        style={({ pressed }) => [styles.frame, { width: size, height: size, borderColor: accent }, pressed && styles.framePressed]}
+        style={({ pressed }) => [
+          styles.frame,
+          fillHeight
+            ? { width: width ?? size, alignSelf: 'stretch', borderColor: accent }
+            : { width: size, height: size, borderColor: accent },
+          pressed && styles.framePressed,
+        ]}
       >
         <CardArt uri={uri} style={styles.fill} imageStyle={styles.img} />
         {/* Corner tick: this square opens larger. Tiny, in the accent, so the

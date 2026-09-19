@@ -68,14 +68,23 @@ function labelFor(kind: CarouselCard['kind']): string {
 
 export function EnrollmentSelection({
   card,
+  summary,
   onToggleLoad,
   onStudy,
+  onOpenAward,
+  onRemove,
 }: {
   card: CarouselCard | null;
+  /** "3 of 7 complete" — omitted for ALL TOPICS, which has no requirement set. */
+  summary?: string | null;
   /** Load / unload EVERY topic of this selection in one action. */
   onToggleLoad: (card: CarouselCard) => void;
   /** Open the Dashboard on this selection's work. */
   onStudy: (card: CarouselCard) => void;
+  /** Credential-only; omit for ALL TOPICS and the placeholder. */
+  onOpenAward?: () => void;
+  /** Credential-only, and omitted for a DERIVED one — nothing to remove. */
+  onRemove?: () => void;
 }) {
   if (!card) return null;
   const accent = accentFor(card.kind);
@@ -107,113 +116,139 @@ export function EnrollmentSelection({
 
   return (
     <View style={s.wrap}>
+      {/*
+        ⛔ THE ART RUNS THE FULL HEIGHT OF THE PANEL (owner 2026-09-19) and
+        everything else is one column to its right, left-justified to the
+        art's edge. `alignSelf: 'stretch'` inside the row does that without
+        measuring anything: the text column sets the height, the art takes it.
+      */}
       <View style={s.head}>
         {card.slug ? (
-          /* The same framed viewer box the Dashboard gives a topic — tap it and
-             the artwork opens full screen. CredentialThumb already owns that
-             viewer, so this is that component and not a second one. */
           <CredentialThumb
             slug={card.slug}
             title={card.title}
             accent={accent}
-            size={78}
+            fillHeight
+            width={96}
             kind={card.kind === 'program' ? 'program' : 'certificate'}
           />
         ) : (
-          /* No box around it (owner 2026-09-19) — the mark stands on its
-             own, the way the book does in the reference. */
-          <MyTopicsIcon size={78} color={accent} framed={false} />
-        )}
-        <View style={s.headText}>
-          {/* Eyebrow and count share the top line: the count is metadata about
-              the same thing the eyebrow names, and stacking it under the title
-              was the third short line crowding the top-left corner. */}
-          <View style={s.eyebrowRow}>
-            <Text style={[s.kind, { color: accent }]}>{labelFor(card.kind)}</Text>
-            <View style={{ flex: 1 }} />
-            <Text style={s.count}>
-              {card.topicCount} topic{card.topicCount === 1 ? '' : 's'}
-            </Text>
+          <View style={s.markBox}>
+            <MyTopicsIcon size={88} color={accent} framed={false} />
           </View>
-          <Text style={s.title} numberOfLines={2}>
-            {card.title}
-          </Text>
-        </View>
-      </View>
+        )}
 
-      {/* Full width (owner 2026-09-19: "use the space better"). A progress bar
-          that stops a third of the way across reads as a stub, and the panel
-          had the room. */}
-      <View style={s.meterRow}>
-        <View style={{ flex: 1 }}>
-          <LedMeter filled={segmentsForPct(card.pct)} fullWidth />
-        </View>
-        <Text style={s.pct}>{card.pct}%</Text>
-      </View>
+        <View style={s.body}>
+          {/* TOP — identity on the left, STUDY ALL in the corner, LOAD ALL
+              directly beneath it. The two actions that move topics live
+              together, away from the two that concern the credential. */}
+          <View style={s.topRow}>
+            <View style={s.identity}>
+              <Text style={[s.kind, { color: accent }]}>{labelFor(card.kind)}</Text>
+              <Text style={s.title} numberOfLines={2}>
+                {card.title}
+              </Text>
+              <Text style={s.count}>
+                {card.topicCount} topic{card.topicCount === 1 ? '' : 's'}
+                {summary ? ` · ${summary}` : ''}
+              </Text>
+            </View>
 
-      <View style={s.actionRow}>
-        <Pressable
-          style={[s.loadBtn, card.allLoaded && { borderColor: colors.green, backgroundColor: 'rgba(55,224,95,.14)' }]}
-          onPress={() => onToggleLoad(card)}
-          hitSlop={6}
-          accessibilityRole="button"
-          accessibilityState={{ selected: card.allLoaded }}
-          aria-pressed={card.allLoaded}
-          accessibilityLabel={
-            card.allLoaded
-              ? `Unload all ${card.topicCount} topics of ${card.title} from the study deck`
-              : `Load all ${card.topicCount} topics of ${card.title} into the study deck`
-          }
-        >
-          {/* Names the ACTION, not the state — one tap moves every topic. */}
-          <Text style={[s.loadText, card.allLoaded && { color: colors.green }]}>
-            {card.allLoaded ? 'UNLOAD ALL TOPICS' : 'LOAD ALL TOPICS'}
-          </Text>
-        </Pressable>
-        <View style={{ flex: 1 }} />
-        <Pressable
-          style={s.studyBtn}
-          onPress={() => onStudy(card)}
-          hitSlop={6}
-          accessibilityRole="button"
-          accessibilityLabel={
-            isTopics
-              ? 'Study — open your dashboard'
-              : `Study all of ${card.title} — loads its ${card.topicCount} topics and opens your dashboard`
-          }
-        >
-          <Image source={STUDY_ICON} style={s.studyIcon} resizeMode="contain" />
-          <Text style={s.studyText}>{isTopics ? 'STUDY' : 'STUDY ALL'}</Text>
-        </Pressable>
+            <View style={s.deckActions}>
+              <Pressable
+                style={s.studyBtn}
+                onPress={() => onStudy(card)}
+                hitSlop={6}
+                accessibilityRole="button"
+                accessibilityLabel={
+                  isTopics
+                    ? 'Study — open your dashboard'
+                    : `Study all of ${card.title} — loads its ${card.topicCount} topics and opens your dashboard`
+                }
+              >
+                <Image source={STUDY_ICON} style={s.studyIcon} resizeMode="contain" />
+                <Text style={s.studyText}>{isTopics ? 'STUDY' : 'STUDY ALL'}</Text>
+              </Pressable>
+
+              <Pressable
+                style={[s.loadBtn, card.allLoaded && { borderColor: colors.green, backgroundColor: 'rgba(55,224,95,.14)' }]}
+                onPress={() => onToggleLoad(card)}
+                hitSlop={6}
+                accessibilityRole="button"
+                accessibilityState={{ selected: card.allLoaded }}
+                aria-pressed={card.allLoaded}
+                accessibilityLabel={
+                  card.allLoaded
+                    ? `Unload all ${card.topicCount} topics of ${card.title} from the study deck`
+                    : `Load all ${card.topicCount} topics of ${card.title} into the study deck`
+                }
+              >
+                <Text style={[s.loadText, card.allLoaded && { color: colors.green }]}>
+                  {card.allLoaded ? 'UNLOAD ALL TOPICS' : 'LOAD ALL TOPICS'}
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+
+          {/* MIDDLE — the two that are about the CREDENTIAL rather than about
+              moving topics around. Absent on ALL TOPICS, which is neither an
+              award nor an enrollment you can drop. */}
+          {onOpenAward || onRemove ? (
+            <View style={s.credActions}>
+              {onOpenAward ? (
+                <Pressable
+                  style={s.awardBtn}
+                  onPress={onOpenAward}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Open the ${card.title} award page to see its Final Exam`}
+                >
+                  <Text style={s.awardText}>FINAL EXAM · ON THE AWARD PAGE →</Text>
+                </Pressable>
+              ) : (
+                <View style={{ flex: 1 }} />
+              )}
+              {onRemove ? (
+                <Pressable
+                  style={s.removeBtn}
+                  onPress={onRemove}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Remove ${card.title} and its topics from the list`}
+                >
+                  <Text style={s.removeText}>REMOVE</Text>
+                </Pressable>
+              ) : null}
+            </View>
+          ) : null}
+
+          {/* BOTTOM — one meter for this selection. The requirements panel
+              that used to sit below carried a second copy of exactly this
+              (owner: "the LED is a repeat of the LED above it"), so that
+              panel is gone and its two buttons moved up here. */}
+          <View style={s.meterRow}>
+            <View style={{ flex: 1 }}>
+              <LedMeter filled={segmentsForPct(card.pct)} fullWidth />
+            </View>
+            <Text style={s.pct}>{card.pct}%</Text>
+          </View>
+        </View>
       </View>
     </View>
   );
 }
 
 const s = StyleSheet.create({
-  // No frame and no background: this IS the green panel's heading now, not a
-  // card sitting inside it.
-  wrap: { gap: 8, paddingTop: 4, paddingBottom: 14, borderBottomWidth: 1, borderBottomColor: colors.hairline },
-  head: { flexDirection: 'row', alignItems: 'flex-start', gap: 14 },
-  headText: { flex: 1, paddingTop: 3 },
-  eyebrowRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 3 },
-  // Not a pill. It is a label, and a box on it reads as a button that is not.
+  // No frame and no background: this IS the green panel's heading.
+  wrap: { paddingBottom: 12, borderBottomWidth: 1, borderBottomColor: colors.hairline },
+  head: { flexDirection: 'row', alignItems: 'stretch', gap: 14 },
+  markBox: { width: 96, alignItems: 'center', justifyContent: 'center' },
+  body: { flex: 1, gap: 10, paddingTop: 2 },
+  topRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
+  identity: { flex: 1, gap: 4 },
   kind: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.3 },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 21, lineHeight: 25, color: colors.textPrimary },
   count: { fontFamily: fonts.mono, fontSize: 12.5, color: colors.textSub },
-  meterRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  pct: { fontFamily: fonts.mono, fontSize: 14, color: colors.textSecondary },
-  actionRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 6 },
-  loadBtn: {
-    borderWidth: 1,
-    borderColor: colors.hairline,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 9,
-    minHeight: 44,
-    justifyContent: 'center',
-  },
-  loadText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.textSub },
+  /* The two controls that move topics, stacked in the corner. */
+  deckActions: { alignItems: 'flex-end', gap: 8 },
   studyBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -227,6 +262,23 @@ const s = StyleSheet.create({
   },
   studyIcon: { width: 26, height: 26 },
   studyText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13.5, letterSpacing: 1, color: colors.blue },
+  loadBtn: {
+    borderWidth: 1,
+    borderColor: colors.hairline,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    minHeight: 40,
+    justifyContent: 'center',
+  },
+  loadText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.textSub },
+  /* The two that are about the credential itself. */
+  credActions: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  awardBtn: { flex: 1, borderWidth: 1, borderColor: 'rgba(255,198,77,.45)', borderRadius: 8, paddingVertical: 11, alignItems: 'center' },
+  awardText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 0.8, color: colors.amber },
+  removeBtn: { minHeight: 44, justifyContent: 'center', paddingHorizontal: 10 },
+  removeText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.textSub },
+  meterRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  pct: { fontFamily: fonts.mono, fontSize: 13, color: colors.textSecondary },
 
   ghost: {
     flexDirection: 'row',

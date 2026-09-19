@@ -84,7 +84,6 @@ import { EnrollmentSelection, type CarouselCard } from './EnrollmentSelection';
  * each carry a bare number.
  */
 const LAB_REQUIREMENT_GS = 3081;
-import { CentredRequirements } from './CentredRequirements';
 
 const GREEN = '#37e05f';
 const BLUE = '#7fbfff';
@@ -1422,6 +1421,18 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
     return i <= 0 ? rows : [rows[i], ...rows.slice(0, i), ...rows.slice(i + 1)];
   };
 
+  /**
+   * "n of m complete" for a credential, counting the shared core alongside
+   * its own topics. It moved onto the selection head when the requirements
+   * container was removed — the number is worth keeping, the second copy of
+   * the meter beside it was not.
+   */
+  const requirementSummary = (b: EnrolledBundle): string => {
+    const all = requirementRows(b);
+    const done = all.filter((r) => pctFor(r.gs) >= 100).length;
+    return `${done} of ${all.length} complete`;
+  };
+
   const requirementRows = (b: EnrolledBundle): EnrollTopic[] => {
     const seen = new Set<number>();
     // LAB FIRST (owner 2026-09-19: "put audio fundamentals at the top of the
@@ -1715,6 +1726,20 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             them — there is no deck to swipe and nothing off to the sides. */}
         <EnrollmentSelection
           card={deckCards[safeDeckIndex] ?? null}
+          summary={centredBundle ? requirementSummary(centredBundle) : null}
+          onOpenAward={
+            centredBundle && centredBundle.kind !== 'subject'
+              ? () =>
+                  navigation.navigate('Awards', {
+                    category: centredBundle.kind === 'program' ? 'program' : 'specialization',
+                  })
+              : undefined
+          }
+          onRemove={
+            centredBundle && bundles.some((b) => b.key === centredBundle.key)
+              ? () => confirmRemoveWhole(centredBundle)
+              : undefined
+          }
           onToggleLoad={(card) => {
             if (card.kind === 'topics') {
               setActiveMany(enrolled.map((e) => e.gs), !card.allLoaded);
@@ -1739,18 +1764,6 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             containers. */}
         {centredBundle ? (
           <>
-            <CentredRequirements
-              bundle={centredBundle}
-              derived={!bundles.some((b) => b.key === centredBundle.key)}
-              coreGs={COREQ_TOPIC_GS}
-              pctFor={pctFor}
-              onRemove={() => confirmRemoveWhole(centredBundle)}
-              onOpenAward={() =>
-                navigation.navigate('Awards', {
-                  category: centredBundle.kind === 'program' ? 'program' : 'specialization',
-                })
-              }
-            />
             {/* ⛔ THE SAME ROWS AS ALL TOPICS, not a second list idiom (owner
                 2026-09-19). Every requirement expands and collapses exactly
                 like a topic does above, because it IS a topic — rendered by
