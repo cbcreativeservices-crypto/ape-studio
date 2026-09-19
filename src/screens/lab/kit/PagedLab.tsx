@@ -15,7 +15,7 @@
  *   PageDef  { title, short, Component, manualDone? }
  */
 import { useCallback, useEffect, useRef, useState, type JSX } from 'react';
-import { AccessibilityInfo, Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ScrollLockProvider } from '../scrollLock';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -23,6 +23,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { animationsAllowed } from '../../../features/settings/a11y';
 import { loadPagedProgress, resetPagedProgress, savePagedProgress, type PagedProgress } from '../../../features/lab/pagedProgress';
+import { confirmDialog } from '../../../lib/confirm';
 
 export type PageCtx = {
   reduceMotion: boolean;
@@ -139,10 +140,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone }: {
       if (typeof confirm !== 'function' || confirm(`Reset this lab? ${message}`)) doReset();
       return;
     }
-    Alert.alert('Reset this lab?', message, [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Reset', style: 'destructive', onPress: doReset },
-    ]);
+    confirmDialog('Reset this lab?', message, 'Reset', doReset, { destructive: true });
   };
 
   const def = pages[page];

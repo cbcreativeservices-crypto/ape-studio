@@ -169,7 +169,7 @@ export function ProductionLabScreen() {
     if (!project || !report) return;
     const res = await exportPacketPdf({ project, stages, report });
     if (res.ok) return;
-    Alert.alert(
+    notify(
       'Packet not shared',
       res.reason === 'needs_build'
         ? 'Printing to PDF needs the next app build. The packet is readable here in the meantime.'

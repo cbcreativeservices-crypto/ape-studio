@@ -10,10 +10,11 @@
  * bundles the native module.
  */
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, Pressable } from 'react-native';
+import { Pressable } from 'react-native';
 import Svg, { Path, Rect } from 'react-native-svg';
 import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from 'expo-speech-recognition';
 import { colors } from '../../theme/tokens';
+import { notify } from '../../lib/confirm';
 
 /** Microphone glyph (line-art, matches the app's monochrome icon style).
  *  Red while actively listening. */
@@ -64,7 +65,7 @@ export function GlossaryDictation({ onText }: { onText: (t: string) => void }) {
     try {
       const perm = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
       if (!perm.granted) {
-        Alert.alert(
+        notify(
           'Microphone needed',
           'Allow microphone and speech recognition access to dictate your search.',
         );

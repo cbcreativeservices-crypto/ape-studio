@@ -7,7 +7,7 @@
  * No email address appears anywhere in this screen, in either direction.
  */
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, FlatList, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { FlatList, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
 import { Banner, Chip, ChipWrap, EmptyState, Eyebrow, Helper, Loading, PrimaryButton } from './directoryBits';
@@ -24,6 +24,7 @@ import {
   type ReportReason,
   type ThreadMessage,
 } from '../../features/directory/api';
+import { confirmDialog, notify as appNotify } from '../../lib/confirm';
 
 const REASONS: { key: ReportReason; label: string }[] = [
   { key: 'spam', label: 'Spam' },
@@ -35,24 +36,11 @@ const REASONS: { key: ReportReason; label: string }[] = [
 
 /** Acknowledge something, in the same idiom as confirmThen below. */
 function notify(title: string, body: string): void {
-  if (Platform.OS === 'web') {
-    if (typeof window !== 'undefined') window.alert(`${title}
-
-${body}`);
-    return;
-  }
-  Alert.alert(title, body);
+  appNotify(title, body);
 }
 
 function confirmThen(title: string, body: string, yes: string, onYes: () => void): void {
-  if (Platform.OS === 'web') {
-    if (typeof window === 'undefined' || window.confirm(`${title}\n\n${body}`)) onYes();
-    return;
-  }
-  Alert.alert(title, body, [
-    { text: 'Cancel', style: 'cancel' },
-    { text: yes, onPress: onYes },
-  ]);
+  confirmDialog(title, body, yes, onYes);
 }
 
 const STATUS_LABEL: Record<ContactThread['status'], string> = {

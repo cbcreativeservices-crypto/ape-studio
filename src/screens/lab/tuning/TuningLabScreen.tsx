@@ -6,7 +6,7 @@
  * chapter (the chapter component is the same element, only ctx changes).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AccessibilityInfo, Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
@@ -18,6 +18,7 @@ import { TuningPlayer, type PlayerStatus } from '../../../features/tuning/tuning
 import { loadTuningProgress, resetTuningProgress, saveTuningProgress, type TuningProgress } from '../../../features/tuning/tuningProgress';
 import { CHAPTERS, CHAPTER_COUNT, CHAPTER_TITLES } from './chapters';
 import type { LabCtx } from './labCtx';
+import { confirmDialog } from '../../../lib/confirm';
 
 export function TuningLabScreen() {
   const insets = useSafeAreaInsets();
@@ -98,10 +99,17 @@ export function TuningLabScreen() {
   };
 
   const confirmReset = () =>
-    Alert.alert('Reset this lab?', 'Clears your chapter progress for the Tuning & Temperament Lab only.', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Reset', style: 'destructive', onPress: () => void resetTuningProgress().then(() => { setProgress({ completed: [], lastChapter: 0, done: false, mathView }); setChapter(0); }) },
-    ]);
+    confirmDialog(
+      'Reset this lab?',
+      'Clears your chapter progress for the Tuning & Temperament Lab only.',
+      'Reset',
+      () =>
+        void resetTuningProgress().then(() => {
+          setProgress({ completed: [], lastChapter: 0, done: false, mathView });
+          setChapter(0);
+        }),
+      { destructive: true },
+    );
 
   const def = CHAPTERS.find((c) => c.index === chapter) ?? CHAPTERS[0];
   const isDone = !!progress?.completed.includes(chapter);

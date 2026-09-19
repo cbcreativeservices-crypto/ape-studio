@@ -10,11 +10,12 @@
  * iapProducts.ts. Owner setup: docs/APE_IAP_PLAN_2026_08_21.md.
  */
 import { Fragment, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { GlassButton } from '../../components/GlassButton';
 import { COPY } from '../../lib/copy';
+import { confirmDialog, notify } from '../../lib/confirm';
 import { colors, fonts } from '../../theme/tokens';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { consumePendingLink } from '../../navigation/pendingLink';
@@ -46,18 +47,15 @@ export function PaywallScreen({ navigation }: Props) {
   useEffect(() => {
     let alive = true;
     const welcome = () => {
-      Alert.alert('Welcome to Academy', 'Your Academy access is active. Enjoy!', [
-        {
-          text: 'Great',
-          // DESTINATION THROUGH PURCHASE (2026-09-06): a deep link the user
-          // followed into locked content is resumed once they have paid,
-          // instead of dropping them back wherever the paywall opened.
-          onPress: () => {
-            const pending = consumePendingLink();
-            if (!(pending && navigateToPath(pending))) navigation.goBack();
-          },
-        },
-      ]);
+      // DESTINATION THROUGH PURCHASE (2026-09-06): a deep link the user
+      // followed into locked content is resumed once they have paid, instead
+      // of dropping them back wherever the paywall opened. `notify` runs its
+      // callback on EVERY dismissal — button, scrim, BACK — so the destination
+      // is honoured however the notice is closed.
+      notify('Welcome to Academy', 'Your Academy access is active. Enjoy!', () => {
+        const pending = consumePendingLink();
+        if (!(pending && navigateToPath(pending))) navigation.goBack();
+      });
     };
     // Reflect a server-verified purchase in the local entitlement. The MONEY
     // has already moved and the server has already written the row — so a
@@ -88,23 +86,19 @@ export function PaywallScreen({ navigation }: Props) {
             welcome();
             return;
           }
-          Alert.alert(
+          confirmDialog(
             // Ratified by the owner 2026-09-14
             'Purchase complete',
             // Ratified by the owner 2026-09-14
             'Your payment went through and your membership is recorded. We couldn’t refresh your access on this device yet — check your connection and retry.',
-            [
-              {
-                text: 'Retry', // Ratified by the owner 2026-09-14
-                onPress: () => {
-                  setBusy(true);
-                  reflectPurchase();
-                },
-              },
-              // Leaving is safe: the entitlement is on the server and the next
-              // boot read / auth event picks it up.
-              { text: 'Later', style: 'cancel', onPress: () => navigation.goBack() }, // Ratified by the owner 2026-09-14
-            ],
+            'Retry', // Ratified by the owner 2026-09-14
+            () => {
+              setBusy(true);
+              reflectPurchase();
+            },
+            // Leaving is safe: the entitlement is on the server and the next
+            // boot read / auth event picks it up.
+            { cancelText: 'Later', onCancel: () => navigation.goBack() }, // Ratified by the owner 2026-09-14
           );
         });
     };
@@ -116,7 +110,7 @@ export function PaywallScreen({ navigation }: Props) {
       onError: (message) => {
         if (!alive) return;
         setBusy(false);
-        if (message) Alert.alert('Purchase', message);
+        if (message) notify('Purchase', message);
       },
     }).then((ok) => {
       if (alive) setAvailable(ok);
@@ -138,11 +132,11 @@ export function PaywallScreen({ navigation }: Props) {
     // connection) fall straight through to buyPlan. Money is the one place
     // where "we don't know yet" must not mean "go ahead".
     if (!resolved) {
-      Alert.alert('One moment', 'Still checking your membership — try again in a second.');
+      notify('One moment', 'Still checking your membership — try again in a second.');
       return;
     }
     if (isMember) {
-      Alert.alert(
+      notify(
         'You’re a member',
         'Your Academy access is already active. Manage or cancel in your app-store subscription settings.',
       );
@@ -163,18 +157,17 @@ export function PaywallScreen({ navigation }: Props) {
     // 'anonymous' is the tier for a guest or a device-key session, and `resolved`
     // above already guarantees this is a real read and not a not-known-yet.
     if (entitlement === 'anonymous') {
-      Alert.alert(
+      confirmDialog(
         'Create an account first',
         'Membership is attached to your account, so you need one before you can buy. Creating it takes a moment, and your progress on this device comes with you.',
-        [
-          { text: 'Not now', style: 'cancel' },
-          { text: 'Create account', onPress: () => (navigation as any).navigate('Auth') },
-        ],
+        'Create account',
+        () => (navigation as any).navigate('Auth'),
+        { cancelText: 'Not now' },
       );
       return;
     }
     if (!available) {
-      Alert.alert(
+      notify(
         'Purchasing unavailable',
         'In-app purchases aren’t available in this build yet. Please update the app, or restore a previous purchase.',
       );
@@ -183,7 +176,7 @@ export function PaywallScreen({ navigation }: Props) {
     setBusy(true);
     buyPlan(selected as PlanId).catch((e: unknown) => {
       setBusy(false);
-      Alert.alert('Purchase', (e as Error)?.message ?? 'The purchase could not be started.');
+      notify('Purchase', (e as Error)?.message ?? 'The purchase could not be started.');
     });
   };
 
@@ -197,13 +190,12 @@ export function PaywallScreen({ navigation }: Props) {
     // `not_authenticated`, and the person is told to check their connection for
     // a problem that is not their connection (2026-09-17). Say the true thing.
     if (resolved && entitlement === 'anonymous') {
-      Alert.alert(
+      confirmDialog(
         'Sign in to restore',
         'A previous purchase is restored to the account it was bought with, so sign in or create your account first — then try Restore again.',
-        [
-          { text: 'Not now', style: 'cancel' },
-          { text: 'Sign in', onPress: () => (navigation as any).navigate('Auth') },
-        ],
+        'Sign in',
+        () => (navigation as any).navigate('Auth'),
+        { cancelText: 'Not now' },
       );
       return;
     }
@@ -221,28 +213,28 @@ export function PaywallScreen({ navigation }: Props) {
         setBusy(false);
         switch (result) {
           case 'restored':
-            Alert.alert(
+            notify(
               'Purchases restored',
               refreshed
                 ? 'Your Academy access has been restored.'
                 : // Ratified by the owner 2026-09-14
                   'Your previous purchase was verified and your membership is recorded. We couldn’t refresh your access on this device yet — it will unlock shortly, or restart the app.',
-              [{ text: 'Great', onPress: () => navigation.goBack() }],
+              () => navigation.goBack(),
             );
             return;
           case 'none':
             // The store ANSWERED and holds nothing — the only case this copy is true.
-            Alert.alert('Nothing to restore', 'No previous Academy purchase was found for this store account.');
+            notify('Nothing to restore', 'No previous Academy purchase was found for this store account.');
             return;
           case 'unavailable':
-            Alert.alert(
+            notify(
               'Purchasing unavailable',
               // Ratified by the owner 2026-09-14
               'In-app purchases aren’t available in this build yet. Please update the app and try Restore again.',
             );
             return;
           default:
-            Alert.alert(
+            notify(
               // Ratified by the owner 2026-09-14
               'Restore didn’t finish',
               // Ratified by the owner 2026-09-14
@@ -252,7 +244,7 @@ export function PaywallScreen({ navigation }: Props) {
       })
       .catch(() => {
         setBusy(false);
-        Alert.alert(
+        notify(
           // Ratified by the owner 2026-09-14 (same strings as the store-unreachable case)
           'Restore didn’t finish',
           'We couldn’t reach the store to check your purchases — check your connection and try again. If you were charged, your purchase is safe.',
@@ -273,7 +265,7 @@ export function PaywallScreen({ navigation }: Props) {
         ? 'itms-apps://apps.apple.com/account/subscriptions'
         : 'https://play.google.com/store/account/subscriptions?package=com.cbcreativeservices.apestudio';
     Linking.openURL(url).catch(() => {
-      Alert.alert(
+      notify(
         // Ratified by the owner 2026-09-14
         'Manage subscription',
         // Ratified by the owner 2026-09-14
@@ -286,7 +278,7 @@ export function PaywallScreen({ navigation }: Props) {
   // required beside the purchase controls (Apple 3.1.2 / Play Subscriptions).
   const openPolicy = (path: 'terms' | 'privacy') => {
     Linking.openURL(`https://www.proaudiotrainingacademy.com/${path}`).catch(() => {
-      Alert.alert(
+      notify(
         // Ratified by the owner 2026-09-14
         'Page unavailable',
         // Ratified by the owner 2026-09-14

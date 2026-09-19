@@ -11,7 +11,7 @@
  * after the ruling (react-native-qrcode-svg already installed).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Image, Modal, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Image, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { KeyboardAwareScrollView } from '../../features/keyboard/keyboardControllerSafe';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -52,6 +52,7 @@ import { useTermList } from '../../features/flags/flaggedStore';
 import { useBundles } from '../../features/enrollment/enrolledBundlesStore';
 import { useEnrollmentProgress } from '../../features/enrollment/enrollmentProgress';
 import { fetchV3Certs, fetchV3Programs } from '../../data/v3Curriculum';
+import { confirmDialog, notify } from '../../lib/confirm';
 
 
 /**
@@ -61,38 +62,16 @@ import { fetchV3Certs, fetchV3Programs } from '../../data/v3Curriculum';
  * no explanation. Route both through the DOM dialogs on web.
  */
 function askPublish(title: string, body: string, onYes: () => void): void {
-  if (Platform.OS === 'web') {
-    if (typeof window === 'undefined' || window.confirm(`${title}
-
-${body}`)) onYes();
-    return;
-  }
-  Alert.alert(title, body, [
-    { text: 'Cancel', style: 'cancel' },
-    { text: 'Publish', onPress: onYes },
-  ]);
+  confirmDialog(title, body, 'Publish', onYes);
 }
 
 /** A plain yes/no question. Same web caveat as askPublish. */
 function askYesNo(title: string, body: string, yes: string, onYes: () => void): void {
-  if (Platform.OS === 'web') {
-    if (typeof window === 'undefined' || window.confirm(`${title}\n\n${body}`)) onYes();
-    return;
-  }
-  Alert.alert(title, body, [
-    { text: 'Not yet', style: 'cancel' },
-    { text: yes, onPress: onYes },
-  ]);
+  confirmDialog(title, body, yes, onYes, { cancelText: 'Not yet' });
 }
 
 function warn(title: string, body: string): void {
-  if (Platform.OS === 'web') {
-    if (typeof window !== 'undefined') window.alert(`${title}
-
-${body}`);
-    return;
-  }
-  Alert.alert(title, body);
+  notify(title, body);
 }
 
 /** One compact statistic row with a subtle separator. */

@@ -11,7 +11,7 @@
  * it; the server refuses regardless, which is what actually enforces it.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Modal } from '../../components/DimModal';
 import { Section } from '../../components/Section';
 import { Toggle } from '../../components/Toggle';
@@ -45,6 +45,7 @@ import {
 } from '../../features/directory/api';
 import { alreadyMigrated, buildLegacyDraft, markMigrated, type LegacyDraft } from '../../features/directory/legacyMigration';
 import { ProfileSetupFlow } from './ProfileSetupFlow';
+import { confirmDialog, notify as appNotify } from '../../lib/confirm';
 
 const WORK_PREFS: { key: WorkPref; label: string }[] = [
   { key: 'remote', label: 'Remote' },
@@ -100,22 +101,11 @@ export function toCountryCode(raw: string): string {
 /** Confirm dialogs must work on web too — react-native-web ships Alert as a
  *  literal no-op, which would make Publish silently do nothing in a browser. */
 function confirmThen(title: string, body: string, yes: string, onYes: () => void): void {
-  if (Platform.OS === 'web') {
-    if (typeof window === 'undefined' || window.confirm(`${title}\n\n${body}`)) onYes();
-    return;
-  }
-  Alert.alert(title, body, [
-    { text: 'Cancel', style: 'cancel' },
-    { text: yes, onPress: onYes },
-  ]);
+  confirmDialog(title, body, yes, onYes);
 }
 
 function notify(title: string, body: string): void {
-  if (Platform.OS === 'web') {
-    if (typeof window !== 'undefined') window.alert(`${title}\n\n${body}`);
-    return;
-  }
-  Alert.alert(title, body);
+  appNotify(title, body);
 }
 
 export function MyProfileView() {

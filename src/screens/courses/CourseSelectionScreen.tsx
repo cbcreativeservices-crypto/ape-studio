@@ -1444,7 +1444,7 @@ export function CourseSelectionScreen() {
             // Turning commercial ON from anonymous → land in FREE so the free
             // topics (gs0/gs36) are immediately accessible for testing.
             if (next && entitlement === 'anonymous') setEntitlement('free');
-            Alert.alert('DEV', `commercialMode → ${next ? 'ON (free)' : 'OFF'}`);
+            notify('DEV', `commercialMode → ${next ? 'ON (free)' : 'OFF'}`);
           }}
           delayLongPress={600}
         >
@@ -1456,7 +1456,7 @@ export function CourseSelectionScreen() {
             const order = ['anonymous', 'free', 'academy', 'lapsed'] as const;
             const next = order[(order.indexOf(entitlement) + 1) % order.length];
             setEntitlement(next);
-            Alert.alert('DEV', `entitlement → ${next}`);
+            notify('DEV', `entitlement → ${next}`);
           }}
           delayLongPress={600}
         >

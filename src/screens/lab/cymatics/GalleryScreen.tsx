@@ -16,7 +16,7 @@
  * own science chain (patternField) — nothing is stored as a picture.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, BackHandler, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { BackHandler, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useFocusEffect, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -33,6 +33,7 @@ import { ExportPanel } from './ExportPanel';
 import { GalleryArt } from './GalleryArt';
 import { CompareCanvas, CompareTable, type CompareItem } from './GalleryCompare';
 import { PatternFigure } from './PatternFigure';
+import { confirmDialog } from '../../../lib/confirm';
 
 type Mode = 'browse' | 'open' | 'art' | 'compare';
 type Filter = 'all' | StudioId | 'fav';
@@ -155,24 +156,23 @@ export function GalleryScreen() {
   };
   const doDelete = () => {
     if (!current) return;
-    Alert.alert('Delete this pattern?', `“${current.name}” and its artwork will be removed. This cannot be undone.`, [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Delete',
-        style: 'destructive',
-        onPress: () => {
-          void remove(current.id).then(() => {
-            setArtworks((m) => {
-              const n = { ...m };
-              delete n[current.id];
-              return n;
-            });
-            setCurrentId(null);
-            setMode('browse');
+    confirmDialog(
+      'Delete this pattern?',
+      `“${current.name}” and its artwork will be removed. This cannot be undone.`,
+      'Delete',
+      () => {
+        void remove(current.id).then(() => {
+          setArtworks((m) => {
+            const n = { ...m };
+            delete n[current.id];
+            return n;
           });
-        },
+          setCurrentId(null);
+          setMode('browse');
+        });
       },
-    ]);
+      { destructive: true },
+    );
   };
   const openInStudio = () => {
     if (!current) return;

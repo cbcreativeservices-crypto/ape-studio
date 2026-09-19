@@ -2138,13 +2138,12 @@ ${COPY.glossaryFreeAllowance}`,
     let removed = 0;
     for (const id of bmBaseline.current) if (!current.has(id)) removed++;
     if (removed >= 1) {
-      Alert.alert(
+      confirmDialog(
         'Removed from list',
         `You removed ${removed} term${removed === 1 ? '' : 's'} from ${ctxName(bmCtx)}.`,
-        [
-          { text: 'Keep open', style: 'cancel' },
-          { text: 'Close', style: 'destructive', onPress: () => setBmOpen(false) },
-        ],
+        'Close',
+        () => setBmOpen(false),
+        { cancelText: 'Keep open', destructive: true },
       );
     } else {
       setBmOpen(false);

@@ -9,7 +9,7 @@
  * good answer — sits where it will be read, under the button, not under a
  * fold. Free for everyone, no account (owner ruling 2026-09-03).
  */
-import { Alert, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { colors, fonts } from '../../theme/tokens';
 import { QUESTION_COUNT } from '../../features/careerfinder/questions';
@@ -17,6 +17,7 @@ import { FAMILY_COUNT, familyById } from '../../features/careerfinder/families';
 import { CAREER_COUNT } from '../../features/careerfinder/careerIndex';
 import { allAnswered, answeredCount, resetCareerFinder, setQuestionIndex, useCareerFinder, useCareerFinderHydrated } from '../../features/careerfinder/store';
 import { BetaPill, Body, Card, CtaButton, FinderShell, Lead, SectionLabel, TextLink } from './kit';
+import { confirmDialog } from '../../lib/confirm';
 
 const fmt = (n: number) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
@@ -36,10 +37,7 @@ export function confirmReset(onConfirm: () => void, message = 'Clears your answe
     if (typeof confirm !== 'function' || confirm(`Reset the Career Finder? ${message}`)) onConfirm();
     return;
   }
-  Alert.alert('Reset the Career Finder?', message, [
-    { text: 'Cancel', style: 'cancel' },
-    { text: 'Reset', style: 'destructive', onPress: onConfirm },
-  ]);
+  confirmDialog('Reset the Career Finder?', message, 'Reset', onConfirm, { destructive: true });
 }
 
 export function CareerFinderScreen() {

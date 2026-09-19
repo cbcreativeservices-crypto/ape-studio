@@ -16,7 +16,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { officialTopicName } from '../../data/officialTopicNames';
-import { ActivityIndicator, Alert, Animated, LayoutAnimation, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, UIManager, View, type GestureResponderEvent, type LayoutChangeEvent } from 'react-native';
+import { ActivityIndicator, Animated, LayoutAnimation, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, UIManager, View, type GestureResponderEvent, type LayoutChangeEvent } from 'react-native';
 import { animationsAllowed } from '../../features/settings/a11y';
 import { Modal } from '../../components/DimModal';
 import { HoldToActivate } from '../../components/HoldToActivate';
@@ -73,6 +73,7 @@ import { FLAGGED_TOPIC_ID, setCustomOnDashboard, useCustomOnDashboard, useTermLi
 import { TermSelectIcons } from '../../features/flags/TermSelectIcons';
 import { fetchGlossaryItemsByIds } from '../../features/study/api';
 import { useLastStudyLocation } from '../../features/study/lastStudyLocation';
+import { confirmDialog } from '../../lib/confirm';
 
 const GREEN = '#37e05f';
 const BLUE = '#7fbfff';
@@ -711,18 +712,9 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
     const word = b.kind === 'cert' ? 'certificate' : b.kind === 'program' ? 'program' : 'subject';
     const title = `Remove ${b.name}?`;
     const body = `This removes the ${word} and all ${b.topics.length} of its topics from your enrollment list.`;
-    // RN-web ships Alert as a literal no-op, so the X was a dead button on the
-    // web preview (QA night 2026-08-31) -- same shim MyProfileView uses.
-    if (Platform.OS === 'web') {
-      if (typeof window === 'undefined' || window.confirm(`${title}\n\n${body}`)) {
-        removeWhole(b.kind, b.name, b.topics);
-      }
-      return;
-    }
-    Alert.alert(title, body, [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Remove', style: 'destructive', onPress: () => removeWhole(b.kind, b.name, b.topics) },
-    ]);
+    // confirmDialog carries its own web fallback AND renders in the app's own
+    // dialog, so this no longer shows the OS grey card (owner 2026-09-19).
+    confirmDialog(title, body, 'Remove', () => removeWhole(b.kind, b.name, b.topics), { destructive: true });
   };
   // Loading topics into the study deck is UNGATED (user request 2026-07-23): a
   // free user with an account can set up everything; it persists so nothing
