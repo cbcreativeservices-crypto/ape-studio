@@ -211,3 +211,45 @@ does not shrink the pack — the videos are reachable history, and removing thos
 needs a history rewrite plus a force push, which is a coordinated decision, not
 maintenance.
 
+---
+
+## ⛔ LESSON FROM AN ACTUAL APPLE REJECTION (2026-09-19, error 90683)
+
+ccode set `photosPermission: false` on `expo-media-library` (pass 5 · E-3),
+reasoning that the feature is write-only so the READ purpose string was
+unnecessary. **That reasoning was wrong and Apple rejected the upload:**
+
+```
+90683 — missing NSPhotoLibraryUsageDescription
+```
+
+**Why it was wrong:** `expo-media-library` **links PhotoKit read APIs into the
+binary regardless of the flag.** Apple's static scanner looks at what the binary
+LINKS, not at what the app calls. Removing the purpose string for an API that is
+present is an automatic reject, even when the app genuinely never reads.
+
+Fixed by A in `e0a610d5` with a truthful read string, rebuilt (build 21),
+**accepted**. ⛔ Do not set it back to `false`.
+
+**The general rule, which is the part worth keeping:** a purpose string must
+match what the binary CAN do, not what the app chooses to do. "We never call it"
+is not a defence to a linker-level scan. Trimming permission strings is only
+safe when the SDK providing them is also removed.
+
+### ⚠️ The same root cause may apply on ANDROID — untested
+
+The other half of E-3 blocked three media READ permissions:
+
+```
+android.permission.READ_EXTERNAL_STORAGE
+android.permission.WRITE_EXTERNAL_STORAGE
+android.permission.READ_MEDIA_IMAGES
+```
+
+Apple's rejection proves the SDK links read APIs. If any of them is reached at
+runtime on Android, `saveToLibraryAsync` could throw a SecurityException where it
+previously worked. **Not observed** — Android builds fine and the write path
+should not need read — but it is the identical mechanism, so the
+save-to-Photos flow on Android must be exercised on a device before release.
+Test: Harmonograph or a Cymatics pattern → SAVE → confirm it lands in Photos.
+

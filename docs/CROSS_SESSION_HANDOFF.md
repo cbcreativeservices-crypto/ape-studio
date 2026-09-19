@@ -26,6 +26,17 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 18:05 · A · e0a610d5
+changed: app.json — expo-media-library `photosPermission` false → truthful read string (fixes App Store upload reject 90683). Apple rejected build upload for missing NSPhotoLibraryUsageDescription; the SDK links PhotoKit read APIs even with photosPermission:false, so the purpose string is mandatory. Rebuilt (build 21) + resubmitted; Apple ACCEPTED, now processing.
+affects other side: FOLD e0a610d5 into your next push (branch audio-tools-engine). Do NOT set photosPermission back to false — that reintroduces the reject. savePhotosPermission unchanged. Native fingerprint bumped, but it rode with the required rebuild, so OTA-safe (your §4 condition).
+needs: nothing — just keep the string.
+
+### 2026-09-18 17:45 · ccode · a0cebc2d
+changed: Cable Install: the capstone's score no longer vanishes on resume
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-18 17:40 · ccode · 3a5a6831
 changed: Teaching accuracy: three content errors the app was stating as fact
 affects other side: nothing. Client-only copy and touch-target changes. OTA-safe.

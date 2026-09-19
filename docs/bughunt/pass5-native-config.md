@@ -217,6 +217,17 @@ user is shown.
 which requires a declaration form and pushes apps toward the photo picker; `WRITE_EXTERNAL_STORAGE`
 plus `requestLegacyExternalStorage` on a modern target is an additional review question.
 
+> ⛔ **SUPERSEDED BY APPLE, 2026-09-19.** `photosPermission: false` was applied,
+> and **Apple rejected the upload — error 90683, missing
+> `NSPhotoLibraryUsageDescription`.** `expo-media-library` links PhotoKit READ
+> APIs regardless of the flag, so the static scanner demands the purpose string
+> whether or not the app ever calls them. Fixed in `e0a610d5` with a truthful
+> read string ("does not read or import your photos; access is requested only by
+> the component that saves…"), rebuilt and **accepted**. DO NOT set it back to
+> false. The Android half of this finding (blocking the media READ permissions)
+> was not implicated and still stands — but see the warning in
+> APE_NEXT_BUILD_CHECKLIST.md, because the same root cause could apply there.
+
 **Fix (native build):** set `photosPermission: false` in the plugin options and add the three
 read permissions to `android.blockedPermissions` in `app.json`. There is no plugin option
 that drops the Android read permissions on its own — I checked the whole `Props` type.
