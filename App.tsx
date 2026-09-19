@@ -53,6 +53,7 @@ import { navigationRef } from './src/navigation/navigationRef';
 import { linking } from './src/navigation/linking';
 import { attachLinkCapture } from './src/navigation/pendingLink';
 import { recordAppSession } from './src/features/review/reviewPrompt';
+import { startAutoUpdate } from './src/features/updates/startAutoUpdate';
 import {
   attachWeeklyConceptPush,
   flushLocalDestNav,
@@ -203,6 +204,16 @@ function App() {
   // or unknown URL is never stored. Splash clears it when a session already
   // exists (linking will have handled it directly).
   useEffect(() => attachLinkCapture(), []);
+
+  // ⛔ APPLY AN OTA ON THIS LAUNCH, not the one after it (owner 2026-09-19:
+  // "please just fix it so every update updates my iphone"). expo-updates
+  // otherwise downloads in the background and waits for the NEXT launch, so
+  // a publish took open-wait-kill-open and failed silently if you were quick.
+  // See autoUpdate.ts — it only reloads during the first seconds of startup,
+  // never in dev, and never throws into the launch path.
+  useEffect(() => {
+    startAutoUpdate();
+  }, []);
 
   // Store-review eligibility (launch readiness, 2026-09-06): count this launch
   // as a session. The prompt itself is only ever requested after a genuine
