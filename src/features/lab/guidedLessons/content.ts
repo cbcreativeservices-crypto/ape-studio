@@ -434,7 +434,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'phase (a frequency-dependent time/angle shift), and shows how each affects mono ' +
       'compatibility on the correlation meter and Lissajous.',
     controls: [
-      { key: 'display', name: 'What the display shows', definition: "The Lissajous plots left against right; the correlation reads +1 (mono-safe) down to −1 (cancels in mono). A polarity flip or inter-channel delay shows up here as tilt or spread." },
+      { key: 'display', name: 'What the display shows', definition: "A goniometer plots left against right and then ROTATES the picture 45°, so mono stands upright instead of lying on the diagonal. The correlation reads +1 (mono-safe) down to −1 (cancels in mono). A polarity flip or inter-channel delay shows up here as tilt or spread." },
       { key: 'invert_polarity', name: 'Polarity (invert)', definition: 'Flips the whole waveform upside-down — 180° at EVERY frequency. Against its original it cancels completely in mono.' },
       { key: 'delay_one_channel', name: 'Delay one channel', definition: 'Delays one channel by a few ms — a frequency-dependent PHASE shift (not a simple flip). In mono this combs, and no polarity flip can fix it.', range: '0 – 10 ms' },
       { key: 'mono_fold', name: 'Mono-fold', definition: 'Sums L+R to mono — the acid test. Anything out of phase cancels or combs here, which is exactly what a mono listener hears.' },
@@ -443,7 +443,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'Confusing polarity with phase — polarity flips the whole waveform (the "Ø" button); phase is a frequency-dependent shift. Not interchangeable.',
       'Assuming a polarity flip always fixes cancellation — it fixes a simple inversion; time-delay comb filtering needs time alignment.',
       'Not checking mono — content that’s wide/phasey in stereo can cancel in mono.',
-      'Misreading the Lissajous/correlation — vertical line = mono/in-phase (+1); horizontal = anti-phase (−1, cancels); a ball = wide/decorrelated.',
+      'Misreading the Lissajous/correlation — on a GONIOMETER (rotated 45°): vertical line = mono/in-phase (+1); horizontal = anti-phase (−1, cancels); a ball = wide/decorrelated. On an unrotated scope in X-Y mode those two swap to the diagonals.',
       'Treating any negative correlation as "bad" — some width uses controlled decorrelation; sustained −1 on key elements is the real problem.',
       'Delaying one channel for width without mono-checking — introduces comb filtering.',
     ],
@@ -542,7 +542,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'Stereo imaging places and shapes sound in the stereo field — pan, width, and Mid/Side ' +
       'balance — with a constant eye on mono compatibility (what survives when L and R sum).',
     controls: [
-      { key: 'display', name: 'What the display shows', definition: "The Lissajous plots left against right: a vertical line = mono, a wide cloud = wide. The correlation number below is your mono-compatibility gauge (+1 safe, −1 cancels)." },
+      { key: 'display', name: 'What the display shows', definition: "A goniometer plots left against right and ROTATES it 45°, which is why a vertical line = mono and a wide cloud = wide. (A plain oscilloscope in X-Y mode does not rotate, so there mono is the 45° diagonal — same data, two conventions.) The correlation number below is your mono-compatibility gauge (+1 safe, −1 cancels)." },
       { key: 'pan', name: 'Pan / Balance', range: 'L100…C…R100 · default C', definition: 'Places the source (or shifts the center) left/right.' },
       { key: 'width', name: 'Width', range: '0% (mono)…100%…200% · default 100%', definition: 'Narrows or widens the field by scaling the Side component vs the Mid.' },
       { key: 'mid', name: 'Mid gain (M)', range: '±12 dB · default 0', definition: 'Level of the center/mono component (vocals, kick, snare, bass usually live here).' },
@@ -768,7 +768,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'distance', name: 'Distance', definition: 'Inverse-distance level (−6 dB per doubling, re 1 m). Distance perception also uses reflections/air absorption — not modeled here (stated).', range: '0.5–4 m' },
       { key: 'source_type', name: 'Source type', definition: 'Sine, white or pink noise per object. Noise localizes much more strongly than a pure tone — broadband content feeds BOTH cues at every frequency.' },
       { key: 'objects', name: 'Sound objects (up to 3)', definition: 'Independent sources mixed to one binaural bus. The bus is peak-bounded (norm shown when attenuating).' },
-      { key: 'tone_freq', name: 'Tone frequency', definition: 'Sets the pitch of the selected object’s sine test tone, in Hz. Localization changes with frequency: LOW tones are located mainly by ITD (timing between the ears), HIGH tones by ILD (the head shadows the far ear). Below ~800 Hz a pure tone is hard to place — switch it to noise to hear the difference.', range: 'preset steps' },
+      { key: 'tone_freq', name: 'Tone frequency', definition: 'Sets the pitch of the selected object’s sine test tone, in Hz. Localization changes with frequency: LOW tones are located mainly by ITD (timing between the ears), HIGH tones by ILD (the head shadows the far ear). ~800 Hz is an UPPER bound, not a lower one: with a maximum ITD near 0.66 ms the interaural phase reaches 180° around 760 Hz, so ABOVE that a steady tone’s timing cue turns ambiguous and pure-tone localization is worst around 1.5–2 kHz, before the head shadow takes over. What a pure tone lacks is onsets and spectral detail — switch it to noise to hear the difference.', range: 'preset steps' },
     ],
     commonMistakes: [
       'Listening on speakers — binaural cues require HEADPHONES; on speakers the two channels mix in the air (crosstalk) and the illusion collapses.',
@@ -1168,7 +1168,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'eq_ridge', name: 'EQ in the waterfall', definition: 'Boost 250 Hz and its mountain grows TALLER — but decay stays the same length: EQ changes level, not ring time. A high-Q boost adds a narrow ridge that also RINGS — the filter itself stores energy. That is why surgical boosts can sound "resonant".' },
       { key: 'reverb_tails', name: 'Reverb tails compared', definition: 'Room = short, warm slope. Plate = long, bright, even sheet. Hall = long with lows outlasting highs. Spring = narrow bouncy ridges. You can identify the reverb type from the waterfall before you ever hear it.' },
       { key: 'phase_meter', name: 'Correlation meter', definition: '+1 = identical channels (mono), 0 = unrelated (wide), −1 = opposite polarity (cancellation in mono). Healthy stereo lives between ~+0.3 and +1. Sitting near −1 means the mono bus — and many phones — will eat your mix.' },
-      { key: 'goniometer', name: 'Goniometer / vectorscope', definition: 'The dot cloud: a vertical line = mono, a fat ball = wide, a HORIZONTAL line = pure anti-phase. Lean left/right = channel imbalance. It\'s the correlation meter with a picture attached.' },
+      { key: 'goniometer', name: 'Goniometer / vectorscope', definition: 'The dot cloud: a vertical line = mono, a fat ball = wide, a HORIZONTAL line = pure anti-phase. Lean left/right = channel imbalance. It\'s the correlation meter with a picture attached. Note the convention: a goniometer ROTATES the L-vs-R plot 45° so mono stands upright — a plain oscilloscope in X-Y mode does not, and there mono is the 45° diagonal.' },
       { key: 'stereo_width', name: 'Stereo width displays', definition: 'Mono, narrow, wide, hard-L/R and mid-side are POSITIONS of energy, not qualities. Mid = what both speakers share; Side = what they disagree about. Width is the M/S ratio made visible.' },
       { key: 'oscilloscope', name: 'Oscilloscope', definition: 'Voltage vs time, the rawest view: sine = smooth wave, square = shelves, saw = ramps, speech = bursts. If the scope shows flat-topping, clipping is happening RIGHT THERE, whatever the meters claim.' },
       { key: 'lissajous', name: 'X-Y / Lissajous', definition: 'Left channel drives X, right drives Y: identical channels draw a 45° line, anti-phase draws the opposite diagonal, stereo draws a cloud, and pure tones at related frequencies draw the classic curves. Instant phase literacy.' },

@@ -373,7 +373,18 @@ const MYTHS: { myth: string; reality: string }[] = [
   {
     myth: 'A 24-bit recording always has 144 dB of dynamic range.',
     reality:
-      '~146 dB is the theoretical ceiling (6.02·24 + 1.76; the 144 dB figure is the 6 dB/bit rounding). Analog noise, converter linearity and clocking set the real usable range (ENOB) well below theory — even excellent converters manage roughly 120 dB.',
+      // ── THE +1.76 IS NOT ROUNDING (2026-09-18, teaching pass · MINOR 2) ────
+      // This said "the 144 dB figure is the 6 dB/bit rounding", which is
+      // arithmetically wrong — 6.02 × 24 = 144.5, so rounding 6.02 to 6 costs
+      // half a decibel, not two. The 2 dB is the +1.76 term: the full-scale
+      // SINE correction (10·log10(3/2)), a distinct physical quantity.
+      //
+      // It also contradicted the app's own Digital Advanced calculator, which
+      // names this exact conflation as a mistake (digitalAdv.ts:529), and
+      // modQuant.tsx:122, which states it correctly. On a panel introduced
+      // with "if one line of this lab survives in your memory, make it one of
+      // these", the app was teaching two different things in three places.
+      '144 dB is 6 × 24 — the 6 dB-per-bit rule of thumb, and it describes DYNAMIC RANGE. The ~146 dB figure is 6.02·24 + 1.76: the theoretical SNR for a dithered full-scale sine, where the +1.76 dB comes from the sine’s crest factor, not from rounding. Analog noise, converter linearity and clocking set the real usable range (ENOB) well below theory — even excellent converters manage roughly 120 dB.',
   },
   {
     myth: 'Record as hot as possible, right up to 0 dBFS, for maximum resolution.',

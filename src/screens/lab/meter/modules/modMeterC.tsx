@@ -452,9 +452,17 @@ const CHECK_LISSAJOUS_LINE: CheckSpec = {
   ],
   correctIdx: 0,
   reveal:
+    // ── WHY THIS DISAGREES WITH THE GONIOMETER (2026-09-18, teaching · MINOR 4)
+    // Both pictures are correct for their own instrument, and the app said so
+    // nowhere: a studio goniometer rotates L-vs-R by 45° (vizMeters.tsx:1511)
+    // so mono stands upright, while a raw scope in X-Y does not
+    // (vizMeters.tsx:1854) so mono is the diagonal. Two modules apart in the
+    // SAME lab, one said mono is vertical and the other said mono is at 45°.
     'Left drives X, right drives Y. Identical channels mean X always equals Y, so every dot lands on ' +
     'the 45° diagonal — mono. The OPPOSITE diagonal is the danger picture (R always the negative of ' +
-    'L: anti-phase), and a cloud between them is real stereo.',
+    'L: anti-phase), and a cloud between them is real stereo. Watch the convention: a studio ' +
+    'goniometer ROTATES this same plot 45° so mono stands upright — a plain scope does not. Same ' +
+    'data, two conventions.',
   wrongHint: 'X = left, Y = right. If the dot never leaves x = y, what is R doing relative to L?',
 };
 
@@ -593,7 +601,7 @@ export function ScopeModule(p: MeterModuleProps) {
       <View style={styles.well}>
         <Text style={dstyles.caption}>
           {xy
-            ? 'Left drives X, right drives Y: a thin 45° line = MONO (L and R identical). The OPPOSITE diagonal = anti-phase — the mono-death picture. A cloud between them is real stereo. Riding WIDTH or PHASE switches X-Y mode on.'
+            ? 'Left drives X, right drives Y: a thin 45° line = MONO (L and R identical). The OPPOSITE diagonal = anti-phase — the mono-death picture. A cloud between them is real stereo. A studio goniometer rotates this plot 45°, so there mono stands upright instead. Riding WIDTH or PHASE switches X-Y mode on.'
             : 'Reading flat-tops: when the trace slams into a ceiling and flattens, clipping is happening RIGHT THERE — whatever the meters further down the chain claim.'}
         </Text>
 

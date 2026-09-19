@@ -313,7 +313,7 @@ export function BinauralLabScreen() {
                 <Text style={styles.caption}>
                   {sel.type === BIN_SRC.sine
                     ? sel.freq <= 440
-                      ? 'A smooth low tone is the HARDEST thing to localize — the head casts almost no shadow (no level difference) and there are no broadband or onset cues, so the ITD it does give, on its own, is only a weak sense of place. Notice how vague it feels.'
+                      ? 'A smooth low tone images VAGUELY over headphones — but not because the timing cue is weak. Below ~1.5 kHz the head casts almost no shadow, so ITD does the work, and it does it well. What a steady sine lacks is onsets and spectral detail, so it lateralizes without externalising: the image sits inside your head rather than out in the room.'
                       : 'A higher tone gives the head shadow something to work with — level difference starts carrying the location.'
                     : 'Broadband noise feeds BOTH cues at once — timing at the low end, shadow at the top. The easiest source to place.'}
                 </Text>
@@ -412,7 +412,7 @@ export function BinauralLabScreen() {
           ],
           correctIdx: 0,
           reveal:
-            'Noise spans the spectrum: its low end carries the timing cue and its top end casts a real head shadow. A smooth low tone gives the brain almost nothing — which is why finding a humming subwoofer by ear is so hard.',
+            'Noise spans the spectrum: its low end carries the timing cue, its top end casts a real head shadow, and its onsets give the brain something to time. A smooth low tone still carries a good timing cue — it is the missing onsets and spectral detail that leave it sitting inside your head. That is why finding a humming subwoofer by ear is so hard.',
           wrongHint: 'Flip SRC between TONE 250 and PINK while dragging the object.',
         }}
       />
