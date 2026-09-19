@@ -32,7 +32,7 @@
  * that deck, and a second hand-rolled carousel would drift from it.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { CredentialThumb } from '../awards/CredentialThumb';
 import { LedMeter, segmentsForPct } from '../../components/LedMeter';
@@ -62,16 +62,11 @@ export type CarouselCard = {
 };
 
 /**
- * ⛔ THE SAME GEOMETRY AS THE MAIN MENU'S COURSE DECK (owner 2026-09-19:
- * "make the containers the same width as the menu cards ... match
- * aesthetic"). Copied from CourseSelectionScreen deliberately, values and
- * all — a card that is merely similar reads as a mistake next to the real
- * thing. Wider card + smaller gap is also what lets the neighbouring cards
- * show at the edges, which is the point of a deck.
+ * The menu deck's GAP, kept so the rhythm between cards matches
+ * CourseSelectionScreen. The WIDTH no longer does — see the note where cardW
+ * is computed: the owner asked for two thirds of the screen, which on a wide
+ * window is deliberately wider than the menu's 280 cap.
  */
-const BASE_W = Math.min(Dimensions.get('window').width, Dimensions.get('window').height);
-const CARD_MAX_W = 280;
-const MENU_CARD_W = Math.min(Math.round(BASE_W * 0.7 * 0.93), CARD_MAX_W);
 const MENU_CARD_GAP = 14;
 /**
  * Fixed so every card is the same height while swiping. Sized to the tallest
@@ -124,9 +119,19 @@ export function EnrollmentCarousel({
   const { width: windowW } = useWindowDimensions();
   const [trackW, setTrackW] = useState(0);
   const availW = trackW || windowW;
-  // Never wider than the space we actually have, but otherwise exactly the
-  // menu card.
-  const cardW = Math.min(MENU_CARD_W, Math.round(availW * 0.92));
+  /**
+   * TWO THIRDS OF THE SCREEN (owner 2026-09-19: "still too thin"). Of the
+   * SCREEN, not of the track — the track is inset inside the green frame, and
+   * two thirds of that would come out NARROWER on a phone than the menu card
+   * it replaced.
+   *
+   * The 280 cap the menu uses is gone deliberately: on a phone it never bound
+   * anyway (2/3 of 411 is 274), but on a wide window it pinned the card at a
+   * third of the screen, which is exactly the "too thin" being complained
+   * about. Clamped so at least ~24px of the neighbouring card still shows on
+   * each side, since a deck whose neighbours are invisible is just a card.
+   */
+  const cardW = Math.min(Math.round(windowW * (2 / 3)), Math.max(160, availW - 48));
   const gap = MENU_CARD_GAP;
   const interval = cardW + gap;
   const sidePad = Math.max(0, Math.round((availW - cardW) / 2));
