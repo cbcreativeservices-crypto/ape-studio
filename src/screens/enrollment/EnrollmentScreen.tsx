@@ -74,7 +74,7 @@ import { TermSelectIcons } from '../../features/flags/TermSelectIcons';
 import { fetchGlossaryItemsByIds } from '../../features/study/api';
 import { useLastStudyLocation } from '../../features/study/lastStudyLocation';
 import { confirmDialog } from '../../lib/confirm';
-import { EnrollmentCarousel, type CarouselCard } from './EnrollmentCarousel';
+import { EnrollmentSelection, type CarouselCard } from './EnrollmentSelection';
 import { CentredRequirements } from './CentredRequirements';
 
 const GREEN = '#37e05f';
@@ -1116,7 +1116,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
     // Certificates the deck is that kind and nothing else, so leaving it in
     // would make the filter look broken.
     // No credentials yet (or none of this kind): show the ghost so the deck
-    // still reads as a deck. See EnrollmentCarousel's placeholder branch.
+    // still says what the < > lead to. See EnrollmentSelection's placeholder.
     const ghost: CarouselCard = {
       key: '__none__',
       kind: 'placeholder',
@@ -1451,9 +1451,13 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             );
           })}
           <View style={{ flex: 1 }} />
-          {/* Arrows are disabled at the ends rather than wrapping — a deck
-              that jumps from the last card back to the first loses the sense
-              of where you are in it. */}
+          {/* ── THE ONLY WAY THROUGH (owner 2026-09-19) ──────────────────
+              With the carousel gone these are not a convenience any more —
+              they are how you move between selections, so they are large,
+              square and plainly buttons. Disabled at the ends rather than
+              wrapping: a list that jumps from last back to first loses any
+              sense of where you are in it. The count between them replaces
+              the dots the deck used to carry. */}
           <Pressable
             style={[styles.deckStep, deckIndex <= 0 && styles.deckStepOff]}
             onPress={() => setDeckIndex((i) => Math.max(0, i - 1))}
@@ -1465,6 +1469,11 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           >
             <Text style={[styles.deckStepText, deckIndex <= 0 && styles.deckStepTextOff]}>‹</Text>
           </Pressable>
+          {deckCards.length > 1 ? (
+            <Text style={styles.deckCount} accessibilityLabel={`${deckIndex + 1} of ${deckCards.length}`}>
+              {deckIndex + 1}/{deckCards.length}
+            </Text>
+          ) : null}
           <Pressable
             style={[styles.deckStep, deckIndex >= deckCards.length - 1 && styles.deckStepOff]}
             onPress={() => setDeckIndex((i) => Math.min(deckCards.length - 1, i + 1))}
@@ -1506,21 +1515,14 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
         )}
 
         <View style={styles.myEnrollArea}>
-        {/* ── THE DECK (owner 2026-09-19) ───────────────────────────────────
-            Replaces the tall stack of credential containers. Column 0 is ALL
-            TOPICS — the list a member has always seen — then one card per
-            credential they added, in that order. Whatever is centred owns the
-            area below. */}
-        {/* ⛔ NO BLEED — the deck stays INSIDE the green frame and must not
-            cross the line (owner 2026-09-19). It costs nothing: the card is
-            capped at the menu width (280, or 268 on a phone), which is well
-            under 92% of even the inset track, so the cards stay exactly
-            menu-sized. Only the neighbour peek narrows, and it still reads
-            as a deck. */}
-        <EnrollmentCarousel
-          cards={deckCards}
-          activeIndex={deckIndex}
-          onIndexChange={setDeckIndex}
+        {/* ── THE SELECTION HEAD (owner 2026-09-19) ────────────────────────
+            One thing at a time, full width, with no frame of its own — it is
+            the panel's heading, not a card inside it. ALL TOPICS is first,
+            then each credential in the order it was added. Whatever is
+            selected owns the list below, and the ‹ › above move between
+            them — there is no deck to swipe and nothing off to the sides. */}
+        <EnrollmentSelection
+          card={deckCards[deckIndex] ?? null}
           onToggleLoad={(card) => {
             if (card.kind === 'topics') {
               setActiveMany(enrolled.map((e) => e.gs), !card.allLoaded);
@@ -2260,10 +2262,20 @@ const styles = StyleSheet.create({
   deckNavBtnOn: { borderColor: GREEN, backgroundColor: 'rgba(55,224,95,.12)' },
   deckNavText: { fontFamily: fonts.oswaldMedium, fontSize: 12.5, color: colors.textSub },
   deckNavTextOn: { color: GREEN },
-  deckStep: { width: 40, minHeight: 40, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.hairline, borderRadius: 7 },
-  deckStepOff: { opacity: 0.35 },
-  deckStepText: { fontFamily: fonts.oswaldSemiBold, fontSize: 19, color: colors.textSecondary, lineHeight: 22 },
+  deckStep: {
+    width: 54,
+    height: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: 'rgba(55,224,95,.55)',
+    backgroundColor: 'rgba(55,224,95,.09)',
+    borderRadius: 10,
+  },
+  deckStepOff: { borderColor: colors.hairline, backgroundColor: 'transparent', opacity: 0.45 },
+  deckStepText: { fontFamily: fonts.oswaldSemiBold, fontSize: 27, color: GREEN, lineHeight: 31, marginTop: -3 },
   deckStepTextOff: { color: colors.textSub },
+  deckCount: { fontFamily: fonts.mono, fontSize: 12.5, color: colors.textSecondary, minWidth: 36, textAlign: 'center' },
   chip: { borderWidth: 1, borderColor: '#333', borderRadius: 14, paddingVertical: 4, paddingHorizontal: 11, backgroundColor: '#161616' },
   chipOn: { borderColor: colors.amber, backgroundColor: 'rgba(255,198,77,.12)' },
   chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.6, color: colors.textSub },
