@@ -74,6 +74,8 @@ import { TermSelectIcons } from '../../features/flags/TermSelectIcons';
 import { fetchGlossaryItemsByIds } from '../../features/study/api';
 import { useLastStudyLocation } from '../../features/study/lastStudyLocation';
 import { confirmDialog } from '../../lib/confirm';
+import { EnrollmentCarousel, type CarouselCard } from './EnrollmentCarousel';
+import { CentredRequirements } from './CentredRequirements';
 
 const GREEN = '#37e05f';
 const BLUE = '#7fbfff';
@@ -315,6 +317,11 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   // INSIDE the popup, so the ✕ never grows/reflows the bottom action row.
   const [clearConfirmOpen, setClearConfirmOpen] = useState(false);
   const [filters, setFilters] = useState<Set<FilterKey>>(new Set());
+  /**
+   * Which deck position is centred. 0 is always ALL TOPICS, so a member who
+   * never swipes sees exactly the list they saw before this redesign.
+   */
+  const [deckIndex, setDeckIndex] = useState(0);
   const dragAccum = useRef(0);
   // Reorder step = the REAL measured height of each container (owner 2026-08-05
   // "reorder not working"): the old fixed DRAG_ROW_H=84 mismatched the true card
@@ -1032,6 +1039,63 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   }, [liftedId, displayed, displayedBundles]);
 
   // A stored cert/program/subject container.
+  /**
+   * NAME → SLUG for the card artwork. Bundles are keyed by NAME (they carry no
+   * id), and the art is keyed by the credential SLUG, so the live v3 catalog
+   * already in state is the bridge. A credential whose slug we cannot resolve
+   * simply shows the plain frame — never a guessed filename.
+   */
+  const slugByName = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const c of v3Certs) if (c.slug) m.set(c.name, c.slug);
+    for (const pgm of v3Programs) if (pgm.slug) m.set(pgm.name, pgm.slug);
+    return m;
+  }, [v3Certs, v3Programs]);
+
+  /**
+   * The deck. Column 0 is ALL TOPICS and is always present; then one card per
+   * enrolled credential IN ADD ORDER — `bundles`, deliberately NOT the
+   * filtered/sorted `displayedBundles`, because a filter chip must not
+   * reshuffle or hide the user's own deck (the chips belong to the topic list
+   * below, which is what they have always filtered).
+   */
+  const deckCards = useMemo<CarouselCard[]>(() => {
+    const topicPct = enrolled.length
+      ? Math.round(enrolled.reduce((sum, e) => sum + (prog.get(e.gs)?.pct ?? 0), 0) / enrolled.length)
+      : 0;
+    const all: CarouselCard = {
+      key: '__topics__',
+      kind: 'topics',
+      title: 'My topics',
+      slug: null,
+      pct: topicPct,
+      topicCount: enrolled.length,
+      allLoaded: enrolled.length > 0 && enrolled.every((e) => activeGs.has(e.gs)),
+    };
+    return [
+      all,
+      ...bundles.map((b) => ({
+        key: b.key,
+        kind: b.kind as CarouselCard['kind'],
+        title: b.name,
+        slug: slugByName.get(b.name) ?? null,
+        pct: b.topics.length
+          ? Math.round(b.topics.reduce((sum, gs) => sum + (prog.get(gs)?.pct ?? 0), 0) / b.topics.length)
+          : 0,
+        topicCount: b.topics.length,
+        allLoaded: b.topics.length > 0 && b.topics.every((gs) => activeGs.has(gs)),
+      })),
+    ];
+  }, [bundles, enrolled, prog, activeGs, slugByName]);
+
+  // Removing the credential you were looking at must not leave the deck
+  // pointing past the end — fall back to ALL TOPICS.
+  useEffect(() => {
+    if (deckIndex > deckCards.length - 1) setDeckIndex(0);
+  }, [deckCards.length, deckIndex]);
+
+  const centredBundle = deckIndex > 0 ? (bundles[deckIndex - 1] ?? null) : null;
+
   const renderBundle = (b: EnrolledBundle) => {
     const onHome = homeBundleSet.has(b.key);
     const tint = b.kind === 'cert' ? BLUE : b.kind === 'program' ? PURPLE : colors.amber;
@@ -1428,6 +1492,9 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             <Text style={styles.homeSetupText}>⌂ HOME SETUP ›</Text>
           </Pressable>
         </View>
+        {/* The chips filter the TOPIC list. With a credential centred they
+            would appear to work and change nothing, so they are not shown. */}
+        {centredBundle ? null : (
         <View style={styles.filterRow}>
           {FILTER_CHIPS.map((c) => {
             const on = filters.has(c.key);
@@ -1446,13 +1513,58 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             );
           })}
         </View>
+        )}
 
-        {/* INCOMPLETE cert/program/subject awards show at the TOP by default
-            (user request 2026-07-22); completed ones sink below the topics. */}
-        {displayedBundles.filter((b) => !isBundleDone(b.topics)).map(renderBundle)}
-        {displayedDerived.filter((d) => !isBundleDone(d.topics)).map(renderDerived)}
+        {/* ── THE DECK (owner 2026-09-19) ───────────────────────────────────
+            Replaces the tall stack of credential containers. Column 0 is ALL
+            TOPICS — the list a member has always seen — then one card per
+            credential they added, in that order. Whatever is centred owns the
+            area below. */}
+        <EnrollmentCarousel
+          cards={deckCards}
+          activeIndex={deckIndex}
+          onIndexChange={setDeckIndex}
+          onToggleLoad={(card) => {
+            if (card.kind === 'topics') {
+              setActiveMany(enrolled.map((e) => e.gs), !card.allLoaded);
+              return;
+            }
+            const b = bundles.find((x) => x.key === card.key);
+            if (b) setBundleLoad(b, !card.allLoaded);
+          }}
+          onStudy={(card) => {
+            if (card.kind === 'topics') {
+              goStudy(enrolled[0]?.gs);
+              return;
+            }
+            const b = bundles.find((x) => x.key === card.key);
+            goStudy(b?.topics[0]);
+          }}
+        />
 
-        {displayed.length === 0 && displayedBundles.length === 0 ? (
+        {/* WHAT THE CENTRED CARD REQUIRES. Opens COLLAPSED every time (owner:
+            "always default to showing topics below collapsed instead of
+            default expanded") — the old screen opened as a wall of expanded
+            containers. */}
+        {centredBundle ? (
+          <CentredRequirements
+            bundle={centredBundle}
+            nameFor={nameFor}
+            pctFor={pctFor}
+            onRemove={() => confirmRemoveWhole(centredBundle)}
+            onOpenAward={() =>
+              navigation.navigate('Awards', {
+                category: centredBundle.kind === 'program' ? 'program' : 'specialization',
+              })
+            }
+          />
+        ) : null}
+
+        {/* Completed-but-unclaimed credentials the user QUALIFIES for stay a
+            list: they are not enrolled, so they are not deck positions. */}
+        {centredBundle ? null : displayedDerived.filter((d) => !isBundleDone(d.topics)).map(renderDerived)}
+
+        {centredBundle ? null : displayed.length === 0 && displayedBundles.length === 0 ? (
           <Text style={styles.empty}>
             {enrolled.length === 0 && bundles.length === 0
               ? 'No topics yet — open BROWSE & ADD below to enroll in your first one.'
