@@ -150,7 +150,7 @@ export function EnrollmentCarousel({
       <Pressable
         style={[
           s.card,
-          { width: cardW, height: CARD_H, marginRight: gap, borderColor: centred ? accent : colors.hairline },
+          { width: cardW, height: CARD_H, borderColor: centred ? accent : colors.hairline },
           centred && s.cardCentred,
         ]}
         onPress={() => {
@@ -234,17 +234,36 @@ export function EnrollmentCarousel({
   return (
     // onLayout gives the deck its real available width (see `trackW` above).
     <View onLayout={(e) => setTrackW(Math.round(e.nativeEvent.layout.width))}>
+      {/*
+        ⛔ DO NOT "TIDY" THE LAYOUT PROPS BELOW.
+        On the first device pass (2026-09-19) this list rendered VERTICALLY
+        despite `horizontal` — both cards stacked, same x, and a horizontal
+        swipe moved nothing (confirmed by uiautomator bounds, not by eye). The
+        props are now written to match the main-menu deck in
+        CourseSelectionScreen, which has always worked, prop for prop:
+        spacing via the container's `gap` rather than a per-item marginRight,
+        `alignItems: 'center'`, and an explicit row direction. `flexGrow: 0`
+        keeps the list from being stretched by the vertical ScrollView it
+        lives in.
+      */}
       <FlatList
         ref={listRef}
         data={cards}
-        horizontal
+        horizontal={true}
         keyExtractor={(c) => c.key}
         renderItem={renderItem}
+        extraData={activeIndex}
         showsHorizontalScrollIndicator={false}
         snapToInterval={interval}
         decelerationRate="fast"
         disableIntervalMomentum
-        contentContainerStyle={{ paddingLeft: sidePad, paddingRight: Math.max(sidePad - gap, 0) }}
+        style={{ flexGrow: 0 }}
+        contentContainerStyle={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap,
+          paddingHorizontal: sidePad,
+        }}
         onMomentumScrollEnd={onMomentumEnd}
         // Every card is a fixed width, so the list can place them without
         // measuring — which is what keeps the snap honest on a cold render.
