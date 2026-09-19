@@ -32,7 +32,7 @@
  * that deck, and a second hand-rolled carousel would drift from it.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { CredentialThumb } from '../awards/CredentialThumb';
 import { LedMeter, segmentsForPct } from '../../components/LedMeter';
@@ -44,10 +44,13 @@ const STUDY_ICON = require('../../../assets/icons/nav/nav-study.png');
 export const CERT_BLUE = '#2f9bff';
 export const PROGRAM_PURPLE = '#b06cff';
 
-/** One deck position. `kind: 'topics'` is column 1 and is always index 0. */
+/**
+ * One deck position. `kind: 'topics'` is ALL TOPICS and is always the
+ * left-most card; `placeholder` is the empty-state ghost described below.
+ */
 export type CarouselCard = {
   key: string;
-  kind: 'topics' | 'cert' | 'program' | 'subject';
+  kind: 'topics' | 'cert' | 'program' | 'subject' | 'placeholder';
   title: string;
   /** Credential slug for the artwork; null for column 1 and for subjects. */
   slug: string | null;
@@ -58,7 +61,18 @@ export type CarouselCard = {
   allLoaded: boolean;
 };
 
-const CARD_MAX_W = 300;
+/**
+ * ⛔ THE SAME GEOMETRY AS THE MAIN MENU'S COURSE DECK (owner 2026-09-19:
+ * "make the containers the same width as the menu cards ... match
+ * aesthetic"). Copied from CourseSelectionScreen deliberately, values and
+ * all — a card that is merely similar reads as a mistake next to the real
+ * thing. Wider card + smaller gap is also what lets the neighbouring cards
+ * show at the edges, which is the point of a deck.
+ */
+const BASE_W = Math.min(Dimensions.get('window').width, Dimensions.get('window').height);
+const CARD_MAX_W = 280;
+const MENU_CARD_W = Math.min(Math.round(BASE_W * 0.7 * 0.93), CARD_MAX_W);
+const MENU_CARD_GAP = 14;
 /**
  * Fixed so every card is the same height while swiping. Sized to the tallest
  * real content — a 58px thumb beside a two-line title, then the meter row,
@@ -69,6 +83,7 @@ const CARD_MAX_W = 300;
 const CARD_H = 156;
 
 function accentFor(kind: CarouselCard['kind']): string {
+  if (kind === 'placeholder') return colors.textSub;
   return kind === 'program' ? PROGRAM_PURPLE : kind === 'cert' ? CERT_BLUE : colors.amber;
 }
 
@@ -109,8 +124,10 @@ export function EnrollmentCarousel({
   const { width: windowW } = useWindowDimensions();
   const [trackW, setTrackW] = useState(0);
   const availW = trackW || windowW;
-  const cardW = Math.min(Math.round(availW * 0.78), CARD_MAX_W);
-  const gap = 12;
+  // Never wider than the space we actually have, but otherwise exactly the
+  // menu card.
+  const cardW = Math.min(MENU_CARD_W, Math.round(availW * 0.92));
+  const gap = MENU_CARD_GAP;
   const interval = cardW + gap;
   const sidePad = Math.max(0, Math.round((availW - cardW) / 2));
   const listRef = useRef<ScrollView>(null);
@@ -145,6 +162,31 @@ export function EnrollmentCarousel({
     const accent = accentFor(item.kind);
     const centred = index === activeIndex;
     const isTopics = item.kind === 'topics';
+
+    /**
+     * A member with no credentials yet would otherwise see a deck of one and
+     * have no idea it IS a deck. This ghost sits where their first
+     * certificate will, says so, and is deliberately inert — a dashed outline
+     * and muted type, so it reads as a space to fill rather than a thing that
+     * failed to load (owner 2026-09-19: "if none yet use a blank to
+     * demonstrate the purpose already").
+     */
+    if (item.kind === 'placeholder') {
+      return (
+        <View
+          key={item.key}
+          style={[s.card, s.ghost, { width: cardW, height: CARD_H }]}
+          accessible
+          accessibilityLabel="No certificates or programs yet. Ones you enrol in appear here, beside your topics."
+        >
+          <View style={[s.thumb, s.thumbPlain, s.ghostThumb]}>
+            <Text style={s.ghostGlyph}>+</Text>
+          </View>
+          <Text style={s.ghostTitle}>Your certificates and programs</Text>
+          <Text style={s.ghostBody}>Enrol in one and it appears here, beside your topics.</Text>
+        </View>
+      );
+    }
     return (
       <Pressable
         key={item.key}
@@ -309,6 +351,18 @@ const s = StyleSheet.create({
     justifyContent: 'space-between',
   },
   cardCentred: { backgroundColor: '#17171b' },
+  ghost: {
+    borderStyle: 'dashed',
+    borderColor: '#2e2e35',
+    backgroundColor: '#0e0e11',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 8,
+  },
+  ghostThumb: { borderColor: '#2e2e35', width: 44, height: 44 },
+  ghostGlyph: { fontFamily: fonts.oswaldMedium, fontSize: 22, color: '#4a4a55' },
+  ghostTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.6, color: colors.textSecondary, textAlign: 'center' },
+  ghostBody: { fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 16, color: colors.textSub, textAlign: 'center', paddingHorizontal: 14 },
   cardHead: { flexDirection: 'row', gap: 10 },
   thumb: { width: 58, height: 58, borderRadius: 8, borderWidth: 1, overflow: 'hidden', backgroundColor: '#0c0c0e' },
   thumbArt: { width: '100%', height: '100%' },

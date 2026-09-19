@@ -1115,6 +1115,18 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
     // ALL TOPICS is column 0 only in the unfiltered view: under Programs or
     // Certificates the deck is that kind and nothing else, so leaving it in
     // would make the filter look broken.
+    // No credentials yet (or none of this kind): show the ghost so the deck
+    // still reads as a deck. See EnrollmentCarousel's placeholder branch.
+    const ghost: CarouselCard = {
+      key: '__none__',
+      kind: 'placeholder',
+      title: '',
+      slug: null,
+      pct: 0,
+      topicCount: 0,
+      allLoaded: false,
+    };
+    if (credentials.length === 0) return deckKind === 'all' ? [all, ghost] : [ghost];
     return [
       ...(deckKind === 'all' ? [all] : []),
       ...credentials.map((b) => ({
@@ -1466,9 +1478,12 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           </Pressable>
         </View>
 
-        <View style={styles.myEnrollArea}>
         {/* The chips filter the TOPIC list. With a credential centred they
-            would appear to work and change nothing, so they are not shown. */}
+            would appear to work and change nothing, so they are not shown.
+            Owner 2026-09-19: they sit UP HERE with the nav row now, outside
+            the frame, since every other control that acts on the area moved
+            out and leaving these behind read as though they belonged to the
+            deck. */}
         {centredBundle ? null : (
         <View style={styles.filterRow}>
           {FILTER_CHIPS.map((c) => {
@@ -1490,11 +1505,17 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
         </View>
         )}
 
+        <View style={styles.myEnrollArea}>
         {/* ── THE DECK (owner 2026-09-19) ───────────────────────────────────
             Replaces the tall stack of credential containers. Column 0 is ALL
             TOPICS — the list a member has always seen — then one card per
             credential they added, in that order. Whatever is centred owns the
             area below. */}
+        {/* FULL BLEED. The deck must be as wide as the MENU deck or the side
+            cards cannot show the same way, but it lives two containers deep:
+            the scroll's 16 and the green frame's 10 + 2.5 border. The negative
+            margin gives those back so the track spans the window. */}
+        <View style={styles.deckBleed}>
         <EnrollmentCarousel
           cards={deckCards}
           activeIndex={deckIndex}
@@ -1516,6 +1537,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             goStudy(b?.topics[0]);
           }}
         />
+        </View>
 
         {/* WHAT THE CENTRED CARD REQUIRES. Opens COLLAPSED every time (owner:
             "always default to showing topics below collapsed instead of
@@ -2234,6 +2256,9 @@ const styles = StyleSheet.create({
   filterRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   /* Deck navigation — frameless, above the green container it drives. */
   deckNav: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 10, marginBottom: 8 },
+  /* −(scroll 16 + frame 10 + border 2.5). Keep in step with `scroll` and
+     `myEnrollArea` if either padding ever changes. */
+  deckBleed: { marginHorizontal: -28 },
   deckNavBtn: { borderWidth: 1, borderColor: colors.hairline, borderRadius: 7, paddingVertical: 6, paddingHorizontal: 11, minHeight: 34, justifyContent: 'center' },
   deckNavBtnOn: { borderColor: GREEN, backgroundColor: 'rgba(55,224,95,.12)' },
   deckNavText: { fontFamily: fonts.oswaldMedium, fontSize: 12.5, color: colors.textSub },
