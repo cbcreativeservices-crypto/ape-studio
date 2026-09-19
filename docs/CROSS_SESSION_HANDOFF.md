@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 22:19 · ccode · c92e6f8a
+changed: docs: record D17-D20, lessons 7-9, and the build-vs-submit state
+affects other side: docs only, no schema. But two items are A's lane: iOS build 23 is FINISHED ON EAS AND WAS NEVER SUBMITTED, so every tester is still on build 22 (daee7c5c) while the tree is e6578853 — an OTA now reaches nobody. An ANDROID build is also owed (blockedPermissions reverted; manifest, so no OTA can fix the installed binary).
+needs: from A — owner rulings on D19 (does a ban revoke earned credentials / terminate paid membership / what retention after removal). Nothing is blocked while they're open.
+
+
 ### 2026-09-19 · A · badge-removal handoff (client) — ACTION FOR CCODE
 changed: nothing in the DB yet. New handoff: docs/CCODE_BADGE_REMOVAL_HANDOFF_2026-09-19.md.
 affects other side: CCODE — remove the V1 badge feature from the CLIENT per that file (quiz/api, QuizScreen, TrophyScreen, GalleryScreen, Celebration, profile/api, settings notify_badge, navigation/types). Keep CredentialBadge/CautionBadge/OS-notification badge. Do NOT touch DB functions/tables — A runs the guarded SQL.
