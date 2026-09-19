@@ -142,3 +142,90 @@ statement did what it said.
   ready: document.readyState}`. Fix = `preview_stop` AND `tabs_close`, then
   restart both; one alone does not clear it. Full detail in the
   `reference_fast_dev_loop` memory.
+
+---
+
+## 7 · ⛔ BUILD ≠ SUBMIT ≠ UPDATE. Three things, and they do not touch.
+
+The owner asked this directly and it is worth writing down, because two of the
+three have silently delivered nothing this week.
+
+| | what it does | what it CANNOT do |
+|---|---|---|
+| `eas build` | makes a binary on EAS | put anything in front of a tester |
+| `eas submit` | sends that binary to Apple / Google | deliver JS-only fixes |
+| `eas update` | swaps the JS inside an ALREADY-INSTALLED app | carry native or manifest changes |
+
+**A finished build is not in TestFlight.** On 2026-09-19 build 23 sat finished
+on EAS while every tester was still on build 22, because nobody had submitted
+it. `eas submit` is a separate command, and after it Apple processes the build
+AND somebody has to add it to the Internal group in the console.
+
+**An OTA is keyed to a per-platform runtime fingerprint**, so it reaches only
+the builds whose fingerprint matches. That day:
+
+```
+build 22 (what testers had)  daee7c5c…
+build 23 (sitting on EAS)    e6578853…
+working tree                 e6578853…
+```
+
+An `eas update` published then would have reached build 23 and NOT the testers
+— succeeding, and delivering nothing. Always compare `--platform`-specific
+fingerprints against `eas build:list` before publishing. See §3.
+
+**Practical rule:** if the work is JS-only and the installed build's
+fingerprint matches, OTA. If anything native or in `app.json`/`eas.json`
+changed, it is a build AND a submit, and the OTA cannot help.
+
+---
+
+## 8 · ⛔ An RLS policy with no GRANT is inert. This has now bitten TWICE.
+
+Postgres checks the table GRANT before it ever consults a policy. So a table
+with `enable row level security`, a perfect `admin_all` policy, and no grant to
+`authenticated` is not "admin only" — it is **nobody**, and the failure is a
+bare "permission denied" from a code path that looked correct in review.
+
+- `employer_profiles` — the admin RLS policy was dead, so revoking a badge was
+  impossible through any client.
+- `contact_reports` — same shape. Every abuse report anyone filed went into a
+  hole no admin could read.
+
+**Both were found by reading `has_table_privilege` / ACLs directly, never by a
+failing test**, because in both cases the feature had never run.
+
+The deliberate inverse is also useful: a table with RLS on, **no policies and
+no grants to any role**, is unreachable except through SECURITY DEFINER
+functions. That is exactly how `employer_email_verifications` and
+`account_standing` keep their contents away from the people they are about.
+When you do that, say so in a comment — it looks like an oversight.
+
+---
+
+## 9 · Smaller ones, each of which cost real time
+
+- **Not every "level" is a volume.** Applying a 30% start to every fader would
+  have broken three labs: Liquid Studio's SHAKE is an acceleration in g whose
+  threshold is the lesson, the Signal Generator's −20 dBFS already IS 10% of
+  full scale, and Mixing faders start at unity because unity is the lesson.
+  Ask what the number MEANS before normalising it.
+- **A content gap is not a search gap.** The Help filter genuinely was broken
+  (it substring-matched the whole query), but "how do I cancel" still returns
+  nothing afterwards, because the manual has no cancellation entry. My first
+  comment claimed otherwise and only the test caught it. Fixing search cannot
+  reach an answer nobody wrote.
+- **Indexing a StyleSheet by a prop name silently collides.** `s[tone]` where
+  tone is `'warn'` picked up the error-banner `warn` style. TypeScript was
+  happy. Use an explicit map.
+- **Clamping is not the same as defaulting.** Capping volume inside the shared
+  tone helper would have been less code and would have made every fader lie —
+  reading 70% while sounding at 30%. Move the default, not the output.
+- **Say the limit before the wall.** `contact_limits()` had been callable since
+  it was written and was called by nothing; every cap was discovered by hitting
+  it. When you add a limit, add the read that lets the UI warn — and make an
+  unknown allowance mean ALLOWED, so a dropped request never looks like a ban.
+- **`git add -A` sweeps in other people's files.** A work order from A appeared
+  in the tree mid-session and went into one of my commits. Harmless that time;
+  check `git status` before staging everything.
+

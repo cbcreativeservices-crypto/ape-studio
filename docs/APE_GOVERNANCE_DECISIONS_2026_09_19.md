@@ -110,3 +110,82 @@ device. Both halves of pass-5 finding E-3 are withdrawn. See
 - **Cymatics #14 / #18 / #19** (Harmonics as a rack; a perf lever conditional
   on device evidence; adding a recall check) are Medium scope calls from
   `Downloads/2026-09-18_BUGHUNT/design-cymatics.md`, not bugs.
+
+---
+
+## D17 · Sound labs open at 30% — but only where the number means loudness
+
+**Owner:** *"in all labs that turn on sound, the volume setting/fader auto
+starts at 30% always… that way volume never starts loud."*
+
+One constant, `src/features/audio/startLevel.ts`, and eight initialisers.
+Double-tap reset moves with it, so a reset can never be louder than the start.
+
+⛔ **Three levels are deliberately EXCLUDED, and must stay excluded:**
+Liquid Studio's SHAKE is an acceleration in g whose Faraday threshold is the
+lesson (30% sits below threshold — the dish would look broken); the Signal
+Generator's −20 dBFS already IS 10% of full scale and matches the engine's own
+`defaultLevelDb`; Mixing faders start at unity because unity is the lesson.
+
+Not clamped in the shared tone helper: that caps the sound without moving the
+fader, and a lane reading 70% while playing at 30% is a lying control.
+
+## D18 · Messaging caps: STRICTER, and counted per PAIR
+
+**Owner chose the stricter option.** 10 requests/week (unchanged), **10
+messages/day**, **30/week**, **5 per partner per day**, stop after **5
+consecutive unanswered**, **1000-character** messages.
+
+Plus two anti-harassment rules that are not about volume at all:
+**a 90-day cooldown after a decline** (previously a "no" held for zero
+seconds — the index only blocked a duplicate PENDING row), and **no second
+request while an accepted thread exists**.
+
+⛔ Every count is **per PAIR**, joined through `contact_requests` — never per
+`request_id`. A per-thread cap is evaded by opening a second thread.
+
+The remaining NEEDS OWNER from that audit: a lifetime per-thread cap and a
+separate monthly ceiling. Neither was adopted.
+
+## D19 · Moderation Phase 0 shipped; three questions are the owner's
+
+States: `active / warned / suspended(until) / banned / removed`, with an
+append-only `moderation_actions` audit. A suspension **expires by being read**,
+never by a cron job. A ban **unpublishes and never deletes** — deleting
+destroys the evidence behind the ban and anything an appeal rests on.
+
+Enforcement runs in two directions: a restricted SENDER is refused; a
+restricted TARGET disappears behind the same deliberately vague wording a
+block gives. Reporting, thread history and sign-in are deliberately NOT
+blocked — a suspended user must still be able to report, the other party keeps
+the evidence, and a banned user must be able to read the reason and appeal.
+
+⚠️ **STILL NEEDS OWNER — legal/product, not engineering:**
+1. Does a ban **revoke earned credentials**? `credential_awards.revoked_at`
+   exists, so it is one UPDATE either way. Revoking a credential somebody
+   passed an exam for is a different act from removing them from a directory.
+2. Does a ban **terminate paid membership**? You cannot refund an IAP
+   yourself — the stores own that — so banning a paid member without a refund
+   is a consumer-law and chargeback question.
+3. **Retention period** for reports, messages and moderation records after a
+   removal.
+
+## D20 · Build, submit and update are three separate acts
+
+Recorded because the owner asked directly and because two of the three have
+silently delivered nothing this week.
+
+`eas build` makes a binary. **It puts nothing in front of a tester.**
+`eas submit` sends that binary to Apple/Google — a separate command, followed
+by Apple processing AND somebody adding it to the Internal group in the
+console (A's lane). `eas update` swaps JS inside an already-installed app and
+**cannot carry native or manifest changes**.
+
+An OTA is keyed to a per-platform runtime fingerprint, so it reaches only
+matching builds. On 2026-09-19 build 23 sat finished and unsubmitted while
+testers were on build 22 with a different fingerprint — an update published
+then would have reached nobody, successfully.
+
+**Standing rule:** JS-only and fingerprints match → OTA. Anything native or in
+`app.json` / `eas.json` → build AND submit; no OTA can help.
+
