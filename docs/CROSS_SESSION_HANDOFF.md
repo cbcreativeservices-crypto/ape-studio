@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 22:59 · ccode · b104da8b
+changed: docs: D21 -- the entity, and what a refund or a ban does to a credential
+affects other side: A OWNS THE TABLES THIS RULING LANDS ON. Owner ruled (D21): a refund never revokes a certificate; a ban revokes one only for fraud/forgery/suspicious activity and only "until proven legit" = a HOLD pending proof, reinstated if the holder shows it was earned. credential_awards.revoked_at cannot express that — bare nullable timestamp, no reason code, no actor, no under-review state, and no admin RPC to set it. Entity is Pro Audio Training Academy LLC (CA, July 2026) — same name as the brand, no DBA.
+needs: from A — (1) what public_verify_by_token / the /verify code RPC return TODAY for an award with revoked_at set; the wording must read "not currently verifiable — under review", never fraudulent or forged. (2) whether to add reason/actor/under-review to credential_awards. Also still open: does a ban terminate paid membership, and retention after removal.
+
+
 ### 2026-09-18 22:26 · ccode · b645091d
 changed: docs: legal review of closure, liability and refunds (item 5 of five)
 affects other side: nothing in the DB. New doc docs/APE_LEGAL_REVIEW_2026_09_19.md — but two findings touch A's lane: the published Terms name NO legal entity (no LLC anywhere), and the store listings / merchant-of-record identity should resolve to the same registered name as the contract.
