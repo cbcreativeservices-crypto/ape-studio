@@ -31,7 +31,7 @@
  * (window − CARD_W) / 2, snapToInterval): the owner asked for it to feel like
  * that deck, and a second hand-rolled carousel would drift from it.
  */
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, Image, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { CardArt } from '../../components/CardArt';
@@ -60,7 +60,14 @@ export type CarouselCard = {
 };
 
 const CARD_MAX_W = 300;
-const CARD_H = 188;
+/**
+ * Fixed so every card is the same height while swiping. Sized to the tallest
+ * real content — a 58px thumb beside a two-line title, then the meter row,
+ * then the action row — with nothing left over. It was 188 on the first device
+ * pass and the ALL TOPICS card (no artwork, one-line title) showed an obvious
+ * dead band between the title and the meter.
+ */
+const CARD_H = 156;
 
 function accentFor(kind: CarouselCard['kind']): string {
   return kind === 'program' ? PROGRAM_PURPLE : kind === 'cert' ? CERT_BLUE : colors.amber;
@@ -91,13 +98,22 @@ export function EnrollmentCarousel({
   /** Open the Dashboard on that card's work. */
   onStudy: (card: CarouselCard) => void;
 }) {
+  /**
+   * The deck must centre against ITS OWN width, not the window's. It is nested
+   * inside the MY ENROLLMENT panel, which has its own horizontal padding, so
+   * centring on the window put the card left of centre with a band of dead
+   * space on the right — visible on the first device pass, 2026-09-19.
+   *
+   * The window is still the fallback for the very first frame, before layout
+   * has measured anything.
+   */
   const { width: windowW } = useWindowDimensions();
-  const cardW = Math.min(Math.round(windowW * 0.78), CARD_MAX_W);
+  const [trackW, setTrackW] = useState(0);
+  const availW = trackW || windowW;
+  const cardW = Math.min(Math.round(availW * 0.78), CARD_MAX_W);
   const gap = 12;
   const interval = cardW + gap;
-  // Centres the first and last card. Read from the live window so rotation and
-  // a split-view drag re-centre instead of leaving the deck offset.
-  const sidePad = Math.max(0, Math.round((windowW - cardW) / 2));
+  const sidePad = Math.max(0, Math.round((availW - cardW) / 2));
   const listRef = useRef<FlatList<CarouselCard>>(null);
 
   /** The index the USER last landed on by scrolling. */
@@ -216,7 +232,8 @@ export function EnrollmentCarousel({
   };
 
   return (
-    <View>
+    // onLayout gives the deck its real available width (see `trackW` above).
+    <View onLayout={(e) => setTrackW(Math.round(e.nativeEvent.layout.width))}>
       <FlatList
         ref={listRef}
         data={cards}
