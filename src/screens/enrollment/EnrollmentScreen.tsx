@@ -76,6 +76,7 @@ import { fetchGlossaryItemsByIds } from '../../features/study/api';
 import { useLastStudyLocation } from '../../features/study/lastStudyLocation';
 import { confirmDialog } from '../../lib/confirm';
 import { EnrollmentSelection, type CarouselCard } from './EnrollmentSelection';
+import { chipForKind, firstIndexOfKind, stepDeck } from './deckNav';
 import { LabScopeSweep } from './LabScopeSweep';
 
 /**
@@ -341,7 +342,6 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
    * were deliberately not merged because they act on different things and
    * sharing one control would make each of them lie about the other.
    */
-  const [deckKind, setDeckKind] = useState<'all' | 'program' | 'cert'>('all');
   const dragAccum = useRef(0);
   // Reorder step = the REAL measured height of each container (owner 2026-08-05
   // "reorder not working"): the old fixed DRAG_ROW_H=84 mismatched the true card
@@ -1131,12 +1131,16 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
     const credentials = [
       ...bundles.map((b) => ({ b, derived: false })),
       ...derivedBundles.map((d) => ({ b: { ...d, loaded: false } as EnrolledBundle, derived: true })),
-    ].filter(({ b }) => (deckKind === 'all' ? true : b.kind === deckKind));
-    // ALL TOPICS is column 0 only in the unfiltered view: under Programs or
-    // Certificates the deck is that kind and nothing else, so leaving it in
-    // would make the filter look broken.
-    // No credentials yet (or none of this kind): show the ghost so the deck
-    // still says what the < > lead to. See EnrollmentSelection's placeholder.
+    ];
+    /**
+     * ⛔ ONE WHOLE DECK, ALWAYS — the chips no longer cut it down (owner
+     * 2026-09-19, "programs and certificates is a: jump to, not a filter").
+     * ALL TOPICS is index 0 every time, so ‹ › traverse the same run of
+     * cards whatever chip is lit and can never be left with nowhere to go.
+     *
+     * No credentials yet: show the ghost so the deck still says what the
+     * ‹ › lead to. See EnrollmentSelection's placeholder.
+     */
     const ghost: CarouselCard = {
       key: '__none__',
       kind: 'placeholder',
@@ -1146,10 +1150,10 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
       topicCount: 0,
       allLoaded: false,
     };
-    if (credentials.length === 0) return deckKind === 'all' ? [all, ghost] : [ghost];
-    // (ghost is otherwise unused — a kind with credentials never shows it)
+    if (credentials.length === 0) return [all, ghost];
+    // (ghost is otherwise unused — a deck with credentials never shows it)
     return [
-      ...(deckKind === 'all' ? [all] : []),
+      all,
       ...credentials.map(({ b, derived }) => ({
         key: b.key,
         kind: b.kind as CarouselCard['kind'],
@@ -1163,7 +1167,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
         derived,
       })),
     ];
-  }, [bundles, derivedBundles, enrolled, prog, activeGs, slugByName, deckKind]);
+  }, [bundles, derivedBundles, enrolled, prog, activeGs, slugByName]);
 
   /**
    * ⛔ CLAMP IN RENDER, NOT IN AN EFFECT. An effect resetting this runs one
@@ -1172,6 +1176,8 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
    * through to the ALL TOPICS list. Derived, it can never be out of range.
    */
   const safeDeckIndex = Math.min(Math.max(deckIndex, 0), Math.max(0, deckCards.length - 1));
+  /** The deck's shape, for the chips' jump targets. */
+  const deckKinds = useMemo(() => deckCards.map((c) => c.kind), [deckCards]);
 
   // Removing the credential you were looking at must not leave the deck
   // pointing past the end — fall back to ALL TOPICS.
@@ -1646,18 +1652,29 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             { k: 'program', label: 'Programs' },
             { k: 'cert', label: 'Certificates' },
           ] as const).map((t) => {
-            const on = deckKind === t.k;
+            /**
+             * A JUMP, and a readout of where you are — not a filter. The chip
+             * lights because the card you are on is of that kind, so stepping
+             * ‹ › off the last program onto the first certificate moves the
+             * highlight with you. See deckNav.ts for why.
+             */
+            const target = firstIndexOfKind(deckKinds, t.k);
+            const on = chipForKind(deckCards[safeDeckIndex]?.kind) === t.k;
+            const none = target < 0;
             return (
               <Pressable
                 key={t.k}
-                style={[styles.deckNavBtn, on && styles.deckNavBtnOn]}
-                onPress={() => setDeckKind(t.k)}
+                style={[styles.deckNavBtn, on && styles.deckNavBtnOn, none && styles.deckNavBtnOff]}
+                onPress={() => setDeckIndex(target)}
+                disabled={none}
                 accessibilityRole="button"
-                accessibilityState={{ selected: on }}
+                accessibilityState={{ selected: on, disabled: none }}
                 aria-pressed={on}
-                accessibilityLabel={`Show ${t.label}`}
+                accessibilityLabel={none ? `No ${t.label.toLowerCase()} yet` : `Jump to ${t.label}`}
               >
-                <Text style={[styles.deckNavText, on && styles.deckNavTextOn]}>{t.label}</Text>
+                <Text style={[styles.deckNavText, on && styles.deckNavTextOn, none && styles.deckNavTextOff]}>
+                  {t.label}
+                </Text>
               </Pressable>
             );
           })}
@@ -1671,7 +1688,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
               the dots the deck used to carry. */}
           <Pressable
             style={[styles.deckStep, safeDeckIndex <= 0 && styles.deckStepOff]}
-            onPress={() => setDeckIndex(Math.max(0, safeDeckIndex - 1))}
+            onPress={() => setDeckIndex(stepDeck(safeDeckIndex, -1, deckCards.length))}
             disabled={safeDeckIndex <= 0}
             hitSlop={8}
             accessibilityRole="button"
@@ -1687,7 +1704,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           ) : null}
           <Pressable
             style={[styles.deckStep, safeDeckIndex >= deckCards.length - 1 && styles.deckStepOff]}
-            onPress={() => setDeckIndex(Math.min(deckCards.length - 1, safeDeckIndex + 1))}
+            onPress={() => setDeckIndex(stepDeck(safeDeckIndex, +1, deckCards.length))}
             disabled={safeDeckIndex >= deckCards.length - 1}
             hitSlop={8}
             accessibilityRole="button"
@@ -2336,6 +2353,10 @@ const styles = StyleSheet.create({
   deckNavBtnOn: { borderColor: GREEN, backgroundColor: 'rgba(55,224,95,.12)' },
   deckNavText: { fontFamily: fonts.oswaldMedium, fontSize: 12.5, color: colors.textSub },
   deckNavTextOn: { color: GREEN },
+  /* Nothing of that kind enrolled yet — the chip has nowhere to jump, so it
+     reads as unavailable rather than looking live and moving nothing. */
+  deckNavBtnOff: { opacity: 0.4 },
+  deckNavTextOff: { color: colors.textSub },
   deckStep: {
     width: 54,
     height: 48,
