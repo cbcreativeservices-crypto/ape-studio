@@ -149,6 +149,17 @@ export type CiModuleProps = {
   /** Fire ONCE when the module's exercises are genuinely completed —
    *  optionally carrying the dimension scores the exercises produced. */
   onComplete: (dims?: CiDimScores) => void;
+  /**
+   * Record dimension scores at a mid-module CHECKPOINT, without completing the
+   * module (2026-09-18, pass 4 · H-2b).
+   *
+   * The capstone is two halves: pass the facility inspection, then the
+   * knowledge check. Its scores were only reported at the very end, so a
+   * learner who passed the inspection, left the lab and came back finished
+   * with an empty score object — the one stage graded across every defect they
+   * found, classified and corrected contributed NOTHING to the scorecard.
+   */
+  onDims?: (dims: CiDimScores) => void;
   /** Open the host's source sheet on these source ids. */
   openSources: (sourceIds: string[]) => void;
 };

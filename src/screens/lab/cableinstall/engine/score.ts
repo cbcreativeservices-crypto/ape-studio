@@ -57,7 +57,31 @@ export function overallScore(dims: CiDimScores): number {
   return wsum > 0 ? clamp100(acc / wsum) : 0;
 }
 
-/** Merge module dimension results (running average per dimension). */
+/**
+ * Merge module dimension results — an EXPONENTIAL BLEND, not a running average.
+ *
+ * ── THE DOCSTRING USED TO SAY "running average" AND IT IS NOT ONE ───────────
+ * (2026-09-18, pass 4 · H-2a — corrected here as WORDING; the behaviour is
+ * deliberately left alone pending an owner ruling.)
+ *
+ * With the default weight of 1 this is `(prev + v) / 2`. There is no sample
+ * count, so the LAST module to touch a dimension owns half of its final score,
+ * the one before it a quarter, and so on. Eleven scenes feed dimensions and
+ * they overlap heavily — `routing` is written by six of them.
+ *
+ * Concretely: score 100 on routing in stages 2–10 and 0 in stage 11 and the
+ * scorecard reads 50, where the true mean is 83.
+ *
+ * ⚠ This is NOT obviously a bug, which is why it was not "fixed":
+ *   - As a MEAN, one early bad stage follows a learner through the whole lab.
+ *   - As a BLEND, recent work counts most — "you improved, and the score shows
+ *     it", which is defensible pedagogy for a teaching lab.
+ * The number also drives `masteryBlocks` and `weakestDim` → the "Recommended
+ * review" line, so changing it changes the advice the lab gives.
+ *
+ * Choosing between them is an owner call about what the score MEANS, not a
+ * defect fix. Until then the name says what the code does.
+ */
 export function mergeDims(into: CiDimScores, add: CiDimScores, weight = 1): CiDimScores {
   const out: CiDimScores = { ...into };
   for (const d of CI_DIMS) {

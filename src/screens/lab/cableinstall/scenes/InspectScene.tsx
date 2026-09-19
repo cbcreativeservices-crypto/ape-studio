@@ -413,7 +413,7 @@ function FacilityScene({
   );
 }
 
-export function InspectScene({ width, completed, onComplete, openSources, clearedUnits }: CiModuleProps) {
+export function InspectScene({ width, completed, onComplete, onDims, openSources, clearedUnits }: CiModuleProps) {
   const seedRef = useRef(Date.now());
   const [attemptSeed, setAttemptSeed] = useState(seedRef.current);
   const defects = useMemo(() => drawAttempt(attemptSeed), [attemptSeed]);
@@ -507,6 +507,12 @@ export function InspectScene({ width, completed, onComplete, openSources, cleare
     });
     const dims = inspectionDimScores(results);
     setPassDims(dims);
+    // H-2b (2026-09-18): report the inspection's scores NOW, not only at
+    // onComplete. `passDims` is component state, so leaving the lab between
+    // the inspection and the knowledge check used to discard it entirely and
+    // the capstone scored nothing. Merging is idempotent for identical dims,
+    // so the onComplete below re-reporting them is a no-op.
+    onDims?.(dims);
     markLabUnit(LAB_KEY, CI_INSPECT_PASS_UNIT);
     announceComplete('Inspection passed. Knowledge check unlocked.');
     setPhase('quiz');

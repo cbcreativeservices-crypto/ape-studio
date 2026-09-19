@@ -195,6 +195,16 @@ export function CableInstallLabScreen() {
   const moduleIdx = step - 1; // 0-based into CI_MODULES when 1..13
   const mod = moduleIdx >= 0 && moduleIdx < CI_MODULES.length ? CI_MODULES[moduleIdx] : null;
 
+  /** Checkpoint scores (H-2b): merge and persist WITHOUT completing the unit. */
+  const onModuleDims = useCallback(
+    (newDims: CiDimScores) => {
+      const merged = mergeDims(dims, newDims);
+      setDims(merged);
+      persist(step, merged, shownMyths);
+    },
+    [dims, step, shownMyths, persist],
+  );
+
   const onModuleComplete = useCallback(
     (newDims?: CiDimScores) => {
       if (!mod) return;
@@ -361,7 +371,7 @@ export function CableInstallLabScreen() {
               <Text style={styles.stageTitle}>{mod.title}</Text>
               <Text style={styles.stageIntro}>{mod.intro}</Text>
               {width > 0 ? (
-                <Body width={width} completed={modDone} onComplete={onModuleComplete} openSources={openSources} clearedUnits={clearedUnits} />
+                <Body width={width} completed={modDone} onComplete={onModuleComplete} onDims={onModuleDims} openSources={openSources} clearedUnits={clearedUnits} />
               ) : null}
             </Appear>
           ) : null}
