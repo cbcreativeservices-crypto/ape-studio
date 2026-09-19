@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-19 00:11 · ccode · 3cbf072d
+changed: Every popup is the app's own dialog now, and a test keeps it that way
+affects other side: nothing in the DB — client presentation only. 33 raw Alert.alert call sites across 13 files now route through the app themed dialog (confirmDialog / notify). No user-facing STRING changed; PaywallScreen copy is owner-ratified and is byte-identical. New guard test/noRawAlert.test.ts fails on any new raw Alert.
+needs: nothing.
+
+
 ### 2026-09-18 23:53 · ccode · b8d3b74c
 changed: Fix the z-order bug: the "won't be saved" notice rendered behind the sheet
 affects other side: nothing in the DB — client UI only. Two client changes from an owner device pass: (1) the credential modal now offers STUDY NOW + GO TO MY ENROLLMENTS once enrolled, shown only when the account can actually hold an enrollment; (2) fixed an Android z-order bug where PrePaywallPrompt rendered BEHIND an open modal, so the "won't be saved without an account" notice was never readable. Paywall also gained a second pricing-honesty line (one price, enrolling in more never costs more).
