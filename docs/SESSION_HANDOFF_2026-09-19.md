@@ -101,7 +101,7 @@ Open since 2026-09-13.
 | 2 | Cap messaging so this isn't "a secret messaging side app" | **DONE** — stricter option, every count per PAIR, 90-day cooldown after a decline (D18) |
 | 3 | Report abuse + suspend / remove / ban | **DONE** — Moderation Phase 0 (D19) |
 | 4 | Help search that implies smart search | **DONE** — tokenised AND-match + stop words, 11 tests |
-| 5 | **Legal verbiage: LLC closure, liability, refunds** | ⛔ **NOT STARTED.** ccode can draft only — this needs a lawyer before it ships |
+| 5 | **Legal verbiage: LLC closure, liability, refunds** | **DRAFTED** — `docs/APE_LEGAL_REVIEW_2026_09_19.md`, 7 findings + drop-in clauses. ⛔ Needs a lawyer, and 4 facts + 3 rulings only the owner has |
 
 ### Three rulings the owner owes on item 3
 
