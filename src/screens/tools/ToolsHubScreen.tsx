@@ -40,7 +40,6 @@ import ToolStripSignalgen from '../../../assets/tool-strips/tool_06_tone_noise_g
 import ToolStripHzcounter from '../../../assets/tool-strips/tool_07_frequency_counter_tuner_strip.svg';
 import ToolStripMultimeter from '../../../assets/tool-strips/tool_08_pro_audio_multimeter_strip.svg';
 import { CompactBrandBar } from '../../components/CompactBrandBar';
-import { NavIcon, type NavIconName } from '../../components/nav/NavIcon';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { CONCEPT_MODULES } from '../../features/tools/learn';
 import { colors, fonts } from '../../theme/tokens';
@@ -120,7 +119,6 @@ function tileWidthFor(windowW: number): number {
   const inner = content - 14 * 2 - (1 + 12) * 2;
   return Math.floor((inner - GRID_GAP - TILE_FIT_SLACK) / 2);
 }
-const NAV_TABS: NavIconName[] = ['Home', 'Study', 'Achievements', 'Profile'];
 
 /** A card/chip/row RIM under the hub's overhead key (HUB_LIGHT, TileChassis):
  *  the up-facing top edge catches (rung 3), the sides sit in ambient, the
@@ -1157,35 +1155,23 @@ export function ToolsHubScreen({ navigation }: Props) {
         </ScrollView>
       </View>
 
-      {/* Tile reveal (Pillar B, plan §3) — sits above this screen's own nav bar. */}
+      {/* Tile reveal (Pillar B, plan §3). The +72 clearance was for this
+          screen's own nav bar, which is gone — it sits on the safe area now. */}
       {hubCoach.visible ? (
-        <CoachMark text="Tap any display to open the full instrument" bottom={insets.bottom + 72} />
+        <CoachMark text="Tap any display to open the full instrument" bottom={insets.bottom + 16} />
       ) : null}
 
-      {/* Bottom nav — this screen lives outside MainTabs, so we render our own
-          bar routing back into the tabs (Booth 2026-07-11). */}
-      <LinearGradient
-        colors={['#1b1b1b', '#0d0d0d']}
-        style={[styles.navBar, { paddingBottom: insets.bottom }]}
-      >
-        <View style={styles.navRow}>
-          {NAV_TABS.map((name) => (
-            <Pressable
-              key={name}
-              style={styles.navItem}
-              accessibilityRole="tab"
-              accessibilityState={{ selected: false }}
-              aria-selected={false}
-              // SR label matches the VISIBLE text -- the tab draws "PROGRESS"
-              // while the route is named Achievements (mirror TabBar.tsx).
-              accessibilityLabel={name === 'Achievements' ? 'Progress' : name}
-              onPress={() => navigation.popTo('Main', { screen: name } as never)}
-            >
-              <NavIcon icon={name} lit={false} />
-            </Pressable>
-          ))}
-        </View>
-      </LinearGradient>
+      {/* ⛔ NO BOTTOM NAV HERE (owner 2026-09-19: "in the tool menu, do not
+          show the bottom nav buttons — users use the top right home button to
+          exit"). This screen rendered its OWN copy of the tab bar because it
+          lives outside MainTabs; it is gone, and HOME in the compact header
+          is the way out.
+
+          ⚠️ That makes the header's HOME load-bearing rather than a
+          convenience — it is now the only control on this screen that leaves
+          it. It is in CompactBrandBar, it uses `popTo` (see the note there),
+          and the hardware back gesture still works. Do not remove it from
+          the header without putting something else in its place. */}
     </View>
   );
 }
@@ -1412,9 +1398,6 @@ const styles = StyleSheet.create({
   trainingTitle: { flex: 1, fontFamily: fonts.oswaldMedium, fontSize: 14, color: colors.textPrimary },
   trainingChevron: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, color: colors.textSub },
   // Bottom nav bar (routes back into MainTabs).
-  navBar: { borderTopWidth: 1, borderTopColor: colors.black },
-  navRow: { flexDirection: 'row', height: 60 },
-  navItem: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   // Academy-locked container/row treatment — grayed steel, muted text.
   // (rim through litRim so the locked steel is still lit from above)
   lockedRow: { ...litRim('#474747', '#3a3a3a', '#2d2d2d'), backgroundColor: '#141414', opacity: 0.6 },
