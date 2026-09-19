@@ -268,22 +268,70 @@ export const HELP_CATEGORIES: HelpCategory[] = [
   },
 ];
 
-/** Case-insensitive filter across category title + question + answer text.
- *  Returns categories with only their matching entries; empty categories drop
- *  out. A query that matches a category's TITLE keeps the whole category —
- *  without this, the ToolsHub "?" key's pre-fill "tool" missed two of the five
- *  TOOLS & LABS entries whose ratified answers never use the word (found
- *  2026-09-13 audit; the copy is governed, the search logic is not). */
+/**
+ * Words that carry no signal in a help query. Dropping them is what lets a
+ * whole question work as a filter instead of dead-ending.
+ */
+const STOP_WORDS = new Set([
+  'a', 'an', 'the', 'is', 'are', 'was', 'were', 'be', 'been', 'do', 'does',
+  'did', 'how', 'what', 'when', 'where', 'why', 'who', 'which', 'can', 'could',
+  'should', 'would', 'will', 'i', 'my', 'me', 'we', 'our', 'you', 'your',
+  'to', 'of', 'in', 'on', 'for', 'with', 'at', 'from', 'by', 'about', 'and',
+  'or', 'it', 'this', 'that', 'get', 'got', 'if', 'so', 'as', 'not',
+]);
+
+/**
+ * Filter the manual by keyword.
+ *
+ * ── WHY THIS IS TOKENISED AND NOT A SUBSTRING MATCH (owner 2026-09-19) ──────
+ *
+ * Owner: "the help search implies we have a smart search and we dont, so we
+ * need to limit or not have the field… it just returns that it cant find
+ * anything anyway (remove this frustration)."
+ *
+ * The old version lowercased the WHOLE query and asked whether the text
+ * `includes()` it. So "how do I cancel" looked for that literal string and
+ * found nothing, in a manual that answers exactly that question. Every
+ * natural sentence dead-ended, which is precisely the frustration.
+ *
+ * Now the query is split into words, the ones that carry no meaning are
+ * dropped, and an entry matches when it contains ALL the remaining words
+ * anywhere in its title, question or answer. "how do I log out" reduces to
+ * ["log", "out"] and lands. AND rather than OR, because two words should
+ * narrow.
+ *
+ * ⚠️ This does NOT fix a content gap, and it must not be mistaken for one.
+ * The manual has no entry about CANCELLING a membership, so "how do I cancel"
+ * still finds nothing — correctly. A filter can only reach answers that were
+ * written. Missing topics are a writing job, not a search job.
+ *
+ * It is still a keyword FILTER, not a search engine — no stemming, no
+ * synonyms, no ranking. The UI now says "filter" and stops promising
+ * otherwise, which was the other half of the complaint.
+ *
+ * A query that is ALL stop words ("how do I") reduces to nothing, and the
+ * honest answer to nothing is everything — return the whole manual rather
+ * than an empty screen.
+ *
+ * Category TITLE matching keeps the whole category — without it, the
+ * ToolsHub "?" pre-fill "tool" missed two of the five TOOLS & LABS entries
+ * whose ratified answers never use the word (2026-09-13 audit; the copy is
+ * governed, the filter logic is not).
+ */
 export function filterHelp(query: string): HelpCategory[] {
-  const q = query.trim().toLowerCase();
-  if (!q) return HELP_CATEGORIES;
+  const words = query
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter((w) => w.length > 1 && !STOP_WORDS.has(w));
+  if (words.length === 0) return HELP_CATEGORIES;
+
+  const hasAll = (text: string) => words.every((w) => text.includes(w));
+
   return HELP_CATEGORIES.map((c) => {
-    if (c.title.toLowerCase().includes(q)) return c;
+    if (hasAll(c.title.toLowerCase())) return c;
     return {
       ...c,
-      entries: c.entries.filter(
-        (e) => e.q.toLowerCase().includes(q) || e.a.toLowerCase().includes(q),
-      ),
+      entries: c.entries.filter((e) => hasAll(`${e.q} ${e.a}`.toLowerCase())),
     };
   }).filter((c) => c.entries.length > 0);
 }

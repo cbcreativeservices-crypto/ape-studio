@@ -45,6 +45,7 @@ import { requireVizPlate, skiaAvailable } from './skiaGate';
 import type { PlateViewMode } from './vizPlate';
 import { useDriveTone } from './useDriveTone';
 import { RES_TINT } from '../../../features/cymatics/resTint';
+import { START_LEVEL_01 } from '../../../features/audio/startLevel';
 
 const F_MIN = 30;
 const F_MAX = 3000;
@@ -116,7 +117,7 @@ export function PlateStudioScreen() {
 
   const [spec, setSpec] = useState<PlateSpec>(() => ({ ...DEFAULT_PLATE, ...(preset?.spec ?? {}) }));
   const [freq, setFreq] = useState(preset?.freq.kind === 'hz' ? preset.freq.hz : 240);
-  const [amplitude, setAmplitude] = useState(preset?.id === 'turn-it-up' ? 0.2 : 0.7);
+  const [amplitude, setAmplitude] = useState(preset?.id === 'turn-it-up' ? 0.2 : START_LEVEL_01);
   const [view, setView] = useState<PlateViewMode>(preset?.view ?? 'particles');
   const [multi, setMulti] = useState('off');
   const [sandCount, setSandCount] = useState(3000);
@@ -443,7 +444,9 @@ export function PlateStudioScreen() {
       format: (v) => `Drive ${Math.round(v * 100)} %`,
       formatShort: (v) => `${Math.round(v * 100)}%`,
       level: true,
-      home: 0.7,
+      // Double-tap reset goes to the same place as first open: one number,
+      // so a reset can never be louder than where you started (2026-09-19).
+      home: START_LEVEL_01,
       helpKey: 'amplitude',
     },
     {

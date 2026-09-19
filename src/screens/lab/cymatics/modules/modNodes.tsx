@@ -19,6 +19,7 @@ import { useDriveTone } from '../useDriveTone';
 import { CymaticsRackLayout } from './rackLayout';
 import { P, excitableModes } from './shared';
 import { RES_TINT } from '../../../../features/cymatics/resTint';
+import { START_LEVEL_01 } from '../../../../features/audio/startLevel';
 
 const F_MIN = 30;
 const F_MAX = 3000;
@@ -43,7 +44,7 @@ export function NodesModule({ width, focused, help }: CymaticsModuleProps) {
   const [hz, setHz] = useState(() => Math.round((modes[0]?.hz ?? 300) * 10) / 10);
   const [view, setView] = useState<PlateViewMode>('nodes');
   const [silent, setSilent] = useState(false);
-  const tone = useDriveTone(hz, null, 0.6);
+  const tone = useDriveTone(hz, null, START_LEVEL_01);
   const res = useMemo(() => readResonance(hz, allModes, Q), [hz, allModes, Q]);
   const grid = useMemo(() => sampleField(spec, allModes, hz, Q, N), [spec, allModes, hz, Q]);
   const viz = skiaAvailable ? requireVizPlate() : null;

@@ -57,6 +57,7 @@ import type { BezelItem, DockParam } from '../rack/rackTypes';
 import { ConceptBadge, DragSlider, LevelMeterBar, VizUnavailableCard } from './bits';
 import { requireViz, type VizModule } from './skiaGate';
 import { visHzFor } from './FoundationsCourseScreen';
+import { START_LEVEL_01 } from '../../../features/audio/startLevel';
 
 const ACTIVITY_MS = 500;
 const SPEED_OF_SOUND = 343;
@@ -154,7 +155,7 @@ export function FoundationsPlaygroundScreen() {
   const [noise, setNoise] = useState<NoiseKind>('pink');
   const [sweepKey, setSweepKey] = useState<(typeof SWEEPS)[number]['key']>('slow');
   const [freq01, setFreq01] = useState(0.4); // log 55..3520
-  const [lvl01, setLvl01] = useState(0.7); // −48..−16
+  const [lvl01, setLvl01] = useState(START_LEVEL_01); // −48..−16
   const [keep, setKeep] = useState<number>(12);
   const [phase, setPhase] = useState<number>(0);
   const [inverted, setInverted] = useState(false);

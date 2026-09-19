@@ -21,6 +21,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { DEFAULT_LIQUID, type LiquidSpec } from './faraday';
 import { DEFAULT_MEMBRANE, type MembraneSpec } from './membrane';
 import { DEFAULT_PLATE, type PlateSpec } from './plateModes';
+import { START_LEVEL_01 } from '../audio/startLevel';
 
 export type StudioId = 'plate' | 'liquid' | 'membrane';
 
@@ -115,7 +116,10 @@ function normaliseState(raw: unknown): PatternState | null {
       studio: 'plate',
       spec: { ...DEFAULT_PLATE, ...(spec as Partial<PlateSpec>) },
       hz: raw.hz,
-      amplitude: isNum(raw.amplitude) ? raw.amplitude : 0.7,
+      // A saved pattern's OWN amplitude is honoured — that is the user's
+      // choice and reopening it is not a first open. But a row MISSING the
+      // field must not resurrect the old loud default (2026-09-19).
+      amplitude: isNum(raw.amplitude) ? raw.amplitude : START_LEVEL_01,
       view: view || 'particles',
       multi: isStr(raw.multi) && raw.multi in TONE_RATIOS ? raw.multi : 'off',
       sandCount: isNum(raw.sandCount) ? raw.sandCount : 3000,
@@ -139,7 +143,10 @@ function normaliseState(raw: unknown): PatternState | null {
       studio: 'membrane',
       spec: { ...DEFAULT_MEMBRANE, ...(spec as Partial<MembraneSpec>) },
       hz: raw.hz,
-      amplitude: isNum(raw.amplitude) ? raw.amplitude : 0.7,
+      // A saved pattern's OWN amplitude is honoured — that is the user's
+      // choice and reopening it is not a first open. But a row MISSING the
+      // field must not resurrect the old loud default (2026-09-19).
+      amplitude: isNum(raw.amplitude) ? raw.amplitude : START_LEVEL_01,
       view: view || 'head',
       driverId: isStr(raw.driverId) ? raw.driverId : 'woofer200',
     };

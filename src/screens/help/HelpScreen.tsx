@@ -22,7 +22,7 @@ import { resetCoachMarks } from '../../lib/coachMark';
 import { resetScreenIntros } from '../../features/intro/screenIntros';
 import { resetOnboarding } from '../../features/intro/onboardingFlow';
 import { resetAmplitudeOrientation } from '../../features/lab/amplitudeOrientation';
-import { filterHelp, type HelpEntry } from '../../features/help/helpContent';
+import { HELP_CATEGORIES, filterHelp, type HelpEntry } from '../../features/help/helpContent';
 
 export function HelpScreen() {
   const insets = useSafeAreaInsets();
@@ -89,33 +89,40 @@ export function HelpScreen() {
             style={styles.search}
             value={query}
             onChangeText={setQuery}
-            placeholder="SEARCH THE MANUAL"
+            placeholder="FILTER BY KEYWORD"
             placeholderTextColor={colors.textSubAlt}
             autoCapitalize="none"
             autoCorrect={false}
-            accessibilityLabel="Search help"
+            accessibilityLabel="Filter the manual by keyword"
             returnKeyType="search"
           />
           {/* Clear shows whenever the box holds ANY text (even whitespace-only,
               which doesn't count as "searching") so typed input is always
               one tap from gone. */}
           {query.length > 0 ? (
-            <Pressable onPress={() => setQuery('')} hitSlop={10} accessibilityRole="button" accessibilityLabel="Clear search">
+            <Pressable onPress={() => setQuery('')} hitSlop={10} accessibilityRole="button" accessibilityLabel="Clear the filter">
               <Text style={styles.clear}>✕</Text>
             </Pressable>
           ) : null}
         </View>
 
+        {/* ── NO DEAD ENDS (owner 2026-09-19) ─────────────────────────────
+            This panel already said "browse the full manual below" — and then
+            rendered INSTEAD of the manual, so there was nothing below it. The
+            copy was false and the screen was a wall. Now the notice sits ABOVE
+            the full manual, so the sentence is true and there is always
+            something to read. */}
         {noResults ? (
           <View style={styles.emptyPanel}>
             {/* Announced to screen readers when the result set empties —
                 otherwise a SR user types into silence (a11y audit 2026-09-13). */}
             <Text style={styles.emptyText} accessibilityRole="alert" accessibilityLiveRegion="polite">
-              Nothing in the manual matches “{query.trim()}”. Try another word — or browse the full manual below; most answers are close by.
+              No entry contains “{query.trim()}”. The whole manual is below — most answers are close by.
             </Text>
           </View>
-        ) : (
-          categories.map((c) => (
+        ) : null}
+
+        {(noResults ? HELP_CATEGORIES : categories).map((c) => (
             <View key={c.key} style={styles.section}>
               <View style={styles.sectionHead}>
                 <View style={styles.sectionTick} />
@@ -127,8 +134,7 @@ export function HelpScreen() {
                 ))}
               </View>
             </View>
-          ))
-        )}
+          ))}
 
         {/* Still need help? — while searching (incl. a "?" key's pre-filter),
             the route is BACK TO THE FULL MANUAL, never straight to email: the

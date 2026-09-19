@@ -64,6 +64,7 @@ import { requireVizMembrane, skiaAvailable } from './skiaGate';
 import type { MembraneViewMode } from './vizMembrane';
 import { useDriveTone } from './useDriveTone';
 import { RES_TINT } from '../../../features/cymatics/resTint';
+import { START_LEVEL_01 } from '../../../features/audio/startLevel';
 
 const F_MIN = 20;
 const F_MAX = 6000;
@@ -113,7 +114,7 @@ export function MembraneStudioScreen() {
 
   const [spec, setSpec] = useState<MembraneSpec>(() => ({ ...DEFAULT_MEMBRANE, ...(preset?.spec ?? {}) }));
   const [freq, setFreq] = useState(typeof preset?.hz === 'number' ? preset.hz : 180);
-  const [amplitude, setAmplitude] = useState(0.7);
+  const [amplitude, setAmplitude] = useState(START_LEVEL_01);
   const [view, setView] = useState<MembraneViewMode>(preset?.view ?? 'head');
   const [driverId, setDriverId] = useState<DriverId>(preset?.driver ?? 'woofer200');
   const [slowMo, setSlowMo] = useState(false);
@@ -375,7 +376,9 @@ export function MembraneStudioScreen() {
       format: (v) => `Drive ${Math.round(v * 100)} %`,
       formatShort: (v) => `${Math.round(v * 100)}%`,
       level: true,
-      home: 0.7,
+      // Double-tap reset goes to the same place as first open: one number,
+      // so a reset can never be louder than where you started (2026-09-19).
+      home: START_LEVEL_01,
       helpKey: 'amplitude',
     },
   ];

@@ -13,6 +13,7 @@ import { formatHz } from '../../../../features/cymatics/music';
 import type { CymaticsModuleProps } from '../CymaticsModuleScreen';
 import { useDriveTone } from '../useDriveTone';
 import { P, excitableModes } from './shared';
+import { START_LEVEL_01 } from '../../../../features/audio/startLevel';
 
 const F0 = 110;
 const AXIS_MAX = 6.5;
@@ -67,7 +68,7 @@ export function HarmonicsModule({ width, help }: CymaticsModuleProps) {
   ];
   const [sel, setSel] = useState<{ ladder: string; ratio: number } | null>(null);
   const hz = F0 * (sel?.ratio ?? 1);
-  const tone = useDriveTone(hz, null, 0.6);
+  const tone = useDriveTone(hz, null, START_LEVEL_01);
   const play = async (ladder: string, ratio: number) => {
     setSel({ ladder, ratio });
     if (!tone.running) await tone.start();

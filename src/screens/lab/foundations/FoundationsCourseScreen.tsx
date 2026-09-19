@@ -64,6 +64,7 @@ import { RackUnit } from '../rack/RackUnit';
 import type { BezelItem, DockParam } from '../rack/rackTypes';
 import { CheckQuestion, ConceptBadge, LevelMeterBar, VizUnavailableCard, type CheckSpec } from './bits';
 import { requireViz, type VizModule } from './skiaGate';
+import { START_LEVEL_01 } from '../../../features/audio/startLevel';
 
 const STEP_KEY = 'ape:fosStep';
 const ACTIVITY_MS = 500;
@@ -523,7 +524,7 @@ function M2Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
 
 /** M3 — compression/rarefaction slider (particles + pressure, no cone). */
 function M3Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
-  const [amt, setAmt] = useState(0.55);
+  const [amt, setAmt] = useState(START_LEVEL_01);
   const [zones, setZones] = useState(true);
   const levelFor = (a: number) => -44 + a * 22; // −44 … −22 dBFS
   const readout = amt < 0.33 ? 'gentle' : amt < 0.66 ? 'medium' : 'strong';
@@ -595,7 +596,7 @@ function M3Stage({ viz, w, h, amp, zones, focused }: { viz: VizModule; w: number
 
 /** M4 — amplitude: one fader drives cone + air + graph + level + loudness. */
 function M4Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
-  const [amt, setAmt] = useState(0.5);
+  const [amt, setAmt] = useState(START_LEVEL_01);
   const [zones, setZones] = useState(true);
   const levelFor = (a: number) => -44 + a * 24; // −44 … −20 dBFS
   const readout = amt < 0.33 ? 'small → quiet' : amt < 0.66 ? 'medium' : 'large → loud';
@@ -1086,7 +1087,7 @@ function M8Stage({ viz, w, h, f, focused, onFreq }: { viz: VizModule; w: number;
 
 function M9Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
   const [pos, setPos] = useState(Math.log(1000 / 80) / Math.log(8000 / 80)); // start at 1 kHz
-  const [lvl, setLvl] = useState(0.65); // −44..−20 dBFS
+  const [lvl, setLvl] = useState(START_LEVEL_01); // −44..−20 dBFS
   const f = Math.round(80 * Math.pow(8000 / 80, pos));
   const levelDb = -44 + lvl * 24;
   const sens = viz ? viz.earSensDb(f) : null;
