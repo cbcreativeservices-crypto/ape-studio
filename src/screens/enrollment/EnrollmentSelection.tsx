@@ -257,7 +257,7 @@ export function EnrollmentSelection({
                   accessibilityRole="button"
                   accessibilityLabel={`Open the ${card.title} award page to see its Final Exam`}
                 >
-                  <Text style={s.awardText}>FINAL EXAM · ON THE AWARD PAGE →</Text>
+                  <Text style={s.awardText}>FINAL EXAM - EARN CERTIFICATE AWARD</Text>
                 </Pressable>
               ) : (
                 <View style={{ flex: 1 }} />
