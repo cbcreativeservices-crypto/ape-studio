@@ -17,13 +17,15 @@
  * Each edge keeps its own position in its own word, so they stay legible even
  * though the edge for each pass is chosen at random.
  *
- * ── BOTH EDGES RUN LEFT → RIGHT ─────────────────────────────────────────────
- * Owner 2026-09-19: it should read like a DAW playhead scrolling past —
- * attack at the LEFT, tail trailing to the RIGHT, travelling one way only.
- * The bottom edge used to run right-to-left with the geometry mirrored to
- * keep time pointing the way it moved; with both edges going the same way
- * there is nothing to mirror, and the envelopes already put the onset on the
- * left, so the waveform is simply drawn as it is.
+ * ── BOTH EDGES TRAVEL RIGHT → LEFT ──────────────────────────────────────────
+ * Owner 2026-09-19: "like a DAW playback screen scroll going by". In that
+ * view the transport is fixed and the AUDIO scrolls past it, leading edge
+ * first — which is right-to-left travel.
+ *
+ * ⛔ THE GEOMETRY IS NOT MIRRORED, and that is the whole trick. The waveform
+ * keeps its onset on the LEFT and its tail on the RIGHT, exactly as it would
+ * sit in an editor; only the container moves. Mirroring it would make the
+ * audio read backwards, which is a reversed clip, not a scroll.
  *
  * ── THE WAVEFORMS ───────────────────────────────────────────────────────────
  * Synthesised here rather than traced off the reference: an envelope per
@@ -186,8 +188,9 @@ export function LabScopeSweep({ color }: { color: string }) {
        * each end are what keep it from appearing abruptly.
        */
       const travel = Math.max(0, w - TRACE_W);
-      const from = 0;
-      const to = travel;
+      // Right to left: enters at the far edge and runs off the near one.
+      const from = travel;
+      const to = 0;
       // Steady: linear, at the owner's screen-width pace.
       const duration = Math.max(500, Math.round((travel / Math.max(1, windowW)) * CROSS_SCREEN_MS));
       x.setValue(from);

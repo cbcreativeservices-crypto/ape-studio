@@ -1843,7 +1843,20 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
 
         {/* BROWSE & ADD header + tabs. Certificates/Programs can be added whole
             (ADD ALL → a bundle) or expanded to add topics. */}
-        <View style={styles.browseHeader} onLayout={(e) => (browseY.current = e.nativeEvent.layout.y)}>
+        {/* ── BROWSE & ADD, FRAMED (owner 2026-09-19) ───────────────────────
+            A white frame, peer to the green MY ENROLLMENT one above: those
+            are the screen's two halves — what you are studying, and what you
+            could add.
+
+            ⛔ THE BOTTOM ACTION ROW STAYS OUTSIDE IT. ✕ / TOP / EXPAND ALL /
+            COLLAPSE ALL act on the WHOLE screen — the enrollment list as much
+            as this section — so boxing them in here would say they belonged
+            to browsing, which they do not.
+
+            onLayout moved off browseHeader onto the frame, so the jump lands
+            on the frame rather than just inside it. */}
+        <View style={styles.browseFrame} onLayout={(e) => (browseY.current = e.nativeEvent.layout.y)}>
+        <View style={styles.browseHeader}>
           {/* White collapse triangle — hides the LIST while keeping the title +
               filter tabs (user request 2026-07-23). */}
           <Pressable
@@ -1996,6 +2009,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                   })}
         </View>
         ) : null}
+        </View>
 
         {/* Bottom actions: return to top + global expand/collapse of every
             enrollment-list container (user request 2026-07-24). */}
@@ -2173,6 +2187,10 @@ const styles = StyleSheet.create({
   recordCheck: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: '#37e05f' },
   // BROWSE & ADD header (scrolls normally — no longer a sticky header, whose
   // touch handling was eating tab taps; user report 2026-07-22).
+  /* Peer to myEnrollArea above — same weight and radius, white instead of
+     green, so the two sections read as a pair rather than as a framed one
+     and a loose one. */
+  browseFrame: { marginTop: 10, borderWidth: 2.5, borderColor: 'rgba(255,255,255,.5)', borderRadius: 12, padding: 10, gap: 8 },
   browseHeader: { paddingTop: 4, paddingBottom: 6 },
   // BROWSE & ADD collapse row — white triangle + title (user request 2026-07-23).
   browseTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
