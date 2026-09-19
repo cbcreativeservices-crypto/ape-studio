@@ -46,6 +46,7 @@ import {
   type GlossaryItem,
   type ItemStates,
 } from '../../features/study/api';
+import { studyLoadMessage, studyLoadReason } from '../../features/study/sessionRetry';
 import {
   FLAGGED_TOPIC_ID,
   getTermList,
@@ -512,7 +513,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
         // from the outside. Finding the cold-start auth race behind it
         // (2026-09-19) took a network trace that this line would have saved.
         console.warn('[flashcards] topic load failed:', e);
-        if (alive) setError('Could not load this topic. Check your connection.');
+        if (alive) setError(studyLoadMessage(studyLoadReason(e)));
       }
     })();
 

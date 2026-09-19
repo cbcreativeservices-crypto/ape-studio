@@ -34,6 +34,7 @@ import {
   type GlossaryItem,
   type ItemStates,
 } from '../../features/study/api';
+import { studyLoadMessage, studyLoadReason } from '../../features/study/sessionRetry';
 import { BLANK, fibSentence } from '../../features/study/sentences';
 import { StudySession } from '../../features/study/sync';
 import { loadLocalMethodStates, mergeItemStates, saveLocalMethodStates } from '../../features/study/localProgress';
@@ -134,8 +135,12 @@ export function FillInBlankScreen({ navigation, route }: Props) {
         if (!alive) return;
         setItems(shuffle(fetched));
         setStates(mergeItemStates(methodState?.itemStates, localStates));
-      } catch {
-        if (alive) setError('Could not load this topic. Check your connection.');
+      } catch (e) {
+        // Same as the other two study screens: name the real cause. See
+        // sessionRetry.ts — "check your connection" was wrong for every
+        // failure that was not actually the connection.
+        console.warn('[fillinblank] topic load failed:', e);
+        if (alive) setError(studyLoadMessage(studyLoadReason(e)));
       }
     })();
     const s = new StudySession(achievementId, 'fill_in_blank', () => {});

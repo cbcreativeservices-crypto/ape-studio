@@ -29,7 +29,8 @@ registerHooks({
   },
 });
 
-const { isAuthDenial, withSessionRetry } = await import('../src/features/study/sessionRetry.ts');
+const { isAuthDenial, withSessionRetry, isOfflineError, studyLoadReason, studyLoadMessage, StudyLoadError } =
+  await import('../src/features/study/sessionRetry.ts');
 
 /** The exact body PostgREST returned on the traced failure. */
 const DENIAL = { code: '42501', details: null, hint: null, message: 'permission denied for view glossary_study_v' };
@@ -85,7 +86,9 @@ describe('withSessionRetry', () => {
         },
         async () => true,
       ),
-      (e: unknown) => e === DENIAL,
+      // Still refused with a session in hand: reported as access, and the
+      // original denial is kept on the error for the log.
+      (e: unknown) => e instanceof StudyLoadError && e.reason === 'no-access' && e.failure === DENIAL,
     );
     assert.equal(calls, 2, 'must be exactly one retry, never a loop');
   });
@@ -100,7 +103,7 @@ describe('withSessionRetry', () => {
         },
         async () => false,
       ),
-      (e: unknown) => e === DENIAL,
+      (e: unknown) => e instanceof StudyLoadError && e.reason === 'signed-out' && e.failure === DENIAL,
     );
     assert.equal(calls, 1, 'a guest must fail on the first read, not the second');
   });
@@ -119,5 +122,62 @@ describe('withSessionRetry', () => {
       (e: unknown) => e === offline,
     );
     assert.equal(calls, 1);
+  });
+});
+
+describe('what the learner is told', () => {
+  /**
+   * ⛔ THE WHOLE POINT. Three study screens said "Check your connection" for
+   * every failure, including a permission denial on a perfectly good network.
+   * That single wrong sentence is why the cold-start race went unexplained.
+   */
+  it('never blames the connection for something that is not the connection', () => {
+    for (const reason of ['signed-out', 'no-access', 'unknown'] as const) {
+      assert.doesNotMatch(studyLoadMessage(reason), /connection/i, `"${reason}" must not mention the connection`);
+    }
+    assert.match(studyLoadMessage('offline'), /connection/i);
+  });
+
+  it('classifies each failure the study path can actually produce', () => {
+    assert.equal(studyLoadReason(new Error('Network request failed')), 'offline');
+    assert.equal(studyLoadReason(new StudyLoadError('signed-out', DENIAL)), 'signed-out');
+    assert.equal(studyLoadReason(new StudyLoadError('no-access', DENIAL)), 'no-access');
+    assert.equal(studyLoadReason(new Error('something nobody predicted')), 'unknown');
+  });
+
+  it('treats an untagged denial as no-access, not as signed-out', () => {
+    // Telling a paid member to sign in is the more confusing of the two
+    // mistakes, so an ambiguous denial must not produce that message.
+    assert.equal(studyLoadReason(DENIAL), 'no-access');
+  });
+
+  it('tells a guest to sign in, and a member about access', async () => {
+    await assert.rejects(
+      withSessionRetry(async () => { throw DENIAL; }, async () => false),
+      (e: unknown) => e instanceof StudyLoadError && e.reason === 'signed-out',
+    );
+    await assert.rejects(
+      withSessionRetry(async () => { throw DENIAL; }, async () => true),
+      (e: unknown) => e instanceof StudyLoadError && e.reason === 'no-access',
+    );
+    assert.match(studyLoadMessage('signed-out'), /sign in/i);
+    assert.match(studyLoadMessage('no-access'), /access/i);
+  });
+
+  it('keeps the underlying error for the log', () => {
+    const wrapped = new StudyLoadError('no-access', DENIAL);
+    assert.equal(wrapped.failure, DENIAL);
+  });
+
+  it('does not mistake a refusal for being offline', () => {
+    assert.equal(isOfflineError(DENIAL), false);
+    assert.equal(isOfflineError(new Error('Network request failed')), true);
+  });
+
+  it('gives every reason a real sentence', () => {
+    for (const reason of ['offline', 'signed-out', 'no-access', 'unknown'] as const) {
+      const m = studyLoadMessage(reason);
+      assert.ok(m.length > 20 && /[.]$/.test(m), `"${reason}" is not a finished sentence: ${m}`);
+    }
   });
 });
