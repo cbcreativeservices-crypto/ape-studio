@@ -41,6 +41,12 @@ _bughunt_tmp/
 skills-lock.json
 
 # ── not needed for the native build (the upload bloat) ───────────────────────
+# ⛔ .git IS THE UPLOAD. Measured 2026-09-19: the repo's .git is 663 MB against
+# 124 MB of assets, and the build archive was 573 MB taking 6m39s just to
+# upload. Nothing in the native build reads the history — `eas build` collects
+# the commit metadata BEFORE it makes the tarball, so excluding the directory
+# costs nothing and is the single biggest win available here.
+.git/
 audio_app_archive/
 machineA_ingest/
 FLAGGED_TERMS/
