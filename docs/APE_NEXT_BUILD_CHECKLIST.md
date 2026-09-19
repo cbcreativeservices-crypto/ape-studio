@@ -236,7 +236,7 @@ match what the binary CAN do, not what the app chooses to do. "We never call it"
 is not a defence to a linker-level scan. Trimming permission strings is only
 safe when the SDK providing them is also removed.
 
-### ⚠️ The same root cause may apply on ANDROID — untested
+### ❌ IT DID. The Android half broke SAVE, and is reverted (2026-09-19)
 
 The other half of E-3 blocked three media READ permissions:
 
@@ -246,10 +246,26 @@ android.permission.WRITE_EXTERNAL_STORAGE
 android.permission.READ_MEDIA_IMAGES
 ```
 
-Apple's rejection proves the SDK links read APIs. If any of them is reached at
-runtime on Android, `saveToLibraryAsync` could throw a SecurityException where it
-previously worked. **Not observed** — Android builds fine and the write path
-should not need read — but it is the identical mechanism, so the
-save-to-Photos flow on Android must be exercised on a device before release.
-Test: Harmonograph or a Cymatics pattern → SAVE → confirm it lands in Photos.
+**Owner, on device: "android image save failed."** Predicted here and confirmed
+within the hour. `blockedPermissions` has been REMOVED entirely — all four media
+permissions are back in the manifest, which is the configuration that shipped
+and worked before E-3 touched it.
+
+**Why it broke:** `saveToLibraryAsync` goes through
+`requestPermissionsAsync(writeOnly: true)`, which maps to
+`WRITE_EXTERNAL_STORAGE` (and `READ_MEDIA_IMAGES` on API 33+). Android returns
+**denied immediately** for any permission the manifest does not declare — there
+is no prompt and no error worth reading, so the save just does not happen.
+Blocking a permission does not make a feature stop asking for it; it makes the
+ask fail.
+
+⛔ **DO NOT re-apply `blockedPermissions` for expo-media-library.** Twice now,
+on two platforms, the same reasoning ("the feature is write-only, so the read
+permission is unnecessary") has broken shipping behaviour. The permission set
+belongs to the SDK, not to our reading of which code paths we call. If the
+permissions are genuinely unwanted, the only safe route is removing
+`expo-media-library` and the save-to-Photos feature with it.
+
+**This needs a NATIVE BUILD to take effect** — `app.json` is a fingerprint
+input, and the fix is in the manifest, so no OTA can deliver it.
 

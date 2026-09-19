@@ -228,6 +228,14 @@ plus `requestLegacyExternalStorage` on a modern target is an additional review q
 > was not implicated and still stands — but see the warning in
 > APE_NEXT_BUILD_CHECKLIST.md, because the same root cause could apply there.
 
+> ⛔ **THE ANDROID HALF ALSO FAILED — REVERTED 2026-09-19.** Blocking
+> `READ_EXTERNAL_STORAGE` / `WRITE_EXTERNAL_STORAGE` / `READ_MEDIA_IMAGES` broke
+> save-to-Photos on device ("android image save failed"):
+> `requestPermissionsAsync(writeOnly: true)` maps to those permissions, and
+> Android returns DENIED immediately for anything the manifest does not
+> declare. `blockedPermissions` is removed entirely. Both halves of E-3 are now
+> withdrawn — do not re-apply either.
+
 **Fix (native build):** set `photosPermission: false` in the plugin options and add the three
 read permissions to `android.blockedPermissions` in `app.json`. There is no plugin option
 that drops the Android read permissions on its own — I checked the whole `Props` type.
