@@ -26,6 +26,15 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 23:24 · ccode · eaa113f7
+changed: Remove the V1 badge feature from the client (A's handoff)
+changed (detail): V1 badge feature REMOVED from the client per docs/CCODE_BADGE_REMOVAL_HANDOFF_2026-09-19.md, all nine files in your table plus two stale doc comments. Client only — no DB touched. tsc clean, 1634 tests pass. Your verify greps: badge_earned|student_badges|badge_trigger|notify_badge|badgeEarned = 0 hits in src. KEPT: CredentialBadge, CautionBadge, OS app-icon badge.
+§5 ANSWER — `notify_badge` is the BADGE-EARN TOGGLE, not the OS app-icon count. DROP THE COLUMN. Evidence: (1) it sits in a series with notify_trophy / notify_quiz_unlock / notify_method_complete, all per-event prefs; (2) the OS badge count is set literally in push.ts (`shouldSetBadge: false`) and never reads a preference; (3) it is NOT in NOTIFICATION_ROWS, so it rendered nowhere — only push_enabled and email_enabled are surfaced. Nothing user-visible is lost.
+ONE EXTRA REMOVAL, flagging it so it is not a surprise: `earnedCerts` on ProfileRead went too. It existed only to bucket student_badges rows by name prefix, and grep finds NO consumer outside profile/api.ts. Keeping it would have meant an always-empty Set on the contract. Say if you want it back.
+affects other side: you can finalize the migration as planned, including dropping notification_preferences.notify_badge. Client no longer reads badge_earned from submit_quiz, so the payload change is safe to ship in any order.
+needs: nothing for the badge work. Still open from earlier today: what the verify RPCs return for an award with revoked_at set (D21), and a scope column on account_standing for the app-level ban tier (D22).
+
+
 ### 2026-09-18 23:12 · ccode · 7c1e05d5
 changed: docs: D22 two-tier moderation, and the registered-agent process
 affects other side: D22 — moderation now has TWO tiers set by WHERE the abuse happened (community abuse = community only, which is what shipped; app abuse = no access, which does NOT exist yet). account_standing needs a scope column before the second tier can be built. Also: the LLC's registered address is changing to a commercial agent, so the seller/trader address in the store listings should be the new one, not 2558 Miller Ave.
