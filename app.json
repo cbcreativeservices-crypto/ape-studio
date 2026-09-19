@@ -174,7 +174,7 @@
         "expo-media-library",
         {
           "savePhotosPermission": "Used only when you tap SAVE on a lab drawing or a measurement snapshot, to add that image to your Photos. Nothing is read from your library.",
-          "photosPermission": false,
+          "photosPermission": "Pro Audio Training Academy does not read or import your photos. Photo access is requested only by the component that saves your lab drawings and measurement snapshots to Photos.",
           "isAccessMediaLocationEnabled": false,
           "granularPermissions": [
             "photo"
