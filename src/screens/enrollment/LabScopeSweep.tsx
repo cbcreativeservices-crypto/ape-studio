@@ -30,12 +30,20 @@
  * letter plus seeded jitter, mirrored about the centre line, drawn as dense
  * vertical bars — the shape a recorded letter makes in an editor.
  *
- * Each envelope is chosen for how that letter is actually SPOKEN, which is
- * what makes them distinguishable at a glance:
- *   S  a long even hiss — a fricative, no attack to speak of
- *   T  a hard transient that collapses almost at once — a plosive
- *   D  a burst, then a short voiced tail
- *   A/U/I/O/Y  vowels: a swell, differing in how fast they open and close
+ * Shaped against the owner's labelled A–Z sheet, which corrected two things
+ * the first attempt got wrong: the real letters are COMPACT and CENTRED, with
+ * the silent baseline running clear on both sides, and most have a fast
+ * attack with a decaying tail rather than a symmetric swell.
+ *
+ * Per letter, read off that sheet:
+ *   A  hard onset, long taper to the right — the most asymmetric of the set
+ *   S  a narrow spike, then a thin hiss trailing well past it
+ *   T  compact, quick attack, short taper
+ *   D  a short rounded burst, slightly left-weighted
+ *   I  rounded with a longer right taper than D
+ *   O  full and round, close to symmetric
+ *   U  the largest — a broad even diamond
+ *   Y  small and rounded, tapering right
  *
  * ⚠️ SEEDED, therefore stable: the same letter draws the same waveform every
  * time. Nothing outside `WAVEFORMS` knows their shape, so replacing them with
@@ -77,38 +85,52 @@ function jitter(seed: number, i: number): number {
   return v - Math.floor(v);
 }
 
-/** 0..1 amplitude envelope for a spoken letter, over t in 0..1. */
-const ENVELOPE: Record<string, (t: number) => number> = {
-  // Fricative: comes up fast, holds, trails off. No transient.
-  S: (t) => Math.min(1, t * 6) * (1 - 0.35 * t) * 0.72,
-  // Plosive: everything in the first instant.
-  T: (t) => Math.exp(-11 * t) * 0.98 + Math.exp(-40 * Math.abs(t - 0.02)) * 0.3,
-  // Burst then a short voiced tail.
-  D: (t) => Math.exp(-14 * t) * 0.85 + Math.sin(Math.PI * Math.min(1, t * 1.25)) * 0.45,
-  // Vowels — the difference is how quickly each opens and closes.
-  U: (t) => Math.pow(Math.sin(Math.PI * t), 0.75) * 0.85,
-  Y: (t) => Math.pow(Math.sin(Math.PI * t), 1.35) * 0.9,
-  A: (t) => Math.pow(Math.sin(Math.PI * t), 0.45) * 1,
-  I: (t) => Math.pow(Math.sin(Math.PI * t), 0.6) * 0.86 * (1 - 0.25 * t),
-  O: (t) => Math.pow(Math.sin(Math.PI * t), 0.85) * 0.95,
+/**
+ * A letter occupies a WINDOW inside the box rather than the whole of it —
+ * `from`/`to` in 0..1 — so the quiet baseline shows either side, which is
+ * what makes these read as recordings rather than as bar charts. `env` is the
+ * amplitude across that window, and `peak` its height.
+ */
+type Shape = { from: number; to: number; peak: number; env: (u: number) => number };
+
+/** Attack in `a`, then taper with curve `c`. The shape most of these have. */
+const hit = (a: number, c: number) => (u: number) =>
+  u < a ? u / a : Math.pow(Math.max(0, 1 - (u - a) / (1 - a)), c);
+
+const SHAPES: Record<string, Shape> = {
+  A: { from: 0.17, to: 0.8, peak: 0.96, env: hit(0.1, 0.75) },
+  S: {
+    from: 0.19, to: 0.86, peak: 0.88,
+    // Spike, then the hiss: a low floor that outlasts it.
+    env: (u) => Math.max(hit(0.07, 2.2)(u), 0.3 * Math.pow(Math.max(0, 1 - u), 0.45)),
+  },
+  T: { from: 0.31, to: 0.67, peak: 0.8, env: hit(0.16, 0.7) },
+  D: { from: 0.29, to: 0.69, peak: 0.74, env: hit(0.3, 0.85) },
+  I: { from: 0.26, to: 0.74, peak: 0.72, env: hit(0.24, 0.6) },
+  O: { from: 0.24, to: 0.76, peak: 0.84, env: (u) => Math.pow(Math.sin(Math.PI * u), 0.55) },
+  U: { from: 0.19, to: 0.81, peak: 1, env: (u) => Math.pow(Math.sin(Math.PI * u), 0.45) },
+  Y: { from: 0.3, to: 0.72, peak: 0.7, env: (u) => Math.pow(Math.sin(Math.PI * u), 0.8) * (1 - 0.3 * u) },
 };
 
-const BARS = 46;
+/** Thin and many, so the body reads as a solid mass the way a recording does. */
+const BARS = 86;
 const MID = TRACE_H / 2;
 
 /** One letter as dense vertical bars, mirrored about the centre line. */
 function waveformPath(letter: string): string {
-  const env = ENVELOPE[letter];
-  if (!env) return '';
+  const sh = SHAPES[letter];
+  if (!sh) return '';
   const seed = letter.charCodeAt(0);
   let d = '';
   for (let i = 0; i < BARS; i++) {
-    const t = i / (BARS - 1);
     const x = ((i + 0.5) / BARS) * TRACE_W;
-    // Envelope sets the ceiling; the jitter fills underneath it, so the
-    // outline stays the letter's shape while the body looks like audio.
-    const a = env(t) * (0.42 + 0.58 * jitter(seed, i)) * (MID - 1);
-    if (a < 0.35) continue;
+    const u = (x / TRACE_W - sh.from) / (sh.to - sh.from);
+    if (u < 0 || u > 1) continue;
+    // The envelope is the ceiling; the jitter fills under it, so the outline
+    // keeps the letter's shape while the body looks like audio and not like
+    // a smooth blob.
+    const a = sh.env(u) * sh.peak * (0.55 + 0.45 * jitter(seed, i)) * (MID - 1);
+    if (a < 0.3) continue;
     d += `M${x.toFixed(2)} ${(MID - a).toFixed(2)}L${x.toFixed(2)} ${(MID + a).toFixed(2)}`;
   }
   return d;
@@ -190,7 +212,7 @@ export function LabScopeSweep({ color }: { color: string }) {
             transform={flip ? `translate(${TRACE_W},0) scale(-1,1)` : undefined}
           >
             <Path d={LEAD} strokeWidth={1} strokeOpacity={0.35} />
-            <Path d={WAVEFORMS[letter] ?? ''} strokeWidth={1.1} />
+            <Path d={WAVEFORMS[letter] ?? ''} strokeWidth={0.75} />
           </G>
         </Svg>
       </Animated.View>
@@ -199,9 +221,20 @@ export function LabScopeSweep({ color }: { color: string }) {
 }
 
 const s = StyleSheet.create({
-  // Sits over the card's own border, clipped to it, and never takes touches.
-  host: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', borderRadius: 11 },
+  /**
+   * ⛔ NOT CLIPPED. The trace has to straddle the frame line — half inside the
+   * card, half outside it (owner 2026-09-19) — so `overflow: hidden` would cut
+   * away exactly the half that makes it read as sitting ON the border rather
+   * than inside the card. It also lets the trace enter and leave from beyond
+   * the card, which is how a sweep should arrive.
+   *
+   * Safe to leave unclipped: it never takes touches, and it is a thin line on
+   * a dark panel.
+   */
+  host: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
   trace: { position: 'absolute', width: TRACE_W, height: TRACE_H },
-  onTop: { top: -11 },
-  onBottom: { bottom: -11 },
+  /* Centre the trace ON the border line: half the height above it, half
+     below. TRACE_H/2 either way. */
+  onTop: { top: -TRACE_H / 2 },
+  onBottom: { bottom: -TRACE_H / 2 },
 });
