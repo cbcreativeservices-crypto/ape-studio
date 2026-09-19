@@ -505,7 +505,13 @@ export function FlashcardsScreen({ navigation, route }: Props) {
           }
         }
         setHidden(hiddenSet ?? new Set(Object.keys(st).filter((k) => !k.startsWith('_') && st[k]?.known)));
-      } catch {
+      } catch (e) {
+        // ⚠️ LOG THE CAUSE. This catch was bare, and the screen's one message
+        // says "check your connection" whatever actually happened — so a
+        // permission denial, a bad id and a real outage were indistinguishable
+        // from the outside. Finding the cold-start auth race behind it
+        // (2026-09-19) took a network trace that this line would have saved.
+        console.warn('[flashcards] topic load failed:', e);
         if (alive) setError('Could not load this topic. Check your connection.');
       }
     })();

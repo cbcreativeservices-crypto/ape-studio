@@ -5,6 +5,7 @@
  * Writes: ONLY via the record_study_progress RPC (WM ruling: no table grants).
  */
 import { supabase } from '../../lib/supabase';
+import { withSessionRetry } from './sessionRetry';
 import { SUPABASE_URL } from '../../lib/env';
 
 export type GlossaryItem = {
@@ -47,7 +48,14 @@ export type StudySnapshot = {
   duplicate_batch: boolean;
 };
 
+/** True once the client has hydrated a persisted session — see sessionRetry. */
+const hasSession = async () => !!(await supabase.auth.getSession()).data.session;
+
 export async function fetchTopicItems(achievementId: string): Promise<GlossaryItem[]> {
+  return withSessionRetry(() => fetchTopicItemsOnce(achievementId), hasSession);
+}
+
+async function fetchTopicItemsOnce(achievementId: string): Promise<GlossaryItem[]> {
   // v2.13 (backend handoff 2026-07-16): study fetch goes through the
   // `glossary_study_v` view — one query keyed by achievement_id, with the
   // free-topic exception (anon/free can study gs0/gs36) and common_mistakes
@@ -171,7 +179,8 @@ export async function fetchTopicItems(achievementId: string): Promise<GlossaryIt
 export async function fetchGlossaryItemsByIds(idList: string[]): Promise<GlossaryItem[]> {
   const ids = idList.filter(Boolean);
   if (ids.length === 0) return [];
-  const byId = await fetchStudyRowsByIds(ids);
+  // Same cold-start race as fetchTopicItems — it reaches the same view.
+  const byId = await withSessionRetry(() => fetchStudyRowsByIds(ids), hasSession);
   return [...byId.values()].sort((a, b) => a.term.localeCompare(b.term));
 }
 
