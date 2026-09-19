@@ -26,10 +26,28 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 · A · TestFlight build handoff — Apple side fully prepped; the iOS build is the only blocker to internal testers
+changed: Owner (Cháno) is standing up INTERNAL TestFlight testers. A completed the entire App Store Connect side today, so the ONLY thing gating testers from installing is the first iOS build (yours).
+Apple side DONE today (A drove it in App Store Connect):
+  - App record created — Apple ID **6813607582**, bundle `com.cbcreativeservices.apestudio`, SKU `PRO-AUDIO-IOS-001`, iOS, English (U.S.).
+  - App Information — subtitle "Audio Glossary, Labs & Tools"; category Education (primary) / Music (secondary); Content Rights = no third-party content; Apple Standard EULA.
+  - Age Rating = **13+** (Apple auto-calc was 4+; A overrode to 13+ to match owner ruling; declared UGC=Yes + Messaging&Chat=Yes per your 13+/18+ handoff, Social Media=No, all objectionable content None).
+  - App Encryption = exempt — `app.json ios.infoPlist.ITSAppUsesNonExemptEncryption:false` already set, so nothing to upload; the export-compliance prompt won't fire at submit.
+  - App Privacy questionnaire FILLED as DRAFT (not published, per owner): Privacy Policy URL set to https://www.proaudiotrainingacademy.com/privacy; 7 account types (Name, Email, Emails or Text Messages, Other User Content, User ID, Device ID, Purchase History) = Linked / App Functionality; 4 telemetry (Product Interaction, Crash, Performance, Other Diagnostic) = Not Linked / Analytics; Tracking = None.
+needs (ccode): **produce + submit the first iOS build to TestFlight.**
+  1. `eas build -p ios --profile production` (App Store distribution signing; EAS manages the cert/profile against the Apple account).
+  2. `eas submit -p ios` → uploads to App Store Connect (the app record already exists — Apple ID 6813607582; no need to create it).
+  3. Mind the **SENTRY_AUTH_TOKEN trap** you documented (bad/absent token fails the build ~20 min in via sentry.gradle). Confirm eas-env-sync validated the token green BEFORE kicking the real build, or set SENTRY_DISABLE_AUTO_UPLOAD so it can't hold the build.
+  4. Target the current Xcode/iOS SDK per your build notes.
+  Bar for INTERNAL testing: **no Beta App Review.** The build only needs to build, launch on a real device, and have the core flows navigable end-to-end (sign-in / redeem code, glossary, study methods, a quiz, and the way back out). Final trophy/cert art NOT required.
+after it processes: A / owner add the build to the Internal Testing group. Owner (account holder, profechano@yahoo.com) is already an eligible internal tester — no invite needed for him.
+separate, not this task: Google Play IARC content rating "users interact" must be corrected **No → Yes** on Play Console (your ruling); flagged for the Google-side pass.
+needs from owner: nothing to paste — owner triggers this by telling you to run the build.
+
 ### 2026-09-18 16:53 · ccode · 8bc8fe94
 changed: docs: close the gain-ramp defect — verified on device, no crackle
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
+needs: nothing.
 
 
 ### 2026-09-18 16:35 · ccode · 66e19aed
@@ -153,8 +171,8 @@ needs: ADMIN_NOTIFY_EMAIL secret; then deploy the function.
 
 ### 2026-09-18 13:53 · ccode · d875abd6
 changed: Employer accounts: auto-decision and a filterable review email
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
+needs: nothing.
 
 
 ### 2026-09-18 13:44 · ccode · db15e261
@@ -369,110 +387,110 @@ needs: nothing
 
 ### 2026-09-18 09:19 · ccode · 856beeed
 changed: finish the credential SQL from the live database
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
+needs: nothing.
 
 
 ### 2026-09-18 09:11 · ccode · 55607234
 changed: SQL for the credential policy, staged and reversible
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
+needs: nothing.
 
 
 ### 2026-09-18 09:03 · ccode · c52f3102
 changed: production labs: learn without completing (owner ruling)
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
+needs: nothing.
 
 
 ### 2026-09-18 08:31 · ccode · a216153c
 changed: the printed cymatics sheets say SIMULATION too
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
+needs: nothing.
 
 
 ### 2026-09-18 01:39 · ccode · 20dbd724
 changed: the free glossary cap survives re-entering guest mode
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
+needs: nothing.
 
 
 ### 2026-09-18 01:34 · ccode · db87c85a
 changed: brief: pass 5 outcome
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
+needs: nothing.
 
 
 ### 2026-09-18 01:17 · ccode · 695caf8d
 changed: pass 4 part 2: stale entitlement reads, a lost exam, and a shake that did two jobs
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
+needs: nothing.
 
 
 ### 2026-09-18 01:01 · ccode · 2cdcd53b
 changed: brief: pass 3 outcome
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
+needs: nothing.
 
 
 ### 2026-09-18 00:48 · ccode · 0407b131
 changed: pass 3 verification: three of my own fixes were broken, plus an inert gate
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
+needs: nothing.
 
 
 ### 2026-09-18 00:35 · ccode · 25dc9923
 changed: bug-hunt brief: what pass 2 fixed and what is still open
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
+needs: nothing.
 
 
 ### 2026-09-18 00:33 · ccode · 6b335c22
 changed: disclosure, the dose warning, and a failed read that read as "you have none"
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
+needs: nothing.
 
 
 ### 2026-09-18 00:22 · ccode · 16fe14bc
 changed: production labs: a decimal point, and a blank row that claimed to be an answer
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
+needs: nothing.
 
 
 ### 2026-09-18 00:18 · ccode · 26f5dac9
 changed: pass 2 blockers, part 2: money, identity, and confident wrong answers
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
+needs: nothing.
 
 
 ### 2026-09-17 23:57 · ccode · 6d59781c
 changed: bug-hunt brief for pass 2
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
+needs: nothing.
 
 
 ### 2026-09-17 23:49 · ccode · 70694099
 changed: Gate the 31 members-only labs that had no membership check
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
+needs: nothing.
 
 
 ### 2026-09-17 23:44 · ccode · 41efaded
 changed: Sound safety: the Profile toggle was a way around the gate
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
+needs: nothing.
 
 
 ### 2026-09-17 23:40 · ccode · 213736bd
 changed: Dashboard: hoist the last conditional hook — it crashed every cold load
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
+needs: nothing.
 
 
 ### 2026-09-17 23:16 · ccode · 6ee9d250
 changed: Celebration engine: one component, eighteen rows of data
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
+needs: nothing.
 
 
 ### 2026-09-17 22:57 · ccode · 5d2d7c34
@@ -483,8 +501,8 @@ needs: that table, eventually. Nothing blocking.
 
 ### 2026-09-17 22:50 · ccode · 661d2f03
 changed: Detail pager: fix the skip-and-jump between expanded cards
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
+needs: nothing.
 
 
 ### 2026-09-17 22:46 · ccode · 8e1929ad
@@ -507,8 +525,8 @@ needs: answers to those three. Owner ruling recorded: admin grants and access co
 
 ### 2026-09-17 22:10 · ccode · 0fa6ef7b
 changed: Home: DAW joins Pro Audio Safety as a free card; labs card reworded
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
+needs: nothing.
 
 
 ### 2026-09-17 21:34 · ccode · 96963360
