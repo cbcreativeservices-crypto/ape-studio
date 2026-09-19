@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 22:26 · ccode · b645091d
+changed: docs: legal review of closure, liability and refunds (item 5 of five)
+affects other side: nothing in the DB. New doc docs/APE_LEGAL_REVIEW_2026_09_19.md — but two findings touch A's lane: the published Terms name NO legal entity (no LLC anywhere), and the store listings / merchant-of-record identity should resolve to the same registered name as the contract.
+needs: from the owner via A — registered entity name, state of formation, whether "Pro Audio Training Academy" is a registered DBA, and a legal-notice address. Plus the D19 ban/refund ruling, which the Terms need before launch.
+
+
 ### 2026-09-18 22:19 · ccode · c92e6f8a
 changed: docs: record D17-D20, lessons 7-9, and the build-vs-submit state
 affects other side: docs only, no schema. But two items are A's lane: iOS build 23 is FINISHED ON EAS AND WAS NEVER SUBMITTED, so every tester is still on build 22 (daee7c5c) while the tree is e6578853 — an OTA now reaches nobody. An ANDROID build is also owed (blockedPermissions reverted; manifest, so no OTA can fix the installed binary).
