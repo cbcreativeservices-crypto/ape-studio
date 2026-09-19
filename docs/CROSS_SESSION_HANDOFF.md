@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-19 14:24 · ccode · 5b7ac881
+changed: Apply OTA updates on the launch that finds them
+affects other side: nothing in the DB. Worth knowing though: the client now APPLIES an OTA on the launch that finds it, instead of the launch after. So a client publish reaches devices roughly a launch sooner than it used to — relevant if you are ever timing a backend change against a client one.
+needs: nothing.
+
+
 ### 2026-09-19 13:42 · ccode · d76b1c1e
 changed: Row tints: drop the breathing, keep the colour
 affects other side: nothing in the DB — Enrollments row tints, client side only.
