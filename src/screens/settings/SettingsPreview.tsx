@@ -42,7 +42,6 @@ function seedMockPrefs(): void {
           email_enabled: true,
           notify_weekly_concept: true,
           notify_trophy: false,
-          notify_badge: false,
           notify_quiz_unlock: false,
           notify_method_complete: false,
         },

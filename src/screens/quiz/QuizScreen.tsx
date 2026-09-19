@@ -197,12 +197,9 @@ export function QuizScreen({ navigation, route }: Props) {
             id: perfect ? 'perfect-score' : 'topic-complete',
             values: { topic_name: topicName, score: pct },
             // REVIEW RESULTS must reach the graded attempt without asking the
-            // server for it again. `badgeEarned` is carried because the Trophy
-            // screen this replaced announced the badge, and dropping it silently
-            // would lose something the user earned.
+            // server for it again.
             context: {
               results: { result, topicName, achievementId, isPractice: payload.is_practice, questions },
-              badge: result.badge_earned ? { achievementId } : undefined,
             },
           });
         } else {

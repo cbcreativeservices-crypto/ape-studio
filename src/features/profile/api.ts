@@ -26,7 +26,6 @@ export type ProfileData = {
   photoUrl: string | null;
   /** Permanent per-user credential token → the QR / public registry lookup. */
   qrToken: string | null;
-  earnedCerts: Set<'mic' | 'rec' | 'mix' | 'pa'>;
   completeCount: number;
   overallPct: number;
   tierName: AlbumTierName;
@@ -39,7 +38,6 @@ type UserRow = {
   last_name_initial: string | null;
   photo_url: string | null;
 };
-type BadgeRow = { badge_name_snapshot: string | null };
 
 export async function fetchProfile(): Promise<ProfileRead> {
   // Safe profile fields come straight from `users`; the isolated identity
@@ -87,12 +85,10 @@ export async function fetchProfile(): Promise<ProfileRead> {
   // Same guard as above: these three tolerate an `{ error }` result on their own
   // (each defaults), but a transport-level REJECTION would escape this function,
   // and a function that promises a ProfileRead must not sometimes throw one.
-  let badges: BadgeRow[] | null = null;
   let completeCount: number | null = null;
   let totalTopics: number | null = null;
   try {
-    const [badgeRes, completeRes, totalRes] = await Promise.all([
-      supabase.from('student_badges').select('badge_name_snapshot').eq('user_id', user.id),
+    const [completeRes, totalRes] = await Promise.all([
       supabase
         .from('student_achievement_progress')
         .select('id', { count: 'exact', head: true })
@@ -106,17 +102,10 @@ export async function fetchProfile(): Promise<ProfileRead> {
         .eq('curriculum_version_id', V3_CURRICULUM_VERSION_ID)
         .eq('is_active', true),
     ]);
-    badges = badgeRes.data as BadgeRow[] | null;
     completeCount = completeRes.count;
     totalTopics = totalRes.count;
   } catch {
     return { state: 'unavailable' };
-  }
-
-  const earnedCerts = new Set<'mic' | 'rec' | 'mix' | 'pa'>();
-  for (const b of badges ?? []) {
-    const key = (b.badge_name_snapshot ?? '').split(' ')[0]?.toLowerCase();
-    if (key === 'mic' || key === 'rec' || key === 'mix' || key === 'pa') earnedCerts.add(key);
   }
 
   const done = completeCount ?? 0;
@@ -137,7 +126,6 @@ export async function fetchProfile(): Promise<ProfileRead> {
       initials,
       photoUrl: user.photo_url,
       qrToken: ident?.qr_token ?? null,
-      earnedCerts,
       completeCount: done,
       overallPct,
       tierName: tier.name,

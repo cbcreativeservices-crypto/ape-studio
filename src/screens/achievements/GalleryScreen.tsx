@@ -82,9 +82,6 @@ export function GalleryScreen() {
           (navigation as any).navigate('Trophy', {
             topicName: e.name,
             achievementId: e.achievementId,
-            // [9] (2026-09-07): every gallery entry is an EARNED trophy
-            // (fetchGalleryV3 filters status='complete'), so this is true.
-            badgeEarned: true,
             entrySource: 'gallery',
           })
         }

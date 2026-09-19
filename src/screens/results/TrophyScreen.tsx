@@ -38,8 +38,7 @@ export function TrophyScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
   // `entrySource` is still in the params (older navigation state may carry it)
   // but nothing reads it any more — every entry behaves the same now.
-  const { topicName, achievementId, badgeEarned } = route.params;
-  const [badgeName, setBadgeName] = useState<string | null>(null);
+  const { topicName, achievementId } = route.params;
   const [iconUrl, setIconUrl] = useState<string | null>(null);
 
   /** Always back to whatever opened this trophy. */
@@ -60,18 +59,17 @@ export function TrophyScreen({ navigation, route }: Props) {
   useEffect(() => {
     supabase
       .from('achievements')
-      .select('badge_trigger, icon_url')
+      .select('icon_url')
       .eq('id', achievementId)
       .single()
       .then(
         ({ data }) => {
           setIconUrl(data?.icon_url ?? null);
-          if (badgeEarned) setBadgeName(data?.badge_trigger?.toUpperCase() ?? null);
         },
-        // [47] (2026-09-07): guard the rejection — leave the fallback badge/icon.
+        // [47] (2026-09-07): guard the rejection — leave the fallback icon.
         () => {},
       );
-  }, [badgeEarned, achievementId]);
+  }, [achievementId]);
 
   useEffect(() => {
     void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -108,14 +106,6 @@ export function TrophyScreen({ navigation, route }: Props) {
       />
 
       <Text style={styles.title}>{(topicName ?? '').toUpperCase()}</Text>
-
-      {badgeEarned && (
-        <View style={styles.badgeCallout}>
-          <Text style={styles.badgeText}>
-            You earned <Text style={styles.badgeName}>{badgeName ?? 'a badge'}</Text> — View on Profile
-          </Text>
-        </View>
-      )}
 
       <View style={styles.buttonWrap}>
         <StudioButton label="Back" variant="white" onPress={exit} />
@@ -162,16 +152,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 16,
   },
-  badgeCallout: {
-    backgroundColor: '#1d1607',
-    borderWidth: 1,
-    borderColor: 'rgba(255,194,51,.5)',
-    borderRadius: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    marginTop: 8,
-  },
-  badgeText: { fontFamily: fonts.barlowMedium, fontSize: 14, color: '#ffd27a', textAlign: 'center' },
-  badgeName: { fontFamily: fonts.barlowSemiBold, color: colors.amber },
   buttonWrap: { alignSelf: 'stretch', marginTop: 20 },
 });

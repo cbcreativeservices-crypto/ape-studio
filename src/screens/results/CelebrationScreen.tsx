@@ -46,33 +46,6 @@ export function CelebrationScreen({ navigation, route }: Props) {
   const { id, values, context } = route.params;
   const def = celebration(id);
 
-  // The badge line. TrophyScreen announced a badge when the attempt earned one,
-  // and the first version of this replacement dropped it silently — a bug-hunt
-  // pass caught it the same day. Fetched exactly as TrophyScreen did.
-  //
-  // It renders only once the name arrives, so a slow or failed lookup costs the
-  // line rather than blocking the celebration. Saying "you earned a badge"
-  // without being able to name it would be worse than saying nothing.
-  const [badgeName, setBadgeName] = useState<string | null>(null);
-  useEffect(() => {
-    const achievementId = context?.badge?.achievementId;
-    if (!achievementId) return;
-    let alive = true;
-    void supabase
-      .from('achievements')
-      .select('badge_trigger')
-      .eq('id', achievementId)
-      .single()
-      .then(
-        ({ data }) => {
-          if (alive) setBadgeName(data?.badge_trigger?.toUpperCase() ?? null);
-        },
-        () => {},
-      );
-    return () => {
-      alive = false;
-    };
-  }, [context]);
 
   /** Where the user lands when a celebration is over. */
   const toStudy = useCallback(() => {
@@ -153,7 +126,6 @@ export function CelebrationScreen({ navigation, route }: Props) {
       <Celebration
         def={def}
         values={values}
-        extra={badgeName ? `You also earned the ${badgeName} badge — see it on your Profile.` : null}
         onAction={onAction}
       />
     </View>

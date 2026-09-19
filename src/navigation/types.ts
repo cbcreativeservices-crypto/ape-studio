@@ -81,7 +81,6 @@ export type RootStackParamList = {
   Trophy: {
     topicName: string;
     achievementId: string;
-    badgeEarned: boolean;
     entrySource: TrophyEntrySource;
   };
   /**
@@ -105,9 +104,6 @@ export type RootStackParamList = {
         awardId: string;
         awardName: string;
       };
-      /** Present when the attempt also earned a badge. The Trophy screen this
-       *  replaced announced it, so the celebration must too. */
-      badge?: { achievementId: string };
     };
   };
   /** Award earn path (R6b, A4) — required-topic checklist, Final Exam gate,

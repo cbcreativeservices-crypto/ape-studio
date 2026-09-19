@@ -41,8 +41,8 @@ export function Celebration({
   values: CelebrationValues;
   /**
    * One instance-specific line under the body — something true of THIS
-   * occurrence rather than of the celebration itself, e.g. "You also earned the
-   * Signal Flow badge." It lives here rather than in the catalog because the
+   * occurrence rather than of the celebration itself, e.g. "That was your last
+   * required topic." It lives here rather than in the catalog because the
    * catalog is per-definition and this is per-event.
    */
   extra?: string | null;
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
   },
   bodySm: { fontSize: 12.5, lineHeight: 18, textAlign: 'left' },
 
-  /** The per-event line (a badge, say) — set apart so it reads as an extra
+  /** The per-event line — set apart so it reads as an extra
    *  thing that happened, not as more of the same paragraph. */
   extra: {
     fontFamily: fonts.oswaldMedium,

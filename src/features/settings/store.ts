@@ -228,7 +228,6 @@ export type NotificationPrefs = {
   email_enabled: boolean;
   notify_weekly_concept: boolean;
   notify_trophy: boolean;
-  notify_badge: boolean;
   notify_quiz_unlock: boolean;
   notify_method_complete: boolean;
 };
@@ -259,7 +258,7 @@ export async function fetchNotificationPrefs(): Promise<NotificationPrefs | null
   if (__DEV__ && devPrefsOverride) return devPrefsOverride;
   const { data, error } = await supabase
     .from('notification_preferences')
-    .select('push_enabled, email_enabled, notify_weekly_concept, notify_trophy, notify_badge, notify_quiz_unlock, notify_method_complete')
+    .select('push_enabled, email_enabled, notify_weekly_concept, notify_trophy, notify_quiz_unlock, notify_method_complete')
     .maybeSingle();
   if (error) {
     console.warn('[settings] prefs fetch failed:', error.message);

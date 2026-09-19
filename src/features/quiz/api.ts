@@ -59,7 +59,6 @@ export type SubmitResult = {
   outcome: QuizOutcome;
   new_status: string;
   best_genuine_score: number;
-  badge_earned: boolean;
   next_topic: { unlocked: boolean; clamped?: boolean } | null;
   wrong_answers: Record<string, { correct: unknown; selected: unknown }>;
   lockout_until?: string;

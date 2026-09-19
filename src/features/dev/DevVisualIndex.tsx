@@ -185,7 +185,6 @@ const SCREENS: { section: string; items: ScreenEntry[] }[] = [
           n.navigate('Trophy', {
             topicName: 'Pro Audio Safety',
             achievementId: 'preview',
-            badgeEarned: true,
             entrySource: 'gallery',
           }),
       },
