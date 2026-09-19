@@ -1,10 +1,15 @@
 /**
- * Applying an OTA on the launch that finds it.
+ * Applying an OTA on the launch that downloads it.
  *
- * ⛔ WHY IT MATTERS THAT THIS IS RIGHT. A reload discards JS state. Get the
- * window wrong and the app restarts under someone mid-task; skip the reload
- * and we are back to the open-wait-kill-open dance that cost the owner an
- * afternoon and sent them to TestFlight looking for a JavaScript update.
+ * ⛔ THIS FILE EXISTS BECAUSE THE FIRST VERSION CRASHED A PRODUCTION BUILD.
+ * Sentry, iPhone 15 Pro Max / iOS 27, 1.0.0 (24): EXC_BAD_ACCESS on the JS
+ * thread inside `RuntimeScheduler_Modern::updateRendering`, two update-server
+ * requests 100ms apart immediately before it. The old code ran its own check
+ * and fetch alongside the native downloader and called `reloadAsync()` the
+ * instant it returned — tearing the runtime down mid-render.
+ *
+ * So the two properties that matter are not "does it update": they are
+ * IT MUST NOT FETCH, and IT MUST NOT RELOAD INLINE.
  */
 import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
@@ -22,86 +27,112 @@ registerHooks({
   },
 });
 
-const { runAutoUpdate } = await import('../src/features/updates/autoUpdate.ts');
+const { watchForPendingUpdate } = await import('../src/features/updates/autoUpdate.ts');
 
-/** A clock the test moves by hand, so no test ever waits. */
-function rig(opts: { available?: boolean; checkMs?: number; fetchMs?: number; throwOn?: 'check' | 'fetch' | 'reload' } = {}) {
+function rig(opts: { isEnabled?: boolean; pendingNow?: boolean; deferSettle?: boolean } = {}) {
   let t = 0;
-  const calls = { check: 0, fetch: 0, reload: 0 };
+  let fire: (() => void) | null = null;
+  const calls = { subscribe: 0, unsubscribe: 0, settle: 0, reload: 0 };
+  const outcomes: string[] = [];
+  const settleQueue: (() => void)[] = [];
   return {
     calls,
+    outcomes,
+    advance: (ms: number) => { t += ms; },
+    /** The native downloader reporting a pending update. */
+    nativeReportsPending: () => fire?.(),
+    /** Run whatever was handed to InteractionManager. */
+    runSettled: () => { settleQueue.splice(0).forEach((f) => f()); },
     deps: {
-      isEnabled: true,
+      isEnabled: opts.isEnabled ?? true,
+      pendingNow: () => opts.pendingNow ?? false,
+      onPending: (cb: () => void) => {
+        calls.subscribe++;
+        fire = cb;
+        return () => { calls.unsubscribe++; };
+      },
+      settle: (cb: () => void) => {
+        calls.settle++;
+        if (opts.deferSettle) settleQueue.push(cb);
+        else cb();
+      },
+      reload: async () => { calls.reload++; },
       now: () => t,
-      check: async () => {
-        calls.check++;
-        if (opts.throwOn === 'check') throw new Error('offline');
-        t += opts.checkMs ?? 0;
-        return { isAvailable: opts.available ?? false };
-      },
-      fetch: async () => {
-        calls.fetch++;
-        if (opts.throwOn === 'fetch') throw new Error('download failed');
-        t += opts.fetchMs ?? 0;
-        return {};
-      },
-      reload: async () => {
-        calls.reload++;
-        if (opts.throwOn === 'reload') throw new Error('reload refused');
-      },
+      onOutcome: (o: string) => outcomes.push(o),
     },
   };
 }
 
-describe('runAutoUpdate', () => {
-  it('downloads and reloads when an update is waiting', async () => {
-    const r = rig({ available: true, checkMs: 400, fetchMs: 2000 });
-    assert.equal(await runAutoUpdate(r.deps), 'reloaded');
-    assert.deepEqual(r.calls, { check: 1, fetch: 1, reload: 1 });
+describe('watchForPendingUpdate', () => {
+  it('⛔ never fetches — it has no way to. That race was the crash.', () => {
+    // The dependency surface is the guarantee: there is no check and no fetch
+    // to call. If someone adds one, this test stops compiling, which is the
+    // point.
+    const r = rig();
+    watchForPendingUpdate(r.deps);
+    assert.ok(!('check' in r.deps), 'a check() dependency must not exist');
+    assert.ok(!('fetch' in r.deps), 'a fetch() dependency must not exist');
   });
 
-  it('does nothing at all when already current', async () => {
-    const r = rig({ available: false });
-    assert.equal(await runAutoUpdate(r.deps), 'current');
-    assert.equal(r.calls.fetch, 0, 'must not download when there is nothing new');
-    assert.equal(r.calls.reload, 0, 'must never reload without an update');
+  it('⛔ never reloads inline — always through settle()', () => {
+    const r = rig({ deferSettle: true });
+    watchForPendingUpdate(r.deps);
+    r.nativeReportsPending();
+    assert.equal(r.calls.settle, 1, 'must hand the reload to settle');
+    assert.equal(r.calls.reload, 0, 'must NOT have reloaded yet — that is the mid-render crash');
+    r.runSettled();
+    assert.equal(r.calls.reload, 1);
   });
 
-  it('⛔ keeps a slow update but does NOT reload into it', async () => {
-    // The whole safety argument: past the window someone may be using the
-    // app, so the bundle waits for the next launch — the old behaviour, which
-    // is never worse than what we had.
-    const r = rig({ available: true, fetchMs: 60_000 });
-    assert.equal(await runAutoUpdate(r.deps), 'deferred');
-    assert.equal(r.calls.fetch, 1, 'the download is still kept');
-    assert.equal(r.calls.reload, 0, 'but nothing restarts under the user');
+  it('reloads when the native downloader reports one pending', () => {
+    const r = rig();
+    watchForPendingUpdate(r.deps);
+    assert.equal(r.calls.reload, 0, 'nothing pending yet');
+    r.nativeReportsPending();
+    assert.equal(r.calls.reload, 1);
   });
 
-  it('counts a slow CHECK against the window too, not just the download', async () => {
-    const r = rig({ available: true, checkMs: 30_000, fetchMs: 100 });
-    assert.equal(await runAutoUpdate(r.deps), 'deferred');
+  it('keeps a slow download but does NOT restart under the user', () => {
+    const r = rig();
+    watchForPendingUpdate(r.deps);
+    r.advance(60_000);
+    r.nativeReportsPending();
     assert.equal(r.calls.reload, 0);
+    assert.ok(r.outcomes.includes('deferred'));
   });
 
-  it('is inert in dev, where the native module is disabled', async () => {
-    const r = rig({ available: true });
-    assert.equal(await runAutoUpdate({ ...r.deps, isEnabled: false }), 'disabled');
-    assert.deepEqual(r.calls, { check: 0, fetch: 0, reload: 0 }, 'must not touch expo-updates at all');
+  it('reloads only ONCE however many times the native state changes', () => {
+    const r = rig();
+    watchForPendingUpdate(r.deps);
+    r.nativeReportsPending();
+    r.nativeReportsPending();
+    r.nativeReportsPending();
+    assert.equal(r.calls.reload, 1);
   });
 
-  it('never lets a failure escape into the launch path', async () => {
-    for (const stage of ['check', 'fetch', 'reload'] as const) {
-      const r = rig({ available: true, throwOn: stage });
-      assert.equal(await runAutoUpdate(r.deps), 'failed', `${stage} threw and was not contained`);
-    }
+  it('is inert in dev, and subscribes to nothing', () => {
+    const r = rig({ isEnabled: false });
+    watchForPendingUpdate(r.deps);
+    r.nativeReportsPending();
+    assert.deepEqual(r.calls, { subscribe: 0, unsubscribe: 0, settle: 0, reload: 0 });
+    assert.deepEqual(r.outcomes, ['disabled']);
   });
 
-  it('cannot loop: a current app performs no work', async () => {
-    // After a reload the new bundle is the running one, so the next launch
-    // takes this path. Nothing to reset, no counter to keep.
-    const r = rig({ available: false });
-    for (let i = 0; i < 5; i++) await runAutoUpdate(r.deps);
-    assert.equal(r.calls.reload, 0);
-    assert.equal(r.calls.check, 5);
+  it('unsubscribes, and goes quiet after it has', () => {
+    const r = rig();
+    const stop = watchForPendingUpdate(r.deps);
+    stop();
+    assert.equal(r.calls.unsubscribe, 1);
+    r.nativeReportsPending();
+    assert.equal(r.calls.reload, 0, 'a late native event must not reload a torn-down screen');
+  });
+
+  it('survives a reload that rejects', async () => {
+    const r = rig();
+    const deps = { ...r.deps, reload: async () => { throw new Error('refused'); } };
+    watchForPendingUpdate(deps);
+    r.nativeReportsPending();
+    await new Promise((res) => setTimeout(res, 0));
+    assert.ok(r.outcomes.includes('failed'));
   });
 });

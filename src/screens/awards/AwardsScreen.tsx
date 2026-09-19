@@ -21,8 +21,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../theme/tokens';
+import { CompactBrandBar } from '../../components/CompactBrandBar';
 import { BrandLogo } from '../../components/BrandLogo';
-import { NavIcon } from '../../components/nav/NavIcon';
 import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 import { LowLightDim } from '../../features/settings/LowLightLayer';
 import { consumeDevPreview } from '../../features/dev/devPreview';
@@ -723,32 +723,14 @@ export function AwardsScreen({ navigation, route }: Props) {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      {/* Company logo header. The RETURN button now lives up here, pinned to the
-          utmost top-right corner across all 4 pages (user request 2026-07-22). */}
-      <View style={styles.brandRow}>
-        <BrandLogo size={34} />
-        <Text style={styles.brandWordmark} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>
-          PRO AUDIO <Text style={styles.brandAccent}>TRAINING ACADEMY</Text>
-        </Text>
-        <View style={{ flex: 1 }} />
-        {/* HOME control = the exact bottom-nav HOME icon + label, so it reads
-            clearly as HOME / Course Select (user request 2026-07-23). It must go
-            to the Home tab (CourseSelection) — NOT goBack(), which returned to
-            whatever opened this screen (e.g. the Dashboard, via "My Enrollments").
-            The title area below is the separate ‹ Return. Nudged in from the far
-            edge with a little padding. popTo (not navigate): under React
-            Navigation 7 navigate('Main') PUSHES a second tab shell on top of
-            this screen; popTo returns to the one existing Main. */}
-        <Pressable
-          onPress={() => navigation.popTo('Main', { screen: 'Home' })}
-          hitSlop={10}
-          accessibilityRole="button"
-          accessibilityLabel="Home"
-          style={styles.homeBtn}
-        >
-          <NavIcon icon="Home" lit />
-        </Pressable>
-      </View>
+      {/* The shared compact header (extracted from this very screen,
+          2026-09-19). Logo, wordmark, HOME — and HOME's `popTo` rule now
+          lives inside the component rather than in a comment here, which is
+          what stops the next copy getting it wrong.
+
+          ⚠️ The two `BrandLogo size={30}` sub-views further down this file
+          are NOT this pattern and were deliberately left alone. */}
+      <CompactBrandBar />
       {/* The whole title area (below the logo, above the page buttons) is still a
           return action (user request 2026-07-18). */}
       <Pressable
@@ -1057,9 +1039,10 @@ export function AwardsScreen({ navigation, route }: Props) {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
-  // Company logo header (user request 2026-07-18).
+  /* ⚠️ STILL USED — by the two picker MODALS below, which carry a
+     BrandLogo size={30} and no HOME and are NOT the CompactBrandBar
+     pattern. The screen's own header moved to that component. */
   brandRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingLeft: 14, paddingRight: 6, paddingBottom: 8 },
-  homeBtn: { padding: 4, marginRight: 8 },
   brandWordmark: { flexShrink: 1, fontFamily: fonts.oswaldBold, fontSize: 14, letterSpacing: 0.6, color: colors.textPrimary },
   brandAccent: { fontFamily: fonts.oswaldMedium, color: colors.amber },
   header: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 14, paddingBottom: 8 },

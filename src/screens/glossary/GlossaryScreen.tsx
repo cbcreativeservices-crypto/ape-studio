@@ -120,6 +120,29 @@ let ENTRIES_CACHE: Promise<Entry[]> | null = null;
 // and serving a member 120-character teasers out of a stale cache would look
 // like the definitions had been truncated. See loadAllEntries.
 let ENTRIES_TABLE: 'glossary' | 'glossary_browse_v' | null = null;
+
+/** How long a key may stay undecided before the screen admits it is stuck. */
+const KEY_WAIT_MS = 9000;
+
+/**
+ * True when the device key has sat undecided long enough that the screen
+ * should stop showing a spinner. See the note at the call site.
+ *
+ * 'ask' and 'declined' are NOT stuck — they are answers, and each has its own
+ * view. Only the states that show nothing can strand the user.
+ */
+function useKeyTimeout(keyState: string): boolean {
+  const [stuck, setStuck] = useState(false);
+  useEffect(() => {
+    if (keyState === 'ready' || keyState === 'ask' || keyState === 'declined') {
+      setStuck(false);
+      return;
+    }
+    const t = setTimeout(() => setStuck(true), KEY_WAIT_MS);
+    return () => clearTimeout(t);
+  }, [keyState]);
+  return stuck;
+}
 let MEDIA_CACHE: Promise<Record<string, string>> | null = null;
 let FORMULA_CACHE: Promise<Record<string, { symbolic: string; words: string | null }>> | null = null;
 
@@ -1171,6 +1194,25 @@ ${COPY.glossaryFreeAllowance}`,
   /** True once it is safe to read the corpus: either the gateway is absent (the
    *  world as it was) or this device holds a key. */
   const keyReady = keyState === 'ready';
+
+  /**
+   * ⛔ A KEY THAT NEVER RESOLVES USED TO FREEZE THIS SCREEN (owner 2026-09-19:
+   * "glossary is not loading in — stalled and froze").
+   *
+   * The corpus effect bails when the key is not ready, and its `finally`
+   * cleared `loading` only `if (keyReady)` — so in the one case where the
+   * screen has nothing to show, it also never stopped showing the spinner.
+   * `unknown` is reachable and sticky: the gateway probe, the entitlement
+   * read and the stored-consent read each hold it there, and a request that
+   * hangs rather than fails holds it forever. The result is a dead screen
+   * with no message and no retry.
+   *
+   * So: give it a deadline. If no decision arrives in KEY_WAIT_MS the screen
+   * stops pretending to load and shows the error card it already has, which
+   * carries a RETRY. 'ask' and 'declined' are excluded — those are decisions,
+   * with their own UI, and are not stuck.
+   */
+  const keyStuck = useKeyTimeout(keyState);
   /** Which relation the corpus comes from, given what the probe found. */
   const table = corpusTable(keyFailedOpen ? 'absent' : (gateway ?? 'absent'));
   /** The SERVER counts the open when the gateway is live — the client must not
@@ -1689,14 +1731,16 @@ ${COPY.glossaryFreeAllowance}`,
           console.warn('[glossary] load failed:', (e as Error).message);
           if (alive) setLoadError(true);
         } finally {
-          if (alive && keyReady) setLoading(false);
+          // ⚠️ `|| keyStuck` — see the note on keyStuck. Without it the one
+          // path that shows nothing is also the one that never stops loading.
+          if (alive && (keyReady || keyStuck)) setLoading(false);
         }
       })();
       return () => {
         alive = false;
         stopAllSpeech(); // leaving the glossary silences any TTS in progress
       };
-    }, [capped, capMode, keyReady, table]),
+    }, [capped, capMode, keyReady, keyStuck, table]),
   );
 
   // After a locked user upgrades and returns as a member, reopen the term they

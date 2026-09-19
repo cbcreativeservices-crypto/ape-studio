@@ -17,6 +17,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../theme/tokens';
 import { AccuracyNote } from '../../components/AccuracyNote';
+import { CompactBrandBar } from '../../components/CompactBrandBar';
 import type { RootStackParamList } from '../../navigation/types';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 
@@ -58,6 +59,11 @@ export function AudioLearningScreen({ navigation }: Props) {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+      {/* The shared compact header (owner 2026-09-19). Back stays for the
+          same reason it stays on the Lab Menu below this screen: HOME is not
+          where back leads from here. */}
+      <CompactBrandBar />
+
       <View style={styles.header}>
         <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>

@@ -205,15 +205,12 @@ function App() {
   // exists (linking will have handled it directly).
   useEffect(() => attachLinkCapture(), []);
 
-  // ⛔ APPLY AN OTA ON THIS LAUNCH, not the one after it (owner 2026-09-19:
-  // "please just fix it so every update updates my iphone"). expo-updates
-  // otherwise downloads in the background and waits for the NEXT launch, so
-  // a publish took open-wait-kill-open and failed silently if you were quick.
-  // See autoUpdate.ts — it only reloads during the first seconds of startup,
-  // never in dev, and never throws into the launch path.
-  useEffect(() => {
-    startAutoUpdate();
-  }, []);
+  // ⛔ APPLY AN OTA ON THIS LAUNCH, not the one after it (owner 2026-09-19).
+  // ⚠️ The first version of this CRASHED a production build — it ran its own
+  // check/fetch alongside the native one and reloaded mid-render. This one
+  // only listens for the native downloader and reloads after interactions.
+  // Read the crash note at the top of autoUpdate.ts before touching it.
+  useEffect(() => startAutoUpdate(), []);
 
   // Store-review eligibility (launch readiness, 2026-09-06): count this launch
   // as a session. The prompt itself is only ever requested after a genuine
