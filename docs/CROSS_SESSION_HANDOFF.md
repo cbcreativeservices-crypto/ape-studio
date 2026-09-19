@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 19:44 · ccode · 8a1581b6
+changed: Guided profile setup: steps instead of a wall of fields
+affects other side: employer chain — finalize edge fn now v2 and actually works (it was dying at lookup_failed before reaching any RPC). New RPCs employer_application_for_finalize (service_role only) and employer_my_interests (authenticated). employer_apply now refuses a duplicate live application with a readable message. ⚠️ STILL OPEN and needing a ruling: the work email is never verified, so auto-approve can be claimed in any company name; and nothing calls employer_review, so there is no approve/reject/revoke surface.
+needs: ADMIN_NOTIFY_EMAIL set in Supabase Edge Function secrets, or queued applications notify nobody.
+
+
 ### 2026-09-18 18:56 · ccode · 8b5ef02f
 changed: Revert my Android blockedPermissions — it broke save-to-Photos on device
 affects other side: directory_areas went 13 → 23 rows (additive, on-conflict-do-nothing, nothing existing touched). Any A-side copy that enumerates the areas — website, store listing, marketing — is now short by ten. New: worship, DJ/club, theatre, touring, assistive listening, audio tech/business, clinical hearing care, forensic, underwater/marine, and "Still exploring — not sure yet" (sort 99).

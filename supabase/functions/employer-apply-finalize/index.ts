@@ -84,19 +84,28 @@ Deno.serve(async (req) => {
 
   const admin = createClient(url, service);
 
-  // 2 · is this application theirs? Service role is used only after this.
-  const { data: appRow, error: readErr } = await admin
-    .from("employer_applications")
-    .select("id, user_id, status, company_name, company_website, work_email, role_title, hiring_for, checks")
-    .eq("id", appId)
-    .maybeSingle();
+  // 2 · is this application theirs?
+  //
+  // ── ONE RPC, NOT TWO TABLE READS (2026-09-19) ───────────────────────────
+  // This used to .from("employer_applications") and .from("users") directly.
+  // service_role has SELECT on 5 of 129 tables in this project and neither of
+  // those is one of them, so BOTH reads failed, this returned 500
+  // lookup_failed, and the two RPCs below were never reached — while the
+  // application row already existed and the form had told the applicant
+  // "Application received".
+  //
+  // The RPC is SECURITY DEFINER, granted to service_role only, and folds the
+  // ownership test into its WHERE: a row comes back only if it belongs to
+  // this auth_id, so the join cannot be got wrong here.
+  const { data: appRows, error: readErr } = await admin.rpc("employer_application_for_finalize", {
+    p_id: appId,
+    p_auth_id: authUid,
+  });
   if (readErr) return json({ ok: false, error: "lookup_failed" }, 500);
+  const appRow = (Array.isArray(appRows) ? appRows[0] : appRows) as Record<string, unknown> | null;
+  // Not found and not-yours are deliberately the same answer: telling a caller
+  // that an application id EXISTS but is not theirs is an id oracle.
   if (!appRow) return json({ ok: false, error: "not_found" }, 404);
-
-  const { data: owner } = await admin.from("users").select("id").eq("auth_id", authUid).maybeSingle();
-  if (!owner || (owner as { id: string }).id !== (appRow as { user_id: string }).user_id) {
-    return json({ ok: false, error: "not_owner" }, 403);
-  }
 
   // 3 · record what the web app found on the network, under its own key
   const remote: Remote = {

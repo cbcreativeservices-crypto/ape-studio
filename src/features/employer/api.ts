@@ -124,9 +124,17 @@ export async function setEmployerInterests(
 
 export async function fetchMyEmployerInterests(): Promise<Record<string, string[]> | null> {
   try {
-    const { data, error } = await supabase
-      .from('employer_profile_interests')
-      .select('kind, slug');
+    // ── MINE, NOT EVERY EMPLOYER'S (2026-09-19, audit) ──────────────────
+    // This used to select the table directly with no user filter. The RLS
+    // policy on employer_profile_interests deliberately exposes ALL rows for
+    // any non-revoked employer (it backs the public profile), so with one
+    // employer it looked right and with two it silently merged them —
+    // employer B saw A's chips lit, and toggling one rewrote B's rows from
+    // the merged list, destroying B's real selections with no error.
+    //
+    // Filtering here is not possible: the client holds an auth uid, not
+    // public.users.id. The RPC filters on directory_me(), where that id lives.
+    const { data, error } = await supabase.rpc('employer_my_interests');
     if (error) return null;
     const out: Record<string, string[]> = {};
     for (const r of (data ?? []) as { kind: string; slug: string }[]) {
