@@ -51,25 +51,54 @@ export function MyTopicsIcon({
 }) {
   // One geometry, drawn twice: a soft wide pass for the glow, a crisp pass on
   // top. Stroke widths are in viewBox units so they scale with `size`.
-  // The HEART is drawn heavier than the book (owner 2026-09-19). It is the
-  // subject of the mark, and at icon size an equal weight let it recede into
-  // the page lines around it.
+  /**
+   * ⛔ THE HEART IS FILLED, NOT STROKED, AT EVERY SIZE.
+   *
+   * It was a heavier stroke than the book (5 against 3) to make it the
+   * subject. That reads as an inconsistency rather than as emphasis — the
+   * house standard is single-weight line art — and at small sizes it is
+   * actively broken: at 24px each lobe is under 2px wide carrying a 1.2px
+   * stroke, so the lobes fill in and the heart becomes a blob. A filled
+   * sub-element is the normal line-art way to say "this is the subject", it
+   * downscales perfectly, and it lets the book hold one honest weight.
+   */
+  const compact = size < 40;
+
   const pass = (wide: boolean) => (
     <G stroke={color} strokeOpacity={wide ? 0.16 : 1} strokeLinecap="round" strokeLinejoin="round" fill="none">
-      <G strokeWidth={wide ? 7 : 3}>
+      <G strokeWidth={compact ? 6 : wide ? 5.3 : 2.3}>
         {framed ? <Rect x={5} y={5} width={90} height={90} rx={19} /> : null}
-        <Path d={LEFT_COVER} />
-        <Path d={RIGHT_COVER} />
+        {/* The cover edges are the first thing to go when small: they carry no
+            meaning, and at 24px the 7-unit gap holding them is under a pixel,
+            so they merge into the page line beside them. */}
+        {compact ? null : <Path d={LEFT_COVER} />}
+        {compact ? null : <Path d={RIGHT_COVER} />}
         <Path d={LEFT_PAGE} />
         <Path d={RIGHT_PAGE} />
       </G>
-      <Path d={HEART} strokeWidth={wide ? 10 : 5} />
+      <Path d={HEART} fill={color} fillOpacity={wide ? 0.16 : 1} stroke="none" />
     </G>
   );
 
+  /**
+   * UNFRAMED, THE DRAWING MUST HOLD ITS SLOT. The ink spans x 14→86, y 31→70,
+   * so in a 0–100 box it rendered 58×33px inside a 78×78 slot — 42% the mass
+   * of the CredentialThumb that sits in the same position for every other
+   * selection, which made ALL TOPICS (the default, the first thing anyone
+   * sees here) look like the weakest one. Cropping the viewBox to the ink
+   * fixes it; the stroke widths above are pre-compensated for the 1.32×.
+   */
   return (
-    <Svg width={size} height={size} viewBox="0 0 100 100" accessibilityRole="image" accessibilityLabel="">
-      {pass(true)}
+    <Svg
+      width={size}
+      height={size}
+      viewBox={framed ? '0 0 100 100' : '12 12.5 76 76'}
+      // The eyebrow and title beside it already name this; a focusable node
+      // that announces "image" only adds a stop for a screen reader.
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+    >
+      {compact ? null : pass(true)}
       {pass(false)}
     </Svg>
   );

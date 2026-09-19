@@ -2247,18 +2247,22 @@ const styles = StyleSheet.create({
 
   sectionHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: GREEN, marginTop: 4 },
 
-  listHead: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 4 },
+  /* paddingHorizontal 12 puts this row's left edge at 28 — the same edge as
+     the container's content below (scroll 16 + border 2.5 + padding 10).
+     marginTop 14 opens 22 above the group against 8 within it, so the four
+     rows read as one block instead of three floating bands. */
+  listHead: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 14, paddingHorizontal: 12 },
   listCount: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.6, color: colors.textSecondary, marginTop: 1 },
   // HOME SETUP — amber (user request 2026-07-23).
-  homeSetupBtn: { borderWidth: 1, borderColor: 'rgba(255,198,77,.6)', backgroundColor: 'rgba(255,198,77,.1)', borderRadius: 8, paddingVertical: 6, paddingHorizontal: 10 },
+  homeSetupBtn: { borderWidth: 1, borderColor: 'rgba(255,198,77,.6)', borderRadius: 8, paddingHorizontal: 10, minHeight: 44, justifyContent: 'center' },
   homeSetupText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.6, color: colors.amber },
   // BROWSE & ADD jump button — green (user request 2026-07-22).
-  jumpBtn: { borderWidth: 1, borderColor: 'rgba(55,224,95,.6)', backgroundColor: 'rgba(55,224,95,.1)', borderRadius: 8, paddingVertical: 6, paddingHorizontal: 10 },
-  jumpText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.6, color: GREEN },
-  filterRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  jumpBtn: { paddingHorizontal: 8, minHeight: 44, justifyContent: 'center' },
+  jumpText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.6, color: colors.textSub },
+  filterRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, paddingHorizontal: 12 },
   /* Deck navigation — frameless, above the green container it drives. */
-  deckNav: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 10, marginBottom: 8 },
-  deckNavBtn: { borderWidth: 1, borderColor: colors.hairline, borderRadius: 7, paddingVertical: 6, paddingHorizontal: 11, minHeight: 34, justifyContent: 'center' },
+  deckNav: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12 },
+  deckNavBtn: { borderWidth: 1, borderColor: colors.hairline, borderRadius: 9, backgroundColor: '#131313', paddingVertical: 6, paddingHorizontal: 11, minHeight: 36, justifyContent: 'center' },
   deckNavBtnOn: { borderColor: GREEN, backgroundColor: 'rgba(55,224,95,.12)' },
   deckNavText: { fontFamily: fonts.oswaldMedium, fontSize: 12.5, color: colors.textSub },
   deckNavTextOn: { color: GREEN },
@@ -2285,7 +2289,7 @@ const styles = StyleSheet.create({
   // Collapse control + collapsed (thin title + %) row (user request 2026-07-22).
   collapseBtn: { paddingRight: 2, paddingVertical: 2 },
   collapseTri: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: colors.textSub },
-  collapsedCard: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8 },
+  collapsedCard: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 11 },
   collapsedTitle: { flex: 1, fontFamily: fonts.oswaldMedium, fontSize: 14.5, color: colors.textPrimary },
   // Enrollment TOPIC cards — WHITE border (border key: cert=blue · program=purple
   // · topic=white · subject=amber) — user request 2026-07-23.
@@ -2332,7 +2336,7 @@ const styles = StyleSheet.create({
   // Subject + ACTIVE/Study buttons row, dropped below the full-width title.
   cardActionRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 },
   cardMeterRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 4 },
-  cardPct: { fontFamily: fonts.mono, fontSize: 12.5, color: colors.textSecondary },
+  cardPct: { fontFamily: fonts.mono, fontSize: 12.5, color: colors.textSecondary, minWidth: 38, textAlign: 'right' },
   pill: { borderWidth: 1, borderRadius: 6, paddingVertical: 4, paddingHorizontal: 9 },
   activeOn: { borderColor: 'rgba(55,224,95,.55)', backgroundColor: 'rgba(55,224,95,.1)' },
   activeOff: { borderColor: '#333', backgroundColor: '#121212' },
@@ -2361,7 +2365,7 @@ const styles = StyleSheet.create({
   loadPillDim: { opacity: 0.55 },
   loadPillSmall: { paddingVertical: 3, paddingHorizontal: 6 },
   loadPillText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.6, color: GRAY },
-  loadPillTextSmall: { fontSize: 9.5, letterSpacing: 0.4 },
+  loadPillTextSmall: { fontSize: 10.5, letterSpacing: 0.4 },
   loadPillTextOn: { color: BLUE },
   // Award "STUDY ALL" (blue) — loads every topic into the deck.
   studyAllBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderColor: 'rgba(127,191,255,.6)', backgroundColor: 'rgba(127,191,255,.12)', borderRadius: 7, paddingVertical: 5, paddingHorizontal: 10 },

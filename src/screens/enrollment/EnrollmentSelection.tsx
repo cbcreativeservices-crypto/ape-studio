@@ -125,7 +125,7 @@ export function EnrollmentSelection({
           <MyTopicsIcon size={78} color={accent} framed={false} />
         )}
         <View style={s.headText}>
-          <Text style={[s.kind, { color: accent, borderColor: accent }]}>{labelFor(card.kind)}</Text>
+          <Text style={[s.kind, { color: accent }]}>{labelFor(card.kind)}</Text>
           <Text style={s.title} numberOfLines={2}>
             {card.title}
           </Text>
@@ -182,24 +182,16 @@ export function EnrollmentSelection({
 const s = StyleSheet.create({
   // No frame and no background: this IS the green panel's heading now, not a
   // card sitting inside it.
-  wrap: { gap: 12, paddingBottom: 12, borderBottomWidth: 1, borderBottomColor: colors.hairline },
-  head: { flexDirection: 'row', alignItems: 'center', gap: 14 },
-  headText: { flex: 1, gap: 6 },
-  kind: {
-    alignSelf: 'flex-start',
-    fontFamily: fonts.oswaldSemiBold,
-    fontSize: 11,
-    letterSpacing: 1.3,
-    borderWidth: 1,
-    borderRadius: 4,
-    paddingHorizontal: 7,
-    paddingVertical: 2,
-  },
+  wrap: { gap: 8, paddingTop: 4, paddingBottom: 14, borderBottomWidth: 1, borderBottomColor: colors.hairline },
+  head: { flexDirection: 'row', alignItems: 'flex-start', gap: 14 },
+  headText: { flex: 1, paddingTop: 3 },
+  // Not a pill. It is a label, and a box on it reads as a button that is not.
+  kind: { alignSelf: 'flex-start', fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.3, marginBottom: 3 },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 21, lineHeight: 25, color: colors.textPrimary },
-  count: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textSub },
+  count: { fontFamily: fonts.mono, fontSize: 13, color: colors.textSub, marginTop: 5 },
   meterRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   pct: { fontFamily: fonts.mono, fontSize: 14, color: colors.textSecondary },
-  actionRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  actionRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 6 },
   loadBtn: {
     borderWidth: 1,
     borderColor: colors.hairline,
@@ -210,7 +202,17 @@ const s = StyleSheet.create({
     justifyContent: 'center',
   },
   loadText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.textSub },
-  studyBtn: { flexDirection: 'row', alignItems: 'center', gap: 7, minHeight: 44, paddingHorizontal: 4 },
+  studyBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    minHeight: 44,
+    paddingHorizontal: 13,
+    borderWidth: 1.5,
+    borderColor: colors.blue,
+    backgroundColor: 'rgba(47,155,255,.14)',
+    borderRadius: 8,
+  },
   studyIcon: { width: 26, height: 26 },
   studyText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13.5, letterSpacing: 1, color: colors.blue },
 
