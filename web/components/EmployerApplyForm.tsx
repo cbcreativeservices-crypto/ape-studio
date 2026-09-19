@@ -27,7 +27,7 @@ import { getSupabaseBrowser } from "@/lib/supabase";
  * hand-crafted POST cannot arrive pre-approved.
  */
 
-type Status = "idle" | "working" | "approved" | "queued" | "error";
+type Status = "idle" | "working" | "code" | "approved" | "queued" | "error";
 
 export default function EmployerApplyForm() {
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
@@ -38,6 +38,11 @@ export default function EmployerApplyForm() {
   const [hiringFor, setHiringFor] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
+  /** Set once the code is on its way, so step two knows which application. */
+  const [appId, setAppId] = useState<string | null>(null);
+  const [sentTo, setSentTo] = useState<string>("");
+  const [code, setCode] = useState("");
+  const [resent, setResent] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -71,7 +76,7 @@ export default function EmployerApplyForm() {
 
       // 1 · the database records it and computes every check it can derive
       //     itself. Deliberately not passed from here.
-      const { data: appId, error: applyErr } = await sb.rpc("employer_apply", {
+      const { data: newId, error: applyErr } = await sb.rpc("employer_apply", {
         p_company_name: company,
         p_company_website: website,
         p_work_email: email,
@@ -84,28 +89,102 @@ export default function EmployerApplyForm() {
         return;
       }
 
-      // 2 · the server looks the company up and asks the database to decide.
-      const domain = website
-        .toLowerCase()
-        .replace(/^[a-z]+:\/\//, "")
-        .split("/")[0]
-        .split("?")[0]
-        .replace(/^www\./, "")
-        .split(":")[0];
+      // 2 · the server looks the company up and mails a confirmation code.
+      //
+      // The domain is NOT sent from here any more. This normalisation was not
+      // the same algorithm as employer_domain_of (which strips whitespace
+      // globally), so a pasted "acme.com " created the application and then
+      // failed the route — and a body-supplied host was an SSRF vector. The
+      // route now reads the server-computed domain off the application.
 
       const res = await fetch("/api/employers/apply", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ application_id: appId, domain }),
+        body: JSON.stringify({ application_id: newId }),
       });
-      const out = (await res.json()) as { ok?: boolean; outcome?: string };
+      const out = (await res.json()) as { ok?: boolean; error?: string; sent_to?: string };
 
-      // The application IS SAVED either way. If the finalize step failed we
-      // must not imply it was lost — it simply waits in the review queue.
-      setStatus(out?.outcome === "approved" ? "approved" : "queued");
+      setAppId(String(newId));
+
+      // ── STEP TWO IS THE ONE THAT COUNTS ─────────────────────────────────
+      // Nothing is decided here any more. Everything else on this form is
+      // something an impostor could type; holding the work mailbox is not,
+      // so the application waits on the code.
+      if (out?.ok) {
+        setSentTo(String(out.sent_to ?? email));
+        setStatus("code");
+        return;
+      }
+
+      // The application IS SAVED either way — employer_apply already
+      // succeeded. If the code could not be sent, say exactly that rather
+      // than implying the application was lost or that it is being reviewed.
+      setError(
+        out?.error === "mail_unavailable" || out?.error === "mail_failed"
+          ? "Your application was saved, but we could not send the confirmation email just now. Open “View status” shortly and request a new code."
+          : "Your application was saved, but we could not finish checking it automatically. A person will review it.",
+      );
+      setStatus("queued");
     } catch {
       setError("Something went wrong sending your application. Try again.");
       setStatus("error");
+    }
+  }
+
+  /** Step two: prove possession of the work mailbox. */
+  async function onConfirm(e: FormEvent) {
+    e.preventDefault();
+    if (!appId) return;
+    setError(null);
+    setStatus("working");
+    try {
+      const sb = getSupabaseBrowser();
+      const { data: sess } = await sb.auth.getSession();
+      const token = sess.session?.access_token;
+      if (!token) {
+        setSignedIn(false);
+        setStatus("code");
+        return;
+      }
+      const { data, error: fnErr } = await sb.functions.invoke("employer-confirm-email", {
+        body: { application_id: appId, code },
+      });
+      const out = (data ?? {}) as { ok?: boolean; outcome?: string; error?: string };
+      if (fnErr || !out.ok) {
+        // The database writes these messages for a human ("that code is not
+        // right", "that code has expired — request a new one"), so show them
+        // rather than flattening every failure into one unhelpful line.
+        setError(out.error ?? "That did not work. Check the code and try again.");
+        setStatus("code");
+        return;
+      }
+      setStatus(out.outcome === "approved" ? "approved" : "queued");
+    } catch {
+      setError("Something went wrong confirming the code. Try again.");
+      setStatus("code");
+    }
+  }
+
+  /** A code that never arrived is the most likely way this stalls. */
+  async function onResend() {
+    if (!appId) return;
+    setError(null);
+    setResent(false);
+    try {
+      const sb = getSupabaseBrowser();
+      const { data: sess } = await sb.auth.getSession();
+      const token = sess.session?.access_token;
+      if (!token) return;
+      const res = await fetch("/api/employers/apply", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ application_id: appId }),
+      });
+      const out = (await res.json()) as { ok?: boolean };
+      if (out?.ok) setResent(true);
+      else setError("We could not send another code just now. Try again in a moment.");
+    } catch {
+      setError("We could not send another code just now. Try again in a moment.");
     }
   }
 
@@ -141,6 +220,79 @@ export default function EmployerApplyForm() {
     );
   }
 
+  if (status === "code" || (status === "working" && appId)) {
+    return (
+      <div className="mt-6 rounded-lg border border-border bg-surface p-5">
+        <p className="font-display text-sm font-semibold uppercase tracking-wide text-amber">
+          Check your work email
+        </p>
+        <p className="mt-2 text-sm text-text-muted">
+          We sent a six-digit code to <b className="text-foreground">{sentTo}</b>. Enter it below to
+          confirm you hold that mailbox. It expires in 30 minutes.
+        </p>
+        <p className="mt-2 text-sm text-text-muted">
+          This is the step that verifies you: everything else on the form is something anyone could
+          type.
+        </p>
+
+        {error ? (
+          <p role="alert" className="mt-4 rounded-md border border-amber/50 bg-amber/10 px-4 py-3 text-sm">
+            {error}
+          </p>
+        ) : null}
+        {resent ? (
+          <p role="status" className="mt-4 rounded-md border border-border px-4 py-3 text-sm text-text-muted">
+            A new code is on its way. The previous one no longer works.
+          </p>
+        ) : null}
+
+        <form onSubmit={onConfirm} className="mt-4 flex flex-col gap-4">
+          <div>
+            <label htmlFor="code" className="text-sm font-semibold text-foreground">
+              Confirmation code
+            </label>
+            <input
+              id="code"
+              required
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              pattern="[0-9]*"
+              maxLength={6}
+              value={code}
+              onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              placeholder="123456"
+              className="mt-1 w-full rounded-md border border-border bg-surface px-4 py-3 text-2xl tracking-[0.4em] text-foreground placeholder:text-text-muted focus:border-amber"
+            />
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="submit"
+              disabled={code.length !== 6 || status === "working"}
+              className="rounded-md bg-amber px-5 py-2.5 text-sm font-semibold text-background hover:bg-amber-deep disabled:opacity-50"
+            >
+              {status === "working" ? "Confirming…" : "Confirm"}
+            </button>
+            <button
+              type="button"
+              onClick={onResend}
+              className="text-sm font-semibold text-text-muted underline hover:text-foreground"
+            >
+              Send another code
+            </button>
+          </div>
+        </form>
+
+        <p className="mt-4 text-xs text-text-muted">
+          Wrong address? Your application is saved — open{" "}
+          <a href="/employers/account" className="underline">
+            your status page
+          </a>{" "}
+          to see it.
+        </p>
+      </div>
+    );
+  }
+
   if (status === "approved" || status === "queued") {
     return (
       <div className="mt-6 rounded-lg border border-border bg-surface p-5">
@@ -149,7 +301,7 @@ export default function EmployerApplyForm() {
         </p>
         <p className="mt-2 text-sm text-text-muted">
           {status === "approved"
-            ? "Your work email is at your company's own domain and the site checks out, so your employer account is active. Open the app to set what you are looking for and to contact members."
+            ? "You confirmed your work address, it is at your company's own domain, and the site checks out — so your employer account is active. Open the app to set what you are looking for and to contact members."
             : "We could not confirm every detail automatically, so a person will look at it. You will hear back by email. Nothing more is needed from you."}
         </p>
         <div className="mt-4 flex flex-wrap gap-3">

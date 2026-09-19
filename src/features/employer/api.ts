@@ -145,3 +145,113 @@ export async function fetchMyEmployerInterests(): Promise<Record<string, string[
     return null;
   }
 }
+
+/* ── ADMIN ────────────────────────────────────────────────────────────────
+ *
+ * Every function below is guarded IN THE DATABASE by is_admin(); these
+ * wrappers exist so the screen has something typed to call, not to enforce
+ * anything. Hiding the UI is a courtesy — the refusal is the RPC's.
+ */
+
+export type PendingApplication = {
+  id: string;
+  companyName: string;
+  companyWebsite: string;
+  workEmail: string;
+  roleTitle: string;
+  hiringFor: string | null;
+  createdAt: string;
+  emailConfirmed: boolean;
+  emailMatchesSite: boolean;
+  freeMail: boolean;
+  domainResolves: boolean;
+  siteReachable: boolean;
+  queueReasons: string[];
+};
+
+export type ActiveEmployer = {
+  userId: string;
+  companyName: string;
+  companyWebsite: string;
+  revokedAt: string | null;
+  createdAt: string;
+};
+
+/** True only for a user whose `users.role` is 'admin'. */
+export async function amIAdmin(): Promise<boolean> {
+  try {
+    const { data, error } = await supabase.rpc('is_admin');
+    return !error && data === true;
+  } catch {
+    return false;
+  }
+}
+
+export async function fetchPendingApplications(): Promise<PendingApplication[] | null> {
+  try {
+    const { data, error } = await supabase.rpc('employer_pending_list');
+    if (error) return null;
+    return ((data ?? []) as Record<string, unknown>[]).map((r) => ({
+      id: String(r.id),
+      companyName: String(r.company_name ?? ''),
+      companyWebsite: String(r.company_website ?? ''),
+      workEmail: String(r.work_email ?? ''),
+      roleTitle: String(r.role_title ?? ''),
+      hiringFor: (r.hiring_for as string) ?? null,
+      createdAt: String(r.created_at ?? ''),
+      emailConfirmed: r.email_confirmed === true,
+      emailMatchesSite: r.email_matches_site === true,
+      freeMail: r.free_mail === true,
+      domainResolves: r.domain_resolves === true,
+      siteReachable: r.site_reachable === true,
+      queueReasons: Array.isArray(r.queue_reasons) ? (r.queue_reasons as string[]) : [],
+    }));
+  } catch {
+    return null;
+  }
+}
+
+export async function fetchActiveEmployers(): Promise<ActiveEmployer[] | null> {
+  try {
+    const { data, error } = await supabase.rpc('employer_active_list');
+    if (error) return null;
+    return ((data ?? []) as Record<string, unknown>[]).map((r) => ({
+      userId: String(r.user_id),
+      companyName: String(r.company_name ?? ''),
+      companyWebsite: String(r.company_website ?? ''),
+      revokedAt: (r.revoked_at as string) ?? null,
+      createdAt: String(r.created_at ?? ''),
+    }));
+  } catch {
+    return null;
+  }
+}
+
+export async function reviewApplication(
+  id: string,
+  action: 'approve' | 'reject',
+  note?: string,
+): Promise<SaveOk> {
+  try {
+    const { error } = await supabase.rpc('employer_review', {
+      p_id: id,
+      p_action: action,
+      p_note: note ?? null,
+    });
+    return error ? { ok: false, error: error.message } : { ok: true };
+  } catch {
+    return { ok: false, error: 'No connection. Try again.' };
+  }
+}
+
+export async function setEmployerRevoked(userId: string, revoked: boolean): Promise<SaveOk> {
+  try {
+    const { error } = await supabase.rpc('employer_revoke', {
+      p_user: userId,
+      p_revoked: revoked,
+    });
+    return error ? { ok: false, error: error.message } : { ok: true };
+  } catch {
+    return { ok: false, error: 'No connection. Try again.' };
+  }
+}

@@ -27,6 +27,7 @@ import { InstitutionalScreen } from '../screens/institutional/InstitutionalScree
 import { AboutScreen } from '../screens/about/AboutScreen';
 import { AwardsScreen } from '../screens/awards/AwardsScreen';
 import { AudioCommunityDirectoryScreen } from '../screens/directory/AudioCommunityDirectoryScreen';
+import { EmployerAdminScreen } from '../screens/admin/EmployerAdminScreen';
 import { ToolsHubScreen } from '../screens/tools/ToolsHubScreen';
 import { ToolInfoScreen } from '../screens/tools/ToolInfoScreen';
 import { ToolLearnScreen } from '../screens/tools/ToolLearnScreen';
@@ -424,6 +425,7 @@ export function RootNavigator() {
           top, and a modal-in-modal is the black-screen trap this codebase has
           hit before. */}
       <Stack.Screen name="AudioCommunityDirectory" component={AudioCommunityDirectoryScreen} />
+      <Stack.Screen name="EmployerAdmin" component={EmployerAdminScreen} />
       {/* Measurement & Analysis tools (Booth 2026-07-09v) — bottom nav hidden.
           The TOOLS AREA root (Dashboard ⇄ Tools) → fade; everything inside it
           pushes. */}

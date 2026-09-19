@@ -164,6 +164,8 @@ export type RootStackParamList = {
    *  unreachable and removed 2026-09-10; that content lives as DirectoryView in
    *  the Awards pager.) */
   AudioCommunityDirectory: undefined;
+  /** Admin-only: the employer application queue. Guarded by is_admin() in the DB. */
+  EmployerAdmin: undefined;
   // Measurement & Analysis tools module (Booth 2026-07-09; MVP = hub + info
   // screens — the native DSP engine is Spike 0, a separate ruling/build).
   ToolsHub: undefined;

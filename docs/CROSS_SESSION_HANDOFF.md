@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 20:06 · ccode · f83fd063
+changed: Employers must prove the mailbox; admin can review and revoke; SSRF closed
+affects other side: /employers/apply now has a CODE-ENTRY step (submit no longer shows an outcome). New app screen EmployerAdmin, reached from Profile, admin-only. Deliberately NOT in linking.ts.
+needs: ADMIN_NOTIFY_EMAIL = info@proaudiotrainingacademy.com in Supabase Edge Function secrets.
+
+
 ### 2026-09-18 19:44 · ccode · 8a1581b6
 changed: Guided profile setup: steps instead of a wall of fields
 affects other side: employer chain — finalize edge fn now v2 and actually works (it was dying at lookup_failed before reaching any RPC). New RPCs employer_application_for_finalize (service_role only) and employer_my_interests (authenticated). employer_apply now refuses a duplicate live application with a readable message. ⚠️ STILL OPEN and needing a ruling: the work email is never verified, so auto-approve can be claimed in any company name; and nothing calls employer_review, so there is no approve/reject/revoke surface.
