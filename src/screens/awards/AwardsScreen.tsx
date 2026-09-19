@@ -931,6 +931,21 @@ export function AwardsScreen({ navigation, route }: Props) {
           onProgress={progressFromDetail}
           onStudy={hasAccount ? studyFromDetail : undefined}
           onEnrollments={hasAccount ? enrollmentsFromDetail : undefined}
+          /* INSIDE the Modal on purpose: a sibling Modal attaches to the
+             activity window and is drawn BENEATH this card on Android.
+             See components/PrePaywallPrompt. */
+          overlay={
+            <PrePaywallPrompt
+              embedded
+              visible={!!payPrompt}
+              onClose={() => setPayPrompt(null)}
+              title="Heads up"
+              lines={[
+                'Your choices won’t be saved without an account.',
+                'Enrolling is free to do and always included — one membership covers every topic and certificate, however many you pick.',
+              ]}
+            />
+          }
           onClose={() => setDetail(null)}
         />
         <LowLightDim />
@@ -1002,6 +1017,21 @@ export function AwardsScreen({ navigation, route }: Props) {
           onProgress={progressFromDetail}
           onStudy={hasAccount ? studyFromDetail : undefined}
           onEnrollments={hasAccount ? enrollmentsFromDetail : undefined}
+          /* INSIDE the Modal on purpose: a sibling Modal attaches to the
+             activity window and is drawn BENEATH this card on Android.
+             See components/PrePaywallPrompt. */
+          overlay={
+            <PrePaywallPrompt
+              embedded
+              visible={!!payPrompt}
+              onClose={() => setPayPrompt(null)}
+              title="Heads up"
+              lines={[
+                'Your choices won’t be saved without an account.',
+                'Enrolling is free to do and always included — one membership covers every topic and certificate, however many you pick.',
+              ]}
+            />
+          }
           onClose={() => setDetail(null)}
         />
         <LowLightDim />
@@ -1009,11 +1039,17 @@ export function AwardsScreen({ navigation, route }: Props) {
 
       {/* Anonymous ENROLL → brief "won't be saved" notice (user request
           2026-07-22). Dismiss-only; no account/plans link. */}
+      {/* Root level: ONLY for the trigger that fires with no detail card open
+          (picking a credential straight from the pager). When a detail card is
+          open the embedded copy inside it shows instead — never both. */}
       <PrePaywallPrompt
-        visible={!!payPrompt}
+        visible={!!payPrompt && !detail}
         onClose={() => setPayPrompt(null)}
         title="Heads up"
-        lines={['Your choices won’t be saved without an account.']}
+        lines={[
+          'Your choices won’t be saved without an account.',
+          'Enrolling is free to do and always included — one membership covers every topic and certificate, however many you pick.',
+        ]}
       />
     </View>
   );

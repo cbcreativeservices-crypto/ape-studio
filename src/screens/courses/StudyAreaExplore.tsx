@@ -305,10 +305,27 @@ export function StudyAreaExplore({
               : undefined
           }
           onClose={closeDetail}
+          /* The notice must render INSIDE this Modal. As a sibling it lands on
+             the activity window, i.e. BEHIND this card on Android — which is
+             exactly what it did until 2026-09-19. */
+          overlay={
+            <PrePaywallPrompt
+              embedded
+              visible={!!payPrompt}
+              onClose={() => setPayPrompt(null)}
+              title="Heads up"
+              lines={[
+                'Your choices won’t be saved without an account.',
+                'Enrolling is free to do and always included — one membership covers every topic and certificate, however many you pick.',
+              ]}
+            />
+          }
         />
       </Modal>
+      {/* Only when NO detail card is open — otherwise the embedded copy above
+          is the one that shows. Never both. */}
       <PrePaywallPrompt
-        visible={!!payPrompt}
+        visible={!!payPrompt && !detail}
         onClose={() => setPayPrompt(null)}
         title="Heads up"
         lines={[

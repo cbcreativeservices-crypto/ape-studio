@@ -90,6 +90,7 @@ export function CredentialDetailModal({
   onProgress,
   onStudy,
   onEnrollments,
+  overlay,
   onClose,
   isEnrolled,
   prev,
@@ -112,6 +113,11 @@ export function CredentialDetailModal({
   onStudy?: (c: CredentialDetail) => void;
   /** Open My Enrollments. Same rule as `onStudy`. */
   onEnrollments?: () => void;
+  /** Anything that must render ABOVE this modal — in practice the
+   *  PrePaywallPrompt in `embedded` mode. It has to live INSIDE this Modal's
+   *  tree: on Android a sibling Modal attaches to the activity window and is
+   *  drawn BENEATH this one. See the note atop components/PrePaywallPrompt. */
+  overlay?: React.ReactNode;
   onClose: () => void;
   /** Whether this credential is already enrolled (parent-owned, reactive). */
   isEnrolled?: (c: CredentialDetail) => boolean;
@@ -365,6 +371,9 @@ export function CredentialDetailModal({
           ) : null}
         </View>
       </View>
+      {/* ABOVE the card, INSIDE this Modal — a sibling Modal would be drawn
+          beneath it on Android. See components/PrePaywallPrompt. */}
+      {overlay}
       <LowLightDim />
     </Modal>
   );

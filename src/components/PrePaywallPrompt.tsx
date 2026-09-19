@@ -3,6 +3,19 @@
  * make it as short as possible; a single "Got it, continue" button, no
  * create-account / see-plans link). Used by the Enrollment screen edit-gate and
  * the Awards enroll buttons to briefly explain and dismiss.
+ *
+ * ⛔ `embedded` — USE IT WHENEVER A MODAL IS ALREADY OPEN.
+ *
+ * On Android every RN <Modal> is its own Dialog window. A Modal rendered as a
+ * SIBLING of an open Modal attaches to the ACTIVITY window, which sits BELOW
+ * that open Dialog — so the notice renders behind the sheet that triggered it,
+ * unreadable and unreachable, and then fades out. Found on device 2026-09-19:
+ * an anonymous user enrolled, the button said ENROLLED ✓, and the one message
+ * telling them it would not be saved was drawn behind the card.
+ *
+ * `embedded` drops the Modal wrapper and renders the same backdrop + card as an
+ * absolutely-positioned overlay, so it can be placed INSIDE the open modal's
+ * own tree and is then guaranteed to be on top. Identical look either way.
  */
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Modal } from './DimModal';
@@ -18,6 +31,7 @@ export function PrePaywallPrompt({
   primaryLabel,
   onPrimary,
   dismissLabel,
+  embedded,
 }: {
   visible: boolean;
   onClose: () => void;
@@ -28,10 +42,12 @@ export function PrePaywallPrompt({
   primaryLabel?: string;
   onPrimary?: () => void;
   dismissLabel?: string;
+  /** Render as an in-tree overlay instead of its own Modal. Required when a
+   *  Modal is already open — see the note at the top of this file. */
+  embedded?: boolean;
 }) {
-  return (
-    <Modal accessibilityViewIsModal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
-      <View style={styles.backdrop}>
+  const body = (
+    <View style={[styles.backdrop, embedded ? StyleSheet.absoluteFill : null]} accessibilityViewIsModal>
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityRole="button" accessibilityLabel="Dismiss" />
         <View style={styles.card}>
           {title ? <Text style={styles.title}>{title}</Text> : null}
@@ -55,7 +71,13 @@ export function PrePaywallPrompt({
             </Pressable>
           )}
         </View>
-      </View>
+    </View>
+  );
+
+  if (embedded) return visible ? body : null;
+  return (
+    <Modal accessibilityViewIsModal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
+      {body}
     </Modal>
   );
 }
