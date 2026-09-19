@@ -486,3 +486,73 @@ credential exists at all.
 
 And then: **all of this to a lawyer.** Items 1 and 7 especially — those two
 decide whether the protections in the rest of the document actually attach.
+
+---
+
+## 8 · Getting a business address that isn't your home
+
+**Owner asked for this 2026-09-19:** *"yes, help with the commercial agent
+process to get a dif address than my home."*
+
+Process information, not legal advice. The filing itself is simple; the part
+worth thinking about is that **there are two different addresses** and people
+routinely fix one and leave the other exposed.
+
+### The two addresses — fix both or you have fixed nothing
+
+1. **Agent for Service of Process** — who accepts a lawsuit on the LLC's
+   behalf. This is what a commercial registered agent replaces.
+2. **The LLC's own business address** on the Statement of Information, and the
+   address you publish in the Terms, the App Store listing, the Play listing,
+   and any marketing email footer.
+
+A commercial agent only replaces #1. If 2558 Miller Ave stays on the Statement
+of Information as the principal business address, or in the App Store's
+support/privacy contact, it is still public. Most agent services sell a
+business address or mail-forwarding add-on that covers #2 as well — that is
+the part to actually ask about when you sign up.
+
+⚠️ **Apple and Google both publish a seller address for paid apps.** Google
+Play requires a publicly displayed physical address for paid/IAP developers,
+and Apple shows trader information under the EU DSA. That is store work —
+Comp A's lane — but the address they enter should be the new one, and the
+change is worth making before those listings go live rather than after.
+
+### The steps, in order
+
+1. **Pick a commercial registered agent.** In California they must be
+   registered with the Secretary of State as a 1505 agent. The usual national
+   services run roughly $50–$200/year; several bundle a business address and
+   scan-and-forward mail. Ask specifically whether the plan includes a
+   **usable business address** (not just service of process) and whether mail
+   is **scanned** or only forwarded.
+2. **Sign up and get their acceptance details** — the agent's exact registered
+   name and their California registration number.
+3. **File the change with the Secretary of State.** For an LLC this is the
+   **Statement of Information, form LLC-12** (SI-550 is the *corporation*
+   form — do not use it for an LLC), filed online at
+   **bizfileOnline.sos.ca.gov**. You can change the agent and the business
+   address on the same filing. The fee has been $20; confirm it on the fees
+   page at filing time. LLC Statements of Information are due **biennially**,
+   but you may file one any time there is a change.
+4. **Then update everywhere the old address appears:** the Terms §29.4 notice
+   clause, the Privacy Policy contact block, the App Store and Play listings,
+   the website contact/support pages, Stripe or other merchant records, and
+   the bank if they hold it as the business address.
+5. **Leave the EIN and DUNS out of all of it.** Those are not address changes
+   and never belong on a public page.
+
+### Two things people get wrong
+
+- **The formation address in the original Articles of Organization does not
+  change** and stays in the public record forever. Filing an LLC-12 changes
+  what is *current*, not what is *historical*. If the home address was on the
+  original filing, it remains findable — that is not a reason to skip this,
+  but it is a reason not to assume the change is retroactive.
+- **A P.O. box will not work** for the agent for service of process. It has to
+  be a California street address where someone can be physically served during
+  business hours, which is exactly what you are buying.
+
+**Sources:** [CA SOS — Statements of Information](https://www.sos.ca.gov/business-programs/business-entities/statements) ·
+[CA SOS — Forms, Samples and Fees](https://www.sos.ca.gov/business-programs/business-entities/forms) ·
+[bizfile Online](https://bizfileonline.sos.ca.gov/)

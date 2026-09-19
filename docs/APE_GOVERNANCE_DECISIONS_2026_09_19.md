@@ -271,3 +271,44 @@ of reasons.
 
 **Still open from D19:** whether a ban terminates paid membership, and the
 retention period for reports, messages and moderation records after removal.
+
+## D22 · Moderation has TWO tiers, set by where the abuse happened
+
+**Owner, 2026-09-19, resolving the conflict flagged in D21:**
+*"abuse in community = community only. abuse in app = no access."*
+
+| Where the abuse happened | What is restricted | What still works |
+|---|---|---|
+| **In the community** — messaging, directory, profile content | Contacting members, appearing in the directory | Sign-in, study, every lab and tool, certificates |
+| **In the app** — cheating, credential fraud, forgery, payment abuse, tampering | **All access** | Sign-in only, to read the reason and appeal |
+
+So the venue of the offence, not its severity, picks the tier. Somebody
+harassing another member loses the community; somebody forging a credential
+loses the product.
+
+**What Phase 0 shipped is the FIRST tier, and it is correct as built.**
+`AccountStandingNotice`'s *"You can still study, and your certificates are
+unaffected"* is the right copy for a community restriction and the **wrong**
+copy for an app-level one, so the notice has to branch.
+
+⚠️ **NOT YET BUILT — the second tier does not exist.** `account_standing` has
+no scope column; every restriction it can express today is community-shaped.
+Building it needs: a scope on the standing row, enforcement at the content
+gates rather than only in `contact_*`, branched notice copy, and a decision on
+the payment question below. All JS + DB, no native — it ships OTA.
+
+⛔ **Sign-in stays open in both tiers.** A banned user must be able to read
+why and appeal; in the EU the DSA expects a statement of reasons. Locking them
+out also looks exactly like a bug and produces support tickets and one-star
+reviews instead of appeals.
+
+⚠️ **STILL OPEN, and the app-level tier makes it urgent:** does an app-level
+ban terminate paid membership? **You cannot refund an in-app purchase
+yourself** — the stores own that — so cutting a paying member off from content
+they bought, while keeping the money, is the default outcome unless something
+says otherwise. That is a chargeback and consumer-law question, and it now has
+a live code path pointing at it. Retention after removal is also still open.
+
+Credential consequences are separate and unchanged from D21: revocation is
+discretionary, limited to fraud, forgery or suspicious activity, and is a HOLD
+"until proven legit" rather than a permanent revocation.
