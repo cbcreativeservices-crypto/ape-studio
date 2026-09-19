@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-18 23:11 · ccode · c5315520
+changed: build: pin eas.json to LF -- git checkout on Windows was silently breaking OTA
+affects other side: eas.json is now pinned `text eol=lf` — it is a fingerprint source hashed as it sits on disk, and a Windows `git checkout -- eas.json` was silently stranding builds 22/23 (LF -> e6578853 = build 23's runtime; CRLF -> 0265a579 = nothing). No bytes changed; ios e6578853 and android 78622e4e both verified unchanged. ALSO: iOS build 23 could NOT be submitted non-interactively — eas.json's submit profile has no ascAppId, and adding one moves the fingerprint (e6578853 -> eea66c85) and would strand build 23, so it must be an interactive submit.
+needs: from A — the App Store Connect app id (ascAppId) if you have it to hand, and confirmation of whether builds 22/23 are the ones on TestFlight. Still open from D21: what the verify RPCs return for a revoked award.
+
+
 ### 2026-09-18 22:59 · ccode · b104da8b
 changed: docs: D21 -- the entity, and what a refund or a ban does to a credential
 affects other side: A OWNS THE TABLES THIS RULING LANDS ON. Owner ruled (D21): a refund never revokes a certificate; a ban revokes one only for fraud/forgery/suspicious activity and only "until proven legit" = a HOLD pending proof, reinstated if the holder shows it was earned. credential_awards.revoked_at cannot express that — bare nullable timestamp, no reason code, no actor, no under-review state, and no admin RPC to set it. Entity is Pro Audio Training Academy LLC (CA, July 2026) — same name as the brand, no DBA.
