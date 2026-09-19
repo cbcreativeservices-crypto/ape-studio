@@ -59,14 +59,20 @@
  * resting state — the row is legible without any of this.
  */
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, StyleSheet, View, type LayoutChangeEvent } from 'react-native';
+import { Animated, Easing, StyleSheet, View, useWindowDimensions, type LayoutChangeEvent } from 'react-native';
 import Svg, { G, Path } from 'react-native-svg';
 import { animationsAllowed } from '../../features/settings/a11y';
 import { useOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
 
 const TRACE_W = 40;
 const TRACE_H = 22;
-const SWEEP_MS = 2400;
+/**
+ * SPEED, not duration. The owner set it as "4 seconds to cross the screen
+ * width", which is a velocity — so a narrower container takes proportionally
+ * less time and the trace moves at the same pace wherever it appears. A fixed
+ * duration would make it crawl on a wide panel and dart across a narrow one.
+ */
+const CROSS_SCREEN_MS = 4000;
 /** ⏱ REVIEW VALUE. 17_000 once the look is signed off. */
 const IDLE_MS = 3000;
 /** ⛔ ON. A waveform runs in time; see the note above. */
@@ -146,6 +152,7 @@ const LEAD = `M0 ${MID} L${TRACE_W} ${MID}`;
 
 export function LabScopeSweep({ color }: { color: string }) {
   const [w, setW] = useState(0);
+  const { width: windowW } = useWindowDimensions();
   const [edge, setEdge] = useState<'top' | 'bottom'>('top');
   const [letter, setLetter] = useState<string>(TOP_WORD[0]);
   const x = useRef(new Animated.Value(0)).current;
@@ -170,15 +177,25 @@ export function LabScopeSweep({ color }: { color: string }) {
       setEdge(key);
       setLetter(word[i]);
 
-      const from = top ? -TRACE_W : w;
-      const to = top ? w : -TRACE_W;
+      /**
+       * ⛔ WITHIN THE CONTAINER, END TO END (owner 2026-09-19). It used to
+       * start a full trace-width off-card and finish the same distance past
+       * the far side, so part of every pass happened outside the row it
+       * belongs to. It now runs edge to edge and no further; the fades at
+       * each end are what keep it from appearing abruptly.
+       */
+      const travel = Math.max(0, w - TRACE_W);
+      const from = top ? 0 : travel;
+      const to = top ? travel : 0;
+      // Steady: linear, at the owner's screen-width pace.
+      const duration = Math.max(500, Math.round((travel / Math.max(1, windowW)) * CROSS_SCREEN_MS));
       x.setValue(from);
       Animated.sequence([
         Animated.parallel([
-          Animated.timing(opacity, { toValue: 1, duration: 220, useNativeDriver: true }),
-          Animated.timing(x, { toValue: to, duration: SWEEP_MS, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
+          Animated.timing(opacity, { toValue: 1, duration: 260, useNativeDriver: true }),
+          Animated.timing(x, { toValue: to, duration, easing: Easing.linear, useNativeDriver: true }),
         ]),
-        Animated.timing(opacity, { toValue: 0, duration: 200, useNativeDriver: true }),
+        Animated.timing(opacity, { toValue: 0, duration: 240, useNativeDriver: true }),
       ]).start(({ finished }) => {
         if (!finished || !alive) return;
         timer = setTimeout(runOnce, IDLE_MS);
@@ -192,7 +209,7 @@ export function LabScopeSweep({ color }: { color: string }) {
       x.stopAnimation();
       opacity.stopAnimation();
     };
-  }, [w, suppressed, x, opacity]);
+  }, [w, windowW, suppressed, x, opacity]);
 
   const onLayout = (e: LayoutChangeEvent) => setW(Math.round(e.nativeEvent.layout.width));
   const flip = MIRROR_BOTTOM && edge === 'bottom';
