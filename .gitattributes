@@ -57,3 +57,15 @@
 # installed builds as they are — .gitignore is CRLF on disk and still matches —
 # so forcing them to LF would break the thing this rule exists to protect.
 .easignore       text eol=lf
+
+# `eas.json` is ALSO a fingerprint source (reason `easBuild`) and is hashed as
+# it sits on disk, exactly like .easignore. MEASURED 2026-09-19, which corrects
+# the paragraph above: the on-disk copy here is LF, and LF is what the shipped
+# builds were keyed to --
+#     eas.json LF  -> ios fingerprint e6578853 == build 23's Runtime Version
+#     eas.json CRLF-> ios fingerprint 0265a579 == nothing that exists
+# So `git checkout -- eas.json` on Windows silently breaks OTA to builds 22/23.
+# It happened in-session. Pinning LF keeps the working copy, the index and a
+# fresh clone all agreeing with the installed builds. This changes no bytes on
+# disk and therefore no fingerprint.
+eas.json         text eol=lf
