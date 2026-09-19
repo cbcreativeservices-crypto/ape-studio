@@ -167,12 +167,13 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
         specialization certificates, and professional accomplishments.
       </Text>
 
-      {/* Example of an official, printable Academy certificate (owner 2026-09-16). */}
+      {/* Example of an official, printable Academy certificate.
+          Owner-supplied art, swapped 2026-09-19 (was cert-sample.webp). */}
       <ExpoImage
-        source={require('../../../assets/cert-sample.webp')}
+        source={require('../../../assets/YOUR_NAME_certificate_SAMPLE_web.webp')}
         style={styles.certSample}
         contentFit="contain"
-        accessibilityLabel="Example Pro Audio Training Academy Certificate of Achievement"
+        accessibilityLabel="Example Pro Audio Training Academy Certificate of Achievement, shown with a placeholder name"
       />
 
       <Text style={styles.body}>
