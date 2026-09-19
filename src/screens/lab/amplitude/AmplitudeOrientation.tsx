@@ -66,7 +66,11 @@ export const AMP_ORIENT_SUBTITLE = 'Different displays. Same visual language.';
 /** Core explanation — also the START HERE step's paragraph text (Path A). */
 export const AMP_ORIENT_PARAS: string[] = [
   'Throughout Pro Audio Training Academy, you will see the same color scale whenever level or amplitude is being visualized.',
-  'Different displays organize audio in different ways. A waveform shows amplitude over time. A spectrum analyzer shows magnitude across frequency. A spectrogram shows magnitude across both frequency and time.',
+  // ⚠️ The last sentence is a REASSURANCE, added 2026-09-19 at the owner's
+  // request: three instruments get named here before a beginner has met
+  // any of them, and the first lab in Audio Fundamentals is not the place
+  // to feel behind. It tells the reader the names are not the lesson.
+  'Different displays organize audio in different ways. A waveform shows amplitude over time. A spectrum analyzer shows magnitude across frequency. A spectrogram shows magnitude across both frequency and time. Do not worry about what those tools are yet — you will learn each of them soon.',
   'The display changes, but the color language stays the same. Cooler colors indicate lower magnitude. Warmer colors indicate higher magnitude.',
 ];
 

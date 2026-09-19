@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-19 16:00 · ccode · b661e531
+changed: Tools hub: no bottom nav — HOME in the header is the way out
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-19 15:31 · ccode · 30d24d45
 changed: Lab Menu: the same compact header
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
