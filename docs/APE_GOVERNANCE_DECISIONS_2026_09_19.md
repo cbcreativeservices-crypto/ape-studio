@@ -189,3 +189,85 @@ then would have reached nobody, successfully.
 **Standing rule:** JS-only and fingerprints match → OTA. Anything native or in
 `app.json` / `eas.json` → build AND submit; no OTA can help.
 
+
+## D21 · The legal entity, and what a refund or a ban does to a credential
+
+**Owner, 2026-09-19, answering the questions raised in
+`APE_LEGAL_REVIEW_2026_09_19.md`.**
+
+### The entity
+
+**Pro Audio Training Academy LLC** — a California limited liability company,
+formed **July 2026**, registered at state and federal level (EIN, DUNS, CA
+tax identity all issued). Registered address **2558 Miller Ave, Escondido, CA
+92029**.
+
+The registered name IS the trading name, so there is **no DBA layer** — the
+contract, the store listings and the merchant identity can all say the same
+thing. The published Terms and Privacy Policy currently name no entity at all
+(zero occurrences of "LLC" in 439 KB), which is the single highest-severity
+finding in the legal review: the liability cap, the indemnity and the warranty
+disclaimers all run in favour of an unnamed trade name.
+
+⛔ **The EIN and DUNS numbers do not go in any published document.** They
+belong in store, banking and tax forms. Nothing on the website needs them.
+
+### A refund does NOT revoke a certificate
+
+**Owner: "refund does not revoke certificate."** Settled, and it matches the
+reasoning already recorded: a certificate records that somebody passed an exam
+on a date, which stays true whatever later happens to the payment. Revoking it
+over a refund turns a billing dispute into an academic-integrity accusation.
+
+A refund ends **access**. It does not touch the credential.
+
+### A ban means no access; credential revocation is DISCRETIONARY and narrow
+
+**Owner: "ban means no access. and at discretion for extreme matters →
+revoke certificates for fraud, forgery, or suspicious activity until proven
+legit."**
+
+So revocation is **not** an automatic consequence of a ban. It is reserved for
+three grounds — **fraud, forgery, suspicious activity** — and the operative
+words are **"until proven legit"**: this is a **HOLD pending proof, not a
+permanent revocation**. The credential comes back if the holder establishes
+the record is genuine. Default state on a ban is: access gone, credential
+intact.
+
+⚠️ **Two things this ruling needs before it can be built:**
+
+1. **The data model cannot express a hold.** `credential_awards.revoked_at` is
+   a single nullable timestamp — settable and re-settable, so a hold is
+   technically reversible, but there is **no reason code, no actor, and no way
+   to distinguish "under review" from "permanently revoked"**. There is also no
+   admin RPC to set it: no client path to revoke a credential exists at all.
+   Both are A's tables.
+2. **The public verification wording carries real exposure.** A held credential
+   must read as *"not currently verifiable — under review"*, never as
+   fraudulent or forged. Publicly calling someone a forger before it is proven
+   is defamation-shaped, and "until proven legit" explicitly means it is not
+   yet proven. What `/verify/[code]` and `/registry/[token]` return today for a
+   revoked award is a backend question for A — the RPCs are theirs.
+
+### ⚠️ UNRESOLVED — "no access" conflicts with what Phase 0 shipped
+
+The moderation work that shipped (D19) restricts **the community only**: a
+banned account can still sign in, study, and use every lab and tool, and
+`AccountStandingNotice` tells them so in those words — *"You can still study,
+and your certificates are unaffected."*
+
+"Ban means no access" reads wider than that. The two readings need different
+work and have different consequences:
+
+- **Community only** (what is built): nothing to change.
+- **The whole app**: enforcement points move, the notice copy is wrong, and it
+  collides directly with the refund position — you cannot refund an in-app
+  purchase yourself, so cutting a paid member off from content they bought is
+  a chargeback and consumer-law question, not just a moderation one.
+
+Sign-in itself must stay open under either reading: a banned user has to be
+able to read the reason and appeal, and in the EU the DSA expects a statement
+of reasons.
+
+**Still open from D19:** whether a ban terminates paid membership, and the
+retention period for reports, messages and moderation records after removal.

@@ -8,6 +8,10 @@ of it is published. Two of the findings (§1 and §7) are the kind of thing that
 decides whether a liability shield actually works, so they should go to counsel
 even if nothing else does.
 
+**UPDATED 2026-09-19 with the owner's answers** — the entity details and the
+credential rulings are now filled in below (§1 and §5). What still needs
+counsel is unchanged.
+
 What I did: read the published Terms (`web/content/legal/terms.html`, 383 KB,
 30 sections + 15 appendices) and Privacy Policy (56 KB) end to end against the
 three things you named — LLC closure, liability, refunds — plus the live
@@ -60,36 +64,50 @@ the Resend "from" identity: these should all resolve to one legal name, and a
 mismatch between the seller of record and the contracting party is exactly what
 a plaintiff's lawyer looks for first.
 
-**Only you can supply these:**
+**✅ ANSWERED BY THE OWNER 2026-09-19:**
 
-1. The exact registered name (e.g. `CB Creative Services LLC`) — the bundle id
-   is `com.cbcreativeservices.apestudio` and the GitHub org is
-   `cbcreativeservices-crypto`, so I can guess, but I am not putting a guess in
-   a contract.
-2. The state of formation.
-3. Whether "Pro Audio Training Academy" is registered as a DBA/FBN of that
-   entity in your county/state, or is only a brand name.
-4. A registered address for legal notices (§29.4 currently gives only an email).
+| | |
+|---|---|
+| Registered name | **Pro Audio Training Academy LLC** |
+| Form / state | California limited liability company |
+| Formed | July 2026 |
+| Registration | State and federal, complete — EIN, DUNS, CA tax identity all issued |
+| Registered address | 2558 Miller Ave, Escondido, CA 92029 |
+| DBA? | **None needed** — the registered name IS the trading name |
+
+That last row simplifies this finding considerably: there is no gap between
+the brand and the entity, so the contract, the store listings and the merchant
+identity can all carry the same name. It is purely a matter of writing it in.
+
+⛔ **The EIN and DUNS numbers must NOT appear in any published document.**
+They belong in store, banking and tax filings. Nothing on the website needs
+them, and publishing an EIN is a fraud vector.
+
+⚠️ **One thing to weigh before publishing:** a legal-notice address in public
+Terms is permanent and gets scraped. It is already public record at the
+California Secretary of State, so this is not a secret — but if 2558 Miller
+Ave is a home rather than a separate registered-agent address, a commercial
+registered-agent service is the usual answer and costs very little.
 
 **Draft replacement for §1.1, first paragraph:**
 
 > These Terms of Service ("Terms") constitute a legally binding agreement
-> between you ("you," "your," or "User") and **[REGISTERED ENTITY NAME], a
-> [STATE] limited liability company, doing business as Pro Audio Training
-> Academy** ("Pro Audio Training Academy," "Academy," "Company," "we," "our,"
-> or "us") governing your access to and use of …
+> between you ("you," "your," or "User") and **Pro Audio Training Academy LLC,
+> a California limited liability company** ("Pro Audio Training Academy,"
+> "Academy," "Company," "we," "our," or "us") governing your access to and use
+> of …
 
 **Draft replacement for §3.2:**
 
-> "Academy" means **[REGISTERED ENTITY NAME] d/b/a Pro Audio Training
-> Academy**, including its mobile applications, websites, educational content,
+> "Academy" means **Pro Audio Training Academy LLC**, including its mobile
+> applications, websites, educational content,
 > software, databases, online services, **members, managers,** employees,
 > contractors, successors, and authorized representatives.
 
 **Add to §29.4 (Contact for Legal Notices):**
 
-> Legal notices must be sent in writing to **[REGISTERED ENTITY NAME],
-> [REGISTERED ADDRESS]**, with a copy by email to
+> Legal notices must be sent in writing to **Pro Audio Training Academy LLC,
+> 2558 Miller Ave, Escondido, CA 92029**, with a copy by email to
 > info@proaudiotrainingacademy.com. Notice by email alone is not effective for
 > the commencement of formal proceedings.
 
@@ -274,7 +292,7 @@ state your own position rather than only pointing at Apple. Draft below.
 **Draft Refund & Subscription Policy (Option A):**
 
 > ### Refund & Subscription Policy
-> *Effective [DATE] · [REGISTERED ENTITY NAME] d/b/a Pro Audio Training Academy*
+> *Effective [DATE] · Pro Audio Training Academy LLC*
 >
 > **1. Who takes your payment.** Memberships and Lifetime Purchases are sold
 > through the Apple App Store and Google Play. Those marketplaces — not the
@@ -307,12 +325,19 @@ state your own position rather than only pointing at Apple. Draft below.
 > subscription.
 >
 > **6. If a refund is granted.** When a marketplace refunds a purchase, the
-> corresponding access ends. Study progress and any certificate already earned
-> are not deleted by a refund, but access to member features stops. [⚠️ OWNER
-> DECISION — see §5 below on whether a refunded Lifetime Purchase revokes an
-> already-issued certificate.]
+> corresponding access ends. **A refund does not cancel a certificate you have
+> already earned.** A certificate records that you completed the requirements
+> on the date shown, and that remains true. Your study progress is not deleted.
 >
-> **7. Accounts closed for conduct.** [⚠️ OWNER DECISION — see §5 below.]
+> **7. Accounts closed for conduct.** If we close or restrict an account for
+> breach of the Terms or the Community Standards, amounts already paid are not
+> refunded by us, and any refund remains a matter for the marketplace that
+> took the payment. **Closing an account does not by itself cancel a
+> certificate already earned.** We may place a credential under review, and
+> suspend its online verification while we do, where we have reason to believe
+> it was obtained by fraud or forgery or through activity that suggests the
+> record is not genuine. A credential placed under review is reinstated if the
+> holder establishes that it was properly earned.
 >
 > **8. Contact.** info@proaudiotrainingacademy.com. We cannot process a refund
 > for you, but if a marketplace has declined one and you think the
@@ -333,21 +358,29 @@ Apple or Google."* That is true, and pretending otherwise would be worse.
    marketplace, so the practical answer is "through the store" — but saying
    nothing looks like denying the right. Clause 4 of the draft above fixes it
    in two sentences.
-2. **What a refund does to access and to a certificate.** Nothing says. If
-   someone buys Lifetime, earns a certificate, then gets a refund from Apple —
-   does the certificate stand? My view: **the certificate should stand**,
-   because it records that they passed an exam, which remains true, and
-   revoking it converts a payment dispute into an academic-integrity claim. But
-   that is a policy call, not a legal one. **Your ruling needed.**
-3. **The ban/refund interaction.** This is the open question from the
-   moderation work (governance D19 #2): if you ban a paid member, do you owe a
-   refund? **You cannot refund an in-app purchase yourself** — so "we ban you
-   and keep your money" is the default outcome whether or not you intend it,
-   and that is a chargeback and consumer-complaint risk. The usual answer is to
-   state it plainly up front: conduct-based termination does not entitle the
-   user to a refund of amounts already paid, and any refund is at the
-   marketplace's discretion. **Your ruling needed**, and it belongs in both the
-   Terms (§25) and the Refund Policy (clause 7).
+2. **What a refund does to access and to a certificate.** ✅ **RULED
+   2026-09-19 — a refund does NOT revoke a certificate.** A refund ends access;
+   the credential stands. Drafted into clause 6 above and it needs to go into
+   Terms §10 and §25 too.
+3. **The ban/refund interaction.** ✅ **PARTLY RULED 2026-09-19.** A ban means
+   no access, and credential revocation is **discretionary and narrow** —
+   reserved for fraud, forgery or suspicious activity, and framed as **"until
+   proven legit"**, i.e. a HOLD pending proof rather than a permanent
+   revocation. Drafted into clause 7 above.
+
+   ⚠️ Two things this does not yet settle, and both need you:
+   **(a)** Does a ban terminate **paid membership**? You cannot refund an
+   in-app purchase yourself, so "we ban you and keep your money" is the silent
+   default whether you intend it or not. Stating it up front is the usual
+   protection — but see the conflict flagged in governance D21, because
+   "no access" may mean more than the community restriction that actually
+   shipped.
+   **(b)** The **public wording** for a held credential. It must read
+   *"not currently verifiable — under review"*, never fraudulent or forged.
+   "Until proven legit" means it is by definition not yet proven, and calling
+   someone a forger in public before that point is defamation-shaped. What the
+   verification pages return today for a revoked award is a backend question
+   for A.
 4. **Your own goodwill position.** You genuinely can't refund. But saying "if
    the store said no and you think that's wrong, tell us" costs nothing, is
    true, and is the difference between a support email and a one-star review
@@ -426,27 +459,30 @@ non-lawyer is worse than none.
 
 ## WHAT I NEED FROM YOU
 
-Four facts (only you have them):
+✅ **Answered 2026-09-19:** the entity (name, state, formation, address, no
+DBA), that a refund does not revoke a certificate, and that credential
+revocation is discretionary and narrow — fraud, forgery or suspicious activity,
+held until proven legitimate.
 
-1. Registered entity name, exactly as filed.
-2. State of formation.
-3. Is "Pro Audio Training Academy" registered as a DBA of it?
-4. Registered address for legal notices.
+**Still needed from you:**
 
-Three rulings (policy, not law):
-
-5. Does a **refunded** Lifetime Purchase revoke an already-issued certificate?
-   (My view: no.)
-6. Does a **ban** entitle the user to a refund, revoke earned credentials, or
-   terminate paid membership? — the open D19 questions. Whatever you decide
-   needs to be stated in §25 before launch, because the silent default is
-   "we keep the money", and that is a chargeback risk.
-7. Retention period for reports, messages and moderation records after removal.
-
-One copy ratification:
-
-8. The "Lifetime means…" line for the paywall (§3 above). JS-only, OTA-safe,
+1. **Does "ban means no access" mean the whole app, or the community?** This is
+   the one that changes work. What shipped restricts the community only and
+   tells the user *"You can still study, and your certificates are
+   unaffected."* If you mean the whole app, that copy is wrong, the enforcement
+   points move, and it collides with the refund position — see governance D21.
+2. Does a ban **terminate paid membership**?
+3. **Retention period** for reports, messages and moderation records after a
+   removal.
+4. The "Lifetime means…" line for the paywall (§3 above). JS-only, OTA-safe,
    ten minutes once you ratify the wording.
+
+**Engineering consequences of the credential ruling** (for A, whose tables
+these are): `credential_awards.revoked_at` is a bare nullable timestamp — no
+reason code, no actor, and no way to distinguish "under review" from
+"permanently revoked", which is exactly the distinction the ruling turns on.
+There is also no admin RPC to set it, so no client path to revoke or hold a
+credential exists at all.
 
 And then: **all of this to a lawyer.** Items 1 and 7 especially — those two
 decide whether the protections in the rest of the document actually attach.
