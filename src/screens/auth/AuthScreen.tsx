@@ -50,6 +50,8 @@ import { COPY } from '../../lib/copy';
 import { registerCommercialUser } from '../../features/commercial/commercialAuth';
 import { redeemAccessCode } from '../../features/commercial/accessCode';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+// Import kept alongside the disabled mount below so re-enabling is one line.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { AppWelcomeOverlay } from '../../features/intro/AppWelcomeOverlay';
 import { resetAmplitudeOrientation } from '../../features/lab/amplitudeOrientation';
 import type { RootStackParamList } from '../../navigation/types';
@@ -571,8 +573,15 @@ export function AuthScreen({ navigation }: Props) {
         )}
       </KeyboardAwareScrollView>
 
-      {/* First-run greeting, shown OVER the login screen (user request 2026-07-23). */}
-      <AppWelcomeOverlay />
+      {/* First-run greeting, shown OVER the login screen (user request
+          2026-07-23) — TURNED OFF 2026-09-19 at the owner's request: "for now
+          turn off the very first pop up before the login gate".
+
+          ⛔ OFF, NOT DELETED. The overlay, its ratified copy and its 9-second
+          governed dwell all still exist in features/intro/AppWelcomeOverlay —
+          re-enable by restoring this one line. "For now" means exactly that,
+          so nothing about it was unpicked. */}
+      {/* <AppWelcomeOverlay /> */}
     </View>
   );
 }
