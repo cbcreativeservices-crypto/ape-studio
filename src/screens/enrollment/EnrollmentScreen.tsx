@@ -18,6 +18,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { officialTopicName } from '../../data/officialTopicNames';
 import { ActivityIndicator, Animated, LayoutAnimation, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, UIManager, View, type GestureResponderEvent, type LayoutChangeEvent } from 'react-native';
 import { animationsAllowed } from '../../features/settings/a11y';
+import { useOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
 import { Modal } from '../../components/DimModal';
 import { HoldToActivate } from '../../components/HoldToActivate';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -106,7 +107,15 @@ function LoadPill({ on, small, dim }: { on: boolean; small?: boolean; dim?: bool
   // 11 s cycle so an unloaded deck reads as "tap to load" without touching the type.
   // LOADED (blue) shows no glow; reduce-motion holds the glow at a steady mid level.
   const glow = useRef(new Animated.Value(0)).current;
-  const animate = !on && animationsAllowed();
+  /**
+   * ⛔ LOW-LIGHT GATE, not just reduced motion. This checked
+   * `animationsAllowed()` alone, so in Low-Light Production Mode every
+   * unloaded row kept an 11-second halo breathing — in the one mode whose
+   * entire rule is that nothing may draw attention to itself unbidden.
+   * The static resting opacity below is already the correct fallback.
+   */
+  const suppressed = useOverlaysSuppressed();
+  const animate = !on && !suppressed && animationsAllowed();
   useEffect(() => {
     if (!animate) return;
     const anim = Animated.loop(
@@ -1213,11 +1222,20 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   /** The deck's shape, for the chips' jump targets. */
   const deckKinds = useMemo(() => deckCards.map((c) => c.kind), [deckCards]);
 
-  // Removing the credential you were looking at must not leave the deck
-  // pointing past the end — fall back to ALL TOPICS.
-  useEffect(() => {
-    if (deckIndex > deckCards.length - 1) setDeckIndex(0);
-  }, [deckCards.length, deckIndex]);
+  /**
+   * ⛔ NO SECOND CORRECTION HERE. There used to be an effect that also fixed
+   * an out-of-range index, but to a DIFFERENT value (0) than the clamp above
+   * (the last card). Removing the credential you were sitting on therefore
+   * rendered the new last card, then jumped to ALL TOPICS one render later —
+   * one visible flash of the wrong selection and an `n/m` readout that moved
+   * twice for one action.
+   *
+   * The clamp is the one that stays: it is load-bearing (it is what prevents
+   * the out-of-range render documented above) and it cannot run late. Two
+   * rules for one condition is how they drift apart; `deckCards` is never
+   * empty, so the clamp alone is sufficient and `deckIndex` may safely sit
+   * past the end until the next interaction moves it.
+   */
 
   /** The credential the deck is sitting on — resolved through the VISIBLE
    *  deck, since a filter changes what index 1, 2, 3 mean. */
@@ -1237,7 +1255,31 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
    * row reads `pctFor(gs)` and the collapse key is `t:<gs>` — one topic, one
    * state, however many lists it appears in.
    */
-  const renderTopicRow = (e: EnrollTopic) => {
+  /**
+   * ⛔ `reorderable` MUST BE FALSE FOR A REQUIREMENT LIST.
+   *
+   * Both lists render through this one function, but only ALL TOPICS is
+   * reorderable. `rowOrder.current.topics` is built from `displayed` — the
+   * ALL TOPICS list — while a credential's rows come from
+   * `requirementRows()`, a different and partly SYNTHESISED set. Holding a
+   * requirement row therefore did one of two wrong things:
+   *
+   *   · a row absent from `displayed` (a completed co-req, or one never
+   *     enrolled) lifted and was dropped again on the next render, because
+   *     the lift-cleanup effect could not find its id — reorder simply dead;
+   *   · a row that happened to BE in `displayed` dragged against the
+   *     neighbours of the OTHER list and silently rewrote the member's
+   *     ALL TOPICS order, while nothing moved on screen, because
+   *     `requirementRows` builds a fixed derived order that never reads the
+   *     store.
+   *
+   * The second is the dangerous one: a gesture on one screen quietly
+   * reordering a different list, with no feedback that anything happened.
+   *
+   * ⚠️ `move` becomes null rather than the row losing its PanResponder — the
+   * horizontal swipe-to-collapse flick is still wanted on requirement rows.
+   */
+  const renderTopicRow = (e: EnrollTopic, reorderable = true) => {
     /**
      * ⛔ THE LAB IS NOT A STUDY TOPIC (owner 2026-09-19). Audio Fundamentals
      * is a required LAB: it sits on the enrollment checklist because every
@@ -1299,8 +1341,24 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           // other topics can always be removed.
           const pct = pctFor(e.gs);
           const isCore = COREQ_TOPIC_GS.includes(e.gs);
-          const coreLocked = isCore && pct < 100;
-          const showActive = coreLocked || e.active;
+          /**
+           * ⛔ A REQUIREMENT YOU ARE NOT ENROLLED IN IS NOT "LOADED".
+           *
+           * `requirementRows` synthesises a row for any requirement the
+           * member has not enrolled in, and its comment says that row "still
+           * says honestly that it is not in the study deck". It did the
+           * opposite: every co-requisite under 100% satisfied `coreLocked`,
+           * which forced `showActive` true, so the row painted the green
+           * LOADED pill, a lit study icon and the label "Locked in your study
+           * deck until completed" — for a topic absent from the enrollment
+           * list entirely. The pill is disabled, so the screen offered no way
+           * to correct what it had just claimed.
+           *
+           * Gating both on real enrollment lets the synthesised state show.
+           */
+          const isEnrolled = enrolledGs.has(e.gs);
+          const coreLocked = isCore && pct < 100 && isEnrolled;
+          const showActive = (coreLocked || e.active) && isEnrolled;
           const activeGreen = acc && showActive;
           // Reorder (custom order only): hold 2 s to lift, drag to sort. The
           // gesture lives on the container wrapper via containerPan/reorderTouch.
@@ -1310,8 +1368,8 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             return (
               <Animated.View
                 key={e.gs}
-                {...containerPan(tid, moveThis).panHandlers}
-                {...(customOrder ? reorderTouchProps(tid) : {})}
+                {...containerPan(tid, reorderable ? moveThis : null).panHandlers}
+                {...(reorderable && customOrder ? reorderTouchProps(tid) : {})}
                 {...rowLayoutProps(tid)}
                 style={liftStyle(tid)}
               >
@@ -1361,8 +1419,8 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           return (
             <Animated.View
               key={e.gs}
-              {...containerPan(tid, moveThis).panHandlers}
-              {...(customOrder ? reorderTouchProps(tid) : {})}
+              {...containerPan(tid, reorderable ? moveThis : null).panHandlers}
+              {...(reorderable && customOrder ? reorderTouchProps(tid) : {})}
               {...rowLayoutProps(tid)}
               style={liftStyle(tid)}
             >
@@ -1852,21 +1910,37 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
               ? () => confirmRemoveWhole(centredBundle)
               : undefined
           }
+          /**
+           * ⛔ RESOLVE THROUGH `centredBundle`, NEVER THROUGH `bundles`.
+           *
+           * The deck deliberately carries DERIVED credentials — the ones you
+           * already hold every topic for — and `derivedBundles` is built by
+           * EXCLUDING everything in `bundleKeySet`, so `bundles.find(...)` on
+           * a derived card is always undefined. These two callbacks did that
+           * and were therefore dead on exactly those cards: LOAD ALL TOPICS
+           * did nothing while reading "UNLOAD ALL TOPICS" in green (allLoaded
+           * is computed from the real topics, so the label was right and the
+           * action was missing), and STUDY ALL opened the dashboard having
+           * loaded nothing, after announcing that it would.
+           *
+           * `centredBundle` already falls back to the derived list and is by
+           * definition this card — the summary, the requirement list and
+           * FINAL EXAM have all been using it correctly. Only these two were
+           * missed.
+           */
           onToggleLoad={(card) => {
             if (card.kind === 'topics') {
               setActiveMany(enrolled.map((e) => e.gs), !card.allLoaded);
               return;
             }
-            const b = bundles.find((x) => x.key === card.key);
-            if (b) setBundleLoad(b, !card.allLoaded);
+            if (centredBundle) setBundleLoad(centredBundle, !card.allLoaded);
           }}
           onStudy={(card) => {
             if (card.kind === 'topics') {
               goStudy(enrolled[0]?.gs);
               return;
             }
-            const b = bundles.find((x) => x.key === card.key);
-            goStudy(b?.topics[0]);
+            goStudy(centredBundle?.topics[0]);
           }}
         />
 
@@ -1887,7 +1961,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                 PRE-REQUISITES ALWAYS FIRST: they gate every credential, so
                 they head the list rather than sitting wherever the credential
                 happens to order them. */}
-            {requirementRows(centredBundle).map(renderTopicRow)}
+            {requirementRows(centredBundle).map((e) => renderTopicRow(e, false))}
           </>
         ) : null}
 
@@ -1898,7 +1972,10 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
               : 'Nothing matches those filters.'}
           </Text>
         ) : (
-          labFirst(displayed).map(renderTopicRow)
+          // ⚠️ NOT `.map(renderTopicRow)` — map passes the INDEX as the second
+          // argument, which would land in `reorderable`: row 0 falsy, every
+          // other row truthy. tsc caught it; the arrow keeps it explicit.
+          labFirst(displayed).map((e) => renderTopicRow(e))
         )}
 
         {/* MY RECORD — the completion folder, pinned to the bottom of the My

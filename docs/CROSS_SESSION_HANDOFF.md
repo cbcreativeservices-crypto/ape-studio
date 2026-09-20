@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-19 18:22 · ccode · 4bb69b31
+changed: Queue autoIncrement for the next build — landing it now strands both phones
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-19 16:20 · ccode · 93ed8758
 changed: Exclude .git from the EAS upload — it WAS the upload
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">

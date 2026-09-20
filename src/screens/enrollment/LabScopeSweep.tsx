@@ -260,7 +260,23 @@ export function LabScopeSweep({ color }: { color: string }) {
           outputRange: [0, 1, 1, 0],
           extrapolate: 'clamp',
         })
-      : 1;
+      : /**
+         * ⛔ ZERO, NOT ONE. `travel` is 0 until the first pass arms, and this
+         * view renders on every path — so an opaque fallback parked a static
+         * `S` waveform in the card's top-left corner, half over the border.
+         * Visible on EVERY mount for the whole first idle wait (3–19s), and
+         * PERMANENTLY under reduced motion or Low-Light Production Mode,
+         * where the effect returns before ever setting `travel`.
+         *
+         * That made this component's own promise — "Both leave a plain
+         * static frame" — false, and broke the Low-Light rule that nothing
+         * may draw attention to itself unbidden, in the one place on this
+         * screen that explicitly claims to honour it.
+         *
+         * `travel > 0` already means exactly "a pass has been armed", so
+         * invisible-until-armed is the correct reading of this branch.
+         */
+        0;
 
   return (
     <View style={s.host} pointerEvents="none" onLayout={onLayout}>
