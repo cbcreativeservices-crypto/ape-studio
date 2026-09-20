@@ -26,6 +26,49 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-20 10:06 · ccode · 1e2f78a0
+changed: Privacy Policy now names the real data processors. The LIVE page had shipped an author's
+  checklist — "Before publication, add any provider used for:" over ten bare CATEGORIES with no
+  provider against any of them — plus a footer reading "Attorney review and production-configuration
+  verification required before publication". Owner confirmed attorney review is done. Verified each
+  provider against the code and the live Vercel project, then disclosed three that were in use and
+  named nowhere: RESEND (transactional email, 4 edge fns), VERCEL (website hosting + CDN, project
+  `web` serving the .com plus .co/.online redirects), EXPO/EAS (OTA updates, asset delivery, push —
+  it was named only as a build platform). Added an explicit PAYMENTS entry: all purchases go through
+  Apple/Google, no direct web payment path, no separate processor. Also removed four other
+  instructions-to-the-author that had shipped publicly. Pushed and verified on the public URL.
+affects other side: ⚠️ A — THIS CHANGES THE STORE PRIVACY FORMS, which are your lane. The App
+  Privacy / Data Safety answers were built from docs/CCODE_SDK_PRIVACY_AUDIT_2026_09_13.md, which
+  predates Sentry+Aptabase (telemetry landed 2026-09-16, commit 7078b21b) and never covered Resend,
+  Vercel or Expo-as-CDN/push. The published policy and the store forms must agree; right now the
+  policy is the newer document. Re-read the Appendix A directory in web/content/legal/privacy.html
+  before you submit either form.
+needs: (1) A to reconcile the store forms against the new Appendix A. (2) One fact only the owner
+  has: the DOMAIN REGISTRAR — no domain is registered through the Vercel account, so it is not named.
+  My read is a registrar processes no USER data (it holds the company WHOIS record) and does not
+  belong in a processor directory at all; flagging it rather than deciding it silently.
+  (3) FYI not yours to fix: the website has NO real gate — web/lib/gate.ts only sets robots noindex,
+  there is no middleware, and Vercel password protection is off. That is how a draft legal document
+  came to be publicly readable. Owner's call, raised with them.
+
+
+### 2026-09-20 09:58 · ccode · 08729e31
+changed: Merged the overnight copy batch — ~140 findings applied across the app's user-facing text,
+  two stripped as wrong on verification. Client only. tsc clean on app and web, 1714 tests, both
+  fingerprints unchanged, nothing published to any phone.
+affects other side: nothing server-side. One class of finding is worth your attention though: the
+  systemic fault the passes named was COPY HARD-CODING A FACT THE SERVER OWNS — question counts,
+  time limits, pass marks, "its three required topics". Where a number is yours, the client now reads
+  it or states it unconditionally rather than restating a literal. If you change a server-owned
+  number, it will now surface rather than silently drift.
+needs: nothing from you for this commit. STILL OPEN AND UNANSWERED FROM MY SIDE — the credential
+  chain: `quiz_attempts` holds ONE row in the entire database (10 Aug, still in progress), there has
+  never been a final-exam attempt, and `credential_awards` is empty. `app_flags.certificate_requires_exam`
+  is still false (untouched since 18 Sep). Re-verified just now. So the assessment-to-credential path
+  has never run end to end on ANY account, including the seeded 100% graduate. That is a launch
+  blocker and it is backend-side. Detail: Downloads/2026-09-20_LAUNCH_BLOCKERS_your_call.md.
+
+
 ### 2026-09-20 09:52 · ccode · 2026092002_remove_four_retired_daw_certificates (APPLIED by ccode)
 changed: APPLIED at the owner's direct instruction ("run it yourself"). Deleted the four retired
   DAW certificates and their 12 certificate_topics links. Verified after: certificates 128 -> 124,
