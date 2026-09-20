@@ -136,10 +136,31 @@ export type CelebrationEvent = {
  * be applied in ONE place: in Low-Light Production Mode nothing may
  * auto-appear, so every tier collapses to the quiet inline notice and no modal
  * ever opens. See the Celebration component.
+ *
+ * ── EVERY TIER IS A POPUP NOW (owner, 2026-09-20) ───────────────────────────
+ *
+ * `step` and `stage` used to render as the inline notice — a card that opens
+ * at the top of the Dashboard and pushes the whole rack down the screen. The
+ * owner's ruling, after seeing MATCHING COMPLETE do exactly that:
+ *
+ *   "i prefer popups to pulldowns — pull downs move the screen up or down,
+ *    which i do not like. popups work better as it focuses user then they go
+ *    right back and there is no reorientation of the page."
+ *
+ * That is a reading about ATTENTION, and it is right: a banner that reflows
+ * the page makes the learner re-find where they were, while a popup takes the
+ * focus and hands it straight back. So every celebration is a modal.
+ *
+ * ⛔ THE LOW-LIGHT BRANCH STAYS, AND STAYS FIRST. It is the absolute standing
+ *    rule — in that mode nothing may auto-appear or flash, and this app is
+ *    used in dark control rooms during shows. Suppressed still collapses to
+ *    the quiet inline notice with no modal and no haptic. The owner's
+ *    preference governs how a celebration interrupts; it does not govern
+ *    whether it may interrupt at all.
  */
 export function formFor(tier: CelebrationTier, suppressed: boolean): CelebrationForm {
   if (suppressed) return 'notice';
-  return tier === 'milestone' || tier === 'credential' ? 'screen' : 'notice';
+  return 'screen';
 }
 
 /**

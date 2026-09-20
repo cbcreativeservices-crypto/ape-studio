@@ -48,13 +48,24 @@ describe('the catalog', () => {
     for (const [key, def] of Object.entries(CELEBRATIONS)) assert.equal(def.id, key);
   });
 
-  it('only three celebrations take the whole screen per topic-worth of work', () => {
-    // The arithmetic that drove the tiering: six full screens per topic across
-    // 171 topics is ~1000 dismissals, and at that rate a full screen stops
-    // meaning anything. The three per-topic ACTIVITIES must stay inline.
+  it('the three per-topic activities stay on the QUIET tier', () => {
+    // ⛔ THE FORM CHANGED, THE TIER MUST NOT (owner 2026-09-20).
+    //
+    // This used to assert these rendered as the inline 'notice'. The owner
+    // ruled against that: an inline card opens at the top of the Dashboard and
+    // pushes the whole rack down, so the learner has to re-find their place.
+    // "popups work better as it focuses user then they go right back and there
+    // is no reorientation of the page." Every tier is a popup now.
+    //
+    // The reasoning BEHIND the old assertion still stands and is what this
+    // test now protects: six celebrations per topic across 171 topics is
+    // ~1000 dismissals, so the per-topic activities must stay restrained.
+    // `tier` is what carries that — 'step' gets no haptic (Celebration.tsx
+    // fires one only for milestone/credential) and no promotion to the
+    // language reserved for finishing a topic or earning a credential.
     for (const id of ['flashcards-complete', 'matching-complete', 'fill-blank-complete'] as const) {
-      assert.equal(CELEBRATIONS[id].tier, 'step', `${id} must not be a full screen`);
-      assert.equal(formFor(CELEBRATIONS[id].tier, false), 'notice');
+      assert.equal(CELEBRATIONS[id].tier, 'step', `${id} must stay on the quiet tier`);
+      assert.equal(formFor(CELEBRATIONS[id].tier, false), 'screen');
     }
   });
 

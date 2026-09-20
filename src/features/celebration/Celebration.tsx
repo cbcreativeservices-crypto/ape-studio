@@ -3,8 +3,14 @@
  *
  * Two forms, chosen by `formFor(tier, suppressed)`:
  *
- *   'screen'  a full-screen modal over a dimmed backdrop (milestone, credential)
- *   'notice'  an inline card that sits in the flow (step, stage)
+ *   'screen'  a POPUP — a centred card (max 380 wide, sized to its content)
+ *             over a dimmed backdrop. Every tier uses this now (owner
+ *             2026-09-20). It was described here as "full-screen", which it
+ *             never was, and that overstatement is part of why the quieter
+ *             tiers were kept inline.
+ *   'notice'  an inline card in the page flow. Reached ONLY when overlays are
+ *             suppressed — Low-Light Production Mode, where nothing may
+ *             auto-appear.
  *
  * If this file ever grows `if (id === ...)` the design has been broken: every
  * difference between celebrations belongs in `catalog.ts`.
