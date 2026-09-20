@@ -54,6 +54,8 @@ import { linking } from './src/navigation/linking';
 import { attachLinkCapture } from './src/navigation/pendingLink';
 import { recordAppSession } from './src/features/review/reviewPrompt';
 import { startAutoUpdate } from './src/features/updates/startAutoUpdate';
+import { drainStudyQueue } from './src/features/study/sync';
+import { flushScenarioQueue } from './src/features/study/scenarioHomework';
 import {
   attachWeeklyConceptPush,
   flushLocalDestNav,
@@ -211,6 +213,32 @@ function App() {
   // only listens for the native downloader and reloads after interactions.
   // Read the crash note at the top of autoUpdate.ts before touching it.
   useEffect(() => startAutoUpdate(), []);
+
+  /**
+   * ⛔ DRAIN QUEUED STUDY PROGRESS ON LAUNCH AND ON EVERY FOREGROUND.
+   *
+   * Offline study batches persist to SQLite, but the only thing that ever
+   * replayed them was a LIVE study session's flush. A learner who studied on
+   * a train, got home to wifi and opened the app saw their pre-offline
+   * numbers — the work looked lost until they happened to re-enter a study
+   * method and stay there. Some of them would just do it again.
+   *
+   * Never throws into the launch path; the drain is internally serialised so
+   * it cannot race a session's own flush.
+   */
+  useEffect(() => {
+    const drain = () => {
+      drainStudyQueue();
+      // Scenarios keeps its own queue (different shape, different RPCs) and
+      // needs the same launch/foreground push — see scenarioQueue.ts.
+      void flushScenarioQueue().catch(() => {});
+    };
+    drain();
+    const sub = AppState.addEventListener('change', (st) => {
+      if (st === 'active') drain();
+    });
+    return () => sub.remove();
+  }, []);
 
   // Store-review eligibility (launch readiness, 2026-09-06): count this launch
   // as a session. The prompt itself is only ever requested after a genuine

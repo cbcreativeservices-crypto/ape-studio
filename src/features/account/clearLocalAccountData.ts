@@ -31,6 +31,7 @@ import { resetLocal as resetLabCompletion } from '../lab/labCompletion';
 import { resetLocal as resetExposureMonitor } from '../audio/exposureMonitor';
 import { resetLocal as resetDashboardCache } from '../dashboard/dashboardCache';
 import { clearQueuedBatches } from '../study/studyQueueStorage';
+import { clearScenarioQueue } from '../study/scenarioQueue';
 import { clearQueuedSubmissions } from '../quiz/submissionQueueStorage';
 import { resetLocal as resetDeckOrder } from '../dashboard/deckOrderStore';
 import { resetLocal as resetSettingsMirrors } from '../settings/store';
@@ -188,6 +189,9 @@ export function resetAllLocalStores(): void {
   // consistent (owner debug audit 2026-08-21).
   clearQueuedBatches();
   clearQueuedSubmissions();
+  // Scenarios keeps its own queue (AsyncStorage, different shape) — its rows
+  // carry an achievement id but no user, so they MUST not survive a switch.
+  void clearScenarioQueue();
   // The hearing-damage warning acceptance (2026-09-17). The stored key is swept
   // by the sweep above, but `isAcknowledged()` reads a module-level mirror that
   // is not - so the NEXT person on this phone got sound with no warning, and no

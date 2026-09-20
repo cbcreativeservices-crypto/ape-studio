@@ -15,6 +15,12 @@
  */
 import { supabase } from '../../lib/supabase';
 import { emitStudyProgress } from './sync';
+import {
+  drainScenarioQueue,
+  pendingScenarioCount,
+  queueScenarioCall,
+  type ScenarioPending,
+} from './scenarioQueue';
 
 export const SCENARIO_ROUNDS = 3;
 
@@ -127,13 +133,8 @@ export async function fetchScenarioHomework(achievementId: string): Promise<Scen
   }
 }
 
-/** Persist one answered scenario (drives mid-round resume). Non-fatal. */
-export async function recordScenarioAnswer(
-  achievementId: string,
-  questionId: string,
-  round: number,
-  correct: boolean,
-): Promise<void> {
+/** The raw RPCs, with no queueing — used by the drain and by the wrappers. */
+async function sendAnswer(achievementId: string, questionId: string, round: number, correct: boolean): Promise<boolean> {
   try {
     // supabase-js RESOLVES with { error } rather than throwing, so the catch
     // below never sees an RPC error — check `error` explicitly or a failed
@@ -144,26 +145,88 @@ export async function recordScenarioAnswer(
       p_round: round,
       p_correct: correct,
     });
-    if (error) console.warn('[scenario] record_scenario_answer failed:', error.message);
+    if (error) {
+      console.warn('[scenario] record_scenario_answer failed:', error.message);
+      return false;
+    }
+    return true;
   } catch (e) {
     console.warn('[scenario] record_scenario_answer threw:', (e as Error).message);
+    return false;
   }
 }
 
-/** Mark a round complete → advances the round + moves the Dashboard LED to
- *  rounds/3. Returns the new rounds-completed count. */
-export async function completeScenarioRound(achievementId: string, round: number): Promise<number> {
+async function sendComplete(achievementId: string, round: number): Promise<number | null> {
   try {
     const { data, error } = await supabase.rpc('complete_scenario_round', {
       p_achievement_id: achievementId,
       p_round: round,
     });
-    if (error) return round;
+    if (error) return null;
     emitStudyProgress(); // refresh any live Dashboard LED
     return Number(data) || round;
   } catch {
-    return round;
+    return null;
   }
+}
+
+/** Send one queued scenario call. Shape-dispatched by the drain. */
+async function sendPending(item: ScenarioPending): Promise<boolean> {
+  return item.kind === 'answer'
+    ? sendAnswer(item.achievementId, item.questionId, item.round, item.correct)
+    : (await sendComplete(item.achievementId, item.round)) !== null;
+}
+
+/**
+ * Push everything scenarios could not send earlier.
+ *
+ * ⛔ CALL THIS BEFORE A NEW CALL, not only on a timer: the queue must stay in
+ * order, and a fresh answer sent ahead of an older queued one would land out
+ * of sequence.
+ */
+export function flushScenarioQueue(): Promise<number> {
+  return drainScenarioQueue(sendPending);
+}
+
+/** Unsent scenario calls still on this device. */
+export { pendingScenarioCount };
+
+/**
+ * Persist one answered scenario (drives mid-round resume).
+ *
+ * ⛔ QUEUES ON FAILURE. This used to warn and return, and scenarios was the
+ * ONLY study method that could lose a learner's work outright — see the note
+ * at the top of scenarioQueue.ts.
+ */
+export async function recordScenarioAnswer(
+  achievementId: string,
+  questionId: string,
+  round: number,
+  correct: boolean,
+): Promise<void> {
+  // Anything already waiting goes first, so order is preserved.
+  const stillPending = await flushScenarioQueue();
+  if (stillPending > 0 || !(await sendAnswer(achievementId, questionId, round, correct))) {
+    await queueScenarioCall({ kind: 'answer', achievementId, questionId, round, correct, at: Date.now() });
+  }
+}
+
+/**
+ * Mark a round complete → advances the round + moves the Dashboard LED to
+ * rounds/3. Returns the new rounds-completed count.
+ *
+ * ⛔ QUEUES ON FAILURE, like the answers it completes. Returning `round`
+ * unchanged on failure is what let the round report congratulate a learner
+ * for a round the server never heard about.
+ */
+export async function completeScenarioRound(achievementId: string, round: number): Promise<number> {
+  const stillPending = await flushScenarioQueue();
+  if (stillPending === 0) {
+    const n = await sendComplete(achievementId, round);
+    if (n !== null) return n;
+  }
+  await queueScenarioCall({ kind: 'complete', achievementId, round, at: Date.now() });
+  return round;
 }
 
 /** Re-shuffle a fresh 3-round cycle after all 3 are done. Returns the new plan. */

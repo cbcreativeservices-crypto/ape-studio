@@ -95,6 +95,20 @@ async function callRpc(
   return data as StudySnapshot;
 }
 
+/** Remove a durable row by its batch id (used by the write-ahead in flushOnce). */
+function dequeueByBatchId(batchId: string): void {
+  try {
+    const ids = getQueuedBatches()
+      .filter((r) => r.batch_id === batchId)
+      .map((r) => r.id);
+    if (ids.length) deleteQueuedBatches(ids);
+  } catch (e) {
+    // Leaving the row is harmless — the server dedupes it by batch_id on
+    // replay. Losing the send because the delete threw would not be.
+    console.warn('[study-sync] could not clear a sent batch:', (e as Error).message);
+  }
+}
+
 function enqueue(achievementId: string, methodKey: string, batchId: string, seconds: number, events: StudyEvent[]) {
   insertQueuedBatch(
     {
@@ -109,12 +123,51 @@ function enqueue(achievementId: string, methodKey: string, batchId: string, seco
 }
 
 /**
- * Replay the offline queue, coalescing per (achievement, method): events are
- * concatenated in insertion order, seconds summed, and sent under fresh batch
- * ids (chunked at 500 events; the seconds ride on the first chunk).
+ * Replay the offline queue, coalescing per (achievement, method) so the
+ * server's wall-clock clamp is not starved (contract §8). Chunked at 500
+ * events; the seconds ride on the first chunk.
+ *
+ * ⛔ EVERY CHUNK GOES UNDER A STORED batch_id, NEVER A FRESH ONE.
+ *
+ * `p_batch_id` exists so a re-send is an idempotent no-op server-side. This
+ * used to mint `Crypto.randomUUID()` per chunk per pass, throwing that away,
+ * and two ordinary sequences then DOUBLE-COUNTED a learner's work:
+ *
+ *   · the response to a committed batch is lost (tunnel, wifi hand-off) →
+ *     the catch enqueues it, correctly — and the replay re-sends it as new;
+ *   · chunk 0 lands carrying ALL the coalesced seconds, chunk 1 fails on the
+ *     network → we return WITHOUT deleting, so the next pass re-sends chunk 0
+ *     and its seconds again. Guaranteed, not a race, on any queue over 500
+ *     events that loses connectivity mid-replay.
+ *
+ * Over-credit in exactly the fields the gates and the accuracy readout are
+ * computed from — a gate could open on work done once.
+ *
+ * So chunks are cut on ROW boundaries rather than on the flattened event
+ * list, and each chunk is sent under its first row's own stored batch_id:
+ * stable across passes, distinct between chunks, already a valid uuid. Each
+ * chunk's rows are deleted as it lands, so a later chunk failing can never
+ * cause an earlier one to be replayed as new work.
+ *
+ * ⚠️ This is also what makes the write-ahead in `flushOnce` safe: a row that
+ * is sent twice is now deduplicated by the server instead of counted twice.
+ *
  * Stops silently on a network error — rows stay queued for the next pass.
  */
 export async function replayQueue(): Promise<void> {
+  // ⛔ ONE REPLAY AT A TIME. There are two callers now (a live session's
+  // flush, and the app-foreground drain), and concurrent passes over the same
+  // rows would send them twice and race on the deletes.
+  if (REPLAYING) return REPLAYING;
+  const run = replayQueueOnce().finally(() => {
+    REPLAYING = null;
+  });
+  REPLAYING = run;
+  return run;
+}
+let REPLAYING: Promise<void> | null = null;
+
+async function replayQueueOnce(): Promise<void> {
   const rows = getQueuedBatches();
   if (rows.length === 0) return;
 
@@ -141,16 +194,38 @@ export async function replayQueue(): Promise<void> {
     const seconds = g.reduce((s, r) => s + r.active_seconds, 0);
     const { achievement_id, method_key } = g[0];
 
-    const chunks: StudyEvent[][] = [];
-    for (let i = 0; i < Math.max(1, Math.ceil(events.length / MAX_EVENTS_PER_BATCH)); i++) {
-      chunks.push(events.slice(i * MAX_EVENTS_PER_BATCH, (i + 1) * MAX_EVENTS_PER_BATCH));
+    /**
+     * Cut chunks on ROW boundaries so each one can carry a real stored
+     * batch_id. A single row is already capped at MAX_EVENTS_PER_BATCH by
+     * `addEvent`, so a chunk is at most one row over the limit in the worst
+     * case — acceptable, and far better than an id we cannot reproduce.
+     */
+    const chunks: { id: string; rows: StudyQueueRow[]; events: StudyEvent[] }[] = [];
+    let cur: { id: string; rows: StudyQueueRow[]; events: StudyEvent[] } | null = null;
+    for (const r of g) {
+      let ev: StudyEvent[];
+      try {
+        ev = JSON.parse(r.events_json) as StudyEvent[];
+      } catch {
+        ev = [];
+      }
+      if (!cur || cur.events.length + ev.length > MAX_EVENTS_PER_BATCH) {
+        cur = { id: r.batch_id, rows: [], events: [] };
+        chunks.push(cur);
+      }
+      cur.rows.push(r);
+      cur.events.push(...ev);
     }
+    if (chunks.length === 0) chunks.push({ id: g[0].batch_id, rows: g, events });
 
     try {
       for (let i = 0; i < chunks.length; i++) {
-        await callRpc(achievement_id, method_key, Crypto.randomUUID(), i === 0 ? seconds : 0, chunks[i]);
+        const c = chunks[i];
+        await callRpc(achievement_id, method_key, c.id, i === 0 ? seconds : 0, c.events);
+        // ⛔ Delete AS IT LANDS. Deleting only after the whole group meant a
+        // later chunk's failure re-sent every earlier chunk next pass.
+        deleteQueuedBatches(c.rows.map((r) => r.id));
       }
-      deleteQueuedBatches(g.map((r) => r.id));
       emitStudyProgress(); // queued progress landed — refresh any dashboards
     } catch (e) {
       if (isNetworkError(e)) return; // still offline — try next loop
@@ -165,6 +240,27 @@ export async function replayQueue(): Promise<void> {
       deleteQueuedBatches(g.map((r) => r.id));
     }
   }
+}
+
+/**
+ * Drain the offline queue from OUTSIDE a study session.
+ *
+ * ⛔ WITHOUT THIS, QUEUED WORK LOOKED LOST. `replayQueue` had exactly one
+ * caller — `StudySession.flushOnce` — so nothing drained it at app start, on
+ * regaining connectivity, or from the Dashboard. A learner who studied
+ * offline, came home to wifi and opened the app saw their pre-offline
+ * numbers: the queue only moved if they entered a study method again AND
+ * stayed long enough for the 30s loop or the unmount flush. Someone whose
+ * work appears to have vanished re-does it, which is how a double-count gets
+ * created out of a display problem.
+ *
+ * Never rejects — a failed drain must not reach a launch path. `replayQueue`
+ * is internally serialised, so this is safe to call alongside a live session.
+ */
+export function drainStudyQueue(): void {
+  void replayQueue().catch((e) => {
+    console.warn('[study-sync] background drain failed:', (e as Error).message);
+  });
 }
 
 /**
@@ -232,8 +328,21 @@ export class StudySession {
   }
 
   private async flushOnce(): Promise<void> {
-    // Drain the offline queue first so coalesced history lands in order.
-    await replayQueue();
+    /**
+     * Drain the offline queue first so coalesced history lands in order.
+     *
+     * ⛔ IN ITS OWN GUARD. `replayQueue` reaches synchronous SQLite; if one of
+     * those throws, an unguarded await here rejects `flush()`, and every
+     * caller is a bare `void this.flush()` — an unhandled rejection. Worse,
+     * `while (this.inflight) await this.inflight` re-throws into WAITING
+     * callers, so they skip their own pass entirely, including stop()'s final
+     * flush. A failed replay must never cost the live buffer its send.
+     */
+    try {
+      await replayQueue();
+    } catch (e) {
+      console.warn('[study-sync] replay pass failed, continuing with the live batch:', (e as Error).message);
+    }
 
     if (this.events.length === 0 && this.seconds === 0) return;
     const events = this.events.splice(0);
@@ -241,20 +350,39 @@ export class StudySession {
     this.seconds = 0;
     const batchId = Crypto.randomUUID();
 
+    /**
+     * ⛔ WRITE AHEAD — PERSIST BEFORE SENDING, delete after it lands.
+     *
+     * The buffer is spliced out before the await, so the catch below covers a
+     * FAILED request but not a process that never reaches the catch. The
+     * AppState listener fires this flush exactly when the app is being
+     * backgrounded, which on iOS is exactly when the OS may suspend and later
+     * terminate mid-await — and those events then existed nowhere on disk.
+     *
+     * ⚠️ Safe only because replay now reuses stored batch ids: if the row is
+     * replayed before this send's response arrives, the server recognises the
+     * same `batch_id` and no-ops. Under the old random-id replay this change
+     * would have double-counted instead.
+     */
+    let persisted = true;
+    try {
+      enqueue(this.achievementId, this.methodKey, batchId, seconds, events);
+    } catch (e) {
+      persisted = false;
+      console.warn('[study-sync] could not write-ahead this batch:', (e as Error).message);
+    }
+
     try {
       const snap = await callRpc(this.achievementId, this.methodKey, batchId, seconds, events);
+      dequeueByBatchId(batchId);
       this.onSnapshot(snap);
       emitStudyProgress(); // progress committed — refresh any live dashboard
     } catch (e) {
-      // NEVER drop the events here. The buffer was already spliced out above,
-      // so a bare `console.warn` would silently lose a study session on any
-      // non-network rejection (a transient RLS/token gap, or an RPC that
-      // hasn't been deployed yet). Persist to the durable queue instead: it
-      // survives an app restart and replays on the next flush. replayQueue()
-      // remains the SINGLE arbiter that eventually drops a genuinely poisoned
-      // batch (it drops on a non-network failure during replay), so this
-      // cannot wedge the queue — it only buys the events one durable retry.
-      enqueue(this.achievementId, this.methodKey, batchId, seconds, events);
+      // The row is already durable, so there is nothing to re-queue — unless
+      // the write-ahead itself failed, in which case this is the last chance.
+      // replayQueue() remains the SINGLE arbiter that eventually drops a
+      // genuinely poisoned batch, so this cannot wedge the queue.
+      if (!persisted) enqueue(this.achievementId, this.methodKey, batchId, seconds, events);
       if (!isNetworkError(e)) {
         console.warn('[study-sync] batch rejected, queued for retry:', (e as Error).message);
         this.onRejected?.((e as Error).message);
