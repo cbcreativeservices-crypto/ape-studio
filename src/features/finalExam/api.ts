@@ -566,7 +566,32 @@ async function replayExamSubmissionsLocked(): Promise<{ awardId: string; result:
       // result_payload for a finalized attempt) and dropping one costs the
       // user their credential.
       const transient = /network|fetch failed|failed to fetch|timeout|timed out|abort|socket|econn|offline/i.test(msg);
-      const permanent = /attempt_not_found|already_finalized|invalid_attempt|not_authenticated|user_not_found/i.test(msg);
+      /**
+       * ⛔ `user_not_found` IS NOT PERMANENT — IT IS THE COLD-START RACE.
+       *
+       * Both `submit_quiz` and `submit_final_exam` open with
+       * `select id into v_user from users where auth_id = auth.uid();
+       *  if v_user is null then raise exception 'user_not_found'`.
+       * So that is exactly what the server says when a request arrives with no
+       * JWT — and the session is read from the keychain ASYNCHRONOUSLY, so the
+       * first calls after a relaunch go out as `anon`. DashboardScreen.load()
+       * fires this replay as one of its first acts on relaunch, which is
+       * precisely the window.
+       *
+       * Classified as permanent, it DELETED a graded attempt the server had
+       * never seen — the exact loss this whole "drop only on a positive
+       * rejection" rule was written to prevent, reintroduced through the list
+       * itself. The study queue's equivalent never listed it, which is what
+       * made these two the outliers.
+       *
+       * `not_authenticated` goes with it: no migration raises it, and if one
+       * ever did it would mean the same thing.
+       *
+       * Cost of keeping a row that really is doomed: one retried call per
+       * drain, answered idempotently. Cost of dropping a good one: the
+       * learner's graded paper.
+       */
+      const permanent = /attempt_not_found|already_finalized|invalid_attempt/i.test(msg);
       if (transient) {
         offline = true;
         remaining.push(r);
