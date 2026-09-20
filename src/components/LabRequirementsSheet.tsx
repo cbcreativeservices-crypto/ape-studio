@@ -68,6 +68,16 @@ export function LabRequirementsSheet({
                 <Text style={s.groupHead}>REQUIRED FOR THIS CREDENTIAL</Text>
                 <Text style={s.groupNote}>Member labs this credential needs on top of the fundamentals.</Text>
                 <LabChecklist rows={member} onOpen={onOpenLab} />
+                {/* ⚠️ Say it rather than let the dashes puzzle them. Member
+                    labs record no progress yet, so the summary above counts
+                    only the fundamentals — and a learner who finished all of
+                    these would otherwise wonder why nothing moved. */}
+                {member.some((m) => !m.tracked) ? (
+                  <Text style={s.trackNote}>
+                    These labs don’t record progress yet, so they aren’t counted in the total above. Work through them
+                    from the labs menu — your credential needs them.
+                  </Text>
+                ) : null}
               </>
             ) : (
               /* Say it plainly. Silence here reads as "the list failed to
@@ -110,6 +120,7 @@ const s = StyleSheet.create({
   scroll: { gap: 8, paddingBottom: 4 },
   groupHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.6, color: colors.amber, marginTop: 6 },
   groupNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.textSubAlt, marginBottom: 2 },
+  trackNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textSubAlt, marginTop: 6 },
   noneNote: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 19, color: colors.textSubAlt, marginTop: 8 },
   actions: { flexDirection: 'row', gap: 10 },
 });

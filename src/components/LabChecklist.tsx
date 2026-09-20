@@ -69,14 +69,30 @@ export function LabChecklist({
               ? {
                   onPress: () => onOpen(r),
                   accessibilityRole: 'button' as const,
-                  accessibilityLabel: `${r.name}. ${r.done ? 'Complete.' : partial ? `${partial} sections done.` : 'Not started.'} Opens the lab.`,
+                  accessibilityLabel: `${r.name}. ${
+                    !r.tracked
+                      ? 'Required. Progress is not recorded for this lab yet.'
+                      : r.done
+                        ? 'Complete.'
+                        : partial
+                          ? `${partial} sections done.`
+                          : 'Not started.'
+                  } Opens the lab.`,
                 }
-              : { accessible: true, accessibilityLabel: `${r.name}. ${r.done ? 'Complete.' : 'Not started.'}` })}
+              : {
+                  accessible: true,
+                  accessibilityLabel: `${r.name}. ${r.tracked ? (r.done ? 'Complete.' : 'Not started.') : 'Required.'}`,
+                })}
             style={s.row}
           >
-            {/* ⛔ NOT COLOUR ALONE. The tick and the empty box differ in SHAPE,
-                so the state survives colour blindness and a dimmed screen. */}
-            <Text style={[s.box, r.done && s.boxDone]}>{r.done ? '✓' : '○'}</Text>
+            {/* ⛔ NOT COLOUR ALONE. Tick, empty box and dash differ in SHAPE,
+                so state survives colour blindness and a dimmed screen.
+                ⛔ AND NO EMPTY BOX ON AN UNTRACKED LAB: member labs record no
+                progress, so a checkbox there would promise a tick the app can
+                never give. A dash says "required, not a task I can score". */}
+            <Text style={[s.box, r.done && s.boxDone, !r.tracked && s.boxUntracked]}>
+              {!r.tracked ? '–' : r.done ? '✓' : '○'}
+            </Text>
             <View style={s.rowBody}>
               <Text style={[s.rowName, r.done && s.rowNameDone]} numberOfLines={2}>
                 {r.name}
@@ -113,6 +129,7 @@ const s = StyleSheet.create({
   },
   box: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, width: 18, textAlign: 'center', color: '#55565e' },
   boxDone: { color: '#37e05f' },
+  boxUntracked: { color: '#3a3b42' },
   rowBody: { flex: 1, gap: 2 },
   rowName: { fontFamily: fonts.barlowRegular, fontSize: 14, color: colors.textSecondary },
   rowNameDone: { color: colors.textSubAlt },

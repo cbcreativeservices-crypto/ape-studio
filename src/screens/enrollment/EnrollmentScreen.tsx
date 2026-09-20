@@ -82,6 +82,7 @@ import { RowTint, LAB_TINT, COREQ_TINT } from './RowTint';
 import { LabScopeSweep } from './LabScopeSweep';
 import { LabRequirementsSheet } from '../../components/LabRequirementsSheet';
 import { requirementsForCredential, type LabRequirementRow } from '../../features/lab/labRequirementList';
+import { labRequirementsFor } from '../../data/labRequirements';
 
 /**
  * Audio Fundamentals — the one REQUIRED LAB in the shared core (the other
@@ -1146,6 +1147,34 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
     for (const pgm of v3Programs) if (pgm.slug) m.set(pgm.name, pgm.slug);
     return m;
   }, [v3Certs, v3Programs]);
+
+  /**
+   * Member labs required across EVERY credential this learner holds or is
+   * working toward, de-duplicated. A lab wanted by three of their credentials
+   * appears once — the owner's ruling is that finishing it once satisfies all
+   * of them, and a list that repeated it would say the opposite.
+   *
+   * `why` keeps the FIRST reason seen rather than concatenating: three
+   * near-identical justifications stacked under one row is noise, and the
+   * learner only needs one good reason to accept the requirement.
+   */
+  const { labReqExtra, labReqFor } = useMemo(() => {
+    const byKey = new Map<string, { labKey: string; why?: string }>();
+    const names: string[] = [];
+    for (const b of bundles) {
+      const slug = slugByName.get(b.name) ?? null;
+      if (!slug) continue;
+      names.push(b.name);
+      for (const r of labRequirementsFor(slug)) if (!byKey.has(r.labKey)) byKey.set(r.labKey, r);
+    }
+    return {
+      labReqExtra: [...byKey.values()],
+      // One credential: name it. Several: say how many, rather than picking a
+      // favourite or running a title off the edge of the sheet.
+      labReqFor:
+        names.length === 1 ? names[0] : names.length > 1 ? `${names.length} credentials` : null,
+    };
+  }, [bundles, slugByName]);
 
   /**
    * The deck. Column 0 is ALL TOPICS and is always present; then one card per
@@ -2372,17 +2401,15 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
         LAB REQUIREMENTS — the fundamentals every credential needs, plus the
         member labs this one specifically needs.
 
-        ⚠️ `extra` is [] for now: the credential→lab mapping
-        (`src/data/labRequirements.ts`) is being authored separately. Until it
-        lands, the sheet shows the fundamentals — which are correct and
-        complete on their own, since they are required by EVERY credential.
-        It degrades to a true smaller answer, never a wrong one, and the
-        member list says so explicitly rather than rendering an empty gap.
+        The member list is the UNION across every credential the learner is
+        enrolled in — one lab, listed once, however many of their credentials
+        want it. That is the owner's rule made literal: complete it once and
+        it counts for all of them.
       */}
       <LabRequirementsSheet
         visible={labReqOpen}
-        credentialName={null}
-        {...requirementsForCredential([])}
+        credentialName={labReqFor}
+        {...requirementsForCredential(labReqExtra)}
         onOpenLab={(row: LabRequirementRow) => {
           setLabReqOpen(false);
           if (row.route) navigation.navigate(row.route as never, row.params as never);

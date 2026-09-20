@@ -37,6 +37,17 @@ export type LabRequirementRow = {
   total: number;
   /** Why this credential needs it. Absent for the universal fundamentals. */
   why?: string;
+  /**
+   * Does this lab record progress at all?
+   *
+   * ⛔ ONLY THE 15 `af_*` FUNDAMENTALS LABS DO. Verified 2026-09-20: every
+   * `markLabUnit` call site in the app passes an `af_*` key, and no training
+   * leaf in the catalog even carries a `key`. A member lab therefore cannot be
+   * completed, and drawing it an empty checkbox would promise a tick the app
+   * can never give — the exact class of lie this whole checklist exists to
+   * end. Untracked rows render as links, not as tasks.
+   */
+  tracked: boolean;
 };
 
 /** Every leaf a category holds, whatever shape it is. A HUB category has no
@@ -56,29 +67,41 @@ function fundamentalsLeaves(): LabLeaf[] {
   return out;
 }
 
-function rowFor(leaf: LabLeaf & { key: string }, why?: string): LabRequirementRow {
-  const p = labProgress(leaf.key);
+function rowFor(leaf: LabLeaf, why?: string): LabRequirementRow {
+  // A leaf with no `key` is not in the completion system at all.
+  const tracked = !!leaf.key;
+  const p = tracked ? labProgress(leaf.key as string) : { cleared: 0, total: 0 };
   return {
-    key: leaf.key,
+    key: leaf.key ?? (leaf.route as string) ?? leaf.name,
     name: leaf.name,
     route: leaf.route,
     params: leaf.params,
-    done: isLabDone(leaf.key),
+    done: tracked ? isLabDone(leaf.key as string) : false,
     cleared: p.cleared,
     total: p.total,
     why,
+    tracked,
   };
 }
 
 /** The universal prerequisite set — every Audio Fundamentals lab. */
 export function fundamentalsRequirements(): LabRequirementRow[] {
-  return fundamentalsLeaves().map((l) => rowFor(l as LabLeaf & { key: string }));
+  return fundamentalsLeaves().map((l) => rowFor(l));
 }
 
-/** Find a lab leaf anywhere in the catalog by its key (member labs included). */
-function leafByKey(key: string): (LabLeaf & { key: string }) | null {
+/**
+ * Find a lab leaf by its key OR its route.
+ *
+ * ⛔ THE ROUTE FALLBACK IS NOT A CONVENIENCE — IT IS THE ONLY WAY MEMBER LABS
+ * RESOLVE. Exactly 15 leaves in the whole catalog carry a `key`, and all 15 are
+ * the `af_*` fundamentals. Every training lab is identified by its route, which
+ * is what `labRequirements.ts` uses. Matching on `key` alone silently returned
+ * nothing for every member requirement, and because unresolved keys are dropped
+ * by design the failure showed as an empty list rather than an error.
+ */
+function leafByKey(key: string): LabLeaf | null {
   for (const cat of LAB_CATEGORIES) {
-    for (const leaf of leavesOf(cat)) if (leaf.key === key) return leaf as LabLeaf & { key: string };
+    for (const leaf of leavesOf(cat)) if (leaf.key === key || leaf.route === key) return leaf;
   }
   return null;
 }
@@ -106,9 +129,16 @@ export function requirementsForCredential(
   return { fundamentals: fundamentalsRequirements(), member };
 }
 
-/** Rolled-up progress across a set of rows — "9 of 15 labs complete". */
+/**
+ * Rolled-up progress — "9 of 15 labs complete".
+ *
+ * ⚠️ COUNTS ONLY TRACKED LABS. Including untracked member labs in the
+ * denominator would cap every learner below 100% forever, which reads as
+ * broken and is unfixable by any amount of work on their part.
+ */
 export function requirementTally(rows: readonly LabRequirementRow[]): { done: number; total: number; pct: number } {
-  const done = rows.filter((r) => r.done).length;
-  const total = rows.length;
+  const tracked = rows.filter((r) => r.tracked);
+  const done = tracked.filter((r) => r.done).length;
+  const total = tracked.length;
   return { done, total, pct: total === 0 ? 0 : Math.round((done / total) * 100) };
 }
