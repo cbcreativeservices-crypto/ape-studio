@@ -45,6 +45,7 @@ import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { LabShell, HeaderPlayButton } from './LabShell';
+import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -108,6 +109,10 @@ export function BassLabScreen() {
   const [fret, setFret] = useState(0); // open
   const [nodeIdx, setNodeIdx] = useState(0); // ½
   const [running, setRunning] = useState(false);
+  // Something else can silence this lab — backgrounding, shake-to-mute, the
+  // idle auto-mute. Without this the transport stayed lit over silence.
+  useStopOnAudioMute(setRunning);
+
   const [genError, setGenError] = useState('');
 
   const [lessonKey, setLessonKey] = useState<string | undefined>(undefined);

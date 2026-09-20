@@ -25,6 +25,7 @@ import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../../features/audio/audioOutputStore';
 import { guardAdditiveForEngine } from '../../../features/audio/speakerSafety';
 import type { EngineState } from '../../../features/tools/engine/useDspEngine';
+import { useStopOnAudioMute } from '../../../features/audio/useStopOnAudioMute';
 
 const ACTIVITY_MS = 500;
 
@@ -75,6 +76,10 @@ export function useDriveTone(hzA: number, hzB: number | null, amplitude01: numbe
   const dualReady = engineReady && ApeDsp.engineVersion() >= 8;
   const additiveReady = engineReady && ApeDsp.engineVersion() >= 3;
   const [running, setRunning] = useState(false);
+  // Something else can silence this lab — backgrounding, shake-to-mute, the
+  // idle auto-mute. Without this the transport stayed lit over silence.
+  useStopOnAudioMute(setRunning);
+
   const [error, setError] = useState('');
   const genRef = useRef(0);
 

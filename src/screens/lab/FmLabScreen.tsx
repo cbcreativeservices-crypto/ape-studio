@@ -36,6 +36,7 @@ import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { CheckQuestion } from './foundations/bits';
 import { LabShell, HeaderPlayButton } from './LabShell';
+import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -101,6 +102,10 @@ export function FmLabScreen() {
   const [index, setIndex] = useState<number>(2);
   const [envKey, setEnvKey] = useState<(typeof ENVS)[number]['key']>('sustain');
   const [running, setRunning] = useState(false);
+  // Something else can silence this lab — backgrounding, shake-to-mute, the
+  // idle auto-mute. Without this the transport stayed lit over silence.
+  useStopOnAudioMute(setRunning);
+
   const [genError, setGenError] = useState('');
 
   const [lessonKey, setLessonKey] = useState<string | undefined>(undefined);

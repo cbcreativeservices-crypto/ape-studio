@@ -260,8 +260,20 @@ export function AwardProgressScreen({ navigation, route }: Props) {
                 </Text>
               </>
             )}
+            {/* ⛔ NO HARDCODED SIZE OR TIME LIMIT (2026-09-20).
+                This read "30 questions · 10 minutes · one sitting". Both
+                numbers are SERVER-OWNED — ExamPayload carries `size` and
+                `time_limit_seconds`, and FinalExamScreen deliberately derives
+                the pass mark from the payload rather than the rendered count
+                so "the two screens can no longer drift". This screen restated
+                them as a fact from a literal, and it is the screen a learner
+                reads BEFORE committing to a one-sitting attempt — the worst
+                possible place for a stale number.
+
+                ExamBriefing states no size at all, which is the right
+                precedent: the exam itself shows both the moment it starts. */}
             <Text style={styles.examNote}>
-              30 questions · 10 minutes · one sitting
+              One sitting · timed · no pause
             </Text>
             {/* The grant rule, said where the exam is actually taken (owner
                 2026-09-17). It has been on the Awards screen since 2026-07-22,

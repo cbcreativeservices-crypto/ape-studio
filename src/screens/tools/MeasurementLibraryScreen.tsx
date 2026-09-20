@@ -21,7 +21,13 @@
  * every entry point is covered — the six tool screens link straight in.
  */
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
-import { Alert, FlatList, Modal, Pressable, Share, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+// `Alert` is imported by nobody here any more — the only mention is a comment
+// explaining why confirmDialog replaced it. Dropped with the Modal swap.
+import { FlatList, Pressable, Share, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+// ⛔ DimModal, not react-native's Modal: the full-screen measurement view was
+//    the last modal in the app that could light a dark room to full
+//    brightness in Low-Light Production Mode.
+import { Modal } from '../../components/DimModal';
 import { confirmDialog } from '../../lib/confirm';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BRAND, SHARE_RULE, shareFooterBlock, shareHeaderLines } from '../../features/commercial/brand';
@@ -38,6 +44,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { LockedButton, MembershipRequiredNote, useToolsLocked } from './ToolLockUi';
 import { toolByKey } from './toolsData';
 import type { RootStackParamList } from '../../navigation/types';
+import { AccuracyNote } from '../../components/AccuracyNote';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ToolLibrary'>;
 
@@ -575,6 +582,12 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
           <Text style={styles.title}>SAVED MEASUREMENTS</Text>
           <Text style={styles.subtitle}>{toolKey ? toolByKey(toolKey).name : 'All tools'}</Text>
         </View>
+        {/* ⛔ THIS SCREEN RE-PRESENTS AND SHARES THE NUMBERS, so it needs the
+            note as much as the tools that produced them — arguably more. Every
+            tool that MAKES these readings carries one; the library that stores,
+            A/B compares and exports them had none, so a saved "97 dB SPL"
+            travelled out of the context that qualified it. */}
+        <AccuracyNote compact detail="These are SAVED readings from your phone’s UNCALIBRATED microphone and audio path — relative, for learning, and not certified measurements. Comparing two of them is still useful; quoting one as an absolute is not. For measurements you can act or report on, use a calibrated SPL meter or measurement mic." />
         <View style={{ flex: 1 }} />
         {all.length >= 2 && (
           <Pressable

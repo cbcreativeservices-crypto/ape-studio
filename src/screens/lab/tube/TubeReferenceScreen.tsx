@@ -19,6 +19,7 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { GlassButton } from '../../../components/GlassButton';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { TUBE_FAMILY_META, searchTubes, type TubeRef } from './tubeRefs';
+import { AccuracyNote } from '../../../components/AccuracyNote';
 
 export function TubeReferenceScreen() {
   const insets = useSafeAreaInsets();
@@ -60,6 +61,10 @@ export function TubeReferenceScreen() {
           <Text style={styles.title}>TUBE REFERENCE</Text>
           <Text style={styles.subtitle}>40 tubes · structure, pins, ratings, substitutions</Text>
         </View>
+        {/* The ratings on these cards are the kind of number someone wires a
+            high-voltage circuit from. VacuumTubeLabScreen carries the note;
+            the reference library that shows the actual figures did not. */}
+        <AccuracyNote compact detail="These cards are a STUDY REFERENCE, not a datasheet. Plate voltages, dissipation limits and substitutions vary by manufacturer and by production run, and tube circuits carry lethal voltages. Work from the manufacturer's own datasheet for anything you build, service or power up." />
       </View>
 
       {/* Search — matches short name, alternates (ECC83, GZ34, CV5220…), base, role. */}

@@ -249,6 +249,17 @@ export function FinalExamScreen({ navigation, route }: Props) {
           // [31] (2026-09-07): release the double-submit latch on a non-network
           // failure so the attempt can be retried (offline path stays queued).
           submitted.current = false;
+          // ⛔ AND STOP THE RETRY LOOP (2026-09-20). `setRetryFinishMs(null)`
+          //    only ever ran on the SUCCESS path, so once the loop was running
+          //    — queue write failed, so offline — the moment connectivity part
+          //    returned and the server refused (`attempt_not_open` is the
+          //    likely one, the attempt having timed out server-side while they
+          //    waited) this notify fired every 15 seconds, forever. That is
+          //    exactly the "un-escapable dialog storm on the one screen they
+          //    had just been told to keep open" the comment at [30] says this
+          //    file was written to avoid.
+          setRetryFinishMs(null);
+          retryFinishMsRef.current = null;
           // SAY IT IN WORDS (2026-09-18). This printed `(e as Error).message`,
           // which on a server refusal is the RAW POSTGRES STRING — a learner who
           // had just finished the capstone that issues their credential was
@@ -455,7 +466,16 @@ export function FinalExamScreen({ navigation, route }: Props) {
       },
       { cancelText: 'Keep going', destructive: true },
     );
-  }, [navigation]);
+    // ⛔ `payload` BELONGS IN THESE DEPS. Without it this callback is built
+    //    once, on the first render, when payload is still null — and
+    //    `navigation` is stable, so it was never rebuilt. `clearAttemptDraft`
+    //    was therefore NEVER called, and the dialog's promise ("Your answers
+    //    will be wiped immediately") was true of memory only: on re-entry
+    //    loadAttemptDraft restored exactly what the learner had just chosen to
+    //    destroy — the outcome the comment above says must not happen. On the
+    //    graded capstone that issues a credential, a dialog that does not do
+    //    what it says is an integrity problem, not just a bug.
+  }, [navigation, payload]);
 
   // M3 (launch audit 2026-09-09; ported from QuizScreen): a malformed options
   // payload renders no controls; record an empty answer for the slot and move
@@ -619,7 +639,13 @@ export function FinalExamScreen({ navigation, route }: Props) {
         </Text>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll}>
+      {/* ⛔ ROOT-STACK SCREEN: NO TAB BAR UNDERNEATH IT.
+          Unlike the study screens, which sit inside the Study tab and are laid
+          out above a TabBar that already carries the inset, this is declared on
+          RootStackParamList — so without a bottom inset the last control in the
+          scroll sits under the home indicator. Its own siblings get this right
+          (ExamBriefing:150, ResultsScreen:147). */}
+      <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 16 }]}>
         {/* RN <Image> does NOT default `accessible` (Image.ios.js:170-171), so
             without it this label never reached the iOS tree and the figure —
             which the question can depend on — was simply absent for a VoiceOver

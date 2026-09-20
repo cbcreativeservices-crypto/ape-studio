@@ -102,6 +102,22 @@ export async function fetchProfile(): Promise<ProfileRead> {
         .eq('curriculum_version_id', V3_CURRICULUM_VERSION_ID)
         .eq('is_active', true),
     ]);
+    /**
+     * ⛔ A FAILED READ IS `unavailable`, NOT ZERO.
+     *
+     * supabase-js RESOLVES with `{ count, error }` — it does not throw on an
+     * RLS denial or a PostgREST error, so the try/catch above only ever sees a
+     * transport-level rejection. On any `{ error }` result `count` is null,
+     * and defaulting it to 0 below turned a failed read into an authoritative
+     * "Not started yet · 0% of the whole curriculum · Topics completed 0" on
+     * the one screen that is the learner's record of their own work. No error,
+     * no retry, just a wrong number stated as fact.
+     *
+     * awards/api.ts:95-102 already refuses to do this for the same class of
+     * read: "A partial failure must surface as the failed state, never as an
+     * authoritative zero-progress checklist (B-174)." Same rule here.
+     */
+    if (completeRes.error || totalRes.error) return { state: 'unavailable' };
     completeCount = completeRes.count;
     totalTopics = totalRes.count;
   } catch {

@@ -24,7 +24,14 @@
  */
 import { useEffect, useSyncExternalStore } from 'react';
 import { useIsFocused } from '@react-navigation/native';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+// ⛔ DimModal, NOT react-native's Modal. This component hosts ~72
+//    confirmDialog/notify call sites, so importing the bare Modal meant that
+//    in Low-Light Production Mode ANY confirm or notice lit the display to
+//    full brightness in a dark control room — the one thing that mode
+//    promises will not happen. DimModal carries the <LowLightDim/> wash and
+//    passes every prop straight through.
+import { Modal } from './DimModal';
 import { colors, fonts } from '../theme/tokens';
 
 export type AppDialogRequest = {

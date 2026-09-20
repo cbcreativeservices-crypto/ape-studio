@@ -53,6 +53,7 @@ import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { CheckQuestion } from './foundations/bits';
 import { LabShell, HeaderPlayButton } from './LabShell';
+import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -134,6 +135,10 @@ export function NoiseLabScreen() {
 
   const [color, setColor] = useState<NoiseColor>('pink');
   const [running, setRunning] = useState(false);
+  // Something else can silence this lab — backgrounding, shake-to-mute, the
+  // idle auto-mute. Without this the transport stayed lit over silence.
+  useStopOnAudioMute(setRunning);
+
   const [genError, setGenError] = useState('');
   // PHONE SPEAKER OUTPUT view — show the roll-off the speaker imposes on noise.
   const [speakerView, setSpeakerView] = useState(false);

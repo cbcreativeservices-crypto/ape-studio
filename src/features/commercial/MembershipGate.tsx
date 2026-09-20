@@ -14,7 +14,10 @@
  */
 import { useSyncExternalStore } from 'react';
 import { useIsFocused } from '@react-navigation/native';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+// ⛔ DimModal, not react-native's Modal — otherwise this surface lights a
+//    dark control room to full brightness in Low-Light Production Mode.
+import { Modal } from '../../components/DimModal';
 import { navigationRef } from '../../navigation/navigationRef';
 import { colors, fonts } from '../../theme/tokens';
 

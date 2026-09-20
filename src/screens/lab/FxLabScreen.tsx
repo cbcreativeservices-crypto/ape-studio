@@ -62,6 +62,7 @@ import { skiaAvailable } from './foundations/skiaGate';
 import { CheckQuestion, type CheckSpec } from './foundations/bits';
 import type { BezelItem, DockParam } from './rack/rackTypes';
 import type { FxAnimModel } from './fxAnim';
+import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -263,6 +264,10 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
     Object.fromEntries(config.params.map((p) => [p.paramId, p.initial])),
   );
   const [running, setRunning] = useState(false);
+  // Something else can silence this lab — backgrounding, shake-to-mute, the
+  // idle auto-mute. Without this the transport stayed lit over silence.
+  useStopOnAudioMute(setRunning);
+
   const [genError, setGenError] = useState('');
   const [grDb, setGrDb] = useState(0);
 

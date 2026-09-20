@@ -125,7 +125,8 @@ function enqueue(achievementId: string, methodKey: string, batchId: string, seco
 /**
  * Replay the offline queue, coalescing per (achievement, method) so the
  * server's wall-clock clamp is not starved (contract §8). Chunked at 500
- * events; the seconds ride on the first chunk.
+ * events, and EACH CHUNK CARRIES ITS OWN ROWS' SECONDS (see below — putting
+ * them all on chunk 0 was its own double-count).
  *
  * ⛔ EVERY CHUNK GOES UNDER A STORED batch_id, NEVER A FRESH ONE.
  *
@@ -139,6 +140,14 @@ function enqueue(achievementId: string, methodKey: string, batchId: string, seco
  *     network → we return WITHOUT deleting, so the next pass re-sends chunk 0
  *     and its seconds again. Guaranteed, not a race, on any queue over 500
  *     events that loses connectivity mid-replay.
+ *
+ * The stored batch_id closed the first. It did NOT close the second, and the
+ * delete-as-it-lands that went with it made that half worse rather than
+ * better: chunk 0's rows are now gone the moment they land, so a later
+ * chunk's failure leaves rows alive that still carry seconds already sent
+ * inside chunk 0's total (bug pass 1, 2026-09-20). Seconds are therefore
+ * split per chunk, so no second is ever attached to a row it did not come
+ * from.
  *
  * Over-credit in exactly the fields the gates and the accuracy readout are
  * computed from — a gate could open on work done once.
@@ -191,7 +200,6 @@ async function replayQueueOnce(): Promise<void> {
       deleteQueuedBatches(g.map((r) => r.id));
       continue;
     }
-    const seconds = g.reduce((s, r) => s + r.active_seconds, 0);
     const { achievement_id, method_key } = g[0];
 
     /**
@@ -221,7 +229,24 @@ async function replayQueueOnce(): Promise<void> {
     try {
       for (let i = 0; i < chunks.length; i++) {
         const c = chunks[i];
-        await callRpc(achievement_id, method_key, c.id, i === 0 ? seconds : 0, c.events);
+        /**
+         * ⛔ EACH CHUNK CARRIES ITS OWN ROWS' SECONDS.
+         *
+         * This used to put the WHOLE group's coalesced seconds on chunk 0 and
+         * zero on the rest — while rows are deleted per chunk, immediately
+         * below. So if a later chunk failed, chunk 0's rows were already gone
+         * while the failing chunk's rows survived still carrying seconds that
+         * had ALREADY been sent inside chunk 0's total. The next pass
+         * re-grouped them and credited those seconds a second time.
+         *
+         * Ten rows of 60 s split 5/5: 600 s sent, chunk 1 fails, next pass
+         * adds another 300 s — 900 s credited for 600 s of work. Deterministic,
+         * not a race. The per-chunk batch_id idempotency protects the EVENTS;
+         * it could not protect the seconds, because they rode on a different
+         * chunk's id from the rows they came from.
+         */
+        const chunkSeconds = c.rows.reduce((sum, r) => sum + r.active_seconds, 0);
+        await callRpc(achievement_id, method_key, c.id, chunkSeconds, c.events);
         // ⛔ Delete AS IT LANDS. Deleting only after the whole group meant a
         // later chunk's failure re-sent every earlier chunk next pass.
         deleteQueuedBatches(c.rows.map((r) => r.id));

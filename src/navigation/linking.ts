@@ -132,7 +132,24 @@ export function navigateToPath(path: string): boolean {
     // the resumed destination away. Navigating puts the target on top of
     // whatever is already there, so Back still returns somewhere sensible.
     const [name, params] = toNavigateArgs(route);
-    navigationRef.dispatch(CommonActions.navigate({ name, params }));
+    /**
+     * ⛔ `{ pop: true }`, OR THIS PUSHES A SECOND BOTTOM-TAB SHELL.
+     *
+     * In React Navigation 7 a NAVIGATE that is not the currently focused route
+     * and carries no `pop` falls through to appending a NEW route instance
+     * (@react-navigation/routers 7.x StackRouter). Both `get` and
+     * `/topics/:topicSlug` resolve to `Main`, so a deep link followed while a
+     * root-level screen is on top stacked a second Home over the paywall:
+     * Back from the "new" Home landed on the paywall, then on the old Home.
+     *
+     * App.tsx already passes `{ pop: true }` for exactly this reason and says
+     * so; this path was written separately and never got it. Reached in
+     * ordinary use — a free user taps a /topics/<slug> link, the topic is
+     * locked, SEE PLANS, buys, and welcome() replays the pending link.
+     *
+     * The tuple form also drops the deprecation warning the object form logs.
+     */
+    navigationRef.dispatch(CommonActions.navigate(name, params, { pop: true }));
     return true;
   } catch {
     return false;

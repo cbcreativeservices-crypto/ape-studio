@@ -34,7 +34,18 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const KEY = 'ape:scenarioQueue';
-/** Above this, the oldest entries are dropped — a runaway queue is worse. */
+/**
+ * Above this the queue sheds work — a runaway queue is worse than losing some.
+ *
+ * ⛔ IT SHEDS THE NEWEST, NOT THE OLDEST. This was `slice(-MAX_PENDING)`, which
+ *    discards from the FRONT — precisely the rows the drain depends on. This
+ *    file's own header calls front-to-back ordering non-negotiable because a
+ *    `complete` for a round must not land before the answers it completes, and
+ *    dropping the front does exactly that: the round is then permanently short
+ *    of its answer count, the scenarios LED never fills, and scenarios is a
+ *    hard term of the quiz gate. Shedding the newest loses the same amount of
+ *    work while leaving what remains replayable.
+ */
 const MAX_PENDING = 500;
 
 export type ScenarioPending =
@@ -55,7 +66,7 @@ async function read(): Promise<ScenarioPending[]> {
 
 async function write(items: ScenarioPending[]): Promise<void> {
   try {
-    await AsyncStorage.setItem(KEY, JSON.stringify(items.slice(-MAX_PENDING)));
+    await AsyncStorage.setItem(KEY, JSON.stringify(items.slice(0, MAX_PENDING)));
   } catch (e) {
     console.warn('[scenario-queue] could not persist:', (e as Error).message);
   }

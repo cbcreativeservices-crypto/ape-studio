@@ -54,6 +54,8 @@ import {
 } from '../../features/quiz/api';
 import { clearAttemptDraft, loadAttemptDraft, saveAttemptDraft } from '../../features/assess/attemptDraft';
 import type { StudyStackParamList } from '../../navigation/types';
+import { parseSubmitError } from '../../features/finalExam/api';
+import { QUIZ_SUBMIT_ERROR_COPY } from '../../features/quiz/api';
 
 type Props = NativeStackScreenProps<StudyStackParamList, 'Quiz'>;
 
@@ -250,7 +252,13 @@ export function QuizScreen({ navigation, route }: Props) {
           // unmounting the screen. The offline path above stays queued and
           // must keep its latch.
           submitted.current = false;
-          notify('Submit failed', (e as Error).message, () => navigation.goBack());
+          // ⛔ NOT THE RAW POSTGRES STRING. See QUIZ_SUBMIT_ERROR_COPY —
+          //    the codes are shared with the Final Exam, the wording is not.
+          notify(
+            'Submit failed',
+            QUIZ_SUBMIT_ERROR_COPY[parseSubmitError((e as Error).message ?? '')] ?? QUIZ_SUBMIT_ERROR_COPY.unknown,
+            () => navigation.goBack(),
+          );
         }
       } finally {
         // Port of the exam twin's [32]: the success path navigates away, so

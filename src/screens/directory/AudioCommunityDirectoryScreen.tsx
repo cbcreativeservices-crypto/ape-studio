@@ -9,7 +9,7 @@
  * Pro Registry routes, which still resolve here.
  */
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Modal } from '../../components/DimModal';
@@ -170,6 +170,20 @@ function MemberSheet({
             </Pressable>
           </View>
 
+          {/* ⛔ THIS BODY HAS TO SCROLL.
+              The sheet is a fixed `maxHeight: '90%'` View and its children —
+              about text, up to six specialty chips, the meta line, the full
+              credentials list, OPEN TO, SEND A CONTACT REQUEST, then BLOCK /
+              REPORT and the self-reported note — were laid out straight into
+              it. On a member with several credentials the moderation controls
+              fell past the bottom: clipped on Android, off-screen on iOS. Those
+              are the exact controls Apple 1.2 requires to be reachable, and
+              reporting a member from the directory was impossible. */}
+          <ScrollView
+            style={{ flexShrink: 1 }}
+            contentContainerStyle={{ paddingBottom: 4 }}
+            keyboardShouldPersistTaps="handled"
+          >
           {busy || !settled ? (
             <Loading label="Loading profile…" />
           ) : !p ? (
@@ -296,6 +310,7 @@ function MemberSheet({
               />
             </>
           )}
+          </ScrollView>
         </View>
       </View>
     </Modal>

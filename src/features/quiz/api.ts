@@ -278,3 +278,34 @@ export async function replayQuizSubmissions(): Promise<
   }
   return results;
 }
+
+/**
+ * ── SAY IT IN WORDS, HERE TOO ───────────────────────────────────────────────
+ *
+ * QuizScreen's non-network submit failure printed `(e as Error).message` — the
+ * RAW POSTGRES STRING. A learner who had just finished a graded 30-question
+ * quiz was shown `attempt_not_open`. The Final Exam's identical line was given
+ * a vocabulary on 2026-09-18 and the quiz, which is its twin, was missed.
+ *
+ * ⛔ THE CODES ARE SHARED; THE WORDING IS NOT. `parseSubmitError` lives in
+ * `features/finalExam/api.ts` and is reused as-is — the two servers apply the
+ * same rules, so a second copy of the parser would only drift. The COPY has to
+ * be its own, because the exam's wording sends people to "the Final Exam" and
+ * talks about a credential. Telling someone whose topic quiz failed to "open
+ * the Final Exam again" would be worse than the Postgres string.
+ */
+export const QUIZ_SUBMIT_ERROR_COPY: Record<string, string> = {
+  // Already graded, or closed by a second device. The server answers a repeat
+  // submit with the stored result, so reaching this means something else
+  // closed the attempt.
+  attempt_not_open:
+    'This quiz attempt has already been closed. Open the quiz again from your dashboard to see your result.',
+  attempt_not_found:
+    'We could not find this quiz attempt. Open the quiz again from your dashboard — if it keeps happening, contact support.',
+  bad_serve_set:
+    'This quiz was not set up correctly and could not be marked. Nothing you did caused this, and the attempt will not be counted against you.',
+  not_owner: 'This quiz belongs to a different account. Sign in as the account that started it.',
+  user_not_found:
+    'We could not find your account record. Sign out and back in, and contact support if it continues.',
+  unknown: 'Your quiz could not be submitted. Your answers are still here — try again.',
+};

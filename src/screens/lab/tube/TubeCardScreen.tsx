@@ -39,6 +39,7 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { GlassButton } from '../../../components/GlassButton';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { TUBE_CARD_ASPECT, TUBE_FAMILY_META, TUBE_REFS, fetchTubePage, fetchTubePageUri, pageCountOf, type TubeFamily } from './tubeRefs';
+import { AccuracyNote } from '../../../components/AccuracyNote';
 
 const MAX_SCALE = 4;
 const DOUBLE_TAP_SCALE = 2.5;
@@ -405,6 +406,9 @@ export function TubeCardScreen() {
           </Text>
           <Text style={styles.barSub} numberOfLines={1}>{famTitle}</Text>
         </View>
+        {/* Same reason as the list screen — this is where the ratings are
+            actually read. */}
+        <AccuracyNote compact detail="This card is a STUDY REFERENCE, not a datasheet. Plate voltages, dissipation limits and substitutions vary by manufacturer and by production run, and tube circuits carry lethal voltages. Work from the manufacturer's own datasheet for anything you build, service or power up." />
         <Pressable
           onPress={() => goTo(idx - 1)}
           disabled={idx === 0}

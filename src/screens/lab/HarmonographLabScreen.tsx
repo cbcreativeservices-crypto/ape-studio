@@ -39,6 +39,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { LabShell, LabChip, HeaderPlayButton } from './LabShell';
 import { HarmonographMachine, INK_DEFAULT, drawTurns } from './HarmonographMachine';
 import { HarmonographViewer } from './HarmonographViewer';
+import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -119,6 +120,10 @@ export function HarmonographLabScreen() {
   const [rotary, setRotary] = useState(true);
   const [detune, setDetune] = useState<(typeof DETUNES)[number]['key']>(0.01);
   const [running, setRunning] = useState(false);
+  // Something else can silence this lab — backgrounding, shake-to-mute, the
+  // idle auto-mute. Without this the transport stayed lit over silence.
+  useStopOnAudioMute(setRunning);
+
   const [genError, setGenError] = useState('');
   // FREEZE holds the machine mid-draw; ⟲ NEW pulls a fresh sheet (owner
   // 2026-08-23 — device parity with the browser mock's NEW DRAWING).

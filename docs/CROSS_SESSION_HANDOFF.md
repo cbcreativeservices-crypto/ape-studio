@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-20 00:21 · ccode · 584a9954
+changed: Bug pass 1 HIGHs: six real dead ends, plus a correction to my own fix
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-19 21:34 · ccode · 4de6701d
 changed: Study: answer a tapped dead panel, and make the prompt reach a screen reader
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">

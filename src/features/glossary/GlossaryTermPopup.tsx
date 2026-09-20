@@ -46,6 +46,18 @@ export function GlossaryTermPopup({
   // Transient server/transport failure — distinct from a genuinely absent term
   // (QA night 2026-08-31: a 500 told the user a real term "was not found").
   const [loadError, setLoadError] = useState(false);
+  /**
+   * ⛔ WHETHER THE TEXT ON SCREEN IS THE WHOLE DEFINITION.
+   *
+   * The row this popup first renders comes from `glossary_browse_v`, which
+   * carries a 120-CHARACTER TEASER for anyone who is not a member. The
+   * gateway call below replaces it with the real text — and every fault took
+   * a silent `return`, leaving the teaser on screen with nothing to say it
+   * was one. A free user out of their fourteen weekly lookups read a
+   * definition that stopped mid-sentence, with no lock card, no "out of
+   * lookups" and no upgrade path; the popup's only control is DONE.
+   */
+  const [partial, setPartial] = useState<null | 'limit-reached' | 'other'>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -53,6 +65,7 @@ export function GlossaryTermPopup({
       setRow(null);
       setNotFound(false);
       setLoadError(false);
+      setPartial(null);
       setLoading(false);
       return;
     }
@@ -88,7 +101,15 @@ export function GlossaryTermPopup({
       // simply leaves the teaser on screen with the caller's "OPEN THE
       // GLOSSARY ›" link, which is where the lock and the upgrade path live.
       const full = await fetchDefinitionViaGateway(hit.id);
-      if (cancelled || full.state !== 'ok') return;
+      if (cancelled) return;
+      if (full.state !== 'ok') {
+        // Say which kind of short it is. `sign-in-required` and `not-deployed`
+        // both mean the caller's own fallback is in play, so they are not
+        // labelled here — only a refusal that genuinely leaves a teaser up.
+        if (full.fault === 'limit-reached') setPartial('limit-reached');
+        else if (full.fault === 'denied' || full.fault === 'error') setPartial('other');
+        return;
+      }
       setRow((prev) =>
         prev && prev.id === hit.id
           ? {
@@ -125,6 +146,13 @@ export function GlossaryTermPopup({
               <Text style={styles.muted}>Couldn’t load this term — please check your connection and try again.</Text>
             ) : null}
             {row?.definition?.trim() ? <Text style={styles.def}>{row.definition.trim()}</Text> : null}
+            {partial ? (
+              <Text style={styles.partial}>
+                {partial === 'limit-reached'
+                  ? 'This is the opening of the entry — you’ve used this week’s free definitions. Open the Glossary for the full text and your upgrade options.'
+                  : 'This is the opening of the entry — the full definition couldn’t be loaded just now. Open the Glossary to try again.'}
+              </Text>
+            ) : null}
             {row?.plain_english?.trim() ? (
               <>
                 <Text style={styles.eyebrow}>PLAIN ENGLISH</Text>
@@ -163,6 +191,8 @@ const styles = StyleSheet.create({
   body: { marginTop: 12 },
   bodyContent: { paddingBottom: 8, gap: 4 },
   spinner: { marginTop: 18 },
+  // Amber = the thing to act on, the same rule as the rest of the app.
+  partial: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.amber, marginTop: 8 },
   muted: { fontFamily: fonts.barlowRegular, fontSize: 14, color: colors.textSub, marginTop: 8 },
   def: { fontFamily: fonts.barlowMedium, fontSize: 15.5, lineHeight: 24, color: colors.textSecondary },
   eyebrow: {

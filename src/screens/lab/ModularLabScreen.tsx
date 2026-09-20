@@ -36,6 +36,7 @@ import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { CheckQuestion } from './foundations/bits';
 import { LabShell, LabChip, HeaderPlayButton } from './LabShell';
+import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 
 const ACTIVITY_MS = 500;
 const STATUS_MS = 100; // live env/step poll while running (10 Hz)
@@ -171,6 +172,10 @@ export function ModularLabScreen() {
   const [patch, setPatch] = useState<Patch>(DEFAULT_PATCH);
   const [patchKey, setPatchKey] = useState<string | null>(null);
   const [running, setRunning] = useState(false);
+  // Something else can silence this lab — backgrounding, shake-to-mute, the
+  // idle auto-mute. Without this the transport stayed lit over silence.
+  useStopOnAudioMute(setRunning);
+
   const [envLevel, setEnvLevel] = useState(0);
   const [activeStep, setActiveStep] = useState(-1);
   const [genError, setGenError] = useState('');

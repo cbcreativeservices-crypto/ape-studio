@@ -39,6 +39,7 @@
  */
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { captureError } from '../features/telemetry/telemetry';
 
 /**
  * The slice of the screen's navigation object this needs. Structural on purpose:
@@ -81,6 +82,21 @@ export class ScreenErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: ErrorInfo): void {
+    /**
+     * ⛔ REPORT IT. THIS BOUNDARY TURNED THE CRASH REPORTER OFF.
+     *
+     * This boundary is attached through every navigator's `screenLayout`
+     * (RootNavigator, MainTabs, StudyStack), so since it landed it has been
+     * catching the render crashes that used to reach RootErrorBoundary — and
+     * it never called captureError. The root boundary's own comment says
+     * render-phase crashes are "exactly the class Sentry's global handlers
+     * miss", so containing them silently meant shipping blind to essentially
+     * every screen crash in the app.
+     *
+     * The file's dependency-free rule is about the theme and the stores;
+     * `captureError` is already a no-op when telemetry is off.
+     */
+    captureError(error, { boundary: 'screen', route: this.props.routeName ?? '(unknown)' });
     // Same caveat as RootErrorBoundary: there is no babel transform stripping
     // console in release, so this line ships and writes to logcat / os_log. It
     // stays because a render-crash trace is the only breadcrumb we have.

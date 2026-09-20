@@ -13,7 +13,10 @@
  * open right now", two different reasons.
  */
 import { useEffect, useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+// ⛔ DimModal, not react-native's Modal — otherwise this surface lights a
+//    dark control room to full brightness in Low-Light Production Mode.
+import { Modal } from '../../components/DimModal';
 import Svg, { Circle, Path } from 'react-native-svg';
 import { colors, fonts } from '../../theme/tokens';
 import { COPY } from '../../lib/copy';

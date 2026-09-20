@@ -320,7 +320,9 @@ export function PaywallScreen({ navigation }: Props) {
         <Text style={styles.closeGlyph}>✕</Text>
       </Pressable>
 
-      <ScrollView contentContainerStyle={styles.scroll}>
+      {/* Root-stack screen, no tab bar beneath — and the control that ends up
+          under the home indicator here is the Apple-required Restore link. */}
+      <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 16 }]}>
         <Text style={styles.eyebrow}>ACADEMY MODE</Text>
         <Text style={styles.title}>{COPY.paywallTitle}</Text>
         {/* The allowance runs INLINE at the end of the first paragraph — the

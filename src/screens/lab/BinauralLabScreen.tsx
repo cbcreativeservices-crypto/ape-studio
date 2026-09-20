@@ -42,6 +42,7 @@ import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { LabShell, LabChip, HeaderPlayButton } from './LabShell';
+import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 
 const ACTIVITY_MS = 500;
 const MIN_DIST = 0.5;
@@ -89,6 +90,10 @@ export function BinauralLabScreen() {
   const [sources, setSources] = useState<Source[]>(DEFAULT_SOURCES);
   const [selected, setSelected] = useState(0);
   const [running, setRunning] = useState(false);
+  // Something else can silence this lab — backgrounding, shake-to-mute, the
+  // idle auto-mute. Without this the transport stayed lit over silence.
+  useStopOnAudioMute(setRunning);
+
   const [busNorm, setBusNorm] = useState(1);
   const [genError, setGenError] = useState('');
 

@@ -35,6 +35,7 @@ import type { RootStackParamList } from '../../../../navigation/types';
 import type { CymaticsModuleProps } from '../CymaticsModuleScreen';
 import { CymaticsRackLayout } from './rackLayout';
 import { P } from './shared';
+import { useStopOnAudioMute } from '../../../../features/audio/useStopOnAudioMute';
 
 const B_MIN = 55;
 const B_MAX = 440;
@@ -78,6 +79,10 @@ function useRatioTone(f0: number, n1: number, n2: number, detune: number) {
   const detuned = detune > 0.0005;
   const playable = detuned ? dualReady : additiveReady;
   const [running, setRunning] = useState(false);
+  // Something else can silence this lab — backgrounding, shake-to-mute, the
+  // idle auto-mute. Without this the transport stayed lit over silence.
+  useStopOnAudioMute(setRunning);
+
   const gen = useRef(0);
   const params = useCallback(() => {
     if (detuned) return { mode: GEN_MODES.dual, frequency: f0 * n1, dual: { freqB: f0 * n2 * (1 + detune), levelB: 1 }, levelDb: -18 };

@@ -278,10 +278,24 @@ export async function updateNotificationPref(
 ): Promise<boolean> {
   const { data: user } = await supabase.from('users').select('id').single();
   if (!user) return false;
-  const { error } = await supabase
+  /**
+   * ⛔ A NO-MATCH UPDATE IS NOT AN ERROR. PostgREST returns no error for an
+   *    UPDATE that matched zero rows, so `!error` reported success for a write
+   *    that changed nothing. SettingsScreen only reverts on `ok === false`, so
+   *    the toggle stayed latched ON, `push_enabled` mirrored "on" into the
+   *    device scheduler, the server row never changed, nothing was ever sent —
+   *    and the switch silently flipped back on the next visit to Settings.
+   *
+   *    Both siblings were already fixed for this exact failure: push.ts:162
+   *    ("A no-match update is NOT an error") and weeklyConcept.ts:174. This
+   *    one was missed. `.select()` makes the row count observable.
+   */
+  const { data, error } = await supabase
     .from('notification_preferences')
     .update({ [key]: value, updated_at: new Date().toISOString() })
-    .eq('user_id', user.id);
+    .eq('user_id', user.id)
+    .select('user_id');
   if (error) console.warn('[settings] pref update failed:', error.message);
-  return !error;
+  else if (!data?.length) console.warn('[settings] pref update matched no row for user', user.id);
+  return !error && !!data?.length;
 }

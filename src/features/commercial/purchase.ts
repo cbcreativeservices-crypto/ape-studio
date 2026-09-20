@@ -117,10 +117,23 @@ let onEntitlementMayHaveChanged: (() => void) | null = null;
 export async function startPurchaseListeners(onChanged: () => void): Promise<boolean> {
   onEntitlementMayHaveChanged = onChanged;
   // No UI callbacks: nothing is on screen. The listener handles that case.
-  return initPurchases({ onSuccess: () => {}, onError: () => {} }).then((ok) => {
-    // initPurchases sets `handlers` to the no-ops above; drop them so a later
-    // paywall's handlers are the only UI callbacks that ever fire.
-    handlers = null;
+  const mine = { onSuccess: () => {}, onError: () => {} };
+  return initPurchases(mine).then((ok) => {
+    /**
+     * ⛔ ONLY CLEAR THEM IF THEY ARE STILL OURS.
+     *
+     * This ran `handlers = null` unconditionally, AFTER awaiting
+     * `iap.initConnection()`. `handlers` is module-global, so if the Paywall
+     * mounted and registered its own callbacks while the root's connection
+     * was still pending, this `.then` wiped the PAYWALL'S callbacks.
+     *
+     * `buyPlan` then had nowhere to report: `setBusy(false)` never ran on a
+     * cancel or an error, `welcome()` never ran on success, and CONTINUE
+     * replaced itself with a spinner that never stopped — no error, no
+     * confirmation, no way forward except ✕. Cancelling the store sheet left
+     * the same frozen spinner.
+     */
+    if (handlers === mine) handlers = null;
     return ok;
   });
 }
