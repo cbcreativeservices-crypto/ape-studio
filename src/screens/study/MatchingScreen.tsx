@@ -15,7 +15,7 @@
  * answer{correct:true}; wrong pick → red flash on both + answer{correct:false}.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AccessibilityInfo, ActivityIndicator, PanResponder, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, ActivityIndicator, PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeOut, LinearTransition } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
@@ -387,12 +387,25 @@ export function MatchingScreen({ navigation, route }: Props) {
           setCorrectFlash((c) => (c === answeredId ? null : c));
         }, CORRECT_FLASH_MS);
         if (next.size === board.length) {
-          // [53] (2026-09-07): at 100% stop auto-advancing to the next board so a
-          // completed topic doesn't keep cycling; the learner moves on manually.
-          scheduleFlash(() => {
-            if (displayPctRef.current >= 100) return;
-            goBoardRef.current(1);
-          }, ADVANCE_MS);
+          /**
+           * ⛔ ADVANCE AT 100% TOO. A FINISHED METHOD IS NOT A LOCKED ONE.
+           *
+           * This used to `return` when displayPct >= 100, "so a completed
+           * topic doesn't keep cycling". The effect on device was the
+           * opposite of tidy: the last pair matched, both columns filtered to
+           * zero cells, and the learner was left staring at an EMPTY board
+           * with PREV/NEXT and no explanation. Found by the owner, 2026-09-20:
+           * "matching is not auto advancing after the last match is made."
+           *
+           * The owner's rule: a learner can come back to flashcards,
+           * fill-in-the-blank, matching, scenarios and the quiz after 100% to
+           * refresh and practise — it must not lock. `goBoard` wraps modulo,
+           * so advancing can never dead-end; it simply keeps the practice
+           * running exactly as it does before 100%. Completion is still
+           * signalled: the header LED reads 100% and the Dashboard fires the
+           * `matching-complete` celebration.
+           */
+          scheduleFlash(() => goBoardRef.current(1), ADVANCE_MS);
         }
       } else {
         wrongPairRef.current = { left: selectedLeft, right: rightId }; // ref first (see above)
@@ -626,6 +639,14 @@ const styles = StyleSheet.create({
   // A little breathing room between the delineation bars / prompt above and
   // the answer cell columns below (user request 2026-07-17).
   columns: { flexDirection: 'row', gap: 12, marginTop: 10 },
+  // The completion panel that replaces an emptied board at 100%.
+  doneWrap: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 8, paddingHorizontal: 18, paddingTop: 24 },
+  doneKicker: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.6, color: '#3fe06a' },
+  doneTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 21, letterSpacing: 0.8, color: colors.textPrimary, textAlign: 'center' },
+  doneSubject: { fontFamily: fonts.barlowRegular, fontSize: 14, color: colors.textSub, textAlign: 'center' },
+  doneBody: { fontFamily: fonts.barlowRegular, fontSize: 14.5, lineHeight: 21, color: colors.textSecondary, textAlign: 'center', marginTop: 6 },
+  doneActions: { marginTop: 16, gap: 12, alignItems: 'center', alignSelf: 'stretch' },
+  doneMore: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1, color: colors.amber, paddingVertical: 8 },
   column: { flex: 1, gap: 10 },
   counter: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSubAlt, minWidth: 56, textAlign: 'right' },
   ledRow: { flexDirection: 'row', alignItems: 'center', gap: 10, alignSelf: 'stretch' },

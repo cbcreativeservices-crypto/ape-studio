@@ -26,6 +26,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-20 15:28 · A · migration 2026092001_free_topics_always_free (APPLIED live)
+changed: set achievements.always_free=true on gs 3060 + 3970 (both active v3); cleared stale true on inactive gs 51. Applied direct to prod via Supabase MCP (not the migration runner). Verified: exactly 2 free rows (3060/3970), seed_commercial_free_topics now matches 2 (was 0), gs51=false.
+affects other side: free tier now records study + sits the quiz on 3060/3970; queued offline study writes land on next retry. No client change needed — matches FREE_ENROLL_GS / studyGate / glossary mask. Migration file renamed off the _FOR_A_NOT_APPLIED suffix.
+needs: nothing. (Separate/non-blocking: publish a48b4035 to phones when ready.)
+
 ### 2026-09-20 08:05 · ccode · 2026092001_free_topics_always_free (NOT APPLIED — for A)
 changed: nothing on the server. Wrote `supabase/migrations/2026092001_free_topics_always_free_FOR_A_NOT_APPLIED.sql`
   for A to review and apply. Both designated free topics (gs 3060, gs 3970) have

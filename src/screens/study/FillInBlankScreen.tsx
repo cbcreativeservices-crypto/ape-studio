@@ -331,9 +331,22 @@ export function FillInBlankScreen({ navigation, route }: Props) {
       if (advanceTimer.current) clearTimeout(advanceTimer.current);
       advanceTimer.current = setTimeout(() => {
         setPicked(null);
-        // [53] (2026-09-07): at 100% stop auto-advancing (header: '100% → manual')
-        // so a completed topic doesn't keep cycling cards on every tap.
-        if (displayPctRef.current >= 100) return;
+        /**
+         * ⛔ ADVANCE AT 100% TOO. A FINISHED METHOD IS NOT A LOCKED ONE.
+         *
+         * This used to `return` at 100% "so a completed topic doesn't keep
+         * cycling cards on every tap". On device that reads as a dead screen:
+         * you answer, the verdict clears, and nothing moves. Its twin in
+         * MatchingScreen had the same guard and was worse — the board emptied
+         * and sat blank, which is how the owner found it (2026-09-20).
+         *
+         * Owner's rule: a learner can come back to flashcards,
+         * fill-in-the-blank, matching, scenarios and the quiz after 100% to
+         * refresh and practise — it must not lock. `qIdx` is taken modulo the
+         * deck length wherever it is read, so advancing past the end simply
+         * wraps and practice keeps running. Completion is still signalled: the
+         * header reads 100% and the Dashboard fires its celebration.
+         */
         setQIdx((i) => i + 1);
         // A11Y (2026-09-18, pass 5 · §3.2): the verdict above is announced and
         // then the whole question changes in silence — new sentence, four new

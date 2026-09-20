@@ -1,4 +1,4 @@
--- ⛔ NOT APPLIED. FOR A TO REVIEW AND APPLY. Written by ccode 2026-09-20.
+-- APPLIED to prod 2026-09-20 via Supabase MCP by A (direct apply, not the migration runner). Verify block at bottom.
 --    The owner asked for this to go to A rather than be run from the client
 --    session. Rename off the _FOR_A_NOT_APPLIED suffix when it lands.
 --
