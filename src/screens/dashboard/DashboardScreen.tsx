@@ -1620,36 +1620,35 @@ export function DashboardScreen() {
                 </Pressable>
                 {/* Overall progress — label left-justified, the amber % below
                     it (owner 2026-08-01). */}
+                {/* The % and the prev/next arrows share ONE row, so the arrows
+                    sit beside the number wherever the number lands. */}
                 <View style={styles.pctBlock}>
-                  <Text style={styles.pctLabel}>OVERALL TOPIC PROGRESS</Text>
-                  <Text style={styles.pctBig}>{dispOverallPct}%</Text>
+                  <View style={styles.pctTextCol}>
+                    <Text style={styles.pctLabel}>OVERALL TOPIC PROGRESS</Text>
+                    <Text style={styles.pctBig}>{dispOverallPct}%</Text>
+                  </View>
+                  <View style={styles.topicNavArrows}>
+                    <Pressable
+                      onPress={() => goTo(topicIdx - 1)}
+                      disabled={topicIdx <= 0}
+                      hitSlop={12}
+                      accessibilityRole="button"
+                      accessibilityLabel="Previous topic"
+                    >
+                      <Text style={[styles.topicNavArrow, topicIdx <= 0 && styles.pctArrowDisabled]}>‹</Text>
+                    </Pressable>
+                    <Pressable
+                      onPress={() => goTo(topicIdx + 1)}
+                      disabled={topicIdx >= lastTopicIdx}
+                      hitSlop={12}
+                      accessibilityRole="button"
+                      accessibilityLabel="Next topic"
+                    >
+                      <Text style={[styles.topicNavArrow, topicIdx >= lastTopicIdx && styles.pctArrowDisabled]}>›</Text>
+                    </Pressable>
+                  </View>
                 </View>
                 <GlassCover />
-                {/* Prev / next topic — bottom-right of the glass, level with
-                    the big amber % (owner 2026-09-20). Still rendered AFTER
-                    GlassCover: the cover is pointerEvents="none" so taps would
-                    pass through either way, but under it the amber glyphs pick
-                    up the tint and the bottom of its darkening gradient. */}
-                <View style={styles.topicNavArrows}>
-                  <Pressable
-                    onPress={() => goTo(topicIdx - 1)}
-                    disabled={topicIdx <= 0}
-                    hitSlop={12}
-                    accessibilityRole="button"
-                    accessibilityLabel="Previous topic"
-                  >
-                    <Text style={[styles.topicNavArrow, topicIdx <= 0 && styles.pctArrowDisabled]}>‹</Text>
-                  </Pressable>
-                  <Pressable
-                    onPress={() => goTo(topicIdx + 1)}
-                    disabled={topicIdx >= lastTopicIdx}
-                    hitSlop={12}
-                    accessibilityRole="button"
-                    accessibilityLabel="Next topic"
-                  >
-                    <Text style={[styles.topicNavArrow, topicIdx >= lastTopicIdx && styles.pctArrowDisabled]}>›</Text>
-                  </Pressable>
-                </View>
               </View>
             </View>
 
@@ -2585,15 +2584,23 @@ const styles = StyleSheet.create({
     textShadowRadius: 3.4,
     textShadowOffset: { width: 0, height: 0 },
   },
-  pctBlock: { alignItems: 'flex-start', marginTop: 6, gap: 1 },
-  /* Prev/next topic arrows — bottom-right of the glass, level with the big
-     amber % (owner 2026-09-20; they were top-right on the CURRENT TOPIC
-     eyebrow from 2026-08-12).
-     ⛔ Anchored to the BOTTOM, not a fixed `top`. `topicName` is
-     numberOfLines={2}, so the block above these grows by a whole line on any
-     long topic name and a top offset would drift off the % on exactly those
-     topics. pctBlock is the last child, so its bottom IS the container's. */
-  topicNavArrows: { position: 'absolute', bottom: 2, right: 6, flexDirection: 'row', alignItems: 'center', gap: 10, zIndex: 4 },
+  /* The % readout and the prev/next arrows on one row (owner 2026-09-20).
+     ⛔ zIndex lifts the whole row above GlassCover, which is a LATER sibling
+     painting over everything beneath it. Without this the arrows go under the
+     smoked tint. (The cover is pointerEvents="none", so this is about how they
+     LOOK, not whether they can be tapped.) */
+  pctBlock: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 6, zIndex: 5 },
+  pctTextCol: { alignItems: 'flex-start', gap: 1 },
+  /* ⛔ NOT absolutely positioned — that was the bug. Anchored to the column's
+     `top` (2026-08-12) they drifted off the number whenever `topicName` wrapped
+     to its second line; anchored to its `bottom` (earlier on 2026-09-20) they
+     sat ~70px BELOW the number, because this column STRETCHES to match the
+     taller trophy + jog-dial column beside it, so its bottom is the bottom of
+     the whole pane and not the bottom of the text. In the row they simply sit
+     next to the number, at any pane height and any name length.
+     `flex-end` bottom-aligns the 40px glyph box with the 32px number's box,
+     which lands the arrow's optical centre within a few px of the number's. */
+  topicNavArrows: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingRight: 6, paddingBottom: 4 },
   /* 30 → 38 with the eyebrow (owner 2026-09-19). These are the only way to
      change topic from here, so they should not be the smallest thing on the
      line. `top` eases to 0 because the taller glyph needs the room back. */

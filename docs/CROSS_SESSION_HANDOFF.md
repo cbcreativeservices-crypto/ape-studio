@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-20 11:41 · ccode · d79a22ef
+changed: Dashboard: topic arrows beside the % readout, and the topic overviews ship
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-20 11:35 · ccode · answer-position bias (no code change)
 
 changed: nothing. Verified A's get_scenario_homework fix from this side — 0 empty assignments,
