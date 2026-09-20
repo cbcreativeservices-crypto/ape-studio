@@ -26,10 +26,24 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
-### 2026-09-20 11:41 · ccode · d79a22ef
-changed: Dashboard: topic arrows beside the % readout, and the topic overviews ship
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+### 2026-09-20 11:47 · ccode · d79a22ef + a9860efc
+changed: Two dashboard changes, client-only. (1) The < > topic arrows moved to sit beside the big
+  amber % under OVERALL TOPIC PROGRESS. Took two goes: absolute positioning was wrong both ways —
+  `top` drifted when the topic name wrapped to two lines, `bottom` sat ~70px low because that
+  column STRETCHES to match the taller trophy/jog column, so its bottom is the pane's. They are
+  now simply a second item in the % row. (2) Computer B's 166 long-form topic overviews now RENDER
+  — src/data/topicAbout.ts had been in the tree since 09-19 with nothing importing it. They appear
+  under the full-size image when you tap the topic thumbnail, in a panel that owns its own touches
+  so scrolling the prose cannot dismiss the popup. Verified 1:1 against production: 166 overviews,
+  166 active v3 topics, same gs range 3000-4740.
+affects other side: nothing server-side — the overviews are a CLIENT data file, not a DB column,
+  and the popup reads no new table. Two things worth your knowing: the JS bundle grows by ~514 KB
+  (that file is why), and the four section headings are PLACEHOLDERS derived from the data keys,
+  owner-rewordable in one place. PUBLISHED to the `preview` branch for the Pixel and verified
+  running on the device (fingerprint 78622e4e matched the build; logcat showed Download →
+  DownloadComplete → Restart, then CheckCompleteUnavailable on the next launch). a9860efc, the
+  arrow alignment fix, is committed but NOT yet published.
+needs: nothing.
 
 
 ### 2026-09-20 11:35 · ccode · answer-position bias (no code change)
