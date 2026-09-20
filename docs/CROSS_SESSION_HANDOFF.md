@@ -26,6 +26,30 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-20 08:05 · ccode · 2026092001_free_topics_always_free (NOT APPLIED — for A)
+changed: nothing on the server. Wrote `supabase/migrations/2026092001_free_topics_always_free_FOR_A_NOT_APPLIED.sql`
+  for A to review and apply. Both designated free topics (gs 3060, gs 3970) have
+  `achievements.always_free = false`; the only `true` row is gs 51, an INACTIVE v1 topic.
+affects other side: A OWNS THIS ONE. `always_free` is read by exactly three functions and all three
+  fail today: `record_study_progress` refuses every free account's study write with
+  `academy_required`; `start_quiz_attempt` refuses the quiz; and `seed_commercial_free_topics`
+  matches nothing, so every new commercial user is seeded no topic and no method rows — its own
+  comment already says "Empty set today -> no rows written". The pair [3060, 3970] is already
+  hard-coded in the client's FREE_ENROLL_GS, in the study gate, and in `glossary_study_v`'s
+  definition mask; this column is the one place it was never set. The client needs NO change:
+  refused batches stay queued by design, so existing free users' work lands on the next retry once
+  this is applied. Verification queries are in the migration.
+needs: A to apply it (or tell ccode to), and to say when it lands so the client side can be
+  confirmed on a real free account. ⚠️ Three OTHER database-side launch blockers are written up in
+  the owner's `Downloads/2026-09-20_LAUNCH_BLOCKERS_your_call.md` — the quiz gate (A already on it),
+  the credential award path, and account deletion for a moderated user.
+
+### 2026-09-20 01:50 · ccode · 350d7e71
+changed: Copy pass 3: the required-education disclosure fired on 6 of 44 career lists
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-20 01:24 · ccode · 3be70e8b
 changed: Copy pass 1: safety-critical calculator caveats, lethal-voltage warning, false credential card
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
