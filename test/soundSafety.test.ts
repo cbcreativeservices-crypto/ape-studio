@@ -94,7 +94,12 @@ describe('the Sound Safety warning text', () => {
   it('tells the user what the app does for them, not only what they must do', () => {
     assert.ok(SOUND_SAFETY_PROTECTIONS.length >= 4);
     const all = SOUND_SAFETY_PROTECTIONS.join(' ').toLowerCase();
-    assert.ok(all.includes('shake'), 'the emergency mute must be stated before it is needed');
+    // CHANGED 2026-09-20 (copy pass 2 F56). It used to require the word
+    // "shake" alone. Shake-to-mute degrades silently where the accelerometer
+    // is unavailable, so the ALWAYS-available route — tapping the audio row —
+    // is now what the acknowledgment leads with, and is what must be stated.
+    assert.ok(all.includes('tap'), 'the always-available mute must be stated before it is needed');
+    assert.ok(all.includes('shaking'), 'the shake gesture is still worth naming, as a second route');
     assert.ok(all.includes('off every time'), 'muted-by-default is a protection worth stating');
   });
 

@@ -142,7 +142,8 @@ const SCREW_VINSET = Math.max(2, Math.round(rs(80) * 0.143 - RACK_SCREW / 2));
 
 const METHOD_ORDER: { key: MethodKey; label: string }[] = [
   { key: 'flashcards', label: 'FLASHCARDS' },
-  { key: 'fill_in_blank', label: 'FILL-IN-BLANK' },
+  // Matches FillInBlankScreen's own title and the lock notice's wording.
+  { key: 'fill_in_blank', label: 'FILL IN THE BLANK' },
   { key: 'matching', label: 'MATCHING' },
   { key: 'scenarios', label: 'SCENARIOS' },
 ];
@@ -910,7 +911,7 @@ export function DashboardScreen() {
       setErrorCode(e?.message ?? 'unknown');
       setError(
         e?.message === 'not_enrolled'
-          ? 'No enrolled courses found for this account.'
+          ? 'No enrolled topics found for this account.'
           : e?.message === 'user_not_found'
             // COMMERCIAL WORDING (2026-09-17). "Student record" is the retired
             // institutional vocabulary and means nothing to a customer.
@@ -1511,7 +1512,7 @@ export function DashboardScreen() {
               values={pendingCelebration.values}
               onAction={(kind) => {
                 dismissCelebration(celebrationProgress, pendingCelebration);
-                // START FINAL QUIZ is the only action that goes anywhere: the
+                // START TOPIC QUIZ is the only action that goes anywhere: the
                 // quiz switch is on this very screen, so the notice dismisses
                 // and leaves the user looking at it, lit.
                 if (kind === 'start-quiz') scrollRef.current?.scrollToEnd({ animated: true });
@@ -1768,10 +1769,15 @@ export function DashboardScreen() {
             onPress={() => (navigation as any).navigate('Auth')}
             style={styles.guestNotice}
             accessibilityRole="button"
-            accessibilityLabel="Progress is not saved without an account. Sign in to keep it."
+            accessibilityLabel="Progress is not saved without an account. Create one to start a saved record."
           >
+            {/* ⚠️ NOT "sign in to keep it". Signing in changes the local
+                identity, which runs clearLocalAccountData() +
+                resetAllLocalStores() — guest enrollment, deck order, the
+                dashboard cache and the study queue are all swept. Until a
+                migration exists, this line must not promise the opposite. */}
             <Text style={styles.guestNoticeText}>
-              Progress isn't saved without an account — <Text style={styles.guestNoticeLink}>sign in</Text> to keep it.
+              Progress isn't saved without an account — <Text style={styles.guestNoticeLink}>create one</Text> to start a saved record.
             </Text>
           </Pressable>
         ) : null}

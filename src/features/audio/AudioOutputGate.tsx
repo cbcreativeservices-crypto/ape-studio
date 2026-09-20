@@ -279,11 +279,15 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
             accessibilityRole="button"
             accessibilityLabel="Cancel"
           />
-          {/* Shake-to-mute notice (owner 2026-08-01: moved ABOVE the enable card)
-              — its own RED container so users know the emergency mute exists. */}
+          {/* Emergency-mute notice (owner 2026-08-01: moved ABOVE the enable
+              card) — its own RED container so users know it exists BEFORE they
+              need it. ⚠️ It named only the shake gesture, which does nothing
+              where the accelerometer is unavailable and says so to nobody. The
+              tap always works, so it leads. */}
           <View style={styles.shakeCard}>
             <Text style={styles.shakeText}>
-              ⚠ SHAKE THE PHONE AT ANY TIME TO INSTANTLY MUTE AUDIO OUTPUT.
+              ⚠ TAP THE RED AUDIO OUTPUT ROW AT ANY TIME TO MUTE IMMEDIATELY — OR, ON A PHONE WITH
+              A MOTION SENSOR, SHAKE THE DEVICE.
             </Text>
           </View>
           {/* Enable-audio card. */}

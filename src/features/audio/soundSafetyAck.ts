@@ -51,7 +51,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
  *
  * v1 — 2026-09-17, first issue.
  */
-export const SOUND_SAFETY_VERSION = 1;
+// v2 (2026-09-20): the shake-to-mute and exposure-check-in clauses both
+// stated a protection that can degrade silently — see soundSafetyText.ts.
+export const SOUND_SAFETY_VERSION = 2;
 
 const KEY = 'ape:soundSafety:v1';
 /** Where a record that could not be written is parked, rather than lost. */

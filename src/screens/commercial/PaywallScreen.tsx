@@ -29,7 +29,9 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Paywall'>;
 type Plan = { id: 'lifetime' | 'annual' | 'monthly'; name: string; price: string; sub: string; badge?: string };
 // Illustrative — real products come from the store config (governance).
 const PLANS: Plan[] = [
-  { id: 'lifetime', name: 'Lifetime Academy', price: '$99.99', sub: 'One-time payment', badge: 'BEST VALUE' },
+  // Matches `public.products.name` exactly — the store listing and this card
+  // must not name the same product two different things.
+  { id: 'lifetime', name: 'Lifetime Access', price: '$99.99', sub: 'One-time payment', badge: 'BEST VALUE' },
   // $59.99/yr vs $9.99×12 = $119.88 → 50.0% saved (Booth 2026-07-11 #6).
   { id: 'annual', name: 'Annual', price: '$59.99 / yr', sub: 'About $5/mo', badge: 'SAVE 50%' },
   { id: 'monthly', name: 'Monthly', price: '$9.99 / mo', sub: 'Cancel anytime' },
@@ -138,7 +140,9 @@ export function PaywallScreen({ navigation }: Props) {
     if (isMember) {
       notify(
         'You’re a member',
-        'Your Academy access is already active. Manage or cancel in your app-store subscription settings.',
+        // The client cannot tell which plan is held, and a Lifetime buyer has
+        // no subscription to manage — so this must be conditional, not flat.
+        'Your Academy access is already active. If you bought a monthly or annual plan, manage it in your app-store subscription settings.',
       );
       return;
     }
@@ -175,7 +179,9 @@ export function PaywallScreen({ navigation }: Props) {
     if (entitlement === 'anonymous') {
       confirmDialog(
         'Create an account first',
-        'Membership is attached to your account, so you need one before you can buy. Creating it takes a moment, and your progress on this device comes with you.',
+        // ⚠️ "your progress comes with you" was false — see the note on the
+        // Dashboard guest notice; signing in resets the local stores.
+        'Membership is attached to your account, so you need one before you can buy. Creating it takes a moment; work done as a guest stays on this device and does not transfer.',
         'Create account',
         () => (navigation as any).navigate('Auth'),
         { cancelText: 'Not now' },
@@ -343,7 +349,11 @@ export function PaywallScreen({ navigation }: Props) {
         {COPY.paywallBody.split('\n\n').map((para, i) => (
           <Text key={i} style={[styles.body, i > 0 && styles.bodyNext]}>
             {para}
-            {i === 0 ? <Text style={styles.allowance}>{' ' + COPY.glossaryFreeAllowance}</Text> : null}
+            {i === 0 ? (
+              <Text style={styles.allowance}>
+                {' ' + COPY.glossaryFreeAllowance + ' ' + COPY.calcFreeAllowance}
+              </Text>
+            ) : null}
           </Text>
         ))}
 
@@ -441,7 +451,7 @@ export function PaywallScreen({ navigation }: Props) {
         {showManage && (
           <Pressable onPress={onManage} accessibilityRole="link" hitSlop={8}>
             {/* Ratified by the owner 2026-09-14 */}
-            <Text style={styles.manage}>Manage subscription</Text>
+            <Text style={styles.manage}>Manage or cancel a subscription</Text>
           </Pressable>
         )}
       </ScrollView>

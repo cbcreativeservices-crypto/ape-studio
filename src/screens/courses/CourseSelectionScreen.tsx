@@ -1671,7 +1671,7 @@ export function CourseSelectionScreen() {
         onClose={() => setGuestGateOpen(false)}
         title="Create a free account"
         lines={[
-          'Sign up to study this topic. Your free topics — Pro Audio Safety and DAW Fundamentals — are open to explore right now.',
+          'Sign up to study this topic. Your free topics — Pro Audio Safety and DAW Fundamentals & Session Management — are open to explore right now.',
         ]}
         primaryLabel="CREATE FREE ACCOUNT"
         onPrimary={() => {
@@ -1681,9 +1681,10 @@ export function CourseSelectionScreen() {
         dismissLabel="NOT NOW"
       />
 
-      {/* The app WELCOME now greets first-run users BEFORE the login screen
-          (user request 2026-07-23, AppWelcomeOverlay on AuthScreen). Home keeps
-          only the "Our Commitment to You" popup. Paid (academy) users see it
+      {/* The app WELCOME was to greet first-run users BEFORE the login screen
+          (user request 2026-07-23, AppWelcomeOverlay on AuthScreen) — but that
+          overlay is currently commented out there, so "Our Commitment to You"
+          is the first overlay anyone sees and carries its own greeting line. Paid (academy) users see it
           once ever; everyone else once per app session — resets each launch
           (owner 2026-08-01). */}
       <ScreenIntroOverlay introKey="commitment" delayMs={8000} sessionOnly={entitlement !== 'academy'} />

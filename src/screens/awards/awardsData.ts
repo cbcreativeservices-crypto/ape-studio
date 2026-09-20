@@ -80,9 +80,9 @@ const SPECIALIZATION: AwardPage = {
   introTitle: 'Build Your Academy Credentials',
   // Cores + the training lab named inline (owner 2026-08-01).
   intro:
-    'Begin by completing the three required core topics and one training lab (required only once):    ' +
+    'Begin by completing the three required core topics and one training lab (required only once): ' +
     'Pro Audio Safety, Grounding & Electrical, Workplace Skills, and the Audio Fundamentals lab.\n\n' +
-    'Then choose a specialization, complete its three required topics, and pass the final assessment to earn ' +
+    'Then choose a specialization, complete its three required topics, and pass the Final Exam to earn ' +
     'your certificate.',
   accent: '#ffc64d', // gold — single-topic award
   tiers: [
@@ -101,7 +101,7 @@ const SPECIALIZATION: AwardPage = {
 const PROGRAM: AwardPage = {
   key: 'program',
   label: 'Program',
-  headline: 'PROFESSIONAL CERTIFICATE',
+  headline: 'PROFESSIONAL CERTIFICATE PROGRAM',
   introTitle: 'Master a Professional Audio Specialty',
   intro:
     'Academy Program Professional Certificates recognize completion of an extensive subject specialization and learning pathway.\n\n' +

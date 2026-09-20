@@ -210,11 +210,11 @@ export function CredentialDetailModal({
           <View
             style={styles.stat}
             accessible
-            accessibilityLabel={`${total} required topics: ${coreCount} core plus ${c.topics.length} ${ownNoun}`}
+            accessibilityLabel={`${total} required topics and labs: ${coreCount} core plus ${c.topics.length} ${ownNoun}`}
           >
             <Text style={styles.statNum}>{total}</Text>
             <View style={styles.statLabels}>
-              <Text style={styles.statLabel}>REQUIRED TOPICS</Text>
+              <Text style={styles.statLabel}>REQUIRED TOPICS &amp; LABS</Text>
               <Text style={styles.statSub}>
                 {coreCount} core + {c.topics.length} {ownNoun}
                 {c.electives.length ? ' · 1 elective' : ''}

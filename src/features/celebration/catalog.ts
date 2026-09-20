@@ -81,22 +81,22 @@ export const CELEBRATIONS: Record<CelebrationId, CelebrationDef> = {
     subject: '{topic_name}',
     body: [
       'You worked through every scenario and applied what you learned to realistic audio situations.',
-      'Excellent work. The final quiz is next.',
+      'Excellent work. The Topic Quiz is next.',
     ],
-    actions: [{ label: 'TAKE THE FINAL QUIZ', kind: 'start-quiz', primary: true }],
+    actions: [{ label: 'TAKE THE TOPIC QUIZ', kind: 'start-quiz', primary: true }],
   },
 
   'final-quiz-unlocked': {
     id: 'final-quiz-unlocked',
     tier: 'stage',
     kicker: 'YOU’RE READY!',
-    title: 'FINAL QUIZ UNLOCKED',
+    title: 'TOPIC QUIZ UNLOCKED',
     subject: '{topic_name}',
     body: [
       'You completed every learning activity for this topic. You reviewed the terminology, connected the concepts, and applied your knowledge.',
       'Now it’s time to show what you know.',
     ],
-    actions: [{ label: 'START FINAL QUIZ', kind: 'start-quiz', primary: true }],
+    actions: [{ label: 'START TOPIC QUIZ', kind: 'start-quiz', primary: true }],
   },
 
   /**
@@ -157,9 +157,9 @@ export const CELEBRATIONS: Record<CelebrationId, CelebrationDef> = {
     kicker: 'YOU DID IT!',
     title: 'TOPIC COMPLETE',
     subject: '{topic_name}',
-    stat: 'FINAL QUIZ: {score}%',
+    stat: 'TOPIC QUIZ: {score} of {size}',
     body: [
-      'You passed the final quiz and completed the entire topic. Your work paid off, and this achievement now has a place in your Trophy Case.',
+      'You passed the Topic Quiz and completed the entire topic. Your work paid off, and this achievement now has a place in your Trophy Case.',
       'That’s one more area of professional audio you can confidently add to your record.',
     ],
     actions: [

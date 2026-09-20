@@ -212,13 +212,14 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
         // Falls back to a pending tile until the token loads.
         <View style={styles.registryBoxCol}>
           <CredentialQr token={qrToken} size={160} />
-          <Text style={styles.registryConfirmName}>{registryName || 'Add your Registry name in Profile'}</Text>
+          <Text style={styles.registryConfirmName}>{registryName || 'Add your Registry name — tap SET UP MY PROFILE below'}</Text>
           {/* Listed as "User" until the first earned certificate/program, then
               "Graduate" (user request 2026-07-22). */}
           <Text style={styles.registryStatus}>{isGraduate ? 'GRADUATE' : 'USER'}</Text>
           {qrToken ? (
             <Text style={styles.registryLink} numberOfLines={1}>
-              Scan to verify · {REGISTRY_BASE_URL.replace(/^https?:\/\//, '')}/registry
+              Scan to verify, or enter your code at{' '}
+              {REGISTRY_BASE_URL.replace(/^https?:\/\//, '')}/verify
             </Text>
           ) : qrFailed ? (
             <Text style={styles.registryPending}>
@@ -288,8 +289,17 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
       title="Account required"
       lines={[
         'Only registered users can set up a Registry profile.',
-        'Create a free account to add your information — you don’t need a paid or active membership, just an account. You can then edit your profile anytime from the Profile screen.',
+        'Create a free account to add your information — you don’t need a paid or active membership, just an account. You can then edit it anytime from SET UP MY PROFILE on this screen.',
       ]}
+      // S17: with no onPrimary the component falls back to a single
+      // GOT IT, CONTINUE dismiss — so a prompt titled "Account required" told
+      // the user to create an account and gave them no way to do it. The Home
+      // guest gate already does this correctly.
+      primaryLabel="CREATE FREE ACCOUNT"
+      onPrimary={() => {
+        setAcctNote(false);
+        navigation.navigate('Auth');
+      }}
     />
     </>
   );
