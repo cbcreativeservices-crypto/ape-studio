@@ -67,6 +67,12 @@ export type SubmitResult = {
 export type QuizStartError =
   | 'safety_prerequisite_incomplete'
   | 'study_gate_unmet'
+  // The server raises this for a v3 topic when the caller has no academy
+  // access. The Final Exam twin has had copy for it since it was written; the
+  // quiz never did, so it fell through to `unknown` — "something went wrong"
+  // for a person whose membership has simply lapsed, with nothing pointing at
+  // the paywall.
+  | 'academy_required'
   | 'under_lockout'
   | 'topic_locked'
   | 'not_enrolled'
@@ -85,6 +91,8 @@ export const QUIZ_PASS = 28;
 export const QUIZ_START_ERROR_COPY: Record<QuizStartError, string> = {
   safety_prerequisite_incomplete: 'Complete the Safety topic quiz before starting course topics.',
   study_gate_unmet: 'Study requirements are not yet met for this topic. See the quiz block for what remains.',
+  academy_required:
+    'Academy membership is required for this topic’s quiz. Your progress is saved — open Membership to continue.',
   under_lockout: 'This quiz is locked out after a voided attempt. Try again when the lockout ends.',
   topic_locked: 'This topic is locked.',
   not_enrolled: 'You are not enrolled in this course.',
@@ -98,6 +106,7 @@ export const QUIZ_START_ERROR_COPY: Record<QuizStartError, string> = {
 const KNOWN_ERRORS: QuizStartError[] = [
   'safety_prerequisite_incomplete',
   'study_gate_unmet',
+  'academy_required',
   'under_lockout',
   'topic_locked',
   'not_enrolled',
