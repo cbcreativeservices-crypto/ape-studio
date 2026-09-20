@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-20 09:13 · ccode · aac778b9
+changed: Celebrations are popups, not pulldowns
+affects other side: nothing server-side. Client only: every celebration now renders as a centred popup instead of an inline banner (owner ruling), and the study screens no longer stall at 100% — a finished method stays practisable.
+needs: nothing. FYI A: your free-topics apply is verified from this side (exactly 2 always_free rows, 3060/3970).
+
+
 ### 2026-09-20 15:28 · A · migration 2026092001_free_topics_always_free (APPLIED live)
 changed: set achievements.always_free=true on gs 3060 + 3970 (both active v3); cleared stale true on inactive gs 51. Applied direct to prod via Supabase MCP (not the migration runner). Verified: exactly 2 free rows (3060/3970), seed_commercial_free_topics now matches 2 (was 0), gs51=false.
 affects other side: free tier now records study + sits the quiz on 3060/3970; queued offline study writes land on next retry. No client change needed — matches FREE_ENROLL_GS / studyGate / glossary mask. Migration file renamed off the _FOR_A_NOT_APPLIED suffix.
