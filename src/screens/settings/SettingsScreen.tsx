@@ -35,6 +35,11 @@ import { redeemAccessCode } from '../../features/commercial/accessCode';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { supabase } from '../../lib/supabase';
 import { markIntentionalSignOut } from '../../features/auth/intentionalSignOut';
+import { replayQueue } from '../../features/study/sync';
+import { replayQuizSubmissions } from '../../features/quiz/api';
+import { flushScenarioQueue, pendingScenarioCount } from '../../features/study/scenarioHomework';
+import { getQueuedBatches } from '../../features/study/studyQueueStorage';
+import { getQueuedSubmissions } from '../../features/quiz/submissionQueueStorage';
 import { colors, fonts } from '../../theme/tokens';
 import {
   COMMERCIAL_NOTIFY_ROWS,
@@ -202,19 +207,51 @@ export function SettingsScreen({ navigation }: Props) {
     // Study progress and credentials are on the server and do come back. The
     // rest does not, and someone who has calibrated a meter against a real SPL
     // reference would never guess that Log out throws it away.
-    confirmDialog(
-      'Log out?',
-      'Your progress and credentials are safe on your account. But this device will lose anything kept only on it — saved measurements, your term lists, your settings, and your microphone calibration. Signing back into the same account does not bring them back.',
-      'Log out',
-      () => {
-      void (async () => {
-        markIntentionalSignOut();
-        await supabase.auth.signOut();
-        navigation.reset({ index: 0, routes: [{ name: 'Splash' }] });
-      })();
-      },
-      { destructive: true },
-    );
+    void (async () => {
+      /**
+       * ⛔ SEND WHAT IS STILL QUEUED **BEFORE** SIGNING OUT. This is the last
+       * moment it can be sent at all.
+       *
+       * The offline study / quiz / scenario queues carry no user id, so
+       * `clearLocalAccountData` drops them wholesale on an identity change —
+       * correct, because replaying them after a switch would credit the
+       * DEPARTING user's work to the NEXT account. But the wipe runs on the
+       * SIGNED_OUT event, by which point there is no session left to send
+       * them with, so "drop them" had quietly become "lose them". A learner
+       * who studied on a train and then logged out lost the lot, while this
+       * very dialog told them their progress was safe.
+       *
+       * Flushing here needs no schema change and no per-user queue: online,
+       * which is the ordinary case, the work simply lands.
+       */
+      await Promise.allSettled([replayQueue(), replayQuizSubmissions(), flushScenarioQueue()]);
+      const stranded =
+        getQueuedBatches().length + getQueuedSubmissions().length + (await pendingScenarioCount().catch(() => 0));
+
+      const LOCAL_LOSS =
+        'This device will lose anything kept only on it — saved measurements, your term lists, your settings, and your microphone calibration. Signing back into the same account does not bring them back.';
+
+      confirmDialog(
+        'Log out?',
+        stranded > 0
+          ? // Do not claim the progress is safe when we just tried to save it
+            // and could not. Naming the count is what makes "wait and
+            // reconnect" an obvious alternative to losing the work.
+            `${stranded} piece${stranded === 1 ? '' : 's'} of study progress could not be saved to your account — most likely you are offline. Logging out now DISCARDS ${stranded === 1 ? 'it' : 'them'}. Reconnect and reopen the app to save ${stranded === 1 ? 'it' : 'them'} first.
+
+${LOCAL_LOSS}`
+          : `Your progress and credentials are safe on your account. But ${LOCAL_LOSS.charAt(0).toLowerCase()}${LOCAL_LOSS.slice(1)}`,
+        'Log out',
+        () => {
+          void (async () => {
+            markIntentionalSignOut();
+            await supabase.auth.signOut();
+            navigation.reset({ index: 0, routes: [{ name: 'Splash' }] });
+          })();
+        },
+        { destructive: true },
+      );
+    })();
   }, [navigation]);
 
   // The whole reminders group is inert while the master switch is off —
