@@ -220,7 +220,7 @@ export const ASSESSMENT_BANK: readonly AsmtQuestion[] = [
     options: ['Mute the channel first, then swap', 'Swap fast — speed beats muting', 'Turn phantom up so the new mic is ready', 'Unplug at the mixer end instead'],
     correct: 0,
     explain: 'Mute first: the connection pop never reaches the PA. With phantom on a condenser, switch it off and pause before unplugging.',
-    wrong: [undefined, 'However fast, the contacts still bridge — the pop happens at any speed.', 'Phantom stays as needed by the MIC — raising anything “ready” is not a thing; mute is the protection.', 'Unplugging a live line pops from either end — mute is what prevents it.'],
+    wrong: [undefined, 'However fast, the contacts still bridge — the pop happens at any speed.', 'Phantom power is a switch, not a level — there is nothing to turn “up.” The mic either needs +48 V or it does not, and muting the channel is what protects the PA during the swap.', 'Unplugging a live line pops from either end — mute is what prevents it.'],
   },
 ];
 

@@ -35,7 +35,7 @@ export const TOOL_LESSONS: Record<ToolId, LessonContent> = {
       'output is the system, not the signal.',
     controls: [
       { key: 'signal', name: 'Signal type', definition: 'What waveform to generate: a pure sine (one frequency), noise colors (all frequencies at once), a sweep (a moving tone), or clicks/impulses (timing tests).' },
-      { key: 'frequency', name: 'Frequency', definition: 'The pitch of the sine, in Hz — how many cycles per second. Sets which single frequency you’re sending.', range: '20 Hz – 20 kHz' },
+      { key: 'frequency', name: 'Frequency', definition: 'The pitch of the sine, in Hz — how many cycles per second. Sets which single frequency you’re sending.', range: '63 Hz – 6 kHz on the fader; 20 Hz – 20 kHz via ±1-semitone steps' },
       { key: 'sweep', name: 'Sweep', definition: 'Glides the frequency from a start to an end over a set time — one pass reveals a system’s whole frequency response. Repeat loops it.' },
       { key: 'click_tempo', name: 'Click tempo', definition: 'How often the click/impulse repeats (BPM). Clicks are for timing and echo/reverb tests — each one is a sharp, broadband event.' },
       { key: 'output_level', name: 'Output level', definition: 'How loud the generator runs, in dBFS. Kept well below 0 dBFS by default so nothing clips; a hard cap protects your ears and the speaker.' },
@@ -179,7 +179,9 @@ export const TOOL_LESSONS: Record<ToolId, LessonContent> = {
     whatItIs:
       'Detects the pitch of a steady tone (or counts repeating events like clicks) and reports ' +
       'it with a confidence figure, so you can trust — or distrust — the number. Uncalibrated ' +
-      'level, but the FREQUENCY itself is accurate for clear, steady signals.',
+      'level, but the FREQUENCY does not depend on mic calibration — for a clear, steady ' +
+      'tone inside the detection band it is reliable, though still an estimate, not a ' +
+      'laboratory measurement.',
     controls: [
       { key: 'confidence', name: 'Confidence (readout)', definition: 'How sure the detector is that it found a real, single pitch (0–100%). Low confidence = noisy, chordal, or too quiet — don’t trust the Hz reading below it.' },
       { key: 'input_level', name: 'Input level (readout)', definition: 'How strong the incoming signal is, in dBFS. Too quiet and pitch detection gets unreliable (the STATUS reads LOW SIGNAL).' },
@@ -254,7 +256,11 @@ export const TOOL_LESSONS: Record<ToolId, LessonContent> = {
       { key: 'pk_hold', name: 'Peak hold (readout)', definition: 'The maximum peak seen since the last reset — it latches brief overloads your eye would miss. Long-press the cell (or tap ⟲) to reset it; that also resets the per-band holds on the spectrum.' },
       { key: 'spectrum', name: 'Live spectrum (display)', definition: 'The hero: 31 gradient LED columns are the native 1/3-octave bands; the cyan curve is the fine FFT spectrum; the amber curve is its exponential AVERAGE; the bright floating dashes are per-band peak holds. Gray slots are bands the engine flags unresolvable — dimmed honestly, never faked.' },
       { key: 'cursor', name: 'Cursor', definition: 'Tap or drag on the spectrum to read the nearest point of the FFT curve — the chip shows its frequency (Hz) and level (dB). Dragging on the plot never scrolls the page; tap CURSOR ✕ to clear.' },
-      { key: 'zoom', name: 'Zoom', definition: 'Re-maps the frequency axis to a window: FULL (20 Hz–20 kHz), LOW (20–500 Hz), MID (200 Hz–5 kHz), HIGH (2–20 kHz). Display-only — bands outside the window hide and the FFT overlay re-samples; capture is unchanged.' },
+      // The FULL / LOW / MID / HIGH frequency zoom was REMOVED from the
+      // MultiMeter (owner 2026-08-05) and its state has no setter; this
+      // entry documented a control that is not on the screen. The scope's
+      // own vertical zoom is the one that survives.
+      { key: 'zoom', name: 'Scope zoom', definition: '×1 / ×2 / ×4 magnifies the mini oscilloscope’s vertical scale so quiet material fills the panel. Display only; it is not gain and does not change the measurement.' },
       { key: 'smoothing', name: 'Smoothing', definition: 'How much the bands and the average trace settle over time (an exponential average). LOW reacts instantly; HIGH steadies a jumpy display so you can read the trend. Changing it restarts the band average and peak holds (new settings epoch).' },
       { key: 'spectrogram', name: 'Mini spectrogram (display)', definition: 'A compact scrolling picture of frequency (vertical, log) over time (horizontal, newest right); color is level relative to the observed maximum over a 60 dB range — the same construction as the full Spectrogram tool, miniaturized.' },
       { key: 'oscilloscope', name: 'Mini oscilloscope (display)', definition: 'Amplitude over the last 3 seconds: the filled shape is the min/max envelope per 50 ms, the inner band is RMS energy, red ticks in the top lane flag clipped moments. The fixed center line is zero pressure — a signal riding above or below it reveals DC offset.' },

@@ -36,7 +36,7 @@ const FOOTER_SECTIONS: { heading: string; links: { href: string; label: string }
 ];
 
 export default function Footer() {
-  const year = 2026;
+  const year = new Date().getFullYear();
   return (
     <footer className="mt-auto border-t border-border bg-surface">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-[2fr_1fr_1fr_1fr]">

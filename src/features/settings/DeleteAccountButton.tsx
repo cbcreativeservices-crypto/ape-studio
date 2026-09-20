@@ -61,7 +61,7 @@ export function DeleteAccountButton({ onDeleted }: { onDeleted: () => void }) {
     Animated.timing(progress, { toValue: 0, duration: 140, useNativeDriver: false }).start();
     confirmDialog(
       'Delete account permanently?',
-      'This erases your account and all personal records for good. It cannot be undone.',
+      'This erases your account and all personal records for good, including every certificate you have earned. Any verification code or QR you have already given to an employer will stop working. It cannot be undone.',
       'Delete forever',
       runDelete,
       { destructive: true },
@@ -84,7 +84,10 @@ export function DeleteAccountButton({ onDeleted }: { onDeleted: () => void }) {
       onDeleted();
     } catch {
       setBusy(false);
-      notify('Could not delete account', 'Something went wrong. Please check your connection and try again.');
+      notify(
+        'Could not delete account',
+        'We couldn’t complete the deletion. Check your connection and try again — if it keeps failing, email info@proaudiotrainingacademy.com and we will remove the account for you.',
+      );
     }
   };
 

@@ -16,7 +16,6 @@ export type IntroKey =
   | 'appWelcome' // app welcome after load-in (Home / Course Select)
   | 'commitment' // "Our Commitment to You" — currently the FIRST overlay a new
   //                 user meets, because appWelcome is switched off on AuthScreen
-  | 'firstUserWelcome' // first-user welcome tutorial (first entry into the app)
   | 'dashboard' // method cards screen
   | 'flashcards' // T1 — on first Flashcards entry
   | 'flashcardsCustomize' // T2 — after ~5 card views/swipes
@@ -73,11 +72,6 @@ export const SCREEN_INTROS: Record<
       'You’ll never have to deal with intrusive ads or annoying pop-ups interrupting your learning. Our focus is simple: provide clear, unbiased, and technically accurate audio education that puts students first.\n\n' +
       'Our pricing is just as straightforward. One membership. Not a series of extra charges—what your membership includes stays included, with no add-ons or surprise fees.\n\n' +
       'Thank you for learning with us.',
-  },
-  firstUserWelcome: {
-    title: 'First-Time Walkthrough',
-    body:
-      'PLACEHOLDER — first-user welcome tutorial. This will become the guided first-run tour for brand-new users: creating your profile, picking a course, and how studying earns awards. Tap anywhere to continue.',
   },
   dashboard: {
     // Ratified by the owner 2026-09-13 (plan §3; wording corrections applied).

@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-20 08:39 · ccode · cec30976
+changed: Ear training: sentences that hard-coded a number the render owns
+affects other side: four DAW certificates (cubase-nuendo-for-post, digital-performer-reason-producer, reaper-power-user, studio-one-producer) existed in the live catalog with NO copy row, so their detail modal was blank. credentialCopy.ts now has all 164 rows (128 certs + 36 programs), matching the live catalog. The four new descriptions are newly written and need owner sign-off.
+needs: nothing
+
+
 ### 2026-09-20 08:33 · ccode · 092e2715
 changed: Copy pass 4c: screens that are each correct and disagree with each other
 affects other side: SOUND_SAFETY_VERSION bumped 1 → 2, so every existing user is asked to acknowledge sound safety again on next audio enable (two clauses stated protections that can degrade silently). Also: the certificate QR caption now points at /verify, not /registry, which is a 404 — if A ever adds a public /registry index page, revisit.

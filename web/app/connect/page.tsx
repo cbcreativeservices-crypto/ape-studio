@@ -47,7 +47,7 @@ export default async function Page({
         <Section title="What this is">
           <p>
             The Academy is structured professional audio education, and a
-            credential graduates can show. People study in the mobile app.
+            credential members can show. People study in the mobile app.
             You license seats. Employers verify what a credential means.
           </p>
         </Section>

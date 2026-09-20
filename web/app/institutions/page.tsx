@@ -39,7 +39,7 @@ export default function Page() {
               <strong>Institutions only.</strong> Access codes are issued to
               institutions for their own students, staff, or members — they are
               not sold to individuals. Individuals get a membership in the app:{" "}
-              <Link href="/get">download it from the App Store or Google Play</Link>.
+              <Link href="/get">see how to get it</Link>.
             </>,
             <>
               <strong>Get a quote.</strong> Tell us how many seats you need and

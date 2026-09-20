@@ -237,6 +237,18 @@ export const MIC_LIMITS = [
   'Uncalibrated readings are always APPROXIMATE and labeled so',
 ];
 
-/** Status note (tech report §0/§2.3): the engine is a native module, not yet built. */
+/**
+ * Status note (tech report §0/§2.3): the engine is a native module, not yet built.
+ *
+ * ⚠️ Use this ONLY where the audio engine is genuinely what is missing. The
+ * Frequency Counter's Light-Pulse mode needs the CAMERA module, and printing
+ * this note there told a user the measurement engine was absent on a screen
+ * whose Sound and Tuner modes were running off it. See CAMERA_NOTE below.
+ */
 export const ENGINE_NOTE =
   'The live measurement engine is a native audio module (real-time capture + DSP) that is not part of this app build. No simulated readings are shown, because a meter that looks live but isn’t would violate the measurement-integrity rules this module is built on.';
+
+/** The CAMERA half of the same story — Light-Pulse only. */
+export const CAMERA_NOTE_TITLE = 'LIGHT-PULSE MODE — NOT IN THIS BUILD';
+export const CAMERA_NOTE =
+  'Light-Pulse needs a native camera module that is not part of this installed build; the Sound, Tuner and Tap modes are unaffected and work now.';

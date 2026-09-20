@@ -315,8 +315,10 @@ export function ExposureMonitorScreen() {
 
         <Section title="GUIDANCE">
           <Text style={styles.body}>
-            Duration matters as much as level: exposure accumulates. A 3 dB increase roughly HALVES the recommended
-            listening time; lowering the level 3 dB roughly doubles it.
+            Duration matters as much as level: exposure accumulates. Under the 3 dB exchange standards a 3 dB
+            increase roughly HALVES the recommended listening time, and 3 dB less roughly doubles it; under the
+            occupational-style 5 dB standard it takes 5 dB to do the same. The standard you pick below changes
+            the answer.
           </Text>
           <Text style={styles.body}>
             Estimates vary between headphones — sensitivity, fit and seal change the level at your ear for the same
@@ -405,9 +407,11 @@ export function ExposureMonitorScreen() {
             </Pressable>
           </View>
           <Text style={styles.note}>
-            To calibrate: play the tone generator at a known level, compare against a trusted SPL meter at your ear
-            position, and adjust the reference until they agree. Model selection alone cannot guarantee accuracy — fit,
-            seal and device gain differ unit to unit.
+            To set the reference: play a steady tone through your MONITORS at a level a trusted SPL meter reads at
+            the listening position, and adjust until the two agree — that offset then carries to headphone estimates
+            too. For headphones there is no way to verify it at your ear without a measurement coupler, so treat
+            headphone figures as the rougher of the two. The reference is limited to 70–115 dB. Model selection alone
+            cannot guarantee accuracy — fit, seal and device gain differ unit to unit.
           </Text>
           <Row label="Current confidence" value={confLabel} />
         </Section>

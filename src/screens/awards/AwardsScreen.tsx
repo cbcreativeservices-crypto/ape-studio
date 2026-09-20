@@ -95,7 +95,7 @@ const PAGE_TAB: Record<PageKey, string> = {
 // Big header title per page (user request 2026-07-22).
 const PAGE_TITLE: Record<PageKey, string> = {
   curriculum: 'Explore the Academy',
-  specialization: 'Specialize. Learn. Get Certified.',
+  specialization: 'Specialize. Learn. Earn the Certificate.',
   program: 'Complete Certificate Programs',
   directory: 'Get Discovered',
   enrollment: 'Manage My Learning',

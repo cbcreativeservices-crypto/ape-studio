@@ -1,11 +1,16 @@
 /**
  * credentialCopy — per-CREDENTIAL copy authored by Computer B (2026-09-15) for
- * the 124 certificates + 36 programs, keyed by slug: description + where-applies
+ * the 128 certificates + 36 programs, keyed by slug: description + where-applies
  * + the full careers ladder, shown in the certificate/program detail
  * (CredentialDetailModal). Factual audit fixes applied 2026-09-16. Careers show
  * the FULL ladder; roles needing further education carry a `requires` code
  * (see careerRequirement.ts) so the app is clear about degrees/licenses/certs
  * every time. Regenerate from the Computer B deliverable; do not hand-edit rows.
+ *
+ * COUNT, SETTLED 2026-09-20: the live v3 catalog holds 128 active certificates
+ * and 36 programs = 164, and this map now has 164 rows. It said "124" because
+ * four DAW certificates had no row at all and rendered a blank detail modal —
+ * those four are marked inline as newly written and awaiting owner review.
  */
 import type { Career } from './careerRequirement';
 

@@ -486,7 +486,7 @@ export function SettingsScreen({ navigation }: Props) {
               <Text style={styles.rowHint}>
                 {prefs?.notify_weekly_concept
                   ? `${activeCatCount} of ${WEEKLY_CONCEPT_CATEGORIES.length} categories · each on its own day and time`
-                  : 'One misunderstood concept a week, from the categories you choose.'}
+                  : 'One misunderstood concept a week from each category you choose — each on its own day and time.'}
               </Text>
             </View>
             <Toggle

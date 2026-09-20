@@ -447,7 +447,7 @@ export function QuizScreen({ navigation, route }: Props) {
   const confirmExit = useCallback(() => {
     confirmDialog(
       'Leave quiz?',
-      'Your answers will be wiped immediately. The quiz allows no pause or save.',
+      'Your answers will be wiped immediately. This does not end the attempt — the clock keeps running and coming back puts you into the same sitting with the same questions and less time left.',
       'Leave & wipe',
       () => {
         answers.current = {};

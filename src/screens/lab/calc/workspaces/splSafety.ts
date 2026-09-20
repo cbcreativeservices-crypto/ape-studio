@@ -672,7 +672,7 @@ const WS_MIC_GAIN: Workspace = {
     'load impedance. This workspace models the spec-sheet number at 94 dB SPL = 1 Pa exactly.',
   glossary: ['Sensitivity', 'Sound Pressure Level', 'Decibel', 'Gain Staging', 'Headroom', 'Preamplifier'],
   fields: [
-    { key: 'sens', name: 'MIC SENSITIVITY', quantity: 'number', placeholder: '2', help: 'Millivolts out per pascal (94 dB SPL). Dynamics ≈ 1–3 mV/Pa; condensers ≈ 8–40 mV/Pa.', warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
+    { key: 'sens', name: 'MIC SENSITIVITY (mV/Pa)', quantity: 'number', placeholder: '2', help: 'Millivolts out per pascal (94 dB SPL). Dynamics ≈ 1–3 mV/Pa; condensers ≈ 8–40 mV/Pa. If your spec sheet gives dBV/Pa instead, convert it first in Mic Sensitivity & Output.', warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
     { key: 'spl', name: 'SOURCE SPL AT THE MIC', quantity: 'spl', placeholder: '94', help: 'The sound pressure level arriving at the capsule.' },
     { key: 'target', name: 'TARGET LEVEL', quantity: 'db', placeholder: '4', help: 'The output level you want after the preamp, in dBu (+4 dBu = pro line level).' },
     { key: 'headroom', name: 'HEADROOM', quantity: 'db', placeholder: '12', help: 'Safety margin left below the target for peaks — subtracted from the required gain.' },
@@ -826,7 +826,7 @@ const WS_LIMITER: Workspace = {
         const volts = Math.sqrt(n(v.pwr) * n(v.z));
         return [
           { label: 'MAX CONTINUOUS VOLTAGE', value: volts, quantity: 'voltage' },
-          { label: 'AS A LEVEL', value: 20 * Math.log10(volts / V_REF_DBU), quantity: 'db', chainable: false },
+          { label: 'AS A LEVEL (dBu)', value: 20 * Math.log10(volts / V_REF_DBU), quantity: 'db', chainable: false },
         ];
       },
       steps: (v) => {

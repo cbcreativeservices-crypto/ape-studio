@@ -732,8 +732,8 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
             <Text style={styles.emptyTitle}>NO SAVED MEASUREMENTS YET</Text>
             <Text style={styles.emptyBody}>
               Measurements you save from the tools appear here with their full context — settings,
-              input, calibration status, and quality. Every tool's SAVE control stores its
-              measurement here.
+              input, calibration status, and quality. Every measurement tool's SAVE control stores
+              its measurement here.
             </Text>
           </View>
         }

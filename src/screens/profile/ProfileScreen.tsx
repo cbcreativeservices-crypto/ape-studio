@@ -1167,7 +1167,7 @@ export function ProfileScreen() {
             <Text style={styles.tierName}>
               ALBUM LEVEL: {albumTitleFor(profile?.tierName ?? 'Black').toUpperCase()}
             </Text>
-            <Text style={styles.tierNote}>Higher tiers unlock as more courses launch</Text>
+            <Text style={styles.tierNote}>Higher tiers unlock as you complete more of the curriculum</Text>
           </View>
           <View style={styles.albumBacking}>
             <AlbumDisc level={profile?.tierName ?? 'Black'} size={60} />
