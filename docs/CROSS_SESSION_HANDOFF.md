@@ -34,6 +34,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-20 13:18 · ccode · 55f18c80
+changed: Lab requirements: resolve member labs, and refuse to draw a tick nobody can earn
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-20 13:10 · ccode · d33c670b
 changed: Fix the JSX I broke in WhyScene and pushed
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">

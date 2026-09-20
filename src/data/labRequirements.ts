@@ -260,6 +260,19 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { labKey: 'ModularLab', why: 'VCO, VCF, VCA, LFO and envelope is the signal flow behind every synthesiser.' },
     { labKey: 'FmLab', why: 'FM is the technique most often used and least often understood.' },
   ],
+  /**
+   * ⛔ OWNER OVERRULE, 2026-09-20, and the glossary backs it. The first pass
+   * left Cymatics required by NOTHING, reasoning that this credential is about
+   * spectrograms, STFT and holography rather than plate patterns. The glossary
+   * says otherwise: ELEVEN terms — Cymatics, Cymatic Pattern/Image/Response/
+   * Visualization, Dry Particle Cymatics, Chladni figure/pattern/plate/sand,
+   * Ernst Chladni — all sit in gs 4570 "Acoustic Imaging & Sound-Field
+   * Visualization", which is a required topic of this credential. It is not a
+   * thematic echo; it is the topic's own vocabulary.
+   */
+  'cert-sound-visualization-and-imaging-v3': [
+    { labKey: 'CymaticsLab', why: 'Chladni plates and cymatic patterns are the hands-on half of this credential’s sound-field visualization topic.' },
+  ],
   'cert-speech-and-voice-science-v3': [
     { labKey: 'SpeechLab', why: 'Anatomy, voicing, vowels and formants are the subject of this certificate.' },
   ],
@@ -420,6 +433,11 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { labKey: 'PostProdLab', why: 'This program is the post workflow, from ingest to an accepted delivery.' },
     { labKey: 'SpeechLab', why: 'Dialogue, ADR and dubbing all rest on how speech is produced.' },
     { labKey: 'AdvancedMixingLab', why: 'Stems, routing and translation are how a final mix is actually delivered.' },
+  ],
+  /** Same evidence as the certificate above — gs 4570 is a required topic here
+   *  too, and eleven of its glossary terms are cymatics vocabulary. */
+  'prog-sound-visualization-and-acoustic-imaging-v3': [
+    { labKey: 'CymaticsLab', why: 'Chladni plates and cymatic patterns are the hands-on half of this program’s sound-field visualization topic.' },
   ],
   'prog-studio-recording-engineering-v3': [
     { labKey: 'MicSelectLab', why: 'The record is decided at the microphone.' },
