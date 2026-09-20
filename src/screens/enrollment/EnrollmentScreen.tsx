@@ -80,6 +80,8 @@ import { CERT_BLUE, EnrollmentSelection, PROGRAM_PURPLE, type CarouselCard } fro
 import { chipForKind, firstIndexOfKind, stepDeck } from './deckNav';
 import { RowTint, LAB_TINT, COREQ_TINT } from './RowTint';
 import { LabScopeSweep } from './LabScopeSweep';
+import { LabRequirementsSheet } from '../../components/LabRequirementsSheet';
+import { requirementsForCredential, type LabRequirementRow } from '../../features/lab/labRequirementList';
 
 /**
  * Audio Fundamentals — the one REQUIRED LAB in the shared core (the other
@@ -299,6 +301,8 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
 
   const enrolled = useEnrollment();
   // LIVE v3 curriculum (owner 2026-08-06) — replaces the retired bundled v2 matrix.
+  /** LAB REQUIREMENTS sheet (owner 2026-09-20). */
+  const [labReqOpen, setLabReqOpen] = useState(false);
   const [v3Subjects, setV3Subjects] = useState<FlatSubject[]>([]);
   // LIVE v3 programs + certs (owner 2026-08-06) — replace the retired v2 award
   // data; aliased to the field names the browse already uses.
@@ -1324,14 +1328,20 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                 says, so anything that greys out here would read as the lab
                 being closed to you. Same size and slot as the pill so the
                 column still lines up. */}
+            {/* LAB REQUIREMENTS, not OPEN LABS (owner 2026-09-20). Jumping
+                straight to the labs menu answered "where are the labs" and
+                left the real question — WHICH of them does my credential
+                need, and which have I already done — for the learner to work
+                out from a catalogue. The sheet answers that, and still
+                carries a way through to the labs. */}
             <Pressable
               style={styles.openLabsBtn}
-              onPress={() => navigation.navigate('AudioLearning')}
+              onPress={() => setLabReqOpen(true)}
               hitSlop={6}
               accessibilityRole="button"
-              accessibilityLabel="Open the Audio Fundamentals labs"
+              accessibilityLabel="Lab requirements for your credential"
             >
-              <Text style={styles.openLabsText}>OPEN LABS</Text>
+              <Text style={styles.openLabsText}>LAB REQUIREMENTS</Text>
             </Pressable>
           </View>
           <Text style={styles.labHint}>Completed in the Audio Fundamentals labs, not from the dashboard.</Text>
@@ -2357,6 +2367,32 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           </View>
         </View>
       </Modal>
+
+      {/*
+        LAB REQUIREMENTS — the fundamentals every credential needs, plus the
+        member labs this one specifically needs.
+
+        ⚠️ `extra` is [] for now: the credential→lab mapping
+        (`src/data/labRequirements.ts`) is being authored separately. Until it
+        lands, the sheet shows the fundamentals — which are correct and
+        complete on their own, since they are required by EVERY credential.
+        It degrades to a true smaller answer, never a wrong one, and the
+        member list says so explicitly rather than rendering an empty gap.
+      */}
+      <LabRequirementsSheet
+        visible={labReqOpen}
+        credentialName={null}
+        {...requirementsForCredential([])}
+        onOpenLab={(row: LabRequirementRow) => {
+          setLabReqOpen(false);
+          if (row.route) navigation.navigate(row.route as never, row.params as never);
+        }}
+        onOpenLabsMenu={() => {
+          setLabReqOpen(false);
+          navigation.navigate('AudioLearning');
+        }}
+        onClose={() => setLabReqOpen(false)}
+      />
     </View>
   );
 }
