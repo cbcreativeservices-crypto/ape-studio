@@ -30,6 +30,12 @@
  * before the answers it completes, or the server counts a round with missing
  * answers. The queue is drained strictly front-to-back and STOPS at the first
  * failure rather than skipping past it.
+ *
+ * ⛔ ...WITH ONE ESCAPE HATCH, AND IT IS LOAD-BEARING. Stopping forever is only
+ * correct while the failure is transient. A call the server will NEVER accept
+ * turns "preserve order" into "freeze scenarios permanently" — see MAX_TRIES
+ * below for the live example that did exactly that. After MAX_TRIES the head is
+ * discarded, loudly, and the drain continues.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -48,9 +54,32 @@ const KEY = 'ape:scenarioQueue';
  */
 const MAX_PENDING = 500;
 
-export type ScenarioPending =
+/**
+ * How many times the head of the queue may fail before it is treated as POISON
+ * and dropped so the rest can move.
+ *
+ * ⛔ WHY THIS EXISTS: stop-at-first-failure is right for a transient failure
+ * and catastrophic for a permanent one. Observed on a device 2026-09-20 —
+ * `complete_scenario_round` writes `auth.uid()` into a column keyed on
+ * `public.users.id`, so it raises a foreign-key violation for EVERY account,
+ * every time. That `complete` could never succeed, and because
+ * `recordScenarioAnswer` and `completeScenarioRound` both refuse to send while
+ * anything is pending, one permanently-failing item silently froze every
+ * scenario answer on every topic — and survived a force-quit, because the
+ * queue is durable. The learner kept answering into a void.
+ *
+ * 6 attempts is comfortably more than a flaky connection needs and still
+ * bounded, so a genuinely dead call clears within one session instead of never.
+ */
+const MAX_TRIES = 6;
+
+export type ScenarioPending = (
   | { kind: 'answer'; achievementId: string; questionId: string; round: number; correct: boolean; at: number }
-  | { kind: 'complete'; achievementId: string; round: number; at: number };
+  | { kind: 'complete'; achievementId: string; round: number; at: number }
+) & {
+  /** Failed sends so far. Absent = 0; only ever set by the drain. */
+  tries?: number;
+};
 
 async function read(): Promise<ScenarioPending[]> {
   try {
@@ -129,7 +158,10 @@ export function drainScenarioQueue(
   const run = (async () => {
     const items = await read();
     if (items.length === 0) return 0;
-    let sent = 0;
+    /** Entries consumed from the head — sent successfully, or given up on. */
+    let consumed = 0;
+    /** True when we stopped on a failure that is still worth retrying. */
+    let stalled = false;
     for (const item of items) {
       let ok = false;
       try {
@@ -137,8 +169,30 @@ export function drainScenarioQueue(
       } catch {
         ok = false;
       }
-      if (!ok) break; // ⛔ stop, do not skip — later calls depend on this one
-      sent++;
+      if (ok) {
+        consumed++;
+        continue;
+      }
+      // ⛔ Ordering still wins for a TRANSIENT failure: stop, do not skip,
+      //    because later calls depend on this one landing first.
+      if ((item.tries ?? 0) + 1 < MAX_TRIES) {
+        stalled = true;
+        break;
+      }
+      /**
+       * Poison. It has failed MAX_TRIES times, so it is not coming back, and
+       * holding the line for it costs every later call indefinitely. Drop it
+       * and keep going — some work lost beats all work lost.
+       *
+       * This is logged loudly on purpose: a discarded `complete` means a round
+       * the server will never count, and that is a real defect somewhere else,
+       * not routine housekeeping.
+       */
+      console.warn(
+        `[scenario-queue] discarding a permanently-failing '${item.kind}' for ` +
+          `achievement ${item.achievementId} round ${item.round} after ${MAX_TRIES} attempts`,
+      );
+      consumed++;
     }
     /**
      * ⛔ RE-READ, DO NOT WRITE BACK THE STALE TAIL. `items` was read before a
@@ -150,7 +204,15 @@ export function drainScenarioQueue(
      */
     return await serial(async () => {
       const current = await read();
-      const left = current.slice(sent);
+      const left = current.slice(consumed);
+      /**
+       * Persist the failed attempt on the new head, or `tries` never climbs and
+       * a permanently-dead call is retried forever — which is the bug this
+       * whole branch exists to end.
+       */
+      if (stalled && left.length > 0) {
+        left[0] = { ...left[0], tries: (left[0].tries ?? 0) + 1 };
+      }
       await write(left);
       return left.length;
     });

@@ -63,6 +63,50 @@ type RawQ = {
   category?: string | null;
 };
 
+/**
+ * Present the options in an order derived from the QUESTION ID, not the order
+ * they were authored in.
+ *
+ * ⛔ WHY: on Pro Audio Safety the correct answer is the FIRST option in 441 of
+ * its 447 scenarios — only "Noise susceptibility" and "Occlusion effect"
+ * deviate. The screen rendered `options_json` verbatim, so the whole activity
+ * was passable by tapping the top option every time; a device run scored
+ * 149/149 doing essentially that. DAW Fundamentals is properly distributed
+ * (133/109/112/126), so this is an authoring artefact on one topic — but the
+ * client should not be defeatable by it either way, and shuffling fixes every
+ * topic at once including ones not yet audited.
+ *
+ * Seeded by question id, NOT random, for two reasons: a mid-round resume shows
+ * the learner the same arrangement they left, and a remount mid-question can
+ * never move an option out from under a finger that is already travelling.
+ *
+ * Safe for every type: `mc` compares `opt === correct[0]`, `multi_select` uses
+ * `correct.includes(...)`, and `sequencing` compares `sequence[i] === correct[i]`
+ * — all by VALUE, none by index into `options`.
+ */
+export function seededOrder<T>(items: T[], seed: string): T[] {
+  // xmur3-style string hash → 32-bit state for a mulberry32 PRNG.
+  let h = 1779033703 ^ seed.length;
+  for (let i = 0; i < seed.length; i++) {
+    h = Math.imul(h ^ seed.charCodeAt(i), 3432918353);
+    h = (h << 13) | (h >>> 19);
+  }
+  let state = h >>> 0;
+  const next = () => {
+    state = (state + 0x6d2b79f5) >>> 0;
+    let t = state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  const out = [...items];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(next() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
 function mapQ(id: string, r: RawQ): ScenarioQ | null {
   if (!r || !r.prompt || !Array.isArray(r.options) || r.options.length === 0) return null;
   const type: ScenarioQ['type'] = Q_TYPES.has(r.question_type ?? '') ? (r.question_type as ScenarioQ['type']) : 'mc';
@@ -81,7 +125,7 @@ function mapQ(id: string, r: RawQ): ScenarioQ | null {
     prompt: r.prompt,
     media,
     type,
-    options: (r.options as unknown[]).map(String),
+    options: seededOrder((r.options as unknown[]).map(String), id),
     correct,
     explanation: r.explanation ?? '',
     term: r.term ?? null,
@@ -213,20 +257,29 @@ export async function recordScenarioAnswer(
 
 /**
  * Mark a round complete → advances the round + moves the Dashboard LED to
- * rounds/3. Returns the new rounds-completed count.
+ * rounds/3.
  *
- * ⛔ QUEUES ON FAILURE, like the answers it completes. Returning `round`
- * unchanged on failure is what let the round report congratulate a learner
- * for a round the server never heard about.
+ * ⛔ QUEUES ON FAILURE, like the answers it completes — and SAYS SO. This
+ * returned a bare `number`, `round` unchanged, on both the success and the
+ * failure path, so the caller could not tell them apart and the round report
+ * congratulated the learner either way. Observed on a device 2026-09-20:
+ * "Outstanding work. You answered 149 of 149 correctly." for a round the
+ * server had no record of, on the one method whose queue file exists
+ * specifically to stop that happening.
+ *
+ * `saved` is the honest bit. Callers must render differently when it is false.
  */
-export async function completeScenarioRound(achievementId: string, round: number): Promise<number> {
+export async function completeScenarioRound(
+  achievementId: string,
+  round: number,
+): Promise<{ roundsCompleted: number; saved: boolean }> {
   const stillPending = await flushScenarioQueue();
   if (stillPending === 0) {
     const n = await sendComplete(achievementId, round);
-    if (n !== null) return n;
+    if (n !== null) return { roundsCompleted: n, saved: true };
   }
   await queueScenarioCall({ kind: 'complete', achievementId, round, at: Date.now() });
-  return round;
+  return { roundsCompleted: round, saved: false };
 }
 
 /** Re-shuffle a fresh 3-round cycle after all 3 are done. Returns the new plan. */

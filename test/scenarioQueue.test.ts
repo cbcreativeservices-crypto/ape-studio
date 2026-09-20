@@ -162,4 +162,66 @@ describe('scenario queue', () => {
     await queueScenarioCall(answer(1, 'q1'));
     assert.equal(await pendingScenarioCount(), 1);
   });
+
+  /**
+   * ── THE WEDGE ────────────────────────────────────────────────────────────
+   *
+   * Stop-at-first-failure is right for a dropped connection and catastrophic
+   * for a call the server will never accept. Observed live 2026-09-20:
+   * `complete_scenario_round` wrote `auth.uid()` into a column keyed on
+   * `public.users.id` and raised a foreign-key violation for EVERY account.
+   * That `complete` sat at the head of the queue forever, and because both
+   * `recordScenarioAnswer` and `completeScenarioRound` refuse to send while
+   * anything is pending, every scenario answer on every topic stopped being
+   * sent — silently, and across app restarts, because the queue is durable.
+   *
+   * So the queue must give up eventually. These pin BOTH halves: it keeps
+   * retrying while a failure could still be transient, and it lets go once it
+   * plainly cannot be.
+   */
+  it('keeps a failing call queued while the failure could still be transient', async () => {
+    await queueScenarioCall(answer(1, 'q1'));
+    await queueScenarioCall(answer(1, 'q2'));
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      const left = await drainScenarioQueue(async () => false);
+      assert.equal(left, 2, `attempt ${attempt}: nothing may be dropped this early`);
+    }
+  });
+
+  it('discards a permanently-failing head so the rest of the queue can move', async () => {
+    await queueScenarioCall(complete(1)); // the poison pill
+    await queueScenarioCall(answer(2, 'q9')); // trapped behind it
+
+    // Fails for the `complete`, succeeds for anything else - exactly the live
+    // shape, where the FK violation hit only the call that wrote progress.
+    const sent: string[] = [];
+    const send = async (i: { kind: string; questionId?: string }) => {
+      if (i.kind === 'complete') return false;
+      sent.push(i.questionId ?? '?');
+      return true;
+    };
+
+    let left = 2;
+    for (let attempt = 1; attempt <= 12 && left > 0; attempt++) {
+      left = await drainScenarioQueue(send as never);
+    }
+
+    assert.equal(left, 0, 'the queue must drain rather than wedge on a dead call');
+    assert.deepEqual(sent, ['q9'], 'the answer behind the poison pill must get through');
+  });
+
+  it('counts attempts per item, so a slow drain cannot discard a healthy queue', async () => {
+    await queueScenarioCall(answer(1, 'q1'));
+    await queueScenarioCall(answer(1, 'q2'));
+    // Two failed attempts, then the network returns.
+    await drainScenarioQueue(async () => false);
+    await drainScenarioQueue(async () => false);
+    const seen: string[] = [];
+    const left = await drainScenarioQueue(async (i) => {
+      seen.push(i.kind === 'answer' ? i.questionId : 'c');
+      return true;
+    });
+    assert.equal(left, 0);
+    assert.deepEqual(seen, ['q1', 'q2'], 'nothing may be lost once sending works again');
+  });
 });

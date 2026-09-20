@@ -78,6 +78,9 @@ export function ScenariosScreen({ route }: Props) {
   const [sequence, setSequence] = useState<string[]>([]);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [report, setReport] = useState<RoundReport | null>(null);
+  /** Did the server actually record the round this report is for?
+   *  `null` = still asking. Drives the honest line on the report card. */
+  const [roundSaved, setRoundSaved] = useState<boolean | null>(null);
   const [busy, setBusy] = useState(false);
   // Why the nocontent view is showing: 'empty' = topic genuinely has no
   // scenarios (marked exempt so the quiz can still unlock); 'error' = the
@@ -191,16 +194,23 @@ export function ScenariosScreen({ route }: Props) {
     (rq: ScenarioQ[], r: number) => {
       clearInteraction();
       setReport(buildRoundReport(r, rq, answersRef.current));
+      setRoundSaved(null); // asking; the report says so until we know
       setView('report');
       // Local "round finished" sentinel so the Dashboard's dev fast-complete can
       // treat scenarios as done even on topics with very few questions (owner
       // 2026-08-13). Inert in production (scenarios % reads server completion_pct).
       scenarioStatesRef.current._done = { correct: 1 };
       void saveLocalMethodStates(achievementId, 'scenarios', scenarioStatesRef.current);
-      void completeScenarioRound(achievementId, r).then((rc) => {
-        setHw((prev) =>
-          prev ? { ...prev, roundsCompleted: Math.max(prev.roundsCompleted, rc) } : prev,
-        );
+      void completeScenarioRound(achievementId, r).then(({ roundsCompleted, saved }) => {
+        // Only advance the local rounds count when the SERVER took it. Bumping
+        // it on a queued-but-unsent round is what made the Dashboard LED and
+        // the report disagree with the database.
+        if (saved) {
+          setHw((prev) =>
+            prev ? { ...prev, roundsCompleted: Math.max(prev.roundsCompleted, roundsCompleted) } : prev,
+          );
+        }
+        setRoundSaved(saved);
       });
     },
     [achievementId],
@@ -439,8 +449,20 @@ export function ScenariosScreen({ route }: Props) {
       <View style={[styles.root, { paddingTop: insets.top }]}>
         <ScrollView contentContainerStyle={styles.scroll}>
           <StudyHeader method="scenarios" title="SCENARIO" />
-          <Text style={styles.reportRound}>ROUND {report.round} OF {SCENARIO_ROUNDS} · COMPLETE</Text>
+          <Text style={styles.reportRound}>
+            ROUND {report.round} OF {SCENARIO_ROUNDS} · {roundSaved === false ? 'NOT SAVED YET' : 'COMPLETE'}
+          </Text>
           <Text style={styles.reportHead}>{headline}</Text>
+          {/* Tell the truth when the round did not reach the server. It used to
+           *  say COMPLETE either way — a learner was congratulated for a round
+           *  the database had no record of. */}
+          {roundSaved === false ? (
+            <Text style={styles.reportUnsaved}>
+              Your answers are saved on this device but haven’t reached your account yet. They’ll
+              sync automatically next time you’re online — this round won’t count towards the quiz
+              until they do.
+            </Text>
+          ) : null}
           {report.total > 0 ? (
             <Text style={styles.reportScore}>
               You answered <Text style={styles.reportScoreNum}>{report.score}</Text> of {report.total} correctly.
@@ -722,6 +744,16 @@ const styles = StyleSheet.create({
   reportRound: { fontFamily: fonts.mono, fontSize: 11, letterSpacing: 1.4, color: colors.textSubAlt, marginTop: 4 },
   reportHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 22, color: colors.textPrimary },
   reportScore: { fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 23, color: colors.textSecondary },
+  // Amber, not red: nothing is lost, it just has not synced yet.
+  reportUnsaved: {
+    fontFamily: fonts.barlowRegular,
+    fontSize: 14,
+    lineHeight: 21,
+    color: '#ffb350',
+    borderLeftWidth: 2,
+    borderLeftColor: 'rgba(255,176,80,.55)',
+    paddingLeft: 10,
+  },
   reportScoreNum: { fontFamily: fonts.oswaldSemiBold, color: '#37e05f' },
   card: { borderRadius: 10, borderWidth: 1, borderColor: colors.hairlineAlt, backgroundColor: '#161616', padding: 14, gap: 6 },
   cardGood: { borderColor: 'rgba(55,224,95,.35)', backgroundColor: '#0e1a12' },
