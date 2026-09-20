@@ -353,7 +353,7 @@ const CASES: { id: string; name: string; symptom: string; flawed: MixSettings; f
     symptom: 'Loud playback hurts; everything fights to be bright.',
     flawed: { lead: { eq: { hz: 3200, gainDb: 6, q: 1.2 } }, gtr: { eq: { hz: 3000, gainDb: 5, q: 1.2 } }, perc: { faderDb: 4 } },
     fixed: { lead: { eq: { hz: 3200, gainDb: 1, q: 1.2 } }, gtr: { eq: { hz: 3000, gainDb: 0, q: 1.2 } }, perc: { faderDb: -2 } },
-    options: ['Presence-range pileup — several parts boosted into the same 2–4 kHz shelf', 'The mix needs more low end to balance it', 'The sample rate is too low', 'The room’s acoustics are harsh, not the mix'],
+    options: ['Presence-range pileup — several parts boosted with bells into the same 2–4 kHz band', 'The mix needs more low end to balance it', 'The sample rate is too low', 'The room’s acoustics are harsh, not the mix'],
     correct: 0,
     explain: 'Harshness concentrates where the ear is most sensitive (2–4 kHz). Three parts each “given presence” is a pileup — undo the stacked boosts; brightness returns as clarity instead of pain.',
     wrong: [undefined, 'Adding low end just makes a harsh mix LOUD and harsh.', 'Harshness is spectral balance, not resolution.', 'A real possibility in life — but here the boosts are printed in the session.'],

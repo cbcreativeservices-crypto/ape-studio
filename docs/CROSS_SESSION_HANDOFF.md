@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-20 01:24 · ccode · 3be70e8b
+changed: Copy pass 1: safety-critical calculator caveats, lethal-voltage warning, false credential card
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-20 00:57 · ccode · c762c919
 changed: Bug pass 2: glossary cross-links were dead for everyone, plus two Android traps
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">

@@ -315,7 +315,10 @@ const AUX_TOPICS = [
   { id: 'cue', name: 'Cue mixes', blurb: 'Pre-fader feeds per performer. Your mix moves never reach their ears; their balance never limits yours.' },
   { id: 'sidechain', name: 'Sidechain feeds', blurb: 'A send can feed a DETECTOR instead of an effect — the kick telling the bass compressor when to duck.' },
   { id: 'solosafe', name: 'Solo-safe returns', blurb: 'Solo a track and its reverb return stays audible — returns marked solo-safe are exempt from the solo cut.' },
-  { id: 'feedback', name: 'Feedback prevention', blurb: 'A return that sends back into a path feeding itself will howl or explode. Returns send NOWHERE by default; break the loop before it exists.' },
+  { id: 'feedback', name: 'Feedback prevention', // ⛔ A RETURN DOES OUTPUT TO THE MIX — routing.ts declares `out: 'mix'`,
+    //    and it is how every reverb in this lab is heard. What it has no
+    //    default of is a SEND of its own, which is the actual point.
+    blurb: 'A return that feeds a path which feeds it back will run away. A return outputs to the mix; what it does NOT have by default is a send of its own — so a loop only exists if you create one. Check before you patch, and pull monitors down while you do.' },
 ] as const;
 
 function PageAuxAdvanced({ ctx }: { ctx: PageCtx }) {

@@ -599,11 +599,18 @@ export function SpeakerCoverageLabScreen() {
             </Text>
           ) : null}
           <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help(sectionIdx === 0 ? 'top_view' : 'side_view')}>
+            {/* ⛔ "FALL OFF FAST" WAS AN INVERSE-SQUARE ERROR. A 120° box loses
+                level with distance at exactly the same rate as a 60° one — what
+                differs is directivity, so it is quieter at EVERY distance,
+                including one metre. The old wording planted a distance-law
+                mistake a learner carries into system design. */}
             {sectionIdx === 0 ? (
               <Text style={styles.caption}>
-                Narrow boxes (60°) throw far but need careful aim; wide boxes (120°) cover close and wide
-                but fall off fast. Two overlapping speakers turn the shared zone RED — energy piles up
-                (and, in the real world, combs). Front fills rescue the first rows the mains fly over.
+                Narrow boxes (60°) put the same power into a smaller wedge, so they arrive louder at the
+                back — but they demand careful aim. Wide boxes (120°) spread that power over far more
+                area, so they cover close and wide at a lower level everywhere, not just at the back.
+                Two overlapping speakers turn the shared zone RED — energy piles up (and, in the real
+                world, combs). Front fills rescue the first rows the mains fly over.
               </Text>
             ) : (
               <Text style={styles.caption}>

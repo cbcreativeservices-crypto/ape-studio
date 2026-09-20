@@ -109,7 +109,10 @@ export function GraphicTruthModule(_p: EqModuleComponentProps) {
       valueLabel: view === 'mag' ? 'MAG' : 'PHASE',
       options: [
         { id: 'mag', label: 'MAGNITUDE', blurb: 'How much each frequency is boosted or cut — the curve every EQ plugin shows you.' },
-        { id: 'phase', label: 'PHASE', blurb: 'How much each frequency is DELAYED in time — the curve EQs don’t show, and the hidden cost of every boost and cut.' },
+        { id: 'phase', label: 'PHASE', blurb: // Phase shift is SIGNED — a minimum-phase boost leads on one side of
+    // centre and lags on the other, which is why this plot swings ±180°.
+    // "Delay per frequency" is GROUP delay, the derivative of phase.
+    'How far each frequency is shifted in phase — ahead on one side of the band, behind on the other. EQ plugins rarely plot it, and every minimum-phase boost or cut applies some. The curve EQs don’t show, and the hidden cost of every boost and cut.' },
       ],
       selectedId: view,
       onSelect: (id) => setView(id as 'mag' | 'phase'),

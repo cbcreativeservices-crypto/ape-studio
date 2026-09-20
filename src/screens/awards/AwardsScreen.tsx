@@ -418,7 +418,14 @@ function AwardPageView({
         <Text style={styles.grantNote}>
           {CERTIFICATE_REQUIRES_EXAM
             ? 'A minimum of 1 complete month of paid membership is required before a certificate can be granted.'
-            : 'Certificates are issued to your record as soon as their requirements are met.'}
+            : // ⛔ NOT "as soon as their requirements are met" — that was my own
+              //    wording earlier tonight and copy pass 2 was right to call it
+              //    false. While certificate_requires_exam is false,
+              //    evaluate_user_credentials takes a branch its own comment
+              //    calls "deliberately still the stale" hardcoded draft list,
+              //    which no v3 learner can satisfy. submit_final_exam is the
+              //    only path that writes a credential_awards row.
+              'Complete a certificate’s required topics, then pass its Final Exam — the certificate is issued to your record straight away.'}
         </Text>
       </ScrollView>
     </View>

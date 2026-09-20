@@ -134,8 +134,17 @@ export function ExamBriefing({
           body="The exam cannot begin offline. If you lose your connection mid-exam your answers are kept and submitted when you reconnect, with your real finish time."
         />
 
-        {/* ── The membership rule ─────────────────────────────────────────── */}
-        <Text style={styles.h}>BEFORE YOUR CERTIFICATE IS ISSUED</Text>
+        {/* ── When the certificate is issued ──────────────────────────────
+            ⛔ THE HEADING IS INSIDE THE CONDITIONAL. It used to sit outside
+            it, above a branch that renders `null` for a 'complete' tenure — so
+            a long-standing member saw the words BEFORE YOUR CERTIFICATE IS
+            ISSUED with nothing whatsoever underneath, immediately before a
+            one-sitting graded capstone. Latent before today; gating the
+            reminder on CERTIFICATE_REQUIRES_EXAM made it universal, which is
+            how copy pass 2 caught it. */}
+        <Text style={styles.h}>
+          {tenure === 'complete' ? 'WHEN YOUR CERTIFICATE IS ISSUED' : 'BEFORE YOUR CERTIFICATE IS ISSUED'}
+        </Text>
 
         {tenure === 'incomplete' ? (
           <View style={styles.tenureCard}>
@@ -153,7 +162,24 @@ export function ExamBriefing({
               not graded, it is not applied, and it does not count as an attempt you have used.
             </Text>
           </View>
-        ) : tenure === 'complete' ? null : (
+        ) : tenure === 'complete' ? (
+          /**
+           * ⛔ SAY SOMETHING TRUE HERE — `null` left the heading bare.
+           *
+           * And this is what the server actually does today: `submit_final_exam`
+           * is the ONLY code path that writes a credential_awards row.
+           * `evaluate_user_credentials` has two, but while
+           * `certificate_requires_exam` is false it takes the ELSE branch,
+           * which its own comment calls "deliberately still the stale"
+           * hardcoded draft list that a v3 learner can never satisfy. So
+           * passing this exam is not merely one route to the certificate — it
+           * is the route.
+           */
+          <Text style={styles.body}>
+            Pass this exam and the certificate is issued to your record straight away. It appears in
+            your Trophy Case and on your Profile, and you can download it as a PDF.
+          </Text>
+        ) : (
           // 'unknown' — state the policy, claim nothing about this person.
           <Text style={styles.body}>
             A certificate requires one complete paid month of membership. If your first month is not

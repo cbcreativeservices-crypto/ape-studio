@@ -76,7 +76,10 @@ const COLOR_CHARACTER: Record<NoiseColor, string> = {
   white: 'Equal energy per Hz — sounds bright because every higher octave holds twice the bandwidth. The untilted reference.',
   pink: 'Equal energy per OCTAVE — matches how we hear. The mixing and measurement reference.',
   brown: 'Energy doubling toward the bottom — rumble, surf, distant thunder.',
-  blue: 'Energy rising toward the top — a thin, airy hiss; the sound of dither.',
+  // Plain RPDF/TPDF dither is FLAT (white). Only NOISE-SHAPED dither is
+    // high-frequency weighted — and the Digital lab teaches exactly that
+    // (digital/vizQuant.tsx:386), so this line contradicted it.
+    blue: 'Energy rising toward the top — a thin, airy hiss. The sound of NOISE-SHAPED dither; plain TPDF dither is flat, like white.',
   violet: 'Steeply rising — nearly all the energy at the very top. Hiss, distilled.',
 };
 
