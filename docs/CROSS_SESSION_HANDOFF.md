@@ -87,6 +87,28 @@ needs: A to apply it (or tell ccode to), and to say when it lands so the client 
 changed: Copy pass 3: the required-education disclosure fired on 6 of 44 career lists
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
 needs: <FILL — what you need from A, or "nothing">
+### 2026-09-20 09:40 · ccode · 9f3f733d + ae74ccb1 + 0cca0bd5 (stubs the hook did not stamp)
+changed: the rest of copy pass 4 — 4b (error copy: raw DSP/Postgres/GoTrue strings, wrong failure attribution), the required-education pass (54 role mentions coded, two new RequireKinds, 46 careerIndex rows reflagged), and 4d (instructions that named removed controls, wrong worked-example figures, two published legal documents).
+affects other side: careerIndex.json gained 42 `reg:1` and 4 `pe:1` flags and credentialCopy/topicCopy gained 54 `requires` codes — if A ever regenerates either from a Computer B deliverable, these hand-applied codes will be LOST unless the generator carries them. Broadcast and RF are deliberately still untagged pending a ruling.
+needs: a ruling on whether broadcast/RF roles carry a disclosure (copy pass 3 established the FCC dropped broadcast operator licensing, so SBE is a hiring norm, not a legal gate).
+
+
+### 2026-09-20 08:39 · ccode · cec30976
+changed: Ear training: sentences that hard-coded a number the render owns
+affects other side: four DAW certificates (cubase-nuendo-for-post, digital-performer-reason-producer, reaper-power-user, studio-one-producer) existed in the live catalog with NO copy row, so their detail modal was blank. credentialCopy.ts now has all 164 rows (128 certs + 36 programs), matching the live catalog. The four new descriptions are newly written and need owner sign-off.
+needs: nothing
+
+
+### 2026-09-20 08:33 · ccode · 092e2715
+changed: Copy pass 4c: screens that are each correct and disagree with each other
+affects other side: SOUND_SAFETY_VERSION bumped 1 → 2, so every existing user is asked to acknowledge sound safety again on next audio enable (two clauses stated protections that can degrade silently). Also: the certificate QR caption now points at /verify, not /registry, which is a 404 — if A ever adds a public /registry index page, revisit.
+needs: nothing
+
+
+### 2026-09-20 08:14 · ccode · e8bac7a9
+changed: Copy pass 4a: stop naming routes, emails and controls that do not exist
+affects other side: two copy promises now depend on backend behaviour A owns — the moderation notice and the employer queue both tell the member to email info@proaudiotrainingacademy.com because `account_set_standing()` and `employer_review()` send no mail. If A adds a mailer to either, the copy should go back to promising the email.
+needs: nothing
 
 
 ### 2026-09-20 01:24 · ccode · 3be70e8b

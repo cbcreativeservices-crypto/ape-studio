@@ -49,7 +49,7 @@ export function CalcResultsScreen() {
     const ok = await shareImage.captureAndShare(shareRef.current, 'Workflow results');
     if (!ok) {
       // notify, not Alert.alert: RN-web's Alert is a no-op (B-018/B-062).
-      notify('Image sharing unavailable', 'Sharing as an image needs the next app build. SHARE AS TEXT works now.');
+      notify('Image sharing unavailable', 'Sharing as an image isn’t available on this device. SHARE AS TEXT works now.');
     }
   };
 
@@ -63,7 +63,11 @@ export function CalcResultsScreen() {
       'Delete result?',
       `The saved result for “${r.workflowName}” will be removed.`,
       'Delete',
-      () => void workflowStore.deleteResult(r.id).then(reload),
+      () =>
+        void workflowStore.deleteResult(r.id).then((ok) => {
+          if (!ok) return notify('Not deleted', 'That could not be removed from this device. Nothing was changed — try again.');
+          reload();
+        }),
       { destructive: true },
     );
   };

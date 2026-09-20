@@ -56,7 +56,7 @@ export function FinderShell({
 
 export function BetaPill({ compact }: { compact?: boolean }) {
   return (
-    <View style={[styles.beta, compact && styles.betaCompact]} accessible accessibilityRole="text" accessibilityLabel="Beta">
+    <View style={[styles.beta, compact && styles.betaCompact]} accessible accessibilityRole="text" accessibilityLabel="Beta feature">
       <Text style={styles.betaText}>BETA</Text>
     </View>
   );

@@ -135,7 +135,7 @@ export function GalleryScreen() {
             loadError ? (
               <View style={styles.errorCard}>
                 <Text style={styles.errorText}>
-                  Couldn’t load your gallery — check your connection.
+                  Couldn’t load this right now. Nothing you’ve earned is affected — check your connection and retry, and email info@proaudiotrainingacademy.com if it keeps failing.
                 </Text>
                 <View style={{ width: 180 }}>
                   <StudioButton label="Retry" variant="secondary" small onPress={load} />

@@ -206,7 +206,7 @@ export function ShareTermSheet({
                 onClose();
                 notify(
                   'Shared as text',
-                  'Sharing as an image needs the next app build, so this went out as text instead.',
+                  'Sharing as an image isn’t available on this device, so this went out as text instead.',
                 );
               });
           } else {
@@ -233,7 +233,7 @@ export function ShareTermSheet({
           onClose();
           notify(
             ok ? 'Copied' : 'Copy unavailable',
-            ok ? 'Share text copied to clipboard.' : 'Copying needs the next app build.',
+            ok ? 'Share text copied to clipboard.' : 'Copying isn’t available on this device.',
           );
         })
         .catch(() => {
@@ -292,7 +292,12 @@ export function ShareTermSheet({
       // A rejected resolve() was an unhandled rejection; the sheet still
       // returns to the main view via .finally, so say nothing more than that
       // the extra terms did not load.
-      .catch(() => notify('Could not add terms', 'Those terms could not be loaded right now.'))
+      .catch(() =>
+        notify(
+          'Some terms weren’t added',
+          'Those extra terms could not be loaded. The terms you already selected are still here — try adding them again.',
+        ),
+      )
       .finally(() => {
         setBusy(false);
         setView('main');

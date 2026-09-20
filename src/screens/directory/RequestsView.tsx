@@ -564,14 +564,27 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
               null when the read failed, and null must read as ALLOWED — the
               server is the enforcement, and guessing "blocked" on a dropped
               connection would lock someone out of their own conversation. */}
+          {/* SEND is disabled on THREE caps, and only the per-conversation one
+              had a sentence — the other two produced a dead button and no
+              explanation. All three windows are ROLLING on the server, so none
+              of them "resets tomorrow". */}
           {allow?.awaitingReply ? (
             <Text style={st.allowance}>
               Wait for a reply before sending more.
             </Text>
+          ) : allow?.messagesLeftThisWeek === 0 ? (
+            <Text style={st.allowance}>
+              No messages left this week. The oldest frees up 7 days after you sent it.
+            </Text>
+          ) : allow?.messagesLeftToday === 0 ? (
+            <Text style={st.allowance}>
+              No messages left today across all conversations. The oldest frees up 24 hours
+              after you sent it.
+            </Text>
           ) : allow && allow.messagesLeftHereToday <= 3 ? (
             <Text style={st.allowance}>
               {allow.messagesLeftHereToday === 0
-                ? 'No replies left in this conversation today. It resets tomorrow.'
+                ? 'No replies left in this conversation for now. The oldest frees up 24 hours after you sent it.'
                 : `${allow.messagesLeftHereToday} ${allow.messagesLeftHereToday === 1 ? 'reply' : 'replies'} left in this conversation today.`}
             </Text>
           ) : null}

@@ -395,7 +395,7 @@ export function CalcWorkflowRunScreen() {
     const ok = await shareImage.captureAndShare(shareRef.current, 'Workflow results');
     if (!ok) {
       // notify, not Alert.alert: RN-web's Alert is a no-op (B-018/B-062).
-      notify('Image sharing unavailable', 'Sharing as an image needs the next app build. SHARE AS TEXT works now.');
+      notify('Image sharing unavailable', 'Sharing as an image isn’t available on this device. SHARE AS TEXT works now.');
     }
   };
 

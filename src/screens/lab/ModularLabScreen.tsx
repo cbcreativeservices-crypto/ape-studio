@@ -27,7 +27,7 @@ import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Circle, Defs, G, Line, LinearGradient, Path, RadialGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
-import { ApeDsp, MOD_PARAM } from '../../../modules/ape-dsp';
+import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, MOD_PARAM } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
@@ -246,7 +246,7 @@ export function ModularLabScreen() {
       setRunning(true);
       noteAudioActivity();
     } catch (e) {
-      if (gen === genRef.current) setGenError(e instanceof Error ? e.message : String(e));
+      if (gen === genRef.current) setGenError(AUDIO_UNAVAILABLE_MESSAGE);
     }
   }, [modReady, requestAudioOutput, pushPatch, patch]);
 

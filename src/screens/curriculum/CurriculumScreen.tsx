@@ -41,13 +41,21 @@ import { FAMILY_COUNT } from '../../features/careerfinder/families';
 import { computeResult } from '../../features/careerfinder/scoring';
 import { useCareerFinder } from '../../features/careerfinder/store';
 
-/** Placeholder academic-goal lines — replace with the Academy's official copy. */
+/**
+ * What the Academy sets out to do.
+ *
+ * ⚠️ These were marked "placeholder — replace with the Academy's official
+ * copy" and shipped anyway, and two of the five over-claimed: "map to career
+ * pathways" and "prepare graduates for certification" both imply a
+ * third-party certification the Academy neither offers nor maps to — which
+ * /credentials on the website explicitly disclaims.
+ */
 const ACADEMIC_GOALS: string[] = [
-  'Build job-ready, professional audio skills grounded in real industry practice.',
-  'Master every topic through study and proven assessment, not passive watching.',
-  'Progress from single-topic specializations to full professional programs.',
-  'Earn stackable, verifiable credentials that map to career pathways.',
-  'Prepare graduates for certification, employment, and continued growth.',
+  'Build professional audio knowledge grounded in real industry practice.',
+  'Learn every topic through study and assessment, not passive watching.',
+  'Progress from single-topic certificates to full Academy programs.',
+  'Earn verifiable Academy credentials that document the work you completed.',
+  'Understand where that knowledge is used at work — and what further education a role may require.',
 ];
 
 const CURRICULUM_INTRO_TITLE = 'Explore the Academy Curriculum';
@@ -440,7 +448,7 @@ export function CurriculumView({
       ) : curriculumState === 'error' ? (
         <View style={styles.treeStatus}>
           <Text style={styles.treeStatusText}>
-            Couldn’t load the curriculum — check your connection.
+            Couldn’t load this right now. Nothing you’ve earned is affected — check your connection and retry, and email info@proaudiotrainingacademy.com if it keeps failing.
           </Text>
           <Pressable
             style={styles.treeRetry}
@@ -557,7 +565,7 @@ export function CurriculumView({
 
       {/* Academic goals — at the bottom. */}
       <View style={styles.section}>
-        <Text accessibilityRole="header" style={styles.sectionEyebrow}>ACADEMIC GOALS</Text>
+        <Text accessibilityRole="header" style={styles.sectionEyebrow}>WHAT THE ACADEMY SETS OUT TO DO</Text>
         <Text style={styles.sectionIntro}>What the Pro Audio Training Academy sets out to do for every student.</Text>
         {ACADEMIC_GOALS.map((goal) => (
           <View key={goal} style={styles.goalRow}>

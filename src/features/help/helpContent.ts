@@ -213,7 +213,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       {
         id: 'tools-limits',
         q: 'Why did a calculator or the glossary stop and ask me to wait?',
-        a: 'The free tier has weekly limits — a set number of calculator results and glossary opens per rolling week. Academy membership removes the caps.',
+        a: 'The free tier has rolling weekly limits — 5 calculator results and 14 glossary lookups in any 7 days. Academy membership removes both caps.',
       },
     ],
   },

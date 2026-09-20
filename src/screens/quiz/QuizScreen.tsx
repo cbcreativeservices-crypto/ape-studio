@@ -185,19 +185,21 @@ export function QuizScreen({ navigation, route }: Props) {
           // so choosing here is the same decision made earlier, and cheaper.
           // `result.score` is a COUNT of correct answers (the server does
           // `v_score := v_score + 1`), NOT a percentage — ResultsScreen renders
-          // it as "28 / 30". The celebration says "FINAL QUIZ: {score}%", so it
-          // has to be converted here or a 28/30 pass reads as 28%.
+          // it as "28 / 30".
           //
-          // Found by a bug-hunting pass on 2026-09-17, hours after this wiring
-          // landed. The same mistake made `perfect-score` UNREACHABLE: the test
-          // was `score >= 100` against a number whose maximum is the question
-          // count.
+          // The celebration USED to print a percentage, so the same result was
+          // reported three ways across three consecutive screens: "93%", then
+          // "26 / 28", then a bare "26" on the rack. It now states the same
+          // count and denominator the graded surface does.
+          //
+          // The percentage bug also made `perfect-score` UNREACHABLE once: the
+          // test was `score >= 100` against a number whose maximum is the
+          // question count.
           const total = questions.length;
-          const pct = total > 0 ? Math.round((result.score / total) * 100) : 0;
           const perfect = total > 0 && result.score >= total;
           (navigation as any).navigate('Celebration', {
             id: perfect ? 'perfect-score' : 'topic-complete',
-            values: { topic_name: topicName, score: pct },
+            values: { topic_name: topicName, score: result.score, size: total },
             // REVIEW RESULTS must reach the graded attempt without asking the
             // server for it again.
             context: {
@@ -445,7 +447,7 @@ export function QuizScreen({ navigation, route }: Props) {
   const confirmExit = useCallback(() => {
     confirmDialog(
       'Leave quiz?',
-      'Your answers will be wiped immediately. The quiz allows no pause or save.',
+      'Your answers will be wiped immediately. This does not end the attempt — the clock keeps running and coming back puts you into the same sitting with the same questions and less time left.',
       'Leave & wipe',
       () => {
         answers.current = {};

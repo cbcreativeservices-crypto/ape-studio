@@ -117,7 +117,7 @@ export function shareOutcomeMessage(outcome: ShareOutcome, what: string): string
       // verified record yet, and telling them to retry would waste their time.
       return 'Your verified record is still being set up — try again shortly.';
     case 'needs_build':
-      return `Sharing your ${what} needs the next app build.`;
+      return `Sharing your ${what} isn’t available on this device.`;
     case 'dismissed':
       // The user closed the sheet. Saying anything here would be nagging.
       return null;

@@ -95,7 +95,7 @@ const PAGE_TAB: Record<PageKey, string> = {
 // Big header title per page (user request 2026-07-22).
 const PAGE_TITLE: Record<PageKey, string> = {
   curriculum: 'Explore the Academy',
-  specialization: 'Specialize. Learn. Get Certified.',
+  specialization: 'Specialize. Learn. Earn the Certificate.',
   program: 'Complete Certificate Programs',
   directory: 'Get Discovered',
   enrollment: 'Manage My Learning',
@@ -850,7 +850,7 @@ export function AwardsScreen({ navigation, route }: Props) {
       />
 
       {/* LEVEL 1 — choose one Specialization Certificate (user request 2026-07-18):
-          each = the COREQ_TOPIC_GS core courses + that certificate's own
+          each = the COREQ_TOPIC_GS core topics and lab + that certificate's own
           specialization topics. NOTE: the list rendered here is `specCertsAZ`,
           which comes from the LIVE v3 backend (fetchV3Certs) — NOT the legacy
           68-entry SPECIALIZED_CERTS array in awardsData.ts, which is marked
@@ -864,7 +864,13 @@ export function AwardsScreen({ navigation, route }: Props) {
               PRO AUDIO <Text style={styles.brandAccent}>TRAINING ACADEMY</Text>
             </Text>
           </View>
-          {/* [18] (2026-09-11): the core count is derived from COREQ_TOPIC_GS so
+          {/* ⚠️ 2026-09-20: deriving the count from COREQ_TOPIC_GS.length printed
+              "the 4 core courses", while the intro block on this same page says
+              "three required core topics and one training lab". 3081 is the
+              Audio Fundamentals LAB proxy, not a topic, so the derived count was
+              the wrong shape, not just the wrong word. Stated literally, matching
+              the intro. If COREQ_TOPIC_GS changes, both must change together.
+              [18] (2026-09-11): the core count was derived from COREQ_TOPIC_GS so
               it can never contradict the REQUIRED CORE banner below; no claim is
               made about the (variable) specialization-topic count. */}
           <ChooserHeader
@@ -872,7 +878,7 @@ export function AwardsScreen({ navigation, route }: Props) {
             backTint={GLOSSARY_BLUE}
             backTo="Certificates"
             title="CHOOSE A SPECIALIZATION CERTIFICATE"
-            sub={`A focused credential: the ${COREQ_TOPIC_GS.length} core courses every student completes (shown below), plus a short, specialized topic set. Choose one to work toward.`}
+            sub={`A focused credential: the 3 core topics and 1 training lab every student completes (shown below), plus a short, specialized topic set. Choose one to work toward.`}
             count={v3Loaded ? specCertsAZ.length : null}
             noun="certificates"
             onBack={() => setPicker(null)}
@@ -960,7 +966,7 @@ export function AwardsScreen({ navigation, route }: Props) {
             backTint={PURPLE}
             backTo="Programs"
             title="CHOOSE A PROGRAM PATH"
-            sub={`A comprehensive credential: the ${COREQ_TOPIC_GS.length} core courses every student completes (shown below), plus a broad topic set across the discipline. Choose one to work toward.`}
+            sub={`A comprehensive credential: the 3 core topics and 1 training lab every student completes (shown below), plus a broad topic set across the discipline. Choose one to work toward.`}
             count={v3Loaded ? programPathsAZ.length : null}
             noun="program paths"
             onBack={() => setPicker(null)}

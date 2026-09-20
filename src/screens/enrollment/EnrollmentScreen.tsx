@@ -889,14 +889,19 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   // held list); the TermSelectIcons row lets the user edit membership inline.
   const [customListOpen, setCustomListOpen] = useState(false);
   const [customListRows, setCustomListRows] = useState<{ id: string; term: string }[] | null>(null);
+  // FAILED-LOAD ≠ EMPTY. The catch used to set [], so a dropped fetch rendered
+  // "MY CUSTOM LIST · 0" and "No terms yet" to somebody whose list is not
+  // empty — a false count stated as fact about their own saved work.
+  const [customListFailed, setCustomListFailed] = useState(false);
   const openCustomList = async () => {
     setCustomListOpen(true);
     setCustomListRows(null);
+    setCustomListFailed(false);
     try {
       const items = await fetchGlossaryItemsByIds([...starred]);
       setCustomListRows(items.map((i) => ({ id: i.id, term: i.term })));
     } catch {
-      setCustomListRows([]);
+      setCustomListFailed(true);
     }
   };
 
@@ -2065,7 +2070,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
         ) : null}
         {browseOpen && browseState === 'error' ? (
           <View style={styles.browseStatus}>
-            <Text style={styles.browseStatusText}>Couldn’t load the catalog — check your connection.</Text>
+            <Text style={styles.browseStatusText}>Couldn’t load this right now. Nothing you’ve earned is affected — check your connection and retry, and email info@proaudiotrainingacademy.com if it keeps failing.</Text>
             <Pressable
               style={styles.browseRetry}
               onPress={() => void loadBrowse()}
@@ -2316,9 +2321,17 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             accessibilityLabel="Dismiss"
           />
           <View style={styles.clCard}>
-            <Text style={styles.clTitle}>MY CUSTOM LIST · {customListRows?.length ?? 0}</Text>
+            {/* No count while the read has failed — we do not know it. */}
+            <Text style={styles.clTitle}>
+              MY CUSTOM LIST{customListRows ? ` · ${customListRows.length}` : ''}
+            </Text>
             <ScrollView style={{ flexGrow: 0 }} showsVerticalScrollIndicator>
-              {customListRows == null ? (
+              {customListFailed ? (
+                <Text style={styles.clEmpty}>
+                  Couldn’t load your custom list. Your saved terms are safe — close this and open
+                  it again.
+                </Text>
+              ) : customListRows == null ? (
                 <Text style={styles.clEmpty}>Loading…</Text>
               ) : customListRows.length > 0 ? (
                 customListRows.map((r) => (
@@ -2332,7 +2345,10 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                   </View>
                 ))
               ) : (
-                <Text style={styles.clEmpty}>No terms yet — star terms in the Glossary to build this list.</Text>
+                <Text style={styles.clEmpty}>
+                  No terms yet — open a term in the Glossary and tap “Add to custom list” to build
+                  this list.
+                </Text>
               )}
             </ScrollView>
             <Pressable style={styles.clClose} onPress={() => setCustomListOpen(false)} accessibilityRole="button" accessibilityLabel="Close">

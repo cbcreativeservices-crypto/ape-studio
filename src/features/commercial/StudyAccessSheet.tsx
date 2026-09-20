@@ -57,8 +57,8 @@ export function StudyAccessSheet({
         <Text style={styles.title}>Ready to study this topic?</Text>
         <Text style={styles.body}>
           You can explore individual terms in the glossary for free. Academy membership unlocks the
-          complete study path for this topic—including flashcards, practice activities, scenario
-          questions, and the proficiency quiz.
+          complete study path for this topic—including flashcards, homework — fill in the blank
+          and matching — scenarios, and the Topic Quiz.
         </Text>
         <Text style={styles.body}>
           Your progress is saved as you complete topics, earn achievements, and work toward

@@ -128,22 +128,22 @@ export function ExportPanel({ subject, onHelp }: { subject: ExportSubject; onHel
   const doShare = () =>
     run(async () => {
       const ok = await shareImage.captureAndShare(cardRef.current, `${name} — Cymatics Lab`);
-      return ok ? 'Shared ✓' : 'Sharing as an image needs the next app build.';
+      return ok ? 'Shared ✓' : 'Sharing as an image isn’t available on this device.';
     });
   const doSave = () =>
     run(async () => {
       const r = await saveToPhotos(cardRef.current);
-      return r === 'saved' ? 'Saved to Photos ✓' : r === 'denied' ? 'Photos permission denied — allow access in Settings to save.' : r === 'unavailable' ? 'Saving to Photos is available after the next app build.' : 'Saving failed — please try again.';
+      return r === 'saved' ? 'Saved to Photos ✓' : r === 'denied' ? 'Photos permission denied — allow access in Settings to save.' : r === 'unavailable' ? 'Saving to Photos isn’t available on this device.' : 'Saving failed — please try again.';
     });
   const doPrint = () =>
     run(async () => {
       const ok = await printHtml(html(), page);
-      return ok ? 'Sent to the printer.' : avail.print ? "Printing didn't complete." : 'Printing is available after the next app build.';
+      return ok ? 'Sent to the printer.' : avail.print ? "Printing didn't complete." : 'Printing isn’t available on this device.';
     });
   const doPdf = () =>
     run(async () => {
       const r = await sharePdf(html(), page, `${name} — ${PAGES[page].label} PDF`);
-      return r === 'shared' ? 'PDF ready — pick where to send it.' : r === 'unavailable' ? 'PDF export is available after the next app build.' : "The PDF didn't complete.";
+      return r === 'shared' ? 'PDF ready — pick where to send it.' : r === 'unavailable' ? 'PDF export isn’t available on this device.' : "The PDF didn't complete.";
     });
   const doSvg = () =>
     run(async () => {
@@ -236,22 +236,22 @@ export function ExportPanel({ subject, onHelp }: { subject: ExportSubject; onHel
       <View style={styles.btnRow}>
         {format === 'png' || format === 'transparent' ? (
           <>
-            <ExportButton label="SHARE" on={avail.share && !busy} onPress={doShare} why="Share as an image — needs the next app build" />
-            <ExportButton label="SAVE" on={avail.save && !busy} onPress={doSave} why="Save to Photos — needs the next app build" />
+            <ExportButton label="SHARE" on={avail.share && !busy} onPress={doShare} why="Share as an image — isn’t available on this device" />
+            <ExportButton label="SAVE" on={avail.save && !busy} onPress={doSave} why="Save to Photos — isn’t available on this device" />
           </>
         ) : null}
         {format === 'pdf' ? (
           <>
-            <ExportButton label="PRINT" on={avail.print && !busy} onPress={doPrint} why="Print — needs the next app build" />
-            <ExportButton label={`PDF · ${PAGES[page].label.toUpperCase()}`} on={avail.pdf && !busy} onPress={doPdf} why="PDF — needs the next app build" />
+            <ExportButton label="PRINT" on={avail.print && !busy} onPress={doPrint} why="Print — isn’t available on this device" />
+            <ExportButton label={`PDF · ${PAGES[page].label.toUpperCase()}`} on={avail.pdf && !busy} onPress={doPdf} why="PDF — isn’t available on this device" />
           </>
         ) : null}
         {format === 'svg' ? <ExportButton label="SHARE SVG" on={!busy && isPattern} onPress={doSvg} why="SVG export is per pattern" /> : null}
-        {format === 'png' ? <ExportButton label="PRINT" on={avail.print && !busy} onPress={doPrint} why="Print — needs the next app build" /> : null}
+        {format === 'png' ? <ExportButton label="PRINT" on={avail.print && !busy} onPress={doPrint} why="Print — isn’t available on this device" /> : null}
       </View>
       {missing.length > 0 ? (
         <Text style={styles.note}>
-          {missing.join(' · ')} {missing.length > 1 ? 'need' : 'needs'} the next app build. SVG works now.
+          {missing.join(' · ')} {missing.length > 1 ? 'need' : 'needs'} not available on this device. SVG works now.
         </Text>
       ) : null}
       {msg ? <Text style={styles.msg}>{msg}</Text> : null}

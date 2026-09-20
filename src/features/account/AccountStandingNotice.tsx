@@ -31,6 +31,26 @@ import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../theme/tokens';
 import { fetchMyStanding, type MyStanding } from '../moderation/api';
 
+/**
+ * The stored reason is the REPORTER'S chip value (`spam` | `harassment` |
+ * `solicitation` | `impersonation` | `other`), written straight through by
+ * `ReportsAdminScreen`. It used to render raw, so a restricted member read
+ * `Reason: harassment` in monospace — or `Reason: other`, which says nothing
+ * at all. Map it to a sentence; fall back to the neutral phrasing for any
+ * code added later so a new slug can never leak to a member.
+ */
+const REASON_LABEL: Record<string, string> = {
+  spam: 'Unsolicited or repeated messages',
+  harassment: 'Harassment or abusive conduct',
+  solicitation: 'Unwanted soliciting or recruiting',
+  impersonation: 'Impersonating another person or organisation',
+  other: 'Conduct reported by another member',
+};
+
+function reasonLabel(code: string | null | undefined): string {
+  return (code && REASON_LABEL[code]) || 'Conduct reported by another member';
+}
+
 /** dd Mon yyyy, in the reader's own timezone — never a UTC ISO string. */
 function until(iso: string | null): string {
   if (!iso) return '';
@@ -64,9 +84,12 @@ export function AccountStandingNotice() {
       : 'A note about your account';
 
   const body = banned
-    ? 'You can still study, and your certificates are unaffected. You cannot contact members or appear in the directory. If you believe this is wrong, reply to the email we sent.'
+    ? // ⚠️ This used to say "reply to the email we sent". Nothing sends one:
+      // `account_set_standing()` calls no mailer and there is no trigger on
+      // `account_standing` / `moderation_actions`. Name a route that exists.
+      'You can still study, and your certificates are unaffected. You cannot contact members or appear in the directory. If you believe this is wrong, email info@proaudiotrainingacademy.com and we will look at it again.'
     : suspended
-      ? `You can still study, and your certificates are unaffected. You cannot contact members or appear in the directory until ${until(standing.until) || 'the suspension lifts'}.`
+      ? `You can still study, and your certificates are unaffected. You cannot contact members or appear in the directory until ${until(standing.until) || 'the suspension lifts'}. If you believe this is wrong, email info@proaudiotrainingacademy.com.`
       : 'Everything still works. This is a note about community conduct, not a restriction.';
 
   return (
@@ -74,12 +97,12 @@ export function AccountStandingNotice() {
       style={[s.wrap, banned ? s.bad : suspended ? s.warn : s.note]}
       accessible
       accessibilityRole="alert"
-      accessibilityLabel={`${title}. ${body} Reason: ${standing.reasonCode}.`}
+      accessibilityLabel={`${title}. ${body} Reason: ${reasonLabel(standing.reasonCode)}.`}
     >
       <Text style={[s.title, banned ? s.badText : suspended ? s.warnText : s.noteText]}>{title}</Text>
       <Text style={s.body}>{body}</Text>
       {/* The reason is always given; the evidence never is. */}
-      <Text style={s.reason}>Reason: {standing.reasonCode}</Text>
+      <Text style={s.reason}>Reason: {reasonLabel(standing.reasonCode)}</Text>
       {standing.publicNote ? <Text style={s.body}>{standing.publicNote}</Text> : null}
     </View>
   );

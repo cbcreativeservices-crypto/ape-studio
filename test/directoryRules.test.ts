@@ -144,8 +144,11 @@ describe('Slugs round-trip the way the database builds them', () => {
 });
 
 describe('Server errors become something a member can act on', () => {
-  it('explains a cap', () => {
-    assert.match(readableError('at most 3 areas may be selected'), /at most 3 areas/);
+  it('explains a cap in our own words, not the database’s', () => {
+    assert.equal(
+      readableError('at most 3 areas may be selected'),
+      'That is more than you can select here.',
+    );
   });
 
   it('explains the specialty/area dependency', () => {
@@ -179,7 +182,15 @@ describe('Server errors become something a member can act on', () => {
     );
   });
 
-  it('passes an unrecognised failure through rather than inventing a cause', () => {
-    assert.equal(readableError('connection reset by peer'), 'connection reset by peer');
+  // CHANGED 2026-09-20 (copy pass 2 F26). The old contract was "pass the
+  // server string through rather than invent a cause" — but the strings are
+  // Postgres exceptions, so members were reading `your account is restricted`
+  // and `sign in first`: lowercase, no full stop, no next step. The honest
+  // answer to an unrecognised failure is to say we do not know, say nothing
+  // was lost, and give a route — never to quote the database at the member.
+  it('never hands the raw server string to a member', () => {
+    const out = readableError('connection reset by peer');
+    assert.ok(!out.includes('connection reset by peer'));
+    assert.match(out, /Nothing you entered was lost/);
   });
 });

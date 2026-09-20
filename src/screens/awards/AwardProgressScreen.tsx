@@ -91,7 +91,7 @@ export function AwardProgressScreen({ navigation, route }: Props) {
     if (res.ok) return;
     setCertMessage(
       res.reason === 'needs_build'
-        ? 'Certificate download needs the next app build.'
+        ? 'Certificate download isn’t available on this device. Your certificate is safely recorded on your account.'
         : res.reason === 'no_share_target'
           ? 'No app on this device can open a PDF.'
           : 'Could not prepare the certificate. Try again.',
@@ -201,7 +201,7 @@ export function AwardProgressScreen({ navigation, route }: Props) {
               </View>
             ) : (
               <Text style={styles.certNote}>
-                Certificate download needs the next app build.
+                Certificate download isn’t available on this device. Your certificate is safely recorded on your account.
               </Text>
             )}
             {certMessage != null && <Text style={styles.certNote}>{certMessage}</Text>}
@@ -221,7 +221,9 @@ export function AwardProgressScreen({ navigation, route }: Props) {
           </>
         )}
 
-        <Text style={styles.sectionLabel}>REQUIRED TOPICS</Text>
+        {/* “& LABS” because the merged set includes the Audio Fundamentals
+            lab proxy, which is not a topic. */}
+        <Text style={styles.sectionLabel}>REQUIRED TOPICS &amp; LABS</Text>
         {totalCount === 0 ? (
           <Text style={styles.muted}>
             No requirements are published for this award yet.
@@ -257,7 +259,7 @@ export function AwardProgressScreen({ navigation, route }: Props) {
               <>
                 <StudioButton label="Take Final Exam" variant="secondary" disabled onPress={() => {}} />
                 <Text style={styles.gateNote}>
-                  Complete every required topic to unlock the Final Exam.
+                  Complete every required topic and lab to unlock the Final Exam.
                 </Text>
               </>
             )}

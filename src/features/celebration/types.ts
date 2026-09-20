@@ -94,6 +94,8 @@ export type CelebrationValues = {
   achievement_name?: string;
   requirement_name?: string;
   score?: number;
+  /** The denominator beside `score` — the number of questions served. */
+  size?: number;
   previous_score?: number;
   new_score?: number;
   improvement?: number;
@@ -109,7 +111,7 @@ export type CelebrationDef = {
   title: string;
   /** The name of the thing achieved — a template over CelebrationValues. */
   subject?: string;
-  /** A prominent figure, e.g. "FINAL QUIZ: {score}%". */
+  /** A prominent figure, e.g. "TOPIC QUIZ: {score} of {size}". */
   stat?: string;
   /** Body paragraphs, in order. Templates. */
   body: readonly string[];

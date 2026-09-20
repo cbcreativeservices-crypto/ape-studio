@@ -16,7 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
 import { colors, fonts } from '../../../theme/tokens';
-import { confirmDialog } from '../../../lib/confirm';
+import { confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import type { Workflow } from './workflowModel';
@@ -115,7 +115,14 @@ export function CalcWorkflowsScreen() {
       createdAt: now,
       updatedAt: now,
     };
-    await workflowStore.saveWorkflow(copy);
+    const ok = await workflowStore.saveWorkflow(copy);
+    if (!ok) {
+      notify(
+        'Copy not created',
+        'This device could not save the copy. Free up some space and try again — the original template is untouched.',
+      );
+      return;
+    }
     reload();
     navigation.navigate('CalcWorkflowEdit', { id: copy.id });
   };
@@ -126,7 +133,10 @@ export function CalcWorkflowsScreen() {
       `“${w.name}” will be removed. Saved results are kept.`,
       'Delete',
       () => {
-        void workflowStore.deleteWorkflow(w.id).then(reload);
+        void workflowStore.deleteWorkflow(w.id).then((ok) => {
+          if (!ok) return notify('Not deleted', 'That could not be removed from this device. Nothing was changed — try again.');
+          reload();
+        });
       },
       { destructive: true },
     );

@@ -83,9 +83,9 @@ export function GainLabHomeScreen() {
           <ToolChip label="SPL METER" onPress={() => navigation.navigate('SplMeter')} />
         </View>
         <Text style={styles.caption}>
-          The exact numbers — dBu, dBV, dBFS, nominal levels and calibration — get their own
-          lessons later. This lab teaches the principle first: healthy level, adequate headroom, at
-          every stage.
+          The exact numbers — dBu, dBV, dBFS and nominal levels — live in the LEVELS &amp; DECIBELS
+          calculator above, and 0 VU gets its own module in the Meter Lab. This lab teaches the
+          principle first: healthy level, adequate headroom, at every stage.
         </Text>
       </ScrollView>
     </View>

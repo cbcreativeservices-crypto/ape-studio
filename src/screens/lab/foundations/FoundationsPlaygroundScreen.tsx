@@ -37,7 +37,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ApeDsp, FX, FX_PARAM, EQ_BAND_TYPES, GEN_MODES } from '../../../../modules/ape-dsp';
+import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, FX, FX_PARAM, EQ_BAND_TYPES, GEN_MODES } from '../../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
 import { playWithHearingWarning } from '../../../features/audio/levelHearingWarning';
 import { noteAudioActivity } from '../../../features/audio/audioOutputStore';
@@ -265,7 +265,7 @@ export function FoundationsPlaygroundScreen() {
       setPlaying(true);
       noteAudioActivity();
     } catch (e) {
-      if (gen === genRef.current) setGenError(e instanceof Error ? e.message : String(e));
+      if (gen === genRef.current) setGenError(AUDIO_UNAVAILABLE_MESSAGE);
     }
   }, [requestAudioOutput, pushSource, pushFx]);
 

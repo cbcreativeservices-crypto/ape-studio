@@ -40,7 +40,10 @@ export function CompactBrandBar({ right }: { right?: ReactNode }) {
   return (
     <View style={s.row}>
       {/* The logo is a second way home, as it is on every screen that has one. */}
-      <Pressable onPress={home} hitSlop={8} accessibilityRole="button" accessibilityLabel="Back to course selection">
+      {/* The screen is titled "Academy"; the old label ("Back to course
+          selection") sent a screen-reader user to a screen name that does not
+          exist — the course model is retired. */}
+      <Pressable onPress={home} hitSlop={8} accessibilityRole="button" accessibilityLabel="Back to Academy">
         <BrandLogo size={34} />
       </Pressable>
       <Text style={s.wordmark} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>

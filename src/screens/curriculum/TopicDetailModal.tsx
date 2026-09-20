@@ -40,6 +40,7 @@ import { Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensio
 import { DetailPager } from '../../components/detailSwipe';
 import { TrophyImage } from '../../components/TrophyImage';
 import { topicImagePath } from '../../data/topicImages';
+import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { LowLightDim } from '../../features/settings/LowLightLayer';
 import { colors, fonts } from '../../theme/tokens';
 import { REQUIRES_LABEL, type Career } from '../../data/careerRequirement';
@@ -100,6 +101,9 @@ export function TopicDetailModal({
   const art = Math.min(pageW, Math.round(height * 0.42));
   // Card budget = 86% of the window, but never more than the scrim ACTUALLY on
   // screen (the modal's content area can be shorter than the window).
+  // A ticked box must not claim more than the entitlement allows (S2).
+  const { entitlement } = useEntitlement();
+  const isMember = entitlement === 'academy';
   const [scrimH, setScrimH] = useState(0);
   const [footerH, setFooterH] = useState(FOOTER_SEED);
   const budget = Math.min(Math.round(height * 0.86), scrimH > 0 ? scrimH - SCRIM_PAD * 2 : Infinity);
@@ -172,6 +176,11 @@ export function TopicDetailModal({
                 </View>
               ))}
             </View>
+            {/* ⛔ UNCONDITIONAL — see the twin note in CredentialDetailModal. */}
+            <Text style={styles.rolesNote}>
+              Studying this topic supports these roles; it does not qualify anyone for them. Some
+              need a degree, licence or certification beyond the Academy (shown on the role).
+            </Text>
           </View>
         ) : null}
       </View>
@@ -213,8 +222,17 @@ export function TopicDetailModal({
                     <View style={[styles.checkbox, enrolled && styles.checkboxOn]}>
                       {enrolled ? <Text style={styles.checkboxTick}>✓</Text> : null}
                     </View>
+                    {/* S2: this screen has no entitlement check, so a FREE
+                        user could tick the box, read "Added", and then be
+                        refused the topic twice in two different words — on the
+                        Home gate and on the Enrollments screen. Say the
+                        condition here, at the moment the box is ticked. */}
                     <Text style={styles.ackText}>
-                      {enrolled ? 'Added to my enrolled studies' : 'Add this topic to my enrolled studies'}
+                      {enrolled
+                        ? isMember
+                          ? 'Added to My Enrollments'
+                          : 'Saved to your list — studying this topic needs Academy membership.'
+                        : 'Add this topic to My Enrollments'}
                     </Text>
                   </Pressable>
                 ) : null}
@@ -301,6 +319,7 @@ const styles = StyleSheet.create({
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   tag: { backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 6, paddingHorizontal: 10, paddingVertical: 5 },
   tagText: { fontFamily: fonts.barlowMedium, fontSize: 13.5, lineHeight: 17, color: colors.textSecondary },
+  rolesNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: '#ffb060', marginTop: 8 },
   reqNote: { fontFamily: fonts.barlowMedium, fontSize: 10.5, lineHeight: 13, letterSpacing: 0.2, color: colors.textSub, marginTop: 2 },
 
   // Footer: optional acknowledge row + a row of [Enroll | Close].

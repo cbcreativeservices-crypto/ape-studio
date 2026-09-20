@@ -118,7 +118,9 @@ export async function setEmployerInterests(
         : 'Could not save that. Try again.',
     };
   } catch {
-    return { ok: false, error: 'No connection. Try again.' };
+    // Not a connection failure: supabase-js RESOLVES with `{ error }`
+    // when the network drops, so only a thrown exception lands here.
+    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
   }
 }
 
@@ -238,9 +240,14 @@ export async function reviewApplication(
       p_action: action,
       p_note: note ?? null,
     });
-    return error ? { ok: false, error: error.message } : { ok: true };
+    // Never the raw Postgres string under a two-word title, and say what
+    // did NOT happen — an approve/revoke failure used to leave the reviewer
+    // unable to tell whether the applicant's state had changed.
+    return error ? { ok: false, error: 'That change could not be saved. Nothing was changed for this account — reload the queue and try again.' } : { ok: true };
   } catch {
-    return { ok: false, error: 'No connection. Try again.' };
+    // Not a connection failure: supabase-js RESOLVES with `{ error }`
+    // when the network drops, so only a thrown exception lands here.
+    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
   }
 }
 
@@ -250,8 +257,13 @@ export async function setEmployerRevoked(userId: string, revoked: boolean): Prom
       p_user: userId,
       p_revoked: revoked,
     });
-    return error ? { ok: false, error: error.message } : { ok: true };
+    // Never the raw Postgres string under a two-word title, and say what
+    // did NOT happen — an approve/revoke failure used to leave the reviewer
+    // unable to tell whether the applicant's state had changed.
+    return error ? { ok: false, error: 'That change could not be saved. Nothing was changed for this account — reload the queue and try again.' } : { ok: true };
   } catch {
-    return { ok: false, error: 'No connection. Try again.' };
+    // Not a connection failure: supabase-js RESOLVES with `{ error }`
+    // when the network drops, so only a thrown exception lands here.
+    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
   }
 }

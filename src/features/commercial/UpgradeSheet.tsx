@@ -54,7 +54,11 @@ export function UpgradeSheet({
         {COPY.upgradeSheetBody.split('\n\n').map((para, i) => (
           <Text key={i} style={[styles.body, i > 0 && styles.bodyNext]}>
             {para}
-            {i === 0 ? <Text style={styles.allowance}>{' ' + COPY.glossaryFreeAllowance}</Text> : null}
+            {i === 0 ? (
+              <Text style={styles.allowance}>
+                {' ' + COPY.glossaryFreeAllowance + ' ' + COPY.calcFreeAllowance}
+              </Text>
+            ) : null}
           </Text>
         ))}
 

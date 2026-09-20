@@ -84,9 +84,30 @@ export type ExamOutcome =
   | 'held'
   /**
    * The membership ended before the month completed, so the paper was discarded:
-   * not graded, not applied, and not counted as an attempt they have used.
+   * not graded and not applied. (There is no attempt allowance to spend —
+   * `start_final_exam` never compares `attempt_number` to anything.)
    */
   | 'discarded';
+
+/**
+ * Learner-facing sentence for the graded outcomes.
+ *
+ * ⚠️ The offline-replay notice on the Dashboard used to print the enum itself
+ * (`outcome.replace(/_/g, ' ')`), so somebody read "Score 22 — voided." on the
+ * capstone. `held` and `discarded` are handled separately at that call site —
+ * they carry no score and must not be announced as a result.
+ */
+export const EXAM_OUTCOME_COPY: Record<
+  'pass' | 'no_pass' | 'voided' | 'timed_out',
+  string
+> = {
+  pass: 'You passed. This credential has been added to your record.',
+  no_pass: 'You did not reach the pass mark this time. You can sit the Final Exam again whenever you are ready.',
+  voided:
+    'This attempt was not counted because the app was left during the exam. The Final Exam is locked for fifteen minutes before you can try again.',
+  timed_out:
+    'This paper arrived after the time limit, so it could not be graded. You can sit the Final Exam again whenever you are ready.',
+};
 
 /**
  * ⚠️ THE SCORE FIELDS ARE OPTIONAL, AND THAT IS THE POINT.
@@ -163,9 +184,9 @@ export const EXAM_START_ERROR_COPY: Record<ExamStartError, string> = {
   award_incomplete: 'Complete every required topic and the Audio Fundamentals labs before taking the Final Exam.',
   award_not_found: 'That award could not be found.',
   invalid_award_type: 'That award type is not recognized.',
-  pool_too_small: 'This Final Exam is not available yet — please contact support so we can look at it.',
+  pool_too_small: 'This Final Exam is not available yet — email info@proaudiotrainingacademy.com so we can look at it.',
   under_lockout: 'This Final Exam is locked out after a voided attempt. Try again when the lockout ends.',
-  user_not_found: 'We could not find your account record. Sign out and back in, and contact support if it continues.',
+  user_not_found: 'We could not find your account record. Sign out and back in, and email info@proaudiotrainingacademy.com if it continues.',
   offline: 'Starting the Final Exam requires a connection. Reconnect and try again.',
   unknown: 'Could not start the Final Exam. Try again.',
 };
@@ -287,15 +308,19 @@ export const EXAM_SUBMIT_ERROR_COPY: Record<ExamSubmitError, string> = {
   attempt_not_open:
     'This attempt has already been closed. Open the Final Exam again to see your result.',
   attempt_not_found:
-    'We could not find this exam attempt. Open the Final Exam again — if it keeps happening, contact support and quote the time you finished.',
+    'We could not find this exam attempt. Open the Final Exam again — if it keeps happening, email info@proaudiotrainingacademy.com and tell us the time you finished.',
   // The serve set is written inside start_final_exam's transaction, so an empty
   // one means the attempt never fully started. Nothing the learner did.
   bad_serve_set:
-    'This exam was not set up correctly and could not be marked. Nothing you did caused this, and this attempt will not be counted — please contact support.',
+    'This exam was not set up correctly and could not be marked. Nothing you did caused this, and this attempt will not be counted — email info@proaudiotrainingacademy.com.',
   not_owner: 'This exam belongs to a different account. Sign in as the account that started it.',
   user_not_found:
-    'We could not find your account record. Sign out and back in, and contact support if it continues.',
-  unknown: 'Your exam could not be submitted. Your answers are still here — try again.',
+    'We could not find your account record. Sign out and back in, and email info@proaudiotrainingacademy.com if it continues.',
+  // ⚠️ See the twin in features/quiz/api.ts: the notify dismiss handler calls
+  // navigation.goBack(), which destroys the answers this line promised were
+  // still there — on a one-sitting capstone.
+  unknown:
+    'Your exam could not be submitted and this attempt was not recorded. Nothing has been counted against you. Open the Final Exam again to retake it, and email info@proaudiotrainingacademy.com if it happens twice.',
 };
 
 /** Map a thrown Postgres message onto the vocabulary above. */

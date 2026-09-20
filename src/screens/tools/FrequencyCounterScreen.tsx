@@ -12,7 +12,11 @@
  *                 LIVE (built first, as recommended).
  *   Tuner       — LIVE: musical interpretation of the SAME pitch frames —
  *                 note, octave, cents vs a selectable A4 reference, with a
- *                 ±50¢ needle and a green ±5¢ in-tune zone.
+ *                 ±50¢ needle and a green in-tune zone at ±1¢ (see the
+ *                 `tunerInTune` test below — the header used to say ±5¢,
+ *                 which matched nothing in this file). ⚠️ The Center-Lock
+ *                 Tuner confirms at ±2¢ (`centerLock.ts` IN_TUNE_CENTS) and
+ *                 the MultiMeter at ±5¢ — three windows, owner to rule.
  *
  * Integrity (tools spec §1.7): Sound and Tuner render ONLY from real engine
  * pitch frames while capture runs — below the confidence/voiced gate the
@@ -46,7 +50,7 @@ import { WARNING_INFO, type WarningFlag } from '../../features/tools/measure/typ
 import { colors, fonts } from '../../theme/tokens';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { EngineGate } from './EngineGate';
-import { ENGINE_NOTE } from './toolsData';
+import { CAMERA_NOTE, CAMERA_NOTE_TITLE, ENGINE_NOTE } from './toolsData';
 import { useToolHelp, DisplayGuideButton, readoutKey } from '../../features/lab/guidedLessons';
 import { useOpticalCounter } from '../../features/tools/capture/opticalCounter';
 import * as Optical from '../../../modules/ape-optical';
@@ -170,11 +174,11 @@ function StatCell({
   );
 }
 
-function EngineInDev({ extra }: { extra?: string }) {
+function EngineInDev({ extra, camera }: { extra?: string; camera?: boolean }) {
   return (
     <View style={styles.statusCard}>
-      <Text style={styles.statusTitle}>MEASUREMENT ENGINE — NOT IN THIS BUILD</Text>
-      <Text style={styles.statusBody}>{ENGINE_NOTE}</Text>
+      <Text style={styles.statusTitle}>{camera ? CAMERA_NOTE_TITLE : 'MEASUREMENT ENGINE — NOT IN THIS BUILD'}</Text>
+      <Text style={styles.statusBody}>{camera ? CAMERA_NOTE : ENGINE_NOTE}</Text>
       {extra ? <Text style={styles.statusBody}>{extra}</Text> : null}
     </View>
   );
@@ -301,7 +305,7 @@ function LightPulseMode({ blurb, help, helpAll }: { blurb: string; help: (key: s
     return (
       <>
         <Text style={styles.intro}>{blurb}</Text>
-        <EngineInDev extra="Light-Pulse uses a native camera module that isn't in this installed build yet — install the next dev build to enable it. It measures overall image brightness over time (no photo or video is saved) and estimates the flash rate; rolling-shutter and frame-rate limits cap what a phone camera can resolve, so it's for slow flashing lights, strobes, and marked rotating machinery, not audio-rate signals." />
+        <EngineInDev camera extra="Light-Pulse measures overall image brightness over time (no photo or video is saved) and estimates the flash rate; rolling-shutter and frame-rate limits cap what a phone camera can resolve, so it's for slow flashing lights, strobes, and marked rotating machinery, not audio-rate signals." />
         <Text style={styles.disclaimer}>{DISCLAIMER}</Text>
       </>
     );

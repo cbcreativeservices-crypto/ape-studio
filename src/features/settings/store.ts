@@ -131,7 +131,7 @@ export const COMMERCIAL_NOTIFY_ROWS: {
   { key: 'notifyDailyStudy', label: 'Study reminder', hint: 'A daily nudge to open the app.' },
   { key: 'notifyContinue', label: 'Come back reminder', hint: 'After a stretch of days without opening the app.' },
   // NEW COPY — owner review (monthly cadence, owner 2026-09-01).
-  { key: 'notifyNewTerms', label: 'New glossary terms', hint: 'Once a month, on the 1st: what was added.' },
+  { key: 'notifyNewTerms', label: 'New glossary terms', hint: 'On the 1st of the month, when terms have been added since you last looked.' },
   { key: 'dailyTerms', label: 'Term of the day', hint: 'One audio term, every day.' },
   { key: 'notifyDailyDefinition', label: 'Definition of the day', hint: 'A definition — you name the term.' },
   { key: 'notifyWeeklySummary', label: 'Weekly recap', hint: 'What you studied this week.' },

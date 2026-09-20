@@ -86,7 +86,7 @@ import { useCredentialCelebration } from '../../features/celebration/useCredenti
 import { customListLocked as customListLockedFn, studyMethodLocked } from '../../features/commercial/studyGate';
 import { supabase } from '../../lib/supabase';
 import { isRealAccount } from '../../features/commercial/realAccount';
-import { notify } from '../../lib/confirm';
+import { confirmDialog, notify } from '../../lib/confirm';
 import { LOCK_TITLE, lockReason, type LockedPanel, type MethodGates } from '../../features/study/lockReason';
 import { markIntentionalSignOut } from '../../features/auth/intentionalSignOut';
 import { fetchGlossaryItemsByIds, fetchTopicItems } from '../../features/study/api';
@@ -108,8 +108,8 @@ import { HelpKey } from '../../components/HelpKey';
 import { COACH_KEYS, useCoachMark } from '../../lib/coachMark';
 import { LearningIntroSheet } from '../../features/intro/LearningIntroSheet';
 import { getCourseIntro, getTopicIntro, isIntroEmpty } from '../../features/intro/learningIntros';
-import { replayQuizSubmissions } from '../../features/quiz/api';
-import { replayExamSubmissions } from '../../features/finalExam/api';
+import { QUIZ_OUTCOME_COPY, replayQuizSubmissions } from '../../features/quiz/api';
+import { EXAM_OUTCOME_COPY, replayExamSubmissions } from '../../features/finalExam/api';
 import { onStudyProgress } from '../../features/study/sync';
 import { useScenarioExempt } from '../../features/study/scenarioExempt';
 import { loadAllLocalMethodStates, mergeItemStates } from '../../features/study/localProgress';
@@ -142,7 +142,8 @@ const SCREW_VINSET = Math.max(2, Math.round(rs(80) * 0.143 - RACK_SCREW / 2));
 
 const METHOD_ORDER: { key: MethodKey; label: string }[] = [
   { key: 'flashcards', label: 'FLASHCARDS' },
-  { key: 'fill_in_blank', label: 'FILL-IN-BLANK' },
+  // Matches FillInBlankScreen's own title and the lock notice's wording.
+  { key: 'fill_in_blank', label: 'FILL IN THE BLANK' },
   { key: 'matching', label: 'MATCHING' },
   { key: 'scenarios', label: 'SCENARIOS' },
 ];
@@ -763,7 +764,9 @@ export function DashboardScreen() {
           // outcome, not the number of questions that were served, and v3
           // quizzes are variable-size (see ResultsScreen). Printing "/30" here
           // was simply wrong on any topic with fewer than 30 quizzable terms.
-          `Score ${result.score} — ${result.outcome.replace(/_/g, ' ')}.`,
+          // Never print the enum: "no pass" / "voided" is database
+          // vocabulary, and "voided" is an accusation in one word.
+          `Score ${result.score}. ${QUIZ_OUTCOME_COPY[result.outcome]}`,
         );
       }
       const examReplayed = await replayExamSubmissions().catch(() => []);
@@ -789,7 +792,7 @@ export function DashboardScreen() {
         const awarded = result.credential_awarded ? ' Credential awarded.' : '';
         notify(
           'Offline exam submitted',
-          `Score ${result.score}/${result.size} — ${result.outcome.replace(/_/g, ' ')}.${awarded}`,
+          `Score ${result.score}/${result.size}. ${EXAM_OUTCOME_COPY[result.outcome]}${awarded}`,
         );
       }
       // A session-less GUEST studies the FREE topics on-device only. It must NEVER
@@ -908,7 +911,7 @@ export function DashboardScreen() {
       setErrorCode(e?.message ?? 'unknown');
       setError(
         e?.message === 'not_enrolled'
-          ? 'No enrolled courses found for this account.'
+          ? 'No enrolled topics found for this account.'
           : e?.message === 'user_not_found'
             // COMMERCIAL WORDING (2026-09-17). "Student record" is the retired
             // institutional vocabulary and means nothing to a customer.
@@ -1509,7 +1512,7 @@ export function DashboardScreen() {
               values={pendingCelebration.values}
               onAction={(kind) => {
                 dismissCelebration(celebrationProgress, pendingCelebration);
-                // START FINAL QUIZ is the only action that goes anywhere: the
+                // START TOPIC QUIZ is the only action that goes anywhere: the
                 // quiz switch is on this very screen, so the notice dismisses
                 // and leaves the user looking at it, lit.
                 if (kind === 'start-quiz') scrollRef.current?.scrollToEnd({ animated: true });
@@ -1766,10 +1769,15 @@ export function DashboardScreen() {
             onPress={() => (navigation as any).navigate('Auth')}
             style={styles.guestNotice}
             accessibilityRole="button"
-            accessibilityLabel="Progress is not saved without an account. Sign in to keep it."
+            accessibilityLabel="Progress is not saved without an account. Create one to start a saved record."
           >
+            {/* ⚠️ NOT "sign in to keep it". Signing in changes the local
+                identity, which runs clearLocalAccountData() +
+                resetAllLocalStores() — guest enrollment, deck order, the
+                dashboard cache and the study queue are all swept. Until a
+                migration exists, this line must not promise the opposite. */}
             <Text style={styles.guestNoticeText}>
-              Progress isn't saved without an account — <Text style={styles.guestNoticeLink}>sign in</Text> to keep it.
+              Progress isn't saved without an account — <Text style={styles.guestNoticeLink}>create one</Text> to start a saved record.
             </Text>
           </Pressable>
         ) : null}
@@ -2030,7 +2038,26 @@ export function DashboardScreen() {
                           setUpgradeOpen(true);
                           return;
                         }
-                        navigation.navigate('Quiz', { achievementId: dispTopic.id, topicName: dispTopic.name });
+                        // S3 (copy pass 2): the topic quiz runs the IDENTICAL
+                        // machinery as the Final Exam — hard clock, 2-second
+                        // grace, second app-switch voids, 15-minute lockout,
+                        // back wipes the answers — and briefed none of it. The
+                        // learner met Rule 2 only by breaking it. ExamBriefing
+                        // states the app's own doctrine: "the rules are not
+                        // relaxed — they are STATED, in full, before the clock
+                        // starts, every single time." This was the one
+                        // exception to it.
+                        confirmDialog(
+                          'BEFORE YOU BEGIN',
+                          'The clock does not pause. Leaving the app twice voids the attempt and locks the quiz for fifteen minutes. Going back wipes your answers — there is no save.',
+                          'BEGIN',
+                          () =>
+                            navigation.navigate('Quiz', {
+                              achievementId: dispTopic.id,
+                              topicName: dispTopic.name,
+                            }),
+                          { cancelText: 'NOT NOW' },
+                        );
                       }}
                     />
                   )}

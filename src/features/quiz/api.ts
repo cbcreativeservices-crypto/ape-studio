@@ -53,6 +53,24 @@ export type AnswerValue = string | string[] | [string, string][];
 
 export type QuizOutcome = 'full_pass' | 'partial_pass' | 'no_pass' | 'voided' | 'timed_out';
 
+/**
+ * Learner-facing sentence for each outcome.
+ *
+ * ⚠️ The offline-replay notices used to print the enum itself
+ * (`outcome.replace(/_/g, ' ')`), so a learner read "Score 22 — voided." —
+ * database vocabulary as a toast, and a serious accusation delivered in one
+ * word with no explanation and no next step.
+ */
+export const QUIZ_OUTCOME_COPY: Record<QuizOutcome, string> = {
+  full_pass: 'You passed. This topic is complete.',
+  partial_pass: 'You passed the required sections. Some sections still need work.',
+  no_pass: 'You did not pass this time. You can retake the quiz from your dashboard.',
+  voided:
+    'This attempt was not counted because the app was left during the quiz. You can start a new attempt from your dashboard.',
+  timed_out:
+    'Time ran out before this attempt was finished. You can start a new attempt from your dashboard.',
+};
+
 export type SubmitResult = {
   attempt_id: string;
   score: number;
@@ -89,16 +107,23 @@ export const QUIZ_SIZE = 30;
 export const QUIZ_PASS = 28;
 
 export const QUIZ_START_ERROR_COPY: Record<QuizStartError, string> = {
-  safety_prerequisite_incomplete: 'Complete the Safety topic quiz before starting course topics.',
-  study_gate_unmet: 'Study requirements are not yet met for this topic. See the quiz block for what remains.',
+  // ⚠️ The start-error screen renders only `Back` (plus `Try again` for
+  // offline/unknown), so every one of these must name a control the learner
+  // can actually see from there. "Membership", "the quiz block" and "the
+  // Dashboard" named none. The course model is also retired — the word
+  // "course" does not appear in the product any more.
+  safety_prerequisite_incomplete:
+    'Pass the Pro Audio Safety topic quiz before taking quizzes in other topics.',
+  study_gate_unmet:
+    'Study requirements are not yet met for this topic. Tap Back and check the TOPIC QUIZ panel for what remains.',
   academy_required:
-    'Academy membership is required for this topic’s quiz. Your progress is saved — open Membership to continue.',
+    'Academy membership is required for this topic’s quiz. Your progress is saved — tap Back, then Membership on the Academy screen.',
   under_lockout: 'This quiz is locked out after a voided attempt. Try again when the lockout ends.',
   topic_locked: 'This topic is locked.',
-  not_enrolled: 'You are not enrolled in this course.',
-  version_mismatch: 'Course content was updated — return to the Dashboard.',
-  pool_too_small: 'This quiz is not available yet — please contact support so we can look at it.',
-  user_not_found: 'We could not find your account record. Sign out and back in, and contact support if it continues.',
+  not_enrolled: 'You are not enrolled in this topic.',
+  version_mismatch: 'Content was updated — tap Back and reopen the quiz.',
+  pool_too_small: 'This quiz is not available yet — email info@proaudiotrainingacademy.com so we can look at it.',
+  user_not_found: 'We could not find your account record. Sign out and back in, and email info@proaudiotrainingacademy.com if it continues.',
   offline: 'Quiz start requires a connection. Reconnect and try again.',
   unknown: 'Could not start the quiz. Try again.',
 };
@@ -310,11 +335,16 @@ export const QUIZ_SUBMIT_ERROR_COPY: Record<string, string> = {
   attempt_not_open:
     'This quiz attempt has already been closed. Open the quiz again from your dashboard to see your result.',
   attempt_not_found:
-    'We could not find this quiz attempt. Open the quiz again from your dashboard — if it keeps happening, contact support.',
+    'We could not find this quiz attempt. Open the quiz again from your dashboard — if it keeps happening, email info@proaudiotrainingacademy.com.',
   bad_serve_set:
     'This quiz was not set up correctly and could not be marked. Nothing you did caused this, and the attempt will not be counted against you.',
   not_owner: 'This quiz belongs to a different account. Sign in as the account that started it.',
   user_not_found:
-    'We could not find your account record. Sign out and back in, and contact support if it continues.',
-  unknown: 'Your quiz could not be submitted. Your answers are still here — try again.',
+    'We could not find your account record. Sign out and back in, and email info@proaudiotrainingacademy.com if it continues.',
+  // ⚠️ This used to say "Your answers are still here — try again". Both call
+  // sites pass `() => navigation.goBack()` as the notify dismiss handler, so
+  // tapping OK unmounts the screen and destroys `answers`. Until the callback
+  // is dropped the wording must not promise survival.
+  unknown:
+    'Your quiz could not be submitted and this attempt was not recorded. Nothing has been counted against you. Open the quiz again from your dashboard to retake it.',
 };

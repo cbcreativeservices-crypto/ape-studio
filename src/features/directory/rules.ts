@@ -170,7 +170,7 @@ export function readableError(message: string | undefined): string {
   // guest during the lab sweep.)
   if (m.includes('permission denied for function'))
     return 'Sign in to use the Audio Community Directory.';
-  if (m.includes('at most')) return message ?? 'That is more than you can select.';
+  if (m.includes('at most')) return 'That is more than you can select here.';
   if (m.includes('needs one of its areas')) return 'Add the matching area first, or remove that specialty.';
   if (m.includes('primary area')) return 'Choose one primary area before publishing.';
   if (m.includes('display name')) return 'Add a public display name before publishing.';
@@ -185,21 +185,28 @@ export function readableError(message: string | undefined): string {
   if (m.includes('not something this member is open to'))
     return 'This member is not open to that. Pick another reason.';
   if (m.includes('links and contact details')) return 'Remove links and contact details from your message.';
-  if (m.includes('contact requests per week')) return message ?? 'Weekly contact limit reached.';
+  // ⚠️ Every server window is `created_at > now() - interval '…'` — ROLLING,
+  // not a calendar day or week. These four used to say "resets tomorrow" /
+  // "today's" / "this week's", which describes a midnight reset that never
+  // happens. Phrase them the way the glossary dialog already does.
+  if (m.includes('contact requests per week'))
+    return 'You have sent 10 contact requests in the last 7 days, which is the limit. The oldest frees up 7 days after you sent it.';
   // ── ORDER MATTERS (2026-09-19) ──────────────────────────────────────────
   // The per-conversation message contains the words "daily limit", so it must
   // be tested BEFORE the all-threads one or it is swallowed and the person is
   // told the wrong thing about why they were stopped.
   if (m.includes('daily limit for this conversation'))
-    return 'You have reached today’s limit for this conversation. It resets tomorrow.';
-  if (m.includes('daily message limit')) return 'You have reached today’s message limit.';
-  if (m.includes('weekly message limit')) return 'You have reached this week’s message limit.';
+    return 'You have sent this member 5 messages in the last 24 hours, which is the limit for one conversation. The oldest frees up 24 hours after you sent it.';
+  if (m.includes('daily message limit'))
+    return 'You have sent 10 messages in the last 24 hours, which is the daily limit. The oldest frees up 24 hours after you sent it.';
+  if (m.includes('weekly message limit'))
+    return 'You have sent 30 messages in the last 7 days, which is the weekly limit. The oldest frees up 7 days after you sent it.';
   if (m.includes('wait for a reply'))
     return 'Wait for a reply before sending more.';
   if (m.includes('already have an open conversation'))
     return 'You already have an open conversation with this member — continue it under Requests.';
   if (m.includes('message is longer than'))
-    return message ?? 'That message is too long.';
+    return 'That message is longer than 1,000 characters. Shorten it and send again.';
   if (m.includes('already answered')) return 'That request has already been answered.';
   if (m.includes('review your public display name'))
     return 'Review your public display name before appearing in search.';
@@ -219,5 +226,17 @@ export function readableError(message: string | undefined): string {
     m.includes('network error')
   )
     return 'No connection. Try again.';
-  return message ?? 'Something went wrong. Please try again.';
+  // ⚠️ The fall-through used to be `message ?? …`, which handed the member the
+  // raw Postgres exception text — lowercase, no full stop, no next step
+  // ("your account is restricted", "sign in first"). Name the reachable ones
+  // and never pass the server string through.
+  if (m.includes('your account is restricted'))
+    return 'Your community access is restricted, so you cannot send this. See the notice on your Profile for the reason.';
+  if (m.includes('this conversation is closed'))
+    return 'This conversation is closed. Nothing you have already sent was removed.';
+  if (m.includes('this conversation is not open'))
+    return 'This conversation is not open yet — the other member has not accepted your request.';
+  if (m.includes('that is your own profile')) return 'That is your own profile.';
+  if (m.includes('sign in first')) return 'Your session has ended. Sign in again to continue.';
+  return 'Something went wrong on our side. Nothing you entered was lost — try again, and email info@proaudiotrainingacademy.com if it keeps happening.';
 }

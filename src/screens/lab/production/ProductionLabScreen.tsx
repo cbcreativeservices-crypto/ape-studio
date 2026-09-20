@@ -84,15 +84,27 @@ export function ProductionLabScreen() {
 
   const commitName = useCallback(() => {
     const next = (nameDraft ?? '').trim();
-    setNameDraft(null);
     // An empty name is not a rename — it would leave an unidentifiable row in
     // the switcher and an untitled packet.
-    if (!project || !next || next === project.name) return;
+    if (!project || !next || next === project.name) {
+      setNameDraft(null);
+      return;
+    }
     void projectStore()
       .upsert({ ...project, name: next, updatedAt: Date.now() })
       .then((ok) => {
-        if (ok) void reload();
-        else notify('Not saved', 'That new name could not be saved. Try again.');
+        if (ok) {
+          // Only drop the draft once the write has actually landed. Clearing
+          // it first meant a failed save emptied the field the dialog was
+          // about to tell the user to retype.
+          setNameDraft(null);
+          void reload();
+        } else {
+          notify(
+            'Name not changed',
+            'That new name could not be saved, so the project kept its current name. Nothing else was affected.',
+          );
+        }
       });
   }, [nameDraft, project, reload]);
 
@@ -172,7 +184,7 @@ export function ProductionLabScreen() {
     notify(
       'Packet not shared',
       res.reason === 'needs_build'
-        ? 'Printing to PDF needs the next app build. The packet is readable here in the meantime.'
+        ? 'Printing to PDF isn’t available on this device. The packet is readable here in the meantime.'
         : res.reason === 'no_share_target'
           ? 'This device has nowhere to send the file.'
           : 'The packet could not be produced.',
@@ -371,7 +383,7 @@ export function ProductionLabScreen() {
             </Pressable>
             {!isPdfAvailable() ? (
               <Text style={styles.packetNote}>
-                Printing to PDF needs the next app build. Everything in the packet is readable on these screens now.
+                Printing to PDF isn’t available on this device. Everything in the packet is readable on these screens now.
               </Text>
             ) : null}
           </>

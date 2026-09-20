@@ -175,7 +175,7 @@ export const M2_EQ: EarModule = {
   // NEW COPY
   listenFor: 'Play A, then B, then A again. Ask what B has MORE of (boost) or LESS of (cut) — never which is louder; they are level-matched.',
   levels: 4,
-  levelNames: ['±12 dB wide boosts', '±9 dB boost + cut', '±6 dB, shelves + narrow', '±3 dB, all filter types'],
+  levelNames: ['±12 dB wide boosts', '±9 dB boost + cut', '±6 dB, shelves + narrow', '±3 dB, all filter types — size trials use 3–12 dB'],
   makeTrial: (level, seed) => {
     const rng = rngFor(seed);
     // Question first, because the AMOUNT question needs a magnitude drawn
@@ -310,7 +310,7 @@ export const M3_BAND: EarModule = {
         { label: 'A', buf: dry },
         { label: 'B', buf: wet },
       ],
-      question: 'What area changed from A to B?',
+      question: 'Which band changed from A to B?',
       answers: deck.map((b) => ({ label: b.label })),
       correct: idx,
       near:
@@ -318,7 +318,7 @@ export const M3_BAND: EarModule = {
           ? [idx - 1, idx + 1].filter((i) => i >= 0 && i < deck.length)
           : undefined,
       ordered: { low: 'too low', high: 'too high' }, // NEW COPY
-      reveal: `${gain > 0 ? '+' : ''}${gain} dB in ${band.label} (${hzLabel(band.lo)}–${hzLabel(band.hi)}), centred near ${hzLabel(band.c)}.`,
+      reveal: `${gain > 0 ? '+' : ''}${gain} dB in ${band.label} (${hzLabel(band.lo)}–${hzLabel(band.hi)}), centred near ${hzLabel(Math.min(band.c, 16000))}.`,
       seeIt: {
         kind: 'spectrum',
         clips: [0, 1],

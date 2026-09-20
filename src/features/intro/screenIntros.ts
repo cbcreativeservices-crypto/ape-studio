@@ -14,8 +14,8 @@
  */
 export type IntroKey =
   | 'appWelcome' // app welcome after load-in (Home / Course Select)
-  | 'commitment' // "Our Commitment to You" — shown right after appWelcome
-  | 'firstUserWelcome' // first-user welcome tutorial (first entry into the app)
+  | 'commitment' // "Our Commitment to You" — currently the FIRST overlay a new
+  //                 user meets, because appWelcome is switched off on AuthScreen
   | 'dashboard' // method cards screen
   | 'flashcards' // T1 — on first Flashcards entry
   | 'flashcardsCustomize' // T2 — after ~5 card views/swipes
@@ -56,22 +56,22 @@ export const SCREEN_INTROS: Record<
       'Let’s get started.',
   },
   commitment: {
-    // Final "Our Commitment to You" copy (user-provided 2026-07-18) — shown as
-    // the 2nd popup right after the app welcome. Pricing-honesty line added to
-    // the trust theme (owner 2026-08-21).
+    // Final "Our Commitment to You" copy (user-provided 2026-07-18).
+    // Pricing-honesty line added to the trust theme (owner 2026-08-21).
+    //
+    // ⚠️ IT IS NO LONGER THE SECOND POPUP. `AppWelcomeOverlay` is commented
+    // out at AuthScreen.tsx:584, so this is the first thing a new user reads
+    // — and it opened mid-conversation, answering a greeting that no longer
+    // runs. The greeting line below restores the opening; remove it again when
+    // the welcome overlay comes back.
     placeholder: false,
     title: 'Our Commitment to You',
     body:
-      'We built this academy to be a trusted place to learn.\n\n' +
+      'Welcome to Pro Audio Training Academy. We built this academy to be a trusted place to learn.\n\n' +
       'Our glossary, lessons, and quizzes are created for education—not advertising. Companies cannot pay to influence our definitions, recommendations, or learning content.\n\n' +
       'You’ll never have to deal with intrusive ads or annoying pop-ups interrupting your learning. Our focus is simple: provide clear, unbiased, and technically accurate audio education that puts students first.\n\n' +
       'Our pricing is just as straightforward. One membership. Not a series of extra charges—what your membership includes stays included, with no add-ons or surprise fees.\n\n' +
       'Thank you for learning with us.',
-  },
-  firstUserWelcome: {
-    title: 'First-Time Walkthrough',
-    body:
-      'PLACEHOLDER — first-user welcome tutorial. This will become the guided first-run tour for brand-new users: creating your profile, picking a course, and how studying earns awards. Tap anywhere to continue.',
   },
   dashboard: {
     // Ratified by the owner 2026-09-13 (plan §3; wording corrections applied).
@@ -137,7 +137,7 @@ export const SCREEN_INTROS: Record<
       'Everything you earn lives in three collections.\n\n' +
       'TOPICS — every topic quiz you pass is banked here.\n\n' +
       'CERTIFICATES — complete a certificate’s required topics and labs to earn it.\n\n' +
-      'PROGRAMS — related certificates stack into full programs.\n\n' +
+      'PROGRAMS — a broad topic path across a whole discipline, earned the same way.\n\n' +
       'Tap any collection to see what you’ve earned and what’s still ahead.',
     button: 'Tap anywhere to continue',
   },

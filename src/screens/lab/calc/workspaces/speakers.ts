@@ -52,7 +52,7 @@ const WS_SPEAKERPOWER: Workspace = {
       quantity: 'sensitivity',
       placeholder: '97',
       help: 'SPL the speaker produces at 1 m from 1 W input (per its spec sheet).',
-      warn: { test: (x) => x < 80 || x > 115, msg: 'Typical passive boxes rate 84–102 dB (1W/1m) — check the spec sheet.' },
+      warn: { test: (x) => x < 80 || x > 115, msg: 'That is outside the usual 80–115 dB (1W/1m) span for passive boxes — check the spec sheet.' },
     },
     {
       key: 'power',
@@ -446,7 +446,7 @@ const WS_CABLE: Workspace = {
     'promised you.',
   example:
     '30 m of 16 AWG into an 8 Ω box: loop resistance = 2 × 30 × 0.01318 = 0.79 Ω. Level loss = ' +
-    '20·log10(8 / 8.79) ≈ −0.83 dB, and about 9% of the amplifier’s power is dissipated in ' +
+    '20·log10(8 / 8.79) ≈ −0.82 dB, and about 9% of the amplifier’s power is dissipated in ' +
     'the cable. The cable alone limits system damping factor to about 8/0.79 ≈ 10 — no matter ' +
     'how stiff the amplifier is.',
   mistakes: [
@@ -677,8 +677,9 @@ const WS_CV70: Workspace = {
   example:
     '12 ceiling speakers tapped at 10 W each on a 250 W / 70 V amplifier: load = 120 W. With a ' +
     '2 dB headroom factor the recommended amp is ≥ 120 × 10^(2/10) ≈ 190 W — the 250 W amp ' +
-    'passes with 130 W (52%) to spare, line current ≈ 120/70.7 ≈ 1.7 A, and 13 more 10 W ' +
-    'speakers could join before the amp is fully allocated.',
+    'passes with 130 W (52%) to spare, line current ≈ 120/70.7 ≈ 1.7 A, and 3 more 10 W ' +
+    'speakers fit while still holding the 2 dB reserve (13 would fill the amplifier to 100% ' +
+    'with no headroom at all).',
   mistakes: [
     'Loading an amplifier to 100% of its rating — distributed amps want ~20–25% held in reserve for transformer losses, line loss, and program peaks.',
     'Summing speaker RATINGS instead of TAP settings — a "32 W" ceiling speaker tapped at 5 W puts 5 W on the line, not 32.',

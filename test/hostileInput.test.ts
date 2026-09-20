@@ -291,8 +291,13 @@ describe('readableError — a member never sees a blank or raw failure', () => {
     assert.match(readableError(''), /went wrong/i);
     assert.match(readableError('   '), /went wrong/i);
   });
-  it('an unrecognised failure is passed through rather than given an invented cause', () =>
-    assert.equal(readableError('constraint xyz_fkey violated'), 'constraint xyz_fkey violated'));
+  // CHANGED 2026-09-20 (copy pass 2 F26) — see the note in
+  // test/directoryRules.test.ts. Raw Postgres text must never reach a member.
+  it('an unrecognised failure is never quoted back at the member', () => {
+    const out = readableError('constraint xyz_fkey violated');
+    assert.ok(!out.includes('xyz_fkey'));
+    assert.match(out, /went wrong/i);
+  });
   it('every returned message is non-empty, whatever goes in', () => {
     for (const m of [undefined, '', '   ', '\n', 'boom', 'Failed to fetch'])
       assert.ok(readableError(m).trim().length > 0, `empty result for ${JSON.stringify(m)}`);

@@ -42,7 +42,7 @@ export function CalcLabScreen() {
     // was a silent tap on the web preview (B-018/B-062).
     confirmDialog(
       'Workflows are an Academy feature',
-      'Calculator workflows — running a guided multi-step sequence, using templates, or building your own — are part of Academy membership. Every individual calculator stays free to use.',
+      'Calculator workflows — running a guided multi-step sequence, using templates, or building your own — are part of Academy membership. Every individual calculator stays open to browse, with 5 free calculations a week; membership removes that limit.',
       'See membership',
       () => (navigation as any).navigate('Paywall'),
       { cancelText: 'Not now' },

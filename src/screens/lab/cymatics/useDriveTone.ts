@@ -20,7 +20,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { ApeDsp, GEN_MODES, type GenParams } from '../../../../modules/ape-dsp';
+import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES, type GenParams } from '../../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../../features/audio/audioOutputStore';
 import { guardAdditiveForEngine } from '../../../features/audio/speakerSafety';
@@ -112,7 +112,7 @@ export function useDriveTone(hzA: number, hzB: number | null, amplitude01: numbe
       setRunning(true);
       noteAudioActivity();
     } catch (e) {
-      if (gen === genRef.current) setError(e instanceof Error ? e.message : String(e));
+      if (gen === genRef.current) setError(AUDIO_UNAVAILABLE_MESSAGE);
     }
   }, [engineReady, requestAudioOutput, params, hzA, hzB, amplitude01, wave]);
 

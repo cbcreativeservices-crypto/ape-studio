@@ -17,7 +17,23 @@ export type RequireKind =
   | 'DOCTORATE_LICENSE'
   | 'CERT'
   | 'NDT_CERT'
-  | 'DEGREE_REGISTRATION';
+  | 'DEGREE_REGISTRATION'
+  /**
+   * Acoustical consulting. `careerIndex.json` flags 33 consulting titles
+   * `pe: 1` and the app already gates `Noise Control Engineer` as
+   * ENG_DEGREE — but the plain "consultant" spellings carried nothing, and
+   * "consultant" reads as a shingle this app's certificate lets you hang out.
+   * Wording matches the index's own `professionalEngineer` phrasing.
+   */
+  | 'PE_LICENSE'
+  /**
+   * Neither a degree, a licence nor a certificate: the gate is eligibility.
+   * CTBTO/IMS and defence acoustics work turns on security clearance,
+   * citizenship and medical eligibility, and NO certificate gets a civilian
+   * into it — so tagging that family `CERT` was not merely incomplete, it was
+   * wrong. `careerIndex.json` already encodes this as `prep: 16` on 26 rows.
+   */
+  | 'CLEARANCE';
 
 /** A career/role. `requires` is set only when the role needs further education. */
 export type Career = { name: string; requires?: RequireKind };
@@ -32,4 +48,6 @@ export const REQUIRES_LABEL: Record<RequireKind, string> = {
   CERT: 'Certification required',
   NDT_CERT: 'NDT certification required',
   DEGREE_REGISTRATION: 'Degree + registration required',
+  PE_LICENSE: 'Degree + PE licence may be required',
+  CLEARANCE: 'Security clearance required',
 };

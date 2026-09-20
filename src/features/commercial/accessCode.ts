@@ -47,7 +47,12 @@ const MESSAGES: Record<RedeemStatus, string> = {
   used_up: 'That code has reached its redemption limit.',
   discount_pending: 'That’s a discount code — it’ll apply at checkout when purchasing is available.',
   not_authenticated: 'Sign in or create an account first, then redeem your code.',
-  unavailable: 'Code redemption isn’t available yet. Your account is set up — try the code again later.',
+  // `unavailable` is returned for ANY RPC error and any thrown exception,
+  // including a plain network drop — and it is shown from Settings → Redeem
+  // too, where "your account is set up" is nonsense to someone who already
+  // has one. Say what we actually know: we could not reach the server.
+  unavailable:
+    'We couldn’t reach the Academy to check that code. Your code has not been used — try it again in a moment.',
   error: 'Couldn’t redeem the code right now. Please try again.',
 };
 

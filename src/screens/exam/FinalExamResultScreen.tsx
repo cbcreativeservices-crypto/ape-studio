@@ -43,12 +43,17 @@ const COPY: Record<string, { title: string; body: string; tone: 'good' | 'bad' |
   },
   timed_out: {
     title: 'TIME EXPIRED',
-    body: 'The exam was submitted past the ten-minute limit, so it could not be graded. You may retake it whenever you are ready.',
+    // The limit is server-owned; hardcoding "ten-minute" here was the one
+    // place in the flow that stated a number the other screens deliberately
+    // leave to the payload.
+    body: 'The exam was submitted after the time limit, so it could not be graded. You may retake it whenever you are ready.',
     tone: 'warn',
   },
   voided: {
     title: 'ATTEMPT VOIDED',
-    body: 'This attempt was voided because the app was switched away from during the exam. The Final Exam is locked briefly before you can try again.',
+    // The briefing promises fifteen minutes; "briefly" was vaguer than the
+    // promise the learner was given before they started.
+    body: 'This attempt was voided because the app was switched away from during the exam. The Final Exam is locked for fifteen minutes before you can try again.',
     tone: 'warn',
   },
   held: {
@@ -58,7 +63,7 @@ const COPY: Record<string, { title: string; body: string; tone: 'good' | 'bad' |
   },
   discarded: {
     title: 'NOT APPLIED',
-    body: 'Your membership ended before your first month completed, so this exam was not graded and has not been applied to your record. It does not count as an attempt you have used — rejoin and you may sit it again.',
+    body: 'Your membership ended before your first month completed, so this exam was not graded and has not been applied to your record. Rejoin and you may sit it again.',
     tone: 'warn',
   },
 };

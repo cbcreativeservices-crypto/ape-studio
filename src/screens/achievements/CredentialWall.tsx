@@ -88,7 +88,7 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
     if (res.ok) return;
     setMessage(
       res.reason === 'needs_build'
-        ? 'Certificate download needs the next app build.'
+        ? 'Certificate download isn’t available on this device. Your certificate is safely recorded on your account.'
         : res.reason === 'no_share_target'
           ? 'No app on this device can open a PDF.'
           : 'Could not prepare the certificate. Try again.',
@@ -112,7 +112,7 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
         {failed && (!rows || rows.length === 0) ? (
           <View style={styles.errorCard}>
             <Text style={styles.errorText}>
-              Couldn’t load your {noun}s — check your connection.
+              Couldn’t load this right now. Nothing you’ve earned is affected — check your connection and retry, and email info@proaudiotrainingacademy.com if it keeps failing.
             </Text>
             <View style={{ width: 180 }}>
               <StudioButton label="Retry" variant="secondary" small onPress={load} />
@@ -194,7 +194,7 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
         )}
         {/* [8] (2026-09-07): honest note when the download isn't in this build. */}
         {!certificateExportAvailable() ? (
-          <Text style={styles.exportNote}>Certificate download needs the next app build.</Text>
+          <Text style={styles.exportNote}>Certificate download isn’t available on this device. Your certificate is safely recorded on your account.</Text>
         ) : null}
         {/* Copy / share the verified-record link, and share the QR as an image
             (owner 2026-09-18). The printed certificate keeps the button above:

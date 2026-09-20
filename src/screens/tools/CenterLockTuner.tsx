@@ -324,7 +324,7 @@ export function CenterLockTuner() {
         small
         accessibilityHint="Tap for the next reference pitch, hold for 440"
       />
-      <Chip label={strobe ? 'STROBE ±0.1¢' : 'STROBE'} on={strobe} onPress={() => { touch(); setStrobe((s) => !s); }} small />
+      <Chip label={strobe ? 'STROBE FINE' : 'STROBE'} on={strobe} onPress={() => { touch(); setStrobe((s) => !s); }} small />
     </>
   );
 
@@ -384,7 +384,8 @@ export function CenterLockTuner() {
 
       <View style={styles.foot}>
         <Text style={styles.honesty}>
-          Phone microphone · it listens to the room, not a pedal · needle ±1¢ · strobe view ±0.1¢ (estimate) · silent by design
+          Phone microphone · it listens to the room, not a pedal · IN TUNE confirms inside ±2 ¢ · the
+          strobe shows finer drift than the needle can resolve · silent by design
         </Text>
       </View>
 

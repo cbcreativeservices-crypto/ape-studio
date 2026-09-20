@@ -35,6 +35,29 @@ import { colors, fonts } from '../../theme/tokens';
 
 const APPLY_URL = 'https://www.proaudiotrainingacademy.com/employers/apply';
 
+/**
+ * `queueReasons` are written by `employer_decide()` for the ADMIN queue —
+ * lowercase fragments meant for a reviewer, not sentences meant for the
+ * applicant. Rendered raw they read as accusations ("consumer mailbox
+ * provider"), and the one the applicant can actually fix — an unconfirmed
+ * work email — never said where to go and fix it. Map for display; the raw
+ * strings are untouched for the admin screen.
+ */
+const QUEUE_REASON_LABEL: Record<string, string> = {
+  'work email not confirmed':
+    'Your work email has not been confirmed yet — open your application on the website and enter the code we emailed you.',
+  'work email is not at the company domain':
+    'The work email you gave is not at your company’s own domain.',
+  'consumer mailbox provider':
+    'The work email you gave is at a personal mailbox provider rather than a company one.',
+  'company domain did not resolve':
+    'We could not reach your company’s domain when we checked.',
+  'company website did not answer':
+    'Your company website did not answer when we checked.',
+  'company name too short to check':
+    'The company name you gave was too short for us to check automatically.',
+};
+
 type Kind = 'area' | 'role' | 'open_to';
 
 export function EmployerSection() {
@@ -121,16 +144,19 @@ export function EmployerSection() {
         </Text>
       ) : app?.status === 'pending' ? (
         <>
+          {/* No mailer runs on `employer_review`, so no decision email is ever
+              sent — this screen is the only place the answer appears. */}
           <Text style={styles.body}>
             We could not confirm everything automatically, so a person is looking at your
-            application. You will hear by email. Nothing more is needed from you.
+            application. Nothing more is needed from you — check back on this screen for the
+            decision.
           </Text>
           {app.queueReasons.length ? (
             <View style={styles.reasons}>
-              <Text style={styles.reasonsHead}>Why it needs a look</Text>
+              <Text style={styles.reasonsHead}>WHAT WE COULD NOT CONFIRM</Text>
               {app.queueReasons.map((r) => (
                 <Text key={r} style={styles.reason}>
-                  · {r}
+                  · {QUEUE_REASON_LABEL[r] ?? r}
                 </Text>
               ))}
             </View>
@@ -170,7 +196,7 @@ export function EmployerSection() {
           accessibilityRole="link"
           accessibilityLabel="Open your employer application on the website"
         >
-          <Text style={styles.linkText}>VIEW ON THE WEBSITE ›</Text>
+          <Text style={styles.linkText}>OPEN MY APPLICATION ON THE WEBSITE ›</Text>
         </Pressable>
       ) : null}
     </View>

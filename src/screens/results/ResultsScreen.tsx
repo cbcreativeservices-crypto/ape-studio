@@ -21,7 +21,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StudioButton } from '../../components/StudioButton';
 import { colors, fonts } from '../../theme/tokens';
-import { clearQuizIntent, QUIZ_PASS, QUIZ_SIZE } from '../../features/quiz/api';
+import { clearQuizIntent } from '../../features/quiz/api';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Results'>;
@@ -133,14 +133,21 @@ export function ResultsScreen({ navigation, route }: Props) {
   // that cannot produce 28.
   //
   // `questions` is the array actually served, handed to this screen by
-  // QuizScreen. Falling back to QUIZ_SIZE covers a restored navigation state
-  // that arrives without it, where the 30-question shape is the best guess we
-  // have.
-  const servedCount = questions.length > 0 ? questions.length : QUIZ_SIZE;
-  const passMark = questions.length > 0 ? Math.max(1, questions.length - 2) : QUIZ_PASS;
+  // QuizScreen.
+  //
+  // ⚠️ AND WHEN WE DO NOT KNOW IT, WE DO NOT PRINT IT. The fallback to the
+  // hardcoded QUIZ_SIZE/QUIZ_PASS stated "24 / 30" as fact on a quiz whose
+  // real size the payload never told us. A bare score is honest; a made-up
+  // denominator on a graded surface is not.
+  const servedCount = questions.length > 0 ? questions.length : null;
+  const passMark = questions.length > 0 ? Math.max(1, questions.length - 2) : null;
 
-  const partial = result.outcome === 'partial_pass' && !isPractice;
   const timedOut = result.outcome === 'timed_out';
+  // S7: the screen had a voided state, a timed-out line and a partial-pass
+  // block — and no PASS state at all. A learner arriving from the celebration
+  // read a bare score with "Retake Quiz" as the primary action, one screen
+  // after being told the topic was banked.
+  const passed = result.outcome === 'full_pass' || result.outcome === 'partial_pass';
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
@@ -149,29 +156,29 @@ export function ResultsScreen({ navigation, route }: Props) {
           <Text style={styles.resultsEyebrow}>{isPractice ? 'RESULTS · PRACTICE' : 'RESULTS'}</Text>
           <View style={styles.scoreRow}>
             <Text style={styles.scoreBig}>{result.score}</Text>
-            <Text style={styles.scoreOf}>/ {servedCount}</Text>
+            {servedCount === null ? null : <Text style={styles.scoreOf}>/ {servedCount}</Text>}
           </View>
           {timedOut && <Text style={styles.timedOut}>Time expired — not passed</Text>}
         </View>
 
-        {partial && (
+        {passed && !isPractice && (
           <View style={styles.clampNotice}>
             <Text style={styles.clampBody}>
-              <Text style={styles.clampLead}>PROVISIONAL PASS — </Text>
-              {/* [46] (2026-09-11): the threshold was the literal "24+", left over
-                  from the retired 25-question quiz. The ratified pass mark is
-                  QUIZ_PASS (28 of 30) — interpolate it so the copy can never
-                  misstate the requirement on a graded surface again. */}
-              Score {passMark}+ on the previous topic to earn the trophy and continue further.
+              <Text style={styles.clampLead}>PASSED — </Text>
+              {passMark === null
+                ? 'this topic is banked toward its certificate.'
+                : `${passMark}+ needed. This topic is banked toward its certificate.`}
             </Text>
           </View>
         )}
 
         <View style={styles.buttonCol}>
-          {partial ? (
+          {passed && !isPractice ? (
+            // On a pass, leaving is the sensible next step — "Retake Quiz" as
+            // the primary action read as though something had gone wrong.
             <>
-              <StudioButton label="Retake for Trophy" variant="primary" onPress={retake} />
-              <StudioButton label="Continue · Provisional" variant="secondary" onPress={toDashboard} />
+              <StudioButton label="Back to Dashboard" variant="primary" onPress={toDashboard} />
+              <StudioButton label="Retake Quiz" variant="secondary" onPress={retake} />
             </>
           ) : (
             <>

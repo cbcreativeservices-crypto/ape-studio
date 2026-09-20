@@ -120,7 +120,7 @@ describe('low-light production mode', () => {
 
 describe('templates', () => {
   it('fills what it has', () => {
-    assert.equal(fill('FINAL QUIZ: {score}%', { score: 92 }), 'FINAL QUIZ: 92%');
+    assert.equal(fill('TOPIC QUIZ: {score} of {size}', { score: 26, size: 28 }), 'TOPIC QUIZ: 26 of 28');
     assert.equal(fill('{topic_name}', { topic_name: 'Gain Staging' }), 'Gain Staging');
   });
 
@@ -135,7 +135,7 @@ describe('templates', () => {
     // A typo'd placeholder would silently render as an empty string forever.
     const known = new Set([
       'topic_name', 'subject_name', 'lab_name', 'certificate_name', 'program_name',
-      'achievement_name', 'requirement_name', 'score', 'previous_score', 'new_score',
+      'achievement_name', 'requirement_name', 'score', 'size', 'previous_score', 'new_score',
       'improvement', 'credential_count',
     ]);
     for (const c of ALL_CELEBRATIONS) {
