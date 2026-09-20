@@ -55,6 +55,23 @@ export const GATED_ROLE_NAMES: readonly string[] = (() => {
  * disclosure once for the whole list — which is what the rule requires and what
  * the format allows.
  */
+/**
+ * ⛔ NO LONGER CALLED BY ANY SCREEN, AND THAT IS THE POINT (2026-09-20).
+ *
+ * This matched canonical role names from `credentialCopy` against short-form
+ * career prose written separately in `subjectMeta`. Measured against the real
+ * data it fired on **6 of 44** lists — 38 rendered with no disclosure at all,
+ * including "Forensic audio analyst, expert witness, law-enforcement lab tech"
+ * and "Research scientist, acoustic engineer… academia".
+ *
+ * It was itself the SECOND attempt: it exists because a first gate was found
+ * inert, and it caught the same disease. The owner's rule is that required
+ * education is stated ALWAYS and EVERY time, so CurriculumScreen now renders
+ * the line unconditionally and no detector stands between a learner and it.
+ *
+ * Kept, not deleted, because the list of gated role names is good data and the
+ * next person to reach for a detector should read this first.
+ */
 export function namesGatedRole(prose: string): boolean {
   const text = prose.toLowerCase();
   return GATED_ROLE_NAMES.some((raw) => {

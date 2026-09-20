@@ -6,10 +6,23 @@
  * curriculum `achievements.subject`): 50 subjects across 18 fields. The old map
  * was keyed to the retired v2 subject names and mostly didn't match v3.
  *
- * PLACEHOLDER COPY — reasonable first-pass descriptions and career mappings,
- * NOT yet owner-ratified. `SUBJECT_META_RATIFIED` is still false, so none of
- * this renders until the owner reviews/replaces the copy and flips the flag
- * (ratified-copy rule). Keys MUST match the v3 `subject` strings exactly.
+ * ⚠️ THIS HEADER WAS WRONG AND SAID THE OPPOSITE OF THE CODE (corrected
+ * 2026-09-20). It read "`SUBJECT_META_RATIFIED` is still false, so none of
+ * this renders" — but the flag at the bottom of this file is **true**, and has
+ * been. All 50 subjects' descriptions and career lists ARE LIVE in the
+ * Curriculum tree.
+ *
+ * ⛔ OWNER DECISION OUTSTANDING: was this copy ratified and the header left
+ * stale, or was the flag flipped before the review happened? The copy below
+ * still describes itself as a reasonable first pass. Nothing has been changed
+ * either way — flipping the flag would silently remove content that may be
+ * deliberately live, and that is not a call to make unattended.
+ *
+ * This mattered beyond tidiness: believing the flag was false is a good reason
+ * nobody noticed that the required-education disclosure on these same career
+ * lists was firing on only 6 of 44 of them.
+ *
+ * Keys MUST match the v3 `subject` strings exactly.
  */
 export type SubjectMeta = { description: string; careers: string };
 
@@ -264,8 +277,10 @@ const EMPTY: SubjectMeta = { description: '', careers: '' };
  * While this is false, `subjectMeta()` returns empty strings and the Curriculum
  * tree — which already null-guards both rows — shows no description/careers.
  *
- * To turn it on: review/replace the copy above, confirm every key still matches
- * the live v3 `subject` string, then set this to true.
+ * ⚠️ IT IS ALREADY ON. See the correction at the top of this file: the header
+ * claimed this was false and it is not. To turn it OFF, set this to false —
+ * but that removes 50 subjects' descriptions and career lists from the
+ * Curriculum tree, so it is the owner's call, not a tidy-up.
  */
 export const SUBJECT_META_RATIFIED = true;
 

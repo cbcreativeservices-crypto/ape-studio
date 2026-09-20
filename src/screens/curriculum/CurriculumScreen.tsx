@@ -36,7 +36,6 @@ import { InsideStats, fmt, lighten, SILVER, type InsideStat } from './InsideStat
 // (fmt is still used by the Career Finder blurb and the subject term totals.)
 import { useNavigation } from '@react-navigation/native';
 import { CAREER_COUNT, familyFieldOf } from '../../features/careerfinder/careerIndex';
-import { namesGatedRole } from '../../data/gatedRoles';
 import { QUESTIONS, QUESTION_COUNT } from '../../features/careerfinder/questions';
 import { FAMILY_COUNT } from '../../features/careerfinder/families';
 import { computeResult } from '../../features/careerfinder/scoring';
@@ -525,13 +524,27 @@ export function CurriculumView({
                           is that required education is stated ALWAYS and EVERY
                           time, so the line goes on the whole list rather than
                           leaving five roles bare. */}
-                      {namesGatedRole(meta.careers) ? (
-                        <Text style={styles.careersNote}>
-                          ⚠ Some of these are licensed, certified or degree-entry occupations. Academy
-                          study supports them but does not lead to that credential — check what is
-                          required where you live.
-                        </Text>
-                      ) : null}
+                      {/* ⛔ UNCONDITIONAL. THE DETECTOR ONLY FIRED ON 6 OF 44 LISTS.
+                          `namesGatedRole` matches CANONICAL role names from
+                          credentialCopy against short-form prose written
+                          separately, so 38 lists rendered bare — including
+                          "Forensic audio analyst, expert witness,
+                          law-enforcement lab tech" and "Research scientist,
+                          acoustic engineer… academia". This is the second
+                          attempt at the same gate; gatedRoles.ts was written to
+                          fix a first inert one and caught the same disease.
+
+                          The owner's rule is that required education is stated
+                          ALWAYS and EVERY time. A detector that has to notice
+                          when honesty is needed will be wrong somewhere, and
+                          being right 14% of the time is the failure mode the
+                          rule exists to prevent. The sentence is true of every
+                          career list in the app, so it goes on every one. */}
+                      <Text style={styles.careersNote}>
+                        ⚠ Some of these are licensed, certified or degree-entry occupations. Academy
+                        study supports them but does not lead to that credential — check what is
+                        required where you live.
+                      </Text>
                     </>
                   ) : null}
                 </View>
