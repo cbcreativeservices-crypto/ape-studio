@@ -2477,11 +2477,18 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,.85)',
     backgroundColor: '#1c1708',
     borderRadius: 10,
-    paddingVertical: 9,
+    paddingVertical: 4,
     paddingHorizontal: 12,
   },
-  continueEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.4, color: colors.amber },
-  continueName: { fontFamily: fonts.oswaldMedium, fontSize: 16, color: colors.textPrimary, marginTop: 1 },
+  /* ── BOTH BARS RUN THINNER (owner 2026-09-20) ──────────────────────────
+     "they are pushing my enrollments container down the screen." These two
+     are signposts, not content: one resumes where you were, the other opens
+     a list. Trimmed ~30% of their height — padding 9 → 4, name 16 → 13,
+     eyebrow 10.5 → 9.5, and the 1px nudge under the eyebrow removed.
+     ⛔ Keep the CONTINUE and CUSTOM values identical. They sit one above the
+     other and read as a pair; a 1px difference between them is visible. */
+  continueEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.4, color: colors.amber },
+  continueName: { fontFamily: fonts.oswaldMedium, fontSize: 13, color: colors.textPrimary },
   continueCta: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.6, color: colors.amber },
 
   // "My Custom List" bar — blue-framed sibling of the continue banner.
@@ -2493,12 +2500,12 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(127,191,255,.55)',
     backgroundColor: '#0d1626',
     borderRadius: 10,
-    paddingVertical: 9,
+    paddingVertical: 4,
     paddingHorizontal: 12,
   },
   customIcon: { width: 40, alignItems: 'center', justifyContent: 'center' },
-  customEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.4, color: BLUE },
-  customName: { fontFamily: fonts.oswaldMedium, fontSize: 16, color: colors.textPrimary, marginTop: 1 },
+  customEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.4, color: BLUE },
+  customName: { fontFamily: fonts.oswaldMedium, fontSize: 13, color: colors.textPrimary },
   customSeeEdit: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.6, color: BLUE },
   // OFF state: gray border + dimmed (de-blued) background.
   customBarOff: { borderColor: 'rgba(255,255,255,.18)', backgroundColor: '#141619' },
@@ -2643,7 +2650,7 @@ const styles = StyleSheet.create({
   // Study control that mirrors the bottom-nav STUDY icon (user request 2026-07-23).
   // Fixed-width slots so every row's study icon + deck toggle line up in
   // vertical columns on the right (user request 2026-07-24).
-  studyNavBtn: { width: 42, paddingVertical: 2, alignItems: 'center', justifyContent: 'center' },
+  studyNavBtn: { width: 42, paddingVertical: 0, alignItems: 'center', justifyContent: 'center' },
   // Open-book toggle = topic loaded into the study deck (user request 2026-07-23).
   bookToggle: { paddingVertical: 3, alignItems: 'center', justifyContent: 'center' },
   // LOADED/UNLOADED framed toggle (owner 2026-09-13) — lights when loaded.

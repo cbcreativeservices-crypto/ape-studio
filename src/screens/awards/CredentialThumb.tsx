@@ -20,6 +20,7 @@ import { useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CardArt } from '../../components/CardArt';
+import { CredentialAboutPanel, hasCredentialAbout } from '../../components/CredentialAboutPanel';
 import { LowLightDim } from '../../features/settings/LowLightLayer';
 import { colors, fonts } from '../../theme/tokens';
 
@@ -118,7 +119,11 @@ export function CredentialArtViewer({
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const uri = artUrl(slug);
-  const ART = artSize(width, height);
+  const hasAbout = hasCredentialAbout(slug);
+  /* With the description sharing the window the art yields height, exactly as
+     the topic popup does — otherwise on a short phone the picture eats the
+     screen and the prose opens two lines tall. */
+  const ART = hasAbout ? Math.round(Math.min(artSize(width, height), height * 0.3)) : artSize(width, height);
   const eyebrow = credentialEyebrow(kind);
   const close = onClose;
   return (
@@ -146,6 +151,12 @@ export function CredentialArtViewer({
             </View>
           </View>
 
+          {/* The long-form credential copy, in the SAME panel the topic popup
+              uses (owner 2026-09-20). It swallows its own touches, so reading
+              or scrolling cannot dismiss the viewer — only the scrim around it
+              closes. */}
+          {hasAbout ? <CredentialAboutPanel slug={slug} accent={accent} /> : null}
+
           {/* The viewer's own close: a round chip floating on the scrim, inside
               the safe area — visually nothing like the chooser's header. */}
           <Pressable
@@ -158,8 +169,11 @@ export function CredentialArtViewer({
             <Text style={styles.closeGlyph}>✕</Text>
           </Pressable>
 
+          {/* With the description present a tap on the PROSE deliberately does
+              nothing, so "tap anywhere" would be false exactly where people
+              touch. The ✕ chip and the surrounding scrim both still close. */}
           <Text style={[styles.hint, { bottom: insets.bottom + 22 }]} pointerEvents="none">
-            TAP ANYWHERE TO CLOSE
+            {hasAbout ? 'TAP OUTSIDE TO CLOSE' : 'TAP ANYWHERE TO CLOSE'}
           </Text>
         </Pressable>
         <LowLightDim />
@@ -193,6 +207,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
+    gap: 6,
   },
   center: { alignItems: 'center', width: '100%', gap: 12 },
   artFrame: {

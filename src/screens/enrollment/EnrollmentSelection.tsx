@@ -199,7 +199,11 @@ export function EnrollmentSelection({
           />
         ) : (
           <View style={[s.markBox, { width: sideLen, height: sideLen }]}>
-            <MyTopicsIcon size={Math.round(sideLen * 0.92)} />
+            {/* 0.92 → 0.58 of the square: the book-and-heart mark reads as an
+                ICON here, not as artwork, and at 0.92 it filled its box far
+                more heavily than the credential photographs beside it
+                (owner 2026-09-20, "37% smaller"). */}
+            <MyTopicsIcon size={Math.round(sideLen * 0.58)} />
           </View>
         )}
 
