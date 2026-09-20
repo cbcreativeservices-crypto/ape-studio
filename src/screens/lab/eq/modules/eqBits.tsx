@@ -34,6 +34,7 @@ export function VerticalFader({
   label,
   tint,
   relative,
+  unity,
 }: {
   value: number;
   onChange: (v: number) => void;
@@ -47,6 +48,17 @@ export function VerticalFader({
    *  jump-to-tap there snapped the band you pushed off from to wherever your
    *  finger happened to sit, silently losing its gain on the way past. */
   relative?: boolean;
+  /**
+   * Position of UNITY on this fader, 0..1 from the bottom — draws a heavier
+   * tick and a `U` beside it (owner 2026-09-20, Gain Lab).
+   *
+   * ⛔ Supply it ONLY where 0 dB really is a landmark. On a gain stage that
+   * runs −20…+40 dB, unity sits at 1/3 of the travel, NOT the middle — which
+   * is exactly why the existing centre tick is hidden whenever this is set.
+   * Two landmarks on one scale, one of them wrong, is worse than none:
+   * "bring it back to unity" is an instruction people are actually given.
+   */
+  unity?: number;
 }) {
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
@@ -121,7 +133,13 @@ export function VerticalFader({
         }}
       >
         <View pointerEvents="none" style={styles.trackLine} />
-        <View pointerEvents="none" style={styles.centerTick} />
+        {unity == null ? (
+          <View pointerEvents="none" style={styles.centerTick} />
+        ) : (
+          <View pointerEvents="none" style={[styles.unityTick, { top: (1 - unity) * TRACK_H - 1.5 }]}>
+            <Text style={styles.unityMark}>U</Text>
+          </View>
+        )}
         {/* The cap stays BRUSHED METAL and the tint moves to its indicator
             line (gear skin 2026-09-11). Flooding the whole cap with amber —
             which is what it used to do — turned the one hardware-looking
@@ -228,6 +246,26 @@ const styles = StyleSheet.create({
   // Unity, printed the width of the slot's surround — on a graphic EQ this is
   // the 0 dB line every band is judged against, so it earns the amber.
   centerTick: { position: 'absolute', top: TRACK_H / 2 - 1, left: 1, right: 1, height: 2, backgroundColor: 'rgba(217,159,31,0.5)' },
+  /* Unity: heavier and brighter than the centre tick, because it is a place
+     you are told to return to rather than a midpoint you pass through. */
+  unityTick: {
+    position: 'absolute',
+    left: 1,
+    right: 1,
+    height: 3,
+    backgroundColor: 'rgba(217,159,31,0.85)',
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+  },
+  unityMark: {
+    position: 'absolute',
+    right: -9,
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 8,
+    lineHeight: 9,
+    letterSpacing: 0.4,
+    color: 'rgba(217,159,31,0.95)',
+  },
   // A brushed cap with a centre indicator line, matching the console strip and
   // the dock lane — one fader vocabulary across the whole app.
   thumb: {

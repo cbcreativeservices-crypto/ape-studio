@@ -23,7 +23,7 @@
  * faders move to the dock, so the columns carry meters/LEDs/collapsed slots
  * only. stageTint/stageStatus feed the bezel readouts.
  */
-import type { ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Line, Path, Rect } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
@@ -76,9 +76,15 @@ const VM_W = 18;
 export function StageMeterV({ node, height = VM_H }: { node: ChainNode; height?: number }) {
   const fill = meterFill(node.level);
   const col = levelColor(fill);
+  const { peak, reset: resetPeak } = usePeakHold(fill);
   return (
     <View style={styles.vWrap}>
-      <View style={[styles.vTrack, { height }]}>
+      <Pressable
+        onPress={resetPeak}
+        accessibilityRole="button"
+        accessibilityLabel="Peak hold. Double tap to clear."
+        style={[styles.vTrack, { height }]}
+      >
         {/* zones, bottom-up: too-low · healthy · hot/over */}
         <View style={[styles.vZone, { bottom: 0, height: pct(ZONE_LOW_FILL), backgroundColor: '#13233f' }]} />
         <View style={[styles.vZone, { bottom: pct(ZONE_LOW_FILL), height: pct(ZONE_HOT_FILL - ZONE_LOW_FILL), backgroundColor: '#122a17' }]} />
@@ -91,7 +97,11 @@ export function StageMeterV({ node, height = VM_H }: { node: ChainNode; height?:
           <View style={[styles.vNoise, { height: pct(meterFill(node.noise)) }]} />
         ) : null}
         <View style={[styles.vCeil, { bottom: pct(ZONE_CLIP_FILL) }]} />
-      </View>
+        {/* Peak hold — stays at the highest level this stage reached until it
+            is cleared. Drawn ABOVE the ceiling line so a peak that hit the
+            wall is still visible against it. */}
+        {peak > 0.01 ? <View style={[styles.vPeak, { bottom: pct(peak) }]} /> : null}
+      </Pressable>
       {node.stageClipped ? (
         <Text style={styles.clipBadge}>CLIP</Text>
       ) : node.distorted ? (
@@ -108,6 +118,9 @@ export type ColumnControl = {
   value: number; // 0..1
   onChange: (t: number) => void;
   readout: string;
+  /** Where unity (0 dB) sits on this fader, 0..1 from the bottom. Omitted on
+   *  the SOURCE fader, which has no unity — it is a level, not a gain. */
+  unity?: number;
 };
 
 export function StageColumn({
@@ -132,7 +145,7 @@ export function StageColumn({
       <View style={styles.colMeterRow}>
         <StageMeterV node={node} />
         {control ? (
-          <VerticalFader value={control.value} onChange={control.onChange} label="" tint={tint} />
+          <VerticalFader value={control.value} onChange={control.onChange} label="" tint={tint} unity={control.unity} />
         ) : null}
       </View>
       {control ? (
@@ -204,6 +217,9 @@ export function ChainColumns({
                       value: (st.gain - st.min) / (st.max - st.min),
                       onChange: (t) => onGain(st.key, Math.round(st.min + t * (st.max - st.min))),
                       readout: `${st.gain >= 0 ? '+' : ''}${st.gain} dB`,
+                      // Only when 0 dB is actually on this fader's travel.
+                      unity:
+                        st.min < 0 && st.max > 0 ? (0 - st.min) / (st.max - st.min) : undefined,
                     }
                   : undefined
               }
@@ -334,19 +350,74 @@ export function ChainStage({ w, h, cols }: { w: number; h: number; cols: StageCo
 
 // ───────────────────────────────────────────── device cards (M6–M8) ─────────
 /** Clip LED pair — all a real device shows you from the outside. */
+/**
+ * ⛔ THE CLIP THAT ALREADY HAPPENED.
+ *
+ * A live `stageClipped` answers "is it clipping RIGHT NOW", and in the field
+ * that is almost never the question. Overload is intermittent: the singer
+ * pushes one line, the LED blinks once, and by the time you look up the meter
+ * is innocent again. Every console ever built latches that event for exactly
+ * this reason, and learning to notice the latch is the skill.
+ *
+ * So the LED flashes live AND latches, and it counts. Tapping it clears the
+ * count — peak-hold reset grammar, the same gesture as the hardware.
+ */
+function useClipLatch(stageClipped: boolean) {
+  const [count, setCount] = useState(0);
+  const was = useRef(false);
+  useEffect(() => {
+    // Count EDGES, not frames: a stage that sits clipped for two seconds
+    // overloaded once, not sixty times.
+    if (stageClipped && !was.current) setCount((c) => c + 1);
+    was.current = stageClipped;
+  }, [stageClipped]);
+  return { latched: count > 0, count, reset: () => setCount(0) };
+}
+
+/**
+ * Peak hold — the thin tick that stays at the highest level reached.
+ *
+ * The moving bar tells you about now; the tick tells you about the take. A
+ * learner who looks away for two seconds has no other way to know what the
+ * chorus did.
+ */
+function usePeakHold(fill: number) {
+  const [peak, setPeak] = useState(fill);
+  useEffect(() => {
+    setPeak((p) => (fill > p ? fill : p));
+  }, [fill]);
+  return { peak, reset: () => setPeak(fill) };
+}
+
 export function DeviceLeds({ node }: { node: ChainNode }) {
   const sig = node.level > LOW_EDGE;
   const clip = node.stageClipped;
+  const { latched, count, reset } = useClipLatch(clip);
   return (
     <View style={styles.ledRow}>
       <View style={styles.ledItem}>
         <View style={[styles.led, sig && styles.ledSig]} />
         <Text style={styles.ledLabel}>SIG</Text>
       </View>
-      <View style={styles.ledItem}>
-        <View style={[styles.led, clip && styles.ledClip]} />
-        <Text style={styles.ledLabel}>CLIP</Text>
-      </View>
+      <Pressable
+        onPress={reset}
+        disabled={count === 0}
+        hitSlop={8}
+        accessibilityRole="button"
+        accessibilityLabel={
+          count === 0
+            ? 'Clip indicator. No overloads recorded.'
+            : `Clip indicator. ${count} overload${count === 1 ? '' : 's'} recorded. Double tap to clear.`
+        }
+        style={styles.ledItem}
+      >
+        {/* Live red while it is happening; a dimmer amber dot AFTER, which is
+            the state you are actually likely to catch. */}
+        <View style={[styles.led, latched && styles.ledClipHeld, clip && styles.ledClip]} />
+        <Text style={[styles.ledLabel, latched && styles.ledLabelHeld]}>
+          {count > 0 ? `CLIP ×${count}` : 'CLIP'}
+        </Text>
+      </Pressable>
     </View>
   );
 }
@@ -634,6 +705,12 @@ const styles = StyleSheet.create({
   ledRow: { flexDirection: 'row', gap: 12, alignItems: 'center' },
   ledItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   led: { width: 9, height: 9, borderRadius: 4.5, backgroundColor: '#23252d', borderWidth: 1, borderColor: '#0c0c0f' },
+  /* Held: the overload is over, the evidence is not. Amber, dimmer than the
+     live red — you are meant to notice it, not be alarmed by it. */
+  ledClipHeld: { backgroundColor: '#8a5a12', borderColor: 'rgba(255,180,0,0.75)' },
+  ledLabelHeld: { color: colors.amber },
+  /* Peak hold: a hairline, the same red as an overload, spanning the track. */
+  vPeak: { position: 'absolute', left: 0, right: 0, height: 1.5, backgroundColor: '#ff5f4e' },
   ledSig: { backgroundColor: '#3fae52' },
   ledClip: { backgroundColor: '#ff3b2a' },
   ledLabel: { fontFamily: fonts.mono, fontSize: 9, color: colors.textSub },
