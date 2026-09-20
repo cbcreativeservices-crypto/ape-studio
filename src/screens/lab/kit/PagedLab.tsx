@@ -14,7 +14,7 @@
  *   PageCtx  { reduceMotion, markDone, isDone, goTo? }
  *   PageDef  { title, short, Component, manualDone? }
  */
-import { useCallback, useEffect, useRef, useState, type JSX } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type JSX } from 'react';
 import { AccessibilityInfo, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ScrollLockProvider } from '../scrollLock';
 import { useNavigation } from '@react-navigation/native';
@@ -62,6 +62,10 @@ function useOsReduceMotion(): boolean {
   return rm;
 }
 
+import { LabUnderstandingCheck } from '../../../components/LabUnderstandingCheck';
+import { UNDERSTANDING_UNIT, understandingFor } from '../../../features/lab/understanding';
+import { markLabUnit, registerLabUnits } from '../../../features/lab/labCompletion';
+
 export function PagedLab({ labId, title, subtitle, pages, onPageDone }: {
   labId: string;
   title: string;
@@ -72,6 +76,49 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone }: {
    *  (labCompletion units) without touching the shell's own persistence. */
   onPageDone?: (index: number) => void;
 }) {
+  /**
+   * ⛔ THE UNDERSTANDING CHECK IS APPENDED HERE, FOR ALL 33 PagedLab LABS AT
+   * ONCE (owner 2026-09-20). Member labs recorded no progress at all, so a
+   * credential that required one could never be satisfied; passing this check
+   * is what completes the lab.
+   *
+   * It is opt-in BY DATA, not by flag: a lab gets the page the moment Computer
+   * B authors its questions, and until then there is no page and no promise of
+   * one. Stubbing a placeholder test would be worse than having none, because
+   * this one grants credit.
+   */
+  const check = understandingFor(labId);
+  const pagesWithCheck = useMemo(
+    () =>
+      check
+        ? [
+            ...pages,
+            {
+              title: 'Check your understanding',
+              short: 'CHECK',
+              // Self-marking: FINISH stays held until every question is right.
+              manualDone: true,
+              Component: ({ ctx }: { ctx: PageCtx }) => (
+                <LabUnderstandingCheck
+                  labTitle={title}
+                  questions={check}
+                  passed={ctx.isDone}
+                  onPassed={() => {
+                    ctx.markDone();
+                    // Server credit rides the same queue every af_* lab uses,
+                    // so an offline pass is retried rather than lost.
+                    registerLabUnits(labId as never, [UNDERSTANDING_UNIT]);
+                    markLabUnit(labId as never, UNDERSTANDING_UNIT);
+                  }}
+                />
+              ),
+            } satisfies PageDef,
+          ]
+        : pages,
+    [check, pages, labId, title],
+  );
+
+
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const [progress, setProgress] = useState<PagedProgress | null>(null);
@@ -97,10 +144,10 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone }: {
       if (!alive) return;
       progressRef.current = p;
       setProgress(p);
-      setPage(Math.min(p.lastPage, pages.length - 1));
+      setPage(Math.min(p.lastPage, pagesWithCheck.length - 1));
     });
     return () => { alive = false; };
-  }, [labId, pages.length]);
+  }, [labId, pagesWithCheck.length]);
 
   const persist = useCallback((patch: Partial<PagedProgress>) => {
     const base = progressRef.current;
@@ -111,20 +158,20 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone }: {
     void savePagedProgress(labId, next);
   }, [labId]);
   const goTo = useCallback((i: number) => {
-    const idx = Math.max(0, Math.min(pages.length - 1, Math.round(i)));
+    const idx = Math.max(0, Math.min(pagesWithCheck.length - 1, Math.round(i)));
     setPage(idx);
     setListOpen(false);
     scrollRef.current?.scrollTo({ y: 0, animated: !reduceMotion });
     persist({ lastPage: idx });
-  }, [pages.length, persist, reduceMotion]);
+  }, [pagesWithCheck.length, persist, reduceMotion]);
   const markDone = useCallback(() => {
     const base = progressRef.current;
     if (!base) return;
     const fresh = !base.completed.includes(page);
     const completed = fresh ? [...base.completed, page].sort((a, b) => a - b) : base.completed;
-    persist({ completed, done: completed.length >= pages.length });
+    persist({ completed, done: completed.length >= pagesWithCheck.length });
     if (fresh) onPageDone?.(page);
-  }, [page, persist, pages.length, onPageDone]);
+  }, [page, persist, pagesWithCheck.length, onPageDone]);
   const doReset = () => void resetPagedProgress(labId).then(() => {
     const fresh: PagedProgress = { completed: [], lastPage: 0, done: false };
     progressRef.current = fresh;
@@ -143,10 +190,10 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone }: {
     confirmDialog('Reset this lab?', message, 'Reset', doReset, { destructive: true });
   };
 
-  const def = pages[page];
+  const def = pagesWithCheck[page];
   const Page = def.Component;
   const isDone = !!progress?.completed.includes(page);
-  const last = page === pages.length - 1;
+  const last = page === pagesWithCheck.length - 1;
   // A self-marking last page (checks) holds Finish until it has marked itself.
   const finishBlocked = last && !!def.manualDone && !isDone;
   const ctx: PageCtx = { reduceMotion, markDone, isDone, goTo };
@@ -159,7 +206,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone }: {
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
-          <Text style={styles.kicker} numberOfLines={1}>{title.toUpperCase()} · {page + 1} OF {pages.length}</Text>
+          <Text style={styles.kicker} numberOfLines={1}>{title.toUpperCase()} · {page + 1} OF {pagesWithCheck.length}</Text>
           <Text style={styles.title} numberOfLines={2}>{def.title}</Text>
         </View>
       </View>
@@ -170,10 +217,10 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone }: {
         accessibilityRole="button"
         accessibilityState={{ expanded: listOpen }}
         aria-expanded={listOpen}
-        accessibilityLabel={`Page list. ${doneCount} of ${pages.length} complete. ${listOpen ? 'Expanded' : 'Collapsed'}`}
+        accessibilityLabel={`Page list. ${doneCount} of ${pagesWithCheck.length} complete. ${listOpen ? 'Expanded' : 'Collapsed'}`}
       >
         {pages.map((_, i) => <View key={i} style={[styles.dot, progress?.completed.includes(i) && styles.dotDone, i === page && styles.dotNow]} />)}
-        <Text style={styles.dotsText}>{doneCount}/{pages.length} done {listOpen ? '▴' : '▾'}</Text>
+        <Text style={styles.dotsText}>{doneCount}/{pagesWithCheck.length} done {listOpen ? '▴' : '▾'}</Text>
       </Pressable>
       {listOpen ? (
         <View style={styles.list}>
