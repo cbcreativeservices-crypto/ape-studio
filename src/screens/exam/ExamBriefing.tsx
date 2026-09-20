@@ -113,10 +113,16 @@ export function ExamBriefing({
         {/* ── The rules, exactly as enforced ──────────────────────────────── */}
         <Text style={styles.h}>THE RULES</Text>
 
+        {/* ⚠️ RULE 1: the auto-submit at 0:00 is a CLIENT timer (FinalExamScreen).
+            With the app backgrounded or killed nothing fires, and
+            `submit_final_exam` then marks the late paper `timed_out` and does
+            not grade it — so promising a graded partial paper for exactly the
+            scenario the sentence before describes was false. The duration
+            itself is server-owned and deliberately not hardcoded here. */}
         <Rule
           n="1"
           title="There is a time limit, and it does not pause."
-          body="The clock starts when you press BEGIN and runs from the server, not from this phone. Closing the app, locking the screen or losing signal does not stop it. When it reaches zero the exam submits whatever you have answered."
+          body="The clock starts when you press BEGIN and runs from the server, not from this phone. Closing the app, locking the screen or losing signal does not stop it. The time limit is shown on screen the moment the exam begins. If the exam is open when the clock reaches zero, it submits whatever you have answered and is graded — if the app is not open at that moment, the paper arrives late and cannot be graded at all, so stay on this screen until you submit."
         />
         <Rule
           n="2"
@@ -158,8 +164,11 @@ export function ExamBriefing({
               and your certificate is issued then.
             </Text>
             <Text style={styles.tenureWarn}>
+              {/* No attempt cap exists — `start_final_exam` never compares
+                  attempt_number to anything — so reassuring about one only
+                  planted the idea that there is one. */}
               If you end your membership before that month completes, this exam is discarded. It is
-              not graded, it is not applied, and it does not count as an attempt you have used.
+              not graded and it is not applied.
             </Text>
           </View>
         ) : tenure === 'complete' ? (

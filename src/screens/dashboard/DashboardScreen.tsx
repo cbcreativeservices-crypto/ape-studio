@@ -108,8 +108,8 @@ import { HelpKey } from '../../components/HelpKey';
 import { COACH_KEYS, useCoachMark } from '../../lib/coachMark';
 import { LearningIntroSheet } from '../../features/intro/LearningIntroSheet';
 import { getCourseIntro, getTopicIntro, isIntroEmpty } from '../../features/intro/learningIntros';
-import { replayQuizSubmissions } from '../../features/quiz/api';
-import { replayExamSubmissions } from '../../features/finalExam/api';
+import { QUIZ_OUTCOME_COPY, replayQuizSubmissions } from '../../features/quiz/api';
+import { EXAM_OUTCOME_COPY, replayExamSubmissions } from '../../features/finalExam/api';
 import { onStudyProgress } from '../../features/study/sync';
 import { useScenarioExempt } from '../../features/study/scenarioExempt';
 import { loadAllLocalMethodStates, mergeItemStates } from '../../features/study/localProgress';
@@ -763,7 +763,9 @@ export function DashboardScreen() {
           // outcome, not the number of questions that were served, and v3
           // quizzes are variable-size (see ResultsScreen). Printing "/30" here
           // was simply wrong on any topic with fewer than 30 quizzable terms.
-          `Score ${result.score} — ${result.outcome.replace(/_/g, ' ')}.`,
+          // Never print the enum: "no pass" / "voided" is database
+          // vocabulary, and "voided" is an accusation in one word.
+          `Score ${result.score}. ${QUIZ_OUTCOME_COPY[result.outcome]}`,
         );
       }
       const examReplayed = await replayExamSubmissions().catch(() => []);
@@ -789,7 +791,7 @@ export function DashboardScreen() {
         const awarded = result.credential_awarded ? ' Credential awarded.' : '';
         notify(
           'Offline exam submitted',
-          `Score ${result.score}/${result.size} — ${result.outcome.replace(/_/g, ' ')}.${awarded}`,
+          `Score ${result.score}/${result.size}. ${EXAM_OUTCOME_COPY[result.outcome]}${awarded}`,
         );
       }
       // A session-less GUEST studies the FREE topics on-device only. It must NEVER

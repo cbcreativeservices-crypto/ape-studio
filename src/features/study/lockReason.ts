@@ -68,13 +68,18 @@ export const LOCK_TITLE = 'NOT POWERED YET';
  *    finished offline has not synced yet, so the gate can read closed for a
  *    beat after the work is actually done. Telling that learner "finish X"
  *    when X is finished is worse than saying nothing; telling them the truth
- *    ("it should open shortly — pull down to refresh") is the only honest line.
+ *    ("it should open shortly — leave and come back") is the only honest line.
+ *
+ * ⚠️ This used to say "Pull down to refresh". There is no RefreshControl on
+ * the Dashboard — the only one in the app is on AwardProgressScreen — and the
+ * rack uses a VERTICAL DRAG to jog between topics, so a learner following that
+ * instruction moved off the topic they were trying to unlock.
  */
 export function lockReason(panel: LockedPanel, g: MethodGates): string {
   const left = remainingFor(panel, g);
   const target = panel === 'quiz' ? 'the Topic Quiz' : LABEL[panel];
   if (left.length === 0) {
-    return `${target} should be open — your progress may not have finished syncing. Pull down to refresh, or check back in a moment.`;
+    return `${target} should be open — your progress may not have finished syncing yet. Leave this screen and come back in a moment, and it will be on.`;
   }
   return `Finish ${joinList(left)} to power on ${target}.`;
 }
