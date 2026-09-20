@@ -49,6 +49,7 @@ import { registerTrialAnswer, useTimeTrial } from '../../features/study/timeTria
 import { StudyHeader } from './StudyHeader';
 import type { StudyStackParamList } from '../../navigation/types';
 import { animationsAllowed } from '../../features/settings/a11y';
+import { orderByCredit } from '../../features/study/deckOrder';
 
 type Props = NativeStackScreenProps<StudyStackParamList, 'Matching'>;
 
@@ -150,9 +151,12 @@ export function MatchingScreen({ navigation, route }: Props) {
         if (!alive) return;
         // Items needing attempts first, then done items (practice), stable within session.
         const st: ItemStates = mergeItemStates(methodState?.itemStates, localStates);
-        const notDone = shuffle(fetched.filter((it) => (st[it.id]?.attempts ?? 0) < 2));
-        const done = shuffle(fetched.filter((it) => (st[it.id]?.attempts ?? 0) >= 2));
-        setItems([...notDone, ...done]);
+        // ⛔ CREDIT, NOT ATTEMPTS — same fix as Fill-in-the-Blank, same reason:
+        //    an item attempted twice and got wrong twice is NOT done, and
+        //    sorting it behind the whole credited deck is what made the last
+        //    board unreachable. Shuffle within each group so the deck still
+        //    varies; the GROUPS themselves stay ordered. See deckOrder.ts.
+        setItems(orderByCredit(shuffle(fetched), st));
         setStates(st);
       } catch (e) {
         // Same as the other two study screens: name the real cause. See

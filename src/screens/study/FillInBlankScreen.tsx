@@ -51,6 +51,7 @@ import { PaceTimerModal } from '../../features/study/PaceTimerModal';
 import { registerTrialAnswer, useTimeTrial } from '../../features/study/timeTrial';
 import { StudyHeader } from './StudyHeader';
 import type { StudyStackParamList } from '../../navigation/types';
+import { orderByCredit, remainingCount } from '../../features/study/deckOrder';
 
 type Props = NativeStackScreenProps<StudyStackParamList, 'FillInBlank'>;
 
@@ -240,12 +241,18 @@ export function FillInBlankScreen({ navigation, route }: Props) {
     void recordPaceSession('fill_in_blank', secs, items.length);
   }, [pace.enabled, pace.preset, answered, items]);
 
-  // Working order: items still needing attempts first, then the rest.
+  // Working order: anything WITHOUT CREDIT first, hardest-hit first.
+  //
+  // ⛔ CREDIT, NOT ATTEMPTS. This used to split on `attempts >= 2`, which is
+  //    not what completion measures — an item is done when it has been
+  //    answered CORRECTLY once. The two rules disagree on exactly one case and
+  //    it is the worst one: an item attempted twice and got wrong twice was
+  //    filed as "done" and sorted BEHIND every item already answered
+  //    correctly, so the single card standing between the learner and 100%
+  //    was placed last in a 162-card queue. See deckOrder.ts for the receipts.
   const order = useMemo(() => {
     if (!items) return [];
-    const notDone = items.filter((it) => (states[it.id]?.attempts ?? 0) < 2);
-    const done = items.filter((it) => (states[it.id]?.attempts ?? 0) >= 2);
-    return [...notDone, ...done];
+    return orderByCredit(items, states);
     // Stable within the session so navigation doesn't reshuffle underfoot.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items]);
@@ -374,6 +381,14 @@ export function FillInBlankScreen({ navigation, route }: Props) {
   // Readout shows 0–99 until the RAW value is 100 (same rule as the Dashboard
   // row): Math.round alone read "100%" with an item still unstudied (B-086).
   const displayPctLabel = displayPct >= 100 ? 100 : Math.min(Math.round(displayPct), 99);
+  /**
+   * How many items still have no credit. The owner spent four minutes and 15+
+   * cards at 99% without knowing whether they were one card away or twenty,
+   * and there was nothing on screen that could tell them. The percentage
+   * cannot: 161/162 and 162/162 both round to "99%" and "100%" in ways that
+   * hide the actual number of cards left. This is that number.
+   */
+  const remaining = remainingCount(order, states);
   const { pre } = blankOut(question.sentence, question.hasBlank);
   const cellState = (opt: string): AnswerCellState => {
     if (!picked) return 'default';
@@ -466,6 +481,13 @@ export function FillInBlankScreen({ navigation, route }: Props) {
           <Text style={styles.counter}>
             {itemNumber + 1} / {order.length}
           </Text>
+          {/* Only once the end is in sight — a "162 LEFT" on card one is noise,
+              and the count only becomes the thing you care about near 100%. */}
+          {remaining > 0 && remaining <= 10 ? (
+            <Text style={styles.remaining} accessibilityLabel={`${remaining} ${remaining === 1 ? 'item' : 'items'} still to answer correctly`}>
+              {remaining} LEFT
+            </Text>
+          ) : null}
           <FsButton onPress={() => setFullscreen(true)} />
         </View>
 
@@ -580,6 +602,8 @@ const styles = StyleSheet.create({
   ledRow: { flexDirection: 'row', alignItems: 'center', gap: 10, alignSelf: 'stretch' },
   ledPct: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: colors.amber, minWidth: 44, textAlign: 'right' },
   counter: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSubAlt, minWidth: 56, textAlign: 'right' },
+  // Amber = the thing to act on, consistent with the rest of the rack.
+  remaining: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8, color: colors.amber },
   footer: { flexDirection: 'row', gap: 10 },
   reportRow: { paddingBottom: 2, alignItems: 'flex-end' },
   // Swipe-to-browse area below the answer grid (Booth 2026-07-15).

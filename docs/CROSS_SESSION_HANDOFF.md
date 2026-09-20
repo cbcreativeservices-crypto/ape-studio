@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-19 21:34 · ccode · 4de6701d
+changed: Study: answer a tapped dead panel, and make the prompt reach a screen reader
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-19 20:53 · ccode · 30316b6e
 changed: Study sync: stop double-counting, stop losing scenarios, drain the queue
 affects other side: nothing schema-side, but ONE contract to be aware of — a replayed
