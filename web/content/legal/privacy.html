@@ -248,20 +248,22 @@
 <h2>15. Analytics and Crash Reporting</h2>
 <p>We may use analytics and crash-reporting tools to understand feature usage, measure reliability, identify failures, improve educational workflows, and correct defects.</p>
 <p>Analytics and diagnostic information may include pseudonymous identifiers, device characteristics, application version, session events, screen or feature interactions, load times, failed requests, crash traces, stack information, and performance data.</p>
-<p>We intend to configure these tools to avoid collecting passwords, complete support messages, raw microphone recordings, and unnecessary free-text content. Final disclosures must reflect the actual configuration of every integrated software development kit.</p>
+<p>These tools are configured to avoid collecting passwords, complete support messages, raw microphone recordings, and unnecessary free-text content.</p>
 <p>We do not use analytics information for cross-company behavioral advertising or data-broker activity.</p>
 <h2>16. Third-Party Service Providers</h2>
-<p>We use or may use Service Providers to operate the Services. Depending on the final production configuration, these may include:</p>
+<p>We use the following Service Providers to operate the Services. Appendix A describes each one in more detail.</p>
 <ul>
 <li><strong>Supabase:</strong> authentication, database, storage, synchronization, and backend infrastructure.  </li>
 <li><strong>Aptabase:</strong> anonymous, privacy-first in-app analytics and feature-usage measurement, hosted in the European Union; no advertising identifiers and no cross-application tracking.  </li>
 <li><strong>Sentry:</strong> crash and error reporting and technical diagnostics, configured without personal identifiers.  </li>
+<li><strong>Resend:</strong> delivery of transactional email, such as verification codes and account-related notices.  </li>
+<li><strong>Vercel:</strong> hosting and content delivery for our public website.  </li>
+<li><strong>Expo (Expo Application Services):</strong> mobile application builds, over-the-air application updates, delivery of application assets, and routing of push notifications.  </li>
 <li><strong>Apple App Store:</strong> application distribution, billing, receipt validation, and subscription management for Apple platforms.  </li>
-<li><strong>Google Play:</strong> application distribution, billing, licensing, and purchase management for Android.  </li>
-<li><strong>Email, hosting, security, customer-support, or notification providers:</strong> as identified in the production Service Directory.</li>
+<li><strong>Google Play:</strong> application distribution, billing, licensing, and purchase management for Android.</li>
 </ul>
 <p>Service Providers may process information only to the extent reasonably necessary to perform their contracted functions, subject to applicable agreements and law. We periodically review provider need, access, and configuration.</p>
-<p>The final published Service Directory must distinguish between providers currently active in production and providers merely under consideration.</p>
+<p>Appendix A lists the providers active in production. Providers that are only under consideration are not listed there and are not used to process information until this Policy is updated.</p>
 <h2>17. Disclosure and Sharing of Information</h2>
 <p>We do not sell Personal Information. We do not share Personal Information for cross-context behavioral advertising.</p>
 <p>We may disclose information:</p>
@@ -306,7 +308,7 @@
 <li><strong>Security records:</strong> for a period appropriate to investigate threats, prevent abuse, and maintain system integrity.  </li>
 <li><strong>Deidentified Information:</strong> potentially indefinitely, provided it remains deidentified and is not used to identify a person.</li>
 </ul>
-<p>Production retention periods should be documented internally and reviewed as the Service architecture matures.</p>
+<p>Retention periods are documented internally and reviewed as the Services change.</p>
 <h2>20. Account and Data Deletion</h2>
 <p>Users may request Account deletion through the in-app deletion function, or by emailing info@proaudiotrainingacademy.com:</p>
 <p><strong>info@proaudiotrainingacademy.com</strong></p>
@@ -368,7 +370,7 @@
 <p>This Privacy Policy should be read with the Terms of Service — which contains our billing and refund terms (Terms Appendix A), our acceptable-use obligations (Terms Appendix C), and our data-handling summary (Terms Appendix F) — together with any additional notice presented for a specific feature.</p>
 <p>————————————————————————————————————————</p>
 <h2 class="apx">Appendix A — Third-Party Service Directory</h2>
-<p>The final public directory should list only providers actually used in production.</p>
+<p>This directory lists the providers used in production as of the date above.</p>
 <h2>Supabase</h2>
 <p><strong>Purpose:</strong> Authentication, database services, cloud storage, synchronization, and backend infrastructure.  </p>
 <p><strong>Possible information processed:</strong> Account information, learning records, authentication data, profile content, subscription entitlements, and security logs.  </p>
@@ -387,20 +389,20 @@
 <h2>Google Play</h2>
 <p><strong>Purpose:</strong> Application distribution, billing, licensing, purchase processing, and subscription administration.  </p>
 <p><strong>Possible information processed:</strong> Entitlement information, transaction identifiers, subscription status, and marketplace metadata.</p>
-<h2>Additional Providers</h2>
-<p>Before publication, add any provider used for:</p>
-<ul>
-<li>Website hosting.  </li>
-<li>Domain services.  </li>
-<li>Email delivery.  </li>
-<li>Customer support.  </li>
-<li>Push notifications.  </li>
-<li>Direct web payments.  </li>
-<li>Error logging.  </li>
-<li>Content delivery.  </li>
-<li>Security monitoring.  </li>
-<li>Institutional reporting.</li>
-</ul>
+<h2>Resend</h2>
+<p><strong>Purpose:</strong> Delivery of transactional email sent by the Services.  </p>
+<p><strong>Possible information processed:</strong> Recipient email address, message subject and body, and delivery status. Used for verification codes, account-related notices, and administrative notifications; not used for marketing email.  </p>
+<p><strong>Status:</strong> In active production use for transactional email delivery.</p>
+<h2>Vercel</h2>
+<p><strong>Purpose:</strong> Hosting and content delivery for the public website.  </p>
+<p><strong>Possible information processed:</strong> Information inherent in serving a web request, including IP address, request URL, browser user-agent, and timestamps, retained as operational and security logs. The public website does not require an account.  </p>
+<p><strong>Status:</strong> In active production use for website hosting and content delivery.</p>
+<h2>Expo (Expo Application Services)</h2>
+<p><strong>Purpose:</strong> Mobile application builds, over-the-air application updates, delivery of application assets, and routing of push notifications.  </p>
+<p><strong>Possible information processed:</strong> Device push token, application version and update identifiers, platform and coarse device attributes, and the content of any push notification sent. Push notifications are sent only where the user has granted the operating-system permission.  </p>
+<p><strong>Status:</strong> In active production use for application updates, asset delivery, and push notifications.</p>
+<h2>Payments</h2>
+<p>All paid subscriptions are purchased through the Apple App Store or Google Play. We do not operate a direct web payment path and do not use a separate payment processor. We never receive or store full payment-card numbers.</p>
 <h2 class="apx">Appendix B — Document Control and Revision History</h2>
 <div class="table-wrap"><table>
 <thead>
@@ -419,7 +421,7 @@
 </tbody>
 </table></div>
 <p><strong>Document owner:</strong> Pro Audio Training Academy  </p>
-<p><strong>Review status:</strong> Attorney review and production-configuration verification required before publication  </p>
+<p><strong>Review status:</strong> Reviewed by counsel. Provider directory verified against the production configuration, September 2026.  </p>
 <p><strong>Next review:</strong> At launch, after any material provider or feature change, and at least annually</p>
 <p>————————————————————————————————————————</p>
 <p><strong>End of Privacy Policy</strong></p>
