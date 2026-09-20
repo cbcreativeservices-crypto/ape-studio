@@ -183,14 +183,23 @@ export function CableInstallLabScreen() {
     }
   }
 
-  const canEnter = useCallback(
-    (n: number) => {
-      if (n <= INTRO_STEP) return true;
-      if (n >= COMPLETE_STEP) return firstIncomplete >= COMPLETE_STEP;
-      return n <= firstIncomplete;
-    },
-    [firstIncomplete],
-  );
+  /**
+   * ⛔ EVERY STAGE IS ALWAYS REACHABLE (owner 2026-09-20, standing rule for
+   * ALL labs): "always allow user to scroll through pages without requiring
+   * them to finish every detail."
+   *
+   * This used to return `n <= firstIncomplete`, so one unreviewed card - six
+   * consequence tiles in Stage 1, in the case that prompted this - disabled
+   * NEXT and stranded the learner with no visible way forward. The owner hit
+   * it and could not tell what the app wanted. A lab is a place to look
+   * around, and blocking the exit teaches nothing.
+   *
+   * ⚠️ CREDIT IS STILL EARNED, NOT GIVEN. `completedUnits` is untouched; the
+   * completion stage now lists what is outstanding and links to it. Freedom
+   * to move is not the same as freedom from the work, and conflating the two
+   * is how you end up either nagging or lying.
+   */
+  const canEnter = useCallback((_n: number) => true, []);
 
   const moduleIdx = step - 1; // 0-based into CI_MODULES when 1..13
   const mod = moduleIdx >= 0 && moduleIdx < CI_MODULES.length ? CI_MODULES[moduleIdx] : null;
@@ -283,14 +292,8 @@ export function CableInstallLabScreen() {
               STAGE {step} / {CI_MODULES.length}
             </Text>
             <View style={{ flex: 1 }} />
-            <Pressable
-              onPress={next}
-              hitSlop={8}
-              disabled={!modDone && !canEnter(step + 1)}
-              accessibilityRole="button"
-              accessibilityLabel="Next stage"
-            >
-              <Text style={[styles.navBtn, !modDone && !canEnter(step + 1) && styles.navBtnDisabled]}>NEXT ›</Text>
+            <Pressable onPress={next} hitSlop={8} accessibilityRole="button" accessibilityLabel="Next stage">
+              <Text style={styles.navBtn}>NEXT ›</Text>
             </Pressable>
           </View>
           {/* NO `accessible` HERE, deliberately (2026-09-18, pass 5 · W8): this row's
@@ -350,6 +353,10 @@ export function CableInstallLabScreen() {
             ) : (
               <CompleteStage
                 dims={dims}
+                outstanding={CI_MODULES.map((m, i) => ({ ...m, step: i + 1 })).filter(
+                  (m) => !completedUnitsRef.current.has(m.unit),
+                )}
+                onGoToStage={(n) => goTo(n)}
                 onFieldCheck={() => setShowFieldCheck(true)}
                 onReview={() => {
                   const worst = weakestDim(dims);
@@ -386,7 +393,11 @@ export function CableInstallLabScreen() {
             </View>
             <View style={{ flex: 2 }}>
               <GlassButton
-                label={step === CI_MODULES.length ? (labComplete ? 'FINISH ✓' : modDone ? 'FINISH ✓' : 'COMPLETE THE STAGE') : modDone ? 'NEXT ›' : 'COMPLETE THE STAGE'}
+                /* Never 'COMPLETE THE STAGE' as a dead end: the control always
+               moves you on, and the completion stage is what tells you what is
+               still outstanding. 'SKIP AHEAD' is honest about what you are
+               doing rather than pretending the stage is finished. */
+            label={step === CI_MODULES.length ? 'FINISH ✓' : modDone ? 'NEXT ›' : 'SKIP AHEAD ›'}
                 tint={modDone ? 'green' : 'gold'}
                 height={44}
                 fontSize={13}
@@ -562,24 +573,64 @@ function MasteryProfile({ dims }: { dims: CiDimScores }) {
 
 function CompleteStage({
   dims,
+  outstanding,
+  onGoToStage,
   onFieldCheck,
   onReview,
   onRepeat,
   onReturn,
 }: {
   dims: CiDimScores;
+  /** Stages not yet completed. Empty = the lab is genuinely finished. */
+  outstanding: { id: string; title: string; step: number }[];
+  onGoToStage: (step: number) => void;
   onFieldCheck: () => void;
   onReview: () => void;
   onRepeat: () => void;
   onReturn: () => void;
 }) {
+  /**
+   * Now that every stage is reachable at any time (owner 2026-09-20), a
+   * learner can arrive here having skipped work — so this screen must be able
+   * to say so. It states what is left and links straight to it, instead of
+   * congratulating someone for a lab they have not finished.
+   */
+  const done = outstanding.length === 0;
   return (
     <View style={{ gap: 14 }}>
-      <Text style={styles.completeTitle}>CABLE DRESSING & INSTALLATION — COMPLETE</Text>
-      <Text style={styles.introLead}>
-        You demonstrated professional decision-making in cable routing, mechanical protection, pathways and supports,
-        rack dressing, floor and overhead installations, identification and documentation, and final inspection.
+      <Text style={styles.completeTitle}>
+        CABLE DRESSING & INSTALLATION — {done ? 'COMPLETE' : 'WHAT IS LEFT'}
       </Text>
+      {done ? (
+        <Text style={styles.introLead}>
+          You demonstrated professional decision-making in cable routing, mechanical protection, pathways and supports,
+          rack dressing, floor and overhead installations, identification and documentation, and final inspection.
+        </Text>
+      ) : (
+        <>
+          <Text style={styles.introLead}>
+            {outstanding.length} of {CI_MODULES.length} stage{outstanding.length === 1 ? '' : 's'} still to finish before
+            this lab counts toward your credit. Everything you have done so far is saved — pick up wherever you like.
+          </Text>
+          <View style={styles.leftList}>
+            {outstanding.map((m) => (
+              <Pressable
+                key={m.id}
+                onPress={() => onGoToStage(m.step)}
+                style={styles.leftRow}
+                accessibilityRole="button"
+                accessibilityLabel={`Go to stage ${m.step}, ${m.title}`}
+              >
+                <Text style={styles.leftStep}>STAGE {m.step}</Text>
+                <Text style={styles.leftTitle} numberOfLines={1}>
+                  {m.title}
+                </Text>
+                <Text style={styles.leftGo}>›</Text>
+              </Pressable>
+            ))}
+          </View>
+        </>
+      )}
       <MasteryProfile dims={dims} />
       <Appear delay={CI_MOTION.base} style={{ gap: 8 }}>
         <GlassButton label="VIEW FIELD CHECK" tint="green" height={46} fontSize={13} onPress={onFieldCheck} />
@@ -640,6 +691,11 @@ const styles = StyleSheet.create({
   objectives: { gap: 6, borderRadius: 10, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 12 },
   objective: { fontFamily: fonts.barlowMedium, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
   sourcesLink: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.2, color: colors.textSub },
+  leftList: { gap: 1, borderWidth: 1, borderColor: '#2a2a2e', borderRadius: 10, overflow: 'hidden' },
+  leftRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 11, paddingHorizontal: 12, backgroundColor: '#141416' },
+  leftStep: { fontFamily: fonts.mono, fontSize: 10, letterSpacing: 1, color: colors.amber, width: 64 },
+  leftTitle: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 14, color: colors.textSecondary },
+  leftGo: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, color: colors.amber },
   completeTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1, color: colors.green },
   profileCard: { gap: 10, borderRadius: 12, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 14 },
   profileHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.amber },

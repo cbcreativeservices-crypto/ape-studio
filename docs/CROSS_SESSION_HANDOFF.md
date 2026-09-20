@@ -34,6 +34,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-20 12:48 · ccode · a07692d3
+changed: Gain Lab: the clip that already happened, peak hold, and unity on the fader
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-20 12:29 · ccode · 4ae71af5
 changed: Enrollments: credential popups get the description, thinner bars, smaller mark
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
