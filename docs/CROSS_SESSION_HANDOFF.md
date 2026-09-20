@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-20 09:40 · ccode · 9f3f733d + ae74ccb1 + 0cca0bd5 (stubs the hook did not stamp)
+changed: the rest of copy pass 4 — 4b (error copy: raw DSP/Postgres/GoTrue strings, wrong failure attribution), the required-education pass (54 role mentions coded, two new RequireKinds, 46 careerIndex rows reflagged), and 4d (instructions that named removed controls, wrong worked-example figures, two published legal documents).
+affects other side: careerIndex.json gained 42 `reg:1` and 4 `pe:1` flags and credentialCopy/topicCopy gained 54 `requires` codes — if A ever regenerates either from a Computer B deliverable, these hand-applied codes will be LOST unless the generator carries them. Broadcast and RF are deliberately still untagged pending a ruling.
+needs: a ruling on whether broadcast/RF roles carry a disclosure (copy pass 3 established the FCC dropped broadcast operator licensing, so SBE is a hiring norm, not a legal gate).
+
+
 ### 2026-09-20 08:39 · ccode · cec30976
 changed: Ear training: sentences that hard-coded a number the render owns
 affects other side: four DAW certificates (cubase-nuendo-for-post, digital-performer-reason-producer, reaper-power-user, studio-one-producer) existed in the live catalog with NO copy row, so their detail modal was blank. credentialCopy.ts now has all 164 rows (128 certs + 36 programs), matching the live catalog. The four new descriptions are newly written and need owner sign-off.

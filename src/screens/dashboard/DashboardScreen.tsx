@@ -86,7 +86,7 @@ import { useCredentialCelebration } from '../../features/celebration/useCredenti
 import { customListLocked as customListLockedFn, studyMethodLocked } from '../../features/commercial/studyGate';
 import { supabase } from '../../lib/supabase';
 import { isRealAccount } from '../../features/commercial/realAccount';
-import { notify } from '../../lib/confirm';
+import { confirmDialog, notify } from '../../lib/confirm';
 import { LOCK_TITLE, lockReason, type LockedPanel, type MethodGates } from '../../features/study/lockReason';
 import { markIntentionalSignOut } from '../../features/auth/intentionalSignOut';
 import { fetchGlossaryItemsByIds, fetchTopicItems } from '../../features/study/api';
@@ -2038,7 +2038,26 @@ export function DashboardScreen() {
                           setUpgradeOpen(true);
                           return;
                         }
-                        navigation.navigate('Quiz', { achievementId: dispTopic.id, topicName: dispTopic.name });
+                        // S3 (copy pass 2): the topic quiz runs the IDENTICAL
+                        // machinery as the Final Exam — hard clock, 2-second
+                        // grace, second app-switch voids, 15-minute lockout,
+                        // back wipes the answers — and briefed none of it. The
+                        // learner met Rule 2 only by breaking it. ExamBriefing
+                        // states the app's own doctrine: "the rules are not
+                        // relaxed — they are STATED, in full, before the clock
+                        // starts, every single time." This was the one
+                        // exception to it.
+                        confirmDialog(
+                          'BEFORE YOU BEGIN',
+                          'The clock does not pause. Leaving the app twice voids the attempt and locks the quiz for fifteen minutes. Going back wipes your answers — there is no save.',
+                          'BEGIN',
+                          () =>
+                            navigation.navigate('Quiz', {
+                              achievementId: dispTopic.id,
+                              topicName: dispTopic.name,
+                            }),
+                          { cancelText: 'NOT NOW' },
+                        );
                       }}
                     />
                   )}
