@@ -153,6 +153,25 @@ export function ScenariosScreen({ route }: Props) {
     [roundQuestions, idx, activeRound, view],
   );
 
+  /** Progress across the WHOLE homework — all 3 rounds, not the round you are in
+   *  (owner 2026-09-20). The "Scenario progress" meter was filling from
+   *  answeredInRound/total, so it ran 0->full three separate times and read
+   *  "full" at the end of round 1 when two thirds of the work was still to come.
+   *  `rounds` is always length SCENARIO_ROUNDS (assembleRounds seeds [[],[],[]]),
+   *  so this counts the future rounds too. The per-item strip and the
+   *  "ITEM n OF m · ROUND r OF 3" line stay per-round on purpose — they say
+   *  which round they mean. */
+  const { answeredAll, totalAll } = useMemo(() => {
+    let answered = 0;
+    let count = 0;
+    for (const round of hw?.rounds ?? []) {
+      count += round.length;
+      for (const q of round) if (answersRef.current[q.id]) answered++;
+    }
+    return { answeredAll: answered, totalAll: count };
+    // same recompute triggers as answeredInRound: answersRef is a ref
+  }, [hw, idx, activeRound, view]);
+
   const clearInteraction = () => {
     if (advanceTimer.current) clearTimeout(advanceTimer.current);
     advanceTimer.current = null;
@@ -538,7 +557,7 @@ export function ScenariosScreen({ route }: Props) {
           hideTimerButton={!!(pace.enabled || trial.active || trial.result)}
         />
         <View style={{ alignSelf: 'stretch' }}>
-          <LedMeterWell filled={Math.round((answeredInRound / Math.max(1, total)) * 21)} label="Scenario progress" />
+          <LedMeterWell filled={Math.round((answeredAll / Math.max(1, totalAll)) * 21)} label="Scenario progress" />
         </View>
 
         {pace.enabled || trial.active || trial.result ? (
