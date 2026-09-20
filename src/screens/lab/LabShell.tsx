@@ -30,6 +30,9 @@ import { colors, fonts } from '../../theme/tokens';
 import { ScrollLockCtx, ScrollLockProvider, useScrollLock } from './scrollLock';
 import { RackUnit } from './rack/RackUnit';
 import type { DockParam, RackStage } from './rack/rackTypes';
+import { LabUnderstandingCheck } from '../../components/LabUnderstandingCheck';
+import { UNDERSTANDING_UNIT, hasUnderstandingCheck, understandingFor } from '../../features/lab/understanding';
+import { isLabDone, markLabUnit, registerLabUnits } from '../../features/lab/labCompletion';
 
 // The scroll-lock context moved to ./scrollLock (2026-08-23, Rack Unit kit —
 // avoids an import cycle). Re-exported here so the 30+ existing call sites
@@ -42,17 +45,37 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 
 // PRACTICE and TEST modes REMOVED app-wide (owner 2026-08-07): they only ever
 // led to "in development" placeholder screens — labs show LEARN + EXPLORE.
-type LabMode = 'learn' | 'explore';
+/**
+ * ⛔ 'check' IS CONDITIONAL — see MODES below. It is a real mode, not a
+ * placeholder: a lab only offers the tab once its understanding check is
+ * authored, because passing it is what COMPLETES the lab (owner 2026-09-20).
+ */
+type LabMode = 'learn' | 'explore' | 'check';
 
-const MODES: { key: LabMode; label: string }[] = [
+const BASE_MODES: { key: LabMode; label: string }[] = [
   { key: 'learn', label: 'LEARN' },
   { key: 'explore', label: 'EXPLORE' },
 ];
+
+/**
+ * The tabs this lab actually offers. CHECK appears only where questions exist.
+ *
+ * ⛔ NO TAB WITHOUT A TEST. An always-present CHECK tab leading to "coming
+ * soon" would promise credit the lab cannot grant — the same fault as an empty
+ * checkbox nobody can tick, and worse here because this one is the completion
+ * mechanism.
+ */
+function modesFor(labId: string): { key: LabMode; label: string }[] {
+  return hasUnderstandingCheck(labId) ? [...BASE_MODES, { key: 'check' as const, label: 'CHECK' }] : BASE_MODES;
+}
 
 /** Fixed per-mode tab color (owner 2026-07-31): LEARN green · EXPLORE amber. */
 export const MODE_COLORS: Record<LabMode, string> = {
   learn: colors.green,
   explore: colors.amber,
+  // Blue: the check is neither reading nor playing — it is the thing that
+  // finishes the lab, and it should not read as a third flavour of either.
+  check: colors.blue,
 };
 
 /** Shared chip control (SignalGen/HarmonicsView idiom). Long-press opens the
@@ -293,6 +316,10 @@ export function LabShell({
   const navigation = useNavigation();
   const { requestAudioOutput } = useAudioOutputGate();
   const [mode, setMode] = useState<LabMode>('explore');
+  const modes = modesFor(labId);
+  /** Seeded from the completion store so a lab passed on an earlier visit
+   *  opens already cleared rather than asking again. */
+  const [checkPassed, setCheckPassed] = useState(() => isLabDone(labId));
   // Drag editors lock the ScrollView while dragging so the gesture wins over
   // scroll. Owned here so a tab switch always frees it.
   const [scrollLocked, setScrollLocked] = useState(false);
@@ -335,7 +362,7 @@ export function LabShell({
 
       {/* Mode tabs directly under the header (owner 2026-07-29 order). */}
       <View style={styles.tabRow} accessibilityRole="tablist">
-        {MODES.map((m) => {
+        {modes.map((m) => {
           const selected = mode === m.key;
           const c = MODE_COLORS[m.key];
           return (
@@ -367,6 +394,22 @@ export function LabShell({
         // so the bound lane, open tray, and well scroll survive a tab hop
         // (review 2026-08-23).
         <>
+          {mode === 'check' ? (
+            <ScrollView contentContainerStyle={styles.scroll}>
+              <View style={styles.panel}>
+                <LabUnderstandingCheck
+                  labTitle={title}
+                  questions={understandingFor(labId) ?? []}
+                  passed={checkPassed}
+                  onPassed={() => {
+                    setCheckPassed(true);
+                    registerLabUnits(labId as never, [UNDERSTANDING_UNIT]);
+                    markLabUnit(labId as never, UNDERSTANDING_UNIT);
+                  }}
+                />
+              </View>
+            </ScrollView>
+          ) : null}
           {mode === 'learn' ? (
             <ScrollView contentContainerStyle={styles.scroll}>
               <View style={styles.panel}>
