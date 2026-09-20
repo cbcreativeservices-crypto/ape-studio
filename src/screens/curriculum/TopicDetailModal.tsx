@@ -176,6 +176,11 @@ export function TopicDetailModal({
                 </View>
               ))}
             </View>
+            {/* ⛔ UNCONDITIONAL — see the twin note in CredentialDetailModal. */}
+            <Text style={styles.rolesNote}>
+              Studying this topic supports these roles; it does not qualify anyone for them. Some
+              need a degree, licence or certification beyond the Academy (shown on the role).
+            </Text>
           </View>
         ) : null}
       </View>
@@ -314,6 +319,7 @@ const styles = StyleSheet.create({
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   tag: { backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 6, paddingHorizontal: 10, paddingVertical: 5 },
   tagText: { fontFamily: fonts.barlowMedium, fontSize: 13.5, lineHeight: 17, color: colors.textSecondary },
+  rolesNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: '#ffb060', marginTop: 8 },
   reqNote: { fontFamily: fonts.barlowMedium, fontSize: 10.5, lineHeight: 13, letterSpacing: 0.2, color: colors.textSub, marginTop: 2 },
 
   // Footer: optional acknowledge row + a row of [Enroll | Close].

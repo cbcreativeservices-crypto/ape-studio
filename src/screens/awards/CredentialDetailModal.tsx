@@ -262,7 +262,7 @@ export function CredentialDetailModal({
 
           {copy?.careers.length ? (
             <View style={styles.metaBlock}>
-              <Text style={[styles.metaLabel, { color: accent }]}>CAREERS THIS CAN LEAD TO</Text>
+              <Text style={[styles.metaLabel, { color: accent }]}>WHERE THIS KNOWLEDGE IS USED AT WORK</Text>
               <View
                 style={styles.tags}
                 accessible
@@ -277,6 +277,18 @@ export function CredentialDetailModal({
                   </View>
                 ))}
               </View>
+              {/* ⛔ UNCONDITIONAL, AND IT STAYS UNCONDITIONAL. The per-role
+                  chips only fire where a `requires` code was assigned, and most
+                  role names have none — so gating this on "does any role here
+                  need a credential" would make the disclosure true only some of
+                  the time, which is how the CurriculumScreen matcher ended up
+                  firing on 6 of 44 lists. */}
+              <Text style={styles.careersNote}>
+                This certificate documents Academy study. On its own it is not a qualification for
+                any role — employers weigh experience and practical ability too, and some roles
+                listed need a degree, licence or certification beyond the Academy (shown on the
+                role).
+              </Text>
             </View>
           ) : null}
         </View>
@@ -440,6 +452,7 @@ const styles = StyleSheet.create({
   tag: { backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 6, paddingHorizontal: 10, paddingVertical: 5 },
   careerTag: { backgroundColor: 'transparent', borderWidth: StyleSheet.hairlineWidth },
   tagText: { fontFamily: fonts.barlowMedium, fontSize: 13.5, lineHeight: 17, color: colors.textSecondary },
+  careersNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: '#ffb060', marginTop: 8 },
   reqNote: { fontFamily: fonts.barlowMedium, fontSize: 10.5, lineHeight: 13, letterSpacing: 0.2, color: colors.textSub, marginTop: 2 },
 
   // Info readout (TopicDetailModal grammar: Share Tech Mono, green).

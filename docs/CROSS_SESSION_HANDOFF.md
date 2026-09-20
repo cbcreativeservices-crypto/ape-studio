@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-20 08:33 · ccode · 092e2715
+changed: Copy pass 4c: screens that are each correct and disagree with each other
+affects other side: SOUND_SAFETY_VERSION bumped 1 → 2, so every existing user is asked to acknowledge sound safety again on next audio enable (two clauses stated protections that can degrade silently). Also: the certificate QR caption now points at /verify, not /registry, which is a 404 — if A ever adds a public /registry index page, revisit.
+needs: nothing
+
+
 ### 2026-09-20 08:14 · ccode · e8bac7a9
 changed: Copy pass 4a: stop naming routes, emails and controls that do not exist
 affects other side: two copy promises now depend on backend behaviour A owns — the moderation notice and the employer queue both tell the member to email info@proaudiotrainingacademy.com because `account_set_standing()` and `employer_review()` send no mail. If A adds a mailer to either, the copy should go back to promising the email.
