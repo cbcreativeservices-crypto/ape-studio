@@ -26,6 +26,24 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-20 09:45 · ccode · 2026092002_remove_four_retired_daw_certificates (NOT APPLIED — for A)
+changed: nothing on the server. Wrote the migration to DELETE the four retired DAW certificates
+  (Cubase/Nuendo for Post, Digital Performer/Reason Producer, REAPER Power User, Studio One
+  Producer) and their 12 certificate_topics links. Owner's call: "there were not enough terms for
+  each so their terms were taken and already consolidated elsewhere."
+affects other side: A OWNS THE APPLY. Verified safe row by row — 0 credential_awards, 0
+  credential_eligibility, and every topic they pointed at is still ACTIVE and shared with 4-9 other
+  certificates, so nothing is orphaned. All four are already is_active=false, so no user-facing
+  change; this only makes the data match the decision. The migration self-checks (aborts unless
+  exactly 4 rows and 0 awards). Client needs nothing — no reference to any of the four slugs exists
+  in src/ or web/.
+  ⚠️ CORRECTION FOR THE RECORD: an audit pass reported these as "four LIVE certificates missing
+  copy" and said the true certificate count was 128. It is 124 — there are 128 rows, four inactive.
+  The Explore screen's "124 specialist certificates" was right all along
+  (refresh_academy_stats counts is_active = true). credentialCopy.ts's 160 keys (124 + 36 programs)
+  are correct and must stay 160.
+needs: A to apply (or say the word and ccode will run it).
+
 ### 2026-09-20 09:13 · ccode · aac778b9
 changed: Celebrations are popups, not pulldowns
 affects other side: nothing server-side. Client only: every celebration now renders as a centred popup instead of an inline banner (owner ruling), and the study screens no longer stall at 100% — a finished method stays practisable.
