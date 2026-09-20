@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-20 12:15 · ccode · ce99b4c2
+changed: Log out: send the queued work first, and stop claiming it is safe
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-20 11:47 · ccode · d79a22ef + a9860efc
 changed: Two dashboard changes, client-only. (1) The < > topic arrows moved to sit beside the big
   amber % under OVERALL TOPIC PROGRESS. Took two goes: absolute positioning was wrong both ways —

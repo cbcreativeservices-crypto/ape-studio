@@ -1084,13 +1084,26 @@ type EchoPreset = {
 // Blurbs quote the round-trip time to the far wall (2·d ÷ 343 m/s): past
 // ~50 ms (the Haas fusion limit the rest of this module uses) the ear stops
 // fusing the reflection and hears a SEPARATE echo.
+/**
+ * ⚠️ NO HARD-CODED MILLISECONDS IN THESE BLURBS. They used to quote a round
+ * trip ("~350 ms") that the readout never showed and could not confirm: the
+ * figure was the far wall, the readout was the nearest side wall, and the two
+ * were out by an order of magnitude. Every arrival time is now live on the
+ * bezel and in the timeline, and it moves as the listener is dragged, so a
+ * number written here can only go stale or disagree. Describe the ROOM; let
+ * the instrument report the time.
+ */
 const ECHO_PRESETS: (EchoPreset & { blurb: string })[] = [
-  { key: 'canyon', label: 'CANYON 60 m', w: 60, h: 30, boundary: ['concrete', 'concrete', 'concrete', 'concrete'], blurb: 'Rock 60 m away: the round trip takes ~350 ms — a full, distinct HELLO…hello. The classic echo.' },
-  { key: 'gym', label: 'GYM 24 m', w: 24, h: 15, boundary: ['concrete', 'glass', 'wood', 'concrete'], blurb: 'Hard walls 24 m apart: ~140 ms round trip — a slap-back you clearly hear as a repeat, not as space.' },
-  { key: 'church', label: 'CHURCH 30 m', w: 30, h: 14, boundary: ['concrete', 'glass', 'wood', 'glass'], blurb: 'A long stone room: ~175 ms to the far wall and back, tangled with many other paths — echo blurring into reverb.' },
-  { key: 'warehouse', label: 'WAREHOUSE 40 m', w: 40, h: 22, boundary: ['concrete', 'concrete', 'concrete', 'concrete'], blurb: 'All concrete, 40 m deep: ~230 ms repeats that keep bouncing — echoes ON echoes.' },
+  { key: 'canyon', label: 'CANYON 60 m', w: 60, h: 30, boundary: ['concrete', 'concrete', 'concrete', 'concrete'], blurb: 'Rock 60 m away, nothing to absorb: the far wall answers about a third of a second later — a full, distinct HELLO…hello. The classic echo.' },
+  { key: 'gym', label: 'GYM 24 m', w: 24, h: 15, boundary: ['concrete', 'glass', 'wood', 'concrete'], blurb: 'Hard walls 24 m apart: the far wall comes back as a slap you hear as a repeat, while the low ceiling fuses. Both at once.' },
+  { key: 'church', label: 'CHURCH 30 m', w: 30, h: 14, boundary: ['concrete', 'glass', 'wood', 'glass'], blurb: 'A long stone room: the far-wall return is tangled with many other paths — echo blurring into reverberation.' },
+  { key: 'warehouse', label: 'WAREHOUSE 40 m', w: 40, h: 22, boundary: ['concrete', 'concrete', 'concrete', 'concrete'], blurb: 'All concrete, 40 m deep: late returns that keep bouncing — echoes ON echoes.' },
 ];
 const ECHO_FREQ = 800;
+/** Haas / integration threshold — below this a reflection fuses with the direct
+ *  sound instead of being heard as a repeat. One constant so the bezel, the
+ *  readouts and the timeline can never disagree about where the line is. */
+const ECHO_FUSE_MS = 50;
 
 const ECHO_CHECK: CheckSpec = {
   question: 'A strong reflection arrives 20 ms after the direct sound. What do you hear?',
@@ -1141,6 +1154,36 @@ export function EchoModule(p: WaveModuleProps) {
   const gapMs = firstRefl && direct ? (firstRefl.t - direct.t) * 1000 : 0;
   const lvl = responseAt(scene, scene.listener.x, scene.listener.y, ECHO_FREQ);
 
+  /**
+   * ⛔ THE FIRST REFLECTION IS NOT THE ECHO, AND THIS MODULE USED TO SAY IT WAS.
+   *
+   * `arrivals` is sorted by time, so `arrivals[1]` is the NEAREST surface — in
+   * every preset that is a side wall a few metres away, and it fuses. The far
+   * wall each preset's blurb describes ("~350 ms round trip") arrived far later
+   * and was never read out, so all four presets printed FUSES while the copy
+   * promised a textbook echo. Verified in the canyon: direct 5 m, left wall
+   * 15 m, gap 29 ms — while the far wall is a 105 m path at ~291 ms.
+   *
+   * Both are real and a big hard room gives you BOTH AT ONCE, which is the
+   * actual lesson (owner ruling 2026-09-20: show both). So the early
+   * reflection keeps its honest readout, and the echo is reported separately.
+   *
+   * The echo is the LOUDEST arrival past the threshold, not the last one to
+   * straggle in: a 2nd-order corner bounce arrives latest and is usually far
+   * too quiet to hear as a repeat, so reporting it would trade one wrong
+   * number for another.
+   */
+  const echo = useMemo(() => {
+    if (!direct) return null;
+    let best: (typeof arrivals)[number] | null = null;
+    for (const a of arrivals) {
+      if ((a.t - direct.t) * 1000 < ECHO_FUSE_MS) continue;
+      if (!best || a.levelDb > best.levelDb) best = a;
+    }
+    return best;
+  }, [arrivals, direct]);
+  const echoGapMs = echo && direct ? (echo.t - direct.t) * 1000 : 0;
+
   return (
     <WaveLayout
       rack={{
@@ -1153,7 +1196,18 @@ export function EchoModule(p: WaveModuleProps) {
           { k: 'DIRECT', v: direct ? `${(direct.t * 1000).toFixed(1)} ms` : '—', helpKey: 'echo' },
           { k: '1ST REFL', v: firstRefl ? `${(firstRefl.t * 1000).toFixed(1)} ms` : '—', helpKey: 'echo' },
           { k: 'GAP', v: `${gapMs.toFixed(1)} ms`, helpKey: 'echo' },
-          { k: 'VERDICT', v: gapMs >= 50 ? 'ECHO' : 'FUSES', flex: 1.1, helpKey: 'echo' },
+          {
+            k: '1ST REFL',
+            v: gapMs >= ECHO_FUSE_MS ? 'ECHO' : 'FUSES',
+            flex: 1.1,
+            helpKey: 'echo',
+          },
+          {
+            k: 'ECHO',
+            v: echo ? `${echoGapMs.toFixed(0)} ms` : 'NONE',
+            flex: 1.1,
+            helpKey: 'echo',
+          },
         ],
         stage: (w, h) => (
           <RackScene
@@ -1201,22 +1255,30 @@ export function EchoModule(p: WaveModuleProps) {
               { k: 'ROOM', v: `${preset.w} × ${preset.h} m` },
               { k: 'DIRECT', v: direct ? `${(direct.t * 1000).toFixed(1)} ms` : '—' },
               { k: '1ST REFLECTION', v: firstRefl ? `${(firstRefl.t * 1000).toFixed(1)} ms` : '—' },
-              { k: 'GAP', v: `${gapMs.toFixed(1)} ms` },
-              { k: 'VERDICT', v: gapMs >= 50 ? 'DISCRETE ECHO' : 'FUSES (HAAS)' },
+              { k: 'GAP TO 1ST', v: `${gapMs.toFixed(1)} ms` },
+              { k: '1ST REFL VERDICT', v: gapMs >= ECHO_FUSE_MS ? 'DISCRETE ECHO' : 'FUSES (HAAS)' },
               { k: '1ST REFL LEVEL', v: firstRefl && direct ? `${(firstRefl.levelDb - direct.levelDb).toFixed(1)} dB re direct` : '—' },
+              { k: 'LOUDEST LATE ARRIVAL', v: echo ? `${(echo.t * 1000).toFixed(1)} ms` : 'none past 50 ms' },
+              { k: 'ECHO GAP', v: echo ? `${echoGapMs.toFixed(1)} ms` : '—' },
+              { k: 'ECHO LEVEL', v: echo && direct ? `${(echo.levelDb - direct.levelDb).toFixed(1)} dB re direct` : '—' },
               { k: 'LEVEL @ LISTENER', v: `${lvl.toFixed(1)} dB` },
             ]}
           />
           <Text style={dstyles.caption}>
-            Drag the listener toward and away from the source: the gap to the first reflection crosses ~50 ms and the verdict flips. Big hard rooms make echoes; the same reflections packed tight make reverberation (Module 15).
+            A room gives you both at once. The nearest surface answers within a few
+            milliseconds and fuses with the direct sound — you hear it as tone and size, not as a
+            repeat. A distant hard wall answers late enough to arrive as a separate event, and that
+            is the echo. Drag the listener: the gap to the first reflection crosses ~50 ms and its
+            verdict flips, while the far-wall return changes far less. Pack those same late
+            reflections close together and you have reverberation instead (Module 15).
           </Text>
         </PanelCard>
       }
       secondary={
         <PanelCard>
           <Text style={dstyles.eyebrow}>ECHO TIMELINE — ARRIVALS AT THE LISTENER</Text>
-          <ArrivalTimeline arrivals={arrivals} thresholdMs={50} />
-          <Badge text="STEMS = arrivalsAt (DIRECT + 1st/2nd-ORDER IMAGE-SOURCE REFLECTIONS) · AMBER FUSES WITH THE DIRECT (<50 ms) · RED READS AS A DISCRETE ECHO" />
+          <ArrivalTimeline arrivals={arrivals} thresholdMs={ECHO_FUSE_MS} />
+          <Badge text="STEMS = arrivalsAt (DIRECT + 1st/2nd-ORDER IMAGE-SOURCE REFLECTIONS) · AMBER FUSES WITH THE DIRECT (<50 ms) · RED READS AS A DISCRETE ECHO · THE ECHO READOUT TRACKS THE LOUDEST RED STEM, NOT THE LAST" />
         </PanelCard>
       }
       mistakes={
@@ -1225,6 +1287,7 @@ export function EchoModule(p: WaveModuleProps) {
             'Confusing a discrete echo (>~50 ms, heard separately) with reverberation (dense, continuous).',
             'Thinking any reflection is an echo — it needs enough delay AND level.',
             'Ignoring the ~50 ms Haas integration threshold below which reflections fuse with the direct sound.',
+            'Assuming the FIRST reflection is the echo. It is usually the nearest wall, arriving too early to hear separately — the echo is a later, more distant return.',
           ]}
         />
       }
