@@ -104,6 +104,35 @@ async function probe(domain: string): Promise<Remote> {
   return out;
 }
 
+/**
+ * Ask the edge function to mint and mail the six-digit work-email code.
+ *
+ * ⛔ FAILS SAFE, AND THAT IS THE POINT. `employer-issue-code` is written but
+ *    NOT YET DEPLOYED (see supabase/functions/_NOT_DEPLOYED.md). Until it is,
+ *    this returns null, no `sent_to` reaches the form, and the form shows the
+ *    honest "your application was saved, a person will review it" branch
+ *    instead of claiming a code was sent. Deploying the function is the only
+ *    thing needed to turn the automatic path on.
+ *
+ *    Never let a failure here fail the APPLICATION — `employer_apply` has
+ *    already succeeded by this point and the row exists. Losing the code is
+ *    recoverable; telling someone their application vanished is not.
+ */
+async function issueCode(auth: string, appId: string): Promise<string | null> {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/employer-issue-code`, {
+      method: "POST",
+      headers: { Authorization: auth, "Content-Type": "application/json" },
+      body: JSON.stringify({ application_id: appId }),
+    });
+    if (!res.ok) return null;
+    const out = (await res.json()) as { ok?: boolean; sent_to?: string };
+    return out?.ok && out.sent_to ? String(out.sent_to) : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(req: Request) {
   const auth = req.headers.get("authorization") ?? "";
   if (!auth.startsWith("Bearer ")) {
@@ -170,7 +199,8 @@ export async function POST(req: Request) {
       }),
     });
     const out0 = await res0.json().catch(() => ({ ok: false, error: "finalize_failed" }));
-    return NextResponse.json(out0, { status: res0.ok ? 200 : res0.status });
+    const sentTo0 = res0.ok ? await issueCode(auth, appId) : null;
+    return NextResponse.json(sentTo0 ? { ...out0, sent_to: sentTo0 } : out0, { status: res0.ok ? 200 : res0.status });
   }
 
   const remote = await probe(domain);
@@ -183,5 +213,6 @@ export async function POST(req: Request) {
   });
 
   const out = await res.json().catch(() => ({ ok: false, error: "finalize_failed" }));
-  return NextResponse.json(out, { status: res.ok ? 200 : res.status });
+  const sentTo = res.ok ? await issueCode(auth, appId) : null;
+  return NextResponse.json(sentTo ? { ...out, sent_to: sentTo } : out, { status: res.ok ? 200 : res.status });
 }

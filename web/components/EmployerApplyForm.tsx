@@ -110,8 +110,22 @@ export default function EmployerApplyForm() {
       // Nothing is decided here any more. Everything else on this form is
       // something an impostor could type; holding the work mailbox is not,
       // so the application waits on the code.
-      if (out?.ok) {
-        setSentTo(String(out.sent_to ?? email));
+      // ⛔ `ok` IS NOT "A CODE WAS SENT" (2026-09-20).
+      //
+      //    `employer-apply-finalize` returns `{ ok: true, outcome, reasons }`
+      //    after notifying the ADMIN. It does not mint a code, does not mail
+      //    the applicant, and does not return `sent_to`. Reading `ok` as
+      //    "code sent" put every applicant on a screen that said, in bold,
+      //    "We sent a six-digit code to <their address>" — for mail that was
+      //    never sent, with no exit, and a "Send another code" button that
+      //    cheerfully reported a new one was on its way every time.
+      //
+      //    Require the server to actually say where it sent the code. Until
+      //    the issuing path exists, this falls through to the honest branch
+      //    below, which tells them the application IS saved and that a person
+      //    will review it — all of which is true today.
+      if (out?.ok && out.sent_to) {
+        setSentTo(String(out.sent_to));
         setStatus("code");
         return;
       }

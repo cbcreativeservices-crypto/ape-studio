@@ -113,6 +113,49 @@ describe('scenario queue', () => {
     assert.equal(await pendingScenarioCount(), 0);
   });
 
+  /**
+   * ── THE LOST-UPDATE RACE (bug pass 1, 2026-09-20) ────────────────────────
+   *
+   * `recordScenarioAnswer` is fired per answer without being awaited, and it
+   * waits on two network round trips before queuing anything. Offline those
+   * sit in the RPC timeout for seconds, so two enqueues genuinely overlap.
+   * Unserialised, both read the same array, both push, both write — and one
+   * learner's answer is gone from disk forever. These two failed before the
+   * queue was put behind a serial chain.
+   */
+  it('⛔ does not lose an answer queued concurrently', async () => {
+    await Promise.all([queueScenarioCall(answer(1, 'q1')), queueScenarioCall(answer(1, 'q2'))]);
+    assert.equal(await pendingScenarioCount(), 2, 'one enqueue overwrote the other');
+  });
+
+  it('⛔ does not lose an answer queued DURING a slow drain', async () => {
+    await queueScenarioCall(answer(1, 'q1'));
+    let arrivedDuringDrain: Promise<void> | null = null;
+    const left = await drainScenarioQueue(async () => {
+      // The new answer lands while the first is still in flight — exactly what
+      // happens when the learner answers again during an RPC timeout.
+      if (!arrivedDuringDrain) arrivedDuringDrain = queueScenarioCall(answer(1, 'q2'));
+      await arrivedDuringDrain;
+      return true;
+    });
+    assert.equal(left, 1, 'the answer queued mid-drain was written over by the drain');
+    assert.equal(await pendingScenarioCount(), 1);
+  });
+
+  it('the surviving row after a mid-drain enqueue is the NEW one, in order', async () => {
+    await queueScenarioCall(answer(1, 'q1'));
+    await drainScenarioQueue(async () => {
+      await queueScenarioCall(answer(1, 'q2'));
+      return true;
+    });
+    const seen: string[] = [];
+    await drainScenarioQueue(async (i) => {
+      seen.push(i.kind === 'answer' ? i.questionId : 'c');
+      return true;
+    });
+    assert.deepEqual(seen, ['q2'], 'q1 was sent; q2 must be what is left');
+  });
+
   it('survives a corrupt queue instead of wedging scenarios forever', async () => {
     store.set('ape:scenarioQueue', '{not json');
     assert.equal(await pendingScenarioCount(), 0);

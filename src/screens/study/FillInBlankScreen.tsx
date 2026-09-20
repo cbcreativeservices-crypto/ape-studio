@@ -458,11 +458,7 @@ export function FillInBlankScreen({ navigation, route }: Props) {
   );
 
   return (
-    // ⛔ THE BOTTOM INSET IS NOT OPTIONAL. Prev/Next is a PINNED footer, so
-    //    without it the two buttons sit inside the Android gesture strip / under
-    //    the iPhone home indicator — which is how the device run kept hitting
-    //    PREV by accident.
-    <View style={[styles.root, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+    <View style={[styles.root, { paddingTop: insets.top }]}>
       <View style={styles.body}>
         <StudyHeader
           method="fill_in_blank"

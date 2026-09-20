@@ -37,7 +37,7 @@ const PLANS: Plan[] = [
 
 export function PaywallScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
-  const { refreshEntitlement, isMember, resolved, entitlement } = useEntitlement();
+  const { refreshEntitlement, isMember, resolved, tierKnown, entitlement } = useEntitlement();
   const [selected, setSelected] = useState<Plan['id']>('annual');
   const [busy, setBusy] = useState(false);
   // Whether in-app purchasing is usable in THIS build (native module present +
@@ -154,8 +154,24 @@ export function PaywallScreen({ navigation }: Props) {
     // the charge sits unacknowledged and auto-refunds after 72 hours; on the
     // App Store it does not.
     //
-    // 'anonymous' is the tier for a guest or a device-key session, and `resolved`
-    // above already guarantees this is a real read and not a not-known-yet.
+    // 'anonymous' is the tier for a guest or a device-key session.
+    //
+    // ⛔ `tierKnown`, NOT `resolved`. The comment here used to claim `resolved`
+    //    "already guarantees this is a real read and not a not-known-yet". The
+    //    provider says the opposite in its own docblock: `resolved` flips in a
+    //    .finally() EVEN WHEN THE READ FAILED. So a signed-in paying member
+    //    whose first entitlement read fails reads as 'anonymous' with
+    //    resolved === true, and this branch told them to "create an account"
+    //    — sending them to a login screen they are already past, with no way
+    //    to buy and no way to Restore. SettingsScreen was converted to
+    //    `tierKnown` for this exact bug; this screen was missed.
+    if (!tierKnown) {
+      notify(
+        'One moment',
+        'We’re still checking your membership on this device. Give it a few seconds and try again — if it keeps failing, your connection is the likeliest cause.',
+      );
+      return;
+    }
     if (entitlement === 'anonymous') {
       confirmDialog(
         'Create an account first',
@@ -189,7 +205,10 @@ export function PaywallScreen({ navigation }: Props) {
     // put it: the receipt verifies, `validate-purchase` answers
     // `not_authenticated`, and the person is told to check their connection for
     // a problem that is not their connection (2026-09-17). Say the true thing.
-    if (resolved && entitlement === 'anonymous') {
+    // Same correction as onContinue: only assert "you are not signed in" when a
+    // read actually produced a tier. Restore is an Apple 3.1.1 requirement, so
+    // wrongly refusing it is worse here than anywhere else in the app.
+    if (tierKnown && entitlement === 'anonymous') {
       confirmDialog(
         'Sign in to restore',
         'A previous purchase is restored to the account it was bought with, so sign in or create your account first — then try Restore again.',

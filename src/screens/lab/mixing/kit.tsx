@@ -16,6 +16,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { colors, fonts } from '../../../theme/tokens';
 import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
 import { navigationRef } from '../../../navigation/navigationRef';
@@ -261,6 +262,25 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
       playerRef.current = null;
     };
   }, []);
+
+  /**
+   * ⛔ STOP ON BLUR, NOT ONLY ON UNMOUNT.
+   *
+   * Unmount is the wrong hook for this lab, because this lab PUSHES siblings:
+   * `OpenLabLink` below navigates to the EQ Lab and to the other mixing lab,
+   * and React Navigation keeps the pushed-from screen mounted. So the 10-second
+   * stem loop carried on playing UNDER the EQ Lab and mixed with that lab's own
+   * audition tone — with the transport on the covered screen, there was nothing
+   * on the visible one that could stop it. Only Back, shake-to-mute or
+   * backgrounding silenced it.
+   *
+   * Every other audio lab already does exactly this (AutotuneLabScreen:191,
+   * BassLabScreen:178, BinauralLabScreen:151, cymatics/useDriveTone:134); the
+   * mixing labs build their own shell and were missed. Dispose stays on
+   * unmount — blur should silence the lab, not throw away the render the
+   * learner comes back to.
+   */
+  useFocusEffect(useCallback(() => () => playerRef.current?.stop(), []));
 
   // New variant set → old renders (AND old listening credit) are stale.
   useEffect(() => {

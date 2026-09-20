@@ -61,11 +61,40 @@ async function write(items: ScenarioPending[]): Promise<void> {
   }
 }
 
+/**
+ * ⛔ EVERY read-modify-write ON THIS KEY GOES THROUGH HERE.
+ *
+ * The queue is one AsyncStorage key, and `read() → modify → write()` across an
+ * await is a lost-update race the moment two of them overlap. They do overlap:
+ * `recordScenarioAnswer` is fired per answer without awaiting
+ * (ScenariosScreen), and before it queues anything it waits on two network
+ * round trips. Offline, those sit in the RPC timeout for SECONDS — long enough
+ * for the next answer, or the 3 s auto-advance running into `finishRound`, to
+ * arrive. Both would read the same array, both push, both write; last write
+ * wins and one answer is gone from disk for good.
+ *
+ * That is precisely the failure this file was written to prevent, reintroduced
+ * one level down: the round report congratulates the learner, the dashboard
+ * LED is short by one, and the round can never complete because the server
+ * never received that answer.
+ *
+ * The network send itself is deliberately NOT inside the chain — it is slow,
+ * and serialising it would stall every queue write behind a timeout.
+ */
+let tail: Promise<unknown> = Promise.resolve();
+function serial<T>(fn: () => Promise<T>): Promise<T> {
+  const run = tail.then(fn, fn);
+  tail = run.catch(() => undefined);
+  return run;
+}
+
 /** Park a call that did not reach the server. Never throws. */
 export async function queueScenarioCall(item: ScenarioPending): Promise<void> {
-  const items = await read();
-  items.push(item);
-  await write(items);
+  await serial(async () => {
+    const items = await read();
+    items.push(item);
+    await write(items);
+  });
 }
 
 /** How many scenario calls are still unsent — drives the "not saved yet" copy. */
@@ -100,9 +129,20 @@ export function drainScenarioQueue(
       if (!ok) break; // ⛔ stop, do not skip — later calls depend on this one
       sent++;
     }
-    const left = items.slice(sent);
-    await write(left);
-    return left.length;
+    /**
+     * ⛔ RE-READ, DO NOT WRITE BACK THE STALE TAIL. `items` was read before a
+     *    loop of network calls that can take seconds; anything queued during
+     *    that loop is on disk but not in this array, and `write(items.slice())`
+     *    would erase it. Drop the first `sent` entries from what is CURRENTLY
+     *    stored instead — correct because the queue is only ever appended to
+     *    at the tail and drained from the head.
+     */
+    return await serial(async () => {
+      const current = await read();
+      const left = current.slice(sent);
+      await write(left);
+      return left.length;
+    });
   })().finally(() => {
     draining = null;
   });
@@ -120,9 +160,13 @@ export function drainScenarioQueue(
  */
 export async function clearScenarioQueue(): Promise<void> {
   draining = null;
-  try {
-    await AsyncStorage.removeItem(KEY);
-  } catch (e) {
-    console.warn('[scenario-queue] could not clear:', (e as Error).message);
-  }
+  // Serialised with the rest: a wipe that interleaves with an in-flight enqueue
+  // would leave the departing user's answer sitting in the next user's queue.
+  await serial(async () => {
+    try {
+      await AsyncStorage.removeItem(KEY);
+    } catch (e) {
+      console.warn('[scenario-queue] could not clear:', (e as Error).message);
+    }
+  });
 }

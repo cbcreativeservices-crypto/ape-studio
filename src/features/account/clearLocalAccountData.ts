@@ -79,8 +79,17 @@ const KEEP: ReadonlySet<string> = new Set<string>([
   // Keeping it does NOT break the owner's "a guest is remembered in no way"
   // ruling: it holds a count and a week-start, no identity and nothing about
   // what was looked up — the same standing as the device id it sits beside. A
-  // guest `total` wipe still removes it below, which is the deliberate escape
-  // for someone genuinely starting over.
+  // ⛔ AND THE `total` WIPE MUST NOT REMOVE IT EITHER (2026-09-20).
+  //
+  // The exemption on the `total` branch below used to name this key, and
+  // Guest Mode entry (AuthScreen's enterGuest) is the ONLY caller that passes
+  // `total`. So the exact repro written above was never actually closed: hit
+  // the lock, tap Guest Mode, get fourteen more, repeat. Three taps for
+  // unlimited access to the whole glossary.
+  //
+  // There is no "deliberate escape" to protect here — the escape WAS the
+  // exploit. Someone genuinely starting over loses nothing that matters: a
+  // count and a week-start.
   'ape:glossaryUsageLocal',
   'ape:splCalOffset', // device mic calibration — hardware (governance R1)
   'ape:deviceId', // stable per-install id for single-device login (survives switch)
@@ -127,9 +136,10 @@ export async function clearLocalAccountData(opts?: { total?: boolean }): Promise
       (k) =>
         k.startsWith('ape:') &&
         // A guest is wiped 100% clean, so `total` overrides the exam-queue
-        // entries too — but never the hardware calibration, the install id or
-        // the dev overrides, which are not user memory.
-        !(KEEP.has(k) && !(opts?.total === true && (k.startsWith('ape:finalExamQueue') || k === 'ape:glossaryUsageLocal'))) &&
+        // entries too — but never the hardware calibration, the install id,
+        // the dev overrides, or THE GLOSSARY METER, which is a rate limit
+        // rather than user memory and whose whole purpose is to survive this.
+        !(KEEP.has(k) && !(opts?.total === true && k.startsWith('ape:finalExamQueue'))) &&
         (opts?.total === true || !isOnboardingFlag(k)),
     );
     if (toRemove.length > 0) {

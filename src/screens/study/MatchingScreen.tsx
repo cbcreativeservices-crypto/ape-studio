@@ -508,9 +508,7 @@ export function MatchingScreen({ navigation, route }: Props) {
   );
 
   return (
-    // ⛔ THE BOTTOM INSET IS NOT OPTIONAL — Prev/Next is PINNED, so without it
-    //    the buttons sit in the Android gesture strip / under the home indicator.
-    <View style={[styles.root, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+    <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scroll}>
         <StudyHeader
           method="matching"

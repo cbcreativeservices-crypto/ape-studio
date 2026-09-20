@@ -7,7 +7,8 @@
  * No email address appears anywhere in this screen, in either direction.
  */
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { FlatList, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { FlatList, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
 import { Banner, Chip, ChipWrap, EmptyState, Eyebrow, Helper, Loading, PrimaryButton } from './directoryBits';
@@ -446,6 +447,7 @@ const bubbleKey = (m: ThreadMessage) => m.id;
 const renderBubble = ({ item }: { item: ThreadMessage }) => <Bubble m={item} />;
 
 function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClose: () => void }) {
+  const insets = useSafeAreaInsets();
   const [msgs, setMsgs] = useState<ThreadMessage[]>([]);
   const [body, setBody] = useState('');
   const [err, setErr] = useState<string | null>(null);
@@ -486,9 +488,27 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
 
   if (!thread) return null;
   return (
+    /**
+     * ⛔ THE KEYBOARD COVERED THE COMPOSER AND SEND, WITH NO WAY OUT.
+     *
+     * This sheet is bottom-anchored and its last two children are the reply
+     * box and SEND. There was no KeyboardAvoidingView, no bottom inset and no
+     * keyboardDismissMode, and an RN <Modal> renders in its own native
+     * container, so the app-root KeyboardProvider/KeyboardToolbar never
+     * reached inside it. Result: the keyboard came up over the member's own
+     * text AND over SEND; the input is `multiline`, so Return inserted a
+     * newline rather than dismissing; and the message list would not drop it
+     * on a drag either. The only escape was backgrounding the app — on every
+     * single message send, in the whole of the messaging feature.
+     */
     <Modal accessibilityViewIsModal visible transparent animationType="slide" onRequestClose={onClose}>
-      <View style={st.sheetRoot}>
-        <View style={[st.sheet, { maxHeight: '88%' }]}>
+      <KeyboardAvoidingView
+        style={st.sheetRoot}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        {/* With the keyboard DOWN, SEND used to sit 14pt from the physical
+            edge, under the home indicator. */}
+        <View style={[st.sheet, { maxHeight: '88%', paddingBottom: 14 + insets.bottom }]}>
           <View style={st.sheetHead}>
             <Text accessibilityRole="header" style={st.sheetTitle}>
               {thread.otherDisplayName.toUpperCase()}
@@ -505,6 +525,10 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
               exactly where the ScrollView put them. */}
           <FlatList
             style={{ flex: 1 }}
+            // Drag the conversation to put the keyboard away — the second
+            // escape route, since a multiline Return cannot dismiss it.
+            keyboardDismissMode="interactive"
+            keyboardShouldPersistTaps="handled"
             data={msgs}
             keyExtractor={bubbleKey}
             renderItem={renderBubble}
@@ -566,7 +590,7 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
             }
           />
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
