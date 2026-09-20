@@ -1,3 +1,11 @@
+## 2026-09-20 — A: Glossary Wave 1 (figure-of-eight purge) APPLIED + VERIFIED
+- Computer B returned Wave 1; A QA'd against live and applied.
+- Changed: glossary.definition x19, glossary.plain_english x3 (incl. 1 A-QA-absorbed B intake miss on 8822ff0d Lateral energy fraction), quiz_questions x41 rows (question_text/options_json/correct_answer/explanation).
+- QA gates PASS: serving path read (materialize_discrete_slot/submit_quiz/grade_one -> options_json+correct_answer are served/graded); answer-key integrity 41/41 (correct_answer in options_json); trigger validate_graded_question_glossary_link satisfied; residual figure-of-eight = 0 glossary / 0 quiz.
+- Backups: public._bkp_fig8_w1_gloss_20260920 (19), public._bkp_fig8_w1_quiz_20260920 (41). Rollback SQL in AUDIO APP\2026-09-20_A_Wave1_figure8_APPLIED + claude.ai artifact VWQZ6AHYFA1m7tefRPSVcj.
+- HELD for owner: (1) retired card 0b031b53 term='figure-of-eight' (dormant) scrub?; (2) spelled-out 'figure eight'/'figure-eight' in ~48 gloss + ~210 quiz -> Wave-1b if ruling extends; (3) 2 lightly self-answering stems (ea0e5903, 1beac4c3) optional B reword.
+- Wave 2 (Class 2 clone review) NOT yet released to B — awaiting owner go.
+
 <!-- CANONICAL A <-> ccode SYNC CHANNEL. Lives at repo docs/CROSS_SESSION_HANDOFF.md. -->
 # CROSS_SESSION_HANDOFF — A ↔ ccode live sync log
 
@@ -25,6 +33,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 ---
 
 ## LOG (newest first)
+
+### 2026-09-20 12:29 · ccode · 4ae71af5
+changed: Enrollments: credential popups get the description, thinner bars, smaller mark
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
 
 ### 2026-09-20 12:15 · ccode · ce99b4c2
 changed: Log out: send the queued work first, and stop claiming it is safe

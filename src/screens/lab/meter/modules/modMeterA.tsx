@@ -480,7 +480,7 @@ const PEAK_CHECK: CheckSpec = {
   ],
   correctIdx: 1,
   reveal:
-    'A peak meter answers exactly one question: "will it clip?" Loudness lives in the AVERAGE energy. Flip between KICK/SNARE and ORGAN at the same peak and compare the RMS and CREST readouts — around 20 dB apart. Module 3’s VU needle turns that difference into something you can watch move.',
+    'A peak meter answers exactly one question: "will it clip?" Loudness lives in the AVERAGE energy. Flip between KICK/SNARE and ORGAN at the same peak and compare the RMS and CREST readouts — more than 10 dB apart. Module 3’s VU needle turns that difference into something you can watch move.',
   wrongHint: 'Peak is one sample’s worth of information. What did the other thousand samples do?',
 };
 
@@ -573,7 +573,7 @@ export function PeakModule(p: MeterModuleProps) {
           <Text style={dstyles.eyebrow}>WHAT PEAK CANNOT TELL YOU — PREVIEW OF MODULE 3</Text>
           <Text style={dstyles.body}>
             Set KICK and ORGAN to the same peak and look at RMS: the meter face is
-            identical while the average energy differs by the CREST readout — around 20 dB. Peak is
+            identical while the average energy differs by the CREST readout — more than 10 dB. Peak is
             the converter's bodyguard, not a loudness meter. The next module puts a 300 ms needle on
             the same signals and makes that difference physical.
           </Text>
