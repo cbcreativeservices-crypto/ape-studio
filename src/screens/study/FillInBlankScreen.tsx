@@ -12,12 +12,14 @@
  * Booth 2026-07-07: swipe ‹ › navigates back/forward through questions like
  * flashcards (revisit a missed term and answer it again — extra attempts
  * accrue server-side normally). Pan handlers live on the screen ROOT with no
- * ScrollView (a scroller eats the gestures — same fix as flashcards). The
+ * ScrollView (a scroller eats the gestures — same fix as flashcards); the one
+ * scroller added since, around the PROMPT only (2026-09-19), is vertical and
+ * sits well away from the swipe strip, so it never claims a horizontal pan. The
  * LED creeps via studyDisplayPct (partial credit per pass) instead of the
  * leap-prone completion_pct; gates still read server fields.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AccessibilityInfo, ActivityIndicator, PanResponder, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, ActivityIndicator, PanResponder, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -383,16 +385,45 @@ export function FillInBlankScreen({ navigation, route }: Props) {
   };
   const itemNumber = ((qIdx % order.length) + order.length) % order.length;
 
+  /**
+   * ⛔ THE PROMPT HAS TO REACH A SCREEN READER, AND "______" IS NOT SPEECH.
+   *
+   * The sentence is drawn as nested <Text> runs so the blank can glow amber.
+   * Two problems came out of the 2026-09-19 device run: on several items the
+   * prompt never appeared in the view hierarchy as text at all (the four answer
+   * options did), so a screen-reader user got four answers and no question —
+   * and where it did appear, the blank itself is six underscores, which is read
+   * out as six underscores.
+   *
+   * One explicit label fixes both: the chunks joined by the WORD "blank", on a
+   * single accessible node, with the decorative runs hidden beneath it.
+   */
+  const spokenSentence = pre
+    .map((chunk) => chunk.trim())
+    .reduce((acc, chunk, i) => (i === 0 ? chunk : `${acc} blank ${chunk}`), '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
   const questionBody = (
     <>
-      <Text style={styles.sentence}>
-        {pre.map((chunk, i) => (
-          <Text key={i}>
-            {chunk}
-            {i < pre.length - 1 && <Text style={styles.blank}>______</Text>}
-          </Text>
-        ))}
-      </Text>
+      {/* flexShrink so a long prompt SCROLLS instead of pushing Prev/Next off
+          the bottom of the screen (device run 2026-09-19). RN defaults
+          flexShrink to 0, which is why a tall sentence simply won the layout. */}
+      <ScrollView style={styles.sentenceScroll} contentContainerStyle={styles.sentenceContent}>
+        <Text
+          style={styles.sentence}
+          accessible
+          accessibilityRole="text"
+          accessibilityLabel={spokenSentence}
+        >
+          {pre.map((chunk, i) => (
+            <Text key={i}>
+              {chunk}
+              {i < pre.length - 1 && <Text style={styles.blank}>______</Text>}
+            </Text>
+          ))}
+        </Text>
+      </ScrollView>
 
       <View style={styles.grid}>
         {question.options.map((opt) => (
@@ -412,7 +443,11 @@ export function FillInBlankScreen({ navigation, route }: Props) {
   );
 
   return (
-    <View style={[styles.root, { paddingTop: insets.top }]}>
+    // ⛔ THE BOTTOM INSET IS NOT OPTIONAL. Prev/Next is a PINNED footer, so
+    //    without it the two buttons sit inside the Android gesture strip / under
+    //    the iPhone home indicator — which is how the device run kept hitting
+    //    PREV by accident.
+    <View style={[styles.root, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
       <View style={styles.body}>
         <StudyHeader
           method="fill_in_blank"
@@ -529,6 +564,10 @@ const styles = StyleSheet.create({
   body: { flex: 1, padding: 16, gap: 16 },
   // 18/29 matches the flashcards body ruling (Booth 2026-07-08).
   sentence: { fontFamily: fonts.barlowRegular, fontSize: 20, lineHeight: 31, color: colors.textSecondary },
+  // Grows with the prompt, but yields to the answer grid and the pinned footer
+  // rather than shoving them off-screen.
+  sentenceScroll: { flexGrow: 0, flexShrink: 1 },
+  sentenceContent: { paddingBottom: 2 },
   blank: {
     fontFamily: fonts.barlowSemiBold,
     color: colors.amber,

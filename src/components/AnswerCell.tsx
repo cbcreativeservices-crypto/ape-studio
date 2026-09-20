@@ -144,9 +144,18 @@ export function AnswerCell({
             </View>
           ) : null}
           <View style={styles.labelWrap}>
+            {/* ⛔ NO MID-WORD BREAKS. Android's default hyphenation split answer
+                text inside words on the 2×2 grid — "Laser and optic / al-audio-
+                system / hazards" (device run 2026-09-19). These are TERMS: a
+                learner reading a hyphenated fragment has to reassemble the word
+                before they can even judge the answer. `none` wraps at spaces
+                instead, and `simple` stops the line-breaker trading a ragged
+                edge for a broken word. */}
             <Text
               style={[styles.label, { fontSize, color: s.text, textAlign: showCheck ? 'left' : 'center' }]}
               numberOfLines={numberOfLines}
+              android_hyphenationFrequency="none"
+              textBreakStrategy="simple"
             >
               {label}
             </Text>

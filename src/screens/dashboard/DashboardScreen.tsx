@@ -87,6 +87,7 @@ import { customListLocked as customListLockedFn, studyMethodLocked } from '../..
 import { supabase } from '../../lib/supabase';
 import { isRealAccount } from '../../features/commercial/realAccount';
 import { notify } from '../../lib/confirm';
+import { LOCK_TITLE, lockReason, type LockedPanel, type MethodGates } from '../../features/study/lockReason';
 import { markIntentionalSignOut } from '../../features/auth/intentionalSignOut';
 import { fetchGlossaryItemsByIds, fetchTopicItems } from '../../features/study/api';
 import { type MethodPctRow, smoothMethodPct, topicOverallPct } from '../../features/dashboard/topicPct';
@@ -1324,6 +1325,24 @@ export function DashboardScreen() {
   // Stage 4 gate: the quiz powers on only when every method before it is complete.
   const allMethodsComplete = flashcardsSeenAll && coreHomeworkComplete && scenariosComplete;
 
+  /**
+   * ⛔ A DEAD PANEL STAYS DEAD — but a TAP on one now answers.
+   *
+   * The powered-off look is the owner's ruling (2026-08-11) and nothing here
+   * lights it: no gate line, no colour, no readout. What was missing is that
+   * tapping one did literally nothing — no movement, no message — so a learner
+   * who did not know why it was dark had no way to find out. That is what sent
+   * the Pixel run down a whole investigation into why Scenarios would not open.
+   * One transient notice, only on a deliberate tap, naming only what is LEFT.
+   */
+  const gatesForLock: MethodGates = {
+    flashcardsSeenAll,
+    fillInBlankComplete: methodPct('fill_in_blank') >= 100,
+    matchingComplete: methodPct('matching') >= 100,
+    scenariosComplete,
+  };
+  const explainLock = (panel: LockedPanel) => notify(LOCK_TITLE, lockReason(panel, gatesForLock));
+
   // The gates are known now, so the celebration can be chosen. NOT a hook —
   // see the note at the top of this component and in useMethodCelebration.
   const celebrationProgress = {
@@ -1842,7 +1861,24 @@ export function DashboardScreen() {
 
                   {!powered ? (
                     // Powered off — a DEAD clear cap: no light, no colour, no nav.
-                    <SwitchButton label="" a11yLabel="Locked — complete the earlier study methods first" variant="clear" width={89} height={RACK_SWITCH_H} disabled />
+                    // The cap itself stays disabled (it must not LOOK live); the
+                    // wrapper is what turns a tap into an answer.
+                    <Pressable
+                      onPress={() => explainLock(m.key as LockedPanel)}
+                      accessibilityRole="button"
+                      accessibilityLabel={`${m.label} is not powered yet. ${lockReason(m.key as LockedPanel, gatesForLock)}`}
+                    >
+                      {/* ⛔ pointerEvents="none" IS LOAD-BEARING. SwitchButton
+                          does not pass `disabled` down to its own Pressable
+                          (it early-returns inside onPress instead), so a
+                          disabled cap still CAPTURES the touch and the wrapper
+                          below it never hears it — which is why the first cut
+                          of this fix silently did nothing. Letting the press
+                          fall through is the whole mechanism. */}
+                      <View pointerEvents="none">
+                        <SwitchButton label="" variant="clear" width={89} height={RACK_SWITCH_H} disabled />
+                      </View>
+                    </Pressable>
                   ) : isApplicable ? (
                     <SwitchButton
                       // Start (blue) → Continue (amber) → Review (green), by progress.
@@ -1973,7 +2009,16 @@ export function DashboardScreen() {
                   </View>
                   {!quizPowered ? (
                     // Powered off — a DEAD clear cap, no light/colour/nav.
-                    <SwitchButton label="" a11yLabel="Locked — complete the earlier study methods first" variant="clear" width={96} height={RACK_QUIZ_SWITCH_H} disabled />
+                    <Pressable
+                      onPress={() => explainLock('quiz')}
+                      accessibilityRole="button"
+                      accessibilityLabel={`The topic quiz is not powered yet. ${lockReason('quiz', gatesForLock)}`}
+                    >
+                      {/* pointerEvents="none" — see the method panel above. */}
+                      <View pointerEvents="none">
+                        <SwitchButton label="" variant="clear" width={96} height={RACK_QUIZ_SWITCH_H} disabled />
+                      </View>
+                    </Pressable>
                   ) : (
                     <SwitchButton
                       label={quizState === 'passed' ? 'Practice' : quizState === 'partial' ? 'Retry' : 'Start'}

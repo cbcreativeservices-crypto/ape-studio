@@ -15,6 +15,7 @@ import {
   fibSentence,
   matchingSentenceV2,
   maskLeaksFor,
+  tidyGaps,
   pickDistractors,
   BLANK,
   GAP,
@@ -171,4 +172,48 @@ test('splitSentences keeps decimals and citations intact', () => {
   const parts = splitSentences('OSHA 1910.95 sets the limit at 90 dBA over 8 hours. A 16.61 ms delay is one frame.');
   assert.equal(parts.length, 2);
   assert.ok(parts[0].includes('1910.95'));
+});
+
+/**
+ * ── A CLUE MUST NOT LOOK TRUNCATED ──────────────────────────────────────────
+ *
+ * Device run 2026-09-19 reported fill-in-the-blank prompts "truncated
+ * mid-sentence with a bare ....". They were not truncated — the final content
+ * word was legitimately masked, and an ellipsis gap sitting against the full
+ * stop renders as four dots. Two fixes, pinned here: the punctuation is
+ * tidied, and a sentence that dangles loses to an equally good one that does
+ * not.
+ */
+test('a gap against the full stop does not render as "…."', () => {
+  const q = fibSentence(
+    'Steel-Toe Boots',
+    'ASTM F2413 rated footwear guards the toes against impact and compression, not only a hard hat.',
+    ['Hard Hat', 'Gloves', 'Harness'],
+    3,
+  );
+  assert.ok(!q.masked.includes('….'), `still renders as truncated: ${q.masked}`);
+  assert.ok(q.masked.trimEnd().endsWith('…'), q.masked);
+});
+
+test('tidyGaps only touches a gap that meets terminal punctuation', () => {
+  assert.equal(tidyGaps('paired with a ….'), 'paired with a …');
+  assert.equal(tidyGaps('is it a …?'), 'is it a …');
+  // A gap mid-sentence, and an ordinary ellipsis with content after it, are
+  // both left exactly alone.
+  assert.equal(tidyGaps('the … guards the toes.'), 'the … guards the toes.');
+  assert.equal(tidyGaps('a … , then the rest'), 'a … , then the rest');
+});
+
+test('a sentence that ends in a gap loses to one that does not', () => {
+  // First sentence dangles ("…paired with a …"), second does not. The choice is
+  // randomised among TIES, so a losing candidate must never come up at all.
+  for (let i = 0; i < 25; i++) {
+    const q = fibSentence(
+      'Dolly',
+      'A wheeled platform that moves heavy cases, often paired with a harness. A harness keeps the load steady on a ramp.',
+      ['Hard Hat', 'Gloves', 'Harness'],
+      3,
+    );
+    assert.ok(!q.masked.trimEnd().endsWith('…'), `picked the dangling sentence: ${q.masked}`);
+  }
 });

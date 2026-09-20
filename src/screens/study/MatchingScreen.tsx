@@ -504,7 +504,9 @@ export function MatchingScreen({ navigation, route }: Props) {
   );
 
   return (
-    <View style={[styles.root, { paddingTop: insets.top }]}>
+    // ⛔ THE BOTTOM INSET IS NOT OPTIONAL — Prev/Next is PINNED, so without it
+    //    the buttons sit in the Android gesture strip / under the home indicator.
+    <View style={[styles.root, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scroll}>
         <StudyHeader
           method="matching"
@@ -626,7 +628,12 @@ const styles = StyleSheet.create({
   counter: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSubAlt, minWidth: 56, textAlign: 'right' },
   ledRow: { flexDirection: 'row', alignItems: 'center', gap: 10, alignSelf: 'stretch' },
   ledPct: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: colors.amber, minWidth: 44, textAlign: 'right' },
-  footer: { flexDirection: 'row', gap: 10, paddingHorizontal: 16, paddingBottom: 12, paddingTop: 4 },
+  // ⛔ paddingTop 14, NOT 4. PREV was landing roughly 20px below the fourth
+  //    definition card, and the 2026-09-19 device run hit it twice while aiming
+  //    at that card — each mis-hit jumps a whole board and loses the set's
+  //    state, which is the most expensive accidental tap on the screen. The gap
+  //    is the fix; the buttons themselves are the right size.
+  footer: { flexDirection: 'row', gap: 10, paddingHorizontal: 16, paddingBottom: 12, paddingTop: 14 },
   // Suggest-a-correction row — right-aligned, just above the Prev/Next footer.
   reportRow: { paddingHorizontal: 16, paddingBottom: 2, alignItems: 'flex-end' },
 });

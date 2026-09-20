@@ -366,6 +366,31 @@ export type FibQuestion = { sentence: string; masked: string; hasBlank: boolean;
  * not open with a dangling "It / This / The term". hasBlank:false = no blank
  * in the masked text → the screen appends one.
  */
+/**
+ * Does the masking reach the END of the sentence?
+ *
+ * A clue that finishes on a hidden word reads as a broken sentence — the
+ * device run 2026-09-19 reported "…not only …." as TRUNCATED text, which is
+ * exactly how a learner experiences it. It is not truncated: the last content
+ * word was legitimately hidden. But a dangling clause gives them nothing to
+ * reason from, so when an equally good sentence exists we take the other one.
+ */
+function endsInGap(sentence: string, spans: Span[]): boolean {
+  if (spans.length === 0) return false;
+  const end = Math.max(...spans.map((sp) => sp.end));
+  // Only closing punctuation and space may follow — anything else is content.
+  return /^[\s.,;:!?)"'’”]*$/.test(sentence.slice(end));
+}
+
+/**
+ * An ellipsis gap immediately followed by the sentence's full stop renders as
+ * "…." — four dots that read as broken text rather than as one hidden word.
+ * The gap already ends the sentence; the stop adds nothing.
+ */
+export function tidyGaps(text: string): string {
+  return text.replace(/…\s*([.!?])(?=\s|$)/g, '…');
+}
+
 export function fibSentence(term: string, definition: string, candidates: string[] = [], n: number = 3): FibQuestion {
   const parts = splitSentences(definition);
   const pool = parts.length > 0 ? parts : [definition];
@@ -374,13 +399,23 @@ export function fibSentence(term: string, definition: string, candidates: string
   const scored = pool.map((s) => {
     const spans = leakSpans(term, s, distractors);
     const hasExact = exactRes.some((re) => ((re.lastIndex = 0), re.test(s)));
-    return { s, extra: spans.length - (hasExact ? 1 : 0), exact: hasExact ? 0 : 1, p: PRONOUN_START.test(s.trim()) ? 1 : 0 };
+    return {
+      s,
+      extra: spans.length - (hasExact ? 1 : 0),
+      exact: hasExact ? 0 : 1,
+      // Ranked BELOW the leak counts (a sentence that gives the answer away is
+      // still the worse fault) but ABOVE the pronoun rule.
+      tail: endsInGap(s, spans) ? 1 : 0,
+      p: PRONOUN_START.test(s.trim()) ? 1 : 0,
+    };
   });
-  scored.sort((a, b) => a.extra - b.extra || a.exact - b.exact || a.p - b.p);
+  scored.sort((a, b) => a.extra - b.extra || a.exact - b.exact || a.tail - b.tail || a.p - b.p);
   const top = scored[0];
-  const ties = scored.filter((x) => x.extra === top.extra && x.exact === top.exact && x.p === top.p);
+  const ties = scored.filter(
+    (x) => x.extra === top.extra && x.exact === top.exact && x.tail === top.tail && x.p === top.p,
+  );
   const chosen = ties[Math.floor(Math.random() * ties.length)].s;
-  const masked = maskLeaksFor(term, chosen, distractors, BLANK, GAP, true);
+  const masked = tidyGaps(maskLeaksFor(term, chosen, distractors, BLANK, GAP, true));
   return { sentence: chosen, masked, hasBlank: masked.includes(BLANK), distractors };
 }
 
@@ -414,7 +449,7 @@ export function matchingClueV2(term: string, definition: string, boardTerms: str
   const top = scored[0];
   const ties = scored.filter((x) => x.hard === top.hard && x.gaps === top.gaps && x.others === top.others && x.p === top.p);
   const chosen = ties[Math.floor(Math.random() * ties.length)];
-  const clue = applySpans(chosen.s, chosen.spans, '___', GAP);
+  const clue = tidyGaps(applySpans(chosen.s, chosen.spans, '___', GAP));
   const partialsLeft = findLeaks(term, clue).filter((h) => h.kind === 'partial').length;
   return { clue, masked: clue !== chosen.s, partialsLeft, othersLeft: chosen.others };
 }
