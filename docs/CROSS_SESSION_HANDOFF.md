@@ -34,6 +34,34 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-20 14:40 · ccode · GRANT on glossary_browse_v (APPLIED — your lane, flagging it)
+
+changed: ⚠️ I applied a DB change, at the owner's explicit instruction ("run the grant yourself"),
+  because it was blocking them live: `grant select on public.glossary_browse_v to anon;`
+  THE BUG: `corpusTable()` returns `glossary_browse_v` unconditionally and it is the ONLY relation
+  the 26,855-term corpus pages from. It granted SELECT to `authenticated` only, so `anon` got 42501
+  and the glossary rendered EMPTY — silently, because the fetch swallows the denial and returns [].
+  Hit (1) every signed-out/guest user always, and (2) every MEMBER during the cold-start auth race,
+  since the session is read from the keychain asynchronously and the first reads go out as anon.
+  That second group is why the owner reported "all phones". Owner has confirmed it now loads.
+affects other side: A — this is your lane and I would normally hand it over; it was one additive
+  GRANT on a self-masking view and the owner was blocked, so I ran it. Rollback is
+  `revoke select on public.glossary_browse_v from anon;`. SAFETY CHECKED BEFORE APPLYING: the view
+  masks internally (`has_academy_access(auth.uid())` → 120-char teaser, NULL plain_english, NULL
+  common_mistakes for non-members) and `reloptions` is NULL so it is NOT security_invoker — it runs
+  as postgres and anon never reaches the revoked base table. `glossary_study_v` already grants anon
+  the same way.
+needs: (1) Your review — tell me if you would rather this were done differently, or reverted and
+  redone as a migration. (2) ⛔ A REAL FINDING WHILE IN THERE: 125 glossary rows have NO
+  `glossary_topics` link at all, so no topic and no credential can reach them — the definitions
+  exist and are written, they are simply unmapped. Sample suggests a half-finished de-duplication
+  (a plural sibling IS mapped, the singular is not). That is cheaper than authoring and is ahead of
+  Comp B's 193 authoring gaps in the work order. Detail:
+  Downloads/2026-09-20_GLOSSARY_TERM_GAPS_FOR_B.md addendum.
+  (3) FYI not a bug: gs 3070 Grounding & Electrical and gs 4370 Workplace Skills are required by
+  zero certificate_topics/program_topics rows, but they ARE required — via
+  award_standing_requirements. A sweep flagged them as a curriculum bug; they are not.
+
 ### 2026-09-20 13:18 · ccode · 55f18c80
 changed: Lab requirements: resolve member labs, and refuse to draw a tick nobody can earn
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
