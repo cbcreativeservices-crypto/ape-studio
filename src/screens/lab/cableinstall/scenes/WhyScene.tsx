@@ -408,10 +408,10 @@ export function WhyScene({ width, completed, onComplete, openSources }: CiModule
               serviceability, documentation and workmanship. Appearance is a byproduct of doing those six right — never a
               substitute for them.
             </Text>
+            {/* Says what it COSTS, not what it forbids. NEXT works regardless
+                (owner 2026-09-20) — the learner was getting stuck here with no
+                visible way on, which is the opposite of a lab. */}
             {!consequencesDone ? (
-              {/* Says what it COSTS, not what it forbids. NEXT works regardless
-                  (owner 2026-09-20) — the learner was getting stuck here with
-                  no visible way on, which is the opposite of a lab. */}
               <Text style={styles.pendingNote}>
                 Open all six consequences above to earn credit for this stage. You can move on without them and come
                 back — the completion screen tracks what is left.
