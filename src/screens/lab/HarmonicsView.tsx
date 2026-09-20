@@ -153,6 +153,7 @@ import {
 } from './harmonicModel';
 import { HarmonicCard } from './HarmonicCard';
 import { HarmonicStems } from './HarmonicStems';
+import { animationsAllowed } from '../../features/settings/a11y';
 
 type ViewMode = 'model' | 'live';
 type AxisMode = 'log' | 'lin';
@@ -213,6 +214,9 @@ const ADDITIVE_PUSH_MS = 67;
 
 // Analytic sweep + synthesis.
 const SWEEP_MS = 9000; // playhead loop — pure visual pacing
+/** Where the playhead sits when motion is off — a quarter in, so it reads as
+ *  a marker on the trace rather than as an edge artefact. */
+const PARKED_SWEEP = 0.25;
 const WAVE_POINTS = 240; // recomputed only when the model changes — no per-frame trig
 const WAVE_CYCLES = 3;
 
@@ -624,10 +628,22 @@ function HarmonicStage({
   // pacing only; zero setState, zero re-renders). Gated on FOCUS too: the view
   // stays mounted on the root stack behind pushed screens, and the loop must
   // not keep compositing forever back there (same lifecycle rule as the tone).
+  //
+  // ⛔ AND ON REDUCE MOTION. SWEEP_MS is 9 s and the loop never ends, so for a
+  //    motion-sensitive user this was a permanent ambient animation on a screen
+  //    they had no way to quiet — the app's own Reduce animations switch did
+  //    nothing here. When motion is off the playhead does not disappear: it
+  //    parks at a fixed position so the diagram still reads, exactly as AmpRig
+  //    does with its stepPhase fallback.
   const isFocused = useIsFocused();
+  const motion = animationsAllowed();
   const sweep = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     if (view !== 'model' || !isFocused) return;
+    if (!motion) {
+      sweep.setValue(PARKED_SWEEP);
+      return () => sweep.setValue(0);
+    }
     const anim = Animated.loop(
       Animated.timing(sweep, {
         toValue: 1,
@@ -641,7 +657,7 @@ function HarmonicStage({
       anim.stop();
       sweep.setValue(0);
     };
-  }, [view, isFocused, sweep]);
+  }, [view, isFocused, motion, sweep]);
 
   // Markers only move on f0/nyquist changes — memoized so the ~22 Hz live
   // re-render doesn't reconcile 12 <Line>s across TWO Svg surfaces (plus the

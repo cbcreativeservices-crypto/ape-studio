@@ -25,6 +25,7 @@ import { useEntitlement } from '../../../features/commercial/EntitlementProvider
 import { colors, fonts } from '../../../theme/tokens';
 import { CheckQuestion } from '../foundations/bits';
 import { MicPhotoLightbox, MicVisual } from './micArt';
+import { AccuracyNote } from '../../../components/AccuracyNote';
 import {
   CHALLENGE_BASE,
   CHALLENGE_FACTORS,
@@ -998,6 +999,9 @@ export function MicSelectLabScreen() {
           <Text style={styles.title}>MICROPHONE SELECTION LAB</Text>
           <Text style={styles.subtitle}>Types, Characteristics & Applications</Text>
         </View>
+        {/* This lab builds its own stepped shell rather than LabShell, so the
+            standing note has to be placed by hand. */}
+        <AccuracyNote compact detail="The patterns, curves and comparisons here are TEACHING MODELS of how microphone types behave — they are not measurements of any specific microphone. Every real mic differs from its own published chart; trust the manufacturer's data and your own ears in the room." />
       </View>
       <Text style={styles.coreQ}>What microphone should I choose for this job — and why?</Text>
 

@@ -30,6 +30,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, type StyleProp, type ViewStyle } from 'react-native';
+import { animationsAllowed } from '../../../features/settings/a11y';
 import { Circle, Ellipse, G, Line, Path, Rect } from 'react-native-svg';
 import Animated, {
   Easing,
@@ -108,17 +109,25 @@ export function useCiMotion() {
       sub.remove();
     };
   }, []);
+  // ⛔ THE APP'S OWN SWITCH COUNTS TOO. AccessibilityInfo reports only the
+  //    PHONE's reduce-motion setting; Settings → Reduce animations is ours and
+  //    lives in `animationsAllowed()` (which already ANDs in the OS flag). A
+  //    user who turned motion off IN THE APP was still getting every fade,
+  //    draw and ambient loop in this lab. Subscribed OS flag OR our setting —
+  //    the same shape PagedLab uses, and the subscription is what re-renders
+  //    when the phone setting flips mid-session.
+  const reduceMotion = reduce || !animationsAllowed();
   return useMemo(
     () => ({
-      reduce,
+      reduce: reduceMotion,
       /** Duration, collapsed to 0 under reduced motion. */
-      d: (ms: number) => (reduce ? 0 : ms),
+      d: (ms: number) => (reduceMotion ? 0 : ms),
       /** Stagger delay for index i. */
-      stagger: (i: number, step = CI_MOTION.stepDelay) => (reduce ? 0 : i * step),
+      stagger: (i: number, step = CI_MOTION.stepDelay) => (reduceMotion ? 0 : i * step),
       /** Should ambient loops (flow, pulse, breathing) run at all? */
-      loops: !reduce,
+      loops: !reduceMotion,
     }),
-    [reduce],
+    [reduceMotion],
   );
 }
 

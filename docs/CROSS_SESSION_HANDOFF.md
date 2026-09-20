@@ -26,6 +26,16 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-19 20:53 · ccode · 30316b6e
+changed: Study sync: stop double-counting, stop losing scenarios, drain the queue
+affects other side: nothing schema-side, but ONE contract to be aware of — a replayed
+  offline batch is now always sent under the batch_id it was FIRST enqueued with, so
+  record_study_progress's p_batch_id idempotency is what stops a double count. It was
+  previously re-chunked under fresh ids, which defeated the dedupe. Do not change or
+  drop that dedupe without telling ccode.
+needs: nothing
+
+
 ### 2026-09-19 18:22 · ccode · 4bb69b31
 changed: Queue autoIncrement for the next build — landing it now strands both phones
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">

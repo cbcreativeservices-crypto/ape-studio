@@ -381,6 +381,9 @@ function Chip({ label, active, onPress, a11yLabel }: { label: string; active: bo
 // ---------------------------------------------------------------------------
 // Screen
 // ---------------------------------------------------------------------------
+/** Matches useToolAutoStart's MAX_REARMS — see the resilience effect below. */
+const MAX_RESUMES = 3;
+
 export function MultiMeterScreen({ navigation }: Props) {
   const { help, helpAll, sheet } = useToolHelp('multimeter');
   const insets = useSafeAreaInsets();
@@ -708,9 +711,27 @@ export function MultiMeterScreen({ navigation }: Props) {
   // still stops for privacy) and everStarted (a fresh entry still shows the
   // manual START card by design). Survives a stray blur/refocus, not a full
   // remount (refs reset then). Root cause still tracked via the Metro log.
+  //
+  // ⛔ AND IT HAS A BUDGET. Every superseded start lands back on 'idle' (the
+  //    documented guarantee in useDspEngine's finally block), so without a cap
+  //    a start that keeps failing while the screen stays focused becomes an
+  //    unbounded idle → onStart → starting → idle loop against the audio HAL.
+  //    Same cap and same reason as useToolAutoStart's MAX_REARMS: a tool that
+  //    cannot get going after a few tries should sit on START and let the user
+  //    decide. A real 'running' clears the budget, so ordinary use never sees
+  //    it; only a genuinely stuck start does.
   const isFocused = useIsFocused();
+  const resumesRef = useRef(0);
   useEffect(() => {
-    if (isFocused && everStartedRef.current && !micPaused && state === 'idle') onStart();
+    if (state === 'running') {
+      resumesRef.current = 0;
+      return;
+    }
+    if (isFocused && everStartedRef.current && !micPaused && state === 'idle') {
+      if (resumesRef.current >= MAX_RESUMES) return;
+      resumesRef.current += 1;
+      onStart();
+    }
   }, [isFocused, micPaused, state, onStart]);
 
   // Background release + foreground resume (B-170) — the same handler

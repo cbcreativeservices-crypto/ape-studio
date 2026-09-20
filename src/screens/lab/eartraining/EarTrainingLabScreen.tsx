@@ -13,6 +13,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { EAR_MODULES } from '../../../features/ear/modules/registry';
+import { AccuracyNote } from '../../../components/AccuracyNote';
 import {
   loadEarProgress, recentAccuracy, type EarProgressState,
 } from '../../../features/ear/earProgress';
@@ -45,6 +46,7 @@ export function EarTrainingLabScreen() {
           <Text style={styles.title}>EAR TRAINING LAB</Text>
           <Text style={styles.subtitle}>Hear a change · then see it measured</Text>
         </View>
+        <AccuracyNote compact detail="Every drill here plays through your phone’s UNCALIBRATED output — and through whatever headphones or speakers you are on, which colour it further. Train the SKILL of hearing a change here; judge absolute tonality on monitoring you trust." />
       </View>
       <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 24 }]}>
         <Text style={styles.body}>

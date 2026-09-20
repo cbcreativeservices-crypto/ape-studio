@@ -34,7 +34,7 @@
  */
 import { useEffect, useState } from 'react';
 import { AccessibilityInfo, ActivityIndicator, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import { colors, fonts } from '../../theme/tokens';
 import { useEntitlement } from '../commercial/EntitlementProvider';
 import { isMemberOnlyLabRoute, labRouteName } from '../../screens/lab/labCatalog';
@@ -110,19 +110,38 @@ export function withMembershipPreview<P extends object>(
     const gated = memberOnly && resolved && !isMember;
     const preview = useLabPreview();
     const armedForThis = preview.active && preview.route === route.name;
+    /**
+     * ⛔ ARM ONLY WHILE THIS SCREEN IS ON TOP.
+     *
+     * React Navigation keeps the previous screen MOUNTED across a push (there
+     * is no freezeOnBlur anywhere in this repo), so a gated lab that is pushed
+     * over is still alive and still subscribed to the preview store. The root
+     * safety net in App.tsx clears the preview the moment the top route stops
+     * being the previewed one — correct for a pop, but after a PUSH it fed
+     * straight back into the effect below, which re-armed instantly. The
+     * UpgradeSheet is a plain root sibling, not a native modal, so the scrim
+     * and the upgrade card then drew over the UNRELATED screen on top, every
+     * further navigation repeated it, and NOT NOW popped the innocent screen
+     * instead of the lab. Recovery was a force-quit.
+     *
+     * Focus breaks the loop at the source: a blurred lab does not re-arm, and
+     * the safety net's clear stays cleared. Coming back to the lab focuses it
+     * and arms it again, which is the behaviour that was intended all along.
+     */
+    const focused = useIsFocused();
 
     useEffect(() => {
       if (gated) {
         // Arm the preview if it isn't already (the Ear Lab arms it BEFORE
         // navigating, so a row tap arrives armed — don't re-arm and flicker).
-        if (!armedForThis) startLabPreview(route.name, labRouteName(route.name) ?? 'This lab');
+        if (focused && !armedForThis) startLabPreview(route.name, labRouteName(route.name) ?? 'This lab');
         return;
       }
       // Entitled (or unknown, or not a members-only route): clear only a stale
       // preview WE would own for this route — e.g. entitlement upgraded while
       // the lab is open. The LabPreviewOverlay owns the ordinary leave.
       if (memberOnly && armedForThis) endLabPreview();
-    }, [gated, memberOnly, armedForThis, route.name]);
+    }, [gated, memberOnly, armedForThis, focused, route.name]);
 
     // Unknown beat: hold rather than flash the paid lab (or a paywall at a
     // member). Non-member: hold until the scrim is actually up, so the lab
@@ -131,7 +150,10 @@ export function withMembershipPreview<P extends object>(
       if (navigation.canGoBack()) navigation.goBack();
     };
     if (memberOnly && !resolved) return <GateHold onBack={goBack} />;
-    if (gated && !armedForThis) return <GateHold onBack={goBack} />;
+    // Unarmed AND focused means the arm has not landed yet — hold. Unarmed
+    // while BLURRED is the pushed-over case above: nothing is visible, and the
+    // hold is what the user comes back to right before the arm re-fires.
+    if (gated && !armedForThis) return <GateHold onBack={focused ? goBack : undefined} />;
 
     // ── A SCRIM STOPS FINGERS, NOT A SCREEN READER ────────────────────
     //

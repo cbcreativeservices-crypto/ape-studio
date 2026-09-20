@@ -26,6 +26,7 @@ import {
   type EarProgressState,
 } from '../../../features/ear/earProgress';
 import { SeeItView } from './SeeItView';
+import { AccuracyNote } from '../../../components/AccuracyNote';
 
 const FATIGUE_MS = 15 * 60 * 1000;
 const TOP_LEVEL_REPLAYS = 2;
@@ -351,6 +352,10 @@ export function EarModuleScreen() {
             Level {level}/{mod.levels} · {mod.levelNames[level - 1] ?? ''}
           </Text>
         </View>
+        {/* ⛔ THE NOTE MATTERS MOST HERE. This is the screen that actually
+            SOUNDS the signals, through the phone's uncalibrated path and the
+            user's own headphones. */}
+        <AccuracyNote compact detail="These drills play through your phone’s UNCALIBRATED output and your own headphones or speakers, both of which colour what you hear. The skill — noticing a change and naming it — transfers anywhere; the absolute tonality you hear here does not." />
         <View
           style={styles.statPill}
           accessible

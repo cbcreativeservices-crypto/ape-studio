@@ -550,7 +550,17 @@ export function initExposureMonitor(subscribeOutput: (cb: () => void) => void): 
   void hydrate().then(evaluateArm);
   subscribeOutput(evaluateArm);
   AppState.addEventListener('change', (st: AppStateStatus) => {
-    appActive = st === 'active';
+    // ⛔ 'inactive' IS NOT BACKGROUNDED — and here that distinction is a
+    //    measurement one, not a lifecycle nicety. iOS reports 'inactive' for a
+    //    permission alert, an incoming-call banner, an app-switcher peek or a
+    //    Control-Centre pull. Treating those as backgrounded stopped the 1 Hz
+    //    dose poller and cleared `sounding` while the room was still loud, so
+    //    the day's dose UNDER-reported — the wrong direction for a hearing
+    //    safety number. Only a real 'background' stands the monitor down;
+    //    anything else leaves it exactly as it was.
+    if (st === 'background') appActive = false;
+    else if (st === 'active') appActive = true;
+    else return; // 'inactive' / 'unknown' / 'extension' — no change, no persist
     if (!appActive && day) void persistDay(true);
     evaluateArm();
   });

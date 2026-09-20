@@ -23,8 +23,14 @@ export function LabPreviewOverlay() {
   // the whole transition; clear it once the pop has settled.
   const leaveLab = () => {
     beginLabPreviewLeave(); // hold the scrim through the pop; safety net stands down
-    if (navigationRef.isReady() && navigationRef.canGoBack()) navigationRef.goBack();
-    setTimeout(endLabPreview, 350);
+    // ⛔ ONLY CLEAR IF THE POP ACTUALLY HAPPENED. If there is nothing to go back
+    //    to, dropping the scrim 350 ms later would leave a free user sitting on
+    //    a live, fully interactive members-only lab. Leaving the scrim up keeps
+    //    the gate closed; the sheet is still there to exit by.
+    if (navigationRef.isReady() && navigationRef.canGoBack()) {
+      navigationRef.goBack();
+      setTimeout(endLabPreview, 350);
+    }
   };
 
   return (
@@ -32,12 +38,18 @@ export function LabPreviewOverlay() {
       visible={active}
       onClose={leaveLab}
       onSeePlans={() => {
-        // Pop the previewed lab, then push the Paywall (which covers the whole
-        // stack) and clear the preview immediately — the Paywall hides the lab,
-        // so there's nothing to flash.
+        // Pop the previewed lab, then push the Paywall over the top.
+        //
+        // ⛔ THE SAME HOLD AS leaveLab, FOR THE SAME REASON. This used to clear
+        //    the preview immediately, on the assumption that "the Paywall hides
+        //    the lab, so there's nothing to flash" — but the push is ANIMATED,
+        //    and clearing before it lands drops the scrim off the live lab for
+        //    the length of the transition. beginLabPreviewLeave() stands the
+        //    safety net down so the scrim can cover both moves.
+        beginLabPreviewLeave();
         if (navigationRef.isReady() && navigationRef.canGoBack()) navigationRef.goBack();
         if (navigationRef.isReady()) navigationRef.navigate('Paywall');
-        endLabPreview();
+        setTimeout(endLabPreview, 350);
       }}
     />
   );

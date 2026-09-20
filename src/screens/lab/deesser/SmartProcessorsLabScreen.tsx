@@ -11,6 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { DEV_NOTE } from '../labCatalog';
+import { AccuracyNote } from '../../../components/AccuracyNote';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -50,6 +51,7 @@ export function SmartProcessorsLabScreen() {
           <Text style={styles.kicker}>TRAINING LAB · DYNAMICS</Text>
           <Text style={styles.title}>Smart Processors Lab</Text>
         </View>
+        <AccuracyNote compact detail="The processors here are TEACHING MODELS of how detectors, thresholds and gain computers behave — not emulations of any particular unit, and anything they play goes through your phone’s UNCALIBRATED output. Learn the shape of the behaviour here; set real thresholds on real metering." />
       </View>
       <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 24 }]}>
         <Text style={styles.lead}>Ordinary processors do what their knobs say. Smart processors listen first, decide, then act — and every one of them is built from the same few ideas: a detector, a threshold, a gain computer, and a choice of what to change.</Text>

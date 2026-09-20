@@ -51,6 +51,7 @@ import { useOverlaysSuppressed } from '../../../features/dev/popupSuppressStore'
 import { useSamplingActive } from '../../../features/intro/onboardingSampling';
 import { GlassButton } from '../../../components/GlassButton';
 import { colors, fonts } from '../../../theme/tokens';
+import { AccuracyNote } from '../../../components/AccuracyNote';
 
 /** Full-scale red — top of the canonical ramp (kept SSoT, never hardcoded). */
 const LOUD_RED = LOUDNESS_STOPS[0].color;
@@ -1003,6 +1004,15 @@ export function AmplitudeLabScreen() {
           <Text style={styles.gateBack}>‹</Text>
         </Pressable>
         <Text style={styles.labHeaderKicker}>AUDIO FUNDAMENTALS</Text>
+        {/* ⛔ THE FIRST FREE LAB A NEW USER OPENS, and it was the one with no
+            note. Whatever standard this screen sets is the one they carry into
+            every other lab. */}
+        <AccuracyNote
+          compact
+          // The kicker is not flex:1, so push the chip to the trailing edge.
+          style={{ marginLeft: 'auto' }}
+          detail="This lab teaches how amplitude and level RELATE — the ramps and colours are a teaching scale, not a calibrated one, and your phone’s screen and output are both uncalibrated. Learn the relationship here; read real levels on real meters."
+        />
       </View>
       <ScrollView contentContainerStyle={styles.gateScroll}>
         {/* One completion control (design pass 2026-08-31): the old stacked

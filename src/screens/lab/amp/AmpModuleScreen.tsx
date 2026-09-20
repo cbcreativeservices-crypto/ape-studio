@@ -15,6 +15,7 @@ import { AMP_MODULES, ampModuleById, checksForModule } from '../../../features/a
 import { emptyAmpModule, updateAmpProgress } from '../../../features/amp/ampProgress';
 import { AMP_MODULE_COMPONENTS, BUILT_MODULE_IDS } from './modules';
 import { CheckCard, SectionTitle, TakeawayCard } from './kit';
+import { AccuracyNote } from '../../../components/AccuracyNote';
 
 export function AmpModuleScreen() {
   const insets = useSafeAreaInsets();
@@ -91,6 +92,10 @@ export function AmpModuleScreen() {
           <Text style={styles.title}>{mod.title.toUpperCase()}</Text>
           <Text style={styles.subtitle}>Module {mod.num} of {AMP_MODULES.length}{done ? ' · completed' : ''}</Text>
         </View>
+        {/* The lab HOME carries the note; a module opened from a deep link or
+            resumed from the dashboard never passes through it. Same placement
+            as EqModuleScreen / GainModuleScreen / WaveModuleScreen. */}
+        <AccuracyNote compact detail="This lab MODELS amplifier behaviour on your phone — the numbers and curves are teaching tools, not bench measurements, and any level it plays goes through an UNCALIBRATED output. For real amplifier work use proper test gear." />
       </View>
       <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 28 }]}>
         <View style={styles.objective}>

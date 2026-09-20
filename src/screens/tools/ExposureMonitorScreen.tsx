@@ -36,6 +36,7 @@ import {
   type ExposureStandard,
 } from '../../features/audio/exposureMonitor';
 import { markToolMount } from '../../features/tools/devTiming';
+import { AccuracyNote } from '../../components/AccuracyNote';
 
 function Row({
   label,
@@ -130,6 +131,17 @@ export function ExposureMonitorScreen() {
           <Text style={styles.title}>LISTENING EXPOSURE MONITOR</Text>
           <Text style={styles.subtitle}>Listening dose · exposure time · hearing conservation</Text>
         </View>
+        {/* The SHARED chip, not more hand-written copy. This screen already
+            carries honest wording of its own (EXPOSURE_HONESTY_LINE, the
+            "General estimate" vs "Calibrated reference" rows), and it was the
+            only measurement screen in the tools area without the component —
+            which is exactly how one screen's wording drifts away from the
+            other eight. The hand-written lines stay; they say different,
+            screen-specific things. */}
+        <AccuracyNote
+          compact
+          detail="Dose and dB SPL here are ESTIMATES from your phone’s UNCALIBRATED microphone and audio path — useful for building listening habits, NOT an occupational noise measurement. For a reading you can act or report on, use a calibrated SPL meter or a personal noise dosimeter."
+        />
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll}>

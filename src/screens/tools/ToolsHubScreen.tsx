@@ -1002,8 +1002,15 @@ export function ToolsHubScreen({ navigation }: Props) {
         {/* ⛔ THE SHARED COMPACT HEADER (owner 2026-09-19): logo, wordmark,
             HOME. The GLOSSARY and STUDY keys are GONE from here at the
             owner's instruction — this screen's top row is brand and nothing
-            else now. Both destinations are still one tap away on the bottom
-            tab bar, so nothing became unreachable.
+            else now.
+
+            ⚠️ THE ORIGINAL JUSTIFICATION NO LONGER HOLDS. When the keys were
+            removed the note here read "both destinations are still one tap
+            away on the bottom tab bar" — and then the bottom tab bar was
+            removed from this screen later the same day. Glossary and Study
+            are now TWO navigations from the hub (HOME, then the tab). Nothing
+            is unreachable, but the premise is gone; if that two-step is not
+            acceptable, one destination returns to the bar's `right` slot.
 
             The back chevron went with them: HOME is where back led anyway
             (the hub is entered from the Course Select card), and the shared
@@ -1021,7 +1028,13 @@ export function ToolsHubScreen({ navigation }: Props) {
         </View>
 
         <ScrollView
-          contentContainerStyle={styles.scroll}
+          // ⛔ THE BOTTOM INSET IS RUNTIME, NOT A CONSTANT. The screen's own
+          //    tab bar used to sit below this ScrollView carrying
+          //    `paddingBottom: insets.bottom`, and it was the ONLY thing holding
+          //    the last row clear of the home indicator / gesture strip. It was
+          //    removed 2026-09-19 and the 24 here was left behind, so the final
+          //    row ran under the indicator. Keep the inset in the style prop.
+          contentContainerStyle={[styles.scroll, { paddingBottom: 24 + insets.bottom }]}
           scrollEventThrottle={100}
           onLayout={(e) => {
             viewRef.current.h = e.nativeEvent.layout.height;
@@ -1198,9 +1211,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   // The hub column centres once the screen is wider than it needs to be
-  //  (owner 2026-09-13). alignSelf on the CONTENT container, so the header and
-  //  the bottom nav outside the ScrollView still span the full width - only the
-  //  hero, the rack panel and the member rows share one centred column.
+  //  (owner 2026-09-13). alignSelf on the CONTENT container - the hero, the
+  //  rack panel and the member rows share one centred column.
+  // paddingBottom is the BASE only; the safe-area inset is added at the call
+  //  site (nothing sits below this ScrollView any more to absorb it).
   scroll: { padding: 14, paddingBottom: 24, gap: 10, width: '100%', maxWidth: HUB_MAX_CONTENT_W, alignSelf: 'center' },
 
   // Compact hero (Booth 2026-07-11); tightened after the tool count was removed
