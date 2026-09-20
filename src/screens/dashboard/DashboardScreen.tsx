@@ -67,6 +67,7 @@ import { TrophyImage } from '../../components/TrophyImage';
 import { topicImagePath } from '../../data/topicImages';
 import { JogDial, JogOverlay } from '../../components/JogWheel';
 import { TrophyModal } from '../../components/TrophyModal';
+import { TopicAboutPanel, hasTopicAbout } from '../../components/TopicAboutPanel';
 import { useTopicTrophies, trophyForTopicName } from '../../features/profile/topicTrophies';
 import { colors, fonts, spacing } from '../../theme/tokens';
 import {
@@ -1624,9 +1625,11 @@ export function DashboardScreen() {
                   <Text style={styles.pctBig}>{dispOverallPct}%</Text>
                 </View>
                 <GlassCover />
-                {/* Prev / next topic — top-right of the glass, level with the
-                    CURRENT TOPIC eyebrow (owner 2026-08-12). Rendered ABOVE the
-                    pointer-transparent GlassCover so they stay tappable. */}
+                {/* Prev / next topic — bottom-right of the glass, level with
+                    the big amber % (owner 2026-09-20). Still rendered AFTER
+                    GlassCover: the cover is pointerEvents="none" so taps would
+                    pass through either way, but under it the amber glyphs pick
+                    up the tint and the bottom of its darkening gradient. */}
                 <View style={styles.topicNavArrows}>
                   <Pressable
                     onPress={() => goTo(topicIdx - 1)}
@@ -2078,10 +2081,19 @@ export function DashboardScreen() {
             carousel at the top of the current-topic area. */}
       </ScrollView>
 
+      {/* The full-size topic image, and under it Computer B's long-form
+          overview for this topic (owner 2026-09-20). `below` is omitted
+          entirely when the topic has no overview, so the popup keeps its
+          original full-size art rather than shrinking around an empty panel. */}
       <TrophyModal
         visible={trophyOpen}
         iconUrl={topicImagePath(topic.global_sequence) ?? trophyForTopicName(trophies, topic.name) ?? topic.icon_url}
         name={topic.name}
+        below={
+          hasTopicAbout(topic.global_sequence) ? (
+            <TopicAboutPanel gs={topic.global_sequence} />
+          ) : undefined
+        }
         onClose={() => setTrophyOpen(false)}
       />
 
@@ -2574,9 +2586,14 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 0 },
   },
   pctBlock: { alignItems: 'flex-start', marginTop: 6, gap: 1 },
-  // Prev/next topic arrows — absolute, top-right of the glass, on the CURRENT
-  // TOPIC eyebrow line (owner 2026-08-12).
-  topicNavArrows: { position: 'absolute', top: 0, right: 6, flexDirection: 'row', alignItems: 'center', gap: 10, zIndex: 4 },
+  /* Prev/next topic arrows — bottom-right of the glass, level with the big
+     amber % (owner 2026-09-20; they were top-right on the CURRENT TOPIC
+     eyebrow from 2026-08-12).
+     ⛔ Anchored to the BOTTOM, not a fixed `top`. `topicName` is
+     numberOfLines={2}, so the block above these grows by a whole line on any
+     long topic name and a top offset would drift off the % on exactly those
+     topics. pctBlock is the last child, so its bottom IS the container's. */
+  topicNavArrows: { position: 'absolute', bottom: 2, right: 6, flexDirection: 'row', alignItems: 'center', gap: 10, zIndex: 4 },
   /* 30 → 38 with the eyebrow (owner 2026-09-19). These are the only way to
      change topic from here, so they should not be the smallest thing on the
      line. `top` eases to 0 because the taller glyph needs the room back. */

@@ -6,6 +6,7 @@
  */
 import { type ReactNode } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TrophyImage } from './TrophyImage';
 import { fonts } from '../theme/tokens';
 import { LowLightDim } from '../features/settings/LowLightLayer';
@@ -18,9 +19,16 @@ import { LowLightDim } from '../features/settings/LowLightLayer';
  * sized for a tall window it is no longer in, overflowing the short axis it was
  * specifically capped against. Hooked, 2026-09-13.
  */
-function artSize(w: number, h: number): number {
+function artSize(w: number, h: number, withBelow: boolean): number {
   // Trophy zoom art reduced 23% (Booth 2026-07-11).
-  return Math.round(Math.min(w * 0.82, h * 0.55, 360) * 0.77);
+  // With a `below` panel sharing the window (the topic overview, owner
+  // 2026-09-20) the art yields height so the prose has somewhere to live —
+  // otherwise on a short phone the art alone eats the screen and the panel
+  // opens two lines tall. Unchanged when there is no panel, which is every
+  // other caller.
+  const hShare = withBelow ? 0.3 : 0.55;
+  const cap = withBelow ? 230 : 360;
+  return Math.round(Math.min(w * 0.82, h * hShare, cap) * 0.77);
 }
 
 export function TrophyModal({
@@ -31,6 +39,7 @@ export function TrophyModal({
   meta,
   action,
   children,
+  below,
   grayed = false,
   onClose,
 }: {
@@ -48,12 +57,24 @@ export function TrophyModal({
   action?: { label: string; onPress: () => void; busy?: boolean } | null;
   /** Optional custom art node (used when art is a bundled asset, not a URL). */
   children?: ReactNode;
+  /**
+   * Optional long-form block under the name — the topic overview (owner
+   * 2026-09-20). It is rendered OUTSIDE the scrim Pressable so its own
+   * scrolling and taps cannot dismiss the popup, and its presence shrinks the
+   * art to make room. Leave it out and this modal behaves exactly as before.
+   */
+  below?: ReactNode;
   onClose: () => void;
 }) {
   const { width, height } = useWindowDimensions();
-  const ART = artSize(width, height);
+  const insets = useSafeAreaInsets();
+  const ART = artSize(width, height, !!below);
   return (
     <Modal accessibilityViewIsModal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      {/* The dark backdrop lives on the HOST, not the scrim, so an optional
+          `below` panel sits on the same dimmed field instead of floating on
+          nothing. With no panel this is pixel-identical to before. */}
+      <View style={styles.host}>
       {/* Tap anywhere on the scrim to hide (Booth 2026-07-11). */}
       <Pressable
         style={styles.scrim}
@@ -87,22 +108,33 @@ export function TrophyModal({
             <Text style={[styles.actionText, { color }]}>{action.busy ? 'WORKING…' : action.label}</Text>
           </Pressable>
         ) : null}
-        <Text style={styles.hint}>TAP TO CLOSE</Text>
+        {/* With a panel present a tap on the PROSE deliberately does nothing,
+            so "tap to close" would be a half-truth on the half of the screen
+            people are actually touching. */}
+        <Text style={styles.hint}>{below ? 'TAP OUTSIDE TO CLOSE' : 'TAP TO CLOSE'}</Text>
       </Pressable>
+        {below ? (
+          <View style={[styles.belowWrap, { paddingBottom: insets.bottom + 12 }]}>{below}</View>
+        ) : null}
+      </View>
       <LowLightDim />
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
+  host: { flex: 1, backgroundColor: 'rgba(0,0,0,0.86)' },
   scrim: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.86)',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 18,
     padding: 24,
   },
+  /* The overview sits BELOW the tap-to-close scrim, sharing the host's dim.
+     No flex: it is sized by its own maxHeight, so the art above keeps every
+     pixel the panel does not need. */
+  belowWrap: { paddingHorizontal: 24 },
   frame: {
     borderRadius: 16,
     borderWidth: 2,
