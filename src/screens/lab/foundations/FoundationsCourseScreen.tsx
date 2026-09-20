@@ -65,6 +65,7 @@ import type { BezelItem, DockParam } from '../rack/rackTypes';
 import { CheckQuestion, ConceptBadge, LevelMeterBar, VizUnavailableCard, type CheckSpec } from './bits';
 import { requireViz, type VizModule } from './skiaGate';
 import { START_LEVEL_01 } from '../../../features/audio/startLevel';
+import { useStopOnAudioMute } from '../../../features/audio/useStopOnAudioMute';
 
 const STEP_KEY = 'ape:fosStep';
 const ACTIVITY_MS = 500;
@@ -143,6 +144,10 @@ function additivePayloadOf(f0: number, amps: number[]): number[] {
 function useCourseTone(engineReady: boolean): ToneApi {
   const { requestAudioOutput } = useAudioOutputGate();
   const [playing, setPlaying] = useState(false);
+  // Backgrounding, shake-to-mute and the idle auto-mute all call
+  // panicMuteAudio(), which stops the generator underneath this screen.
+  // Without this the transport stays lit over silence.
+  useStopOnAudioMute(setPlaying);
   const genRef = useRef(0);
   const freqRef = useRef(220);
   const levelRef = useRef(-24);

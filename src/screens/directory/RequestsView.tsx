@@ -340,6 +340,7 @@ function ReportLink({
   onDone: () => Promise<void>;
   onError: (e: string) => void;
 }) {
+  const insets = useSafeAreaInsets();
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState<ReportReason>('spam');
   const [detail, setDetail] = useState('');
@@ -357,8 +358,13 @@ function ReportLink({
         <Text style={st.linkText}>REPORT</Text>
       </Pressable>
       <Modal accessibilityViewIsModal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
-        <View style={st.sheetRoot}>
-          <View style={st.sheet}>
+        {/* ⛔ KEYBOARD TRAP — the same shape fixed in the message sheet 145
+            lines below, and missed here. Bottom-anchored Modal, multiline
+            detail box, SEND REPORT and CANCEL last, nothing to drag the
+            keyboard down with and a scrim that is not pressable. This is the
+            messaging report path Apple 1.2 requires. */}
+        <KeyboardAvoidingView style={st.sheetRoot} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+          <View style={[st.sheet, { paddingBottom: 14 + insets.bottom }]}>
             <Text accessibilityRole="header" style={st.sheetTitle}>
               REPORT THIS REQUEST
             </Text>
@@ -427,7 +433,7 @@ function ReportLink({
             />
             <PrimaryButton label="CANCEL" onPress={() => setOpen(false)} />
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
     </>
   );

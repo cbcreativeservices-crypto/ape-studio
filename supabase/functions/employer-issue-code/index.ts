@@ -3,7 +3,7 @@
 // Mint a six-digit code, store its hash, and mail it to the WORK address on an
 // employer application.
 //
-// ⛔ NOT DEPLOYED YET (written 2026-09-20). See `_NOT_DEPLOYED.md` beside this
+// ⛔ NOT DEPLOYED YET (written 2026-09-20). See `_DEPLOY_NOTES.md` beside this
 //    file. The calling code is written to fail SAFE: if this function is not
 //    deployed, the invoke fails, no `sent_to` comes back, and the apply form
 //    falls through to "your application was saved, a person will review it" —

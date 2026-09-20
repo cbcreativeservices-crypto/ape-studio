@@ -102,7 +102,10 @@ export function FinalExamResultScreen({ navigation, route }: Props) {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
-      <ScrollView contentContainerStyle={styles.scroll}>
+      {/* Root-stack screen — no tab bar beneath it — and the control that
+          falls under the home indicator here is Done, the only
+          button-shaped way off the graded capstone's result screen. */}
+      <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 16 }]}>
         <Text style={styles.awardName} numberOfLines={2}>
           {awardName}
         </Text>

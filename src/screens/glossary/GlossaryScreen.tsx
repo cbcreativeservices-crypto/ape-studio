@@ -1465,19 +1465,36 @@ ${COPY.glossaryFreeAllowance}`,
   const fetchDetails = useCallback(
     async (id: string) => {
       if (detailsRef.current[id]) return;
-      // Base detail fields (NOT common_mistakes) from base glossary — works for
-      // everyone. common_mistakes comes from the academy-gated view in a SEPARATE
-      // NON-FATAL query: the view's mask calls has_academy_access(), which
-      // anon/free roles can't EXECUTE yet, so selecting it errors for them. If it
-      // fails we simply show no mistakes — never block the whole detail (which
-      // previously left the term stuck on "Loading…"). Booth 2026-07-11.
+      /**
+       * ⛔ `glossary_study_v`, NOT `glossary` / `glossary_full_v`.
+       *
+       * VERIFIED ON THE LIVE PROJECT 2026-09-20: neither `public.glossary` nor
+       * `public.glossary_full_v` grants SELECT to `anon` OR `authenticated` —
+       * both return 42501. This is the only path that fills a term's detail
+       * body, and `openLinked` calls it directly and deliberately, because
+       * cross-links are FREE and must not spend a weekly lookup. The free
+       * route WAS those two direct table reads, so when the grants went, every
+       * cross-link hop became "Couldn't load details — tap to retry"
+       * permanently, for members and free users alike, with a retry button
+       * that re-ran the same denied query. Cross-links are on by default.
+       *
+       * `glossary_study_v` is granted to both roles, carries every field this
+       * needs INCLUDING common_mistakes, and already applies the free/member
+       * mask through `has_academy_access()` inside the view — so this is one
+       * query where there used to be two, with the same visibility rules.
+       *
+       * ⚠️ It keys on `glossary_id`, not `id`, and joins the topic rows: 353
+       * of 26,831 terms have more than one row. Hence limit(1).maybeSingle()
+       * rather than single(), which would throw for those.
+       */
       const { data } = await supabase
-        .from('glossary')
+        .from('glossary_study_v')
         .select(
-          'plain_english, purpose_function, practical_application, scenario_contexts, related_terms, category, difficulty',
+          'plain_english, purpose_function, practical_application, scenario_contexts, related_terms, category, common_mistakes',
         )
-        .eq('id', id)
-        .single();
+        .eq('glossary_id', id)
+        .limit(1)
+        .maybeSingle();
       // [72]: mark the failure so the row can offer a retry instead of "Loading…".
       if (!data) {
         setDetailErrs((prev) => ({ ...prev, [id]: true }));
@@ -1489,14 +1506,9 @@ ${COPY.glossaryFreeAllowance}`,
         delete next[id];
         return next;
       });
-      let common_mistakes: string[] | null = null;
-      const { data: mv } = await supabase
-        .from('glossary_full_v')
-        .select('common_mistakes')
-        .eq('id', id)
-        .maybeSingle();
-      common_mistakes = ((mv?.common_mistakes as string[] | null) ?? null) as string[] | null;
-      putDetail(id, { ...(data as object), common_mistakes } as EntryDetail);
+      // common_mistakes now rides along in the same masked row — the separate
+      // glossary_full_v query it used to need is gone with the grant.
+      putDetail(id, data as unknown as EntryDetail);
     },
     [putDetail],
   );
@@ -1883,23 +1895,30 @@ ${COPY.glossaryFreeAllowance}`,
       // legacy read decide. After the revokes it returns nothing, which the
       // share sheet already handles as "no detail".
     }
+    /**
+     * ⛔ `glossary_study_v`, for the same reason as fetchDetails.
+     *
+     * The comment above says "after the revokes it returns nothing, which the
+     * share sheet already handles as no detail" — and it did return nothing,
+     * because `glossary` and `glossary_full_v` grant SELECT to neither `anon`
+     * nor `authenticated` (probed live 2026-09-20). Handling that gracefully
+     * is not the same as it being right: sharing a term you had not opened
+     * lost every detail field, silently.
+     *
+     * `glossary_study_v` IS granted to both roles and applies the same
+     * free/member mask internally, so this fallback works again without
+     * spending a lookup and without widening what a free user can see.
+     */
     const { data } = await supabase
-      .from('glossary')
+      .from('glossary_study_v')
       .select(
-        'plain_english, purpose_function, practical_application, scenario_contexts, related_terms, category, difficulty',
+        'plain_english, purpose_function, practical_application, scenario_contexts, related_terms, category, common_mistakes',
       )
-      .eq('id', id)
-      .single();
-    if (!data) return null;
-    const { data: mv } = await supabase
-      .from('glossary_full_v')
-      .select('common_mistakes')
-      .eq('id', id)
+      .eq('glossary_id', id)
+      .limit(1)
       .maybeSingle();
-    const detail = {
-      ...(data as object),
-      common_mistakes: (mv?.common_mistakes as string[] | null) ?? null,
-    } as EntryDetail;
+    if (!data) return null;
+    const detail = data as unknown as EntryDetail;
     putDetail(id, detail);
     return detail;
   }, [putDetail]);
@@ -2181,16 +2200,31 @@ ${COPY.glossaryFreeAllowance}`,
     const current = getBookmarks(bmCtx);
     let removed = 0;
     for (const id of bmBaseline.current) if (!current.has(id)) removed++;
+    /**
+     * ⛔ CLOSE FIRST, THEN TELL THEM. THIS WAS AN ANDROID TRAP.
+     *
+     * `setBmOpen(false)` used to live ONLY inside a confirmDialog raised while
+     * this popup was still open — and all three exits (backdrop, CLOSE, and
+     * the hardware BACK) routed through it. On Android every RN <Modal> is its
+     * own Dialog window, and AppDialogHost is mounted as a SIBLING in the
+     * navigator's screenLayout, so it attaches to the activity window BELOW
+     * this open Dialog. PrePaywallPrompt:9-14 records that behaviour as
+     * device-verified on 2026-09-19.
+     *
+     * So the dialog holding the only way out was drawn underneath the sheet
+     * it was asked about: remove one term from a bookmark list, tap CLOSE, and
+     * nothing happens. Backdrop, nothing. BACK, nothing. Force-quit.
+     *
+     * Closing first and reporting afterwards costs the "Keep open" option,
+     * which is worth a great deal less than an exit — and nothing is destroyed
+     * here anyway; the removals already happened as they were tapped.
+     */
+    setBmOpen(false);
     if (removed >= 1) {
-      confirmDialog(
+      notify(
         'Removed from list',
         `You removed ${removed} term${removed === 1 ? '' : 's'} from ${ctxName(bmCtx)}.`,
-        'Close',
-        () => setBmOpen(false),
-        { cancelText: 'Keep open', destructive: true },
       );
-    } else {
-      setBmOpen(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bmCtx]);

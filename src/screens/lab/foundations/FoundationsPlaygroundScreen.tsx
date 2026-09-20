@@ -58,6 +58,7 @@ import { ConceptBadge, DragSlider, LevelMeterBar, VizUnavailableCard } from './b
 import { requireViz, type VizModule } from './skiaGate';
 import { visHzFor } from './FoundationsCourseScreen';
 import { START_LEVEL_01 } from '../../../features/audio/startLevel';
+import { useStopOnAudioMute } from '../../../features/audio/useStopOnAudioMute';
 
 const ACTIVITY_MS = 500;
 const SPEED_OF_SOUND = 343;
@@ -164,6 +165,10 @@ export function FoundationsPlaygroundScreen() {
   const [eqCut, setEqCut] = useState<number>(0);
   const [eqQ, setEqQ] = useState<number>(0.7);
   const [playing, setPlaying] = useState(false);
+  // Backgrounding, shake-to-mute and the idle auto-mute all call
+  // panicMuteAudio(), which stops the generator underneath this screen.
+  // Without this the transport stays lit over silence.
+  useStopOnAudioMute(setPlaying);
   const [genError, setGenError] = useState('');
 
   const freq = Math.round(55 * Math.pow(3520 / 55, freq01));

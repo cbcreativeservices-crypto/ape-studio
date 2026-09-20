@@ -194,8 +194,16 @@ export default function EmployerApplyForm() {
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         body: JSON.stringify({ application_id: appId }),
       });
-      const out = (await res.json()) as { ok?: boolean };
-      if (out?.ok) setResent(true);
+      // ⛔ SAME RULE AS THE SUBMIT PATH ABOVE — `ok` IS NOT "A CODE WAS SENT".
+      //    The submit branch was hardened to require `sent_to`; this one, one
+      //    function below it, was not, so "A new code is on its way. The
+      //    previous one no longer works." was still printed off `ok` alone.
+      //    `employer-apply-finalize` returns ok:true whether or not a code was
+      //    minted, and the route only merges `sent_to` when issuing actually
+      //    succeeded — so this stays wrong even after the deploy, whenever
+      //    mail is unavailable.
+      const out = (await res.json()) as { ok?: boolean; sent_to?: string };
+      if (out?.ok && out.sent_to) setResent(true);
       else setError("We could not send another code just now. Try again in a moment.");
     } catch {
       setError("We could not send another code just now. Try again in a moment.");

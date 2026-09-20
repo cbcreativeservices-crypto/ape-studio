@@ -141,6 +141,23 @@ export function ShareTermSheet({
     { key: 'related' as const, rows: payload.related ?? [] },
   ].filter((s) => s.rows.length > 0);
 
+  /**
+   * ⚠️ ANDROID: THIS CONFIRM IS DRAWN BEHIND THE SHEET THAT RAISED IT.
+   *
+   * Every RN <Modal> is its own Dialog window, and AppDialogHost is mounted as
+   * a SIBLING in the navigator's screenLayout, so it attaches to the activity
+   * window BELOW this open sheet (device-verified, PrePaywallPrompt:9-14). So
+   * past the 25-term threshold, SHARE AS TEXT / Share as image / Copy do
+   * nothing on Android — the same dead-button symptom the comment below says
+   * was fixed for RN-web, re-created by a different mechanism.
+   *
+   * ⛔ NOT FIXED BY CLOSING THE SHEET FIRST, and that matters: the image path
+   *    captures `captureRef.current`, which only exists while this sheet is
+   *    mounted. The correct fix is an in-tree overlay confirm (the `embedded`
+   *    shape PrePaywallPrompt already has), which is real UI work and is
+   *    flagged for the owner rather than guessed at unattended. The notify
+   *    cases below, which need nothing from the sheet, ARE fixed.
+   */
   const confirmLargeThen = (run: () => void) => {
     if (!isLarge) return run();
     // confirmDialog, not Alert.alert: RN-web ships Alert as a literal no-op, so
@@ -169,21 +186,41 @@ export function ShareTermSheet({
         .captureAndShare(captureRef.current, multi ? 'Glossary terms' : 'Glossary term')
         .then((ok) => {
           if (!ok) {
-            // notify(), not Alert.alert (no-op on RN-web): the text-share
-            // fallback rode on the alert's OK handler, so on web the image
-            // path ended in silence — no image, no text, no message.
-            notify(
-              'Image share unavailable',
-              'Sharing as an image needs the next app build. Sharing as text instead.',
-              () => void Share.share({ message }).catch(() => {}).finally(onClose),
-            );
+            /**
+             * ⛔ DO THE FALLBACK, DO NOT HANG IT OFF A DIALOG'S OK HANDLER.
+             *
+             * The text share used to ride on this notify's OK — so on Android,
+             * where the dialog renders behind the open sheet, the image path
+             * ended in exactly the silence the comment here says it was
+             * written to prevent: no image, no text, no message. (It was fixed
+             * for RN-web's no-op Alert and then re-broken by the Android
+             * window rule.)
+             *
+             * Share first, then say what happened. The notice is now purely
+             * informational, and it is raised AFTER onClose, so nothing is
+             * waiting on a dialog nobody can see.
+             */
+            void Share.share({ message })
+              .catch(() => {})
+              .finally(() => {
+                onClose();
+                notify(
+                  'Shared as text',
+                  'Sharing as an image needs the next app build, so this went out as text instead.',
+                );
+              });
           } else {
             onClose();
           }
         })
         // Without this a rejected capture was an unhandled rejection AND left
         // the sheet open with no explanation.
-        .catch(() => notify('Share failed', 'The image could not be prepared. Try sharing as text.'))
+        // Close first: a notice raised over this open sheet is invisible on
+        // Android, and there is nothing left to do inside the sheet anyway.
+        .catch(() => {
+          onClose();
+          notify('Share failed', 'The image could not be prepared. Try sharing as text.');
+        })
         .finally(() => setBusy(false));
     });
 
@@ -191,13 +228,18 @@ export function ShareTermSheet({
     confirmLargeThen(() => {
       void copyText(message)
         .then((ok) => {
+          // Close BEFORE the notice — see the image path above. On Android a
+          // notice raised over this sheet is drawn underneath it.
+          onClose();
           notify(
             ok ? 'Copied' : 'Copy unavailable',
             ok ? 'Share text copied to clipboard.' : 'Copying needs the next app build.',
           );
-          if (ok) onClose();
         })
-        .catch(() => notify('Copy unavailable', 'The share text could not be copied.'));
+        .catch(() => {
+          onClose();
+          notify('Copy unavailable', 'The share text could not be copied.');
+        });
     });
 
   const openPicker = (key: SourceKey, rows: NamedTerm[]) => {

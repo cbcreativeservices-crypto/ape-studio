@@ -108,7 +108,7 @@ async function probe(domain: string): Promise<Remote> {
  * Ask the edge function to mint and mail the six-digit work-email code.
  *
  * ⛔ FAILS SAFE, AND THAT IS THE POINT. `employer-issue-code` is written but
- *    NOT YET DEPLOYED (see supabase/functions/_NOT_DEPLOYED.md). Until it is,
+ *    NOT YET DEPLOYED (see supabase/functions/_DEPLOY_NOTES.md). Until it is,
  *    this returns null, no `sent_to` reaches the form, and the form shows the
  *    honest "your application was saved, a person will review it" branch
  *    instead of claiming a code was sent. Deploying the function is the only

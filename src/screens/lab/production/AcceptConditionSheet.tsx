@@ -49,7 +49,16 @@ export function AcceptConditionSheet({
     >
       <Pressable accessible={false} style={styles.backdrop} onPress={close}>
         <Pressable accessible={false} style={styles.card} onPress={() => {}}>
-          <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
+          {/* keyboardShouldPersistTaps: the reason box is multiline, so the
+              keyboard is up when the user reaches RECORD IT — and RN's
+              default ("never") spends that first tap dismissing the
+              keyboard, so the button appears not to work. Every sibling
+              sheet that got this right uses "handled". */}
+          <ScrollView
+            contentContainerStyle={styles.body}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
             <Text style={styles.kicker}>ACCEPT A CONDITION</Text>
             <Text style={styles.title}>{finding?.title}</Text>
             <Text style={styles.detail}>{finding?.detail}</Text>

@@ -39,6 +39,7 @@ import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { LabShell, HeaderPlayButton } from './LabShell';
+import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -104,6 +105,10 @@ export function AutotuneLabScreen() {
   const [amount, setAmount] = useState<number>(1);
   const [speedKey, setSpeedKey] = useState<(typeof SPEEDS)[number]['key']>('med');
   const [playing, setPlaying] = useState(false);
+  // Backgrounding, shake-to-mute and the idle auto-mute all call
+  // panicMuteAudio(), which stops the generator underneath this screen.
+  // Without this the transport stays lit over silence.
+  useStopOnAudioMute(setPlaying);
   const [activeNote, setActiveNote] = useState(-1); // -1 = idle
   const [genError, setGenError] = useState('');
 

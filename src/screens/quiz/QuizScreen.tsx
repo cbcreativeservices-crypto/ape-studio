@@ -449,11 +449,22 @@ export function QuizScreen({ navigation, route }: Props) {
       'Leave & wipe',
       () => {
         answers.current = {};
+        // ⛔ AND THE SAVED DRAFT GOES WITH THEM. Without this the dialog's
+        //    promise ("Your answers will be wiped immediately") was true of
+        //    memory only: loadAttemptDraft at [117] restores them on re-entry
+        //    and the attempt resumes with exactly the answers the learner just
+        //    chose to destroy. The draft exists to survive a crash, never to
+        //    soften this decision. Fixed in the Final Exam twin first; this
+        //    one was the same defect, unreported, in the same shape.
+        if (payload) void clearAttemptDraft(payload.attempt_id);
         navigation.goBack();
       },
       { cancelText: 'Keep going', destructive: true },
     );
-  }, [navigation]);
+    // `payload` MUST be in the deps — `navigation` is stable, so without it
+    // this callback is built once, when payload is still null, and the
+    // clearAttemptDraft above can never run.
+  }, [navigation, payload]);
 
   // M3 (2026-09-07): a malformed options payload renders no controls; record an
   // empty answer for the slot and move on rather than stranding the learner

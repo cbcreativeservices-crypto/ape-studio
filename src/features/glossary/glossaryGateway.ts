@@ -66,9 +66,28 @@ export function probeGateway(): Promise<GatewayProbe> {
   return p;
 }
 
-/** Which relation the corpus is paged out of, given the probe's answer. */
-export function corpusTable(probe: GatewayProbe): 'glossary_browse_v' | 'glossary' {
-  return probe === 'deployed' ? 'glossary_browse_v' : 'glossary';
+/**
+ * Which relation the corpus is paged out of.
+ *
+ * ⛔ THE FALLBACK USED TO BE `public.glossary`, AND THAT IS NOW A FAIL-CLOSED.
+ *
+ * VERIFIED ON THE LIVE PROJECT 2026-09-20: `public.glossary` grants SELECT to
+ * NEITHER `anon` NOR `authenticated` — it returns 42501 for both. So the
+ * designed fail-open ("gateway absent, or the device key failed → read the
+ * base table") landed on a revoked relation and returned nothing: a blank
+ * glossary rather than a degraded one. It is a live path, reached whenever
+ * `keyFailedOpen` is set, not a theoretical one.
+ *
+ * `glossary_browse_v` is granted to `authenticated` and carries every column
+ * both corpus queries read, including the formula pair that
+ * `glossary_study_v` does not have. So it is the right read in BOTH cases:
+ * when the gateway is deployed, and when it is not.
+ *
+ * The parameter is kept so the call sites still document which case they are
+ * in, and so a future third relation has somewhere to go.
+ */
+export function corpusTable(_probe: GatewayProbe): 'glossary_browse_v' {
+  return 'glossary_browse_v';
 }
 
 // ── The metered definition read ───────────────────────────────────────────

@@ -9,7 +9,7 @@
  * Pro Registry routes, which still resolve here.
  */
 import { useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Modal } from '../../components/DimModal';
@@ -108,6 +108,7 @@ function MemberSheet({
   /** [77]: tell the host a token was blocked so Explore drops it right away. */
   onBlocked?: (token: string) => void;
 }) {
+  const insets = useSafeAreaInsets();
   const [data, setData] = useState<{
     profile: PublicProfile;
     credentials: PublicCredential[];
@@ -154,8 +155,10 @@ function MemberSheet({
 
   return (
     <Modal accessibilityViewIsModal visible transparent animationType="slide" onRequestClose={onClose}>
-      <View style={st.sheetRoot}>
-        <View style={st.sheet}>
+      {/* No text input here, but the same bottom inset applies: BLOCK and
+          REPORT are the last things in the sheet. */}
+      <KeyboardAvoidingView style={st.sheetRoot} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <View style={[st.sheet, { paddingBottom: 14 + insets.bottom }]}>
           <View style={st.sheetHead}>
             <Text accessibilityRole="header" style={st.sheetTitle}>
               {p ? p.displayName.toUpperCase() : 'MEMBER'}
@@ -312,7 +315,7 @@ function MemberSheet({
           )}
           </ScrollView>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
@@ -330,6 +333,7 @@ function ContactSheet({
   openTo: string[];
   onSend: (purpose: string, message: string) => Promise<boolean>;
 }) {
+  const insets = useSafeAreaInsets();
   const [purpose, setPurpose] = useState<string | null>(null);
   const [message, setMessage] = useState('');
   /**
@@ -359,8 +363,14 @@ function ContactSheet({
 
   return (
     <Modal accessibilityViewIsModal visible={open} transparent animationType="slide" onRequestClose={onClose}>
-      <View style={st.sheetRoot}>
-        <View style={st.sheet}>
+      {/* ⛔ KEYBOARD TRAP — the same shape pass 1 fixed in the 1:1 message
+          sheet. Bottom-anchored Modal, multiline input, action buttons last,
+          no scroller to drag the keyboard down and a scrim that is not
+          pressable. The keyboard covered SEND and CANCEL, Return inserted a
+          newline instead of dismissing, and on iOS the only way out was to
+          background the app. These are the Apple 1.2 controls. */}
+      <KeyboardAvoidingView style={st.sheetRoot} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <View style={[st.sheet, { paddingBottom: 14 + insets.bottom }]}>
           <Text accessibilityRole="header" style={st.sheetTitle}>
             SEND A CONTACT REQUEST
           </Text>
@@ -401,7 +411,7 @@ function ContactSheet({
           />
           <PrimaryButton label="CANCEL" onPress={onClose} />
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
@@ -423,12 +433,14 @@ function ReportSheet({
   onClose: () => void;
   onSend: (reason: ReportReason, detail: string) => void;
 }) {
+  const insets = useSafeAreaInsets();
   const [reason, setReason] = useState<ReportReason>('spam');
   const [detail, setDetail] = useState('');
   return (
     <Modal accessibilityViewIsModal visible={open} transparent animationType="slide" onRequestClose={onClose}>
-      <View style={st.sheetRoot}>
-        <View style={st.sheet}>
+      {/* Keyboard trap — see the note on the contact composer above. */}
+      <KeyboardAvoidingView style={st.sheetRoot} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <View style={[st.sheet, { paddingBottom: 14 + insets.bottom }]}>
           <Text accessibilityRole="header" style={st.sheetTitle}>
             REPORT THIS MEMBER
           </Text>
@@ -451,7 +463,7 @@ function ReportSheet({
           <PrimaryButton label="SEND REPORT" tone="danger" onPress={() => onSend(reason, detail)} />
           <PrimaryButton label="CANCEL" onPress={onClose} />
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

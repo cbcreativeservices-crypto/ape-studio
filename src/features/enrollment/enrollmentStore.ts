@@ -121,11 +121,18 @@ async function reconcileFromServer(): Promise<boolean> {
     const rows = (data ?? []) as { gs: number; favorite: boolean | null; active: boolean | null }[];
     // ZERO ROWS IS NOT AN ANSWER (corrected 2026-09-17 by a verification pass).
     //
-    // `user_topic_enrollments` is in the deny-all RLS set, and the repo's own
-    // security review records that a direct client select on it returns ZERO
-    // ROWS RATHER THAN AN ERROR. So the first version of this treated a denial
-    // as "the server has nothing to teach us", returned, and let the push
-    // proceed — which is the exact overwrite it was written to prevent.
+    // `user_topic_enrollments` has NO SELECT grant to `anon` or
+    // `authenticated`. ⛔ CORRECTED 2026-09-20 (probed live): a direct client
+    // select on it returns **42501 permission denied** — an ERROR, not the
+    // zero rows this comment used to claim, twice, as the stated reason the
+    // push below is unconditional.
+    //
+    // The behaviour here is right either way, and deliberately so: a denial
+    // and an empty result are BOTH treated as not-confirmed, because the
+    // first version treated a denial as "the server has nothing to teach us",
+    // returned, and let the push proceed — the exact overwrite this was
+    // written to prevent. But the next person reasoning about whether the
+    // client can ever read this list should start from the true premise.
     //
     // An empty result is therefore indistinguishable from a denial, and both are
     // treated as NOT CONFIRMED. Only rows we actually read count.
@@ -179,9 +186,12 @@ function scheduleServerSync(delayMs = 800) {
         // unconditional again, and the reinstall case needs the fix it always
         // needed, which is on the SERVER: either `sync_my_enrollments` merges
         // rather than replaces, or the client is given a way to READ the list
-        // (it currently cannot — the table is in the deny-all RLS set, and a
-        // client select returns zero rows rather than an error, which is why the
-        // pull below is best-effort and never load-bearing).
+        // (it currently cannot — the table has no SELECT grant to `anon` or
+        // `authenticated`, so a client select returns 42501 permission denied;
+        // corrected 2026-09-20, this used to say "zero rows rather than an
+        // error". Either way the pull below is best-effort and never
+        // load-bearing, because a denial and an empty result are both treated
+        // as not-confirmed).
         //
         // BOUNDED (2026-09-17, pass 6). The pull is a convenience; the push is
         // the thing that matters. There is no request timeout anywhere in this

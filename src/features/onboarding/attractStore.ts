@@ -160,7 +160,20 @@ export function useAboutOpened(): boolean {
   return v;
 }
 
-/** Account wipe / user switch — clear all cues (clearLocalAccountData). */
+/**
+ * Clear all cues.
+ *
+ * ⛔ DELIBERATELY NOT WIRED INTO THE ACCOUNT WIPE, and the docstring used to
+ *    say the opposite. These cues are device-level first-use state, the same
+ *    family as onboardingFlow, and `accountWipeRegistry.test.ts` exempts this
+ *    module on exactly that ruling. The old wording ("Account wipe / user
+ *    switch — clear all cues (clearLocalAccountData)") described a call that
+ *    does not exist and would have sent the next reader to register it,
+ *    against the ruling.
+ *
+ *    Kept as an export because it is the correct thing to call if that ruling
+ *    is ever reversed — and because deleting it would lose the reasoning.
+ */
 export function resetLocal(): void {
   state = { exploreDone: false, aboutDone: false, enrolledOnce: false, firstSeenAt: null };
   hydrated = false;

@@ -36,8 +36,14 @@ function walk(dir: string, out: string[] = []): string[] {
   return out;
 }
 
-/** The one file allowed to import the bare Modal: DimModal itself wraps it. */
-const ALLOWED = new Set(['src/components/DimModal.tsx']);
+/**
+ * Files allowed to import the bare Modal.
+ *
+ * `DimModal` is the wrapper itself. `LowLightLayer` is the mode's OWN notice,
+ * shown only while the mode is on and already dimmed by definition — washing
+ * it would dim the explanation of the dimming.
+ */
+const ALLOWED = new Set(['src/components/DimModal.tsx', 'src/features/settings/LowLightLayer.tsx']);
 
 test('no screen renders a Modal that Low-Light Mode cannot reach', () => {
   const offenders: string[] = [];
@@ -48,7 +54,24 @@ test('no screen renders a Modal that Low-Light Mode cannot reach', () => {
     // Only the import FROM react-native counts; `import { Modal } from './DimModal'` is the fix.
     const bare = /import\s*\{[^}]*\bModal\b[^}]*\}\s*from\s*'react-native'/.test(src);
     if (!bare) continue;
-    if (!src.includes('LowLightDim')) offenders.push(rel);
+    /**
+     * ⛔ COUNT THEM, do not just look for the string. The first version of
+     *    this passed a file as soon as `LowLightDim` appeared ANYWHERE in it,
+     *    so a screen with two Modals and one wash passed — and the next
+     *    multi-modal screen would have slipped through silently.
+     *
+     *    A `visible={false}` Modal is a placeholder that never renders, so it
+     *    needs no wash and is discounted.
+     */
+    // Comments mention `<Modal>` constantly in this codebase — strip them, or
+    // every file that EXPLAINS the rule fails it.
+    const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+    const modals = (code.match(/<Modal[\s>]/g) ?? []).length;
+    const placeholders = (code.match(/<Modal[^>]*visible=\{false\}/g) ?? []).length;
+    const washes = (code.match(/<LowLightDim\s*\/>/g) ?? []).length;
+    if (washes < modals - placeholders) {
+      offenders.push(`${rel} (${modals - placeholders} live Modal(s), ${washes} LowLightDim)`);
+    }
   }
   assert.deepEqual(
     offenders,
