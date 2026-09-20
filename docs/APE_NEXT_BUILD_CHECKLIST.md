@@ -4,6 +4,23 @@ The installed dev client predates several native modules and engine versions. Ev
 
 **Owner ask 2026-09-05:** "the harmonograph drawing says it needs the next app build to work (share, save, print). make sure this is included in our next build." → verified below; one config gap fixed (photo-library permission text).
 
+## ⛔ CONFIG CHANGES THAT MUST RIDE WITH A BUILD (never alone)
+
+These are FINGERPRINT INPUTS. Landing one on its own moves `runtimeVersion`,
+and every later `eas update` then publishes to a runtime no installed build
+has — it succeeds, delivers nothing, and says nothing. Both of these were
+tried and reverted on 2026-09-19 for exactly that reason.
+
+| Change | Why | Measured cost if landed alone |
+|---|---|---|
+| **`autoIncrement: true` on the `preview` profile** (`eas.json`) | Preview has no auto-increment, so every Android preview build is version code **13**. Two different APKs already share it — `adb install -r` worked, but Android can refuse, and you cannot tell which APK is on a device from its version. | ios `e6578853…` → `8230019c…`, android `78622e4e…` → `0c8630da…`. Would strand iPhone 27 AND the Pixel APK from all OTAs. |
+| **Shrinking the EAS upload** (573 MB) | It is `audio_app_archive/` — **370 MB across 5572 TRACKED files** — not `.git`, which is not in the archive at all. `.easignore` lists the folder and is **not being honoured**; the fix is untracking it, or `EAS_NO_VCS=1` to select the copy-based archive. | Any `.easignore` edit moves both fingerprints. The `.git/` attempt on 2026-09-19 changed the runtime and saved **zero bytes**. |
+
+⚠️ THE WHOLE FILE IS HASHED, not the profile you touched. Adding
+`autoIncrement` to the **preview** profile moved the **iOS** fingerprint too,
+even though iOS never builds with that profile. Do not assume a change is
+"only" for one platform.
+
 ## What the next build must carry — verified in the repo
 
 | Feature (what the user sees today) | Native half | In `package.json` | In `app.json` plugins / permissions | Status |
