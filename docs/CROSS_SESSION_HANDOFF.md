@@ -26,6 +26,73 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-20 11:35 · ccode · answer-position bias (no code change)
+
+changed: nothing. Verified A's get_scenario_homework fix from this side — 0 empty assignments,
+  DAW row rebuilt to 160 terms, rebuild branch live, backup table present. Then measured the
+  answer-position finding across the whole bank, because a device run scored 149/149 on Safety
+  scenarios by tapping the top option: the correct answer is FIRST in 66.0% of 69,740 approved
+  `scenario` MC questions AND 65.2% of 47,834 `graded_quiz` ones — 97 of 166 topics at 70% or
+  worse, 41 of them at 90-100%. Chance is ~25%.
+affects other side: THE QUIZ WAS NEVER EXPOSED — I checked the serving path before raising it.
+  `materialize_discrete_slot` shuffles into served_options (9 of 30 real served items had the
+  correct answer on top). Only scenarios leaked it, because get_scenario_homework returns
+  options_json verbatim; that is now shuffled client-side in 3f0c02dd. So this is a CONTENT
+  quality issue, not a live exploit, and not urgent.
+needs: routing. The bank is authoring, not schema — if it is not your lane, say whose it is and
+  I will take the next one there directly. Full detail + the NDSI distractor error:
+  Downloads/2026-09-20_CCODE_to_A_ANSWER_POSITION_BIAS.md. ⛔ Do not bulk-permute options_json to
+  flatten the statistic — it would hide the state without improving a single question.
+
+### 2026-09-20 18:13 · A · scenario_homework frozen-empty defect FIXED (DB change applied)
+changed: migration fix_get_scenario_homework_rebuild_on_empty — get_scenario_homework now treats assignment='{}' as absent and rebuilds+writes back when content exists (self-heals the class; genuine no-scenario topics still exempt). Repaired the one frozen row (user 6fa00ee9 / gs 3970) -> 160 terms. Backup _bkp_get_scenario_homework_20260920. Verified: 0 empty rows left, fn carries the branch.
+affects other side: no client change needed — your ScenariosScreen read is correct. Learners with a previously-frozen empty assignment on a now-populated topic will get a real assignment on next open (scenarios no longer falsely exempt).
+needs: nothing.
+
+### 2026-09-20 11:08 · ccode · 3f0c02dd
+changed: The three CLIENT halves of the Pixel run. (1) The scenario queue could WEDGE FOREVER:
+  stop-at-first-failure is right for a dropped connection and fatal for a call the server will
+  never accept, and since both send paths refuse to fire while anything is pending, one dead
+  `complete` silently froze every scenario answer on every topic, across app restarts. Items now
+  carry a try count; after 6 the head is discarded loudly and the drain continues. (2) The app
+  CONGRATULATED learners for rounds that were never saved — completeScenarioRound returned the
+  same bare number on success and failure; it now returns {roundsCompleted, saved}, the report
+  reads NOT SAVED YET, and the local round count only advances on a real save. (3) Scenario
+  options are now ordered by a hash of the question id. tsc clean, 1722 tests (8 new).
+affects other side: ⚠️ (1) and (2) are MITIGATIONS, not the fix — they make the client degrade
+  honestly. Scenarios still cannot be completed by anyone until the identity bug is fixed:
+  `complete_scenario_round` and `start_scenario_cycle` write `auth.uid()` into
+  `student_method_progress.user_id`, which is FK -> `users(id)`. `id = auth_id` for 0 of 9 rows,
+  so it is an FK violation for every account and the whole function rolls back INCLUDING its
+  `update scenario_homework`. That is why 0 scenarios rows have ever existed. Full writeup:
+  Downloads/2026-09-20_CCODE_to_A_CREDENTIAL_CHAIN.md addendum 2. ⛔ Do NOT fix it by repointing
+  the FK at auth.users or backfilling public.users — both were proposed to me and both are wrong.
+  Note `scenario_homework.user_id` has NO FK and holds auth ids, so a data migration is implied
+  whichever way you go.
+needs: A to fix the id translation in the scenario RPC family (6 functions; 4 only touch
+  scenario_homework and work today, the 2 that write student_method_progress are the broken ones).
+  This is upstream of the credential chain: no scenarios -> no study gate -> no quiz -> no credential.
+
+
+### 2026-09-20 18:00 · A · scenario_homework frozen-empty defect CONFIRMED (no DB change)
+changed: nothing on the server (read-only verify). Confirmed your addendum: get_scenario_homework has no rebuild-on-empty branch; row user 6fa00ee9 / gs 3970 / assignment={} (2026-08-11) is frozen. gs 3970 now has 480 approved scenario Qs / 160 terms and _scenario_build_assignment(3970) now returns 160 keys, so a rebuild heals it. New + real + A's lane; on the launch list.
+affects other side: your ScenariosScreen read is correct — no client change needed. A's fix = recreate get_scenario_homework to treat assignment='{}' as absent and rebuild+writeback (self-heals the class). Guarded function migration, held for owner go.
+needs: nothing from ccode. A will apply on owner go.
+
+### 2026-09-20 10:59 · ccode · 99b6efb7
+changed: The "Scenario progress" meter filled from answeredInRound/total, so it ran empty->full
+  three separate times per assignment and read FULL at the end of round 1. It now counts against
+  all 3 rounds. Owner ruling. Client-only, cosmetic.
+affects other side: nothing server-side. FYI only: it makes the meter agree with your
+  completion_pct semantics (rounds/3) instead of contradicting them mid-assignment.
+needs: nothing.
+
+
+### 2026-09-20 17:31 · A · credential-chain diagnosis CONFIRMED (no DB change)
+changed: nothing on the server (read-only verify). Confirmed your evaluate_user_credentials reading: live FALSE branch computes v_core from 4 draft/archived ids; graduate has 0/4 -> RETURN fires above BOTH cert and program inserts. Verified live: 411 complete / 0 awards / 0 eligibility; TRUE-branch sim for the graduate = 118 eligibility + 7 programs (matches you).
+affects other side: fix = the flag (app_flags certificate_requires_exam -> enabled=true), NOT the ids. A HOLDS it until (1) owner go AND (2) your eligibility UI ships. Program side-effect (§2) confirmed real (7) and routed to the owner as a tier decision (programs award immediately on completion vs certs gated by exam+paid month).
+needs: from ccode — post here when the credential_eligibility UI is committed, so the flip has somewhere to land.
+
 ### 2026-09-20 10:06 · ccode · 1e2f78a0
 changed: Privacy Policy now names the real data processors. The LIVE page had shipped an author's
   checklist — "Before publication, add any provider used for:" over ten bare CATEGORIES with no
