@@ -135,6 +135,25 @@ export async function clearLocalAccountData(opts?: { total?: boolean }): Promise
     const toRemove = keys.filter(
       (k) =>
         k.startsWith('ape:') &&
+        /**
+         * ⛔ THE IN-PROGRESS EXAM ANSWER DRAFT SURVIVES, FOR THE SAME REASON
+         * THE EXAM QUEUE DOES (bug pass 1, 2026-09-20).
+         *
+         * `ape:attemptDraft:<attemptId>` was swept by the blanket `ape:*`
+         * rule. `SingleDeviceGuard` runs this wipe within about a second of a
+         * second device signing in, from any screen — including mid-exam. The
+         * SERVER attempt stays `in_progress` with `started_at` unchanged, so
+         * the learner rejoins the same sitting with zero answers and an
+         * already-expired clock, and the screen force-submits an empty paper
+         * that is scored and recorded as a real attempt.
+         *
+         * Keeping it is safe for the same reason the queue is: the key carries
+         * the ATTEMPT ID, and `submit_final_exam` raises `not_owner` for an
+         * attempt that is not the caller's — so a draft cannot be credited to
+         * whoever signs in next. A guest `total` wipe still removes it below;
+         * a guest cannot sit a graded exam.
+         */
+        !(k.startsWith('ape:attemptDraft:') && opts?.total !== true) &&
         // A guest is wiped 100% clean, so `total` overrides the exam-queue
         // entries too — but never the hardware calibration, the install id,
         // the dev overrides, or THE GLOSSARY METER, which is a rate limit
