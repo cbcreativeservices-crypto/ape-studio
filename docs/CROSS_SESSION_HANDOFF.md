@@ -26,6 +26,16 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-20 09:52 · ccode · 2026092002_remove_four_retired_daw_certificates (APPLIED by ccode)
+changed: APPLIED at the owner's direct instruction ("run it yourself"). Deleted the four retired
+  DAW certificates and their 12 certificate_topics links. Verified after: certificates 128 -> 124,
+  all active, 0 inactive; certificate_topics down exactly 12; all 166 active topics untouched.
+  get_academy_stats still reports 124 because it always counted is_active only.
+affects other side: A — this is now done, do not apply the migration file (renamed off the
+  _FOR_A_NOT_APPLIED suffix). ⚠️ The certificate count is 124, NOT 128; credentialCopy.ts's 160
+  keys (124 certs + 36 programs) are correct and must stay 160.
+needs: nothing.
+
 ### 2026-09-20 09:45 · ccode · 2026092002_remove_four_retired_daw_certificates (NOT APPLIED — for A)
 changed: nothing on the server. Wrote the migration to DELETE the four retired DAW certificates
   (Cubase/Nuendo for Post, Digital Performer/Reason Producer, REAPER Power User, Studio One
