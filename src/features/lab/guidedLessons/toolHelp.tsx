@@ -119,7 +119,7 @@ export const TOOL_LESSONS: Record<ToolId, LessonContent> = {
       'meter — the tool says so, and shows the calibration state.',
     controls: [
       { key: 'weighting', name: 'Weighting (Z/A/C)', definition: 'Which frequency curve to apply before measuring: Z = flat (unweighted); A = de-emphasizes lows to match quiet-level hearing (the common one); C = nearly flat, for loud/peak levels.' },
-      { key: 'range', name: 'Range (VU window)', definition: 'The dB SPL that sits at the VU’s −20 mark; the 0 mark is 20 dB above it. So RANGE 60 shows 60 dB at −20 and 80 dB at 0 — a 20 dB window mapped across the face, with the low and high numbers printed inside the arc. Pick the window that brackets your room level so the needle swings on-scale instead of pinned. AUTO tracks the ambient level and parks it so the signal sits mid-scale. It is a relative reference, honest regardless of calibration; it is NOT a calibrated SPL reading.' },
+      { key: 'range', name: 'Range (VU window)', definition: 'The dB SPL that sits at the VU’s 0 mark; the −20 mark is 20 dB below it. So RANGE 80 shows 80 dB at 0 and 60 dB at −20 — a 20 dB window mapped across the face, with the low and high numbers printed inside the arc. Pick the window that brackets your room level so the needle swings on-scale instead of pinned. AUTO tracks the ambient level and parks it so the signal sits mid-scale. It is a relative reference, honest regardless of calibration; it is NOT a calibrated SPL reading.' },
       { key: 'response', name: 'Time response', definition: 'How fast the meter reacts: FAST (125 ms) follows quick changes; SLOW (1 s) averages for a steadier reading of continuous sound.' },
       { key: 'calibration', name: 'Calibration', definition: 'A one-time offset that aligns the phone reading to a reference meter. Until set, readings are “dBFS · uncalibrated approximate”; after, “dB SPL · field-calibrated (approximate)”.' },
       { key: 'reading', name: 'The big number (readout)', definition: 'The current weighted, time-averaged level — labeled like LAF (A-weighted, Fast) or LZS (Z, Slow). The unit says dB SPL only after calibration; otherwise dBFS · uncalibrated.' },
@@ -243,10 +243,12 @@ export const TOOL_LESSONS: Record<ToolId, LessonContent> = {
     whatItIs:
       'One live instrument combining the level meter, spectrum analyzer, spectrogram, ' +
       'oscilloscope, frequency counter and a smart signal-condition readout. Everything reads ' +
-      'from the same microphone capture, so the panels always agree. Every level is dBFS ' +
-      '(uncalibrated digital level) — never true dB SPL.',
+      'from the same microphone capture, so the panels always agree. Levels read in whichever ' +
+      'mode the SPL tile is set to: dBA / dBC / dB SPL are an ESTIMATE from an uncalibrated ' +
+      'phone mic (it uses the SPL meter’s field calibration when one is set), and dBFS is the ' +
+      'raw digital level. Never a certified dB SPL.',
     controls: [
-      { key: 'spl', name: 'SPL (readout)', definition: 'The level in whichever weighting and response this tile is set to — its label shows the mode (LCF = C-weighted FAST, LAF = A-weighted FAST; long-press the tile to change). Here it is dBFS-referenced and UNCALIBRATED: read it as relative level, not true sound pressure.' },
+      { key: 'spl', name: 'SPL (readout)', definition: 'The level in whichever weighting and response this tile is set to — its label shows the mode (LCF = C-weighted FAST, LAF = A-weighted FAST; long-press the tile to change). Modes: dBA, dBC and dB SPL apply the SPL-meter reference offset and read as an ESTIMATED sound-pressure level; dBFS is the raw digital level. If you have field-calibrated the SPL meter, this tile uses that offset too — still approximate, never certified.' },
       { key: 'peak', name: 'Peak (readout)', definition: 'The highest instantaneous sample level right now, in dBFS. It turns red at ≥ 0 dBFS — the converter itself is clipping, regardless of how loud the room actually is.' },
       { key: 'rms', name: 'RMS (readout)', definition: 'The unweighted (Z) FAST level — the average signal energy in dBFS. The gap between RMS and PEAK is the signal’s crest factor: big gap = transient material, small gap = dense/compressed.' },
       { key: 'pk_hold', name: 'Peak hold (readout)', definition: 'The maximum peak seen since the last reset — it latches brief overloads your eye would miss. Long-press the cell (or tap ⟲) to reset it; that also resets the per-band holds on the spectrum.' },
@@ -262,10 +264,10 @@ export const TOOL_LESSONS: Record<ToolId, LessonContent> = {
       { key: 'counter', name: 'Frequency counter (readout)', definition: 'The tracked pitch in Hz with the tracker’s confidence. Below the confidence gate the value dims (last stable reading) and then falls to dashes — a number is never presented as live when it isn’t.' },
       { key: 'detection', name: 'Smart detection (panel)', definition: 'Heuristics watching the live spectrum for signatures: mains hum (50 or 60 Hz family), 120 Hz supply harmonics, pink-noise character, clipping, possible mic overload, feedback beginning (one narrowband component rising), LF rumble, and a narrowband whistle. These are likely conditions based on the measured signal — not guarantees.' },
       { key: 'snapshot', name: 'Measurement snapshot', definition: 'Saves the whole instrument state — spectrum bands + holds, recent spectrogram history, levels, dominant frequency/note, active detections, date/time and your notes — to the Measurement Library. Numbers only, never audio.' },
-      { key: 'display', name: 'What the display shows', definition: 'Top bar: the four headline levels (all dBFS · uncalibrated). Hero: energy per frequency, low (left) → high (right) — columns are 1/3-octave bands, the cyan curve the fine FFT, amber its average. Lower left: frequency over TIME (color = level). Lower right: amplitude over time around the zero line. Bottom: the dominant frequency read musically, then system facts and any detected signal conditions.' },
+      { key: 'display', name: 'What the display shows', definition: 'Top bar: the four headline levels (all in the mode the SPL tile is set to — estimated dB SPL or raw dBFS, never certified). Hero: energy per frequency, low (left) → high (right) — columns are 1/3-octave bands, the cyan curve the fine FFT, amber its average. Lower left: frequency over TIME (color = level). Lower right: amplitude over time around the zero line. Bottom: the dominant frequency read musically, then system facts and any detected signal conditions.' },
     ],
     commonMistakes: [
-      'Reading the SPL·LAF number as true dB SPL — every level here is uncalibrated dBFS from a phone mic; only the dedicated SPL meter offers field calibration.',
+      'Reading the SPL·LAF number as a certified dB SPL — it is an estimate from a phone mic, approximate even after field calibration.',
       'Trusting the note/cents readout when the counter is dimmed — a dimmed value is the LAST stable reading, not what is sounding now.',
       'Treating detection chips as diagnoses — they are likely conditions inferred from the signal; confirm by ear and by isolating the source.',
       'Judging tonal balance while smoothing is LOW — raise it so the average trace settles before you read the trend.',

@@ -44,6 +44,7 @@ import { CardArt } from '../../components/CardArt';
 import { credentialArtUrl } from './CredentialThumb';
 import { CredentialDetailModal, type CredentialDetail } from './CredentialDetailModal';
 import type { RootStackParamList } from '../../navigation/types';
+import { CERTIFICATE_REQUIRES_EXAM } from '../../features/finalExam/tenure';
 
 const SPEC_CERT_KEY = 'ape:specCert'; // chosen Specialization Certificate name (Level 1)
 const PROGRAM_PATH_KEY = 'ape:programPath'; // chosen program path name (Level 2)
@@ -413,8 +414,11 @@ function AwardPageView({
           />
         ))}
         {/* Small, upfront grant requirement (user request 2026-07-22). */}
+        {/* Gated on the real server flag — see AwardProgressScreen for the note. */}
         <Text style={styles.grantNote}>
-          A minimum of 1 complete month of paid membership is required before a certificate can be granted.
+          {CERTIFICATE_REQUIRES_EXAM
+            ? 'A minimum of 1 complete month of paid membership is required before a certificate can be granted.'
+            : 'Certificates are issued to your record as soon as their requirements are met.'}
         </Text>
       </ScrollView>
     </View>

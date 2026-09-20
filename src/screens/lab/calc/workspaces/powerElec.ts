@@ -224,8 +224,11 @@ const VDROP: Workspace = {
     'Ignoring that thin, long DC feeds waste real power as heat (I²R) on top of the voltage sag.',
   ],
   warnings:
-    'Copper at 20 °C (ρ = 1.724×10⁻⁸ Ω·m); resistance rises ~0.4%/°C when hot. Round-trip ' +
-    'resistance R = ρ·2L/A; drop = I·R. AWG area from the standard geometric definition.',
+    'DC or SINGLE-PHASE AC only: round-trip resistance R = ρ·2L/A, drop = I·R. For a ' +
+    'THREE-PHASE feeder use √3·L·I·R per phase — this calculator will read about 15% high. ' +
+    'Copper at 20 °C (ρ = 1.724×10⁻⁸ Ω·m); a hot conductor at 60 °C has roughly 16% more ' +
+    'resistance, so the real drop is higher than shown. Conductor reactance and power factor ' +
+    'are not modelled. AWG area from the standard geometric definition.',
   glossary: ['Voltage', 'Resistance', 'Current', 'AWG', 'Power'],
   fields: [
     { key: 'awg', name: 'WIRE GAUGE (AWG)', quantity: 'number', placeholder: '16', help: 'American Wire Gauge — smaller number = thicker wire.' },
@@ -278,6 +281,13 @@ const VDROP: Workspace = {
       explain:
         'The voltage-drop calculation solved backwards: the wire cross-section — and so the gauge — needed to keep a run within an allowable percentage drop. A longer run or more current needs more copper; choose the resulting AWG number or thicker (a lower number).',
       keySymbols: ['ρ', '·', '/', '%'],
+      note:
+        'Voltage-drop sizing only — this is NOT an ampacity calculation. It gives the smallest ' +
+        'conductor that stays inside your drop budget; it does not check whether that conductor ' +
+        'can safely or legally carry the current. Size for ampacity FIRST from the applicable ' +
+        'code (NEC Table 310.16 / IEC 60364-5-52), including bundling, ambient-temperature and ' +
+        'conduit-fill derating, then use this result only to go THICKER if the drop demands it. ' +
+        'Whichever is larger wins.',
       compute: (v) => {
         const vdMax = (n(v.vsrc) * n(v.pct)) / 100;
         const Rmax = vdMax / n(v.current);
@@ -285,7 +295,11 @@ const VDROP: Workspace = {
         const awgReal = awgFromAreaM2(A);
         return [
           { label: 'REQUIRED AREA', value: A * 1e6, quantity: 'number', chainable: false },
-          { label: 'USE THIS AWG OR THICKER', value: Math.floor(awgReal), quantity: 'number', chainable: false },
+          // ⛔ NOT 'USE THIS AWG'. The old label read as a recommendation for a number
+          //    derived ONLY from the drop budget: 5 m / 20 A / 120 V / 3% returns 17 AWG,
+          //    which on a 20 A branch circuit is a fire. The ampacity check is the
+          //    caller's, from the code table — see `note` above.
+          { label: 'DROP-LIMITED AWG (CHECK AMPACITY)', value: Math.floor(awgReal), quantity: 'number', chainable: false },
           { label: 'MAX ALLOWABLE DROP', value: vdMax, quantity: 'voltage', chainable: false },
         ];
       },
@@ -297,7 +311,8 @@ const VDROP: Workspace = {
         return [
           `Allowable drop = ${fmt(n(v.pct))}% × ${fmt(n(v.vsrc))} V = ${fmt(vdMax)} V, so max resistance = ${fmt(Rmax)} Ω.`,
           `Required area = (1.724e-8 × ${fmt(2 * n(v.len))}) ÷ ${fmt(Rmax)} = ${fmt(A * 1e6)} mm².`,
-          `That is about ${fmt(awgReal)} AWG — choose ${fmtInt(Math.floor(awgReal))} AWG or thicker (a LOWER gauge number).`,
+          `That is about ${fmt(awgReal)} AWG — so on DROP ALONE, ${fmtInt(Math.floor(awgReal))} AWG or thicker (a LOWER gauge number).`,
+          'Now check ampacity against the applicable code table for this circuit and its derating, and use whichever conductor is LARGER. Drop sizing alone can return a conductor that cannot legally or safely carry the current.',
         ];
       },
     },
@@ -328,7 +343,9 @@ const RACK: Workspace = {
   ],
   warnings:
     'BTU/hr = W × 3.412; mains current I = P/V; cooling airflow CFM ≈ BTU/hr ÷ (1.08·ΔT°F). ' +
-    'These size a starting point — real device power factor, duty cycle, and rack airflow paths vary.',
+    'I = P/V ASSUMES A POWER FACTOR OF 1 — gear with a lower power factor (many switch-mode ' +
+    'amplifier supplies sit at 0.6–0.9) draws MORE current than shown, so treat this as a floor ' +
+    'and confirm against the nameplate current rating. Duty cycle and rack airflow paths vary.',
   glossary: ['Power', 'Current', 'Voltage', 'Amplifier'],
   fields: [
     { key: 'watts', name: 'TOTAL POWER DRAW', quantity: 'power', placeholder: '800', help: 'Sum of every device’s real power draw under load.', warn: { test: (x) => x <= 0, msg: 'Power must be greater than zero.' } },

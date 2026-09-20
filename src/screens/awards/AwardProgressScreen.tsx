@@ -38,6 +38,7 @@ import {
   isAvailable as certificateExportAvailable,
 } from '../../features/credentials/certificatePdf';
 import type { RootStackParamList } from '../../navigation/types';
+import { CERTIFICATE_REQUIRES_EXAM } from '../../features/finalExam/tenure';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AwardProgress'>;
 
@@ -285,8 +286,16 @@ export function AwardProgressScreen({ navigation, route }: Props) {
                 Deliberately no date: the server owns the arithmetic, and the
                 clock restarts if a membership lapses, so anything computed on
                 this side would be wrong for exactly the people it matters to. */}
+            {/* ⛔ GATED ON THE REAL SERVER FLAG. `certificate_requires_exam`
+                is FALSE on production, and while it is, the server issues the
+                credential the moment its requirements are met — so stating the
+                paid-month rule unconditionally was simply false. The copy is
+                the owner's 2026-09-18 ruling and returns the day the flag
+                flips; see CERTIFICATE_REQUIRES_EXAM in features/finalExam/tenure. */}
             <Text style={styles.grantNote}>
-              Credentials are granted after one complete month of paid membership.
+              {CERTIFICATE_REQUIRES_EXAM
+                ? 'Credentials are granted after one complete month of paid membership.'
+                : 'Passing the Final Exam issues this credential to your record immediately.'}
             </Text>
           </View>
         )}

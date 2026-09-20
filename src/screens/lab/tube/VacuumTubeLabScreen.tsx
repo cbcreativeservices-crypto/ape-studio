@@ -500,9 +500,15 @@ function HighVoltSection(p: SectionProps) {
             ? 'A high-voltage plate pulls HARD: a dense, fast electron stream with room to swing. This is why tube circuits run at hundreds of volts — the “B+” supply.'
             : 'A small supply barely attracts the cloud: few electrons cross, weakly. Not enough current — and no headroom to swing a big signal.'}
         </Text>
+        {/* ⛔ "DESERVES RESPECT" IS A EUPHEMISM FOR A CHARGE THAT KILLS.
+            The Tube REFERENCE screens say "lethal" plainly; this is the screen
+            that actually teaches the high-voltage procedure, and it was the
+            softer of the two. Say it the same way in both places. */}
         <Text style={styles.caption}>
-          (It is also why tube gear deserves respect when the cover comes off — those voltages
-          remain stored in capacitors after power-down.)
+          This is also why a tube chassis is never a casual thing to open. The B+ rail runs at
+          hundreds of volts, and the filter capacitors HOLD that charge long after the amplifier
+          is switched off and unplugged — it is enough to kill. Servicing, measuring and biasing
+          inside a tube chassis is qualified-technician work.
         </Text>
       </SectionWell>
     </RackUnit>
@@ -668,8 +674,10 @@ function BiasSection(p: SectionProps) {
         <Text style={[styles.readout, bad ? styles.readoutBad : null]}>{zone}</Text>
         <Text style={styles.caption}>
           Bias is the idle point — where the tube rests with no signal. Set it mid-curve and the
-          whole wave amplifies cleanly; mis-set it and one side of the wave dies first. (This is
-          what “biasing your amp” after a tube change is about.)
+          whole wave amplifies cleanly; mis-set it and one side of the wave dies first. This is
+          what “biasing an amp” after a tube change means — and on a real amplifier it is done
+          inside an energized chassis at lethal voltage, by a qualified technician. Learn what
+          bias IS here; have the work done by someone trained to do it.
         </Text>
         <CheckQuestion spec={BIAS_CHECK} />
       </SectionWell>
@@ -837,7 +845,9 @@ export function VacuumTubeLabScreen() {
           <Text style={styles.title}>VACUUM TUBE FUNDAMENTALS</Text>
           <Text style={styles.subtitle}>Amplification by controlling electron flow</Text>
         </View>
-        <AccuracyNote compact />
+        {/* Same detail string as the Tube Reference screens — this is the
+            lab that teaches the procedure, so it needs it more, not less. */}
+        <AccuracyNote compact detail="This lab is a STUDY MODEL, not a datasheet. Plate voltages, dissipation limits and substitutions vary by manufacturer and by production run, and tube circuits carry lethal voltages that persist in the filter capacitors after power-down. Work from the manufacturer's own datasheet, and have service, measurement and biasing done by a qualified technician." />
       </View>
       {/* Course-nav chip row — PINNED under the header (my call in the rack
           conversion: the 10-topic march is navigation, not a parameter, so it

@@ -40,6 +40,41 @@
 import { supabase } from '../../lib/supabase';
 import { classifyGatewayError } from '../glossary/gatewayFault';
 
+/**
+ * ⛔ IS THE PAID-MONTH RULE ACTUALLY IN FORCE ON THE SERVER?
+ *
+ * MIRRORS `app_flags.certificate_requires_exam`, WHICH IS **FALSE** ON
+ * PRODUCTION (set 2026-09-18, verified again 2026-09-20). The client cannot
+ * read `app_flags` — it holds no SELECT grant for anon or authenticated — so
+ * this constant is the mirror, and the two MUST be flipped in the same change.
+ *
+ * ── WHY THIS HAD TO EXIST ──────────────────────────────────────────────────
+ *
+ * While the flag is false the server does NOT enforce any of the rule
+ * documented above: `submit_final_exam` sets `v_month_ok := true`
+ * unconditionally and awards the credential the moment the exam is passed, and
+ * `evaluate_user_credentials` awards on topic completion with no exam and no
+ * tenure check. `member_month_complete()` is never consulted.
+ *
+ * But this module was not flag-aware, so a genuine day-one paying member was
+ * shown a red card immediately before the one-sitting capstone telling them
+ * their paper would be "held, unopened", and "discarded" if they left — three
+ * statements, all false, at the worst possible moment.
+ *
+ * ⛔ DO NOT DELETE THE COPY THIS GATES. The rule is the owner's ruling of
+ *    2026-09-18 and the flag flips after the client ships
+ *    ([[project_launch_reminders]]). Everything below is written and correct
+ *    FOR THAT DAY. Flip this constant in the same commit as the server flag
+ *    and the whole briefing comes back intact.
+ *
+ * ⛔ GATED AT THE CALLER, NOT IN `readTenureState`. Short-circuiting the read
+ *    itself made it a one-value function, and `examTenure.test.ts` caught that
+ *    immediately — it asserts all three states stay reachable, which is the
+ *    property that keeps 'unknown' honest. The flag is a UI decision about
+ *    whether to SHOW the reminder, so it belongs where the reminder is drawn.
+ */
+export const CERTIFICATE_REQUIRES_EXAM = false;
+
 export type TenureState =
   /** One complete paid month is on the record. No reminder is shown. */
   | 'complete'

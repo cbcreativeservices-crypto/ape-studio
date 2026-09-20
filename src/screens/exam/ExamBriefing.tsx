@@ -39,7 +39,7 @@ import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../theme/tokens';
-import { readTenureState, type TenureState } from '../../features/finalExam/tenure';
+import { CERTIFICATE_REQUIRES_EXAM, readTenureState, type TenureState } from '../../features/finalExam/tenure';
 
 export function ExamBriefing({
   awardName,
@@ -57,6 +57,26 @@ export function ExamBriefing({
   const [tenure, setTenure] = useState<TenureState>('unknown');
 
   useEffect(() => {
+    /**
+     * ⛔ ONLY ASK WHEN THE RULE IS ACTUALLY IN FORCE.
+     *
+     * `certificate_requires_exam` is FALSE on production, and while it is the
+     * server awards the credential the moment the exam is passed — it never
+     * holds a paper and never discards one. This screen was not flag-aware, so
+     * a genuine day-one paying member was shown a red card immediately before
+     * the one-sitting capstone saying their paper would be "held, unopened"
+     * and "discarded" if they left. Three sentences, all false, at the worst
+     * moment in the product.
+     *
+     * 'complete' is the state that shows no reminder. The whole tenure
+     * briefing below is the owner's 2026-09-18 ruling and is correct for the
+     * day the flag flips — flip CERTIFICATE_REQUIRES_EXAM with it and it all
+     * comes back, unchanged.
+     */
+    if (!CERTIFICATE_REQUIRES_EXAM) {
+      setTenure('complete');
+      return;
+    }
     let alive = true;
     void readTenureState().then((t) => {
       if (alive) setTenure(t);
