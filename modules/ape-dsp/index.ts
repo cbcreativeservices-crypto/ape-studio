@@ -131,6 +131,19 @@ export type EngineConfig = {
   bandAvgAlpha?: number; // 0..1 exponential band averaging per tick
 };
 
+/**
+ * What a LEARNER is told when the engine is not there.
+ *
+ * ⚠️ The rejection messages below are written for us — "ape-dsp native module
+ * not in this build", "requires the v7 engine build". Fifteen screens used to
+ * print them verbatim via `setGenError(e.message)`, so a user met a sentence
+ * about a build they have no way to act on. Screens that show a message to a
+ * learner use this; DspDebugScreen deliberately still shows the raw text,
+ * because that screen exists to read it.
+ */
+export const AUDIO_UNAVAILABLE_MESSAGE =
+  'Sound isn’t available on this device right now. The visuals on this screen still work.';
+
 /** Generator modes (must match apedsp::GenMode). */
 export const GEN_MODES = {
   off: 0,

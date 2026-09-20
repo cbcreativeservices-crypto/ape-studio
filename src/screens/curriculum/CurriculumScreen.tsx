@@ -440,7 +440,7 @@ export function CurriculumView({
       ) : curriculumState === 'error' ? (
         <View style={styles.treeStatus}>
           <Text style={styles.treeStatusText}>
-            Couldn’t load the curriculum — check your connection.
+            Couldn’t load this right now. Nothing you’ve earned is affected — check your connection and retry, and email info@proaudiotrainingacademy.com if it keeps failing.
           </Text>
           <Pressable
             style={styles.treeRetry}

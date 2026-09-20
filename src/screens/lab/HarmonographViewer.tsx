@@ -156,7 +156,7 @@ export function HarmonographViewer(props: {
     void shareImage
       .captureAndShare(cardRef.current, 'Harmonograph drawing')
       .then((ok) => {
-        if (!ok) setMsg('Sharing as an image needs the next app build.');
+        if (!ok) setMsg('Sharing as an image isn’t available on this device.');
       })
       .finally(() => setBusy(false));
   };
@@ -173,7 +173,7 @@ export function HarmonographViewer(props: {
             : r === 'denied'
               ? 'Photos permission denied — allow access in Settings to save.'
               : r === 'unavailable'
-                ? 'Saving to Photos is available after the next app build.'
+                ? 'Saving to Photos isn’t available on this device.'
                 : 'Saving failed — please try again.',
         );
       })
@@ -191,7 +191,7 @@ export function HarmonographViewer(props: {
           setMsg(
             avail.print
               ? "Printing didn't complete."
-              : 'Printing is available after the next app build.',
+              : 'Printing isn’t available on this device.',
           );
       })
       .finally(() => setBusy(false));
@@ -253,7 +253,7 @@ export function HarmonographViewer(props: {
               onPress={doShare}
               disabled={!avail.share || busy}
               accessibilityRole="button"
-              accessibilityLabel={avail.share ? 'Share drawing' : 'Share drawing — needs the next app build'}
+              accessibilityLabel={avail.share ? 'Share drawing' : 'Share drawing — isn’t available on this device'}
             >
               <Text style={styles.btnText}>SHARE</Text>
             </Pressable>
@@ -262,7 +262,7 @@ export function HarmonographViewer(props: {
               onPress={doSave}
               disabled={!avail.save || busy}
               accessibilityRole="button"
-              accessibilityLabel={avail.save ? 'Save drawing to Photos' : 'Save to Photos — needs the next app build'}
+              accessibilityLabel={avail.save ? 'Save drawing to Photos' : 'Save to Photos — isn’t available on this device'}
             >
               <Text style={styles.btnText}>SAVE</Text>
             </Pressable>
@@ -271,7 +271,7 @@ export function HarmonographViewer(props: {
               onPress={doPrint}
               disabled={!avail.print || busy}
               accessibilityRole="button"
-              accessibilityLabel={avail.print ? 'Print drawing' : 'Print — needs the next app build'}
+              accessibilityLabel={avail.print ? 'Print drawing' : 'Print — isn’t available on this device'}
             >
               <Text style={styles.btnText}>PRINT</Text>
             </Pressable>
@@ -298,7 +298,7 @@ export function HarmonographViewer(props: {
 
           {missing.length > 0 ? (
             <Text style={styles.note}>
-              {missing.join(' · ')} {missing.length > 1 ? 'need' : 'needs'} the next app build.
+              {missing.join(' · ')} {missing.length > 1 ? 'are' : 'is'} not available on this device.
             </Text>
           ) : null}
           {msg ? <Text style={styles.msg}>{msg}</Text> : null}

@@ -429,7 +429,15 @@ export function ExposureMonitorScreen() {
                 // and silent (B-069).
                 void exportExposureHistory()
                   .then((json) => Share.share({ message: json }))
-                  .catch(() => notify('Export unavailable', 'Sharing is not available on this device.'));
+                  .catch(() =>
+                    // The catch covers the read as well as the share, so it
+                    // must not name a device capability as the cause — and it
+                    // must say the history itself is intact.
+                    notify(
+                      'Export didn’t complete',
+                      'Your exposure history could not be shared from this device. Nothing was deleted — it is all still on the Exposure screen.',
+                    ),
+                  );
               }}
             >
               <Text style={styles.chipText}>Export history</Text>

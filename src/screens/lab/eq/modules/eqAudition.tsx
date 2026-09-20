@@ -18,7 +18,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import { ApeDsp, EQ_BAND_TYPES, FX, FX_PARAM, GEN_MODES, type GenParams } from '../../../../../modules/ape-dsp';
+import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, EQ_BAND_TYPES, FX, FX_PARAM, GEN_MODES, type GenParams } from '../../../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../../../features/audio/audioOutputStore';
 import type { EqBandSpec } from '../../../../features/lab/fxViz';
@@ -104,7 +104,7 @@ export function EqAuditionBar({ bands }: { bands: EqBandSpec[] }) {
         setRunning(true);
         noteAudioActivity();
       } catch (e) {
-        if (gen === genRef.current) setError(e instanceof Error ? e.message : String(e));
+        if (gen === genRef.current) setError(AUDIO_UNAVAILABLE_MESSAGE);
         ApeDsp.fxReset();
       }
     },

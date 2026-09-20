@@ -33,7 +33,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { PanResponder, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Circle, Line, Text as SvgText } from 'react-native-svg';
-import { ApeDsp, BIN_SRC } from '../../../modules/ape-dsp';
+import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, BIN_SRC } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
@@ -143,7 +143,7 @@ export function BinauralLabScreen() {
       setBusNorm(st?.busNorm ?? 1);
       noteAudioActivity();
     } catch (e) {
-      if (gen === genRef.current) setGenError(e instanceof Error ? e.message : String(e));
+      if (gen === genRef.current) setGenError(AUDIO_UNAVAILABLE_MESSAGE);
     }
   }, [binReady, requestAudioOutput, pushAll, sources]);
 

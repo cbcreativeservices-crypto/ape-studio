@@ -100,7 +100,7 @@ export function TopicsScreen() {
         {fields !== null && subjects.length === 0 ? (
           <Text style={styles.emptyNote}>
             {loadError
-              ? 'Couldn’t load topics — check your connection and try again.'
+              ? 'Couldn’t load this right now. Nothing you’ve earned is affected — check your connection and retry, and email info@proaudiotrainingacademy.com if it keeps failing.'
               : 'No topics available yet.'}
           </Text>
         ) : null}

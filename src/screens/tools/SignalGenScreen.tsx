@@ -39,7 +39,7 @@ import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Defs, Line, LinearGradient, Path, Stop } from 'react-native-svg';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { ApeDsp, GEN_MODES, type GenModeName, type GenStatus } from '../../../modules/ape-dsp';
+import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES, type GenModeName, type GenStatus } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { playWithHearingWarning } from '../../features/audio/levelHearingWarning';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
@@ -493,7 +493,7 @@ export function SignalGenScreen({ navigation }: Props) {
       noteAudioActivity();
     } catch (e) {
       if (gen !== genRef.current) return;
-      setGenError(e instanceof Error ? e.message : String(e));
+      setGenError(AUDIO_UNAVAILABLE_MESSAGE);
       setRunning(false);
     }
   };

@@ -91,7 +91,7 @@ export function AwardProgressScreen({ navigation, route }: Props) {
     if (res.ok) return;
     setCertMessage(
       res.reason === 'needs_build'
-        ? 'Certificate download needs the next app build.'
+        ? 'Certificate download isn’t available on this device. Your certificate is safely recorded on your account.'
         : res.reason === 'no_share_target'
           ? 'No app on this device can open a PDF.'
           : 'Could not prepare the certificate. Try again.',
@@ -201,7 +201,7 @@ export function AwardProgressScreen({ navigation, route }: Props) {
               </View>
             ) : (
               <Text style={styles.certNote}>
-                Certificate download needs the next app build.
+                Certificate download isn’t available on this device. Your certificate is safely recorded on your account.
               </Text>
             )}
             {certMessage != null && <Text style={styles.certNote}>{certMessage}</Text>}

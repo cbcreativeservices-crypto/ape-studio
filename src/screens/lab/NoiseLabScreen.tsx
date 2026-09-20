@@ -37,7 +37,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { ApeDsp, GEN_MODES } from '../../../modules/ape-dsp';
+import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import {
@@ -175,7 +175,7 @@ export function NoiseLabScreen() {
       setRunning(true);
       noteAudioActivity();
     } catch (e) {
-      if (gen === genRef.current) setGenError(e instanceof Error ? e.message : String(e));
+      if (gen === genRef.current) setGenError(AUDIO_UNAVAILABLE_MESSAGE);
     }
   }, [requestAudioOutput, color]);
 

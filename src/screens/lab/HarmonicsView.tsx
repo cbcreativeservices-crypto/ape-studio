@@ -115,7 +115,7 @@ import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-nativ
 import { Modal } from '../../components/DimModal';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import Svg, { Defs, Line, LinearGradient, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
-import { ApeDsp, GEN_MODES, type EngineConfig, type GenParams, type WaveBucket } from '../../../modules/ape-dsp';
+import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES, type EngineConfig, type GenParams, type WaveBucket } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { isFeedbackAllowed, noteAudioActivity, useFeedbackAllowed } from '../../features/audio/audioOutputStore';
 import { FeedbackAllowRow } from '../../features/audio/FeedbackAllowRow';
@@ -1271,7 +1271,7 @@ export function HarmonicsView({
         return true;
       } catch (e) {
         if (gen !== toneGenRef.current) return false;
-        setGenError(e instanceof Error ? e.message : String(e));
+        setGenError(AUDIO_UNAVAILABLE_MESSAGE);
         setGenRunning(false);
         return false;
       }

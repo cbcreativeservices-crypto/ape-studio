@@ -108,7 +108,7 @@ export function CredentialShareRow({
       {!imageAvailable ? (
         // Honest, not silent: the button is absent and the reason is given,
         // rather than a control that does nothing.
-        <Text style={styles.note}>Sharing the QR as an image needs the next app build.</Text>
+        <Text style={styles.note}>Sharing the QR as an image isn’t available on this device.</Text>
       ) : null}
 
       {/* Laid out for real — see the note at the top of this file. */}

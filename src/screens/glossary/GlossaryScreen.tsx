@@ -2172,7 +2172,13 @@ ${COPY.glossaryFreeAllowance}`,
         );
       }
       if (item.kind === 'empty') {
-        return <Text style={styles.tlEmpty}>No bookmarks in this list yet — tap ⚑ on any term to add it.</Text>;
+        return (
+          <Text style={styles.tlEmpty}>
+            {loadError
+              ? 'Your terms couldn’t be loaded. Nothing has been removed from this list — check your connection and open it again.'
+              : 'No bookmarks in this list yet — tap ⚑ on any term to add it.'}
+          </Text>
+        );
       }
       if (item.kind === 'otherHeader') {
         // OTHER LISTS — EVERY selectable list (Glossary + all topics), even empty
@@ -2642,7 +2648,9 @@ ${COPY.glossaryFreeAllowance}`,
             loading ? null : loadError && entries.length === 0 ? (
               <View style={styles.offlineCard}>
                 <Text style={styles.offlineText}>
-                  Couldn’t load the glossary — check your connection.
+                  Couldn’t load the glossary right now. Nothing you’ve saved is affected — check
+                  your connection and retry, and email info@proaudiotrainingacademy.com if it
+                  keeps failing.
                 </Text>
                 <View style={{ width: 180 }}>
                   <StudioButton label="Retry" variant="secondary" small onPress={reloadCorpus} />
@@ -3209,11 +3217,13 @@ ${COPY.glossaryFreeAllowance}`,
               ListEmptyComponent={
                 // Empty state as help (Pillar C): each list says how it fills.
                 <Text style={styles.tlEmpty}>
-                  {termListModal?.kind === 'starred'
-                    ? 'No terms yet — tap ★ on any term to build your custom list.'
-                    : termListModal?.kind === 'recent'
-                      ? 'Nothing yet — terms you open will appear here.'
-                      : 'No terms in this set.'}
+                  {loadError
+                    ? 'Your terms couldn’t be loaded. Nothing has been removed from this list — check your connection and open it again.'
+                    : termListModal?.kind === 'starred'
+                      ? 'No terms yet — tap ★ on any term to build your custom list.'
+                      : termListModal?.kind === 'recent'
+                        ? 'Nothing yet — terms you open will appear here.'
+                        : 'No terms in this set.'}
                 </Text>
               }
               {...NO_TOUCH_DELAY}

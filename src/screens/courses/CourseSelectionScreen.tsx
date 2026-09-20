@@ -1128,7 +1128,12 @@ export function CourseSelectionScreen() {
     try {
       await buildPublicCatalog();
     } catch {
-      setError('Could not load courses. Check your connection.');
+      // buildPublicCatalog makes no network call (see above), so a failure
+      // here is a code fault, not the user's router. It also said "courses",
+      // which is retired vocabulary.
+      setError(
+        'The menu could not be built. Restart the app, and email info@proaudiotrainingacademy.com if it happens again.',
+      );
     }
   }, []);
 

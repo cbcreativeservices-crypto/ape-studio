@@ -205,7 +205,10 @@ export async function setFeaturedCredentials(ids: string[]): Promise<SaveResult>
     const { error } = await supabase.rpc('community_profile_set_credentials', { p_ids: ids });
     return error ? { ok: false, error: readableError(error.message) } : { ok: true };
   } catch {
-    return { ok: false, error: 'No connection. Try again.' };
+    // supabase-js RESOLVES with `{ error }` on a network failure — that path
+    // goes through readableError above. Only a genuine thrown exception
+    // reaches here, so blaming the connection was wrong every time.
+    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
   }
 }
 
@@ -221,7 +224,10 @@ export async function publishCommunityProfile(on: boolean, adult = false): Promi
     });
     return error ? { ok: false, error: readableError(error.message) } : { ok: true };
   } catch {
-    return { ok: false, error: 'No connection. Try again.' };
+    // supabase-js RESOLVES with `{ error }` on a network failure — that path
+    // goes through readableError above. Only a genuine thrown exception
+    // reaches here, so blaming the connection was wrong every time.
+    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
   }
 }
 
@@ -230,7 +236,10 @@ export async function setDiscoverable(on: boolean): Promise<SaveResult> {
     const { error } = await supabase.rpc('community_profile_set_discoverable', { p_on: on });
     return error ? { ok: false, error: readableError(error.message) } : { ok: true };
   } catch {
-    return { ok: false, error: 'No connection. Try again.' };
+    // supabase-js RESOLVES with `{ error }` on a network failure — that path
+    // goes through readableError above. Only a genuine thrown exception
+    // reaches here, so blaming the connection was wrong every time.
+    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
   }
 }
 
@@ -239,7 +248,10 @@ export async function setContactEnabled(on: boolean): Promise<SaveResult> {
     const { error } = await supabase.rpc('community_profile_set_contact', { p_on: on });
     return error ? { ok: false, error: readableError(error.message) } : { ok: true };
   } catch {
-    return { ok: false, error: 'No connection. Try again.' };
+    // supabase-js RESOLVES with `{ error }` on a network failure — that path
+    // goes through readableError above. Only a genuine thrown exception
+    // reaches here, so blaming the connection was wrong every time.
+    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
   }
 }
 
@@ -248,7 +260,10 @@ export async function deleteCommunityProfile(): Promise<SaveResult> {
     const { error } = await supabase.rpc('community_profile_delete');
     return error ? { ok: false, error: readableError(error.message) } : { ok: true };
   } catch {
-    return { ok: false, error: 'No connection. Try again.' };
+    // supabase-js RESOLVES with `{ error }` on a network failure — that path
+    // goes through readableError above. Only a genuine thrown exception
+    // reaches here, so blaming the connection was wrong every time.
+    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
   }
 }
 
@@ -316,7 +331,10 @@ export async function searchDirectory(
       })),
     };
   } catch {
-    return { status: 'error', error: 'No connection. Try again.' };
+    // See the note on the save arms: a dropped connection RESOLVES with
+    // `{ error }` and is handled by readableError, so reaching this
+    // catch means a thrown exception, not the member's router.
+    return { status: 'error', error: 'Something went wrong loading this. Try again, and email info@proaudiotrainingacademy.com if it continues.' };
   }
 }
 
@@ -509,7 +527,10 @@ export async function sendContactRequest(
     });
     return error ? { ok: false, error: readableError(error.message) } : { ok: true };
   } catch {
-    return { ok: false, error: 'No connection. Try again.' };
+    // supabase-js RESOLVES with `{ error }` on a network failure — that path
+    // goes through readableError above. Only a genuine thrown exception
+    // reaches here, so blaming the connection was wrong every time.
+    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
   }
 }
 
@@ -521,7 +542,10 @@ export async function respondToRequest(
     const { error } = await supabase.rpc('contact_request_respond', { p_id: id, p_action: action });
     return error ? { ok: false, error: readableError(error.message) } : { ok: true };
   } catch {
-    return { ok: false, error: 'No connection. Try again.' };
+    // supabase-js RESOLVES with `{ error }` on a network failure — that path
+    // goes through readableError above. Only a genuine thrown exception
+    // reaches here, so blaming the connection was wrong every time.
+    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
   }
 }
 
@@ -576,7 +600,10 @@ export async function sendThreadMessage(requestId: string, body: string): Promis
     });
     return error ? { ok: false, error: readableError(error.message) } : { ok: true };
   } catch {
-    return { ok: false, error: 'No connection. Try again.' };
+    // supabase-js RESOLVES with `{ error }` on a network failure — that path
+    // goes through readableError above. Only a genuine thrown exception
+    // reaches here, so blaming the connection was wrong every time.
+    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
   }
 }
 
@@ -601,7 +628,10 @@ export async function blockThread(requestId: string, on = true): Promise<SaveRes
     });
     return error ? { ok: false, error: readableError(error.message) } : { ok: true };
   } catch {
-    return { ok: false, error: 'No connection. Try again.' };
+    // supabase-js RESOLVES with `{ error }` on a network failure — that path
+    // goes through readableError above. Only a genuine thrown exception
+    // reaches here, so blaming the connection was wrong every time.
+    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
   }
 }
 
@@ -612,7 +642,10 @@ export async function blockMember(token: string, on = true): Promise<SaveResult>
     const { error } = await supabase.rpc('contact_block', { p_token: token, p_on: on });
     return error ? { ok: false, error: readableError(error.message) } : { ok: true };
   } catch {
-    return { ok: false, error: 'No connection. Try again.' };
+    // supabase-js RESOLVES with `{ error }` on a network failure — that path
+    // goes through readableError above. Only a genuine thrown exception
+    // reaches here, so blaming the connection was wrong every time.
+    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
   }
 }
 
@@ -633,6 +666,9 @@ export async function reportMember(input: {
     });
     return error ? { ok: false, error: readableError(error.message) } : { ok: true };
   } catch {
-    return { ok: false, error: 'No connection. Try again.' };
+    // supabase-js RESOLVES with `{ error }` on a network failure — that path
+    // goes through readableError above. Only a genuine thrown exception
+    // reaches here, so blaming the connection was wrong every time.
+    return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
   }
 }

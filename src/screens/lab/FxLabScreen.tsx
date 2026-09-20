@@ -49,7 +49,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
-import { ApeDsp, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
+import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { GuidedLessonSheet, getLabLesson, SOURCE_LESSON, type LabId, type LessonContent } from '../../features/lab/guidedLessons';
@@ -321,7 +321,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
       setRunning(true);
       noteAudioActivity();
     } catch (e) {
-      if (gen === genRef.current) setGenError(e instanceof Error ? e.message : String(e));
+      if (gen === genRef.current) setGenError(AUDIO_UNAVAILABLE_MESSAGE);
       ApeDsp.fxReset();
     }
   }, [fxReady, requestAudioOutput, config, sourceIdx, values, pushAllParams]);

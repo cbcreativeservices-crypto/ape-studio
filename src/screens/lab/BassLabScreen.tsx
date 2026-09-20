@@ -35,7 +35,7 @@ import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'rea
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Circle, Defs, LinearGradient, Line, Path, RadialGradient, Rect, Stop } from 'react-native-svg';
-import { ApeDsp, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
+import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { guardAdditiveForEngine, speakerGuardDb, SPEAKER_HPF_HZ } from '../../features/audio/speakerSafety';
@@ -170,7 +170,7 @@ export function BassLabScreen() {
       setRunning(true);
       noteAudioActivity();
     } catch (e) {
-      if (gen === genRef.current) setGenError(e instanceof Error ? e.message : String(e));
+      if (gen === genRef.current) setGenError(AUDIO_UNAVAILABLE_MESSAGE);
     }
   }, [requestAudioOutput, genParams]);
 

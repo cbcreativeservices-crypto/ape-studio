@@ -123,6 +123,11 @@ export function CalcProjectsScreen() {
       return;
     }
     const out: Project['values'] = [];
+    // ⚠️ The skips below used to be silent — the comment said "honestly" but
+    // the user was told nothing, the save reported success, and a value they
+    // had typed was simply gone. In the calculator lab, where the
+    // source-of-truth rule applies, silence is the wrong default. Count them.
+    let skipped = 0;
     for (const v of values) {
       const label = v.label.trim();
       const kind = PROJECT_KINDS[v.kindIdx].kind;
@@ -135,7 +140,12 @@ export function CalcProjectsScreen() {
       // as an incomplete one already was.
       const typed = parseQuantity(v.raw);
       const base = typed === null ? Number.NaN : units[v.unitIdx % units.length].toBase(typed);
-      if (!label || !Number.isFinite(base)) continue; // skip incomplete rows honestly
+      if (!label || !Number.isFinite(base)) {
+        // A row with something typed in it that we could not read is a loss
+        // worth reporting; a wholly blank row the user never filled is not.
+        if (label || v.raw.trim()) skipped += 1;
+        continue;
+      }
       if (out.some((x) => x.label === label)) continue; // labels stay unique
       out.push({ label, quantity: kind, baseValue: base });
     }
@@ -152,6 +162,12 @@ export function CalcProjectsScreen() {
     if (!ok) {
       notify('Save failed', 'The project could not be saved. Try again.');
       return;
+    }
+    if (skipped > 0) {
+      notify(
+        'Project saved, some rows skipped',
+        `${skipped} row${skipped === 1 ? '' : 's'} had no label or no readable value, so ${skipped === 1 ? 'it was' : 'they were'} not saved. Everything else was saved.`,
+      );
     }
     setEditing(null);
     reload();

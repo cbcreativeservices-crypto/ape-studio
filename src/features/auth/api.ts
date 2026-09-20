@@ -35,7 +35,11 @@ function friendlyAuthError(error: { message?: string } | null | undefined): stri
   if (/user already registered|already been registered/i.test(m)) {
     return 'That email already has an account — sign in instead.';
   }
-  return m || 'Something went wrong. Please try again.';
+  // ⚠️ This used to be `return m || …`, so every unmapped GoTrue string
+  // rendered verbatim on the app's first screen — "Signups not allowed for
+  // this instance", "Database error saving new user", and "Password should be
+  // at least 6 characters", which contradicts our own 8-character rule below.
+  return 'We couldn’t complete that. Your details were not changed — try again, and email info@proaudiotrainingacademy.com if it continues.';
 }
 
 export type EnrolledCourse = {

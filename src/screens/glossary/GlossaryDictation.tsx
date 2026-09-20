@@ -66,8 +66,8 @@ export function GlossaryDictation({ onText }: { onText: (t: string) => void }) {
       const perm = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
       if (!perm.granted) {
         notify(
-          'Microphone needed',
-          'Allow microphone and speech recognition access to dictate your search.',
+          'Microphone access is off',
+          'Dictation needs microphone and speech recognition access. If you are not asked again, turn them on for this app in your device Settings. You can still type your search.',
         );
         return;
       }

@@ -202,7 +202,7 @@ export function ProfileScreen() {
     if (res.ok) return;
     setCredMessage(
       res.reason === 'needs_build'
-        ? 'Certificate download needs the next app build.'
+        ? 'Certificate download isn’t available on this device. Your certificate is safely recorded on your account.'
         : res.reason === 'no_share_target'
           ? 'No app on this device can open a PDF.'
           : 'Could not prepare the certificate. Try again.',
@@ -1029,7 +1029,7 @@ export function ProfileScreen() {
                 </View>
               ))}
               {!certificateExportAvailable() && (
-                <Text style={styles.rowHint}>Certificate download needs the next app build.</Text>
+                <Text style={styles.rowHint}>Certificate download isn’t available on this device. Your certificate is safely recorded on your account.</Text>
               )}
               {credMessage != null && <Text style={styles.rowHint}>{credMessage}</Text>}
             </Section>

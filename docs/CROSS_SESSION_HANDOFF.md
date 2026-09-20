@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-20 08:14 · ccode · e8bac7a9
+changed: Copy pass 4a: stop naming routes, emails and controls that do not exist
+affects other side: two copy promises now depend on backend behaviour A owns — the moderation notice and the employer queue both tell the member to email info@proaudiotrainingacademy.com because `account_set_standing()` and `employer_review()` send no mail. If A adds a mailer to either, the copy should go back to promising the email.
+needs: nothing
+
+
 ### 2026-09-20 01:24 · ccode · 3be70e8b
 changed: Copy pass 1: safety-critical calculator caveats, lethal-voltage warning, false credential card
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">

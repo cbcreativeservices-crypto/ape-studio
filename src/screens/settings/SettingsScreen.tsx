@@ -312,7 +312,7 @@ export function SettingsScreen({ navigation }: Props) {
           setPrefs((p) => (p ? { ...p, notify_weekly_concept: false } : p));
           notify(
             'Notifications',
-            'Your weekly concept schedule could not be saved, so the switch has been left off. Check your connection and try again.',
+            'Your weekly concept schedule could not be saved, so the switch has been left off. Nothing was changed on your account — try again in a moment.',
           );
           return;
         }
@@ -329,7 +329,7 @@ export function SettingsScreen({ navigation }: Props) {
           );
           notify(
             'Notifications',
-            'Weekly concepts could not be switched on. Check your connection and try again.',
+            'Weekly concepts could not be switched on. Your other reminder settings are unchanged — try again in a moment.',
           );
           return;
         }
@@ -337,7 +337,7 @@ export function SettingsScreen({ navigation }: Props) {
         if (!token) {
           notify(
             'Notifications',
-            'Weekly concepts are saved. Push delivery needs a physical device build with notification permission allowed.',
+            'Weekly concepts are saved. To receive them you need to allow notifications for this app on a phone — they cannot be delivered to this preview.',
           );
         }
       } else {
@@ -348,7 +348,7 @@ export function SettingsScreen({ navigation }: Props) {
           setPrefs((p) => (p ? { ...p, notify_weekly_concept: true } : p));
           notify(
             'Notifications',
-            'Weekly concepts could not be switched off. Check your connection and try again.',
+            'Weekly concepts could not be switched off. No reminders were sent in the meantime — try again in a moment.',
           );
           return;
         }
