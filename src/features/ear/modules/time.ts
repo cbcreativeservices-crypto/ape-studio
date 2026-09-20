@@ -41,7 +41,7 @@ export const M8_DELAY: EarModule = {
   // NEW COPY
   listenFor: 'Find the repeat after each pluck and feel the gap. Long gaps read as an echo; short ones blur into thickness.',
   levels: 4,
-  levelNames: ['500 ms echoes', '250 ms', '100 ms', '50 ms — near the fusion edge'],
+  levelNames: ['500 ms — with 250 ms comparisons', '250 ms and longer', 'Down to 100 ms', 'Down to 50 ms — the fusion edge'],
   makeTrial: (level, seed) => {
     const rng = rngFor(seed);
     const delay = DELAYS[Math.min(level, 4) - 1];
@@ -362,7 +362,7 @@ export const M9_REVERB: EarModule = {
         // No corner frequency is claimed: the damping is a one-pole in each
         // comb loop, so its tilt compounds every pass rather than sitting at
         // one number. NEW COPY.
-        reveal: `${brightIs ? 'Bright — light damping, so the top end lives on into the tail.' : 'Dark — heavy damping, so the highs die first and the tail goes woolly.'} ${space.truth} (emulation)`,
+        reveal: `${brightIs ? 'Bright — light damping, so the top end lives on into the tail.' : 'Dark — heavy damping, so the highs die first and the tail goes woolly.'} Both versions are the same ${space.label.replace(' (emulation)', '').toLowerCase()} emulation at the same 1.2 s decay — only the damping differs.`,
         seeIt: {
           kind: 'spectrum',
           clips: [0],

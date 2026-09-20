@@ -12,7 +12,11 @@
  *                 LIVE (built first, as recommended).
  *   Tuner       — LIVE: musical interpretation of the SAME pitch frames —
  *                 note, octave, cents vs a selectable A4 reference, with a
- *                 ±50¢ needle and a green ±5¢ in-tune zone.
+ *                 ±50¢ needle and a green in-tune zone at ±1¢ (see the
+ *                 `tunerInTune` test below — the header used to say ±5¢,
+ *                 which matched nothing in this file). ⚠️ The Center-Lock
+ *                 Tuner confirms at ±2¢ (`centerLock.ts` IN_TUNE_CENTS) and
+ *                 the MultiMeter at ±5¢ — three windows, owner to rule.
  *
  * Integrity (tools spec §1.7): Sound and Tuner render ONLY from real engine
  * pitch frames while capture runs — below the confidence/voiced gate the

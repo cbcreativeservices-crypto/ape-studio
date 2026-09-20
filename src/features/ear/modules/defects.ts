@@ -94,7 +94,7 @@ const DEFECTS: Defect[] = [
   },
   {
     key: 'buzz', label: 'Buzz',
-    truth: 'Buzz — mains-rate but harmonic-rich to 5 kHz. Edgy where hum is smooth.',
+    truth: 'Buzz — mains-rate like hum, but sixty harmonics deep: energy right up past 3 kHz. Edgy where hum is smooth.',
     solo: (rng) => buzz(1.6, mains(rng)),
     onBed: (b, rng, mix) => addUnder(b, buzz(b.length / SR, mains(rng)), mix),
   },
@@ -164,7 +164,7 @@ export const M5_DEFECTS: EarModule = {
   // NEW COPY
   listenFor: 'Steady or one-off? Tonal (hum, buzz, hiss) or impulsive (click, pop, dropout)? Then how rough — smooth hum versus edgy buzz.',
   levels: 4,
-  levelNames: ['Six common defects, solo', 'All twelve, solo', 'Under a program bed (−20 dB)', 'Buried (−32 dB)'],
+  levelNames: ['Six common defects, solo', 'All twelve, solo', 'Under a program bed', 'Buried in the program'],
   makeTrial: (level, seed) => {
     const rng = rngFor(seed);
     const deck = level <= 1 ? DEFECTS.filter((d) => d.core) : DEFECTS;

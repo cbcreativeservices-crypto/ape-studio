@@ -118,7 +118,7 @@ export const M6_STEREO: EarModule = {
         : undefined;
     return {
       clips: [{ label: '▶', buf: presentStereo(v.make(m, rng)) }],
-      question: 'Where does the image sit?',
+      question: 'What is this stereo image doing?',
       answers: deck.map((x) => ({ label: x.label })),
       correct: idx,
       near,

@@ -37,7 +37,7 @@ export const M7_LOUDNESS: EarModule = {
   // NEW COPY
   listenFor: 'Trust the first impression — A or B jumps out. Then judge the size: 6 dB is "obviously", 1 dB is "I think".',
   levels: 4,
-  levelNames: ['6 dB steps', '3 dB steps', '2 dB steps', '1 dB steps'],
+  levelNames: ['6 dB steps', '3 dB steps', '2 dB steps', '1 dB steps — size trials use 1–6 dB'],
   makeTrial: (level, seed) => {
     const rng = rngFor(seed);
     // The magnitude question draws from every step unlocked so far (L2: 6 or
@@ -100,19 +100,19 @@ type CompSetting = { key: string; label: string; truth: string; apply?: (x: Mono
 const COMP: CompSetting[] = [
   { key: 'none', label: 'None', truth: 'No compression — the transients keep their full snap.' },
   {
-    key: 'light', label: 'Light', truth: 'Light: 2:1, threshold −18, attack 30 ms, release 200 ms — near transparent.',
+    key: 'light', label: 'Light', truth: 'Light: 2:1 above −18 dBFS, 30 ms attack, 200 ms release — near transparent.',
     apply: (x) => compress(x, 2, -18, 30, 200),
   },
   {
-    key: 'moderate', label: 'Moderate', truth: 'Moderate: 4:1, −24, 10 ms, 150 ms — the hits sit down noticeably.',
+    key: 'moderate', label: 'Moderate', truth: 'Moderate: 4:1 above −24 dBFS, 10 ms attack, 150 ms release — the hits sit down noticeably.',
     apply: (x) => compress(x, 4, -24, 10, 150),
   },
   {
-    key: 'heavy', label: 'Heavy', truth: 'Heavy: 8:1, −30, 5 ms, 100 ms — squashed, thick, up-front.',
+    key: 'heavy', label: 'Heavy', truth: 'Heavy: 8:1 above −30 dBFS, 5 ms attack, 100 ms release — squashed, thick, up-front.',
     apply: (x) => compress(x, 8, -30, 5, 100),
   },
   {
-    key: 'pumping', label: 'Pumping', truth: 'Pumping: 10:1, −35, 1 ms attack, 400 ms release — the gain audibly swells back between hits.',
+    key: 'pumping', label: 'Pumping', truth: 'Pumping: 10:1 above −35 dBFS, 1 ms attack, 400 ms release — the gain audibly swells back between hits.',
     apply: (x) => compress(x, 10, -35, 1, 400),
   },
 ];
@@ -163,7 +163,7 @@ export const M10_COMPRESSION: EarModule = {
     const { out } = m10Render(setting, rng);
     return {
       clips: [{ label: '▶', buf: out }],
-      question: 'How compressed is this?',
+      question: 'Which compression setting is this?',
       answers: deck.map((s) => ({ label: s.label })),
       correct: idx,
       // Spec: adjacent intensity = half credit at L2–L3; pumping and "none"
@@ -232,7 +232,7 @@ export const M14_CLIPPING: EarModule = {
         seeIt: {
           kind: 'spectrum',
           clips: [0, 1],
-          caption: 'Hard clipping sprays odd harmonics across the top of the spectrum.',
+          caption: 'Hard clipping sprays new distortion product right across the top of the spectrum.',
         },
       };
     }
