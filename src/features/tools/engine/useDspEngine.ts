@@ -382,6 +382,29 @@ export function useToolAutoStart(state: EngineState, start: () => void, stop?: (
   }, [stop]);
 }
 
+/**
+ * Is this frame from a mic that is actually capturing?
+ *
+ * ⛔ THE GUARD THAT COULD NEVER FIRE (owner 2026-09-20 bug pass).
+ *
+ * Several screens defended against a dead mic by testing `getMeterFrame()`
+ * for null — but neither bridge can return one on an engine build: Android
+ * builds its map from a DoubleArray(18) even with no handle, and iOS returns
+ * a non-optional dictionary. So when capture really died — an iOS
+ * interruption, a route change, another app taking the mic — frames kept
+ * arriving, carrying `running: false` / `captureStalled: true` and a frozen
+ * `sequence`, and nothing looked at any of them. The SPL meter went on
+ * showing a plausible level, PEAK, PEAK HOLD and Leq off a mic that had
+ * stopped, which is the precise failure the no-fake-meters rule exists to
+ * prevent.
+ *
+ * This is the SAME verdict the hub watchdog and micSession already use,
+ * exported once so a screen cannot invent a third version of it.
+ */
+export function frameIsLive(m: MeterFrame | null | undefined): m is MeterFrame {
+  return !!m && m.running && !m.captureStalled;
+}
+
 /** Map live native conditions → the Phase-2 quality flags (spec §6). The SAME
  *  flags shown live are stored on save, so screen and library always agree. */
 export function meterWarningFlags(m: MeterFrame | null): WarningFlag[] {

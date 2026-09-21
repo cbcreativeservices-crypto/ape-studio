@@ -54,7 +54,7 @@ import { ContributeCalibrationPrompt } from '../../components/ContributeCalibrat
 import { buildDeviceKey } from '../../features/tools/measure/deviceProfile';
 import { fetchCommunityProfile, type CommunityProfile } from '../../features/tools/measure/catalogClient';
 import { resolveLedFill, useLedAvgColorPref, useLedColorPref } from '../../features/tools/ledScheme';
-import { healthWarningFlags, meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
+import { frameIsLive, healthWarningFlags, meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { useRafFrameLoop } from '../../features/tools/engine/useRafFrameLoop';
 import { setSplCalibration, useSplCalibration } from '../../features/tools/measure/calibrationStore';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
@@ -795,11 +795,22 @@ export function SplMeterScreen({ navigation }: Props) {
   // screen every native tick. The needles/LED do NOT use this (they read the
   // SharedValues driven by the rAF loop). Stale frames after STOP are cleared.
   const [displayMeter, setDisplayMeter] = useState<MeterFrame | null>(null);
-  const meter = running ? displayMeter : null;
+  /** Capture has died while React still thinks we are running — see the rAF
+   *  loop below. Kept as state (not just a blanked frame) because the SCREEN
+   *  must still say why it went quiet. */
+  const [captureDead, setCaptureDead] = useState(false);
+  const meter = running && !captureDead ? displayMeter : null;
   // Note: meterWarningFlags raises 'uncalibrated_input' only for OS-PROCESSED
   // input (measurement mode not honored) — that stays a warning even when
   // field-calibrated, because it undermines the calibration itself.
-  const flags = [...meterWarningFlags(meter), ...healthWarningFlags(ApeDsp.getInfo())];
+  const flags: WarningFlag[] = [
+    ...meterWarningFlags(meter),
+    ...healthWarningFlags(ApeDsp.getInfo()),
+    // Blanking the numbers is honest but SILENT, and `meter` is null here so
+    // meterWarningFlags cannot raise this itself. Say why the readouts went
+    // dark rather than leaving dashes with no explanation.
+    ...(captureDead ? (['engine_inactive'] as WarningFlag[]) : []),
+  ];
 
   // ── Full-screen VU popup (owner directive 2026-07-29) ─────────────────────
   // Skia meters load ONLY through the meter gate (§1.7 honest fallback).
@@ -1014,15 +1025,36 @@ export function SplMeterScreen({ navigation }: Props) {
   // "no data" state. The window is well above the ~50 ms native tick so a
   // single dropped frame never flickers the display.
   const lastFrameRef = useRef(0);
+  const deadRef = useRef(false);
   useRafFrameLoop(running, (now) => {
     const m = ApeDsp.getMeterFrame();
-    if (!m) {
+    /**
+     * ⛔ A FRAME FROM A DEAD MIC IS NOT A FRAME (owner 2026-09-20 bug pass).
+     *
+     * The `!m` test above could never fire — see frameIsLive. A stopped
+     * capture keeps DELIVERING frames, it just marks them `running: false` /
+     * `captureStalled`, so this loop kept accepting them and the readouts
+     * stayed lit off a mic that had stopped.
+     *
+     * Treating a dead frame as no frame at all reuses the staleness window
+     * below, so a single stalled tick still cannot flicker the display — only
+     * a capture that stays dead past STALE_FRAME_MS blanks it.
+     */
+    if (!frameIsLive(m)) {
       if (lastFrameRef.current && now - lastFrameRef.current > STALE_FRAME_MS) {
         setDisplayMeter((prev) => (prev === null ? prev : null));
         liveRmsDb.value = -120;
         livePeakDb.value = -120;
+        if (!deadRef.current) {
+          deadRef.current = true;
+          setCaptureDead(true); // guarded: this loop runs every frame
+        }
       }
       return;
+    }
+    if (deadRef.current) {
+      deadRef.current = false;
+      setCaptureDead(false);
     }
     lastFrameRef.current = now;
     const w = weightingRef.current;
