@@ -60,7 +60,7 @@ import * as Crypto from 'expo-crypto';
 import Svg, { Defs, G, Line, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 import { ApeDsp, type EngineConfig } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
-import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
+import { frameIsLive, meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
 import { releaseMicNow } from '../../features/tools/engine/micSession';
 import { micReleaseOnBackgroundEnabled } from '../../features/settings/store';
 import { deriveSixthOctave, NO_LEVEL, SIXTH_BANDS, SIXTH_EDGE, type DisplayBands } from '../../features/tools/sixthOctave';
@@ -580,7 +580,13 @@ export function MultiMeterScreen({ navigation }: Props) {
     setMicPaused(true);
     stop();
   }, [stop]);
-  const meter = running ? frames.meter : null;
+  // ⛔ A FRAME FROM A DEAD MIC IS NOT A FRAME (owner 2026-09-20 bug pass).
+  // getMeterFrame() never returns null on an engine build, so a stopped
+  // capture keeps delivering frames marked running:false / captureStalled
+  // and the readouts stayed lit off a mic that had stopped. frameIsLive is
+  // the verdict the hub watchdog and micSession already use.
+  const liveFrame = running ? frames.meter : null;
+  const meter = frameIsLive(liveFrame) ? liveFrame : null;
 
   // Readout mode (owner rev 24 — long-press the SPL cell): A/C/FS/SPL, same as
   // the SPL meter. Shared field calibration → estimated dB SPL; nominal 100 when
@@ -943,7 +949,7 @@ export function MultiMeterScreen({ navigation }: Props) {
   }, [draft, notes, smoothing, zoom, photoUri, geo]);
 
   // ---- Derived render data ---------------------------------------------------
-  const liveFlags = running ? meterWarningFlags(meter) : [];
+  const liveFlags = running ? meterWarningFlags(liveFrame) : []; // raw: a dead capture must still flag
   const bands = running ? sixthBands : null; // 61-band 1/6-oct (owner rev 24)
   const info = running ? ApeDsp.getInfo() : null;
   const half = SCOPE_H / 2;

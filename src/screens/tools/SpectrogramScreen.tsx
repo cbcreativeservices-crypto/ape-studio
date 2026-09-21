@@ -45,7 +45,7 @@ import Svg, { Line, Rect } from 'react-native-svg';
 import { AlphaType, Canvas, ColorType, Image as SkiaImage, Skia } from '@shopify/react-native-skia';
 import { ApeDsp, type EngineConfig } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
-import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
+import { frameIsLive, meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
@@ -443,7 +443,12 @@ export function SpectrogramScreen({ navigation }: Props) {
   // (MultiMeter, SplMeter, FrequencyCounter); these four did not. The no-fake-
   // meters rule is about what a display CLAIMS to be, and a lit meter over a
   // dead mic claims to be live.
-  const meter = state === 'running' ? frames.meter : null;
+  // ⛔ A FRAME FROM A DEAD MIC IS NOT A FRAME (owner 2026-09-20 bug pass).
+  // getMeterFrame() never returns null on an engine build, so a stopped
+  // capture keeps delivering frames marked running:false / captureStalled
+  // and the readouts stayed lit off a mic that had stopped. frameIsLive is
+  // the verdict the hub watchdog and micSession already use.
+  const meter = state === 'running' && frameIsLive(frames.meter) ? frames.meter : null;
   const canSave = state === 'running' && history.length > 0;
 
   return (

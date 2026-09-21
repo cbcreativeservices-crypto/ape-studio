@@ -43,7 +43,7 @@ import { TunerDiagram } from '../../components/ColorTargetDiagrams';
 import { useToolColorPref } from '../../features/tools/waveColorPref';
 import { LockedButton, MembershipRequiredNote, MEMBERSHIP_REQUIRED, useFullScreenGate, useSaveGate, useToolsLocked } from './ToolLockUi';
 import { useToolUsage } from '../../features/tools/telemetry';
-import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
+import { frameIsLive, meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type WarningFlag } from '../../features/tools/measure/types';
@@ -449,7 +449,13 @@ function LivePitchMode({
   // Readouts come ONLY from a live frame — stale frames after STOP are never
   // shown (the SPL screen's integrity idiom).
   const live = running ? frames.pitch : null;
-  const meter = running ? frames.meter : null;
+  // ⛔ A FRAME FROM A DEAD MIC IS NOT A FRAME (owner 2026-09-20 bug pass).
+  // getMeterFrame() never returns null on an engine build, so a stopped
+  // capture keeps delivering frames marked running:false / captureStalled
+  // and the readouts stayed lit off a mic that had stopped. frameIsLive is
+  // the verdict the hub watchdog and micSession already use.
+  const liveFrame = running ? frames.meter : null;
+  const meter = frameIsLive(liveFrame) ? liveFrame : null;
   const lowSignal = live != null && live.levelDb < PITCH_LOW_SIGNAL_DB;
   // Tuner detection band — Sound mode is never band-limited (it counts any
   // frequency); only the Tuner locks within [lowCut, highCut].
@@ -530,7 +536,7 @@ function LivePitchMode({
   // Quality flags: native meter conditions (clipping / OS-processed input /
   // Bluetooth / stalled capture) via the SHARED mapping, plus this tool's own
   // honest conditions — the same flags shown live are stored on save (§6).
-  const flags = meterWarningFlags(meter);
+  const flags = meterWarningFlags(liveFrame); // raw: a dead capture must still flag
   if (running && lowSignal && !flags.includes('insufficient_signal')) flags.push('insufficient_signal');
   if (running && stats?.stabilityLabel === 'Unstable' && !flags.includes('unstable_measurement'))
     flags.push('unstable_measurement');

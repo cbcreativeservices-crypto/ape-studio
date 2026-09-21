@@ -39,7 +39,7 @@ import { Canvas, Path as SkiaPath, LinearGradient as SkiaGradient, Skia, vec } f
 import * as Crypto from 'expo-crypto';
 import { ApeDsp, type WaveBucket } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
-import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
+import { frameIsLive, meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { MIDLINE_BLUE, WAVE_LEVEL_STOPS, levelColorForDb } from '../../features/tools/levelColor';
 import { useColorModePref } from '../../features/tools/colorModePref';
 import { useWaveColorPref, WAVE_COLOR_SWATCHES } from '../../features/tools/waveColorPref';
@@ -227,9 +227,17 @@ export function WaveformScreen({ navigation }: Props) {
   // (MultiMeter, SplMeter, FrequencyCounter); these four did not. The no-fake-
   // meters rule is about what a display CLAIMS to be, and a lit meter over a
   // dead mic claims to be live.
-  const meter = state === 'running' ? frames.meter : null;
+  // ⛔ A FRAME FROM A DEAD MIC IS NOT A FRAME (owner 2026-09-20 bug pass).
+  // getMeterFrame() never returns null on an engine build, so a stopped
+  // capture keeps delivering frames marked running:false / captureStalled
+  // and the readouts stayed lit off a mic that had stopped. frameIsLive is
+  // the verdict the hub watchdog and micSession already use.
+  const liveFrame = state === 'running' ? frames.meter : null;
+  const meter = frameIsLive(liveFrame) ? liveFrame : null;
   // Live quality flags (spec §6) — the SAME flags get stored on save.
-  const flags = useMemo(() => meterWarningFlags(meter), [meter]);
+  // ⚠️ From the RAW frame, not the blanked one: a dead capture is exactly when
+  // `engine_inactive` must appear, and it cannot come from a null meter.
+  const flags = useMemo(() => meterWarningFlags(liveFrame), [liveFrame]);
 
   // Clip-overrun display count + latch (item 4). Green 0 until the first real
   // overrun, then red until reset.

@@ -35,7 +35,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
 import { ApeDsp, type Rt60Band, type Rt60Frame } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
-import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
+import { frameIsLive, meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type WarningFlag } from '../../features/tools/measure/types';
@@ -239,7 +239,13 @@ export function Rt60Screen({ navigation }: Props) {
   // (MultiMeter, SplMeter, FrequencyCounter); these four did not. The no-fake-
   // meters rule is about what a display CLAIMS to be, and a lit meter over a
   // dead mic claims to be live.
-  const meter = state === 'running' ? frames.meter : null;
+  // ⛔ A FRAME FROM A DEAD MIC IS NOT A FRAME (owner 2026-09-20 bug pass).
+  // getMeterFrame() never returns null on an engine build, so a stopped
+  // capture keeps delivering frames marked running:false / captureStalled
+  // and the readouts stayed lit off a mic that had stopped. frameIsLive is
+  // the verdict the hub watchdog and micSession already use.
+  const liveFrame = state === 'running' ? frames.meter : null;
+  const meter = frameIsLive(liveFrame) ? liveFrame : null;
 
   // ---- Capture-window warning flags (review 2026-07-23) ----
   // clipRuns is SESSION-cumulative in the engine (reset only on capture start),
@@ -290,7 +296,7 @@ export function Rt60Screen({ navigation }: Props) {
         next.push('capture_dropout');
       // Both clipRuns and droppedFrames are baselined above; take the rest of the
       // live flags as-is (they're not session-cumulative counters).
-      for (const f of meterWarningFlags(meter))
+      for (const f of meterWarningFlags(liveFrame)) // raw: a dead capture must still flag
         if (f !== 'input_clipping' && f !== 'capture_dropout' && !next.includes(f)) next.push(f);
       return next.length === prev.length ? prev : next;
     });

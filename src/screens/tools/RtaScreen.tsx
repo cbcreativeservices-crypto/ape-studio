@@ -73,7 +73,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
 import Svg, { Defs, G, Line, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { ApeDsp, type BandsFrame, type EngineConfig, type MeterFrame } from '../../../modules/ape-dsp';
-import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
+import { frameIsLive, meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
@@ -983,7 +983,12 @@ export function RtaScreen({ navigation }: Props) {
   // (MultiMeter, SplMeter, FrequencyCounter); these four did not. The no-fake-
   // meters rule is about what a display CLAIMS to be, and a lit meter over a
   // dead mic claims to be live.
-  const meter = state === 'running' ? frames.meter : null;
+  // ⛔ A FRAME FROM A DEAD MIC IS NOT A FRAME (owner 2026-09-20 bug pass).
+  // getMeterFrame() never returns null on an engine build, so a stopped
+  // capture keeps delivering frames marked running:false / captureStalled
+  // and the readouts stayed lit off a mic that had stopped. frameIsLive is
+  // the verdict the hub watchdog and micSession already use.
+  const meter = state === 'running' && frameIsLive(frames.meter) ? frames.meter : null;
   const anyUnresolvable = displayBands != null && displayBands.resolvable.some((r) => !r);
 
   // LEVEL bezel cell: tap cycles the C/A/Z weighting (the old vertical unit
