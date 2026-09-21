@@ -1541,6 +1541,27 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                       request 2026-07-25). */}
                   {pct >= 100 ? <Text style={styles.specialistTag}>  SPECIALIST</Text> : null}
                 </Text>
+                {/* ⛔ THE REQUIRED BADGE LIVES UP HERE (owner 2026-09-20).
+                    It used to share the meta row with the subject, the LOADED
+                    pill and the STUDY icon — four things across one line on a
+                    360 dp phone — so BOTH captions ellipsized: the subject to
+                    "Safety & Elect…" and the lock to "🔒 until comp…". A rule
+                    the learner cannot finish reading is not telling them the
+                    rule.
+
+                    The title row beside a short name like "Pro Audio Safety"
+                    is empty, which is exactly the space this needed. The
+                    subject now has the meta row to itself. */}
+                {isCore ? (
+                  <View style={styles.reqBadge}>
+                    <Text style={styles.requiredTag}>Required</Text>
+                    {coreLocked ? (
+                      <Text style={styles.lockCaption} numberOfLines={1}>
+                        🔒 until completed
+                      </Text>
+                    ) : null}
+                  </View>
+                ) : null}
               </View>
               {/* Row 2 — subject on the left; ACTIVE + Study dropped BELOW the
                   title on the right (user request 2026-07-22). */}
@@ -1549,18 +1570,10 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                   {subjectFor(e.gs)}
                   {free && !isCore ? '  ·  Free' : ''}
                 </Text>
-                {/* Required core courses labelled in green (user request
-                    2026-07-22). */}
-                {isCore ? <Text style={styles.requiredTag}>Required</Text> : null}
+                {/* ("Required" + the "🔒 until completed" caption moved to the
+                    title row above — owner 2026-09-20. The toggle is still
+                    disabled while core-locked; see coreLocked below.) */}
                 <View style={{ flex: 1 }} />
-                {/* Core required courses are LOCKED into the deck until completed
-                    (user request 2026-07-24): a "🔒 until completed" caption sits
-                    beside the 3-card icon, and the toggle can't turn them off. */}
-                {coreLocked ? (
-                  <Text style={styles.lockCaption} numberOfLines={1}>
-                    🔒 until completed
-                  </Text>
-                ) : null}
                 {/* Deck-of-cards = loaded into the Dashboard deck. Green when in
                     the deck, gray when not; tap toggles (user request 2026-07-23). */}
                 <Pressable hitSlop={6}
@@ -1800,12 +1813,23 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
         {/* Slim "Continue Learning" banner — notification height. */}
         {resume ? (
           <Pressable style={styles.continueBar} onPress={resumeLastOrDashboard} accessibilityRole="button" accessibilityLabel={`Continue ${nameFor(resume.gs)}`}>
-            <View style={{ flex: 1 }}>
+            <View style={styles.continueText}>
               <Text style={styles.continueEyebrow}>CONTINUE LEARNING · {resume.pct}%</Text>
               <Text style={styles.continueName} numberOfLines={1}>
                 Resume {nameFor(resume.gs)}
               </Text>
             </View>
+            {/* A meter where the number already is (owner 2026-09-20). Every
+                other row on this screen shows its progress as an LED strip, and
+                the one row that says "continue" — the row most about how far
+                along you are — said it only as a figure in the eyebrow. Small
+                and segWidth 3, matching the requirement rows rather than the
+                full-width card meter. */}
+            <LedMeter
+              filled={segmentsForPct(resume.pct)}
+              segWidth={3}
+              a11yLabel={`${resume.pct} percent complete`}
+            />
             {/* Blue bottom-nav STUDY icon — in the shared studyNavBtn slot so it
                 aligns with the other rows' study icons (user request 2026-07-24). */}
             <View style={styles.studyNavBtn}>
@@ -2653,6 +2677,9 @@ const styles = StyleSheet.create({
   returnTopText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.6, color: colors.textSecondary },
 
   // Slim Continue banner (notification height).
+  // flexShrink 1 so the meter beside it keeps its full width and the NAME
+  // ellipsizes instead — RN defaults flexShrink to 0.
+  continueText: { flex: 1, flexShrink: 1 },
   continueBar: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -2840,9 +2867,13 @@ const styles = StyleSheet.create({
   // flexShrink so on a narrow phone (~360 dp) the caption ellipsizes instead
   // of pushing the LOADED/UNLOADED pill + STUDY icon past the card edge — the
   // pill is ~30 px wider than the 42 px deck icon it replaced (2026-09-13).
-  lockCaption: { flexShrink: 1, fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.2, color: GREEN, marginRight: 3, textAlign: 'right' },
+  lockCaption: { flexShrink: 0, fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.2, color: GREEN },
   cardTop: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   cardName: { flex: 1, fontFamily: fonts.oswaldMedium, fontSize: 16, letterSpacing: 0.2, color: colors.textPrimary },
+  /* The Required / 🔒 badge on the title row. flexShrink 0 — the NAME yields
+     (it has two lines to wrap into); the rule must never be the thing that
+     gets clipped, which is the whole reason it moved up here. */
+  reqBadge: { flexShrink: 0, flexDirection: 'row', alignItems: 'center', gap: 5 },
   // "SPECIALIST" badge appended to a completed topic's name — amber.
   specialistTag: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.amberDeep },
   handle: { paddingHorizontal: 4, paddingVertical: 2 },
