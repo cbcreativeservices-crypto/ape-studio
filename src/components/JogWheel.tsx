@@ -111,6 +111,11 @@ const PRESENCE_OUT_MS = 110;
 const SVG_ORBIT = 0.24;
 const SVG_REST_RAD = -Math.PI / 6;
 
+/** How far an OUTSIDE press may slide and still count as a dismiss rather
+ *  than a turn (owner 2026-09-20). A thumb landing on a dark screen rarely
+ *  lands still; 8 px turned too many close-taps into a topic change. */
+const DISMISS_SLOP = 22;
+
 const A11Y_ACTIONS = [{ name: 'increment' }, { name: 'decrement' }];
 
 const clamp = (v: number, lo: number, hi: number) => (v < lo ? lo : v > hi ? hi : v);
@@ -374,6 +379,11 @@ export function JogOverlay({
   sizeRef.current = size;
   const grantRef = useRef({ x: 0, y: 0 });
   const movedRef = useRef(false);
+  /** This gesture started OFF the wheel. Owner 2026-09-20: a press anywhere
+   *  around the wheel must close it, so an outside press is a dismiss until
+   *  it proves itself a drag — it does not glide the dimple, and it needs a
+   *  frank slide (not an 8 px wobble) before it counts as turning. */
+  const outsideRef = useRef(false);
   const activeRef = useRef(active);
   activeRef.current = active;
   // Read on EVERY render (the PanResponder is memoised with []): the reduce-
@@ -480,6 +490,10 @@ export function JogOverlay({
           inDead.current = false;
           grantRef.current = { x: g.x0, y: g.y0 };
           movedRef.current = false;
+          {
+            const c = centerRef.current;
+            outsideRef.current = Math.hypot(g.x0 - c.x, g.y0 - c.y) > sizeRef.current / 2;
+          }
           const now = Date.now();
           grantAt.current = now;
           lastMoveAt.current = now;
@@ -491,6 +505,10 @@ export function JogOverlay({
           // Unwrap the target to the closest equivalent of the current spin so
           // the glide never takes the long way round. Whatever was running
           // (a settle, a coast) is simply replaced — no cancel, no jump.
+          // An outside press is a dismiss until proven a drag — gliding the
+          // dimple to meet a finger that is about to lift reads as the wheel
+          // twitching at a tap meant to close it.
+          if (outsideRef.current) return;
           const current = spin.value;
           let diff = (a0 + DIMPLE_OFFSET - current) % 360;
           if (diff > 180) diff -= 360;
@@ -503,8 +521,21 @@ export function JogOverlay({
         onPanResponderMove: (_e, g) => {
           if (disabledRef.current) return;
           const now = Date.now();
-          if (!movedRef.current && Math.hypot(g.moveX - grantRef.current.x, g.moveY - grantRef.current.y) > 8) {
+          const slop = outsideRef.current ? DISMISS_SLOP : 8;
+          if (!movedRef.current && Math.hypot(g.moveX - grantRef.current.x, g.moveY - grantRef.current.y) > slop) {
             movedRef.current = true; // it's a drag (rotation), not a tap
+            if (outsideRef.current) {
+              // Promoted to a turn: run the grab glide now, the one the
+              // outside press deferred, so the dimple still comes to the finger.
+              const cur = spin.value;
+              let dd = (angleAt(g.moveX, g.moveY) + DIMPLE_OFFSET - cur) % 360;
+              if (dd > 180) dd -= 360;
+              if (dd < -180) dd += 360;
+              spinTarget.current = cur + dd;
+              spin.value = withTiming(spinTarget.current, { duration: 50, easing: REasing.out(REasing.quad) });
+              lastAngle.current = angleAt(g.moveX, g.moveY);
+              accum.current = 0;
+            }
             // One Soft tick as the grab is confirmed — never on grant, so a tap
             // on the wheel and a tap-outside-to-close stay silent.
             if (hapticsEnabled()) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft).catch(() => {});
@@ -571,10 +602,8 @@ export function JogOverlay({
             settle();
             return;
           }
-          // A tap (no drag) that landed beyond the wheel radius = dismiss.
-          const { x, y } = centerRef.current;
-          const outside = Math.hypot(grantRef.current.x - x, grantRef.current.y - y) > sizeRef.current / 2;
-          if (outside) onCloseRef.current();
+          // A press (no drag) that landed beyond the wheel radius = dismiss.
+          if (outsideRef.current) onCloseRef.current();
         },
         onPanResponderTerminate: () => {
           // The system took the touch mid-drag: still seat the wheel.

@@ -2027,7 +2027,44 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                 PRE-REQUISITES ALWAYS FIRST: they gate every credential, so
                 they head the list rather than sitting wherever the credential
                 happens to order them. */}
-            {requirementRows(centredBundle).map((e) => renderTopicRow(e, false))}
+            {(() => {
+              /**
+               * ONCE ALL THREE CO-REQUISITES ARE DONE THEY COLLAPSE INTO ONE
+               * GREEN LINE (owner 2026-09-20).
+               *
+               * Three finished rows, each carrying a meter, a pill, a study
+               * icon and a lock, is three rows of furniture saying the same
+               * settled thing. Collapsed, the list gets back to what is still
+               * outstanding — which is the only reason to open it.
+               *
+               * ⚠️ It collapses ONLY when every one is complete. A partial
+               * collapse would hide the very rows the learner still has to
+               * act on, which is the opposite of the point.
+               */
+              const rows = requirementRows(centredBundle);
+              const coreRows = rows.filter((r) => COREQ_TOPIC_GS.includes(r.gs));
+              const allCoreDone =
+                coreRows.length === COREQ_TOPIC_GS.length && coreRows.every((r) => pctFor(r.gs) >= 100);
+              if (!allCoreDone) return rows.map((e) => renderTopicRow(e, false));
+              const rest = rows.filter((r) => !COREQ_TOPIC_GS.includes(r.gs));
+              return (
+                <>
+                  {rest.map((e) => renderTopicRow(e, false))}
+                  <View
+                    style={[styles.card, styles.cardCore, styles.coreDoneCard]}
+                    accessible
+                    accessibilityLabel={`Co-requisites complete. All ${COREQ_TOPIC_GS.length} shared requirements are finished.`}
+                  >
+                    {/* Same green LED check the study dashboard uses for a
+                        finished method — one completion mark across the app. */}
+                    <Text style={styles.coreDoneCheck} accessibilityElementsHidden importantForAccessibility="no">
+                      ✓
+                    </Text>
+                    <Text style={styles.coreDoneText}>Co-Requisites Complete</Text>
+                  </View>
+                </>
+              );
+            })()}
           </>
         ) : null}
 
@@ -2669,6 +2706,18 @@ const styles = StyleSheet.create({
     lineHeight: 44,
     opacity: 0.75,
   },
+  /* The collapsed "all three done" line. Keeps cardCore's indent and lighter
+     fill so it still reads as the co-requisite band, just settled. */
+  coreDoneCard: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 12, borderColor: 'rgba(63,224,106,.45)' },
+  coreDoneCheck: {
+    fontFamily: fonts.barlowCondensedSemiBold,
+    fontSize: 22,
+    lineHeight: 22,
+    color: '#3fe06a',
+    textShadowColor: 'rgba(63,224,106,0.75)',
+    textShadowRadius: 10,
+  },
+  coreDoneText: { flex: 1, fontFamily: fonts.oswaldMedium, fontSize: 14.5, color: '#3fe06a' },
   collapseTri: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: colors.textSub },
   collapsedCard: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 11 },
   collapsedTitle: { flex: 1, fontFamily: fonts.oswaldMedium, fontSize: 14.5, color: colors.textPrimary },
