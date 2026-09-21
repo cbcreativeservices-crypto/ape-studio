@@ -32,7 +32,7 @@ import { RackUnit } from './rack/RackUnit';
 import type { DockParam, RackStage } from './rack/rackTypes';
 import { LabUnderstandingCheck } from '../../components/LabUnderstandingCheck';
 import { UNDERSTANDING_UNIT, hasUnderstandingCheck, understandingFor } from '../../features/lab/understanding';
-import { isLabDone, markLabUnit, registerLabUnits } from '../../features/lab/labCompletion';
+import { markLabUnit, registerLabUnits, useLabDone } from '../../features/lab/labCompletion';
 
 // The scroll-lock context moved to ./scrollLock (2026-08-23, Rack Unit kit —
 // avoids an import cycle). Re-exported here so the 30+ existing call sites
@@ -317,9 +317,18 @@ export function LabShell({
   const { requestAudioOutput } = useAudioOutputGate();
   const [mode, setMode] = useState<LabMode>('explore');
   const modes = modesFor(labId);
-  /** Seeded from the completion store so a lab passed on an earlier visit
-   *  opens already cleared rather than asking again. */
-  const [checkPassed, setCheckPassed] = useState(() => isLabDone(labId));
+  /**
+   * Already passed on an earlier visit?
+   *
+   * ⛔ `useLabDone`, NOT a one-shot `useState(() => isLabDone(...))`. The
+   * completion store hydrates from AsyncStorage ASYNCHRONOUSLY, so a lazy
+   * initializer reads it before it is loaded and answers `false` on every cold
+   * start — re-asking a learner for a check they had already passed. The hook
+   * exists precisely because the store is async and subscribes to it.
+   */
+  const alreadyPassed = useLabDone(labId);
+  const [justPassed, setJustPassed] = useState(false);
+  const checkPassed = alreadyPassed || justPassed;
   // Drag editors lock the ScrollView while dragging so the gesture wins over
   // scroll. Owned here so a tab switch always frees it.
   const [scrollLocked, setScrollLocked] = useState(false);
@@ -402,7 +411,7 @@ export function LabShell({
                   questions={understandingFor(labId) ?? []}
                   passed={checkPassed}
                   onPassed={() => {
-                    setCheckPassed(true);
+                    setJustPassed(true);
                     registerLabUnits(labId as never, [UNDERSTANDING_UNIT]);
                     markLabUnit(labId as never, UNDERSTANDING_UNIT);
                   }}

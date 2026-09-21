@@ -68,6 +68,14 @@ function declaredPaths(): { route: string; path: string }[] {
 const PARAM_SAMPLES: Record<string, string> = {
   toolKey: TOOL_INFO_KEYS[0],
   category: AWARD_PAGES[0],
+  /**
+   * `:lab` takes one of exactly two values, and the deep-link filter now
+   * allowlists them rather than accepting `[^/]+` — a URL naming a third
+   * reached `LABS[lab].stages` with `lab` undefined and threw during render.
+   * So the sample has to be a REAL lab, like the two above it: a placeholder
+   * would assert that the filter accepts a value the app cannot open.
+   */
+  lab: 'preprod',
 };
 
 function sample(path: string): string {

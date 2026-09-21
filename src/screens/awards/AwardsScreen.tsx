@@ -698,10 +698,13 @@ export function AwardsScreen({ navigation, route }: Props) {
       setDetail(null);
       setPicker(null);
       const first = c.topics[0];
-      navigation.navigate('Main', {
+      /* popTo, not navigate — same rule the rest of this screen follows. RN7
+         pushes a SECOND tab shell on a navigate to a non-focused route, so
+         Back returns to a duplicate Awards pager instead of leaving. */
+      (navigation as unknown as { popTo: (name: string, params?: object) => void }).popTo('Main', {
         screen: 'Study',
         params: { screen: 'Dashboard', params: first != null ? { focusGs: first } : undefined },
-      } as never);
+      });
     },
     [navigation],
   );

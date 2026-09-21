@@ -148,10 +148,20 @@ export function linkPath(url: string): string {
 const LAB_DEEP_PATHS: RegExp[] = [
   /^cymatics\/(plate|liquid|membrane|gallery)$/,
   /^cymatics\/module\/[^/]+$/,
+  /**
+   * ⛔ `:lab` IS ALLOWLISTED, NOT `[^/]+`. There are exactly two production
+   * labs, and the screen does `LABS[lab].stages` — so a URL naming a third
+   * reaches that line with `lab` undefined and THROWS during render. An
+   * earlier pass called this latent and warned that widening the gate without
+   * validating `lab` "turns a dead link into a crash"; the gate was widened on
+   * 2026-09-17 and the guard was never added, so it has been live since.
+   * These were the only deep-link patterns in the app with no value
+   * allowlist — every other one names its values.
+   */
   // labs/production/:lab/:projectId/:stageId
-  /^production\/[^/]+\/[^/]+\/[^/]+$/,
+  /^production\/(preprod|postprod)\/[^/]+\/[^/]+$/,
   // labs/production/:lab/exercise/:activityId/:pathway
-  /^production\/[^/]+\/exercise\/[^/]+\/[^/]+$/,
+  /^production\/(preprod|postprod)\/exercise\/[^/]+\/[^/]+$/,
 ];
 
 export function isClaimedPath(path: string): boolean {

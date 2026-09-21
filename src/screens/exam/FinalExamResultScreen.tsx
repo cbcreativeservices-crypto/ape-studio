@@ -157,7 +157,11 @@ export function FinalExamResultScreen({ navigation, route }: Props) {
             <StudioButton
               label="View on Profile"
               variant="success"
-              onPress={() => (navigation as any).navigate('Main', { screen: 'Profile' })}
+              /* popTo, not navigate: under React Navigation 7 a NAVIGATE to a
+                 non-focused route with no `pop` APPENDS a second tab shell on
+                 top of this screen, so Back lands the learner in a duplicate
+                 app rather than where they came from. */
+              onPress={() => (navigation as any).popTo('Main', { screen: 'Profile' })}
             />
           )}
           <StudioButton label="Done" variant="secondary" onPress={() => navigation.goBack()} />
