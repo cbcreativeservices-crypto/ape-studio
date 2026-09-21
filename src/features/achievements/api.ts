@@ -23,6 +23,7 @@ import { fetchMyCredentials, type EarnedCredentialRow } from '../credentials/api
 import { fetchAwardProgress } from '../awards/api';
 import { topicImagePath } from '../../data/topicImages';
 
+import { myUserId } from '../account/myUserRow';
 export type TopicStatus = 'complete' | 'passed_incomplete' | 'unlocked' | 'locked';
 
 export type TopicAchievement = {
@@ -60,8 +61,7 @@ export type TopicAchievementData = {
 
 async function internalUserId(): Promise<string | null> {
   try {
-    const { data } = await supabase.from('users').select('id').single();
-    return (data as { id?: string } | null)?.id ?? null;
+    return await myUserId();
   } catch {
     return null;
   }

@@ -108,7 +108,11 @@ async function authUserId(): Promise<string | null> {
 
 /** App id (public.users.id) — required for notification_preferences. */
 async function appUserId(): Promise<string | null> {
-  const { data, error } = await supabase.from('users').select('id').maybeSingle();
+  /* Scoped to the caller: an admin matches every row under `admin_all_users`,
+     and `maybeSingle` errors on more than one just as `single` does. */
+  const uid = (await supabase.auth.getUser()).data?.user?.id ?? null;
+  if (!uid) return null;
+  const { data, error } = await supabase.from('users').select('id').eq('auth_id', uid).maybeSingle();
   if (error) {
     console.warn('[weekly-concept] app user lookup failed:', error.message);
     return null;

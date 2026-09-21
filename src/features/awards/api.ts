@@ -19,6 +19,7 @@
 import { supabase } from '../../lib/supabase';
 import type { AwardType } from '../finalExam/api';
 
+import { myUserId } from '../account/myUserRow';
 export type RequiredTopic = {
   achievementId: string;
   gs: number | null;
@@ -43,8 +44,7 @@ export type AwardProgress = {
 
 /** Internal users.id for the signed-in account (RLS scopes this to the caller). */
 async function internalUserId(): Promise<string | null> {
-  const { data } = await supabase.from('users').select('id').single();
-  return (data as { id?: string } | null)?.id ?? null;
+  return await myUserId();
 }
 
 /**

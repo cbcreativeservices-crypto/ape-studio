@@ -174,6 +174,7 @@ export const NOTIFY_FREQ: Record<CommercialNotifyKey, { mode: NotifyFreqMode; la
 // eslint-disable-next-line import/order -- leaf data module (no cycle; see localSchedule's cycle note)
 import { MISUNDERSTOOD_TERMS, ODD_TERMS } from '../notifications/curatedTermLists';
 
+import { myUserRow } from '../account/myUserRow';
 const KEY = 'ape:settings';
 
 // Synchronous mirrors so low-level, non-React code can honour these toggles
@@ -276,7 +277,7 @@ export async function updateNotificationPref(
   key: keyof NotificationPrefs,
   value: boolean,
 ): Promise<boolean> {
-  const { data: user } = await supabase.from('users').select('id').single();
+  const user = await myUserRow<{ id: string }>('id');
   if (!user) return false;
   /**
    * ⛔ A NO-MATCH UPDATE IS NOT AN ERROR. PostgREST returns no error for an

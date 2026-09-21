@@ -117,10 +117,21 @@ async function fetchCredentials(): Promise<{
 export async function fetchDashboardSummary(): Promise<DashboardSummary> {
   const supabase = getSupabaseBrowser();
 
-  // 1. Own users row (RLS own_user links auth.uid() → app user id).
+  // 1. Own users row.
+  //
+  // ⛔ FILTERED ON auth_id, NOT LEFT TO RLS. The comment here used to say
+  // "RLS own_user links auth.uid() → app user id", and that is true for an
+  // ordinary member — but `public.users` also carries `admin_all_users`
+  // (ALL, is_admin()), so an ADMIN matches every row and `.single()` raises
+  // PGRST116. This function then threw `user_not_found`, i.e. the website
+  // told an administrator they had no account.
+  const { data: auth } = await supabase.auth.getUser();
+  const authUid = auth?.user?.id;
+  if (!authUid) throw new Error("user_not_found");
   const { data: user, error: userErr } = await supabase
     .from("users")
     .select("id, nickname, first_name, last_name_initial")
+    .eq("auth_id", authUid)
     .single();
   if (userErr || !user) throw new Error("user_not_found");
   const displayName =

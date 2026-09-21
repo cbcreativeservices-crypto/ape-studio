@@ -11,6 +11,7 @@ import { isRealAccount } from '../commercial/realAccount';
 import { albumTierFor, type AlbumTierName } from '../../theme/tokens';
 import { V3_CURRICULUM_VERSION_ID } from '../../data/v3Curriculum';
 import { classifyProfileRead, type ProfileRead } from './profileRead';
+import { myUserId, myUserRow } from '../account/myUserRow';
 export type { ProfileRead } from './profileRead';
 
 export const ALBUM_DENOMINATOR = 50; // locked (D-5) — legacy album scale; NOT the
@@ -64,11 +65,17 @@ export async function fetchProfile(): Promise<ProfileRead> {
     // shown to someone whose connection is fine. See realAccount.ts.
     const { data: sessionData } = await supabase.auth.getSession();
     if (!isRealAccount(sessionData?.session)) return { state: 'none' };
+    const authUid = sessionData!.session!.user.id;
 
+    /* ⛔ `.eq('auth_id', …)`, not a bare `.single()`. An ADMIN matches every
+       row under the `admin_all_users` policy, so the unfiltered read raised
+       PGRST116 and `classifyProfileRead` reported "you have no account". The
+       uid is already in hand from the session check two lines up. */
     const [userRes, identityRes] = await Promise.all([
       supabase
         .from('users')
         .select('id, nickname, first_name, last_name_initial, photo_url')
+        .eq('auth_id', authUid)
         .single(),
       supabase.rpc('my_identity').single(),
     ]);
@@ -177,8 +184,8 @@ export async function fetchMyQrToken(): Promise<string | null> {
  *  row, and the caller falls back to the device-local copy rather than failing. */
 export async function fetchMyRegistryName(): Promise<string | null> {
   try {
-    const { data, error } = await supabase.from('users').select('registry_name').single();
-    if (error || !data) return null;
+    const data = await myUserRow<{ registry_name: string | null }>('registry_name');
+    if (!data) return null;
     const v = (data as { registry_name?: string | null }).registry_name;
     return v && v.trim() ? v : null;
   } catch {
@@ -225,10 +232,12 @@ export async function fetchMyRegistryListing(): Promise<RegistryListingRead> {
     // like an outage. Settle that before the read rather than after it.
     const { data: sessionData } = await supabase.auth.getSession();
     if (!isRealAccount(sessionData?.session)) return { state: 'none' }; // see above
+    const authUid = sessionData!.session!.user.id;
 
     const { data, error } = await supabase
       .from('users')
       .select('show_in_registry, registry_bio, registry_interests, registry_primary_interest, registry_adult_confirmed')
+      .eq('auth_id', authUid)
       .single();
     if (error || !data) return { state: 'unavailable' };
     const r = data as {
@@ -289,12 +298,12 @@ export async function setRegistryListing(input: {
  *  (guest, offline, RLS) so the caller can keep the local copy and retry later. */
 export async function saveMyRegistryName(name: string): Promise<boolean> {
   try {
-    const { data: user, error: uErr } = await supabase.from('users').select('id').single();
-    if (uErr || !user) return false;
+    const userId = await myUserId();
+    if (!userId) return false;
     const { error } = await supabase
       .from('users')
       .update({ registry_name: name.trim() })
-      .eq('id', (user as { id: string }).id);
+      .eq('id', userId);
     return !error;
   } catch {
     return false;

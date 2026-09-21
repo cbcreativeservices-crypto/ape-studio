@@ -17,6 +17,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
 
+import { myUserRow } from '../account/myUserRow';
 export type TopicStatus = 'locked' | 'unlocked' | 'passed_incomplete' | 'complete';
 
 export type Course = {
@@ -232,7 +233,7 @@ export async function fetchEnrollmentDashboard(gsList: number[]): Promise<Dashbo
   let userId = 'local';
   let nickname: string | null = null;
   try {
-    const { data: user } = await supabase.from('users').select('id, nickname').single();
+    const user = await myUserRow<{ id: string; nickname: string | null }>('id, nickname');
     if (user) {
       userId = user.id;
       nickname = (user as { nickname: string | null }).nickname ?? null;

@@ -12,6 +12,7 @@
  */
 import { supabase } from '../../lib/supabase';
 
+import { myUserId } from '../account/myUserRow';
 export type EarnedCredentialRow = {
   /** credential_awards.credential_id — the certificate/program uuid. */
   id: string;
@@ -34,8 +35,7 @@ export type EarnedCredentialRow = {
  */
 export async function fetchMyCredentials(): Promise<EarnedCredentialRow[]> {
   try {
-    const { data: user } = await supabase.from('users').select('id').single();
-    const userId = (user as { id?: string } | null)?.id;
+    const userId = await myUserId();
     if (!userId) return [];
 
     const { data: awards, error } = await supabase
