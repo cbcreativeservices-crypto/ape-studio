@@ -1,3 +1,34 @@
+## 2026-09-21 — A: Lab-Gaps ccode handoff UPDATED (absorbed B's verification note)
+- B verified the ccode handoff bundle: return JSON byte-identical (md5 c72ae561...), A's collision overlay cross-checks clean, partition 128-4-3=121 holds. No conflicts.
+- A resolved B's 4 fuzzy-collision flags live (equality couldn't catch). TWO are real same-topic neighbors ccode must judge distinct-or-map: (1) 'Dynamic processing' [3350] vs existing 'Dynamics processors' bd86613c [3350]; (2) 'Beating' [3020] vs existing 'Beat Frequency' 29964684 [3020] + 'Beat-frequency interference' 33a220a7 [3020] (do NOT map to Binaural beats [4280]). The other 2 (Harmonograph->Lissajous 3020, Drumhead->4570) already handled by the handoff's secondary maps.
+- For ccode to confirm: 11 of 13 collisions trace to the source gap-report scan asserting absence — DB drift vs under-match; affects trust in the remaining gap inventory. B is changing origin labels to 'per gap-report scan' + shipping a normalized-headword list going forward.
+- B recommends Option A (insert 121 at 2 fields as draft now; complete later). Booth's call. Updated bundle in AUDIO APP\2026-09-20_CCODE_LABGAPS_HANDOFF (adds A_QA_OVERLAY fuzzy_collision_cautions + B_VERIFICATION_NOTE).
+
+## 2026-09-21 — A: Glossary Wave 2 (Class 2 clone review) APPLIED + VERIFIED
+- Computer B returned 64 pairs (27 alias, 37 distinct). A QA'd live + applied autonomously (pre-authorized). 27 aliases retired via the mapping lever (3 cross-topic merges P062/P063/P064 got keeper mapped onto retiree topic first); 66 distinct defs reworded; 1 study-state row migrated; completion_pct recomputed. Backups _bkp_w2_*_20260921.
+- QA PASS: retire_mappings_left 0/27, defs_changed 66, smp_holding_retire_key 0, cross_topic_keepers 3/3, rows_vdone_exceeds_vtotal 0, retiree_rows_intact 27. Doc APE_GLOSSARY_WAVE2_APPLIED_2026-09-21; artifact E9tT9XGW6HHu71Kwx3gUUK.
+- NOTE for ccode: study completion gate is LIVE (build_study_snapshot: v_done=v_total from live glossary_topics count + item_states; stored completion_pct is display-only). Any mapping change auto-adjusts v_total; migrate stale item_states keys onto the survivor.
+- Parked: B's optional 'monitor world' generic card (P009) + ukulele mic-blend card (P036); Wave 3 semantic sweep parked.
+
+## 2026-09-20 — A: Launch-readiness QA snapshot (read-only) + NULL-difficulty hygiene fix
+- Corpus-wide quiz answer-key integrity: 117,574 approved MC on active topics, 0 mis-keys, 0 structural defects. Cert-chain dedup COMPLETE (only 5 kept symbol pairs remain). All 166 active topics have terms + approved questions (0 gaps). scenario_homework 0 empty. 0 referential-orphan mappings.
+- APPLIED: filled 88 NULL-difficulty glossary_topics on active topics (gs 3180,3300,3340,3600,4040,4360,4390) from each term's own glossary.difficulty (19 beg/50 int/19 adv). Backup public._bkp_nulldiff_active_20260920. Non-guessing, reversible. This unblocks graded-question inserts on those links.
+- CONFIRMED for ccode: 125 unmapped glossary rows = the "125-orphan sweep" target (live). Already flagged in the Lab-Gaps ccode handoff to run first.
+- Doc: claude/APE_LAUNCH_READINESS_QA_2026-09-20; artifact ERMGBxSXcrJumyFRTqYNAJ.
+
+## 2026-09-20 — A: Lab-Gaps glossary return QA'd -> handed to ccode to finish
+- Computer B authored 128 lab-gap glossary terms (source 2026-09-20_GLOSSARY_TERM_GAPS_FOR_B.md). Per Booth, ccode processes/finishes; A only QA'd + packaged the handoff (AUDIO APP\2026-09-20_CCODE_LABGAPS_HANDOFF: CCODE_HANDOFF_LABGAPS_2026-09-20.md + A_QA_OVERLAY.json + B return json).
+- CRITICAL QA (A, verified live): B's origin labels UNRELIABLE — 13 of 128 headwords already exist. Resolution in A_QA_OVERLAY.json: DROP 4 (PCM, SPL, Subgroup, Twisted pair — exact dup at proposed topic), REMAP 3 existing (Frequency sweep->3470, Linear-phase EQ->3340, VCA->3810/4070; map existing id, do NOT insert), KEEP 6 false-friends (Azimuth, Compressor, Flanger, Reverb, Sync, Pitch detection). Net INSERT = 121. All 42 proposed topics exist+active.
+- Sequencing: 125-orphan glossary_topics sweep lands FIRST (ccode's). B's 5 orphan_fixes + secondary maps (Lissajous->3020, VCA->4070, Drumhead->4570) in the handoff. 47 anchor verdicts = terms already exist, no DB change.
+- OPEN for Booth: B authored only definition+plain_english; house standard is full record + 2 graded + 3 scenario Qs + difficulty. Booth decides: insert at 2 fields now (coverage) vs complete first. ccode sets source='ai_generated', review_status='draft', batch tag in external_ref.
+
+## 2026-09-20 — A: Glossary Wave 2 (Class 2 definition clones) BUILT + handed to Computer B
+- Owner rulings on Wave-1 held items: figure-8 rule applies ONLY to the literal 'figure-of-eight' (spelled-out 'figure eight' left as-is); retired card 0b031b53 left; no stem rewords. NO Wave-1b.
+- Wave 2 re-derived from LIVE (not the stale definition_clones.csv): prefix/suffix-45 def blocking + trigram similarity>=0.70. pg_trgm % self-join timed out on the MCP endpoint even chunked -> blocking+score is the working method. Temp objects + pg_trgm extension DROPPED after; prod clean.
+- LIVE clone set: 76 pairs >=0.70 (38 >=0.80); 64 both-active delivered to B; 61/64 same-topic. Far below the old '212' (expected: 130 dups already retired + old CSV was looser). Aliases (Lobby loudspeaker/speaker, HTTP/expansion) + distinct-but-alike (Downstage L/R, Decca Tree L/R mic).
+- Handoff at AUDIO APP\2026-09-20_ComputerB_GLOSSARY_Wave2 (ZIP+4 loose). B returns alias|distinct per pair; A then retires aliases via mapping lever + applies distinct rewrites, guarded.
+- Wave 3 (deep semantic sweep) parked.
+
 ## 2026-09-20 — A: Glossary Wave 1 (figure-of-eight purge) APPLIED + VERIFIED
 - Computer B returned Wave 1; A QA'd against live and applied.
 - Changed: glossary.definition x19, glossary.plain_english x3 (incl. 1 A-QA-absorbed B intake miss on 8822ff0d Lateral energy fraction), quiz_questions x41 rows (question_text/options_json/correct_answer/explanation).
@@ -33,6 +64,91 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 ---
 
 ## LOG (newest first)
+
+### 2026-09-20 22:10 · ccode · Lab-Gaps handoff — MAPPING HALF APPLIED (inserts held)
+
+changed: Ran the mapping half of A's Lab-Gaps handoff against prod. Backup first:
+  `_bkp_glossary_topics_20260920` (27,055 rows). glossary_topics 27,055 → 27,159 (+104), all
+  idempotent via the (glossary_id, achievement_id) unique key, and NOTHING was inserted into
+  `glossary` itself.
+  • 5 orphan_fixes — Wavefront→3000, AWG→3280, Inter-sample peak→3450, Envelope generator→4070,
+    Formant→4300.
+  • 3 REMAPs + secondaries — Frequency sweep→3470, Linear-phase EQ→3340, VCA→3810 and 4070.
+  • Lissajous curve + Lissajous figure → ALSO 3020 (kept 3450). The Harmonograph Lab finally has
+    a curricular anchor.
+  • Orphan sweep: 89 orphans mapped (93 rows) by taking the topic AND difficulty of an
+    already-mapped exact/plural sibling. Orphans 147 → 58. Difficulty is carried over rather than
+    invented, because the quiz draw weights on `max(gt.difficulty)`.
+  Verified after: 0 rows on inactive topics, both Lissajous rows at 3020, +104 exactly as intended.
+affects other side: ⛔ THE 58 REMAINING ORPHANS ARE NOT A MECHANICAL JOB — and this is the part
+  worth your attention. They include the terms YOU deliberately retired this morning in the
+  dup-glossary wave: "Assembly Area", "Bullet microphone", "Effective aperture" are all in there,
+  unmapped ON PURPOSE (dormant twins, reversible). My sibling rule did not touch them only because
+  their normalized headwords differ from their surviving twins ("assemblyarea" vs "assemblypoint").
+  Anyone finishing the sweep must exclude retired terms first or they will silently un-retire them
+  and re-open the duplicate the wave closed.
+  ALSO: gs 3020 is a required topic of 1 certificate and ALL 36 programs, so the Lissajous anchor
+  gives the Harmonograph Lab presence but no discriminating power for the lab→credential mapping.
+needs: (1) ⛔ THE 121 INSERTS ARE HELD. Booth ruled option B: complete records before insert, not
+  2-field drafts. So the authoring wave is on: 121 full records + 242 graded + 363 scenario
+  questions + A's per-term difficulty. Computer B takes it when A packages it.
+  (2) FYI, A asked me to confirm whether the source gap scan under-matched or the DB changed
+  between the scan and A's live check. It UNDER-MATCHED — the DB did not change. I re-ran an
+  independent normalized-headword check of all 128 and got A's 13 exactly. In every case B's own
+  origin note cites a NEIGHBOUR while the near-identical headword was live: "linear PCM" vs the
+  existing `PCM (Pulse-Code Modulation)`, "'Sound pressure' exists" vs `SPL (sound pressure
+  level)`, "minimum phase" vs `Linear-Phase EQ`, "VCA Group/VCA trim" vs `VCA (voltage-controlled
+  amplifier)`, "shielded/unshielded twisted pair" vs `Twisted-pair (UTP/STP)`. One more,
+  "Frequency sweep", traces to NO gap-report term at all and already existed exactly. The
+  normalized-headword diff B is adopting is the right fix. There is no unchecked remainder: the
+  193 are 128 authored (all now checked) + 47 anchors + 5 orphans + 3 skip + 2 recommend, and the
+  last four groups are already-exists by construction.
+  (3) The two fuzzy CAUTIONS are resolved as INSERT (when the wave lands): "Dynamic processing"
+  defines the process family and contrasts with static processing, where the existing "Dynamics
+  processors" is the devices; "Beating" defines the phenomenon and names the rate only as a
+  property, where "Beat Frequency" is that rate. Both clear A's bar.
+
+### 2026-09-20 21:44 · ccode · 8252188c
+changed: Subscription renewals now extend the entitlement (NOT deployed)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-20 21:43 · ccode · 2803cb6c
+changed: Your two admin accounts could not use the app
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-20 21:26 · ccode · e7d476dd
+changed: Three smaller fixes from passes 1 and 3
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-20 15:52 · ccode · d78fedb3
+changed: An involuntary sign-out mid-exam no longer force-submits an empty paper
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-20 15:45 · ccode · a810d2cd
+changed: The quiz and exam replays were deleting graded attempts on a cold start
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-20 15:10 · ccode · bc8b044d
+changed: Understanding checks reach the OTHER 13 labs too — I had it wrong
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-20 14:58 · ccode · 962bf576
+changed: Member labs: the end-of-lab understanding check that completes them
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
 
 ### 2026-09-20 14:40 · ccode · GRANT on glossary_browse_v (APPLIED — your lane, flagging it)
 
