@@ -221,12 +221,29 @@ export function ScenariosScreen({ route }: Props) {
   const enterRound = useCallback(
     (rq: ScenarioQ[], r: number) => {
       const first = rq.findIndex((q) => !answersRef.current[q.id]);
+      /**
+       * ⛔ RECORD THE ROUND BEFORE THE EARLY RETURN (owner 2026-09-21 bug pass).
+       *
+       * `setActiveRound` used to sit below the `first === -1` branch, so
+       * entering a round whose questions are ALREADY answered — which is what
+       * resuming a part-finished topic does — reported that round and left
+       * `activeRound` at its initial 1.
+       *
+       * The next-round button reads `activeRound`, so it then offered
+       * `rounds[1]` again: "Begin Round 3" re-ran Round 2, which was also
+       * already answered, which reported and again left `activeRound` at 1.
+       * Round 3 was unreachable, and since Scenarios is a hard requirement for
+       * the quiz, the whole topic dead-ended for anyone who left mid-way.
+       *
+       * `finishRound` takes the round explicitly and never reads this state,
+       * so setting it first changes nothing else.
+       */
+      setActiveRound(r);
       if (rq.length === 0 || first === -1) {
         finishRound(rq, r);
         return;
       }
       clearInteraction();
-      setActiveRound(r);
       setIdx(first);
       setView('play');
     },
