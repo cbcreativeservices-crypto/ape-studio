@@ -319,6 +319,52 @@ async function markRefunded(admin: Store, storeRefs: string[], why: string): Pro
   return n;
 }
 
+/**
+ * A RENEWAL: the subscription billed again, so push `expires_at` out.
+ *
+ * ⛔ WHY THIS FUNCTION HAD TO EXIST (bug pass 2, 2026-09-20). Nothing in the
+ * app wrote `expires_at` a second time. `validate-purchase` sets it once, at
+ * purchase; this receiver handled refunds and revocations only and answered
+ * every other notification with "ignored"; and `restorePurchases()` has one
+ * caller in the whole codebase — the Restore button. On Android the Play
+ * Billing update listener does not fire for an auto-renewal at all. So a
+ * monthly subscriber who was STILL BEING BILLED went `lapsed` on day 30:
+ * tools, member labs, the unmetered glossary and the Final Exam all locked,
+ * and the only cure was tapping Restore every month.
+ *
+ * ⚠️ `member_since` IS NOT TOUCHED — and that is the whole difference from
+ * `markReinstated`. A renewal is an UNBROKEN month continuing; restarting the
+ * clock here would reset the tenure the certificate rule depends on, so a
+ * member who paid for a year would never complete "one complete paid month".
+ * A reinstatement after a refund does restart it, because that month was in
+ * fact broken.
+ *
+ * Refunded rows are excluded: a store must not resurrect a refunded
+ * entitlement through a renewal message. Reinstatement is its own path.
+ */
+async function markRenewed(admin: Store, storeRefs: string[], expiresAtMs: number | null): Promise<number> {
+  const refs = storeRefs.filter(Boolean);
+  if (refs.length === 0 || !expiresAtMs) return 0;
+  const { data, error } = await admin
+    .from('entitlements')
+    .update({
+      status: 'active',
+      expires_at: new Date(expiresAtMs).toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .in('store_ref', refs)
+    .in('source', ['app_store', 'play_store'])
+    .is('refunded_at', null)
+    .select('id');
+  if (error) {
+    console.error('[store-notifications] renewal write failed:', error.message);
+    return 0;
+  }
+  const n = (data ?? []).length;
+  console.log(`[store-notifications] renewal: ${n} entitlement row(s) extended`);
+  return n;
+}
+
 /** A refund that the store later reverses gives the member their access back —
  *  but NOT their old tenure. The month restarts, because they did not in fact
  *  hold an unbroken paid month. */
@@ -353,6 +399,10 @@ async function markReinstated(admin: Store, storeRefs: string[], expiresAtMs: nu
 /** Apple notification types that mean money went back, or access was pulled. */
 const APPLE_REFUND_TYPES = new Set(['REFUND', 'REVOKE']);
 const APPLE_REINSTATE_TYPES = new Set(['REFUND_REVERSED']);
+/** Apple's "it billed again" family. DID_RENEW is the ordinary monthly/annual
+ *  renewal; SUBSCRIBED covers a resubscribe after a lapse; DID_CHANGE_RENEWAL_
+ *  STATUS arrives with a fresh expiry when auto-renew is turned back on. */
+const APPLE_RENEW_TYPES = new Set(['DID_RENEW', 'SUBSCRIBED', 'DID_CHANGE_RENEWAL_STATUS']);
 
 async function handleApple(admin: Store, signedPayload: string): Promise<Response> {
   const outer = peekJwtPayload<{
@@ -363,8 +413,9 @@ async function handleApple(admin: Store, signedPayload: string): Promise<Respons
   if (!outer) return ok('apple: unreadable payload, ignored');
 
   const type = outer.notificationType ?? '';
-  const interesting = APPLE_REFUND_TYPES.has(type) || APPLE_REINSTATE_TYPES.has(type);
-  if (!interesting) return ok(`apple: ${type || 'unknown'} is not a refund event, ignored`);
+  const interesting =
+    APPLE_REFUND_TYPES.has(type) || APPLE_REINSTATE_TYPES.has(type) || APPLE_RENEW_TYPES.has(type);
+  if (!interesting) return ok(`apple: ${type || 'unknown'} is not an event we act on, ignored`);
 
   // The transaction id is the ONLY thing taken from the rumour.
   const tx = outer.data?.signedTransactionInfo
@@ -393,6 +444,11 @@ async function handleApple(admin: Store, signedPayload: string): Promise<Respons
   if (APPLE_REINSTATE_TYPES.has(type)) {
     const n = await markReinstated(admin, refs, truth.expiresDate ?? null);
     return ok('apple: refund reversed, access restored and the month restarted', { rows: n });
+  }
+  if (APPLE_RENEW_TYPES.has(type)) {
+    // The expiry comes from Apple's own API, never from the notification.
+    const n = await markRenewed(admin, refs, truth.expiresDate ?? null);
+    return ok('apple: renewal confirmed, entitlement extended', { rows: n, type });
   }
   // Apple said REFUND but its own API shows no revocation — believe the API.
   return ok('apple: store reports no revocation, nothing changed');
@@ -444,8 +500,28 @@ async function handleGoogle(admin: Store, body: unknown): Promise<Response> {
   }
 
   if (sub?.purchaseToken) {
-    // 12 = SUBSCRIPTION_REVOKED (refund / chargeback). 13 = EXPIRED, which is a
-    // normal ending and must NOT clear tenure — the member simply lapsed.
+    /**
+     * 12 = SUBSCRIPTION_REVOKED (refund / chargeback). 13 = EXPIRED, a normal
+     * ending that must NOT clear tenure — the member simply lapsed.
+     *
+     * ⛔ AND 1/2/4/7 ARE RENEWALS, WHICH USED TO FALL THROUGH AS "ignored".
+     * Nothing else in the system writes `expires_at` a second time, and the
+     * Play Billing update listener does not fire for an auto-renewal — so a
+     * subscriber who kept paying went lapsed on day 30. See markRenewed.
+     *   1 RECOVERED · 2 RENEWED · 4 PURCHASED · 7 RESTARTED
+     */
+    const GOOGLE_RENEWAL_TYPES = new Set([1, 2, 4, 7]);
+    if (GOOGLE_RENEWAL_TYPES.has(sub.notificationType ?? -1)) {
+      const rt =
+        (sub.subscriptionId ? await googleTruth(sub.purchaseToken, sub.subscriptionId, 'subs') : null) ??
+        (await googleTruthAnySku(sub.purchaseToken));
+      // Verified against Google, never the notification — same rule as every
+      // other branch here. No expiry from the store means no write.
+      if (!rt) return ok('google: could not verify the renewal with the store, nothing changed');
+      if (rt.revoked) return ok('google: store reports this purchase revoked, not renewing');
+      const n = await markRenewed(admin, [sub.purchaseToken], rt.expiresAtMs);
+      return ok('google: renewal confirmed, entitlement extended', { rows: n, type: sub.notificationType });
+    }
     if (sub.notificationType !== 12) {
       return ok(`google: subscription notification ${sub.notificationType} is not a revocation, ignored`);
     }
