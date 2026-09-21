@@ -271,7 +271,12 @@ export function EnrollmentSelection({
                       : `Load all ${card.topicCount} topics of ${card.title} into the study deck`
                   }
                 >
-                  <Text style={s.loadText}>{card.allLoaded ? 'UNLOAD' : 'LOAD'}</Text>
+                  {/* "ALL" stays in the label (owner 2026-09-20): the bare
+                      verb beside a per-topic list read as though it acted on
+                      one row. It acts on every topic in the card. */}
+                  <Text style={s.loadText} numberOfLines={1}>
+                    {card.allLoaded ? 'UNLOAD ALL' : 'LOAD ALL'}
+                  </Text>
                 </Pressable>
                 <View
                   style={[s.loadLamp, card.allLoaded && s.loadLampOn]}
@@ -369,22 +374,26 @@ const s = StyleSheet.create({
   },
   studyIcon: { width: 26, height: 26 },
   studyText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13.5, letterSpacing: 1, color: colors.blue },
-  /* Action + state lamp, splitting the width the single button used to take. */
+  /* Action + state lamp, splitting the width the single button used to take.
+     ⛔ CONTENT-WIDTH, NOT flex:1 HALVES. `deckActions` is an auto-width
+     flex-end column, so flex:1 children resolve against a basis of 0 and the
+     pair collapsed to roughly the STUDY button's width above — which clipped
+     "UNLOAD ALL" to "UNLOAD…". Each sizes to its own label instead; the
+     narrow-screen case is already handled by actionsFitBesideIdentity, which
+     stacks the whole column. */
   loadRow: { flexDirection: 'row', alignItems: 'stretch', gap: 6 },
   loadActionBtn: {
-    flex: 1,
     borderWidth: 1,
     borderColor: colors.hairline,
     borderRadius: 8,
-    paddingHorizontal: 12,
+    paddingHorizontal: 11,
     minHeight: 40,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  loadText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.textSub },
+  loadText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 0.8, color: colors.textSub },
   /* Reports only — never a tap target, so it is a View, not a Pressable. */
   loadLamp: {
-    flex: 1,
     borderWidth: 1,
     borderColor: '#3a3a3a',
     backgroundColor: '#1c1c1c',
