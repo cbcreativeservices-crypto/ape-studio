@@ -22,6 +22,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { animationsAllowed } from '../settings/a11y';
+import { useOverlaysSuppressed } from '../dev/popupSuppressStore';
 
 const HALF = 1600; // ms per half-cycle → ~3.2 s full breathe (calm, not gimmicky)
 
@@ -47,12 +48,16 @@ function useBreathe(active: boolean, motion: boolean, staticT: number) {
 export function AttractRing({
   active,
   variant = 'amber',
+  /** Keep glowing forever instead of retiring — for a ring that marks a
+   *  standing destination rather than a first-run cue. */
+  persistent = false,
   inset = -1,
   radius = 8,
   width = 1,
 }: {
   active: boolean;
   variant?: 'amber' | 'green';
+  persistent?: boolean;
   /** How far OUTSIDE the host's box the ring sits, in px (negative = outside).
    *  The default -1 overlays a button's own 1px frame. Use a larger negative
    *  with a matching `radius` to sit just beyond a thicker frame, so the two
@@ -64,9 +69,18 @@ export function AttractRing({
   radius?: number;
   width?: number;
 }) {
-  const motion = active && animationsAllowed();
+  /**
+   * ⛔ LOW-LIGHT GATE, NOT JUST REDUCED MOTION — the same correction LoadPill
+   * needed. Low-Light Production Mode's whole rule is that nothing draws
+   * attention to itself unbidden, and a ring breathing on a 3.2 s cycle is
+   * exactly that. The static resting level below is already the right
+   * fallback, so the cue survives without the movement.
+   */
+  const suppressed = useOverlaysSuppressed();
+  const motion = active && !suppressed && animationsAllowed();
   const t = useBreathe(active, motion, 0.43); // 0.43 → ~0.6 static opacity
   const aStyle = useAnimatedStyle(() => ({ opacity: 0.3 + t.value * 0.7 }));
+  void persistent; // documentation for the caller; the ring itself is stateless
   if (!active) return null;
   return (
     <Animated.View

@@ -1859,12 +1859,19 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
         <View style={styles.listHead}>
           <View>
             <Text style={styles.sectionHead}>MY ENROLLMENT</Text>
-            <Text style={styles.listCount}>
-              {/* [28] (2026-09-07): name the two figures so it doesn't read as
-                  "X of Y are enrolled" (all Y are); completed topics live in MY
-                  RECORD, so the visible list is a subset. */}
-              {activeCount} active · {enrolled.length} enrolled
-            </Text>
+            {/* [28] (2026-09-07): name the two figures so it doesn't read as
+                "X of Y are enrolled" (all Y are); completed topics live in MY
+                RECORD, so the visible list is a subset.
+                Owner 2026-09-20: "active" was this screen's own word for it —
+                everywhere else the same state is LOADED, next to the study
+                headphones. The icon carries the meaning and the label matches
+                the pills in the list below. */}
+            <View style={styles.listCountRow}>
+              <NavIcon icon="Study" lit={activeCount > 0} showLabel={false} />
+              <Text style={styles.listCount}>
+                {activeCount} Loaded · {enrolled.length} Topics Enrolled
+              </Text>
+            </View>
           </View>
           <View style={{ flex: 1 }} />
           {/* Jump down to the browse/add list (user request 2026-07-22). */}
@@ -1909,7 +1916,9 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
              comes apart.
           */}
           {([
-            { k: 'all', label: 'All', tint: GREEN },
+            // "All" alone read as "all of everything" beside Programs and
+            // Certificates; it jumps to the ALL TOPICS card (owner 2026-09-20).
+            { k: 'all', label: 'All Topics', tint: GREEN },
             { k: 'program', label: 'Programs', tint: PROGRAM_PURPLE },
             { k: 'cert', label: 'Certificates', tint: CERT_BLUE },
           ] as const).map((t) => {
@@ -1957,6 +1966,19 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
               wrapping: a list that jumps from last back to first loses any
               sense of where you are in it. The count between them replaces
               the dots the deck used to carry. */}
+          {/* ⛔ THE COUNT SITS ABOVE THE ARROWS (owner 2026-09-20). Between
+              them it was a third thing in the tap zone, pushing ‹ and › apart
+              so the pair no longer read as one control — and on a 13-page deck
+              the widening "12/13" kept nudging them. Above, the arrows sit
+              together and the count is a label on the pair rather than an
+              obstacle between them. */}
+          <View style={styles.deckStepCol}>
+            {deckCards.length > 1 ? (
+              <Text style={styles.deckCount} accessibilityLabel={`${safeDeckIndex + 1} of ${deckCards.length}`}>
+                {safeDeckIndex + 1}/{deckCards.length}
+              </Text>
+            ) : null}
+            <View style={styles.deckStepRow}>
           <Pressable
             style={[styles.deckStep, safeDeckIndex <= 0 && styles.deckStepOff]}
             onPress={() => {
@@ -1971,11 +1993,6 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           >
             <Text style={[styles.deckStepText, safeDeckIndex <= 0 && styles.deckStepTextOff]}>‹</Text>
           </Pressable>
-          {deckCards.length > 1 ? (
-            <Text style={styles.deckCount} accessibilityLabel={`${safeDeckIndex + 1} of ${deckCards.length}`}>
-              {safeDeckIndex + 1}/{deckCards.length}
-            </Text>
-          ) : null}
           <Pressable
             style={[styles.deckStep, safeDeckIndex >= deckCards.length - 1 && styles.deckStepOff]}
             onPress={() => {
@@ -2005,6 +2022,8 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             />
             <Text style={[styles.deckStepText, safeDeckIndex >= deckCards.length - 1 && styles.deckStepTextOff]}>›</Text>
           </Pressable>
+            </View>
+          </View>
         </View>
 
         {/* The chips filter the TOPIC list. With a credential centred they
@@ -2745,7 +2764,8 @@ const styles = StyleSheet.create({
      marginTop 14 opens 22 above the group against 8 within it, so the four
      rows read as one block instead of three floating bands. */
   listHead: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 14, paddingHorizontal: 12 },
-  listCount: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.6, color: colors.textSecondary, marginTop: 1 },
+  listCountRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 1 },
+  listCount: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.6, color: colors.textSecondary },
   // HOME SETUP — amber (user request 2026-07-23).
   homeSetupBtn: { borderWidth: 1, borderColor: 'rgba(255,198,77,.6)', borderRadius: 8, paddingHorizontal: 10, minHeight: 44, justifyContent: 'center' },
   homeSetupText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.6, color: colors.amber },
@@ -2774,7 +2794,12 @@ const styles = StyleSheet.create({
   deckStepOff: { borderColor: colors.hairline, backgroundColor: 'transparent', opacity: 0.45 },
   deckStepText: { fontFamily: fonts.oswaldSemiBold, fontSize: 27, color: GREEN, lineHeight: 31, marginTop: -3 },
   deckStepTextOff: { color: colors.textSub },
-  deckCount: { fontFamily: fonts.mono, fontSize: 12.5, color: colors.textSecondary, minWidth: 36, textAlign: 'center' },
+  /* Count above, arrows together beneath it — see the note at the markup. */
+  deckStepCol: { alignItems: 'center', gap: 3 },
+  deckStepRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  // GREEN, matching the ‹ › beneath it (owner 2026-09-20): it is a label ON
+  // that control, so it should belong to it rather than read as stray text.
+  deckCount: { fontFamily: fonts.mono, fontSize: 12.5, color: GREEN, minWidth: 36, textAlign: 'center' },
   chip: { borderWidth: 1, borderColor: '#333', borderRadius: 14, paddingVertical: 4, paddingHorizontal: 11, backgroundColor: '#161616' },
   chipOn: { borderColor: colors.amber, backgroundColor: 'rgba(255,198,77,.12)' },
   chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.6, color: colors.textSub },

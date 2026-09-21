@@ -13,7 +13,6 @@ import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../theme/tokens';
 
 const HOLD_MS = 5000;
-const HOLD_SECS = 5;
 
 export function HoldToActivate({
   label,
@@ -21,6 +20,9 @@ export function HoldToActivate({
   onComplete,
   tint = colors.green,
   disabled = false,
+  holdMs = HOLD_MS,
+  bg = '#0f1a12',
+  compact = false,
 }: {
   /** Resting label, e.g. "HOLD 5s TO ENABLE AUDIO OUTPUT". */
   label: string;
@@ -30,12 +32,20 @@ export function HoldToActivate({
   /** Accent colour for the fill + label (default house green). */
   tint?: string;
   disabled?: boolean;
+  /** How long the hold must last. Default 5 s — the audio-output gate's. */
+  holdMs?: number;
+  /** Resting background. Default is the green-tinted dark the gate uses; pass
+   *  a neutral one for a non-green tint. */
+  bg?: string;
+  /** Tighter padding + smaller type, for a button sharing a row. */
+  compact?: boolean;
 }) {
+  const holdSecs = Math.max(1, Math.round(holdMs / 1000));
   const progress = useRef(new Animated.Value(0)).current;
   const anim = useRef<Animated.CompositeAnimation | null>(null);
   const tick = useRef<ReturnType<typeof setInterval> | null>(null);
   const [holding, setHolding] = useState(false);
-  const [secs, setSecs] = useState(HOLD_SECS);
+  const [secs, setSecs] = useState(holdSecs);
 
   const clearTick = () => {
     if (tick.current) {
@@ -54,22 +64,22 @@ export function HoldToActivate({
     anim.current?.stop();
     clearTick();
     setHolding(false);
-    setSecs(HOLD_SECS);
+    setSecs(holdSecs);
     Animated.timing(progress, { toValue: 0, duration: 140, useNativeDriver: false }).start();
   };
 
   const start = () => {
     if (disabled) return;
     setHolding(true);
-    setSecs(HOLD_SECS);
+    setSecs(holdSecs);
     progress.setValue(0);
-    let left = HOLD_SECS;
+    let left = holdSecs;
     tick.current = setInterval(() => {
       left -= 1;
       setSecs(Math.max(0, left));
       if (left <= 0) clearTick();
     }, 1000);
-    anim.current = Animated.timing(progress, { toValue: 1, duration: HOLD_MS, useNativeDriver: false });
+    anim.current = Animated.timing(progress, { toValue: 1, duration: holdMs, useNativeDriver: false });
     anim.current.start(({ finished }) => {
       clearTick();
       setHolding(false);
@@ -86,11 +96,16 @@ export function HoldToActivate({
       onPressOut={reset}
       disabled={disabled}
       accessibilityRole="button"
-      accessibilityLabel={`${label}. Press and hold for five seconds.`}
-      style={[styles.btn, { borderColor: hexAlpha(tint, 0.6) }, disabled && styles.btnDisabled]}
+      accessibilityLabel={`${label}. Press and hold for ${holdSecs} seconds.`}
+      style={[
+        styles.btn,
+        compact && styles.btnCompact,
+        { borderColor: hexAlpha(tint, 0.6), backgroundColor: bg },
+        disabled && styles.btnDisabled,
+      ]}
     >
       <Animated.View style={[styles.fill, { width: fillWidth, backgroundColor: hexAlpha(tint, 0.26) }]} />
-      <Text style={[styles.label, { color: tint }]}>
+      <Text style={[styles.label, compact && styles.labelCompact, { color: tint }]}>
         {holding ? `${holdingLabel} · ${secs}` : label}
       </Text>
     </Pressable>
@@ -115,9 +130,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#0f1a12',
   },
+  btnCompact: { paddingVertical: 9, paddingHorizontal: 10, borderRadius: 8 },
   btnDisabled: { opacity: 0.5 },
   fill: { position: 'absolute', left: 0, top: 0, bottom: 0 },
   label: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.2, textAlign: 'center' },
+  labelCompact: { fontSize: 10.5 },
 });

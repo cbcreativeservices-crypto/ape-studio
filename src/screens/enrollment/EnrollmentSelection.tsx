@@ -29,6 +29,8 @@ import { MyTopicsIcon } from '../../components/MyTopicsIcon';
 import { LedMeter, segmentsForPct } from '../../components/LedMeter';
 import { colors, fonts } from '../../theme/tokens';
 import { actionsFitBesideIdentity, artSideLen } from './selectionLayout';
+import { HoldToActivate } from '../../components/HoldToActivate';
+import { AttractRing } from '../../features/onboarding/AttractCue';
 
 /** The Study tab's own icon, so the control looks like where it sends you. */
 const STUDY_ICON = require('../../../assets/icons/nav/nav-study.png');
@@ -307,20 +309,35 @@ export function EnrollmentSelection({
               accessibilityRole="button"
               accessibilityLabel={`Open the ${card.title} award page to see its Final Exam`}
             >
+              {/* ⛔ ALWAYS GLOWING (owner 2026-09-20) — `persistent`, not a
+                  first-run cue. This is the thing the whole card is FOR: the
+                  certificate at the end of it. Every other control here moves
+                  topics around; this one is the destination, and it should
+                  never stop looking like it. Holds a static level under
+                  reduce-motion and in Low-Light. */}
+              <AttractRing active persistent />
               <Text style={s.awardText}>FINAL EXAM - EARN CERTIFICATE AWARD</Text>
             </Pressable>
           ) : (
             <View style={{ flex: 1 }} />
           )}
           {onRemove ? (
-            <Pressable
-              style={s.removeBtn}
-              onPress={onRemove}
-              accessibilityRole="button"
-              accessibilityLabel={`Remove ${card.title} and its topics from the list`}
-            >
-              <Text style={s.removeText}>REMOVE</Text>
-            </Pressable>
+            /* ⛔ HOLD THREE SECONDS (owner 2026-09-20). This throws away a
+               whole credential and every topic under it, and it sat one
+               stray tap away from the button people press to open their
+               final exam. A hold cannot be done by accident, and the fill
+               shows what is being committed to while there is still time to
+               let go. Same idiom as the audio-output gate, three seconds
+               rather than five. */
+            <HoldToActivate
+              label="HOLD TO REMOVE"
+              holdingLabel="KEEP HOLDING"
+              holdMs={3000}
+              compact
+              tint={colors.textSub}
+              bg="#151517"
+              onComplete={onRemove}
+            />
           ) : null}
         </View>
       ) : null}
@@ -410,8 +427,6 @@ const s = StyleSheet.create({
   credActions: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   awardBtn: { flex: 1, borderWidth: 1, borderColor: 'rgba(255,198,77,.45)', borderRadius: 8, paddingVertical: 11, alignItems: 'center' },
   awardText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 0.8, color: colors.amber },
-  removeBtn: { minHeight: 44, justifyContent: 'center', paddingHorizontal: 10 },
-  removeText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.textSub },
   meterRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   pct: { fontFamily: fonts.mono, fontSize: 13, color: colors.textSecondary },
 
