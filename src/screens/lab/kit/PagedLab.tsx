@@ -170,8 +170,18 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone }: {
     const fresh = !base.completed.includes(page);
     const completed = fresh ? [...base.completed, page].sort((a, b) => a - b) : base.completed;
     persist({ completed, done: completed.length >= pagesWithCheck.length });
-    if (fresh) onPageDone?.(page);
-  }, [page, persist, pagesWithCheck.length, onPageDone]);
+    /**
+     * ⛔ THE APPENDED CHECK PAGE IS NOT ONE OF THE LAB'S PAGES
+     * (owner 2026-09-21 bug pass — latent until the first check is authored).
+     *
+     * Callers implement onPageDone as `markLabUnit(lab, 'p' + (index + 1))`
+     * against a unit list that ends at their real page count, so firing it for
+     * the check page banked credit under a `p17` / `p24` that no lab registers.
+     * The check page already marks its own UNDERSTANDING_UNIT above, which is
+     * the unit that actually exists.
+     */
+    if (fresh && page < pages.length) onPageDone?.(page);
+  }, [page, persist, pagesWithCheck.length, pages.length, onPageDone]);
   const doReset = () => void resetPagedProgress(labId).then(() => {
     const fresh: PagedProgress = { completed: [], lastPage: 0, done: false };
     progressRef.current = fresh;
@@ -219,12 +229,17 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone }: {
         aria-expanded={listOpen}
         accessibilityLabel={`Page list. ${doneCount} of ${pagesWithCheck.length} complete. ${listOpen ? 'Expanded' : 'Collapsed'}`}
       >
-        {pages.map((_, i) => <View key={i} style={[styles.dot, progress?.completed.includes(i) && styles.dotDone, i === page && styles.dotNow]} />)}
+        {/* ⛔ pagesWithCheck, NOT pages. The counter beside these dots already
+            counts the appended check page, so iterating the original array
+            left the check with no dot and no row in the list below —
+            unreachable except by pressing CONTINUE off the page before it,
+            while the header read "17 of 17". */}
+        {pagesWithCheck.map((_, i) => <View key={i} style={[styles.dot, progress?.completed.includes(i) && styles.dotDone, i === page && styles.dotNow]} />)}
         <Text style={styles.dotsText}>{doneCount}/{pagesWithCheck.length} done {listOpen ? '▴' : '▾'}</Text>
       </Pressable>
       {listOpen ? (
         <View style={styles.list}>
-          {pages.map((p, i) => {
+          {pagesWithCheck.map((p, i) => {
             const done = !!progress?.completed.includes(i);
             return (
               <Pressable key={i} onPress={() => goTo(i)} style={styles.listRow} accessibilityRole="button" accessibilityState={{ selected: i === page }} aria-pressed={i === page} accessibilityLabel={`Page ${i + 1}, ${p.title}${done ? ', complete' : ''}${i === page ? ', current' : ''}`}>
