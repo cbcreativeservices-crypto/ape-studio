@@ -47,7 +47,19 @@ const CHECK: CheckSpec = {
   correctIdx: 0,
   reveal:
     'Slope is the RATE of attenuation past the transition region: each octave beyond the cutoff loses roughly another 24 dB. Steeper slope = harder edge; gentler slope = more gradual.',
-  wrongHint: 'Filters here only remove — and Q belongs to bells, not slopes.',
+  /**
+   * ⛔ "Q belongs to bells, not slopes" was the old hint, and it is false —
+   * it taught the misconception it was trying to correct (owner 2026-09-21
+   * bug pass). A pass filter has a Q: it sets how much the response peaks
+   * right at the corner, which is what a resonant low-pass is. This app's own
+   * engine says so — `Biquad.hpp:134` is commented "2nd-order low-pass (RBJ;
+   * Q selectable, unlike the Butterworth highpass above)" — and the drawn
+   * curve honours it too (`fxViz.tsx:110` passes `b.q` into `rbjLowPass`).
+   * The teaching point survives without the false half: slope is a RATE, Q is
+   * not what "per octave" measures.
+   */
+  wrongHint:
+    'Slope is a rate, not a width. A pass filter does have a Q — it sets how much the response peaks right at the corner — but that is not what “per octave” measures.',
 };
 
 export function FilterSlopesModule(_p: EqModuleComponentProps) {
