@@ -37,6 +37,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { CheckQuestion } from './foundations/bits';
 import { LabShell, LabChip, HeaderPlayButton } from './LabShell';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
+import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 
 const ACTIVITY_MS = 500;
 const STATUS_MS = 100; // live env/step poll while running (10 Hz)
@@ -257,6 +258,10 @@ export function ModularLabScreen() {
     setEnvLevel(0);
     setActiveStep(-1);
   }, []);
+  // Shake-to-mute (and the idle/background lock) silences the voices from
+  // outside this screen; without this the transport would keep saying it is
+  // playing. See useStopWhenSilenced.
+  useStopWhenSilenced(running, stop);
 
   useFocusEffect(useCallback(() => () => stop(), [stop]));
   useEffect(() => {

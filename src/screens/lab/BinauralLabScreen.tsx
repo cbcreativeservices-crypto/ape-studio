@@ -43,6 +43,7 @@ import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { LabShell, LabChip, HeaderPlayButton } from './LabShell';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
+import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 
 const ACTIVITY_MS = 500;
 const MIN_DIST = 0.5;
@@ -152,6 +153,10 @@ export function BinauralLabScreen() {
     void ApeDsp.binStop();
     setRunning(false);
   }, []);
+  // Shake-to-mute (and the idle/background lock) silences the voices from
+  // outside this screen; without this the transport would keep saying it is
+  // playing. See useStopWhenSilenced.
+  useStopWhenSilenced(running, stop);
 
   useFocusEffect(useCallback(() => () => stop(), [stop]));
   useEffect(() => {

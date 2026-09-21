@@ -66,6 +66,7 @@ import { CheckQuestion, ConceptBadge, LevelMeterBar, VizUnavailableCard, type Ch
 import { requireViz, type VizModule } from './skiaGate';
 import { START_LEVEL_01 } from '../../../features/audio/startLevel';
 import { useStopOnAudioMute } from '../../../features/audio/useStopOnAudioMute';
+import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
 
 const STEP_KEY = 'ape:fosStep';
 const ACTIVITY_MS = 500;
@@ -294,6 +295,10 @@ function useCourseTone(engineReady: boolean): ToneApi {
     void ApeDsp.genStop();
     setPlaying(false);
   }, []);
+  // Shake-to-mute (and the idle/background lock) silences the voices from
+  // outside this screen; without this the transport would keep saying it is
+  // playing. See useStopWhenSilenced.
+  useStopWhenSilenced(playing, stop);
 
   useFocusEffect(useCallback(() => () => stop(), [stop]));
   useEffect(() => {

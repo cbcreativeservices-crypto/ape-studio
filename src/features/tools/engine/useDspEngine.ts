@@ -238,6 +238,48 @@ export function useToolAutoStart(state: EngineState, start: () => void, stop?: (
    *  hammer the audio HAL. */
   const rearms = useRef(0);
   const MAX_REARMS = 3;
+  /** Live view of `state` for the focus callbacks, which are created once. */
+  const liveState = useRef(state);
+  liveState.current = state;
+  /**
+   * ⛔ THE TOOL WAS LIVE WHEN THE SCREEN LOST FOCUS, SO BRING IT BACK.
+   *
+   * useDspEngine's own blur cleanup drops the state to 'idle', and the
+   * one-shot above refuses to re-arm after a real run — deliberately, so a
+   * manual STOP can never silently reopen the mic. The two rules together
+   * meant that ANY push-and-return killed the tool for good: open the
+   * Waveform Viewer, tap VIEW SAVED MEASUREMENTS, come back, and the screen
+   * sat on "Starting the oscilloscope…" with no control of any kind, because
+   * its whole viewer unmounts when nothing is running (owner 2026-09-20 bug
+   * pass). The Frequency Counter did the same.
+   *
+   * Focus is what tells the two identical-looking 'idle's apart. A manual
+   * STOP happens while the screen is FOCUSED, so it never sets this flag; an
+   * involuntary blur teardown always does. That is a fact about the gesture,
+   * not a guess about intent, which is why it is safe to act on.
+   *
+   * This is the same promise the background handler below already makes —
+   * release on leaving, resume on return — just for navigation rather than
+   * for the Home button.
+   */
+  const resumeOnFocus = useRef(false);
+  const [resumeTick, setResumeTick] = useState(0);
+  useFocusEffect(
+    useCallback(() => {
+      if (resumeOnFocus.current) {
+        resumeOnFocus.current = false;
+        done.current = false; // let the hardened one-shot below fire again
+        rearms.current = 0;
+        setResumeTick((t) => t + 1); // …and make its effect re-run
+      }
+      return () => {
+        // Only an involuntary teardown. Idle here means the user stopped it.
+        if (liveState.current === 'running' || liveState.current === 'starting') {
+          resumeOnFocus.current = true;
+        }
+      };
+    }, []),
+  );
 
   useEffect(() => {
     if (state === 'running') {
@@ -292,7 +334,7 @@ export function useToolAutoStart(state: EngineState, start: () => void, stop?: (
       };
     }
     return undefined;
-  }, [state, start]);
+  }, [state, start, resumeTick]);
 
   // Background release + foreground resume (rev 24), gated on the user setting
   // "Release microphone in the background". TOOLS only — the hub owns its own
@@ -312,7 +354,21 @@ export function useToolAutoStart(state: EngineState, start: () => void, stop?: (
       if (s === 'background') {
         // 'inactive' (app-switcher peek, a permission alert) is NOT backgrounding
         // — only a real 'background' releases, so we don't tear down mid-prompt.
-        if (stateRef.current === 'running') {
+        /**
+         * ⛔ 'starting' RELEASES TOO (owner 2026-09-20 bug pass).
+         *
+         * This used to require 'running', so pressing Home during the start
+         * window left the capture open in the background with the OS mic
+         * indicator lit — on the DEFAULT setting, whose own description
+         * promises "the mic stops immediately". On Android that window is the
+         * documented 5–10 s cold HAL open, so first entry hits it easily, and
+         * nothing else could close it: the screen never blurs, so its focus
+         * cleanup does not run either.
+         *
+         * Releasing mid-acquire is safe — stop() bumps the generation counter,
+         * so the in-flight acquireMic hands its stream straight back.
+         */
+        if (stateRef.current === 'running' || stateRef.current === 'starting') {
           releasedForBg.current = true;
           stopRef.current?.(); // state → idle + debounced release
           releaseMicNow(); // hard stop now — no hot mic lingering in the background

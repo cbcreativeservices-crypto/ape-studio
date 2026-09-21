@@ -42,7 +42,6 @@ import { hapticsEnabled } from '../../features/settings/store';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSharedValue } from 'react-native-reanimated';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useFocusEffect } from '@react-navigation/native';
 import * as Crypto from 'expo-crypto';
 import { GlassButton } from '../../components/GlassButton';
 import { lockLandscape, lockPortrait, unlockOrientation } from '../../lib/screenOrientationSafe';
@@ -588,9 +587,13 @@ export function SplMeterScreen({ navigation }: Props) {
   // START card. We remember the user's INTENT to run and silently re-arm the
   // meter on refocus — the mic is still off while away, just restored on return.
   // A deliberate STOP clears the intent, so it is also the "end my session" act.
-  const wantRunning = useRef(false);
-  const stateRef = useRef(state);
-  stateRef.current = state;
+  //
+  // ⚠️ That resume now lives in useToolAutoStart, so EVERY tool gets it —
+  // Waveform and the Frequency Counter had no equivalent and dead-ended with
+  // no control after any push-and-return (owner 2026-09-20 bug pass). The
+  // hook reads the same signal this screen used to: whether the tool was live
+  // when focus was lost. A manual STOP happens while focused, so it still
+  // ends the session.
   // micPaused (owner 2026-07-30): STOP must ONLY stop the mic — it is NOT a
   // navigation/exit button. Previously STOP dropped state to 'idle', which
   // collapsed the whole tool back to its START card (it read as "kicked out to
@@ -598,7 +601,6 @@ export function SplMeterScreen({ navigation }: Props) {
   // (frozen, readouts dashed) and the same button flips to START to re-arm.
   const [micPaused, setMicPaused] = useState(false);
   const startMeter = useCallback(() => {
-    wantRunning.current = true;
     // A FRESH SESSION MUST NOT INHERIT THE LAST ONE'S PEAK (fix 2026-08-28).
     // The mic stream is warm-adopted across tools and across a STOP→START
     // inside the debounce, so the NATIVE peak-hold/Leq accumulators keep
@@ -616,15 +618,9 @@ export function SplMeterScreen({ navigation }: Props) {
     void start();
   }, [start, resetPeakHold, resetLeq]);
   const stopMeter = useCallback(() => {
-    wantRunning.current = false;
     setMicPaused(true);
     stop();
   }, [stop]);
-  useFocusEffect(
-    useCallback(() => {
-      if (wantRunning.current && stateRef.current === 'idle') void start();
-    }, [start]),
-  );
 
   // Open straight into the live meter — no redundant START screen (owner
   // 2026-08-01). Fires once; a deliberate STOP still holds the tool on-screen.

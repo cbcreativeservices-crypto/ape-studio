@@ -34,6 +34,7 @@ export function PaceTimerBar({
   enabled,
   onToggle,
   onReset,
+  topicId,
   running,
   onToggleRunning,
   onRemove,
@@ -52,6 +53,9 @@ export function PaceTimerBar({
   /** @deprecated the header on/off Switch was removed 2026-07-25. */
   onToggle?: (enabled: boolean) => void;
   onReset?: () => void;
+  /** The topic on screen. A time trial started against a DIFFERENT topic is
+   *  not this screen's — see useTimeTrial (owner 2026-09-20 bug pass). */
+  topicId?: string;
   /** Whether the clock is ticking — drives the flip button glyph. */
   running?: boolean;
   /** Toggle the running (ticking) state. */
@@ -67,7 +71,7 @@ export function PaceTimerBar({
   const secPerQ = SEC_PER_Q[preset];
   const isStopwatch = secPerQ == null;
 
-  const trial = useTimeTrial(method);
+  const trial = useTimeTrial(method, topicId);
   const brainOutputs = useBrainOutputs(method);
   const autoTrack = useAutoTrack(method);
   // Pace advances on CORRECT answers only (user 2026-07-25): a wrong answer must

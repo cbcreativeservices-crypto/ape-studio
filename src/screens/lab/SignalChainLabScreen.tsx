@@ -38,6 +38,7 @@ import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { LabShell, HeaderPlayButton } from './LabShell';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
+import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -271,6 +272,10 @@ export function SignalChainLabScreen() {
     setRunning(false);
     setGr({ comp: 0, gate: 0, limiter: 0 });
   }, []);
+  // Shake-to-mute (and the idle/background lock) silences the voices from
+  // outside this screen; without this the transport would keep saying it is
+  // playing. See useStopWhenSilenced.
+  useStopWhenSilenced(running, stop);
 
   useFocusEffect(useCallback(() => () => stop(), [stop]));
   useEffect(() => {

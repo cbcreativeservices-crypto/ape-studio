@@ -85,8 +85,14 @@ function resolve(which: 'confirm' | 'cancel'): void {
   // Handler AFTER clearing, so a handler that opens another dialog is queued
   // against an empty slot rather than colliding with the one closing.
   if (req) (which === 'confirm' ? req.onConfirm : req.onCancel)?.();
-  const next = queue.shift();
-  if (next) showAppDialog(next);
+  // …and only drain if that handler did not open one of its own. Draining
+  // unconditionally sent the next request back through showAppDialog, which
+  // saw the handler's dialog in `current` and pushed it onto the BACK of the
+  // queue — so [A, B] came out as handler → B → A (owner 2026-09-20 bug pass).
+  if (!current) {
+    const next = queue.shift();
+    if (next) showAppDialog(next);
+  }
 }
 
 const subscribe = (cb: () => void) => {

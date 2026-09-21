@@ -9,7 +9,7 @@
  * backend, or any error → no action (never a spurious logout).
  */
 import { useEffect, useRef } from 'react';
-import { Alert, AppState, type AppStateStatus } from 'react-native';
+import { AppState, type AppStateStatus } from 'react-native';
 import { notify } from '../../lib/confirm';
 import { supabase } from '../../lib/supabase';
 import { isRealAccount } from '../commercial/realAccount';

@@ -18,8 +18,14 @@ export function useGlossaryLinksPref(): [boolean, (v: boolean) => void] {
   useEffect(() => {
     let alive = true;
     void (async () => {
-      const raw = await AsyncStorage.getItem(KEY);
-      if (alive && raw != null) setOn(raw === '1');
+      try {
+        const raw = await AsyncStorage.getItem(KEY);
+        if (alive && raw != null) setOn(raw === '1');
+      } catch {
+        // Unreadable storage → keep the default. The setter below already
+        // guards; without this the read surfaced as an unhandled rejection at
+        // glossary mount on the disk-full failure this app has already seen.
+      }
     })();
     return () => {
       alive = false;

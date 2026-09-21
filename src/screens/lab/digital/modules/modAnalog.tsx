@@ -44,6 +44,7 @@ import type { DockParam } from '../../rack/rackTypes';
 import { requireVizSignal, type VizSignalModule } from '../skiaGate';
 import type { WaveKind } from '../vizSignal';
 import type { DigitalModuleProps } from '../DigitalModuleScreen';
+import { useStopWhenSilenced } from '../../../../features/audio/useStopWhenSilenced';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared helpers (pure math — no Skia; duplicated one-liners of the viz math
@@ -445,6 +446,10 @@ function useAliasTone(engineReady: boolean, focused: boolean) {
     void ApeDsp.genStop();
     setPlaying(null);
   }, []);
+  // Shake-to-mute (and the idle/background lock) silences the voices from
+  // outside this screen; without this the transport would keep saying it is
+  // playing. See useStopWhenSilenced.
+  useStopWhenSilenced(playing !== null, stop);
 
   // Stop on blur and on unmount (host keeps modules mounted under pushes).
   useEffect(() => {

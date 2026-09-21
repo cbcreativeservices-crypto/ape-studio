@@ -101,14 +101,27 @@ export async function ensureSession(email: string, password: string): Promise<st
   // anonymous session, which is exactly what should happen.
   if (isRealAccount(existing.data.session)) return null;
 
-  const { data, error } = await supabase.auth.signUp({ email, password });
-  if (!error) {
+  const { data, error: signUpError } = await supabase.auth.signUp({ email, password });
+  if (!signUpError) {
     if (data.session) return null;
     console.warn('[auth] signUp returned no session — email confirmation appears ENABLED (model-A violation).');
     return 'Your account was created, but sign-in needs email confirmation first. Check your inbox, then sign in — or contact support if nothing arrives.';
   }
 
-  // Email already registered → try signing in with the provided credentials.
+  /**
+   * Email already registered → try signing in with the provided credentials.
+   *
+   * ⛔ ONLY for that case (owner 2026-09-20 bug pass). This fallback used to
+   * run on ANY signUp failure and return the SIGN-IN error, so anything else
+   * that can fail a brand-new signup — email signups switched off in the
+   * dashboard, a server-side password-policy rejection, a provider 500 —
+   * told the person creating an account "Email or password is incorrect."
+   * about an account that does not exist. That is a dead end: the advice is
+   * to fix a password they never set.
+   */
+  if (!/already|registered|exists|taken/i.test(signUpError.message)) {
+    return friendlyAuthError(signUpError);
+  }
   const signIn = await supabase.auth.signInWithPassword({ email, password });
   if (!signIn.error) return null;
   // Surface the SIGN-IN failure (the operative one — e.g. wrong password), mapped

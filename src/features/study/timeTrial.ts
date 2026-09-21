@@ -54,6 +54,8 @@ export type TimeTrialResult = {
 
 /** The live snapshot the HUD renders from. */
 export type TimeTrialSnapshot = {
+  /** The topic this trial was started against (null when idle). */
+  topicId: string | null;
   /** True while the countdown is running. */
   active: boolean;
   /** 900 → 0. */
@@ -103,6 +105,7 @@ const IDLE_STATE: TrialState = {
 
 /** Shared idle snapshot — stable reference so idle screens never re-render. */
 const IDLE_SNAPSHOT: TimeTrialSnapshot = {
+  topicId: null,
   active: false,
   remainingSeconds: TIME_TRIAL_SECONDS,
   correctCount: 0,
@@ -163,6 +166,7 @@ function recompute(m: PaceMethodKey): void {
   else status = 'onpace';
 
   snapshots.set(m, {
+    topicId: st.topicId,
     active: st.active,
     remainingSeconds,
     correctCount: st.correctCount,
@@ -267,9 +271,11 @@ export function restartTimeTrial(method: PaceMethodKey): void {
  * earn no pace credit here (so speed-tapping can't clear the trial). No-op when
  * no trial is active for the method.
  */
-export function registerTrialAnswer(method: PaceMethodKey, correct: boolean): void {
+export function registerTrialAnswer(method: PaceMethodKey, correct: boolean, topicId?: string): void {
   const st = getState(method);
   if (!st.active) return;
+  // Never let one topic's answers count toward another topic's trial.
+  if (topicId != null && st.topicId != null && st.topicId !== topicId) return;
   if (!correct) return;
   states.set(method, { ...st, correctCount: st.correctCount + 1 });
   recompute(method);
@@ -311,8 +317,22 @@ export function resetTimeTrials(): void {
 }
 
 /** Subscribe to a method's live time-trial snapshot. */
-export function useTimeTrial(method: PaceMethodKey): TimeTrialSnapshot {
-  return useSyncExternalStore(
+/**
+ * @param topicId the topic the CALLER is showing. A trial started on another
+ *   topic reads as idle here.
+ *
+ * ⛔ WHY THE TOPIC IS A PARAMETER (owner 2026-09-20 bug pass).
+ *
+ * Trials were keyed by METHOD alone, and the screens passed no topic at all.
+ * So a trial started on topic A's Fill in the Blank stayed live when the
+ * learner opened topic B's Fill in the Blank: B's HUD took over, B's correct
+ * answers incremented A's counter, and at 0:00 `credit_time_trial` fired with
+ * A's id — real study credit toward A's quiz gate, earned on B.
+ *
+ * The state still knows which topic it belongs to; nothing ever asked.
+ */
+export function useTimeTrial(method: PaceMethodKey, topicId?: string): TimeTrialSnapshot {
+  const snap = useSyncExternalStore(
     (cb) => {
       let set = listeners.get(method);
       if (!set) {
@@ -326,7 +346,13 @@ export function useTimeTrial(method: PaceMethodKey): TimeTrialSnapshot {
     },
     () => getSnapshot(method),
     () => getSnapshot(method),
+
   );
+  // A trial belonging to a DIFFERENT topic is not this screen's trial.
+  // IDLE_SNAPSHOT is a shared frozen object, so this stays referentially
+  // stable for useSyncExternalStore.
+  if (topicId != null && snap.topicId != null && snap.topicId !== topicId) return IDLE_SNAPSHOT;
+  return snap;
 }
 
 /**

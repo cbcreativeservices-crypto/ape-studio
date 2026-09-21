@@ -124,7 +124,7 @@ export function MatchingScreen({ navigation, route }: Props) {
   // Read every render — the OS flag hydrates after first paint.
   const motionOk = animationsAllowed();
   // Time trial (opt-in 15:00 challenge) — the readout switches to its HUD while live.
-  const trial = useTimeTrial('matching');
+  const trial = useTimeTrial('matching', achievementId);
   const [timerOpen, setTimerOpen] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const startRef = useRef<number | null>(null);
@@ -343,7 +343,7 @@ export function MatchingScreen({ navigation, route }: Props) {
       if (locked.has(rightId) || lockedRef.current.has(rightId)) return;
       if (wrongPair || wrongPairRef.current) return;
       const correct = rightId === selectedLeft;
-      registerTrialAnswer('matching', correct); // time trial: only correct advances pace
+      registerTrialAnswer('matching', correct, achievementId); // time trial: only correct advances pace
       if (correct) incBrainOutput('matching'); // one brain output per correct PAIR match (not per board)
       session.current?.addEvent({ item: selectedLeft, kind: 'answer', correct });
       const answeredId = selectedLeft;
@@ -544,6 +544,7 @@ export function MatchingScreen({ navigation, route }: Props) {
         {pace.enabled || trial.active || trial.result ? (
           <PaceTimerBar
             method="matching"
+            topicId={achievementId}
             preset={pace.preset}
             answered={Math.max(0, answered - answeredBaseRef.current)}
             total={items.length}
@@ -604,6 +605,7 @@ export function MatchingScreen({ navigation, route }: Props) {
           pace.enabled || trial.active || trial.result ? (
             <PaceTimerBar
               method="matching"
+            topicId={achievementId}
               preset={pace.preset}
               answered={Math.max(0, answered - answeredBaseRef.current)}
               total={items.length}

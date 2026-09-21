@@ -184,6 +184,12 @@ export function isClaimedPath(path: string): boolean {
       );
     case 'glossary':
     case 'topics':
+      // ⚠️ Bare `/topics` is claimed ON PURPOSE (pinned by test/linkPaths),
+      // but linking.ts declares only `/topics/:topicSlug`, so it resolves to
+      // no screen and the user lands on Home with no explanation. Claiming it
+      // is the deliberate half; the missing half is a route. Flagged for the
+      // owner 2026-09-20 rather than silently unclaimed — where `/topics`
+      // should land (Study tab? curriculum browse?) is a product call.
       return more.length === 0;
     case 'awards':
       return more.length === 0 && AWARD_PAGES.includes(second ?? '');

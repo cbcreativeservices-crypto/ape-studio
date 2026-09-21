@@ -6,7 +6,7 @@
  * generic "account deleted" page (no personal info).
  */
 import { useRef, useState } from 'react';
-import { Alert, Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { confirmDialog, notify } from '../../lib/confirm';
 import { supabase } from '../../lib/supabase';
 import { markIntentionalSignOut } from '../auth/intentionalSignOut';

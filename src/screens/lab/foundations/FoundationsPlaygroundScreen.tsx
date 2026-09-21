@@ -59,6 +59,7 @@ import { requireViz, type VizModule } from './skiaGate';
 import { visHzFor } from './FoundationsCourseScreen';
 import { START_LEVEL_01 } from '../../../features/audio/startLevel';
 import { useStopOnAudioMute } from '../../../features/audio/useStopOnAudioMute';
+import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
 
 const ACTIVITY_MS = 500;
 const SPEED_OF_SOUND = 343;
@@ -275,6 +276,10 @@ export function FoundationsPlaygroundScreen() {
     ApeDsp.fxReset(); // no effect leakage into other labs (house rule)
     setPlaying(false);
   }, []);
+  // Shake-to-mute (and the idle/background lock) silences the voices from
+  // outside this screen; without this the transport would keep saying it is
+  // playing. See useStopWhenSilenced.
+  useStopWhenSilenced(playing, stop);
 
   useFocusEffect(useCallback(() => () => stop(), [stop]));
   useEffect(() => {

@@ -40,6 +40,7 @@ import { LabShell, LabChip, HeaderPlayButton } from './LabShell';
 import { HarmonographMachine, INK_DEFAULT, drawTurns } from './HarmonographMachine';
 import { HarmonographViewer } from './HarmonographViewer';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
+import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -223,6 +224,10 @@ export function HarmonographLabScreen() {
     ApeDsp.genSet({ stereo: { on: false, fL: BASE_F0, fR: BASE_F0 } });
     setRunning(false);
   }, []);
+  // Shake-to-mute (and the idle/background lock) silences the voices from
+  // outside this screen; without this the transport would keep saying it is
+  // playing. See useStopWhenSilenced.
+  useStopWhenSilenced(running, stopInterval);
 
   useFocusEffect(useCallback(() => () => stopInterval(), [stopInterval]));
   useEffect(() => {

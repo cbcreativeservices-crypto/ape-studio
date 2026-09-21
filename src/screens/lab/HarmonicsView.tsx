@@ -154,6 +154,7 @@ import {
 import { HarmonicCard } from './HarmonicCard';
 import { HarmonicStems } from './HarmonicStems';
 import { animationsAllowed } from '../../features/settings/a11y';
+import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 
 type ViewMode = 'model' | 'live';
 type AxisMode = 'log' | 'lin';
@@ -1288,6 +1289,11 @@ export function HarmonicsView({
     setAdditiveOn(false); // the model tone (if any) is no longer sounding
     setAdditiveNorm(null);
   }, []);
+
+  // Shake-to-mute (and the idle/background lock) silences the voices from
+  // outside this screen; without this the transport would keep saying it is
+  // playing. See useStopWhenSilenced.
+  useStopWhenSilenced(genRunning, stopTone);
 
   /** Full stop: tone + capture + history (mode switch / live STOP). */
   const stopAll = useCallback(() => {

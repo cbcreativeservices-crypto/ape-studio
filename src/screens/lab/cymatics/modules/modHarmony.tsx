@@ -36,6 +36,7 @@ import type { CymaticsModuleProps } from '../CymaticsModuleScreen';
 import { CymaticsRackLayout } from './rackLayout';
 import { P } from './shared';
 import { useStopOnAudioMute } from '../../../../features/audio/useStopOnAudioMute';
+import { useStopWhenSilenced } from '../../../../features/audio/useStopWhenSilenced';
 
 const B_MIN = 55;
 const B_MAX = 440;
@@ -111,6 +112,10 @@ function useRatioTone(f0: number, n1: number, n2: number, detune: number) {
     void ApeDsp.genStop();
     setRunning(false);
   }, []);
+  // Shake-to-mute (and the idle/background lock) silences the voices from
+  // outside this screen; without this the transport would keep saying it is
+  // playing. See useStopWhenSilenced.
+  useStopWhenSilenced(running, stop);
   useEffect(() => {
     if (!running) return;
     if (!playable) {

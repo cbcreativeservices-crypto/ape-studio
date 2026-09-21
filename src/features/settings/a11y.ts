@@ -16,6 +16,7 @@
  *    read a value synchronously with no async hop, and
  *  - a subscription so React components re-render the moment it changes.
  */
+import { useSyncExternalStore } from 'react';
 import { AccessibilityInfo } from 'react-native';
 import type { LocalSettings } from './store';
 
@@ -111,6 +112,36 @@ export function screenReaderOn(): boolean {
 /** Should this animation run at all? Honours the app toggle AND the OS. */
 export function animationsAllowed(): boolean {
   return !state.reduceAnimations && !osReduceMotion;
+}
+
+/**
+ * Subscribe to motion changes.
+ *
+ * ⛔ THE SECOND HALF OF THE DOCBLOCK ABOVE, WHICH WAS MISSING
+ * (owner 2026-09-20 bug pass). This module promised "a subscription so React
+ * components re-render the moment it changes" and notified `listeners` in six
+ * places — but nothing was ever ADDED to that set, because no subscribe was
+ * exported. Every one of those notifications was a no-op, and all 28 importers
+ * took only the synchronous readers.
+ *
+ * So "Reduce animations" did nothing to anything already on screen. Settings
+ * is a MODAL: the screen behind it stays mounted, so turning the setting on
+ * and closing left every running loop running. Seven switch lamps on the
+ * Dashboard kept flickering at a user who had just asked the app to stop
+ * moving — the exact thing the setting exists to prevent.
+ */
+export function subscribeA11y(cb: () => void): () => void {
+  listeners.add(cb);
+  return () => {
+    listeners.delete(cb);
+  };
+}
+
+/** Reactive `animationsAllowed()` — re-renders when the app toggle or the OS
+ *  flag changes. Decorative loops should use THIS, not the plain reader, or
+ *  they will not notice the setting until they remount. */
+export function useAnimationsAllowed(): boolean {
+  return useSyncExternalStore(subscribeA11y, animationsAllowed, animationsAllowed);
 }
 
 /** True when the phone (not the app) asked for reduced motion — lets Settings

@@ -63,6 +63,7 @@ import { CheckQuestion, type CheckSpec } from './foundations/bits';
 import type { BezelItem, DockParam } from './rack/rackTypes';
 import type { FxAnimModel } from './fxAnim';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
+import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -333,6 +334,10 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
     setRunning(false);
     setGrDb(0);
   }, []);
+  // Shake-to-mute (and the idle/background lock) silences the voices from
+  // outside this screen; without this the transport would keep saying it is
+  // playing. See useStopWhenSilenced.
+  useStopWhenSilenced(running, stop);
 
   useFocusEffect(useCallback(() => () => stop(), [stop]));
   useEffect(() => {

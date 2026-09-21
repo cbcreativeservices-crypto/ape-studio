@@ -110,7 +110,7 @@ export function FillInBlankScreen({ navigation, route }: Props) {
   const { settings: pace, setEnabled, setPreset } = usePaceSettings('fill_in_blank');
   const running = useRunning('fill_in_blank');
   // Time trial (opt-in 15:00 challenge) — the readout switches to its HUD while live.
-  const trial = useTimeTrial('fill_in_blank');
+  const trial = useTimeTrial('fill_in_blank', achievementId);
   const [timerOpen, setTimerOpen] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const startRef = useRef<number | null>(null);
@@ -315,7 +315,7 @@ export function FillInBlankScreen({ navigation, route }: Props) {
       AccessibilityInfo.announceForAccessibility(
         correct ? 'Correct.' : `Not quite. The answer is ${question.item.term}.`,
       );
-      registerTrialAnswer('fill_in_blank', correct); // time trial: only correct advances pace
+      registerTrialAnswer('fill_in_blank', correct, achievementId); // time trial: only correct advances pace
       if (correct) incBrainOutput('fill_in_blank'); // one brain output per correct answer press
       session.current?.addEvent({ item: question.item.id, kind: 'answer', correct });
       setStates((prev) => ({
@@ -503,6 +503,7 @@ export function FillInBlankScreen({ navigation, route }: Props) {
         {pace.enabled || trial.active || trial.result ? (
           <PaceTimerBar
             method="fill_in_blank"
+            topicId={achievementId}
             preset={pace.preset}
             answered={Math.max(0, answered - answeredBaseRef.current)}
             total={items.length}
@@ -562,6 +563,7 @@ export function FillInBlankScreen({ navigation, route }: Props) {
           pace.enabled || trial.active || trial.result ? (
             <PaceTimerBar
               method="fill_in_blank"
+            topicId={achievementId}
               preset={pace.preset}
               answered={Math.max(0, answered - answeredBaseRef.current)}
               total={items.length}

@@ -106,7 +106,17 @@ export function TrophyImage({
     setAttempt(0);
     setFailed(false);
     return () => {
-      if (timer.current) clearTimeout(timer.current);
+      // ⛔ NULL IT. Both the error path and the retry open with
+      // `if (timer.current) return;`, so a cleared-but-not-nulled handle
+      // wedges this image FOREVER: no further retry, never the cache-busting
+      // last attempt, and `failed` never set — so the fallback never renders
+      // either. The Dashboard re-points one of these on every jog detent and
+      // the credential pager on every swipe, both well inside the backoff
+      // (owner 2026-09-20 bug pass).
+      if (timer.current) {
+        clearTimeout(timer.current);
+        timer.current = null;
+      }
     };
   }, [url]);
 

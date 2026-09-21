@@ -66,6 +66,7 @@ import { LabShell, HeaderPlayButton } from './LabShell';
 import { additivePayload, buildPreset, effectiveAmp, synthWaveform, type PresetKey } from './harmonicModel';
 import { levelColor, MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
+import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 
 const GEN_LEVEL_DB = -20; // Q4 default; cap stays locked
 const ACTIVITY_MS = 500; // 2 Hz keepalive (SignalGen idiom)
@@ -184,6 +185,10 @@ export function OscillatorLabScreen() {
     void ApeDsp.genStop();
     setRunning(false);
   }, []);
+  // Shake-to-mute (and the idle/background lock) silences the voices from
+  // outside this screen; without this the transport would keep saying it is
+  // playing. See useStopWhenSilenced.
+  useStopWhenSilenced(running, stopTone);
 
   // Stop on blur/unmount; keepalive while sounding.
   useFocusEffect(useCallback(() => () => stopTone(), [stopTone]));

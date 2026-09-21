@@ -25,6 +25,7 @@ import type { EqBandSpec } from '../../../../features/lab/fxViz';
 import { colors, fonts } from '../../../../theme/tokens';
 import { MiniBtn } from './eqBits';
 import { useStopOnAudioMute } from '../../../../features/audio/useStopOnAudioMute';
+import { useStopWhenSilenced } from '../../../../features/audio/useStopWhenSilenced';
 
 const GEN_LEVEL_DB = -20; // house default; the core enforces the −12 dBFS cap
 const ACTIVITY_MS = 500;
@@ -83,6 +84,10 @@ export function EqAuditionBar({ bands }: { bands: EqBandSpec[] }) {
     ApeDsp.fxReset(); // leave NOTHING armed for the next lab (FxLab rule)
     setRunning(false);
   }, []);
+  // Shake-to-mute (and the idle/background lock) silences the voices from
+  // outside this screen; without this the transport would keep saying it is
+  // playing. See useStopWhenSilenced.
+  useStopWhenSilenced(running, stop);
 
   const start = useCallback(
     async (srcKey: SourceKey) => {

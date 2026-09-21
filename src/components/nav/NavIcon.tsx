@@ -16,6 +16,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, Animated, Easing, Image, Platform, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../theme/tokens';
+import { useAnimationsAllowed } from '../../features/settings/a11y';
 
 export type NavIconName = 'Home' | 'Study' | 'Achievements' | 'Profile';
 
@@ -96,16 +97,30 @@ let lastFaderExcursionAt = 0;
 let nextExcursionFader = 0;
 
 function ProgressFadersLit() {
-  const [reduceMotion, setReduceMotion] = useState(false);
+  // ⛔ THE APP SETTING COUNTS HERE TOO (owner 2026-09-20 bug pass). This read
+  // only the OS flag, so the faders drifted on forever for anyone who turned
+  // "Reduce animations" on in the app — the phone-level switch was the only
+  // one that reached them.
+  const motionOk = useAnimationsAllowed();
+  const [osReduceMotion, setReduceMotion] = useState(false);
+  const reduceMotion = osReduceMotion || !motionOk;
   useEffect(() => {
     let live = true;
-    void AccessibilityInfo.isReduceMotionEnabled().then((v) => {
-      if (live) setReduceMotion(v);
-    });
-    const sub = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduceMotion);
+    // Guarded exactly like navigation/reduceMotionNav.ts, whose comment
+    // explains why: this runs at tab mount, and a platform that does not
+    // report the flag must fall back to "motion allowed", not throw into an
+    // unhandled rejection (owner 2026-09-20 bug pass).
+    void AccessibilityInfo.isReduceMotionEnabled?.()
+      .then((v) => {
+        if (live) setReduceMotion(!!v);
+      })
+      .catch(() => {
+        /* platform does not report it — keep the default */
+      });
+    const sub = AccessibilityInfo.addEventListener?.('reduceMotionChanged', setReduceMotion);
     return () => {
       live = false;
-      sub.remove();
+      sub?.remove?.();
     };
   }, []);
 

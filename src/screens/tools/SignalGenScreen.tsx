@@ -56,6 +56,7 @@ import { useToolHelp, HelpHead } from '../../features/lab/guidedLessons';
 import { RackUnit } from '../lab/rack/RackUnit';
 import type { DockParam } from '../lab/rack/rackTypes';
 import type { RootStackParamList } from '../../navigation/types';
+import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SignalGen'>;
 
@@ -506,6 +507,13 @@ export function SignalGenScreen({ navigation }: Props) {
       refreshStatus();
     }
   };
+
+  // Shake-to-mute (and the idle/background lock) silences the voices from
+  // outside this screen; without this the transport would keep saying it is
+  // playing. See useStopWhenSilenced.
+  useStopWhenSilenced(running, () => {
+    void onStop();
+  });
 
   const isSweep = mode === 'sweepLin' || mode === 'sweepLog';
   const showFreq = mode === 'sine' || mode === 'burst';

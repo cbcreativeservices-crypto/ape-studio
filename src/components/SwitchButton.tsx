@@ -19,7 +19,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { animationsAllowed } from '../features/settings/a11y';
+import { useAnimationsAllowed } from '../features/settings/a11y';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../features/settings/store';
@@ -108,6 +108,8 @@ export function SwitchButton({
   // Idle filament drift — a slow, barely-perceptible brightness wander (mains
   // hum / filament wobble) that makes the light read analog, not LED-steady.
   const flicker = useRef(new Animated.Value(0)).current;
+  // Reactive, so closing Settings actually stops these — see useAnimationsAllowed.
+  const motionOk = useAnimationsAllowed();
 
   useEffect(() => {
     // ── DECORATIVE, SO IT HONOURS "Reduce animations" (2026-09-18) ───────────
@@ -123,7 +125,7 @@ export function SwitchButton({
     // distraction. This setting is about decoration.
     //
     // The lamp still lights and still reads on/off — only the flicker stops.
-    if (!animationsAllowed()) {
+    if (!motionOk) {
       flicker.setValue(0.8);
       return;
     }
@@ -137,7 +139,7 @@ export function SwitchButton({
     );
     loop.start();
     return () => loop.stop();
-  }, [flicker]);
+  }, [flicker, motionOk]);
 
   // Tactile "click" on touch-down for EVERY hardware key press — including the
   // inactive keys that don't navigate (Booth 2026-07-11). iOS haptics are

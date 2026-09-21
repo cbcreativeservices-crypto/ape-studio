@@ -110,7 +110,7 @@ export function ScenariosScreen({ route }: Props) {
   // the 3 HOMEWORK methods, Scenarios included (owner 2026-08-13).
   const { settings: pace, setEnabled, setPreset } = usePaceSettings('scenarios');
   const running = useRunning('scenarios');
-  const trial = useTimeTrial('scenarios');
+  const trial = useTimeTrial('scenarios', achievementId);
   const [timerOpen, setTimerOpen] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const startRef = useRef<number | null>(null);
@@ -313,7 +313,7 @@ export function ScenariosScreen({ route }: Props) {
         correct: correct ? 1 : (scenarioStatesRef.current[item.id]?.correct ?? 0),
       };
       void saveLocalMethodStates(achievementId, 'scenarios', scenarioStatesRef.current);
-      registerTrialAnswer('scenarios', correct); // time trial: only correct advances pace
+      registerTrialAnswer('scenarios', correct, achievementId); // time trial: only correct advances pace
       if (correct) incBrainOutput('scenarios');
       setFeedback({ correct, text: item.explanation });
       /* ── THE VERDICT AND THE TEACHING WERE BOTH SILENT ───────────────────
@@ -585,6 +585,7 @@ export function ScenariosScreen({ route }: Props) {
         {pace.enabled || trial.active || trial.result ? (
           <PaceTimerBar
             method="scenarios"
+            topicId={achievementId}
             preset={pace.preset}
             answered={answeredInRound}
             total={total}

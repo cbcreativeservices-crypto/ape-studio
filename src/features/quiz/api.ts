@@ -181,10 +181,38 @@ export async function startQuizAttempt(achievementId: string): Promise<AttemptPa
       /* resume convenience only — the attempt still starts */
     }
   }
-  const { data, error } = await supabase.rpc('start_quiz_attempt', {
-    p_achievement_id: achievementId,
-    p_client_attempt_id: intentId,
-  });
+  /**
+   * ⛔ ONE RETRY FOR THE COLD-START AUTH RACE (owner 2026-09-20 bug pass).
+   *
+   * The session is read from the keychain ASYNCHRONOUSLY, so a tap that gets
+   * to a quiz before the stored login lands goes out as `anon` — and
+   * `start_quiz_attempt` answers `user_not_found`, which this very file
+   * documents as exactly that. But `user_not_found` is a KNOWN error, so the
+   * member was shown "We could not find your account record. Sign out and
+   * back in…" — advice that is both alarming and wrong, for an account that
+   * is fine and will work a second later.
+   *
+   * The study reads already close this window (features/study/sessionRetry).
+   * Quiz start never did, and it is the one place the wrong message costs the
+   * most: the learner is about to sit a graded paper.
+   *
+   * Retry ONCE and only with a real session: getSession() settles after the
+   * client has finished reading storage, so the second call is certain to
+   * carry the token. A genuine missing account still fails, immediately.
+   */
+  const call = () =>
+    supabase.rpc('start_quiz_attempt', {
+      p_achievement_id: achievementId,
+      p_client_attempt_id: intentId,
+    });
+  let { data, error } = await call();
+  if (error && error.message.includes('user_not_found')) {
+    const signedIn = !!(await supabase.auth.getSession()).data.session;
+    if (signedIn) {
+      console.warn('[quiz] start denied before the session loaded; retrying once');
+      ({ data, error } = await call());
+    }
+  }
   if (error) throw new QuizStartFailure(parseStartError(error.message));
   const payload = data as AttemptPayload;
   // Anonymous count only — no topic/attempt ids leave the app.
