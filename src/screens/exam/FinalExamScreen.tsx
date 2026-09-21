@@ -347,7 +347,22 @@ export function FinalExamScreen({ navigation, route }: Props) {
   /* ---- per-question state helpers ---- */
   const question: ExamItem | null = payload?.items[qIdx] ?? null;
 
+  /**
+   * ⛔ A SYNCHRONOUS LATCH, NOT REACT STATE (owner 2026-09-21 bug pass).
+   *
+   * `pickSingle` guarded on `selIdx !== null`. Two fingers landing in the same
+   * frame both read the pre-update `selIdx` — both null — so both passed and
+   * both called `recordAndAdvance`: the SECOND option was submitted and
+   * graded, while the first was the one the learner saw highlight.
+   *
+   * On this screen that is a graded final exam with a hard clock and no
+   * second look at the question. The three study screens already had this
+   * latch; the two graded ones were missed.
+   */
+  const pickedRef = useRef(false);
+
   const advance = useCallback(() => {
+    pickedRef.current = false; // the next item is open for one press
     setSelIdx(null);
     setMultiSel(new Set());
     setLeftSel(null);
@@ -383,7 +398,8 @@ export function FinalExamScreen({ navigation, route }: Props) {
 
   const pickSingle = useCallback(
     (idx: number, value: string) => {
-      if (!question || selIdx !== null) return;
+      if (!question || pickedRef.current || selIdx !== null) return;
+      pickedRef.current = true;
       setSelIdx(idx);
       recordAndAdvance(question.slot_index, value); // submit the served string
     },

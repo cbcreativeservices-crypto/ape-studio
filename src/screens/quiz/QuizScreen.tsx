@@ -319,7 +319,22 @@ export function QuizScreen({ navigation, route }: Props) {
   /* ---- per-question state helpers ---- */
   const question: ServedQuestion | null = payload?.questions[qIdx] ?? null;
 
+  /**
+   * ⛔ A SYNCHRONOUS LATCH, NOT REACT STATE (owner 2026-09-21 bug pass).
+   *
+   * `pickSingle` guarded on `selIdx !== null`. Two fingers landing in the same
+   * frame both read the pre-update `selIdx` — both null — so both passed the
+   * guard and both called `recordAndAdvance`: the SECOND option was submitted
+   * and graded, while the first was the one the learner saw highlight.
+   *
+   * The three study screens were given this latch already; the two GRADED
+   * screens, where a wrong answer actually costs the learner something, were
+   * missed. A ref updates within the same tick, so the second press loses.
+   */
+  const pickedRef = useRef(false);
+
   const advance = useCallback(() => {
+    pickedRef.current = false; // the next question is open for one press
     setSelIdx(null);
     setMultiSel(new Set());
     setLeftSel(null);
@@ -377,7 +392,8 @@ export function QuizScreen({ navigation, route }: Props) {
 
   const pickSingle = useCallback(
     (idx: number, value: string) => {
-      if (!question || selIdx !== null) return;
+      if (!question || pickedRef.current || selIdx !== null) return;
+      pickedRef.current = true;
       setSelIdx(idx);
       recordAndAdvance(question.slot_index, value); // submit the served string
     },
