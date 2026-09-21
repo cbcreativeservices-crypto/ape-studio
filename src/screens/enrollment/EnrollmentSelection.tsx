@@ -263,7 +263,7 @@ export function EnrollmentSelection({
                   as the LOADED pill on every row below. */}
               <View style={s.loadRow}>
                 <Pressable
-                  style={s.loadActionBtn}
+                  style={[s.loadActionBtn, !card.allLoaded && s.loadActionBtnInvite]}
                   onPress={() => onToggleLoad(card)}
                   hitSlop={6}
                   accessibilityRole="button"
@@ -275,11 +275,25 @@ export function EnrollmentSelection({
                 >
                   {/* "ALL" stays in the label (owner 2026-09-20): the bare
                       verb beside a per-topic list read as though it acted on
-                      one row. It acts on every topic in the card. */}
+                      one row. It acts on every topic in the card.
+
+                      ⛔ THE FRAME LIGHTS ONLY ON THE INVITATION (owner
+                      2026-09-21). LOAD ALL is the thing to do next, so it
+                      gets the full amber treatment, frame and all. UNLOAD ALL
+                      is the undo of something already done — the text stays
+                      amber so it is plainly the same control, but the frame
+                      goes quiet so a loaded card is not two lit boxes
+                      competing for the eye. */}
                   <Text style={s.loadText} numberOfLines={1}>
                     {card.allLoaded ? 'UNLOAD ALL' : 'LOAD ALL'}
                   </Text>
                 </Pressable>
+                {/* ⛔ NO FRAME ON THIS ONE, EITHER STATE (owner 2026-09-21).
+                    It is the only thing in the head that is not a control, and
+                    a frame is what everything else here wears to say "press
+                    me". Losing it is how the lamp stops looking like a button
+                    and starts looking like a readout. The row pills below keep
+                    theirs — they ARE tappable. */}
                 <View
                   style={[s.loadLamp, card.allLoaded && s.loadLampOn]}
                   accessible
@@ -408,11 +422,13 @@ const s = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  loadText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 0.8, color: colors.textSub },
-  /* Reports only — never a tap target, so it is a View, not a Pressable. */
+  /* LOAD ALL — the invitation, so the frame lights with the text. */
+  loadActionBtnInvite: { borderColor: 'rgba(255,198,77,.55)', backgroundColor: 'rgba(255,198,77,.08)' },
+  loadText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 0.8, color: colors.amber },
+  /* Reports only — never a tap target, so it is a View, not a Pressable, and
+     it carries NO frame in either state. */
   loadLamp: {
-    borderWidth: 1,
-    borderColor: '#3a3a3a',
+    borderWidth: 0,
     backgroundColor: '#1c1c1c',
     borderRadius: 8,
     paddingHorizontal: 10,
@@ -420,7 +436,7 @@ const s = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  loadLampOn: { borderColor: colors.amber, backgroundColor: 'rgba(255,198,77,.14)' },
+  loadLampOn: { backgroundColor: 'rgba(255,198,77,.14)' },
   loadLampText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.textSub },
   loadLampTextOn: { color: colors.amber },
   /* The two that are about the credential itself. */
