@@ -53,5 +53,17 @@ export function SuggestCorrectionButton({
 
 const styles = StyleSheet.create({
   btn: { paddingVertical: 2, paddingHorizontal: 2, alignSelf: 'flex-end' },
-  text: { fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 0.3, color: 'rgba(255,255,255,0.28)' },
+  /**
+   * ⛔ CONTRAST FLOOR, NOT A STYLE PREFERENCE (owner walkthrough 2026-09-21).
+   *
+   * This was 10 px at 28% white, which composites to rgb(90,90,92) on the
+   * card behind it — a measured **2.53:1** against that background. WCAG AA
+   * for normal-size text is 4.5:1, so it failed by a wide margin, at a size
+   * (10 px) already below both platforms' recommended minimum.
+   *
+   * 50% white measures 5.18:1 and 11 px clears the size floor. It is still
+   * plainly the quietest thing on the screen — which was the intent — it is
+   * simply legible now. Measured, not eyeballed.
+   */
+  text: { fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 0.3, color: 'rgba(255,255,255,0.5)' },
 });
