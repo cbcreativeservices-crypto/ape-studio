@@ -1263,6 +1263,21 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   const safeDeckIndex = Math.min(Math.max(deckIndex, 0), Math.max(0, deckCards.length - 1));
   /** The deck's shape, for the chips' jump targets. */
   const deckKinds = useMemo(() => deckCards.map((c) => c.kind), [deckCards]);
+  /**
+   * Is there a REAL credential to step to? A deck with none is `[topics,
+   * ghost]` — the ghost being the "Your certificates and programs" placeholder
+   * — so the pager is technically live but leads only to an empty promise.
+   *
+   * Owner 2026-09-20: "it makes no sense to touch it beforehand." The pager
+   * cue below keys on this, and so does retiring it: a press made while the
+   * only other page was the ghost must NOT burn the one-time cue, or the
+   * learner never gets pointed at the pager on the day they finally have a
+   * certificate to find behind it.
+   */
+  const hasCredentialCard = useMemo(
+    () => deckKinds.some((k) => k !== 'topics' && k !== 'placeholder'),
+    [deckKinds],
+  );
 
   /**
    * ⛔ NO SECOND CORRECTION HERE. There used to be an effect that also fixed
@@ -1904,7 +1919,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           <Pressable
             style={[styles.deckStep, safeDeckIndex <= 0 && styles.deckStepOff]}
             onPress={() => {
-              markDeckStepped();
+              if (hasCredentialCard) markDeckStepped();
               setDeckIndex(stepDeck(safeDeckIndex, -1, deckCards.length));
             }}
             disabled={safeDeckIndex <= 0}
@@ -1923,7 +1938,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           <Pressable
             style={[styles.deckStep, safeDeckIndex >= deckCards.length - 1 && styles.deckStepOff]}
             onPress={() => {
-              markDeckStepped(); // found it — the cue never returns
+              if (hasCredentialCard) markDeckStepped(); // found it — the cue never returns
               setDeckIndex(stepDeck(safeDeckIndex, +1, deckCards.length));
             }}
             disabled={safeDeckIndex >= deckCards.length - 1}
@@ -1938,9 +1953,11 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                 decoration. A gold ring sits just outside the green frame —
                 touching it, so the two read as one object — and breathes until
                 the pager is stepped ONCE, ever. Nothing on the last page,
-                where the button is dead anyway. */}
+                where the button is dead anyway — and nothing until a real
+                certificate or program exists to step TO (hasCredentialCard),
+                since the only other page before that is the empty ghost. */}
             <AttractRing
-              active={attract.deckNext && safeDeckIndex < deckCards.length - 1}
+              active={attract.deckNext && hasCredentialCard && safeDeckIndex < deckCards.length - 1}
               inset={-2}
               radius={12}
               width={2}
