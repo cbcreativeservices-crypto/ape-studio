@@ -91,25 +91,31 @@ export function IntroSheet({
 }: {
   introKey: IntroKey;
   onDismiss: () => void;
-  /** Minimum time (ms) the sheet stays before it can be tapped away. The
-   *  "tap to continue" affordance appears only after it elapses. */
+  /** @deprecated Accepted so existing call sites keep compiling; IGNORED.
+   *  See the read-timer note below. */
   delayMs?: number;
 }) {
   const copy = SCREEN_INTROS[introKey];
-  // `instantIntros` (dev-only) zeroes every governed read-timer so intros are
-  // immediately dismissable during screen sweeps; the delayMs values passed by
-  // callers are left untouched so flipping the flag restores them exactly.
-  const holdMs = devBypass('instantIntros') ? 0 : delayMs;
-  const [ready, setReady] = useState(holdMs <= 0);
-  useEffect(() => {
-    if (holdMs <= 0) {
-      setReady(true);
-      return;
-    }
-    setReady(false);
-    const t = setTimeout(() => setReady(true), holdMs);
-    return () => clearTimeout(t);
-  }, [holdMs]);
+  /**
+   * ⛔ NO READ-TIMER. INTROS CLOSE ON THE FIRST TAP (owner 2026-09-20: "take
+   * the timer off of the intro pop ups, make them tappable to close
+   * immediately").
+   *
+   * This supersedes the ratified dwell times (app welcome 9 s, commitment
+   * 8 s — APE_BACKEND_HANDOFF_2026_07_23 §2.3). The owner ratified those and
+   * has now withdrawn them, so the constants are not "bypassed" any more;
+   * the gate is gone.
+   *
+   * It was also the honest call. A dead screen with no button for nine
+   * seconds is indistinguishable from a freeze — which is why this file grew
+   * a VoiceOver announcement to explain the wait rather than let a blind user
+   * conclude the app had hung. A hold that needs an accessibility workaround
+   * to stop reading as a crash is not making anyone read more carefully.
+   *
+   * `delayMs` is still accepted so the call sites compile unchanged, and is
+   * deliberately unused.
+   */
+  void delayMs;
 
   return (
     <Modal accessibilityViewIsModal
@@ -117,12 +123,11 @@ export function IntroSheet({
       animationType="fade"
       visible
       statusBarTranslucent
-      onRequestClose={ready ? onDismiss : undefined}
+      onRequestClose={onDismiss}
     >
       <Pressable
         style={styles.backdrop}
-        onPress={ready ? onDismiss : undefined}
-        disabled={!ready}
+        onPress={onDismiss}
         accessibilityRole="button"
         accessibilityLabel="Dismiss intro"
       >
@@ -133,9 +138,9 @@ export function IntroSheet({
           <Text style={styles.title}>{copy.title}</Text>
           <View style={styles.rule} />
           <Text style={styles.body}>{copy.body}</Text>
-          {/* Until the timer elapses, show NOTHING and swallow taps. After it
-              elapses, show the (green) dismiss affordance. */}
-          {!ready ? null : !copy.button || /^tap /i.test(copy.button) ? (
+          {/* The dismiss affordance is there from the first frame — there is
+              nothing to wait for any more. */}
+          {!copy.button || /^tap /i.test(copy.button) ? (
             <Text style={styles.dismissHint}>{(copy.button ?? 'Tap anywhere to continue').toUpperCase()}</Text>
           ) : (
             <View style={styles.introBtn}>

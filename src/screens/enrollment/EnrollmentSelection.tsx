@@ -198,7 +198,16 @@ export function EnrollmentSelection({
             kind={card.kind === 'program' ? 'program' : 'certificate'}
           />
         ) : (
-          <View style={[s.markBox, { width: sideLen, height: sideLen }]}>
+          /* ⛔ NARROWER BOX THAN THE CREDENTIAL ART (owner 2026-09-20).
+             The credentials show a photograph that earns a full square; this
+             is a line icon at 0.58 of one, so a full-square box left it
+             floating in emptiness and pushed the title to the same far-right
+             start as the credential cards. Holding the box to 0.66 of the
+             side pulls the title back past the centre of the screen and
+             makes MY ENROLLED TOPICS read as a different KIND of card at a
+             glance — which is the whole point. The HEIGHT stays square so
+             nothing below it shifts. */
+          <View style={[s.markBox, { width: Math.round(sideLen * 0.66), height: sideLen }]}>
             {/* 0.92 → 0.58 of the square: the book-and-heart mark reads as an
                 ICON here, not as artwork, and at 0.92 it filled its box far
                 more heavily than the credential photographs beside it
@@ -239,23 +248,43 @@ export function EnrollmentSelection({
                 <Text style={s.studyText}>{isTopics ? 'STUDY' : 'STUDY ALL'}</Text>
               </Pressable>
 
-              <Pressable
-                style={[s.loadBtn, card.allLoaded && { borderColor: colors.green, backgroundColor: 'rgba(55,224,95,.14)' }]}
-                onPress={() => onToggleLoad(card)}
-                hitSlop={6}
-                accessibilityRole="button"
-                accessibilityState={{ selected: card.allLoaded }}
-                aria-pressed={card.allLoaded}
-                accessibilityLabel={
-                  card.allLoaded
-                    ? `Unload all ${card.topicCount} topics of ${card.title} from the study deck`
-                    : `Load all ${card.topicCount} topics of ${card.title} into the study deck`
-                }
-              >
-                <Text style={[s.loadText, card.allLoaded && { color: colors.green }]}>
-                  {card.allLoaded ? 'UNLOAD ALL TOPICS' : 'LOAD ALL TOPICS'}
-                </Text>
-              </Pressable>
+              {/* ⛔ THE VERB AND THE STATE ARE TWO DIFFERENT FACTS
+                  (owner 2026-09-20). One button carrying both had to say
+                  "UNLOAD ALL TOPICS" to mean "these ARE loaded", so the
+                  reader had to invert the label to learn where they stood —
+                  and the one word they had to read to do it was the word for
+                  the opposite thing.
+
+                  Split: the LEFT is the action and always names what the tap
+                  will do; the RIGHT is a lamp that never moves and only
+                  reports. Amber lit = loaded, gray = not, the same language
+                  as the LOADED pill on every row below. */}
+              <View style={s.loadRow}>
+                <Pressable
+                  style={s.loadActionBtn}
+                  onPress={() => onToggleLoad(card)}
+                  hitSlop={6}
+                  accessibilityRole="button"
+                  accessibilityLabel={
+                    card.allLoaded
+                      ? `Unload all ${card.topicCount} topics of ${card.title} from the study deck`
+                      : `Load all ${card.topicCount} topics of ${card.title} into the study deck`
+                  }
+                >
+                  <Text style={s.loadText}>{card.allLoaded ? 'UNLOAD' : 'LOAD'}</Text>
+                </Pressable>
+                <View
+                  style={[s.loadLamp, card.allLoaded && s.loadLampOn]}
+                  accessible
+                  accessibilityLabel={
+                    card.allLoaded
+                      ? 'All topics are loaded in your study dashboard'
+                      : 'These topics are not loaded in your study dashboard'
+                  }
+                >
+                  <Text style={[s.loadLampText, card.allLoaded && s.loadLampTextOn]}>LOADED</Text>
+                </View>
+              </View>
             </View>
           </View>
         </View>
@@ -340,15 +369,34 @@ const s = StyleSheet.create({
   },
   studyIcon: { width: 26, height: 26 },
   studyText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13.5, letterSpacing: 1, color: colors.blue },
-  loadBtn: {
+  /* Action + state lamp, splitting the width the single button used to take. */
+  loadRow: { flexDirection: 'row', alignItems: 'stretch', gap: 6 },
+  loadActionBtn: {
+    flex: 1,
     borderWidth: 1,
     borderColor: colors.hairline,
     borderRadius: 8,
     paddingHorizontal: 12,
     minHeight: 40,
+    alignItems: 'center',
     justifyContent: 'center',
   },
   loadText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.textSub },
+  /* Reports only — never a tap target, so it is a View, not a Pressable. */
+  loadLamp: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#3a3a3a',
+    backgroundColor: '#1c1c1c',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    minHeight: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadLampOn: { borderColor: colors.amber, backgroundColor: 'rgba(255,198,77,.14)' },
+  loadLampText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.textSub },
+  loadLampTextOn: { color: colors.amber },
   /* The two that are about the credential itself. */
   credActions: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   awardBtn: { flex: 1, borderWidth: 1, borderColor: 'rgba(255,198,77,.45)', borderRadius: 8, paddingVertical: 11, alignItems: 'center' },

@@ -5,53 +5,33 @@
  * Rules:
  *  - Shows once (persisted via the shared screen-intro flag `ape:intro:appWelcome`);
  *    never again unless Settings → "Reset onboarding hints" clears it.
- *  - The "Let's get started" button only appears after a 9-second minimum, so the
- *    greeting can't be skipped instantly.
+ *  - "Let's get started" is live from the first frame (owner 2026-09-20). The
+ *    9-second minimum is gone; see the note on the component.
  */
-import { useEffect, useState } from 'react';
-import { AccessibilityInfo, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../theme/tokens';
 import { LowLightDim } from '../settings/LowLightLayer';
 import { SCREEN_INTROS } from './screenIntros';
 import { useScreenIntro } from './ScreenIntroOverlay';
-import { devBypass } from '../../config/devMode';
 
-/** Governed dwell time (ratified: 9 s before "LET'S GET STARTED" appears).
- *  Left intact — the `instantIntros` dev bypass zeroes it only in __DEV__. */
-const WELCOME_DELAY_MS = 9000;
-
+/**
+ * ⛔ NO DWELL. "LET'S GET STARTED" IS THERE FROM THE FIRST FRAME
+ * (owner 2026-09-20: "take the timer off of the intro pop ups, make them
+ * tappable to close immediately").
+ *
+ * This supersedes the ratified 9-second hold (APE_BACKEND_HANDOFF_2026_07_23
+ * §2.3) — the owner ratified it and has now withdrawn it.
+ *
+ * The strongest argument for removing it is in the code it required: this is
+ * the FIRST screen a new user ever sees, it held for nine seconds, and the
+ * button did not exist until the end. That is indistinguishable from a freeze,
+ * which is why it needed a "ONE MOMENT…" line and then a VoiceOver
+ * announcement so a blind user would not conclude the app had hung. A hold
+ * that has to reassure people it is not a crash is not making anyone read
+ * more carefully — and a reader who wants the time can simply take it.
+ */
 export function AppWelcomeOverlay() {
   const { visible, dismiss } = useScreenIntro('appWelcome');
-  const [canContinue, setCanContinue] = useState(false);
-
-  /**
-   * W16 (2026-09-18): the "ONE MOMENT…" dwell text is `accessibilityLiveRegion`
-   * — Android-only, silent on iOS. This is the FIRST screen a new user sees,
-   * it holds for nine seconds, and the button does not exist until it ends.
-   * So a VoiceOver user met the app with a screen that had no button and no
-   * explanation, which is indistinguishable from a freeze.
-   *
-   * Announce the ARRIVAL of the button rather than the waiting: the wait is
-   * visible dwell, the button appearing is the event worth speaking.
-   */
-  useEffect(() => {
-    if (!canContinue || Platform.OS !== 'ios') return;
-    AccessibilityInfo.announceForAccessibility("Ready. Let's get started button is now available.");
-  }, [canContinue]);
-
-  useEffect(() => {
-    if (!visible) {
-      setCanContinue(false);
-      return;
-    }
-    if (devBypass('instantIntros')) {
-      setCanContinue(true);
-      return;
-    }
-    setCanContinue(false);
-    const t = setTimeout(() => setCanContinue(true), WELCOME_DELAY_MS);
-    return () => clearTimeout(t);
-  }, [visible]);
 
   if (!visible) return null;
   const copy = SCREEN_INTROS.appWelcome;
@@ -61,9 +41,7 @@ export function AppWelcomeOverlay() {
       animationType="fade"
       visible
       statusBarTranslucent
-      onRequestClose={() => {
-        if (canContinue) dismiss();
-      }}
+      onRequestClose={dismiss}
     >
       <View style={styles.backdrop}>
         <View style={styles.card}>
@@ -72,17 +50,9 @@ export function AppWelcomeOverlay() {
             <View style={styles.rule} />
             <Text style={styles.body}>{copy.body}</Text>
           </ScrollView>
-          {canContinue ? (
-            <Pressable style={styles.btn} onPress={dismiss} accessibilityRole="button" accessibilityLabel="Let's get started">
-              <Text style={styles.btnText}>LET’S GET STARTED</Text>
-            </Pressable>
-          ) : (
-            // M5 (2026-09-07): show the dwell state so the 9 s wait doesn't read
-            // as a frozen screen with no button.
-            <Text style={styles.wait} accessibilityLiveRegion="polite">
-              ONE MOMENT…
-            </Text>
-          )}
+          <Pressable style={styles.btn} onPress={dismiss} accessibilityRole="button" accessibilityLabel="Let's get started">
+            <Text style={styles.btnText}>LET’S GET STARTED</Text>
+          </Pressable>
         </View>
       </View>
       <LowLightDim />
@@ -106,14 +76,6 @@ const styles = StyleSheet.create({
   title: { fontFamily: fonts.oswaldMedium, fontSize: 24, lineHeight: 29, color: colors.textPrimary },
   rule: { width: 44, height: 2, backgroundColor: colors.amber, borderRadius: 1, marginBottom: 4 },
   body: { fontFamily: fonts.barlowMedium, fontSize: 15.5, lineHeight: 23, color: colors.textSecondary },
-  wait: {
-    fontFamily: fonts.oswaldSemiBold,
-    fontSize: 11,
-    letterSpacing: 1.6,
-    color: colors.textSub,
-    textAlign: 'center',
-    marginTop: 4,
-  },
   btn: {
     alignSelf: 'center',
     marginTop: 2,

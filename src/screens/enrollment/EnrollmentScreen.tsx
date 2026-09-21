@@ -103,14 +103,15 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 }
 
 /** The deck load state as a framed text toggle (owner 2026-09-13): LOADED
- *  lights blue, UNLOADED sits gray. Replaces the 3-card icon everywhere it
+ *  lights AMBER (blue until 2026-09-20 — it collided with this screen's STUDY
+ *  blue), UNLOADED sits gray. Replaces the 3-card icon everywhere it
  *  meant "in the Dashboard deck" — the icon itself now belongs ONLY to My
  *  Custom List, whose identity it is. `dim` = core-locked (can't toggle). */
 function LoadPill({ on, small, dim }: { on: boolean; small?: boolean; dim?: boolean }) {
   // UNLOADED pills stay STATIC — the gray text + frame + fill never change shade
   // (owner 2026-09-14). Instead a soft light glow breathes AROUND the pill over an
   // 11 s cycle so an unloaded deck reads as "tap to load" without touching the type.
-  // LOADED (blue) shows no glow; reduce-motion holds the glow at a steady mid level.
+  // LOADED (amber) shows no glow; reduce-motion holds the glow at a steady mid level.
   const glow = useRef(new Animated.Value(0)).current;
   /**
    * ⛔ LOW-LIGHT GATE, not just reduced motion. This checked
@@ -1274,6 +1275,16 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
    * learner never gets pointed at the pager on the day they finally have a
    * certificate to find behind it.
    */
+  /** The accent of whatever card is centred — green / purple / blue. Faded to
+   *  the same weight the old fixed green had, so only the hue changes. */
+  const frameAccent = useMemo(() => {
+    const kind = deckKinds[safeDeckIndex] ?? 'topics';
+    // The real accents (EnrollmentSelection's PROGRAM_PURPLE / CERT_BLUE), at
+    // the same weight the fixed green had — only the hue changes.
+    if (kind === 'program') return 'rgba(176,108,255,.6)'; // #b06cff
+    if (kind === 'cert') return 'rgba(47,155,255,.6)'; // #2f9bff
+    return 'rgba(55,224,95,.55)';
+  }, [deckKinds, safeDeckIndex]);
   const hasCredentialCard = useMemo(
     () => deckKinds.some((k) => k !== 'topics' && k !== 'placeholder'),
     [deckKinds],
@@ -1993,7 +2004,14 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
         </View>
         )}
 
-        <View style={styles.myEnrollArea}>
+        {/* ⛔ THE FRAME NAMES WHAT IS INSIDE IT (owner 2026-09-20). One green
+            border around every card meant the only thing telling you whether
+            you were looking at your topics, a program or a certificate was
+            the eyebrow text — while the app already has a colour for each and
+            uses it everywhere else. The frame now carries the same accent the
+            eyebrow, the thumbnail and the meter already use: green for your
+            topics, purple for a program, blue for a certificate. */}
+        <View style={[styles.myEnrollArea, { borderColor: frameAccent }]}>
         {/* ── THE SELECTION HEAD (owner 2026-09-19) ────────────────────────
             One thing at a time, full width, with no frame of its own — it is
             the panel's heading, not a card inside it. ALL TOPICS is first,
@@ -2535,6 +2553,8 @@ const styles = StyleSheet.create({
   // Green frame around the whole My Enrollment area — title → last container
   // (user request 2026-07-22).
   // borderWidth 1.5 → 2.5 (owner 2026-09-13: 1pt thicker).
+  // The border colour is set per-render from the centred card's accent — see
+  // the note at the <View>. The green here is the ALL TOPICS default.
   myEnrollArea: { gap: 8, borderWidth: 2.5, borderColor: 'rgba(55,224,95,.55)', borderRadius: 12, padding: 10 },
   // MY RECORD folder — white nested container of completed items (user request 2026-07-23).
   recordFolder: { borderWidth: 1.5, borderColor: 'rgba(255,255,255,.5)', borderRadius: 10, backgroundColor: '#131313', overflow: 'hidden', marginTop: 2 },
@@ -2865,12 +2885,15 @@ const styles = StyleSheet.create({
     boxShadow: '0px 0px 10px 2px rgba(200,212,236,0.75)',
   },
   loadPill: { borderWidth: 1, borderColor: '#3a3a3a', backgroundColor: '#1c1c1c', borderRadius: 7, paddingVertical: 5, paddingHorizontal: 9 },
-  loadPillOn: { borderColor: BLUE, backgroundColor: 'rgba(127,191,255,0.13)' },
+  // AMBER, not blue (owner 2026-09-20). Blue is this screen's STUDY colour —
+  // the headphones icon, STUDY ALL, SEE & EDIT — so a blue LOADED pill sat in
+  // a row of blue controls and read as another button rather than as state.
+  loadPillOn: { borderColor: colors.amber, backgroundColor: 'rgba(255,198,77,0.13)' },
   loadPillDim: { opacity: 0.55 },
   loadPillSmall: { paddingVertical: 3, paddingHorizontal: 6 },
   loadPillText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.6, color: GRAY },
   loadPillTextSmall: { fontSize: 10.5, letterSpacing: 0.4 },
-  loadPillTextOn: { color: BLUE },
+  loadPillTextOn: { color: colors.amber },
   // Award "STUDY ALL" (blue) — loads every topic into the deck.
   studyAllBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderColor: 'rgba(127,191,255,.6)', backgroundColor: 'rgba(127,191,255,.12)', borderRadius: 7, paddingVertical: 5, paddingHorizontal: 10 },
   studyAllText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.6, color: BLUE },

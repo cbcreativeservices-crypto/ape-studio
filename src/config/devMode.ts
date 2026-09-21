@@ -39,14 +39,6 @@ export const DEV_BYPASS = {
    *  kept reappearing on every visit to the login screen during device testing
    *  — with this off, intros show once and honor the persisted seen flag. */
   alwaysShowIntros: false,
-  /** Intro/welcome READ-TIMERS forced to zero: every intro popup is instantly
-   *  dismissable instead of holding the reader for its governed dwell time
-   *  (owner 2026-07-29, "for now" — logging/screen-sweep aid).
-   *  ⚠️ GOVERNANCE: the real dwell times (app welcome 9 s, commitment 8 s) are
-   *  a ratified decision (APE_BACKEND_HANDOFF_2026_07_23 §2.3). This flag only
-   *  bypasses them in __DEV__; the constants themselves are untouched, so
-   *  flipping this to false restores the governed behavior exactly. */
-  instantIntros: true,
   /** WEB PREVIEW ONLY: auto-enter Guest Mode on the Auth screen so the browser
    *  preview (localhost:8090) boots straight into the app, letting Claude drive
    *  and screenshot screens without the login step (RN-web swallows synthetic
