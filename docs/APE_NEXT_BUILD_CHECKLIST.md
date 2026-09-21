@@ -286,3 +286,60 @@ permissions are genuinely unwanted, the only safe route is removing
 **This needs a NATIVE BUILD to take effect** — `app.json` is a fingerprint
 input, and the fix is in the manifest, so no OTA can deliver it.
 
+
+---
+
+## Android APK is 190 MB — 80 MB of it is emulator-only CPU code (measured 2026-09-20)
+
+Measured by downloading build `f33dd9e7` (preview, Android) and reading the
+zip directory. Compressed section weights, i.e. real download cost:
+
+| section | MB | note |
+|---|---:|---|
+| `lib/x86` | 40.3 | **emulator only — no phone uses it** |
+| `lib/x86_64` | 40.1 | **emulator only — no phone uses it** |
+| `lib/arm64-v8a` | 38.0 | every modern phone |
+| `lib/armeabi-v7a` | 26.1 | 32-bit phones (pre-~2017) |
+| `classes*.dex` | 19.2 | Java/Kotlin |
+| `assets/index.android.bundle` | 18.7 | the JS bundle |
+| everything else | 6.2 | resources, manifest, certs |
+
+**Native code is 77% of the APK, and more than half of that runs on nothing
+the owner owns.** A phone installs 190 MB and uses 38 MB of the libraries in
+it. Largest single library: `librnskia.so` at 42.8 MB across the four
+architectures (~11 MB each) — Skia is the wheel, the labs and the meters, so
+it stays; it is just worth knowing what it costs.
+
+**Zero images ship in the APK.** Topic tiles, certificate squares and program
+squares are all fetched from Supabase Storage at runtime (`src/data/topicImages.ts`
+and friends). The ~129 MB under `assets/` is master art: it slows every EAS
+upload and is worth pruning for that reason, but it is NOT app weight. Do not
+"optimise" the app by compressing it.
+
+### The fix, when a native build is happening anyway
+Drop the two x86 architectures. This needs `expo-build-properties`, which is
+**not currently installed** — so it is a native dependency add:
+
+```
+npx expo install expo-build-properties
+```
+then in `app.json` plugins:
+```json
+["expo-build-properties", { "android": { "abiFilters": ["arm64-v8a", "armeabi-v7a"] } }]
+```
+
+⛔ This changes the fingerprint. Per the OTA rule, the install, the config edit
+and the build are ONE commit — never land the config edit alone, or every later
+`eas update` publishes to a runtime no phone has and silently reaches nobody.
+
+**Cost:** Android emulators on Intel/AMD machines stop working (Apple Silicon
+and modern arm64 emulator images are unaffected). Physical devices are
+unaffected — no phone has ever used those libraries.
+
+### What the store actually delivers — this is NOT a launch problem
+The 190 MB figure is an artefact of the `preview` profile building a universal
+APK for internal testing. The `production` profile builds an **AAB**, and
+Google Play splits it per device: a real user downloads one architecture, so
+roughly **38 MB of native code instead of 144 MB**. Trimming the ABIs makes
+tester installs smaller and EAS builds faster; it does not change what a
+customer downloads, because Play already does the split.
