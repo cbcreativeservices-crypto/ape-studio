@@ -903,6 +903,40 @@ export function WaveformScreen({ navigation }: Props) {
                 }}
               />
             ) : null}
+            {/* THE WAY BACK (owner 2026-09-20). Every other control in this
+                popup picks a flat colour, and picking one turns the heat map
+                OFF — so once a user had chosen a colour there was nothing in
+                here that returned them to the app's standard level colouring.
+                The COLORS chip out on the card does it, but that is not where
+                someone who just changed the colour is looking.
+
+                It is painted with the actual ramp rather than labelled with a
+                swatch, the same "show, don't label" rule as the header
+                diagram: the button IS the thing it turns on. */}
+            {wavePopup === 'color' ? (
+              <Pressable
+                onPress={() => {
+                  setColorsOn(true);
+                  setWaveColor(null); // a flat colour would hide the ramp
+                  setWaveSpectrum(false);
+                  setWavePreviewHex(null);
+                }}
+                style={[styles.heatRow, colorsOn && !waveColor && styles.heatRowSel]}
+                accessibilityRole="button"
+                accessibilityState={{ selected: colorsOn && !waveColor }}
+                aria-pressed={colorsOn && !waveColor}
+                accessibilityLabel="Standard level heat map — colour the trace by how loud it is"
+              >
+                <View style={styles.heatBar} pointerEvents="none">
+                  {WAVE_LEVEL_STOPS.map((stop) => (
+                    <View key={stop.offset} style={[styles.heatSeg, { backgroundColor: stop.color }]} />
+                  ))}
+                </View>
+                <Text style={[styles.heatText, colorsOn && !waveColor && styles.heatTextSel]}>
+                  STANDARD HEAT MAP
+                </Text>
+              </Pressable>
+            ) : null}
             {wavePopup === 'color' ? (
               <Pressable
                 onPress={() => setWaveSpectrum((v) => !v)}
@@ -925,6 +959,29 @@ export function WaveformScreen({ navigation }: Props) {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
+  // "Standard heat map" row in the colour popup — the ramp itself, so the
+  // control shows what it does instead of naming it.
+  heatRow: {
+    minHeight: 44,
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#2c2c33',
+  },
+  heatRowSel: { borderColor: colors.amber, backgroundColor: 'rgba(255,198,77,0.10)' },
+  heatBar: { flexDirection: 'row', height: 10, borderRadius: 3, overflow: 'hidden' },
+  heatSeg: { flex: 1 },
+  heatText: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 12,
+    letterSpacing: 1.1,
+    textAlign: 'center',
+    color: colors.textSub,
+  },
+  heatTextSel: { color: colors.amber },
   header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 10 },
   back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1.4, color: colors.textPrimary },
