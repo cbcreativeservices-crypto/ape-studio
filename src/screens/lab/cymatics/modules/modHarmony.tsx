@@ -256,7 +256,36 @@ export function HarmonyModule({ help, focused }: CymaticsModuleProps) {
   const f1 = base * ratio.n1;
   const f2 = base * ratio.n2 * (1 + detune);
   const tone = useRatioTone(base, ratio.n1, ratio.n2, detune);
-  const beatHz = Math.abs(f2 - f1);
+  /**
+   * ⛔ THE BEAT IS BETWEEN THE COINCIDING PARTIALS, NOT BETWEEN THE TONES
+   * (owner 2026-09-21 bug pass).
+   *
+   * This was `Math.abs(f2 - f1)` — the textbook formula for two tones at
+   * ALMOST the same pitch. These two are an INTERVAL apart, so that
+   * difference is the pitch gap, not a beat rate. At the default fifth with
+   * 1% detune it printed 113.3 Hz, seventeen times the truth, and 113 Hz is
+   * not a beat at all — nothing swells a hundred times a second.
+   *
+   * What actually beats when you detune one side of a just interval is the
+   * pair of partials that used to coincide: partial n2 of A at base·n1·n2,
+   * and partial n1 of B at base·n1·n2·(1+detune). Their difference is
+   * base·n1·n2·detune — 6.6 Hz for the default fifth at 1%, which is a rate
+   * you can hear and count, and which the tuner analogy at the bottom of this
+   * module depends on.
+   *
+   * Fixing it also fixes the drawing: `beatWindow` below is 2.5 beats wide, so
+   * at the old rate the strip spanned 22 ms and the envelope it promises to
+   * show could never appear.
+   *
+   * ⚠️ CONTENT CAVEAT FOR THE OWNER, not a bug in this line. The rate is
+   * base·n1·n2·detune, so it climbs with the partial order: the default fifth
+   * at 1% is 6.6 Hz, but 5:7 at 440 Hz and 3% is over 400 Hz. The arithmetic
+   * is right at both ends — what fades is the AUDIBILITY, because the
+   * coincidence at 5:7 sits on the 35th partial, which is weak or absent in a
+   * pair of sines. The wide ratios teach the figure, not the beat. Worth a
+   * sentence in the copy, or capping DETUNE for the wide ratios.
+   */
+  const beatHz = Math.abs(ratio.n1 * f2 - ratio.n2 * f1);
 
   // Two cycles of the slower tone across the strip so the ratio is readable;
   // a detuned pair is drawn over ~2.5 beats so the envelope shows.
@@ -350,10 +379,15 @@ export function HarmonyModule({ help, focused }: CymaticsModuleProps) {
       </Text>
       {tone.detuned ? (
         <View style={P.card}>
-          <Text style={P.strong}>Beat frequency = |f₂ − f₁| = {beatHz.toFixed(1)} Hz</Text>
+          <Text style={P.strong}>
+            Beat frequency = |{ratio.n1} × f₂ − {ratio.n2} × f₁| = {beatHz.toFixed(1)} Hz
+          </Text>
           <Text style={P.body}>
-            The two waves slide in and out of step {beatHz.toFixed(1)} times a second: loud where they agree, silent where they cancel. A beat is a
-            slow swell in loudness — it is <Text style={P.strong}>not</Text> a third tone (that needs a nonlinear element). Tuners use it: zero beats = in tune.
+            These two tones are a whole interval apart, so they do not beat against each other — |f₂ − f₁| is the gap between their
+            pitches, not a rate. What beats is the pair of <Text style={P.strong}>partials that used to line up</Text>: partial {ratio.n2} of
+            A and partial {ratio.n1} of B sat on the same frequency while the ratio was locked, and detuning B slides them past each other
+            {' '}{beatHz.toFixed(1)} times a second — loud where they agree, silent where they cancel. A beat is a slow swell in loudness; it is
+            {' '}<Text style={P.strong}>not</Text> a third tone (that needs a nonlinear element). Tuners use exactly this: zero beats = in tune.
           </Text>
         </View>
       ) : null}
