@@ -401,8 +401,17 @@ export function CableInstallLabScreen() {
                 tint={modDone ? 'green' : 'gold'}
                 height={44}
                 fontSize={13}
-                onPress={modDone ? next : undefined}
-                disabled={!modDone}
+                /* ⛔ ALWAYS LIVE (owner 2026-09-21 bug pass). The comment above
+                   has said "the control always moves you on" since the gate was
+                   taken out of `canEnter`, but this button was missed: it was
+                   `onPress={modDone ? next : undefined}` with `disabled`, so
+                   GlassButton dimmed it to 0.45 and swallowed the press. The
+                   loudest control on the screen announced SKIP AHEAD and then
+                   did nothing — the exact shape of the complaint that produced
+                   the standing rule. Progress is banked per unit, so leaving
+                   early costs the stage's credit and nothing else, and the
+                   completion stage is what lists what is still outstanding. */
+                onPress={next}
               />
             </View>
           </View>
