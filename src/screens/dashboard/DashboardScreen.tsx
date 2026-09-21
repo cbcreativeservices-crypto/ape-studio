@@ -1383,6 +1383,9 @@ export function DashboardScreen() {
     const itemCount = data.itemCountByTopic.get(t.id) ?? 0;
     return topicOverallPct(keys, (k) => rows.find((r) => r.method_key === k), itemCount, t.id, rpFor);
   };
+  /** The rotary-dial hint is on screen — drives BOTH the pill and the scroll
+   *  padding that keeps it off the last rack row. */
+  const jogCoachShowing = jogCoach.visible && !jogActive && topics.length > 1;
   const dispIdx = jogActive ? scrollIdx : topicIdx;
   const dispTopic = topics[dispIdx] ?? topic;
   const dispIsCustom = dispTopic.id === FLAGGED_TOPIC_ID;
@@ -1461,7 +1464,17 @@ export function DashboardScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
-      <ScrollView ref={scrollRef} contentContainerStyle={styles.scroll}>
+      {/* ⛔ THE COACH MARK SITS ON TOP OF THE RACK (owner walkthrough
+          2026-09-21). It is an absolutely-positioned pill at bottom:18 over a
+          ScrollView that reserves 10 px, so when the list is scrolled to the
+          end the hint covers the TOPIC QUIZ row — the score, the state and
+          the PRACTICE button, which is the one row the whole rack builds
+          toward. Reserve the pill's height while it is showing, and only
+          while it is showing, so a retired hint costs no dead space. */}
+      <ScrollView
+        ref={scrollRef}
+        contentContainerStyle={[styles.scroll, jogCoachShowing && styles.scrollUnderCoach]}
+      >
         {/* Header (shared, 30%-enlarged tile — Booth 2026-07-08).
             Logo tap → About/Credits (Dashboard only). */}
         <AppHeader
@@ -2286,7 +2299,7 @@ export function DashboardScreen() {
 
       {/* Jog-dial reveal (Pillar B, plan §3) — only meaningful with somewhere
           to spin to; hidden while the big wheel is open (it teaches itself). */}
-      {jogCoach.visible && !jogActive && topics.length > 1 ? (
+      {jogCoachShowing ? (
         <CoachMark text="Use the rotary dial to spin directly to any topic" bottom={18} />
       ) : null}
 
@@ -2328,6 +2341,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   scroll: { padding: 14, paddingBottom: 10, gap: 8 },
+  /* Clears the floating coach pill: bottom 18 + ~37 pill height + breathing
+     room. Applied only while the hint shows — see the note at the ScrollView. */
+  scrollUnderCoach: { paddingBottom: 72 },
   // Stranded-session self-heal banner.
   strandedBanner: {
     borderRadius: 10,

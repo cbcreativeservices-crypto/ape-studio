@@ -133,9 +133,34 @@ export function LedMeter({
 /** The meter mounted in the SAME recessed panel well as the Dashboard study
  *  method containers (Booth 2026-07-11) — so every screen's meter matches.
  *  Always shows at least 1 lit green segment (owner 2026-08-06). */
-export function LedMeterWell({ filled, label = 'Progress' }: { filled: number; label?: string }) {
-  // Screen-reader value from the TRUE fill (not the min-1 display floor).
-  const pct = Math.round((Math.max(0, Math.min(SEG_COUNT, filled)) / SEG_COUNT) * 100);
+export function LedMeterWell({
+  filled,
+  label = 'Progress',
+  pct: pctProp,
+}: {
+  filled: number;
+  label?: string;
+  /**
+   * The REAL percentage, for the screen reader.
+   *
+   * ⛔ WITHOUT THIS THE LABEL AND THE SCREEN DISAGREE (owner walkthrough
+   * 2026-09-21). The label used to be re-derived from `filled`, which is the
+   * percentage already rounded into 21 segments — so it round-tripped
+   * pct → segments → pct and quantised to the nearest 1/21. Observed live on
+   * Flashcards: the screen read **12%** and the label announced **14%**
+   * (11.9% → 3 segments → 14.28%). Each segment is ~4.76 points, so the
+   * announcement could be off by more than two points on every study screen.
+   *
+   * A blind learner was being told a different number from a sighted one, on
+   * the same control, at the same moment. Pass the same value you print.
+   */
+  pct?: number;
+}) {
+  // Fall back to deriving it only when the caller has no truer number to give.
+  const pct =
+    pctProp != null
+      ? Math.round(pctProp)
+      : Math.round((Math.max(0, Math.min(SEG_COUNT, filled)) / SEG_COUNT) * 100);
   return (
     <View style={styles.well}>
       {/* Study-method progress meters (flashcards + homework) ride the MIDI

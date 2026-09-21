@@ -532,7 +532,7 @@ export function MatchingScreen({ navigation, route }: Props) {
         />
         <View style={styles.ledRow}>
           <View style={{ flex: 1 }}>
-            <LedMeterWell filled={segmentsForPct(displayPct)} label="Matching progress" />
+            <LedMeterWell filled={segmentsForPct(displayPct)} pct={displayPctLabel} label="Matching progress" />
           </View>
           <Text style={styles.ledPct}>{displayPctLabel}%</Text>
           <Text style={styles.counter}>

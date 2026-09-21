@@ -1264,7 +1264,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
 
         <View style={styles.ledRow}>
           <View style={{ flex: 1 }}>
-            <LedMeterWell filled={segmentsForPct(displayPct)} label="Flashcards progress" />
+            <LedMeterWell filled={segmentsForPct(displayPct)} pct={displayPctLabel} label="Flashcards progress" />
           </View>
           <Text style={styles.ledPct}>{displayPctLabel}%</Text>
           <Text style={styles.counter}>

@@ -56,7 +56,11 @@ const SECTIONS: { head: string; paras: string[] }[] = [
     paras: [
       'Completing required groups of topics can earn Pro Audio Training Academy credentials in specific areas of professional audio.',
       'These credentials document the training you have completed and the knowledge you have demonstrated within the Academy.',
-      'Your credentials are lifelong verifiable by employers using our online Pro Audio Training Academy database, and current membership is not required to maintain your transcript in our searchable registry.',
+      // "lifelong verifiable" was ungrammatical — `lifelong` is an adjective and
+      // cannot modify `verifiable` (owner walkthrough 2026-09-21). Meaning is
+      // unchanged: the promise is still lifetime verification without an active
+      // membership.
+      'Your credentials are verifiable for life by employers using our online Pro Audio Training Academy database, and current membership is not required to maintain your transcript in our searchable registry.',
     ],
   },
 ];

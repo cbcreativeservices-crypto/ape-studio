@@ -484,7 +484,7 @@ export function FillInBlankScreen({ navigation, route }: Props) {
             never floating over the answer grid). */}
         <View style={styles.ledRow}>
           <View style={{ flex: 1 }}>
-            <LedMeterWell filled={segmentsForPct(displayPct)} label="Fill-in-the-blank progress" />
+            <LedMeterWell filled={segmentsForPct(displayPct)} pct={displayPctLabel} label="Fill-in-the-blank progress" />
           </View>
           <Text style={styles.ledPct}>{displayPctLabel}%</Text>
           <Text style={styles.counter}>
