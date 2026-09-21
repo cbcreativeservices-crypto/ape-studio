@@ -2590,7 +2590,14 @@ const styles = StyleSheet.create({
      smoked tint. (The cover is pointerEvents="none", so this is about how they
      LOOK, not whether they can be tapped.) */
   pctBlock: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 6, zIndex: 5 },
-  pctTextCol: { alignItems: 'flex-start', gap: 1 },
+  /* ⛔ flexShrink: 1 — AND RN DEFAULTS IT TO 0, WHICH IS WHY THE `›` VANISHED.
+     Without it this column claims its full intrinsic width (the widest thing
+     in it is the letter-spaced OVERALL TOPIC PROGRESS label), `space-between`
+     pushes the arrow row past the pane's right edge, and the pane has
+     `overflow: 'hidden'` — so the SECOND arrow was clipped out of existence
+     while the first sat jammed against the bezel. Nothing errored and nothing
+     looked broken except a missing control. */
+  pctTextCol: { flexShrink: 1, alignItems: 'flex-start', gap: 1 },
   /* ⛔ NOT absolutely positioned — that was the bug. Anchored to the column's
      `top` (2026-08-12) they drifted off the number whenever `topicName` wrapped
      to its second line; anchored to its `bottom` (earlier on 2026-09-20) they
@@ -2600,7 +2607,17 @@ const styles = StyleSheet.create({
      next to the number, at any pane height and any name length.
      `flex-end` bottom-aligns the 40px glyph box with the 32px number's box,
      which lands the arrow's optical centre within a few px of the number's. */
-  topicNavArrows: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingRight: 6, paddingBottom: 4 },
+  /* flexShrink: 0 is the other half: the text may give way, the CONTROLS never
+     do. Tighter than before (gap 10→6, padding 6→2) so the pair fits the
+     narrowest pane with room to spare rather than exactly. */
+  topicNavArrows: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexShrink: 0,
+    gap: 6,
+    paddingRight: 2,
+    paddingBottom: 4,
+  },
   /* 30 → 38 with the eyebrow (owner 2026-09-19). These are the only way to
      change topic from here, so they should not be the smallest thing on the
      line. `top` eases to 0 because the taller glyph needs the room back. */
@@ -2609,7 +2626,7 @@ const styles = StyleSheet.create({
     fontSize: 38,
     lineHeight: 40,
     color: colors.amber,
-    paddingHorizontal: 6,
+    paddingHorizontal: 4,
   },
   pctArrowDisabled: { color: '#45454d' },
   pctBig: {
