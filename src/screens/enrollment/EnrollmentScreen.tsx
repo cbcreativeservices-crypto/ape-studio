@@ -1379,7 +1379,13 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
               {nameFor(e.gs)}
             </Text>
             <LedMeter filled={segmentsForPct(labPct)} segWidth={3} />
-            <Text style={styles.cardPct}>{labPct}%</Text>
+            {/* CENTRED here, not right-aligned (owner 2026-09-20). The shared
+                cardPct is right-aligned in a 38 px box because it ENDS its
+                row everywhere else; on this row a button follows it, so the
+                figure sat hard against LAB REQUIREMENTS with all the slack
+                pooled on the meter side. Centring in a slightly wider box
+                puts equal air either side. */}
+            <Text style={[styles.cardPct, styles.labPct]}>{labPct}%</Text>
             {/* ⛔ ALWAYS FULL BLUE, NEVER DISABLED (owner 2026-09-19). It sits
                 where every other row carries LOADED / UNLOADED, and that chip
                 is a STATE — it dims, it toggles, it tells you where the topic
@@ -2892,6 +2898,8 @@ const styles = StyleSheet.create({
   cardActionRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 },
   cardMeterRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 4 },
   cardPct: { fontFamily: fonts.mono, fontSize: 12.5, color: colors.textSecondary, minWidth: 38, textAlign: 'right' },
+  /* The LAB row's figure sits BETWEEN two things — see the note at the Text. */
+  labPct: { minWidth: 46, textAlign: 'center' },
   pill: { borderWidth: 1, borderRadius: 6, paddingVertical: 4, paddingHorizontal: 9 },
   activeOn: { borderColor: 'rgba(55,224,95,.55)', backgroundColor: 'rgba(55,224,95,.1)' },
   activeOff: { borderColor: '#333', backgroundColor: '#121212' },
