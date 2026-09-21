@@ -1417,6 +1417,17 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                 {...rowLayoutProps(tid)}
                 style={liftStyle(tid)}
               >
+              {/* The three co-requisites indent, and the lock sits in the
+                  space that opens up (owner 2026-09-20). Outside the card on
+                  purpose: it is a fact ABOUT the row — this one is required
+                  and cannot be removed until it is complete — not another
+                  control inside it. pointerEvents none so it never steals the
+                  press that expands the row. */}
+              {isCore ? (
+                <Text style={styles.coreLock} pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no">
+                  🔒
+                </Text>
+              ) : null}
               <Pressable style={[styles.card, !e.active && styles.cardInactive, isCore && styles.cardCore, styles.collapsedCard]} onPress={() => toggleCollapse(tid)} accessibilityRole="button" accessibilityLabel={`Expand ${nameFor(e.gs)}`}>
                 {isCore ? <RowTint color={COREQ_TINT} /> : null}
                 <Text style={styles.collapseTri}>▸</Text>
@@ -1468,6 +1479,17 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
               {...rowLayoutProps(tid)}
               style={liftStyle(tid)}
             >
+            {/* The three co-requisites indent, and the lock sits in the
+                space that opens up (owner 2026-09-20). Outside the card on
+                purpose: it is a fact ABOUT the row — this one is required
+                and cannot be removed until it is complete — not another
+                control inside it. pointerEvents none so it never steals the
+                press that expands the row. */}
+            {isCore ? (
+                <Text style={styles.coreLock} pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no">
+                  🔒
+                </Text>
+              ) : null}
             <View
               style={[
                 styles.card,
@@ -2424,6 +2446,10 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   );
 }
 
+/** How far the three co-requisite rows indent, and therefore how wide the
+ *  gutter their lock sits in is. One constant so the two can never disagree. */
+const CORE_INDENT = 26;
+
 const styles = StyleSheet.create({
   scroll: { paddingHorizontal: 16, paddingTop: 10, gap: 8 },
   // Top block above the sticky BROWSE & ADD header — keeps the inter-card rhythm
@@ -2627,6 +2653,22 @@ const styles = StyleSheet.create({
 
   // Collapse control + collapsed (thin title + %) row (user request 2026-07-22).
   collapseBtn: { paddingRight: 2, paddingVertical: 2 },
+  /* The lock in the co-requisite gutter. Absolute inside the row wrapper, so
+     it sits in the indent WITHOUT taking part in the card's own row layout —
+     which is what kept the title, meter and pill on the same grid as every
+     other topic. */
+  coreLock: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: CORE_INDENT,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    fontSize: 13,
+    lineHeight: 44,
+    opacity: 0.75,
+  },
   collapseTri: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: colors.textSub },
   collapsedCard: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 11 },
   collapsedTitle: { flex: 1, fontFamily: fonts.oswaldMedium, fontSize: 14.5, color: colors.textPrimary },
@@ -2665,7 +2707,12 @@ const styles = StyleSheet.create({
   /* Required co-requisites. The fill was green (2026-07-23); the owner asked
      for a light gray on 2026-09-19, with a very subtle breathing wash over it
      — see RowTint. Border stays WHITE from `card`, as it always has. */
-  cardCore: { backgroundColor: '#1b1b1d' },
+  /* Fill lightened one more step (owner 2026-09-20): #161616 card → #1b1b1d →
+     #212124. Still clearly darker than the LOADED pills, still a gray rather
+     than a tint, so the subtle RowTint wash over it stays visible.
+     `marginLeft` opens the gutter the lock lives in — the indent IS what
+     separates a requirement from a topic you chose, before any icon is read. */
+  cardCore: { backgroundColor: '#212124', marginLeft: CORE_INDENT },
   // The 4th requisite Foundations LAB container (owner 2026-07-30): green like a
   // core, a hair brighter border to read as a link, no 3-card deck icon.
   // Lifted (held) card during reorder — pops out with a shadow (user request 2026-07-23).
