@@ -529,8 +529,12 @@ export function FillInBlankScreen({ navigation, route }: Props) {
         {/* Suggest a correction — bottom-right of the answers area, above
             Prev/Next (owner 2026-08-13). */}
         <View style={styles.reportRow}>
+          {/* ⛔ The tag is the ANSWER here — see tagIsAnswer on the component.
+              It still travels in the feedback payload; it just must not be
+              announced, or a screen reader gives the question away. */}
           <SuggestCorrectionButton
             tag={question?.item?.term}
+            tagIsAnswer
             context={{
               Method: 'Fill in the blank',
               Topic: topicName,
