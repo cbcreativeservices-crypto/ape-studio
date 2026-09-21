@@ -22,10 +22,17 @@ type AttractState = {
   exploreDone: boolean; // user has opened Explore at least once
   aboutDone: boolean; // user has opened About at least once
   enrolledOnce: boolean; // user has added their first topic/bundle to My Enrollment
+  deckNextDone: boolean; // user has stepped the Manage My Learning pager once
   firstSeenAt: number | null; // ms epoch of the first-ever Home view
 };
 
-let state: AttractState = { exploreDone: false, aboutDone: false, enrolledOnce: false, firstSeenAt: null };
+let state: AttractState = {
+  exploreDone: false,
+  aboutDone: false,
+  enrolledOnce: false,
+  deckNextDone: false,
+  firstSeenAt: null,
+};
 let hydrated = false;
 let hydrating: Promise<void> | null = null;
 const listeners = new Set<() => void>();
@@ -49,6 +56,7 @@ async function hydrate(): Promise<void> {
             exploreDone: !!p.exploreDone,
             aboutDone: !!p.aboutDone,
             enrolledOnce: !!p.enrolledOnce,
+            deckNextDone: !!p.deckNextDone,
             firstSeenAt: typeof p.firstSeenAt === 'number' ? p.firstSeenAt : null,
           };
         }
@@ -107,6 +115,19 @@ export function markEnrolled(): void {
   });
 }
 
+/** The user stepped the Manage My Learning pager — retire its cue for good
+ *  (owner 2026-09-20). Either arrow counts: they have found the control, and
+ *  saying so again is just clutter over a button they already use. */
+export function markDeckStepped(): void {
+  void hydrate().then(() => {
+    if (!state.deckNextDone) {
+      state = { ...state, deckNextDone: true };
+      persist();
+      emit();
+    }
+  });
+}
+
 export type AttractFlags = {
   explore: boolean;
   about: boolean;
@@ -115,6 +136,10 @@ export type AttractFlags = {
   /** The user has enrolled their first topic — the chip stays GREEN permanently
    *  (frame + text) after the animation retires. */
   enrolledOnce: boolean;
+  /** The Manage My Learning pager `›` still needs pointing at: it is the only
+   *  way to reach pages 2…n of a 13-page deck, and a static green square next
+   *  to a static green square reads as decoration (owner 2026-09-20). */
+  deckNext: boolean;
 };
 
 function computeFlags(now: number): AttractFlags {
@@ -125,7 +150,7 @@ function computeFlags(now: number): AttractFlags {
   // opened and until the first topic/bundle is added; once added, the chip keeps
   // a static green frame+text (enrolledOnce) permanently.
   const enrollments = state.exploreDone && !state.enrolledOnce;
-  return { explore, about, enrollments, enrolledOnce: state.enrolledOnce };
+  return { explore, about, enrollments, enrolledOnce: state.enrolledOnce, deckNext: !state.deckNextDone };
 }
 
 /** Live attract flags for the Home screen. Recomputes on store changes and on
@@ -175,7 +200,7 @@ export function useAboutOpened(): boolean {
  *    is ever reversed — and because deleting it would lose the reasoning.
  */
 export function resetLocal(): void {
-  state = { exploreDone: false, aboutDone: false, enrolledOnce: false, firstSeenAt: null };
+  state = { exploreDone: false, aboutDone: false, enrolledOnce: false, deckNextDone: false, firstSeenAt: null };
   hydrated = false;
   hydrating = null;
   emit();

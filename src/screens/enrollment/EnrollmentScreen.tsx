@@ -83,6 +83,8 @@ import { LabScopeSweep } from './LabScopeSweep';
 import { LabRequirementsSheet } from '../../components/LabRequirementsSheet';
 import { requirementsForCredential, type LabRequirementRow } from '../../features/lab/labRequirementList';
 import { labRequirementsFor } from '../../data/labRequirements';
+import { AttractRing } from '../../features/onboarding/AttractCue';
+import { markDeckStepped, useHomeAttract } from '../../features/onboarding/attractStore';
 
 /**
  * Audio Fundamentals — the one REQUIRED LAB in the shared core (the other
@@ -381,6 +383,8 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
    * never swipes sees exactly the list they saw before this redesign.
    */
   const [deckIndex, setDeckIndex] = useState(0);
+  // First-run cue on the deck pager — see the AttractRing below.
+  const attract = useHomeAttract();
   /**
    * The deck's own filter (owner 2026-09-19): All / Programs / Certificates.
    * Separate from the chips below, which filter the TOPIC list — these two
@@ -1899,7 +1903,10 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
               the dots the deck used to carry. */}
           <Pressable
             style={[styles.deckStep, safeDeckIndex <= 0 && styles.deckStepOff]}
-            onPress={() => setDeckIndex(stepDeck(safeDeckIndex, -1, deckCards.length))}
+            onPress={() => {
+              markDeckStepped();
+              setDeckIndex(stepDeck(safeDeckIndex, -1, deckCards.length));
+            }}
             disabled={safeDeckIndex <= 0}
             hitSlop={8}
             accessibilityRole="button"
@@ -1915,13 +1922,29 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           ) : null}
           <Pressable
             style={[styles.deckStep, safeDeckIndex >= deckCards.length - 1 && styles.deckStepOff]}
-            onPress={() => setDeckIndex(stepDeck(safeDeckIndex, +1, deckCards.length))}
+            onPress={() => {
+              markDeckStepped(); // found it — the cue never returns
+              setDeckIndex(stepDeck(safeDeckIndex, +1, deckCards.length));
+            }}
             disabled={safeDeckIndex >= deckCards.length - 1}
             hitSlop={8}
             accessibilityRole="button"
             accessibilityState={{ disabled: safeDeckIndex >= deckCards.length - 1 }}
             accessibilityLabel="Next"
           >
+            {/* FIRST-RUN CUE (owner 2026-09-20), the Explore chip's breathe.
+                This `›` is the only way to reach pages 2…13 of the deck, and a
+                static green square beside a static green square reads as
+                decoration. A gold ring sits just outside the green frame —
+                touching it, so the two read as one object — and breathes until
+                the pager is stepped ONCE, ever. Nothing on the last page,
+                where the button is dead anyway. */}
+            <AttractRing
+              active={attract.deckNext && safeDeckIndex < deckCards.length - 1}
+              inset={-2}
+              radius={12}
+              width={2}
+            />
             <Text style={[styles.deckStepText, safeDeckIndex >= deckCards.length - 1 && styles.deckStepTextOff]}>›</Text>
           </Pressable>
         </View>

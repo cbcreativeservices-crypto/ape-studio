@@ -44,7 +44,26 @@ function useBreathe(active: boolean, motion: boolean, staticT: number) {
 
 /** Breathing border+glow ring to overlay a framed button (Explore = amber, the
  *  next-step Enrollments cue = green). */
-export function AttractRing({ active, variant = 'amber' }: { active: boolean; variant?: 'amber' | 'green' }) {
+export function AttractRing({
+  active,
+  variant = 'amber',
+  inset = -1,
+  radius = 8,
+  width = 1,
+}: {
+  active: boolean;
+  variant?: 'amber' | 'green';
+  /** How far OUTSIDE the host's box the ring sits, in px (negative = outside).
+   *  The default -1 overlays a button's own 1px frame. Use a larger negative
+   *  with a matching `radius` to sit just beyond a thicker frame, so the two
+   *  read as one object with a gold outer edge (owner 2026-09-20: "a gold
+   *  outer frame touching the green frame"). */
+  inset?: number;
+  /** Corner radius — match the host button's, plus |inset|, or the corners
+   *  will not follow it. */
+  radius?: number;
+  width?: number;
+}) {
   const motion = active && animationsAllowed();
   const t = useBreathe(active, motion, 0.43); // 0.43 → ~0.6 static opacity
   const aStyle = useAnimatedStyle(() => ({ opacity: 0.3 + t.value * 0.7 }));
@@ -52,7 +71,11 @@ export function AttractRing({ active, variant = 'amber' }: { active: boolean; va
   return (
     <Animated.View
       pointerEvents="none"
-      style={[variant === 'green' ? styles.ringGreen : styles.ring, aStyle]}
+      style={[
+        variant === 'green' ? styles.ringGreen : styles.ring,
+        { top: inset, left: inset, right: inset, bottom: inset, borderRadius: radius, borderWidth: width },
+        aStyle,
+      ]}
     />
   );
 }
