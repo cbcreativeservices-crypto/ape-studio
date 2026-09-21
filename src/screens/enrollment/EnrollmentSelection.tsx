@@ -250,62 +250,37 @@ export function EnrollmentSelection({
                 <Text style={s.studyText}>{isTopics ? 'STUDY' : 'STUDY ALL'}</Text>
               </Pressable>
 
-              {/* ⛔ THE VERB AND THE STATE ARE TWO DIFFERENT FACTS
-                  (owner 2026-09-20). One button carrying both had to say
-                  "UNLOAD ALL TOPICS" to mean "these ARE loaded", so the
-                  reader had to invert the label to learn where they stood —
-                  and the one word they had to read to do it was the word for
-                  the opposite thing.
+              {/* ONE CONTROL, NO SEPARATE READOUT (owner 2026-09-21). A lamp
+                  reading LOADED sat here for a day; it said the same thing the
+                  verb already implies — UNLOAD ALL can only mean they are
+                  loaded — and every row below still reports its own state, so
+                  the head was repeating the list. */}
+              <Pressable
+                style={[s.loadActionBtn, !card.allLoaded && s.loadActionBtnInvite]}
+                onPress={() => onToggleLoad(card)}
+                hitSlop={6}
+                accessibilityRole="button"
+                accessibilityState={{ selected: card.allLoaded }}
+                aria-pressed={card.allLoaded}
+                accessibilityLabel={
+                  card.allLoaded
+                    ? `Unload all ${card.topicCount} topics of ${card.title} from the study deck`
+                    : `Load all ${card.topicCount} topics of ${card.title} into the study deck`
+                }
+              >
+                {/* "ALL" stays in the label (owner 2026-09-20): the bare verb
+                    beside a per-topic list read as though it acted on one row.
+                    It acts on every topic in the card.
 
-                  Split: the LEFT is the action and always names what the tap
-                  will do; the RIGHT is a lamp that never moves and only
-                  reports. Amber lit = loaded, gray = not, the same language
-                  as the LOADED pill on every row below. */}
-              <View style={s.loadRow}>
-                <Pressable
-                  style={[s.loadActionBtn, !card.allLoaded && s.loadActionBtnInvite]}
-                  onPress={() => onToggleLoad(card)}
-                  hitSlop={6}
-                  accessibilityRole="button"
-                  accessibilityLabel={
-                    card.allLoaded
-                      ? `Unload all ${card.topicCount} topics of ${card.title} from the study deck`
-                      : `Load all ${card.topicCount} topics of ${card.title} into the study deck`
-                  }
-                >
-                  {/* "ALL" stays in the label (owner 2026-09-20): the bare
-                      verb beside a per-topic list read as though it acted on
-                      one row. It acts on every topic in the card.
-
-                      ⛔ THE FRAME LIGHTS ONLY ON THE INVITATION (owner
-                      2026-09-21). LOAD ALL is the thing to do next, so it
-                      gets the full amber treatment, frame and all. UNLOAD ALL
-                      is the undo of something already done — the text stays
-                      amber so it is plainly the same control, but the frame
-                      goes quiet so a loaded card is not two lit boxes
-                      competing for the eye. */}
-                  <Text style={s.loadText} numberOfLines={1}>
-                    {card.allLoaded ? 'UNLOAD ALL' : 'LOAD ALL'}
-                  </Text>
-                </Pressable>
-                {/* ⛔ NO FRAME ON THIS ONE, EITHER STATE (owner 2026-09-21).
-                    It is the only thing in the head that is not a control, and
-                    a frame is what everything else here wears to say "press
-                    me". Losing it is how the lamp stops looking like a button
-                    and starts looking like a readout. The row pills below keep
-                    theirs — they ARE tappable. */}
-                <View
-                  style={[s.loadLamp, card.allLoaded && s.loadLampOn]}
-                  accessible
-                  accessibilityLabel={
-                    card.allLoaded
-                      ? 'All topics are loaded in your study dashboard'
-                      : 'These topics are not loaded in your study dashboard'
-                  }
-                >
-                  <Text style={[s.loadLampText, card.allLoaded && s.loadLampTextOn]}>LOADED</Text>
-                </View>
-              </View>
+                    ⛔ THE FRAME LIGHTS ONLY ON THE INVITATION (owner
+                    2026-09-21). LOAD ALL is the thing to do next, so it takes
+                    the full amber treatment, frame and all. UNLOAD ALL is the
+                    undo of something already done — the text stays amber so it
+                    is plainly the same control, but it wears no frame. */}
+                <Text style={s.loadText} numberOfLines={1}>
+                  {card.allLoaded ? 'UNLOAD ALL' : 'LOAD ALL'}
+                </Text>
+              </Pressable>
             </View>
           </View>
         </View>
@@ -405,17 +380,17 @@ const s = StyleSheet.create({
   },
   studyIcon: { width: 26, height: 26 },
   studyText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13.5, letterSpacing: 1, color: colors.blue },
-  /* Action + state lamp, splitting the width the single button used to take.
-     ⛔ CONTENT-WIDTH, NOT flex:1 HALVES. `deckActions` is an auto-width
-     flex-end column, so flex:1 children resolve against a basis of 0 and the
-     pair collapsed to roughly the STUDY button's width above — which clipped
-     "UNLOAD ALL" to "UNLOAD…". Each sizes to its own label instead; the
-     narrow-screen case is already handled by actionsFitBesideIdentity, which
-     stacks the whole column. */
-  loadRow: { flexDirection: 'row', alignItems: 'stretch', gap: 6 },
+  /* ⛔ CONTENT-WIDTH, NEVER flex:1. `deckActions` is an auto-width flex-end
+     column, so a flex:1 child resolves against a basis of 0 and collapsed to
+     roughly the STUDY button's width above — which clipped "UNLOAD ALL" to
+     "UNLOAD…". The narrow-screen case is handled by actionsFitBesideIdentity,
+     which stacks the whole column. */
   loadActionBtn: {
+    // UNLOAD ALL wears NO frame (owner 2026-09-21). The border stays 1 px and
+    // goes TRANSPARENT rather than to zero, so the button does not change size
+    // by two pixels every time it is toggled.
     borderWidth: 1,
-    borderColor: colors.hairline,
+    borderColor: 'transparent',
     borderRadius: 8,
     paddingHorizontal: 11,
     minHeight: 40,
@@ -425,20 +400,6 @@ const s = StyleSheet.create({
   /* LOAD ALL — the invitation, so the frame lights with the text. */
   loadActionBtnInvite: { borderColor: 'rgba(255,198,77,.55)', backgroundColor: 'rgba(255,198,77,.08)' },
   loadText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 0.8, color: colors.amber },
-  /* Reports only — never a tap target, so it is a View, not a Pressable, and
-     it carries NO frame in either state. */
-  loadLamp: {
-    borderWidth: 0,
-    backgroundColor: '#1c1c1c',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    minHeight: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  loadLampOn: { backgroundColor: 'rgba(255,198,77,.14)' },
-  loadLampText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.textSub },
-  loadLampTextOn: { color: colors.amber },
   /* The two that are about the credential itself. */
   credActions: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   awardBtn: { flex: 1, borderWidth: 1, borderColor: 'rgba(255,198,77,.45)', borderRadius: 8, paddingVertical: 11, alignItems: 'center' },
