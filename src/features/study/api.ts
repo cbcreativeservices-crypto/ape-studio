@@ -6,6 +6,7 @@
  */
 import { supabase } from '../../lib/supabase';
 import { withSessionRetry } from './sessionRetry';
+import { myUserId } from '../account/myUserRow';
 import { SUPABASE_URL } from '../../lib/env';
 
 export type GlossaryItem = {
@@ -318,9 +319,35 @@ export async function fetchMethodState(
   achievementId: string,
   methodKey: string,
 ): Promise<{ itemStates: ItemStates; completionPct: number } | null> {
+  /**
+   * ⛔ FILTER BY USER. RLS IS NOT THE ONLY READER OF THIS TABLE
+   * (owner 2026-09-21 bug pass).
+   *
+   * This selected on `achievement_id` + `method_key` alone and leaned on the
+   * row-level policy to scope it. That holds for an ordinary learner — and
+   * fails for anyone the table's `admin_all` policy covers, because it hands
+   * them every user's row for that topic and method. `maybeSingle()` then
+   * returns ANOTHER LEARNER'S item_states and completion_pct, and the screen
+   * seeds itself with them as the admin's own progress. Where more than one
+   * learner has studied that method it instead errors on multiple rows and
+   * falls into the guest branch below, silently losing real progress.
+   *
+   * The Dashboard reads this same table correctly one file over
+   * (`features/dashboard/api.ts:314` — `.eq('user_id', userId)`); this read
+   * was simply missed.
+   *
+   * ⚠️ `user_id` is a `public.users.id`, NOT `auth.uid()` — the two id spaces
+   * are different and bridged by `users.auth_id`, which is what `myUserId()`
+   * resolves. Passing an auth uid here matches nothing.
+   */
+  const uid = await myUserId();
+  // No user row = a guest, or a cold start before register_commercial_user has
+  // run. Same outcome as the 403 below, without the round trip.
+  if (!uid) return null;
   const { data, error } = await supabase
     .from('student_method_progress')
     .select('item_states, completion_pct')
+    .eq('user_id', uid)
     .eq('achievement_id', achievementId)
     .eq('method_key', methodKey)
     .maybeSingle();
