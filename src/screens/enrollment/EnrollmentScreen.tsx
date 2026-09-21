@@ -75,7 +75,7 @@ import { FLAGGED_TOPIC_ID, setCustomOnDashboard, useCustomOnDashboard, useTermLi
 import { TermSelectIcons } from '../../features/flags/TermSelectIcons';
 import { fetchGlossaryItemsByIds } from '../../features/study/api';
 import { useLastStudyLocation } from '../../features/study/lastStudyLocation';
-import { confirmDialog } from '../../lib/confirm';
+import { confirmDialog, notify } from '../../lib/confirm';
 import { CERT_BLUE, EnrollmentSelection, PROGRAM_PURPLE, type CarouselCard } from './EnrollmentSelection';
 import { chipForKind, firstIndexOfKind, stepDeck } from './deckNav';
 import { RowTint, LAB_TINT, COREQ_TINT } from './RowTint';
@@ -2072,10 +2072,40 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           summary={centredBundle ? requirementSummary(centredBundle) : null}
           onOpenAward={
             centredBundle && centredBundle.kind !== 'subject'
-              ? () =>
+              ? () => {
+                  /**
+                   * ⛔ SAY WHY IT IS SHUT, AND NAME WHAT IS LEFT
+                   * (owner 2026-09-21).
+                   *
+                   * The button is always live — deliberately, it is the point
+                   * of the whole card — so a learner who is not finished
+                   * pressed it and landed on the award page with no exam and
+                   * no explanation. "Nothing happened" is the worst possible
+                   * answer to the most motivated tap on the screen.
+                   *
+                   * It lists the ACTUAL outstanding requirements rather than
+                   * restating the policy, because the learner already knows
+                   * there are requirements; what they cannot see from here is
+                   * WHICH ones they still owe.
+                   */
+                  const outstanding = requirementRows(centredBundle).filter((r) => pctFor(r.gs) < 100);
+                  if (outstanding.length > 0) {
+                    const named = outstanding.slice(0, 6).map((r) => '•  ' + nameFor(r.gs));
+                    const rest = outstanding.length - named.length;
+                    const list = rest > 0 ? [...named, '•  and ' + rest + ' more'] : named;
+                    notify(
+                      'Final Exam not open yet',
+                      'Every requirement on this card has to reach 100% before the Final Exam opens.' +
+                        '\n\nStill outstanding:\n' +
+                        list.join('\n') +
+                        '\n\nThe certificate itself also needs one complete paid month of membership. You can still take the exam before that month is over.',
+                    );
+                    return;
+                  }
                   navigation.navigate('Awards', {
                     category: centredBundle.kind === 'program' ? 'program' : 'specialization',
-                  })
+                  });
+                }
               : undefined
           }
           onRemove={

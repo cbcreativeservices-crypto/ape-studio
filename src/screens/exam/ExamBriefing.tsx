@@ -157,7 +157,7 @@ export function ExamBriefing({
             <Text style={styles.tenureHead}>YOUR FIRST MONTH IS NOT COMPLETE YET</Text>
             <Text style={styles.tenureBody}>
               A certificate requires one complete paid month of membership. You have not reached that
-              yet — and you are welcome to sit the exam now.
+              yet — and you are welcome to take the exam now.
             </Text>
             <Text style={styles.tenureBody}>
               Your paper will be held, unopened, until your first month completes. It is graded then,
