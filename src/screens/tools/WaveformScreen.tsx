@@ -56,6 +56,7 @@ import { AccuracyNote } from '../../components/AccuracyNote';
 import { EngineGate } from './EngineGate';
 import { useToolHelp, DisplayGuideButton } from '../../features/lab/guidedLessons';
 import type { RootStackParamList } from '../../navigation/types';
+import { buildPixelEnvelope } from './waveEnvelope';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'WaveformLive'>;
 
@@ -344,21 +345,21 @@ export function WaveformScreen({ navigation }: Props) {
     const colW = scopeW / windowBuckets;
 
     // PER-PIXEL min/max envelope (owner 2026-07-31): sample the bucket envelope at
-    // EVERY screen pixel (linearly interpolated between bucket centres) so the
-    // waveform is drawn as finely as the screen allows — one filled amber body,
-    // like a DAW, not a coarse outlined trace.
-    // SAMPLE-AND-HOLD, NOT interpolated (owner 2026-08-01): each pixel takes the
-    // NEAREST bucket's exact min/max/rms, so every bucket draws as a flat-topped
-    // rectangular bar (the DAW peak look). Interpolating between bucket centres
-    // slewed the edges into triangles when the buckets are wide (e.g. the 0.5 s
-    // window) — that rounding is gone.
-    const sampleAt = (px: number) => {
-      let f = n - 0.5 - (scopeW - px) / colW; // fractional bucket index at this x
-      if (f < 0) f = 0;
-      if (f > n - 1) f = n - 1;
-      const b = displayBuckets[Math.round(f)];
-      return { max: b.max, min: b.min, rms: b.rms };
-    };
+    // EVERY screen pixel so the waveform is drawn as finely as the screen
+    // allows — one filled amber body, like a DAW, not a coarse outlined trace.
+    // SAMPLE-AND-HOLD, NOT interpolated (owner 2026-08-01): where a bucket is
+    // wider than a pixel it draws as a flat-topped rectangular bar (the DAW
+    // peak look), never slewed into a triangle.
+    //
+    // ⛔ And where a bucket is NARROWER than a pixel, the pixel takes the min
+    // of the mins and the max of the maxes of every bucket in it — never the
+    // nearest one. Nearest-bucket sampling dropped the others, and at the
+    // 2/3/4 s windows (400–800 buckets on a ~350 px panel) that was most of
+    // them: a transient was drawn full height only on the frames where the
+    // rounding happened to land on its loudest bucket, so it PULSED as it
+    // scrolled (owner 2026-09-20). See waveEnvelope.ts + test/waveEnvelope.
+    const env = buildPixelEnvelope(displayBuckets, scopeW);
+    const sampleAt = (px: number) => ({ max: env.max[px], min: env.min[px], rms: env.rms[px] });
     // Build the trace as SKIA paths (owner 2026-08-14): react-native-svg rendered
     // this dense per-pixel envelope COARSELY on Android; Skia is anti-aliased and
     // identical on both platforms. Collect the min/max + RMS envelope per screen

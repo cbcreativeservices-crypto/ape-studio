@@ -922,19 +922,22 @@ export function ToolsHubScreen({ navigation }: Props) {
   // navigating so the tool's own engine session never races the hub teardown
   // (single native session, no refcount — hubPreviewEngine header).
   // Pillar B coach mark (plan §3): the live tile displays read as meters, not
-  // buttons — say once that the display IS the way in. Retires on real opens.
+  // buttons — say once that the display IS the way in. ONE tool open ever
+  // retires it for good (owner 2026-09-20): a user who has opened a tool has
+  // found the door, and saying it a second time is just clutter over the
+  // instruments.
   const hubCoach = useCoachMark(COACH_KEYS.toolsHub, 1);
-  const { registerAction: hubCoachAction } = hubCoach;
+  const { retire: hubCoachRetire } = hubCoach;
   const { stopForNavigation } = hubPreview;
   const openTool = useCallback(
     (key: ToolKey) => {
-      hubCoachAction(); // taught action: opening a tool from its tile
+      hubCoachRetire(); // they found the door — never say it again
       stopForNavigation();
       if (key === 'hzcounter') navigation.navigate('FrequencyCounter');
       else if (key === 'multimeter') navigation.navigate('MultiMeter');
       else navigation.navigate('ToolInfo', { toolKey: key });
     },
-    [hubCoachAction, stopForNavigation, navigation],
+    [hubCoachRetire, stopForNavigation, navigation],
   );
   // Defer the tile displays until the open transition finishes so the heavy SVG
   // art / skin PNG / minis never render synchronously during navigation (owner

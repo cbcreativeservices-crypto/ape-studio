@@ -95,5 +95,25 @@ export function useCoachMark(storageKey: string, dismissAfter: number) {
     }
   }, [visible, dismissAfter, storageKey]);
 
-  return { visible: visible && !suppressed, registerAction };
+  /**
+   * Retire the hint PERMANENTLY, right now — for a hint whose lesson is
+   * learned the first time the user does the thing, so repeating it is noise
+   * (owner 2026-09-20, the Tools hub: "after user has tapped a tool 1 time
+   * (ever) never show it").
+   *
+   * Unlike `registerAction` this does NOT require the hint to be visible.
+   * A user who opened a tool while Low-Light Production Mode was hushing
+   * overlays has still learned that the display is the way in; the hint has
+   * nothing left to teach them, and popping up later would be the app
+   * forgetting what it watched them do.
+   */
+  const retire = useCallback(() => {
+    if (qualified.current) return;
+    qualified.current = true;
+    setVisible(false);
+    if (devBypass('alwaysShowIntros')) return; // dev: never dirty the real counter
+    void AsyncStorage.setItem(storageKey, String(MAX_OPENS)).catch(() => {});
+  }, [storageKey]);
+
+  return { visible: visible && !suppressed, registerAction, retire };
 }
