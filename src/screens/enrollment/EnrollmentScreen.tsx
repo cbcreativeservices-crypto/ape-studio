@@ -1835,6 +1835,10 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
               filled={segmentsForPct(resume.pct)}
               segWidth={3}
               a11yLabel={`${resume.pct} percent complete`}
+              // Without this the announced VALUE is re-derived from the segment
+              // count while the label carries the real number — the same split
+              // fixed in LedMeterWell. 12% announced as 14.
+              a11yPct={resume.pct}
             />
             {/* Blue bottom-nav STUDY icon — in the shared studyNavBtn slot so it
                 aligns with the other rows' study icons (user request 2026-07-24). */}

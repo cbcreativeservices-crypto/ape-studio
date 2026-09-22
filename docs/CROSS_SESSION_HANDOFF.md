@@ -65,6 +65,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-22 00:43 · ccode · a8faa0b7
+changed: A missing production project no longer spins forever
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-22 00:37 · ccode · a72f35cf
 changed: Bug-Hunt Standard: record the three traps that cost real defects tonight
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">

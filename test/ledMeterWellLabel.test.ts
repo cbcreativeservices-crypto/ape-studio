@@ -17,7 +17,7 @@
  */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 
 const SEG_COUNT = 21;
 
@@ -129,5 +129,50 @@ test('SOURCE GUARD: LedMeterWell must hand LedMeter the real percentage', () => 
     well,
     /<LedMeter[^>]*a11yPct=\{pct\}/s,
     'LedMeterWell must pass a11yPct, or the value is re-derived from the segment count again',
+  );
+});
+
+/**
+ * ⛔ AND THE GUARD ABOVE WAS TOO NARROW — it read only LedMeter.tsx.
+ *
+ * A third instance was sitting in EnrollmentScreen the whole time: a LedMeter
+ * with an a11yLabel and no a11yPct, announcing 14 while its label said 12. The
+ * guard could not see it, so the suite went green over a live bug. Found by an
+ * independent pass on 2026-09-22, hours after the "fix".
+ *
+ * A guard that inspects one file cannot pin a rule about every CALLER. This one
+ * sweeps the repo: any LedMeter that bothers to carry a screen-reader label must
+ * also carry the real percentage, or the number it announces is quantised to
+ * 1/21 and disagrees with the label right next to it.
+ */
+test('SOURCE GUARD: every LedMeter with a label must pass the real percentage', () => {
+  const root = new URL('../src/', import.meta.url);
+  const rel = (u: URL) =>
+    decodeURIComponent(u.pathname).slice(decodeURIComponent(root.pathname).length);
+
+  const walk = (dir: URL): URL[] =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+      e.isDirectory()
+        ? walk(new URL(e.name + '/', dir))
+        : e.name.endsWith('.tsx')
+          ? [new URL(e.name, dir)]
+          : [],
+    );
+
+  const offenders: string[] = [];
+  for (const file of walk(root)) {
+    const src = readFileSync(file, 'utf8');
+    // Each <LedMeter ... /> element, INCLUDING the multi-line ones - which is
+    // exactly where the missed instance was hiding.
+    for (const m of src.matchAll(/<LedMeter[\s\S]*?\/>/g)) {
+      const el = m[0];
+      if (el.includes('a11yLabel') && !el.includes('a11yPct')) offenders.push(rel(file));
+    }
+  }
+  assert.deepEqual(
+    offenders,
+    [],
+    'these meters announce a value derived from the segment count, not the one they print: ' +
+      offenders.join(', '),
   );
 });
