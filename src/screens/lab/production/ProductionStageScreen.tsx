@@ -32,13 +32,31 @@ export function ProductionStageScreen() {
   const { lab, projectId, stageId } = useRoute<R>().params;
 
   const [project, setProject] = useState<ProductionProject | null>(null);
+  /**
+   * ⛔ 'STILL LOADING' AND 'NOT ON THIS PHONE' ARE NOT THE SAME THING.
+   *
+   * `project` starts null and `projectStore().get()` also RESOLVES null for
+   * a project this device does not hold — and production projects are
+   * device-local. So the screen could not tell the two apart and sat on
+   * "Opening the project…" forever: no error, no way back, nothing to tap.
+   * A production-stage deep link opened on any other phone landed exactly
+   * there. Nothing threw, so no boundary caught it.
+   */
+  const [loadState, setLoadState] = useState<'loading' | 'ready' | 'missing'>('loading');
 
   useEffect(() => {
     let alive = true;
+    setLoadState('loading');
     void projectStore()
       .get(lab, projectId)
       .then((p) => {
-        if (alive) setProject(p);
+        if (!alive) return;
+        setProject(p);
+        setLoadState(p ? 'ready' : 'missing');
+      })
+      .catch(() => {
+        // A failed read is not an empty project. Say so rather than spinning.
+        if (alive) setLoadState('missing');
       });
     return () => {
       alive = false;
@@ -162,7 +180,11 @@ export function ProductionStageScreen() {
       {!project || !stage || !report ? (
         <View style={styles.empty}>
           <Text style={styles.emptyText}>
-            {project ? 'This stage is not authored yet.' : 'Opening the project…'}
+            {project
+              ? 'This stage is not authored yet.'
+              : loadState === 'missing'
+                ? 'This project is not on this device. Production projects are saved on the phone that created them — open it there, or start a new one from the lab home.'
+                : 'Opening the project…'}
           </Text>
         </View>
       ) : (
