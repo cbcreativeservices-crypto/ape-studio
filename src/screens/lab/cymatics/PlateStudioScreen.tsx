@@ -210,6 +210,22 @@ export function PlateStudioScreen() {
   // the same frequency. 8 Hz ticks (B7) — each tick re-samples the field.
   useEffect(() => {
     if (!sweeping) return;
+    /**
+     * ⛔ A SWEEP WITH NOTHING DRIVING IS A LIE (owner ruling 2026-09-22).
+     *
+     * This depended on `sweeping` alone, so stopping the tone froze the plate
+     * correctly — the physics is gated on `driving` — while the sweep kept
+     * walking the DRIVE readout across the whole decade in silence, and the
+     * chip still offered "Stop sweep". The one number on screen that claims to
+     * say what is being played went on changing with nothing playing.
+     *
+     * Ending the sweep rather than pausing it keeps the chip honest: the
+     * control says what is actually happening, and restarting is one tap.
+     */
+    if (!driving) {
+      setSweeping(false);
+      return;
+    }
     const ex = modes.filter((m) => m.drive > 0.05 && m.hz >= F_MIN && m.hz <= F_MAX).map((m) => m.hz);
     if (ex.length === 0) {
       setSweeping(false);
@@ -229,7 +245,7 @@ export function PlateStudioScreen() {
       setFreq(Math.round(f * 10) / 10);
     }, 125);
     return () => clearInterval(id);
-  }, [sweeping, modes]);
+  }, [sweeping, driving, modes]);
 
   const note = nearestNote(freq);
   const mat = MATERIALS.find((m) => m.id === spec.material)!;

@@ -134,6 +134,17 @@ export type TapLogPayload = {
 /** SPL logging session (engine tool — planned; spec §9 View 2). */
 export type SplLogPayload = {
   kind: 'spl_log';
+  /**
+   * The weighting the STORED AVERAGE actually carries — not what the meter was
+   * set to.
+   *
+   * ⛔ THOSE ARE NOT THE SAME THING (owner ruling 2026-09-22). The engine logs
+   * Leq(A) and Leq(Z) only, so a C-weighted selection stores the UNWEIGHTED
+   * Leq(Z) as its average. That fallback is honest and documented; recording it
+   * as 'C' was not. A saved record is read back months later with no memory of
+   * the session, so this field has to describe the number beside it. The
+   * meter's setting is preserved separately, in `measurement_settings`.
+   */
   weighting: 'A' | 'C' | 'Z';
   response: 'fast' | 'slow';
   durationSec: number;
@@ -141,6 +152,14 @@ export type SplLogPayload = {
   timeline: number[];
   timelineStepSec: number;
   peakDb: number;
+  /**
+   * The weighting of `peakDb`, which is ALWAYS 'Z': the peak hold is taken from
+   * the raw unweighted level, never through the A or C curve. It was previously
+   * stored inside a record whose only weighting field said A or C, so an
+   * unweighted peak was labelled dBA. Optional so older records still parse —
+   * absent means it was written before this was recorded, and it was Z then too.
+   */
+  peakWeighting?: 'Z';
   avgDb: number;
 };
 

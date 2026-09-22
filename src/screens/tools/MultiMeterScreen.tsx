@@ -592,7 +592,21 @@ export function MultiMeterScreen({ navigation }: Props) {
 
   // Readout mode (owner rev 24 — long-press the SPL cell): A/C/FS/SPL, same as
   // the SPL meter. Shared field calibration → estimated dB SPL; nominal 100 when
-  // uncalibrated. The chosen mode RIPPLES to PEAK/RMS and the horizontal meter.
+  // uncalibrated. The chosen mode drives the LEVEL cell and the horizontal
+  // meter.
+  //
+  // ⛔ IT DOES NOT RIPPLE TO PEAK / RMS / PK HOLD, though this comment used to
+  // say it did (owner ruling 2026-09-22, found by the audio-tools hunt). Those
+  // three read `peakDb`, `zFastDb` and `peakHoldDb` — all unweighted Z — while
+  // the single unit line beneath them printed the SELECTED unit. So in A mode
+  // the panel showed four numbers under one "dBA" heading and only one of them
+  // was A-weighted. At 100 Hz the A-curve is about 19 dB down, so PEAK read
+  // ~19 dB high and RMS disagreed with the weighted cell beside it by the same
+  // amount, both labelled dBA, in a tool people point at a room to decide
+  // whether it is too loud.
+  //
+  // The ruling was to label each cell for what it actually is rather than
+  // invent a weighted peak, which is not standard practice.
   const [unitMode, setUnitMode] = useState<UnitMode>('C');
   const [unitPopup, setUnitPopup] = useState(false);
   const cal = useSplCalibration();
@@ -605,6 +619,16 @@ export function MultiMeterScreen({ navigation }: Props) {
   // offset (estimated dB SPL, floored at 0). Colour always uses the RAW dBFS.
   const applyRef = (dbfs: number | undefined): number | undefined =>
     dbfs == null || !Number.isFinite(dbfs) ? undefined : unitMode === 'FS' ? dbfs : Math.max(0, dbfs + splOffset);
+
+  /**
+   * True when PEAK / RMS / PK HOLD are weighted DIFFERENTLY from the LEVEL cell.
+   * Only A and C apply a curve; FS and SPL are flat Z, which is what those three
+   * cells already are — so in those modes there is nothing to disclose and the
+   * suffix would be noise.
+   */
+  const otherCellsAreZ = unitMode === 'A' || unitMode === 'C';
+  /** Appended to the three unweighted cells so each says what it is. */
+  const zTag = otherCellsAreZ ? ' · Z' : '';
 
   /**
    * ⛔ THE TUNER OBEYS THE SAME VERDICT AS THE NUMBERS (owner ruling 2026-09-22).
@@ -1125,13 +1149,13 @@ export function MultiMeterScreen({ navigation }: Props) {
               </Text>
             </Pressable>
             <Pressable accessibilityHint="Press and hold for an explanation." style={styles.statusCell} onLongPress={() => help('peak')} delayLongPress={350}>
-              <Text style={styles.statusLabel}>PEAK</Text>
+              <Text style={styles.statusLabel}>{`PEAK${zTag}`}</Text>
               <Text style={[styles.statusValue, meter ? { color: levelColorForDb(meter.peakDb) } : null]}>
                 {meter ? fmtDb(applyRef(meter.peakDb)) : '—'}
               </Text>
             </Pressable>
             <Pressable accessibilityHint="Press and hold for an explanation." style={styles.statusCell} onLongPress={() => help('rms')} delayLongPress={350}>
-              <Text style={styles.statusLabel}>RMS</Text>
+              <Text style={styles.statusLabel}>{`RMS${zTag}`}</Text>
               <Text style={[styles.statusValue, meter ? { color: levelColorForDb(meter.zFastDb) } : null]}>
                 {meter ? fmtDb(applyRef(meter.zFastDb)) : '—'}
               </Text>
@@ -1148,7 +1172,7 @@ export function MultiMeterScreen({ navigation }: Props) {
               accessibilityLabel="Peak hold — tap to reset"
             >
               <View style={styles.statusHoldRow}>
-                <Text style={styles.statusLabel}>PK HOLD</Text>
+                <Text style={styles.statusLabel}>{`PK HOLD${zTag}`}</Text>
                 {/* The ⟲ is the AFFORDANCE, not a second button. The whole
                     cell already resets (that is why the tile-tap was added —
                     "tap the readout, not just the key"), so making the glyph
@@ -1162,7 +1186,7 @@ export function MultiMeterScreen({ navigation }: Props) {
             </Pressable>
           </View>
           <Text style={styles.statusUnit}>
-            {MODE_UNIT[unitMode]} ·{' '}
+            {otherCellsAreZ ? `${MODE_UNIT[unitMode]} (LEVEL only — PEAK/RMS/HOLD are Z)` : MODE_UNIT[unitMode]} ·{' '}
             {calibrated
               ? 'field-calibrated (approximate)'
               : unitMode === 'FS'

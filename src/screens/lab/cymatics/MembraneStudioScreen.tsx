@@ -189,6 +189,22 @@ export function MembraneStudioScreen() {
   // → edge → radial → breakup.
   useEffect(() => {
     if (!sweeping) return;
+    /**
+     * ⛔ A SWEEP WITH NOTHING DRIVING IS A LIE (owner ruling 2026-09-22).
+     *
+     * This depended on `sweeping` alone, so stopping the tone froze the plate
+     * correctly — the physics is gated on `driving` — while the sweep kept
+     * walking the DRIVE readout across the whole decade in silence, and the
+     * chip still offered "Stop sweep". The one number on screen that claims to
+     * say what is being played went on changing with nothing playing.
+     *
+     * Ending the sweep rather than pausing it keeps the chip honest: the
+     * control says what is actually happening, and restarting is one tap.
+     */
+    if (!driving) {
+      setSweeping(false);
+      return;
+    }
     const stops = isSpeaker
       ? [driver.fs * 0.5, driver.fs, driver.fs * 2.5, (343 / (Math.PI * (driver.diameterMm / 1000))) * 1.05, driver.breakupHz * 0.45, driver.breakupHz * 0.75, driver.breakupHz * 1.5]
       : modes.filter((m) => m.drive > 0.05).map((m) => m.hz);
@@ -211,7 +227,7 @@ export function MembraneStudioScreen() {
       setFreq(Math.round(f * 10) / 10);
     }, 125);
     return () => clearInterval(id);
-  }, [sweeping, modes, isSpeaker, driver]);
+  }, [sweeping, driving, modes, isSpeaker, driver]);
 
   const patch = (o: Partial<MembraneSpec>) => setSpec((s) => ({ ...s, ...o }));
   const land = (hz: number) => {

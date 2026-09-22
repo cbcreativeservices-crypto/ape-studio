@@ -31,6 +31,7 @@ import { AppState, type AppStateStatus } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Speech from 'expo-speech';
 import { ApeDsp } from '../../../modules/ape-dsp';
+import { frameIsLive } from '../tools/engine/useDspEngine';
 import { isAudioOutputEnabled, isMicActive } from './audioOutputStore';
 import { getSplCalibration } from '../tools/measure/calibrationStore';
 import { areOverlaysSuppressed } from '../dev/popupSuppressStore';
@@ -378,7 +379,24 @@ function readSources(): { active: boolean; db: number | null; rt: RouteKey; meas
   let micGap = false;
   if (isMicActive() && ApeDsp.isAvailable()) {
     const f = ApeDsp.getMeterFrame();
-    if (f?.running) {
+    /**
+     * ⛔ THE SAME LIVENESS VERDICT AS EVERY OTHER READER (2026-09-22).
+     *
+     * This asked `f?.running`, which was a FOURTH definition of "is the mic
+     * delivering audio" in a codebase that already exports one. `running`
+     * stays true through a stalled capture — `captureStalled` is the other
+     * half — so `f.aFastDb` here could be the last level the engine managed to
+     * produce, held indefinitely, and this integral went on accumulating
+     * hearing dose from it.
+     *
+     * That matters more here than on any display. This is the noise-exposure
+     * figure the app uses to warn someone about their hearing, and a frozen
+     * quiet reading under-reports a loud room — the one direction that costs
+     * something real. When the capture is not live we do not have an
+     * environmental measurement, so we say so (inDb stays null) rather than
+     * integrating a number we cannot stand behind.
+     */
+    if (frameIsLive(f)) {
       // Continuity: a NEW dropout since the last read means the mic stream
       // overran/stalled — track the monotonic counter (it resets to 0 on a fresh
       // capture, which is not a gap).

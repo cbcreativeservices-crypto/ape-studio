@@ -1346,13 +1346,25 @@ export function SplMeterScreen({ navigation }: Props) {
     // clearly an approximate estimate (compare mode warns on calibrated-vs-
     // uncalibrated pairs).
     const avgDb = shown(weighting === 'A' ? m.leqADb : m.leqZDb);
-    const unit = weighting === 'C' ? 'dBC' : weighting === 'A' ? 'dBA' : 'dB SPL';
+    /**
+     * ⛔ LABEL THE NUMBER WE HAVE, NOT THE KNOB WE TURNED (owner ruling
+     * 2026-09-22). The engine logs Leq(A) and Leq(Z) only, so a C selection
+     * stores Leq(Z) — and this used to title it "dBC". The record then read as
+     * a C-weighted measurement forever, which is exactly the kind of thing
+     * someone quotes in a report. The meter's setting is still preserved in
+     * `measurement_settings` below; this is about the value.
+     */
+    const avgWeighting: Weighting = weighting === 'A' ? 'A' : 'Z';
+    const unit = avgWeighting === 'A' ? 'dBA' : 'dB SPL';
     // The saved payload's response is fast|slow only; 5 SEC AVG (a display-time
     // integration) records as SLOW, its closest logged sibling.
     const saveResponse: MeterResponse = response === 'fast' ? 'fast' : 'slow';
     const payload: SplLogPayload = {
       kind: 'spl_log',
-      weighting,
+      weighting: avgWeighting,
+      // The peak hold is taken from the RAW level and never goes through the
+      // A/C curve, so it carries its own weighting regardless of the above.
+      peakWeighting: 'Z',
       response: saveResponse,
       durationSec: m.elapsedSec,
       timeline: [], // timeline capture ships with a later engine pass
@@ -1364,7 +1376,7 @@ export function SplMeterScreen({ navigation }: Props) {
       id: Crypto.randomUUID(),
       tool_type: 'spl',
       created_at: new Date().toISOString(),
-      title: `SPL Log — Leq(${weighting === 'A' ? 'A' : 'Z'}) ${avgDb.toFixed(1)} ${unit} · ${fmtElapsed(m.elapsedSec)}`,
+      title: `SPL Log — Leq(${avgWeighting}) ${avgDb.toFixed(1)} ${unit} · ${fmtElapsed(m.elapsedSec)}`,
       notes: '',
       input_device: 'phone microphone',
       calibration_status: offset != null ? 'calibrated' : 'uncalibrated',

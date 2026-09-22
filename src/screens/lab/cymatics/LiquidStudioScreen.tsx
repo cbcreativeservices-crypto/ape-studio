@@ -214,13 +214,29 @@ export function LiquidStudioScreen() {
   // Sweep: log 15 → 150 Hz over 40 s, loops.
   useEffect(() => {
     if (!sweeping) return;
+    /**
+     * ⛔ A SWEEP WITH NOTHING DRIVING IS A LIE (owner ruling 2026-09-22).
+     *
+     * This depended on `sweeping` alone, so stopping the tone froze the plate
+     * correctly — the physics is gated on `driving` — while the sweep kept
+     * walking the DRIVE readout across the whole decade in silence, and the
+     * chip still offered "Stop sweep". The one number on screen that claims to
+     * say what is being played went on changing with nothing playing.
+     *
+     * Ending the sweep rather than pausing it keeps the chip honest: the
+     * control says what is actually happening, and restarting is one tap.
+     */
+    if (!driving) {
+      setSweeping(false);
+      return;
+    }
     const t0 = Date.now();
     const id = setInterval(() => {
       const u = ((Date.now() - t0) % 40000) / 40000;
       setFreq(Math.round(15 * Math.pow(10, u) * 10) / 10);
     }, 125);
     return () => clearInterval(id);
-  }, [sweeping]);
+  }, [sweeping, driving]);
 
   const patch = (o: Partial<LiquidSpec>) => setSpec((s) => ({ ...s, ...o }));
   const note = nearestNote(freq);
