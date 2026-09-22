@@ -365,3 +365,39 @@ Faraday forcing), so it is worth finishing properly.
   real dish would not teaches the opposite of the Myth module beside it.
 - **Audio alone will not do** — a static phase offset between two steady summed
   tones is nearly inaudible at 15–150 Hz. Wire the picture or it still feels dead.
+
+
+## AFTER THIS BUILD + TESTER ROUND — deploy `store-notifications`
+
+Owner 2026-09-22: *"do store-notifications after this build and tester version."*
+
+⛔ **Until it is deployed, NO refund, cancellation, revocation or renewal is
+processed at all.** A refunded member keeps access until `expires_at`, which for
+a lifetime purchase is 2099. The function is written and hardened; it has simply
+never been deployed — it is absent from the deployed list.
+
+- Deploy with **`verify_jwt` FALSE** — the stores do not send a Supabase JWT.
+- `markRefunded` is already scoped to `source IN ('app_store','play_store')`, so
+  a forged notification naming an access code cannot mass-revoke code holders.
+- Sequence matters: it reads columns the tenure migration adds, and that
+  migration IS applied (verified 2026-09-22 — `entitlements` has `member_since`
+  and `refunded_at`).
+
+## SUBJECT COPY — ratification sheet exists, flag stays TRUE
+
+Owner 2026-09-22: *"keep it live, prepare a review/audit to resolve this."*
+
+`SUBJECT_META_RATIFIED` stays **true**; all 50 subjects remain live. The sheet to
+settle whether the copy was ever actually reviewed is
+`Downloads/2026-09-22_SUBJECT_COPY_AUDIT.md`, regenerable with
+`node scripts/buildSubjectAudit.mjs`.
+
+Structural coverage is already clean — 50 live subjects, 50 entries, 1:1, no
+orphans, every entry has both fields. The open question is WORDING. The sheet
+prints each subject's copy beside the topics it actually contains, and flags
+**7** lists naming roles the app classifies as needing a degree/licence/cert,
+plus **3** that name no specific role at all ("every audio role").
+
+⛔ Do NOT reintroduce a gated-role detector for this screen. Two attempts were
+found inert (the second fired on 6 of 44 lists); `CurriculumScreen` now prints
+the disclosure unconditionally, which is what the hard rule actually requires.
