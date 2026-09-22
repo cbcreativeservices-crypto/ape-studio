@@ -270,22 +270,35 @@ async function fetchAllGlossaryMedia(): Promise<Record<string, string>> {
 /** Formula map for the "Equations & Formulas" filter: id → the term's symbolic
  *  formula (+ plain-language words). A term counts as an equation/formula when
  *  its `formula_symbolic` is non-empty. Loaded in ONE isolated, NON-FATAL paged
- *  pass, deliberately kept OUT of the main corpus select (loadEntries below):
- *  as of 2026-07-26 NO client role (anon/authenticated/service_role) holds a
- *  SELECT grant on `formula_symbolic`/`formula_words`, so a direct select 403s
- *  today for every user. Isolating it means that 403 yields an empty map (the
- *  filter shows no terms) WITHOUT breaking the glossary corpus load. Once the
- *  backend grants the columns and populates them, the filter lights up with no
- *  client change. (Verified 2026-07-26: 0 of 14,246 rows currently carry one.)
- *  Session-cached (owner 2026-08-10). */
+ *  pass, deliberately kept OUT of the main corpus select (loadEntries below) so
+ *  a failure here can never break the glossary corpus load.
+ *  Session-cached (owner 2026-08-10).
+ *
+ *  ⛔ FILTER SERVER-SIDE — THIS CAUSED A PRODUCTION APP HANG (2026-09-21).
+ *  This pass used to page the ENTIRE corpus unfiltered and throw away the rows
+ *  with no formula on the device. Sentry APE-STUDIO-F caught the result on a
+ *  tester's iPhone 16 Pro (iOS 27, build 28): 27 sequential 1000-row requests,
+ *  ~230 ms apart, each parsed on the JS thread — the last breadcrumb before
+ *  "App hanging for at least 2000 ms" is offset=22000, and the device had
+ *  112 MiB free at the time.
+ *
+ *  The two comments this replaces claimed the columns were ungranted and that
+ *  "0 of 14,246 rows carry one", so the whole scan looked free. Both went stale
+ *  without anyone noticing: verified against production 2026-09-21, anon AND
+ *  authenticated hold the SELECT grant on id/formula_symbolic/formula_words,
+ *  and 1,911 of 26,975 rows carry a formula. The scan was never free — it just
+ *  got slower every time the corpus grew, which is exactly why it surfaced now.
+ *
+ *  Filtering in the query fetches those 1,911 rows in 2 pages instead of 26,975
+ *  in 27. Keep the filter here; do not "simplify" it back to a bare select. */
 function loadAllGlossaryFormulas(
   table: 'glossary' | 'glossary_browse_v',
 ): Promise<Record<string, { symbolic: string; words: string | null }>> {
   return sessionCache(() => FORMULA_CACHE, (p) => (FORMULA_CACHE = p), () => fetchAllGlossaryFormulas(table));
 }
-// Rejects on a failed page (network error, or today's column-grant 403) — the
-// caller swallows it and the filter simply shows no terms — so sessionCache
-// does NOT memoize an empty failed result for the whole session (B-176).
+// Rejects on a failed page (network error, or a column-grant 403) — the caller
+// swallows it and the filter simply shows no terms — so sessionCache does NOT
+// memoize an empty failed result for the whole session (B-176).
 async function fetchAllGlossaryFormulas(
   table: 'glossary' | 'glossary_browse_v',
 ): Promise<Record<string, { symbolic: string; words: string | null }>> {
@@ -295,6 +308,11 @@ async function fetchAllGlossaryFormulas(
     const { data, error } = await supabase
       .from(table)
       .select('id, formula_symbolic, formula_words')
+      // The filter that keeps this off the main thread — see the block comment.
+      // Whitespace-only values still slip through `neq ''`, so the trim check
+      // below stays as the authority on what counts as a formula.
+      .not('formula_symbolic', 'is', null)
+      .neq('formula_symbolic', '')
       .order('id')
       .range(from, from + PAGE_F - 1);
     if (error) throw error;

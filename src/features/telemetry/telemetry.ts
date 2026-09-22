@@ -36,6 +36,30 @@ import { sanitizeProps, scrubBreadcrumb, scrubEvent } from './scrub';
 const SENTRY_DSN = process.env.EXPO_PUBLIC_SENTRY_DSN ?? '';
 const APTABASE_APP_KEY = process.env.EXPO_PUBLIC_APTABASE_APP_KEY ?? '';
 
+/** The self-test is the ONE reason to let a dev machine reach Sentry. */
+const SELFTEST_ON = process.env.EXPO_PUBLIC_TELEMETRY_SELFTEST === '1';
+
+/**
+ * ⛔ A DEV MACHINE DOES NOT REPORT TO SENTRY. (2026-09-21)
+ *
+ * Events were tagged `environment: development` but still SENT, and the
+ * result was that the issue feed stopped being readable. Counted on
+ * 2026-09-21: 16 of the 21 open issues were Metro bundler output from this
+ * repo — `TransformError`, `UnableToResolveError`, half-finished edits — each
+ * one carrying a `C:\Users\profe\dev\ape-studio\...` path, each one already
+ * fixed minutes later, and none of them reachable by any user. They sat above
+ * and around the five that were real, including a production app hang.
+ *
+ * Filtering by environment in the Sentry UI is a workaround that has to be
+ * re-applied by every person who opens the page; not sending is not. A dev
+ * error is already a redbox and a Metro log two feet away — Sentry adds
+ * nothing there and costs quota and attention.
+ *
+ * Set EXPO_PUBLIC_TELEMETRY_SELFTEST=1 when you specifically need to prove the
+ * pipe end-to-end from a dev build; that is what the self-test below is for.
+ */
+const SENTRY_MAY_SEND = !__DEV__ || SELFTEST_ON;
+
 let started = false;
 let sentryOn = false;
 let aptabaseOn = false;
@@ -47,7 +71,7 @@ export function initTelemetry(): void {
   started = true;
   if (!TELEMETRY_ENABLED) return;
 
-  if (SENTRY_DSN) {
+  if (SENTRY_DSN && SENTRY_MAY_SEND) {
     try {
       Sentry.init({
         dsn: SENTRY_DSN,
@@ -97,7 +121,7 @@ export function initTelemetry(): void {
 
   // One-shot verification hook (dev only, opt-in via .env): proves the pipes
   // end-to-end without leaving a test path in the app.
-  if (__DEV__ && process.env.EXPO_PUBLIC_TELEMETRY_SELFTEST === '1') {
+  if (__DEV__ && SELFTEST_ON) {
     selfTest();
   }
 }

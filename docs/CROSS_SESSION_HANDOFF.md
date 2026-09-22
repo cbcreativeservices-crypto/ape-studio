@@ -65,6 +65,90 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-21 22:13 · ccode · 495f2c56
+changed: A stalled session read could freeze a screen permanently — bound all of them
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-21 08:53 · ccode · f430c083
+changed: The "Suggest a correction" link was below the contrast floor
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-21 08:51 · ccode · ede38f79
+changed: Fill in the Blank announced the correct answer to screen readers
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-21 08:43 · ccode · a117699e
+changed: Phone walkthrough: the meter announced a different number than it printed
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-21 08:11 · ccode · 44343dcf
+changed: Scenario RPCs: translate auth.uid() to users.id — APPLIED to production
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-21 01:35 · ccode · 6dbe16ff
+changed: Quiz and Final Exam: two fingers in one frame submitted the wrong answer
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-21 01:34 · ccode · f9d7d38d
+changed: Scenarios: "Begin Round 3" re-ran Round 2 forever, dead-ending the topic
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-21 01:33 · ccode · 04c111e9
+changed: Scope the study progress read to the caller — an admin was seeing other learners' rows
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-21 01:30 · ccode · beab3b9d
+changed: Close two PagedLab traps that would fire across 33 labs at once
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-21 01:29 · ccode · 8781771f
+changed: EQ Lab: a hint that taught the misconception it was trying to correct
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-21 01:28 · ccode · c7ad6890
+changed: Cymatics Harmony: the beat rate was seventeen times too fast, and printed as a formula
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-21 01:26 · ccode · 6630b7af
+changed: Cable Install: the bottom button announces SKIP AHEAD and now actually does it
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-21 00:58 · ccode · c8c2fc45
+changed: Close the same dead-mic blind spot in the other five instruments
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-21 00:57 · ccode · 3584f45b
+changed: Stop the SPL meter showing readings from a mic that has stopped
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-21 00:29 · ccode · 595de488
 changed: Explain the locked Final Exam instead of opening an award page with nothing on it
 affects other side: nothing — client UI only

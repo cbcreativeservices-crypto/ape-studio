@@ -113,11 +113,27 @@ export function SingleDeviceGuard() {
     // drop any stale same-topic channel synchronously first, and treat realtime
     // as best-effort — if it cannot be set up we keep the poll and carry on,
     // which is the same fail-OPEN posture as the rest of this guard.
-    const TOPIC = 'active_device_watch';
+    //
+    // ⛔ THAT FIX DID NOT HOLD — Sentry APE-STUDIO-5 caught the same error in
+    // the wild on 2026-09-16. The diagnosis above is right; the remedy is not.
+    // `removeChannel()` is ASYNCHRONOUS — the `void` in front of it says so —
+    // so it does not drop the old channel before the very next line asks for
+    // the same topic. The remount still won the race, still got the live
+    // channel back, and still threw. The try/catch then downgraded us to
+    // poll-only, so a displaced device waited for the poll instead of signing
+    // out in ~1s: the feature quietly stopped working rather than crashing,
+    // which is why it went unnoticed.
+    //
+    // A UNIQUE TOPIC PER MOUNT cannot collide, so there is no race left to
+    // lose — this does not depend on cleanup finishing first. The sweep below
+    // still runs, but now only to reap channels an earlier unmount left
+    // behind; correctness no longer rests on it.
+    const TOPIC_PREFIX = 'active_device_watch';
+    const TOPIC = `${TOPIC_PREFIX}:${Math.random().toString(36).slice(2)}`;
     let channel: ReturnType<typeof supabase.channel> | undefined;
     try {
       for (const c of supabase.getChannels()) {
-        if (c.topic === `realtime:${TOPIC}`) void supabase.removeChannel(c);
+        if (c.topic.startsWith(`realtime:${TOPIC_PREFIX}`)) void supabase.removeChannel(c);
       }
       channel = supabase
         .channel(TOPIC)
