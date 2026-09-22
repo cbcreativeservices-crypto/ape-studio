@@ -195,3 +195,52 @@ so you do not repeat it, then go somewhere it did not.
   it burns its once-per-version allowance when suppressed.
 - `subjectMeta`'s `SUBJECT_META_RATIFIED` was flipped to true inside an unrelated
   commit; 50 subjects of unratified copy are live.
+
+---
+
+## READINESS AUDIT — 2026-09-22 (owner asked: are they all ACTUALLY resolved?)
+
+Every item below was re-checked against the current tree or the live database.
+**Four items this file still listed as open are already fixed** — the ledger had
+gone stale, which is its own hazard: a stale "still open" list costs the next
+person the time to re-find something, and a stale "fixed" list is worse.
+
+### Listed OPEN, actually RESOLVED — corrected here
+- **The paid-lab scrim / TalkBack BLOCKER is FIXED.** `withMembershipPreview`
+  now renders the gated subtree with `accessibilityElementsHidden` +
+  `importantForAccessibility="no-hide-descendants"`, which closes both the
+  Android ACTION_CLICK path (never hit-tests, so the scrim was irrelevant to it)
+  and the iOS readable-through-the-scrim case.
+- **`status='refunded'` is NOT rejected.** Suspected to be blocked by a CHECK
+  constraint; the live constraint is
+  `status = ANY (ARRAY['active','lapsed','revoked','refunded'])`. Refuted.
+- **Quiz/exam figures are exposed** — `accessible` + `accessibilityRole="image"`
+  are present on the question figure.
+- **The store-review prompt IS Low-Light gated** — `reviewPrompt.ts` calls
+  `areOverlaysSuppressed()` and blocks on `low_light`.
+
+### Still genuinely open
+- **`store-notifications` is NOT DEPLOYED.** No refund, cancellation,
+  revocation or renewal is processed. A refunded member keeps access until
+  `expires_at`, which for a lifetime purchase is 2099.
+- **`SUBJECT_META_RATIFIED = true`** — 50 subjects' descriptions and career
+  lists are LIVE, and the file itself records that nobody knows whether the
+  copy was ratified or the flag was flipped early. OWNER DECISION; unchanged
+  deliberately, because flipping it would silently remove live content.
+- **The Android share-sheet fix is UNVERIFIED on a device.** The confirm is now
+  an in-sheet overlay, but Android window layering is the whole point and it has
+  not been checked on the Pixel. The phone runs the 2026-09-19 standalone build,
+  which cannot contain it.
+- **Liquid Studio RELATIVE PHASE** — hidden behind
+  `PHASE_CONTROL_HIDDEN_FOR_LAUNCH`, owner wants it finished after launch.
+
+### The half-fix sweep
+The recurring failure this week was not missed bugs but **fixes reported
+complete that covered one instance of their own class**. Five separate cases:
+the meter's label but not its value; a `getSession` sweep that grepped one line
+and missed six multiline sites plus the whole `getUser` sibling; a dead-mic
+guard applied to the meter frame and not the screens; a Time Trial fix landed in
+a file nothing imports; and a source guard that could only see one file.
+
+Each now has a guard that pins the CLASS repo-wide rather than the instance, and
+each guard was checked against the pre-fix tree to confirm it actually fails.
