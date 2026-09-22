@@ -22,7 +22,14 @@
 import { studyDisplayPct } from '../study/api';
 import { isScenariosExempt } from '../study/scenarioExempt';
 
-export type MethodPctRow = { item_states?: unknown; completion_pct?: number | null } | undefined;
+export type MethodPctRow =
+  | {
+      item_states?: unknown;
+      completion_pct?: number | null;
+      /** Set by `credit_time_trial` when a Time Trial is passed — see below. */
+      trial_passed?: boolean | null;
+    }
+  | undefined;
 
 export function methodDisplayPct(
   row: MethodPctRow,
@@ -50,6 +57,28 @@ export function smoothMethodPct(
   topicId: string,
   requiredPasses: number,
 ): number {
+  /**
+   * ⛔ A PASSED TIME TRIAL CLEARS THE METHOD — and this is where the app has to
+   * agree, because this is the formula the Dashboard, Enrollments, Profile and
+   * Directory all actually use.
+   *
+   * The server already treats it that way: `start_quiz_attempt` reads
+   * `trial_passed`, and `build_study_snapshot` returns
+   *   gate_pass = COALESCE(trial_passed,false) OR (completion AND time AND accuracy)
+   * So without this the learner passes a trial, is told the method is cleared
+   * toward the quiz, and watches the meter sit at the percentage they had —
+   * with the power sequencing still refusing to light the next stage, while the
+   * server would have let them straight through.
+   *
+   * ⚠️ IT WAS "FIXED" IN THE WRONG FILE FIRST (2026-09-22). The same change went
+   * into `features/dashboard/gates.ts`, whose header calls itself the
+   * Dashboard's mirror of the server gate — and which nothing imports. It was
+   * dead code, so the fix and its tests were real and changed nothing anyone
+   * could see. If you are here to adjust gate behaviour, this file is the live
+   * one; check for callers before trusting a name.
+   */
+  if (row?.trial_passed === true) return 100;
+
   return key === 'scenarios' && isScenariosExempt(topicId)
     ? 100
     : methodDisplayPct(row, itemCount, key, requiredPasses);
