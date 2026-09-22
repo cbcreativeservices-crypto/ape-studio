@@ -301,11 +301,33 @@ export async function saveMyRegistryName(name: string): Promise<boolean> {
   try {
     const userId = await myUserId();
     if (!userId) return false;
-    const { error } = await supabase
+    /**
+     * ⛔ NO ERROR IS NOT THE SAME AS "IT SAVED".
+     *
+     * An `update().eq()` that matches ZERO rows returns `error: null` — the
+     * write simply had nothing to write to. Without `.select()` there is no way
+     * to tell that apart from a successful update, so this returned `true` for
+     * a save that never happened. Row-level security is exactly how that
+     * occurs: the column grant here is scoped, and `own_users_update` restricts
+     * it to `auth_id = auth.uid()`, so a stale or mismatched `userId` is
+     * filtered out silently rather than refused loudly.
+     *
+     * It matters beyond a lost setting. This is the name that gets PRINTED on
+     * the certificate: `certificatePdf` reads the SERVER copy of
+     * `registry_name`, while the Profile screen keeps showing the device-local
+     * value it just "saved". The learner sees their corrected name in the app
+     * and a different one on the credential, with nothing anywhere reporting a
+     * failure.
+     *
+     * The house idiom, already applied in three other places after the same
+     * bug: ask for the row back and treat an empty result as failure.
+     */
+    const { data, error } = await supabase
       .from('users')
       .update({ registry_name: name.trim() })
-      .eq('id', userId);
-    return !error;
+      .eq('id', userId)
+      .select('id');
+    return !error && Array.isArray(data) && data.length > 0;
   } catch {
     return false;
   }

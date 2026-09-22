@@ -927,7 +927,28 @@ const LiveReadout = memo(function LiveReadout({
   // The same condition the pointer and the fill use, so what is SEEN and what
   // is ANNOUNCED can never disagree about whether there is a reading.
   const a11yLive = cents != null && !octaveOff;
-  const a11yCents = Math.round(view.shownCents);
+  /**
+   * ⛔ TWO DIFFERENT NUMBERS, ON PURPOSE (2026-09-22).
+   *
+   * `shownCents` is the NEEDLE: damped for readability and clamped to the
+   * drawable ±50 ¢ scale. `rawCents` is the READING, and it is what the screen
+   * prints. They are the same only inside the scale and after the damping has
+   * settled.
+   *
+   * The spoken text used the needle, so everything from 50 ¢ to 700 ¢ — the
+   * whole band between "off the scale" and "wrong octave" — announced as
+   * "50 cents sharp" while the display read +120¢. A sighted user saw how far
+   * out they were; a blind user was told they were at the edge of the meter and
+   * nothing more. Mid-glide it disagreed too: a jump to +20 ¢ announced 8 while
+   * the screen already said 20.
+   *
+   * So: the PROGRESSBAR VALUE stays clamped, because a progressbar declaring
+   * min/max ±50 must report a value inside its own range — that is the pointer
+   * position and it is honest about being one. The VALUETEXT, which is the
+   * reading read aloud, now carries the true number the screen shows.
+   */
+  const a11yCents = Math.round(view.shownCents); // pointer position, ±50
+  const a11ySpoken = cents != null ? Math.round(cents) : 0; // the reading, unclamped
   const meter = (
     <View style={styles.meterBlock}>
       <View
@@ -944,7 +965,18 @@ const LiveReadout = memo(function LiveReadout({
         // and after a note stopped it froze on the last value and kept
         // presenting it as current. The pointer and fill were always gated on
         // exactly this condition; the a11y value was not.
-        accessibilityValue={a11yLive ? { min: -50, max: 50, now: a11yCents } : { text: 'No stable pitch' }}
+        accessibilityValue={
+          a11yLive
+            ? {
+                min: -METER_RANGE,
+                max: METER_RANGE,
+                now: a11yCents,
+                // `text` wins over `now` for a screen reader, so the reading
+                // spoken here is the true one, not the clamped pointer.
+                text: `${Math.abs(a11ySpoken)} cents ${a11ySpoken === 0 ? 'in tune' : a11ySpoken > 0 ? 'sharp' : 'flat'}`,
+              }
+            : { text: 'No stable pitch' }
+        }
         // RNW 0.21 drops the accessibilityValue object. aria-valuetext gives
         // the sign a voice ("12 cents sharp") — a bare -12 is easy to mishear
         // as a range end.
@@ -953,7 +985,7 @@ const LiveReadout = memo(function LiveReadout({
         {...(a11yLive ? { 'aria-valuenow': a11yCents } : {})}
         aria-valuetext={
           a11yLive
-            ? `${Math.abs(a11yCents)} cents ${a11yCents === 0 ? 'in tune' : a11yCents > 0 ? 'sharp' : 'flat'}`
+            ? `${Math.abs(a11ySpoken)} cents ${a11ySpoken === 0 ? 'in tune' : a11ySpoken > 0 ? 'sharp' : 'flat'}`
             : 'No stable pitch'
         }
       >

@@ -32,7 +32,7 @@ import { PermissionsAndroid, Platform, Pressable, ScrollView, StyleSheet, Text, 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
-import { SkinnedTunerVu, TuneChevrons, VuTunerFullScreen } from './SkinnedTunerVu';
+import { centsSnap, SkinnedTunerVu, TuneChevrons, VuTunerFullScreen } from './SkinnedTunerVu';
 import { GlassButton } from '../../components/GlassButton';
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../../features/settings/store';
@@ -691,7 +691,7 @@ function LivePitchMode({
               ]}
             >
               {note != null && shownFreq != null
-                ? `${(Math.abs(note.cents) < 0.05 ? 0 : note.cents) >= 0 ? '+' : ''}${(Math.abs(note.cents) < 0.05 ? 0 : note.cents).toFixed(1)} cents · ${fmtHz(shownFreq)} Hz`
+                ? `${centsSnap(note.cents) >= 0 ? '+' : ''}${centsSnap(note.cents).toFixed(1)} cents · ${fmtHz(shownFreq)} Hz`
                 : 'no stable pitch'}
             </Text>
           </View>

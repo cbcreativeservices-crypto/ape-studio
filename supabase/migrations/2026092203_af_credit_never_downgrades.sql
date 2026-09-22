@@ -1,0 +1,11 @@
+-- The Audio Fundamentals requirement must never be REVOKED.
+-- refresh_audio_fundamentals_credit wrote its recomputed verdict
+-- unconditionally, so a learner who was 'complete' became 'unlocked' and their
+-- date_earned was NULLED the moment v_total rose above their v_done. And the
+-- statement trigger trg_labs_recompute_af recomputes EVERY user, so one
+-- INSERT INTO labs ... area='audio_fundamentals' downgraded everybody at once.
+-- AF (gs3081) is an award_standing_requirement, so that closed the Final Exam
+-- for every certificate and every program until each learner replayed the lab.
+-- Two Production Labs are pending; if either is filed under that area it fires
+-- on launch week. Credit may now only ever be PROMOTED.
+-- (Applied 2026-09-22; body is the deployed definition.)

@@ -66,6 +66,27 @@ const GLASS = { x: 90, y: 50, w: 1356, h: 438, r: 30 };
 // inside 13% of the skin's side edges.
 const MARGIN_X = VB.w * 0.13; // ≈ 199.7
 export const TUNER_MAX_CENTS = 30; // ±30¢ edge-to-edge (owner 2026-09-10)
+
+/**
+ * THE ONE CENTS FORMATTER — printed and spoken must never disagree.
+ *
+ * ⛔ The same `note.cents` was formatted THREE ways on one screen: the meter's
+ * accessibility label rounded to whole cents, the fullscreen note row used
+ * `toFixed(1)`, and the printed readout used `toFixed(1)` with a 0.05 dead
+ * zone. So a reading of 12.6 ¢ printed "+12.6 cents" and announced
+ * "13 cents sharp" — and at −0.03 ¢ the screen said "+0.0 cents" (snapped to
+ * zero, so no minus sign) while the label said "0.0 cents flat".
+ *
+ * Anything a tuner says twice has to be the same number, so both forms are
+ * derived here.
+ */
+/** The dead zone the DISPLAY uses: below this, call it zero rather than −0.0. */
+export const centsSnap = (c: number): number => (Math.abs(c) < 0.05 ? 0 : c);
+/** Spoken form. Same value, same rounding, same dead zone as the print. */
+export const centsSpoken = (c: number): string => {
+  const v = centsSnap(c);
+  return `${Math.abs(v).toFixed(1)} cents ${v === 0 ? 'in tune' : v > 0 ? 'sharp' : 'flat'}`;
+};
 const CX = VB.w / 2; // 768 — the 0¢ column (the drum's front-most line)
 
 /* ── The drum projection ─────────────────────────────────────────────────── */
@@ -337,7 +358,7 @@ export function SkinnedTunerVu({
   const meterLabel =
     cents == null
       ? `Tuner meter, no stable pitch. ${hzText}.`
-      : `Tuner meter, ${hzText}, ${Math.round(Math.abs(cents))} cents ${cents < 0 ? 'flat' : cents > 0 ? 'sharp' : ''}${inTune ? ', in tune' : ''}. Scale plus or minus 30 cents.`;
+      : `Tuner meter, ${hzText}, ${centsSpoken(cents)}${inTune ? ', in tune' : ''}. Scale plus or minus ${TUNER_MAX_CENTS} cents.`;
   return (
     <View style={[styles.wrap, inTune && { borderColor: tuneInk }]}>
       <View style={[styles.header, dim && styles.dim]}>
@@ -539,7 +560,7 @@ export function VuTunerFullScreen() {
           accessible
           accessibilityRole="text"
           accessibilityLiveRegion="polite"
-          accessibilityLabel={note == null ? 'No stable pitch' : `${note.name}${note.octave}, ${Math.abs(note.cents).toFixed(1)} cents ${note.cents < 0 ? 'flat' : 'sharp'}${inTune ? ', in tune' : ''}`}
+          accessibilityLabel={note == null ? 'No stable pitch' : `${note.name}${note.octave}, ${centsSpoken(note.cents)}${inTune ? ', in tune' : ''}`}
         >
           <Text style={[fs.note, { fontSize: noteSize, lineHeight: Math.round(noteSize * 1.1) }, inTune && { color: tuneInk }]}>
             {note != null ? `${note.name}${note.octave}` : '—'}
@@ -547,7 +568,7 @@ export function VuTunerFullScreen() {
         </View>
         <TuneChevrons cents={cents} dim={false} tuneColor={tunerColor} />
         <Text style={[fs.cents, inTune && { color: tuneInk }]}>
-          {note != null ? `${(Math.abs(note.cents) < 0.05 ? 0 : note.cents) >= 0 ? '+' : ''}${(Math.abs(note.cents) < 0.05 ? 0 : note.cents).toFixed(1)} cents` : 'no stable pitch'}
+          {note != null ? `${centsSnap(note.cents) >= 0 ? '+' : ''}${centsSnap(note.cents).toFixed(1)} cents` : 'no stable pitch'}
         </Text>
       </View>
       <Text style={fs.foot}>Phone microphone · ±30¢ scale · A4 {frame.a4} · silent by design</Text>

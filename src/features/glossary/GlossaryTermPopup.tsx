@@ -119,7 +119,23 @@ export function GlossaryTermPopup({
             }
           : prev,
       );
-    })();
+    })().catch(() => {
+      /**
+       * ⛔ A THROW HERE USED TO LEAVE A PERMANENT SPINNER.
+       *
+       * This IIFE had no `catch`, and `setLoading(false)` is only reached on
+       * the paths that return normally. So anything that THREW — probeGateway,
+       * the gateway fetch, a malformed row — left `loading` true forever: a
+       * spinner with no message, no retry and no explanation, on a popup the
+       * learner opened by tapping a term mid-sentence.
+       *
+       * The screen already has an honest error state for exactly this; nothing
+       * was reaching it. Failing into it is strictly better than spinning.
+       */
+      if (cancelled) return;
+      setLoadError(true);
+      setLoading(false);
+    });
     return () => {
       cancelled = true;
     };
