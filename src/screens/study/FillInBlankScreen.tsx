@@ -41,6 +41,7 @@ import { BLANK, fibSentence } from '../../features/study/sentences';
 import { StudySession } from '../../features/study/sync';
 import { loadLocalMethodStates, mergeItemStates, saveLocalMethodStates } from '../../features/study/localProgress';
 import { supabase } from '../../lib/supabase';
+import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../../features/commercial/realAccount';
 import { SuggestCorrectionButton } from '../../features/study/SuggestCorrectionButton';
 import { incBrainOutput, resetBrainOutput, setRunning, usePaceSettings, useRunning } from '../../features/study/paceStore';
@@ -130,8 +131,12 @@ export function FillInBlankScreen({ navigation, route }: Props) {
           // Device-mirror resume merge — SIGNED-IN only (same ruling as the
           // flashcards fix 2026-08-17; QA night 2026-08-31 found FIB/Matching
           // never got it, and a single answer then clobbered the mirror).
-          supabase.auth
-            .getSession()
+          // Bounded: this sits inside a Promise.all that gates the screen's
+          // ONLY load, so one stalled keychain read leaves the learner on an
+          // empty screen with no cards and no error. Flashcards was fixed on
+          // 2026-09-21; these two siblings were missed because the call is
+          // split across lines and the sweep grepped for it on one.
+          safeSession(supabase.auth.getSession(), 'fill_in_blank')
             .then(({ data }) => (isRealAccount(data.session) ? loadLocalMethodStates(achievementId, 'fill_in_blank') : null))
             .catch(() => null),
         ]);

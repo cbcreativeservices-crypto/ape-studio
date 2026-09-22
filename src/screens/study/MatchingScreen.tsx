@@ -38,6 +38,7 @@ import { matchingSentenceV2 } from '../../features/study/sentences';
 import { StudySession } from '../../features/study/sync';
 import { loadLocalMethodStates, mergeItemStates, saveLocalMethodStates } from '../../features/study/localProgress';
 import { supabase } from '../../lib/supabase';
+import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../../features/commercial/realAccount';
 import { SuggestCorrectionButton } from '../../features/study/SuggestCorrectionButton';
 import { incBrainOutput, resetBrainOutput, setRunning, usePaceSettings, useRunning } from '../../features/study/paceStore';
@@ -143,8 +144,12 @@ export function MatchingScreen({ navigation, route }: Props) {
           fetchMethodState(achievementId, 'matching'),
           // Device-mirror resume merge — SIGNED-IN only (flashcards ruling
           // 2026-08-17; ported QA night 2026-08-31).
-          supabase.auth
-            .getSession()
+          // Bounded: this sits inside a Promise.all that gates the screen's
+          // ONLY load, so one stalled keychain read leaves the learner on an
+          // empty screen with no cards and no error. Flashcards was fixed on
+          // 2026-09-21; these two siblings were missed because the call is
+          // split across lines and the sweep grepped for it on one.
+          safeSession(supabase.auth.getSession(), 'matching')
             .then(({ data }) => (isRealAccount(data.session) ? loadLocalMethodStates(achievementId, 'matching') : null))
             .catch(() => null),
         ]);

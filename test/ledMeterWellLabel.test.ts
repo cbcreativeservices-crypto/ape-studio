@@ -17,6 +17,7 @@
  */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 
 const SEG_COUNT = 21;
 
@@ -62,4 +63,71 @@ test('a zero fill still announces zero, not the min-1 display floor', () => {
   // LedMeterWell lights at least one segment so the meter never looks dead.
   // That floor is a DISPLAY choice and must not reach the announcement.
   assert.equal(announcedNew(0), 0);
+});
+
+/* ────────────────────────────────────────────────────────────────────────────
+ * THE OTHER HALF — the progressbar VALUE, not the label. (2026-09-22)
+ *
+ * The fix above corrected the label and stopped there. `LedMeterWell` handed
+ * `LedMeter` a correct label string while `LedMeter` went on computing its own
+ * `accessibilityValue` / `aria-valuenow` from `filled` — the segment count. So
+ * the same control announced two different numbers at once, and the tests
+ * passed because they only ever modelled the label.
+ *
+ * Found by an independent pass on 2026-09-22 looking for values that are
+ * RECONSTRUCTED rather than passed through. Worth remembering: the first fix
+ * was verified against the thing it changed, not against the whole control.
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+/** What LedMeter announced as its VALUE before `a11yPct` existed. */
+const valueOld = (filled: number) =>
+  Math.round((Math.max(0, Math.min(SEG_COUNT, Math.round(filled))) / SEG_COUNT) * 100);
+/** What it announces now, when the caller passes the truth. */
+const valueNew = (pct: number) => Math.max(0, Math.min(100, Math.round(pct)));
+/** LedMeterWell's DISPLAY FLOOR: never show a dead meter. */
+const withFloor = (filled: number) => Math.max(1, filled);
+
+test('the progressbar VALUE now agrees with the label it sits next to', () => {
+  const pct = (27 / 226) * 100; // the same 11.9% case as above
+  // 11.9469% -> 3 segments -> 14. The VALUE was computed exactly the way the
+  // old LABEL was, so it reproduced the original 12-vs-14 gap one layer down.
+  assert.equal(valueOld(segmentsForPct(pct)), 14, 'the old value really did say 14');
+  assert.equal(printed(pct), 12, 'while the screen said 12');
+  assert.equal(valueNew(pct), 12, 'label and value must now match');
+});
+
+test('⛔ the display floor must never reach the announcement', () => {
+  // LedMeterWell lights one segment at 0% so the meter does not look broken.
+  // That floor is a VISUAL choice; announcing it tells a blind learner they
+  // have made progress they have not made.
+  assert.equal(valueOld(withFloor(0)), 5, 'the old value announced 5% at zero');
+  assert.equal(valueNew(0), 0, 'zero must announce as zero');
+});
+
+test('label and value agree across the whole range', () => {
+  const bad: string[] = [];
+  for (let n = 0; n <= 1000; n++) {
+    const pct = (n / 1000) * 100;
+    if (valueNew(pct) !== announcedNew(pct)) bad.push(pct.toFixed(1));
+  }
+  assert.deepEqual(bad, [], `label != value at: ${bad.slice(0, 10).join(', ')}`);
+});
+
+test('the old derivation disagreed with the label for most values — so this mattered', () => {
+  let wrong = 0;
+  for (let n = 0; n <= 100; n++) {
+    if (valueOld(withFloor(segmentsForPct(n))) !== announcedNew(n)) wrong++;
+  }
+  assert.ok(wrong > 50, `expected the old VALUE to be wrong for most percentages, got ${wrong}/101`);
+});
+
+test('SOURCE GUARD: LedMeterWell must hand LedMeter the real percentage', () => {
+  // The bug was a missing prop, not bad arithmetic, so this is what pins it.
+  const src = readFileSync(new URL('../src/components/LedMeter.tsx', import.meta.url), 'utf8');
+  const well = src.slice(src.indexOf('export function LedMeterWell'));
+  assert.match(
+    well,
+    /<LedMeter[^>]*a11yPct=\{pct\}/s,
+    'LedMeterWell must pass a11yPct, or the value is re-derived from the segment count again',
+  );
 });

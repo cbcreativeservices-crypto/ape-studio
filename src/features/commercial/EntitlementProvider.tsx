@@ -377,8 +377,13 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
       lastUid.current = uid;
       uidSeeded.current = true;
     };
-    void supabase.auth
-      .getSession()
+    // ⛔ BOUNDED. `resolved` has exactly ONE setter — the .finally() below —
+    // and a getSession() that HANGS runs neither .then, .catch nor .finally.
+    // The .catch under it names the consequence: CourseSelection gates first
+    // paint on `resolved` and shows a bare spinner with no text, no Retry and
+    // no timeout. A reject was handled; a stall was not, and a stall is the
+    // failure this app has actually seen twice.
+    void safeSession(supabase.auth.getSession(), 'EntitlementProvider/boot')
       .then(async ({ data }) => {
         clearLocalOnUserChange(identityOf(data.session));
         // ── START FROM WHAT THE SERVER LAST CONFIRMED (2026-09-18) ───────────

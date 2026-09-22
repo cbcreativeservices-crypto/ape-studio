@@ -70,6 +70,7 @@ import {
 import { isHazardTerm } from '../../lib/hazard';
 import { CautionBadge } from '../../components/CautionBadge';
 import { supabase } from '../../lib/supabase';
+import { safeSession } from '../../lib/getSessionSafe';
 import { V3_CURRICULUM_VERSION_ID } from '../../data/v3Curriculum';
 import { isCalcBackedTerm, calcLinkForTerm } from '../lab/calc/calcGlossaryLinks';
 import { SUPABASE_URL } from '../../lib/env';
@@ -1120,8 +1121,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
     let alive = true;
     void probeGateway().then((g) => alive && setGateway(g));
     void readConsent().then((c) => alive && setConsent(c));
-    supabase.auth
-      .getSession()
+    void safeSession(supabase.auth.getSession(), 'Glossary')
       .then(({ data }) => alive && setHasSession(!!data.session))
       .catch(() => alive && setHasSession(false));
     // The key can appear (minted here) or vanish (purged after 7 days, or the

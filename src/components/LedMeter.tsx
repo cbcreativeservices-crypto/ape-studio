@@ -35,6 +35,7 @@ export function LedMeter({
   flat = false,
   midi = false,
   a11yLabel,
+  a11yPct,
 }: {
   filled: number;
   /** Fixed per-segment width → the meter self-sizes (compact panel mode). */
@@ -62,10 +63,33 @@ export function LedMeter({
    *  exposed as a progressbar with this label and its percent value. Left unset
    *  for fast audio meters, which would spam a screen reader every frame. */
   a11yLabel?: string;
+  /**
+   * The TRUE percentage, when the caller has one.
+   *
+   * ⛔ WITHOUT THIS THE NUMBER IS RE-DERIVED FROM THE SEGMENT COUNT, and that
+   * is the same bug `LedMeterWell` was fixed for on 2026-09-21 — it survived
+   * one layer down. The label was corrected to carry the caller's real
+   * percentage while `accessibilityValue` / `aria-valuenow` below went on
+   * being computed from `filled`, which is the value already rounded into 21
+   * segments. So the meter announced two different numbers at once: the label
+   * said "12% complete" and the progressbar value said 10.
+   *
+   * It is worst at zero, because `LedMeterWell` lights a minimum of one
+   * segment so the meter never looks dead: a genuine 0% arrives here as
+   * `filled = 1` and is announced as 5%. A display floor must never reach the
+   * announcement.
+   *
+   * Pass the same number you print. Falls back to the derived value only when
+   * the caller genuinely has nothing truer.
+   */
+  a11yPct?: number;
 }) {
   const f = Math.max(0, Math.min(SEG_COUNT, Math.round(filled)));
   const segColor = midi ? midiColorFor : colorFor;
-  const pct = Math.round((f / SEG_COUNT) * 100);
+  const pct =
+    a11yPct != null
+      ? Math.max(0, Math.min(100, Math.round(a11yPct)))
+      : Math.round((f / SEG_COUNT) * 100);
   const a11y = a11yLabel
     // RNW 0.21 drops the accessibilityValue OBJECT, so on web the meter announced
     // as a progressbar with no reading at all. The aria- trio carries the percent
@@ -165,7 +189,10 @@ export function LedMeterWell({
     <View style={styles.well}>
       {/* Study-method progress meters (flashcards + homework) ride the MIDI
        *  blue→red velocity ramp — start blue, climb to red (owner 2026-08-13). */}
-      <LedMeter filled={Math.max(1, filled)} fullWidth midi a11yLabel={`${label}, ${pct}% complete`} />
+      {/* `a11yPct` carries the SAME number the label states. Without it the
+       *  meter re-derives the value from `filled` — and `Math.max(1, …)` below
+       *  is a display floor, so 0% would be announced as 5%. */}
+      <LedMeter filled={Math.max(1, filled)} fullWidth midi a11yLabel={`${label}, ${pct}% complete`} a11yPct={pct} />
     </View>
   );
 }

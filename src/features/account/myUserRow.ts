@@ -24,11 +24,12 @@
  * `.from('users')…single()` anywhere in the app.
  */
 import { supabase } from '../../lib/supabase';
+import { safeUser } from '../../lib/getSessionSafe';
 
 /** The auth uid, or null when the session has not hydrated yet. */
 async function authUid(): Promise<string | null> {
   try {
-    const { data } = await supabase.auth.getUser();
+    const { data } = await safeUser(supabase.auth.getUser(), 'myUserRow');
     return data?.user?.id ?? null;
   } catch {
     return null;

@@ -76,3 +76,34 @@ export async function safeSession<T extends AnySession>(p: Promise<T>, whereFrom
 export async function hasSafeSession<T extends AnySession>(p: Promise<T>, whereFrom: string): Promise<boolean> {
   return !!(await safeSession(p, whereFrom)).data.session;
 }
+
+type AnyUser = { data: { user: unknown } };
+
+/**
+ * The same bound for `supabase.auth.getUser()`.
+ *
+ * ⚠️ `getUser()` is a NETWORK round trip, not a keychain read, so it fails in
+ * a second way `getSession()` does not: on a dead or captive connection it can
+ * sit unresolved until the platform's own socket timeout, which is far longer
+ * than a person will wait and is not guaranteed to fire at all. Everywhere it
+ * gates a screen's only load — or worse, sits in front of a write to disk on
+ * the branch entered *because* the network just failed — an unbounded wait is
+ * the same defect as the session one, reached by a different road.
+ */
+export async function safeUser<T extends AnyUser>(p: Promise<T>, whereFrom: string): Promise<T> {
+  const none = { data: { user: null } } as unknown as T;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      p.catch(() => none),
+      new Promise<T>((resolve) => {
+        timer = setTimeout(() => {
+          console.warn(`[auth] getUser stalled >${SESSION_TIMEOUT_MS}ms in ${whereFrom} — continuing as signed out`);
+          resolve(none);
+        }, SESSION_TIMEOUT_MS);
+      }),
+    ]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}

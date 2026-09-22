@@ -17,6 +17,7 @@
  */
 import { useEffect, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
+import { safeSession } from '../../lib/getSessionSafe';
 import { navigationRef } from '../../navigation/navigationRef';
 import { consumeIntentionalSignOut } from '../auth/intentionalSignOut';
 import { isRealAccount } from '../commercial/realAccount';
@@ -26,8 +27,7 @@ export function SessionExpiryGuard() {
   // session, so the answer has to be remembered from the last one that did.
   const wasRealAccount = useRef(false);
   useEffect(() => {
-    supabase.auth
-      .getSession()
+    void safeSession(supabase.auth.getSession(), 'SessionExpiryGuard')
       .then(({ data }) => {
         wasRealAccount.current = isRealAccount(data.session);
       })
