@@ -160,8 +160,57 @@ let FORMULA_CACHE: Promise<Record<string, { symbolic: string; words: string | nu
  * timer has to elapse first. Coming back to the foreground cancels it. The
  * loaders already handle a cold start with their own progress UI, and a failed
  * load is not cached, so re-entry after a release is the normal cold path.
+ *
+ * ⛔ 60 SECONDS BROKE THE EXACT CASE THE PARAGRAPH ABOVE PROMISES (owner
+ * 2026-09-22: "my iphone froze the app when i received and viewed a sms
+ * message - when i returned the app was frozen").
+ *
+ * Reading and replying to a text takes longer than a minute, so the window
+ * named as safe — "checking a message" — was the window that dropped the
+ * corpus. Coming back re-paged 26,975 rows over 27 sequential requests while
+ * the glossary sat on screen fully drawn and unresponsive, which is what a
+ * frozen app looks like from the outside. Sentry APE-STUDIO-F recorded it as
+ * "App hanging for at least 2000 ms" with the paging calls as the last
+ * breadcrumbs.
+ *
+ * Five minutes covers reading a message or taking a call and still frees the
+ * corpus for someone who has genuinely moved on. It barely weakens the OOM
+ * protection this valve exists for: an app idle in the background for five
+ * minutes is one iOS is usually about to reclaim anyway, and the release only
+ * ever mattered for a much longer absence.
+ *
+ * The window is not the whole fix. A reload must not freeze the app EITHER —
+ * see `yieldToUi` in the loaders and the `setLoading(true)` on re-entry.
  */
-const CACHE_RELEASE_MS = 60000;
+const CACHE_RELEASE_MS = 300000;
+
+/**
+ * Has the corpus been dropped (or never loaded)?
+ *
+ * The focus effect asks this so that a reload SHOWS ITSELF. Without it the
+ * screen kept the previous list on screen and simply stopped responding —
+ * indistinguishable from a crash, and the reason the report above says
+ * "frozen" rather than "slow".
+ */
+function corpusNeedsLoad(table: 'glossary' | 'glossary_browse_v'): boolean {
+  // `table` matters: loadAllEntries drops the cache itself when the table
+  // changes (a guest signing in swaps teasers for full definitions), and that
+  // re-page is just as long as the one after a release.
+  return ENTRIES_CACHE === null || ENTRIES_TABLE !== table;
+}
+
+/**
+ * Hand the JS thread back to the runtime for one turn.
+ *
+ * The corpus loops below await one request after another and then parse each
+ * page. Between pages there was nothing for queued touches, timers or a
+ * re-render to run in, so the whole load was one unbroken block of work. A
+ * zero-delay timer is the portable way to let that queue drain, and it costs
+ * one tick per page — ~27 ticks for the full corpus.
+ */
+function yieldToUi(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 0));
+}
 let releaseTimer: ReturnType<typeof setTimeout> | null = null;
 AppState.addEventListener('change', (st) => {
   if (releaseTimer) {
@@ -232,6 +281,7 @@ function loadAllEntries(table: 'glossary' | 'glossary_browse_v'): Promise<Entry[
         if (error) throw error;
         all.push(...((data ?? []) as Entry[]));
         if (!data || data.length < PAGE_E) break;
+        await yieldToUi(); // the corpus is 27 pages — let the UI breathe between them
       }
       return all;
     },
@@ -264,6 +314,7 @@ async function fetchAllGlossaryMedia(): Promise<Record<string, string>> {
       if (!out[m.glossary_id]) out[m.glossary_id] = `${SUPABASE_URL}/storage/v1/object/public/${m.url}`;
     }
     if (data.length < PAGE) break;
+    await yieldToUi();
   }
   return out;
 }
@@ -324,6 +375,7 @@ async function fetchAllGlossaryFormulas(
       }
     }
     if (data.length < PAGE_F) break;
+    await yieldToUi();
   }
   return out;
 }
@@ -1755,6 +1807,13 @@ ${COPY.glossaryFreeAllowance}`,
           // Full corpus — session-cached (owner 2026-08-10): downloads once per
           // app session, so re-focusing the Glossary is instant instead of
           // re-paging ~22.7k rows every visit.
+          //
+          // ⛔ SAY SO WHEN THE CACHE IS GONE (owner 2026-09-22 freeze report).
+          // On a re-focus `loading` is already false, so a dropped cache re-paged
+          // the whole corpus with the OLD list still on screen and nothing
+          // responding — the app looked frozen rather than busy. This is a
+          // no-op on the normal cache hit, which is the common path.
+          if (alive && corpusNeedsLoad(table)) setLoading(true);
           const all = await loadAllEntries(table);
           if (alive) setEntries(all);
         } catch (e) {

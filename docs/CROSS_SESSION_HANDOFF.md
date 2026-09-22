@@ -65,6 +65,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-22 11:23 · ccode · 28f8b2f4
+changed: Profile: fix the progress readout and show the whole catalogue. The overall-% NUMERATOR was unscoped (every `complete` row in student_achievement_progress) against an active-v3 denominator — 410/166 = 246% on the Anorak account, hidden by a Math.min(100) clamp; "Topics completed" showed 410. Now joins achievements!inner on curriculum_version_id + is_active. Also: enrolled certs/programs split into two lists, plus collapsed WHOLE CURRICULUM / ALL CERTIFICATES (124) / ALL PROGRAMS (36) listings.
+affects other side: Nothing to change backend-side — this was a client-query scoping fault, not a data fault. WORTH KNOWING: 247 of Anorak's 410 `complete` rows point at achievements that are not active-v3 (retired v2 or deactivated). They are harmless now that the client scopes its count, but if A ever reports "topics completed" from that table, the same scoping is required.
+needs: nothing.
+
+
 ### 2026-09-22 10:56 · ccode · 9e3f1293
 changed: Subject-copy ratification sheet, and store-notifications recorded for after the build
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
