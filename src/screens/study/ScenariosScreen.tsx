@@ -31,7 +31,6 @@ import {
   completeScenarioRound,
   fetchScenarioHomework,
   recordScenarioAnswer,
-  startScenarioCycle,
   type RoundReport,
   type ScenarioAnswer,
   type ScenarioHomework,
@@ -81,7 +80,6 @@ export function ScenariosScreen({ route }: Props) {
   /** Did the server actually record the round this report is for?
    *  `null` = still asking. Drives the honest line on the report card. */
   const [roundSaved, setRoundSaved] = useState<boolean | null>(null);
-  const [busy, setBusy] = useState(false);
   // Why the nocontent view is showing: 'empty' = topic genuinely has no
   // scenarios (marked exempt so the quiz can still unlock); 'error' = the
   // homework failed to load (recoverable, NOT exempt).
@@ -99,12 +97,6 @@ export function ScenariosScreen({ route }: Props) {
   // saw batched state and could judge one question twice. Declared here (with
   // the other refs) so clearInteraction() can release it — see below.
   const answeredItemRef = useRef<string | null>(null);
-  // Synchronous latch for "Start a fresh set". `busy` is useState, so a
-  // same-tick double tap read it still false and fired start_scenario_cycle
-  // twice — two re-shuffles, and whichever plan lost the race was discarded
-  // under the learner. The ref is set BEFORE the first await and released on
-  // every exit path (including the failure one, or the button stays dead).
-  const freshCycleRef = useRef(false);
 
   // Pace timer (practice aid — device-local, never blocks study). Available on
   // the 3 HOMEWORK methods, Scenarios included (owner 2026-08-13).
@@ -407,24 +399,26 @@ export function ScenariosScreen({ route }: Props) {
     enterRound(hw?.rounds[activeRound] ?? [], activeRound + 1);
   };
 
-  const onStartFreshCycle = async () => {
-    if (busy || freshCycleRef.current) return;
-    freshCycleRef.current = true; // set BEFORE the await — `busy` lands too late
-    setBusy(true);
-    try {
-      const fresh = await startScenarioCycle(achievementId);
-      if (!fresh) return;
-      answersRef.current = { ...fresh.answers };
-      setHw(fresh);
-      setReport(null);
-      enterRound(fresh.rounds[0] ?? [], 1);
-    } finally {
-      // Always release, on the null/failure path too, or "Start a fresh set"
-      // stays disabled forever with no way back to it but leaving the screen.
-      freshCycleRef.current = false;
-      setBusy(false);
-    }
-  };
+  /**
+   * ⛔ "START A FRESH SET" WAS REMOVED (owner 2026-09-22).
+   *
+   * It was the one place in the app where a learner's progress could go
+   * BACKWARDS. The button called `start_scenario_cycle`, which does this:
+   *
+   *     update student_method_progress
+   *        set completion_pct = 0
+   *      where ... and method_key = 'scenarios';
+   *
+   * Scenarios is the last stage of the power sequence, so zeroing it powered
+   * the TOPIC QUIZ back off. A learner who had finished everything, unlocked
+   * the quiz, and then tapped a primary-styled button offering more practice
+   * silently lost the unlock — with nothing on screen warning them.
+   *
+   * ⚠️ IF PRACTICE-AGAIN COMES BACK, IT MUST NOT RESET completion_pct. Re-shuffle
+   * the assignment and leave the meter alone; the RPC needs changing first, not
+   * just the button. `startScenarioCycle` in features/study/scenarioHomework.ts
+   * is left in place, unwired, with the same warning.
+   */
 
   /* ---- loading ---- */
   // Header + spinner (parity with fill-in-blank / matching): a bare empty View
@@ -545,10 +539,9 @@ export function ScenariosScreen({ route }: Props) {
         <Text style={styles.doneTitle}>ALL THREE ROUNDS COMPLETE</Text>
         <Text style={styles.emptyBody}>
           You've worked through every scenario for this topic — the scenarios meter on your Dashboard
-          is full. Come back any time for a fresh, re-shuffled set.
+          is full, and the topic quiz is unlocked.
         </Text>
         <View style={{ width: 240, marginTop: 8, gap: 10 }}>
-          <StudioButton label={busy ? 'Shuffling…' : 'Start a fresh set'} variant="primary" small disabled={busy} onPress={onStartFreshCycle} />
           <StudioButton
             label="Back to Dashboard"
             variant="secondary"

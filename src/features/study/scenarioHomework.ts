@@ -283,6 +283,27 @@ export async function completeScenarioRound(
 }
 
 /** Re-shuffle a fresh 3-round cycle after all 3 are done. Returns the new plan. */
+/**
+ * ⛔ UNWIRED ON PURPOSE (owner 2026-09-22) — DO NOT CALL AS-IS.
+ *
+ * This maps to `start_scenario_cycle`, which re-shuffles the assignment AND
+ * does this:
+ *
+ *     update student_method_progress set completion_pct = 0
+ *      where ... and method_key = 'scenarios';
+ *
+ * Scenarios is the last stage of the Dashboard power sequence, so zeroing it
+ * powers the TOPIC QUIZ back off. Its only caller was a primary-styled
+ * "Start a fresh set" button on the scenarios completion screen, which meant a
+ * learner who had finished everything and unlocked the quiz could silently lose
+ * that unlock by accepting an offer of more practice. It was the one place in
+ * the app where progress could go backwards, so the button was removed.
+ *
+ * Kept, rather than deleted, because it is an honest wrapper over a live RPC
+ * and the knowledge is worth more than the line count. If practice-again
+ * returns, change the RPC FIRST so it re-shuffles without touching
+ * completion_pct — a new button over this behaviour re-creates the bug.
+ */
 export async function startScenarioCycle(achievementId: string): Promise<ScenarioHomework | null> {
   try {
     const { data, error } = await supabase.rpc('start_scenario_cycle', { p_achievement_id: achievementId });
