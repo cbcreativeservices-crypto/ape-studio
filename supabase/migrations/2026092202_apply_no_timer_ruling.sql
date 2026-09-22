@@ -1,0 +1,22 @@
+-- Apply the 2026-08-06 governance ruling: NO timer on the study-method gates.
+-- OWNER CONFIRMED 2026-09-22.
+--
+-- The ruling was "flashcards seen-once / others correct-once / NO timer", and
+-- min_engagement_seconds was never actually changed in the database. It sat at
+-- 360 on all four methods, and start_quiz_attempt genuinely enforces it.
+--
+-- That alone would have been a 6-minute wait per method. What made it a
+-- blocker is that SCENARIOS never accrues engagement at all -- it routes
+-- through its own queue instead of the study-sync engine, so
+-- student_method_progress.engagement_seconds is 0 on every scenarios row while
+-- other methods reach 3,455. And 172 of the 175 active v3 topics list
+-- scenarios as applicable.
+--
+-- So on 172 topics the server required 360 seconds of a value nothing ever
+-- writes, and the quiz gate could not open by any normal path -- while the
+-- client's gate readout, which only checks completion, showed it OPEN. The
+-- learner saw a green gate and the server refused them.
+--
+-- Setting this to 0 is not a relaxation; it is applying the decision that was
+-- already made. Completion still gates the quiz (seen-once / correct-once).
+UPDATE public.study_methods SET min_engagement_seconds = 0;
