@@ -34,6 +34,7 @@ import { GalleryArt } from './GalleryArt';
 import { CompareCanvas, CompareTable, type CompareItem } from './GalleryCompare';
 import { PatternFigure } from './PatternFigure';
 import { confirmDialog } from '../../../lib/confirm';
+import { goToCymatics } from './goToCymatics';
 
 type Mode = 'browse' | 'open' | 'art' | 'compare';
 type Filter = 'all' | StudioId | 'fav';
@@ -254,9 +255,9 @@ export function GalleryScreen() {
                   <Text style={styles.emptyTitle}>NOTHING SAVED YET</Text>
                   <Text style={styles.body}>Every studio has a SAVE key in its header. Press it while a figure is on the plate, in the dish or on the drumhead — the exact experiment comes here, ready to reopen, colour, compare and print.</Text>
                   <View style={styles.chips}>
-                    <LabChip label="Open the plate studio ›" selected={false} onPress={() => navigation.navigate('CymaticsPlateStudio', {})} />
-                    <LabChip label="The dish ›" selected={false} onPress={() => navigation.navigate('CymaticsLiquidStudio', {})} />
-                    <LabChip label="The drum ›" selected={false} onPress={() => navigation.navigate('CymaticsMembraneStudio', {})} />
+                    <LabChip label="Open the plate studio ›" selected={false} onPress={() => goToCymatics(navigation, 'CymaticsPlateStudio', {})} />
+                    <LabChip label="The dish ›" selected={false} onPress={() => goToCymatics(navigation, 'CymaticsLiquidStudio', {})} />
+                    <LabChip label="The drum ›" selected={false} onPress={() => goToCymatics(navigation, 'CymaticsMembraneStudio', {})} />
                   </View>
                 </View>
               ) : visible.length === 0 ? (

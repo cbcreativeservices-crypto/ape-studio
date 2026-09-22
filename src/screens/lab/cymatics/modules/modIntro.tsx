@@ -15,6 +15,7 @@ import { formatHz } from '../../../../features/cymatics/music';
 import { requireVizPlate, skiaAvailable } from '../skiaGate';
 import type { CymaticsModuleProps } from '../CymaticsModuleScreen';
 import { P, PlateDemo, ResponseStrip, excitableModes } from './shared';
+import { goToCymatics } from '../goToCymatics';
 
 export function IntroModule({ width, focused }: CymaticsModuleProps) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -109,7 +110,7 @@ export function IntroModule({ width, focused }: CymaticsModuleProps) {
         </Text>
         <Pressable
           style={styles.goBtn}
-          onPress={() => navigation.navigate('CymaticsModule', { id: 'change' })}
+          onPress={() => goToCymatics(navigation, 'CymaticsModule', { id: 'change' })}
           accessibilityRole="button"
           accessibilityLabel="Open Change One Thing and test your prediction"
         >

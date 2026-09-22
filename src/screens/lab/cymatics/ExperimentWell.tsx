@@ -27,6 +27,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors, fonts } from '../../../theme/tokens';
 import { EXPERIMENTS, experimentRoute, type Experiment } from '../../../features/cymatics/presets';
 import type { RootStackParamList } from '../../../navigation/types';
+import { goToCymatics } from './goToCymatics';
 
 /* ── tick-off persistence ───────────────────────────────────────────────────
    One key for the whole series, `{ [experimentId]: number[] }`. Never throws:
@@ -200,7 +201,7 @@ export function ExperimentWell({ experiment }: { experiment: Experiment }) {
               </Text>
               <Pressable
                 style={styles.finaleBtn}
-                onPress={() => navigation.navigate('CymaticsModule', { id: 'myth' })}
+                onPress={() => goToCymatics(navigation, 'CymaticsModule', { id: 'myth' })}
                 accessibilityRole="button"
                 accessibilityLabel="Check yourself with Evidence versus Myth"
               >
@@ -240,7 +241,7 @@ export function ExperimentWell({ experiment }: { experiment: Experiment }) {
         >
           <Text style={[styles.navText, !prev && styles.navTextOff]}>‹ PREV</Text>
         </Pressable>
-        <Pressable style={styles.navBtn} onPress={() => navigation.navigate('CymaticsModule', { id: 'experiments' })} accessibilityRole="button" accessibilityLabel="Back to the list of all experiments">
+        <Pressable style={styles.navBtn} onPress={() => goToCymatics(navigation, 'CymaticsModule', { id: 'experiments' })} accessibilityRole="button" accessibilityLabel="Back to the list of all experiments">
           <Text style={styles.navText}>ALL 17</Text>
         </Pressable>
         <Pressable

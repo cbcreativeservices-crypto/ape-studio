@@ -58,6 +58,7 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { requireVizLiquid, skiaAvailable } from './skiaGate';
 import type { LiquidViewMode } from './vizLiquid';
 import { useDriveTone } from './useDriveTone';
+import { goToCymatics } from './goToCymatics';
 
 const F_MIN = 10;
 const F_MAX = 200;
@@ -534,7 +535,7 @@ export function LiquidStudioScreen() {
         {savedMsg ? (
           <View style={styles.savedRow}>
             <Text style={styles.savedText}>{savedMsg === 'failed' ? 'SAVE FAILED — TRY AGAIN' : 'SAVED TO THE GALLERY ✓'}</Text>
-            {savedMsg !== 'failed' ? <LabChip label="Open the gallery ›" selected={false} onPress={() => navigation.navigate('CymaticsGallery', { id: savedMsg.id })} /> : null}
+            {savedMsg !== 'failed' ? <LabChip label="Open the gallery ›" selected={false} onPress={() => goToCymatics(navigation, 'CymaticsGallery', { id: savedMsg.id })} /> : null}
           </View>
         ) : null}
         {view === 'height' || view === 'contours' || view === 'liquid3d' || view === 'section' ? (
@@ -596,9 +597,9 @@ export function LiquidStudioScreen() {
         </View>
 
         <View style={styles.chips}>
-          <LabChip label="Guided experiments ›" selected={false} onPress={() => navigation.navigate('CymaticsModule', { id: 'experiments' })} />
-          <LabChip label="Chladni plate studio ›" selected={false} onPress={() => navigation.navigate('CymaticsPlateStudio', {})} />
-          <LabChip label="Evidence vs myth ›" selected={false} onPress={() => navigation.navigate('CymaticsModule', { id: 'myth' })} />
+          <LabChip label="Guided experiments ›" selected={false} onPress={() => goToCymatics(navigation, 'CymaticsModule', { id: 'experiments' })} />
+          <LabChip label="Chladni plate studio ›" selected={false} onPress={() => goToCymatics(navigation, 'CymaticsPlateStudio', {})} />
+          <LabChip label="Evidence vs myth ›" selected={false} onPress={() => goToCymatics(navigation, 'CymaticsModule', { id: 'myth' })} />
         </View>
         <Text style={styles.honest}>SIMULATION — no fluid-dynamics solver runs on the phone.</Text>
         <Text style={styles.honest}>· Calculated: the dispersion relation and the dish’s own modes.</Text>

@@ -17,6 +17,7 @@ import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { DEFAULT_PLATE, effectiveQ, plateModes, readResonance, sampleField } from '../../../features/cymatics/plateModes';
 import { CYMATICS_MODULES, PLANNED_AREAS, type CymaticsModuleId } from './modules/registry';
 import { requireVizPlate, skiaAvailable } from './skiaGate';
+import { goToCymatics } from './goToCymatics';
 
 const HERO_N = 48;
 
@@ -77,7 +78,7 @@ export function CymaticsHomeScreen() {
   const [lessonOpen, setLessonOpen] = useState(false);
   const [openId, setOpenId] = useState<CymaticsModuleId | null>(null);
   const [width, setWidth] = useState(0);
-  const open = (id: CymaticsModuleId) => navigation.navigate('CymaticsModule', { id });
+  const open = (id: CymaticsModuleId) => goToCymatics(navigation, 'CymaticsModule', { id });
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -120,19 +121,19 @@ export function CymaticsHomeScreen() {
           to find it yourself.
         </Text>
 
-        <Pressable style={styles.studioBtn} onPress={() => navigation.navigate('CymaticsPlateStudio', {})} accessibilityRole="button" accessibilityLabel="Open the Chladni Plate Studio">
+        <Pressable style={styles.studioBtn} onPress={() => goToCymatics(navigation, 'CymaticsPlateStudio', {})} accessibilityRole="button" accessibilityLabel="Open the Chladni Plate Studio">
           <Text style={styles.studioBtnText}>OPEN THE CHLADNI PLATE STUDIO ›</Text>
           <Text style={styles.studioBtnSub}>Build a plate · drive it with a tone · seven synchronised views</Text>
         </Pressable>
-        <Pressable style={[styles.studioBtn, styles.studioBtnLiquid]} onPress={() => navigation.navigate('CymaticsLiquidStudio', {})} accessibilityRole="button" accessibilityLabel="Open the Liquid Cymatics Studio">
+        <Pressable style={[styles.studioBtn, styles.studioBtnLiquid]} onPress={() => goToCymatics(navigation, 'CymaticsLiquidStudio', {})} accessibilityRole="button" accessibilityLabel="Open the Liquid Cymatics Studio">
           <Text style={[styles.studioBtnText, { color: '#7fd4ff' }]}>OPEN THE LIQUID CYMATICS STUDIO ›</Text>
           <Text style={styles.studioBtnSub}>A dish on a shaker · Faraday waves at half the drive frequency · eight liquids</Text>
         </Pressable>
-        <Pressable style={[styles.studioBtn, styles.studioBtnMembrane]} onPress={() => navigation.navigate('CymaticsMembraneStudio', {})} accessibilityRole="button" accessibilityLabel="Open the Membrane and Loudspeaker Studio">
+        <Pressable style={[styles.studioBtn, styles.studioBtnMembrane]} onPress={() => goToCymatics(navigation, 'CymaticsMembraneStudio', {})} accessibilityRole="button" accessibilityLabel="Open the Membrane and Loudspeaker Studio">
           <Text style={[styles.studioBtnText, { color: '#e2c48a' }]}>OPEN THE MEMBRANE &amp; LOUDSPEAKER STUDIO ›</Text>
           <Text style={styles.studioBtnSub}>Tune and strike a drumhead · why a timpani has a pitch · a loudspeaker cone from piston to breakup</Text>
         </Pressable>
-        <Pressable style={[styles.studioBtn, styles.studioBtnGallery]} onPress={() => navigation.navigate('CymaticsGallery', {})} accessibilityRole="button" accessibilityLabel="Open the Pattern Gallery and Art Studio">
+        <Pressable style={[styles.studioBtn, styles.studioBtnGallery]} onPress={() => goToCymatics(navigation, 'CymaticsGallery', {})} accessibilityRole="button" accessibilityLabel="Open the Pattern Gallery and Art Studio">
           <Text style={[styles.studioBtnText, { color: colors.programPurple }]}>OPEN THE PATTERN GALLERY &amp; ART STUDIO ›</Text>
           <Text style={styles.studioBtnSub}>Save a pattern from any studio · colour it · compare 2 or 4 · art print or lab sheet</Text>
         </Pressable>

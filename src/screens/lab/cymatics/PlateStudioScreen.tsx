@@ -46,6 +46,7 @@ import type { PlateViewMode } from './vizPlate';
 import { useDriveTone } from './useDriveTone';
 import { RES_TINT } from '../../../features/cymatics/resTint';
 import { START_LEVEL_01 } from '../../../features/audio/startLevel';
+import { goToCymatics } from './goToCymatics';
 
 const F_MIN = 30;
 const F_MAX = 3000;
@@ -593,7 +594,7 @@ export function PlateStudioScreen() {
         {savedMsg ? (
           <View style={styles.savedRow}>
             <Text style={styles.savedText}>{savedMsg === 'failed' ? 'SAVE FAILED — TRY AGAIN' : 'SAVED TO THE GALLERY ✓'}</Text>
-            {savedMsg !== 'failed' ? <LabChip label="Open the gallery ›" selected={false} onPress={() => navigation.navigate('CymaticsGallery', { id: savedMsg.id })} /> : null}
+            {savedMsg !== 'failed' ? <LabChip label="Open the gallery ›" selected={false} onPress={() => goToCymatics(navigation, 'CymaticsGallery', { id: savedMsg.id })} /> : null}
             {/* ── SAY WHY YOU WOULD COMPARE (2026-09-18, design review #12) ──
                 The gallery offers browse / colour / compare and never says what
                 compare is FOR. Its verdict line states the lab's whole thesis in
@@ -666,9 +667,9 @@ export function PlateStudioScreen() {
         </View>
 
         <View style={styles.chips}>
-          <LabChip label="Guided experiments ›" selected={false} onPress={() => navigation.navigate('CymaticsModule', { id: 'experiments' })} />
-          <LabChip label="Nodes & modes ›" selected={false} onPress={() => navigation.navigate('CymaticsModule', { id: 'nodes' })} />
-          <LabChip label="Evidence vs myth ›" selected={false} onPress={() => navigation.navigate('CymaticsModule', { id: 'myth' })} />
+          <LabChip label="Guided experiments ›" selected={false} onPress={() => goToCymatics(navigation, 'CymaticsModule', { id: 'experiments' })} />
+          <LabChip label="Nodes & modes ›" selected={false} onPress={() => goToCymatics(navigation, 'CymaticsModule', { id: 'nodes' })} />
+          <LabChip label="Evidence vs myth ›" selected={false} onPress={() => goToCymatics(navigation, 'CymaticsModule', { id: 'myth' })} />
         </View>
         <Text style={styles.honest}>SIMULATION.</Text>
         <Text style={styles.honest}>· Exact: the size / thickness / material scaling law.</Text>

@@ -65,6 +65,7 @@ import type { MembraneViewMode } from './vizMembrane';
 import { useDriveTone } from './useDriveTone';
 import { RES_TINT } from '../../../features/cymatics/resTint';
 import { START_LEVEL_01 } from '../../../features/audio/startLevel';
+import { goToCymatics } from './goToCymatics';
 
 const F_MIN = 20;
 const F_MAX = 6000;
@@ -491,7 +492,7 @@ export function MembraneStudioScreen() {
         {savedMsg ? (
           <View style={styles.savedRow}>
             <Text style={styles.savedText}>{savedMsg === 'failed' ? 'SAVE FAILED — TRY AGAIN' : 'SAVED TO THE GALLERY ✓'}</Text>
-            {savedMsg !== 'failed' ? <LabChip label="Open the gallery ›" selected={false} onPress={() => navigation.navigate('CymaticsGallery', { id: savedMsg.id })} /> : null}
+            {savedMsg !== 'failed' ? <LabChip label="Open the gallery ›" selected={false} onPress={() => goToCymatics(navigation, 'CymaticsGallery', { id: savedMsg.id })} /> : null}
           </View>
         ) : null}
         {view === 'heat' || view === 'head3d' || view === 'section' || view === 'speaker' ? (
@@ -562,9 +563,9 @@ export function MembraneStudioScreen() {
         <Text style={styles.caption}>Nothing moves without a drive — press ▶ to play the tone, or STRIKE › SILENT to shake without sound. STRIKE › SWEEP walks the modes (or the cone stages). Displays are strobed to a few hertz; the real head and cone move at the drive frequency.</Text>
 
         <View style={styles.chips}>
-          <LabChip label="Guided experiments ›" selected={false} onPress={() => navigation.navigate('CymaticsModule', { id: 'experiments' })} />
-          <LabChip label="Harmonics vs modes ›" selected={false} onPress={() => navigation.navigate('CymaticsModule', { id: 'harmonics' })} />
-          <LabChip label="Chladni plate studio ›" selected={false} onPress={() => navigation.navigate('CymaticsPlateStudio', {})} />
+          <LabChip label="Guided experiments ›" selected={false} onPress={() => goToCymatics(navigation, 'CymaticsModule', { id: 'experiments' })} />
+          <LabChip label="Harmonics vs modes ›" selected={false} onPress={() => goToCymatics(navigation, 'CymaticsModule', { id: 'harmonics' })} />
+          <LabChip label="Chladni plate studio ›" selected={false} onPress={() => goToCymatics(navigation, 'CymaticsPlateStudio', {})} />
         </View>
         <Text style={styles.honest}>SIMULATION.</Text>
         <Text style={styles.honest}>· Calculated: the clamped membrane’s Bessel modes and the exact tension / size / density scaling; the driver’s resonance response, ka and the 1/f² piston law.</Text>

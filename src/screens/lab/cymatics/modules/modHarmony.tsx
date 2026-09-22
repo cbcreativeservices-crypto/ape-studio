@@ -37,6 +37,7 @@ import { CymaticsRackLayout } from './rackLayout';
 import { P } from './shared';
 import { useStopOnAudioMute } from '../../../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../../../features/audio/useStopWhenSilenced';
+import { goToCymatics } from '../goToCymatics';
 
 const B_MIN = 55;
 const B_MAX = 440;
@@ -398,8 +399,8 @@ export function HarmonyModule({ help, focused }: CymaticsModuleProps) {
         “superlattice” patterns are made.
       </Text>
       <View style={P.chips}>
-        <LabChip label="Plate studio · second tone ›" selected={false} onPress={() => navigation.navigate('CymaticsPlateStudio', {})} />
-        <LabChip label="Liquid studio · two frequencies ›" selected={false} onPress={() => navigation.navigate('CymaticsLiquidStudio', {})} />
+        <LabChip label="Plate studio · second tone ›" selected={false} onPress={() => goToCymatics(navigation, 'CymaticsPlateStudio', {})} />
+        <LabChip label="Liquid studio · two frequencies ›" selected={false} onPress={() => goToCymatics(navigation, 'CymaticsLiquidStudio', {})} />
         <LabChip label="Harmonograph lab ›" selected={false} onPress={() => navigation.navigate('HarmonographLab' as never)} />
       </View>
     </CymaticsRackLayout>
