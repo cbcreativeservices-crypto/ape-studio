@@ -819,6 +819,20 @@ export function ProfileScreen() {
               when the tool is no longer wanted. */}
           {__DEV__ ? <DevVisualIndex /> : null}
 
+          {/* ⛔ LABELS ON THIS SCREEN ARE FIRST PERSON (owner 2026-09-22).
+              The screen is MY PROFILE, and the directory beside it already said
+              MY AREAS OF AUDIO & ACOUSTICS, HOW I'M INVOLVED and ABOUT MY WORK —
+              but this screen answered with YOUR CERTIFICATES, YOUR NUMBERS,
+              YOUR USER NAME and WHAT YOU WORK IN, so the app changed voice
+              halfway down a single page.
+
+              The rule, applied here and in Settings: a LABEL naming something
+              that belongs to the user is first person ("My Certificates");
+              explanatory BODY copy stays second person ("Your display name will
+              be visible…"), because that is the app talking TO them and first
+              person reads bizarrely in a sentence. Third person is only ever
+              correct about OTHER members — see HOW THEY'RE INVOLVED in the
+              directory's Explore filters, which is not an inconsistency. */}
           {/* —— MY PROGRESS —— retrospective only (owner 2026-09-04): what the
               user has DONE. The Full Course line is a readout; each certificate /
               program row opens its read-only AwardProgress view (which has a ‹
@@ -873,7 +887,7 @@ export function ProfileScreen() {
                 a learner could not tell which of their goals was which — and the
                 two are different things: a certificate is a subject credential,
                 a program is a multi-certificate path. */}
-            <Text style={styles.groupLabel}>YOUR CERTIFICATES</Text>
+            <Text style={styles.groupLabel}>MY CERTIFICATES</Text>
             {certBundles.length ? (
               certBundles.map((b) => (
                 <CatalogRow
@@ -899,7 +913,7 @@ export function ProfileScreen() {
               </Text>
             )}
 
-            <Text style={styles.groupLabel}>YOUR PROGRAMS</Text>
+            <Text style={styles.groupLabel}>MY PROGRAMS</Text>
             {programBundles.length ? (
               programBundles.map((b) => (
                 <CatalogRow
@@ -1021,7 +1035,7 @@ export function ProfileScreen() {
               </>
             )}
 
-            <Text style={styles.groupLabel}>YOUR NUMBERS</Text>
+            <Text style={styles.groupLabel}>MY NUMBERS</Text>
             {/* "Quizzes passed" and "Study streak" REMOVED (design review
                 2026-08-30): both were literal em-dashes with no backend, which
                 made the two real numbers beside them look broken too. */}
@@ -1061,10 +1075,10 @@ export function ProfileScreen() {
 
           {/* —— PUBLIC PROFILE — the fields. Opens itself while something is
               missing, so the fix is already in front of you. —— */}
-          {/* YOUR USER NAME lives OUTSIDE the public profile (owner 2026-09-17):
+          {/* MY USER NAME lives OUTSIDE the public profile (owner 2026-09-17):
               it is never published and never shown to another member, so
               sitting under a heading that says PUBLIC was misleading. */}
-          <Section title="YOUR USER NAME" summary={pub.name.trim() ? 'set' : 'not set'}>
+          <Section title="MY USER NAME" summary={pub.name.trim() ? 'set' : 'not set'}>
             <Text style={styles.fieldLabel}>Your user name</Text>
             <TextInput
               ref={nameRef}
@@ -1203,7 +1217,7 @@ export function ProfileScreen() {
 
             {!profileComplete ? (
               <View style={styles.gapBox}>
-                <Text style={styles.groupLabel}>BEFORE YOU CAN BE LISTED</Text>
+                <Text style={styles.groupLabel}>BEFORE I CAN BE LISTED</Text>
                 {gaps.map((g) => (
                   <Pressable
                     key={g.key}
@@ -1247,7 +1261,7 @@ export function ProfileScreen() {
             </Text>
 
             <View style={styles.manifest}>
-              <Text style={styles.groupLabel}>ON YOUR PUBLIC PAGE</Text>
+              <Text style={styles.groupLabel}>ON MY PUBLIC PAGE</Text>
               <Text style={styles.manifestOn}>
                 · {pub.registryName || pub.name || 'Your name'}
               </Text>
@@ -1292,14 +1306,14 @@ export function ProfileScreen() {
             </Text>
           </Section>
 
-          {/* —— WHAT YOU WORK IN — published when listed, so the section says
+          {/* —— WHAT I WORK IN — published when listed, so the section says
               so rather than leaving the user to guess. "Why you're studying"
               was REMOVED entirely (owner 2026-08-30): one of its options was
               Church, and a study goal attached to a published name is religious
               affiliation — special-category data under GDPR Art. 9. It earned
               nothing that justified carrying that. —— */}
           <Section
-            title="WHAT YOU WORK IN"
+            title="WHAT I WORK IN"
             summary={pub.interests.length ? `${pub.interests.length} selected` : 'none yet'}
           >
             <Text style={styles.sectionIntro}>

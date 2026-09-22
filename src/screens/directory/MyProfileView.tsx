@@ -251,7 +251,7 @@ export function MyProfileView() {
     const g: string[] = [];
     if (!p.displayName.trim()) g.push('a public display name');
     if (!p.primaryArea) g.push('one primary area');
-    if (!p.roles.length) g.push('how you’re involved');
+    if (!p.roles.length) g.push('How I’m Involved');
     return g;
   }, [p.displayName, p.primaryArea, p.roles.length]);
 
@@ -272,7 +272,7 @@ export function MyProfileView() {
     const go = (adult: boolean) =>
       confirmThen(
         'Publish your community profile?',
-        'Your display name, areas, specialties, how you’re involved and About My Work become visible to anyone with your link. Your private account name, email address, learning progress, quiz scores, notes and unselected credentials are never published.',
+        'Your display name, areas, specialties, How I’m Involved and About My Work become visible to anyone with your link. Your private account name, email address, learning progress, quiz scores, notes and unselected credentials are never published.',
         'Publish',
         () => void publishCommunityProfile(true, adult).then((r) => (r.ok ? refresh() : setErr(r.error))),
       );
