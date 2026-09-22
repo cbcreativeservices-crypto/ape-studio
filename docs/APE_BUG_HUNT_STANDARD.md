@@ -235,7 +235,34 @@ well-argued fix that cannot work.
   comment that claims a count, a grant or a permission before trusting it.**
 - **`GREATEST`/`LEAST` ignore NULL in Postgres**, so a NULL meaning "unlimited"
   loses to any finite value.
-- **Agents mis-count.** Verify any number in a finding before acting on it.
+- **Agents mis-count.** Verify any number in a finding before acting on it. On
+  2026-09-22 a correct finding arrived with worked arithmetic that used a
+  rounded input (11.9 instead of the true 11.9469) and so named the wrong
+  segment count. The bug was real; the example was not. **Re-derive the numbers
+  from the real values before writing the assertion**, or you will pin the
+  wrong one — a test written from the report failed against correct code.
+
+- ⛔ **A SINGLE-LINE GREP MISSES A MULTI-LINE CALL.** This one cost a real
+  defect. A sweep for `auth.getSession()` found and fixed fifteen call sites and
+  was reported as complete. Six more were written as
+
+  ```ts
+  void supabase.auth
+    .getSession()
+  ```
+
+  and the grep never saw them — including the app's **boot** read, whose stall
+  leaves the Home screen on a permanent bare spinner. Any sweep for a call
+  pattern must be run **multiline** (`rg -U`, or Grep with `multiline: true`)
+  before it is called complete. The same applies to a method the sweep did not
+  think of: `getUser()` was never covered at all, because the hunt was framed
+  around one method name rather than one failure mode.
+
+- **Verify the fix against the whole control, not the line you changed.**
+  `LedMeterWell`'s label was fixed on 2026-09-21 and the tests passed — while
+  `LedMeter`, one layer down, went on computing `aria-valuenow` from the
+  segment count. The same control announced two different numbers for another
+  day. Ask what else reads the value you just corrected.
 
 ---
 
