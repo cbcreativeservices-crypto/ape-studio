@@ -17,6 +17,7 @@ import { loadLastTier, saveLastTier } from './lastTierCache';
 import { devBypass } from '../../config/devMode';
 import { DEV_COMMERCIAL_FLAG_KEY, DEV_ENTITLEMENT_KEY, FLAG_DEFAULTS } from '../../config/flags';
 import { supabase } from '../../lib/supabase';
+import { safeSession } from '../../lib/getSessionSafe';
 import { classifyExpiry, verdictKeepsAccess } from './entitlementExpiry';
 import { setMemberStanding } from './memberStanding';
 import { requestLocalNotifSync } from '../notifications/localSchedule';
@@ -476,10 +477,10 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
       // There is no generation counter reachable from here, so it re-reads the
       // session identity after the await and refuses to apply an answer that
       // belongs to somebody else.
-      const { data: sess } = await supabase.auth.getSession();
+      const { data: sess } = await safeSession(supabase.auth.getSession(), 'entitlement');
       const uidAtStart = sess.session?.user?.id ?? null;
       const stillSameUser = async () => {
-        const { data: now } = await supabase.auth.getSession();
+        const { data: now } = await safeSession(supabase.auth.getSession(), 'entitlement/recheck');
         return (now.session?.user?.id ?? null) === uidAtStart;
       };
       // Same test as the effect above — an ANONYMOUS session is still a guest.

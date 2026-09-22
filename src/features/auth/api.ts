@@ -7,6 +7,7 @@
  * v2.1 auto-enrolls the SAFE course; first-topic seeding is trigger-side.
  */
 import { supabase } from '../../lib/supabase';
+import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../commercial/realAccount';
 
 /**
@@ -93,7 +94,7 @@ export const REGISTER_ERROR_COPY: Record<RegisterErrorCode, string> = {
  * error (backend-session concern, not fixable client-side).
  */
 export async function ensureSession(email: string, password: string): Promise<string | null> {
-  const existing = await supabase.auth.getSession();
+  const existing = await safeSession(supabase.auth.getSession(), 'auth/api');
   // ⚠️ Not `existing.data.session`. A guest holding the glossary's temporary
   // device key HAS a session, and returning null here would tell the Auth
   // screen "you are already signed in" — so the account they came to create

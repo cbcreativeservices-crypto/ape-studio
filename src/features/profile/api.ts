@@ -7,6 +7,7 @@
  * was REMOVED (owner 2026-08-07 — album progression retired for commercial).
  */
 import { supabase } from '../../lib/supabase';
+import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../commercial/realAccount';
 import { albumTierFor, type AlbumTierName } from '../../theme/tokens';
 import { V3_CURRICULUM_VERSION_ID } from '../../data/v3Curriculum';
@@ -63,7 +64,7 @@ export async function fetchProfile(): Promise<ProfileRead> {
     // back 42501 and classify as 'unavailable', which is the "Couldn't load
     // your ID — check your connection" banner fixed earlier on 2026-09-13,
     // shown to someone whose connection is fine. See realAccount.ts.
-    const { data: sessionData } = await supabase.auth.getSession();
+    const { data: sessionData } = await safeSession(supabase.auth.getSession(), 'profile/api');
     if (!isRealAccount(sessionData?.session)) return { state: 'none' };
     const authUid = sessionData!.session!.user.id;
 
@@ -230,7 +231,7 @@ export async function fetchMyRegistryListing(): Promise<RegistryListingRead> {
   try {
     // A guest genuinely has no listing, and asking would fail on RLS and look
     // like an outage. Settle that before the read rather than after it.
-    const { data: sessionData } = await supabase.auth.getSession();
+    const { data: sessionData } = await safeSession(supabase.auth.getSession(), 'profile/api');
     if (!isRealAccount(sessionData?.session)) return { state: 'none' }; // see above
     const authUid = sessionData!.session!.user.id;
 

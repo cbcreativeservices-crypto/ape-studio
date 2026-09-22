@@ -17,6 +17,7 @@ import * as Crypto from 'expo-crypto';
 import { AppState, type AppStateStatus } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import type { StudySnapshot } from './api';
+import { sendCoalescedChunk } from './replayChunk';
 import {
   deleteQueuedBatches,
   getQueuedBatches,
@@ -32,6 +33,11 @@ export type StudyEvent =
 const MAX_EVENTS_PER_BATCH = 500;
 const SYNC_INTERVAL_MS = 30_000;
 const IDLE_CUTOFF_MS = 10_000;
+
+/** One replay chunk: the queued rows it covers, each with its parsed events.
+ *  Per-row events are kept apart (not pre-flattened) so a chunk can be re-sent
+ *  minus a row that turns out to be already committed — see the send loop. */
+type Chunk = { items: { row: StudyQueueRow; ev: StudyEvent[] }[] };
 
 function isNetworkError(e: unknown): boolean {
   const msg = e instanceof Error ? e.message : String(e);
@@ -158,6 +164,14 @@ function enqueue(achievementId: string, methodKey: string, batchId: string, seco
  * chunk's rows are deleted as it lands, so a later chunk failing can never
  * cause an earlier one to be replayed as new work.
  *
+ * ⛔ AND A DUPLICATE REPLY DELETES ONLY THE ROW THAT CAUSED IT (2026-09-21).
+ * Borrowing the first row's id has a third failure the two above did not
+ * cover: if that row was already committed, the server discards the whole
+ * coalesced payload and answers successfully, so every other row in the
+ * chunk was deleted having never been recorded. The send loop now reads
+ * `duplicate_batch` off the snapshot and re-sends the remainder. Full
+ * reasoning is in replayChunk.ts.
+ *
  * ⚠️ This is also what makes the write-ahead in `flushOnce` safe: a row that
  * is sent twice is now deduplicated by the server instead of counted twice.
  *
@@ -189,9 +203,8 @@ async function replayQueueOnce(): Promise<void> {
   }
 
   for (const g of groups.values()) {
-    let events: StudyEvent[];
     try {
-      events = g.flatMap((r) => JSON.parse(r.events_json) as StudyEvent[]);
+      for (const r of g) JSON.parse(r.events_json);
     } catch (e) {
       // Corrupt events_json: parsing used to run OUTSIDE the try below, so a
       // poisoned row threw before the drop logic and wedged the queue AND
@@ -208,8 +221,9 @@ async function replayQueueOnce(): Promise<void> {
      * `addEvent`, so a chunk is at most one row over the limit in the worst
      * case — acceptable, and far better than an id we cannot reproduce.
      */
-    const chunks: { id: string; rows: StudyQueueRow[]; events: StudyEvent[] }[] = [];
-    let cur: { id: string; rows: StudyQueueRow[]; events: StudyEvent[] } | null = null;
+    const chunks: Chunk[] = [];
+    let cur: Chunk | null = null;
+    let curCount = 0;
     for (const r of g) {
       let ev: StudyEvent[];
       try {
@@ -217,14 +231,14 @@ async function replayQueueOnce(): Promise<void> {
       } catch {
         ev = [];
       }
-      if (!cur || cur.events.length + ev.length > MAX_EVENTS_PER_BATCH) {
-        cur = { id: r.batch_id, rows: [], events: [] };
+      if (!cur || curCount + ev.length > MAX_EVENTS_PER_BATCH) {
+        cur = { items: [] };
         chunks.push(cur);
+        curCount = 0;
       }
-      cur.rows.push(r);
-      cur.events.push(...ev);
+      cur.items.push({ row: r, ev });
+      curCount += ev.length;
     }
-    if (chunks.length === 0) chunks.push({ id: g[0].batch_id, rows: g, events });
 
     try {
       for (let i = 0; i < chunks.length; i++) {
@@ -245,11 +259,17 @@ async function replayQueueOnce(): Promise<void> {
          * it could not protect the seconds, because they rode on a different
          * chunk's id from the rows they came from.
          */
-        const chunkSeconds = c.rows.reduce((sum, r) => sum + r.active_seconds, 0);
-        await callRpc(achievement_id, method_key, c.id, chunkSeconds, c.events);
-        // ⛔ Delete AS IT LANDS. Deleting only after the whole group meant a
-        // later chunk's failure re-sent every earlier chunk next pass.
-        deleteQueuedBatches(c.rows.map((r) => r.id));
+        // The duplicate-reply handling lives in replayChunk.ts, with the
+        // full reasoning — it is the step that decides what gets deleted.
+        await sendCoalescedChunk(
+          c.items,
+          (batchId, seconds, evs) => callRpc(achievement_id, method_key, batchId, seconds, evs),
+          deleteQueuedBatches,
+          () =>
+            console.warn(
+              '[study-sync] batch already committed server-side — re-sending the rest under the next id',
+            ),
+        );
       }
       emitStudyProgress(); // queued progress landed — refresh any dashboards
     } catch (e) {
