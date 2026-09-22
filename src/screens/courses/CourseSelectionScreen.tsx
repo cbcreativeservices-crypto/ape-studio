@@ -137,7 +137,33 @@ const CARD_MAX_W = 280;
 // Cards shrunk 7% (Booth 2026-07-15) to give the carousel vertical room — the
 // Awards row had squeezed the eyebrow captions + card bottoms off-screen.
 const CARD_W = Math.min(Math.round(BASE_W * 0.7 * 0.93), CARD_MAX_W);
-const CARD_H = 409; // was 440 (−7%)
+/**
+ * ⛔ THE CARD HEIGHT MUST FOLLOW THE SCREEN (owner bug report 2026-09-22).
+ *
+ * This was a bare `409`, and on a 375x667 phone the carousel only has about
+ * 273pt of vertical room. The FlatList centres its items
+ * (`contentContainerStyle: { alignItems: 'center' }`), so a card taller than
+ * the row does not simply run off the bottom — it overflows EQUALLY at both
+ * ends. `styles.card` has `overflow: 'hidden'`, so the result the owner
+ * photographed was the first line of the title sliced in half by the top edge
+ * ("Professional" above "Audio Glossary") and the OPEN GLOSSARY / OPEN LABS
+ * button cut off below. The card looked like a rendering fault, and the
+ * primary action on the home screen was unreachable.
+ *
+ * Note the history directly above: 440 was already shrunk to 409 in July for
+ * this same complaint ("the Awards row had squeezed the eyebrow captions +
+ * card bottoms off-screen"). A second hardcoded number would fail the same way
+ * on the next screen size, so this derives from the screen instead.
+ *
+ * 394 is the chrome above and below the carousel — brand header, tab row,
+ * "Start Learning", the dots and the bottom nav — measured off the owner's
+ * screenshot (card top 279pt, row height 273pt, on a 667pt screen). 409 stays
+ * the ceiling so nothing changes on the phones where it already fits: an
+ * iPhone 16 Pro (852) and 15 Pro Max (932) both clear it comfortably, and the
+ * floor only engages on screens shorter than any current iPhone.
+ */
+const SCREEN_LONG = Math.max(SCREEN.width, SCREEN.height);
+const CARD_H = Math.max(260, Math.min(409, SCREEN_LONG - 394)); // was a flat 409
 const CARD_GAP = 14;
 /** Lit switch width on the cards — narrower than the card (Booth 2026-07-09q). */
 const CARD_BTN_W = Math.round(CARD_W * 0.62);
