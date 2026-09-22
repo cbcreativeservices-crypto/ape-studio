@@ -289,15 +289,23 @@ export function ShareTermSheet({
           });
         }
       })
-      // A rejected resolve() was an unhandled rejection; the sheet still
-      // returns to the main view via .finally, so say nothing more than that
-      // the extra terms did not load.
-      .catch(() =>
+      // A rejected resolve() was an unhandled rejection; say plainly that the
+      // extra terms did not load.
+      //
+      // ⛔ CLOSE FIRST — the same rule the three call sites above follow, and
+      // the only one of the four that was still breaking it. `.finally` returns
+      // to the main view but leaves the <Modal> MOUNTED, so a notice raised
+      // here is drawn on the activity window UNDERNEATH the sheet on Android
+      // and the user simply watches the picker close with no explanation. The
+      // selection is unaffected either way; this is only about whether the
+      // sentence can be seen.
+      .catch(() => {
+        onClose();
         notify(
           'Some terms weren’t added',
           'Those extra terms could not be loaded. The terms you already selected are still here — try adding them again.',
-        ),
-      )
+        );
+      })
       .finally(() => {
         setBusy(false);
         setView('main');

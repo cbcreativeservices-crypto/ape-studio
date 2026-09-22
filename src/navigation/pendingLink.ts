@@ -75,6 +75,13 @@ export function pendingLinkUrl(path: string): string {
  * simply means no deep links on that platform — never a broken launch.
  */
 /** Just the two members we use, so the lazy require needs no RN type import. */
+/** Only what the warm-link guard touches. */
+type NavRefLike = {
+  isReady(): boolean;
+  getRootState(): { routes?: { name?: string; params?: unknown }[] } | undefined;
+  dispatch(action: unknown): void;
+};
+
 type LinkingLike = {
   getInitialURL(): Promise<string | null>;
   addEventListener(type: 'url', handler: (event: { url: string }) => void): { remove(): void };
@@ -97,6 +104,58 @@ export function attachLinkCapture(): () => void {
     }).catch(() => {});
     const sub = linking.addEventListener('url', ({ url }) => {
       if (url) setPendingLink(url);
+      /**
+       * ⛔ NOTHING SITS ABOVE `Auth` — INCLUDING A LINK THAT ARRIVES LATE.
+       *
+       * Pass 2 established that rule, but the fix lived entirely inside
+       * Splash's cold-start hand-off, which runs once. React Navigation's
+       * `linking` keeps listening for `url` events for the life of the
+       * container, and its only filter is `isAcceptedLink`, which checks the
+       * PATH, not the session. So a person sitting signed-out on the login
+       * screen who taps an app link in Mail or Chrome gets the destination
+       * pushed straight over `Auth` — the same state pass 2 removed, reached by
+       * a different door. On Android those paths are autoVerify'd, so the OS
+       * hands them straight to the app.
+       *
+       * The stack itself says whether they are signed out: Splash makes `Auth`
+       * the BASE route in exactly that case, so no auth lookup is needed here.
+       * If a link has pushed anything above an Auth-based stack, drop it — the
+       * URL is already held in `pendingLink` above and resumes after sign-in,
+       * which is what the paywall's welcome already assumes.
+       *
+       * Deferred a tick because React Navigation has not applied the URL yet
+       * when this fires, and scoped to link arrivals only: an ordinary push
+       * above Auth during registration is none of this function's business.
+       */
+      setTimeout(() => {
+        try {
+          /**
+           * Required LAZILY, like the `react-native` require above and for the
+           * same reason: this module is loaded by node tests that have neither
+           * React Navigation nor a navigation container. A static import here
+           * pulled both into their module graph and broke linkPaths.test.ts.
+           */
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          const nav = eval('require')('./navigationRef') as { navigationRef?: NavRefLike };
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          const rnav = eval('require')('@react-navigation/native') as {
+            CommonActions?: { reset(cfg: unknown): unknown };
+          };
+          const navigationRef = nav?.navigationRef;
+          const CommonActions = rnav?.CommonActions;
+          if (!navigationRef || !CommonActions) return;
+          if (!navigationRef.isReady()) return;
+          const state = navigationRef.getRootState();
+          const routes = state?.routes ?? [];
+          if (routes.length > 1 && routes[0]?.name === 'Auth') {
+            navigationRef.dispatch(
+              CommonActions.reset({ index: 0, routes: [{ name: 'Auth', params: routes[0].params }] }),
+            );
+          }
+        } catch {
+          /* navigation not mounted — nothing to correct */
+        }
+      }, 0);
     });
     return () => {
       try {
