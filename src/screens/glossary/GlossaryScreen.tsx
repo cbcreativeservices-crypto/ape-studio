@@ -2099,6 +2099,10 @@ ${COPY.glossaryFreeAllowance}`,
       cancelSaveRef.current = true;
       return;
     }
+    // Belt and braces: the control is already member-only, but a saved-off
+    // entitlement or a future caller must not be able to start a 4 MB download
+    // the reader is not entitled to. The UI is not the enforcement.
+    if (resolved && !isMember) return;
     cancelSaveRef.current = false;
     setSavingOffline(true);
     try {
@@ -2128,7 +2132,7 @@ ${COPY.glossaryFreeAllowance}`,
       setSavingOffline(false);
       cancelSaveRef.current = false;
     }
-  }, [table, savingOffline, refreshOfflineStats]);
+  }, [table, savingOffline, refreshOfflineStats, resolved, isMember]);
 
   const requestedDefsRef = useRef<Set<string>>(new Set());
   /**
@@ -2998,32 +3002,70 @@ ${COPY.glossaryFreeAllowance}`,
                outlive a reload and the offer would be a lie. */
             !OFFLINE_AVAILABLE || loading || !offlineStats?.terms ? null : (
               <View style={styles.offlineRow}>
-                <Text style={styles.offlineStat}>
-                  {offlineStats.definitions >= offlineStats.terms
-                    ? `Saved on this device — all ${offlineStats.terms.toLocaleString()} terms work without a connection.`
-                    : `${offlineStats.definitions.toLocaleString()} of ${offlineStats.terms.toLocaleString()} definitions saved on this device.`}
-                </Text>
-                {offlineStats.definitions >= offlineStats.terms ? null : (
-                  <Pressable
-                    onPress={() => void saveWholeGlossary()}
-                    accessibilityRole="button"
-                    accessibilityLabel={
-                      savingOffline
-                        ? 'Stop saving the glossary for offline use'
-                        : 'Save the whole glossary on this device for offline use'
-                    }
-                    style={({ pressed }) => [styles.offlineBtn, pressed && { opacity: 0.7 }]}
-                  >
-                    <Text style={styles.offlineBtnText}>
-                      {savingOffline ? 'SAVING — TAP TO STOP' : 'SAVE ALL FOR OFFLINE'}
+                <Text style={styles.offlineLabel}>USE THE GLOSSARY WITH NO SIGNAL</Text>
+                {/* ⛔ OFFERED TO EVERYONE, DONE BY MEMBERS (owner 2026-09-22:
+                    "only member can save all to phone - yes offer the option -
+                    let user decide"). Hiding it from non-members would leave
+                    them never knowing the app can do this; the decision is
+                    theirs to make, which needs them to know it exists.
+                    `!resolved ||` keeps the member view during the entitlement
+                    round-trip — the house rule, since flashing a lock at
+                    somebody who has paid is the worse error. */}
+                {!resolved || isMember ? (
+                  <>
+                    <Text style={styles.offlineStat}>
+                      {offlineStats.definitions >= offlineStats.terms
+                        ? `Saved on this phone — all ${offlineStats.terms.toLocaleString()} terms work with no connection.`
+                        : `${offlineStats.definitions.toLocaleString()} of ${offlineStats.terms.toLocaleString()} definitions saved on this phone.`}
                     </Text>
-                  </Pressable>
+                    {offlineStats.definitions >= offlineStats.terms ? null : (
+                      <Pressable
+                        onPress={() => void saveWholeGlossary()}
+                        accessibilityRole="button"
+                        accessibilityLabel={
+                          savingOffline
+                            ? 'Stop saving the glossary to this phone'
+                            : 'Save the whole glossary to this phone for use with no signal'
+                        }
+                        style={({ pressed }) => [styles.offlineBtn, pressed && { opacity: 0.7 }]}
+                      >
+                        <Text style={styles.offlineBtnText}>
+                          {savingOffline ? 'SAVING — TAP TO STOP' : 'SAVE ALL FOR OFFLINE'}
+                        </Text>
+                      </Pressable>
+                    )}
+                    <Text style={styles.offlineHint}>
+                      {savingOffline
+                        ? 'Keep this screen open. You can carry on reading while it saves.'
+                        : 'Working a ship, on a flight, or out on a tour with no wi-fi? Save the whole glossary now and every term stays readable with no signal at all. About 4 MB. Terms you read are kept automatically either way.'}
+                    </Text>
+                  </>
+                ) : (
+                  <>
+                    <Text style={styles.offlineStat}>
+                      Academy members can save all {offlineStats.terms.toLocaleString()} terms to this
+                      phone and read them with no connection.
+                    </Text>
+                    <Text style={styles.offlineHint}>
+                      Working a ship, on a flight, or out on a tour with no wi-fi — the glossary keeps
+                      working when nothing else does. Terms you have already read stay on this phone
+                      either way.
+                    </Text>
+                    <Pressable
+                      onPress={() => {
+                        if (lastViewedTermRef.current) {
+                          void AsyncStorage.setItem(RETURN_TERM_KEY, lastViewedTermRef.current).catch(() => {});
+                        }
+                        (navigation as unknown as { navigate: (r: string) => void }).navigate('Paywall');
+                      }}
+                      accessibilityRole="button"
+                      accessibilityLabel="See Academy membership, which lets you save the whole glossary to this phone"
+                      style={({ pressed }) => [styles.offlineBtn, pressed && { opacity: 0.7 }]}
+                    >
+                      <Text style={styles.offlineBtnText}>SEE MEMBERSHIP</Text>
+                    </Pressable>
+                  </>
                 )}
-                <Text style={styles.offlineHint}>
-                  {savingOffline
-                    ? 'Keep this screen open. You can carry on reading while it saves.'
-                    : 'Terms you read are saved automatically. Saving everything uses about 4 MB and lets the whole glossary work with no signal.'}
-                </Text>
               </View>
             )
           }
@@ -3857,7 +3899,14 @@ const styles = StyleSheet.create({
   list: { paddingBottom: 16 },
   empty: { fontFamily: fonts.barlowRegular, fontSize: 14, color: colors.textSub, paddingTop: 12 },
   offlineRow: { paddingHorizontal: 16, paddingTop: 18, paddingBottom: 28, gap: 8 },
-  offlineStat: { fontFamily: fonts.barlowMedium, fontSize: 13, color: colors.textSub },
+  offlineLabel: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 10,
+    letterSpacing: 1.8,
+    color: colors.textMutedDeep,
+    marginBottom: 2,
+  },
+  offlineStat: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: colors.textSub },
   offlineBtn: {
     alignSelf: 'flex-start',
     borderWidth: 1,

@@ -70,6 +70,23 @@ describe('glossary works offline once loaded', () => {
     assert.match(screen, /!OFFLINE_AVAILABLE \|\| loading \|\| !offlineStats\?\.terms \? null/, 'the offline UI no longer hides itself on web');
   });
 
+  test('saving everything is member-only, but OFFERED to everyone', () => {
+    // Owner: "only member can save all to phone - yes offer the option - let
+    // user decide". Hiding it from non-members would leave them never knowing
+    // the app can do this, and the decision is theirs to make.
+    assert.match(screen, /\{!resolved \|\| isMember \? \(/, 'the offline block no longer branches on membership');
+    assert.match(screen, /SEE MEMBERSHIP/, 'non-members are no longer offered the option');
+    // The UI is not the enforcement.
+    assert.match(screen, /if \(resolved && !isMember\) return;/, 'saveWholeGlossary no longer refuses a non-member');
+  });
+
+  test('the offer names real situations, not an abstraction', () => {
+    // Owner asked for the examples: a ship, a flight, a tour with no wi-fi.
+    for (const word of ['ship', 'flight', 'tour']) {
+      assert.ok(new RegExp(word, 'i').test(screen), `the offline copy no longer mentions a ${word}`);
+    }
+  });
+
   test('the save-everything loop cannot spin forever', () => {
     // A definition that is NULL upstream returns the same ids every pass.
     assert.match(screen, /for \(let pass = 0; pass < 80; pass \+= 1\)/, 'the offline save loop is no longer bounded');
