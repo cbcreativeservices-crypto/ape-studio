@@ -269,3 +269,6 @@ reason nobody looks.
 **Corollary on telemetry:** dev events were tagged `environment=development`
 and still sent, so 19 of 21 open Sentry issues were Metro bundler output from
 a developer's own machine. Tagging noise is not the same as not producing it.
+
+> **Hunting bugs?** The method these lessons feed is written up as a standing
+> standard in [`APE_BUG_HUNT_STANDARD.md`](APE_BUG_HUNT_STANDARD.md).

@@ -1,5 +1,10 @@
 # Bug-hunt brief — read this first
 
+> **Method lives in [`docs/APE_BUG_HUNT_STANDARD.md`](../APE_BUG_HUNT_STANDARD.md)** — how to
+> hunt, how to prove a finding, and the per-domain prompts with their calibration
+> checks. Read it once, then read THIS file for what is already found.
+> This file is the ledger; that one is the standard.
+
 App: ape-studio, Expo SDK 57 / React Native. Pro Audio Training Academy.
 Branch `audio-tools-engine`. **Days from launch.** Paying customers.
 
