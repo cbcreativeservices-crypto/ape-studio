@@ -11,6 +11,26 @@
  * before the learner has enabled audio output — then fetches the signed URL and
  * streams it. `active` is the asset_key currently sounding (drive ▶/■ off it);
  * `loading` is true between the tap and audio start (the signed-URL fetch).
+ *
+ * ⛔ BEFORE YOU WIRE THIS INTO A LAB: IT HAS NO SILENCE PATH.
+ *
+ * As of 2026-09-22 this hook has ZERO callers, so what follows is a trap laid
+ * for whoever uses it first rather than a live bug.
+ *
+ * It carries neither `useStopWhenSilenced` nor a blur stop. `panicMuteAudio()`
+ * really does call `stopAllFilePlayers()`, so shake-to-mute, backgrounding and
+ * the hearing-safety cutout will all silence the CLIP — while `active` stays
+ * lit, leaving the lab's ▶/■ showing playing over silence and needing two
+ * presses to restart. That exact class has been fixed three times in this
+ * codebase already (filePlayers, the lab transports, the Cymatics sweeps).
+ *
+ * The first caller must add, alongside its own transport state:
+ *
+ *   useStopWhenSilenced(active != null, stop);
+ *
+ * and stop on blur. Do it in the same commit as the wiring, not after — an
+ * `active` flag that outlives its audio is exactly the "display claims to be
+ * live" failure the tools rule exists to prevent.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAudioOutputGate } from '../audio/AudioOutputGate';

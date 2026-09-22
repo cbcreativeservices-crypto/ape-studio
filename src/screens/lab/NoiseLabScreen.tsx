@@ -256,7 +256,7 @@ export function NoiseLabScreen() {
               accessibilityRole={engineReady ? 'button' : undefined}
               accessibilityLabel={engineReady ? (running ? 'Tap to stop' : 'Tap to play noise') : undefined}
             >
-              <SlopeChart w={w} h={h} selectedKey={color} selectedSlope={selected.slope} speakerView={speakerView} />
+              <SlopeChart w={w} h={h} selectedKey={color} selectedSlope={selected.slope} speakerView={speakerView} running={running} />
             </Pressable>
           ),
         },
@@ -416,12 +416,23 @@ function SlopeChart({
   selectedKey,
   selectedSlope,
   speakerView,
+  running,
 }: {
   w: number;
   h: number;
   selectedKey: NoiseColor;
   selectedSlope: number;
   speakerView: boolean;
+  /**
+   * ⛔ MOTION IS THE UNIVERSAL SIGN OF A LIVE SIGNAL, so it must follow the
+   * audio. The shimmer ran on focus alone, so a learner who opened the lab and
+   * never pressed play — or pressed stop, or shook to mute — watched the trace
+   * breathing across the spectrum as though noise were coming out. The badge
+   * disclaims that the CURVE is a measurement; nothing said the MOTION was
+   * unrelated to whether anything was playing. Three siblings already gate
+   * their animation this way (MicCutaway, vizWave, modHarmony).
+   */
+  running: boolean;
 }) {
   const H = 150;
   const VH = H + 16; // plot + the frequency-label strip
@@ -440,9 +451,10 @@ function SlopeChart({
   const [tick, setTick] = useState(0);
   useFocusEffect(
     useCallback(() => {
+      if (!running) return; // silent = still. See the `running` prop.
       const id = setInterval(() => setTick((t) => (t + 1) % 100000), 70);
       return () => clearInterval(id);
-    }, []),
+    }, [running]),
   );
 
   // The shimmer trace: the selected color's exact response (ideal slope, plus
@@ -453,7 +465,8 @@ function SlopeChart({
     for (let i = 0; i <= N; i++) {
       const oct = OCT_LO + (i / N) * (OCT_HI - OCT_LO);
       const f = 1000 * Math.pow(2, oct);
-      const jit = (hash01(i * 12.9898 + tick * 78.233) - 0.5) * 5; // ±2.5 dB
+      // No jitter at rest: a still trace is the IDEAL slope, drawn exactly.
+      const jit = running ? (hash01(i * 12.9898 + tick * 78.233) - 0.5) * 5 : 0; // ±2.5 dB
       const db = selectedSlope * oct + (speakerView ? speakerGuardDb(f) : 0) + jit;
       s += `${i === 0 ? 'M' : 'L'}${xAt(oct).toFixed(1)} ${yAt(db).toFixed(1)}`;
     }

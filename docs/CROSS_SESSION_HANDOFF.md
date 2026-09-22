@@ -65,6 +65,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-22 09:31 · ccode · ed6c5b34
+changed: The Cymatics lab stops stacking copies of its own screens
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-22 09:25 · ccode · 2c6b936a
 changed: A frozen "seconds ago", a bar in the wrong domain, and a timeline that lied
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
