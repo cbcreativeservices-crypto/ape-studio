@@ -346,6 +346,44 @@ Deno.serve(async (req) => {
       ? nowIso
       : prior.member_since;
 
+  // ── ONE RECEIPT, ONE ACCOUNT ──────────────────────────────────────────────
+  //
+  // Verifying a receipt with Apple or Google proves the PURCHASE is real. It
+  // does NOT prove the caller is the person who made it. Nothing here checked
+  // whether this store_ref was already bound to a different account, and
+  // `entitlements` is unique on (user_id, product) and nothing else — so one
+  // subscription could entitle unlimited accounts, each with its own row, by
+  // replaying the same token from each of them.
+  //
+  // The refund path shows the column was always meant to identify ONE
+  // purchase: store-notifications revokes with `.in('store_ref',[token])`,
+  // which would mark every one of those accounts refunded together.
+  //
+  // Migration 2026092103 adds the partial unique index that makes this true
+  // no matter which code path writes the row. This check exists so the second
+  // account gets a clear, actionable answer instead of a constraint violation
+  // reported as `grant_failed`.
+  //
+  // Scoped to the two store sources deliberately: access codes also live in
+  // store_ref (source='access_code') and are redeemed by many people by
+  // design, so they must not be caught by this.
+  const { data: boundElsewhere, error: bindErr } = await admin
+    .from('entitlements')
+    .select('user_id')
+    .eq('store_ref', store_ref)
+    .in('source', ['app_store', 'play_store'])
+    .neq('user_id', userId)
+    .maybeSingle();
+  if (bindErr) {
+    // Unreadable: do NOT block the grant on a check we could not perform. The
+    // customer has already been charged, and the unique index is the real
+    // guarantee — it will refuse the write if this truly is a second account.
+    console.warn('[validate-purchase] store_ref binding check failed, relying on the index:', bindErr.message);
+  } else if (boundElsewhere) {
+    console.warn('[validate-purchase] receipt already bound to another account — refusing');
+    return json({ ok: false, error: 'receipt_already_linked' });
+  }
+
   const row = {
     status: 'active',
     source,

@@ -78,7 +78,19 @@ function isCancel(code: unknown): boolean {
   return String(code ?? '').toLowerCase().includes('cancel');
 }
 
-async function validateWithServer(p: IapPurchase): Promise<boolean> {
+/**
+ * The server's answer, with the REASON kept.
+ *
+ * ⛔ This used to return a bare boolean, so every failure produced the same
+ * sentence: "We couldn’t verify that purchase." For one case that sentence is
+ * actively false — `receipt_already_linked` means the purchase verified
+ * perfectly and is simply attached to a different account. Telling that person
+ * verification failed sends them to Restore Purchases, which cannot help, or
+ * to buying it a second time.
+ */
+type ValidationResult = { ok: true } | { ok: false; reason: string | null };
+
+async function validateWithServer(p: IapPurchase): Promise<ValidationResult> {
   try {
     const { data, error } = await supabase.functions.invoke('validate-purchase', {
       body: {
@@ -90,13 +102,23 @@ async function validateWithServer(p: IapPurchase): Promise<boolean> {
     });
     if (error) {
       console.warn('[iap] validate-purchase failed:', error.message);
-      return false;
+      return { ok: false, reason: null };
     }
-    return !!(data as { ok?: boolean } | null)?.ok;
+    const body = data as { ok?: boolean; error?: string } | null;
+    if (body?.ok) return { ok: true };
+    return { ok: false, reason: body?.error ?? null };
   } catch (e) {
     console.warn('[iap] validate-purchase threw:', (e as Error).message);
-    return false;
+    return { ok: false, reason: null };
   }
+}
+
+/** What to tell the person. Only the linked-receipt case is not a failure. */
+function purchaseErrorMessage(reason: string | null): string {
+  if (reason === 'receipt_already_linked') {
+    return 'This purchase is already linked to another account. Sign in with that account to use it — you have not been charged twice.';
+  }
+  return 'We couldn’t verify that purchase. If you were charged, use Restore Purchases.';
 }
 
 /**
@@ -170,8 +192,8 @@ export async function initPurchases(h: PurchaseHandlers): Promise<boolean> {
           // finishTransaction is the part that matters: unacknowledged Google
           // purchases are AUTO-REFUNDED after 72 hours, so a customer who paid
           // silently loses both the money and the access.
-          const ok = await validateWithServer(purchase);
-          if (ok) {
+          const result = await validateWithServer(purchase);
+          if (result.ok) {
             try {
               await iap.finishTransaction({ purchase, isConsumable: false });
             } catch (e) {
@@ -183,7 +205,7 @@ export async function initPurchases(h: PurchaseHandlers): Promise<boolean> {
             onEntitlementMayHaveChanged?.();
             handlers?.onSuccess();
           } else {
-            handlers?.onError('We couldn’t verify that purchase. If you were charged, use Restore Purchases.');
+            handlers?.onError(purchaseErrorMessage(result.reason));
           }
         })();
       }),
@@ -303,7 +325,7 @@ export async function restorePurchases(): Promise<RestoreResult> {
     let validationFailed = false;
     for (const p of purchases) {
       if (!p.productId || !planIdForSku(p.productId)) continue;
-      if (await validateWithServer(p)) {
+      if ((await validateWithServer(p)).ok) {
         restored = true;
         try {
           await iap.finishTransaction({ purchase: p, isConsumable: false });
