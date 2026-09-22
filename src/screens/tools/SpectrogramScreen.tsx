@@ -399,8 +399,29 @@ export function SpectrogramScreen({ navigation }: Props) {
   useToolAutoStart(state, onStart, stop);
 
   const toggleFreeze = useCallback(() => {
-    frozenRef.current = !frozenRef.current;
+    const wasFrozen = frozenRef.current;
+    frozenRef.current = !wasFrozen;
     setFrozen(frozenRef.current);
+    /**
+     * ⛔ RESUME STARTS A NEW TIMELINE, because the old one would be a lie.
+     *
+     * Nothing is retained while frozen — the poll returns early, so no column
+     * is kept. On resume the new columns used to butt straight against the
+     * pre-freeze ones with no marker, while the axis asserts a uniform
+     * timebase: "~N s visible" derived from the column count, and 5-second
+     * gridlines at fixed column offsets. The single seam across the freeze was
+     * drawn 0.125 s wide when it was really 0.125 s PLUS however long the user
+     * stared at it — and a snapshot saved afterwards carried
+     * `timeStepSec: 0.125` for the whole grid, so the saved redraw inherited
+     * the false timeline.
+     *
+     * Clearing on resume discards real captured columns, which is a genuine
+     * cost — but they were captured before a gap the display cannot represent,
+     * and an axis that silently compresses an unknown amount of time is worse
+     * than a shorter honest one. Someone who froze to study the picture has
+     * already studied it; SAVE while frozen still keeps it.
+     */
+    if (wasFrozen) setHistory([]);
   }, []);
 
   const [justSaved, setJustSaved] = useState(false);
@@ -640,7 +661,7 @@ export function SpectrogramScreen({ navigation }: Props) {
             </View>
             {frozen && (
               <Text style={styles.frozenNote}>
-                Display frozen — capture continues underneath. RESUME to scroll again.
+                Display frozen — nothing is recorded while frozen. RESUME starts a fresh timeline.
               </Text>
             )}
 

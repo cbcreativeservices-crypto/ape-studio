@@ -511,6 +511,21 @@ function LivePitchMode({
   const lastGood = lastGoodRef.current;
   const heldAgeMs = !accepted && lastGood != null ? Date.now() - lastGood.at : null;
   const isHeld = heldAgeMs != null && heldAgeMs <= PITCH_HOLD_MAX_MS;
+  /**
+   * ⛔ THE HOLD EXPIRES ON ITS OWN — same fix as the MultiMeter's, same reason.
+   *
+   * `heldAgeMs` is wall-clock and only recomputed on re-render, and the only
+   * thing that re-renders this screen is the 15 Hz frame poll that `stop()`
+   * clears. So "last stable reading · 0.3 s ago" froze at 0.3 s indefinitely
+   * after STOP, long past the constant meant to blank it.
+   */
+  const [, setHoldTick] = useState(0);
+  useEffect(() => {
+    if (!isHeld || heldAgeMs == null) return;
+    const remaining = Math.max(0, PITCH_HOLD_MAX_MS - heldAgeMs);
+    const id = setTimeout(() => setHoldTick((n) => n + 1), remaining + 50);
+    return () => clearTimeout(id);
+  }, [isHeld, heldAgeMs]);
   const shownFreq = accepted && live != null ? live.freq : isHeld && lastGood != null ? lastGood.f : null;
   const holdNote = accepted
     ? null

@@ -649,6 +649,28 @@ export function MultiMeterScreen({ navigation }: Props) {
   const lastGood = lastGoodRef.current;
   const heldAgeMs = !accepted && lastGood != null ? Date.now() - lastGood.at : null;
   const isHeld = heldAgeMs != null && heldAgeMs <= PITCH_HOLD_MAX_MS;
+  /**
+   * ⛔ THE HOLD HAS TO EXPIRE ON ITS OWN.
+   *
+   * `heldAgeMs` is wall-clock and is only recomputed when something re-renders
+   * this screen — and the only thing that does is the 15 Hz frame poll, which
+   * `stop()` clears. So pressing STOP 0.3 s after a good reading forced one
+   * final render and then nothing, ever: NOTE A4, "+0.0 cents", COUNTER 440.0,
+   * and "last stable pitch · 0.3 s ago — not live" frozen on screen minutes
+   * later, thirty times past the very constant whose job is to blank it. The
+   * DOMINANT cell beside it correctly read "—", so one panel contradicted the
+   * other about the same dead mic.
+   *
+   * A timer for the remaining hold window forces the one render that lets the
+   * expiry happen, whether or not frames are still arriving.
+   */
+  const [, setHoldTick] = useState(0);
+  useEffect(() => {
+    if (!isHeld || heldAgeMs == null) return;
+    const remaining = Math.max(0, PITCH_HOLD_MAX_MS - heldAgeMs);
+    const id = setTimeout(() => setHoldTick((n) => n + 1), remaining + 50);
+    return () => clearTimeout(id);
+  }, [isHeld, heldAgeMs]);
   const shownPitchHz = accepted && live != null ? live.freq : isHeld && lastGood != null ? lastGood.f : null;
   const note = shownPitchHz != null ? noteFor(shownPitchHz) : null;
   const inTune = note != null && !isHeld && Math.abs(note.cents) < 5;

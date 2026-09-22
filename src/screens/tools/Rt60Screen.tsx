@@ -427,8 +427,30 @@ export function Rt60Screen({ navigation }: Props) {
   /** Input-level bar geometry (armed/recording panel): the SAME zFastDb value
    *  printed in the line below it, mapped −60…0 dBFS → 0…100% — a visual of
    *  an existing readout, not a new measurement. */
-  const levelPct = meter ? Math.max(0, Math.min(100, ((meter.zFastDb + 60) / 60) * 100)) : 0;
-  const TRIGGER_PCT = ((-35 + 60) / 60) * 100; // the ~−35 dBFS arm trigger
+  /**
+   * ⛔ THE BAR AND THE TICK MUST MEASURE THE SAME THING.
+   *
+   * The arm trigger is a PER-SAMPLE MAGNITUDE test in the engine —
+   * `if (std::fabs(samples[i]) >= 0.0178f)`, i.e. −35 dBFS PEAK — while this
+   * bar was drawn from `zFastDb`, the Fast RMS with a 125 ms time constant.
+   * Two different domains, one tick mark, and copy underneath promising that
+   * the mark is where recording starts.
+   *
+   * On a continuous sine whose peak sits exactly on the trigger, RMS is
+   * peak/√2 = 3.01 dB lower, so the engine fired a full 3 dB before the bar
+   * reached the mark. For the excitation this tool actually asks for — "one
+   * loud, SHORT sound" — it is far worse, because a 125 ms RMS integrates a
+   * few-millisecond transient down enormously.
+   *
+   * And the direction is the harmful one: the bar UNDER-reads, so the natural
+   * response is to clap harder until it reaches the mark, which drives the
+   * capture into input_clipping — the one fault that invalidates it.
+   *
+   * `peakDb` is the same quantity the engine tests, so the bar now rises to
+   * the tick exactly when the trigger fires.
+   */
+  const levelPct = meter ? Math.max(0, Math.min(100, ((meter.peakDb + 60) / 60) * 100)) : 0;
+  const TRIGGER_PCT = ((-35 + 60) / 60) * 100; // the ~−35 dBFS arm trigger (peak)
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
