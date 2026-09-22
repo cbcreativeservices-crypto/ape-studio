@@ -21,6 +21,8 @@ import Constants from 'expo-constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Toggle } from '../../components/Toggle';
+import { autoOfflineEnabled, setAutoOffline } from '../../features/glossary/autoOfflinePref';
+import { cancelGlossaryPrefetch, prefetchGlossary } from '../../features/glossary/offlinePrefetch';
 import { TextField } from '../../components/TextField';
 import { StudioButton } from '../../components/StudioButton';
 import { resetCoachMarks } from '../../lib/coachMark';
@@ -81,6 +83,13 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
 export function SettingsScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
   const [local, setLocal] = useState<LocalSettings>(DEFAULT_LOCAL_SETTINGS);
+  // The glossary's background save. Read once; the switch writes through.
+  const [autoOffline, setAutoOfflineState] = useState(true);
+  useEffect(() => {
+    let alive = true;
+    void autoOfflineEnabled().then((v) => { if (alive) setAutoOfflineState(v); });
+    return () => { alive = false; };
+  }, []);
   // M12 (2026-09-07): a transient prefs-fetch failure must NOT read as "guest".
   // fetchNotificationPrefs() resolves null on BOTH a guest and a failure, so the
   // error branch below keys off `prefs == null && resolved && !isGuest` — that is
@@ -680,6 +689,36 @@ ${LOCAL_LOSS}`
 
         {/* Both rows answer "what does the app do with my microphone?", so they
             belong together — they were two separate one-row sections before. */}
+        <SettingsSection title="GLOSSARY">
+          {/* The off switch for the background save (owner 2026-09-22). It is
+              automatic for members because 5.4 MB is one photo — but the
+              download cannot yet tell wi-fi from cellular (expo-network is a
+              native dependency, queued for the next build), so somebody on a
+              metered or satellite connection needs a way to say no. Shown to
+              everyone: a non-member seeing it is how they learn the app can do
+              this at all. */}
+          <View style={styles.row}>
+            <View style={{ flex: 1, paddingRight: 10 }}>
+              <Text style={styles.rowLabel}>Keep the glossary on this phone</Text>
+              <Text style={styles.rowHint}>
+                Academy members: saves all 31,858 terms in the background (about 5 MB) so the
+                glossary works with no signal — on a ship, a flight, or a tour with no wi-fi. Turn
+                off to save only the terms you actually read.
+              </Text>
+            </View>
+            <Toggle
+              on={autoOffline}
+              label="Keep the glossary on this phone"
+              onChange={(v) => {
+                setAutoOfflineState(v);
+                void setAutoOffline(v);
+                if (!v) cancelGlossaryPrefetch();
+                else void prefetchGlossary();
+              }}
+            />
+          </View>
+        </SettingsSection>
+
         <SettingsSection title="MICROPHONE & PRIVACY">
           <View style={[styles.row, styles.rowBorder]}>
             <View style={{ flex: 1, paddingRight: 10 }}>

@@ -49,13 +49,16 @@ describe('the Glossary corpus cannot silently freeze the app', () => {
   });
 
   test('every corpus paging loop yields to the UI', () => {
-    // One per loader: entries, media, formulas.
-    const yields = code.match(/await yieldToUi\(\)/g) ?? [];
+    // Three loaders: media and formulas in the screen, the term corpus in the
+    // shared corpusFetch module it was extracted to on 2026-09-22.
+    const fetchSrc = readFileSync(join(process.cwd(), 'src', 'features', 'glossary', 'corpusFetch.ts'), 'utf8');
+    const yields = (code.match(/await yieldToUi\(\)/g) ?? []).length
+      + (fetchSrc.match(/await yieldToUi\(\)/g) ?? []).length;
     assert.ok(
-      yields.length >= 3,
-      `only ${yields.length} paging loop(s) yield. A loop that pages without yielding blocks touches for the whole load.`,
+      yields >= 3,
+      `only ${yields} paging loop(s) yield. A loop that pages without yielding blocks touches for the whole load.`,
     );
-    assert.match(code, /function yieldToUi\(\)/, 'yieldToUi is gone');
+    assert.match(fetchSrc, /export function yieldToUi\(\)/, 'yieldToUi is gone');
   });
 
   test('a reload announces itself instead of freezing a drawn screen', () => {

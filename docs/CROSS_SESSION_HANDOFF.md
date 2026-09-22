@@ -65,6 +65,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-22 16:01 · ccode · c4d2bb68
+changed: Saving the glossary offline is a member feature — offered to everyone
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-22 15:41 · ccode · 8dfd4c9a
 changed: Glossary: load terms first, definitions for the rows on screen
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">

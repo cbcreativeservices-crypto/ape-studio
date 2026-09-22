@@ -74,6 +74,7 @@ import { ProfilePreview } from './src/screens/profile/ProfilePreview';
 import { LabPreviewOverlay } from './src/features/lab/LabPreviewOverlay';
 import { endLabPreview, getLabPreview } from './src/features/lab/labPreviewStore';
 import { EntitlementProvider } from './src/features/commercial/EntitlementProvider';
+import { GlossaryPrefetchRoot } from './src/features/glossary/GlossaryPrefetchRoot';
 import { PurchaseListenerRoot } from './src/features/commercial/PurchaseListenerRoot';
 import { AudioOutputGate } from './src/features/audio/AudioOutputGate';
 import { touchAudioActivity } from './src/features/audio/audioOutputStore';
@@ -484,6 +485,12 @@ function App() {
             finishTransaction never ran — and an unacknowledged Google purchase
             is auto-refunded after 72 hours. Renders nothing. */}
         <PurchaseListenerRoot />
+        {/* The glossary saves itself to the phone in the background for members
+            (owner 2026-09-22: 5.4 MB, "seems small for a phone to carry"), so
+            it is already there on a ship or a flight rather than waiting for
+            someone to open the screen and find a button. Renders nothing, waits
+            for launch to settle, and honours the off switch in Settings. */}
+        <GlossaryPrefetchRoot />
         {/* Global audio-output gate (owner request 2026-07-25): the app is
             silent by default; this provider owns the enable popups and wires the
             login / foreground-idle auto-re-mute. Mounted once at the root. */}

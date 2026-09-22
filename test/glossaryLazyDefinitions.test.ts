@@ -29,13 +29,17 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-const raw = readFileSync(join(process.cwd(), 'src', 'screens', 'glossary', 'GlossaryScreen.tsx'), 'utf8');
-const code = raw.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+const code = strip(readFileSync(join(process.cwd(), 'src', 'screens', 'glossary', 'GlossaryScreen.tsx'), 'utf8'));
+/* The corpus reads were extracted to a shared module (2026-09-22) so the screen
+   and the background prefetch cannot drift apart. The guards follow them. */
+const fetchSrc = strip(readFileSync(join(process.cwd(), 'src', 'features', 'glossary', 'corpusFetch.ts'), 'utf8'));
 
 describe('glossary loads terms first, definitions on demand', () => {
   test('the corpus select does NOT pull definitions', () => {
-    // The one select inside loadAllEntries, identified by its ordering by term.
-    const m = code.match(/\.select\('([^']*)'\)\s*\n\s*\.order\('term'\)/);
+    // The one corpus select, identified by its ordering by term. It lives in
+    // corpusFetch since the extraction — the screen no longer queries directly.
+    const m = fetchSrc.match(/\.select\('([^']*)'\)\s*\n\s*\.order\('term'\)/);
     assert.ok(m, 'the corpus select changed shape — re-verify this guard');
     const cols = m[1];
     assert.ok(!/\bdefinition\b/.test(cols), `the corpus select pulls definitions again (${cols}) — that is 70% of the payload across every row`);
@@ -45,8 +49,8 @@ describe('glossary loads terms first, definitions on demand', () => {
   });
 
   test('there is a batched definition fetch', () => {
-    assert.match(code, /async function fetchDefinitions/, 'fetchDefinitions is gone');
-    assert.match(code, /\.in\('id', ids\)/, 'definitions are no longer fetched by id batch');
+    assert.match(fetchSrc, /export async function fetchDefinitionsFor/, 'the batched definition fetch is gone');
+    assert.match(fetchSrc, /\.in\('id', ids\)/, 'definitions are no longer fetched by id batch');
   });
 
   test('rows request their own definition when drawn', () => {

@@ -106,6 +106,14 @@ const KEEP: ReadonlySet<string> = new Set<string>([
    * nothing about the previous one.
    */
   'ape:profile:showBigPicture',
+  /**
+   * "Keep the glossary on this phone" (2026-09-22). A device preference about
+   * how much of a 5.4 MB corpus to hold locally — it says nothing about the
+   * account. Swept by the generic `ape:*` rule it would silently revert to on
+   * for somebody who had deliberately turned it off, and re-spend their data.
+   * Same trap as the line above; see the 2026-09-22 engineering lessons.
+   */
+  'ape:glossary:autoOffline',
   'ape:splCalOffset', // device mic calibration — hardware (governance R1)
   'ape:deviceId', // stable per-install id for single-device login (survives switch)
   'ape:dev:commercialMode', // dev-only override

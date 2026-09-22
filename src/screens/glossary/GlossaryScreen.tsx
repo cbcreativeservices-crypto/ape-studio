@@ -43,6 +43,7 @@ import { COPY } from '../../lib/copy';
 import { useCoachMark } from '../../lib/coachMark';
 import { sendFeedback } from '../../lib/feedback';
 import { confirmDialog, notify } from '../../lib/confirm';
+import { fetchCorpusTerms, fetchDefinitionsFor, yieldToUi } from '../../features/glossary/corpusFetch';
 import {
   OFFLINE_AVAILABLE,
   corpusStats,
@@ -208,18 +209,6 @@ function corpusNeedsLoad(table: 'glossary' | 'glossary_browse_v'): boolean {
   return ENTRIES_CACHE === null || ENTRIES_TABLE !== table;
 }
 
-/**
- * Hand the JS thread back to the runtime for one turn.
- *
- * The corpus loops below await one request after another and then parse each
- * page. Between pages there was nothing for queued touches, timers or a
- * re-render to run in, so the whole load was one unbroken block of work. A
- * zero-delay timer is the portable way to let that queue drain, and it costs
- * one tick per page — ~27 ticks for the full corpus.
- */
-function yieldToUi(): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, 0));
-}
 let releaseTimer: ReturnType<typeof setTimeout> | null = null;
 AppState.addEventListener('change', (st) => {
   if (releaseTimer) {
@@ -326,13 +315,16 @@ function loadAllEntries(table: 'glossary' | 'glossary_browse_v'): Promise<Entry[
         }));
       }
 
-      const all = await fetchCorpusFromServer(table);
+      const terms = await fetchCorpusTerms(table);
       // Best-effort: a failed write costs a re-download next launch, nothing more.
-      void saveStoredTerms(
-        table,
-        all.map((e) => ({ id: e.id, term: e.term, achievement_id: e.achievement_id })),
-      ).catch(() => {});
-      return all;
+      void saveStoredTerms(table, terms).catch(() => {});
+      return terms.map((r) => ({
+        id: r.id,
+        term: r.term,
+        definition: '',
+        plain_english: null,
+        achievement_id: r.achievement_id,
+      }));
     },
   );
 }
@@ -431,26 +423,6 @@ async function fetchAllGlossaryFormulas(
 
 const EMPTY_TERMS: { id: string; term: string; achievement_id: string | null }[] = [];
 
-/** Page the whole term list from the server. Terms only — see loadAllEntries. */
-async function fetchCorpusFromServer(table: 'glossary' | 'glossary_browse_v'): Promise<Entry[]> {
-  const all: Entry[] = [];
-  const PAGE_E = 1000;
-  for (let from = 0; ; from += PAGE_E) {
-    const { data, error } = await supabase
-      .from(table)
-      .select('id, term, achievement_id')
-      .order('term')
-      .range(from, from + PAGE_E - 1);
-    if (error) throw error;
-    for (const r of (data ?? []) as { id: string; term: string; achievement_id: string | null }[]) {
-      all.push({ id: r.id, term: r.term, definition: '', plain_english: null, achievement_id: r.achievement_id });
-    }
-    if (!data || data.length < PAGE_E) break;
-    await yieldToUi(); // 32 pages — let the UI breathe between them
-  }
-  return all;
-}
-
 /**
  * Is the device copy still current? Cheap check, then a full refresh only when
  * it is not.
@@ -466,31 +438,11 @@ async function revalidateCorpus(table: 'glossary' | 'glossary_browse_v', haveCou
   try {
     const { data, error } = await supabase.rpc('get_glossary_term_count');
     if (error || typeof data !== 'number' || data === haveCount) return;
-    const fresh = await fetchCorpusFromServer(table);
-    await saveStoredTerms(
-      table,
-      fresh.map((e) => ({ id: e.id, term: e.term, achievement_id: e.achievement_id })),
-    );
+    const fresh = await fetchCorpusTerms(table);
+    await saveStoredTerms(table, fresh);
   } catch {
     // Offline, or the RPC is unavailable — keep what we have. That is the point.
   }
-}
-
-/**
- * Definitions for a set of ids, in ONE request.
- *
- * Called with the rows the reader can actually see. Rejects on failure so the
- * caller can forget the ids and retry when they scroll back — a swallowed
- * error here would leave a row permanently blank with nothing to retry.
- */
-async function fetchDefinitions(
-  table: 'glossary' | 'glossary_browse_v',
-  ids: string[],
-): Promise<{ id: string; definition: string | null }[]> {
-  if (!ids.length) return [];
-  const { data, error } = await supabase.from(table).select('id, definition').in('id', ids);
-  if (error) throw error;
-  return (data ?? []) as { id: string; definition: string | null }[];
 }
 
 type Props = NativeStackScreenProps<StudyStackParamList, 'Glossary'>;
@@ -2113,7 +2065,7 @@ ${COPY.glossaryFreeAllowance}`,
         if (cancelSaveRef.current) break;
         const ids = await idsMissingDefinitions(table, 400);
         if (!ids.length) break;
-        const rows = await fetchDefinitions(table, ids);
+        const rows = await fetchDefinitionsFor(table, ids);
         await saveStoredDefinitions(table, rows);
         // Stop if a whole page came back with nothing storable — otherwise the
         // same ids return next pass and this never ends.
@@ -2192,7 +2144,7 @@ ${COPY.glossaryFreeAllowance}`,
           // 2. Only what the device did not have.
           const missing = want.filter((id) => !stored.has(id));
           if (!missing.length) return;
-          const rows = await fetchDefinitions(table, missing);
+          const rows = await fetchDefinitionsFor(table, missing);
           if (merge(rows)) setDefRev((n) => n + 1);
           // 3. Keep them, so this reader never pays for them twice.
           void saveStoredDefinitions(table, rows).catch(() => {});
