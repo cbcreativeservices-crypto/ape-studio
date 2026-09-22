@@ -318,7 +318,7 @@ export function StudyAreaExplore({
               lines={[
                 'Your choices won’t be saved without an account.',
                 COPY.enrollFreeLine,
-                COPY.membershipCoversLine,
+          COPY.membershipCoversLine,
               ]}
             />
           }
@@ -333,7 +333,7 @@ export function StudyAreaExplore({
         lines={[
           'Your choices won’t be saved without an account.',
           COPY.enrollFreeLine,
-                COPY.membershipCoversLine,
+          COPY.membershipCoversLine,
         ]}
       />
     </>

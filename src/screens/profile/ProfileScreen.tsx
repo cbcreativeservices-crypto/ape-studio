@@ -10,7 +10,7 @@
  * 120 vs 160px). Layout ships at 120×120 with a stub pattern; encoding wires
  * after the ruling (react-native-qrcode-svg already installed).
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Image, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { KeyboardAwareScrollView } from '../../features/keyboard/keyboardControllerSafe';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -51,7 +51,13 @@ import { DevVisualIndex } from '../../features/dev/DevVisualIndex';
 import { useTermList } from '../../features/flags/flaggedStore';
 import { useBundles } from '../../features/enrollment/enrolledBundlesStore';
 import { useEnrollmentProgress } from '../../features/enrollment/enrollmentProgress';
-import { fetchV3Certs, fetchV3Programs } from '../../data/v3Curriculum';
+import {
+  fetchV3Certs,
+  fetchV3Programs,
+  fetchV3Curriculum,
+  type V3Credential,
+  type V3Field,
+} from '../../data/v3Curriculum';
 import { confirmDialog, notify } from '../../lib/confirm';
 
 
@@ -73,6 +79,120 @@ function askYesNo(title: string, body: string, yes: string, onYes: () => void): 
 function warn(title: string, body: string): void {
   notify(title, body);
 }
+
+/**
+ * A collapsible GROUP inside a Section — the whole curriculum, all certificates
+ * and all programs are long lists, and the owner asked for all of them on this
+ * screen (2026-09-22). Collapsed by default so the screen opens the same length
+ * it always did, and so the 128-certificate list costs nothing until asked for.
+ *
+ * `onFirstOpen` is what keeps that promise real: the progress figures for the
+ * whole catalog are only fetched once one of these is actually opened.
+ */
+function SubGroup({
+  label,
+  summary,
+  onFirstOpen,
+  children,
+}: {
+  label: string;
+  summary?: string;
+  onFirstOpen?: () => void;
+  children: ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+  const toggle = useCallback(() => {
+    setOpen((v) => {
+      if (!v) onFirstOpen?.();
+      return !v;
+    });
+  }, [onFirstOpen]);
+  return (
+    <View>
+      <Pressable
+        style={({ pressed }) => [styles.subGroupHead, pressed && styles.rowPressed]}
+        onPress={toggle}
+        accessibilityRole="button"
+        accessibilityState={{ expanded: open }}
+        // RN-web drops accessibilityState; aria-expanded is what reaches the DOM.
+        aria-expanded={open}
+        accessibilityLabel={`${label}${summary ? `, ${summary}` : ''}, ${open ? 'expanded' : 'collapsed'}`}
+      >
+        <Text style={[styles.subCaret, open && styles.subCaretOpen]}>▸</Text>
+        <Text style={styles.subGroupLabel}>{label}</Text>
+        <View style={{ flex: 1 }} />
+        {summary ? <Text style={styles.subGroupSummary}>{summary}</Text> : null}
+      </Pressable>
+      {open ? <View>{children}</View> : null}
+    </View>
+  );
+}
+
+/**
+ * One credential / field / subject row with its completion count.
+ *
+ * `done` is `null` when the catalog progress has not loaded yet. It renders as
+ * "— of 12 topics" rather than "0 of 12", because a zero stated before the read
+ * lands is a claim about the learner's work that we have not checked — the same
+ * failed-load-is-not-empty rule the progress reads above follow.
+ */
+function CatalogRow({
+  name,
+  done,
+  total,
+  onPress,
+  indent,
+}: {
+  name: string;
+  done: number | null;
+  total: number;
+  onPress?: () => void;
+  indent?: boolean;
+}) {
+  const hint = `${done == null ? '—' : done} of ${total} ${total === 1 ? 'topic' : 'topics'} complete`;
+  const inner = (
+    <View style={styles.rowMain}>
+      <Text style={[styles.rowLabel, indent && styles.rowLabelIndent]}>{name}</Text>
+      <Text style={styles.rowHint}>{hint}</Text>
+    </View>
+  );
+  if (!onPress) return <View style={styles.navRow}>{inner}</View>;
+  return (
+    <Pressable
+      style={({ pressed }) => [styles.navRow, pressed && styles.rowPressed]}
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={`${name}, ${hint}. View progress.`}
+    >
+      {inner}
+      <Text style={styles.chevron}>›</Text>
+    </Pressable>
+  );
+}
+
+/** A long catalog list that renders in pages, so opening "all certificates"
+ *  does not mount 128 pressables in one frame on a mid-range Android. */
+function PagedList({ count, children }: { count: number; children: (limit: number) => ReactNode }) {
+  const [limit, setLimit] = useState(PAGE);
+  return (
+    <View>
+      {children(limit)}
+      {limit < count ? (
+        <Pressable
+          style={({ pressed }) => [styles.navRow, pressed && styles.rowPressed]}
+          onPress={() => setLimit((l) => l + PAGE)}
+          accessibilityRole="button"
+          accessibilityLabel={`Show more. Showing ${limit} of ${count}.`}
+        >
+          <Text style={styles.showMore}>
+            Show more — {limit} of {count} shown
+          </Text>
+        </Pressable>
+      ) : null}
+    </View>
+  );
+}
+const PAGE = 25;
 
 /** One compact statistic row with a subtle separator. */
 function StatRow({ label, value, last }: { label: string; value: string; last?: boolean }) {
@@ -237,25 +357,85 @@ export function ProfileScreen() {
     [bundleProg],
   );
 
+  /**
+   * THE WHOLE CATALOG — every certificate, every program, and the whole v3
+   * curriculum (owner 2026-09-22: "show the whole curriculum, all programs, all
+   * certs, their enrolled programs and certs all separately here as well").
+   *
+   * This used to fetch the same two lists and keep ONLY name→id, throwing the
+   * member-topic lists on the floor. They cost nothing extra — the fetchers
+   * already return `topicsGs` — so the catalog listings below are free of any
+   * additional round-trip.
+   *
+   * `state` is tracked because an empty list and a failed read are different
+   * claims: "there are no certificates" would be a lie told to someone whose
+   * connection dropped. The lenient wrappers resolve `[]` on failure, so
+   * emptiness alone cannot distinguish them — a resolved-but-empty catalog is
+   * therefore reported as unavailable, since the live catalog is never empty.
+   */
+  const [catalog, setCatalog] = useState<{
+    certs: V3Credential[];
+    programs: V3Credential[];
+    fields: V3Field[];
+    state: 'loading' | 'ready' | 'unavailable';
+  }>({ certs: [], programs: [], fields: [], state: 'loading' });
+  useEffect(() => {
+    let alive = true;
+    void Promise.all([fetchV3Certs(), fetchV3Programs(), fetchV3Curriculum()]).then(
+      ([certs, programs, fields]) => {
+        if (!alive) return;
+        const ok = certs.length > 0 && programs.length > 0 && fields.length > 0;
+        setCatalog({ certs, programs, fields, state: ok ? 'ready' : 'unavailable' });
+      },
+      () => { if (alive) setCatalog((c) => ({ ...c, state: 'unavailable' })); },
+    ); // [38] (2026-09-07): guard the rejection (was unhandled)
+    return () => { alive = false; };
+  }, []);
+
   // Name → credential id, so a progress row can open the AwardProgress earn-path
   // screen for that certificate / program (My Progress is retrospective: it
   // links to the read-only progress view, never the Enrollments enroll page —
   // owner 2026-09-04). The enrolled bundle only stores the name.
-  const [credIds, setCredIds] = useState<{ cert: Map<string, string>; program: Map<string, string> }>({
-    cert: new Map(),
-    program: new Map(),
-  });
-  useEffect(() => {
-    let alive = true;
-    void Promise.all([fetchV3Certs(), fetchV3Programs()]).then(([certs, programs]) => {
-      if (!alive) return;
-      setCredIds({
-        cert: new Map(certs.map((c) => [c.name, c.id] as const)),
-        program: new Map(programs.map((p) => [p.name, p.id] as const)),
-      });
-    }, () => {}); // [38] (2026-09-07): guard the rejection (was unhandled)
-    return () => { alive = false; };
-  }, []);
+  const credIds = useMemo(
+    () => ({
+      cert: new Map(catalog.certs.map((c) => [c.name, c.id] as const)),
+      program: new Map(catalog.programs.map((p) => [p.name, p.id] as const)),
+    }),
+    [catalog.certs, catalog.programs],
+  );
+
+  /**
+   * Catalog progress is LAZY. The enrolled rows only need their own topics, and
+   * that is what the screen has always fetched. Opening one of the catalog
+   * groups is what asks for the other ~166 topics' progress — so a user who
+   * never opens them pays exactly what they paid before.
+   */
+  const [catalogWanted, setCatalogWanted] = useState(false);
+  const wantCatalog = useCallback(() => setCatalogWanted(true), []);
+  const catalogGs = useMemo(
+    () =>
+      catalogWanted
+        ? Array.from(new Set(catalog.fields.flatMap((f) => f.subjects.flatMap((su) => su.topics.map((t) => t.gs)))))
+        : [],
+    [catalogWanted, catalog.fields],
+  );
+  const curriculumTotals = useMemo(
+    () => ({
+      fields: catalog.fields.length,
+      subjects: catalog.fields.reduce((n, f) => n + f.subjects.length, 0),
+      topics: catalog.fields.reduce((n, f) => n + f.subjects.reduce((m, su) => m + su.topics.length, 0), 0),
+    }),
+    [catalog.fields],
+  );
+  const catalogProg = useEnrollmentProgress(catalogGs);
+  /** null = not loaded yet (renders "—", never a fabricated 0). */
+  const catalogDone = useCallback(
+    (topics: number[]): number | null => {
+      if (!catalogProg.size) return null;
+      return topics.filter((gs) => catalogProg.get(gs)?.status === 'complete').length;
+    },
+    [catalogProg],
+  );
 
   /**
    * PERSIST OUTSIDE THE UPDATER (design review 2026-08-30). These used to call
@@ -459,6 +639,10 @@ export function ProfileScreen() {
           ? colors.amber
           : colors.textSubAlt;
     const goalCount = certBundles.length + programBundles.length;
+    // Clamped ONCE, so the bar width and the value a screen reader hears can
+    // never disagree — they did on LedMeter, where the label and aria-valuenow
+    // were computed separately and drifted apart (2026-09-21).
+    const pctClamped = Math.min(100, Math.max(0, profile?.overallPct ?? 0));
     return (
       <View style={[styles.root, { paddingTop: insets.top }]}>
         <KeyboardAwareScrollView contentContainerStyle={styles.bodyScroll} keyboardShouldPersistTaps="handled" bottomOffset={24}>
@@ -644,58 +828,197 @@ export function ProfileScreen() {
             title="MY PROGRESS"
             summary={`${profile?.overallPct ?? 0}%${goalCount ? ` · ${goalCount} ${goalCount === 1 ? 'goal' : 'goals'}` : ''}`}
           >
-            {/* Full Course Certification — a progress readout, not a link. */}
+            {/* Whole-curriculum progress — a readout, not a link. */}
             <View style={styles.readoutRow}>
               <View style={styles.readoutHead}>
-                {/* RENAMED 2026-09-17: this is completed-topics ÷ 171, and there
-                    is no "Full Course Certification" award in the app — the label
-                    promised a credential that is never issued. */}
+                {/* RENAMED 2026-09-17: this is completed-topics ÷ the live topic
+                    count, and there is no "Full Course Certification" award in
+                    the app — the label promised a credential never issued. */}
                 <Text style={styles.rowLabel}>Whole-curriculum progress</Text>
+                {/* SAY BOTH NUMBERS (owner 2026-09-22: "check the logic and how
+                    the my progress - progress bars show their readout"). A bare
+                    "98% complete" tells the learner nothing about the scale of
+                    what is left; "163 of 166 topics" does. The total is only
+                    printed once it is known — a denominator of 0 would render
+                    "0 of 0", which reads as a broken curriculum. */}
                 <Text style={styles.rowHint}>
-                  {(profile?.overallPct ?? 0) > 0 ? `${profile?.overallPct ?? 0}% complete` : 'Not started yet'}
+                  {(profile?.overallPct ?? 0) > 0
+                    ? `${profile?.overallPct ?? 0}% complete${
+                        profile?.topicTotal
+                          ? ` · ${profile.completeCount} of ${profile.topicTotal} topics`
+                          : ''
+                      }`
+                    : 'Not started yet'}
                 </Text>
               </View>
-              <View style={styles.progressTrack}>
-                <View style={[styles.progressFill, { width: `${Math.min(100, Math.max(0, profile?.overallPct ?? 0))}%` }]} />
+              {/* The bar carried NO accessible value, so a screen reader heard
+                  the label and nothing of the progress it exists to show — the
+                  same gap fixed on LedMeter on 2026-09-21. `progressbar` is not
+                  an RN accessibilityRole, so the value goes on the adjustable
+                  role, with aria-* for RN-web where the DOM takes it directly. */}
+              <View
+                style={styles.progressTrack}
+                accessibilityRole="adjustable"
+                accessibilityValue={{ min: 0, max: 100, now: pctClamped, text: `${pctClamped}% complete` }}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={pctClamped}
+              >
+                <View style={[styles.progressFill, { width: `${pctClamped}%` }]} />
               </View>
             </View>
 
-            <Text style={styles.groupLabel}>YOUR CERTIFICATES &amp; PROGRAMS</Text>
-            {goalCount ? (
-              [...certBundles, ...programBundles].map((b) => {
-                const awardType = b.kind === 'program' ? 'program' : 'certificate';
-                const awardId = (b.kind === 'program' ? credIds.program : credIds.cert).get(b.name);
-                const done = bundleDone(b.topics);
-                const inner = (
-                  <View style={styles.rowMain}>
-                    <Text style={styles.rowLabel}>{b.name}</Text>
-                    <Text style={styles.rowHint}>
-                      {done} of {b.topics.length} topics complete
-                    </Text>
-                  </View>
-                );
-                // Tap opens the read-only earn-path progress once we've resolved
-                // the credential id (arrives with the v3 fetch); until then the
-                // row still shows progress but is not pressable.
-                return awardId ? (
-                  <Pressable
-                    key={b.key}
-                    style={({ pressed }) => [styles.navRow, pressed && styles.rowPressed]}
-                    onPress={() => (navigation as any).navigate('AwardProgress', { awardType, awardId, awardName: b.name })}
-                    accessibilityRole="button"
-                    accessibilityLabel={`${b.name}, ${done} of ${b.topics.length} topics complete. View progress.`}
-                  >
-                    {inner}
-                    <Text style={styles.chevron}>›</Text>
-                  </Pressable>
-                ) : (
-                  <View key={b.key} style={styles.navRow}>{inner}</View>
-                );
-              })
+            {/* SPLIT (owner 2026-09-22: "their enrolled programs and certs all
+                separately"). Certificates and programs were one merged list, so
+                a learner could not tell which of their goals was which — and the
+                two are different things: a certificate is a subject credential,
+                a program is a multi-certificate path. */}
+            <Text style={styles.groupLabel}>YOUR CERTIFICATES</Text>
+            {certBundles.length ? (
+              certBundles.map((b) => (
+                <CatalogRow
+                  key={b.key}
+                  name={b.name}
+                  done={bundleDone(b.topics)}
+                  total={b.topics.length}
+                  onPress={
+                    credIds.cert.get(b.name)
+                      ? () =>
+                          (navigation as any).navigate('AwardProgress', {
+                            awardType: 'certificate',
+                            awardId: credIds.cert.get(b.name),
+                            awardName: b.name,
+                          })
+                      : undefined
+                  }
+                />
+              ))
             ) : (
               <Text style={styles.rowHint}>
-                No certificates or programs started yet — your progress will appear here as you complete topics.
+                No certificates started yet — enrol from Study, and your progress appears here.
               </Text>
+            )}
+
+            <Text style={styles.groupLabel}>YOUR PROGRAMS</Text>
+            {programBundles.length ? (
+              programBundles.map((b) => (
+                <CatalogRow
+                  key={b.key}
+                  name={b.name}
+                  done={bundleDone(b.topics)}
+                  total={b.topics.length}
+                  onPress={
+                    credIds.program.get(b.name)
+                      ? () =>
+                          (navigation as any).navigate('AwardProgress', {
+                            awardType: 'program',
+                            awardId: credIds.program.get(b.name),
+                            awardName: b.name,
+                          })
+                      : undefined
+                  }
+                />
+              ))
+            ) : (
+              <Text style={styles.rowHint}>
+                No programs started yet — enrol from Study, and your progress appears here.
+              </Text>
+            )}
+
+            {/* —— THE WHOLE CATALOGUE —— everything the academy offers, whether
+                or not this learner has enrolled in it. All three are collapsed,
+                so the screen opens at the length it always did, and none of the
+                catalogue progress is fetched until one is opened. */}
+            <Text style={styles.groupLabel}>EVERYTHING THE ACADEMY OFFERS</Text>
+            {catalog.state === 'loading' ? (
+              <Text style={styles.rowHint}>Loading the catalogue…</Text>
+            ) : catalog.state === 'unavailable' ? (
+              /* Not "there are none". A failed read is not an empty academy. */
+              <Text style={styles.rowHint}>
+                Couldn’t load the catalogue — check your connection and try again.
+              </Text>
+            ) : (
+              <>
+                <SubGroup
+                  label="WHOLE CURRICULUM"
+                  summary={`${curriculumTotals.fields} fields · ${curriculumTotals.topics} topics`}
+                  onFirstOpen={wantCatalog}
+                >
+                  {catalog.fields.map((f) => {
+                    const fieldGs = f.subjects.flatMap((su) => su.topics.map((t) => t.gs));
+                    return (
+                      <SubGroup
+                        key={f.field}
+                        label={f.field.toUpperCase()}
+                        summary={`${catalogDone(fieldGs) ?? '—'} / ${fieldGs.length}`}
+                        onFirstOpen={wantCatalog}
+                      >
+                        {f.subjects.map((su) => (
+                          <CatalogRow
+                            key={`${f.field}/${su.subject}`}
+                            name={su.subject}
+                            done={catalogDone(su.topics.map((t) => t.gs))}
+                            total={su.topics.length}
+                            indent
+                          />
+                        ))}
+                      </SubGroup>
+                    );
+                  })}
+                </SubGroup>
+
+                <SubGroup
+                  label="ALL CERTIFICATES"
+                  summary={String(catalog.certs.length)}
+                  onFirstOpen={wantCatalog}
+                >
+                  <PagedList count={catalog.certs.length}>
+                    {(limit) =>
+                      catalog.certs.slice(0, limit).map((c) => (
+                        <CatalogRow
+                          key={c.id}
+                          name={c.name}
+                          done={catalogDone(c.topicsGs)}
+                          total={c.topicsGs.length}
+                          onPress={() =>
+                            (navigation as any).navigate('AwardProgress', {
+                              awardType: 'certificate',
+                              awardId: c.id,
+                              awardName: c.name,
+                            })
+                          }
+                        />
+                      ))
+                    }
+                  </PagedList>
+                </SubGroup>
+
+                <SubGroup
+                  label="ALL PROGRAMS"
+                  summary={String(catalog.programs.length)}
+                  onFirstOpen={wantCatalog}
+                >
+                  <PagedList count={catalog.programs.length}>
+                    {(limit) =>
+                      catalog.programs.slice(0, limit).map((pr) => (
+                        <CatalogRow
+                          key={pr.id}
+                          name={pr.name}
+                          done={catalogDone(pr.topicsGs)}
+                          total={pr.topicsGs.length}
+                          onPress={() =>
+                            (navigation as any).navigate('AwardProgress', {
+                              awardType: 'program',
+                              awardId: pr.id,
+                              awardName: pr.name,
+                            })
+                          }
+                        />
+                      ))
+                    }
+                  </PagedList>
+                </SubGroup>
+              </>
             )}
 
             <Text style={styles.groupLabel}>YOUR NUMBERS</Text>
@@ -1304,6 +1627,15 @@ const styles = StyleSheet.create({
   readoutHead: {},
   progressTrack: { height: 6, borderRadius: 3, backgroundColor: '#26262b', overflow: 'hidden', marginTop: 8 },
   progressFill: { height: 6, borderRadius: 3, backgroundColor: colors.green },
+  rowLabelIndent: { paddingLeft: 12 },
+  // Collapsible catalogue groups inside MY PROGRESS. Deliberately quieter than
+  // Section's own header: these are groups WITHIN a section, not sections.
+  subGroupHead: { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 44, paddingHorizontal: 4 },
+  subCaret: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, color: colors.amber, width: 11 },
+  subCaretOpen: { transform: [{ rotate: '90deg' }] },
+  subGroupLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.amberLabel },
+  subGroupSummary: { fontFamily: fonts.mono, fontSize: 11, color: colors.textSubAlt },
+  showMore: { fontFamily: fonts.barlowMedium, fontSize: 13, color: colors.amber, paddingHorizontal: 4 },
   groupLabel: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 10,
@@ -1490,17 +1822,26 @@ const styles = StyleSheet.create({
   bioInput: { minHeight: 60, textAlignVertical: 'top', paddingTop: 10 },
   headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   college: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 2.3, color: '#cfcfcf' },
+  /**
+   * +37% (owner 2026-09-22). Box 32 → 44 and glyph 15 → 20.5, scaled together
+   * so the padding ratio is unchanged and the gear does not end up crowded in
+   * its own frame. The radius moves with it (8 → 11).
+   *
+   * The bigger box is a bonus rather than a cost: 32 was under BOTH platform
+   * minimum tap targets (44pt iOS / 48dp Android) for a control that sits in
+   * the corner of a header, which is exactly where a thumb is least accurate.
+   */
   gear: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
+    width: 44,
+    height: 44,
+    borderRadius: 11,
     backgroundColor: '#1d1d1d',
     borderWidth: 1,
     borderColor: colors.deepBorder,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  gearGlyph: { fontSize: 15, color: colors.textSubAlt },
+  gearGlyph: { fontSize: 20.5, color: colors.textSubAlt },
 
   idCardLegacy: {
     backgroundColor: '#181818',

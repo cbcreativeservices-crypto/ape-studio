@@ -1,6 +1,7 @@
 /**
  * Profile / Achievements / Gallery data layer — RLS-scoped reads only.
- * `overallPct` = complete_count / 50 — a plain completion percentage from server
+ * `overallPct` = completed ACTIVE v3 topics / active v3 topic count — both
+ * sides scoped identically (2026-09-22). Was complete_count / 50.
  * status rows (never client math over raw events). The album-tier data (tier
  * name + AlbumDisc) is still computed for the RETAINED academic Profile variant,
  * but the commercial version no longer shows it and the live tab-bar tier store
@@ -29,6 +30,10 @@ export type ProfileData = {
   /** Permanent per-user credential token → the QR / public registry lookup. */
   qrToken: string | null;
   completeCount: number;
+  /** The denominator the percentage is over — the live ACTIVE v3 topic count.
+   *  Exposed (2026-09-22) so the Profile readout can state "163 of 166" rather
+   *  than a bare "98%", which tells the learner nothing about the scale. */
+  topicTotal: number;
   overallPct: number;
   tierName: AlbumTierName;
 };
@@ -97,11 +102,34 @@ export async function fetchProfile(): Promise<ProfileRead> {
   let totalTopics: number | null = null;
   try {
     const [completeRes, totalRes] = await Promise.all([
+      /**
+       * ⛔ THE NUMERATOR MUST BE SCOPED LIKE THE DENOMINATOR (fixed 2026-09-22).
+       *
+       * This counted EVERY `complete` row for the user, while the denominator
+       * below counts only ACTIVE v3 achievements. So completions against
+       * retired v2 topics — or against v3 topics since deactivated — were
+       * counted in the top and absent from the bottom.
+       *
+       * Measured on production: one account had 410 complete rows against a
+       * denominator of 166, of which only 163 were live topics. The raw
+       * percentage was 246%, and the `Math.min(100, …)` clamp below was doing
+       * ALL the work — it showed a confident 100% where the honest figure is
+       * 98%. The clamp was hiding the fault rather than guarding an edge.
+       *
+       * `completeCount` is worse, because nothing clamps it: the "Topics
+       * completed" stat read 410 out of a 166-topic curriculum, on the screen
+       * that is the learner's own record of their work.
+       *
+       * The `!inner` join makes the count answer the same question the
+       * denominator does.
+       */
       supabase
         .from('student_achievement_progress')
-        .select('id', { count: 'exact', head: true })
+        .select('id, achievements!inner(id)', { count: 'exact', head: true })
         .eq('user_id', user.id)
-        .eq('status', 'complete'),
+        .eq('status', 'complete')
+        .eq('achievements.curriculum_version_id', V3_CURRICULUM_VERSION_ID)
+        .eq('achievements.is_active', true),
       // Overall % denominator = the LIVE v3 topic count, not the retired 50-slot
       // album scale (QA Wave B 2026-09-10: /50 against 166 topics rendered >100%).
       supabase
@@ -133,8 +161,10 @@ export async function fetchProfile(): Promise<ProfileRead> {
   }
 
   const done = completeCount ?? 0;
-  // Clamp to 100: the denominator is the curriculum size, and `done` is not yet
-  // v3-scoped, so a stray non-v3 complete row can't push the headline over 100%.
+  // Both sides are now scoped to ACTIVE v3, so this can no longer exceed 100 by
+  // construction. The clamp stays as a floor-level guard against a future
+  // divergence, but it is no longer load-bearing — when it WAS, it turned a
+  // 246% computation into a confident-looking 100%.
   const total = totalTopics ?? 0;
   const overallPct = total > 0 ? Math.min(100, Math.floor((done / total) * 100)) : 0;
   const tier = albumTierFor(overallPct);
@@ -151,6 +181,7 @@ export async function fetchProfile(): Promise<ProfileRead> {
       photoUrl: user.photo_url,
       qrToken: ident?.qr_token ?? null,
       completeCount: done,
+      topicTotal: total,
       overallPct,
       tierName: tier.name,
     },
