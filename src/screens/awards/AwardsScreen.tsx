@@ -12,6 +12,7 @@
  * topics, info readout and the ENROLL / VIEW PROGRESS actions. No inline
  * expand/collapse. The ✕ glyph appears only inside the full-screen art viewer.
  */
+import { COPY } from '../../lib/copy';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Animated, { Easing, cancelAnimation, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { officialTopicName } from '../../data/officialTopicNames';
@@ -978,7 +979,8 @@ export function AwardsScreen({ navigation, route }: Props) {
               title="Heads up"
               lines={[
                 'Your choices won’t be saved without an account.',
-                'Enrolling is free to do and always included — one membership covers every topic and certificate, however many you pick.',
+                COPY.enrollFreeLine,
+                COPY.membershipCoversLine,
               ]}
             />
           }
@@ -1064,7 +1066,8 @@ export function AwardsScreen({ navigation, route }: Props) {
               title="Heads up"
               lines={[
                 'Your choices won’t be saved without an account.',
-                'Enrolling is free to do and always included — one membership covers every topic and certificate, however many you pick.',
+                COPY.enrollFreeLine,
+                COPY.membershipCoversLine,
               ]}
             />
           }
@@ -1084,7 +1087,8 @@ export function AwardsScreen({ navigation, route }: Props) {
         title="Heads up"
         lines={[
           'Your choices won’t be saved without an account.',
-          'Enrolling is free to do and always included — one membership covers every topic and certificate, however many you pick.',
+          COPY.enrollFreeLine,
+                COPY.membershipCoversLine,
         ]}
       />
     </View>

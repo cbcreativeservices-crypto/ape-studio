@@ -65,6 +65,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-22 10:17 · ccode · 9332b1af
+changed: Pricing copy that cannot go stale, and a share confirm Android can see
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-22 09:47 · ccode · d6cff392
 changed: Remove "Start a fresh set" — the one place progress could go backwards
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">

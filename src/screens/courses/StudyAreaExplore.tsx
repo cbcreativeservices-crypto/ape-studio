@@ -15,6 +15,7 @@
  * AwardsScreen gives it (bundle store + cores + the no-account heads-up).
  * Nested inside the picker modal so iOS layers it on top (AwardsScreen grammar).
  */
+import { COPY } from '../../lib/copy';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, PanResponder, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -316,7 +317,8 @@ export function StudyAreaExplore({
               title="Heads up"
               lines={[
                 'Your choices won’t be saved without an account.',
-                'Enrolling is free to do and always included — one membership covers every topic and certificate, however many you pick.',
+                COPY.enrollFreeLine,
+                COPY.membershipCoversLine,
               ]}
             />
           }
@@ -330,7 +332,8 @@ export function StudyAreaExplore({
         title="Heads up"
         lines={[
           'Your choices won’t be saved without an account.',
-          'Enrolling is free to do and always included — one membership covers every topic and certificate, however many you pick.',
+          COPY.enrollFreeLine,
+                COPY.membershipCoversLine,
         ]}
       />
     </>

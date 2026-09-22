@@ -90,6 +90,27 @@ export const COPY = {
     'No problem — nothing was stored. The glossary needs a temporary device ID so ' +
     'your free definitions can be counted. You can allow it any time, or sign in to ' +
     'your account instead.',
+  /**
+   * The pre-paywall "Heads up" prompt (owner 2026-09-22: "we need to separate
+   * the everything is free with the membership covers").
+   *
+   * ⛔ THESE ARE TWO CLAIMS AND MUST STAY TWO LINES. It used to be one
+   * sentence — "Enrolling is free to do and always included — one membership
+   * covers every topic and certificate, however many you pick." Fusing them
+   * made the whole thing read as "it is all free", which is not what the app
+   * sells, and "free to do AND always included" said the same thing twice
+   * about the same act.
+   *
+   * Split: the first line is about the ACT of choosing (it costs nothing), the
+   * second is about what the MEMBERSHIP covers (everything, with no per-item
+   * charge). Neither one claims the membership itself is free.
+   *
+   * It was copy-pasted into five call sites across two screens before this, so
+   * it lives here now — the same sentence in five places is five chances to
+   * drift.
+   */
+  enrollFreeLine: 'Enrolling costs nothing — pick as many topics and certificates as you like.',
+  membershipCoversLine: 'One membership covers them all. Choosing more never costs more.',
   // Introductory lifetime offer (Booth 2026-07-15).
   lifetimePrice: '$99.99',
   lifetimeOffer: `One payment for lifetime academy access. Current pricing runs to ${CURRENT_PRICING_ENDS_LABEL}.`,
