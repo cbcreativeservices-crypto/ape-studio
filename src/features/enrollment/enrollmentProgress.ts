@@ -75,6 +75,10 @@ export function useEnrollmentProgress(gsList: number[]): Map<number, TopicProg> 
               answered_count: 0,
               correct_count: 0,
               item_states: lr.item_states,
+              // The device mirror has no notion of a trial pass, and this
+              // branch only runs when the server has no row at all — so the
+              // honest value is "not passed". Fail closed.
+              trial_passed: null,
             });
           }
         }

@@ -65,6 +65,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-21 22:49 · ccode · a4c8b768
+changed: Stop the offline study queue deleting answers the server never received
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-21 22:13 · ccode · 495f2c56
 changed: A stalled session read could freeze a screen permanently — bound all of them
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">

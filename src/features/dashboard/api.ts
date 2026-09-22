@@ -59,6 +59,10 @@ export type MethodProgressRow = {
   correct_count: number;
   /** Per-item pass states (server-written by record_study_progress). */
   item_states: Record<string, { views?: number; known?: boolean; attempts?: number }> | null;
+  /** Set by `credit_time_trial` when a Time Trial is passed. The REAL gate
+   *  (`start_quiz_attempt`) treats this as clearing the method, so the
+   *  Dashboard mirror has to read it or it contradicts the quiz. */
+  trial_passed: boolean | null;
 };
 
 export type StudyMethodConfig = {
@@ -315,7 +319,9 @@ export async function fetchEnrollmentDashboard(gsList: number[]): Promise<Dashbo
         .in('achievement_id', topicIds),
       supabase
         .from('student_method_progress')
-        .select('achievement_id, method_key, completion_pct, engagement_seconds, answered_count, correct_count, item_states')
+        .select(
+          'achievement_id, method_key, completion_pct, engagement_seconds, answered_count, correct_count, item_states, trial_passed',
+        )
         .eq('user_id', userId)
         .in('achievement_id', topicIds),
     ]);
