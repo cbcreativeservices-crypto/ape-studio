@@ -66,6 +66,8 @@ const LEVEL_MIN_DB = -60;
 const LEVEL_MAX_DB = 0;
 const LEVEL_STEP_DB = 3;
 const DEFAULT_LEVEL_DB = -20; // Q4 safe default
+/** The un-quantised dB a 0..1 lane position corresponds to, before snapping. */
+const rawDb = (v: number) => LEVEL_MIN_DB + Math.max(0, Math.min(1, v)) * (LEVEL_MAX_DB - LEVEL_MIN_DB);
 const FALLBACK_CAP_DB = -12; // Q4 hard cap
 
 const SEMITONE = 2 ** (1 / 12); // fine frequency step ×2^(1/12)
@@ -341,6 +343,15 @@ export function SignalGenScreen({ navigation }: Props) {
   const [sweepRepeat, setSweepRepeat] = useState(false);
   const [running, setRunning] = useState(false);
   const [status, setStatus] = useState<GenStatus | null>(() => (ready ? ApeDsp.genStatus() : null));
+  /**
+   * What the GENERATOR says, not what we asked for.
+   *
+   * `status.running` is backed by `Generator::running()` and polled every
+   * STATUS_POLL_MS — and was read by nothing. Falls back to the optimistic
+   * local flag only while the first poll is outstanding, so the transport is
+   * never blank on open.
+   */
+  const genRunning = status ? status.running : running;
   // Native session/route info — for the dev output diagnostics (why is it silent?).
   const [info, setInfo] = useState<ReturnType<typeof ApeDsp.getInfo>>(() => ApeDsp.getInfo());
   const [genError, setGenError] = useState('');
@@ -443,7 +454,23 @@ export function SignalGenScreen({ navigation }: Props) {
   const capPromptOpen = useRef(false);
   const setLevelFromLane = (v: number) => {
     const steps = Math.round((clamp01(v) * (LEVEL_MAX_DB - LEVEL_MIN_DB)) / LEVEL_STEP_DB);
-    const next = Math.min(LEVEL_MAX_DB, LEVEL_MIN_DB + steps * LEVEL_STEP_DB);
+    const onGrid = Math.min(LEVEL_MAX_DB, LEVEL_MIN_DB + steps * LEVEL_STEP_DB);
+    /**
+     * ⛔ THE DEFAULT HAS TO BE REACHABLE.
+     *
+     * The grid is anchored at −60 in 3 dB steps, so it runs …−21, −18… and
+     * −20 is not on it: (−20 − −60) = 40 and 40/3 is not whole. The caption
+     * directly under this control says "default −20", and the fader is
+     * jump-to-touch, so the first touch anywhere moved the level off −20 and
+     * nothing could ever put it back. The nearest reachable values were −21
+     * and −18.
+     *
+     * Snapping to the default when it is the closest value keeps the 3 dB grid
+     * the caption describes, keeps 0 dBFS reachable (it is on the grid), and
+     * makes the one documented value restorable. It is below the −12 dBFS cap,
+     * so it never bypasses the safety confirm.
+     */
+    const next = Math.abs(DEFAULT_LEVEL_DB - rawDb(v)) < Math.abs(onGrid - rawDb(v)) ? DEFAULT_LEVEL_DB : onGrid;
     if (next > capDb && capLocked) {
       // Clamp to the highest 3 dB step at/below the cap…
       const clamped = Math.floor(capDb / LEVEL_STEP_DB) * LEVEL_STEP_DB;
@@ -721,8 +748,15 @@ export function SignalGenScreen({ navigation }: Props) {
               },
               {
                 k: 'GEN',
-                v: running ? 'RUN' : 'STOP',
-                tint: running ? colors.greenBright : '#7a7f8a',
+                // ⛔ THE ENGINE'S OWN FLAG, not our optimistic local one. If the
+                // generator stops native-side for any reason other than the app
+                // mute gate — session interruption, route teardown, engine error
+                // — `running` stayed true over a silent output, and the next key
+                // press called onStop() on an already-stopped generator, so it
+                // took two presses to get sound back. status.running was polled
+                // twice a second and thrown away.
+                v: genRunning ? 'RUN' : 'STOP',
+                tint: genRunning ? colors.greenBright : '#7a7f8a',
                 flex: 0.9,
                 helpKey: 'status',
               },
@@ -766,8 +800,8 @@ export function SignalGenScreen({ navigation }: Props) {
           {/* Status — the HONEST output level from the native path (Q4). */}
           <Pressable accessibilityHint="Press and hold for an explanation." style={styles.statusCard} onLongPress={() => help('status')} delayLongPress={260}>
             <View style={styles.statusRow}>
-              <Text style={[styles.statusState, running && styles.statusStateRunning]}>
-                {running ? 'RUNNING' : 'STOPPED'}
+              <Text style={[styles.statusState, genRunning && styles.statusStateRunning]}>
+                {genRunning ? 'RUNNING' : 'STOPPED'}
               </Text>
               {capLocked ? (
                 <View style={styles.capBadge}>
@@ -778,7 +812,10 @@ export function SignalGenScreen({ navigation }: Props) {
             <View style={styles.statusRow}>
               <Text style={styles.statusLabel}>OUTPUT</Text>
               <Text style={styles.statusValue}>
-                {status ? `${status.effectiveLevelDb.toFixed(1)} dBFS` : '—'}
+                {/* effectiveLevelDb never consults running_ — it is the capped
+                    REQUESTED level. Printing it under "STOPPED" read as a live
+                    output of −20.0 dBFS from a silent generator. */}
+                {status && genRunning ? `${status.effectiveLevelDb.toFixed(1)} dBFS` : '—'}
               </Text>
             </View>
             {/* DEV output diagnostics (why is it silent?) — hidden in production. */}

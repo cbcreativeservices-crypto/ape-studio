@@ -65,6 +65,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-22 09:15 · ccode · 32019368
+changed: The Time Trial client fix was in a file nothing imports; move it to the live one
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-22 08:42 · ccode · bd73bc8b
 changed: Four more from the audio hunt: dose, weighting labels, saved logs, sweeps
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">

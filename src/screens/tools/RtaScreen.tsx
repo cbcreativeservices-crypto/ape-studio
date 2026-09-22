@@ -99,17 +99,42 @@ const FFT_SIZE = 8192;
  *  sub-bass 1/6-oct bands 8192 leaves grayed. Fits the 32768 rolling buffer. */
 const HIRES_FFT = 16384;
 
+/** The native analysis loop's period — `analysisTick(); sleep_for(50ms)` on
+ *  both platforms. Verified in the engine source, not inferred from a comment. */
+const NATIVE_TICK_SEC = 0.05;
+/** The client-side 1/6-octave derivation's period (SIXTH_POLL_MS below). */
+const SIXTH_TICK_SEC = 0.08;
+/** The α that gives an exponential time constant of `tauSec` at a `tickSec`
+ *  update rate: τ = −T / ln(1 − α). */
+const alphaForTau = (tauSec: number, tickSec: number) => 1 - Math.exp(-tickSec / tauSec);
+
 /** Averaging chips → exponential band-average α (higher = faster response).
  *  FAST bumped + made the default (owner 2026-08-17: the display felt slow and
  *  laggy — it now tracks the input sooner). */
 const AVG_CHOICES = [
-  { label: 'FAST', alpha: 0.8 },
-  { label: 'MED', alpha: 0.45 },
-  { label: 'SLOW', alpha: 0.2 },
-  // ~5 s exponential time constant (owner 2026-08-21) — a long, steady average
-  // for room/EQ work. Approximate: the exact settle time varies a little with
-  // the band mode's update rate, but this is the "very slow / ~5 s" option.
-  { label: '5 SEC', alpha: 0.016 },
+  { label: 'FAST', alpha: 0.8, nativeAlpha: 0.8 },
+  { label: 'MED', alpha: 0.45, nativeAlpha: 0.45 },
+  { label: 'SLOW', alpha: 0.2, nativeAlpha: 0.2 },
+  /**
+   * ~5 s exponential time constant (owner 2026-08-21) — a long, steady average
+   * for room/EQ work.
+   *
+   * ⛔ IT IS THE ONLY CHIP THAT NAMES A TIME, SO IT IS THE ONLY ONE THAT CAN BE
+   * WRONG — and it was, in four of the five band modes. α is applied once per
+   * tick, and the two paths do not tick at the same rate: the native analysis
+   * loop is 50 ms (ApeDspCore.mm / ApeDspJni.cpp both `analysisTick();
+   * sleep_for(50ms)`), while the client-side 1/6-octave derivation runs at
+   * SIXTH_POLL_MS = 80 ms.
+   *
+   * τ = −T / ln(1 − α). At α 0.016 that is 4.96 s at 80 ms — correct — and
+   * 3.10 s at 50 ms, which is 38 % faster than the chip claims. So the average
+   * silently changed length when the BANDING chip changed.
+   *
+   * Each path now gets the α that yields the same 5 s. FAST / MED / SLOW are
+   * deliberately left alone: they name no time, so they promise nothing, and
+   * FAST's responsiveness was tuned by ear (owner 2026-08-17).
+   */
+  { label: '5 SEC', alpha: alphaForTau(5, SIXTH_TICK_SEC), nativeAlpha: alphaForTau(5, NATIVE_TICK_SEC) },
 ] as const;
 /** Opening averaging α — FAST, so the analyzer is responsive on entry. */
 const DEFAULT_ALPHA = 0.8;
@@ -800,7 +825,10 @@ export function RtaScreen({ navigation }: Props) {
   const applyAlpha = useCallback(
     (a: number) => {
       if (a === alpha) return;
-      cfg.bandAvgAlpha = a;
+      // The engine ticks at 50 ms and the 1/6-octave derivation at 80 ms, so the
+      // same time constant needs a different α on each. `alpha` stays the
+      // client-side value; the engine gets its own. See AVG_CHOICES.
+      cfg.bandAvgAlpha = AVG_CHOICES.find((c) => c.alpha === a)?.nativeAlpha ?? a;
       setAlpha(a);
       clearDerived(); // derived smoothing/holds restart with the epoch too
       ApeDsp.setEngineConfig(cfg); // same settings-epoch restart as banding
@@ -986,7 +1014,11 @@ export function RtaScreen({ navigation }: Props) {
       input_device: routeName && routeName.length > 0 ? routeName : 'Device microphone',
       calibration_status: 'uncalibrated',
       sample_rate: bands.sampleRate,
-      measurement_settings: { fraction, fft_size: FFT_SIZE, averaging: alpha },
+      // ⛔ THE FFT ACTUALLY IN USE, not the default constant. HI-RES sets
+      // cfg.fftSize = 16384 and the on-glass meta line prints it, while this
+      // wrote 8192 — so the user read "FFT 16384", tapped SAVE, and the record
+      // said 8192. Resolvability is judged against this on replay.
+      measurement_settings: { fraction, fft_size: cfg.fftSize ?? FFT_SIZE, averaging: alpha },
       quality_state: evaluateQuality(flags),
       warning_flags: flags,
       data_payload: {
