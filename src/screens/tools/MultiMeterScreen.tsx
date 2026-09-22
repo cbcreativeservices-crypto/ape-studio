@@ -587,6 +587,8 @@ export function MultiMeterScreen({ navigation }: Props) {
   // the verdict the hub watchdog and micSession already use.
   const liveFrame = running ? frames.meter : null;
   const meter = frameIsLive(liveFrame) ? liveFrame : null;
+  /** The one verdict every display on this screen answers to. */
+  const captureLive = meter != null;
 
   // Readout mode (owner rev 24 — long-press the SPL cell): A/C/FS/SPL, same as
   // the SPL meter. Shared field calibration → estimated dB SPL; nominal 100 when
@@ -604,7 +606,15 @@ export function MultiMeterScreen({ navigation }: Props) {
   const applyRef = (dbfs: number | undefined): number | undefined =>
     dbfs == null || !Number.isFinite(dbfs) ? undefined : unitMode === 'FS' ? dbfs : Math.max(0, dbfs + splOffset);
 
-  const live = running ? frames.pitch : null;
+  /**
+   * ⛔ THE TUNER OBEYS THE SAME VERDICT AS THE NUMBERS (owner ruling 2026-09-22).
+   *
+   * This read `running ? frames.pitch : null`, and `running` stays true through
+   * a stalled capture — which is the whole reason `frameIsLive` exists. So the
+   * meter cells blanked correctly on a dead mic while the tuner kept reading
+   * STABLE off the last pitch frame beside them.
+   */
+  const live = meter != null ? frames.pitch : null;
   const lowSignal = live != null && live.levelDb < PITCH_LOW_SIGNAL_DB;
   const accepted =
     live != null && live.voiced && live.confidence >= PITCH_CONF_MIN && !lowSignal && live.freq > 0;
@@ -965,7 +975,9 @@ export function MultiMeterScreen({ navigation }: Props) {
   // Mini-scope geometry (WaveformScreen scope math, compact ×1, autoscaled).
   const [scopeW, setScopeW] = useState(0);
   const scope = useMemo(() => {
-    if (!running || scopeW <= 0) return null;
+    // ⛔ `running` is true through a stalled capture; `captureLive` is not.
+    // The scope was drawing a frozen trace beside blanked numbers.
+    if (!captureLive || scopeW <= 0) return null;
     // Resolution-agnostic 3 s window over the fine engine history (owner
     // 2026-08-15) — auto-adapts to the native bucket duration.
     const total = frames.waveform.length;
@@ -1039,7 +1051,7 @@ export function MultiMeterScreen({ navigation }: Props) {
       gradY0: half - fullPix,
       gradY1: half + fullPix,
     };
-  }, [running, frames.waveform, scopeW, half, scopeZoom]);
+  }, [captureLive, frames.waveform, scopeW, half, scopeZoom]);
 
   // Visible 1/6-oct bands within the zoom window (log-mapped x + edges).
   const visibleBands = useMemo(() => {

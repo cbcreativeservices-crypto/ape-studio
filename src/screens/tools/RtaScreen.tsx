@@ -846,12 +846,21 @@ export function RtaScreen({ navigation }: Props) {
    *  While a fraction switch is in flight the native frame renders as-is for a
    *  frame or two rather than regrouping the wrong grid. */
   const displayBands = useMemo<DisplayBands | null>(() => {
+    /**
+     * ⛔ NO BARS WITHOUT A LIVE CAPTURE (owner ruling 2026-09-22).
+     *
+     * The bands were drawn on `frames.bands` alone, while the LEVEL cell below
+     * correctly required `frameIsLive`. So a stalled mic blanked the number and
+     * left a full spectrum standing — the most convincing thing on the screen
+     * and the one with no verdict attached.
+     */
+    if (!frameIsLive(frames.meter)) return null;
     if (mode === 61) return sixth;
     const nb = frames.bands;
     if (nb == null) return null;
     if (mode === 10 || mode === 31 || nb.fraction !== 3) return nb;
     return regroupBands(nb, mode, groupHoldRef.current);
-  }, [mode, frames.bands, sixth]);
+  }, [mode, frames.bands, frames.meter, sixth]);
 
   // Clip latch (owner 2026-08-05): PEAK / PEAK HOLD numbers are neutral until an
   // actual clip (≥ 0 dBFS), then stay RED (+ red frame on PEAK HOLD) until the
@@ -954,7 +963,8 @@ export function RtaScreen({ navigation }: Props) {
       return;
     }
     const bands = frames.bands;
-    if (state !== 'running' || bands == null || bands.centers.length === 0) return;
+    // Same verdict as the display — a dead mic has no spectrum to save.
+    if (state !== 'running' || !frameIsLive(frames.meter) || bands == null || bands.centers.length === 0) return;
     const flags = meterWarningFlags(frames.meter);
     // Q2: persist ONLY resolvable bands — the payload has no resolvable flag,
     // so storing flagged-unresolvable levels would fabricate data on replay.

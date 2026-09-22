@@ -446,9 +446,6 @@ function LivePitchMode({
   // redundant START screen (owner 2026-08-01).
   useToolAutoStart(state, onStart, stop);
 
-  // Readouts come ONLY from a live frame — stale frames after STOP are never
-  // shown (the SPL screen's integrity idiom).
-  const live = running ? frames.pitch : null;
   // ⛔ A FRAME FROM A DEAD MIC IS NOT A FRAME (owner 2026-09-20 bug pass).
   // getMeterFrame() never returns null on an engine build, so a stopped
   // capture keeps delivering frames marked running:false / captureStalled
@@ -456,6 +453,16 @@ function LivePitchMode({
   // the verdict the hub watchdog and micSession already use.
   const liveFrame = running ? frames.meter : null;
   const meter = frameIsLive(liveFrame) ? liveFrame : null;
+  /**
+   * ⛔ AND THE DISPLAY OBEYS THE SAME VERDICT (owner ruling 2026-09-22).
+   *
+   * This read `running ? frames.pitch : null`, and `running` stays true through
+   * a stall — `frameIsLive` exists precisely because it is not the same
+   * question. So the NUMBERS blanked correctly on a dead mic while the tuner
+   * went on reading STABLE off the last pitch frame. The half that is easiest
+   * to believe at a glance was the half still lying.
+   */
+  const live = meter != null ? frames.pitch : null;
   const lowSignal = live != null && live.levelDb < PITCH_LOW_SIGNAL_DB;
   // Tuner detection band — Sound mode is never band-limited (it counts any
   // frequency); only the Tuner locks within [lowCut, highCut].
@@ -552,7 +559,8 @@ function LivePitchMode({
       saveGate.prompt();
       return;
     }
-    const fr = state === 'running' ? frames.pitch : null;
+    // Same verdict as the display: a dead mic has nothing to save.
+    const fr = frameIsLive(state === 'running' ? frames.meter : null) ? frames.pitch : null;
     const s = computePitchStats(histRef.current);
     const ok =
       fr != null &&

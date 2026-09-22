@@ -316,9 +316,29 @@ export function SpectrogramScreen({ navigation }: Props) {
   // ---- The spectrogram's OWN 8 Hz poll (not the hook's 15 Hz meter poll).
   // Reads the current REAL fine spectrum each 125 ms while running; FREEZE
   // skips the history push only — capture and polling continue underneath.
+  /**
+   * ⛔ A STALLED CAPTURE MUST NOT KEEP MINTING COLUMNS (owner ruling 2026-09-22).
+   *
+   * This poll runs on `state === 'running'`, and `running` stays true through a
+   * stall — `frameIsLive` exists because that is a different question. So on a
+   * dead mic this went on pushing a NEW column every 125 ms from whatever
+   * spectrum the engine last managed to produce: a steady tone scrolling
+   * convincingly across the screen, beside a LEVEL readout that had correctly
+   * blanked. And those fabricated columns were savable.
+   *
+   * A ref, not a dep: the interval is deliberately keyed to `state` only, so
+   * re-creating it on every meter frame would reset the 8 Hz cadence 15 times a
+   * second. Already-captured history is left alone — those columns are real
+   * recorded audio, and blanking a live display is not a reason to destroy
+   * data the learner actually captured.
+   */
+  const captureLiveRef = useRef(false);
+  captureLiveRef.current = frameIsLive(state === 'running' ? frames.meter : null);
+
   useEffect(() => {
     if (state !== 'running') return;
     const id = setInterval(() => {
+      if (!captureLiveRef.current) return; // dead mic: add nothing
       const meta = ApeDsp.getSpectrumMeta();
       const spec = ApeDsp.getSpectrum();
       if (!meta || meta.sampleRate <= 0 || meta.fftSize <= 0 || spec.length === 0) return;

@@ -190,9 +190,22 @@ export function WaveformScreen({ navigation }: Props) {
 
   // getWaveform() is newest-first → reverse so index 0 is oldest, drawn
   // leftmost, newest at the right edge (oscilloscope convention, §11 View 1).
+  /**
+   * ⛔ NO TRACE WITHOUT A LIVE CAPTURE (owner ruling 2026-09-22).
+   *
+   * This drew `frames.waveform` on `state === 'running'` alone, and `running`
+   * stays true through a stalled capture — which is exactly why `frameIsLive`
+   * exists and is already applied to the numbers below. So on a dead mic the
+   * readouts blanked while the scope kept drawing, badged LIVE, off the last
+   * buckets the engine managed to deliver. FREEZE is unaffected: a frozen
+   * trace is real captured data the user deliberately held.
+   */
   const liveBuckets = useMemo(
-    () => frames.waveform.slice(0, MAX_BUCKETS).reverse(),
-    [frames.waveform],
+    () =>
+      frameIsLive(state === 'running' ? frames.meter : null)
+        ? frames.waveform.slice(0, MAX_BUCKETS).reverse()
+        : [],
+    [frames.waveform, frames.meter, state],
   );
   const source = frozen ?? liveBuckets;
   // Bucket DURATION from the ring's real capacity (the most buckets seen this
