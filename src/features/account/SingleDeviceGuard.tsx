@@ -12,6 +12,7 @@ import { useEffect, useRef } from 'react';
 import { AppState, type AppStateStatus } from 'react-native';
 import { notify } from '../../lib/confirm';
 import { supabase } from '../../lib/supabase';
+import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../commercial/realAccount';
 import { navigationRef } from '../../navigation/navigationRef';
 import { clearLocalAccountData, resetAllLocalStores } from './clearLocalAccountData';
@@ -32,7 +33,7 @@ export function SingleDeviceGuard() {
     const check = async () => {
       if (handling.current) return;
       // Only meaningful for a signed-in account.
-      const { data } = await supabase.auth.getSession();
+      const { data } = await safeSession(supabase.auth.getSession(), 'SingleDeviceGuard');
       // An anonymous device key is a session, but single-device enforcement is
       // about an ACCOUNT being used in two places. A guest cannot displace
       // anyone — and enforcing would sign them out of their own glossary.

@@ -18,6 +18,7 @@
  * `discount_pending` and the client explains it applies at purchase.
  */
 import { supabase } from '../../lib/supabase';
+import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from './realAccount';
 
 export type RedeemStatus =
@@ -81,7 +82,7 @@ export async function redeemAccessCode(code: string): Promise<RedeemResult> {
   // ⚠️ An anonymous device key is a session but not an account. Redeeming
   // against it would write the entitlement to a uid the nightly purge deletes
   // in seven days — the user would redeem and then silently lose it.
-  const { data: sess } = await supabase.auth.getSession();
+  const { data: sess } = await safeSession(supabase.auth.getSession(), 'accessCode');
   if (!isRealAccount(sess.session)) return result('not_authenticated');
 
   try {

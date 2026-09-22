@@ -5,6 +5,7 @@
  * Writes: ONLY via the record_study_progress RPC (WM ruling: no table grants).
  */
 import { supabase } from '../../lib/supabase';
+import { hasSafeSession } from '../../lib/getSessionSafe';
 import { withSessionRetry } from './sessionRetry';
 import { myUserId } from '../account/myUserRow';
 import { SUPABASE_URL } from '../../lib/env';
@@ -50,7 +51,7 @@ export type StudySnapshot = {
 };
 
 /** True once the client has hydrated a persisted session — see sessionRetry. */
-const hasSession = async () => !!(await supabase.auth.getSession()).data.session;
+const hasSession = async () => hasSafeSession(supabase.auth.getSession(), 'study/api');
 
 export async function fetchTopicItems(achievementId: string): Promise<GlossaryItem[]> {
   return withSessionRetry(() => fetchTopicItemsOnce(achievementId), hasSession);

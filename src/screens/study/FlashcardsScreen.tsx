@@ -64,6 +64,7 @@ import { IntroSheet, ScreenIntroOverlay } from '../../features/intro/ScreenIntro
 import { INTRO_STORAGE_PREFIX } from '../../features/intro/screenIntros';
 import { StudySession } from '../../features/study/sync';
 import { supabase } from '../../lib/supabase';
+import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../../features/commercial/realAccount';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import {
@@ -452,8 +453,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
           // factory-reset each session, so guests must NOT resume from the mirror.
           flaggedMode
             ? Promise.resolve(null)
-            : supabase.auth
-                .getSession()
+            : safeSession(supabase.auth.getSession(), 'Flashcards')
                 .then(({ data }) => (isRealAccount(data.session) ? loadLocalMethodStates(achievementId, 'flashcards') : null))
                 .catch(() => null),
           AsyncStorage.getItem(hiddenKey(achievementId)),

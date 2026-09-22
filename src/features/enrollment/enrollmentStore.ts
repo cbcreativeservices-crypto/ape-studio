@@ -20,6 +20,7 @@
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
+import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../commercial/realAccount';
 
 export type EnrollTopic = { gs: number; favorite: boolean; active: boolean };
@@ -159,7 +160,7 @@ function scheduleServerSync(delayMs = 800) {
   syncTimer = setTimeout(() => {
     void (async () => {
       try {
-        const { data } = await supabase.auth.getSession();
+        const { data } = await safeSession(supabase.auth.getSession(), 'enrollmentStore');
         // Guests (incl. an anonymous device key) keep enrollment device-local:
         // syncing would write a master list for a uid deleted within the week.
         if (!isRealAccount(data.session)) return;

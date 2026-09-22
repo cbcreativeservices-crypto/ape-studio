@@ -59,6 +59,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { supabase } from '../../lib/supabase';
+import { safeSession } from '../../lib/getSessionSafe';
 import { classifyMintError, singleFlight, type ConsentRecord } from './deviceKeyState';
 
 export * from './deviceKeyState';
@@ -119,7 +120,7 @@ const mintOnce = singleFlight<MintResult>();
 export function mintDeviceKey(): Promise<MintResult> {
   return mintOnce(async () => {
     try {
-      const { data } = await supabase.auth.getSession();
+      const { data } = await safeSession(supabase.auth.getSession(), 'deviceKey');
       if (data.session) return { ok: true };
       const { error } = await supabase.auth.signInAnonymously();
       if (!error) return { ok: true };

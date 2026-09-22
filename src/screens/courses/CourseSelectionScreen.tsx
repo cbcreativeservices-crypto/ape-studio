@@ -41,6 +41,7 @@ import { CardArt } from '../../components/CardArt';
 import { StudioButton } from '../../components/StudioButton';
 import { SwitchButton } from '../../components/SwitchButton';
 import { supabase } from '../../lib/supabase';
+import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../../features/commercial/realAccount';
 import { SUPABASE_URL } from '../../lib/env';
 import { colors, fonts } from '../../theme/tokens';
@@ -1058,7 +1059,7 @@ export function CourseSelectionScreen() {
     // error (fix 2026-07-26: Guest Mode landed on the academy path). Keyed on the
     // real session, NOT entitlement, since returning authed users also default to
     // the mock 'anonymous' entitlement.
-    const { data: sessData } = await supabase.auth.getSession();
+    const { data: sessData } = await safeSession(supabase.auth.getSession(), 'Home');
     // …and NOT on the mere presence of one either: the glossary's temporary
     // device key is an anonymous session, and reading it as "signed in" would
     // put a guest back on the academy path this line exists to keep them off.

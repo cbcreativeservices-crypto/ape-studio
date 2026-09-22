@@ -19,6 +19,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Crypto from 'expo-crypto';
 import { supabase } from '../../lib/supabase';
+import { hasSafeSession } from '../../lib/getSessionSafe';
 import { trackEvent } from '../telemetry/telemetry';
 import {
   deleteQueuedSubmission,
@@ -207,7 +208,7 @@ export async function startQuizAttempt(achievementId: string): Promise<AttemptPa
     });
   let { data, error } = await call();
   if (error && error.message.includes('user_not_found')) {
-    const signedIn = !!(await supabase.auth.getSession()).data.session;
+    const signedIn = await hasSafeSession(supabase.auth.getSession(), 'quiz/start');
     if (signedIn) {
       console.warn('[quiz] start denied before the session loaded; retrying once');
       ({ data, error } = await call());

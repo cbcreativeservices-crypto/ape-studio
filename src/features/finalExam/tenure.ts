@@ -38,6 +38,7 @@
  * answer.
  */
 import { supabase } from '../../lib/supabase';
+import { safeSession } from '../../lib/getSessionSafe';
 import { classifyGatewayError } from '../glossary/gatewayFault';
 
 /**
@@ -105,7 +106,7 @@ export async function readTenureState(): Promise<TenureState> {
     // Worse, my first draft of the migration defined it against `auth.uid()`
     // directly, which would have matched nothing and told every member their
     // month was incomplete.
-    const { data: sess } = await supabase.auth.getSession();
+    const { data: sess } = await safeSession(supabase.auth.getSession(), 'finalExam/tenure');
     const authUid = sess.session?.user?.id ?? null;
     // No session is not a failure to read tenure — it is a guest, who has none.
     // Still 'unknown' rather than 'incomplete': the briefing should state the
