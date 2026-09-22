@@ -443,6 +443,39 @@ export function AwardsScreen({ navigation, route }: Props) {
   const [swipeLocked, setSwipeLocked] = useState(startIdx === ENROLLMENT_IDX);
   const listRef = useRef<FlatList<PageKey>>(null);
 
+  /**
+   * Move the pager to a page. USE THIS, NEVER `navigate('Awards', …)`.
+   *
+   * ⛔ WHY THIS EXISTS. Every page of this screen — including the Enrollments
+   * view — is rendered INSIDE this pager, so anything on them that called
+   * `navigation.navigate('Awards', { category })` was navigating to the route
+   * it was already on. React Navigation 7 reuses a focused route with the same
+   * key and merely swaps its params; the component does not remount. And
+   * `startIdx` is read from `route.params.category` exactly once, into
+   * `useState`, with no effect watching it — so the swapped param was read by
+   * nobody and the button did nothing at all.
+   *
+   * It killed two real buttons: the glowing "FINAL EXAM · EARN CERTIFICATE
+   * AWARD" on the Enrollments page — dead for precisely the learner who had
+   * just finished a certificate — and "GO TO MY ENROLLMENTS" in the credential
+   * popup. Both looked wired, because the identical call works from Home,
+   * where the route is genuinely not focused yet.
+   *
+   * A callback cannot silently no-op the way a repeat navigate() does, which
+   * is why the page passes this down (as `CurriculumView` already did) instead
+   * of letting children route to themselves.
+   */
+  const goToPage = useCallback((key: PageKey) => {
+    const i = PAGE_ORDER.indexOf(key);
+    if (i < 0) return;
+    setIdx(i);
+    // Landing on Enrollments locks the swipe (exit via Home) — same rule the
+    // picker flow applies, kept here so every jump agrees.
+    if (i === ENROLLMENT_IDX) setSwipeLocked(true);
+    // Instant jump so it does not flash through the pages in between.
+    requestAnimationFrame(() => listRef.current?.scrollToIndex({ index: i, animated: false }));
+  }, []);
+
   // A paged list keeps its scroll offset in PIXELS, so when the window width
   // changes under it (rotation, iPad Split View) the content re-lays out at the
   // new page width while the offset stays where it was - and the pager settles
@@ -712,8 +745,9 @@ export function AwardsScreen({ navigation, route }: Props) {
   const enrollmentsFromDetail = useCallback(() => {
     setDetail(null);
     setPicker(null);
-    (navigation as any).navigate('Awards', { category: 'enrollment' });
-  }, [navigation]);
+    // Was navigate('Awards', …) — a no-op from inside this very screen. See goToPage.
+    goToPage('enrollment');
+  }, [goToPage]);
 
   const progressFromDetail = useCallback(
     (c: CredentialDetail) => {
@@ -844,7 +878,7 @@ export function AwardsScreen({ navigation, route }: Props) {
             </View>
           ) : item === 'enrollment' ? (
             <View style={{ width: screenW }}>
-              <EnrollmentView showBrand={false} />
+              <EnrollmentView showBrand={false} onOpenCategory={goToPage} />
             </View>
           ) : (
             <AwardPageView page={awardPage(item)} onBuild={setPicker} summaryForTier={summaryForTier} />

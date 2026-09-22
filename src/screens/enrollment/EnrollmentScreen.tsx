@@ -291,7 +291,25 @@ const enrollUi = {
   openField: null as number | null,
 };
 
-export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
+export function EnrollmentView({
+  showBrand = true,
+  onOpenCategory,
+}: {
+  showBrand?: boolean;
+  /**
+   * Move the Awards pager to another page.
+   *
+   * ⛔ REQUIRED WHEN THIS VIEW IS RENDERED INSIDE THE AWARDS PAGER, which it is.
+   * `navigation.navigate('Awards', …)` from in here targets the route that is
+   * ALREADY focused: RN7 reuses it and only swaps params, and AwardsScreen
+   * reads `route.params.category` once into `useState` with nothing watching
+   * it — so the tap did nothing whatsoever. That is what made the glowing
+   * "FINAL EXAM · EARN CERTIFICATE AWARD" button dead for exactly the learner
+   * who had finished a certificate. Falls back to navigate() only for a
+   * standalone mount, where the route really is not focused yet.
+   */
+  onOpenCategory?: (key: 'curriculum' | 'specialization' | 'program' | 'directory' | 'enrollment') => void;
+}) {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
   // `resolved` hold (entitlement roll-out 2026-09-11): the provider boots at
@@ -2106,9 +2124,11 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                     );
                     return;
                   }
-                  navigation.navigate('Awards', {
-                    category: centredBundle.kind === 'program' ? 'program' : 'specialization',
-                  });
+                  const cat = centredBundle.kind === 'program' ? 'program' : 'specialization';
+                  // Callback first — a repeat navigate() to the focused route
+                  // is a silent no-op. See onOpenCategory.
+                  if (onOpenCategory) onOpenCategory(cat);
+                  else navigation.navigate('Awards', { category: cat });
                 }
               : undefined
           }
