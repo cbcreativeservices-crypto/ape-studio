@@ -20,7 +20,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Modal, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
-import { confirmDialog, notify } from '../lib/confirm';
+import { notify } from '../lib/confirm';
 import { GlassButton } from './GlassButton';
 import { StudioButton } from './StudioButton';
 import { ShareIcon } from './ShareIcon';
@@ -131,6 +131,10 @@ export function ShareTermSheet({
 
   if (!payload) return <Modal accessibilityViewIsModal visible={false} transparent onRequestClose={onClose} />;
 
+  /** The action waiting on the long-message confirm, or null. Stored as a
+   *  function IN a function, or React would call it as a state updater. */
+  const [pendingLargeShare, setPendingLargeShare] = useState<(() => void) | null>(null);
+
   const multi = staged.length > 1;
   const isLarge = staged.length >= LARGE_SHARE_THRESHOLD;
 
@@ -153,23 +157,28 @@ export function ShareTermSheet({
    *
    * ⛔ NOT FIXED BY CLOSING THE SHEET FIRST, and that matters: the image path
    *    captures `captureRef.current`, which only exists while this sheet is
-   *    mounted. The correct fix is an in-tree overlay confirm (the `embedded`
-   *    shape PrePaywallPrompt already has), which is real UI work and is
-   *    flagged for the owner rather than guessed at unattended. The notify
-   *    cases below, which need nothing from the sheet, ARE fixed.
+   *    mounted.
+   *
+   * ✅ FIXED 2026-09-22 (owner go): the confirm is now an IN-SHEET overlay,
+   *    rendered inside this component's own <Modal> — the same shape
+   *    PrePaywallPrompt's `embedded` mode uses, and for the same reason. It
+   *    cannot land behind the sheet because it is not a separate window, and
+   *    the sheet stays mounted so the image capture still works. The pending
+   *    action is held in state until the learner answers.
+   *
+   *    ⚠️ Android layering is the whole point of this fix, and it has NOT been
+   *    checked on a device — verify on the Pixel that the confirm appears
+   *    above the sheet past 25 staged terms, and that SHARE AS TEXT, Share as
+   *    image and Copy all complete from it.
    */
   const confirmLargeThen = (run: () => void) => {
     if (!isLarge) return run();
-    // confirmDialog, not Alert.alert: RN-web ships Alert as a literal no-op, so
-    // on the web build every share/copy of a LARGE selection swallowed the tap
-    // — the dialog never appeared and `run` was never reached, making SHARE AS
-    // TEXT / Share as image / Copy dead buttons past the threshold.
-    confirmDialog(
-      'Long message',
-      `You're sharing ${staged.length} terms — this will create a very long message. Continue?`,
-      'Share',
-      run,
-    );
+    // ⛔ IN-SHEET, NOT A SEPARATE WINDOW — see the note above. Holding the
+    // pending action in state and drawing the confirm INSIDE this Modal keeps
+    // the sheet mounted, which the image path requires: it captures
+    // `captureRef.current`, and that only exists while this sheet is rendered.
+    // That is why "close the sheet first" was not a fix.
+    setPendingLargeShare(() => run);
   };
 
   const doShareText = () =>
@@ -507,12 +516,86 @@ export function ShareTermSheet({
         </View>
       ) : null}
 
+      {pendingLargeShare ? (
+        <View style={styles.confirmBackdrop} accessibilityViewIsModal>
+          <Pressable
+            style={StyleSheet.absoluteFill}
+            onPress={() => setPendingLargeShare(null)}
+            accessibilityRole="button"
+            accessibilityLabel="Cancel"
+          />
+          <View style={styles.confirmCard}>
+            <Text style={styles.confirmTitle}>Long message</Text>
+            <Text style={styles.confirmBody}>
+              You&apos;re sharing {staged.length} terms — this will create a very long message. Continue?
+            </Text>
+            <Pressable
+              style={styles.confirmBtn}
+              onPress={() => {
+                const run = pendingLargeShare;
+                setPendingLargeShare(null);
+                run();
+              }}
+              accessibilityRole="button"
+              accessibilityLabel="Share"
+            >
+              <Text style={styles.confirmBtnText}>SHARE</Text>
+            </Pressable>
+            <Pressable
+              style={styles.confirmBtnSecondary}
+              onPress={() => setPendingLargeShare(null)}
+              accessibilityRole="button"
+              accessibilityLabel="Cancel"
+            >
+              <Text style={styles.confirmBtnSecondaryText}>CANCEL</Text>
+            </Pressable>
+          </View>
+        </View>
+      ) : null}
+
       <LowLightDim />
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
+  // The long-message confirm, drawn INSIDE this sheet's own Modal window so it
+  // cannot land behind it on Android. Same shape as PrePaywallPrompt's
+  // `embedded` overlay, which exists for exactly this reason.
+  confirmBackdrop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.72)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+  },
+  confirmCard: {
+    width: '100%',
+    maxWidth: 380,
+    backgroundColor: '#15161a',
+    borderColor: '#3a3d45',
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 18,
+    gap: 10,
+  },
+  confirmTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, color: colors.amber },
+  confirmBody: { fontFamily: fonts.barlowRegular, fontSize: 14, color: colors.textSub, lineHeight: 20 },
+  confirmBtn: {
+    marginTop: 6,
+    paddingVertical: 11,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.amber,
+    alignItems: 'center',
+  },
+  confirmBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: colors.amber, letterSpacing: 1 },
+  confirmBtnSecondary: { paddingVertical: 10, alignItems: 'center' },
+  confirmBtnSecondaryText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: colors.textSub, letterSpacing: 1 },
   backdrop: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.74)',

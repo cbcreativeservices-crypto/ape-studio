@@ -14,7 +14,7 @@ import { ActivityIndicator, Linking, Platform, Pressable, ScrollView, StyleSheet
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { GlassButton } from '../../components/GlassButton';
-import { COPY } from '../../lib/copy';
+import { COPY, pricingDeadlineActive } from '../../lib/copy';
 import { confirmDialog, notify } from '../../lib/confirm';
 import { colors, fonts } from '../../theme/tokens';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
@@ -403,13 +403,16 @@ export function PaywallScreen({ navigation }: Props) {
         <View style={styles.promiseRow}>
           <Text style={styles.promiseCheck}>✓</Text>
           <Text style={styles.valueLine}>
-            Every topic, certificate and lab is included. Enrol in as many as you like — choosing more never costs more.
+            Every topic, certificate and lab is included. Enroll in as many as you like — choosing more never costs more.
           </Text>
         </View>
 
-        {/* Single consolidated pricing/deadline note (Booth 2026-07-18; owner
-            2026-08-21 made it the ONE place the end-of-year deadline appears). */}
-        <Text style={styles.betaNote}>{COPY.betaPricingNote}</Text>
+        {/* The ONE place the pricing deadline appears (Booth 2026-07-18; owner
+            2026-08-21). It HIDES ITSELF once the date passes — a note claiming
+            a deadline that has gone is worse than no note, and relying on
+            someone remembering to delete prose on 1 January is how the previous
+            wording would have gone false. See CURRENT_PRICING_ENDS. */}
+        {pricingDeadlineActive() ? <Text style={styles.betaNote}>{COPY.pricingNote}</Text> : null}
 
         {/* One consolidated renewal/legal line (owner 2026-08-21 — merged the
             two near-duplicate app-store notes). MOVED ABOVE the buy button

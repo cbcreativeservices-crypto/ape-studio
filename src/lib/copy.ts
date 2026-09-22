@@ -2,6 +2,24 @@
  * Commercial-mode copy (CM1, Booth 2026-07-11). VERBATIM — do not reword.
  * These strings are ratified marketing/lock copy; changes route to governance.
  */
+/**
+ * When the current prices stop being the current prices (owner 2026-09-22:
+ * "pricing changes Jan 1").
+ *
+ * ⛔ CHANGE THIS, NEVER THE PROSE. Every sentence that mentions the deadline is
+ * built from it, and the paywall note hides itself once the date has passed —
+ * so a forgotten copy edit cannot leave the app making a pricing claim that is
+ * no longer true. That is exactly what the previous wording did: "valid through
+ * the end of the year" was hardcoded prose that would have gone false at
+ * midnight with nobody touching the app.
+ */
+export const CURRENT_PRICING_ENDS = new Date('2027-01-01T00:00:00');
+/** Rendered form of the date above — one place, so the two never disagree. */
+export const CURRENT_PRICING_ENDS_LABEL = '1 January 2027';
+/** False once the deadline has passed, so time-limited copy stops claiming it. */
+export const pricingDeadlineActive = (now: Date = new Date()): boolean =>
+  now.getTime() < CURRENT_PRICING_ENDS.getTime();
+
 export const COPY = {
   lockCommonMistakes: 'Common Mistakes are available in academy mode.',
   upgradePhrase: 'Upgrade from reference mode to full academy mode.',
@@ -74,14 +92,31 @@ export const COPY = {
     'your account instead.',
   // Introductory lifetime offer (Booth 2026-07-15).
   lifetimePrice: '$99.99',
-  lifetimeOffer:
-    'Introductory lifetime price — one payment for lifetime academy access. Available through the end of the year.',
-  // Beta pricing note (Booth 2026-07-18) — shown wherever plans/prices appear
-  // and on signup.
-  betaPricingNote:
-    'Introductory pricing for our early beta (new-adopter) users — all prices are valid through the end of the year. ' +
-    'Lock in now early low priced subscriptions or the lifetime academy membership fee.',
-  // Short introductory deadline shown on EVERY plan tier (user request
-  // 2026-07-17) — the end-of-year deadline applies to all sub levels.
-  introDeadline: 'Introductory price — through the end of the year',
+  lifetimeOffer: `One payment for lifetime academy access. Current pricing runs to ${CURRENT_PRICING_ENDS_LABEL}.`,
+  /**
+   * The ONE pricing note on the purchase screen (owner ruling 2026-09-22:
+   * "pricing changes Jan 1 … it is early-bird pricing but i do not want to
+   * call it that").
+   *
+   * ⛔ WHAT THE OLD WORDING DID WRONG, so it does not creep back:
+   *
+   *  1. "early beta (new-adopter) users" — it told someone deciding whether to
+   *     PAY that the product is unfinished, on the screen where they decide.
+   *  2. "valid through the end of the year" — prose, with no date behind it, in
+   *     a sentence that becomes FALSE at midnight on 31 December with nobody
+   *     touching anything. That is now derived from CURRENT_PRICING_ENDS, and
+   *     the note hides itself once the date passes, so it cannot go stale.
+   *  3. "Lock in now" — a promise that today's price FOLLOWS the subscriber.
+   *     Nothing implements grandfathering, and neither store does it
+   *     automatically: a price rise on an existing subscription is a deliberate
+   *     act with its own consent flow on both Apple and Google. It is dropped
+   *     rather than quietly honoured by hand, because it appeared on the one
+   *     screen customers screenshot. If grandfathering is ever promised, say so
+   *     here AND build it.
+   *  4. The last sentence did not parse: "Lock in now early low priced
+   *     subscriptions or the lifetime academy membership fee."
+   */
+  pricingNote: `These prices are available until ${CURRENT_PRICING_ENDS_LABEL}. The lifetime membership is a one-time payment.`,
+  /** Short deadline line for an individual plan tier. */
+  introDeadline: `Current price — until ${CURRENT_PRICING_ENDS_LABEL}`,
 } as const;
