@@ -93,6 +93,49 @@ const WAVES: { id: Waveform; label: string }[] = [
   { id: 'triangle', label: 'Triangle' },
   { id: 'pulse', label: 'Pulse' },
 ];
+/**
+ * ⛔ RELATIVE PHASE IS HIDDEN FOR LAUNCH — AND IS COMING BACK (owner 2026-09-22).
+ *
+ * The owner wants this control; it is hidden only because finishing it is
+ * design work and this is launch week. **Do not delete it.** Nothing else was
+ * removed: the chips, the `dualPhaseDeg` field on LiquidSpec and its default
+ * are all intact, so bringing it back starts from the physics, not from a
+ * rebuild.
+ *
+ * WHY IT WAS HIDDEN. It did nothing at all. `dualPhaseDeg` was written by these
+ * chips and read by NOBODY — not the surface model, not the audio. Tapping
+ * 0°/90°/180° lit a chip and changed neither the picture nor the sound.
+ *
+ * IT IS A REAL CONTROL, NOT A NONSENSE ONE. In two-frequency Faraday forcing
+ * the relative phase between the drive components genuinely selects between
+ * superlattice and quasipattern states — it is one of the knobs the literature
+ * this lab is built from actually turns.
+ *
+ * WHAT FINISHING IT TAKES, in order of difficulty:
+ *
+ *  1. AUDIO — probably cheap. All three ratios offered (2:1, 3:2, 4:3) are
+ *     simple harmonics, so both tones are harmonics of one fundamental, and the
+ *     additive engine already accepts per-harmonic phases in DEGREES
+ *     ([f0, a1..a12, p1..p12], shared byte-for-byte with both native bridges).
+ *     The engine is ready; only the spec → array mapping is missing.
+ *
+ *  2. THE PICTURE — the real work, and the real risk. `sampleSurface` in
+ *     features/cymatics/faraday.ts would have to fold the phase into the
+ *     two-frequency pattern, and that file already describes its families as
+ *     approximated from published phase maps.
+ *
+ * ⚠️ AND THE CHARTER APPLIES. This is the lab whose own Myth module rules that
+ * an app-generated pattern is not a measurement. A phase control that moves the
+ * surface in a way a real dish would not is worse than no control — it teaches
+ * the opposite of the module sitting next to it.
+ *
+ * ⚠️ AUDIO ALONE WILL NOT DO. Two steady tones summed into one channel with a
+ * static phase offset are very nearly inaudible as a phase change — it shifts
+ * crest factor and little else, especially at 15–150 Hz. Wire the picture, or
+ * the control will still feel dead.
+ */
+const PHASE_CONTROL_HIDDEN_FOR_LAUNCH = true;
+
 const DUALS: { id: string; label: string; ratio: number | null }[] = [
   { id: 'off', label: 'Single frequency', ratio: null },
   { id: 'oct', label: '+ 2:1', ratio: 2 },
@@ -418,12 +461,16 @@ export function LiquidStudioScreen() {
           </View>
           {dualId !== 'off' ? (
             <>
-              <Text style={styles.trayHead}>RELATIVE PHASE</Text>
-              <View style={styles.chips}>
-                {[0, 90, 180].map((d) => (
-                  <LabChip key={d} label={`${d}°`} selected={spec.dualPhaseDeg === d} onPress={() => patch({ dualPhaseDeg: d })} />
-                ))}
-              </View>
+              {PHASE_CONTROL_HIDDEN_FOR_LAUNCH ? null : (
+                <>
+                  <Text style={styles.trayHead}>RELATIVE PHASE</Text>
+                  <View style={styles.chips}>
+                    {[0, 90, 180].map((d) => (
+                      <LabChip key={d} label={`${d}°`} selected={spec.dualPhaseDeg === d} onPress={() => patch({ dualPhaseDeg: d })} />
+                    ))}
+                  </View>
+                </>
+              )}
             </>
           ) : null}
           <Text style={styles.trayBlurb}>

@@ -343,3 +343,25 @@ Google Play splits it per device: a real user downloads one architecture, so
 roughly **38 MB of native code instead of 144 MB**. Trimming the ABIs makes
 tester installs smaller and EAS builds faster; it does not change what a
 customer downloads, because Play already does the split.
+
+
+## AFTER LAUNCH — finish the Liquid Studio's RELATIVE PHASE control
+
+Owner 2026-09-22: *"it is what i do want to include, but i do not have the
+tokens left to any more designing this week."* **Hidden, not deleted** —
+`PHASE_CONTROL_HIDDEN_FOR_LAUNCH` in `LiquidStudioScreen.tsx`. The chips, the
+`dualPhaseDeg` field and its default are all intact.
+
+It was hidden because it did nothing: `dualPhaseDeg` was written by the chips
+and read by nobody — not the surface model, not the audio. It is a real control
+(relative phase selects superlattice vs quasipattern states in two-frequency
+Faraday forcing), so it is worth finishing properly.
+
+- **Audio is probably cheap.** 2:1, 3:2 and 4:3 are simple harmonics, and the
+  additive engine already takes per-harmonic phases in degrees.
+- **The picture is the work, and the risk.** `sampleSurface` must fold phase
+  into the two-frequency pattern — and the Cymatics charter says an
+  app-generated pattern is not a measurement, so a surface that moves in a way a
+  real dish would not teaches the opposite of the Myth module beside it.
+- **Audio alone will not do** — a static phase offset between two steady summed
+  tones is nearly inaudible at 15–150 Hz. Wire the picture or it still feels dead.
