@@ -270,18 +270,43 @@ function loadAllEntries(table: 'glossary' | 'glossary_browse_v'): Promise<Entry[
     () => ENTRIES_CACHE,
     (p) => (ENTRIES_CACHE = p),
     async () => {
+      /**
+       * ⛔ TERMS ONLY. DEFINITIONS ARE FETCHED FOR WHAT IS ON SCREEN.
+       *
+       * Owner 2026-09-22, after Discovery B/C took the corpus from 26,975 to
+       * 31,858 terms: "opening the glossary seems to brick the app" — the list
+       * drew and then nothing responded.
+       *
+       * Measured against production: of the ~5.4 MB this select used to pull,
+       * `definition` is 3.8 MB of it, and `plain_english` is NULL for all
+       * 31,858 rows — it was being requested for every one and never held a
+       * value. Building 31,858 objects carrying all of that is what blocked the
+       * JS thread; yielding between pages (below) let the UI breathe DURING the
+       * load but could not make the load smaller.
+       *
+       * id + term + achievement_id is ~1.5 MB. Search only ever reads `term`
+       * (see searchRank), so nothing about finding a term depends on this, and
+       * definitions arrive through `ensureDefinitions` for the rows actually
+       * displayed — reusing the same in-place merge + `defRev` repaint that
+       * `openViaGateway` already uses for the metered read.
+       *
+       * ⛔ Do NOT add `definition` back to this select to "simplify" it. The
+       * corpus will keep growing; this is the fix that survives that.
+       */
       const all: Entry[] = [];
       const PAGE_E = 1000;
       for (let from = 0; ; from += PAGE_E) {
         const { data, error } = await supabase
           .from(table)
-          .select('id, term, definition, plain_english, achievement_id')
+          .select('id, term, achievement_id')
           .order('term')
           .range(from, from + PAGE_E - 1);
         if (error) throw error;
-        all.push(...((data ?? []) as Entry[]));
+        for (const r of (data ?? []) as { id: string; term: string; achievement_id: string | null }[]) {
+          all.push({ id: r.id, term: r.term, definition: '', plain_english: null, achievement_id: r.achievement_id });
+        }
         if (!data || data.length < PAGE_E) break;
-        await yieldToUi(); // the corpus is 27 pages — let the UI breathe between them
+        await yieldToUi(); // 32 pages — let the UI breathe between them
       }
       return all;
     },
@@ -378,6 +403,23 @@ async function fetchAllGlossaryFormulas(
     await yieldToUi();
   }
   return out;
+}
+
+/**
+ * Definitions for a set of ids, in ONE request.
+ *
+ * Called with the rows the reader can actually see. Rejects on failure so the
+ * caller can forget the ids and retry when they scroll back — a swallowed
+ * error here would leave a row permanently blank with nothing to retry.
+ */
+async function fetchDefinitions(
+  table: 'glossary' | 'glossary_browse_v',
+  ids: string[],
+): Promise<{ id: string; definition: string | null }[]> {
+  if (!ids.length) return [];
+  const { data, error } = await supabase.from(table).select('id, definition').in('id', ids);
+  if (error) throw error;
+  return (data ?? []) as { id: string; definition: string | null }[];
 }
 
 type Props = NativeStackScreenProps<StudyStackParamList, 'Glossary'>;
@@ -1307,6 +1349,10 @@ ${COPY.glossaryFreeAllowance}`,
    * instead would rebuild the 26k-term link index on every definition opened.
    */
   const [defRev, setDefRev] = useState(0);
+  /** Indirection to ensureDefinitions, which is declared further down but is
+   *  needed by the popup handlers above it. Assigned during render; every
+   *  caller runs from an event, long after that. */
+  const ensureDefsRef = useRef<(ids: string[]) => void>(() => {});
   /** Forward handle to the metered read. The implementation needs the detail
    *  state, which is declared further down; the gate needs to CALL it from up
    *  here. A ref is the cheap way to cross that without reordering the screen. */
@@ -1650,6 +1696,7 @@ ${COPY.glossaryFreeAllowance}`,
       recordRecent(id);
       coach.registerAction();
       void fetchDetails(id);
+      ensureDefsRef.current([id]); // a cross-link hop may never have been on screen
       popupScrollY.current = 0;
       setPopupTrail([{ id, offset: 0 }]);
     },
@@ -1662,6 +1709,7 @@ ${COPY.glossaryFreeAllowance}`,
   const openLinked = useCallback(
     (id: string) => {
       lastViewedTermRef.current = id;
+      ensureDefsRef.current([id]); // hopped-to term may never have been rendered
       setChooser(null);
       recordRecent(id);
       void fetchDetails(id);
@@ -1939,6 +1987,83 @@ ${COPY.glossaryFreeAllowance}`,
   // resolve() can fire long after the sheet opened (e.g. list picker → share).
   const entryByIdRef = useRef(entryById);
   entryByIdRef.current = entryById;
+  /**
+   * Fill in definitions for rows the reader can actually see.
+   *
+   * The corpus load carries terms only (see loadAllEntries). This pulls the
+   * definitions for a batch of ids and merges them IN PLACE, then bumps
+   * `defRev` — the same repaint seam `openViaGateway` uses when the metered
+   * read replaces a teaser. `visible` is derived from `entries`, and the row
+   * renderer reads `item.definition`, so an in-place merge plus a defRev bump
+   * is what makes the text appear without rebuilding a 31,858-entry array.
+   *
+   * `requestedRef` holds ids already asked for, so scrolling back over rows
+   * does not refetch them. A FAILED batch is dropped from that set, so the
+   * rows retry the next time they scroll into view rather than staying blank
+   * forever.
+   */
+  const requestedDefsRef = useRef<Set<string>>(new Set());
+  /**
+   * ⛔ DRIVEN BY renderItem, NOT BY onViewableItemsChanged.
+   *
+   * The viewability callback was tried first and never fired a single request
+   * (verified in the browser: no network call at all, on first paint or on
+   * scroll). `renderItem` runs for exactly the rows RN decides to mount, which
+   * is the signal we actually want and needs no config to agree with.
+   *
+   * Ids are coalesced on a timer so one screenful is ONE request rather than
+   * ~15.
+   */
+  const pendingDefsRef = useRef<Set<string>>(new Set());
+  const flushTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const queueDefinition = useCallback((id: string) => {
+    if (requestedDefsRef.current.has(id) || pendingDefsRef.current.has(id)) return;
+    pendingDefsRef.current.add(id);
+    if (flushTimerRef.current) return;
+    flushTimerRef.current = setTimeout(() => {
+      flushTimerRef.current = null;
+      const ids = [...pendingDefsRef.current];
+      pendingDefsRef.current.clear();
+      ensureDefsRef.current(ids);
+    }, 60);
+  }, []);
+  const ensureDefinitions = useCallback(
+    (ids: string[]) => {
+      const want = ids.filter((id) => {
+        if (requestedDefsRef.current.has(id)) return false;
+        const e = entryByIdRef.current.get(id);
+        return !!e && e.definition === '';
+      });
+      if (!want.length) return;
+      for (const id of want) requestedDefsRef.current.add(id);
+      void fetchDefinitions(table, want).then(
+        (rows) => {
+          let changed = false;
+          for (const r of rows) {
+            const e = entryByIdRef.current.get(r.id);
+            if (e && r.definition && e.definition !== r.definition) {
+              e.definition = r.definition;
+              changed = true;
+            }
+          }
+          if (changed) setDefRev((n) => n + 1);
+        },
+        () => {
+          // Let them be retried on the next pass over these rows.
+          for (const id of want) requestedDefsRef.current.delete(id);
+        },
+      );
+    },
+    [table],
+  );
+
+  ensureDefsRef.current = ensureDefinitions;
+
+  // A new corpus (sign-in swaps the table) invalidates what we have asked for.
+  useEffect(() => {
+    requestedDefsRef.current = new Set();
+  }, [table]);
+
   const termIndexRef = useRef(termIndex);
   termIndexRef.current = termIndex;
   const isMemberRef = useRef(isMember);
@@ -2757,6 +2882,8 @@ ${COPY.glossaryFreeAllowance}`,
           }
           extraData={rowExtraData}
           renderItem={({ item }) => {
+            // Ask for this row's definition the first time it is drawn.
+            if (!item.definition) queueDefinition(item.id);
             // List view expands INLINE; card view stays compact and opens the
             // popup overlay instead (below).
             const expanded = !cardView && expandedIds.has(item.id);
