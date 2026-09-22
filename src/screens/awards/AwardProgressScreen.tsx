@@ -146,16 +146,57 @@ export function AwardProgressScreen({ navigation, route }: Props) {
   }
 
   if (failed || !progress) {
+    /**
+     * ⛔ THIS STATE USED TO BE A DEAD END (owner 2026-09-22, reported from the
+     * app: "blank screen with a signin text and a back button").
+     *
+     * Three things were wrong, and the third was the worst:
+     *
+     *  1. NO WAY TO DO THE THING IT ASKED FOR. It said "Sign in with a free
+     *     account" and offered only Back. The app told the learner what to do
+     *     and gave them no way to do it — and the row they tapped on the
+     *     Credential Wall had ALREADY told them the same sentence, so the tap
+     *     achieved nothing but a round trip.
+     *  2. IT NEVER SAID WHICH AWARD. `awardName` is right there in the route
+     *     params and was rendered only in the success branch, so someone who
+     *     tapped a specific certificate landed on a screen with no subject.
+     *  3. "PULL TO RETRY" WAS FALSE. The RefreshControl lives on the ScrollView
+     *     in the SUCCESS branch; this branch is a plain View with nothing to
+     *     pull. It instructed the user to perform a gesture that does not
+     *     exist — the same dead-control class as a button that does nothing.
+     *
+     * Now: the award is named, and each case gets the action it actually needs
+     * — sign-in for a guest, a real retry for a failed load.
+     */
     return (
       <View style={[styles.root, { paddingTop: insets.top }]}>
         {headerBar}
         <View style={styles.center}>
+          <Text style={styles.awardNameEmpty} numberOfLines={3}>
+            {awardName}
+          </Text>
           <Text style={styles.muted}>
             {noSession
-              ? 'Sign in with a free account to track award progress and sit the Final Exam.'
-              : "Could not load this award's requirements right now. Pull to retry, or check your connection."}
+              ? 'Sign in with a free account to track your progress toward this and to sit the Final Exam. It is free, and your progress is kept.'
+              : "Could not load this award's requirements right now — check your connection and try again."}
           </Text>
-          <View style={{ width: 200 }}>
+          <View style={{ width: 240, gap: 10 }}>
+            {noSession ? (
+              <StudioButton
+                label="Create a free account"
+                variant="primary"
+                small
+                onPress={() => (navigation as any).navigate('Auth')}
+              />
+            ) : (
+              <StudioButton
+                label={refreshing ? 'Trying…' : 'Try again'}
+                variant="primary"
+                small
+                disabled={refreshing}
+                onPress={() => void onRefresh()}
+              />
+            )}
             <StudioButton label="Back" variant="secondary" small onPress={() => navigation.goBack()} />
           </View>
         </View>
@@ -308,6 +349,14 @@ export function AwardProgressScreen({ navigation, route }: Props) {
 }
 
 const styles = StyleSheet.create({
+  /** The award name in the empty/failed state — so the screen has a subject. */
+  awardNameEmpty: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 19,
+    color: colors.textPrimary,
+    textAlign: 'center',
+    marginBottom: 4,
+  },
   root: { flex: 1, backgroundColor: colors.screenBg },
   center: {
     flex: 1,

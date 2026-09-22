@@ -65,6 +65,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-22 10:56 · ccode · 9e3f1293
+changed: Subject-copy ratification sheet, and store-notifications recorded for after the build
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-22 10:34 · ccode · a8f45648
 changed: Bound the last five auth reads, and guard the class repo-wide
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
