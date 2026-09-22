@@ -3,6 +3,7 @@
  * reads. Categories must match notification_concepts.category exactly.
  */
 import { supabase } from '../../lib/supabase';
+import { safeUser } from '../../lib/getSessionSafe';
 
 export const WEEKLY_CONCEPT_CATEGORIES = [
   'Acoustics',
@@ -99,7 +100,7 @@ export function timeToHhmm(raw: string): string {
  * matches zero rows and — for updates — fails SILENTLY.
  */
 async function authUserId(): Promise<string | null> {
-  const { data } = await supabase.auth.getUser();
+  const { data } = await safeUser(supabase.auth.getUser(), 'weeklyConcept');
   // An anonymous device key (the glossary's) is not someone to subscribe: the
   // rows would be written against a uid the nightly purge deletes.
   if (data.user?.is_anonymous === true) return null;
@@ -110,7 +111,7 @@ async function authUserId(): Promise<string | null> {
 async function appUserId(): Promise<string | null> {
   /* Scoped to the caller: an admin matches every row under `admin_all_users`,
      and `maybeSingle` errors on more than one just as `single` does. */
-  const uid = (await supabase.auth.getUser()).data?.user?.id ?? null;
+  const uid = (await safeUser(supabase.auth.getUser(), 'weeklyConcept')).data?.user?.id ?? null;
   if (!uid) return null;
   const { data, error } = await supabase.from('users').select('id').eq('auth_id', uid).maybeSingle();
   if (error) {

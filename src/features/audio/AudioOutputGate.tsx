@@ -27,6 +27,7 @@ import { Modal } from '../../components/DimModal';
 import { HoldToActivate } from '../../components/HoldToActivate';
 import { getLabPreview } from '../lab/labPreviewStore';
 import { supabase } from '../../lib/supabase';
+import { safeUser } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../commercial/realAccount';
 import { colors, fonts } from '../../theme/tokens';
 import { SoundSafetyWarning } from './SoundSafetyWarning';
@@ -212,7 +213,10 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
             const stored = await recordSoundSafetyAck({
               text: soundSafetyFullText(),
               appVersion: appVersion(),
-              userId: (await supabase.auth.getUser()).data.user?.id ?? null,
+              // Bounded: this write settles the AUDIO GATE. A stalled getUser
+              // here never reaches settle(), so the learner could not enable
+              // audio at all — a hang on a safety gate, not just a slow read.
+              userId: (await safeUser(supabase.auth.getUser(), 'soundSafetyAck')).data.user?.id ?? null,
             });
             if (!stored) {
               settle(false);

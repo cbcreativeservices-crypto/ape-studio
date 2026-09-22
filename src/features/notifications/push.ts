@@ -6,6 +6,7 @@
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 import { supabase } from '../../lib/supabase';
+import { safeUser } from '../../lib/getSessionSafe';
 import { payloadFromUnknown, type WeeklyConceptPayload } from './weeklyConcept';
 
 // Type-only import — erased at runtime, never touches the native module.
@@ -105,7 +106,7 @@ export function flushLocalDestNav(go: (dest: string) => void): void {
 async function appUserId(): Promise<string | null> {
   /* Scoped to the caller: an admin matches every row under `admin_all_users`,
      and `maybeSingle` errors on more than one just as `single` does. */
-  const uid = (await supabase.auth.getUser()).data?.user?.id ?? null;
+  const uid = (await safeUser(supabase.auth.getUser(), 'push')).data?.user?.id ?? null;
   if (!uid) return null;
   const { data, error } = await supabase.from('users').select('id').eq('auth_id', uid).maybeSingle();
   if (error) {

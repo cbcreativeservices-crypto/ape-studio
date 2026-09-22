@@ -29,6 +29,7 @@ import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-nati
 import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
+import { safeUser } from '../../lib/getSessionSafe';
 import { useOverlaysSuppressed } from '../dev/popupSuppressStore';
 import { LowLightDim } from '../settings/LowLightLayer';
 import { colors, fonts } from '../../theme/tokens';
@@ -45,7 +46,7 @@ type Copy = { title: string; body: string };
 
 async function currentUid(): Promise<string> {
   try {
-    const { data } = await supabase.auth.getUser();
+    const { data } = await safeUser(supabase.auth.getUser(), 'TopicWelcomeSheet');
     return data.user?.id ?? 'guest';
   } catch {
     return 'guest';
