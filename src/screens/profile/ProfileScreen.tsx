@@ -59,6 +59,7 @@ import {
   type V3Field,
 } from '../../data/v3Curriculum';
 import { confirmDialog, notify } from '../../lib/confirm';
+import { loadShowBigPicture, saveShowBigPicture } from '../../features/profile/bigPicturePref';
 
 
 /**
@@ -142,14 +143,22 @@ function CatalogRow({
   total,
   onPress,
   indent,
+  showProgress = true,
 }: {
   name: string;
   done: number | null;
   total: number;
   onPress?: () => void;
   indent?: boolean;
+  /** False for catalogue rows while the big picture is off: the row then states
+   *  the SIZE of the thing ("3 topics") instead of how little of it is done
+   *  ("0 of 3 complete"), which is the discouraging form. The learner's own
+   *  enrolled rows always pass true. */
+  showProgress?: boolean;
 }) {
-  const hint = `${done == null ? '—' : done} of ${total} ${total === 1 ? 'topic' : 'topics'} complete`;
+  const hint = showProgress
+    ? `${done == null ? '—' : done} of ${total} ${total === 1 ? 'topic' : 'topics'} complete`
+    : `${total} ${total === 1 ? 'topic' : 'topics'}`;
   const inner = (
     <View style={styles.rowMain}>
       <Text style={[styles.rowLabel, indent && styles.rowLabelIndent]}>{name}</Text>
@@ -412,12 +421,33 @@ export function ProfileScreen() {
    */
   const [catalogWanted, setCatalogWanted] = useState(false);
   const wantCatalog = useCallback(() => setCatalogWanted(true), []);
+
+  /**
+   * THE BIG PICTURE IS OPT-IN (owner 2026-09-22: the academy-wide totals "are
+   * intimidating and discouraging since they fill so slowly"). Off until the
+   * learner asks for it; their OWN enrolled certificates and programs are never
+   * gated by this, only the totals measured against the whole academy.
+   */
+  const [showBigPicture, setShowBigPicture] = useState(false);
+  useEffect(() => {
+    let alive = true;
+    void loadShowBigPicture().then((v) => { if (alive) setShowBigPicture(v); });
+    return () => { alive = false; };
+  }, []);
+  // Takes the value the switch reports rather than flipping the current one:
+  // a control that toggles on every change would desync the moment Toggle
+  // reported the same state twice.
+  const toggleBigPicture = useCallback((next: boolean) => {
+    setShowBigPicture(next);
+    void saveShowBigPicture(next);
+    if (next) setCatalogWanted(true); // only now is the catalogue read worth doing
+  }, []);
   const catalogGs = useMemo(
     () =>
-      catalogWanted
+      catalogWanted && showBigPicture
         ? Array.from(new Set(catalog.fields.flatMap((f) => f.subjects.flatMap((su) => su.topics.map((t) => t.gs)))))
         : [],
-    [catalogWanted, catalog.fields],
+    [catalogWanted, showBigPicture, catalog.fields],
   );
   const curriculumTotals = useMemo(
     () => ({
@@ -840,9 +870,22 @@ export function ProfileScreen() {
               — enrolling lives in Study — so no one lands there and gets stuck. */}
           <Section
             title="MY PROGRESS"
-            summary={`${profile?.overallPct ?? 0}%${goalCount ? ` · ${goalCount} ${goalCount === 1 ? 'goal' : 'goals'}` : ''}`}
+            /* The collapsed header used to read "2% · 3 goals" — the academy-wide
+               figure, in the most prominent spot on the screen, before the
+               learner had opened anything. It now leads with the goals they
+               chose, and only carries the percentage once they have asked for
+               the big picture. */
+            summary={
+              goalCount
+                ? `${goalCount} ${goalCount === 1 ? 'goal' : 'goals'}${showBigPicture ? ` · ${profile?.overallPct ?? 0}%` : ''}`
+                : showBigPicture
+                  ? `${profile?.overallPct ?? 0}%`
+                  : ''
+            }
           >
-            {/* Whole-curriculum progress — a readout, not a link. */}
+            {/* Whole-curriculum progress — a readout, not a link. HIDDEN by
+                default; see the big-picture note above. */}
+            {showBigPicture ? (
             <View style={styles.readoutRow}>
               <View style={styles.readoutHead}>
                 {/* RENAMED 2026-09-17: this is completed-topics ÷ the live topic
@@ -881,6 +924,7 @@ export function ProfileScreen() {
                 <View style={[styles.progressFill, { width: `${pctClamped}%` }]} />
               </View>
             </View>
+            ) : null}
 
             {/* SPLIT (owner 2026-09-22: "their enrolled programs and certs all
                 separately"). Certificates and programs were one merged list, so
@@ -964,7 +1008,11 @@ export function ProfileScreen() {
                       <SubGroup
                         key={f.field}
                         label={f.field.toUpperCase()}
-                        summary={`${catalogDone(fieldGs) ?? '—'} / ${fieldGs.length}`}
+                        summary={
+                          showBigPicture
+                            ? `${catalogDone(fieldGs) ?? '—'} / ${fieldGs.length}`
+                            : `${fieldGs.length} topics`
+                        }
                         onFirstOpen={wantCatalog}
                       >
                         {f.subjects.map((su) => (
@@ -973,6 +1021,7 @@ export function ProfileScreen() {
                             name={su.subject}
                             done={catalogDone(su.topics.map((t) => t.gs))}
                             total={su.topics.length}
+                            showProgress={showBigPicture}
                             indent
                           />
                         ))}
@@ -994,6 +1043,7 @@ export function ProfileScreen() {
                           name={c.name}
                           done={catalogDone(c.topicsGs)}
                           total={c.topicsGs.length}
+                          showProgress={showBigPicture}
                           onPress={() =>
                             (navigation as any).navigate('AwardProgress', {
                               awardType: 'certificate',
@@ -1020,6 +1070,7 @@ export function ProfileScreen() {
                           name={pr.name}
                           done={catalogDone(pr.topicsGs)}
                           total={pr.topicsGs.length}
+                          showProgress={showBigPicture}
                           onPress={() =>
                             (navigation as any).navigate('AwardProgress', {
                               awardType: 'program',
@@ -1034,6 +1085,24 @@ export function ProfileScreen() {
                 </SubGroup>
               </>
             )}
+
+            {/* THE OPT-IN ITSELF (owner 2026-09-22). Deliberately the last thing
+                in the section and written as an invitation, not a setting: the
+                default view is the learner's own goals, and the academy-wide
+                totals are something they can ask for and put away again. */}
+            <View style={styles.switchRow}>
+              <Text style={styles.switchLabel}>Show my progress across the whole academy</Text>
+              <Toggle
+                on={showBigPicture}
+                label="Show my progress across the whole academy"
+                onChange={toggleBigPicture}
+              />
+            </View>
+            <Text style={styles.rowHint}>
+              {showBigPicture
+                ? 'Whole-curriculum, certificate and program totals are shown below. My own certificates and programs stay either way.'
+                : 'Totals across all 166 topics, 124 certificates and 36 programs. They move slowly — most people find their own goals more useful.'}
+            </Text>
 
             <Text style={styles.groupLabel}>MY NUMBERS</Text>
             {/* "Quizzes passed" and "Study streak" REMOVED (design review

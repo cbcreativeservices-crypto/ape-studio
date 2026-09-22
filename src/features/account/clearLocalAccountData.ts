@@ -91,6 +91,21 @@ const KEEP: ReadonlySet<string> = new Set<string>([
   // exploit. Someone genuinely starting over loses nothing that matters: a
   // count and a week-start.
   'ape:glossaryUsageLocal',
+  /**
+   * A DISPLAY PREFERENCE, NOT USER DATA (2026-09-22).
+   *
+   * The Profile screen's opt-in for whole-academy progress totals. It records
+   * nothing about the account — no progress, no identity, no content — only
+   * whether this device shows the academy-wide figures at all. Swept by the
+   * generic `ape:*` rule it silently reset to OFF on boots where the anonymous
+   * session churns the identity marker, so a learner who turned it on found it
+   * off again with no explanation, every time.
+   *
+   * Keeping it across an account switch is harmless: the worst case is the next
+   * person on this device seeing a totals toggle already on, which discloses
+   * nothing about the previous one.
+   */
+  'ape:profile:showBigPicture',
   'ape:splCalOffset', // device mic calibration — hardware (governance R1)
   'ape:deviceId', // stable per-install id for single-device login (survives switch)
   'ape:dev:commercialMode', // dev-only override
