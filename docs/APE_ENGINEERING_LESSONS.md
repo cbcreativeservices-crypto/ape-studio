@@ -229,3 +229,43 @@ When you do that, say so in a comment — it looks like an oversight.
   in the tree mid-session and went into one of my commits. Harmless that time;
   check `git status` before staging everything.
 
+
+## 2026-09-21 — four lessons from a Sentry sweep and a bug-fix run
+
+**A successful response is not evidence the work landed.**
+`record_study_progress` dedupes on `p_batch_id` and returns *before* reading
+the payload, with a 200. The offline replay read that as "sent" and deleted
+every row in the chunk, including rows the server had never seen. The server
+was reporting the discard the whole time — `duplicate_batch` is in the
+snapshot and in the client's own type — and nothing read it. When a server
+tells you it ignored you, listen; and when you coalesce N things under one
+id, one id's idempotency does not cover the other N−1.
+
+**The obvious fix is sometimes the next bug.** Sending each queued row under
+its own id is the natural remedy and would have destroyed credited study
+time instead: the server clamps with `LEAST(active_seconds, now() -
+last_updated)` and every call sets `last_updated = now()`. Three earlier
+passes at this same logic each introduced the next fault. Extracting it to a
+module with no native deps (`replayChunk.ts`) so it could finally be *tested*
+was worth more than the fix itself — and the tests were checked against the
+old behaviour to prove they fail, rather than assumed to work.
+
+**When the data model changes, grep for every writer.** v3 retired courses,
+`record_study_progress` got a v3 branch, and `credit_time_trial` — the only
+other writer of study credit — did not. Its first line is `IF v_course IS
+NULL THEN RAISE 'not_enrolled'`, and all 175 v3 topics have no course, so
+passing a Time Trial has never credited anything for anyone while the UI said
+it had. A caller that swallows errors by design turns a total failure into
+silence.
+
+**Stale comments are load-bearing.** The glossary formula scan carried two
+confident comments — no role holds the grant, "0 of 14,246 rows" have a
+formula — which made pulling the whole corpus look free. Both had quietly
+become false (both roles hold it; 1,911 of 26,975 rows). The scan crossed
+iOS's two-second line and Sentry logged a production app hang. Comments that
+assert facts about *data* need a date and a re-check, or they become the
+reason nobody looks.
+
+**Corollary on telemetry:** dev events were tagged `environment=development`
+and still sent, so 19 of 21 open Sentry issues were Metro bundler output from
+a developer's own machine. Tagging noise is not the same as not producing it.

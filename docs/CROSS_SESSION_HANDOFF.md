@@ -65,6 +65,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-21 22:54 · ccode · bfee0d78
+changed: Bind a store receipt to one account (migration + function, both unapplied)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-21 22:49 · ccode · a4c8b768
 changed: Stop the offline study queue deleting answers the server never received
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
