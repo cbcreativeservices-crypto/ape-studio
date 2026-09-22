@@ -162,7 +162,25 @@ function regroupBands(nb: BandsFrame, groups: number, hold: Map<number, number>)
     centers.push(Math.exp(logSum / m));
     resolvable.push(ok);
     if (ok) {
-      const level = 10 * Math.log10(power / m);
+      /**
+       * ⛔ SUM THE POWER, DO NOT AVERAGE IT (owner ruling 2026-09-22).
+       *
+       * This was `10 * log10(power / m)`. Dividing by the number of constituent
+       * bands turns the combination into an energy AVERAGE, but a wider band
+       * CONTAINS the energy of the narrow bands inside it — combining 1/3-octave
+       * bands into a 7- or 15-band view is a sum, which is also what every other
+       * path in the app does.
+       *
+       * The `/ m` cost exactly 10·log10(m) on every bar, so switching BANDING
+       * moved the whole display with no change in the signal: about 3.2 dB into
+       * 15 bands and about 6.5 dB into 7 bands, on a 31-band source. Two modes
+       * of the same instrument disagreeing about the same sound.
+       *
+       * `centers` still uses `logSum / m` — that IS an average, correctly: the
+       * geometric mean frequency of the group. Averaging the centre and summing
+       * the energy is the right pair; it was only the energy that was wrong.
+       */
+      const level = 10 * Math.log10(power);
       const prev = hold.get(g);
       const h = prev != null && prev > level ? prev : level;
       hold.set(g, h);

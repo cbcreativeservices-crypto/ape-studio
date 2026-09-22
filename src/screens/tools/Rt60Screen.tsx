@@ -82,7 +82,33 @@ const fitOf = (b: Rt60Band): 'T30' | 'T20' | null =>
 /** R² of THAT fit (never the other method's — review 2026-07-23). */
 const fitR2 = (b: Rt60Band): number => (b.t30Rt60Sec > 0 ? b.t30R2 : b.t20R2);
 /** Invalid because the fit ran but was too poor (vs insufficient range). */
-const poorFit = (b: Rt60Band): boolean => !b.valid && b.decayRangeDb > T20_RANGE_DB;
+const poorFit = (b: Rt60Band): boolean => !shownValid(b) && b.decayRangeDb > T20_RANGE_DB;
+
+/**
+ * The quality bar the readout itself quotes: "needs > 0.90".
+ * Named so the number shown to the learner and the number tested are one thing.
+ */
+const R2_MIN = 0.9;
+
+/**
+ * ⛔ VALIDITY MUST DESCRIBE THE FIT WE PRINT (owner ruling 2026-09-22).
+ *
+ * The native `valid` flag is gated on `r2`, documented as "best available
+ * fit" — so it can be decided by the T20 fit while this screen prints T30,
+ * because `fitOf` prefers T30 whenever `t30Rt60Sec > 0`. The two then describe
+ * different fits of the same capture, and the readout contradicts itself:
+ * "valid · R² 0.61" when T20 scored 0.98 and T30 scored 0.61, or an INVALID
+ * banner over a T30 fit that is actually good.
+ *
+ * A room measurement is quoted to clients and used to justify treatment. A
+ * confidence stamp that belongs to a different fit from the number beside it is
+ * worse than no stamp, because it is believed.
+ *
+ * So: still require the native gate — it also covers insufficient decay range,
+ * which no R² can tell you — and additionally require that the fit ACTUALLY
+ * SHOWN clears the bar the screen quotes.
+ */
+const shownValid = (b: Rt60Band): boolean => b.valid && fitR2(b) > R2_MIN;
 
 /** Broadband Schroeder decay curve (0 → −60 dB window): glow-stroked trace
  *  with a gradient underfill, dashed-amber −5/−25/−35 fit-region markers
@@ -337,7 +363,7 @@ export function Rt60Screen({ navigation }: Props) {
   const flags = useMemo<WarningFlag[]>(() => {
     const f = [...windowFlags];
     if (!f.includes('uncalibrated_input')) f.push('uncalibrated_input'); // phone mic (§6 table)
-    if (showResults && broadband && !broadband.valid)
+    if (showResults && broadband && !shownValid(broadband))
       f.push(poorFit(broadband) ? 'unstable_measurement' : 'insufficient_decay_range');
     else if (showResults && broadband && broadband.decayRangeDb < 45)
       f.push('high_noise_floor'); // T30 range not met — background noise limits the tail
@@ -345,7 +371,7 @@ export function Rt60Screen({ navigation }: Props) {
   }, [windowFlags, showResults, broadband]);
 
   const saveGate = useSaveGate();
-  const headlineMethod = broadband && broadband.valid ? fitOf(broadband) : null;
+  const headlineMethod = broadband && shownValid(broadband) ? fitOf(broadband) : null;
 
   const onSave = () => {
     // Academy-only save (owner ruling 2026-09-01): a locked user gets the
@@ -355,7 +381,7 @@ export function Rt60Screen({ navigation }: Props) {
       return;
     }
     // §13 integrity: a disavowed capture is never saved under a method label.
-    if (!rt60 || !showResults || !broadband || !broadband.valid) return;
+    if (!rt60 || !showResults || !broadband || !shownValid(broadband)) return;
     const method = fitOf(broadband);
     if (method == null) return; // no fit ran — nothing honest to save
     // Downsample the stored curve to ≤200 numeric points (ceil so the cap holds).
@@ -384,9 +410,9 @@ export function Rt60Screen({ navigation }: Props) {
         // Per-band method + that fit's R² (§13 "always labeled", per band).
         perBand: octaves.map((b) => ({
           bandHz: b.bandHz,
-          rt60Sec: b.valid ? (b.t30Rt60Sec > 0 ? b.t30Rt60Sec : b.t20Rt60Sec) : null,
-          method: b.valid ? fitOf(b) : null,
-          confidence: b.valid ? fitR2(b) : b.r2,
+          rt60Sec: shownValid(b) ? (b.t30Rt60Sec > 0 ? b.t30Rt60Sec : b.t20Rt60Sec) : null,
+          method: shownValid(b) ? fitOf(b) : null,
+          confidence: fitR2(b), // always the fit we report, valid or not
         })),
         noiseFloorDb: broadband.decayRangeDb > 0 ? -broadband.decayRangeDb : null,
         decayDb,
@@ -426,16 +452,16 @@ export function Rt60Screen({ navigation }: Props) {
                 House instrument readout: framed panel, mono digits, glow. */}
             <Pressable accessibilityHint="Press and hold for an explanation." style={styles.readout} onLongPress={() => help('rt60')} delayLongPress={260}>
               <Text style={styles.readoutEyebrow}>BROADBAND DECAY</Text>
-              <Text style={[styles.readoutValue, !broadband.valid && styles.readoutInvalid]}>
-                {broadband.valid
+              <Text style={[styles.readoutValue, !shownValid(broadband) && styles.readoutInvalid]}>
+                {shownValid(broadband)
                   ? fmtSec(headlineMethod === 'T30' ? broadband.t30Rt60Sec : broadband.t20Rt60Sec)
                   : 'INVALID'}
               </Text>
               <Text style={styles.readoutMethod}>
-                {broadband.valid
+                {shownValid(broadband)
                   ? `RT60 · ${headlineMethod} fit · R² ${fitR2(broadband).toFixed(2)}`
                   : poorFit(broadband)
-                    ? `unstable decay fit — R² ${broadband.r2.toFixed(2)} (needs > 0.90) — do not trust this capture`
+                    ? `unstable decay fit — R² ${fitR2(broadband).toFixed(2)} (needs > ${R2_MIN.toFixed(2)}) — do not trust this capture`
                     : 'insufficient decay range — do not trust this capture'}
               </Text>
             </Pressable>
@@ -465,7 +491,7 @@ export function Rt60Screen({ navigation }: Props) {
               </View>
               {octaves.map((b) => {
                 const tag = fitOf(b);
-                const lit = b.valid && tag != null;
+                const lit = shownValid(b) && tag != null;
                 const v = lit && tag ? (tag === 'T30' ? b.t30Rt60Sec : b.t20Rt60Sec) : 0;
                 return (
                   <View key={b.bandHz} style={[styles.bandRow, lit ? styles.bandRowLit : styles.bandRowDim]}>
@@ -483,7 +509,7 @@ export function Rt60Screen({ navigation }: Props) {
                     ) : (
                       <Text style={[styles.bandCell, styles.bandInvalid, { flex: 3 }]}>
                         {poorFit(b)
-                          ? `unstable fit (R² ${b.r2.toFixed(2)})`
+                          ? `unstable fit (R² ${fitR2(b).toFixed(2)})`
                           : `insufficient range (${b.decayRangeDb.toFixed(0)} dB available)`}
                       </Text>
                     )}
@@ -503,12 +529,12 @@ export function Rt60Screen({ navigation }: Props) {
                   tint="steel"
                   height={46}
                   fontSize={14}
-                  disabled={!broadband.valid}
+                  disabled={!shownValid(broadband)}
                   onPress={onSave}
                 />
               </View>
             </View>
-            {!broadband.valid && (
+            {!shownValid(broadband) && (
               <Text style={styles.saveNote}>
                 Invalid captures can't be saved — re-arm and repeat with a louder excitation or a
                 quieter room.

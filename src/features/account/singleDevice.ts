@@ -31,11 +31,40 @@ export async function claimThisDevice(): Promise<ClaimResult> {
 }
 
 /** The account's currently-active device id (null on error / none / no session). */
+/**
+ * ⛔ BOUNDED, because this GATES SIGN-IN.
+ *
+ * `claimAndProceed` awaits this inside a `Promise.all` before letting a login
+ * complete, and the whole design of this function is to FAIL OPEN — an error
+ * or an un-migrated backend returns null and the user proceeds. A hung RPC
+ * fails neither open nor closed: it never returns, so a *successful* sign-in
+ * leaves the person on the login spinner, signed in and unable to see it.
+ *
+ * The timeout returns the same `null` the error paths already return, so a
+ * stall now means exactly what every other failure here means. Same 5 s and
+ * the same reasoning as `lib/getSessionSafe`; kept local because this is an
+ * RPC rather than an auth read. If a fourth of these appears, extract it.
+ */
+const ACTIVE_DEVICE_TIMEOUT_MS = 5000;
+
 export async function getActiveDeviceId(): Promise<string | null> {
   try {
-    const { data, error } = await supabase.rpc('get_active_device');
-    if (error) return null;
-    return (data as string | null) ?? null;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const result = await Promise.race([
+      supabase.rpc('get_active_device').then(
+        ({ data, error }) => (error ? null : ((data as string | null) ?? null)),
+        () => null,
+      ),
+      new Promise<null>((resolve) => {
+        timer = setTimeout(() => {
+          console.warn('[single-device] get_active_device stalled >5s — treating as no active device');
+          resolve(null);
+        }, ACTIVE_DEVICE_TIMEOUT_MS);
+      }),
+    ]).finally(() => {
+      if (timer) clearTimeout(timer);
+    });
+    return result;
   } catch {
     return null;
   }

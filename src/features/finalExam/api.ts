@@ -25,6 +25,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Crypto from 'expo-crypto';
 import { supabase } from '../../lib/supabase';
+import { safeUser } from '../../lib/getSessionSafe';
 import { trackEvent } from '../telemetry/telemetry';
 
 export type AwardType = 'certificate' | 'program';
@@ -379,10 +380,18 @@ const QUEUE_KEY = 'ape:finalExamQueue';
 type QueuedExam = SubmitArgs & { awardType: AwardType; awardId: string; userId?: string | null };
 
 /** The signed-in user, or null. Never throws: a failed read must not stop a
- *  submission being queued, so an unknown owner is recorded as null. */
+ *  submission being queued, so an unknown owner is recorded as null.
+ *
+ *  ⛔ AND NEVER HANGS. `getUser()` is a NETWORK round trip, and this is awaited
+ *  INSIDE `enqueueExamSubmission` — i.e. in front of the disk write, on the
+ *  branch entered *because* the network just failed. A stall there meant the
+ *  graded exam never reached the queue at all while the screen sat on
+ *  "Submitting…" with no controls. The `try/catch` covers a reject; it cannot
+ *  cover a promise that never settles. Bounded, and a stall records the same
+ *  null this function already documents as its unknown-owner answer. */
 async function currentUserId(): Promise<string | null> {
   try {
-    const { data } = await supabase.auth.getUser();
+    const { data } = await safeUser(supabase.auth.getUser(), 'finalExam/queue');
     return data?.user?.id ?? null;
   } catch {
     return null;
