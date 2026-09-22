@@ -280,6 +280,20 @@ commit image assets. Publishing needs the owner's word in the moment.
 last one's findings — caught more than parallel runs, because run N can refute
 run N−1 (R3) instead of duplicating it.
 
+⛔ **DO NOT FIX BETWEEN CHAINED HUNTS — or date every refutation.** This bit on
+2026-09-22 and it nearly cost a correct fix. Hunt A correctly reported the boot
+`getSession()` as unguarded. It was fixed a few hours later. Hunt B then read
+the repaired file, saw `safeSession(...)`, and **refuted Hunt A as wrong** —
+citing the fix's own comment as evidence the bug never existed. `git show` of
+the parent commit settled it in one command: Hunt A was right, and the guard
+Hunt B "found" was the fix for the very bug it was dismissing.
+
+Trusting that refutation would have meant dismissing a BLOCKER on the app's
+first paint. So either freeze the tree for the length of the chain, or require
+every refutation to answer **"when was this fixed?"** — `git log -S'<code>'`
+— and to report *fixed in flight* rather than *prior hunt was wrong*. A later
+hunt reading a newer tree is not evidence that an earlier hunt was mistaken.
+
 **Scope each agent narrowly.** Unscoped "investigate the app" fills context with
 file reads and returns generalities.
 
