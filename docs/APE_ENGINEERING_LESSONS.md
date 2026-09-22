@@ -270,5 +270,63 @@ reason nobody looks.
 and still sent, so 19 of 21 open Sentry issues were Metro bundler output from
 a developer's own machine. Tagging noise is not the same as not producing it.
 
+## 2026-09-22 — six lessons from the ship day
+
+**A hardcoded dimension fixes whichever device is in the room.** The home
+carousel's `CARD_H` was the literal `409`. On a 375x667 phone that row has about
+273pt, and the FlatList centres its items — so an oversized card does not run off
+the bottom, it overflows EQUALLY at both ends, and `overflow: 'hidden'` clips
+both. The owner photographed card titles sliced in half and the card's own
+button pushed out of sight. The comment above the constant recorded `440` being
+shrunk to `409` in July *for the same complaint*. The second magic number failed
+the same way as the first. Derive from the screen, and have the guard test pin
+the DERIVATION rather than any value.
+
+**A clamp doing real work is a bug indicator, not a guard.** The Profile
+percentage computed `complete_count / active_v3_topics` with an UNSCOPED
+numerator: every `complete` row for the user over a denominator of live topics
+only. On one production account that is 410/166 = 246%, and `Math.min(100, …)`
+turned it into a confident 100% where the honest figure is 98%. The clamp looked
+like defensive code and was in fact the only thing hiding the fault for weeks.
+The neighbouring stat had no clamp and read "Topics completed 410" against a
+166-topic curriculum. **If a clamp is ever reached in normal use, it is
+concealing a bug — instrument it, don't trust it.**
+
+**Busy must never look frozen.** The Glossary dropped its whole 26,975-row
+corpus after 60s in the background, and its own comment promised the opposite:
+"a quick app switch (checking a message, answering a call) must not cost the
+user a corpus reload". Reading a text takes longer than a minute, so the case
+named as safe was the case that broke. Coming back re-paged 27 requests behind a
+fully drawn list with no loading state and no yields — indistinguishable from a
+crash. Three separate defects (the window, the missing loading state, the
+non-yielding loops) each had to be fixed; any one alone left it reproducible.
+
+**⛔ A new `ape:*` preference silently resets unless it is on the KEEP list.**
+`clearLocalAccountData()` removes EVERY `ape:*` AsyncStorage key except a small
+allowlist. A new device-local display preference looked like it worked, then
+came back OFF after a reload whenever the anonymous session churned the identity
+marker. Nothing errors; the setting just quietly reverts. **Any new `ape:*` key
+that is a device preference rather than user data must be added to KEEP, with
+the reason written down.**
+
+**Verify the operation, not a proxy for it.** A Sentry organization auth token
+(`org:ci`) returns **403 on `sentry-cli projects list`** while uploading source
+maps perfectly — the scope permits writing, not listing. Read as "dead token"
+that 403 is badly misleading. Worse, the preceding failure surfaced as
+`schannel: server closed abruptly`, which reads like a network problem on a
+32MB upload; the real cause was a 401 on a revoked token, found only by running
+`sentry-cli info`. **And do not arm `SENTRY_DISABLE_AUTO_UPLOAD=false` on an
+unverified token:** `sentry-xcode-debug-files.sh` prints `error:`-prefixed lines
+on a failed upload, which *fails the Xcode build*. Prove the upload works first.
+
+**⛔ Never hand the owner a command with an inline placeholder.** Three times in
+one day a template was run verbatim: `DB_URL="PASTE-YOUR-CONNECTION-STRING"`,
+`--value "YOUR_NEW_TOKEN"`, and Supabase's own `[YOUR-PASSWORD]`. A command that
+*looks* runnable will be run. Either ask for the secret by another route (copy
+to clipboard, then read it from there without printing it), or make the
+placeholder impossible to execute. Always check a pasted secret's SHAPE before
+writing it anywhere — a 197-byte "token" turned out to be a copy of the command
+itself, and writing it would have set the credential to that text.
+
 > **Hunting bugs?** The method these lessons feed is written up as a standing
 > standard in [`APE_BUG_HUNT_STANDARD.md`](APE_BUG_HUNT_STANDARD.md).
