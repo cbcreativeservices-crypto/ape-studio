@@ -44,6 +44,15 @@ import { useCoachMark } from '../../lib/coachMark';
 import { sendFeedback } from '../../lib/feedback';
 import { confirmDialog, notify } from '../../lib/confirm';
 import {
+  OFFLINE_AVAILABLE,
+  corpusStats,
+  idsMissingDefinitions,
+  loadDefinitions as loadStoredDefinitions,
+  loadTerms as loadStoredTerms,
+  saveDefinitions as saveStoredDefinitions,
+  saveTerms as saveStoredTerms,
+} from '../../features/glossary/offlineCorpus';
+import {
   GLOSSARY_WARN_AT_USED,
   GLOSSARY_WEEK_MS,
   consumeGlossary,
@@ -293,21 +302,36 @@ function loadAllEntries(table: 'glossary' | 'glossary_browse_v'): Promise<Entry[
        * ⛔ Do NOT add `definition` back to this select to "simplify" it. The
        * corpus will keep growing; this is the fix that survives that.
        */
-      const all: Entry[] = [];
-      const PAGE_E = 1000;
-      for (let from = 0; ; from += PAGE_E) {
-        const { data, error } = await supabase
-          .from(table)
-          .select('id, term, achievement_id')
-          .order('term')
-          .range(from, from + PAGE_E - 1);
-        if (error) throw error;
-        for (const r of (data ?? []) as { id: string; term: string; achievement_id: string | null }[]) {
-          all.push({ id: r.id, term: r.term, definition: '', plain_english: null, achievement_id: r.achievement_id });
-        }
-        if (!data || data.length < PAGE_E) break;
-        await yieldToUi(); // 32 pages — let the UI breathe between them
+      /**
+       * ⛔ THE DEVICE COPY COMES FIRST (owner 2026-09-22: "the glossary needs to
+       * work offline after being loaded. a user lets say who works on a cruise
+       * will not be able to load it every time").
+       *
+       * Before this there was no persistence of ANY kind — the corpus lived in
+       * a module variable, so every cold start re-downloaded all 31,858 terms
+       * and a reader with no signal had no glossary at all.
+       */
+      const stored = await loadStoredTerms(table).catch(() => [] as typeof EMPTY_TERMS);
+      if (stored.length) {
+        // Revalidate WITHOUT blocking the reader. A changed corpus is written
+        // to the device and picked up on the next cold open; swapping 31,858
+        // rows under someone mid-scroll would be worse than a day-late term.
+        void revalidateCorpus(table, stored.length);
+        return stored.map((r) => ({
+          id: r.id,
+          term: r.term,
+          definition: '',
+          plain_english: null,
+          achievement_id: r.achievement_id,
+        }));
       }
+
+      const all = await fetchCorpusFromServer(table);
+      // Best-effort: a failed write costs a re-download next launch, nothing more.
+      void saveStoredTerms(
+        table,
+        all.map((e) => ({ id: e.id, term: e.term, achievement_id: e.achievement_id })),
+      ).catch(() => {});
       return all;
     },
   );
@@ -403,6 +427,53 @@ async function fetchAllGlossaryFormulas(
     await yieldToUi();
   }
   return out;
+}
+
+const EMPTY_TERMS: { id: string; term: string; achievement_id: string | null }[] = [];
+
+/** Page the whole term list from the server. Terms only — see loadAllEntries. */
+async function fetchCorpusFromServer(table: 'glossary' | 'glossary_browse_v'): Promise<Entry[]> {
+  const all: Entry[] = [];
+  const PAGE_E = 1000;
+  for (let from = 0; ; from += PAGE_E) {
+    const { data, error } = await supabase
+      .from(table)
+      .select('id, term, achievement_id')
+      .order('term')
+      .range(from, from + PAGE_E - 1);
+    if (error) throw error;
+    for (const r of (data ?? []) as { id: string; term: string; achievement_id: string | null }[]) {
+      all.push({ id: r.id, term: r.term, definition: '', plain_english: null, achievement_id: r.achievement_id });
+    }
+    if (!data || data.length < PAGE_E) break;
+    await yieldToUi(); // 32 pages — let the UI breathe between them
+  }
+  return all;
+}
+
+/**
+ * Is the device copy still current? Cheap check, then a full refresh only when
+ * it is not.
+ *
+ * The count comes from `get_glossary_term_count`, the nightly RPC the loading
+ * header already uses. ⚠️ It only moves when the NUMBER of terms changes, so an
+ * edited definition with no count change will not invalidate — a corpus
+ * version or max(updated_at) would be the honest signal and needs a backend
+ * column. Recorded rather than pretended: this catches additions and removals,
+ * which is what Discovery-style batches actually are.
+ */
+async function revalidateCorpus(table: 'glossary' | 'glossary_browse_v', haveCount: number): Promise<void> {
+  try {
+    const { data, error } = await supabase.rpc('get_glossary_term_count');
+    if (error || typeof data !== 'number' || data === haveCount) return;
+    const fresh = await fetchCorpusFromServer(table);
+    await saveStoredTerms(
+      table,
+      fresh.map((e) => ({ id: e.id, term: e.term, achievement_id: e.achievement_id })),
+    );
+  } catch {
+    // Offline, or the RPC is unavailable — keep what we have. That is the point.
+  }
 }
 
 /**
@@ -1864,6 +1935,7 @@ ${COPY.glossaryFreeAllowance}`,
           if (alive && corpusNeedsLoad(table)) setLoading(true);
           const all = await loadAllEntries(table);
           if (alive) setEntries(all);
+          if (alive) refreshOfflineStats();
         } catch (e) {
           console.warn('[glossary] load failed:', (e as Error).message);
           if (alive) setLoadError(true);
@@ -2002,6 +2074,62 @@ ${COPY.glossaryFreeAllowance}`,
    * rows retry the next time they scroll into view rather than staying blank
    * forever.
    */
+  /**
+   * SAVE THE WHOLE GLOSSARY TO THE DEVICE (owner 2026-09-22, the cruise case).
+   *
+   * Definitions are otherwise only kept as they are read, so a reader who goes
+   * offline has whatever they happened to scroll past — useless to someone who
+   * knew in advance they would lose signal. This walks the ids with no stored
+   * definition and fills them in, a page at a time.
+   *
+   * ⛔ Not automatic. It is ~4 MB, and deciding on someone's behalf to spend
+   * their data is exactly the kind of thing that should be asked for.
+   */
+  const [offlineStats, setOfflineStats] = useState<{ terms: number; definitions: number } | null>(null);
+  const [savingOffline, setSavingOffline] = useState(false);
+  const cancelSaveRef = useRef(false);
+
+  const refreshOfflineStats = useCallback(() => {
+    if (!OFFLINE_AVAILABLE) return;
+    void corpusStats(table).then(setOfflineStats, () => {});
+  }, [table]);
+
+  const saveWholeGlossary = useCallback(async () => {
+    if (savingOffline) {
+      cancelSaveRef.current = true;
+      return;
+    }
+    cancelSaveRef.current = false;
+    setSavingOffline(true);
+    try {
+      // Bounded rather than `while (true)`: a server that keeps returning the
+      // same ids (a definition that is NULL upstream) would otherwise spin
+      // forever. 80 passes x 400 covers 32,000 terms.
+      for (let pass = 0; pass < 80; pass += 1) {
+        if (cancelSaveRef.current) break;
+        const ids = await idsMissingDefinitions(table, 400);
+        if (!ids.length) break;
+        const rows = await fetchDefinitions(table, ids);
+        await saveStoredDefinitions(table, rows);
+        // Stop if a whole page came back with nothing storable — otherwise the
+        // same ids return next pass and this never ends.
+        if (!rows.some((r) => r.definition)) break;
+        void corpusStats(table).then(setOfflineStats, () => {});
+        await yieldToUi();
+      }
+      refreshOfflineStats();
+    } catch {
+      notify(
+        'Couldn’t finish saving',
+        'The glossary is partly saved and what was stored is kept. Try again when you have a steadier connection.',
+      );
+      refreshOfflineStats();
+    } finally {
+      setSavingOffline(false);
+      cancelSaveRef.current = false;
+    }
+  }, [table, savingOffline, refreshOfflineStats]);
+
   const requestedDefsRef = useRef<Set<string>>(new Set());
   /**
    * ⛔ DRIVEN BY renderItem, NOT BY onViewableItemsChanged.
@@ -2036,23 +2164,40 @@ ${COPY.glossaryFreeAllowance}`,
       });
       if (!want.length) return;
       for (const id of want) requestedDefsRef.current.add(id);
-      void fetchDefinitions(table, want).then(
-        (rows) => {
-          let changed = false;
-          for (const r of rows) {
-            const e = entryByIdRef.current.get(r.id);
-            if (e && r.definition && e.definition !== r.definition) {
-              e.definition = r.definition;
-              changed = true;
-            }
+
+      const merge = (rows: { id: string; definition: string | null }[]): boolean => {
+        let changed = false;
+        for (const r of rows) {
+          const e = entryByIdRef.current.get(r.id);
+          if (e && r.definition && e.definition !== r.definition) {
+            e.definition = r.definition;
+            changed = true;
           }
-          if (changed) setDefRev((n) => n + 1);
-        },
-        () => {
-          // Let them be retried on the next pass over these rows.
+        }
+        return changed;
+      };
+
+      void (async () => {
+        try {
+          // 1. THE DEVICE FIRST. On a ship with no signal this is the only step
+          //    that runs, and it is why the glossary still works there.
+          const stored = await loadStoredDefinitions(table, want).catch(() => new Map<string, string>());
+          const fromDisk = [...stored.entries()].map(([id, definition]) => ({ id, definition }));
+          if (merge(fromDisk)) setDefRev((n) => n + 1);
+
+          // 2. Only what the device did not have.
+          const missing = want.filter((id) => !stored.has(id));
+          if (!missing.length) return;
+          const rows = await fetchDefinitions(table, missing);
+          if (merge(rows)) setDefRev((n) => n + 1);
+          // 3. Keep them, so this reader never pays for them twice.
+          void saveStoredDefinitions(table, rows).catch(() => {});
+        } catch {
+          // Network miss: let these ids be retried the next time the rows are
+          // drawn. Anything already served from disk stays on screen.
           for (const id of want) requestedDefsRef.current.delete(id);
-        },
-      );
+        }
+      })();
     },
     [table],
   );
@@ -2843,6 +2988,42 @@ ${COPY.glossaryFreeAllowance}`,
                     Glossary Links
                   </Text>
                 </Pressable>
+              </View>
+            )
+          }
+          ListFooterComponent={
+            /* OFFLINE READOUT + the save control. Below the list rather than in
+               the header: it is a one-off action, not something to step over on
+               every visit. Hidden entirely on web, where the store cannot
+               outlive a reload and the offer would be a lie. */
+            !OFFLINE_AVAILABLE || loading || !offlineStats?.terms ? null : (
+              <View style={styles.offlineRow}>
+                <Text style={styles.offlineStat}>
+                  {offlineStats.definitions >= offlineStats.terms
+                    ? `Saved on this device — all ${offlineStats.terms.toLocaleString()} terms work without a connection.`
+                    : `${offlineStats.definitions.toLocaleString()} of ${offlineStats.terms.toLocaleString()} definitions saved on this device.`}
+                </Text>
+                {offlineStats.definitions >= offlineStats.terms ? null : (
+                  <Pressable
+                    onPress={() => void saveWholeGlossary()}
+                    accessibilityRole="button"
+                    accessibilityLabel={
+                      savingOffline
+                        ? 'Stop saving the glossary for offline use'
+                        : 'Save the whole glossary on this device for offline use'
+                    }
+                    style={({ pressed }) => [styles.offlineBtn, pressed && { opacity: 0.7 }]}
+                  >
+                    <Text style={styles.offlineBtnText}>
+                      {savingOffline ? 'SAVING — TAP TO STOP' : 'SAVE ALL FOR OFFLINE'}
+                    </Text>
+                  </Pressable>
+                )}
+                <Text style={styles.offlineHint}>
+                  {savingOffline
+                    ? 'Keep this screen open. You can carry on reading while it saves.'
+                    : 'Terms you read are saved automatically. Saving everything uses about 4 MB and lets the whole glossary work with no signal.'}
+                </Text>
               </View>
             )
           }
@@ -3675,6 +3856,20 @@ const styles = StyleSheet.create({
   chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1 },
   list: { paddingBottom: 16 },
   empty: { fontFamily: fonts.barlowRegular, fontSize: 14, color: colors.textSub, paddingTop: 12 },
+  offlineRow: { paddingHorizontal: 16, paddingTop: 18, paddingBottom: 28, gap: 8 },
+  offlineStat: { fontFamily: fonts.barlowMedium, fontSize: 13, color: colors.textSub },
+  offlineBtn: {
+    alignSelf: 'flex-start',
+    borderWidth: 1,
+    borderColor: colors.amber,
+    borderRadius: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    minHeight: 44,
+    justifyContent: 'center',
+  },
+  offlineBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.amber },
+  offlineHint: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16, color: colors.textMuted },
   offlineCard: { alignItems: 'center', gap: 14, paddingTop: 28, paddingHorizontal: 16 },
   offlineText: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 21, color: colors.textSub, textAlign: 'center' },
   // Loading panel (owner 2026-08-05) — shown while the corpus pages in.

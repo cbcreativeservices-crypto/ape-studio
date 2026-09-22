@@ -65,6 +65,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-22 15:41 · ccode · 8dfd4c9a
+changed: Glossary: load terms first, definitions for the rows on screen
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-22 15:17 · ccode · 4d748813
 changed: Whole-academy progress totals (whole curriculum / all certs / all programs) are now OPT-IN on the Profile screen — owner: they "are intimidating and discouraging since they fill so slowly". The learner's OWN enrolled certificates and programs still always show progress. Also found and fixed: clearLocalAccountData sweeps every `ape:*` key except a KEEP allowlist, so the new preference silently reset to OFF on boots where the anon session churns the identity marker.
 affects other side: nothing backend-side. ⚠️ FYI for A: any NEW device-local `ape:*` preference must be added to clearLocalAccountData's KEEP list or it will silently reset — that is a repo-wide trap, now written up in docs/APE_ENGINEERING_LESSONS.md (2026-09-22 section).
