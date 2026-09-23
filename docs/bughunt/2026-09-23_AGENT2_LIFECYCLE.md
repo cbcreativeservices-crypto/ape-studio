@@ -97,3 +97,80 @@ start-hold, so that was deliberately not re-reported.
 pass over ~32k entries with per-row regex, inside a `useMemo` during render,
 re-running after the 5-minute cache release. One-off block, not per-keystroke;
 could not be measured from source.
+
+---
+
+# VERIFICATION (by me, after the agent returned)
+
+Every finding checked against live source before any edit. **9 raised · 8 confirmed
+· 7 fixed · 1 confirmed-but-deliberately-not-fixed · 1 inferred, not chased.**
+
+## A2-1 — CONFIRMED, FIXED (`5a5f0d2c`) · the worst of the run
+`submitQuiz` really was unbounded, and the rescue really is in the CATCH — so a
+stall did not merely hang the screen, it **destroyed a completed graded attempt**.
+Bounded with `withDeadline` at 25 s. Safe only because the server is idempotent:
+read from the live definition, `submit_quiz` opens with
+`IF result_payload IS NOT NULL THEN RETURN result_payload`, exactly as
+`submit_final_exam` does. A retry after a timeout returns the original grade
+rather than re-grading.
+
+The rejection message carries the word "timeout" because QuizScreen's rescue
+matches on `/timeout|timed out/` to decide whether the attempt is worth queueing.
+That coupling is now pinned by `test/noUnboundedUiGate.test.ts`.
+
+## A2-2 — CONFIRMED, FIXED FOR FREE
+Verified the chain: `load()` sets `loading` true, first awaits
+`replayQuizSubmissions()`, and `.catch(() => [])` cannot catch a stall. Bounding
+A2-1 bounds this, since the replay loops through the same call. No separate edit.
+
+## A2-3 — CONFIRMED, FIXED · the sharpest finding
+The agent's key claim held up: `serverMeters` is true, so the LIVE metering path
+is the gateway RPC, and the `boundedRpc` added yesterday covers only the fallback.
+Every tier including members could tap a term and get nothing at all — no popup,
+no spinner, no error.
+
+Fixed with `softDeadline` (8 s) → an `'error'` fault, i.e. **fail open**: a meter
+that cannot answer must not lock a member out of content they have paid for.
+Deliberately NOT `withDeadline` here — rejecting would leave the tap silent again.
+
+⚠️ **Sidelined for the owner:** the retap/dedup half is real and separate.
+`gateOpeningRef` guards only the non-gateway branch, so repeated taps during a slow
+call can charge the weekly meter several times for one term. Fixing it means
+deciding what a half-completed open costs, which is a policy call, not a bug fix.
+
+## A2-4 — CONFIRMED, FIXED (`b8a284b9`)
+`MultiMeterScreen` carried its own copy of the handler and gated on `'running'`
+alone; `useDspEngine` was fixed on 2026-09-20 with the reason written on it.
+Privacy defect: during the Android cold-HAL window the mic stays open, indicator
+lit, while the app is not in front of the user — and the setting promises it
+"stops immediately". Guard `test/micReleasedOnBackground.test.ts` now sweeps
+**every** file that does a background release, because this has been found twice
+for the want of one shared handler.
+
+## A2-5 — CONFIRMED, FIXED
+`calcUsage.ts` is a line-for-line mirror of `glossaryCap.ts` that copied
+everything except the bound later added to the original. Button stuck reading
+"CALCULATING…" for the life of the screen while the answer sat computed locally.
+Bounded, and the flag now clears in a `finally`.
+
+## A2-6 and the three smaller ones — CONFIRMED, FIXED (`158df0f8`)
+Directory search, delete-account, lab audio. One judgement call worth recording:
+in `DeleteAccountButton`, the RPC uses `withDeadline` but `signOut` uses
+`softDeadline`. If the server delete succeeds and the sign-out stalls, throwing
+would skip the local wipe and leave a deleted account's data on the device, still
+apparently signed in. Proceeding is the safe direction.
+
+`GlossaryTermPopup` was left: the popup is closable, so the damage is bounded and
+the fix would add a code path to a screen already changed heavily tonight.
+
+## The one systemic outcome
+Six hand-written copies of the same race had drifted apart, so the seventh was
+inevitable. They now share `src/lib/boundedCall.ts` with the two shapes named and
+the difference between them documented, since picking the wrong one is how a
+timeout becomes silent data loss.
+
+## Agent accuracy this run
+9 findings · 8 verified in source · 0 false positives · 1 honestly labelled as
+inferred. Its negative results (lifecycle `'inactive' ≠ 'background'` handling,
+`study/sync.ts` write-ahead ordering, the corpus batching) were spot-checked and
+correct.
