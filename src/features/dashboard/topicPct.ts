@@ -21,6 +21,7 @@
  */
 import { studyDisplayPct } from '../study/api';
 import { isScenariosExempt } from '../study/scenarioExempt';
+import { isTermsExempt } from '../study/termsExempt';
 
 export type MethodPctRow =
   | {
@@ -78,6 +79,22 @@ export function smoothMethodPct(
    * one; check for callers before trusting a name.
    */
   if (row?.trial_passed === true) return 100;
+
+  /**
+   * ⛔ A TOPIC CONFIRMED TO HAVE NO TERMS CANNOT SATISFY ANY ITEM-BASED METHOD.
+   *
+   * Every non-scenario method divides by the term count, and studyDisplayPct
+   * returns 0 when that count is 0 — so flashcards is stuck at 0%,
+   * homeworkPowered never flips, and the quiz is locked FOREVER, taking every
+   * credential that requires the topic with it (overnight hunt 2026-09-23, A1-2).
+   *
+   * Same shape and same ruling as the scenarios exemption directly below, and
+   * the same hard condition: `markTermsExempt` is only ever called after a
+   * SUCCESSFUL fetch that returned zero items, never on an error, a denial or a
+   * guest read. This removes a gate that cannot be satisfied; it does not claim
+   * the topic was studied. A topic with nothing to study has nothing to withhold.
+   */
+  if (key !== 'scenarios' && isTermsExempt(topicId)) return 100;
 
   return key === 'scenarios' && isScenariosExempt(topicId)
     ? 100

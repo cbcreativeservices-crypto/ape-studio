@@ -65,6 +65,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-23 01:11 · ccode · 404e7734
+changed: Five lessons from the overnight hunts
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-23 01:09 · ccode · f28581b7
 changed: Agent 3 verification record
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">

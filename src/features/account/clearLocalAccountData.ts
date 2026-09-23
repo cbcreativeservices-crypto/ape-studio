@@ -22,6 +22,7 @@ import { resetLocal as resetFlaggedStore } from '../flags/flaggedStore';
 import { resetLocal as resetPaceStore } from '../study/paceStore';
 import { resetLocal as resetLastStudyLocation } from '../study/lastStudyLocation';
 import { resetLocal as resetScenarioExempt } from '../study/scenarioExempt';
+import { resetLocal as resetTermsExempt } from '../study/termsExempt';
 import { resetLocal as resetHomeCardsStore } from '../home/homeCardsStore';
 import {
   clearStoredMeasurements,
@@ -211,6 +212,7 @@ export function resetAllLocalStores(): void {
   resetPaceStore();
   resetLastStudyLocation();
   resetScenarioExempt();
+  resetTermsExempt();
   resetHomeCardsStore();
   resetMeasurementStore();
   resetLabCompletion();

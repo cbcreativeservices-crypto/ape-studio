@@ -26,13 +26,18 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { registerHooks } from 'node:module';
 
-// topicPct imports `../study/api` (which pulls in the Supabase client) and
-// `../study/scenarioExempt`. Neither is reached by the branch under test, so
-// they are stubbed rather than dragged in.
+// topicPct imports `../study/api` (which pulls in the Supabase client),
+// `../study/scenarioExempt` and `../study/termsExempt` (which pulls in React +
+// AsyncStorage). None is reached by the branch under test, so they are stubbed
+// rather than dragged in.
 const STUB = new URL('./_stub-topicpct-deps.mjs', import.meta.url).href;
 registerHooks({
   resolve(specifier, context, nextResolve) {
-    if (specifier.endsWith('study/api') || specifier.endsWith('study/scenarioExempt')) {
+    if (
+      specifier.endsWith('study/api') ||
+      specifier.endsWith('study/scenarioExempt') ||
+      specifier.endsWith('study/termsExempt')
+    ) {
       return { url: STUB, shortCircuit: true };
     }
     return nextResolve(specifier, context);

@@ -62,7 +62,8 @@ import { consumeDevPreview } from '../../features/dev/devPreview';
 import { devBypass } from '../../config/devMode';
 import { IntroSheet, ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
 import { INTRO_STORAGE_PREFIX } from '../../features/intro/screenIntros';
-import { StudySession } from '../../features/study/sync';
+import { emitStudyProgress, StudySession } from '../../features/study/sync';
+import { markTermsExempt } from '../../features/study/termsExempt';
 import { supabase } from '../../lib/supabase';
 import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../../features/commercial/realAccount';
@@ -466,6 +467,18 @@ export function FlashcardsScreen({ navigation, route }: Props) {
         if (storedShowLinks != null) setShowLinks(storedShowLinks !== '0');
         fetched.sort((a, b) => a.term.localeCompare(b.term));
         setItems(fetched);
+        /**
+         * ⛔ CONFIRMED-EMPTY TOPIC. `fetchTopicItems` RESOLVED, so this is a real
+         * "this topic has no terms mapped" answer rather than a failure — a
+         * throw, the cold-start 42501 denial, or a guest read all land in the
+         * catch below and can never reach here. Without this the topic sits at
+         * 0% forever and locks its whole study chain and every credential that
+         * requires it (overnight hunt 2026-09-23). Skipped for the Flagged
+         * pseudo-topic, which is legitimately empty and has no achievement row.
+         */
+        if (!flaggedMode && fetched.length === 0) {
+          void markTermsExempt(achievementId).then(() => emitStudyProgress());
+        }
         // Term images — non-fatal, ungated (all roles read glossary_media);
         // empty map = text-only cards.
         // PREFETCH every image up front (Booth 2026-07-16) so fast swiping

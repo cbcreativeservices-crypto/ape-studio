@@ -152,10 +152,15 @@ export default function DashboardPage() {
         <h2 className="font-display text-lg font-semibold uppercase tracking-wide text-foreground">
           Keep working
         </h2>
-        {d.upNext ? (
+        {!d.progressAvailable ? (
+          <p className="mt-2 text-text-sub">
+            We couldn&rsquo;t load your progress just now. Your work is safe — open the
+            app, or refresh this page to try again.
+          </p>
+        ) : d.upNext ? (
           <p className="mt-2 text-text-sub">
             Up next: <span className="text-foreground">{d.upNext.topicName}</span>{" "}
-            <span className="text-text-muted">· {d.upNext.courseName}</span>
+            <span className="text-text-muted">· {d.upNext.subjectName}</span>
           </p>
         ) : d.totalTopics > 0 ? (
           <p className="mt-2 text-text-sub">
@@ -190,42 +195,55 @@ export default function DashboardPage() {
             Progress
           </h2>
           <p className="font-mono text-sm text-text-sub">
-            {d.completeTopics}/{d.totalTopics} topics
+            {/* ⛔ Never render "0/0" from a FAILED read — that is the exact lie
+                this panel was rebuilt to stop telling. */}
+            {d.progressAvailable ? `${d.completeTopics}/${d.totalTopics} topics` : "—"}
           </p>
         </div>
-        <div
-          className="mt-4 h-2 w-full overflow-hidden rounded-full bg-surface-raised"
-          role="progressbar"
-          aria-valuenow={pct}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-label="Overall topic completion"
-        >
-          <div className="h-full rounded-full bg-amber" style={{ width: `${pct}%` }} />
-        </div>
+        {d.progressAvailable ? (
+          <div
+            className="mt-4 h-2 w-full overflow-hidden rounded-full bg-surface-raised"
+            role="progressbar"
+            aria-valuenow={pct}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label="Overall topic completion"
+          >
+            <div className="h-full rounded-full bg-amber" style={{ width: `${pct}%` }} />
+          </div>
+        ) : null}
 
-        {d.courses.length > 0 ? (
+        {!d.progressAvailable ? (
+          <p className="mt-4 text-sm text-text-muted">
+            Your progress couldn&rsquo;t be loaded right now. This doesn&rsquo;t mean
+            you have none — please refresh the page to try again.
+          </p>
+        ) : d.subjects.length > 0 ? (
           <ul className="mt-6 space-y-4">
-            {d.courses.map((c) => {
-              const cpct = c.total > 0 ? Math.round((c.complete / c.total) * 100) : 0;
-              const tint = c.colorHex || "#ffc64d";
+            {d.subjects.map((g) => {
+              const gpct = g.total > 0 ? Math.round((g.complete / g.total) * 100) : 0;
               return (
-                <li key={c.courseId}>
+                <li key={g.subject}>
                   <div className="flex items-baseline justify-between text-sm">
-                    <span className="text-foreground">{c.name}</span>
+                    <span className="text-foreground">{g.subject}</span>
                     <span className="font-mono text-text-muted">
-                      {c.complete}/{c.total}
+                      {g.complete}/{g.total}
                     </span>
                   </div>
                   <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-surface-raised">
-                    <div className="h-full rounded-full" style={{ width: `${cpct}%`, backgroundColor: tint }} />
+                    <div
+                      className="h-full rounded-full"
+                      style={{ width: `${gpct}%`, backgroundColor: "#ffc64d" }}
+                    />
                   </div>
                 </li>
               );
             })}
           </ul>
         ) : (
-          <p className="mt-4 text-sm text-text-muted">No enrolled courses yet.</p>
+          <p className="mt-4 text-sm text-text-muted">
+            No enrolled topics yet — open the app to choose what to study.
+          </p>
         )}
       </section>
 

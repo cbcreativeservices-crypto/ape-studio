@@ -9,20 +9,30 @@ import { getSupabaseBrowser } from "./supabase";
 
 export type Tier = "anonymous" | "free" | "academy" | "lapsed";
 
-export type CourseProgress = {
-  courseId: string;
-  code: string;
-  name: string;
-  sequence: number;
-  colorHex: string | null;
+/**
+ * ⛔ v3 GROUPS BY SUBJECT, NOT BY COURSE. The course model was retired
+ * 2026-09-03 and `achievements.course_id` is NULL on every live v3 topic, so
+ * the old per-course panel returned nothing for everybody. The v3 curriculum is
+ * Field → Subject → Topic, and the SUBJECT is the middle tier that reads like
+ * the old course did.
+ */
+export type SubjectProgress = {
+  /** Stable key: the subject name is unique within the active curriculum. */
+  subject: string;
+  field: string | null;
   total: number;
   complete: number;
 };
 
 export type UpNext = {
-  courseName: string;
+  subjectName: string;
   topicName: string;
 } | null;
+
+/** The active v3 curriculum (mirrors `src/data/v3Curriculum.ts`). Topics are
+ *  resolved by `global_sequence` within THIS version — the same id the app
+ *  resolves by, so the two cannot drift onto different curricula. */
+const V3_CURRICULUM_VERSION_ID = "a7c1f2e0-9b34-4d55-8e21-0c4f6a9b1d72";
 
 export type Credential = {
   id: string;
@@ -35,9 +45,14 @@ export type DashboardSummary = {
   userId: string;
   displayName: string | null;
   tier: Tier;
-  courses: CourseProgress[];
+  subjects: SubjectProgress[];
   totalTopics: number;
   completeTopics: number;
+  /** FALSE when the enrolment read FAILED, as distinct from a member who is
+   *  genuinely enrolled in nothing. The page must not present the two the same
+   *  way — telling a member with 40 topics that they have none, as a fact, is
+   *  the failure this whole panel was rebuilt for. */
+  progressAvailable: boolean;
   upNext: UpNext;
   credentials: Credential[];
   credentialsAvailable: boolean;
@@ -172,86 +187,110 @@ export async function fetchDashboardSummary(): Promise<DashboardSummary> {
 
   const tier = await deriveTier();
 
-  // 2. Enrollments + course reference rows (own_enrollment).
-  const { data: enrollments } = await supabase
-    .from("enrollment")
-    .select(
-      "course_id, curriculum_version_id, courses(id, code, name, sequence, achievement_count, color_hex)",
-    )
-    .eq("user_id", user.id);
-
-  type EnrRow = {
-    course_id: string;
-    curriculum_version_id: string;
-    courses: {
-      id: string;
-      code: string;
-      name: string;
-      sequence: number;
-      achievement_count: number;
-      color_hex: string | null;
-    } | null;
-  };
-  const enrs = (enrollments ?? []) as unknown as EnrRow[];
-
-  // 3. Active topics across enrolled courses, and own progress.
-  const courses: CourseProgress[] = [];
+  // 2. The member's own enrolled topics (v3).
+  //
+  // ⛔ THIS REPLACED THE v1 COURSE WALK (2026-09-23). The old code read
+  // `enrollment` joined to the archived `courses` table and keyed topics on
+  // `achievements.course_id`. The app deleted its equivalent on 2026-09-03; the
+  // website kept it, and `course_id` is NULL on all 166 live v3 topics — so the
+  // panel reported "not enrolled in any topics yet / 0 of 0 / 0%" to 100% of
+  // signed-in members, while the credentials block beside it rendered
+  // correctly, which is exactly what made the empty progress read as TRUE.
+  //
+  // `user_topic_enrollments` is RLS-scoped to the caller's own rows, so no
+  // user filter is passed here — see the `own_topic_enrollments` policy in
+  // supabase/migrations/2026092301_own_topic_enrollments_read.sql.
+  let progressAvailable = true;
+  const subjects: SubjectProgress[] = [];
   let totalTopics = 0;
   let completeTopics = 0;
   let upNext: UpNext = null;
 
-  // Fetch per course (small N); keeps curriculum_version filtering exact.
-  const sortedEnrs = enrs
-    .filter((e) => e.courses)
-    .sort((a, b) => (a.courses!.sequence ?? 0) - (b.courses!.sequence ?? 0));
+  const { data: enrRows, error: enrErr } = await supabase
+    .from("user_topic_enrollments")
+    .select("gs, active, position")
+    .order("position", { ascending: true });
 
-  for (const e of sortedEnrs) {
-    const c = e.courses!;
-    const { data: topics } = await supabase
+  // ⛔ A FAILED READ IS NOT "ENROLLED IN NOTHING". Until the migration above is
+  // applied this table is deny-all to `authenticated` and returns 42501, so
+  // this branch is the LIVE one — and it must say so rather than invent a zero.
+  if (enrErr) progressAvailable = false;
+
+  const enrolled = ((enrRows ?? []) as { gs: number; active: boolean | null; position: number }[])
+    // `active: false` is a parked topic; the app does not count it either.
+    .filter((e) => e.active !== false && typeof e.gs === "number");
+
+  if (progressAvailable && enrolled.length > 0) {
+    const gsList = enrolled.map((e) => e.gs);
+
+    const { data: achRows, error: achErr } = await supabase
       .from("achievements")
-      .select("id, name, sequence_in_course")
-      .eq("course_id", c.id)
-      .eq("curriculum_version_id", e.curriculum_version_id)
+      .select("id, name, field, subject, global_sequence")
+      .eq("curriculum_version_id", V3_CURRICULUM_VERSION_ID)
       .eq("is_active", true)
-      .order("sequence_in_course");
-    const topicRows = (topics ?? []) as {
+      .in("global_sequence", gsList)
+      .order("global_sequence");
+    if (achErr) progressAvailable = false;
+
+    const topics = (achRows ?? []) as {
       id: string;
       name: string;
-      sequence_in_course: number;
+      field: string | null;
+      subject: string | null;
+      global_sequence: number;
     }[];
-    const topicIds = topicRows.map((t) => t.id);
 
-    const { data: prog } = topicIds.length
-      ? await supabase
-          .from("student_achievement_progress")
-          .select("achievement_id, status")
-          .eq("user_id", user.id)
-          .in("achievement_id", topicIds)
-      : { data: [] as { achievement_id: string; status: string }[] };
-    const statusById = new Map<string, string>();
-    for (const p of (prog ?? []) as { achievement_id: string; status: string }[]) {
-      statusById.set(p.achievement_id, p.status);
+    if (progressAvailable && topics.length > 0) {
+      const { data: prog, error: progErr } = await supabase
+        .from("student_achievement_progress")
+        .select("achievement_id, status")
+        .eq("user_id", user.id)
+        .in(
+          "achievement_id",
+          topics.map((t) => t.id),
+        );
+      // Same rule: a failed progress read must not render as "nothing complete".
+      if (progErr) progressAvailable = false;
+
+      const statusById = new Map<string, string>();
+      for (const pr of (prog ?? []) as { achievement_id: string; status: string }[]) {
+        statusById.set(pr.achievement_id, pr.status);
+      }
+
+      if (progressAvailable) {
+        // Keep the member's OWN ordering for "up next" — `position` is the order
+        // they arranged in My Enrollments, and the first thing they have not
+        // finished in their own order is the honest answer.
+        const orderByGs = new Map(enrolled.map((e, i) => [e.gs, i]));
+        const inOwnOrder = [...topics].sort(
+          (a, b) =>
+            (orderByGs.get(a.global_sequence) ?? Number.MAX_SAFE_INTEGER) -
+            (orderByGs.get(b.global_sequence) ?? Number.MAX_SAFE_INTEGER),
+        );
+
+        const bySubject = new Map<string, SubjectProgress>();
+        for (const t of inOwnOrder) {
+          const subject = t.subject || "Other";
+          const group = bySubject.get(subject) ?? {
+            subject,
+            field: t.field ?? null,
+            total: 0,
+            complete: 0,
+          };
+          group.total += 1;
+          const done = statusById.get(t.id) === "complete";
+          if (done) group.complete += 1;
+          else if (!upNext) upNext = { subjectName: subject, topicName: t.name };
+          bySubject.set(subject, group);
+        }
+
+        subjects.push(...bySubject.values());
+        for (const g of subjects) {
+          totalTopics += g.total;
+          completeTopics += g.complete;
+        }
+      }
     }
-
-    const total = topicRows.length;
-    let complete = 0;
-    for (const t of topicRows) {
-      const st = statusById.get(t.id);
-      if (st === "complete") complete += 1;
-      else if (!upNext) upNext = { courseName: c.name, topicName: t.name };
-    }
-
-    courses.push({
-      courseId: c.id,
-      code: c.code,
-      name: c.name,
-      sequence: c.sequence,
-      colorHex: c.color_hex,
-      total,
-      complete,
-    });
-    totalTopics += total;
-    completeTopics += complete;
   }
 
   const { credentials, available } = await fetchCredentials();
@@ -260,9 +299,10 @@ export async function fetchDashboardSummary(): Promise<DashboardSummary> {
     userId: user.id,
     displayName,
     tier,
-    courses,
+    subjects,
     totalTopics,
     completeTopics,
+    progressAvailable,
     upNext,
     credentials,
     credentialsAvailable: available,
