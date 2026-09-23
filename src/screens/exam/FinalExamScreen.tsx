@@ -22,6 +22,7 @@ import {
   AppState,
   BackHandler,
   Image,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -52,6 +53,60 @@ import {
   type MatchingOptions,
 } from '../../features/finalExam/api';
 import type { RootStackParamList } from '../../navigation/types';
+
+/**
+ * The waiting state for the exam — with a way out once it stops being brief.
+ * See the note at its use site for why this route needed one.
+ */
+function ExamHold({ submitting, onBack }: { submitting: boolean; onBack: () => void }) {
+  const [slow, setSlow] = useState(false);
+  useEffect(() => {
+    // Generous: an exam start is worth waiting for, and the ordinary
+    // sub-second hold must stay clean.
+    const t = setTimeout(() => setSlow(true), 6000);
+    return () => clearTimeout(t);
+  }, []);
+
+  // `accessibilityLiveRegion` is Android-only, so on iOS this is the only way
+  // a VoiceOver user learns the wait turned slow and a button appeared.
+  useEffect(() => {
+    if (!slow || submitting || Platform.OS !== 'ios') return;
+    AccessibilityInfo.announceForAccessibility(
+      'Still starting your exam. A go back button is available.',
+    );
+  }, [slow, submitting]);
+
+  return (
+    <View style={styles.center}>
+      <ActivityIndicator color={colors.amber} />
+      <Text style={styles.holdText} accessibilityLiveRegion="polite">
+        {submitting
+          ? 'Submitting your exam…'
+          : slow
+            ? 'Still starting your exam…'
+            : 'Starting your exam…'}
+      </Text>
+      {/* ⛔ NEVER while submitting. The answers are in flight and, until the
+          bounded submit resolves, leaving would abandon a graded sitting. That
+          branch resolves on its own now. */}
+      {slow && !submitting ? (
+        <>
+          <Text style={styles.holdHint}>
+            Nothing has been graded yet, and your answers are saved as you go.
+          </Text>
+          <Pressable
+            onPress={onBack}
+            style={styles.holdBtn}
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
+          >
+            <Text style={styles.holdBtnText}>GO BACK</Text>
+          </Pressable>
+        </>
+      ) : null}
+    </View>
+  );
+}
 
 type Props = NativeStackScreenProps<RootStackParamList, 'FinalExam'>;
 
@@ -585,12 +640,30 @@ export function FinalExamScreen({ navigation, route }: Props) {
     );
   }
   if (!payload || !question || submitting) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator color={colors.amber} />
-        {submitting && <Text style={styles.errorText}>Submitting…</Text>}
-      </View>
-    );
+    /**
+     * ⛔ THIS SPINNER HAD NO WAY OUT ON iOS (2026-09-23 overnight hunt).
+     *
+     * `FinalExam` is a ROOT-stack route, and the root navigator sets
+     * `headerShown: false, gestureEnabled: false`; the route re-asserts the
+     * gesture. The Android hardware-back interceptor deliberately skips this
+     * branch (`if (!payload || submitting) return`), which leaves Android's
+     * system back working — iOS had no header, no swipe and no button at all.
+     * Force-quit was the only exit, on the graded capstone that issues the
+     * credential.
+     *
+     * The `submitting` half is now bounded in api.ts, so it resolves itself.
+     * This is for the OTHER half: a `startFinalExam` that never answers.
+     * Nothing has been graded at that point, so leaving costs the learner
+     * nothing — and their answers are drafted on every tap anyway
+     * (saveAttemptDraft), so a resumed attempt rejoins where they left off.
+     *
+     * Pattern lifted from GateHold in features/lab/withMembershipPreview,
+     * which was written for this exact trap and simply never covered this
+     * route — including its iOS VoiceOver announcement, because on iOS
+     * `accessibilityLiveRegion` does nothing and a screen-reader user would
+     * not know a button had appeared.
+     */
+    return <ExamHold submitting={submitting} onBack={() => navigation.goBack()} />;
   }
 
   const isMatching = question.question_type === 'matching';
@@ -765,6 +838,26 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
   center: { flex: 1, backgroundColor: colors.screenBg, alignItems: 'center', justifyContent: 'center', gap: 16, padding: 24 },
   errorText: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 21, color: colors.textSub, textAlign: 'center' },
+  // The waiting state's copy + escape (see ExamHold).
+  holdText: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 21, color: colors.textSub, textAlign: 'center' },
+  holdHint: {
+    fontFamily: fonts.barlowRegular,
+    fontSize: 12.5,
+    lineHeight: 18,
+    color: colors.textMuted,
+    textAlign: 'center',
+    maxWidth: 300,
+  },
+  holdBtn: {
+    borderWidth: 1,
+    borderColor: colors.amber,
+    borderRadius: 8,
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    minHeight: 44,
+    justifyContent: 'center',
+  },
+  holdBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.amber },
   headerBar: {
     flexDirection: 'row',
     alignItems: 'center',

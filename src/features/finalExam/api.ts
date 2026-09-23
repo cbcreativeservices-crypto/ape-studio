@@ -338,7 +338,48 @@ export function parseSubmitError(message: string): ExamSubmitError {
   return [...codes].sort((a, b) => b.length - a.length).find((c) => message.includes(c)) ?? 'unknown';
 }
 
+/**
+ * ⛔ THE GRADED SUBMIT IS BOUNDED (2026-09-23 overnight hunt).
+ *
+ * This file already said the quiet part at replayExamSubmissions: "there is no
+ * request timeout anywhere in this app… the screen would sit on a spinner."
+ * That was written about the replay and left true of the submit itself.
+ *
+ * A request that HANGS is not one that FAILS. FinalExamScreen's catch is what
+ * calls `enqueueExamSubmission`, so a stall never reaches it: the answers are
+ * never queued, the screen renders its `submitting` spinner, and on iOS that
+ * branch has no header, no back gesture and no button. The learner is stranded
+ * on the capstone that issues their credential.
+ *
+ * Bounding it converts the stall into the failure the caller already handles —
+ * queue, then replay. Safe because the SERVER IS IDEMPOTENT: submit_final_exam
+ * does `IF a.result_payload IS NOT NULL THEN RETURN a.result_payload`, so a
+ * replayed attempt returns the same frozen grade rather than re-grading. Read
+ * from the live function definition, not assumed.
+ *
+ * Generous on purpose: a slow-but-working submit must win. This only catches a
+ * connection that has stopped answering altogether.
+ */
+const SUBMIT_TIMEOUT_MS = 25000;
+
 export async function submitFinalExam(args: SubmitArgs): Promise<ExamResult> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      submitFinalExamUnbounded(args),
+      new Promise<never>((_resolve, reject) => {
+        timer = setTimeout(
+          () => reject(new Error('submit_timeout')),
+          SUBMIT_TIMEOUT_MS,
+        );
+      }),
+    ]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
+async function submitFinalExamUnbounded(args: SubmitArgs): Promise<ExamResult> {
   const { data, error } = await supabase.rpc('submit_final_exam', {
     p_attempt_id: args.attemptId,
     p_answers: args.answers,

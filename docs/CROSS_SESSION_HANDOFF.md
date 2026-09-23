@@ -65,6 +65,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-23 00:19 · ccode · 5af7e312
+changed: Agent 1 findings recorded (unverified) — navigation & goal paths
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-22 23:58 · ccode · 8cf16e2b
 changed: Search text goes bold while a definition is open
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
