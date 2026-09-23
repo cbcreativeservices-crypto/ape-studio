@@ -71,7 +71,10 @@ function wsMs(window_start: string | null | undefined): number | null {
 }
 
 async function consumeServer(): Promise<GlossaryUsage> {
-  try {
+  // Bounded for the same reason as statusServer: `gateDefinitionOpen` awaits
+  // this before a term opens, so a stalled RPC would leave the tap doing
+  // nothing at all, with the in-flight guard still set.
+  return boundedRpc(async () => {
     const { data, error } = await supabase.rpc('glossary_consume');
     const row = (data as Row[] | null)?.[0];
     if (error || !row) {
@@ -85,21 +88,69 @@ async function consumeServer(): Promise<GlossaryUsage> {
       windowStart: wsMs(row.window_start),
       unavailable: false,
     };
-  } catch {
-    return OPEN;
+  }, OPEN, 'glossary_consume');
+}
+
+/**
+ * ⛔ THESE RPCs MUST BE BOUNDED. AN UNBOUNDED ONE FROZE THE GLOSSARY.
+ *
+ * Owner 2026-09-22: "gets stuck when trying to open in free account", and the
+ * same owner's observation is what found it — a guest on Android sees the
+ * device-key popup and a signed-in free user on iOS does not, so the two take
+ * different paths into this file:
+ *
+ *   guest            capMode 'local'   AsyncStorage, cannot hang on a network
+ *   signed-in FREE   capMode 'server'  THIS, over the network
+ *   member           not capped        never calls it at all
+ *
+ * The glossary's focus effect does `const st = await getGlossaryStatus(capMode)`
+ * BEFORE it loads the corpus, and clears `loading` in its `finally`. A promise
+ * that never settles — a stalled connection rather than a failed one — never
+ * reaches that `finally`, so the screen shows its loading card forever with no
+ * error and no retry. try/catch does not help: nothing is ever thrown.
+ *
+ * So every call here races a deadline and FAILS OPEN, which is what this file
+ * already does for an error. A reader is never blocked from the glossary
+ * because the meter could not be read; at worst a lookup goes uncounted.
+ */
+const CAP_RPC_TIMEOUT_MS = 5000;
+
+async function boundedRpc<T>(run: () => Promise<T>, fallback: T, what: string): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      run().catch(() => fallback),
+      new Promise<T>((resolve) => {
+        timer = setTimeout(() => {
+          // A stall is a real fault and is otherwise completely silent.
+          console.warn(`[glossary] ${what} stalled >${CAP_RPC_TIMEOUT_MS}ms — continuing without the meter`);
+          resolve(fallback);
+        }, CAP_RPC_TIMEOUT_MS);
+      }),
+    ]);
+  } finally {
+    if (timer) clearTimeout(timer);
   }
 }
 
 async function statusServer(): Promise<GlossaryUsage> {
-  try {
-    const { data, error } = await supabase.rpc('glossary_usage_status');
-    const row = (data as Row[] | null)?.[0];
-    if (error || !row) return OPEN;
-    const limit = row.lim ?? GLOSSARY_WEEKLY_LIMIT;
-    return { used: row.used, limit, allowed: row.used < limit, windowStart: wsMs(row.window_start), unavailable: false };
-  } catch {
-    return OPEN;
-  }
+  return boundedRpc(
+    async () => {
+      const { data, error } = await supabase.rpc('glossary_usage_status');
+      const row = (data as Row[] | null)?.[0];
+      if (error || !row) return OPEN;
+      const limit = row.lim ?? GLOSSARY_WEEKLY_LIMIT;
+      return {
+        used: row.used,
+        limit,
+        allowed: row.used < limit,
+        windowStart: wsMs(row.window_start),
+        unavailable: false,
+      };
+    },
+    OPEN,
+    'glossary_usage_status',
+  );
 }
 
 // ── LOCAL backend (anonymous / logged-out guests) ──────────────────────────
