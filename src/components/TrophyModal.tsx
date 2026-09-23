@@ -6,6 +6,7 @@
  */
 import { type ReactNode } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { ALL_ORIENTATIONS } from './modalOrientations';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TrophyImage } from './TrophyImage';
 import { fonts } from '../theme/tokens';
@@ -70,7 +71,7 @@ export function TrophyModal({
   const insets = useSafeAreaInsets();
   const ART = artSize(width, height, !!below);
   return (
-    <Modal accessibilityViewIsModal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+    <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       {/* The dark backdrop lives on the HOST, not the scrim, so an optional
           `below` panel sits on the same dimmed field instead of floating on
           nothing. With no panel this is pixel-identical to before. */}

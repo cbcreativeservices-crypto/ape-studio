@@ -13,6 +13,7 @@
  */
 import { useCallback, useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../theme/tokens';
 import { LowLightDim } from '../settings/LowLightLayer';
@@ -43,7 +44,7 @@ export function ScreenHelpSheet({
   const insets = useSafeAreaInsets();
   if (!visible) return null;
   return (
-    <Modal accessibilityViewIsModal transparent animationType="fade" visible statusBarTranslucent onRequestClose={onClose}>
+    <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal transparent animationType="fade" visible statusBarTranslucent onRequestClose={onClose}>
       <View style={styles.backdrop}>
         <View style={[styles.card, { maxHeight: '86%', marginTop: insets.top + 8, marginBottom: insets.bottom + 8 }]}>
           <View style={styles.headRow}>

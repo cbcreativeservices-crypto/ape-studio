@@ -18,6 +18,7 @@ import Animated, { Easing, cancelAnimation, useAnimatedStyle, useSharedValue, wi
 import { officialTopicName } from '../../data/officialTopicNames';
 import { HelpKey } from '../../components/HelpKey';
 import { FlatList, Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions, type ViewToken } from 'react-native';
+import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -894,7 +895,7 @@ export function AwardsScreen({ navigation, route }: Props) {
           68-entry SPECIALIZED_CERTS array in awardsData.ts, which is marked
           PARTIALLY DEAD. Don't restate "68", "3 core" or "3 specialization
           topics" here; all three drifted and were corrected in [18]/[18b]. */}
-      <Modal accessibilityViewIsModal visible={picker === 'specializations'} animationType="slide" transparent statusBarTranslucent onRequestClose={() => setPicker(null)}>
+      <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={picker === 'specializations'} animationType="slide" transparent statusBarTranslucent onRequestClose={() => setPicker(null)}>
         <View style={[styles.pickerRoot, { paddingTop: insets.top }]}>
           <View style={styles.brandRow}>
             <BrandLogo size={30} />
@@ -990,7 +991,7 @@ export function AwardsScreen({ navigation, route }: Props) {
       </Modal>
 
       {/* LEVEL 2 — choose an established Program Path (TBD course sets). */}
-      <Modal accessibilityViewIsModal visible={picker === 'programs'} animationType="slide" transparent statusBarTranslucent onRequestClose={() => setPicker(null)}>
+      <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={picker === 'programs'} animationType="slide" transparent statusBarTranslucent onRequestClose={() => setPicker(null)}>
         <View style={[styles.pickerRoot, { paddingTop: insets.top }]}>
           <View style={styles.brandRow}>
             <BrandLogo size={30} />

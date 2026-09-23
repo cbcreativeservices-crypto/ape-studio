@@ -1190,7 +1190,25 @@ export function AnalyticWaveformView({
       const smooth = noise === 'white' ? 0 : noise === 'pink' ? 0.75 : 0.93;
       let y = 0;
       for (let i = 0; i <= N; i++) {
-        const r = (hashJs(i * 17.13) - 0.5) * 2;
+        /**
+         * ⛔ `hash`, NOT `hashJs`. THIS IS A UI-THREAD WORKLET.
+         *
+         * CRASH, reported 2026-09-23: Sound Playground → PINK NOISE. The two
+         * functions are identical twins by design — `hash` carries the
+         * 'worklet' directive, `hashJs` says "module scope, not a worklet" on
+         * the line above itself — and this call site reached for the JS one
+         * from inside `useDerivedValue`, which runs on the UI thread. Calling a
+         * non-worklet across that boundary is a hard native crash, not a caught
+         * JS error, so the app went down rather than showing an error.
+         *
+         * It only ever fired on NOISE because this is the only branch that
+         * hashes: the wave branch is pure trigonometry, which is why switching
+         * sine → square worked perfectly a moment earlier.
+         *
+         * Every other `hashJs` call in this file is inside a `useMemo` on the
+         * JS thread and is correct. Pinned by test/workletSafety.test.ts.
+         */
+        const r = (hash(i * 17.13) - 0.5) * 2;
         y = smooth * y + (1 - smooth) * r;
         ys.push(mid - a * (noise === 'brown' ? y * 3.2 : noise === 'pink' ? y * 1.8 : y));
       }

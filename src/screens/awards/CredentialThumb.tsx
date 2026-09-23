@@ -18,6 +18,7 @@
  */
 import { useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CardArt } from '../../components/CardArt';
 import { CredentialAboutPanel, hasCredentialAbout } from '../../components/CredentialAboutPanel';
@@ -128,7 +129,7 @@ export function CredentialArtViewer({
   const close = onClose;
   return (
     <>
-      <Modal accessibilityViewIsModal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={close}>
+      <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={close}>
         {/* Full-bleed viewer: the whole scrim closes on tap (TrophyModal grammar). */}
         <Pressable
           style={styles.scrim}

@@ -6,6 +6,7 @@
  * during development.
  */
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../theme/tokens';
 import { LowLightDim } from '../settings/LowLightLayer';
@@ -45,7 +46,7 @@ export function LearningIntroSheet({
   if (overlaysSuppressed || sampling) return null;
 
   return (
-    <Modal accessibilityViewIsModal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onBegin}>
+    <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onBegin}>
       {/* Tapping the dimmed area dismisses (never a hard block); the card
           absorbs its own taps so content/BEGIN aren't swallowed. */}
       <Pressable accessibilityRole="button" style={styles.backdrop} onPress={onBegin} accessibilityLabel="Dismiss">

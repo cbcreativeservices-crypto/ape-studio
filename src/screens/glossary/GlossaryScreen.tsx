@@ -16,6 +16,7 @@
  */
 import { memo, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from 'react';
 import { Alert, AppState, FlatList, Image, ImageBackground, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type StyleProp, type TextStyle } from 'react-native';
+import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -2519,7 +2520,7 @@ ${COPY.glossaryFreeAllowance}`,
      *
      * `setBmOpen(false)` used to live ONLY inside a confirmDialog raised while
      * this popup was still open — and all three exits (backdrop, CLOSE, and
-     * the hardware BACK) routed through it. On Android every RN <Modal> is its
+     * the hardware BACK) routed through it. On Android every RN <Modal supportedOrientations={ALL_ORIENTATIONS}> is its
      * own Dialog window, and AppDialogHost is mounted as a SIBLING in the
      * navigator's screenLayout, so it attaches to the activity window BELOW
      * this open Dialog. PrePaywallPrompt:9-14 records that behaviour as
@@ -3553,7 +3554,7 @@ ${COPY.glossaryFreeAllowance}`,
       <ShareTermSheet payload={sharePayload} onClose={() => setSharePayload(null)} />
 
       {/* Media viewer (user request 2026-07-18) — tap anywhere to close. */}
-      <Modal accessibilityViewIsModal visible={!!mediaPopup} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setMediaPopup(null)}>
+      <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={!!mediaPopup} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setMediaPopup(null)}>
         <Pressable style={styles.mediaBackdrop} onPress={() => setMediaPopup(null)} accessibilityRole="button" accessibilityLabel="Close image">
           {mediaPopup ? (
             <Image accessible
@@ -3572,7 +3573,7 @@ ${COPY.glossaryFreeAllowance}`,
       {/* Held-chip term list (user request 2026-07-22) — the members of one set
           (Bookmarks / Custom / Recent). Tap a term to open it; the select icons
           re-tag it into any list. Mirrors the Flashcards held-chip list. */}
-      <Modal accessibilityViewIsModal visible={!!termListModal} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setTermListModal(null)}>
+      <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={!!termListModal} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setTermListModal(null)}>
         <View style={styles.tlBackdrop}>
           <Pressable
             style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
@@ -3629,7 +3630,7 @@ ${COPY.glossaryFreeAllowance}`,
           context's bookmarked terms up top (each re-taggable via the select
           icons), then an OTHER LISTS switcher for every other context that holds
           bookmarks. Closing confirms if terms were removed from the shown list. */}
-      <Modal accessibilityViewIsModal visible={bmOpen} transparent animationType="fade" statusBarTranslucent onRequestClose={requestCloseBookmarkPopup}>
+      <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={bmOpen} transparent animationType="fade" statusBarTranslucent onRequestClose={requestCloseBookmarkPopup}>
         <View style={styles.tlBackdrop}>
           <Pressable
             style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}

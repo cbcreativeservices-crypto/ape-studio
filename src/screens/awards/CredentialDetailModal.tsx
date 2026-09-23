@@ -40,6 +40,7 @@
  */
 import { useState } from 'react';
 import { Image, Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { DetailPager } from '../../components/detailSwipe';
 import { CardArt } from '../../components/CardArt';
 import { LowLightDim } from '../../features/settings/LowLightLayer';
@@ -297,7 +298,7 @@ export function CredentialDetailModal({
   };
 
   return (
-    <Modal accessibilityViewIsModal visible={credential != null} transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
+    <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={credential != null} transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
       <View style={styles.scrim} onLayout={(e) => setScrimH(e.nativeEvent.layout.height)}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityRole="button" accessibilityLabel="Close" />
         <View style={[styles.card, { maxHeight: budget }]} accessibilityViewIsModal>

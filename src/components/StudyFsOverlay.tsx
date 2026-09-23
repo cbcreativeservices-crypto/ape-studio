@@ -7,6 +7,7 @@
  */
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Modal, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ALL_ORIENTATIONS } from './modalOrientations';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors, fonts } from '../theme/tokens';
 import { LowLightDim } from '../features/settings/LowLightLayer';
@@ -83,7 +84,7 @@ export function StudyFsOverlay({
   ).current;
 
   return (
-    <Modal accessibilityViewIsModal visible={visible} animationType="fade" onRequestClose={onClose}>
+    <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={visible} animationType="fade" onRequestClose={onClose}>
       <View style={styles.root} {...pan.panHandlers}>
         <Pressable style={styles.close} onPress={onClose} hitSlop={16} accessibilityRole="button" accessibilityLabel="Close full screen">
           <Text style={styles.closeText}>✕</Text>

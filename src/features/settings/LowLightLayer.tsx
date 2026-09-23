@@ -15,6 +15,7 @@
  */
 import { useEffect, useState } from 'react';
 import { AppState, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { colors, fonts } from '../../theme/tokens';
 import {
   checkLowLightExpiry,
@@ -113,7 +114,7 @@ export function LowLightProductionGate() {
 
   if (!on || !showInfo) return null;
   return (
-    <Modal accessibilityViewIsModal transparent animationType="fade" visible statusBarTranslucent onRequestClose={() => setShowInfo(false)}>
+    <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal transparent animationType="fade" visible statusBarTranslucent onRequestClose={() => setShowInfo(false)}>
       <View style={styles.gateBackdrop}>
         <View style={styles.gateCard}>
           <Text style={styles.gateEyebrow}>LOW-LIGHT PRODUCTION MODE</Text>

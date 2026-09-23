@@ -19,6 +19,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactElement, type ReactNode } from 'react';
 import { AccessibilityInfo, ActivityIndicator, FlatList, Image, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { confirmDialog } from '../../lib/confirm';
 import Svg, { Circle, Ellipse, Path } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -1675,7 +1676,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
           it. Only the term / definition — no nav, no prev/next, no progress bar.
           Tap flips, swipe changes term, scroll for long text, X closes. The same
           filtered deck (card/level) is shown. */}
-      <Modal accessibilityViewIsModal visible={fullscreen} animationType="fade" onRequestClose={closeFullscreen}>
+      <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={fullscreen} animationType="fade" onRequestClose={closeFullscreen}>
         {/* fsPan (not pan): full screen uses the looser swipe thresholds. */}
         <View
           style={[styles.fsRoot, { paddingTop: insets.top }]}
@@ -1801,7 +1802,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       {/* animationType="none" + a virtualized FlatList so the popup appears
           INSTANTLY on tap — the old fade + render-every-row ScrollView made long
           lists (ALL, etc.) feel like nothing happened (user request 2026-08-13). */}
-      <Modal accessibilityViewIsModal visible={!!termList} transparent animationType="none" onRequestClose={() => setTermList(null)}>
+      <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={!!termList} transparent animationType="none" onRequestClose={() => setTermList(null)}>
         <View style={styles.tlBackdrop}>
           <Pressable
             style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}

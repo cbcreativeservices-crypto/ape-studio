@@ -37,6 +37,7 @@
 import { useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { DetailPager } from '../../components/detailSwipe';
 import { TrophyImage } from '../../components/TrophyImage';
 import { topicImagePath } from '../../data/topicImages';
@@ -199,7 +200,7 @@ export function TopicDetailModal({
   );
 
   return (
-    <Modal accessibilityViewIsModal visible={topic != null} transparent animationType="fade" onRequestClose={onClose}>
+    <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={topic != null} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.scrim} onLayout={(e) => setScrimH(e.nativeEvent.layout.height)}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityRole="button" accessibilityLabel="Close" />
         <View style={[styles.card, { maxHeight: budget }]} accessibilityViewIsModal>

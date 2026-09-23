@@ -26,6 +26,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
@@ -120,7 +121,7 @@ export function TopicWelcomeSheet({ topicId, enabled = true }: { topicId: string
   if (!show || !copy) return null;
 
   return (
-    <Modal
+    <Modal supportedOrientations={ALL_ORIENTATIONS}
       accessibilityViewIsModal
       visible
       transparent

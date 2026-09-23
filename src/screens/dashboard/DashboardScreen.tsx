@@ -31,6 +31,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { useSharedValue } from 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -2115,7 +2116,7 @@ export function DashboardScreen() {
       />
 
       {/* Topic term list (Booth 2026-07-18): every term in the current topic. */}
-      <Modal accessibilityViewIsModal
+      <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal
         visible={termsOpen}
         transparent
         animationType="slide"

@@ -9,6 +9,7 @@
  *    9-second minimum is gone; see the note on the component.
  */
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { colors, fonts } from '../../theme/tokens';
 import { LowLightDim } from '../settings/LowLightLayer';
 import { SCREEN_INTROS } from './screenIntros';
@@ -36,7 +37,7 @@ export function AppWelcomeOverlay() {
   if (!visible) return null;
   const copy = SCREEN_INTROS.appWelcome;
   return (
-    <Modal accessibilityViewIsModal
+    <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal
       transparent
       animationType="fade"
       visible

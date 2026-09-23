@@ -10,6 +10,7 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { devBypass } from '../../config/devMode';
@@ -131,7 +132,7 @@ export function IntroSheet({
   void delayMs;
 
   return (
-    <Modal accessibilityViewIsModal
+    <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal
       transparent
       animationType="fade"
       visible

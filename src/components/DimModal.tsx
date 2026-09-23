@@ -21,10 +21,40 @@
 import type { ReactNode } from 'react';
 import { Modal as RNModal, type ModalProps } from 'react-native';
 import { LowLightDim } from '../features/settings/LowLightLayer';
+import { ALL_ORIENTATIONS } from './modalOrientations';
 
-export function Modal({ children, ...rest }: ModalProps & { children?: ReactNode }) {
+/**
+ * ⛔ iOS CRASHES A MODAL THAT CANNOT FACE THE WAY THE APP IS FACING.
+ *
+ * `supportedOrientations` defaults to `['portrait']`. Present a Modal while the
+ * interface is locked LANDSCAPE and UIKit raises
+ * `UIApplicationInvalidInterfaceOrientation` — "supported orientations has no
+ * common orientation with the application" — which is a hard native crash, not
+ * a JS error anything can catch.
+ *
+ * CRASH, reported 2026-09-23: SPL Meter → fullscreen → colour wheel. The
+ * fullscreen VU/Gauge sets `orientation: 'landscape'`
+ * (SplMeterScreen.tsx:883), and the colour wheel opens LedColorPicker, which is
+ * one of these. The lesson was already known and written down — in
+ * `HarmonographViewer.tsx:15`, as "MODAL RULES (SplMeter lessons): ONE native
+ * Modal, both-orientation supportedOrientations for iOS" — but it was recorded
+ * in the file that LEARNED it rather than enforced anywhere, so the SPL Meter's
+ * own picker never got it. That is this file's whole argument, already made
+ * above for the low-light wash: remembering is not a mechanism.
+ *
+ * Allowing every orientation does NOT let a modal spin freely on a locked
+ * screen. react-native-screens owns the lock and the modal follows the
+ * interface; this only stops UIKit refusing to present it at all. A caller that
+ * genuinely needs to pin a modal can still pass its own value.
+ */
+
+export function Modal({
+  children,
+  supportedOrientations = ALL_ORIENTATIONS,
+  ...rest
+}: ModalProps & { children?: ReactNode }) {
   return (
-    <RNModal {...rest}>
+    <RNModal supportedOrientations={supportedOrientations} {...rest}>
       {children}
       {/* Last child, so it washes over the modal's own content. It is
           pointerEvents="none", so nothing below it loses a touch. */}
