@@ -3743,7 +3743,19 @@ const styles = StyleSheet.create({
   searchClear: { fontSize: 15, color: colors.textSub, paddingHorizontal: 1 },
   searchInput: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 15, color: colors.textPrimary, paddingVertical: 0 },
   // GREEN once a search has settled and its results are shown (owner 2026-08-01).
-  searchInputDone: { color: '#37e05f' },
+  /**
+   * The settled search text matches the HIGHLIGHT it produced (owner
+   * 2026-09-22: it "should go bold and the same brighter green when matching
+   * the visible Lis on the screen below in the definitions").
+   *
+   * Measured in the browser, the colour was ALREADY identical — rgb(55,224,95)
+   * in both places. What made the typed text look duller was weight alone:
+   * Barlow_400Regular in the field against Barlow_500Medium in the definition
+   * highlight. So this is a font change, not a colour one, and it takes the
+   * exact family the highlight uses rather than a guess at "bolder" — the two
+   * are meant to read as the same thing.
+   */
+  searchInputDone: { color: '#37e05f', fontFamily: fonts.barlowMedium },
   // Constrain the horizontal filter scroller so it can't grow to fill the
   // column and shove the list down (Booth 2026-07-09 black-gap fix).
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, alignItems: 'center' },
