@@ -328,5 +328,55 @@ placeholder impossible to execute. Always check a pasted secret's SHAPE before
 writing it anywhere — a 197-byte "token" turned out to be a copy of the command
 itself, and writing it would have set the credential to that text.
 
+**⛔ A CLAMP AROUND A NUMBER THAT COULD BE WRONG MAKES IT UNFALSIFIABLE.**
+`studyDisplayPct` did `Math.min(100, (credit / totalItems) * 100)` over a
+denominator read from a query the server silently truncates at 1000 rows. A
+truncated denominator therefore never surfaced as an absurd 340% — it surfaced
+as a tidy, confident **100% complete** on a topic the learner had not finished.
+Measured: 195 mapping rows per topic on live data, so the read broke at roughly
+the sixth enrolled topic. Before writing `Math.min`, `Math.max`, `?? 0` or
+`|| 0` around a count or a percentage, ask what it would look like if the
+underlying number were wrong — if the answer is "the same", the clamp is hiding
+the bug rather than handling it. `?? 0` on a MISSING row is the same trap: it
+says "zero progress" when it means "unknown".
+
+**⛔ PAGE AND ORDER EVERY ROW-DOWNLOAD COUNT.** The server caps a response at
+1000 rows and reports it as a SHORT ARRAY, never an error, so a truncated tally
+is indistinguishable from a real one. And `.range()` without `.order()` is not
+pagination: PostgREST does not guarantee a stable row order, so unordered pages
+repeat and skip rows. `fetchCorpusTerms` ordered before ranging; `curriculumStats`
+did not, and its per-subject term counts were simply wrong.
+
+**⛔ `web/` IS A SEPARATE APP THAT KEEPS ITS OWN COPY OF APP LOGIC — AND IT
+DRIFTS.** It has its own tsconfig and no path into `src/`, so every shared rule
+is re-implemented. Three drifts were live at once on 2026-09-23: both
+entitlement defects the app was audited for (row `[0]` of an unordered query,
+and `NaN > now` being FALSE so an unparseable expiry read as expired), the
+swallowed public-credentials error, and a whole progress panel still on the
+retired v1 course model — with `course_id` NULL on every live v3 topic, i.e.
+wrong for 100% of users. One of those files described itself as a "Mirror of
+EntitlementProvider" while implementing the pre-fix version. **A comment saying
+a file mirrors another is not a mechanism.** When a ruling is made app-side,
+grep `web/` for it, and pin BOTH sides with a guard test
+(`test/webMirrorsAppRulings.test.ts`).
+
+**⛔ WHEN A FIX HAS A TWIN, FIX THE TWIN — OR THE TWIN IS THE NEXT BUG.** Nearly
+every finding across the three overnight hunts was this: the quiz submit was
+left unbounded when the identically-shaped exam submit was bounded; MultiMeter
+carried its own copy of the mic-release handler and missed the fix its sibling
+got; `calcUsage.ts` was copied from `glossaryCap.ts` line for line EXCEPT the
+bound that had been added to the original. Six hand-written copies of one
+deadline had drifted apart, so a seventh was inevitable. The durable move is not
+a better copy — it is one shared helper plus a guard that pins the RULE rather
+than a list of filenames, because a filename list rots.
+
+**⛔ A SUBAGENT'S "INFERRED" IS AN INSTRUCTION TO GO AND MEASURE.** Across three
+hunts, 19 findings were raised and 19 confirmed — 0 false positives — because
+every one was checked against source, and every hedge was resolved against the
+live database. Both of agent 3's hedges came back WORSE than it had guessed. The
+agents' NEGATIVE results (a 136-route self-navigation sweep, deep-link
+stranding, lifecycle handling) were as valuable as the findings, because they
+say where not to look again. Demand the confidence label, then close it yourself.
+
 > **Hunting bugs?** The method these lessons feed is written up as a standing
 > standard in [`APE_BUG_HUNT_STANDARD.md`](APE_BUG_HUNT_STANDARD.md).
