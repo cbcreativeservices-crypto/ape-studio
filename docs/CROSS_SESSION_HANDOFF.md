@@ -65,6 +65,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-23 09:17 · ccode · f8bbda7a
+changed: Pixel device sweep: OTA confirmed running, SPL colour wheel verified
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-23 08:24 · ccode · 779d97ee
 changed: Sentry f95ff9a3: a SECOND worklet crash in the same file, still live
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">

@@ -53,3 +53,31 @@ So the file's worklets execute cleanly on device; the two specific branches
 The Pixel is signed out and I do not sign in on the owner's behalf. That blocks:
 completing topics, completing programs/certificates, and quizzes
 (`start_quiz_attempt` raises `not_enrolled` without an account).
+
+## Glossary — the big freeze · VERIFIED WORKING ✅
+Guest → Open Glossary:
+1. Device-key consent dialog ("Opening the glossary") appeared FIRST
+2. The welcome intro appeared AFTER it, **not drawn over it** — this is the
+   `glossaryIntroHold` fix, confirmed on device
+3. Corpus loaded: **32,116 terms**, list rendered, `pid` constant,
+   **0 FATAL / 0 ANR / 0 long-frame skips**. No freeze, no brick.
+4. Search "compress" → **190 results**, matches highlighted green in both term
+   titles and definition bodies
+5. Expanded "Compressed Air" → full definition with PLAIN ENGLISH / PURPOSE
+   sections and tappable in-glossary cross-links (air, compressor, cold, freeze)
+6. **Search-text weight rule confirmed both ways** (owner's latest request):
+   expanded → search text **bold**; collapsed → back to regular
+
+## Modals verified rendering on device (the layering work)
+AppWelcomeOverlay · SoundSafetyWarning · AudioOutputGate · AccuracyNote ·
+glossary device-key consent · glossary intro · LED colour picker (landscape).
+All rendered and dismissed correctly; none drawn behind another.
+
+⚠️ Observed: on first audio interaction three modals QUEUE (sound safety →
+audio-output gate → accuracy note). Each consumed one tap, so navigation taps
+were swallowed until all three were cleared. Not a bug — but worth knowing it
+takes three dismissals before the app responds to navigation again.
+
+## Orientation lock behaviour
+Fullscreen SPL forced `ROTATION_90` and exiting restored `ROTATION_0`.
+The mic released on exit (dosimeter stopped counting).
