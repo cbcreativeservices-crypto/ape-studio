@@ -87,6 +87,35 @@ describe('glossary works offline once loaded', () => {
     }
   });
 
+  test('the corpus is written in BATCHES, never one row at a time', () => {
+    // ⛔ THIS FROZE THE APP. The first version awaited a prepared statement once
+    // per row: 31,858 sequential round-trips across the native bridge with
+    // nothing given back to the JS thread in between. It surfaced on a FREE
+    // account because a member runs the same write from the background
+    // prefetch, where it is invisible.
+    assert.match(native, /const ROWS_PER_INSERT = \d+/, 'the batch size is gone');
+    assert.match(native, /VALUES \$\{values\}/, 'the corpus insert is no longer a multi-row statement');
+    assert.ok(
+      !/for \(const r of rows\) await stmt\.executeAsync/.test(native),
+      'saveTerms is back to one statement per row — that is the freeze',
+    );
+  });
+
+  test('an interrupted save reads as NO corpus, not a short one', () => {
+    // Batching without an enclosing transaction is what lets the write yield —
+    // the cost is that a kill mid-write leaves a partial corpus, and the
+    // caller's test is `if (stored.length)`. 5,000 of 31,858 terms would be
+    // served as the whole glossary, silently and permanently.
+    assert.match(native, /const completeKey = \(src: string\) =>/, 'the completeness marker is gone');
+    assert.match(native, /if \(!expected\) return \[\];/, 'loadTerms no longer requires a completeness marker');
+    assert.match(native, /!== expected\) return \[\]; \/\/ partial/, 'loadTerms no longer rejects a partial corpus');
+    // Cleared BEFORE the write, set only after the last batch.
+    assert.match(native, /DELETE FROM glossary_meta WHERE k = \?/, 'the marker is not cleared before writing');
+    assert.match(native, /await setMeta\(completeKey\(src\), String\(rows\.length\)\);/, 'the marker is not set after the write');
+    // The web fallback must honour the same contract or it drifts.
+    assert.match(web, /if \(!expected\) return \[\];/, 'the web fallback does not check completeness');
+  });
+
   test('the save-everything loop cannot spin forever', () => {
     // A definition that is NULL upstream returns the same ids every pass.
     assert.match(screen, /for \(let pass = 0; pass < 80; pass \+= 1\)/, 'the offline save loop is no longer bounded');
