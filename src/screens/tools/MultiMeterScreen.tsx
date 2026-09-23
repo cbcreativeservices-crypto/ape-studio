@@ -815,7 +815,26 @@ export function MultiMeterScreen({ navigation }: Props) {
       if (!micReleaseOnBackgroundEnabled()) return; // OFF → keep the warm session
       if (s === 'background') {
         // 'inactive' (app-switcher peek, a permission alert) is NOT backgrounding.
-        if (stateRef.current === 'running') {
+        /**
+         * ⛔ 'starting' RELEASES TOO (2026-09-23 overnight hunt).
+         *
+         * This checked only 'running', so pressing Home during the START window
+         * released nothing: capture stayed open in the background with the OS
+         * mic indicator lit — contradicting this setting's own promise that
+         * "the mic stops immediately". `releasedForBgRef` also stayed false, so
+         * nothing tore it down on return either.
+         *
+         * 'starting' is a real, reachable state here — the button renders
+         * "STARTING…" and disables itself in it — and on Android the cold HAL
+         * open is a documented 5–10 s window, so first entry hits it easily.
+         *
+         * The identical bug was found and fixed in useDspEngine on 2026-09-20,
+         * with the reasoning written on it. This screen carries its own copy of
+         * the handler and was missed. Releasing mid-acquire is safe: the stop
+         * bumps the generation counter, so the in-flight acquire hands its
+         * stream straight back.
+         */
+        if (stateRef.current === 'running' || stateRef.current === 'starting') {
           releasedForBgRef.current = true;
           onStopRef.current(); // micPaused + state → idle + debounced release
           releaseMicNow(); // hard stop now — no hot mic lingering in the background
