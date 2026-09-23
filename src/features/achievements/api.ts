@@ -77,10 +77,26 @@ export async function fetchTopicAchievements(): Promise<TopicAchievementData> {
 
   const statusById = new Map<string, { status: TopicStatus; dateEarned: string | null }>();
   if (userId) {
-    const { data: prog } = await supabase
+    const { data: prog, error } = await supabase
       .from('student_achievement_progress')
       .select('achievement_id, status, date_earned')
       .eq('user_id', userId);
+    /**
+     * ⛔ Surface the failure. supabase-js RESOLVES with `{ data: null, error }`
+     * on an RLS denial or a PostgREST error, so dropping `error` left
+     * `statusById` empty, every topic falling to `'locked'`, and `earnedTotal`
+     * at 0 — and BOTH consumers' error states became unreachable
+     * (`TopicsScreen.tsx:64`, `AchievementsHomeScreen.tsx:81` each have a
+     * `.catch` that could never fire). A member with forty trophies was told,
+     * as a fact with no error and no retry, "0 / 166".
+     *
+     * The doc comment above promises a locked grid for a GUEST, which is
+     * honest — that branch is the `userId == null` one. The same grid for a
+     * signed-in member whose read failed is not. `fetchGalleryV3` twelve lines
+     * below already throws for exactly this reason; this site was missed.
+     * (overnight hunt 2026-09-23)
+     */
+    if (error) throw error;
     for (const p of (prog ?? []) as { achievement_id: string; status: string; date_earned: string | null }[]) {
       statusById.set(p.achievement_id, {
         status: (p.status as TopicStatus) ?? 'locked',

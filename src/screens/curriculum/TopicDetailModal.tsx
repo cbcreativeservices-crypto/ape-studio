@@ -102,8 +102,19 @@ export function TopicDetailModal({
   // Card budget = 86% of the window, but never more than the scrim ACTUALLY on
   // screen (the modal's content area can be shorter than the window).
   // A ticked box must not claim more than the entitlement allows (S2).
-  const { entitlement } = useEntitlement();
-  const isMember = entitlement === 'academy';
+  const { entitlement, resolved } = useEntitlement();
+  /**
+   * ⛔ HOLD THE MEMBER-FAVOURING STATE UNTIL `resolved`. The provider boots at
+   * 'anonymous', so gating on `entitlement` alone told a PAYING member that the
+   * topic they just ticked "needs Academy membership" — during the pre-resolve
+   * window, and permanently for a member whose boot read failed with no
+   * `lastTier` cache (a reinstall with no signal). This was the only one of the
+   * `useEntitlement()` consumers reading the tier for a decision without also
+   * reading `resolved`; `studyGate.ts`, `withMembershipPreview` and the glossary
+   * all hold. It is text only — no access is withheld either way — but telling a
+   * member they have not paid is not a small thing. (overnight hunt 2026-09-23)
+   */
+  const needsMembership = resolved && entitlement !== 'academy';
   const [scrimH, setScrimH] = useState(0);
   const [footerH, setFooterH] = useState(FOOTER_SEED);
   const budget = Math.min(Math.round(height * 0.86), scrimH > 0 ? scrimH - SCRIM_PAD * 2 : Infinity);
@@ -229,9 +240,9 @@ export function TopicDetailModal({
                         condition here, at the moment the box is ticked. */}
                     <Text style={styles.ackText}>
                       {enrolled
-                        ? isMember
-                          ? 'Added to My Enrollments'
-                          : 'Saved to your list — studying this topic needs Academy membership.'
+                        ? needsMembership
+                          ? 'Saved to your list — studying this topic needs Academy membership.'
+                          : 'Added to My Enrollments'
                         : 'Add this topic to My Enrollments'}
                     </Text>
                   </Pressable>

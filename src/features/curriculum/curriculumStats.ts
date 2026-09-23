@@ -114,6 +114,12 @@ export function useCurriculumStats(gsList: number[]): CurriculumStats {
               .from('glossary_topics')
               .select('achievement_id')
               .in('achievement_id', ids)
+              // ⛔ ORDER BEFORE RANGE. PostgREST does not guarantee a stable row
+              // order without one, so unordered pages can repeat or skip rows —
+              // and this tally is what the per-subject "N terms" line reports.
+              // `fetchCorpusTerms` already orders before ranging; this did not.
+              // (overnight hunt 2026-09-23)
+              .order('achievement_id')
               .range(from, from + PAGE - 1);
             if (error || !data || data.length === 0) break;
             for (const r of data as { achievement_id: string }[]) {

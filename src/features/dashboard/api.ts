@@ -176,12 +176,41 @@ async function resolveItemCounts(
     }
   }
   if (!counted) {
-    const { data: direct } = await supabase
-      .from('glossary_topics')
-      .select('achievement_id')
-      .in('achievement_id', topicIds);
-    for (const r of (direct ?? []) as { achievement_id: string }[]) {
-      counts.set(r.achievement_id, (counts.get(r.achievement_id) ?? 0) + 1);
+    /**
+     * ⛔ PAGE IT. This counts by downloading the rows, and the server caps a
+     * response at 1000 — silently, as a short array rather than an error. Live
+     * data averages 195 mapping rows per topic, so an unpaged read truncates at
+     * roughly the SIXTH enrolled topic, which is an ordinary member, not an
+     * edge case (measured 2026-09-23: 32,420 rows across 166 live topics).
+     *
+     * A truncated denominator is worse than a missing one, because
+     * `studyDisplayPct` clamps with `Math.min(100, …)` — so an over-100
+     * percentage arrives as a confident "100% complete" on a topic the learner
+     * has not finished, and a topic truncated to zero freezes the whole
+     * flashcards → homework → scenarios → quiz chain at 0% with no message.
+     *
+     * `.order()` is not optional either: PostgREST does not guarantee a stable
+     * row order without one, so unordered pages can repeat or skip rows.
+     * (overnight hunt 2026-09-23)
+     */
+    const PAGE = 1000;
+    for (let from = 0; ; from += PAGE) {
+      const { data: direct, error } = await supabase
+        .from('glossary_topics')
+        .select('achievement_id, glossary_id')
+        .in('achievement_id', topicIds)
+        .order('achievement_id')
+        .order('glossary_id')
+        .range(from, from + PAGE - 1);
+      // Bail on an error rather than looping: a partial tally read as a whole
+      // one is the failure this comment exists to prevent.
+      if (error) {
+        counts.clear();
+        break;
+      }
+      const rows = (direct ?? []) as { achievement_id: string }[];
+      for (const r of rows) counts.set(r.achievement_id, (counts.get(r.achievement_id) ?? 0) + 1);
+      if (rows.length < PAGE) break;
     }
   }
 
@@ -201,17 +230,33 @@ async function resolveItemCounts(
   const allSibIds = Array.from(nameByAch.keys());
   if (allSibIds.length === 0) return counts;
 
-  const { data: sibItems } = await supabase
-    .from('glossary_topics')
-    .select('achievement_id, glossary_id')
-    .in('achievement_id', allSibIds);
+  /**
+   * ⛔ Paged for the same reason as the direct count above, and this one is NOT
+   * a fallback — it runs whenever an enrolled topic has zero direct terms,
+   * which is the path gs3060 Professional Audio Safety already takes, i.e. the
+   * first thing a new tester touches. The largest single name-union measured is
+   * 560 rows, so two zero-direct topics are enough to cross the 1000 cap.
+   */
+  const SIB_PAGE = 1000;
   const glossaryByName = new Map<string, Set<string>>();
-  for (const r of (sibItems ?? []) as { achievement_id: string; glossary_id: string }[]) {
-    const name = nameByAch.get(r.achievement_id);
-    if (!name) continue;
-    const set = glossaryByName.get(name) ?? new Set<string>();
-    set.add(r.glossary_id);
-    glossaryByName.set(name, set);
+  for (let from = 0; ; from += SIB_PAGE) {
+    const { data: sibItems, error } = await supabase
+      .from('glossary_topics')
+      .select('achievement_id, glossary_id')
+      .in('achievement_id', allSibIds)
+      .order('achievement_id')
+      .order('glossary_id')
+      .range(from, from + SIB_PAGE - 1);
+    if (error) break;
+    const rows = (sibItems ?? []) as { achievement_id: string; glossary_id: string }[];
+    for (const r of rows) {
+      const name = nameByAch.get(r.achievement_id);
+      if (!name) continue;
+      const set = glossaryByName.get(name) ?? new Set<string>();
+      set.add(r.glossary_id);
+      glossaryByName.set(name, set);
+    }
+    if (rows.length < SIB_PAGE) break;
   }
   for (const id of zeroIds) {
     const name = topicNameById.get(id);

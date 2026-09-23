@@ -51,6 +51,12 @@ export function ExploreView({
   const [rows, setRows] = useState<DirectoryCard[]>([]);
   const [total, setTotal] = useState(0);
   const [busy, setBusy] = useState(true);
+  /** Which page has been loaded. The header shows the SERVER's total, so
+   *  without a way to reach page 2 the screen said "212 members" over a list of
+   *  thirty and the other 182 were unreachable by any interaction
+   *  (overnight hunt 2026-09-23). */
+  const [page, setPage] = useState(0);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
 
@@ -71,6 +77,7 @@ export function ExploreView({
 
   const run = useCallback(async (filters: DirectoryFilters) => {
     setBusy(true);
+    setPage(0);
     // try/finally, not a bare sequence: the spinner must be cleared by the
     // language, not by reaching the next statement. searchDirectory is bounded
     // now and returns its errors rather than throwing, but a future throw
@@ -91,6 +98,33 @@ export function ExploreView({
     setRows(out.results);
     setTotal(out.total);
   }, []);
+
+  /** Fetch the next page and APPEND. A failure here leaves what is already
+   *  listed alone — losing thirty results the reader is looking at, to report
+   *  that a thirty-first could not be fetched, is the wrong trade. */
+  const loadMore = useCallback(async () => {
+    const next = page + 1;
+    setLoadingMore(true);
+    let out: Awaited<ReturnType<typeof searchDirectory>>;
+    try {
+      out = await searchDirectory(f, next);
+    } finally {
+      setLoadingMore(false);
+    }
+    if (out.status === 'error') {
+      setErr(out.error);
+      return;
+    }
+    setErr(null);
+    setPage(next);
+    // De-duplicate by token: a member published between the two requests shifts
+    // the window, and React would otherwise throw on the duplicate key.
+    setRows((prev) => {
+      const seen = new Set(prev.map((r) => r.publicToken));
+      return [...prev, ...out.results.filter((r) => !seen.has(r.publicToken))];
+    });
+    setTotal(out.total);
+  }, [f, page]);
 
   useEffect(() => {
     void run(f);
@@ -127,6 +161,7 @@ export function ExploreView({
     [rows, hiddenTokens],
   );
   const visibleTotal = Math.max(0, total - (rows.length - visibleRows.length));
+  const hasMore = rows.length < total;
 
   const specialtyPool = useMemo(
     () =>
@@ -270,7 +305,9 @@ export function ExploreView({
       ) : (
         <>
           <Text style={st.count} accessibilityRole="header">
-            {visibleTotal} {visibleTotal === 1 ? 'member' : 'members'}
+            {hasMore
+              ? `Showing ${visibleRows.length} of ${visibleTotal} members`
+              : `${visibleTotal} ${visibleTotal === 1 ? 'member' : 'members'}`}
           </Text>
           {visibleRows.map((r) => (
             <Pressable
@@ -311,6 +348,15 @@ export function ExploreView({
               <Text style={st.chev}>›</Text>
             </Pressable>
           ))}
+          {hasMore ? (
+            <View style={st.moreWrap}>
+              <PrimaryButton
+                label={loadingMore ? 'Loading…' : 'Show more members'}
+                onPress={() => void loadMore()}
+                disabled={loadingMore}
+              />
+            </View>
+          ) : null}
           <SelfReportedNote />
         </>
       )}
@@ -320,6 +366,7 @@ export function ExploreView({
 
 const st = StyleSheet.create({
   body: { padding: 14, paddingBottom: 40 },
+  moreWrap: { marginTop: 14 },
   lede: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSub },
   input: {
     backgroundColor: '#101010',
