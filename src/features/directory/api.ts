@@ -14,6 +14,7 @@
  * disturb a credential QR someone already printed (spec §4.4).
  */
 import { supabase } from '../../lib/supabase';
+import { withDeadline } from '../../lib/boundedCall';
 import { LIMITS, readableError } from './rules';
 
 export { LIMITS, readableError };
@@ -302,17 +303,33 @@ export async function searchDirectory(
 ): Promise<SearchOutcome> {
   const none = <T,>(a: T[] | undefined) => (a && a.length ? a : null);
   try {
-    const { data, error } = await supabase.rpc('directory_search', {
-      p_q: f.q?.trim() || null,
-      p_areas: none(f.areas),
-      p_specialties: none(f.specialties),
-      p_roles: none(f.roles),
-      p_open_to: none(f.openTo),
-      p_country: f.country || null,
-      p_work_pref: f.workPref ?? null,
-      p_limit: pageSize,
-      p_offset: page * pageSize,
-    });
+    /**
+     * ⛔ BOUNDED (2026-09-23 overnight hunt). ExploreView does
+     * `setBusy(true) … setBusy(false)` with no `finally`, and its error state is
+     * only reachable from a RESOLVED `{status:'error'}`. So a stalled search
+     * showed a spinner with no message and no retry, while the debounce kept
+     * firing further unbounded searches behind it.
+     *
+     * A search is a foreground action the reader is waiting on, so the deadline
+     * is short. Timing out returns the same `{status:'error'}` the screen
+     * already renders — with copy that says what actually happened.
+     */
+    const { data, error } = await withDeadline(
+      // `async () =>`: the Supabase builder is a thenable, not a Promise.
+      async () => await supabase.rpc('directory_search', {
+        p_q: f.q?.trim() || null,
+        p_areas: none(f.areas),
+        p_specialties: none(f.specialties),
+        p_roles: none(f.roles),
+        p_open_to: none(f.openTo),
+        p_country: f.country || null,
+        p_work_pref: f.workPref ?? null,
+        p_limit: pageSize,
+        p_offset: page * pageSize,
+      }),
+      'directory_search',
+      10000,
+    );
     if (error) return { status: 'error', error: readableError(error.message) };
     const rows = (data ?? []) as Record<string, unknown>[];
     return {

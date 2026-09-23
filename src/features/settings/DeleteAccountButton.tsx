@@ -9,6 +9,7 @@ import { useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { confirmDialog, notify } from '../../lib/confirm';
 import { supabase } from '../../lib/supabase';
+import { softDeadline, withDeadline } from '../../lib/boundedCall';
 import { markIntentionalSignOut } from '../auth/intentionalSignOut';
 import { clearLocalAccountData, resetAllLocalStores } from '../account/clearLocalAccountData';
 import { colors, fonts } from '../../theme/tokens';
@@ -71,10 +72,31 @@ export function DeleteAccountButton({ onDeleted }: { onDeleted: () => void }) {
   const runDelete = async () => {
     setBusy(true);
     try {
-      const { error } = await supabase.rpc('delete_my_account');
+      /**
+       * ⛔ BOUNDED (2026-09-23 overnight hunt). Unbounded, a stall left the
+       * Delete button permanently disabled after the five-second hold and the
+       * final confirm — no message, no retry, on the one flow where a user has
+       * already committed to something irreversible.
+       *
+       * Safe to time out into the catch below: that copy already says "we
+       * couldn't COMPLETE the deletion… if it keeps failing, email us and we
+       * will remove the account for you." It does not claim the account
+       * survived, which is right — after a timeout we genuinely do not know.
+       */
+      const { error } = await withDeadline(
+        // `async () =>`: the Supabase builder is a thenable, not a Promise.
+        async () => await supabase.rpc('delete_my_account'),
+        'delete_my_account',
+      );
       if (error) throw error;
       markIntentionalSignOut();
-      await supabase.auth.signOut();
+      /**
+       * softDeadline, NOT withDeadline. If the server delete succeeded and the
+       * sign-out then stalls, throwing here would skip the local wipe below and
+       * leave a deleted account's data on the device, still apparently signed
+       * in. Proceeding is the safe direction: the wipe must happen either way.
+       */
+      await softDeadline(async () => await supabase.auth.signOut(), undefined, 'signOut', 8000);
       // Backend is gone; now wipe the device-local user data + reset the
       // in-memory store caches so no stale academic state survives to the next
       // account (user bug 2026-07-26). No JS reload available (expo-updates not

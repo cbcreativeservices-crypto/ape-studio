@@ -71,8 +71,16 @@ export function ExploreView({
 
   const run = useCallback(async (filters: DirectoryFilters) => {
     setBusy(true);
-    const out = await searchDirectory(filters);
-    setBusy(false);
+    // try/finally, not a bare sequence: the spinner must be cleared by the
+    // language, not by reaching the next statement. searchDirectory is bounded
+    // now and returns its errors rather than throwing, but a future throw
+    // between these lines would leave the view spinning for good.
+    let out: Awaited<ReturnType<typeof searchDirectory>>;
+    try {
+      out = await searchDirectory(filters);
+    } finally {
+      setBusy(false);
+    }
     if (out.status === 'error') {
       setErr(out.error);
       setRows([]);

@@ -84,8 +84,14 @@ export function useLabAudio(): UseLabAudio {
         return 'blocked';
       }
       setLoading(true);
-      const reason = await p.play(labKey, assetKey);
-      setLoading(false);
+      // try/finally: a throw between these lines left the lab's play button
+      // stuck on its loading state for the life of the screen.
+      let reason: Awaited<ReturnType<typeof p.play>>;
+      try {
+        reason = await p.play(labKey, assetKey);
+      } finally {
+        setLoading(false);
+      }
       setLastResult(reason);
       setActive(p.active);
       return reason;
