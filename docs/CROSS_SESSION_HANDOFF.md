@@ -65,6 +65,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-23 07:51 · ccode · 1f471ab4
+changed: Two reported crashes: pink noise, and the fullscreen colour wheel
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-23 01:11 · ccode · 404e7734
 changed: Five lessons from the overnight hunts
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">

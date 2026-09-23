@@ -378,5 +378,45 @@ agents' NEGATIVE results (a 136-route self-navigation sweep, deep-link
 stranding, lifecycle handling) were as valuable as the findings, because they
 say where not to look again. Demand the confidence label, then close it yourself.
 
+**⛔ A NATIVE CRASH IS NOT AN ERROR — NO `try/catch` WILL EVER SEE IT.** Two
+arrived on 2026-09-23 as plain "it crashed", which is all either can ever look
+like from outside. Both are boundary violations, and both had a correct twin
+sitting a few lines away.
+
+*Calling a non-worklet from a worklet.* Reanimated worklets run on the UI thread
+in a SEPARATE JS runtime; a function that was not workletized does not exist
+there. `viz.tsx` keeps deliberate twins — `hash` with the `'worklet'` directive
+and `hashJs` labelled "module scope, not a worklet" — and the noise branch of the
+Playground waveform called the JS one from inside `useDerivedValue`. It could
+only ever fire on NOISE, because that is the only branch that hashes; the wave
+branch is pure trigonometry, which is why sine → square worked seconds earlier.
+When a file keeps a JS twin and a worklet twin, the naming is the only thing
+standing between them — so it is now a test (`test/nativeCrashGuards.test.ts`
+fails on any `…Js` call inside a worklet hook).
+
+*A modal that cannot face the way the app is facing.* React Native's
+`supportedOrientations` defaults to `['portrait']`. Present a `<Modal>` while the
+interface is locked LANDSCAPE and UIKit raises
+`UIApplicationInvalidInterfaceOrientation` — "supported orientations has no
+common orientation with the application". The SPL Meter's fullscreen sets
+`orientation: 'landscape'`, so its colour wheel took the app down. Allowing every
+orientation does NOT let a modal spin on a locked screen: react-native-screens
+owns the lock and the modal follows the interface; it only stops UIKit refusing
+to present it.
+
+**⛔ A LESSON RECORDED IN THE FILE THAT LEARNED IT PROTECTS THAT FILE ONLY.**
+The modal crash above was already known. `HarmonographViewer.tsx` opens with
+"MODAL RULES (SplMeter lessons): ONE native Modal, both-orientation
+supportedOrientations for iOS, and NOTHING nests a second Modal inside it" — a
+correct, specific, hard-won rule, written into the file that had just been fixed,
+enforced nowhere. **The SPL Meter's own picker never got it.** So the fix is a
+default on the shared `DimModal` (its stated purpose already: "remembering is not
+a mechanism") plus a guard for the raw call sites. The measure of that: I found
+nine raw `<Modal>`s by hand and **the guard immediately found seven more**, in
+the Glossary, Flashcards, Awards, Dashboard and Topic-detail screens — every one
+of them reachable over a landscape-locked tool. If a lesson is worth a comment,
+ask what would fail if somebody never read it; if the answer is "nothing", write
+the test instead.
+
 > **Hunting bugs?** The method these lessons feed is written up as a standing
 > standard in [`APE_BUG_HUNT_STANDARD.md`](APE_BUG_HUNT_STANDARD.md).
