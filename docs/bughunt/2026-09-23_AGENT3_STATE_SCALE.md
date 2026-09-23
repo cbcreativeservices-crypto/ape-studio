@@ -97,3 +97,106 @@ WITH `.order('term')`, lazy definitions, batched offline save);
 `student_method_progress` bounded at 684 rows; all 27 divisions by `.length`
 guarded; `careerfinder/scoring.ts` zero-evidence handling; `fetchAwardProgress`
 returning null rather than an authoritative zero.
+
+---
+
+# VERIFICATION (by me, after the agent returned)
+
+**7 raised · 7 confirmed in source · 0 false positives · 6 fixed · 1 sidelined
+as a decision.** Two of the agent's "INFERRED" labels were resolved against the
+live database, and both came back WORSE than it had guessed.
+
+## A3-1 — CONFIRMED, FIXED
+Grepped repo-wide: `searchDirectory` has exactly one caller and it never passes
+a page. No `onEndReached`, no page state. `visibleTotal` is the server's
+`total_count` minus locally-blocked rows, so the header is the true total over a
+list of thirty.
+
+Now pages on a "Show more members" button, de-dupes by token across requests (a
+member publishing between two requests shifts the window and React would throw on
+the duplicate key), and reads "Showing 30 of 212" while truncated. A failed next
+page keeps what is already listed — losing thirty results the reader is looking
+at, to report that a thirty-first could not be fetched, is the wrong trade.
+
+## A3-2 — CONFIRMED, FIXED
+Exactly as described, and the detail that makes it bad is that BOTH consumers had
+already built the error state this one line made unreachable, and the sibling
+twelve lines below (`fetchGalleryV3`) already throws with a comment explaining
+why. The function's own doc comment promises a locked grid for a guest — honest,
+because that is the `userId == null` branch. The same grid for a signed-in member
+whose read failed is not.
+
+## A3-3 — CONFIRMED, AND IT IS LIVE, NOT LATENT · measured
+The agent labelled "does production cross 1000 rows?" as INFERRED. Queried:
+
+```
+glossary_topics rows over 166 live topics : 32,420
+average mapping rows per topic            : 195
+largest single sibling-name union         : 560   (two such topics cross the cap)
+```
+
+At 195 rows per topic the unpaged read truncates at roughly the **sixth enrolled
+topic** — an ordinary member, not an edge case. Both reads now page and both now
+order. `curriculumStats` already paged but ranged with no `ORDER BY`, which is not
+stable pagination; ordered.
+
+What made this expensive to see is the CLAMP. `studyDisplayPct` does
+`Math.min(100, …)`, so a truncated denominator does not surface as an absurd
+340% — it surfaces as a confident, tidy **100% complete** on a topic the learner
+has not finished. A clamp around a number that could be wrong does not make it
+right; it makes it unfalsifiable.
+
+## A3-4 — CONFIRMED, AND WORSE THAN REPORTED. **NOT FIXED — owner decision.**
+The agent could not tell whether the v1 tables still exist. They do — and that is
+not the point. Queried:
+
+```
+live v3 topics with a course_id : 0      ← the join key the web page uses
+v1 enrollment rows / users      : 20 / 3
+v3 enrolment rows / users       : 91 / 6
+```
+
+`achievements.course_id` is NULL for **every** live v3 topic, so the per-course
+topic query returns nothing for everybody. This is not "wrong for some users on
+some data" — the website's progress panel is wrong for **100% of users today**,
+and it fails silently into copy that reads like a fact:
+
+> "You're not enrolled in any topics yet. Open the app to get started."
+> **0/0 topics**, 0%
+
+The credentials block on the same page still works, which is what makes the empty
+progress read as truth rather than as breakage.
+
+**Why I did not fix it:** the correct fix is to rebuild the panel on
+`user_topic_enrollments` keyed on `global_sequence` — that is a rebuild of a
+website surface and a decision about what the web dashboard should show, not a
+bug fix I can make on the owner's behalf at 4am. Mitigating: the site is behind
+the pre-launch gate, so no tester reaches it today. **This is the single biggest
+item on the morning list.**
+
+## A3-5 — CONFIRMED, FIXED (deployed)
+Both defects present verbatim, in a file whose header calls itself a mirror of the
+provider. The `[0]` half is currently latent — queried, no user holds more than
+one academy row today — but the NaN half needs only one unparseable timestamp,
+and the swallowed read error needs only a blip. Fixed all three, and pinned the
+rulings on BOTH sides with a guard, since drift is the actual disease here.
+
+## A3-6 — CONFIRMED, FIXED (deployed)
+`p.error` checked, `c.error` dropped. The app's own fix comment from 2026-09-18
+already spelled out that the likely trigger is not a blip but the
+RLS-policy-without-a-GRANT failure this project has shipped once before, which
+returns zero rows rather than an error — so every profile would show zero
+credentials, permanently, with nothing looking broken. The page now says the
+credentials could not be loaded instead of silently hiding the section.
+
+## A3-7 — CONFIRMED, FIXED
+The agent's claim that this is the only one of the `useEntitlement()` consumers
+deciding without `resolved` held up. Text only, no access withheld — but telling
+a paying member their topic "needs Academy membership" is not a small thing, and
+for a member whose boot read failed with no `lastTier` cache it is not transient.
+
+## Agent accuracy this run
+7 findings, 7 verified, 0 false positives, and its two hedges were the two places
+it was right to hedge. Its negative results were spot-checked in three places
+(the corpus paging, the `'local'` sentinel guard, the 27 divisions by `.length`)
+and were correct each time.
