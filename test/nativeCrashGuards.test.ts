@@ -143,11 +143,67 @@ describe('worklets never call a function that does not exist on the UI thread', 
     );
   });
 
+  test('no function-typed PROP is called inside a worklet', () => {
+    /**
+     * The gap that let Sentry f95ff9a3 through (build 1.0.0+28, iPhone SE 3rd
+     * gen, iOS 26.6): the check above only resolves MODULE-SCOPE definitions and
+     * skips anything it cannot resolve — "a param, prop, or inline closure".
+     * `gainDbAt` is precisely that: an ordinary arrow function built by
+     * FoundationsPlaygroundScreen and passed down as a prop. Captured by a
+     * worklet it becomes a Reanimated "Remote Function", callable only
+     * ASYNCHRONOUSLY from the UI runtime — calling it inline is a SIGABRT.
+     *
+     * Nothing about such a call site looks unusual, which is why it needs a test
+     * rather than a reading. Numbers marshal across the boundary; functions do
+     * not — compute on the JS thread and pass the VALUES in.
+     */
+    const offenders: string[] = [];
+    for (const file of files) {
+      const raw = readFileSync(file, 'utf8');
+      if (!WORKLET_HOOKS.some((h) => raw.includes(h + '('))) continue;
+      const code = stripComments(raw);
+
+      const spans: [number, number][] = [];
+      for (const h of WORKLET_HOOKS) {
+        for (const c of callBodies(code, h)) spans.push([c.at, c.at + c.body.length]);
+      }
+      if (spans.length === 0) continue;
+
+      // Names declared with a FUNCTION type: `name?: ((f: number) => number) | null`
+      const fnProps = new Set<string>();
+      for (const m of code.matchAll(/(?<![\w$])([a-z][\w$]*)\??:\s*\(?\(?[^;{}=]*?\)\s*=>/g)) {
+        fnProps.add(m[1]);
+      }
+
+      const seen = new Set<string>();
+      for (const [s, e] of spans) {
+        const region = code.slice(s, e);
+        for (const m of region.matchAll(/(?<![.\w$])([A-Za-z_$][\w$]*)\s*\(/g)) {
+          const name = m[1];
+          if (!fnProps.has(name)) continue;
+          // A closure of the same name declared INSIDE the span is fine.
+          if (new RegExp('(?:const|let|var)\\s+' + name + '\\s*=').test(region)) continue;
+          if (seen.has(name)) continue;
+          seen.add(name);
+          offenders.push(`${rel(file)}:${code.slice(0, s + m.index!).split('\n').length} — worklet calls the prop ${name}()`);
+        }
+      }
+    }
+    assert.deepEqual(
+      offenders,
+      [],
+      `a worklet calls a function passed in from the JS thread — a Remote Function called inline is a NATIVE CRASH:\n${offenders.join('\n')}`,
+    );
+  });
+
   test('the worklet twin still exists and is still a worklet', () => {
     // If `hash` lost its directive the fix would silently become the bug again.
     const viz = readFileSync(join(SRC, 'screens', 'lab', 'foundations', 'viz.tsx'), 'utf8');
     assert.match(viz, /function hash\(n: number\): number \{\s*\n\s*'worklet';/, "viz.tsx's `hash` is no longer a worklet");
     assert.match(viz, /const r = \(hash\(i \* 17\.13\) - 0\.5\) \* 2;/, 'the noise trace stopped using the worklet hash');
+    // The EQ weights must stay on the JS thread (Sentry f95ff9a3).
+    assert.match(viz, /const eqWeights = useMemo\(/, 'the EQ weights moved back into the worklet');
+    assert.match(viz, /const wts = eqWeights;/, 'the worklet is building the EQ weights again — it would call gainDbAt inline');
   });
 });
 

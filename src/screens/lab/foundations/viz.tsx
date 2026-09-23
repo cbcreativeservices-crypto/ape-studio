@@ -1175,6 +1175,37 @@ export function AnalyticWaveformView({
    * NOISE stays still — it has no single wavelength to lock to, and the
    * Playground already pauses these drawings for a sweep.
    */
+  /**
+   * ⛔ THE EQ WEIGHTS ARE COMPUTED HERE, ON THE JS THREAD, ON PURPOSE.
+   *
+   * CRASH, Sentry f95ff9a3 (build 1.0.0+28, iPhone SE 3rd gen, iOS 26.6):
+   *   [Worklets] Tried to synchronously call a Remote Function.
+   *   Called "anonymous" on the UI Runtime.
+   *     at vizTsx14 … at reactNativeReanimated_useDerivedValueTs1
+   *
+   * `gainDbAt` is a PROP — an ordinary arrow function built by
+   * FoundationsPlaygroundScreen's `useMemo`. Captured by a worklet it becomes a
+   * "Remote Function", which may only be called ASYNCHRONOUSLY from the UI
+   * runtime; calling it inline is a hard native crash (SIGABRT), not a JS error
+   * anything can catch. The weights used to be built inside the worklet, so the
+   * Sound Playground went down as soon as an EQ CUT was active and the WAVE
+   * branch drew a frame.
+   *
+   * ⚠️ DIFFERENT BUG, SAME WORKLET as the `hashJs` noise crash fixed the same
+   * day, and it survived that fix because the two live in opposite branches:
+   * that one only fired on NOISE, this one only with EQ on and a WAVE selected.
+   * The lesson the pair teaches is that a worklet may not call ANY function
+   * from the JS thread — a module-scope one, or a prop, which is far easier to
+   * miss because nothing about the call site looks unusual.
+   *
+   * Numbers marshal across the boundary; functions do not. So the array is
+   * built here and only its VALUES are read on the UI thread.
+   */
+  const eqWeights = useMemo(
+    () => amps.map((v, n) => (v > 0 && gainDbAt ? Math.pow(10, gainDbAt((n + 1) * f0) / 20) : 1)),
+    [amps, gainDbAt, f0],
+  );
+
   const paths = useDerivedValue(() => {
     const t = clock ? clock.value : 0;
     const om = 2 * Math.PI * visHz;
@@ -1216,10 +1247,9 @@ export function AnalyticWaveformView({
       let sum = 0;
       for (const v of amps) sum += v;
       const norm = 1 / (sum > 1 ? sum : 1);
-      // EQ weight per partial (1 when no EQ) — display mirrors DSP.
-      const wts = amps.map((v, n) =>
-        v > 0 && gainDbAt ? Math.pow(10, gainDbAt((n + 1) * f0) / 20) : 1,
-      );
+      // EQ weight per partial (1 when no EQ) — display mirrors DSP. Computed
+      // on the JS thread above: calling `gainDbAt` here crashed the app.
+      const wts = eqWeights;
       for (let i = 0; i <= N; i++) {
         const x01 = i / N;
         let s = 0;
@@ -1243,7 +1273,9 @@ export function AnalyticWaveformView({
     u.lineTo(w, mid);
     u.close();
     return { path: p, under: u };
-  }, [clock, w, h, amps, phasesDeg, level, noise, f0, gainDbAt, visHz, cycles]);
+    // `eqWeights` rather than `gainDbAt`: the function must never be captured
+    // by this worklet again.
+  }, [clock, w, h, amps, phasesDeg, level, noise, f0, eqWeights, visHz, cycles]);
   const path = useDerivedValue(() => paths.value.path, [paths]);
   const under = useDerivedValue(() => paths.value.under, [paths]);
 
