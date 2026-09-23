@@ -17,6 +17,7 @@
  * Plan: docs/APE_GLOSSARY_DEVICE_ID_BUILD_PLAN_2026_09_13.md.
  */
 import { supabase } from '../../lib/supabase';
+import { softDeadline } from '../../lib/boundedCall';
 import { classifyGatewayError, type GatewayFault } from './gatewayFault';
 
 export * from './gatewayFault';
@@ -122,9 +123,43 @@ export type DefinitionResult = { state: 'ok'; row: GatewayDefinition } | { state
 
 /** One metered definition. The SERVER counts it — the client must not also
  *  charge `glossary_consume()` for the same open, or a free week is seven. */
+/**
+ * A tap is waiting on this, so the deadline is much shorter than a submit's.
+ * Long enough for a slow-but-working read; short enough that a tap never feels
+ * dead.
+ */
+const DEFINITION_DEADLINE_MS = 8000;
+
 export async function fetchDefinitionViaGateway(id: string): Promise<DefinitionResult> {
   try {
-    const { data, error } = await supabase.rpc('get_glossary_definition', { p_id: id });
+    /**
+     * ⛔ BOUNDED — THIS IS THE LIVE METERING PATH (2026-09-23 overnight hunt).
+     *
+     * `glossaryCap.ts` was bounded on 2026-09-22, but that is the FALLBACK
+     * meter. While `serverMeters` is true — i.e. the gateway view is deployed,
+     * and it is — every term open goes through THIS RPC instead, and it was
+     * unbounded. It also affects every tier including members, where the
+     * fallback meter only ever ran for signed-in free users.
+     *
+     * The user-visible failure was the worst kind: `openPopupRoot` awaits this
+     * and sets no loading flag, so a tap on a term produced literally nothing.
+     * No popup, no spinner, no error. A 32,000-term glossary that appears dead
+     * and gives the reader nothing to report.
+     *
+     * Timing out to `'error'` is the intended path, not a workaround — the
+     * fault is documented in gatewayFault.ts as "Anything else: network,
+     * timeout, unknown. Fail open", and openViaGateway then lets the legacy
+     * read fill the detail. The term still opens.
+     */
+    const { data, error } = await softDeadline(
+      // `async () =>`: the Supabase builder is a thenable, not a Promise.
+      async () => await supabase.rpc('get_glossary_definition', { p_id: id }),
+      { data: null, error: { message: 'gateway timeout' } } as Awaited<
+        ReturnType<typeof supabase.rpc<'get_glossary_definition'>>
+      >,
+      'get_glossary_definition',
+      DEFINITION_DEADLINE_MS,
+    );
     const fault = classifyGatewayError(error);
     if (fault) return { state: 'fault', fault };
     const row = (data as GatewayDefinition[] | null)?.[0];

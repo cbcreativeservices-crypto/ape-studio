@@ -19,6 +19,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Crypto from 'expo-crypto';
 import { supabase } from '../../lib/supabase';
+import { withDeadline } from '../../lib/boundedCall';
 import { hasSafeSession } from '../../lib/getSessionSafe';
 import { trackEvent } from '../telemetry/telemetry';
 import {
@@ -244,14 +245,41 @@ export async function submitQuiz(args: {
   focusLossCount: number;
   focusLossDuration: number;
 }): Promise<SubmitResult> {
-  const { data, error } = await supabase.rpc('submit_quiz', {
-    p_attempt_id: args.attemptId,
-    p_answers: args.answers,
-    p_submitted_at: args.submittedAt,
-    p_submitted_offline: args.submittedOffline,
-    p_focus_loss_count: args.focusLossCount,
-    p_focus_loss_duration: args.focusLossDuration,
-  });
+  /**
+   * ⛔ BOUNDED, OR A COMPLETED QUIZ IS DESTROYED (2026-09-23 overnight hunt).
+   *
+   * QuizScreen's offline rescue lives in its CATCH and tests the error message
+   * for a transient pattern. A stall throws nothing, so the catch never ran:
+   * the screen sat on "Submitting…" forever AND the graded attempt was never
+   * queued. Not a slow submit — a lost one.
+   *
+   * `submitFinalExam` was bounded a day earlier for the identical shape, two
+   * directories away. This is its twin.
+   *
+   * Safe because the server is idempotent: submit_quiz does
+   * `if v_att.result_payload is not null then return v_att.result_payload`, so
+   * the queued replay returns the same frozen grade rather than re-grading.
+   * Read from the live function definition.
+   *
+   * ⚠️ The server's own `statement_timeout = 30s` does NOT cover this. It
+   * aborts the QUERY; a socket that has stopped answering never delivers that
+   * abort to the client either.
+   */
+  // `async () =>` rather than a bare arrow: the Supabase builder is a THENABLE,
+  // not a Promise, so it has no .catch/.finally and infers as unknown. Awaiting
+  // it inside an async factory hands the helper a real, typed Promise.
+  const { data, error } = await withDeadline(
+    async () =>
+      await supabase.rpc('submit_quiz', {
+        p_attempt_id: args.attemptId,
+        p_answers: args.answers,
+        p_submitted_at: args.submittedAt,
+        p_submitted_offline: args.submittedOffline,
+        p_focus_loss_count: args.focusLossCount,
+        p_focus_loss_duration: args.focusLossDuration,
+      }),
+    'submit_quiz',
+  );
   if (error) throw new Error(error.message);
   const result = data as SubmitResult;
   trackEvent('quiz_finish', { outcome: result.outcome, offline: args.submittedOffline });

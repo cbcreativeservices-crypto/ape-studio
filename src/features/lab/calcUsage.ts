@@ -31,6 +31,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { supabase } from '../../lib/supabase';
+import { withDeadline } from '../../lib/boundedCall';
 
 // Display/fail-open fallback ONLY — the live number is whatever the server
 // returns (v_limit in calc_consume / calc_usage_status). Keep the two in step:
@@ -120,7 +121,26 @@ async function statusLocal(): Promise<CalcUsage> {
 /** Spend one credit for a newly revealed calculation. */
 export async function consumeCalc(): Promise<CalcUsage> {
   try {
-    const { data, error } = await supabase.rpc('calc_consume');
+    /**
+     * ⛔ BOUNDED (2026-09-23 overnight hunt). This file says at the top that it
+     * "mirrors glossaryCap.ts" — and it did, line for line, EXCEPT for the
+     * deadline that was later added to the original. The copy drifted, which is
+     * why boundedCall.ts now exists instead of a sixth hand-written variant.
+     *
+     * Unbounded, a stalled connection left CalcWorkspaceScreen's button
+     * disabled and reading "CALCULATING…" for the life of the screen — while
+     * the answer had been computed locally and was sitting there ready.
+     *
+     * Rejecting rather than resolving is deliberate: the catch below already
+     * falls back to `consumeLocal()`, the device-local window this file is
+     * built around. A timeout should take exactly that path.
+     */
+    const { data, error } = await withDeadline(
+      // `async () =>`: the Supabase builder is a thenable, not a Promise.
+      async () => await supabase.rpc('calc_consume'),
+      'calc_consume',
+      8000,
+    );
     const row = (data as Row[] | null)?.[0];
     if (error || !row) {
       if (error) console.warn('[calc] calc_consume unavailable, using device window:', error.message);

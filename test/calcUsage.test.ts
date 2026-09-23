@@ -24,6 +24,20 @@ const STUB_URL = 'ape-test:supabase';
 registerHooks({
   resolve(specifier, context, next) {
     if (specifier.endsWith('lib/supabase')) return { url: STUB_URL, shortCircuit: true };
+    // Extensionless relative imports inside the module under test: Node's ESM
+    // needs the extension, the app's bundler does not. Resolve them rather than
+    // forcing source files to carry `.ts` in their imports for the harness's
+    // benefit. (Added 2026-09-23 when src/lib/boundedCall was extracted.)
+    // ...but ONLY for our own source. The first version of this rule had no
+    // parentURL check and appended `.ts` to node_modules' own relative imports
+    // too, which broke async-storage's `./AsyncStorage`.
+    if (
+      context.parentURL?.includes('/src/') &&
+      /^\.{1,2}\//.test(specifier) &&
+      !/\.[cm]?[jt]sx?$/.test(specifier)
+    ) {
+      return next(`${specifier}.ts`, context);
+    }
     return next(specifier, context);
   },
   load(url, context, next) {

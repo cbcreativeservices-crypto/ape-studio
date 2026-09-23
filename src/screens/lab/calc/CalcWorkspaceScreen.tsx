@@ -163,9 +163,19 @@ export function CalcWorkspaceScreen() {
     if (!values || consuming || consumingRef.current || consumedSig === inputSig) return;
     consumingRef.current = true;
     setConsuming(true);
-    const u = await consumeCalc();
-    consumingRef.current = false;
-    setConsuming(false);
+    // ⛔ try/finally, not a bare sequence (2026-09-23 hunt). consumeCalc is now
+    // bounded and swallows its own failures, but the button is
+    // `disabled={consuming}` and reads "CALCULATING…" — so ANY future path that
+    // throws between these two lines would disable the control for the life of
+    // the screen, with the answer already computed and sitting there. The flag
+    // must be cleared by the language, not by reaching the next statement.
+    let u: Awaited<ReturnType<typeof consumeCalc>>;
+    try {
+      u = await consumeCalc();
+    } finally {
+      consumingRef.current = false;
+      setConsuming(false);
+    }
     setUsage(u);
     // ⚠️ NO LONGER SHORT-CIRCUITS ON `unavailable` (2026-09-18).
     //

@@ -59,6 +59,20 @@ registerHooks({
     if (specifier === '@react-native-async-storage/async-storage')
       return { url: 'ape-test:async-storage', shortCircuit: true };
     if (specifier.endsWith('lib/supabase')) return { url: 'ape-test:supabase', shortCircuit: true };
+    // Extensionless relative imports inside the module under test: Node's ESM
+    // needs the extension, the app's bundler does not. Resolve them rather than
+    // forcing source files to carry `.ts` in their imports for the harness's
+    // benefit. (Added 2026-09-23 when src/lib/boundedCall was extracted.)
+    // ...but ONLY for our own source. The first version of this rule had no
+    // parentURL check and appended `.ts` to node_modules' own relative imports
+    // too, which broke async-storage's `./AsyncStorage`.
+    if (
+      context.parentURL?.includes('/src/') &&
+      /^\.{1,2}\//.test(specifier) &&
+      !/\.[cm]?[jt]sx?$/.test(specifier)
+    ) {
+      return next(`${specifier}.ts`, context);
+    }
     if (specifier.endsWith('commercial/EntitlementProvider'))
       return { url: 'ape-test:entitlement', shortCircuit: true };
     return next(specifier, context);

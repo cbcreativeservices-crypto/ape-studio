@@ -65,6 +65,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-23 00:34 · ccode · 500d90a9
+changed: Agent 2 findings recorded (unverified) — lifecycle & stalled waits
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-23 00:27 · ccode · c3d0d925
+changed: Career Finder retake pushed a duplicate; record agent 1 verification
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-23 00:19 · ccode · 5af7e312
 changed: Agent 1 findings recorded (unverified) — navigation & goal paths
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
