@@ -65,6 +65,24 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-23 08:24 · ccode · 779d97ee
+changed: Sentry f95ff9a3: a SECOND worklet crash in the same file, still live
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-23 08:18 · ccode · 31697560
+changed: Modal layering: the surfaces that were drawn behind the sheet that raised them
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-23 08:06 · ccode · da0c9ce8
+changed: Sweep both crash classes repo-wide — and undo damage my own fix did
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-23 07:51 · ccode · 1f471ab4
 changed: Two reported crashes: pink noise, and the fullscreen colour wheel
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
