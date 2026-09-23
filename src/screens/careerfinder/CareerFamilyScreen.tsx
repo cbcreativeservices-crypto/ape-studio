@@ -76,6 +76,25 @@ export function CareerFamilyScreen() {
       params: { screen: 'Dashboard', params: { focusGs: gs } },
     });
   };
+  /**
+   * ⛔ popTo, NOT navigate (2026-09-23 overnight hunt).
+   *
+   * Both call sites used `navigate('CareerFinder')`. Under React Navigation 7
+   * NAVIGATE reuses only the FOCUSED route, so an existing CareerFinder lower
+   * in the stack is ignored and a SECOND copy is pushed: the stack becomes
+   * CareerFinder -> CareerFamilyList -> CareerFamily -> CareerFinder, and the
+   * reader needs three backs to leave what looks like one screen. This same
+   * file already gets it right for 'Main' a few lines up, with the same
+   * warning written on it.
+   *
+   * Returning to the existing instance loses nothing: the Career Finder keeps
+   * its answers in a STORE, not component state, and carries its own
+   * "RESET & START OVER" for an actual retake. popTo also adds the route if it
+   * is somehow not in the stack, so an entry from elsewhere still works.
+   */
+  const goToFinder = () =>
+    (navigation as unknown as { popTo: (name: string) => void }).popTo('CareerFinder');
+
   const correction = () => sendFeedback('correction', fam.name, { Screen: 'Career family', 'Family id': fam.id, 'Index version': CAREER_INDEX_VERSION });
 
   return (
@@ -211,10 +230,10 @@ export function CareerFamilyScreen() {
         ) : hasResults ? (
           <CtaButton label="SEE MY RESULTS" tone="green" onPress={() => navigation.navigate('CareerFinderResults')} />
         ) : (
-          <CtaButton label="TAKE THE CAREER FINDER" tone="green" onPress={() => navigation.navigate('CareerFinder')} />
+          <CtaButton label="TAKE THE CAREER FINDER" tone="green" onPress={goToFinder} />
         )}
         <LinkRow>
-          {hasResults ? <TextLink label="Retake the Career Finder" onPress={() => navigation.navigate('CareerFinder')} muted /> : null}
+          {hasResults ? <TextLink label="Retake the Career Finder" onPress={goToFinder} muted /> : null}
           <TextLink label="Suggest a correction" onPress={correction} muted a11y="Suggest a correction. Opens your mail app with this family named." />
         </LinkRow>
       </View>
