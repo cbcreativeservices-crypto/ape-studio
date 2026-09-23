@@ -63,6 +63,10 @@ export default function CommunityProfileView({ token }: { token: string }) {
   }
 
   const { profile: p, credentials } = outcome;
+  // A FAILED credentials read is not a member with none. Presenting the two the
+  // same way told a prospective employer this member holds no credentials at
+  // all (hunt 2026-09-23).
+  const credsUnavailable = "credentialsUnavailable" in outcome && outcome.credentialsUnavailable;
   const list = (v: string[] | null) => (v ?? []).filter(Boolean);
   const workPref =
     p.work_pref === "remote" ? "Remote" : p.work_pref === "local" ? "Local / in person" : p.work_pref === "either" ? "Remote or local" : null;
@@ -115,7 +119,17 @@ export default function CommunityProfileView({ token }: { token: string }) {
         ) : null}
       </div>
 
-      {credentials.length > 0 ? (
+      {credsUnavailable ? (
+        <div className="mt-6 rounded-xl border border-border bg-surface p-6 sm:p-8">
+          <p className="font-display text-sm font-semibold uppercase tracking-wide text-text-muted">
+            Verified credentials
+          </p>
+          <p className="mt-2 text-sm text-text-muted">
+            We couldn&apos;t load this member&apos;s credentials just now. This does not mean they
+            hold none — please refresh the page to try again.
+          </p>
+        </div>
+      ) : credentials.length > 0 ? (
         <div className="mt-6 rounded-xl border border-green/40 bg-green/5 p-6 sm:p-8">
           <div className="flex items-center gap-2">
             <span

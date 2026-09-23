@@ -65,6 +65,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-23 01:05 · ccode · c0462ccb
+changed: Four ways the app showed a confident, specific, wrong number
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-23 00:49 · ccode · 369362b2
 changed: Agent 2 verification record
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">

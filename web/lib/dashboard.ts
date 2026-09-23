@@ -45,22 +45,53 @@ export type DashboardSummary = {
 
 /** Mirror of EntitlementProvider: an ACTIVE, non-expired academy row ⇒ academy;
  *  an academy row that's inactive/expired ⇒ lapsed; a signed-in account with no
- *  academy row ⇒ free. (anonymous is handled by the caller when no session.) */
+ *  academy row ⇒ free. (anonymous is handled by the caller when no session.)
+ *
+ *  ⛔ THIS COPY DRIFTED, AND CALLING ITSELF A MIRROR IS WHY NOBODY NOTICED.
+ *  It mirrored the PRE-FIX version and re-introduced both defects the app was
+ *  audited for. Re-synced 2026-09-23; `test/webMirrorsEntitlementRuling.test.ts`
+ *  now fails if either drifts again. The app's reasoning lives in
+ *  `src/features/commercial/EntitlementProvider.tsx` (`academyTierFromRows`) and
+ *  `src/features/commercial/entitlementExpiry.ts` — read those before editing
+ *  this. `web/` cannot import from `src/` (separate tsconfig, no shared path),
+ *  so this is a deliberate re-implementation, not an oversight. */
+type AcademyRow = { status?: string; expires_at?: string | null };
+
+/** Does this row's expiry leave it entitling the member?
+ *
+ *  ⛔ UNREADABLE EXPIRY ⇒ FAIL OPEN (owner ruling 2026-09-11). The old guard was
+ *  `new Date(expires_at).getTime() > Date.now()`, which leans on the comparison
+ *  to do the checking — and `NaN > now` is FALSE. So a row whose `expires_at`
+ *  was present but unparseable read as ALREADY EXPIRED and silently dropped a
+ *  PAYING member to "lapsed". Only a timestamp we genuinely READ and that has
+ *  genuinely PASSED may take access away. */
+function keepsAccess(expiresAt: string | null | undefined): boolean {
+  if (expiresAt === null || expiresAt === undefined || expiresAt === "") return true;
+  // A non-string is unreadable, and unreadable keeps access (see above).
+  if (typeof expiresAt !== "string") return true;
+  const ms = Date.parse(expiresAt);
+  if (!Number.isFinite(ms)) return true; // unreadable ⇒ keep access
+  return ms > Date.now();
+}
+
 async function deriveTier(): Promise<Tier> {
   const supabase = getSupabaseBrowser();
   try {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("entitlements")
       .select("status, expires_at")
       .eq("product", "academy");
-    const acad = (data ?? [])[0] as
-      | { status?: string; expires_at?: string | null }
-      | undefined;
-    if (acad) {
-      const notExpired =
-        !acad.expires_at || new Date(acad.expires_at).getTime() > Date.now();
-      return acad.status === "active" && notExpired ? "academy" : "lapsed";
-    }
+    // A read FAILURE is not "this member has no entitlement". Without this the
+    // page silently told a paying member they were on a free account.
+    if (error) throw error;
+    const rows = (data ?? []) as AcademyRow[];
+    // ⛔ SCAN, do not trust row [0]. A user may hold MULTIPLE academy rows (an
+    // expired one plus an active one) with NO guaranteed order — there is no
+    // ORDER BY on this query — so `[0]` could classify an active member as
+    // lapsed (owner debug audit).
+    const active = rows.some((r) => r.status === "active" && keepsAccess(r.expires_at));
+    if (active) return "academy";
+    if (rows.length > 0) return "lapsed";
   } catch {
     // Network/RLS failure — safe signed-in default.
   }

@@ -37,7 +37,14 @@ export type CommunityPublicCredential = {
 };
 
 export type CommunityOutcome =
-  | { status: "found"; profile: CommunityPublicProfile; credentials: CommunityPublicCredential[] }
+  | {
+      status: "found";
+      profile: CommunityPublicProfile;
+      credentials: CommunityPublicCredential[];
+      /** TRUE when the credentials read FAILED, as distinct from a member who
+       *  genuinely holds none. The view must not present the two the same way. */
+      credentialsUnavailable?: boolean;
+    }
   | { status: "notFound" }
   | { status: "error" };
 
@@ -55,10 +62,29 @@ export async function fetchCommunityProfile(token: string): Promise<CommunityOut
     if (p.error) return { status: "error" };
     const profile = ((p.data ?? []) as CommunityPublicProfile[])[0];
     if (!profile) return { status: "notFound" };
+    /**
+     * ⛔ `c.error` USED TO BE DROPPED ON THE FLOOR while `p.error` was checked.
+     * This is the page a member shares with a prospective employer, and
+     * `CommunityProfileView` hides the whole "Verified credentials" block when
+     * the list is empty — so a failed credentials read presented that member as
+     * holding NO CREDENTIALS AT ALL. Stated as fact, with no error and no retry.
+     *
+     * And the likely trigger is not a blip. It is the failure this project has
+     * already shipped once: a public-catalog RPC with an RLS policy but NO GRANT
+     * returns zero rows rather than an error, so EVERY profile would show zero
+     * credentials, permanently, and nothing would look broken.
+     *
+     * The app fixed exactly this on 2026-09-18 (`src/features/directory/api.ts`,
+     * which returns a three-state result); this web copy was missed until the
+     * 2026-09-23 hunt. The profile still renders — losing the whole page over
+     * the credentials block would be the wrong trade — but the block now says
+     * it could not be loaded rather than implying there is nothing to show.
+     */
     return {
       status: "found",
       profile,
-      credentials: (c.data ?? []) as CommunityPublicCredential[],
+      credentials: c.error ? [] : ((c.data ?? []) as CommunityPublicCredential[]),
+      credentialsUnavailable: !!c.error,
     };
   } catch {
     return { status: "error" };
