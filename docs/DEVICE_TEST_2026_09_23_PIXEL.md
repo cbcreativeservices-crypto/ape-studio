@@ -110,3 +110,38 @@ An early crash check counted `AndroidRuntime: ` lines and appeared to show
 5 → 10 → 15 "fatals" across tab navigation. Those were **my own `uiautomator`
 dumps** starting a VM (5 lines each), not the app. Real crashes log
 `FATAL EXCEPTION`; that count has been **0 everywhere all session**.
+
+## Matching · Career Finder · credential tabs
+- **Matching** started (58 pair-sets). Matched NFPA-80 self-closing → *Fire door*
+  and the outdoor-rigging hazard → *Wind Hazard*; accepted pairs are removed from
+  the pool. Mechanism works, 0 FATAL.
+- **Career Finder** completed END TO END as a guest: 28 questions → scoring →
+  results ("Music Creation, DAWs, Synthesis & Sonic Art", 37 titles, ranked #1)
+  → family detail. No crash at any step.
+- **Credential tabs** all render distinct content and none crash:
+  Explore ("Discover What's Inside"), Certificates ("Build Your Academy
+  Credentials"), Programs ("Complete Certificate Programs"), Pro Registry
+  ("Get Discovered"), Enrollments ("Manage My Learning").
+- Stats card is self-consistent with the glossary: **32,116 glossary terms**,
+  166 study topics, 124 certificates, 36 programs, 163 calculators,
+  142,324 practice questions.
+
+## ⚠️ NOT CONCLUSIVELY VERIFIED — the Career Finder retake fix (A1-3)
+I changed "Retake the Career Finder" from `navigate` to `popTo` so it returns to
+the existing screen instead of pushing a duplicate. On device the retake did land
+on the Career Finder, but leaving it took **two** back presses, not one.
+
+That is ambiguous: it is either a surviving duplicate, or the first back was
+consumed by the screen's own view state. I could not separate the two, because
+backing out of the app ends the guest session and resets the path.
+
+⛔ So this one is UNPROVEN on device. A clean test needs a baseline (fresh
+Explore → Career Finder → count backs to leave) compared against the
+post-retake count, ideally signed in so the session survives.
+
+## Two false leads I chased and discarded (recorded so nobody re-chases them)
+1. `AndroidRuntime:` line counts rising across navigation — those were my own
+   `uiautomator` dumps, not the app. Real crashes log `FATAL EXCEPTION`: zero.
+2. Credential tabs appearing not to switch — my tap coordinates were stale; the
+   tab row moves down when the screen shows a title. With correct coordinates
+   every tab switches correctly.

@@ -65,6 +65,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-23 09:39 · ccode · 8fd9e837
+changed: Device sweep: flashcard deck completed, power sequence verified, 10/10 questions correct
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-23 09:17 · ccode · f8bbda7a
 changed: Pixel device sweep: OTA confirmed running, SPL colour wheel verified
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
