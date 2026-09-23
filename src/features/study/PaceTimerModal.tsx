@@ -100,7 +100,17 @@ export function PaceTimerModal({
   }, [visible, method]);
 
   return (
-    <Modal accessibilityViewIsModal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
+    <Modal
+      accessibilityViewIsModal
+      visible={visible}
+      transparent
+      animationType="fade"
+      statusBarTranslucent
+      /* The fader is now an in-tree overlay, which gets no onRequestClose of its
+         own — without this, Android BACK would close this whole sheet instead of
+         just the fader it opened. */
+      onRequestClose={() => (faderOpen ? setFaderOpen(false) : onClose())}
+    >
       <View style={styles.backdrop}>
         <Pressable
           style={StyleSheet.absoluteFill}
@@ -173,8 +183,13 @@ export function PaceTimerModal({
         </View>
 
         {/* Shared full-size fader popup — same component the container's
-            hold-press fader button opens; here it's opened by the mini-fader. */}
+            hold-press fader button opens; here it's opened by the mini-fader.
+            `embedded` because THIS sheet is already an open Modal: on Android a
+            second Modal is its own Dialog window and attaches beneath the one
+            that raised it, so the fader would be invisible and its slider
+            unreachable behind this sheet. See components/PrePaywallPrompt. */}
         <PresetFader
+          embedded
           visible={faderOpen}
           preset={settings.preset}
           onChange={setPreset}

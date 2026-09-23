@@ -45,11 +45,21 @@ export function PresetFader({
   preset,
   onChange,
   onClose,
+  embedded,
 }: {
   visible: boolean;
   preset: PacePreset;
   onChange: (preset: PacePreset) => void;
   onClose: () => void;
+  /** Render as an in-tree overlay instead of its own Modal.
+   *
+   *  ⛔ REQUIRED WHEN A MODAL IS ALREADY OPEN. On Android every RN Modal is its
+   *  own Dialog window, so a second one raised from inside an open sheet is
+   *  drawn BENEATH it — the fader would be invisible and its slider unreachable
+   *  while the pace sheet that opened it sat on top. PaceTimerModal is exactly
+   *  that case. Same rule, same wording and the same fix as
+   *  `components/PrePaywallPrompt`. Identical look either way. */
+  embedded?: boolean;
 }) {
   const [index, setIndex] = useState(() => indexOfPreset(preset));
   const indexRef = useRef(index);
@@ -96,9 +106,8 @@ export function PresetFader({
 
   const capTop = index * STEP;
 
-  return (
-    <Modal accessibilityViewIsModal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
-      <View style={styles.backdrop}>
+  const body = (
+    <View style={[styles.backdrop, embedded ? StyleSheet.absoluteFill : null]} accessibilityViewIsModal>
         <Pressable
           style={StyleSheet.absoluteFill}
           onPress={onClose}
@@ -164,7 +173,13 @@ export function PresetFader({
             <Text style={styles.doneText}>DONE</Text>
           </Pressable>
         </View>
-      </View>
+    </View>
+  );
+
+  if (embedded) return visible ? body : null;
+  return (
+    <Modal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
+      {body}
     </Modal>
   );
 }

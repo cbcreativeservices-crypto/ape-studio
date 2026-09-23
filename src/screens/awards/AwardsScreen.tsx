@@ -1083,7 +1083,14 @@ export function AwardsScreen({ navigation, route }: Props) {
           (picking a credential straight from the pager). When a detail card is
           open the embedded copy inside it shows instead — never both. */}
       <PrePaywallPrompt
-        visible={!!payPrompt && !detail}
+        /* ⛔ ...AND ONLY WHEN NO PICKER IS OPEN EITHER. `!detail` alone was not
+           enough: close the detail card with a prompt still pending and this
+           root copy became visible while the PICKER Modal was still open — a
+           sibling Modal, which on Android attaches to the activity window and is
+           drawn BENEATH the picker. The notice would be invisible and
+           unreachable, the exact failure recorded in components/PrePaywallPrompt.
+           It shows once the picker closes. (2026-09-23) */
+        visible={!!payPrompt && !detail && picker === null}
         onClose={() => setPayPrompt(null)}
         title="Heads up"
         lines={[

@@ -292,7 +292,25 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
   );
 
   return (
-    <Modal accessibilityViewIsModal visible={visible} transparent animationType="slide" statusBarTranslucent onRequestClose={onClose}>
+    <Modal
+      accessibilityViewIsModal
+      visible={visible}
+      transparent
+      animationType="slide"
+      statusBarTranslucent
+      /* Both notices are in-tree overlays now, and an overlay gets no
+         onRequestClose of its own — so Android BACK would close this sheet
+         while a message was still on screen. Dismiss the message first. */
+      onRequestClose={() => {
+        if (warn) return setWarn(false);
+        if (payOpen) {
+          setPayOpen(false);
+          tapCount.current = 0;
+          return;
+        }
+        onClose();
+      }}
+    >
       <View style={[styles.root, { paddingTop: insets.top }]} onTouchStart={onAnyTap}>
         <View style={styles.head}>
           <View style={{ flex: 1 }}>
@@ -417,7 +435,12 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
         </View>
       </View>
 
+      {/* `embedded` — this sheet IS an open Modal, and on Android every RN
+          Modal is its own Dialog window, so a second one is drawn BENEATH the
+          sheet that raised it: the message explaining the limit would be
+          invisible and unreachable. See components/PrePaywallPrompt. */}
       <PrePaywallPrompt
+        embedded
         visible={warn}
         onClose={() => setWarn(false)}
         title="Home screen is full"
@@ -428,6 +451,7 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
           Raised on the 2nd tap anywhere (owner 2026-08-05) — reset on dismiss so
           the "one free tap, then prompt" cycle repeats. */}
       <PrePaywallPrompt
+        embedded
         visible={payOpen}
         onClose={() => {
           setPayOpen(false);

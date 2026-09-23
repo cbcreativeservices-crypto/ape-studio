@@ -325,9 +325,13 @@ export function StudyAreaExplore({
         />
       </Modal>
       {/* Only when NO detail card is open — otherwise the embedded copy above
-          is the one that shows. Never both. */}
+          is the one that shows. Never both.
+          ⛔ AND only when this sheet itself is closed: close the detail card with
+          a prompt still pending and this copy became a SIBLING Modal of the open
+          sheet, drawn beneath it on Android and therefore invisible. It shows
+          once the sheet closes. (2026-09-23) */}
       <PrePaywallPrompt
-        visible={!!payPrompt && !detail}
+        visible={!!payPrompt && !detail && !visible}
         onClose={() => setPayPrompt(null)}
         title="Heads up"
         lines={[

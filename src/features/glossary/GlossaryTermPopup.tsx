@@ -35,10 +35,19 @@ type Row = { id: string; term: string; definition: string | null; plain_english:
 export function GlossaryTermPopup({
   termName,
   onClose,
+  embedded,
 }: {
   /** The term to show, or null when the popup is closed. */
   termName: string | null;
   onClose: () => void;
+  /** Render as an in-tree overlay instead of its own Modal.
+   *
+   *  ⛔ REQUIRED WHEN A MODAL IS ALREADY OPEN. On Android every RN Modal is its
+   *  own Dialog window, so a second one raised from inside an open sheet is
+   *  drawn BENEATH it: tapping a term inside the calculator's formula-key sheet
+   *  would appear to do nothing at all. Same rule and the same fix as
+   *  `components/PrePaywallPrompt`. Identical look either way. */
+  embedded?: boolean;
 }) {
   const [row, setRow] = useState<Row | null>(null);
   const [loading, setLoading] = useState(false);
@@ -141,9 +150,13 @@ export function GlossaryTermPopup({
     };
   }, [termName]);
 
-  return (
-    <Modal accessibilityViewIsModal visible={termName != null} transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable accessible={false} style={styles.backdrop} onPress={onClose}>
+  const body = (
+    <Pressable
+      accessible={false}
+      style={[styles.backdrop, embedded ? StyleSheet.absoluteFill : null]}
+      onPress={onClose}
+      accessibilityViewIsModal
+    >
         {/* Inner press swallows taps so tapping the card doesn't dismiss. */}
         <Pressable accessible={false} style={styles.card} onPress={() => {}}>
           <View style={styles.headerRow}>
@@ -180,7 +193,13 @@ export function GlossaryTermPopup({
             <Text style={styles.doneText}>DONE</Text>
           </Pressable>
         </Pressable>
-      </Pressable>
+    </Pressable>
+  );
+
+  if (embedded) return termName != null ? body : null;
+  return (
+    <Modal accessibilityViewIsModal visible={termName != null} transparent animationType="fade" onRequestClose={onClose}>
+      {body}
     </Modal>
   );
 }

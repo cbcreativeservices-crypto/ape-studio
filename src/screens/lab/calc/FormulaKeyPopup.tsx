@@ -58,7 +58,17 @@ export function FormulaKeyPopup({
   const symbols = symbolsInFormula(fn.formula, fn.keySymbols);
 
   return (
-    <Modal accessibilityViewIsModal visible transparent animationType="slide" onRequestClose={onClose}>
+    <Modal
+      accessibilityViewIsModal
+      visible
+      transparent
+      animationType="slide"
+      /* The term popup is now an in-tree overlay rather than its own Modal, and
+         an overlay gets no onRequestClose of its own — so Android BACK would
+         close this whole sheet out from under an open definition. Close the
+         popup first, exactly as the nested Modal used to. */
+      onRequestClose={() => (popupTerm ? setPopupTerm(null) : onClose())}
+    >
       <View style={styles.backdrop}>
         <View style={styles.sheet}>
           <View style={styles.header}>
@@ -157,7 +167,10 @@ export function FormulaKeyPopup({
           </ScrollView>
         </View>
       </View>
-      <GlossaryTermPopup termName={popupTerm} onClose={() => setPopupTerm(null)} />
+      {/* `embedded` because THIS sheet is already an open Modal: on Android a
+          second Modal attaches beneath the one that raised it, so tapping a
+          term here would appear to do nothing. See components/PrePaywallPrompt. */}
+      <GlossaryTermPopup embedded termName={popupTerm} onClose={() => setPopupTerm(null)} />
     </Modal>
   );
 }
