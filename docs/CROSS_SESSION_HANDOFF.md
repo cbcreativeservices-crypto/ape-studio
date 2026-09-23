@@ -65,6 +65,24 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-22 23:58 · ccode · 8cf16e2b
+changed: Search text goes bold while a definition is open
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-22 23:39 · ccode · 43bf5217
+changed: Glossary search text matches the highlight it produces
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-22 23:25 · ccode · 68c71eb0
+changed: Glossary: stop the intro drawing over the consent dialog
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-22 21:48 · ccode · 82dbb8a1
 changed: Fix the freeze my own offline save caused — batch the corpus write
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
