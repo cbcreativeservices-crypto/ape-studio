@@ -2520,7 +2520,7 @@ ${COPY.glossaryFreeAllowance}`,
      *
      * `setBmOpen(false)` used to live ONLY inside a confirmDialog raised while
      * this popup was still open — and all three exits (backdrop, CLOSE, and
-     * the hardware BACK) routed through it. On Android every RN <Modal supportedOrientations={ALL_ORIENTATIONS}> is its
+     * the hardware BACK) routed through it. On Android every RN <Modal> is its
      * own Dialog window, and AppDialogHost is mounted as a SIBLING in the
      * navigator's screenLayout, so it attaches to the activity window BELOW
      * this open Dialog. PrePaywallPrompt:9-14 records that behaviour as

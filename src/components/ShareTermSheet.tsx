@@ -149,7 +149,7 @@ export function ShareTermSheet({
   /**
    * ⚠️ ANDROID: THIS CONFIRM IS DRAWN BEHIND THE SHEET THAT RAISED IT.
    *
-   * Every RN <Modal supportedOrientations={ALL_ORIENTATIONS}> is its own Dialog window, and AppDialogHost is mounted as
+   * Every RN <Modal> is its own Dialog window, and AppDialogHost is mounted as
    * a SIBLING in the navigator's screenLayout, so it attaches to the activity
    * window BELOW this open sheet (device-verified, PrePaywallPrompt:9-14). So
    * past the 25-term threshold, SHARE AS TEXT / Share as image / Copy do
@@ -161,7 +161,7 @@ export function ShareTermSheet({
    *    mounted.
    *
    * ✅ FIXED 2026-09-22 (owner go): the confirm is now an IN-SHEET overlay,
-   *    rendered inside this component's own <Modal supportedOrientations={ALL_ORIENTATIONS}> — the same shape
+   *    rendered inside this component's own <Modal> — the same shape
    *    PrePaywallPrompt's `embedded` mode uses, and for the same reason. It
    *    cannot land behind the sheet because it is not a separate window, and
    *    the sheet stays mounted so the image capture still works. The pending
@@ -304,7 +304,7 @@ export function ShareTermSheet({
       //
       // ⛔ CLOSE FIRST — the same rule the three call sites above follow, and
       // the only one of the four that was still breaking it. `.finally` returns
-      // to the main view but leaves the <Modal supportedOrientations={ALL_ORIENTATIONS}> MOUNTED, so a notice raised
+      // to the main view but leaves the <Modal> MOUNTED, so a notice raised
       // here is drawn on the activity window UNDERNEATH the sheet on Android
       // and the user simply watches the picker close with no explanation. The
       // selection is unaffected either way; this is only about whether the
