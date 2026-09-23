@@ -29,7 +29,7 @@ const sessionShownIntros = new Set<IntroKey>();
  *   memory, resets on relaunch) rather than once-ever (persisted). Used to give
  *   free users a per-session Commitment popup while paid users see it once.
  */
-export function useScreenIntro(key: IntroKey, sessionOnly = false) {
+export function useScreenIntro(key: IntroKey, sessionOnly = false, hold = false) {
   const [visible, setVisible] = useState(false);
   // Suppression: NOTHING shows when the dev kill-switch is on OR Low-Light
   // Production Mode is engaged — this wins even over DEV_BYPASS.alwaysShowIntros.
@@ -81,7 +81,20 @@ export function useScreenIntro(key: IntroKey, sessionOnly = false) {
     }
   }, [key, sessionOnly]);
 
-  return { visible: visible && focused && !suppressed, dismiss };
+  /**
+   * ⛔ `hold` DEFERS, IT DOES NOT RETIRE (owner 2026-09-22: "fix the overlays").
+   *
+   * On a fresh install the Glossary drew its welcome card AND the device-key
+   * consent dialog at the same moment, text through text — both illegible, with
+   * AGREE and NOT NOW buried in the middle of a paragraph. Two overlays, each
+   * correct on its own, neither aware of the other.
+   *
+   * A host passes `hold` while something else owns the screen. Crucially this
+   * only suppresses the RENDER: `dismiss` is what persists the seen flag, so an
+   * intro held here is not consumed — it appears the moment the blocking thing
+   * resolves, which is the whole point. Same shape as `suppressed` above.
+   */
+  return { visible: visible && focused && !suppressed && !hold, dismiss };
 }
 
 export function IntroSheet({
@@ -158,13 +171,17 @@ export function ScreenIntroOverlay({
   introKey,
   delayMs = 0,
   sessionOnly = false,
+  hold = false,
 }: {
   introKey: IntroKey;
   delayMs?: number;
   /** Show once per app session (resets on relaunch) instead of once-ever. */
   sessionOnly?: boolean;
+  /** Hold the intro back while the host has something more important on
+   *  screen — a consent dialog, a lock. DEFERS; never marks it seen. */
+  hold?: boolean;
 }) {
-  const { visible, dismiss } = useScreenIntro(introKey, sessionOnly);
+  const { visible, dismiss } = useScreenIntro(introKey, sessionOnly, hold);
   if (!visible) return null;
   return <IntroSheet introKey={introKey} onDismiss={dismiss} delayMs={delayMs} />;
 }

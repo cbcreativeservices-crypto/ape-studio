@@ -3672,8 +3672,17 @@ ${COPY.glossaryFreeAllowance}`,
         }}
       />
 
-      {/* Glossary intro placeholder (Booth 2026-07-18). */}
-      <ScreenIntroOverlay introKey="glossary" />
+      {/* Glossary intro placeholder (Booth 2026-07-18).
+          ⛔ HELD until the reader can actually use the glossary (owner
+          2026-09-22). On a fresh install this drew at the same instant as the
+          device-key consent dialog — two overlays through each other, AGREE and
+          NOT NOW lost inside a paragraph of welcome copy. It is held for the
+          whole key decision ('unknown' while probing, 'ask' while the dialog is
+          up, 'mint' mid-mint, 'declined' behind the NOT NOW card) and for the
+          weekly lock, because an intro about using the glossary makes no sense
+          on top of something saying you cannot. Holding only defers it — the
+          seen flag is written on dismiss, so it still appears, once, after. */}
+      <ScreenIntroOverlay introKey="glossary" hold={keyState !== 'ready' || locked} />
       {/* Weekly-lookup HARD LOCK over the dimmed glossary (owner 2026-09-10). */}
       {lockOverlay}
       {deviceKeyOverlay}
