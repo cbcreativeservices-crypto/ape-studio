@@ -81,3 +81,32 @@ takes three dismissals before the app responds to navigation again.
 ## Orientation lock behaviour
 Fullscreen SPL forced `ROTATION_90` and exiting restored `ROTATION_0`.
 The mic released on exit (dosimeter stopped counting).
+
+## Study machinery — REAL PROGRESS MADE (guest, unsaved) ✅
+A guest CAN study the free topics, which got much further than expected.
+
+**Pro Audio Safety** (TOPIC 2 OF 2, auto-enrolled):
+- **Flashcards: 233 / 233 cards, 100% COMPLETE.** Swept the whole deck; `pid`
+  constant, 0 FATAL, no jank.
+- Completion popup fired correctly: **"NICE WORK! — FLASHCARD DECK COMPLETE"**,
+  a CENTRED popup (matches the popups-not-pulldowns rule).
+- **THE POWER SEQUENCE WORKS.** Before: only FLASHCARDS had START. After
+  completing it: FLASHCARDS → REVIEW, and **FILL IN THE BLANK + MATCHING both
+  gained START**. Overall topic progress moved 0% → **25%**.
+- **Fill in the Blank: 10 questions answered, ALL 10 CORRECT** (progress tracked
+  0% → 4%, i.e. every answer registered). Content spot-check was excellent —
+  OSHA Competent Person, noise dose D=100×Σ(C/T), HAVS finger blanching,
+  cheater plug as a ground-lift violation. All technically accurate and the
+  distractors were plausible without being ambiguous.
+
+⚠️ SCOPE, STATED PLAINLY: "every term, every question" is not reachable in a day.
+This topic alone is 233 cards + 233 fill-in-blank questions, and there are 166
+live topics averaging 195 terms. Answering one question costs ~2 UI round trips;
+233 questions is ~470, and the full corpus is ~32,000 terms. What is proven is
+that the machinery and the content are sound, not that every item was visited.
+
+## Correction to my own method
+An early crash check counted `AndroidRuntime: ` lines and appeared to show
+5 → 10 → 15 "fatals" across tab navigation. Those were **my own `uiautomator`
+dumps** starting a VM (5 lines each), not the app. Real crashes log
+`FATAL EXCEPTION`; that count has been **0 everywhere all session**.
