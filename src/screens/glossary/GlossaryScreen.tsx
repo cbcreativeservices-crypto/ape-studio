@@ -1704,6 +1704,11 @@ ${COPY.glossaryFreeAllowance}`,
   // pushes) — the list/scroll position beneath is untouched by design, and the
   // STUDY-tab nav rules stay unviolated.
   const [popupTrail, setPopupTrail] = useState<{ id: string; offset: number }[]>([]);
+
+  /** Is a definition open right now — an expanded row in LIST view, or the
+   *  card popup in CARDS view? Both are "expanded and viewed" to a reader.
+   *  Declared here because popupTrail is, and the search field reads it. */
+  const anyExpanded = expandedIds.size > 0 || popupTrail.length > 0;
   const [chooser, setChooser] = useState<string[] | null>(null); // ambiguous sense ids
   const popupScrollRef = useRef<ScrollView>(null);
   const popupScrollY = useRef(0);
@@ -2771,7 +2776,12 @@ ${COPY.glossaryFreeAllowance}`,
         {/* Search glyph always on the left (Booth 2026-07-15). */}
         <Text style={styles.searchGlyph}>⌕</Text>
         <TextInput
-          style={[styles.searchInput, searchGreen && styles.searchInputDone]}
+          style={[
+            styles.searchInput,
+            searchGreen && styles.searchInputDone,
+            // Bold while a definition is open; back to regular when it closes.
+            anyExpanded && styles.searchInputExpanded,
+          ]}
           value={search}
           onChangeText={onSearchChange}
           placeholder="Search by term"
@@ -3744,18 +3754,22 @@ const styles = StyleSheet.create({
   searchInput: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 15, color: colors.textPrimary, paddingVertical: 0 },
   // GREEN once a search has settled and its results are shown (owner 2026-08-01).
   /**
-   * The settled search text matches the HIGHLIGHT it produced (owner
-   * 2026-09-22: it "should go bold and the same brighter green when matching
-   * the visible Lis on the screen below in the definitions").
-   *
-   * Measured in the browser, the colour was ALREADY identical — rgb(55,224,95)
-   * in both places. What made the typed text look duller was weight alone:
-   * Barlow_400Regular in the field against Barlow_500Medium in the definition
-   * highlight. So this is a font change, not a colour one, and it takes the
-   * exact family the highlight uses rather than a guess at "bolder" — the two
-   * are meant to read as the same thing.
+   * The settled search text turns the same green as the highlight it produced.
+   * Measured in the browser: the colour was ALREADY identical in both places —
+   * rgb(55,224,95) — so only the WEIGHT ever differed.
    */
-  searchInputDone: { color: '#37e05f', fontFamily: fonts.barlowMedium },
+  searchInputDone: { color: '#37e05f' },
+  /**
+   * BOLD ONLY WHILE A DEFINITION IS OPEN (owner 2026-09-22: "expanded def =
+   * bold. compacted definitions = regular").
+   *
+   * The weight tracks the reading state, not the search state: it thickens
+   * while a definition is expanded and drops back the moment it closes, so the
+   * field echoes what the reader is actually looking at. An earlier pass tied
+   * it to the search having settled, which left it permanently bold and said
+   * nothing.
+   */
+  searchInputExpanded: { fontFamily: fonts.barlowSemiBold },
   // Constrain the horizontal filter scroller so it can't grow to fill the
   // column and shove the list down (Booth 2026-07-09 black-gap fix).
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, alignItems: 'center' },
