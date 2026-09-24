@@ -1822,6 +1822,31 @@ export function DashboardScreen() {
           // flashcards; scenarios only after both of those too (owner 2026-08-13).
           const powered =
             m.key === 'flashcards' ? true : m.key === 'scenarios' ? scenariosPowered : homeworkPowered;
+          /**
+           * ⛔ THE WHOLE PANEL ANSWERS A TAP WHEN IT IS POWERED OFF.
+           *
+           * Tester report 2026-09-23 (Jason, iPhone 17): "Got stuck here
+           * couldn't press any buttons" — on this very rack, at 0%.
+           *
+           * The lock DID already explain itself, but only from the switch cap:
+           * an 89pt square at the right edge. The rest of the panel — the icon,
+           * the title, the subtitle, the LED meter, i.e. everything that looks
+           * like the thing you would press — was inert. Tap the panel, get
+           * nothing, conclude the screen is dead. Which is exactly what he did.
+           *
+           * The cap keeps its own Pressable and still wins for its own area
+           * (the innermost responder does), so this only gives an answer to the
+           * taps that previously fell into silence.
+           */
+          const RowTag = (powered ? View : Pressable) as React.ElementType;
+          const rowTapProps = powered
+            ? {}
+            : {
+                onPress: () => explainLock(m.key as LockedPanel),
+                // The cap already carries the spoken label for screen readers;
+                // a second focus stop on the same row would just be noise.
+                accessible: false,
+              };
           return (
             // 3D console-key frame (Booth 2026-07-09): raised while incomplete,
             // DEPRESSED (indented) once at 100%. Unavailable methods (ear
@@ -1847,7 +1872,7 @@ export function DashboardScreen() {
                 {/* Layout (Booth 2026-07-09e): a flex LEFT column (title row +
                     a PARTIAL-width LED meter) with a SQUARE action button on the
                     right. The LED no longer spans the full container width. */}
-                <View style={styles.methodRow}>
+                <RowTag style={styles.methodRow} {...rowTapProps}>
                   {/* Icon in its recessed well. The glyph is always lit; the
                       ICON TILE's own thin line stays OFF (default faint line)
                       while the method still needs work, and LIGHTS (70% glow)
@@ -1953,7 +1978,7 @@ export function DashboardScreen() {
                     // on touch but opens nothing (Booth 2026-07-11).
                     <SwitchButton label="" a11yLabel="Locked — complete the earlier study methods first" variant="clear" width={89} height={RACK_SWITCH_H} disabled />
                   )}
-                </View>
+                </RowTag>
               </ElevatedFrame>
             </View>
           );
