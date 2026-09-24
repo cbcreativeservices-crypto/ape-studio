@@ -145,3 +145,45 @@ post-retake count, ideally signed in so the session survives.
 2. Credential tabs appearing not to switch — my tap coordinates were stale; the
    tab row moves down when the screen shows a title. With correct coordinates
    every tab switches correctly.
+
+---
+
+# 2026-09-24 — VERIFIED ON DEVICE, SIGNED IN (anorak)
+
+The owner signed in, which unlocked the member-gated Sound Playground — the one
+screen I could not reach as a guest, and the one both crashes live on.
+
+## ✅ Crash 1 — pink noise. FIXED, exact repro driven.
+Owner's original sequence, reproduced step for step:
+`SOURCE → SQUARE` (they said this worked) → `PINK NOISE` (they said this crashed).
+
+Result: **no crash.** pid constant, 0 FATAL / 0 "Tried to synchronously call".
+The noise waveform draws and the spectrum shows the pink −3 dB/oct slope —
+i.e. the `hash()` worklet path that used to abort is rendering.
+WHITE and BROWN also cycled clean.
+
+## ✅ Crash 2 — the Sentry one (`gainDbAt`). FIXED.
+Condition: a WAVE selected **plus EQ on** — the branch a guest could never reach.
+`SQUARE` + `FX → LPF 500 Hz`.
+
+Result: **no crash.** The spectrum header reads **"EQ APPLIED"** and the square
+wave visibly rounds off as its harmonics are attenuated. That is the EQ-weight
+computation that Sentry recorded aborting, now running from the JS thread.
+
+## ✅ HIDE DISPLAY (owner's ruling) — works, and holds.
+- Tapped **▴ HIDE DISPLAY**: the glass disappears, the lesson takes the screen —
+  TRY THIS, the level meter, the full prose AND the CHECK YOURSELF question all
+  visible at once, where before they were crammed into a ~140pt well.
+- **The readouts and the honesty badge stayed** (FREQ/λ/PERIOD/LEVEL and
+  "CONCEPTUAL MODEL — … NOT MEASURED"). The disclosure was never the thing hidden.
+- **Persisted across labs**: opened a different lab (Foundations of Sound) and it
+  was already collapsed.
+- **Persisted across MODULE changes**: NEXT ×2 → Module 3/14, still collapsed.
+  This was the engineered-for failure mode (the frame remounts per module) and it
+  held.
+- **▾ SHOW DISPLAY restored it**: the AIR particle field and PRESSURE wave are
+  animating again. Control measured **52pt tall** — above the 44pt minimum.
+
+## Not done, and why
+I did NOT use the saved-password sheet that Android offered for the account. The
+owner signed in themselves.

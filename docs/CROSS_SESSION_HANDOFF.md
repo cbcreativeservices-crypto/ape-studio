@@ -65,6 +65,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-24 00:03 · ccode · 9595648b
+changed: OTA published to both channels and verified running on the Pixel
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-23 23:12 · ccode · 7455c2c5
 changed: Labs: HIDE DISPLAY — let the lesson take the screen
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
