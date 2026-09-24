@@ -1,3 +1,14 @@
+## 2026-09-24 — ccode -> A: SUBMIT iOS BUILD 30 TO TESTFLIGHT (owner's instruction)
+
+- **ACTION FOR A:** submit **iOS 1.0.0 (30)** to TestFlight and release it to the **alpha testers** group (23 testers). EAS build id `3df55473-ec12-4a86-b50c-8feaae1e6887`, project `@cbcreativeservices/ape-studio`, bundle `com.cbcreativeservices.apestudio`, profile/channel `production`. Status FINISHED, sitting unsubmitted. A finished build puts NOTHING in front of a tester.
+  - CLI route: `cd C:\Users\profe\dev\ape-studio; npx eas-cli submit --platform ios --id 3df55473-ec12-4a86-b50c-8feaae1e6887`
+  - Full brief incl. suggested "What to Test" copy: `Downloads/2026-09-24_COMP_A_SUBMIT_BUILD_30.md`
+- **CANCELLED:** the build-28 dSYM request (`Downloads/2026-09-24_COMP_A_BUILD28_DSYM_REQUEST.md`) is DEAD — do not work it. Builds 24/29/30 share one binary UUID (`3e1c1a45-ead7-3283-be64-b6d9b8274a44`), so build 30 is already fully symbolicated on Sentry; all 9 dSYMs verified present on the server. Submitting 30 moves testers off 28 and makes its missing symbols irrelevant.
+- **WHY IT IS URGENT:** `eas.json` gained `ios.buildArtifactPaths`, which moved the runtime fingerprint on BOTH platforms (ios `e65788533c` -> `64a7eddf33`, android `78622e4e4f` -> `02255b7bae`). Everyone on build 28 is now on an orphaned runtime — an `eas update` to them reaches ZERO devices and still reports success. Build 30 is the ONLY way any fix reaches a tester right now.
+- **Contents:** 14 commits since build 29 — 2 crash fixes (pink noise, SPL colour wheel), all 6 tester screenshot reports, HIDE DISPLAY, modal-layering sweep. Verified pre-build: tsc clean, 1,911 tests pass / 0 fail, no rollback on either channel. Post-build the runtime fingerprint was confirmed to match the prediction exactly.
+- **Scope limit:** nothing else in App Store Connect is requested — no metadata, no review submission, no listing changes.
+- Android preview build also FINISHED (runtime `02255b7bae`); owner still needs to install it on the Pixel. Migration `2026092301_own_topic_enrollments_read.sql` APPLIED and verified live (grant + policy both present, qual resolving through `users.auth_id` -> `users.id`).
+
 ## 2026-09-21 — A: Lab-Gaps ccode handoff UPDATED (absorbed B's verification note)
 - B verified the ccode handoff bundle: return JSON byte-identical (md5 c72ae561...), A's collision overlay cross-checks clean, partition 128-4-3=121 holds. No conflicts.
 - A resolved B's 4 fuzzy-collision flags live (equality couldn't catch). TWO are real same-topic neighbors ccode must judge distinct-or-map: (1) 'Dynamic processing' [3350] vs existing 'Dynamics processors' bd86613c [3350]; (2) 'Beating' [3020] vs existing 'Beat Frequency' 29964684 [3020] + 'Beat-frequency interference' 33a220a7 [3020] (do NOT map to Binaural beats [4280]). The other 2 (Harmonograph->Lissajous 3020, Drumhead->4570) already handled by the handoff's secondary maps.
