@@ -21,6 +21,7 @@
  * every entry point is covered — the six tool screens link straight in.
  */
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
+import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 // `Alert` is imported by nobody here any more — the only mention is a comment
 // explaining why confirmDialog replaced it. Dropped with the Modal swap.
 import { FlatList, Pressable, Share, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
@@ -556,7 +557,7 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
     return (
       <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
         <View style={styles.header}>
-          <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
+          <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
             <Text style={styles.back}>‹</Text>
           </Pressable>
           <View style={{ flexShrink: 1 }}>
@@ -575,7 +576,7 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
+        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flexShrink: 1 }}>

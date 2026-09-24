@@ -35,6 +35,7 @@
  *  - leaving the screen stops the generator AND re-locks the cap.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Defs, Line, LinearGradient, Path, Stop } from 'react-native-svg';
@@ -701,7 +702,7 @@ export function SignalGenScreen({ navigation }: Props) {
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
+        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>

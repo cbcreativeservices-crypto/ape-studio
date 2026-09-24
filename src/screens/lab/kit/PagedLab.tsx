@@ -15,6 +15,7 @@
  *   PageDef  { title, short, Component, manualDone? }
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type JSX } from 'react';
+import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { AccessibilityInfo, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ScrollLockProvider } from '../scrollLock';
 import { useNavigation } from '@react-navigation/native';
@@ -212,7 +213,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone }: {
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} style={styles.backBtn} hitSlop={6} accessibilityRole="button" accessibilityLabel="Leave the lab">
+        <Pressable onPress={() => navigation.goBack()} style={styles.backBtn} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Leave the lab">
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flex: 1 }}>

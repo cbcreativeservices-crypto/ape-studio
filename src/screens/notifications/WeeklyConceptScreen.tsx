@@ -3,6 +3,7 @@
  * Shows the misconception first, then the correction. Matches Settings modal chrome.
  */
 import { useEffect, useState } from 'react';
+import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -54,7 +55,7 @@ export function WeeklyConceptScreen({ navigation, route }: Props) {
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <View style={styles.headerBar}>
         <Text accessibilityRole="header" style={styles.headerTitle}>WEEKLY CONCEPT</Text>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close">
+        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Close">
           <Text style={styles.close}>✕</Text>
         </Pressable>
       </View>

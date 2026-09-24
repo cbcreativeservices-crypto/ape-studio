@@ -26,6 +26,7 @@
  *    on unmount (§18: no DSP behind a closed screen).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { AccessibilityInfo, Animated, BackHandler, Pressable, ScrollView, StatusBar, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { animationsAllowed } from '../../features/settings/a11y';
 import { CoachMark } from '../../components/CoachMark';
@@ -1720,7 +1721,7 @@ export function SplMeterScreen({ navigation }: Props) {
             {/* Back button (owner 2026-08-19): the SPL Meter HOME is the meter's
                 landing view — without this the user was stuck with no way out.
                 Exits the tool (back to the tool intro). */}
-            <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back" style={styles.vuModalBack}>
+            <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back" style={styles.vuModalBack}>
               <Text style={styles.back}>‹</Text>
             </Pressable>
             <Text style={styles.vuModalTitle}>SPL METER HOME</Text>

@@ -10,6 +10,7 @@
  * rule); hitting a limit routes to the Paywall, never a silent failure.
  */
 import { useCallback, useEffect, useState } from 'react';
+import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -212,7 +213,7 @@ export function CalcWorkflowsScreen() {
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
+        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flex: 1 }}>

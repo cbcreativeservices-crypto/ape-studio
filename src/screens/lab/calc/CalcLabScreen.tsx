@@ -5,6 +5,7 @@
  * IN DEVELOPMENT ("coming soon") — never presented as available.
  */
 import { useCallback, useEffect, useState } from 'react';
+import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { ImageBackground, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
@@ -74,7 +75,7 @@ export function CalcLabScreen() {
   return (
     <ImageBackground source={BG_CALC} style={[styles.root, { paddingTop: insets.top + 10 }]} imageStyle={styles.bgImage}>
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
+        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
         {/* Lab glyph: the purple Σ that brands the Audio Calculator Lab (matches

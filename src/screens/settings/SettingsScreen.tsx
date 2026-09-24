@@ -14,6 +14,7 @@
  * Writes are immediate; there is no Save button.
  */
 import { useCallback, useEffect, useState } from 'react';
+import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { ActivityIndicator, Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { confirmDialog, notify } from '../../lib/confirm';
 import { Modal } from '../../components/DimModal';
@@ -416,7 +417,7 @@ ${LOCAL_LOSS}`
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <View style={styles.headerBar}>
         <Text accessibilityRole="header" style={styles.headerTitle}>SETTINGS</Text>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close settings">
+        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Close settings">
           <Text style={styles.close}>✕</Text>
         </Pressable>
       </View>

@@ -16,6 +16,7 @@
  * grant an exam it shouldn't.
  */
 import { useCallback, useEffect, useState } from 'react';
+import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { supabase } from '../../lib/supabase';
 import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../../features/commercial/realAccount';
@@ -124,7 +125,7 @@ export function AwardProgressScreen({ navigation, route }: Props) {
   // failed the user still needs the ‹ control, not a bare spinner.
   const headerBar = (
     <View style={styles.headerBar}>
-      <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
+      <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
         <Text style={styles.back}>‹</Text>
       </Pressable>
       <Text style={styles.headerKicker}>

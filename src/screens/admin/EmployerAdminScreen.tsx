@@ -30,6 +30,7 @@
  * does. Hiding it from non-admins is a courtesy, not a control.
  */
 import { useCallback, useEffect, useState } from 'react';
+import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -128,7 +129,7 @@ export function EmployerAdminScreen() {
   return (
     <View style={[s.root, { paddingTop: insets.top + 8 }]}>
       <View style={s.head}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={16} accessibilityRole="button" accessibilityLabel="Back">
+        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={s.back}>‹</Text>
         </Pressable>
         <View style={{ flex: 1 }}>

@@ -12,6 +12,7 @@
  * only chooses the path.
  */
 import { ImageBackground, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -65,7 +66,7 @@ export function AudioLearningScreen({ navigation }: Props) {
       <CompactBrandBar />
 
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
+        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>

@@ -7,6 +7,7 @@
  * terms, OS share sheet, and the Calculation Chain (SEND → / USE).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { Alert, Pressable, Share, StyleSheet, Text, View, type ScrollView } from 'react-native';
 import { confirmDialog, notify } from '../../../lib/confirm';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -255,7 +256,7 @@ export function CalcWorkspaceScreen() {
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
+        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>

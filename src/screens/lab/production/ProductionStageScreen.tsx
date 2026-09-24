@@ -7,6 +7,7 @@
  * broken and should be fixed here rather than worked around.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { AccessibilityInfo, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -149,7 +150,7 @@ export function ProductionStageScreen() {
       keyboardVerticalOffset={insets.top + 8}
     >
       <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
+        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flex: 1 }}>

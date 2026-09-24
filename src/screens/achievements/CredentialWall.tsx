@@ -11,6 +11,7 @@
  * (the in-progress checklist + Final Exam gate) rather than duplicating it.
  */
 import { useCallback, useState } from 'react';
+import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -99,7 +100,7 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScrollView contentContainerStyle={styles.scroll}>
         <View style={styles.headerRow}>
-          <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back" style={styles.backBtn}>
+          <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back" style={styles.backBtn}>
             <Text style={styles.back}>‹</Text>
           </Pressable>
           <Text style={styles.title}>{title}</Text>

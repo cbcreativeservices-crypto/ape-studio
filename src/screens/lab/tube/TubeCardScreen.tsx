@@ -20,6 +20,7 @@
  * paging snappy.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import {
   ActivityIndicator,
   Animated,
@@ -374,7 +375,7 @@ export function TubeCardScreen() {
     return (
       <View style={[styles.root, { paddingTop: insets.top + 10, paddingHorizontal: 16 }]}>
         <View style={styles.lockHeader}>
-          <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
+          <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
             <Text style={styles.back}>‹</Text>
           </Pressable>
           <Text style={styles.barTitle}>TUBE REFERENCE</Text>
@@ -397,7 +398,7 @@ export function TubeCardScreen() {
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
       {/* FIXED nav bar — ABOVE the image, its own space (owner 2026-08-10). */}
       <View style={styles.navBar}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={12} accessibilityRole="button" accessibilityLabel="Back to the tube list">
+        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back to the tube list">
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flex: 1 }}>

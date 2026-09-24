@@ -16,6 +16,7 @@
  * users neither restore nor persist (house guest rule).
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
@@ -268,7 +269,7 @@ export function CableInstallLabScreen() {
   return (
     <View style={styles.root}>
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
+        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>

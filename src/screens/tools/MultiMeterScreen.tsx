@@ -51,6 +51,7 @@
  *  only at its own ~6 Hz column push (React.memo keyed by history reference).
  */
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
+import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { AppState, Image, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { Modal } from '../../components/DimModal';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -1153,7 +1154,7 @@ export function MultiMeterScreen({ navigation }: Props) {
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
+        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>

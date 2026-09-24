@@ -4,6 +4,7 @@
  * 2026-07-18): ABOUT · OUR PROMISE · CREDITS · CONTACT.
  */
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import Constants from 'expo-constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -20,7 +21,7 @@ export function AboutScreen({ navigation }: Props) {
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <View style={styles.headerBar}>
         <Text accessibilityRole="header" style={styles.headerTitle}>ABOUT</Text>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close">
+        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Close">
           <Text style={styles.close}>✕</Text>
         </Pressable>
       </View>

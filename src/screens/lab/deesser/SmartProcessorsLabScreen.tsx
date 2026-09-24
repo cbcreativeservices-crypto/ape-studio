@@ -5,6 +5,7 @@
  * "Coming Soon" on 2026-09-17 — see labCatalog).
  */
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -44,7 +45,7 @@ export function SmartProcessorsLabScreen() {
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
+        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
