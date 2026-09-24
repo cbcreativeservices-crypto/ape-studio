@@ -1029,7 +1029,28 @@ export function FlashcardsScreen({ navigation, route }: Props) {
         // closing has to return to the exact card (Booth 2026-07-18).
         if (stateRef.current.linkedOpen) return false;
         const horizontal = Math.abs(g.dx) > 16 && Math.abs(g.dx) > Math.abs(g.dy) * 1.2;
-        const vertical = Math.abs(g.dy) > 16 && stateRef.current.level === 0;
+        /**
+         * ⛔ `!reviewMode` IS LOAD-BEARING (tester report 2026-09-23).
+         *   Jason: "couldn't scroll down on the flashcard"
+         *   Frank: "The definition is cut off and I can't scroll any lower.
+         *           I have to go to full screen to see it."
+         *
+         * Vertical is claimed on the TERM side so a swipe ↑ reveals. The test
+         * used to be `level === 0` alone — but the SOLO / open-study view
+         * (the eyeball) shows term AND definition together while `level` is
+         * still 0. So on the one view whose whole point is reading a long
+         * definition, this responder took the vertical axis and the text
+         * ScrollView beneath it never received a single drag.
+         *
+         * `stateRef.current.reviewMode` is `reviewMode || soloReveal`, so this
+         * releases the axis whenever a definition is actually on screen, and
+         * keeps swipe-to-reveal on the bare term card where it belongs.
+         * The comment above this responder had ALREADY stated the rule —
+         * "on definition views the vertical axis belongs to the text
+         * ScrollView" — it just did not cover the solo view.
+         */
+        const vertical =
+          Math.abs(g.dy) > 16 && stateRef.current.level === 0 && !stateRef.current.reviewMode;
         return horizontal || vertical;
       },
       onPanResponderRelease: (_e, g) => {
@@ -1751,6 +1772,13 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                     </View>
                   ) : null}
                   <Text accessibilityRole="header" style={styles.fsTermSmall}>{card.term}</Text>
+                  {/* WHICH SECTION AM I READING? (tester report 2026-09-23,
+                      Frank: "you can't see the sub category such as definition
+                      or common mistake in full screen.") The in-card view has
+                      always shown this eyebrow; full screen dropped it, so the
+                      reader could carousel between DEFINITION, PLAIN ENGLISH
+                      and COMMON MISTAKES with nothing saying which was which. */}
+                  <Text style={styles.fsEyebrow}>{LEVEL_LABELS[Math.max(0, level - 1)]}</Text>
                   {/* Term image in the full-screen reveal too (user request
                       2026-07-18) — it only rendered in the study sheet before. */}
                   {showMedia && mediaByItem[card.id] && !badImages.has(card.id) ? (
@@ -2015,6 +2043,14 @@ const styles = StyleSheet.create({
   tlCloseText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.4, color: colors.textSubAlt },
   fsTerm: { fontFamily: fonts.oswaldMedium, fontSize: 36, letterSpacing: 0.5, color: colors.textPrimary, textAlign: 'center' },
   fsTermSmall: { fontFamily: fonts.oswaldMedium, fontSize: 25, color: colors.amber, textAlign: 'center', marginBottom: 16 },
+  fsEyebrow: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 12,
+    letterSpacing: 1.8,
+    color: colors.amberLabel,
+    textAlign: 'center',
+    marginBottom: 14,
+  },
   fsDef: { fontFamily: fonts.barlowMedium, fontSize: 22, lineHeight: 34, color: colors.textSecondary, textAlign: 'center' },
   center: { flex: 1, backgroundColor: colors.screenBg, alignItems: 'center', justifyContent: 'center', gap: 16, padding: 24 },
   errorText: { fontFamily: fonts.barlowRegular, fontSize: 14, color: colors.textSub, textAlign: 'center' },

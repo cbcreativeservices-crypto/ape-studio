@@ -15,7 +15,7 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
-import { ActivityIndicator, Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { confirmDialog, notify } from '../../lib/confirm';
 import { Modal } from '../../components/DimModal';
 import Constants from 'expo-constants';
@@ -113,6 +113,22 @@ export function SettingsScreen({ navigation }: Props) {
   const [redeemOpen, setRedeemOpen] = useState(false);
   const [redeemCode, setRedeemCode] = useState('');
   const [redeemBusy, setRedeemBusy] = useState(false);
+  /** Is the soft keyboard up? Drives the backdrop's two-stage dismiss above. */
+  const [keyboardUp, setKeyboardUp] = useState(false);
+  useEffect(() => {
+    const show = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      () => setKeyboardUp(true),
+    );
+    const hide = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      () => setKeyboardUp(false),
+    );
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
   const isMember = entitlement === 'academy';
   // A no-account GUEST is not a "free account" (QA night 2026-09-01): Settings
   // showed them FREE status, an empty Student ID, a Log out row and a DELETE
@@ -949,7 +965,39 @@ ${LOCAL_LOSS}`
       <Modal accessibilityViewIsModal visible={redeemOpen} transparent animationType="fade" onRequestClose={() => setRedeemOpen(false)}>
         {/* Scrim is NOT an accessible button (QA night 2026-09-01): as one it
             wrapped the card's real buttons — invalid nesting + SR trap. */}
-        <Pressable accessible={false} style={styles.modalBackdrop} onPress={() => !redeemBusy && setRedeemOpen(false)}>
+        {/**
+          * ⛔ TAPPING OUTSIDE MUST DISMISS THE KEYBOARD, NOT THE DIALOG.
+          *
+          * Tester report 2026-09-23 (Frank, iPhone SE): "When you finish typing
+          * in the code, you can't make the keyboard disappear to press the
+          * redeem button — if you press anywhere outside the box, it cancels it."
+          *
+          * Exactly right. The keyboard covers the REDEEM button on a 667pt
+          * screen, and the one gesture everybody uses to put a keyboard away —
+          * tap the background — was wired straight to "close and discard".
+          * So the code could be typed and then never submitted.
+          *
+          * Now the backdrop dismisses the keyboard FIRST and only closes on a
+          * second tap, the card lifts clear of the keyboard, and the keyboard's
+          * own `done` key submits so the button need not be reached at all.
+          */}
+        <Pressable
+          accessible={false}
+          style={styles.modalBackdrop}
+          onPress={() => {
+            if (redeemBusy) return;
+            if (keyboardUp) {
+              Keyboard.dismiss();
+              return;
+            }
+            setRedeemOpen(false);
+          }}
+        >
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            style={styles.modalAvoider}
+            pointerEvents="box-none"
+          >
           <Pressable accessible={false} style={styles.modalCard} onPress={() => {}}>
             <Text style={styles.modalTitle}>REDEEM A CODE</Text>
             <Text style={styles.modalBody}>
@@ -962,6 +1010,8 @@ ${LOCAL_LOSS}`
               onChangeText={setRedeemCode}
               placeholder="Enter your code"
               autoCapitalize="characters"
+              returnKeyType="done"
+              onSubmitEditing={submitRedeem}
             />
             {redeemBusy ? (
               <View style={{ height: 48, alignItems: 'center', justifyContent: 'center' }}>
@@ -974,6 +1024,7 @@ ${LOCAL_LOSS}`
               </View>
             )}
           </Pressable>
+          </KeyboardAvoidingView>
         </Pressable>
       </Modal>
 
@@ -1054,6 +1105,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 24,
   },
+  modalAvoider: { width: '100%', alignItems: 'center', justifyContent: 'center' },
   modalCard: {
     width: '100%',
     maxWidth: 420,

@@ -29,6 +29,8 @@ export function TextField({
   autoCapitalize = 'none',
   keyboardType = 'default',
   editable = true,
+  returnKeyType,
+  onSubmitEditing,
 }: {
   label: string;
   value: string;
@@ -39,6 +41,12 @@ export function TextField({
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
   keyboardType?: KeyboardTypeOptions;
   editable?: boolean;
+  /** Label on the keyboard's action key — 'done' / 'go' / 'send'. Giving a
+   *  single-field form one of these is the only way to both DISMISS THE
+   *  KEYBOARD and submit without hunting for a button the keyboard is
+   *  covering (tester report 2026-09-23 — see SettingsScreen's redeem card). */
+  returnKeyType?: 'done' | 'go' | 'next' | 'search' | 'send';
+  onSubmitEditing?: () => void;
 }) {
   const [hidden, setHidden] = useState(password);
   const [focused, setFocused] = useState(false);
@@ -64,6 +72,8 @@ export function TextField({
           autoCorrect={false}
           keyboardType={keyboardType}
           editable={editable}
+          returnKeyType={returnKeyType}
+          onSubmitEditing={onSubmitEditing}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           accessibilityLabel={label}
