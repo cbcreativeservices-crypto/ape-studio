@@ -5,7 +5,8 @@
 
 ## Summary
 
-**5 of 6 real issues fixed and pushed. 1 left for you — it's a design call, not a bug.**
+**ALL 6 fixed and pushed.** Five were bugs; the sixth was a design call you made
+("let the display collapse so the lesson can take the screen") and it is now built.
 
 Every fix is committed with the tester's own words in the commit message, so the
 reason survives. tsc clean, **1,905 tests** green after each.
@@ -17,7 +18,7 @@ reason survives. tsc clean, **1,905 tests** green after each.
 | 3 | Frank | Full screen hides which section you're reading | ✅ fixed |
 | 4 | Frank | Redeem code — keyboard won't go away, tapping outside cancels | ✅ fixed |
 | 5 | Jason | "Got stuck here couldn't press any buttons" | ✅ fixed |
-| 6 | Frank | Only a small portion of the lesson screen scrolls | ⚠️ **your call** |
+| 6 | Frank | Only a small portion of the lesson screen scrolls | ✅ fixed (your ruling) |
 | — | You | App froze after a text message | already fixed earlier |
 
 ---
@@ -84,32 +85,39 @@ working as before, so nothing that already worked changed.
 
 ---
 
-## ⚠️ 6. The one I did NOT fix — I need your call
+## 6. "Only that small portion of the screen scrolls" — HIDE DISPLAY ✅
 
 Frank: *"It's hard to go through the lesson and question when it's only that
 small portion of the screen that scrolls."*
 
-He's right, and I measured it. In the lab frame the display is **pinned** at the
-top, the dock is pinned at the bottom, and the lesson text gets whatever is left:
+Measured: the display is pinned at the top and the dock at the bottom, leaving
+the lesson roughly **140pt on his iPhone SE** — about six lines, with the
+check-yourself question inside the same window.
 
-- On his **iPhone SE (667pt)**: roughly **140pt** of reading window — about six
-  lines of text, with the check-yourself question also inside it
-- On a Pixel 7 Pro it's comfortable, which is why neither of us hit it
+You chose: *let the display collapse so the lesson can take the screen.* Built.
 
-**I stopped because this is a design decision, not a defect.** The pinned-display
-layout is deliberate and tuned by you, and any fix changes how every lab looks:
+A **HIDE DISPLAY / SHOW DISPLAY** control now sits on the faceplate between the
+display and the lesson — on the faceplate, never floating over the glass, and in
+the wording your SPL meter already uses. It's 44pt tall by construction, because
+a control invented to fix a reading problem shouldn't repeat the back-button
+mistake.
 
-- **A)** Shrink the display further on short phones — simple, but every lab's
-  proportions change on small devices
-- **B)** Let the display collapse so the lesson can take the screen — best
-  reading experience, but adds a control to every lab
-- **C)** Let the whole page scroll on short phones only — most text, but the
-  display stops being pinned, which the current design explicitly promises
+Three details that make it actually work:
 
-I didn't want to redesign your labs overnight and unverified. Say which and I'll
-do it.
+- The display is **not rendered** while hidden — a zero-height canvas would still
+  be mounted and still drawing frames.
+- The lesson grows into the freed space **only** while hidden. Expanded, it still
+  wraps its content so the dock rides up under short lessons instead of leaving a
+  dead gap.
+- **The choice survives moving to the next module.** Labs build a fresh frame per
+  module, so plain state would have snapped back to open on every NEXT — collapse,
+  read, tap NEXT, display in your way again. It now persists across modules and
+  across a relaunch.
 
----
+⛔ **Hiding the display does not hide a disclosure.** The live readouts and the
+honesty badge ("illustrative — not live measurements", "ESTIMATED · UNCALIBRATED")
+stay on screen. Buying reading space by tucking away an accuracy notice is exactly
+what your standing rule forbids, and the guard test asserts it.
 
 ## Also worth knowing
 
@@ -122,4 +130,4 @@ do it.
   metadata, nothing beyond reading the feedback.
 
 **Commits:** `1223aecf` (back targets) · `c00cc6f5` (flashcards + redeem) ·
-`b3a46c21` (rack)
+`b3a46c21` (rack) · `7455c2c5` (hide display)

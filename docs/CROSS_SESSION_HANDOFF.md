@@ -65,6 +65,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-23 23:12 · ccode · 7455c2c5
+changed: Labs: HIDE DISPLAY — let the lesson take the screen
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-23 22:59 · ccode · b3a46c21
 changed: Tester report: "Got stuck here couldn't press any buttons" — the rack was mute
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
