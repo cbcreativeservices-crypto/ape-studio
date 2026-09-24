@@ -115,6 +115,15 @@ const KEEP: ReadonlySet<string> = new Set<string>([
    * Same trap as the line above; see the 2026-09-22 engineering lessons.
    */
   'ape:glossary:autoOffline',
+  /**
+   * "Hide the display" in the labs (2026-09-23). A reading preference about how
+   * much room the lesson gets — it records nothing about the account, no
+   * progress, no identity, no content. Swept by the generic `ape:*` rule it
+   * would silently spring the display back open for somebody who had chosen to
+   * read without it, on every boot that churns the identity marker. Same trap,
+   * and same ruling, as the two lines above.
+   */
+  'ape:lab:stageCollapsed',
   'ape:splCalOffset', // device mic calibration — hardware (governance R1)
   'ape:deviceId', // stable per-install id for single-device login (survives switch)
   'ape:dev:commercialMode', // dev-only override

@@ -19,8 +19,9 @@
  * During any lane drag a DRAG TAG rides the glass bottom edge with the live
  * value (the Faceplate graft) — the value is never hidden under the finger.
  */
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
@@ -34,6 +35,38 @@ import { ParamLane } from './ParamLane';
 import { STAGE_HEIGHTS, type DockParam, type RackStage } from './rackTypes';
 
 export type RackUnitApi = { setScrollLocked: (locked: boolean) => void };
+
+/**
+ * HIDE DISPLAY — give the lesson the whole screen.
+ *
+ * ⛔ TESTER REPORT 2026-09-23 (Frank, iPhone SE 3rd gen):
+ *   "It's hard to go through the lesson and question when it's only that
+ *    small portion of the screen that scrolls."
+ *
+ * Measured: the stage is pinned at the top and the dock at the bottom, so on a
+ * 667pt phone the well was left roughly 140pt — about six lines of prose, with
+ * the CHECK YOURSELF question living inside the same window. On a tall phone it
+ * is comfortable, which is why it went unnoticed.
+ *
+ * Owner's ruling (2026-09-23), choosing between shrinking the stage, collapsing
+ * it, or letting the whole page scroll: "let the display collapse so the lesson
+ * can take the screen."
+ *
+ * ⚠️ COLLAPSING HIDES THE GLASS ONLY. The bezel readouts and the honesty badge
+ * stay on screen. The badge is a disclosure ("illustrative — not live
+ * measurements", "ESTIMATED · UNCALIBRATED") and the standing accuracy rule does
+ * not let a disclosure be tucked away to win space.
+ *
+ * ⚠️ AND THE CHOICE HAS TO OUTLIVE THE MODULE. The lab screens mount a FRESH
+ * RackUnit per module (`<s.Rack key={s.key} …/>`), so component state alone
+ * would snap back to expanded on every NEXT — collapse, read, tap NEXT, and the
+ * display is in your way again. Hence a module-scope cache (survives the
+ * remount with no flash) written through to storage (survives a relaunch).
+ */
+const STAGE_COLLAPSED_KEY = 'ape:lab:stageCollapsed';
+/** Session cache — set before the first storage read resolves, so stepping
+ *  between modules never flashes the display back open. */
+let stageCollapsedCache: boolean | null = null;
 
 export function RackUnit({
   stage,
@@ -120,6 +153,33 @@ export function RackUnit({
       | Extract<DockParam, { kind: 'options' | 'group' }>
       | undefined) ?? null);
 
+  const [stageCollapsed, setStageCollapsed] = useState(stageCollapsedCache ?? false);
+  useEffect(() => {
+    if (stageCollapsedCache != null) return; // already known this session
+    let alive = true;
+    AsyncStorage.getItem(STAGE_COLLAPSED_KEY)
+      .then((v) => {
+        stageCollapsedCache = v === '1';
+        if (alive && stageCollapsedCache) setStageCollapsed(true);
+      })
+      .catch(() => {
+        /* a missing pref just means "expanded" */
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
+  const toggleStage = useCallback(() => {
+    setStageCollapsed((prev) => {
+      const next = !prev;
+      stageCollapsedCache = next;
+      AsyncStorage.setItem(STAGE_COLLAPSED_KEY, next ? '1' : '0').catch(() => {
+        /* the in-memory cache already carries it for this session */
+      });
+      return next;
+    });
+  }, []);
+
   const { height: winH } = useWindowDimensions();
   // Vertical budget (review 2026-08-23): the stage may never starve the dock.
   // Target = the declared size, auto-dropped one step on short viewports, then
@@ -143,6 +203,9 @@ export function RackUnit({
     <View style={[styles.root, { paddingBottom: insets.bottom }]}>
       {/* ── STAGE — pinned; structurally cannot leave the screen ─────────── */}
       <View style={styles.stageWrap} onLayout={(e) => setStageBlockH(Math.round(e.nativeEvent.layout.height))}>
+        {/* Not rendered at all when collapsed — a zero-height canvas would
+            still be mounted and still be drawing frames. */}
+        {stageCollapsed ? null : (
         <View style={[styles.glass, { height: glassH }]} onLayout={(e) => setGlassW(Math.round(e.nativeEvent.layout.width) - 2)}>
           {glassW > 0 ? stage.render(glassW, glassH - 2) : null}
           {/* Smoked-glass sheen (ToolsHub TileGlass language). Decorative. */}
@@ -160,6 +223,7 @@ export function RackUnit({
             </View>
           ) : null}
         </View>
+        )}
         {stage.bezel?.length || stage.onGuide ? (
           <BezelReadouts items={stage.bezel ?? []} onGuide={stage.onGuide} onHelp={onHelp} />
         ) : null}
@@ -176,13 +240,44 @@ export function RackUnit({
         ) : null}
       </View>
 
+      {/* HIDE / SHOW DISPLAY — the reading-space control. Sits on the
+          faceplate between the stage and the well, never floated over the
+          glass (owner 2026-08-23: nothing may hover over the display). House
+          wording, matching the SPL meter's HIDE CONTROLS / HIDE LED. */}
+      <Pressable
+        onPress={toggleStage}
+        style={styles.stageToggle}
+        // 44pt tall by construction — the lesson-reading control must not
+        // repeat the back-button mistake of being too small to hit.
+        hitSlop={{ top: 6, bottom: 6, left: 12, right: 12 }}
+        accessibilityRole="button"
+        accessibilityState={{ expanded: !stageCollapsed }}
+        accessibilityLabel={stageCollapsed ? 'Show the display' : 'Hide the display to read'}
+        accessibilityHint={
+          stageCollapsed
+            ? 'Brings the display back'
+            : 'Gives the lesson the whole screen; the readings stay on screen'
+        }
+      >
+        <Text style={styles.stageToggleText}>
+          {stageCollapsed ? '▾  SHOW DISPLAY' : '▴  HIDE DISPLAY'}
+        </Text>
+      </Pressable>
+
       {/* ── WELL — the only scroller. It wraps its CONTENT height (owner
              2026-08-23): collapse LAB NOTES and the dock rides up directly
              beneath it, leaving blank faceplate below — not a dead gap in the
              middle. Long content still shrinks to fit and scrolls. ─────────── */}
-      <View style={styles.wellWrap}>
+      {/* `flexGrow: 1` ONLY while collapsed: expanded, the well must keep
+          wrapping its content so the dock rides up under short lessons
+          (owner 2026-08-23) rather than leaving a dead gap in the middle. */}
+      <View style={[styles.wellWrap, stageCollapsed && styles.wellWrapGrow]}>
         <ScrollLockProvider value={setWellLocked}>
-          <ScrollView style={styles.wellScroll} contentContainerStyle={styles.well} scrollEnabled={!wellLocked}>
+          <ScrollView
+            style={[styles.wellScroll, stageCollapsed && styles.wellScrollGrow]}
+            contentContainerStyle={styles.well}
+            scrollEnabled={!wellLocked}
+          >
             {typeof children === 'function' ? children({ setScrollLocked: setWellLocked }) : children}
           </ScrollView>
         </ScrollLockProvider>
@@ -339,7 +434,26 @@ const styles = StyleSheet.create({
   // The well wraps its content (dock rides up under it) but shrinks + scrolls
   // when the content outgrows the space above the dock.
   wellWrap: { flexGrow: 0, flexShrink: 1 },
+  wellWrapGrow: { flexGrow: 1 },
   wellScroll: { flexGrow: 0 },
+  wellScrollGrow: { flexGrow: 1 },
+  stageToggle: {
+    minHeight: 44,
+    marginHorizontal: 10,
+    marginTop: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#2c2c33',
+    borderRadius: 8,
+    backgroundColor: '#101114',
+  },
+  stageToggleText: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 11.5,
+    letterSpacing: 1.6,
+    color: colors.textSubAlt,
+  },
   // 6px of clearance so scrolled well text never hard-clips mid-glyph
   // against the pinned badge strip above it (design pass 2026-08-31).
   well: { padding: 12, paddingTop: 18, paddingBottom: 14, gap: 10 },
