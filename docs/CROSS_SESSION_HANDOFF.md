@@ -65,6 +65,24 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-23 22:59 · ccode · b3a46c21
+changed: Tester report: "Got stuck here couldn't press any buttons" — the rack was mute
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-23 22:52 · ccode · c00cc6f5
+changed: Tester reports: flashcard definitions wouldn't scroll, and redeem ate the code
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-23 22:46 · ccode · 1223aecf
+changed: Tester report: "the back button does not work" — it was too small to hit
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-23 09:39 · ccode · 8fd9e837
 changed: Device sweep: flashcard deck completed, power sequence verified, 10/10 questions correct
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
