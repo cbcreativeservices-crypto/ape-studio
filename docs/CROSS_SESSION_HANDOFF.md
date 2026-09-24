@@ -65,6 +65,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-24 13:22 · ccode · 49b8420d
+changed: Collect iOS dSYMs from every build, so crash reports stay readable
+affects other side: eas.json changed, so the runtime fingerprint moved on BOTH platforms (ios e65788533c -> 64a7eddf33, android 78622e4e4f -> 02255b7bae). Any `eas update` from this tree now reaches ZERO installed apps and still reports success. Realigns automatically the moment a build ships from this tree; to OTA before then, revert 49b8420d, publish, re-apply.
+needs: Build 28's dSYM (UUID 2678ae4c-b582-3d4c-b162-7ab7b2ff19b0) uploaded to the ape-studio Sentry project — it is the build all 23 alpha testers run and the only symbol gap left. Build 29 (3e1c1a45) is already covered. Handoff: Downloads/2026-09-24_COMP_A_BUILD28_DSYM_REQUEST.md
+
+
 ### 2026-09-24 00:03 · ccode · 9595648b
 changed: OTA published to both channels and verified running on the Pixel
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
