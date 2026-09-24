@@ -62,6 +62,18 @@ statement did what it said.
 - **`eas.json` is a fingerprint input** (`reasons: ['easBuild']`), including its
   `submit` block. Editing it moves the runtimeVersion and closes OTA to every
   installed build. Prefer interactive `eas submit` over writing submit config.
+  - **MEASURED 2026-09-24.** Adding `ios.buildArtifactPaths` to the `production`
+    profile — four lines, nested under `ios`, touching nothing native:
+
+    | platform | before | after |
+    |---|---|---|
+    | ios | `e65788533c…` | `64a7eddf33…` |
+    | android | `78622e4e4f…` | `02255b7bae…` |
+
+    **Android moved too**, although the edit is scoped under `ios`: fingerprint
+    hashes the whole `eas.json` FILE, not the resolved profile. There is no such
+    thing as a platform-scoped eas.json edit. Treat ANY eas.json change as
+    "no OTA reaches anyone until the next build ships on both platforms."
 - **`.easignore` is fingerprint source #1** and is hashed AS IT SITS ON DISK,
   so CRLF vs LF breaks OTA with no edit at all. Pinned via
   `.easignore text eol=lf`. Do NOT pin `.gitignore` — its CRLF on disk is what

@@ -16,7 +16,10 @@
     },
     "production": {
       "autoIncrement": true,
-      "channel": "production"
+      "channel": "production",
+      "ios": {
+        "buildArtifactPaths": ["ios/build/**/*.dSYM.zip", "ios/build/**/*.dSYM"]
+      }
     }
   },
   "submit": {
