@@ -131,3 +131,33 @@ what your standing rule forbids, and the guard test asserts it.
 
 **Commits:** `1223aecf` (back targets) · `c00cc6f5` (flashcards + redeem) ·
 `b3a46c21` (rack) · `7455c2c5` (hide display)
+
+---
+
+## Shipped & verified (2026-09-24, on your go)
+
+**Published to both channels.** Fingerprints checked first, so it lands rather
+than silently no-ops:
+
+| Channel | Runtime | Reaches |
+|---|---|---|
+| `production` | iOS `e65788533c…` + Android | your four TestFlight testers, on next launch |
+| `preview` | Android `78622e4e4f…` | the Pixel |
+
+**Verified running on the Pixel** — the two-launch proof:
+
+- **Launch 1:** 48/48 assets, 0 failed → `Update available` → `DownloadComplete`
+  → `NEW_UPDATE_LOADED` → `Restart`
+- **Launch 2:** `CheckCompleteUnavailable` → **`No update available`**
+
+Launch 2 having nothing left to fetch is what proves the new code is the code
+running. No build, no submission needed — all six fixes are JS.
+
+⚠️ **What I could NOT do:** the Pixel is locked behind a **fingerprint**, so I
+could not take a picture of the new HIDE DISPLAY control in a lab. The update
+itself is proven (the app launches and logs behind the lockscreen), but the
+*visual* check needs your thumb for ten seconds. Say the word when you're back
+and I'll finish it.
+
+I set the screen to stay awake while driving the phone and have **restored that
+to its normal setting**.
