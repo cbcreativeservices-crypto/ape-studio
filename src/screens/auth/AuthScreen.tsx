@@ -337,7 +337,24 @@ export function AuthScreen({ navigation }: Props) {
       setResetCode('');
       setNewPassword('');
       setMode('recovery');
-      setInfo(`We emailed a 6-digit code to ${email.trim()}. Enter it below with your new password.`);
+      /**
+       * ⛔ "IF" IS LOAD-BEARING — do not shorten this to "We emailed a code".
+       *
+       * `resetPasswordForEmail` returns 200 for an address with NO account, on
+       * purpose: answering truthfully would let anyone test whether an email is
+       * registered. Measured 2026-09-25: the auth log shows a /recover 200 with
+       * no user's `recovery_sent_at` moving — i.e. exactly that case, live.
+       *
+       * The old copy stated flatly that a code had been sent. For someone whose
+       * signup had failed (see the weak-password mapping in features/auth/api)
+       * no account existed, nothing was ever sent, and they sat waiting on an
+       * email that was never coming — which is precisely the "never got the
+       * email" report. Naming the condition costs one word and turns a dead end
+       * into a checkable one.
+       */
+      setInfo(
+        `If an account exists for ${email.trim()}, we’ve emailed it a 6-digit code — enter it below with your new password. Nothing arriving? That address may not have an account yet, so create one instead.`,
+      );
     } catch {
       setError('Couldn’t send the reset email — check your connection and try again.');
     } finally {

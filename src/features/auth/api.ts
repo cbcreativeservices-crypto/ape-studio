@@ -10,39 +10,18 @@ import { supabase } from '../../lib/supabase';
 import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../commercial/realAccount';
 
+// The pure helpers live in authErrorCopy.ts so they can be unit-tested without
+// standing up the Supabase client. Re-exported here so every existing call site
+// (AuthScreen imports EMAIL_RE / passwordIssue from this module) is unchanged.
+import { friendlyAuthError } from './authErrorCopy';
+export { friendlyAuthError, EMAIL_RE, passwordIssue } from './authErrorCopy';
+
 /**
  * Map a Supabase/JS auth error to user-facing copy (QA Wave D, D-3 2026-09-10).
  * Offline used to surface the raw developer string "Network request failed";
  * detect network failures and show an actionable line, pass everything else
  * through (Supabase's own messages are already user-legible for bad creds etc.).
  */
-function friendlyAuthError(error: { message?: string } | null | undefined): string | null {
-  if (!error) return null;
-  const m = error.message ?? '';
-  if (/network request failed|failed to fetch|network error|timed out|timeout|unable to (resolve|connect)|offline|enotfound|econnrefused|socket hang/i.test(m)) {
-    return 'You appear to be offline — reconnect and try again.';
-  }
-  // [1] (2026-09-07): map the common Supabase auth errors to friendly copy
-  // instead of relaying the raw error.message to the user.
-  if (/invalid login credentials|invalid.*(email|password)/i.test(m)) {
-    return 'Email or password is incorrect.';
-  }
-  if (/email not confirmed/i.test(m)) {
-    return 'Please confirm your email, then sign in.';
-  }
-  if (/rate limit|too many/i.test(m)) {
-    return 'Too many attempts — wait a moment and try again.';
-  }
-  if (/user already registered|already been registered/i.test(m)) {
-    return 'That email already has an account — sign in instead.';
-  }
-  // ⚠️ This used to be `return m || …`, so every unmapped GoTrue string
-  // rendered verbatim on the app's first screen — "Signups not allowed for
-  // this instance", "Database error saving new user", and "Password should be
-  // at least 6 characters", which contradicts our own 8-character rule below.
-  return 'We couldn’t complete that. Your details were not changed — try again, and email info@proaudiotrainingacademy.com if it continues.';
-}
-
 export type EnrolledCourse = {
   course_id: string;
   course_code: string;
@@ -169,14 +148,4 @@ export async function verifyRecoveryOtp(email: string, token: string): Promise<s
 export async function updatePassword(newPassword: string): Promise<string | null> {
   const { error } = await supabase.auth.updateUser({ password: newPassword });
   return friendlyAuthError(error);
-}
-
-/** Locked validation rules (seed brief §3 S1). */
-export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-export function passwordIssue(pw: string): string | null {
-  if (pw.length < 8) return 'Password must be at least 8 characters.';
-  if (!/[A-Z]/.test(pw)) return 'Password must include at least 1 uppercase letter.';
-  if (!/[0-9]/.test(pw)) return 'Password must include at least 1 number.';
-  return null;
 }
