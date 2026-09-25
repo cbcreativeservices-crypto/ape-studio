@@ -40,6 +40,7 @@ import { QUESTIONS, QUESTION_COUNT } from '../../features/careerfinder/questions
 import { FAMILY_COUNT } from '../../features/careerfinder/families';
 import { computeResult } from '../../features/careerfinder/scoring';
 import { useCareerFinder } from '../../features/careerfinder/store';
+import { readingColumn } from '../../theme/readingColumn';
 
 /**
  * What the Academy sets out to do.
@@ -622,7 +623,7 @@ export function CurriculumView({
 }
 
 const styles = StyleSheet.create({
-  scroll: { padding: 20, gap: 20 },
+  scroll: { padding: 20, gap: 20, ...readingColumn },
 
   brandRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   brandWordmark: { fontFamily: fonts.oswaldBold, fontSize: 14, letterSpacing: 0.6, color: colors.textPrimary },

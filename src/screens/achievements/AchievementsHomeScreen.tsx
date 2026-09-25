@@ -21,6 +21,7 @@ import { CredentialBadge, type CredentialKind } from '../../components/Credentia
 import { fetchAchievementsHub, type HubData } from '../../features/achievements/api';
 import { TROPHY_CASE_EMPTY } from '../../features/celebration/catalog';
 import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
+import { readingColumn } from '../../theme/readingColumn';
 
 const MINI = 44;
 
@@ -240,7 +241,7 @@ function MiniCredential({ kind }: { kind: CredentialKind }) {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
-  scroll: { padding: 16, gap: 14 },
+  scroll: { padding: 16, gap: 14, ...readingColumn },
   headerRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 2 },
   backBtn: { alignSelf: 'center' },
   back: { fontFamily: fonts.oswaldSemiBold, fontSize: 28, lineHeight: 28, color: colors.textSub, marginRight: -2 },

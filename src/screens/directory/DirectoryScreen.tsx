@@ -25,6 +25,7 @@ import { REGISTRY_BASE_URL } from '../../features/profile/registry';
 import { CredentialQr } from '../../components/CredentialQr';
 import { useBundles } from '../../features/enrollment/enrolledBundlesStore';
 import { useEnrollmentProgress } from '../../features/enrollment/enrollmentProgress';
+import { readingColumn } from '../../theme/readingColumn';
 
 const DIRECTORY_INTRO_TITLE = 'Get Discovered';
 
@@ -306,7 +307,7 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
 }
 
 const styles = StyleSheet.create({
-  scroll: { padding: 20, gap: 16 },
+  scroll: { padding: 20, gap: 16, ...readingColumn },
 
   brandRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 4 },
   brandWordmark: { fontFamily: fonts.oswaldBold, fontSize: 14, letterSpacing: 0.6, color: colors.textPrimary },

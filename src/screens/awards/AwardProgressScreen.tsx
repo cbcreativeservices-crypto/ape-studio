@@ -41,6 +41,7 @@ import {
 } from '../../features/credentials/certificatePdf';
 import type { RootStackParamList } from '../../navigation/types';
 import { CERTIFICATE_REQUIRES_EXAM } from '../../features/finalExam/tenure';
+import { readingColumn } from '../../theme/readingColumn';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AwardProgress'>;
 
@@ -379,7 +380,7 @@ const styles = StyleSheet.create({
   },
   back: { fontFamily: fonts.oswaldMedium, fontSize: 24, color: colors.textSub, marginTop: -2 },
   headerKicker: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.8, color: colors.textSubAlt },
-  scroll: { padding: 20, gap: 14, paddingBottom: 48 },
+  scroll: { padding: 20, gap: 14, paddingBottom: 48, ...readingColumn },
   awardName: { fontFamily: fonts.oswaldSemiBold, fontSize: 22, lineHeight: 29, color: colors.textPrimary },
   progressRow: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 },
   progressCount: { fontFamily: fonts.mono, fontSize: 30, color: colors.textPrimary },

@@ -76,6 +76,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-24 17:55 · ccode · 1a19855e
+changed: iPad: tool screens and the paywall ran their text the full width
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-24 17:38 · ccode · 0c852784
 changed: Career Finder retake: proven fixed on device, with a baseline this time
 affects other side: nothing — docs only, no schema or content change.

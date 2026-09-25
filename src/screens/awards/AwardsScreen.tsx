@@ -47,6 +47,7 @@ import { credentialArtUrl } from './CredentialThumb';
 import { CredentialDetailModal, type CredentialDetail } from './CredentialDetailModal';
 import type { RootStackParamList } from '../../navigation/types';
 import { CERTIFICATE_REQUIRES_EXAM } from '../../features/finalExam/tenure';
+import { readingColumn } from '../../theme/readingColumn';
 
 const SPEC_CERT_KEY = 'ape:specCert'; // chosen Specialization Certificate name (Level 1)
 const PROGRAM_PATH_KEY = 'ape:programPath'; // chosen program path name (Level 2)
@@ -1129,7 +1130,7 @@ const styles = StyleSheet.create({
 
   // paddingTop bumped so the first title clears the pager tab row (user request
   // 2026-07-22) — applies to the Certificate + Program pages (they use this scroll).
-  scroll: { paddingHorizontal: 18, paddingTop: 18, paddingBottom: 44, gap: 16 },
+  scroll: { paddingHorizontal: 18, paddingTop: 18, paddingBottom: 44, gap: 16, ...readingColumn },
 
   introTitle: {
     fontFamily: fonts.oswaldSemiBold,
