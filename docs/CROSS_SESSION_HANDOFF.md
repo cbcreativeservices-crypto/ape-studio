@@ -98,6 +98,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-25 09:40 · ccode · e0bd4d68
+changed: Home deck: tablet-sized carousel cards
+affects other side: nothing — client-only (Home carousel card size on tablets).
+needs: nothing.
+
+
 ### 2026-09-25 09:11 · ccode · 7203b32f
 changed: Sound Systems Lab: phone-width text pass and meter colour standard
 affects other side: nothing — client-only (meter colour standard, phone-width text fixes in the Sound Systems Lab).
