@@ -484,3 +484,62 @@ showed **7**. The other 14 were dev/web-preview Metro errors with
 `C:\Users\profe\...` paths — correctly tagged `development` by our own telemetry
 gating (`SENTRY_MAY_SEND = !__DEV__ || SELFTEST_ON`). The noise was in the query,
 not in the app. **Always filter by environment before triaging.**
+
+### 2026-09-25 — seven more from the same day, mostly my own errors
+
+**1. ⛔ I ESCALATED ON ABSENCE OF EVIDENCE. Build 30 was already submitted.**
+`eas build:list` showed FINISHED and `eas submit:list` does not exist in this CLI
+version, so I concluded it had not been submitted and filed a second, firmer
+request to Comp A. It HAD been submitted the day before (submission
+`1a088d86-…`), and the owner had already assigned it to the testers.
+**I cannot see App Store Connect.** Nothing in EAS proves a submission did not
+happen, because a submit can be done from ASC directly. Before escalating
+anything in another computer's lane, say what I can and cannot see, and ask.
+
+**2. Verify a screenshot shows what you are about to claim it shows.** I captured
+a "before" for the SPL meter that was actually the amplitude-orientation gate —
+Playwright had landed on the gate, and I did not look before saving. Caught it
+only because the file size differed from the "after". A before/after pair is
+evidence; evidence gets checked. The fix was to revert the file, re-shoot the
+real screen, and restore — not to hand over a plausible-looking pair.
+
+**3. A cap that centres is wrong when the surrounding chrome is left-aligned.**
+`readingColumn` (alignSelf: center) suits a surface capped as a WHOLE. Applied to
+paragraphs inside a still-full-width screen it pushed them ~210pt inward while the
+headings stayed at x=16 — ragged, and arguably worse than the long lines it fixed.
+Hence `readingText` (flex-start). I had already shipped the centred version into a
+screenshot before noticing.
+
+**4. ⛔ A STYLE NAME CAN LIE.** `ruleLine` in AmplitudeOrientation sounds like the
+short "BLUE = LESS / RED = MORE" display type. It carries the third PARAGRAPH, is
+used exactly once, and was the single over-wide run left after the first pass.
+Grep for the rendered STRING, not for the name you expect.
+
+**5. Do not set a state flag before the operation it describes.** I added
+`tapInstalled = true` immediately BEFORE `installTap`. Harmless for a
+non-throwing call, wrong in principle, and it would have lied if anything above
+it failed. Moved to after.
+
+**6. ⛔ CHECK FOR TEST FIXTURES BEFORE A BULK WRITE.** Granting entitlements to
+"every account without one" would have included
+`gratis@proaudiotrainingacademy.com` — the deliberate FREE-TIER fixture, and the
+only account that can exercise the paywall. Excluded it. A bulk UPDATE over user
+rows should always be listed and read before it is run.
+
+**7. A Windows path pasted into the Bash tool is mangled, and a failed git
+command leaves a lock.** `cd C:\Users\...` became `C:Usersprofe…`; the half-run
+`git add` left a 0-byte `.git/index.lock` that blocked the next command. Convert
+to `/c/Users/...`, and before removing a lock check its age AND that no git
+process is running.
+
+**What worked and should stay habit:**
+- **Check the fingerprint against the installed build BEFORE every `eas update`.**
+  Done twice today; both times it matched and both OTAs landed. This is the
+  cheapest possible insurance against publishing into a void.
+- **Read the publish output, never the exit code.** The preview publish failed
+  once with a GraphQL error and succeeded on retry; a piped exit code would have
+  said "fine".
+- **Prove an OTA with two launches.** Launch 1 downloads, launch 2 says "No
+  update available". Anything less is "published", not "updated".
+- **Find out what a number measures before optimising it** (see the
+  `launch_duration` entry above).

@@ -98,6 +98,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-25 00:20 · ccode · 9ebe0d16
+changed: Two triage lessons: launch_duration is not launch time, and filter Sentry by env
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-25 00:06 · ccode · 427a0897
+changed: Fatal audio crash: stop the engine before touching inputNode
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-24 22:21 · ccode · 1cdfd56e
 changed: "Never got the email" — they never had an account. Signup was failing silently
 affects other side: nothing to change server-side. Supabase leaked-password protection STAYS ON (owner call 2026-09-25) — the fix is that the app now explains the rejection instead of showing a generic error.
