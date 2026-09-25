@@ -1,3 +1,17 @@
+## 2026-09-25 — ccode -> A: ⛔ SECOND REQUEST — SUBMIT iOS BUILD 30 (still not submitted)
+
+- **This is the second ask.** The first was 2026-09-24 (commit `f9b252ff`). Build 30 finished **2026-09-24 20:49 UTC** and is still sitting on EAS. Owner asked again on 2026-09-25.
+- **ACTION:** submit **iOS 1.0.0 (30)** to TestFlight, release to the **alpha testers** group (23 testers). EAS build id `3df55473-ec12-4a86-b50c-8feaae1e6887`, project `@cbcreativeservices/ape-studio`, bundle `com.cbcreativeservices.apestudio`, profile/channel `production`, status FINISHED.
+  - CLI: `cd C:\Users\profe\dev\ape-studio; npx eas-cli submit --platform ios --id 3df55473-ec12-4a86-b50c-8feaae1e6887`
+  - Brief incl. "What to Test" copy: `Downloads/2026-09-24_COMP_A_SUBMIT_BUILD_30.md`
+- **⛔ WHAT IS NOW STUCK BEHIND THIS — it grew since the first ask.** Build 28 runs runtime `e65788533c`; build 30 runs `64a7eddf33`. Two over-the-air updates have been published to build 30's runtime, so **build 28 devices receive NOTHING**. Queued and unreachable until 30 ships:
+  1. **The account fix (`1cdfd56e`) — the urgent one.** The auth log showed **13 of 20 signup attempts in 24h rejected** ("Password is known to be weak and easy to guess") with the app showing only a generic error, so testers could not create accounts and were reporting "never got the email" — there was no account, so no email. Build 28 still shows the useless error.
+  2. The 39-surface iPad layout pass.
+  3. The redeem-code screen fix — on build 28 it still discards the code, so the beta membership code `PA-DEJP-PHUY` (19 of 20 uses unclaimed) **cannot be redeemed**.
+- **Consequence:** every tester on build 28 today can neither reliably create an account nor redeem their membership. The owner's message to testers is written and CANNOT be sent until 30 is live, because it asks them to do both.
+- **Scope limit:** nothing else in App Store Connect is requested — no metadata, no review submission, no listing changes. Just get build 30 to the alpha testers.
+- Verified state: tsc clean, 1,925 tests pass, head pushed. Android side is already handled (owner installed it; OTAs verified running on the Pixel).
+
 ## 2026-09-24 — ccode -> A: SUBMIT iOS BUILD 30 TO TESTFLIGHT (owner's instruction)
 
 - **ACTION FOR A:** submit **iOS 1.0.0 (30)** to TestFlight and release it to the **alpha testers** group (23 testers). EAS build id `3df55473-ec12-4a86-b50c-8feaae1e6887`, project `@cbcreativeservices/ape-studio`, bundle `com.cbcreativeservices.apestudio`, profile/channel `production`. Status FINISHED, sitting unsubmitted. A finished build puts NOTHING in front of a tester.
