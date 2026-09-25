@@ -52,6 +52,7 @@ import { useSamplingActive } from '../../../features/intro/onboardingSampling';
 import { GlassButton } from '../../../components/GlassButton';
 import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
+import { readingText } from '../../../theme/readingColumn';
 
 /** Full-scale red — top of the canonical ramp (kept SSoT, never hardcoded). */
 const LOUD_RED = LOUDNESS_STOPS[0].color;
@@ -1132,7 +1133,7 @@ const styles = StyleSheet.create({
   },
 
   sixViews: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.amber },
-  sixViewsSub: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
+  sixViewsSub: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub, ...readingText },
 
   // Cards
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
@@ -1208,7 +1209,7 @@ const styles = StyleSheet.create({
   },
 
   explain: { gap: 8 },
-  explainText: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
+  explainText: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary, ...readingText },
 
   convention: {
     borderRadius: 10,
@@ -1219,7 +1220,7 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   conventionTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.6, color: colors.amber },
-  conventionBody: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
+  conventionBody: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary, ...readingText },
 
   finale: { alignItems: 'center', gap: 2, paddingVertical: 4 },
   finaleLine: { fontFamily: fonts.oswaldBold, fontSize: 28, letterSpacing: 2 },
@@ -1245,6 +1246,7 @@ const styles = StyleSheet.create({
     fontSize: 13.5,
     lineHeight: 18,
     color: colors.textSecondary,
+    ...readingText,
   },
 
   // ── RAMP CHECK ──
@@ -1259,7 +1261,7 @@ const styles = StyleSheet.create({
   checkHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   checkTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.6, color: colors.amber },
   checkProgress: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.textSub },
-  checkQ: { fontFamily: fonts.barlowMedium, fontSize: 15, lineHeight: 20, color: colors.textPrimary },
+  checkQ: { fontFamily: fonts.barlowMedium, fontSize: 15, lineHeight: 20, color: colors.textPrimary, ...readingText },
   checkRow: { flexDirection: 'row', gap: 12 },
   checkSwatch: {
     flex: 1,
@@ -1296,9 +1298,9 @@ const styles = StyleSheet.create({
   checkRtaRow: { flex: 1, flexDirection: 'row', alignItems: 'flex-end', gap: 3 },
   checkRtaBar: { flex: 1, borderRadius: 2 },
   checkWrongWrap: { gap: 6 },
-  checkWrong: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 17, color: colors.amber },
+  checkWrong: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 17, color: colors.amber, ...readingText },
   checkMiniRamp: { height: 8, borderRadius: 4 },
-  checkPassed: { fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 19, color: colors.green },
+  checkPassed: { fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 19, color: colors.green, ...readingText },
   practiceBtn: { minHeight: 44, justifyContent: 'center', alignItems: 'center' },
   practiceBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.4, color: colors.amberLabel },
 
@@ -1312,7 +1314,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.barlowMedium,
     fontSize: 13,
     lineHeight: 17,
-    color: colors.textSecondary,
-  },
+    color: colors.textSecondary, ...readingText },
   gateScroll: { padding: 16, paddingTop: 6, paddingBottom: 30 },
 });

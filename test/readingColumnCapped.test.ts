@@ -33,7 +33,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { READING_MAX_W, TOOL_READING_MAX_W, readingColumn } from '../src/theme/readingColumn.ts';
+import { READING_MAX_W, TOOL_READING_MAX_W, readingColumn, readingText } from '../src/theme/readingColumn.ts';
 
 /** [file, the style name its scroll content uses]. */
 const READING_SURFACES: Array<[string, string]> = [
@@ -158,5 +158,43 @@ test('every intro popup card caps its width', () => {
       /maxWidth: 460,/,
       `${file}: an uncapped popup card stretches across a whole iPad`,
     );
+  }
+});
+
+/**
+ * Screens that stay FULL WIDTH and cap only their paragraphs — instruments and
+ * anything whose artwork should keep the tablet. They must use the LEFT variant:
+ * measured 2026-09-24, the centred one pushed the amplitude gate's paragraphs
+ * ~210pt inward while its headings stayed at x=16, which read as ragged.
+ */
+const PROSE_ONLY_SCREENS = [
+  'src/screens/tools/SplMeterScreen.tsx',
+  'src/screens/lab/amplitude/AmplitudeOrientation.tsx',
+];
+
+test('the left-aligned variant caps the same width but does not centre', () => {
+  assert.equal(readingText.maxWidth, READING_MAX_W);
+  assert.equal(readingText.width, '100%');
+  assert.equal(readingText.alignSelf, 'flex-start');
+  assert.notEqual(readingText.alignSelf, readingColumn.alignSelf);
+});
+
+test('prose-only screens use the LEFT variant and never cap their scroll', () => {
+  for (const file of PROSE_ONLY_SCREENS) {
+    const src = readFileSync(file, 'utf8');
+    assert.match(src, /\.\.\.readingText/, `${file}: should cap paragraphs with readingText`);
+    assert.doesNotMatch(
+      src,
+      /\.\.\.readingColumn/,
+      `${file}: the centred variant misaligns paragraphs against left-aligned headings`,
+    );
+    const scroll = src.match(/\n\s*(?:gateScroll|scroll): \{[^}]*\}/);
+    if (scroll) {
+      assert.doesNotMatch(
+        scroll[0],
+        /readingText|readingColumn/,
+        `${file}: the scroll must stay full width — capping it shrinks the instrument`,
+      );
+    }
   }
 });

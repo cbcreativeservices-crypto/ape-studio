@@ -46,3 +46,21 @@ export const readingColumn = {
   maxWidth: TOOL_READING_MAX_W,
   alignSelf: 'center',
 } as const;
+
+/**
+ * The LEFT-ALIGNED variant, for capping individual paragraphs inside a surface
+ * that is itself still full width — an instrument screen, or a page whose cards
+ * and artwork should keep the whole tablet.
+ *
+ * ⛔ USE THIS, NOT `readingColumn`, WHENEVER THE SURROUNDING CHROME IS LEFT
+ * ALIGNED. Seen on the amplitude-orientation gate 2026-09-24: capping its
+ * paragraphs with the CENTRED version pushed them ~210 pt inward while the
+ * section headings ("SIX VIEWS · ONE SIGNAL") stayed at x=16, so the page read
+ * as ragged — a worse problem than the long lines it fixed. Centring is right
+ * when the WHOLE surface is capped; left is right when only the text is.
+ */
+export const readingText = {
+  width: '100%',
+  maxWidth: TOOL_READING_MAX_W,
+  alignSelf: 'flex-start',
+} as const;

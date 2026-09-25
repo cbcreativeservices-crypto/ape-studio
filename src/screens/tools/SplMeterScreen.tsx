@@ -74,7 +74,7 @@ import { MIC_LIMITS, toolByKey } from './toolsData';
 import { ApeDsp, type MeterFrame } from '../../../modules/ape-dsp';
 import { useToolHelp, HelpHead, DisplayGuideButton } from '../../features/lab/guidedLessons';
 import type { RootStackParamList } from '../../navigation/types';
-import { readingColumn } from '../../theme/readingColumn';
+import { readingText } from '../../theme/readingColumn';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SplMeter'>;
 
@@ -2482,7 +2482,7 @@ const styles = StyleSheet.create({
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
   scroll: { padding: 16, paddingBottom: 32, gap: 14 },
 
-  intro: { fontFamily: fonts.barlowRegular, fontSize: 15.5, lineHeight: 23, color: colors.textSecondary, ...readingColumn },
+  intro: { fontFamily: fonts.barlowRegular, fontSize: 15.5, lineHeight: 23, color: colors.textSecondary, ...readingText },
 
   // Weighting / response chips.
   chipsRow: { flexDirection: 'row', gap: 10 },
@@ -2691,7 +2691,7 @@ const styles = StyleSheet.create({
   ctrlTextSm: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 0.8, color: colors.textSecondary, textAlign: 'center' },
 
   // Live quality warning line (spec §6) — house amber warning style.
-  liveWarn: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.amber, ...readingColumn },
+  liveWarn: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.amber, ...readingText },
   // Warnings area at the BOTTOM (owner 2026-07-30): a new warning flashes here 5 s
   // then settles into the steady accumulated list.
   warnArea: { gap: 8 },
@@ -2706,7 +2706,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,198,77,.12)',
     borderRadius: 8,
     paddingVertical: 8,
-    paddingHorizontal: 10, ...readingColumn },
+    paddingHorizontal: 10, ...readingText },
   warnList: { gap: 4 },
 
   // Field-calibration card (ruling R1, 2026-07-23).
@@ -2727,7 +2727,7 @@ const styles = StyleSheet.create({
   calCommunitySub: { fontFamily: fonts.barlowRegular, fontSize: 11.5, color: colors.textMuted, marginTop: 1 },
   calDraftValue: { fontFamily: fonts.mono, fontSize: 30, color: colors.textPrimary, textAlign: 'center' },
   calDraftUnit: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.amber },
-  calNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted, ...readingColumn },
+  calNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted, ...readingText },
 
   libraryLink: {
     fontFamily: fonts.oswaldSemiBold,
@@ -3043,7 +3043,7 @@ const styles = StyleSheet.create({
     fontSize: 9,
     letterSpacing: 1,
     lineHeight: 14,
-    color: '#c2c6ce', ...readingColumn },
+    color: '#c2c6ce', ...readingText },
   vuUnavailCard: {
     gap: 6,
     borderRadius: 10,
