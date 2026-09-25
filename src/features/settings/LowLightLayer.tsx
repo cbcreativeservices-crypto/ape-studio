@@ -220,6 +220,9 @@ const styles = StyleSheet.create({
   },
   gateCard: {
     width: '100%',
+    // Same 460 as the intro sheets: this is an overlay CARD, and without a cap
+    // its two paragraphs stretched across a whole iPad.
+    maxWidth: 460,
     borderRadius: 14,
     borderWidth: 1,
     borderColor: 'rgba(194,84,15,.55)',

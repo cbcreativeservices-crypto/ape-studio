@@ -142,13 +142,17 @@ const INTRO_SHEETS = [
   'src/features/intro/ScreenIntroOverlay.tsx',
   'src/features/intro/LearningIntroSheet.tsx',
   'src/features/intro/TopicWelcomeSheet.tsx',
-];
+].map((f) => [f, 'card'] as [string, string]).concat([
+  // Low-Light Production Mode's gate is the same shape: a Modal overlay card
+  // carrying two paragraphs, declared width:'100%' with no cap.
+  ['src/features/settings/LowLightLayer.tsx', 'gateCard'],
+]);
 
 test('every intro popup card caps its width', () => {
-  for (const file of INTRO_SHEETS) {
+  for (const [file, style] of INTRO_SHEETS) {
     const src = readFileSync(file, 'utf8');
-    const card = src.match(/\n {2}card: \{[\s\S]*?\n {2}\},/);
-    assert.ok(card, `${file}: no 'card' style found`);
+    const card = src.match(new RegExp('\\n {2}' + style + ': \\{[\\s\\S]*?\\n {2}\\},'));
+    assert.ok(card, `${file}: no '${style}' style found`);
     assert.match(
       card![0],
       /maxWidth: 460,/,
