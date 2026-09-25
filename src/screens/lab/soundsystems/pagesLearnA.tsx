@@ -376,7 +376,8 @@ function PageConfigs({ ctx }: { ctx: PageCtx }) {
         setSeen((v) => new Set(v).add(o));
       },
       name: (o) => o.name,
-      short: (o) => o.name.split(' ')[0],
+      // First word without its punctuation: "Lobby, recording…" read "Lobby,".
+      short: (o) => o.name.split(/[ ,]/)[0],
       blurb: (o) => o.what,
       sticky: true,
     }),

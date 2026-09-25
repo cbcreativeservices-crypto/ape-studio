@@ -269,7 +269,11 @@ function PageMonitorMixes({ ctx }: { ctx: PageCtx }) {
   const send = ch.sends[auxId];
   const sendDb = send?.db ?? -90;
   const tap = send?.tap ?? 'post';
-  const wedgeName = (a: string) => `${WEDGE_NAMES[a as keyof typeof WEDGE_NAMES]}’S WEDGE`;
+  // Possessive: DRUMS’ WEDGE, BASS’ WEDGE — not "DRUMS’S".
+  const wedgeName = (a: string) => {
+    const n = WEDGE_NAMES[a as keyof typeof WEDGE_NAMES];
+    return `${n}${n.endsWith('S') ? '’' : '’S'} WEDGE`;
+  };
   const params: DockParam[] = [
     {
       kind: 'options',
@@ -303,7 +307,9 @@ function PageMonitorMixes({ ctx }: { ctx: PageCtx }) {
       kind: 'group',
       id: 'console',
       label: 'CONSOLE',
-      valueLabel: allPre ? 'ALL PRE' : 'Open',
+      // "ALL PRE" is a claim about sends that exist: with none yet it was
+      // vacuously true and the key read ALL PRE on an empty desk.
+      valueLabel: allPre && each.some((n) => n > 0) ? 'ALL PRE' : 'Open',
       render: () => (
         <View style={{ gap: 10 }}>
           <Body>Every channel, four wedge sends each. ▲/▼ step a send; PRE lights the pre-fader tap; ALL PRE at the top of a column sets the whole column. The wedges above fill as you go.</Body>
@@ -429,13 +435,26 @@ function PageGroups({ ctx }: { ctx: PageCtx }) {
 function PageMutes({ ctx }: { ctx: PageCtx }) {
   const [cs, setCs] = useState<ConsoleState>(() => {
     let s = bandConsole();
-    s = { ...s, channels: s.channels.map((c) => (c.family === 'speech' || c.family === 'playback' ? c : { ...c, muteGroups: ['mg-band'] })) };
+    // BAND MUTE holds every band channel; ALL MICS holds every microphone
+    // (the DIs and playback are not microphones). Without members the ALL
+    // MICS key changed nothing on the glass (bug-hunt 2026-09-25).
+    s = {
+      ...s,
+      channels: s.channels.map((c) => {
+        const band = c.family !== 'speech' && c.family !== 'playback';
+        const mic = c.family === 'drums' || c.family === 'guitar' || c.family === 'vocal' || c.family === 'speech';
+        const groups = [...(band ? ['mg-band'] : []), ...(mic ? ['mg-mics'] : [])];
+        return groups.length ? { ...c, muteGroups: groups } : c;
+      }),
+    };
     return s;
   });
   const [solved, setSolved] = useState(false);
   const bandMuted = cs.muteGroups.find((m) => m.id === 'mg-band')?.active === true;
   const mainHeard = hears(mainHears(cs));
-  const onlyMcPb = bandMuted && mainHeard.every((h) => h.channelId === 'mc' || h.channelId === 'pb') && mainHeard.length > 0;
+  // BOTH the announce mic and playback, and nothing else — with ALL MICS on as
+  // well only playback is left, and that is not 'MC · PB'.
+  const onlyMcPb = bandMuted && mainHeard.length === 2 && mainHeard.every((h) => h.channelId === 'mc' || h.channelId === 'pb');
   const done = onlyMcPb && solved;
   useRouteCredit('mutes', done, ctx);
   const goals = [{ label: 'Mute the band with one button; announce mic and playback stay', hit: onlyMcPb }, { label: 'Answer the PFL/AFL check', hit: solved }];
@@ -450,7 +469,7 @@ function PageMutes({ ctx }: { ctx: PageCtx }) {
         bezel: [
           { k: 'BAND MUTE', v: bandMuted ? 'ON' : 'OFF', tint: bandMuted ? colors.red : undefined },
           { k: 'MAIN HEARS', v: `${mainHeard.length} CH`, tint: onlyMcPb ? colors.green : undefined, flex: 1.1 },
-          { k: 'STILL LIVE', v: onlyMcPb ? 'MC · PB' : bandMuted ? 'CHECK' : 'ALL', tint: onlyMcPb ? colors.green : undefined, flex: 1.1 },
+          { k: 'STILL LIVE', v: onlyMcPb ? 'MC · PB' : mainHeard.length === cs.channels.length ? 'ALL' : 'CHECK', tint: onlyMcPb ? colors.green : undefined, flex: 1.1 },
           { k: 'CHECK', v: solved ? '✓' : '—', tint: solved ? colors.green : undefined, flex: 0.7 },
         ],
         stage: (w, h) => <BusBank w={w} h={h} buses={[{ id: 'main', title: 'MAIN MIX — WHO IS STILL LIVE', list: mainHears(cs) }]} />,

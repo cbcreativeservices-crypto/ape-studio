@@ -14,6 +14,7 @@
  *                     each adjustable stage (WCAG 2.5.7), sized so one tap
  *                     visibly moves the bar (preamp ±6 dB, everything else ±3).
  */
+import { memo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, { useAnimatedProps, useDerivedValue, type SharedValue } from 'react-native-reanimated';
 import Svg, { Circle, Defs, Line, LinearGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
@@ -104,6 +105,12 @@ function GlyphRow({ chain, size }: { chain: GainNode[]; size: number }) {
   );
 }
 
+/** The equipment row never changes with the settings — only the stage ids
+ *  and the glyph size pick it — so it is skipped on every lane step. Each
+ *  glyph is its own <Svg> with seven gradients; re-rendering the eight of
+ *  them cost ~150 DOM attribute writes a step (web harness, 2026-09-25). */
+const GlyphRowMemo = memo(GlyphRow, (a, b) => a.size === b.size && a.chain.length === b.chain.length && a.chain.every((n, i) => n.id === b.chain[i].id));
+
 /** Stage labels + dBu readouts, optionally with the tap steppers. */
 function LabelRow({ chain, settings, onChange, highlight }: { chain: GainNode[]; settings?: GainSettings; onChange?: (id: GainStageId, db: number) => void; highlight?: GainStageId | null }) {
   return (
@@ -174,7 +181,7 @@ export function ChainMeterStage({ chain, settings, w, h, running = true, highlig
   return (
     <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center' }}>
       <View style={{ width: fitW, gap: 3 }}>
-        <GlyphRow chain={chain} size={glyph} />
+        <GlyphRowMemo chain={chain} size={glyph} />
         <MeterSvg chain={chain} programme={programme} peak={peak} highlight={highlight} />
         <LabelRow chain={chain} settings={settings} highlight={highlight} />
       </View>
@@ -188,7 +195,7 @@ export function ChainMeter({ chain, settings, onChange, running = true }: { chai
   const peak = usePeakHold(programme);
   return (
     <View style={styles.wrap}>
-      <GlyphRow chain={chain} size={30} />
+      <GlyphRowMemo chain={chain} size={30} />
       <MeterSvg chain={chain} programme={programme} peak={peak} />
       <LabelRow chain={chain} settings={settings} onChange={onChange} />
       <ChainMeterKey />

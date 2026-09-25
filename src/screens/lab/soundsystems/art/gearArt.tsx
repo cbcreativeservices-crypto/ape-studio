@@ -14,6 +14,7 @@
  *
  * Generic hardware — no brand likeness, no trade dress.
  */
+import { useRef } from 'react';
 import Svg, { Circle, Defs, Ellipse, G, Line, LinearGradient, Path, Polygon, RadialGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { GearKind } from '../../../../features/soundsystems/types';
@@ -614,7 +615,14 @@ let seq = 0;
 export type GearPower = 'on' | 'off';
 
 export function GearGlyph({ kind, size = 56, dim, label, power = 'on' }: { kind: GlyphKind; size?: number; dim?: boolean; label?: string; power?: GearPower }) {
-  const id = `g${(seq = (seq + 1) % 100000)}`;
+  // One id per INSTANCE, minted once at mount. Minting one per RENDER (as
+  // this did until 2026-09-25) gave every gradient a new id and every
+  // url(#…) fill a new target on each parent re-render, so a row of eight
+  // glyphs was rewritten in the DOM on every lane step of the gain-chain
+  // pages — ~170 `id` attribute writes a step, measured in the web harness.
+  const idRef = useRef<string | null>(null);
+  if (idRef.current == null) idRef.current = `g${(seq = (seq + 1) % 100000)}`;
+  const id = idRef.current;
   return (
     <Svg width={size} height={size} viewBox="0 0 64 64" opacity={dim ? 0.38 : 1} {...(label ? { accessibilityLabel: label } : {})}>
       <GearDefs id={id} />

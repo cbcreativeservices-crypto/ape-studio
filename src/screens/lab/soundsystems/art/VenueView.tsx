@@ -38,6 +38,8 @@ const DECK = { x: 70, y: 14, w: 220, h: 94 }; // the stage deck; lip at y = 108
 const LIP_Y = DECK.y + DECK.h;
 const AUD = { top: 140, bottom: 314, left: 22, right: 338 };
 const AISLE = { left: 172, right: 188 }; // centre aisle
+/** Floor-field levels per unit of the window — one <Path> per level drawn. */
+const FIELD_LEVELS = 48;
 const CROSS = { top: 206, bottom: 222 }; // cross-aisle (the delays stand in it)
 
 export type PlotBeam = Beam & {
@@ -135,24 +137,40 @@ export function VenueView(p: VenueViewProps) {
   const beams = p.beams ?? [];
   const animate = p.animate ?? true;
   const byId = useMemo(() => new Map(placed.map((x) => [x.id, x])), [placed]);
-  const liveBeams = useMemo(() => beams.filter((b) => b.live !== false), [beams]);
+  // The field's inputs as one string. Pages rebuild their beams array on
+  // every render (a fader step, a card opening), so keying on array identity
+  // recomputed the ~780-cell field for nothing — on the alignment page every
+  // DELAY step did it though no beam had moved. Only what moves the field
+  // counts here; colour, feed tag and delay text are drawn elsewhere.
+  const beamKey = beams.map((b) => (b.live === false ? '' : [b.x, b.y, b.aimDeg, b.coverDeg, b.gain ?? 1, b.throw ?? '', b.spread ?? '', b.rig ?? '', b.pattern ?? ''].join(','))).join('|');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const liveBeams = useMemo(() => beams.filter((b) => b.live !== false), [beamKey]);
 
   // The field over the whole room — the deck included, because a sub
   // arrangement's rear rejection (or an omni sub's stage rumble) is the
   // teaching. A cell below the window's floor is left transparent — dark
   // means "not covered".
+  // The cells are drawn as ONE path per level, not one rect per cell
+  // (2026-09-25): ~780 individually reconciled <Rect>s cost ~1,500 DOM
+  // attribute writes on every step of the COVERAGE and AIM faders — the
+  // slowest ride in the lab. Level is quantised to FIELD_LEVELS steps of the
+  // window (an opacity step of ~0.013 and a colour step the eye cannot
+  // separate); the seam hatch is a second path over the seam cells.
   const cells = useMemo(() => {
-    if (!p.field || liveBeams.length === 0) return [];
+    if (!p.field || liveBeams.length === 0) return { fills: [] as { k: string; d: string; c: string; o: number }[], hatch: '' };
     const cols = 30;
     const top = DECK.y;
     const rows = Math.round((AUD.bottom - top) / 11.6);
     const cw = (AUD.right - AUD.left) / cols;
     const ch = (AUD.bottom - top) / rows;
-    const out: { x: number; y: number; w: number; h: number; c: string; o: number; seam: boolean }[] = [];
+    const buckets = new Map<number, string[]>();
+    let hatch = '';
     const dir = liveBeams.filter((b) => b.coverDeg < 360);
     // On the deck only the subwoofers count: a top's rear at mid/high
     // frequencies is below the window, and drawing it would read as leakage.
     const subs = liveBeams.filter((b) => b.coverDeg >= 360 || (b.pattern && b.pattern !== 'horn'));
+    const w = (cw + 0.7).toFixed(2);
+    const hh = (ch + 0.7).toFixed(2);
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
         const x = AUD.left + c * cw;
@@ -163,11 +181,19 @@ export function VenueView(p: VenueViewProps) {
         if (onDeck && subs.length === 0) continue;
         const v = fieldValue(onDeck ? subs : liveBeams, px, py);
         if (v <= 0.03) continue;
-        const seam = !!p.seam && dir.length >= 2 && overlapValue(dir[0], dir[1], px, py) > 0.5;
-        out.push({ x, y, w: cw + 0.7, h: ch + 0.7, c: heatColor(v), o: 0.18 + v * 0.62, seam });
+        const cell = `M${x.toFixed(2)} ${y.toFixed(2)}h${w}v${hh}h-${w}z`;
+        const q = Math.round(v * FIELD_LEVELS);
+        const list = buckets.get(q);
+        if (list) list.push(cell);
+        else buckets.set(q, [cell]);
+        if (!!p.seam && dir.length >= 2 && overlapValue(dir[0], dir[1], px, py) > 0.5) hatch += cell;
       }
     }
-    return out;
+    const fills = [...buckets.entries()].map(([q, parts]) => {
+      const v = q / FIELD_LEVELS;
+      return { k: `f${q}`, d: parts.join(''), c: heatColor(v), o: 0.18 + v * 0.62 };
+    });
+    return { fills, hatch };
   }, [liveBeams, p.field, p.seam]);
 
   const occupied = new Set(placed.map((x) => x.slot));
@@ -241,12 +267,10 @@ export function VenueView(p: VenueViewProps) {
         <SvgText x={180} y={PLOT_H - 8} fontSize={6.5} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1.6}>FOH · MIX</SvgText>
 
         {/* the floor field and the seam */}
-        {cells.map((c, i) => (
-          <G key={i}>
-            <Rect x={c.x} y={c.y} width={c.w} height={c.h} fill={c.c} opacity={c.o} />
-            {c.seam ? <Rect x={c.x} y={c.y} width={c.w} height={c.h} fill="url(#vv-hatch)" /> : null}
-          </G>
+        {cells.fills.map((c) => (
+          <Path key={c.k} d={c.d} fill={c.c} opacity={c.o} />
         ))}
+        {cells.hatch ? <Path d={cells.hatch} fill="url(#vv-hatch)" /> : null}
 
         {/* coverage: the −6 dB sector of each loudspeaker, lit from the cabinet */}
         <G clipPath="url(#vv-room)">
