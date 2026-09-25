@@ -109,6 +109,14 @@ import { TuningLabScreen } from '../screens/lab/tuning/TuningLabScreen';
 import { EnvelopeLabScreen } from '../screens/lab/envelope/EnvelopeLabScreen';
 import { PatchbayLabScreen } from '../screens/lab/patchbay/PatchbayLabScreen';
 import { ConnectorSelectLabScreen } from '../screens/lab/connectorselect/ConnectorSelectLabScreen';
+import { SoundSystemsLabScreen } from '../screens/lab/soundsystems/SoundSystemsLabScreen';
+import {
+  SoundSystemsBuildScreen,
+  SoundSystemsLearnScreen,
+  SoundSystemsOperateScreen,
+  SoundSystemsRouteScreen,
+  SoundSystemsTroubleshootScreen,
+} from '../screens/lab/soundsystems/modeScreens';
 import { BeginningMixingLabScreen } from '../screens/lab/mixing/BeginningMixingLabScreen';
 import { AdvancedMixingLabScreen } from '../screens/lab/mixing/AdvancedMixingLabScreen';
 import { SpeechLabScreen } from '../screens/lab/speech/SpeechLabScreen';
@@ -294,6 +302,14 @@ const MemberGated = {
   CableLab: withMembershipPreview(Gated.CableLab),
   ChorusLab: withMembershipPreview(Gated.ChorusLab),
   ConnectorSelectLab: withMembershipPreview(ConnectorSelectLabScreen),
+  // Sound Systems Lab (2026-09-25): the hub is the catalog row; its five mode
+  // screens are children the catalog cannot see (MEMBER_ONLY_EXTRA_ROUTES).
+  SoundSystemsLab: withMembershipPreview(SoundSystemsLabScreen),
+  SoundSystemsLearn: withMembershipPreview(SoundSystemsLearnScreen),
+  SoundSystemsBuild: withMembershipPreview(SoundSystemsBuildScreen),
+  SoundSystemsRoute: withMembershipPreview(SoundSystemsRouteScreen),
+  SoundSystemsOperate: withMembershipPreview(SoundSystemsOperateScreen),
+  SoundSystemsTroubleshoot: withMembershipPreview(SoundSystemsTroubleshootScreen),
   DistortionLab: withMembershipPreview(Gated.DistortionLab),
   EarTrainingLab: withMembershipPreview(EarTrainingLabScreen),
   EnvelopeLab: withMembershipPreview(EnvelopeLabScreen),
@@ -541,6 +557,12 @@ export function RootNavigator() {
       <Stack.Screen name="EnvelopeLab" component={MemberGated.EnvelopeLab} />
       <Stack.Screen name="PatchbayLab" component={MemberGated.PatchbayLab} />
       <Stack.Screen name="ConnectorSelectLab" component={MemberGated.ConnectorSelectLab} />
+      <Stack.Screen name="SoundSystemsLab" component={MemberGated.SoundSystemsLab} />
+      <Stack.Screen name="SoundSystemsLearn" component={MemberGated.SoundSystemsLearn} />
+      <Stack.Screen name="SoundSystemsBuild" component={MemberGated.SoundSystemsBuild} />
+      <Stack.Screen name="SoundSystemsRoute" component={MemberGated.SoundSystemsRoute} />
+      <Stack.Screen name="SoundSystemsOperate" component={MemberGated.SoundSystemsOperate} />
+      <Stack.Screen name="SoundSystemsTroubleshoot" component={MemberGated.SoundSystemsTroubleshoot} />
       <Stack.Screen name="BeginningMixingLab" component={MemberGated.BeginningMixingLab} />
       <Stack.Screen name="AdvancedMixingLab" component={MemberGated.AdvancedMixingLab} />
       <Stack.Screen name="SpeechLab" component={MemberGated.SpeechLab} />

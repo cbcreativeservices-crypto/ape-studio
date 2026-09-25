@@ -48,6 +48,7 @@ import { resetLowLight } from '../settings/lowLight';
 import { resetMixingCommitments } from '../../screens/lab/mixing/kit';
 import { resetCelebrationsSeen } from '../celebration/celebrationSeen';
 import { resetGenCapSession } from '../tools/genCapSession';
+import { resetLocal as resetSoundSystemsProgress } from '../soundsystems/progress';
 
 /**
  * Keys that MUST survive an account wipe: device-hardware calibration (per
@@ -297,4 +298,7 @@ export function resetAllLocalStores(): void {
   // re-persisted under the new account, and the next member lost the
   // celebration for their first certificate to somebody else's history.
   resetCelebrationsSeen();
+  // Sound Systems Lab: solved faults, passed capstones, routing/operating
+  // exercises — the departing learner's record, not the next one's.
+  resetSoundSystemsProgress();
 }

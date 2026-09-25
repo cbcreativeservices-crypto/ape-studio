@@ -27,6 +27,8 @@
  * becomes completable the moment its questions land — no other wiring needed.
  */
 
+import { SOUND_SYSTEMS_CHECK, SOUND_SYSTEMS_LEARN_ID } from '../soundsystems/check';
+
 export type UnderstandingQuestion = {
   /** Stable within its lab; used as the per-question progress key. */
   id: string;
@@ -45,9 +47,13 @@ export type UnderstandingQuestion = {
  * Authored checks, keyed by the lab's `labId` — the same id `PagedLab` already
  * persists progress under, so there is no second identifier to keep in step.
  *
- * ⚠️ EMPTY BY DESIGN. See the header. Adding a lab here makes it completable.
+ * ⚠️ Starts EMPTY for every lab whose questions are not yet authored. See the
+ * header. Adding a lab here makes it completable. The Sound Systems Lab
+ * (2026-09-25) authored its own check with the lab, so it is the first entry.
  */
-export const UNDERSTANDING_CHECKS: Record<string, readonly UnderstandingQuestion[]> = {};
+export const UNDERSTANDING_CHECKS: Record<string, readonly UnderstandingQuestion[]> = {
+  [SOUND_SYSTEMS_LEARN_ID]: SOUND_SYSTEMS_CHECK,
+};
 
 /** The check for a lab, or null when none is authored yet. */
 export function understandingFor(labId: string): readonly UnderstandingQuestion[] | null {

@@ -24,10 +24,10 @@ completion status the owner signs off as we approach launch testing.
 |---|---|
 | **Incomplete (🔴 — needs dev work)** | **0** |
 | Blocked (🟡 — built, dependency-gated) | 1 |
-| Built, awaiting sign-off (🔵) | 75 |
+| Built, awaiting sign-off (🔵) | 81 |
 | Signed off (🟢) | 3 |
 | Excluded (⚪ — parked/dev) | 2 |
-| **Total navigable screens (excl. ⚪)** | **79** |
+| **Total navigable screens (excl. ⚪)** | **85** |
 
 **So: "how many screens are incomplete?" → 0 need net-new build (audit found no
 stubs/partials); the native audio engine went LIVE and was iOS-verified
@@ -153,6 +153,12 @@ are built and awaiting your sign-off.**
 | TubeLab (VacuumTube) | 🔵 | VS animation redrawn 2026-08-10. |
 | TubeReference | 🟢 | **Owner-approved 2026-08-17.** 40 tubes (was 30); browse metadata for the 10 new tubes + #28 rename approved. |
 | TubeCard | 🟢 | **Owner-approved 2026-08-17.** 2 pages per tube (PAGE 1/2 toggle + category label); images served via Supabase WebP transform (~4.6× smaller, CDN-cached). |
+| SoundSystemsLab (hub) | 🔵 | Added 2026-09-25 (owner GO, overnight build): Live Sound Reinforcement — five mode cards + WHAT IS LEFT summary (never blocks navigation; credit earned via the LEARN understanding check). Member-only. |
+| SoundSystemsLearn | 🔵 | 22 pages / 14 chapters + appended understanding check (14 questions). Venue plot, system diagram, gain chain, coverage, alignment (calculator-backed). |
+| SoundSystemsBuild | 🔵 | Venue builder (tap-to-place, validated links, live trace) + 10 capstones graded live; 4 capstones also open the console. |
+| SoundSystemsRoute | 🔵 | 8 console exercises on the routing engine (pre/post, which tool, monitors, groups vs DCA, mutes/solo, matrices, output patch). |
+| SoundSystemsOperate | 🔵 | Power-up/down ordering, line check, gain structure, soundcheck ring-out, documentation. |
+| SoundSystemsTroubleshoot | 🔵 | 22-fault bench in 5 groups; probe stations source-forward, graded on answer AND walk. |
 
 ## Calculators
 | Screen (route) | Status | Notes |

@@ -221,6 +221,20 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       { name: 'Audio Post-Production', blurb: 'Take a folder of recordings through to a delivery somebody has accepted — ingest, sync, edit, mix, finish to specification, and prove the files arrived intact — leaving a Delivery Package and an archive that can still be opened years later.', route: 'PostProdLab', params: { lab: 'postprod' }, member: true },
     ],
   },
+  // Live Sound Reinforcement (owner brief + GO 2026-09-25): the last lab before
+  // launch. One hub with five modes (LEARN · BUILD · ROUTE · OPERATE ·
+  // TROUBLESHOOT), fourteen chapters, ten capstones. Member-only.
+  {
+    id: 'livesound',
+    glyph: '📣',
+    name: 'Live Sound Reinforcement',
+    description: 'Complete-system thinking — design, wire, route, operate, tune and troubleshoot a live sound reinforcement system from an empty venue.',
+    section: 'training',
+    kind: 'list',
+    labs: [
+      { name: 'Sound Systems Lab', blurb: 'Begin with an empty venue; finish having designed, wired, routed, tested, tuned and troubleshot a complete live sound reinforcement system — fourteen chapters, a venue builder, a live console, an operating walk-through and a twenty-two-fault bench.', route: 'SoundSystemsLab', member: true },
+    ],
+  },
   {
     id: 'equalization',
     glyph: '🎚',
@@ -563,6 +577,12 @@ const MEMBER_ONLY_EXTRA_ROUTES: Record<string, string> = {
   ProductionLab: 'Production Labs',
   ProductionStage: 'Production Labs',
   ProductionActivity: 'Production Labs',
+  // The Sound Systems Lab's five mode screens (the catalog names the hub).
+  SoundSystemsLearn: 'Sound Systems Lab',
+  SoundSystemsBuild: 'Sound Systems Lab',
+  SoundSystemsRoute: 'Sound Systems Lab',
+  SoundSystemsOperate: 'Sound Systems Lab',
+  SoundSystemsTroubleshoot: 'Sound Systems Lab',
   // ── THE SAME SHAPE, FOUND BY THE PASS-4 VERIFIER ────────────────────
   //
   // Eight more routes sit inside or behind a paid lab and were equally invisible

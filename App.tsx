@@ -49,6 +49,16 @@ import { CareerFinderResultsScreen } from './src/screens/careerfinder/CareerFind
 import { CareerFamilyScreen } from './src/screens/careerfinder/CareerFamilyScreen';
 import { CareerFamilyListScreen } from './src/screens/careerfinder/CareerFamilyListScreen';
 import { CareerFinderAboutScreen } from './src/screens/careerfinder/CareerFinderAboutScreen';
+// Sound Systems Lab (2026-09-25) — `#soundsystemspreview` walks the hub and
+// all five modes in the browser harness.
+import { SoundSystemsLabScreen } from './src/screens/lab/soundsystems/SoundSystemsLabScreen';
+import {
+  SoundSystemsBuildScreen,
+  SoundSystemsLearnScreen,
+  SoundSystemsOperateScreen,
+  SoundSystemsRouteScreen,
+  SoundSystemsTroubleshootScreen,
+} from './src/screens/lab/soundsystems/modeScreens';
 import { navigationRef } from './src/navigation/navigationRef';
 import { linking } from './src/navigation/linking';
 import { attachLinkCapture } from './src/navigation/pendingLink';
@@ -395,6 +405,20 @@ function App() {
               { name: 'CareerFamily', component: CareerFamilyScreen as ComponentType },
               { name: 'CareerFamilyList', component: CareerFamilyListScreen as ComponentType },
               { name: 'CareerFinderAbout', component: CareerFinderAboutScreen as ComponentType },
+            ],
+          }
+      : window.location.hash === '#soundsystemspreview'
+        // Sound Systems Lab (owner GO 2026-09-25): the hub plus its five mode
+        // screens, so the whole lab can be walked in the browser harness.
+        ? {
+            name: 'SoundSystemsLab',
+            component: SoundSystemsLabScreen as ComponentType,
+            screens: [
+              { name: 'SoundSystemsLearn', component: SoundSystemsLearnScreen as ComponentType },
+              { name: 'SoundSystemsBuild', component: SoundSystemsBuildScreen as ComponentType },
+              { name: 'SoundSystemsRoute', component: SoundSystemsRouteScreen as ComponentType },
+              { name: 'SoundSystemsOperate', component: SoundSystemsOperateScreen as ComponentType },
+              { name: 'SoundSystemsTroubleshoot', component: SoundSystemsTroubleshootScreen as ComponentType },
             ],
           }
       : window.location.hash === '#multimeterpreview'
