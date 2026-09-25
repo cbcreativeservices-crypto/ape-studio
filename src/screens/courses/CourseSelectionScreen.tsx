@@ -167,6 +167,51 @@ const CARD_H = Math.max(260, Math.min(409, SCREEN_LONG - 394)); // was a flat 40
 const CARD_GAP = 14;
 /** Lit switch width on the cards — narrower than the card (Booth 2026-07-09q). */
 const CARD_BTN_W = Math.round(CARD_W * 0.62);
+
+/**
+ * TABLETS GET A BIGGER CARD (owner iPad report 2026-09-26: "fix the size issue
+ * of the carousel cards in the main menu when viewed on an iPad").
+ *
+ * The 2026-09-13 note above capped the card at the largest PHONE width so an
+ * iPad would never render a landscape card carrying portrait art. That cap
+ * kept the phone card on a 1024 × 1366 screen — a 280 × 409 card floating in
+ * a field of black. The fix keeps the phone card's PROPORTIONS (280 : 409)
+ * and lets the card grow into the room the window actually has:
+ *
+ *   • height-bound: the chrome above and below the deck is the same ≈394 pt
+ *     that `CARD_H` already budgets, so `windowH − 394` is the tallest card
+ *     that still shows its title and its button (the 2026-09-22 bug);
+ *   • width-bound: never more than 46 % of the window, so the neighbouring
+ *     cards still show and the deck still reads as a deck;
+ *   • capped at 720 pt tall so a 13-inch iPad does not turn a card into a
+ *     poster.
+ *
+ * Read from `useWindowDimensions()` — NOT the physical screen — because on a
+ * tablet the answer genuinely changes with rotation and Split View (landscape
+ * has less height, so the card must shrink to stay whole). The stylesheet
+ * keeps the phone constants; the dims are applied inline at every card site.
+ *
+ * ✅ NO PIXEL MOVES ON ANY PHONE: `IS_TABLET` is false below a 600 pt short
+ * edge (an iPad mini's is 744; the widest phone's is 430), and the phone path
+ * returns exactly the constants above.
+ */
+const IS_TABLET = BASE_W >= 600;
+const PHONE_CARD_RATIO = 409 / 280;
+const DECK_CHROME_H = 394;
+const TABLET_CARD_MAX_H = 720;
+type CardDims = { w: number; h: number; btnW: number; outer: { width: number }; card: { width: number; height: number } };
+const PHONE_DIMS: CardDims = { w: CARD_W, h: CARD_H, btnW: CARD_BTN_W, outer: { width: CARD_W }, card: { width: CARD_W, height: CARD_H } };
+function cardDimsFor(windowW: number, windowH: number): CardDims {
+  if (!IS_TABLET) return PHONE_DIMS;
+  const tallest = Math.max(300, Math.min(TABLET_CARD_MAX_H, windowH - DECK_CHROME_H));
+  const w = Math.max(CARD_W, Math.min(Math.round(tallest / PHONE_CARD_RATIO), Math.round(windowW * 0.46)));
+  const h = Math.round(w * PHONE_CARD_RATIO);
+  return { w, h, btnW: Math.round(w * 0.62), outer: { width: w }, card: { width: w, height: h } };
+}
+function useCardDims(): CardDims {
+  const { width, height } = useWindowDimensions();
+  return useMemo(() => cardDimsFor(width, height), [width, height]);
+}
 // Session landing memory (owner 2026-07-30). These module-level vars survive
 // component remounts but RESET when the app process restarts — which is exactly
 // the "cold start vs in-session return" signal we need:
@@ -413,10 +458,10 @@ const SHIMMER_FADE_OUT_START = 0.67;
 const SHIMMER_FADE_OUT_END = 0.99;
 /** Master dim (owner 2026-08-16): the WHOLE trace 57% dimmer. */
 const SHIMMER_MASTER = 0.43;
-/** Sweep angle of the card's lower-left corner (start of the pass). */
-const SHIMMER_START_RAD = Math.PI - Math.atan2(CARD_H, CARD_W);
-
-function CardShimmer({ active }: { active: boolean }) {
+function CardShimmer({ active, dims }: { active: boolean; dims: CardDims }) {
+  const { w: cw, h: chh } = dims;
+  /** Sweep angle of the card's lower-left corner (start of the pass). */
+  const startRad = Math.PI - Math.atan2(chh, cw);
   const [reduceMotion, setReduceMotion] = useState(false);
   useEffect(() => {
     let live = true;
@@ -466,7 +511,7 @@ function CardShimmer({ active }: { active: boolean }) {
   // Start the pass at the LOWER-LEFT corner (owner 2026-08-16), travelling
   // clockwise — up the left edge, across the top, down the right. The corner's
   // sweep angle in screen coords (y down): π − atan(CARD_H/CARD_W).
-  const transform = useDerivedValue(() => [{ rotate: angle.value + SHIMMER_START_RAD }]);
+  const transform = useDerivedValue(() => [{ rotate: angle.value + startRad }], [startRad]);
 
   if (!active || reduceMotion) return null;
   return (
@@ -475,13 +520,13 @@ function CardShimmer({ active }: { active: boolean }) {
       // style.pointerEvents too: on RN-web the Skia Canvas ignores the legacy
       // prop, so the shimmer swallowed every tap on the CENTERED card's own
       // button (Bug+Hater night E2-01). Native honors the prop; both are kept.
-      style={{ position: 'absolute', left: 0, bottom: 0, width: CARD_W, height: CARD_H, pointerEvents: 'none' }}
+      style={{ position: 'absolute', left: 0, bottom: 0, width: cw, height: chh, pointerEvents: 'none' }}
     >
       <Group opacity={glow}>
-        <RoundedRect x={0.75} y={0.75} width={CARD_W - 1.5} height={CARD_H - 1.5} r={15.5} style="stroke" strokeWidth={1.6}>
+        <RoundedRect x={0.75} y={0.75} width={cw - 1.5} height={chh - 1.5} r={15.5} style="stroke" strokeWidth={1.6}>
           <SweepGradient
-            c={vec(CARD_W / 2, CARD_H / 2)}
-            origin={vec(CARD_W / 2, CARD_H / 2)}
+            c={vec(cw / 2, chh / 2)}
+            origin={vec(cw / 2, chh / 2)}
             transform={transform}
             // Mostly transparent ring; a short warm tail rising to a soft
             // white head just behind the sweep point, then a crisp cutoff.
@@ -542,18 +587,19 @@ function CourseCardView({
   // CM3: the card RENDERS entitlement capabilities (server-owned once live) —
   // it never decides them. Flag OFF ⇒ everything unlocked-looking as today.
   const { commercialMode, caps, isMember } = useEntitlement();
+  const cd = useCardDims();
 
   // "+ XX other" tally card — its own compact look, far right of the deck.
   // (After the hook above so hook order stays stable.)
   if (item.kind === 'more') {
     return (
-      <View style={styles.cardOuter}>
+      <View style={[styles.cardOuter, cd.outer]}>
         <View style={styles.cardAbove}>
           <Text style={[styles.cardAboveText, { color: '#5bb0ff' }]}>SPECIALIZATION CERTIFICATES</Text>
           <View style={[styles.cardAboveRule, { backgroundColor: '#5bb0ff' }]} />
         </View>
         <Pressable
-          style={[styles.card, styles.moreCard]}
+          style={[styles.card, cd.card, styles.moreCard]}
           onPress={onOpenMore}
           accessibilityRole="button"
           accessibilityLabel={`Plus ${item.count} other certificates — view certificates`}
@@ -592,7 +638,7 @@ function CourseCardView({
           <Text style={styles.cardTitle}>{item.name}</Text>
         </View>
         <View style={{ alignItems: 'center' }}>
-          <View style={{ width: CARD_BTN_W }}>
+          <View style={{ width: cd.btnW }}>
             <GlassButton
               label={isMember ? 'COMING SOON' : '🔒 ACADEMY MODE'}
               tint="steel"
@@ -605,7 +651,7 @@ function CourseCardView({
       </>
     );
     return (
-      <View style={styles.cardOuter}>
+      <View style={[styles.cardOuter, cd.outer]}>
         <View style={styles.cardAbove}>
           <Text style={[styles.cardAboveText, { color: '#c4a2ff' }]}>Professional Program Certificate</Text>
           <View style={[styles.cardAboveRule, { backgroundColor: '#c4a2ff' }]} />
@@ -618,13 +664,13 @@ function CourseCardView({
         {stubUrl ? (
           <CardArt
             uri={stubUrl}
-            style={[styles.card, { borderColor: 'rgba(196,162,255,.65)' }]}
+            style={[styles.card, cd.card, { borderColor: 'rgba(196,162,255,.65)' }]}
             imageStyle={[styles.cardImg, { opacity: 0.7 }]}
           >
             {stubInner}
           </CardArt>
         ) : (
-          <View style={[styles.card, styles.cardNoImg, { borderColor: 'rgba(196,162,255,.65)' }]}>{stubInner}</View>
+          <View style={[styles.card, cd.card, styles.cardNoImg, { borderColor: 'rgba(196,162,255,.65)' }]}>{stubInner}</View>
         )}
         </Pressable>
       </View>
@@ -642,13 +688,13 @@ function CourseCardView({
     // otherwise the generic topic art, so no topic card is ever bare.
     const topicArt = cardImageUrl(`free${item.gs}`) ?? cardImageUrl('topic');
     return (
-      <View style={styles.cardOuter}>
+      <View style={[styles.cardOuter, cd.outer]}>
         <View style={styles.cardAbove}>
           <Text style={[styles.cardAboveText, { color: '#c4a2ff' }]}>MY TOPIC</Text>
           <View style={[styles.cardAboveRule, { backgroundColor: '#c4a2ff' }]} />
         </View>
         <Pressable onPress={() => onOpenTopic(item.gs)} accessibilityRole="button" accessibilityLabel={`Study ${item.name}`}>
-          <CardArt uri={topicArt} style={[styles.card, { borderColor: 'rgba(196,162,255,.65)' }]} imageStyle={styles.cardImg}>
+          <CardArt uri={topicArt} style={[styles.card, cd.card, { borderColor: 'rgba(196,162,255,.65)' }]} imageStyle={styles.cardImg}>
             <LinearGradient
               colors={['rgba(8,8,10,0.55)', 'rgba(8,8,10,0)', 'rgba(8,8,10,0.45)', 'rgba(8,8,10,0.95)']}
               locations={[0, 0.3, 0.58, 1]}
@@ -676,13 +722,13 @@ function CourseCardView({
     const label = cert ? 'CERTIFICATE' : subject ? 'SUBJECT' : 'PROGRAM';
     const bg = cert ? '#0e1a26' : subject ? '#1c1708' : '#161225';
     return (
-      <View style={styles.cardOuter}>
+      <View style={[styles.cardOuter, cd.outer]}>
         <View style={styles.cardAbove}>
           <Text style={[styles.cardAboveText, { color: tint }]}>{label}</Text>
           <View style={[styles.cardAboveRule, { backgroundColor: tint }]} />
         </View>
         <Pressable
-          style={[styles.card, styles.homeTopicCard, { borderColor: tint, backgroundColor: bg }]}
+          style={[styles.card, cd.card, styles.homeTopicCard, { borderColor: tint, backgroundColor: bg }]}
           onPress={() => onOpenBundle(item.bundleKey, item.topics)}
           accessibilityRole="button"
           accessibilityLabel={`Open ${item.name}`}
@@ -705,7 +751,7 @@ function CourseCardView({
     // art + legibility scrim + title + green OPEN LAB key (user request 2026-07-26).
     const labUrl = cardImageUrl('lab');
     return (
-      <View style={styles.cardOuter}>
+      <View style={[styles.cardOuter, cd.outer]}>
         <View style={styles.cardAbove}>
           {/* Owner 2026-09-17: this card's eyebrow is no longer the same
               sentence as Tools and Glossary. Those two are free outright; the
@@ -726,7 +772,7 @@ function CourseCardView({
         <Pressable onPress={onOpenLab} accessible={false}>
         <CardArt
           uri={labUrl}
-          style={[styles.card, { borderColor: 'rgba(55,224,95,.6)' }]}
+          style={[styles.card, cd.card, { borderColor: 'rgba(55,224,95,.6)' }]}
           imageStyle={styles.cardImg}
         >
           <LinearGradient
@@ -738,7 +784,7 @@ function CourseCardView({
             <Text style={styles.cardTitle}>Audio Fundamentals & Advanced Training Labs</Text>
           </View>
           <View style={{ alignItems: 'center' }}>
-            <View style={{ width: CARD_BTN_W }}>
+            <View style={{ width: cd.btnW }}>
               {/* Plural (owner 2026-09-17): the card opens a shelf of labs. */}
               <GlassButton label="OPEN LABS" tint="green" height={50} onPress={onOpenLab} />
             </View>
@@ -756,13 +802,13 @@ function CourseCardView({
     const showUrl = cardImageUrl(item.name);
     const openArea = () => onOpenShowcase(item.name);
     return (
-      <View style={styles.cardOuter}>
+      <View style={[styles.cardOuter, cd.outer]}>
         <View style={styles.cardAbove}>
           <Text style={[styles.cardAboveText, { color: '#ffc64d' }]}>STUDY AREA</Text>
           <View style={[styles.cardAboveRule, { backgroundColor: '#ffc64d' }]} />
         </View>
         <Pressable onPress={openArea} accessible={false}>
-          <CardArt uri={showUrl} style={[styles.card, { borderColor: 'rgba(255,198,77,.55)' }]} imageStyle={styles.cardImg}>
+          <CardArt uri={showUrl} style={[styles.card, cd.card, { borderColor: 'rgba(255,198,77,.55)' }]} imageStyle={styles.cardImg}>
             <LinearGradient
               colors={['rgba(8,8,10,0.55)', 'rgba(8,8,10,0)', 'rgba(8,8,10,0.45)', 'rgba(8,8,10,0.95)']}
               locations={[0, 0.3, 0.58, 1]}
@@ -772,7 +818,7 @@ function CourseCardView({
               <Text style={styles.cardTitle}>{item.name}</Text>
             </View>
             <View style={{ alignItems: 'center' }}>
-              <View style={{ width: CARD_BTN_W }}>
+              <View style={{ width: cd.btnW }}>
                 <GlassButton label="EXPLORE ›" tint="gold" height={50} fontSize={13} onPress={openArea} />
               </View>
             </View>
@@ -906,17 +952,17 @@ function CourseCardView({
             // Booth 2026-07-11 until the owner changed it on 2026-09-17: the
             // eyebrow above already says FREE TOPIC, so the button should say
             // what it DOES rather than repeat the price.
-            <View style={{ width: CARD_BTN_W }}>
+            <View style={{ width: cd.btnW }}>
               <GlassButton label="STUDY NOW" tint="green" height={50} onPress={() => onOpenPublic(free.courseOrder, true, free.gs)} />
             </View>
           ) : isTools ? (
             // Audio Tools is ALWAYS FREE to open (Booth 2026-07-11 #4); the
             // per-tutorial locks live INSIDE the hub, not on this card.
-            <View style={{ width: CARD_BTN_W }}>
+            <View style={{ width: cd.btnW }}>
               <GlassButton label="OPEN TOOLS" tint="green" height={50} onPress={onOpenTools} />
             </View>
           ) : isGlossary ? (
-            <View style={{ width: CARD_BTN_W }}>
+            <View style={{ width: cd.btnW }}>
               <GlassButton label="OPEN GLOSSARY" tint="blue" height={50} onPress={onOpenGlossary} />
             </View>
           ) : coming ? (
@@ -924,7 +970,7 @@ function CourseCardView({
             // 2026-08-10). Members are NOT upsold the membership they hold
             // (QA night 2026-08-31 — mirrors the program-stub ruling above):
             // they see COMING SOON instead of the paywall path.
-            <View style={{ width: CARD_BTN_W }}>
+            <View style={{ width: cd.btnW }}>
               <GlassButton
                 label={isMember ? 'COMING SOON' : '🔒 ACADEMY MODE'}
                 tint="steel"
@@ -939,9 +985,9 @@ function CourseCardView({
             </View>
           ) : locked ? (
             // Sized to match the glass keys (Booth 2026-07-09r).
-            <SwitchButton label="🔒 Locked" variant="locked" width={CARD_BTN_W} height={50} disabled />
+            <SwitchButton label="🔒 Locked" variant="locked" width={cd.btnW} height={50} disabled />
           ) : (
-            <View style={{ width: CARD_BTN_W }}>
+            <View style={{ width: cd.btnW }}>
               <GlassButton
                 label={completed ? 'REVIEW' : 'CONTINUE'}
                 tint={completed ? 'green' : 'gold'}
@@ -958,7 +1004,7 @@ function CourseCardView({
   const cardBody = url ? (
     <CardArt
       uri={url}
-      style={[styles.card, { borderColor: accent }]}
+      style={[styles.card, cd.card, { borderColor: accent }]}
       // Locked: no color wash — show the art but clearly grayed-out: image dimmed
       // 30% + a neutral gray overlay (below). Purple stays on the frame only
       // (Booth 2026-07-09c → deepened 07-09d, cards read too "active").
@@ -967,7 +1013,7 @@ function CourseCardView({
       {inner}
     </CardArt>
   ) : (
-    <View style={[styles.card, styles.cardNoImg, { borderColor: accent }, locked && { opacity: 0.55 }]}>
+    <View style={[styles.card, cd.card, styles.cardNoImg, { borderColor: accent }, locked && { opacity: 0.55 }]}>
       {inner}
     </View>
   );
@@ -994,7 +1040,7 @@ function CourseCardView({
   // COURSE / TOPIC (and FREE…) label sits ABOVE the card as a small caption with
   // a thin rule, keeping the per-type font colour (Booth 2026-07-11).
   return (
-    <View style={styles.cardOuter}>
+    <View style={[styles.cardOuter, cd.outer]}>
       {eyebrow ? (
         <View style={styles.cardAbove}>
           <Text style={[styles.cardAboveText, { color: eyebrowColor }]}>{eyebrow}</Text>
@@ -1015,7 +1061,8 @@ export function CourseSelectionScreen() {
   // and last card. Read from the hook so rotation and an iPad Split View drag
   // re-centre the deck instead of leaving it offset by half the width change.
   const { width: windowW } = useWindowDimensions();
-  const sidePad = Math.max(0, Math.round((windowW - CARD_W) / 2));
+  const cd = useCardDims();
+  const sidePad = Math.max(0, Math.round((windowW - cd.w) / 2));
   const navigation = useNavigation();
   const [cards, setCards] = useState<Card[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -1600,13 +1647,13 @@ export function CourseSelectionScreen() {
         horizontal
         showsHorizontalScrollIndicator={false}
         keyExtractor={(c) => c.id}
-        extraData={[activeIdx]}
-        snapToInterval={CARD_W + CARD_GAP}
+        extraData={[activeIdx, cd.w]}
+        snapToInterval={cd.w + CARD_GAP}
         decelerationRate="fast"
         contentContainerStyle={{ paddingHorizontal: sidePad, gap: CARD_GAP, alignItems: 'center' }}
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={{ itemVisiblePercentThreshold: 60 }}
-        getItemLayout={(_d, i) => ({ length: CARD_W + CARD_GAP, offset: (CARD_W + CARD_GAP) * i, index: i })}
+        getItemLayout={(_d, i) => ({ length: cd.w + CARD_GAP, offset: (cd.w + CARD_GAP) * i, index: i })}
         renderItem={({ item, index }) => (
           <View>
             <CourseCardView
@@ -1625,7 +1672,7 @@ export function CourseSelectionScreen() {
             />
             {/* Featured-card shimmer — overlays the CARD (bottom CARD_H of the
                 cell; the caption strip sits above), taps pass through. */}
-            <CardShimmer active={index === activeIdx} />
+            <CardShimmer active={index === activeIdx} dims={cd} />
           </View>
         )}
       />
