@@ -103,9 +103,13 @@ export const STUDY_AREA_CREDENTIALS: Record<string, readonly string[]> = {
   'System Design & Maintenance': [
     'prog-audio-acoustics-and-system-optimization-v3',
     'prog-audio-systems-engineering-v3',
+    // Owner 2026-09-25 (topic split): the standards path — measurement,
+    // conformity and calibration — sits with Test & Calibration here.
+    'prog-audio-standards-and-technical-compliance-v3',
     'cert-distributed-and-paging-systems-v3',
     'cert-audio-measurement-and-analysis-v3',
     'cert-test-and-calibration-technician-v3',
+    'cert-audio-standards-specialist-v3',
     'cert-audio-troubleshooting-specialist-v3',
     'cert-studio-wiring-and-infrastructure-v3',
     'cert-signal-flow-and-connections-v3',
@@ -121,10 +125,14 @@ export const STUDY_AREA_CREDENTIALS: Record<string, readonly string[]> = {
   'Architectural Acoustics': [
     'prog-acoustics-and-psychoacoustics-research-v3',
     'prog-environmental-noise-and-regulatory-acoustics-v3',
+    // Owner 2026-09-25 (topic split): the standards path's environmental-noise
+    // and regulatory half sits beside Noise Control and Noise Law.
+    'prog-audio-standards-and-technical-compliance-v3',
     'cert-room-acoustics-and-treatment-v3',
     'cert-how-sound-behaves-in-a-room-v3',
     'cert-noise-control-engineering-v3',
     'cert-noise-law-and-compliance-v3',
+    'cert-audio-standards-specialist-v3',
     'cert-archaeoacoustics-and-heritage-v3',
   ],
   'Commercial 70V Systems': [
