@@ -1,5 +1,8 @@
 # Lab photographs for Computer C — brief v2 (2026-09-25)
 
+> **2026-09-25 later:** findings 1, 2, 3, 4 and 6 are superseded by
+> `APE_DEFECT_PHOTO_REMAKE_BRIEF_2026_09_25.md` (the five remakes; d01/d04/d05/d08/d10 unwired).
+
 **Read this instead of every earlier prompt file.** It replaces
 `APE_LAB_PHOTO_PROMPTS_2026_09_25.md` (46 prompts) and the 2026-09-21 pack. Those described
 pictures the app cannot use: generic defects instead of the app's fifteen named findings,
