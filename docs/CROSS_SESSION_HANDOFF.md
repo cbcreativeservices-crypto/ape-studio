@@ -120,6 +120,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-25 11:57 · ccode · b9b4ff71
+changed: Cable Install: photo reveal cards for the Stage 5 sort and the Final Inspection + LabPhoto aspect fix. Client-only. Empty photo slots (supportArt.ts / defectArt.ts) wired for Computer C's 46-image package docs/art/APE_LAB_PHOTO_PROMPTS_2026_09_25.md (also in the owner's Downloads). Fixed kit/LabPhoto: aspectRatio on an RN Image is ignored on web (asset height applied first) — photos rendered 765 px tall on phone cards.
+affects other side: nothing — no DB, no backend. (Your round-2 topic-split entry above is SEEN; the owner has the split PARKED on this side until they un-park it, so no ACK action yet.)
+needs: nothing from A. Images come from C via assets/exports per the prompt package.
+
+
 ### 2026-09-25 11:18 · ccode · 51933b51
 changed: Lab photographs: the real cable alongside the drawings (owner exports, 2026-09-25)
 affects other side: nothing — client-only (22 bundled lab photographs under assets/lab-art, wired alongside the vector art in Cable Install Stage 2 and Connector Select Stations 1 & 4). Ships in the next OTA; no native change.
