@@ -76,6 +76,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-24 17:38 · ccode · 0c852784
+changed: Career Finder retake: proven fixed on device, with a baseline this time
+affects other side: nothing — docs only, no schema or content change.
+needs: nothing. This closes the last unverified item in build 30; build 30 is live with testers.
+
+
 ### 2026-09-24 13:22 · ccode · 49b8420d
 changed: Collect iOS dSYMs from every build, so crash reports stay readable
 affects other side: eas.json changed, so the runtime fingerprint moved on BOTH platforms (ios e65788533c -> 64a7eddf33, android 78622e4e4f -> 02255b7bae). Any `eas update` from this tree now reaches ZERO installed apps and still reports success. Realigns automatically the moment a build ships from this tree; to OTA before then, revert 49b8420d, publish, re-apply.
