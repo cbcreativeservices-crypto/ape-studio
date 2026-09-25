@@ -432,3 +432,55 @@ the test instead.
 
 > **Hunting bugs?** The method these lessons feed is written up as a standing
 > standard in [`APE_BUG_HUNT_STANDARD.md`](APE_BUG_HUNT_STANDARD.md).
+
+## 2026-09-25 — ⛔ `launch_duration` in Sentry is NOT the app's launch time
+
+A Cupertino iPhone 16 Pro (almost certainly Apple Beta App Review) reported a
+**34-second `launch_duration`** on build 30. It looked like a rejection risk and
+an obvious thing to go and optimise. It was neither.
+
+**What it actually measures.** Verified in
+`node_modules/expo-updates/ios/EXUpdates/EnabledAppController.swift`: the window
+from `AppController.start()` to `startupProcedureDidLaunch` — the expo-updates
+startup procedure ONLY. It excludes React starting, the JS bundle and the splash.
+Sentry's expo-updates integration reports it automatically; our code never sets
+it, which is why grepping for `launch_duration` in `src/` finds nothing.
+
+**The same phase on the Pixel is ~203 ms.** Measured end to end:
+
+    05.321  process start
+    05.421  Updates StartStartup
+    05.624  Updates EndStartup        <- 203 ms
+    05.827  ReactNativeJS "Running main"
+
+with `am start -W` reporting 166 ms to first frame.
+
+**The iOS numbers do not behave like work.** 34.4 s (b30, embedded launch),
+38.6 s (b28, embedded), 19.2 s (b24, NOT embedded), 11.4 s (b27 iPad, NOT
+embedded). First-launch asset extraction cannot explain the non-embedded ones,
+and the spread is far too wide for a fixed amount of work.
+
+**Most likely iOS PREWARMING.** The clock is `DispatchTime` (mach_absolute_time),
+which keeps counting while the process is SUSPENDED. iOS starts apps early, runs
+init, then suspends them until the user actually taps the icon — which inflates
+this arbitrarily. Android does not prewarm the same way, hence 203 ms.
+
+**Settled by the cheapest possible test:** the owner opened the app on the
+iPhone. **About 3 seconds.** No optimisation needed.
+
+⚠️ **But do not dismiss a high value outright.** Build 28's 38.6 s event had the
+unfiltered glossary formula scan sitting in its breadcrumbs, and that WAS a real
+stall (fixed `9a09158e`). Treat a high `launch_duration` as a prompt to read the
+breadcrumbs, never as a measurement of how long the app took to open.
+
+**The general lesson:** before optimising against a number, find out what the
+number measures. Ten minutes in the vendor's source and one hand-timed launch
+were worth more than any amount of profiling would have been.
+
+### Also from this sweep: filter Sentry by environment
+
+The unresolved list showed **21** issues. Filtered to `environment:production` it
+showed **7**. The other 14 were dev/web-preview Metro errors with
+`C:\Users\profe\...` paths — correctly tagged `development` by our own telemetry
+gating (`SENTRY_MAY_SEND = !__DEV__ || SELFTEST_ON`). The noise was in the query,
+not in the app. **Always filter by environment before triaging.**
