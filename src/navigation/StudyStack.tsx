@@ -5,7 +5,7 @@
  */
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ScreenErrorBoundary } from '../components/ScreenErrorBoundary';
-import { NAV_FADE, NAV_PUSH, NAV_PUSH_REDUCED, useReduceMotionNav } from './reduceMotionNav';
+import { NAV_PUSH, NAV_PUSH_REDUCED, useReduceMotionNav } from './reduceMotionNav';
 import { DashboardScreen } from '../screens/dashboard/DashboardScreen';
 import { FlashcardsScreen } from '../screens/study/FlashcardsScreen';
 import { FillInBlankScreen } from '../screens/study/FillInBlankScreen';
@@ -47,7 +47,15 @@ export function StudyStack() {
       <Stack.Screen name="FillInBlank" component={FillInBlankScreen} />
       <Stack.Screen name="Matching" component={MatchingScreen} />
       <Stack.Screen name="Quiz" component={QuizScreen} />
-      <Stack.Screen name="Glossary" component={GlossaryScreen} options={NAV_FADE} />
+      {/* Glossary used to be the ONE screen in this stack with a fade
+          transition. Two iOS reports point at exactly this route when it is
+          reached from Home's OPEN GLOSSARY (a cross-tab navigate that mounts
+          the stack and pushes in the same frame): build 28 iPhone "glossary
+          lands on the dashboard", and 2026-09-25 iPad "black screen, twice"
+          with no JS error, no server error, and the corpus fully loaded.
+          Every other Study screen uses the stack's default push and works on
+          the same iPad, so the Glossary now does too (owner re-tests). */}
+      <Stack.Screen name="Glossary" component={GlossaryScreen} />
       <Stack.Screen name="Scenarios" component={ScenariosScreen} />
     </Stack.Navigator>
   );

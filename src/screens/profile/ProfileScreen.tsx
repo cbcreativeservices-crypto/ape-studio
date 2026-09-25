@@ -60,7 +60,7 @@ import {
 } from '../../data/v3Curriculum';
 import { confirmDialog, notify } from '../../lib/confirm';
 import { loadShowBigPicture, saveShowBigPicture } from '../../features/profile/bigPicturePref';
-import { readingColumn } from '../../theme/readingColumn';
+import { cardColumn } from '../../theme/readingColumn';
 
 
 /**
@@ -1589,7 +1589,9 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
   body: { flex: 1, padding: 14, gap: 12 }, // zero scroll (locked)
   // Commercial variant scrolls (adds the networking profile form).
-  bodyScroll: { padding: 14, paddingBottom: 32, gap: 12, ...readingColumn },
+  // Card column, not the prose column: 760 on a tablet (owner iPad report
+  // 2026-09-25 - 560 read as "narrow squeezed"). Phones unchanged.
+  bodyScroll: { padding: 14, paddingBottom: 32, gap: 12, ...cardColumn },
 
   // --- Restructured commercial Profile (design review 2026-08-30) ---
   // Pinned digital ID: identity left, the scannable code right, at the size a

@@ -33,6 +33,24 @@
  */
 export const READING_MAX_W = 560;
 
+/**
+ * The CARD column — for surfaces made of cards and rows rather than prose:
+ * the Profile (identity card, share row, toggles, section cards). Owner iPad
+ * report 2026-09-25: capped at the 560 reading width the Profile "gets a
+ * narrow squeezed view" — 560 is right for a paragraph, wrong for a page of
+ * cards sitting in 230 pt of black on each side of a landscape iPad. 760
+ * fills a portrait iPad (820) and leaves a calm margin in landscape (1024).
+ * Phones are untouched (never wider than 430).
+ */
+export const CARD_MAX_W = 760;
+
+/** Spread into the scroll content style of a card/row surface. */
+export const cardColumn = {
+  width: '100%',
+  maxWidth: CARD_MAX_W,
+  alignSelf: 'center',
+} as const;
+
 /** Alias kept so the Tools hub's tile arithmetic reads a tools-flavoured name. */
 export const TOOL_READING_MAX_W = READING_MAX_W;
 

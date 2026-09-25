@@ -33,7 +33,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { READING_MAX_W, TOOL_READING_MAX_W, readingColumn, readingText } from '../src/theme/readingColumn.ts';
+import { CARD_MAX_W, READING_MAX_W, TOOL_READING_MAX_W, cardColumn, readingColumn, readingText } from '../src/theme/readingColumn.ts';
 
 /** [file, the style name its scroll content uses]. */
 const READING_SURFACES: Array<[string, string]> = [
@@ -97,12 +97,23 @@ test('every reading surface caps its scroll content', () => {
     const src = readFileSync(file, 'utf8');
     const m = src.match(new RegExp('\\n\\s*' + style + ': \\{[^}]*\\}'));
     assert.ok(m, `${file}: no '${style}' style found — did it get renamed?`);
+    // `cardColumn` (760) is the cap for card/row pages — the Profile since the
+    // owner's iPad report of 2026-09-25 ("narrow squeezed" at 560). Either
+    // spread counts as capped; a bare style does not.
     assert.match(
       m![0],
-      /\.\.\.readingColumn/,
+      /\.\.\.(readingColumn|cardColumn)/,
       `${file}: '${style}' is uncapped, so its text spans a whole iPad`,
     );
   }
+});
+
+test('the card column is wider than the reading column and still centred', () => {
+  assert.equal(cardColumn.maxWidth, CARD_MAX_W);
+  assert.ok(CARD_MAX_W > READING_MAX_W, 'cards get more of a tablet than prose does');
+  assert.ok(CARD_MAX_W <= 820, 'must still fit a portrait iPad (820) without binding');
+  assert.equal(cardColumn.alignSelf, 'center');
+  assert.equal(cardColumn.width, '100%');
 });
 
 test('tools reading surfaces cap the header so it lines up with the body', () => {
