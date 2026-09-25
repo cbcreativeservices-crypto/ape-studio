@@ -129,6 +129,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-25 15:07 · ccode · 476c0de0
+changed: Sound Systems Lab: bug and latency pass — client-only, this lab (six bugs, two slow rides fixed; engine and rack frame untouched; report docs/APE_SOUND_SYSTEMS_BUG_LATENCY_PASS_2026_09_25.md). Not published.
+affects other side: nothing
+needs: nothing
+
+
 ### 2026-09-25 14:57 · ccode · 8a00ef7a
 changed: Cable Install: 12 delivered defect photographs wired + Computer C brief v2
 affects other side: nothing — client-only. Cable Install Final Inspection now shows 8 Computer C defect photographs; the Computer C image brief was rebuilt from the app (docs/art/APE_LAB_PHOTO_BRIEF_v2_2026_09_25.md, zip in Downloads) after the owner rejected the 09-25 prompt package. No DB, no publish.
