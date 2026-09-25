@@ -46,8 +46,12 @@ including `b9b4ff71`. Fingerprints matched both installed runtimes; Pixel proven
 `01a0da05-06fd-7ac6-b670-0d6b1469ec10` on `production`. **Owner confirmed on the iPad:
 "the photos look right now."**
 
-**NOT published:** `430db688` (Profile width + Glossary fade). ⛔ Publish only on the owner's
-own words. When they say so, follow §7.
+**Second publish, 20:1x UTC (owner: "update the phones - then I am starting the new
+session"), both channels, from `aa4c8920`:** `430db688` (Profile 760 column + Glossary
+without the fade). iOS update `01a0da3d-1454-733a-abfb-c08cb81dadc5` on `production`.
+⚠️ It was published from a CLEAN SEPARATE CHECKOUT because the design agent (§1) had
+uncommitted Sound Systems edits in the main tree — a publish bundles whatever is on disk.
+Routine in §7. The owner still has to re-test the iPad glossary.
 
 ## 3 · Owner's open iPad reports
 
@@ -94,6 +98,15 @@ own words. When they say so, follow §7.
 - `web/` — a push publishes the live site (Vercel production = this branch).
 
 ## 7 · How to publish when the owner says "update the phones"
+
+**If the main tree has anyone's uncommitted work, publish from a clean checkout instead:**
+`git worktree add --detach C:\Users\profe\dev\ape-publish <pushed sha>`, then copy
+`node_modules` with robocopy (a JUNCTION does not work — autolinking resolves real paths and
+the fingerprint changes), copy `.env`, and mirror `.gitignore` and `modules\` from the main
+tree byte for byte (the main `.gitignore` has mixed CRLF/LF and the module folders hold
+ignored artefacts; a fresh checkout normalizes both and the fingerprint moves). Restore the
+pre-fix Swift file there, check both fingerprints, publish, then
+`git worktree remove --force` the checkout. Done this way 2026-09-25 evening.
 ```bash
 cd C:\Users\profe\dev\ape-studio; git show 427a0897^:modules/ape-dsp/ios/ApeDspModule.swift > modules/ape-dsp/ios/ApeDspModule.swift; npx expo-updates fingerprint:generate --platform ios | python -c "import json,sys; print(json.load(sys.stdin)['hash'])"; npx expo-updates fingerprint:generate --platform android | python -c "import json,sys; print(json.load(sys.stdin)['hash'])"
 ```
