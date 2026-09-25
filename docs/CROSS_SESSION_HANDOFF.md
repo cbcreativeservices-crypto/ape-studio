@@ -98,6 +98,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-25 08:58 · ccode · 25feb82b
+changed: Sound Systems Lab: accuracy and design pass after the owner's review
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
+
+
 ### 2026-09-25 02:01 · ccode · e3cf5f56
 changed: Sound Systems Lab: live sound reinforcement, all 14 chapters, 5 modes, 10 capstones
 affects other side: nothing backend-side — client + docs only. New training-section lab "Live Sound Reinforcement → Sound Systems Lab" (member-only, no af_ key, no labs-table row needed; completion = its understanding check). No new tables, RPCs or deep-link paths.
@@ -184,104 +190,104 @@ needs: Build 28's dSYM (UUID 2678ae4c-b582-3d4c-b162-7ab7b2ff19b0) uploaded to t
 
 ### 2026-09-24 00:03 · ccode · 9595648b
 changed: OTA published to both channels and verified running on the Pixel
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-23 23:12 · ccode · 7455c2c5
 changed: Labs: HIDE DISPLAY — let the lesson take the screen
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-23 22:59 · ccode · b3a46c21
 changed: Tester report: "Got stuck here couldn't press any buttons" — the rack was mute
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-23 22:52 · ccode · c00cc6f5
 changed: Tester reports: flashcard definitions wouldn't scroll, and redeem ate the code
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-23 22:46 · ccode · 1223aecf
 changed: Tester report: "the back button does not work" — it was too small to hit
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-23 09:39 · ccode · 8fd9e837
 changed: Device sweep: flashcard deck completed, power sequence verified, 10/10 questions correct
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-23 09:17 · ccode · f8bbda7a
 changed: Pixel device sweep: OTA confirmed running, SPL colour wheel verified
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-23 08:24 · ccode · 779d97ee
 changed: Sentry f95ff9a3: a SECOND worklet crash in the same file, still live
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-23 08:18 · ccode · 31697560
 changed: Modal layering: the surfaces that were drawn behind the sheet that raised them
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-23 08:06 · ccode · da0c9ce8
 changed: Sweep both crash classes repo-wide — and undo damage my own fix did
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-23 07:51 · ccode · 1f471ab4
 changed: Two reported crashes: pink noise, and the fullscreen colour wheel
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-23 01:11 · ccode · 404e7734
 changed: Five lessons from the overnight hunts
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-23 01:09 · ccode · f28581b7
 changed: Agent 3 verification record
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-23 01:05 · ccode · c0462ccb
 changed: Four ways the app showed a confident, specific, wrong number
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-23 00:49 · ccode · 369362b2
 changed: Agent 2 verification record
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-23 00:42 · ccode · b8a284b9
 changed: Multi-Meter left the mic hot in the background during START
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-23 00:34 · ccode · 500d90a9
 changed: Agent 2 findings recorded (unverified) — lifecycle & stalled waits
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-23 00:27 · ccode · c3d0d925
@@ -292,44 +298,44 @@ needs: nothing.
 
 ### 2026-09-23 00:19 · ccode · 5af7e312
 changed: Agent 1 findings recorded (unverified) — navigation & goal paths
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-22 23:58 · ccode · 8cf16e2b
 changed: Search text goes bold while a definition is open
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-22 23:39 · ccode · 43bf5217
 changed: Glossary search text matches the highlight it produces
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-22 23:25 · ccode · 68c71eb0
 changed: Glossary: stop the intro drawing over the consent dialog
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-22 21:48 · ccode · 82dbb8a1
 changed: Fix the freeze my own offline save caused — batch the corpus write
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-22 16:01 · ccode · c4d2bb68
 changed: Saving the glossary offline is a member feature — offered to everyone
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-22 15:41 · ccode · 8dfd4c9a
 changed: Glossary: load terms first, definitions for the rows on screen
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-22 15:17 · ccode · 4d748813
@@ -352,176 +358,176 @@ needs: nothing.
 
 ### 2026-09-22 10:56 · ccode · 9e3f1293
 changed: Subject-copy ratification sheet, and store-notifications recorded for after the build
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-22 10:34 · ccode · a8f45648
 changed: Bound the last five auth reads, and guard the class repo-wide
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-22 10:17 · ccode · 9332b1af
 changed: Pricing copy that cannot go stale, and a share confirm Android can see
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-22 09:47 · ccode · d6cff392
 changed: Remove "Start a fresh set" — the one place progress could go backwards
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-22 09:31 · ccode · ed6c5b34
 changed: The Cymatics lab stops stacking copies of its own screens
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-22 09:25 · ccode · 2c6b936a
 changed: A frozen "seconds ago", a bar in the wrong domain, and a timeline that lied
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-22 09:15 · ccode · 32019368
 changed: The Time Trial client fix was in a file nothing imports; move it to the live one
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-22 08:42 · ccode · bd73bc8b
 changed: Four more from the audio hunt: dose, weighting labels, saved logs, sweeps
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-22 08:32 · ccode · 1d4d344f
 changed: Three audio-tool corrections + the last two unbounded waits
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-22 07:44 · ccode · d1e93907
 changed: Two owner rulings applied: programs need the exam; the quiz timer goes to 0
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-22 00:43 · ccode · a8faa0b7
 changed: A missing production project no longer spins forever
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-22 00:37 · ccode · a72f35cf
 changed: Bug-Hunt Standard: record the three traps that cost real defects tonight
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-22 00:11 · ccode · b3eb30ec
 changed: Add the standing Bug-Hunt Standard; cross-link the ledger and lessons
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-21 22:54 · ccode · bfee0d78
 changed: Bind a store receipt to one account (migration + function, both unapplied)
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-21 22:49 · ccode · a4c8b768
 changed: Stop the offline study queue deleting answers the server never received
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-21 22:13 · ccode · 495f2c56
 changed: A stalled session read could freeze a screen permanently — bound all of them
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-21 08:53 · ccode · f430c083
 changed: The "Suggest a correction" link was below the contrast floor
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-21 08:51 · ccode · ede38f79
 changed: Fill in the Blank announced the correct answer to screen readers
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-21 08:43 · ccode · a117699e
 changed: Phone walkthrough: the meter announced a different number than it printed
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-21 08:11 · ccode · 44343dcf
 changed: Scenario RPCs: translate auth.uid() to users.id — APPLIED to production
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-21 01:35 · ccode · 6dbe16ff
 changed: Quiz and Final Exam: two fingers in one frame submitted the wrong answer
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-21 01:34 · ccode · f9d7d38d
 changed: Scenarios: "Begin Round 3" re-ran Round 2 forever, dead-ending the topic
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-21 01:33 · ccode · 04c111e9
 changed: Scope the study progress read to the caller — an admin was seeing other learners' rows
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-21 01:30 · ccode · beab3b9d
 changed: Close two PagedLab traps that would fire across 33 labs at once
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-21 01:29 · ccode · 8781771f
 changed: EQ Lab: a hint that taught the misconception it was trying to correct
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-21 01:28 · ccode · c7ad6890
 changed: Cymatics Harmony: the beat rate was seventeen times too fast, and printed as a formula
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-21 01:26 · ccode · 6630b7af
 changed: Cable Install: the bottom button announces SKIP AHEAD and now actually does it
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-21 00:58 · ccode · c8c2fc45
 changed: Close the same dead-mic blind spot in the other five instruments
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-21 00:57 · ccode · 3584f45b
 changed: Stop the SPL meter showing readings from a mic that has stopped
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
+needs: nothing.
 
 
 ### 2026-09-21 00:29 · ccode · 595de488
