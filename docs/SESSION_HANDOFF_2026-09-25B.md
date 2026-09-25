@@ -8,26 +8,29 @@ tsc clean, 1,986 tests pass. Working tree clean apart from untracked images (§6
 
 ---
 
-## 1 · ⛔ A background design agent may still be working in this tree
+## 1 · The Sound Systems Lab Rack Unit pass is DONE (background agent) — not published
 
-The previous session launched a design agent to bring the **Sound Systems Lab** onto the
-Rack Unit layout (owner: *"controls on the bottom, the display above, data in between that
-scrolls — many screens need adjustment"*, governance D24). It edits ONLY
-`src/screens/lab/soundsystems/**` (and wiring in `src/features/soundsystems/**`), verifies
-in the `#soundsystemspreview` harness, then commits **"Sound Systems Lab: Rack Unit layout
-pass"**, fills its sync-channel stub, pushes, and writes
-`docs/APE_SOUND_SYSTEMS_RACK_PASS_2026_09_25.md` + `Downloads/2026-09-25_SOUND_SYSTEMS_RACK_PASS.md`.
+Owner: *"controls on the bottom, the display above, data in between that scrolls — many
+screens need adjustment"* (governance D24). Commits **`eaff23f1`** ("Sound Systems Lab:
+Rack Unit layout pass") + `d31c1c61`, pushed. Report:
+`docs/APE_SOUND_SYSTEMS_RACK_PASS_2026_09_25.md` = `Downloads/2026-09-25_SOUND_SYSTEMS_RACK_PASS.md`.
+Independently re-checked after the hand-back: tree clean, tsc clean, 1,986 tests pass.
 
-**Before touching anything:**
-```bash
-cd C:\Users\profe\dev\ape-studio; git log --oneline -6; git status --short | grep -v "^??"
-```
-- Report file present + commit on the branch → the pass is done; read the report.
-- Report absent and `soundsystems` files modified but uncommitted → the agent is still
-  running or died mid-way. Do not edit those files; do not `git add -A` (ever); leave the
-  preview server alone. If the owner says the agent is gone, review the diff before
-  deciding to keep or discard it.
-- Never `git add .` in this tree while any of this is outstanding.
+- 43 of 52 pages are Rack Unit pages (stage pinned, bezel readouts, honesty badge, one
+  scroll well, dock with the lane bound to the teaching parameter); 9 stay document layout
+  (reading/checks with no live display: LEARN 4, 6, 7, 12, 15, 19, 22, ROUTE 3,
+  TROUBLESHOOT 1). Engine untouched, copy verbatim.
+- New: `soundsystems/rackLayout.tsx`, `SsPagedLab.tsx` (a local paged host with a `rack`
+  branch — `kit/PagedLab` is shared by 30 labs and was left alone; folding upstream is a
+  `rack?: boolean` on `PageDef`), `gainDock.tsx`, `consoleDock.tsx`.
+- One shared-frame change: `RackUnit` gained optional `bottomInset` (additive; Cymatics and
+  Digital unaffected).
+- Verified in the browser at 375 (all 52 pages, zero-overflow DOM scan) and 768×1024 (five
+  pages). NOT device-tested.
+
+**Next:** the owner's browser look (`?r=x#soundsystemspreview`) and a phone pass, then their
+publish cue. Known limits carried over: builds not persisted between BUILD pages; capstone 6
+grades REQS 1/5 on an empty venue.
 
 ## 2 · What shipped today (all pushed)
 
