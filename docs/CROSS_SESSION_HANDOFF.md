@@ -129,6 +129,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-25 16:49 · ccode · 6c6e3be3
+changed: Cable Install: unwire five mismatched defect photos; Computer C remake brief
+affects other side: nothing — app bundle + docs only, no DB. Five Final Inspection cards (sharp-bend, crushed-by-tie, connector-strain, bad-floor-crossing, slack-pile) are drawing-only until Computer C's remakes land (Downloads/2026-09-25_COMP_C_DEFECT_PHOTO_REMAKE_5.zip). Not on the phones until the owner publishes.
+needs: nothing
+
+
 ### 2026-09-25 16:20 · ccode · 3da182a6
 changed: docs: session handoff 2026-09-25C (publish proven, meter per device, Comp C zip), governance D30-D31, late lessons
 affects other side: nothing — docs only. Session handoff 2026-09-25C: OTA published to both channels from dbf6c9b2 (Pixel proven); the DB change of 1099d4de (glossary meter per device) is the one thing A must re-read — see that entry below.
