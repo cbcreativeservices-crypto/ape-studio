@@ -98,6 +98,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-25 02:01 · ccode · e3cf5f56
+changed: Sound Systems Lab: live sound reinforcement, all 14 chapters, 5 modes, 10 capstones
+affects other side: nothing backend-side — client + docs only. New training-section lab "Live Sound Reinforcement → Sound Systems Lab" (member-only, no af_ key, no labs-table row needed; completion = its understanding check). No new tables, RPCs or deep-link paths.
+needs: nothing. Owner reviews in the browser first (`localhost:8091/#soundsystemspreview`); no publish requested.
+
+
 ### 2026-09-25 00:20 · ccode · 9ebe0d16
 changed: Two triage lessons: launch_duration is not launch time, and filter Sentry by env
 affects other side: nothing — client + docs only.
