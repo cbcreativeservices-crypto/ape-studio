@@ -174,6 +174,7 @@ export function VenueView(p: VenueViewProps) {
 
   return (
     <View style={styles.wrap} accessible accessibilityRole="image" accessibilityLabel={p.a11y}>
+      {p.orientation ? <Text style={styles.orientText}>{p.orientation}</Text> : null}
       <Svg width="100%" viewBox={`0 0 ${PLOT_W} ${PLOT_H}`} style={{ aspectRatio: PLOT_W / PLOT_H }}>
         <Defs>
           <LinearGradient id="vv-deck" x1="0" y1="0" x2="0" y2="1">
@@ -379,11 +380,6 @@ export function VenueView(p: VenueViewProps) {
           <Text style={styles.badgeText}>{p.badge}</Text>
         </View>
       ) : null}
-      {p.orientation ? (
-        <View style={styles.orient} pointerEvents="none">
-          <Text style={styles.orientText}>{p.orientation}</Text>
-        </View>
-      ) : null}
       {p.caption ? <Text style={styles.caption}>{p.caption}</Text> : null}
     </View>
   );
@@ -437,10 +433,9 @@ export const CABLE_COLORS = LEVEL_COLOR;
 
 const styles = StyleSheet.create({
   wrap: { width: '100%', gap: 6 },
-  badge: { position: 'absolute', top: 8, right: 10, borderRadius: 6, borderWidth: 1, borderColor: 'rgba(255,198,77,.45)', backgroundColor: 'rgba(12,12,14,.85)', paddingHorizontal: 7, paddingVertical: 3 },
+  badge: { position: 'absolute', top: 30, right: 10, borderRadius: 6, borderWidth: 1, borderColor: 'rgba(255,198,77,.45)', backgroundColor: 'rgba(12,12,14,.85)', paddingHorizontal: 7, paddingVertical: 3 },
   badgeText: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 8.5, letterSpacing: 1.2 },
-  orient: { position: 'absolute', top: 8, left: 10, borderRadius: 6, backgroundColor: 'rgba(12,12,14,.8)', paddingHorizontal: 7, paddingVertical: 3, maxWidth: '62%' },
-  orientText: { color: colors.textSecondary, fontFamily: fonts.barlowMedium, fontSize: 11 },
+  orientText: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.2, textTransform: 'uppercase' },
   caption: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17 },
   legend: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },

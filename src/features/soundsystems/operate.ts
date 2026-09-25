@@ -38,23 +38,24 @@ export const SETUP_SEQUENCE: readonly SetupStep[] = [
 
 /* ── power sequence ──────────────────────────────────────────────────────── */
 
-export type PowerStep = { id: string; title: string; why: string };
+/** `short` is the button label — the full title lands in the ordered list. */
+export type PowerStep = { id: string; short: string; title: string; why: string };
 
 export const POWER_UP: readonly PowerStep[] = [
-  { id: 'verify', title: 'Loudspeakers and amplifiers OFF — verify routing and mutes', why: 'Nothing can be damaged while nothing can play.' },
-  { id: 'sources', title: 'Stage devices: wireless, DIs, playback', why: 'Their turn-on noise happens into a console that is not yet passing anything.' },
-  { id: 'console', title: 'Console', why: 'It boots and settles with every output still dark downstream.' },
-  { id: 'processor', title: 'Loudspeaker processor', why: 'Its outputs come up muted or at their last state — with the amplifiers still off, either is safe.' },
-  { id: 'amps', title: 'Amplifiers and powered loudspeakers — LAST', why: 'Every upstream transient has already happened. The amplifiers wake into silence.' },
-  { id: 'raise', title: 'Un-mute the processor outputs and bring the system up', why: 'Only now is there gain from source to cone — and the console mains stay down until the line check. Touring amplifiers are set once and protected by the processor limiters; they are not ridden per show.' },
+  { id: 'verify', short: 'Verify routing — amps OFF', title: 'Loudspeakers and amplifiers OFF — verify routing and mutes', why: 'Nothing can be damaged while nothing can play.' },
+  { id: 'sources', short: 'Stage devices', title: 'Stage devices: wireless, DIs, playback', why: 'Their turn-on noise happens into a console that is not yet passing anything.' },
+  { id: 'console', short: 'Console', title: 'Console', why: 'It boots and settles with every output still dark downstream.' },
+  { id: 'processor', short: 'Processor', title: 'Loudspeaker processor', why: 'Its outputs come up muted or at their last state — with the amplifiers still off, either is safe.' },
+  { id: 'amps', short: 'Amps and powered boxes — LAST', title: 'Amplifiers and powered loudspeakers — LAST', why: 'Every upstream transient has already happened. The amplifiers wake into silence.' },
+  { id: 'raise', short: 'Un-mute and bring up', title: 'Un-mute the processor outputs and bring the system up', why: 'Only now is there gain from source to cone — and the console mains stay down until the line check. Touring amplifiers are set once and protected by the processor limiters; they are not ridden per show.' },
 ];
 
 export const POWER_DOWN: readonly PowerStep[] = [
-  { id: 'lower', title: 'Mute the processor outputs (or pull the system master)', why: 'Take the gain out of the loudspeakers before anything upstream changes.' },
-  { id: 'amps', title: 'Amplifiers and powered loudspeakers — FIRST', why: 'Nothing that is switched off later can send a thump through an amplifier that is already off.' },
-  { id: 'processor', title: 'Loudspeaker processor', why: 'Its power-down transient meets a dead amplifier.' },
-  { id: 'console', title: 'Console', why: 'Save the show first; then it goes dark into a silent system.' },
-  { id: 'sources', title: 'Stage devices last', why: 'Wireless, DIs and playback are switched off when nothing can hear them.' },
+  { id: 'lower', short: 'Mute the outputs', title: 'Mute the processor outputs (or pull the system master)', why: 'Take the gain out of the loudspeakers before anything upstream changes.' },
+  { id: 'amps', short: 'Amps and powered boxes — FIRST', title: 'Amplifiers and powered loudspeakers — FIRST', why: 'Nothing that is switched off later can send a thump through an amplifier that is already off.' },
+  { id: 'processor', short: 'Processor', title: 'Loudspeaker processor', why: 'Its power-down transient meets a dead amplifier.' },
+  { id: 'console', short: 'Console — save first', title: 'Console', why: 'Save the show first; then it goes dark into a silent system.' },
+  { id: 'sources', short: 'Stage devices — last', title: 'Stage devices last', why: 'Wireless, DIs and playback are switched off when nothing can hear them.' },
 ];
 
 /** Is `order` a correct ordering of the given sequence? */

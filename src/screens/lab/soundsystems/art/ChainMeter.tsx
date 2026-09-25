@@ -76,7 +76,10 @@ export function ChainMeter({ chain, settings, onChange, running = true }: { chai
       <View accessible accessibilityRole="image" accessibilityLabel={`Gain chain: ${chain.map((c) => `${c.label} ${Math.round(c.levelDbu)} dBu${c.clipped ? ', clipping' : ''}`).join('; ')}`}>
         <Svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ aspectRatio: W / H }}>
           <Defs>
-            <LinearGradient id="cm-ramp" x1="0" y1="0" x2="0" y2="1">
+            {/* ONE ramp for every bar, in scale space: red at the top of the dBu
+                axis, blue 60 dB below it and beneath — a bar's colour is its
+                absolute level, never its own height (loudness colour standard). */}
+            <LinearGradient id="cm-ramp" gradientUnits="userSpaceOnUse" x1={0} y1={yOf(MAX_DBU)} x2={0} y2={yOf(MAX_DBU - 60)}>
               {LOUDNESS_STOPS.map((s) => (
                 <Stop key={s.pos} offset={s.pos} stopColor={s.color} />
               ))}
@@ -158,7 +161,7 @@ function StageMeter({ node, i, cellW, programme, peak, flash }: { node: GainNode
       <Rect x={x} y={TOP} width={w} height={BOTTOM - TOP} rx={3} fill="#050609" stroke="#1f2229" strokeWidth={0.6} />
       {/* accumulated noise: the haze from the floor */}
       <Rect x={x + 1} y={yNoise} width={w - 2} height={Math.max(0, BOTTOM - yNoise)} fill="#5a5f6a" opacity={0.45} />
-      {/* the signal, painted by the ramp keyed to the whole scale */}
+      {/* the signal, painted by the shared ramp (absolute level → colour) */}
       <ARect x={x + 3} y={yPeakStatic} width={w - 6} height={BOTTOM - yPeakStatic} rx={1.5} fill="url(#cm-ramp)" opacity={node.clipped ? 0.6 : 0.95} animatedProps={bar} />
       {/* peak hold */}
       <ARect x={x + 3} y={yPeakStatic - 1} width={w - 6} height={2} fill="#fff" opacity={0.85} animatedProps={holdProps} />

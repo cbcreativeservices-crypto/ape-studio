@@ -109,7 +109,7 @@ export function PickTile({ label, sub, selected, onPress, done }: { label: strin
       aria-pressed={selected}
       accessibilityLabel={`${label}${sub ? `, ${sub}` : ''}${done ? ', viewed' : ''}`}
     >
-      <Text style={[styles.tileLabel, selected && { color: colors.cyanBright }, done && !selected && { color: colors.textPrimary }]} numberOfLines={2}>
+      <Text style={[styles.tileLabel, selected && { color: colors.cyanBright }, done && !selected && { color: colors.textPrimary }]} numberOfLines={3}>
         {done && !selected ? '✓ ' : ''}
         {label}
       </Text>
@@ -155,7 +155,7 @@ export function ReadoutRow({ children }: { children: ReactNode }) {
 
 const styles = StyleSheet.create({
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  chip: { borderRadius: 8, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#101013', paddingHorizontal: 9, paddingVertical: 6, minHeight: 32, justifyContent: 'center' },
+  chip: { borderRadius: 8, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#101013', paddingHorizontal: 9, paddingVertical: 6, minHeight: 32, justifyContent: 'center', maxWidth: '100%', flexShrink: 1 },
   chipDone: { borderColor: colors.green, backgroundColor: '#0f2416' },
   chipText: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 0.8 },
   deeper: { gap: 6, marginTop: 2 },

@@ -446,8 +446,8 @@ export function bandConsole(): ConsoleState {
       ch('gtr', 'Guitar', 'guitar'),
       ch('keys', 'Keys', 'keys'),
       ch('vox', 'Lead vocal', 'vocal'),
-      ch('bvox', 'Backing vocal', 'vocal'),
-      ch('mc', 'Announce mic', 'speech'),
+      ch('bvox', 'Backing vox', 'vocal'),
+      ch('mc', 'Announce', 'speech'),
       ch('pb', 'Playback', 'playback'),
     ],
     auxes: [

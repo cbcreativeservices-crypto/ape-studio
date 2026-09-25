@@ -302,7 +302,7 @@ function BusMeter({ db, programme, peak }: { db: number; programme: SharedValue<
   return (
     <Svg width={W} height={H} viewBox={`0 0 ${W} ${H}`}>
       <Defs>
-        <LinearGradient id="bus-ramp" x1="0" y1="0" x2="0" y2="1">
+        <LinearGradient id="bus-ramp" gradientUnits="userSpaceOnUse" x1={0} y1={4} x2={0} y2={H - 4}>
           {LOUDNESS_STOPS.map((s) => (
             <Stop key={s.pos} offset={s.pos} stopColor={s.color} />
           ))}
@@ -486,8 +486,8 @@ const styles = StyleSheet.create({
   headCol: { flex: 1, alignItems: 'center', gap: 2 },
   headCell: { color: '#8b8b95', fontFamily: fonts.panelSemiBold, fontSize: 8, letterSpacing: 1.4, textAlign: 'center' },
   headSub: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 8, letterSpacing: 0.8 },
-  allRow: { flexDirection: 'row', gap: 3 },
-  allBtn: { minHeight: 22, paddingHorizontal: 4, borderRadius: 3, borderWidth: 1, borderColor: '#3a3a42', backgroundColor: '#1a1a1f', justifyContent: 'center' },
+  allRow: { flexDirection: 'column', gap: 3, alignSelf: 'stretch' },
+  allBtn: { minHeight: 22, paddingHorizontal: 4, borderRadius: 3, borderWidth: 1, borderColor: '#3a3a42', backgroundColor: '#1a1a1f', justifyContent: 'center', alignItems: 'center' },
   allText: { color: '#8b8b95', fontFamily: fonts.panelSemiBold, fontSize: 7, letterSpacing: 0.6 },
   tapeCol: { width: 72, justifyContent: 'center', gap: 2 },
   dblWarn: { color: colors.orange, fontFamily: fonts.oswaldMedium, fontSize: 8, letterSpacing: 0.6 },

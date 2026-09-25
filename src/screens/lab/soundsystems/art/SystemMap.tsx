@@ -160,7 +160,7 @@ export function SystemMap({ nodes, edges, selectedId, onTap, a11y, running = tru
         {LANES.map((y, i) => (
           <G key={i}>
             <Line x1={8} y1={y + 42} x2={MAP_W - 8} y2={y + 42} stroke="#1c1f27" strokeWidth={0.8} />
-            <SvgText x={10} y={y - 30} fontSize={6.5} fill="#4a505c" fontFamily={fonts.oswaldMedium} letterSpacing={1.6}>{lanes[i]}</SvgText>
+            <SvgText x={10} y={y - 30} fontSize={7} fill="#4a505c" fontFamily={fonts.oswaldMedium} letterSpacing={1.6}>{lanes[i]}</SvgText>
           </G>
         ))}
         {/* edges */}
@@ -205,11 +205,11 @@ export function SystemMap({ nodes, edges, selectedId, onTap, a11y, running = tru
               {state !== 'ok' && state !== 'unknown' ? <Circle cx={x} cy={y} r={24} fill={ring} opacity={0.1} /> : null}
               <GearInSvg kind={n.kind} id={`sm-${n.id}`} x={x} y={y} size={34} dim={!!n.dark || state === 'none'} power={n.dark || state === 'none' ? 'off' : 'on'} />
               <Led x={x + 18} y={y - 18} state={state} dark={!!n.dark} programme={programme} />
-              <SvgText x={x} y={y + 33} fontSize={7} fill={sel ? colors.cyanBright : colors.textSecondary} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={0.5}>
+              <SvgText x={x} y={y + 34} fontSize={8} fill={sel ? colors.cyanBright : colors.textSecondary} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={0.4}>
                 {n.label.toUpperCase()}
               </SvgText>
               {n.value ? (
-                <SvgText x={x} y={y + 41} fontSize={6.5} fill={ring} fontFamily={fonts.mono} textAnchor="middle">{n.value}</SvgText>
+                <SvgText x={x} y={y + 43} fontSize={7} fill={ring} fontFamily={fonts.mono} textAnchor="middle">{n.value}</SvgText>
               ) : null}
               {onTap ? <Circle cx={x} cy={y + 6} r={30} fill="transparent" onPress={() => onTap(n.id)} accessibilityLabel={`${n.label}${state === 'unknown' ? ', not probed — tap to probe' : `, reads ${state === 'ok' ? 'healthy' : state === 'none' ? 'no signal' : state}`}${n.value ? `, ${n.value}` : ''}${sel ? ', selected' : ''}`} /> : null}
             </G>

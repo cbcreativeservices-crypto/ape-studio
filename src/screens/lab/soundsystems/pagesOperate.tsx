@@ -50,7 +50,7 @@ function SequenceExercise({ steps, title, onCorrect, onOrder }: { steps: readonl
     <View style={{ gap: 10 }}>
       <Row>
         {bin.map((s) => (
-          <Btn key={s.id} label={s.title} disabled={order.includes(s.id) || !!err} onPress={() => setOrder((o) => [...o, s.id])} a11y={`${s.title}${order.includes(s.id) ? ', placed' : ''}`} />
+          <Btn key={s.id} label={s.short} disabled={order.includes(s.id) || !!err} onPress={() => setOrder((o) => [...o, s.id])} a11y={`${s.title}${order.includes(s.id) ? ', placed' : ''}`} />
         ))}
         {order.length ? <Btn label="RESET" tone="danger" onPress={() => setOrder([])} a11y="Reset the order" /> : null}
       </Row>
