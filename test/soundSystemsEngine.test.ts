@@ -42,9 +42,10 @@ const sys = await import('../src/features/soundsystems/system.ts');
 const con = await import('../src/features/soundsystems/console.ts');
 const loads = await import('../src/features/soundsystems/loads.ts');
 const { FAULTS, FAULT_GROUPS, firstAbnormal, gradeAttempt, isForwardWalk, minimalProbes } = await import('../src/features/soundsystems/faults.ts');
-const { CAPSTONES, gradeCapstone } = await import('../src/features/soundsystems/capstones.ts');
+const { CAPSTONES, CAPSTONES_IN_ORDER, gradeCapstone } = await import('../src/features/soundsystems/capstones.ts');
 const { OUTPUT_CONFIGS, SYSTEM_TYPES, VENUE_CASES } = await import('../src/features/soundsystems/configs.ts');
 const op = await import('../src/features/soundsystems/operate.ts');
+const cov = await import('../src/features/soundsystems/coverage.ts');
 const { SOUND_SYSTEMS_CHECK } = await import('../src/features/soundsystems/check.ts');
 const { getWorkspace } = await import('../src/screens/lab/calc/registry.ts');
 const progress = await import('../src/features/soundsystems/progress.ts');
@@ -189,7 +190,7 @@ describe('trace', () => {
 /* ── console ─────────────────────────────────────────────────────────────── */
 
 describe('console routing', () => {
-  it('pre-fader sends ignore fader and mute; post-fader sends follow both', () => {
+  it('pre-fader sends ignore the fader but follow the mute; post-fader sends follow both', () => {
     let cs = con.bandConsole();
     cs = con.setSend(cs, 'vox', 'aux1', { db: 0, tap: 'pre' });
     cs = con.setSend(cs, 'vox', 'aux5', { db: 0, tap: 'post' });
@@ -198,9 +199,19 @@ describe('console routing', () => {
     const post = con.auxBus(cs, 'aux5').find((c) => c.channelId === 'vox')!.gain;
     assert.equal(Math.round(con.lin2db(pre)), 0);
     assert.equal(Math.round(con.lin2db(post)), -20);
+    // "Pre-fader" means before the fader, not before the mute: a muted channel
+    // leaves nothing, monitor sends included.
     cs = con.setChannel(cs, 'vox', { mute: true });
     assert.equal(con.auxBus(cs, 'aux5').find((c) => c.channelId === 'vox')!.gain, 0);
-    assert.ok(con.auxBus(cs, 'aux1').find((c) => c.channelId === 'vox')!.gain > 0);
+    assert.equal(con.auxBus(cs, 'aux1').find((c) => c.channelId === 'vox')!.gain, 0);
+  });
+  it('a channel lit on L/R AND a subgroup arrives twice — the double-routing fault', () => {
+    let cs = con.bandConsole();
+    const single = con.mainBus(cs).find((c) => c.channelId === 'gtr')!.gain;
+    cs = con.setChannel(cs, 'gtr', { toMain: true, subgroup: 'sub-drums' });
+    assert.ok(con.doubleRouted(cs.channels.find((c) => c.id === 'gtr')!, cs));
+    const twice = con.mainBus(cs).find((c) => c.channelId === 'gtr')!.gain;
+    assert.equal(Math.round(con.lin2db(twice / single)), 6);
   });
   it('a subgroup not assigned to main is a dead end with a moving meter', () => {
     let cs = con.bandConsole();
@@ -308,6 +319,12 @@ describe('fault library', () => {
     assert.equal(new Set(FAULTS.map((f) => f.id)).size, 22);
     for (const g of FAULT_GROUPS) assert.ok(FAULTS.some((f) => f.group === g.id), g.id);
   });
+  it('every case starts where the symptom says, at or before its fault station', () => {
+    for (const f of FAULTS) {
+      assert.ok(STATION_ORDER.indexOf(f.startAt) <= STATION_ORDER.indexOf(f.faultAt), `${f.id} starts after its fault`);
+      assert.ok(minimalProbes(f) >= 1, f.id);
+    }
+  });
   it('every station has a reading; healthy before the fault, not healthy at it', () => {
     for (const f of FAULTS) {
       for (const s of STATION_ORDER) assert.ok(f.reads[s]?.note, `${f.id} missing ${s}`);
@@ -332,6 +349,8 @@ describe('fault library', () => {
     assert.equal(isForwardWalk(['speaker', 'source']), false);
     const f = FAULTS.find((x) => x.id === 'one-input')!;
     assert.equal(minimalProbes(f), 2);
+    // a whole-PA fault starts at the console meters, not the microphone
+    assert.equal(minimalProbes(FAULTS.find((x) => x.id === 'nothing')!), 2);
     const g = gradeAttempt(f, ['source', 'cable'] as Station[], f.correct);
     assert.deepEqual(g, { correct: true, forward: true, sawFault: true, probes: 2, minimal: 2 });
     const bad = gradeAttempt(f, ['speaker', 'amp'] as Station[], f.correct + 1);
@@ -362,7 +381,6 @@ function referenceBuild(id: string): { s: System; cs: CS } {
     post('kick', 'aux6');
     post('bass', 'aux6');
     post('keys', 'aux6');
-    cs = con.setMatrixInput(cs, 'mx-subs', 'aux6', 0);
   };
   switch (id) {
     case 'speech':
@@ -406,10 +424,10 @@ function referenceBuild(id: string): { s: System; cs: CS } {
         .put('l', 'poweredSpeaker', 'mainL').put('r', 'poweredSpeaker', 'mainR').put('fl', 'poweredSpeaker', 'frontFillL').put('fr', 'poweredSpeaker', 'frontFillR').put('sub', 'poweredSub', 'subC')
         .link('mic', 'con').link('rx', 'con').link('pb', 'con').link('con', 'l').link('con', 'r').link('con', 'fl').link('con', 'fr').link('con', 'sub');
       cs = con.setMatrixInput(cs, 'mx-fills', 'main', 0);
-      pre('mc', 'aux2');
+      pre('mc', 'aux7');
       cs = con.setMatrixInput(cs, 'mx-lobby', 'main', -6);
-      cs = con.setMatrixInput(cs, 'mx-lobby', 'aux2', 0);
-      auxFedSubs();
+      cs = con.setMatrixInput(cs, 'mx-lobby', 'aux7', 0);
+      cs = con.setMatrixInput(cs, 'mx-subs', 'main', 0);
       break;
     case 'outdoor':
       b.put('m1', 'vocalMic', 'stageC').put('m2', 'instrumentMic', 'riserC').put('d1', 'di', 'stageL').put('d2', 'di', 'stageR')
@@ -447,9 +465,10 @@ function referenceBuild(id: string): { s: System; cs: CS } {
 }
 
 describe('capstones', () => {
-  it('ten capstones, numbered 1..10, unique ids, every requirement has a kind', () => {
+  it('ten capstones, numbered 1..10 in a difficulty ramp, unique ids, every requirement has a kind', () => {
     assert.equal(CAPSTONES.length, 10);
-    assert.deepEqual(CAPSTONES.map((c) => c.n), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    assert.deepEqual([...CAPSTONES].map((c) => c.n).sort((a, b) => a - b), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    assert.deepEqual(CAPSTONES_IN_ORDER.map((c) => c.id), ['speech', 'mono-music', 'two-one', 'stereo-subs', 'network', 'monitors', 'groups-fx', 'matrices', 'outdoor', 'festival']);
     assert.equal(new Set(CAPSTONES.map((c) => c.id)).size, 10);
     for (const c of CAPSTONES) {
       assert.ok(c.requirements.length >= 4, c.id);
@@ -486,7 +505,7 @@ describe('capstones', () => {
     assert.ok(direct.ok);
     if (direct.ok) assert.ok(gradeCapstone(CAPSTONES[8], direct.system, r.cs).unmet.includes('sources'));
     const m = referenceBuild('matrices');
-    const noAux = con.setMatrixInput(m.cs, 'mx-lobby', 'aux2', null);
+    const noAux = con.setMatrixInput(m.cs, 'mx-lobby', 'aux7', null);
     assert.ok(gradeCapstone(CAPSTONES[6], m.s, noAux).unmet.includes('lobby'));
   });
 });
@@ -517,6 +536,42 @@ describe('output configurations and system types', () => {
   });
 });
 
+/* ── coverage physics ────────────────────────────────────────────────────── */
+
+describe('coverage model', () => {
+  it('the nominal angle is the −6 dB angle, and the fall continues steeply outside it', () => {
+    assert.equal(cov.offAxisDb(0, 90), 0);
+    assert.equal(cov.offAxisDb(45, 90), 6);
+    assert.equal(cov.offAxisDb(90, 90), 24);
+    assert.equal(cov.offAxisDb(90, 60), cov.REAR_FLOOR_DB);
+    assert.equal(cov.offAxisDb(180, 120), cov.REAR_FLOOR_DB);
+  });
+  it('a subwoofer is omnidirectional; a main aimed away from a point is at the rear floor', () => {
+    assert.equal(cov.offAxisDb(170, 360), 0);
+    const main = { x: 100, y: 100, aimDeg: 0, coverDeg: 90 };
+    const front = cov.beamLevelDb(main, 100, 200);
+    const behind = cov.beamLevelDb(main, 100, 0);
+    assert.ok(front - behind >= cov.REAR_FLOOR_DB - 0.01, `${front} vs ${behind}`);
+    const beside = cov.beamLevelDb(main, 200, 100);
+    assert.ok(front - beside >= 20, 'nothing reads sideways at 90° off a 90° horn');
+  });
+  it('level falls 6 dB per doubling of distance along the axis', () => {
+    const main = { x: 0, y: 0, aimDeg: 0, coverDeg: 90 };
+    const a = cov.beamLevelDb(main, 0, 80);
+    const b = cov.beamLevelDb(main, 0, 160);
+    assert.ok(Math.abs(a - b - 6.02) < 0.05, `${a - b}`);
+  });
+  it('two mains overlapping down the centre add about 3 dB, and the floor goes dark far away', () => {
+    const l = { x: 40, y: 0, aimDeg: 15, coverDeg: 90 };
+    const r = { x: 320, y: 0, aimDeg: -15, coverDeg: 90 };
+    const one = cov.fieldDb([l], 180, 200);
+    const two = cov.fieldDb([l, r], 180, 200);
+    assert.ok(two - one > 2.5 && two - one < 3.5, `${two - one}`);
+    assert.equal(cov.fieldValue([{ x: 180, y: 0, aimDeg: 0, coverDeg: 60 }], 180, 6000), 0);
+    assert.equal(cov.fieldValue([], 10, 10), 0);
+  });
+});
+
 /* ── operate ─────────────────────────────────────────────────────────────── */
 
 describe('operate models', () => {
@@ -532,6 +587,14 @@ describe('operate models', () => {
     const first = hot.find((n) => n.clipped)!;
     assert.equal(first.id, 'preamp');
     assert.ok(hot[hot.length - 1].clipped && hot[hot.length - 1].inheritedClip);
+  });
+  it('the OPERATE gain goals are achievable: 12 dB headroom before the amplifier, the amplifier last to clip', () => {
+    const chain = op.computeGainChain({ preamp: 36, fader: 0, main: 0, procIn: 0, procOut: 0, amp: -16 });
+    assert.equal(op.gainVerdict(chain), 'ok');
+    assert.ok(chain.every((n) => n.headroomDb >= 12), chain.map((n) => `${n.id} ${n.headroomDb.toFixed(1)}`).join(', '));
+    // and the OPERATE opening state clips at the preamp, the LEARN opening state is noisy
+    assert.equal(op.gainVerdict(op.computeGainChain({ preamp: 60, fader: -20, main: -10, procIn: 0, procOut: 0, amp: 0 })), 'clipping');
+    assert.equal(op.gainVerdict(op.computeGainChain({ preamp: 5, fader: 10, main: 10, procIn: 10, procOut: 0 })), 'noisy');
   });
   it('sequences grade order and name the first misplaced step', () => {
     const ids = op.POWER_UP.map((s) => s.id);

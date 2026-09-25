@@ -13,7 +13,7 @@
  * toward the listener, and stop at the first station whose reading changes —
  * is graded by `isForwardWalk`, not just the final answer.
  */
-import { STATION_ORDER, type Station } from './types';
+import { STATION_ORDER, type GearKind, type Station } from './types';
 
 export type Flag = 'hum' | 'distortion' | 'polarity' | 'intermittent' | 'early' | 'feedback' | 'dropout' | 'clicks' | 'limiting' | 'wrongContent';
 
@@ -30,7 +30,7 @@ export const FAULT_GROUPS: readonly { id: FaultGroup; title: string; blurb: stri
   { id: 'level', title: 'Level, noise and distortion', blurb: 'It plays, but wrong: clipping, hum, squash, a rattle. The walk finds where clean turns dirty.' },
   { id: 'routing', title: 'Routing', blurb: 'The signal exists and arrives somewhere — just not where it should. The console is usually the station.' },
   { id: 'time', title: 'Time, polarity and crossover', blurb: 'Everything is present; the pieces disagree with each other. The processor and the loudspeakers are the stations.' },
-  { id: 'digital', title: 'Digital, network and feedback', blurb: 'Faults that arrive as clicks, dropouts or a ring — and are solved by discipline, not by swapping boxes.' },
+  { id: 'digital', title: 'Digital, network and acoustic', blurb: 'Faults that arrive as clicks, dropouts or a ring — and are solved by discipline, not by swapping boxes.' },
 ];
 
 export type FaultCase = {
@@ -44,6 +44,15 @@ export type FaultCase = {
   /** Readings, one per station of STATION_ORDER. */
   reads: Record<Station, Reading>;
   faultAt: Station;
+  /** Where a professional STARTS: the symptom already clears everything
+   *  before this station (a whole-PA fault starts at the console meters; a
+   *  single dead channel starts at its source). */
+  startAt: Station;
+  /** Station labels for this scenario when the path is not the house path
+   *  (a monitor fault walks aux → monitor amp → wedge → performer). */
+  labels?: Partial<Record<Station, string>>;
+  /** Glyphs for those stations. */
+  kinds?: Partial<Record<Station, GearKind | 'listener'>>;
   options: readonly string[];
   correct: number;
   explain: string;
@@ -79,6 +88,7 @@ export const FAULTS: readonly FaultCase[] = [
   /* ── DEAD SIGNAL ────────────────────────────────────────────────────── */
   {
     id: 'nothing',
+    startAt: 'consoleIn',
     group: 'dead',
     title: 'No sound anywhere',
     symptom: '“Nothing is coming out. Anywhere.”',
@@ -102,6 +112,7 @@ export const FAULTS: readonly FaultCase[] = [
   },
   {
     id: 'one-input',
+    startAt: 'source',
     group: 'dead',
     title: 'One input has no sound',
     symptom: '“The lead vocal is dead. Everything else is fine.”',
@@ -129,6 +140,7 @@ export const FAULTS: readonly FaultCase[] = [
   },
   {
     id: 'left-dead',
+    startAt: 'consoleOut',
     group: 'dead',
     title: 'Left loudspeaker has no sound',
     symptom: '“Only the right side is playing.”',
@@ -153,6 +165,7 @@ export const FAULTS: readonly FaultCase[] = [
   },
   {
     id: 'subs-dead',
+    startAt: 'consoleOut',
     group: 'dead',
     title: 'Subwoofers have no output',
     symptom: '“The tops sound fine but there is no low end at all.”',
@@ -177,6 +190,7 @@ export const FAULTS: readonly FaultCase[] = [
   },
   {
     id: 'mixer-not-speaker',
+    startAt: 'consoleOut',
     group: 'dead',
     title: 'Signal reaches the mixer but not the loudspeakers',
     symptom: '“Meters are moving on the desk. Nothing from the PA.”',
@@ -187,7 +201,7 @@ export const FAULTS: readonly FaultCase[] = [
       { signal: 'none', note: 'Dark.' },
       {
         consoleOut: { signal: 'ok', note: 'Main meters healthy; main outputs patched to the processor inputs.' },
-        processor: { signal: 'none', note: 'INPUT meters lit. Every OUTPUT shows MUTE — a preset was recalled with its outputs muted, as processors do for safety.' },
+        processor: { signal: 'none', note: 'INPUT meters lit. Every OUTPUT shows MUTE — a preset was recalled with its outputs muted, as many processors do (and as this one was saved).' },
         amp: { signal: 'none', note: 'No signal LEDs.' },
         speaker: { signal: 'none', note: 'Silent.' },
         listener: { signal: 'none', note: 'Silence.' },
@@ -195,12 +209,13 @@ export const FAULTS: readonly FaultCase[] = [
     ),
     options: ['The processor outputs are muted (a preset recall)', 'The console main is muted', 'The loudspeaker cables are unplugged', 'The microphones are switched off'],
     correct: 0,
-    explain: 'Signal in, nothing out, at one box — that box is the station. Processors mute their outputs on preset recall precisely so a wrong preset cannot destroy loudspeakers; un-muting is a deliberate act.',
+    explain: 'Signal in, nothing out, at one box — that box is the station. Many processors mute their outputs on preset recall precisely so a wrong preset cannot destroy loudspeakers; un-muting is a deliberate act.',
     fix: 'Confirm the preset matches the loudspeakers, then un-mute the outputs one at a time at low level.',
     forward: 'The console meters already proved everything upstream. Starting at the console output and walking forward reached the processor in two probes.',
   },
   {
     id: 'intermittent',
+    startAt: 'source',
     group: 'dead',
     title: 'Intermittent cable or connector',
     symptom: '“The bass keeps dropping out. Sometimes it crackles.”',
@@ -210,7 +225,7 @@ export const FAULTS: readonly FaultCase[] = [
       'cable',
       { signal: 'ok', note: 'Present, until it is not.', flags: ['intermittent'] },
       {
-        source: { signal: 'ok', note: 'Bass and DI are fine on headphones at the DI’s output.' },
+        source: { signal: 'ok', note: 'The bass amp on stage, fed from the DI’s THRU, is clean and steady — instrument and DI are fine.' },
         cable: { signal: 'ok', note: 'Wiggle the XLR where it enters the DI: the channel crackles and drops. The strain relief spins loose.', flags: ['intermittent'] },
         stagebox: { signal: 'ok', note: 'Input LED flickers with the wiggle.', flags: ['intermittent'] },
         consoleIn: { signal: 'ok', note: 'Channel meter drops to nothing in bursts.', flags: ['intermittent'] },
@@ -227,6 +242,7 @@ export const FAULTS: readonly FaultCase[] = [
   /* ── LEVEL, NOISE, DISTORTION ───────────────────────────────────────── */
   {
     id: 'driver',
+    startAt: 'consoleOut',
     group: 'level',
     title: 'Loudspeaker produces distortion',
     symptom: '“The left top buzzes on every low note.”',
@@ -251,18 +267,19 @@ export const FAULTS: readonly FaultCase[] = [
   },
   {
     id: 'amp-clip',
+    startAt: 'consoleOut',
     group: 'level',
     title: 'Amplifier clips',
     symptom: '“It gets harsh and nasty as soon as the band gets loud.”',
-    setup: 'Processor outputs at nominal level into an amplifier whose input attenuators are fully open.',
+    setup: 'Amplifier input attenuators fully open (full output at +4 dBu in); the processor limiter threshold is set ABOVE that.',
     faultAt: 'amp',
     reads: reads(
       'amp',
       { signal: 'clip', note: 'Harsh on every loud passage.', flags: ['distortion'] },
       {
         consoleOut: { signal: 'ok', note: 'Main meters peak around −6 dBFS — healthy headroom.' },
-        processor: { signal: 'ok', note: 'Outputs at nominal; no limiter light.' },
-        amp: { signal: 'clip', note: 'CLIP LEDs flash on every loud passage. Input attenuators are fully open; the feed is a hot line level.', flags: ['distortion'] },
+        processor: { signal: 'ok', note: 'Outputs peak around +16 dBu on loud passages; the limiter threshold reads +20 — it never engages.' },
+        amp: { signal: 'clip', note: 'CLIP LEDs flash on every loud passage. With the attenuators open this amplifier is at full output by +4 dBu, so everything above that is flattened — and the limiter upstream is set higher than the amplifier’s clip point, so it never wins.', flags: ['distortion'] },
         speaker: { signal: 'hot', note: 'Harsh, flattened transients; the horns are working hard.', flags: ['distortion'] },
         listener: { signal: 'hot', note: 'Loud and ugly at the same moment.', flags: ['distortion'] },
       },
@@ -270,11 +287,12 @@ export const FAULTS: readonly FaultCase[] = [
     options: ['The amplifier is driven into clipping — set its input level and the system gain structure', 'A loudspeaker is damaged', 'A console channel is clipping', 'A digital clock error'],
     correct: 0,
     explain: 'The console and the processor have headroom; the first station to run out of it is the amplifier. A clipped amplifier delivers flattened, high-frequency-rich waveforms that heat tweeters — the distortion is a warning of damage to come.',
-    fix: 'Set the amplifier input attenuators so the processor’s limiter engages before the amplifier clips, and confirm the limiter thresholds match the cabinets.',
+    fix: 'Bring the amplifier attenuators down (or lower the processor output) until the limiter engages before the amplifier clips, and confirm the limiter thresholds match the cabinets. The amplifier must be the last stage to clip.',
     forward: 'Headroom is checked in order. The first station with no headroom left is where the level structure broke.',
   },
   {
     id: 'hum-keys',
+    startAt: 'source',
     group: 'level',
     title: 'Loud hum or buzz',
     symptom: '“There is a hum on the keyboards.”',
@@ -286,7 +304,7 @@ export const FAULTS: readonly FaultCase[] = [
       {
         source: { signal: 'ok', note: 'On headphones at the keyboard: clean.' },
         cable: { signal: 'ok', note: 'A 20 m UNBALANCED instrument cable. Lift its far end from the input: the hum stops with the keys. Move it near the lighting cable: it gets louder.', flags: ['hum'] },
-        stagebox: { signal: 'ok', note: 'Signal present, hum riding under it.', flags: ['hum'] },
+        stagebox: { signal: 'ok', note: 'Not in this path — the keyboard cable bypasses the box and runs straight to front of house. That is already the clue: no balanced line, no DI.', flags: ['hum'] },
         consoleIn: { signal: 'ok', note: 'Hum on the keys channel only. Mute it: silence.', flags: ['hum'] },
         listener: { signal: 'ok', note: 'A steady hum whenever the keys channel is open.', flags: ['hum'] },
       },
@@ -294,11 +312,14 @@ export const FAULTS: readonly FaultCase[] = [
     options: ['A long unbalanced cable picking up interference — use a DI box', 'A damaged loudspeaker driver', 'The amplifier is clipping', 'The channel is on the wrong bus'],
     correct: 0,
     explain: 'The source is clean; the first station that adds the hum is the cable, and it is unbalanced over a distance no unbalanced cable should run. A DI converts to balanced mic level at the keyboard, and the long run rejects interference.',
-    fix: 'DI box at the keyboard, XLR to the stagebox. Ground-lift on the DI if a loop remains.',
+    fix: 'DI box at the keyboard, XLR to the stagebox — or, if the keyboard has balanced XLR outputs, run those direct. Ground-lift on the DI if a loop remains.',
     forward: 'The hum was NOT at the source. Probing the source first ruled out the keyboard in one step and pointed at the next station.',
   },
   {
     id: 'ground-loop',
+    startAt: 'consoleIn',
+    labels: { amp: 'Powered cabinet (amp inside)' },
+    kinds: { amp: 'poweredSpeaker' },
     group: 'level',
     title: 'Ground loop',
     symptom: '“A hum that is there even when everything is muted.”',
@@ -324,6 +345,7 @@ export const FAULTS: readonly FaultCase[] = [
   },
   {
     id: 'limiter',
+    startAt: 'consoleOut',
     group: 'level',
     title: 'Excessive limiter activity',
     symptom: '“It will not get loud. It just sounds squashed.”',
@@ -334,7 +356,7 @@ export const FAULTS: readonly FaultCase[] = [
       { signal: 'low', note: 'Squashed and quiet.', flags: ['limiting'] },
       {
         consoleOut: { signal: 'ok', note: 'Main meters healthy and well below clip.' },
-        processor: { signal: 'low', note: 'LIMIT LEDs solid on the HIGH outputs at moderate level; threshold reads −20 dBu. The preset name is for a different cabinet.', flags: ['limiting'] },
+        processor: { signal: 'low', note: 'LIMIT LEDs solid on the HIGH outputs at moderate level; the threshold reads 0 dBu where this amplifier-and-cabinet pairing needs about +10. The preset name is for a different cabinet.', flags: ['limiting'] },
         amp: { signal: 'low', note: 'Signal present, never near clip.' },
         speaker: { signal: 'low', note: 'Quiet, flattened — every transient shaved off.', flags: ['limiting'] },
         listener: { signal: 'low', note: 'Loud passages do not get louder, they get smaller.', flags: ['limiting'] },
@@ -350,6 +372,7 @@ export const FAULTS: readonly FaultCase[] = [
   /* ── ROUTING ────────────────────────────────────────────────────────── */
   {
     id: 'wrong-patch',
+    startAt: 'stagebox',
     group: 'routing',
     title: 'Incorrect digital patch',
     symptom: '“The vocal is plugged in and the box shows signal, but the channel is dead.”',
@@ -376,6 +399,7 @@ export const FAULTS: readonly FaultCase[] = [
   },
   {
     id: 'wrong-bus',
+    startAt: 'consoleIn',
     group: 'routing',
     title: 'Wrong output bus selected',
     symptom: '“Guitar meter is moving on the desk but the guitar is not in the PA.”',
@@ -401,6 +425,7 @@ export const FAULTS: readonly FaultCase[] = [
   },
   {
     id: 'pre-post',
+    startAt: 'consoleIn',
     group: 'routing',
     title: 'Pre-fader / post-fader routing error',
     symptom: '“When I pull the vocal down, the reverb stays just as loud.”',
@@ -423,6 +448,9 @@ export const FAULTS: readonly FaultCase[] = [
   },
   {
     id: 'monitor-follows-main',
+    startAt: 'consoleOut',
+    labels: { consoleOut: 'Aux output', processor: 'Monitor EQ', amp: 'Monitor amp', speaker: 'Wedge', listener: 'Performer' },
+    kinds: { speaker: 'wedge' },
     group: 'routing',
     title: 'Monitor changes when the main fader moves',
     symptom: '“Every time you touch the house, the wedges change.”',
@@ -446,6 +474,7 @@ export const FAULTS: readonly FaultCase[] = [
   },
   {
     id: 'vocals-in-subs',
+    startAt: 'consoleOut',
     group: 'routing',
     title: 'Subwoofer receives vocals unintentionally',
     symptom: '“The vocal sounds boomy and thick — you can hear it coming from the subs.”',
@@ -471,6 +500,9 @@ export const FAULTS: readonly FaultCase[] = [
   /* ── TIME, POLARITY, CROSSOVER ──────────────────────────────────────── */
   {
     id: 'polarity',
+    startAt: 'consoleOut',
+    labels: { amp: 'Powered cabinet (amp inside)' },
+    kinds: { amp: 'poweredSpeaker' },
     group: 'time',
     title: 'Reversed polarity',
     symptom: '“Each side alone sounds full. Both together, the bass disappears in the middle.”',
@@ -495,6 +527,7 @@ export const FAULTS: readonly FaultCase[] = [
   },
   {
     id: 'crossover',
+    startAt: 'consoleOut',
     group: 'time',
     title: 'Incorrect crossover',
     symptom: '“The subs are muddy and you can hear vocals in them. The tops sound thin.”',
@@ -518,6 +551,7 @@ export const FAULTS: readonly FaultCase[] = [
   },
   {
     id: 'delay-time',
+    startAt: 'consoleOut',
     group: 'time',
     title: 'Delay loudspeaker arriving too early',
     symptom: '“Under the delay towers everything sounds smeared, like a slap echo.”',
@@ -544,6 +578,7 @@ export const FAULTS: readonly FaultCase[] = [
   /* ── DIGITAL, NETWORK, FEEDBACK ─────────────────────────────────────── */
   {
     id: 'clocking',
+    startAt: 'stagebox',
     group: 'digital',
     title: 'Digital clocking problem',
     symptom: '“Clicks and pops, every few seconds, on every channel at once.”',
@@ -561,21 +596,22 @@ export const FAULTS: readonly FaultCase[] = [
     options: ['A digital clock mismatch — one clock master, everything else slaved to it', 'A bad microphone cable', 'A ground loop', 'Feedback'],
     correct: 0,
     explain: 'One bad cable affects one channel; a clock fault affects every channel at once, at the same instant. Two devices each believing they are master is the classic cause.',
-    fix: 'Choose ONE master (usually the console) and set every other device to slave from the network or word clock. Confirm the sample rates match.',
+    fix: 'Choose ONE clock master — on a proprietary link usually the console — and set every other device to slave from it. On Dante or AES67 the network ELECTS the master: the equivalent mistake is two devices forced to preferred master, or one forced to INTERNAL. Confirm the sample rates match.',
     forward: 'Every channel together means the fault is where the channels first share a clock — the console’s digital input, not any microphone.',
   },
   {
     id: 'network',
+    startAt: 'stagebox',
     group: 'digital',
     title: 'Network audio interruption',
     symptom: '“The whole PA drops out for a second, then comes back.”',
-    setup: 'One network cable from the stagebox to the console, routed through a door hinge to an unmanaged switch.',
+    setup: 'One network cable from the stagebox to the console, routed through a door hinge to an office switch with Energy-Efficient Ethernet enabled.',
     faultAt: 'stagebox',
     reads: reads(
       'stagebox',
       { signal: 'ok', note: 'Everything drops together.', flags: ['dropout'] },
       {
-        stagebox: { signal: 'ok', note: 'The LINK LED blinks off when the door moves. Every input drops together. The cable is crushed at the hinge and the switch is an office unit that is not configured for audio.', flags: ['dropout'] },
+        stagebox: { signal: 'ok', note: 'The LINK LED blinks off when the door moves. Every input drops together. The cable is crushed at the hinge — and the switch has Energy-Efficient Ethernet enabled, which drops the link between packets.', flags: ['dropout'] },
         consoleIn: { signal: 'ok', note: 'Every channel vanishes and returns as one.', flags: ['dropout'] },
         listener: { signal: 'ok', note: 'A second of silence, then the show returns.', flags: ['dropout'] },
       },
@@ -583,15 +619,18 @@ export const FAULTS: readonly FaultCase[] = [
     options: ['The network link between the stagebox and the console is failing (cable or switch)', 'One microphone cable is intermittent', 'The amplifier is going into protect', 'The limiter is closing'],
     correct: 0,
     explain: 'All inputs dropping as one is a transport fault, not a channel fault. On a networked system the transport is a single cable and whatever it passes through — and a door hinge is where cables die.',
-    fix: 'Re-route the cable clear of the door with strain relief, use a switch configured for audio networking, and run a redundant second link if the system supports it.',
+    fix: 'Re-route the cable clear of the door with strain relief, use a switch with Energy-Efficient Ethernet disabled and QoS set for audio, and run the redundant second link if the system supports it.',
     forward: 'The stagebox is the first station where all channels share one path. Its LINK light told the story before a single cable was swapped.',
   },
   {
     id: 'feedback',
+    startAt: 'consoleIn',
+    labels: { consoleOut: 'Aux output', processor: 'Monitor EQ', amp: 'Monitor amp', speaker: 'Wedge', listener: 'Performer' },
+    kinds: { speaker: 'wedge' },
     group: 'digital',
     title: 'Feedback appears during soundcheck',
     symptom: '“A ring starts every time the singer’s wedge comes up.”',
-    setup: 'Vocal microphone with a cardioid pattern; the wedge is aimed straight up into the microphone from the front, and the singer’s monitor send is at +6 dB.',
+    setup: 'Vocal microphone with a cardioid pattern; the wedge fires up into the FRONT of the capsule — on-axis — and the singer’s monitor send is at +6 dB.',
     faultAt: 'speaker',
     reads: reads(
       'speaker',
@@ -601,14 +640,14 @@ export const FAULTS: readonly FaultCase[] = [
         consoleOut: { signal: 'ok', note: 'Aux 1 send on the vocal at +6 dB — hotter than anything else in that mix.' },
         processor: { signal: 'ok', note: 'Not in the monitor path.' },
         amp: { signal: 'ok', note: 'Monitor amplifier clean.' },
-        speaker: { signal: 'hot', note: 'The wedge sits directly in FRONT of the microphone, firing up into its most sensitive angle. Raise the send: a 2.5 kHz ring builds until it howls.', flags: ['feedback'] },
+        speaker: { signal: 'hot', note: 'The wedge sits ON-AXIS, firing into the capsule’s most sensitive angle. Raise the send: a 2.5 kHz ring builds until it howls.', flags: ['feedback'] },
         listener: { signal: 'hot', note: 'Everyone hears the ring before the singer hears the wedge.', flags: ['feedback'] },
       },
     ),
     options: ['Acoustic feedback: the wedge is aimed into the microphone and the send is too hot — reposition, reduce, then notch', 'A faulty cable', 'A digital clock error', 'A ground loop'],
     correct: 0,
     explain: 'Feedback is a loop, not a component: microphone → console → wedge → microphone. Gain-before-feedback is spent first by geometry — a wedge in the pattern’s live angle — then by level. Position and placement come before any equaliser.',
-    fix: 'Move the wedge to the microphone’s rejection angle (behind a cardioid), lower the send, then find the ringing frequency on the analyser and apply a narrow cut.',
+    fix: 'Move the wedge into the microphone’s null — directly behind a cardioid; about 110–125° off-axis for a super- or hypercardioid, which has a small rear lobe — lower the send, then find the ringing frequency on the analyser and apply a narrow cut.',
     forward: 'Electrical stations were all clean; the fault was ACOUSTIC, at the last station, where the loudspeaker meets the microphone again.',
   },
 ];
@@ -647,10 +686,17 @@ export function firstAbnormal(c: FaultCase): Station {
   return c.faultAt;
 }
 
-/** Probes a disciplined forward walk needs: every station up to and
- *  including the fault station. */
+/** Probes a disciplined forward walk needs: from the station the symptom
+ *  leaves in doubt (`startAt`) to the fault station, inclusive. */
 export function minimalProbes(c: FaultCase): number {
-  return STATION_ORDER.indexOf(c.faultAt) + 1;
+  return STATION_ORDER.indexOf(c.faultAt) - STATION_ORDER.indexOf(c.startAt) + 1;
+}
+
+/** Was the walk forward AND did it start where the symptom says to? A probe
+ *  before `startAt` is not wrong, just wasted; only a backward jump breaks
+ *  the discipline. */
+export function stationLabelFor(c: FaultCase, s: Station, fallback: string): string {
+  return c.labels?.[s] ?? fallback;
 }
 
 export type AttemptGrade = {

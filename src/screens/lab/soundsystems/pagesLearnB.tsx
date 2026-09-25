@@ -9,6 +9,7 @@
  *
  * Every number on these pages comes from the Audio Calculator Laboratory
  * through features/soundsystems/loads.ts — never a second derivation.
+ * Every page opens with its instrument; every control changes it.
  */
 import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -21,34 +22,33 @@ import { gearSpec, GEAR, LEVEL_LABEL } from '../../../features/soundsystems/gear
 import { canConnect, EMPTY_SYSTEM, place, slotDef } from '../../../features/soundsystems/system';
 import { ampMatch, ampMatchCopy, CALC_LINKS, fmtOhms, loadVerdict, loadVerdictCopy, parallelLoad, predictedSpl, wattsIntoLoad, type AmpRating } from '../../../features/soundsystems/loads';
 import { SETUP_SEQUENCE } from '../../../features/soundsystems/operate';
-import type { GearKind, SignalLevel, SlotId } from '../../../features/soundsystems/types';
+import type { GearKind, Placed, SignalLevel, SlotId } from '../../../features/soundsystems/types';
 import { CalcLink, ChapterTag, DeeperRow, GoalChips, KeyFact, LabLink, PickTile, Readout, ReadoutRow, useVisitGoals, VerdictLine } from './bits';
 import { GearGlyph, GearInSvg, INK } from './art/gearArt';
-import { CableLegend, VenueView, type PlotBeam } from './art/VenueView';
-import { PLOT_BADGE } from './plot';
+import { CableLegend, FieldKey, VenueView, type PlotBeam } from './art/VenueView';
+import { Orient, SplitDiagram, SubFeedRouter, type SubFeedMode } from './art/diagrams';
+import { BEAM_COLOR, placedToBeams, PLOT_BADGE, THROW } from './plot';
 
 /* ── 8 · Subwoofer feeds ────────────────────────────────────────────────── */
 
-type SubFeed = 'crossover' | 'aux' | 'matrix';
-
-const SUB_FEEDS: Record<SubFeed, { name: string; path: string; reaches: string; control: string; when: string }> = {
+const SUB_FEEDS: Record<SubFeedMode, { name: string; path: string; reaches: string; control: string; when: string }> = {
   crossover: {
     name: 'Crossover-fed',
-    path: 'Main mix → processor crossover → LOW output → subwoofer',
+    path: 'Main mix → processor crossover → LOW output → subwoofer (HIGH output → tops)',
     reaches: 'Everything below the crossover frequency, from every channel — vocals, guitars, plosives included.',
     control: 'None at the console. The crossover decides; the sub level is a processor output trim.',
-    when: 'Simple systems, DJ and playback, anywhere the operator should not need to think about the subs.',
+    when: 'Simple systems, DJ and playback, anywhere the operator should not need to think about the subs. Also what a powered sub with a built-in crossover does on its own.',
   },
   aux: {
     name: 'Aux-fed',
-    path: 'Selected channels → post-fader aux send → aux output → processor LOW → subwoofer',
+    path: 'Selected channels → post-fader aux send → aux output → processor LOW input → subwoofer',
     reaches: 'Only the channels you send: kick, bass, floor tom, keys. Nothing else — however low it goes.',
     control: 'Per channel AND overall: each send level, and the aux master as a sub fader.',
     when: 'Band mixing where a clean, controlled low end matters and the operator is at the console all night.',
   },
   matrix: {
     name: 'Matrix-fed',
-    path: 'Main mix (and/or an aux) → matrix with its own level and EQ → subwoofer',
+    path: 'Main mix (and/or an aux) → matrix with its own level, EQ and delay → processor LOW input → subwoofer',
     reaches: 'Whatever buses the matrix takes: the whole mix, or an aux carrying just the low-frequency sources.',
     control: 'A matrix fader and processing, independent of the mains — and the choice of source bus.',
     when: 'Larger consoles and multi-zone systems, where the subs are one output among many that all derive from the finished mix.',
@@ -56,24 +56,29 @@ const SUB_FEEDS: Record<SubFeed, { name: string; path: string; reaches: string; 
 };
 
 function PageSubFeeds({ ctx }: { ctx: PageCtx }) {
-  const [feed, setFeed] = useState<SubFeed>('crossover');
-  const [seen, setSeen] = useState<Set<SubFeed>>(new Set(['crossover']));
+  const [feed, setFeed] = useState<SubFeedMode>('crossover');
+  const [seen, setSeen] = useState<Set<SubFeedMode>>(new Set(['crossover']));
   const [vocalSend, setVocalSend] = useState(false);
-  const goals = [{ label: 'Compare all three feed methods', hit: seen.size >= 3 }, { label: 'Send the vocal to an aux-fed sub and hear why not', hit: vocalSend }];
+  const goals = [{ label: 'Compare all three feed methods', hit: seen.size >= 3 }, { label: 'Send the vocal to an aux-fed sub and see why not', hit: vocalSend }];
   const latched = useVisitGoals(ctx, goals);
   const f = SUB_FEEDS[feed];
-  const subsHear = feed === 'crossover' ? ['Kick', 'Bass', 'Keys', 'Guitar (low end)', 'Vocal (chest and plosives)', 'Playback'] : feed === 'aux' ? ['Kick', 'Bass', 'Keys', ...(vocalSend ? ['Vocal — by mistake'] : [])] : ['The main mix below the crossover', 'or an aux of chosen channels'];
   return (
     <View style={{ gap: 12 }}>
       <ChapterTag n={5}>SUBWOOFER DEPLOYMENT AND ROUTING</ChapterTag>
-      <Lead>
-        A subwoofer reproduces roughly 30–100 Hz and nothing else. The interesting decision is not the cabinet — it is WHAT reaches it, and that is a routing choice with three answers.
-      </Lead>
+      <Orient>Six channels on the left, the console buses in the middle, the processor and the two cabinets on the right. The blue lines are what reaches the subwoofer.</Orient>
       <Row>
-        {(Object.keys(SUB_FEEDS) as SubFeed[]).map((k) => (
+        {(Object.keys(SUB_FEEDS) as SubFeedMode[]).map((k) => (
           <Btn key={k} label={SUB_FEEDS[k].name} selected={feed === k} tone={feed === k ? 'primary' : 'plain'} onPress={() => { setFeed(k); setSeen((s) => new Set(s).add(k)); }} a11y={`${SUB_FEEDS[k].name} subwoofers`} />
         ))}
       </Row>
+      <SubFeedRouter mode={feed} vocalSend={vocalSend && feed === 'aux'} />
+      {feed === 'aux' ? (
+        <Pressable onPress={() => setVocalSend((v) => !v)} style={[styles.toggle, vocalSend && styles.toggleOn]} accessibilityRole="switch" accessibilityState={{ checked: vocalSend }} aria-checked={vocalSend} accessibilityLabel="Vocal channel send to the sub aux">
+          <Text style={[styles.toggleText, vocalSend && { color: colors.orange }]}>{vocalSend ? '△ VOCAL → SUB AUX: ON (the fault on the bench)' : '○ VOCAL → SUB AUX: OFF — tap to send it by mistake'}</Text>
+        </Pressable>
+      ) : null}
+      <Prompt>Switch the feed and watch which channels reach the sub. On the aux feed, send the vocal by mistake.</Prompt>
+      <GoalChips goals={goals} latched={latched} />
       <Card tone="math">
         <Eyebrow>{f.name.toUpperCase()} · THE PATH</Eyebrow>
         <Text style={styles.path}>{f.path}</Text>
@@ -81,26 +86,11 @@ function PageSubFeeds({ ctx }: { ctx: PageCtx }) {
         <Body>CONTROL · {f.control}</Body>
         <Body>WHEN · {f.when}</Body>
       </Card>
-      <Card>
-        <Eyebrow>WHAT THE SUBWOOFERS HEAR RIGHT NOW</Eyebrow>
-        {subsHear.map((s) => (
-          <Text key={s} style={[styles.hearRow, s.includes('mistake') || s.includes('Vocal') ? { color: colors.orange } : null]}>
-            {s.includes('mistake') || s.includes('Vocal') ? '△ ' : '● '}
-            {s}
-          </Text>
-        ))}
-        {feed === 'aux' ? (
-          <Pressable onPress={() => setVocalSend((v) => !v)} style={[styles.toggle, vocalSend && styles.toggleOn]} accessibilityRole="switch" accessibilityState={{ checked: vocalSend }} aria-checked={vocalSend} accessibilityLabel="Vocal channel send to the sub aux">
-            <Text style={[styles.toggleText, vocalSend && { color: colors.orange }]}>{vocalSend ? '△ VOCAL → SUB AUX: ON (the fault on the bench)' : '○ VOCAL → SUB AUX: OFF'}</Text>
-          </Pressable>
-        ) : null}
-      </Card>
-      <KeyFact>Crossover-fed subs get everything below the crossover. Aux-fed and matrix-fed subs get what you choose — which is why an accidental vocal send puts a singer’s chest in the subwoofers with the crossover blameless.</KeyFact>
+      <KeyFact>A subwoofer reproduces from about 30–40 Hz up to the crossover at 80–120 Hz and nothing else. Crossover-fed subs get everything below that from every channel. Aux-fed and matrix-fed subs get what you choose — which is why an accidental vocal send puts a singer’s chest in the subwoofers with the crossover blameless.</KeyFact>
       <Card>
         <Eyebrow>ALSO IN THE CHAIN</Eyebrow>
         <Body>High-pass and low-pass filters make the crossover; a powered subwoofer’s internal crossover does the same job without a processor, and hands the tops a high-passed feed from its own output. Polarity and delay between the subs and the tops are set at the crossover point — the alignment page covers that.</Body>
       </Card>
-      <GoalChips goals={goals} latched={latched} />
     </View>
   );
 }
@@ -109,48 +99,46 @@ function PageSubFeeds({ ctx }: { ctx: PageCtx }) {
 
 type SubLayout = 'lr' | 'center' | 'cardioid' | 'endfire' | 'flown';
 
-const SUB_LAYOUTS: Record<SubLayout, { name: string; beams: PlotBeam[]; placed: { slot: SlotId; kind: GearKind }[]; what: string; cost: string }> = {
+const subBeam = (slot: SlotId, extra: Partial<PlotBeam> = {}): PlotBeam => ({ x: slotDef(slot).x, y: slotDef(slot).y, aimDeg: 0, coverDeg: 360, pattern: 'omni', gain: 0.5, throw: THROW.sub, color: BEAM_COLOR.sub, live: true, ...extra });
+
+const SUB_LAYOUTS: Record<SubLayout, { name: string; beams: PlotBeam[]; placed: { slot: SlotId; kind: GearKind }[]; what: string; cost: string; orient: string }> = {
   lr: {
     name: 'Left / right',
     placed: [{ slot: 'subL', kind: 'passiveSub' }, { slot: 'subR', kind: 'passiveSub' }],
-    beams: [
-      { x: slotDef('subL').x, y: slotDef('subL').y, aimDeg: 0, coverDeg: 360, gain: 0.7, color: '#2f74ff' },
-      { x: slotDef('subR').x, y: slotDef('subR').y, aimDeg: 0, coverDeg: 360, gain: 0.7, color: '#2f74ff' },
-    ],
+    beams: [subBeam('subL', { gain: 0.6 }), subBeam('subR', { gain: 0.6 })],
+    orient: 'One sub under each main. Two sources of the same low-frequency signal, a room-width apart.',
     what: 'Subs under each main. The most common layout because it is the easiest to rig.',
-    cost: 'Two sources of the same low-frequency signal, spaced apart: down the centre line they add; off to the sides they arrive at different times and cancel at some frequencies — the power alley and the valleys beside it.',
+    cost: 'Down the centre line the two arrive together and add — the power alley; off to the sides they arrive at different times and cancel at some frequencies. Real rooms add their boundaries and modes to this.',
   },
   center: {
     name: 'Centre cluster',
     placed: [{ slot: 'subC', kind: 'passiveSub' }],
-    beams: [{ x: slotDef('subC').x, y: slotDef('subC').y, aimDeg: 0, coverDeg: 360, gain: 0.9, color: '#2f74ff' }],
+    beams: [subBeam('subC', { gain: 0.9 })],
+    orient: 'All the subs together in one place, in front of the stage on the centre line.',
     what: 'All the subs together in one place, in front of the stage.',
     cost: 'One source, so no cancellation between subs: the low end is even across the width of the room. The trade is stage rumble and a cluster in the sightline.',
   },
   cardioid: {
-    name: 'Cardioid (rear-facing box)',
+    name: 'Cardioid stacks',
     placed: [{ slot: 'subL', kind: 'passiveSub' }, { slot: 'subR', kind: 'passiveSub' }],
-    beams: [
-      { x: slotDef('subL').x, y: slotDef('subL').y, aimDeg: 0, coverDeg: 200, gain: 0.7, color: '#2f74ff' },
-      { x: slotDef('subR').x, y: slotDef('subR').y, aimDeg: 0, coverDeg: 200, gain: 0.7, color: '#2f74ff' },
-    ],
+    beams: [subBeam('subL', { pattern: 'cardioid', gain: 0.55 }), subBeam('subR', { pattern: 'cardioid', gain: 0.55 })],
+    orient: 'Left and right stacks with one box in each turned to face the stage: the glow now stops behind the stack.',
     what: 'One box in each stack turned to face the stage, delayed and polarity-flipped so its output cancels behind the stack and adds in front.',
-    cost: 'A quieter stage — less low-frequency spill into the microphones — for one cabinet’s worth of output in front. Needs a processor with per-output delay and polarity.',
+    cost: 'A quieter stage — 15–20 dB less low-frequency spill into the microphones — for one cabinet’s worth of output in front. Needs a processor with per-output delay and polarity.',
   },
   endfire: {
     name: 'End-fire array',
-    placed: [{ slot: 'subC', kind: 'passiveSub' }, { slot: 'frontFillL', kind: 'passiveSub' }],
-    beams: [{ x: slotDef('subC').x, y: slotDef('subC').y + 6, aimDeg: 0, coverDeg: 160, gain: 0.9, color: '#2f74ff' }],
+    placed: [{ slot: 'subC', kind: 'passiveSub' }, { slot: 'subC2', kind: 'passiveSub' }],
+    beams: [subBeam('subC', { pattern: 'endfire', gain: 0.9, y: (slotDef('subC').y + slotDef('subC2').y) / 2 })],
+    orient: 'Two subs in a line front-to-back on the centre line, the rear box delayed by the time sound takes to reach the front one.',
     what: 'Subs in a line front-to-back, each delayed by the time sound takes to reach the next, so the outputs add forward and cancel backward.',
-    cost: 'The most directional low end a ground stack can make; it needs depth in front of the stage and exact delays.',
+    cost: 'The most directional low end a ground stack can make; it needs depth in front of the stage and exact delays — the spacing sets the frequency where the rejection is deepest.',
   },
   flown: {
     name: 'Flown subs',
     placed: [{ slot: 'subL', kind: 'passiveSub' }, { slot: 'subR', kind: 'passiveSub' }],
-    beams: [
-      { x: slotDef('subL').x, y: slotDef('subL').y, aimDeg: 0, coverDeg: 360, gain: 0.55, color: '#2f74ff' },
-      { x: slotDef('subR').x, y: slotDef('subR').y, aimDeg: 0, coverDeg: 360, gain: 0.55, color: '#2f74ff' },
-    ],
+    beams: [subBeam('subL', { gain: 0.45, rig: 'flown' }), subBeam('subR', { gain: 0.45, rig: 'flown' })],
+    orient: 'Subs hung beside the main arrays: quieter at the barrier, more even front-to-back.',
     what: 'Subs hung beside or behind the main arrays.',
     cost: 'More even front-to-back — the front rows are no longer standing on the cabinets — at the price of the floor’s boundary gain. Ground-stacked subs are louder for the same box; flown subs are more even.',
   },
@@ -159,37 +147,37 @@ const SUB_LAYOUTS: Record<SubLayout, { name: string; beams: PlotBeam[]; placed: 
 function PageSubPlacement({ ctx }: { ctx: PageCtx }) {
   const [id, setId] = useState<SubLayout>('lr');
   const [seen, setSeen] = useState<Set<SubLayout>>(new Set(['lr']));
-  const goals = [{ label: 'View four sub arrangements', hit: seen.size >= 4 }];
+  const goals = [{ label: 'View four sub arrangements', hit: seen.size >= 4 }, { label: 'Compare the cardioid and end-fire arrays', hit: seen.has('cardioid') && seen.has('endfire') }];
   const latched = useVisitGoals(ctx, goals);
   const l = SUB_LAYOUTS[id];
-  const placed = [
-    { id: 'l', kind: 'passiveSpeaker' as GearKind, slot: 'mainL' as SlotId },
-    { id: 'r', kind: 'passiveSpeaker' as GearKind, slot: 'mainR' as SlotId },
+  const placed: Placed[] = [
+    { id: 'l', kind: 'passiveSpeaker', slot: 'mainL' },
+    { id: 'r', kind: 'passiveSpeaker', slot: 'mainR' },
     ...l.placed.map((p, i) => ({ id: `s${i}`, kind: p.kind, slot: p.slot })),
   ];
   return (
     <View style={{ gap: 12 }}>
       <ChapterTag n={5}>SUBWOOFER PLACEMENT AND ARRAYS</ChapterTag>
-      <Lead>
-        Low frequencies are long: a 60 Hz wave is nearly six metres. Two subwoofers a room-width apart are, to that wave, two sources that cannot help interfering. Where you put them decides where the low end adds and where it vanishes.
-      </Lead>
+      <Orient>{l.orient}</Orient>
       <View style={styles.tiles}>
         {(Object.keys(SUB_LAYOUTS) as SubLayout[]).map((k) => (
           <PickTile key={k} label={SUB_LAYOUTS[k].name} selected={id === k} done={seen.has(k)} onPress={() => { setId(k); setSeen((s) => new Set(s).add(k)); }} />
         ))}
       </View>
-      <VenueView placed={placed} beams={l.beams} field badge={PLOT_BADGE} a11y={`Plot of the ${l.name} subwoofer arrangement`} caption="The floor tint shows where the low end lands in this conceptual model. Real rooms add their boundaries and their modes — measure before you trust a layout." />
+      <VenueView placed={placed} beams={l.beams} field badge={PLOT_BADGE} orientation={`${l.name} — plan view`} a11y={`Plan of the ${l.name} subwoofer arrangement. ${l.orient}`} caption="The blue glow is the low-frequency field in this conceptual model — only the mains’ subs are playing here. Real rooms add their boundaries and their modes: measure before you trust a layout." />
+      <FieldKey />
+      <Prompt>Pick each arrangement and watch where the low end lands — and, for the two arrays, where it stops.</Prompt>
+      <GoalChips goals={goals} latched={latched} />
       <Card tone="math">
         <Eyebrow>{l.name.toUpperCase()}</Eyebrow>
         <Body>{l.what}</Body>
         <Body>THE TRADE · {l.cost}</Body>
       </Card>
-      <KeyFact>Preventing excessive low-frequency build-up is mostly geometry: fewer separated sources, boundaries used deliberately, and a high-pass filter on every channel that has no business below 100 Hz.</KeyFact>
+      <KeyFact>Low frequencies are long: a 60 Hz wave is nearly six metres. Two subwoofers a room-width apart are, to that wave, two sources that cannot help interfering. Preventing low-frequency build-up is mostly geometry: fewer separated sources, boundaries used deliberately, and a high-pass filter on every channel that has no business below 100 Hz.</KeyFact>
       <DeeperRow>
         <LabLink route="WaveLab" label="Wave Physics — interference and standing waves" />
         <CalcLink id={CALC_LINKS.comb.workspace} label="Comb filter from a path difference" />
       </DeeperRow>
-      <GoalChips goals={goals} latched={latched} />
     </View>
   );
 }
@@ -197,9 +185,9 @@ function PageSubPlacement({ ctx }: { ctx: PageCtx }) {
 /* ── 10 · Stage monitors ────────────────────────────────────────────────── */
 
 const MONITOR_KINDS: readonly { id: string; kind: GearKind; slot: SlotId; name: string; blurb: string }[] = [
-  { id: 'wedge', kind: 'wedge', slot: 'mon2', name: 'Floor wedge', blurb: 'Angled at one performer, fed from one aux send. Its whole design is to be heard by the person in front of it and rejected by the microphone above it.' },
-  { id: 'side', kind: 'wedge', slot: 'sideFillL', name: 'Side fill', blurb: 'A larger cabinet at the wing, covering the whole stage with a general mix so performers who move still hear the band.' },
-  { id: 'drum', kind: 'poweredSub', slot: 'drumFill', name: 'Drum fill', blurb: 'A sub-and-top stack beside the drummer: the one performer who needs to feel the kick and bass as well as hear them.' },
+  { id: 'wedge', kind: 'wedge', slot: 'mon2', name: 'Floor wedge', blurb: 'On the floor at the lip, angled up at one performer, fed from one aux send. Its whole design is to be heard by the person in front of it and rejected by the microphone above it — which is why it sits in the microphone’s null, directly behind it.' },
+  { id: 'side', kind: 'wedge', slot: 'sideFillL', name: 'Side fill', blurb: 'A larger cabinet at the wing, firing across the stage with a general mix so performers who move still hear the band. Left and right side fills are usually a pair on one stereo mix.' },
+  { id: 'drum', kind: 'poweredSub', slot: 'drumFill', name: 'Drum fill', blurb: 'A sub-and-top stack beside the drummer, aimed at the throne: the one performer who needs to feel the kick and bass as well as hear them.' },
   { id: 'iem', kind: 'iemPack', slot: 'stageC', name: 'In-ear monitors', blurb: 'Sealed earphones from a bodypack — wired or wireless. No wedge on the floor, no spill into the microphones, a stereo mix if the transmitter is stereo. Isolation is the point, and also the hazard.' },
 ];
 
@@ -209,15 +197,15 @@ function PageMonitors({ ctx }: { ctx: PageCtx }) {
   const goals = [{ label: 'Inspect all four monitor types', hit: seen.size >= 4 }];
   const latched = useVisitGoals(ctx, goals);
   const m = MONITOR_KINDS.find((x) => x.id === sel)!;
-  const placed = MONITOR_KINDS.map((k) => ({ id: k.id, kind: k.kind, slot: k.slot }));
+  const placed: Placed[] = MONITOR_KINDS.map((k) => ({ id: k.id, kind: k.kind, slot: k.slot }));
+  const beams = useMemo(() => placedToBeams(placed, new Set(placed.map((p) => p.id))), [placed]);
   return (
     <View style={{ gap: 12 }}>
       <ChapterTag n={6}>STAGE MONITORS AND PERFORMER MIXES</ChapterTag>
-      <Lead>
-        The audience hears one mix. Each performer needs a different one — more of themselves, less of the drummer, a click nobody else may hear. Monitoring is a second sound system pointed the other way.
-      </Lead>
-      <VenueView placed={placed} selectedId={sel} onTapPlaced={(id) => { setSel(id); setSeen((s) => new Set(s).add(id)); }} beams={MONITOR_KINDS.filter((k) => k.kind === 'wedge').map((k) => ({ x: slotDef(k.slot).x, y: slotDef(k.slot).y, aimDeg: k.slot === 'sideFillL' ? 90 : 180, coverDeg: 70, gain: 0.4, color: '#c9a6ff' }))} a11y="Monitor positions on the stage: a wedge, a side fill, a drum fill and an in-ear pack. Tap one to read about it." />
+      <Orient>The stage from above: a wedge at the lip aimed back at its performer, a side fill at the stage-left wing firing across, a drum fill beside the riser, and a performer at centre wearing in-ears.</Orient>
+      <VenueView placed={placed} beams={beams} performers selectedId={sel} onTapPlaced={(id) => { setSel(id); setSeen((s) => new Set(s).add(id)); }} orientation="Monitor world — plan view, stage at the top" a11y="Monitor positions on the stage: a wedge, a side fill, a drum fill and an in-ear pack. Tap one to read about it." />
       <Prompt>Tap a monitor on the stage.</Prompt>
+      <GoalChips goals={goals} latched={latched} />
       <Card tone="math">
         <View style={styles.inspectHead}>
           <GearGlyph kind={m.kind} size={52} label={m.name} />
@@ -225,15 +213,11 @@ function PageMonitors({ ctx }: { ctx: PageCtx }) {
         </View>
         <Body>{m.blurb}</Body>
       </Card>
-      <Card>
-        <Eyebrow>THE RULES THAT DO NOT CHANGE</Eyebrow>
-        <Body>Monitor mixes are PRE-FADER aux sends — the house fader must never move a wedge. Effects sends are post-fader. Each aux output feeds one wedge amplifier channel or one in-ear transmitter; a stereo in-ear mix needs a stereo aux and a stereo transmitter.</Body>
-      </Card>
+      <KeyFact>The audience hears one mix. Each performer needs a different one — more of themselves, less of the drummer, a click nobody else may hear. Monitoring is a second sound system pointed the other way, and its sends are PRE-FADER: the house fader must never move a wedge. Each aux output feeds one wedge amplifier channel, one powered wedge or one in-ear transmitter; a stereo in-ear mix needs a stereo aux and a stereo transmitter.</KeyFact>
       <Card tone="warn">
         <Eyebrow>HEARING SAFETY — IN-EAR LEVELS</Eyebrow>
         <Body>Sealed in-ears remove the room, so a performer reaches for level to feel the band. The limiter on the bodypack is not optional, and the mix should be built so the performer is comfortable at a moderate setting. A wedge is loud in a room; an in-ear is loud in an ear canal.</Body>
       </Card>
-      <GoalChips goals={goals} latched={latched} />
     </View>
   );
 }
@@ -241,18 +225,27 @@ function PageMonitors({ ctx }: { ctx: PageCtx }) {
 /* ── 11 · The monitor world ─────────────────────────────────────────────── */
 
 function PageMonitorWorld({ ctx }: { ctx: PageCtx }) {
+  const [mode, setMode] = useState<'analog' | 'digital'>('analog');
+  const [seen, setSeen] = useState<Set<string>>(new Set(['analog']));
+  const [gainMove, setGainMove] = useState(false);
   const [solved, setSolved] = useState(0);
-  const goals = [{ label: 'Answer both checks', hit: solved >= 2 }];
+  const goals = [{ label: 'See both splits with a gain move', hit: seen.size >= 2 && gainMove }, { label: 'Answer both checks', hit: solved >= 2 }];
   const latched = useVisitGoals(ctx, goals);
   return (
     <View style={{ gap: 12 }}>
       <ChapterTag n={6}>MONITOR CONSOLE, SPLITS AND TALKBACK</ChapterTag>
-      <Lead>
-        On a small show one console does both jobs. On a large one, a monitor engineer at the side of the stage mixes every performer’s feed on a second console — and both consoles need every microphone.
-      </Lead>
+      <Orient>Three sources feeding TWO consoles — the house console at front of house and the monitor console at side stage — by one of the two ways the split is made.</Orient>
+      <Row>
+        <Btn label="ANALOG SPLIT" selected={mode === 'analog'} tone={mode === 'analog' ? 'primary' : 'plain'} onPress={() => { setMode('analog'); setSeen((s) => new Set(s).add('analog')); }} a11y="Analog transformer split" />
+        <Btn label="DIGITAL GAIN SHARING" selected={mode === 'digital'} tone={mode === 'digital' ? 'primary' : 'plain'} onPress={() => { setMode('digital'); setSeen((s) => new Set(s).add('digital')); }} a11y="Digital stagebox with gain sharing" />
+        <Btn label={gainMove ? '● MONITORS RAISE GAIN +6 dB' : '○ MONITORS RAISE GAIN +6 dB'} selected={gainMove} onPress={() => setGainMove((g) => !g)} a11y={`The monitor engineer raises a preamp gain by 6 dB: ${gainMove ? 'on' : 'off'}`} />
+      </Row>
+      <SplitDiagram mode={mode} gainMove={gainMove} />
+      <Prompt>Switch the split, then have the monitor engineer raise a gain. Read what happens at front of house.</Prompt>
+      <GoalChips goals={goals} latched={latched} />
       <Card>
         <Eyebrow>ANALOG SPLIT</Eyebrow>
-        <Body>A transformer-isolated splitter sends each microphone to both consoles. Each console has its own preamp and its own gain — independent, but two preamps loading one microphone, and twice the cabling.</Body>
+        <Body>A transformer-isolated splitter sends each microphone to both consoles. Each console has its own preamp and its own gain — independent, but two preamps loading one microphone, and twice the cabling. A gain move at monitors is invisible at front of house.</Body>
       </Card>
       <Card>
         <Eyebrow>DIGITAL GAIN SHARING</Eyebrow>
@@ -260,7 +253,7 @@ function PageMonitorWorld({ ctx }: { ctx: PageCtx }) {
       </Card>
       <Card>
         <Eyebrow>TALKBACK</Eyebrow>
-        <Body>A microphone at each console routed to the monitor mixes (and to each other) so the engineers can speak to the stage without going through the house. Its routing is checked like any other: which wedges hear it, and never the main mix.</Body>
+        <Body>A microphone at each console routed to the monitor mixes (and to each other) so the engineers can speak to the stage without going through the house. Its routing is checked like any other: which wedges hear it, and never the main mix. On a small show, one console does both jobs and all of this collapses into one operator’s aux sends.</Body>
       </Card>
       <UnderstandingCheck
         question="With digital gain sharing, the monitor engineer raises a preamp gain by 6 dB. What keeps the house mix from jumping 6 dB?"
@@ -276,7 +269,6 @@ function PageMonitorWorld({ ctx }: { ctx: PageCtx }) {
         explain="Pre-fader: the send takes its copy before the fader, so the fader cannot touch it. Post-fader is for effects, where following the fader is the point."
         onCorrect={() => setSolved((n) => n + 1)}
       />
-      <GoalChips goals={goals} latched={latched} />
     </View>
   );
 }
@@ -284,9 +276,9 @@ function PageMonitorWorld({ ctx }: { ctx: PageCtx }) {
 /* ── 12 · Wiring and connections ────────────────────────────────────────── */
 
 const LEVELS: readonly { level: SignalLevel; volts: string; carried: string; cable: string }[] = [
-  { level: 'mic', volts: 'millivolts', carried: 'Microphones, DI outputs', cable: 'Balanced XLR' },
-  { level: 'instrument', volts: 'tens of millivolts, high impedance', carried: 'Guitars, basses, keyboards', cable: 'Unbalanced ¼-inch TS — short runs only, then a DI' },
-  { level: 'line', volts: 'about a volt (+4 dBu)', carried: 'Console outputs, processors, playback', cable: 'Balanced XLR or TRS' },
+  { level: 'mic', volts: 'a few millivolts (−60 to −40 dBu)', carried: 'Microphones, DI outputs', cable: 'Balanced XLR' },
+  { level: 'instrument', volts: 'tenths of a volt, high impedance, unbalanced', carried: 'Guitars, basses, keyboards', cable: 'Unbalanced ¼-inch TS — short runs only, then a DI' },
+  { level: 'line', volts: 'about a volt (+4 dBu nominal)', carried: 'Console outputs, processors, playback', cable: 'Balanced XLR or TRS' },
   { level: 'speaker', volts: 'tens of volts, amps of current', carried: 'Amplifier outputs only', cable: 'Speaker cable with speakON — never a signal cable' },
   { level: 'digital', volts: 'data, not audio', carried: 'Stagebox ↔ console, AES3, Dante, AVB, MADI', cable: 'Category cable, coaxial or fibre — clocked from one master' },
 ];
@@ -323,24 +315,9 @@ function PageWiring({ ctx }: { ctx: PageCtx }) {
   return (
     <View style={{ gap: 12 }}>
       <ChapterTag n={7}>WIRING AND SYSTEM CONNECTIONS</ChapterTag>
-      <Lead>
-        Five signal levels, and a connector’s shape never tells you which one it carries. The wiring chapters of the cable labs go deep; here is the system-level rule and the one connection that damages equipment.
-      </Lead>
-      <Card>
-        <Eyebrow>THE LEVELS</Eyebrow>
-        {LEVELS.map((l) => (
-          <View key={l.level} style={styles.levelRow}>
-            <View style={styles.levelHead}>
-              <Text style={styles.levelName}>{LEVEL_LABEL[l.level].toUpperCase()}</Text>
-              <Text style={styles.levelVolts}>{l.volts}</Text>
-            </View>
-            <Text style={styles.levelLine}>{l.carried} · {l.cable}</Text>
-          </View>
-        ))}
-        <CableLegend levels={['mic', 'line', 'speaker', 'digital', 'wireless']} />
-      </Card>
-      <KeyFact>Speaker level into a line or mic input damages the input. Mic level into a line input is silence. Line level into a passive loudspeaker moves no cone. Every refusal in BUILD mode is one of these three sentences.</KeyFact>
-      <Prompt>May these connect? Decide, then read the system’s verdict.</Prompt>
+      <Orient>Six proposed connections. Decide whether each one carries signal, then read the engine’s verdict — the same engine that judges every cable in BUILD mode.</Orient>
+      <Prompt>May these connect?</Prompt>
+      <GoalChips goals={goals} latched={latched} />
       {PAIRS.map((p, i) => {
         const v = verdicts[i];
         const ans = answers[i];
@@ -367,6 +344,20 @@ function PageWiring({ ctx }: { ctx: PageCtx }) {
         );
       })}
       <Card>
+        <Eyebrow>THE LEVELS</Eyebrow>
+        {LEVELS.map((l) => (
+          <View key={l.level} style={styles.levelRow}>
+            <View style={styles.levelHead}>
+              <Text style={styles.levelName}>{LEVEL_LABEL[l.level].toUpperCase()}</Text>
+              <Text style={styles.levelVolts}>{l.volts}</Text>
+            </View>
+            <Text style={styles.levelLine}>{l.carried} · {l.cable}</Text>
+          </View>
+        ))}
+        <CableLegend levels={['mic', 'line', 'speaker', 'digital', 'wireless']} />
+      </Card>
+      <KeyFact>Five signal levels, and a connector’s shape never tells you which one it carries. Speaker level into a line or mic input damages the input. Mic level into a line input is 40–50 dB too quiet — a whisper you will chase with gain and noise. Line level into a passive loudspeaker moves no cone you can hear. Every refusal in BUILD mode is one of these three sentences.</KeyFact>
+      <Card>
         <Eyebrow>THE REST OF THE CHAPTER LIVES IN THE CABLE LABS</Eyebrow>
         <Body>Balanced and unbalanced signals, XLR/TRS/TS/speakON/Ethernet, correct amplifier-to-loudspeaker wiring, clocking and sample rate, cable routing and strain relief, signal cables kept apart from power, ground loops and isolation, redundancy, labelling and documentation.</Body>
       </Card>
@@ -377,7 +368,6 @@ function PageWiring({ ctx }: { ctx: PageCtx }) {
         <LabLink route="PatchbayLab" label="Patchbay Signal Flow" />
         <LabLink route="DigitalLab" label="Digital Audio Systems" />
       </DeeperRow>
-      <GoalChips goals={goals} latched={latched} />
     </View>
   );
 }
@@ -386,20 +376,21 @@ function PageWiring({ ctx }: { ctx: PageCtx }) {
 
 const AMP: AmpRating = { at8: 300, at4: 500, minOhms: 4, bridged8: 1000, minOhmsBridged: 8 };
 
-function LoadRig({ ohms, count, bridged }: { ohms: number; count: number; bridged: boolean }) {
+function LoadRig({ ohms, count, bridged, verdict }: { ohms: number; count: number; bridged: boolean; verdict: 'safe' | 'marginal' | 'unsafe' | 'open' }) {
   const W = 300;
   const H = 120;
   const cabs = Array.from({ length: count }, (_, i) => i);
+  const wire = verdict === 'unsafe' ? colors.red : verdict === 'marginal' ? colors.gold : '#ff7a5c';
   return (
-    <Svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ aspectRatio: W / H }} accessibilityLabel={`${count} cabinet${count === 1 ? '' : 's'} of ${ohms} ohms in parallel on one amplifier channel${bridged ? ', bridged' : ''}`}>
-      <GearInSvg kind="amp" id="lr-amp" x={44} y={58} size={70} />
-      <SvgText x={44} y={104} fontSize={8} fill={colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{bridged ? 'AMP · BRIDGED' : 'AMP · CH A'}</SvgText>
+    <Svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ aspectRatio: W / H }} accessibilityLabel={`${count} cabinet${count === 1 ? '' : 's'} of ${ohms} ohms in parallel on one amplifier channel${bridged ? ', bridged' : ''}; the load is ${verdict}`}>
+      <GearInSvg kind="amp" id="lr-amp" x={44} y={58} size={70} power={verdict === 'unsafe' ? 'off' : 'on'} />
+      <SvgText x={44} y={104} fontSize={8} fill={verdict === 'unsafe' ? colors.red : colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{verdict === 'unsafe' ? 'AMP · PROTECT' : bridged ? 'AMP · BRIDGED' : 'AMP · CH A'}</SvgText>
       {cabs.map((i) => {
         const x = 120 + i * 46;
         const y = 56;
         return (
           <Svg key={i}>
-            <Path d={`M 78 58 C 96 58 ${x - 26} ${y + 4} ${x - 14} ${y + 6}`} stroke="#ff7a5c" strokeWidth={2.4} fill="none" strokeLinecap="round" />
+            <Path d={`M 78 58 C 96 58 ${x - 26} ${y + 4} ${x - 14} ${y + 6}`} stroke={wire} strokeWidth={2.4} fill="none" strokeLinecap="round" />
             <Path d={`M 78 58 C 96 58 ${x - 26} ${y + 4} ${x - 14} ${y + 6}`} stroke="#fff" strokeWidth={0.6} fill="none" opacity={0.3} />
             <GearInSvg kind="passiveSpeaker" id={`lr-cab-${i}`} x={x} y={y} size={46} />
             <SvgText x={x} y={y + 34} fontSize={8} fill={colors.textSecondary} textAnchor="middle" fontFamily={fonts.mono}>{ohms} Ω</SvgText>
@@ -407,7 +398,7 @@ function LoadRig({ ohms, count, bridged }: { ohms: number; count: number; bridge
         );
       })}
       {count > 1 ? <SvgText x={120 + (count - 1) * 23} y={16} fontSize={8} fill={INK.metalHi} textAnchor="middle" fontFamily={fonts.oswaldMedium}>IN PARALLEL</SvgText> : null}
-      <Circle cx={78} cy={58} r={2.5} fill="#ff7a5c" />
+      <Circle cx={78} cy={58} r={2.5} fill={wire} />
     </Svg>
   );
 }
@@ -429,10 +420,8 @@ function PageLoads({ ctx }: { ctx: PageCtx }) {
   return (
     <View style={{ gap: 12 }}>
       <ChapterTag n={8}>AMPLIFIERS AND LOUDSPEAKER COMPATIBILITY · LOADS</ChapterTag>
-      <Lead>
-        A passive loudspeaker is a load. Put two on one amplifier channel in parallel and the load halves; the amplifier must deliver twice the current. Every amplifier has a minimum impedance, and below it the story ends in protection or smoke.
-      </Lead>
-      <LoadRig ohms={ohms} count={count} bridged={bridged} />
+      <Orient>One amplifier channel and the passive cabinets wired across it in parallel. The wire turns gold at the amplifier’s minimum and red below it.</Orient>
+      <LoadRig ohms={ohms} count={count} bridged={bridged} verdict={verdict} />
       <Row>
         <Text style={styles.ctlLabel}>CABINET</Text>
         {[16, 8, 4].map((z) => (
@@ -446,6 +435,8 @@ function PageLoads({ ctx }: { ctx: PageCtx }) {
         ))}
         <Btn label={bridged ? '● BRIDGED' : '○ BRIDGED'} selected={bridged} onPress={() => setBridged((b) => !b)} a11y={`Bridged mode ${bridged ? 'on' : 'off'}`} />
       </Row>
+      <Prompt>Add cabinets and watch the load fall. Find the point where the amplifier can no longer drive it.</Prompt>
+      <GoalChips goals={goals} latched={latched} />
       <ReadoutRow>
         <Readout k="TOTAL LOAD" v={fmtOhms(load.ohms)} tint={verdict === 'unsafe' ? colors.red : verdict === 'marginal' ? colors.gold : colors.green} />
         <Readout k="AMP MINIMUM" v={`${min} Ω`} />
@@ -458,7 +449,7 @@ function PageLoads({ ctx }: { ctx: PageCtx }) {
       <Card tone="math">
         <Eyebrow>THE ARITHMETIC · FROM THE CALCULATOR</Eyebrow>
         <Text style={styles.path}>Ztot = 1 ÷ Σ(1/Zi)</Text>
-        <Body>Parallel cabinets share the amplifier’s voltage and each draws its own current; the total impedance is always below the lowest cabinet. Bridging joins two channels into one with twice the voltage swing — and DOUBLES the minimum impedance (typically 8 Ω), so a bridged 4 Ω load is the classic mistake.</Body>
+        <Body>A passive loudspeaker is a load. Parallel cabinets share the amplifier’s voltage and each draws its own current; the total impedance is always below the lowest cabinet, and the amplifier must deliver the sum of the currents. Bridging joins two channels into one with twice the voltage swing — and DOUBLES the minimum impedance (typically 8 Ω), so a bridged 4 Ω load is the classic mistake.</Body>
         <Body>This amplifier’s ratings — {AMP.at8} W at 8 Ω, {AMP.at4} W at 4 Ω, {AMP.bridged8} W bridged at 8 Ω, {AMP.minOhms} Ω minimum — are an example. Read YOUR amplifier’s table; never assume the ratio.</Body>
       </Card>
       <DeeperRow>
@@ -466,7 +457,6 @@ function PageLoads({ ctx }: { ctx: PageCtx }) {
         <CalcLink id="cable" label="Speaker cable loss and gauge" />
         <LabLink route="AmpLab" label="Amplifier Principles Lab" />
       </DeeperRow>
-      <GoalChips goals={goals} latched={latched} />
     </View>
   );
 }
@@ -483,18 +473,30 @@ function PagePower({ ctx }: { ctx: PageCtx }) {
   const latched = useVisitGoals(ctx, goals);
   const match = ampMatch(amp, CABINET.continuous, CABINET.program);
   const spl = predictedSpl(CABINET.sensitivity, amp, dist, 6);
+  const band = (w: number) => Math.min(100, Math.max(2, (w / 1600) * 100));
   return (
     <View style={{ gap: 12 }}>
       <ChapterTag n={8}>POWER RATINGS, HEADROOM AND PROTECTION</ChapterTag>
-      <Lead>
-        A loudspeaker carries three power numbers — continuous, program and peak — and an amplifier carries one per load. Matching them is a band, not a bullseye, and the wrong side of the band is not the side most people expect.
-      </Lead>
+      <Orient>The cabinet’s power band — continuous to program — and where the chosen amplifier lands on it.</Orient>
+      <View style={styles.bandWrap} accessible accessibilityLabel={`Amplifier ${amp} watts against a cabinet rated ${CABINET.continuous} watts continuous and ${CABINET.program} watts program: ${match === 'ok' ? 'in the band' : match === 'under' ? 'under' : 'over'}`}>
+        <View style={styles.band}>
+          <View style={[styles.bandOk, { left: `${band(CABINET.continuous)}%`, width: `${band(CABINET.program) - band(CABINET.continuous)}%` }]} />
+          <View style={[styles.bandMark, { left: `${band(amp)}%`, backgroundColor: match === 'ok' ? colors.green : match === 'under' ? colors.red : colors.gold }]} />
+        </View>
+        <View style={styles.bandLabels}>
+          <Text style={styles.bandText}>0 W</Text>
+          <Text style={[styles.bandText, { color: colors.green }]}>{CABINET.continuous}–{CABINET.program} W · THE BAND</Text>
+          <Text style={styles.bandText}>1600 W</Text>
+        </View>
+      </View>
       <Row>
         <Text style={styles.ctlLabel}>AMPLIFIER INTO 8 Ω</Text>
         {[200, 500, 800, 1500].map((w) => (
           <Btn key={w} label={`${w} W`} selected={amp === w} tone={amp === w ? 'primary' : 'plain'} onPress={() => { setAmp(w); setTried((t) => new Set(t).add(w)); }} a11y={`${w} watt amplifier`} />
         ))}
       </Row>
+      <Prompt>Try each amplifier and read which side of the band it lands on.</Prompt>
+      <GoalChips goals={goals} latched={latched} />
       <ReadoutRow>
         <Readout k="CABINET CONTINUOUS" v={`${CABINET.continuous} W`} />
         <Readout k="CABINET PROGRAM" v={`${CABINET.program} W`} />
@@ -514,8 +516,9 @@ function PagePower({ ctx }: { ctx: PageCtx }) {
           <Readout k="SENSITIVITY" v={`${CABINET.sensitivity} dB · 1 W / 1 m`} />
           <Readout k="WITH 6 dB HEADROOM" v={`${spl.toFixed(1)} dB SPL`} tint={colors.amber} />
         </ReadoutRow>
-        <Body>Free-field, one cabinet, 6 dB kept in reserve for peaks. Every doubling of power buys 3 dB; every doubling of distance costs 6. That asymmetry is why coverage is solved with placement and count before it is solved with watts.</Body>
+        <Body>Free-field, one cabinet, 6 dB kept in reserve for peaks — the MINIMUM; music with real dynamics wants 10–12. Every doubling of power buys 3 dB; every doubling of distance costs 6. That asymmetry is why coverage is solved with placement and count before it is solved with watts.</Body>
       </Card>
+      <KeyFact>A loudspeaker carries three power numbers — continuous, program and peak — and an amplifier carries one per load. Matching them is a band, not a bullseye: an amplifier between the continuous and program ratings, run clean. The wrong side of the band is not the side most people expect — an underpowered amplifier driven into clipping kills more high-frequency drivers than a big one run with headroom.</KeyFact>
       <Card>
         <Eyebrow>PROTECTING HIGH-FREQUENCY DRIVERS</Eyebrow>
         <Body>Tweeters die from clipped amplifiers and from sustained feedback far more often than from clean power. The processor’s limiter, set for the cabinet; a powered loudspeaker’s input gain left at its nominal mark; and an operator who reduces gain before the clip light stays on — these are the protections. Sensitivity and maximum SPL on the data sheet tell you how loud a cabinet CAN go; headroom tells you how loud you should ASK it to go.</Body>
@@ -524,7 +527,6 @@ function PagePower({ ctx }: { ctx: PageCtx }) {
         <CalcLink id={CALC_LINKS.spl.workspace} label="Loudspeaker power and SPL" />
         <CalcLink id={CALC_LINKS.splDistance.workspace} label="SPL at a distance" />
       </DeeperRow>
-      <GoalChips goals={goals} latched={latched} />
     </View>
   );
 }
@@ -541,6 +543,7 @@ function PageDeployment({ ctx }: { ctx: PageCtx }) {
       <Lead>
         A professional setup is a sequence, and the order is not a preference. Each step exists because the one after it would be unsafe, or wasted, without it. Open the steps to read why.
       </Lead>
+      <GoalChips goals={goals} latched={latched} />
       {SETUP_SEQUENCE.map((s) => {
         const o = open.has(s.n);
         return (
@@ -553,12 +556,11 @@ function PageDeployment({ ctx }: { ctx: PageCtx }) {
           </Pressable>
         );
       })}
-      <KeyFact>Step 9 is the one that saves loudspeakers: routing is verified on meters and headphones with the amplifiers OFF. A wrong output at full level is a destroyed driver in under a second.</KeyFact>
+      <KeyFact>Step 9 is the one that saves loudspeakers: routing is verified on meters and headphones with the amplifiers OFF. A wrong output at full level is a destroyed driver in under a second. Steps 11–13 are one common show-day order — outputs first, then inputs, then gain — and small gigs fold them into a single pass.</KeyFact>
       <DeeperRow>
         <LabLink route="SoundSystemsOperate" label="OPERATE mode — power up, line check, gain" />
         <LabLink route="PreProdLab" label="Audio Pre-Production" />
       </DeeperRow>
-      <GoalChips goals={goals} latched={latched} />
     </View>
   );
 }
@@ -579,8 +581,7 @@ void GEAR;
 
 const styles = StyleSheet.create({
   path: { color: colors.cyanBright, fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 0.5, lineHeight: 17 },
-  hearRow: { color: colors.textSecondary, fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 19 },
-  toggle: { marginTop: 6, minHeight: 44, borderRadius: 8, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#101013', paddingHorizontal: 10, justifyContent: 'center' },
+  toggle: { minHeight: 44, borderRadius: 8, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#101013', paddingHorizontal: 10, justifyContent: 'center' },
   toggleOn: { borderColor: colors.orange, backgroundColor: '#241a10' },
   toggleText: { color: colors.textSecondary, fontFamily: fonts.oswaldMedium, fontSize: 11.5, letterSpacing: 0.8 },
   tiles: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
@@ -594,6 +595,12 @@ const styles = StyleSheet.create({
   arrow: { color: colors.amber, fontFamily: fonts.oswaldSemiBold, fontSize: 16 },
   pairText: { flex: 1, color: colors.textSecondary, fontFamily: fonts.barlowMedium, fontSize: 13 },
   ctlLabel: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 1.6, marginRight: 2 },
+  bandWrap: { gap: 4 },
+  band: { height: 16, borderRadius: 8, backgroundColor: '#050609', borderWidth: 1, borderColor: '#1f2229', overflow: 'hidden' },
+  bandOk: { position: 'absolute', top: 0, bottom: 0, backgroundColor: 'rgba(55,224,95,.22)', borderLeftWidth: 1, borderRightWidth: 1, borderColor: colors.green },
+  bandMark: { position: 'absolute', top: -1, width: 4, height: 18, borderRadius: 2 },
+  bandLabels: { flexDirection: 'row', justifyContent: 'space-between' },
+  bandText: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1 },
   step: { borderRadius: 10, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#101013', padding: 10, gap: 6, minHeight: 44 },
   stepOpen: { borderColor: '#2f4a5a', backgroundColor: '#0f1a22' },
   stepKey: { borderColor: 'rgba(255,198,77,.5)' },

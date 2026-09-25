@@ -129,7 +129,7 @@ function RackEars({ x, y, w, h }: { x: number; y: number; w: number; h: number }
 
 /* ── the drawings ────────────────────────────────────────────────────────── */
 
-function VocalMic({ id }: { id: string }) {
+function VocalMic({ id, lit }: { id: string; lit: boolean }) {
   return (
     <G>
       {/* stand */}
@@ -153,27 +153,31 @@ function VocalMic({ id }: { id: string }) {
   );
 }
 
-function InstrumentMic({ id }: { id: string }) {
+function InstrumentMic({ id, lit }: { id: string; lit: boolean }) {
   return (
     <G>
-      <Ellipse cx={30} cy={59} rx={11} ry={2.6} fill={`url(#${id}-metal)`} />
-      <Line x1={30} y1={58} x2={30} y2={40} stroke={INK.metalMid} strokeWidth={2} />
-      <Path d="M 30 40 L 16 30" stroke={INK.metalMid} strokeWidth={2} strokeLinecap="round" />
-      <G transform="rotate(-52 16 30)">
-        <Rect x={12} y={20} width={8} height={20} rx={2.5} fill={`url(#${id}-metal)`} stroke="#000" strokeWidth={0.4} />
-        <Line x1={13.5} y1={22} x2={13.5} y2={38} stroke={INK.rim} strokeWidth={0.6} />
-        <Rect x={11} y={14} width={10} height={8} rx={3} fill={`url(#${id}-grille)`} stroke="#0b0c0f" strokeWidth={0.5} />
-        <Line x1={12} y1={17} x2={20} y2={17} stroke="#0b0c0f" strokeWidth={0.5} />
-        <Line x1={12} y1={19.5} x2={20} y2={19.5} stroke="#0b0c0f" strokeWidth={0.5} />
+      {/* short boom stand: base, upright, boom arm, the mic aimed down at its source */}
+      <Ellipse cx={24} cy={59} rx={12} ry={2.8} fill="#0d0f13" />
+      <Ellipse cx={24} cy={58} rx={11} ry={2.3} fill={`url(#${id}-metal)`} />
+      <Line x1={24} y1={58} x2={24} y2={36} stroke={INK.metalMid} strokeWidth={2.2} />
+      <Line x1={23.2} y1={58} x2={23.2} y2={36} stroke={INK.rim} strokeWidth={0.6} />
+      <Circle cx={24} cy={36} r={2.6} fill={`url(#${id}-metal)`} stroke="#000" strokeWidth={0.4} />
+      <Line x1={24} y1={36} x2={42} y2={22} stroke={INK.metalMid} strokeWidth={2} strokeLinecap="round" />
+      {/* the clip holds the body at its middle; the capsule points down and forward */}
+      <G transform="rotate(140 42 22)">
+        <Rect x={38.5} y={10} width={7} height={22} rx={2.5} fill={`url(#${id}-metal)`} stroke="#000" strokeWidth={0.4} />
+        <Line x1={40} y1={12} x2={40} y2={30} stroke={INK.rim} strokeWidth={0.6} />
+        <Rect x={39} y={20} width={6} height={1.6} fill="#0b0c0f" opacity={0.6} />
+        <Rect x={37.5} y={3} width={9} height={8} rx={2.5} fill={`url(#${id}-grille)`} stroke="#0b0c0f" strokeWidth={0.5} />
+        <Line x1={38.5} y1={6} x2={45.5} y2={6} stroke="#0b0c0f" strokeWidth={0.5} />
+        <Line x1={38.5} y1={8.5} x2={45.5} y2={8.5} stroke="#0b0c0f" strokeWidth={0.5} />
+        <Path d="M 42 32 C 42 37 39 39 35 40" stroke="#1b1e25" strokeWidth={1.4} fill="none" />
       </G>
-      {/* the drum it points at, suggested by a rim */}
-      <Ellipse cx={46} cy={44} rx={13} ry={5} fill="none" stroke="#3a3f47" strokeWidth={1.2} />
-      <Ellipse cx={46} cy={44} rx={13} ry={5} fill="#1a1d24" opacity={0.5} />
     </G>
   );
 }
 
-function DiBox({ id }: { id: string }) {
+function DiBox({ id, lit }: { id: string; lit: boolean }) {
   return (
     <G>
       <Rect x={14} y={22} width={38} height={26} rx={3} fill={INK.shadow} transform="translate(2,3)" />
@@ -197,24 +201,32 @@ function DiBox({ id }: { id: string }) {
   );
 }
 
-function Playback({ id }: { id: string }) {
+function Playback({ id, lit }: { id: string; lit: boolean }) {
   return (
     <G>
-      <Rect x={12} y={20} width={40} height={26} rx={3} fill={INK.shadow} transform="translate(2,3)" />
-      <Rect x={12} y={20} width={40} height={26} rx={3} fill={`url(#${id}-panel)`} stroke="#000" strokeWidth={0.6} />
-      <Rect x={15} y={23} width={22} height={13} rx={1.5} fill="#0a1a2a" stroke="#1f3a55" strokeWidth={0.6} />
-      <Polygon points="22,25.5 22,33.5 29,29.5" fill={INK.blue} />
-      <Rect x={16} y={37} width={20} height={1.4} rx={0.7} fill="#2a2e35" />
-      <Rect x={16} y={37} width={11} height={1.4} rx={0.7} fill={INK.blue} />
-      <Circle cx={44} cy={29} r={4.5} fill={`url(#${id}-metal)`} stroke="#000" strokeWidth={0.4} />
-      <Line x1={44} y1={25.5} x2={44} y2={29} stroke={INK.amber} strokeWidth={1} />
-      <Led x={44} y={39} color={INK.green} />
-      <Ellipse cx={32} cy={49} rx={20} ry={1.4} fill="#000" opacity={0.35} />
+      {/* a laptop: the playback session on the lid, keyboard base, interface LED */}
+      <Path d="M 14 14 L 50 14 L 52 40 L 12 40 Z" fill={INK.shadow} transform="translate(2,3)" />
+      <Path d="M 14 14 L 50 14 L 52 40 L 12 40 Z" fill={`url(#${id}-panel)`} stroke="#000" strokeWidth={0.6} />
+      <Path d="M 16.5 16.5 L 47.5 16.5 L 49.2 37.5 L 14.8 37.5 Z" fill="#0a1a2a" stroke="#1f3a55" strokeWidth={0.6} />
+      {[0, 1, 2].map((i) => (
+        <Rect key={i} x={18} y={20 + i * 5} width={28} height={3} rx={0.6} fill={i === 1 ? '#1f3a55' : '#173044'} />
+      ))}
+      <Rect x={20} y={20} width={12} height={3} rx={0.6} fill={INK.blue} opacity={0.8} />
+      <Rect x={24} y={25} width={18} height={3} rx={0.6} fill={INK.green} opacity={0.7} />
+      <Rect x={19} y={30} width={8} height={3} rx={0.6} fill={INK.amber} opacity={0.8} />
+      <Line x1={30} y1={18} x2={30.6} y2={36} stroke="#fff" strokeWidth={0.7} opacity={0.8} />
+      <Path d="M 6 40 L 58 40 L 60 48 L 4 48 Z" fill={`url(#${id}-metal)`} stroke="#000" strokeWidth={0.6} />
+      <Rect x={12} y={42} width={40} height={4} rx={0.8} fill="#0f1114" />
+      {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
+        <Rect key={i} x={13 + i * 4} y={42.6} width={3} height={2.8} rx={0.4} fill="#2a2e35" />
+      ))}
+      <Led on={lit} x={55.5} y={44} color={INK.green} r={1} />
+      <Ellipse cx={32} cy={51} rx={24} ry={1.4} fill="#000" opacity={0.35} />
     </G>
   );
 }
 
-function WirelessRx({ id }: { id: string }) {
+function WirelessRx({ id, lit }: { id: string; lit: boolean }) {
   return (
     <G>
       <Line x1={18} y1={30} x2={10} y2={10} stroke={INK.metalHi} strokeWidth={1.6} strokeLinecap="round" />
@@ -229,56 +241,74 @@ function WirelessRx({ id }: { id: string }) {
         <Rect key={i} x={19 + i * 3} y={41 - i * 1.3} width={2} height={1.3 * i + 1} fill={INK.green} opacity={0.5 + i * 0.1} />
       ))}
       <Circle cx={44} cy={39} r={3.6} fill={`url(#${id}-metal)`} stroke="#000" strokeWidth={0.4} />
-      <Led x={38} y={35} color={INK.blue} />
+      <Led on={lit} x={38} y={35} color={INK.blue} />
     </G>
   );
 }
 
-function Snake({ id }: { id: string }) {
+function Snake({ id, lit }: { id: string; lit: boolean }) {
   return (
     <G>
-      <Rect x={8} y={36} width={26} height={16} rx={2} fill={INK.shadow} transform="translate(2,3)" />
-      <Rect x={8} y={36} width={26} height={16} rx={2} fill={`url(#${id}-panel)`} stroke="#000" strokeWidth={0.6} />
-      {[0, 1, 2, 3].map((i) => (
+      {/* the stage end: a steel fan-out box — two rows of XLR inputs, two returns */}
+      <Rect x={4} y={34} width={30} height={20} rx={2} fill={INK.shadow} transform="translate(2,3)" />
+      <Rect x={4} y={34} width={30} height={20} rx={2} fill={`url(#${id}-panel)`} stroke="#000" strokeWidth={0.6} />
+      {[0, 1, 2, 3, 4].map((i) => (
         <G key={i}>
-          <Circle cx={13 + i * 5.6} cy={41} r={2} fill="#0a0b0d" stroke={INK.metalHi} strokeWidth={0.6} />
-          <Circle cx={13 + i * 5.6} cy={47.5} r={2} fill="#0a0b0d" stroke={INK.metalHi} strokeWidth={0.6} />
+          <Circle cx={8.5 + i * 5.2} cy={39} r={1.9} fill="#0a0b0d" stroke={INK.metalHi} strokeWidth={0.6} />
+          <Circle cx={8.5 + i * 5.2} cy={45} r={1.9} fill="#0a0b0d" stroke={INK.metalHi} strokeWidth={0.6} />
         </G>
       ))}
-      {/* the coiled multipair, drawn as a ribbon with tone */}
-      <Path d="M 34 44 C 46 44 52 34 46 24 C 40 14 26 18 30 28 C 33 36 46 34 50 26" stroke="#1b2a36" strokeWidth={7} fill="none" strokeLinecap="round" />
-      <Path d="M 34 44 C 46 44 52 34 46 24 C 40 14 26 18 30 28 C 33 36 46 34 50 26" stroke="#2f7f9f" strokeWidth={4.6} fill="none" strokeLinecap="round" />
-      <Path d="M 34 44 C 46 44 52 34 46 24 C 40 14 26 18 30 28 C 33 36 46 34 50 26" stroke="#7fc3df" strokeWidth={1.2} fill="none" strokeLinecap="round" opacity={0.55} />
+      <Circle cx={10} cy={50.5} r={1.9} fill="#0a0b0d" stroke={INK.amber} strokeWidth={0.6} />
+      <Circle cx={16} cy={50.5} r={1.9} fill="#0a0b0d" stroke={INK.amber} strokeWidth={0.6} />
+      {/* the multicore leaving the box for its drum */}
+      <Path d="M 34 42 C 42 42 46 38 48 32" stroke="#1b2a36" strokeWidth={6.5} fill="none" strokeLinecap="round" />
+      <Path d="M 34 42 C 42 42 46 38 48 32" stroke="#2f7f9f" strokeWidth={4.2} fill="none" strokeLinecap="round" />
+      <Path d="M 34 42 C 42 42 46 38 48 32" stroke="#7fc3df" strokeWidth={1} fill="none" strokeLinecap="round" opacity={0.5} />
+      {/* the cable drum, seen from the side: flange, wound cable, hub */}
+      <Line x1={40} y1={30} x2={37} y2={38} stroke={INK.metalMid} strokeWidth={1.6} strokeLinecap="round" />
+      <Line x1={56} y1={30} x2={59} y2={38} stroke={INK.metalMid} strokeWidth={1.6} strokeLinecap="round" />
+      <Circle cx={48} cy={20} r={12.5} fill={INK.metalLo} stroke="#000" strokeWidth={0.6} />
+      <Circle cx={48} cy={20} r={10} fill="#1b2a36" />
+      <Circle cx={48} cy={20} r={9} fill="none" stroke="#2f7f9f" strokeWidth={1.3} strokeDasharray="2.2 1.4" />
+      <Circle cx={48} cy={20} r={6.4} fill="none" stroke="#2f7f9f" strokeWidth={1.3} strokeDasharray="2.2 1.4" />
+      <Circle cx={48} cy={20} r={3.8} fill={`url(#${id}-metal)`} stroke="#000" strokeWidth={0.5} />
+      <Circle cx={48} cy={20} r={1.3} fill="#000" />
     </G>
   );
 }
 
-function Stagebox({ id }: { id: string }) {
+function Stagebox({ id, lit }: { id: string; lit: boolean }) {
+  const inX = (i: number) => 12.5 + i * 5.6;
   return (
     <G>
-      <Rect x={12} y={12} width={40} height={40} rx={3} fill={INK.shadow} transform="translate(2,3)" />
-      <Rect x={12} y={12} width={40} height={40} rx={3} fill={`url(#${id}-panel)`} stroke="#000" strokeWidth={0.6} />
-      <RackEars x={12} y={12} w={40} h={40} />
-      {/* two columns of XLR inputs with signal LEDs */}
-      {[0, 1, 2, 3].map((i) => (
+      {/* a rack-mount digital stagebox: two rows of XLR inputs with signal LEDs, a row of outputs, two network ports */}
+      <Rect x={6} y={14} width={52} height={38} rx={2} fill={INK.shadow} transform="translate(2,3)" />
+      <Rect x={6} y={14} width={52} height={38} rx={2} fill={`url(#${id}-panel)`} stroke="#000" strokeWidth={0.6} />
+      <RackEars x={6} y={14} w={52} h={38} />
+      {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
         <G key={i}>
-          <Circle cx={22} cy={18 + i * 8} r={2.8} fill="#0a0b0d" stroke={INK.metalHi} strokeWidth={0.7} />
-          <Circle cx={31} cy={18 + i * 8} r={2.8} fill="#0a0b0d" stroke={INK.metalHi} strokeWidth={0.7} />
-          <Led x={26.5} y={18 + i * 8} color={INK.green} on={i < 3} r={0.9} />
-          <Led x={35.5} y={18 + i * 8} color={INK.green} on={i !== 2} r={0.9} />
+          <Led x={inX(i)} y={18.3} color={INK.green} on={lit && i !== 5} r={0.7} />
+          <Circle cx={inX(i)} cy={23} r={2.1} fill="#0a0b0d" stroke={INK.metalHi} strokeWidth={0.6} />
+          <Circle cx={inX(i)} cy={30.5} r={2.1} fill="#0a0b0d" stroke={INK.metalHi} strokeWidth={0.6} />
+          <Led x={inX(i)} y={35.2} color={INK.green} on={lit && i < 3} r={0.7} />
         </G>
       ))}
-      {/* line outputs */}
-      <Circle cx={44} cy={20} r={2.6} fill="#0a0b0d" stroke={INK.amber} strokeWidth={0.7} />
-      <Circle cx={44} cy={28} r={2.6} fill="#0a0b0d" stroke={INK.amber} strokeWidth={0.7} />
-      {/* network port + link LED */}
-      <Rect x={40.5} y={36} width={8} height={6} rx={1} fill="#0a0b0d" stroke={INK.metalHi} strokeWidth={0.6} />
-      <Led x={44.5} y={46} color={INK.blue} r={1.3} />
+      <SvgText x={9} y={27.8} fontSize={3.2} fill={INK.tape} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" transform="rotate(-90 9 27.8)">IN</SvgText>
+      {/* outputs, amber rings */}
+      {[0, 1, 2, 3, 4, 5].map((i) => (
+        <Circle key={i} cx={inX(i)} cy={43} r={2.1} fill="#0a0b0d" stroke={INK.amber} strokeWidth={0.6} />
+      ))}
+      <SvgText x={9} y={43} fontSize={3.2} fill={INK.tape} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" transform="rotate(-90 9 43)">OUT</SvgText>
+      {/* network: primary + redundant, link LEDs */}
+      <Rect x={45} y={39.5} width={5} height={5.5} rx={0.8} fill="#0a0b0d" stroke={INK.metalHi} strokeWidth={0.5} />
+      <Rect x={51.5} y={39.5} width={5} height={5.5} rx={0.8} fill="#0a0b0d" stroke={INK.metalHi} strokeWidth={0.5} />
+      <Led on={lit} x={47.5} y={48} color={INK.blue} r={0.9} />
+      <Led on={false} x={54} y={48} color={INK.blue} r={0.9} />
     </G>
   );
 }
 
-function Console({ id }: { id: string }) {
+function Console({ id, lit }: { id: string; lit: boolean }) {
   const strips = [0, 1, 2, 3, 4, 5];
   return (
     <G>
@@ -305,12 +335,12 @@ function Console({ id }: { id: string }) {
       <Rect x={51.9} y={35} width={1.4} height={10} rx={0.7} fill="#08090b" />
       <Rect x={50} y={37} width={5.2} height={2.6} rx={0.6} fill={`url(#${id}-metal)`} stroke="#000" strokeWidth={0.3} />
       <Line x1={50.6} y1={38.3} x2={54.6} y2={38.3} stroke={INK.red} strokeWidth={0.6} />
-      <Led x={53} y={47.5} color={INK.amber} r={1} />
+      <Led on={lit} x={53} y={47.5} color={INK.amber} r={1} />
     </G>
   );
 }
 
-function Processor({ id }: { id: string }) {
+function Processor({ id, lit }: { id: string; lit: boolean }) {
   return (
     <G>
       <Rect x={6} y={26} width={52} height={14} rx={1.5} fill={INK.shadow} transform="translate(2,3)" />
@@ -322,16 +352,16 @@ function Processor({ id }: { id: string }) {
       <Circle cx={39} cy={33} r={2.6} fill={`url(#${id}-metal)`} stroke="#000" strokeWidth={0.4} />
       <Line x1={39} y1={30.6} x2={39} y2={33} stroke={INK.amber} strokeWidth={0.8} />
       {[0, 1, 2, 3].map((i) => (
-        <Led key={i} x={45 + i * 3} y={31} color={i === 3 ? INK.red : INK.green} on={i < 3} r={0.9} />
+        <Led key={i} x={45 + i * 3} y={31} color={i === 3 ? INK.red : INK.green} on={lit && (i < 3)} r={0.9} />
       ))}
       {[0, 1, 2, 3].map((i) => (
-        <Led key={i} x={45 + i * 3} y={35.5} color={INK.amber} on={i < 2} r={0.9} />
+        <Led key={i} x={45 + i * 3} y={35.5} color={INK.amber} on={lit && (i < 2)} r={0.9} />
       ))}
     </G>
   );
 }
 
-function Amp({ id }: { id: string }) {
+function Amp({ id, lit }: { id: string; lit: boolean }) {
   return (
     <G>
       <Rect x={6} y={20} width={52} height={26} rx={2} fill={INK.shadow} transform="translate(2,3)" />
@@ -341,45 +371,62 @@ function Amp({ id }: { id: string }) {
       <Rect x={9} y={24} width={3} height={18} rx={1.5} fill={`url(#${id}-metal)`} stroke="#000" strokeWidth={0.3} />
       <Rect x={52} y={24} width={3} height={18} rx={1.5} fill={`url(#${id}-metal)`} stroke="#000" strokeWidth={0.3} />
       {/* fan grille */}
-      <Rect x={16} y={24} width={16} height={18} rx={1} fill="#08090b" />
+      <Rect x={15} y={24} width={11} height={18} rx={1} fill="#08090b" />
       {[0, 1, 2, 3, 4, 5].map((i) => (
-        <Line key={i} x1={17} y1={26 + i * 2.8} x2={31} y2={26 + i * 2.8} stroke="#2a2e35" strokeWidth={0.8} />
+        <Line key={i} x1={16} y1={26 + i * 2.8} x2={25} y2={26 + i * 2.8} stroke="#2a2e35" strokeWidth={0.8} />
       ))}
-      {/* two channel meters + attenuators */}
-      {[0, 1].map((ch) => (
-        <G key={ch}>
-          {[0, 1, 2, 3].map((i) => (
-            <Led key={i} x={38 + i * 2.8} y={27 + ch * 9} color={i === 3 ? INK.red : i === 2 ? INK.amber : INK.green} on={i < 3} r={0.9} />
-          ))}
-          <Circle cx={39.5} cy={33 + ch * 9} r={2.2} fill={`url(#${id}-metal)`} stroke="#000" strokeWidth={0.4} />
-          <Line x1={39.5} y1={31} x2={39.5} y2={33 + ch * 9} stroke={INK.amber} strokeWidth={0.7} />
-        </G>
-      ))}
-      <Led x={48} y={43} color={INK.blue} r={1.1} />
+      {/* two channels: a vertical ladder (signal · −10 · −3 · clip) beside its attenuator */}
+      {[0, 1].map((ch) => {
+        const x = 29.5 + ch * 10;
+        return (
+          <G key={ch}>
+            {[0, 1, 2, 3].map((i) => (
+              <Led key={i} x={x} y={38.5 - i * 3.6} color={i === 3 ? INK.red : i === 2 ? INK.amber : INK.green} on={lit && i < 3} r={0.9} />
+            ))}
+            <Circle cx={x + 5} cy={37} r={2.4} fill={`url(#${id}-metal)`} stroke="#000" strokeWidth={0.4} />
+            <Line x1={x + 5} y1={34.8} x2={x + 5} y2={37} stroke={INK.amber} strokeWidth={0.7} />
+            <SvgText x={x + 2.5} y={43.6} fontSize={3.2} fill={INK.tape} textAnchor="middle" fontFamily={fonts.oswaldSemiBold}>{`CH${ch + 1}`}</SvgText>
+          </G>
+        );
+      })}
+      {/* power rocker + its indicator */}
+      <Rect x={47.5} y={25.5} width={3.4} height={8} rx={1} fill="#0a0b0d" stroke="#3a3f47" strokeWidth={0.5} />
+      <Rect x={48.2} y={lit ? 26.2 : 29.6} width={2} height={3.2} rx={0.5} fill={lit ? INK.green : INK.metalHi} />
+      <Led on={lit} x={49.2} y={38} color={INK.blue} r={1.1} />
     </G>
   );
 }
 
-function TopCabinet({ id, powered }: { id: string; powered: boolean }) {
+function TopCabinet({ id, lit, powered }: { id: string; lit: boolean; powered: boolean }) {
   return (
     <G>
-      {/* trapezoid front-loaded cabinet, slightly wider at the bottom */}
-      <Path d="M 18 8 L 46 8 L 50 58 L 14 58 Z" fill={INK.shadow} transform="translate(2,3)" />
-      <Path d="M 18 8 L 46 8 L 50 58 L 14 58 Z" fill={`url(#${id}-cab)`} stroke="#000" strokeWidth={0.7} />
-      <Path d="M 18.8 8.8 L 45.2 8.8" stroke="#fff" strokeWidth={0.7} opacity={0.14} />
-      <Path d="M 18.8 9 L 15.4 57" stroke="#fff" strokeWidth={0.5} opacity={0.08} />
-      {/* grille inset */}
-      <Path d="M 21 12 L 43 12 L 46.5 54 L 17.5 54 Z" fill={INK.grille} />
-      <Horn x={24} y={15} w={16} h={10} />
-      <Woofer id={id} cx={32} cy={41} r={11} />
-      {/* handle + pole cup hint */}
-      <Rect x={12} y={30} width={2.2} height={9} rx={1} fill={INK.metalLo} />
-      {powered ? <Led x={44.5} y={55.5} color={INK.blue} r={1} /> : null}
+      {/* a two-way front-loaded box: rectangular front, a real HF horn over the woofer */}
+      <Rect x={16} y={6} width={32} height={52} rx={2} fill={INK.shadow} transform="translate(2,3)" />
+      <Rect x={16} y={6} width={32} height={52} rx={2} fill={`url(#${id}-cab)`} stroke="#000" strokeWidth={0.7} />
+      <Line x1={17} y1={6.8} x2={47} y2={6.8} stroke="#fff" strokeWidth={0.7} opacity={0.14} />
+      <Rect x={19} y={9} width={26} height={46} rx={1} fill={INK.grille} />
+      {/* the horn: a flared mouth, the throat at the centre */}
+      <Path d="M 21 11.5 L 43 11.5 L 39.5 22 L 24.5 22 Z" fill="#08090b" stroke="#3a3f47" strokeWidth={0.6} />
+      <Path d="M 24.5 22 L 39.5 22 L 36.5 16.5 L 27.5 16.5 Z" fill="#101215" stroke="#2a2e35" strokeWidth={0.5} />
+      <Rect x={30.2} y={15} width={3.6} height={2.6} rx={0.6} fill="#000" />
+      <Line x1={32} y1={11.5} x2={32} y2={22} stroke="#2a2e35" strokeWidth={0.5} />
+      <Woofer id={id} cx={32} cy={39} r={11.5} />
+      {/* handle + corner protectors */}
+      <Rect x={13.6} y={28} width={2.4} height={10} rx={1} fill={INK.metalLo} />
+      {[
+        [16, 6],
+        [44, 6],
+        [16, 54],
+        [44, 54],
+      ].map(([x, y]) => (
+        <Rect key={`${x}${y}`} x={x} y={y} width={4} height={4} rx={1} fill={INK.metalLo} />
+      ))}
+      {powered ? <Led on={lit} x={40} y={52.5} color={INK.blue} r={1} /> : null}
     </G>
   );
 }
 
-function SubCabinet({ id, powered }: { id: string; powered: boolean }) {
+function SubCabinet({ id, lit, powered }: { id: string; lit: boolean; powered: boolean }) {
   return (
     <G>
       <Rect x={8} y={16} width={48} height={40} rx={2} fill={INK.shadow} transform="translate(2,3)" />
@@ -399,30 +446,32 @@ function SubCabinet({ id, powered }: { id: string; powered: boolean }) {
       ].map(([x, y]) => (
         <Rect key={`${x}${y}`} x={x} y={y} width={4} height={4} rx={1} fill={INK.metalLo} />
       ))}
-      {powered ? <Led x={52} y={44} color={INK.blue} r={1} /> : null}
+      {powered ? <Led on={lit} x={52} y={44} color={INK.blue} r={1} /> : null}
     </G>
   );
 }
 
-function Wedge({ id, powered }: { id: string; powered: boolean }) {
+function Wedge({ id, lit, powered }: { id: string; lit: boolean; powered: boolean }) {
   return (
     <G>
-      {/* the angled face, seen from the performer's side */}
-      <Path d="M 6 54 L 40 22 L 58 26 L 58 54 Z" fill={INK.shadow} transform="translate(2,3)" />
-      <Path d="M 6 54 L 40 22 L 58 26 L 58 54 Z" fill={`url(#${id}-cab)`} stroke="#000" strokeWidth={0.7} />
-      <Path d="M 40 22 L 58 26" stroke="#fff" strokeWidth={0.8} opacity={0.16} />
-      <Path d="M 12 52 L 40 26 L 54 29 L 54 52 Z" fill={INK.grille} />
-      <G transform="rotate(-40 33 41)">
-        <Horn x={24} y={26} w={14} h={7} />
-      </G>
-      <Woofer id={id} cx={38} cy={41} r={9} />
-      <Rect x={6} y={54} width={52} height={3} rx={1} fill={INK.metalLo} />
-      {powered ? <Led x={54.5} y={50} color={INK.blue} r={1} /> : null}
+      {/* seen from the performer's side, three-quarter: the sloped baffle faces up at them, the side panel shows the wedge profile */}
+      <Path d="M 8 50 L 20 20 L 50 20 L 56 50 Z" fill={INK.shadow} transform="translate(2,3)" />
+      <Path d="M 50 20 L 56 50 L 60.5 46 L 57.5 23 Z" fill={INK.metalLo} stroke="#000" strokeWidth={0.6} />
+      <Path d="M 8 50 L 20 20 L 50 20 L 56 50 Z" fill={`url(#${id}-cab)`} stroke="#000" strokeWidth={0.7} />
+      <Path d="M 20.6 20.6 L 49.4 20.6" stroke="#fff" strokeWidth={0.8} opacity={0.16} />
+      <Path d="M 12 48 L 22 23 L 48.5 23 L 53 48 Z" fill={INK.grille} />
+      <Horn x={26} y={25} w={16} h={7} />
+      <Woofer id={id} cx={33} cy={40} r={8} />
+      {/* floor rail + rubber feet */}
+      <Rect x={6} y={50} width={52} height={3.5} rx={1} fill={INK.metalLo} />
+      <Rect x={9} y={53.5} width={5} height={1.6} rx={0.6} fill="#000" />
+      <Rect x={50} y={53.5} width={5} height={1.6} rx={0.6} fill="#000" />
+      {powered ? <Led on={lit} x={51} y={46.5} color={INK.blue} r={1} /> : null}
     </G>
   );
 }
 
-function IemTx({ id }: { id: string }) {
+function IemTx({ id, lit }: { id: string; lit: boolean }) {
   return (
     <G>
       <Line x1={48} y1={30} x2={56} y2={10} stroke={INK.metalHi} strokeWidth={1.6} strokeLinecap="round" />
@@ -436,12 +485,12 @@ function IemTx({ id }: { id: string }) {
       <Rect x={17} y={34} width={18} height={9} rx={1} fill="#0b1520" stroke="#1f3a55" strokeWidth={0.6} />
       <SvgText x={26} y={40.5} fontSize={4.5} fill={INK.blue} fontFamily={fonts.mono} textAnchor="middle">TX · ST</SvgText>
       <Circle cx={44} cy={39} r={3.6} fill={`url(#${id}-metal)`} stroke="#000" strokeWidth={0.4} />
-      <Led x={38} y={35} color={INK.red} />
+      <Led on={lit} x={38} y={35} color={INK.red} />
     </G>
   );
 }
 
-function IemPack({ id }: { id: string }) {
+function IemPack({ id, lit }: { id: string; lit: boolean }) {
   return (
     <G>
       {/* earphones cable and buds */}
@@ -461,21 +510,24 @@ function IemPack({ id }: { id: string }) {
       <Circle cx={33} cy={50} r={3.2} fill={`url(#${id}-metal)`} stroke="#000" strokeWidth={0.4} />
       <Line x1={33} y1={47.2} x2={33} y2={50} stroke={INK.amber} strokeWidth={0.8} />
       <Line x1={46} y1={34} x2={46} y2={52} stroke={INK.metalMid} strokeWidth={2} strokeLinecap="round" />
+      {/* the receive antenna */}
+      <Line x1={25} y1={30} x2={22} y2={17} stroke={INK.metalHi} strokeWidth={1.4} strokeLinecap="round" />
+      <Circle cx={22} cy={17} r={1.3} fill={INK.metalHi} />
     </G>
   );
 }
 
-function Distro({ id }: { id: string }) {
+function Distro({ id, lit }: { id: string; lit: boolean }) {
   return (
     <G>
       <Rect x={10} y={18} width={44} height={30} rx={2} fill={INK.shadow} transform="translate(2,3)" />
       <Rect x={10} y={18} width={44} height={30} rx={2} fill={`url(#${id}-panel)`} stroke="#000" strokeWidth={0.6} />
       <Rect x={10.5} y={18.5} width={43} height={3} rx={1.5} fill="#fff" opacity={0.08} />
-      {/* breakers */}
+      {/* three breakers, all on — one colour, one state */}
       {[0, 1, 2].map((i) => (
         <G key={i}>
           <Rect x={15 + i * 8} y={22} width={5} height={9} rx={1} fill="#0a0b0d" stroke="#3a3f47" strokeWidth={0.5} />
-          <Rect x={16 + i * 8} y={23} width={3} height={4} rx={0.6} fill={i === 2 ? INK.red : INK.metalHi} />
+          <Rect x={16 + i * 8} y={lit ? 23 : 27} width={3} height={4} rx={0.6} fill={INK.metalHi} />
         </G>
       ))}
       {/* outlets */}
@@ -486,8 +538,9 @@ function Distro({ id }: { id: string }) {
           <Rect x={18.8 + i * 9.5} y={37} width={1.2} height={3} fill="#3a3f47" />
         </G>
       ))}
-      <Led x={46} y={26} color={INK.green} r={1.2} />
-      <Led x={50} y={26} color={INK.amber} r={1.2} />
+      {/* mains present + ground OK */}
+      <Led on={lit} x={44} y={26} color={INK.green} r={1.2} />
+      <Led on={lit} x={49} y={26} color={INK.green} r={1.2} />
     </G>
   );
 }
@@ -508,46 +561,46 @@ function Listener() {
 
 export type GlyphKind = GearKind | 'listener';
 
-function Drawing({ kind, id }: { kind: GlyphKind; id: string }) {
+function Drawing({ kind, id, lit }: { kind: GlyphKind; id: string; lit: boolean }) {
   switch (kind) {
     case 'vocalMic':
-      return <VocalMic id={id} />;
+      return <VocalMic id={id} lit={lit} />;
     case 'instrumentMic':
-      return <InstrumentMic id={id} />;
+      return <InstrumentMic id={id} lit={lit} />;
     case 'di':
-      return <DiBox id={id} />;
+      return <DiBox id={id} lit={lit} />;
     case 'playback':
-      return <Playback id={id} />;
+      return <Playback id={id} lit={lit} />;
     case 'wirelessRx':
-      return <WirelessRx id={id} />;
+      return <WirelessRx id={id} lit={lit} />;
     case 'snake':
-      return <Snake id={id} />;
+      return <Snake id={id} lit={lit} />;
     case 'stagebox':
-      return <Stagebox id={id} />;
+      return <Stagebox id={id} lit={lit} />;
     case 'console':
-      return <Console id={id} />;
+      return <Console id={id} lit={lit} />;
     case 'processor':
-      return <Processor id={id} />;
+      return <Processor id={id} lit={lit} />;
     case 'amp':
-      return <Amp id={id} />;
+      return <Amp id={id} lit={lit} />;
     case 'poweredSpeaker':
-      return <TopCabinet id={id} powered />;
+      return <TopCabinet id={id} lit={lit} powered />;
     case 'passiveSpeaker':
-      return <TopCabinet id={id} powered={false} />;
+      return <TopCabinet id={id} lit={lit} powered={false} />;
     case 'poweredSub':
-      return <SubCabinet id={id} powered />;
+      return <SubCabinet id={id} lit={lit} powered />;
     case 'passiveSub':
-      return <SubCabinet id={id} powered={false} />;
+      return <SubCabinet id={id} lit={lit} powered={false} />;
     case 'wedge':
-      return <Wedge id={id} powered={false} />;
+      return <Wedge id={id} lit={lit} powered={false} />;
     case 'poweredWedge':
-      return <Wedge id={id} powered />;
+      return <Wedge id={id} lit={lit} powered />;
     case 'iemTx':
-      return <IemTx id={id} />;
+      return <IemTx id={id} lit={lit} />;
     case 'iemPack':
-      return <IemPack id={id} />;
+      return <IemPack id={id} lit={lit} />;
     case 'powerDistro':
-      return <Distro id={id} />;
+      return <Distro id={id} lit={lit} />;
     case 'listener':
       return <Listener />;
   }
@@ -556,19 +609,23 @@ function Drawing({ kind, id }: { kind: GlyphKind; id: string }) {
 let seq = 0;
 
 /** Standalone glyph in its own <Svg>. `size` is the rendered square. */
-export function GearGlyph({ kind, size = 56, dim, label }: { kind: GlyphKind; size?: number; dim?: boolean; label?: string }) {
+/** `power: 'off'` draws every indicator dark — a device before power-up, or
+ *  one nothing has reached yet. Default is lit. */
+export type GearPower = 'on' | 'off';
+
+export function GearGlyph({ kind, size = 56, dim, label, power = 'on' }: { kind: GlyphKind; size?: number; dim?: boolean; label?: string; power?: GearPower }) {
   const id = `g${(seq = (seq + 1) % 100000)}`;
   return (
-    <Svg width={size} height={size} viewBox="0 0 64 64" opacity={dim ? 0.38 : 1} {...(label ? { accessible: true, accessibilityRole: 'image' as const, accessibilityLabel: label } : {})}>
+    <Svg width={size} height={size} viewBox="0 0 64 64" opacity={dim ? 0.38 : 1} {...(label ? { accessibilityLabel: label } : {})}>
       <GearDefs id={id} />
-      <Drawing kind={kind} id={id} />
+      <Drawing kind={kind} id={id} lit={power !== 'off'} />
     </Svg>
   );
 }
 
 /** The same drawing placed INSIDE a larger <Svg> (the venue plot, the
  *  system diagram). The caller owns the <Svg>; `id` must be unique in it. */
-export function GearInSvg({ kind, id, x, y, size = 40, dim, highlight }: { kind: GlyphKind; id: string; x: number; y: number; size?: number; dim?: boolean; highlight?: string }) {
+export function GearInSvg({ kind, id, x, y, size = 40, dim, highlight, power = 'on' }: { kind: GlyphKind; id: string; x: number; y: number; size?: number; dim?: boolean; highlight?: string; power?: GearPower }) {
   const s = size / 64;
   return (
     <G>
@@ -576,7 +633,7 @@ export function GearInSvg({ kind, id, x, y, size = 40, dim, highlight }: { kind:
       {highlight ? <Circle cx={x} cy={y} r={size * 0.62} fill={highlight} opacity={0.16} /> : null}
       {highlight ? <Circle cx={x} cy={y} r={size * 0.62} fill="none" stroke={highlight} strokeWidth={1.2} opacity={0.8} /> : null}
       <G transform={`translate(${x - size / 2}, ${y - size / 2}) scale(${s})`} opacity={dim ? 0.4 : 1}>
-        <Drawing kind={kind} id={id} />
+        <Drawing kind={kind} id={id} lit={power !== 'off'} />
       </G>
     </G>
   );

@@ -73,3 +73,18 @@ the walk in §2 (text readouts from the live DOM). Open the harness URL above to
   uncommitted, still not approved.
 - `web/` — nothing changed; the push rebuilds the site with nothing new.
 - No `eas update`, no `eas build`.
+
+## 6 · Afternoon review pass (2026-09-26)
+
+The owner reviewed the lab and found it wanting on accuracy and design (chains, speaker
+positions, coverage physics, landing images, dead adjustments, prose without pictures,
+toy animations, "the" signal path). Four specialist reviews were consolidated and applied
+across engine → art → pages; the full list is in the design doc's "Review pass" section.
+`tsc` clean, 56 engine tests (was 49), full suite green, every mode re-walked in the browser
+(system map, trace, sub feeds/placement, monitors, splits, power band, coverage, alignment,
+feedback, method, channel strip, patch panel, power rack, line check, chain meter, ring-out,
+builder, bench). Still device-untested. Nothing published.
+
+Harness notes: RN `Btn`/`Pressable` targets answer a JS `click` on `[aria-label]`; SVG hit
+targets answer `find` + ref clicks; a `GearGlyph` label can shadow a same-named button in
+`querySelector` order.

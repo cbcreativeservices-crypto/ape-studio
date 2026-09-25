@@ -1,13 +1,15 @@
 /**
  * Sound Systems Lab — LEARN pages 1–7 (chapters 1–4).
  *
- * Chapter 1 · the complete system (tap any component; trace the signal)
+ * Chapter 1 · the complete system (one map, many systems; trace the signal)
  * Chapter 2 · PA system types (ten kinds; match the venue)
  * Chapter 3 · output configurations (thirteen, visual only; choose one)
  * Chapter 4 · the routing map (six tools, and the ROUTE mode to drill them)
  *
- * Copy is the register a working engineer uses with a client: plain,
- * technical, no promises. "Live sound reinforcement" throughout.
+ * Every page opens with the instrument, not the prose (owner standard
+ * 2026-09-26): an orientation line, the picture, the prompt, the goals —
+ * then the words. Copy is the register a working engineer uses with a
+ * client: plain, technical, no promises. "Live sound reinforcement" throughout.
  */
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -19,50 +21,62 @@ import { gearSpec, LEVEL_LABEL } from '../../../features/soundsystems/gear';
 import { OUTPUT_CONFIGS, SYSTEM_TYPES, VENUE_CASES, FEEDS, type FeedId, type OutputConfig } from '../../../features/soundsystems/configs';
 import { ROUTING_TOOLS } from '../../../features/soundsystems/console';
 import { slotDef } from '../../../features/soundsystems/system';
-import type { GearKind } from '../../../features/soundsystems/types';
+import { STATION_LABEL, STATION_ORDER, type Station } from '../../../features/soundsystems/types';
 import { ChapterTag, DeeperRow, GoalChips, KeyFact, LabLink, PickTile, Readout, ReadoutRow, useVisitGoals, VerdictLine } from './bits';
 import { GearGlyph } from './art/gearArt';
-import { SystemDiagram, type DiagramStation } from './art/SystemDiagram';
-import { VenueView } from './art/VenueView';
+import { benchMap, chapterOneMap, SystemMap, type MapEdge, type MapNode, type MapVariant } from './art/SystemMap';
+import { FieldKey, VenueView } from './art/VenueView';
+import { Orient } from './art/diagrams';
 import { PLOT_BADGE, layoutToBeams, layoutToPlaced } from './plot';
 
 /* ── 1 · The complete system ────────────────────────────────────────────── */
 
-const CHAIN: readonly { id: string; kind: GearKind; label: string }[] = [
-  { id: 'mic', kind: 'vocalMic', label: 'Source' },
-  { id: 'di', kind: 'di', label: 'DI' },
-  { id: 'box', kind: 'stagebox', label: 'Stagebox' },
-  { id: 'con', kind: 'console', label: 'Console' },
-  { id: 'proc', kind: 'processor', label: 'Processor' },
-  { id: 'amp', kind: 'amp', label: 'Amplifier' },
-  { id: 'top', kind: 'passiveSpeaker', label: 'Loudspeaker' },
-  { id: 'sub', kind: 'passiveSub', label: 'Subwoofer' },
-  { id: 'wedge', kind: 'wedge', label: 'Monitor' },
-];
-
 function PageSystem({ ctx }: { ctx: PageCtx }) {
+  const [v, setV] = useState<MapVariant>({ input: 'stagebox', house: 'passive' });
   const [sel, setSel] = useState<string | null>(null);
   const [seen, setSeen] = useState<Set<string>>(new Set());
-  const stations: DiagramStation[] = [...CHAIN.map((c) => ({ id: c.id, kind: c.kind, label: c.label })), { id: 'ear', kind: 'listener', label: 'Listener' }];
+  const [builds, setBuilds] = useState<Set<string>>(new Set(['stagebox-passive']));
+  const map = useMemo(() => chapterOneMap(v), [v]);
+  const set = (next: MapVariant) => {
+    setV(next);
+    setBuilds((b) => new Set(b).add(`${next.input}-${next.house}`));
+  };
   const tap = (id: string) => {
     setSel(id);
     setSeen((s) => new Set(s).add(id));
   };
   const goals = [
-    { label: 'Inspect four components', hit: seen.size >= 4 },
+    { label: 'Inspect four stations', hit: seen.size >= 4 },
     { label: 'Inspect the console', hit: seen.has('con') },
     { label: 'Inspect a loudspeaker', hit: seen.has('top') || seen.has('sub') || seen.has('wedge') },
+    { label: 'See both stage inputs and both house builds', hit: builds.size >= 3 },
   ];
   const latched = useVisitGoals(ctx, goals);
-  const spec = sel && sel !== 'ear' ? gearSpec(CHAIN.find((c) => c.id === sel)!.kind) : null;
+  const node = sel ? map.nodes.find((n) => n.id === sel) : undefined;
+  const spec = node && node.kind !== 'listener' ? gearSpec(node.kind) : null;
   return (
     <View style={{ gap: 12 }}>
       <ChapterTag n={1}>UNDERSTANDING THE COMPLETE PA SYSTEM</ChapterTag>
-      <Lead>
-        A live sound reinforcement system has one job: carry a performer’s sound to every listener, louder than the room would on its own, and still sounding like the performer. Everything on this diagram exists to do one part of that.
-      </Lead>
-      <SystemDiagram stations={stations} selectedId={sel} onTap={tap} a11y="The signal thread from a vocal microphone through a DI, stagebox, console, processor, amplifier, loudspeaker, subwoofer and monitor to the listener. Tap any station to read where its signal comes from and where it goes." />
-      <Prompt>Tap any component. Where does its signal come from — and where does it go next?</Prompt>
+      <Orient>A live sound reinforcement system as a system technician draws it: sources on the stage lane, the stage input carrying them to the console at front of house, the house path and the monitor path leaving the console separately.</Orient>
+      <Row>
+        <Text style={styles.ctlLabel}>STAGE INPUT</Text>
+        <Btn label="ANALOG SNAKE" selected={v.input === 'snake'} tone={v.input === 'snake' ? 'primary' : 'plain'} onPress={() => set({ ...v, input: 'snake' })} a11y="Stage input: an analog multicore snake" />
+        <Btn label="DIGITAL STAGEBOX" selected={v.input === 'stagebox'} tone={v.input === 'stagebox' ? 'primary' : 'plain'} onPress={() => set({ ...v, input: 'stagebox' })} a11y="Stage input: a digital stagebox on a network" />
+      </Row>
+      <Row>
+        <Text style={styles.ctlLabel}>HOUSE</Text>
+        <Btn label="PASSIVE + AMPS" selected={v.house === 'passive'} tone={v.house === 'passive' ? 'primary' : 'plain'} onPress={() => set({ ...v, house: 'passive' })} a11y="House loudspeakers: passive cabinets with a processor and amplifiers" />
+        <Btn label="POWERED BOXES" selected={v.house === 'powered'} tone={v.house === 'powered' ? 'primary' : 'plain'} onPress={() => set({ ...v, house: 'powered' })} a11y="House loudspeakers: powered boxes with the amplifier inside" />
+      </Row>
+      <SystemMap
+        nodes={map.nodes}
+        edges={map.edges}
+        selectedId={sel}
+        onTap={tap}
+        a11y={`The system map: a vocal microphone, a bass through a DI and playback into the ${v.input === 'snake' ? 'analog snake' : 'digital stagebox'}, then the console. ${v.house === 'passive' ? 'The main mix goes to the processor, the amplifiers, then passive tops and subs.' : 'The main mix goes straight to powered tops, and the sub takes its own console output.'} A pre-fader aux feeds the monitor amplifier and a wedge; a stereo aux feeds the in-ear transmitter. The tops reach the listener through the air. Tap any station.`}
+      />
+      <Prompt>Tap any station. Where does its signal come from — and where does it go next?</Prompt>
+      <GoalChips goals={goals} latched={latched} />
       {spec ? (
         <Card tone="math">
           <View style={styles.inspectHead}>
@@ -80,86 +94,70 @@ function PageSystem({ ctx }: { ctx: PageCtx }) {
           <Text style={styles.fromTo}>◂ FROM · {spec.from}</Text>
           <Text style={styles.fromTo}>▸ TO · {spec.to}</Text>
         </Card>
-      ) : sel === 'ear' ? (
+      ) : node?.kind === 'listener' ? (
         <Card tone="math">
           <Eyebrow>THE LISTENER</Eyebrow>
-          <Body>The only component that cannot be replaced, moved or re-patched — and the one every other decision is measured against. Coverage, level, timing and intelligibility are all judged at the ear, not at the console.</Body>
+          <Body>The only station that cannot be replaced, moved or re-patched — and the one every other decision is measured against. Coverage, level, timing and intelligibility are all judged at the ear, not at the console.</Body>
         </Card>
       ) : null}
       <Card>
-        <Eyebrow>THE SECTIONS OF EVERY SYSTEM</Eyebrow>
-        <Body>Sound source → microphones, DIs, playback and wireless → stage inputs → analog snake or digital stagebox → mixing console → signal processing → loudspeaker management processor → power amplifiers → passive and powered loudspeakers, subwoofers, stage monitors and in-ears → main, auxiliary, group, matrix and zone outputs — all of it standing on electrical power and grounding that were designed for it.</Body>
+        <Eyebrow>ONE MAP, MANY SYSTEMS</Eyebrow>
+        <Body>Switch the stage input and the house build and the map redraws — but the ORDER never changes: source → stage input → console → processing → amplification → loudspeaker → listener. A powered loudspeaker is the amplifier and the cabinet in one box. A digital stagebox turns the snake into a network cable, carries the returns to the stage on the same link, and moves the preamps to the stage. The fault bench walks every case against this order.</Body>
       </Card>
-      <GoalChips goals={goals} latched={latched} />
+      <Card>
+        <Eyebrow>THE SECTIONS OF EVERY SYSTEM</Eyebrow>
+        <Body>Sound sources — microphones, DIs, playback and wireless → stage inputs — analog snake or digital stagebox → mixing console → signal processing → loudspeaker management processor → power amplifiers → passive and powered loudspeakers, subwoofers, stage monitors and in-ears → main, auxiliary, group, matrix and zone outputs — all of it standing on electrical power and grounding that were designed for it.</Body>
+      </Card>
     </View>
   );
 }
 
 /* ── 2 · Trace the signal ───────────────────────────────────────────────── */
 
-const TRACE_ORDER = ['mic', 'box', 'con', 'proc', 'amp', 'top', 'ear'] as const;
-const TRACE_LABEL: Record<(typeof TRACE_ORDER)[number], string> = {
-  mic: 'Microphone',
-  box: 'Stagebox',
-  con: 'Console',
-  proc: 'Processor',
-  amp: 'Amplifier',
-  top: 'Loudspeaker',
-  ear: 'Listener',
-};
-const TRACE_KIND: Record<(typeof TRACE_ORDER)[number], DiagramStation['kind']> = {
-  mic: 'vocalMic',
-  box: 'stagebox',
-  con: 'console',
-  proc: 'processor',
-  amp: 'amp',
-  top: 'passiveSpeaker',
-  ear: 'listener',
-};
-
 function PageTrace({ ctx }: { ctx: PageCtx }) {
-  const [picked, setPicked] = useState<string[]>([]);
+  const [picked, setPicked] = useState<Station[]>([]);
   // Shuffle the bin once per mount so the order is not given away by layout.
-  const bin = useMemo(() => [...TRACE_ORDER].sort(() => Math.random() - 0.5), []);
-  const wrongAt = picked.findIndex((id, i) => id !== TRACE_ORDER[i]);
-  const complete = picked.length === TRACE_ORDER.length && wrongAt < 0;
+  const bin = useMemo(() => [...STATION_ORDER].sort(() => Math.random() - 0.5), []);
+  const wrongAt = picked.findIndex((id, i) => id !== STATION_ORDER[i]);
+  const complete = picked.length === STATION_ORDER.length && wrongAt < 0;
   const goals = [{ label: 'Trace source → listener in order', hit: complete }];
   const latched = useVisitGoals(ctx, goals);
-  const stations: DiagramStation[] = picked.map((id) => ({ id, kind: TRACE_KIND[id as never], label: TRACE_LABEL[id as never], state: 'ok' }));
+  const base = useMemo(() => benchMap({}, {}), []);
+  const nodes: MapNode[] = base.nodes.map((n) => {
+    const i = picked.indexOf(n.id as Station);
+    const state = i < 0 ? 'unknown' : wrongAt >= 0 && i >= wrongAt ? 'flag' : 'ok';
+    return { ...n, state, dark: i < 0 };
+  });
+  const reachedOk = wrongAt >= 0 ? wrongAt : picked.length;
+  const edges: MapEdge[] = base.edges.map((e) => ({ ...e, dead: STATION_ORDER.indexOf(e.to as Station) >= reachedOk }));
   return (
     <View style={{ gap: 12 }}>
       <ChapterTag n={1}>BASIC SIGNAL-FLOW TRACING</ChapterTag>
-      <Lead>
-        Tracing is the habit every other skill rests on: from the source, forward, one station at a time. Build the thread in the order the signal travels.
-      </Lead>
-      {stations.length ? (
-        <SystemDiagram stations={stations} flowing={complete} breakAfter={wrongAt >= 0 ? wrongAt - 1 : null} a11y={`Your thread so far: ${picked.map((p) => TRACE_LABEL[p as never]).join(', ')}`} />
-      ) : (
-        <Card>
-          <Body>The thread is empty. Start where the signal begins.</Body>
-        </Card>
-      )}
-      {wrongAt >= 0 ? (
-        <VerdictLine ok={false}>
-          {TRACE_LABEL[picked[wrongAt] as never]} cannot come after {wrongAt === 0 ? 'the start' : TRACE_LABEL[picked[wrongAt - 1] as never]} — the signal has not reached it yet. Reset and try again.
-        </VerdictLine>
-      ) : complete ? (
-        <VerdictLine ok>Source to listener, in order. That is the walk you will make on every fault.</VerdictLine>
-      ) : null}
+      <Orient>The nine stations of the house path, drawn as the bench draws them. Light them in the order the signal travels.</Orient>
+      <SystemMap nodes={nodes} edges={edges} running={complete} a11y={`Your thread so far: ${picked.length ? picked.map((p) => STATION_LABEL[p]).join(', ') : 'nothing yet'}.`} />
       <Prompt>Tap the next station the signal reaches.</Prompt>
       <Row>
         {bin.map((id) => (
-          <Btn key={id} label={TRACE_LABEL[id]} disabled={picked.includes(id) || wrongAt >= 0} onPress={() => setPicked((p) => [...p, id])} a11y={`${TRACE_LABEL[id]}${picked.includes(id) ? ', placed' : ''}`} />
+          <Btn key={id} label={STATION_LABEL[id]} disabled={picked.includes(id) || wrongAt >= 0} onPress={() => setPicked((p) => [...p, id])} a11y={`${STATION_LABEL[id]}${picked.includes(id) ? ', placed' : ''}`} />
         ))}
         {picked.length ? <Btn label="RESET" tone="danger" onPress={() => setPicked([])} a11y="Reset the thread" /> : null}
       </Row>
-      <KeyFact>Signal falls forward: source, stage input, console, processing, amplification, loudspeaker, listener. A fault is found by walking that order — never by guessing at the far end.</KeyFact>
+      {wrongAt >= 0 ? (
+        <VerdictLine ok={false}>
+          {STATION_LABEL[picked[wrongAt]]} cannot come after {wrongAt === 0 ? 'the start' : STATION_LABEL[picked[wrongAt - 1]]} — the signal has not reached it yet. Reset and try again.
+        </VerdictLine>
+      ) : complete ? (
+        <VerdictLine ok>Source to listener, in order — and the LEDs chase with programme. That is the walk you will make on every fault.</VerdictLine>
+      ) : null}
       <GoalChips goals={goals} latched={latched} />
+      <KeyFact>Signal falls forward: source, cable, stage input, console in, console out, processor, amplifier, loudspeaker, listener. A fault is found by walking that order from wherever the symptom leaves doubt — never by guessing at the far end.</KeyFact>
     </View>
   );
 }
 
 /* ── 3 · Ten kinds of system ────────────────────────────────────────────── */
+
+const FLOWN_TYPES = new Set(['line-array']);
 
 function PageSystemTypes({ ctx }: { ctx: PageCtx }) {
   const [id, setId] = useState(SYSTEM_TYPES[0].id);
@@ -167,25 +165,45 @@ function PageSystemTypes({ ctx }: { ctx: PageCtx }) {
   const t = SYSTEM_TYPES.find((x) => x.id === id)!;
   const goals = [{ label: 'View five system types', hit: seen.size >= 5 }, { label: 'View the line array and the distributed system', hit: seen.has('line-array') && seen.has('distributed') }];
   const latched = useVisitGoals(ctx, goals);
+  const pick = (s: string) => {
+    setId(s);
+    setSeen((v) => new Set(v).add(s));
+  };
+  const venue = SYSTEM_TYPES.filter((s) => s.group === 'venue');
+  const build = SYSTEM_TYPES.filter((s) => s.group === 'build');
   return (
     <View style={{ gap: 12 }}>
       <ChapterTag n={2}>PA SYSTEM TYPES</ChapterTag>
-      <Lead>
-        Systems differ by WHEN they are the right answer, not just by what is in the case. The same band in a café, a club and a field needs three different systems.
-      </Lead>
+      <Orient>Ten kinds of system. Six are chosen by the venue; four are ways any of them can be built out. Pick one and read its plan.</Orient>
+      <Eyebrow>CHOSEN BY THE VENUE</Eyebrow>
       <View style={styles.tiles}>
-        {SYSTEM_TYPES.map((s) => (
-          <PickTile key={s.id} label={s.name} selected={s.id === id} done={seen.has(s.id)} onPress={() => { setId(s.id); setSeen((v) => new Set(v).add(s.id)); }} />
+        {venue.map((s) => (
+          <PickTile key={s.id} label={s.name} selected={s.id === id} done={seen.has(s.id)} onPress={() => pick(s.id)} />
         ))}
       </View>
-      <VenueView placed={layoutToPlaced(t.layout)} beams={layoutToBeams(t.layout)} field badge={PLOT_BADGE} a11y={`Plot of a ${t.name}: ${t.layout.map((p) => `${p.kind} at ${slotDef(p.slot).label}`).join(', ')}`} />
+      <Eyebrow>WAYS TO BUILD ANY OF THEM</Eyebrow>
+      <View style={styles.tiles}>
+        {build.map((s) => (
+          <PickTile key={s.id} label={s.name} selected={s.id === id} done={seen.has(s.id)} onPress={() => pick(s.id)} />
+        ))}
+      </View>
+      <VenueView
+        placed={layoutToPlaced(t.layout, t.powered !== false)}
+        beams={layoutToBeams(t.layout, { flown: FLOWN_TYPES.has(t.id) })}
+        field
+        badge={PLOT_BADGE}
+        orientation={`${t.name} — plan view, stage at the top`}
+        a11y={`Plan of a ${t.name}: ${t.layout.map((p) => `${p.kind} at ${slotDef(p.slot).label}`).join(', ')}`}
+      />
+      <FieldKey />
+      <GoalChips goals={goals} latched={latched} />
       <Card tone="math">
         <Eyebrow>{t.name.toUpperCase()} · {t.scale.toUpperCase()}</Eyebrow>
         <Text style={styles.chain}>{t.chain.join('  →  ')}</Text>
         <Body>WHEN · {t.when}</Body>
         <Body>NOT WHEN · {t.notWhen}</Body>
       </Card>
-      <GoalChips goals={goals} latched={latched} />
+      <KeyFact>Systems differ by WHEN they are the right answer, not just by what is in the case. The same band in a café, a club and a field needs three different systems — and the chain above is the common shape, not the only wiring: a powered box folds the amplifier in, a processor can live inside the amplifier, and a small show mixes monitors from the house console.</KeyFact>
     </View>
   );
 }
@@ -201,6 +219,7 @@ function PageVenueMatch({ ctx }: { ctx: PageCtx }) {
     <View style={{ gap: 12 }}>
       <ChapterTag n={2}>WHEN EACH DESIGN IS APPROPRIATE</ChapterTag>
       <Lead>Eight venues. Choose the system each one calls for — and read why the runner-up would have been carried in for nothing.</Lead>
+      <GoalChips goals={goals} latched={latched} />
       {VENUE_CASES.map((v, i) => {
         const names = SYSTEM_TYPES.map((t) => t.name);
         const correctIdx = SYSTEM_TYPES.findIndex((t) => t.id === v.correct);
@@ -220,7 +239,6 @@ function PageVenueMatch({ ctx }: { ctx: PageCtx }) {
         );
       })}
       <Body>{count} of {VENUE_CASES.length} matched.</Body>
-      <GoalChips goals={goals} latched={latched} />
     </View>
   );
 }
@@ -248,20 +266,29 @@ function PageConfigs({ ctx }: { ctx: PageCtx }) {
   return (
     <View style={{ gap: 12 }}>
       <ChapterTag n={3}>OUTPUT CONFIGURATIONS</ChapterTag>
-      <Lead>
-        The output configuration is the decision that shapes everything downstream: how many loudspeaker positions, what each one carries, and which console buses feed them. Pick one and watch the plot, the feeds and the coverage change.
-      </Lead>
+      <Orient>Thirteen ways the console’s outputs can reach a room. Pick one: the plan shows where each loudspeaker stands, the tag beside it says what it carries, and the floor shows where that lands.</Orient>
       <View style={styles.tiles}>
         {OUTPUT_CONFIGS.map((o) => (
           <PickTile key={o.id} label={o.name} selected={o.id === id} done={seen.has(o.id)} onPress={() => { setId(o.id); setSeen((v) => new Set(v).add(o.id)); }} />
         ))}
       </View>
-      <VenueView placed={layoutToPlaced(c.layout)} beams={layoutToBeams(c.layout)} field badge={PLOT_BADGE} a11y={`Plot of ${c.name}: ${c.layout.map((p) => `${FEEDS[p.feed].name} feed at ${slotDef(p.slot).label}`).join(', ')}`} caption="Coverage beams and the floor tint are a conceptual model of where each feed lands — not a measurement." />
+      <VenueView
+        placed={layoutToPlaced(c.layout, c.powered !== false)}
+        beams={layoutToBeams(c.layout, { flown: c.id === 'front-fills' })}
+        field
+        seam={c.id === 'stereo' || c.id === 'dual-mono' || c.id === 'lcr'}
+        badge={PLOT_BADGE}
+        orientation={`${c.name} — plan view`}
+        a11y={`Plan of ${c.name}: ${c.layout.map((p) => `${FEEDS[p.feed].name} feed at ${slotDef(p.slot).label}`).join(', ')}`}
+        caption="The sectors are each loudspeaker’s nominal (−6 dB) coverage; the floor sums them in the conceptual model. Hatched floor is where two arrivals overlap and comb-filter."
+      />
+      <FieldKey />
       <ReadoutRow>
         {bars.map(([feed, n]) => (
           <Readout key={feed} k={FEEDS[feed].name.toUpperCase()} v={n ? `${n} box${n > 1 ? 'es' : ''}` : 'output'} tint={FEEDS[feed].band === 'low' ? '#2f74ff' : colors.amber} />
         ))}
       </ReadoutRow>
+      <GoalChips goals={goals} latched={latched} />
       <Card tone="math">
         <Eyebrow>{c.name.toUpperCase()}</Eyebrow>
         <Body>{c.what}</Body>
@@ -269,7 +296,7 @@ function PageConfigs({ ctx }: { ctx: PageCtx }) {
         <Body>WHAT CHANGES · {c.changes}</Body>
         <Text style={styles.busLine}>BUSES · {bars.map(([f]) => `${FEEDS[f].name}: ${FEEDS[f].bus}`).join(' · ')}</Text>
       </Card>
-      <GoalChips goals={goals} latched={latched} />
+      <KeyFact>The output configuration is the decision that shapes everything downstream: how many loudspeaker positions, what each one carries, and which console buses feed them. The bus list is the common practice, not the only one — a sub can be fed from a crossover, an aux or a matrix, and the next chapter shows all three.</KeyFact>
     </View>
   );
 }
@@ -295,6 +322,7 @@ function PageChooseConfig({ ctx }: { ctx: PageCtx }) {
     <View style={{ gap: 12 }}>
       <ChapterTag n={3}>CHOOSING THE CONFIGURATION</ChapterTag>
       <Lead>Six rooms, six briefs. Choose the output configuration and read why.</Lead>
+      <GoalChips goals={goals} latched={latched} />
       {CONFIG_CASES.map((c, i) => (
         <UnderstandingCheck
           key={c.id}
@@ -307,7 +335,6 @@ function PageChooseConfig({ ctx }: { ctx: PageCtx }) {
         />
       ))}
       <Body>{count} of {CONFIG_CASES.length} chosen.</Body>
-      <GoalChips goals={goals} latched={latched} />
     </View>
   );
 }
@@ -323,8 +350,9 @@ function PageRoutingMap({ ctx }: { ctx: PageCtx }) {
     <View style={{ gap: 12 }}>
       <ChapterTag n={4}>MIXER ROUTING AND BUSSING</ChapterTag>
       <Lead>
-        Six tools on every professional console, and four of them are confused with each other daily. The confusion ends when you ask two questions of each: does audio pass THROUGH it, and does it SUM channels or COPY them?
+        Six tools on every full-size console, and four of them are confused with each other daily. The confusion ends when you ask two questions of each: does audio pass THROUGH it, and does it SUM channels or COPY them?
       </Lead>
+      <GoalChips goals={goals} latched={latched} />
       {ROUTING_TOOLS.map((t) => {
         const o = open.has(t.id);
         return (
@@ -348,13 +376,12 @@ function PageRoutingMap({ ctx }: { ctx: PageCtx }) {
       })}
       <Card>
         <Eyebrow>ALSO ON THE CONSOLE</Eyebrow>
-        <Body>Input channels · pre-fader and post-fader sends · direct outputs · control-room and monitor outputs · solo, PFL and AFL · inserts · digital patching and output patching. ROUTE mode puts every one of them under your fingers on a live console model.</Body>
+        <Body>Input channels · pre-fader and post-fader sends · direct outputs · control-room and monitor outputs · solo, PFL and AFL · inserts · digital patching and output patching. ROUTE mode puts every one of them under your fingers on a live console model. A compact analog mixer may have only two auxes and no matrix; the ideas are the same, there are just fewer of them.</Body>
       </Card>
       <DeeperRow>
         <LabLink route="SoundSystemsRoute" label="ROUTE mode — drill the console" />
         <LabLink route="BeginningMixingLab" label="Beginning Mixing" />
       </DeeperRow>
-      <GoalChips goals={goals} latched={latched} />
     </View>
   );
 }
@@ -377,4 +404,5 @@ const styles = StyleSheet.create({
   chain: { color: colors.cyanBright, fontFamily: fonts.oswaldMedium, fontSize: 11.5, letterSpacing: 0.6, lineHeight: 17 },
   busLine: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
   truth: { color: colors.textSecondary, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 0.6, borderRadius: 6, borderWidth: 1, borderColor: colors.hairline, paddingHorizontal: 7, paddingVertical: 4 },
+  ctlLabel: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 1.6, marginRight: 2 },
 });

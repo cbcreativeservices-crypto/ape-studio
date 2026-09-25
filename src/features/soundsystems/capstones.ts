@@ -117,11 +117,15 @@ const lobbyFromMainAndMc = (cs: ConsoleState) => {
   const viaAux = Object.keys(m.inputs).some((src) => src !== 'main' && hears(auxBus(cs, src)).some((h) => h.channelId === 'mc'));
   return 'main' in m.inputs && viaAux && heard.length > 1;
 };
-const subsFromAux = (cs: ConsoleState) => {
+/** Matrix-fed subs: the sub matrix takes the MAIN mix (its own level and delay). */
+const subsMatrixFromMain = (cs: ConsoleState) => {
   const m = cs.matrices.find((x) => x.id === 'mx-subs')!;
-  const heard = hears(matrixBus(cs, 'mx-subs'));
-  const lowOnly = heard.every((h) => ['kick', 'bass', 'keys'].includes(h.channelId));
-  return 'aux6' in m.inputs && !('main' in m.inputs) && heard.length > 0 && lowOnly;
+  return 'main' in m.inputs && hears(matrixBus(cs, 'mx-subs')).length > 0;
+};
+/** Aux-fed subs: the sub aux carries only the low-frequency sources. */
+const subAuxLowOnly = (cs: ConsoleState) => {
+  const heard = hears(auxBus(cs, 'aux6'));
+  return heard.length > 0 && heard.every((h) => ['kick', 'bass', 'keys'].includes(h.channelId));
 };
 const recordingFromMain = (cs: ConsoleState) => 'main' in cs.matrices.find((m) => m.id === 'mx-rec')!.inputs && hears(matrixBus(cs, 'mx-rec')).length > 0;
 const vocalsNotInSubs = (cs: ConsoleState) => cs.channels.filter((c) => c.family === 'vocal' || c.family === 'speech').every((c) => !c.sends.aux6 || c.sends.aux6.db <= -60);
@@ -151,20 +155,20 @@ export const CAPSTONES: readonly Capstone[] = [
     n: 2,
     title: 'Small mono music system',
     venue: 'A café corner. Singer with guitar, plus a backing track.',
-    brief: 'A single loudspeaker position covers a narrow room better than two fighting each other. Build a MONO system: three sources, one main position, and — because there is music — a subwoofer.',
+    brief: 'A single loudspeaker position covers a narrow room better than two fighting each other. Build a MONO system: three sources, one main position, and — because the backing track carries real low end — a subwoofer.',
     bin: ['vocalMic', 'instrumentMic', 'di', 'playback', 'console', 'poweredSpeaker', 'poweredSub', 'powerDistro'],
     routing: false,
     requirements: [
       req('sources', 'Three sources: a vocal mic, a DI (or instrument mic), and playback', 'build', (s) => count(s, 'vocalMic') >= 1 && (count(s, 'di') + count(s, 'instrumentMic')) >= 1 && count(s, 'playback') >= 1),
       req('console', 'A mixing console', 'build', (s) => count(s, 'console') === 1),
-      req('mono', 'ONE loudspeaker, at the centre cluster position — no left/right pair', 'build', (s) => anySpeakerIn(s, 'mainC') && !anySpeakerIn(s, 'mainL') && !anySpeakerIn(s, 'mainR')),
+      req('mono', 'ONE loudspeaker at the centre main position (a single box over the sub) — no left/right pair', 'build', (s) => anySpeakerIn(s, 'mainC') && !anySpeakerIn(s, 'mainL') && !anySpeakerIn(s, 'mainR')),
       req('sub', 'A subwoofer at the centre sub position', 'build', (s) => anySubIn(s, 'subC')),
       req('live', 'Every loudspeaker live, every source connected', 'build', live),
     ],
   },
   {
     id: 'stereo-subs',
-    n: 3,
+    n: 4,
     title: 'Stereo band system with subwoofers',
     venue: 'A 300-capacity club. Four-piece band.',
     brief: 'Left and right mains, left and right subs, a processor between the console and the amplification so crossover and limiting live in one place. Passive cabinets — so the amplifiers are yours to place and wire.',
@@ -182,10 +186,10 @@ export const CAPSTONES: readonly Capstone[] = [
   },
   {
     id: 'two-one',
-    n: 4,
+    n: 3,
     title: '2.1 with a dedicated subwoofer output',
     venue: 'A DJ night in a bar. Playback only.',
-    brief: 'Two powered tops and a powered subwoofer — but the sub gets its OWN output from the console, not the tops’ high-passed pass-through. That is what makes the sub level a console decision.',
+    brief: 'Two common ways to wire a 2.1: (a) the tops fed from the powered sub’s HIGH-PASSED outputs — one cable to the sub, and the sub’s own crossover does the split; (b) the sub on its OWN console output and the tops fed direct, each with its own high-pass. Build (b) here, because it makes the sub level a fader move at the console.',
     bin: ['playback', 'wirelessRx', 'console', 'poweredSpeaker', 'poweredSub', 'powerDistro'],
     routing: false,
     requirements: [
@@ -194,13 +198,13 @@ export const CAPSTONES: readonly Capstone[] = [
       req('tops', 'Powered tops at main left and right', 'build', (s) => anySpeakerIn(s, 'mainL') && anySpeakerIn(s, 'mainR')),
       req('sub', 'A powered subwoofer', 'build', (s) => count(s, 'poweredSub') >= 1),
       req('dedicated', 'The sub is fed by its OWN link from the console — not from a top', 'build', subsHaveDedicatedFeed),
-      req('topsDirect', 'The tops are NOT fed through the sub’s pass-through output', 'build', topsNotViaSub),
+      req('topsDirect', 'For THIS build the tops are fed direct, not through the sub (the sub’s pass-through is the other valid way — see the brief)', 'build', topsNotViaSub),
       req('live', 'Everything live', 'build', live),
     ],
   },
   {
     id: 'monitors',
-    n: 5,
+    n: 6,
     title: 'Band with four monitor mixes',
     venue: 'A theatre stage. Four musicians who each want something different.',
     brief: 'Four wedges, four positions, four mixes. Build the stage side: the wedges and what drives them. Then open the console and give each aux a mix — pre-fader, so the house faders never touch them.',
@@ -217,7 +221,7 @@ export const CAPSTONES: readonly Capstone[] = [
   },
   {
     id: 'groups-fx',
-    n: 6,
+    n: 7,
     title: 'Subgroups and effects',
     venue: 'The same theatre, mixed properly.',
     brief: 'A routing capstone. Put the drums on their subgroup and make sure the subgroup reaches the house; send the vocals to the reverb POST-fader; and hang the whole band on one DCA so a speech cue is one fader move.',
@@ -233,23 +237,23 @@ export const CAPSTONES: readonly Capstone[] = [
   },
   {
     id: 'matrices',
-    n: 7,
+    n: 8,
     title: 'Matrices for mains, fills and lobby',
     venue: 'A conference hall with front fills and a lobby overflow.',
-    brief: 'The mains take the main mix. The front fills take the main mix through a matrix so they can have their own level and delay. The lobby takes the main mix PLUS the announcement microphone, through another matrix. The subs are aux-fed, through a matrix of their own — and no vocal may reach them.',
+    brief: 'The mains take the main mix. The front fills take the main mix through a matrix so they can have their own level and delay. The lobby takes the main mix PLUS the announcement microphone — sent to an aux kept for exactly that, so no wedge hears it — through another matrix. The subs are matrix-fed from the main mix on a matrix of their own, with their own level and delay.',
     bin: ['vocalMic', 'wirelessRx', 'playback', 'console', 'processor', 'poweredSpeaker', 'poweredSub', 'powerDistro'],
     routing: true,
     requirements: [
       req('system', 'Mains, front fills and subs placed and live', 'build', (s) => anySpeakerIn(s, 'mainL') && anySpeakerIn(s, 'mainR') && anySpeakerIn(s, 'frontFillL') && anySpeakerIn(s, 'frontFillR') && count(s, 'poweredSub') >= 1 && live(s)),
       req('fills', 'Matrix 2 (front fills) takes the MAIN mix', 'route', (_s, cs) => fillsFromMain(cs)),
-      req('lobby', 'Matrix 3 (lobby) takes the main mix AND the announce mic (via a send to any aux)', 'route', (_s, cs) => lobbyFromMainAndMc(cs)),
-      req('subs', 'Matrix 1 (subs) takes Aux 6 only — and only kick, bass and keys are sent to Aux 6', 'route', (_s, cs) => subsFromAux(cs)),
-      req('noVox', 'No vocal or speech channel sends to Aux 6', 'route', (_s, cs) => vocalsNotInSubs(cs)),
+      req('lobby', 'Matrix 3 (lobby) takes the main mix AND the announce mic by its own route — the mic sent to Aux 7, the matrix taking Aux 7', 'route', (_s, cs) => lobbyFromMainAndMc(cs)),
+      req('subs', 'Matrix 1 (subs) takes the MAIN mix', 'route', (_s, cs) => subsMatrixFromMain(cs)),
+      req('noVox', 'Nothing vocal is sent to the sub aux (Aux 6)', 'route', (_s, cs) => vocalsNotInSubs(cs)),
     ],
   },
   {
     id: 'outdoor',
-    n: 8,
+    n: 9,
     title: 'Outdoor system with front fills and delays',
     venue: 'A park stage for two thousand, ninety metres deep.',
     brief: 'Mains and subs left and right, front fills for the first rows the mains fly over, and delay loudspeakers halfway back — every one of them through the processor, because alignment is what makes this one system rather than six.',
@@ -267,7 +271,7 @@ export const CAPSTONES: readonly Capstone[] = [
   },
   {
     id: 'network',
-    n: 9,
+    n: 5,
     title: 'Digital stagebox and networked audio',
     venue: 'A festival side stage with a long run to front of house.',
     brief: 'Every source goes into the stagebox, ONE network link carries them to the console, and the console’s outputs come back down the same link to leave the stagebox at line level. No analog snake anywhere.',
@@ -286,7 +290,7 @@ export const CAPSTONES: readonly Capstone[] = [
     n: 10,
     title: 'Festival-style complete system',
     venue: 'Main stage. Mains, subs, monitors, a recording feed and a broadcast feed.',
-    brief: 'Everything at once. Stagebox on stage, processor in the rack, mains and subs through it, four monitor mixes, an in-ear system for the singer — and on the console, matrices for recording and for the subs, with the vocals kept out of the low end.',
+    brief: 'Everything at once. Stagebox on stage, processor in the rack, mains and subs through it, four monitor mixes, an in-ear system for the singer — and on the console, a recording matrix and an aux-fed sub bus that carries kick, bass and keys and nothing else. One console mixes house AND monitors here; on a real main stage the inputs are split to a separate monitor console at side stage.',
     bin: ['vocalMic', 'instrumentMic', 'di', 'wirelessRx', 'stagebox', 'console', 'processor', 'amp', 'passiveSpeaker', 'passiveSub', 'wedge', 'poweredWedge', 'iemTx', 'iemPack', 'powerDistro'],
     routing: true,
     requirements: [
@@ -298,10 +302,13 @@ export const CAPSTONES: readonly Capstone[] = [
       req('live', 'Everything live, every passive cabinet amplified', 'build', (s) => passiveHasAmp(s) && live(s)),
       req('fourMixes', 'Console: four monitor mixes, all pre-fader', 'route', (_s, cs) => fourMonitorMixes(cs) && monitorsPre(cs)),
       req('rec', 'Console: Matrix 4 (recording) takes the main mix', 'route', (_s, cs) => recordingFromMain(cs)),
-      req('subs', 'Console: Matrix 1 (subs) is aux-fed from Aux 6 — low-frequency sources only', 'route', (_s, cs) => subsFromAux(cs) && vocalsNotInSubs(cs)),
+      req('subs', 'Console: Aux 6 (the sub aux) carries only kick, bass and keys — no vocal or speech', 'route', (_s, cs) => subAuxLowOnly(cs) && vocalsNotInSubs(cs)),
     ],
   },
 ];
+
+/** Capstones in teaching order (by `n`) — the difficulty ramp. */
+export const CAPSTONES_IN_ORDER: readonly Capstone[] = [...CAPSTONES].sort((a, b) => a.n - b.n);
 
 export function capstone(id: string): Capstone {
   const c = CAPSTONES.find((x) => x.id === id);

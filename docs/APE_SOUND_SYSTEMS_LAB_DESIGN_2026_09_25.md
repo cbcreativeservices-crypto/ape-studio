@@ -84,3 +84,50 @@ through the Cable Install motion kit · no images added.
 - The plot's coverage field is a coarse 24 × 12 grid — deliberate for phone performance.
 - `react-native-svg` on web logs "Unknown event handler property onResponder…" for every
   SVG `onPress` (the same as Connector Select and Patchbay); harmless, not ours.
+
+## Review pass — 2026-09-26 (owner's morning notes)
+
+The owner's review: chains shown incorrectly, speaker arrangements guessed, landing images
+not understood, adjustments that changed nothing visually, text without a picture,
+animations unlike real equipment, coverage physics wrong ("speakers don't have odd coverage
+off to the side"), signal paths presented as THE path. Four specialist reviews (audio engine
+truth, audio copy, cognitive-learning design, visual/animation fidelity) were consolidated
+and applied engine → art → pages.
+
+**Engine truth.** Coverage is now a real model (`coverage.ts`): nominal angle = −6 dB angle,
+horn falls with the square of the off-axis angle to a 24 dB rear floor, point sources −6 dB
+per doubling, flown rigs have a near-field hole, cardioid/end-fire subs reject to the rear,
+sources sum as power, the floor window is +12 → −20 dB. Gain model recalibrated (EIN-based
+preamp noise, SNR target 70 dB, QUIET before NOISY, OPERATE goals pinned achievable).
+Faults carry `startAt` (where the symptom leaves doubt) and optional per-station labels/
+kinds; the minimal walk counts from there. Console: MUTE silences pre sends (digital default,
+copy says so), main = direct + subgroup sum, `aux7` kept for the lobby announce. Capstones
+renumbered into a ramp (`CAPSTONES_IN_ORDER`). Configs/types carry `powered`, `group`,
+branch chains. Stage plan corrected: stage left = performer's left = plot RIGHT; racks and
+stagebox in the stage-left wing, power stage-right, subs on the floor inboard, fills on the
+apron, delays on the cross-aisle, FOH two-thirds back; `subC2` for the end-fire front box.
+
+**Art.** `planArt` (top-down glyphs rotated to aim) · `VenueView` rebuilt as a production
+plan with −6 dB sectors, aim arrows, floor field (deck included, subs only there), seam
+hatching, looms, wavefronts · `SystemMap` (three lanes STAGE / CONSOLE · RACKS /
+LOUDSPEAKERS; straight runs, bowed runs over intermediate stations, network link both ways,
+LEDs chase programme) replaces the serpentine `SystemDiagram` · `motion.tsx` (programme
+envelope, peak hold, wavefronts; all gated on reduced motion AND Low-Light) · `ChainMeter`
+bounces with programme, peak hold, CLIP LED, headroom bracket, noise haze · `ConsolePanel`
+is a desk: scribble strips, send pots with a lit PRE switch, real-taper mini faders,
+illuminated switches, bus meters, ALL PRE / ALL POST · gear redraws (rectangular top with a
+real horn, ¾ wedge, snake box + drum, boom-mic without the drum, rack stagebox, amp ladders
++ power rocker, laptop playback, IEM antenna) · six teaching diagrams (`diagrams.tsx`):
+channel strip, feedback loop in plan, patch panel, stagebox LEDs over console meters,
+FOH/monitor split, sub-feed router, plus the arrival timeline.
+
+**Pages.** Every page opens with an orientation line, the instrument, the prompt and the
+goal chips before the prose. Ch1 = ONE MAP, MANY SYSTEMS (snake/stagebox × passive/powered
+toggles). Trace uses the nine bench stations. Bench and method pages walk from `startAt`
+with readouts under each station. Coverage page: flown toggle shows the near-field hole,
+fills fill it. Alignment: towers move with distance; the mains' wavefront ring reaches the
+towers when aligned; arrival timeline fuses. Feedback/ring-out: the wedge in the null vs the
+live angle. Line check: outputs first, LED-vs-meter readings. Power-up/down: the rack lights
+in order. Copy corrections throughout (PFL/AFL, hypercardioid null 110–125°, mic-into-line
+40–50 dB too quiet, 6 dB headroom minimum, deliberate 5–10 ms late delays, "common
+practice, not the only wiring" on every chain).

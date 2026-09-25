@@ -24,9 +24,13 @@ export const SETUP_SEQUENCE: readonly SetupStep[] = [
   { n: 8, title: 'Patch inputs and outputs', why: 'Every source to its channel, every output to its destination — documented as it is done.' },
   { n: 9, title: 'Verify routing before powering loudspeakers', why: 'A wrong output at full level destroys drivers. Check on meters and headphones first, with the amplifiers off.' },
   { n: 10, title: 'Power the system in the correct sequence', why: 'Sources and console first, amplifiers last — so no turn-on transient reaches a loudspeaker at full gain.' },
-  { n: 11, title: 'Test every input and output', why: 'The line check: each source arrives at its channel, each output plays its loudspeaker. Nothing is assumed.' },
-  { n: 12, title: 'Establish gain structure', why: 'Preamps set, faders near unity, headroom at every stage — the quietest, cleanest path.' },
-  { n: 13, title: 'Tune and align the system', why: 'Crossovers, EQ, delay and polarity, measured and listened to, for consistency across the seats.' },
+  // One common show-day order: the PA is checked and tuned on playback and
+  // measurement BEFORE the band's line check — you need a verified PA to
+  // line-check into. Festival stages tune the day before; small gigs fold
+  // 11–13 into one pass.
+  { n: 11, title: 'PA check and system tune', why: 'Every output plays its loudspeaker on pink noise or playback; crossovers, EQ, delay and polarity measured and listened to, for consistency across the seats.' },
+  { n: 12, title: 'Line check every input', why: 'Each source lands on the RIGHT channel — scratch the mic, tap the head, play the keyboard — and each wedge plays its own mix. Nothing is assumed.' },
+  { n: 13, title: 'Establish gain structure', why: 'Preamps set at soundcheck level, faders near unity, headroom at every stage, the amplifiers the last thing to clip — the quietest, cleanest path.' },
   { n: 14, title: 'Conduct soundcheck', why: 'The performers, at show level, with monitors — the first time the system meets its real signal.' },
   { n: 15, title: 'Document the final configuration', why: 'Patch lists, scenes, processor presets — so the next person can rebuild it and the show can be recalled.' },
   { n: 16, title: 'Shut down in the correct sequence', why: 'Amplifiers first, then processing, console and sources — the mirror of power-up, for the same reason.' },
@@ -42,11 +46,11 @@ export const POWER_UP: readonly PowerStep[] = [
   { id: 'console', title: 'Console', why: 'It boots and settles with every output still dark downstream.' },
   { id: 'processor', title: 'Loudspeaker processor', why: 'Its outputs come up muted or at their last state — with the amplifiers still off, either is safe.' },
   { id: 'amps', title: 'Amplifiers and powered loudspeakers — LAST', why: 'Every upstream transient has already happened. The amplifiers wake into silence.' },
-  { id: 'raise', title: 'Raise amplifier levels', why: 'Only now does the system have gain from source to cone.' },
+  { id: 'raise', title: 'Un-mute the processor outputs and bring the system up', why: 'Only now is there gain from source to cone — and the console mains stay down until the line check. Touring amplifiers are set once and protected by the processor limiters; they are not ridden per show.' },
 ];
 
 export const POWER_DOWN: readonly PowerStep[] = [
-  { id: 'lower', title: 'Lower amplifier levels', why: 'Take the gain out of the loudspeakers before anything upstream changes.' },
+  { id: 'lower', title: 'Mute the processor outputs (or pull the system master)', why: 'Take the gain out of the loudspeakers before anything upstream changes.' },
   { id: 'amps', title: 'Amplifiers and powered loudspeakers — FIRST', why: 'Nothing that is switched off later can send a thump through an amplifier that is already off.' },
   { id: 'processor', title: 'Loudspeaker processor', why: 'Its power-down transient meets a dead amplifier.' },
   { id: 'console', title: 'Console', why: 'Save the show first; then it goes dark into a silent system.' },
@@ -96,17 +100,21 @@ export type GainStageSpec = {
 
 export const GAIN_STAGES: readonly GainStageSpec[] = [
   { id: 'source', label: 'Source (vocal mic)', min: null, max: null, clipDbu: 10, noiseDbu: -110, unity: 0 },
-  { id: 'preamp', label: 'Preamp gain', min: 0, max: 60, clipDbu: 20, noiseDbu: -92, unity: 40 },
-  // Later stages carry a HIGHER floor than the preamp (illustrative, but the
-  // shape is real: a console bus and a power amplifier's input are noisier
-  // than a good preamp at working gain) — so gain placed late in the chain
-  // lifts that floor into audibility, which is the lesson.
-  { id: 'fader', label: 'Channel fader', min: -60, max: 10, clipDbu: 22, noiseDbu: -85, unity: 0 },
-  { id: 'main', label: 'Main fader', min: -60, max: 10, clipDbu: 22, noiseDbu: -85, unity: 0 },
-  { id: 'procIn', label: 'Processor input', min: -20, max: 20, clipDbu: 20, noiseDbu: -82, unity: 0 },
-  { id: 'procOut', label: 'Processor output', min: -20, max: 20, clipDbu: 20, noiseDbu: -82, unity: 0 },
-  { id: 'amp', label: 'Amplifier input', min: -40, max: 0, clipDbu: 4, noiseDbu: -75, unity: 0 },
-  { id: 'speaker', label: 'Loudspeaker', min: null, max: null, clipDbu: 4, noiseDbu: -75, unity: 0 },
+  // The preamp's own noise is its EIN (≈ −128 dBu) lifted by its gain — see
+  // computeGainChain — so a starved preamp sits close to its floor.
+  { id: 'preamp', label: 'Preamp gain', min: 0, max: 60, clipDbu: 20, noiseDbu: -95, unity: 40 },
+  // Later stages have fixed floors around −90…−95 dBu (console buses, DSP,
+  // an amplifier's input). Gain placed AFTER them lifts those floors along
+  // with the signal — that is the lesson, not that they are worse.
+  { id: 'fader', label: 'Channel fader', min: -60, max: 10, clipDbu: 22, noiseDbu: -90, unity: 0 },
+  { id: 'main', label: 'Main fader', min: -60, max: 10, clipDbu: 22, noiseDbu: -90, unity: 0 },
+  { id: 'procIn', label: 'Processor input', min: -20, max: 20, clipDbu: 20, noiseDbu: -95, unity: 0 },
+  { id: 'procOut', label: 'Processor output', min: -20, max: 20, clipDbu: 20, noiseDbu: -95, unity: 0 },
+  // A pro amplifier reaches full output at about +4 dBu in with its attenuator
+  // wide open; the console and processor peak at +20. So the attenuator sits
+  // around −12 at "unity" — the amplifier must be the LAST stage to clip.
+  { id: 'amp', label: 'Amplifier input attenuator', min: -40, max: 0, clipDbu: 4, noiseDbu: -95, unity: -12 },
+  { id: 'speaker', label: 'Loudspeaker', min: null, max: null, clipDbu: 4, noiseDbu: -95, unity: 0 },
 ];
 
 export type GainNode = {
@@ -125,8 +133,12 @@ export type GainNode = {
 
 export type GainSettings = Partial<Record<GainStageId, number>>;
 
-/** A vocal microphone’s peak output, dBu, in this illustrative model. */
-export const SOURCE_PEAK_DBU = -38;
+/** A loud close vocal on a dynamic microphone peaks around −20…−30 dBu;
+ *  this illustrative model uses −30. */
+export const SOURCE_PEAK_DBU = -30;
+
+/** A good preamp’s equivalent input noise, dBu. */
+export const PREAMP_EIN_DBU = -128;
 
 /** Propagate a peak through the chain. Noise accumulates: a stage that adds
  *  gain raises everything before it — the hiss from a starved preamp cannot
@@ -140,8 +152,11 @@ export function computeGainChain(settings: GainSettings, sourcePeakDbu = SOURCE_
     const g = st.min == null ? 0 : Math.max(st.min, Math.min(st.max ?? 0, settings[st.id] ?? st.unity));
     if (st.id !== 'source') {
       level += g;
-      // Noise: the earlier noise is amplified by this stage; the stage adds its own.
-      noise = 10 * Math.log10(Math.pow(10, (noise + g) / 10) + Math.pow(10, st.noiseDbu / 10));
+      // Noise: the earlier noise is amplified by this stage; the stage adds
+      // its own. A preamp's own floor is its EIN lifted by its gain (never
+      // better than the stage's fixed floor).
+      const own = st.id === 'preamp' ? Math.max(PREAMP_EIN_DBU + g, st.noiseDbu) : st.noiseDbu;
+      noise = 10 * Math.log10(Math.pow(10, (noise + g) / 10) + Math.pow(10, own / 10));
     }
     const here = level > st.clipDbu;
     const inherited = clipped;
@@ -165,7 +180,7 @@ export function computeGainChain(settings: GainSettings, sourcePeakDbu = SOURCE_
 export type GainVerdict = 'clipping' | 'noisy' | 'quiet' | 'ok';
 
 /** Signal-to-noise at the loudspeaker below which the chain reads NOISY. */
-export const SNR_TARGET_DB = 65;
+export const SNR_TARGET_DB = 70;
 
 /** The professional target: no stage clipped, enough level at the
  *  loudspeaker, and the signal at least SNR_TARGET_DB above the noise there.
@@ -175,7 +190,7 @@ export const SNR_TARGET_DB = 65;
 export function gainVerdict(chain: GainNode[]): GainVerdict {
   if (chain.some((n) => n.clipped)) return 'clipping';
   const last = chain[chain.length - 1];
-  if (last.levelDbu < -12) return 'quiet';
+  if (last.levelDbu < -24) return 'quiet';
   if (last.snrDb < SNR_TARGET_DB) return 'noisy';
   return 'ok';
 }
@@ -188,8 +203,8 @@ export function gainVerdictCopy(v: GainVerdict, chain: GainNode[]): string {
     case 'noisy':
       return 'Too much of the gain is late in the chain. A starved preamp sits close to its noise floor, and every later stage amplifies that hiss along with the signal. Raise the preamp, lower what follows.';
     case 'quiet':
-      return 'Not enough level reaches the loudspeaker — a stage after the preamp is throwing signal away, and the stages after THAT add their own noise to what is left. Bring the faders and trims back toward unity before you touch the amplifier.';
+      return 'Not enough level reaches the amplifier — a stage after the preamp is throwing signal away, and the stages after THAT add their own noise to what is left. Bring the faders and trims back toward unity before you touch the amplifier attenuator.';
     default:
-      return 'Unity through the middle, headroom at every stage, the preamp doing the work: this is the structure a professional system is set to.';
+      return 'Unity through the middle, headroom at every stage, the preamp doing the work, the amplifier attenuated so it is the last thing to clip: this is the structure a professional system is set to.';
   }
 }

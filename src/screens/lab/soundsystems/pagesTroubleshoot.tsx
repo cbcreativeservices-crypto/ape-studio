@@ -2,37 +2,36 @@
  * Sound Systems Lab — TROUBLESHOOT mode: the bench.
  *
  * Page 1 explains the bench. Pages 2–6 each hold one fault group. Inside a
- * case the learner PROBES stations on the signal diagram (each probe reveals
- * that station's reading from the fault library), then names the fault. The
- * grade records whether the diagnosis was right AND whether the walk was
- * source-forward — both come from features/soundsystems/faults.ts.
+ * case the learner PROBES stations on the system map (each probe reveals
+ * that station's reading from the fault library, as a short readout under
+ * the station and a card beside it), then names the fault. The grade records
+ * whether the diagnosis was right AND whether the walk was source-forward —
+ * both come from features/soundsystems/faults.ts, which also says where the
+ * symptom leaves doubt (`startAt`): the walk starts THERE, not always at the
+ * microphone.
  */
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import type { PageCtx, PageDef } from '../kit/PagedLab';
 import { Body, Btn, Card, Eyebrow, Lead, Prompt, Row } from '../tuning/components/primitives';
-import { FAULT_GROUPS, faultsInGroup, gradeAttempt, type FaultCase, type FaultGroup, type Reading } from '../../../features/soundsystems/faults';
+import { FAULT_GROUPS, faultsInGroup, gradeAttempt, stationLabelFor, type FaultCase, type FaultGroup, type Reading } from '../../../features/soundsystems/faults';
 import { markFaultSolved, useSoundSystemsProgress } from '../../../features/soundsystems/progress';
 import { STATION_LABEL, STATION_ORDER, type Station } from '../../../features/soundsystems/types';
 import { ChapterTag, DeeperRow, GoalChips, KeyFact, LabLink, useVisitGoals, VerdictLine } from './bits';
-import { ReadingKey, SystemDiagram, type DiagramState, type DiagramStation } from './art/SystemDiagram';
+import { benchMap, ReadingKey, SystemMap, type MapNode, type MapState } from './art/SystemMap';
+import { Orient } from './art/diagrams';
 
-const STATION_KIND: Record<Station, DiagramStation['kind']> = {
-  source: 'vocalMic',
-  cable: 'snake',
-  stagebox: 'stagebox',
-  consoleIn: 'console',
-  consoleOut: 'console',
-  processor: 'processor',
-  amp: 'amp',
-  speaker: 'passiveSpeaker',
-  listener: 'listener',
-};
-
-function stateOf(r: Reading): DiagramState {
+export function stateOf(r: Reading): MapState {
   if (r.flags && r.flags.length) return r.signal === 'clip' ? 'clip' : r.signal === 'hot' ? 'hot' : 'flag';
   return r.signal === 'ok' ? 'ok' : r.signal === 'none' ? 'none' : r.signal === 'low' ? 'flag' : r.signal === 'hot' ? 'hot' : 'clip';
+}
+
+/** The short readout printed under a probed station. */
+export function readoutOf(r: Reading): string {
+  const flag = r.flags?.[0];
+  const sig = r.signal === 'ok' ? 'OK' : r.signal === 'none' ? 'NO SIGNAL' : r.signal === 'low' ? 'LOW' : r.signal === 'hot' ? 'HOT' : 'CLIP';
+  return flag ? `${sig} · ${flag.toUpperCase()}` : sig;
 }
 
 /* ── one case on the bench ──────────────────────────────────────────────── */
@@ -55,13 +54,16 @@ function Bench({ c, onSolved, onClose, solvedBefore }: { c: FaultCase; onSolved:
     if (solved) onSolved(grade!.forward);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [solved]);
-  const stations: DiagramStation[] = STATION_ORDER.map((s) => {
+  const base = useMemo(() => benchMap(c.labels ?? {}, c.kinds ?? {}), [c]);
+  const nodes: MapNode[] = base.nodes.map((n) => {
+    const s = n.id as Station;
     const r = c.reads[s];
     const probed = probes.includes(s);
-    return { id: s, kind: STATION_KIND[s], label: STATION_LABEL[s], state: probed ? stateOf(r) : 'unknown' };
+    return { ...n, state: probed ? stateOf(r) : 'unknown', value: probed ? readoutOf(r) : undefined };
   });
   const backwards = probes.length > 1 && STATION_ORDER.indexOf(probes[probes.length - 1]) < STATION_ORDER.indexOf(probes[probes.length - 2]);
   const reading = last ? c.reads[last] : null;
+  const label = (s: Station) => stationLabelFor(c, s, STATION_LABEL[s]);
   return (
     <View style={{ gap: 10 }}>
       <Card tone="math">
@@ -69,13 +71,24 @@ function Bench({ c, onSolved, onClose, solvedBefore }: { c: FaultCase; onSolved:
         <Text style={styles.symptom}>{c.symptom}</Text>
         <Body>{c.setup}</Body>
       </Card>
-      <SystemDiagram stations={stations} flowing={false} onTap={(id) => { const s = id as Station; setProbes((p) => [...p, s]); setLast(s); }} selectedId={last} a11y={`The nine stations. ${probes.length} probed. Tap a station to read it.`} />
+      <SystemMap
+        nodes={nodes}
+        edges={base.edges}
+        running={false}
+        onTap={(id) => {
+          const s = id as Station;
+          setProbes((p) => [...p, s]);
+          setLast(s);
+        }}
+        selectedId={last ?? c.startAt}
+        a11y={`The nine stations. ${probes.length} probed. The symptom clears everything before ${label(c.startAt)}. Tap a station to read it.`}
+      />
       <ReadingKey />
-      <Prompt>{probes.length === 0 ? 'Start at the source. Tap a station to probe it.' : 'Keep walking forward until the reading changes — then name the fault.'}</Prompt>
+      <Prompt>{probes.length === 0 ? `The symptom clears everything before ${label(c.startAt).toUpperCase()}. Start there and walk forward.` : 'Keep walking forward until the reading changes — then name the fault.'}</Prompt>
       {backwards ? <VerdictLine ok={false} warn>You jumped backward. The bench still records the answer, but not as a forward walk.</VerdictLine> : null}
       {reading && last ? (
         <Card tone={stateOf(reading) === 'ok' ? 'ok' : 'warn'}>
-          <Eyebrow>{STATION_LABEL[last].toUpperCase()} · {reading.signal.toUpperCase()}{reading.flags?.length ? ` · ${reading.flags.join(', ').toUpperCase()}` : ''}</Eyebrow>
+          <Eyebrow>{label(last).toUpperCase()} · {readoutOf(reading)}</Eyebrow>
           <Body>{reading.note}</Body>
         </Card>
       ) : null}
@@ -99,7 +112,7 @@ function Bench({ c, onSolved, onClose, solvedBefore }: { c: FaultCase; onSolved:
       {grade && grade.correct ? (
         <View style={{ gap: 8 }}>
           <VerdictLine ok>
-            Correct{grade.forward ? ' — and a source-forward walk' : ' — but not a forward walk'}. {grade.probes} probe{grade.probes === 1 ? '' : 's'}; a disciplined walk needs {grade.minimal}.
+            Correct{grade.forward ? ' — and a source-forward walk' : ' — but not a forward walk'}. {grade.probes} probe{grade.probes === 1 ? '' : 's'}; a disciplined walk from {label(c.startAt)} needs {grade.minimal}.
           </VerdictLine>
           <Card tone="ok">
             <Eyebrow>WHY</Eyebrow>
@@ -141,6 +154,7 @@ function GroupPage({ group, ctx }: { group: FaultGroup; ctx: PageCtx }) {
       ) : (
         <>
           <Lead>{g.blurb}</Lead>
+          <GoalChips goals={goals} latched={latched} />
           {cases.map((f) => {
             const done = progress.faults.includes(f.id);
             const fwd = progress.forward.includes(f.id);
@@ -155,7 +169,6 @@ function GroupPage({ group, ctx }: { group: FaultGroup; ctx: PageCtx }) {
             );
           })}
           <Body>{solvedHere} of {cases.length} solved · {forwardHere} with a forward walk (✓✓).</Body>
-          <GoalChips goals={goals} latched={latched} />
         </>
       )}
     </View>
@@ -170,17 +183,29 @@ function PageBenchIntro({ ctx }: { ctx: PageCtx }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const progress = useSoundSystemsProgress();
+  const demo = useMemo(() => benchMap({}, {}), []);
+  const nodes: MapNode[] = demo.nodes.map((n) => {
+    const i = STATION_ORDER.indexOf(n.id as Station);
+    return { ...n, state: i < 3 ? 'unknown' : i < 5 ? 'ok' : i === 5 ? 'none' : 'unknown', value: i === 3 ? 'OK' : i === 4 ? 'OK' : i === 5 ? 'NO SIGNAL' : undefined };
+  });
   return (
     <View style={{ gap: 12 }}>
       <ChapterTag n={14}>TESTING AND TROUBLESHOOTING · THE BENCH</ChapterTag>
+      <Orient>How a case reads: the symptom cleared the first three stations, so the walk started at the console input — healthy, healthy — and stopped at the processor, which reads NO SIGNAL. That station is the answer.</Orient>
+      <SystemMap nodes={nodes} edges={demo.edges.map((e) => ({ ...e, dead: STATION_ORDER.indexOf(e.to as Station) > 5 }))} running={false} a11y="An example walk: console in and console out read healthy, the processor reads no signal, everything after it is unlit." />
+      <ReadingKey />
       <Lead>
-        Twenty-two faults from real shows, in five groups. Each one hands you a symptom and a system. You probe the stations on the signal diagram — each probe reveals what a technician would read there — and then you name the fault.
+        Twenty-two faults from real shows, in five groups. Each one hands you a symptom and a system. You probe the stations on the map — each probe reveals what a technician would read there — and then you name the fault.
       </Lead>
       <Card tone="math">
-        <Eyebrow>HOW A CASE IS GRADED</Eyebrow>
-        <Body>✓ — the right diagnosis. ✓✓ — the right diagnosis AND a source-forward walk: every probe at or after the one before it, never a jump back toward the source, never a guess at the loudspeaker first. The bench counts your probes against the minimum a disciplined walk needs.</Body>
+        <Eyebrow>WHERE THE WALK STARTS</Eyebrow>
+        <Body>Not always at the microphone. The symptom tells you which stations are already cleared: “one vocal is dead, the band is fine” starts at that source; “nothing anywhere, but every channel meter is dancing” starts at the console output, because the meters have already vouched for everything before it. Every case prints its start. Probes before it are not wrong, only wasted.</Body>
       </Card>
-      <KeyFact>Start at the source. Read each station. Stop at the first reading that is not healthy. That station is the fault, or where the fault became visible — and the diagram tells you which by what the reading says.</KeyFact>
+      <Card tone="math">
+        <Eyebrow>HOW A CASE IS GRADED</Eyebrow>
+        <Body>✓ — the right diagnosis. ✓✓ — the right diagnosis AND a source-forward walk: every probe at or after the one before it, never a jump back toward the source, never a guess at the loudspeaker first. The bench counts your probes against the minimum a disciplined walk from the start needs.</Body>
+      </Card>
+      <KeyFact>Start where the symptom leaves doubt. Read each station. Stop at the first reading that is not healthy. That station is the fault, or where the fault became visible — and the reading tells you which.</KeyFact>
       <Card>
         <Eyebrow>YOUR BENCH SO FAR</Eyebrow>
         <Body>{progress.faults.length} of 22 solved · {progress.forward.length} with a forward walk.</Body>

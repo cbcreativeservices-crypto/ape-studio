@@ -65,6 +65,7 @@ export type SlotId =
   | 'subL'
   | 'subR'
   | 'subC'
+  | 'subC2'
   | 'frontFillL'
   | 'frontFillR'
   | 'delayL'
@@ -122,7 +123,7 @@ export const STATION_ORDER: readonly Station[] = [
 export const STATION_LABEL: Record<Station, string> = {
   source: 'Source',
   cable: 'Cable',
-  stagebox: 'Stagebox',
+  stagebox: 'Stage input',
   consoleIn: 'Console input',
   consoleOut: 'Console output',
   processor: 'Processor',

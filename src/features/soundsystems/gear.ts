@@ -28,6 +28,9 @@ export type GearSpec = {
   to: string;
   /** Whether more than one may be placed in one build (mics, speakers, wedges). */
   many?: boolean;
+  /** Seeds the signal trace even though it has an electrical input (a DI:
+   *  the bass on the player's strap is not a device on the plot). */
+  source?: boolean;
   /** Draws sound into the room — the trace treats it as a listener-facing sink. */
   radiates?: boolean;
 };
@@ -61,13 +64,14 @@ export const GEAR: readonly GearSpec[] = [
     kind: 'di',
     name: 'DI box',
     short: 'DI',
-    accepts: ['instrument'],
+    accepts: ['instrument', 'line'],
     emits: ['mic'],
     roles: ['stageSource'],
-    blurb: 'Direct injection: takes an unbalanced instrument-level signal (bass, keyboard, acoustic pickup) and delivers a balanced mic-level signal the long cable run and the console preamp expect.',
-    from: 'An instrument output on a ¼-inch cable.',
+    blurb: 'Direct injection: takes an unbalanced instrument- or line-level signal (bass, acoustic pickup, keyboard, or playback with the pad in) and delivers the balanced mic-level signal a long cable run and a console preamp expect.',
+    from: 'An instrument or line output on a ¼-inch cable; its THRU carries the same signal on to the player’s amplifier.',
     to: 'An XLR mic cable to the stagebox, then a console input.',
     many: true,
+    source: true,
   },
   {
     kind: 'playback',
@@ -86,8 +90,8 @@ export const GEAR: readonly GearSpec[] = [
     short: 'RF RX',
     accepts: [],
     emits: ['mic', 'line'],
-    roles: ['stageSource', 'foh'],
-    blurb: 'The rack half of a wireless microphone. The transmitter rides on the performer; the receiver outputs the signal on a cable at mic or line level depending on its switch.',
+    roles: ['stageSource', 'stageInfra', 'foh'],
+    blurb: 'The rack half of a wireless microphone. The transmitter rides on the performer; the receiver outputs the signal on a cable — usually mic level on its XLR, line level on its ¼-inch — set by its switch. The RF rack lives side-stage on any real show.',
     from: 'The handheld or bodypack transmitter over radio.',
     to: 'A console input — match the receiver’s output switch to the input you use.',
     many: true,
@@ -110,7 +114,7 @@ export const GEAR: readonly GearSpec[] = [
     accepts: ['mic', 'line', 'digital'],
     emits: ['digital', 'line'],
     roles: ['stageInfra'],
-    blurb: 'Preamps on the stage. Every input is converted to digital at the box and travels to the console on one network cable; console outputs come back the same way and leave the box at line level for amplifiers and powered loudspeakers.',
+    blurb: 'Preamps on the stage. Every input is converted to digital at the box and travels to the console on one network cable; console outputs usually come back the same way and leave the box at line level for amplifiers and powered loudspeakers. Alternatives: analog console outputs down a return snake, or networked amplifiers fed directly.',
     from: 'Stage sources on the input side; the console over the network on the output side.',
     to: 'The console over a single network cable; amplifiers and powered loudspeakers from its line outputs.',
   },
@@ -129,12 +133,12 @@ export const GEAR: readonly GearSpec[] = [
     kind: 'processor',
     name: 'Loudspeaker management processor',
     short: 'PROCESSOR',
-    accepts: ['line', 'digital'],
+    accepts: ['line'],
     emits: ['line'],
     roles: ['ampRack', 'foh'],
-    blurb: 'Sits between the console and the amplifiers: crossovers that split lows to the subs and highs to the tops, system EQ, delay for alignment, polarity, and the limiters that protect the loudspeakers.',
+    blurb: 'Sits between the console and the amplification: crossovers that split lows to the subs and highs to the tops, system EQ, delay for alignment, polarity, and the limiters that protect the loudspeakers. Networked versions take the console over Dante or AES — the same job on one cable — and networked amplifiers build the processing in, with no separate box.',
     from: 'The console’s main and matrix outputs.',
-    to: 'Amplifier inputs, one processor output per amplifier channel.',
+    to: 'Amplifier inputs or powered loudspeakers, one processor output per amplifier channel.',
   },
   {
     kind: 'amp',
@@ -153,11 +157,11 @@ export const GEAR: readonly GearSpec[] = [
     name: 'Powered loudspeaker',
     short: 'POWERED TOP',
     accepts: ['line'],
-    emits: [],
+    emits: ['line'],
     roles: ['main', 'fill', 'delay'],
-    blurb: 'A loudspeaker with its amplifier and basic processing inside. It takes a LINE-LEVEL feed and mains power — two cables to every box.',
-    from: 'A console or processor output at line level.',
-    to: 'The audience, as sound.',
+    blurb: 'A loudspeaker with its amplifier and basic processing inside. It takes a LINE-LEVEL feed and mains power — two cables to every box — and nearly every one has a LINK/THRU output carrying its input, unfiltered, to the next cabinet.',
+    from: 'A console, processor or powered-sub output at line level.',
+    to: 'The audience, as sound — and its LINK/THRU to a second cabinet.',
     many: true,
     radiates: true,
   },
@@ -180,8 +184,8 @@ export const GEAR: readonly GearSpec[] = [
     short: 'POWERED SUB',
     accepts: ['line'],
     emits: ['line'],
-    roles: ['sub'],
-    blurb: 'Low frequencies only, amplifier inside. Most have an internal crossover and a high-passed line output so the tops can be fed from the sub — one way of splitting the band without a separate processor.',
+    roles: ['sub', 'monitor'],
+    blurb: 'Low frequencies only, amplifier inside. Most have an internal crossover with a HIGH-PASSED output for the tops (the sub does the split — the common small-system hookup) and a full-range THRU for the next sub. Beside a drum kit, with a top on it, it is a drum fill.',
     from: 'A console output, a processor output, or the aux/matrix feeding the subs.',
     to: 'The audience below roughly 100 Hz; optionally the tops from its high-passed output.',
     many: true,
@@ -193,7 +197,7 @@ export const GEAR: readonly GearSpec[] = [
     short: 'PASSIVE SUB',
     accepts: ['speaker'],
     emits: [],
-    roles: ['sub'],
+    roles: ['sub', 'monitor'],
     blurb: 'A low-frequency cabinet driven by an external amplifier. The crossover must be done upstream — in the processor — because nothing inside the box will do it.',
     from: 'A power amplifier fed by the processor’s LOW output.',
     to: 'The audience below the crossover frequency.',
@@ -233,7 +237,7 @@ export const GEAR: readonly GearSpec[] = [
     accepts: ['line'],
     emits: ['wireless'],
     roles: ['stageInfra', 'foh', 'ampRack'],
-    blurb: 'Takes a monitor mix at line level and broadcasts it to a performer’s bodypack. A stereo mix needs a stereo transmitter and a stereo send.',
+    blurb: 'Takes a monitor mix at line level and broadcasts it to a performer’s bodypack. A stereo mix needs a stereo transmitter and one stereo send — two aux outputs.',
     from: 'An aux or stereo aux send from the console.',
     to: 'The performer’s bodypack over radio.',
     many: true,
@@ -275,7 +279,7 @@ export function gearSpec(kind: GearKind): GearSpec {
  *  air nor the guitar is a device on the plot. */
 export function isSource(kind: GearKind): boolean {
   const g = gearSpec(kind);
-  return g.accepts.length === 0 || g.accepts.every((l) => l === 'acoustic' || l === 'instrument');
+  return g.source === true || g.accepts.length === 0 || g.accepts.every((l) => l === 'acoustic');
 }
 
 /** Sinks end it: the signal leaves as sound (or into an ear). */

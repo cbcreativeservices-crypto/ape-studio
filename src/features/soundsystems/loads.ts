@@ -77,9 +77,9 @@ export function loadVerdictCopy(v: LoadVerdict, totalOhms: number, ampMinOhms: n
     case 'unsafe':
       return `${fmtOhms(totalOhms)} is BELOW this amplifier’s ${ampMinOhms} Ω minimum. It will current-limit, run into protection, or overheat. Re-wire the cabinets or use more amplifier channels.`;
     case 'marginal':
-      return `${fmtOhms(totalOhms)} is exactly the ${ampMinOhms} Ω minimum. Legal, but the amplifier runs at its hottest with no margin for long cable runs — watch its temperature.`;
+      return `${fmtOhms(totalOhms)} is exactly the ${ampMinOhms} Ω minimum — nominally. A cabinet’s nominal impedance is not its minimum: an 8 Ω box dips to 5–6 Ω at some frequencies, so this load spends part of the music below the amplifier’s limit. Legal on paper; run it with the limiter set and the fans clear.`;
     default:
-      return `${fmtOhms(totalOhms)} is above the ${ampMinOhms} Ω minimum — a safe load for this amplifier.`;
+      return `${fmtOhms(totalOhms)} is above the ${ampMinOhms} Ω minimum — a safe load for this amplifier. A higher load is always safe; it just draws less power.`;
   }
 }
 
@@ -94,11 +94,13 @@ export type MatchVerdict = 'under' | 'ok' | 'over';
 
 /**
  * The common professional GUIDELINE (stated as one): choose an amplifier whose
- * continuous power into the loudspeaker’s impedance sits between the
- * loudspeaker’s continuous rating and its program rating (≈ 2× continuous).
- * Below that band, reaching level means driving the amplifier into clipping —
- * which is what actually burns high-frequency drivers. Well above it, a
- * moment’s carelessness delivers more than the voice coil can dissipate.
+ * continuous power into the loudspeaker’s impedance runs from the
+ * loudspeaker’s continuous (AES) rating up to about its program rating
+ * (≈ 2× continuous) — a little over is common when the processor limiters
+ * are set. Below that band, reaching level means driving the amplifier into
+ * clipping — which is what actually burns high-frequency drivers. Well above
+ * it, a moment’s carelessness delivers more than the voice coil can
+ * dissipate.
  */
 export function ampMatch(ampWattsIntoLoad: number, speakerContinuousW: number, speakerProgramW = speakerContinuousW * 2): MatchVerdict {
   if (ampWattsIntoLoad < speakerContinuousW) return 'under';
@@ -124,9 +126,12 @@ export type AmpRating = { at8: number; at4: number; at2?: number; bridged8?: num
 
 export function wattsIntoLoad(rating: AmpRating, ohms: number, bridged = false): number | null {
   if (bridged) return rating.bridged8 != null && ohms >= (rating.minOhmsBridged ?? 8) ? rating.bridged8 : null;
-  if (ohms >= 8) return rating.at8;
-  if (ohms >= 4) return rating.at4;
-  if (ohms >= 2 && rating.at2 != null) return rating.at2;
+  if (!Number.isFinite(ohms)) return null;
+  // Above 8 Ω the amplifier is voltage-limited: power falls in proportion.
+  if (ohms >= 8) return Math.round(rating.at8 * (8 / ohms));
+  // Between the rated points, interpolate — a 6 Ω load is not a 4 Ω load.
+  if (ohms >= 4) return Math.round(rating.at8 + (rating.at4 - rating.at8) * ((8 - ohms) / 4));
+  if (ohms >= 2 && rating.at2 != null) return Math.round(rating.at4 + (rating.at2 - rating.at4) * ((4 - ohms) / 2));
   return null;
 }
 

@@ -9,10 +9,16 @@
  * Everything a ROUTE page says about "who hears what" is computed here, so an
  * exercise's verdict and its explanation can never disagree.
  *
- * Convention (matches the mixing lab, the classic analog rule): a PRE-FADER
- * send ignores the channel fader and the channel mute; a POST-FADER send
- * follows both, and the DCA. Many digital consoles let a mute silence
- * pre-fader sends too — the pages say so, the engine keeps the classic rule.
+ * Convention (the consoles technicians actually meet — analog and digital):
+ * a PRE-FADER send ignores the channel FADER and the DCA level but FOLLOWS
+ * the channel mute, mute groups and a DCA mute — "pre-fader" means before the
+ * fader, not before the mute. Some consoles offer a per-desk "pre-mute"
+ * option for monitor world; the engine keeps the default. A POST-FADER send
+ * follows the fader, the mute and the DCA.
+ *
+ * A channel can be assigned to the main bus AND to a subgroup that also goes
+ * to main — the double-routing fault: it arrives twice, about 6 dB louder,
+ * bypassing the group's insert. The engine models it so the fault is visible.
  */
 
 export type SendTap = 'pre' | 'post';
@@ -107,24 +113,36 @@ export function dcaGain(ch: Channel, cs: ConsoleState): number {
   return d ? db2lin(d.levelDb) : 1;
 }
 
-/** Linear gain from this channel into the MAIN bus, main master excluded. */
+/** Linear gain from this channel into the MAIN bus, main master excluded.
+ *  Direct assignment and the subgroup path SUM — a channel lit on both is the
+ *  double-routing fault, and it reads 6 dB hot here as it does on a desk. */
 export function mainContribution(ch: Channel, cs: ConsoleState): number {
   if (channelMuted(ch, cs)) return 0;
   const post = db2lin(ch.faderDb) * dcaGain(ch, cs);
+  let g = ch.toMain ? post : 0;
   if (ch.subgroup) {
     const sg = cs.subgroups.find((s) => s.id === ch.subgroup);
-    if (!sg || !sg.toMain) return 0;
-    return post * db2lin(sg.faderDb);
+    if (sg && sg.toMain) g += post * db2lin(sg.faderDb);
   }
-  return ch.toMain ? post : 0;
+  return g;
+}
+
+/** True when a channel reaches the main bus twice — direct AND via a
+ *  subgroup that is assigned to main. */
+export function doubleRouted(ch: Channel, cs: ConsoleState): boolean {
+  if (!ch.toMain || !ch.subgroup) return false;
+  const sg = cs.subgroups.find((s) => s.id === ch.subgroup);
+  return !!sg && sg.toMain;
 }
 
 /** Linear gain from this channel into one AUX, aux master excluded. */
 export function sendContribution(ch: Channel, auxId: string, cs: ConsoleState): number {
   const s = ch.sends[auxId];
   if (!s) return 0;
-  if (s.tap === 'pre') return db2lin(s.db);
+  // The mute is before everything that leaves the channel — pre-fader sends
+  // included. That is what "pre-fader" has always meant.
   if (channelMuted(ch, cs)) return 0;
+  if (s.tap === 'pre') return db2lin(s.db);
   return db2lin(s.db) * db2lin(ch.faderDb) * dcaGain(ch, cs);
 }
 
@@ -272,7 +290,7 @@ export const ROUTING_TOOLS: readonly RoutingTool[] = [
     remoteControl: false,
     mixesBuses: false,
     use: 'Sum several channels into one path with one fader — and one insert point, so a compressor can grip all the drums at once.',
-    notFor: 'Anything that must keep the channels’ pre-fader sends independent of the group fader — a subgroup fader moves the audience, not the monitors.',
+    notFor: 'Remote level control of channels that must keep reaching the main by their own path — that is a DCA. And a channel on a subgroup that is NOT assigned to main is a dead end with a moving meter.',
   },
   {
     id: 'dca',
@@ -282,7 +300,7 @@ export const ROUTING_TOOLS: readonly RoutingTool[] = [
     isCopy: false,
     remoteControl: true,
     mixesBuses: false,
-    use: 'One fader that remotely controls the level of many channels — no audio passes through it, so post-fader sends follow it and pre-fader sends do not.',
+    use: 'One fader that remotely controls the level of many channels — no audio passes through it, so post-fader sends follow it and pre-fader sends do not. Its MUTE silences everything leaving those channels.',
     notFor: 'Group processing — there is no audio in a DCA to insert a compressor on.',
   },
   {
@@ -371,7 +389,7 @@ export const WHICH_TOOL: readonly WhichToolCase[] = [
     correct: 'aux',
     why: 'An AUX-FED SUB: a post-fader send from just those channels, so the sub feed follows the mix but carries nothing the low end does not need.',
     wrong: {
-      matrix: 'A matrix would send the whole main mix to the subs — the crossover then decides, not you.',
+      matrix: 'A matrix mixes BUSES, so it can only choose channels if some bus already carries just those channels — that bus is the aux. (A matrix is then a fine place to deliver that aux to the sub output with its own level.)',
       main: 'The main mix carries every channel, vocals included, to the subs.',
     },
   },
@@ -389,16 +407,14 @@ export const WHICH_TOOL: readonly WhichToolCase[] = [
     id: 'between-songs',
     situation: 'Between songs every band microphone must go silent instantly, and come back exactly as set.',
     correct: 'muteGroup',
-    why: 'A MUTE GROUP mutes a set of channels with one button and restores them untouched.',
-    wrong: {
-      dca: 'Pulling a DCA down works, but it must be returned to exactly the right level — a mute is binary and repeatable.',
-    },
+    why: 'A MUTE GROUP mutes a set of channels with one button and restores them untouched — and it silences their monitor sends too, which is what you want between songs. On a digital console a DCA mute does the same job; the mute group is the dedicated control.',
+    wrong: {},
   },
   {
     id: 'broadcast',
     situation: 'A broadcast truck needs the house mix plus a bit more vocal and a lot less of the audience mics.',
     correct: 'matrix',
-    why: 'A MATRIX starts from the finished main mix and adds or removes buses — the standard broadcast, recording and overflow feed.',
+    why: 'A MATRIX starts from the finished main mix and adds or removes buses — the standard broadcast, recording and overflow feed. On larger shows a split feeds a separate broadcast console instead.',
     wrong: {
       aux: 'Rebuilding the whole mix on an aux doubles the work and drifts from the house balance the moment anything changes.',
     },
@@ -441,6 +457,8 @@ export function bandConsole(): ConsoleState {
       { id: 'aux4', name: 'Aux 4 · Wedge 4', purpose: 'monitor', masterDb: 0 },
       { id: 'aux5', name: 'Aux 5 · Reverb', purpose: 'fx', masterDb: 0 },
       { id: 'aux6', name: 'Aux 6 · Subs', purpose: 'sub', masterDb: 0 },
+      // Kept for the lobby / overflow announce feed so no wedge ever hears it.
+      { id: 'aux7', name: 'Aux 7 · Announce', purpose: 'other', masterDb: 0 },
     ],
     subgroups: [
       { id: 'sub-drums', name: 'Drums', faderDb: 0, toMain: true },

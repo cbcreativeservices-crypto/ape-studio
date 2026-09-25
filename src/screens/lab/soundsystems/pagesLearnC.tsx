@@ -7,8 +7,10 @@
  * Chapter 13 · feedback control
  * Chapter 14 · testing and troubleshooting (the source-forward method)
  * Wrap        · what you can now do, and where credit is earned
+ *
+ * Every page opens with its instrument; every control changes it.
  */
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Circle, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
@@ -18,18 +20,20 @@ import { UnderstandingCheck } from '../tuning/components/check';
 import { computeGainChain, gainVerdict, gainVerdictCopy, type GainSettings, type GainStageId } from '../../../features/soundsystems/operate';
 import { CALC_LINKS, combFirstNullHz, delayMs, speedOfSound } from '../../../features/soundsystems/loads';
 import { slotDef } from '../../../features/soundsystems/system';
-import { STATION_LABEL, STATION_ORDER, type Station } from '../../../features/soundsystems/types';
+import { STATION_LABEL, STATION_ORDER, type Placed, type Station } from '../../../features/soundsystems/types';
 import { levelColorForDb } from '../../../features/tools/levelColor';
 import { CalcLink, ChapterTag, DeeperRow, GoalChips, KeyFact, LabLink, Readout, ReadoutRow, ToolLink, useVisitGoals, VerdictLine } from './bits';
 import { ChainMeter } from './art/ChainMeter';
-import { SystemDiagram, type DiagramStation } from './art/SystemDiagram';
-import { VenueView, type PlotBeam } from './art/VenueView';
-import { PLOT_BADGE } from './plot';
+import { benchMap, ReadingKey, SystemMap, type MapNode } from './art/SystemMap';
+import { FieldKey, VenueView, type PlotBeam } from './art/VenueView';
+import { PlanGlyph } from './art/planArt';
+import { ArrivalTimeline, FeedbackLoop, Orient } from './art/diagrams';
+import { BEAM_COLOR, PLOT_BADGE, THROW } from './plot';
 
 /* ── 16 · Gain structure ────────────────────────────────────────────────── */
 
 function PageGain({ ctx }: { ctx: PageCtx }) {
-  const [settings, setSettings] = useState<GainSettings>({ preamp: 12, fader: 8, main: 6, procIn: 8, procOut: 4 });
+  const [settings, setSettings] = useState<GainSettings>({ preamp: 5, fader: 10, main: 10, procIn: 10, procOut: 0 });
   const [sawBad, setSawBad] = useState(false);
   const [sawOk, setSawOk] = useState(false);
   const chain = computeGainChain(settings);
@@ -42,20 +46,20 @@ function PageGain({ ctx }: { ctx: PageCtx }) {
   return (
     <View style={{ gap: 12 }}>
       <ChapterTag n={10}>GAIN STRUCTURE AND SIGNAL LEVELS</ChapterTag>
-      <Lead>
-        The same peak, followed from the microphone to the loudspeaker. Every stage has a clip point above and a noise floor below; gain structure is the art of keeping the signal between them at EVERY stage — with the preamp doing the work and the faders near unity.
-      </Lead>
+      <Orient>The same vocal peak followed from the microphone to the loudspeaker, one meter per stage. Each meter has its clip line above and its noise floor rising from below. Right now the preamp is starved and every later stage is making up for it — read the grey haze.</Orient>
       <ChainMeter chain={chain} settings={settings} onChange={(id: GainStageId, db: number) => setSettings((s) => ({ ...s, [id]: db }))} />
+      <Prompt>Raise the preamp with its ▲, bring the faders and trims back to unity, and watch the haze fall.</Prompt>
+      <GoalChips goals={goals} latched={latched} />
       <ReadoutRow>
         <Readout k="AT THE LOUDSPEAKER" v={`${Math.round(last.levelDbu)} dBu`} tint={levelColorForDb(last.levelDbu, -40, 20)} />
-        <Readout k="SIGNAL ABOVE NOISE" v={`${Math.round(last.snrDb)} dB`} tint={last.snrDb < 60 ? colors.orange : colors.green} />
+        <Readout k="SIGNAL ABOVE NOISE" v={`${Math.round(last.snrDb)} dB`} tint={last.snrDb < 70 ? colors.orange : colors.green} />
         <Readout k="VERDICT" v={verdict.toUpperCase()} tint={verdict === 'ok' ? colors.green : verdict === 'clipping' ? colors.red : colors.orange} />
       </ReadoutRow>
       <VerdictLine ok={verdict === 'ok'} warn={verdict === 'quiet' || verdict === 'noisy'}>{gainVerdictCopy(verdict, chain)}</VerdictLine>
-      <Prompt>Right now the preamp is starved and every later stage is making up for it. Raise the preamp, bring the rest back to unity, and watch the grey noise haze fall.</Prompt>
+      <KeyFact>Every stage has a clip point above and a noise floor below; gain structure is the art of keeping the signal between them at EVERY stage — with the preamp doing the work and the faders near unity. The console’s nominal +4 dBu sits at about −18 dBFS on its digital meters.</KeyFact>
       <Card>
         <Eyebrow>THE VOCABULARY, ON THE METER</Eyebrow>
-        <Body>Noise floor — the grey haze. Headroom — the gap between the signal and the red clip line. Signal-to-noise — the height of the signal above the haze. Unity — the control at 0, passing what it receives. Analog clipping flattens at a rail; digital clipping stops at 0 dBFS, and both are the same red on this meter. Gain-before-feedback and the power-up order belong to the next pages.</Body>
+        <Body>Noise floor — the grey haze. Headroom — the bracket from the peak up to the red clip line. Signal-to-noise — the height of the signal above the haze. Unity — the control at 0, passing what it receives. Analog clipping flattens at a rail; digital clipping stops at 0 dBFS, and both light the same red CLIP indicator here. Gain-before-feedback and the power-up order belong to the next pages.</Body>
       </Card>
       <Card tone="note">
         <Eyebrow>ILLUSTRATIVE MODEL</Eyebrow>
@@ -65,7 +69,6 @@ function PageGain({ ctx }: { ctx: PageCtx }) {
         <LabLink route="GainLabHome" label="Gain Staging Lab — the full treatment" />
         <LabLink route="SoundSystemsOperate" label="OPERATE mode — set a whole system" />
       </DeeperRow>
-      <GoalChips goals={goals} latched={latched} />
     </View>
   );
 }
@@ -75,35 +78,36 @@ function PageGain({ ctx }: { ctx: PageCtx }) {
 function PageCoverage({ ctx }: { ctx: PageCtx }) {
   const [cover, setCover] = useState(90);
   const [aim, setAim] = useState(18);
+  const [flown, setFlown] = useState(false);
   const [fills, setFills] = useState(false);
   const [changedCover, setChangedCover] = useState(false);
   const [changedAim, setChangedAim] = useState(false);
-  const goals = [{ label: 'Change the coverage angle', hit: changedCover }, { label: 'Change the aim', hit: changedAim }, { label: 'Add front fills', hit: fills }];
+  const goals = [{ label: 'Change the coverage angle', hit: changedCover }, { label: 'Change the aim', hit: changedAim }, { label: 'Fly the mains, then add front fills', hit: flown && fills }];
   const latched = useVisitGoals(ctx, goals);
   const L = slotDef('mainL');
   const R = slotDef('mainR');
+  const rig = flown ? 'flown' : 'stack';
   const beams: PlotBeam[] = [
-    { x: L.x, y: L.y, aimDeg: aim, coverDeg: cover, color: colors.amber },
-    { x: R.x, y: R.y, aimDeg: -aim, coverDeg: cover, color: colors.amber },
+    { x: L.x, y: L.y, aimDeg: aim, coverDeg: cover, throw: THROW.top, rig, color: BEAM_COLOR.top, live: true },
+    { x: R.x, y: R.y, aimDeg: -aim, coverDeg: cover, throw: THROW.top, rig, color: BEAM_COLOR.top, live: true },
     ...(fills
       ? [
-          { x: slotDef('frontFillL').x, y: slotDef('frontFillL').y, aimDeg: 0, coverDeg: 90, gain: 0.35, color: colors.greenBright },
-          { x: slotDef('frontFillR').x, y: slotDef('frontFillR').y, aimDeg: 0, coverDeg: 90, gain: 0.35, color: colors.greenBright },
+          { x: slotDef('frontFillL').x, y: slotDef('frontFillL').y, aimDeg: 0, coverDeg: 90, gain: 0.06, throw: THROW.fill, color: BEAM_COLOR.fill, live: true },
+          { x: slotDef('frontFillR').x, y: slotDef('frontFillR').y, aimDeg: 0, coverDeg: 90, gain: 0.06, throw: THROW.fill, color: BEAM_COLOR.fill, live: true },
         ]
       : []),
   ];
-  const placed = [
-    { id: 'l', kind: 'poweredSpeaker' as const, slot: 'mainL' as const },
-    { id: 'r', kind: 'poweredSpeaker' as const, slot: 'mainR' as const },
+  const placed: Placed[] = [
+    { id: 'l', kind: 'poweredSpeaker', slot: 'mainL' },
+    { id: 'r', kind: 'poweredSpeaker', slot: 'mainR' },
     ...(fills ? [{ id: 'fl', kind: 'poweredSpeaker' as const, slot: 'frontFillL' as const }, { id: 'fr', kind: 'poweredSpeaker' as const, slot: 'frontFillR' as const }] : []),
   ];
   return (
     <View style={{ gap: 12 }}>
       <ChapterTag n={11}>LOUDSPEAKER PLACEMENT, COVERAGE AND ALIGNMENT</ChapterTag>
-      <Lead>
-        A loudspeaker’s coverage angle is the width of the audience it can serve evenly; its aim decides who is inside that width. Two mains overlap down the middle — where the same signal arrives twice from different distances and comb-filters — and miss the front rows beneath them.
-      </Lead>
-      <VenueView placed={placed} beams={beams} field badge={PLOT_BADGE} a11y={`Two mains with ${cover} degree coverage aimed ${aim} degrees inward${fills ? ', with front fills' : ''}`} caption="Amber: the mains. Green: front fills. The floor tint sums them in the conceptual model — brighter is louder, and the middle is where two arrivals overlap." />
+      <Orient>Two mains at the deck corners, each drawn with its nominal (−6 dB) coverage sector; the floor is the two summed. Hatched floor is where both arrive and comb-filter.</Orient>
+      <VenueView placed={placed} beams={beams} field seam badge={PLOT_BADGE} orientation={`${cover}° boxes, aimed ${aim === 0 ? 'straight' : `${aim}° in`}${flown ? ', flown' : ', stacked'}${fills ? ', with front fills' : ''}`} a11y={`Two mains with ${cover} degree coverage aimed ${aim} degrees inward${flown ? ', flown, with the near-field hole beneath them' : ''}${fills ? ', with front fills' : ''}`} />
+      <FieldKey />
       <Row>
         <Text style={styles.ctlLabel}>COVERAGE</Text>
         {[60, 90, 120].map((c) => (
@@ -115,23 +119,30 @@ function PageCoverage({ ctx }: { ctx: PageCtx }) {
         {[0, 18, 35].map((a) => (
           <Btn key={a} label={a === 0 ? 'STRAIGHT' : `${a}° IN`} selected={aim === a} tone={aim === a ? 'primary' : 'plain'} onPress={() => { setAim(a); setChangedAim(true); }} a11y={a === 0 ? 'Aim straight ahead' : `Aim ${a} degrees inward`} />
         ))}
+      </Row>
+      <Row>
+        <Btn label={flown ? '● FLOWN' : '○ FLOWN'} selected={flown} onPress={() => setFlown((f) => !f)} a11y={`Mains flown ${flown ? 'on' : 'off'}`} />
         <Btn label={fills ? '● FRONT FILLS' : '○ FRONT FILLS'} selected={fills} onPress={() => setFills((f) => !f)} a11y={`Front fills ${fills ? 'on' : 'off'}`} />
       </Row>
+      <Prompt>Change the box, the aim and the rig, and read the floor. Fly the mains: the front rows go dark. Add front fills: they come back.</Prompt>
+      <GoalChips goals={goals} latched={latched} />
       <Card>
         <Eyebrow>READ THE PLOT</Eyebrow>
-        <Body>Narrow coverage throws further and overlaps less; wide coverage fills a wide room and paints the side walls. Aiming inward tightens the overlap zone into the middle of the floor; aiming straight spreads it. Height and tilt — the vertical dispersion — do the same job front-to-back, and are why flown mains need front fills: the near-field beneath them is outside the vertical pattern.</Body>
+        <Body>A loudspeaker’s coverage angle is the width it serves within 6 dB of on-axis; outside that edge the level keeps falling, fast — nothing leaks sideways at a level that matters. Narrow coverage throws further and overlaps less; wide coverage fills a wide room and paints the side walls. Aiming inward tightens the overlap into the middle of the floor; aiming straight spreads it. Height and tilt — the vertical pattern — do the same job front-to-back, and are why flown or high-mounted mains need front fills: the near field beneath them is outside the vertical pattern.</Body>
       </Card>
-      <KeyFact>Near-field, far-field, overlap, comb filtering, interference between loudspeakers — every one of them is geometry first. A microphone should never stand in a loudspeaker’s coverage; a listener should always stand in exactly one loudspeaker’s, or in two that have been aligned.</KeyFact>
+      <KeyFact>Near field, far field, overlap, comb filtering, interference between loudspeakers — every one of them is geometry first. A microphone should never stand in a loudspeaker’s coverage; a listener should always stand in exactly one loudspeaker’s, or in two that have been aligned.</KeyFact>
       <DeeperRow>
         <LabLink route="SpeakerLab" label="Speaker Placement & Coverage — the full lab" />
         <LabLink route="WaveLab" label="Wave Physics — interference" />
       </DeeperRow>
-      <GoalChips goals={goals} latched={latched} />
     </View>
   );
 }
 
 /* ── 18 · Delay and alignment ───────────────────────────────────────────── */
+
+/** Where the delay towers stand on the plot for each distance option. */
+const TOWER_Y: Record<number, number> = { 10: 178, 30: 216, 60: 258 };
 
 function PageAlignment({ ctx }: { ctx: PageCtx }) {
   const [dist, setDist] = useState(30);
@@ -140,49 +151,61 @@ function PageAlignment({ ctx }: { ctx: PageCtx }) {
   const need = delayMs(dist, temp);
   const err = setMs - need;
   const aligned = Math.abs(err) <= 2;
-  const goals = [{ label: 'Align the delays to within 2 ms', hit: aligned && setMs > 0 }];
+  const goals = [{ label: 'Align the delays to within 2 ms', hit: aligned && setMs > 0 }, { label: 'Try all three distances', hit: false }];
+  const [dists, setDists] = useState<Set<number>>(new Set([30]));
+  goals[1].hit = dists.size >= 3;
   const latched = useVisitGoals(ctx, goals);
   const pathDiff = 1.2;
   const firstNull = combFirstNullHz(pathDiff, temp);
-  // Timing rings: how far the mains' sound has travelled when the delays' arrives.
-  const D = slotDef('delayL');
+  const ty = TOWER_Y[dist];
+  const L = slotDef('mainL');
+  const R = slotDef('mainR');
+  const DL = { x: slotDef('delayL').x, y: ty };
+  const DR = { x: slotDef('delayR').x, y: ty };
+  // The mains' wavefront at the moment the delay tower fires: it has
+  // travelled (setMs / need) of the way to the tower. Aligned = it is AT the tower.
+  const plotDist = Math.hypot(DL.x - L.x, DL.y - L.y);
+  const ring = need > 0 ? plotDist * Math.min(1.6, setMs / need) : 0;
+  const beams: PlotBeam[] = [
+    { x: L.x, y: L.y, aimDeg: 18, coverDeg: 90, throw: THROW.top, color: BEAM_COLOR.top, live: true },
+    { x: R.x, y: R.y, aimDeg: -18, coverDeg: 90, throw: THROW.top, color: BEAM_COLOR.top, live: true },
+    { x: DL.x, y: DL.y, aimDeg: 0, coverDeg: 90, gain: 0.16, throw: THROW.delay, color: BEAM_COLOR.delay, live: true },
+    { x: DR.x, y: DR.y, aimDeg: 0, coverDeg: 90, gain: 0.16, throw: THROW.delay, color: BEAM_COLOR.delay, live: true },
+  ];
   const overlay = (
     <>
-      {[0.5, 1, 1.5].map((k) => (
-        <Circle key={k} cx={slotDef('mainL').x} cy={slotDef('mainL').y} r={40 * k * 1.6} fill="none" stroke={colors.amber} strokeWidth={0.7} opacity={0.35} strokeDasharray="3 4" />
+      {ring > 0
+        ? [L, R].map((m, i) => <Circle key={i} cx={m.x} cy={m.y} r={ring} fill="none" stroke={aligned ? colors.greenBright : colors.amber} strokeWidth={1.2} opacity={0.75} strokeDasharray={aligned ? undefined : '4 3'} />)
+        : null}
+      {[DL, DR].map((d, i) => (
+        <PlanGlyph key={i} kind="poweredSpeaker" id={`al-tower-${i}`} x={d.x} y={d.y} rotateDeg={0} rig="pole" highlight={aligned ? colors.greenBright : undefined} />
       ))}
-      <SvgText x={D.x} y={D.y + 30} fontSize={7} fill={aligned ? colors.greenBright : colors.orange} textAnchor="middle" fontFamily={fonts.mono}>
+      <SvgText x={180} y={ty + 4} fontSize={7} fill={aligned ? colors.greenBright : colors.orange} textAnchor="middle" fontFamily={fonts.mono}>
         {`${setMs.toFixed(0)} ms set · ${need.toFixed(1)} ms needed`}
       </SvgText>
+      <SvgText x={180} y={ty - 8} fontSize={5.5} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={1}>{`DELAY TOWERS · ${dist} m FROM THE MAINS`}</SvgText>
     </>
   );
   return (
     <View style={{ gap: 12 }}>
       <ChapterTag n={11}>DELAY TIME, TIME ALIGNMENT AND POLARITY</ChapterTag>
-      <Lead>
-        A delay loudspeaker is closer to the back rows than the mains, so its sound arrives first — unless it is held back electronically by the time the mains’ sound needs to cover the extra distance. Sound travels about {speedOfSound(temp).toFixed(0)} m/s at {temp} °C: roughly 2.9 ms per metre.
-      </Lead>
+      <Orient>{`Mains at the stage, delay towers on poles ${dist} m back. The ring is the mains’ wavefront at the instant the towers fire: aligned means it has just reached them.`}</Orient>
       <VenueView
         placed={[
           { id: 'l', kind: 'poweredSpeaker', slot: 'mainL' },
           { id: 'r', kind: 'poweredSpeaker', slot: 'mainR' },
-          { id: 'dl', kind: 'poweredSpeaker', slot: 'delayL' },
-          { id: 'dr', kind: 'poweredSpeaker', slot: 'delayR' },
         ]}
-        beams={[
-          { x: slotDef('mainL').x, y: slotDef('mainL').y, aimDeg: 18, coverDeg: 90, color: colors.amber },
-          { x: slotDef('mainR').x, y: slotDef('mainR').y, aimDeg: -18, coverDeg: 90, color: colors.amber },
-          { x: slotDef('delayL').x, y: slotDef('delayL').y, aimDeg: 0, coverDeg: 90, gain: 0.6, color: colors.cyanBright },
-          { x: slotDef('delayR').x, y: slotDef('delayR').y, aimDeg: 0, coverDeg: 90, gain: 0.6, color: colors.cyanBright },
-        ]}
+        beams={beams}
         overlay={overlay}
-        badge="TIMING RINGS — ILLUSTRATIVE"
-        a11y={`Mains and delay loudspeakers ${dist} metres apart. Delay set ${setMs} milliseconds; ${need.toFixed(1)} needed.`}
+        badge="TIMING RING — ILLUSTRATIVE"
+        orientation={`Delays ${dist} m back · air ${temp} °C`}
+        a11y={`Mains and delay loudspeakers ${dist} metres apart. Delay set ${setMs} milliseconds; ${need.toFixed(1)} needed. ${aligned ? 'Aligned.' : ''}`}
       />
+      <ArrivalTimeline needMs={need} setMs={setMs} />
       <Row>
         <Text style={styles.ctlLabel}>DISTANCE</Text>
         {[10, 30, 60].map((d) => (
-          <Btn key={d} label={`${d} m`} selected={dist === d} tone={dist === d ? 'primary' : 'plain'} onPress={() => setDist(d)} a11y={`${d} metres from mains to delays`} />
+          <Btn key={d} label={`${d} m`} selected={dist === d} tone={dist === d ? 'primary' : 'plain'} onPress={() => { setDist(d); setDists((s) => new Set(s).add(d)); }} a11y={`${d} metres from mains to delays`} />
         ))}
         <Text style={styles.ctlLabel}>AIR</Text>
         {[5, 20, 35].map((t) => (
@@ -197,6 +220,8 @@ function PageAlignment({ ctx }: { ctx: PageCtx }) {
         <Btn label="+1" onPress={() => setSetMs((v) => Math.min(300, v + 1))} a11y="Delay up 1 millisecond" />
         <Btn label="+10" onPress={() => setSetMs((v) => Math.min(300, v + 10))} a11y="Delay up 10 milliseconds" />
       </Row>
+      <Prompt>Step the delay up until the ring reaches the towers and the two arrivals fuse. Then move the towers and do it again.</Prompt>
+      <GoalChips goals={goals} latched={latched} />
       <ReadoutRow>
         <Readout k="NEEDED" v={`${need.toFixed(1)} ms`} tint={colors.amber} />
         <Readout k="ERROR" v={`${err > 0 ? '+' : ''}${err.toFixed(1)} ms`} tint={aligned ? colors.green : colors.orange} />
@@ -208,7 +233,8 @@ function PageAlignment({ ctx }: { ctx: PageCtx }) {
       <Card tone="math">
         <Eyebrow>FROM THE CALCULATOR</Eyebrow>
         <Text style={styles.path}>t = d ÷ c · c = 331.3 × √(1 + T/273.15)</Text>
-        <Body>Acoustic delay is the distance; electronic delay is what you add to match it. Warm air is faster, so a delay set at soundcheck in the afternoon drifts by evening — measure again.</Body>
+        <Body>Sound travels about {speedOfSound(temp).toFixed(0)} m/s at {temp} °C — roughly 2.9 ms per metre. Acoustic delay is the distance; electronic delay is what you add to match it. Warm air is faster, so a delay set at soundcheck in the afternoon drifts by evening — measure again.</Body>
+        <Body>Many engineers then add 5–10 ms MORE on purpose: with the mains arriving first, the ear localises to the stage and the delay tower disappears (the precedence effect). Align first, then decide.</Body>
       </Card>
       <Card>
         <Eyebrow>POLARITY, PHASE AND THE SUBWOOFER CROSSOVER</Eyebrow>
@@ -219,7 +245,6 @@ function PageAlignment({ ctx }: { ctx: PageCtx }) {
         <CalcLink id={CALC_LINKS.comb.workspace} label="Comb filter from a path difference" />
         <CalcLink id="phase" label="Phase from time and distance" />
       </DeeperRow>
-      <GoalChips goals={goals} latched={latched} />
     </View>
   );
 }
@@ -245,9 +270,7 @@ function PageProcessing({ ctx }: { ctx: PageCtx }) {
   return (
     <View style={{ gap: 12 }}>
       <ChapterTag n={12}>PROCESSING AND SYSTEM TUNING</ChapterTag>
-      <Lead>
-        Tuning is measurement plus listening. A measurement microphone and a transfer-function analyser show what the system does at a reference position; your ears, walking the room, decide whether it is consistent across the seats — which matters more than perfection at one.
-      </Lead>
+      <Orient>Nine processing blocks and where each one lives — in the channel strip, in the processor, or on the monitor outputs.</Orient>
       <View style={styles.tiles}>
         {PROC_BLOCKS.map((b) => {
           const o = open.has(b.id);
@@ -260,18 +283,19 @@ function PageProcessing({ ctx }: { ctx: PageCtx }) {
           );
         })}
       </View>
+      <Prompt>Open each block.</Prompt>
+      <GoalChips goals={goals} latched={latched} />
       <Card>
         <Eyebrow>THE TUNING SESSION</Eyebrow>
-        <Body>1 · Recall the cabinet presets and confirm the limiters. 2 · Verify polarity and the sub-to-top alignment at the crossover. 3 · Measure at a reference position — not the mix position alone — and apply broad system EQ. 4 · Walk the room with pink noise and music; adjust for consistency, not for one perfect seat. 5 · Listen to material you know. 6 · Save the configuration and name it for the room.</Body>
+        <Body>1 · Recall the cabinet presets and confirm the limiters. 2 · Verify polarity and the sub-to-top alignment at the crossover. 3 · Align the front fills and the delays to the mains, from measured distance and then by measurement. 4 · Measure at a reference position — not the mix position alone — and apply broad system EQ. 5 · Walk the room with pink noise and music; adjust for consistency, not for one perfect seat. 6 · Listen to material you know. 7 · Save the configuration and name it for the room.</Body>
       </Card>
-      <KeyFact>RTA shows what the microphone hears; a transfer function shows what the SYSTEM changed. Tune with the second, confirm with the first, decide with your ears — and remember that the phone in your hand is not a measurement microphone.</KeyFact>
+      <KeyFact>Tuning is measurement plus listening. RTA shows what the microphone hears; a transfer function shows what the SYSTEM changed. Tune with the second, confirm with the first, decide with your ears walking the room — and remember that the phone in your hand is not a measurement microphone.</KeyFact>
       <DeeperRow>
         <ToolLink toolKey="rta" label="RTA tool" />
         <ToolLink toolKey="spl" label="SPL meter" />
         <ToolLink toolKey="spectrogram" label="Spectrogram" />
         <LabLink route="EqLabHome" label="EQ Lab" />
       </DeeperRow>
-      <GoalChips goals={goals} latched={latched} />
     </View>
   );
 }
@@ -280,13 +304,13 @@ function PageProcessing({ ctx }: { ctx: PageCtx }) {
 
 function PageFeedback({ ctx }: { ctx: PageCtx }) {
   const [send, setSend] = useState(-12);
-  const [position, setPosition] = useState<'front' | 'behind'>('front');
+  const [position, setPosition] = useState<'null' | 'live'>('live');
   const [notched, setNotched] = useState(false);
   const [rang, setRang] = useState(false);
   const [fixed, setFixed] = useState(false);
   // Gain-before-feedback in this illustrative model: geometry buys 12 dB, a
   // narrow notch buys 4 more. The loop rings when the send exceeds it.
-  const gbf = (position === 'behind' ? 0 : -12) + (notched ? 4 : 0);
+  const gbf = (position === 'null' ? 0 : -12) + (notched ? 4 : 0);
   const ringing = send > gbf;
   const margin = gbf - send;
   useEffect(() => {
@@ -299,15 +323,14 @@ function PageFeedback({ ctx }: { ctx: PageCtx }) {
   return (
     <View style={{ gap: 12 }}>
       <ChapterTag n={13}>FEEDBACK CONTROL</ChapterTag>
-      <Lead>
-        Feedback is a loop: microphone → console → loudspeaker → microphone, around and around, until one frequency where the loop gain passes unity takes off. Gain-before-feedback is how much level you can add before that happens — and it is spent first by geometry, then by level, and only last by an equaliser.
-      </Lead>
+      <Orient>From above: the performer at the microphone, the microphone’s cardioid pattern, and the wedge — currently off to the side, inside the live angle. The dashed path is the loop: microphone → console → amplifier → wedge → air → microphone.</Orient>
+      <FeedbackLoop wedge={position} ringing={ringing} sendDb={send} />
       <View style={styles.gbfWrap} accessible accessibilityLabel={`Monitor send ${send} dB; gain before feedback ${gbf} dB; ${ringing ? 'ringing' : `${margin} dB of margin`}`}>
         <View style={styles.gbfBar}>
           <View style={[styles.gbfFill, { width: `${((send + 30) / 40) * 100}%`, backgroundColor: ringing ? colors.red : levelColorForDb(send, -30, 6) }]} />
           <View style={[styles.gbfMark, { left: `${((gbf + 30) / 40) * 100}%` }]} />
         </View>
-        <Text style={[styles.gbfText, ringing && { color: colors.red }]}>{ringing ? `RINGING at ~${ringHz} Hz — ${-margin} dB over the loop limit` : `${margin} dB of margin before the loop rings`}</Text>
+        <Text style={[styles.gbfText, ringing && { color: colors.red }]}>{ringing ? `RINGING at ~${ringHz} Hz — ${-margin} dB over the loop limit` : `${margin} dB of margin before the loop rings · the red mark is the limit`}</Text>
       </View>
       <Row>
         <Text style={styles.ctlLabel}>SEND</Text>
@@ -317,55 +340,48 @@ function PageFeedback({ ctx }: { ctx: PageCtx }) {
       </Row>
       <Row>
         <Text style={styles.ctlLabel}>WEDGE</Text>
-        <Btn label="IN FRONT OF THE MIC" selected={position === 'front'} tone={position === 'front' ? 'primary' : 'plain'} onPress={() => setPosition('front')} a11y="Wedge in front of the microphone, in its live angle" />
-        <Btn label="BEHIND THE MIC" selected={position === 'behind'} tone={position === 'behind' ? 'primary' : 'plain'} onPress={() => setPosition('behind')} a11y="Wedge behind the microphone, in its rejection angle" />
+        <Btn label="IN THE LIVE ANGLE" selected={position === 'live'} tone={position === 'live' ? 'primary' : 'plain'} onPress={() => setPosition('live')} a11y="Wedge off to the side, in the microphone’s live angle" />
+        <Btn label="IN THE NULL" selected={position === 'null'} tone={position === 'null' ? 'primary' : 'plain'} onPress={() => setPosition('null')} a11y="Wedge directly behind the microphone, in its null" />
         <Btn label={notched ? `● NOTCH ${ringHz} Hz` : `○ NOTCH ${ringHz} Hz`} selected={notched} onPress={() => setNotched((n) => !n)} a11y={`Narrow notch at ${ringHz} hertz ${notched ? 'on' : 'off'}`} />
       </Row>
+      <Prompt>Push the send up until it rings. Then move the wedge into the null and try again.</Prompt>
+      <GoalChips goals={goals} latched={latched} />
       <Card tone="math">
         <Eyebrow>THE ORDER OF OPERATIONS</Eyebrow>
-        <Body>1 · Placement: the wedge in the microphone’s rejection angle (behind a cardioid, at the sides of a hypercardioid), the mains in front of the microphones, never behind. 2 · Polar pattern and technique: a tighter pattern and a closer mouth both raise the ratio of voice to loop. 3 · Stage volume: a quieter stage needs quieter wedges. 4 · Level: the send at what the performer needs, not more. 5 · Identify the ringing frequency on the analyser and apply a NARROW cut. 6 · Automatic feedback suppressors, if used, as a safety net — not a substitute for the first four.</Body>
+        <Body>1 · Placement: the wedge in the microphone’s null — directly behind a cardioid; at 110–125° off axis for a hypercardioid, whose rear has a small live lobe — and the mains in front of the microphones, never behind. 2 · Polar pattern and technique: a tighter pattern and a closer mouth both raise the ratio of voice to loop. 3 · Stage volume: a quieter stage needs quieter wedges. 4 · Level: the send at what the performer needs, not more. 5 · Identify the ringing frequency on the analyser and apply a NARROW cut. 6 · Automatic feedback suppressors, if used, as a safety net — not a substitute for the first four.</Body>
       </Card>
+      <KeyFact>Feedback is a loop, and it takes off at the one frequency where the gain around the loop passes unity. Gain-before-feedback is how much level you can add before that happens — spent first by geometry, then by level, and only last by an equaliser.</KeyFact>
       <Card tone="warn">
         <Eyebrow>WHEN IT HAPPENS DURING A PERFORMANCE</Eyebrow>
         <Body>Pull the offending send or channel down first — a hand on the fader beats a search for the frequency. Mute unused microphones as a habit. Then find the frequency and notch it while the room is quiet. Excessive graphic EQ to “fix” feedback leaves a wedge that sounds hollow and still rings somewhere else.</Body>
       </Card>
       <UnderstandingCheck
         question="A wedge rings as the send comes up. Which change buys the MOST gain-before-feedback?"
-        options={['Moving the wedge into the microphone’s rejection angle', 'Cutting six bands on the graphic EQ', 'Raising the amplifier level', 'Adding compression to the vocal']}
+        options={['Moving the wedge into the microphone’s null', 'Cutting six bands on the graphic EQ', 'Raising the amplifier level', 'Adding compression to the vocal']}
         correct={0}
         explain="Geometry first: placement changes how much of the loudspeaker the microphone hears at every frequency at once. An equaliser can only treat the frequencies it finds, one at a time, at a tonal cost."
       />
-      <GoalChips goals={goals} latched={latched} />
     </View>
   );
 }
 
 /* ── 21 · The source-forward method ─────────────────────────────────────── */
 
-const WALK_KINDS: Record<Station, DiagramStation['kind']> = {
-  source: 'vocalMic',
-  cable: 'snake',
-  stagebox: 'stagebox',
-  consoleIn: 'console',
-  consoleOut: 'console',
-  processor: 'processor',
-  amp: 'amp',
-  speaker: 'passiveSpeaker',
-  listener: 'listener',
-};
+const METHOD_START: Station = 'consoleIn';
+const METHOD_FAULT: Station = 'processor';
 
 function PageMethod({ ctx }: { ctx: PageCtx }) {
   const [probed, setProbed] = useState<Station[]>([]);
   const [running, setRunning] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const faultAt: Station = 'processor';
-  const done = probed.includes(faultAt);
+  const done = probed.includes(METHOD_FAULT);
   const goals = [{ label: 'Run the forward walk to the fault', hit: done }];
   const latched = useVisitGoals(ctx, goals);
+  const walk = STATION_ORDER.slice(STATION_ORDER.indexOf(METHOD_START));
   useEffect(() => {
     if (!running) return;
-    const next = STATION_ORDER[probed.length];
-    if (!next || probed.includes(faultAt)) {
+    const next = walk[probed.length];
+    if (!next || probed.includes(METHOD_FAULT)) {
       setRunning(false);
       return;
     }
@@ -373,29 +389,32 @@ function PageMethod({ ctx }: { ctx: PageCtx }) {
     return () => {
       if (timer.current) clearTimeout(timer.current);
     };
-  }, [running, probed, ctx.reduceMotion]);
-  const stations: DiagramStation[] = STATION_ORDER.map((s) => {
+  }, [running, probed, ctx.reduceMotion, walk]);
+  const base = useMemo(() => benchMap({}, {}), []);
+  const f = STATION_ORDER.indexOf(METHOD_FAULT);
+  const nodes: MapNode[] = base.nodes.map((n) => {
+    const s = n.id as Station;
     const i = STATION_ORDER.indexOf(s);
-    const f = STATION_ORDER.indexOf(faultAt);
     const isProbed = probed.includes(s);
-    return { id: s, kind: WALK_KINDS[s], label: STATION_LABEL[s], state: !isProbed ? 'unknown' : i < f ? 'ok' : 'none' };
+    return { ...n, state: !isProbed ? 'unknown' : i < f ? 'ok' : 'none', value: !isProbed ? undefined : i < f ? 'OK' : 'NO SIGNAL', dark: done && i > f };
   });
   return (
     <View style={{ gap: 12 }}>
       <ChapterTag n={14}>TESTING AND TROUBLESHOOTING · THE METHOD</ChapterTag>
-      <Lead>
-        “The PA is dead.” The amateur swaps the amplifier. The professional starts at the microphone and walks forward, reading each station, and stops at the first one whose reading changes. That station is the fault — or the place it became visible.
-      </Lead>
-      <SystemDiagram stations={stations} flowing={false} breakAfter={done ? STATION_ORDER.indexOf(faultAt) - 1 : null} a11y="The nine stations of the walk. Run the walk to watch each station read healthy until the processor, where the signal stops." />
+      <Orient>“The PA is dead — but every channel meter is dancing.” The meters have already vouched for the source, the cable and the stagebox, so the walk starts at the console input and goes forward.</Orient>
+      <SystemMap nodes={nodes} edges={base.edges.map((e) => ({ ...e, dead: done && STATION_ORDER.indexOf(e.to as Station) > f }))} running={false} selectedId={probed.length ? probed[probed.length - 1] : METHOD_START} a11y="The nine stations of the walk. Run the walk to watch the console read healthy and the processor read no signal." />
+      <ReadingKey />
       <Row>
         <Btn label={running ? '… WALKING' : done ? 'WALK AGAIN' : '▶ RUN THE WALK'} tone="primary" disabled={running} onPress={() => { setProbed([]); setRunning(true); }} a11y="Run the forward walk" />
       </Row>
+      <Prompt>Run the walk and watch where the reading changes.</Prompt>
+      <GoalChips goals={goals} latched={latched} />
       {done ? (
-        <VerdictLine ok>Healthy, healthy, healthy, healthy, healthy — then nothing at the processor output. Six probes, one answer, no boxes swapped.</VerdictLine>
+        <VerdictLine ok>Console in: healthy. Console out: healthy. Processor: nothing. Three probes, one answer, no boxes swapped.</VerdictLine>
       ) : (
         <Body>{probed.length ? `${probed.length} station${probed.length === 1 ? '' : 's'} read so far.` : 'Nothing read yet.'}</Body>
       )}
-      <KeyFact>Probe forward, never backward. Re-probe a station if you must, but never jump toward the loudspeaker on a hunch. The bench grades the walk as well as the answer.</KeyFact>
+      <KeyFact>The amateur swaps the amplifier. The professional starts where the symptom leaves doubt, walks forward reading each station, and stops at the first reading that changes. That station is the fault — or the place it became visible. Probe forward, never backward: re-probe a station if you must, but never jump toward the loudspeaker on a hunch. The bench grades the walk as well as the answer.</KeyFact>
       <Card>
         <Eyebrow>WHAT A PROBE IS</Eyebrow>
         <Body>A meter, an LED, a pair of headphones, a cable tester, a swap to a known-good part — whatever answers “is the signal healthy HERE?” for that station. Reading it is the skill; owning it is the kit.</Body>
@@ -404,7 +423,6 @@ function PageMethod({ ctx }: { ctx: PageCtx }) {
         <LabLink route="SoundSystemsTroubleshoot" label="TROUBLESHOOT mode — 22 faults on the bench" />
         <LabLink route="MeterModule" label="Signal Detective" params={{ id: 'detective' }} />
       </DeeperRow>
-      <GoalChips goals={goals} latched={latched} />
     </View>
   );
 }
@@ -446,6 +464,8 @@ export const SS_LEARN_PAGES_C: PageDef[] = [
   { title: 'The source-forward method', short: 'METHOD', Component: PageMethod, manualDone: true },
   { title: 'What you can now do', short: 'WRAP', Component: PageWrap, manualDone: true },
 ];
+
+void STATION_LABEL;
 
 const styles = StyleSheet.create({
   ctlLabel: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 1.6, marginRight: 2 },

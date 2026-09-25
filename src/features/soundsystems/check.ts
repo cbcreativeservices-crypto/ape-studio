@@ -80,7 +80,7 @@ export const SOUND_SYSTEMS_CHECK: readonly UnderstandingQuestion[] = [
     prompt: 'The preamp is set low and the channel fader is pushed far above unity to compensate. What is the result?',
     options: ['Hiss — the fader amplifies the preamp’s noise floor along with the signal', 'A cleaner signal, because the preamp is not working hard', 'Distortion at the preamp', 'No difference'],
     correct: 'Hiss — the fader amplifies the preamp’s noise floor along with the signal',
-    explanation: 'Gain placed late in the chain raises everything before it, noise included. The preamp should do the work; the faders sit near unity.',
+    explanation: 'Gain placed late in the chain amplifies everything before it — the preamp’s floor and the channel’s own — and every stage after adds its gain to that hiss. The preamp should do the work; the faders sit near unity.',
   },
   {
     id: 'delay-time',

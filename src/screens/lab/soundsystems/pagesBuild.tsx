@@ -16,15 +16,16 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import type { PageCtx, PageDef } from '../kit/PagedLab';
 import { Body, Btn, Card, Eyebrow, Lead, Prompt, Row } from '../tuning/components/primitives';
-import { GEAR, gearSpec, LEVEL_LABEL } from '../../../features/soundsystems/gear';
+import { GEAR, gearSpec, isSource, LEVEL_LABEL } from '../../../features/soundsystems/gear';
 import { connect, disconnect, EMPTY_SYSTEM, place, removePlaced, SLOTS, slotAccepts, slotDef, trace, upstream, downstream } from '../../../features/soundsystems/system';
-import { CAPSTONES, gradeCapstone, type Capstone } from '../../../features/soundsystems/capstones';
+import { CAPSTONES_IN_ORDER, gradeCapstone, type Capstone } from '../../../features/soundsystems/capstones';
 import { bandConsole, type ConsoleState } from '../../../features/soundsystems/console';
 import { markCapstonePassed } from '../../../features/soundsystems/progress';
 import type { GearKind, Link, SlotId, SoundSystem } from '../../../features/soundsystems/types';
 import { ChapterTag, GoalChips, KeyFact, ReqRow, useVisitGoals, VerdictLine } from './bits';
 import { GearGlyph } from './art/gearArt';
 import { CableLegend, VenueView } from './art/VenueView';
+import { Orient } from './art/diagrams';
 import { placedToBeams, PLOT_BADGE } from './plot';
 import { BusHears, ConsolePanel, DcaStrip, MatrixStrip, matrixHears, auxHears, mainHears, subgroupHears, SubgroupStrip, type ConsoleColumn } from './art/ConsolePanel';
 
@@ -159,6 +160,7 @@ export function Builder({ b, kinds, badgeless }: { b: ReturnType<typeof useBuild
         onTapPlaced={b.tapPlaced}
         onTapLink={b.tapLink}
         badge={badgeless ? undefined : PLOT_BADGE}
+        orientation="Plan view — stage at the top, audience below, front of house two-thirds back"
         a11y={`The venue plot. ${b.system.placed.length} device${b.system.placed.length === 1 ? '' : 's'} placed, ${b.system.links.length} cable${b.system.links.length === 1 ? '' : 's'}, ${b.live.size} loudspeaker${b.live.size === 1 ? '' : 's'} live.${b.part ? ` ${b.targets.length} positions accept the ${gearSpec(b.part).name.toLowerCase()}.` : ''}`}
       />
       <CableLegend levels={['mic', 'line', 'speaker', 'digital', 'wireless']} />
@@ -201,7 +203,7 @@ const ALL_KINDS = GEAR.map((g) => g.kind);
 function PageFreeBuild({ ctx }: { ctx: PageCtx }) {
   const b = useBuilder();
   const goals = [
-    { label: 'Place a source, a console and a loudspeaker', hit: b.system.placed.some((p) => p.kind === 'console') && b.system.placed.some((p) => gearSpec(p.kind).radiates) && b.system.placed.some((p) => gearSpec(p.kind).accepts.length === 0 || gearSpec(p.kind).accepts.every((l) => l === 'acoustic' || l === 'instrument')) },
+    { label: 'Place a source, a console and a loudspeaker', hit: b.system.placed.some((p) => p.kind === 'console') && b.system.placed.some((p) => gearSpec(p.kind).radiates) && b.system.placed.some((p) => isSource(p.kind) && p.kind !== 'powerDistro') },
     { label: 'Make a loudspeaker live', hit: b.live.size > 0 },
     { label: 'Read one refusal', hit: b.refusals > 0 },
   ];
@@ -209,12 +211,10 @@ function PageFreeBuild({ ctx }: { ctx: PageCtx }) {
   return (
     <View style={{ gap: 12 }}>
       <ChapterTag n={0}>BUILD · THE EMPTY VENUE</ChapterTag>
-      <Lead>
-        Every part in the catalogue, an empty room, and an engine that knows which connections carry signal, which are silent and which cause damage. Build anything. Watch the loudspeakers light when a source reaches them.
-      </Lead>
+      <Orient>An empty venue in plan — the deck and its riser at the top, wings either side, the audience below — and every part in the catalogue. Build anything; the loudspeakers light when a source reaches them.</Orient>
       <Builder b={b} kinds={ALL_KINDS} />
-      <KeyFact>A loudspeaker is LIVE only when an unbroken path of valid links runs from a source to it. A dim loudspeaker is a placed loudspeaker with no such path — the most common state of a real system at four in the afternoon.</KeyFact>
       <GoalChips goals={goals} latched={latched} />
+      <KeyFact>A loudspeaker is LIVE only when an unbroken path of valid links runs from a source to it. A dim loudspeaker is a placed loudspeaker with no such path — the most common state of a real system at four in the afternoon. The engine refuses a link for one of three reasons — wrong level, a full input, or a loop — and the one hazardous refusal (speaker level into a line input) is drawn as a warning.</KeyFact>
     </View>
   );
 }
@@ -251,10 +251,10 @@ const ROUTE_UI: Partial<Record<string, RouteUi>> = {
     ],
   },
   matrices: {
-    columns: ['send:aux2', 'send:aux6'],
+    columns: ['main', 'send:aux7', 'send:aux6'],
     matrices: [
-      { id: 'mx-fills', sources: [{ id: 'main', label: 'MAIN' }, { id: 'aux2', label: 'AUX 2' }] },
-      { id: 'mx-lobby', sources: [{ id: 'main', label: 'MAIN' }, { id: 'aux2', label: 'AUX 2' }] },
+      { id: 'mx-fills', sources: [{ id: 'main', label: 'MAIN' }, { id: 'aux7', label: 'AUX 7' }] },
+      { id: 'mx-lobby', sources: [{ id: 'main', label: 'MAIN' }, { id: 'aux7', label: 'AUX 7' }] },
       { id: 'mx-subs', sources: [{ id: 'main', label: 'MAIN' }, { id: 'aux6', label: 'AUX 6' }] },
     ],
     hears: [
@@ -265,14 +265,11 @@ const ROUTE_UI: Partial<Record<string, RouteUi>> = {
   },
   festival: {
     columns: ['send:aux1', 'send:aux2', 'send:aux3', 'send:aux4', 'send:aux6'],
-    matrices: [
-      { id: 'mx-rec', sources: [{ id: 'main', label: 'MAIN' }, { id: 'aux1', label: 'AUX 1' }] },
-      { id: 'mx-subs', sources: [{ id: 'main', label: 'MAIN' }, { id: 'aux6', label: 'AUX 6' }] },
-    ],
+    matrices: [{ id: 'mx-rec', sources: [{ id: 'main', label: 'MAIN' }, { id: 'aux1', label: 'AUX 1' }] }],
     hears: [
       { title: 'AUX 1 · WEDGE 1 HEARS', kind: 'aux', id: 'aux1' },
+      { title: 'AUX 6 · THE SUBS HEAR', kind: 'aux', id: 'aux6' },
       { title: 'MATRIX 4 · RECORDING HEARS', kind: 'matrix', id: 'mx-rec' },
-      { title: 'MATRIX 1 · SUBS HEAR', kind: 'matrix', id: 'mx-subs' },
     ],
   },
 };
@@ -322,8 +319,8 @@ function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
       {ui ? (
         <View style={{ gap: 10 }}>
           <Eyebrow>THE CONSOLE</Eyebrow>
-          <Body>Levels step on tap; PRE/POST toggles the tap point. The buses below show who hears what — computed, not promised.</Body>
-          <ConsolePanel cs={cs} onChange={setCs} channels={ui.channels} columns={ui.columns} />
+          <Body>▲/▼ step a level; PRE lights the pre-fader tap. The buses below show who hears what — computed, not promised.</Body>
+          <ConsolePanel cs={cs} onChange={setCs} channels={ui.channels} columns={ui.columns} sendNames={{ aux1: 'SINGER', aux2: 'GUITAR', aux3: 'BASS', aux4: 'DRUMS', aux5: 'REVERB', aux6: 'SUBS', aux7: 'LOBBY' }} />
           {ui.subgroups ? <SubgroupStrip cs={cs} onChange={setCs} /> : null}
           {ui.dcas ? <DcaStrip cs={cs} onChange={setCs} /> : null}
           {ui.matrices?.map((m) => (
@@ -341,7 +338,7 @@ function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
 
 export const SS_BUILD_PAGES: PageDef[] = [
   { title: 'The empty venue', short: 'VENUE', Component: PageFreeBuild, manualDone: true },
-  ...CAPSTONES.map((c) => ({
+  ...CAPSTONES_IN_ORDER.map((c) => ({
     title: `Capstone ${c.n} · ${c.title}`,
     short: `C${c.n}`,
     manualDone: true,
