@@ -129,6 +129,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-25 13:51 · ccode · eaff23f1
+changed: Sound Systems Lab: Rack Unit layout pass
+affects other side: nothing — client-only.
+needs: nothing.
+
+
 ### 2026-09-25 13:29 · ccode · 7e5c02d4
 changed: handoff 2026-09-25B: second OTA published (Profile column + Glossary push) from a clean checkout; the clean-checkout publish routine
 affects other side: nothing — second OTA of the day published (client-only fixes); docs.
