@@ -38,6 +38,7 @@ import {
 } from '../../features/audio/exposureMonitor';
 import { markToolMount } from '../../features/tools/devTiming';
 import { AccuracyNote } from '../../components/AccuracyNote';
+import { readingText } from '../../theme/readingColumn';
 
 function Row({
   label,
@@ -517,7 +518,7 @@ const styles = StyleSheet.create({
   rowLabel: { fontFamily: fonts.barlowRegular, fontSize: 13.5, color: colors.textSecondary, flexShrink: 1 },
   rowValue: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 0.4, color: colors.textPrimary },
   toggleText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1 },
-  body: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
+  body: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary, ...readingText },
   note: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16.5, color: colors.textSub, fontStyle: 'italic' },
   doseTrack: { height: 10, borderRadius: 5, backgroundColor: '#1b1c20', overflow: 'hidden' },
   doseFill: { height: '100%', borderRadius: 5 },

@@ -47,6 +47,7 @@ import { EngineGate } from './EngineGate';
 import { useToolHelp, HelpHead, DisplayGuideButton } from '../../features/lab/guidedLessons';
 import type { RootStackParamList } from '../../navigation/types';
 import { levelColor } from '../../features/tools/levelColor';
+import { readingColumn, readingText } from '../../theme/readingColumn';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Rt60Live'>;
 
@@ -688,7 +689,7 @@ const styles = StyleSheet.create({
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
   scroll: { padding: 16, paddingBottom: 28, gap: 12 },
 
-  intro: { fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 22, color: colors.textSecondary },
+  intro: { fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 22, color: colors.textSecondary, ...readingText },
 
   stagePanel: {
     borderRadius: 12,
@@ -718,7 +719,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   stageTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.6, color: colors.textPrimary },
-  stageBody: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19.5, color: colors.textSecondary },
+  stageBody: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19.5, color: colors.textSecondary, ...readingText },
 
   // Live input-level bar — a visual of the zFastDb readout printed below it.
   levelTrack: {
@@ -777,8 +778,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingHorizontal: 10,
   },
-  stoppedNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.textMuted, textAlign: 'center' },
-  saveNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.textMuted, textAlign: 'center' },
+  stoppedNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.textMuted, textAlign: 'center', ...readingColumn },
+  saveNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.textMuted, textAlign: 'center', ...readingColumn },
 
   curvePanel: {
     borderRadius: 10,
@@ -788,7 +789,7 @@ const styles = StyleSheet.create({
     padding: 10,
     gap: 6,
   },
-  curveCaption: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted },
+  curveCaption: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted, ...readingText },
 
   groupHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.8, color: colors.amberLabel, marginTop: 2 },
   bandTable: { borderRadius: 10, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', overflow: 'hidden' },
@@ -814,7 +815,7 @@ const styles = StyleSheet.create({
   controls: { flexDirection: 'row', gap: 12 },
   libraryLink: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: '#4dd0e1', textAlign: 'center' },
 
-  liveWarn: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.amber },
+  liveWarn: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.amber, ...readingText },
 
   disciplineCard: {
     borderRadius: 10,
@@ -825,5 +826,5 @@ const styles = StyleSheet.create({
     gap: 6,
     marginTop: 2,
   },
-  disciplineLine: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.textSub },
+  disciplineLine: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.textSub, ...readingText },
 });

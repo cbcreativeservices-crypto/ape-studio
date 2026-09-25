@@ -91,6 +91,7 @@ import {
   type Detection,
 } from './multiMeterDetect';
 import type { RootStackParamList } from '../../navigation/types';
+import { readingText } from '../../theme/readingColumn';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'MultiMeter'>;
 
@@ -1847,7 +1848,7 @@ const styles = StyleSheet.create({
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
   scroll: { padding: 16, paddingTop: 10, paddingBottom: 28, gap: 14 },
 
-  intro: { fontFamily: fonts.barlowRegular, fontSize: 15.5, lineHeight: 23, color: colors.textSecondary },
+  intro: { fontFamily: fonts.barlowRegular, fontSize: 15.5, lineHeight: 23, color: colors.textSecondary, ...readingText },
 
   // 1 ── Top status bar (pinned).
   statusBar: { flexDirection: 'row', gap: 8, paddingHorizontal: 14 },
@@ -1951,7 +1952,7 @@ const styles = StyleSheet.create({
   legendItem: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub },
   legendHint: { fontFamily: fonts.barlowRegular, fontSize: 12, color: colors.textMuted },
   unitLine: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSubAlt },
-  grayNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSubAlt },
+  grayNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSubAlt, ...readingText },
 
   // Control chips.
   ctrlRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
@@ -2051,7 +2052,7 @@ const styles = StyleSheet.create({
   },
   sysValue: { fontFamily: fonts.mono, fontSize: 13, color: colors.textSecondary },
 
-  liveWarn: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.amber },
+  liveWarn: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.amber, ...readingText },
 
   // 7 ── detection chips.
   detectWrap: { gap: 8 },
@@ -2061,7 +2062,7 @@ const styles = StyleSheet.create({
   detectLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2 },
   detectLabelAmber: { color: colors.amber },
   detectLabelRed: { color: '#ff8d7a' },
-  detectDetail: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSecondary },
+  detectDetail: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSecondary, ...readingText },
   detectEmpty: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textMuted },
   detectCaption: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 12, lineHeight: 16, color: colors.textSub },
 
@@ -2091,8 +2092,7 @@ const styles = StyleSheet.create({
     fontSize: 12.5,
     lineHeight: 18,
     color: colors.textMuted,
-    marginTop: 4,
-  },
+    marginTop: 4, ...readingText },
 
   // Snapshot sheet.
   // Readout-mode chooser popup (owner rev 24).
@@ -2144,7 +2144,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   sheetTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.8, color: colors.textPrimary },
-  sheetSummary: { fontFamily: fonts.mono, fontSize: 12, lineHeight: 17, color: colors.textSub },
+  sheetSummary: { fontFamily: fonts.mono, fontSize: 12, lineHeight: 17, color: colors.textSub, ...readingText },
   sheetInput: {
     minHeight: 72,
     borderRadius: 8,

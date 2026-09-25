@@ -71,6 +71,7 @@ import {
 import { EngineGate } from './EngineGate';
 import { useToolHelp, HelpHead, DisplayGuideButton, readoutKey } from '../../features/lab/guidedLessons';
 import type { RootStackParamList } from '../../navigation/types';
+import { readingText } from '../../theme/readingColumn';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SpectrogramLive'>;
 
@@ -730,7 +731,7 @@ const styles = StyleSheet.create({
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
   scroll: { padding: 16, paddingBottom: 28, gap: 14 },
 
-  intro: { fontFamily: fonts.barlowRegular, fontSize: 15.5, lineHeight: 23, color: colors.textSecondary },
+  intro: { fontFamily: fonts.barlowRegular, fontSize: 15.5, lineHeight: 23, color: colors.textSecondary, ...readingText },
   /** The recovery affordance for an engine that is ready but not capturing.
    *  Deliberately plain — it is an escape hatch, not a feature, and on the
    *  normal auto-start path it never renders. */
@@ -784,7 +785,7 @@ const styles = StyleSheet.create({
   legendText: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSubAlt },
 
   unitLine: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSubAlt },
-  scaleNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSubAlt },
+  scaleNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSubAlt, ...readingText },
 
   // Numeric readout cells (fonts.mono for values — house data-readout face).
   statGrid: { flexDirection: 'row', gap: 10 },
@@ -808,7 +809,7 @@ const styles = StyleSheet.create({
   speedLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.2, color: colors.textSub },
 
   // Live warning line (spec §6) — amber, plain language.
-  liveWarn: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.amber },
+  liveWarn: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.amber, ...readingText },
 
   // Control chips.
   ctrlRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
@@ -832,7 +833,7 @@ const styles = StyleSheet.create({
   chipActive: { borderColor: colors.amberDeep, backgroundColor: '#1d180d' },
   chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textSub },
   chipTextActive: { color: colors.amber },
-  settingsNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textMuted },
+  settingsNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textMuted, ...readingText },
 
   // Freeze / save buttons.
   buttonRow: { flexDirection: 'row', gap: 12 },
@@ -851,7 +852,7 @@ const styles = StyleSheet.create({
   ctrlText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.4, color: colors.textSecondary },
   ctrlTextFrozen: { color: '#dcc9ff' },
   ctrlTextSaved: { color: '#5bff85' },
-  frozenNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: '#b9a3e6' },
+  frozenNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: '#b9a3e6', ...readingText },
 
   libraryLink: {
     fontFamily: fonts.oswaldSemiBold,
@@ -867,6 +868,5 @@ const styles = StyleSheet.create({
     fontSize: 12.5,
     lineHeight: 18,
     color: colors.textMuted,
-    marginTop: 4,
-  },
+    marginTop: 4, ...readingText },
 });

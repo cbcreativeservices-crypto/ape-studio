@@ -58,6 +58,7 @@ import { EngineGate } from './EngineGate';
 import { useToolHelp, DisplayGuideButton } from '../../features/lab/guidedLessons';
 import type { RootStackParamList } from '../../navigation/types';
 import { buildPixelEnvelope } from './waveEnvelope';
+import { readingText } from '../../theme/readingColumn';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'WaveformLive'>;
 
@@ -1010,7 +1011,7 @@ const styles = StyleSheet.create({
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
   scroll: { padding: 16, paddingBottom: 32, gap: 14 },
 
-  intro: { fontFamily: fonts.barlowRegular, fontSize: 15.5, lineHeight: 23, color: colors.textSecondary },
+  intro: { fontFamily: fonts.barlowRegular, fontSize: 15.5, lineHeight: 23, color: colors.textSecondary, ...readingText },
 
   // Oscilloscope card.
   scopeCard: {
@@ -1145,7 +1146,7 @@ const styles = StyleSheet.create({
   chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.2, color: colors.textSecondary },
   chipTextActive: { color: TRACE },
   chipTextFrozen: { color: colors.cyanBright },
-  settingsNote: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSub },
+  settingsNote: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSub, ...readingText },
 
   // Readouts.
   statGrid: { flexDirection: 'row', gap: 10 },
@@ -1173,7 +1174,7 @@ const styles = StyleSheet.create({
   calNote: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textSecondary },
 
   // Live quality warning line (spec §6) — house amber warning style.
-  liveWarn: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.amber },
+  liveWarn: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.amber, ...readingText },
 
   controls: { flexDirection: 'row', gap: 12, alignItems: 'stretch' },
   saveBtn: {
@@ -1202,6 +1203,5 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     fontSize: 13,
     lineHeight: 18.5,
-    color: colors.textSub,
-  },
+    color: colors.textSub, ...readingText },
 });

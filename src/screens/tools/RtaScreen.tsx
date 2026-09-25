@@ -92,6 +92,7 @@ import { useToolHelp, readoutKey } from '../../features/lab/guidedLessons';
 import { RackUnit } from '../lab/rack/RackUnit';
 import type { BezelItem, DockParam } from '../lab/rack/rackTypes';
 import type { RootStackParamList } from '../../navigation/types';
+import { readingText } from '../../theme/readingColumn';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Rta'>;
 
@@ -1319,7 +1320,7 @@ const styles = StyleSheet.create({
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1.4, color: colors.textPrimary },
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
 
-  intro: { fontFamily: fonts.barlowRegular, fontSize: 15.5, lineHeight: 23, color: colors.textSecondary },
+  intro: { fontFamily: fonts.barlowRegular, fontSize: 15.5, lineHeight: 23, color: colors.textSecondary, ...readingText },
 
   // Live bar-graph glass (rack stage, height-parametric).
   glassBody: { flex: 1, paddingHorizontal: 4, paddingTop: 2 },
@@ -1358,13 +1359,13 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     textAlign: 'center',
   },
-  grayNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSubAlt },
+  grayNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSubAlt, ...readingText },
 
   // The old stat-grid / LEVEL-toggle styles are gone: those readouts live on
   // the rack bezel now (BezelReadouts owns the skin).
 
   // Live warning line (spec §6) — amber, plain language.
-  liveWarn: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.amber },
+  liveWarn: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.amber, ...readingText },
 
   // Tray composition (AVG · DISPLAY group trays) — chips in labeled rows.
   trayCol: { gap: 10 },
@@ -1383,7 +1384,7 @@ const styles = StyleSheet.create({
   chipActive: { borderColor: colors.amberDeep, backgroundColor: '#1d180d' },
   chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textSub },
   chipTextActive: { color: colors.amber },
-  settingsNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textMuted },
+  settingsNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textMuted, ...readingText },
 
   // Discreet colour-wheel button in the DISPLAY tray (owner rule 2026-08-20).
   rtaColorBtn: {
@@ -1437,6 +1438,5 @@ const styles = StyleSheet.create({
     fontSize: 12.5,
     lineHeight: 18,
     color: colors.textMuted,
-    marginTop: 4,
-  },
+    marginTop: 4, ...readingText },
 });

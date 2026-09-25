@@ -57,6 +57,7 @@ import * as Optical from '../../../modules/ape-optical';
 import { PermissionPrompt, usePermissionFlow } from '../../features/permissions/PermissionPrompt';
 import type { RootStackParamList } from '../../navigation/types';
 import { levelColorForDb } from '../../features/tools/levelColor';
+import { readingText } from '../../theme/readingColumn';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'FrequencyCounter'>;
 
@@ -1333,7 +1334,7 @@ const styles = StyleSheet.create({
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
   scroll: { padding: 16, paddingBottom: 32, gap: 14 },
 
-  intro: { fontFamily: fonts.barlowRegular, fontSize: 15.5, lineHeight: 23, color: colors.textSecondary },
+  intro: { fontFamily: fonts.barlowRegular, fontSize: 15.5, lineHeight: 23, color: colors.textSecondary, ...readingText },
 
   // Mode selection buttons — large.
   modeBtn: {
@@ -1348,7 +1349,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   modeName: { fontFamily: fonts.oswaldMedium, fontSize: 20, letterSpacing: 0.4, color: colors.textPrimary },
-  modeBlurb: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary, marginTop: 3 },
+  modeBlurb: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary, marginTop: 3, ...readingText },
   modeChevron: { fontFamily: fonts.oswaldSemiBold, fontSize: 26, color: '#5fd9c4' },
   // Locked (Academy-only) mode row — grayed, steel border.
   modeBtnLocked: { borderColor: '#3a3a3a', backgroundColor: '#141414', opacity: 0.6 },
@@ -1435,8 +1436,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.barlowRegular,
     fontSize: 13,
     lineHeight: 18.5,
-    color: colors.amber,
-  },
+    color: colors.amber, ...readingText },
   // Tuner cents scale (engine build 2026-07-23) — real deviation, ±50¢.
   centsLabel: {
     fontFamily: fonts.mono,
@@ -1460,7 +1460,7 @@ const styles = StyleSheet.create({
   tunerNoteRow: { alignItems: 'center' },
 
   // Honest range/unit footnote under the stat grid.
-  gridNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted },
+  gridNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted, ...readingText },
   centerLockRow: { alignItems: 'center', marginBottom: 6 },
   // Top-right corner of the note card (owner 2026-09-11); 44pt effective
   // target via padding + the wheel's own hit slop.
@@ -1514,7 +1514,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   statusTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: colors.amber },
-  statusBody: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
+  statusBody: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary, ...readingText },
 
   disclaimer: {
     fontFamily: fonts.barlowRegular,
@@ -1522,6 +1522,5 @@ const styles = StyleSheet.create({
     fontSize: 12.5,
     lineHeight: 18,
     color: colors.textMuted,
-    marginTop: 6,
-  },
+    marginTop: 6, ...readingText },
 });

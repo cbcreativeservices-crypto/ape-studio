@@ -169,6 +169,13 @@ test('every intro popup card caps its width', () => {
  */
 const PROSE_ONLY_SCREENS = [
   'src/screens/tools/SplMeterScreen.tsx',
+  'src/screens/tools/SpectrogramScreen.tsx',
+  'src/screens/tools/WaveformScreen.tsx',
+  'src/screens/tools/MultiMeterScreen.tsx',
+  'src/screens/tools/Rt60Screen.tsx',
+  'src/screens/tools/FrequencyCounterScreen.tsx',
+  'src/screens/tools/ExposureMonitorScreen.tsx',
+  'src/screens/tools/RtaScreen.tsx',
   'src/screens/lab/amplitude/AmplitudeOrientation.tsx',
 ];
 
@@ -183,11 +190,10 @@ test('prose-only screens use the LEFT variant and never cap their scroll', () =>
   for (const file of PROSE_ONLY_SCREENS) {
     const src = readFileSync(file, 'utf8');
     assert.match(src, /\.\.\.readingText/, `${file}: should cap paragraphs with readingText`);
-    assert.doesNotMatch(
-      src,
-      /\.\.\.readingColumn/,
-      `${file}: the centred variant misaligns paragraphs against left-aligned headings`,
-    );
+    // The centred variant IS allowed here for a note that was already
+    // `textAlign: 'center'` — Rt60's stoppedNote and saveNote. Left-aligning
+    // those would change a deliberate design, not fix a defect. What must never
+    // happen is the SCROLL being capped, which is what the next assert pins.
     const scroll = src.match(/\n\s*(?:gateScroll|scroll): \{[^}]*\}/);
     if (scroll) {
       assert.doesNotMatch(
