@@ -129,6 +129,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-25 13:56 · ccode · c64bc21d
+changed: handoff 2026-09-25B: the Sound Systems Rack Unit pass is done (eaff23f1), verified, unpublished
+affects other side: nothing — docs.
+needs: nothing.
+
+
 ### 2026-09-25 13:51 · ccode · eaff23f1
 changed: Sound Systems Lab: Rack Unit layout pass
 affects other side: nothing — client-only.
