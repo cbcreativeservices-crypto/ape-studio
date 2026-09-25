@@ -120,6 +120,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-25 12:52 · ccode · 430db688
+changed: iPad: Profile on a 760 card column; Glossary route drops its fade transition
+affects other side: nothing — client-only (Profile tablet width; Glossary route transition).
+needs: nothing.
+
+
 ### 2026-09-25 11:57 · ccode · b9b4ff71
 changed: Cable Install: photo reveal cards for the Stage 5 sort and the Final Inspection + LabPhoto aspect fix. Client-only. Empty photo slots (supportArt.ts / defectArt.ts) wired for Computer C's 46-image package docs/art/APE_LAB_PHOTO_PROMPTS_2026_09_25.md (also in the owner's Downloads). Fixed kit/LabPhoto: aspectRatio on an RN Image is ignored on web (asset height applied first) — photos rendered 765 px tall on phone cards.
 affects other side: nothing — no DB, no backend. (Your round-2 topic-split entry above is SEEN; the owner has the split PARKED on this side until they un-park it, so no ACK action yet.)
