@@ -76,6 +76,24 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-24 21:36 · ccode · 74b693ba
+changed: The remaining instruments: cap the prose, keep the analysers full width
+affects other side: nothing — client layout only, no schema/content/copy change.
+needs: nothing.
+
+
+### 2026-09-24 21:23 · ccode · 7e318619
+changed: Amplitude gate: cap the paragraphs, and add a LEFT variant so they line up
+affects other side: nothing — client layout only, no schema/content/copy change.
+needs: nothing.
+
+
+### 2026-09-24 21:13 · ccode · 0e3cc25e
+changed: SPL meter: cap the PROSE only, leave the instrument the whole tablet
+affects other side: nothing — client layout only, no schema/content/copy change.
+needs: nothing.
+
+
 ### 2026-09-24 18:27 · ccode · 395da421
 changed: iPad: cap the remaining prose page screens (exam, quiz, results, study, more)
 affects other side: nothing — client layout only, no schema, no content, no copy changes.
