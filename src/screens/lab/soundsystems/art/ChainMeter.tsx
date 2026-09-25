@@ -6,9 +6,13 @@
  * haze rising from below, and the first stage that clips flashes its CLIP
  * indicator. Amplitude is drawn on the app-wide velocity ramp.
  *
- * Controls are tap steppers under each adjustable stage — the visible
- * non-drag path, WCAG 2.5.7 — sized so one tap visibly moves the bar
- * (preamp ±6 dB, everything else ±3 dB).
+ * Two faces of the same drawing (Rack Unit pass, 2026-09-25):
+ *   ChainMeterStage — the display alone (equipment, meters, stage labels and
+ *                     readouts), sized by the glass; the stage being adjusted
+ *                     wears an amber underline. Its controls live in the dock.
+ *   ChainMeter      — the document form: the display over tap steppers under
+ *                     each adjustable stage (WCAG 2.5.7), sized so one tap
+ *                     visibly moves the bar (preamp ±6 dB, everything else ±3).
  */
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, { useAnimatedProps, useDerivedValue, type SharedValue } from 'react-native-reanimated';
@@ -29,6 +33,7 @@ const TOP = 20;
 const BOTTOM = H - 12;
 /** How far below the peak the programme dips between hits, dB. */
 const SWING_DB = 16;
+const CELL_W = 44;
 
 const yOf = (dbu: number) => BOTTOM - ((Math.max(MIN_DBU, Math.min(MAX_DBU, dbu)) - MIN_DBU) / (MAX_DBU - MIN_DBU)) * (BOTTOM - TOP);
 
@@ -43,7 +48,7 @@ const STAGE_GLYPH: Record<GainStageId, GlyphKind> = {
   speaker: 'passiveSpeaker',
 };
 
-const SHORT_LABEL: Record<GainStageId, string> = {
+export const SHORT_LABEL: Record<GainStageId, string> = {
   source: 'SOURCE',
   preamp: 'PREAMP',
   fader: 'FADER',
@@ -54,57 +59,66 @@ const SHORT_LABEL: Record<GainStageId, string> = {
   speaker: 'SPEAKER',
 };
 
-const STEP: Record<GainStageId, number> = { source: 0, preamp: 6, fader: 3, main: 3, procIn: 3, procOut: 3, amp: 3, speaker: 0 };
+export const STEP: Record<GainStageId, number> = { source: 0, preamp: 6, fader: 3, main: 3, procIn: 3, procOut: 3, amp: 3, speaker: 0 };
 
-export function ChainMeter({ chain, settings, onChange, running = true }: { chain: GainNode[]; settings: GainSettings; onChange: (id: GainStageId, db: number) => void; running?: boolean }) {
+/* ── the drawing ─────────────────────────────────────────────────────────── */
+
+function MeterSvg({ chain, programme, peak, highlight, w }: { chain: GainNode[]; programme: SharedValue<number>; peak: SharedValue<number>; highlight?: GainStageId | null; w?: number }) {
   const n = chain.length;
-  const cellW = 44;
-  const W = n * cellW + 8;
-  const programme = useProgrammeLevel(running);
-  const peak = usePeakHold(programme);
+  const W = n * CELL_W + 8;
   const firstClip = chain.find((c) => c.clipped && !c.inheritedClip);
   return (
-    <View style={styles.wrap}>
-      {/* the equipment above its meter */}
-      <View style={styles.row}>
-        {chain.map((node) => (
-          <View key={node.id} style={styles.cell}>
-            <GearGlyph kind={STAGE_GLYPH[node.id]} size={30} />
-          </View>
+    <View accessible accessibilityRole="image" accessibilityLabel={`Gain chain: ${chain.map((c) => `${c.label} ${Math.round(c.levelDbu)} dBu${c.clipped ? ', clipping' : ''}`).join('; ')}`}>
+      <Svg width={w ?? '100%'} viewBox={`0 0 ${W} ${H}`} style={{ aspectRatio: W / H }}>
+        <Defs>
+          {/* ONE ramp for every bar, in scale space: red at the top of the dBu
+              axis, blue 60 dB below it and beneath — a bar's colour is its
+              absolute level, never its own height (loudness colour standard). */}
+          <LinearGradient id="cm-ramp" gradientUnits="userSpaceOnUse" x1={0} y1={yOf(MAX_DBU)} x2={0} y2={yOf(MAX_DBU - 60)}>
+            {LOUDNESS_STOPS.map((s) => (
+              <Stop key={s.pos} offset={s.pos} stopColor={s.color} />
+            ))}
+          </LinearGradient>
+        </Defs>
+        <Rect x={0} y={0} width={W} height={H} rx={10} fill="#0b0c10" stroke={colors.hairline} strokeWidth={0.8} />
+        {/* nominal +4 dBu across the chain */}
+        <Line x1={4} y1={yOf(4)} x2={W - 4} y2={yOf(4)} stroke={colors.textMuted} strokeWidth={0.6} strokeDasharray="2 3" />
+        <SvgText x={6} y={H - 3} fontSize={6} fill="#6a6f7a" textAnchor="start" fontFamily={fonts.oswaldMedium} letterSpacing={1}>GREY HAZE = NOISE FLOOR</SvgText>
+        {chain.map((node, i) => (
+          <StageMeter key={node.id} node={node} i={i} programme={programme} peak={peak} flash={firstClip?.id === node.id} lit={highlight === node.id} />
         ))}
-      </View>
-      <View accessible accessibilityRole="image" accessibilityLabel={`Gain chain: ${chain.map((c) => `${c.label} ${Math.round(c.levelDbu)} dBu${c.clipped ? ', clipping' : ''}`).join('; ')}`}>
-        <Svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ aspectRatio: W / H }}>
-          <Defs>
-            {/* ONE ramp for every bar, in scale space: red at the top of the dBu
-                axis, blue 60 dB below it and beneath — a bar's colour is its
-                absolute level, never its own height (loudness colour standard). */}
-            <LinearGradient id="cm-ramp" gradientUnits="userSpaceOnUse" x1={0} y1={yOf(MAX_DBU)} x2={0} y2={yOf(MAX_DBU - 60)}>
-              {LOUDNESS_STOPS.map((s) => (
-                <Stop key={s.pos} offset={s.pos} stopColor={s.color} />
-              ))}
-            </LinearGradient>
-          </Defs>
-          <Rect x={0} y={0} width={W} height={H} rx={10} fill="#0b0c10" stroke={colors.hairline} strokeWidth={0.8} />
-          {/* nominal +4 dBu across the chain */}
-          <Line x1={4} y1={yOf(4)} x2={W - 4} y2={yOf(4)} stroke={colors.textMuted} strokeWidth={0.6} strokeDasharray="2 3" />
-          <SvgText x={6} y={H - 3} fontSize={6} fill="#6a6f7a" textAnchor="start" fontFamily={fonts.oswaldMedium} letterSpacing={1}>GREY HAZE = NOISE FLOOR</SvgText>
-          {chain.map((node, i) => (
-            <StageMeter key={node.id} node={node} i={i} cellW={cellW} programme={programme} peak={peak} flash={firstClip?.id === node.id} />
-          ))}
-        </Svg>
-      </View>
-      {/* labels, readouts and the steppers */}
-      <View style={styles.row}>
-        {chain.map((node) => {
-          const spec = GAIN_STAGES.find((s) => s.id === node.id)!;
-          const step = STEP[node.id];
-          const v = settings[node.id] ?? spec.unity;
-          return (
-            <View key={node.id} style={styles.cell}>
-              <Text style={styles.label} numberOfLines={1}>{SHORT_LABEL[node.id]}</Text>
-              <Text style={[styles.dbu, { color: node.clipped ? colors.red : levelColorForDb(node.levelDbu, -40, 20) }]}>{Math.round(node.levelDbu)}</Text>
-              {step > 0 ? (
+      </Svg>
+    </View>
+  );
+}
+
+function GlyphRow({ chain, size }: { chain: GainNode[]; size: number }) {
+  return (
+    <View style={styles.row}>
+      {chain.map((node) => (
+        <View key={node.id} style={styles.cell}>
+          <GearGlyph kind={STAGE_GLYPH[node.id]} size={size} />
+        </View>
+      ))}
+    </View>
+  );
+}
+
+/** Stage labels + dBu readouts, optionally with the tap steppers. */
+function LabelRow({ chain, settings, onChange, highlight }: { chain: GainNode[]; settings?: GainSettings; onChange?: (id: GainStageId, db: number) => void; highlight?: GainStageId | null }) {
+  return (
+    <View style={styles.row}>
+      {chain.map((node) => {
+        const spec = GAIN_STAGES.find((s) => s.id === node.id)!;
+        const step = STEP[node.id];
+        const v = settings?.[node.id] ?? spec.unity;
+        const lit = highlight === node.id;
+        return (
+          <View key={node.id} style={styles.cell}>
+            <Text style={[styles.label, lit && { color: colors.amber }]} numberOfLines={1}>{SHORT_LABEL[node.id]}</Text>
+            <Text style={[styles.dbu, { color: node.clipped ? colors.red : levelColorForDb(node.levelDbu, -40, 20) }]}>{Math.round(node.levelDbu)}</Text>
+            {onChange && settings ? (
+              step > 0 ? (
                 <>
                   <Pressable style={styles.nudge} onPress={() => onChange(node.id, Math.min(spec.max ?? 0, v + step))} accessibilityRole="button" accessibilityLabel={`${spec.label} up ${step} dB, now ${v} dB`}>
                     <Text style={styles.nudgeGlyph}>▲</Text>
@@ -119,24 +133,72 @@ export function ChainMeter({ chain, settings, onChange, running = true }: { chai
                 </>
               ) : (
                 <Text style={styles.fixed}>—</Text>
-              )}
-            </View>
-          );
-        })}
-      </View>
-      <View style={styles.key} accessibilityRole="list">
-        <Text style={[styles.keyItem, { color: colors.red }]}>● CLIP LED · flashes on the first stage that clips (↑ = inherited from upstream)</Text>
-        <Text style={styles.keyItem}>⌐ bracket · headroom in dB, the model’s peak to the clip line</Text>
-        <Text style={styles.keyItem}>▮ white tick · peak hold on the programme</Text>
-        <Text style={styles.keyItem}>- - - dashed line · NOMINAL +4 dBu ≡ −18 dBFS on the console’s meters</Text>
-        <Text style={[styles.keyItem, { color: colors.amberLabel }]}>SIMULATED PROGRAMME</Text>
+              )
+            ) : step > 0 ? (
+              <Text style={[styles.val, v !== spec.unity && { color: colors.amber }]} numberOfLines={1}>
+                {v > 0 ? '+' : ''}
+                {v}
+              </Text>
+            ) : null}
+          </View>
+        );
+      })}
+    </View>
+  );
+}
+
+/** The legend under the meters — colours and marks paired with words. */
+export function ChainMeterKey() {
+  return (
+    <View style={styles.key} accessibilityRole="list">
+      <Text style={[styles.keyItem, { color: colors.red }]}>● CLIP LED · flashes on the first stage that clips (↑ = inherited from upstream)</Text>
+      <Text style={styles.keyItem}>⌐ bracket · headroom in dB, the model’s peak to the clip line</Text>
+      <Text style={styles.keyItem}>▮ white tick · peak hold on the programme</Text>
+      <Text style={styles.keyItem}>- - - dashed line · NOMINAL +4 dBu ≡ −18 dBFS on the console’s meters</Text>
+      <Text style={[styles.keyItem, { color: colors.amberLabel }]}>SIMULATED PROGRAMME</Text>
+    </View>
+  );
+}
+
+/** The display alone, sized by the glass: equipment over its meter, the
+ *  labels and control values under it, the adjusted stage underlined. */
+export function ChainMeterStage({ chain, settings, w, h, running = true, highlight }: { chain: GainNode[]; settings: GainSettings; w: number; h: number; running?: boolean; highlight?: GainStageId | null }) {
+  const programme = useProgrammeLevel(running);
+  const peak = usePeakHold(programme);
+  const n = chain.length;
+  const W = n * CELL_W + 8;
+  const glyph = Math.round(Math.min(34, Math.max(22, h * 0.15)));
+  const labelH = 34;
+  const svgH = Math.max(60, h - glyph - labelH - 14);
+  const fitW = Math.max(120, Math.min(w - 12, svgH * (W / H)));
+  return (
+    <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ width: fitW, gap: 3 }}>
+        <GlyphRow chain={chain} size={glyph} />
+        <MeterSvg chain={chain} programme={programme} peak={peak} highlight={highlight} />
+        <LabelRow chain={chain} settings={settings} highlight={highlight} />
       </View>
     </View>
   );
 }
 
-function StageMeter({ node, i, cellW, programme, peak, flash }: { node: GainNode; i: number; cellW: number; programme: SharedValue<number>; peak: SharedValue<number>; flash: boolean }) {
+/** The document form: display, tap steppers and the legend. */
+export function ChainMeter({ chain, settings, onChange, running = true }: { chain: GainNode[]; settings: GainSettings; onChange: (id: GainStageId, db: number) => void; running?: boolean }) {
+  const programme = useProgrammeLevel(running);
+  const peak = usePeakHold(programme);
+  return (
+    <View style={styles.wrap}>
+      <GlyphRow chain={chain} size={30} />
+      <MeterSvg chain={chain} programme={programme} peak={peak} />
+      <LabelRow chain={chain} settings={settings} onChange={onChange} />
+      <ChainMeterKey />
+    </View>
+  );
+}
+
+function StageMeter({ node, i, programme, peak, flash, lit }: { node: GainNode; i: number; programme: SharedValue<number>; peak: SharedValue<number>; flash: boolean; lit: boolean }) {
   const spec = GAIN_STAGES[i];
+  const cellW = CELL_W;
   const x = 4 + i * cellW + 8;
   const w = cellW - 16;
   const yPeakStatic = yOf(node.levelDbu);
@@ -158,7 +220,7 @@ function StageMeter({ node, i, cellW, programme, peak, flash }: { node: GainNode
   const clipProps = useAnimatedProps(() => ({ opacity: flash ? (programme.value > 0.82 ? 1 : 0.25) : node.clipped ? 0.45 : 0 }));
   return (
     <>
-      <Rect x={x} y={TOP} width={w} height={BOTTOM - TOP} rx={3} fill="#050609" stroke="#1f2229" strokeWidth={0.6} />
+      <Rect x={x} y={TOP} width={w} height={BOTTOM - TOP} rx={3} fill="#050609" stroke={lit ? colors.amber : '#1f2229'} strokeWidth={lit ? 1 : 0.6} />
       {/* accumulated noise: the haze from the floor */}
       <Rect x={x + 1} y={yNoise} width={w - 2} height={Math.max(0, BOTTOM - yNoise)} fill="#5a5f6a" opacity={0.45} />
       {/* the signal, painted by the shared ramp (absolute level → colour) */}
@@ -178,6 +240,8 @@ function StageMeter({ node, i, cellW, programme, peak, flash }: { node: GainNode
           <SvgText x={x + 4} y={(yClip + yPeakStatic) / 2 + 2} fontSize={5.5} fill={colors.textMuted} fontFamily={fonts.mono}>{`${Math.round(node.headroomDb)}`}</SvgText>
         </>
       ) : null}
+      {/* the stage under the learner's thumb */}
+      {lit ? <Rect x={x} y={BOTTOM + 3} width={w} height={2.5} rx={1} fill={colors.amber} /> : null}
     </>
   );
 }

@@ -288,9 +288,9 @@ function Cell({ col, ch, cs, set, readonly }: { col: ConsoleColumn; ch: Channel;
 
 /* ── bus readouts: a meter and who hears what ────────────────────────────── */
 
-function BusMeter({ db, programme, peak }: { db: number; programme: SharedValue<number>; peak: SharedValue<number> }) {
+export function BusMeter({ db, programme, peak, height = 64 }: { db: number; programme: SharedValue<number>; peak: SharedValue<number>; height?: number }) {
   const W = 14;
-  const H = 64;
+  const H = height;
   const frac = db <= -60 ? 0 : (Math.max(-60, Math.min(6, db)) + 60) / 66;
   const top = 4 + (1 - frac) * (H - 8);
   const bar = useAnimatedProps(() => {
@@ -346,6 +346,66 @@ export function BusHears({ title, list, note, running = true }: { title: string;
         </View>
       </View>
       {note ? <Text style={styles.busNote}>{note}</Text> : null}
+    </View>
+  );
+}
+
+/**
+ * BusBank — the console's METER BRIDGE for the Rack Unit's glass (2026-09-25):
+ * one column per bus, a scribble-strip title over a tall bus meter, and who
+ * that bus hears beside it with a level bar per contributor — the same
+ * arithmetic BusHears prints, arranged to be read at a glance while the
+ * console itself is worked from the dock. Sized by the glass.
+ */
+export function BusBank({ buses, w, h, running = true }: { buses: readonly { id: string; title: string; list: Contribution[] }[]; w: number; h: number; running?: boolean }) {
+  const meterH = Math.max(56, Math.min(150, h - 40));
+  const cols = Math.max(1, buses.length);
+  const colW = Math.floor((w - 12 - (cols - 1) * 6) / cols);
+  return (
+    <View style={[styles.bank, { width: w, height: h }]}>
+      {buses.map((b) => (
+        <BusColumn key={b.id} title={b.title} list={b.list} width={colW} meterH={meterH} running={running} />
+      ))}
+    </View>
+  );
+}
+
+function BusColumn({ title, list, width, meterH, running }: { title: string; list: Contribution[]; width: number; meterH: number; running: boolean }) {
+  const heard = hears(list).sort((a, b) => b.gain - a.gain);
+  const sumDb = lin2db(list.reduce((s, c) => s + c.gain, 0));
+  const programme = useProgrammeLevel(running && heard.length > 0);
+  const peak = usePeakHold(programme);
+  const rows = Math.max(1, Math.floor((meterH - 4) / 15));
+  return (
+    <View style={[styles.bankCol, { width }]} accessible accessibilityLabel={`${title}: ${heard.length ? heard.map((h) => `${h.name} at ${Math.round(lin2db(h.gain))} dB`).join(', ') : 'silent'}`}>
+      <View style={styles.bankTape}>
+        <Text style={styles.bankTitle} numberOfLines={1}>{title}</Text>
+      </View>
+      <View style={styles.bankBody}>
+        <BusMeter db={sumDb} programme={programme} peak={peak} height={meterH} />
+        <View style={{ flex: 1, gap: 3 }}>
+          {heard.length === 0 ? (
+            <Text style={styles.bankEmpty}>silent</Text>
+          ) : (
+            heard.slice(0, rows).map((h) => {
+              const db = lin2db(h.gain);
+              return (
+                <View key={h.channelId} style={{ gap: 1 }}>
+                  <View style={styles.bankRow}>
+                    <Text style={styles.bankName} numberOfLines={1}>{h.name}</Text>
+                    <Text style={styles.bankDb}>{db > 0 ? '+' : ''}{Math.round(db)}</Text>
+                  </View>
+                  <View style={styles.bankBar}>
+                    <View style={[styles.busFill, { width: `${Math.max(3, ((db + 60) / 66) * 100)}%`, backgroundColor: levelColorForDb(db, -60, 6) }]} />
+                  </View>
+                </View>
+              );
+            })
+          )}
+          {heard.length > rows ? <Text style={styles.bankEmpty}>+{heard.length - rows} more</Text> : null}
+        </View>
+      </View>
+      <Text style={styles.bankSum}>{sumDb <= -60 ? 'OFF' : `${sumDb > 0 ? '+' : ''}${Math.round(sumDb)} dB`}</Text>
     </View>
   );
 }
@@ -523,6 +583,17 @@ const styles = StyleSheet.create({
   busFill: { height: '100%', borderRadius: 4 },
   busDb: { width: 30, textAlign: 'right', color: colors.textSub, fontFamily: fonts.mono, fontSize: 11 },
   busNote: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16, marginTop: 2 },
+  bank: { flexDirection: 'row', gap: 6, paddingHorizontal: 6, alignItems: 'center', justifyContent: 'center' },
+  bankCol: { gap: 4, borderRadius: 8, borderWidth: 1, borderColor: '#2b2e36', backgroundColor: '#141418', padding: 5 },
+  bankTape: { borderRadius: 3, backgroundColor: '#e8e2c8', paddingHorizontal: 4, paddingVertical: 2 },
+  bankTitle: { color: '#1a1a1f', fontFamily: fonts.panelSemiBold, fontSize: 8.5, letterSpacing: 0.8 },
+  bankBody: { flexDirection: 'row', gap: 5, alignItems: 'flex-start' },
+  bankRow: { flexDirection: 'row', alignItems: 'baseline', gap: 3 },
+  bankName: { flex: 1, color: colors.textSecondary, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 0.3 },
+  bankDb: { color: colors.textSub, fontFamily: fonts.mono, fontSize: 9 },
+  bankBar: { height: 4, borderRadius: 2, backgroundColor: '#050609', overflow: 'hidden' },
+  bankEmpty: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 10.5 },
+  bankSum: { color: colors.amberLabel, fontFamily: fonts.mono, fontSize: 9.5, textAlign: 'center' },
   stripRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   strip: { minWidth: 150, flexGrow: 1, borderRadius: 8, borderWidth: 1, borderColor: '#2b2e36', backgroundColor: '#141418', padding: 6, gap: 5 },
   stripTitle: { color: '#8b8b95', fontFamily: fonts.panelSemiBold, fontSize: 9, letterSpacing: 1.4 },

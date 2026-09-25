@@ -1,12 +1,13 @@
 /**
- * Sound Systems Lab — the five mode screens. Each is a PagedLab with its own
- * labId (own page persistence), so a learner's place in BUILD survives a
- * detour into TROUBLESHOOT. The understanding check rides on LEARN.
+ * Sound Systems Lab — the five mode screens. Each is an SsPagedLab (the paged
+ * shell with the Rack Unit branch, 2026-09-25) with its own labId (own page
+ * persistence), so a learner's place in BUILD survives a detour into
+ * TROUBLESHOOT. The understanding check rides on LEARN.
  *
  * Every mode dev-checks its page count against units.ts, which the hub reads
  * without importing these page arrays (they pull in SVG and React).
  */
-import { PagedLab } from '../kit/PagedLab';
+import { SsPagedLab as PagedLab } from './SsPagedLab';
 import { SS_BUILD_ID, SS_LEARN_ID, SS_OPERATE_ID, SS_PAGE_COUNTS, SS_ROUTE_ID, SS_TROUBLESHOOT_ID } from './units';
 import { SS_LEARN_PAGES_A } from './pagesLearnA';
 import { SS_LEARN_PAGES_B } from './pagesLearnB';

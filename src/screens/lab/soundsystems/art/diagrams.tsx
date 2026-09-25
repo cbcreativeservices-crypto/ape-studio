@@ -226,7 +226,7 @@ export function PatchPanel({ sockets, active, onTap }: { sockets: readonly Patch
 
 export type LineReading = { id: string; short: string; led: boolean; meter: boolean; revealed: boolean };
 
-export function StageboxStrip({ inputs, title = 'STAGEBOX INPUT LEDs', lower = 'CONSOLE CHANNEL METERS' }: { inputs: readonly LineReading[]; title?: string; lower?: string }) {
+export function StageboxStrip({ inputs, title = 'STAGEBOX INPUT LEDs', lower = 'CONSOLE CHANNEL METERS', selectedId }: { inputs: readonly LineReading[]; title?: string; lower?: string; /** The line under the probe (the dock's LINE fader) — drawn with a cyan frame. */ selectedId?: string | null }) {
   const H = 118;
   const n = inputs.length;
   const gap = (W - 40) / n;
@@ -238,8 +238,10 @@ export function StageboxStrip({ inputs, title = 'STAGEBOX INPUT LEDs', lower = '
       {inputs.map((r, i) => {
         const x = 20 + gap * (i + 0.5);
         const led = r.revealed ? r.led : false;
+        const sel = selectedId === r.id;
         return (
           <G key={r.id}>
+            {sel ? <Rect x={x - gap / 2 + 1} y={20} width={gap - 2} height={H - 24} rx={3} fill={colors.cyanBright} opacity={0.08} stroke={colors.cyanBright} strokeWidth={0.8} /> : null}
             <Circle cx={x} cy={38} r={6} fill="#0a0b0d" stroke={INK.metalHi} strokeWidth={0.8} />
             <Circle cx={x} cy={27} r={2.4} fill={led ? INK.green : '#2a2d33'} stroke="#000" strokeWidth={0.4} />
             {led ? <Circle cx={x} cy={27} r={5} fill={INK.green} opacity={0.25} /> : null}
@@ -266,13 +268,13 @@ export function StageboxStrip({ inputs, title = 'STAGEBOX INPUT LEDs', lower = '
 
 /* ── 5 · FOH / monitor split ─────────────────────────────────────────────── */
 
-export function SplitDiagram({ mode, gainMove }: { mode: 'analog' | 'digital'; gainMove: boolean }) {
+export function SplitDiagram({ mode, gainMove, gainDb = 6 }: { mode: 'analog' | 'digital'; gainMove: boolean; /** The size of the monitor engineer's gain move, dB (the dock fader). */ gainDb?: number }) {
   const H = 160;
   const foh = { x: 292, y: 44 };
   const mon = { x: 292, y: 120 };
   const mid = { x: 168, y: 82 };
   return (
-    <Frame h={H} a11y={mode === 'analog' ? `Analog split: three microphones into a transformer splitter, two outputs each to the front-of-house console and the monitor console, each with its own preamp. ${gainMove ? 'The monitor engineer raises a preamp 6 dB: front of house is unaffected — it has its own preamp.' : ''}` : `Digital gain sharing: three microphones into one stagebox with one preamp each, one network to both consoles. The monitor console owns the gain. ${gainMove ? 'The monitor engineer raises the preamp 6 dB: gain compensation applies a −6 dB trim at front of house so its mix does not move.' : ''}`}>
+    <Frame h={H} a11y={mode === 'analog' ? `Analog split: three microphones into a transformer splitter, two outputs each to the front-of-house console and the monitor console, each with its own preamp. ${gainMove ? `The monitor engineer raises a preamp ${gainDb} dB: front of house is unaffected — it has its own preamp.` : ''}` : `Digital gain sharing: three microphones into one stagebox with one preamp each, one network to both consoles. The monitor console owns the gain. ${gainMove ? `The monitor engineer raises the preamp ${gainDb} dB: gain compensation applies a −${gainDb} dB trim at front of house so its mix does not move.` : ''}`}>
       {[30, 82, 134].map((y, i) => (
         <G key={y}>
           <GearInSvg kind={i === 1 ? 'di' : 'vocalMic'} id={`sp-src-${i}`} x={34} y={y} size={30} />
@@ -291,7 +293,7 @@ export function SplitDiagram({ mode, gainMove }: { mode: 'analog' | 'digital'; g
           <Line x1={mid.x + 28} y1={mid.y - 8} x2={foh.x - 22} y2={foh.y} stroke={CABLE_COLORS.mic} strokeWidth={1.6} />
           <Line x1={mid.x + 28} y1={mid.y + 8} x2={mon.x - 22} y2={mon.y} stroke={CABLE_COLORS.mic} strokeWidth={1.6} />
           <SvgText x={foh.x} y={foh.y - 24} fontSize={5.5} fill={colors.amberLabel} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1}>OWN PREAMP</SvgText>
-          <SvgText x={mon.x} y={mon.y - 24} fontSize={5.5} fill={colors.amberLabel} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1}>OWN PREAMP{gainMove ? ' · +6 dB' : ''}</SvgText>
+          <SvgText x={mon.x} y={mon.y - 24} fontSize={5.5} fill={colors.amberLabel} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1}>OWN PREAMP{gainMove ? ` · +${gainDb} dB` : ''}</SvgText>
           {gainMove ? <SvgText x={foh.x} y={foh.y + 30} fontSize={6} fill={colors.greenBright} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1}>UNCHANGED</SvgText> : null}
         </>
       ) : (
@@ -300,8 +302,8 @@ export function SplitDiagram({ mode, gainMove }: { mode: 'analog' | 'digital'; g
           <SvgText x={mid.x} y={mid.y + 32} fontSize={5.5} fill={colors.textSecondary} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1}>ONE PREAMP PER MIC</SvgText>
           <Line x1={mid.x + 22} y1={mid.y - 6} x2={foh.x - 22} y2={foh.y} stroke={CABLE_COLORS.digital} strokeWidth={1.6} strokeDasharray="3 3" />
           <Line x1={mid.x + 22} y1={mid.y + 6} x2={mon.x - 22} y2={mon.y} stroke={CABLE_COLORS.digital} strokeWidth={1.6} strokeDasharray="3 3" />
-          <SvgText x={mon.x} y={mon.y - 24} fontSize={5.5} fill={colors.amberLabel} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1}>OWNS THE GAIN{gainMove ? ' · +6 dB' : ''}</SvgText>
-          <SvgText x={foh.x} y={foh.y - 24} fontSize={5.5} fill={gainMove ? colors.cyanBright : colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1}>{gainMove ? 'GAIN COMP · TRIM −6 dB' : 'GAIN COMPENSATION ON'}</SvgText>
+          <SvgText x={mon.x} y={mon.y - 24} fontSize={5.5} fill={colors.amberLabel} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1}>OWNS THE GAIN{gainMove ? ` · +${gainDb} dB` : ''}</SvgText>
+          <SvgText x={foh.x} y={foh.y - 24} fontSize={5.5} fill={gainMove ? colors.cyanBright : colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1}>{gainMove ? `GAIN COMP · TRIM −${gainDb} dB` : 'GAIN COMPENSATION ON'}</SvgText>
           {gainMove ? <SvgText x={foh.x} y={foh.y + 30} fontSize={6} fill={colors.greenBright} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1}>MIX UNCHANGED</SvgText> : null}
         </>
       )}

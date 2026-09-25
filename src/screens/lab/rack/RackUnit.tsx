@@ -73,6 +73,7 @@ export function RackUnit({
   params,
   initialParam,
   onHelp,
+  bottomInset,
   children,
 }: {
   stage: RackStage;
@@ -83,6 +84,12 @@ export function RackUnit({
   initialParam: string;
   /** Guided-lesson router: helpKey → the lab's GuidedLessonSheet. */
   onHelp?: (helpKey?: string) => void;
+  /** Bottom inset under the faceplate and the tray. Defaults to the safe-area
+   *  inset; a host that mounts its OWN footer beneath the rack (the Sound
+   *  Systems paged host, 2026-09-25) already pads the safe area there and
+   *  passes 0 so the well is not shortened twice. Additive — every existing
+   *  host leaves it undefined. */
+  bottomInset?: number;
   /** The scroll well. A function child receives the well's scroll-lock API
    *  (LabShell parity for legacy in-well drag widgets). */
   children: ReactNode | ((api: RackUnitApi) => ReactNode);
@@ -96,6 +103,7 @@ export function RackUnit({
   const [glassW, setGlassW] = useState(0);
   const [stageBlockH, setStageBlockH] = useState(0); // tray overlay top edge
   const insets = useSafeAreaInsets();
+  const bottom = bottomInset ?? insets.bottom;
 
   // Contract check once, not per render (a wrong id would otherwise warn ~60/s
   // while riding the lane and bury the device logs).
@@ -200,7 +208,7 @@ export function RackUnit({
   }, [interacting, glassH, targetH]);
 
   return (
-    <View style={[styles.root, { paddingBottom: insets.bottom }]}>
+    <View style={[styles.root, { paddingBottom: bottom }]}>
       {/* ── STAGE — pinned; structurally cannot leave the screen ─────────── */}
       <View style={styles.stageWrap} onLayout={(e) => setStageBlockH(Math.round(e.nativeEvent.layout.height))}>
         {/* Not rendered at all when collapsed — a zero-height canvas would
@@ -387,7 +395,7 @@ export function RackUnit({
             setOpenTrayId(null);
           }}
           onHelp={onHelp}
-          bottomInset={insets.bottom}
+          bottomInset={bottom}
         />
       </View>
     </View>
