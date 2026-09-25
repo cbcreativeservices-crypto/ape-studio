@@ -543,3 +543,29 @@ process is running.
   update available". Anything less is "published", not "updated".
 - **Find out what a number measures before optimising it** (see the
   `launch_duration` entry above).
+
+
+## 2026-09-25 (evening) — five lessons from the photo, publish and iPad work
+
+- **⛔ `aspectRatio` on a React Native `Image` is IGNORED on web for a bundled asset.**
+  RN-web applies the asset's own pixel height *before* the style, and an explicit height
+  beats CSS `aspect-ratio`. The lab photographs rendered 765 px tall on a 317 px phone card
+  and nobody saw it because the desktop preview was wide enough to hide it. Fix: an
+  aspect-ratio FRAME `View` with the `Image` at `width/height: '100%'` (`kit/LabPhoto`).
+  Check every image surface at 375 px, not at desktop width.
+- **A prompt that names the object is not a brief.** The first group-1 image round came
+  back "close but missing key elements" because each prompt said *what* and never *why*:
+  the anchor to structure, the wide bearing surface, the fill limit. Every prompt now
+  carries the teaching point, MUST SHOW, MUST NOT SHOW and a check
+  (`docs/art/APE_LAB_PHOTO_PROMPTS_2026_09_25.md`). Also: say which CABLES to draw — the
+  generator defaults to thin coloured building wire.
+- **Empty slots are a deliverable.** Wiring the Stage 5 / Inspection reveal cards before the
+  photographs exist (Partial maps + a guard test on keys and file paths) means the image
+  drop is one `require` line per file and cannot silently mis-map.
+- **Read the server logs before guessing at a device bug.** The iPad "glossary black
+  screen" had no Sentry event; the edge logs showed the corpus loading fully, twice, and an
+  anonymous device key minted on open (designed guest behaviour). That turned a crash hunt
+  into a rendering/transition question and ruled out the network in ten minutes.
+- **One archive, not a scavenger hunt.** The Computer C handoff went out as a single zip
+  (brief + manifest + approved references + rejected drafts). The owner's words: "i dont
+  want to hunt and collect." Do that by default for any cross-computer deliverable.

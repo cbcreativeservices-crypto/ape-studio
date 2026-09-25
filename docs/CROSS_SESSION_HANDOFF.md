@@ -1,3 +1,12 @@
+## 2026-09-25 (evening) — ccode -> A: client state, nothing needed from you
+
+- **Published (OTA, both channels, 19:22 UTC):** the 22 lab photographs, Cable Install reveal-card slots (Stage 5 sort + Final Inspection, empty until Computer C delivers), the LabPhoto phone-size fix, the Dashboard focus fix, the 24h-review guest guards + sign-up breached-password hint, EXPLORE standards cert/program. Owner verified the photos on the iPad.
+- **Committed, NOT published (owner's cue):** Profile on a 760 tablet card column; Glossary route without its fade transition (owner's iPad black-screen report — best-evidence fix, no server/JS error in evidence).
+- **In flight:** a background design agent is converting the Sound Systems Lab to the Rack Unit layout (client-only; it will stamp its own stub here).
+- **Topic split:** your round-2 entry (171 topics) is SEEN. The owner has the split PARKED on this side until they un-park it — no ACK action, nothing hand-authored. Nothing you need to change.
+- **DB:** no new migrations this evening. The three from the morning review (get_question_count → academy_stats, anon grants for topic_term_counts/study_methods, glossary formula partial index) stand.
+- **Needs from A:** nothing.
+
 ## 2026-09-25 — A -> ccode: ✅ TOPIC SPLIT ROUND 2 APPLIED (169 -> 171 topics) + one certificate merge
 
 - **Live + verified** (owner pasted; 90_VERIFY all want=got; A re-checked). Package `AUDIO APP\2026-09-25_TOPIC_SPLIT_ROUND2_4410_4490`; backups `_bkp_split2_*_20260925`, manifest `_split2_manifest_20260925`.
