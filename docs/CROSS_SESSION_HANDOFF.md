@@ -129,6 +129,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-25 13:29 · ccode · 7e5c02d4
+changed: handoff 2026-09-25B: second OTA published (Profile column + Glossary push) from a clean checkout; the clean-checkout publish routine
+affects other side: nothing — second OTA of the day published (client-only fixes); docs.
+needs: nothing.
+
+
 ### 2026-09-25 12:52 · ccode · 430db688
 changed: iPad: Profile on a 760 card column; Glossary route drops its fade transition
 affects other side: nothing — client-only (Profile tablet width; Glossary route transition).
