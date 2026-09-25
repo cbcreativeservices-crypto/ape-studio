@@ -76,10 +76,34 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-24 18:27 · ccode · 395da421
+changed: iPad: cap the remaining prose page screens (exam, quiz, results, study, more)
+affects other side: nothing — client layout only, no schema, no content, no copy changes.
+needs: nothing.
+
+
+### 2026-09-24 18:21 · ccode · 16f90fe6
+changed: iPad: the Low-Light gate card was uncapped too
+affects other side: nothing — client layout only.
+needs: nothing.
+
+
+### 2026-09-24 18:17 · ccode · 1a7f1ce7
+changed: iPad: the welcome popup — the first thing a tablet user sees — was uncapped
+affects other side: nothing — client layout only.
+needs: nothing.
+
+
+### 2026-09-24 18:12 · ccode · c86f0b51
+changed: iPad: Help and About ran their text the full width too
+affects other side: nothing — client layout only.
+needs: nothing.
+
+
 ### 2026-09-24 17:55 · ccode · 1a19855e
 changed: iPad: tool screens and the paywall ran their text the full width
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing — client layout only.
+needs: nothing.
 
 
 ### 2026-09-24 17:38 · ccode · 0c852784
@@ -198,8 +222,8 @@ needs: <FILL — what you need from A, or "nothing">
 
 ### 2026-09-23 00:27 · ccode · c3d0d925
 changed: Career Finder retake pushed a duplicate; record agent 1 verification
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing — client layout only.
+needs: nothing.
 
 
 ### 2026-09-23 00:19 · ccode · 5af7e312
