@@ -51,6 +51,8 @@ import { CiSection, RuleFeedback, SpecCard, announceComplete } from '../bits';
 import { OptionChip, VerdictBanner } from '../../cable/lessons/bits';
 import { CI_SUPPORT_ITEMS, CI_SUPPORT_SPACING_SPEC } from '../data/scenarios';
 import { CI_CLASS_TINTS } from '../data/cableTypes';
+import { CI_SUPPORT_ART, CI_SUPPORT_ART_ASPECT } from '../data/supportArt';
+import { LabPhoto } from '../../kit/LabPhoto';
 import { clamp100 } from '../engine/score';
 import {
   ACircle,
@@ -641,6 +643,8 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
   /* — sort handlers — */
   const item = idx < N ? CI_SUPPORT_ITEMS[order[idx]] : null;
   const matched = item && pick != null ? pick === item.ok : null;
+  // The reveal: the real thing, shown only once the learner has answered.
+  const itemArt = item ? CI_SUPPORT_ART[item.id] : undefined;
 
   // The deck: the outgoing card fades before the next one is dealt.
   const cardFade = useSharedValue(1);
@@ -818,6 +822,18 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
             {pick != null ? (
               <Appear key={`v-${idx}`}>
                 <View style={{ gap: 8 }}>
+                  {/* REVEAL (owner 2026-09-25): the photograph of the real
+                      hardware lands with the verdict — the pictogram asked
+                      the question, the photo answers "what does it actually
+                      look like on site". Absent until Computer C delivers. */}
+                  {itemArt ? (
+                    <LabPhoto
+                      source={itemArt}
+                      aspect={CI_SUPPORT_ART_ASPECT}
+                      label={`${item.name}, as found on site`}
+                      caption={item.ok ? 'THE REAL THING — APPROVED CABLE HARDWARE' : 'THE REAL THING — NEVER A CABLE SUPPORT'}
+                    />
+                  ) : null}
                   <RuleFeedback
                     ruleId={item.ruleId}
                     verdict={matched ? 'good' : 'bad'}

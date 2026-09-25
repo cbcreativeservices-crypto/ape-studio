@@ -47,6 +47,8 @@ import {
   withTiming,
 } from '../motion';
 import { CI_CATEGORY_META, mistakeById, type CiMistakeCategory } from '../data/mistakes';
+import { CI_DEFECT_ART, CI_DEFECT_ART_ASPECT } from '../data/defectArt';
+import { LabPhoto } from '../../kit/LabPhoto';
 import { CI_INSPECTION_DRAW, CI_INSPECTION_POOL, CI_QUIZ_BANK, CI_QUIZ_DRAW, type CiInspectionDefect } from '../data/scenarios';
 import { inspectionDimScores, type CiDimScores } from '../engine/score';
 import { CI_FINAL_CHECK_UNIT, CI_INSPECT_PASS_UNIT, type CiModuleProps } from '../registry';
@@ -450,6 +452,8 @@ export function InspectScene({ width, completed, onComplete, onDims, openSources
   const activeDefect = active ? defects.find((d) => d.id === active) : null;
   const activeMistake = activeDefect ? mistakeById(activeDefect.mistakeId)! : null;
   const activeState = active ? states[active] : undefined;
+  // The finding as the inspector actually sees it (absent until delivered).
+  const activeArt = activeMistake ? CI_DEFECT_ART[activeMistake.id] : undefined;
 
   const openDefect = (id: string) => {
     setActive(id);
@@ -573,6 +577,18 @@ export function InspectScene({ width, completed, onComplete, onDims, openSources
                 FINDING {defects.indexOf(activeDefect) + 1} · {ZONE_NAMES[activeDefect.zone]}
               </Text>
               <Text style={styles.workLabel}>{activeDefect.label}</Text>
+              {/* REVEAL (owner 2026-09-25): the marker on the drawing is a
+                  number; opening it reveals the photograph of the defect as
+                  found. It stays up through CLASSIFY and CORRECT so the
+                  learner judges the real thing, not the label. */}
+              {activeArt ? (
+                <LabPhoto
+                  source={activeArt}
+                  aspect={CI_DEFECT_ART_ASPECT}
+                  label={`${activeMistake.name}: ${activeDefect.label}`}
+                  caption="AS FOUND ON THE WALK"
+                />
+              ) : null}
               {!activeState?.category ? (
                 <>
                   <Text style={styles.workStep}>1 · CLASSIFY — what kind of problem is this?</Text>
