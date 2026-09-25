@@ -12,8 +12,22 @@ agree with, and the **key elements** the learner has to be able to see. Open the
 plates first — each one is a real screen of the app with a real photograph in it.
 
 **What to make:** 34 images. 17 for the Stage 5 sort · 15 for the Final Inspection · 1 extension
-cord · (optional) 1 XLR connector. Nothing else. Four of the twelve defect images you already
-delivered are keepers (§5), so the real count is 30.
+cord · (optional) 1 XLR connector. Nothing else. Three of the twelve defect images you already
+delivered are keepers (§5), so the real count is 31.
+
+## 0 · What is in this zip — nothing to assemble
+
+| Folder | What | Use it for |
+|---|---|---|
+| `00_READ_ME_FIRST.md` | this brief | read once |
+| `01_MANIFEST.csv` | every file to deliver: exact name, lab id, home card, size, caption, status | the checklist |
+| `02_PROMPTS/` | **one ready-to-paste prompt per image** (`<file name>.txt`, 34 of them) and `ALL_PROMPTS.md` with all of them | paste one, generate, save under that name — no composing |
+| `03_EXAMPLES/` | four plates and four app screens showing exactly where a photo lands; `pictograms/` = the 17 sort drawings your group-1 photos must match; contact sheets of the approved set | look before generating |
+| `04_APPROVED_STYLE_REFERENCE/` | the 22 approved photographs, full size | the look to match |
+| `05_YOUR_DRAFTS_WITH_VERDICTS/` | your 2026-09-22 drafts and the 12 delivered defect images, downscaled, with `VERDICTS.csv` | what to change |
+
+The tables in §3, §4 and §6 explain each prompt; you do not need them to generate — the
+prompt files already contain everything.
 
 ---
 
@@ -101,7 +115,11 @@ the key elements are what the photograph must make visible for that sentence to 
 | group-1-16-sprinkler | `sprinkler` · Sprinkler pipe | Life-safety system — loading it is a serious violation. | red-painted branch pipe with a **sprinkler head**, on its hangers, bare | good → keep |
 | group-1-17-hanger | `hanger` · Unrelated hanger / loose hardware | Unrated, unknown anchor — not a listed support. | one piece of **improvised, unrated** hardware: a bent wire hook, a screw eye, a scrap of strut on a single wire — it must look wrong | a proper strut trapeze — the **opposite** of the lesson → redo |
 
-**Prompt shape for group 1** (fill the brackets from the row; keep it one paragraph):
+The drawing each photo must match is in `03_EXAMPLES/pictograms/` — seventeen screenshots of
+the sort card, one per item, named by the item.
+
+**Prompt shape for group 1** (already written out for every item in `02_PROMPTS/` — this is
+only so you can see how they are built):
 
 > Product photograph on a seamless white background of one [name], [fastened to / holding] […].
 > KEY ELEMENTS the viewer must see: 1) […] 2) […] 3) […]. CABLES: round black audio cables
@@ -139,7 +157,8 @@ above your photo; the feedback and correction are printed under it after the lea
 Delivered but with **no home** (no card shows them): d02 on-ceiling-tile, d03 foreign-support,
 d06 jacket-damage, d11 overfilled-pathway. They are kept on file; do not remake them.
 
-**Prompt shape for group 5** (one paragraph):
+**Prompt shape for group 5** (already written out for every finding in `02_PROMPTS/`,
+including optional regenerations of the three keepers):
 
 > Documentary photograph, brightly and evenly lit, tidy surroundings, of [the finding label, in
 > plain words], in [the zone's place: a black stage deck / a carpeted audience aisle / a painted
