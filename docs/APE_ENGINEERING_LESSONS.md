@@ -569,3 +569,31 @@ process is running.
 - **One archive, not a scavenger hunt.** The Computer C handoff went out as a single zip
   (brief + manifest + approved references + rejected drafts). The owner's words: "i dont
   want to hunt and collect." Do that by default for any cross-computer deliverable.
+
+## 2026-09-25 (late) — eight lessons from the photo brief, the meter and the publish
+
+- **The KEEP-list fix for the glossary meter never held once the gateway went live.** Guests
+  are metered on the SERVER against their anonymous uid the moment `serverMeters` is true;
+  the phone-local meter that was protected from the wipe is never consulted. Re-entering
+  Guest Mode mints a new uid = a fresh row. Read the LIVE path (`get_glossary_definition`)
+  before reasoning about a limit; the fallback meter is not what runs.
+- **Test a definer function as a real user without residue:** the Supabase MCP `execute_sql`
+  runs `begin; …; select * from t; rollback;` and returns the last SELECT. `set_config(
+  'request.jwt.claims', '{"sub":"<uid>","role":"authenticated"}', true)` makes `auth.uid()`
+  that user inside the transaction; collect results in a temp table.
+- **A brief for an image generator is a description of the CARD, not of the object.** The
+  09-25 package was rejected whole. What worked: screenshot the card, quote its caption and
+  the lesson text, name the slot and size, write every prompt out, ship one zip.
+- **`<Svg accessible>` is a React-DOM error** ("non-boolean attribute"); react-native-svg
+  elements take only `accessibilityLabel`. Found on Cable Install Stage 5.
+- **Playwright is one browser shared with every agent in the session.** A page goes to
+  about:blank between your calls when an agent navigates. One `browser_run_code_unsafe`
+  call per capture sequence; no `require` inside it.
+- **Bash heredocs die on an unbalanced apostrophe** ("Another system's conduit") with
+  "unexpected EOF". Write scripts with the Write tool and run the file.
+- **u.expo.dev wants `accept: multipart/mixed, application/expo+json, application/json`**;
+  a plain JSON accept returns 406 and looks like "nothing published".
+- **"Published" from the owner is a claim to verify, not a fact:** `eas update:list --all`
+  showed nothing new on any branch; the Pixel's "No update available" was true because
+  there was nothing to fetch. Check the branches before the phones.
+

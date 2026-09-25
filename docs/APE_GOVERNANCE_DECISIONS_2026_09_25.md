@@ -102,3 +102,35 @@ against both installed runtimes, prove the Pixel is running it (launch 1
 downloads, launch 2 "No update available"), confirm what the update server
 serves an iPhone, and give the iPad/iPhone relaunch steps. Only the owner's own
 words trigger a publish; nothing else does.
+
+## D30 · A Computer C image brief is built FROM THE APP, one photo per finding
+
+**Owner:** *"your image prompt for comp c is 100% inaccurate and incomplete. it design is
+nothing like the app needs. make a much more clear and with example handoff for comp c."*
+Then: *"deliver the entire comp c package as a zip to downloads. do not make me compile."*
+
+**Ruled:**
+- The brief starts from the card the photo lands on: a real screenshot, the caption the app
+  prints, the lesson text the photo sits under, the exact slot and size. A prompt list
+  without that is not a brief.
+- Final Inspection photographs are ONE PER FINDING, matching the finding label and zone (the
+  cable named, the place named, the fault named). Only the fifteen findings have a slot; the
+  rack issues and the ceiling walk are drawings only.
+- Stage 5 sort photographs show the SAME object the pictogram shows: in use for approved
+  hardware, bare for the never-items. Object shots stay on white (D 2026-09-21).
+- 1200 × 896 exactly; anything else is cropped by the frame.
+- The handoff is ONE zip in Downloads with every prompt written out; the reader assembles
+  nothing. `docs/art/APE_LAB_PHOTO_BRIEF_v2_2026_09_25.md` is the record; the 09-25 prompt
+  package is SUPERSEDED.
+
+## D31 · The glossary weekly meter counts per DEVICE as well as per identity
+
+**Owner:** *"i exceeded the weekly glossary limit and it locked - good. but then i logged in on
+a free guest account and it was completely unlocked fresh again"* → *"go - fix the glossary
+limit per device"*.
+
+**Ruled:** the fourteen-a-week free allowance belongs to the phone as much as to the sign-in.
+The server keeps a row per install id beside the row per identity; a lookup needs room in
+both. Guest → free account, free → guest and a re-minted guest key on the same phone share
+one fourteen. A second phone is its own fourteen (the accepted floor). Migration
+`2026092502_glossary_meter_per_device.sql`, applied live 2026-09-25.
