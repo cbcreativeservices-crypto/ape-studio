@@ -98,6 +98,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-25 09:11 · ccode · 7203b32f
+changed: Sound Systems Lab: phone-width text pass and meter colour standard
+affects other side: nothing — client-only (meter colour standard, phone-width text fixes in the Sound Systems Lab).
+needs: nothing.
+
+
 ### 2026-09-25 09:01 · ccode · bed1cb36
 changed: Sound Systems Lab: cardioid and end-fire sub arrays reject 30 dB to the rear so the plot shows the stage going quiet
 affects other side: nothing — a client-side coverage-model constant.
