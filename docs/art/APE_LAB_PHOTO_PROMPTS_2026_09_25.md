@@ -1,3 +1,5 @@
+> ⛔ **SUPERSEDED 2026-09-25 (owner: "100% inaccurate and incomplete").** Do not generate from this file. The brief of record is `APE_LAB_PHOTO_BRIEF_v2_2026_09_25.md` (handoff zip `Downloads/2026-09-25_COMP_C_LAB_IMAGES_HANDOFF_v2.zip`). Kept only as history.
+
 # Lab photographs — prompt package for Computer C (2026-09-25)
 
 **For:** Computer C (Pencil, Claude Code agent) generating the remaining lab photographs.

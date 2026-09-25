@@ -521,7 +521,7 @@ const SpanArt = memo(function SpanArt({ w, placed }: { w: number; placed: Set<nu
   const restHotD = hotPolyline(to, hotSpec) || 'M0 0';
 
   return (
-    <Svg accessible
+    <Svg
       width={w}
       height={h}
       viewBox="0 0 360 132"

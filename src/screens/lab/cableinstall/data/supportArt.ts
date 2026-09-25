@@ -5,7 +5,7 @@
  * is the reveal — owner 2026-09-25: photos sit alongside the drawings, never
  * instead of them).
  *
- * Delivery (Computer C, prompt package docs/art/APE_LAB_PHOTO_PROMPTS_2026_09_25.md):
+ * Delivery (Computer C, brief docs/art/APE_LAB_PHOTO_BRIEF_v2_2026_09_25.md):
  * `assets/exports/group-1-NN-<id>.png` at 1200 × 896 → converted to bundled
  * WebP at `assets/lab-art/cable-install/supports/<id>.webp` (1024 × 764).
  * Add one `require` line per delivered file; an item with no entry shows no
