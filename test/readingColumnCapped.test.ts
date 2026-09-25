@@ -130,3 +130,29 @@ test('live instrument screens are deliberately NOT capped', () => {
     );
   }
 });
+
+/**
+ * The intro popups are their own family with their own width (460, not 560).
+ * Two of the four had it and two did not, which is the same inconsistency as
+ * the tools hub vs its detail screens — and the one that was missing is the
+ * FIRST thing a new tablet user sees. Measured at 934pt on a 1024pt iPad.
+ */
+const INTRO_SHEETS = [
+  'src/features/intro/AppWelcomeOverlay.tsx',
+  'src/features/intro/ScreenIntroOverlay.tsx',
+  'src/features/intro/LearningIntroSheet.tsx',
+  'src/features/intro/TopicWelcomeSheet.tsx',
+];
+
+test('every intro popup card caps its width', () => {
+  for (const file of INTRO_SHEETS) {
+    const src = readFileSync(file, 'utf8');
+    const card = src.match(/\n {2}card: \{[\s\S]*?\n {2}\},/);
+    assert.ok(card, `${file}: no 'card' style found`);
+    assert.match(
+      card![0],
+      /maxWidth: 460,/,
+      `${file}: an uncapped popup card stretches across a whole iPad`,
+    );
+  }
+});

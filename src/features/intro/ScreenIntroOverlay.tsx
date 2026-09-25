@@ -209,6 +209,10 @@ const styles = StyleSheet.create({
   },
   card: {
     width: '100%',
+    // Match the sibling sheets (LearningIntroSheet, TopicWelcomeSheet), which
+    // already cap here. Without it this card stretched to 934pt on an iPad —
+    // and this one is the FIRST thing a new tablet user sees.
+    maxWidth: 460,
     borderRadius: 14,
     borderWidth: 1,
     borderColor: 'rgba(255,180,0,.5)',
