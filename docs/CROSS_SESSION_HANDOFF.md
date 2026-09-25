@@ -110,6 +110,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-25 10:41 · ccode · 3d224541
+changed: 24-hour usage review: guest 401 guards and a sign-up password hint
+affects other side: A — THREE MIGRATIONS APPLIED FROM HERE 2026-09-25 ~17:35 UTC (Supabase migration names): `get_question_count_from_academy_stats` (the function now reads academy_stats.questions — keep refresh_academy_stats running after content loads or the Explore count goes stale), `anon_catalog_reads_topic_term_counts_study_methods` (grant execute topic_term_counts(uuid[]) to anon; grant select + policy anon_read_study_methods on study_methods), `glossary_formula_terms_partial_index` (idx_glossary_formula_terms_id). Evidence: edge/auth/postgres logs for the prior 24 h. The topic-split follow-ups remain PARKED by the owner.
+needs: nothing.
+
+
 ### 2026-09-25 10:18 · ccode · 3440d2e0
 changed: EXPLORE areas: the standards program and certificate get a home
 affects other side: nothing — client-only (EXPLORE area menus: the standards program + certificate now surface in System Design & Maintenance and Architectural Acoustics).
