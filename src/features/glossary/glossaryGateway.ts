@@ -18,6 +18,7 @@
  */
 import { supabase } from '../../lib/supabase';
 import { softDeadline } from '../../lib/boundedCall';
+import { getDeviceId } from '../account/deviceIdentity';
 import { classifyGatewayError, type GatewayFault } from './gatewayFault';
 
 export * from './gatewayFault';
@@ -151,9 +152,18 @@ export async function fetchDefinitionViaGateway(id: string): Promise<DefinitionR
      * timeout, unknown. Fail open", and openViaGateway then lets the legacy
      * read fill the detail. The term still opens.
      */
+    // The meter is per DEVICE as well as per identity (owner 2026-09-25) —
+    // see glossaryCap.ts. The id is read first so the deadline below covers
+    // only the network.
+    let p_device_id: string | null = null;
+    try {
+      p_device_id = await getDeviceId();
+    } catch {
+      p_device_id = null;
+    }
     const { data, error } = await softDeadline(
       // `async () =>`: the Supabase builder is a thenable, not a Promise.
-      async () => await supabase.rpc('get_glossary_definition', { p_id: id }),
+      async () => await supabase.rpc('get_glossary_definition', { p_id: id, p_device_id }),
       { data: null, error: { message: 'gateway timeout' } } as Awaited<
         ReturnType<typeof supabase.rpc<'get_glossary_definition'>>
       >,

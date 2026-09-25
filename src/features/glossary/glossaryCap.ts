@@ -24,6 +24,27 @@
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
+import { getDeviceId } from '../account/deviceIdentity';
+
+/**
+ * THE METER IS PER DEVICE AS WELL AS PER IDENTITY (owner 2026-09-25).
+ *
+ * A guest who hit the weekly lock signed in to a free account on the same
+ * phone and had fourteen fresh lookups: the server counted per auth uid, and a
+ * guest key, a free account and a re-minted guest key are three uids. Every
+ * metered call now carries the stable per-install id (`ape:deviceId`, on the
+ * wipe KEEP list), and the server keeps a row per device beside the row per
+ * identity — a lookup needs room in both (migration
+ * 2026092502_glossary_meter_per_device.sql). The gateway RPC in
+ * glossaryGateway.ts sends the same id.
+ */
+async function deviceArg(): Promise<{ p_device_id: string | null }> {
+  try {
+    return { p_device_id: await getDeviceId() };
+  } catch {
+    return { p_device_id: null };
+  }
+}
 
 // Display/fail-open fallback ONLY — the live number is whatever the server
 // returns (v_limit in glossary_consume / glossary_usage_status). Keep the two
@@ -75,7 +96,7 @@ async function consumeServer(): Promise<GlossaryUsage> {
   // this before a term opens, so a stalled RPC would leave the tap doing
   // nothing at all, with the in-flight guard still set.
   return boundedRpc(async () => {
-    const { data, error } = await supabase.rpc('glossary_consume');
+    const { data, error } = await supabase.rpc('glossary_consume', await deviceArg());
     const row = (data as Row[] | null)?.[0];
     if (error || !row) {
       if (error) console.warn('[glossary] glossary_consume unavailable:', error.message);
@@ -136,7 +157,7 @@ async function boundedRpc<T>(run: () => Promise<T>, fallback: T, what: string): 
 async function statusServer(): Promise<GlossaryUsage> {
   return boundedRpc(
     async () => {
-      const { data, error } = await supabase.rpc('glossary_usage_status');
+      const { data, error } = await supabase.rpc('glossary_usage_status', await deviceArg());
       const row = (data as Row[] | null)?.[0];
       if (error || !row) return OPEN;
       const limit = row.lim ?? GLOSSARY_WEEKLY_LIMIT;

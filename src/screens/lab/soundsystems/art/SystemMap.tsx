@@ -117,13 +117,34 @@ function edgeMid(a: { x: number; y: number }, b: { x: number; y: number }, bow: 
   return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, ux: dx / len, uy: dy / len };
 }
 
+/** The arrowhead. Wider than the run it sits on and edged in the map's
+ *  dark, so it reads as an arrow rather than a thickening of the line (owner
+ *  2026-09-25, on the phone: "the green lines are too thick and don't allow
+ *  the arrows to be seen"). */
 function chevron(m: { x: number; y: number; ux: number; uy: number }, color: string, both?: boolean) {
   const { ux, uy } = m;
-  const tip = (px: number, py: number, s: number) => `${px + ux * 4 * s},${py + uy * 4 * s} ${px - ux * 3 * s - uy * 3},${py - uy * 3 * s + ux * 3} ${px - ux * 3 * s + uy * 3},${py - uy * 3 * s - ux * 3}`;
+  const L = 7.5; // tip to base
+  const W = 4.2; // half-width at the base
+  const tip = (px: number, py: number, s: number) =>
+    `${px + ux * L * 0.55 * s},${py + uy * L * 0.55 * s} ${px - ux * L * 0.45 * s - uy * W},${py - uy * L * 0.45 * s + ux * W} ${px - ux * L * 0.45 * s + uy * W},${py - uy * L * 0.45 * s - ux * W}`;
   return (
     <>
-      <Polygon points={tip(m.x, m.y, 1)} fill={color} opacity={0.9} />
-      {both ? <Polygon points={tip(m.x - ux * 12, m.y - uy * 12, -1)} fill={color} opacity={0.9} /> : null}
+      <Polygon points={tip(m.x, m.y, 1)} fill={color} stroke="#05060a" strokeWidth={0.9} strokeLinejoin="round" />
+      {both ? <Polygon points={tip(m.x - ux * 14, m.y - uy * 14, -1)} fill={color} stroke="#05060a" strokeWidth={0.9} strokeLinejoin="round" /> : null}
+    </>
+  );
+}
+
+/** An edge label on a knocked-out pill, so a run never passes through its own
+ *  words. Width is estimated from the character count (Oswald Medium at 5 px
+ *  with 0.6 tracking runs about 3.1 px a character). */
+function EdgeLabel({ x, y, text, color, anchor }: { x: number; y: number; text: string; color: string; anchor: 'start' | 'middle' | 'end' }) {
+  const w = text.length * 3.1 + 6;
+  const left = anchor === 'start' ? x - 3 : anchor === 'end' ? x - w + 3 : x - w / 2;
+  return (
+    <>
+      <Rect x={left} y={y - 5.8} width={w} height={7.8} rx={2} fill="#0e1015" opacity={0.92} />
+      <SvgText x={x} y={y} fontSize={5} fill={color} fontFamily={fonts.oswaldMedium} textAnchor={anchor} letterSpacing={0.6}>{text}</SvgText>
     </>
   );
 }
@@ -176,19 +197,21 @@ export function SystemMap({ nodes, edges, selectedId, onTap, a11y, running = tru
           const dead = !!e.dead;
           return (
             <G key={i} opacity={dead ? 0.3 : 1}>
-              <Path d={d} stroke="#05060a" strokeWidth={4.2} fill="none" strokeLinecap="round" strokeLinejoin="round" />
-              <Path d={d} stroke={color} strokeWidth={e.both ? 1.6 : 2.2} fill="none" strokeLinecap="round" strokeLinejoin="round" strokeDasharray={e.dashed || e.level === 'wireless' ? '3 4' : dead ? '2 4' : undefined} />
-              {d2 ? <Path d={d2} stroke={color} strokeWidth={1.6} fill="none" strokeLinecap="round" strokeDasharray="3 4" /> : null}
+              {/* Runs are drawn thin (a cable, not a pipe) so the arrowhead and
+                  the label stand clear of them — owner 2026-09-25. */}
+              <Path d={d} stroke="#05060a" strokeWidth={2.8} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+              <Path d={d} stroke={color} strokeWidth={e.both ? 1.1 : 1.3} fill="none" strokeLinecap="round" strokeLinejoin="round" strokeDasharray={e.dashed || e.level === 'wireless' ? '3 4' : dead ? '2 4' : undefined} />
+              {d2 ? <Path d={d2} stroke={color} strokeWidth={1.1} fill="none" strokeLinecap="round" strokeDasharray="3 4" /> : null}
               {e.level === 'air' ? <Path d={d} stroke="#fff" strokeWidth={0.5} fill="none" opacity={0.25} strokeDasharray="1 3" /> : null}
               {chevron(mid, color, e.both)}
               {e.label ? (() => {
-                if (bow) return <SvgText x={mid.x + 8} y={mid.y + 2} fontSize={5} fill={color} fontFamily={fonts.oswaldMedium} textAnchor="start" letterSpacing={0.6}>{e.label}</SvgText>;
-                if (Math.abs(mid.uy) < 0.3) return <SvgText x={mid.x} y={mid.y - 6} fontSize={5} fill={color} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={0.6}>{e.label}</SvgText>;
+                if (bow) return <EdgeLabel x={mid.x + 9} y={mid.y + 2} text={e.label} color={color} anchor="start" />;
+                if (Math.abs(mid.uy) < 0.3) return <EdgeLabel x={mid.x} y={mid.y - 8} text={e.label} color={color} anchor="middle" />;
                 const ly = b.y - 30;
                 const t = (ly - a.y) / (b.y - a.y);
                 const lx = a.x + t * (b.x - a.x);
                 const right = mid.ux < 0;
-                return <SvgText x={lx + (right ? 6 : -6)} y={ly + 2} fontSize={5} fill={color} fontFamily={fonts.oswaldMedium} textAnchor={right ? 'start' : 'end'} letterSpacing={0.6}>{e.label}</SvgText>;
+                return <EdgeLabel x={lx + (right ? 7 : -7)} y={ly + 2} text={e.label} color={color} anchor={right ? 'start' : 'end'} />;
               })() : null}
             </G>
           );

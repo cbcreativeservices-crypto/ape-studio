@@ -1,3 +1,7 @@
+-- ⛔ SUPERSEDED IN PART (2026-09-25): the meter now also counts PER DEVICE. The live
+-- functions take p_device_id and are defined in
+-- supabase/migrations/2026092502_glossary_meter_per_device.sql. Do not re-run this file.
+
 -- ===========================================================================
 -- APE — GLOSSARY WEEKLY LOOKUP CAP: 14 / rolling week  (owner ruling 2026-09-10)
 --
