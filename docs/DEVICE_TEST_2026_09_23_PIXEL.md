@@ -187,3 +187,37 @@ computation that Sentry recorded aborting, now running from the JS thread.
 ## Not done, and why
 I did NOT use the saved-password sheet that Android offered for the account. The
 owner signed in themselves.
+
+---
+
+# 2026-09-24 — ✅ CAREER FINDER RETAKE: PROVEN FIXED (build 30, Pixel 7 Pro)
+
+The A1-3 item above is now closed. It was unprovable last time because no
+BASELINE was taken; this run takes one first, which removes the ambiguity.
+
+**Method — one observation, no back-counting.**
+The old `navigate` bug leaves the stack as
+`CareerFinder → CareerFamilyList → CareerFamily → CareerFinder`. So after a
+retake, a SINGLE back press lands on the **career family detail** if a duplicate
+survives, and on **Explore the Academy** if `popTo` collapsed the stack. Where
+you land is unambiguous; how many presses it takes is not.
+
+| step | result |
+|---|---|
+| **Baseline** — Explore → Career Finder → 1 back | → **Explore the Academy** |
+| Full run — 28 questions → results → EXPLORE FAMILY ("Accessible Media & Audio Description") → "Retake the Career Finder" | → lands on Audio Career Finder |
+| **After retake** — 1 back | → **Explore the Academy** |
+
+Identical to baseline, and NOT the family detail. `popTo` is collapsing the
+intermediate stack back onto the single existing CareerFinder instance. **Fixed.**
+
+**What the old "two back presses" actually was.** On the way in, tapping the
+Career Finder link on the curriculum screen raises an *intro popup* (START /
+NOT NOW) before the screen is pushed. An overlay like that can absorb a back
+press, which is exactly the "consumed by view state" alternative the earlier
+note could not rule out. It was never evidence of a duplicate route.
+
+⚠️ **uiautomator dumps go stale on this app** and will happily report the
+PREVIOUS screen — it claimed we were still on the Career Finder after the back
+press while the screenshot showed Explore. Treat `screencap` as ground truth and
+use dumps only for locating tap targets on a screen you have already confirmed.
