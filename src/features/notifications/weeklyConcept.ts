@@ -3,7 +3,7 @@
  * reads. Categories must match notification_concepts.category exactly.
  */
 import { supabase } from '../../lib/supabase';
-import { safeUser } from '../../lib/getSessionSafe';
+import { hasSafeSession, safeUser } from '../../lib/getSessionSafe';
 
 export const WEEKLY_CONCEPT_CATEGORIES = [
   'Acoustics',
@@ -128,6 +128,8 @@ async function appUserId(): Promise<string | null> {
  * category to the default the next time it is switched on).
  */
 export async function fetchWeeklySubscriptions(): Promise<WeeklySubscription[]> {
+  // The table is member-only; a signed-out read is a guaranteed 401.
+  if (!(await hasSafeSession(supabase.auth.getSession(), 'fetchWeeklySubscriptions'))) return [];
   const { data, error } = await supabase
     .from('notification_concept_subscriptions')
     .select('category, day_of_week, send_time, timezone, active');

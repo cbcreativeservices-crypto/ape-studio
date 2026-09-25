@@ -16,6 +16,7 @@
  */
 import { useEffect, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
+import { hasSafeSession } from '../../lib/getSessionSafe';
 import { useEntitlement } from '../commercial/EntitlementProvider';
 
 /** Skip sub-second bounces and absurd durations (the RPC also caps at 86400). */
@@ -40,16 +41,25 @@ export function useToolUsage(toolId: string): void {
       const duration = Math.round((Date.now() - openedMs) / 1000);
       if (duration < MIN_SECONDS || duration > MAX_SECONDS) return;
       // Fire-and-forget; swallow every outcome — telemetry never affects the UX.
-      void supabase
-        .rpc('record_tool_usage', {
-          p_tool_id: toolRef.current,
-          p_opened_at: new Date(openedMs).toISOString(),
-          p_duration_seconds: duration,
-        })
-        .then(
-          () => {},
-          () => {},
-        );
+      // The entitlement flag above is not the session: a guest whose flag reads
+      // "free" still has no auth session, and the RPC 401s (measured 2026-09-25),
+      // so confirm the session itself before sending.
+      void hasSafeSession(supabase.auth.getSession(), 'record_tool_usage').then(
+        (ok) => {
+          if (!ok) return;
+          void supabase
+            .rpc('record_tool_usage', {
+              p_tool_id: toolRef.current,
+              p_opened_at: new Date(openedMs).toISOString(),
+              p_duration_seconds: duration,
+            })
+            .then(
+              () => {},
+              () => {},
+            );
+        },
+        () => {},
+      );
     };
     // Session clock starts once on mount; refs carry the latest tool/auth.
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -11,6 +11,7 @@
  * runs the network checks.
  */
 import { supabase } from '../../lib/supabase';
+import { hasSafeSession } from '../../lib/getSessionSafe';
 
 export type EmployerApplicationStatus = 'pending' | 'approved' | 'rejected' | 'withdrawn';
 
@@ -40,6 +41,8 @@ export type EmployerState =
 
 export async function fetchMyEmployerApplication(): Promise<EmployerState> {
   try {
+    // A guest has no application; the RPC answers 401 without a session.
+    if (!(await hasSafeSession(supabase.auth.getSession(), 'fetchMyEmployerApplication'))) return { state: 'none' };
     const { data, error } = await supabase.rpc('employer_application_mine');
     if (error) return { state: 'error' };
     const row = (Array.isArray(data) ? data[0] : data) as Record<string, unknown> | undefined;
@@ -85,6 +88,7 @@ export async function fetchMyEmployerApplication(): Promise<EmployerState> {
  */
 export async function amIVerifiedEmployer(): Promise<boolean> {
   try {
+    if (!(await hasSafeSession(supabase.auth.getSession(), 'amIVerifiedEmployer'))) return false;
     const { data, error } = await supabase.rpc('am_i_verified_employer');
     return !error && data === true;
   } catch {

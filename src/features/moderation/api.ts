@@ -11,6 +11,7 @@
  * has every right to know it, why, and when it lifts.
  */
 import { supabase } from '../../lib/supabase';
+import { hasSafeSession } from '../../lib/getSessionSafe';
 
 export type AccountStatus = 'active' | 'warned' | 'suspended' | 'banned' | 'removed';
 
@@ -133,6 +134,8 @@ export async function resolveReport(id: string, outcome: 'dismissed' | 'open', n
  */
 export async function fetchMyStanding(): Promise<MyStanding | null> {
   try {
+    // No session, no standing to read — and the RPC would only answer 401.
+    if (!(await hasSafeSession(supabase.auth.getSession(), 'fetchMyStanding'))) return null;
     const { data, error } = await supabase.rpc('account_standing_mine');
     const r = (data as Record<string, unknown>[] | null)?.[0];
     if (error || !r) return null;

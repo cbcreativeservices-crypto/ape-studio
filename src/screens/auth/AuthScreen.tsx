@@ -505,6 +505,15 @@ export function AuthScreen({ navigation }: Props) {
         ) : (
           <>
             <TextField label="Password" value={password} onChangeText={setPassword} password />
+            {/* Measured 2026-09-25: 16 signups in 24 h were rejected for a
+                breached password against 9 that succeeded — every new account
+                took about three tries. The server's leaked-password check
+                cannot be run client-side (features/auth/authErrorCopy), so say
+                what it wants BEFORE the first attempt. */}
+            <Text style={styles.codeHint}>
+              New account? Choose a password you don’t use anywhere else — a few unrelated words is ideal. Passwords
+              found in known data breaches are rejected.
+            </Text>
 
             {/* Optional organization / promo access code + its explanation. */}
             <TextField

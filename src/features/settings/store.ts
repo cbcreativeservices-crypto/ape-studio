@@ -15,6 +15,7 @@
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
+import { hasSafeSession } from '../../lib/getSessionSafe';
 import { requestLocalNotifSync } from '../notifications/localSchedule';
 import { applyA11yFromSettings, resetA11y } from './a11y';
 
@@ -257,6 +258,8 @@ export function __setDevPrefsOverride(p: NotificationPrefs | null): void {
 
 export async function fetchNotificationPrefs(): Promise<NotificationPrefs | null> {
   if (__DEV__ && devPrefsOverride) return devPrefsOverride;
+  // Member-only table: without a session the read can only 401.
+  if (!(await hasSafeSession(supabase.auth.getSession(), 'fetchNotificationPrefs'))) return null;
   const { data, error } = await supabase
     .from('notification_preferences')
     .select('push_enabled, email_enabled, notify_weekly_concept, notify_trophy, notify_quiz_unlock, notify_method_complete')

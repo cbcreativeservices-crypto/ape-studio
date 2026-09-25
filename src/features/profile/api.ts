@@ -8,7 +8,7 @@
  * was REMOVED (owner 2026-08-07 — album progression retired for commercial).
  */
 import { supabase } from '../../lib/supabase';
-import { safeSession } from '../../lib/getSessionSafe';
+import { hasSafeSession, safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../commercial/realAccount';
 import { albumTierFor, type AlbumTierName } from '../../theme/tokens';
 import { V3_CURRICULUM_VERSION_ID } from '../../data/v3Curriculum';
@@ -193,6 +193,9 @@ export async function fetchProfile(): Promise<ProfileRead> {
  *  null when signed out or on any error — callers show the pending state. */
 export async function fetchMyQrToken(): Promise<string | null> {
   try {
+    // Signed out (a guest, or a cold start whose keychain read has not landed):
+    // there is no identity to fetch, and asking earns a 401 (measured 2026-09-25).
+    if (!(await hasSafeSession(supabase.auth.getSession(), 'fetchMyQrToken'))) return null;
     // Via the my_identity() RPC (schema isolation) rather than a direct
     // users.qr_token read.
     const { data, error } = await supabase.rpc('my_identity').single();
