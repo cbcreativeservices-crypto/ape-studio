@@ -76,6 +76,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-24 22:21 · ccode · 1cdfd56e
+changed: "Never got the email" — they never had an account. Signup was failing silently
+affects other side: nothing to change server-side. Supabase leaked-password protection STAYS ON (owner call 2026-09-25) — the fix is that the app now explains the rejection instead of showing a generic error.
+needs: nothing.
+
+
 ### 2026-09-24 21:36 · ccode · 74b693ba
 changed: The remaining instruments: cap the prose, keep the analysers full width
 affects other side: nothing — client layout only, no schema/content/copy change.
