@@ -129,6 +129,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-25 16:20 · ccode · 3da182a6
+changed: docs: session handoff 2026-09-25C (publish proven, meter per device, Comp C zip), governance D30-D31, late lessons
+affects other side: nothing — docs only. Session handoff 2026-09-25C: OTA published to both channels from dbf6c9b2 (Pixel proven); the DB change of 1099d4de (glossary meter per device) is the one thing A must re-read — see that entry below.
+needs: nothing
+
+
 ### 2026-09-25 15:52 · ccode · 1099d4de
 changed: Glossary meter counts per device; Sound Systems map: thin runs, visible arrowheads, backed labels
 affects other side: DB CHANGE, applied live by ccode (migration 2026092502_glossary_meter_per_device.sql): new table public.glossary_usage_device; glossary_consume(p_device_id text default null), glossary_usage_status(p_device_id text default null), get_glossary_definition(p_id uuid, p_device_id text default null) REPLACE the old zero-arg / one-arg versions (dropped). The glossary weekly meter is now per device AND per identity. Re-read before touching those functions. Owner-reported hole: guest hit the lock, signed in free on the same phone, got a fresh 14.
