@@ -47,6 +47,8 @@ import {
   withTiming,
 } from '../motion';
 import { CI_CABLE_TYPES, cableTypeById, type CiCableClass, type CiCableType } from '../data/cableTypes';
+import { CI_CABLE_ART_ASPECT, CI_CABLE_TYPE_ART } from '../data/cableTypeArt';
+import { LabPhoto } from '../../kit/LabPhoto';
 import { CI_ID_SCENARIOS, type CiIdScenario } from '../data/scenarios';
 import { clamp100, type CiDimScores } from '../engine/score';
 import type { CiModuleProps } from '../registry';
@@ -222,6 +224,7 @@ function TypeCard({ t, open, viewed, onPress }: { t: CiCableType; open: boolean;
   /** Body rows arrive top-down so the eye reads signal → note → concerns in
    *  the order an installer checks them. */
   const noteRows = t.useNote ? 1 : 0;
+  const art = CI_CABLE_TYPE_ART[t.id];
   return (
     <Pressable
       style={[styles.typeCard, viewed && styles.typeCardSeen]}
@@ -241,6 +244,13 @@ function TypeCard({ t, open, viewed, onPress }: { t: CiCableType; open: boolean;
       </View>
       {open ? (
         <View style={styles.typeBody}>
+          {/* The photograph (owner 2026-09-25) opens with the card: the real
+              cable, cut back, above the words about it. */}
+          {art ? (
+            <Stagger index={0}>
+              <LabPhoto source={art} aspect={CI_CABLE_ART_ASPECT} label={`${t.name}, cut back to show its construction`} />
+            </Stagger>
+          ) : null}
           <Stagger index={0}>
             <Text style={styles.typeSignal}>{t.signal}</Text>
           </Stagger>

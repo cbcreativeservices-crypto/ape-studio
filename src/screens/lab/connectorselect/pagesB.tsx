@@ -16,6 +16,8 @@ import type { PageCtx, PageDef } from '../kit/PagedLab';
 import { ConnectorPhoto, GoalChips, LessonCard, StationTag, useVisitGoals } from './bits';
 import { BenchCard } from './pagesA';
 import { CrossSectionView } from './art';
+import { PHOTO_ASPECT, SECTION_PHOTO } from './data/photos';
+import { LabPhoto } from '../kit/LabPhoto';
 import { BENCH_GROUPS } from './data/roster';
 import { JOB_MATRIX, MATRIX_RULE, type JobMatrixEntry } from './data/jobs';
 import { AES_VS_MIC, CROSS_SECTIONS, INSTRUMENT_VS_SPEAKER } from './data/practice';
@@ -306,8 +308,14 @@ function PageInside({ ctx }: { ctx: PageCtx }) {
         ))}
       </ScrollView>
       <Card>
-        <View style={{ alignItems: 'center' }} accessible accessibilityRole="image" accessibilityLabel={`Cross-section diagram: ${section.name}. Layers from outside in: ${section.layers.join(', ')}.`}>
-          <CrossSectionView kind={section.id} />
+        {/* The drawing keeps the labelled layers; the photograph sits beside
+            it where the width allows and wraps beneath it on a phone (owner
+            2026-09-25: alongside, never instead). */}
+        <View style={styles.insideRow}>
+          <View style={{ alignItems: 'center' }} accessible accessibilityRole="image" accessibilityLabel={`Cross-section diagram: ${section.name}. Layers from outside in: ${section.layers.join(', ')}.`}>
+            <CrossSectionView kind={section.id} />
+          </View>
+          <LabPhoto source={SECTION_PHOTO[section.id]} aspect={PHOTO_ASPECT} label={`${section.name}, the cut end`} caption="THE CUT END, ON THE BENCH" style={styles.insidePhoto} />
         </View>
         <Prompt>{section.name}</Prompt>
         <Body>{section.blurb}</Body>
@@ -356,6 +364,8 @@ export const CONNECTOR_PAGES_B: PageDef[] = [
 ];
 
 const styles = StyleSheet.create({
+  insideRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, alignItems: 'center', justifyContent: 'center' },
+  insidePhoto: { flexGrow: 1, flexBasis: 200, maxWidth: 440 },
   chipScroll: { flexDirection: 'row', gap: 8, paddingVertical: 2, paddingRight: 12 },
   swipeCue: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1.5 },
   jobNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, paddingHorizontal: 4 },

@@ -19,6 +19,8 @@ import type { ConnectorId, ConnectorRecord } from '../cable/cableTypes';
 import { CARRIED_LABELS } from './labels';
 import { ConceptList, ConnectorPhoto, GoalChips, LessonCard, StationTag, useVisitGoals } from './bits';
 import { ExplodedCable } from './art';
+import { ANATOMY_PHOTO, PHOTO_ASPECT } from './data/photos';
+import { LabPhoto } from '../kit/LabPhoto';
 import { BENCH_GROUPS, CABLE_PARTS, CARD_FLAGS, FOUR_QUESTIONS, ROSTER } from './data/roster';
 
 /* ── shared bench card (used by pages 3–5) ───────────────────────────────── */
@@ -149,6 +151,10 @@ function PageThreeThings({ ctx }: { ctx: PageCtx }) {
       <LessonCard />
       <Card>
         <Eyebrow>THE EXPLODED CABLE — TAP A ZONE OR A PART BELOW</Eyebrow>
+        {/* The real thing first (owner 2026-09-25), then the tappable drawing
+            that names each part — jacket, shield, insulation, conductors are
+            all visible in the photograph. */}
+        <LabPhoto source={ANATOMY_PHOTO} aspect={PHOTO_ASPECT} label="a microphone cable stripped back — jacket, copper braid shield, cotton filler, the twisted blue and white pair, and bare stranded conductors" caption="STRIPPED BACK — JACKET · BRAID · FILLER · PAIR · CONDUCTORS" />
         <ExplodedCable selected={part} onSelect={selectPart} />
         <ConceptList
           items={CABLE_PARTS.map((p) => ({ id: p.id, name: p.name, blurb: p.blurb }))}
