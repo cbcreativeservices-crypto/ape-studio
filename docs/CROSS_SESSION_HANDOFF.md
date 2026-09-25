@@ -129,6 +129,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-25 15:28 · ccode · 1d0755c2
+changed: docs: Computer C brief v2 — zip contents section, ready-to-paste prompts and sort pictograms referenced
+affects other side: nothing — docs only (the Computer C image brief now ships as one complete zip in Downloads with 34 ready-to-paste prompts and the 17 sort pictograms).
+needs: nothing
+
+
 ### 2026-09-25 15:07 · ccode · 476c0de0
 changed: Sound Systems Lab: bug and latency pass — client-only, this lab (six bugs, two slow rides fixed; engine and rack frame untouched; report docs/APE_SOUND_SYSTEMS_BUG_LATENCY_PASS_2026_09_25.md). Not published.
 affects other side: nothing
