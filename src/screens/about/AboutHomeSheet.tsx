@@ -10,6 +10,7 @@ import { Modal } from '../../components/DimModal';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BrandLogo } from '../../components/BrandLogo';
 import { colors, fonts } from '../../theme/tokens';
+import { readingColumn } from '../../theme/readingColumn';
 
 /** One eyebrow-headed section. */
 const SECTIONS: { head: string; paras: string[] }[] = [
@@ -182,7 +183,7 @@ const styles = StyleSheet.create({
   headerTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.6, color: colors.textPrimary },
   close: { fontSize: 18, color: colors.textSubAlt },
 
-  scroll: { padding: 20, gap: 14, paddingBottom: 28 },
+  scroll: { padding: 20, gap: 14, paddingBottom: 28, ...readingColumn },
   brandBlock: { alignItems: 'center', gap: 8, marginBottom: 4 },
   title: { fontFamily: fonts.oswaldBold, fontSize: 21, color: colors.textPrimary, marginTop: 6, textAlign: 'center' },
   titleAccent: {

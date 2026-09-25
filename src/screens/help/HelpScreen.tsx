@@ -24,6 +24,7 @@ import { resetScreenIntros } from '../../features/intro/screenIntros';
 import { resetOnboarding } from '../../features/intro/onboardingFlow';
 import { resetAmplitudeOrientation } from '../../features/lab/amplitudeOrientation';
 import { HELP_CATEGORIES, filterHelp, type HelpEntry } from '../../features/help/helpContent';
+import { readingColumn } from '../../theme/readingColumn';
 
 export function HelpScreen() {
   const insets = useSafeAreaInsets();
@@ -261,7 +262,7 @@ const styles = StyleSheet.create({
   back: { fontFamily: fonts.oswaldSemiBold, fontSize: 28, lineHeight: 28, color: colors.textSubAlt },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, letterSpacing: 1.6, color: colors.textPrimary },
   subtitle: { fontFamily: fonts.mono, fontSize: 10, letterSpacing: 1.2, color: colors.textSubAlt, marginTop: 2 },
-  scroll: { paddingHorizontal: 16, gap: 4 },
+  scroll: { paddingHorizontal: 16, gap: 4, ...readingColumn },
   searchWrap: {
     flexDirection: 'row',
     alignItems: 'center',

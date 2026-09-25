@@ -11,6 +11,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { BrandLogo } from '../../components/BrandLogo';
 import { colors, fonts } from '../../theme/tokens';
 import type { RootStackParamList } from '../../navigation/types';
+import { readingColumn } from '../../theme/readingColumn';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'About'>;
 
@@ -107,7 +108,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.6, color: colors.textPrimary },
   close: { fontSize: 18, color: colors.textSubAlt },
-  scroll: { padding: 20, gap: 24 },
+  scroll: { padding: 20, gap: 24, ...readingColumn },
   brandBlock: { alignItems: 'center', gap: 8, marginTop: 12 },
   appName: { fontFamily: fonts.oswaldBold, fontSize: 22, color: colors.textPrimary, marginTop: 8 },
   appNameAccent: {

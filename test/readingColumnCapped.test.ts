@@ -1,26 +1,30 @@
 /**
  * GUARD — a text surface must not run the full width of a tablet.
  *
- * ⛔ THE RULE: reading surfaces cap and centre; instruments do not.
+ * ⛔ THE RULE: reading surfaces cap and centre; instruments and grids do not.
  *
  * Owner bug report 2026-09-24, on an iPad: "all screens seem to adjust fine to
  * the larger screen - but not audio tools". Measured live in the web preview at
- * 1024 pt, which is the whole reason this was findable:
+ * 1024 pt, which is the only reason this was findable at all:
  *
  *   Tools HUB        560 pt wide, centred at x=225   <- already tablet-aware
  *   Tool INFO page   992 pt wide, starting at x=16   <- never was
  *
  * The hub had been capped in an earlier pass; every screen the hub PUSHES TO was
- * missed, so the moment you opened a tool the body text stretched across the
- * whole iPad at roughly 180 characters a line against a comfortable 60-90.
- * Nothing was clipped and nothing crashed, which is exactly why it reads as
- * "doesn't adjust" and why no test caught it.
+ * missed, so opening a tool stretched its body text across the whole iPad at
+ * roughly 180 characters a line against a comfortable 60-90. Nothing was clipped
+ * and nothing crashed, which is exactly why it reads as "doesn't adjust" and why
+ * no existing test caught it.
+ *
+ * Walking the rest of the app at 1024 pt with the same probe found nine more.
+ * Every file listed below was MEASURED running text past 940 pt before the fix.
  *
  * ⚠️ THIS IS NOT "CAP EVERYTHING". 104 scroll containers in this app have no
- * maxWidth, and most of them are RIGHT: an RTA, a spectrogram, a waveform or a
- * card grid genuinely should use the extra width a tablet gives. Capping those
- * would throw away the screen the user paid for. The guard therefore pins the
- * named READING surfaces, not a blanket property check.
+ * maxWidth and most of them are RIGHT: an RTA, a spectrogram, a waveform or a
+ * card carousel should use the extra width a tablet gives, and capping those
+ * would throw away the screen the user paid for. So this guard pins a NAMED LIST
+ * of reading surfaces rather than asserting a property across the codebase, and
+ * asserts the analysers stay uncapped so nobody "fixes" those the same way.
  *
  * ✅ NO PHONE CHANGES. The widest phone here is 430 pt, so a 560 pt cap never
  * binds and `alignSelf: 'center'` on a full-width child is a no-op. Tablets only.
@@ -31,24 +35,42 @@ import assert from 'node:assert/strict';
 
 import { READING_MAX_W, TOOL_READING_MAX_W, readingColumn } from '../src/theme/readingColumn.ts';
 
-/** Screens whose job is to be READ. Each must cap its header AND its scroll. */
-const READING_SURFACES = [
-  'src/screens/tools/ToolInfoScreen.tsx',
-  'src/screens/tools/ToolLearnScreen.tsx',
-  'src/screens/tools/ToolDemoScreen.tsx',
-  'src/screens/tools/ConceptModuleScreen.tsx',
-  'src/screens/tools/MeasurementLibraryScreen.tsx',
-  'src/screens/commercial/PaywallScreen.tsx',
+/** [file, the style name its scroll content uses]. */
+const READING_SURFACES: Array<[string, string]> = [
+  // Audio Tools — what the report was actually about.
+  ['src/screens/tools/ToolInfoScreen.tsx', 'scroll'],
+  ['src/screens/tools/ToolLearnScreen.tsx', 'scroll'],
+  ['src/screens/tools/ToolDemoScreen.tsx', 'scroll'],
+  ['src/screens/tools/ConceptModuleScreen.tsx', 'scroll'],
+  ['src/screens/tools/MeasurementLibraryScreen.tsx', 'scroll'],
+  // Found by walking the app at 1024 pt with the same probe.
+  ['src/screens/commercial/PaywallScreen.tsx', 'scroll'],
+  ['src/screens/achievements/AchievementsHomeScreen.tsx', 'scroll'],
+  ['src/screens/profile/ProfileScreen.tsx', 'bodyScroll'],
+  ['src/screens/curriculum/CurriculumScreen.tsx', 'scroll'],
+  ['src/screens/awards/AwardsScreen.tsx', 'scroll'],
+  ['src/screens/awards/AwardProgressScreen.tsx', 'scroll'],
+  ['src/screens/directory/DirectoryScreen.tsx', 'scroll'],
+  ['src/screens/help/HelpScreen.tsx', 'scroll'],
+  ['src/screens/about/AboutScreen.tsx', 'scroll'],
+  ['src/screens/about/AboutHomeSheet.tsx', 'scroll'],
 ];
 
-/** Header is capped too, or the title sits far left of a centred body. */
-const NEEDS_CAPPED_HEADER = READING_SURFACES.filter((f) => f.includes('/tools/'));
+/** The tools screens share one header shape; cap it or the title sits far left
+ *  of a centred body. */
+const NEEDS_CAPPED_HEADER = READING_SURFACES.map(([f]) => f).filter((f) => f.includes('/tools/'));
+
+/** A live analyser should USE a tablet's width. Pinned so nobody caps them. */
+const MUST_STAY_UNCAPPED = [
+  'src/screens/tools/RtaScreen.tsx',
+  'src/screens/tools/SpectrogramScreen.tsx',
+];
 
 test('the reading column is a real cap that centres', () => {
   assert.equal(readingColumn.maxWidth, READING_MAX_W);
   assert.equal(readingColumn.alignSelf, 'center');
-  // Without width:100% the cap makes the box shrink to its content instead of
-  // filling up to the cap — the bug this guard exists to prevent, inverted.
+  // Without width:100% the cap makes the box shrink to its content on a tablet
+  // instead of filling up to the cap — this bug, inverted.
   assert.equal(readingColumn.width, '100%');
 });
 
@@ -71,14 +93,14 @@ test('the Tools hub and its detail screens share ONE width', () => {
 });
 
 test('every reading surface caps its scroll content', () => {
-  for (const file of READING_SURFACES) {
+  for (const [file, style] of READING_SURFACES) {
     const src = readFileSync(file, 'utf8');
-    const scroll = src.match(/\n\s*scroll: \{[^}]*\}/);
-    assert.ok(scroll, `${file}: no 'scroll' style found — did it get renamed?`);
+    const m = src.match(new RegExp('\\n\\s*' + style + ': \\{[^}]*\\}'));
+    assert.ok(m, `${file}: no '${style}' style found — did it get renamed?`);
     assert.match(
-      scroll![0],
+      m![0],
       /\.\.\.readingColumn/,
-      `${file}: the scroll content is uncapped, so its text spans a whole iPad`,
+      `${file}: '${style}' is uncapped, so its text spans a whole iPad`,
     );
   }
 });
@@ -97,13 +119,12 @@ test('tools reading surfaces cap the header so it lines up with the body', () =>
 });
 
 test('live instrument screens are deliberately NOT capped', () => {
-  // If someone "fixes" these the same way, a tablet RTA gets worse, not better.
-  for (const file of ['src/screens/tools/RtaScreen.tsx', 'src/screens/tools/SpectrogramScreen.tsx']) {
+  for (const file of MUST_STAY_UNCAPPED) {
     const src = readFileSync(file, 'utf8');
-    const scroll = src.match(/\n\s*scroll: \{[^}]*\}/);
-    if (!scroll) continue;
+    const m = src.match(/\n\s*scroll: \{[^}]*\}/);
+    if (!m) continue;
     assert.doesNotMatch(
-      scroll![0],
+      m[0],
       /\.\.\.readingColumn/,
       `${file}: an analyser should USE a tablet's width — do not cap it`,
     );
