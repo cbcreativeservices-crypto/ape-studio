@@ -48,6 +48,7 @@ import { PaceTimerBar } from '../../features/study/PaceTimerBar';
 import { PaceTimerModal } from '../../features/study/PaceTimerModal';
 import { StudyHeader } from './StudyHeader';
 import type { StudyStackParamList } from '../../navigation/types';
+import { readingColumn } from '../../theme/readingColumn';
 
 type Props = NativeStackScreenProps<StudyStackParamList, 'Scenarios'>;
 
@@ -722,7 +723,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     maxWidth: 300,
   },
-  scroll: { padding: 16, gap: 16 },
+  scroll: { padding: 16, gap: 16, ...readingColumn },
   termTag: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.textSubAlt },
   mediaImage: { width: '80%', aspectRatio: 4 / 3, alignSelf: 'center', borderRadius: 6 },
   prompt: {

@@ -23,6 +23,7 @@ import { StudioButton } from '../../components/StudioButton';
 import { colors, fonts } from '../../theme/tokens';
 import { clearQuizIntent } from '../../features/quiz/api';
 import type { RootStackParamList } from '../../navigation/types';
+import { readingColumn } from '../../theme/readingColumn';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Results'>;
 
@@ -214,7 +215,7 @@ const styles = StyleSheet.create({
     gap: 20,
     padding: 24,
   },
-  scroll: { paddingHorizontal: 16, paddingTop: 20, gap: 16 },
+  scroll: { paddingHorizontal: 16, paddingTop: 20, gap: 16, ...readingColumn },
 
   scoreBlock: { alignItems: 'center' },
   resultsEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 3, color: colors.textSubAlt },

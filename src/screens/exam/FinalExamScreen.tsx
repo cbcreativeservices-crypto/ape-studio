@@ -53,6 +53,7 @@ import {
   type MatchingOptions,
 } from '../../features/finalExam/api';
 import type { RootStackParamList } from '../../navigation/types';
+import { readingColumn } from '../../theme/readingColumn';
 
 /**
  * The waiting state for the exam — with a way out once it stops being brief.
@@ -905,7 +906,7 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 0 },
   },
   timerLow: { color: colors.red, textShadowColor: 'rgba(255,75,58,.6)' },
-  scroll: { padding: 16, gap: 12 },
+  scroll: { padding: 16, gap: 12, ...readingColumn },
   media: { width: '80%', aspectRatio: 4 / 3, alignSelf: 'center', borderRadius: 6 },
   questionText: { fontFamily: fonts.barlowRegular, fontSize: 16, lineHeight: 26, color: colors.textPrimary },
   stem: { fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 24, color: colors.textSecondary },

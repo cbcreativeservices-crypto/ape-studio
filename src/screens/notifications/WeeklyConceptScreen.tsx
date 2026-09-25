@@ -13,6 +13,7 @@ import {
   type WeeklyConceptPayload,
 } from '../../features/notifications/weeklyConcept';
 import type { RootStackParamList } from '../../navigation/types';
+import { readingColumn } from '../../theme/readingColumn';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'WeeklyConcept'>;
 
@@ -163,7 +164,7 @@ const styles = StyleSheet.create({
   empty: { fontFamily: fonts.barlowRegular, fontSize: 15, color: colors.textMuted, textAlign: 'center' },
   retry: { marginTop: 14, minHeight: 44, justifyContent: 'center', paddingHorizontal: 22, borderRadius: 10, borderWidth: 1, borderColor: colors.amber },
   retryText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.2, color: colors.amber },
-  scroll: { padding: 16, gap: 16 },
+  scroll: { padding: 16, gap: 16, ...readingColumn },
   eyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.amberLabel },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 22, color: colors.textPrimary, lineHeight: 28 },
   block: { gap: 6 },

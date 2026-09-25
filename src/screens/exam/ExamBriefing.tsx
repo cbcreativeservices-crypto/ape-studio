@@ -40,6 +40,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../theme/tokens';
 import { CERTIFICATE_REQUIRES_EXAM, readTenureState, type TenureState } from '../../features/finalExam/tenure';
+import { readingColumn } from '../../theme/readingColumn';
 
 export function ExamBriefing({
   awardName,
@@ -241,7 +242,7 @@ function Rule({ n, title, body }: { n: string; title: string; body: string }) {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
-  scroll: { paddingHorizontal: 18, gap: 10 },
+  scroll: { paddingHorizontal: 18, gap: 10, ...readingColumn },
 
   kicker: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.8, color: colors.amberLabel },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 21, lineHeight: 27, color: colors.textPrimary },

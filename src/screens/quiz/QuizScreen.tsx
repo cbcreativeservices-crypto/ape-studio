@@ -56,6 +56,7 @@ import { clearAttemptDraft, loadAttemptDraft, saveAttemptDraft } from '../../fea
 import type { StudyStackParamList } from '../../navigation/types';
 import { parseSubmitError } from '../../features/finalExam/api';
 import { QUIZ_SUBMIT_ERROR_COPY } from '../../features/quiz/api';
+import { readingColumn } from '../../theme/readingColumn';
 
 type Props = NativeStackScreenProps<StudyStackParamList, 'Quiz'>;
 
@@ -738,7 +739,7 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 0 },
   },
   timerLow: { color: colors.red, textShadowColor: 'rgba(255,75,58,.6)' },
-  scroll: { padding: 16, gap: 12 },
+  scroll: { padding: 16, gap: 12, ...readingColumn },
   finalNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textSubAlt, fontStyle: 'italic' },
   media: { width: '80%', aspectRatio: 4 / 3, alignSelf: 'center', borderRadius: 6 },
   questionText: { fontFamily: fonts.barlowRegular, fontSize: 16, lineHeight: 26, color: colors.textPrimary },

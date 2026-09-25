@@ -85,6 +85,7 @@ import { requirementsForCredential, type LabRequirementRow } from '../../feature
 import { labRequirementsFor } from '../../data/labRequirements';
 import { AttractRing } from '../../features/onboarding/AttractCue';
 import { markDeckStepped, useHomeAttract } from '../../features/onboarding/attractStore';
+import { readingColumn } from '../../theme/readingColumn';
 
 /**
  * Audio Fundamentals — the one REQUIRED LAB in the shared core (the other
@@ -2649,7 +2650,7 @@ export function EnrollmentView({
 const CORE_INDENT = 26;
 
 const styles = StyleSheet.create({
-  scroll: { paddingHorizontal: 16, paddingTop: 10, gap: 8 },
+  scroll: { paddingHorizontal: 16, paddingTop: 10, gap: 8, ...readingColumn },
   // Top block above the sticky BROWSE & ADD header — keeps the inter-card rhythm
   // the ScrollView's own gap used to provide (user request 2026-07-22).
   topBlock: { gap: 8 },

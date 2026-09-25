@@ -27,6 +27,7 @@ import { StudioButton } from '../../components/StudioButton';
 import { colors, fonts } from '../../theme/tokens';
 import type { RootStackParamList } from '../../navigation/types';
 import { isReleased } from '../../features/finalExam/api';
+import { readingColumn } from '../../theme/readingColumn';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'FinalExamResult'>;
 
@@ -173,7 +174,7 @@ export function FinalExamResultScreen({ navigation, route }: Props) {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
-  scroll: { padding: 24, gap: 14, alignItems: 'center', justifyContent: 'center', flexGrow: 1 },
+  scroll: { padding: 24, gap: 14, alignItems: 'center', justifyContent: 'center', flexGrow: 1, ...readingColumn },
   awardName: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 20,

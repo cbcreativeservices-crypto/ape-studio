@@ -51,6 +51,7 @@ import { StudyHeader } from './StudyHeader';
 import type { StudyStackParamList } from '../../navigation/types';
 import { animationsAllowed } from '../../features/settings/a11y';
 import { orderByCredit } from '../../features/study/deckOrder';
+import { readingColumn } from '../../theme/readingColumn';
 
 type Props = NativeStackScreenProps<StudyStackParamList, 'Matching'>;
 
@@ -638,7 +639,7 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
   center: { flex: 1, backgroundColor: colors.screenBg, alignItems: 'center', justifyContent: 'center', gap: 16, padding: 24 },
   errorText: { fontFamily: fonts.barlowRegular, fontSize: 14, color: colors.textSub, textAlign: 'center' },
-  scroll: { padding: 16, gap: 16 },
+  scroll: { padding: 16, gap: 16, ...readingColumn },
   sideBars: { flexDirection: 'row', gap: 12, marginBottom: -8 },
   sideBar: { flex: 1, height: 3, borderRadius: 2 },
   sideBarLeft: { backgroundColor: 'rgba(255,198,77,0.28)' }, // definitions side — faint amber

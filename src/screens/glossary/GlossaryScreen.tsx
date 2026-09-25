@@ -93,6 +93,7 @@ import {
 } from '../../features/glossary/learningProfiles';
 import { getLabLesson } from '../../features/lab/guidedLessons';
 import type { StudyStackParamList } from '../../navigation/types';
+import { readingColumn } from '../../theme/readingColumn';
 
 const BG_GLOSSARY = require('../../../assets/lab-backgrounds/glossary.webp');
 
@@ -4012,7 +4013,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     overflow: 'hidden',
   },
-  cardPopupContent: { padding: 20, paddingTop: 8, paddingBottom: 32 },
+  cardPopupContent: { padding: 20, paddingTop: 8, paddingBottom: 32, ...readingColumn },
   // Popup header bar: back pill (trail) left · ✕ right (Feature 1).
   cardPopupBar: {
     flexDirection: 'row',

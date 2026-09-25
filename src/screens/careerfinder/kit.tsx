@@ -16,6 +16,7 @@ import { animationsAllowed } from '../../features/settings/a11y';
 import { DIMENSION_CODES, DIMENSIONS, type DimensionCode } from '../../features/careerfinder/dimensions';
 import { band, type DimensionScores } from '../../features/careerfinder/scoring';
 import { CENTRALITY, type AudioCentrality } from '../../features/careerfinder/careerIndex';
+import { readingColumn } from '../../theme/readingColumn';
 
 /* ── shell ─────────────────────────────────────────────────────────────── */
 
@@ -250,7 +251,7 @@ const styles = StyleSheet.create({
   back: { color: colors.textPrimary, fontSize: 30, lineHeight: 32 },
   kicker: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1.5 },
   title: { color: colors.textPrimary, fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.5 },
-  scroll: { paddingHorizontal: 16, paddingTop: 6, gap: 12 },
+  scroll: { paddingHorizontal: 16, paddingTop: 6, gap: 12, ...readingColumn },
   footer: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingTop: 8, borderTopWidth: 1, borderTopColor: colors.hairlineDim, backgroundColor: colors.screenBgDeep },
 
   beta: { alignSelf: 'flex-start', borderWidth: 1, borderColor: colors.amberLabel, borderRadius: 4, paddingHorizontal: 7, paddingVertical: 2 },

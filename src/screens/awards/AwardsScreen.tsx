@@ -1245,7 +1245,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 18,
   },
-  pickerScroll: { paddingHorizontal: 18, paddingTop: 10, gap: 6 },
+  pickerScroll: { paddingHorizontal: 18, paddingTop: 10, gap: 6, ...readingColumn },
   pickerGroup: { marginTop: 10, gap: 2 },
   pickerGroupHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.amberLabel, marginBottom: 4 },
   pickerRow: { flexDirection: 'row', gap: 11, alignItems: 'center', paddingVertical: 7 },
