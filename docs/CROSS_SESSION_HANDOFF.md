@@ -129,6 +129,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-25 14:57 · ccode · 8a00ef7a
+changed: Cable Install: 12 delivered defect photographs wired + Computer C brief v2
+affects other side: nothing — client-only. Cable Install Final Inspection now shows 8 Computer C defect photographs; the Computer C image brief was rebuilt from the app (docs/art/APE_LAB_PHOTO_BRIEF_v2_2026_09_25.md, zip in Downloads) after the owner rejected the 09-25 prompt package. No DB, no publish.
+needs: nothing
+
+
 ### 2026-09-25 13:56 · ccode · c64bc21d
 changed: handoff 2026-09-25B: the Sound Systems Rack Unit pass is done (eaff23f1), verified, unpublished
 affects other side: nothing — docs.
