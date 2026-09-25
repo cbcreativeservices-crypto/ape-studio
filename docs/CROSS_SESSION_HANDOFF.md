@@ -110,6 +110,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-25 10:18 · ccode · 3440d2e0
+changed: EXPLORE areas: the standards program and certificate get a home
+affects other side: nothing — client-only (EXPLORE area menus: the standards program + certificate now surface in System Design & Maintenance and Architectural Acoustics).
+needs: nothing.
+
+
 ### 2026-09-25 09:40 · ccode · e0bd4d68
 changed: Home deck: tablet-sized carousel cards
 affects other side: nothing — client-only (Home carousel card size on tablets).
