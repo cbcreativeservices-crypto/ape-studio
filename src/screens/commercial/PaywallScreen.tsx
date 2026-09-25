@@ -23,6 +23,7 @@ import { navigateToPath } from '../../navigation/linking';
 import { buyPlan, detachPaywallHandlers, initPurchases, restorePurchases } from '../../features/commercial/purchase';
 import type { PlanId } from '../../features/commercial/iapProducts';
 import type { RootStackParamList } from '../../navigation/types';
+import { readingColumn } from '../../theme/readingColumn';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Paywall'>;
 
@@ -466,7 +467,7 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
   close: { position: 'absolute', top: 0, right: 0, zIndex: 2, padding: 16, marginTop: 8 },
   closeGlyph: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, color: colors.textSub },
-  scroll: { padding: 20, paddingTop: 8, gap: 14 },
+  scroll: { padding: 20, paddingTop: 8, gap: 14, ...readingColumn },
   eyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 2.4, color: colors.amber },
   title: { fontFamily: fonts.oswaldMedium, fontSize: 24, lineHeight: 29, color: colors.textPrimary },
   body: { fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 22, color: colors.textSecondary },

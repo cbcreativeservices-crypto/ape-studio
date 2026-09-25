@@ -65,6 +65,7 @@ import {
   type ExposureSnapshot,
 } from '../../features/audio/exposureMonitor';
 import type { RootStackParamList } from '../../navigation/types';
+import { TOOL_READING_MAX_W } from '../../theme/readingColumn';
 
 /**
  * TILE WIDTH IS A FUNCTION OF THE LIVE WINDOW, NOT OF BOOT (2026-09-13).
@@ -110,7 +111,7 @@ import type { RootStackParamList } from '../../navigation/types';
  *  land at 247 pt on any screen at least this wide - bigger than a phone's 163,
  *  which is the point of a tablet, without becoming half the screen. */
 const GRID_GAP = 12; // styles.grid gap
-const HUB_MAX_CONTENT_W = 560;
+const HUB_MAX_CONTENT_W = TOOL_READING_MAX_W;
 /** Pixels deliberately left unspent so flex-wrap can never drop a tile. */
 const TILE_FIT_SLACK = 2;
 

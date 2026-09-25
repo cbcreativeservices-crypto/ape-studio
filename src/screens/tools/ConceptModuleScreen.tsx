@@ -17,6 +17,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { ToolAcademyLock } from './ToolAcademyLock';
 import { toolByKey } from './toolsData';
 import type { RootStackParamList } from '../../navigation/types';
+import { readingColumn } from '../../theme/readingColumn';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ConceptModule'>;
 
@@ -105,11 +106,11 @@ export function ConceptModuleScreen({ navigation, route }: Props) {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 10 },
+  header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 10, ...readingColumn },
   back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
   eyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 2, color: '#7a7a7a' },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 0.8, color: colors.textPrimary, marginTop: 1 },
-  scroll: { padding: 16, paddingBottom: 28, gap: 12 },
+  scroll: { padding: 16, paddingBottom: 28, gap: 12, ...readingColumn },
 
   authoringCard: {
     borderRadius: 10,

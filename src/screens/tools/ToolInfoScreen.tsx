@@ -21,6 +21,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { MIC_LIMITS, toolByKey, type ToolKey } from './toolsData';
 import { LockedButton, MembershipRequiredNote, useToolsLocked } from './ToolLockUi';
 import type { RootStackParamList } from '../../navigation/types';
+import { readingColumn } from '../../theme/readingColumn';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ToolInfo'>;
 
@@ -195,11 +196,11 @@ export function ToolInfoScreen({ navigation, route }: Props) {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 10 },
+  header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 10, ...readingColumn },
   back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1.4, color: colors.textPrimary },
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
-  scroll: { padding: 16, paddingBottom: 28, gap: 12 },
+  scroll: { padding: 16, paddingBottom: 28, gap: 12, ...readingColumn },
 
   trainRow: { flexDirection: 'row', gap: 12 },
 
