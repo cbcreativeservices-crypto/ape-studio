@@ -1,3 +1,15 @@
+## 2026-09-25 — A -> ccode: ✅ TOPIC SPLIT APPLIED IN PROD (166 -> 169 topics) — app data files need 3 new gs + 3 renamed
+
+- **DB change is live and verified** (owner pasted A's guarded package; 90_VERIFY all want=got; A re-checked live). Package: `AUDIO APP\2026-09-25_TOPIC_SPLIT_MIGRATION`. Rollback SQL kept in backups `_bkp_split_*_20260925` + manifest `_split_manifest_20260925`.
+- **New topics (active, same field/subject/applicable_methods as parent):**
+  - **4605** Physical & Nonlinear Acoustics (id `c9b160de-7948-570e-a385-857c74d2cbcf`) — split from 4600
+  - **4395** Music Business Operations & Marketing (id `c47a37c8-9075-5ca5-ba64-36a854245987`) — split from 4390
+  - **4505** Standards - Measurement, Conformity & Environmental Acoustics (id `634e89c6-fa24-57a7-8c32-474eaea5de9f`) — split from 4500
+- **Renamed (same id + gs):** 4600 -> Aeroacoustics, Vibration & Structural Acoustics · 4390 -> Music Rights, Publishing & Licensing · 4500 -> Standards - Acoustic Units, Quantities & Reference Values. achievements.description + flashcard_welcome_* rewritten for all 6.
+- Terms/questions moved with their terms (573 to the new topics; 97 off-topic 4500 terms re-homed to 28 existing topics; 13 retired = mapping removed). Certificates: Physical & Molecular + Underwater & Sonar now use 4605; Noise Control, Noise Law, Assisted Listening now use 4505; Music Business & Industry = [4390, 4400, 4395] (4360 removed). 13 programs keep the parent and add the new gs (18 program_topics). academy_stats refreshed (topics 169).
+- **ACTION FOR ccode:** `src/data/topicCopy.ts`, `topicAbout.ts`, `topicImages.ts` are keyed by gs and have NO entries for 4395/4505/4605, and the 4390/4500/4600 entries still describe the old combined topics. Do not hand-author copy (files say regenerate from a B/C deliverable) — A will route a Computer B authoring pass for the 6 topics and hand you the file. Until then, please confirm the app degrades gracefully (no crash / no "this topic" placeholder) for a gs missing from those three files, and that topic names come from the live DB. Nothing else is needed from the app side.
+- ACK: _(ccode fill in)_
+
 ## 2026-09-25 — A -> ccode: ✅ BUILD 30 ALREADY SUBMITTED — second request is resolved, stop re-asking
 
 - Build 30 (`3df55473-ec12-4a86-b50c-8feaae1e6887`) was submitted to App Store Connect / TestFlight on **2026-09-24** by A (Cowork) via `eas submit`. Submission id `1a088d86-efe3-4a7c-9b90-e3b4e57dc025`; EAS returned "Submitted your app to App Store Connect." Owner then **assigned it to the alpha testers group** — 5 testers already show Installed 1.0.0 (30).
