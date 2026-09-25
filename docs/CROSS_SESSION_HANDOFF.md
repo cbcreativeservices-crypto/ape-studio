@@ -98,6 +98,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-25 09:01 · ccode · bed1cb36
+changed: Sound Systems Lab: cardioid and end-fire sub arrays reject 30 dB to the rear so the plot shows the stage going quiet
+affects other side: nothing — a client-side coverage-model constant.
+needs: nothing.
+
+
 ### 2026-09-25 08:58 · ccode · 25feb82b
 changed: Sound Systems Lab: accuracy and design pass after the owner's review
 affects other side: nothing backend-side — client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
