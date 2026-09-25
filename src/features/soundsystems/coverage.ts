@@ -53,6 +53,9 @@ export type Beam = {
 };
 
 export const REAR_FLOOR_DB = 24;
+/** A cardioid or end-fire sub array rejects 20–30 dB to the rear; the model
+ *  draws the deeper end so the plot shows the stage going quiet. */
+export const SUB_REAR_DB = 30;
 export const DEFAULT_THROW = 120;
 /** One cabinet depth: level is never computed nearer than this. */
 const MIN_DIST = 18;
@@ -67,9 +70,9 @@ export function patternDb(pattern: BeamPattern, offDeg: number, coverDeg: number
     case 'omni':
       return 0;
     case 'cardioid':
-      return Math.min(REAR_FLOOR_DB, -20 * Math.log10(Math.max(1e-6, (1 + Math.cos((th * Math.PI) / 180)) / 2)));
+      return Math.min(SUB_REAR_DB, -20 * Math.log10(Math.max(1e-6, (1 + Math.cos((th * Math.PI) / 180)) / 2)));
     case 'endfire':
-      return Math.min(REAR_FLOOR_DB, -40 * Math.log10(Math.max(1e-6, (1 + Math.cos((th * Math.PI) / 180)) / 2)));
+      return Math.min(SUB_REAR_DB, -40 * Math.log10(Math.max(1e-6, (1 + Math.cos((th * Math.PI) / 180)) / 2)));
     default: {
       if (coverDeg >= 360) return 0;
       const half = Math.max(1, coverDeg / 2);
