@@ -27,6 +27,10 @@ private let apeDeviceModel: String = {
 public class ApeDspModule: Module {
   private let core = ApeDspCore()
   private var engine: AVAudioEngine?
+  /// Did we actually install the input tap? Removing one we never added
+  /// still goes through `engine.inputNode`, which is the access that
+  /// crashed in Sentry APE-STUDIO-T — see stopCapture.
+  private var tapInstalled = false
   private var running = false
   private var interrupted = false
   // Generator output (engine build 2026-07-23): its own AVAudioEngine so the
@@ -454,6 +458,9 @@ public class ApeDspModule: Module {
         self.core.writeChannels(rebound, channelCount: Int32(nch), frameCount: frames)
       }
     }
+    // Set AFTER the tap is actually installed, so a failure above can never
+    // leave us believing there is a tap to remove.
+    tapInstalled = true
 
     engine.prepare()
     try engine.start()
@@ -471,8 +478,40 @@ public class ApeDspModule: Module {
     guard running || engine != nil else { return }
     stopReason = reason
     logEvent("capture STOPPED (\(reason))")
-    engine?.inputNode.removeTap(onBus: 0)
-    engine?.stop()
+    /**
+     ⛔ ORDER MATTERS: STOP THE ENGINE BEFORE TOUCHING `inputNode`.
+
+     CRASH, Sentry APE-STUDIO-T (fatal, iPad Pro 12.9" 5th gen, iOS 26.6.1,
+     build 1.0.0+27): EXC_BAD_ACCESS / KERN_INVALID_ADDRESS at 0xbb inside
+     AVAudioEngineImpl::UpdateInputNode, called from this line.
+
+     The breadcrumbs say what happened: the user opened ToolsHub, rotated to
+     landscape, and BACKGROUNDED the app — the crash landed eight minutes later
+     with `In Foreground: false`, on thread #24, from the `js-stop` path
+     (definition line 74) which Expo dispatches onto a background queue.
+
+     `engine.inputNode` is NOT a passive property read. AVAudioEngine builds and
+     RECONFIGURES the input node when you touch it, so reading it after the OS
+     has torn the audio session down behind a backgrounded app sends the engine
+     looking at input hardware that is no longer attached — and it dereferences
+     a garbage pointer before any Swift error can be thrown. `try?` cannot catch
+     this; it is a native SIGSEGV.
+
+     So: stop the engine first, which quiesces it, and only then remove the tap
+     — and only if we actually installed one. `tapInstalled` exists because
+     removing a tap that was never added also has to go through `inputNode`,
+     which is the very access being guarded against.
+
+     ⚠️ NATIVE CHANGE — this ships in a BUILD, not an over-the-air update, and
+     it is NOT device-tested (reproducing it needs an iPad, a live capture and a
+     background transition). The ordering is the documented-safe one and the
+     guard can only skip work, but it wants a device pass before it is trusted.
+     */
+    if let engine = engine {
+      if engine.isRunning { engine.stop() }
+      if tapInstalled { engine.inputNode.removeTap(onBus: 0) }
+    }
+    tapInstalled = false
     engine = nil
     core.stop()
     running = false
