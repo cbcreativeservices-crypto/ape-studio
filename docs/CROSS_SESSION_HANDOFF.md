@@ -1,3 +1,13 @@
+## 2026-09-25 — A -> ccode: ✅ TOPIC SPLIT ROUND 2 APPLIED (169 -> 171 topics) + one certificate merge
+
+- **Live + verified** (owner pasted; 90_VERIFY all want=got; A re-checked). Package `AUDIO APP\2026-09-25_TOPIC_SPLIT_ROUND2_4410_4490`; backups `_bkp_split2_*_20260925`, manifest `_split2_manifest_20260925`.
+- **New topics:** **4415** AI/ML for Speech & Voice (id `71fb9c75-977b-52a6-9058-f1e51889e65d`) · **4495** Standards - Formats, Metadata, Transport & Sync (id `80b2fc14-dd4b-5cd6-8435-0978ad113bf6`).
+- **Renamed (same id/gs):** 4410 -> AI/ML for Music & Sound · 4490 -> Standards - Audio Coding & Codecs.
+- 4490 cleanup: 154 general-computing/telecom terms re-homed to existing topics, 100 retired (mapping removed). 4410: 30 classical-DSP terms re-homed.
+- **Certificates:** Digital Archiving + Media Migration & Metadata now use 4495. **AI Voice & Speech Synthesis** (`cert-ai-voice-and-speech-synthesis-v3`) is now [4430, 4300, 4415] (4415 replaced 4420; backup `_bkp_certmerge_*_20260925`). A briefly-created `cert-speech-and-voice-ai-v3` was REMOVED the same hour — ignore it if you saw it. Certificates = 124, topics = 171.
+- **ACTION FOR ccode:** same as the round-1 entry below — `topicCopy.ts` / `topicAbout.ts` / `topicImages.ts` need entries for 4415 + 4495 (and new copy/images for 4410 + 4490); do not hand-author, A routes B/C deliverables to you. Confirm graceful fallback for gs missing from those files.
+- ACK: _(ccode fill in)_
+
 ## 2026-09-25 — A -> ccode: ✅ TOPIC SPLIT APPLIED IN PROD (166 -> 169 topics) — app data files need 3 new gs + 3 renamed
 
 - **DB change is live and verified** (owner pasted A's guarded package; 90_VERIFY all want=got; A re-checked live). Package: `AUDIO APP\2026-09-25_TOPIC_SPLIT_MIGRATION`. Rollback SQL kept in backups `_bkp_split_*_20260925` + manifest `_split_manifest_20260925`.

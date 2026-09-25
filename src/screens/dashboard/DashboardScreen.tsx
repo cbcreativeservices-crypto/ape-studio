@@ -1056,11 +1056,30 @@ export function DashboardScreen() {
       // A deep-linked topic becomes the LAST KNOWN one (owner 2026-09-01), so
       // the STUDY tab returns the user to what they actually opened last.
       if (dataRef.current) setLastTopicIndex(dataRef.current.currentCourse.id, i);
+      navigation.setParams({ focusGs: undefined, topicSlug: undefined });
+      return;
     }
-    // An unresolved slug leaves the Dashboard on its normal topic rather than
-    // erroring: the term may have been renamed, or belong to a course this
-    // account is not enrolled in. The website's page is the fallback.
-    navigation.setParams({ focusGs: undefined, topicSlug: undefined });
+    /**
+     * ⛔ A MISSED `focusGs` STAYS ARMED (tester report, TestFlight 2026-09-25,
+     * build 30: "I enrolled in microphone course and it locked on the flash
+     * card screen for electrical connections a different course").
+     *
+     * The Dashboard lands on CACHED content and refetches only after the
+     * landing transition (the `load` focus effect above). So when a learner
+     * enrols and taps STUDY NOW, this effect first runs against the OLD topic
+     * list, the new topic is not in it, and — before this fix — the param was
+     * cleared on that miss. The refetch then brought the topic in, but nothing
+     * was left to focus it: the learner sat on topic 0, which for anyone with
+     * co-requisites is Pro Audio Safety or Grounding & Electrical, and the
+     * power-sequence lock put them on ITS flashcards. Exactly the report.
+     *
+     * Keep the numeric focus until the list catches up; it costs one cheap
+     * findIndex per topics change. A SLUG that never resolves is different and
+     * keeps its documented fallback: the term may have been renamed, or belong
+     * to a course this account is not enrolled in — the website's page is the
+     * fallback, so clear it rather than retry forever.
+     */
+    if (topicSlug) navigation.setParams({ focusGs: undefined, topicSlug: undefined });
   }, [focusGs, topicSlug, topics, navigation]);
   const status = topic ? (data!.progressByTopic.get(topic.id)?.status ?? 'locked') : 'locked';
   const lastTopicIdx = Math.max(0, topics.length - 1);
