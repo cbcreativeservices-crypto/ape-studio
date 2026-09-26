@@ -173,6 +173,78 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 10:26 · ccode · f031688a
+changed: Meter lab: everything in the drawing zooms with full screen (parity pass)
+affects other side: nothing — client only
+needs: nothing
+
+
+### 2026-09-26 10:15 · ccode · 7cc09e12
+changed: EQ Lab: everything in the drawing zooms with full screen (parity pass)
+affects other side: nothing — client only
+needs: nothing
+
+
+### 2026-09-26 10:12 · ccode · ae5e259b
+changed: Foundations of Sound: everything in the drawing zooms with full screen (parity pass)
+affects other side: nothing — client only
+needs: nothing
+
+
+### 2026-09-26 10:12 · ccode · ab23175b
+changed: Envelope: everything in the drawing zooms with full screen (parity pass)
+affects other side: nothing — client only
+needs: nothing
+
+
+### 2026-09-26 10:12 · ccode · 62ec9832
+changed: Amplifier: everything in the drawing zooms with full screen (parity pass)
+affects other side: nothing — client only
+needs: nothing
+
+
+### 2026-09-26 10:09 · ccode · 02054a6a
+changed: Speech: everything in the drawing zooms with full screen (parity pass)
+affects other side: nothing — client only
+needs: nothing
+
+
+### 2026-09-26 10:08 · ccode · 0063c87d
+changed: Oscillator Lab: everything in the drawing zooms with full screen (parity pass)
+affects other side: nothing — client only
+needs: nothing
+
+
+### 2026-09-26 10:07 · ccode · 205426d2
+changed: De-Esser: everything in the drawing zooms with full screen (parity pass)
+affects other side: nothing — client only
+needs: nothing
+
+
+### 2026-09-26 10:06 · ccode · 9ce7586c
+changed: Cable Install: everything in the drawing zooms with full screen (parity pass)
+affects other side: nothing — client only
+needs: nothing
+
+
+### 2026-09-26 10:05 · ccode · 41f92f3a
+changed: Sound Systems: everything in the drawing zooms with full screen (parity pass)
+affects other side: nothing — client only
+needs: nothing
+
+
+### 2026-09-26 10:01 · ccode · 5d80ba6a
+changed: Mic Principles: everything in the drawing zooms with full screen (parity pass)
+affects other side: nothing — client only
+needs: nothing
+
+
+### 2026-09-26 09:49 · ccode · 2d392040
+changed: Rack: HIDE DISPLAY / FULL SCREEN row is 34 pt tall (touch target still 44 pt by hit slop)
+affects other side: nothing — client only
+needs: nothing
+
+
 ### 2026-09-26 09:38 · ccode · c3e80579
 changed: Rack full screen: the bezel readouts run across the top, under the zoom bar
 affects other side: nothing — client only

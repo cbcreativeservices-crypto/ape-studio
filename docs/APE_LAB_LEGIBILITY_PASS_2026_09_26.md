@@ -220,6 +220,22 @@ returned signed URLs with the expected durations (playback itself cannot be hear
 display was screenshotted at 390 and 375 and in full screen at 1× and 2× with the dock visible; trays opened inside
 full screen on the rack labs; page controls changed the picture inside full screen on the inline-figure labs.
 
+## 6 · Morning walkthrough with the owner (2026-09-26) — five rulings, applied to every full-screen lab
+
+Ruled on Wave Physics · Reflection, then applied everywhere so all labs behave the same:
+| Ruling | Where it lives | Commits |
+|---|---|---|
+| The zoom hint rolls down out of the way on a tap; a `?` chip rolls it back | shared `StageFullScreen` | `800b9a9f` |
+| The lab's readouts run across the top of full screen, under the zoom bar | shared (rack bezel passes through); inline-figure labs put their live readouts at the top of the dock | `c3e80579` + per-lab |
+| With a tray open, the dock rises above the tray card so lane + keys stay usable, and drops back on close | shared `StageFullScreen` / `RackUnit` / `DockTray` | `f8b9d79d` |
+| HIDE DISPLAY / FULL SCREEN row is thinner: 34 pt visible, 44 pt touch target kept by hit slop | shared `RackUnit` (+ guard test) | `2d392040` |
+| EVERYTHING in the drawing zooms with the step — objects, glyphs, icons, ticks, strokes, halos, legends, fader boards | per lab | Wave `89cb3917` · Mic `5d80ba6a` · Sound Systems `41f92f3a` · Oscillator `0063c87d` · Foundations `ae5e259b` · Meter `f031688a` · EQ `7cc09e12` · Cable Install `9ce7586c` · De-Esser `205426d2` · Speech `02054a6a` · Amplifier `62ec9832` · Envelope `ab23175b` |
+
+Each lab's parity report (element · glass · 2× · 3×) is in the session scratchpad; every element scales by
+the measured step (2.03 / 3.05), nothing in a drawing stays phone-sized. Deliberately kept at size: dock
+chrome and genuine controls (Cable Install's 44 pt marker hit areas, the M7 predict-first question).
+Tools sharing the meter drawings (SPL / RTA) are unchanged (scale = 1 outside a rack).
+
 ## 5 · Not reached / leftovers (the next candidates, not asked for)
 - **SE 375×667** reported only, not required (full screen covers it). Landscape not screenshotted.
 - **Bezel value truncation** (shared `BezelReadouts`): Loudness meter ("INTEGRAT…", "-15.9LU…"); Sound Systems
