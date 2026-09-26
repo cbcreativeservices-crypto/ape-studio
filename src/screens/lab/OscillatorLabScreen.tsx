@@ -63,6 +63,7 @@ import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { CheckQuestion } from './foundations/bits';
 import { LabShell, HeaderPlayButton } from './LabShell';
+import { useStageTextScale } from './rack/stageAspect';
 import { additivePayload, buildPreset, effectiveAmp, synthWaveform, type PresetKey } from './harmonicModel';
 import { levelColor, MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
@@ -242,6 +243,7 @@ export function OscillatorLabScreen() {
         onHelp: openLesson,
         stage: {
           size: 'L', // strip + bars stacked — the pair earns the tall glass
+          fullScreen: true, // the rack's ⤢ FULL SCREEN (legibility pass 2026-09-26)
           // Honesty badge stays per-display and dynamic: reference model vs
           // the filtered speaker-output view (what you see = what you hear).
           badge: speakerView
@@ -266,7 +268,7 @@ export function OscillatorLabScreen() {
                 accessibilityRole={engineReady ? 'button' : undefined}
                 accessibilityLabel={engineReady ? (running ? 'Tap to stop' : 'Tap to play') : undefined}
               >
-                <TravelingWaveStrip points={waveformPts} height={stripH} />
+                <TravelingWaveStrip points={waveformPts} width={w} height={stripH} />
                 <HarmonicBars amps={amps} overlay={speakerView ? guardCurve : undefined} width={w} height={h - stripH} />
               </Pressable>
             );
@@ -409,9 +411,12 @@ const CYCLE_MS = 1600; // one waveform period per lap — a calm, readable drift
  *  `height` comes from the stage glass budget (rack conversion 2026-08-23);
  *  the level-colour gradient (red at ±full scale, deep green at the zero
  *  line) is pinned to the same ±h/2.2 span the path uses. */
-function TravelingWaveStrip({ points, height }: { points: number[]; height: number }) {
+function TravelingWaveStrip({ points, width, height }: { points: number[]; width?: number; height: number }) {
   const focused = useIsFocused();
-  const [w, setW] = useState(0);
+  // The stage hands its width in (so the strip is right on the first frame
+  // in FULL SCREEN, where it mounts fresh at a new size); measured otherwise.
+  const [measured, setMeasured] = useState(0);
+  const w = width && width > 0 ? width : measured;
   const shift = useSharedValue(0);
 
   // The 3-cycle path in PIXEL coords (recomputed only on layout/model change).
@@ -439,7 +444,7 @@ function TravelingWaveStrip({ points, height }: { points: number[]; height: numb
   return (
     <View
       style={styles.stripClip}
-      onLayout={(e) => setW(Math.round(e.nativeEvent.layout.width))}
+      onLayout={width && width > 0 ? undefined : (e) => setMeasured(Math.round(e.nativeEvent.layout.width))}
     >
       {w > 0 ? (
         <Animated.View style={[{ width: w * 1.5 }, slide]}>
@@ -505,7 +510,8 @@ function SettleBar({ x, width, amp, chartH }: { x: number; width: number; amp: n
  *  `overlay` is given (0..1 gain per harmonic) the filter response is drawn as a
  *  line across the bars — the honest picture of what the high-pass does.
  *  Pixel-driven (rack conversion 2026-08-23): `width`/`height` come from the
- *  stage glass, with a 14 px label strip under the chart. */
+ *  stage glass, with a label strip (9 pt × the full-screen text scale) under
+ *  the chart. */
 function HarmonicBars({
   amps,
   overlay,
@@ -517,7 +523,13 @@ function HarmonicBars({
   width: number;
   height: number;
 }) {
-  const H = Math.max(40, height - 14); // chart area; 14 px for the H1–H12 labels
+  // H1–H12 labels: 9 pt on the glass (owner 2026-09-25: 9 pt minimum), grown
+  // with the picture in FULL SCREEN — this chart is pixel-driven (no viewBox),
+  // so its text would otherwise stay glass-sized while the bars grew.
+  const ts = useStageTextScale();
+  const fs = 9 * ts;
+  const labelH = Math.round(fs + 6);
+  const H = Math.max(40, height - labelH); // chart area; the label strip sits under it
   const pad = 6;
   const bw = (width - pad * 2) / 12;
   const cx = (i: number) => pad + i * bw + bw / 2;
@@ -551,9 +563,9 @@ function HarmonicBars({
         <SvgText
           key={`l${i}`}
           x={pad + i * bw + bw / 2}
-          y={H + 11}
+          y={H + labelH - 3}
           fill={colors.textSub}
-          fontSize={8}
+          fontSize={fs}
           textAnchor="middle"
         >
           {`${i + 1}`}
