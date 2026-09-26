@@ -214,6 +214,25 @@ function appendBust(p: SkPathT, x: number, y: number, s: number) {
   p.close();
 }
 
+/** A standing person, front view, drawn to a real height (feet at `gy`,
+ *  `u` = px per metre) — for side-view scenes where the figure must stay in
+ *  proportion with the speaker and the barrier (owner 2026-09-26: "the
+ *  speaker, human figure and height all stay in correct proportional
+ *  dimensions"). 1.75 m tall. Body contour + head, one path each. */
+function appendStanding(p: SkPathT, x: number, gy: number, u: number) {
+  const P = (dx: number, h: number): [number, number] => [x + dx * u, gy - h * u];
+  const pts: [number, number][] = [
+    P(-0.05, 1.5), P(-0.19, 1.45), P(-0.24, 1.36), P(-0.26, 0.86), P(-0.2, 0.86),
+    P(-0.19, 1.2), P(-0.17, 0.82), P(-0.15, 0.0), P(-0.04, 0.0), P(0, 0.76),
+    P(0.04, 0.0), P(0.15, 0.0), P(0.17, 0.82), P(0.19, 1.2), P(0.2, 0.86),
+    P(0.26, 0.86), P(0.24, 1.36), P(0.19, 1.45), P(0.05, 1.5),
+  ];
+  pts.forEach(([px, py], i) => (i === 0 ? p.moveTo(px, py) : p.lineTo(px, py)));
+  p.close();
+  const [hx, hy] = P(0, 1.63);
+  p.addCircle(hx, hy, 0.12 * u);
+}
+
 /** Line-art bust over a readability plate (LineBusts idiom, micspeaker/viz). */
 function LineBust({ path, stroke, sw }: { path: SkPathT; stroke: string; sw: number }) {
   return (
@@ -1968,6 +1987,9 @@ export function RoomSceneView(p: RoomSceneProps) {
 
 const BARRIER_SCENE_M = 30; // canvas width spans 30 m (side view)
 const BARRIER_TEMP_C = 20;
+const BARRIER_SIDE_M = 10; // source and listener each 10 m from the barrier (module geometry)
+const BARRIER_EAR_M = 1.5; // source and ear height, m (module geometry)
+const PA_CAB_M = 0.6; // PA cabinet height, m — the speaker glyph is scaled to this
 
 /** A whole wavefront TRAIN drawn in ONE worklet path — a full run of concentric
  *  circles at wavelength-true spacing. One component (not N RoomRings), so the
@@ -2041,7 +2063,16 @@ function DiffractedTrain({
     }
     return p;
   }, [phase, cx, cy, spacing, count, a0, sweep, maxR]);
-  return <Path path={path} color="#bcd4ff" style="stroke" strokeWidth={1.3} opacity={0.55 * amp} blendMode="plus" />;
+  // Bright enough to SEE the wrap (walkthrough 2026-09-26: it was drawn but
+  // too faint to read); `amp` is still the real Maekawa level per band.
+  return (
+    <>
+      <Path path={path} color="#bcd4ff" style="stroke" strokeWidth={3.2} opacity={0.35 * amp} blendMode="plus">
+        <BlurMask blur={4} style="normal" />
+      </Path>
+      <Path path={path} color="#e6f0ff" style="stroke" strokeWidth={1.5} opacity={0.95 * amp} blendMode="plus" />
+    </>
+  );
 }
 
 /** Small side-view PA speaker (front toward +x) — recognizable object, not a
@@ -2073,7 +2104,8 @@ export function BarrierSceneView(p: {
   width: number;
   height?: number;
   freq: number;
-  barrierH01: number;
+  /** Barrier height, m — drawn to scale (2–8 m in the module). */
+  barrierM: number;
   phase: SharedValue<number>;
 }) {
   const w = p.width;
@@ -2089,16 +2121,31 @@ export function BarrierSceneView(p: {
   const lambdaPx = (c / Math.max(20, p.freq)) * ppm;
   const spacing = Math.max(10, Math.min(w * 0.33, lambdaPx)); // wavelength-true, clamped readable
 
-  // Geometry (meters are heights above ground; screen y runs down).
-  const sxM = 3.0;
-  const syM = 1.4;
+  // Geometry — the MODULE'S geometry, drawn to ONE scale (px per metre the
+  // same across and up), so speaker, person and wall keep their real
+  // proportions (walkthrough 2026-09-26). Source and listener 10 m either
+  // side of the barrier at 1.5 m, exactly what the LOSS readouts assume;
+  // the barrier is its real height, not a fraction of the canvas.
   const bxM = BARRIER_SCENE_M * 0.5;
-  const maxBarM = (groundY - 14) / ppm;
-  const barM = Math.max(0.4, Math.min(1, p.barrierH01) * maxBarM);
+  const sxM = bxM - BARRIER_SIDE_M;
+  const lxM = bxM + BARRIER_SIDE_M;
+  const syM = BARRIER_EAR_M;
+  const barM = Math.max(0.4, Math.min((groundY - 6) / ppm, p.barrierM));
   const sx = sxM * ppm;
   const sy = groundY - syM * ppm;
   const bx = bxM * ppm;
+  const lx = lxM * ppm;
   const eY = groundY - barM * ppm;
+  // Level at the listener: the same Maekawa loss the bezel prints, shown on
+  // the app's loudness ramp in dB (0 dB = unobstructed → red; 30 dB down →
+  // blue), so 63 Hz reads warm and 8 kHz reads cold.
+  const listenerLoss = maekawaAttenuationDb(
+    Math.hypot(bxM - sxM, barM - syM) + Math.hypot(lxM - bxM, barM - syM),
+    lxM - sxM,
+    p.freq,
+    BARRIER_TEMP_C,
+  );
+  const listenerLevel = Math.max(0, Math.min(1, 1 - listenerLoss / 30));
 
   // Ring-train lengths are derived from the CANVAS geometry and the 10 px
   // spacing floor — NOT the live frequency or barrier height — so the count is
@@ -2166,11 +2213,42 @@ export function BarrierSceneView(p: {
     return [mk(th0, mid), mk(mid, thMax)];
   }, [w, groundY, ppm, bx, eY, sx, sy, sxM, syM, bxM, barM, p.freq]);
 
+  // The direct wave exists only where the source can SEE: everything except
+  // the geometric shadow behind the wall. Clipping the primary rings to it
+  // leaves the shadow to the diffracted train alone — the wrap is then the
+  // only sound in there, so it reads (walkthrough 2026-09-26).
+  const lit = useMemo(() => {
+    const path = Skia.Path.Make();
+    const slope = (eY - sy) / (bx - sx); // up-to-the-right (barrier > source)
+    const yAtW = eY + slope * (w - bx);
+    path.moveTo(0, 0);
+    if (yAtW >= 0) {
+      path.lineTo(w, 0);
+      path.lineTo(w, yAtW);
+    } else {
+      path.lineTo(bx + (0 - eY) / slope, 0);
+    }
+    path.lineTo(bx, eY);
+    path.lineTo(bx, groundY);
+    path.lineTo(0, groundY);
+    path.close();
+    return path;
+  }, [w, bx, eY, sx, sy, groundY]);
   const barrier = useMemo(() => {
     const path = Skia.Path.Make();
-    path.addRect(Skia.XYWHRect(bx - 2.5, eY, 5, groundY - eY));
+    const t = Math.max(3, 0.25 * ppm); // a 25 cm wall
+    path.addRect(Skia.XYWHRect(bx - t / 2, eY, t, groundY - eY));
     return path;
-  }, [bx, eY, groundY]);
+  }, [bx, eY, groundY, ppm]);
+  const barrierT = Math.max(3, 0.25 * ppm);
+  // Speaker: a 0.6 m cabinet centred at 1.5 m on a stand (glyph box = 16 s).
+  const spkS = (PA_CAB_M * ppm) / 16;
+  const stand = useMemo(() => {
+    const path = Skia.Path.Make();
+    path.moveTo(sx - 4 * spkS, sy + 8 * spkS);
+    path.lineTo(sx - 4 * spkS, groundY);
+    return path;
+  }, [sx, sy, spkS, groundY]);
   const sky = useMemo(() => {
     const path = Skia.Path.Make();
     path.addRect(Skia.XYWHRect(0, 0, w, groundY));
@@ -2178,9 +2256,10 @@ export function BarrierSceneView(p: {
   }, [w, groundY]);
   const bust = useMemo(() => {
     const path = Skia.Path.Make();
-    appendBust(path, w * 0.86, groundY, 1.15);
+    appendStanding(path, lx, groundY, ppm);
     return path;
-  }, [w, groundY]);
+  }, [lx, groundY, ppm]);
+  const headY = groundY - 1.63 * ppm;
 
   return (
     <View style={{ width: w, height: h }}>
@@ -2188,11 +2267,14 @@ export function BarrierSceneView(p: {
         <Path path={sky}>
           <LinearGradient start={vec(0, 0)} end={vec(0, groundY)} colors={['#111420', '#0c0c0f']} />
         </Path>
-        {/* Primary wavefronts (wavelength-true spacing). */}
-        <WaveTrain phase={p.phase} x={sx} y={sy} spacing={spacing} count={primaryCount} maxR={trainMaxR} />
+        {/* Primary wavefronts (wavelength-true spacing) — only where the
+            source can see; the shadow gets the diffracted train alone. */}
+        <Group clip={lit}>
+          <WaveTrain phase={p.phase} x={sx} y={sy} spacing={spacing} count={primaryCount} maxR={trainMaxR} />
+        </Group>
         {/* Maekawa shadow: dimming buckets behind the barrier (idx 0 = clear). */}
         {shadow.map((path, i) =>
-          i === 0 ? null : <Path key={i} path={path} color="#06070b" opacity={(i / 13) * 0.82} />,
+          i === 0 ? null : <Path key={i} path={path} color="#06070b" opacity={(i / 13) * 0.9} />,
         )}
         {/* Diffracted (Huygens) train wrapping past the edge — brightness per
             band from the Maekawa dB; low freq wraps visibly, highs shadow. */}
@@ -2212,17 +2294,28 @@ export function BarrierSceneView(p: {
         ))}
         {/* The knife-edge barrier: concrete-toned slab, lit edge cap. */}
         <Path path={barrier}>
-          <LinearGradient start={vec(bx - 2.5, 0)} end={vec(bx + 2.5, 0)} colors={['#6a6e79', '#3a3d46']} />
+          <LinearGradient start={vec(bx - barrierT / 2, 0)} end={vec(bx + barrierT / 2, 0)} colors={['#6a6e79', '#3a3d46']} />
         </Path>
-        <Circle cx={bx} cy={eY + 1} r={2.2} color={WAVE} opacity={0.65}>
-          <BlurMask blur={2.4} style="normal" />
+        <Circle cx={bx} cy={eY + 1} r={2.2 * ts} color={WAVE} opacity={0.65}>
+          <BlurMask blur={2.4 * ts} style="normal" />
         </Circle>
         <Floor w={w} y={groundY} h={h - groundY} />
-        <SideSpeakerGlyph x={sx} y={sy} s={1.15 * ts} />
-        <LineBust path={bust} stroke={LINE} sw={1.2} />
+        {/* Speaker on its stand, over a dark plate so dense high-frequency
+            rings never swallow it. */}
+        <Path path={stand} color="#4a4d58" style="stroke" strokeWidth={Math.max(1, 0.05 * ppm)} />
+        <Circle cx={sx - 4 * spkS} cy={sy} r={12 * spkS} color={BG} opacity={0.85}>
+          <BlurMask blur={3 * spkS} style="normal" />
+        </Circle>
+        <SideSpeakerGlyph x={sx} y={sy} s={spkS} />
+        {/* Listener level halo — the bezel's LOSS on the loudness ramp. */}
+        <Circle cx={lx} cy={headY} r={0.55 * ppm} color={levelColor(listenerLevel)} opacity={0.28 + 0.5 * listenerLevel}>
+          <BlurMask blur={0.25 * ppm} style="normal" />
+        </Circle>
+        <LineBust path={bust} stroke={LINE} sw={Math.max(1, 0.06 * ppm)} />
       </Canvas>
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-        <RNText style={[styles.sceneLabel, { fontSize: 9 * ts, left: bx + (w - bx) / 2 - 50 * ts, top: groundY - 30 * ts, width: 100 * ts, textAlign: 'center' }]}>
+        {/* Bright enough to read on the dark wedge (walkthrough 2026-09-26). */}
+        <RNText style={[styles.sceneLabel, { fontSize: 9 * ts, left: bx + (lx - bx) / 2 - 50 * ts, top: groundY - 14 * ts, width: 100 * ts, textAlign: 'center', color: '#c9d3e6' }]}>
           SHADOW ZONE
         </RNText>
       </View>

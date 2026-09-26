@@ -174,17 +174,18 @@ function BarrierView({
   height,
   focused,
   freq,
-  barrierH01,
+  barrierM,
 }: {
   viz: WaveVizModule;
   width: number;
   height?: number;
   focused: boolean;
   freq: number;
-  barrierH01: number;
+  /** Real barrier height, m — the view draws it to scale. */
+  barrierM: number;
 }) {
   const phase = viz.usePhaseClock(focused, visHzFor(freq));
-  return <viz.BarrierSceneView width={width} height={height} freq={freq} barrierH01={barrierH01} phase={phase} />;
+  return <viz.BarrierSceneView width={width} height={height} freq={freq} barrierM={barrierM} phase={phase} />;
 }
 
 function GradientView({
@@ -989,7 +990,7 @@ export function DiffractionModule(p: WaveModuleProps) {
               height={h}
               focused={p.focused}
               freq={freq}
-              barrierH01={(barrierH - 2) / 6}
+              barrierM={barrierH}
             />
           ) : (
             <VizUnavailableCard />
