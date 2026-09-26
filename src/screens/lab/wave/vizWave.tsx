@@ -2014,15 +2014,22 @@ export function RoomSceneView(p: RoomSceneProps) {
         ) : null}
         {/* PRESSURE: constant-speed, wavelength-spaced ring trains (worklets;
             fixed 3 rings × 2 strokes = 6 paths regardless of source count). */}
-        {ringSrcs.length > 0
-          ? Array.from({ length: RING_N }, (_, i) => <RoomRing key={i} phase={p.phase} srcs={ringSrcs} i={i} />)
-          : null}
+        {/* Clipped to the room: the rings were drawn straight through the
+            walls into the margin, as if sound passed through concrete
+            (walkthrough 2026-09-26). */}
+        {ringSrcs.length > 0 ? (
+          <Group clip={interior}>
+            {Array.from({ length: RING_N }, (_, i) => <RoomRing key={i} phase={p.phase} srcs={ringSrcs} i={i} />)}
+          </Group>
+        ) : null}
         {/* PULSE TRACER (PRESSURE, with or without RAYS): the 2 s pulse ring + one
             node per ray riding its line at constant speed — direct arrives
             first, reflections later, all landed before the next pulse. */}
         {tracing && traces ? (
           <>
-            <PulseRing t={pulseT} origins={pulseOrigins} paceLen={paceLen} />
+            <Group clip={interior}>
+              <PulseRing t={pulseT} origins={pulseOrigins} paceLen={paceLen} />
+            </Group>
             <PulseNodes t={pulseT} traces={traces} paceLen={paceLen} minLen={minLen} scale={ts} />
           </>
         ) : null}
