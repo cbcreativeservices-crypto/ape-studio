@@ -37,6 +37,7 @@
 import { useId, useMemo } from 'react';
 import {
   Circle,
+  ClipPath,
   Defs,
   Ellipse,
   G,
@@ -983,6 +984,270 @@ export function PlugRearView({ x, y, k, dia = 19, kind = 'xlr' }: { x: number; y
       <Circle cx={x} cy={y} r={R * 0.62} fill="#1b1c20" stroke="#050506" strokeWidth={0.4 * k} />
       <Circle cx={x} cy={y} r={R * 0.46} fill="none" stroke="#2e3036" strokeWidth={0.7 * k} />
       <Circle cx={x} cy={y} r={R * 0.3} fill="none" stroke="#2e3036" strokeWidth={0.7 * k} />
+    </G>
+  );
+}
+
+
+/* ══ ARCHITECTURE (building sections; `m` = drawing units per METRE) ═══════ */
+
+/** Diagonal-hatched concrete (a slab or wall cut by the section plane). */
+export function ConcreteCut({ x, y, w, h, pitch = 3.2 }: { x: number; y: number; w: number; h: number; pitch?: number }) {
+  const id = useUid();
+  const lines: string[] = [];
+  for (let d = -h; d < w; d += pitch) lines.push(`M${x + d} ${y + h} L${x + d + h} ${y}`);
+  const dots: string[] = [];
+  for (let i = 0; i < Math.round((w * h) / 30); i++) {
+    const px = x + ((i * 7.31) % w);
+    const py = y + ((i * 3.77) % h);
+    dots.push(`M${px} ${py} h0.6`);
+  }
+  return (
+    <G>
+      <Defs>
+        <ClipPath id={`${id}k`}>
+          <Rect x={x} y={y} width={w} height={h} />
+        </ClipPath>
+      </Defs>
+      <Rect x={x} y={y} width={w} height={h} fill="#3a3c42" />
+      <G clipPath={`url(#${id}k)`}>
+        <Path d={lines.join('')} stroke="#5b5e66" strokeWidth={0.5} />
+        <Path d={dots.join('')} stroke="#6e717a" strokeWidth={0.7} />
+      </G>
+      <Rect x={x} y={y} width={w} height={h} fill="none" stroke="#1a1b1f" strokeWidth={0.6} />
+    </G>
+  );
+}
+
+/** Earth under a ground slab. */
+export function EarthBand({ x, y, w, h }: { x: number; y: number; w: number; h: number }) {
+  const marks: string[] = [];
+  for (let xx = x + 2; xx < x + w - 2; xx += 7) marks.push(`M${xx} ${y + 3} l2.2 2.2 M${xx + 3.5} ${y + h - 3} l2.2 -2.2`);
+  return (
+    <G>
+      <Rect x={x} y={y} width={w} height={h} fill="#16130f" />
+      <Path d={marks.join('')} stroke="#3a3126" strokeWidth={0.6} />
+    </G>
+  );
+}
+
+/**
+ * A stud partition cut in section: two gypsum faces with the insulated cavity
+ * between them. (x, y0..y1) = the wall's left face and extent; `t` thickness.
+ * `gaps` are door openings as [yTop, yBottom] pairs.
+ */
+export function StudWallCut({ x, y0, y1, t, gaps = [] }: { x: number; y0: number; y1: number; t: number; gaps?: [number, number][] }) {
+  const spans: [number, number][] = [];
+  let at = y0;
+  for (const [a, b] of [...gaps].sort((p, q) => p[0] - q[0])) {
+    if (a > at) spans.push([at, a]);
+    at = b;
+  }
+  if (at < y1) spans.push([at, y1]);
+  return (
+    <G>
+      {spans.map(([a, b], i) => {
+        const wig: string[] = [];
+        for (let yy = a + 1.5; yy < b - 1; yy += 2.6) wig.push(`M${x + t * 0.3} ${yy} q${t * 0.2} 1.3 ${t * 0.4} 0`);
+        return (
+          <G key={i}>
+            <Rect x={x} y={a} width={t} height={b - a} fill="#2a2519" />
+            <Path d={wig.join('')} stroke="#6d5c33" strokeWidth={0.45} fill="none" />
+            <Rect x={x} y={a} width={t * 0.2} height={b - a} fill="#d7d4cc" />
+            <Rect x={x + t * 0.8} y={a} width={t * 0.2} height={b - a} fill="#d7d4cc" />
+          </G>
+        );
+      })}
+      {gaps.map(([a], i) => (
+        <Rect key={`g${i}`} x={x - 0.4} y={a - 1.2} width={t + 0.8} height={1.4} fill="#8c8f96" />
+      ))}
+    </G>
+  );
+}
+
+/**
+ * Suspended acoustic ceiling, cut: tiles on a T-bar grid at 0.6 m, hung on
+ * wires to the structure above at 1.2 m. (x0..x1, y) = underside of the tiles.
+ */
+export function CeilingCut({ x0, x1, y, m, hangTo, opening }: { x0: number; x1: number; y: number; m: number; hangTo?: number; opening?: [number, number] }) {
+  const tile = Math.max(0.9, 0.02 * m);
+  const segs: [number, number][] = opening ? [[x0, opening[0]], [opening[1], x1]] : [[x0, x1]];
+  const tees: string[] = [];
+  const wires: string[] = [];
+  for (let xx = x0 + 0.6 * m; xx < x1; xx += 0.6 * m) {
+    if (opening && xx > opening[0] - 1 && xx < opening[1] + 1) continue;
+    tees.push(`M${xx} ${y - tile} v${tile + 0.9}`);
+  }
+  if (hangTo != null) {
+    for (let xx = x0 + 0.6 * m; xx < x1; xx += 1.2 * m) {
+      if (opening && xx > opening[0] - 1 && xx < opening[1] + 1) continue;
+      wires.push(`M${xx} ${hangTo} V${y - tile}`);
+    }
+  }
+  return (
+    <G>
+      {wires.length ? <Path d={wires.join('')} stroke="#6b6f77" strokeWidth={0.35} /> : null}
+      {segs.map(([a, b], i) => (
+        <G key={i}>
+          <Rect x={a} y={y - tile} width={b - a} height={tile} fill="#cfccc3" />
+          <Line x1={a} y1={y} x2={b} y2={y} stroke="#8d8a80" strokeWidth={0.4} />
+        </G>
+      ))}
+      <Path d={tees.join('')} stroke="#f2f2f2" strokeWidth={0.7} />
+    </G>
+  );
+}
+
+/**
+ * Ladder cable tray seen side-on along its run, hung on trapeze rods.
+ * (x0..x1, y) = the tray bottom; rails 100 mm tall; rungs every 0.3 m.
+ */
+export function LadderTraySide({ x0, x1, y, m, rodTo, rodEvery = 1.5 }: { x0: number; x1: number; y: number; m: number; rodTo?: number; rodEvery?: number }) {
+  const id = useUid();
+  const h = 0.1 * m;
+  const rungs: string[] = [];
+  for (let xx = x0 + 0.15 * m; xx < x1; xx += 0.3 * m) rungs.push(`M${xx} ${y - h * 0.15} v${-h * 0.7}`);
+  const rods: number[] = [];
+  if (rodTo != null) for (let xx = x0 + 0.4 * m; xx < x1; xx += rodEvery * m) rods.push(xx);
+  return (
+    <G>
+      <Defs>
+        <LinearGradient id={`${id}t`} x1="0" y1="0" x2="0" y2="1">
+          <Stop offset="0" stopColor={ZINC.hi} />
+          <Stop offset="0.5" stopColor={ZINC.mid} />
+          <Stop offset="1" stopColor={ZINC.lo} />
+        </LinearGradient>
+      </Defs>
+      {rods.map((xx) => (
+        <G key={xx}>
+          <Line x1={xx} y1={rodTo} x2={xx} y2={y + 0.06 * m} stroke="#8f949b" strokeWidth={Math.max(0.5, 0.012 * m)} />
+          <Rect x={xx - 0.08 * m} y={y} width={0.16 * m} height={Math.max(0.8, 0.03 * m)} fill="#6d7179" />
+        </G>
+      ))}
+      <Rect x={x0} y={y - h} width={x1 - x0} height={h} fill={`url(#${id}t)`} stroke={ZINC.edge} strokeWidth={0.35} />
+      <Path d={rungs.join('')} stroke={ZINC.edge} strokeWidth={0.5} opacity={0.7} />
+    </G>
+  );
+}
+
+/** Rectangular sheet-metal duct seen side-on, flanged joints every 1.5 m. */
+export function DuctSide({ x0, x1, y, h, m, hangTo }: { x0: number; x1: number; y: number; h: number; m: number; hangTo?: number }) {
+  const id = useUid();
+  const joints: string[] = [];
+  for (let xx = x0 + 1.5 * m; xx < x1 - 1; xx += 1.5 * m) joints.push(`M${xx} ${y - 0.6} v${h + 1.2}`);
+  const straps: number[] = [];
+  if (hangTo != null) for (let xx = x0 + 0.75 * m; xx < x1; xx += 3 * m) straps.push(xx);
+  return (
+    <G>
+      <Defs>
+        <LinearGradient id={`${id}d`} x1="0" y1="0" x2="0" y2="1">
+          <Stop offset="0" stopColor="#a9aeb5" />
+          <Stop offset="0.45" stopColor="#80858d" />
+          <Stop offset="1" stopColor="#50545b" />
+        </LinearGradient>
+      </Defs>
+      {straps.map((xx) => (
+        <Path key={xx} d={`M${xx - 0.5} ${hangTo} V${y + h + 0.6} M${xx + 0.5} ${hangTo} V${y}`} stroke="#8f949b" strokeWidth={0.5} />
+      ))}
+      <Rect x={x0} y={y} width={x1 - x0} height={h} fill={`url(#${id}d)`} stroke="#2c2f34" strokeWidth={0.5} />
+      <Path d={joints.join('')} stroke="#3a3d43" strokeWidth={1.1} />
+      <Path d={joints.join('')} stroke="#c3c7cc" strokeWidth={0.35} transform="translate(-0.5 0)" />
+    </G>
+  );
+}
+
+/**
+ * A standing person for scale (1.75 m), front elevation — shoulders 0.44 m,
+ * head 0.23 m — a flat graphite figure, the way section drawings show people.
+ */
+export function PersonScale({ x, floorY, m, color = '#4a4f59' }: { x: number; floorY: number; m: number; facing?: 1 | -1; color?: string }) {
+  const u = (1.75 * m) / 175; // 1 unit = 1 cm
+  const X = (cm: number) => x + cm * u;
+  const Y = (cm: number) => floorY - cm * u;
+  const body = [
+    // right side of the body, top down, then back up the left
+    `M${X(4)} ${Y(150)} L${X(4)} ${Y(147)} Q${X(20)} ${Y(146)} ${X(22)} ${Y(141)}`,
+    `L${X(24)} ${Y(112)} L${X(23)} ${Y(84)} L${X(19)} ${Y(84)} L${X(18)} ${Y(110)} L${X(17)} ${Y(118)}`,
+    `L${X(16)} ${Y(96)} L${X(13)} ${Y(4)} L${X(16)} ${Y(1)} L${X(15)} ${Y(0)} L${X(3)} ${Y(0)} L${X(3)} ${Y(4)} L${X(2)} ${Y(86)}`,
+    `L${X(-2)} ${Y(86)} L${X(-3)} ${Y(4)} L${X(-3)} ${Y(0)} L${X(-15)} ${Y(0)} L${X(-16)} ${Y(1)} L${X(-13)} ${Y(4)} L${X(-16)} ${Y(96)}`,
+    `L${X(-17)} ${Y(118)} L${X(-18)} ${Y(110)} L${X(-19)} ${Y(84)} L${X(-23)} ${Y(84)} L${X(-24)} ${Y(112)} L${X(-22)} ${Y(141)}`,
+    `Q${X(-20)} ${Y(146)} ${X(-4)} ${Y(147)} L${X(-4)} ${Y(150)} Z`,
+  ].join(' ');
+  return (
+    <G>
+      <Ellipse cx={x} cy={floorY} rx={20 * u} ry={2.2 * u} fill="rgba(0,0,0,0.45)" />
+      <Path d={body} fill={color} stroke={shade(color, 0.5)} strokeWidth={0.4} />
+      <Ellipse cx={x} cy={Y(163)} rx={8 * u} ry={11.5 * u} fill={color} stroke={shade(color, 0.5)} strokeWidth={0.4} />
+    </G>
+  );
+}
+
+/** A graphic scale bar: `metres` long, ticked each metre, labelled. */
+export function ScaleBar({ x, y, m, metres = 2, color = INK.sub }: { x: number; y: number; m: number; metres?: number; color?: string }) {
+  const ticks: string[] = [];
+  for (let i = 0; i <= metres; i++) ticks.push(`M${x + i * m} ${y - 2.5} v5`);
+  return (
+    <G>
+      <Line x1={x} y1={y} x2={x + metres * m} y2={y} stroke={color} strokeWidth={0.9} />
+      <Path d={ticks.join('')} stroke={color} strokeWidth={0.9} />
+      <Rect x={x} y={y - 1.2} width={m} height={2.4} fill={color} />
+      <SvgText x={x + metres * m + 4} y={y + 3.4} fontFamily={fonts.oswaldSemiBold} fontSize={9.5} fill={color}>
+        {`${metres} m`}
+      </SvgText>
+    </G>
+  );
+}
+
+/**
+ * An equipment rack seen from the SIDE (section): 42U ≈ 2.0 m tall, 1.0 m
+ * deep, with its front/rear rails and the kit shown as dark slices.
+ */
+export function RackSide({ x, floorY, m, tint: tone }: { x: number; floorY: number; m: number; tint?: string }) {
+  const id = useUid();
+  const H = 2.0 * m;
+  const D = 1.0 * m;
+  const top = floorY - H;
+  const slices = [0.12, 0.2, 0.33, 0.45, 0.62, 0.74, 0.86];
+  return (
+    <G>
+      <Defs>
+        <LinearGradient id={`${id}r`} x1="0" y1="0" x2="1" y2="0">
+          <Stop offset="0" stopColor="#2e3036" />
+          <Stop offset="1" stopColor="#1a1b1f" />
+        </LinearGradient>
+      </Defs>
+      <Rect x={x} y={top} width={D} height={H} rx={0.6} fill={`url(#${id}r)`} stroke="#0b0b0d" strokeWidth={0.6} />
+      <Rect x={x + 0.05 * m} y={top + 0.05 * m} width={D - 0.1 * m} height={H - 0.1 * m} fill="#101114" />
+      {slices.map((f, i) => (
+        <Rect key={i} x={x + 0.1 * m} y={top + f * H} width={D * (0.55 + (i % 3) * 0.1)} height={0.07 * m + (i % 2) * 0.05 * m} rx={0.3} fill="#2b2d33" stroke="#3b3e45" strokeWidth={0.3} />
+      ))}
+      {tone ? <Rect x={x + 0.1 * m} y={top + 0.04 * H} width={D * 0.6} height={0.04 * m} fill={tone} opacity={0.85} /> : null}
+      <Line x1={x + 0.08 * m} y1={top + 0.05 * m} x2={x + 0.08 * m} y2={floorY - 0.05 * m} stroke="#6d7179" strokeWidth={0.6} />
+      <Line x1={x + D - 0.08 * m} y1={top + 0.05 * m} x2={x + D - 0.08 * m} y2={floorY - 0.05 * m} stroke="#6d7179" strokeWidth={0.6} />
+      <Rect x={x + 0.05 * m} y={floorY - 0.06 * m} width={D - 0.1 * m} height={0.06 * m} fill="#0b0b0d" />
+    </G>
+  );
+}
+
+/**
+ * A flush-mounted wall box / input panel cut in section: the back box sits in
+ * the wall cavity (depth `depth`), the faceplate on the wall face, the
+ * connectors standing proud of the plate. `x` = the wall face; dir -1 = the
+ * plate faces left.
+ */
+export function WallBoxSide({ x, y, m, tone, dir = -1, depth }: { x: number; y: number; m: number; tone: string; dir?: 1 | -1; depth?: number }) {
+  const h = 0.4 * m;
+  const d = depth ?? 0.1 * m;
+  const plate = Math.max(0.5, 0.004 * m * 3);
+  const bx = dir < 0 ? x : x - d;
+  const px = dir < 0 ? x - plate : x;
+  return (
+    <G>
+      <Rect x={bx} y={y - h / 2} width={d} height={h} fill="#1a1b1f" stroke="#55585f" strokeWidth={0.4} />
+      <Rect x={px} y={y - h / 2 - 0.6} width={plate} height={h + 1.2} fill={tone} />
+      {[0.22, 0.5, 0.78].map((f) => (
+        <Rect key={f} x={dir < 0 ? px - 0.04 * m : px + plate} y={y - h / 2 + f * h - 0.04 * m} width={0.04 * m} height={0.08 * m} rx={0.3} fill="#9aa0a8" />
+      ))}
     </G>
   );
 }

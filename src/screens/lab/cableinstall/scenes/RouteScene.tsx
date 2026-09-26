@@ -37,7 +37,9 @@
  */
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
-import Svg, { Circle, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle } from 'react-native-svg';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
+import { ClusterSection, RouteBadge, StageRackOverlay, StageRackSection } from './routeArt';
 import { colors, fonts } from '../../../../theme/tokens';
 import { CiSection, RuleFeedback, ScoreBars, announceComplete } from '../bits';
 import { OptionChip } from '../../cable/lessons/bits';
@@ -89,34 +91,35 @@ const DIM_LABELS: Record<CiDim, string> = {
 type CiArtSeg = { d: string; len: number; hidden?: boolean };
 
 const ROUTE_SEGS: Record<string, Record<string, CiArtSeg[]>> = {
+  // Geometry in the 20 units = 1 m sections of routeArt.tsx.
   'stage-to-rack': {
     'mech-shortcut': [
-      { d: 'M104 150 H112', len: 8 },
-      { d: 'M112 150 V70 H262 V150 H296', len: 344, hidden: true },
-      { d: 'M296 150 H302', len: 6 },
+      { d: 'M112.6 163 H114.2', len: 2 },
+      { d: 'M114.2 163 V88 H340 V147', len: 363, hidden: true },
+      { d: 'M340 147 V176 H332', len: 37 },
     ],
     'tray-route': [
-      { d: 'M104 142 H112', len: 8 },
-      { d: 'M112 142 V42 H318 V112', len: 376, hidden: true },
-      { d: 'M318 112 V124', len: 12 },
+      { d: 'M112.6 166 H113', len: 1 },
+      { d: 'M113 166 V138 H322 V147', len: 237, hidden: true },
+      { d: 'M322 147 V156', len: 9 },
     ],
-    'floor-shortcut': [{ d: 'M104 158 V190 H300 h4', len: 232 }],
+    'floor-shortcut': [{ d: 'M110 170 V194 H318', len: 232 }],
   },
   'amp-to-cluster': {
     catwalk: [
-      { d: 'M44 128 V116 H88', len: 56 },
-      { d: 'M88 116 H92 V32 H250 V84', len: 298, hidden: true },
-      { d: 'M250 84 V96', len: 12 },
+      { d: 'M40 156 V148 H86 V84', len: 118 },
+      { d: 'M86 84 V45 H250 V84', len: 242, hidden: true },
+      { d: 'M250 84 V92', len: 8 },
     ],
     'over-grid': [
-      { d: 'M52 128 V122 H70', len: 24 },
-      { d: 'M70 122 V80 Q94 88 118 80 Q142 88 166 80 Q190 88 214 80 Q232 87 246 82 L246 84', len: 224, hidden: true },
-      { d: 'M246 84 V96', len: 12 },
+      { d: 'M44 156 V144 H70 V84', len: 98 },
+      { d: 'M70 84 V82.5 Q94 85 118 82.5 Q142 85 166 82.5 Q190 85 214 82.5 Q232 85 244 83 V84', len: 182, hidden: true },
+      { d: 'M244 84 V92', len: 8 },
     ],
     'duct-ride': [
-      { d: 'M36 128 V112 H84', len: 64 },
-      { d: 'M84 112 V54 H242 V84', len: 246, hidden: true },
-      { d: 'M242 84 V96', len: 12 },
+      { d: 'M36 156 V140 H80 V84', len: 116 },
+      { d: 'M80 84 V54.5 H242 V84', len: 221, hidden: true },
+      { d: 'M242 84 V92', len: 8 },
     ],
   },
 };
@@ -125,12 +128,12 @@ const ROUTE_SEGS: Record<string, Record<string, CiArtSeg[]>> = {
  *  Used for ONE brief attention pulse on the verdict (then it rests). */
 const HAZARD_POINTS: Record<string, Record<string, [number, number]>> = {
   'stage-to-rack': {
-    'mech-shortcut': [176, 70],
-    'floor-shortcut': [186, 190],
+    'mech-shortcut': [216, 88],
+    'floor-shortcut': [188, 194],
   },
   'amp-to-cluster': {
-    'over-grid': [142, 84],
-    'duct-ride': [170, 54],
+    'over-grid': [142, 83],
+    'duct-ride': [170, 54.5],
   },
 };
 
@@ -154,17 +157,17 @@ function installTiming(segs: CiArtSeg[], fast: boolean, base: number) {
   return out;
 }
 
-/** Letter positions chosen to sit in empty drawing space beside each route. */
+/** Route badges sit ON their own line, in a stretch no other route shares. */
 const ROUTE_LETTER_POS: Record<string, [number, number][]> = {
   'stage-to-rack': [
-    [121, 85],
-    [200, 33],
-    [216, 184],
+    [262, 88],
+    [200, 138],
+    [150, 194],
   ],
   'amp-to-cluster': [
-    [102, 24],
-    [60, 76],
-    [76, 46],
+    [168, 45],
+    [158, 83],
+    [206, 54.5],
   ],
 };
 
@@ -175,12 +178,8 @@ const MAP_A11Y: Record<string, string> = {
     'Building section: amp room at lower left with the rack, the hall at right with a flown loudspeaker cluster, and an attic above the tile ceiling holding a catwalk and an HVAC duct. Route A rides the catwalk on hooks, route B lies across the ceiling tiles, route C is tied along the duct. Selection happens on the route cards below, not on this drawing.',
 };
 
-const WALL = '#3a3c42';
-const LINE = '#33353b';
-const FLOOR = '#4a4d54';
-const LABEL = '#7c828c';
-const XMETA = '#6f7378';
 const HAZARD = '#ff9b8f';
+const MAP_ASPECT = 360 / 220;
 
 /* ── motion primitives for the section drawing ──────────────────────────── */
 
@@ -202,17 +201,6 @@ function useFade(on: boolean, delay: number, duration: number = CI_MOTION.base) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [on, delay, duration, m.reduce]);
   return useAnimatedProps(() => ({ opacity: t.value }));
-}
-
-/** One stratum of concealed structure. Always mounted; only its opacity moves
- *  (a <G>'s opacity is a plain prop — never its transform). */
-function XLayer({ on, delay, children }: { on: boolean; delay: number; children: ReactNode }) {
-  const p = useFade(on, delay);
-  return (
-    <AG opacity={0} animatedProps={p}>
-      {children}
-    </AG>
-  );
 }
 
 /** Furniture that fades up once, on its own beat (route letters). */
@@ -249,9 +237,9 @@ function RouteSeg({
   timing: { delay: number; duration: number };
 }) {
   const { progress } = useDrawIn(seg.len, { duration: timing.duration, delay: timing.delay });
-  const w = useTween(picked ? 3.4 : 2.4, CI_MOTION.base);
+  const w = useTween(picked ? 2.6 : 1.7, CI_MOTION.base);
   const x = useTween(xray ? 1 : 0, CI_MOTION.base);
-  const restW = useRef(picked ? 3.4 : 2.4).current;
+  const restW = useRef(picked ? 2.6 : 1.7).current;
   const restOp = useRef(seg.hidden ? (xray ? 1 : 0.3) : 1).current;
 
   const body = useAnimatedProps(() => ({
@@ -287,7 +275,7 @@ function RouteSeg({
           strokeLinejoin="round"
           strokeWidth={restW}
           opacity={0}
-          strokeDasharray="5 5"
+          strokeDasharray="4 3"
           animatedProps={comb}
         />
       ) : null}
@@ -328,157 +316,21 @@ function HazardPing({ x, y }: { x: number; y: number }) {
   );
 }
 
-/* ── building drawings (honest sections; xray strips the surfaces) ──────── */
-function StageRackBuilding({ xray, tint }: { xray: boolean; tint: string }) {
-  return (
-    <>
-      <Rect x={6} y={10} width={348} height={192} rx={6} fill="#0e0e12" stroke={WALL} strokeWidth={1.6} />
-      {/* the void above the ceiling opens first — then what lives in it */}
-      <XLayer on={xray} delay={0}>
-        <Rect x={8} y={12} width={344} height={43} fill="rgba(91,176,255,0.05)" />
-      </XLayer>
-      {/* finished ceiling + tile ticks */}
-      <Line x1={6} y1={56} x2={354} y2={56} stroke={LINE} strokeWidth={1.6} />
-      {[30, 54, 78, 102, 126, 150, 174, 198, 222, 246, 270, 294, 318, 342].map((x) => (
-        <Line key={x} x1={x} y1={56} x2={x} y2={60} stroke={LINE} strokeWidth={1} />
-      ))}
-      {/* floor + stage platform */}
-      <Line x1={6} y1={196} x2={354} y2={196} stroke={FLOOR} strokeWidth={3} />
-      <Path d="M10 176 H108 V196 H10 Z" fill="#15151a" stroke={LINE} strokeWidth={1.2} />
-      {/* walls, bay slab, door leaves */}
-      <Line x1={112} y1={56} x2={112} y2={152} stroke={WALL} strokeWidth={2} />
-      <Line x1={258} y1={56} x2={258} y2={152} stroke={WALL} strokeWidth={2} />
-      <Line x1={112} y1={128} x2={258} y2={128} stroke={LINE} strokeWidth={1.6} />
-      <Line x1={112} y1={196} x2={126} y2={162} stroke={WALL} strokeWidth={1.2} />
-      <Line x1={258} y1={196} x2={244} y2={162} stroke={WALL} strokeWidth={1.2} />
-      {/* stage input panel (cable class tint) */}
-      <Rect x={96} y={136} width={14} height={30} rx={2} fill="#17171c" stroke={tint} strokeWidth={1.4} />
-      {/* rack */}
-      <Rect x={300} y={120} width={40} height={76} rx={3} fill="#141419" stroke={WALL} strokeWidth={1.4} />
-      <Rect x={304} y={126} width={32} height={5} rx={1} fill={tint} opacity={0.85} />
-      {[140, 156, 172, 186].map((y) => (
-        <Line key={y} x1={304} y1={y} x2={336} y2={y} stroke={LINE} strokeWidth={1.2} />
-      ))}
-      {/* x-ray, in the order a building actually reveals itself:
-          pathway → what holds it up → the riser → foreign systems → names */}
-      <XLayer on={xray} delay={70}>
-        <Line x1={90} y1={38} x2={300} y2={38} stroke="#5a5f68" strokeWidth={1.6} />
-        <Line x1={90} y1={46} x2={300} y2={46} stroke="#5a5f68" strokeWidth={1.6} />
-      </XLayer>
-      <XLayer on={xray} delay={140}>
-        {[100, 160, 220, 280].map((x) => (
-          <Line key={x} x1={x} y1={12} x2={x} y2={38} stroke={FLOOR} strokeWidth={1.2} />
-        ))}
-      </XLayer>
-      <XLayer on={xray} delay={200}>
-        <Line x1={314} y1={52} x2={314} y2={60} stroke="#5a5f68" strokeWidth={1.4} />
-        <Line x1={322} y1={52} x2={322} y2={60} stroke="#5a5f68" strokeWidth={1.4} />
-      </XLayer>
-      <XLayer on={xray} delay={255}>
-        <Rect x={150} y={80} width={52} height={40} rx={3} fill="#141419" stroke={FLOOR} strokeWidth={1.2} />
-        <Rect x={202} y={88} width={48} height={16} rx={2} fill="#111116" stroke={FLOOR} strokeWidth={1} />
-      </XLayer>
-      <XLayer on={xray} delay={320}>
-        <SvgText x={130} y={32} fill={XMETA} fontSize={12} textAnchor="middle">TRAY</SvgText>
-        <SvgText x={176} y={104} fill={XMETA} fontSize={12} textAnchor="middle">HVAC</SvgText>
-      </XLayer>
-      {/* room labels */}
-      <SvgText x={56} y={80} fill={LABEL} fontSize={12} textAnchor="middle">STAGE</SvgText>
-      <SvgText x={228} y={122} fill={LABEL} fontSize={12} textAnchor="middle">MECH BAY</SvgText>
-      <SvgText x={185} y={148} fill={LABEL} fontSize={12} textAnchor="middle">CORRIDOR</SvgText>
-      <SvgText x={306} y={74} fill={LABEL} fontSize={12} textAnchor="middle">CONTROL RM</SvgText>
-    </>
-  );
-}
-
-/** Floor protector drawn OVER route C so the crossing reads as protected. */
-function StageRackOverlay() {
-  return <Path d="M174 192 h24 l-4 -6 h-16 Z" fill="#26262c" stroke={WALL} strokeWidth={0.9} />;
-}
-
-function ClusterBuilding({ xray, tint }: { xray: boolean; tint: string }) {
-  return (
-    <>
-      <Rect x={6} y={10} width={348} height={192} rx={6} fill="#0e0e12" stroke={WALL} strokeWidth={1.6} />
-      <XLayer on={xray} delay={0}>
-        <Rect x={8} y={12} width={344} height={71} fill="rgba(91,176,255,0.05)" />
-      </XLayer>
-      {/* tile ceiling with the cluster opening */}
-      <Line x1={6} y1={84} x2={238} y2={84} stroke={LINE} strokeWidth={1.6} />
-      <Line x1={270} y1={84} x2={354} y2={84} stroke={LINE} strokeWidth={1.6} />
-      {[30, 54, 78, 102, 126, 150, 174, 198, 222, 294, 318, 342].map((x) => (
-        <Line key={x} x1={x} y1={84} x2={x} y2={88} stroke={LINE} strokeWidth={1} />
-      ))}
-      {/* floor */}
-      <Line x1={6} y1={196} x2={354} y2={196} stroke={FLOOR} strokeWidth={3} />
-      {/* amp room wall + door leaf */}
-      <Line x1={96} y1={84} x2={96} y2={156} stroke={WALL} strokeWidth={2} />
-      <Line x1={96} y1={196} x2={110} y2={162} stroke={WALL} strokeWidth={1.2} />
-      {/* amp rack */}
-      <Rect x={22} y={128} width={44} height={68} rx={3} fill="#141419" stroke={WALL} strokeWidth={1.4} />
-      <Rect x={26} y={134} width={36} height={5} rx={1} fill={tint} opacity={0.85} />
-      {[150, 164, 178].map((y) => (
-        <Line key={y} x1={26} y1={y} x2={62} y2={y} stroke={LINE} strokeWidth={1.2} />
-      ))}
-      {/* cluster rigging (in-hall part always; attic part x-ray) */}
-      <XLayer on={xray} delay={70}>
-        <Line x1={258} y1={10} x2={258} y2={84} stroke={FLOOR} strokeWidth={1.2} />
-        <Line x1={266} y1={10} x2={266} y2={84} stroke={FLOOR} strokeWidth={1.2} />
-      </XLayer>
-      <Line x1={258} y1={84} x2={258} y2={96} stroke={FLOOR} strokeWidth={1.2} />
-      <Line x1={266} y1={84} x2={266} y2={96} stroke={FLOOR} strokeWidth={1.2} />
-      {/* flown cluster (cable class tint on the input plate) */}
-      <Path d="M236 96 H276 L268 128 H244 Z" fill="#141419" stroke={WALL} strokeWidth={1.4} />
-      <Rect x={244} y={99} width={24} height={4} rx={1} fill={tint} opacity={0.85} />
-      <Line x1={242} y1={112} x2={270} y2={112} stroke={LINE} strokeWidth={1.2} />
-      <Line x1={240} y1={120} x2={272} y2={120} stroke={LINE} strokeWidth={1.2} />
-      {/* x-ray: catwalk deck → posts → J-hook ticks → duct → names */}
-      <XLayer on={xray} delay={130}>
-        <Line x1={116} y1={36} x2={344} y2={36} stroke="#5a5f68" strokeWidth={1.6} />
-        <Line x1={116} y1={40} x2={344} y2={40} stroke="#5a5f68" strokeWidth={1.6} />
-      </XLayer>
-      <XLayer on={xray} delay={190}>
-        {[130, 190, 310].map((x) => (
-          <Line key={x} x1={x} y1={12} x2={x} y2={36} stroke={FLOOR} strokeWidth={1.2} />
-        ))}
-      </XLayer>
-      <XLayer on={xray} delay={240}>
-        {[120, 150, 180, 210, 240].map((x) => (
-          <Line key={x} x1={x} y1={32} x2={x} y2={36} stroke={XMETA} strokeWidth={1} />
-        ))}
-      </XLayer>
-      <XLayer on={xray} delay={290}>
-        <Rect x={100} y={56} width={140} height={16} rx={3} fill="#111116" stroke={FLOOR} strokeWidth={1.2} />
-      </XLayer>
-      <XLayer on={xray} delay={350}>
-        <SvgText x={170} y={68} fill={XMETA} fontSize={12} textAnchor="middle">DUCT</SvgText>
-        <SvgText x={300} y={52} fill={XMETA} fontSize={12} textAnchor="middle">CATWALK</SvgText>
-      </XLayer>
-      {/* room labels */}
-      <SvgText x={50} y={100} fill={LABEL} fontSize={12} textAnchor="middle">AMP ROOM</SvgText>
-      <SvgText x={160} y={150} fill={LABEL} fontSize={12} textAnchor="middle">HALL</SvgText>
-      <SvgText x={256} y={142} fill={LABEL} fontSize={12} textAnchor="middle">CLUSTER</SvgText>
-    </>
-  );
-}
-
 /* ── the section map: building + routes + letters ───────────────────────── */
-function RouteMap({ scenario, xray, picked, w }: { scenario: CiRouteScenario; xray: boolean; picked: string | null; w: number }) {
-  const h = Math.round((w * 220) / 360);
+function RouteMap({ scenario, xray, picked, w, h }: { scenario: CiRouteScenario; xray: boolean; picked: string | null; w: number; h: number }) {
   const tint = cableTypeById(scenario.cable).tint;
   const mine = picked ? scenario.options.find((o) => o.id === picked) : undefined;
   const hazard = picked ? HAZARD_POINTS[scenario.id]?.[picked] : undefined;
   const showHazard = !!hazard && !!mine && mine.flags.some((f) => !f.positive && f.cost >= HAZARD_COST);
   return (
     <View accessible
-      style={styles.mapFrame}
       accessibilityRole="image"
       accessibilityLabel={`${MAP_A11Y[scenario.id]}${
         showHazard ? ' The worst condition on your chosen route is marked on the drawing; the notes below name it.' : ''
       }`}
     >
       <Svg width={w} height={h} viewBox="0 0 360 220">
-        {scenario.id === 'stage-to-rack' ? <StageRackBuilding xray={xray} tint={tint} /> : <ClusterBuilding xray={xray} tint={tint} />}
+        {scenario.id === 'stage-to-rack' ? <StageRackSection xray={xray} tint={tint} /> : <ClusterSection xray={xray} tint={tint} />}
         {scenario.options.map((o, i) => {
           const segs = ROUTE_SEGS[scenario.id][o.id] ?? [];
           const isPicked = picked === o.id;
@@ -506,11 +358,7 @@ function RouteMap({ scenario, xray, picked, w }: { scenario: CiRouteScenario; xr
         <LateLayer delay={CI_MOTION.draw}>
           {scenario.options.map((o, i) => {
             const pos = ROUTE_LETTER_POS[scenario.id][i];
-            return (
-              <SvgText key={o.id} x={pos[0]} y={pos[1]} fill={ROUTE_COLORS[i]} fontSize={13} fontWeight="bold" textAnchor="middle">
-                {LETTERS[i]}
-              </SvgText>
-            );
+            return <RouteBadge key={o.id} x={pos[0]} y={pos[1]} letter={LETTERS[i]} color={ROUTE_COLORS[i]} />;
           })}
         </LateLayer>
         {showHazard && hazard ? <HazardPing x={hazard[0]} y={hazard[1]} /> : null}
@@ -656,7 +504,7 @@ export function RouteScene({ width, completed, onComplete, openSources }: CiModu
   const [xrays, setXrays] = useState<Record<string, boolean>>({});
   const [picks, setPicks] = useState<Record<string, string>>({});
   const [fired, setFired] = useState(completed);
-  const mapW = Math.max(280, width - 22);
+  const mapW = Math.max(280, width);
 
   const ranked = useMemo(() => {
     const m: Record<string, ReturnType<typeof rankRoutes>> = {};
@@ -745,7 +593,32 @@ export function RouteScene({ width, completed, onComplete, openSources }: CiModu
               <OptionChip label="FINISHED" active={!xray} onPress={() => setXray(s.id, false)} />
               <OptionChip label="X-RAY" active={xray} onPress={() => setXray(s.id, true)} />
             </View>
-            <RouteMap scenario={s} xray={xray} picked={picked} w={mapW} />
+            <ExpandableFigure
+              width={mapW}
+              aspect={MAP_ASPECT}
+              title="SECTION"
+              badge="Scale: 20 units = 1 m · person 1.75 m"
+              render={(fw, fh) => <RouteMap scenario={s} xray={xray} picked={picked} w={fw} h={fh} />}
+              controls={
+                <View style={{ gap: 7 }}>
+                  <View style={styles.chipRow}>
+                    <OptionChip label="FINISHED" active={!xray} onPress={() => setXray(s.id, false)} />
+                    <OptionChip label="X-RAY" active={xray} onPress={() => setXray(s.id, true)} />
+                  </View>
+                  <View style={styles.chipRow}>
+                    {s.options.map((o, i) => (
+                      <OptionChip
+                        key={o.id}
+                        label={`PULL ${LETTERS[i]}`}
+                        active={picked === o.id}
+                        disabled={picked != null && picked !== o.id}
+                        onPress={() => select(s.id, o.id)}
+                      />
+                    ))}
+                  </View>
+                </View>
+              }
+            />
             <Text style={styles.legendLine}>
               {xray
                 ? 'X-RAY — surfaces stripped: in-wall and above-ceiling runs solid.'
