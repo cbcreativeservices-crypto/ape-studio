@@ -42,6 +42,7 @@ import type { SharedValue } from 'react-native-reanimated';
 import { colors, fonts } from '../../../../theme/tokens';
 import { OptionChip } from '../../cable/lessons/bits';
 import { CiSection, RuleFeedback, announceComplete } from '../bits';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { CI_CLASS_TINTS } from '../data/cableTypes';
 import { CI_FLOOR_SCENARIOS, CI_OVERUNDER_STEPS, type CiRouteScenario } from '../data/scenarios';
 import { evaluateRoute, rankRoutes, type CiRouteFlag } from '../engine/routeEval';
@@ -353,16 +354,15 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
       <Rect x={0} y={0} width={360} height={205} rx={10} fill="#0c0c10" />
       {/* deck */}
       <Rect x={6} y={14} width={348} height={158} rx={8} fill="#101014" stroke="#2c2c33" strokeWidth={1.5} />
-      <SvgText x={14} y={28} fill="#6f7378" fontSize={8}>STAGE</SvgText>
+      <SvgText x={14} y={30} fill="#6f7378" fontSize={10.5}>STAGE</SvgText>
       {/* audience edge */}
       <Line x1={6} y1={180} x2={354} y2={180} stroke="#2c2c33" strokeWidth={1.5} />
-      <SvgText x={180} y={196} fill="#6f7378" fontSize={8} textAnchor="middle">AUDIENCE</SvgText>
+      <SvgText x={180} y={197} fill="#6f7378" fontSize={10.5} textAnchor="middle">AUDIENCE</SvgText>
       {/* performer lane */}
       <Rect x={96} y={98} width={210} height={52} fill="none" stroke="#6f7378" strokeWidth={1} strokeDasharray="5,4" />
-      <SvgText x={201} y={128} fill="#6f7378" fontSize={8} textAnchor="middle">PERFORMER LANE</SvgText>
       {/* stage box, downstage-left */}
       <Rect x={16} y={138} width={36} height={24} rx={3} fill="#17171c" stroke="#6f7378" strokeWidth={1.3} />
-      <SvgText x={34} y={153} fill="#a6a6ad" fontSize={8} textAnchor="middle">BOX</SvgText>
+      <SvgText x={34} y={154} fill="#a6a6ad" fontSize={10} textAnchor="middle">BOX</SvgText>
       {/* mic stands (upstage of the lane) */}
       {[
         [120, 84],
@@ -374,14 +374,14 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
           <Line x1={x} y1={y + 5} x2={x} y2={y + 11} stroke="#e8e8ea" strokeWidth={1.2} />
         </G>
       ))}
-      <SvgText x={200} y={62} fill="#6f7378" fontSize={7.5} textAnchor="middle">MIC STANDS</SvgText>
+      <SvgText x={200} y={62} fill="#6f7378" fontSize={10.5} textAnchor="middle">MIC STANDS</SvgText>
       {/* monitor wedges at the downstage edge */}
       {[118, 196, 274].map((x) => (
         <Path key={`wg${x}`} d={`M${x} 168 h26 l-6 -13 h-14 z`} fill="#17171c" stroke="#6f7378" strokeWidth={1.2} />
       ))}
       {/* monitor world, downstage-right */}
       <Rect x={318} y={146} width={30} height={20} rx={3} fill="#17171c" stroke="#6f7378" strokeWidth={1.2} />
-      <SvgText x={333} y={159} fill="#a6a6ad" fontSize={7} textAnchor="middle">MON</SvgText>
+      <SvgText x={333} y={160} fill="#a6a6ad" fontSize={10} textAnchor="middle">MON</SvgText>
 
       {/* MIC ROUTING — the web retracts, the edge route installs itself */}
       <SwapPath d="M40 140 C90 150 110 120 120 90" len={115} tint={mic} width={2.4} mode="bad" fixed={routeFixed} intro={120} />
@@ -410,6 +410,10 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
         <Path d="M230 170 l6 -7 h20 l6 7 z" fill="#26262c" stroke="#6f7378" strokeWidth={1.2} />
       </SwapGroup>
 
+      {/* lane label on a dark tag, painted after the cables: the as-found web
+          crosses the lane in plain view without crossing the words */}
+      <Rect x={156} y={118} width={90} height={13} rx={2} fill="#0c0c10" opacity={0.86} />
+      <SvgText x={201} y={128} fill="#6f7378" fontSize={10.5} textAnchor="middle">PERFORMER LANE</SvgText>
       {/* one performer crosses the web — the conflict, shown once */}
       <TrafficPass x1={104} y1={126} x2={300} y2={120} run={!routeFixed} delay={780} duration={1900} crossAt={0.36} />
     </Svg>
@@ -526,7 +530,7 @@ function FohPlan({ w, pick }: { w: number; pick: number | null }) {
       <Rect x={60} y={12} width={240} height={36} rx={4} fill="#141418" stroke="#3a3c42" strokeWidth={1.3} />
       <SvgText x={180} y={34} fill="#a6a6ad" fontSize={10} textAnchor="middle">STAGE</SvgText>
       <Rect x={150} y={170} width={60} height={26} rx={4} fill="#141418" stroke="#3a3c42" strokeWidth={1.3} />
-      <SvgText x={180} y={187} fill="#a6a6ad" fontSize={9} textAnchor="middle">FOH</SvgText>
+      <SvgText x={180} y={187} fill="#a6a6ad" fontSize={10.5} textAnchor="middle">FOH</SvgText>
       {/* seating rows, center aisle between */}
       {[66, 78, 90, 102, 114, 126, 138, 150].map((y) => (
         <G key={`row${y}`}>
@@ -534,10 +538,12 @@ function FohPlan({ w, pick }: { w: number; pick: number | null }) {
           <Line x1={200} y1={y} x2={298} y2={y} stroke="#1b1b20" strokeWidth={6} />
         </G>
       ))}
-      <SvgText x={180} y={60} fill="#6f7378" fontSize={7.5} textAnchor="middle">AISLE (EGRESS)</SvgText>
+      <SvgText x={174} y={60} fill="#6f7378" fontSize={10.5} textAnchor="end">AISLE</SvgText>
+      <SvgText x={186} y={60} fill="#6f7378" fontSize={10.5}>(EGRESS)</SvgText>
       {/* service door on the left wall */}
       <Rect x={3} y={108} width={7} height={22} fill="#26262c" stroke="#6f7378" strokeWidth={1} />
-      <SvgText x={34} y={104} fill="#6f7378" fontSize={7}>SVC DOOR</SvgText>
+      <SvgText x={44} y={98} fill="#6f7378" fontSize={10.5} textAnchor="middle">SVC</SvgText>
+      <SvgText x={44} y={110} fill="#6f7378" fontSize={10.5} textAnchor="middle">DOOR</SvgText>
       {/* main doors on the bottom wall */}
       <Rect x={58} y={200} width={26} height={6} fill="#26262c" />
       <Rect x={276} y={200} width={26} height={6} fill="#26262c" />
@@ -553,11 +559,12 @@ function FohPlan({ w, pick }: { w: number; pick: number | null }) {
       <RoutePath d="M294 48 C334 72 338 132 214 174" len={200} tint={ROUTE_TINTS[2]} width={2.6} phase={phaseFor(2, pick)} index={2} dashed />
       <Circle cx={322} cy={78} r={3.2} fill="none" stroke={ROUTE_TINTS[2]} strokeWidth={1.6} />
       <Circle cx={314} cy={140} r={3.2} fill="none" stroke={ROUTE_TINTS[2]} strokeWidth={1.6} />
-      <SvgText x={252} y={70} fill="#6f7378" fontSize={7}>OVERHEAD · RATED PTS</SvgText>
+      <SvgText x={308} y={176} fill="#6f7378" fontSize={10.5} textAnchor="middle">OVERHEAD</SvgText>
+      <SvgText x={308} y={188} fill="#6f7378" fontSize={10.5} textAnchor="middle">RATED POINTS</SvgText>
       {/* audience crosses the aisle run — once, when the verdicts land */}
       <TrafficPass x1={146} y1={120} x2={216} y2={120} run={pick != null} delay={820} duration={1700} crossAt={0.486} />
       {/* letters */}
-      <RouteLetter x={168} y={64} i={0} />
+      <RouteLetter x={162} y={88} i={0} />
       <RouteLetter x={40} y={64} i={1} />
       <RouteLetter x={300} y={64} i={2} />
     </Svg>
@@ -578,9 +585,10 @@ function BackstagePlan({ w, pick }: { w: number; pick: number | null }) {
       <Rect x={6} y={6} width={348} height={198} rx={8} fill="#101014" stroke="#2c2c33" strokeWidth={1.5} />
       {/* dock + load-in band */}
       <Rect x={46} y={3} width={50} height={7} fill="#26262c" />
-      <SvgText x={71} y={22} fill="#6f7378" fontSize={7.5} textAnchor="middle">DOCK</SvgText>
       <Path d="M52 10 L100 10 L268 204 L200 204 z" fill="#16161b" stroke="#26262c" strokeWidth={1} />
-      <SvgText x={172} y={104} fill="#6f7378" fontSize={7.5} textAnchor="middle">LOAD-IN / FORKLIFT</SvgText>
+      <SvgText x={76} y={23} fill="#6f7378" fontSize={10.5} textAnchor="middle">DOCK</SvgText>
+      <SvgText x={160} y={96} fill="#6f7378" fontSize={10.5} textAnchor="middle">LOAD-IN</SvgText>
+      <SvgText x={160} y={109} fill="#6f7378" fontSize={10.5} textAnchor="middle">FORKLIFT PATH</SvgText>
       {/* forklift glyph */}
       <Rect x={140} y={52} width={20} height={10} rx={2} fill="none" stroke="#6f7378" strokeWidth={1.2} />
       <Circle cx={145} cy={65} r={3} fill="none" stroke="#6f7378" strokeWidth={1.2} />
@@ -590,26 +598,27 @@ function BackstagePlan({ w, pick }: { w: number; pick: number | null }) {
       {[36, 66, 96].map((y) => (
         <Rect key={`case${y}`} x={304} y={y} width={42} height={26} rx={2} fill="#17171c" stroke="#3a3c42" strokeWidth={1.2} />
       ))}
-      <SvgText x={325} y={132} fill="#6f7378" fontSize={7} textAnchor="middle">CASES</SvgText>
+      <SvgText x={325} y={133} fill="#6f7378" fontSize={10.5} textAnchor="middle">CASES</SvgText>
       {/* door swing on the left wall */}
       <Line x1={8} y1={150} x2={38} y2={174} stroke="#6f7378" strokeWidth={1.4} />
       <Path d="M8 188 A38 38 0 0 0 38 174" fill="none" stroke="#6f7378" strokeWidth={1} strokeDasharray="4,4" />
-      <SvgText x={16} y={144} fill="#6f7378" fontSize={7}>DOOR SWING</SvgText>
+      <SvgText x={10} y={201} fill="#6f7378" fontSize={10.5}>DOOR SWING</SvgText>
       {/* distro + monitor world */}
-      <Rect x={14} y={84} width={34} height={26} rx={3} fill="#17171c" stroke="#6f7378" strokeWidth={1.2} />
-      <SvgText x={31} y={100} fill="#a6a6ad" fontSize={7} textAnchor="middle">DISTRO</SvgText>
+      <Rect x={8} y={84} width={40} height={26} rx={3} fill="#17171c" stroke="#6f7378" strokeWidth={1.2} />
+      <SvgText x={28} y={101} fill="#a6a6ad" fontSize={10} textAnchor="middle">DISTRO</SvgText>
       <Rect x={296} y={168} width={52} height={30} rx={3} fill="#17171c" stroke="#6f7378" strokeWidth={1.2} />
-      <SvgText x={322} y={186} fill="#a6a6ad" fontSize={7} textAnchor="middle">MON WORLD</SvgText>
+      <SvgText x={322} y={181} fill="#a6a6ad" fontSize={10.5} textAnchor="middle">MON</SvgText>
+      <SvgText x={322} y={193} fill="#a6a6ad" fontSize={10.5} textAnchor="middle">WORLD</SvgText>
       {/* ROUTE A — straight across under a mat (amber) */}
       <RoutePath d="M48 100 L296 178" len={270} tint={ROUTE_TINTS[0]} width={2.8} phase={phaseFor(0, pick)} index={0} />
       <Rect x={172} y={134} width={30} height={12} rx={2} fill="#1f1f24" stroke="#6f7378" strokeWidth={1.1} />
-      <SvgText x={187} y={130} fill="#6f7378" fontSize={7} textAnchor="middle">MAT</SvgText>
+      <SvgText x={187} y={130} fill="#6f7378" fontSize={10.5} textAnchor="middle">MAT</SvgText>
       {/* ROUTE B — one marked, vehicle-rated crossing (teal) */}
       <RoutePath d="M48 106 V178 H296" len={330} tint={ROUTE_TINTS[1]} width={2.8} phase={phaseFor(1, pick)} index={1} />
       <Path d="M206 184 l8 -9 h22 l8 9 z" fill="#26262c" stroke="#6f7378" strokeWidth={1.2} />
       <Line x1={200} y1={168} x2={200} y2={190} stroke={CI_CLASS_TINTS.speaker} strokeWidth={1.4} strokeDasharray="3,3" />
       <Line x1={248} y1={168} x2={248} y2={190} stroke={CI_CLASS_TINTS.speaker} strokeWidth={1.4} strokeDasharray="3,3" />
-      <SvgText x={224} y={164} fill="#6f7378" fontSize={7} textAnchor="middle">RATED + MARKED</SvgText>
+      <SvgText x={224} y={201} fill="#6f7378" fontSize={10.5} textAnchor="middle">RATED + MARKED</SvgText>
       {/* ROUTE C — long perimeter behind the cases (purple) */}
       <RoutePath d="M48 94 V30 H292 V172 H296" len={470} tint={ROUTE_TINTS[2]} width={2.6} phase={phaseFor(2, pick)} index={2} />
       {/* a case rolls the load-in path once — and finds the mat crossing */}
@@ -625,8 +634,8 @@ function BackstagePlan({ w, pick }: { w: number; pick: number | null }) {
 function RouteLetter({ x, y, i }: { x: number; y: number; i: number }) {
   return (
     <G>
-      <Circle cx={x} cy={y} r={7.5} fill="#17171c" stroke={ROUTE_TINTS[i]} strokeWidth={1.6} />
-      <SvgText x={x} y={y + 3.4} fill={ROUTE_TINTS[i]} fontSize={9} textAnchor="middle">{LETTERS[i]}</SvgText>
+      <Circle cx={x} cy={y} r={9} fill="#17171c" stroke={ROUTE_TINTS[i]} strokeWidth={1.6} />
+      <SvgText x={x} y={y + 3.8} fill={ROUTE_TINTS[i]} fontSize={10.5} textAnchor="middle">{LETTERS[i]}</SvgText>
     </G>
   );
 }
@@ -697,6 +706,7 @@ function dedupeFlags(flags: CiRouteFlag[]): CiRouteFlag[] {
 function RouteBlock({
   scenario,
   width,
+  title,
   plan,
   pick,
   onPick,
@@ -705,6 +715,8 @@ function RouteBlock({
 }: {
   scenario: CiRouteScenario;
   width: number;
+  /** Full-screen bar title (owner 2026-09-25 legibility pass). */
+  title: string;
   plan: (w: number, pickIdx: number | null) => ReactNode;
   pick: string | null;
   onPick: (id: string) => void;
@@ -717,30 +729,43 @@ function RouteBlock({
   const letterOf = (id: string) => LETTERS[scenario.options.findIndex((o) => o.id === id)] ?? '?';
   const tintOf = (id: string) => ROUTE_TINTS[scenario.options.findIndex((o) => o.id === id)] ?? '#6f7378';
   const pickIdx = pick ? scenario.options.findIndex((o) => o.id === pick) : -1;
+  /* The route pickers are THE control for this drawing: the same cards dock
+     under the plan in full screen so the pick can be made while enlarged
+     (owner 2026-09-25). Once picked there is nothing left to operate. */
+  const pickers = !revealed ? (
+    <View style={{ gap: 8 }}>
+      {scenario.options.map((o, i) => (
+        <Stagger key={o.id} index={i}>
+          <Pressable
+            style={s.routeCard}
+            onPress={() => onPick(o.id)}
+            accessibilityRole="button"
+            accessibilityLabel={`Route ${LETTERS[i]}: ${o.name}. ${o.path}`}
+          >
+            <View style={[s.swatch, { backgroundColor: ROUTE_TINTS[i] }]} />
+            <View style={{ flex: 1, gap: 2 }}>
+              <Text style={s.routeName}>{`ROUTE ${LETTERS[i]} — ${o.name.toUpperCase()}`}</Text>
+              <Text style={s.routePath}>{o.path}</Text>
+            </View>
+          </Pressable>
+        </Stagger>
+      ))}
+    </View>
+  ) : null;
   return (
     <View style={{ gap: 10 }}>
       <Text style={s.lead}>{scenario.brief}</Text>
-      {plan(width, pickIdx >= 0 ? pickIdx : null)}
+      <ExpandableFigure
+        width={width}
+        aspect={360 / 210}
+        title={title}
+        badge="Training visualization — route colors identify the options, not cable classes."
+        render={(w) => plan(w, pickIdx >= 0 ? pickIdx : null)}
+        controls={pickers ? <View style={{ paddingHorizontal: 12 }}>{pickers}</View> : undefined}
+      />
       <Text style={s.caption}>Route colors identify the options — not cable classes.</Text>
       {!revealed ? (
-        <View style={{ gap: 8 }}>
-          {scenario.options.map((o, i) => (
-            <Stagger key={o.id} index={i}>
-              <Pressable
-                style={s.routeCard}
-                onPress={() => onPick(o.id)}
-                accessibilityRole="button"
-                accessibilityLabel={`Route ${LETTERS[i]}: ${o.name}. ${o.path}`}
-              >
-                <View style={[s.swatch, { backgroundColor: ROUTE_TINTS[i] }]} />
-                <View style={{ flex: 1, gap: 2 }}>
-                  <Text style={s.routeName}>{`ROUTE ${LETTERS[i]} — ${o.name.toUpperCase()}`}</Text>
-                  <Text style={s.routePath}>{o.path}</Text>
-                </View>
-              </Pressable>
-            </Stagger>
-          ))}
-        </View>
+        pickers
       ) : (
         <View style={{ gap: 10 }}>
           {ranked.map(({ option, verdict, overall, safetyReject }, i) => {
@@ -962,7 +987,7 @@ function CoilArt({ w, signs, done }: { w: number; signs: number[]; done: boolean
       {signs.map((sign, i) => (
         <CoilLoop key={i} i={i} sign={sign} writhe={writhe} settle={settle} newest={i === signs.length - 1} />
       ))}
-      <SvgText x={180} y={143} fill="#6f7378" fontSize={7.5} textAnchor="middle">
+      <SvgText x={180} y={143} fill="#6f7378" fontSize={10.5} textAnchor="middle">
         OVER LOOPS LEAN ONE WAY — UNDER LOOPS MIRROR
       </SvgText>
     </Svg>
@@ -1072,6 +1097,88 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
     onComplete({ safety, protection, workmanship });
   }, [allDone, fohPick, backPick, coilMistakes, craftCorrect, foh, back, onComplete]);
 
+  /* ── the controls that change each drawing — rendered on the page AND
+     docked under the drawing in full screen (owner 2026-09-25: "the user must
+     still be able to adjust and view their changes to controls"). State lives
+     here; the elements are simply rendered twice. ─────────────────────── */
+  const craftDock = (
+    <View style={{ gap: 10, paddingHorizontal: 12 }}>
+      {CRAFT_DECISIONS.map((d) => {
+        const answered = craftAnswered(d.id);
+        const chosen = d.options.find((o) => o.id === craft[d.id]);
+        return (
+          <View key={d.id} style={{ gap: 6 }}>
+            <Text style={s.prompt}>{d.prompt}</Text>
+            <View style={s.chipWrap}>
+              {d.options.map((o) => (
+                <OptionChip
+                  key={o.id}
+                  label={o.label}
+                  active={craft[d.id] === o.id}
+                  disabled={answered && craft[d.id] !== o.id}
+                  onPress={() => pickCraft(d, o)}
+                />
+              ))}
+            </View>
+            {chosen ? (
+              <Text style={[s.dockVerdict, { color: chosen.ok ? colors.green : '#ff9b8f' }]}>
+                {chosen.ok ? '✓ ' : '✕ '}
+                {chosen.short}
+              </Text>
+            ) : null}
+          </View>
+        );
+      })}
+    </View>
+  );
+  const coilDock = (
+    <View style={{ gap: 8 }}>
+      <Text style={s.loopCount} accessibilityLiveRegion="polite">{`LOOP ${signs.length} / 6`}</Text>
+      <View
+        style={s.twistRow}
+        accessibilityLabel={`Twist stored in the cable: ${twistInfo.label}`}
+        accessibilityLiveRegion="polite"
+      >
+        <Text style={s.twistLabel}>TWIST</Text>
+        <View style={s.twistTrack}>
+          <Animated.View style={[s.twistFill, { backgroundColor: colors.green }, twistFillStyle, greenStyle]} />
+          <Animated.View style={[s.twistFill, { backgroundColor: colors.amber }, twistFillStyle, amberStyle]} />
+          <Animated.View style={[s.twistFill, { backgroundColor: '#ff9b8f' }, twistFillStyle, redStyle]} />
+        </View>
+        <Text style={[s.twistReadout, { color: twistInfo.tint }]} numberOfLines={1}>
+          {twistInfo.label}
+        </Text>
+      </View>
+      {lastWrong ? (
+        <Appear>
+          <Text style={s.warnLine}>⚠ Twist is building — the next loop should be the reverse lay.</Text>
+        </Appear>
+      ) : null}
+      <View style={s.loopBtnRow}>
+        <Pressable
+          style={[s.loopBtn, (coilDone || signs.length >= 6) && s.loopBtnOff]}
+          disabled={coilDone || signs.length >= 6}
+          onPress={() => addLoop(1)}
+          accessibilityRole="button"
+          accessibilityLabel="Over loop — natural lay"
+        >
+          <Text style={s.loopBtnText}>OVER LOOP</Text>
+          <Text style={s.loopBtnSub}>natural lay — palm over</Text>
+        </Pressable>
+        <Pressable
+          style={[s.loopBtn, (coilDone || signs.length >= 6) && s.loopBtnOff]}
+          disabled={coilDone || signs.length >= 6}
+          onPress={() => addLoop(-1)}
+          accessibilityRole="button"
+          accessibilityLabel="Under loop — reverse, roll the wrist"
+        >
+          <Text style={s.loopBtnText}>UNDER LOOP</Text>
+          <Text style={s.loopBtnSub}>reverse — roll the wrist</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+
   const checkParts = [
     { label: 'STAGE CRAFT', done: craftDone },
     { label: 'FOH RUN', done: fohPick != null },
@@ -1096,11 +1203,15 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
             the art (and its accessibility label, which asserts "edge-routed
             clear of the performer lane") rewarded a wrong answer while the
             feedback directly beneath it said "bad". */}
-        <StagePlan
-          w={artW}
-          routeFixed={craftOkById('route')}
-          slackFixed={craftOkById('slack')}
-          monFixed={craftOkById('mon')}
+        <ExpandableFigure
+          width={artW}
+          aspect={360 / 205}
+          title="STAGE PLAN"
+          badge="Training visualization — qualitative plan, training colors only; field cable colors vary."
+          render={(w) => (
+            <StagePlan w={w} routeFixed={craftOkById('route')} slackFixed={craftOkById('slack')} monFixed={craftOkById('mon')} />
+          )}
+          controls={craftDock}
         />
         <Text style={s.caption}>Training visualization — qualitative plan, training colors only; field cable colors vary.</Text>
         <View style={{ gap: 12 }}>
@@ -1137,6 +1248,7 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
         <RouteBlock
           scenario={foh}
           width={artW}
+          title="FOH RUN"
           plan={(w, p) => <FohPlan w={w} pick={p} />}
           pick={fohPick}
           onPick={(id) => pickRoute('foh', id)}
@@ -1154,6 +1266,7 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
         <RouteBlock
           scenario={back}
           width={artW}
+          title="BACKSTAGE"
           plan={(w, p) => <BackstagePlan w={w} pick={p} />}
           pick={backPick}
           onPick={(id) => pickRoute('back', id)}
@@ -1172,51 +1285,16 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
           Coil the snake so it deploys straight tomorrow: alternate a natural OVER loop with a reversed UNDER loop, six
           loops total. Watch the coil — and the twist you are storing in the cable.
         </Text>
-        <CoilArt w={artW} signs={signs} done={coilDone} />
+        <ExpandableFigure
+          width={artW}
+          aspect={360 / 150}
+          title="COIL"
+          badge="Training visualization — training tint; field cable colors vary."
+          render={(w) => <CoilArt w={w} signs={signs} done={coilDone} />}
+          controls={<View style={{ paddingHorizontal: 12 }}>{coilDock}</View>}
+        />
         {!coilDone && !coilFullWrong ? <Text style={s.coach}>{CI_OVERUNDER_STEPS[stepIdx]}</Text> : null}
-        <Text style={s.loopCount} accessibilityLiveRegion="polite">{`LOOP ${signs.length} / 6`}</Text>
-        <View
-          style={s.twistRow}
-          accessibilityLabel={`Twist stored in the cable: ${twistInfo.label}`}
-          accessibilityLiveRegion="polite"
-        >
-          <Text style={s.twistLabel}>TWIST</Text>
-          <View style={s.twistTrack}>
-            <Animated.View style={[s.twistFill, { backgroundColor: colors.green }, twistFillStyle, greenStyle]} />
-            <Animated.View style={[s.twistFill, { backgroundColor: colors.amber }, twistFillStyle, amberStyle]} />
-            <Animated.View style={[s.twistFill, { backgroundColor: '#ff9b8f' }, twistFillStyle, redStyle]} />
-          </View>
-          <Text style={[s.twistReadout, { color: twistInfo.tint }]} numberOfLines={1}>
-            {twistInfo.label}
-          </Text>
-        </View>
-        {lastWrong ? (
-          <Appear>
-            <Text style={s.warnLine}>⚠ Twist is building — the next loop should be the reverse lay.</Text>
-          </Appear>
-        ) : null}
-        <View style={s.loopBtnRow}>
-          <Pressable
-            style={[s.loopBtn, (coilDone || signs.length >= 6) && s.loopBtnOff]}
-            disabled={coilDone || signs.length >= 6}
-            onPress={() => addLoop(1)}
-            accessibilityRole="button"
-            accessibilityLabel="Over loop — natural lay"
-          >
-            <Text style={s.loopBtnText}>OVER LOOP</Text>
-            <Text style={s.loopBtnSub}>natural lay — palm over</Text>
-          </Pressable>
-          <Pressable
-            style={[s.loopBtn, (coilDone || signs.length >= 6) && s.loopBtnOff]}
-            disabled={coilDone || signs.length >= 6}
-            onPress={() => addLoop(-1)}
-            accessibilityRole="button"
-            accessibilityLabel="Under loop — reverse, roll the wrist"
-          >
-            <Text style={s.loopBtnText}>UNDER LOOP</Text>
-            <Text style={s.loopBtnSub}>reverse — roll the wrist</Text>
-          </Pressable>
-        </View>
+        {coilDock}
         {coilFullWrong ? (
           <Appear>
             <View style={s.coilFailCard}>
@@ -1307,6 +1385,7 @@ const s = StyleSheet.create({
   keyHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.5, color: colors.amber },
   keyBody: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 19, color: colors.textSecondary },
   coach: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: colors.amberLabel, fontStyle: 'italic' },
+  dockVerdict: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17 },
   loopCount: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub },
   twistRow: { flexDirection: 'row', alignItems: 'center', gap: 9 },
   twistTrack: { flex: 1, height: 10, borderRadius: 5, backgroundColor: '#26262c', overflow: 'hidden' },

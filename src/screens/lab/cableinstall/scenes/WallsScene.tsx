@@ -43,6 +43,7 @@ import type { SharedValue } from 'react-native-reanimated';
 import { colors, fonts } from '../../../../theme/tokens';
 import { OptionChip, lessonStyles } from '../../cable/lessons/bits';
 import { CiSection, RuleFeedback, announceComplete, stableShuffle } from '../bits';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { CI_WALL_TYPES } from '../data/scenarios';
 import { clamp100 } from '../engine/score';
 import {
@@ -248,13 +249,13 @@ function WallMarker({ x, y, index, pending, answered, tint }: { x: number; y: nu
   const breath = useBreath({ run: pending, period: 1420 + (index % 3) * 200, delay: index * 260 });
   const k = useSettle(answered ? 1 : 0, { spring: SPRING_UI });
   const restRing = useRest(pending ? 0.5 : 0);
-  const ring = useAnimatedProps(() => ({ r: 9 + 7 * breath.value, opacity: 0.5 * (1 - breath.value) }));
-  const core = useAnimatedProps(() => ({ r: 9 + 1.4 * k.value }));
+  const ring = useAnimatedProps(() => ({ r: 10 + 7 * breath.value, opacity: 0.5 * (1 - breath.value) }));
+  const core = useAnimatedProps(() => ({ r: 10 + 1.4 * k.value }));
   return (
     <>
-      <ACircle cx={x} cy={y} r={9} fill="none" stroke={tint} strokeWidth={1.4} opacity={restRing} animatedProps={ring} />
-      <ACircle cx={x} cy={y} r={9} fill="#101014" stroke={tint} strokeWidth={1.6} animatedProps={core} />
-      <SvgText x={x} y={y + 3.5} fill={tint} fontSize={10} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">
+      <ACircle cx={x} cy={y} r={10} fill="none" stroke={tint} strokeWidth={1.4} opacity={restRing} animatedProps={ring} />
+      <ACircle cx={x} cy={y} r={10} fill="#101014" stroke={tint} strokeWidth={1.6} animatedProps={core} />
+      <SvgText x={x} y={y + 4} fill={tint} fontSize={11} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">
         {String(index + 1)}
       </SvgText>
     </>
@@ -461,8 +462,8 @@ function RoomSvg({
         {routePick === 'a' ? <InstalledRun d="M76 157 H206" len={130} color="#4fd0e0" width={2.4} /> : null}
         {/* the riser is IN the wall — concealed until the x-ray comes up */}
         <ConcealedRun d="M215 150 L215 134" len={16} color="#4fd0e0" width={2} xr={xr} />
-        <Circle cx={140} cy={157} r={8} fill="#101014" stroke="#4fd0e0" strokeWidth={1.4} />
-        <SvgText x={140} y={160.5} fill="#4fd0e0" fontSize={9} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">
+        <Circle cx={140} cy={157} r={9.5} fill="#101014" stroke="#4fd0e0" strokeWidth={1.4} />
+        <SvgText x={140} y={161} fill="#4fd0e0" fontSize={10.5} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">
           A
         </SvgText>
       </FadeGroup>
@@ -471,8 +472,8 @@ function RoomSvg({
       <FadeGroup to={emph('b')}>
         <Path d="M70 64 Q140 88 206 112" stroke="#ffd35e" strokeWidth={1.6} fill="none" strokeLinecap="round" opacity={0.5} />
         {routePick === 'b' ? <InstalledRun d="M70 64 Q140 88 206 112" len={152} color="#ffd35e" width={4} /> : null}
-        <Circle cx={128} cy={84} r={8} fill="#101014" stroke="#ffd35e" strokeWidth={1.4} />
-        <SvgText x={128} y={87.5} fill="#ffd35e" fontSize={9} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">
+        <Circle cx={128} cy={84} r={9.5} fill="#101014" stroke="#ffd35e" strokeWidth={1.4} />
+        <SvgText x={128} y={88} fill="#ffd35e" fontSize={10.5} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">
           B
         </SvgText>
       </FadeGroup>
@@ -484,8 +485,8 @@ function RoomSvg({
         <DoorCrossing relieved={protectorOn} active={doorActive} />
         <Path d="M316 167 L344 167" stroke="#37d97b" strokeWidth={2.5} fill="none" strokeDasharray="4 4" />
         <Path d="M344 163 L352 167 L344 171 Z" fill="#37d97b" />
-        <Circle cx={250} cy={167} r={8} fill="#101014" stroke="#37d97b" strokeWidth={1.4} />
-        <SvgText x={250} y={170.5} fill="#37d97b" fontSize={9} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">
+        <Circle cx={250} cy={167} r={9.5} fill="#101014" stroke="#37d97b" strokeWidth={1.4} />
+        <SvgText x={250} y={171} fill="#37d97b" fontSize={10.5} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">
           C
         </SvgText>
       </FadeGroup>
@@ -592,32 +593,49 @@ export function WallsScene({ width, completed, onComplete, openSources }: CiModu
 
   const artW = Math.max(160, width);
 
+  /* ── the controls that change the drawing — rendered on the page AND docked
+     under the drawing in full screen (owner 2026-09-25: "the user must still be
+     able to adjust and view their changes to controls"). State lives here; the
+     elements are simply rendered twice. ──────────────────────────────────── */
+  const xrayChip = (
+    <View style={lessonStyles.chipWrap}>
+      <OptionChip
+        label={xray ? 'X-RAY WALL VIEW: ON' : 'X-RAY WALL VIEW: OFF'}
+        active={xray}
+        onPress={() => {
+          setXray((v) => {
+            say(v ? 'X-ray off.' : 'X-ray on. Studs and in-wall runs are visible — a fire rating still is not.');
+            return !v;
+          });
+        }}
+      />
+    </View>
+  );
+
   return (
     <View style={{ gap: 14 }}>
       {/* the one room, shared by all four scenarios */}
       <View style={{ gap: 8 }}>
-        <View style={lessonStyles.chipWrap}>
-          <OptionChip
-            label={xray ? 'X-RAY WALL VIEW: ON' : 'X-RAY WALL VIEW: OFF'}
-            active={xray}
-            onPress={() => {
-              setXray((v) => {
-                say(v ? 'X-ray off.' : 'X-ray on. Studs and in-wall runs are visible — a fire rating still is not.');
-                return !v;
-              });
-            }}
-          />
-        </View>
-        <RoomSvg
-          w={artW}
-          xray={xray}
-          routePick={routePick}
-          wallIdx={wallIdx}
-          wallsActive={s1Solved && !s2Done}
-          protectorOn={tempOk}
-          bushed={s4Done}
-          doorActive={s2Done && !s3Done}
-          edgeActive={s3Done && !s4Done}
+        {xrayChip}
+        <ExpandableFigure
+          width={artW}
+          aspect={VB_W / VB_H}
+          title="ROOM"
+          badge="Training visualization — teaching colors, not field colors."
+          render={(w) => (
+            <RoomSvg
+              w={w}
+              xray={xray}
+              routePick={routePick}
+              wallIdx={wallIdx}
+              wallsActive={s1Solved && !s2Done}
+              protectorOn={tempOk}
+              bushed={s4Done}
+              doorActive={s2Done && !s3Done}
+              edgeActive={s3Done && !s4Done}
+            />
+          )}
+          controls={<View style={{ paddingHorizontal: 12 }}>{xrayChip}</View>}
         />
         <Text style={styles.legend}>
           Rack · route A (raceway) · route B (diagonal) · route C (doorway) · rough opening · wall zones ① ② ③

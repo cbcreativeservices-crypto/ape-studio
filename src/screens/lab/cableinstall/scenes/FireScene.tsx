@@ -21,6 +21,7 @@ import Svg, { G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
 import { OptionChip, VerdictBanner } from '../../cable/lessons/bits';
 import { CiSection, RuleFeedback, SpecCard, announceComplete, stableShuffle } from '../bits';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import {
   ACircle,
   AG,
@@ -260,13 +261,13 @@ function SleeveMarker({ on, done, reduce }: { on: boolean; done: boolean; reduce
 
 /** Numbered space marker — springs a touch larger the moment it is identified. */
 function SpaceMarker({ cx, cy, n, done, reduce }: { cx: number; cy: number; n: number; done: boolean; reduce: boolean }) {
-  const r = useSpringTo(done ? 9.2 : 8, reduce);
+  const r = useSpringTo(done ? 10.7 : 9.5, reduce);
   const p = useAnimatedProps(() => ({ r: r.value }));
   const tint = done ? colors.green : colors.amber;
   return (
     <G>
-      <ACircle cx={cx} cy={cy} r={done ? 9.2 : 8} fill="#17171c" stroke={tint} strokeWidth={1.5} animatedProps={p} />
-      <SvgText x={cx} y={cy + 3} fontSize={8.5} fill={tint} textAnchor="middle">
+      <ACircle cx={cx} cy={cy} r={done ? 10.7 : 9.5} fill="#17171c" stroke={tint} strokeWidth={1.5} animatedProps={p} />
+      <SvgText x={cx} y={cy + 3.8} fontSize={10.5} fill={tint} textAnchor="middle">
         {String(n)}
       </SvgText>
     </G>
@@ -293,7 +294,7 @@ function BuildingArt({
   flowDone: boolean;
 }) {
   const m = useCiMotion();
-  const h = Math.round(w * 0.62);
+  const h = Math.round((w * 224) / 360);
   const ROUTES: Record<string, { d: string; len: number; end: [number, number] }> = {
     'fs-cavity': { d: 'M44 182 H60 V133 H126', len: 140, end: [126, 133] },
     'fs-plenum': { d: 'M44 194 H160 V177 H202 V134 H236', len: 260, end: [236, 134] },
@@ -336,7 +337,7 @@ function BuildingArt({
       <Line x1={296} y1={8} x2={296} y2={190} stroke="#3a3c42" strokeWidth={2} />
       <Line x1={296} y1={202} x2={296} y2={212} stroke="#3a3c42" strokeWidth={2} />
       <Line x1={332} y1={8} x2={332} y2={212} stroke="#3a3c42" strokeWidth={2} />
-      <SvgText x={314} y={20} fontSize={6.5} fill="#6f7378" textAnchor="middle">
+      <SvgText x={314} y={21} fontSize={10.5} fill="#6f7378" textAnchor="middle">
         RISER
       </SvgText>
 
@@ -381,15 +382,18 @@ function BuildingArt({
       {/* MARKED rated wall (hatch + placard) with its conduit sleeve */}
       <Rect x={180} y={112} width={8} height={100} fill="#241416" stroke="#3a3c42" strokeWidth={1} />
       <RatedHatch active={flowOn && !flowDone} loops={m.loops} />
-      <Rect x={118} y={158} width={68} height={11} rx={2} fill="#1a0f0f" stroke="#ff5a48" strokeWidth={1} />
-      <SvgText x={152} y={166} fontSize={6} fill="#ff8a6b" textAnchor="middle">
+      {/* placard beside the rated wall (moved right of the sleeve, 2026-09-25:
+          at 6 units it was unreadable and there is no room left of the wall
+          for a 10-unit line between the ceiling and the plenum route) */}
+      <Rect x={208} y={161} width={98} height={14} rx={2} fill="#1a0f0f" stroke="#ff5a48" strokeWidth={1} />
+      <SvgText x={257} y={171.5} fontSize={10} fill="#ff8a6b" textAnchor="middle">
         RATED · SEE PLANS
       </SvgText>
       <Rect x={172} y={170} width={24} height={12} rx={3} fill="#101014" stroke="#6f7378" strokeWidth={1.4} />
       <SleeveMarker on={flowOn} done={flowDone} reduce={m.reduce} />
 
       {/* origin rack in the lower room */}
-      <SvgText x={29} y={165} fontSize={5.5} fill="#6f7378" textAnchor="middle">
+      <SvgText x={29} y={166} fontSize={10.5} fill="#6f7378" textAnchor="middle">
         RACK
       </SvgText>
       <Rect x={14} y={168} width={30} height={40} rx={3} fill="#17171c" stroke="#3a3c42" strokeWidth={1.4} />
@@ -481,9 +485,45 @@ export function FireScene({ width, completed, onComplete, openSources }: CiModul
     maybeFire(spaceAns, next);
   };
 
+  /* ── the controls that change the drawing — rendered on the page AND docked
+     under the drawing in full screen (owner 2026-09-25: "the user must still be
+     able to adjust and view their changes to controls"). State lives here; the
+     elements are simply rendered twice. ──────────────────────────────────── */
+  const spaceDock = (
+    <View style={{ gap: 6, paddingHorizontal: 12 }}>
+      {CI_FIRE_SPACES.map((sp, i) => {
+        const answered = spaceAns[sp.id] != null;
+        const isSel = sel === sp.id;
+        return (
+          <Pressable
+            key={sp.id}
+            onPress={() => setSel(isSel ? null : sp.id)}
+            style={[styles.spaceCard, isSel && styles.spaceCardSel, styles.spaceHead, { paddingVertical: 6 }]}
+            accessibilityRole="button"
+            accessibilityState={{ selected: isSel }}
+            aria-pressed={isSel}
+            accessibilityLabel={`Space ${i + 1}. ${sp.label}${answered ? ', identified' : ''}`}
+          >
+            <View style={[styles.spaceNum, answered && styles.spaceNumDone]}>
+              <Text style={[styles.spaceNumText, answered && { color: colors.green }]}>{answered ? '✓' : i + 1}</Text>
+            </View>
+            <Text style={styles.spaceLabel}>{sp.label}</Text>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+
   return (
     <View style={{ gap: 14 }}>
-      <BuildingArt w={width} sel={sel} done={(id) => spaceAns[id] != null} flowOn={spacesDone} flowDone={flowDone} />
+      <ExpandableFigure
+        width={width}
+        aspect={360 / 224}
+        title="BUILDING"
+        badge="Training visualization — simplified section; teaching colors, not field colors."
+        render={(w) => <BuildingArt w={w} sel={sel} done={(id) => spaceAns[id] != null} flowOn={spacesDone} flowDone={flowDone} />}
+        controls={spaceDock}
+      />
       <Text style={styles.tintNote}>
         TRAINING VISUALIZATION — simplified building section; tints are the lab’s teaching colors, not field colors.
         Red-hatched wall = marked rated assembly · plain wall = non-rated partition · numbered markers = the three spaces

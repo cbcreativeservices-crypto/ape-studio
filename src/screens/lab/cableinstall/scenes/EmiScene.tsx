@@ -44,6 +44,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { OptionChip } from '../../cable/lessons/bits';
 import { DragSlider } from '../../foundations/bits';
 import { CiSection, RuleFeedback, announceComplete } from '../bits';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { CI_CLASS_TINTS } from '../data/cableTypes';
 import { CI_EMI_CHOICES } from '../data/scenarios';
 import {
@@ -306,8 +307,9 @@ function FieldArt({ w, src, dist, balanced, band }: { w: number; src: EmiSource;
         <IconFade key={src.id}>
           <SourceIcon id={src.id} tint={src.tint} />
         </IconFade>
-        <SvgText x={64} y={124} fill="#a6a6ad" fontSize={8.5} textAnchor="middle">{src.label}</SvgText>
-        <SvgText x={64} y={135} fill="#6f7378" fontSize={6.5} textAnchor="middle">{src.role.toUpperCase()}</SvgText>
+        {/* the source's ROLE line moved out of the drawing into the caption
+            below it (legibility pass 2026-09-25: it printed at 6.5 units) */}
+        <SvgText x={64} y={127} fill="#a6a6ad" fontSize={10.5} textAnchor="middle">{src.label}</SvgText>
         {/* distance guide — stretches with the cable */}
         <ALine
           x1={80}
@@ -320,7 +322,7 @@ function FieldArt({ w, src, dist, balanced, band }: { w: number; src: EmiSource;
           animatedProps={guideProps}
         />
         {/* honesty label — required, in the drawing itself */}
-        <SvgText x={180} y={146} fill="#6f7378" fontSize={7.5} textAnchor="middle">
+        <SvgText x={180} y={146} fill="#6f7378" fontSize={10} textAnchor="middle">
           CONCEPTUAL VISUALIZATION — NOT MEASURED VALUES
         </SvgText>
       </Svg>
@@ -355,9 +357,12 @@ function FieldArt({ w, src, dist, balanced, band }: { w: number; src: EmiSource;
             {/* one conductor splits into a balanced pair, and merges back */}
             <ACircle cx={SIG_X0} cy={70} r={2.6} fill="#e8e8ea" animatedProps={condA} />
             <ACircle cx={SIG_X0} cy={70} r={2.6} fill="#e8e8ea" animatedProps={condB} />
-            <SvgText x={SIG_X0} y={101} fill="#a6a6ad" fontSize={8} textAnchor="middle">SIGNAL CABLE</SvgText>
-            <SvgText x={SIG_X0} y={111} fill="#6f7378" fontSize={6.5} textAnchor="middle">
-              {balanced ? 'BALANCED + SHIELD' : 'UNBALANCED + SHIELD'}
+            <SvgText x={SIG_X0} y={103} fill="#a6a6ad" fontSize={10.5} textAnchor="middle">SIGNAL CABLE</SvgText>
+            <SvgText x={SIG_X0} y={114} fill="#6f7378" fontSize={10} textAnchor="middle">
+              {balanced ? 'BALANCED' : 'UNBALANCED'}
+            </SvgText>
+            <SvgText x={SIG_X0} y={125} fill="#6f7378" fontSize={10} textAnchor="middle">
+              + SHIELD
             </SvgText>
           </Svg>
         </MovingLayer>
@@ -632,6 +637,45 @@ export function EmiScene({ width, completed, onComplete, openSources }: CiModule
 
   const cardW = Math.max(120, Math.floor((width - 8) / 2));
 
+  /* ── the controls that change the drawing — rendered on the page AND docked
+     under the drawing in full screen (owner 2026-09-25: "the user must still be
+     able to adjust and view their changes to controls"). State lives here; the
+     elements are simply rendered twice. ──────────────────────────────────── */
+  const srcChips = (
+    <View style={s.chipWrap}>
+      {EMI_SOURCES.map((x) => (
+        <OptionChip key={x.id} label={x.label} active={srcId === x.id} onPress={() => setSrcId(x.id)} />
+      ))}
+    </View>
+  );
+  const exposureRow = (
+    <View style={s.exposureRow} accessibilityLiveRegion="polite" accessibilityLabel={`Exposure ${band.word}. ${src.label}, ${balanced ? 'balanced' : 'unbalanced'}, ${distWord(dist)} spacing.`}>
+      <Text style={s.exposureLabel}>EXPOSURE</Text>
+      <BandWord key={band.word} word={band.word} tint={band.tint} />
+      <Text style={s.exposureCtx} numberOfLines={1}>
+        {`${src.label} · ${balanced ? 'BALANCED' : 'UNBALANCED'} · ${distWord(dist)}`}
+      </Text>
+    </View>
+  );
+  const distanceSlider = <DragSlider value={dist} onChange={onDist} label="DISTANCE" readout={distWord(dist)} />;
+  const stepChips = (
+    <View style={s.chipWrap}>
+      <OptionChip label="◂ CLOSER" action onPress={() => stepDist(-0.25)} />
+      <OptionChip label="FARTHER ▸" action onPress={() => stepDist(0.25)} />
+      <View style={{ width: 10 }} />
+      <OptionChip label="BALANCED PAIR" active={balanced} onPress={() => setBal(true)} />
+      <OptionChip label="UNBALANCED" active={!balanced} onPress={() => setBal(false)} />
+    </View>
+  );
+  const fieldDock = (
+    <View style={{ gap: 8, paddingHorizontal: 12 }}>
+      {srcChips}
+      {exposureRow}
+      {distanceSlider}
+      {stepChips}
+    </View>
+  );
+
   return (
     <View style={{ gap: 16 }}>
       {completed ? <Text style={s.replayNote}>✓ Stage already recorded complete — replay freely.</Text> : null}
@@ -642,31 +686,23 @@ export function EmiScene({ width, completed, onComplete, openSources }: CiModule
           One signal cable near one noisy neighbor. Pick the neighbor, slide the cable, and flip the interconnect between
           balanced and unbalanced — the exposure call is qualitative, because coupling has levers, not one magic distance.
         </Text>
-        <View style={s.chipWrap}>
-          {EMI_SOURCES.map((x) => (
-            <OptionChip key={x.id} label={x.label} active={srcId === x.id} onPress={() => setSrcId(x.id)} />
-          ))}
-        </View>
-        <FieldArt w={artW} src={src} dist={dist} balanced={balanced} band={band} />
+        {srcChips}
+        <ExpandableFigure
+          width={artW}
+          aspect={360 / 150}
+          title="CONCEPT FIELD"
+          badge="Conceptual visualization — not measured values; training colors."
+          render={(w) => <FieldArt w={w} src={src} dist={dist} balanced={balanced} band={band} />}
+          controls={fieldDock}
+        />
         <Text style={s.caption}>
+          {`${src.label} — ${src.role}. `}
           The glow marks a conceptual coupling-risk region — not measured values, and no universal separation distance
           exists. Training colors — field cable colors vary.
         </Text>
-        <View style={s.exposureRow} accessibilityLiveRegion="polite" accessibilityLabel={`Exposure ${band.word}. ${src.label}, ${balanced ? 'balanced' : 'unbalanced'}, ${distWord(dist)} spacing.`}>
-          <Text style={s.exposureLabel}>EXPOSURE</Text>
-          <BandWord key={band.word} word={band.word} tint={band.tint} />
-          <Text style={s.exposureCtx} numberOfLines={1}>
-            {`${src.label} · ${balanced ? 'BALANCED' : 'UNBALANCED'} · ${distWord(dist)}`}
-          </Text>
-        </View>
-        <DragSlider value={dist} onChange={onDist} label="DISTANCE" readout={distWord(dist)} />
-        <View style={s.chipWrap}>
-          <OptionChip label="◂ CLOSER" action onPress={() => stepDist(-0.25)} />
-          <OptionChip label="FARTHER ▸" action onPress={() => stepDist(0.25)} />
-          <View style={{ width: 10 }} />
-          <OptionChip label="BALANCED PAIR" active={balanced} onPress={() => setBal(true)} />
-          <OptionChip label="UNBALANCED" active={!balanced} onPress={() => setBal(false)} />
-        </View>
+        {exposureRow}
+        {distanceSlider}
+        {stepChips}
         <View style={s.leverCard}>
           <Text style={s.leverHead}>THE REAL LEVERS — NOT A MAGIC NUMBER</Text>
           {EMI_LEVERS.map((l, i) => (

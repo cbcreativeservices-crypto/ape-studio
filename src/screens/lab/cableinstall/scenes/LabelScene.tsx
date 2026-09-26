@@ -31,6 +31,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { OptionChip, VerdictBanner } from '../../cable/lessons/bits';
 import { DragSlider } from '../../foundations/bits';
 import { CiSection, RuleFeedback, SpecCard, announceComplete } from '../bits';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import {
   AG,
   APath,
@@ -74,7 +75,7 @@ const B_FIELDS = [
 
 /* ── the installed system (training visualization; one SVG, two states) ── */
 const RACK_Y = [44, 72, 96, 120]; // rack-exit y per cable
-const P_Y = [58, 68, 78, 88]; // patch-panel lane y
+const P_Y = [52, 64, 76, 88]; // patch-panel lane y (12 apart: room for a 12-unit label flag each)
 const W_Y = [62, 70, 78, 86]; // wall-plate lane y
 const S_Y = [54, 70, 86, 102]; // stage-box jack y
 const PERM_A = [2, 0, 3, 1]; // cable i → patch lane (crossings by design)
@@ -199,7 +200,7 @@ function TraceBeam({ d }: { d: string }) {
 
 function SystemArt({ w, labeled, found }: { w: number; labeled: boolean; found: boolean }) {
   const m = useCiMotion();
-  const h = Math.round(w * 0.42);
+  const h = Math.round((w * 150) / 360);
   const veil = useVeil(found, 0.74);
   return (
     <Svg accessible
@@ -246,8 +247,8 @@ function SystemArt({ w, labeled, found }: { w: number; labeled: boolean; found: 
       {/* physical cable numbers at the rack exits */}
       {[0, 1, 2, 3].map((i) => (
         <G key={i}>
-          <Circle cx={71} cy={RACK_Y[i]} r={6.5} fill="#17171c" stroke="#6f7378" strokeWidth={1.2} />
-          <SvgText x={71} y={RACK_Y[i] + 2.5} fontSize={7.5} fill={colors.textSecondary} textAnchor="middle">
+          <Circle cx={71} cy={RACK_Y[i]} r={8} fill="#17171c" stroke="#6f7378" strokeWidth={1.2} />
+          <SvgText x={71} y={RACK_Y[i] + 3.8} fontSize={10.5} fill={colors.textSecondary} textAnchor="middle">
             {String(i + 1)}
           </SvgText>
         </G>
@@ -261,8 +262,8 @@ function SystemArt({ w, labeled, found }: { w: number; labeled: boolean; found: 
             const tint = isTarget ? colors.green : '#6f7378';
             return (
               <G key={i}>
-                <LabelFlag x={158} y={p - 12} w={32} h={9} tint={tint} delay={i * 80} reduce={m.reduce}>
-                  <SvgText x={174} y={p - 5} fontSize={6} fill={isTarget ? colors.green : colors.textSecondary} textAnchor="middle">
+                <LabelFlag x={156} y={p - 13} w={36} h={12} tint={tint} delay={i * 80} reduce={m.reduce}>
+                  <SvgText x={174} y={p - 4} fontSize={10} fill={isTarget ? colors.green : colors.textSecondary} textAnchor="middle">
                     {CABLE_FLAGS[i]}
                   </SvgText>
                 </LabelFlag>
@@ -276,8 +277,8 @@ function SystemArt({ w, labeled, found }: { w: number; labeled: boolean; found: 
       {found ? (
         <>
           <TraceBeam d={cablePath(TARGET_CABLE)} />
-          <LabelFlag x={158} y={P_Y[PERM_A[TARGET_CABLE]] - 12} w={32} h={9} tint={colors.green} delay={520} reduce={m.reduce}>
-            <SvgText x={174} y={P_Y[PERM_A[TARGET_CABLE]] - 5} fontSize={6} fill={colors.green} textAnchor="middle">
+          <LabelFlag x={156} y={P_Y[PERM_A[TARGET_CABLE]] - 13} w={36} h={12} tint={colors.green} delay={520} reduce={m.reduce}>
+            <SvgText x={174} y={P_Y[PERM_A[TARGET_CABLE]] - 4} fontSize={10} fill={colors.green} textAnchor="middle">
               {CABLE_FLAGS[TARGET_CABLE]}
             </SvgText>
           </LabelFlag>
@@ -285,16 +286,16 @@ function SystemArt({ w, labeled, found }: { w: number; labeled: boolean; found: 
         </>
       ) : null}
       {/* node names */}
-      <SvgText x={38} y={146} fontSize={6.5} fill="#6f7378" textAnchor="middle">
+      <SvgText x={38} y={146} fontSize={10.5} fill="#6f7378" textAnchor="middle">
         RACK R1
       </SvgText>
-      <SvgText x={124} y={146} fontSize={6.5} fill="#6f7378" textAnchor="middle">
+      <SvgText x={124} y={146} fontSize={10.5} fill="#6f7378" textAnchor="middle">
         PATCH PP2
       </SvgText>
-      <SvgText x={210} y={146} fontSize={6.5} fill="#6f7378" textAnchor="middle">
+      <SvgText x={210} y={146} fontSize={10.5} fill="#6f7378" textAnchor="middle">
         WALL PLATE
       </SvgText>
-      <SvgText x={300} y={146} fontSize={6.5} fill="#6f7378" textAnchor="middle">
+      <SvgText x={300} y={146} fontSize={10.5} fill="#6f7378" textAnchor="middle">
         STAGE BOX
       </SvgText>
     </Svg>
@@ -448,7 +449,7 @@ function SlackArt({ w, v }: { w: number; v: number }) {
       {[86, 106, 126, 146, 166, 186].map((x) => (
         <Path key={x} d={`M${x} 102 l8 -12`} stroke="#26262c" strokeWidth={1} />
       ))}
-      <SvgText x={146} y={98} fontSize={5.5} fill="#6f7378" textAnchor="middle">
+      <SvgText x={146} y={98.5} fontSize={7} fill="#6f7378" textAnchor="middle">
         SERVICE PATHWAY — KEEP CLEAR
       </SvgText>
       <ARect
@@ -640,9 +641,46 @@ export function LabelScene({ width, completed, onComplete, openSources }: CiModu
       ? 'Not yet — read each field against the note: the origin is where the run starts (Stage Input 12), the destination is where it lands (rack panel port), and the cable ID is the run’s own number.'
       : 'Read closely: Stage Input 12 = STG-A-IN12 · Rack 1, Patch Panel 2, Port 12 = R1-PP2-12 · the cable itself is A-012.';
 
+  /* ── the controls that change the drawing — rendered on the page AND docked
+     under the drawing in full screen (owner 2026-09-25: "the user must still be
+     able to adjust and view their changes to controls"). State lives here; the
+     elements are simply rendered twice. ──────────────────────────────────── */
+  const slackDock = (
+    <View style={{ gap: 8 }}>
+      <DragSlider
+        value={slack}
+        onChange={(v) => {
+          if (!dDone) setSlack(v);
+        }}
+        label="STORED SLACK"
+        readout={ZONE_NAME[zone]}
+        tint={ZONE_TINT[zone]}
+      />
+      <View style={{ gap: 3 }}>
+        {(['little', 'good', 'much'] as const).map((z) => (
+          <Text key={z} style={[styles.zoneNote, zone === z && { color: ZONE_TINT[z], fontFamily: fonts.barlowMedium }]}>
+            {zone === z ? '▶ ' : '·  '}
+            {CI_SLACK_SCENARIO.notes[z]}
+          </Text>
+        ))}
+      </View>
+      {!dDone ? (
+        <Pressable style={styles.applyBtn} onPress={confirmSlack} accessibilityRole="button" accessibilityLabel="Confirm stored slack">
+          <Text style={styles.applyText}>CONFIRM STORED SLACK</Text>
+        </Pressable>
+      ) : null}
+    </View>
+  );
+
   return (
     <View style={{ gap: 14 }}>
-      <SystemArt w={width} labeled={bDone} found={cFound} />
+      <ExpandableFigure
+        width={width}
+        aspect={360 / 150}
+        title="SYSTEM"
+        badge="Training visualization — simplified system; teaching colors, not field colors."
+        render={(w) => <SystemArt w={w} labeled={bDone} found={cFound} />}
+      />
       <Text style={styles.tintNote}>
         TRAINING VISUALIZATION — simplified system; the identical cable tints ARE the point (teaching colors — field
         colors vary). Numbered markers = the four physical cables below.
@@ -811,29 +849,15 @@ export function LabelScene({ width, completed, onComplete, openSources }: CiModu
             project/manufacturer requirements — there is no universal service-loop length. Set this rack’s loop to the
             project note:
           </Text>
-          <SlackArt w={width} v={slack} />
-          <DragSlider
-            value={slack}
-            onChange={(v) => {
-              if (!dDone) setSlack(v);
-            }}
-            label="STORED SLACK"
-            readout={ZONE_NAME[zone]}
-            tint={ZONE_TINT[zone]}
+          <ExpandableFigure
+            width={width}
+            aspect={220 / 110}
+            title="SERVICE LOOP"
+            badge="Training visualization — teaching colors, not field colors."
+            render={(w) => <SlackArt w={w} v={slack} />}
+            controls={<View style={{ paddingHorizontal: 12 }}>{slackDock}</View>}
           />
-          <View style={{ gap: 3 }}>
-            {(['little', 'good', 'much'] as const).map((z) => (
-              <Text key={z} style={[styles.zoneNote, zone === z && { color: ZONE_TINT[z], fontFamily: fonts.barlowMedium }]}>
-                {zone === z ? '▶ ' : '·  '}
-                {CI_SLACK_SCENARIO.notes[z]}
-              </Text>
-            ))}
-          </View>
-          {!dDone ? (
-            <Pressable style={styles.applyBtn} onPress={confirmSlack} accessibilityRole="button" accessibilityLabel="Confirm stored slack">
-              <Text style={styles.applyText}>CONFIRM STORED SLACK</Text>
-            </Pressable>
-          ) : null}
+          {slackDock}
           {dDone ? (
             <Appear style={{ gap: 8 }}>
               <VerdictBanner

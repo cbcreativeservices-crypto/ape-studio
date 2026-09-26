@@ -22,6 +22,7 @@ import { CheckQuestion } from '../../foundations/bits';
 import { markLabUnit } from '../../../../features/lab/labCompletion';
 import { colors, fonts } from '../../../../theme/tokens';
 import { CiSection, FindProgress, RuleFeedback, announceComplete } from '../bits';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import {
   ACircle,
   AG,
@@ -206,7 +207,7 @@ function DefectMarker({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [breathing, delay, phase]);
 
-  const targetR = corrected ? 9.5 : found ? 10.5 : 9;
+  const targetR = corrected ? 10.5 : found ? 11.5 : 10;
   const r = useSpringTo(targetR, found, reduce);
   const check = useDrawIn(14, { run: corrected, duration: reduce ? 0 : 260 });
 
@@ -233,7 +234,7 @@ function DefectMarker({
         />
       ) : (
         <AG opacity={reduce ? 1 : 0} animatedProps={label}>
-          <SvgText x={cx} y={cy + 3} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={8.5} fill="#e8e8ea">
+          <SvgText x={cx} y={cy + 3.8} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={10.5} fill="#e8e8ea">
             {n}
           </SvgText>
         </AG>
@@ -310,7 +311,7 @@ function FacilityScene({
   passed: boolean;
 }) {
   const m = useCiMotion();
-  const h = Math.round(w * 0.66);
+  const h = Math.round((w * 240) / 360);
   const [assembled, setAssembled] = useState(false);
   useEffect(() => {
     const id = setTimeout(() => setAssembled(true), 90);
@@ -346,7 +347,9 @@ function FacilityScene({
         <ZoneIn delay={90} reduce={m.reduce}>
           {/* equipment room + rack (right, full height) */}
           <Line x1={256} y1={8} x2={256} y2={228} stroke="#3a3c42" strokeWidth={2.5} />
-          <SvgText x={300} y={78} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={8} letterSpacing={1} fill="#54565c">
+          {/* room names sit where no pooled finding lands (scenarios.ts x/y %):
+              the equipment room at x 84-94 / y 30-66, the stage at y >= 70 */}
+          <SvgText x={306} y={223} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={10.5} letterSpacing={1} fill="#54565c">
             EQUIP ROOM
           </SvgText>
           <Rect x={276} y={84} width={62} height={128} rx={4} fill="#17171c" stroke="#3a3c42" strokeWidth={1.5} />
@@ -362,7 +365,7 @@ function FacilityScene({
           {/* stage (left) */}
           <Rect x={8} y={186} width={104} height={42} rx={3} fill="#141418" stroke="#3a3c42" strokeWidth={1.4} />
           <Rect x={16} y={196} width={20} height={14} rx={2} fill="#101014" stroke="#6f7378" strokeWidth={1.2} />
-          <SvgText x={60} y={182} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={8} letterSpacing={1} fill="#54565c">
+          <SvgText x={92} y={224} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={10.5} letterSpacing={1} fill="#54565c">
             STAGE
           </SvgText>
         </ZoneIn>
@@ -534,6 +537,23 @@ export function InspectScene({ width, completed, onComplete, onDims, openSources
     }
   };
 
+  /* Docked under the drawing in full screen (owner 2026-09-25): the progress
+     counter and the finding a tapped marker just opened. Classifying and
+     correcting stay on the page, where the photograph of the defect lives. */
+  const inspectDock = (
+    <View style={{ gap: 8, paddingHorizontal: 12 }}>
+      <FindCounter found={processedCount} required={required} total={defects.length} />
+      {activeDefect ? (
+        <View style={{ gap: 2 }}>
+          <Text style={styles.workHead}>
+            FINDING {defects.indexOf(activeDefect) + 1} · {ZONE_NAMES[activeDefect.zone]}
+          </Text>
+          <Text style={styles.workLabel} numberOfLines={2}>{activeDefect.label}</Text>
+        </View>
+      ) : null}
+    </View>
+  );
+
   return (
     <View style={{ gap: 14 }}>
       {phase === 'inspect' ? (
@@ -544,7 +564,14 @@ export function InspectScene({ width, completed, onComplete, onDims, openSources
               correction. Pass at {required} of {defects.length} processed. Each attempt draws a different set.
             </Text>
             {width > 40 ? (
-              <FacilityScene w={width} defects={defects} states={states} onTap={openDefect} passed={processedCount >= required} />
+              <ExpandableFigure
+                width={width}
+                aspect={360 / 240}
+                title="FACILITY WALK"
+                badge="Training visualization — numbered markers are the findings; tap one to open it."
+                render={(w) => <FacilityScene w={w} defects={defects} states={states} onTap={openDefect} passed={processedCount >= required} />}
+                controls={inspectDock}
+              />
             ) : null}
             <FindCounter found={processedCount} required={required} total={defects.length} />
             <Pressable onPress={() => setListOpen((o) => !o)} accessibilityRole="button" accessibilityState={{ expanded: listOpen }} aria-expanded={listOpen} accessibilityLabel="Findings list — accessible alternative to tapping the drawing">

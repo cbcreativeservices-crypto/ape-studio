@@ -48,6 +48,7 @@ import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-nati
 import Svg, { Circle, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
 import { CiSection, RuleFeedback, SpecCard, announceComplete } from '../bits';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { OptionChip, VerdictBanner } from '../../cable/lessons/bits';
 import { CI_SUPPORT_ITEMS, CI_SUPPORT_SPACING_SPEC } from '../data/scenarios';
 import { CI_CLASS_TINTS } from '../data/cableTypes';
@@ -546,15 +547,27 @@ const SpanArt = memo(function SpanArt({ w, placed }: { w: number; placed: Set<nu
         opacity={0.3}
         animatedProps={guideProps}
       />
+      {/* the guide's label sits BELOW the sag limit, tied to it by a tick:
+          above the line it collided with the hooks once it grew to 11 units
+          (legibility pass 2026-09-25) */}
+      <Line
+        x1={X1 - 2}
+        y1={CABLE_Y + SAG_LIMIT_UNITS * UNIT + 2}
+        x2={X1 - 2}
+        y2={CABLE_Y + SAG_LIMIT_UNITS * UNIT + 14}
+        stroke="#37d97b"
+        strokeWidth={1}
+        opacity={0.5}
+      />
       <SvgText
-        x={X1}
-        y={CABLE_Y + SAG_LIMIT_UNITS * UNIT - 4}
+        x={X1 - 2}
+        y={CABLE_Y + SAG_LIMIT_UNITS * UNIT + 24}
         textAnchor="end"
         fontFamily={fonts.oswaldSemiBold}
-        fontSize={8.5}
+        fontSize={11}
         letterSpacing={0.8}
         fill="#37d97b"
-        opacity={0.8}
+        opacity={0.85}
       >
         MAX SAG ½ UNIT
       </SvgText>
@@ -753,6 +766,47 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
   const answered = idx + (pick != null ? 1 : 0);
   const finishedPass = correct >= passNeeded;
 
+  /* ── the controls that change the drawing — rendered on the page AND docked
+     under the drawing in full screen (owner 2026-09-25: "the user must still be
+     able to adjust and view their changes to controls"). State lives here; the
+     elements are simply rendered twice. ──────────────────────────────────── */
+  const spanDock = (
+    <View style={{ gap: 8 }}>
+      <View style={styles.posRow}>
+        {POS_UNITS.map((u, i) => {
+          const on = placed.has(i);
+          return (
+            <Pressable
+              key={u}
+              style={[styles.posBtn, on && styles.posBtnOn]}
+              onPress={() => togglePos(i)}
+              accessibilityRole="button"
+              accessibilityState={{ selected: on }}
+              // Twin of accessibilityState (RNW 0.21 drops the object). aria-pressed
+              // is the valid two-state attribute on role=button; the placed/empty
+              // state is also spelled out in accessibilityLabel.
+              aria-pressed={on}
+              accessibilityLabel={`Position ${i + 1}, at ${u} units, ${on ? 'support placed' : 'empty'}`}
+            >
+              <Text style={[styles.posText, on && { color: colors.amber }]}>P{i + 1}</Text>
+              <Text style={[styles.posSub, on && { color: colors.amber }]}>{u}u</Text>
+            </Pressable>
+          );
+        })}
+      </View>
+      <Pressable
+        style={[styles.checkBtn, spacingPassed && styles.checkBtnDone]}
+        onPress={checkSpacing}
+        accessibilityRole="button"
+        accessibilityLabel={spacingPassed ? 'Spacing meets the specification. Check again' : 'Check the support spacing against the specification'}
+      >
+        <Text style={[styles.checkText, spacingPassed && { color: '#0a1a0f' }]}>
+          {spacingPassed ? 'MEETS SPEC ✓ — CHECK AGAIN' : 'CHECK SPACING'}
+        </Text>
+      </Pressable>
+    </View>
+  );
+
   return (
     <View style={{ gap: 16 }}>
       {/* ── A · ROLES ───────────────────────────────────────────────────── */}
@@ -888,40 +942,16 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
           A 12-unit span, five candidate positions. Place supports to the system's documented criteria — the cable sags
           live between whatever you give it.
         </Text>
-        <SpanArt w={artW} placed={placed} />
+        <ExpandableFigure
+          width={artW}
+          aspect={360 / 132}
+          title="SPAN"
+          badge="Cable drawn in a training tint — field colors vary."
+          render={(w) => <SpanArt w={w} placed={placed} />}
+          controls={<View style={{ paddingHorizontal: 12 }}>{spanDock}</View>}
+        />
         <Text style={styles.tintNote}>Cable drawn in a training tint — field colors vary.</Text>
-        <View style={styles.posRow}>
-          {POS_UNITS.map((u, i) => {
-            const on = placed.has(i);
-            return (
-              <Pressable
-                key={u}
-                style={[styles.posBtn, on && styles.posBtnOn]}
-                onPress={() => togglePos(i)}
-                accessibilityRole="button"
-                accessibilityState={{ selected: on }}
-                // Twin of accessibilityState (RNW 0.21 drops the object). aria-pressed
-                // is the valid two-state attribute on role=button; the placed/empty
-                // state is also spelled out in accessibilityLabel.
-                aria-pressed={on}
-                accessibilityLabel={`Position ${i + 1}, at ${u} units, ${on ? 'support placed' : 'empty'}`}
-              >
-                <Text style={[styles.posText, on && { color: colors.amber }]}>P{i + 1}</Text>
-                <Text style={[styles.posSub, on && { color: colors.amber }]}>{u}u</Text>
-              </Pressable>
-            );
-          })}
-        </View>
-        <Pressable
-          style={[styles.checkBtn, spacingPassed && styles.checkBtnDone]}
-          onPress={checkSpacing}
-          accessibilityRole="button"
-          accessibilityLabel={spacingPassed ? 'Spacing meets the specification. Check again' : 'Check the support spacing against the specification'}
-        >
-          <Text style={[styles.checkText, spacingPassed && { color: '#0a1a0f' }]}>
-            {spacingPassed ? 'MEETS SPEC ✓ — CHECK AGAIN' : 'CHECK SPACING'}
-          </Text>
-        </Pressable>
+        {spanDock}
         {spacingVerdict ? (
           <Appear key={`sp-${checkNonce}`}>
             <RuleFeedback ruleId="sup-spacing-mfr" verdict={spacingVerdict} short={spacingMsg} openSources={openSources} />
