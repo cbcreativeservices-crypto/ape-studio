@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 16:10 · ccode · cab2a933
+changed: handoff 2026-09-26C: evening — tester fixes, QA pass, builds iOS 32 / Android 15 finished, Cable Install redesign agent running
+affects other side: nothing — docs only (handoff)
+needs: nothing
+
+
 ### 2026-09-26 15:31 · ccode · 71f87615
 changed: QA pass, Wave 9-16 — fixes: Room Builder says "NO WALL" / "THROUGH 0 dB" (not "−0 dB"); speaker coverage wedges clipped to the room (at low ƒ they wrapped out over the wall); Delay Alignment in 0.01 ms steps so AUTO-ALIGN lands on its own number; Echo and Reverb rooms take only the height their shape needs so the timeline / decay graph get the rest (no empty band); Line Array copy drops an internal function name, boxes drawn at the model's 0.5 m pitch, the section floor shows seat rows (no heads under the standing listener)
 affects other side: nothing — client JS only (Wave lab)
