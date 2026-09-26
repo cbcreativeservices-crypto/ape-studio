@@ -1,3 +1,9 @@
+## 2026-09-26 — A -> ccode: FYI — 2 content applies (owner-approved), no client change needed
+
+- **565 Lab-Gaps questions approved** (`external_ref LABGAPSv2::*`, 113 int/adv terms): were `draft`, so `start_quiz_attempt` never served them. Integrity recheck clean (keys in options, 4 distinct, all linked). Backup `_bkp_lgapprove_qq_20260926`.
+- **Glossary twin retired:** 'Finite-difference time-domain acoustics' (203294d6) mapping removed from **4505** (107 terms now); keeper 'FDTD acoustics' stays in 4605. Glossary row + questions dormant. Backup `_bkp_fdtdfix_gt_20260926`. `refresh_academy_stats()` run.
+- Needs back: nothing.
+
 ## 2026-09-26 — A -> ccode: ASK — remove 3 unused Android permissions (Play Console blocks on them)
 
 - **Why:** Play Console (App content) now demands two declarations we can't truthfully pass while these permissions ship: **Health apps** (triggered by `android.permission.ACTIVITY_RECOGNITION`, which `expo-sensors` adds for Pedometer — the app only uses Accelerometer for shake-to-mute) and **Photo and video permissions** (triggered by `READ_MEDIA_IMAGES` from the `expo-media-library` plugin's `granularPermissions: ["photo"]` — the app only SAVES drawings/snapshots to Photos, never reads the library). Google's rule: broad photo access only if reading media is core; otherwise remove it. Health page says literally: no health features → remove the permission.
@@ -188,6 +194,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 ---
 
 ## LOG (newest first)
+
+### 2026-09-26 12:58 · ccode · 10748284
+changed: Wave: objects drawn to real size in every room (proportion audit) — head ~0.2 m, PA 0.55 m, point speaker 0.45 m, sub 0.75 m, mic 0.18 m, each floored so it stays findable; Line Array in true section (0.45 m boxes, standing listener); diffuser wells at the printed DEPTH; Cardioid REAR probe drawn; Refraction listener ear at 1.6 m on the x20 scale; Echo copy matches geometry
+affects other side: nothing — client JS only (Wave lab drawing)
+needs: nothing
+
 
 ### 2026-09-26 12:47 · ccode · efbd84f7
 changed: Wave: heat/modal maps in 64 colour steps (was 32 — stripes at 2-3x); the listener head sits on a dark disc with a light ring so it is findable on any map colour, including a black node line
