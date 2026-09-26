@@ -23,6 +23,7 @@ import { LOUDNESS_STOPS, levelColorForDb } from '../../../../features/tools/leve
 import { GAIN_STAGES, type GainNode, type GainSettings, type GainStageId } from '../../../../features/soundsystems/operate';
 import { GearGlyph, type GlyphKind } from './gearArt';
 import { usePeakHold, useProgrammeLevel } from './motion';
+import { useStageTextScale } from '../../rack/stageAspect';
 
 const ARect = Animated.createAnimatedComponent(Rect);
 const ACircle = Animated.createAnimatedComponent(Circle);
@@ -97,9 +98,9 @@ function MeterSvg({ chain, programme, peak, highlight, w }: { chain: GainNode[];
   );
 }
 
-function GlyphRow({ chain, size }: { chain: GainNode[]; size: number }) {
+function GlyphRow({ chain, size, ts = 1 }: { chain: GainNode[]; size: number; ts?: number }) {
   return (
-    <View style={styles.row}>
+    <View style={[styles.row, ts !== 1 && { paddingHorizontal: 4 * ts }]}>
       {chain.map((node) => (
         <View key={node.id} style={styles.cell}>
           <GearGlyph kind={STAGE_GLYPH[node.id]} size={size} legends={false} />
@@ -113,21 +114,24 @@ function GlyphRow({ chain, size }: { chain: GainNode[]; size: number }) {
  *  and the glyph size pick it — so it is skipped on every lane step. Each
  *  glyph is its own <Svg> with seven gradients; re-rendering the eight of
  *  them cost ~150 DOM attribute writes a step (web harness, 2026-09-25). */
-const GlyphRowMemo = memo(GlyphRow, (a, b) => a.size === b.size && a.chain.length === b.chain.length && a.chain.every((n, i) => n.id === b.chain[i].id));
+const GlyphRowMemo = memo(GlyphRow, (a, b) => a.size === b.size && a.ts === b.ts && a.chain.length === b.chain.length && a.chain.every((n, i) => n.id === b.chain[i].id));
 
-/** Stage labels + dBu readouts, optionally with the tap steppers. */
-function LabelRow({ chain, settings, onChange, highlight }: { chain: GainNode[]; settings?: GainSettings; onChange?: (id: GainStageId, db: number) => void; highlight?: GainStageId | null }) {
+/** Stage labels + dBu readouts, optionally with the tap steppers. `ts` is
+ *  the FULL SCREEN text scale (1 on the glass): the words and numbers are
+ *  React Native text under the meter SVG, so they must be told to grow. */
+function LabelRow({ chain, settings, onChange, highlight, ts = 1 }: { chain: GainNode[]; settings?: GainSettings; onChange?: (id: GainStageId, db: number) => void; highlight?: GainStageId | null; ts?: number }) {
+  const grow = ts !== 1;
   return (
-    <View style={styles.row}>
+    <View style={[styles.row, grow && { paddingHorizontal: 4 * ts }]}>
       {chain.map((node) => {
         const spec = GAIN_STAGES.find((s) => s.id === node.id)!;
         const step = STEP[node.id];
         const v = settings?.[node.id] ?? spec.unity;
         const lit = highlight === node.id;
         return (
-          <View key={node.id} style={styles.cell}>
-            <Text style={[styles.label, lit && { color: colors.amber }]} numberOfLines={1}>{SHORT_LABEL[node.id]}</Text>
-            <Text style={[styles.dbu, { color: node.clipped ? colors.red : levelColorForDb(node.levelDbu, -40, 20) }]}>{Math.round(node.levelDbu)}</Text>
+          <View key={node.id} style={[styles.cell, grow && { gap: 1 * ts }]}>
+            <Text style={[styles.label, grow && { fontSize: 9 * ts, letterSpacing: 0.6 * ts }, lit && { color: colors.amber }]} numberOfLines={1}>{SHORT_LABEL[node.id]}</Text>
+            <Text style={[styles.dbu, grow && { fontSize: 11 * ts }, { color: node.clipped ? colors.red : levelColorForDb(node.levelDbu, -40, 20) }]}>{Math.round(node.levelDbu)}</Text>
             {onChange && settings ? (
               step > 0 ? (
                 <>
@@ -146,7 +150,7 @@ function LabelRow({ chain, settings, onChange, highlight }: { chain: GainNode[];
                 <Text style={styles.fixed}>—</Text>
               )
             ) : step > 0 ? (
-              <Text style={[styles.val, v !== spec.unity && { color: colors.amber }]} numberOfLines={1}>
+              <Text style={[styles.val, grow && { fontSize: 11 * ts }, v !== spec.unity && { color: colors.amber }]} numberOfLines={1}>
                 {v > 0 ? '+' : ''}
                 {v}
               </Text>
@@ -179,16 +183,22 @@ export function ChainMeterStage({ chain, settings, w, h, running = true, highlig
   const peak = usePeakHold(programme);
   const n = chain.length;
   const W = n * CELL_W + 8;
-  const glyph = Math.round(Math.min(34, Math.max(22, h * 0.15)));
-  const labelH = 34;
-  const svgH = Math.max(60, h - glyph - labelH - 14);
-  const fitW = Math.max(120, Math.min(w - 12, svgH * (W / H)));
+  // Parity pass 2026-09-26: the equipment row and the label row are
+  // View-built (not inside the meter SVG), so they are sized in glass points
+  // and multiplied by the FULL SCREEN text scale — at 2× the glyphs, the
+  // stage names and the dBu readouts are twice their glass size, like the
+  // meters between them. ts = 1 on the glass, so nothing moves there.
+  const ts = useStageTextScale();
+  const glyph = Math.round(Math.min(34, Math.max(22, (h / ts) * 0.15)) * ts);
+  const labelH = 34 * ts;
+  const svgH = Math.max(60 * ts, h - glyph - labelH - 14 * ts);
+  const fitW = Math.max(120 * ts, Math.min(w - 12 * ts, svgH * (W / H)));
   return (
     <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center' }}>
-      <View style={{ width: fitW, gap: 3 }}>
-        <GlyphRowMemo chain={chain} size={glyph} />
+      <View style={{ width: fitW, gap: 3 * ts }}>
+        <GlyphRowMemo chain={chain} size={glyph} ts={ts} />
         <MeterSvg chain={chain} programme={programme} peak={peak} highlight={highlight} />
-        <LabelRow chain={chain} settings={settings} highlight={highlight} />
+        <LabelRow chain={chain} settings={settings} highlight={highlight} ts={ts} />
       </View>
     </View>
   );
