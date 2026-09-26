@@ -1868,7 +1868,11 @@ export function RoomSceneView(p: RoomSceneProps) {
       // frequency-dependent, so switching material or sweeping frequency
       // re-labels every reflected tick (owner 2026-08-02). Direct = 0.0 dB ref.
       const relDb = a.levelDb - maxDb;
-      const norm = Math.pow(10, relDb / 20); // 0..1 linear, drives tick length
+      // A reflection off a WORKING diffuser is not one strong mirror arrival
+      // — it is broken into many dim ones (QA 2026-09-26: the legend still
+      // listed the slap at −5 dB with the diffuser on).
+      const scattered = scatterWall != null && a.bounces.includes(scatterWall);
+      const norm = Math.pow(10, relDb / 20) * (scattered ? 0.25 : 1); // 0..1 linear, drives tick length
       // Sized with the text scale so the fan grows in FULL SCREEN (owner
       // 2026-09-26: "make sure the head, speaker … are also zooming").
       const r0 = 14 * ts;
@@ -1883,13 +1887,13 @@ export function RoomSceneView(p: RoomSceneProps) {
       const relRounded = Math.round(Math.abs(relDb));
       rows.push({
         ms: `${(a.t * 1000).toFixed(1)} ms`,
-        db: i === 0 ? 'direct' : `${relRounded > 0 && relDb < 0 ? '−' : ''}${relRounded} dB`,
+        db: i === 0 ? 'direct' : scattered ? 'scattered' : `${relRounded > 0 && relDb < 0 ? '−' : ''}${relRounded} dB`,
         color,
       });
     }
     return { ticks: Array.from(byColor, ([color, path]) => ({ path, color })), rows };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key, freq, geo, ts, p.layers.arrivals]);
+  }, [key, freq, geo, ts, p.layers.arrivals, scatterWall]);
 
   // Pulsing listener halo (arrivals layer) — soft breathing, eased by sin.
   const haloR = useDerivedValue(() => (12 + 2.6 * Math.sin(p.phase.value * 0.7)) * ts, [p.phase, ts]);
@@ -2332,7 +2336,7 @@ export function RoomSceneView(p: RoomSceneProps) {
         {ringGapWide ? (
           // Inside the room's top-left corner on a plate — in the margin it
           // collided with the top wall's name on a small room (Reverb).
-          <RNText style={[styles.wallLabel, styles.labelPlate, { fontSize: 9 * ts, color: '#c9a45a', left: geo.x0 + 3 * ts, top: geo.y0 + 3 * ts, paddingHorizontal: 3 * ts, borderRadius: 3 * ts }]}>
+          <RNText style={[styles.wallLabel, styles.labelPlate, { fontSize: 9 * ts, color: '#c9a45a', left: geo.x0 + 3 * ts, top: geo.y1 - 17 * ts, paddingHorizontal: 3 * ts, borderRadius: 3 * ts }]}>
             RING GAP {'>'} λ
           </RNText>
         ) : null}
@@ -2940,27 +2944,28 @@ export function GradientSceneView(p: {
   }, [w, groundY]);
   const thermo = useMemo(() => {
     const path = Skia.Path.Make();
-    path.addRect(Skia.XYWHRect(4, 8, 4, groundY - 16));
+    path.addRect(Skia.XYWHRect(4 * ts, 8, 4 * ts, groundY - 16));
     return path;
-  }, [groundY]);
+  }, [groundY, ts]);
 
   // Wind arrows (drawn, not text): 2 strokes near the top, length ∝ wind.
   const windPath = useMemo(() => {
     const path = Skia.Path.Make();
     if (Math.abs(wind) < 0.04) return path;
-    const len = 16 + 30 * Math.abs(wind);
+    // × ts: the arrows zoom with their WIND label (QA 2026-09-26, D35.4).
+    const len = (16 + 30 * Math.abs(wind)) * ts;
     const dir = wind > 0 ? 1 : -1;
-    for (const yy of [16, 26]) {
+    for (const yy of [16 * ts, 26 * ts]) {
       const xc = w * 0.5 - (dir * len) / 2;
       path.moveTo(xc, yy);
       path.lineTo(xc + dir * len, yy);
       path.moveTo(xc + dir * len, yy);
-      path.lineTo(xc + dir * (len - 5), yy - 3.2);
+      path.lineTo(xc + dir * (len - 5 * ts), yy - 3.2 * ts);
       path.moveTo(xc + dir * len, yy);
-      path.lineTo(xc + dir * (len - 5), yy + 3.2);
+      path.lineTo(xc + dir * (len - 5 * ts), yy + 3.2 * ts);
     }
     return path;
-  }, [w, wind]);
+  }, [w, wind, ts]);
 
   const bust = useMemo(() => {
     const path = Skia.Path.Make();
@@ -2992,20 +2997,20 @@ export function GradientSceneView(p: {
           />
         </Path>
         {/* The ray fan: engine-true curved paths, one amber hero mid-fan. */}
-        <GlowStroke path={rays.dim} color={ACCENT_BLUE} width={1.1} opacity={0.5} />
-        <GlowStroke path={rays.hot} color={WAVE} width={1.5} opacity={0.85} />
+        <GlowStroke path={rays.dim} color={ACCENT_BLUE} width={1.1 * ts} opacity={0.5} />
+        <GlowStroke path={rays.hot} color={WAVE} width={1.5 * ts} opacity={0.85} />
         {/* Animated wavefronts riding the fan. */}
         {Array.from({ length: RING_N }, (_, i) => (
           <GradientFront key={i} phase={p.phase} i={i} h0={h0} kCurv={kCurv} ppm={ppm} groundY={groundY} x0px={x0px} maxXm={maxXm} />
         ))}
         {/* Wind cue. */}
-        <Path path={windPath} color="#9aa3b5" style="stroke" strokeWidth={1.4} strokeCap="round" opacity={0.7} />
+        <Path path={windPath} color="#9aa3b5" style="stroke" strokeWidth={1.4 * ts} strokeCap="round" opacity={0.7} />
         <Floor w={w} y={groundY} h={h - groundY} />
         {/* Source: small PA on a pole, near the ground at left. */}
         <SkLine p1={{ x: x0px, y: groundY - h0 * ppmY + 9 * ts }} p2={{ x: x0px, y: groundY }} color="#4a4d58" strokeWidth={2 * ts} />
         <SideSpeakerGlyph x={x0px + 4 * ts} y={groundY - h0 * ppmY} s={1.0 * ts} />
         {/* The distant listener. */}
-        <LineBust path={bust} stroke={LINE} sw={1.2} />
+        <LineBust path={bust} stroke={LINE} sw={1.2 * ts} />
       </Canvas>
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
         {topLabel ? <RNText style={[styles.sceneLabel, { fontSize: 9 * ts, left: 12 * ts, top: 10 * ts }]}>{topLabel}</RNText> : null}
@@ -3014,7 +3019,7 @@ export function GradientSceneView(p: {
             hidden behind it — walkthrough 2026-09-26). */}
         <RNText style={[styles.sceneLabel, { fontSize: 9 * ts, left: x0px + 26 * ts, top: groundY - 14 * ts }]}>{botLabel}</RNText>
         {/* The one exaggeration, said on the picture. */}
-        <RNText style={[styles.sceneLabel, { fontSize: 9 * ts, right: 8 * ts, top: 10 * ts, color: '#c9a45a' }]}>{`HEIGHT ×${GRAD_V_EXAG}`}</RNText>
+        <RNText style={[styles.sceneLabel, { fontSize: 9 * ts, right: 8 * ts, top: 10 * ts, color: '#c9a45a', backgroundColor: 'rgba(8,9,13,0.72)', paddingHorizontal: 3 * ts, borderRadius: 3 * ts, overflow: 'hidden' }]}>{`HEIGHT ×${GRAD_V_EXAG}`}</RNText>
         <RNText style={[styles.sceneLabel, { fontSize: 9 * ts, left: x0px + GRAD_LISTENER_M * ppm - 20 * ts, top: groundY + 2 * ts, width: 40 * ts, textAlign: 'center' }]}>
           {`${GRAD_LISTENER_M} m`}
         </RNText>

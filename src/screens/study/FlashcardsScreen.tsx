@@ -1945,9 +1945,9 @@ export function FlashcardsScreen({ navigation, route }: Props) {
  * was a tap-to-advance target, so the touch that starts a scroll could flip
  * the card before the last lines were ever seen. Now, while the text is
  * longer than the card and not yet scrolled to its end, a tap does NOT
- * advance and a fading "more ↓" cue says there is more; once the end has
- * been reached (or the text fits), a tap advances as before. The coach hint
- * steps aside while text overflows — it only took space from the reading.
+ * advance — it pages the text down — and a fading "more ↓" cue says there is
+ * more; once the end has been reached (or the text fits), a tap advances as
+ * before.
  */
 function DefinitionScroll({
   onTap,
@@ -1963,12 +1963,22 @@ function DefinitionScroll({
   const [viewH, setViewH] = useState(0);
   const [contentH, setContentH] = useState(0);
   const [atEnd, setAtEnd] = useState(false);
-  const overflow = viewH > 0 && contentH > viewH + 4;
+  const scrollRef = useRef<ScrollView>(null);
+  const offsetRef = useRef(0);
+  // The 22 px bottom padding is blank space, not text — it must not count.
+  const overflow = viewH > 0 && contentH - 22 > viewH + 4;
   const canAdvance = !overflow || atEnd;
+  // A tap before the end PAGES the text down (a tap always does something
+  // useful); at the end it flips the card as before (QA 2026-09-26).
+  const pageDown = () => {
+    const next = Math.min(contentH - viewH, offsetRef.current + viewH * 0.8);
+    scrollRef.current?.scrollTo({ y: Math.max(0, next), animated: true });
+  };
   return (
     <>
       <View style={{ flex: 1 }}>
         <ScrollView
+          ref={scrollRef}
           style={{ flex: 1 }}
           contentContainerStyle={styles.levelScrollContent}
           showsVerticalScrollIndicator
@@ -1978,21 +1988,24 @@ function DefinitionScroll({
           onContentSizeChange={(_w, h) => setContentH(h)}
           onScroll={(e) => {
             const { contentOffset, layoutMeasurement, contentSize } = e.nativeEvent;
+            offsetRef.current = contentOffset.y;
             if (contentOffset.y + layoutMeasurement.height >= contentSize.height - 8) setAtEnd(true);
           }}
         >
-          <CardTextPress onPress={canAdvance ? onTap : undefined} onLongPress={onLongPress}>
+          <CardTextPress onPress={canAdvance ? onTap : pageDown} onLongPress={onLongPress}>
             {children}
           </CardTextPress>
         </ScrollView>
         {overflow && !atEnd ? (
-          <View pointerEvents="none" style={styles.moreFade}>
+          <View pointerEvents="none" style={styles.moreFade} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
             <LinearGradient colors={['rgba(27,27,27,0)', '#1b1b1b']} style={StyleSheet.absoluteFill} />
             <Text style={styles.moreText}>more ↓</Text>
           </View>
         ) : null}
       </View>
-      {overflow ? null : hint}
+      {/* Always keep the hint's space: hiding it on overflow grew the scroller,
+          the text then fit, the hint came back — a flicker loop (QA). */}
+      {hint}
     </>
   );
 }
@@ -2153,7 +2166,10 @@ const styles = StyleSheet.create({
   ledRow: { flexDirection: 'row', alignItems: 'center', gap: 10, alignSelf: 'stretch' },
   ledPct: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: colors.amber, minWidth: 44, textAlign: 'right' },
 
-  filterRow: { flexDirection: 'row', flexWrap: 'nowrap', gap: 5 },
+  // One line each at normal text size (chips 9 px sides, gap 5); `wrap` stays
+  // as the fallback so large system text wraps instead of pushing the timer
+  // off-screen (QA 2026-09-26).
+  filterRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 5 },
 
   cardZone: { flex: 1 },
   card: {

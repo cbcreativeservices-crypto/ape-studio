@@ -817,7 +817,11 @@ export function RefractionModule(p: WaveModuleProps) {
   const [wind, setWind] = useState(0); // 0..1 shear (snapped 0.05)
 
   const tempC = 20;
-  const tempAloft = tempC + grad * 8; // disclosed teaching model: ±8 °C aloft
+  // Disclosed teaching model: ±8 °C at 60 m — the SAME gradient the rays use
+  // (grad × 0.08 (m/s)/m × 60 m ≈ ±4.8 m/s ≈ ±8 °C). "Aloft" is now a stated
+  // height, not a floating number (QA 2026-09-26).
+  const ALOFT_M = 60;
+  const tempAloft = tempC + grad * 8;
   const cGround = speedOfSound(tempC);
   const cAloft = speedOfSound(tempAloft);
   // WIND MUST REACH THE READOUTS (fix 2026-08-28). GradientSceneView bends the
@@ -834,7 +838,7 @@ export function RefractionModule(p: WaveModuleProps) {
 
   const readouts = [
     { k: 'c @ GROUND (20 °C)', v: `${cGround.toFixed(1)} m/s` },
-    { k: `c ALOFT (${tempAloft.toFixed(0)} °C)`, v: `${cAloft.toFixed(1)} m/s` },
+    { k: `c @ ${ALOFT_M} m (${tempAloft.toFixed(0)} °C)`, v: `${cAloft.toFixed(1)} m/s` },
     { k: 'BEND DIRECTION', v: bend },
     // Height ABOVE THE GROUND of the level-launched (amber) ray at the
     // listener — not a direction. "0.7 m UP" beside "BEND DOWN" read as a
@@ -858,7 +862,7 @@ export function RefractionModule(p: WaveModuleProps) {
           // 390-wide phone, legibility pass 2026-09-25); the well's readouts
           // right below keep the 0.1 m/s figure.
           { k: 'c GROUND', v: `${cGround.toFixed(0)} m/s`, helpKey: 'refraction' },
-          { k: `c ALOFT ${tempAloft.toFixed(0)}°`, v: `${cAloft.toFixed(0)} m/s`, flex: 1.15, helpKey: 'refraction' },
+          { k: `c @${ALOFT_M}m ${tempAloft.toFixed(0)}°`, v: `${cAloft.toFixed(0)} m/s`, flex: 1.15, helpKey: 'refraction' },
           { k: 'BEND', v: effGrad > 0.1 ? 'DOWN' : effGrad < -0.1 ? 'UP' : 'STRAIGHT', helpKey: 'refraction' },
           { k: 'H @150 m', v: rayH <= 0 ? 'GROUND' : `${rayH.toFixed(1)} m`, helpKey: 'refraction' },
         ],
@@ -916,7 +920,7 @@ export function RefractionModule(p: WaveModuleProps) {
         <PanelCard>
           <Text style={dstyles.eyebrow}>SOUND SPEED & RAY</Text>
           <ReadoutGrid items={readouts} help={p.help} helpKey="refraction" />
-          <Badge text="LINEAR-GRADIENT RAY MODEL — ALOFT ≈ ±8 °C AT HEIGHT (DISCLOSED TEACHING SCALE)" />
+          <Badge text="LINEAR-GRADIENT RAY MODEL — ±8 °C AT 60 m (DISCLOSED TEACHING SCALE)" />
         </PanelCard>
       }
       mistakes={<MistakesCard items={REFRACTION_MISTAKES} />}
@@ -945,7 +949,7 @@ const DIFFRACTION_CHECK: CheckSpec = {
   ],
   correctIdx: 1,
   reveal:
-    'Wavelength decides. An 80 Hz rumble is ~4.3 m long — comparable to the barrier itself — and wraps over the edge nearly unbothered. A 4 kHz hiss is 8.6 cm and casts a real shadow. Compare the LOSS @ 80 Hz and LOSS @ 8 kHz readouts: the shadow zone is a high-frequency dimmer, never an off switch.',
+    'Wavelength decides. An 80 Hz rumble is ~4.3 m long — comparable to the barrier itself — and wraps over the edge losing only about 9 dB. A 4 kHz hiss is 8.6 cm and casts a real shadow. Compare the LOSS @ 80 Hz and LOSS @ 8 kHz readouts: the shadow zone is a high-frequency dimmer, never an off switch.',
   wrongHint: 'Which wavelength is comparable to the barrier — the rumble’s or the hiss’s?',
 };
 
@@ -970,8 +974,10 @@ export function DiffractionModule(p: WaveModuleProps) {
     { k: 'DETOUR OVER TOP δ', v: `+${delta.toFixed(2)} m` },
     { k: 'FRESNEL N (2δ/λ)', v: N.toFixed(2) },
     { k: `LOSS @ ${fmtHz(freq)}`, v: `${loss.toFixed(1)} dB` },
-    { k: 'LOSS @ 80 Hz', v: `${maekawaAttenuationDb(pathOver, pathDirect, 80, tempC).toFixed(1)} dB` },
-    { k: 'LOSS @ 8 kHz', v: `${maekawaAttenuationDb(pathOver, pathDirect, 8000, tempC).toFixed(1)} dB` },
+    // Fixed reference rows are named apart from the live row: at 80 Hz / 8 kHz
+    // they collided with `LOSS @ ${freq}` as duplicate React keys (QA 2026-09-26).
+    { k: 'LOW REF — LOSS @ 80 Hz', v: `${maekawaAttenuationDb(pathOver, pathDirect, 80, tempC).toFixed(1)} dB` },
+    { k: 'HIGH REF — LOSS @ 8 kHz', v: `${maekawaAttenuationDb(pathOver, pathDirect, 8000, tempC).toFixed(1)} dB` },
   ];
 
   return (
@@ -1027,9 +1033,10 @@ export function DiffractionModule(p: WaveModuleProps) {
           <Text style={dstyles.eyebrow}>LOWS WRAP, HIGHS SHADOW</Text>
           <Text style={dstyles.body}>
             Waves bend around anything comparable to or smaller than their own wavelength. Slide the
-            frequency: at 80 Hz (λ ≈ 4.3 m) the wave barely notices a 4 m wall — the detour over the
-            top is a tiny fraction of a wavelength, so the loss stays small. At 8 kHz (λ ≈ 4 cm) the
-            same detour is tens of wavelengths and the shadow gets deep. One barrier, one
+            frequency: at 80 Hz (λ ≈ 4.3 m) the detour over a 4 m wall is only a fraction of a
+            wavelength, so the loss stays modest — about 9 dB here, and the rumble still arrives. At
+            8 kHz (λ ≈ 4 cm) the same detour is tens of wavelengths and the shadow gets deep — nearly
+            three times the loss. One barrier, one
             geometry — the wavelength alone decides who gets through.
           </Text>
           <Text style={dstyles.eyebrow}>A SHADOW ZONE IS NOT SILENCE</Text>
@@ -1265,7 +1272,7 @@ const COMB_CHECK: CheckSpec = {
   ],
   correctIdx: 1,
   reveal:
-    'The notches exist because a delayed copy sums with the direct sound — they are set by the PATH GEOMETRY, and they move the moment the mic does. EQ boost pushes energy into frequencies that still cancel (and wrecks everything at other positions). Press MOVE MIC and watch every notch jump: that is the fix, six inches of it.',
+    'The notches exist because a delayed copy sums with the direct sound — they are set by the PATH GEOMETRY, and they move the moment the mic does. EQ boost pushes energy into frequencies that still cancel (and wrecks everything at other positions). Press ← MIC or MIC → and watch every notch jump: that is the fix, six inches of it.',
   wrongHint: 'The notches are made of time, not tone. What changes the time?',
 };
 
@@ -1364,7 +1371,7 @@ export function CombModule(p: WaveModuleProps) {
                   onDragListener={onDragListener}
                 />
               </StageAspectReport.Provider>
-              <ResponseCurveGraph curves={curves} dbRange={18} totalHeight={h - Math.round(h * 0.56)} width={w} samples={720} />
+              <ResponseCurveGraph curves={curves} dbRange={18} totalHeight={h - Math.round(h * 0.56)} width={w} samples={1600} />
             </View>
           ) : (
             <VizUnavailableCard />
@@ -1397,7 +1404,7 @@ export function CombModule(p: WaveModuleProps) {
             The direct sound and its one reflection sum at every frequency — in phase they add, an odd
             half-cycle apart they cancel. The result is a comb: the first notch sits at 1/(2Δt) and
             its brothers repeat every 1/Δt above it. Move the wall and the whole comb stretches; press
-            MOVE MIC — six inches, 0.15 m — and every notch jumps to a new frequency. That is the
+            ← MIC or MIC → — six inches, 0.15 m — and every notch jumps to a new frequency. That is the
             payoff line of this module: you cannot EQ a comb away, but you can MOVE it away.
           </Text>
           <Text style={dstyles.eyebrow}>WHERE YOU WILL MEET IT</Text>
@@ -1419,8 +1426,8 @@ export function CombModule(p: WaveModuleProps) {
       }
       secondary={
         <PanelCard>
-          <Text style={dstyles.eyebrow}>RESPONSE AT THE LISTENER — 100 Hz TO 8 kHz AND BEYOND</Text>
-          <ResponseCurveGraph curves={curves} dbRange={18} height={150} samples={720} />
+          <Text style={dstyles.eyebrow}>RESPONSE AT THE MIC — 20 Hz TO 20 kHz</Text>
+          <ResponseCurveGraph curves={curves} dbRange={18} height={150} samples={1600} />
           <Badge text="COMPUTED FROM THE SCENE’S DIRECT + REFLECTED ARRIVALS · 0 dB = DIRECT SOUND ALONE" />
         </PanelCard>
       }
@@ -1583,7 +1590,7 @@ export function StandingWaveModule(p: WaveModuleProps) {
             and its peaks flatten: DAMPED, never eliminated. The geometry (and thus the frequency)
             stays. And modes are a LOW-frequency story: above the Schroeder frequency (estimated in
             the readouts from this room’s RT and volume) the mode density is so high that discrete
-            patterns blur into a statistical reverberant field — nobody chases the (47, 12) mode at
+            patterns blur into a statistical reverberant field — nobody chases a single mode at
             5 kHz.
           </Text>
         </PanelCard>

@@ -164,9 +164,18 @@ export function StageFullScreen({
   };
   // Each step re-mounts the scrollers (key), so once the new content has its
   // size, scroll each axis to put the anchor mid-view.
+  // Once per zoom step and axis: re-running on every content-size change
+  // snapped a panned learner back whenever the body resized (hint roll-up,
+  // rotation) — QA 2026-09-26.
+  const anchoredAt = useRef({ x: -1, y: -1 });
+  useEffect(() => {
+    if (visible) anchoredAt.current = { x: -1, y: -1 };
+  }, [visible, zoom]);
   const anchorScroll = (axis: 'x' | 'y', content: number) => {
     const view = axis === 'x' ? bodyW : bodyH;
     if (zoom <= 1 || view <= 0 || content <= view) return;
+    if (anchoredAt.current[axis] === zoom) return;
+    anchoredAt.current[axis] = zoom;
     const f = anchor.current ? (axis === 'x' ? anchor.current.fx : anchor.current.fy) : 0.5;
     const off = Math.max(0, Math.min(content - view, f * content - view / 2));
     if (axis === 'x') hScroll.current?.scrollTo({ x: off, y: 0, animated: false });
@@ -230,9 +239,13 @@ export function StageFullScreen({
               // drawing could not be dragged left/right (Sound Systems
               // re-check 2026-09-26). Stretched, the inner scroller is the
               // viewport's width and owns the sideways drag.
-              contentContainerStyle={styles.vCenter}
-              scrollEnabled={zoom > 1}
-              showsVerticalScrollIndicator={zoom > 1}
+              // An open tray + the lifted dock cover the bottom `overlayLift`
+              // px of the body: pad the content by that much and let it
+              // scroll even at 1×, so the whole drawing stays reachable while
+              // choosing (QA 2026-09-26, D35.2 "the tray never veils").
+              contentContainerStyle={[styles.vCenter, overlayLift > 0 ? { paddingBottom: overlayLift } : null]}
+              scrollEnabled={zoom > 1 || overlayLift > 0}
+              showsVerticalScrollIndicator={zoom > 1 || overlayLift > 0}
             >
               <ScrollView
                 ref={hScroll}

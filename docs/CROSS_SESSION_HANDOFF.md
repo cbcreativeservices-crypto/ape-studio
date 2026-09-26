@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 15:08 · ccode · d2efa1bf
+changed: Flashcards (TestFlight, build 30, John Martin III x3): a long definition can be read to the end — a tap no longer advances until the text has been scrolled to its end (a "more ↓" cue shows while there is more); the last line clears "Suggest a correction"; both filter rows fit on one line each (no third line of stray buttons)
+affects other side: nothing — client JS only (Flashcards screen)
+needs: nothing
+
+
 ### 2026-09-26 14:59 · ccode · d8e54200
 changed: docs: session handoff 2026-09-26C (the 16-module Wave Physics walkthrough), governance D38-D43, lessons (C)
 affects other side: nothing — docs only (handoff, D38-D43, lessons)

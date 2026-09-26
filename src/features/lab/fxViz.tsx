@@ -744,7 +744,7 @@ export function DecayCurveGraph({
         <Line key={`t${t}`} x1={xAt(t)} y1={plotB - 4} x2={xAt(t)} y2={plotB} stroke={DIM} strokeWidth={1} strokeOpacity={0.55} />
       ))}
       {tTicks.map((t) =>
-        Math.abs(xAt(t) - rtX) > 32 ? (
+        Math.abs(xAt(t) - rtX) > 32 * textScale ? (
           <SvgText key={`tl${t}`} x={xAt(t)} y={H - 2} fill={colors.textSub} fontSize={fs} fontFamily={MONO} textAnchor="middle">
             {`${t}s`}
           </SvgText>
