@@ -173,6 +173,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 10:44 · ccode · 1a69d3ca
+changed: Rack: a cropped bezel readout drops its label and stacks number over unit; full screen opens a narrow fixed-shape drawing at the step that fills the width
+affects other side: nothing — client only
+needs: nothing
+
+
 ### 2026-09-26 10:26 · ccode · f031688a
 changed: Meter lab: everything in the drawing zooms with full screen (parity pass)
 affects other side: nothing — client only
