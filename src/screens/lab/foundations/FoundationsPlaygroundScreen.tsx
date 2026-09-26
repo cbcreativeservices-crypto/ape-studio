@@ -54,6 +54,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { LabChip } from '../LabShell';
 import { RackUnit } from '../rack/RackUnit';
+import { useStageTextScale } from '../rack/stageAspect';
 import type { BezelItem, DockParam } from '../rack/rackTypes';
 import { ConceptBadge, DragSlider, LevelMeterBar, VizUnavailableCard } from './bits';
 import { requireViz, type VizModule } from './skiaGate';
@@ -592,6 +593,7 @@ export function FoundationsPlaygroundScreen() {
           // display). The pinned bezel cells under the glass carry the live
           // value already; M9 set the hideDragTag precedent.
           hideDragTag: true,
+          fullScreen: true, // the rack's ⤢ FULL SCREEN — the three views share the tall box (legibility pass 2026-09-25)
           size: 'L', // the whole playground of views — earns the tall glass
           badge: 'CONCEPTUAL MODEL — SLOWED · WAVEFORM/SPECTRUM ANALYTIC, NOT MEASURED',
           onGuide: () => help('waveform'),
@@ -772,8 +774,9 @@ function StageViz({
   gainDbAt: ((f: number) => number) | null;
 }) {
   const clock = viz.useVizClock(running);
+  const ts = useStageTextScale(); // pane names grow with the picture in FULL SCREEN
   const GAP = 3;
-  const LABEL_H = 12;
+  const LABEL_H = Math.round(13 * ts);
   // Air row 40% → 30% (design pass 2026-08-31): the two TEACHING panes were
   // squeezed to ~59px — below the visual resolution of the effects being
   // taught (harmonic corners, EQ tilt) — while the air row took 40%.
@@ -808,7 +811,7 @@ function StageViz({
         </View>
       ) : (
         <>
-          <Text style={[styles.stageLabel, { height: LABEL_H, marginTop: GAP }]} numberOfLines={1}>
+          <Text style={[styles.stageLabel, { fontSize: 9 * ts, height: LABEL_H, marginTop: GAP }]} numberOfLines={1}>
             WAVEFORM — PRESSURE VS TIME
           </Text>
           <viz.AnalyticWaveformView
@@ -829,7 +832,7 @@ function StageViz({
             visHz={visHz}
             cycles={source === 'wave' ? 1.3 + 4.7 * freq01 : 2.5}
           />
-          <Text style={[styles.stageLabel, { height: LABEL_H, marginTop: GAP }]} numberOfLines={1}>
+          <Text style={[styles.stageLabel, { fontSize: 9 * ts, height: LABEL_H, marginTop: GAP }]} numberOfLines={1}>
             SPECTRUM — LOG 40 Hz–16 kHz
             {!noiseKind && amps.filter((a) => a > 0.001).length === 1 ? ' · 1 PARTIAL — PURE TONE' : ''}
             {gainDbAt ? ' · EQ APPLIED' : ''}
@@ -855,7 +858,7 @@ const styles = StyleSheet.create({
   // Stage chrome
   stageLabel: {
     fontFamily: fonts.oswaldSemiBold,
-    fontSize: 8.5,
+    fontSize: 9,
     letterSpacing: 1,
     color: '#9a9ca8',
     paddingHorizontal: 4,

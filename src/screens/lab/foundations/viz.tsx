@@ -42,7 +42,7 @@
  * this is a restyle of the DRAWING only.
  */
 import { useEffect, useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, type TextProps, type TextStyle } from 'react-native';
 import {
   BlurMask,
   Canvas,
@@ -67,6 +67,7 @@ import Animated, {
   type SharedValue,
 } from 'react-native-reanimated';
 import { colors, fonts } from '../../../theme/tokens';
+import { useStageTextScale } from '../rack/stageAspect';
 import { levelColor, WAVE_LEVEL_STOPS } from '../../../features/tools/levelColor';
 
 /** Amplitude ramp for SPECTRUM STICKS / recipe bars, ordered TOP (full scale,
@@ -170,7 +171,7 @@ function Vignette({ w, h }: { w: number; h: number }) {
 const tickText = {
   position: 'absolute' as const,
   fontFamily: fonts.mono,
-  fontSize: 8.5,
+  fontSize: 9,
   color: AXIS_TEXT,
 };
 
@@ -181,6 +182,20 @@ const spiralTick = {
   fontSize: 12,
   color: '#d6dae2',
 };
+
+/** Overlay label over a Skia canvas — the legibility pass (owner 2026-09-25,
+ *  "9 pt minimum"): the rendered size is floored at 9 and multiplied by
+ *  StageTextScale so the words grow with the picture in FULL SCREEN. The Skia
+ *  trap: the canvas scales with its box, React Native text does not — so every
+ *  label laid over a canvas goes through here. Fixed pixel offsets/widths at
+ *  the call sites are multiplied by the same scale (`ts`) by hand. */
+function OText({ style, ...rest }: TextProps) {
+  const k = useStageTextScale();
+  const flat = (StyleSheet.flatten(style) ?? {}) as TextStyle;
+  const grown: TextStyle = { fontSize: Math.max(9, typeof flat.fontSize === 'number' ? flat.fontSize : 9) * k };
+  if (typeof flat.lineHeight === 'number') grown.lineHeight = flat.lineHeight * k;
+  return <Text {...rest} style={[flat, grown]} />;
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Clock
@@ -917,6 +932,7 @@ export function PressureGraphView({
    *  (owner 2026-08-05). */
   originX?: number;
 }) {
+  const ts = useStageTextScale();
   const w = width;
   const h = height;
   const lambda = lambdaPx && lambdaPx > 8 ? lambdaPx : w / 2.2; // SAME spatial
@@ -1014,8 +1030,8 @@ export function PressureGraphView({
     </Canvas>
       {/* +/- PRESSURE metrics on the LEFT (owner 2026-08-05): above the zero
           line = compression (+), below = rarefaction (−). */}
-      <Text style={[pgStyles.pLabel, pgStyles.pPlus, { top: h / 2 - 16 }]}>+ PRESSURE</Text>
-      <Text style={[pgStyles.pLabel, pgStyles.pMinus, { top: h / 2 + 5 }]}>− PRESSURE</Text>
+      <OText style={[pgStyles.pLabel, pgStyles.pPlus, { top: h / 2 - 16 * ts }]}>+ PRESSURE</OText>
+      <OText style={[pgStyles.pLabel, pgStyles.pMinus, { top: h / 2 + 5 * ts }]}>− PRESSURE</OText>
     </View>
   );
 }
@@ -1025,7 +1041,7 @@ const pgStyles = StyleSheet.create({
     position: 'absolute',
     left: 4,
     fontFamily: fonts.oswaldSemiBold,
-    fontSize: 8.5,
+    fontSize: 9,
     letterSpacing: 0.8,
   },
   // Both pressure labels amber (owner 2026-08-05) — not red/blue.
@@ -1044,6 +1060,7 @@ export function ThreeWindowView({
   mode = 'wave',
   showEar = true,
   showZones = true,
+  scale = 1,
 }: {
   width: number;
   visHz: number;
@@ -1052,6 +1069,10 @@ export function ThreeWindowView({
   mode?: AirMode;
   showEar?: boolean;
   showZones?: boolean;
+  /** Vector scale of the fixed-height layout (FitStage, legibility pass
+   *  2026-09-25): 1 = the phone-glass design; the window heights and gaps
+   *  grow with it so FULL SCREEN zooms the whole picture, not just its width. */
+  scale?: number;
 }) {
   // ONE clock — all three windows phase-locked (the whole point).
   const clock = useVizClock(running);
@@ -1063,8 +1084,9 @@ export function ThreeWindowView({
   // Wider speaker now that no sound-rays take space (owner 2026-08-05) — better
   // proportions, less squished. Clamped so a narrow panel still leaves room for
   // the air animation on the right.
-  const spkW = Math.min(120, Math.max(96, width * 0.36));
-  const gap = 6;
+  const k = scale;
+  const spkW = Math.min(120 * k, Math.max(96 * k, width * 0.36));
+  const gap = 6 * k;
   const airW = Math.max(60, width - spkW - gap);
   const originX = spkW * 0.72; // the speaker's cone-mouth x — the wave is born here
   const lambdaPx = airW / 2.2; // one spatial scale shared by air + graph
@@ -1072,17 +1094,18 @@ export function ThreeWindowView({
   // whose wave starts at originX: air-local x=0 sits at screen (spkW+gap).
   const airPhasePx = spkW + gap - originX;
   return (
-    <View style={{ gap: 4 }}>
+    <View style={{ gap: 4 * k }}>
       <View style={{ flexDirection: 'row', gap }}>
-        <View style={{ gap: 4 }}>
-          <Text style={twStyles.winLabel}>SPEAKER</Text>
-          <SpeakerConeView clock={clock} width={spkW} height={116} visHz={visHz} amp={amp} mode={mode} />
+        <View style={{ gap: 4 * k }}>
+          <OText style={twStyles.winLabel}>SPEAKER</OText>
+          <SpeakerConeView clock={clock} width={spkW} height={116 * k} visHz={visHz} amp={amp} mode={mode} />
         </View>
-        <View style={{ gap: 4 }}>
-          <Text style={twStyles.winLabel}>AIR — molecules, moving</Text>
+        <View style={{ gap: 4 * k }}>
+          <OText style={twStyles.winLabel}>AIR — molecules, moving</OText>
           <AirParticlesView
             clock={clock}
             width={airW}
+            height={116 * k}
             visHz={visHz}
             amp={amp}
             mode={mode}
@@ -1095,8 +1118,8 @@ export function ThreeWindowView({
       {/* THE GRAPH — full width UNDER the speaker + air. The wave is created at
           the speaker mouth and travels right; its crests sit under the
           compressions above. */}
-      <Text style={twStyles.winLabel}>THE GRAPH — the speaker creates the wave; it travels right</Text>
-      <PressureGraphView clock={clock} width={width} visHz={visHz} amp={amp} mode={mode} lambdaPx={lambdaPx} originX={originX} />
+      <OText style={twStyles.winLabel}>THE GRAPH — the speaker creates the wave; it travels right</OText>
+      <PressureGraphView clock={clock} width={width} height={84 * k} visHz={visHz} amp={amp} mode={mode} lambdaPx={lambdaPx} originX={originX} />
     </View>
   );
 }
@@ -1297,12 +1320,14 @@ export function AnalyticWaveformView({
 
 /** Decade marks for the spectrum's fixed 40 Hz–16 kHz log axis. Read inside the
  *  pane, so they name the span without the caption having to. */
+// The two RANGE ends hug their edges (left/right aligned) so the 10k mark and
+// the 16k end never touch — they are only ~8 % of the width apart on a log axis.
 const SPECTRUM_TICKS = [
-  { f: 40, label: '40' },
-  { f: 100, label: '100' },
-  { f: 1000, label: '1k' },
-  { f: 10000, label: '10k' },
-  { f: 16000, label: '16k' },
+  { f: 40, label: '40', align: 'left' },
+  { f: 100, label: '100', align: 'center' },
+  { f: 1000, label: '1k', align: 'center' },
+  { f: 10000, label: '10k', align: 'center' },
+  { f: 16000, label: '16k', align: 'right' },
 ] as const;
 
 /** Harmonic-stick spectrum (linear axis to 13×f0) with an optional response
@@ -1329,6 +1354,7 @@ export function AnalyticSpectrumView({
    *  fix 2026-08-28: the spectrum was deaf to LEVEL). */
   level?: number;
 }) {
+  const ts = useStageTextScale();
   const w = width;
   const h = height;
   /**
@@ -1419,21 +1445,21 @@ export function AnalyticSpectrumView({
         not read off WHERE it moved to. These sit on the baseline, inside the
         drawing, at the decade marks the log axis is built on. */}
     {SPECTRUM_TICKS.map((t) => (
-      <Text
+      <OText
         key={t.f}
         style={[
           tickText,
           {
-            top: h - 12,
-            left: Math.max(0, Math.min(w - 30, xOfHz(t.f) - 15)),
-            width: 30,
-            textAlign: 'center' as const,
+            top: h - 12 * ts,
+            left: t.align === 'left' ? 2 : t.align === 'right' ? w - 30 * ts - 2 : Math.max(0, Math.min(w - 30 * ts, xOfHz(t.f) - 15 * ts)),
+            width: 30 * ts,
+            textAlign: t.align,
             color: '#c8ccd4',
           },
         ]}
       >
         {t.label}
-      </Text>
+      </OText>
     ))}
     </View>
   );
@@ -1619,6 +1645,7 @@ export function WavelengthRulerView({
   freqHz: number;
   amp?: number;
 }) {
+  const ts = useStageTextScale();
   const w = width;
   const h = height;
   const floorY = h - 18;
@@ -1817,11 +1844,12 @@ export function WavelengthRulerView({
         <Vignette w={w} h={h} />
       </Canvas>
       {/* Mono tick labels (house RNText-overlay idiom). */}
-      <Text style={[tickText, { left: 2, top: floorY + 9 }]}>0</Text>
-      <Text style={[tickText, { left: w - 26, top: floorY + 9, width: 24, textAlign: 'right' as const }]}>7 m</Text>
-      <Text style={[tickText, { left: Math.max(10, Math.min(w - 16, bracketMidX - 3)), top: floorY - 38, color: WAVE }]}>
+      <OText style={[tickText, { left: 2, top: floorY + 9 }]}>0</OText>
+      <OText style={[tickText, { left: w - 26 * ts, top: floorY + 9, width: 24 * ts, textAlign: 'right' as const }]}>7 m</OText>
+      {/* λ sits just above its bracket (bracket y = floorY − 22) whatever the text scale. */}
+      <OText style={[tickText, { left: Math.max(10, Math.min(w - 16 * ts, bracketMidX - 3 * ts)), top: floorY - 27 - 11 * ts, color: WAVE }]}>
         λ
-      </Text>
+      </OText>
     </View>
   );
 }
@@ -1923,6 +1951,7 @@ export function DualDomainView({
   cursor,
   running,
   frozen = false,
+  scale = 1,
 }: {
   width: number;
   visHz: number;
@@ -1934,10 +1963,16 @@ export function DualDomainView({
   /** FREEZE engaged: fires the camera-FLASH animation, then keeps a cyan
    *  frozen border on the display until released (owner 2026-08-27). */
   frozen?: boolean;
+  /** Vector scale (FitStage, legibility pass 2026-09-25): the panels are
+   *  laid out at width ÷ scale and painted through a Skia Group scaled by
+   *  it, so FULL SCREEN zooms the drawing crisply; overlay labels move with it. */
+  scale?: number;
 }) {
   // Phase clock: continuous through the 110/220 chip switches.
   const phase = usePhaseClock(running, visHz);
-  const w = width;
+  const k = scale;
+  const ts = useStageTextScale();
+  const w = width / k; // internal layout width — every path below is in these units
 
   // Camera flash on freeze — the room panel IS "a camera flash", so engaging
   // FREEZE literally takes the photo: white pop that decays fast.
@@ -2153,13 +2188,14 @@ export function DualDomainView({
   }, [scopeTicks]);
 
   return (
-    <View style={{ gap: 3 }}>
+    <View style={{ gap: 3 * k }}>
       <View style={ddStyles.labelRow}>
-        <Text style={twStyles.winLabel}>THE ROOM — CAMERA FLASH</Text>
-        <Text style={[ddStyles.measured, { color: '#7fd4ff' }]}>MEASURED: every point · one instant</Text>
+        <OText style={twStyles.winLabel}>THE ROOM — CAMERA FLASH</OText>
+        <OText style={[ddStyles.measured, { color: '#7fd4ff' }]}>MEASURED: every point · one instant</OText>
       </View>
-      <View style={{ width: w, height: DD_H }}>
-        <Canvas style={{ width: w, height: DD_H, backgroundColor: BG }}>
+      <View style={{ width, height: DD_H * k }}>
+        <Canvas style={{ width, height: DD_H * k, backgroundColor: BG }}>
+          <Group transform={[{ scale: k }]}>
           <Path path={roomBands} color="#7fd4ff" opacity={0.1} />
           {/* the SAME aligned grid as the scope — matched widths are the lesson */}
           <Path path={scopeGrid} color="#1c1c22" style="stroke" strokeWidth={1} />
@@ -2228,44 +2264,48 @@ export function DualDomainView({
             <BlurMask blur={5} style="normal" />
           </Path>
           <Path path={roomProbeDot} color={ACCENT_GREEN} />
+          </Group>
         </Canvas>
         {roomTicks.map((t) => (
-          <Text key={t.label} style={[ddStyles.tick, { left: t.x - 17, top: 84 }]}>{t.label}</Text>
+          <OText key={t.label} style={[ddStyles.tick, { left: t.x * k - 17 * ts, top: 84 * k, width: 34 * ts }]}>{t.label}</OText>
         ))}
-        <Text style={[ddStyles.micTag, { right: w - MICX + 8, top: 2 }]} numberOfLines={1}>
+        <OText style={[ddStyles.micTag, { right: (w - MICX) * k + 8, top: 2 * k }]} numberOfLines={1}>
           THE MIC — one point
-        </Text>
+        </OText>
         {/* region names — what each stretch of wave IS (owner 2026-08-27) */}
-        <Text style={[ddStyles.zoneTag, { left: MICX + 8, top: 3, color: '#7fd4ff' }]}>INCOMING</Text>
-        <Text style={[ddStyles.zoneTag, { left: 8, top: 66 }]}>← ALREADY PASSED</Text>
+        <OText style={[ddStyles.zoneTag, { left: MICX * k + 8, top: 3 * k, color: '#7fd4ff' }]}>INCOMING</OText>
+        <OText style={[ddStyles.zoneTag, { left: 8, top: 66 * k }]}>← ALREADY PASSED</OText>
         {/* the PROBE's WHERE readout — fixed home, always legible, green like
             the line it describes (learner feedback 2026-08-27) */}
-        <View style={[ddStyles.probeTag, { left: 4, top: 22 }]}>
-          <Text style={ddStyles.probeTagTxt}>{`● PROBE — ${dM.toFixed(2)} m past the mic`}</Text>
+        <View style={[ddStyles.probeTag, { left: 4, top: 22 * k }]}>
+          <OText style={ddStyles.probeTagTxt}>{`● PROBE — ${dM.toFixed(2)} m past the mic`}</OText>
         </View>
       </View>
       {/* the cable, with the SAME-SPOT tag riding it like a cable label — and
           the probe line passing straight through: one spot, one vertical */}
-      <View style={{ width: w, height: DD_CON }}>
-        <Canvas style={{ width: w, height: DD_CON }}>
+      <View style={{ width, height: DD_CON * k }}>
+        <Canvas style={{ width, height: DD_CON * k }}>
+          <Group transform={[{ scale: k }]}>
           <Path path={cablePath} color="#000000" style="stroke" strokeWidth={4} opacity={0.5} />
           <Path path={cablePath} color="#a6a6ad" style="stroke" strokeWidth={2.2} />
           <Path path={probeStripLine} color={ACCENT_GREEN} style="stroke" strokeWidth={1.1} opacity={0.5}>
             <DashPathEffect intervals={[4, 4]} />
           </Path>
+          </Group>
         </Canvas>
         <View style={ddStyles.chipWrap} pointerEvents="none">
           <View style={ddStyles.chip}>
-            <Text style={ddStyles.chipTxt}>{`SAME SPOT: ${tMs.toFixed(1)} ms ago = ${dM.toFixed(2)} m past`}</Text>
+            <OText style={ddStyles.chipTxt}>{`SAME SPOT: ${tMs.toFixed(1)} ms ago = ${dM.toFixed(2)} m past`}</OText>
           </View>
         </View>
       </View>
       <View style={ddStyles.labelRow}>
-        <Text style={twStyles.winLabel}>THE MIC&#8217;S OUTPUT</Text>
-        <Text style={[ddStyles.measured, { color: WAVE }]}>MEASURED: at the mic only · over time</Text>
+        <OText style={twStyles.winLabel}>THE MIC&#8217;S OUTPUT</OText>
+        <OText style={[ddStyles.measured, { color: WAVE }]}>MEASURED: at the mic only · over time</OText>
       </View>
-      <View style={{ width: w, height: DD_H }}>
-        <Canvas style={{ width: w, height: DD_H, backgroundColor: BG }}>
+      <View style={{ width, height: DD_H * k }}>
+        <Canvas style={{ width, height: DD_H * k, backgroundColor: BG }}>
+          <Group transform={[{ scale: k }]}>
           <Path path={scopeGrid} color="#1c1c22" style="stroke" strokeWidth={1} />
           <SkLine p1={{ x: 4, y: scopeMid }} p2={{ x: NOWX, y: scopeMid }} color={ZERO_REF} strokeWidth={1.1} />
           <GlowStroke path={scopeTrace} color={WAVE} width={2.2} />
@@ -2305,18 +2345,19 @@ export function DualDomainView({
             <BlurMask blur={5} style="normal" />
           </Path>
           <Path path={scopeProbeDot} color={ACCENT_GREEN} />
+          </Group>
         </Canvas>
         {scopeTicks.map((t) => (
-          <Text key={t.label} style={[ddStyles.tick, { left: t.x - 17, top: 84 }]}>{t.label}</Text>
+          <OText key={t.label} style={[ddStyles.tick, { left: t.x * k - 17 * ts, top: 84 * k, width: 34 * ts }]}>{t.label}</OText>
         ))}
-        <Text style={[ddStyles.tick, { left: NOWX - 42, top: 84, width: 34, textAlign: 'right', color: '#ff4b3a' }]}>NOW</Text>
-        <Text style={[ddStyles.inputTag, { right: w - NOWX + 12 }]}>MIC INPUT · REC — like a DAW recording</Text>
+        <OText style={[ddStyles.tick, { left: NOWX * k - 42 * ts, top: 84 * k, width: 34 * ts, textAlign: 'right', color: '#ff4b3a' }]}>NOW</OText>
+        <OText style={[ddStyles.inputTag, { right: (w - NOWX) * k + 12, top: 2 * k }]}>MIC INPUT · REC — like a DAW recording</OText>
         {/* region names — aligned with the room's zones above */}
-        <Text style={[ddStyles.zoneTag, { left: NOWX + 8, top: 40, color: '#8a8b93' }]}>NOT YET</Text>
-        <Text style={[ddStyles.zoneTag, { left: 8, top: 66 }]}>← ALREADY DRAWN</Text>
+        <OText style={[ddStyles.zoneTag, { left: NOWX * k + 8, top: 40 * k, color: '#8a8b93' }]}>NOT YET</OText>
+        <OText style={[ddStyles.zoneTag, { left: 8, top: 66 * k }]}>← ALREADY DRAWN</OText>
         {/* the PROBE's WHEN readout — same fixed-home treatment as the room's */}
-        <View style={[ddStyles.probeTag, { left: 4, top: 22 }]}>
-          <Text style={ddStyles.probeTagTxt}>{`● PROBE — ${tMs.toFixed(1)} ms ago`}</Text>
+        <View style={[ddStyles.probeTag, { left: 4, top: 22 * k }]}>
+          <OText style={ddStyles.probeTagTxt}>{`● PROBE — ${tMs.toFixed(1)} ms ago`}</OText>
         </View>
       </View>
       {/* FROZEN — icy border + ice crystals creeping in from the corners,
@@ -2348,7 +2389,7 @@ export function DualDomainView({
 const ddStyles = StyleSheet.create({
   labelRow: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' },
   measured: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.8 },
-  tick: { position: 'absolute', fontFamily: fonts.mono, fontSize: 8.5, color: AXIS_TEXT, width: 34, textAlign: 'center' },
+  tick: { position: 'absolute', fontFamily: fonts.mono, fontSize: 9, color: AXIS_TEXT, width: 34, textAlign: 'center' },
   // SAME-SPOT tag: SOLID background so the cable passes visibly behind it —
   // never a translucent chip fighting the cable for legibility.
   chipWrap: { position: 'absolute', left: 0, right: 0, top: 3, alignItems: 'center' },
@@ -2371,7 +2412,7 @@ const ddStyles = StyleSheet.create({
     paddingVertical: 2,
     paddingHorizontal: 6,
   },
-  probeTagTxt: { fontFamily: fonts.mono, fontSize: 8.5, color: '#5bff85' },
+  probeTagTxt: { fontFamily: fonts.mono, fontSize: 9, color: '#5bff85' },
   // Camera-flash overlay + the persistent frozen border (cyan = the bezel's
   // FROZEN tint), double-ring for a lit-edge read.
   flash: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#eaf4ff', borderRadius: 4 },
@@ -2395,17 +2436,17 @@ const ddStyles = StyleSheet.create({
     borderColor: 'rgba(127,212,255,0.75)',
     borderRadius: 6,
   },
-  micTag: { position: 'absolute', fontFamily: fonts.mono, fontSize: 8.5, color: WAVE },
+  micTag: { position: 'absolute', fontFamily: fonts.mono, fontSize: 9, color: WAVE },
   // Region names — solid ground so they read over the traces.
   zoneTag: {
     position: 'absolute',
     fontFamily: fonts.mono,
-    fontSize: 8,
+    fontSize: 9,
     color: '#8a8b93',
     backgroundColor: '#0c0c0f',
     paddingHorizontal: 3,
   },
-  inputTag: { position: 'absolute', right: 16, top: 2, fontFamily: fonts.mono, fontSize: 8.5, color: WAVE },
+  inputTag: { position: 'absolute', right: 16, top: 2, fontFamily: fonts.mono, fontSize: 9, color: WAVE },
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -2429,6 +2470,7 @@ export function OctaveSpiralView({
   height?: number;
   freqHz: number;
 }) {
+  const ts = useStageTextScale();
   const w = width;
   const h = height;
   const cx = w / 2;
@@ -2512,9 +2554,9 @@ export function OctaveSpiralView({
           lap), so they get their own larger, brighter style. Radii are ~23 px
           apart at this size, so 12 px still clears its neighbours. */}
       {Array.from({ length: SPIRAL_OCTAVES + 1 }, (_, o) => (
-        <Text key={o} style={[tickText, spiralTick, { left: cx + 10, top: cy - rOf(o) - 7 }]}>
+        <OText key={o} style={[tickText, spiralTick, { left: cx + 10, top: cy - rOf(o) - 7 * ts }]}>
           {SPIRAL_F0 * Math.pow(2, o)}
-        </Text>
+        </OText>
       ))}
     </View>
   );
@@ -2562,18 +2604,22 @@ export function EqualLoudnessView({
    *  and (× the ear curve) the heard-wave inset's drawn amplitude. */
   level01?: number;
 }) {
+  const ts = useStageTextScale();
   const w = width;
   const h = height;
   const fLo = 40;
   const fHi = 16000;
   const gh = h - 8; // curve region: full height (strip is an inset now)
-  const AX = 30; // left gutter: the numbered dB colour scale
+  const AX = 36; // left gutter: the numbered dB colour scale (widened 2026-09-25 so the 9 pt numbers clear the curve's start)
   // THE SIGNAL inset (owner 2026-08-28): a compact strip in the top-right dead
   // space instead of a full-width bottom lane.
-  const SBx0 = Math.max(AX + 10, Math.round(w * 0.44));
+  const SBx0 = Math.max(AX + 10, Math.round(w * 0.4));
   const SBx1 = w - 6;
   const SBy0 = 4;
-  const SBy1 = 40;
+  // The strip's name band is reserved above the wave (it used to sit on the
+  // wave's peaks); it grows with the text scale so FULL SCREEN keeps it clear.
+  const SBcap = 12 * ts;
+  const SBy1 = SBy0 + SBcap + 34;
   const xOf = (f: number) => AX + (Math.log(f / fLo) / Math.log(fHi / fLo)) * (w - AX - 6);
   // Numbered dB axis (owner 2026-08-28): 0 dBFS at the top … −60 at the bottom.
   const yDb = (db: number) => 8 + ((0 - db) / 60) * (gh - 16);
@@ -2635,7 +2681,7 @@ export function EqualLoudnessView({
   }, [dotX, ySend, dotY]);
   // The strip's drawn spatial frequency follows pitch (visual hint only).
   const stripCyc = 2 + 4 * (Math.log(fC / fLo) / Math.log(fHi / fLo));
-  const stripMid = (SBy0 + SBy1) / 2;
+  const stripMid = (SBy0 + SBcap + SBy1) / 2;
 
   const anim = useDerivedValue(() => {
     const ph = phase.value;
@@ -2721,9 +2767,9 @@ export function EqualLoudnessView({
       </Canvas>
       {/* dB numbers for the colour scale. */}
       {[0, -20, -40, -60].map((d) => (
-        <Text key={d} style={[tickText, { left: 11, top: yDb(d) - 4, width: 20, fontSize: 7.5, color: '#c8ccd4' }]}>
+        <OText key={d} style={[tickText, { left: 10, top: yDb(d) - 5 * ts, width: 25 * ts, color: '#c8ccd4' }]}>
           {d === 0 ? '0dB' : `${d}`}
-        </Text>
+        </OText>
       ))}
       {/* Log-frequency tick labels along the bottom of the curve region. */}
       {[
@@ -2731,21 +2777,24 @@ export function EqualLoudnessView({
         { f: 1000, label: '1k' },
         { f: 10000, label: '10k' },
       ].map((t) => (
-        <Text
+        <OText
           key={t.f}
-          style={[tickText, { left: Math.max(0, Math.min(w - 24, xOf(t.f) - 12)), width: 24, textAlign: 'center' as const, top: gh - 12, color: '#c8ccd4' }]}
+          style={[tickText, { left: Math.max(0, Math.min(w - 24 * ts, xOf(t.f) - 12 * ts)), width: 24 * ts, textAlign: 'center' as const, top: gh - 12 * ts, color: '#c8ccd4' }]}
         >
           {t.label}
-        </Text>
+        </OText>
       ))}
-      <Text style={[tickText, { left: AX, top: 0, width: 30, color: '#c8ccd4' }]}>40Hz</Text>
-      {/* Named lines — SEND (amber, flat) vs HEAR (ramp-coloured curve). */}
-      <Text style={[tickText, { right: 8, top: Math.max(0, ySend - 12), color: WAVE }]} numberOfLines={1}>
+      <OText style={[tickText, { left: AX, top: 0, width: 30 * ts, color: '#c8ccd4' }]}>40Hz</OText>
+      {/* Named lines — SEND (amber, flat) vs HEAR (ramp-coloured curve). SEND's
+          name sits at the LEFT end of its line (2026-09-25): at the right end it
+          sat on the curve's high-frequency fall; at the left the curve is 20–40 dB
+          below the line, so the name never touches it. */}
+      <OText style={[tickText, { left: AX + 2, top: Math.max(0, ySend - 12 * ts), color: WAVE }]} numberOfLines={1}>
         YOU SEND — same at every Hz
-      </Text>
-      <Text style={[tickText, { left: AX + 2, top: Math.min(gh - 22, yDb(heard(fLo)) - 12), color: stops[0] }]} numberOfLines={1}>
+      </OText>
+      <OText style={[tickText, { left: AX + 2, top: Math.min(gh - 22 * ts, yDb(heard(fLo)) - 12 * ts), color: stops[0] }]} numberOfLines={1}>
         YOU HEAR
-      </Text>
+      </OText>
       {/* The ear's cut at the tone — solid ground so it's always legible. */}
       <View
         style={{
@@ -2760,15 +2809,15 @@ export function EqualLoudnessView({
           paddingVertical: 1,
         }}
       >
-        <Text style={[tickText, { position: 'relative', left: 0, top: 0, color: '#e6e6e6' }]}>{`EAR ${earCut > 0 ? '+' : ''}${earCut} dB`}</Text>
+        <OText style={[tickText, { position: 'relative', left: 0, top: 0, color: '#e6e6e6' }]}>{`EAR ${earCut > 0 ? '+' : ''}${earCut} dB`}</OText>
       </View>
       {/* Strip name — the physics, deliberately deaf to FREQ. */}
-      <Text
-        style={[tickText, { left: SBx0 + 6, top: SBy0 + 1, width: SBx1 - SBx0 - 10, fontSize: 7, color: '#9a9ca8' }]}
+      <OText
+        style={[tickText, { left: SBx0 + 6, top: SBy0 + 1, width: SBx1 - SBx0 - 10, color: '#9a9ca8' }]}
         numberOfLines={1}
       >
         WHAT YOU HEAR — LEVEL × EAR CURVE
-      </Text>
+      </OText>
     </View>
   );
 }
@@ -2912,8 +2961,8 @@ export function PhaseOverlayView({
           </>
         )}
       </Canvas>
-      <Text style={[tickText, { left: 4, top: 2 }]}>INPUTS</Text>
-      <Text style={[tickText, { left: 4, top: h * 0.52 + 3 }]}>SUM = A + B</Text>
+      <OText style={[tickText, { left: 4, top: 2 }]}>INPUTS</OText>
+      <OText style={[tickText, { left: 4, top: h * 0.52 + 3 }]}>SUM = A + B</OText>
     </View>
   );
 }
@@ -2992,6 +3041,7 @@ export function HarmonicStackerView({
   width,
   amps,
   visHz,
+  scale = 1,
 }: {
   clock: SharedValue<number>;
   width: number;
@@ -2999,8 +3049,13 @@ export function HarmonicStackerView({
   amps: number[];
   /** Slowed fundamental rate. Every layer travels PHASE-LOCKED (ωₙ = n·ω₀). */
   visHz: number;
+  /** Vector scale (FitStage, legibility pass 2026-09-25): rows are laid out
+   *  at width ÷ scale and painted through a Skia Group scaled by it. */
+  scale?: number;
 }) {
-  const w = width;
+  const k = scale;
+  const ts = useStageTextScale();
+  const w = width / k; // internal layout width
   const h = HSTACK_ROWS_BOTTOM + HSTACK_GAP + HSTACK_SUM_H;
   const a6 = amps;
 
@@ -3044,8 +3099,9 @@ export function HarmonicStackerView({
   }, [clock, w, a6, visHz]);
 
   return (
-    <View style={{ width: w, height: h }}>
-      <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
+    <View style={{ width, height: h * k }}>
+      <Canvas style={{ position: 'absolute', width, height: h * k, backgroundColor: BG }}>
+        <Group transform={[{ scale: k }]}>
         {/* Divider between the layer rows and the sum. */}
         <SkLine p1={{ x: 0, y: HSTACK_ROWS_BOTTOM + HSTACK_GAP / 2 }} p2={{ x: w, y: HSTACK_ROWS_BOTTOM + HSTACK_GAP / 2 }} color={ZERO_REF} strokeWidth={1.4} />
         {/* Harmonic layers — each coloured by its own amplitude (MIDI). */}
@@ -3063,17 +3119,18 @@ export function HarmonicStackerView({
         <Path path={sum} style="stroke" strokeWidth={2.6} strokeCap="round" strokeJoin="round">
           <LinearGradient start={vec(0, HSTACK_MIDS - HSTACK_SUM_H * 0.45)} end={vec(0, HSTACK_MIDS + HSTACK_SUM_H * 0.45)} colors={MIDI_STOP_COLORS} positions={MIDI_STOP_POS} />
         </Path>
+        </Group>
       </Canvas>
       {/* Harmonic row numbers (H1 at the bottom) — coloured by level. */}
       {Array.from({ length: HSTACK_ROWS }, (_, i) => {
         const a = a6[i] ?? 0;
         return (
-          <Text key={i} style={[tickText, { left: 3, top: hstackMid(i + 1) - 6, color: a > 0.02 ? levelColor(a) : '#4a4a54' }]}>
+          <OText key={i} style={[tickText, { left: 3, top: hstackMid(i + 1) * k - 6 * ts, color: a > 0.02 ? levelColor(a) : '#4a4a54' }]}>
             {`H${i + 1}`}
-          </Text>
+          </OText>
         );
       })}
-      <Text style={[tickText, { left: 3, top: HSTACK_MIDS - 6 }]}>SUM</Text>
+      <OText style={[tickText, { left: 3, top: HSTACK_MIDS * k - 6 * ts }]}>SUM</OText>
     </View>
   );
 }

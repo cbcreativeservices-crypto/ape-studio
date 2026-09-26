@@ -63,6 +63,7 @@ import { markLabUnit, registerLabUnits } from '../../../features/lab/labCompleti
 import { FOUNDATIONS_LAB_KEY, FOUNDATIONS_STEP_COUNT, FOUNDATIONS_UNITS } from './units';
 import { RackUnit } from '../rack/RackUnit';
 import type { BezelItem, DockParam } from '../rack/rackTypes';
+import { StageTextScale, useStageTextScale } from '../rack/stageAspect';
 import { CheckQuestion, ConceptBadge, LevelMeterBar, VizUnavailableCard, type CheckSpec } from './bits';
 import { requireViz, type VizModule } from './skiaGate';
 import { START_LEVEL_01 } from '../../../features/audio/startLevel';
@@ -361,18 +362,25 @@ function StageFallback({ w }: { w: number }) {
 
 /** Scale-to-fit wrapper for the fixed-height COMPOSITE vizzes (ThreeWindow,
  *  DualDomain, HarmonicStacker) whose internal layout can't take a height
- *  prop: render at width/scale, scale down so the natural height fits the
- *  glass exactly — nothing is cropped, the drawing stays whole. */
-function FitStage({ w, h, natural, children }: { w: number; h: number; natural: number; children: (vw: number) => ReactNode }) {
+ *  prop. Legibility pass 2026-09-25: the composite now takes a VECTOR scale
+ *  `k` (its Skia paths are scaled, not its raster — crisp at every zoom) and
+ *  the box publishes StageTextScale = max(1, k), so its overlay labels never
+ *  render under 9 pt on the glass and grow with the picture in FULL SCREEN.
+ *  k = the largest scale at which the natural height fits the box and the
+ *  layout stays at least FIT_REF_W wide (the phone-glass design width). */
+function FitStage({ w, h, natural, children }: { w: number; h: number; natural: number; children: (vw: number, k: number) => ReactNode }) {
   const pad = 8;
-  const s = Math.min(1, (h - pad) / natural);
-  const vw = Math.max(1, Math.floor((w - pad) / s));
+  const k = Math.max(0.05, Math.min((h - pad) / natural, (w - pad) / FIT_REF_W));
+  const vw = Math.max(1, w - pad);
   return (
     <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-      <View style={{ width: vw, transform: [{ scale: s }] }}>{children(vw)}</View>
+      <StageTextScale.Provider value={Math.max(1, k)}>
+        <View style={{ width: vw }}>{children(vw, k)}</View>
+      </StageTextScale.Provider>
     </View>
   );
 }
+const FIT_REF_W = 320; // the narrowest layout the composites were designed at
 const THREE_WINDOW_NATURAL = 240; // label+cone row (133) + gap + label + gap + graph (84)
 const DUAL_DOMAIN_NATURAL = 262; // 2 labels + 2×100 panels + 26 cable strip + gaps
 const HSTACK_NATURAL = 282; // 4 + 6×30 rows + 12 gap + 86 sum
@@ -473,6 +481,7 @@ function M1Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       params={params}
       onHelp={(k) => (k ? help(k) : undefined)}
       stage={{
+        fullScreen: true, // the rack's ⤢ FULL SCREEN (legibility pass 2026-09-25)
         size: 'M',
         badge: BADGE_CONCEPT,
         onGuide: () => help('air'),
@@ -512,6 +521,7 @@ function M2Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       params={params}
       onHelp={(k) => (k ? help(k) : undefined)}
       stage={{
+        fullScreen: true, // the rack's ⤢ FULL SCREEN (legibility pass 2026-09-25)
         size: 'L', // three phase-locked windows — earns the tall glass
         badge: BADGE_CONCEPT,
         onGuide: () => help('speaker_cone'),
@@ -519,7 +529,7 @@ function M2Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
         render: (w, h) =>
           viz ? (
             <FitStage w={w} h={h} natural={THREE_WINDOW_NATURAL}>
-              {(vw) => <viz.ThreeWindowView width={vw} visHz={visHzFor(220)} amp={0.75} running={focused} showZones={zones} />}
+              {(vw, k) => <viz.ThreeWindowView width={vw} scale={k} visHz={visHzFor(220)} amp={0.75} running={focused} showZones={zones} />}
             </FitStage>
           ) : (
             <StageFallback w={w} />
@@ -563,6 +573,7 @@ function M3Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       params={params}
       onHelp={(k) => (k ? help(k) : undefined)}
       stage={{
+        fullScreen: true, // the rack's ⤢ FULL SCREEN (legibility pass 2026-09-25)
         size: 'L', // two stacked windows: air + pressure
         badge: BADGE_CONCEPT,
         onGuide: () => help('pressure_graph'),
@@ -589,17 +600,18 @@ function M3Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
 }
 function M3Stage({ viz, w, h, amp, zones, focused }: { viz: VizModule; w: number; h: number; amp: number; zones: boolean; focused: boolean }) {
   const clock = viz.useVizClock(focused);
+  const ts = useStageTextScale(); // overlay labels grow with the picture in FULL SCREEN
   const visHz = visHzFor(165);
   // Height split: two label rows (~12) + container gaps eat ~36; the air
   // window gets the larger share (that's where the molecules live).
-  const avail = Math.max(60, h - 36);
+  const avail = Math.max(60, h - 36 * ts);
   const airH = Math.round(avail * 0.55);
   const graphH = avail - airH;
   return (
     <View style={{ width: w, height: h, justifyContent: 'center', gap: 4 }}>
-      <Text style={styles.winLabel}>AIR — squeeze (compression) · stretch (rarefaction)</Text>
+      <Text style={[styles.winLabel, { fontSize: 9.5 * ts }]}>AIR — squeeze (compression) · stretch (rarefaction)</Text>
       <viz.AirParticlesView clock={clock} width={w} height={airH} visHz={visHz} amp={amp} showZones={zones} />
-      <Text style={styles.winLabel}>PRESSURE — above / below atmospheric</Text>
+      <Text style={[styles.winLabel, { fontSize: 9.5 * ts }]}>PRESSURE — above / below atmospheric</Text>
       <viz.PressureGraphView clock={clock} width={w} height={graphH} visHz={visHz} amp={amp} />
     </View>
   );
@@ -636,6 +648,7 @@ function M4Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       params={params}
       onHelp={(k) => (k ? help(k) : undefined)}
       stage={{
+        fullScreen: true, // the rack's ⤢ FULL SCREEN (legibility pass 2026-09-25)
         size: 'L',
         badge: BADGE_CONCEPT,
         onGuide: () => help('speaker_cone'),
@@ -647,8 +660,8 @@ function M4Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
         render: (w, h) =>
           viz ? (
             <FitStage w={w} h={h} natural={THREE_WINDOW_NATURAL}>
-              {(vw) => (
-                <viz.ThreeWindowView width={vw} visHz={visHzFor(330)} amp={0.25 + amt * 0.75} running={focused} showEar={false} showZones={zones} />
+              {(vw, k) => (
+                <viz.ThreeWindowView width={vw} scale={k} visHz={visHzFor(330)} amp={0.25 + amt * 0.75} running={focused} showEar={false} showZones={zones} />
               )}
             </FitStage>
           ) : (
@@ -716,6 +729,7 @@ function M5Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       params={params}
       onHelp={(k) => (k ? help(k) : undefined)}
       stage={{
+        fullScreen: true, // the rack's ⤢ FULL SCREEN (legibility pass 2026-09-25)
         size: 'M',
         badge: BADGE_CONCEPT,
         onGuide: () => help('rate'),
@@ -779,6 +793,7 @@ function M6Rack({ viz, tone: _tone, focused, help, wellTop, wellBottom }: RackPr
       params={params}
       onHelp={(k) => (k ? help(k) : undefined)}
       stage={{
+        fullScreen: true, // the rack's ⤢ FULL SCREEN (legibility pass 2026-09-25)
         size: 'L', // the room ruler IS the lesson
         badge: 'CONCEPTUAL MODEL — HORIZONTAL SCALE IS REAL (7 m ROOM)',
         onGuide: () => help('wavelength_room'),
@@ -873,6 +888,7 @@ function M7Rack({ viz, tone, focused, help, wellTop, wellBottom, m7Predicted, on
       params={params}
       onHelp={(k) => (k ? help(k) : undefined)}
       stage={{
+        fullScreen: true, // the rack's ⤢ FULL SCREEN (legibility pass 2026-09-25)
         size: 'L',
         badge: BADGE_CONCEPT,
         onGuide: () => help('domain_link'),
@@ -916,8 +932,8 @@ function M7Rack({ viz, tone, focused, help, wellTop, wellBottom, m7Predicted, on
               </View>
             ) : (
               <FitStage w={w} h={h} natural={DUAL_DOMAIN_NATURAL}>
-                {(vw) => (
-                  <viz.DualDomainView width={vw} visHz={visHzFor(f)} realHz={f} cursor={cursor} running={focused && !frozen} frozen={frozen} />
+                {(vw, k) => (
+                  <viz.DualDomainView width={vw} scale={k} visHz={visHzFor(f)} realHz={f} cursor={cursor} running={focused && !frozen} frozen={frozen} />
                 )}
               </FitStage>
             )
@@ -1008,6 +1024,7 @@ function M8Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       params={params}
       onHelp={(k) => (k ? help(k) : undefined)}
       stage={{
+        fullScreen: true, // the rack's ⤢ FULL SCREEN (legibility pass 2026-09-25)
         size: 'L', // the spiral wants the round glass
         badge: 'ANALYTIC — LOG SPIRAL DRAWN EXACTLY · ORBIT SLOWED',
         onGuide: () => help('octave_spiral'),
@@ -1146,6 +1163,7 @@ function M9Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       params={params}
       onHelp={(k) => (k ? help(k) : undefined)}
       stage={{
+        fullScreen: true, // the rack's ⤢ FULL SCREEN (legibility pass 2026-09-25)
         size: 'M',
         badge: 'SIMPLIFIED SENSITIVITY CURVE — NOT MEASURED DATA',
         onGuide: () => help('loudness_curve'),
@@ -1262,6 +1280,7 @@ function M10Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       params={params}
       onHelp={(k) => (k ? help(k) : undefined)}
       stage={{
+        fullScreen: true, // the rack's ⤢ FULL SCREEN (legibility pass 2026-09-25)
         size: 'L',
         badge: 'DRAWN FROM THE MATH — THE EXACT SUM (SLOWED)',
         onGuide: () => help('phase_sum'),
@@ -1384,6 +1403,7 @@ function M11Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       params={params}
       onHelp={(k) => (k ? help(k) : undefined)}
       stage={{
+        fullScreen: true, // the rack's ⤢ FULL SCREEN (legibility pass 2026-09-25)
         size: 'L', // six layers + the sum
         badge: 'ANALYTIC — THE ENGINE’S EXACT RECIPE · PHASE-LOCKED, SLOWED',
         onGuide: () => help('harmonic_stack'),
@@ -1396,7 +1416,7 @@ function M11Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
         render: (w, h) =>
           viz ? (
             <FitStage w={w} h={h} natural={HSTACK_NATURAL}>
-              {(vw) => <M11Stage viz={viz} w={vw} amps={amps} focused={focused} />}
+              {(vw, k) => <M11Stage viz={viz} w={vw} k={k} amps={amps} focused={focused} />}
             </FitStage>
           ) : (
             <StageFallback w={w} />
@@ -1420,9 +1440,9 @@ function M11Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
     </RackUnit>
   );
 }
-function M11Stage({ viz, w, amps, focused }: { viz: VizModule; w: number; amps: number[]; focused: boolean }) {
+function M11Stage({ viz, w, k, amps, focused }: { viz: VizModule; w: number; k: number; amps: number[]; focused: boolean }) {
   const clock = viz.useVizClock(focused);
-  return <viz.HarmonicStackerView clock={clock} width={w} amps={amps} visHz={visHzFor(M11_F0)} />;
+  return <viz.HarmonicStackerView clock={clock} width={w} scale={k} amps={amps} visHz={visHzFor(M11_F0)} />;
 }
 
 // ─── M12 — The Fourier principle: unmix a wave into its recipe ──────────────
@@ -1472,6 +1492,7 @@ function M12Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       params={params}
       onHelp={(k) => (k ? help(k) : undefined)}
       stage={{
+        fullScreen: true, // the rack's ⤢ FULL SCREEN (legibility pass 2026-09-25)
         size: 'L',
         badge: 'ANALYTIC DECOMPOSITION OF THE MODEL — SLOWED',
         onGuide: () => help('fourier_morph'),
@@ -1527,6 +1548,7 @@ function M13Rack({ viz, focused, help, wellTop, wellBottom, onTool }: RackProps)
       params={[]}
       onHelp={(k) => (k ? help(k) : undefined)}
       stage={{
+        fullScreen: true, // the rack's ⤢ FULL SCREEN (legibility pass 2026-09-25)
         size: 'S',
         badge: BADGE_CONCEPT,
         onGuide: () => help('tool_map'),
@@ -1599,6 +1621,7 @@ function M14Rack({ viz, focused, help, wellTop, wellBottom }: RackProps) {
       params={[]}
       onHelp={(k) => (k ? help(k) : undefined)}
       stage={{
+        fullScreen: true, // the rack's ⤢ FULL SCREEN (legibility pass 2026-09-25)
         size: 'L',
         badge: BADGE_CONCEPT,
         onGuide: () => help('speaker_cone'),
@@ -1606,7 +1629,7 @@ function M14Rack({ viz, focused, help, wellTop, wellBottom }: RackProps) {
         render: (w, h) =>
           viz ? (
             <FitStage w={w} h={h} natural={THREE_WINDOW_NATURAL}>
-              {(vw) => <viz.ThreeWindowView width={vw} visHz={visHzFor(220)} amp={0.75} running={focused} />}
+              {(vw, k) => <viz.ThreeWindowView width={vw} scale={k} visHz={visHzFor(220)} amp={0.75} running={focused} />}
             </FitStage>
           ) : (
             <StageFallback w={w} />
