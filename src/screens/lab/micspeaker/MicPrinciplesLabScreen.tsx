@@ -45,6 +45,8 @@ import { RackUnit } from '../rack/RackUnit';
 import type { DockParam } from '../rack/rackTypes';
 import { requireMsViz, skiaAvailable, type MsVizModule } from './skiaGate';
 import { MicCutaway } from './MicCutaway';
+import { MIC_ASPECT } from './micCutawayAsset';
+import { ExpandableFigure } from '../kit/ExpandableFigure';
 
 // ── Pure models the SCREEN owns (no Skia dependency — readouts must work
 //    even on pre-Skia clients showing the honest card). ─────────────────────
@@ -368,7 +370,18 @@ function CapsuleSection({ focused, help, wellTop, wellBottom }: SectionProps) {
       <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
         {width > 0 ? (
           <View style={styles.panelCard}>
-            <MicCutaway width={width} running={focused} />
+            {/* Legibility pass 2026-09-25: the cutaway is dense, so it gets a
+                ⤢ FULL SCREEN button directly UNDER it (ExpandableFigure —
+                never over the drawing). No controls travel: this section is
+                pure reading. Height = width ÷ MIC_ASPECT, the SVG's own shape,
+                so nothing stretches at any zoom. */}
+            <ExpandableFigure
+              width={width}
+              aspect={MIC_ASPECT}
+              render={(w) => <MicCutaway width={w} running={focused} />}
+              badge="MOVING-COIL DYNAMIC CUTAWAY — ILLUSTRATIVE MODEL · coil travel exaggerated ~1,000× · amber = induced current"
+              title="INSIDE THE CAPSULE"
+            />
             <IllustrationBadge text="MOVING-COIL DYNAMIC CUTAWAY — ILLUSTRATIVE MODEL · coil travel exaggerated ~1,000×; the on-drawing caveat states the mass-controlled-cardioid honesty note · amber = induced current (⊗/⊙ mark its direction, and flip as it reverses)" />
             <DisplayGuideButton onPress={() => help('capsule')} />
             <Text style={styles.readout}>e = B · l · v — voltage tracks the coil’s VELOCITY</Text>
@@ -711,6 +724,7 @@ function ProximitySection({ viz, focused, help, wellTop, wellBottom }: SectionPr
       onHelp={help}
       stage={{
         size: 'L', // approach scene + response curve stack on one glass
+        fullScreen: true, // legibility pass 2026-09-25: the rack shows ⤢ FULL SCREEN and docks the controls inside
         badge: 'ILLUSTRATIVE — conceptual approach scene + a simplified low-shelf response; real mics vary by design',
         onGuide: () => help('proximity'),
         bezel: [
@@ -823,6 +837,7 @@ function OffAxisSection({ viz, help, wellTop, wellBottom }: SectionProps) {
       onHelp={help}
       stage={{
         size: 'L', // mic diagram + response curve stack on one glass
+        fullScreen: true, // legibility pass 2026-09-25: the rack shows ⤢ FULL SCREEN and docks the controls inside
         badge: 'ILLUSTRATIVE — broadband polar loss + growing high-frequency rolloff off-axis',
         onGuide: () => help('off_axis'),
         bezel: [

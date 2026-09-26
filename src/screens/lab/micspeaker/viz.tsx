@@ -56,6 +56,7 @@ import {
 } from 'react-native-reanimated';
 // Reuse the house clocks (same Skia-gated load condition as this file).
 import { usePhaseClock } from '../foundations/viz';
+import { useStageTextScale } from '../rack/stageAspect';
 import { fonts } from '../../../theme/tokens';
 import { heatColor } from '../../../features/tools/levelColor';
 import { CondenserMic, HandheldMic } from '../../../features/lab/micDrawings';
@@ -1355,10 +1356,18 @@ export function ResponseCurveView({
   const h = height;
   const fLo = 40;
   const fHi = 16000;
-  const PAD_L = 30; // dB gutter
+  // Legibility pass (owner 2026-09-25, "9 pt minimum"): the axis labels are
+  // React Native text laid OVER the Skia canvas, so they do not grow when the
+  // FULL SCREEN view draws the canvas larger (the Skia trap). Every label is
+  // floored at 9 pt and multiplied by StageTextScale (1 on the glass), and the
+  // gutters that hold them grow by the same factor so nothing overlaps.
+  const ts = useStageTextScale();
+  const AXIS_PT = 9 * ts;
+  const LINE = 11 * ts; // one line of 9-pt mono
+  const PAD_L = 30 * ts; // dB gutter
   const PAD_R = 8;
-  const PAD_T = 9;
-  const PAD_B = 15; // frequency label strip
+  const PAD_T = 18 * ts; // "dB" heading sits above the ceiling label
+  const PAD_B = 15 * ts; // frequency label strip
   const plotW = Math.max(20, w - PAD_L - PAD_R);
   const plotH = Math.max(20, h - PAD_T - PAD_B);
   const xOf = (f: number) => PAD_L + (Math.log(f / fLo) / Math.log(fHi / fLo)) * plotW;
@@ -1399,7 +1408,7 @@ export function ResponseCurveView({
     fr.lineTo(PAD_L, PAD_T + plotH);
     fr.lineTo(PAD_L + plotW, PAD_T + plotH);
     return { grid: g, ticks: t, frame: fr };
-  }, [w, h, floorDb, ceilDb, dbTicks]);
+  }, [w, h, floorDb, ceilDb, dbTicks, ts]);
 
   const { curve, under } = useMemo(() => {
     const c = Skia.Path.Make();
@@ -1421,11 +1430,11 @@ export function ResponseCurveView({
     u.lineTo(PAD_L, PAD_T + plotH);
     u.close();
     return { curve: c, under: u };
-  }, [w, h, dbAt, floorDb, ceilDb]);
+  }, [w, h, dbAt, floorDb, ceilDb, ts]);
 
   const axisText = {
     fontFamily: fonts.mono,
-    fontSize: 8.5,
+    fontSize: AXIS_PT,
     color: '#9a9ca8',
   } as const;
   const zeroInRange = floorDb <= 0 && ceilDb >= 0;
@@ -1511,8 +1520,8 @@ export function ResponseCurveView({
           style={{
             position: 'absolute',
             left: 0,
-            width: PAD_L - 5,
-            top: yOf(db) - 5,
+            width: PAD_L - 5 * ts,
+            top: yOf(db) - LINE / 2,
             textAlign: 'right',
             ...axisText,
           }}
@@ -1520,13 +1529,17 @@ export function ResponseCurveView({
           {db > 0 ? `+${db}` : `${db}`}
         </RNText>
       ))}
+      {/* Unit heading at the top of the dB column — above the ceiling label,
+          never beside it (at 9 pt the two collided in the old corner spot). */}
       <RNText
         style={{
           position: 'absolute',
-          left: 1,
+          left: 0,
+          width: PAD_L - 5 * ts,
           top: 0,
+          textAlign: 'right',
           fontFamily: fonts.oswaldSemiBold,
-          fontSize: 8,
+          fontSize: AXIS_PT,
           letterSpacing: 0.8,
           color: '#9a9ca8',
         }}
@@ -1539,9 +1552,9 @@ export function ResponseCurveView({
           key={`f${ft.f}`}
           style={{
             position: 'absolute',
-            left: Math.max(0, Math.min(w - 30, xOf(ft.f) - 15)),
-            width: 30,
-            top: h - 11,
+            left: Math.max(0, Math.min(w - 30 * ts, xOf(ft.f) - 15 * ts)),
+            width: 30 * ts,
+            top: h - LINE,
             textAlign: 'center',
             ...axisText,
           }}
@@ -1553,9 +1566,9 @@ export function ResponseCurveView({
         style={{
           position: 'absolute',
           left: 1,
-          top: h - 11,
+          top: h - LINE,
           fontFamily: fonts.oswaldSemiBold,
-          fontSize: 8,
+          fontSize: AXIS_PT,
           letterSpacing: 0.8,
           color: '#9a9ca8',
         }}
@@ -1592,6 +1605,8 @@ export function ProximityApproachView({
   directional: boolean;
 }) {
   const w = width;
+  // The GAP readout is RN text over the canvas: grow it with FULL SCREEN.
+  const ts = useStageTextScale();
   const h = height;
   const mid = h * 0.52;
   const headX = 30; // ProfileHead origin = the mouth
@@ -1839,7 +1854,7 @@ export function ProximityApproachView({
           bottom: 1,
           textAlign: 'center',
           fontFamily: fonts.oswaldSemiBold,
-          fontSize: 10.5,
+          fontSize: 10.5 * ts,
           letterSpacing: 1.2,
           color: '#5bff85',
         }}
