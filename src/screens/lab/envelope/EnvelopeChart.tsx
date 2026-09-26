@@ -19,14 +19,22 @@
  *
  * MOTION: animated SVG primitive props only (x1/x2, cx/cy) through Reanimated
  * — the rule learned on the Harmonograph. Rest pose carried as static props.
+ *
+ * FULL SCREEN (owner 2026-09-25 legibility pass): the chart sits in an
+ * ExpandableFigure — drawn at the page width with the viewBox's own ratio
+ * (h = w / aspect, so nothing stretches), a ⤢ FULL SCREEN button directly
+ * under it, and the page's `controls` (the same slider / button elements,
+ * shared state) plus the SWEEP button docked under the enlarged drawing.
+ * Every label is authored at ≥ 9 pt of the 340-unit viewBox.
  */
-import { useCallback, useEffect, useId, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useId, useState, type ReactNode } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Svg, { Circle, Defs, G, Line, LinearGradient, Polyline, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import Animated, { Easing, cancelAnimation, interpolate, runOnJS, useAnimatedProps, useSharedValue, withTiming } from 'react-native-reanimated';
 import { colors, fonts } from '../../../theme/tokens';
 import { adsrCurve, adsrTotalMs, riseTimes, shapedWave, peakAbs, rms, type Adsr } from '../../../features/envelope/envelopeModel';
 import { LOUDNESS_STOPS, MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../../features/tools/levelColor';
+import { ExpandableFigure } from '../kit/ExpandableFigure';
 
 const W = 340;
 const ALine = Animated.createAnimatedComponent(Line);
@@ -43,8 +51,9 @@ const AVG_LINE = colors.purple;
 
 export const CHART_HONESTY = 'ILLUSTRATIVE MODEL — DRAWN FROM THE SETTINGS, NOT A MEASUREMENT';
 
-/** A label with a dark backing so it stays legible over the curves. */
-function Tag({ x, y, text, anchor = 'start', color, size = 8.5, family = fonts.barlowMedium }: {
+/** A label with a dark backing so it stays legible over the curves. 9 pt of
+ *  the viewBox minimum (owner 2026-09-25). */
+function Tag({ x, y, text, anchor = 'start', color, size = 9, family = fonts.barlowMedium }: {
   x: number; y: number; text: string; anchor?: 'start' | 'middle' | 'end'; color: string; size?: number; family?: string;
 }) {
   const w = text.length * size * 0.56 + 6;
@@ -59,7 +68,7 @@ function Tag({ x, y, text, anchor = 'start', color, size = 8.5, family = fonts.b
 }
 
 export function EnvelopeChart({
-  adsr, height = 150, showWave = true, showRegions = true, showRise = false, showPeakAvg = false, title, sweep = false, reduceMotion = false, caption,
+  adsr, height = 150, showWave = true, showRegions = true, showRise = false, showPeakAvg = false, title, sweep = false, reduceMotion = false, caption, controls, fullTitle = 'ENVELOPE',
 }: {
   adsr: Adsr;
   height?: number;
@@ -75,7 +84,14 @@ export function EnvelopeChart({
   reduceMotion?: boolean;
   /** Extra caption after the standing honesty line. */
   caption?: string;
+  /** The page's controls for this chart (sliders, preset buttons) — THE SAME
+   *  elements the page renders, docked under the drawing in full screen so
+   *  the learner can adjust and watch (owner 2026-09-25). */
+  controls?: ReactNode;
+  /** Title in the full-screen bar (short — ≤ 10 characters). */
+  fullTitle?: string;
 }) {
+  const { height: winH } = useWindowDimensions();
   const H = height;
   const top = 18, bottom = H - 22;
   const total = Math.max(1, adsrTotalMs(adsr));
@@ -140,84 +156,106 @@ export function EnvelopeChart({
   ];
   const drawn = regions.filter((r) => r.to > r.from);
 
+  // The SWEEP button is the chart's own control: under the chart on the page
+  // and docked with the page's controls in full screen (same element, same state).
+  const sweepRow =
+    sweep && !reduceMotion ? (
+      <View style={styles.sweepRow}>
+        <Pressable
+          onPress={playing ? stopSweep : startSweep}
+          style={styles.sweepBtn}
+          accessibilityRole="button"
+          accessibilityLabel={playing ? 'Stop the sweep' : `Sweep a playhead across the shape, ${slowLabel}`}
+        >
+          <Text style={styles.sweepText}>{playing ? '■ STOP' : '▶ SWEEP THE SHAPE'}</Text>
+        </Pressable>
+        <Text style={styles.sweepNote}>{Math.round(total)} ms shown over {(sweepMs / 1000).toFixed(1)} s · {slowLabel}</Text>
+      </View>
+    ) : null;
+
   return (
     <View style={{ gap: 4 }}>
       {title ? <Text style={styles.title}>{title}</Text> : null}
-      <View accessible accessibilityRole="image" accessibilityLabel={a11y}>
-        <Svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
-          <Defs>
-            {/* Vertical amplitude ramp mapped to ±(peak / PEAK_ON_RAMP) so the
-                envelope's peak lands in the orange band, never red. */}
-            <LinearGradient id={gradId} x1={0} y1={mid - halfH / PEAK_ON_RAMP} x2={0} y2={mid + halfH / PEAK_ON_RAMP} gradientUnits="userSpaceOnUse">
-              {WAVE_LEVEL_STOPS.map((s) => <Stop key={s.offset} offset={s.offset} stopColor={s.color} />)}
-            </LinearGradient>
-            {/* The ENVELOPE is a level contour (0 → 1), so it carries the same
-                ramp, unipolar: silence-blue at the floor, its peak in the
-                orange band (owner standard 2026-09-05 — it was flat cyan). */}
-            <LinearGradient id={`${gradId}env`} x1={0} y1={y(1 / PEAK_ON_RAMP)} x2={0} y2={y(0)} gradientUnits="userSpaceOnUse">
-              {LOUDNESS_STOPS.map((s) => <Stop key={s.pos} offset={s.pos} stopColor={s.color} />)}
-            </LinearGradient>
-          </Defs>
-          <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
-          {showRegions
-            ? drawn.map((r, i) => (
-                <G key={r.label}>
-                  <Rect x={x(r.from)} y={top - 4} width={Math.max(0.5, x(r.to) - x(r.from))} height={bottom - top + 8} fill="#ffffff" opacity={i % 2 ? 0.05 : 0.025} />
-                  {i < drawn.length - 1 ? <Line x1={x(r.to)} y1={top - 6} x2={x(r.to)} y2={bottom + 2} stroke="rgba(255,255,255,0.22)" strokeWidth={0.8} strokeDasharray="3,3" /> : null}
-                  <SvgText x={(x(r.from) + x(r.to)) / 2} y={H - 7} fontSize={10} fill={colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{r.label}</SvgText>
-                </G>
-              ))
-            : null}
-          {showWave ? (
-            <>
-              <Line x1={10} y1={mid} x2={W - 10} y2={mid} stroke={MIDLINE_BLUE} strokeWidth={1} opacity={0.6} />
-              <Polyline points={wavePts} fill="none" stroke={`url(#${gradId})`} strokeWidth={0.9} opacity={0.85} />
-            </>
-          ) : null}
-          <Polyline points={env} fill="none" stroke={`url(#${gradId}env)`} strokeWidth={2.2} />
-          {showRise ? (
-            <>
-              <Line x1={10} y1={y(0.1)} x2={W - 10} y2={y(0.1)} stroke={colors.gold} strokeDasharray="2,3" opacity={0.55} />
-              <Line x1={10} y1={y(0.9)} x2={W - 10} y2={y(0.9)} stroke={colors.gold} strokeDasharray="2,3" opacity={0.55} />
-              <Circle cx={x(t10)} cy={y(0.1)} r={2.6} fill={colors.gold} />
-              <Circle cx={x(t90)} cy={y(0.9)} r={2.6} fill={colors.gold} />
-              {/* both tags face INTO the 10–90 band, clear of the duration tag above and the A/D/S/R letters below */}
-              <Tag x={W - 12} y={y(0.9) + 11} text="90 %" anchor="end" color={colors.gold} />
-              <Tag x={W - 12} y={y(0.1) - 3} text="10 %" anchor="end" color={colors.gold} />
-              <Tag x={12} y={12} text={`rise 10→90 %: ${rise.toFixed(1)} ms`} color={colors.gold} size={9} family={fonts.oswaldMedium} />
-            </>
-          ) : null}
-          {showPeakAvg && wave ? (
-            <>
-              <Line x1={10} y1={mid - pk * halfH} x2={W - 10} y2={mid - pk * halfH} stroke={PEAK_LINE} strokeWidth={1.2} />
-              <Tag x={12} y={mid - pk * halfH + 11} text="peak" color={PEAK_LINE} />
-              <Line x1={10} y1={mid - av * halfH} x2={W - 10} y2={mid - av * halfH} stroke={AVG_LINE} strokeWidth={1.2} strokeDasharray="4,2" />
-              {/* opposite corner from "peak": on a sustained shape the two lines sit ~19 px apart, too close for stacked tags */}
-              <Tag x={W - 12} y={mid - av * halfH + 11} text="average (RMS)" anchor="end" color={AVG_LINE} />
-            </>
-          ) : null}
-          {playing ? (
-            <>
-              <ALine animatedProps={headProps} x1={10} x2={10} y1={top - 6} y2={bottom + 2} stroke={colors.textPrimary} strokeWidth={1} opacity={0.7} />
-              <ACircle animatedProps={dotProps} cx={10} cy={y(0)} r={3.6} fill={colors.cyanBright} stroke="#0a0a0c" strokeWidth={1} />
-            </>
-          ) : null}
-          <Tag x={W - 8} y={12} text={`${Math.round(total)} ms →`} anchor="end" color={colors.textMuted} />
-        </Svg>
-      </View>
-      {sweep && !reduceMotion ? (
-        <View style={styles.sweepRow}>
-          <Pressable
-            onPress={playing ? stopSweep : startSweep}
-            style={styles.sweepBtn}
-            accessibilityRole="button"
-            accessibilityLabel={playing ? 'Stop the sweep' : `Sweep a playhead across the shape, ${slowLabel}`}
-          >
-            <Text style={styles.sweepText}>{playing ? '■ STOP' : '▶ SWEEP THE SHAPE'}</Text>
-          </Pressable>
-          <Text style={styles.sweepNote}>{Math.round(total)} ms shown over {(sweepMs / 1000).toFixed(1)} s · {slowLabel}</Text>
-        </View>
-      ) : null}
+      <ExpandableFigure
+        aspect={W / H}
+        title={fullTitle}
+        badge={CHART_HONESTY}
+        controls={
+          sweepRow || controls ? (
+            // Docked, pinned; only on a short phone does the dock itself scroll
+            // so the drawing keeps at least half the screen.
+            <ScrollView style={{ maxHeight: Math.round(winH * 0.55) }} contentContainerStyle={styles.dock} keyboardShouldPersistTaps="handled">
+              {sweepRow}
+              {controls}
+            </ScrollView>
+          ) : undefined
+        }
+        render={(w, h) => (
+          <View accessible accessibilityRole="image" accessibilityLabel={a11y} style={{ width: w, height: h }}>
+            <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
+              <Defs>
+                {/* Vertical amplitude ramp mapped to ±(peak / PEAK_ON_RAMP) so the
+                    envelope's peak lands in the orange band, never red. */}
+                <LinearGradient id={gradId} x1={0} y1={mid - halfH / PEAK_ON_RAMP} x2={0} y2={mid + halfH / PEAK_ON_RAMP} gradientUnits="userSpaceOnUse">
+                  {WAVE_LEVEL_STOPS.map((s) => <Stop key={s.offset} offset={s.offset} stopColor={s.color} />)}
+                </LinearGradient>
+                {/* The ENVELOPE is a level contour (0 → 1), so it carries the same
+                    ramp, unipolar: silence-blue at the floor, its peak in the
+                    orange band (owner standard 2026-09-05 — it was flat cyan). */}
+                <LinearGradient id={`${gradId}env`} x1={0} y1={y(1 / PEAK_ON_RAMP)} x2={0} y2={y(0)} gradientUnits="userSpaceOnUse">
+                  {LOUDNESS_STOPS.map((s) => <Stop key={s.pos} offset={s.pos} stopColor={s.color} />)}
+                </LinearGradient>
+              </Defs>
+              <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
+              {showRegions
+                ? drawn.map((r, i) => (
+                    <G key={r.label}>
+                      <Rect x={x(r.from)} y={top - 4} width={Math.max(0.5, x(r.to) - x(r.from))} height={bottom - top + 8} fill="#ffffff" opacity={i % 2 ? 0.05 : 0.025} />
+                      {i < drawn.length - 1 ? <Line x1={x(r.to)} y1={top - 6} x2={x(r.to)} y2={bottom + 2} stroke="rgba(255,255,255,0.22)" strokeWidth={0.8} strokeDasharray="3,3" /> : null}
+                      <SvgText x={(x(r.from) + x(r.to)) / 2} y={H - 7} fontSize={10} fill={colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{r.label}</SvgText>
+                    </G>
+                  ))
+                : null}
+              {showWave ? (
+                <>
+                  <Line x1={10} y1={mid} x2={W - 10} y2={mid} stroke={MIDLINE_BLUE} strokeWidth={1} opacity={0.6} />
+                  <Polyline points={wavePts} fill="none" stroke={`url(#${gradId})`} strokeWidth={0.9} opacity={0.85} />
+                </>
+              ) : null}
+              <Polyline points={env} fill="none" stroke={`url(#${gradId}env)`} strokeWidth={2.2} />
+              {showRise ? (
+                <>
+                  <Line x1={10} y1={y(0.1)} x2={W - 10} y2={y(0.1)} stroke={colors.gold} strokeDasharray="2,3" opacity={0.55} />
+                  <Line x1={10} y1={y(0.9)} x2={W - 10} y2={y(0.9)} stroke={colors.gold} strokeDasharray="2,3" opacity={0.55} />
+                  <Circle cx={x(t10)} cy={y(0.1)} r={2.6} fill={colors.gold} />
+                  <Circle cx={x(t90)} cy={y(0.9)} r={2.6} fill={colors.gold} />
+                  {/* both tags face INTO the 10–90 band, clear of the duration tag above and the A/D/S/R letters below */}
+                  <Tag x={W - 12} y={y(0.9) + 11} text="90 %" anchor="end" color={colors.gold} />
+                  <Tag x={W - 12} y={y(0.1) - 3} text="10 %" anchor="end" color={colors.gold} />
+                  <Tag x={12} y={12} text={`rise 10→90 %: ${rise.toFixed(1)} ms`} color={colors.gold} size={9} family={fonts.oswaldMedium} />
+                </>
+              ) : null}
+              {showPeakAvg && wave ? (
+                <>
+                  <Line x1={10} y1={mid - pk * halfH} x2={W - 10} y2={mid - pk * halfH} stroke={PEAK_LINE} strokeWidth={1.2} />
+                  <Tag x={12} y={mid - pk * halfH + 11} text="peak" color={PEAK_LINE} />
+                  <Line x1={10} y1={mid - av * halfH} x2={W - 10} y2={mid - av * halfH} stroke={AVG_LINE} strokeWidth={1.2} strokeDasharray="4,2" />
+                  {/* opposite corner from "peak": on a sustained shape the two lines sit ~19 px apart, too close for stacked tags */}
+                  <Tag x={W - 12} y={mid - av * halfH + 11} text="average (RMS)" anchor="end" color={AVG_LINE} />
+                </>
+              ) : null}
+              {playing ? (
+                <>
+                  <ALine animatedProps={headProps} x1={10} x2={10} y1={top - 6} y2={bottom + 2} stroke={colors.textPrimary} strokeWidth={1} opacity={0.7} />
+                  <ACircle animatedProps={dotProps} cx={10} cy={y(0)} r={3.6} fill={colors.cyanBright} stroke="#0a0a0c" strokeWidth={1} />
+                </>
+              ) : null}
+              <Tag x={W - 8} y={12} text={`${Math.round(total)} ms →`} anchor="end" color={colors.textMuted} />
+            </Svg>
+          </View>
+        )}
+      />
+      {sweepRow}
       <Text style={styles.caption}>{CHART_HONESTY} · vertical = relative level · horizontal = time{caption ? ` · ${caption}` : ''}</Text>
     </View>
   );
@@ -227,6 +265,7 @@ const styles = StyleSheet.create({
   title: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 1.5 },
   caption: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1, lineHeight: 13 },
   sweepRow: { flexDirection: 'row', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginTop: 2 },
+  dock: { paddingHorizontal: 12, paddingBottom: 4, gap: 10 },
   sweepBtn: { minHeight: 44, paddingHorizontal: 12, borderRadius: 10, borderWidth: 1, borderColor: colors.hairline, justifyContent: 'center', backgroundColor: '#131315' },
   sweepText: { color: colors.cyanBright, fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 1.2 },
   sweepNote: { flex: 1, minWidth: 140, color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },

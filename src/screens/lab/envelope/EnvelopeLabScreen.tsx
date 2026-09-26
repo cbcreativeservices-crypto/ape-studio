@@ -11,6 +11,11 @@
  *   peak vs average  → p5 lines on the waveform + numbers, check 4
  *   dynamic range    → p5 worked example (four spans), check 5
  *   envelope ≠ propagation → p6, check 6
+ *
+ * FULL SCREEN (owner 2026-09-25 legibility pass): every chart sits in an
+ * ExpandableFigure with the page's own controls docked under the enlarged
+ * drawing — the SAME slider / button elements the page shows, so state is
+ * shared and the learner adjusts while enlarged. Chart labels ≥ 9 pt.
  */
 import { useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -21,6 +26,7 @@ import {
   shapedWave, crestFactorDb, peakAbs, rms, toDb, type Adsr, type TransientKind,
 } from '../../../features/envelope/envelopeModel';
 import { PagedLab, type PageCtx, type PageDef } from '../kit/PagedLab';
+import { ExpandableFigure } from '../kit/ExpandableFigure';
 import { Body, Btn, Card, Eyebrow, Lead, Prompt, Row } from '../tuning/components/primitives';
 import { UnderstandingCheck } from '../tuning/components/check';
 import { ControlSlider } from '../amp/kit';
@@ -92,16 +98,24 @@ function PageExplorer({ ctx }: { ctx: PageCtx }) {
   const rise = riseTimeMs(adsr);
   const snap = adsr.attackShape === 'exponential';
   const natural = adsr.decayShape === 'exponential';
+  // The four A / D / S / R sliders — on the page under the chart AND docked
+  // under it in full screen (same elements, one state). Hold and the curve
+  // toggles stay on the page: with them the dock outgrew a 812-tall phone.
+  const adsrSliders = (
+    <>
+      <ControlSlider label="Attack" value={toLog(adsr.attackMs)} min={0} max={3.3} step={0.02} format={(v) => `${logMs(v)} ms`} onChange={(v) => set('attackMs')(logMs(v))} />
+      <ControlSlider label="Decay" value={toLog(adsr.decayMs)} min={0} max={3.5} step={0.02} format={(v) => `${logMs(v)} ms`} onChange={(v) => set('decayMs')(logMs(v))} />
+      <ControlSlider level label="Sustain level" value={adsr.sustain} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)} %`} onChange={set('sustain')} />
+      <ControlSlider label="Release" value={toLog(adsr.releaseMs)} min={0} max={3.5} step={0.02} format={(v) => `${logMs(v)} ms`} onChange={(v) => set('releaseMs')(logMs(v))} />
+    </>
+  );
   return (
     <View style={{ gap: 12 }}>
       <Lead>Every sound has a shape in time. Move the sliders and watch the envelope — and the waveform inside it — redraw instantly.</Lead>
       <Prompt>Try it: drag ATTACK all the way left, then all the way right. Watch the two gold dots — the rise-time markers — and the readout under the chart.</Prompt>{/* NEW COPY */}
       {loaded ? <Text style={styles.loaded}>LOADED FROM THE GALLERY · {loaded.name.toUpperCase()}</Text> : null}{/* NEW COPY */}
-      <EnvelopeChart adsr={adsr} showRise sweep reduceMotion={ctx.reduceMotion} title="ENVELOPE · A / D / S / R (waveform shaped by it)" />
-      <ControlSlider label="Attack" value={toLog(adsr.attackMs)} min={0} max={3.3} step={0.02} format={(v) => `${logMs(v)} ms`} onChange={(v) => set('attackMs')(logMs(v))} />
-      <ControlSlider label="Decay" value={toLog(adsr.decayMs)} min={0} max={3.5} step={0.02} format={(v) => `${logMs(v)} ms`} onChange={(v) => set('decayMs')(logMs(v))} />
-      <ControlSlider level label="Sustain level" value={adsr.sustain} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)} %`} onChange={set('sustain')} />
-      <ControlSlider label="Release" value={toLog(adsr.releaseMs)} min={0} max={3.5} step={0.02} format={(v) => `${logMs(v)} ms`} onChange={(v) => set('releaseMs')(logMs(v))} />
+      <EnvelopeChart adsr={adsr} showRise sweep reduceMotion={ctx.reduceMotion} title="ENVELOPE · A / D / S / R (waveform shaped by it)" controls={adsrSliders} />
+      {adsrSliders}
       <ControlSlider label="Hold (energy still supplied)" value={adsr.holdMs} min={0} max={2000} step={10} format={(v) => `${v} ms`} onChange={set('holdMs')} />
       <Row>
         <Btn label={snap ? 'ATTACK: SNAP' : 'ATTACK: LINEAR'} a11y={`Attack curve: ${snap ? 'snap' : 'linear'}. Tap to switch.`} onPress={() => { setAdsr((p) => ({ ...p, attackShape: p.attackShape === 'exponential' ? 'linear' : 'exponential' })); touch(); }} />
@@ -129,17 +143,20 @@ function PageGallery({ ctx }: { ctx: PageCtx }) {
   const touch = useTouch(ctx);
   const preset = PRESETS.find((p) => p.id === sel);
   const pick = (id: string) => { setSel(id); touch(); };
+  // The preset buttons: on the page (with SPEECH) and docked under the chart
+  // in full screen (presets only — SPEECH swaps the chart out).
+  const presetBtns = PRESETS.map((p) => <Btn key={p.id} label={p.name} tone={sel === p.id ? 'primary' : 'plain'} onPress={() => pick(p.id)} a11y={`${p.name}, ${p.kind}`} />);
   return (
     <View style={{ gap: 12 }}>
       <Lead>Simplified envelope shapes for common sounds. These are teaching shapes — real instruments vary with playing technique, register and room.</Lead>
       <Prompt>Compare a percussive shape with a sustained one: where does each spend most of its time — falling, or held?</Prompt>{/* NEW COPY */}
       <Row>
-        {PRESETS.map((p) => <Btn key={p.id} label={p.name} tone={sel === p.id ? 'primary' : 'plain'} onPress={() => pick(p.id)} a11y={`${p.name}, ${p.kind}`} />)}
+        {presetBtns}
         <Btn label="Speech" tone={sel === 'speech' ? 'primary' : 'plain'} onPress={() => pick('speech')} a11y="Speech, a sequence of syllables" />
       </Row>
       {preset ? (
         <>
-          <EnvelopeChart adsr={preset.adsr} sweep reduceMotion={ctx.reduceMotion} title={`${preset.name.toUpperCase()} · ${preset.kind.toUpperCase()} · TEACHING SHAPE`} />
+          <EnvelopeChart adsr={preset.adsr} sweep reduceMotion={ctx.reduceMotion} title={`${preset.name.toUpperCase()} · ${preset.kind.toUpperCase()} · TEACHING SHAPE`} fullTitle="GALLERY" controls={<Row>{presetBtns}</Row>} />
           <Card>
             <Body>{preset.notice}</Body>
             {preset.bullets.map((b) => <Text key={b} style={styles.gloss}>• {b}</Text>)}
@@ -176,8 +193,9 @@ function SpeechChart() {
   return (
     <View style={{ gap: 4 }}>
       <Text style={styles.chartTitle}>SPEECH · “PRO-FES-SION-AL AU-DI-O” · {marks.length} SYLLABLE ENVELOPES</Text>
-      <View accessible accessibilityRole="image" accessibilityLabel={`Speech: ${marks.length} syllables over ${Math.round(total)} milliseconds, each a short envelope with near-silence between. Illustrative model.`}>
-        <Svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+      <ExpandableFigure aspect={W / H} title="SPEECH" badge={CHART_HONESTY} render={(w, h) => (
+      <View accessible accessibilityRole="image" accessibilityLabel={`Speech: ${marks.length} syllables over ${Math.round(total)} milliseconds, each a short envelope with near-silence between. Illustrative model.`} style={{ width: w, height: h }}>
+        <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
           <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
           {marks.map((m, i) => (
             <G key={m.label}>
@@ -187,9 +205,10 @@ function SpeechChart() {
           ))}
           <Line x1={10} y1={bottom} x2={W - 10} y2={bottom} stroke="rgba(255,255,255,0.12)" />
           <Polyline points={pts} fill="none" stroke={colors.cyanBright} strokeWidth={2} />
-          <SvgText x={W - 8} y={12} fontSize={8.5} fill={colors.textMuted} textAnchor="end" fontFamily={fonts.barlowMedium}>{Math.round(total)} ms →</SvgText>
+          <SvgText x={W - 8} y={12} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={fonts.barlowMedium}>{Math.round(total)} ms →</SvgText>
         </Svg>
       </View>
+      )} />
       <Text style={styles.caption}>{CHART_HONESTY} · syllable timing is typical, not a recording</Text>
     </View>
   );
@@ -210,14 +229,18 @@ function PageTransients({ ctx }: { ctx: PageCtx }) {
   const [kind, setKind] = useState<TransientKind>('sharp');
   const touch = useTouch(ctx);
   const t = TRANSIENTS[kind];
+  // The three onsets: on the page and docked under the chart in full screen.
+  const onsets = (
+    <Row>
+      {(Object.keys(TRANSIENTS) as TransientKind[]).map((k) => <Btn key={k} label={TRANSIENTS[k].name} tone={kind === k ? 'primary' : 'plain'} onPress={() => { setKind(k); touch(); }} />)}
+    </Row>
+  );
   return (
     <View style={{ gap: 12 }}>
       <Lead>The transient is the onset — the first few milliseconds. It carries more information than its size suggests.</Lead>
       <Prompt>Step through the three onsets and watch the rise-time readout jump from about a millisecond to hundreds. Same peak level each time — only the onset changes.</Prompt>{/* NEW COPY */}
-      <Row>
-        {(Object.keys(TRANSIENTS) as TransientKind[]).map((k) => <Btn key={k} label={TRANSIENTS[k].name} tone={kind === k ? 'primary' : 'plain'} onPress={() => { setKind(k); touch(); }} />)}
-      </Row>
-      <EnvelopeChart adsr={t.adsr} showRise sweep reduceMotion={ctx.reduceMotion} title={`${t.name.toUpperCase()} · TEACHING SHAPE`} />
+      {onsets}
+      <EnvelopeChart adsr={t.adsr} showRise sweep reduceMotion={ctx.reduceMotion} title={`${t.name.toUpperCase()} · TEACHING SHAPE`} fullTitle="TRANSIENT" controls={onsets} />
       <Card>
         <Body>{t.note}</Body>
         <Text style={styles.read}>rise time (10→90 %) {riseTimeMs(t.adsr).toFixed(1)} ms · attack {fmtMs(t.adsr.attackMs)}</Text>
@@ -246,26 +269,33 @@ function PageDuration({ ctx }: { ctx: PageCtx }) {
   const lx = chosen ? x(chosen.ms) : 0;
   const anchor: 'start' | 'middle' | 'end' = lx < 70 ? 'start' : lx > W - 70 ? 'end' : 'middle';
   const labelX = anchor === 'start' ? Math.max(PAD, lx - 8) : anchor === 'end' ? Math.min(W - PAD, lx + 8) : lx;
+  // The numbered buttons: on the page and docked under the timeline in full screen.
+  const picks = (
+    <Row>
+      {DURATION_EXAMPLES.map((e, i) => <Btn key={e.name} label={`${i + 1} · ${e.name}`} tone={sel === i ? 'primary' : 'plain'} onPress={() => pick(i)} a11y={`${i + 1}, ${e.name}, about ${fmtMs(e.ms)}, ${e.category}`} />)}
+    </Row>
+  );
   return (
     <View style={{ gap: 12 }}>
       <Lead>From an impulse to a continuous tone — sound durations span four orders of magnitude, so the timeline is logarithmic.</Lead>
       <Prompt>Tap a numbered marker, or its button. Notice how far apart 12 ms and 12 s sit: each equal step along the axis is ten times longer.</Prompt>{/* NEW COPY */}
       <View style={{ gap: 4 }}>
         <Text style={styles.chartTitle}>DURATION · IMPULSE → CONTINUOUS · LOG TIME</Text>
-        <View accessible accessibilityRole="image" accessibilityLabel={`Duration timeline on a logarithmic axis from 1 millisecond to 20 seconds: ${DURATION_EXAMPLES.map((e, i) => `${i + 1}, ${e.name}, about ${fmtMs(e.ms)}, ${e.category}`).join('; ')}.${chosen ? ` Selected: ${chosen.name}.` : ''} Typical values, illustrative.`}>
-          <Svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+        <ExpandableFigure aspect={W / H} title="DURATION" badge="TYPICAL VALUES — ILLUSTRATIVE, NOT MEASURED" controls={<View style={styles.dock}>{picks}</View>} render={(w, h) => (
+        <View accessible accessibilityRole="image" accessibilityLabel={`Duration timeline on a logarithmic axis from 1 millisecond to 20 seconds: ${DURATION_EXAMPLES.map((e, i) => `${i + 1}, ${e.name}, about ${fmtMs(e.ms)}, ${e.category}`).join('; ')}.${chosen ? ` Selected: ${chosen.name}.` : ''} Typical values, illustrative.`} style={{ width: w, height: h }}>
+          <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
             <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
             {DURATION_BANDS.map((b, i) => (
               <G key={b.category}>
                 <Rect x={x(b.fromMs)} y={32} width={Math.max(1, x(b.toMs) - x(b.fromMs))} height={AXIS - 32} fill="#ffffff" opacity={i % 2 ? 0.05 : 0.025} />
-                <SvgText x={(x(b.fromMs) + x(b.toMs)) / 2} y={26} fontSize={8.5} fill={chosen?.category === b.category ? colors.cyanBright : colors.textSub} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{b.category.toUpperCase()}</SvgText>
+                <SvgText x={(x(b.fromMs) + x(b.toMs)) / 2} y={26} fontSize={9} fill={chosen?.category === b.category ? colors.cyanBright : colors.textSub} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{b.category.toUpperCase()}</SvgText>
               </G>
             ))}
             <Line x1={PAD} y1={AXIS} x2={W - PAD} y2={AXIS} stroke={colors.textSub} />
             {[1, 10, 100, 1000, 10000].map((tick) => (
               <G key={tick}>
                 <Line x1={x(tick)} y1={AXIS} x2={x(tick)} y2={AXIS + 4} stroke={colors.textSub} />
-                <SvgText x={x(tick)} y={AXIS + 15} fontSize={8.5} fill={colors.textMuted} textAnchor={tick === 1 ? 'start' : 'middle'} fontFamily={fonts.barlowMedium}>{tick >= 1000 ? `${tick / 1000} s` : `${tick} ms`}</SvgText>
+                <SvgText x={x(tick)} y={AXIS + 15} fontSize={9} fill={colors.textMuted} textAnchor={tick === 1 ? 'start' : 'middle'} fontFamily={fonts.barlowMedium}>{tick >= 1000 ? `${tick / 1000} s` : `${tick} ms`}</SvgText>
               </G>
             ))}
             {chosen ? (
@@ -282,18 +312,17 @@ function PageDuration({ ctx }: { ctx: PageCtx }) {
                   {/* invisible hit area — the numbered buttons below are the 44 pt targets */}
                   <Rect x={cx - 13} y={AXIS - 24} width={26} height={44} fill="#000000" fillOpacity={0.01} />
                   <Circle cx={cx} cy={AXIS} r={on ? 8 : 6.5} fill={on ? colors.cyanBright : '#0a0a0c'} stroke={on ? colors.cyanBright : colors.textSub} strokeWidth={1.2} />
-                  <SvgText x={cx} y={AXIS + 3.2} fontSize={8.5} fill={on ? colors.black : colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{i + 1}</SvgText>
+                  <SvgText x={cx} y={AXIS + 3.4} fontSize={9} fill={on ? colors.black : colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{i + 1}</SvgText>
                 </G>
               );
             })}
-            <SvgText x={W - 8} y={H - 8} fontSize={8.5} fill={colors.textMuted} textAnchor="end" fontFamily={fonts.barlowMedium}>log time →</SvgText>
+            <SvgText x={W - 8} y={H - 8} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={fonts.barlowMedium}>log time →</SvgText>
           </Svg>
         </View>
+        )} />
         <Text style={styles.caption}>TYPICAL VALUES — ILLUSTRATIVE, NOT MEASURED · real sounds vary</Text>{/* NEW COPY */}
       </View>
-      <Row>
-        {DURATION_EXAMPLES.map((e, i) => <Btn key={e.name} label={`${i + 1} · ${e.name}`} tone={sel === i ? 'primary' : 'plain'} onPress={() => pick(i)} a11y={`${i + 1}, ${e.name}, about ${fmtMs(e.ms)}, ${e.category}`} />)}
-      </Row>
+      {picks}
       <Card>
         {chosen ? (
           <>
@@ -319,15 +348,19 @@ function PagePeakAverage({ ctx }: { ctx: PageCtx }) {
   const wave = shapedWave(preset.adsr, 2000, 80);
   const pk = peakAbs(wave), av = rms(wave);
   const crest = crestFactorDb(wave);
+  // The two shapes: on the page and docked under the chart in full screen.
+  const shapes = (
+    <Row>
+      <Btn label="Percussive (snare)" tone={id === 'snare' ? 'primary' : 'plain'} onPress={() => { setId('snare'); touch(); }} />
+      <Btn label="Sustained (trumpet)" tone={id === 'trumpet' ? 'primary' : 'plain'} onPress={() => { setId('trumpet'); touch(); }} />
+    </Row>
+  );
   return (
     <View style={{ gap: 12 }}>
       <Lead>Two meters can disagree about the same sound: a peak meter follows the transient, an average meter follows the body.</Lead>
       <Prompt>Switch between the two shapes and watch the gap between the PEAK line and the AVERAGE line. That gap is the crest factor.</Prompt>{/* NEW COPY */}
-      <Row>
-        <Btn label="Percussive (snare)" tone={id === 'snare' ? 'primary' : 'plain'} onPress={() => { setId('snare'); touch(); }} />
-        <Btn label="Sustained (trumpet)" tone={id === 'trumpet' ? 'primary' : 'plain'} onPress={() => { setId('trumpet'); touch(); }} />
-      </Row>
-      <EnvelopeChart adsr={preset.adsr} showRegions={false} showPeakAvg title={`${preset.name.toUpperCase()} · PEAK VS AVERAGE`} caption="levels relative to the drawn peak" />
+      {shapes}
+      <EnvelopeChart adsr={preset.adsr} showRegions={false} showPeakAvg title={`${preset.name.toUpperCase()} · PEAK VS AVERAGE`} caption="levels relative to the drawn peak" fullTitle="PEAK / AVG" controls={shapes} />
       <Card>
         <Eyebrow>COMPUTED FROM THE DRAWN WAVEFORM · RELATIVE TO ITS PEAK</Eyebrow>
         <Text style={styles.read}>
@@ -461,4 +494,5 @@ const styles = StyleSheet.create({
   loaded: { color: colors.green, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.5 },
   chartTitle: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 1.5 },
   caption: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1, lineHeight: 13 },
+  dock: { paddingHorizontal: 12, paddingBottom: 4, gap: 10 },
 });
