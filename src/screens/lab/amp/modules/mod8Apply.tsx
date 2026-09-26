@@ -370,6 +370,11 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
       <AmpRig
         title="CHALLENGE"
         controls={<ControlGrid>{chControls}</ControlGrid>}
+        readout={
+          <Text style={[styles.verdict, { color: challenge.rig.primary ? colors.red : colors.green }]} numberOfLines={2}>
+            {`OUTPUT ${Math.round(challenge.outLevel * 100)}% OF FULL · ${challenge.rig.primary ? `FAULT: ${String(challenge.rig.primary).replace(/-/g, ' ').toUpperCase()}` : 'NO FAULT'}${chSubmitted ? ` · ${challenge.passed} OF 6 PASS` : ''}`}
+          </Text>
+        }
         input={chInput}
         output={chOutput}
         clipAt={challenge.railLimit}

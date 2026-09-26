@@ -139,6 +139,7 @@ export function Mod5ClassD() {
             {viewSeg}
           </>
         }
+        readout={<Text style={styles.dutyLine}>{`INPUT ${Math.round(drive * 100)}% · DUTY AVERAGE ${Math.round(sim.meanDuty * 100)}% · AT THE PEAK ≈${Math.round(dutyAtPeak * 100)}%`}</Text>}
         input={sim.audio}
         extraIn={[{ data: sim.carrier, color: AMP_COLORS.supply, dash: '3,2', width: 1, label: 'triangle carrier' }]}
         output={outputForView}
@@ -224,6 +225,7 @@ export function Mod5ClassD() {
 const styles = StyleSheet.create({
   note: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
   effBig: { color: colors.textPrimary, fontFamily: fonts.oswaldMedium, fontSize: 15 },
+  dutyLine: { color: colors.textSecondary, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1 },
   lossRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   lossLabel: { width: 150, color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12 },
   lossTrack: { flex: 1, height: 8, borderRadius: 4, backgroundColor: '#0a0a0c', borderWidth: 1, borderColor: colors.hairline, overflow: 'hidden' },

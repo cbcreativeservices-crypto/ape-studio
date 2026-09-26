@@ -165,6 +165,11 @@ export type AmpRigProps = {
   controls?: ReactNode;
   /** Full-screen bar title (≤ 10 characters). */
   title?: string;
+  /** The module's live readout for THIS picture (a region tag, a verdict,
+   *  the class stats) — THE SAME element the page shows, placed at the TOP
+   *  of the full-screen dock so the numbers are read while enlarged (parity
+   *  pass 2026-09-26). The rig adds its own status line under it. */
+  readout?: ReactNode;
 };
 
 const CONCEPT_NOTE = 'Conceptual visualization — not a component-level circuit simulation.';
@@ -207,6 +212,14 @@ export function AmpRig(p: AmpRigProps) {
   const showNominal = p.clipAt != null && p.nominalRailAt != null && p.nominalRailAt > p.clipAt + 0.01;
   const legendTraces = [...(p.extraIn ?? []), ...(p.extraOut ?? [])];
 
+  // The status row's numbers, one line, for the top of the full-screen dock
+  // (the row itself stays on the page): same words as the cells below.
+  const statusLine = !p.hideStatus ? (
+    <Text style={styles.dockStatus} numberOfLines={2}>
+      {`SUPPLY ${Math.round(p.supplyFlow * 100)}% · HEAT ${heatWord}${p.efficiencyPct != null ? ` · EFFICIENCY ${Math.round(p.efficiencyPct)}%` : ''}${p.speaker ? ` · LOAD ${Math.round(Math.min(1, outLevel * Math.SQRT2) * 100)}%` : ''} · relative`}
+    </Text>
+  ) : null;
+
   // The transport is drawn twice — on the page and in the full-screen dock —
   // from the same state.
   const transport = (
@@ -243,6 +256,8 @@ export function AmpRig(p: AmpRigProps) {
         badge={CONCEPT_NOTE}
         controls={
           <FigureDock>
+            {p.readout}
+            {statusLine}
             {p.controls}
             {transport}
           </FigureDock>
@@ -364,7 +379,7 @@ function WaveStack({
       {/* the shared playhead */}
       <Animated.View
         pointerEvents="none"
-        style={[styles.playhead, { top: titleLine + TITLE_GAP, transform: [{ translateX: playX }] }]}
+        style={[styles.playhead, { top: titleLine + TITLE_GAP, width: 1.5 * scale, transform: [{ translateX: playX }] }]}
       />
     </View>
   );
@@ -451,5 +466,6 @@ const styles = StyleSheet.create({
   tBtnOn: { borderColor: colors.green },
   tBtnText: { color: colors.textSecondary, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1 },
   faultTag: { color: colors.red, fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, marginLeft: 'auto' },
+  dockStatus: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1 },
   conceptNote: { color: colors.textMutedDeep, fontFamily: fonts.barlowRegular, fontSize: 11 },
 });

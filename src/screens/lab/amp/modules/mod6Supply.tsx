@@ -78,6 +78,13 @@ export function Mod6Supply() {
       onChange={setSupply}
     />
   );
+  // The state word + the four numbers: on the page and at the top of the
+  // rig's full-screen dock (parity pass 2026-09-26) — one element, one state.
+  const stateRead = (
+    <Text style={[styles.state, { color: stateColor }]} numberOfLines={2}>
+      {`${state} · rails ±${sim.railEff.toFixed(0)} V · ${sim.vrms.toFixed(1)} Vrms · ${sim.irms.toFixed(1)} A · ${sim.p.toFixed(0)} W`}
+    </Text>
+  );
   const driveSlider = <ControlSlider level label="Input level" value={drive} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setDrive} />;
   const railSlider = <ControlSlider label="Available rail voltage" value={rail} min={0.3} max={1} step={0.01} format={(v) => `±${Math.round(v * RAIL_V_FULL)} V`} onChange={setRail} />;
   const loadSeg = (
@@ -131,6 +138,7 @@ export function Mod6Supply() {
             {loadSeg}
           </>
         }
+        readout={stateRead}
         input={sim.input}
         output={sim.out}
         clipAt={sim.clipAtNorm}
@@ -147,7 +155,7 @@ export function Mod6Supply() {
         a11ySummary={`Rails ±${Math.round(sim.railNominal)} volts nominal${sagged ? `, sagging to ±${Math.round(sim.railEff)} under load` : ''}. State: ${state}. ${sim.state === 'protect' ? `Output muted; the load demanded ${sim.iDemand.toFixed(1)} amps rms into ${loadZ} ohms.` : `Output ${sim.vrms.toFixed(1)} volts rms, ${sim.irms.toFixed(1)} amps rms into ${loadZ} ohms, ${sim.p.toFixed(0)} watts.`}`}
       />
       <Card tone="accent">
-        <Text style={[styles.state, { color: stateColor }]}>{state}</Text>
+        {stateRead}
         <View style={styles.readoutRow}>
           <Readout label="RAILS" value={`±${sim.railNominal.toFixed(0)} V`} sub={sagged ? `sag −${sim.sagV.toFixed(1)} V → ±${sim.railEff.toFixed(0)} V` : 'no sag'} />
           <Readout label="OUTPUT" value={`${sim.vrms.toFixed(1)} Vrms`} sub={sim.state === 'protect' ? 'muted' : undefined} />

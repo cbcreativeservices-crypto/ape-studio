@@ -124,6 +124,14 @@ export function Mod2Devices() {
   const controlSlider = (
     <ControlSlider level label="Control signal" value={control} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setControl} />
   );
+  // The live readouts: on the page under each drawing and at the top of its
+  // full-screen dock (parity pass 2026-09-26) — one element, one state.
+  const regionRead = <Text style={styles.region}>{region.label}</Text>;
+  const xfRead = xf ? (
+    <Text style={styles.badge}>
+      {xf.kind === 'step-up' ? 'STEP-UP' : xf.kind === 'step-down' ? 'STEP-DOWN' : '1:1 ISOLATION'} · ratio {xf.voltageRatio.toFixed(2)}:1 · Vs {xf.vs.toFixed(1)} V · Is {xf.isFromIp(IP).toFixed(2)} A
+    </Text>
+  ) : null;
   const npSlider = <ControlSlider label="Primary turns Np" value={np} min={100} max={1000} step={50} format={(v) => `${v}`} onChange={setNp} />;
   const nsSlider = <ControlSlider label="Secondary turns Ns" value={ns} min={100} max={1000} step={50} format={(v) => `${v}`} onChange={setNs} />;
 
@@ -143,10 +151,10 @@ export function Mod2Devices() {
           aspect={DEV_W / DEV_H}
           title="DEVICE"
           badge="Conceptual — three-part control model"
-          controls={<FigureDock>{deviceSeg}{controlSlider}</FigureDock>}
+          controls={<FigureDock>{regionRead}{deviceSeg}{controlSlider}</FigureDock>}
           render={(w, h) => <DeviceDiagram width={w} height={h} device={device} control={control} />}
         />
-        <Text style={styles.region}>{region.label}</Text>
+        {regionRead}
         <Body>{region.sub}</Body>
       </Card>
       {controlSlider}
@@ -167,7 +175,7 @@ export function Mod2Devices() {
           aspect={XF_W / XF_H}
           title="TRANSFORMER"
           badge="Ideal relationships — real transformers have losses"
-          controls={<FigureDock>{npSlider}{nsSlider}</FigureDock>}
+          controls={<FigureDock>{xfRead}{npSlider}{nsSlider}</FigureDock>}
           render={(w, h) => <TransformerDiagram width={w} height={h} np={np} ns={ns} />}
         />
         {xf ? (

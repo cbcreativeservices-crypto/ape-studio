@@ -68,6 +68,23 @@ export function Mod3Bias() {
       onChange={setAngle}
     />
   );
+  // The live region tags: on the page under each rig and at the top of the
+  // full-screen dock (parity pass 2026-09-26) — one element, one state.
+  const singleRead = (
+    <Text style={[styles.regionTag, { color: single.region === 'linear' ? colors.green : colors.gold }]}>
+      {single.region === 'cutoff' ? 'TOO LITTLE BIAS' : single.region === 'saturation' ? 'EXCESSIVE BIAS' : 'APPROPRIATE LINEAR BIAS'}
+    </Text>
+  );
+  const ppRead = (
+    <Text style={[styles.regionTag, { color: taskSolved ? colors.green : tooHot ? colors.gold : colors.red }]}>
+      {taskSolved
+        ? '✓ CLEAN HANDOFF, MODEST IDLE CURRENT'
+        : tooHot
+          ? 'CLEAN — BUT INTO THE EXCESSIVE-HEAT REGION'
+          : 'CROSSOVER NOTCH PRESENT'}
+      {` · idle ${Math.round(pp.idleCurrent * 100)}%`}
+    </Text>
+  );
   const ppBiasSlider = <ControlSlider label="Output-stage bias (overlap)" value={ppBias} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setPpBias} />;
 
   return (
@@ -82,6 +99,7 @@ export function Mod3Bias() {
       {biasSlider}
       <AmpRig
         controls={biasSlider}
+        readout={singleRead}
         input={smallAudio}
         devices={singleDevices}
         output={single.out}
@@ -91,9 +109,7 @@ export function Mod3Bias() {
         a11ySummary={`Bias ${Math.round(bias * 100)} percent: ${single.region} region. Output is ${single.distorted ? 'distorted — part of the swing is lost' : 'clean'}. Relative idle heat ${Math.round(single.heat * 100)} percent.`}
       />
       <Card tone="accent">
-        <Text style={[styles.regionTag, { color: single.region === 'linear' ? colors.green : colors.gold }]}>
-          {single.region === 'cutoff' ? 'TOO LITTLE BIAS' : single.region === 'saturation' ? 'EXCESSIVE BIAS' : 'APPROPRIATE LINEAR BIAS'}
-        </Text>
+        {singleRead}
         <Body>
           {single.region === 'cutoff'
             ? 'The operating point sits near cutoff: the negative half of the swing drives the device below zero current and simply vanishes. Idle current and heat are low — but the waveform is missing a piece.'
@@ -141,6 +157,7 @@ export function Mod3Bias() {
       {ppBiasSlider}
       <AmpRig
         controls={ppBiasSlider}
+        readout={ppRead}
         input={audio}
         devices={{ iPos: pp.iPos, iNeg: pp.iNeg }}
         output={pp.out}
@@ -154,16 +171,10 @@ export function Mod3Bias() {
           aspect={ZOOM_W / ZOOM_H}
           title="ZERO CROSS"
           badge="Zero-crossing zoom · ×3.2 vertical magnification"
-          controls={<FigureDock>{ppBiasSlider}</FigureDock>}
+          controls={<FigureDock>{ppRead}{ppBiasSlider}</FigureDock>}
           render={(w, h) => <CrossoverZoom width={w} height={h} out={pp.out} />}
         />
-        <Text style={[styles.regionTag, { color: taskSolved ? colors.green : tooHot ? colors.gold : colors.red }]}>
-          {taskSolved
-            ? '✓ CLEAN HANDOFF, MODEST IDLE CURRENT'
-            : tooHot
-              ? 'CLEAN — BUT INTO THE EXCESSIVE-HEAT REGION'
-              : 'CROSSOVER NOTCH PRESENT'}
-        </Text>
+        {ppRead}
         <Body>
           {taskSolved
             ? `Just enough overlap: both devices conduct around zero, the notch is gone, and idle current stays at ${Math.round(pp.idleCurrent * 100)}% relative. This is the Class AB sweet spot.`

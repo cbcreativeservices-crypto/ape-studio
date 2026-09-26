@@ -122,6 +122,17 @@ export function Mod7RealWorld() {
 
   // The gain-chain sliders, drawn on the page and again in the figure's
   // full-screen dock — one state.
+  // The verdict: under the chain on the page and at the top of its
+  // full-screen dock (parity pass 2026-09-26) — one element, one state.
+  const gainRead = (
+    <Text style={[styles.verdict, { color: gs.firstClip ? colors.red : gs.starved ? colors.gold : colors.green }]}>
+      {gs.firstClip
+        ? `FIRST STAGE CLIPPING: ${gs.firstClip.toUpperCase()}`
+        : gs.starved
+          ? `${gs.starved.toUpperCase()} RUNNING STARVED — NOISE FLOOR RISES`
+          : 'HEALTHY GAIN STRUCTURE'}
+    </Text>
+  );
   const srcSlider = <ControlSlider level label="Source output" value={src} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setSrc} />;
   const mixSlider = <ControlSlider level label="Mixer / processor output" value={mix} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setMix} />;
   const ampInSlider = <ControlSlider level label="Amplifier input control" value={ampIn} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setAmpIn} />;
@@ -148,16 +159,10 @@ export function Mod7RealWorld() {
           aspect={CHAIN_W / CHAIN_H}
           title="GAIN CHAIN"
           badge="Relative levels — 100% = that stage’s clip point"
-          controls={<FigureDock>{srcSlider}{mixSlider}{ampInSlider}</FigureDock>}
+          controls={<FigureDock>{gainRead}{srcSlider}{mixSlider}{ampInSlider}</FigureDock>}
           render={(w, h) => <GainChain width={w} height={h} levels={gs.levels} firstClip={gs.firstClip} starved={gs.starved} />}
         />
-        <Text style={[styles.verdict, { color: gs.firstClip ? colors.red : gs.starved ? colors.gold : colors.green }]}>
-          {gs.firstClip
-            ? `FIRST STAGE CLIPPING: ${gs.firstClip.toUpperCase()}`
-            : gs.starved
-              ? `${gs.starved.toUpperCase()} RUNNING STARVED — NOISE FLOOR RISES`
-              : 'HEALTHY GAIN STRUCTURE'}
-        </Text>
+        {gainRead}
         <Body>
           {gs.firstClip === 'source'
             ? 'The source is already flat-topped. Turning the mixer or amplifier down makes it quieter distortion — fix it at the source.'

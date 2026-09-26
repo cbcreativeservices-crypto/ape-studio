@@ -196,6 +196,20 @@ export function Mod4Classes() {
       />
     ) : null;
 
+  // The per-class numbers on one line — at the top of the rig's full-screen
+  // dock (parity pass 2026-09-26); the stat cells below stay on the page.
+  const distortionWord = lin?.crossoverNotch ? 'NOTCH' : cls === 'C' && c?.conductionDeg === 0 ? 'NO OUTPUT' : cls === 'C' && (c?.resonanceGain ?? 1) < 0.9 ? 'MISTUNED' : 'CLEAN';
+  const statsRead = (
+    <Text style={styles.statsLine} numberOfLines={2}>
+      {`CLASS ${cls} · CONDUCTION ${Math.round(sim.conductionDeg)}° · IDLE ${Math.round(sim.idleCurrent * 100)}% · EFFICIENCY ${Math.round(sim.efficiencyPct)}% · ${distortionWord}`}
+    </Text>
+  );
+  const zoomRead = (
+    <Text style={styles.zoomNote}>
+      {lin?.crossoverNotch ? 'The flat step at the crossing is the region where neither device conducts.' : 'Smooth through zero — the devices overlap.'}
+    </Text>
+  );
+
   return (
     <View style={{ gap: 12 }}>
       <Body>
@@ -215,6 +229,7 @@ export function Mod4Classes() {
             {classControl}
           </>
         }
+        readout={statsRead}
         input={input}
         devices={{ iPos: sim.iPos, iNeg: sim.iNeg }}
         output={sim.out}
@@ -270,12 +285,10 @@ export function Mod4Classes() {
             aspect={ZOOM_W / ZOOM_H}
             title="ZERO CROSS"
             badge="Zero-crossing zoom · ×3.2 vertical magnification"
-            controls={cls === 'AB' ? <FigureDock>{abBiasSlider}</FigureDock> : undefined}
+            controls={<FigureDock>{zoomRead}{cls === 'AB' ? abBiasSlider : null}</FigureDock>}
             render={(w, h) => <CrossoverZoom width={w} height={h} out={sim.out} />}
           />
-          <Text style={styles.zoomNote}>
-            {lin?.crossoverNotch ? 'The flat step at the crossing is the region where neither device conducts.' : 'Smooth through zero — the devices overlap.'}
-          </Text>
+          {zoomRead}
         </Card>
       ) : null}
 
@@ -336,4 +349,5 @@ const styles = StyleSheet.create({
   statValue: { color: colors.textPrimary, fontFamily: fonts.oswaldSemiBold, fontSize: 18 },
   statSub: { color: colors.textMutedDeep, fontFamily: fonts.barlowRegular, fontSize: 10.5 },
   zoomNote: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17 },
+  statsLine: { color: colors.textSecondary, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1 },
 });
