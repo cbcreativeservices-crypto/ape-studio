@@ -611,7 +611,11 @@ export function DelayAlignModule(p: WaveModuleProps) {
     () => ({
       w: 16,
       h: 10,
-      boundary: ['drywall', 'drywall', 'drywall', 'drywall'],
+      // OPEN AIR (walkthrough 2026-09-26): alignment is set on the DIRECT
+      // sound (measured with the room gated out). With drywall at 80–120 Hz
+      // the reflections dominated the seat — auto-align made the listener
+      // 3.6 dB QUIETER, the opposite of the lesson.
+      boundary: ['open', 'open', 'open', 'open'],
       sources: [
         { id: 'sub', x: ALIGN_SUB.x, y: ALIGN_SUB.y, freq, levelDb: 0, delayMs: 0, polarity: 1, kind: 'sub' },
         { id: 'main', x: ALIGN_MAIN.x, y: ALIGN_MAIN.y, freq, levelDb: 0, delayMs, polarity: mainInv ? -1 : 1, kind: 'speaker', aimDeg: 0, coverageDeg: 90 },
@@ -628,6 +632,13 @@ export function DelayAlignModule(p: WaveModuleProps) {
   const reqDelay = ((dSub - dMain) / c) * 1000; // ms the MAIN must wait to land with the sub
   const mismatch = delayMs - reqDelay;
   const lvl = responseAt(scene, listener.x, listener.y, freq);
+  // SUM: the pair vs PERFECT addition at the listener — 0 dB when sub and
+  // main land in step, negative = how much they are cancelling. Each source
+  // alone through the same engine, amplitudes added (walkthrough 2026-09-26).
+  const aSub = Math.pow(10, responseAt({ ...scene, sources: [scene.sources[0]] }, listener.x, listener.y, freq) / 20);
+  const aMain = Math.pow(10, responseAt({ ...scene, sources: [scene.sources[1]] }, listener.x, listener.y, freq) / 20);
+  const sumDb = lvl - 20 * Math.log10(Math.max(1e-9, aSub + aMain));
+  const sumText = sumDb > -0.05 ? '0.0 dB' : `${sumDb.toFixed(1)} dB`;
 
   return (
     <WaveLayout
@@ -643,7 +654,7 @@ export function DelayAlignModule(p: WaveModuleProps) {
           // 'MISS' answered a question the student has not learned to ask (design
           // pass 2026-08-31) — OFF BY says what the number is.
           { k: 'OFF BY', v: `${mismatch >= 0 ? '+' : ''}${mismatch.toFixed(2)} ms`, flex: 1.15, helpKey: 'delay_align' },
-          { k: 'LVL', v: `${lvl.toFixed(1)} dB`, helpKey: 'delay_align' },
+          { k: 'SUM', v: sumText, helpKey: 'delay_align' },
         ],
         stage: (w, h) => (
           <RackScene
@@ -729,7 +740,8 @@ export function DelayAlignModule(p: WaveModuleProps) {
               { k: 'REQUIRED DELAY', v: `${reqDelay.toFixed(2)} ms` },
               { k: 'CURRENT DELAY', v: `${delayMs.toFixed(2)} ms` },
               { k: 'MISMATCH', v: `${mismatch >= 0 ? '+' : ''}${mismatch.toFixed(2)} ms` },
-              { k: 'LEVEL @ LISTENER', v: `${lvl.toFixed(1)} dB` },
+              { k: 'SUM vs PERFECT ADDITION', v: sumText },
+              { k: 'LEVEL @ LISTENER (re 1 m)', v: `${lvl.toFixed(1)} dB` },
             ]}
           />
           <Text style={dstyles.caption}>
