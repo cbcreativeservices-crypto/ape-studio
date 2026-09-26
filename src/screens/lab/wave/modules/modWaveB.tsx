@@ -2100,6 +2100,16 @@ export function RoomBuilderModule(p: WaveModuleProps) {
       }}
       explain={
         <PanelCard>
+          {/* Accuracy note, first thing under the display (owner rule: every
+              lab/tool says "learn here, measure with a calibrated instrument";
+              the outside view added a model that needs it — 2026-09-26). */}
+          <Text style={dstyles.eyebrow}>OUTSIDE THE ROOM — WHAT THE NEIGHBOURS HEAR</Text>
+          <Text style={dstyles.body}>
+            The rings beyond the walls show what each wall lets through at the frequency you are viewing. Each
+            material is treated as the whole partition: heavy concrete stops almost everything, glass and drywall let
+            the bass out, curtains and foam barely stop anything. Sweep the frequency down and watch more escape.
+          </Text>
+          <Badge text="WHAT GETS THROUGH USES A TEACHING MASS-LAW MODEL (TL ≈ 20·log10(m·f) − 47 dB) WITH EXAGGERATED FADING. REAL ISOLATION DEPENDS ON CONSTRUCTION, GAPS AND FLANKING — MEASURE IT WITH A CALIBRATED METER." />
           <Text style={dstyles.eyebrow}>WHAT TO TRY</Text>
           <Text style={dstyles.body}>
             • Build a cardioid: two SUBs 1.2 m apart (SRC key), rear one delayed ~3.5 ms with polarity inverted — HEAT shows energy forward, silence behind.
