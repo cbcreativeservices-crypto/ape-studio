@@ -246,6 +246,7 @@ export function VowelChart({ v, controls }: { v: Vowel; controls?: ReactNode }) 
 export function PageVowels({ ctx }: { ctx: PageCtx }) {
   const [id, setId] = useState('a');
   const v = VOWELS.find((o) => o.id === id)!;
+  const formantRead = <Text style={styles.read}>F1 ≈ {v.f1} Hz · F2 ≈ {v.f2} Hz · F3 ≈ {v.f3} Hz — typical adult male; roughly 15–20% higher for women, higher again for children</Text>;
   const picker = (
     <Row>
       {VOWELS.map((o) => <Btn key={o.id} label={`${o.letter} · ${o.sound.split(' ')[0]}`} tone={o.id === id ? 'primary' : 'plain'} onPress={() => { setId(o.id); if (!ctx.isDone) ctx.markDone(); }} a11y={`${o.letter}, ${o.sound}`} />)}
@@ -256,9 +257,10 @@ export function PageVowels({ ctx }: { ctx: PageCtx }) {
       <Lead>A vowel is a tongue position. Where the tongue sits sets which harmonics the mouth boosts — the formants — and that is what you hear as A, E, I, O or U.</Lead>
       {picker}
       <VowelChart v={v} controls={picker} />
-      <FormantChart v={v} title={`${v.letter} · ${v.sound.toUpperCase()} · HARMONICS SHAPED BY THE MOUTH`} controls={picker} />
+      {/* In full screen the formant readout leads the dock (parity pass 2026-09-26). */}
+      <FormantChart v={v} title={`${v.letter} · ${v.sound.toUpperCase()} · HARMONICS SHAPED BY THE MOUTH`} controls={<View style={{ gap: 8 }}>{formantRead}{picker}</View>} />
       <Card>
-        <Text style={styles.read}>F1 ≈ {v.f1} Hz · F2 ≈ {v.f2} Hz · F3 ≈ {v.f3} Hz — typical adult male; roughly 15–20% higher for women, higher again for children</Text>
+        {formantRead}
         <Body>{v.height > 0.6 ? 'Tongue high, jaw nearly closed → a low first formant.' : 'Tongue low, jaw open → a high first formant.'} {v.back > 0.6 ? 'Tongue back → a low second formant.' : 'Tongue forward → a high second formant.'} {v.rounded ? 'Rounded lips lengthen the tract and pull every formant down a little.' : 'Spread lips keep the tract short.'}</Body>
       </Card>
       <Notice>Step from I (EE) to A (AH): the tongue drops, F1 climbs and F2 falls — the two gold peaks move toward each other.</Notice>
@@ -288,7 +290,7 @@ export function PageConsonants({ ctx }: { ctx: PageCtx }) {
         <Body>{c.how}</Body>
         <Text style={styles.see}>Energy: {c.energy}.</Text>
       </Card>
-      <ExpandableFigure aspect={W / H} title="ENERGY" controls={picker} render={(w, h) => (
+      <ExpandableFigure aspect={W / H} title="ENERGY" controls={<View style={{ gap: 8 }}><Text style={styles.readout} numberOfLines={2}>{c.name.toUpperCase()} · {c.examples} — energy: {c.energy}</Text>{picker}</View>} render={(w, h) => (
       <View accessible accessibilityLabel={`${c.name}: energy mainly between ${c.bandLoHz} and ${c.bandHiHz} hertz, approximate.`} style={{ width: w, height: h }}>
         <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
           <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />

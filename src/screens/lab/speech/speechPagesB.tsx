@@ -194,6 +194,13 @@ export function PageDistance({ ctx }: { ctx: PageCtx }) {
     { label: 'Proximity bass', db: d.proximityDb, color: colors.gold },
     { label: 'Voice over noise', db: d.snrDb, color: colors.green },
   ];
+  // The live numbers, one line: on the drawing's bars and at the top of the
+  // full-screen dock (parity pass 2026-09-26).
+  const distRead = (
+    <Text style={styles.readout} numberOfLines={2}>
+      {inches}" · direct {d.directDb >= 0 ? '+' : ''}{d.directDb.toFixed(0)} dB · room {d.roomDb} dB · plosive {d.plosiveDb >= 0 ? '+' : ''}{d.plosiveDb.toFixed(0)} dB · bass {d.proximityDb >= 0 ? '+' : ''}{d.proximityDb.toFixed(0)} dB · voice over noise {d.snrDb >= 0 ? '+' : ''}{d.snrDb.toFixed(0)} dB
+    </Text>
+  );
   const picker = (
     <Row>
       {DISTANCE_PRESETS.map((p) => <Btn key={p} label={`${p}"`} tone={inches === p ? 'primary' : 'plain'} onPress={() => { setInches(p); if (!ctx.isDone) ctx.markDone(); }} a11y={`${p} inch${p === 1 ? '' : 'es'}`} />)}
@@ -203,7 +210,7 @@ export function PageDistance({ ctx }: { ctx: PageCtx }) {
     <View style={{ gap: 12 }}>
       <Lead>Distance is the biggest control you have and it costs nothing. Every value here is relative to the voice at 12 inches.</Lead>
       {picker}
-      <DbBars rows={rows} controls={picker} a11y={`At ${inches} inches: direct voice ${d.directDb.toFixed(0)} dB, room ${d.roomDb} dB, plosive air ${d.plosiveDb.toFixed(0)} dB, proximity bass ${d.proximityDb.toFixed(0)} dB, voice over noise ${d.snrDb.toFixed(0)} dB, all relative and illustrative.`} />
+      <DbBars rows={rows} controls={<View style={{ gap: 8 }}>{distRead}{picker}</View>} a11y={`At ${inches} inches: direct voice ${d.directDb.toFixed(0)} dB, room ${d.roomDb} dB, plosive air ${d.plosiveDb.toFixed(0)} dB, proximity bass ${d.proximityDb.toFixed(0)} dB, voice over noise ${d.snrDb.toFixed(0)} dB, all relative and illustrative.`} />
       <Text style={styles.foot}>Relative, illustrative values — inverse-square for the voice, a much steeper fall for the air jet, a typical cardioid proximity curve, a fixed room and noise floor.</Text>
       <Notice>Switch between 12", 6" and 1" and watch two bars: the room never moves, and the plosive bar moves far faster than the voice.</Notice>
       <Card>
@@ -316,4 +323,5 @@ export function PageSpeechChecks({ ctx }: { ctx: PageCtx }) {
 
 const styles = StyleSheet.create({
   foot: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 15 },
+  readout: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, paddingHorizontal: 2 },
 });
