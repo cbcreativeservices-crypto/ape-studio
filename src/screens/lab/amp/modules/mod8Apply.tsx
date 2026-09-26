@@ -20,7 +20,7 @@ import {
 } from '../../../../features/amp/ampContent';
 import { loadAmpProgress, updateAmpProgress, type AmpProgressState } from '../../../../features/amp/ampProgress';
 import { AmpRig, type RigTrace } from '../AmpRig';
-import { Body, Card, ControlSlider, FaultBanner, HonestyBadge, SectionTitle, SegRow } from '../kit';
+import { Body, Card, ControlGrid, ControlSlider, FaultBanner, HonestyBadge, SectionTitle, SegRow } from '../kit';
 import type { AmpModuleProps } from './index';
 
 /** Mirrors the Scenarios screen's feedback tiers — the app has no global pass rule. */
@@ -220,6 +220,19 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
 
   const finalDone = Object.keys(finalAnswers).length;
 
+  // The challenge rig's controls, drawn on the page (one column) and again
+  // in the rig's full-screen dock (two abreast, so the enlarged drawing keeps
+  // its room) — one state. Every one of them changes the picture.
+  const chControls = [
+    <ControlSlider key="src" level label="Source level" value={chSource} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={(v) => { setChSource(v); setChSubmitted(false); }} />,
+    <ControlSlider key="mix" level label="Mixer output" value={chMixer} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={(v) => { setChMixer(v); setChSubmitted(false); }} />,
+    <ControlSlider key="amp" level label="Amplifier input setting" value={chAmp} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={(v) => { setChAmp(v); setChSubmitted(false); }} />,
+    <SegRow<'stereo' | 'bridge'> key="mode" label="Operating mode" options={[{ key: 'stereo', label: 'Stereo' }, { key: 'bridge', label: 'Bridge' }]} value={chMode} onChange={(v) => { setChMode(v); setChSubmitted(false); }} />,
+    <SegRow<'healthy' | 'sagging'> key="supply" label="Supply condition" options={[{ key: 'healthy', label: 'Healthy' }, { key: 'sagging', label: 'Sagging (weak mains)' }]} value={chSupply} onChange={(v) => { setChSupply(v); setChSubmitted(false); }} />,
+    <SegRow<8 | 4 | 2> key="load" label="Speaker load (nominal)" options={[{ key: 8, label: '8 Ω' }, { key: 4, label: '4 Ω' }, { key: 2, label: '2 Ω' }]} value={chLoad} onChange={(v) => { setChLoad(v); setChSubmitted(false); }} />,
+    <SegRow<'clear' | 'blocked'> key="vent" label="Ventilation" options={[{ key: 'clear', label: 'Clear' }, { key: 'blocked', label: 'Blocked' }]} value={chVent} onChange={(v) => { setChVent(v); setChSubmitted(false); }} />,
+  ];
+
   return (
     <View style={{ gap: 12 }}>
       <Body>Everything so far was practice. Now use it: read waveforms, choose amplifiers, kill myths, configure a system, and pass the check.</Body>
@@ -234,6 +247,7 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
         nominalRailAt={diagWave.nominalRailAt}
         extraOut={diagPick ? diagWave.extra : undefined}
         outputTitle="OUTPUT — what is this amplifier doing?"
+        title="DIAGNOSIS"
         supplyFlow={0}
         heat={0}
         hideStatus
@@ -352,14 +366,10 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
         no thermal or protection faults and correct connections. The amplifier is rated 4 Ω per channel in stereo and
         8 Ω bridged. Score it as often as you like — every failing dimension tells you what to change.
       </Body>
-      <ControlSlider level label="Source level" value={chSource} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={(v) => { setChSource(v); setChSubmitted(false); }} />
-      <ControlSlider level label="Mixer output" value={chMixer} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={(v) => { setChMixer(v); setChSubmitted(false); }} />
-      <ControlSlider level label="Amplifier input setting" value={chAmp} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={(v) => { setChAmp(v); setChSubmitted(false); }} />
-      <SegRow<'stereo' | 'bridge'> label="Operating mode" options={[{ key: 'stereo', label: 'Stereo' }, { key: 'bridge', label: 'Bridge' }]} value={chMode} onChange={(v) => { setChMode(v); setChSubmitted(false); }} />
-      <SegRow<'healthy' | 'sagging'> label="Supply condition" options={[{ key: 'healthy', label: 'Healthy' }, { key: 'sagging', label: 'Sagging (weak mains)' }]} value={chSupply} onChange={(v) => { setChSupply(v); setChSubmitted(false); }} />
-      <SegRow<8 | 4 | 2> label="Speaker load (nominal)" options={[{ key: 8, label: '8 Ω' }, { key: 4, label: '4 Ω' }, { key: 2, label: '2 Ω' }]} value={chLoad} onChange={(v) => { setChLoad(v); setChSubmitted(false); }} />
-      <SegRow<'clear' | 'blocked'> label="Ventilation" options={[{ key: 'clear', label: 'Clear' }, { key: 'blocked', label: 'Blocked' }]} value={chVent} onChange={(v) => { setChVent(v); setChSubmitted(false); }} />
+      {chControls}
       <AmpRig
+        title="CHALLENGE"
+        controls={<ControlGrid>{chControls}</ControlGrid>}
         input={chInput}
         output={chOutput}
         clipAt={challenge.railLimit}

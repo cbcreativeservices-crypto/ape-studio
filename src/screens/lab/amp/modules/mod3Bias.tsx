@@ -5,18 +5,25 @@
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Line, Polyline, Rect } from 'react-native-svg';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { colors, fonts } from '../../../../theme/tokens';
 import {
   simulateSingleDeviceBias, conductionCurrent, simulateLinearClass, sineCycle, WAVE_N,
 } from '../../../../features/amp/ampModel';
 import { AmpRig } from '../AmpRig';
-import { AMP_COLORS, Body, Card, ControlSlider, HonestyBadge, LearnMore, SectionTitle, SegRow } from '../kit';
+import { AMP_COLORS, Body, Card, ControlSlider, FigureDock, HonestyBadge, LearnMore, SectionTitle, SegRow } from '../kit';
 
 const ANGLES = [360, 270, 180, 90] as const;
 
-/** Magnified view around the zero crossing of one output cycle (shared with Module 4). */
-export function CrossoverZoom({ out }: { out: Float32Array }) {
-  const W = 340, H = 110;
+/** The zoom's drawing units — its ExpandableFigure aspect is ZOOM_W / ZOOM_H. */
+export const ZOOM_W = 340;
+export const ZOOM_H = 110;
+
+/** Magnified view around the zero crossing of one output cycle (shared with
+ *  Module 4). Drawn at (width, height) = the box ExpandableFigure hands it,
+ *  which has the viewBox's ratio, so "none" stretches nothing. */
+export function CrossoverZoom({ out, width, height }: { out: Float32Array; width: number; height: number }) {
+  const W = ZOOM_W, H = ZOOM_H;
   const span = 22; // samples each side of the crossing at n/2
   const c = WAVE_N / 2;
   const pts: string[] = [];
@@ -26,7 +33,7 @@ export function CrossoverZoom({ out }: { out: Float32Array }) {
     pts.push(`${x.toFixed(1)},${Math.max(4, Math.min(H - 4, y)).toFixed(1)}`);
   }
   return (
-    <Svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+    <Svg width={width} height={height} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
       <Rect x={0} y={0} width={W} height={H} fill="#0a0a0c" />
       <Line x1={0} y1={H / 2} x2={W} y2={H / 2} stroke="rgba(255,255,255,0.12)" />
       <Line x1={W / 2} y1={0} x2={W / 2} y2={H} stroke="rgba(255,255,255,0.08)" strokeDasharray="3,3" />
@@ -52,6 +59,17 @@ export function Mod3Bias() {
   const taskSolved = !pp.crossoverNotch && pp.idleCurrent <= 0.08;
   const tooHot = pp.idleCurrent > 0.08;
 
+  // Each rig's control, drawn on the page and again in its full-screen dock.
+  const biasSlider = <ControlSlider label="Bias (quiescent current)" value={bias} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setBias} />;
+  const angleSeg = (
+    <SegRow<(typeof ANGLES)[number]>
+      options={ANGLES.map((a) => ({ key: a, label: `${a}°` }))}
+      value={angle}
+      onChange={setAngle}
+    />
+  );
+  const ppBiasSlider = <ControlSlider label="Output-stage bias (overlap)" value={ppBias} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setPpBias} />;
+
   return (
     <View style={{ gap: 12 }}>
       <Body>
@@ -61,14 +79,15 @@ export function Mod3Bias() {
       </Body>
 
       <SectionTitle>1 · BIAS — THE OPERATING POINT</SectionTitle>
-      <ControlSlider label="Bias (quiescent current)" value={bias} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setBias} />
+      {biasSlider}
       <AmpRig
+        controls={biasSlider}
         input={smallAudio}
         devices={singleDevices}
         output={single.out}
         supplyFlow={Math.min(1, single.idleCurrent * 0.9 + 0.1)}
         heat={single.heat}
-        deviceTitle="DEVICE CURRENT (gold) — can only exist between 0 and full conduction"
+        deviceTitle="DEVICE CURRENT (gold) — 0 to full conduction only"
         a11ySummary={`Bias ${Math.round(bias * 100)} percent: ${single.region} region. Output is ${single.distorted ? 'distorted — part of the swing is lost' : 'clean'}. Relative idle heat ${Math.round(single.heat * 100)} percent.`}
       />
       <Card tone="accent">
@@ -87,12 +106,9 @@ export function Mod3Bias() {
 
       <SectionTitle>2 · CONDUCTION ANGLE</SectionTitle>
       <Body>One full sine cycle is 360°. How much of it does the device actually pass current?</Body>
-      <SegRow<(typeof ANGLES)[number]>
-        options={ANGLES.map((a) => ({ key: a, label: `${a}°` }))}
-        value={angle}
-        onChange={setAngle}
-      />
+      {angleSeg}
       <AmpRig
+        controls={angleSeg}
         input={audio}
         devices={condDevices}
         supplyFlow={angle / 360}
@@ -122,8 +138,9 @@ export function Mod3Bias() {
       {/* The task sits BEFORE the control it is done with — it used to be the
           last line of the result card, under the display it described. */}
       <Text style={styles.task}>YOUR TASK: raise the bias until the notch is gone — but stop before the excessive-heat region (idle current ≤ 8% relative).</Text>
-      <ControlSlider label="Output-stage bias (overlap)" value={ppBias} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setPpBias} />
+      {ppBiasSlider}
       <AmpRig
+        controls={ppBiasSlider}
         input={audio}
         devices={{ iPos: pp.iPos, iNeg: pp.iNeg }}
         output={pp.out}
@@ -133,7 +150,13 @@ export function Mod3Bias() {
       />
       <Card>
         <HonestyBadge label="Zero-crossing zoom · ×3.2 vertical magnification" />
-        <CrossoverZoom out={pp.out} />
+        <ExpandableFigure
+          aspect={ZOOM_W / ZOOM_H}
+          title="ZERO CROSS"
+          badge="Zero-crossing zoom · ×3.2 vertical magnification"
+          controls={<FigureDock>{ppBiasSlider}</FigureDock>}
+          render={(w, h) => <CrossoverZoom width={w} height={h} out={pp.out} />}
+        />
         <Text style={[styles.regionTag, { color: taskSolved ? colors.green : tooHot ? colors.gold : colors.red }]}>
           {taskSolved
             ? '✓ CLEAN HANDOFF, MODEST IDLE CURRENT'

@@ -10,8 +10,9 @@ import {
 } from '../../../../features/amp/ampModel';
 import { MISCONCEPTIONS } from '../../../../features/amp/ampContent';
 import { AmpRig } from '../AmpRig';
-import { AMP_COLORS, Body, Card, ControlSlider, HonestyBadge, LearnMore, MisconceptionCard, SectionTitle, SegRow } from '../kit';
-import { CrossoverZoom } from './mod3Bias';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
+import { AMP_COLORS, Body, Card, ControlSlider, FigureDock, HonestyBadge, LearnMore, MisconceptionCard, SectionTitle, SegRow } from '../kit';
+import { CrossoverZoom, ZOOM_H, ZOOM_W } from './mod3Bias';
 
 type Explorable = 'A' | 'B' | 'AB' | 'C';
 
@@ -154,6 +155,47 @@ export function Mod4Classes() {
   const sim = lin ?? c!;
   const facts = CLASS_FACTS[cls];
 
+  // The rig's controls, drawn on the page and again in its full-screen dock
+  // (one state): the class selector, the level, and the class's own control.
+  const classSeg = (
+    <SegRow<Explorable>
+      options={[
+        { key: 'A', label: 'Class A' },
+        { key: 'B', label: 'Class B' },
+        { key: 'AB', label: 'Class AB' },
+        { key: 'C', label: 'Class C' },
+      ]}
+      value={cls}
+      onChange={setCls}
+    />
+  );
+  const driveSlider = <ControlSlider level label="Input level" value={drive} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setDrive} />;
+  const abBiasSlider = <ControlSlider label="Output-stage bias — 0% is the Class B condition" value={abBias} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setAbBias} />;
+  const classControl =
+    cls === 'A' ? (
+      <SegRow<'on' | 'off'>
+        label="Audio signal (amplifier stays powered)"
+        options={[
+          { key: 'on', label: 'Signal on' },
+          { key: 'off', label: 'Signal off' },
+        ]}
+        value={signalOn ? 'on' : 'off'}
+        onChange={(v) => setSignalOn(v === 'on')}
+      />
+    ) : cls === 'AB' ? (
+      abBiasSlider
+    ) : cls === 'C' ? (
+      <ControlSlider
+        label="Tuned circuit frequency ÷ signal frequency"
+        value={detune}
+        min={0.5}
+        max={2}
+        step={0.01}
+        format={(v) => `${v.toFixed(2)}× ${Math.abs(v - 1) < 0.03 ? '· TUNED' : '· mistuned'}`}
+        onChange={setDetune}
+      />
+    ) : null;
+
   return (
     <View style={{ gap: 12 }}>
       <Body>
@@ -161,45 +203,18 @@ export function Mod4Classes() {
         which device conducts when, what happens at zero crossing, what it costs at idle, and where the heat goes.
       </Body>
 
-      <SegRow<Explorable>
-        options={[
-          { key: 'A', label: 'Class A' },
-          { key: 'B', label: 'Class B' },
-          { key: 'AB', label: 'Class AB' },
-          { key: 'C', label: 'Class C' },
-        ]}
-        value={cls}
-        onChange={setCls}
-      />
-      <ControlSlider level label="Input level" value={drive} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setDrive} />
-
-      {cls === 'A' ? (
-        <SegRow<'on' | 'off'>
-          label="Audio signal (amplifier stays powered)"
-          options={[
-            { key: 'on', label: 'Signal on' },
-            { key: 'off', label: 'Signal off' },
-          ]}
-          value={signalOn ? 'on' : 'off'}
-          onChange={(v) => setSignalOn(v === 'on')}
-        />
-      ) : null}
-      {cls === 'AB' ? (
-        <ControlSlider label="Output-stage bias — 0% is the Class B condition" value={abBias} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setAbBias} />
-      ) : null}
-      {cls === 'C' ? (
-        <ControlSlider
-          label="Tuned circuit frequency ÷ signal frequency"
-          value={detune}
-          min={0.5}
-          max={2}
-          step={0.01}
-          format={(v) => `${v.toFixed(2)}× ${Math.abs(v - 1) < 0.03 ? '· TUNED' : '· mistuned'}`}
-          onChange={setDetune}
-        />
-      ) : null}
+      {classSeg}
+      {driveSlider}
+      {classControl}
 
       <AmpRig
+        controls={
+          <>
+            {classSeg}
+            {driveSlider}
+            {classControl}
+          </>
+        }
         input={input}
         devices={{ iPos: sim.iPos, iNeg: sim.iNeg }}
         output={sim.out}
@@ -251,7 +266,13 @@ export function Mod4Classes() {
       {cls === 'B' || cls === 'AB' ? (
         <Card>
           <HonestyBadge label="Zero-crossing zoom · ×3.2 vertical magnification" />
-          <CrossoverZoom out={sim.out} />
+          <ExpandableFigure
+            aspect={ZOOM_W / ZOOM_H}
+            title="ZERO CROSS"
+            badge="Zero-crossing zoom · ×3.2 vertical magnification"
+            controls={cls === 'AB' ? <FigureDock>{abBiasSlider}</FigureDock> : undefined}
+            render={(w, h) => <CrossoverZoom width={w} height={h} out={sim.out} />}
+          />
           <Text style={styles.zoomNote}>
             {lin?.crossoverNotch ? 'The flat step at the crossing is the region where neither device conducts.' : 'Smooth through zero — the devices overlap.'}
           </Text>

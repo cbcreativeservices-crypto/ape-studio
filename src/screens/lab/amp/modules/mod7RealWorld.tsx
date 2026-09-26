@@ -7,6 +7,7 @@
 import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { G, Line, Rect, Text as SvgText } from 'react-native-svg';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { colors, fonts } from '../../../../theme/tokens';
 import {
   evaluateGainStructure, seriesImpedance, parallelImpedance, sineVrms, ohmsCurrent, resistivePower,
@@ -16,7 +17,12 @@ import {
   MISCONCEPTIONS, SAFETY_POINTS, RACK_SCENARIOS, RACK_FINDINGS, SPEC_SHEETS, SPEC_CONDITIONS,
   type RackFinding, type SpecCondition,
 } from '../../../../features/amp/ampContent';
-import { AMP_COLORS, Body, Card, ControlSlider, FormulaCard, HonestyBadge, LearnMore, MisconceptionCard, SectionTitle, SegRow } from '../kit';
+import { AMP_COLORS, Body, BoxLabel, Card, ControlSlider, DIAGRAM_FONT, FigureDock, FormulaCard, HonestyBadge, LearnMore, MisconceptionCard, SectionTitle, SegRow } from '../kit';
+
+/** Drawing units (legibility pass 2026-09-25: labels ≥ DIAGRAM_FONT, the SVG
+ *  drawn at the width ExpandableFigure hands it, height = w / aspect). */
+const CHAIN_W = 360;
+const CHAIN_H = 84;
 
 const MIN_STEREO_Z = 4;
 const MIN_BRIDGED_Z = 8;
@@ -26,13 +32,13 @@ const misc = (id: string) => MISCONCEPTIONS.find((m) => m.id === id)!;
 
 /* ── gain structure chain ───────────────────────────────────────────────── */
 
-function GainChain({ levels, firstClip, starved }: { levels: Record<GainStage, number>; firstClip: GainStage | null; starved: GainStage | null }) {
+function GainChain({ levels, firstClip, starved, width, height }: { levels: Record<GainStage, number>; firstClip: GainStage | null; starved: GainStage | null; width: number; height: number }) {
   const stages: { key: GainStage | 'out' | 'spk'; label: string }[] = [
     { key: 'source', label: 'SOURCE' }, { key: 'mixer', label: 'MIXER / DSP' }, { key: 'amp', label: 'AMP INPUT' }, { key: 'out', label: 'OUTPUT STAGE' }, { key: 'spk', label: 'SPEAKER' },
   ];
-  const bw = 64, gap = 8, x0 = 2;
+  const bw = 66, gap = 6, x0 = 3, y = 6, bh = 32;
   return (
-    <Svg width="100%" height={84} viewBox="0 0 360 84">
+    <Svg width={width} height={height} viewBox={`0 0 ${CHAIN_W} ${CHAIN_H}`}>
       {stages.map((s, i) => {
         const x = x0 + i * (bw + gap);
         const lvl = s.key === 'source' || s.key === 'mixer' || s.key === 'amp' ? levels[s.key] : null;
@@ -41,15 +47,15 @@ function GainChain({ levels, firstClip, starved }: { levels: Record<GainStage, n
         const stroke = clip ? AMP_COLORS.fault : starve ? colors.gold : s.key === 'spk' ? AMP_COLORS.output : colors.steelBorder;
         return (
           <G key={s.key}>
-            <Rect x={x} y={8} width={bw} height={30} rx={5} fill={clip ? '#241012' : '#151518'} stroke={stroke} strokeWidth={clip ? 1.6 : 1} />
-            <SvgText x={x + bw / 2} y={27} fontSize={8.5} fill={clip ? colors.red : colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{s.label}</SvgText>
-            {i < 4 ? <Line x1={x + bw + 1} y1={23} x2={x + bw + gap - 1} y2={23} stroke={clip ? AMP_COLORS.fault : AMP_COLORS.input} strokeWidth={1.5} /> : null}
+            <Rect x={x} y={y} width={bw} height={bh} rx={5} fill={clip ? '#241012' : '#151518'} stroke={stroke} strokeWidth={clip ? 1.6 : 1} />
+            <BoxLabel x={x + bw / 2} y={y + bh / 2 + 4} lines={[s.label]} fill={clip ? colors.red : colors.textSecondary} />
+            {i < 4 ? <Line x1={x + bw + 1} y1={y + bh / 2} x2={x + bw + gap - 1} y2={y + bh / 2} stroke={clip ? AMP_COLORS.fault : AMP_COLORS.input} strokeWidth={1.5} /> : null}
             {lvl != null ? (
               <>
-                <Rect x={x} y={50} width={bw} height={8} rx={4} fill="#0a0a0c" stroke={colors.hairline} />
+                <Rect x={x} y={48} width={bw} height={9} rx={4.5} fill="#0a0a0c" stroke={colors.hairline} />
                 {/* red ONLY at/over the clip point (amplitude colour standard); gold = starved */}
-                <Rect x={x + 1} y={51} width={Math.max(0, Math.min(bw - 2, (bw - 2) * Math.min(lvl, 1)))} height={6} rx={3} fill={lvl > 1 ? colors.red : lvl < 0.15 ? colors.gold : colors.green} />
-                <SvgText x={x + bw / 2} y={72} fontSize={8.5} fill={lvl > 1 ? colors.red : colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>{lvl > 1 ? 'CLIPPING' : `${Math.round(lvl * 100)}% of clip`}</SvgText>
+                <Rect x={x + 1} y={49} width={Math.max(0, Math.min(bw - 2, (bw - 2) * Math.min(lvl, 1)))} height={7} rx={3.5} fill={lvl > 1 ? colors.red : lvl < 0.15 ? colors.gold : colors.green} />
+                <SvgText x={x + bw / 2} y={74} fontSize={DIAGRAM_FONT} fill={lvl > 1 ? colors.red : colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>{lvl > 1 ? 'CLIPPING' : `${Math.round(lvl * 100)}% of clip`}</SvgText>
               </>
             ) : null}
           </G>
@@ -114,6 +120,12 @@ export function Mod7RealWorld() {
       ? picked.length === 0 ? 'complete-right' : 'complete-wrong'
       : specCorrect ? 'right' : 'wrong';
 
+  // The gain-chain sliders, drawn on the page and again in the figure's
+  // full-screen dock — one state.
+  const srcSlider = <ControlSlider level label="Source output" value={src} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setSrc} />;
+  const mixSlider = <ControlSlider level label="Mixer / processor output" value={mix} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setMix} />;
+  const ampInSlider = <ControlSlider level label="Amplifier input control" value={ampIn} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setAmpIn} />;
+
   return (
     <View style={{ gap: 12 }}>
       <Card>
@@ -132,7 +144,13 @@ export function Mod7RealWorld() {
       </Body>
       <Card>
         <HonestyBadge label="Relative levels — 100% = that stage’s clip point" />
-        <GainChain levels={gs.levels} firstClip={gs.firstClip} starved={gs.starved} />
+        <ExpandableFigure
+          aspect={CHAIN_W / CHAIN_H}
+          title="GAIN CHAIN"
+          badge="Relative levels — 100% = that stage’s clip point"
+          controls={<FigureDock>{srcSlider}{mixSlider}{ampInSlider}</FigureDock>}
+          render={(w, h) => <GainChain width={w} height={h} levels={gs.levels} firstClip={gs.firstClip} starved={gs.starved} />}
+        />
         <Text style={[styles.verdict, { color: gs.firstClip ? colors.red : gs.starved ? colors.gold : colors.green }]}>
           {gs.firstClip
             ? `FIRST STAGE CLIPPING: ${gs.firstClip.toUpperCase()}`
@@ -152,9 +170,9 @@ export function Mod7RealWorld() {
                   : 'Each stage sits comfortably below its ceiling with headroom for peaks.'}
         </Body>
       </Card>
-      <ControlSlider level label="Source output" value={src} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setSrc} />
-      <ControlSlider level label="Mixer / processor output" value={mix} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setMix} />
-      <ControlSlider level label="Amplifier input control" value={ampIn} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setAmpIn} />
+      {srcSlider}
+      {mixSlider}
+      {ampInSlider}
       <MisconceptionCard m={misc('gain-sets-watts')} />
 
       {/* ── load builder ── */}

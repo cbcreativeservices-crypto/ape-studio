@@ -5,41 +5,48 @@
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { colors, fonts } from '../../../../theme/tokens';
 import {
   sineCycle, amplify, isClipping, cycleRms, simulateLinearClass, sineVrms, resistivePower,
 } from '../../../../features/amp/ampModel';
 import { AmpRig } from '../AmpRig';
 import {
-  AMP_COLORS, Body, Card, ControlSlider, FaultBanner, FormulaCard, HonestyBadge, LearnMore, SectionTitle, SegRow,
+  AMP_COLORS, Body, BoxLabel, Card, ControlSlider, DIAGRAM_FONT, FaultBanner, FigureDock, FormulaCard, HonestyBadge, LearnMore, SectionTitle, SegRow,
 } from '../kit';
 
 const GAIN = 1.5;
 const RAIL = 1.0;
 
+/** Drawing units (legibility pass 2026-09-25: every label ≥ DIAGRAM_FONT,
+ *  the SVG drawn at the width ExpandableFigure hands it, height = w / aspect). */
+const PATH_W = 360;
+const PATH_H = 92;
+
 /** Input → Input Stage → Voltage Gain → Driver/Output → Load, supply below. */
-function SignalPathDiagram({ level, clipping }: { level: number; clipping: boolean }) {
-  const boxes = ['INPUT', 'INPUT STAGE', 'VOLT. GAIN', 'DRIVER/OUTPUT', 'LOAD'];
-  const bw = 60, gap = 10, x0 = 4, y = 10, bh = 28;
+function SignalPathDiagram({ level, clipping, width, height }: { level: number; clipping: boolean; width: number; height: number }) {
+  const boxes: string[][] = [['INPUT'], ['INPUT STAGE'], ['VOLT. GAIN'], ['DRIVER /', 'OUTPUT'], ['LOAD']];
+  const bw = 66, gap = 6, x0 = 3, y = 6, bh = 34;
+  const centre = (i: number) => x0 + i * (bw + gap) + bw / 2;
   return (
-    <Svg width="100%" height={92} viewBox="0 0 360 92">
+    <Svg width={width} height={height} viewBox={`0 0 ${PATH_W} ${PATH_H}`}>
       {boxes.map((b, i) => {
         const x = x0 + i * (bw + gap);
         const isLoad = i === 4;
         return (
-          <G key={b}>
+          <G key={b.join(' ')}>
             <Rect x={x} y={y} width={bw} height={bh} rx={5} fill={isLoad ? '#1a2a1e' : '#151518'} stroke={isLoad ? AMP_COLORS.output : colors.steelBorder} strokeWidth={1} />
-            <SvgText x={x + bw / 2} y={y + 18} fontSize={8.5} fill={colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{b}</SvgText>
+            <BoxLabel x={x + bw / 2} y={y + bh / 2 + 4} lines={b} fill={colors.textSecondary} />
             {i < 4 ? <Path d={`M${x + bw + 1} ${y + bh / 2} l${gap - 2} 0`} stroke={i === 0 ? AMP_COLORS.input : AMP_COLORS.output} strokeWidth={1.5} /> : null}
           </G>
         );
       })}
       {/* power supply feeding the gain and output stages */}
-      <Rect x={130} y={58} width={150} height={26} rx={5} fill="#1f1a0e" stroke={AMP_COLORS.supply} strokeWidth={1} />
-      <SvgText x={205} y={75} fontSize={9} fill={AMP_COLORS.supply} textAnchor="middle" fontFamily={fonts.oswaldMedium}>POWER SUPPLY  (+rail / −rail)</SvgText>
-      <Line x1={174} y1={58} x2={174} y2={y + bh + 1} stroke={AMP_COLORS.supply} strokeWidth={1.5} strokeDasharray="3,2" />
-      <Line x1={244} y1={58} x2={244} y2={y + bh + 1} stroke={AMP_COLORS.supply} strokeWidth={1.5} strokeDasharray="3,2" />
-      <SvgText x={296} y={76} fontSize={8.5} fill={clipping ? colors.red : colors.textMuted} fontFamily={fonts.barlowMedium}>
+      <Rect x={130} y={58} width={150} height={28} rx={5} fill="#1f1a0e" stroke={AMP_COLORS.supply} strokeWidth={1} />
+      <SvgText x={205} y={76} fontSize={DIAGRAM_FONT} fill={AMP_COLORS.supply} textAnchor="middle" fontFamily={fonts.oswaldMedium}>POWER SUPPLY  (+rail / −rail)</SvgText>
+      <Line x1={centre(2)} y1={58} x2={centre(2)} y2={y + bh + 1} stroke={AMP_COLORS.supply} strokeWidth={1.5} strokeDasharray="3,2" />
+      <Line x1={centre(3)} y1={58} x2={centre(3)} y2={y + bh + 1} stroke={AMP_COLORS.supply} strokeWidth={1.5} strokeDasharray="3,2" />
+      <SvgText x={PATH_W - 4} y={76} fontSize={DIAGRAM_FONT} fill={clipping ? colors.red : colors.textMuted} textAnchor="end" fontFamily={fonts.barlowMedium}>
         {clipping ? 'LIMIT REACHED' : `${Math.round(level * 100)}% drive`}
       </SvgText>
     </Svg>
@@ -74,6 +81,11 @@ export function Mod1What() {
   const ampVrms = sineVrms(20)!; // 20 V peak from the amplifier
   const ampPower = resistivePower(ampVrms, 8)!; // 25 W
 
+  // Drawn on the page and again in each figure's full-screen dock — one state.
+  const levelSlider = (
+    <ControlSlider level label="Input level" value={level} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setLevel} />
+  );
+
   return (
     <View style={{ gap: 12 }}>
       <Body>
@@ -85,7 +97,13 @@ export function Mod1What() {
 
       <Card>
         <HonestyBadge label="Functional path — conceptual" />
-        <SignalPathDiagram level={level} clipping={sim.clipping} />
+        <ExpandableFigure
+          aspect={PATH_W / PATH_H}
+          title="SIGNAL PATH"
+          badge="Functional path — conceptual"
+          controls={<FigureDock>{levelSlider}</FigureDock>}
+          render={(w, h) => <SignalPathDiagram width={w} height={h} level={level} clipping={sim.clipping} />}
+        />
       </Card>
 
       <SectionTitle>PREDICT, THEN TRY</SectionTitle>
@@ -100,9 +118,10 @@ export function Mod1What() {
         onChange={setPrediction}
       />
 
-      <ControlSlider level label="Input level" value={level} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setLevel} />
+      {levelSlider}
 
       <AmpRig
+        controls={levelSlider}
         input={sim.input}
         output={sim.output}
         clipAt={RAIL}

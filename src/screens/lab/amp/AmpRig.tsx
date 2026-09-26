@@ -19,18 +19,27 @@
  * rail, with the heavier fault overlay on top. Cyan/green stay the lab's
  * LABEL colours for "input"/"output" (legends, diagram arrows), not trace paint.
  */
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Defs, Line, LinearGradient, Path, Polyline, Rect, Stop } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
 import { WAVE_LEVEL_STOPS, levelColor } from '../../../features/tools/levelColor';
 import { animationsAllowed } from '../../../features/settings/a11y';
 import { cycleRms } from '../../../features/amp/ampModel';
-import { AMP_COLORS } from './kit';
+import { ExpandableFigure } from '../kit/ExpandableFigure';
+import { useStageTextScale } from '../rack/stageAspect';
+import { AMP_COLORS, FigureDock } from './kit';
 
 const W = 340;
 const PANEL_H = 58;
 const Y_MAX = 1.15;
+/** Panel title line and the gaps, in the same units as W/PANEL_H — the
+ *  waveform stack's shape (aspect) is computed from these. */
+const TITLE_FONT = 10;
+const TITLE_LINE = 14;
+const TITLE_GAP = 2;
+const PANEL_GAP = 6;
+const stackHeight = (n: number) => n * (TITLE_LINE + TITLE_GAP + PANEL_H) + (n - 1) * PANEL_GAP;
 
 /** y for a signal value on a panel of height h (same mapping everywhere). */
 const yFor = (v: number, h: number, yMax = Y_MAX) => h / 2 - (v / yMax) * (h / 2 - 4);
@@ -63,13 +72,24 @@ function clippedSegments(data: Float32Array, limit: number, h: number, yMax = Y_
   return segs.filter((s) => s.includes(' '));
 }
 
+/**
+ * One panel of the stack, drawn at the width the figure was given: the SVG's
+ * pixel height follows the width (svgH ≈ w × PANEL_H / W), so the
+ * `preserveAspectRatio="none"` box keeps the viewBox's own ratio and nothing
+ * stretches sideways in FULL SCREEN (the SVG trap, legibility pass
+ * 2026-09-25). The title is React Native text over the drawing — it grows
+ * with the zoom through `scale` (the Skia/overlay trap), 1 on the page.
+ */
 function WavePanel({
-  title, children, h = PANEL_H,
-}: { title: string; children: React.ReactNode; h?: number }) {
+  title, children, w, svgH, scale,
+}: { title: string; children: ReactNode; w: number; svgH: number; scale: number }) {
+  const h = PANEL_H;
   return (
     <View style={styles.panel}>
-      <Text style={styles.panelTitle}>{title}</Text>
-      <Svg width="100%" height={h} viewBox={`0 0 ${W} ${h}`} preserveAspectRatio="none">
+      <Text style={[styles.panelTitle, { fontSize: TITLE_FONT * scale, lineHeight: TITLE_LINE * scale }]} numberOfLines={1}>
+        {title}
+      </Text>
+      <Svg width={w} height={svgH} viewBox={`0 0 ${W} ${h}`} preserveAspectRatio="none">
         <Rect x={0} y={0} width={W} height={h} fill="#0a0a0c" />
         <Line x1={0} y1={h / 2} x2={W} y2={h / 2} stroke="rgba(255,255,255,0.10)" strokeWidth={1} />
         {children}
@@ -137,7 +157,17 @@ export type AmpRigProps = {
   a11ySummary: string;
   deviceTitle?: string;
   outputTitle?: string;
+  /** The module's controls that change THIS picture (its level/bias sliders,
+   *  a class or view selector). Rendered by the page as usual AND docked
+   *  under the waveforms in FULL SCREEN, beside the rig's own transport, so
+   *  the learner can adjust while enlarged (owner 2026-09-25). Pass the same
+   *  elements — state lives in the module. */
+  controls?: ReactNode;
+  /** Full-screen bar title (≤ 10 characters). */
+  title?: string;
 };
+
+const CONCEPT_NOTE = 'Conceptual visualization — not a component-level circuit simulation.';
 
 export function AmpRig(p: AmpRigProps) {
   const motion = animationsAllowed();
@@ -145,7 +175,6 @@ export function AmpRig(p: AmpRigProps) {
   const [slow, setSlow] = useState(false);
   const [stepPhase, setStepPhase] = useState(0); // reduced-motion playhead ⅛s
   const phase = useRef(new Animated.Value(0)).current;
-  const [panelW, setPanelW] = useState(W);
 
   useEffect(() => {
     if (!motion || !running) return;
@@ -166,10 +195,8 @@ export function AmpRig(p: AmpRigProps) {
   // Gradient ids must be unique per rig — several rigs can share one screen
   // (and on web every SVG shares one document), and their rails can differ.
   const gid = useRef(`amprig${Math.floor(Math.random() * 1e9).toString(36)}`).current;
-  const playX = useMemo(
-    () => (motion ? phase.interpolate({ inputRange: [0, 1], outputRange: [0, panelW] }) : new Animated.Value((stepPhase / 8) * panelW)),
-    [motion, phase, panelW, stepPhase],
-  );
+  const nPanels = (p.input ? 1 : 0) + (p.devices ? 1 : 0) + (p.output ? 1 : 0);
+  const aspect = W / stackHeight(Math.max(1, nPanels));
 
   // Heat is NOT amplitude: blue (cool) → green → yellow → red (dangerously
   // hot) is the kit's fault language, and the word beside it says the same.
@@ -180,60 +207,50 @@ export function AmpRig(p: AmpRigProps) {
   const showNominal = p.clipAt != null && p.nominalRailAt != null && p.nominalRailAt > p.clipAt + 0.01;
   const legendTraces = [...(p.extraIn ?? []), ...(p.extraOut ?? [])];
 
+  // The transport is drawn twice — on the page and in the full-screen dock —
+  // from the same state.
+  const transport = (
+    <View style={styles.transportRow}>
+      {motion ? (
+        <>
+          <Pressable style={styles.tBtn} hitSlop={{ top: 6, bottom: 6 }} onPress={() => setRunning(!running)} accessibilityRole="button" accessibilityLabel={running ? 'Pause animation' : 'Play animation'}>
+            <Text style={styles.tBtnText}>{running ? '⏸ PAUSE' : '▶ PLAY'}</Text>
+          </Pressable>
+          <Pressable style={[styles.tBtn, slow && styles.tBtnOn]} hitSlop={{ top: 6, bottom: 6 }} onPress={() => setSlow(!slow)} accessibilityRole="button" accessibilityState={{ selected: slow }} aria-pressed={slow} accessibilityLabel="Slow motion">
+            <Text style={[styles.tBtnText, slow && { color: colors.green }]}>SLOW</Text>
+          </Pressable>
+        </>
+      ) : (
+        <Pressable style={styles.tBtn} hitSlop={{ top: 6, bottom: 6 }} onPress={() => setStepPhase((s) => (s + 2) % 9)} accessibilityRole="button" accessibilityLabel="Step through the cycle">
+          <Text style={styles.tBtnText}>STEP ¼ CYCLE</Text>
+        </Pressable>
+      )}
+      {p.faulted ? <Text style={styles.faultTag} accessibilityRole="text">⚠ FAULT</Text> : null}
+    </View>
+  );
+
   return (
     <View style={styles.rig}>
       {/* The waveform stack is ONE accessible graphic with the summary as its
           label — a screen reader hears the state once, not three panels of
-          silent SVG plus a duplicate note. */}
-      <View
-        onLayout={(e) => setPanelW(e.nativeEvent.layout.width)}
-        style={{ gap: 6 }}
-        accessible
-        accessibilityRole="image"
-        accessibilityLabel={p.a11ySummary}
-      >
-        {p.input ? (
-          <WavePanel title="INPUT (signal)">
-            <WaveGradient id={`${gid}in`} fullScale={1} />
-            <Polyline points={tracePoints(p.input, PANEL_H)} fill="none" stroke={`url(#${gid}in)`} strokeWidth={1.6} />
-            {p.extraIn?.map((t) => (
-              <Polyline key={t.label} points={tracePoints(t.data, PANEL_H)} fill="none" stroke={t.color} strokeWidth={t.width ?? 1.2} strokeDasharray={t.dash} />
-            ))}
-          </WavePanel>
-        ) : null}
-        {p.devices ? (
-          <WavePanel title={p.deviceTitle ?? 'DEVICE CURRENTS (+ gold solid · − purple dashed)'}>
-            {/* yMax 2.1, not 1.6. Class A is `iq(1.0) + sine(drive)`, so device
-                current reaches 2.0 at full drive — a 1.6 ceiling flat-topped
-                the trace and drew the universal picture of SATURATION directly
-                under copy explaining full-cycle conduction, which is the one
-                thing class A does not do. */}
-            <Polyline points={tracePoints(p.devices.iPos, PANEL_H, 2.1)} fill="none" stroke={AMP_COLORS.pos} strokeWidth={1.6} />
-            <Polyline points={tracePoints(p.devices.iNeg, PANEL_H, 2.1)} fill="none" stroke={AMP_COLORS.neg} strokeWidth={1.6} strokeDasharray="5,3" />
-          </WavePanel>
-        ) : null}
-        {p.output ? (
-          <WavePanel title={p.outputTitle ?? 'OUTPUT (to load)'}>
-            {showNominal ? <RailPair at={p.nominalRailAt!} stroke="rgba(255,255,255,0.18)" dash="2,5" /> : null}
-            {p.clipAt != null ? <RailPair at={p.clipAt} stroke="rgba(255,75,58,0.45)" dash="4,4" /> : null}
-            <WaveGradient id={`${gid}out`} fullScale={p.clipAt ?? 1} />
-            <Polyline points={tracePoints(p.output, PANEL_H)} fill="none" stroke={`url(#${gid}out)`} strokeWidth={2} />
-            {p.clipAt != null
-              ? clippedSegments(p.output, p.clipAt, PANEL_H).map((s, i) => (
-                  <Polyline key={i} points={s} fill="none" stroke={AMP_COLORS.fault} strokeWidth={2.6} />
-                ))
-              : null}
-            {p.extraOut?.map((t) => (
-              <Polyline key={t.label} points={tracePoints(t.data, PANEL_H)} fill="none" stroke={t.color} strokeWidth={t.width ?? 1.2} strokeDasharray={t.dash} />
-            ))}
-          </WavePanel>
-        ) : null}
-        {/* the shared playhead */}
-        <Animated.View
-          pointerEvents="none"
-          style={[styles.playhead, { transform: [{ translateX: playX }] }]}
-        />
-      </View>
+          silent SVG plus a duplicate note. It is drawn through
+          ExpandableFigure: the same stack, same state, at the page width and
+          again at the FULL SCREEN size, the transport and the module's
+          controls docked under it there. */}
+      <ExpandableFigure
+        aspect={aspect}
+        title={p.title ?? 'AMP RIG'}
+        badge={CONCEPT_NOTE}
+        controls={
+          <FigureDock>
+            {p.controls}
+            {transport}
+          </FigureDock>
+        }
+        render={(w, h) => (
+          <WaveStack w={w} h={h} p={p} gid={gid} motion={motion} phase={phase} stepPhase={stepPhase} showNominal={showNominal} />
+        )}
+      />
 
       {legendTraces.length || showNominal || (p.clipAt != null && p.output) ? (
         <View style={styles.legendRow}>
@@ -274,27 +291,81 @@ export function AmpRig(p: AmpRigProps) {
       ) : null}
 
       {/* transport */}
-      <View style={styles.transportRow}>
-        {motion ? (
-          <>
-            <Pressable style={styles.tBtn} hitSlop={{ top: 6, bottom: 6 }} onPress={() => setRunning(!running)} accessibilityRole="button" accessibilityLabel={running ? 'Pause animation' : 'Play animation'}>
-              <Text style={styles.tBtnText}>{running ? '⏸ PAUSE' : '▶ PLAY'}</Text>
-            </Pressable>
-            <Pressable style={[styles.tBtn, slow && styles.tBtnOn]} hitSlop={{ top: 6, bottom: 6 }} onPress={() => setSlow(!slow)} accessibilityRole="button" accessibilityState={{ selected: slow }} aria-pressed={slow} accessibilityLabel="Slow motion">
-              <Text style={[styles.tBtnText, slow && { color: colors.green }]}>SLOW</Text>
-            </Pressable>
-          </>
-        ) : (
-          <Pressable style={styles.tBtn} hitSlop={{ top: 6, bottom: 6 }} onPress={() => setStepPhase((s) => (s + 2) % 9)} accessibilityRole="button" accessibilityLabel="Step through the cycle">
-            <Text style={styles.tBtnText}>STEP ¼ CYCLE</Text>
-          </Pressable>
-        )}
-        {p.faulted ? <Text style={styles.faultTag} accessibilityRole="text">⚠ FAULT</Text> : null}
-      </View>
+      {transport}
 
-      <Text style={styles.conceptNote}>
-        Conceptual visualization — not a component-level circuit simulation.
-      </Text>
+      <Text style={styles.conceptNote}>{CONCEPT_NOTE}</Text>
+    </View>
+  );
+}
+
+/**
+ * The waveform panels at (w, h): the panels share the height the title lines
+ * leave over, so the stack fills the figure box exactly and each panel is
+ * w × PANEL_H / W — the viewBox's own shape. One playhead sweeps them all.
+ */
+function WaveStack({
+  w, h, p, gid, motion, phase, stepPhase, showNominal,
+}: {
+  w: number;
+  h: number;
+  p: AmpRigProps;
+  gid: string;
+  motion: boolean;
+  phase: Animated.Value;
+  stepPhase: number;
+  showNominal: boolean;
+}) {
+  const scale = useStageTextScale();
+  const n = Math.max(1, (p.input ? 1 : 0) + (p.devices ? 1 : 0) + (p.output ? 1 : 0));
+  const titleLine = TITLE_LINE * scale;
+  const svgH = Math.max(16, Math.floor((h - n * (titleLine + TITLE_GAP) - (n - 1) * PANEL_GAP) / n));
+  const playX = useMemo(
+    () => (motion ? phase.interpolate({ inputRange: [0, 1], outputRange: [0, w] }) : new Animated.Value((stepPhase / 8) * w)),
+    [motion, phase, w, stepPhase],
+  );
+  return (
+    <View style={{ width: w, height: h, gap: PANEL_GAP }} accessible accessibilityRole="image" accessibilityLabel={p.a11ySummary}>
+      {p.input ? (
+        <WavePanel title="INPUT (signal)" w={w} svgH={svgH} scale={scale}>
+          <WaveGradient id={`${gid}in`} fullScale={1} />
+          <Polyline points={tracePoints(p.input, PANEL_H)} fill="none" stroke={`url(#${gid}in)`} strokeWidth={1.6} />
+          {p.extraIn?.map((t) => (
+            <Polyline key={t.label} points={tracePoints(t.data, PANEL_H)} fill="none" stroke={t.color} strokeWidth={t.width ?? 1.2} strokeDasharray={t.dash} />
+          ))}
+        </WavePanel>
+      ) : null}
+      {p.devices ? (
+        <WavePanel title={p.deviceTitle ?? 'DEVICE CURRENTS (+ gold solid · − purple dashed)'} w={w} svgH={svgH} scale={scale}>
+          {/* yMax 2.1, not 1.6. Class A is `iq(1.0) + sine(drive)`, so device
+              current reaches 2.0 at full drive — a 1.6 ceiling flat-topped
+              the trace and drew the universal picture of SATURATION directly
+              under copy explaining full-cycle conduction, which is the one
+              thing class A does not do. */}
+          <Polyline points={tracePoints(p.devices.iPos, PANEL_H, 2.1)} fill="none" stroke={AMP_COLORS.pos} strokeWidth={1.6} />
+          <Polyline points={tracePoints(p.devices.iNeg, PANEL_H, 2.1)} fill="none" stroke={AMP_COLORS.neg} strokeWidth={1.6} strokeDasharray="5,3" />
+        </WavePanel>
+      ) : null}
+      {p.output ? (
+        <WavePanel title={p.outputTitle ?? 'OUTPUT (to load)'} w={w} svgH={svgH} scale={scale}>
+          {showNominal ? <RailPair at={p.nominalRailAt!} stroke="rgba(255,255,255,0.18)" dash="2,5" /> : null}
+          {p.clipAt != null ? <RailPair at={p.clipAt} stroke="rgba(255,75,58,0.45)" dash="4,4" /> : null}
+          <WaveGradient id={`${gid}out`} fullScale={p.clipAt ?? 1} />
+          <Polyline points={tracePoints(p.output, PANEL_H)} fill="none" stroke={`url(#${gid}out)`} strokeWidth={2} />
+          {p.clipAt != null
+            ? clippedSegments(p.output, p.clipAt, PANEL_H).map((s, i) => (
+                <Polyline key={i} points={s} fill="none" stroke={AMP_COLORS.fault} strokeWidth={2.6} />
+              ))
+            : null}
+          {p.extraOut?.map((t) => (
+            <Polyline key={t.label} points={tracePoints(t.data, PANEL_H)} fill="none" stroke={t.color} strokeWidth={t.width ?? 1.2} strokeDasharray={t.dash} />
+          ))}
+        </WavePanel>
+      ) : null}
+      {/* the shared playhead */}
+      <Animated.View
+        pointerEvents="none"
+        style={[styles.playhead, { top: titleLine + TITLE_GAP, transform: [{ translateX: playX }] }]}
+      />
     </View>
   );
 }
@@ -359,9 +430,9 @@ function SpeakerGlyph({ level, motion }: { level: number; motion: boolean }) {
 
 const styles = StyleSheet.create({
   rig: { gap: 8, borderRadius: 14, borderWidth: 1, borderColor: colors.steelBorder, backgroundColor: '#0e0e10', padding: 10 },
-  panel: { gap: 2 },
-  panelTitle: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 1.2 },
-  playhead: { position: 'absolute', top: 14, bottom: 0, left: 0, width: 1.5, backgroundColor: 'rgba(255,255,255,0.35)' },
+  panel: { gap: TITLE_GAP },
+  panelTitle: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: TITLE_FONT, letterSpacing: 1.2 },
+  playhead: { position: 'absolute', bottom: 0, left: 0, width: 1.5, backgroundColor: 'rgba(255,255,255,0.35)' },
   legendRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   legend: { fontFamily: fonts.barlowMedium, fontSize: 11 },
   statusRow: { flexDirection: 'row', gap: 10, flexWrap: 'wrap' },

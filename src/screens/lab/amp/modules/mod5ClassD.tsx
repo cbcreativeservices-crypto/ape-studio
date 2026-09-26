@@ -6,26 +6,34 @@
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { colors, fonts } from '../../../../theme/tokens';
 import { simulateClassD } from '../../../../features/amp/ampModel';
 import { MISCONCEPTIONS } from '../../../../features/amp/ampContent';
 import { AmpRig } from '../AmpRig';
-import { AMP_COLORS, Body, Card, ControlSlider, HonestyBadge, LearnMore, MisconceptionCard, SectionTitle, SegRow } from '../kit';
+import { AMP_COLORS, Body, BoxLabel, Card, ControlSlider, DIAGRAM_FONT, FigureDock, HonestyBadge, LearnMore, MisconceptionCard, SectionTitle, SegRow } from '../kit';
 
 type ViewMode = 'raw' | 'filter' | 'recovered';
 
-function SignalPath() {
-  const boxes = ['AUDIO IN', 'MODULATION', 'SWITCHING', 'OUTPUT FILTER', 'SPEAKER'];
-  const bw = 62, gap = 9, x0 = 3, y = 12, bh = 30;
+/** Drawing units (legibility pass 2026-09-25: labels ≥ DIAGRAM_FONT, each SVG
+ *  drawn at the width ExpandableFigure hands it, height = w / aspect). */
+const PATH_W = 360;
+const PATH_H = 52;
+const STAGE_W = 360;
+const STAGE_H = 150;
+
+function SignalPath({ width, height }: { width: number; height: number }) {
+  const boxes: string[][] = [['AUDIO IN'], ['MODULATION'], ['SWITCHING'], ['OUTPUT', 'FILTER'], ['SPEAKER']];
+  const bw = 66, gap = 6, x0 = 3, y = 8, bh = 36;
   return (
-    <Svg width="100%" height={56} viewBox="0 0 360 56">
+    <Svg width={width} height={height} viewBox={`0 0 ${PATH_W} ${PATH_H}`}>
       {boxes.map((b, i) => {
         const x = x0 + i * (bw + gap);
         const last = i === 4;
         return (
-          <G key={b}>
+          <G key={b.join(' ')}>
             <Rect x={x} y={y} width={bw} height={bh} rx={5} fill={last ? '#1a2a1e' : i === 2 ? '#1f1a0e' : '#151518'} stroke={last ? AMP_COLORS.output : i === 2 ? AMP_COLORS.supply : colors.steelBorder} />
-            <SvgText x={x + bw / 2} y={y + 19} fontSize={8.5} fill={colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{b}</SvgText>
+            <BoxLabel x={x + bw / 2} y={y + bh / 2 + 4} lines={b} fill={colors.textSecondary} />
             {i < 4 ? <Line x1={x + bw + 1} y1={y + bh / 2} x2={x + bw + gap - 1} y2={y + bh / 2} stroke={i === 0 ? AMP_COLORS.input : i >= 3 ? AMP_COLORS.output : AMP_COLORS.supply} strokeWidth={1.5} /> : null}
           </G>
         );
@@ -35,35 +43,34 @@ function SignalPath() {
 }
 
 /** Representative half-bridge switching stage: high side, low side, node, filter, load. */
-function SwitchingStage({ dutyAtPeak }: { dutyAtPeak: number }) {
+function SwitchingStage({ dutyAtPeak, width, height }: { dutyAtPeak: number; width: number; height: number }) {
+  const F = DIAGRAM_FONT;
   return (
-    <Svg width="100%" height={150} viewBox="0 0 360 150">
-      <SvgText x={20} y={16} fontSize={9} fill={AMP_COLORS.supply} fontFamily={fonts.oswaldMedium}>+RAIL</SvgText>
-      <SvgText x={20} y={142} fontSize={9} fill={AMP_COLORS.supply} fontFamily={fonts.oswaldMedium}>−RAIL</SvgText>
+    <Svg width={width} height={height} viewBox={`0 0 ${STAGE_W} ${STAGE_H}`}>
+      <SvgText x={20} y={16} fontSize={F} fill={AMP_COLORS.supply} fontFamily={fonts.oswaldMedium}>+RAIL</SvgText>
+      <SvgText x={20} y={144} fontSize={F} fill={AMP_COLORS.supply} fontFamily={fonts.oswaldMedium}>−RAIL</SvgText>
       <Line x1={60} y1={12} x2={60} y2={138} stroke={AMP_COLORS.supply} strokeWidth={1.2} strokeDasharray="3,2" />
       {/* high-side device */}
-      <Rect x={40} y={28} width={40} height={30} rx={5} fill="#151518" stroke={AMP_COLORS.pos} />
-      <SvgText x={60} y={41} fontSize={9} fill={AMP_COLORS.pos} textAnchor="middle" fontFamily={fonts.oswaldMedium}>HIGH</SvgText>
-      <SvgText x={60} y={53} fontSize={9} fill={AMP_COLORS.pos} textAnchor="middle" fontFamily={fonts.oswaldMedium}>SIDE</SvgText>
+      <Rect x={38} y={26} width={44} height={32} rx={5} fill="#151518" stroke={AMP_COLORS.pos} />
+      <BoxLabel x={60} y={46} lines={['HIGH', 'SIDE']} fill={AMP_COLORS.pos} />
       {/* low-side device */}
-      <Rect x={40} y={92} width={40} height={30} rx={5} fill="#151518" stroke={AMP_COLORS.neg} strokeDasharray="4,2" />
-      <SvgText x={60} y={105} fontSize={9} fill={AMP_COLORS.neg} textAnchor="middle" fontFamily={fonts.oswaldMedium}>LOW</SvgText>
-      <SvgText x={60} y={117} fontSize={9} fill={AMP_COLORS.neg} textAnchor="middle" fontFamily={fonts.oswaldMedium}>SIDE</SvgText>
+      <Rect x={38} y={92} width={44} height={32} rx={5} fill="#151518" stroke={AMP_COLORS.neg} strokeDasharray="4,2" />
+      <BoxLabel x={60} y={112} lines={['LOW', 'SIDE']} fill={AMP_COLORS.neg} />
       {/* switching node */}
-      <Line x1={80} y1={75} x2={150} y2={75} stroke={colors.textSecondary} strokeWidth={1.5} />
-      <SvgText x={115} y={68} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>switching node</SvgText>
+      <Line x1={82} y1={75} x2={150} y2={75} stroke={colors.textSecondary} strokeWidth={1.5} />
+      <SvgText x={116} y={67} fontSize={F} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>switching node</SvgText>
       {/* filter: inductor + capacitor */}
       <Path d="M150 75 a6 6 0 0 1 12 0 a6 6 0 0 1 12 0 a6 6 0 0 1 12 0 a6 6 0 0 1 12 0" fill="none" stroke={colors.textSecondary} strokeWidth={1.6} />
-      <Line x1={198} y1={75} x2={240} y2={75} stroke={colors.textSecondary} strokeWidth={1.5} />
+      <Line x1={198} y1={75} x2={250} y2={75} stroke={colors.textSecondary} strokeWidth={1.5} />
       <Line x1={220} y1={75} x2={220} y2={100} stroke={colors.textSecondary} strokeWidth={1.5} />
       <Line x1={210} y1={100} x2={230} y2={100} stroke={colors.textSecondary} strokeWidth={2} />
       <Line x1={210} y1={106} x2={230} y2={106} stroke={colors.textSecondary} strokeWidth={2} />
-      <SvgText x={174} y={98} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>L  C  low-pass filter</SvgText>
+      <SvgText x={148} y={124} fontSize={F} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>L  C  low-pass filter</SvgText>
       {/* load */}
-      <Rect x={240} y={60} width={70} height={30} rx={5} fill="#1a2a1e" stroke={AMP_COLORS.output} />
-      <SvgText x={275} y={79} fontSize={9.5} fill={AMP_COLORS.output} textAnchor="middle" fontFamily={fonts.oswaldMedium}>LOAD</SvgText>
-      <SvgText x={275} y={108} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>high side on ≈{Math.round(dutyAtPeak * 100)}%</SvgText>
-      <SvgText x={275} y={121} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>of each period at the peak</SvgText>
+      <Rect x={250} y={60} width={70} height={30} rx={5} fill="#1a2a1e" stroke={AMP_COLORS.output} />
+      <SvgText x={285} y={79} fontSize={F} fill={AMP_COLORS.output} textAnchor="middle" fontFamily={fonts.oswaldMedium}>LOAD</SvgText>
+      <SvgText x={285} y={110} fontSize={F} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>high side on ≈{Math.round(dutyAtPeak * 100)}%</SvgText>
+      <SvgText x={285} y={124} fontSize={F} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>of each period at the peak</SvgText>
     </Svg>
   );
 }
@@ -89,6 +96,22 @@ export function Mod5ClassD() {
       ? [{ data: sim.recovered, color: AMP_COLORS.recovered, width: 2.2, label: 'filter output (recovered audio)' }]
       : undefined;
 
+  // The controls, drawn on the page and again in each figure's full-screen
+  // dock — one state.
+  const driveSlider = <ControlSlider level label="Audio input level" value={drive} min={0} max={0.95} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setDrive} />;
+  const viewSeg = (
+    <SegRow<ViewMode>
+      label="Output panel shows"
+      options={[
+        { key: 'raw', label: 'Raw switching' },
+        { key: 'filter', label: 'Filter action' },
+        { key: 'recovered', label: 'Recovered audio' },
+      ]}
+      value={view}
+      onChange={setView}
+    />
+  );
+
   return (
     <View style={{ gap: 12 }}>
       <Body>
@@ -98,7 +121,7 @@ export function Mod5ClassD() {
       </Body>
       <Card>
         <HonestyBadge label="Signal path — conceptual" />
-        <SignalPath />
+        <ExpandableFigure aspect={PATH_W / PATH_H} title="CLASS D" badge="Signal path — conceptual" render={(w, h) => <SignalPath width={w} height={h} />} />
       </Card>
 
       <SectionTitle>1 · MODULATION (PWM)</SectionTitle>
@@ -107,18 +130,15 @@ export function Mod5ClassD() {
         below → switch low. Louder audio makes wider pulses. Pulse-width modulation is the classic example, not the
         only Class D method.
       </Body>
-      <ControlSlider level label="Audio input level" value={drive} min={0} max={0.95} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setDrive} />
-      <SegRow<ViewMode>
-        label="Output panel shows"
-        options={[
-          { key: 'raw', label: 'Raw switching' },
-          { key: 'filter', label: 'Filter action' },
-          { key: 'recovered', label: 'Recovered audio' },
-        ]}
-        value={view}
-        onChange={setView}
-      />
+      {driveSlider}
+      {viewSeg}
       <AmpRig
+        controls={
+          <>
+            {driveSlider}
+            {viewSeg}
+          </>
+        }
         input={sim.audio}
         extraIn={[{ data: sim.carrier, color: AMP_COLORS.supply, dash: '3,2', width: 1, label: 'triangle carrier' }]}
         output={outputForView}
@@ -150,7 +170,13 @@ export function Mod5ClassD() {
       <SectionTitle>2 · THE SWITCHING STAGE</SectionTitle>
       <Card>
         <HonestyBadge label="Representative half-bridge — conceptual" />
-        <SwitchingStage dutyAtPeak={dutyAtPeak} />
+        <ExpandableFigure
+          aspect={STAGE_W / STAGE_H}
+          title="HALF-BRIDGE"
+          badge="Representative half-bridge — conceptual"
+          controls={<FigureDock>{driveSlider}</FigureDock>}
+          render={(w, h) => <SwitchingStage width={w} height={h} dutyAtPeak={dutyAtPeak} />}
+        />
         <Body>
           The high-side device connects the node to +rail, the low-side to −rail. They must never conduct at the same
           time — that would short the rails through both devices.

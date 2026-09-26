@@ -5,17 +5,25 @@
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { colors, fonts } from '../../../../theme/tokens';
 import { transformer, transformerIdealPowerOk } from '../../../../features/amp/ampModel';
 import { MISCONCEPTIONS } from '../../../../features/amp/ampContent';
 import {
-  AMP_COLORS, Body, Card, ControlSlider, FormulaCard, HonestyBadge, LearnMore, MisconceptionCard, SectionTitle, SegRow,
+  AMP_COLORS, Body, Card, ControlSlider, DIAGRAM_FONT, FigureDock, FormulaCard, HonestyBadge, LearnMore, MisconceptionCard, SectionTitle, SegRow,
 } from '../kit';
+
+/** Drawing units (legibility pass 2026-09-25: labels ≥ DIAGRAM_FONT, the SVG
+ *  drawn at the width ExpandableFigure hands it, height = w / aspect). */
+const DEV_W = 360;
+const DEV_H = 150;
+const XF_W = 360;
+const XF_H = 136;
 
 type Device = 'generic' | 'bjt' | 'mosfet' | 'tube';
 
 const DEVICE_TERMS: Record<Device, { control: string; in: string; out: string; note: string }> = {
-  generic: { control: 'CONTROL INPUT', in: 'POWER IN (supply)', out: 'CONTROLLED CURRENT (to load)', note: 'A small control signal regulates a much larger flow of supply current. The device spends the supply’s energy — it does not create it.' },
+  generic: { control: 'CONTROL INPUT', in: 'POWER IN (supply)', out: 'CONTROLLED CURRENT', note: 'A small control signal regulates a much larger flow of supply current to the load. The device spends the supply’s energy — it does not create it.' },
   bjt: { control: 'BASE', in: 'COLLECTOR', out: 'EMITTER', note: 'Bipolar junction transistor: the base-emitter condition controls collector current. A little base current steers a lot of collector current.' },
   mosfet: { control: 'GATE', in: 'DRAIN', out: 'SOURCE', note: 'MOSFET: gate VOLTAGE controls drain current. Steady-state gate current is tiny — but the gate is a capacitor, so gate charge must be moved every time it switches.' },
   tube: { control: 'CONTROL GRID', in: 'PLATE (high-voltage supply)', out: 'CATHODE', note: 'Vacuum tube: control-grid voltage governs plate current from a high-voltage supply. Same control idea as a transistor, very different circuit requirements.' },
@@ -27,37 +35,39 @@ function regionFor(control: number): { label: string; sub: string } {
   return { label: 'CONTROLLED CONDUCTION', sub: 'The useful region: output current follows the control signal.' };
 }
 
-function DeviceDiagram({ device, control }: { device: Device; control: number }) {
+function DeviceDiagram({ device, control, width, height }: { device: Device; control: number; width: number; height: number }) {
   const t = DEVICE_TERMS[device];
   const i = control < 0.15 ? 0 : Math.min(1, (control - 0.15) / 0.7);
+  // The device box is wide (160) so its terminal names fit at a legible size.
+  const dx = 100, dw = 160, dy = 32, dh = 74;
   return (
-    <Svg width="100%" height={150} viewBox="0 0 360 150">
+    <Svg width={width} height={height} viewBox={`0 0 ${DEV_W} ${DEV_H}`}>
       {/* supply → device → load power path */}
-      <Rect x={14} y={54} width={70} height={30} rx={5} fill="#1f1a0e" stroke={AMP_COLORS.supply} />
-      <SvgText x={49} y={73} fontSize={9.5} fill={AMP_COLORS.supply} textAnchor="middle" fontFamily={fonts.oswaldMedium}>SUPPLY</SvgText>
-      <Line x1={84} y1={69} x2={140} y2={69} stroke={AMP_COLORS.supply} strokeWidth={2 + i * 4} strokeOpacity={0.35 + i * 0.65} />
+      <Rect x={4} y={54} width={62} height={30} rx={5} fill="#1f1a0e" stroke={AMP_COLORS.supply} />
+      <SvgText x={35} y={73} fontSize={DIAGRAM_FONT} fill={AMP_COLORS.supply} textAnchor="middle" fontFamily={fonts.oswaldMedium}>SUPPLY</SvgText>
+      <Line x1={66} y1={69} x2={dx} y2={69} stroke={AMP_COLORS.supply} strokeWidth={2 + i * 4} strokeOpacity={0.35 + i * 0.65} />
       {/* the device */}
-      <Rect x={140} y={34} width={80} height={70} rx={8} fill="#151518" stroke={colors.steelBorder} />
-      <SvgText x={180} y={56} fontSize={9.5} fill={colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{device === 'generic' ? 'ACTIVE DEVICE' : device.toUpperCase()}</SvgText>
-      <SvgText x={180} y={72} fontSize={8.5} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>{t.in}</SvgText>
-      <SvgText x={180} y={88} fontSize={8.5} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>→ {t.out}</SvgText>
+      <Rect x={dx} y={dy} width={dw} height={dh} rx={8} fill="#151518" stroke={colors.steelBorder} />
+      <SvgText x={dx + dw / 2} y={52} fontSize={DIAGRAM_FONT} fill={colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{device === 'generic' ? 'ACTIVE DEVICE' : device.toUpperCase()}</SvgText>
+      <SvgText x={dx + dw / 2} y={72} fontSize={DIAGRAM_FONT} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>{t.in}</SvgText>
+      <SvgText x={dx + dw / 2} y={92} fontSize={DIAGRAM_FONT} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>→ {t.out}</SvgText>
       {/* control input */}
-      <Line x1={180} y1={10} x2={180} y2={34} stroke={AMP_COLORS.input} strokeWidth={1.6} />
+      <Line x1={180} y1={10} x2={180} y2={dy} stroke={AMP_COLORS.input} strokeWidth={1.6} />
       <Circle cx={180} cy={10} r={4} fill={AMP_COLORS.input} />
-      <SvgText x={190} y={14} fontSize={9} fill={AMP_COLORS.input} fontFamily={fonts.oswaldMedium}>{t.control} · {Math.round(control * 100)}%</SvgText>
+      <SvgText x={190} y={14} fontSize={DIAGRAM_FONT} fill={AMP_COLORS.input} fontFamily={fonts.oswaldMedium}>{t.control} · {Math.round(control * 100)}%</SvgText>
       {/* controlled current to load */}
-      <Line x1={220} y1={69} x2={276} y2={69} stroke={AMP_COLORS.output} strokeWidth={2 + i * 4} strokeOpacity={0.35 + i * 0.65} />
-      <Rect x={276} y={54} width={70} height={30} rx={5} fill="#1a2a1e" stroke={AMP_COLORS.output} />
-      <SvgText x={311} y={73} fontSize={9.5} fill={AMP_COLORS.output} textAnchor="middle" fontFamily={fonts.oswaldMedium}>LOAD</SvgText>
+      <Line x1={dx + dw} y1={69} x2={294} y2={69} stroke={AMP_COLORS.output} strokeWidth={2 + i * 4} strokeOpacity={0.35 + i * 0.65} />
+      <Rect x={294} y={54} width={62} height={30} rx={5} fill="#1a2a1e" stroke={AMP_COLORS.output} />
+      <SvgText x={325} y={73} fontSize={DIAGRAM_FONT} fill={AMP_COLORS.output} textAnchor="middle" fontFamily={fonts.oswaldMedium}>LOAD</SvgText>
       {/* current meter (relative) */}
-      <Rect x={140} y={120} width={206} height={10} rx={5} fill="#0a0a0c" stroke={colors.hairline} />
-      <Rect x={141} y={121} width={204 * i} height={8} rx={4} fill={AMP_COLORS.output} />
-      <SvgText x={14} y={129} fontSize={8.5} fill={colors.textMuted} fontFamily={fonts.oswaldMedium}>CONTROLLED CURRENT · relative</SvgText>
+      <SvgText x={4} y={134} fontSize={DIAGRAM_FONT} fill={colors.textMuted} fontFamily={fonts.oswaldMedium}>CONTROLLED CURRENT · relative</SvgText>
+      <Rect x={156} y={125} width={200} height={12} rx={6} fill="#0a0a0c" stroke={colors.hairline} />
+      <Rect x={157} y={126} width={198 * i} height={10} rx={5} fill={AMP_COLORS.output} />
     </Svg>
   );
 }
 
-function TransformerDiagram({ np, ns }: { np: number; ns: number }) {
+function TransformerDiagram({ np, ns, width, height }: { np: number; ns: number; width: number; height: number }) {
   const turnsP = Math.max(2, Math.round(np / 100));
   const turnsS = Math.max(2, Math.round(ns / 100));
   // sweep 0 bulges the primary OUT to the left of the core, sweep 1 the
@@ -68,18 +78,18 @@ function TransformerDiagram({ np, ns }: { np: number; ns: number }) {
       <Path key={`${x}-${k}`} d={`M${x} ${30 + k * (80 / turns)} a10 ${40 / turns} 0 0 ${sweep} 0 ${80 / turns}`} fill="none" stroke={color} strokeWidth={2} />
     ));
   return (
-    <Svg width="100%" height={130} viewBox="0 0 360 130">
+    <Svg width={width} height={height} viewBox={`0 0 ${XF_W} ${XF_H}`}>
       <Rect x={150} y={18} width={60} height={104} rx={4} fill="#26262b" stroke={colors.steelBorder} />
-      <SvgText x={180} y={72} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium}>CORE</SvgText>
+      <SvgText x={180} y={74} fontSize={DIAGRAM_FONT} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium}>CORE</SvgText>
       {coil(150, turnsP, AMP_COLORS.input, 0)}
       {coil(210, turnsS, AMP_COLORS.output, 1)}
-      <SvgText x={110} y={14} fontSize={9.5} fill={AMP_COLORS.input} textAnchor="middle" fontFamily={fonts.oswaldMedium}>PRIMARY · Np {np}</SvgText>
-      <SvgText x={250} y={14} fontSize={9.5} fill={AMP_COLORS.output} textAnchor="middle" fontFamily={fonts.oswaldMedium}>SECONDARY · Ns {ns}</SvgText>
+      <SvgText x={100} y={14} fontSize={DIAGRAM_FONT} fill={AMP_COLORS.input} textAnchor="middle" fontFamily={fonts.oswaldMedium}>PRIMARY · Np {np}</SvgText>
+      <SvgText x={262} y={14} fontSize={DIAGRAM_FONT} fill={AMP_COLORS.output} textAnchor="middle" fontFamily={fonts.oswaldMedium}>SECONDARY · Ns {ns}</SvgText>
       <Path d="M30 70 q10 -20 20 0 t20 0 t20 0 t20 0" fill="none" stroke={AMP_COLORS.input} strokeWidth={1.5} />
       <Path d="M250 70 q10 -20 20 0 t20 0 t20 0 t20 0" fill="none" stroke={AMP_COLORS.output} strokeWidth={1.5} />
       <Path d="M165 60 q15 -30 30 0" fill="none" stroke={AMP_COLORS.supply} strokeDasharray="3,2" />
       <Path d="M165 90 q15 30 30 0" fill="none" stroke={AMP_COLORS.supply} strokeDasharray="3,2" />
-      <SvgText x={180} y={127} fontSize={8.5} fill={AMP_COLORS.supply} textAnchor="middle" fontFamily={fonts.barlowMedium}>changing magnetic field</SvgText>
+      <SvgText x={180} y={133} fontSize={DIAGRAM_FONT} fill={AMP_COLORS.supply} textAnchor="middle" fontFamily={fonts.barlowMedium}>changing magnetic field</SvgText>
     </Svg>
   );
 }
@@ -97,6 +107,26 @@ export function Mod2Devices() {
   const region = regionFor(control);
   const terms = DEVICE_TERMS[device];
 
+  // Each figure's controls, drawn on the page and again in its full-screen
+  // dock — one state.
+  const deviceSeg = (
+    <SegRow<Device>
+      options={[
+        { key: 'generic', label: 'Generic' },
+        { key: 'bjt', label: 'BJT' },
+        { key: 'mosfet', label: 'MOSFET' },
+        { key: 'tube', label: 'Tube' },
+      ]}
+      value={device}
+      onChange={setDevice}
+    />
+  );
+  const controlSlider = (
+    <ControlSlider level label="Control signal" value={control} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setControl} />
+  );
+  const npSlider = <ControlSlider label="Primary turns Np" value={np} min={100} max={1000} step={50} format={(v) => `${v}`} onChange={setNp} />;
+  const nsSlider = <ControlSlider label="Secondary turns Ns" value={ns} min={100} max={1000} step={50} format={(v) => `${v}`} onChange={setNs} />;
+
   return (
     <View style={{ gap: 12 }}>
       <Body>
@@ -106,23 +136,20 @@ export function Mod2Devices() {
       </Body>
 
       <SectionTitle>THE ACTIVE DEVICE</SectionTitle>
-      <SegRow<Device>
-        options={[
-          { key: 'generic', label: 'Generic' },
-          { key: 'bjt', label: 'BJT' },
-          { key: 'mosfet', label: 'MOSFET' },
-          { key: 'tube', label: 'Tube' },
-        ]}
-        value={device}
-        onChange={setDevice}
-      />
+      {deviceSeg}
       <Card>
         <HonestyBadge label="Conceptual — three-part control model" />
-        <DeviceDiagram device={device} control={control} />
+        <ExpandableFigure
+          aspect={DEV_W / DEV_H}
+          title="DEVICE"
+          badge="Conceptual — three-part control model"
+          controls={<FigureDock>{deviceSeg}{controlSlider}</FigureDock>}
+          render={(w, h) => <DeviceDiagram width={w} height={h} device={device} control={control} />}
+        />
         <Text style={styles.region}>{region.label}</Text>
         <Body>{region.sub}</Body>
       </Card>
-      <ControlSlider level label="Control signal" value={control} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setControl} />
+      {controlSlider}
       <Body>{terms.note}</Body>
       <LearnMore title="BJT VS MOSFET VS TUBE — THE FINE PRINT">
         <Body>
@@ -136,7 +163,13 @@ export function Mod2Devices() {
       <SectionTitle>THE TRANSFORMER</SectionTitle>
       <Card>
         <HonestyBadge label="Ideal relationships — real transformers have losses" />
-        <TransformerDiagram np={np} ns={ns} />
+        <ExpandableFigure
+          aspect={XF_W / XF_H}
+          title="TRANSFORMER"
+          badge="Ideal relationships — real transformers have losses"
+          controls={<FigureDock>{npSlider}{nsSlider}</FigureDock>}
+          render={(w, h) => <TransformerDiagram width={w} height={h} np={np} ns={ns} />}
+        />
         {xf ? (
           <View style={{ gap: 4 }}>
             <Text style={styles.badge}>
@@ -150,8 +183,8 @@ export function Mod2Devices() {
           </View>
         ) : null}
       </Card>
-      <ControlSlider label="Primary turns Np" value={np} min={100} max={1000} step={50} format={(v) => `${v}`} onChange={setNp} />
-      <ControlSlider label="Secondary turns Ns" value={ns} min={100} max={1000} step={50} format={(v) => `${v}`} onChange={setNs} />
+      {npSlider}
+      {nsSlider}
       <FormulaCard
         title="Ideal transformer"
         lines={['Vp / Vs = Np / Ns', 'Ip × Vp = Is × Vs   (ideal — no net power gain)']}

@@ -15,10 +15,11 @@
  * amplitude colour standard (owner 2026-09-05): MIDI-0 blue at silence →
  * green → yellow → orange → red at the rail (`features/tools/levelColor`).
  */
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Children, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, LayoutChangeEvent, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
 import { levelColor, rampColors } from '../../../features/tools/levelColor';
 import { usePulseStyle } from '../../../features/lab/attentionPulse';
@@ -37,6 +38,53 @@ export const AMP_COLORS = {
 } as const;
 
 /* ── text + layout primitives ───────────────────────────────────────────── */
+
+/**
+ * Authored font size for every label in a 360-unit module drawing (legibility
+ * pass, owner 2026-09-25: 9 pt minimum on a phone). The drawings render at
+ * 332 px on a 390-wide phone and 317 px on a 375-wide one (measured
+ * 2026-09-26), a 0.88 scale — 10.5 units lands at 9.2 pt on the narrower
+ * phone. The old 8.5 landed at 7.8 pt.
+ */
+export const DIAGRAM_FONT = 10.5;
+
+/** One or two centred lines of SVG text — a box label that no longer has to
+ *  squeeze "DRIVER/OUTPUT" onto one line at a size a phone can show. `y` is
+ *  the baseline of the middle of the label; `lineH` the line pitch. */
+export function BoxLabel({
+  x, y, lines, fill, size = DIAGRAM_FONT, family = fonts.oswaldMedium, lineH = 12,
+}: {
+  x: number; y: number; lines: string[]; fill: string; size?: number; family?: string; lineH?: number;
+}) {
+  const off = (lines.length - 1) / 2;
+  return (
+    <>
+      {lines.map((l, i) => (
+        <SvgText key={i} x={x} y={y + (i - off) * lineH} fontSize={size} fill={fill} textAnchor="middle" fontFamily={family}>
+          {l}
+        </SvgText>
+      ))}
+    </>
+  );
+}
+
+/** A figure's controls as they dock under it in FULL SCREEN (the page draws
+ *  them in its own column; here they get the screen's side margin). The same
+ *  elements the page shows — state lives in the page. */
+export function FigureDock({ children }: { children: ReactNode }) {
+  return <View style={styles.figureDock}>{children}</View>;
+}
+
+/** Controls two abreast for a dock with many of them (the final challenge's
+ *  seven): stacked, they left the enlarged drawing smaller than the page's.
+ *  The page still draws the same elements in one column. */
+export function ControlGrid({ children }: { children: ReactNode }) {
+  return (
+    <View style={styles.controlGrid}>
+      {Children.map(children, (c, i) => (c != null && c !== false ? <View key={i} style={styles.controlCell}>{c}</View> : null))}
+    </View>
+  );
+}
 
 export function SectionTitle({ children }: { children: ReactNode }) {
   return <Text style={styles.sectionTitle}>{children}</Text>;
@@ -434,6 +482,9 @@ const styles = StyleSheet.create({
   body: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19 },
   card: { borderRadius: 12, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#131315', padding: 12, gap: 6 },
   cardAccent: { borderColor: colors.steelBorder, backgroundColor: '#121216' },
+  figureDock: { paddingHorizontal: 12, gap: 8 },
+  controlGrid: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 12, rowGap: 6 },
+  controlCell: { flexBasis: '46%', flexGrow: 1 },
   // Honesty labels CARRY MEANING (illustrative / relative / conceptual) — they
   // sit at the chrome floor's top, not below it.
   honesty: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.5 },

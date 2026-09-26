@@ -7,31 +7,39 @@
  */
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Svg, { G, Line, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { G, Line, Rect } from 'react-native-svg';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { colors, fonts } from '../../../../theme/tokens';
 import { simulateRailLimits, RAIL_V_FULL, RAIL_I_LIMIT, RAIL_I_PROTECT } from '../../../../features/amp/ampModel';
 import { MISCONCEPTIONS, SAFETY_POINTS } from '../../../../features/amp/ampContent';
 import { AmpRig } from '../AmpRig';
-import { AMP_COLORS, Body, Card, ControlSlider, FaultBanner, FormulaCard, HonestyBadge, LearnMore, MisconceptionCard, SectionTitle, SegRow } from '../kit';
+import { AMP_COLORS, Body, BoxLabel, Card, ControlSlider, FaultBanner, FigureDock, FormulaCard, HonestyBadge, LearnMore, MisconceptionCard, SectionTitle, SegRow } from '../kit';
 
-function ChainDiagram({ kind }: { kind: 'linear' | 'smps' }) {
-  const boxes =
+/** Drawing units (legibility pass 2026-09-25: labels ≥ DIAGRAM_FONT, the SVG
+ *  drawn at the width ExpandableFigure hands it, height = w / aspect). */
+const CHAIN_W = 360;
+const CHAIN_H = 52;
+
+function ChainDiagram({ kind, width, height }: { kind: 'linear' | 'smps'; width: number; height: number }) {
+  // Six boxes across 360 units leave 54 each — the longer names take two lines.
+  const boxes: string[][] =
     kind === 'linear'
-      ? ['AC IN', 'TRANSFORMER', 'RECTIFIER', 'RESERVOIR', 'DC RAILS']
-      : ['AC IN', 'INPUT CONV.', 'HF SWITCH', 'HF XFMR', 'RECT./REG.', 'DC RAILS'];
+      ? [['AC IN'], ['TRANSFORMER'], ['RECTIFIER'], ['RESERVOIR'], ['DC RAILS']]
+      : [['AC IN'], ['INPUT', 'CONV.'], ['HF', 'SWITCH'], ['HF', 'XFMR'], ['RECT. /', 'REG.'], ['DC RAILS']];
   const n = boxes.length;
   const gap = 6;
-  const bw = (360 - 6 - gap * (n - 1)) / n;
+  const bw = (CHAIN_W - 6 - gap * (n - 1)) / n;
+  const y = 8, bh = 36;
   return (
-    <Svg width="100%" height={52} viewBox="0 0 360 52">
+    <Svg width={width} height={height} viewBox={`0 0 ${CHAIN_W} ${CHAIN_H}`}>
       {boxes.map((b, i) => {
         const x = 3 + i * (bw + gap);
         const last = i === n - 1;
         return (
-          <G key={b}>
-            <Rect x={x} y={10} width={bw} height={30} rx={5} fill={last ? '#1f1a0e' : '#151518'} stroke={last ? AMP_COLORS.supply : colors.steelBorder} />
-            <SvgText x={x + bw / 2} y={29} fontSize={8.5} fill={last ? AMP_COLORS.supply : colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{b}</SvgText>
-            {!last ? <Line x1={x + bw + 1} y1={25} x2={x + bw + gap - 1} y2={25} stroke={AMP_COLORS.supply} strokeWidth={1.5} /> : null}
+          <G key={b.join(' ')}>
+            <Rect x={x} y={y} width={bw} height={bh} rx={5} fill={last ? '#1f1a0e' : '#151518'} stroke={last ? AMP_COLORS.supply : colors.steelBorder} />
+            <BoxLabel x={x + bw / 2} y={y + bh / 2 + 4} lines={b} fill={last ? AMP_COLORS.supply : colors.textSecondary} />
+            {!last ? <Line x1={x + bw + 1} y1={y + bh / 2} x2={x + bw + gap - 1} y2={y + bh / 2} stroke={AMP_COLORS.supply} strokeWidth={1.5} /> : null}
           </G>
         );
       })}
@@ -58,6 +66,33 @@ export function Mod6Supply() {
   const sagged = sim.sagV > 0.5;
   const ceiling = useMemo(() => new Float32Array(sim.out.length).fill(sim.iLimitNorm), [sim.out.length, sim.iLimitNorm]);
 
+  // The controls, drawn on the page and again in each figure's full-screen
+  // dock — one state.
+  const supplySeg = (
+    <SegRow<'linear' | 'smps'>
+      options={[
+        { key: 'linear', label: 'Linear supply' },
+        { key: 'smps', label: 'Switch-mode supply' },
+      ]}
+      value={supply}
+      onChange={setSupply}
+    />
+  );
+  const driveSlider = <ControlSlider level label="Input level" value={drive} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setDrive} />;
+  const railSlider = <ControlSlider label="Available rail voltage" value={rail} min={0.3} max={1} step={0.01} format={(v) => `±${Math.round(v * RAIL_V_FULL)} V`} onChange={setRail} />;
+  const loadSeg = (
+    <SegRow<8 | 4 | 2>
+      label="Modeled load (resistive teaching example)"
+      options={[
+        { key: 8, label: '8 Ω' },
+        { key: 4, label: '4 Ω' },
+        { key: 2, label: '2 Ω' },
+      ]}
+      value={loadZ}
+      onChange={setLoadZ}
+    />
+  );
+
   return (
     <View style={{ gap: 12 }}>
       <Body>
@@ -66,17 +101,16 @@ export function Mod6Supply() {
       </Body>
 
       <SectionTitle>TWO WAYS TO MAKE RAILS</SectionTitle>
-      <SegRow<'linear' | 'smps'>
-        options={[
-          { key: 'linear', label: 'Linear supply' },
-          { key: 'smps', label: 'Switch-mode supply' },
-        ]}
-        value={supply}
-        onChange={setSupply}
-      />
+      {supplySeg}
       <Card>
         <HonestyBadge label="Conceptual chain" />
-        <ChainDiagram kind={supply} />
+        <ExpandableFigure
+          aspect={CHAIN_W / CHAIN_H}
+          title="SUPPLY"
+          badge="Conceptual chain"
+          controls={<FigureDock>{supplySeg}</FigureDock>}
+          render={(w, h) => <ChainDiagram width={w} height={h} kind={supply} />}
+        />
         <Body>
           {supply === 'linear'
             ? 'Mains → transformer steps it to the rail voltage → rectifier → reservoir capacitors smooth it into DC rails. Heavy, simple, and the reservoir droops under sustained load — the sag you will see below.'
@@ -86,19 +120,17 @@ export function Mod6Supply() {
 
       <SectionTitle>THE RAILS SET THE LIMIT</SectionTitle>
       <Body>Try it in this order: raise the input at 8 Ω until the peaks flatten; switch to 2 Ω and find the limit that arrives first; then push on until protection mutes the output.</Body>
-      <ControlSlider level label="Input level" value={drive} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setDrive} />
-      <ControlSlider label="Available rail voltage" value={rail} min={0.3} max={1} step={0.01} format={(v) => `±${Math.round(v * RAIL_V_FULL)} V`} onChange={setRail} />
-      <SegRow<8 | 4 | 2>
-        label="Modeled load (resistive teaching example)"
-        options={[
-          { key: 8, label: '8 Ω' },
-          { key: 4, label: '4 Ω' },
-          { key: 2, label: '2 Ω' },
-        ]}
-        value={loadZ}
-        onChange={setLoadZ}
-      />
+      {driveSlider}
+      {railSlider}
+      {loadSeg}
       <AmpRig
+        controls={
+          <>
+            {driveSlider}
+            {railSlider}
+            {loadSeg}
+          </>
+        }
         input={sim.input}
         output={sim.out}
         clipAt={sim.clipAtNorm}
