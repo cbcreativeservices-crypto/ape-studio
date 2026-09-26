@@ -83,3 +83,46 @@ Open, owner-deferred (not asked to do):
 
 Ask the owner. The standing lists are 26B §4 (build carries the iOS crash fix; A's lane items;
 launch-day items) plus §3 above.
+
+---
+
+## 7 · Evening (owner away, standing instruction: fix tester reports → QA today's screens → full build)
+
+**TestFlight tester screenshots** (read-only in the owner's Chrome, nothing changed in App Store
+Connect): the three NEW reports (John Martin III, build 30, iPhone 16 Pro, all on Flashcards) are
+fixed in `d2efa1bf` + `b7d9f414`:
+- a long definition can be read to the end — a tap before the end now PAGES the text down (and only
+  flips the card once the end is reached); a "more ↓" cue shows while there is more;
+- the last line clears "Suggest a correction";
+- both filter rows fit on one line at normal text size (the full-screen and timer buttons used to
+  wrap onto a third line); they still wrap as a large-system-text fallback.
+Older reports (1–4 days) were already fixed 09-23/25; C Booth's "glossary button → study
+dashboard" (`430db688`) still wants an **iPhone re-test by the owner**.
+
+**QA agents** (three, report-only, in the built-in pane): Wave 1–8, Wave 9–16, shared components +
+Flashcards review. All actionable findings fixed in `b7d9f414` and `71f87615` (duplicate React key,
+prose that contradicted readouts, full-screen tray veiling the drawing at 1×, snap-back after
+zoom, scaled strokes, "THROUGH −0 dB", coverage wedges outside the room, Delay Alignment 0.01 ms,
+Echo/Reverb room sizing, Line Array copy/pitch/floor, Diffusion legend "scattered", …). No
+regressions found in the other labs' full screens or graphs. Deliberately NOT changed: Room
+Builder outside rings start just under the room colour for every wall (owner's wording, D43 —
+reach carries the loss; the QA agent suggested scaling the start by the loss — owner's call);
+Coverage's flat-in-wedge directivity with a −12 dB floor (disclosed model). Not reachable in the
+preview: Sound Systems module pages, Oscillator/Bass (sound-safety modal), fxLabConfigs labs.
+
+**Full build — owner's word ("lets do the full build, not just an ota")**, from `3c6a37cd`:
+- **Both FINISHED** (checked 2026-09-26 evening).
+- Android **version code 15** — `db0de81b-381b-443f-a739-195c7373a0bb`
+- iOS **build number 32** — `520707e3-1138-4fd8-8ffb-ce10a7071f8b` (31 was consumed by a first
+  attempt my 15-min command timeout cut off mid-upload; the project archive is 636 MB — the
+  untracked image folders ride along; do NOT add an .easignore, it breaks OTA fingerprints)
+- These binaries carry EVERYTHING: the iOS audio-crash fix `427a0897` plus all of 26B and today.
+- **Not submitted.** `eas submit` / TestFlight / Play upload are Computer A's lane (build ≠ submit).
+- No OTA was published: the phones still run the 23:40 09-25 update until the new builds are
+  installed. A new binary has a NEW runtime fingerprint, so a later `eas update` for these builds
+  needs no Swift-restore dance.
+
+**Also started (owner, evening):** a background Opus agent redesigning every Cable Dressing &
+Installation Lab display, one scene at a time (owner: "primitive … would have to not allow the lab
+to be published"). It commits per scene, does NOT push, touches no images. Its work is NOT in
+builds 32 / 15 — it ships in a later update or build after the owner reviews it.
