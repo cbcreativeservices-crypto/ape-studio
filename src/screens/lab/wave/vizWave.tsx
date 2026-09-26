@@ -627,6 +627,9 @@ function buildWalls(
     }
 
     // Reflectivity edge on the room side: bright = reflective, matte = absorbed.
+    // Not on a diffuser: a hard white face there read as a surface blocking
+    // the wells behind it (owner 2026-09-26).
+    if (panel && panel.wall === b) continue;
     const a = alphaAt(mat, freq);
     const edge = Skia.Path.Make();
     edge.moveTo(sx, sy);

@@ -181,6 +181,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 11:38 · ccode · 94dc0f69
+changed: Wave Diffusion: the diffuser is drawn on the top wall — a QRD (n² mod 7) row of wooden wells whose depth follows DEPTH; wall labelled DIFFUSER
+affects other side: nothing — client JS only (Wave lab drawing)
+needs: nothing
+
+
 ### 2026-09-26 11:22 · ccode · a5e33e6c
 changed: Full screen: 1x always shows the whole drawing; zoom steps anchor on the last touch (else centre). Wave walls drawn in section; Absorption walls deepened
 affects other side: nothing — client JS only (rack full screen + Wave lab drawing)
