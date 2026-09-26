@@ -146,7 +146,14 @@ export function StageFullScreen({
             // the drawing fits and neither scrolls.
             <ScrollView
               key={`v${zoom}`}
-              contentContainerStyle={styles.center}
+              // The outer (vertical) content must NOT centre its child
+              // horizontally: with alignItems:'center' the inner horizontal
+              // scroller took its CONTENT width, so the overflow landed on
+              // this outer scroller, which cannot pan sideways — at 2× the
+              // drawing could not be dragged left/right (Sound Systems
+              // re-check 2026-09-26). Stretched, the inner scroller is the
+              // viewport's width and owns the sideways drag.
+              contentContainerStyle={styles.vCenter}
               scrollEnabled={zoom > 1}
               showsVerticalScrollIndicator={zoom > 1}
             >
@@ -213,6 +220,7 @@ const styles = StyleSheet.create({
   controls: { paddingTop: 6 },
   body: { flex: 1, borderTopWidth: 1, borderBottomWidth: 1, borderColor: '#2c2c33', backgroundColor: '#0b0c0e' },
   center: { flexGrow: 1, alignItems: 'center', justifyContent: 'center' },
+  vCenter: { flexGrow: 1, justifyContent: 'center' },
   hint: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textSub, textAlign: 'center', paddingTop: 8, paddingHorizontal: 12 },
   badge: { fontFamily: fonts.oswaldMedium, fontSize: 11.5, letterSpacing: 0.8, color: colors.textSubAlt, textAlign: 'center', paddingTop: 4, paddingHorizontal: 12 },
 });

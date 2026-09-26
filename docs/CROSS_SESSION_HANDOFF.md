@@ -165,6 +165,42 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 00:38 · ccode · 2160048d
+changed: Envelope Lab: labels ≥ 9 pt + FULL SCREEN (legibility pass)
+affects other side: nothing — client only
+needs: nothing
+
+
+### 2026-09-26 00:38 · ccode · 20a8fc69
+changed: Oscillator Lab: labels ≥ 9 pt + FULL SCREEN (legibility pass)
+affects other side: nothing — client only
+needs: nothing
+
+
+### 2026-09-26 00:30 · ccode · a360c57f
+changed: Meter lab: labels ≥ 9 pt + FULL SCREEN (legibility pass)
+affects other side: nothing — client only
+needs: nothing
+
+
+### 2026-09-26 00:28 · ccode · 3107cbb7
+changed: Mic Principles: labels ≥ 9 pt + FULL SCREEN (legibility pass)
+affects other side: nothing — client only
+needs: nothing
+
+
+### 2026-09-26 00:26 · ccode · 58b6fe79
+changed: Wave Physics: labels ≥ 9 pt + FULL SCREEN (legibility pass)
+affects other side: nothing — client only
+needs: nothing
+
+
+### 2026-09-26 00:25 · ccode · 26fb82d3
+changed: Cable Install: labels ≥ 9 pt + FULL SCREEN (legibility pass)
+affects other side: nothing — client only
+needs: nothing
+
+
 ### 2026-09-26 00:15 · ccode · fa535552
 changed: Foundations of Sound: labels ≥ 9 pt + FULL SCREEN (legibility pass)
 affects other side: nothing — client only
