@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 14:57 · ccode · 0981b406
+changed: Wave Room Builder: accuracy note first under the display — what the outside rings show, and that it is a teaching mass-law model with exaggerated fading; measure real isolation with a calibrated meter
+affects other side: nothing — client JS only (Wave lab copy)
+needs: nothing
+
+
 ### 2026-09-26 14:48 · ccode · 2113d7de
 changed: Wave Room Builder outside rings END: each starts just under the room's own level inside that wall (heat-map calculation and ramp) and fades to nothing over a reach set by the wall's loss at this frequency — bass carries, treble dies at the wall
 affects other side: nothing — client JS only (Wave lab drawing)
