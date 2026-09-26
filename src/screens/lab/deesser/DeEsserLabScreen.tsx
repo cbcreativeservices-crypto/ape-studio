@@ -19,10 +19,27 @@ import {
 } from '../../../features/deesser/deEsserModel';
 import { navigationRef } from '../../../navigation/navigationRef';
 import { PagedLab, type PageCtx, type PageDef } from '../kit/PagedLab';
+import { ExpandableFigure } from '../kit/ExpandableFigure';
 import { Body, Btn, Card, Eyebrow, Lead, Prompt, Row } from '../tuning/components/primitives';
 import { UnderstandingCheck } from '../tuning/components/check';
 import { ControlSlider } from '../amp/kit';
-import { BandSpectrum, DetectorTrace, FrameStrip, HissDbStrip, PathDiagram } from './deEsserViz';
+import {
+  BandSpectrum, Caption, DETECTOR_H, DetectorTrace, EQVS_H, EqVsStrips, FRAME_H, FrameStrip, PATH_H, PathDiagram, SPECTRUM_H, Title, VIZ_W,
+} from './deEsserViz';
+
+/** Every drawing is a 340-unit viewBox drawn at the page width (h = w / aspect)
+ *  inside ExpandableFigure, whose FULL SCREEN button sits under it and whose
+ *  `controls` are THE SAME elements the page shows — docked under the enlarged
+ *  drawing so the learner can adjust and watch (owner 2026-09-25). */
+const ASPECT = { frame: VIZ_W / FRAME_H, eqvs: VIZ_W / EQVS_H, detector: VIZ_W / DETECTOR_H, spectrum: VIZ_W / SPECTRUM_H, path: VIZ_W / PATH_H };
+const CONCEPTUAL = 'Relative levels from a modelled phrase — conceptual, not a calibrated meter.';
+const BAND_CAPTION = "Gold dashed line: the detector's band-pass — the part of this sound it can hear.";
+
+/** The page's controls as they dock in full screen (the page draws them in
+ *  its own column; here they get the screen's side margin). */
+function Dock({ children }: { children: ReactNode }) {
+  return <View style={styles.dock}>{children}</View>;
+}
 
 /** One rack: settings persist across pages while the lab is open. The
  *  module-level object is the source of truth; a page mirrors it into local
@@ -68,19 +85,37 @@ function PageWhat({ ctx }: { ctx: PageCtx }) {
   const sp = sFrameSpectrum(f, 48);
   const pick = (i: number) => { setSel((i + PHRASE.length) % PHRASE.length); touch(ctx); };
   const gap = f.label === '·';
+  // One set of frame controls: on the page, and docked under either figure in full screen.
+  const nav = (
+    <Row>
+      <Wide><Btn label="‹" onPress={() => pick(sel - 1)} a11y="Previous frame" /></Wide>
+      <Wide><Btn label="›" onPress={() => pick(sel + 1)} a11y="Next frame" /></Wide>
+      <Btn label="JUMP TO AN S" onPress={() => pick(nextSib(sel))} a11y="Jump to the next sibilant frame" />
+      <Text style={styles.read}>frame {sel + 1} · “{f.label}”</Text>
+    </Row>
+  );
   return (
     <View style={{ gap: 12 }}>
       {/* NEW COPY: S vs SH placement made explicit so the 2–10 kHz band is explained, not asserted. */}
       <Lead>Sibilance is the hiss of S, Z, SH and CH — air turbulence at the teeth. An S sits mostly between 4 and 10 kHz; SH and CH sit lower, nearer 2–5 kHz. That whole 2–10 kHz region is where the ear is sensitive and where bright microphones add the most.</Lead>
       <Prompt>Tap a frame in the strip. Notice where its energy sits — vowels low, sibilants high.</Prompt>
-      <FrameStrip frames={PHRASE} selected={sel} onSelect={pick} title="A SPOKEN PHRASE · FRAME BY FRAME" a11y={`The phrase ${PHRASE.map((p) => p.label).join(' ')} as frames; the sibilant frames carry the hiss. Frame ${sel + 1}, ${f.label}, is selected.`} />
-      <Row>
-        <Wide><Btn label="‹" onPress={() => pick(sel - 1)} a11y="Previous frame" /></Wide>
-        <Wide><Btn label="›" onPress={() => pick(sel + 1)} a11y="Next frame" /></Wide>
-        <Btn label="JUMP TO AN S" onPress={() => pick(nextSib(sel))} a11y="Jump to the next sibilant frame" />
-        <Text style={styles.read}>frame {sel + 1} · “{f.label}”</Text>
-      </Row>
-      <BandSpectrum hz={sp.hz} mag={sp.mag} band={[2000, 10000]} title={`FRAME “${f.label.toUpperCase()}” · SPECTRUM`} a11y={f.sibilant ? `Spectrum of ${f.label}: energy concentrated around ${f.hissHz} hertz.` : gap ? 'Spectrum of a gap between words: almost nothing.' : `Spectrum of ${f.label}: energy mostly below 1 kilohertz.`} />
+      <Title>A SPOKEN PHRASE · FRAME BY FRAME</Title>
+      <ExpandableFigure
+        aspect={ASPECT.frame}
+        title="PHRASE"
+        badge={CONCEPTUAL}
+        controls={<Dock>{nav}</Dock>}
+        render={(w, h) => <FrameStrip width={w} height={h} frames={PHRASE} selected={sel} onSelect={pick} a11y={`The phrase ${PHRASE.map((p) => p.label).join(' ')} as frames; the sibilant frames carry the hiss. Frame ${sel + 1}, ${f.label}, is selected.`} />}
+      />
+      {nav}
+      <Title>{`FRAME “${f.label.toUpperCase()}” · SPECTRUM`}</Title>
+      <ExpandableFigure
+        aspect={ASPECT.spectrum}
+        title="SPECTRUM"
+        badge={CONCEPTUAL}
+        controls={<Dock>{nav}</Dock>}
+        render={(w, h) => <BandSpectrum width={w} height={h} hz={sp.hz} mag={sp.mag} band={[2000, 10000]} a11y={f.sibilant ? `Spectrum of ${f.label}: energy concentrated around ${f.hissHz} hertz.` : gap ? 'Spectrum of a gap between words: almost nothing.' : `Spectrum of ${f.label}: energy mostly below 1 kilohertz.`} />}
+      />
       <Card>
         <Body>{f.sibilant
           ? `A sibilant frame: almost all of its energy is hiss near ${kHz(f.hissHz)}, and very little body.`
@@ -104,16 +139,26 @@ function PageEqVs({ ctx }: { ctx: PageCtx }) {
   const out = which === 'eq' ? eq : de;
   const loss = vowelBrightnessLossDb(PHRASE, out);
   const sGr = which === 'eq' ? cut : meanSibilantGr(de);
+  const toggle = (
+    <Row>
+      <Btn label={`STATIC EQ CUT · −${cut} dB`} tone={which === 'eq' ? 'primary' : 'plain'} selected={which === 'eq'} onPress={() => { setWhich('eq'); touch(ctx); }} />
+      <Btn label="DE-ESSER" tone={which === 'de' ? 'primary' : 'plain'} selected={which === 'de'} onPress={() => { setWhich('de'); touch(ctx); }} />
+    </Row>
+  );
   return (
     <View style={{ gap: 12 }}>
       <Lead>An EQ cut is always on. A de-esser is on only while there is an S. That one difference is the whole reason it exists.</Lead>
       <Prompt>Switch between the two and watch the non-S frames in the dB strip: does their hiss band drop as well?</Prompt>
-      <Row>
-        <Btn label={`STATIC EQ CUT · −${cut} dB`} tone={which === 'eq' ? 'primary' : 'plain'} onPress={() => { setWhich('eq'); touch(ctx); }} />
-        <Btn label="DE-ESSER" tone={which === 'de' ? 'primary' : 'plain'} onPress={() => { setWhich('de'); touch(ctx); }} />
-      </Row>
-      <FrameStrip frames={PHRASE} output={out} title={which === 'eq' ? 'OUTPUT · STATIC EQ (input as ghost)' : 'OUTPUT · DE-ESSER (input as ghost)'} a11y={which === 'eq' ? 'With a static EQ cut every frame loses the same amount of hiss — vowels included.' : 'With the de-esser only the sibilant frames are reduced; the vowels are untouched.'} />
-      <HissDbStrip frames={PHRASE} output={out} a11y={which === 'eq' ? `On a decibel scale every frame's hiss band drops by ${cut} dB, vowels and gaps included.` : `On a decibel scale only the sibilant frames drop, by up to ${cut} dB; every other frame is unchanged.`} />
+      {toggle}
+      <Title>{which === 'eq' ? 'OUTPUT · STATIC EQ (input as ghost)' : 'OUTPUT · DE-ESSER (input as ghost)'}</Title>
+      <ExpandableFigure
+        aspect={ASPECT.eqvs}
+        title={which === 'eq' ? 'STATIC EQ' : 'DE-ESSER'}
+        badge={CONCEPTUAL}
+        controls={<Dock>{toggle}</Dock>}
+        render={(w, h) => <EqVsStrips width={w} height={h} frames={PHRASE} output={out} a11y={which === 'eq' ? `With a static EQ cut every frame loses the same amount of hiss — vowels included. On a decibel scale every frame's hiss band drops by ${cut} dB, vowels and gaps included.` : `With the de-esser only the sibilant frames are reduced; the vowels are untouched. On a decibel scale only the sibilant frames drop, by up to ${cut} dB; every other frame is unchanged.`} />}
+      />
+      <Caption>Top: body and hiss per frame. Bottom: the hiss band alone on a dB scale, where an 8 dB loss is the same height on a vowel as on an S.</Caption>
       <Card tone={which === 'eq' ? 'warn' : 'ok'}>
         <Eyebrow>{which === 'eq' ? 'WHAT THE EQ DID' : 'WHAT THE DE-ESSER DID'}</Eyebrow>
         {/* NEW COPY: "vowels" → "everything that is not an S" (the measure includes TH and P). */}
@@ -149,11 +194,10 @@ function PagePath({ ctx }: { ctx: PageCtx }) {
   }, [auto, ctx.reduceMotion]);
   const active = ORDER[idx];
   const block = [...PATH_MAIN, ...PATH_SIDECHAIN].find((b) => b.id === active)!;
-  return (
-    <View style={{ gap: 12 }}>
-      <Lead>A de-esser is a compressor with a filtered ear. The voice goes straight through a gain element; a filtered copy decides how much that gain element turns down.</Lead>
-      <Prompt>Tap each block, or walk the signal. Notice that the voice itself never passes through the filter.</Prompt>
-      <PathDiagram active={active} mode={rackS.mode} onSelect={(id) => { setIdx(Math.max(0, ORDER.indexOf(id))); setAuto(false); touch(ctx); }} />
+  // The block reader + its buttons: on the page, and docked under the diagram
+  // in full screen so a tapped block can still be read there.
+  const reader = (
+    <View style={{ gap: 10 }}>
       <Card tone="math">
         <Eyebrow>{idx + 1} OF {ORDER.length} · {block.name.toUpperCase()}</Eyebrow>
         <Body>{block.what}</Body>
@@ -162,6 +206,19 @@ function PagePath({ ctx }: { ctx: PageCtx }) {
         <Btn label="NEXT BLOCK ›" tone="primary" onPress={() => { setIdx((i) => (i + 1) % ORDER.length); setAuto(false); touch(ctx); }} />
         {!ctx.reduceMotion ? <Btn label={auto ? 'STOP' : 'WALK THE SIGNAL'} onPress={() => { setAuto((a) => !a); touch(ctx); }} a11y={auto ? 'Stop walking the signal' : 'Walk the signal through every block automatically'} /> : null}
       </Row>
+    </View>
+  );
+  return (
+    <View style={{ gap: 12 }}>
+      <Lead>A de-esser is a compressor with a filtered ear. The voice goes straight through a gain element; a filtered copy decides how much that gain element turns down.</Lead>
+      <Prompt>Tap each block, or walk the signal. Notice that the voice itself never passes through the filter.</Prompt>
+      <ExpandableFigure
+        aspect={ASPECT.path}
+        title="SIGNAL PATH"
+        controls={<Dock>{reader}</Dock>}
+        render={(w, h) => <PathDiagram width={w} height={h} active={active} mode={rackS.mode} onSelect={(id) => { setIdx(Math.max(0, ORDER.indexOf(id))); setAuto(false); touch(ctx); }} />}
+      />
+      {reader}
       <Body>The band-pass filter is the smart part: it is NOT in the signal path. It only shapes what the detector hears, so the decision is made on the hiss alone while the whole voice passes through untouched until the gain moves.</Body>
       {/* NEW COPY: check rewritten with length-balanced options. */}
       <Check
@@ -183,14 +240,22 @@ function PageThreshold({ ctx }: { ctx: PageCtx }) {
   const overSib = out.filter((p) => p.grDb > 0 && p.frame.sibilant).length;
   const overOther = out.filter((p) => p.grDb > 0 && !p.frame.sibilant).length;
   const over = overSib + overOther;
+  const thr = <ControlSlider level label="Threshold" value={s.thresholdDb} min={-40} max={0} step={1} format={(v) => `${v.toFixed(0)} dB`} onChange={(v) => { set({ thresholdDb: v }); touch(ctx); }} />;
+  const count = <Text style={styles.read}>{overSib} of {SIB.length} sibilants above threshold · {overOther} other sounds crossing</Text>;
   return (
     <View style={{ gap: 12 }}>
       <Lead>The threshold is the level the hiss must reach before anything happens. Above it, the de-esser turns down; below it, it is not even there.</Lead>
       <Prompt>Drag the threshold up until nothing crosses, then down until the gaps cross. Find the band where only orange labels sit above the line.</Prompt>
-      <ControlSlider level label="Threshold" value={s.thresholdDb} min={-40} max={0} step={1} format={(v) => `${v.toFixed(0)} dB`} onChange={(v) => { set({ thresholdDb: v }); touch(ctx); }} />
-      <DetectorTrace processed={out} thresholdDb={s.thresholdDb} rangeDb={s.rangeDb} a11y={`Detector trace across the phrase with the threshold at ${s.thresholdDb} dB; ${overSib} of ${SIB.length} sibilants and ${overOther} other sounds are above it and being reduced.`} />
+      {thr}
+      <ExpandableFigure
+        aspect={ASPECT.detector}
+        title="DETECTOR"
+        badge={CONCEPTUAL}
+        controls={<Dock>{thr}{count}</Dock>}
+        render={(w, h) => <DetectorTrace width={w} height={h} processed={out} thresholdDb={s.thresholdDb} rangeDb={s.rangeDb} a11y={`Detector trace across the phrase with the threshold at ${s.thresholdDb} dB; ${overSib} of ${SIB.length} sibilants and ${overOther} other sounds are above it and being reduced.`} />}
+      />
       <Card tone={overOther > 0 ? 'warn' : over === 0 ? 'plain' : 'ok'}>
-        <Text style={styles.read}>{overSib} of {SIB.length} sibilants above threshold · {overOther} other sounds crossing</Text>
+        {count}
         {/* NEW COPY: the first non-sibilant sounds to cross are TH and P, not vowels; a partial-catch state added. */}
         <Body>{over === 0
           ? 'Too high: no S reaches the threshold, so the de-esser does nothing at all.'
@@ -226,18 +291,33 @@ function PageFrequency({ ctx }: { ctx: PageCtx }) {
   const heard = bandpassGain(f.hissHz, s.freqHz, s.q);
   const pct = Math.round(heard * 100);
   const logMin = Math.log(FREQ_MIN), logMax = Math.log(FREQ_MAX);
+  // The aiming controls: on the page, and docked under the spectrum in full screen.
+  const aim = (
+    <View style={{ gap: 12 }}>
+      <ControlSlider label="Detector frequency" value={Math.log(s.freqHz)} min={logMin} max={logMax} step={0.01} format={(v) => kHz(Math.exp(v))} onChange={(v) => { set({ freqHz: Math.round(Math.exp(v) / 50) * 50 }); setHint(null); touch(ctx); }} />
+      <ControlSlider label="Band width" value={s.q} min={0.7} max={4} step={0.1} format={(v) => (v < 1.2 ? 'wide' : v < 2.5 ? 'medium' : 'narrow')} onChange={(v) => { set({ q: v }); touch(ctx); }} />
+      <Row>
+        {SIB.map((i) => <Btn key={i} label={`“${PHRASE[i].label}” · ${(PHRASE[i].hissHz / 1000).toFixed(1)}k`} tone={pick === i ? 'primary' : 'plain'} selected={pick === i} onPress={() => { setPick(i); touch(ctx); }} a11y={`Sibilant ${PHRASE[i].label}, hiss near ${PHRASE[i].hissHz} hertz`} />)}
+      </Row>
+    </View>
+  );
+  const hears = <Text style={styles.read}>the detector hears {pct}% of this “{f.label}”’s hiss</Text>;
   return (
     <View style={{ gap: 12 }}>
       <Lead>Every voice hisses in its own place. Aim the detector at that place — too low and it hears the voice, too high and it misses the S.</Lead>
       <Prompt>Pick a sibilant, then move the detector until the gold band sits on its hiss. Try the SH — it lives lower than the S’s.</Prompt>
-      <ControlSlider label="Detector frequency" value={Math.log(s.freqHz)} min={logMin} max={logMax} step={0.01} format={(v) => kHz(Math.exp(v))} onChange={(v) => { set({ freqHz: Math.round(Math.exp(v) / 50) * 50 }); setHint(null); touch(ctx); }} />
-      <ControlSlider label="Band width" value={s.q} min={0.7} max={4} step={0.1} format={(v) => (v < 1.2 ? 'wide' : v < 2.5 ? 'medium' : 'narrow')} onChange={(v) => { set({ q: v }); touch(ctx); }} />
-      <Row>
-        {SIB.map((i) => <Btn key={i} label={`“${PHRASE[i].label}” · ${(PHRASE[i].hissHz / 1000).toFixed(1)}k`} tone={pick === i ? 'primary' : 'plain'} onPress={() => { setPick(i); touch(ctx); }} a11y={`Sibilant ${PHRASE[i].label}, hiss near ${PHRASE[i].hissHz} hertz`} />)}
-      </Row>
-      <BandSpectrum hz={sp.hz} mag={sp.mag} curve={dc.mag} band={[2000, 10000]} title={`“${f.label.toUpperCase()}” SPECTRUM · DETECTOR AT ${kHz(s.freqHz)}`} caption="Gold dashed line: the detector's band-pass — the part of this sound it can hear." a11y={`Spectrum of ${f.label} with hiss near ${f.hissHz} hertz; the detector band is centred at ${s.freqHz} hertz and passes ${pct} percent of that hiss.`} />
+      {aim}
+      <Title>{`“${f.label.toUpperCase()}” SPECTRUM · DETECTOR AT ${kHz(s.freqHz)}`}</Title>
+      <ExpandableFigure
+        aspect={ASPECT.spectrum}
+        title="SPECTRUM"
+        badge={BAND_CAPTION}
+        controls={<Dock>{aim}{hears}</Dock>}
+        render={(w, h) => <BandSpectrum width={w} height={h} hz={sp.hz} mag={sp.mag} curve={dc.mag} band={[2000, 10000]} a11y={`Spectrum of ${f.label} with hiss near ${f.hissHz} hertz; the detector band is centred at ${s.freqHz} hertz and passes ${pct} percent of that hiss.`} />}
+      />
+      <Caption>{BAND_CAPTION}</Caption>
       <Card tone={heard > 0.7 ? 'ok' : heard > 0.4 ? 'plain' : 'warn'}>
-        <Text style={styles.read}>the detector hears {pct}% of this “{f.label}”’s hiss</Text>
+        {hears}
         <Body>{heard > 0.7 ? 'On target: the band sits on the hiss, so a modest threshold catches it cleanly.' : heard > 0.4 ? 'Partly: it will catch loud S’s and miss quiet ones. Move the frequency toward the hiss or widen the band.' : 'Missing it: the S passes through untouched — the detector is listening somewhere else.'}</Body>
       </Card>
       <Eyebrow>STARTING POINTS</Eyebrow>
@@ -272,16 +352,28 @@ function PageGr({ ctx }: { ctx: PageCtx }) {
   const out = processPhrase(PHRASE, s);
   const max = Math.max(...out.map((p) => p.grDb));
   const mean = meanSibilantGr(out);
+  const knobs = (
+    <View style={{ gap: 12 }}>
+      <ControlSlider label="Range (maximum reduction)" value={s.rangeDb} min={0} max={24} step={1} format={(v) => `${v.toFixed(0)} dB`} onChange={(v) => { set({ rangeDb: v }); touch(ctx); }} />
+      <ControlSlider level label="Threshold" value={s.thresholdDb} min={-40} max={0} step={1} format={(v) => `${v.toFixed(0)} dB`} onChange={(v) => { set({ thresholdDb: v }); touch(ctx); }} />
+    </View>
+  );
+  const peak = <Text style={styles.read}>peak reduction {max.toFixed(1)} dB · average on S’s {mean.toFixed(1)} dB · stage: {overStage(mean).name}</Text>;
   return (
     <View style={{ gap: 12 }}>
       {/* NEW COPY: "the only honest meter" → "the one essential display". */}
       <Lead>The gain-reduction meter is the de-esser's one essential display: how much, and when. Read it as a question — am I working on S’s only, and by a sensible amount?</Lead>
       <Prompt>Watch two things: WHERE the bars appear (only under orange labels) and HOW TALL they get (never past the range).</Prompt>
-      <ControlSlider label="Range (maximum reduction)" value={s.rangeDb} min={0} max={24} step={1} format={(v) => `${v.toFixed(0)} dB`} onChange={(v) => { set({ rangeDb: v }); touch(ctx); }} />
-      <ControlSlider level label="Threshold" value={s.thresholdDb} min={-40} max={0} step={1} format={(v) => `${v.toFixed(0)} dB`} onChange={(v) => { set({ thresholdDb: v }); touch(ctx); }} />
-      <DetectorTrace processed={out} thresholdDb={s.thresholdDb} rangeDb={s.rangeDb} a11y={`Gain reduction across the phrase: maximum ${max.toFixed(1)} dB, average on sibilants ${mean.toFixed(1)} dB, range ${s.rangeDb} dB.`} />
+      {knobs}
+      <ExpandableFigure
+        aspect={ASPECT.detector}
+        title="GAIN REDUCTION"
+        badge={CONCEPTUAL}
+        controls={<Dock>{knobs}{peak}</Dock>}
+        render={(w, h) => <DetectorTrace width={w} height={h} processed={out} thresholdDb={s.thresholdDb} rangeDb={s.rangeDb} a11y={`Gain reduction across the phrase: maximum ${max.toFixed(1)} dB, average on sibilants ${mean.toFixed(1)} dB, range ${s.rangeDb} dB.`} />}
+      />
       <Card>
-        <Text style={styles.read}>peak reduction {max.toFixed(1)} dB · average on S’s {mean.toFixed(1)} dB · stage: {overStage(mean).name}</Text>
+        {peak}
         {/* NEW COPY: range is a cap, not a dose — the old line said 10 dB of range was "lisp territory whatever the threshold says". */}
         <Body>Range is the safety rail: however far above threshold an S goes, the gain never drops more than this. Most voices stay natural with the range at 4–6 dB. Open it wide and the threshold alone decides how hard it works — which is how a de-esser ends up lisping.</Body>
         <Body>These meters are conceptual — relative gain, not calibrated level.</Body>
@@ -313,24 +405,47 @@ function PageMode({ ctx }: { ctx: PageCtx }) {
   }
   const go = (i: number) => { setStep((i + PHRASE.length) % PHRASE.length); setAuto(false); touch(ctx); };
   const gr = p.grDb.toFixed(1);
+  const specCaption = s.mode === 'split' ? 'Grey: before · colour: after · gold dashed: the band being turned down.' : 'Grey: before · colour: after — the whole spectrum moves together.';
+  // Mode + frame controls: on the page, and docked under either figure in full screen.
+  const modeRow = (
+    <Row>
+      <Btn label="BROADBAND" tone={s.mode === 'broadband' ? 'primary' : 'plain'} selected={s.mode === 'broadband'} onPress={() => { set({ mode: 'broadband' }); touch(ctx); }} />
+      <Btn label="SPLIT-BAND" tone={s.mode === 'split' ? 'primary' : 'plain'} selected={s.mode === 'split'} onPress={() => { set({ mode: 'split' }); touch(ctx); }} />
+    </Row>
+  );
+  const stepRow = (
+    <Row>
+      <Wide><Btn label="‹" onPress={() => go(step - 1)} a11y="Previous frame" /></Wide>
+      <Wide><Btn label="›" onPress={() => go(step + 1)} a11y="Next frame" /></Wide>
+      {/* NEW COPY: "PLAY" → "AUTO-STEP" (nothing plays in this lab). */}
+      {!ctx.reduceMotion ? <Btn label={auto ? 'STOP' : 'AUTO-STEP'} onPress={() => { setAuto((a) => !a); touch(ctx); }} a11y={auto ? 'Stop stepping through the frames' : 'Step through the frames automatically'} /> : null}
+      <Btn label="JUMP TO AN S" onPress={() => go(nextSib(step))} a11y="Jump to the next sibilant frame" />
+      <Text style={styles.read}>frame {step + 1} · “{f.label}” · {p.grDb > 0 ? `−${gr} dB reduction` : 'no reduction'}</Text>
+    </Row>
+  );
   return (
     <View style={{ gap: 12 }}>
       <Lead>When the detector fires, what gets turned down? Everything (broadband) or only the hiss band (split-band). Same decision, different action.</Lead>
       <Prompt>Step to an S and compare the cyan body bar in each mode — that is the whole difference.</Prompt>
-      <Row>
-        <Btn label="BROADBAND" tone={s.mode === 'broadband' ? 'primary' : 'plain'} onPress={() => { set({ mode: 'broadband' }); touch(ctx); }} />
-        <Btn label="SPLIT-BAND" tone={s.mode === 'split' ? 'primary' : 'plain'} onPress={() => { set({ mode: 'split' }); touch(ctx); }} />
-      </Row>
-      <FrameStrip frames={PHRASE} output={out} selected={step} onSelect={go} title={`OUTPUT · ${s.mode.toUpperCase()} (input as ghost)`} a11y={s.mode === 'broadband' ? 'Broadband: on each sibilant frame both the body and the hiss drop.' : 'Split-band: on each sibilant frame only the hiss drops; the body is unchanged.'} />
-      <Row>
-        <Wide><Btn label="‹" onPress={() => go(step - 1)} a11y="Previous frame" /></Wide>
-        <Wide><Btn label="›" onPress={() => go(step + 1)} a11y="Next frame" /></Wide>
-        {/* NEW COPY: "PLAY" → "AUTO-STEP" (nothing plays in this lab). */}
-        {!ctx.reduceMotion ? <Btn label={auto ? 'STOP' : 'AUTO-STEP'} onPress={() => { setAuto((a) => !a); touch(ctx); }} a11y={auto ? 'Stop stepping through the frames' : 'Step through the frames automatically'} /> : null}
-        <Btn label="JUMP TO AN S" onPress={() => go(nextSib(step))} a11y="Jump to the next sibilant frame" />
-        <Text style={styles.read}>frame {step + 1} · “{f.label}” · {p.grDb > 0 ? `−${gr} dB reduction` : 'no reduction'}</Text>
-      </Row>
-      <BandSpectrum hz={inSp.hz} mag={outMag} ghost={inSp.mag} curve={s.mode === 'split' ? detectorCurve(s, 48).mag : undefined} band={[2000, 10000]} title="THIS FRAME · BEFORE (GHOST) AND AFTER" caption={s.mode === 'split' ? 'Grey: before · colour: after · gold dashed: the band being turned down.' : 'Grey: before · colour: after — the whole spectrum moves together.'} a11y={p.grDb > 0 ? (s.mode === 'broadband' ? `Broadband: the whole spectrum of ${f.label} drops by ${gr} dB.` : `Split-band: only the band around ${s.freqHz} hertz of ${f.label} drops by ${gr} dB.`) : `No reduction on ${f.label}.`} />
+      {modeRow}
+      <Title>{`OUTPUT · ${s.mode.toUpperCase()} (input as ghost)`}</Title>
+      <ExpandableFigure
+        aspect={ASPECT.frame}
+        title={s.mode === 'broadband' ? 'BROADBAND' : 'SPLIT-BAND'}
+        badge={CONCEPTUAL}
+        controls={<Dock>{modeRow}{stepRow}</Dock>}
+        render={(w, h) => <FrameStrip width={w} height={h} frames={PHRASE} output={out} selected={step} onSelect={go} a11y={s.mode === 'broadband' ? 'Broadband: on each sibilant frame both the body and the hiss drop.' : 'Split-band: on each sibilant frame only the hiss drops; the body is unchanged.'} />}
+      />
+      {stepRow}
+      <Title>THIS FRAME · BEFORE (GHOST) AND AFTER</Title>
+      <ExpandableFigure
+        aspect={ASPECT.spectrum}
+        title="THIS FRAME"
+        badge={specCaption}
+        controls={<Dock>{modeRow}{stepRow}</Dock>}
+        render={(w, h) => <BandSpectrum width={w} height={h} hz={inSp.hz} mag={outMag} ghost={inSp.mag} curve={s.mode === 'split' ? detectorCurve(s, 48).mag : undefined} band={[2000, 10000]} a11y={p.grDb > 0 ? (s.mode === 'broadband' ? `Broadband: the whole spectrum of ${f.label} drops by ${gr} dB.` : `Split-band: only the band around ${s.freqHz} hertz of ${f.label} drops by ${gr} dB.`) : `No reduction on ${f.label}.`} />}
+      />
+      <Caption>{specCaption}</Caption>
       <Card>
         <Eyebrow>{s.mode === 'broadband' ? 'BROADBAND' : 'SPLIT-BAND'} · THIS FRAME</Eyebrow>
         {/* NEW COPY: side-by-side worked example for the current frame, so both modes are compared without toggling from memory. */}
@@ -362,15 +477,24 @@ function PageOver({ ctx }: { ctx: PageCtx }) {
   const out = processPhrase(PHRASE, s);
   const mean = meanSibilantGr(out);
   const stage = overStage(mean);
+  const hard = <ControlSlider label="How hard" value={amount} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}% · threshold ${-Math.round(v * OVER_THRESHOLD_SPAN_DB)} dB`} onChange={(v) => { setAmount(v); touch(ctx); }} />;
+  const stageLine = <Eyebrow>{stage.name.toUpperCase()} · ABOUT {mean.toFixed(0)} dB ON THE S’S</Eyebrow>;
   return (
     <View style={{ gap: 12 }}>
       {/* NEW COPY: lead names what the stages are. */}
       <Lead>More is not better. Push the amount up and watch the S’s go from tamed to missing — the stages are the symptoms you would hear.</Lead>
       <Prompt>Find the last stage before the S’s start disappearing — then back off a little.</Prompt>
-      <ControlSlider label="How hard" value={amount} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}% · threshold ${-Math.round(v * OVER_THRESHOLD_SPAN_DB)} dB`} onChange={(v) => { setAmount(v); touch(ctx); }} />
-      <FrameStrip frames={PHRASE} output={out} title={`OUTPUT · ${stage.name.toUpperCase()} (input as ghost)`} a11y={`At this setting the sibilants are reduced by about ${mean.toFixed(0)} dB: ${stage.name}. ${stage.symptoms}`} />
+      {hard}
+      <Title>{`OUTPUT · ${stage.name.toUpperCase()} (input as ghost)`}</Title>
+      <ExpandableFigure
+        aspect={ASPECT.frame}
+        title="OUTPUT"
+        badge={CONCEPTUAL}
+        controls={<Dock>{hard}{stageLine}</Dock>}
+        render={(w, h) => <FrameStrip width={w} height={h} frames={PHRASE} output={out} a11y={`At this setting the sibilants are reduced by about ${mean.toFixed(0)} dB: ${stage.name}. ${stage.symptoms}`} />}
+      />
       <Card tone={stage.id === 'transparent' || stage.id === 'controlled' ? 'ok' : stage.id === 'off' ? 'plain' : 'warn'}>
-        <Eyebrow>{stage.name.toUpperCase()} · ABOUT {mean.toFixed(0)} dB ON THE S’S</Eyebrow>
+        {stageLine}
         <Body>{stage.symptoms}</Body>
       </Card>
       <Eyebrow>THE PROGRESSION</Eyebrow>
@@ -446,6 +570,7 @@ export function DeEsserLabScreen() {
 
 const styles = StyleSheet.create({
   read: { color: colors.textSecondary, fontFamily: fonts.barlowMedium, fontSize: 13, flexShrink: 1 },
+  dock: { paddingHorizontal: 12, paddingBottom: 4, gap: 10 },
   foot: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
   stage: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 20 },
   linkRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 6 },
