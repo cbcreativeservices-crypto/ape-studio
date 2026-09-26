@@ -24,10 +24,12 @@
  * the bridge because each semitone is the same RATIO — itself part of the
  * lesson. The drawing is deterministic math, no measurement claims.
  *
- * AUDIO (honest, real): the pluck is an additive model (harmonic amps ≈ 1/n —
- * an idealized plucked string) through the v3 additive engine; natural
- * harmonics play as the single exact harmonic n of the open string. On a v2
- * engine both fall back to a sine at the target pitch (stated). Low bass
+ * AUDIO (honest, real — owner 2026-09-25): PLAY streams the RECORDING of the
+ * selected note from the lab-audio bucket — 52 chromatic notes (four strings
+ * × frets 0–12) and 16 natural harmonics (four strings × ½ ⅓ ¼ ⅕) of a real
+ * bass (features/lab/bassSamples.ts). The additive string model (harmonic
+ * amps ≈ 1/n; a v2 engine gives a sine) is the FALLBACK when a recording
+ * cannot be fetched, and the screen says which is sounding. Low bass
  * fundamentals sit under the speaker high-pass — the advisory says so and the
  * shared speaker guard applies (audio == display honesty).
  */
@@ -47,6 +49,8 @@ import { colors, fonts } from '../../theme/tokens';
 import { LabShell, HeaderPlayButton } from './LabShell';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
+import { useLabAudio } from '../../features/lab/useLabAudio';
+import { BASS_LAB_KEY, frettedSampleKey, harmonicSampleKey, type BassString } from '../../features/lab/bassSamples';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -115,6 +119,15 @@ export function BassLabScreen() {
   useStopOnAudioMute(setRunning);
 
   const [genError, setGenError] = useState('');
+  // ---- The real recordings (owner 2026-09-25) --------------------------------
+  // PLAY streams the RECORDED note for the selection — 52 chromatic notes and
+  // 16 natural harmonics of a real bass, published in the lab-audio bucket
+  // (features/lab/bassSamples.ts). The string-model generator below is now
+  // the FALLBACK, used only when the recording cannot be fetched, and the
+  // lab says so on screen. `source` is what is sounding right now.
+  const sample = useLabAudio();
+  const [source, setSource] = useState<'recording' | 'model' | null>(null);
+  const [sampleNote, setSampleNote] = useState('');
 
   const [lessonKey, setLessonKey] = useState<string | undefined>(undefined);
   const [lessonOpen, setLessonOpen] = useState(false);
@@ -156,11 +169,43 @@ export function BassLabScreen() {
     [additiveReady, payload, soundHz],
   );
 
+  const sampleKey =
+    mode === 'fretted'
+      ? frettedSampleKey(str.key.toLowerCase() as BassString, fret)
+      : harmonicSampleKey(str.key.toLowerCase() as BassString, node.n);
+
   const startNote = useCallback(async () => {
     const gen = ++genRef.current;
+    setGenError('');
+    // 1. The recording. play() runs the audio-output gate itself.
+    if (sampleKey) {
+      const r = await sample.play(BASS_LAB_KEY, sampleKey);
+      if (gen !== genRef.current) return;
+      if (r === 'blocked') return;
+      if (r === 'ok') {
+        void ApeDsp.genStop(); // never both at once
+        setSource('recording');
+        setSampleNote('');
+        setRunning(true);
+        noteAudioActivity();
+        return;
+      }
+      setSampleNote(
+        r === 'network'
+          ? 'The recording could not be fetched (check the connection) — playing the string model instead.'
+          : r === 'auth'
+            ? 'This recording needs a signed-in account — playing the string model instead.'
+            : 'No recording is published for this note — playing the string model instead.',
+      );
+    }
+    // 2. Fallback: the string model through the engine.
+    if (!engineReady) {
+      setGenError(AUDIO_UNAVAILABLE_MESSAGE);
+      return;
+    }
     const ok = await requestAudioOutput();
     if (!ok || gen !== genRef.current) return;
-    setGenError('');
+    setSource('model');
     ApeDsp.genSet(genParams());
     try {
       await ApeDsp.genStart();
@@ -173,13 +218,23 @@ export function BassLabScreen() {
     } catch (e) {
       if (gen === genRef.current) setGenError(AUDIO_UNAVAILABLE_MESSAGE);
     }
-  }, [requestAudioOutput, genParams]);
+  }, [requestAudioOutput, genParams, sample, sampleKey, engineReady]);
 
   const stopNote = useCallback(() => {
     genRef.current++;
+    sample.stop();
     void ApeDsp.genStop();
     setRunning(false);
-  }, []);
+    setSource(null);
+  }, [sample]);
+  // A recording is a one-shot (~2.5 s): when it ends on its own the transport
+  // drops back to ▶ — the display never claims to be sounding over silence.
+  useEffect(() => {
+    if (running && source === 'recording' && !sample.loading && sample.active == null) {
+      setRunning(false);
+      setSource(null);
+    }
+  }, [running, source, sample.loading, sample.active]);
   // Shake-to-mute (and the idle/background lock) silences the voices from
   // outside this screen; without this the transport would keep saying it is
   // playing. See useStopWhenSilenced.
@@ -192,12 +247,17 @@ export function BassLabScreen() {
     return () => clearInterval(id);
   }, [running]);
 
-  // Selection changes retune in place while sounding (phase-continuous resend).
+  // Selection changes while sounding: a recording re-plucks the new note; the
+  // model retunes in place (phase-continuous resend).
   const retune = useCallback(() => {
     if (!running) return;
+    if (source === 'recording') {
+      void startNote();
+      return;
+    }
     ApeDsp.genSet(genParams());
     noteAudioActivity();
-  }, [running, genParams]);
+  }, [running, source, startNote, genParams]);
   useEffect(retune, [mode, stringIdx, fret, nodeIdx]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ---- Readouts (bezel cells + well detail) ----------------------------------
@@ -218,9 +278,11 @@ export function BassLabScreen() {
       headerAction={
         <HeaderPlayButton
           playing={running}
-          disabled={!engineReady}
+          // The recordings need no engine; only the fallback does. While the
+          // signed URL is being fetched a second tap is ignored, not queued.
+          disabled={sample.loading}
           onPress={() => (running ? stopNote() : void startNote())}
-          label={running ? 'Stop' : `Play ${soundHz.toFixed(1)} hertz`}
+          label={running ? 'Stop' : `Play ${midiName(soundMidi)}, ${soundHz.toFixed(1)} hertz`}
         />
       }
       rack={{
@@ -320,7 +382,9 @@ export function BassLabScreen() {
         ],
       }}
     >
-      {!engineReady ? <EngineGate state={gate} /> : null}
+      {/* The engine gate only matters once a recording has failed and the
+          model is what would have to play. */}
+      {!engineReady && sampleNote ? <EngineGate state={gate} /> : null}
 
       <View style={{ gap: 6 }}>
         <Text style={styles.sectionHead}>WHAT YOU’RE SEEING</Text>
@@ -357,25 +421,32 @@ export function BassLabScreen() {
 
       <View style={{ gap: 6 }}>
         <Text style={styles.sectionHead}>THE NOTE, AS SOUND</Text>
-        {/* PLAY lives in the header (▶) — real audio through the additive
-            engine (sine fallback on v2); the honest captions stay here. */}
-        {engineReady ? (
-          <>
-            <Text style={styles.caption}>
-              {additiveReady
+        {/* PLAY lives in the header (▶) — a REAL bass recording of the
+            selected note (owner 2026-09-25); the string model is only the
+            fallback when the recording cannot be fetched. Honest captions. */}
+        <Text style={styles.caption}>
+          {mode === 'fretted'
+            ? `PLAY (header ▶) — a recording of a real bass: the ${str.label} string ${fret === 0 ? 'open' : `at fret ${fret}`} (${midiName(soundMidi)}). Pick another note while it rings and the new one plays.`
+            : `PLAY (header ▶) — a recording of a real bass: the natural harmonic at ${node.frac} of the open ${str.label} string (H${node.n}). Pick another node while it rings and the new one plays.`}
+        </Text>
+        {sampleNote ? (
+          <Text style={styles.advisory}>
+            {sampleNote}
+            {engineReady
+              ? additiveReady
                 ? mode === 'fretted'
-                  ? `PLAY (header ▶) — idealized plucked-string model, harmonic amplitudes ≈ 1/n through the additive engine (real strings vary with pluck position and pickup). Output ${GEN_LEVEL_DB} dBFS · uncalibrated.`
-                  : `PLAY (header ▶) — the single exact harmonic ${node.n} of the open ${str.label} string through the additive engine. Output ${GEN_LEVEL_DB} dBFS · uncalibrated.`
-                : 'This dev build predates the v3 additive engine — audio falls back to a pure sine at the target pitch; the fretboard and readouts are exact either way.'}
-            </Text>
-            {soundHz < SPEAKER_HPF_HZ ? (
-              <Text style={styles.advisory}>
-                {`Speaker high-pass (${SPEAKER_HPF_HZ} Hz): a ${soundHz.toFixed(0)} Hz fundamental is attenuated ${speakerGuardDb(soundHz).toFixed(1)} dB on the phone speaker — you mostly hear its harmonics. Use headphones for the true low end.`}
-              </Text>
-            ) : null}
-            {genError ? <Text style={styles.error}>{genError}</Text> : null}
-          </>
+                  ? ` The model is an idealized plucked string, harmonic amplitudes ≈ 1/n, output ${GEN_LEVEL_DB} dBFS · uncalibrated.`
+                  : ` The model is the single exact harmonic ${node.n} of the open ${str.label} string, output ${GEN_LEVEL_DB} dBFS · uncalibrated.`
+                : ' This dev build predates the v3 additive engine — the model is a pure sine at the target pitch.'
+              : ''}
+          </Text>
         ) : null}
+        {soundHz < SPEAKER_HPF_HZ ? (
+          <Text style={styles.advisory}>
+            {`Speaker high-pass (${SPEAKER_HPF_HZ} Hz): a ${soundHz.toFixed(0)} Hz fundamental is attenuated ${speakerGuardDb(soundHz).toFixed(1)} dB on the phone speaker — you mostly hear its harmonics. Use headphones for the true low end.`}
+          </Text>
+        ) : null}
+        {genError ? <Text style={styles.error}>{genError}</Text> : null}
       </View>
 
 {/* Retrieval (learning pass 2026-08-31) — NEW COPY, owner review. */}
