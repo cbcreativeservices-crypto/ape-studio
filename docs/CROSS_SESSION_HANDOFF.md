@@ -181,6 +181,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 12:01 · ccode · 9dafbce2
+changed: Wave Diffusion: opens with PRESSURE on; split pulse balls show their 1/N energy share, a clear step down the colour ramp
+affects other side: nothing — client JS only (Wave lab drawing)
+needs: nothing
+
+
 ### 2026-09-26 11:45 · ccode · 60ec580c
 changed: Wave Diffusion: a pressure pulse SPLITS at the diffuser — one fragment rides each scatter-fan ray and vanishes at its end
 affects other side: nothing — client JS only (Wave lab drawing)

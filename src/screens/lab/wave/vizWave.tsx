@@ -1226,8 +1226,11 @@ export function RoomSceneView(p: RoomSceneProps) {
   // ── RAYS: image-source reflection polylines, order ≤ 2 ────────────────────
   // Also emits TRACES — each ray's px polyline + cumulative segment lengths —
   // for the pulse tracer below (owner 2026-08-02).
+  // Built when RAYS or PRESSURE is on: the pulse balls ride these paths, and
+  // PRESSURE shows them on its own (owner 2026-09-26: "show pressure without
+  // having to have rays on at the same time"). The LINES draw only with RAYS.
   const rays = useMemo(() => {
-    if (!p.layers.rays) return null;
+    if (!p.layers.rays && !p.layers.pressure) return null;
     const byOrder = [Skia.Path.Make(), Skia.Path.Make(), Skia.Path.Make()];
     const arrows = [Skia.Path.Make(), Skia.Path.Make(), Skia.Path.Make()];
     const traces: TraceRay[] = [];
@@ -1535,9 +1538,10 @@ export function RoomSceneView(p: RoomSceneProps) {
     }
     return { byOrder, arrows, traces, scatter };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key, freq, geo, p.layers.rays, scatterWall]);
+  }, [key, freq, geo, p.layers.rays || p.layers.pressure, scatterWall]);
 
-  // ── PULSE TRACER (owner 2026-08-02): with RAYS + PRESSURE both on, every
+  // ── PULSE TRACER (owner 2026-08-02): with PRESSURE on (RAYS no longer
+  // needed, 2026-09-26), every
   // 2 s a pulse leaves the source; a node rides EVERY visible ray at ONE
   // constant speed, so the direct ray lands at the listener first and each
   // reflection lands later in true path-length order — all before the next
@@ -1793,7 +1797,7 @@ export function RoomSceneView(p: RoomSceneProps) {
           ),
         )}
         {/* RAYS: direct amber → 1st bounce blue → 2nd dim, with arrowheads. */}
-        {rays ? (
+        {rays && p.layers.rays ? (
           <>
             <GlowStroke path={rays.byOrder[0]} color={RAY_COLORS[0]} width={1.6} opacity={0.85} />
             <Path path={rays.byOrder[1]} color={RAY_COLORS[1]} style="stroke" strokeWidth={1.3} opacity={0.6} />
@@ -1813,7 +1817,7 @@ export function RoomSceneView(p: RoomSceneProps) {
         {ringSrcs.length > 0
           ? Array.from({ length: RING_N }, (_, i) => <RoomRing key={i} phase={p.phase} srcs={ringSrcs} i={i} />)
           : null}
-        {/* PULSE TRACER (RAYS + PRESSURE combined): the 2 s pulse ring + one
+        {/* PULSE TRACER (PRESSURE, with or without RAYS): the 2 s pulse ring + one
             node per ray riding its line at constant speed — direct arrives
             first, reflections later, all landed before the next pulse. */}
         {tracing && traces ? (
