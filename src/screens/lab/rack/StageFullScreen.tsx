@@ -132,6 +132,22 @@ export function StageFullScreen({
   }
   const w = Math.round(baseW * zoom);
   const h = Math.round(baseH * zoom);
+  // A fixed-shape drawing on a portrait phone is height-limited at 1×: a
+  // 3:2 room sat in the middle third with black above and below (owner
+  // 2026-09-26). So it OPENS at the largest step whose width still fits the
+  // screen — "1×" is then what fills the width — once per opening.
+  const autoZoomed = useRef(false);
+  useEffect(() => {
+    if (!visible) {
+      autoZoomed.current = false;
+      return;
+    }
+    if (autoZoomed.current || !effShape || bodyH === 0) return;
+    autoZoomed.current = true;
+    let best = 1;
+    for (const z of ZOOMS) if (baseW * z <= fitW + 1) best = z;
+    if (best !== 1) setZoom(best);
+  }, [visible, effShape, bodyH, baseW, fitW]);
   // Overlay labels (RN <Text> over Skia) grow by this — 1 on the glass.
   const textScale = glassW && glassW > 0 ? w / glassW : 1;
 
