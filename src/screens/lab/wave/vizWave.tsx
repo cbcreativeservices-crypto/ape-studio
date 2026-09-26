@@ -887,7 +887,11 @@ function RoomRing({
 // remainder is a beat of silence before the next pulse. Node counts are FIXED
 // per frame (one circle per ray); the ring is one path.
 
-const PULSE_MS = 3000; // 3 s between pulses — more time to watch the decay
+// 3 s between pulses — more time to watch the decay — then stretched so every
+// ball travels 13 % SLOWER (owner 2026-09-26: "the balls travel too fast").
+// Speed ∝ 1 / PULSE_MS; the fade points are fractions of the cycle, so the
+// whole choreography stretches together (≈3.45 s).
+const PULSE_MS = Math.round(3000 / 0.87);
 const PULSE_ARRIVE = 0.9; // the pacing span is covered by 90% of the cycle
 /** Room diagonals the wavefront covers per pulse cycle. The pulse speed is
  *  keyed to ROOM GEOMETRY, never to the surviving ray set, so the surface
