@@ -1173,8 +1173,11 @@ export function RoomSceneView(p: RoomSceneProps) {
   // bucket, horizontal run-length merging (see addFieldRow).
   const heat = useMemo(() => {
     if (!p.layers.heat) return null;
-    const COLS = Math.min(176, Math.max(64, Math.round(geo.wPx / 2.6)));
-    const ROWS = Math.min(140, Math.max(48, Math.round(geo.hPx / 2.6)));
+    // ~2.6 px cells at every zoom step: the cap grows with the stage scale (to
+    // 2.2× the glass grid) so FULL SCREEN stays smooth instead of blocky
+    // (walkthrough 2026-09-26). Rebuilt only on a parameter change.
+    const COLS = Math.min(Math.round(176 * Math.min(2.2, Math.max(1, ts))), Math.max(64, Math.round(geo.wPx / 2.6)));
+    const ROWS = Math.min(Math.round(140 * Math.min(2.2, Math.max(1, ts))), Math.max(48, Math.round(geo.hPx / 2.6)));
     const buckets: SkPathT[] = Array.from({ length: BUCKET_N }, () => Skia.Path.Make());
     const cw = geo.wPx / COLS;
     const ch = geo.hPx / ROWS;

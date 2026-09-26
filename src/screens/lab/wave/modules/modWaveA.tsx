@@ -1113,6 +1113,16 @@ export function InterferenceModule(p: WaveModuleProps) {
     [scene, freq],
   );
   const level = fieldDb(fieldAt(scene, lx, ly, freq, images));
+  // The lesson's number: the pair COMPARED WITH ONE SPEAKER (the louder one
+  // alone) — +6 dB where they arrive in step, deep negative on a null. The
+  // absolute level (re one source at 1 m) read −0.5 dB at a perfect +6 dB
+  // spot and contradicted the prose (walkthrough 2026-09-26).
+  const alone = Math.max(
+    fieldDb(fieldAt({ ...scene, sources: [s1] }, lx, ly, freq, [images[0]])),
+    fieldDb(fieldAt({ ...scene, sources: [s2] }, lx, ly, freq, [images[1]])),
+  );
+  const vsOne = level - alone;
+  const vsOneText = vsOne < -20 ? 'NULL' : `${vsOne >= 0 ? '+' : ''}${vsOne.toFixed(1)} dB`;
   let phi =
     (2 * Math.PI * freq * ((r2 - r1) / c + s2.delayMs / 1000) + (s2.polarity === -1 ? Math.PI : 0)) %
     (2 * Math.PI);
@@ -1124,7 +1134,8 @@ export function InterferenceModule(p: WaveModuleProps) {
     { k: 'PATH FROM S2', v: fmtM(r2) },
     { k: 'PATH DIFFERENCE', v: `${(r2 - r1).toFixed(2)} m · ${((r2 - r1) / lambda).toFixed(2)} λ` },
     { k: 'PHASE DIFF @ LISTENER', v: `${phiDeg.toFixed(0)}°` },
-    { k: 'LEVEL @ LISTENER', v: fmtDb(level) },
+    { k: 'LEVEL vs ONE SPEAKER', v: vsOne < -20 ? `NULL (${vsOne.toFixed(0)} dB)` : vsOneText },
+    { k: 'LEVEL @ LISTENER (re 1 SOURCE @ 1 m)', v: fmtDb(level) },
   ];
 
   return (
@@ -1139,7 +1150,7 @@ export function InterferenceModule(p: WaveModuleProps) {
           { k: 'S1 PATH', v: fmtM(r1), helpKey: 'interference' },
           { k: 'S2 PATH', v: fmtM(r2), helpKey: 'interference' },
           { k: 'Δ PATH', v: `${((r2 - r1) / lambda).toFixed(2)} λ`, helpKey: 'interference' },
-          { k: 'LEVEL', v: fmtDb(level), helpKey: 'interference' },
+          { k: 'vs 1 SPKR', v: vsOneText, helpKey: 'interference' },
         ],
         stage: (w, h) =>
           viz ? (
