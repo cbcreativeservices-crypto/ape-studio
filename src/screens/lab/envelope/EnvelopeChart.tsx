@@ -68,7 +68,7 @@ function Tag({ x, y, text, anchor = 'start', color, size = 9, family = fonts.bar
 }
 
 export function EnvelopeChart({
-  adsr, height = 150, showWave = true, showRegions = true, showRise = false, showPeakAvg = false, title, sweep = false, reduceMotion = false, caption, controls, fullTitle = 'ENVELOPE',
+  adsr, height = 150, showWave = true, showRegions = true, showRise = false, showPeakAvg = false, title, sweep = false, reduceMotion = false, caption, controls, readout, fullTitle = 'ENVELOPE',
 }: {
   adsr: Adsr;
   height?: number;
@@ -88,6 +88,10 @@ export function EnvelopeChart({
    *  elements the page renders, docked under the drawing in full screen so
    *  the learner can adjust and watch (owner 2026-09-25). */
   controls?: ReactNode;
+  /** The page's live readout for this chart (times, levels) — THE SAME
+   *  element the page renders, at the TOP of the full-screen dock so the
+   *  numbers are read while enlarged (parity pass 2026-09-26). */
+  readout?: ReactNode;
   /** Title in the full-screen bar (short — ≤ 10 characters). */
   fullTitle?: string;
 }) {
@@ -181,10 +185,11 @@ export function EnvelopeChart({
         title={fullTitle}
         badge={CHART_HONESTY}
         controls={
-          sweepRow || controls ? (
+          sweepRow || controls || readout ? (
             // Docked, pinned; only on a short phone does the dock itself scroll
-            // so the drawing keeps at least half the screen.
+            // so the drawing keeps at least half the screen. The readout leads.
             <ScrollView style={{ maxHeight: Math.round(winH * 0.55) }} contentContainerStyle={styles.dock} keyboardShouldPersistTaps="handled">
+              {readout}
               {sweepRow}
               {controls}
             </ScrollView>

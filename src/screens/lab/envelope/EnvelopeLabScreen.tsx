@@ -101,6 +101,9 @@ function PageExplorer({ ctx }: { ctx: PageCtx }) {
   // The four A / D / S / R sliders — on the page under the chart AND docked
   // under it in full screen (same elements, one state). Hold and the curve
   // toggles stay on the page: with them the dock outgrew a 812-tall phone.
+  // The live readout: in the card on the page and at the top of the
+  // full-screen dock (parity pass 2026-09-26) — one element, one state.
+  const explorerRead = <Text style={styles.read}>attack {fmtMs(adsr.attackMs)} → rise time (10→90 %) {rise.toFixed(1)} ms · total duration {fmtMs(adsrTotalMs(adsr))}</Text>;
   const adsrSliders = (
     <>
       <ControlSlider label="Attack" value={toLog(adsr.attackMs)} min={0} max={3.3} step={0.02} format={(v) => `${logMs(v)} ms`} onChange={(v) => set('attackMs')(logMs(v))} />
@@ -114,7 +117,7 @@ function PageExplorer({ ctx }: { ctx: PageCtx }) {
       <Lead>Every sound has a shape in time. Move the sliders and watch the envelope — and the waveform inside it — redraw instantly.</Lead>
       <Prompt>Try it: drag ATTACK all the way left, then all the way right. Watch the two gold dots — the rise-time markers — and the readout under the chart.</Prompt>{/* NEW COPY */}
       {loaded ? <Text style={styles.loaded}>LOADED FROM THE GALLERY · {loaded.name.toUpperCase()}</Text> : null}{/* NEW COPY */}
-      <EnvelopeChart adsr={adsr} showRise sweep reduceMotion={ctx.reduceMotion} title="ENVELOPE · A / D / S / R (waveform shaped by it)" controls={adsrSliders} />
+      <EnvelopeChart adsr={adsr} showRise sweep reduceMotion={ctx.reduceMotion} title="ENVELOPE · A / D / S / R (waveform shaped by it)" controls={adsrSliders} readout={explorerRead} />
       {adsrSliders}
       <ControlSlider label="Hold (energy still supplied)" value={adsr.holdMs} min={0} max={2000} step={10} format={(v) => `${v} ms`} onChange={set('holdMs')} />
       <Row>
@@ -124,7 +127,7 @@ function PageExplorer({ ctx }: { ctx: PageCtx }) {
       </Row>
       <Card>
         <Eyebrow>READOUT · FROM THE DRAWN SHAPE</Eyebrow>
-        <Text style={styles.read}>attack {fmtMs(adsr.attackMs)} → rise time (10→90 %) {rise.toFixed(1)} ms · total duration {fmtMs(adsrTotalMs(adsr))}</Text>
+        {explorerRead}
         {/* NEW COPY — live worked example for rise time */}
         <Body>{adsr.attackMs <= 0
           ? 'An attack of 0 ms is an ideal instant step — no real source manages it, and there is nothing left to measure a rise time on. Nudge ATTACK up and watch the gold markers appear.'
@@ -146,6 +149,8 @@ function PageGallery({ ctx }: { ctx: PageCtx }) {
   // The preset buttons: on the page (with SPEECH) and docked under the chart
   // in full screen (presets only — SPEECH swaps the chart out).
   const presetBtns = PRESETS.map((p) => <Btn key={p.id} label={p.name} tone={sel === p.id ? 'primary' : 'plain'} onPress={() => pick(p.id)} a11y={`${p.name}, ${p.kind}`} />);
+  // The preset's four times: in the card and at the top of the full-screen dock.
+  const galleryRead = preset ? <Text style={styles.read}>{preset.name.toUpperCase()} · attack {preset.adsr.attackMs} ms · decay {preset.adsr.decayMs} ms · sustain {Math.round(preset.adsr.sustain * 100)} % · release {preset.adsr.releaseMs} ms</Text> : null;
   return (
     <View style={{ gap: 12 }}>
       <Lead>Simplified envelope shapes for common sounds. These are teaching shapes — real instruments vary with playing technique, register and room.</Lead>
@@ -156,11 +161,11 @@ function PageGallery({ ctx }: { ctx: PageCtx }) {
       </Row>
       {preset ? (
         <>
-          <EnvelopeChart adsr={preset.adsr} sweep reduceMotion={ctx.reduceMotion} title={`${preset.name.toUpperCase()} · ${preset.kind.toUpperCase()} · TEACHING SHAPE`} fullTitle="GALLERY" controls={<Row>{presetBtns}</Row>} />
+          <EnvelopeChart adsr={preset.adsr} sweep reduceMotion={ctx.reduceMotion} title={`${preset.name.toUpperCase()} · ${preset.kind.toUpperCase()} · TEACHING SHAPE`} fullTitle="GALLERY" controls={<Row>{presetBtns}</Row>} readout={galleryRead} />
           <Card>
             <Body>{preset.notice}</Body>
             {preset.bullets.map((b) => <Text key={b} style={styles.gloss}>• {b}</Text>)}
-            <Text style={styles.read}>attack {preset.adsr.attackMs} ms · decay {preset.adsr.decayMs} ms · sustain {Math.round(preset.adsr.sustain * 100)} % · release {preset.adsr.releaseMs} ms</Text>
+            {galleryRead}
             <Btn
               label="LOAD INTO THE EXPLORER ›"
               tone="primary"
@@ -230,6 +235,7 @@ function PageTransients({ ctx }: { ctx: PageCtx }) {
   const touch = useTouch(ctx);
   const t = TRANSIENTS[kind];
   // The three onsets: on the page and docked under the chart in full screen.
+  const riseRead = <Text style={styles.read}>{t.name.toUpperCase()} · rise time (10→90 %) {riseTimeMs(t.adsr).toFixed(1)} ms · attack {fmtMs(t.adsr.attackMs)}</Text>;
   const onsets = (
     <Row>
       {(Object.keys(TRANSIENTS) as TransientKind[]).map((k) => <Btn key={k} label={TRANSIENTS[k].name} tone={kind === k ? 'primary' : 'plain'} onPress={() => { setKind(k); touch(); }} />)}
@@ -240,10 +246,10 @@ function PageTransients({ ctx }: { ctx: PageCtx }) {
       <Lead>The transient is the onset — the first few milliseconds. It carries more information than its size suggests.</Lead>
       <Prompt>Step through the three onsets and watch the rise-time readout jump from about a millisecond to hundreds. Same peak level each time — only the onset changes.</Prompt>{/* NEW COPY */}
       {onsets}
-      <EnvelopeChart adsr={t.adsr} showRise sweep reduceMotion={ctx.reduceMotion} title={`${t.name.toUpperCase()} · TEACHING SHAPE`} fullTitle="TRANSIENT" controls={onsets} />
+      <EnvelopeChart adsr={t.adsr} showRise sweep reduceMotion={ctx.reduceMotion} title={`${t.name.toUpperCase()} · TEACHING SHAPE`} fullTitle="TRANSIENT" controls={onsets} readout={riseRead} />
       <Card>
         <Body>{t.note}</Body>
-        <Text style={styles.read}>rise time (10→90 %) {riseTimeMs(t.adsr).toFixed(1)} ms · attack {fmtMs(t.adsr.attackMs)}</Text>
+        {riseRead}
       </Card>
       <Words title="THE WORDS · ONSETS" items={WORDS_TRANSIENT} />
       <Eyebrow>WHY TRANSIENTS MATTER</Eyebrow>
@@ -349,6 +355,11 @@ function PagePeakAverage({ ctx }: { ctx: PageCtx }) {
   const pk = peakAbs(wave), av = rms(wave);
   const crest = crestFactorDb(wave);
   // The two shapes: on the page and docked under the chart in full screen.
+  const crestRead = (
+    <Text style={styles.read}>
+      <Text style={{ color: colors.textPrimary }}>peak {fmtDb(toDb(pk))}</Text> · <Text style={{ color: colors.purple }}>average (RMS) {fmtDb(toDb(av))}</Text> · crest factor {crest.toFixed(1)} dB
+    </Text>
+  );
   const shapes = (
     <Row>
       <Btn label="Percussive (snare)" tone={id === 'snare' ? 'primary' : 'plain'} onPress={() => { setId('snare'); touch(); }} />
@@ -360,12 +371,10 @@ function PagePeakAverage({ ctx }: { ctx: PageCtx }) {
       <Lead>Two meters can disagree about the same sound: a peak meter follows the transient, an average meter follows the body.</Lead>
       <Prompt>Switch between the two shapes and watch the gap between the PEAK line and the AVERAGE line. That gap is the crest factor.</Prompt>{/* NEW COPY */}
       {shapes}
-      <EnvelopeChart adsr={preset.adsr} showRegions={false} showPeakAvg title={`${preset.name.toUpperCase()} · PEAK VS AVERAGE`} caption="levels relative to the drawn peak" fullTitle="PEAK / AVG" controls={shapes} />
+      <EnvelopeChart adsr={preset.adsr} showRegions={false} showPeakAvg title={`${preset.name.toUpperCase()} · PEAK VS AVERAGE`} caption="levels relative to the drawn peak" fullTitle="PEAK / AVG" controls={shapes} readout={crestRead} />
       <Card>
         <Eyebrow>COMPUTED FROM THE DRAWN WAVEFORM · RELATIVE TO ITS PEAK</Eyebrow>
-        <Text style={styles.read}>
-          <Text style={{ color: colors.textPrimary }}>peak {fmtDb(toDb(pk))}</Text> · <Text style={{ color: colors.purple }}>average (RMS) {fmtDb(toDb(av))}</Text> · crest factor {crest.toFixed(1)} dB
-        </Text>
+        {crestRead}
         <Body>{id === 'snare' ? 'The percussive sound spends almost all its time far below its peak: a big crest factor. A peak meter reads it as loud; an average meter barely moves.' : 'The sustained sound sits near its peak most of the time: a small crest factor. Peak and average meters nearly agree.'}</Body>
       </Card>
       <Card>
