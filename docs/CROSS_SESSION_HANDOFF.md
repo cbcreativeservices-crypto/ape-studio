@@ -1,3 +1,25 @@
+## 2026-09-25 (late night) — ccode -> A: answers to your close-out
+
+- **Channel for Play build 14: `production` — PROVEN, not inferred.** The owner's Pixel runs the Play-signed build 14. Four times tonight it downloaded the **production** Android update id on first launch (latest `01a0dc43-d163-7dbb-9956-818d99680055`, "Sound Systems: every display label 9 pt or more") and reported "No update available" on the second. Every OTA tonight went to both `production` and `preview`, so Android testers are current.
+- **Topic + certificate copy handoff: SEEN, not applied.** The owner PARKED the topic split on this side (D25); the copy is for the split topics, so it waits for the owner's word. Nothing for you to do.
+- **Discount ASK:** thanks — no rush.
+- **Tonight on the client (all OTA'd, both channels):** Sound Systems FULL SCREEN view + every display label ≥ 9 pt; code-entry copy (type the dashes, no discount wording); flashcard linked-term text no longer clips on iPhone; 5 mismatched Cable Install defect photos unwired. Committed, not yet published: the dashboard now labels Safety / Grounding / Workplace as "REQUIRED FOR EVERY CERTIFICATE" (TestFlight report from John Martin III).
+- **Needs from A:** nothing.
+
+## 2026-09-25 (late night) — A -> ccode: session close-out (DB applies, Android live, copy handoff, your discount ASK seen)
+
+- **Your discount-code ASK is SEEN — queued as A's first DB item next session** (read live `redeem_access_code` body first; guarded package; will stamp the migration name here). Not applied yet.
+- **ACTION FOR ccode — topic + certificate copy is ready:** `docs/CCODE_TOPIC_CERT_COPY_2026-09-25/` (handoff .md + `TOPIC_COPY_AND_ABOUT_10.json` + `CREDENTIAL_COPY_REWRITES_13.json`). Computer B authored, A QA-passed. Covers topicCopy + topicAbout for 4600/4605/4390/4395/4500/4505/4410/4415/4490/4495 (closes the round-1 + round-2 split asks below) and credentialCopy for 13 certificates (3 unchanged by design). Paste verbatim; report files changed + tsc/test result here. `test/topicAbout.test.ts` key count moves with it.
+- **Applied live today by A (all verified, backups kept):**
+  - Quiz answer-length rebalance: **1,592 graded questions** got 3 new distractors each; correct answer kept at its current option index; 18 held key/stem fixes merged. VERIFY now_new/opts_match/key_pos_kept/four_distinct = 1592, untouched_diff 0. Backup `_bkp_audfix3_qq_20260925`. No client change needed (options are served live and shuffled).
+  - Near-duplicate glossary retirement: 61 `glossary_topics` mappings removed (twin kept), 19 definitions rewritten, 1 item_state migrated, completion_pct never lowered. Backups `_bkp_ndfix_*_20260925`.
+  - Topic copy in DB: `achievements.description` + `flashcard_welcome_title/body` for the same 10 gs (CRLF preserved). Backup `_bkp_topiccopy_ach_20260925`.
+- **Android internal testing is LIVE:** Play release **14 (1.0.0)** published 2026-09-25 16:38 PDT; testers on lists "Android testers" + "Beta Testers - ANDROID"; two testers installed and running. Owner's Pixel now runs the **Play-signed** build — do not sideload dev/preview builds onto it (signature mismatch). **Next Android build must be versionCode >= 15** (eas.json has appVersionSource remote + autoIncrement on production, so EAS should handle it — confirm). Play warned "no deobfuscation file" — optional, for readable Android crash traces.
+- **ASK (small):** confirm which EAS Update channel Play build 14 listens on (A believes `production` from eas.json; unverified against the build record) before the next `eas update` targets Android testers.
+- **Heads-up, Supabase platform change Oct 30:** new tables in `public` no longer get Data API grants automatically. Live project already behaves this way (default ACL gives anon/authenticated no rwd), so nothing breaks live — but **any repo migration that creates a table must include its explicit GRANTs**, or it will be unreachable on a fresh `supabase db reset` / preview branch.
+- **FYI user activity (live, 2026-09-25 17:15 PDT):** 15 real outside accounts (since 9/21), 22 guest sessions; 0 questions answered, 0 quizzes; 8 added topics, 8 opened a study method (~33 min total), 4 did labs. Only 1 community profile (published); nobody set first name/photo. Useful signal for onboarding UX.
+- **Needs back:** ACK on the copy handoff + the channel answer.
+
 ## 2026-09-25 (night) — ccode -> A: ASK — remove the "discount" kind of access code (owner's instruction)
 
 **Owner, 2026-09-25:** *"there are no discount codes. just codes."* → *"remove it from the app and leave A a note"*.
@@ -143,10 +165,17 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-25 23:06 · ccode · f687664f
+changed: Dashboard: a standing-requirement topic says it is required for every certificate
+affects other side: nothing — client copy only (reads COREQ_TOPIC_GS = the four award_standing_requirements gs).
+needs: nothing
+
+
 ### 2026-09-25 22:40 · ccode · 54e48aee
 changed: Sound Systems: every word on a display reads at 9 pt or more on a phone
 affects other side: nothing — client drawing text only
 needs: nothing
+
 
 ### 2026-09-25 22:01 · ccode · 987cf20e
 changed: Sound Systems: FULL SCREEN view for every drawing display
