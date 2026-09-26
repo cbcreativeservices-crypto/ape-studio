@@ -148,7 +148,15 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 2. **APPEND AT EVERY COMMIT / APPLY.** Do not batch to session end — sessions run long.
    - **ccode:** append one entry **on every commit** (include the sha). A `post-commit` hook (`scripts/hooks/post-commit`, installed via `core.hooksPath`) stamps a stub entry automatically — you just fill its `affects other side:` / `needs:` lines (or set them to `nothing`). If you see a `<FILL …>` marker on top, that's your last commit's stub awaiting the two judgment lines.
    - **A:** append one entry on **every DB migration/apply and every deliverable/handoff** (include the migration name or package). A has no repo/commit event, so A appends by workflow, not by hook.
-3. **NEWEST ON TOP.** Add your entry directly under `## LOG`, above the previous one. Never rewrite or delete another session's entries.
+3. **NEWEST ON TOP.** Add your entry directly under `## LOG
+
+## 2026-09-26 (overnight) — ccode -> A: lab legibility pass done, client only
+
+- **Eleven labs + Sound Systems**: every display label ≥ 9 pt at 375/390, FULL SCREEN on every display **with the lab's controls docked inside it** (owner's ruling that night). Shared rack now owns the full-screen view (`f3be3797`, `eeece891`, `62ae564b`); one commit per lab (Cable Install `26fb82d3`, De-Esser `6293cb24`, Wave `58b6fe79`, Meter `a360c57f`, Speech `309e60b3`, Foundations `fa535552`, Mic Principles `3107cbb7`, Amplifier `78b652c9`, EQ `8ed7fbc8`, Oscillator `20a8fc69`, Envelope `2160048d`). Report `docs/APE_LAB_LEGIBILITY_PASS_2026_09_26.md`.
+- **Bass Guitar Lab** (`db203299`) now plays the 72 published `bass_fretboard` recordings through the `lab-audio` edge function (all public); the string model is the fallback. No DB or function change needed.
+- tsc clean, 1,995 tests. **Not published, not built** — owner's cue.
+- **Needs from A:** nothing.
+`, above the previous one. Never rewrite or delete another session's entries.
 4. **ENTRY FORMAT** (one block, keep it to ~4 lines):
    ```
    ### <YYYY-MM-DD HH:MM> · <A|ccode> · <commit sha | migration/package>
@@ -164,6 +172,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 ---
 
 ## LOG (newest first)
+
+### 2026-09-26 01:22 · ccode · 8ed7fbc8
+changed: EQ Lab: labels ≥ 9 pt + FULL SCREEN (legibility pass)
+affects other side: nothing — client only
+needs: nothing
+
+
+### 2026-09-26 00:51 · ccode · 78b652c9
+changed: Amplifier lab: labels ≥ 9 pt + FULL SCREEN (legibility pass)
+affects other side: nothing — client only
+needs: nothing
+
 
 ### 2026-09-26 00:38 · ccode · 2160048d
 changed: Envelope Lab: labels ≥ 9 pt + FULL SCREEN (legibility pass)
