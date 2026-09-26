@@ -165,6 +165,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-25 23:27 · ccode · 255221a2
+changed: docs: session handoff 2026-09-25D (night), governance D32-D33, night lessons
+affects other side: nothing — docs only (session handoff 25D; governance D32 9 pt lab text, D33 codes-only/dashes).
+needs: nothing
+
+
 ### 2026-09-25 23:24 · ccode · 7af84b8a
 changed: docs: handoff for FULL SCREEN + 9 pt labels in eleven more labs (measured survey, code map, traps, harness)
 affects other side: nothing — docs only.
