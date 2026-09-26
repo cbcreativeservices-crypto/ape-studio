@@ -125,6 +125,7 @@ function RoomView({
   mode,
   modal,
   scatterWall,
+  wallT,
   onDragSource,
   onDragListener,
 }: {
@@ -139,6 +140,8 @@ function RoomView({
   modal?: { nx: number; ny: number };
   /** Wall carrying a WORKING diffuser (0 = top), or null for a specular room. */
   scatterWall?: number | null;
+  /** Wall depth on the glass, px (RoomSceneView default 9). */
+  wallT?: number;
   onDragSource?: (id: string, x: number, y: number) => void;
   onDragListener?: (x: number, y: number) => void;
 }) {
@@ -154,6 +157,7 @@ function RoomView({
       mode={mode}
       modal={modal}
       scatterWall={scatterWall}
+      wallT={wallT}
       onDragSource={onDragSource}
       onDragListener={onDragListener}
     />
@@ -512,6 +516,8 @@ export function AbsorptionModule(p: WaveModuleProps) {
               scene={scene}
               freq={freq}
               layers={layers}
+              // Deep walls: the material is drawn in section (owner 2026-09-26).
+              wallT={18}
               onDragSource={onDragSource}
               onDragListener={onDragListener}
             />

@@ -332,6 +332,9 @@ export type RoomSceneProps = {
   onDragSource?: (id: string, x: number, y: number) => void;
   onDragListener?: (x: number, y: number) => void;
   onSelect?: (id: string | null) => void;
+  /** Wall strip depth on the glass, px (default 9). The Absorption lab draws
+   *  its walls deeper so each material reads in section (owner 2026-09-26). */
+  wallT?: number;
   /** Fires true when an object drag starts, false on release/terminate — hosts
    *  wire this to their scroll-lock so the drag beats the ScrollView. Usually
    *  unneeded: RoomSceneView also locks via the ScrollLockProvider context. */
@@ -340,7 +343,7 @@ export type RoomSceneProps = {
 
 // ── Room geometry: meters → px ───────────────────────────────────────────────
 
-const WALL_T = 9; // wall strip thickness, px
+const WALL_T = 9; // default wall strip depth on the glass, px (× ts in FULL SCREEN)
 const ROOM_MARGIN = 30; // canvas margin so wall strips + labels fit
 
 type RoomGeo = { x0: number; y0: number; x1: number; y1: number; pxPerM: number; wPx: number; hPx: number; diag: number };
@@ -375,33 +378,36 @@ function sceneKey(scene: WaveScene): string {
   });
 }
 
-// ── Wall strips: material color/texture hints ────────────────────────────────
+// ── Wall strips: each material drawn in SECTION ─────────────────────────────
+// The strip is the wall seen from above, cut through — so each material shows
+// what it physically is (owner 2026-09-26: "I want better … (static) of the
+// materials … thicken the edge (wall) thickness so that material inside could
+// be better visualized"). Illustrative, not to scale: a 5 cm foam panel is not
+// drawn 5 cm deep. Treatments sit on a backing wall (grey band on the outside)
+// so the picture says "treatment ON a wall", which is what α describes.
 
-const WALL_ART: Record<MaterialKey, { fill: string; accent: 'none' | 'spec' | 'hem' | 'ticks' | 'dots' | 'grain'; accentColor: string }> = {
-  concrete: { fill: '#4b4e57', accent: 'none', accentColor: '' }, // flat slab gray
-  glass: { fill: '#22384a', accent: 'spec', accentColor: '#9fd2f2' }, // pale + specular line
-  drywall: { fill: '#5b5e66', accent: 'none', accentColor: '' },
-  curtain: { fill: '#463a63', accent: 'hem', accentColor: '#8f7fc0' }, // soft wave hem
-  carpet: { fill: '#4a3a2e', accent: 'ticks', accentColor: '#2e2318' },
-  foam: { fill: '#23262c', accent: 'ticks', accentColor: '#3d434e' }, // dark + tick texture
-  fiberglass: { fill: '#2e2620', accent: 'ticks', accentColor: '#5a4730' },
-  wood: { fill: '#6b4a2c', accent: 'grain', accentColor: '#8a6238' },
-  audience: { fill: '#2c3242', accent: 'dots', accentColor: '#6a7288' }, // dotted heads
-  open: { fill: '', accent: 'none', accentColor: '' }, // dashed gap, no strip
-};
+/** Deterministic 0..1 noise — the texture must not shimmer between renders. */
+function wallNoise(i: number, b: number, salt: number): number {
+  const v = Math.sin(i * 127.1 + b * 311.7 + salt * 74.7) * 43758.5453;
+  return v - Math.floor(v);
+}
+
+const WALL_BACKING = '#4b4e57'; // the structural wall behind a treatment
+const WALL_POST = '#3a3c43'; // corner posts where two strips meet
 
 type WallPiece = { path: SkPathT; color: string; width?: number; opacity: number; dash?: [number, number] };
 
-/** Boundary strips: [top, right, bottom, left]. The inner-edge line brightness
- *  encodes REFLECTIVITY (1 − α at the current frequency) — reflective glass
- *  glints, absorptive fiberglass goes matte. Honest and pretty. */
-function buildWalls(scene: WaveScene, geo: RoomGeo, freq: number): WallPiece[] {
-  const { x0, y0, x1, y1 } = geo;
-  const T = WALL_T;
+/** Boundary strips: [top, right, bottom, left], `T` px deep. The inner-edge
+ *  line brightness encodes REFLECTIVITY (1 − α at the current frequency) —
+ *  reflective glass glints, absorptive fiberglass goes matte. */
+function buildWalls(scene: WaveScene, geo: RoomGeo, freq: number, T: number): WallPiece[] {
+  const { x0, y0, x1, y1, pxPerM } = geo;
+  const u = T / WALL_T; // detail scale: 1 on a default glass wall, grows with depth and zoom
   const pieces: WallPiece[] = [];
+  const fill = (path: SkPathT, color: string, opacity = 1) => pieces.push({ path, color, opacity });
+  const stroke = (path: SkPathT, color: string, width: number, opacity = 1) => pieces.push({ path, color, width, opacity });
   for (let b = 0; b < 4; b++) {
     const mat = scene.boundary[b];
-    const art = WALL_ART[mat];
     // Inner edge (room side) start/end, along unit, and normal INTO the strip.
     const horiz = b === 0 || b === 2;
     const sx = horiz ? x0 : b === 3 ? x0 : x1;
@@ -411,70 +417,175 @@ function buildWalls(scene: WaveScene, geo: RoomGeo, freq: number): WallPiece[] {
     const ay = horiz ? 0 : 1;
     const nx = horiz ? 0 : b === 3 ? -1 : 1;
     const ny = horiz ? (b === 0 ? -1 : 1) : 0;
-    const P = (t: number, off: number): [number, number] => [sx + ax * t + nx * off, sy + ay * t + ny * off];
+    // (t along the wall, d depth from the room face) → canvas px.
+    const P = (t: number, d: number): [number, number] => [sx + ax * t + nx * d, sy + ay * t + ny * d];
+    const poly = (pts: [number, number][]) => {
+      const path = Skia.Path.Make();
+      pts.forEach(([t, d], i) => {
+        const [px, py] = P(t, d);
+        if (i === 0) path.moveTo(px, py);
+        else path.lineTo(px, py);
+      });
+      path.close();
+      return path;
+    };
+    const band = (d0: number, d1: number) => poly([[0, d0], [len, d0], [len, d1], [0, d1]]);
+    const seg = (path: SkPathT, t0: number, d0: number, t1: number, d1: number) => {
+      const [qx0, qy0] = P(t0, d0);
+      const [qx1, qy1] = P(t1, d1);
+      path.moveTo(qx0, qy0);
+      path.lineTo(qx1, qy1);
+    };
 
     if (mat === 'open') {
       // Opening: no strip at all — a dashed gap along the boundary.
       const dashP = Skia.Path.Make();
       dashP.moveTo(sx, sy);
       dashP.lineTo(sx + ax * len, sy + ay * len);
-      pieces.push({ path: dashP, color: '#7d828f', width: 1.6, opacity: 0.8, dash: [8, 7] });
+      pieces.push({ path: dashP, color: '#7d828f', width: 1.6 * u, opacity: 0.8, dash: [8 * u, 7 * u] });
       continue;
     }
 
-    // Strip rect, extended past the corners so adjacent strips meet cleanly.
-    const fill = Skia.Path.Make();
-    if (horiz) fill.addRect(Skia.XYWHRect(x0 - T, b === 0 ? y0 - T : y1, len + 2 * T, T));
-    else fill.addRect(Skia.XYWHRect(b === 3 ? x0 - T : x1, y0 - T, T, len + 2 * T));
-    pieces.push({ path: fill, color: art.fill, opacity: 1 });
-
-    // Material texture accents.
-    if (art.accent === 'spec') {
-      const spec = Skia.Path.Make();
-      const [gx0, gy0] = P(len * 0.08, T * 0.45);
-      const [gx1, gy1] = P(len * 0.92, T * 0.45);
-      spec.moveTo(gx0, gy0);
-      spec.lineTo(gx1, gy1);
-      pieces.push({ path: spec, color: art.accentColor, width: 2, opacity: 0.4 });
-      const hi = Skia.Path.Make();
-      const [hx0, hy0] = P(len * 0.14, T * 0.28);
-      const [hx1, hy1] = P(len * 0.5, T * 0.28);
-      hi.moveTo(hx0, hy0);
-      hi.lineTo(hx1, hy1);
-      pieces.push({ path: hi, color: '#ffffff', width: 0.8, opacity: 0.55 });
-    } else if (art.accent === 'hem') {
-      const hem = Skia.Path.Make();
-      let first = true;
-      for (let t = 2; t <= len - 2; t += 4) {
-        const [hx, hy] = P(t, T * 0.5 + 2.1 * Math.sin(t * 0.45));
-        if (first) { hem.moveTo(hx, hy); first = false; } else hem.lineTo(hx, hy);
+    if (mat === 'concrete') {
+      // Poured slab: grey with aggregate stones.
+      fill(band(0, T), '#4b4e57');
+      const lite = Skia.Path.Make();
+      const dark = Skia.Path.Make();
+      const n = Math.floor(len / (3.2 * u));
+      for (let i = 0; i < n; i++) {
+        const [cx, cy] = P(wallNoise(i, b, 1) * len, (0.15 + 0.7 * wallNoise(i, b, 2)) * T);
+        (i % 2 ? lite : dark).addCircle(cx, cy, (0.45 + 0.75 * wallNoise(i, b, 3)) * u);
       }
-      pieces.push({ path: hem, color: art.accentColor, width: 1.2, opacity: 0.6 });
-    } else if (art.accent === 'ticks') {
-      const ticks = Skia.Path.Make();
-      for (let t = 5; t < len - 3; t += 8) {
-        const [tx0, ty0] = P(t, 1.6);
-        const [tx1, ty1] = P(t + 3.4, T - 1.6);
-        ticks.moveTo(tx0, ty0);
-        ticks.lineTo(tx1, ty1);
-      }
-      pieces.push({ path: ticks, color: art.accentColor, width: 1, opacity: 0.7 });
-    } else if (art.accent === 'dots') {
-      const dots = Skia.Path.Make();
-      for (let t = 6; t < len - 4; t += 10) {
-        const [dx, dy] = P(t, T * 0.5);
-        dots.addCircle(dx, dy, 1.7);
-      }
-      pieces.push({ path: dots, color: art.accentColor, opacity: 0.85 });
-    } else if (art.accent === 'grain') {
+      fill(lite, '#70747e', 0.85);
+      fill(dark, '#33353c', 0.9);
+    } else if (mat === 'glass') {
+      // Window: dark frame depth, a pale pane with glints, mullions.
+      fill(band(0, T), '#16232e');
+      fill(band(0.3 * T, 0.62 * T), '#8fc6e6', 0.32);
+      const glint = Skia.Path.Make();
+      seg(glint, len * 0.1, 0.38 * T, len * 0.42, 0.38 * T);
+      seg(glint, len * 0.58, 0.38 * T, len * 0.7, 0.38 * T);
+      stroke(glint, '#ffffff', 0.8 * u, 0.6);
+      const mull = Skia.Path.Make();
+      const S = Math.max(40 * u, len / 5);
+      for (let t = S; t < len - S * 0.3; t += S) seg(mull, t, 0, t, T);
+      stroke(mull, '#3a4a58', 1.8 * u, 1);
+    } else if (mat === 'drywall') {
+      // Stud wall: gypsum board each side of a hollow cavity, studs every 40 cm.
+      fill(band(0, T), '#1a1b20');
+      fill(band(0, 0.26 * T), '#a8a49a');
+      fill(band(0.8 * T, T), '#a8a49a', 0.7);
+      const S = Math.max(10 * u, 0.4 * pxPerM);
+      const sw = Math.max(1.5 * u, 0.1 * S);
+      const studs = Skia.Path.Make();
+      for (let t = S / 2; t < len - sw; t += S) studs.addPath(poly([[t, 0.26 * T], [t + sw, 0.26 * T], [t + sw, 0.8 * T], [t, 0.8 * T]]));
+      fill(studs, '#7a5a3a');
+    } else if (mat === 'wood') {
+      // Panelling: planks with seams and running grain.
+      fill(band(0, T), '#6b4a2c');
+      const seams = Skia.Path.Make();
+      let k = 0;
+      for (let t = 14 * u; t < len - 4 * u; t += (14 + 6 * wallNoise(k++, b, 4)) * u) seg(seams, t, 0, t, T);
+      stroke(seams, '#3e2a18', 0.9 * u, 0.9);
       const grain = Skia.Path.Make();
-      for (const off of [T * 0.33, T * 0.66]) {
-        const [gx0, gy0] = P(2, off);
-        const [gx1, gy1] = P(len - 2, off);
-        grain.moveTo(gx0, gy0);
-        grain.lineTo(gx1, gy1);
+      [0.25, 0.5, 0.75].forEach((dd, g) => {
+        for (let t = 0; t <= len; t += 2 * u) {
+          const [gx, gy] = P(t, dd * T + 0.07 * T * Math.sin(t / (6 * u) + g * 1.9));
+          if (t === 0) grain.moveTo(gx, gy);
+          else grain.lineTo(gx, gy);
+        }
+      });
+      stroke(grain, '#95693e', 0.7 * u, 0.7);
+    } else if (mat === 'curtain') {
+      // Heavy drape hung off the wall: pleated fabric, an air gap, the wall.
+      fill(band(0, T), '#101116');
+      fill(band(0.8 * T, T), WALL_BACKING);
+      const pleat = Skia.Path.Make();
+      const hi = Skia.Path.Make();
+      const Pd = 9 * u;
+      for (let t = 0; t <= len; t += 0.8 * u) {
+        const d = 0.4 * T + 0.26 * T * Math.sin((2 * Math.PI * t) / Pd);
+        const [px, py] = P(t, d);
+        const [hx, hy] = P(t, d - 0.08 * T);
+        if (t === 0) {
+          pleat.moveTo(px, py);
+          hi.moveTo(hx, hy);
+        } else {
+          pleat.lineTo(px, py);
+          hi.lineTo(hx, hy);
+        }
       }
-      pieces.push({ path: grain, color: art.accentColor, width: 0.9, opacity: 0.5 });
+      stroke(pleat, '#7a68ad', Math.max(1.4 * u, 0.14 * T), 1);
+      stroke(hi, '#bfb0ea', 0.5 * u, 0.5);
+    } else if (mat === 'carpet') {
+      // Backing + underlay, then a dense pile facing the room.
+      fill(band(0, T), '#241a13');
+      fill(band(0.62 * T, T), '#3a2d23');
+      const pileA = Skia.Path.Make();
+      const pileB = Skia.Path.Make();
+      let i = 0;
+      for (let t = 0.8 * u; t < len; t += 1.6 * u, i++) {
+        const lean = (wallNoise(i, b, 5) - 0.5) * 1.4 * u;
+        seg(i % 2 ? pileA : pileB, t, 0.62 * T, t + lean, (0.06 + 0.12 * wallNoise(i, b, 6)) * T);
+      }
+      stroke(pileA, '#8a6a4f', 0.8 * u, 0.95);
+      stroke(pileB, '#6a4f3b', 0.8 * u, 0.95);
+    } else if (mat === 'foam') {
+      // Wedge foam on the wall: the sawtooth profile everyone recognises.
+      fill(band(0, T), '#101116');
+      fill(band(0.82 * T, T), WALL_BACKING);
+      const Pw = Math.max(6 * u, 0.8 * T);
+      const body: [number, number][] = [[0, 0.82 * T], [0, 0.5 * T]];
+      const lit = Skia.Path.Make();
+      for (let t = 0; t < len; t += Pw) {
+        const tip = Math.min(len, t + Pw / 2);
+        const end = Math.min(len, t + Pw);
+        body.push([tip, 0.05 * T], [end, 0.5 * T]);
+        lit.addPath(poly([[t, 0.5 * T], [tip, 0.05 * T], [tip, 0.5 * T]]));
+      }
+      body.push([len, 0.82 * T]);
+      fill(poly(body), '#353a44');
+      fill(lit, '#4c5360', 0.95);
+    } else if (mat === 'fiberglass') {
+      // Fabric-wrapped rigid panel on stand-offs: fibrous core, air gap, wall.
+      fill(band(0, T), '#101116');
+      fill(band(0.84 * T, T), WALL_BACKING);
+      fill(band(0.06 * T, 0.62 * T), '#9c7b46');
+      fill(band(0, 0.06 * T), '#4a4552');
+      const clips = Skia.Path.Make();
+      for (let t = 12 * u; t < len; t += 24 * u) seg(clips, t, 0.62 * T, t, 0.84 * T);
+      stroke(clips, '#6b6e78', 1.4 * u, 1);
+      const fibA = Skia.Path.Make();
+      const fibB = Skia.Path.Make();
+      const n = Math.floor(len / (1.8 * u));
+      for (let i = 0; i < n; i++) {
+        const t = wallNoise(i, b, 7) * len;
+        const d = (0.12 + 0.44 * wallNoise(i, b, 8)) * T;
+        const ang = wallNoise(i, b, 9) * Math.PI;
+        const r = 1.4 * u;
+        seg(i % 2 ? fibA : fibB, t - Math.cos(ang) * r, d - Math.sin(ang) * r * 0.5, t + Math.cos(ang) * r, d + Math.sin(ang) * r * 0.5);
+      }
+      stroke(fibA, '#d4b37c', 0.5 * u, 0.6);
+      stroke(fibB, '#6e5530', 0.5 * u, 0.6);
+    } else if (mat === 'audience') {
+      // A seated row from above: shoulders and heads, seat backs behind.
+      fill(band(0, T), '#14161d');
+      fill(band(0.82 * T, T), '#2a2f3d');
+      const sh = Skia.Path.Make();
+      const heads = Skia.Path.Make();
+      const S = Math.max(7 * u, 0.62 * T);
+      for (let t = S / 2; t < len - S / 3; t += S) {
+        const [cx, cy] = P(t, 0.58 * T);
+        const along = 0.52 * T;
+        const deep = 0.26 * T;
+        const wR = horiz ? along : deep;
+        const hR = horiz ? deep : along;
+        sh.addOval(Skia.XYWHRect(cx - wR / 2, cy - hR / 2, wR, hR));
+        const [hx, hy] = P(t, 0.34 * T);
+        heads.addCircle(hx, hy, 0.19 * T);
+      }
+      fill(sh, '#3b4256');
+      fill(heads, '#9aa2b8', 0.9);
     }
 
     // Reflectivity edge on the room side: bright = reflective, matte = absorbed.
@@ -482,8 +593,20 @@ function buildWalls(scene: WaveScene, geo: RoomGeo, freq: number): WallPiece[] {
     const edge = Skia.Path.Make();
     edge.moveTo(sx, sy);
     edge.lineTo(sx + ax * len, sy + ay * len);
-    pieces.push({ path: edge, color: '#ffffff', width: 1.2, opacity: 0.08 + 0.5 * (1 - a) });
+    pieces.push({ path: edge, color: '#ffffff', width: 1.2 * u, opacity: 0.08 + 0.5 * (1 - a) });
   }
+  // Corner posts where two strips meet (skipped where both sides are open).
+  const bd = scene.boundary;
+  const posts = Skia.Path.Make();
+  const corner = (cx: number, cy: number, wa: number, wb: number) => {
+    if (bd[wa] === 'open' && bd[wb] === 'open') return;
+    posts.addRect(Skia.XYWHRect(cx, cy, T, T));
+  };
+  corner(x0 - T, y0 - T, 0, 3);
+  corner(x1, y0 - T, 0, 1);
+  corner(x1, y1, 2, 1);
+  corner(x0 - T, y1, 2, 3);
+  pieces.push({ path: posts, color: WALL_POST, opacity: 1 });
   return pieces;
 }
 
@@ -937,13 +1060,18 @@ export function RoomSceneView(p: RoomSceneProps) {
   // SCREEN (the Skia trap — see stageAspect.ts). The room margin holds the
   // wall labels, so it grows with them.
   const ts = useStageTextScale();
-  const geo = useMemo(() => roomGeo(scene, w, h, ROOM_MARGIN * ts), [scene, w, h, ts]);
+  // Walls zoom with the drawing (D35): depth × ts, and the margin that holds
+  // the strip + its label grows by whatever the lab adds over the default.
+  const wallT0 = p.wallT ?? WALL_T;
+  const roomMargin = ROOM_MARGIN + (wallT0 - WALL_T);
+  const wallPx = wallT0 * ts;
+  const geo = useMemo(() => roomGeo(scene, w, h, roomMargin * ts), [scene, w, h, ts, roomMargin]);
   // FULL SCREEN: report the room's own shape so the zoomed canvas is the room
   // (plus its label margin), not a tall box with the room floating mid-way.
   const report = useContext(StageAspectReport);
   useEffect(() => {
-    report?.aspect(scene.w / scene.h, ROOM_MARGIN);
-  }, [report, scene.w, scene.h]);
+    report?.aspect(scene.w / scene.h, roomMargin);
+  }, [report, scene.w, scene.h, roomMargin]);
   const key = sceneKey(scene);
   const headFrontImg = useImage(ICON_HEAD_FRONT);
   const nx = p.modal?.nx ?? 1;
@@ -1018,7 +1146,7 @@ export function RoomSceneView(p: RoomSceneProps) {
     }
     return path;
   }, [scene.w, scene.h, geo]);
-  const walls = useMemo(() => buildWalls(scene, geo, freq), [key, geo, freq]); // eslint-disable-line react-hooks/exhaustive-deps
+  const walls = useMemo(() => buildWalls(scene, geo, freq, wallPx), [key, geo, freq, wallPx]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── RAYS: image-source reflection polylines, order ≤ 2 ────────────────────
   // Also emits TRACES — each ray's px polyline + cumulative segment lengths —
@@ -1570,19 +1698,19 @@ export function RoomSceneView(p: RoomSceneProps) {
           offset here is × ts (the Skia trap, 2026-09-25): the canvas grows in
           FULL SCREEN, RN text does not, so the labels scale themselves. */}
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-        <RNText style={[styles.wallLabel, { fontSize: 9 * ts, left: midX - 50 * ts, top: geo.y0 - WALL_T - 15 * ts, width: 100 * ts, textAlign: 'center' }]}>
+        <RNText style={[styles.wallLabel, { fontSize: 9 * ts, left: midX - 50 * ts, top: geo.y0 - wallPx - 15 * ts, width: 100 * ts, textAlign: 'center' }]}>
           {matLabel(0)}
         </RNText>
-        <RNText style={[styles.wallLabel, { fontSize: 9 * ts, left: midX - 50 * ts, top: geo.y1 + WALL_T + 2 * ts, width: 100 * ts, textAlign: 'center' }]}>
+        <RNText style={[styles.wallLabel, { fontSize: 9 * ts, left: midX - 50 * ts, top: geo.y1 + wallPx + 2 * ts, width: 100 * ts, textAlign: 'center' }]}>
           {matLabel(2)}
         </RNText>
         <RNText
-          style={[styles.wallLabel, { fontSize: 9 * ts, left: geo.x1 + WALL_T + 8 * ts - 50 * ts, top: midY - 6 * ts, width: 100 * ts, textAlign: 'center', transform: [{ rotate: '90deg' }] }]}
+          style={[styles.wallLabel, { fontSize: 9 * ts, left: geo.x1 + wallPx + 8 * ts - 50 * ts, top: midY - 6 * ts, width: 100 * ts, textAlign: 'center', transform: [{ rotate: '90deg' }] }]}
         >
           {matLabel(1)}
         </RNText>
         <RNText
-          style={[styles.wallLabel, { fontSize: 9 * ts, left: geo.x0 - WALL_T - 8 * ts - 50 * ts, top: midY - 6 * ts, width: 100 * ts, textAlign: 'center', transform: [{ rotate: '-90deg' }] }]}
+          style={[styles.wallLabel, { fontSize: 9 * ts, left: geo.x0 - wallPx - 8 * ts - 50 * ts, top: midY - 6 * ts, width: 100 * ts, textAlign: 'center', transform: [{ rotate: '-90deg' }] }]}
         >
           {matLabel(3)}
         </RNText>

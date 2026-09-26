@@ -132,22 +132,46 @@ export function StageFullScreen({
   }
   const w = Math.round(baseW * zoom);
   const h = Math.round(baseH * zoom);
-  // A fixed-shape drawing on a portrait phone is height-limited at 1×: a
-  // 3:2 room sat in the middle third with black above and below (owner
-  // 2026-09-26). So it OPENS at the largest step whose width still fits the
-  // screen — "1×" is then what fills the width — once per opening.
-  const autoZoomed = useRef(false);
+  // 1× is ALWAYS the whole drawing, and every opening starts there (owner
+  // 2026-09-26: "1× should be zoomed full out to see everything always").
+  // This replaces the fill-width opening step of 1a69d3ca, which cropped a
+  // height-limited drawing top and bottom.
+
+  // ZOOM ANCHOR (owner 2026-09-26): a step zooms in on the spot the learner
+  // last touched in the drawing; untouched, it zooms on the centre. Held as
+  // a fraction of the drawing so it survives every step's re-draw.
+  const anchor = useRef<{ fx: number; fy: number } | null>(null);
   useEffect(() => {
-    if (!visible) {
-      autoZoomed.current = false;
-      return;
-    }
-    if (autoZoomed.current || !effShape || bodyH === 0) return;
-    autoZoomed.current = true;
-    let best = 1;
-    for (const z of ZOOMS) if (baseW * z <= fitW + 1) best = z;
-    if (best !== 1) setZoom(best);
-  }, [visible, effShape, bodyH, baseW, fitW]);
+    if (visible) anchor.current = null;
+  }, [visible]);
+  const drawRef = useRef<View>(null);
+  const hScroll = useRef<ScrollView>(null);
+  const vScroll = useRef<ScrollView>(null);
+  const [bodyW, setBodyW] = useState(0);
+  // Record the touch WITHOUT claiming it: the capture probe answers false,
+  // so the drawing's own drag still gets the gesture (touch and mouse alike).
+  const noteTouch = (e: { nativeEvent: { pageX: number; pageY: number } }) => {
+    const { pageX: tx, pageY: ty } = e.nativeEvent;
+    drawRef.current?.measure((_x, _y, mw, mh, px, py) => {
+      if (mw > 0 && mh > 0) {
+        anchor.current = {
+          fx: Math.max(0, Math.min(1, (tx - px) / mw)),
+          fy: Math.max(0, Math.min(1, (ty - py) / mh)),
+        };
+      }
+    });
+    return false;
+  };
+  // Each step re-mounts the scrollers (key), so once the new content has its
+  // size, scroll each axis to put the anchor mid-view.
+  const anchorScroll = (axis: 'x' | 'y', content: number) => {
+    const view = axis === 'x' ? bodyW : bodyH;
+    if (zoom <= 1 || view <= 0 || content <= view) return;
+    const f = anchor.current ? (axis === 'x' ? anchor.current.fx : anchor.current.fy) : 0.5;
+    const off = Math.max(0, Math.min(content - view, f * content - view / 2));
+    if (axis === 'x') hScroll.current?.scrollTo({ x: off, y: 0, animated: false });
+    else vScroll.current?.scrollTo({ x: 0, y: off, animated: false });
+  };
   // Overlay labels (RN <Text> over Skia) grow by this — 1 on the glass.
   const textScale = glassW && glassW > 0 ? w / glassW : 1;
 
@@ -185,12 +209,20 @@ export function StageFullScreen({
 
         <View style={styles.stack}>
         {readouts ? <View style={styles.readouts}>{readouts}</View> : null}
-        <View style={styles.body} onLayout={(e) => setBodyH(Math.round(e.nativeEvent.layout.height))}>
+        <View
+          style={styles.body}
+          onLayout={(e) => {
+            setBodyH(Math.round(e.nativeEvent.layout.height));
+            setBodyW(Math.round(e.nativeEvent.layout.width));
+          }}
+        >
           {bodyH > 0 ? (
             // Two scrollers = drag in both directions once zoomed in. At 1×
             // the drawing fits and neither scrolls.
             <ScrollView
               key={`v${zoom}`}
+              ref={vScroll}
+              onContentSizeChange={(_cw, ch) => anchorScroll('y', ch)}
               // The outer (vertical) content must NOT centre its child
               // horizontally: with alignItems:'center' the inner horizontal
               // scroller took its CONTENT width, so the overflow landed on
@@ -203,12 +235,14 @@ export function StageFullScreen({
               showsVerticalScrollIndicator={zoom > 1}
             >
               <ScrollView
+                ref={hScroll}
+                onContentSizeChange={(cw) => anchorScroll('x', cw)}
                 horizontal
                 contentContainerStyle={styles.center}
                 scrollEnabled={zoom > 1}
                 showsHorizontalScrollIndicator={zoom > 1}
               >
-                <View style={{ width: w, height: h }}>
+                <View ref={drawRef} style={{ width: w, height: h }} onStartShouldSetResponderCapture={noteTouch}>
                   <StageAspectReport.Provider value={report}>
                     <StageTextScale.Provider value={textScale}>{render(w, h)}</StageTextScale.Provider>
                   </StageAspectReport.Provider>
