@@ -335,6 +335,11 @@ export type RoomSceneProps = {
   /** Wall strip depth on the glass, px (default 9). The Absorption lab draws
    *  its walls deeper so each material reads in section (owner 2026-09-26). */
   wallT?: number;
+  /** A quadratic-residue diffuser FITTED to a wall (drawn whether or not it is
+   *  scattering at this ƒ — the object is there either way; `scatterWall` is
+   *  what says it is working). Well depths follow `depthM` (owner 2026-09-26:
+   *  "draw the diffuser on the wall"). */
+  diffuserPanel?: { wall: number; depthM: number } | null;
   /** Fires true when an object drag starts, false on release/terminate — hosts
    *  wire this to their scroll-lock so the drag beats the ScrollView. Usually
    *  unneeded: RoomSceneView also locks via the ScrollLockProvider context. */
@@ -400,7 +405,19 @@ type WallPiece = { path: SkPathT; color: string; width?: number; opacity: number
 /** Boundary strips: [top, right, bottom, left], `T` px deep. The inner-edge
  *  line brightness encodes REFLECTIVITY (1 − α at the current frequency) —
  *  reflective glass glints, absorptive fiberglass goes matte. */
-function buildWalls(scene: WaveScene, geo: RoomGeo, freq: number, T: number): WallPiece[] {
+/** QRD well sequence for N = 7: sₙ = n² mod 7. Well depth ∝ sₙ. */
+const QRD7 = [0, 1, 4, 2, 2, 4, 1];
+/** The Diffusion lab's DEPTH range, m — maps the panel's depth into the strip. */
+const QRD_DEPTH_MIN = 0.05;
+const QRD_DEPTH_MAX = 0.6;
+
+function buildWalls(
+  scene: WaveScene,
+  geo: RoomGeo,
+  freq: number,
+  T: number,
+  panel?: { wall: number; depthM: number } | null,
+): WallPiece[] {
   const { x0, y0, x1, y1, pxPerM } = geo;
   const u = T / WALL_T; // detail scale: 1 on a default glass wall, grows with depth and zoom
   const pieces: WallPiece[] = [];
@@ -446,7 +463,28 @@ function buildWalls(scene: WaveScene, geo: RoomGeo, freq: number, T: number): Wa
       continue;
     }
 
-    if (mat === 'concrete') {
+    if (panel && panel.wall === b) {
+      // Quadratic-residue diffuser: a row of wooden wells of different depths
+      // (sₙ = n² mod 7, repeating) on the structural wall. Deeper panel =
+      // deeper wells = scatters lower (ƒmin = c / 2·depth). Not to scale.
+      const f01 = Math.max(0, Math.min(1, (panel.depthM - QRD_DEPTH_MIN) / (QRD_DEPTH_MAX - QRD_DEPTH_MIN)));
+      const D = T * (0.3 + 0.62 * f01);
+      fill(band(D, T), WALL_BACKING);
+      fill(band(0, D), '#0c0d10');
+      const ww = Math.max(4 * u, len / 42);
+      const wood = Skia.Path.Make();
+      const fins = Skia.Path.Make();
+      let n = 0;
+      for (let t = 0; t < len - 0.5; t += ww, n++) {
+        const t1 = Math.min(len, t + ww);
+        const bottom = (QRD7[n % 7] / 4) * D;
+        wood.addPath(poly([[t, bottom], [t1, bottom], [t1, D], [t, D]]));
+        seg(fins, t, 0, t, D);
+      }
+      seg(fins, len, 0, len, D);
+      fill(wood, '#7a5534');
+      stroke(fins, '#b0824f', 0.9 * u, 1);
+    } else if (mat === 'concrete') {
       // Poured slab: grey with aggregate stones.
       fill(band(0, T), '#4b4e57');
       const lite = Skia.Path.Make();
@@ -1146,7 +1184,12 @@ export function RoomSceneView(p: RoomSceneProps) {
     }
     return path;
   }, [scene.w, scene.h, geo]);
-  const walls = useMemo(() => buildWalls(scene, geo, freq, wallPx), [key, geo, freq, wallPx]); // eslint-disable-line react-hooks/exhaustive-deps
+  const panelWall = p.diffuserPanel?.wall ?? -1;
+  const panelDepth = p.diffuserPanel?.depthM ?? 0;
+  const walls = useMemo(
+    () => buildWalls(scene, geo, freq, wallPx, panelWall >= 0 ? { wall: panelWall, depthM: panelDepth } : null),
+    [key, geo, freq, wallPx, panelWall, panelDepth], // eslint-disable-line react-hooks/exhaustive-deps
+  ); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── RAYS: image-source reflection polylines, order ≤ 2 ────────────────────
   // Also emits TRACES — each ray's px polyline + cumulative segment lengths —
@@ -1572,7 +1615,7 @@ export function RoomSceneView(p: RoomSceneProps) {
   // house label idiom; rotated for the side walls).
   const midX = (geo.x0 + geo.x1) / 2;
   const midY = (geo.y0 + geo.y1) / 2;
-  const matLabel = (b: number) => MATERIALS[scene.boundary[b]].label.toUpperCase();
+  const matLabel = (b: number) => (b === panelWall ? 'DIFFUSER' : MATERIALS[scene.boundary[b]].label.toUpperCase());
 
   return (
     <View style={{ width: w, height: h }} {...pan.panHandlers}>

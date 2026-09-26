@@ -126,6 +126,7 @@ function RoomView({
   modal,
   scatterWall,
   wallT,
+  diffuserPanel,
   onDragSource,
   onDragListener,
 }: {
@@ -142,6 +143,8 @@ function RoomView({
   scatterWall?: number | null;
   /** Wall depth on the glass, px (RoomSceneView default 9). */
   wallT?: number;
+  /** A diffuser fitted to a wall, drawn in section (Diffusion). */
+  diffuserPanel?: { wall: number; depthM: number } | null;
   onDragSource?: (id: string, x: number, y: number) => void;
   onDragListener?: (x: number, y: number) => void;
 }) {
@@ -158,6 +161,7 @@ function RoomView({
       modal={modal}
       scatterWall={scatterWall}
       wallT={wallT}
+      diffuserPanel={diffuserPanel}
       onDragSource={onDragSource}
       onDragListener={onDragListener}
     />
@@ -694,6 +698,11 @@ export function DiffusionModule(p: WaveModuleProps) {
               // the design ƒ), so the drawing agrees with the bezel: below
               // `fLow` it stays a mirror, which is the whole point of DEPTH.
               scatterWall={scatters ? 0 : null}
+              // The panel itself, drawn on the top wall whenever it is fitted;
+              // its wells deepen with DEPTH (owner 2026-09-26). Deep walls so
+              // the wells read.
+              diffuserPanel={diffuser ? { wall: 0, depthM: depth } : null}
+              wallT={18}
               onDragSource={onDragSource}
               onDragListener={onDragListener}
             />
