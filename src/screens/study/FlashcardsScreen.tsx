@@ -1492,11 +1492,13 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                     <Text style={styles.levelEyebrow}>{LEVEL_LABELS[0]}</Text>
                     <ScrollView
                       style={{ flex: 1 }}
-                      contentContainerStyle={{ paddingBottom: 4 }}
+                      contentContainerStyle={styles.levelScrollContent}
                       showsVerticalScrollIndicator
                       nestedScrollEnabled
                     >
-                      <Text style={styles.levelBody}>{renderLinked(levelText(card, 1, isMember), card.id)}</Text>
+                      <CardTextPress onLongPress={() => setFullscreen(true)}>
+                        <Text style={styles.levelBody}>{renderLinked(levelText(card, 1, isMember), card.id)}</Text>
+                      </CardTextPress>
                     </ScrollView>
                   </>
                 ) : level === 0 ? (
@@ -1546,13 +1548,15 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                         running under the footer buttons (Booth 2026-07-08). */}
                     <ScrollView
                       style={{ flex: 1 }}
-                      contentContainerStyle={{ paddingBottom: 4 }}
+                      contentContainerStyle={styles.levelScrollContent}
                       showsVerticalScrollIndicator
                       nestedScrollEnabled
                     >
                       {/* In-deck glossary terms inside the text are tappable
                           links to their full-screen definition (2026-07-18). */}
-                      <Text style={styles.levelBody}>{renderLinked(levelText(card, level, isMember), card.id)}</Text>
+                      <CardTextPress onPress={onTap} onLongPress={() => setFullscreen(true)}>
+                        <Text style={styles.levelBody}>{renderLinked(levelText(card, level, isMember), card.id)}</Text>
+                      </CardTextPress>
                     </ScrollView>
                     {coach.visible && (
                       <Text style={styles.hint} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
@@ -1916,6 +1920,31 @@ export function FlashcardsScreen({ navigation, route }: Props) {
  * top of the full-screen study modal. Closing changes no deck state, so the
  * user lands back on the exact card/level they were on.
  */
+/**
+ * CardTextPress — the card's tap / long-press, moved INSIDE the definition's
+ * ScrollView (tester report 2026-09-25, iPhone 15, iOS 26.6.2: "I'm only
+ * getting the part of the text that first shows up when you tap for
+ * definitions… I can't see the words that would scroll from below… If I tap
+ * again it goes to the next aspect… if I swipe it goes to the next term").
+ *
+ * The whole card is a Pressable, and the definition's ScrollView sat inside
+ * it. On iOS a scroller INSIDE a touchable is the unreliable arrangement: the
+ * touchable becomes the responder on touch-down and the drag never reaches the
+ * text. A touchable inside a scroller is the one every list uses — the
+ * ScrollView takes the gesture over the moment it moves and cancels the press.
+ * So the text carries its own press (innermost wins: one tap, one step), and
+ * the outer card Pressable still answers taps on the padding around it.
+ * 2026-09-23's fix (the pan responder releasing the vertical axis on the solo
+ * view) stays — this is the other half of the same symptom.
+ */
+function CardTextPress({ onPress, onLongPress, children }: { onPress?: () => void; onLongPress: () => void; children: ReactNode }) {
+  return (
+    <Pressable onPress={onPress} onLongPress={onLongPress} delayLongPress={850} style={{ flexGrow: 1 }} accessible={false}>
+      {children}
+    </Pressable>
+  );
+}
+
 function LinkedTermOverlay({
   item,
   topInset,
@@ -2133,6 +2162,9 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 0 },
   },
   levelEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.8, color: colors.amberLabel },
+  // flexGrow: short text still fills the scroller, so a tap below it is the
+  // text's own press (see CardTextPress).
+  levelScrollContent: { flexGrow: 1, paddingBottom: 4 },
   levelBody: { fontFamily: fonts.barlowRegular, fontSize: 21, lineHeight: 33, color: colors.textSecondary },
   // In-definition glossary term link (Booth 2026-07-18) — glossary blue,
   // underlined, tappable → LinkedTermOverlay.
