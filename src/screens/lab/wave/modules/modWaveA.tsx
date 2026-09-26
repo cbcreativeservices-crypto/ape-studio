@@ -352,6 +352,8 @@ export function ReflectionModule(p: WaveModuleProps) {
               scene={scene}
               freq={freq}
               layers={layers}
+              // Deep walls: the material is drawn in section (owner 2026-09-26).
+              wallT={18}
               onDragSource={onDragSource}
               onDragListener={onDragListener}
             />

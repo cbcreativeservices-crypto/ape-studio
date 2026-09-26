@@ -78,7 +78,7 @@ function coverageAtFreq(src: WaveSource, freq: number): number {
 /** Hosts the phase clock next to the Skia view — only rendered when viz ≠ null,
  *  so no conditional hooks ever run in the module bodies. */
 function SceneHero({
-  viz, scene, width, maxH = 300, focused, freq, layers, visHz = 0.6, selectedId, onSelect, onDragSource, onDragListener,
+  viz, scene, width, maxH = 300, focused, freq, layers, visHz = 0.6, selectedId, onSelect, onDragSource, onDragListener, wallT,
 }: {
   viz: WaveVizModule;
   scene: WaveScene;
@@ -94,6 +94,8 @@ function SceneHero({
   onSelect?: (id: string | null) => void;
   onDragSource?: (id: string, x: number, y: number) => void;
   onDragListener?: (x: number, y: number) => void;
+  /** Wall depth on the glass, px (RoomSceneView default 9). */
+  wallT?: number;
 }) {
   const phase = viz.usePhaseClock(focused, visHz);
   const height = Math.max(150, Math.min(maxH, Math.round((width * scene.h) / scene.w)));
@@ -109,6 +111,7 @@ function SceneHero({
       onSelect={onSelect}
       onDragSource={onDragSource}
       onDragListener={onDragListener}
+      wallT={wallT}
     />
   );
 }
@@ -1631,6 +1634,8 @@ export function RoomBuilderModule(p: WaveModuleProps) {
                 focused={p.focused}
                 freq={viewFreq}
                 layers={layers}
+                // Deep walls: the material is drawn in section (owner 2026-09-26).
+                wallT={18}
                 selectedId={selectedId}
                 onSelect={setSelectedId}
                 onDragSource={(id, x, y) => {

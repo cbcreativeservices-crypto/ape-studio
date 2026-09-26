@@ -181,6 +181,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 11:22 · ccode · a5e33e6c
+changed: Full screen: 1x always shows the whole drawing; zoom steps anchor on the last touch (else centre). Wave walls drawn in section; Absorption walls deepened
+affects other side: nothing — client JS only (rack full screen + Wave lab drawing)
+needs: nothing
+
+
 ### 2026-09-26 10:56 · ccode · 38d005d8
 changed: docs: session handoff 2026-09-26B, governance D35-D37 (interactive full screen, cropped readouts, bass recordings), lessons
 affects other side: nothing — docs only

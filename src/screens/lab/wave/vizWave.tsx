@@ -1741,8 +1741,11 @@ export function RoomSceneView(p: RoomSceneProps) {
             { left: lx - stackW / 2, top: ly + 22 * ts }, // below the head
             { left: lx - stackW / 2, top: ly - 50 * ts - stackH }, // above the fan
           ];
+          // Inside the ROOM, not just the canvas: the canvas margin holds the
+          // wall strip and its material label, which the stack must not cover
+          // (Reflection, deep walls 2026-09-26).
           const inCanvas = (c: { left: number; top: number }) =>
-            c.left >= 2 && c.left + stackW <= w - 2 && c.top >= 2 && c.top + stackH <= h - 2;
+            c.left >= geo.x0 + 2 && c.left + stackW <= geo.x1 - 2 && c.top >= geo.y0 + 2 && c.top + stackH <= geo.y1 - 2;
           const coversSource = (c: { left: number; top: number }) =>
             scene.sources.some((s) => {
               const sx = geo.x0 + s.x * geo.pxPerM;
@@ -1753,7 +1756,7 @@ export function RoomSceneView(p: RoomSceneProps) {
           const pick =
             candidates.find((c) => inCanvas(c) && !coversSource(c)) ??
             candidates.find(inCanvas) ??
-            { left: Math.max(2, Math.min(w - stackW - 2, lx - stackW / 2)), top: midTop };
+            { left: Math.max(geo.x0 + 2, Math.min(geo.x1 - stackW - 2, lx - stackW / 2)), top: midTop };
           const { left, top } = pick;
           return (
             <View pointerEvents="none" style={[styles.arrivalStack, { left, top, width: stackW, paddingHorizontal: padX, paddingVertical: padY, borderRadius: 4 * ts }]}>
