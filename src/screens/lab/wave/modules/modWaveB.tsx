@@ -78,7 +78,7 @@ function coverageAtFreq(src: WaveSource, freq: number): number {
 /** Hosts the phase clock next to the Skia view — only rendered when viz ≠ null,
  *  so no conditional hooks ever run in the module bodies. */
 function SceneHero({
-  viz, scene, width, maxH = 300, focused, freq, layers, visHz = 0.6, selectedId, onSelect, onDragSource, onDragListener, wallT, sectionView, probes,
+  viz, scene, width, maxH = 300, fixedH, focused, freq, layers, visHz = 0.6, selectedId, onSelect, onDragSource, onDragListener, wallT, sectionView, probes,
 }: {
   viz: WaveVizModule;
   scene: WaveScene;
@@ -98,11 +98,15 @@ function SceneHero({
   wallT?: number;
   /** Section (side) view — line array (2026-09-26). */
   sectionView?: boolean;
+  /** Draw into exactly this height (a rack stage's box). RoomSceneView fits
+   *  the room + its label margin inside it; deriving the height from the
+   *  room's bare aspect let the margin eat the room (2026-09-26). */
+  fixedH?: number;
   /** Measurement points the module reads, drawn on the scene. */
   probes?: { x: number; y: number; label: string }[];
 }) {
   const phase = viz.usePhaseClock(focused, visHz);
-  const height = Math.max(150, Math.min(maxH, Math.round((width * scene.h) / scene.w)));
+  const height = fixedH ?? Math.max(150, Math.min(maxH, Math.round((width * scene.h) / scene.w)));
   return (
     <viz.RoomSceneView
       scene={scene}
@@ -133,7 +137,7 @@ const layersValue = (layers: WaveLayers) =>
 /** Rack stage — fit the room into the glass: SceneHero derives height from
  *  width × aspect, so hand it the width that lands on h (Room Builder idiom). */
 function RackScene({
-  viz, scene, w, h, focused, freq, layers, selectedId, onSelect, onDragSource, onDragListener, sectionView, probes,
+  viz, scene, w, h, focused, freq, layers, selectedId, onSelect, onDragSource, onDragListener, sectionView, probes, wallT,
 }: {
   viz: WaveVizModule | null;
   scene: WaveScene;
@@ -148,15 +152,20 @@ function RackScene({
   onDragListener?: (x: number, y: number) => void;
   sectionView?: boolean;
   probes?: { x: number; y: number; label: string }[];
+  wallT?: number;
 }) {
   if (!viz) return <VizUnavailableCard />;
   return (
     <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center' }}>
+      {/* The whole stage box: RoomSceneView letterboxes the room AND its
+          wall-label margin itself. Sizing to the room's bare aspect let the
+          margin eat the room — at 3× the Line Array room filled 716 of
+          ~1100 px while its labels were drawn for the full width. */}
       <SceneHero
         viz={viz}
         scene={scene}
-        width={Math.max(120, Math.min(w, Math.round((h * scene.w) / scene.h)))}
-        maxH={Math.max(150, h)}
+        width={w}
+        fixedH={h}
         focused={focused}
         freq={freq}
         layers={layers}
@@ -166,6 +175,7 @@ function RackScene({
         onDragListener={onDragListener}
         sectionView={sectionView}
         probes={probes}
+        wallT={wallT}
       />
     </View>
   );
@@ -459,6 +469,7 @@ export function LineArrayModule(p: WaveModuleProps) {
             layers={layers}
             onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
             sectionView
+            wallT={18}
           />
         ),
         params: [
@@ -1638,13 +1649,13 @@ export function RoomBuilderModule(p: WaveModuleProps) {
         stage: (w, h) =>
           viz ? (
             <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center' }}>
-              {/* Fit the room into the glass: SceneHero derives height from
-                  width × aspect, so hand it the width that lands on h. */}
+              {/* The whole stage box — RoomSceneView fits room + label margin
+                  itself (see RackScene, 2026-09-26). */}
               <SceneHero
                 viz={viz}
                 scene={scene}
-                width={Math.max(120, Math.min(w, Math.round((h * scene.w) / scene.h)))}
-                maxH={Math.max(150, h)}
+                width={w}
+                fixedH={h}
                 focused={p.focused}
                 freq={viewFreq}
                 layers={layers}

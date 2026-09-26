@@ -495,6 +495,7 @@ function buildWalls(
   freq: number,
   T: number,
   panel?: { wall: number; depthM: number } | null,
+  section = false,
 ): WallPiece[] {
   const { x0, y0, x1, y1, pxPerM } = geo;
   const u = T / WALL_T; // detail scale: 1 on a default glass wall, grows with depth and zoom
@@ -684,6 +685,24 @@ function buildWalls(
       }
       stroke(fibA, '#d4b37c', 0.5 * u, 0.6);
       stroke(fibB, '#6e5530', 0.5 * u, 0.6);
+    } else if (mat === 'audience' && section) {
+      // SECTION view (Line Array floor): a seated row seen from the SIDE —
+      // heads on torsos facing the room, chair backs behind them.
+      fill(band(0, T), '#14161d');
+      const heads = Skia.Path.Make();
+      const torsos = Skia.Path.Make();
+      const chairs = Skia.Path.Make();
+      const S = Math.max(7 * u, 0.62 * T);
+      for (let t = S / 2; t < len - S / 3; t += S) {
+        const [hx, hy] = P(t, 0.18 * T);
+        heads.addCircle(hx, hy, 0.14 * T);
+        torsos.addPath(poly([[t - 0.16 * T, 0.34 * T], [t + 0.16 * T, 0.34 * T], [t + 0.2 * T, 0.78 * T], [t - 0.2 * T, 0.78 * T]]));
+        seg(chairs, t + 0.28 * T, 0.4 * T, t + 0.28 * T, T);
+        seg(chairs, t - 0.2 * T, 0.78 * T, t + 0.28 * T, 0.78 * T);
+      }
+      stroke(chairs, '#3b4256', 1.1 * u, 1);
+      fill(torsos, '#3b4256');
+      fill(heads, '#9aa2b8', 0.9);
     } else if (mat === 'audience') {
       // A seated row from above: shoulders and heads, seat backs behind.
       fill(band(0, T), '#14161d');
@@ -1321,7 +1340,7 @@ export function RoomSceneView(p: RoomSceneProps) {
   const panelWall = p.diffuserPanel?.wall ?? -1;
   const panelDepth = p.diffuserPanel?.depthM ?? 0;
   const walls = useMemo(
-    () => buildWalls(scene, geo, freq, wallPx, panelWall >= 0 ? { wall: panelWall, depthM: panelDepth } : null),
+    () => buildWalls(scene, geo, freq, wallPx, panelWall >= 0 ? { wall: panelWall, depthM: panelDepth } : null, !!p.sectionView),
     [key, geo, freq, wallPx, panelWall, panelDepth], // eslint-disable-line react-hooks/exhaustive-deps
   ); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -1862,6 +1881,11 @@ export function RoomSceneView(p: RoomSceneProps) {
   const midX = (geo.x0 + geo.x1) / 2;
   const midY = (geo.y0 + geo.y1) / 2;
   const matLabel = (b: number) => (b === panelWall ? 'DIFFUSER' : MATERIALS[scene.boundary[b]].label.toUpperCase());
+  // The pressure rings have a 12 px minimum gap (finer is an unreadable
+  // smear). When the true wavelength is finer than that, SAY so on the
+  // picture — the bezel prints the true λ (proportion audit 2026-09-26).
+  const ringGapWide =
+    p.layers.pressure && mode !== 'modal' && (speedOfSound(scene.tempC) / Math.max(20, freq)) * geo.pxPerM < 12;
 
   return (
     <View style={{ width: w, height: h }} {...pan.panHandlers}>
@@ -2046,6 +2070,11 @@ export function RoomSceneView(p: RoomSceneProps) {
           offset here is × ts (the Skia trap, 2026-09-25): the canvas grows in
           FULL SCREEN, RN text does not, so the labels scale themselves. */}
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+        {ringGapWide ? (
+          <RNText style={[styles.wallLabel, { fontSize: 9 * ts, color: '#c9a45a', left: geo.x0 - wallPx, top: geo.y0 - wallPx - 15 * ts }]}>
+            RING GAP {'>'} λ
+          </RNText>
+        ) : null}
         {(p.probes ?? []).map((pr, i) => (
           <RNText
             key={`probeL${i}`}
@@ -2466,6 +2495,11 @@ export function BarrierSceneView(p: {
         <LineBust path={bust} stroke={LINE} sw={Math.max(1, 0.06 * ppm)} />
       </Canvas>
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+        {/* Ring floor disclosed: above ~420 Hz the true λ is finer than the
+            10 px minimum ring gap (proportion audit 2026-09-26). */}
+        {lambdaPx < 10 ? (
+          <RNText style={[styles.sceneLabel, { fontSize: 9 * ts, right: 8 * ts, top: 8 * ts, color: '#c9a45a' }]}>RING GAP {'>'} λ</RNText>
+        ) : null}
         {/* Bright enough to read on the dark wedge (walkthrough 2026-09-26). */}
         <RNText style={[styles.sceneLabel, { fontSize: 9 * ts, left: bx + (lx - bx) / 2 - 50 * ts, top: groundY - 14 * ts, width: 100 * ts, textAlign: 'center', color: '#c9d3e6' }]}>
           SHADOW ZONE
