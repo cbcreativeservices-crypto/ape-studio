@@ -165,6 +165,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-25 23:24 · ccode · 7af84b8a
+changed: docs: handoff for FULL SCREEN + 9 pt labels in eleven more labs (measured survey, code map, traps, harness)
+affects other side: nothing — docs only.
+needs: nothing
+
+
 ### 2026-09-25 23:06 · ccode · f687664f
 changed: Dashboard: a standing-requirement topic says it is required for every certificate
 affects other side: nothing — client copy only (reads COREQ_TOPIC_GS = the four award_standing_requirements gs).
