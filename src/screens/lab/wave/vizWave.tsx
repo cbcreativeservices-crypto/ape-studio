@@ -1215,19 +1215,25 @@ function OutsideRing({
     if (r > 1.5) for (let i = 0; i < origins.length; i++) p.addCircle(origins[i].x, origins[i].y, r);
     return p;
   }, [t, origins, paceLen]);
+  // Owner tuning 2026-09-26 (DEMO scaling, disclosed in the lab's note):
+  //  · decay TWICE real spreading (−40·log10 r) so the fade reads in 4 m;
+  //  · ramp window (dB + 17) / 47 — the loudest case (40 Hz through drywall,
+  //    ≈ −35 dB at the wall) leaves the wall JUST WARMER THAN GREEN, while
+  //    500 Hz+ (≈ −57 dB) leaves it already blue: maximum contrast.
   const color = useDerivedValue(() => {
     const rM = Math.max(1, (t.value * (paceLen / PULSE_ARRIVE)) / pxPerM);
-    const db = -20 * Math.log10(rM) - tlDb;
-    const lvl = Math.max(0, Math.min(1, 1 + db / 60));
+    const db = -40 * Math.log10(rM) - tlDb;
+    const lvl = Math.max(0, Math.min(1, 1 + (db + 17) / 47));
     return OUT_COLORS[Math.round(lvl * (OUT_BUCKETS - 1))];
   }, [t, paceLen, pxPerM, tlDb]);
-  const op = useDerivedValue(() => 0.95 * (1 - t.value * 0.6), [t]);
+  // Quieter line (owner: "it now takes too much attention").
+  const op = useDerivedValue(() => 0.6 * (1 - t.value * 0.6), [t]);
   return (
     <>
-      <Path path={path} color={color} style="stroke" strokeWidth={5 * scale} opacity={op} blendMode="plus">
-        <BlurMask blur={4 * scale} style="normal" />
+      <Path path={path} color={color} style="stroke" strokeWidth={3 * scale} opacity={op} blendMode="plus">
+        <BlurMask blur={3 * scale} style="normal" />
       </Path>
-      <Path path={path} color={color} style="stroke" strokeWidth={2 * scale} opacity={op} />
+      <Path path={path} color={color} style="stroke" strokeWidth={1.2 * scale} opacity={op} />
     </>
   );
 }
