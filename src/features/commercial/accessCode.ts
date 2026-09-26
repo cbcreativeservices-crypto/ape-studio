@@ -13,9 +13,11 @@
  * Migration: docs/APE_ACCESS_CODES_2026_08_21.sql. Until the owner runs it, this
  * FAILS OPEN: the account is still created; the code simply reports unavailable.
  *
- * GRANT codes (comp academy) are functional at launch. DISCOUNT codes need the
- * in-app purchase / checkout flow (not built yet), so the server returns
- * `discount_pending` and the client explains it applies at purchase.
+ * Every code is a GRANT code (comp academy). There are no discount codes (owner
+ * 2026-09-25: "there are no discount codes. just codes."); the app has no
+ * message for the server's old `discount_pending` answer, so if one ever came
+ * back it falls through to 'error'. Computer A was asked to drop the
+ * 'discount' kind from access_codes.
  */
 import { supabase } from '../../lib/supabase';
 import { safeSession } from '../../lib/getSessionSafe';
@@ -27,7 +29,6 @@ export type RedeemStatus =
   | 'invalid' // unknown code
   | 'expired' // code past its validity window
   | 'used_up' // code hit its max redemptions
-  | 'discount_pending' // a valid discount code, but checkout isn't live yet
   | 'not_authenticated' // no session (must be signed in to redeem)
   | 'unavailable' // RPC missing / transport error — feature not live yet
   | 'error';
@@ -46,7 +47,6 @@ const MESSAGES: Record<RedeemStatus, string> = {
   invalid: 'That code isn’t recognized. Check it, including the dashes (-), and try again.',
   expired: 'That code has expired.',
   used_up: 'That code has reached its redemption limit.',
-  discount_pending: 'That’s a discount code — it’ll apply at checkout when purchasing is available.',
   not_authenticated: 'Sign in or create an account first, then redeem your code.',
   // `unavailable` is returned for ANY RPC error and any thrown exception,
   // including a plain network drop — and it is shown from Settings → Redeem
