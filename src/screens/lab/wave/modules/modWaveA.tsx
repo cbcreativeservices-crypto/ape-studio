@@ -34,6 +34,7 @@ import { Badge, PanelCard, ReadoutGrid, dstyles } from '../../digital/bits';
 import { useLabPhoto } from '../../labPhoto';
 import { MATERIAL_PHOTOS } from '../materialPhotos';
 import { WaveLayout } from './waveLayout';
+import { StageAspectReport } from '../../rack/stageAspect';
 import {
   MATERIALS,
   MATERIAL_SHORT,
@@ -127,6 +128,7 @@ function RoomView({
   scatterWall,
   wallT,
   diffuserPanel,
+  listenerKind,
   onDragSource,
   onDragListener,
 }: {
@@ -145,6 +147,8 @@ function RoomView({
   wallT?: number;
   /** A diffuser fitted to a wall, drawn in section (Diffusion). */
   diffuserPanel?: { wall: number; depthM: number } | null;
+  /** 'mic' draws the listener as a microphone (Comb). */
+  listenerKind?: 'head' | 'mic';
   onDragSource?: (id: string, x: number, y: number) => void;
   onDragListener?: (x: number, y: number) => void;
 }) {
@@ -162,6 +166,7 @@ function RoomView({
       scatterWall={scatterWall}
       wallT={wallT}
       diffuserPanel={diffuserPanel}
+      listenerKind={listenerKind}
       onDragSource={onDragSource}
       onDragListener={onDragListener}
     />
@@ -1266,15 +1271,22 @@ const COMB_CHECK: CheckSpec = {
 export function CombModule(p: WaveModuleProps) {
   const viz = useState(() => requireWaveViz())[0];
   const [scene, setScene] = useState<WaveScene>(() => ({
-    w: 6,
-    h: 4,
+    // Opens with the mic 0.5 m from the hard wall (a podium / music-stand mic
+    // — "where you will meet it"): the reflection is only ~4 dB down, so the
+    // notches are deep and the comb is unmistakable. At the old 4.2 m it was
+    // 21 dB down — a ±1 dB ripple that read as noise (walkthrough 2026-09-26).
+    // Sliding WALL away then shows the comb fading.
+    w: 3,
+    h: 2,
     // Only the RIGHT wall reflects — one direct sound + exactly one reflection.
     boundary: ['open', 'concrete', 'open', 'open'],
-    sources: [pt('s1', 1, 2, 500)],
-    listener: { x: 1.8, y: 2 },
+    sources: [pt('s1', 1, 1, 500)],
+    listener: { x: 2.5, y: 1 },
     tempC: 20,
   }));
-  const [layers, setLayers] = useState<WaveLayers>({ pressure: true, heat: false, rays: true, arrivals: true });
+  // ARRIVALS starts off here: the response curve on the display tells the
+  // same story, and in the small room the legend covered speaker and mic.
+  const [layers, setLayers] = useState<WaveLayers>({ pressure: true, heat: false, rays: true, arrivals: false });
   const { onDragListener } = useSceneDrag(setScene);
 
   const freq = scene.sources[0].freq;
@@ -1330,18 +1342,29 @@ export function CombModule(p: WaveModuleProps) {
           { k: 'SPACING', v: spacing > 0 ? fmtHz(spacing) : '—', helpKey: 'comb' },
           { k: 'MIC→WALL', v: fmtM(scene.w - lx), helpKey: 'comb' },
         ],
+        // The comb ON the display (walkthrough 2026-09-26): the room above,
+        // its response at the mic below — MOVE MIC / WALL visibly shift the
+        // notches here and in FULL SCREEN, not three cards down the well.
+        // The room's own aspect report is muted so FULL SCREEN hands this
+        // stack the whole box.
         stage: (w, h) =>
           viz ? (
-            <RoomView
-              viz={viz}
-              width={w}
-              height={h}
-              focused={p.focused}
-              scene={scene}
-              freq={freq}
-              layers={layers}
-              onDragListener={onDragListener}
-            />
+            <View style={{ width: w, height: h }}>
+              <StageAspectReport.Provider value={null}>
+                <RoomView
+                  viz={viz}
+                  width={w}
+                  height={Math.round(h * 0.56)}
+                  focused={p.focused}
+                  scene={scene}
+                  freq={freq}
+                  layers={layers}
+                  listenerKind="mic"
+                  onDragListener={onDragListener}
+                />
+              </StageAspectReport.Provider>
+              <ResponseCurveGraph curves={curves} dbRange={18} totalHeight={h - Math.round(h * 0.56)} width={w} samples={720} />
+            </View>
           ) : (
             <VizUnavailableCard />
           ),
@@ -1396,7 +1419,7 @@ export function CombModule(p: WaveModuleProps) {
       secondary={
         <PanelCard>
           <Text style={dstyles.eyebrow}>RESPONSE AT THE LISTENER — 100 Hz TO 8 kHz AND BEYOND</Text>
-          <ResponseCurveGraph curves={curves} dbRange={18} height={150} />
+          <ResponseCurveGraph curves={curves} dbRange={18} height={150} samples={720} />
           <Badge text="COMPUTED FROM THE SCENE’S DIRECT + REFLECTED ARRIVALS · 0 dB = DIRECT SOUND ALONE" />
         </PanelCard>
       }

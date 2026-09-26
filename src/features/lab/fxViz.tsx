@@ -251,6 +251,7 @@ export function ResponseCurveGraph({
   totalHeight,
   width,
   mainColor,
+  samples = 96,
 }: {
   curves: ResponseCurve[];
   dbRange?: number;
@@ -267,6 +268,9 @@ export function ResponseCurveGraph({
   /** Overrides the amber of the MAIN trace + its underfill (EQ Lab MIDI level
    *  colouring, owner 2026-08-07). Omitted ⇒ the house amber. */
   mainColor?: string;
+  /** Points along the log axis (default 96). A comb with notches every few
+   *  hundred Hz needs more or its notches alias away. */
+  samples?: number;
 }) {
   const [measured, setMeasured] = useState(0);
   const gw = width ?? measured;
@@ -281,7 +285,7 @@ export function ResponseCurveGraph({
   const paths = useMemo(
     () =>
       curves.map((c) => {
-        const N = 96;
+        const N = samples;
         let d = '';
         for (let i = 0; i <= N; i++) {
           const f = 20 * Math.pow(1000, i / N); // 20 → 20k log
@@ -293,7 +297,7 @@ export function ResponseCurveGraph({
         return { d, fill };
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [curves, dbRange, H, gw],
+    [curves, dbRange, H, gw, samples],
   );
   if (!gw) {
     // Reserve the box, measure once, paint on the next frame.

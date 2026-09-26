@@ -233,6 +233,36 @@ function appendStanding(p: SkPathT, x: number, gy: number, u: number) {
   p.addCircle(hx, hy, 0.12 * u);
 }
 
+/** A handheld/stand microphone seen from above, grille toward +x, rotated
+ *  to `angle` (rad). Body 18 × 5 units, grille ⌀ 9 — a real object, not a dot. */
+function MicTopGlyph({ x, y, angle, s }: { x: number; y: number; angle: number; s: number }) {
+  const parts = useMemo(() => {
+    const body = Skia.Path.Make();
+    body.addRRect(Skia.RRectXY(Skia.XYWHRect(-19 * s, -2.5 * s, 16 * s, 5 * s), 2.2 * s, 2.2 * s));
+    const mesh = Skia.Path.Make();
+    for (const d of [-2.4, 0, 2.4]) {
+      mesh.moveTo(d * s, -4 * s);
+      mesh.lineTo(d * s, 4 * s);
+      mesh.moveTo(-4 * s, d * s);
+      mesh.lineTo(4 * s, d * s);
+    }
+    return { body, mesh };
+  }, [s]);
+  return (
+    <Group transform={[{ translateX: x }, { translateY: y }, { rotate: angle }]}>
+      <Path path={parts.body}>
+        <LinearGradient start={vec(0, -2.5 * s)} end={vec(0, 2.5 * s)} colors={[BODY_HI, BODY_LO]} />
+      </Path>
+      <Path path={parts.body} color="#5a5e6a" style="stroke" strokeWidth={0.8 * s} />
+      <Circle cx={0} cy={0} r={4.6 * s} color="#8d94a1" />
+      <Group clip={Skia.RRectXY(Skia.XYWHRect(-4.6 * s, -4.6 * s, 9.2 * s, 9.2 * s), 4.6 * s, 4.6 * s)}>
+        <Path path={parts.mesh} color="#3a3e48" style="stroke" strokeWidth={0.6 * s} />
+      </Group>
+      <Circle cx={0} cy={0} r={4.6 * s} color="#c9ced8" style="stroke" strokeWidth={0.8 * s} />
+    </Group>
+  );
+}
+
 /** Line-art bust over a readability plate (LineBusts idiom, micspeaker/viz). */
 function LineBust({ path, stroke, sw }: { path: SkPathT; stroke: string; sw: number }) {
   return (
@@ -351,6 +381,9 @@ export type RoomSceneProps = {
   onDragSource?: (id: string, x: number, y: number) => void;
   onDragListener?: (x: number, y: number) => void;
   onSelect?: (id: string | null) => void;
+  /** Draw the listener as a MICROPHONE (top view, aimed at the nearest
+   *  source) instead of a head — the Comb lab is about a mic (2026-09-26). */
+  listenerKind?: 'head' | 'mic';
   /** Wall strip depth on the glass, px (default 9). The Absorption lab draws
    *  its walls deeper so each material reads in section (owner 2026-09-26). */
   wallT?: number;
@@ -1886,7 +1919,15 @@ export function RoomSceneView(p: RoomSceneProps) {
         })}
         {/* The listener — the owner's front-head line icon (LINE + a green
             accent wash), falling back to the vector glyph while it loads. */}
-        {headFrontImg ? (
+        {p.listenerKind === 'mic' ? (
+          (() => {
+            const mx = geo.x0 + scene.listener.x * geo.pxPerM;
+            const my = geo.y0 + scene.listener.y * geo.pxPerM;
+            const src = scene.sources[0];
+            const ang = src ? Math.atan2(src.y - scene.listener.y, src.x - scene.listener.x) : Math.PI;
+            return <MicTopGlyph x={mx} y={my} angle={ang} s={1.25 * ts} />;
+          })()
+        ) : headFrontImg ? (
           <>
             <IconMark image={headFrontImg} cx={geo.x0 + scene.listener.x * geo.pxPerM} cy={geo.y0 + scene.listener.y * geo.pxPerM} size={HEAD_SIZE * ts} color={LINE} plate />
             <IconMark image={headFrontImg} cx={geo.x0 + scene.listener.x * geo.pxPerM} cy={geo.y0 + scene.listener.y * geo.pxPerM} size={HEAD_SIZE * ts} color={ACCENT_GREEN} opacity={0.28} />
