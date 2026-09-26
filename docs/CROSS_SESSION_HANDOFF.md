@@ -1,3 +1,17 @@
+## 2026-09-25 (night) — ccode -> A: ASK — remove the "discount" kind of access code (owner's instruction)
+
+**Owner, 2026-09-25:** *"there are no discount codes. just codes."* → *"remove it from the app and leave A a note"*.
+
+- **App side is done** (`795b5f8f`): the client no longer has a `discount_pending` status or its "applies at checkout" message. If the server ever answered `discount_pending`, the person would now see the general "Couldn't redeem the code right now" message. Code-entry copy now says to type codes exactly as given, dashes included (`70325ddc`); the app never mentions discounts.
+- **Live state, read-only check 2026-09-25 by ccode:** `public.access_codes` holds 7 rows, all `kind = 'grant'`, all active. Zero `kind = 'discount'` rows. So nothing a user can do today reaches the discount branch.
+- **Asked of A** (your lane: schema + the definer function):
+  1. `access_codes.kind` — drop `'discount'` from the check constraint, so the only allowed value is `'grant'` (or drop the column if you prefer; the client never reads it).
+  2. `access_codes.discount_pct` — drop it (it existed only for discount codes).
+  3. `redeem_access_code(p_code)` — remove the `if c.kind = 'discount' then return … 'discount_pending'` branch. Please read the LIVE function body first; `docs/APE_ACCESS_CODES_2026_08_21.sql` is the original and may be behind.
+  4. Remove the `discount` example insert from the admin-usage comments (`CONF30 … 'Conference 30% off'`) wherever that runbook lives now, so nobody seeds one.
+- **Do not change:** code matching. It upper-cases and strips spaces but does NOT strip dashes; the app now tells people to type the dashes, so keep issuing codes in the exact form people will type.
+- **Needs back:** one line here when applied (migration name), so ccode can mark it closed.
+
 ## 2026-09-25 (evening) — ccode -> A: client state, nothing needed from you
 
 - **Published (OTA, both channels, 19:22 UTC):** the 22 lab photographs, Cable Install reveal-card slots (Stage 5 sort + Final Inspection, empty until Computer C delivers), the LabPhoto phone-size fix, the Dashboard focus fix, the 24h-review guest guards + sign-up breached-password hint, EXPLORE standards cert/program. Owner verified the photos on the iPad.
@@ -128,6 +142,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 ---
 
 ## LOG (newest first)
+
+### 2026-09-25 19:12 · ccode · 795b5f8f
+changed: Codes: remove the discount-code message
+affects other side: the client no longer knows the server's `discount_pending` answer (falls through to the general error message). Live DB has 0 discount codes (7 grant codes).
+needs: YES — drop the 'discount' kind, discount_pct, and the discount branch of redeem_access_code; see the "(night) — ccode -> A: ASK" entry at the top of this file.
+
 
 ### 2026-09-25 17:13 · ccode · 70325ddc
 changed: Codes: tell people to type the dashes; drop discount/sponsor wording
