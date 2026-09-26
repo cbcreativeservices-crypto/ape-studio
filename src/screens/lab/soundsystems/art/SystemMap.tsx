@@ -7,8 +7,13 @@
  * darkens everything downstream of it.
  *
  * Nodes are placed on a column/lane grid so the map reads at phone width:
- * five columns 68 apart, three lanes 84 apart in a 354 × 288 box (room above
- * the first lane for the bowed runs).
+ * five columns 67 apart, three lanes 78 apart in a 354 × 246 box. The box is
+ * as wide as the phone's glass allows (aspect ≈ 1.44), so the map draws at
+ * ~0.96 px per unit and every word on it — MAP_FS, 9.6 units — reads at
+ * 9 pt or more (owner 2026-09-25). A cable's label is printed under the
+ * station it FEEDS, in the cable's colour, rather than along the run: runs
+ * between neighbouring stations are too short to carry a readable word.
+ * The lane names run up the left edge, as a drawing's zone names do.
  *
  * Pure react-native-svg; LEDs and flow animate through Reanimated shared
  * values (primitive props only), and collapse to a steady state under
@@ -58,9 +63,14 @@ export type MapEdge = {
 };
 
 export const MAP_W = 354;
-const COLS = [38, 106, 174, 242, 310];
-const LANES = [56, 140, 224];
-export const MAP_H = 288;
+const COLS = [47, 113.25, 179.5, 245.75, 312];
+const LANES = [44, 122, 200];
+export const MAP_H = 246;
+/** Every word on the map, in map units (× ~0.96 on a phone = 9.2 pt). */
+const MAP_FS = 9.6;
+/** Station ring radius and the glyph inside it. */
+const RING = 21;
+const GLYPH = 30;
 
 export function mapXY(n: { lane: 0 | 1 | 2; col: number }): { x: number; y: number } {
   const c = Math.max(0, Math.min(4, n.col));
@@ -80,7 +90,7 @@ const STATE_COLOR: Record<MapState, string> = {
 };
 
 /** How high a same-lane edge bows to clear the stations it passes over. */
-const BOW = 62;
+const BOW = 50;
 
 /** A straight run between two stations, leaving their rings clear. A run
  *  along one lane that would pass THROUGH another station bows over it
@@ -92,7 +102,7 @@ function edgePath(a: { x: number; y: number }, b: { x: number; y: number }, offs
   const len = Math.max(1, Math.hypot(dx, dy));
   const nx = -dy / len;
   const ny = dx / len;
-  const r = 24;
+  const r = RING;
   if (bow) {
     const ax = a.x + Math.sign(dx) * r * 0.7;
     const ay = a.y - r * 0.7;
@@ -135,20 +145,6 @@ function chevron(m: { x: number; y: number; ux: number; uy: number }, color: str
   );
 }
 
-/** An edge label on a knocked-out pill, so a run never passes through its own
- *  words. Width is estimated from the character count (Oswald Medium at 5 px
- *  with 0.6 tracking runs about 3.1 px a character). */
-function EdgeLabel({ x, y, text, color, anchor }: { x: number; y: number; text: string; color: string; anchor: 'start' | 'middle' | 'end' }) {
-  const w = text.length * 3.1 + 6;
-  const left = anchor === 'start' ? x - 3 : anchor === 'end' ? x - w + 3 : x - w / 2;
-  return (
-    <>
-      <Rect x={left} y={y - 5.8} width={w} height={7.8} rx={2} fill="#0e1015" opacity={0.92} />
-      <SvgText x={x} y={y} fontSize={5} fill={color} fontFamily={fonts.oswaldMedium} textAnchor={anchor} letterSpacing={0.6}>{text}</SvgText>
-    </>
-  );
-}
-
 function Led({ x, y, state, dark, programme }: { x: number; y: number; state: MapState; dark: boolean; programme: SharedValue<number> }) {
   const color = state === 'unknown' ? '#1a1d24' : STATE_COLOR[state];
   const props = useAnimatedProps(() => {
@@ -160,8 +156,9 @@ function Led({ x, y, state, dark, programme }: { x: number; y: number; state: Ma
   return (
     <G>
       <ACircle cx={x} cy={y} r={7.5} fill={color} opacity={0.2} animatedProps={props} />
-      <ACircle cx={x} cy={y} r={3.6} fill={color} stroke="#000" strokeWidth={0.6} animatedProps={props} />
-      {state === 'unknown' ? <SvgText x={x} y={y + 2.4} fontSize={6.5} fill={INK.metalHi} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">?</SvgText> : null}
+      {/* not probed: a larger dark lamp with a readable '?' in it */}
+      <ACircle cx={x} cy={y} r={state === 'unknown' ? 6.4 : 3.6} fill={color} stroke="#000" strokeWidth={0.6} animatedProps={props} />
+      {state === 'unknown' ? <SvgText x={x} y={y + 3.4} fontSize={MAP_FS} fill={INK.metalHi} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">?</SvgText> : null}
     </G>
   );
 }
@@ -173,15 +170,20 @@ export function SystemMap({ nodes, edges, selectedId, onTap, a11y, running = tru
   /** Does a straight run along the lane from a to b pass under another station? */
   const blocked = (a: { x: number; y: number }, b: { x: number; y: number }) =>
     Math.abs(a.y - b.y) < 1 && [...pos.values()].some((q) => Math.abs(q.y - a.y) < 1 && q.x > Math.min(a.x, b.x) + 1 && q.x < Math.max(a.x, b.x) - 1);
+  /** A cable's label, printed under the station it feeds (see the header). */
+  const feedTag = new Map<string, { text: string; color: string }>();
+  for (const e of edges) if (e.label && !feedTag.has(e.to)) feedTag.set(e.to, { text: e.label, color: e.level === 'air' ? '#8a8b93' : CABLE_COLORS[e.level] });
   return (
     <View style={styles.wrap} accessible accessibilityRole="image" accessibilityLabel={a11y}>
       <Svg width="100%" viewBox={`0 0 ${MAP_W} ${MAP_H}`} style={{ aspectRatio: MAP_W / MAP_H }}>
         <Rect x={0} y={0} width={MAP_W} height={MAP_H} rx={12} fill="#0e1015" stroke={colors.hairline} strokeWidth={0.8} />
-        {/* lanes */}
+        {/* lanes: a divider between each pair, the name up the left edge */}
         {LANES.map((y, i) => (
           <G key={i}>
-            <Line x1={8} y1={y + 42} x2={MAP_W - 8} y2={y + 42} stroke="#1c1f27" strokeWidth={0.8} />
-            <SvgText x={10} y={y - 30} fontSize={7} fill="#4a505c" fontFamily={fonts.oswaldMedium} letterSpacing={1.6}>{lanes[i]}</SvgText>
+            {i < LANES.length - 1 ? <Line x1={16} y1={y + 49} x2={MAP_W - 8} y2={y + 49} stroke="#1c1f27" strokeWidth={0.8} /> : null}
+            <SvgText x={12} y={y + 10} fontSize={MAP_FS} fill="#5a606c" fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={0.5} transform={`rotate(-90 12 ${y + 10})`}>
+              {lanes[i]}
+            </SvgText>
           </G>
         ))}
         {/* edges */}
@@ -197,22 +199,13 @@ export function SystemMap({ nodes, edges, selectedId, onTap, a11y, running = tru
           const dead = !!e.dead;
           return (
             <G key={i} opacity={dead ? 0.3 : 1}>
-              {/* Runs are drawn thin (a cable, not a pipe) so the arrowhead and
-                  the label stand clear of them — owner 2026-09-25. */}
+              {/* Runs are drawn thin (a cable, not a pipe) so the arrowhead
+                  stands clear of them — owner 2026-09-25. */}
               <Path d={d} stroke="#05060a" strokeWidth={2.8} fill="none" strokeLinecap="round" strokeLinejoin="round" />
               <Path d={d} stroke={color} strokeWidth={e.both ? 1.1 : 1.3} fill="none" strokeLinecap="round" strokeLinejoin="round" strokeDasharray={e.dashed || e.level === 'wireless' ? '3 4' : dead ? '2 4' : undefined} />
               {d2 ? <Path d={d2} stroke={color} strokeWidth={1.1} fill="none" strokeLinecap="round" strokeDasharray="3 4" /> : null}
               {e.level === 'air' ? <Path d={d} stroke="#fff" strokeWidth={0.5} fill="none" opacity={0.25} strokeDasharray="1 3" /> : null}
               {chevron(mid, color, e.both)}
-              {e.label ? (() => {
-                if (bow) return <EdgeLabel x={mid.x + 9} y={mid.y + 2} text={e.label} color={color} anchor="start" />;
-                if (Math.abs(mid.uy) < 0.3) return <EdgeLabel x={mid.x} y={mid.y - 8} text={e.label} color={color} anchor="middle" />;
-                const ly = b.y - 30;
-                const t = (ly - a.y) / (b.y - a.y);
-                const lx = a.x + t * (b.x - a.x);
-                const right = mid.ux < 0;
-                return <EdgeLabel x={lx + (right ? 7 : -7)} y={ly + 2} text={e.label} color={color} anchor={right ? 'start' : 'end'} />;
-              })() : null}
             </G>
           );
         })}
@@ -222,18 +215,21 @@ export function SystemMap({ nodes, edges, selectedId, onTap, a11y, running = tru
           const sel = selectedId === n.id;
           const state = n.state ?? 'ok';
           const ring = state === 'unknown' ? '#3a3f4a' : STATE_COLOR[state];
+          const tag = n.value ? { text: n.value, color: ring } : feedTag.get(n.id);
           return (
             <G key={n.id}>
-              <Circle cx={x} cy={y} r={24} fill="#13161d" stroke={sel ? colors.cyanBright : ring} strokeWidth={sel ? 2 : 1.1} opacity={n.dark ? 0.6 : 1} />
-              {state !== 'ok' && state !== 'unknown' ? <Circle cx={x} cy={y} r={24} fill={ring} opacity={0.1} /> : null}
-              <GearInSvg kind={n.kind} id={`sm-${n.id}`} x={x} y={y} size={34} dim={!!n.dark || state === 'none'} power={n.dark || state === 'none' ? 'off' : 'on'} />
-              <Led x={x + 18} y={y - 18} state={state} dark={!!n.dark} programme={programme} />
-              <SvgText x={x} y={y + 34} fontSize={8} fill={sel ? colors.cyanBright : colors.textSecondary} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={0.4}>
-                {n.label.toUpperCase()}
+              <Circle cx={x} cy={y} r={RING} fill="#13161d" stroke={sel ? colors.cyanBright : ring} strokeWidth={sel ? 2 : 1.1} opacity={n.dark ? 0.6 : 1} />
+              {state !== 'ok' && state !== 'unknown' ? <Circle cx={x} cy={y} r={RING} fill={ring} opacity={0.1} /> : null}
+              <GearInSvg kind={n.kind} id={`sm-${n.id}`} x={x} y={y} size={GLYPH} dim={!!n.dark || state === 'none'} power={n.dark || state === 'none' ? 'off' : 'on'} />
+              <Led x={x + 15} y={y - 15} state={state} dark={!!n.dark} programme={programme} />
+              <SvgText x={x} y={y + 31} fontSize={MAP_FS} fill={sel ? colors.cyanBright : colors.textSecondary} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={0.3}>
+                {mapLabel(n.label)}
               </SvgText>
-              {n.value ? (
-                <SvgText x={x} y={y + 43} fontSize={7} fill={ring} fontFamily={fonts.mono} textAnchor="middle">{n.value}</SvgText>
-              ) : null}
+              {tag
+                ? tagLines(tag.text, !!n.value && n.lane < 2).map((line, k) => (
+                    <SvgText key={k} x={x} y={y + 42.5 + k * 10.5} fontSize={MAP_FS} fill={tag.color} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={0.3}>{line}</SvgText>
+                  ))
+                : null}
               {onTap ? <Circle cx={x} cy={y + 6} r={30} fill="transparent" onPress={() => onTap(n.id)} accessibilityLabel={`${n.label}${state === 'unknown' ? ', not probed — tap to probe' : `, reads ${state === 'ok' ? 'healthy' : state === 'none' ? 'no signal' : state}`}${n.value ? `, ${n.value}` : ''}${sel ? ', selected' : ''}`} /> : null}
             </G>
           );
@@ -241,6 +237,22 @@ export function SystemMap({ nodes, edges, selectedId, onTap, a11y, running = tru
       </Svg>
     </View>
   );
+}
+
+/** A reading wider than a column (WRONG CONTENT is ~68 units against a
+ *  66-unit column) breaks onto a second line under its station, so it can
+ *  never run into its neighbour's. Only above the bottom lane, which has
+ *  room below it; the bottom lane's two stations stand far apart. */
+function tagLines(text: string, mayWrap: boolean): string[] {
+  const cut = text.indexOf(' ');
+  return mayWrap && text.length > 12 && cut > 0 ? [text.slice(0, cut), text.slice(cut + 1)] : [text];
+}
+
+/** A station's name as the map prints it: upper case, without a
+ *  parenthetical ("Powered cabinet (amp inside)" → POWERED CABINET) — the
+ *  full name stays in the accessibility label, the probe list and the cards. */
+function mapLabel(label: string): string {
+  return label.replace(/\s*\([^)]*\)\s*/g, ' ').trim().toUpperCase();
 }
 
 /** The reading key under a bench — colours paired with words. */
@@ -291,7 +303,7 @@ export function chapterOneMap(v: MapVariant): { nodes: MapNode[]; edges: MapEdge
           { id: 'sub', kind: 'poweredSub', label: 'Powered sub', lane: 2, col: 4 } as MapNode,
         ]),
     { id: 'iemtx', kind: 'iemTx', label: 'IEM TX', lane: 1, col: 0 },
-    { id: 'mamp', kind: 'amp', label: 'Monitor amp', lane: 1, col: 0.9 },
+    { id: 'mamp', kind: 'amp', label: 'Monitor amp', lane: 1, col: 1 },
     { id: 'wedge', kind: 'wedge', label: 'Wedge', lane: 2, col: 0.5 },
     { id: 'ear', kind: 'listener', label: 'Listener', lane: 2, col: 2 },
   ];
@@ -300,7 +312,7 @@ export function chapterOneMap(v: MapVariant): { nodes: MapNode[]; edges: MapEdge
     { from: 'mic', to: 'box', level: inLevel },
     { from: 'di', to: 'box', level: 'mic' },
     { from: 'pb', to: 'box', level: 'line' },
-    { from: 'box', to: 'con', level: stagebox ? 'digital' : 'mic', both: true, dashed: stagebox, label: stagebox ? 'NETWORK · BOTH WAYS' : 'MULTICORE + RETURNS' },
+    { from: 'box', to: 'con', level: stagebox ? 'digital' : 'mic', both: true, dashed: stagebox, label: stagebox ? 'NETWORK' : 'MULTICORE' },
     ...(v.house === 'passive'
       ? ([
           { from: 'con', to: 'proc', level: 'line', label: 'MAIN L/R' },
@@ -314,7 +326,7 @@ export function chapterOneMap(v: MapVariant): { nodes: MapNode[]; edges: MapEdge
         ] as MapEdge[])),
     { from: 'con', to: 'mamp', level: 'line', label: 'AUX 1 · PRE' },
     { from: 'mamp', to: 'wedge', level: 'speaker' },
-    { from: 'con', to: 'iemtx', level: 'line', label: 'AUX 2 · stereo' },
+    { from: 'con', to: 'iemtx', level: 'line', label: 'AUX 2 · STEREO' },
     { from: 'top', to: 'ear', level: 'air' },
   ];
   return { nodes, edges };

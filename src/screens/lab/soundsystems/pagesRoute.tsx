@@ -19,7 +19,7 @@ import { markRouteDone } from '../../../features/soundsystems/progress';
 import type { DockParam } from '../rack/rackTypes';
 import { ChapterTag, DeeperRow, GoalChips, KeyFact, LabLink, useVisitGoals, VerdictLine } from './bits';
 import { auxHears, BusBank, ConsolePanel, DcaStrip, mainHears, MatrixStrip, matrixHears, subgroupHears, SubgroupStrip } from './art/ConsolePanel';
-import { ChannelStrip, PatchPanel, type PatchSocket, type StripStation } from './art/diagrams';
+import { ChannelStrip, PATCH_H, PatchPanel, STRIP_H, type PatchSocket, type StripStation } from './art/diagrams';
 import { dbFader, fmtDb } from './consoleDock';
 import { flipFader, SoundSystemsRackLayout, StageFit, type SsPageDef } from './rackLayout';
 
@@ -49,9 +49,9 @@ const STATIONS: readonly { id: StripStation; name: string; what: string; kind: s
   { id: 'hpf', name: 'High-pass filter', kind: 'THROUGH', what: 'Removes what the source has no business carrying below its cut-off: stage rumble, handling noise, plosives. Around 80–120 Hz for a vocal, higher for overheads and acoustic guitar, lower or off for kick, bass and keys — the sources that live down there.' },
   { id: 'eq', name: 'Channel EQ', kind: 'THROUGH', what: 'Shapes ONE source for the mix. Not the place to fix the room — that is the system EQ in the processor, applied once to the whole output.' },
   { id: 'insert', name: 'Insert', kind: 'THROUGH', what: 'A processor placed IN the path — a compressor, a gate — so the whole channel passes through it. Nothing is copied; everything goes through. On a digital console it is a block in the strip; on an analog one, a send-and-return jack.' },
-  { id: 'fader', name: 'Fader, pan and mute', kind: 'THROUGH', what: 'The channel’s level in the main mix and its position between left and right. Post-fader sends follow the fader; pre-fader sends do not. On this console the MUTE also silences the pre-fader sends — the common digital-console default; the classic analog rule left them running.' },
-  { id: 'sends', name: 'Aux sends', kind: 'A COPY', what: 'Adjustable COPIES of the channel to other buses. PRE-fader for monitors, so the house fader cannot move a wedge; POST-fader for effects and aux-fed subs, so the wet and the low end stay in proportion to the fader.' },
-  { id: 'assign', name: 'Assignment', kind: 'THE PATH', what: 'Where the channel’s main path goes: direct to the L/R main bus, or into a subgroup that then goes to main — one or the other, never both. A DCA and mute groups are controls over the channel, not paths for it.' },
+  { id: 'fader', name: 'Fader, pan and mute', kind: 'THROUGH', what: 'The channel’s level in the main mix and its position between left and right. Post-fader sends follow the fader; pre-fader sends do not. On this console the MUTE also silences the pre-fader sends — the common digital-console default; the classic analog rule left them running. A DCA or a mute group acts here too — a hand on the fader, with no audio of its own.' },
+  { id: 'sends', name: 'Aux sends', kind: 'A COPY', what: 'Adjustable COPIES of the channel to other buses. PRE-fader for monitors, so the house fader cannot move a wedge; POST-fader for effects — the reverb here — and aux-fed subs, so the wet and the low end stay in proportion to the fader.' },
+  { id: 'assign', name: 'Assignment', kind: 'THE PATH', what: 'Where the channel’s main path goes: direct to the L/R main bus, or into a subgroup that then goes to main — one or the other, never both; both is the double-routing fault. A DCA and mute groups are controls over the channel, not paths for it.' },
   { id: 'direct', name: 'Direct output', kind: 'A COPY', what: 'The channel by itself on its own output, usually for a multitrack recorder — pre- or post-fader by setting, and on a digital console a patch like any other.' },
 ];
 
@@ -95,7 +95,7 @@ function PageChannel({ ctx }: { ctx: PageCtx }) {
           { k: 'SEEN', v: `${seen.size}/${STATIONS.length}`, flex: 0.7 },
         ],
         stage: (w, h) => (
-          <StageFit w={w} h={h} aspect={354 / 314}>
+          <StageFit w={w} h={h} aspect={354 / STRIP_H}>
             <ChannelStrip selected={sel} onTap={pick} />
           </StageFit>
         ),
@@ -172,6 +172,8 @@ function PagePrePost({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'M',
+        // View-built bus columns: their text does not grow with the box, so no full-screen zoom.
+        fullScreen: false,
         badge: BUS_BADGE,
         initialParam: 'fader',
         hideDragTag: true,
@@ -322,6 +324,8 @@ function PageMonitorMixes({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
+        // View-built bus columns: their text does not grow with the box, so no full-screen zoom.
+        fullScreen: false,
         badge: BUS_BADGE,
         initialParam: 'send',
         hideDragTag: true,
@@ -392,6 +396,8 @@ function PageGroups({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
+        // View-built bus columns: their text does not grow with the box, so no full-screen zoom.
+        fullScreen: false,
         badge: BUS_BADGE,
         initialParam: 'dca',
         hideDragTag: true,
@@ -464,6 +470,8 @@ function PageMutes({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'M',
+        // View-built bus columns: their text does not grow with the box, so no full-screen zoom.
+        fullScreen: false,
         badge: BUS_BADGE,
         initialParam: 'mg-band',
         bezel: [
@@ -555,6 +563,8 @@ function PageMatrices({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
+        // View-built bus columns: their text does not grow with the box, so no full-screen zoom.
+        fullScreen: false,
         badge: BUS_BADGE,
         initialParam: 'mc7',
         hideDragTag: true,
@@ -654,7 +664,7 @@ function PagePatch({ ctx }: { ctx: PageCtx }) {
           { k: 'PATCHED', v: `${correct}/${DESTINATIONS.length}`, tint: done ? colors.green : undefined },
         ],
         stage: (w, h) => (
-          <StageFit w={w} h={h} aspect={354 / 150}>
+          <StageFit w={w} h={h} aspect={354 / PATCH_H}>
             <PatchPanel sockets={sockets} active={active} onTap={setActive} />
           </StageFit>
         ),

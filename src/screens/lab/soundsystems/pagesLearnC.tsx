@@ -13,7 +13,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Circle, Text as SvgText } from 'react-native-svg';
+import { Circle, Line } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
 import type { PageCtx } from '../kit/PagedLab';
 import { Body, Card, Eyebrow, Lead, Prompt } from '../tuning/components/primitives';
@@ -27,7 +27,7 @@ import type { DockParam } from '../rack/rackTypes';
 import { CalcLink, ChapterTag, DeeperRow, GoalChips, KeyFact, LabLink, ToolLink, useVisitGoals, VerdictLine } from './bits';
 import { ChainMeterKey, ChainMeterStage } from './art/ChainMeter';
 import { benchMap, MAP_H, MAP_W, ReadingKey, SystemMap, type MapNode } from './art/SystemMap';
-import { FieldKey, PLOT_H, PLOT_W, VenueView, type PlotBeam } from './art/VenueView';
+import { FieldKey, PLOT_FS, PLOT_H, PLOT_W, PlotLabel, VenueView, type PlotBeam } from './art/VenueView';
 import { PlanGlyph } from './art/planArt';
 import { ArrivalTimeline, FeedbackLoop } from './art/diagrams';
 import { BEAM_COLOR, PLOT_BADGE, THROW } from './plot';
@@ -230,10 +230,13 @@ function PageAlignment({ ctx }: { ctx: PageCtx }) {
       {[DL, DR].map((d, i) => (
         <PlanGlyph key={i} kind="poweredSpeaker" id={`al-tower-${i}`} x={d.x} y={d.y} rotateDeg={0} rig="pole" highlight={aligned ? colors.greenBright : undefined} />
       ))}
-      <SvgText x={180} y={ty + 4} fontSize={7} fill={aligned ? colors.greenBright : colors.orange} textAnchor="middle" fontFamily={fonts.mono}>
-        {`${setMs.toFixed(0)} ms set · ${need.toFixed(1)} ms needed`}
-      </SvgText>
-      <SvgText x={180} y={ty - 8} fontSize={5.5} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={1}>{`DELAY TOWERS · ${dist} m FROM THE MAINS`}</SvgText>
+      {/* A dimension line, mains to the delay row, the way a drawing gives a
+          distance. The set / needed milliseconds are on the bezel (NEEDED ·
+          SET · ERROR), so the plot no longer repeats them in small type. */}
+      <Line x1={180} y1={L.y} x2={180} y2={ty} stroke={colors.textMuted} strokeWidth={0.8} strokeDasharray="2 3" />
+      <Line x1={174} y1={L.y} x2={186} y2={L.y} stroke={colors.textMuted} strokeWidth={0.8} />
+      <Line x1={174} y1={ty} x2={186} y2={ty} stroke={colors.textMuted} strokeWidth={0.8} />
+      <PlotLabel x={186} y={(L.y + ty) / 2 + 4.5} fontSize={PLOT_FS} fill={aligned ? colors.greenBright : colors.textMuted} fontFamily={fonts.mono} textAnchor="start" letterSpacing={0}>{`${dist} m`}</PlotLabel>
     </>
   );
   const params: DockParam[] = [

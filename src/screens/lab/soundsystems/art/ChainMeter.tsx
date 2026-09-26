@@ -35,6 +35,11 @@ const BOTTOM = H - 12;
 /** How far below the peak the programme dips between hits, dB. */
 const SWING_DB = 16;
 const CELL_W = 44;
+/** Words and numbers on the meter drawing. It draws at ~0.94 px per unit in
+ *  a phone's glass, so 9.8 units is ≥ 9.2 pt (owner floor, 2026-09-25). The
+ *  noise-floor legend that used to be printed along its foot is in
+ *  ChainMeterKey with the other marks. */
+const METER_FS = 9.8;
 
 const yOf = (dbu: number) => BOTTOM - ((Math.max(MIN_DBU, Math.min(MAX_DBU, dbu)) - MIN_DBU) / (MAX_DBU - MIN_DBU)) * (BOTTOM - TOP);
 
@@ -84,7 +89,6 @@ function MeterSvg({ chain, programme, peak, highlight, w }: { chain: GainNode[];
         <Rect x={0} y={0} width={W} height={H} rx={10} fill="#0b0c10" stroke={colors.hairline} strokeWidth={0.8} />
         {/* nominal +4 dBu across the chain */}
         <Line x1={4} y1={yOf(4)} x2={W - 4} y2={yOf(4)} stroke={colors.textMuted} strokeWidth={0.6} strokeDasharray="2 3" />
-        <SvgText x={6} y={H - 3} fontSize={6} fill="#6a6f7a" textAnchor="start" fontFamily={fonts.oswaldMedium} letterSpacing={1}>GREY HAZE = NOISE FLOOR</SvgText>
         {chain.map((node, i) => (
           <StageMeter key={node.id} node={node} i={i} programme={programme} peak={peak} flash={firstClip?.id === node.id} lit={highlight === node.id} />
         ))}
@@ -98,7 +102,7 @@ function GlyphRow({ chain, size }: { chain: GainNode[]; size: number }) {
     <View style={styles.row}>
       {chain.map((node) => (
         <View key={node.id} style={styles.cell}>
-          <GearGlyph kind={STAGE_GLYPH[node.id]} size={size} />
+          <GearGlyph kind={STAGE_GLYPH[node.id]} size={size} legends={false} />
         </View>
       ))}
     </View>
@@ -161,6 +165,7 @@ export function ChainMeterKey() {
       <Text style={[styles.keyItem, { color: colors.red }]}>● CLIP LED · flashes on the first stage that clips (↑ = inherited from upstream)</Text>
       <Text style={styles.keyItem}>⌐ bracket · headroom in dB, the model’s peak to the clip line</Text>
       <Text style={styles.keyItem}>▮ white tick · peak hold on the programme</Text>
+      <Text style={styles.keyItem}>▒ grey haze · the noise floor, accumulated stage by stage</Text>
       <Text style={styles.keyItem}>- - - dashed line · NOMINAL +4 dBu ≡ −18 dBFS on the console’s meters</Text>
       <Text style={[styles.keyItem, { color: colors.amberLabel }]}>SIMULATED PROGRAMME</Text>
     </View>
@@ -238,13 +243,13 @@ function StageMeter({ node, i, programme, peak, flash, lit }: { node: GainNode; 
       <Line x1={x} y1={yClip} x2={x + w} y2={yClip} stroke={colors.red} strokeWidth={1.2} />
       <ACircle cx={x + w - 5} cy={TOP - 6} r={2.6} fill={colors.red} stroke="#000" strokeWidth={0.5} opacity={0} animatedProps={clipProps} />
       <Circle cx={x + w - 5} cy={TOP - 6} r={2.6} fill="none" stroke={node.clipped ? colors.red : '#2a2d33'} strokeWidth={0.6} />
-      {node.inheritedClip ? <SvgText x={x + w - 12} y={TOP - 3.5} fontSize={6} fill={colors.red} textAnchor="middle" fontFamily={fonts.oswaldSemiBold}>↑</SvgText> : null}
+      {node.inheritedClip ? <SvgText x={x + w - 14} y={TOP - 2} fontSize={METER_FS} fill={colors.red} textAnchor="middle" fontFamily={fonts.oswaldSemiBold}>↑</SvgText> : null}
       {!node.clipped && node.headroomDb > 2 ? (
         <>
           <Line x1={x + 1.5} y1={yClip} x2={x + 1.5} y2={yPeakStatic} stroke={colors.textMuted} strokeWidth={0.6} />
           <Line x1={x} y1={yClip} x2={x + 3} y2={yClip} stroke={colors.textMuted} strokeWidth={0.6} />
           <Line x1={x} y1={yPeakStatic} x2={x + 3} y2={yPeakStatic} stroke={colors.textMuted} strokeWidth={0.6} />
-          <SvgText x={x + 4} y={(yClip + yPeakStatic) / 2 + 2} fontSize={5.5} fill={colors.textMuted} fontFamily={fonts.mono}>{`${Math.round(node.headroomDb)}`}</SvgText>
+          <SvgText x={x + 4} y={(yClip + yPeakStatic) / 2 + 3.5} fontSize={METER_FS} fill={colors.textMuted} fontFamily={fonts.mono}>{`${Math.round(node.headroomDb)}`}</SvgText>
         </>
       ) : null}
       {/* the stage under the learner's thumb */}

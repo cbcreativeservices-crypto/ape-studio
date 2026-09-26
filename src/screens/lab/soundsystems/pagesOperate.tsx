@@ -116,7 +116,7 @@ function PowerRack({ on, direction, w, h }: { on: ReadonlySet<string>; direction
           const lit = direction === 'up' ? on.has(r.step) : !on.has(r.step);
           return (
             <View key={i} style={styles.rackItem}>
-              <GearGlyph kind={r.kind} size={size} label={r.label} power={lit ? 'on' : 'off'} dim={!lit} />
+              <GearGlyph kind={r.kind} size={size} label={r.label} power={lit ? 'on' : 'off'} dim={!lit} legends={false} />
               <Text style={styles.rackLabel} numberOfLines={1}>{r.label.toUpperCase()}</Text>
               <Text style={[styles.rackState, { color: lit ? colors.greenBright : colors.textMuted }]}>{lit ? '● ON' : '○ OFF'}</Text>
             </View>
@@ -535,7 +535,7 @@ export const SS_OPERATE_PAGES: SsPageDef[] = [
 const styles = StyleSheet.create({
   glyphRow: { flexDirection: 'row', justifyContent: 'space-around', alignItems: 'flex-end' },
   rackItem: { alignItems: 'center', gap: 2, flex: 1 },
-  rackLabel: { fontFamily: fonts.oswaldMedium, fontSize: 8.5, letterSpacing: 0.8, color: colors.textSub },
+  rackLabel: { fontFamily: fonts.oswaldMedium, fontSize: 9, letterSpacing: 0.3, color: colors.textSub },
   rackState: { fontFamily: fonts.oswaldMedium, fontSize: 9, letterSpacing: 1 },
   seqRow: { flexDirection: 'row', gap: 10, alignItems: 'flex-start', paddingVertical: 3 },
   seqN: { color: colors.amberLabel, fontFamily: fonts.mono, fontSize: 13, width: 18 },

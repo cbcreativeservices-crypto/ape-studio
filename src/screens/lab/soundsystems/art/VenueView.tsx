@@ -32,6 +32,11 @@ import { placedRotation } from '../plot';
 
 export const PLOT_W = 360;
 export const PLOT_H = 330;
+/** Every word on the plot. The plot draws at ~0.715 px per unit in the
+ *  phone's 250 pt glass (236 px tall inside StageFit's pad), so 13 units is
+ *  9.3 pt — the floor the owner set on 2026-09-25 for display text. Overlays
+ *  drawn on the plot use it too. */
+export const PLOT_FS = 13;
 
 /* the room's furniture, in plot units */
 const DECK = { x: 70, y: 14, w: 220, h: 94 }; // the stage deck; lip at y = 108
@@ -129,6 +134,18 @@ function sectorPath(cx: number, cy: number, r0: number, r1: number, aimDeg: numb
   const p = (r: number, a: number) => `${cx + Math.sin(a) * r} ${cy + Math.cos(a) * r}`;
   if (r0 <= 0) return `M ${cx} ${cy} L ${p(r1, a0)} A ${r1} ${r1} 0 ${large} 0 ${p(r1, a1)} Z`;
   return `M ${p(r0, a0)} L ${p(r1, a0)} A ${r1} ${r1} 0 ${large} 0 ${p(r1, a1)} L ${p(r0, a1)} A ${r0} ${r0} 0 ${large} 1 ${p(r0, a0)} Z`;
+}
+
+/** A word printed on the plot, with a dark halo under it so the floor tint
+ *  and the coverage fans never veil it (drawn twice: halo, then the fill —
+ *  paint-order is not available on every react-native-svg target). */
+export function PlotLabel({ children, ...t }: { x: number; y: number; fontSize: number; fill: string; fontFamily: string; textAnchor: 'start' | 'middle' | 'end'; letterSpacing: number; children: string }) {
+  return (
+    <>
+      <SvgText {...t} stroke="#0a0b0e" strokeWidth={3} strokeLinejoin="round" opacity={0.85}>{children}</SvgText>
+      <SvgText {...t}>{children}</SvgText>
+    </>
+  );
 }
 
 export function VenueView(p: VenueViewProps) {
@@ -229,7 +246,6 @@ export function VenueView(p: VenueViewProps) {
         {/* the deck and its riser */}
         <Rect x={DECK.x} y={DECK.y} width={DECK.w} height={DECK.h} fill="url(#vv-deck)" stroke="#2a3040" strokeWidth={1} />
         <Rect x={118} y={20} width={124} height={34} rx={2} fill="#222838" stroke="#2f3646" strokeWidth={0.8} />
-        <SvgText x={180} y={30} fontSize={6} fill="#6a7186" fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1.6}>RISER</SvgText>
         {/* masking legs, with the entrance gap */}
         {[66, 290].map((x) => (
           <G key={x}>
@@ -242,7 +258,6 @@ export function VenueView(p: VenueViewProps) {
         <Rect x={DECK.x} y={LIP_Y} width={DECK.w} height={4} fill="#0a0b0e" />
         {/* the barrier: the sub line (and an end-fire's front box) stands in the pit before it */}
         <Line x1={AUD.left} y1={162} x2={AUD.right} y2={162} stroke="#2a2e38" strokeWidth={0.8} />
-        <SvgText x={AUD.right - 4} y={159} fontSize={5} fill="#4a505c" fontFamily={fonts.oswaldMedium} textAnchor="end" letterSpacing={1}>BARRIER</SvgText>
 
         {/* seating blocks, aisles, the centre line and the mix riser */}
         {Array.from({ length: 12 }, (_, i) => 170 + i * 12).map((y) =>
@@ -255,16 +270,6 @@ export function VenueView(p: VenueViewProps) {
         )}
         <Line x1={180} y1={LIP_Y + 4} x2={180} y2={PLOT_H - 8} stroke="#fff" strokeWidth={0.7} opacity={0.12} strokeDasharray="2 4" />
         <Rect x={156} y={268} width={48} height={30} rx={2} fill="none" stroke="#3a3f4a" strokeWidth={0.7} strokeDasharray="2 2" />
-
-        {/* labels — both conventions, because the plot uses both */}
-        <SvgText x={37} y={26} fontSize={7} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={2}>SR</SvgText>
-        <SvgText x={323} y={26} fontSize={7} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={2}>SL</SvgText>
-        <SvgText x={37} y={DECK.y + DECK.h - 4} fontSize={5.5} fill="#4a505c" fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1}>WING</SvgText>
-        <SvgText x={323} y={DECK.y + DECK.h - 4} fontSize={5.5} fill="#4a505c" fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1}>WING</SvgText>
-        <SvgText x={180} y={LIP_Y + 14} fontSize={6.5} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={2}>LIP</SvgText>
-        <SvgText x={40} y={PLOT_H - 8} fontSize={6.5} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1.6}>HOUSE L</SvgText>
-        <SvgText x={320} y={PLOT_H - 8} fontSize={6.5} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1.6}>HOUSE R</SvgText>
-        <SvgText x={180} y={PLOT_H - 8} fontSize={6.5} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1.6}>FOH · MIX</SvgText>
 
         {/* the floor field and the seam */}
         {cells.fills.map((c) => (
@@ -321,6 +326,24 @@ export function VenueView(p: VenueViewProps) {
           })}
         </G>
 
+        {/* labels — both conventions, because the plot uses both. Drawn at
+            PLOT_FS so each reads at 9 pt or more on a phone (owner 2026-09-25);
+            each sits where no position's glyph or target ring can land — SR
+            mid-wing (the power distro takes the wing's top), SL above the
+            amp racks, LIP between the house-left sub and the front fill. The
+            wing is the dark offstage band the SR / SL label sits in. Drawn
+            over the floor field and the coverage so the tint never veils them. */}
+        <PlotLabel x={37} y={65} fontSize={PLOT_FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={2}>SR</PlotLabel>
+        <PlotLabel x={323} y={25} fontSize={PLOT_FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={2}>SL</PlotLabel>
+        <PlotLabel x={111} y={124} fontSize={PLOT_FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={2}>LIP</PlotLabel>
+        <PlotLabel x={44} y={PLOT_H - 8} fontSize={PLOT_FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1}>HOUSE L</PlotLabel>
+        <PlotLabel x={316} y={PLOT_H - 8} fontSize={PLOT_FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1}>HOUSE R</PlotLabel>
+        <PlotLabel x={180} y={PLOT_H - 8} fontSize={PLOT_FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1}>FOH · MIX</PlotLabel>
+
+        {/* RISER sits under the riser's front edge: inside it, it would sit under the drum-riser positions. */}
+        <PlotLabel x={180} y={64.5} fontSize={PLOT_FS} fill="#6a7186" fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1.6}>RISER</PlotLabel>
+        <PlotLabel x={AUD.right - 4} y={174} fontSize={PLOT_FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="end" letterSpacing={1}>BARRIER</PlotLabel>
+
         {/* cables */}
         {links.map((l) => {
           const a = byId.get(l.from);
@@ -344,11 +367,12 @@ export function VenueView(p: VenueViewProps) {
           if (occupied.has(s)) return null;
           const { x, y } = xy(s);
           const def = slotDef(s);
+          // No name under the ring: at a legible size the names of neighbouring
+          // positions overlap. The in-hand card in the well lists them.
           return (
             <G key={s}>
               <Circle cx={x} cy={y} r={13} fill={colors.amber} opacity={0.08} />
               <Circle cx={x} cy={y} r={13} fill="none" stroke={colors.amber} strokeWidth={1} strokeDasharray="3 3" opacity={0.85} />
-              <SvgText x={x} y={y + 21} fontSize={5.5} fill={colors.amberLabel} fontFamily={fonts.oswaldMedium} textAnchor="middle">{def.label.toUpperCase()}</SvgText>
               <Circle cx={x} cy={y} r={18} fill="transparent" onPress={() => p.onTapSlot?.(s)} accessibilityLabel={`Place at ${def.label}`} />
             </G>
           );
@@ -383,14 +407,14 @@ export function VenueView(p: VenueViewProps) {
             <G key={x.id}>
               <PlanGlyph kind={x.kind} id={`vv-${x.id}`} x={px} y={py} rotateDeg={placedRotation(x)} dim={!live} lit={live} rig={beam?.rig === 'flown' ? 'flown' : 'stack'} highlight={sel ? colors.cyanBright : undefined} />
               {beam?.feed ? (
-                <SvgText x={px} y={py + 22} fontSize={6.5} fill={beam.color} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={1}>
+                <PlotLabel x={px} y={py + 26} fontSize={PLOT_FS} fill={beam.color} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={1}>
                   {beam.feed}
-                </SvgText>
+                </PlotLabel>
               ) : null}
               {beam?.delayMs != null ? (
-                <SvgText x={px} y={py + 30} fontSize={5.5} fill={colors.textMuted} fontFamily={fonts.mono} textAnchor="middle">
+                <PlotLabel x={px} y={py + 39} fontSize={PLOT_FS} fill={colors.textMuted} fontFamily={fonts.mono} textAnchor="middle" letterSpacing={0}>
                   {`${beam.delayMs} ms`}
-                </SvgText>
+                </PlotLabel>
               ) : null}
               <Circle cx={px} cy={py} r={22} fill="transparent" onPress={() => p.onTapPlaced?.(x.id)} accessibilityLabel={`${spec.name} at ${slotDef(x.slot).label}${sel ? ', selected' : ''}${spec.radiates ? (live ? ', live' : ', silent') : ''}`} />
             </G>

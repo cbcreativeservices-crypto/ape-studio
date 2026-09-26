@@ -37,6 +37,16 @@ export function readoutOf(r: Reading): string {
   return flag ? `${sig} · ${flag.toUpperCase()}` : sig;
 }
 
+/** The one word printed under a probed station on the map: the flag when the
+ *  station carries one (it is the diagnostic word — HUM, INTERMITTENT), else
+ *  the signal. Two words side by side do not fit under neighbouring stations
+ *  at a readable size; the full reading is on the bezel (READS) and in the
+ *  PROBE list. */
+function mapReadout(r: Reading): string {
+  const flag = r.flags?.[0];
+  return flag ? flag.replace(/([a-z])([A-Z])/g, '$1 $2').toUpperCase() : readoutOf(r);
+}
+
 const BENCH_BADGE = 'THE BENCH — ILLUSTRATIVE · readings from the fault library';
 
 function shuffled(n: number): number[] {
@@ -84,7 +94,7 @@ function GroupPage({ group, ctx }: { group: FaultGroup; ctx: PageCtx }) {
     if (!c) return { ...n, state: 'unknown' };
     const r = c.reads[s];
     const probed = probes.includes(s);
-    return { ...n, state: probed ? stateOf(r) : 'unknown', value: probed ? readoutOf(r) : undefined };
+    return { ...n, state: probed ? stateOf(r) : 'unknown', value: probed ? mapReadout(r) : undefined };
   });
   const backwards = probes.length > 1 && STATION_ORDER.indexOf(probes[probes.length - 1]) < STATION_ORDER.indexOf(probes[probes.length - 2]);
   const reading = c && last ? c.reads[last] : null;

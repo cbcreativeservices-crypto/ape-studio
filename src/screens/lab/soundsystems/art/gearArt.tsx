@@ -178,7 +178,7 @@ function InstrumentMic({ id, lit }: { id: string; lit: boolean }) {
   );
 }
 
-function DiBox({ id, lit }: { id: string; lit: boolean }) {
+function DiBox({ id, lit, legends = true }: { id: string; lit: boolean; legends?: boolean }) {
   return (
     <G>
       <Rect x={14} y={22} width={38} height={26} rx={3} fill={INK.shadow} transform="translate(2,3)" />
@@ -197,7 +197,7 @@ function DiBox({ id, lit }: { id: string; lit: boolean }) {
       {/* ground lift */}
       <Rect x={26} y={43} width={12} height={2.6} rx={1.3} fill="#0a0b0d" />
       <Rect x={27} y={42.6} width={4} height={3.4} rx={1} fill={INK.metalHi} />
-      <SvgText x={33} y={30} fontSize={5} fill={INK.tape} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">DI</SvgText>
+      {legends ? <SvgText x={33} y={30} fontSize={5} fill={INK.tape} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">DI</SvgText> : null}
     </G>
   );
 }
@@ -278,7 +278,7 @@ function Snake({ id, lit }: { id: string; lit: boolean }) {
   );
 }
 
-function Stagebox({ id, lit }: { id: string; lit: boolean }) {
+function Stagebox({ id, lit, legends = true }: { id: string; lit: boolean; legends?: boolean }) {
   const inX = (i: number) => 12.5 + i * 5.6;
   return (
     <G>
@@ -294,12 +294,12 @@ function Stagebox({ id, lit }: { id: string; lit: boolean }) {
           <Led x={inX(i)} y={35.2} color={INK.green} on={lit && i < 3} r={0.7} />
         </G>
       ))}
-      <SvgText x={9} y={27.8} fontSize={3.2} fill={INK.tape} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" transform="rotate(-90 9 27.8)">IN</SvgText>
+      {legends ? <SvgText x={9} y={27.8} fontSize={3.2} fill={INK.tape} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" transform="rotate(-90 9 27.8)">IN</SvgText> : null}
       {/* outputs, amber rings */}
       {[0, 1, 2, 3, 4, 5].map((i) => (
         <Circle key={i} cx={inX(i)} cy={43} r={2.1} fill="#0a0b0d" stroke={INK.amber} strokeWidth={0.6} />
       ))}
-      <SvgText x={9} y={43} fontSize={3.2} fill={INK.tape} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" transform="rotate(-90 9 43)">OUT</SvgText>
+      {legends ? <SvgText x={9} y={43} fontSize={3.2} fill={INK.tape} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" transform="rotate(-90 9 43)">OUT</SvgText> : null}
       {/* network: primary + redundant, link LEDs */}
       <Rect x={45} y={39.5} width={5} height={5.5} rx={0.8} fill="#0a0b0d" stroke={INK.metalHi} strokeWidth={0.5} />
       <Rect x={51.5} y={39.5} width={5} height={5.5} rx={0.8} fill="#0a0b0d" stroke={INK.metalHi} strokeWidth={0.5} />
@@ -362,7 +362,7 @@ function Processor({ id, lit }: { id: string; lit: boolean }) {
   );
 }
 
-function Amp({ id, lit }: { id: string; lit: boolean }) {
+function Amp({ id, lit, legends = true }: { id: string; lit: boolean; legends?: boolean }) {
   return (
     <G>
       <Rect x={6} y={20} width={52} height={26} rx={2} fill={INK.shadow} transform="translate(2,3)" />
@@ -386,7 +386,7 @@ function Amp({ id, lit }: { id: string; lit: boolean }) {
             ))}
             <Circle cx={x + 5} cy={37} r={2.4} fill={`url(#${id}-metal)`} stroke="#000" strokeWidth={0.4} />
             <Line x1={x + 5} y1={34.8} x2={x + 5} y2={37} stroke={INK.amber} strokeWidth={0.7} />
-            <SvgText x={x + 2.5} y={43.6} fontSize={3.2} fill={INK.tape} textAnchor="middle" fontFamily={fonts.oswaldSemiBold}>{`CH${ch + 1}`}</SvgText>
+            {legends ? <SvgText x={x + 2.5} y={43.6} fontSize={3.2} fill={INK.tape} textAnchor="middle" fontFamily={fonts.oswaldSemiBold}>{`CH${ch + 1}`}</SvgText> : null}
           </G>
         );
       })}
@@ -472,7 +472,7 @@ function Wedge({ id, lit, powered }: { id: string; lit: boolean; powered: boolea
   );
 }
 
-function IemTx({ id, lit }: { id: string; lit: boolean }) {
+function IemTx({ id, lit, legends = true }: { id: string; lit: boolean; legends?: boolean }) {
   return (
     <G>
       <Line x1={48} y1={30} x2={56} y2={10} stroke={INK.metalHi} strokeWidth={1.6} strokeLinecap="round" />
@@ -484,7 +484,7 @@ function IemTx({ id, lit }: { id: string; lit: boolean }) {
       <Rect x={10} y={30} width={44} height={18} rx={2} fill={`url(#${id}-panel)`} stroke="#000" strokeWidth={0.6} />
       <RackEars x={10} y={30} w={44} h={18} />
       <Rect x={17} y={34} width={18} height={9} rx={1} fill="#0b1520" stroke="#1f3a55" strokeWidth={0.6} />
-      <SvgText x={26} y={40.5} fontSize={4.5} fill={INK.blue} fontFamily={fonts.mono} textAnchor="middle">TX · ST</SvgText>
+      {legends ? <SvgText x={26} y={40.5} fontSize={4.5} fill={INK.blue} fontFamily={fonts.mono} textAnchor="middle">TX · ST</SvgText> : null}
       <Circle cx={44} cy={39} r={3.6} fill={`url(#${id}-metal)`} stroke="#000" strokeWidth={0.4} />
       <Led on={lit} x={38} y={35} color={INK.red} />
     </G>
@@ -562,14 +562,14 @@ function Listener() {
 
 export type GlyphKind = GearKind | 'listener';
 
-function Drawing({ kind, id, lit }: { kind: GlyphKind; id: string; lit: boolean }) {
+function Drawing({ kind, id, lit, legends = true }: { kind: GlyphKind; id: string; lit: boolean; legends?: boolean }) {
   switch (kind) {
     case 'vocalMic':
       return <VocalMic id={id} lit={lit} />;
     case 'instrumentMic':
       return <InstrumentMic id={id} lit={lit} />;
     case 'di':
-      return <DiBox id={id} lit={lit} />;
+      return <DiBox id={id} lit={lit} legends={legends} />;
     case 'playback':
       return <Playback id={id} lit={lit} />;
     case 'wirelessRx':
@@ -577,13 +577,13 @@ function Drawing({ kind, id, lit }: { kind: GlyphKind; id: string; lit: boolean 
     case 'snake':
       return <Snake id={id} lit={lit} />;
     case 'stagebox':
-      return <Stagebox id={id} lit={lit} />;
+      return <Stagebox id={id} lit={lit} legends={legends} />;
     case 'console':
       return <Console id={id} lit={lit} />;
     case 'processor':
       return <Processor id={id} lit={lit} />;
     case 'amp':
-      return <Amp id={id} lit={lit} />;
+      return <Amp id={id} lit={lit} legends={legends} />;
     case 'poweredSpeaker':
       return <TopCabinet id={id} lit={lit} powered />;
     case 'passiveSpeaker':
@@ -597,7 +597,7 @@ function Drawing({ kind, id, lit }: { kind: GlyphKind; id: string; lit: boolean 
     case 'poweredWedge':
       return <Wedge id={id} lit={lit} powered />;
     case 'iemTx':
-      return <IemTx id={id} lit={lit} />;
+      return <IemTx id={id} lit={lit} legends={legends} />;
     case 'iemPack':
       return <IemPack id={id} lit={lit} />;
     case 'powerDistro':
@@ -614,7 +614,12 @@ let seq = 0;
  *  one nothing has reached yet. Default is lit. */
 export type GearPower = 'on' | 'off';
 
-export function GearGlyph({ kind, size = 56, dim, label, power = 'on' }: { kind: GlyphKind; size?: number; dim?: boolean; label?: string; power?: GearPower }) {
+/** `legends` draws the silk-screen printing on a panel (IN / OUT, CH1 / CH2,
+ *  DI, TX · ST). It is a few units tall in the 64-box, so it is illegible at
+ *  any size a glyph is drawn: a DISPLAY passes `legends={false}` (owner
+ *  2026-09-25 — no text on a display under 9 pt). Cards and the hub keep it
+ *  as texture. */
+export function GearGlyph({ kind, size = 56, dim, label, power = 'on', legends = true }: { kind: GlyphKind; size?: number; dim?: boolean; label?: string; power?: GearPower; legends?: boolean }) {
   // One id per INSTANCE, minted once at mount. Minting one per RENDER (as
   // this did until 2026-09-25) gave every gradient a new id and every
   // url(#…) fill a new target on each parent re-render, so a row of eight
@@ -626,13 +631,14 @@ export function GearGlyph({ kind, size = 56, dim, label, power = 'on' }: { kind:
   return (
     <Svg width={size} height={size} viewBox="0 0 64 64" opacity={dim ? 0.38 : 1} {...(label ? { accessibilityLabel: label } : {})}>
       <GearDefs id={id} />
-      <Drawing kind={kind} id={id} lit={power !== 'off'} />
+      <Drawing kind={kind} id={id} lit={power !== 'off'} legends={legends} />
     </Svg>
   );
 }
 
 /** The same drawing placed INSIDE a larger <Svg> (the venue plot, the
- *  system diagram). The caller owns the <Svg>; `id` must be unique in it. */
+ *  system diagram). The caller owns the <Svg>; `id` must be unique in it.
+ *  Always on a display, so the panel legends are never drawn (see GearGlyph). */
 export function GearInSvg({ kind, id, x, y, size = 40, dim, highlight, power = 'on' }: { kind: GlyphKind; id: string; x: number; y: number; size?: number; dim?: boolean; highlight?: string; power?: GearPower }) {
   const s = size / 64;
   return (
@@ -641,7 +647,7 @@ export function GearInSvg({ kind, id, x, y, size = 40, dim, highlight, power = '
       {highlight ? <Circle cx={x} cy={y} r={size * 0.62} fill={highlight} opacity={0.16} /> : null}
       {highlight ? <Circle cx={x} cy={y} r={size * 0.62} fill="none" stroke={highlight} strokeWidth={1.2} opacity={0.8} /> : null}
       <G transform={`translate(${x - size / 2}, ${y - size / 2}) scale(${s})`} opacity={dim ? 0.4 : 1}>
-        <Drawing kind={kind} id={id} lit={power !== 'off'} />
+        <Drawing kind={kind} id={id} lit={power !== 'off'} legends={false} />
       </G>
     </G>
   );

@@ -358,7 +358,9 @@ export function BusHears({ title, list, note, running = true }: { title: string;
  * console itself is worked from the dock. Sized by the glass.
  */
 export function BusBank({ buses, w, h, running = true }: { buses: readonly { id: string; title: string; list: Contribution[] }[]; w: number; h: number; running?: boolean }) {
-  const meterH = Math.max(56, Math.min(150, h - 40));
+  // 52 = the column's chrome: a two-line scribble strip, the sum readout,
+  // gaps, padding and border — so a column never grows past the glass.
+  const meterH = Math.max(56, Math.min(150, h - 52));
   const cols = Math.max(1, buses.length);
   const colW = Math.floor((w - 12 - (cols - 1) * 6) / cols);
   return (
@@ -375,11 +377,15 @@ function BusColumn({ title, list, width, meterH, running }: { title: string; lis
   const sumDb = lin2db(list.reduce((s, c) => s + c.gain, 0));
   const programme = useProgrammeLevel(running && heard.length > 0);
   const peak = usePeakHold(programme);
-  const rows = Math.max(1, Math.floor((meterH - 4) / 15));
+  // One contributor row is its name line, the level bar and the gap (~21 pt);
+  // when they do not all fit, the last line is kept for "+n more".
+  const ROW = 21;
+  const fitAll = Math.floor((meterH + 3) / ROW);
+  const rows = Math.max(1, heard.length > fitAll ? Math.floor((meterH + 3 - 16) / ROW) : fitAll);
   return (
     <View style={[styles.bankCol, { width }]} accessible accessibilityLabel={`${title}: ${heard.length ? heard.map((h) => `${h.name} at ${Math.round(lin2db(h.gain))} dB`).join(', ') : 'silent'}`}>
       <View style={styles.bankTape}>
-        <Text style={styles.bankTitle} numberOfLines={1}>{title}</Text>
+        <Text style={styles.bankTitle} numberOfLines={2}>{title}</Text>
       </View>
       <View style={styles.bankBody}>
         <BusMeter db={sumDb} programme={programme} peak={peak} height={meterH} />
@@ -586,7 +592,7 @@ const styles = StyleSheet.create({
   bank: { flexDirection: 'row', gap: 6, paddingHorizontal: 6, alignItems: 'center', justifyContent: 'center' },
   bankCol: { gap: 4, borderRadius: 8, borderWidth: 1, borderColor: '#2b2e36', backgroundColor: '#141418', padding: 5 },
   bankTape: { borderRadius: 3, backgroundColor: '#e8e2c8', paddingHorizontal: 4, paddingVertical: 2 },
-  bankTitle: { color: '#1a1a1f', fontFamily: fonts.panelSemiBold, fontSize: 8.5, letterSpacing: 0.8 },
+  bankTitle: { color: '#1a1a1f', fontFamily: fonts.panelSemiBold, fontSize: 9, letterSpacing: 0.5 },
   bankBody: { flexDirection: 'row', gap: 5, alignItems: 'flex-start' },
   bankRow: { flexDirection: 'row', alignItems: 'baseline', gap: 3 },
   bankName: { flex: 1, color: colors.textSecondary, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 0.3 },

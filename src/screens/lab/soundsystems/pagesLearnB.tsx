@@ -14,7 +14,7 @@
  */
 import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import Svg, { Circle, Path, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, G, Path, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
 import type { PageCtx } from '../kit/PagedLab';
 import { Body, Btn, Card, Eyebrow, Lead, Prompt, Row } from '../tuning/components/primitives';
@@ -549,20 +549,20 @@ function LoadRig({ ohms, count, bridged, verdict }: { ohms: number; count: numbe
   return (
     <Svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ aspectRatio: W / H }} accessibilityLabel={`${count} cabinet${count === 1 ? '' : 's'} of ${ohms} ohms in parallel on one amplifier channel${bridged ? ', bridged' : ''}; the load is ${verdict}`}>
       <GearInSvg kind="amp" id="lr-amp" x={44} y={58} size={70} power={verdict === 'unsafe' ? 'off' : 'on'} />
-      <SvgText x={44} y={104} fontSize={8} fill={verdict === 'unsafe' ? colors.red : colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{verdict === 'unsafe' ? 'AMP · PROTECT' : bridged ? 'AMP · BRIDGED' : 'AMP · CH A'}</SvgText>
+      <SvgText x={44} y={104} fontSize={8.5} fill={verdict === 'unsafe' ? colors.red : colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{verdict === 'unsafe' ? 'AMP · PROTECT' : bridged ? 'AMP · BRIDGED' : 'AMP · CH A'}</SvgText>
       {cabs.map((i) => {
         const x = 120 + i * 46;
         const y = 56;
         return (
-          <Svg key={i}>
+          <G key={i}>
             <Path d={`M 78 58 C 96 58 ${x - 26} ${y + 4} ${x - 14} ${y + 6}`} stroke={wire} strokeWidth={2.4} fill="none" strokeLinecap="round" />
             <Path d={`M 78 58 C 96 58 ${x - 26} ${y + 4} ${x - 14} ${y + 6}`} stroke="#fff" strokeWidth={0.6} fill="none" opacity={0.3} />
             <GearInSvg kind="passiveSpeaker" id={`lr-cab-${i}`} x={x} y={y} size={46} />
-            <SvgText x={x} y={y + 34} fontSize={8} fill={colors.textSecondary} textAnchor="middle" fontFamily={fonts.mono}>{ohms} Ω</SvgText>
-          </Svg>
+            <SvgText x={x} y={y + 34} fontSize={8.5} fill={colors.textSecondary} textAnchor="middle" fontFamily={fonts.mono}>{ohms} Ω</SvgText>
+          </G>
         );
       })}
-      {count > 1 ? <SvgText x={120 + (count - 1) * 23} y={16} fontSize={8} fill={INK.metalHi} textAnchor="middle" fontFamily={fonts.oswaldMedium}>IN PARALLEL</SvgText> : null}
+      {count > 1 ? <SvgText x={120 + (count - 1) * 23} y={16} fontSize={8.5} fill={INK.metalHi} textAnchor="middle" fontFamily={fonts.oswaldMedium}>IN PARALLEL</SvgText> : null}
       <Circle cx={78} cy={58} r={2.5} fill={wire} />
     </Svg>
   );
@@ -671,7 +671,7 @@ function PowerBand({ amp, match, w, h }: { amp: number; match: 'under' | 'ok' | 
     <View style={[styles.bandStage, { width: w, height: h }]} accessible accessibilityLabel={`Amplifier ${amp} watts against a cabinet rated ${CABINET.continuous} watts continuous and ${CABINET.program} watts program: ${match === 'ok' ? 'in the band' : match === 'under' ? 'under' : 'over'}`}>
       <View style={styles.bandRow}>
         <View style={styles.bandEnd}>
-          <GearGlyph kind="amp" size={glyph} label="Amplifier" />
+          <GearGlyph kind="amp" size={glyph} label="Amplifier" legends={false} />
           <Text style={[styles.bandEndText, { color: tint }]}>{amp} W</Text>
         </View>
         <View style={styles.bandWrap}>
@@ -687,7 +687,7 @@ function PowerBand({ amp, match, w, h }: { amp: number; match: 'under' | 'ok' | 
           <Text style={[styles.bandVerdict, { color: tint }]}>{match === 'ok' ? '● IN THE BAND' : match === 'under' ? '△ UNDERPOWERED — CLIPS FIRST' : '△ OVERSIZED — HEADROOM IS YOURS TO KEEP'}</Text>
         </View>
         <View style={styles.bandEnd}>
-          <GearGlyph kind="passiveSpeaker" size={glyph} label="Cabinet" />
+          <GearGlyph kind="passiveSpeaker" size={glyph} label="Cabinet" legends={false} />
           <Text style={styles.bandEndText}>{CABINET.continuous} W cont.</Text>
         </View>
       </View>
@@ -731,6 +731,8 @@ function PagePower({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'S',
+        // View-built band and readouts: nothing in it grows with the box, so no full-screen zoom.
+        fullScreen: false,
         badge: 'POWER BAND — CALCULATED · SPL from the Audio Calculator Laboratory · free field, one cabinet',
         initialParam: 'amp',
         hideDragTag: true,

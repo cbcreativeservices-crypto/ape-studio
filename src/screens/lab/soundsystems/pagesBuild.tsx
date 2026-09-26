@@ -198,6 +198,9 @@ function useBuilderRack(b: ReturnType<typeof useBuilder>, kinds: readonly GearKi
           <View style={{ flex: 1, gap: 1 }}>
             <Eyebrow>IN HAND · {inHand.name.toUpperCase()}</Eyebrow>
             <Text style={styles.small}>{prompt}</Text>
+            {/* The plot marks these positions with rings; their names live here,
+                because at a readable size neighbouring names overlap on the plot. */}
+            {b.targets.length ? <Text style={styles.small}>STANDS AT · {b.targets.map((t) => slotDef(t).label).join(', ')}</Text> : null}
           </View>
         </View>
       ) : null}
