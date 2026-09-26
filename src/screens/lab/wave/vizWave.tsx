@@ -1189,51 +1189,60 @@ function PulseRing({
 const OUT_BUCKETS = 24;
 const OUT_COLORS: string[] = Array.from({ length: OUT_BUCKETS }, (_, i) => levelColor(i / (OUT_BUCKETS - 1)));
 
-/** The pulse ring BEYOND a wall (Room Builder): the same expanding front,
- *  coloured by the level that got through — spreading loss from the source
- *  (−20·log10 r, r ≥ 1 m) minus the wall's transmission loss — on the app's
- *  loudness ramp (0 dB red … −60 dB blue). So it leaves the wall at the
- *  level the neighbour gets and cools toward blue as it travels on. */
-function OutsideRing({
-  t,
-  origins,
-  paceLen,
+/** The SLOW ring train carried on beyond a wall (Room Builder, owner
+ *  2026-09-26: "time it with the slow concentric rings - not the balls").
+ *  Same clock (`phase`), same wavelength spacing and speed as RoomRing, so
+ *  the outside rings are the speaker's rings continuing through the wall —
+ *  each ring coloured by ITS OWN distance (the level that got through, then
+ *  cooling). Drawn as OUT_BUCKETS colour paths (fixed count per frame). */
+function OutsideTrain({
+  phase,
+  srcs,
   pxPerM,
   tlDb,
+  maxR,
   scale,
 }: {
-  t: SharedValue<number>;
-  origins: { x: number; y: number }[];
-  paceLen: number;
+  phase: SharedValue<number>;
+  srcs: RingSrc[];
   pxPerM: number;
   tlDb: number;
+  maxR: number;
   scale: number;
 }) {
-  const path = useDerivedValue(() => {
-    const p = Skia.Path.Make();
-    const r = t.value * (paceLen / PULSE_ARRIVE);
-    if (r > 1.5) for (let i = 0; i < origins.length; i++) p.addCircle(origins[i].x, origins[i].y, r);
-    return p;
-  }, [t, origins, paceLen]);
-  // Owner tuning 2026-09-26 (DEMO scaling, disclosed in the lab's note):
-  //  · decay TWICE real spreading (−40·log10 r) so the fade reads in 4 m;
-  //  · ramp window (dB + 17) / 47 — the loudest case (40 Hz through drywall,
-  //    ≈ −35 dB at the wall) leaves the wall JUST WARMER THAN GREEN, while
-  //    500 Hz+ (≈ −57 dB) leaves it already blue: maximum contrast.
-  const color = useDerivedValue(() => {
-    const rM = Math.max(1, (t.value * (paceLen / PULSE_ARRIVE)) / pxPerM);
-    const db = -40 * Math.log10(rM) - tlDb;
-    const lvl = Math.max(0, Math.min(1, 1 + (db + 17) / 47));
-    return OUT_COLORS[Math.round(lvl * (OUT_BUCKETS - 1))];
-  }, [t, paceLen, pxPerM, tlDb]);
-  // Quieter line (owner: "it now takes too much attention").
-  const op = useDerivedValue(() => 0.6 * (1 - t.value * 0.6), [t]);
+  const buckets: SharedValue<SkPathT>[] = [];
+  for (let b = 0; b < OUT_BUCKETS; b++) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    buckets.push(
+      useDerivedValue(() => {
+        const p = Skia.Path.Make();
+        if (srcs.length === 0) return p;
+        const sp = srcs[0].spacing;
+        const f = (phase.value / (2 * Math.PI)) % 1;
+        const K = Math.min(400, Math.ceil(maxR / sp));
+        for (let k = 0; k < K; k++) {
+          const r = (f + k) * sp;
+          if (r < 2.5) continue;
+          // DEMO scaling (owner 2026-09-26): decay twice real spreading
+          // (−40·log10 r); window (dB + 17) / 47 so 40 Hz through drywall
+          // leaves the wall just warmer than green and 500 Hz+ leaves blue.
+          const rM = Math.max(1, r / pxPerM);
+          const db = -40 * Math.log10(rM) - tlDb;
+          const lvl = Math.max(0, Math.min(1, 1 + (db + 17) / 47));
+          if (Math.round(lvl * (OUT_BUCKETS - 1)) !== b) continue;
+          for (let i = 0; i < srcs.length; i++) p.addCircle(srcs[i].x, srcs[i].y, r);
+        }
+        return p;
+      }, [phase, srcs, pxPerM, tlDb, maxR]),
+    );
+  }
   return (
     <>
-      <Path path={path} color={color} style="stroke" strokeWidth={3 * scale} opacity={op} blendMode="plus">
-        <BlurMask blur={3 * scale} style="normal" />
-      </Path>
-      <Path path={path} color={color} style="stroke" strokeWidth={1.2 * scale} opacity={op} />
+      {buckets.map((path, b) => (
+        // Dimmer when the rings are packed tight (high ƒ): a dense bullseye
+        // must not grab attention (owner: "less bright").
+        <Path key={b} path={path} color={OUT_COLORS[b]} style="stroke" strokeWidth={1.2 * scale} opacity={0.55 * Math.min(1, Math.max(0.35, (srcs[0]?.spacing ?? 30) / (30 * scale)))} />
+      ))}
     </>
   );
 }
@@ -2109,6 +2118,14 @@ export function RoomSceneView(p: RoomSceneProps) {
             {Array.from({ length: RING_N }, (_, i) => <RoomRing key={i} phase={p.phase} srcs={ringSrcs} i={i} />)}
           </Group>
         ) : null}
+        {/* Room Builder: the same slow rings continuing OUTSIDE, per wall. */}
+        {outsideBands && ringSrcs.length > 0
+          ? outsideBands.map((band, bi) => (
+              <Group key={`out${bi}`} clip={band.clip}>
+                <OutsideTrain phase={p.phase} srcs={ringSrcs} pxPerM={geo.pxPerM} tlDb={band.tl} maxR={Math.hypot(w, h)} scale={ts} />
+              </Group>
+            ))
+          : null}
         {/* PULSE TRACER (PRESSURE, with or without RAYS): the 2 s pulse ring + one
             node per ray riding its line at constant speed — direct arrives
             first, reflections later, all landed before the next pulse. */}
@@ -2117,13 +2134,7 @@ export function RoomSceneView(p: RoomSceneProps) {
             <Group clip={interior}>
               <PulseRing t={pulseT} origins={pulseOrigins} paceLen={paceLen} />
             </Group>
-            {outsideBands
-              ? outsideBands.map((band, bi) => (
-                  <Group key={`out${bi}`} clip={band.clip}>
-                    <OutsideRing t={pulseT} origins={pulseOrigins} paceLen={paceLen} pxPerM={geo.pxPerM} tlDb={band.tl} scale={ts} />
-                  </Group>
-                ))
-              : null}
+
             <PulseNodes t={pulseT} traces={traces} paceLen={paceLen} minLen={minLen} scale={ts} />
           </>
         ) : null}

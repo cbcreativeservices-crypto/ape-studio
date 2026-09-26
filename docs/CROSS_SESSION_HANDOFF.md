@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 14:32 · ccode · 51db07ce
+changed: Wave Room Builder outside ring: loudest case (40 Hz through drywall) leaves the wall just warmer than green, 500 Hz+ already blue; decay twice real spreading for the demo; thinner, dimmer line
+affects other side: nothing — client JS only (Wave lab drawing)
+needs: nothing
+
+
 ### 2026-09-26 14:18 · ccode · d2c9c357
 changed: Wave: pressure rings and the pulse ring are clipped to the room interior — they were drawn through the walls into the label margin, as if sound passed through concrete
 affects other side: nothing — client JS only (Wave lab drawing)
