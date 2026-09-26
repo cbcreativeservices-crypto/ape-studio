@@ -131,7 +131,10 @@ export function modalColor(t01: number): string {
   return rampColor(MODAL_STOPS, t01);
 }
 
-const BUCKET_N = 32;
+// 64 colour steps (was 32): at 2–3× FULL SCREEN the 32 steps showed as
+// stripes on the smooth standing-wave map (walkthrough 2026-09-26). The map
+// is rebuilt only on a parameter change, so the cost is paths, not frames.
+const BUCKET_N = 64;
 const JET_BUCKETS: string[] = Array.from({ length: BUCKET_N }, (_, i) => jetColor(i / (BUCKET_N - 1)));
 
 /** Walk one row of a quantized field and emit ONE rect per contiguous run of
@@ -1929,6 +1932,12 @@ export function RoomSceneView(p: RoomSceneProps) {
           })()
         ) : headFrontImg ? (
           <>
+            {/* Dark backing disc + light ring: the thin line head vanished on
+                a black node line and blended into bright maps — the lesson's
+                "drag the listener" needs it findable on ANY colour
+                (walkthrough 2026-09-26). */}
+            <Circle cx={geo.x0 + scene.listener.x * geo.pxPerM} cy={geo.y0 + scene.listener.y * geo.pxPerM} r={HEAD_SIZE * 0.62 * ts} color={BG} opacity={0.72} />
+            <Circle cx={geo.x0 + scene.listener.x * geo.pxPerM} cy={geo.y0 + scene.listener.y * geo.pxPerM} r={HEAD_SIZE * 0.62 * ts} color={LINE} style="stroke" strokeWidth={1.3 * ts} opacity={0.9} />
             <IconMark image={headFrontImg} cx={geo.x0 + scene.listener.x * geo.pxPerM} cy={geo.y0 + scene.listener.y * geo.pxPerM} size={HEAD_SIZE * ts} color={LINE} plate />
             <IconMark image={headFrontImg} cx={geo.x0 + scene.listener.x * geo.pxPerM} cy={geo.y0 + scene.listener.y * geo.pxPerM} size={HEAD_SIZE * ts} color={ACCENT_GREEN} opacity={0.28} />
           </>
