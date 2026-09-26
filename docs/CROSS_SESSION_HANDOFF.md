@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 13:25 · ccode · eb84fe4c
+changed: Wave Delay Alignment: open air (alignment is set on the direct sound) and a SUM readout — the pair vs perfect addition at the listener (0.0 dB aligned, negative = cancelling); absolute level kept in the well
+affects other side: nothing — client JS only (Wave lab drawing)
+needs: nothing
+
+
 ### 2026-09-26 13:20 · ccode · 03740e86
 changed: Wave Coverage: open air so the beam is the only thing on the map; the EFF angle drawn as dashed -6 dB edges that swing in with frequency; bezel reads the listener vs ON-AXIS at the same distance (absolute level kept in the well); short EFF key so it is not cropped
 affects other side: nothing — client JS only (Wave lab drawing)
