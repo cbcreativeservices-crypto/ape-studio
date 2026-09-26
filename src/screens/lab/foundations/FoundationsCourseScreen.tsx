@@ -1057,6 +1057,11 @@ function M8Stage({ viz, w, h, f, focused, onFreq }: { viz: VizModule; w: number;
   wRef.current = w;
   const hRef = useRef(h);
   hRef.current = h;
+  // The hub dead-zone follows the drawn hub (r0 = 18 × text scale) so a 2×
+  // spiral keeps the same no-angle disc under the finger (parity pass 2026-09-26).
+  const ts = useStageTextScale();
+  const tsRef = useRef(ts);
+  tsRef.current = ts;
   const lastAngRef = useRef<number | null>(null);
   // Rotary drag on the PINNED stage (owner 2026-07-30 lesson, resolved by the
   // rack law): the glass never scrolls, so no scroll-lock plumbing is needed —
@@ -1072,12 +1077,12 @@ function M8Stage({ viz, w, h, f, focused, onFreq }: { viz: VizModule; w: number;
         const dy = e.nativeEvent.locationY - hRef.current / 2;
         // Hub dead-zone: near the center, angles are meaningless — a touch
         // crossing it would read as up to a half-turn (a half-octave lurch).
-        lastAngRef.current = Math.hypot(dx, dy) < 25 ? null : Math.atan2(dy, dx);
+        lastAngRef.current = Math.hypot(dx, dy) < 25 * tsRef.current ? null : Math.atan2(dy, dx);
       },
       onPanResponderMove: (e) => {
         const dx = e.nativeEvent.locationX - wRef.current / 2;
         const dy = e.nativeEvent.locationY - hRef.current / 2;
-        if (Math.hypot(dx, dy) < 25) {
+        if (Math.hypot(dx, dy) < 25 * tsRef.current) {
           lastAngRef.current = null; // re-grab cleanly once clear of the hub
           return;
         }
@@ -1587,9 +1592,14 @@ function M13Rack({ viz, focused, help, wellTop, wellBottom, onTool }: RackProps)
 }
 function M13Stage({ viz, w, h, focused }: { viz: VizModule; w: number; h: number; focused: boolean }) {
   const clock = viz.useVizClock(focused);
+  // The chain is a wide strip (speaker → air → mic). The rack's FULL SCREEN box
+  // is a tall portrait, which stretched the cutaway into a thin slab; cap the
+  // strip's height at 0.45 × its width and centre it (parity pass 2026-09-26).
+  // On the glass (368 × 158) the cap does not engage — unchanged.
+  const stripH = Math.min(h, Math.round(w * 0.45));
   return (
     <View style={{ width: w, height: h, justifyContent: 'center' }}>
-      <viz.SignalPathView clock={clock} width={w} height={h} />
+      <viz.SignalPathView clock={clock} width={w} height={stripH} />
     </View>
   );
 }

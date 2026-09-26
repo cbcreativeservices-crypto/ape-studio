@@ -374,6 +374,11 @@ export function AirParticlesView({
    *  MUST match a co-drawn PressureGraphView's lambda to keep peaks aligned. */
   lambdaPx?: number;
 }) {
+  // Parity pass (owner 2026-09-26, "make sure the head, speaker (objects) …
+  // are also zooming"): every fixed-size mark — molecule radius, glint, blur,
+  // the ear — is multiplied by the stage text scale so a doubled picture
+  // doubles its objects too. 1 on the glass.
+  const ts = useStageTextScale();
   const COLS = 26;
   const ROWS = 6;
   const w = width;
@@ -387,8 +392,8 @@ export function AirParticlesView({
   // clear-out still matches the drawing and the right margin stays ~12 px:
   // `cx = w - earW / 2`, so a bigger ear in the OLD zone would have crowded the
   // panel edge.
-  const earW = showEar ? 62 : 0;
-  const earScale = 2.2;
+  const earW = showEar ? 62 * ts : 0;
+  const earScale = 2.2 * ts;
 
   // Rest grid + per-particle jitter (deterministic — stable across renders).
   // Particles that would fall in the ear zone are dropped so the ear reads
@@ -481,13 +486,13 @@ export function AirParticlesView({
       // Size carries the fade — grows in, shrinks out on each hand-off.
       const R = Math.max(
         0.5,
-        (7 + 2.2 * Math.sin(t * 6 + idx * 2.1) + 0.9 * Math.sin(t * 13 + idx * 1.7)) * fade,
+        (7 + 2.2 * Math.sin(t * 6 + idx * 2.1) + 0.9 * Math.sin(t * 13 + idx * 1.7)) * fade * ts,
       );
       addGlint(p, x, y, R, t * 1.2 + idx);
-      p.addCircle(x, y, 2.2 + 1.0 * fade); // the molecule itself, larger + bright
+      p.addCircle(x, y, (2.2 + 1.0 * fade) * ts); // the molecule itself, larger + bright
     }
     return p;
-  }, [clock, sxs, sys, sparkleMid, visHz, amp, mode, lambda, dispMax, phasePx]);
+  }, [clock, sxs, sys, sparkleMid, visHz, amp, mode, lambda, dispMax, phasePx, ts]);
 
   const path = useDerivedValue(() => {
     const t = clock.value;
@@ -509,10 +514,10 @@ export function AirParticlesView({
         const tq = Math.floor(t * 22);
         dx = amp * dispMax * 0.9 * (hash(i * 127.1 + tq * 311.7) - 0.5) * 2;
       }
-      p.addCircle(xs[i] + dx, ys[i] + dy, 2.2);
+      p.addCircle(xs[i] + dx, ys[i] + dy, 2.2 * ts);
     }
     return p;
-  }, [clock, xs, ys, visHz, amp, mode, lambda, dispMax, phasePx]);
+  }, [clock, xs, ys, visHz, amp, mode, lambda, dispMax, phasePx, ts]);
 
   // Compression/rarefaction ZONE SHADING — pressure p ∝ cos(ωt − kx), the SAME
   // law the co-drawn PressureGraphView plots, so the warm bands sit exactly
@@ -583,26 +588,26 @@ export function AirParticlesView({
       {showZones ? (
         <>
           <Path path={warmBands} color={WARM_BAND} style="stroke" strokeWidth={bandW} opacity={0.05 + 0.1 * amp}>
-            <BlurMask blur={9} style="normal" />
+            <BlurMask blur={9 * ts} style="normal" />
           </Path>
           <Path path={coolBands} color={COOL_BAND} style="stroke" strokeWidth={bandW} opacity={0.04 + 0.08 * amp}>
-            <BlurMask blur={9} style="normal" />
+            <BlurMask blur={9 * ts} style="normal" />
           </Path>
         </>
       ) : null}
       {/* Particles: soft halo layer + crisp cores (tube-lab electron idiom). */}
       <Path path={path} color={PARTICLE} opacity={0.35}>
-        <BlurMask blur={4} style="normal" />
+        <BlurMask blur={4 * ts} style="normal" />
       </Path>
       <Path path={path} color={PARTICLE} />
       {/* SPARKLE-TRACKED molecules — two glinting at a time, handing off every
           ~2 s, each only ever swinging back and forth in place. Three layers
           (owner 2026-08-10, more visible): wide bloom → tight glow → crisp star. */}
       <Path path={sparkles} color="#ffffff" opacity={0.32}>
-        <BlurMask blur={14} style="normal" />
+        <BlurMask blur={14 * ts} style="normal" />
       </Path>
       <Path path={sparkles} color="#ffffff" opacity={0.45}>
-        <BlurMask blur={5} style="normal" />
+        <BlurMask blur={5 * ts} style="normal" />
       </Path>
       <Path path={sparkles} color="#f6f8fc" opacity={0.95} />
       {showEar ? (
@@ -653,8 +658,14 @@ export function SpeakerConeView({
   amp: number;
   mode?: AirMode;
 }) {
-  const w = width;
-  const h = height;
+  // Parity pass (owner 2026-09-26): the cutaway's proportions are clamped in
+  // pixels (magnet, coil, cone depth, dust cap, rim), so a doubled box used to
+  // hold a phone-sized driver. It is now laid out at its GLASS size and painted
+  // through a Skia Group scaled by the stage text scale — the whole driver
+  // doubles, crisp, with the excursion in step. 1 on the glass = unchanged.
+  const ts = useStageTextScale();
+  const w = width / ts;
+  const h = height / ts;
   const cy = h / 2;
   const clampN = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
   // Smaller excursion + a bigger rim margin (owner 2026-08-05) so the cone and
@@ -806,7 +817,8 @@ export function SpeakerConeView({
   }, [clock, visHz, amp, mode, mouthX, rimX, cy, mh]);
 
   return (
-    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+    <Canvas style={{ width, height, backgroundColor: BG }}>
+      <Group transform={[{ scale: ts }]}>
       {/* ── Motor: steel back plate · WARM magnet ring (reference cutaway) ·
           steel front plate. */}
       <RoundedRect x={3} y={cy - h * 0.3} width={motor.backW} height={h * 0.6} r={2}>
@@ -902,6 +914,7 @@ export function SpeakerConeView({
       {/* No emanating "sound rays" (owner 2026-08-05) — the air window shows
           the propagation; nothing decorative is drawn leaving the speaker. */}
       <Vignette w={w} h={h} />
+      </Group>
     </Canvas>
   );
 }
@@ -1002,11 +1015,11 @@ export function PressureGraphView({
     const p = Skia.Path.Make();
     for (let i = 1; i < 8; i++) {
       const x = (i / 8) * w;
-      p.moveTo(x, h / 2 - 3);
-      p.lineTo(x, h / 2 + 3);
+      p.moveTo(x, h / 2 - 3 * ts);
+      p.lineTo(x, h / 2 + 3 * ts);
     }
     return p;
-  }, [w, h]);
+  }, [w, h, ts]);
 
   return (
     <View style={{ width: w, height: h }}>
@@ -1015,16 +1028,18 @@ export function PressureGraphView({
       <Path path={under} opacity={0.42}>
         <LinearGradient start={vec(0, mid - fullA)} end={vec(0, mid + fullA)} colors={MIDI_STOP_COLORS} positions={MIDI_STOP_POS} />
       </Path>
-      <Path path={ticks} color={GRID} style="stroke" strokeWidth={1.2} />
+      <Path path={ticks} color={GRID} style="stroke" strokeWidth={1.2 * ts} />
       {/* Atmospheric-pressure zero line — brighter than the grid (reference). */}
-      <SkLine p1={{ x: 0, y: h / 2 }} p2={{ x: w, y: h / 2 }} color={ZERO_REF} strokeWidth={1.4} />
+      <SkLine p1={{ x: 0, y: h / 2 }} p2={{ x: w, y: h / 2 }} color={ZERO_REF} strokeWidth={1.4 * ts} />
       {/* Trace: glow + crisp, BOTH coloured by the MIDI amplitude gradient
-          (owner 2026-08-05: level shown in the MIDI scheme). */}
-      <Path path={trace} style="stroke" strokeWidth={5.4} strokeCap="round" strokeJoin="round" opacity={0.22}>
-        <BlurMask blur={4} style="normal" />
+          (owner 2026-08-05: level shown in the MIDI scheme). Stroke weights ride
+          the stage text scale so the line stays the same weight relative to the
+          picture in FULL SCREEN (parity pass 2026-09-26). */}
+      <Path path={trace} style="stroke" strokeWidth={5.4 * ts} strokeCap="round" strokeJoin="round" opacity={0.22}>
+        <BlurMask blur={4 * ts} style="normal" />
         <LinearGradient start={vec(0, mid - fullA)} end={vec(0, mid + fullA)} colors={MIDI_STOP_COLORS} positions={MIDI_STOP_POS} />
       </Path>
-      <Path path={trace} style="stroke" strokeWidth={2.2} strokeCap="round" strokeJoin="round">
+      <Path path={trace} style="stroke" strokeWidth={2.2 * ts} strokeCap="round" strokeJoin="round">
         <LinearGradient start={vec(0, mid - fullA)} end={vec(0, mid + fullA)} colors={MIDI_STOP_COLORS} positions={MIDI_STOP_POS} />
       </Path>
     </Canvas>
@@ -1174,6 +1189,7 @@ export function AnalyticWaveformView({
    *  a low-passed SAW must lose its edge here too, not only in the sticks). */
   gainDbAt?: ((f: number) => number) | null;
 }) {
+  const ts = useStageTextScale(); // stroke weights grow with the picture (parity pass 2026-09-26)
   const w = width;
   const h = height;
   // Samples computed ONCE (identical math to the pre-retrofit trace — same
@@ -1312,8 +1328,8 @@ export function AnalyticWaveformView({
         />
       </Path>
       {/* Zero line — brighter reference (house idiom). */}
-      <SkLine p1={{ x: 0, y: h / 2 }} p2={{ x: w, y: h / 2 }} color={ZERO_REF} strokeWidth={1.2} />
-      <GlowStroke path={path} color={WAVE} width={2} />
+      <SkLine p1={{ x: 0, y: h / 2 }} p2={{ x: w, y: h / 2 }} color={ZERO_REF} strokeWidth={1.2 * ts} />
+      <GlowStroke path={path} color={WAVE} width={2 * ts} />
     </Canvas>
   );
 }
@@ -1383,9 +1399,11 @@ export function AnalyticSpectrumView({
   const { sticks, slope } = useMemo(() => {
     const stickPath = Skia.Path.Make();
     const slopePath = Skia.Path.Make();
+    // Margins ride the text scale: the baseline sits above the 9 pt × ts axis
+    // labels at every zoom (parity pass 2026-09-26).
     const yOf = (db: number) => {
       const c = Math.max(floorDb, Math.min(0, db));
-      return 8 + ((0 - c) / -floorDb) * (h - 22);
+      return 8 * ts + ((0 - c) / -floorDb) * (h - 22 * ts);
     };
     if (noise) {
       // Idealized color slopes: white 0, pink −3, brown −6 dB/oct (NoiseLab idiom).
@@ -1414,30 +1432,30 @@ export function AnalyticSpectrumView({
       if (db <= floorDb) continue;
       if (f > F_HI) continue; // above the drawn range — do not pile it on the edge
       const x = xOfHz(f);
-      stickPath.moveTo(x, h - 14);
+      stickPath.moveTo(x, h - 14 * ts);
       stickPath.lineTo(x, yOf(db));
     }
     return { sticks: stickPath, slope: slopePath };
-  }, [w, h, f0, amps, gainDbAt, noise, lvlDb]);
+  }, [w, h, f0, amps, gainDbAt, noise, lvlDb, ts]);
 
   return (
     <View style={{ width: w, height: h }}>
     <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
       {/* Baseline — brighter reference (house idiom). */}
-      <SkLine p1={{ x: 0, y: h - 14 }} p2={{ x: w, y: h - 14 }} color={ZERO_REF} strokeWidth={1.4} />
+      <SkLine p1={{ x: 0, y: h - 14 * ts }} p2={{ x: w, y: h - 14 * ts }} color={ZERO_REF} strokeWidth={1.4 * ts} />
       {/* Harmonic sticks: glow pass + crisp pass with a vertical heat gradient
           (tip hot, base dim) — heights are the SAME dB mapping as ever. */}
-      <Path path={sticks} color={WAVE} style="stroke" strokeWidth={5.5} opacity={0.22}>
-        <BlurMask blur={5} style="normal" />
+      <Path path={sticks} color={WAVE} style="stroke" strokeWidth={5.5 * ts} opacity={0.22}>
+        <BlurMask blur={5 * ts} style="normal" />
       </Path>
-      <Path path={sticks} style="stroke" strokeWidth={3}>
-        <LinearGradient start={vec(0, 8)} end={vec(0, h - 14)} colors={STICK_RAMP} />
+      <Path path={sticks} style="stroke" strokeWidth={3 * ts}>
+        <LinearGradient start={vec(0, 8 * ts)} end={vec(0, h - 14 * ts)} colors={STICK_RAMP} />
       </Path>
       {/* Noise slope: glow + crisp (same idealized dB/oct line). */}
-      <Path path={slope} color={WAVE} style="stroke" strokeWidth={4.5} opacity={0.22}>
-        <BlurMask blur={4.5} style="normal" />
+      <Path path={slope} color={WAVE} style="stroke" strokeWidth={4.5 * ts} opacity={0.22}>
+        <BlurMask blur={4.5 * ts} style="normal" />
       </Path>
-      <Path path={slope} color={WAVE} style="stroke" strokeWidth={2} />
+      <Path path={slope} color={WAVE} style="stroke" strokeWidth={2 * ts} />
     </Canvas>
     {/* Owner 2026-09-13: "the spectrun log should show Hz range inside viewer."
         The span used to live only in the caption ABOVE the pane, so the axis was
@@ -1486,8 +1504,12 @@ export function RateComparatorView({
   /** Which side is currently SOUNDING ('a' | 'b' | 'none') — highlighted. */
   active?: 'a' | 'b' | 'none';
 }) {
-  const w = width;
-  const h = height;
+  // Parity pass (owner 2026-09-26): the dials, pistons, particles and margins
+  // are pixel constants, so the scene is laid out at its glass size and painted
+  // through a Group scaled by the stage text scale — the whole picture doubles.
+  const ts = useStageTextScale();
+  const w = width / ts;
+  const h = height / ts;
   const colW = (w - 14) / 2;
 
   // One column's rest grid (shared by both sides; mirrored by x offset).
@@ -1559,7 +1581,8 @@ export function RateComparatorView({
   }, [colW, h]);
 
   return (
-    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+    <Canvas style={{ width, height, backgroundColor: BG }}>
+      <Group transform={[{ scale: ts }]}>
       <Path path={chrome.divider} color={GRID} style="stroke" strokeWidth={1.4} />
       <Path path={chrome.rings} color="#3a3a42" style="stroke" strokeWidth={1.6} />
       <Path path={chrome.lapTicks} color={WAVE} style="stroke" strokeWidth={1.6} opacity={0.7} />
@@ -1617,6 +1640,7 @@ export function RateComparatorView({
       </Path>
       <Path path={b.fill} color={active === 'b' ? '#eef2ee' : PARTICLE} />
       <Vignette w={w} h={h} />
+      </Group>
     </Canvas>
   );
 }
@@ -1645,9 +1669,14 @@ export function WavelengthRulerView({
   freqHz: number;
   amp?: number;
 }) {
+  // Parity pass (owner 2026-09-26): laid out at the glass size and painted
+  // through a Group scaled by the stage text scale, so the molecules, the
+  // glints, the metre ticks, the λ bracket and the person all double with the
+  // room. Every path below is in these (glass) units; overlay labels multiply
+  // their positions by `ts` to land on the scaled picture.
   const ts = useStageTextScale();
-  const w = width;
-  const h = height;
+  const w = width / ts;
+  const h = height / ts;
   const floorY = h - 18;
   const lambdaM = 343 / Math.max(20, freqHz);
   const lambdaPx = (lambdaM / RULER_ROOM_M) * w;
@@ -1803,8 +1832,9 @@ export function WavelengthRulerView({
 
   const bracketMidX = (8 + Math.min(w - 8, 8 + lambdaPx)) / 2;
   return (
-    <View style={{ width: w, height: h }}>
-      <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
+    <View style={{ width, height }}>
+      <Canvas style={{ position: 'absolute', width, height, backgroundColor: BG }}>
+        <Group transform={[{ scale: ts }]}>
         {/* Warm compression bands riding with the particle bunching. */}
         <Path path={bands} color={WARM_BAND} style="stroke" strokeWidth={bandW} opacity={0.12}>
           <BlurMask blur={Math.min(9, bandW * 0.8)} style="normal" />
@@ -1842,12 +1872,13 @@ export function WavelengthRulerView({
           opacity={0.85}
         />
         <Vignette w={w} h={h} />
+        </Group>
       </Canvas>
-      {/* Mono tick labels (house RNText-overlay idiom). */}
-      <OText style={[tickText, { left: 2, top: floorY + 9 }]}>0</OText>
-      <OText style={[tickText, { left: w - 26 * ts, top: floorY + 9, width: 24 * ts, textAlign: 'right' as const }]}>7 m</OText>
+      {/* Mono tick labels (house RNText-overlay idiom) — glass positions × ts. */}
+      <OText style={[tickText, { left: 2 * ts, top: (floorY + 9) * ts }]}>0</OText>
+      <OText style={[tickText, { left: (w - 26) * ts, top: (floorY + 9) * ts, width: 24 * ts, textAlign: 'right' as const }]}>7 m</OText>
       {/* λ sits just above its bracket (bracket y = floorY − 22) whatever the text scale. */}
-      <OText style={[tickText, { left: Math.max(10, Math.min(w - 16 * ts, bracketMidX - 3 * ts)), top: floorY - 27 - 11 * ts, color: WAVE }]}>
+      <OText style={[tickText, { left: Math.max(10, Math.min(w - 16, bracketMidX - 3)) * ts, top: (floorY - 38) * ts, color: WAVE }]}>
         λ
       </OText>
     </View>
@@ -1871,8 +1902,8 @@ const DD_CON = 26; // cable-connector strip height
 /** FrostCorner — an ice-crystal cluster for one display corner while FROZEN:
  *  sharp gradient shards creeping in from the corner, a tiny six-arm crystal,
  *  and specks. Drawn for the TOP-LEFT corner; the other three are rotations. */
-function FrostCorner() {
-  const S = 40;
+function FrostCorner({ s = 1 }: { s?: number }) {
+  const S = 40 * s;
   const shards = useMemo(() => {
     const p = Skia.Path.Make();
     // main diagonal shard + two edge shards, all rooted at the corner
@@ -1903,6 +1934,7 @@ function FrostCorner() {
   }, []);
   return (
     <Canvas style={{ width: S, height: S }}>
+      <Group transform={[{ scale: s }]}>
       <Path path={shards}>
         <LinearGradient start={vec(0, 0)} end={vec(26, 26)} colors={['#eaf6ff', '#9fd8ff', 'rgba(127,212,255,0)']} />
       </Path>
@@ -1911,6 +1943,7 @@ function FrostCorner() {
       <Circle cx={28} cy={5} r={1.2} color="#cfeaff" opacity={0.7} />
       <Circle cx={5} cy={28} r={1.2} color="#cfeaff" opacity={0.7} />
       <Circle cx={13} cy={13} r={0.9} color="#ffffff" opacity={0.6} />
+      </Group>
     </Canvas>
   );
 }
@@ -2269,15 +2302,16 @@ export function DualDomainView({
         {roomTicks.map((t) => (
           <OText key={t.label} style={[ddStyles.tick, { left: t.x * k - 17 * ts, top: 84 * k, width: 34 * ts }]}>{t.label}</OText>
         ))}
-        <OText style={[ddStyles.micTag, { right: (w - MICX) * k + 8, top: 2 * k }]} numberOfLines={1}>
+        <OText style={[ddStyles.micTag, { right: (w - MICX) * k + 8 * ts, top: 2 * k }]} numberOfLines={1}>
           THE MIC — one point
         </OText>
         {/* region names — what each stretch of wave IS (owner 2026-08-27) */}
-        <OText style={[ddStyles.zoneTag, { left: MICX * k + 8, top: 3 * k, color: '#7fd4ff' }]}>INCOMING</OText>
-        <OText style={[ddStyles.zoneTag, { left: 8, top: 66 * k }]}>← ALREADY PASSED</OText>
+        <OText style={[ddStyles.zoneTag, { left: MICX * k + 8 * ts, top: 3 * k, paddingHorizontal: 3 * ts, color: '#7fd4ff' }]}>INCOMING</OText>
+        <OText style={[ddStyles.zoneTag, { left: 8 * ts, top: 66 * k, paddingHorizontal: 3 * ts }]}>← ALREADY PASSED</OText>
         {/* the PROBE's WHERE readout — fixed home, always legible, green like
-            the line it describes (learner feedback 2026-08-27) */}
-        <View style={[ddStyles.probeTag, { left: 4, top: 22 * k }]}>
+            the line it describes (learner feedback 2026-08-27). The box's
+            padding, corner and border ride `ts` (parity pass 2026-09-26). */}
+        <View style={[ddStyles.probeTag, { left: 4 * ts, top: 22 * k, paddingVertical: 2 * ts, paddingHorizontal: 6 * ts, borderRadius: 4 * ts, borderWidth: ts }]}>
           <OText style={ddStyles.probeTagTxt}>{`● PROBE — ${dM.toFixed(2)} m past the mic`}</OText>
         </View>
       </View>
@@ -2293,8 +2327,8 @@ export function DualDomainView({
           </Path>
           </Group>
         </Canvas>
-        <View style={ddStyles.chipWrap} pointerEvents="none">
-          <View style={ddStyles.chip}>
+        <View style={[ddStyles.chipWrap, { top: 3 * k }]} pointerEvents="none">
+          <View style={[ddStyles.chip, { paddingVertical: 2.5 * ts, paddingHorizontal: 10 * ts, borderWidth: ts }]}>
             <OText style={ddStyles.chipTxt}>{`SAME SPOT: ${tMs.toFixed(1)} ms ago = ${dM.toFixed(2)} m past`}</OText>
           </View>
         </View>
@@ -2351,12 +2385,12 @@ export function DualDomainView({
           <OText key={t.label} style={[ddStyles.tick, { left: t.x * k - 17 * ts, top: 84 * k, width: 34 * ts }]}>{t.label}</OText>
         ))}
         <OText style={[ddStyles.tick, { left: NOWX * k - 42 * ts, top: 84 * k, width: 34 * ts, textAlign: 'right', color: '#ff4b3a' }]}>NOW</OText>
-        <OText style={[ddStyles.inputTag, { right: (w - NOWX) * k + 12, top: 2 * k }]}>MIC INPUT · REC — like a DAW recording</OText>
+        <OText style={[ddStyles.inputTag, { right: (w - NOWX) * k + 12 * ts, top: 2 * k }]}>MIC INPUT · REC — like a DAW recording</OText>
         {/* region names — aligned with the room's zones above */}
-        <OText style={[ddStyles.zoneTag, { left: NOWX * k + 8, top: 40 * k, color: '#8a8b93' }]}>NOT YET</OText>
-        <OText style={[ddStyles.zoneTag, { left: 8, top: 66 * k }]}>← ALREADY DRAWN</OText>
+        <OText style={[ddStyles.zoneTag, { left: NOWX * k + 8 * ts, top: 40 * k, paddingHorizontal: 3 * ts, color: '#8a8b93' }]}>NOT YET</OText>
+        <OText style={[ddStyles.zoneTag, { left: 8 * ts, top: 66 * k, paddingHorizontal: 3 * ts }]}>← ALREADY DRAWN</OText>
         {/* the PROBE's WHEN readout — same fixed-home treatment as the room's */}
-        <View style={[ddStyles.probeTag, { left: 4, top: 22 * k }]}>
+        <View style={[ddStyles.probeTag, { left: 4 * ts, top: 22 * k, paddingVertical: 2 * ts, paddingHorizontal: 6 * ts, borderRadius: 4 * ts, borderWidth: ts }]}>
           <OText style={ddStyles.probeTagTxt}>{`● PROBE — ${tMs.toFixed(1)} ms ago`}</OText>
         </View>
       </View>
@@ -2364,19 +2398,19 @@ export function DualDomainView({
           until FREEZE is released */}
       {frozen ? (
         <>
-          <View pointerEvents="none" style={ddStyles.frozenBorderOuter} />
-          <View pointerEvents="none" style={ddStyles.frozenBorderInner} />
+          <View pointerEvents="none" style={[ddStyles.frozenBorderOuter, { borderWidth: 3 * ts, borderRadius: 8 * ts }]} />
+          <View pointerEvents="none" style={[ddStyles.frozenBorderInner, { borderWidth: 1.5 * ts, borderRadius: 6 * ts }]} />
           <View pointerEvents="none" style={{ position: 'absolute', top: -3, left: -3 }}>
-            <FrostCorner />
+            <FrostCorner s={ts} />
           </View>
           <View pointerEvents="none" style={{ position: 'absolute', top: -3, right: -3, transform: [{ rotate: '90deg' }] }}>
-            <FrostCorner />
+            <FrostCorner s={ts} />
           </View>
           <View pointerEvents="none" style={{ position: 'absolute', bottom: -3, right: -3, transform: [{ rotate: '180deg' }] }}>
-            <FrostCorner />
+            <FrostCorner s={ts} />
           </View>
           <View pointerEvents="none" style={{ position: 'absolute', bottom: -3, left: -3, transform: [{ rotate: '270deg' }] }}>
-            <FrostCorner />
+            <FrostCorner s={ts} />
           </View>
         </>
       ) : null}
@@ -2470,13 +2504,16 @@ export function OctaveSpiralView({
   height?: number;
   freqHz: number;
 }) {
+  // Parity pass (owner 2026-09-26): the hub radius, octave dots, marker ring,
+  // satellite and stroke weights all ride the stage text scale, so the spiral's
+  // furniture doubles with its curve in FULL SCREEN. Geometry law unchanged.
   const ts = useStageTextScale();
   const w = width;
   const h = height;
   const cx = w / 2;
   const cy = h / 2;
-  const rMax = Math.min(w, h) / 2 - 14;
-  const r0 = 18;
+  const rMax = Math.min(w, h) / 2 - 14 * ts;
+  const r0 = 18 * ts;
   const rOf = (o: number) => r0 + (o / (SPIRAL_OCTAVES + 0.15)) * (rMax - r0);
   const angOf = (o: number) => -Math.PI / 2 + o * 2 * Math.PI;
 
@@ -2492,10 +2529,10 @@ export function OctaveSpiralView({
     // Octave markers — every crossing of the 12-o'clock ray is a DOUBLING.
     const octDots = Skia.Path.Make();
     for (let o = 0; o <= SPIRAL_OCTAVES; o++) {
-      octDots.addCircle(cx + rOf(o) * Math.cos(angOf(o)), cy + rOf(o) * Math.sin(angOf(o)), 4);
+      octDots.addCircle(cx + rOf(o) * Math.cos(angOf(o)), cy + rOf(o) * Math.sin(angOf(o)), 4 * ts);
     }
     return { curve, octDots };
-  }, [cx, cy, rMax]);
+  }, [cx, cy, rMax, r0, ts]);
 
   // Marker position — plain numbers, computed in JS so the worklet below
   // captures only values (never calls a JS function).
@@ -2507,39 +2544,39 @@ export function OctaveSpiralView({
     const p = Skia.Path.Make();
     p.moveTo(cx, cy);
     p.lineTo(mx, my);
-    p.addCircle(mx, my, 8.5);
+    p.addCircle(mx, my, 8.5 * ts);
     return p;
-  }, [cx, cy, mx, my]);
+  }, [cx, cy, mx, my, ts]);
 
   // The living part: a pulsing core + a satellite lapping ONCE PER CYCLE.
   const markerAnim = useDerivedValue(() => {
     const ph = phase.value;
     const p = Skia.Path.Make();
-    p.addCircle(mx + 13 * Math.cos(ph - Math.PI / 2), my + 13 * Math.sin(ph - Math.PI / 2), 3);
-    p.addCircle(mx, my, 4.6 + 1.2 * Math.sin(ph));
+    p.addCircle(mx + 13 * ts * Math.cos(ph - Math.PI / 2), my + 13 * ts * Math.sin(ph - Math.PI / 2), 3 * ts);
+    p.addCircle(mx, my, (4.6 + 1.2 * Math.sin(ph)) * ts);
     return p;
-  }, [phase, mx, my]);
+  }, [phase, mx, my, ts]);
 
   return (
     <View style={{ width: w, height: h }}>
       <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
         {/* The 12-o'clock "doubling ray": every crossing = ×2 frequency. */}
-        <SkLine p1={{ x: cx, y: cy - r0 + 6 }} p2={{ x: cx, y: cy - rMax - 6 }} color={ZERO_REF} strokeWidth={1.4}>
-          <DashPathEffect intervals={[3, 4]} />
+        <SkLine p1={{ x: cx, y: cy - r0 + 6 * ts }} p2={{ x: cx, y: cy - rMax - 6 * ts }} color={ZERO_REF} strokeWidth={1.4 * ts}>
+          <DashPathEffect intervals={[3 * ts, 4 * ts]} />
         </SkLine>
-        <Path path={spiralParts.curve} color="#4a4a54" style="stroke" strokeWidth={2} />
+        <Path path={spiralParts.curve} color="#4a4a54" style="stroke" strokeWidth={2 * ts} />
         {/* Octave doubling markers on the ray. */}
         <Path path={spiralParts.octDots} color="#6a6e78" />
         {/* Hub anchor — the hub dead-zone stays clear (r0 unchanged). */}
-        <Circle cx={cx} cy={cy} r={3.4}>
-          <RadialGradient c={vec(cx - 1, cy - 1)} r={5} colors={[METAL_HI, METAL_LO]} />
+        <Circle cx={cx} cy={cy} r={3.4 * ts}>
+          <RadialGradient c={vec(cx - ts, cy - ts)} r={5 * ts} colors={[METAL_HI, METAL_LO]} />
         </Circle>
         {/* Marker ray + ring: glow + crisp. GREEN — this is the node you drag
             (owner 2026-08-05). */}
-        <GlowStroke path={markerLine} color={ACCENT_GREEN} width={2.4} />
+        <GlowStroke path={markerLine} color={ACCENT_GREEN} width={2.4 * ts} />
         {/* Satellite + pulsing core: soft halo + crisp (one lap = one cycle). */}
         <Path path={markerAnim} color={ACCENT_GREEN} opacity={0.4}>
-          <BlurMask blur={6} style="normal" />
+          <BlurMask blur={6 * ts} style="normal" />
         </Path>
         <Path path={markerAnim} color={ACCENT_GREEN} />
         <Vignette w={w} h={h} />
@@ -2554,7 +2591,7 @@ export function OctaveSpiralView({
           lap), so they get their own larger, brighter style. Radii are ~23 px
           apart at this size, so 12 px still clears its neighbours. */}
       {Array.from({ length: SPIRAL_OCTAVES + 1 }, (_, o) => (
-        <OText key={o} style={[tickText, spiralTick, { left: cx + 10, top: cy - rOf(o) - 7 * ts }]}>
+        <OText key={o} style={[tickText, spiralTick, { left: cx + 10 * ts, top: cy - rOf(o) - 7 * ts }]}>
           {SPIRAL_F0 * Math.pow(2, o)}
         </OText>
       ))}
@@ -2604,9 +2641,14 @@ export function EqualLoudnessView({
    *  and (× the ear curve) the heard-wave inset's drawn amplitude. */
   level01?: number;
 }) {
+  // Parity pass (owner 2026-09-26): the gutter, the colour scale, the inset,
+  // the dot and every stroke are pixel constants, so the plot is laid out at
+  // its glass size and painted through a Group scaled by the stage text scale.
+  // Every coordinate below is in glass units; the overlay labels multiply
+  // theirs by `ts` to land on the scaled picture. Physics untouched.
   const ts = useStageTextScale();
-  const w = width;
-  const h = height;
+  const w = width / ts;
+  const h = height / ts;
   const fLo = 40;
   const fHi = 16000;
   const gh = h - 8; // curve region: full height (strip is an inset now)
@@ -2617,8 +2659,8 @@ export function EqualLoudnessView({
   const SBx1 = w - 6;
   const SBy0 = 4;
   // The strip's name band is reserved above the wave (it used to sit on the
-  // wave's peaks); it grows with the text scale so FULL SCREEN keeps it clear.
-  const SBcap = 12 * ts;
+  // wave's peaks); in glass units — the Group scale carries it into FULL SCREEN.
+  const SBcap = 12;
   const SBy1 = SBy0 + SBcap + 34;
   const xOf = (f: number) => AX + (Math.log(f / fLo) / Math.log(fHi / fLo)) * (w - AX - 6);
   // Numbered dB axis (owner 2026-08-28): 0 dBFS at the top … −60 at the bottom.
@@ -2713,8 +2755,9 @@ export function EqualLoudnessView({
   }, [phase, w, stripCyc, stripMid, stripAmp, SBx0, SBx1]);
 
   return (
-    <View style={{ width: w, height: h }}>
-      <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
+    <View style={{ width, height }}>
+      <Canvas style={{ position: 'absolute', width, height, backgroundColor: BG }}>
+        <Group transform={[{ scale: ts }]}>
         {/* Frequency grid. */}
         <Path path={grid} color="#3a3c46" style="stroke" strokeWidth={1.1} />
         {/* the ear's CUT — the shaded gap between sent and heard */}
@@ -2764,10 +2807,11 @@ export function EqualLoudnessView({
           <LinearGradient start={vec(0, 8)} end={vec(0, gh - 8)} colors={MIDI_VSCALE_COLORS} positions={MIDI_VSCALE_POS} />
         </RoundedRect>
         <SkLine p1={{ x: 0, y: ySend }} p2={{ x: 13, y: ySend }} color="#ffffff" strokeWidth={2} />
+        </Group>
       </Canvas>
-      {/* dB numbers for the colour scale. */}
+      {/* dB numbers for the colour scale (glass positions × ts). */}
       {[0, -20, -40, -60].map((d) => (
-        <OText key={d} style={[tickText, { left: 10, top: yDb(d) - 5 * ts, width: 25 * ts, color: '#c8ccd4' }]}>
+        <OText key={d} style={[tickText, { left: 10 * ts, top: (yDb(d) - 5) * ts, width: 25 * ts, color: '#c8ccd4' }]}>
           {d === 0 ? '0dB' : `${d}`}
         </OText>
       ))}
@@ -2779,41 +2823,41 @@ export function EqualLoudnessView({
       ].map((t) => (
         <OText
           key={t.f}
-          style={[tickText, { left: Math.max(0, Math.min(w - 24 * ts, xOf(t.f) - 12 * ts)), width: 24 * ts, textAlign: 'center' as const, top: gh - 12 * ts, color: '#c8ccd4' }]}
+          style={[tickText, { left: Math.max(0, Math.min(w - 24, xOf(t.f) - 12)) * ts, width: 24 * ts, textAlign: 'center' as const, top: (gh - 12) * ts, color: '#c8ccd4' }]}
         >
           {t.label}
         </OText>
       ))}
-      <OText style={[tickText, { left: AX, top: 0, width: 30 * ts, color: '#c8ccd4' }]}>40Hz</OText>
+      <OText style={[tickText, { left: AX * ts, top: 0, width: 30 * ts, color: '#c8ccd4' }]}>40Hz</OText>
       {/* Named lines — SEND (amber, flat) vs HEAR (ramp-coloured curve). SEND's
           name sits at the LEFT end of its line (2026-09-25): at the right end it
           sat on the curve's high-frequency fall; at the left the curve is 20–40 dB
           below the line, so the name never touches it. */}
-      <OText style={[tickText, { left: AX + 2, top: Math.max(0, ySend - 12 * ts), color: WAVE }]} numberOfLines={1}>
+      <OText style={[tickText, { left: (AX + 2) * ts, top: Math.max(0, ySend - 12) * ts, color: WAVE }]} numberOfLines={1}>
         YOU SEND — same at every Hz
       </OText>
-      <OText style={[tickText, { left: AX + 2, top: Math.min(gh - 22 * ts, yDb(heard(fLo)) - 12 * ts), color: stops[0] }]} numberOfLines={1}>
+      <OText style={[tickText, { left: (AX + 2) * ts, top: Math.min(gh - 22, yDb(heard(fLo)) - 12) * ts, color: stops[0] }]} numberOfLines={1}>
         YOU HEAR
       </OText>
       {/* The ear's cut at the tone — solid ground so it's always legible. */}
       <View
         style={{
           position: 'absolute',
-          left: Math.max(AX, Math.min(dotX + 8, w - 84)),
-          top: Math.max(8, Math.min((ySend + dotY) / 2 - 8, gh - 26)),
+          left: Math.max(AX, Math.min(dotX + 8, w - 84)) * ts,
+          top: Math.max(8, Math.min((ySend + dotY) / 2 - 8, gh - 26)) * ts,
           backgroundColor: '#0c0c0f',
-          borderRadius: 4,
-          borderWidth: 1,
+          borderRadius: 4 * ts,
+          borderWidth: ts,
           borderColor: '#33353d',
-          paddingHorizontal: 5,
-          paddingVertical: 1,
+          paddingHorizontal: 5 * ts,
+          paddingVertical: ts,
         }}
       >
         <OText style={[tickText, { position: 'relative', left: 0, top: 0, color: '#e6e6e6' }]}>{`EAR ${earCut > 0 ? '+' : ''}${earCut} dB`}</OText>
       </View>
       {/* Strip name — the physics, deliberately deaf to FREQ. */}
       <OText
-        style={[tickText, { left: SBx0 + 6, top: SBy0 + 1, width: SBx1 - SBx0 - 10, color: '#9a9ca8' }]}
+        style={[tickText, { left: (SBx0 + 6) * ts, top: (SBy0 + 1) * ts, width: (SBx1 - SBx0 - 10) * ts, color: '#9a9ca8' }]}
         numberOfLines={1}
       >
         WHAT YOU HEAR — LEVEL × EAR CURVE
@@ -2841,6 +2885,7 @@ export function PhaseOverlayView({
    *  holds, so at 180° the inputs visibly move while the sum stays flat. */
   visHz: number;
 }) {
+  const ts = useStageTextScale(); // stroke weights + label offsets ride the zoom (parity pass 2026-09-26)
   const w = width;
   const h = height;
   const midTop = h * 0.27;
@@ -2922,47 +2967,47 @@ export function PhaseOverlayView({
     <View style={{ width: w, height: h }}>
       <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
         {/* Midlines — brighter references; divider between inputs and sum. */}
-        <SkLine p1={{ x: 0, y: midTop }} p2={{ x: w, y: midTop }} color={ZERO_REF} strokeWidth={1.2} />
-        <SkLine p1={{ x: 0, y: midBot }} p2={{ x: w, y: midBot }} color={ZERO_REF} strokeWidth={1.2} />
-        <SkLine p1={{ x: 0, y: h * 0.52 }} p2={{ x: w, y: h * 0.52 }} color="#1c1c22" strokeWidth={2} />
+        <SkLine p1={{ x: 0, y: midTop }} p2={{ x: w, y: midTop }} color={ZERO_REF} strokeWidth={1.2 * ts} />
+        <SkLine p1={{ x: 0, y: midBot }} p2={{ x: w, y: midBot }} color={ZERO_REF} strokeWidth={1.2 * ts} />
+        <SkLine p1={{ x: 0, y: h * 0.52 }} p2={{ x: w, y: h * 0.52 }} color="#1c1c22" strokeWidth={2 * ts} />
         {/* Inputs: A PURPLE, B BLUE (owner 2026-08-05) — light glow so the SUM
             stays the star. */}
-        <Path path={pathA} color="#b45bff" style="stroke" strokeWidth={4.5} opacity={0.18}>
-          <BlurMask blur={4} style="normal" />
+        <Path path={pathA} color="#b45bff" style="stroke" strokeWidth={4.5 * ts} opacity={0.18}>
+          <BlurMask blur={4 * ts} style="normal" />
         </Path>
-        <Path path={pathA} color="#b45bff" style="stroke" strokeWidth={2} />
-        <Path path={pathB} color={ACCENT_BLUE} style="stroke" strokeWidth={4.5} opacity={0.16}>
-          <BlurMask blur={4} style="normal" />
+        <Path path={pathA} color="#b45bff" style="stroke" strokeWidth={2 * ts} />
+        <Path path={pathB} color={ACCENT_BLUE} style="stroke" strokeWidth={4.5 * ts} opacity={0.16}>
+          <BlurMask blur={4 * ts} style="normal" />
         </Path>
-        <Path path={pathB} color={ACCENT_BLUE} style="stroke" strokeWidth={2} />
+        <Path path={pathB} color={ACCENT_BLUE} style="stroke" strokeWidth={2 * ts} />
         {/* THE SUM. Normally coloured by the MIDI amplitude ramp (blue at the
             midline → red at the peaks). At full cancellation (~180°) it collapses
             to the centerline and glows RED — the "bad, they cancelled" signal
             (owner 2026-08-05). */}
         {cancelled ? (
           <>
-            <Path path={pathS} color="#ff3b30" style="stroke" strokeWidth={8} strokeCap="round" opacity={0.45}>
-              <BlurMask blur={8} style="normal" />
+            <Path path={pathS} color="#ff3b30" style="stroke" strokeWidth={8 * ts} strokeCap="round" opacity={0.45}>
+              <BlurMask blur={8 * ts} style="normal" />
             </Path>
-            <Path path={pathS} color="#ff5a48" style="stroke" strokeWidth={2.8} strokeCap="round" />
+            <Path path={pathS} color="#ff5a48" style="stroke" strokeWidth={2.8 * ts} strokeCap="round" />
           </>
         ) : (
           <>
             <Path path={sumUnder} opacity={0.5}>
               <LinearGradient start={vec(0, midBot - unit * 2.1)} end={vec(0, midBot + unit * 2.1)} colors={MIDI_STOP_COLORS} positions={MIDI_STOP_POS} />
             </Path>
-            <Path path={pathS} style="stroke" strokeWidth={6.5} strokeCap="round" strokeJoin="round" opacity={0.2}>
-              <BlurMask blur={5} style="normal" />
+            <Path path={pathS} style="stroke" strokeWidth={6.5 * ts} strokeCap="round" strokeJoin="round" opacity={0.2}>
+              <BlurMask blur={5 * ts} style="normal" />
               <LinearGradient start={vec(0, midBot - unit * 2.1)} end={vec(0, midBot + unit * 2.1)} colors={MIDI_STOP_COLORS} positions={MIDI_STOP_POS} />
             </Path>
-            <Path path={pathS} style="stroke" strokeWidth={2.8} strokeCap="round" strokeJoin="round">
+            <Path path={pathS} style="stroke" strokeWidth={2.8 * ts} strokeCap="round" strokeJoin="round">
               <LinearGradient start={vec(0, midBot - unit * 2.1)} end={vec(0, midBot + unit * 2.1)} colors={MIDI_STOP_COLORS} positions={MIDI_STOP_POS} />
             </Path>
           </>
         )}
       </Canvas>
-      <OText style={[tickText, { left: 4, top: 2 }]}>INPUTS</OText>
-      <OText style={[tickText, { left: 4, top: h * 0.52 + 3 }]}>SUM = A + B</OText>
+      <OText style={[tickText, { left: 4 * ts, top: 2 * ts }]}>INPUTS</OText>
+      <OText style={[tickText, { left: 4 * ts, top: h * 0.52 + 3 * ts }]}>SUM = A + B</OText>
     </View>
   );
 }
@@ -3125,12 +3170,12 @@ export function HarmonicStackerView({
       {Array.from({ length: HSTACK_ROWS }, (_, i) => {
         const a = a6[i] ?? 0;
         return (
-          <OText key={i} style={[tickText, { left: 3, top: hstackMid(i + 1) * k - 6 * ts, color: a > 0.02 ? levelColor(a) : '#4a4a54' }]}>
+          <OText key={i} style={[tickText, { left: 3 * ts, top: hstackMid(i + 1) * k - 6 * ts, color: a > 0.02 ? levelColor(a) : '#4a4a54' }]}>
             {`H${i + 1}`}
           </OText>
         );
       })}
-      <OText style={[tickText, { left: 3, top: HSTACK_MIDS * k - 6 * ts }]}>SUM</OText>
+      <OText style={[tickText, { left: 3 * ts, top: HSTACK_MIDS * k - 6 * ts }]}>SUM</OText>
     </View>
   );
 }
@@ -3158,8 +3203,12 @@ export function FourierLensView({
    *  the spectrum bars hold still (the recipe doesn't change with time). */
   visHz: number;
 }) {
-  const w = width;
-  const h = height;
+  // Parity pass (owner 2026-09-26): component amplitudes, recipe-bar heights
+  // and stroke weights are pixel constants, so the lens is laid out at its
+  // glass size and painted through a Group scaled by the stage text scale.
+  const ts = useStageTextScale();
+  const w = width / ts;
+  const h = height / ts;
   const m = Math.max(0, Math.min(1, morph));
   const centerY = h * 0.27;
   const specBase = h - 14;
@@ -3229,7 +3278,8 @@ export function FourierLensView({
   const sumO = Math.max(0.08, 1 - m);
   const compO = Math.max(0.05, m);
   return (
-    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+    <Canvas style={{ width, height, backgroundColor: BG }}>
+      <Group transform={[{ scale: ts }]}>
       {/* Midline + spectrum baseline — brighter references. */}
       <SkLine p1={{ x: 0, y: centerY }} p2={{ x: w, y: centerY }} color={ZERO_REF} strokeWidth={1.2} />
       <SkLine p1={{ x: 0, y: specBase }} p2={{ x: w, y: specBase }} color={ZERO_REF} strokeWidth={1.4} />
@@ -3251,6 +3301,7 @@ export function FourierLensView({
       <Path path={bars} style="stroke" strokeWidth={4} opacity={m}>
         <LinearGradient start={vec(0, specBase - 36)} end={vec(0, specBase)} colors={STICK_RAMP} />
       </Path>
+      </Group>
     </Canvas>
   );
 }
@@ -3270,8 +3321,13 @@ export function SignalPathView({
   height?: number;
   visHz?: number;
 }) {
-  const w = width;
-  const h = height;
+  // Parity pass (owner 2026-09-26): the mic (grille ball, barrel, diaphragm)
+  // and the speaker's share of the width are pixel constants, so the chain is
+  // laid out at its glass size and the air canvas is painted through a Group
+  // scaled by the stage text scale; the speaker scales itself the same way.
+  const ts = useStageTextScale();
+  const w = width / ts;
+  const h = height / ts;
   const mid = h / 2;
   // Source is the SAME speaker used everywhere else (owner 2026-08-05) — a small
   // SpeakerConeView on the left; the air + mic live in the canvas to its right.
@@ -3329,10 +3385,11 @@ export function SignalPathView({
   }, [micX, mid]);
 
   return (
-    <View style={{ width: w, height: h, flexDirection: 'row' }}>
+    <View style={{ width, height, flexDirection: 'row' }}>
       {/* The SOURCE — the shared SpeakerConeView, firing right into the air. */}
-      <SpeakerConeView clock={clock} width={spkW} height={h} visHz={visHz} amp={0.7} />
-      <Canvas style={{ width: airW, height: h, backgroundColor: BG }}>
+      <SpeakerConeView clock={clock} width={spkW * ts} height={height} visHz={visHz} amp={0.7} />
+      <Canvas style={{ width: airW * ts, height, backgroundColor: BG }}>
+        <Group transform={[{ scale: ts }]}>
         {/* Travel axis. */}
         <SkLine p1={{ x: waveX0, y: mid }} p2={{ x: waveX1, y: mid }} color="#1c1c22" strokeWidth={1.2} />
         {/* ── The air: glowing pressure wave (cos(ωt − kx) trace). ── */}
@@ -3359,6 +3416,7 @@ export function SignalPathView({
         </Path>
         <Path path={diaphragm} color={ACCENT_GREEN} style="stroke" strokeWidth={2.4} strokeCap="round" />
         <Vignette w={airW} h={h} />
+        </Group>
       </Canvas>
     </View>
   );

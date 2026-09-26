@@ -782,7 +782,9 @@ function StageViz({
   // taught (harmonic corners, EQ tilt) — while the air row took 40%.
   const rowH = Math.max(56, Math.round(h * 0.3));
   const paneH = Math.max(30, Math.floor((h - rowH - 2 * (LABEL_H + GAP)) / 2));
-  const spkW = Math.min(110, Math.max(84, Math.round(w * 0.32)));
+  // The speaker's share is clamped in glass pixels; the clamp rides the text
+  // scale so a doubled stage gives the driver a doubled box (parity pass 2026-09-26).
+  const spkW = Math.min(110 * ts, Math.max(84 * ts, Math.round(w * 0.32)));
   const airW = Math.max(60, w - spkW - GAP);
   // Air-window wavelength (px): wide at low pitch, tight at high pitch — only
   // for a single-frequency wave (noise/sweep have no single λ).
