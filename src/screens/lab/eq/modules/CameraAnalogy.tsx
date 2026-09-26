@@ -12,9 +12,11 @@
  *
  * RULING: the analogy STOPS there — gain is NOT mapped (next lesson). The room
  * scene and the response graph share ONE log-frequency axis (fxViz's 320-unit
- * viewBox, padL/padR 8), so the camera's field of view sits pixel-aligned above
- * the bell it points at. PAN is active from stage 1 onward (`panActive`); the
- * stage-0 row is deliberately locked. (Corrected 2026-08-28 — this comment used
+ * geometry, padL/padR 8, both scaled by the same width ÷ 320 — legibility pass
+ * 2026-09-26), so the camera's field of view sits pixel-aligned above the bell
+ * it points at. The pair is one ExpandableFigure: FULL SCREEN enlarges both.
+ * PAN is active from stage 1 onward (`panActive`); the stage-0 row is
+ * deliberately locked. (Corrected 2026-08-28 — this comment used
  * to claim pan worked in EVERY mode, which the code has never done.)
  *
  * RACK evaluated 2026-08-23 — KEPT CLASSIC: the lesson's display is TWO
@@ -27,6 +29,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Ellipse, Line, Path, Polygon, Rect } from 'react-native-svg';
 import { ResponseCurveGraph, eqResponseDb, type ResponseCurve } from '../../../../features/lab/fxViz';
 import { CheckQuestion, DragSlider, type CheckSpec } from '../../foundations/bits';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { colors, fonts } from '../../../../theme/tokens';
 import { bwOctFromQ, fFromNorm, fmtHz, gainColor, normFromF, qFromBwOct } from './eqMath';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
@@ -42,6 +45,12 @@ const xForF = (f: number) => PAD + ((Math.log10(f) - Math.log10(20)) / 3) * PLOT
 // ---- Scene geometry (compressed 2026-08-07: shorter scene lifts the sliders
 // higher on the phone screen) --------------------------------------------------
 const SCENE_H = 168;
+/** Response graph under the scene: plot height at 1× (its 14 px label strip is
+ *  added by the graph). */
+const GRAPH_H = 116;
+/** The two-panel figure's shape at 320 units wide: scene + graph + label strip.
+ *  Both panels scale uniformly with the width, so the shape holds at any size. */
+const FIG_ASPECT = W / (SCENE_H + GRAPH_H + 14);
 const FLOOR_Y = 116;
 const FOV_TOP = 42;
 const CAM_APEX: [number, number] = [160, 148];
@@ -92,12 +101,16 @@ const FILL2 = '#22242c';
 /** The room, drawn with a little depth: window · chair · person · lamp ·
  *  studio monitor. `aimX`/`halfW` place the camera's field-of-view wedge on the
  *  shared frequency axis; `locked` dims the tie between camera and EQ (fixed). */
-function RoomScene({ aimX, halfW }: { aimX: number; halfW: number }) {
+function RoomScene({ aimX, halfW, width }: { aimX: number; halfW: number; width: number }) {
   // Camera and EQ always point at the same place now, so the field of view is
   // always the live amber (owner 2026-08-07).
   const fov = colors.amber;
+  // Drawn at the pixel width the figure grants, scaled uniformly from the
+  // 320-unit scene — the SAME width ÷ 320 scale the response graph below uses
+  // for its x-axis, so the field of view stays over the bell at every size.
+  const s = width / W;
   return (
-    <Svg width="100%" height={SCENE_H} viewBox={`0 0 ${W} ${SCENE_H}`}>
+    <Svg width={width} height={SCENE_H * s} viewBox={`0 0 ${W} ${SCENE_H}`}>
       {/* Back wall / floor split for depth */}
       <Rect x={PAD} y={28} width={PLOT_W} height={FLOOR_Y - 28} fill="#101216" />
       <Polygon points={`${PAD},${FLOOR_Y} ${W - PAD},${FLOOR_Y} ${W - PAD - 14},${FLOOR_Y + 16} ${PAD + 14},${FLOOR_Y + 16}`} fill="#0c0d11" />
@@ -155,7 +168,7 @@ function RoomScene({ aimX, halfW }: { aimX: number; halfW: number }) {
   );
 }
 
-export function CameraAnalogyModule(_p: EqModuleComponentProps) {
+export function CameraAnalogyModule(p: EqModuleComponentProps) {
   const [stage, setStage] = useState<Stage>(0);
   // Starts pointed at the lamp, so unlocking PAN continues from where the fixed
   // camera was staring instead of jumping.
@@ -188,54 +201,30 @@ export function CameraAnalogyModule(_p: EqModuleComponentProps) {
 
   const meta = STAGE_META[stage];
 
-  return (
-    <View style={styles.root}>
-      <GlossaryText style={styles.body}>
-        Imagine a camera in a room. What the camera can DO — stay bolted down, pan, or pan and
-        zoom — is exactly the difference between fixed, semi-parametric, and fully parametric EQ.
-      </GlossaryText>
-
-      <Text style={styles.stageCamera}>{meta.camera}</Text>
-      <Text style={styles.stageEq}>→ {meta.eq}</Text>
-
-      {/* EQ-type buttons sit JUST ABOVE the display (owner 2026-08-07). */}
-      <View style={styles.chipRow}>
-        {STAGE_META.map((s, i) => (
-          <Pressable
-            key={s.label}
-            onPress={() => setStage(i as Stage)}
-            hitSlop={6}
-            accessibilityRole="button"
-            accessibilityLabel={`${s.label} stage`}
-            accessibilityState={{ selected: stage === i }}
-            aria-pressed={stage === i}
-            style={[styles.chip, stage === i && styles.chipActive]}
-          >
-            <Text style={[styles.chipText, stage === i && styles.chipTextActive]}>{s.label}</Text>
-          </Pressable>
-        ))}
-      </View>
-
-      <View style={styles.panel}>
-        <View style={styles.panelHead}>
-          <Text accessibilityRole="header" style={styles.panelEyebrow}>THE ROOM</Text>
-          <Text style={styles.readout}>
-            {stage === 0
-              ? `${fmtHz(eqFreq)} — FIXED`
-              : `${fmtHz(eqFreq)} · Q ${q.toFixed(1)} · ${bwOct.toFixed(2)} oct`}
-          </Text>
-        </View>
-        <RoomScene aimX={aimX} halfW={halfW} />
-        <ResponseCurveGraph curves={curves} dbRange={12} height={116} mainColor={gc} />
-        <Text style={styles.honest}>
-          {stage === 0
-            ? 'Locked on the lamp at 2 kHz. Nothing you do moves it — that is what “fixed” means.'
-            : 'The bell = the real peaking response at a fixed +9 dB — gain is NOT part of this analogy.'}
-        </Text>
-      </View>
-
-      {/* FIXED locks BOTH controls (owner 2026-08-07) — a bolted-down camera
-          has no pan handle to grab. */}
+  // EQ-type buttons and the two camera sliders — on the page AND docked inside
+  // FULL SCREEN (legibility pass 2026-09-26), same elements, same state.
+  const stageChips = (
+    <View style={styles.chipRow}>
+      {STAGE_META.map((s, i) => (
+        <Pressable
+          key={s.label}
+          onPress={() => setStage(i as Stage)}
+          hitSlop={6}
+          accessibilityRole="button"
+          accessibilityLabel={`${s.label} stage`}
+          accessibilityState={{ selected: stage === i }}
+          aria-pressed={stage === i}
+          style={[styles.chip, stage === i && styles.chipActive]}
+        >
+          <Text style={[styles.chipText, stage === i && styles.chipTextActive]}>{s.label}</Text>
+        </Pressable>
+      ))}
+    </View>
+  );
+  // FIXED locks BOTH controls (owner 2026-08-07) — a bolted-down camera has no
+  // pan handle to grab.
+  const cameraSliders = (
+    <View style={styles.sliders}>
       {panActive ? (
         <DragSlider label="PAN THE CAMERA" value={pan} onChange={setPan} readout={fmtHz(cameraF)} />
       ) : (
@@ -257,6 +246,62 @@ export function CameraAnalogyModule(_p: EqModuleComponentProps) {
           <Text style={styles.lockedNote}>locked — this lens cannot zoom</Text>
         </View>
       )}
+    </View>
+  );
+
+  return (
+    <View style={styles.root}>
+      <GlossaryText style={styles.body}>
+        Imagine a camera in a room. What the camera can DO — stay bolted down, pan, or pan and
+        zoom — is exactly the difference between fixed, semi-parametric, and fully parametric EQ.
+      </GlossaryText>
+
+      <Text style={styles.stageCamera}>{meta.camera}</Text>
+      <Text style={styles.stageEq}>→ {meta.eq}</Text>
+
+      {/* EQ-type buttons sit JUST ABOVE the display (owner 2026-08-07). */}
+      {stageChips}
+
+      <View style={styles.panel}>
+        <View style={styles.panelHead}>
+          <Text accessibilityRole="header" style={styles.panelEyebrow}>THE ROOM</Text>
+          <Text style={styles.readout}>
+            {stage === 0
+              ? `${fmtHz(eqFreq)} — FIXED`
+              : `${fmtHz(eqFreq)} · Q ${q.toFixed(1)} · ${bwOct.toFixed(2)} oct`}
+          </Text>
+        </View>
+        {/* One figure, two pixel-aligned panels: the room over the response, on
+            a shared log-frequency axis. FULL SCREEN enlarges both together. */}
+        <ExpandableFigure
+          width={Math.max(120, p.width)}
+          aspect={FIG_ASPECT}
+          title="THE ROOM"
+          badge="REAL PEAKING RESPONSE AT A FIXED +9 dB — GAIN IS NOT PART OF THE ANALOGY"
+          render={(w, h) => {
+            const sceneH = SCENE_H * (w / W);
+            return (
+              <View style={{ width: w, height: h }}>
+                <RoomScene aimX={aimX} halfW={halfW} width={w} />
+                <ResponseCurveGraph curves={curves} dbRange={12} width={w} totalHeight={Math.max(40, h - sceneH)} mainColor={gc} />
+              </View>
+            );
+          }}
+          controls={
+            <View style={styles.controls}>
+              {stageChips}
+              {cameraSliders}
+            </View>
+          }
+        />
+        <Text style={styles.honest}>
+          {stage === 0
+            ? 'Locked on the lamp at 2 kHz. Nothing you do moves it — that is what “fixed” means.'
+            : 'The bell = the real peaking response at a fixed +9 dB — gain is NOT part of this analogy.'}
+        </Text>
+      </View>
+
+      {cameraSliders}
 
       <View style={styles.banner}>
         <Text style={styles.bannerText}>MOVE THE CAMERA = FREQUENCY</Text>
@@ -274,6 +319,8 @@ export function CameraAnalogyModule(_p: EqModuleComponentProps) {
 
 const styles = StyleSheet.create({
   root: { gap: 12 },
+  sliders: { gap: 12 },
+  controls: { gap: 10 },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },

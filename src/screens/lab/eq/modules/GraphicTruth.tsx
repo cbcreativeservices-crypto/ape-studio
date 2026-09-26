@@ -129,6 +129,7 @@ export function GraphicTruthModule(_p: EqModuleComponentProps) {
       params={params}
       stage={{
         size: 'L', // curve + board — the revelation is the display
+        fullScreen: true, // legibility pass 2026-09-26 — the rack renders the dock inside
         // Per-view honesty line (verbatim, dynamic).
         badge:
           view === 'mag'
@@ -149,7 +150,7 @@ export function GraphicTruthModule(_p: EqModuleComponentProps) {
           },
         ],
         render: (w, h) => {
-          const curveH = Math.max(60, h - BOARD_BLOCK_H - 14 - 12);
+          const curveTotalH = Math.max(74, h - BOARD_BLOCK_H - 12); // plot + label strip
           return (
             <View style={{ width: w, height: h, paddingHorizontal: 8, paddingTop: 6, gap: 4 }}>
               {view === 'mag' ? (
@@ -158,11 +159,12 @@ export function GraphicTruthModule(_p: EqModuleComponentProps) {
                 <ResponseCurveGraph
                   curves={magCurves}
                   dbRange={12}
-                  height={curveH}
+                  width={w - 16}
+                  totalHeight={curveTotalH}
                   mainColor={gainColor(Math.max(0, ...gains), 12)}
                 />
               ) : (
-                <ResponseCurveGraph curves={phaseCurves} dbRange={180} height={curveH} />
+                <ResponseCurveGraph curves={phaseCurves} dbRange={180} width={w - 16} totalHeight={curveTotalH} />
               )}
               <GraphicBoard
                 centers={OCT_CENTERS}

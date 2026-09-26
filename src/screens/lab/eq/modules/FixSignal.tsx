@@ -176,12 +176,13 @@ export function FixSignalModule(_p: EqModuleComponentProps) {
       params={params}
       stage={{
         size: 'M', // the story is half the lesson — leave the well room
+        fullScreen: true, // legibility pass 2026-09-26 — the rack renders the dock inside
         // Legend + honesty, verbatim from the pre-rack panel head.
         badge: 'SIGNAL (amber) vs REFERENCE (dim) · SYNTHETIC',
         bezel,
         render: (w, h) => (
           <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center' }}>
-            <ResponseCurveGraph curves={curves} dbRange={24} height={Math.max(80, h - 18)} mainColor={plotColor} />
+            <ResponseCurveGraph curves={curves} dbRange={24} width={w - 12} totalHeight={Math.max(94, h - 4)} mainColor={plotColor} />
           </View>
         ),
       }}

@@ -15,10 +15,21 @@
  * BYPASS is a dock key for instant in/out A-B. EqAuditionBar plays the
  * composite curve in the well on builds with the FX engine.
  */
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState, type ReactNode } from 'react';
 import { PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
-import { ResponseCurveGraph, eqResponseDb, type EqBandSpec, type ResponseCurve } from '../../../../features/lab/fxViz';
+import {
+  ResponseCurveGraph,
+  eqResponseDb,
+  responseGraphDb,
+  responseGraphF,
+  responseGraphPadB,
+  responseGraphTextScale,
+  responseGraphX,
+  responseGraphY,
+  type EqBandSpec,
+  type ResponseCurve,
+} from '../../../../features/lab/fxViz';
 import { MiniBtn } from './eqBits';
 import { colors, fonts } from '../../../../theme/tokens';
 import { RackUnit } from '../../rack/RackUnit';
@@ -29,19 +40,67 @@ import { EqAuditionBar } from './eqAudition';
 import type { EqModuleComponentProps } from './registry';
 import { CheckQuestion } from '../../foundations/bits';
 
-// ---- Graph geometry (mirrors ResponseCurveGraph: viewBox 320, pad 8; the
-//      HEIGHT is now the stage's — the glass grants it at render) ------------
-const VB_W = 320;
-const PAD = 8;
-const PAD_B = 14;
+// ---- Graph geometry — fxViz's own pixel-unit helpers (legibility pass
+//      2026-09-26: the graph now draws at the width the glass grants, so the
+//      node overlay and the touch mapping use the SAME functions, per surface:
+//      the glass and the FULL SCREEN view each have their own size) ----------
 const DB_RANGE = 18;
-const xVbForF = (f: number) => PAD + ((Math.log10(f) - Math.log10(20)) / 3) * (VB_W - 2 * PAD);
-const yVbForDb = (db: number, h: number) =>
-  h / 2 - (Math.max(-DB_RANGE, Math.min(DB_RANGE, db)) / DB_RANGE) * (h / 2 - 8);
-const fForXVb = (x: number) =>
-  Math.max(20, Math.min(20000, 20 * Math.pow(10, ((x - PAD) / (VB_W - 2 * PAD)) * 3)));
-const dbForYVb = (y: number, h: number) =>
-  Math.max(-DB_RANGE, Math.min(DB_RANGE, ((h / 2 - y) / (h / 2 - 8)) * DB_RANGE));
+const STAGE_PAD_X = 6;
+const xForF = (f: number, gw: number) => responseGraphX(f, gw);
+const yForDb = (db: number, gh: number) => responseGraphY(db, gh, DB_RANGE);
+const fForX = (x: number, gw: number) => responseGraphF(x, gw);
+const dbForY = (y: number, gh: number) => responseGraphDb(y, gh, DB_RANGE);
+
+/** One drag surface = one drawn size. The glass and the full-screen view each
+ *  mount their own, so a finger is always mapped through the geometry of the
+ *  graph it is actually touching. Anchored drag (owner 2026-08-07): the grant
+ *  fixes the start point; moves apply dx/dy — locationX/Y re-base when the
+ *  finger leaves the graph, which flung nodes across the plot. */
+function NodeDragSurface({
+  gw,
+  gh,
+  onGrab,
+  onDrag,
+  children,
+}: {
+  gw: number;
+  gh: number;
+  /** Touch-down at graph pixel (x, y) on a graph gw × gh. */
+  onGrab: (x: number, y: number, gw: number, gh: number) => void;
+  onDrag: (x: number, y: number, gw: number, gh: number) => void;
+  children: ReactNode;
+}) {
+  const geom = useRef({ gw, gh });
+  geom.current = { gw, gh };
+  const cb = useRef({ onGrab, onDrag });
+  cb.current = { onGrab, onDrag };
+  const anchor = useRef({ x: 0, y: 0 });
+  const pan = useRef(
+    PanResponder.create({
+      // Claim on touch-down: on the pinned stage nothing competes for the
+      // gesture, but claiming early keeps the grab instant and deliberate.
+      onStartShouldSetPanResponder: () => true,
+      onStartShouldSetPanResponderCapture: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: (e) => {
+        const x = e.nativeEvent.locationX;
+        const y = e.nativeEvent.locationY;
+        anchor.current = { x, y };
+        cb.current.onGrab(x, y, geom.current.gw, geom.current.gh);
+      },
+      onPanResponderMove: (_e, g) => {
+        const a = anchor.current;
+        cb.current.onDrag(a.x + g.dx, a.y + g.dy, geom.current.gw, geom.current.gh);
+      },
+      onPanResponderTerminationRequest: () => false,
+    }),
+  ).current;
+  return (
+    <View style={{ width: gw }} {...pan.panHandlers}>
+      {children}
+    </View>
+  );
+}
 
 type BandKey = 'hpf' | 'b0' | 'b1' | 'b2' | 'b3' | 'lpf';
 type Bands = {
@@ -101,68 +160,37 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
   // ---- Direct node dragging on the STAGE glass (spec: "drag nodes directly").
   // The stage is pinned outside any ScrollView, so the old scroll-lock
   // plumbing (useScrollLock + lockRef) is REMOVED — a node drag can no longer
-  // fight a page scroll by construction (rack conversion 2026-08-23).
-  const layoutRef = useRef(0); // pan surface width (stage onLayout)
-  const graphHRef = useRef(150); // graph height granted by the glass
-
-  const toVb = (lx: number, ly: number) => {
-    const w = layoutRef.current || VB_W;
-    const s = Math.min(w / VB_W, 1);
-    const ox = (w - VB_W * s) / 2;
-    const oy = ((graphHRef.current + PAD_B) * (1 - s)) / 2;
-    return { x: (lx - ox) / s, y: (ly - oy) / s };
-  };
-  // Anchored drag (owner 2026-08-07): grant fixes the start point in viewBox
-  // space; moves apply dx/dy — locationX/Y re-base when the finger leaves the
-  // graph, which flung nodes across the plot.
-  const anchorRef = useRef<{ x: number; y: number; s: number }>({ x: 0, y: 0, s: 1 });
-
-  const applyDrag = (xVb: number, yVb: number) => {
+  // fight a page scroll by construction (rack conversion 2026-08-23). Each
+  // surface (the glass, the FULL SCREEN view) is a NodeDragSurface that hands
+  // over graph pixels plus its own drawn size — the mapping here is pure
+  // geometry, shared with the node overlay.
+  const applyDrag = (x: number, y: number, gw: number, gh: number) => {
     const key = selRef.current;
-    const f = fForXVb(xVb);
+    const f = fForX(x, gw);
     setBands((prev) => {
       if (key === 'hpf') return { ...prev, hpf: { ...prev.hpf, f } };
       if (key === 'lpf') return { ...prev, lpf: { ...prev.lpf, f } };
       const i = Number(key.slice(1));
-      const g = Math.round(dbForYVb(yVb, graphHRef.current) * 2) / 2;
+      const g = Math.round(dbForY(y, gh) * 2) / 2;
       return { ...prev, bells: prev.bells.map((b, k) => (k === i ? { ...b, f, g } : b)) };
     });
   };
-
-  const pan = useRef(
-    PanResponder.create({
-      // Claim on touch-down: on the pinned stage nothing competes for the
-      // gesture, but claiming early keeps the grab instant and deliberate.
-      onStartShouldSetPanResponder: () => true,
-      onStartShouldSetPanResponderCapture: () => true,
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: (e) => {
-        const { x, y } = toVb(e.nativeEvent.locationX, e.nativeEvent.locationY);
-        const w = layoutRef.current || VB_W;
-        anchorRef.current = { x, y, s: Math.min(w / VB_W, 1) };
-        // Grab the nearest ENABLED band node by horizontal distance.
-        const b = bandsRef.current;
-        const cands: { key: BandKey; x: number }[] = [];
-        if (b.hpf.on) cands.push({ key: 'hpf', x: xVbForF(b.hpf.f) });
-        if (b.lpf.on) cands.push({ key: 'lpf', x: xVbForF(b.lpf.f) });
-        b.bells.forEach((bell, i) => {
-          if (bell.on) cands.push({ key: `b${i}` as BandKey, x: xVbForF(bell.f) });
-        });
-        if (!cands.length) return;
-        let best = cands[0];
-        for (const c of cands) if (Math.abs(c.x - x) < Math.abs(best.x - x)) best = c;
-        selRef.current = best.key;
-        setSel(best.key);
-        applyDrag(x, y);
-      },
-      onPanResponderMove: (_e, g) => {
-        // Anchored: dx/dy from the grant point, scaled into viewBox units.
-        const a = anchorRef.current;
-        applyDrag(a.x + g.dx / a.s, a.y + g.dy / a.s);
-      },
-      onPanResponderTerminationRequest: () => false,
-    }),
-  ).current;
+  const grab = (x: number, y: number, gw: number, gh: number) => {
+    // Grab the nearest ENABLED band node by horizontal distance.
+    const b = bandsRef.current;
+    const cands: { key: BandKey; x: number }[] = [];
+    if (b.hpf.on) cands.push({ key: 'hpf', x: xForF(b.hpf.f, gw) });
+    if (b.lpf.on) cands.push({ key: 'lpf', x: xForF(b.lpf.f, gw) });
+    b.bells.forEach((bell, i) => {
+      if (bell.on) cands.push({ key: `b${i}` as BandKey, x: xForF(bell.f, gw) });
+    });
+    if (!cands.length) return;
+    let best = cands[0];
+    for (const c of cands) if (Math.abs(c.x - x) < Math.abs(best.x - x)) best = c;
+    selRef.current = best.key;
+    setSel(best.key);
+    applyDrag(x, y, gw, gh);
+  };
 
   const curves = useMemo<ResponseCurve[]>(() => {
     const list: ResponseCurve[] = [];
@@ -339,6 +367,7 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
       params={params}
       stage={{
         size: 'L', // the node-drag graph is the star
+        fullScreen: true, // legibility pass 2026-09-26 — the rack renders the dock inside
         badge: bypass
           ? 'BYPASSED — output flat · dim = the would-be composite'
           : 'BANDS (dim) + COMBINED (amber)',
@@ -353,30 +382,32 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
           { k: 'EQ', v: bypass ? 'BYPASS' : `${specsFor(bands).length} ACTIVE` },
         ],
         render: (w, h) => {
-          const gh = Math.max(80, h - PAD_B - 10);
-          graphHRef.current = gh;
-          // Node markers, drawn over the graph in the SAME viewBox (stays aligned).
+          // The graph fills the glass width; plot height = what is left after
+          // the (text-scaled) frequency-label strip. Same helpers as the touch
+          // mapping, so nodes and fingers agree at every size.
+          const gw = Math.max(120, w - STAGE_PAD_X * 2);
+          const padB = responseGraphPadB(gw);
+          const gh = Math.max(80, h - padB - 10);
+          const ts = responseGraphTextScale(gw);
+          // Node markers, drawn over the graph in the SAME pixel space (stays aligned).
           const b = bands;
           const nodes: { key: BandKey; x: number; y: number }[] = [];
-          if (b.hpf.on) nodes.push({ key: 'hpf', x: xVbForF(b.hpf.f), y: yVbForDb(0, gh) });
-          if (b.lpf.on) nodes.push({ key: 'lpf', x: xVbForF(b.lpf.f), y: yVbForDb(0, gh) });
+          if (b.hpf.on) nodes.push({ key: 'hpf', x: xForF(b.hpf.f, gw), y: yForDb(0, gh) });
+          if (b.lpf.on) nodes.push({ key: 'lpf', x: xForF(b.lpf.f, gw), y: yForDb(0, gh) });
           b.bells.forEach((bell, i) => {
-            if (bell.on) nodes.push({ key: `b${i}` as BandKey, x: xVbForF(bell.f), y: yVbForDb(bell.g, gh) });
+            if (bell.on) nodes.push({ key: `b${i}` as BandKey, x: xForF(bell.f, gw), y: yForDb(bell.g, gh) });
           });
           return (
-            <View style={{ width: w, height: h, justifyContent: 'center', paddingHorizontal: 6 }}>
-              <View
-                onLayout={(e) => (layoutRef.current = e.nativeEvent.layout.width)}
-                {...pan.panHandlers}
-              >
+            <View style={{ width: w, height: h, justifyContent: 'center', alignItems: 'center' }}>
+              <NodeDragSurface gw={gw} gh={gh} onGrab={grab} onDrag={applyDrag}>
                 {/* Every curve carries its OWN MIDI colour (set per-curve above). */}
-                <ResponseCurveGraph curves={curves} dbRange={DB_RANGE} height={gh} />
+                <ResponseCurveGraph curves={curves} dbRange={DB_RANGE} width={gw} height={gh} />
                 <Svg
                   pointerEvents="none"
                   style={StyleSheet.absoluteFill}
-                  width="100%"
-                  height={gh + PAD_B}
-                  viewBox={`0 0 ${VB_W} ${gh + PAD_B}`}
+                  width={gw}
+                  height={gh + padB}
+                  viewBox={`0 0 ${gw} ${gh + padB}`}
                 >
                   {nodes.map((n) => {
                     // Node dot colour matches the band's button (owner 2026-08-07).
@@ -387,16 +418,16 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
                         key={n.key}
                         cx={n.x}
                         cy={n.y}
-                        r={selected ? 7 : 5}
+                        r={(selected ? 7 : 5) * ts}
                         fill={col}
                         fillOpacity={selected ? 0.95 : 0.25}
                         stroke={col}
-                        strokeWidth={1.5}
+                        strokeWidth={1.5 * ts}
                       />
                     );
                   })}
                 </Svg>
-              </View>
+              </NodeDragSurface>
             </View>
           );
         },

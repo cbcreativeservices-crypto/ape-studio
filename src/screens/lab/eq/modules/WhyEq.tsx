@@ -16,6 +16,7 @@ import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ResponseCurveGraph, eqResponseDb, type ResponseCurve } from '../../../../features/lab/fxViz';
 import { CheckQuestion, DragSlider, type CheckSpec } from '../../foundations/bits';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { colors, fonts } from '../../../../theme/tokens';
 import { fmtHz, gainColor } from './eqMath';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
@@ -31,6 +32,9 @@ const REGIONS = [
 /** Wide, musical bell for the region demo (Q≈0.8 ≈ 1.8 octaves). */
 const REGION_Q = 0.8;
 const GAIN_RANGE = 12; // ±12 dB — enough to see balance change dramatically
+/** The response graph's shape: fxViz's 320-unit width over a 140 px plot + its
+ *  14 px frequency-label strip (ExpandableFigure zooms it in this shape). */
+const GRAPH_ASPECT = 320 / (140 + 14);
 
 const CHECK: CheckSpec = {
   question: 'Turning a frequency region DOWN with an EQ is called…',
@@ -41,7 +45,7 @@ const CHECK: CheckSpec = {
   wrongHint: 'Think “down = ?” — Q is about width, not direction.',
 };
 
-export function WhyEqModule(_p: EqModuleComponentProps) {
+export function WhyEqModule(p: EqModuleComponentProps) {
   const [region, setRegion] = useState<(typeof REGIONS)[number]>(REGIONS[1]);
   const [gainDb, setGainDb] = useState(6);
 
@@ -57,33 +61,11 @@ export function WhyEqModule(_p: EqModuleComponentProps) {
   // MIDI level colour (owner 2026-08-07): boost warms toward red, a cut stays blue.
   const gc = gainColor(gainDb, GAIN_RANGE);
 
-  return (
-    <View style={styles.root}>
-      <GlossaryText style={styles.body}>
-        Every sound you work with is a balance of frequency content — lows, mids, highs, all at
-        once. An equalizer changes that balance: you pick a frequency region and either raise it
-        (BOOST) or lower it (CUT, also called attenuation).
-      </GlossaryText>
-
-      <View style={styles.panel}>
-        <View style={styles.panelHead}>
-          <Text accessibilityRole="header" style={styles.panelEyebrow}>EQ RESPONSE</Text>
-          <Text style={[styles.readout, { color: gc }]}>
-            {fmtHz(region.f)} · {gainDb >= 0 ? '+' : ''}
-            {gainDb.toFixed(1)} dB
-          </Text>
-        </View>
-        <ResponseCurveGraph curves={curves} dbRange={GAIN_RANGE + 3} height={140} mainColor={gc} />
-        <Text style={styles.verdict}>
-          {gainDb > 0.5
-            ? 'BOOST — raising the level of this frequency region.'
-            : gainDb < -0.5
-              ? 'CUT / ATTENUATION — lowering the level of this frequency region.'
-              : 'FLAT — no change; the balance is untouched.'}
-        </Text>
-      </View>
-
-      <Text style={styles.sectionTitle}>PICK A REGION</Text>
+  // The page's own controls — rendered here under the graph AND docked inside
+  // FULL SCREEN (legibility pass 2026-09-26: "the user must still be able to
+  // adjust and view their changes"). Same elements, same state.
+  const controls = (
+    <View style={styles.controls}>
       <View style={styles.chipRow}>
         {REGIONS.map((r) => (
           <Pressable
@@ -109,6 +91,44 @@ export function WhyEqModule(_p: EqModuleComponentProps) {
         tint={gc}
         levelTint
       />
+    </View>
+  );
+
+  return (
+    <View style={styles.root}>
+      <GlossaryText style={styles.body}>
+        Every sound you work with is a balance of frequency content — lows, mids, highs, all at
+        once. An equalizer changes that balance: you pick a frequency region and either raise it
+        (BOOST) or lower it (CUT, also called attenuation).
+      </GlossaryText>
+
+      <View style={styles.panel}>
+        <View style={styles.panelHead}>
+          <Text accessibilityRole="header" style={styles.panelEyebrow}>EQ RESPONSE</Text>
+          <Text style={[styles.readout, { color: gc }]}>
+            {fmtHz(region.f)} · {gainDb >= 0 ? '+' : ''}
+            {gainDb.toFixed(1)} dB
+          </Text>
+        </View>
+        <ExpandableFigure
+          width={Math.max(120, p.width)}
+          aspect={GRAPH_ASPECT}
+          title="EQ RESPONSE"
+          badge="DESIGNED RESPONSE — ANALYTIC"
+          render={(w, h) => <ResponseCurveGraph curves={curves} dbRange={GAIN_RANGE + 3} width={w} totalHeight={h} mainColor={gc} />}
+          controls={controls}
+        />
+        <Text style={styles.verdict}>
+          {gainDb > 0.5
+            ? 'BOOST — raising the level of this frequency region.'
+            : gainDb < -0.5
+              ? 'CUT / ATTENUATION — lowering the level of this frequency region.'
+              : 'FLAT — no change; the balance is untouched.'}
+        </Text>
+      </View>
+
+      <Text style={styles.sectionTitle}>PICK A REGION</Text>
+      {controls}
 
       <Text style={styles.caption}>
         Boosting and cutting are both legitimate tools — sometimes lowering the unwanted region is
@@ -122,6 +142,7 @@ export function WhyEqModule(_p: EqModuleComponentProps) {
 
 const styles = StyleSheet.create({
   root: { gap: 12 },
+  controls: { gap: 12 },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   sectionTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.4, color: colors.amber, marginTop: 2 },

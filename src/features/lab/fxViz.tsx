@@ -13,7 +13,7 @@
  * the real measured gain reduction from the engine (fxGrStatus), never a
  * simulated needle.
  */
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Defs, Line, LinearGradient, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../theme/tokens';
@@ -173,6 +173,41 @@ const FREQ_TICKS = [50, 200, 1000, 5000, 20000];
 const fmtF = (f: number) => (f >= 1000 ? `${f / 1000}k` : `${f}`);
 const MONO = fonts.mono; // axis tick / readout label face
 
+// ── ResponseCurveGraph geometry (pixel units, legibility pass 2026-09-26) ──
+// The graph used to be a 320-unit viewBox in a 100%-wide SVG ("meet"): at
+// any width ≥ 320 it drew at exactly 1:1, so its 8-unit tick labels were 8 px
+// on the glass AND 8 px in FULL SCREEN — the picture never grew. It now draws
+// at the pixel width it is given: the 320-unit x-geometry scaled by
+// `width ÷ 320` (so hosts that share the axis — MultiBand's node overlay, the
+// Camera Analogy's room scene — stay pixel-aligned by scaling the same way),
+// heights in pixels, and the labels ≥ 9 pt that grow with the width.
+export const RESPONSE_GRAPH_REF_W = W;
+export const RESPONSE_GRAPH_PAD = 8;
+/** Label floor — the owner's 9 pt minimum on every lab display. */
+const TICK_FONT = 9;
+const RCG_PAD_B = 14; // axis strip height at 1× (scales with the text)
+/** Horizontal scale: how much wider than the 320-unit reference the graph is drawn. */
+export const responseGraphScale = (width: number): number => Math.max(0.5, width / W);
+/** Text scale: never below 1 — a narrow graph keeps 9 pt labels, a wide one grows them. */
+export const responseGraphTextScale = (width: number): number => Math.max(1, responseGraphScale(width));
+/** Height of the frequency-label strip under the plot at this width. */
+export const responseGraphPadB = (width: number): number => Math.round(RCG_PAD_B * responseGraphTextScale(width));
+/** Pixel x of frequency `f` on a graph drawn `width` wide. */
+export const responseGraphX = (f: number, width: number): number =>
+  responseGraphScale(width) * logX(Math.max(1, f), 20, 20000, RESPONSE_GRAPH_PAD, RESPONSE_GRAPH_PAD);
+/** Inverse of responseGraphX (clamped to the 20 Hz–20 kHz axis). */
+export const responseGraphF = (xPx: number, width: number): number => {
+  const x = xPx / responseGraphScale(width);
+  const t = (x - RESPONSE_GRAPH_PAD) / (W - 2 * RESPONSE_GRAPH_PAD);
+  return Math.max(20, Math.min(20000, 20 * Math.pow(10, t * 3)));
+};
+/** Pixel y of `db` on a plot `plotH` tall (mirrors the graph's own yAt). */
+export const responseGraphY = (db: number, plotH: number, dbRange: number): number =>
+  plotH / 2 - (Math.max(-dbRange, Math.min(dbRange, db)) / dbRange) * (plotH / 2 - 8);
+/** Inverse of responseGraphY. */
+export const responseGraphDb = (yPx: number, plotH: number, dbRange: number): number =>
+  Math.max(-dbRange, Math.min(dbRange, ((plotH / 2 - yPx) / (plotH / 2 - 8)) * dbRange));
+
 /** Rounded plot panel + hairline frame — shared chrome under every graph. */
 function PlotFrame({ w, h }: { w: number; h: number }) {
   return (
@@ -211,19 +246,36 @@ export function ResponseCurveGraph({
   curves,
   dbRange = 18,
   height = 150,
+  totalHeight,
+  width,
   mainColor,
 }: {
   curves: ResponseCurve[];
   dbRange?: number;
+  /** PLOT height in px (the frequency-label strip is added under it). */
   height?: number;
+  /** Alternatively the WHOLE graph's height — plot + label strip — for a host
+   *  that hands the graph a box to fill (a rack glass, an ExpandableFigure).
+   *  Wins over `height` when given. */
+  totalHeight?: number;
+  /** Pixel width to draw at. Omitted ⇒ measured from the parent (one layout
+   *  pass; the graph reserves its height and paints on the next frame). Pass
+   *  it when you know it — a rack stage's `w` — so nothing waits. */
+  width?: number;
   /** Overrides the amber of the MAIN trace + its underfill (EQ Lab MIDI level
    *  colouring, owner 2026-08-07). Omitted ⇒ the house amber. */
   mainColor?: string;
 }) {
-  const H = height;
-  const padL = 8, padR = 8, padB = 14;
-  const yAt = (db: number) =>
-    H / 2 - (Math.max(-dbRange, Math.min(dbRange, db)) / dbRange) * (H / 2 - 8);
+  const [measured, setMeasured] = useState(0);
+  const gw = width ?? measured;
+  const s = responseGraphScale(gw || W); // x-geometry scale
+  const ts = responseGraphTextScale(gw || W); // label scale (≥ 1)
+  const padB = responseGraphPadB(gw || W);
+  const H = totalHeight != null ? Math.max(40, totalHeight - padB) : height;
+  const padL = RESPONSE_GRAPH_PAD * s;
+  const padR = RESPONSE_GRAPH_PAD * s;
+  const xAt = (f: number) => s * logX(f, 20, 20000, RESPONSE_GRAPH_PAD, RESPONSE_GRAPH_PAD);
+  const yAt = (db: number) => responseGraphY(db, H, dbRange);
   const paths = useMemo(
     () =>
       curves.map((c) => {
@@ -231,30 +283,42 @@ export function ResponseCurveGraph({
         let d = '';
         for (let i = 0; i <= N; i++) {
           const f = 20 * Math.pow(1000, i / N); // 20 → 20k log
-          const x = logX(f, 20, 20000, padL, padR);
+          const x = xAt(f);
           d += `${i === 0 ? 'M' : 'L'}${x.toFixed(1)} ${yAt(c.at(f)).toFixed(1)}`;
         }
         // Underfill for the main trace: close the curve down to the plot floor.
-        const fill = c.emphasis === 'main' ? `${d}L${W - padR} ${H - 1} L${padL} ${H - 1}Z` : '';
+        const fill = c.emphasis === 'main' ? `${d}L${(gw - padR).toFixed(1)} ${H - 1} L${padL.toFixed(1)} ${H - 1}Z` : '';
         return { d, fill };
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [curves, dbRange, height],
+    [curves, dbRange, H, gw],
   );
+  if (!gw) {
+    // Reserve the box, measure once, paint on the next frame.
+    return <View style={{ width: '100%', height: H + padB }} onLayout={(e) => setMeasured(Math.round(e.nativeEvent.layout.width))} />;
+  }
+  const fs = TICK_FONT * ts;
+  // Keep an edge label ("20k" under the last tick) inside the graph: a mono
+  // glyph is ~0.62 em wide, so clamp the label centre by its own half-width.
+  const labelX = (f: number) => {
+    const half = 0.62 * fs * fmtF(f).length * 0.5 + 1;
+    return Math.min(Math.max(xAt(f), half), gw - half);
+  };
   return (
-    <Svg width="100%" height={H + padB} viewBox={`0 0 ${W} ${H + padB}`}>
+    <View style={width == null ? { width: '100%' } : undefined} onLayout={width == null ? (e) => setMeasured(Math.round(e.nativeEvent.layout.width)) : undefined}>
+    <Svg width={gw} height={H + padB} viewBox={`0 0 ${gw} ${H + padB}`}>
       <Defs>
         <LinearGradient id="fxRcgFill" x1="0" y1="0" x2="0" y2="1">
           <Stop offset="0" stopColor={AMBER} stopOpacity={0.3} />
           <Stop offset="1" stopColor={AMBER} stopOpacity={0} />
         </LinearGradient>
       </Defs>
-      <PlotFrame w={W} h={H} />
+      <PlotFrame w={gw} h={H} />
       {FREQ_TICKS.map((f) => (
-        <Line key={`g${f}`} x1={logX(f, 20, 20000, padL, padR)} y1={4} x2={logX(f, 20, 20000, padL, padR)} y2={H - 4} stroke={GRID} strokeWidth={0.75} />
+        <Line key={`g${f}`} x1={xAt(f)} y1={4} x2={xAt(f)} y2={H - 4} stroke={GRID} strokeWidth={0.75} />
       ))}
       {[dbRange / 2, -dbRange / 2].map((db) => (
-        <Line key={db} x1={padL} y1={yAt(db)} x2={W - padR} y2={yAt(db)} stroke={GRID} strokeWidth={0.6} />
+        <Line key={db} x1={padL} y1={yAt(db)} x2={gw - padR} y2={yAt(db)} stroke={GRID} strokeWidth={0.6} />
       ))}
       {curves.map((c, i) =>
         c.emphasis === 'main' && paths[i].fill ? (
@@ -266,7 +330,7 @@ export function ResponseCurveGraph({
         ) : null,
       )}
       {/* 0 dB reference — deliberately brighter than the rest of the graticule */}
-      <Line x1={padL} y1={H / 2} x2={W - padR} y2={H / 2} stroke={AXIS} strokeWidth={1.1} />
+      <Line x1={padL} y1={H / 2} x2={gw - padR} y2={H / 2} stroke={AXIS} strokeWidth={1.1} />
       {curves.map((c, i) =>
         c.emphasis === 'main' ? null : (
           <Path
@@ -275,25 +339,26 @@ export function ResponseCurveGraph({
             stroke={c.color ?? DIM}
             // A colour-carrying curve is a real reading, not chrome — draw it
             // solid and legible rather than dim/dashed.
-            strokeWidth={c.color ? 1.6 : c.emphasis === 'ref' ? 1.2 : 1}
+            strokeWidth={(c.color ? 1.6 : c.emphasis === 'ref' ? 1.2 : 1) * ts}
             strokeOpacity={c.color ? 0.95 : c.emphasis === 'ref' ? 0.9 : 0.7}
-            strokeDasharray={!c.color && c.emphasis === 'ghost' ? '4 3' : undefined}
+            strokeDasharray={!c.color && c.emphasis === 'ghost' ? `${4 * ts} ${3 * ts}` : undefined}
             fill="none"
           />
         ),
       )}
       {curves.map((c, i) =>
-        c.emphasis === 'main' ? <GlowPath key={`m${i}`} d={paths[i].d} color={c.color ?? mainColor} /> : null,
+        c.emphasis === 'main' ? <GlowPath key={`m${i}`} d={paths[i].d} color={c.color ?? mainColor} width={2.2 * ts} /> : null,
       )}
       {FREQ_TICKS.map((f) => (
-        <Line key={`t${f}`} x1={logX(f, 20, 20000, padL, padR)} y1={H - 4} x2={logX(f, 20, 20000, padL, padR)} y2={H} stroke={DIM} strokeWidth={1} strokeOpacity={0.55} />
+        <Line key={`t${f}`} x1={xAt(f)} y1={H - 4} x2={xAt(f)} y2={H} stroke={DIM} strokeWidth={1} strokeOpacity={0.55} />
       ))}
       {FREQ_TICKS.map((f) => (
-        <SvgText key={f} x={logX(f, 20, 20000, padL, padR)} y={H + 11} fill={colors.textSub} fontSize={8} fontFamily={MONO} textAnchor="middle">
+        <SvgText key={f} x={labelX(f)} y={H + 11 * ts} fill={colors.textSub} fontSize={fs} fontFamily={MONO} textAnchor="middle">
           {fmtF(f)}
         </SvgText>
       ))}
     </Svg>
+    </View>
   );
 }
 
@@ -375,19 +440,19 @@ export function TransferCurveGraph({
       <Path d={`${path}L${xAt(0).toFixed(1)} ${plotB - 2} L${xAt(-60).toFixed(1)} ${plotB - 2}Z`} fill="url(#fxTcgFill)" />
       <GlowPath d={path} />
       {[-60, -40, -20, 0].map((db) => (
-        <SvgText key={db} x={xAt(db)} y={H - pad + 16} fill={colors.textSub} fontSize={8} fontFamily={MONO} textAnchor="middle">
+        <SvgText key={db} x={xAt(db)} y={H - pad + 16} fill={colors.textSub} fontSize={9} fontFamily={MONO} textAnchor="middle">
           {db}
         </SvgText>
       ))}
       {[-40, -20, 0].map((db) => (
-        <SvgText key={`y${db}`} x={4} y={yAt(db) + 3} fill={colors.textSub} fontSize={8} fontFamily={MONO}>
+        <SvgText key={`y${db}`} x={4} y={yAt(db) + 3} fill={colors.textSub} fontSize={9} fontFamily={MONO}>
           {db}
         </SvgText>
       ))}
-      <SvgText x={W - 10} y={H - pad + 16} fill={colors.textSub} fontSize={8} fontFamily={MONO} textAnchor="end">
+      <SvgText x={W - 10} y={H - pad + 16} fill={colors.textSub} fontSize={9} fontFamily={MONO} textAnchor="end">
         IN dB
       </SvgText>
-      <SvgText x={4} y={14} fill={colors.textSub} fontSize={8} fontFamily={MONO}>
+      <SvgText x={4} y={14} fill={colors.textSub} fontSize={9} fontFamily={MONO}>
         OUT
       </SvgText>
       {/* THE OPERATING POINT — where the lab's own source meets the law.
@@ -412,7 +477,7 @@ export function TransferCurveGraph({
             return (
               <>
                 <Line x1={x} y1={4} x2={x} y2={plotB - 4} stroke={colors.textSub} strokeWidth={0.9} strokeOpacity={0.5} strokeDasharray="2 3" />
-                <SvgText x={lx} y={plotB - 6} fill={colors.textSub} fontSize={8} fontFamily={MONO} textAnchor={anchor}>
+                <SvgText x={lx} y={plotB - 6} fill={colors.textSub} fontSize={9} fontFamily={MONO} textAnchor={anchor}>
                   SOURCE
                 </SvgText>
                 {acting ? <Line x1={x} y1={yU} x2={x} y2={yO} stroke={AMBER} strokeWidth={1.4} strokeOpacity={0.75} /> : null}
@@ -572,7 +637,7 @@ export function EchoTimelineGraph({
       {[0.25, 0.5, 0.75].map((t) => (
         <Line key={t} x1={xAt(t * spanMs)} y1={baseY} x2={xAt(t * spanMs)} y2={baseY + 4} stroke={DIM} strokeWidth={1} strokeOpacity={0.55} />
       ))}
-      <SvgText x={xAt(0.5 * spanMs)} y={H + 10} fill={colors.textSub} fontSize={8} fontFamily={MONO} textAnchor="middle">
+      <SvgText x={xAt(0.5 * spanMs)} y={H + 10} fill={colors.textSub} fontSize={9} fontFamily={MONO} textAnchor="middle">
         {`${Math.round(spanMs / 2)}`}
       </SvgText>
       {/* dry hit — the dim reference */}
@@ -589,15 +654,15 @@ export function EchoTimelineGraph({
       ))}
       {taps.map((t, i) =>
         pingpong ? (
-          <SvgText key={`s${i}`} x={xAt(t.ms)} y={H - 2} fill={colors.textSub} fontSize={7} fontFamily={MONO} textAnchor="middle">
+          <SvgText key={`s${i}`} x={xAt(t.ms)} y={H - 2} fill={colors.textSub} fontSize={9} fontFamily={MONO} textAnchor="middle">
             {t.side}
           </SvgText>
         ) : null,
       )}
-      <SvgText x={xAt(0)} y={H + 10} fill={colors.textSub} fontSize={8} fontFamily={MONO} textAnchor="middle">
+      <SvgText x={xAt(0)} y={H + 10} fill={colors.textSub} fontSize={9} fontFamily={MONO} textAnchor="middle">
         dry
       </SvgText>
-      <SvgText x={W - 8} y={H + 10} fill={colors.textSub} fontSize={8} fontFamily={MONO} textAnchor="end">
+      <SvgText x={W - 8} y={H + 10} fill={colors.textSub} fontSize={9} fontFamily={MONO} textAnchor="end">
         {`${Math.round(spanMs)} ms`}
       </SvgText>
     </Svg>
@@ -651,7 +716,7 @@ export function DecayCurveGraph({
       ))}
       {tTicks.map((t) =>
         Math.abs(xAt(t) - rtX) > 32 ? (
-          <SvgText key={`tl${t}`} x={xAt(t)} y={H - 2} fill={colors.textSub} fontSize={7} fontFamily={MONO} textAnchor="middle">
+          <SvgText key={`tl${t}`} x={xAt(t)} y={H - 2} fill={colors.textSub} fontSize={9} fontFamily={MONO} textAnchor="middle">
             {`${t}s`}
           </SvgText>
         ) : null,
@@ -667,11 +732,11 @@ export function DecayCurveGraph({
       <Circle cx={rtX} cy={yAt(-60)} r={2.4} fill={AMBER_HI} />
       <Line x1={rtX} y1={yAt(-60) - 6} x2={rtX} y2={yAt(-60) + 6} stroke={AMBER} strokeWidth={2} strokeOpacity={0.9} />
       {[0, -20, -40, -60].map((db) => (
-        <SvgText key={db} x={2} y={yAt(db) + 3} fill={colors.textSub} fontSize={8} fontFamily={MONO}>
+        <SvgText key={db} x={2} y={yAt(db) + 3} fill={colors.textSub} fontSize={9} fontFamily={MONO}>
           {db}
         </SvgText>
       ))}
-      <SvgText x={rtX} y={H - 2} fill={AMBER} fontSize={8} fontFamily={MONO} textAnchor="middle">
+      <SvgText x={rtX} y={H - 2} fill={AMBER} fontSize={9} fontFamily={MONO} textAnchor="middle">
         {`RT60 ${rt60.toFixed(1)} s`}
       </SvgText>
     </Svg>

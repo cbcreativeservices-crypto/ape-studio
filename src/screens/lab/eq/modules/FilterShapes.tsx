@@ -136,6 +136,7 @@ export function FilterShapesModule(_p: EqModuleComponentProps) {
       params={params}
       stage={{
         size: 'M', // response-curve teaching chart
+        fullScreen: true, // legibility pass 2026-09-26 — the rack renders the dock inside
         badge:
           shape === 'highPass' || shape === 'lowPass'
             ? 'Drawn at 12 dB/octave — slopes get their own lesson next.'
@@ -152,7 +153,7 @@ export function FilterShapesModule(_p: EqModuleComponentProps) {
         ],
         render: (w, h) => (
           <View style={{ width: w, height: h, justifyContent: 'center', paddingHorizontal: 8 }}>
-            <ResponseCurveGraph curves={curves} dbRange={18} height={Math.max(80, h - 26)} mainColor={gc} />
+            <ResponseCurveGraph curves={curves} dbRange={18} width={w - 16} totalHeight={Math.max(94, h - 12)} mainColor={gc} />
           </View>
         ),
       }}

@@ -87,6 +87,7 @@ export function GraphicVsParametricModule(_p: EqModuleComponentProps) {
       params={params}
       stage={{
         size: 'L', // the board is the star
+        fullScreen: true, // legibility pass 2026-09-26 — the rack renders the dock inside
         badge: `Curve = the ACTUAL combined response of the board’s real filters (fixed ${
           board === 'oct' ? '1-octave' : '1/3-octave'
         } bells)`,
@@ -103,10 +104,10 @@ export function GraphicVsParametricModule(_p: EqModuleComponentProps) {
           },
         ],
         render: (w, h) => {
-          const curveH = Math.max(60, h - BOARD_BLOCK_H - 14 - 12);
+          const curveTotalH = Math.max(74, h - BOARD_BLOCK_H - 12); // plot + label strip
           return (
             <View style={{ width: w, height: h, paddingHorizontal: 8, paddingTop: 6, gap: 4 }}>
-              <ResponseCurveGraph curves={curves} dbRange={15} height={curveH} />
+              <ResponseCurveGraph curves={curves} dbRange={15} width={w - 16} totalHeight={curveTotalH} />
               <GraphicBoard
                 centers={centers}
                 gains={gains}

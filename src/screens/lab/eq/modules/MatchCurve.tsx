@@ -184,12 +184,13 @@ export function MatchCurveModule(_p: EqModuleComponentProps) {
       params={params}
       stage={{
         size: 'L',
+        fullScreen: true, // legibility pass 2026-09-26 — the rack renders the dock inside
         // Legend, verbatim from the pre-rack panel head.
         badge: 'TARGET (dim) vs YOUR EQ (amber)',
         bezel,
         render: (w, h) => (
           <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center' }}>
-            <ResponseCurveGraph curves={curves} dbRange={15} height={Math.max(80, h - 18)} mainColor={plotColor} />
+            <ResponseCurveGraph curves={curves} dbRange={15} width={w - 12} totalHeight={Math.max(94, h - 4)} mainColor={plotColor} />
           </View>
         ),
       }}

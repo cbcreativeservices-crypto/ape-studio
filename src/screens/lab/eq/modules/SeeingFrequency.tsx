@@ -34,6 +34,7 @@ import { butterworthHighPassDb } from '../../../../features/lab/fxViz';
 import { colors, fonts } from '../../../../theme/tokens';
 import { EngineGate } from '../../../tools/EngineGate';
 import { RackUnit } from '../../rack/RackUnit';
+import { useStageTextScale } from '../../rack/stageAspect';
 import type { DockParam } from '../../rack/rackTypes';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
@@ -122,8 +123,12 @@ function SeeingGlass({
   bands: BandsFrame | null;
   hpfHz: number | null;
 }) {
-  const GUTTER = 26;
-  const LABEL_H = 15;
+  // Overlay labels are React Native <Text>: they do not grow with the SVG in
+  // FULL SCREEN unless scaled (the Skia/overlay trap, legibility pass
+  // 2026-09-26). 1 on the glass, rendered ÷ glass width when enlarged.
+  const ts = useStageTextScale();
+  const GUTTER = 26 * ts;
+  const LABEL_H = 15 * ts;
   const chartW = Math.max(0, w - GUTTER - 6);
   const chartH = Math.max(60, h - LABEL_H - 4);
   const floorY = chartH - 8;
@@ -171,7 +176,7 @@ function SeeingGlass({
     <View style={styles.glassRow}>
       <View style={{ width: GUTTER, height: chartH }}>
         {GRID_DBS.map((db) => (
-          <Text key={db} style={[styles.gutterLabel, { top: yForDb(db) - 8 }]}>
+          <Text key={db} style={[styles.gutterLabel, { top: yForDb(db) - 8 * ts, fontSize: 10 * ts }]}>
             {db}
           </Text>
         ))}
@@ -259,13 +264,13 @@ function SeeingGlass({
           {/* The extreme low end is labeled explicitly on the left (owner
               2026-08-07) — what frequency the leftmost band is. */}
           {chartW > 0 && bands != null && bands.centers.length > 0 && (
-            <Text style={[styles.freqLabel, styles.freqLabelEdge, { left: 0 }]}>
+            <Text style={[styles.freqLabel, styles.freqLabelEdge, { left: 0, width: 48 * ts, fontSize: 10 * ts }]}>
               {Math.round(bands.centers[0])} Hz
             </Text>
           )}
           {chartW > 0 &&
             labels.map((l) => (
-              <Text key={l.text} style={[styles.freqLabel, { left: (l.i + 0.5) * barW - 24 }]}>
+              <Text key={l.text} style={[styles.freqLabel, { left: (l.i + 0.5) * barW - 24 * ts, width: 48 * ts, fontSize: 10 * ts }]}>
                 {l.text}
               </Text>
             ))}
@@ -327,6 +332,7 @@ export function SeeingFrequencyModule(_p: EqModuleComponentProps) {
       params={params}
       stage={{
         size: 'L', // the live spectrum IS the lesson — the signature moment
+        fullScreen: true, // legibility pass 2026-09-26 — the rack renders the dock inside
         badge:
           hpfHz == null
             ? '◂ look below 100 Hz — what energy lives there even when the room seems quiet?'

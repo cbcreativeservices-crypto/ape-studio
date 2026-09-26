@@ -74,6 +74,7 @@ export function QBandwidthModule(_p: EqModuleComponentProps) {
       params={params}
       stage={{
         size: 'M', // response-curve teaching chart
+        fullScreen: true, // legibility pass 2026-09-26 — the rack renders the dock inside
         badge: 'ghosts: Q 0.5 · Q 8',
         bezel: [
           // The live dual readout, then the deliberately frozen parameters.
@@ -84,7 +85,7 @@ export function QBandwidthModule(_p: EqModuleComponentProps) {
         ],
         render: (w, h) => (
           <View style={{ width: w, height: h, justifyContent: 'center', paddingHorizontal: 8 }}>
-            <ResponseCurveGraph curves={curves} dbRange={12} height={Math.max(80, h - 26)} mainColor={gainColor(GAIN_DB, 12)} />
+            <ResponseCurveGraph curves={curves} dbRange={12} width={w - 16} totalHeight={Math.max(94, h - 12)} mainColor={gainColor(GAIN_DB, 12)} />
           </View>
         ),
       }}

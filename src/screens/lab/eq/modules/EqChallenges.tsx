@@ -20,12 +20,17 @@ import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { ResponseCurveGraph, eqResponseDb, type EqBandSpec, type ResponseCurve } from '../../../../features/lab/fxViz';
 import { CheckQuestion, type CheckSpec } from '../../foundations/bits';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { MiniBtn } from './eqBits';
 import { colors, fonts } from '../../../../theme/tokens';
 import { baseSpectrumDb, gainColor, maxPosDb } from './eqMath';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import { EqAuditionBar, eqAuditionAvailable } from './eqAudition';
 import type { EqModuleComponentProps } from './registry';
+
+/** The response graph's shape: fxViz's 320-unit width over a 150 px plot + its
+ *  14 px frequency-label strip (ExpandableFigure zooms it in this shape). */
+const GRAPH_ASPECT = 320 / (150 + 14);
 
 /** The built-in problem: too much 250 Hz. */
 const PROBLEM: EqBandSpec[] = [{ type: 'peak', freq: 250, q: 1, gainDb: 6 }];
@@ -53,7 +58,7 @@ const CHECK: CheckSpec = {
   wrongHint: 'Look at the overall-shift readout under the graph.',
 };
 
-export function EqChallengesModule(_p: EqModuleComponentProps) {
+export function EqChallengesModule(p: EqModuleComponentProps) {
   const [strategy, setStrategy] = useState<Strategy>('none');
 
   const fix = strategy === 'cut' ? CUT_FIX : strategy === 'boost' ? BOOST_FIX : [];
@@ -83,6 +88,22 @@ export function EqChallengesModule(_p: EqModuleComponentProps) {
     return s / (N + 1);
   }, [fix]);
 
+  // MIDI plot colour: warms with the excess still on the signal.
+  const plotColor = gainColor(
+    maxPosDb((f) => eqResponseDb(PROBLEM, f) + (fix.length ? eqResponseDb(fix, f) : 0)),
+    12,
+  );
+
+  // The strategy keys — on the page above the graph AND docked inside FULL
+  // SCREEN (legibility pass 2026-09-26), so the A/B still works enlarged.
+  const strategyButtons = (
+    <View style={styles.btnRow}>
+      <MiniBtn label="PROBLEM ONLY" active={strategy === 'none'} onPress={() => setStrategy('none')} />
+      <MiniBtn label="CUT THE PROBLEM (−6 @ 250)" active={strategy === 'cut'} onPress={() => setStrategy('cut')} />
+      <MiniBtn label="BOOST AROUND IT (+6)" active={strategy === 'boost'} onPress={() => setStrategy('boost')} />
+    </View>
+  );
+
   return (
     <View style={styles.root}>
       <GlossaryText style={styles.body}>
@@ -90,11 +111,7 @@ export function EqChallengesModule(_p: EqModuleComponentProps) {
         reduce it. Try both strategies and compare what else changes.
       </GlossaryText>
 
-      <View style={styles.btnRow}>
-        <MiniBtn label="PROBLEM ONLY" active={strategy === 'none'} onPress={() => setStrategy('none')} />
-        <MiniBtn label="CUT THE PROBLEM (−6 @ 250)" active={strategy === 'cut'} onPress={() => setStrategy('cut')} />
-        <MiniBtn label="BOOST AROUND IT (+6)" active={strategy === 'boost'} onPress={() => setStrategy('boost')} />
-      </View>
+      {strategyButtons}
 
       <View style={styles.panel}>
         <View style={styles.panelHead}>
@@ -105,15 +122,22 @@ export function EqChallengesModule(_p: EqModuleComponentProps) {
             {strategy === 'none' ? '250 Hz +6 dB' : `overall shift ≈ ${overallShift >= 0 ? '+' : ''}${overallShift.toFixed(1)} dB`}
           </Text>
         </View>
-        <ResponseCurveGraph
-          curves={curves}
-          dbRange={24}
-          height={150}
-          // MIDI plot colour: warms with the excess still on the signal.
-          mainColor={gainColor(
-            maxPosDb((f) => eqResponseDb(PROBLEM, f) + (fix.length ? eqResponseDb(fix, f) : 0)),
-            12,
+        <ExpandableFigure
+          width={Math.max(120, p.width)}
+          aspect={GRAPH_ASPECT}
+          title="THE PROBLEM"
+          badge="SYNTHETIC SPECTRUM · dim = healthy reference · amber = the signal"
+          render={(w, h) => (
+            <ResponseCurveGraph
+              curves={curves}
+              dbRange={24}
+              width={w}
+              totalHeight={h}
+              // MIDI plot colour: warms with the excess still on the signal.
+              mainColor={plotColor}
+            />
           )}
+          controls={strategyButtons}
         />
         {eqAuditionAvailable() ? (
           // Audible A/B (owner 2026-08-10): the PROBLEM coloration + your chosen

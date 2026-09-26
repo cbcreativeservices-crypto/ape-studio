@@ -94,6 +94,7 @@ export function ParametricControlsModule(_p: EqModuleComponentProps) {
       params={params}
       stage={{
         size: 'M', // response-curve teaching chart
+        fullScreen: true, // legibility pass 2026-09-26 — the rack renders the dock inside
         bezel: [
           { k: 'FREQ', v: fmtHz(freq) },
           { k: 'GAIN', v: `${gainDb >= 0 ? '+' : ''}${gainDb.toFixed(1)} dB`, tint: gc },
@@ -103,7 +104,7 @@ export function ParametricControlsModule(_p: EqModuleComponentProps) {
         ],
         render: (w, h) => (
           <View style={{ width: w, height: h, justifyContent: 'center', paddingHorizontal: 8 }}>
-            <ResponseCurveGraph curves={curves} dbRange={GAIN_RANGE} height={Math.max(80, h - 26)} mainColor={gc} />
+            <ResponseCurveGraph curves={curves} dbRange={GAIN_RANGE} width={w - 16} totalHeight={Math.max(94, h - 12)} mainColor={gc} />
           </View>
         ),
       }}

@@ -116,6 +116,7 @@ export function FilterSlopesModule(_p: EqModuleComponentProps) {
       params={params}
       stage={{
         size: 'M', // teaching chart
+        fullScreen: true, // legibility pass 2026-09-26 — the rack renders the dock inside
         badge: `Butterworth response — order ${order} (${slope} dB/oct asymptotic).`,
         bezel: [
           { k: 'SLOPE', v: `${slope} dB/OCT` },
@@ -127,7 +128,7 @@ export function FilterSlopesModule(_p: EqModuleComponentProps) {
         render: (w, h) => (
           <View style={{ width: w, height: h, justifyContent: 'center', paddingHorizontal: 6, paddingTop: 4 }}>
             {/* A slope is pure attenuation (all ≤0 dB) → MIDI blue (owner 2026-08-07). */}
-            <ResponseCurveGraph curves={curves} dbRange={48} height={Math.max(70, h - 24)} mainColor={gainColor(0)} />
+            <ResponseCurveGraph curves={curves} dbRange={48} width={w - 12} totalHeight={Math.max(84, h - 10)} mainColor={gainColor(0)} />
           </View>
         ),
       }}
