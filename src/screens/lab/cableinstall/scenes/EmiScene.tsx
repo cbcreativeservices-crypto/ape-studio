@@ -667,10 +667,12 @@ export function EmiScene({ width, completed, onComplete, openSources }: CiModule
       <OptionChip label="UNBALANCED" active={!balanced} onPress={() => setBal(false)} />
     </View>
   );
+  // The live readout (EXPOSURE + its context) rides at the TOP of the dock
+  // so the learner reads the number while enlarged (parity pass 2026-09-26).
   const fieldDock = (
     <View style={{ gap: 8, paddingHorizontal: 12 }}>
-      {srcChips}
       {exposureRow}
+      {srcChips}
       {distanceSlider}
       {stepChips}
     </View>
