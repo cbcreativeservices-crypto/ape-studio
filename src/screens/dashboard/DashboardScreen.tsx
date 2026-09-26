@@ -17,6 +17,7 @@
  * - Topic "overall progress" = mean of the applicable methods' server
  *   completion_pct (display aggregation of server truth — flagged in review).
  */
+import { COREQ_TOPIC_GS } from '../awards/awardsData';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -1653,7 +1654,20 @@ export function DashboardScreen() {
                   <Text style={styles.topicMeta}>
                     {dispIsCustom
                       ? `${starred.size} TERM${starred.size === 1 ? '' : 'S'}`
-                      : `TOPIC ${dispIdx + 1} OF ${topics.length} · ${data.currentCourse.name.toUpperCase()}`}
+                      : // A standing requirement says WHY it is here (tester report
+                        // 2026-09-25, John, build 30: "I enrolled in microphone
+                        // course and it locked on the flash card screen for
+                        // electrical connections a different course"). The server
+                        // adds Safety, Grounding & Electrical, Workplace Skills and
+                        // the Audio Fundamentals Lab to every certificate and
+                        // program (award_standing_requirements), so a Microphone
+                        // Building enrollment opens on one of them with nothing
+                        // saying so.
+                        `TOPIC ${dispIdx + 1} OF ${topics.length} · ${
+                          dispTopic.global_sequence != null && COREQ_TOPIC_GS.includes(dispTopic.global_sequence)
+                            ? 'REQUIRED FOR EVERY CERTIFICATE'
+                            : data.currentCourse.name.toUpperCase()
+                        }`}
                   </Text>
                 </Pressable>
                 {/* Overall progress — label left-justified, the amber % below
