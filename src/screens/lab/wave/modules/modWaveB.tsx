@@ -78,7 +78,7 @@ function coverageAtFreq(src: WaveSource, freq: number): number {
 /** Hosts the phase clock next to the Skia view — only rendered when viz ≠ null,
  *  so no conditional hooks ever run in the module bodies. */
 function SceneHero({
-  viz, scene, width, maxH = 300, fixedH, focused, freq, layers, visHz = 0.6, selectedId, onSelect, onDragSource, onDragListener, wallT, sectionView, probes, coverageEdges, labels,
+  viz, scene, width, maxH = 300, fixedH, focused, freq, layers, visHz = 0.6, selectedId, onSelect, onDragSource, onDragListener, wallT, sectionView, probes, coverageEdges, labels, delayBars,
 }: {
   viz: WaveVizModule;
   scene: WaveScene;
@@ -108,6 +108,8 @@ function SceneHero({
   coverageEdges?: { x: number; y: number; aimDeg: number; halfDeg: number } | null;
   /** Object labels in scene metres. */
   labels?: { x: number; y: number; text: string; color?: string; side?: 'right' | 'center' }[];
+  /** Per-source delay staircase (Beam Steering). */
+  delayBars?: { bars: { x: number; y: number; ms: number }[]; maxLenM: number } | null;
 }) {
   const phase = viz.usePhaseClock(focused, visHz);
   const height = fixedH ?? Math.max(150, Math.min(maxH, Math.round((width * scene.h) / scene.w)));
@@ -128,6 +130,7 @@ function SceneHero({
       probes={probes}
       coverageEdges={coverageEdges}
       labels={labels}
+      delayBars={delayBars}
     />
   );
 }
@@ -143,7 +146,7 @@ const layersValue = (layers: WaveLayers) =>
 /** Rack stage — fit the room into the glass: SceneHero derives height from
  *  width × aspect, so hand it the width that lands on h (Room Builder idiom). */
 function RackScene({
-  viz, scene, w, h, focused, freq, layers, selectedId, onSelect, onDragSource, onDragListener, sectionView, probes, wallT, coverageEdges, labels,
+  viz, scene, w, h, focused, freq, layers, selectedId, onSelect, onDragSource, onDragListener, sectionView, probes, wallT, coverageEdges, labels, delayBars,
 }: {
   viz: WaveVizModule | null;
   scene: WaveScene;
@@ -161,6 +164,7 @@ function RackScene({
   wallT?: number;
   coverageEdges?: { x: number; y: number; aimDeg: number; halfDeg: number } | null;
   labels?: { x: number; y: number; text: string; color?: string; side?: 'right' | 'center' }[];
+  delayBars?: { bars: { x: number; y: number; ms: number }[]; maxLenM: number } | null;
 }) {
   if (!viz) return <VizUnavailableCard />;
   return (
@@ -186,6 +190,7 @@ function RackScene({
         wallT={wallT}
         coverageEdges={coverageEdges}
         labels={labels}
+        delayBars={delayBars}
       />
     </View>
   );
@@ -1051,6 +1056,15 @@ export function BeamSteerModule(p: WaveModuleProps) {
   const lambda = c / freq;
   const grating = lambda < STEER_SPACING * (1 + Math.abs(Math.sin((steer * Math.PI) / 180)));
   const lvl = responseAt(scene, listener.x, listener.y, freq);
+  // vs STRAIGHT: the listener compared with the SAME array unsteered (every
+  // delay 0) — how much energy steering moved toward or away from this seat
+  // (walkthrough 2026-09-26).
+  const lvlStraight = responseAt({ ...scene, sources: scene.sources.map((s) => ({ ...s, delayMs: 0 })) }, listener.x, listener.y, freq);
+  const vsStraight = lvl - lvlStraight;
+  const vsStraightText = `${vsStraight >= 0.05 ? '+' : ''}${Math.abs(vsStraight) < 0.05 ? '0.0' : vsStraight.toFixed(1)} dB`;
+  // Δt per box: µs while small, ms once it is thousands of µs.
+  const dtAbsUs = Math.abs(dtPerBoxMs) * 1000;
+  const dtText = dtAbsUs >= 1000 ? `${(dtAbsUs / 1000).toFixed(2)} ms` : `${Math.round(dtAbsUs)} µs`;
 
   return (
     <WaveLayout
@@ -1062,9 +1076,9 @@ export function BeamSteerModule(p: WaveModuleProps) {
         initialParam: 'steer',
         bezel: [
           { k: 'STEER', v: `${steer}°`, helpKey: 'beam_steer' },
-          { k: 'Δt/BOX', v: `${Math.round(Math.abs(dtPerBoxMs) * 1000)} µs`, helpKey: 'beam_steer' },
+          { k: 'Δt/BOX', v: dtText, helpKey: 'beam_steer' },
           { k: 'GRATING', v: grating ? 'IN FIELD' : 'NONE', flex: 1.15, helpKey: 'beam_steer' },
-          { k: 'LVL', v: `${lvl.toFixed(1)} dB`, helpKey: 'beam_steer' },
+          { k: 'vs STRAIGHT', v: vsStraightText, flex: 1.15, helpKey: 'beam_steer' },
         ],
         stage: (w, h) => (
           <RackScene
@@ -1076,6 +1090,10 @@ export function BeamSteerModule(p: WaveModuleProps) {
             freq={freq}
             layers={layers}
             onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
+            // The steer angle, drawn (one dashed line from the array centre).
+            coverageEdges={{ x: 12, y: 2, aimDeg: steer, halfDeg: 0 }}
+            // The delay gradient, drawn: one amber bar per box, longest 1.3 m (stays inside the 2 m to the back edge).
+            delayBars={{ bars: scene.sources.map((s) => ({ x: s.x, y: s.y, ms: s.delayMs })), maxLenM: 1.3 }}
           />
         ),
         params: [
@@ -1125,12 +1143,13 @@ export function BeamSteerModule(p: WaveModuleProps) {
             helpKey="beam_steer"
             items={[
               { k: 'STEER ANGLE', v: `${steer}°` },
-              { k: 'PER-BOX Δt', v: `${Math.round(Math.abs(dtPerBoxMs) * 1000)} µs` },
+              { k: 'PER-BOX Δt', v: dtText },
               { k: 'TOTAL Δt', v: `${(Math.abs(dtPerBoxMs) * (n - 1)).toFixed(2)} ms` },
               { k: 'ARRAY LENGTH', v: `${((n - 1) * STEER_SPACING).toFixed(1)} m` },
               { k: 'WAVELENGTH', v: `${lambda.toFixed(2)} m` },
               { k: 'GRATING LOBE', v: grating ? 'IN THE FIELD' : 'NONE' },
-              { k: 'LEVEL @ LISTENER', v: `${lvl.toFixed(1)} dB` },
+              { k: 'LEVEL vs UNSTEERED', v: vsStraightText },
+              { k: 'LEVEL @ LISTENER (re 1 m)', v: `${lvl.toFixed(1)} dB` },
             ]}
           />
           <Badge text="Δt = d·sin θ / c PER BOX — A LINEAR DELAY GRADIENT TILTS THE WAVEFRONT; THE CABINETS NEVER MOVE" />

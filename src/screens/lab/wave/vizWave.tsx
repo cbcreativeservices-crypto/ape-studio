@@ -418,6 +418,11 @@ export type RoomSceneProps = {
    *  AUDIENCE ↓) — 9 pt on a dark plate so they read over any map colour.
    *  `side` puts the label right of the point (default) or centred on it. */
   labels?: { x: number; y: number; text: string; color?: string; side?: 'right' | 'center' }[];
+  /** Per-source DELAY bars (Beam Steering): an amber bar behind each box
+   *  (toward −y), length ∝ that box's delay — the linear delay gradient made
+   *  visible as a staircase (2026-09-26). Scene metres; `maxLenM` = the
+   *  longest bar. */
+  delayBars?: { bars: { x: number; y: number; ms: number }[]; maxLenM: number } | null;
   /** Wall strip depth on the glass, px (default 9). The Absorption lab draws
    *  its walls deeper so each material reads in section (owner 2026-09-26). */
   wallT?: number;
@@ -1791,6 +1796,23 @@ export function RoomSceneView(p: RoomSceneProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, freq, geo, p.layers.pressure, mode]);
 
+  // Delay bars: rects behind each source, longest = maxLenM.
+  const db = p.delayBars;
+  const delayBarPath = useMemo(() => {
+    if (!db || db.bars.length === 0) return null;
+    const maxMs = Math.max(...db.bars.map((b) => b.ms));
+    if (maxMs <= 0) return null;
+    const path = Skia.Path.Make();
+    const bw = Math.max(3 * ts, 0.35 * geo.pxPerM);
+    for (const b of db.bars) {
+      if (b.ms <= 0) continue;
+      const len = (b.ms / maxMs) * db.maxLenM * geo.pxPerM;
+      const cx = geo.x0 + b.x * geo.pxPerM;
+      const top = geo.y0 + (b.y - 0.55) * geo.pxPerM;
+      path.addRRect(Skia.RRectXY(Skia.XYWHRect(cx - bw / 2, top - len, bw, len), 1.5 * ts, 1.5 * ts));
+    }
+    return path;
+  }, [db, geo, ts]);
   // Coverage edges: aim ± half from the source to the room boundary.
   const ce = p.coverageEdges;
   const coverageEdgePaths = useMemo(() => {
@@ -2068,6 +2090,8 @@ export function RoomSceneView(p: RoomSceneProps) {
             <ListenerGlyph x={geo.x0 + scene.listener.x * geo.pxPerM} y={geo.y0 + scene.listener.y * geo.pxPerM} />
           </Group>
         )}
+        {/* Delay staircase (Beam Steering). */}
+        {delayBarPath ? <Path path={delayBarPath} color={WAVE} opacity={0.85} /> : null}
         {/* Coverage −6 dB edges (the bezel's EFF angle, drawn). */}
         {coverageEdgePaths ? (
           <Path path={coverageEdgePaths} color={WAVE} style="stroke" strokeWidth={1.6 * ts} opacity={0.9}>
