@@ -324,7 +324,10 @@ function ShuffleIcon({ color }: { color: string }) {
 }
 
 const chipStyles = StyleSheet.create({
-  chip: { paddingVertical: 8, paddingHorizontal: 12, borderRadius: 4.5, borderWidth: 1 },
+  // 9 px sides (was 12): each filter row now fits ONE line down to a 375-wide
+  // iPhone SE — the last chip of each row (full screen, session timer) used to
+  // wrap onto a third line beside a dead black gap (tester, build 30).
+  chip: { paddingVertical: 8, paddingHorizontal: 9, borderRadius: 4.5, borderWidth: 1 },
   text: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.9 },
 });
 
@@ -1546,23 +1549,22 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                     <Text style={styles.levelEyebrow}>{LEVEL_LABELS[level - 1]}</Text>
                     {/* Long definitions scroll INSIDE the card instead of
                         running under the footer buttons (Booth 2026-07-08). */}
-                    <ScrollView
-                      style={{ flex: 1 }}
-                      contentContainerStyle={styles.levelScrollContent}
-                      showsVerticalScrollIndicator
-                      nestedScrollEnabled
+                    <DefinitionScroll
+                      key={`${card.id}:${level}`}
+                      onTap={onTap}
+                      onLongPress={() => setFullscreen(true)}
+                      hint={
+                        coach.visible ? (
+                          <Text style={styles.hint} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
+                            Tap to see definitions  ·  Swipe to change terms
+                          </Text>
+                        ) : null
+                      }
                     >
                       {/* In-deck glossary terms inside the text are tappable
                           links to their full-screen definition (2026-07-18). */}
-                      <CardTextPress onPress={onTap} onLongPress={() => setFullscreen(true)}>
-                        <Text style={styles.levelBody}>{renderLinked(levelText(card, level, isMember), card.id)}</Text>
-                      </CardTextPress>
-                    </ScrollView>
-                    {coach.visible && (
-                      <Text style={styles.hint} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
-                        Tap to see definitions  ·  Swipe to change terms
-                      </Text>
-                    )}
+                      <Text style={styles.levelBody}>{renderLinked(levelText(card, level, isMember), card.id)}</Text>
+                    </DefinitionScroll>
                   </>
                 )}
                 {/* Subtle error-report affordance, bottom-right of the card
@@ -1937,6 +1939,64 @@ export function FlashcardsScreen({ navigation, route }: Props) {
  * 2026-09-23's fix (the pan responder releasing the vertical axis on the solo
  * view) stays — this is the other half of the same symptom.
  */
+/**
+ * A definition that can be read to the END (tester reports, build 30:
+ * "when you touch to scroll you lose the text to the next card"). The text
+ * was a tap-to-advance target, so the touch that starts a scroll could flip
+ * the card before the last lines were ever seen. Now, while the text is
+ * longer than the card and not yet scrolled to its end, a tap does NOT
+ * advance and a fading "more ↓" cue says there is more; once the end has
+ * been reached (or the text fits), a tap advances as before. The coach hint
+ * steps aside while text overflows — it only took space from the reading.
+ */
+function DefinitionScroll({
+  onTap,
+  onLongPress,
+  hint,
+  children,
+}: {
+  onTap: () => void;
+  onLongPress: () => void;
+  hint: ReactNode;
+  children: ReactNode;
+}) {
+  const [viewH, setViewH] = useState(0);
+  const [contentH, setContentH] = useState(0);
+  const [atEnd, setAtEnd] = useState(false);
+  const overflow = viewH > 0 && contentH > viewH + 4;
+  const canAdvance = !overflow || atEnd;
+  return (
+    <>
+      <View style={{ flex: 1 }}>
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={styles.levelScrollContent}
+          showsVerticalScrollIndicator
+          nestedScrollEnabled
+          scrollEventThrottle={32}
+          onLayout={(e) => setViewH(e.nativeEvent.layout.height)}
+          onContentSizeChange={(_w, h) => setContentH(h)}
+          onScroll={(e) => {
+            const { contentOffset, layoutMeasurement, contentSize } = e.nativeEvent;
+            if (contentOffset.y + layoutMeasurement.height >= contentSize.height - 8) setAtEnd(true);
+          }}
+        >
+          <CardTextPress onPress={canAdvance ? onTap : undefined} onLongPress={onLongPress}>
+            {children}
+          </CardTextPress>
+        </ScrollView>
+        {overflow && !atEnd ? (
+          <View pointerEvents="none" style={styles.moreFade}>
+            <LinearGradient colors={['rgba(27,27,27,0)', '#1b1b1b']} style={StyleSheet.absoluteFill} />
+            <Text style={styles.moreText}>more ↓</Text>
+          </View>
+        ) : null}
+      </View>
+      {overflow ? null : hint}
+    </>
+  );
+}
+
 function CardTextPress({ onPress, onLongPress, children }: { onPress?: () => void; onLongPress: () => void; children: ReactNode }) {
   return (
     <Pressable onPress={onPress} onLongPress={onLongPress} delayLongPress={850} style={{ flexGrow: 1 }} accessible={false}>
@@ -2020,7 +2080,7 @@ const styles = StyleSheet.create({
   fsSheetSection: { alignSelf: 'stretch', gap: 6 },
   // Full-screen icon button in the filter row.
   fsBtn: {
-    width: 40,
+    width: 36,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 6,
@@ -2032,7 +2092,7 @@ const styles = StyleSheet.create({
   // Reveal SOLO eye button (user request 2026-07-18) — neutral when OFF, lit
   // red only when engaged, like an audio solo lighting up.
   soloBtn: {
-    width: 40,
+    width: 36,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 6,
@@ -2093,7 +2153,7 @@ const styles = StyleSheet.create({
   ledRow: { flexDirection: 'row', alignItems: 'center', gap: 10, alignSelf: 'stretch' },
   ledPct: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: colors.amber, minWidth: 44, textAlign: 'right' },
 
-  filterRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  filterRow: { flexDirection: 'row', flexWrap: 'nowrap', gap: 5 },
 
   cardZone: { flex: 1 },
   card: {
@@ -2164,7 +2224,9 @@ const styles = StyleSheet.create({
   levelEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.8, color: colors.amberLabel },
   // flexGrow: short text still fills the scroller, so a tap below it is the
   // text's own press (see CardTextPress).
-  levelScrollContent: { flexGrow: 1, paddingBottom: 4 },
+  // 22 px bottom: the last line clears the absolute "Suggest a correction"
+  // link in the card's corner (tester, build 30: text covered at the bottom).
+  levelScrollContent: { flexGrow: 1, paddingBottom: 22 },
   levelBody: { fontFamily: fonts.barlowRegular, fontSize: 21, lineHeight: 33, color: colors.textSecondary },
   // In-definition glossary term link (Booth 2026-07-18) — glossary blue,
   // underlined, tappable → LinkedTermOverlay.
@@ -2191,6 +2253,8 @@ const styles = StyleSheet.create({
     marginTop: 18,
     marginBottom: 8,
   },
+  moreFade: { position: 'absolute', left: 0, right: 0, bottom: 0, height: 34, alignItems: 'center', justifyContent: 'flex-end' },
+  moreText: { fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 0.8, color: '#9aa0a8', paddingBottom: 2 },
   hint: { textAlign: 'center', fontFamily: fonts.barlowCondensedRegular, fontSize: 14, color: '#8a8a8a' },
 
   footer: { gap: 10 },
