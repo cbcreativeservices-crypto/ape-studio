@@ -1365,7 +1365,7 @@ export function ResponseCurveView({
   const AXIS_PT = 9 * ts;
   const LINE = 11 * ts; // one line of 9-pt mono
   const PAD_L = 30 * ts; // dB gutter
-  const PAD_R = 8;
+  const PAD_R = 8 * ts;
   const PAD_T = 18 * ts; // "dB" heading sits above the ceiling label
   const PAD_B = 15 * ts; // frequency label strip
   const plotW = Math.max(20, w - PAD_L - PAD_R);
@@ -1394,13 +1394,13 @@ export function ResponseCurveView({
       g.moveTo(x, PAD_T);
       g.lineTo(x, PAD_T + plotH);
       t.moveTo(x, PAD_T + plotH);
-      t.lineTo(x, PAD_T + plotH + 3.5);
+      t.lineTo(x, PAD_T + plotH + 3.5 * ts);
     }
     for (const db of dbTicks) {
       const y = yOf(db);
       g.moveTo(PAD_L, y);
       g.lineTo(PAD_L + plotW, y);
-      t.moveTo(PAD_L - 3.5, y);
+      t.moveTo(PAD_L - 3.5 * ts, y);
       t.lineTo(PAD_L, y);
     }
     // Plot frame: left axis + baseline.
@@ -1454,17 +1454,19 @@ export function ResponseCurveView({
 
   return (
     <View style={{ width: w, height: h }}>
+      {/* Parity pass 2026-09-26: every stroke, tick and glow is × ts so the
+          curve is as heavy at 2× as the doubled plot around it. */}
       <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
-        <Path path={grid} color={GHOST} style="stroke" strokeWidth={1} />
-        <Path path={ticks} color={GRID} style="stroke" strokeWidth={1.2} />
-        <Path path={frame} color={GRID} style="stroke" strokeWidth={1.2} />
+        <Path path={grid} color={GHOST} style="stroke" strokeWidth={1 * ts} />
+        <Path path={ticks} color={GRID} style="stroke" strokeWidth={1.2 * ts} />
+        <Path path={frame} color={GRID} style="stroke" strokeWidth={1.2 * ts} />
         {/* 0 dB reference, brighter than the grid. */}
         {zeroInRange ? (
           <SkLine
             p1={{ x: PAD_L, y: yOf(0) }}
             p2={{ x: PAD_L + plotW, y: yOf(0) }}
             color="#4b4e58"
-            strokeWidth={1.4}
+            strokeWidth={1.4 * ts}
           />
         ) : null}
         {/* Gradient underfill lifts the curve off black (abstract, styled).
@@ -1481,8 +1483,8 @@ export function ResponseCurveView({
               />
             </Path>
             {/* Glow copy. */}
-            <Path path={curve} style="stroke" strokeWidth={6.2} strokeCap="round" strokeJoin="round" opacity={0.22}>
-              <BlurMask blur={5.3} style="normal" />
+            <Path path={curve} style="stroke" strokeWidth={6.2 * ts} strokeCap="round" strokeJoin="round" opacity={0.22}>
+              <BlurMask blur={5.3 * ts} style="normal" />
               <LinearGradient
                 start={vec(0, PAD_T)}
                 end={vec(0, PAD_T + plotH)}
@@ -1491,7 +1493,7 @@ export function ResponseCurveView({
               />
             </Path>
             {/* Crisp curve. */}
-            <Path path={curve} style="stroke" strokeWidth={2.4} strokeCap="round" strokeJoin="round">
+            <Path path={curve} style="stroke" strokeWidth={2.4 * ts} strokeCap="round" strokeJoin="round">
               <LinearGradient
                 start={vec(0, PAD_T)}
                 end={vec(0, PAD_T + plotH)}
@@ -1509,7 +1511,7 @@ export function ResponseCurveView({
                 colors={[withAlpha(color, 0.26), withAlpha(color, 0.02)]}
               />
             </Path>
-            <GlowStroke path={curve} color={color} width={2.4} />
+            <GlowStroke path={curve} color={color} width={2.4 * ts} />
           </>
         )}
       </Canvas>
@@ -1604,10 +1606,15 @@ export function ProximityApproachView({
   /** Omni mics have no proximity effect — the glow stays off. */
   directional: boolean;
 }) {
-  const w = width;
-  // The GAP readout is RN text over the canvas: grow it with FULL SCREEN.
+  // Parity pass 2026-09-26 (owner: "the head, speaker (objects) and the
+  // arrival readouts are also zooming in size"): the scene is laid out in
+  // GLASS units (w ÷ ts × h ÷ ts) and the whole canvas content is scaled by
+  // ts in one static <Group>, so at 2× the head, the mic, the ripples, the
+  // dimension line and every stroke are exactly twice their glass size. The
+  // GAP readout is RN text over the canvas and grows by the same factor.
   const ts = useStageTextScale();
-  const h = height;
+  const w = width / ts;
+  const h = height / ts;
   const mid = h * 0.52;
   const headX = 30; // ProfileHead origin = the mouth
   const GR = 9; // grille radius
@@ -1790,8 +1797,9 @@ export function ProximityApproachView({
   }, [micX, headX, mid]);
 
   return (
-    <View style={{ width: w, height: h }}>
-      <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
+    <View style={{ width, height }}>
+      <Canvas style={{ position: 'absolute', width, height, backgroundColor: BG }}>
+       <Group transform={[{ scale: ts }]}>
         <Floor w={w} y={h - 14} h={14} />
         <Path path={ripples} color="#ffffff" style="stroke" strokeWidth={1.2} opacity={0.3} />
         {/* LF emphasis: warm glow + swelling bass arcs at the capsule. */}
@@ -1844,6 +1852,7 @@ export function ProximityApproachView({
         <ProfileHead x={headX} y={mid} angleRad={0} scale={headS} tint={CONE} speaking />
         <GlowStroke path={dimLine} color={ACCENT_GREEN} width={1.2} opacity={0.7} />
         <Vignette w={w} h={h} />
+       </Group>
       </Canvas>
       {/* Gap readout (RN text — the annotation the dimension line points at). */}
       <RNText
@@ -1886,8 +1895,11 @@ export function OffAxisMicView({
   height?: number;
   angleDeg: number;
 }) {
-  const w = width;
-  const h = height;
+  // Parity pass 2026-09-26: laid out in glass units and scaled by ts in one
+  // static <Group>, so the talker, the mic and the arrow are 2× at 2×.
+  const ts = useStageTextScale();
+  const w = width / ts;
+  const h = height / ts;
   // Lifted slightly so the (properly proportioned) body clears the floor
   // strip when the mic is rotated to 90°.
   const mid = h * 0.46;
@@ -1905,15 +1917,17 @@ export function OffAxisMicView({
   }, [srcX, micX, mid]);
 
   return (
-    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
-      <Floor w={w} y={h - 10} h={10} />
-      <GlowStroke path={arrow} color={WAVE} width={1.8} opacity={0.8} />
-      {/* Talker in true proportion to the 45-px mic (crown crops by design). */}
-      <ProfileHead x={srcX} y={mid} angleRad={0} scale={headScaleForMic(7, 33)} tint={CONE} speaking />
-      {/* Mic rotated: at 0° the grille faces the incoming sound (left).
-          1.72·7 + 33 = 45 ≈ 3.2 × the 14-px grille diameter. */}
-      <HandheldMic x={micX} y={mid} angleDeg={-90 + angleDeg} grilleR={7} bodyLen={33} />
-      <Vignette w={w} h={h} />
+    <Canvas style={{ width, height, backgroundColor: BG }}>
+      <Group transform={[{ scale: ts }]}>
+        <Floor w={w} y={h - 10} h={10} />
+        <GlowStroke path={arrow} color={WAVE} width={1.8} opacity={0.8} />
+        {/* Talker in true proportion to the 45-px mic (crown crops by design). */}
+        <ProfileHead x={srcX} y={mid} angleRad={0} scale={headScaleForMic(7, 33)} tint={CONE} speaking />
+        {/* Mic rotated: at 0° the grille faces the incoming sound (left).
+            1.72·7 + 33 = 45 ≈ 3.2 × the 14-px grille diameter. */}
+        <HandheldMic x={micX} y={mid} angleDeg={-90 + angleDeg} grilleR={7} bodyLen={33} />
+        <Vignette w={w} h={h} />
+      </Group>
     </Canvas>
   );
 }
