@@ -51,6 +51,7 @@ export function StageFullScreen({
   controls,
   overlay,
   readouts,
+  overlayLift = 0,
 }: {
   visible: boolean;
   onClose: () => void;
@@ -71,6 +72,10 @@ export function StageFullScreen({
    *  bar — there is room up there and the numbers belong with the picture
    *  (owner 2026-09-26). */
   readouts?: ReactNode;
+  /** Height the controls should rise by while the overlay is open (the tray
+   *  card's height): the dock slides up above the tray so it stays usable
+   *  during a choice, and drops back when the tray closes. 0 = at rest. */
+  overlayLift?: number;
 }) {
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -93,6 +98,11 @@ export function StageFullScreen({
     setHintOpen(next);
     Animated.timing(hintAnim, { toValue: next ? 1 : 0, duration: 220, useNativeDriver: false }).start();
   };
+  // The dock's lift above an open tray, animated both ways.
+  const liftAnim = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(liftAnim, { toValue: -overlayLift, duration: 200, useNativeDriver: true }).start();
+  }, [overlayLift, liftAnim]);
   const hintMaxH = hintAnim.interpolate({ inputRange: [0, 1], outputRange: [0, 48] });
   const hintShift = hintAnim.interpolate({ inputRange: [0, 1], outputRange: [16, 0] });
 
@@ -214,11 +224,15 @@ export function StageFullScreen({
             {badge}
           </Text>
         ) : null}
-        {controls ? <View style={styles.controls}>{controls}</View> : null}
         {overlay ? (
           <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
             {overlay}
           </View>
+        ) : null}
+        {/* Rendered AFTER the overlay so the lifted dock sits on top of the
+            tray's backdrop, not under it. */}
+        {controls ? (
+          <Animated.View style={[styles.controls, { transform: [{ translateY: liftAnim }] }]}>{controls}</Animated.View>
         ) : null}
         </View>
       </View>

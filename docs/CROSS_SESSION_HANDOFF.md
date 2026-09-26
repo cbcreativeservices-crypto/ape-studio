@@ -173,6 +173,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 09:38 · ccode · c3e80579
+changed: Rack full screen: the bezel readouts run across the top, under the zoom bar
+affects other side: nothing — client only
+needs: nothing
+
+
 ### 2026-09-26 09:25 · ccode · 800b9a9f
 changed: Rack full screen: the zoom hint rolls down out of the way on a tap and back up from a ? chip
 affects other side: nothing — client only

@@ -70,6 +70,7 @@ export function DockTray({
   onHelp,
   bottomInset = 0,
   dim = true,
+  onCardLayout,
 }: {
   /** The open options/group param (null = tray closed, renders nothing). */
   param: Extract<DockParam, { kind: 'options' | 'group' }> | null;
@@ -84,6 +85,9 @@ export function DockTray({
    *  the tray to A/B while watching it — a veil would defeat the purpose.
    *  The backdrop still closes the tray on a tap. */
   dim?: boolean;
+  /** Reports the card's height, so a host can lift its controls above it
+   *  (full screen, owner 2026-09-26). */
+  onCardLayout?: (h: number) => void;
 }) {
   const open = param != null;
   useEffect(() => {
@@ -108,7 +112,7 @@ export function DockTray({
         accessibilityRole="button"
         accessibilityLabel="Close the tray"
       />
-      <View style={[styles.card, { bottom: 6 + bottomInset }]}>
+      <View style={[styles.card, { bottom: 6 + bottomInset }]} onLayout={onCardLayout ? (e) => onCardLayout(Math.round(e.nativeEvent.layout.height)) : undefined}>
         <View style={styles.head}>
           <Text style={styles.title} numberOfLines={1}>
             {param.label}

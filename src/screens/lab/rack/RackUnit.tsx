@@ -319,7 +319,11 @@ export function RackUnit({
   };
   const trayNode = <DockTray param={trayParam} onClose={closeTray} onHelp={onHelp} bottomInset={bottom} />;
   // In full screen the drawing is what sits behind the tray: no wash.
-  const trayNodeFull = <DockTray param={trayParam} onClose={closeTray} onHelp={onHelp} bottomInset={0} dim={false} />;
+  // …and its card height is reported so the full-screen view can lift the
+  // dock ABOVE the open tray: the learner keeps the lane and keys while
+  // choosing (owner 2026-09-26), and the dock drops back when it closes.
+  const [fullTrayH, setFullTrayH] = useState(0);
+  const trayNodeFull = <DockTray param={trayParam} onClose={closeTray} onHelp={onHelp} bottomInset={0} dim={false} onCardLayout={setFullTrayH} />;
 
   return (
     <View style={[styles.root, { paddingBottom: bottom }]}>
@@ -446,6 +450,7 @@ export function RackUnit({
           glassW={glassW}
           controls={dockNode}
           overlay={trayNodeFull}
+          overlayLift={trayParam ? fullTrayH + 6 : 0}
           readouts={stage.bezel?.length ? <BezelReadouts items={stage.bezel} onHelp={onHelp} /> : undefined}
         />
       ) : null}
