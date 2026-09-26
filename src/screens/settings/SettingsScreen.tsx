@@ -1001,14 +1001,13 @@ ${LOCAL_LOSS}`
           <Pressable accessible={false} style={styles.modalCard} onPress={() => {}}>
             <Text style={styles.modalTitle}>REDEEM A CODE</Text>
             <Text style={styles.modalBody}>
-              Enter an access or promo code from an event, sponsor, or the Academy. Membership codes apply
-              instantly; discount codes apply at checkout when purchasing is available.
+              Type your code exactly as it was given to you, including the dashes (-).
             </Text>
             <TextField
               label="Access or promo code"
               value={redeemCode}
               onChangeText={setRedeemCode}
-              placeholder="Enter your code"
+              placeholder="Enter your code, including any dashes"
               autoCapitalize="characters"
               returnKeyType="done"
               onSubmitEditing={submitRedeem}

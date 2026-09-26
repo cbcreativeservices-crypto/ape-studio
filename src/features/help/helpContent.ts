@@ -85,7 +85,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       {
         id: 'acct-code',
         q: 'I have an access or promo code.',
-        a: 'Redeem it in Settings under MEMBERSHIP — it works for any signed-in account.',
+        a: 'Redeem it in Settings under MEMBERSHIP — it works for any signed-in account. Type the code exactly as it was given to you, including the dashes (-).',
         jump: { label: 'Open Settings', route: 'Settings' },
       },
       {

@@ -43,7 +43,7 @@ export type RedeemResult = {
 const MESSAGES: Record<RedeemStatus, string> = {
   granted: 'Code applied — your Academy access is active.',
   already_active: 'You already have this access — nothing to redeem.',
-  invalid: 'That code isn’t recognized. Check it and try again.',
+  invalid: 'That code isn’t recognized. Check it, including the dashes (-), and try again.',
   expired: 'That code has expired.',
   used_up: 'That code has reached its redemption limit.',
   discount_pending: 'That’s a discount code — it’ll apply at checkout when purchasing is available.',

@@ -520,12 +520,11 @@ export function AuthScreen({ navigation }: Props) {
               label="Access or promo code (optional)"
               value={accessCode}
               onChangeText={setAccessCode}
-              placeholder="Enter a code, if you have one"
+              placeholder="Enter a code, including any dashes"
               autoCapitalize="characters"
             />
             <Text style={styles.codeHint}>
-              Join with an access code — enter the invitation or access code provided by your employer, school, church,
-              training organization, or other sponsoring institution.
+              If you have a code, type it exactly as it was given to you, including the dashes (-).
             </Text>
 
             {/* Error / info */}
