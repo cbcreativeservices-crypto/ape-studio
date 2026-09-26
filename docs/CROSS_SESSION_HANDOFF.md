@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 13:20 · ccode · 03740e86
+changed: Wave Coverage: open air so the beam is the only thing on the map; the EFF angle drawn as dashed -6 dB edges that swing in with frequency; bezel reads the listener vs ON-AXIS at the same distance (absolute level kept in the well); short EFF key so it is not cropped
+affects other side: nothing — client JS only (Wave lab drawing)
+needs: nothing
+
+
 ### 2026-09-26 13:11 · ccode · 3e9499bd
 changed: Wave 9-16: rooms fill their stage (RoomSceneView fits room + label margin in the whole box; sizing to the bare room aspect let the margin eat the room); "RING GAP > λ" tag when the true wavelength is finer than the ring floor (rooms 12 px, diffraction 10 px); Line Array floor drawn as a seated row seen from the side, deep strip
 affects other side: nothing — client JS only (Wave lab drawing)
