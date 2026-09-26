@@ -1530,7 +1530,9 @@ export function ReverbModule(p: WaveModuleProps) {
   const viz = useState(() => requireWaveViz())[0];
   const [absV, setAbsV] = useState(0.25);
   // PRESSURE on at start: timing lab — the pulse balls show WHEN each arrival lands (owner 2026-09-26: "turn on pressure balls on all labs that have timing as a focus for the learner").
-  const [layers, setLayers] = useState<WaveLayers>({ pressure: true, heat: false, rays: true, arrivals: true });
+  // ARRIVALS off at start: the legend covered the listener; the decay curve
+  // on the display carries the timing story (walkthrough 2026-09-26).
+  const [layers, setLayers] = useState<WaveLayers>({ pressure: true, heat: false, rays: true, arrivals: false });
   const [listener, setListener] = useState({ x: 8, y: 4.5 });
 
   const treated = Math.round(absV * 4); // 0..4 walls swap concrete → fiberglass
@@ -1574,17 +1576,29 @@ export function ReverbModule(p: WaveModuleProps) {
           { k: 'RT 2K', v: `${rt2k.toFixed(2)} s`, helpKey: 'reverb_field' },
           { k: 'GAP', v: `${gapMs.toFixed(1)} ms`, helpKey: 'reverb_field' },
         ],
+        // Room above, DECAY below (walkthrough 2026-09-26): every treated
+        // wall visibly shortens the amber tail against the dim all-concrete
+        // reference — on the display and in FULL SCREEN, not down the well.
         stage: (w, h) => (
-          <RackScene
-            viz={viz}
-            scene={scene}
-            w={w}
-            h={h}
-            focused={p.focused}
-            freq={REVERB_FREQ}
-            layers={layers}
-            onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
-          />
+          <StageTextScaleReader>
+            {(ts) => (
+              <View style={{ width: w, height: h }}>
+                <StageAspectReport.Provider value={null}>
+                  <RackScene
+                    viz={viz}
+                    scene={scene}
+                    w={w}
+                    h={Math.round(h * 0.58)}
+                    focused={p.focused}
+                    freq={REVERB_FREQ}
+                    layers={layers}
+                    onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
+                  />
+                </StageAspectReport.Provider>
+                <DecayCurveGraph rt60={rt500} preDelayMs={gapMs} refRt60={hardRt500} width={w} height={h - Math.round(h * 0.58)} textScale={ts} />
+              </View>
+            )}
+          </StageTextScaleReader>
         ),
         params: [
           {

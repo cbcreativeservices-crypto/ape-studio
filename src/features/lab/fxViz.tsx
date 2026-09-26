@@ -153,6 +153,7 @@ export function distShape(x: number, type: 'hard' | 'soft' | 'tube'): number {
 // STYLED — glow strokes, gradient underfills, weight hierarchy. Never
 // hairline-on-black. Palette is the shared lab grammar.
 const W = 320;
+const W_CARD = W; // DecayCurveGraph's default box (it shadows W with its own width)
 const AMBER = colors.amber; // processed / designed result
 const AMBER_HI = '#ffd35e'; // hot end of the amber ramp (glow tips, cores)
 const AMBER_LO = '#f09e1a'; // deep end of the amber ramp
@@ -685,14 +686,25 @@ export function DecayCurveGraph({
   rt60,
   preDelayMs,
   refRt60,
+  width,
+  height,
+  textScale = 1,
 }: {
   rt60: number;
   preDelayMs: number;
   /** Optional dim comparison slope (e.g. the previous setting). */
   refRt60?: number;
+  /** Real px box — for a lab stage (Reverb, 2026-09-26). Omitted = the
+   *  320×150 card graphic scaled to the parent width. */
+  width?: number;
+  height?: number;
+  /** Stage text scale (FULL SCREEN) — labels stay ≥ 9 pt and grow. */
+  textScale?: number;
 }) {
-  const H = 150;
-  const padL = 26, padB = 14;
+  const W = width ?? W_CARD;
+  const H = height ?? 150;
+  const fs = 9 * textScale;
+  const padL = 26 * textScale, padB = 14 * textScale;
   const spanS = Math.max(rt60 * 1.25, refRt60 ? refRt60 * 1.25 : 0, 0.6);
   const xAt = (s: number) => padL + (s / spanS) * (W - padL - 8);
   const yAt = (db: number) => 8 + (-db / 70) * (H - 8 - padB);
@@ -708,7 +720,7 @@ export function DecayCurveGraph({
   const tTicks: number[] = [];
   for (let t = tickStep; t < spanS; t += tickStep) tTicks.push(t);
   return (
-    <Svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`}>
+    <Svg width={width ?? '100%'} height={H} viewBox={`0 0 ${W} ${H}`}>
       <Defs>
         <LinearGradient id="fxDecayFill" x1="0" y1="0" x2="0" y2="1">
           <Stop offset="0" stopColor={AMBER} stopOpacity={0.28} />
@@ -725,7 +737,7 @@ export function DecayCurveGraph({
       ))}
       {tTicks.map((t) =>
         Math.abs(xAt(t) - rtX) > 32 ? (
-          <SvgText key={`tl${t}`} x={xAt(t)} y={H - 2} fill={colors.textSub} fontSize={9} fontFamily={MONO} textAnchor="middle">
+          <SvgText key={`tl${t}`} x={xAt(t)} y={H - 2} fill={colors.textSub} fontSize={fs} fontFamily={MONO} textAnchor="middle">
             {`${t}s`}
           </SvgText>
         ) : null,
@@ -741,11 +753,11 @@ export function DecayCurveGraph({
       <Circle cx={rtX} cy={yAt(-60)} r={2.4} fill={AMBER_HI} />
       <Line x1={rtX} y1={yAt(-60) - 6} x2={rtX} y2={yAt(-60) + 6} stroke={AMBER} strokeWidth={2} strokeOpacity={0.9} />
       {[0, -20, -40, -60].map((db) => (
-        <SvgText key={db} x={2} y={yAt(db) + 3} fill={colors.textSub} fontSize={9} fontFamily={MONO}>
+        <SvgText key={db} x={2} y={yAt(db) + 3} fill={colors.textSub} fontSize={fs} fontFamily={MONO}>
           {db}
         </SvgText>
       ))}
-      <SvgText x={rtX} y={H - 2} fill={AMBER} fontSize={9} fontFamily={MONO} textAnchor="middle">
+      <SvgText x={rtX} y={H - 2} fill={AMBER} fontSize={fs} fontFamily={MONO} textAnchor="middle">
         {`RT60 ${rt60.toFixed(1)} s`}
       </SvgText>
     </Svg>

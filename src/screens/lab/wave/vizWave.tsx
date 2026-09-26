@@ -2144,7 +2144,9 @@ export function RoomSceneView(p: RoomSceneProps) {
           FULL SCREEN, RN text does not, so the labels scale themselves. */}
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
         {ringGapWide ? (
-          <RNText style={[styles.wallLabel, { fontSize: 9 * ts, color: '#c9a45a', left: geo.x0 - wallPx, top: geo.y0 - wallPx - 15 * ts }]}>
+          // Inside the room's top-left corner on a plate — in the margin it
+          // collided with the top wall's name on a small room (Reverb).
+          <RNText style={[styles.wallLabel, styles.labelPlate, { fontSize: 9 * ts, color: '#c9a45a', left: geo.x0 + 3 * ts, top: geo.y0 + 3 * ts, paddingHorizontal: 3 * ts, borderRadius: 3 * ts }]}>
             RING GAP {'>'} λ
           </RNText>
         ) : null}
