@@ -106,3 +106,20 @@ and the Pixel proves the **production** Android id. Expected fingerprints: iOS
 `64a7eddf33375780a486104c99dc4cc230b728e6`, Android `02255b7bae6489047ab17f67be58e5f50885e644`.
 Point the export at its own temp folder (`$env:TEMP=…\ape-eas-0925d; $env:TMP=$env:TEMP`) when
 another chat's preview server is running. Never publish unasked.
+
+## 9 · Addendum — the last hour, and retirement (23:48 PDT)
+
+- **Tester report (iPhone 15, iOS 26.6.2):** flashcard definitions (e.g. "Impairment") showed only
+  the first screenful — no scrolling in the tap-through view. Cause: the definition's ScrollView sat
+  INSIDE the card's Pressable; on iOS the touchable takes the touch-down and the drag never reaches
+  the text. Fix `ddf3118d`: both definition scrollers carry the tap/hold on their own content
+  (`CardTextPress`). iOS-only; confirm on an iPhone — drag the "Impairment" definition to
+  "…safety-sensitive work."
+- **Published 23:40 from a clean worktree** (`git worktree add --detach … 6de27879`, robocopy
+  `node_modules`, mirror `modules\`, copy `.env` + `.gitignore`, restore the pre-fix Swift file,
+  fingerprints iOS `64a7eddf…` / Android `02255b7b…` matched, publish both channels, remove the
+  worktree). Needed because a new session had a half-finished file move in the main tree. The
+  worktree folder needed `rd /s /q "\?\C:\…"` to delete (Windows long paths in node_modules).
+  Pixel: "No update available" on both launches and the server's Android id is `01a0dc73-…-747a`,
+  so the Pixel is on it (the download itself was not seen — likely fetched in the background).
+- **This session is RETIRED (governance D34).** The new session is the only one working the repo.

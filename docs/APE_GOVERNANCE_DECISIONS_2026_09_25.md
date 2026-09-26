@@ -155,3 +155,24 @@ note"*.
 **Ruled:** code entry says to type the code exactly as given, dashes included, and nothing else
 (no discount wording, no list of where codes come from). The client has no discount message; A
 is asked to drop the `discount` kind server-side (CROSS_SESSION_HANDOFF, 2026-09-25 night).
+
+## D34 · One working session: the 2026-09-25 ccode chat is RETIRED
+
+**Owner (2026-09-25, 23:48 PDT):** *"commit this to the gov docs - i am going to work now only in
+the new session - this session is now retired"*.
+
+**Ruled:** the ccode session that ran 2026-09-25 (Sound Systems FULL SCREEN + 9 pt, codes copy,
+flashcard fixes, TestFlight review, the lab-legibility and 25D handoffs) is retired. The NEW
+session — the one already working the lab-legibility brief
+(`docs/LAB_FULLSCREEN_AND_9PT_HANDOFF_2026_09_25.md`; its first commit `f3be3797` "Rack: FULL
+SCREEN shared by every lab") — is the only session that works this repo from now on. It owns the
+working tree, pushes, publishing (on the owner's word only) and `docs/CROSS_SESSION_HANDOFF.md`.
+
+**State the retired session left** (read `docs/SESSION_HANDOFF_2026-09-25D.md` §9 for detail):
+- Last publish **23:40 PDT**, both channels, from a CLEAN WORKTREE at `6de27879` (the new session's
+  half-finished file move was deliberately kept out): iOS `01a0dc73-5eee-74f2-be41-9c8d935f9b92`,
+  Android `01a0dc73-5eee-747a-a279-9af555342082` (Pixel on it; preview `01a0dc76-…`). It carries
+  `ddf3118d` — the flashcard definition now scrolls on iPhone (the tap moved inside the scroller).
+- This D34 commit is **local, NOT pushed**: pushing it would also push the new session's
+  unpushed `f3be3797`. The new session pushes both when it is ready.
+- The new session's uncommitted edit to `docs/CROSS_SESSION_HANDOFF.md` was left untouched.
