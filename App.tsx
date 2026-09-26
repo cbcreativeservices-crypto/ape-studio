@@ -52,6 +52,61 @@ import { CareerFinderAboutScreen } from './src/screens/careerfinder/CareerFinder
 // Sound Systems Lab (2026-09-25) — `#soundsystemspreview` walks the hub and
 // all five modes in the browser harness.
 import { SoundSystemsLabScreen } from './src/screens/lab/soundsystems/SoundSystemsLabScreen';
+// `#labpreview/<Screen>/<id>` (2026-09-25 legibility pass): any lab screen in
+// the browser harness by name, so a display can be measured without walking
+// Home → OPEN LABS (the app root sometimes rendered blank in the preview).
+import { DeEsserLabScreen } from './src/screens/lab/deesser/DeEsserLabScreen';
+import { SpeechLabScreen } from './src/screens/lab/speech/SpeechLabScreen';
+import { WaveLabHomeScreen } from './src/screens/lab/wave/WaveLabHomeScreen';
+import { WaveModuleScreen } from './src/screens/lab/wave/WaveModuleScreen';
+import { MeterLabHomeScreen } from './src/screens/lab/meter/MeterLabHomeScreen';
+import { MeterModuleScreen } from './src/screens/lab/meter/MeterModuleScreen';
+import { FoundationsCourseScreen } from './src/screens/lab/foundations/FoundationsCourseScreen';
+import { FoundationsPlaygroundScreen } from './src/screens/lab/foundations/FoundationsPlaygroundScreen';
+import { AmpLabHomeScreen } from './src/screens/lab/amp/AmpLabHomeScreen';
+import { AmpModuleScreen } from './src/screens/lab/amp/AmpModuleScreen';
+import { OscillatorLabScreen } from './src/screens/lab/OscillatorLabScreen';
+import { EnvelopeLabScreen } from './src/screens/lab/envelope/EnvelopeLabScreen';
+import { BassLabScreen } from './src/screens/lab/BassLabScreen';
+import { EqLabScreen } from './src/screens/lab/fxLabConfigs';
+
+const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
+  DeEsserLab: DeEsserLabScreen as ComponentType,
+  SpeechLab: SpeechLabScreen as ComponentType,
+  WaveLab: WaveLabHomeScreen as ComponentType,
+  WaveModule: WaveModuleScreen as ComponentType,
+  MeterLab: MeterLabHomeScreen as ComponentType,
+  MeterModule: MeterModuleScreen as ComponentType,
+  FoundationsCourse: FoundationsCourseScreen as ComponentType,
+  FoundationsPlayground: FoundationsPlaygroundScreen as ComponentType,
+  AmpLab: AmpLabHomeScreen as ComponentType,
+  AmpModule: AmpModuleScreen as ComponentType,
+  OscillatorLab: OscillatorLabScreen as ComponentType,
+  EnvelopeLab: EnvelopeLabScreen as ComponentType,
+  BassLab: BassLabScreen as ComponentType,
+  EqLab: EqLabScreen as ComponentType,
+  EqModule: EqModuleScreen as ComponentType,
+  MicPrinciples: MicPrinciplesLabScreen as ComponentType,
+  CableInstallLab: CableInstallLabScreen as ComponentType,
+  SoundSystemsLab: SoundSystemsLabScreen as ComponentType,
+};
+/** `#labpreview/<Screen>/<id>` → a ToolPreview of that lab, every other lab
+ *  screen registered as a sibling so in-lab navigation (a home → a module)
+ *  works. `<id>` becomes `{ id }` for module screens. */
+function labPreviewFromHash(hash: string): { name: string; component: ComponentType; initialParams?: Record<string, unknown>; screens: { name: string; component: ComponentType }[] } | null {
+  if (!hash.startsWith('#labpreview/')) return null;
+  const [name, id] = hash.slice('#labpreview/'.length).split('/');
+  const component = LAB_PREVIEW_SCREENS[name];
+  if (!component) return null;
+  return {
+    name,
+    component,
+    initialParams: id ? { id } : undefined,
+    screens: Object.entries(LAB_PREVIEW_SCREENS)
+      .filter(([n]) => n !== name)
+      .map(([n, c]) => ({ name: n, component: c })),
+  };
+}
 import {
   SoundSystemsBuildScreen,
   SoundSystemsLearnScreen,
@@ -479,7 +534,7 @@ function App() {
                             component: AwardsScreen as ComponentType,
                             initialParams: { category: 'specialization' },
                           }
-                        : null
+                        : labPreviewFromHash(window.location.hash)
       : null;
   if (toolPreview) {
     return (

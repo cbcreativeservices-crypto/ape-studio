@@ -165,6 +165,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-25 23:48 · ccode · ec08d4b7
+changed: docs: governance D34 - the 2026-09-25 ccode session is retired; 25D addendum (flashcard scroll fix, clean-worktree publish 23:40)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-25 23:44 · ccode · f3be3797
+changed: Rack: FULL SCREEN shared by every lab, with the controls docked inside it
+affects other side: nothing — client only
+needs: nothing
+
+
 ### 2026-09-25 23:35 · ccode · ddf3118d
 changed: Flashcards: the definition scrolls on iPhone - the tap lives inside the scroller
 affects other side: nothing — client gesture/layout only (flashcard definition scroll on iPhone).
