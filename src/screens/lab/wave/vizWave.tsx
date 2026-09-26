@@ -527,6 +527,10 @@ function buildWalls(
   T: number,
   panel?: { wall: number; depthM: number } | null,
   section = false,
+  /** The material IS the partition (Room Builder's outside view): no grey
+   *  backing wall behind curtains / foam / fiberglass, so the drawing agrees
+   *  with what the outside rings show gets through (2026-09-26). */
+  standalone = false,
 ): WallPiece[] {
   const { x0, y0, x1, y1, pxPerM } = geo;
   const u = T / WALL_T; // detail scale: 1 on a default glass wall, grows with depth and zoom
@@ -648,7 +652,7 @@ function buildWalls(
     } else if (mat === 'curtain') {
       // Heavy drape hung off the wall: pleated fabric, an air gap, the wall.
       fill(band(0, T), '#101116');
-      fill(band(0.8 * T, T), WALL_BACKING);
+      if (!standalone) fill(band(0.8 * T, T), WALL_BACKING);
       const pleat = Skia.Path.Make();
       const hi = Skia.Path.Make();
       const Pd = 9 * u;
@@ -682,7 +686,7 @@ function buildWalls(
     } else if (mat === 'foam') {
       // Wedge foam on the wall: the sawtooth profile everyone recognises.
       fill(band(0, T), '#101116');
-      fill(band(0.82 * T, T), WALL_BACKING);
+      if (!standalone) fill(band(0.82 * T, T), WALL_BACKING);
       const Pw = Math.max(6 * u, 0.8 * T);
       const body: [number, number][] = [[0, 0.82 * T], [0, 0.5 * T]];
       const lit = Skia.Path.Make();
@@ -698,7 +702,7 @@ function buildWalls(
     } else if (mat === 'fiberglass') {
       // Fabric-wrapped rigid panel on stand-offs: fibrous core, air gap, wall.
       fill(band(0, T), '#101116');
-      fill(band(0.84 * T, T), WALL_BACKING);
+      if (!standalone) fill(band(0.84 * T, T), WALL_BACKING);
       fill(band(0.06 * T, 0.62 * T), '#9c7b46');
       fill(band(0, 0.06 * T), '#4a4552');
       const clips = Skia.Path.Make();
@@ -1462,8 +1466,8 @@ export function RoomSceneView(p: RoomSceneProps) {
   const panelWall = p.diffuserPanel?.wall ?? -1;
   const panelDepth = p.diffuserPanel?.depthM ?? 0;
   const walls = useMemo(
-    () => buildWalls(scene, geo, freq, wallPx, panelWall >= 0 ? { wall: panelWall, depthM: panelDepth } : null, !!p.sectionView),
-    [key, geo, freq, wallPx, panelWall, panelDepth], // eslint-disable-line react-hooks/exhaustive-deps
+    () => buildWalls(scene, geo, freq, wallPx, panelWall >= 0 ? { wall: panelWall, depthM: panelDepth } : null, !!p.sectionView, !!p.outside),
+    [key, geo, freq, wallPx, panelWall, panelDepth, !!p.outside], // eslint-disable-line react-hooks/exhaustive-deps
   ); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── RAYS: image-source reflection polylines, order ≤ 2 ────────────────────

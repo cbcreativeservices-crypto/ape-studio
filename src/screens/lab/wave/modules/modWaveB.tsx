@@ -151,19 +151,22 @@ function SceneHero({
 
 /** Surface mass per wall material, kg/m² — a TEACHING mass-law model for
  *  what gets through to the neighbours (Room Builder, 2026-09-26). Single
- *  leaf, field incidence: TL ≈ 20·log10(m·f) − 47 dB, floored at 0. Soft
- *  treatments are counted on a 20 kg/m² drywall backing (they absorb inside;
- *  they barely stop sound going out — "absorption ≠ soundproofing"). */
+ *  leaf, field incidence: TL ≈ 20·log10(m·f) − 47 dB, floored at 0.
+ *  In Room Builder each material IS the partition (owner 2026-09-26: "make
+ *  sure all of the different wall materials show their effect on the outside
+ *  ring levels depending on what they do and dont let pass through"), so a
+ *  curtain or a foam sheet lets the bass straight out — absorption is not
+ *  isolation. */
 const WALL_MASS: Record<MaterialKey, number> = {
-  concrete: 400,
-  glass: 15,
-  drywall: 20,
-  wood: 12,
-  curtain: 21,
-  carpet: 22,
-  foam: 21,
-  fiberglass: 23,
-  audience: 20,
+  concrete: 400, // 200 mm poured
+  glass: 15, // 6 mm pane
+  drywall: 20, // gypsum partition
+  wood: 12, // panel / door leaf
+  carpet: 3, // hung carpet
+  fiberglass: 3, // rigid 50 mm panel
+  audience: 2, // a crowd — mostly air between bodies
+  foam: 1.2, // 50 mm acoustic foam
+  curtain: 0.6, // heavy drape
   open: 0,
 };
 function massLawTL(m: MaterialKey, f: number): number {
