@@ -423,6 +423,9 @@ export type RoomSceneProps = {
    *  visible as a staircase (2026-09-26). Scene metres; `maxLenM` = the
    *  longest bar. */
   delayBars?: { bars: { x: number; y: number; ms: number }[]; maxLenM: number } | null;
+  /** One sound path to single out (Echo: source → far wall → listener),
+   *  drawn as a bright amber polyline over the rays. Scene metres. */
+  highlightPath?: { x: number; y: number }[] | null;
   /** Wall strip depth on the glass, px (default 9). The Absorption lab draws
    *  its walls deeper so each material reads in section (owner 2026-09-26). */
   wallT?: number;
@@ -1796,6 +1799,18 @@ export function RoomSceneView(p: RoomSceneProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, freq, geo, p.layers.pressure, mode]);
 
+  const hp = p.highlightPath;
+  const highlightPathPx = useMemo(() => {
+    if (!hp || hp.length < 2) return null;
+    const path = Skia.Path.Make();
+    hp.forEach((pt, i) => {
+      const x = geo.x0 + pt.x * geo.pxPerM;
+      const y = geo.y0 + pt.y * geo.pxPerM;
+      if (i === 0) path.moveTo(x, y);
+      else path.lineTo(x, y);
+    });
+    return path;
+  }, [hp, geo]);
   // Delay bars: rects behind each source, longest = maxLenM.
   const db = p.delayBars;
   const delayBarPath = useMemo(() => {
@@ -2090,6 +2105,8 @@ export function RoomSceneView(p: RoomSceneProps) {
             <ListenerGlyph x={geo.x0 + scene.listener.x * geo.pxPerM} y={geo.y0 + scene.listener.y * geo.pxPerM} />
           </Group>
         )}
+        {/* The singled-out path (Echo: the far-wall return). */}
+        {highlightPathPx ? <GlowStroke path={highlightPathPx} color={WAVE} width={2.2 * ts} opacity={0.95} /> : null}
         {/* Delay staircase (Beam Steering). */}
         {delayBarPath ? <Path path={delayBarPath} color={WAVE} opacity={0.85} /> : null}
         {/* Coverage −6 dB edges (the bezel's EFF angle, drawn). */}

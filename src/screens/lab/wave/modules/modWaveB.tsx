@@ -19,10 +19,10 @@
  * print on the bezel, sliders/chips ride the dock (lane + trays), and prose/
  * overflow readouts/secondary displays/mistakes/check scroll in the well.
  */
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState, type ReactNode } from 'react';
 import { Text, View } from 'react-native';
 import Svg, { Line as SvgLine, Rect as SvgRect, Text as SvgText } from 'react-native-svg';
-import { colors } from '../../../../theme/tokens';
+import { colors, fonts } from '../../../../theme/tokens';
 import { GlassButton } from '../../../../components/GlassButton';
 import { DecayCurveGraph } from '../../../../features/lab/fxViz';
 import { LabChip } from '../../LabShell';
@@ -31,6 +31,7 @@ import { Badge, PanelCard, ReadoutGrid, dstyles } from '../../digital/bits';
 import { LabPhoto, useLabPhoto } from '../../labPhoto';
 import { MATERIAL_PHOTOS } from '../materialPhotos';
 import { WaveLayout } from './waveLayout';
+import { StageAspectReport, useStageTextScale } from '../../rack/stageAspect';
 import { requireWaveViz, type WaveVizModule } from '../skiaGate';
 import type { WaveLayers } from '../vizWave';
 import {
@@ -78,7 +79,7 @@ function coverageAtFreq(src: WaveSource, freq: number): number {
 /** Hosts the phase clock next to the Skia view — only rendered when viz ≠ null,
  *  so no conditional hooks ever run in the module bodies. */
 function SceneHero({
-  viz, scene, width, maxH = 300, fixedH, focused, freq, layers, visHz = 0.6, selectedId, onSelect, onDragSource, onDragListener, wallT, sectionView, probes, coverageEdges, labels, delayBars,
+  viz, scene, width, maxH = 300, fixedH, focused, freq, layers, visHz = 0.6, selectedId, onSelect, onDragSource, onDragListener, wallT, sectionView, probes, coverageEdges, labels, delayBars, highlightPath,
 }: {
   viz: WaveVizModule;
   scene: WaveScene;
@@ -110,6 +111,8 @@ function SceneHero({
   labels?: { x: number; y: number; text: string; color?: string; side?: 'right' | 'center' }[];
   /** Per-source delay staircase (Beam Steering). */
   delayBars?: { bars: { x: number; y: number; ms: number }[]; maxLenM: number } | null;
+  /** One path singled out (Echo's far-wall return). */
+  highlightPath?: { x: number; y: number }[] | null;
 }) {
   const phase = viz.usePhaseClock(focused, visHz);
   const height = fixedH ?? Math.max(150, Math.min(maxH, Math.round((width * scene.h) / scene.w)));
@@ -131,6 +134,7 @@ function SceneHero({
       coverageEdges={coverageEdges}
       labels={labels}
       delayBars={delayBars}
+      highlightPath={highlightPath}
     />
   );
 }
@@ -146,7 +150,7 @@ const layersValue = (layers: WaveLayers) =>
 /** Rack stage — fit the room into the glass: SceneHero derives height from
  *  width × aspect, so hand it the width that lands on h (Room Builder idiom). */
 function RackScene({
-  viz, scene, w, h, focused, freq, layers, selectedId, onSelect, onDragSource, onDragListener, sectionView, probes, wallT, coverageEdges, labels, delayBars,
+  viz, scene, w, h, focused, freq, layers, selectedId, onSelect, onDragSource, onDragListener, sectionView, probes, wallT, coverageEdges, labels, delayBars, highlightPath,
 }: {
   viz: WaveVizModule | null;
   scene: WaveScene;
@@ -165,6 +169,7 @@ function RackScene({
   coverageEdges?: { x: number; y: number; aimDeg: number; halfDeg: number } | null;
   labels?: { x: number; y: number; text: string; color?: string; side?: 'right' | 'center' }[];
   delayBars?: { bars: { x: number; y: number; ms: number }[]; maxLenM: number } | null;
+  highlightPath?: { x: number; y: number }[] | null;
 }) {
   if (!viz) return <VizUnavailableCard />;
   return (
@@ -191,6 +196,7 @@ function RackScene({
         coverageEdges={coverageEdges}
         labels={labels}
         delayBars={delayBars}
+        highlightPath={highlightPath}
       />
     </View>
   );
@@ -224,15 +230,42 @@ function Mistakes({ items }: { items: string[] }) {
   );
 }
 
+/** Hands a stage render function the FULL SCREEN text scale (hooks can't
+ *  run inside the rack's `stage` callback itself). */
+function StageTextScaleReader({ children }: { children: (ts: number) => ReactNode }) {
+  return <>{children(useStageTextScale())}</>;
+}
+
 /** SVG echo/ETC timeline: arrivalsAt stems on a ms axis (any build — no Skia).
  *  First stem = direct; within thresholdMs of it = fused (amber); later = echo
  *  (red). Heights span a 40 dB window under the direct arrival. */
-function ArrivalTimeline({ arrivals, thresholdMs = 50 }: { arrivals: Arrival[]; thresholdMs?: number }) {
+function ArrivalTimeline({
+  arrivals,
+  thresholdMs = 50,
+  width,
+  height,
+  mark,
+  markLabel,
+  textScale = 1,
+}: {
+  arrivals: Arrival[];
+  thresholdMs?: number;
+  /** Real px box (a stage); omitted = the 340×132 card graphic. */
+  width?: number;
+  height?: number;
+  /** One arrival to single out (Echo's far-wall return) + its label. */
+  mark?: Arrival | null;
+  markLabel?: string;
+  /** Stage text scale (FULL SCREEN). */
+  textScale?: number;
+}) {
   if (arrivals.length === 0) return null;
-  const W = 340;
-  const H = 132;
+  const W = width ?? 340;
+  const H = height ?? 132;
+  // 9 pt minimum (lab display law) — the card graphic used 8.
+  const fs = 9 * textScale;
   const padL = 10;
-  const padB = 16;
+  const padB = fs + 7;
   const t0 = arrivals[0].t * 1000;
   const lastMs = arrivals[arrivals.length - 1].t * 1000 - t0;
   const span = Math.max(lastMs * 1.12, thresholdMs * 1.6, 20);
@@ -241,7 +274,7 @@ function ArrivalTimeline({ arrivals, thresholdMs = 50 }: { arrivals: Arrival[]; 
   const hOf = (db: number) => Math.max(3, (1 - clamp(topDb - db, 0, 40) / 40) * (H - padB - 10));
   const base = H - padB;
   return (
-    <Svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`}>
+    <Svg width={width ?? '100%'} height={H} viewBox={`0 0 ${W} ${H}`}>
       <SvgRect x={0} y={0} width={W} height={base} fill="#0f0f13" />
       <SvgLine x1={0} y1={base} x2={W} y2={base} stroke="#2e2f38" strokeWidth={1} />
       <SvgLine x1={xAt(thresholdMs)} y1={6} x2={xAt(thresholdMs)} y2={base} stroke="rgba(255,198,77,.4)" strokeWidth={1} strokeDasharray="4 3" />
@@ -249,11 +282,24 @@ function ArrivalTimeline({ arrivals, thresholdMs = 50 }: { arrivals: Arrival[]; 
         const ms = a.t * 1000 - t0;
         const echo = ms >= thresholdMs;
         const fill = i === 0 ? '#c8c8d0' : echo ? '#ff6b5e' : '#ffc64d';
-        return <SvgRect key={i} x={xAt(ms) - 1.5} y={base - hOf(a.levelDb)} width={3} height={hOf(a.levelDb)} fill={fill} opacity={0.95} />;
+        const isMark = !!mark && a === mark;
+        const sw = isMark ? 4 * textScale : 3;
+        return <SvgRect key={i} x={xAt(ms) - sw / 2} y={base - hOf(a.levelDb)} width={sw} height={hOf(a.levelDb)} fill={isMark ? '#ffd9d3' : fill} opacity={0.95} />;
       })}
-      <SvgText x={xAt(0)} y={H - 4} fill={colors.textSub} fontSize={8} textAnchor="start">direct</SvgText>
-      <SvgText x={xAt(thresholdMs)} y={H - 4} fill={colors.amber} fontSize={8} textAnchor="middle">{`${thresholdMs} ms`}</SvgText>
-      <SvgText x={W - 4} y={H - 4} fill={colors.textSub} fontSize={8} textAnchor="end">{`${Math.round(span)} ms`}</SvgText>
+      {mark ? (
+        <SvgText
+          x={Math.min(W - 4, Math.max(40, xAt(mark.t * 1000 - t0)))}
+          y={Math.max(fs + 2, base - hOf(mark.levelDb) - 4)}
+          fill="#ffd9d3"
+          fontSize={fs} fontFamily={fonts.mono}
+          textAnchor="middle"
+        >
+          {markLabel ?? ''}
+        </SvgText>
+      ) : null}
+      <SvgText x={xAt(0)} y={H - 4} fill={colors.textSub} fontSize={fs} fontFamily={fonts.mono} textAnchor="start">direct</SvgText>
+      <SvgText x={xAt(thresholdMs)} y={H - 4} fill={colors.amber} fontSize={fs} fontFamily={fonts.mono} textAnchor="middle">{`${thresholdMs} ms`}</SvgText>
+      <SvgText x={W - 4} y={H - 4} fill={colors.textSub} fontSize={fs} fontFamily={fonts.mono} textAnchor="end">{`${Math.round(span)} ms`}</SvgText>
     </Svg>
   );
 }
@@ -611,7 +657,8 @@ export function DelayAlignModule(p: WaveModuleProps) {
   const [freqV, setFreqV] = useState(0.5); // 80..120 Hz
   const [delayV, setDelayV] = useState(0); // 0..20 ms on the main
   const [mainInv, setMainInv] = useState(false);
-  const [layers, setLayers] = useState<WaveLayers>({ pressure: false, heat: true, rays: false, arrivals: false });
+  // RAYS on at start: timing lab (owner 2026-09-26: "all labs that are about timing should have rays on when started").
+  const [layers, setLayers] = useState<WaveLayers>({ pressure: false, heat: true, rays: true, arrivals: false });
   const [listener, setListener] = useState({ x: 8, y: 6 });
 
   const freq = Math.round(80 + freqV * 40);
@@ -807,7 +854,8 @@ export function CardioidSubModule(p: WaveModuleProps) {
   // can never be cardioid, but both subs were fixed — the claim could not
   // be tested. Muting the rear collapses the pattern to omni, live.
   const [soloFront, setSoloFront] = useState(false);
-  const [layers, setLayers] = useState<WaveLayers>({ pressure: false, heat: true, rays: false, arrivals: false });
+  // RAYS on at start: timing lab (owner 2026-09-26: "all labs that are about timing should have rays on when started").
+  const [layers, setLayers] = useState<WaveLayers>({ pressure: false, heat: true, rays: true, arrivals: false });
   const [listener, setListener] = useState({ x: 7, y: 8.2 }); // the FRONT probe — drag it
 
   const freq = logMap(freqV, 40, 120);
@@ -1022,7 +1070,8 @@ export function BeamSteerModule(p: WaveModuleProps) {
   const [n, setN] = useState(5);
   const [steerV, setSteerV] = useState(0.5); // −60..+60°
   const [freqV, setFreqV] = useState(logPos(80, 40, 120));
-  const [layers, setLayers] = useState<WaveLayers>({ pressure: false, heat: true, rays: false, arrivals: false });
+  // RAYS on at start: timing lab (owner 2026-09-26: "all labs that are about timing should have rays on when started").
+  const [layers, setLayers] = useState<WaveLayers>({ pressure: false, heat: true, rays: true, arrivals: false });
   const [listener, setListener] = useState({ x: 12, y: 10 });
 
   const steer = Math.round(-60 + steerV * 120);
@@ -1229,7 +1278,10 @@ const ECHO_CHECK: CheckSpec = {
 export function EchoModule(p: WaveModuleProps) {
   const viz = useState(() => requireWaveViz())[0];
   const [presetKey, setPresetKey] = useState('canyon');
-  const [layers, setLayers] = useState<WaveLayers>({ pressure: false, heat: false, rays: true, arrivals: true });
+  // ARRIVALS off at the start: the timeline on the display shows EVERY
+  // arrival (the legend lists only the first five — never the far wall) and
+  // the legend covered source and listener (walkthrough 2026-09-26).
+  const [layers, setLayers] = useState<WaveLayers>({ pressure: false, heat: false, rays: true, arrivals: false });
   const [listener, setListener] = useState({ x: 10, y: 15 });
 
   const preset = ECHO_PRESETS.find((e) => e.key === presetKey) ?? ECHO_PRESETS[0];
@@ -1288,6 +1340,20 @@ export function EchoModule(p: WaveModuleProps) {
     return best;
   }, [arrivals, direct]);
   const echoGapMs = echo && direct ? (echo.t - direct.t) * 1000 : 0;
+  // THE FAR WALL (right, boundary 1) — the echo every preset's copy
+  // describes. The loudest late arrival above is usually the SIDE walls
+  // bouncing between each other (canyon: 74 ms vs the rock at ~291 ms), so
+  // the ECHO cell now reads the far-wall return itself (walkthrough
+  // 2026-09-26); the loudest late arrival stays in the well, named.
+  const far = arrivals.find((a) => a.bounces.length === 1 && a.bounces[0] === 1) ?? null;
+  const farGapMs = far && direct ? (far.t - direct.t) * 1000 : 0;
+  const S = scene.sources[0];
+  const L = scene.listener;
+  const farHitY = S.y + ((L.y - S.y) * (scene.w - S.x)) / (2 * scene.w - S.x - L.x);
+  const farPath = far ? [{ x: S.x, y: S.y }, { x: scene.w, y: farHitY }, { x: L.x, y: L.y }] : null;
+  const WALL_NAME = ['side wall', 'far wall', 'side wall', 'back wall'];
+  const describe = (a: (typeof arrivals)[number]) =>
+    a.bounces.length === 0 ? 'direct' : Array.from(new Set(a.bounces.map((b) => WALL_NAME[b]))).join(' + ');
 
   return (
     <WaveLayout
@@ -1311,22 +1377,43 @@ export function EchoModule(p: WaveModuleProps) {
             helpKey: 'echo',
           },
           {
-            k: 'ECHO',
-            v: echo ? `${echoGapMs.toFixed(0)} ms` : 'NONE',
+            k: 'FAR WALL',
+            v: far ? `${farGapMs.toFixed(0)} ms` : 'NONE',
             helpKey: 'echo',
           },
         ],
+        // Room above, ARRIVAL TIMELINE below (walkthrough 2026-09-26): the
+        // fused early reflections and the far-wall echo standing apart —
+        // the lesson — on the display and in FULL SCREEN, not down the well.
         stage: (w, h) => (
-          <RackScene
-            viz={viz}
-            scene={scene}
-            w={w}
-            h={h}
-            focused={p.focused}
-            freq={ECHO_FREQ}
-            layers={layers}
-            onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
-          />
+          <StageTextScaleReader>
+            {(ts) => (
+              <View style={{ width: w, height: h }}>
+                <StageAspectReport.Provider value={null}>
+                  <RackScene
+                    viz={viz}
+                    scene={scene}
+                    w={w}
+                    h={Math.round(h * 0.6)}
+                    focused={p.focused}
+                    freq={ECHO_FREQ}
+                    layers={layers}
+                    onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
+                    highlightPath={farPath}
+                  />
+                </StageAspectReport.Provider>
+                <ArrivalTimeline
+                  arrivals={arrivals}
+                  thresholdMs={ECHO_FUSE_MS}
+                  width={w}
+                  height={h - Math.round(h * 0.6)}
+                  mark={far}
+                  markLabel={far ? `FAR WALL ${farGapMs.toFixed(0)} ms` : ''}
+                  textScale={ts}
+                />
+              </View>
+            )}
+          </StageTextScaleReader>
         ),
         params: [
           {
@@ -1365,9 +1452,10 @@ export function EchoModule(p: WaveModuleProps) {
               { k: 'GAP TO 1ST', v: `${gapMs.toFixed(1)} ms` },
               { k: '1ST REFL VERDICT', v: gapMs >= ECHO_FUSE_MS ? 'DISCRETE ECHO' : 'FUSES (HAAS)' },
               { k: '1ST REFL LEVEL', v: firstRefl && direct ? `${(firstRefl.levelDb - direct.levelDb).toFixed(1)} dB re direct` : '—' },
-              { k: 'LOUDEST LATE ARRIVAL', v: echo ? `${(echo.t * 1000).toFixed(1)} ms` : 'none past 50 ms' },
-              { k: 'ECHO GAP', v: echo ? `${echoGapMs.toFixed(1)} ms` : '—' },
-              { k: 'ECHO LEVEL', v: echo && direct ? `${(echo.levelDb - direct.levelDb).toFixed(1)} dB re direct` : '—' },
+              { k: 'FAR-WALL ECHO GAP', v: far ? `${farGapMs.toFixed(1)} ms` : '—' },
+              { k: 'FAR-WALL ECHO LEVEL', v: far && direct ? `${(far.levelDb - direct.levelDb).toFixed(1)} dB re direct` : '—' },
+              { k: 'LOUDEST LATE ARRIVAL', v: echo ? `${echoGapMs.toFixed(1)} ms · ${describe(echo)}` : 'none past 50 ms' },
+              { k: 'ITS LEVEL', v: echo && direct ? `${(echo.levelDb - direct.levelDb).toFixed(1)} dB re direct` : '—' },
               { k: 'LEVEL @ LISTENER', v: `${lvl.toFixed(1)} dB` },
             ]}
           />
