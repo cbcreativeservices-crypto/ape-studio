@@ -129,6 +129,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-25 17:13 · ccode · 70325ddc
+changed: Codes: tell people to type the dashes; drop discount/sponsor wording
+affects other side: nothing — client copy only. FYI for A: the app now tells people to type codes exactly as given, dashes included; redeem_access_code still matches upper-case with spaces stripped and does NOT strip dashes, so keep issuing codes in the form people will type. The app no longer mentions discount codes (owner: "there are no discount codes, just codes").
+needs: nothing
+
+
 ### 2026-09-25 16:49 · ccode · 6c6e3be3
 changed: Cable Install: unwire five mismatched defect photos; Computer C remake brief
 affects other side: nothing — app bundle + docs only, no DB. Five Final Inspection cards (sharp-bend, crushed-by-tie, connector-strain, bad-floor-crossing, slack-pile) are drawing-only until Computer C's remakes land (Downloads/2026-09-25_COMP_C_DEFECT_PHOTO_REMAKE_5.zip). Not on the phones until the owner publishes.
