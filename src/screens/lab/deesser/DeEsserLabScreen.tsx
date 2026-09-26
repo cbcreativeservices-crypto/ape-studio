@@ -85,15 +85,18 @@ function PageWhat({ ctx }: { ctx: PageCtx }) {
   const sp = sFrameSpectrum(f, 48);
   const pick = (i: number) => { setSel((i + PHRASE.length) % PHRASE.length); touch(ctx); };
   const gap = f.label === '·';
-  // One set of frame controls: on the page, and docked under either figure in full screen.
-  const nav = (
-    <Row>
+  // One set of frame controls: on the page, and docked under either figure in
+  // full screen — where the live readout leads the dock (parity pass 2026-09-26).
+  const read = <Text style={styles.read}>frame {sel + 1} · “{f.label}”</Text>;
+  const navBtns = (
+    <>
       <Wide><Btn label="‹" onPress={() => pick(sel - 1)} a11y="Previous frame" /></Wide>
       <Wide><Btn label="›" onPress={() => pick(sel + 1)} a11y="Next frame" /></Wide>
       <Btn label="JUMP TO AN S" onPress={() => pick(nextSib(sel))} a11y="Jump to the next sibilant frame" />
-      <Text style={styles.read}>frame {sel + 1} · “{f.label}”</Text>
-    </Row>
+    </>
   );
+  const nav = <Row>{navBtns}{read}</Row>;
+  const navDock = <Dock>{read}<Row>{navBtns}</Row></Dock>;
   return (
     <View style={{ gap: 12 }}>
       {/* NEW COPY: S vs SH placement made explicit so the 2–10 kHz band is explained, not asserted. */}
@@ -104,7 +107,7 @@ function PageWhat({ ctx }: { ctx: PageCtx }) {
         aspect={ASPECT.frame}
         title="PHRASE"
         badge={CONCEPTUAL}
-        controls={<Dock>{nav}</Dock>}
+        controls={navDock}
         render={(w, h) => <FrameStrip width={w} height={h} frames={PHRASE} selected={sel} onSelect={pick} a11y={`The phrase ${PHRASE.map((p) => p.label).join(' ')} as frames; the sibilant frames carry the hiss. Frame ${sel + 1}, ${f.label}, is selected.`} />}
       />
       {nav}
@@ -113,7 +116,7 @@ function PageWhat({ ctx }: { ctx: PageCtx }) {
         aspect={ASPECT.spectrum}
         title="SPECTRUM"
         badge={CONCEPTUAL}
-        controls={<Dock>{nav}</Dock>}
+        controls={navDock}
         render={(w, h) => <BandSpectrum width={w} height={h} hz={sp.hz} mag={sp.mag} band={[2000, 10000]} a11y={f.sibilant ? `Spectrum of ${f.label}: energy concentrated around ${f.hissHz} hertz.` : gap ? 'Spectrum of a gap between words: almost nothing.' : `Spectrum of ${f.label}: energy mostly below 1 kilohertz.`} />}
       />
       <Card>
@@ -139,6 +142,8 @@ function PageEqVs({ ctx }: { ctx: PageCtx }) {
   const out = which === 'eq' ? eq : de;
   const loss = vowelBrightnessLossDb(PHRASE, out);
   const sGr = which === 'eq' ? cut : meanSibilantGr(de);
+  // The live readout — shown in the card on the page and at the top of the dock in full screen.
+  const lossRead = <Text style={styles.read}>brightness taken from everything that is not an S: {loss.toFixed(1)} dB · S’s reduced by about {sGr.toFixed(1)} dB</Text>;
   const toggle = (
     <Row>
       <Btn label={`STATIC EQ CUT · −${cut} dB`} tone={which === 'eq' ? 'primary' : 'plain'} selected={which === 'eq'} onPress={() => { setWhich('eq'); touch(ctx); }} />
@@ -155,14 +160,14 @@ function PageEqVs({ ctx }: { ctx: PageCtx }) {
         aspect={ASPECT.eqvs}
         title={which === 'eq' ? 'STATIC EQ' : 'DE-ESSER'}
         badge={CONCEPTUAL}
-        controls={<Dock>{toggle}</Dock>}
+        controls={<Dock>{lossRead}{toggle}</Dock>}
         render={(w, h) => <EqVsStrips width={w} height={h} frames={PHRASE} output={out} a11y={which === 'eq' ? `With a static EQ cut every frame loses the same amount of hiss — vowels included. On a decibel scale every frame's hiss band drops by ${cut} dB, vowels and gaps included.` : `With the de-esser only the sibilant frames are reduced; the vowels are untouched. On a decibel scale only the sibilant frames drop, by up to ${cut} dB; every other frame is unchanged.`} />}
       />
       <Caption>Top: body and hiss per frame. Bottom: the hiss band alone on a dB scale, where an 8 dB loss is the same height on a vowel as on an S.</Caption>
       <Card tone={which === 'eq' ? 'warn' : 'ok'}>
         <Eyebrow>{which === 'eq' ? 'WHAT THE EQ DID' : 'WHAT THE DE-ESSER DID'}</Eyebrow>
         {/* NEW COPY: "vowels" → "everything that is not an S" (the measure includes TH and P). */}
-        <Text style={styles.read}>brightness taken from everything that is not an S: {loss.toFixed(1)} dB · S’s reduced by about {sGr.toFixed(1)} dB</Text>
+        {lossRead}
         <Body>{which === 'eq'
           ? 'The S’s are tamed — and so is every vowel, every breath and the air of the whole recording. Dull the voice enough to fix the S and you have a dull voice.'
           : 'The S’s are tamed and the vowels keep every bit of their brightness, because the gain only moves while the detector hears hiss.'}</Body>
@@ -251,7 +256,7 @@ function PageThreshold({ ctx }: { ctx: PageCtx }) {
         aspect={ASPECT.detector}
         title="DETECTOR"
         badge={CONCEPTUAL}
-        controls={<Dock>{thr}{count}</Dock>}
+        controls={<Dock>{count}{thr}</Dock>}
         render={(w, h) => <DetectorTrace width={w} height={h} processed={out} thresholdDb={s.thresholdDb} rangeDb={s.rangeDb} a11y={`Detector trace across the phrase with the threshold at ${s.thresholdDb} dB; ${overSib} of ${SIB.length} sibilants and ${overOther} other sounds are above it and being reduced.`} />}
       />
       <Card tone={overOther > 0 ? 'warn' : over === 0 ? 'plain' : 'ok'}>
@@ -312,7 +317,7 @@ function PageFrequency({ ctx }: { ctx: PageCtx }) {
         aspect={ASPECT.spectrum}
         title="SPECTRUM"
         badge={BAND_CAPTION}
-        controls={<Dock>{aim}{hears}</Dock>}
+        controls={<Dock>{hears}{aim}</Dock>}
         render={(w, h) => <BandSpectrum width={w} height={h} hz={sp.hz} mag={sp.mag} curve={dc.mag} band={[2000, 10000]} a11y={`Spectrum of ${f.label} with hiss near ${f.hissHz} hertz; the detector band is centred at ${s.freqHz} hertz and passes ${pct} percent of that hiss.`} />}
       />
       <Caption>{BAND_CAPTION}</Caption>
@@ -369,7 +374,7 @@ function PageGr({ ctx }: { ctx: PageCtx }) {
         aspect={ASPECT.detector}
         title="GAIN REDUCTION"
         badge={CONCEPTUAL}
-        controls={<Dock>{knobs}{peak}</Dock>}
+        controls={<Dock>{peak}{knobs}</Dock>}
         render={(w, h) => <DetectorTrace width={w} height={h} processed={out} thresholdDb={s.thresholdDb} rangeDb={s.rangeDb} a11y={`Gain reduction across the phrase: maximum ${max.toFixed(1)} dB, average on sibilants ${mean.toFixed(1)} dB, range ${s.rangeDb} dB.`} />}
       />
       <Card>
@@ -413,16 +418,19 @@ function PageMode({ ctx }: { ctx: PageCtx }) {
       <Btn label="SPLIT-BAND" tone={s.mode === 'split' ? 'primary' : 'plain'} selected={s.mode === 'split'} onPress={() => { set({ mode: 'split' }); touch(ctx); }} />
     </Row>
   );
-  const stepRow = (
-    <Row>
+  const stepRead = <Text style={styles.read}>frame {step + 1} · “{f.label}” · {p.grDb > 0 ? `−${gr} dB reduction` : 'no reduction'}</Text>;
+  const stepBtns = (
+    <>
       <Wide><Btn label="‹" onPress={() => go(step - 1)} a11y="Previous frame" /></Wide>
       <Wide><Btn label="›" onPress={() => go(step + 1)} a11y="Next frame" /></Wide>
       {/* NEW COPY: "PLAY" → "AUTO-STEP" (nothing plays in this lab). */}
       {!ctx.reduceMotion ? <Btn label={auto ? 'STOP' : 'AUTO-STEP'} onPress={() => { setAuto((a) => !a); touch(ctx); }} a11y={auto ? 'Stop stepping through the frames' : 'Step through the frames automatically'} /> : null}
       <Btn label="JUMP TO AN S" onPress={() => go(nextSib(step))} a11y="Jump to the next sibilant frame" />
-      <Text style={styles.read}>frame {step + 1} · “{f.label}” · {p.grDb > 0 ? `−${gr} dB reduction` : 'no reduction'}</Text>
-    </Row>
+    </>
   );
+  const stepRow = <Row>{stepBtns}{stepRead}</Row>;
+  // In full screen the readout leads the dock (parity pass 2026-09-26).
+  const modeDock = <Dock>{stepRead}{modeRow}<Row>{stepBtns}</Row></Dock>;
   return (
     <View style={{ gap: 12 }}>
       <Lead>When the detector fires, what gets turned down? Everything (broadband) or only the hiss band (split-band). Same decision, different action.</Lead>
@@ -433,7 +441,7 @@ function PageMode({ ctx }: { ctx: PageCtx }) {
         aspect={ASPECT.frame}
         title={s.mode === 'broadband' ? 'BROADBAND' : 'SPLIT-BAND'}
         badge={CONCEPTUAL}
-        controls={<Dock>{modeRow}{stepRow}</Dock>}
+        controls={modeDock}
         render={(w, h) => <FrameStrip width={w} height={h} frames={PHRASE} output={out} selected={step} onSelect={go} a11y={s.mode === 'broadband' ? 'Broadband: on each sibilant frame both the body and the hiss drop.' : 'Split-band: on each sibilant frame only the hiss drops; the body is unchanged.'} />}
       />
       {stepRow}
@@ -442,7 +450,7 @@ function PageMode({ ctx }: { ctx: PageCtx }) {
         aspect={ASPECT.spectrum}
         title="THIS FRAME"
         badge={specCaption}
-        controls={<Dock>{modeRow}{stepRow}</Dock>}
+        controls={modeDock}
         render={(w, h) => <BandSpectrum width={w} height={h} hz={inSp.hz} mag={outMag} ghost={inSp.mag} curve={s.mode === 'split' ? detectorCurve(s, 48).mag : undefined} band={[2000, 10000]} a11y={p.grDb > 0 ? (s.mode === 'broadband' ? `Broadband: the whole spectrum of ${f.label} drops by ${gr} dB.` : `Split-band: only the band around ${s.freqHz} hertz of ${f.label} drops by ${gr} dB.`) : `No reduction on ${f.label}.`} />}
       />
       <Caption>{specCaption}</Caption>
@@ -490,7 +498,7 @@ function PageOver({ ctx }: { ctx: PageCtx }) {
         aspect={ASPECT.frame}
         title="OUTPUT"
         badge={CONCEPTUAL}
-        controls={<Dock>{hard}{stageLine}</Dock>}
+        controls={<Dock>{stageLine}{hard}</Dock>}
         render={(w, h) => <FrameStrip width={w} height={h} frames={PHRASE} output={out} a11y={`At this setting the sibilants are reduced by about ${mean.toFixed(0)} dB: ${stage.name}. ${stage.symptoms}`} />}
       />
       <Card tone={stage.id === 'transparent' || stage.id === 'controlled' ? 'ok' : stage.id === 'off' ? 'plain' : 'warn'}>
