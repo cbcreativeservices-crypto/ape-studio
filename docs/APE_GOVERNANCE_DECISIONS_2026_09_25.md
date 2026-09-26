@@ -219,3 +219,62 @@ bass guitar lab — it is still using the sound generator instead of the samples
 **Ruled:** ▶ streams the published `bass_fretboard` recording for the selection (52 chromatic
 notes, 16 natural harmonics); the additive string model is only the fallback when a recording
 cannot be fetched, and the screen says which is sounding (`db203299`).
+
+## D38 · Full-screen zoom: 1× is the whole drawing; a step anchors on the last touch
+
+**Owner (2026-09-26, Wave walkthrough):** *"1× should be zoomed full out to see everything always.
+center 2× on what the user last touched (if any), or if the user has not touched the display yet,
+zoom anchored on the center of the display."*
+
+**Ruled (every lab, `rack/StageFullScreen.tsx`, `a5e33e6c`):** every opening starts at 1× = the
+whole drawing (the fill-width opening step of `1a69d3ca` is withdrawn); a zoom step scrolls so the
+spot last touched in the drawing is mid-view, else the centre.
+
+## D39 · Objects, heights and stated dimensions are drawn to the SAME scale
+
+**Owner (2026-09-26):** *"make sure the speaker, human figure and height all stay in correct
+proportional dimensions"* → *"check all wave lab screens and make sure again that speakers, heads,
+heights, and display stated dimensions are all proportional and related."*
+
+**Ruled:** a drawing's objects are sized in metres from the scene's px-per-metre (head ≈ 0.2 m,
+PA 0.55 m, sub 0.75 m, mic 0.18 m, standing person 1.75 m, line-array box 0.45 m), and every
+printed distance/height is the drawn one. A small px floor keeps an object findable in a huge room —
+the only place a drawing may be bigger than life. One deliberate exaggeration is allowed only when
+it is SAID on the picture (Refraction: `HEIGHT ×20`). (`70ffad7b` `1b54b067` `10748284`)
+
+## D40 · A readout compares against the reference the lesson is about
+
+**Walkthrough rulings (2026-09-26), applied in Interference, Coverage, Delay Alignment, Beam
+Steering:** the bezel shows the number the lesson promises — the pair *vs ONE speaker* (+6.0 dB /
+NULL), the listener *vs ON-AXIS*, the sub+main *SUM vs perfect addition*, the listener *vs
+STRAIGHT* — and the absolute level moves to the well, labelled. An absolute dB that contradicts the
+prose (−0.5 dB at a "+6 dB" seat) is a defect.
+
+## D41 · The lesson's own graph belongs ON the display
+
+**Walkthrough rulings (2026-09-26):** when a lab's point is a curve or a timeline (Comb response,
+Echo arrivals, Reverb decay), it is stacked under the scene on the display and in FULL SCREEN, not
+three cards down the well. A lab whose picture is swamped by room reflections it is not teaching
+(Coverage, Delay Alignment) is drawn in open air.
+
+## D42 · Timing labs open with the pulse balls on
+
+**Owner (2026-09-26):** *"turn on pressure balls on all labs that have timing as a focus for the
+learner (echo, delays, diffusion, etc...)"* — pressure balls, not rays (`212a38b2`). PRESSURE shows
+the balls on its own; RAYS only adds the lines (`8b52b6b1`). Balls travel 13 % slower (`8b1b382f`).
+
+## D43 · Room Builder shows what the neighbours hear
+
+**Owner (2026-09-26):** *"keep the rings outside the room … the user needs to understand what their
+neighbors get to hear and not"* → *"time it with the slow concentric rings"* → *"the rings should
+not go on forever … eventually they fall off and there's nothing"* → *"make sure all of the
+different wall materials show their effect."*
+
+**Ruled (Room Builder only; every other room clips its rings at the walls, `d2c9c357`):** a 4 m zone
+around the room; the speaker's slow ring train continues through each wall, starting just under the
+room's own level inside that wall and fading to nothing over a reach set by that wall's loss at the
+viewed frequency. Each material IS the partition, with a teaching mass law TL ≈ 20·log10(m·f) − 47
+(concrete 400 · drywall 20 · glass 15 · wood 12 · carpet/fiberglass 3 · audience 2 · foam 1.2 ·
+curtain 0.6 kg/m²); a `THROUGH −xx dB` tag outside each wall carries the real model number; the
+colours and reach are exaggerated for the demo and the accuracy note under the display says so
+(`abeb48ec` … `0981b406`).

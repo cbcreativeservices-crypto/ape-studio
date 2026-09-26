@@ -649,3 +649,30 @@ process is running.
 - **The auto-mode classifier can refuse `eas update` and even `cat` on a deploy doc** regardless of
   the owner's cue. Restore the Swift file, prove the fingerprint, then hand the owner the three
   commands (or ask for a permission rule) — do not route around it.
+
+## 2026-09-26 (C) — lessons from the 16-module Wave Physics walkthrough
+
+- **Glyphs sized in px lie about scale.** Every room drew its head/speaker/sub/mic at a fixed px
+  size, so their real size swung from 0.3 m to 4 m with the room. Size objects from px-per-metre
+  and floor them in px only for findability (D39). Audit with a subagent: list every glyph's px
+  size, convert at the scene's px/m, compare with the real object.
+- **Fit the room with its label margin, not its bare aspect.** `RackScene` sized the canvas to
+  `scene.w / scene.h`; the 30 px wall-label margin then ate the room — at 3× the Line Array room
+  filled 716 of ~1100 px while its labels were scaled for the full width ("blocky" maps were this,
+  not grid resolution — measure before fixing).
+- **Stacking a graph under a scene:** wrap the scene in `StageAspectReport.Provider value={null}`
+  so FULL SCREEN hands the stack the whole box; read the stage text scale through a tiny
+  component (`StageTextScaleReader`) — hooks can't run inside the rack's `stage` callback.
+- **Two views = two clocks.** The glass and FULL SCREEN each mount their own room, so anything that
+  must move with the balls (Reverb's decay playhead) gets its own per-stage component holding that
+  room's clock (`onPulseClock` → `PulseSyncedDecayStage`), never one shared state.
+- **A replace-script is not idempotent when the new text contains the old.** Re-running
+  `s.replace(old, old + extra)` still finds `old` exactly once and inserts twice. Restore the file
+  from git before re-running, or assert on a marker of the NEW text first.
+- **Ask what the learner is supposed to see, then check the number that shows it.** Four modules
+  printed a correct-but-wrong number: absolute dB where the lesson promised a comparison (D40),
+  Echo's "ECHO" was the side walls (74 ms) not the far wall (291 ms), Delay Alignment's auto-align
+  made the seat 3.6 dB QUIETER because drywall reflections dominated at 100 Hz.
+- **The built-in pane throttles to ~3 fps and drops the emulated viewport between turns** — set
+  `resize_window` at the start of every batch, and catch animations with several short-interval
+  screenshots (or read a TEMP-DEBUG global via `javascript_tool`, then remove it).
