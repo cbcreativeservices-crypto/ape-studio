@@ -15,6 +15,7 @@
  */
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import Animated, { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 import Svg, { Circle, Defs, Line, LinearGradient, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../theme/tokens';
 
@@ -689,6 +690,7 @@ export function DecayCurveGraph({
   width,
   height,
   textScale = 1,
+  playhead,
 }: {
   rt60: number;
   preDelayMs: number;
@@ -700,6 +702,12 @@ export function DecayCurveGraph({
   height?: number;
   /** Stage text scale (FULL SCREEN) — labels stay ≥ 9 pt and grow. */
   textScale?: number;
+  /** The room's pulse clock (0→1 per pulse): a playhead rides the amber
+   *  decay line from the moment the balls are released, reaching the end of
+   *  the time axis as they finish fading (owner 2026-09-26: "the pressure
+   *  ball release should be timed with the RT line trace"). Stage use only
+   *  (needs `width`). */
+  playhead?: SharedValue<number> | null;
 }) {
   const W = width ?? W_CARD;
   const H = height ?? 150;
@@ -719,7 +727,7 @@ export function DecayCurveGraph({
   const tickStep = spanS > 4 ? 2 : spanS > 1.5 ? 1 : 0.5;
   const tTicks: number[] = [];
   for (let t = tickStep; t < spanS; t += tickStep) tTicks.push(t);
-  return (
+  const graph = (
     <Svg width={width ?? '100%'} height={H} viewBox={`0 0 ${W} ${H}`}>
       <Defs>
         <LinearGradient id="fxDecayFill" x1="0" y1="0" x2="0" y2="1">
@@ -761,6 +769,59 @@ export function DecayCurveGraph({
         {`RT60 ${rt60.toFixed(1)} s`}
       </SvgText>
     </Svg>
+  );
+  if (!playhead || width == null) return graph;
+  return (
+    <View style={{ width, height: H }}>
+      {graph}
+      <DecayPlayhead
+        clock={playhead}
+        geo={{ padL, spanS, W, H, padB, pre: preDelayMs / 1000, rt: rt60 }}
+        scale={textScale}
+      />
+    </View>
+  );
+}
+
+/** Playhead on the decay graph: a hairline at the current time and a dot on
+ *  the amber line. The pulse cycle's fade ends at ~99 % of the cycle, so the
+ *  time axis is swept over that span — release = 0 s, balls gone = the end. */
+function DecayPlayhead({
+  clock,
+  geo,
+  scale,
+}: {
+  clock: SharedValue<number>;
+  geo: { padL: number; spanS: number; W: number; H: number; padB: number; pre: number; rt: number };
+  scale: number;
+}) {
+  const { padL, spanS, W, H, padB, pre, rt } = geo;
+  const plotH = H - 8 - padB;
+  const line = useAnimatedStyle(() => {
+    const u = Math.min(1, clock.value / 0.99);
+    const x = padL + u * (W - padL - 8);
+    return { transform: [{ translateX: x }] };
+  }, [padL, W]);
+  const dot = useAnimatedStyle(() => {
+    const u = Math.min(1, clock.value / 0.99);
+    const s = u * spanS;
+    let db = 0;
+    if (s > pre) db = s < pre + rt ? (-60 * (s - pre)) / rt : Math.max(-69, -60 - (9 * (s - pre - rt)) / (0.15 * rt));
+    const x = padL + u * (W - padL - 8);
+    const y = 8 + (-db / 70) * plotH;
+    return { transform: [{ translateX: x - 4 * scale }, { translateY: y - 4 * scale }] };
+  }, [padL, W, spanS, pre, rt, plotH, scale]);
+  return (
+    <>
+      <Animated.View
+        pointerEvents="none"
+        style={[{ position: 'absolute', left: 0, top: 6, width: 1.5 * scale, height: H - padB - 6, backgroundColor: 'rgba(255,217,160,0.55)' }, line]}
+      />
+      <Animated.View
+        pointerEvents="none"
+        style={[{ position: 'absolute', left: 0, top: 0, width: 8 * scale, height: 8 * scale, borderRadius: 4 * scale, backgroundColor: '#ffd9a0' }, dot]}
+      />
+    </>
   );
 }
 

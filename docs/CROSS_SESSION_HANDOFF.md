@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 14:07 · ccode · 046f0ed4
+changed: Wave Reverb: the decay curve is ON the display under the room (amber = this room, dim = untreated all-concrete), in FULL SCREEN too; ARRIVALS legend off at start; the RING GAP tag sits inside the room corner on a plate (it collided with the top wall's name)
+affects other side: nothing — client JS only (Wave lab drawing)
+needs: nothing
+
+
 ### 2026-09-26 14:00 · ccode · 2c96565d
 changed: Wave Echo: each room's walls match its own description — canyon ROCK on three sides and open behind the stage; gym block walls, a windowed side, wood bleachers behind; church stone with wood doors; walls can carry display names (wallLabels) over their material
 affects other side: nothing — client JS only (Wave lab drawing)

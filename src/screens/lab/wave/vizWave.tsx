@@ -430,6 +430,10 @@ export type RoomSceneProps = {
    *  the material label (Echo's canyon: ROCK, drawn and modelled as concrete).
    *  null = keep the material's own label. */
   wallLabels?: (string | null)[];
+  /** Receives the pulse clock (0→1 per pulse, linear, repeating) while the
+   *  pulse tracer runs, or null when it stops — so a host graph can move in
+   *  step with the balls (Reverb's decay playhead, 2026-09-26). */
+  onPulseClock?: (clock: SharedValue<number> | null) => void;
   /** Wall strip depth on the glass, px (default 9). The Absorption lab draws
    *  its walls deeper so each material reads in section (owner 2026-09-26). */
   wallT?: number;
@@ -1737,6 +1741,11 @@ export function RoomSceneView(p: RoomSceneProps) {
     pulseT.value = withRepeat(withTiming(1, { duration: PULSE_MS, easing: Easing.linear }), -1, false);
     return () => cancelAnimation(pulseT);
   }, [tracing, pulseT]);
+  const onPulseClock = p.onPulseClock;
+  useEffect(() => {
+    onPulseClock?.(tracing ? pulseT : null);
+    return () => onPulseClock?.(null);
+  }, [tracing, pulseT, onPulseClock]);
 
   // ── ARRIVALS: fan of time-of-arrival ticks at the listener ────────────────
   const arrivalFan = useMemo(() => {

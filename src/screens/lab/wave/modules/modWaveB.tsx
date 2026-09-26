@@ -20,6 +20,7 @@
  * overflow readouts/secondary displays/mistakes/check scroll in the well.
  */
 import { useMemo, useRef, useState, type ReactNode } from 'react';
+import type { SharedValue } from 'react-native-reanimated';
 import { Text, View } from 'react-native';
 import Svg, { Line as SvgLine, Rect as SvgRect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
@@ -79,7 +80,7 @@ function coverageAtFreq(src: WaveSource, freq: number): number {
 /** Hosts the phase clock next to the Skia view — only rendered when viz ≠ null,
  *  so no conditional hooks ever run in the module bodies. */
 function SceneHero({
-  viz, scene, width, maxH = 300, fixedH, focused, freq, layers, visHz = 0.6, selectedId, onSelect, onDragSource, onDragListener, wallT, sectionView, probes, coverageEdges, labels, delayBars, highlightPath, wallLabels,
+  viz, scene, width, maxH = 300, fixedH, focused, freq, layers, visHz = 0.6, selectedId, onSelect, onDragSource, onDragListener, wallT, sectionView, probes, coverageEdges, labels, delayBars, highlightPath, wallLabels, onPulseClock,
 }: {
   viz: WaveVizModule;
   scene: WaveScene;
@@ -115,6 +116,8 @@ function SceneHero({
   highlightPath?: { x: number; y: number }[] | null;
   /** Display names per wall (overrides the material label). */
   wallLabels?: (string | null)[];
+  /** Receives the pulse clock (Reverb's decay playhead). */
+  onPulseClock?: (clock: SharedValue<number> | null) => void;
 }) {
   const phase = viz.usePhaseClock(focused, visHz);
   const height = fixedH ?? Math.max(150, Math.min(maxH, Math.round((width * scene.h) / scene.w)));
@@ -138,6 +141,7 @@ function SceneHero({
       delayBars={delayBars}
       highlightPath={highlightPath}
       wallLabels={wallLabels}
+      onPulseClock={onPulseClock}
     />
   );
 }
@@ -153,7 +157,7 @@ const layersValue = (layers: WaveLayers) =>
 /** Rack stage — fit the room into the glass: SceneHero derives height from
  *  width × aspect, so hand it the width that lands on h (Room Builder idiom). */
 function RackScene({
-  viz, scene, w, h, focused, freq, layers, selectedId, onSelect, onDragSource, onDragListener, sectionView, probes, wallT, coverageEdges, labels, delayBars, highlightPath, wallLabels,
+  viz, scene, w, h, focused, freq, layers, selectedId, onSelect, onDragSource, onDragListener, sectionView, probes, wallT, coverageEdges, labels, delayBars, highlightPath, wallLabels, onPulseClock,
 }: {
   viz: WaveVizModule | null;
   scene: WaveScene;
@@ -174,6 +178,7 @@ function RackScene({
   delayBars?: { bars: { x: number; y: number; ms: number }[]; maxLenM: number } | null;
   highlightPath?: { x: number; y: number }[] | null;
   wallLabels?: (string | null)[];
+  onPulseClock?: (clock: SharedValue<number> | null) => void;
 }) {
   if (!viz) return <VizUnavailableCard />;
   return (
@@ -202,6 +207,7 @@ function RackScene({
         delayBars={delayBars}
         highlightPath={highlightPath}
         wallLabels={wallLabels}
+        onPulseClock={onPulseClock}
       />
     </View>
   );
@@ -232,6 +238,35 @@ function Mistakes({ items }: { items: string[] }) {
         <Text key={i} style={dstyles.body}>• {m}</Text>
       ))}
     </PanelCard>
+  );
+}
+
+/** Room above, decay graph below — the graph's playhead driven by THIS
+ *  room's pulse clock (Reverb, 2026-09-26). */
+function PulseSyncedDecayStage({
+  w,
+  h,
+  ts,
+  room,
+  rt60,
+  preDelayMs,
+  refRt60,
+}: {
+  w: number;
+  h: number;
+  ts: number;
+  room: (onPulseClock: (c: SharedValue<number> | null) => void) => ReactNode;
+  rt60: number;
+  preDelayMs: number;
+  refRt60: number;
+}) {
+  const [clock, setClock] = useState<SharedValue<number> | null>(null);
+  const roomH = Math.round(h * 0.58);
+  return (
+    <View style={{ width: w, height: h }}>
+      <StageAspectReport.Provider value={null}>{room(setClock)}</StageAspectReport.Provider>
+      <DecayCurveGraph rt60={rt60} preDelayMs={preDelayMs} refRt60={refRt60} width={w} height={h - roomH} textScale={ts} playhead={clock} />
+    </View>
   );
 }
 
@@ -1579,11 +1614,16 @@ export function ReverbModule(p: WaveModuleProps) {
         // Room above, DECAY below (walkthrough 2026-09-26): every treated
         // wall visibly shortens the amber tail against the dim all-concrete
         // reference — on the display and in FULL SCREEN, not down the well.
+        // Each stage (glass, FULL SCREEN) is its own component with its own
+        // pulse clock, so the decay playhead rides with the balls it sits under.
         stage: (w, h) => (
           <StageTextScaleReader>
             {(ts) => (
-              <View style={{ width: w, height: h }}>
-                <StageAspectReport.Provider value={null}>
+              <PulseSyncedDecayStage
+                w={w}
+                h={h}
+                ts={ts}
+                room={(onPulseClock) => (
                   <RackScene
                     viz={viz}
                     scene={scene}
@@ -1593,10 +1633,13 @@ export function ReverbModule(p: WaveModuleProps) {
                     freq={REVERB_FREQ}
                     layers={layers}
                     onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
+                    onPulseClock={onPulseClock}
                   />
-                </StageAspectReport.Provider>
-                <DecayCurveGraph rt60={rt500} preDelayMs={gapMs} refRt60={hardRt500} width={w} height={h - Math.round(h * 0.58)} textScale={ts} />
-              </View>
+                )}
+                rt60={rt500}
+                preDelayMs={gapMs}
+                refRt60={hardRt500}
+              />
             )}
           </StageTextScaleReader>
         ),
