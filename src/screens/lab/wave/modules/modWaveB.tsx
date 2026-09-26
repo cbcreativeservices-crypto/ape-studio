@@ -657,8 +657,8 @@ export function DelayAlignModule(p: WaveModuleProps) {
   const [freqV, setFreqV] = useState(0.5); // 80..120 Hz
   const [delayV, setDelayV] = useState(0); // 0..20 ms on the main
   const [mainInv, setMainInv] = useState(false);
-  // RAYS on at start: timing lab (owner 2026-09-26: "all labs that are about timing should have rays on when started").
-  const [layers, setLayers] = useState<WaveLayers>({ pressure: false, heat: true, rays: true, arrivals: false });
+  // PRESSURE on at start: timing lab — the pulse balls show WHEN each arrival lands (owner 2026-09-26: "turn on pressure balls on all labs that have timing as a focus for the learner").
+  const [layers, setLayers] = useState<WaveLayers>({ pressure: true, heat: true, rays: false, arrivals: false });
   const [listener, setListener] = useState({ x: 8, y: 6 });
 
   const freq = Math.round(80 + freqV * 40);
@@ -854,8 +854,8 @@ export function CardioidSubModule(p: WaveModuleProps) {
   // can never be cardioid, but both subs were fixed — the claim could not
   // be tested. Muting the rear collapses the pattern to omni, live.
   const [soloFront, setSoloFront] = useState(false);
-  // RAYS on at start: timing lab (owner 2026-09-26: "all labs that are about timing should have rays on when started").
-  const [layers, setLayers] = useState<WaveLayers>({ pressure: false, heat: true, rays: true, arrivals: false });
+  // PRESSURE on at start: timing lab — the pulse balls show WHEN each arrival lands (owner 2026-09-26: "turn on pressure balls on all labs that have timing as a focus for the learner").
+  const [layers, setLayers] = useState<WaveLayers>({ pressure: true, heat: true, rays: false, arrivals: false });
   const [listener, setListener] = useState({ x: 7, y: 8.2 }); // the FRONT probe — drag it
 
   const freq = logMap(freqV, 40, 120);
@@ -1070,8 +1070,8 @@ export function BeamSteerModule(p: WaveModuleProps) {
   const [n, setN] = useState(5);
   const [steerV, setSteerV] = useState(0.5); // −60..+60°
   const [freqV, setFreqV] = useState(logPos(80, 40, 120));
-  // RAYS on at start: timing lab (owner 2026-09-26: "all labs that are about timing should have rays on when started").
-  const [layers, setLayers] = useState<WaveLayers>({ pressure: false, heat: true, rays: true, arrivals: false });
+  // PRESSURE on at start: timing lab — the pulse balls show WHEN each arrival lands (owner 2026-09-26: "turn on pressure balls on all labs that have timing as a focus for the learner").
+  const [layers, setLayers] = useState<WaveLayers>({ pressure: true, heat: true, rays: false, arrivals: false });
   const [listener, setListener] = useState({ x: 12, y: 10 });
 
   const steer = Math.round(-60 + steerV * 120);
@@ -1281,7 +1281,8 @@ export function EchoModule(p: WaveModuleProps) {
   // ARRIVALS off at the start: the timeline on the display shows EVERY
   // arrival (the legend lists only the first five — never the far wall) and
   // the legend covered source and listener (walkthrough 2026-09-26).
-  const [layers, setLayers] = useState<WaveLayers>({ pressure: false, heat: false, rays: true, arrivals: false });
+  // PRESSURE on at start: timing lab — the pulse balls show WHEN each arrival lands (owner 2026-09-26: "turn on pressure balls on all labs that have timing as a focus for the learner").
+  const [layers, setLayers] = useState<WaveLayers>({ pressure: true, heat: false, rays: true, arrivals: false });
   const [listener, setListener] = useState({ x: 10, y: 15 });
 
   const preset = ECHO_PRESETS.find((e) => e.key === presetKey) ?? ECHO_PRESETS[0];
@@ -1515,7 +1516,8 @@ const REVERB_CHECK: CheckSpec = {
 export function ReverbModule(p: WaveModuleProps) {
   const viz = useState(() => requireWaveViz())[0];
   const [absV, setAbsV] = useState(0.25);
-  const [layers, setLayers] = useState<WaveLayers>({ pressure: false, heat: false, rays: true, arrivals: true });
+  // PRESSURE on at start: timing lab — the pulse balls show WHEN each arrival lands (owner 2026-09-26: "turn on pressure balls on all labs that have timing as a focus for the learner").
+  const [layers, setLayers] = useState<WaveLayers>({ pressure: true, heat: false, rays: true, arrivals: true });
   const [listener, setListener] = useState({ x: 8, y: 4.5 });
 
   const treated = Math.round(absV * 4); // 0..4 walls swap concrete → fiberglass

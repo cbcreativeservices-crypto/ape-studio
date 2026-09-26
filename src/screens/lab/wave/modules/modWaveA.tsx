@@ -1090,8 +1090,7 @@ export function InterferenceModule(p: WaveModuleProps) {
     listener: { x: 4, y: 4.5 },
     tempC: 20,
   }));
-  // RAYS on at start: timing lab (owner 2026-09-26: "all labs that are about timing should have rays on when started").
-  const [layers, setLayers] = useState<WaveLayers>({ pressure: true, heat: true, rays: true, arrivals: false });
+  const [layers, setLayers] = useState<WaveLayers>({ pressure: true, heat: true, rays: false, arrivals: false });
   const { onDragSource, onDragListener } = useSceneDrag(setScene);
 
   const s1 = scene.sources[0];

@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 13:52 · ccode · d09fd0f1
+changed: Wave Echo: FAR WALL readout is the far-wall return the copy describes (canyon 291 ms; the old ECHO cell reported the side walls' 74 ms), its path highlighted; the arrival timeline is ON the display under the room with the far-wall stem marked; ARRIVALS legend off at start. Timing labs (Interference, Delay Alignment, Cardioid, Beam Steering) open with RAYS on
+affects other side: nothing — client JS only (Wave lab drawing)
+needs: nothing
+
+
 ### 2026-09-26 13:42 · ccode · afe2e694
 changed: Wave Beam Steering: the delay gradient drawn as an amber staircase behind the boxes; the steer angle as a dashed line; Δt/BOX in ms once it passes 1000 µs; bezel reads the listener vs the SAME array unsteered (absolute level kept in the well)
 affects other side: nothing — client JS only (Wave lab drawing)
