@@ -143,6 +143,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-25 22:01 · ccode · 987cf20e
+changed: Sound Systems: FULL SCREEN view for every drawing display
+affects other side: nothing — client layout only (Sound Systems FULL SCREEN view; label redraw to a 9 pt minimum follows in separate commits).
+needs: nothing
+
+
 ### 2026-09-25 21:23 · ccode · d0276ac1
 changed: Flashcards: full-screen definition text can no longer clip its last word
 affects other side: nothing — client layout only; the glossary text itself is complete (checked live: Impairment definition 329 chars in glossary / glossary_study_v / glossary_full_v).
