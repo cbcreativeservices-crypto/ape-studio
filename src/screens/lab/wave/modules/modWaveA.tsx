@@ -664,7 +664,10 @@ export function DiffusionModule(p: WaveModuleProps) {
           { k: 'MIN ƒ', v: fmtHz(fLow), helpKey: 'diffusion_depth' },
           {
             k: `@ ${fmtHz(freq)}`,
-            v: !diffuser ? 'SPECULAR' : scatters ? 'SCATTERED' : 'BELOW ƒ',
+            // ≤ 7 mono characters: 'SPECULAR'/'SCATTERED' truncated on a
+            // 375-wide phone (legibility pass 2026-09-25). The prose and the
+            // guide keep the word "specular"; the glass says what it does.
+            v: !diffuser ? 'MIRROR' : scatters ? 'SCATTER' : 'BELOW ƒ',
             helpKey: 'diffusion',
           },
         ],
@@ -822,10 +825,13 @@ export function RefractionModule(p: WaveModuleProps) {
         onGuide: () => p.help('refraction'),
         initialParam: 'grad',
         bezel: [
-          { k: 'c GROUND', v: `${cGround.toFixed(1)} m/s`, helpKey: 'refraction' },
-          { k: `c ALOFT ${tempAloft.toFixed(0)}°`, v: `${cAloft.toFixed(1)} m/s`, flex: 1.15, helpKey: 'refraction' },
+          // Whole m/s on the bezel ("343.2 m/s" truncated to "343.2 …" on a
+          // 390-wide phone, legibility pass 2026-09-25); the well's readouts
+          // right below keep the 0.1 m/s figure.
+          { k: 'c GROUND', v: `${cGround.toFixed(0)} m/s`, helpKey: 'refraction' },
+          { k: `c ALOFT ${tempAloft.toFixed(0)}°`, v: `${cAloft.toFixed(0)} m/s`, flex: 1.15, helpKey: 'refraction' },
           { k: 'BEND', v: effGrad > 0.1 ? 'DOWN' : effGrad < -0.1 ? 'UP' : 'STRAIGHT', helpKey: 'refraction' },
-          { k: 'RAY @150m', v: rayH <= 0 ? 'GROUND' : `${rayH.toFixed(1)} m UP`, helpKey: 'refraction' },
+          { k: 'RAY 150m', v: rayH <= 0 ? 'GROUND' : `${rayH.toFixed(1)} m UP`, helpKey: 'refraction' },
         ],
         stage: (w, h) =>
           viz ? (

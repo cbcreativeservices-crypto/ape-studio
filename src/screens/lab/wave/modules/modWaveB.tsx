@@ -53,6 +53,10 @@ const logPos = (f: number, lo: number, hi: number) => Math.log(f / lo) / Math.lo
 const fmtHz = (f: number) => (f >= 1000 ? `${Number((f / 1000).toFixed(2))} kHz` : `${Math.round(f)} Hz`);
 
 /** Clamp+round a dragged point into the room, keeping 0.3 m off the walls. */
+/** Bezel room dimension: "12" for 12.0 m, "12.5" otherwise (the strip has
+ *  room for ~7 mono characters per cell on a 375-wide phone). */
+const bezelDim = (m: number) => (Math.abs(m - Math.round(m)) < 0.05 ? `${Math.round(m)}` : m.toFixed(1));
+
 function dragPoint(scene: { w: number; h: number }, x: number, y: number): { x: number; y: number } {
   return { x: roundM(clamp(x, 0.3, scene.w - 0.3)), y: roundM(clamp(y, 0.3, scene.h - 0.3)) };
 }
@@ -74,11 +78,14 @@ function coverageAtFreq(src: WaveSource, freq: number): number {
 /** Hosts the phase clock next to the Skia view — only rendered when viz ≠ null,
  *  so no conditional hooks ever run in the module bodies. */
 function SceneHero({
-  viz, scene, width, focused, freq, layers, visHz = 0.6, selectedId, onSelect, onDragSource, onDragListener,
+  viz, scene, width, maxH = 300, focused, freq, layers, visHz = 0.6, selectedId, onSelect, onDragSource, onDragListener,
 }: {
   viz: WaveVizModule;
   scene: WaveScene;
   width: number;
+  /** Height ceiling. Classic layout keeps the 300 default; a rack stage passes
+   *  its glass height so the room can fill a FULL SCREEN canvas (2026-09-25). */
+  maxH?: number;
   focused: boolean;
   freq: number;
   layers: WaveLayers;
@@ -89,7 +96,7 @@ function SceneHero({
   onDragListener?: (x: number, y: number) => void;
 }) {
   const phase = viz.usePhaseClock(focused, visHz);
-  const height = Math.max(150, Math.min(300, Math.round((width * scene.h) / scene.w)));
+  const height = Math.max(150, Math.min(maxH, Math.round((width * scene.h) / scene.w)));
   return (
     <viz.RoomSceneView
       scene={scene}
@@ -138,6 +145,7 @@ function RackScene({
         viz={viz}
         scene={scene}
         width={Math.max(120, Math.min(w, Math.round((h * scene.w) / scene.h)))}
+        maxH={Math.max(150, h)}
         focused={focused}
         freq={freq}
         layers={layers}
@@ -1192,20 +1200,22 @@ export function EchoModule(p: WaveModuleProps) {
         onHelp: p.help,
         onGuide: () => p.help('echo'),
         initialParam: 'room', // no faders in this module — the lane stays hidden
+        // Four cells, not five (legibility pass 2026-09-25): with five, every
+        // value truncated on a 375-wide phone ("14.6 …", "1ST RE…"). The 1st
+        // reflection's own arrival time (= DIRECT + GAP) stays in the well's
+        // 1ST REFLECTION readout right under the display; the glass keeps the
+        // numbers that decide the lesson — the gap and its verdict, the echo.
         bezel: [
           { k: 'DIRECT', v: direct ? `${(direct.t * 1000).toFixed(1)} ms` : '—', helpKey: 'echo' },
-          { k: '1ST REFL', v: firstRefl ? `${(firstRefl.t * 1000).toFixed(1)} ms` : '—', helpKey: 'echo' },
-          { k: 'GAP', v: `${gapMs.toFixed(1)} ms`, helpKey: 'echo' },
+          { k: 'GAP', v: firstRefl ? `${gapMs.toFixed(1)} ms` : '—', helpKey: 'echo' },
           {
             k: '1ST REFL',
             v: gapMs >= ECHO_FUSE_MS ? 'ECHO' : 'FUSES',
-            flex: 1.1,
             helpKey: 'echo',
           },
           {
             k: 'ECHO',
             v: echo ? `${echoGapMs.toFixed(0)} ms` : 'NONE',
-            flex: 1.1,
             helpKey: 'echo',
           },
         ],
@@ -1591,11 +1601,14 @@ export function RoomBuilderModule(p: WaveModuleProps) {
         onGuide: () => p.help('room_builder'),
         initialParam: 'freq',
         bezel: [
-          { k: 'ROOM', v: `${roomW.toFixed(1)}×${roomH.toFixed(1)}`, helpKey: 'room_builder' },
+          // Whole metres unless the room is a half-size ("12.0×8.0" truncated on
+          // a 375-wide phone, legibility pass 2026-09-25); the ROOM tray's
+          // sliders keep the 0.01 m readouts.
+          { k: 'ROOM', v: `${bezelDim(roomW)}×${bezelDim(roomH)}`, helpKey: 'room_builder' },
           {
             k: `LVL @ ${fmtHz(viewFreq)}`,
             v: lvl == null ? '—' : `${lvl.toFixed(1)} dB`,
-            flex: 1.35,
+            flex: 1.2,
             helpKey: 'room_builder',
           },
           {
@@ -1614,6 +1627,7 @@ export function RoomBuilderModule(p: WaveModuleProps) {
                 viz={viz}
                 scene={scene}
                 width={Math.max(120, Math.min(w, Math.round((h * scene.w) / scene.h)))}
+                maxH={Math.max(150, h)}
                 focused={p.focused}
                 freq={viewFreq}
                 layers={layers}

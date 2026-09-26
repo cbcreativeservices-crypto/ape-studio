@@ -91,6 +91,9 @@ export function WaveLayout({
           badge: rack.badge,
           bezel: rack.bezel,
           onGuide: rack.onGuide,
+          // FULL SCREEN for all 16 modules (legibility pass 2026-09-25): the
+          // rack owns the button and renders the dock + trays inside it.
+          fullScreen: true,
         }}
         params={rack.params}
         initialParam={rack.initialParam}

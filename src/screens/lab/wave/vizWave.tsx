@@ -25,7 +25,7 @@
  *
  * ONLY this file imports Skia (via wave/skiaGate.requireWaveViz()).
  */
-import { useEffect, useMemo, useRef } from 'react';
+import { useContext, useEffect, useMemo, useRef } from 'react';
 import { PanResponder, StyleSheet, Text as RNText, View } from 'react-native';
 import {
   BlurMask,
@@ -54,6 +54,7 @@ import {
 import { fonts } from '../../../theme/tokens';
 import { heatColor, levelColor } from '../../../features/tools/levelColor';
 import { useScrollLock } from '../LabShell';
+import { StageAspectReport, useStageTextScale } from '../rack/stageAspect';
 import {
   MATERIALS,
   alphaAt,
@@ -70,6 +71,10 @@ import {
   type WaveScene,
   type WaveSource,
 } from './waveEngine';
+
+/** Side-view scenes (barrier, gradient) keep the L glass's shape in FULL
+ *  SCREEN so their ground line and sky stay where the learner saw them. */
+const SIDE_SCENE_ASPECT = 1.5;
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 
 // ── Lab palette (same tokens as micspeaker/viz.tsx — visual standards §3) ────
@@ -340,10 +345,10 @@ const ROOM_MARGIN = 30; // canvas margin so wall strips + labels fit
 
 type RoomGeo = { x0: number; y0: number; x1: number; y1: number; pxPerM: number; wPx: number; hPx: number; diag: number };
 
-function roomGeo(scene: WaveScene, width: number, height: number): RoomGeo {
+function roomGeo(scene: WaveScene, width: number, height: number, margin = ROOM_MARGIN): RoomGeo {
   const pxPerM = Math.max(
     1,
-    Math.min((width - ROOM_MARGIN * 2) / scene.w, (height - ROOM_MARGIN * 2) / scene.h),
+    Math.min((width - margin * 2) / scene.w, (height - margin * 2) / scene.h),
   );
   const wPx = scene.w * pxPerM;
   const hPx = scene.h * pxPerM;
@@ -918,7 +923,7 @@ const ARRIVAL_COLORS = [WAVE, ACCENT_BLUE, '#5a6c94'];
 
 /** One arrival readout: time (geometric) + level relative to the direct (the
  *  material/frequency-driven number). */
-type ArrivalLabel = { x: number; y: number; ms: string; db: string; color: string };
+type ArrivalLabel = { ms: string; db: string; color: string };
 
 // ── RoomSceneView — the one view all 16 modules render through ───────────────
 
@@ -928,7 +933,17 @@ export function RoomSceneView(p: RoomSceneProps) {
   const scene = p.scene;
   const freq = p.freq;
   const mode = p.mode ?? 'interference';
-  const geo = useMemo(() => roomGeo(scene, w, h), [scene, w, h]);
+  // Overlay-label scale: 1 on the glass, rendered ÷ glass width in FULL
+  // SCREEN (the Skia trap — see stageAspect.ts). The room margin holds the
+  // wall labels, so it grows with them.
+  const ts = useStageTextScale();
+  const geo = useMemo(() => roomGeo(scene, w, h, ROOM_MARGIN * ts), [scene, w, h, ts]);
+  // FULL SCREEN: report the room's own shape so the zoomed canvas is the room
+  // (plus its label margin), not a tall box with the room floating mid-way.
+  const report = useContext(StageAspectReport);
+  useEffect(() => {
+    report?.aspect(scene.w / scene.h, ROOM_MARGIN);
+  }, [report, scene.w, scene.h]);
   const key = sceneKey(scene);
   const headFrontImg = useImage(ICON_HEAD_FRONT);
   const nx = p.modal?.nx ?? 1;
@@ -1273,12 +1288,12 @@ export function RoomSceneView(p: RoomSceneProps) {
   const arrivalFan = useMemo(() => {
     if (!p.layers.arrivals) return null;
     const list = arrivalsAt(scene, scene.listener.x, scene.listener.y, freq, 2).slice(0, 5);
-    if (list.length === 0) return { ticks: [] as { path: SkPathT; color: string }[], labels: [] as ArrivalLabel[] };
+    if (list.length === 0) return { ticks: [] as { path: SkPathT; color: string }[], rows: [] as ArrivalLabel[] };
     const lx = geo.x0 + scene.listener.x * geo.pxPerM;
     const ly = geo.y0 + scene.listener.y * geo.pxPerM;
     const maxDb = list[0].levelDb; // the direct arrival (earliest = loudest)
     const byColor = new Map<string, SkPathT>();
-    const labels: ArrivalLabel[] = [];
+    const rows: ArrivalLabel[] = [];
     for (let i = 0; i < list.length; i++) {
       const a = list[i];
       const ang = ((-135 + (i * 90) / Math.max(1, list.length - 1)) * Math.PI) / 180;
@@ -1296,19 +1311,16 @@ export function RoomSceneView(p: RoomSceneProps) {
       if (!path) { path = Skia.Path.Make(); byColor.set(color, path); }
       path.moveTo(lx + Math.cos(ang) * r0, ly - 4 + Math.sin(ang) * r0);
       path.lineTo(lx + Math.cos(ang) * r1, ly - 4 + Math.sin(ang) * r1);
-      const lr = r1 + (i % 2 === 0 ? 12 : 24); // stagger so close arrivals don't collide
       // Sign is decided on the ROUNDED magnitude so a reflection 0.05–0.5 dB
       // under the direct reads '0 dB', never '−0 dB' (B-105).
       const relRounded = Math.round(Math.abs(relDb));
-      labels.push({
-        x: lx + Math.cos(ang) * lr,
-        y: ly - 4 + Math.sin(ang) * lr,
+      rows.push({
         ms: `${(a.t * 1000).toFixed(1)} ms`,
         db: i === 0 ? 'direct' : `${relRounded > 0 && relDb < 0 ? '−' : ''}${relRounded} dB`,
         color,
       });
     }
-    return { ticks: Array.from(byColor, ([color, path]) => ({ path, color })), labels };
+    return { ticks: Array.from(byColor, ([color, path]) => ({ path, color })), rows };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, freq, geo, p.layers.arrivals]);
 
@@ -1541,32 +1553,78 @@ export function RoomSceneView(p: RoomSceneProps) {
           <Circle cx={selPos.x} cy={selPos.y} r={16} color={WAVE} style="stroke" strokeWidth={1.6} opacity={0.85} />
         ) : null}
       </Canvas>
-      {/* Labels (outside the canvas — mono, house label idiom). */}
+      {/* Labels (outside the canvas — mono, house label idiom). Every size and
+          offset here is × ts (the Skia trap, 2026-09-25): the canvas grows in
+          FULL SCREEN, RN text does not, so the labels scale themselves. */}
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-        <RNText style={[styles.wallLabel, { left: midX - 50, top: geo.y0 - WALL_T - 14, width: 100, textAlign: 'center' }]}>
+        <RNText style={[styles.wallLabel, { fontSize: 9 * ts, left: midX - 50 * ts, top: geo.y0 - WALL_T - 15 * ts, width: 100 * ts, textAlign: 'center' }]}>
           {matLabel(0)}
         </RNText>
-        <RNText style={[styles.wallLabel, { left: midX - 50, top: geo.y1 + WALL_T + 2, width: 100, textAlign: 'center' }]}>
+        <RNText style={[styles.wallLabel, { fontSize: 9 * ts, left: midX - 50 * ts, top: geo.y1 + WALL_T + 2 * ts, width: 100 * ts, textAlign: 'center' }]}>
           {matLabel(2)}
         </RNText>
         <RNText
-          style={[styles.wallLabel, { left: geo.x1 + WALL_T - 43, top: midY - 7, width: 100, textAlign: 'center', transform: [{ rotate: '90deg' }] }]}
+          style={[styles.wallLabel, { fontSize: 9 * ts, left: geo.x1 + WALL_T + 8 * ts - 50 * ts, top: midY - 6 * ts, width: 100 * ts, textAlign: 'center', transform: [{ rotate: '90deg' }] }]}
         >
           {matLabel(1)}
         </RNText>
         <RNText
-          style={[styles.wallLabel, { left: geo.x0 - WALL_T - 57, top: midY - 7, width: 100, textAlign: 'center', transform: [{ rotate: '-90deg' }] }]}
+          style={[styles.wallLabel, { fontSize: 9 * ts, left: geo.x0 - WALL_T - 8 * ts - 50 * ts, top: midY - 6 * ts, width: 100 * ts, textAlign: 'center', transform: [{ rotate: '-90deg' }] }]}
         >
           {matLabel(3)}
         </RNText>
-        {arrivalFan
-          ? arrivalFan.labels.map((l, i) => (
-              <View key={i} pointerEvents="none" style={{ position: 'absolute', left: l.x - 24, top: l.y - 10, width: 48, alignItems: 'center' }}>
-                <RNText style={[styles.msLabel, { color: l.color }]}>{l.ms}</RNText>
-                <RNText style={[styles.dbLabel, { color: l.color }]}>{l.db}</RNText>
-              </View>
-            ))
-          : null}
+        {/* ARRIVALS legend — one row per tick, in TIME order (= the fan's
+            left-to-right order), each in its tick's colour. It used to sit as
+            five 8-pt labels fanned around the head, where they collided with
+            each other (legibility pass 2026-09-25); a stack beside the head
+            keeps every number readable at 9 pt and never overlaps itself. */}
+        {arrivalFan && arrivalFan.rows.length > 0 ? (() => {
+          const rowH = 12 * ts;
+          const padX = 5 * ts;
+          const padY = 3 * ts;
+          const stackW = 96 * ts;
+          const stackH = arrivalFan.rows.length * rowH + padY * 2;
+          const lx = geo.x0 + scene.listener.x * geo.pxPerM;
+          const ly = geo.y0 + scene.listener.y * geo.pxPerM;
+          // Beside the head, clear of the tick fan, on the side AWAY from the
+          // sources when both sides fit (so it never sits on the speaker or the
+          // direct ray); below the head when neither side has the room.
+          const gap = 34 * ts;
+          const srcX = scene.sources.reduce((acc, s) => acc + s.x, 0) / Math.max(1, scene.sources.length);
+          const preferRight = geo.x0 + srcX * geo.pxPerM <= lx;
+          const midTop = Math.max(2, Math.min(h - stackH - 2, ly - stackH / 2));
+          const side = (l: number) => ({ left: l, top: midTop });
+          const candidates = [
+            preferRight ? side(lx + gap) : side(lx - gap - stackW),
+            preferRight ? side(lx - gap - stackW) : side(lx + gap),
+            { left: lx - stackW / 2, top: ly + 22 * ts }, // below the head
+            { left: lx - stackW / 2, top: ly - 50 * ts - stackH }, // above the fan
+          ];
+          const inCanvas = (c: { left: number; top: number }) =>
+            c.left >= 2 && c.left + stackW <= w - 2 && c.top >= 2 && c.top + stackH <= h - 2;
+          const coversSource = (c: { left: number; top: number }) =>
+            scene.sources.some((s) => {
+              const sx = geo.x0 + s.x * geo.pxPerM;
+              const sy = geo.y0 + s.y * geo.pxPerM;
+              const m = 12 * ts;
+              return sx > c.left - m && sx < c.left + stackW + m && sy > c.top - m && sy < c.top + stackH + m;
+            });
+          const pick =
+            candidates.find((c) => inCanvas(c) && !coversSource(c)) ??
+            candidates.find(inCanvas) ??
+            { left: Math.max(2, Math.min(w - stackW - 2, lx - stackW / 2)), top: midTop };
+          const { left, top } = pick;
+          return (
+            <View pointerEvents="none" style={[styles.arrivalStack, { left, top, width: stackW, paddingHorizontal: padX, paddingVertical: padY, borderRadius: 4 * ts }]}>
+              {arrivalFan.rows.map((l, i) => (
+                <View key={i} style={{ height: rowH, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <RNText style={[styles.msLabel, { fontSize: 9 * ts, color: l.color }]}>{l.ms}</RNText>
+                  <RNText style={[styles.dbLabel, { fontSize: 9 * ts, color: l.color }]}>{l.db}</RNText>
+                </View>
+              ))}
+            </View>
+          );
+        })() : null}
       </View>
     </View>
   );
@@ -1691,6 +1749,11 @@ export function BarrierSceneView(p: {
 }) {
   const w = p.width;
   const h = p.height ?? 200;
+  const ts = useStageTextScale();
+  const report = useContext(StageAspectReport);
+  useEffect(() => {
+    report?.aspect(SIDE_SCENE_ASPECT, 0);
+  }, [report]);
   const groundY = h - 18;
   const ppm = w / BARRIER_SCENE_M;
   const c = speedOfSound(BARRIER_TEMP_C);
@@ -1830,7 +1893,7 @@ export function BarrierSceneView(p: {
         <LineBust path={bust} stroke={LINE} sw={1.2} />
       </Canvas>
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-        <RNText style={[styles.sceneLabel, { left: bx + (w - bx) / 2 - 44, top: groundY - 30, width: 88, textAlign: 'center' }]}>
+        <RNText style={[styles.sceneLabel, { fontSize: 9 * ts, left: bx + (w - bx) / 2 - 50 * ts, top: groundY - 30 * ts, width: 100 * ts, textAlign: 'center' }]}>
           SHADOW ZONE
         </RNText>
       </View>
@@ -1911,6 +1974,11 @@ export function GradientSceneView(p: {
 }) {
   const w = p.width;
   const h = p.height ?? 200;
+  const ts = useStageTextScale();
+  const report = useContext(StageAspectReport);
+  useEffect(() => {
+    report?.aspect(SIDE_SCENE_ASPECT, 0);
+  }, [report]);
   const groundY = h - 16;
   const ppm = w / GRAD_SCENE_M;
   const wind = p.wind01 ?? 0;
@@ -2028,10 +2096,11 @@ export function GradientSceneView(p: {
         <LineBust path={bust} stroke={LINE} sw={1.2} />
       </Canvas>
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-        {topLabel ? <RNText style={[styles.sceneLabel, { left: 12, top: 10 }]}>{topLabel}</RNText> : null}
-        <RNText style={[styles.sceneLabel, { left: 12, top: groundY - 16 }]}>{botLabel}</RNText>
+        {topLabel ? <RNText style={[styles.sceneLabel, { fontSize: 9 * ts, left: 12 * ts, top: 10 * ts }]}>{topLabel}</RNText> : null}
+        {/* Right of the source pole (x0px) — it used to sit on the speaker. */}
+        <RNText style={[styles.sceneLabel, { fontSize: 9 * ts, left: x0px + 14 * ts, top: groundY - 16 * ts }]}>{botLabel}</RNText>
         {Math.abs(wind) >= 0.04 ? (
-          <RNText style={[styles.sceneLabel, { left: w * 0.5 - 20, top: 30, width: 40, textAlign: 'center' }]}>WIND</RNText>
+          <RNText style={[styles.sceneLabel, { fontSize: 9 * ts, left: w * 0.5 - 24 * ts, top: 30 * ts, width: 48 * ts, textAlign: 'center' }]}>WIND</RNText>
         ) : null}
       </View>
     </View>
@@ -2039,29 +2108,34 @@ export function GradientSceneView(p: {
 }
 
 const styles = StyleSheet.create({
+  // Lab display law (owner 2026-09-25): nothing under 9 pt on the glass. Each
+  // use site multiplies fontSize by useStageTextScale() for FULL SCREEN.
   wallLabel: {
     position: 'absolute',
     fontFamily: fonts.mono,
-    fontSize: 8,
+    fontSize: 9,
     letterSpacing: 0.6,
     color: '#8f95a6',
   },
+  arrivalStack: {
+    position: 'absolute',
+    backgroundColor: 'rgba(8,9,13,0.78)',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#2a2d38',
+  },
   msLabel: {
-    textAlign: 'center',
     fontFamily: fonts.mono,
-    fontSize: 8,
+    fontSize: 9,
   },
   dbLabel: {
-    textAlign: 'center',
     fontFamily: fonts.mono,
     fontSize: 9,
     fontWeight: '700',
-    marginTop: 0.5,
   },
   sceneLabel: {
     position: 'absolute',
     fontFamily: fonts.mono,
-    fontSize: 8,
+    fontSize: 9,
     letterSpacing: 0.8,
     color: '#8f95a6',
   },
