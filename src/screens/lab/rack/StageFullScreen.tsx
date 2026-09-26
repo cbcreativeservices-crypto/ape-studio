@@ -31,8 +31,8 @@
  * rendered width ÷ `glassW` (the width the stage had on the glass), and the
  * overlay-label helpers multiply their font size by it. See stageAspect.ts.
  */
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Animated, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Modal } from '../../../components/DimModal';
 import { colors, fonts } from '../../../theme/tokens';
@@ -77,6 +77,19 @@ export function StageFullScreen({
   useEffect(() => {
     if (visible) setZoom(1);
   }, [visible]);
+  // The hint line rolls DOWN out of the way on a tap and back up from a
+  // small ? chip (owner 2026-09-26: "make the 'pick a zoom step…' message
+  // collapsable — animate it like a roll up/down message"). Height and
+  // slide are driven together so it reads as a shutter, not a fade.
+  const [hintOpen, setHintOpen] = useState(true);
+  const hintAnim = useRef(new Animated.Value(1)).current;
+  const toggleHint = () => {
+    const next = !hintOpen;
+    setHintOpen(next);
+    Animated.timing(hintAnim, { toValue: next ? 1 : 0, duration: 220, useNativeDriver: false }).start();
+  };
+  const hintMaxH = hintAnim.interpolate({ inputRange: [0, 1], outputRange: [0, 48] });
+  const hintShift = hintAnim.interpolate({ inputRange: [0, 1], outputRange: [16, 0] });
 
   // A StageFit drawing reports its aspect: then the canvas at every zoom is
   // the drawing's own shape. A drawing that paints the whole box itself
@@ -174,9 +187,21 @@ export function StageFullScreen({
         </View>
 
         {landscape ? null : (
-          <Text style={styles.hint}>
-            {zoom > 1 ? 'Drag to move around the drawing.' : 'Pick a zoom step to look closer. Turn the phone sideways for a wider view.'}
-          </Text>
+          <View style={styles.hintWrap}>
+            <Animated.View style={[styles.hintRoll, { maxHeight: hintMaxH, opacity: hintAnim, transform: [{ translateY: hintShift }] }]}>
+              <Pressable onPress={toggleHint} accessibilityRole="button" accessibilityLabel="Hide this hint" hitSlop={6}>
+                <Text style={styles.hint}>
+                  {zoom > 1 ? 'Drag to move around the drawing.' : 'Pick a zoom step to look closer. Turn the phone sideways for a wider view.'}
+                  <Text style={styles.hintChevron}>  ▾</Text>
+                </Text>
+              </Pressable>
+            </Animated.View>
+            {hintOpen ? null : (
+              <Pressable onPress={toggleHint} style={styles.hintChip} accessibilityRole="button" accessibilityLabel="Show the zoom hint" hitSlop={8}>
+                <Text style={styles.hintChipText}>?</Text>
+              </Pressable>
+            )}
+          </View>
         )}
         {badge ? (
           <Text style={styles.badge} numberOfLines={landscape ? 1 : 2}>
@@ -221,6 +246,11 @@ const styles = StyleSheet.create({
   body: { flex: 1, borderTopWidth: 1, borderBottomWidth: 1, borderColor: '#2c2c33', backgroundColor: '#0b0c0e' },
   center: { flexGrow: 1, alignItems: 'center', justifyContent: 'center' },
   vCenter: { flexGrow: 1, justifyContent: 'center' },
+  hintWrap: { alignItems: 'center', minHeight: 8 },
+  hintRoll: { overflow: 'hidden', alignSelf: 'stretch' },
   hint: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textSub, textAlign: 'center', paddingTop: 8, paddingHorizontal: 12 },
+  hintChevron: { color: colors.textSubAlt, fontSize: 12 },
+  hintChip: { marginTop: 4, width: 26, height: 22, borderRadius: 11, borderWidth: 1, borderColor: '#2c2c33', backgroundColor: '#101114', alignItems: 'center', justifyContent: 'center' },
+  hintChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.textSubAlt },
   badge: { fontFamily: fonts.oswaldMedium, fontSize: 11.5, letterSpacing: 0.8, color: colors.textSubAlt, textAlign: 'center', paddingTop: 4, paddingHorizontal: 12 },
 });
