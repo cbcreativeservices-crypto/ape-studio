@@ -181,6 +181,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 12:25 · ccode · 70ffad7b
+changed: Wave Diffraction: true-scale scene (module geometry, one px/m both ways, real barrier height, 0.6 m PA on a stand, 1.75 m standing listener); direct rings clipped to the lit region so the wrap is the only sound in the shadow; brighter diffracted train; listener level halo from the bezel's Maekawa loss; SHADOW ZONE readable
+affects other side: nothing — client JS only (Wave lab drawing)
+needs: nothing
+
+
 ### 2026-09-26 12:15 · ccode · 1b54b067
 changed: Wave Refraction: one honest model — the drawing uses the readouts' real dc/dz over a 400 m scene with heights drawn x20 (tagged HEIGHT x20); listener at 150 m; H @150 m readout; COOL AIR label clear of the speaker
 affects other side: nothing — client JS only (Wave lab drawing)
