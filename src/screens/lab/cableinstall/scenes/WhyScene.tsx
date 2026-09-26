@@ -10,29 +10,14 @@
  * Accessibility: every choice is a labeled button (no color-only state, no
  * drag); verdicts are announced; targets ≥44dp.
  */
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
-import Svg, { Line, Path, Rect } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { CiSection, RuleFeedback, announceComplete } from '../bits';
-import {
-  AG,
-  ALine,
-  APath,
-  Appear,
-  CI_EASE,
-  CI_MOTION,
-  Stagger,
-  cancelAnimation,
-  useAnimatedProps,
-  useCiMotion,
-  useDrawIn,
-  useSharedValue,
-  withDelay,
-  withRepeat,
-  withTiming,
-} from '../motion';
+import { Appear, Stagger } from '../motion';
 import type { CiModuleProps } from '../registry';
+import { ExampleArt, WHY_ASPECT, type ExampleId } from './whyArt';
 
 const CONSEQUENCES: { id: string; title: string; body: string }[] = [
   { id: 'safety', title: 'SAFETY', body: 'Trip hazards, damaged power cables, falling cable, obstructed access — cable placed wrong hurts people first.' },
@@ -42,8 +27,6 @@ const CONSEQUENCES: { id: string; title: string; body: string }[] = [
   { id: 'mech', title: 'MECHANICAL PROTECTION', body: 'Abrasion, pinch points, crush and unsupported weight damage cable invisibly, from the inside out.' },
   { id: 'work', title: 'PROFESSIONAL WORKMANSHIP', body: 'An installation should be organized, understandable and maintainable — by someone who has never seen it before.' },
 ];
-
-type ExampleId = 'a' | 'b' | 'c' | 'd';
 
 const EXAMPLES: { id: ExampleId; name: string; caption: string; verdictRule: string; verdict: 'good' | 'bad'; short: string }[] = [
   {
@@ -79,224 +62,6 @@ const EXAMPLES: { id: ExampleId; name: string; caption: string; verdictRule: str
     short: 'Neat — and it blocks cooling and service access. Tidy in the wrong place is still wrong.',
   },
 ];
-
-/**
- * Close-up per example — the MOTION tells the story (owner 2026-08-24):
- *   A the cable draws in flawlessly straight… then each tie bites and the
- *     jacket deformation swells under it (the flaw arrives after the beauty)
- *   B draws in with honest curves, supports land, then the labels flip up —
- *     calm, in the order a professional actually works
- *   C dumps in fast and out of order — no plan, no sequence
- *   D the loom sweeps across, then the vent behind it flushes hot and keeps
- *     breathing — the blocked airflow is visible, not stated
- * All primitive-prop animation (see motion.tsx's hard-won rule).
- */
-function ExampleArt({ id, w, run }: { id: ExampleId; w: number; run: boolean }) {
-  const h = 74;
-  const vb = 160;
-  const common = { width: w, height: h, viewBox: `0 0 ${vb} 74` } as const;
-  const m = useCiMotion();
-
-  if (id === 'a') {
-    return (
-      <Svg {...common}>
-        <Rect x={0} y={0} width={vb} height={74} rx={8} fill="#101014" />
-        {[18, 30, 42, 54].map((y, i) => (
-          <DrawLine key={y} d={`M8 ${y} H152`} len={148} color="#4fd0e0" width={5} run={run} delay={i * 70} />
-        ))}
-        {/* ties bite AFTER the loom lands — beauty first, damage second */}
-        {[40, 80, 120].map((x, i) => (
-          <TieBite key={x} x={x} run={run} delay={CI_MOTION.draw * 0.55 + i * 110} />
-        ))}
-      </Svg>
-    );
-  }
-
-  if (id === 'b') {
-    return (
-      <Svg {...common}>
-        <Rect x={0} y={0} width={vb} height={74} rx={8} fill="#101014" />
-        {/* supports go in FIRST — the professional order */}
-        {[36, 72].map((x, i) => (
-          <FadeIn key={x} run={run} delay={i * 90}>
-            <Path d={`M${x} 8 v6 a7 7 0 0 0 14 0`} stroke="#6f7378" strokeWidth={1.8} fill="none" />
-          </FadeIn>
-        ))}
-        <DrawLine d="M10 16 H96 C118 16 118 30 118 38 v20" len={150} color="#4fd0e0" width={4.5} run={run} delay={180} />
-        <DrawLine d="M10 28 H88 C110 28 112 40 112 46 v12" len={142} color="#37d97b" width={4.5} run={run} delay={260} />
-        {/* labels land last, once the run is dressed */}
-        {[
-          { x: 120, y: 40 },
-          { x: 114, y: 52 },
-        ].map((l, i) => (
-          <FadeIn key={l.y} run={run} delay={CI_MOTION.draw * 0.7 + i * 90}>
-            <Rect x={l.x} y={l.y} width={14} height={7} rx={1.5} fill="#26262c" stroke="#6f7378" strokeWidth={0.8} />
-          </FadeIn>
-        ))}
-      </Svg>
-    );
-  }
-
-  if (id === 'c') {
-    return (
-      <Svg {...common}>
-        <Rect x={0} y={0} width={vb} height={74} rx={8} fill="#101014" />
-        <Line x1={10} y1={68} x2={150} y2={68} stroke="#2c2c33" strokeWidth={2} />
-        {/* dumped, not routed: both runs arrive at once, fast and unordered */}
-        <DrawLine
-          d="M14 60 C30 30 44 66 58 44 C70 26 84 66 98 48 C110 34 124 62 146 40"
-          len={190}
-          color="#4fd0e0"
-          width={4}
-          run={run}
-          delay={0}
-          duration={m.d(430)}
-        />
-        <DrawLine
-          d="M20 64 C40 44 52 70 70 54 C88 40 100 68 120 52 C132 44 140 58 150 52"
-          len={186}
-          color="#37d97b"
-          width={4}
-          run={run}
-          delay={40}
-          duration={m.d(400)}
-        />
-      </Svg>
-    );
-  }
-
-  return (
-    <Svg {...common}>
-      <Rect x={0} y={0} width={vb} height={74} rx={8} fill="#101014" />
-      <Rect x={96} y={10} width={54} height={54} rx={4} fill="#17171c" stroke="#3a3c42" strokeWidth={1.4} />
-      {/* vent slats keep breathing hot once the loom covers them */}
-      {[18, 24, 30, 36].map((y, i) => (
-        <VentSlat key={y} y={y} run={run} index={i} />
-      ))}
-      <Rect x={104} y={44} width={38} height={14} rx={2} fill="#101014" stroke="#3a3c42" strokeWidth={1} />
-      <DrawLine d="M8 26 H150" len={142} color="#ffd35e" width={5} run={run} delay={120} />
-      <DrawLine d="M8 50 H150" len={142} color="#ffd35e" width={5} run={run} delay={200} />
-    </Svg>
-  );
-}
-
-/** A cable that installs itself along its path. */
-function DrawLine({
-  d,
-  len,
-  color,
-  width,
-  run,
-  delay = 0,
-  duration,
-}: {
-  d: string;
-  len: number;
-  color: string;
-  width: number;
-  run: boolean;
-  delay?: number;
-  duration?: number;
-}) {
-  const { animatedProps, dashArray, restOffset } = useDrawIn(len, { run, delay, duration });
-  return (
-    <APath
-      d={d}
-      stroke={color}
-      strokeWidth={width}
-      fill="none"
-      strokeLinecap="round"
-      strokeDasharray={dashArray}
-      strokeDashoffset={restOffset}
-      animatedProps={animatedProps}
-    />
-  );
-}
-
-/** The tie bites: the strap snaps down and the jacket swells around it. */
-function TieBite({ x, run, delay }: { x: number; run: boolean; delay: number }) {
-  const m = useCiMotion();
-  const t = useSharedValue(0);
-  useEffect(() => {
-    cancelAnimation(t);
-    if (!run) {
-      t.value = 0;
-      return;
-    }
-    t.value = withDelay(m.d(delay), withTiming(1, { duration: m.d(CI_MOTION.settle), easing: CI_EASE.physical }));
-    return () => cancelAnimation(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [run, delay, m.reduce]);
-
-  const strap = useAnimatedProps(() => ({ opacity: t.value, strokeWidth: 3 * (0.6 + 0.4 * t.value) }));
-  // deformation swells as the strap tightens
-  const bulge = useAnimatedProps(() => ({ opacity: t.value, strokeWidth: 1.4 * t.value }));
-  return (
-    <>
-      <ALine x1={x} y1={10} x2={x} y2={64} stroke="#e8e8ea" strokeWidth={3} opacity={0} animatedProps={strap} />
-      <APath
-        d={`M${x - 7} 36 q7 -7 14 0 q-7 7 -14 0`}
-        fill="none"
-        stroke="#ff9b8f"
-        strokeWidth={1.4}
-        opacity={0}
-        animatedProps={bulge}
-      />
-    </>
-  );
-}
-
-/** A vent slat that flushes hot and keeps breathing while it's blocked. */
-function VentSlat({ y, run, index }: { y: number; run: boolean; index: number }) {
-  const m = useCiMotion();
-  const t = useSharedValue(0);
-  useEffect(() => {
-    cancelAnimation(t);
-    if (!run || !m.loops) {
-      t.value = 0;
-      return;
-    }
-    t.value = withDelay(
-      CI_MOTION.draw * 0.8 + index * 120,
-      withRepeat(withTiming(1, { duration: 1600, easing: CI_EASE.inOut }), -1, true),
-    );
-    return () => cancelAnimation(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [run, index, m.loops]);
-  const p = useAnimatedProps(() => ({ opacity: 0.35 + 0.65 * t.value }));
-  return (
-    <>
-      <Line x1={104} y1={y} x2={142} y2={y} stroke="#3a3c42" strokeWidth={2} />
-      <ALine x1={104} y1={y} x2={142} y2={y} stroke="#ff7a5e" strokeWidth={2} opacity={0} animatedProps={p} />
-    </>
-  );
-}
-
-/** Simple opacity entrance for static furniture inside an SVG. */
-function FadeIn({ children, run, delay = 0 }: { children: ReactNode; run: boolean; delay?: number }) {
-  const m = useCiMotion();
-  const t = useSharedValue(run && !m.reduce ? 0 : 1);
-  useEffect(() => {
-    cancelAnimation(t);
-    if (!run) {
-      t.value = 0;
-      return;
-    }
-    if (m.reduce) {
-      t.value = 1;
-      return;
-    }
-    t.value = withDelay(delay, withTiming(1, { duration: CI_MOTION.base, easing: CI_EASE.out }));
-    return () => cancelAnimation(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [run, delay, m.reduce]);
-  const p = useAnimatedProps(() => ({ opacity: t.value }));
-  return (
-    <AG opacity={run && !m.reduce ? 0 : 1} animatedProps={p}>
-      {children}
-    </AG>
-  );
-}
 
 export function WhyScene({ width, completed, onComplete, openSources }: CiModuleProps) {
   const [seen, setSeen] = useState<Set<string>>(() => new Set(completed ? CONSEQUENCES.map((c) => c.id) : []));
@@ -376,6 +141,9 @@ export function WhyScene({ width, completed, onComplete, openSources }: CiModule
             const locked = revealed && (pick === 'b' || ex.id !== 'b');
             return (
               <View key={ex.id} style={[styles.example, picked && styles.examplePicked]}>
+                {/* Tap the name, the drawing or the caption to approve. The
+                    FULL SCREEN button sits OUTSIDE the choosing press targets —
+                    nested inside one, its click also approved the example. */}
                 <Pressable
                   onPress={() => choose(ex.id)}
                   disabled={locked}
@@ -384,10 +152,38 @@ export function WhyScene({ width, completed, onComplete, openSources }: CiModule
                   aria-pressed={picked}
                   aria-disabled={locked}
                   accessibilityLabel={`${ex.name}. ${ex.caption}${revealed ? (ex.verdict === 'good' ? '. This is the correct approval.' : '. Not approvable.') : ''}`}
-                  style={{ gap: 8 }}
                 >
                   <Text style={styles.exampleName}>{ex.name}</Text>
-                  <ExampleArt id={ex.id} w={artW} run={artRun} />
+                </Pressable>
+                <ExpandableFigure
+                  width={artW}
+                  aspect={WHY_ASPECT}
+                  title={`CLOSE-UP ${ex.id.toUpperCase()}`}
+                  render={(fw, fh) =>
+                    fw === artW ? (
+                      <Pressable onPress={() => choose(ex.id)} disabled={locked} accessible={false}>
+                        <ExampleArt id={ex.id} w={fw} h={fh} run={artRun} revealed={revealed} />
+                      </Pressable>
+                    ) : (
+                      <ExampleArt id={ex.id} w={fw} h={fh} run={artRun} revealed={revealed} />
+                    )
+                  }
+                  controls={
+                    <Pressable
+                      onPress={() => choose(ex.id)}
+                      disabled={locked}
+                      style={[styles.fsApprove, locked && { opacity: 0.45 }]}
+                      accessibilityRole="button"
+                      accessibilityState={{ disabled: locked }}
+                      accessibilityLabel={`Approve ${ex.name}`}
+                    >
+                      <Text style={styles.fsApproveText}>
+                        {picked ? (ex.verdict === 'good' ? '✓ APPROVED' : '✕ NOT APPROVABLE') : `APPROVE ${ex.id.toUpperCase()}`}
+                      </Text>
+                    </Pressable>
+                  }
+                />
+                <Pressable onPress={() => choose(ex.id)} disabled={locked} accessible={false}>
                   <Text style={styles.exampleCaption}>{ex.caption}</Text>
                 </Pressable>
                 {revealed ? (
@@ -456,6 +252,8 @@ const styles = StyleSheet.create({
   lessonHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.6, color: colors.amber },
   lessonBody: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 19, color: colors.textSecondary },
   pendingNote: { fontFamily: fonts.barlowMedium, fontSize: 12.5, color: colors.amberLabel },
+  fsApprove: { alignItems: 'center', justifyContent: 'center', minHeight: 44, borderRadius: 10, borderWidth: 1, borderColor: 'rgba(255,198,77,.6)', backgroundColor: '#1a1710', paddingHorizontal: 16 },
+  fsApproveText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.2, color: colors.amber },
   finishBtn: { alignItems: 'center', borderRadius: 10, backgroundColor: colors.green, paddingVertical: 13 },
   finishText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13.5, letterSpacing: 1.2, color: '#0a1a0f' },
 });
