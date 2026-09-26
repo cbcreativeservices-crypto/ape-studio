@@ -410,6 +410,10 @@ export type RoomSceneProps = {
   /** Extra measurement points a module READS (e.g. Cardioid's rear probe) —
    *  drawn so a printed number never refers to an invisible spot. */
   probes?: { x: number; y: number; label: string }[];
+  /** The −6 dB coverage edges of a speaker (Coverage): two dashed lines from
+   *  the source at aim ± half, across the room — the printed EFF angle,
+   *  drawn (2026-09-26). Angles in the source aim convention (0 = +y). */
+  coverageEdges?: { x: number; y: number; aimDeg: number; halfDeg: number } | null;
   /** Wall strip depth on the glass, px (default 9). The Absorption lab draws
    *  its walls deeper so each material reads in section (owner 2026-09-26). */
   wallT?: number;
@@ -1783,6 +1787,19 @@ export function RoomSceneView(p: RoomSceneProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, freq, geo, p.layers.pressure, mode]);
 
+  // Coverage edges: aim ± half from the source to the room boundary.
+  const ce = p.coverageEdges;
+  const coverageEdgePaths = useMemo(() => {
+    if (!ce || ce.halfDeg >= 179) return null;
+    const path = Skia.Path.Make();
+    for (const sgn of [-1, 1]) {
+      const a = ((ce.aimDeg + sgn * ce.halfDeg) * Math.PI) / 180;
+      const hit = marchWall(ce.x, ce.y, Math.sin(a), Math.cos(a), scene.w, scene.h);
+      path.moveTo(geo.x0 + ce.x * geo.pxPerM, geo.y0 + ce.y * geo.pxPerM);
+      path.lineTo(geo.x0 + hit.x * geo.pxPerM, geo.y0 + hit.y * geo.pxPerM);
+    }
+    return path;
+  }, [ce?.x, ce?.y, ce?.aimDeg, ce?.halfDeg, scene.w, scene.h, geo]); // eslint-disable-line react-hooks/exhaustive-deps
   // Listener head icon box at real size (≈0.2 m head), floored for findability.
   const headPx = Math.max(FLOOR_HEAD_PX * ts, REAL_HEAD_ICON_M * geo.pxPerM);
   // Pulsing point-source dots: ONE derived path for every point source.
@@ -2047,6 +2064,12 @@ export function RoomSceneView(p: RoomSceneProps) {
             <ListenerGlyph x={geo.x0 + scene.listener.x * geo.pxPerM} y={geo.y0 + scene.listener.y * geo.pxPerM} />
           </Group>
         )}
+        {/* Coverage −6 dB edges (the bezel's EFF angle, drawn). */}
+        {coverageEdgePaths ? (
+          <Path path={coverageEdgePaths} color={WAVE} style="stroke" strokeWidth={1.6 * ts} opacity={0.9}>
+            <DashPathEffect intervals={[7 * ts, 5 * ts]} />
+          </Path>
+        ) : null}
         {/* Probe points the module reads (Cardioid REAR): a small mic cross. */}
         {(p.probes ?? []).map((pr, i) => {
           const px = geo.x0 + pr.x * geo.pxPerM;

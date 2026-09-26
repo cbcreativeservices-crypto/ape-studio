@@ -78,7 +78,7 @@ function coverageAtFreq(src: WaveSource, freq: number): number {
 /** Hosts the phase clock next to the Skia view — only rendered when viz ≠ null,
  *  so no conditional hooks ever run in the module bodies. */
 function SceneHero({
-  viz, scene, width, maxH = 300, fixedH, focused, freq, layers, visHz = 0.6, selectedId, onSelect, onDragSource, onDragListener, wallT, sectionView, probes,
+  viz, scene, width, maxH = 300, fixedH, focused, freq, layers, visHz = 0.6, selectedId, onSelect, onDragSource, onDragListener, wallT, sectionView, probes, coverageEdges,
 }: {
   viz: WaveVizModule;
   scene: WaveScene;
@@ -104,6 +104,8 @@ function SceneHero({
   fixedH?: number;
   /** Measurement points the module reads, drawn on the scene. */
   probes?: { x: number; y: number; label: string }[];
+  /** A speaker's −6 dB coverage edges (Coverage). */
+  coverageEdges?: { x: number; y: number; aimDeg: number; halfDeg: number } | null;
 }) {
   const phase = viz.usePhaseClock(focused, visHz);
   const height = fixedH ?? Math.max(150, Math.min(maxH, Math.round((width * scene.h) / scene.w)));
@@ -122,6 +124,7 @@ function SceneHero({
       wallT={wallT}
       sectionView={sectionView}
       probes={probes}
+      coverageEdges={coverageEdges}
     />
   );
 }
@@ -137,7 +140,7 @@ const layersValue = (layers: WaveLayers) =>
 /** Rack stage — fit the room into the glass: SceneHero derives height from
  *  width × aspect, so hand it the width that lands on h (Room Builder idiom). */
 function RackScene({
-  viz, scene, w, h, focused, freq, layers, selectedId, onSelect, onDragSource, onDragListener, sectionView, probes, wallT,
+  viz, scene, w, h, focused, freq, layers, selectedId, onSelect, onDragSource, onDragListener, sectionView, probes, wallT, coverageEdges,
 }: {
   viz: WaveVizModule | null;
   scene: WaveScene;
@@ -153,6 +156,7 @@ function RackScene({
   sectionView?: boolean;
   probes?: { x: number; y: number; label: string }[];
   wallT?: number;
+  coverageEdges?: { x: number; y: number; aimDeg: number; halfDeg: number } | null;
 }) {
   if (!viz) return <VizUnavailableCard />;
   return (
@@ -176,6 +180,7 @@ function RackScene({
         sectionView={sectionView}
         probes={probes}
         wallT={wallT}
+        coverageEdges={coverageEdges}
       />
     </View>
   );
@@ -278,7 +283,11 @@ export function CoverageModule(p: WaveModuleProps) {
     () => ({
       w: 14,
       h: 10,
-      boundary: ['drywall', 'drywall', 'drywall', 'drywall'],
+      // OPEN AIR (walkthrough 2026-09-26): with drywall the heat map was a
+      // speckle of reflections and the beam — the lesson — was buried.
+      // Reflections have their own modules; here the speaker's own pattern
+      // is the only thing on the map.
+      boundary: ['open', 'open', 'open', 'open'],
       sources: [{ id: 'spk', x: 7, y: 1, freq, levelDb: 0, delayMs: 0, polarity: 1, kind: 'speaker', aimDeg: aim, coverageDeg: cov }],
       listener,
       tempC: TEMP_C,
@@ -288,6 +297,14 @@ export function CoverageModule(p: WaveModuleProps) {
 
   const eff = coverageAtFreq(scene.sources[0], freq);
   const lvl = responseAt(scene, listener.x, listener.y, freq);
+  // The lesson's number: the listener COMPARED WITH ON-AXIS at the same
+  // distance — 0 dB on the axis, falling off-axis (more at HF). The absolute
+  // level alone said nothing about coverage (walkthrough 2026-09-26).
+  const spk = scene.sources[0];
+  const rL = Math.hypot(listener.x - spk.x, listener.y - spk.y);
+  const aRad = (aim * Math.PI) / 180;
+  const onAxis = responseAt(scene, spk.x + rL * Math.sin(aRad), spk.y + rL * Math.cos(aRad), freq);
+  const vsOn = lvl - onAxis;
   const lambda = speedOfSound(TEMP_C) / freq;
 
   return (
@@ -300,9 +317,10 @@ export function CoverageModule(p: WaveModuleProps) {
         initialParam: 'freq',
         bezel: [
           { k: 'NOM COV', v: `${cov}°`, helpKey: 'coverage_pattern' },
-          { k: `EFF @ ${fmtHz(freq)}`, v: eff >= 360 ? '≈360°' : `${eff}°`, flex: 1.25, helpKey: 'coverage_pattern' },
+          // Short frequency in the key: "EFF @ 4.84 kHz" was cropped at 390.
+          { k: `EFF @ ${freq >= 1000 ? `${(freq / 1000).toFixed(1)}k` : Math.round(freq)}`, v: eff >= 360 ? '≈360°' : `${eff}°`, flex: 1.25, helpKey: 'coverage_pattern' },
           { k: 'λ', v: `${lambda.toFixed(2)} m`, helpKey: 'coverage_pattern' },
-          { k: 'LVL', v: `${lvl.toFixed(1)} dB`, helpKey: 'coverage_pattern' },
+          { k: 'vs ON-AXIS', v: `${vsOn > -0.05 ? '0.0' : vsOn.toFixed(1)} dB`, flex: 1.1, helpKey: 'coverage_pattern' },
         ],
         stage: (w, h) => (
           <RackScene
@@ -314,6 +332,8 @@ export function CoverageModule(p: WaveModuleProps) {
             freq={freq}
             layers={layers}
             onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
+            // The EFF angle, drawn: the −6 dB edges swing in as FREQ rises.
+            coverageEdges={eff >= 360 ? null : { x: spk.x, y: spk.y, aimDeg: aim, halfDeg: eff / 2 }}
           />
         ),
         params: [
@@ -361,6 +381,9 @@ export function CoverageModule(p: WaveModuleProps) {
           <Badge text="EFFECTIVE COVERAGE = −6 dB POINTS PROBED FROM THE ENGINE'S DIRECTIVITY MODEL (NOMINAL AT 1 kHz — WIDER LOW, NARROWER HIGH)" />
           <Text style={dstyles.caption}>
             Drag the listener off-axis and sweep the frequency: on-axis it barely changes, off-axis the highs fall away first. Aim the HF pattern, not the cabinet.
+          </Text>
+          <Text style={dstyles.caption}>
+            {`Dashed lines = the −6 dB coverage edges at ${fmtHz(freq)}. Level at the listener: ${lvl.toFixed(1)} dB (re 1 m on-axis) · ${vsOn > -0.05 ? '0.0' : vsOn.toFixed(1)} dB vs on-axis at the same distance.`}
           </Text>
         </PanelCard>
       }
