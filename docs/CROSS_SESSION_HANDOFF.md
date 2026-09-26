@@ -181,6 +181,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 11:45 · ccode · 60ec580c
+changed: Wave Diffusion: a pressure pulse SPLITS at the diffuser — one fragment rides each scatter-fan ray and vanishes at its end
+affects other side: nothing — client JS only (Wave lab drawing)
+needs: nothing
+
+
 ### 2026-09-26 11:38 · ccode · 94dc0f69
 changed: Wave Diffusion: the diffuser is drawn on the top wall — a QRD (n² mod 7) row of wooden wells whose depth follows DEPTH; wall labelled DIFFUSER
 affects other side: nothing — client JS only (Wave lab drawing)

@@ -934,7 +934,11 @@ function nodeState(ray: TraceRay, dist: number, minLen: number, timeEnv: number)
   const ref = minLen * NODE_TIME_STRETCH;
   const level = gain * Math.pow(ref / Math.max(ref, travelled), DIST_POW);
   const amp = Math.max(0, Math.min(1, level * timeEnv));
-  const r = 2.5 * (0.34 + 0.66 * amp);
+  // Diffuser fragments keep a visible floor: each carries 1/√N of the energy,
+  // so by level alone they shrank to sub-pixel specks and the split could not
+  // be seen (owner 2026-09-26: "there should be MANY balls"). Colour still
+  // tells the truth about their level.
+  const r = Math.max(ray.split ? 1.7 : 0, 2.5 * (0.34 + 0.66 * amp));
   return { x, y, amp, r };
 }
 
@@ -949,7 +953,20 @@ function pulseTimeEnv(u: number): number {
 /** The nodes for ALL rays, coloured by each ray's ECHO LEVEL (its own path
  *  length + material) on the MIDI ramp, decaying to blue over the pulse.
  *  Quantised into NODE_BUCKETS colour paths (fixed set of paths/frame). */
-function PulseNodes({ t, traces, paceLen, minLen }: { t: SharedValue<number>; traces: TraceRay[]; paceLen: number; minLen: number }) {
+function PulseNodes({
+  t,
+  traces,
+  paceLen,
+  minLen,
+  scale = 1,
+}: {
+  t: SharedValue<number>;
+  traces: TraceRay[];
+  paceLen: number;
+  minLen: number;
+  /** Stage text scale: the balls zoom with the drawing (D35). */
+  scale?: number;
+}) {
   // A soft bloom under every node so they read over the heat field.
   const glow = useDerivedValue(() => {
     const p = Skia.Path.Make();
@@ -957,10 +974,10 @@ function PulseNodes({ t, traces, paceLen, minLen }: { t: SharedValue<number>; tr
     const env = pulseTimeEnv(t.value);
     for (let k = 0; k < traces.length; k++) {
       const n = nodeState(traces[k], dist, minLen, env);
-      p.addCircle(n.x, n.y, n.r * 1.5);
+      p.addCircle(n.x, n.y, n.r * 1.5 * scale);
     }
     return p;
-  }, [t, traces, paceLen, minLen]);
+  }, [t, traces, paceLen, minLen, scale]);
   // One colour path per loudness bucket (fixed count → stable hook order).
   const buckets: SharedValue<SkPathT>[] = [];
   for (let b = 0; b < NODE_BUCKETS; b++) {
@@ -972,10 +989,10 @@ function PulseNodes({ t, traces, paceLen, minLen }: { t: SharedValue<number>; tr
         const env = pulseTimeEnv(t.value);
         for (let k = 0; k < traces.length; k++) {
           const n = nodeState(traces[k], dist, minLen, env);
-          if (Math.round(n.amp * (NODE_BUCKETS - 1)) === b) p.addCircle(n.x, n.y, n.r);
+          if (Math.round(n.amp * (NODE_BUCKETS - 1)) === b) p.addCircle(n.x, n.y, n.r * scale);
         }
         return p;
-      }, [t, traces, paceLen, minLen]),
+      }, [t, traces, paceLen, minLen, scale]),
     );
   }
   return (
@@ -1369,6 +1386,66 @@ export function RoomSceneView(p: RoomSceneProps) {
         appendArrow(arrows[order], X(b[0]) - (dx / len) * 12, Y(b[1]) - (dy / len) * 12, dx / len, dy / len, 6);
       }
     }
+    // DIFFUSER BURST (owner 2026-09-26: "show more bounced reflection balls
+    // than just the lines already drawn … there should be MANY balls
+    // reflecting after hitting the diffusor"). The pulse's wavefront meets the
+    // diffuser along its WHOLE face, not only where a drawn ray lands, so it is
+    // sampled at BURST_HITS points across the wall; at each, the pulse breaks
+    // into BURST_FRAGS small balls spread over the scatter arc, each riding to
+    // the first wall it meets and vanishing there. Energy per hit is shared
+    // 1/√N, the same rule as the drawn fans — many dim balls, not new energy.
+    // Pulse-only (no lines): the drawn fans stay the readable reference.
+    if (scatterWall != null && scene.boundary[scatterWall] !== 'open') {
+      const BURST_HITS = 9;
+      const BURST_FRAGS = 15;
+      const BURST_ARC = (130 * Math.PI) / 180;
+      const inX = scatterWall === 1 ? -1 : scatterWall === 3 ? 1 : 0;
+      const inY = scatterWall === 0 ? 1 : scatterWall === 2 ? -1 : 0;
+      const horizW = scatterWall === 0 || scatterWall === 2;
+      const wallLen = horizW ? scene.w : scene.h;
+      const wallGain = Math.sqrt(Math.max(0, 1 - alphaAt(scene.boundary[scatterWall], freq)));
+      const share = wallGain / Math.sqrt(BURST_FRAGS);
+      for (const s of scene.sources) {
+        if (s.muted) continue;
+        for (let hI = 0; hI < BURST_HITS; hI++) {
+          const along = ((hI + 0.5) / BURST_HITS) * wallLen;
+          const hx = horizW ? along : scatterWall === 1 ? scene.w : 0;
+          const hy = horizW ? (scatterWall === 0 ? 0 : scene.h) : along;
+          const ix = hx - s.x;
+          const iy = hy - s.y;
+          const iLen = Math.hypot(ix, iy);
+          if (iLen < 1e-6) continue;
+          // Mirror direction off the wall, then spread the fragments around it.
+          let mx = ix / iLen;
+          let my = iy / iLen;
+          if (horizW) my = -my;
+          else mx = -mx;
+          const leadPx = Math.hypot(X(hx) - X(s.x), Y(hy) - Y(s.y));
+          for (let f = 0; f < BURST_FRAGS; f++) {
+            const jitter = (hashFrac(hI * 31.7 + f * 7.13 + 0.5) - 0.5) * (BURST_ARC / BURST_FRAGS);
+            const a = (f / (BURST_FRAGS - 1) - 0.5) * BURST_ARC + jitter;
+            const ca = Math.cos(a);
+            const sa = Math.sin(a);
+            const rx = mx * ca - my * sa;
+            const ry = mx * sa + my * ca;
+            if (rx * inX + ry * inY <= 0.05) continue; // into the room only
+            const hit = marchWall(hx, hy, rx, ry, scene.w, scene.h);
+            const ex = X(hit.x);
+            const ey = Y(hit.y);
+            const legPx = Math.hypot(ex - X(hx), ey - Y(hy));
+            if (legPx < 1) continue;
+            traces.push({
+              pts: [X(s.x), Y(s.y), X(hx), Y(hy), ex, ey],
+              cum: [0, leadPx, leadPx + legPx],
+              len: leadPx + legPx,
+              order: 1,
+              segGain: [1, share],
+              split: true,
+            });
+          }
+        }
+      }
+    }
     // Free diffuse reflections (owner 2026-08-02): cast many rays that bounce
     // around the room and KEEP ONLY the ones that reach the listener's head —
     // extra multi-bounce reflection paths beyond the line-traced order-≤2 set.
@@ -1736,7 +1813,7 @@ export function RoomSceneView(p: RoomSceneProps) {
         {tracing && traces ? (
           <>
             <PulseRing t={pulseT} origins={pulseOrigins} paceLen={paceLen} />
-            <PulseNodes t={pulseT} traces={traces} paceLen={paceLen} minLen={minLen} />
+            <PulseNodes t={pulseT} traces={traces} paceLen={paceLen} minLen={minLen} scale={ts} />
           </>
         ) : null}
         {/* ARRIVALS: tick fan + pulsing listener halo. */}
