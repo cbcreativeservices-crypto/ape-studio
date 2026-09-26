@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 15:31 · ccode · 71f87615
+changed: QA pass, Wave 9-16 — fixes: Room Builder says "NO WALL" / "THROUGH 0 dB" (not "−0 dB"); speaker coverage wedges clipped to the room (at low ƒ they wrapped out over the wall); Delay Alignment in 0.01 ms steps so AUTO-ALIGN lands on its own number; Echo and Reverb rooms take only the height their shape needs so the timeline / decay graph get the rest (no empty band); Line Array copy drops an internal function name, boxes drawn at the model's 0.5 m pitch, the section floor shows seat rows (no heads under the standing listener)
+affects other side: nothing — client JS only (Wave lab)
+needs: nothing
+
+
 ### 2026-09-26 15:08 · ccode · d2efa1bf
 changed: Flashcards (TestFlight, build 30, John Martin III x3): a long definition can be read to the end — a tap no longer advances until the text has been scrolled to its end (a "more ↓" cue shows while there is more); the last line clears "Suggest a correction"; both filter rows fit on one line each (no third line of stray buttons)
 affects other side: nothing — client JS only (Flashcards screen)
