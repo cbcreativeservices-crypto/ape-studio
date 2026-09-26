@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 13:42 · ccode · afe2e694
+changed: Wave Beam Steering: the delay gradient drawn as an amber staircase behind the boxes; the steer angle as a dashed line; Δt/BOX in ms once it passes 1000 µs; bezel reads the listener vs the SAME array unsteered (absolute level kept in the well)
+affects other side: nothing — client JS only (Wave lab drawing)
+needs: nothing
+
+
 ### 2026-09-26 13:34 · ccode · d8d538eb
 changed: Wave Cardioid: FRONT SUB / REAR SUB · Ø · ms (live) / AUDIENCE labels on the scene; the rear probe is REAR MIC; probe and object labels sit on a dark plate so they read over the blue cancelled area
 affects other side: nothing — client JS only (Wave lab drawing)
