@@ -80,7 +80,7 @@ function coverageAtFreq(src: WaveSource, freq: number): number {
 /** Hosts the phase clock next to the Skia view — only rendered when viz ≠ null,
  *  so no conditional hooks ever run in the module bodies. */
 function SceneHero({
-  viz, scene, width, maxH = 300, fixedH, focused, freq, layers, visHz = 0.6, selectedId, onSelect, onDragSource, onDragListener, wallT, sectionView, probes, coverageEdges, labels, delayBars, highlightPath, wallLabels, onPulseClock,
+  viz, scene, width, maxH = 300, fixedH, focused, freq, layers, visHz = 0.6, selectedId, onSelect, onDragSource, onDragListener, wallT, sectionView, probes, coverageEdges, labels, delayBars, highlightPath, wallLabels, onPulseClock, outside,
 }: {
   viz: WaveVizModule;
   scene: WaveScene;
@@ -118,6 +118,8 @@ function SceneHero({
   wallLabels?: (string | null)[];
   /** Receives the pulse clock (Reverb's decay playhead). */
   onPulseClock?: (clock: SharedValue<number> | null) => void;
+  /** Outside zone + per-wall transmission loss (Room Builder). */
+  outside?: { marginM: number; tlDb: [number, number, number, number] } | null;
 }) {
   const phase = viz.usePhaseClock(focused, visHz);
   const height = fixedH ?? Math.max(150, Math.min(maxH, Math.round((width * scene.h) / scene.w)));
@@ -142,8 +144,32 @@ function SceneHero({
       highlightPath={highlightPath}
       wallLabels={wallLabels}
       onPulseClock={onPulseClock}
+      outside={outside}
     />
   );
+}
+
+/** Surface mass per wall material, kg/m² — a TEACHING mass-law model for
+ *  what gets through to the neighbours (Room Builder, 2026-09-26). Single
+ *  leaf, field incidence: TL ≈ 20·log10(m·f) − 47 dB, floored at 0. Soft
+ *  treatments are counted on a 20 kg/m² drywall backing (they absorb inside;
+ *  they barely stop sound going out — "absorption ≠ soundproofing"). */
+const WALL_MASS: Record<MaterialKey, number> = {
+  concrete: 400,
+  glass: 15,
+  drywall: 20,
+  wood: 12,
+  curtain: 21,
+  carpet: 22,
+  foam: 21,
+  fiberglass: 23,
+  audience: 20,
+  open: 0,
+};
+function massLawTL(m: MaterialKey, f: number): number {
+  const mass = WALL_MASS[m];
+  if (mass <= 0) return 0;
+  return Math.max(0, Math.min(80, 20 * Math.log10(mass * f) - 47));
 }
 
 const LAYER_KEYS = ['pressure', 'heat', 'rays', 'arrivals'] as const;
@@ -1890,6 +1916,9 @@ export function RoomBuilderModule(p: WaveModuleProps) {
                 layers={layers}
                 // Deep walls: the material is drawn in section (owner 2026-09-26).
                 wallT={18}
+                // What the neighbours hear: the pulse carries on outside,
+                // coloured by what each wall lets through at this frequency.
+                outside={{ marginM: 4, tlDb: [0, 1, 2, 3].map((b) => massLawTL(boundary[b], viewFreq)) as [number, number, number, number] }}
                 selectedId={selectedId}
                 onSelect={setSelectedId}
                 onDragSource={(id, x, y) => {

@@ -434,6 +434,13 @@ export type RoomSceneProps = {
    *  pulse tracer runs, or null when it stops — so a host graph can move in
    *  step with the balls (Reverb's decay playhead, 2026-09-26). */
   onPulseClock?: (clock: SharedValue<number> | null) => void;
+  /** OUTSIDE THE ROOM (Room Builder, 2026-09-26: "the user needs to
+   *  understand what their neighbors get to hear and not"). A zone `marginM`
+   *  metres wide is drawn around the room; the pulse ring continues out
+   *  through it, coloured on the loudness ramp by the level that got THROUGH
+   *  each wall (`tlDb` [top, right, bottom, left] at the current frequency)
+   *  and falling with distance toward blue. */
+  outside?: { marginM: number; tlDb: [number, number, number, number] } | null;
   /** Wall strip depth on the glass, px (default 9). The Absorption lab draws
    *  its walls deeper so each material reads in section (owner 2026-09-26). */
   wallT?: number;
@@ -1178,6 +1185,53 @@ function PulseRing({
   );
 }
 
+/** Loudness-ramp colours for the outside ring (worklet-safe lookup). */
+const OUT_BUCKETS = 24;
+const OUT_COLORS: string[] = Array.from({ length: OUT_BUCKETS }, (_, i) => levelColor(i / (OUT_BUCKETS - 1)));
+
+/** The pulse ring BEYOND a wall (Room Builder): the same expanding front,
+ *  coloured by the level that got through — spreading loss from the source
+ *  (−20·log10 r, r ≥ 1 m) minus the wall's transmission loss — on the app's
+ *  loudness ramp (0 dB red … −60 dB blue). So it leaves the wall at the
+ *  level the neighbour gets and cools toward blue as it travels on. */
+function OutsideRing({
+  t,
+  origins,
+  paceLen,
+  pxPerM,
+  tlDb,
+  scale,
+}: {
+  t: SharedValue<number>;
+  origins: { x: number; y: number }[];
+  paceLen: number;
+  pxPerM: number;
+  tlDb: number;
+  scale: number;
+}) {
+  const path = useDerivedValue(() => {
+    const p = Skia.Path.Make();
+    const r = t.value * (paceLen / PULSE_ARRIVE);
+    if (r > 1.5) for (let i = 0; i < origins.length; i++) p.addCircle(origins[i].x, origins[i].y, r);
+    return p;
+  }, [t, origins, paceLen]);
+  const color = useDerivedValue(() => {
+    const rM = Math.max(1, (t.value * (paceLen / PULSE_ARRIVE)) / pxPerM);
+    const db = -20 * Math.log10(rM) - tlDb;
+    const lvl = Math.max(0, Math.min(1, 1 + db / 60));
+    return OUT_COLORS[Math.round(lvl * (OUT_BUCKETS - 1))];
+  }, [t, paceLen, pxPerM, tlDb]);
+  const op = useDerivedValue(() => 0.95 * (1 - t.value * 0.6), [t]);
+  return (
+    <>
+      <Path path={path} color={color} style="stroke" strokeWidth={5 * scale} opacity={op} blendMode="plus">
+        <BlurMask blur={4 * scale} style="normal" />
+      </Path>
+      <Path path={path} color={color} style="stroke" strokeWidth={2 * scale} opacity={op} />
+    </>
+  );
+}
+
 // ── Ray helpers (image-source reflection polylines) ──────────────────────────
 
 /** Mirror a point across boundary b (same construct as waveEngine's internal
@@ -1277,13 +1331,22 @@ export function RoomSceneView(p: RoomSceneProps) {
   const wallT0 = p.wallT ?? WALL_T;
   const roomMargin = ROOM_MARGIN + (wallT0 - WALL_T);
   const wallPx = wallT0 * ts;
-  const geo = useMemo(() => roomGeo(scene, w, h, roomMargin * ts), [scene, w, h, ts, roomMargin]);
+  const outM = p.outside?.marginM ?? 0;
+  const geo = useMemo(() => {
+    if (outM <= 0) return roomGeo(scene, w, h, roomMargin * ts);
+    // Fit room + outside zone, then inset to the room itself.
+    const g = roomGeo({ ...scene, w: scene.w + 2 * outM, h: scene.h + 2 * outM }, w, h, roomMargin * ts);
+    const o = outM * g.pxPerM;
+    const wPx = scene.w * g.pxPerM;
+    const hPx = scene.h * g.pxPerM;
+    return { ...g, x0: g.x0 + o, y0: g.y0 + o, x1: g.x0 + o + wPx, y1: g.y0 + o + hPx, wPx, hPx, diag: Math.hypot(wPx, hPx) };
+  }, [scene, w, h, ts, roomMargin, outM]);
   // FULL SCREEN: report the room's own shape so the zoomed canvas is the room
   // (plus its label margin), not a tall box with the room floating mid-way.
   const report = useContext(StageAspectReport);
   useEffect(() => {
-    report?.aspect(scene.w / scene.h, roomMargin);
-  }, [report, scene.w, scene.h, roomMargin]);
+    report?.aspect((scene.w + 2 * outM) / (scene.h + 2 * outM), roomMargin);
+  }, [report, scene.w, scene.h, roomMargin, outM]);
   const key = sceneKey(scene);
   const headFrontImg = useImage(ICON_HEAD_FRONT);
   const nx = p.modal?.nx ?? 1;
@@ -1824,6 +1887,24 @@ export function RoomSceneView(p: RoomSceneProps) {
     });
     return path;
   }, [hp, geo]);
+  // Outside bands [top, right, bottom, left] beyond each wall strip, to the
+  // canvas edge; corners go to the top/bottom bands.
+  const outsideCfg = p.outside;
+  const outsideBands = useMemo(() => {
+    if (!outsideCfg || outsideCfg.marginM <= 0) return null;
+    const T = wallPx;
+    const rect = (x: number, y: number, rw: number, rh: number) => {
+      const path = Skia.Path.Make();
+      path.addRect(Skia.XYWHRect(x, y, Math.max(0, rw), Math.max(0, rh)));
+      return path;
+    };
+    return [
+      { clip: rect(0, 0, w, geo.y0 - T), tl: outsideCfg.tlDb[0] },
+      { clip: rect(geo.x1 + T, geo.y0 - T, w - geo.x1 - T, geo.hPx + 2 * T), tl: outsideCfg.tlDb[1] },
+      { clip: rect(0, geo.y1 + T, w, h - geo.y1 - T), tl: outsideCfg.tlDb[2] },
+      { clip: rect(0, geo.y0 - T, geo.x0 - T, geo.hPx + 2 * T), tl: outsideCfg.tlDb[3] },
+    ];
+  }, [outsideCfg, geo, w, h, wallPx]);
   // Delay bars: rects behind each source, longest = maxLenM.
   const db = p.delayBars;
   const delayBarPath = useMemo(() => {
@@ -2030,6 +2111,13 @@ export function RoomSceneView(p: RoomSceneProps) {
             <Group clip={interior}>
               <PulseRing t={pulseT} origins={pulseOrigins} paceLen={paceLen} />
             </Group>
+            {outsideBands
+              ? outsideBands.map((band, bi) => (
+                  <Group key={`out${bi}`} clip={band.clip}>
+                    <OutsideRing t={pulseT} origins={pulseOrigins} paceLen={paceLen} pxPerM={geo.pxPerM} tlDb={band.tl} scale={ts} />
+                  </Group>
+                ))
+              : null}
             <PulseNodes t={pulseT} traces={traces} paceLen={paceLen} minLen={minLen} scale={ts} />
           </>
         ) : null}
@@ -2159,6 +2247,36 @@ export function RoomSceneView(p: RoomSceneProps) {
           offset here is × ts (the Skia trap, 2026-09-25): the canvas grows in
           FULL SCREEN, RN text does not, so the labels scale themselves. */}
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+        {p.outside
+          ? ([0, 1, 2, 3] as const).map((b) => {
+              const tl = p.outside!.tlDb[b];
+              const text = `THROUGH −${Math.round(tl)} dB`;
+              const T = wallPx;
+              // Side zones are narrow: their tags run vertically down the
+              // middle of the zone, like the side wall names.
+              const zoneW = p.outside!.marginM * geo.pxPerM;
+              const pos =
+                b === 0
+                  ? { left: midX - 60 * ts, top: Math.max(2, geo.y0 - T - 34 * ts) }
+                  : b === 2
+                    ? { left: midX - 60 * ts, top: geo.y1 + T + 18 * ts }
+                    : b === 1
+                      ? { left: geo.x1 + T + zoneW / 2 - 60 * ts, top: midY - 7 * ts, transform: [{ rotate: '90deg' }] }
+                      : { left: geo.x0 - T - zoneW / 2 - 60 * ts, top: midY - 7 * ts, transform: [{ rotate: '-90deg' }] };
+              return (
+                <RNText
+                  key={`thru${b}`}
+                  style={[
+                    styles.wallLabel,
+                    styles.labelPlate,
+                    { fontSize: 9 * ts, color: '#dfe4ee', width: 120 * ts, textAlign: 'center', paddingHorizontal: 3 * ts, borderRadius: 3 * ts, ...pos },
+                  ]}
+                >
+                  {text}
+                </RNText>
+              );
+            })
+          : null}
         {ringGapWide ? (
           // Inside the room's top-left corner on a plate — in the margin it
           // collided with the top wall's name on a small room (Reverb).
