@@ -134,3 +134,24 @@ The server keeps a row per install id beside the row per identity; a lookup need
 both. Guest → free account, free → guest and a re-minted guest key on the same phone share
 one fourteen. A second phone is its own fourteen (the accepted floor). Migration
 `2026092502_glossary_meter_per_device.sql`, applied live 2026-09-25.
+
+## D32 · Lab display text is never under 9 pt on a phone; drawings get FULL SCREEN
+
+**Owner:** *"the new lab has several screens with text too small to read… these displays may
+need to be enlarged so the user can see them and make use of them"* → *"do both - 9 pt minimum"*.
+
+**Ruled:** every word drawn on a lab's display renders at 9 pt or more on a 375- and 390-wide
+phone (authored size × the scale the drawing is drawn at — measured, not estimated). Drawing
+displays also get a FULL SCREEN view (zoom steps, pan, any orientation, still interactive).
+Short phones are covered by full screen. Shipped for Sound Systems (`987cf20e`, `54e48aee`);
+eleven more labs are briefed in `docs/LAB_FULLSCREEN_AND_9PT_HANDOFF_2026_09_25.md`.
+
+## D33 · There are only codes — no discount codes; people type the dashes
+
+**Owner:** *"be sure to state they need to include the dashes"* → *"there are no discount codes.
+just codes. do not mention from event, sponsor, academy"* → *"remove it from the app and leave A a
+note"*.
+
+**Ruled:** code entry says to type the code exactly as given, dashes included, and nothing else
+(no discount wording, no list of where codes come from). The client has no discount message; A
+is asked to drop the `discount` kind server-side (CROSS_SESSION_HANDOFF, 2026-09-25 night).

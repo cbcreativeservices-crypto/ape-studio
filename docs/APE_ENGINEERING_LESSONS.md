@@ -597,3 +597,21 @@ process is running.
   showed nothing new on any branch; the Pixel's "No update available" was true because
   there was nothing to fetch. Check the branches before the phones.
 
+
+## 2026-09-25 (night) — seven lessons from legibility, TestFlight and five publishes
+
+- **Measure text on a display as fontSize × the drawing's scale.** The Sound Systems Lab passed
+  two review passes with labels at 2.6 pt: nobody had a floor and nobody measured. The in-page
+  harness is in `docs/LAB_FULLSCREEN_AND_9PT_HANDOFF_2026_09_25.md` §6.
+- **A bigger box does not enlarge every drawing.** Skia canvases with React Native `<Text>`
+  overlays keep the overlay at its pt size; view-built stages (lists, bus columns) too. Only
+  width-driven SVG with a viewBox scales its text. Check which kind before promising "zoom fixes it".
+- **`preserveAspectRatio="none"` stretches text sideways** when a chart is made wider.
+- **Restore the pre-fix Swift file with bash, not cmd.** `cmd /c "git show … > file"` produced
+  an iOS fingerprint of `8ba35686…` instead of `64a7eddf…`; the bash redirect matched. Always read
+  both fingerprints before publishing.
+- **The Pixel now runs Play build 14 on `production`** (not preview). Proven by logcat five times.
+- **iPhone-only text clipping:** a `Text` shrink-wrapped inside an `alignItems:'center'` column can
+  lose its last line's tail on iOS; give long centred text `alignSelf:'stretch'`.
+- **Tester "bugs" are often unexplained design.** "Locked on the wrong course" was the standing
+  requirements (Safety, Grounding, Workplace) placed first with nothing saying why; one label fixed it.
