@@ -240,24 +240,26 @@ function Screw({ x, y, r, slotDeg }: { x: number; y: number; r: number; slotDeg:
 }
 
 /** Brushed-aluminium panel backing (M2's rack-gear housing). */
-function BrushedPanel({ w, h, r = 12 }: { w: number; h: number; r?: number }) {
+function BrushedPanel({ w, h, r = 12, s = 1 }: { w: number; h: number; r?: number; s?: number }) {
+  // `s` = the stage text scale (parity pass 2026-09-26): corner radius, streak
+  // pitch and edge stroke grow with the zoomed drawing; 1 everywhere else.
   const paths = useMemo(() => {
     const base = Skia.Path.Make();
-    base.addRRect(Skia.RRectXY(Skia.XYWHRect(0, 0, w, h), r, r));
+    base.addRRect(Skia.RRectXY(Skia.XYWHRect(0, 0, w, h), r * s, r * s));
     const streaks = Skia.Path.Make();
-    for (let y = 3; y < h; y += 3) {
-      streaks.moveTo(2, y);
-      streaks.lineTo(w - 2, y);
+    for (let y = 3 * s; y < h; y += 3 * s) {
+      streaks.moveTo(2 * s, y);
+      streaks.lineTo(w - 2 * s, y);
     }
     return { base, streaks };
-  }, [w, h, r]);
+  }, [w, h, r, s]);
   return (
     <>
       <Path path={paths.base}>
         <LinearGradient start={vec(0, 0)} end={vec(0, h)} colors={['#2a2c33', '#1b1c22', '#141519']} positions={[0, 0.55, 1]} />
       </Path>
-      <Path path={paths.streaks} color="#ffffff" style="stroke" strokeWidth={1} opacity={0.03} />
-      <Path path={paths.base} color="#000000" style="stroke" strokeWidth={1.4} opacity={0.6} />
+      <Path path={paths.streaks} color="#ffffff" style="stroke" strokeWidth={s} opacity={0.03} />
+      <Path path={paths.base} color="#000000" style="stroke" strokeWidth={1.4 * s} opacity={0.6} />
     </>
   );
 }
@@ -285,8 +287,12 @@ export function WaveformView(p: {
   const inv = p.invertPolarity ?? false;
   const showClip = p.showClip ?? false;
 
+  // Every px constant below (insets, clip caps, playhead flag, strokes) is
+  // multiplied by the stage text scale so the drawing zooms as one picture in
+  // FULL SCREEN (parity pass 2026-09-26); 1 on the glass.
+  const ts = useStageTextScale();
   const AMAX = 1.28;
-  const half = h / 2 - 8;
+  const half = h / 2 - 8 * ts;
   const yOf = (a: number) => h / 2 - (a / AMAX) * half;
 
   const S = useMemo(() => {
@@ -336,7 +342,7 @@ export function WaveformView(p: {
           const on = c < cols && flags[c];
           if (on && s0 < 0) s0 = c;
           if (!on && s0 >= 0) {
-            caps.addRect(Skia.XYWHRect(s0 * colW, y - 1.3, (c - s0) * colW, 2.6));
+            caps.addRect(Skia.XYWHRect(s0 * colW, y - 1.3 * ts, (c - s0) * colW, 2.6 * ts));
             s0 = -1;
           }
         }
@@ -362,33 +368,32 @@ export function WaveformView(p: {
     // waveform goes red while clipping, back to the MIDI ramp when under.)
     const clipping = clT.some(Boolean) || clB.some(Boolean);
     return { body, caps, grid, rails, stats, clipping };
-  }, [p.signal, gain, dc, inv, showClip, w, h]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [p.signal, gain, dc, inv, showClip, w, h, ts]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Playhead sweeping the loop on the phase clock (the ONLY per-frame path).
   const playhead = useDerivedValue(() => {
     const f = frac01(p.phase.value);
-    const x = 2 + f * (w - 4);
+    const x = 2 * ts + f * (w - 4 * ts);
     const pth = Skia.Path.Make();
-    pth.moveTo(x, 3);
-    pth.lineTo(x, h - 3);
-    pth.moveTo(x - 4.5, 3);
-    pth.lineTo(x + 4.5, 3);
-    pth.lineTo(x, 10);
+    pth.moveTo(x, 3 * ts);
+    pth.lineTo(x, h - 3 * ts);
+    pth.moveTo(x - 4.5 * ts, 3 * ts);
+    pth.lineTo(x + 4.5 * ts, 3 * ts);
+    pth.lineTo(x, 10 * ts);
     pth.close();
     return pth;
-  }, [p.phase, w, h]);
+  }, [p.phase, w, h, ts]);
 
   const st = S.stats;
   const statLine = `PK ${st.pkDb.toFixed(1)}  RMS ${st.rmsDb.toFixed(1)}  CF ${st.crest.toFixed(1)} dB`;
   // Overlay labels grow in FULL SCREEN (StageTextScale); the corner offsets
   // that hold them grow with them so the stat and DC lines never overlap.
-  const ts = useStageTextScale();
   return (
     <View style={{ width: w, height: h }}>
       <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
-        <Path path={S.grid} color={GHOST} style="stroke" strokeWidth={1} />
-        <SkLine p1={{ x: 0, y: yOf(0) }} p2={{ x: w, y: yOf(0) }} color="#3a3b43" strokeWidth={1.2} />
-        <Path path={S.rails} color={showClip ? RED : '#33343c'} style="stroke" strokeWidth={1.1} opacity={showClip ? 0.85 : 1} />
+        <Path path={S.grid} color={GHOST} style="stroke" strokeWidth={ts} />
+        <SkLine p1={{ x: 0, y: yOf(0) }} p2={{ x: w, y: yOf(0) }} color="#3a3b43" strokeWidth={1.2 * ts} />
+        <Path path={S.rails} color={showClip ? RED : '#33343c'} style="stroke" strokeWidth={1.1 * ts} opacity={showClip ? 0.85 : 1} />
         {/* Amplitude painted by the MIDI loudness ramp (blue at the zero line →
             red at ±full scale); the WHOLE body flips solid red while clipping,
             back to the ramp when brought under (owner 2026-08-05). */}
@@ -404,19 +409,19 @@ export function WaveformView(p: {
             />
           </Path>
         )}
-        <Path path={S.body} color={S.clipping ? RED : '#dfe4ee'} style="stroke" strokeWidth={1.1} opacity={S.clipping ? 0.95 : 0.55} />
+        <Path path={S.body} color={S.clipping ? RED : '#dfe4ee'} style="stroke" strokeWidth={1.1 * ts} opacity={S.clipping ? 0.95 : 0.55} />
         {showClip ? (
           <>
             <Path path={S.caps} color={RED} opacity={0.55}>
-              <BlurMask blur={3} style="normal" />
+              <BlurMask blur={3 * ts} style="normal" />
             </Path>
             <Path path={S.caps} color={RED} />
           </>
         ) : null}
-        <Path path={playhead} color="#ffffff" style="stroke" strokeWidth={2.6} opacity={0.18}>
-          <BlurMask blur={2.5} style="normal" />
+        <Path path={playhead} color="#ffffff" style="stroke" strokeWidth={2.6 * ts} opacity={0.18}>
+          <BlurMask blur={2.5 * ts} style="normal" />
         </Path>
-        <Path path={playhead} color="#e8ecf4" style="stroke" strokeWidth={1.1} opacity={0.9} />
+        <Path path={playhead} color="#e8ecf4" style="stroke" strokeWidth={1.1 * ts} opacity={0.9} />
       </Canvas>
       <Lbl x={3} y={yOf(1) - 4} w={30} align="left" size={7} color={showClip ? RED : TEXT_DIM}>
         0
@@ -473,16 +478,20 @@ export function PeakMeterView(p: {
   const wellY = 30 * ts;
   const wellH = h - wellY - 26 * ts;
   const gutter = 40 * ts;
-  const padI = 9;
-  // Thinner bars, centered in the well (owner 2026-08-05).
-  const colWpx = Math.min(16, (wellW - gutter - padI * 2) / 2);
+  const padI = 9 * ts;
+  // Thinner bars, centered in the well (owner 2026-08-05). The LED column
+  // width, the 1 px segment gap, the ticks, the well inset, the hold caps and
+  // the screws all carry `ts` so the meter zooms as one picture (parity pass
+  // 2026-09-26).
+  const colWpx = Math.min(16 * ts, (wellW - gutter - padI * 2) / 2);
   const contentW = colWpx * 2 + gutter;
   const colLx = wellX + (wellW - contentW) / 2;
   const colRx = colLx + colWpx + gutter;
-  const barTop = wellY + 7;
-  const barBot = wellY + wellH - 7;
+  const barTop = wellY + 7 * ts;
+  const barBot = wellY + wellH - 7 * ts;
   const span = barBot - barTop;
   const SEG = 66; // fine LED segmentation (owner: ≥60, 1px gaps)
+  const segGap = ts; // the 1 px gap between LEDs, zoomed with the picture
   const segH = span / SEG;
   const yDb = (d: number) => barBot - ((d + 60) / 60) * span;
 
@@ -554,19 +563,19 @@ export function PeakMeterView(p: {
       const hi = -60 + ((i + 1) * 60) / SEG;
       const z = hi <= -18 ? 0 : hi <= -6 ? 1 : 2;
       const y = yDb(hi);
-      unlit[z].addRect(Skia.XYWHRect(colLx, y, colWpx, segH - 1));
-      unlit[z].addRect(Skia.XYWHRect(colRx, y, colWpx, segH - 1));
+      unlit[z].addRect(Skia.XYWHRect(colLx, y, colWpx, segH - segGap));
+      unlit[z].addRect(Skia.XYWHRect(colRx, y, colWpx, segH - segGap));
     }
     const ticks = Skia.Path.Make();
     for (const d of [0, -3, -6, -12, -20, -30, -40, -50, -60]) {
       const y = yDb(d);
-      ticks.moveTo(colLx + colWpx + 3, y);
-      ticks.lineTo(colLx + colWpx + 8, y);
-      ticks.moveTo(colRx - 8, y);
-      ticks.lineTo(colRx - 3, y);
+      ticks.moveTo(colLx + colWpx + 3 * ts, y);
+      ticks.lineTo(colLx + colWpx + 8 * ts, y);
+      ticks.moveTo(colRx - 8 * ts, y);
+      ticks.lineTo(colRx - 3 * ts, y);
     }
     const well = Skia.Path.Make();
-    well.addRRect(Skia.RRectXY(Skia.XYWHRect(wellX - 8, wellY - 8, wellW + 16, wellH + 16), 8, 8));
+    well.addRRect(Skia.RRectXY(Skia.XYWHRect(wellX - 8 * ts, wellY - 8 * ts, wellW + 16 * ts, wellH + 16 * ts), 8 * ts, 8 * ts));
     const lamp = Skia.Path.Make();
     lamp.addRRect(Skia.RRectXY(Skia.XYWHRect(w / 2 - 26 * ts, 8 * ts, 52 * ts, 15 * ts), 4 * ts, 4 * ts));
     return { unlit, ticks, well, lamp };
@@ -627,7 +636,7 @@ export function PeakMeterView(p: {
         const hi = lo + 60 / 66;
         if (hi > -18) break;
         if (lv[ch] <= lo) break;
-        pth.addRect(Skia.XYWHRect(xs[ch], barBot - ((hi + 60) / 60) * span, colWpx, segH - 1));
+        pth.addRect(Skia.XYWHRect(xs[ch], barBot - ((hi + 60) / 60) * span, colWpx, segH - segGap));
       }
     }
     return pth;
@@ -645,7 +654,7 @@ export function PeakMeterView(p: {
         if (hi <= -18) continue;
         if (hi > -6) break;
         if (lv[ch] <= lo) break;
-        pth.addRect(Skia.XYWHRect(xs[ch], barBot - ((hi + 60) / 60) * span, colWpx, segH - 1));
+        pth.addRect(Skia.XYWHRect(xs[ch], barBot - ((hi + 60) / 60) * span, colWpx, segH - segGap));
       }
     }
     return pth;
@@ -662,7 +671,7 @@ export function PeakMeterView(p: {
         const hi = lo + 60 / 66;
         if (hi <= -6) continue;
         if (lv[ch] <= lo) break;
-        pth.addRect(Skia.XYWHRect(xs[ch], barBot - ((hi + 60) / 60) * span, colWpx, segH - 1));
+        pth.addRect(Skia.XYWHRect(xs[ch], barBot - ((hi + 60) / 60) * span, colWpx, segH - segGap));
       }
     }
     return pth;
@@ -673,8 +682,8 @@ export function PeakMeterView(p: {
     const pth = Skia.Path.Make();
     const hL = Math.max(-59, Math.min(0.4, livePeak ? lHold.value : holdL[idx]));
     const hR = Math.max(-59, Math.min(0.4, livePeak ? lHold.value : holdR[idx]));
-    pth.addRect(Skia.XYWHRect(colLx, barBot - ((hL + 60) / 60) * span - 1.2, colWpx, 2.4));
-    pth.addRect(Skia.XYWHRect(colRx, barBot - ((hR + 60) / 60) * span - 1.2, colWpx, 2.4));
+    pth.addRect(Skia.XYWHRect(colLx, barBot - ((hL + 60) / 60) * span - 1.2 * ts, colWpx, 2.4 * ts));
+    pth.addRect(Skia.XYWHRect(colRx, barBot - ((hR + 60) / 60) * span - 1.2 * ts, colWpx, 2.4 * ts));
     return pth;
   }, [p.phase, holdL, holdR, livePeak]);
 
@@ -689,19 +698,19 @@ export function PeakMeterView(p: {
   return (
     <View style={{ width: w, height: h }}>
       <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
-        <BrushedPanel w={w} h={h} />
-        <Screw x={12} y={12} r={3.6} slotDeg={25} />
-        <Screw x={w - 12} y={12} r={3.6} slotDeg={80} />
-        <Screw x={12} y={h - 12} r={3.6} slotDeg={130} />
-        <Screw x={w - 12} y={h - 12} r={3.6} slotDeg={60} />
+        <BrushedPanel w={w} h={h} s={ts} />
+        <Screw x={12 * ts} y={12 * ts} r={3.6 * ts} slotDeg={25} />
+        <Screw x={w - 12 * ts} y={12 * ts} r={3.6 * ts} slotDeg={80} />
+        <Screw x={12 * ts} y={h - 12 * ts} r={3.6 * ts} slotDeg={130} />
+        <Screw x={w - 12 * ts} y={h - 12 * ts} r={3.6 * ts} slotDeg={60} />
         {/* Inset bezel well. */}
         <Path path={G.well} color="#08090b" />
         {/* Whole meter washes RED while it clips (owner 2026-08-05 — like the
             SPL/VU LED display). Latches with the OVER series; clears when the
             gain is pulled back under 0 dBFS. */}
         <Path path={G.well} color={withAlpha(RED, 0.22)} opacity={overO} />
-        <Path path={G.well} color="#000000" style="stroke" strokeWidth={1.6} opacity={0.8} />
-        <Path path={G.well} color="#3d4049" style="stroke" strokeWidth={0.8} opacity={0.5} />
+        <Path path={G.well} color="#000000" style="stroke" strokeWidth={1.6 * ts} opacity={0.8} />
+        <Path path={G.well} color="#3d4049" style="stroke" strokeWidth={0.8 * ts} opacity={0.5} />
         {/* Unlit LED stacks — the meter face at rest. */}
         <Path path={G.unlit[0]} color="#122419" opacity={0.95} />
         <Path path={G.unlit[1]} color="#2a2312" opacity={0.95} />
@@ -710,19 +719,19 @@ export function PeakMeterView(p: {
         <Path path={litGreen} color="#43e97b" />
         <Path path={litAmber} color={AMBER} />
         <Path path={litRed} color="#ff5f4e" opacity={0.6}>
-          <BlurMask blur={4} style="normal" />
+          <BlurMask blur={4 * ts} style="normal" />
         </Path>
         <Path path={litRed} color="#ff5f4e" />
         {/* Floating peak-hold caps. */}
         <Path path={caps} color="#f2f5fa" />
-        <Path path={G.ticks} color="#565a64" style="stroke" strokeWidth={1} />
+        <Path path={G.ticks} color="#565a64" style="stroke" strokeWidth={ts} />
         {/* Red frame over the whole well while clipping. */}
-        <Path path={G.well} color={RED} style="stroke" strokeWidth={2.4} opacity={overO} />
+        <Path path={G.well} color={RED} style="stroke" strokeWidth={2.4 * ts} opacity={overO} />
         {/* Latching OVER lamp. */}
         <Path path={G.lamp} color="#1c0f10" />
-        <Path path={G.lamp} color="#000000" style="stroke" strokeWidth={1.2} opacity={0.8} />
+        <Path path={G.lamp} color="#000000" style="stroke" strokeWidth={1.2 * ts} opacity={0.8} />
         <Path path={G.lamp} color={withAlpha(RED, 0.6)} opacity={overO}>
-          <BlurMask blur={6} style="normal" />
+          <BlurMask blur={6 * ts} style="normal" />
         </Path>
         <Path path={G.lamp} color={RED} opacity={overO} />
       </Canvas>
@@ -814,17 +823,21 @@ export function VuMeterView(p: {
   // linear in VOLTAGE (10^(dB/20), full scale at +3) — which is exactly why 0
   // sits ~71% of the way across a real VU face.
   const A = 48;
-  const bez = 10;
-  const fx = bez + 3;
-  const fy = bez + 3;
-  const fw = w - (bez + 3) * 2;
-  const fh = h - (bez + 3) * 2;
+  // The bezel, the printed ticks, the needle blade, the hub and every stroke
+  // carry the stage text scale so the face zooms as one instrument in FULL
+  // SCREEN (parity pass 2026-09-26); 1 on the glass and in the SPL tool.
+  const ts = useStageTextScale();
+  const bez = 10 * ts;
+  const fx = bez + 3 * ts;
+  const fy = bez + 3 * ts;
+  const fw = w - (bez + 3 * ts) * 2;
+  const fh = h - (bez + 3 * ts) * 2;
   const cx = w / 2;
   // C2 (owner 2026-07-30): pivot dropped LOWER and R reduced so the printed
   // scale/arc sits lower on the face — matching a real Studio-Six VU where the
   // scale hugs the lower third and the needle blade is short.
-  const py = h - 26;
-  const R = Math.min(py - fy - 40, (w / 2 - bez - 30) / Math.sin(A * DEG));
+  const py = h - 26 * ts;
+  const R = Math.min(py - fy - 40 * ts, (w / 2 - bez - 30 * ts) / Math.sin(A * DEG));
   const angDb = (d: number) => (-A + 96 * (Math.pow(10, d / 20) / Math.pow(10, 3 / 20))) * DEG;
 
   // ── Printed face: arcs, ticks, red wedge, label anchors (static) ──────────
@@ -836,27 +849,27 @@ export function VuMeterView(p: {
     const tickR = Skia.Path.Make();
     for (const d of majors) {
       const a = angDb(d);
-      const p0 = pt(a, R + 2);
-      const p1 = pt(a, R + 13);
+      const p0 = pt(a, R + 2 * ts);
+      const p1 = pt(a, R + 13 * ts);
       const tp = d >= 0.5 ? tickR : tickB;
       tp.moveTo(p0.x, p0.y);
       tp.lineTo(p1.x, p1.y);
     }
     for (const d of minors) {
       const a = angDb(d);
-      const p0 = pt(a, R + 2);
-      const p1 = pt(a, R + 8);
+      const p0 = pt(a, R + 2 * ts);
+      const p1 = pt(a, R + 8 * ts);
       const tp = d >= 0.5 ? tickR : tickB;
       tp.moveTo(p0.x, p0.y);
       tp.lineTo(p1.x, p1.y);
     }
     // Printed arc along the tick base: black −20..0, then the RED zone wedge.
-    const oval = Skia.XYWHRect(cx - (R + 2), py - (R + 2), 2 * (R + 2), 2 * (R + 2));
+    const oval = Skia.XYWHRect(cx - (R + 2 * ts), py - (R + 2 * ts), 2 * (R + 2 * ts), 2 * (R + 2 * ts));
     const arcB = Skia.Path.Make();
     arcB.addArc(oval, angDb(-20) / DEG - 90, (angDb(0) - angDb(-20)) / DEG);
     const wedge = Skia.Path.Make();
-    const rO = R + 11;
-    const rI = R + 2;
+    const rO = R + 11 * ts;
+    const rI = R + 2 * ts;
     const oO = Skia.XYWHRect(cx - rO, py - rO, 2 * rO, 2 * rO);
     const oI = Skia.XYWHRect(cx - rI, py - rI, 2 * rI, 2 * rI);
     // Red is the over-0 zone: start the FILL a touch above 0 (angDb(0.3)) so the
@@ -873,11 +886,11 @@ export function VuMeterView(p: {
     wedge.close();
     // Bezel + face plates.
     const outer = Skia.Path.Make();
-    outer.addRRect(Skia.RRectXY(Skia.XYWHRect(0, 0, w, h), 14, 14));
+    outer.addRRect(Skia.RRectXY(Skia.XYWHRect(0, 0, w, h), 14 * ts, 14 * ts));
     const face = Skia.Path.Make();
-    face.addRRect(Skia.RRectXY(Skia.XYWHRect(fx, fy, fw, fh), 8, 8));
+    face.addRRect(Skia.RRectXY(Skia.XYWHRect(fx, fy, fw, fh), 8 * ts, 8 * ts));
     const topShade = Skia.Path.Make();
-    topShade.addRect(Skia.XYWHRect(fx, fy, fw, 14));
+    topShade.addRect(Skia.XYWHRect(fx, fy, fw, 14 * ts));
     // Diagonal glass sheen band.
     const sheen = Skia.Path.Make();
     sheen.moveTo(fx + fw * 0.58, fy + 2);
@@ -890,7 +903,7 @@ export function VuMeterView(p: {
     // the END of the 0 line, with clear spacing from −1 — and seated a hair
     // further out radially so it clears the red over-0 wedge in clean dark ink.
     const labels = majors.map((d) => {
-      const rOff = d === 0 ? R + 24 : R + 21;
+      const rOff = d === 0 ? R + 24 * ts : R + 21 * ts;
       const lp = pt(angDb(d), rOff);
       return { d, x: lp.x, y: lp.y };
     });
@@ -899,12 +912,12 @@ export function VuMeterView(p: {
     // scaleBrackets). All share the R−15 concave radius; their tick angles are
     // well-separated (−41°/−26°/−10°/+20°) so the four never collide, and the
     // inner radius keeps them clear of the outer ticks and (at rest) the needle.
-    const brLow = pt(angDb(-20), R - 15);
-    const brMid10 = pt(angDb(-10), R - 15);
-    const brMid5 = pt(angDb(-5), R - 15);
-    const brHigh = pt(angDb(0), R - 15);
+    const brLow = pt(angDb(-20), R - 15 * ts);
+    const brMid10 = pt(angDb(-10), R - 15 * ts);
+    const brMid5 = pt(angDb(-5), R - 15 * ts);
+    const brHigh = pt(angDb(0), R - 15 * ts);
     return { tickB, tickR, arcB, wedge, outer, face, topShade, sheen, labels, brLow, brMid10, brMid5, brHigh };
-  }, [w, h]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [w, h, ts]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Precomputed loop series: windowed RMS (needle target) + peak LED ──────
   const B = useMemo(() => {
@@ -1004,9 +1017,9 @@ export function VuMeterView(p: {
     // INSIDE the scale ticks (~0.92·R) like a real VU — close to the arc but never
     // past it — over a stubby counterweight tail.
     const tipR = R * 0.92;
-    const tailR = -12;
-    const wb = 3.0;
-    const wt = 1.0;
+    const tailR = -12 * ts;
+    const wb = 3.0 * ts;
+    const wt = 1.0 * ts;
     const bx = cx + s * tailR;
     const by = py - c * tailR;
     const tx = cx + s * tipR;
@@ -1018,18 +1031,18 @@ export function VuMeterView(p: {
     pth.lineTo(bx - c * wb, by - s * wb);
     pth.close();
     return pth;
-  }, [needleRad]);
+  }, [needleRad, ts]);
 
   const needleShadow = useDerivedValue(() => {
     const th = needleRad.value;
     const s = Math.sin(th);
     const c = Math.cos(th);
     const tipR = R * 0.92;
-    const tailR = -12;
-    const wb = 3.0;
-    const wt = 1.0;
-    const ox = 3.4;
-    const oy = 3.7;
+    const tailR = -12 * ts;
+    const wb = 3.0 * ts;
+    const wt = 1.0 * ts;
+    const ox = 3.4 * ts;
+    const oy = 3.7 * ts;
     const bx = cx + s * tailR + ox;
     const by = py - c * tailR + oy;
     const tx = cx + s * tipR + ox;
@@ -1041,7 +1054,7 @@ export function VuMeterView(p: {
     pth.lineTo(bx - c * wb, by - s * wb);
     pth.close();
     return pth;
-  }, [needleRad]);
+  }, [needleRad, ts]);
 
   const ledO = useDerivedValue(() => {
     // Over-range PEG (owner 2026-07-30): when the needle is parked at/over the +3
@@ -1096,8 +1109,8 @@ export function VuMeterView(p: {
     const th = pkAng.value;
     const s = Math.sin(th);
     const c = Math.cos(th);
-    const r0 = R + 1;
-    const r1 = R + 12;
+    const r0 = R + 1 * ts;
+    const r1 = R + 12 * ts;
     const pth = Skia.Path.Make();
     pth.moveTo(cx + s * r0, py - c * r0);
     pth.lineTo(cx + s * r1, py - c * r1);
@@ -1119,7 +1132,6 @@ export function VuMeterView(p: {
 
   // The fast PEAK LED and its caption sit in the top-right corner; both grow
   // with the overlay text scale in FULL SCREEN (1 on the glass).
-  const ts = useStageTextScale();
   const ledX = fx + fw - 22 * ts;
   const ledY = fy + 20 * ts;
   // VU wordmark seat (owner 2026-07-30, RAISED to the midpoint): the wordmark was
@@ -1128,8 +1140,10 @@ export function VuMeterView(p: {
   // base / pivot hub (radius ~0) — i.e. at radius (R−15)/2 straight up the vertical
   // centreline. That keeps it clear of BOTH the blue numbers above and the pivot/
   // needle below.
-  const wmSize = Math.min(18, Math.max(12, Math.round(0.06 * R + 6)));
-  const wmCenterY = py - (R - 15) / 2;
+  // Sized from the GLASS radius (R ÷ ts) — Lbl multiplies by ts, so the
+  // wordmark is exactly 2× at 2× instead of hitting the 18 pt cap.
+  const wmSize = Math.min(18, Math.max(12, Math.round(0.06 * (R / ts) + 6)));
+  const wmCenterY = py - (R - 15 * ts) / 2;
   const wmTopY = wmCenterY - wmSize / 2;
   return (
     <View style={{ width: w, height: h }}>
@@ -1138,7 +1152,7 @@ export function VuMeterView(p: {
         <Path path={G.outer}>
           <LinearGradient start={vec(0, 0)} end={vec(0, h)} colors={['#26272e', '#131418', '#0b0b0e']} positions={[0, 0.6, 1]} />
         </Path>
-        <Path path={G.outer} color="#000000" style="stroke" strokeWidth={1.4} opacity={0.7} />
+        <Path path={G.outer} color="#000000" style="stroke" strokeWidth={1.4 * ts} opacity={0.7} />
         {/* Warm cream face: radial light + edge vignette + bezel drop shade. */}
         <Path path={G.face}>
           <RadialGradient c={vec(cx, fy + fh * 0.3)} r={fw * 0.8} colors={['#f8eecf', '#f0e0b4', '#e2cd98']} />
@@ -1152,39 +1166,39 @@ export function VuMeterView(p: {
           />
         </Path>
         <Path path={G.topShade}>
-          <LinearGradient start={vec(0, fy)} end={vec(0, fy + 14)} colors={['rgba(0,0,0,0.26)', 'rgba(0,0,0,0)']} />
+          <LinearGradient start={vec(0, fy)} end={vec(0, fy + 14 * ts)} colors={['rgba(0,0,0,0.26)', 'rgba(0,0,0,0)']} />
         </Path>
         {/* Printed scale: red zone wedge, arc, fine minors, majors. */}
         <Path path={G.wedge} color="#c9382e" opacity={0.92} />
-        <Path path={G.arcB} color="#2b2317" style="stroke" strokeWidth={1.8} />
-        <Path path={G.tickB} color="#2b2317" style="stroke" strokeWidth={1.4} />
-        <Path path={G.tickR} color="#6e1710" style="stroke" strokeWidth={1.4} />
+        <Path path={G.arcB} color="#2b2317" style="stroke" strokeWidth={1.8 * ts} />
+        <Path path={G.tickB} color="#2b2317" style="stroke" strokeWidth={1.4 * ts} />
+        <Path path={G.tickR} color="#6e1710" style="stroke" strokeWidth={1.4 * ts} />
         {/* Peak-hold marker: subtle white tick on the arc at the highest needle
             angle reached (peakHold prop). Absent/'off' ⇒ nothing drawn. */}
-        {pkEnabled ? <Path path={peakTick} color="#ffffff" style="stroke" strokeWidth={1} opacity={0.7} /> : null}
+        {pkEnabled ? <Path path={peakTick} color="#ffffff" style="stroke" strokeWidth={ts} opacity={0.7} /> : null}
         {/* Fast PEAK LED beside the face (the contrast lesson in one glance). */}
         {showLed ? (
           <>
             <Circle cx={ledX} cy={ledY} r={5 * ts} color="#42150f" />
             <Circle cx={ledX} cy={ledY} r={9 * ts} color={withAlpha(RED, 0.6)} opacity={ledO}>
-              <BlurMask blur={6} style="normal" />
+              <BlurMask blur={6 * ts} style="normal" />
             </Circle>
             <Circle cx={ledX} cy={ledY} r={4.4 * ts} color="#ff4d3c" opacity={ledO} />
-            <Circle cx={ledX} cy={ledY} r={5 * ts} color="#1d0c09" style="stroke" strokeWidth={1} />
+            <Circle cx={ledX} cy={ledY} r={5 * ts} color="#1d0c09" style="stroke" strokeWidth={ts} />
           </>
         ) : null}
         {/* Needle: soft ANIMATED drop shadow (offset down-right, blurred) that
             tracks the blade every frame via needleShadow ← needleRad; drawn UNDER
             the needle so the blade reads as floating above the face. */}
         <Path path={needleShadow} color="#050505" opacity={0.58}>
-          <BlurMask blur={3.5} style="normal" />
+          <BlurMask blur={3.5 * ts} style="normal" />
         </Path>
         <Path path={needlePath} color="#17130c" />
-        <Circle cx={cx} cy={py} r={10}>
-          <RadialGradient c={vec(cx - 3, py - 3)} r={16} colors={['#4a4c55', '#232429', '#101114']} />
+        <Circle cx={cx} cy={py} r={10 * ts}>
+          <RadialGradient c={vec(cx - 3 * ts, py - 3 * ts)} r={16 * ts} colors={['#4a4c55', '#232429', '#101114']} />
         </Circle>
-        <Circle cx={cx} cy={py} r={3.6} color="#0c0d10" />
-        <SkLine p1={{ x: cx - 2.4, y: py - 1.4 }} p2={{ x: cx + 2.4, y: py + 1.4 }} color="#3f424b" strokeWidth={1.1} />
+        <Circle cx={cx} cy={py} r={3.6 * ts} color="#0c0d10" />
+        <SkLine p1={{ x: cx - 2.4 * ts, y: py - 1.4 * ts }} p2={{ x: cx + 2.4 * ts, y: py + 1.4 * ts }} color="#3f424b" strokeWidth={1.1 * ts} />
         {/* Glass: diagonal specular sheen band + inner lip. */}
         <Path path={G.sheen}>
           <LinearGradient
@@ -1193,8 +1207,8 @@ export function VuMeterView(p: {
             colors={['rgba(255,255,255,0.13)', 'rgba(255,255,255,0.02)']}
           />
         </Path>
-        <Path path={G.face} color="#07080a" style="stroke" strokeWidth={3} opacity={0.9} />
-        <Path path={G.face} color="#4b4e57" style="stroke" strokeWidth={0.8} opacity={0.5} />
+        <Path path={G.face} color="#07080a" style="stroke" strokeWidth={3 * ts} opacity={0.9} />
+        <Path path={G.face} color="#4b4e57" style="stroke" strokeWidth={0.8 * ts} opacity={0.5} />
       </Canvas>
       {/* Printed numerals (mono) — black ink below 0, red in the hot zone. */}
       {/* C1 (owner 2026-07-30): scale numerals larger + bold. */}
@@ -1305,37 +1319,37 @@ export function LoudnessView(p: {
 
   // Layout: M/S bars left · integrated + LRA center · history strip right.
   const mX = 38 * ts;
-  const barW = 22;
-  const sX = mX + barW + 12;
+  const barW = 22 * ts; // bar width, ticks, brackets and strokes all zoom (parity pass 2026-09-26)
+  const sX = mX + barW + 12 * ts;
   const barTop = 36 * ts;
   const barBot = h - 38 * ts;
   const yL = (v: number) => barBot - ((Math.max(-36, Math.min(0, v)) + 36) / 36) * (barBot - barTop);
   const histW = Math.max(90, w * 0.32);
-  const histX = w - 14 - histW;
+  const histX = w - 14 * ts - histW;
   const histTop = 48 * ts;
   const histBot = h - 64 * ts;
   const yH = (v: number) => histBot - ((Math.max(-36, Math.min(0, v)) + 36) / 36) * (histBot - histTop);
   const hx = (i: number) => histX + (i / (N - 1)) * histW;
-  const cX0 = sX + barW + 20;
-  const cX1 = histX - 16;
+  const cX0 = sX + barW + 20 * ts;
+  const cX1 = histX - 16 * ts;
   const cMid = (cX0 + cX1) / 2;
   const xLufs = (v: number) => cX0 + ((Math.max(-36, Math.min(0, v)) + 36) / 36) * (cX1 - cX0);
   const over = sim.truePeakDbtp > -1;
 
   const G = useMemo(() => {
     const panel = Skia.Path.Make();
-    panel.addRRect(Skia.RRectXY(Skia.XYWHRect(0, 0, w, h), 12, 12));
+    panel.addRRect(Skia.RRectXY(Skia.XYWHRect(0, 0, w, h), 12 * ts, 12 * ts));
     const wells = Skia.Path.Make();
-    wells.addRRect(Skia.RRectXY(Skia.XYWHRect(mX - 2, barTop - 2, barW + 4, barBot - barTop + 4), 3, 3));
-    wells.addRRect(Skia.RRectXY(Skia.XYWHRect(sX - 2, barTop - 2, barW + 4, barBot - barTop + 4), 3, 3));
+    wells.addRRect(Skia.RRectXY(Skia.XYWHRect(mX - 2 * ts, barTop - 2 * ts, barW + 4 * ts, barBot - barTop + 4 * ts), 3 * ts, 3 * ts));
+    wells.addRRect(Skia.RRectXY(Skia.XYWHRect(sX - 2 * ts, barTop - 2 * ts, barW + 4 * ts, barBot - barTop + 4 * ts), 3 * ts, 3 * ts));
     const ticks = Skia.Path.Make();
     for (const v of [0, -9, -18, -27, -36]) {
-      ticks.moveTo(mX - 8, yL(v));
-      ticks.lineTo(mX - 3, yL(v));
+      ticks.moveTo(mX - 8 * ts, yL(v));
+      ticks.lineTo(mX - 3 * ts, yL(v));
     }
     const target = Skia.Path.Make();
-    target.moveTo(mX - 6, yL(-14));
-    target.lineTo(sX + barW + 6, yL(-14));
+    target.moveTo(mX - 6 * ts, yL(-14));
+    target.lineTo(sX + barW + 6 * ts, yL(-14));
     // History frame + grid + the precomputed short-term polyline.
     const hFrame = Skia.Path.Make();
     hFrame.addRect(Skia.XYWHRect(histX, histTop, histW, histBot - histTop));
@@ -1366,14 +1380,14 @@ export function LoudnessView(p: {
     lraTrack.moveTo(cX0, lraY);
     lraTrack.lineTo(cX1, lraY);
     const lraBar = Skia.Path.Make();
-    lraBar.addRect(Skia.XYWHRect(xLufs(lo), lraY - 3, Math.max(4, xLufs(hi) - xLufs(lo)), 6));
-    lraBar.moveTo(xLufs(lo), lraY - 7);
-    lraBar.lineTo(xLufs(lo), lraY + 7);
-    lraBar.moveTo(xLufs(hi), lraY - 7);
-    lraBar.lineTo(xLufs(hi), lraY + 7);
+    lraBar.addRect(Skia.XYWHRect(xLufs(lo), lraY - 3 * ts, Math.max(4 * ts, xLufs(hi) - xLufs(lo)), 6 * ts));
+    lraBar.moveTo(xLufs(lo), lraY - 7 * ts);
+    lraBar.lineTo(xLufs(lo), lraY + 7 * ts);
+    lraBar.moveTo(xLufs(hi), lraY - 7 * ts);
+    lraBar.lineTo(xLufs(hi), lraY + 7 * ts);
     const iTick = Skia.Path.Make();
-    iTick.moveTo(xLufs(sim.integratedLufs), lraY - 8);
-    iTick.lineTo(xLufs(sim.integratedLufs), lraY + 8);
+    iTick.moveTo(xLufs(sim.integratedLufs), lraY - 8 * ts);
+    iTick.lineTo(xLufs(sim.integratedLufs), lraY + 8 * ts);
     return { panel, wells, ticks, target, hFrame, hGrid, hTarget, poly, fill, lraTrack, lraBar, iTick, lraY };
   }, [w, h, sim, ts]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -1404,10 +1418,10 @@ export function LoudnessView(p: {
     const vm = Math.max(-36, Math.min(0, mom[idx]));
     const vs = Math.max(-36, Math.min(0, sho[idx]));
     const pth = Skia.Path.Make();
-    pth.addRect(Skia.XYWHRect(mX, barBot - ((vm + 36) / 36) * (barBot - barTop) - 1, barW, 2));
-    pth.addRect(Skia.XYWHRect(sX, barBot - ((vs + 36) / 36) * (barBot - barTop) - 1, barW, 2));
+    pth.addRect(Skia.XYWHRect(mX, barBot - ((vm + 36) / 36) * (barBot - barTop) - ts, barW, 2 * ts));
+    pth.addRect(Skia.XYWHRect(sX, barBot - ((vs + 36) / 36) * (barBot - barTop) - ts, barW, 2 * ts));
     return pth;
-  }, [p.phase, mom, sho]);
+  }, [p.phase, mom, sho, ts]);
 
   const cursor = useDerivedValue(() => {
     const f = frac01(p.phase.value);
@@ -1418,9 +1432,9 @@ export function LoudnessView(p: {
     const pth = Skia.Path.Make();
     pth.moveTo(x, histTop);
     pth.lineTo(x, histBot);
-    pth.addCircle(x, y, 2.4);
+    pth.addCircle(x, y, 2.4 * ts);
     return pth;
-  }, [p.phase, sho]);
+  }, [p.phase, sho, ts]);
 
   const tpO = useDerivedValue(() => {
     return over ? 0.72 + 0.28 * Math.sin(p.phase.value * 2) : 0;
@@ -1433,11 +1447,11 @@ export function LoudnessView(p: {
         <Path path={G.panel}>
           <LinearGradient start={vec(0, 0)} end={vec(0, h)} colors={['#171b22', '#0c0e12']} />
         </Path>
-        <Path path={G.panel} color={GRID} style="stroke" strokeWidth={1.2} />
-        <SkLine p1={{ x: 10, y: 2 }} p2={{ x: w - 10, y: 2 }} color="#5a6376" strokeWidth={1} opacity={0.6} />
+        <Path path={G.panel} color={GRID} style="stroke" strokeWidth={1.2 * ts} />
+        <SkLine p1={{ x: 10 * ts, y: 2 * ts }} p2={{ x: w - 10 * ts, y: 2 * ts }} color="#5a6376" strokeWidth={ts} opacity={0.6} />
         {/* M / S bars on the −36..0 LUFS scale, −14 target line. */}
         <Path path={G.wells} color="#0a0c0f" />
-        <Path path={G.wells} color={GHOST} style="stroke" strokeWidth={1} />
+        <Path path={G.wells} color={GHOST} style="stroke" strokeWidth={ts} />
         <Path path={mBar}>
           <LinearGradient start={vec(0, barTop)} end={vec(0, barBot)} colors={['#a9ccff', '#4a7fd6']} />
         </Path>
@@ -1445,13 +1459,13 @@ export function LoudnessView(p: {
           <LinearGradient start={vec(0, barTop)} end={vec(0, barBot)} colors={['#8fe9d2', '#2fa08b']} />
         </Path>
         <Path path={barTips} color="#eef4ff" />
-        <Path path={G.ticks} color="#565a64" style="stroke" strokeWidth={1} />
-        <Path path={G.target} color={AMBER} style="stroke" strokeWidth={1.3} opacity={0.9} />
+        <Path path={G.ticks} color="#565a64" style="stroke" strokeWidth={ts} />
+        <Path path={G.target} color={AMBER} style="stroke" strokeWidth={1.3 * ts} opacity={0.9} />
         {/* Short-term history strip with sweeping cursor. */}
         <Path path={G.hFrame} color="#0a0c0f" />
-        <Path path={G.hGrid} color={GHOST} style="stroke" strokeWidth={1} />
-        <Path path={G.hTarget} color={AMBER} style="stroke" strokeWidth={1} opacity={0.55}>
-          <DashPathEffect intervals={[4, 4]} />
+        <Path path={G.hGrid} color={GHOST} style="stroke" strokeWidth={ts} />
+        <Path path={G.hTarget} color={AMBER} style="stroke" strokeWidth={ts} opacity={0.55}>
+          <DashPathEffect intervals={[4 * ts, 4 * ts]} />
         </Path>
         <Path path={G.fill}>
           <LinearGradient
@@ -1460,26 +1474,26 @@ export function LoudnessView(p: {
             colors={[withAlpha(BLUE, 0.3), withAlpha(BLUE, 0.02)]}
           />
         </Path>
-        <GlowStroke path={G.poly} color={BLUE} width={1.6} />
-        <Path path={G.hFrame} color={GRID} style="stroke" strokeWidth={1.1} />
-        <Path path={cursor} color="#e8ecf4" style="stroke" strokeWidth={1} opacity={0.85} />
+        <GlowStroke path={G.poly} color={BLUE} width={1.6 * ts} />
+        <Path path={G.hFrame} color={GRID} style="stroke" strokeWidth={1.1 * ts} />
+        <Path path={cursor} color="#e8ecf4" style="stroke" strokeWidth={ts} opacity={0.85} />
         {/* LRA bracket around the integrated value. */}
-        <Path path={G.lraTrack} color={GHOST} style="stroke" strokeWidth={2} />
-        <Path path={G.lraBar} color={BLUE} style="stroke" strokeWidth={1.6} opacity={0.9} />
-        <Path path={G.iTick} color={AMBER} style="stroke" strokeWidth={1.6} />
+        <Path path={G.lraTrack} color={GHOST} style="stroke" strokeWidth={2 * ts} />
+        <Path path={G.lraBar} color={BLUE} style="stroke" strokeWidth={1.6 * ts} opacity={0.9} />
+        <Path path={G.iTick} color={AMBER} style="stroke" strokeWidth={1.6 * ts} />
         {/* TP lamp — lights above −1 dBTP. */}
         <Circle cx={w - 26 * ts} cy={20 * ts} r={5 * ts} color="#1c0f10" />
         <Circle cx={w - 26 * ts} cy={20 * ts} r={9 * ts} color={withAlpha(RED, 0.6)} opacity={tpO}>
-          <BlurMask blur={6} style="normal" />
+          <BlurMask blur={6 * ts} style="normal" />
         </Circle>
         <Circle cx={w - 26 * ts} cy={20 * ts} r={4.4 * ts} color={RED} opacity={tpO} />
-        <Circle cx={w - 26 * ts} cy={20 * ts} r={5 * ts} color="#000000" style="stroke" strokeWidth={1} opacity={0.7} />
+        <Circle cx={w - 26 * ts} cy={20 * ts} r={5 * ts} color="#000000" style="stroke" strokeWidth={ts} opacity={0.7} />
       </Canvas>
       <Lbl x={10} y={6 * ts} w={200} align="left" size={11} font={fonts.oswaldSemiBold} ls={1}>
         LOUDNESS · LUFS
       </Lbl>
       {[0, -9, -18, -27, -36].map((v) => (
-        <Lbl key={v} x={mX - 38} y={yL(v) - 5} w={28} align="right" size={9}>
+        <Lbl key={v} x={mX - 10 * ts - 28} y={yL(v) - 5} w={28} align="right" size={9}>
           {`${v}`}
         </Lbl>
       ))}
@@ -1489,7 +1503,7 @@ export function LoudnessView(p: {
       <Lbl x={sX + barW / 2 - 12} y={barBot + 8 * ts} w={24} size={11} color="#9aa0ac">
         S
       </Lbl>
-      <Lbl x={mX - 6} y={yL(-14) - 13 * ts} w={90} align="left" size={9} color={AMBER}>
+      <Lbl x={mX - 6 * ts} y={yL(-14) - 13 * ts} w={90} align="left" size={9} color={AMBER}>
         TARGET −14
       </Lbl>
       {/* Integrated LUFS — the headline number, enlarged up top. */}
@@ -1538,10 +1552,10 @@ export function PhaseMeterView(p: {
   const bx0 = 42 * ts;
   const bx1 = w - 42 * ts;
   const by = 20 * ts;
-  const bh = 13;
+  const bh = 13 * ts; // bar height, needle, dots, ticks, strokes all zoom (parity pass 2026-09-26)
   const cxg = w / 2;
-  const cyg = (54 * ts + (h - 8)) / 2;
-  const Rg = Math.min((h - 70 * ts) / 2 - 4, w * 0.3);
+  const cyg = (54 * ts + (h - 8 * ts)) / 2;
+  const Rg = Math.min((h - 70 * ts) / 2 - 4 * ts, w * 0.3);
 
   // stereoPair + correlationOf are the engine's truth: mono → ρ +1 and a
   // vertical gonio line; 180° → ρ −1 and the horizontal — by construction.
@@ -1564,7 +1578,7 @@ export function PhaseMeterView(p: {
       }
       px[i] = cxg + gx;
       py2[i] = cyg - gy;
-      dots.addCircle(px[i], py2[i], 1.35);
+      dots.addCircle(px[i], py2[i], 1.35 * ts);
     }
     // Graticule: rings, the 45° L/R axes, the M/S crosshair.
     const rings = Skia.Path.Make();
@@ -1584,15 +1598,15 @@ export function PhaseMeterView(p: {
     // Correlation bar zones + ticks.
     const zones: [SkPathT, SkPathT, SkPathT] = [Skia.Path.Make(), Skia.Path.Make(), Skia.Path.Make()];
     const xOfC = (c: number) => bx0 + ((c + 1) / 2) * (bx1 - bx0);
-    zones[0].addRect(Skia.XYWHRect(xOfC(-1), by, xOfC(0) - xOfC(-1) - 1, bh));
-    zones[1].addRect(Skia.XYWHRect(xOfC(0), by, xOfC(0.5) - xOfC(0) - 1, bh));
+    zones[0].addRect(Skia.XYWHRect(xOfC(-1), by, xOfC(0) - xOfC(-1) - ts, bh));
+    zones[1].addRect(Skia.XYWHRect(xOfC(0), by, xOfC(0.5) - xOfC(0) - ts, bh));
     zones[2].addRect(Skia.XYWHRect(xOfC(0.5), by, xOfC(1) - xOfC(0.5), bh));
     const track = Skia.Path.Make();
-    track.addRRect(Skia.RRectXY(Skia.XYWHRect(bx0 - 2, by - 2, bx1 - bx0 + 4, bh + 4), 3, 3));
+    track.addRRect(Skia.RRectXY(Skia.XYWHRect(bx0 - 2 * ts, by - 2 * ts, bx1 - bx0 + 4 * ts, bh + 4 * ts), 3 * ts, 3 * ts));
     const bticks = Skia.Path.Make();
     for (const c of [-1, -0.5, 0, 0.5, 1]) {
-      bticks.moveTo(xOfC(c), by + bh + 2);
-      bticks.lineTo(xOfC(c), by + bh + 6);
+      bticks.moveTo(xOfC(c), by + bh + 2 * ts);
+      bticks.lineTo(xOfC(c), by + bh + 6 * ts);
     }
     return { corr, px, py: py2, dots, rings, diag, cross, zones, track, bticks };
   }, [p.width01, p.phaseDeg, w, h, ts]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -1610,14 +1624,14 @@ export function PhaseMeterView(p: {
     if (c > 1) c = 1;
     const x = bx0 + ((c + 1) / 2) * (bx1 - bx0);
     const pth = Skia.Path.Make();
-    pth.moveTo(x, by - 4);
-    pth.lineTo(x, by + bh + 4);
-    pth.moveTo(x - 4, by - 6);
-    pth.lineTo(x + 4, by - 6);
-    pth.lineTo(x, by - 1);
+    pth.moveTo(x, by - 4 * ts);
+    pth.lineTo(x, by + bh + 4 * ts);
+    pth.moveTo(x - 4 * ts, by - 6 * ts);
+    pth.lineTo(x + 4 * ts, by - 6 * ts);
+    pth.lineTo(x, by - 1 * ts);
     pth.close();
     return pth;
-  }, [p.phase, corr]);
+  }, [p.phase, corr, ts]);
 
   // Phosphor beam: a bright refresh window sweeping the dot cloud.
   const beam = useDerivedValue(() => {
@@ -1625,7 +1639,7 @@ export function PhaseMeterView(p: {
     const pth = Skia.Path.Make();
     for (let k = 0; k < 26; k++) {
       const i = (j0 + k) % RES;
-      pth.addCircle(ptsX[i], ptsY[i], 1.7);
+      pth.addCircle(ptsX[i], ptsY[i], 1.7 * ts);
     }
     return pth;
   }, [p.phase, ptsX, ptsY]);
@@ -1638,25 +1652,25 @@ export function PhaseMeterView(p: {
         <Path path={S.zones[0]} color={RED} opacity={0.26} />
         <Path path={S.zones[1]} color={AMBER} opacity={0.26} />
         <Path path={S.zones[2]} color={GREEN} opacity={0.26} />
-        <Path path={S.track} color={GRID} style="stroke" strokeWidth={1.1} />
-        <Path path={S.bticks} color="#565a64" style="stroke" strokeWidth={1} />
-        <Path path={needle} color="#ffffff" style="stroke" strokeWidth={3} opacity={0.2}>
-          <BlurMask blur={2.5} style="normal" />
+        <Path path={S.track} color={GRID} style="stroke" strokeWidth={1.1 * ts} />
+        <Path path={S.bticks} color="#565a64" style="stroke" strokeWidth={ts} />
+        <Path path={needle} color="#ffffff" style="stroke" strokeWidth={3 * ts} opacity={0.2}>
+          <BlurMask blur={2.5 * ts} style="normal" />
         </Path>
-        <Path path={needle} color="#e8ecf4" style="stroke" strokeWidth={1.4} />
+        <Path path={needle} color="#e8ecf4" style="stroke" strokeWidth={1.4 * ts} />
         {/* Goniometer graticule. */}
-        <Path path={S.rings} color={GRID} style="stroke" strokeWidth={1.1} />
-        <Path path={S.diag} color="#3a444f" style="stroke" strokeWidth={1} />
-        <Path path={S.cross} color="#333c46" style="stroke" strokeWidth={1} opacity={0.8}>
-          <DashPathEffect intervals={[4, 4]} />
+        <Path path={S.rings} color={GRID} style="stroke" strokeWidth={1.1 * ts} />
+        <Path path={S.diag} color="#3a444f" style="stroke" strokeWidth={ts} />
+        <Path path={S.cross} color="#333c46" style="stroke" strokeWidth={ts} opacity={0.8}>
+          <DashPathEffect intervals={[4 * ts, 4 * ts]} />
         </Path>
         {/* Phosphor cloud: glow pass + core pass + sweeping refresh beam. */}
         <Path path={S.dots} color={GREEN} opacity={0.4}>
-          <BlurMask blur={4} style="normal" />
+          <BlurMask blur={4 * ts} style="normal" />
         </Path>
         <Path path={S.dots} color="#c9ffda" opacity={0.85} />
         <Path path={beam} color={withAlpha(GREEN, 0.8)} opacity={0.7}>
-          <BlurMask blur={3} style="normal" />
+          <BlurMask blur={3 * ts} style="normal" />
         </Path>
         <Path path={beam} color="#f2fff5" opacity={0.95} />
       </Canvas>
@@ -1666,25 +1680,25 @@ export function PhaseMeterView(p: {
       <Lbl x={w - 10 * ts - 80} y={4 * ts} w={80} align="right" size={9} color={zoneColor}>
         {`ρ ${corr >= 0 ? '+' : ''}${corr.toFixed(2)}`}
       </Lbl>
-      <Lbl x={bx0 - 30} y={by + 2} w={24} align="right" size={8}>
+      <Lbl x={bx0 - 6 * ts - 24} y={by + bh / 2 - 4} w={24} align="right" size={8}>
         −1
       </Lbl>
-      <Lbl x={bx1 + 6} y={by + 2} w={24} align="left" size={8}>
+      <Lbl x={bx1 + 6 * ts} y={by + bh / 2 - 4} w={24} align="left" size={8}>
         +1
       </Lbl>
       <Lbl x={(bx0 + bx1) / 2 - 10} y={by + bh + 8 * ts} w={20} size={7}>
         0
       </Lbl>
-      <Lbl x={cxg - Rg * 0.707 - 24} y={cyg - Rg * 0.707 - 12 * ts} w={20} size={8} color="#9aa0ac">
+      <Lbl x={cxg - Rg * 0.707 - 14 * ts - 10} y={cyg - Rg * 0.707 - 12 * ts} w={20} size={8} color="#9aa0ac">
         L
       </Lbl>
-      <Lbl x={cxg + Rg * 0.707 + 4} y={cyg - Rg * 0.707 - 12 * ts} w={20} size={8} color="#9aa0ac">
+      <Lbl x={cxg + Rg * 0.707 + 14 * ts - 10} y={cyg - Rg * 0.707 - 12 * ts} w={20} size={8} color="#9aa0ac">
         R
       </Lbl>
       <Lbl x={cxg - 10} y={cyg - Rg - 12 * ts} w={20} size={7}>
         M
       </Lbl>
-      <Lbl x={cxg + Rg + 4} y={cyg - 4} w={20} align="left" size={7}>
+      <Lbl x={cxg + Rg + 4 * ts} y={cyg - 4} w={20} align="left" size={7}>
         S
       </Lbl>
     </View>
@@ -1708,11 +1722,11 @@ export function StereoImageView(p: {
   // MID/SIDE rows, their label gutter and the preset strip grow with them.
   const ts = useStageTextScale();
   const oy = h - 64 * ts;
-  const r0 = 16;
-  const maxLen = Math.min(oy - 24 * ts, w / 2 - 42) - r0;
+  const r0 = 16 * ts; // hub radius, fan bar width, M/S row height all zoom (parity pass 2026-09-26)
+  const maxLen = Math.min(oy - 24 * ts, w / 2 - 42 * ts) - r0;
   const BINS = 41;
   const msX0 = 52 * ts;
-  const msX1 = w - 18;
+  const msX1 = w - 18 * ts;
   const rowM = h - 44 * ts;
   const rowS = h - 26 * ts;
 
@@ -1750,9 +1764,10 @@ export function StereoImageView(p: {
     }
     // Arc frame.
     const arcs = Skia.Path.Make();
-    const rA = r0 + maxLen + 6;
+    const rA = r0 + maxLen + 6 * ts;
     arcs.addArc(Skia.XYWHRect(cx - rA, oy - rA, 2 * rA, 2 * rA), -162, 144);
-    arcs.addArc(Skia.XYWHRect(cx - (r0 - 5), oy - (r0 - 5), 2 * (r0 - 5), 2 * (r0 - 5)), -162, 144);
+    const rH = r0 - 5 * ts;
+    arcs.addArc(Skia.XYWHRect(cx - rH, oy - rH, 2 * rH, 2 * rH), -162, 144);
     // MID / SIDE levels from the engine's stereo model.
     const W01: Record<typeof p.preset, number> = { mono: 0, narrow: 0.25, wide: 0.8, hardlr: 1, midside: 0.95 };
     const pair = stereoPair(W01[p.preset], 0, 512);
@@ -1761,17 +1776,18 @@ export function StereoImageView(p: {
     const midN = Math.min(1, rmsOf(m) / 0.45);
     const sideN = Math.min(1, rmsOf(sd) / 0.45);
     const wells = Skia.Path.Make();
-    wells.addRRect(Skia.RRectXY(Skia.XYWHRect(msX0, rowM, msX1 - msX0, 10), 2, 2));
-    wells.addRRect(Skia.RRectXY(Skia.XYWHRect(msX0, rowS, msX1 - msX0, 10), 2, 2));
-    const midW = Math.max(3, (msX1 - msX0) * midN);
-    const sideW = Math.max(3, (msX1 - msX0) * sideN);
+    const rowH = 10 * ts;
+    wells.addRRect(Skia.RRectXY(Skia.XYWHRect(msX0, rowM, msX1 - msX0, rowH), 2 * ts, 2 * ts));
+    wells.addRRect(Skia.RRectXY(Skia.XYWHRect(msX0, rowS, msX1 - msX0, rowH), 2 * ts, 2 * ts));
+    const midW = Math.max(3 * ts, (msX1 - msX0) * midN);
+    const sideW = Math.max(3 * ts, (msX1 - msX0) * sideN);
     const midFill = Skia.Path.Make();
-    midFill.addRRect(Skia.RRectXY(Skia.XYWHRect(msX0, rowM, midW, 10), 2, 2));
+    midFill.addRRect(Skia.RRectXY(Skia.XYWHRect(msX0, rowM, midW, rowH), 2 * ts, 2 * ts));
     const sideFill = Skia.Path.Make();
-    sideFill.addRRect(Skia.RRectXY(Skia.XYWHRect(msX0, rowS, sideW, 10), 2, 2));
+    sideFill.addRRect(Skia.RRectXY(Skia.XYWHRect(msX0, rowS, sideW, rowH), 2 * ts, 2 * ts));
     const capsMs = Skia.Path.Make();
-    capsMs.addRect(Skia.XYWHRect(msX0 + midW - 2, rowM, 2.4, 10));
-    capsMs.addRect(Skia.XYWHRect(msX0 + sideW - 2, rowS, 2.4, 10));
+    capsMs.addRect(Skia.XYWHRect(msX0 + midW - 2 * ts, rowM, 2.4 * ts, rowH));
+    capsMs.addRect(Skia.XYWHRect(msX0 + sideW - 2 * ts, rowS, 2.4 * ts, rowH));
     return { energies, base, arcs, wells, midFill, sideFill, capsMs };
   }, [p.preset, w, h, ts]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -1794,23 +1810,23 @@ export function StereoImageView(p: {
     return 0.55 + 0.45 * (0.5 + 0.5 * Math.sin(p.phase.value * 2.4));
   }, [p.phase]);
 
-  const rL = r0 + maxLen + 16;
+  const rL = r0 + maxLen + 16 * ts;
   return (
     <View style={{ width: w, height: h }}>
       <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
-        <Path path={S.arcs} color={GHOST} style="stroke" strokeWidth={1.1} />
-        <Path path={S.base} color="#2e3540" style="stroke" strokeWidth={4.5} strokeCap="round" opacity={0.55} />
+        <Path path={S.arcs} color={GHOST} style="stroke" strokeWidth={1.1 * ts} />
+        <Path path={S.base} color="#2e3540" style="stroke" strokeWidth={4.5 * ts} strokeCap="round" opacity={0.55} />
         {/* Energy fan: blue at the sides → amber at center (SweepGradient). */}
-        <Path path={fan} style="stroke" strokeWidth={4.5} strokeCap="round" opacity={0.28}>
+        <Path path={fan} style="stroke" strokeWidth={4.5 * ts} strokeCap="round" opacity={0.28}>
           <SweepGradient c={vec(cx, oy)} colors={[BLUE, BLUE, AMBER, BLUE, BLUE]} positions={[0, 0.54, 0.75, 0.96, 1]} />
-          <BlurMask blur={5} style="normal" />
+          <BlurMask blur={5 * ts} style="normal" />
         </Path>
-        <Path path={fan} style="stroke" strokeWidth={4.5} strokeCap="round">
+        <Path path={fan} style="stroke" strokeWidth={4.5 * ts} strokeCap="round">
           <SweepGradient c={vec(cx, oy)} colors={[BLUE, BLUE, AMBER, BLUE, BLUE]} positions={[0, 0.54, 0.75, 0.96, 1]} />
         </Path>
         {/* MID / SIDE bars (stereoPair → rmsOf). */}
         <Path path={S.wells} color="#0a0c0f" />
-        <Path path={S.wells} color={GHOST} style="stroke" strokeWidth={1} />
+        <Path path={S.wells} color={GHOST} style="stroke" strokeWidth={ts} />
         <Path path={S.midFill}>
           <LinearGradient start={vec(msX0, 0)} end={vec(msX1, 0)} colors={['#8a6a1e', AMBER]} />
         </Path>
@@ -1828,10 +1844,10 @@ export function StereoImageView(p: {
       <Lbl x={cx + Math.sin(72 * DEG) * rL - 10} y={oy - Math.cos(72 * DEG) * rL - 5} w={20} size={9} color="#9aa0ac">
         R
       </Lbl>
-      <Lbl x={12} y={rowM + 1} w={36} align="left" size={7}>
+      <Lbl x={12} y={rowM + 5 * ts - 3.5} w={36} align="left" size={7}>
         MID
       </Lbl>
-      <Lbl x={12} y={rowS + 1} w={36} align="left" size={7}>
+      <Lbl x={12} y={rowS + 5 * ts - 3.5} w={36} align="left" size={7}>
         SIDE
       </Lbl>
       <Lbl x={w - 10 * ts - 80} y={6 * ts} w={80} align="right" size={7} color={AMBER} ls={1}>
@@ -1861,10 +1877,12 @@ export function ScopeView(p: {
   // The screen-corner captions grow in FULL SCREEN (StageTextScale); their
   // inset from the screen edge grows with them.
   const ts = useStageTextScale();
-  const sx = 12;
-  const sy = 12;
-  const sw = w - 24;
-  const sh = h - 24;
+  // Bezel inset, graticule ticks, trace widths and the trigger marker zoom
+  // with the drawing (parity pass 2026-09-26).
+  const sx = 12 * ts;
+  const sy = 12 * ts;
+  const sw = w - 24 * ts;
+  const sh = h - 24 * ts;
   const cxs = sx + sw / 2;
   const cys = sy + sh / 2;
 
@@ -1889,13 +1907,13 @@ export function ScopeView(p: {
     const ticksA = Skia.Path.Make();
     for (let i = 0; i <= 50; i++) {
       const x = sx + (i * sw) / 50;
-      ticksA.moveTo(x, cys - 2.6);
-      ticksA.lineTo(x, cys + 2.6);
+      ticksA.moveTo(x, cys - 2.6 * ts);
+      ticksA.lineTo(x, cys + 2.6 * ts);
     }
     for (let j = 0; j <= 40; j++) {
       const y = sy + (j * sh) / 40;
-      ticksA.moveTo(cxs - 2.6, y);
-      ticksA.lineTo(cxs + 2.6, y);
+      ticksA.moveTo(cxs - 2.6 * ts, y);
+      ticksA.lineTo(cxs + 2.6 * ts, y);
     }
     // Trace: Y-t sweep, or the X-Y Lissajous figure (X = left, Y = right).
     const trace = Skia.Path.Make();
@@ -1932,16 +1950,16 @@ export function ScopeView(p: {
     }
     // Screen + bezel plates, trigger marker (normal mode).
     const bezel = Skia.Path.Make();
-    bezel.addRRect(Skia.RRectXY(Skia.XYWHRect(0, 0, w, h), 16, 16));
+    bezel.addRRect(Skia.RRectXY(Skia.XYWHRect(0, 0, w, h), 16 * ts, 16 * ts));
     const screen = Skia.Path.Make();
-    screen.addRRect(Skia.RRectXY(Skia.XYWHRect(sx - 2, sy - 2, sw + 4, sh + 4), 10, 10));
+    screen.addRRect(Skia.RRectXY(Skia.XYWHRect(sx - 2 * ts, sy - 2 * ts, sw + 4 * ts, sh + 4 * ts), 10 * ts, 10 * ts));
     const trig = Skia.Path.Make();
-    trig.moveTo(sx + sw - 1, cys - 4);
-    trig.lineTo(sx + sw - 7, cys);
-    trig.lineTo(sx + sw - 1, cys + 4);
+    trig.moveTo(sx + sw - 1 * ts, cys - 4 * ts);
+    trig.lineTo(sx + sw - 7 * ts, cys);
+    trig.lineTo(sx + sw - 1 * ts, cys + 4 * ts);
     trig.close();
     return { grat, axes, ticksA, trace, ptsX, ptsY, bezel, screen, trig };
-  }, [p.signal, xy, p.width01, p.phaseDeg, w, h]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [p.signal, xy, p.width01, p.phaseDeg, w, h, ts]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const bpx = S.ptsX;
   const bpy = S.ptsY;
@@ -1959,7 +1977,7 @@ export function ScopeView(p: {
   const beam = useDerivedValue(() => {
     const i = Math.min(RES - 1, Math.floor(frac01(p.phase.value) * RES));
     const pth = Skia.Path.Make();
-    pth.addCircle(bpx[i], bpy[i], 2.2);
+    pth.addCircle(bpx[i], bpy[i], 2.2 * ts);
     return pth;
   }, [p.phase, bpx, bpy]);
 
@@ -1970,31 +1988,31 @@ export function ScopeView(p: {
         <Path path={S.bezel}>
           <LinearGradient start={vec(0, 0)} end={vec(0, h)} colors={['#26272e', '#131418']} />
         </Path>
-        <Path path={S.bezel} color="#000000" style="stroke" strokeWidth={1.4} opacity={0.7} />
+        <Path path={S.bezel} color="#000000" style="stroke" strokeWidth={1.4 * ts} opacity={0.7} />
         <Path path={S.screen}>
           <RadialGradient c={vec(cxs, cys)} r={Math.max(sw, sh) * 0.62} colors={['#0c130c', '#060906']} />
         </Path>
-        <Path path={S.grat} color="#16281b" style="stroke" strokeWidth={1} opacity={0.9} />
-        <Path path={S.axes} color="#24402b" style="stroke" strokeWidth={1.2} />
-        <Path path={S.ticksA} color="#24402b" style="stroke" strokeWidth={0.8} opacity={0.9} />
+        <Path path={S.grat} color="#16281b" style="stroke" strokeWidth={ts} opacity={0.9} />
+        <Path path={S.axes} color="#24402b" style="stroke" strokeWidth={1.2 * ts} />
+        <Path path={S.ticksA} color="#24402b" style="stroke" strokeWidth={0.8 * ts} opacity={0.9} />
         {/* Phosphor persistence: a dimmer echo one frame back. */}
-        <Group transform={xy ? [{ translateX: 1.5 }, { translateY: 1.5 }] : [{ translateX: -3 }]}>
-          <Path path={S.trace} color={GREEN} style="stroke" strokeWidth={2} opacity={0.16}>
-            <BlurMask blur={3.5} style="normal" />
+        <Group transform={xy ? [{ translateX: 1.5 * ts }, { translateY: 1.5 * ts }] : [{ translateX: -3 * ts }]}>
+          <Path path={S.trace} color={GREEN} style="stroke" strokeWidth={2 * ts} opacity={0.16}>
+            <BlurMask blur={3.5 * ts} style="normal" />
           </Path>
         </Group>
         {/* Live trace: glow pass + crisp core. */}
-        <Path path={S.trace} color={GREEN} style="stroke" strokeWidth={5} opacity={0.3}>
-          <BlurMask blur={6} style="normal" />
+        <Path path={S.trace} color={GREEN} style="stroke" strokeWidth={5 * ts} opacity={0.3}>
+          <BlurMask blur={6 * ts} style="normal" />
         </Path>
-        <Path path={S.trace} color="#b6ffc9" style="stroke" strokeWidth={1.6} />
-        {!xy ? <Path path={cursor} color="#69a877" style="stroke" strokeWidth={1} opacity={0.35} /> : null}
+        <Path path={S.trace} color="#b6ffc9" style="stroke" strokeWidth={1.6 * ts} />
+        {!xy ? <Path path={cursor} color="#69a877" style="stroke" strokeWidth={ts} opacity={0.35} /> : null}
         <Path path={beam} color={withAlpha(GREEN, 0.8)} opacity={0.8}>
-          <BlurMask blur={4} style="normal" />
+          <BlurMask blur={4 * ts} style="normal" />
         </Path>
         <Path path={beam} color="#eaffef" />
         {!xy ? <Path path={S.trig} color="#69a877" opacity={0.8} /> : null}
-        <Path path={S.screen} color="#000000" style="stroke" strokeWidth={2.4} opacity={0.85} />
+        <Path path={S.screen} color="#000000" style="stroke" strokeWidth={2.4 * ts} opacity={0.85} />
       </Canvas>
       <Lbl x={sx + 6} y={sy + sh - 12 * ts} w={140} align="left" size={7} color="#5f8a68">
         {xy ? 'X = L · Y = R' : 'CH 1 · SWEEP LOCK'}

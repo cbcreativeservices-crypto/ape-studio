@@ -255,13 +255,13 @@ export function SpectrumPatternView(p: {
         if (f < F_LO || f > F_HI) continue;
         const x = xOf(f);
         ticks.moveTo(x, baseY);
-        ticks.lineTo(x, baseY + 3);
+        ticks.lineTo(x, baseY + 3 * ts);
       }
     }
     for (const d of SPEC_DECADES) {
       const x = xOf(d.f);
       ticks.moveTo(x, baseY);
-      ticks.lineTo(x, baseY + 4.5);
+      ticks.lineTo(x, baseY + 4.5 * ts);
     }
     frame.moveTo(PAD_L, PAD_T);
     frame.lineTo(PAD_L, baseY);
@@ -356,11 +356,11 @@ export function SpectrumPatternView(p: {
     const marker = Skia.Path.Make();
     const px = xOf(peakF);
     const py = yOf(peakDb);
-    marker.moveTo(px, py - 3);
-    marker.lineTo(px, PAD_T - 4);
-    marker.moveTo(px - 2.6, py - 3);
-    marker.lineTo(px, py + 0.5);
-    marker.lineTo(px + 2.6, py - 3);
+    marker.moveTo(px, py - 3 * ts);
+    marker.lineTo(px, PAD_T - 4 * ts);
+    marker.moveTo(px - 2.6 * ts, py - 3 * ts);
+    marker.lineTo(px, py + 0.5 * ts);
+    marker.lineTo(px + 2.6 * ts, py - 3 * ts);
     marker.close();
     return { curve, under, marker, peakF, px };
   }, [p.pattern, w, h, ts]);
@@ -370,9 +370,10 @@ export function SpectrumPatternView(p: {
   return (
     <View style={{ width: w, height: h }}>
       <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
-        <Path path={axes.grid} color={GHOST} style="stroke" strokeWidth={1} />
-        <Path path={axes.ticks} color={GRID} style="stroke" strokeWidth={1.2} />
-        <Path path={axes.frame} color={GRID} style="stroke" strokeWidth={1.2} />
+        {/* Strokes, ticks and the peak flag zoom with the plot (parity pass 2026-09-26). */}
+        <Path path={axes.grid} color={GHOST} style="stroke" strokeWidth={ts} />
+        <Path path={axes.ticks} color={GRID} style="stroke" strokeWidth={1.2 * ts} />
+        <Path path={axes.frame} color={GRID} style="stroke" strokeWidth={1.2 * ts} />
         {/* Layer 1 — gradient underfill lifts the pattern off black. */}
         <Path path={envelope.under}>
           <LinearGradient
@@ -399,9 +400,9 @@ export function SpectrumPatternView(p: {
         </Path>
         <Path path={tips} color={withAlpha('#ffffff', 0.55)} />
         {/* Layer 3 — the smooth glowing envelope over the bars. */}
-        <GlowStroke path={envelope.curve} color={WAVE} width={2.2} />
+        <GlowStroke path={envelope.curve} color={WAVE} width={2.2 * ts} />
         {/* Peak-of-pattern marker (the feedback spike's thin flag). */}
-        <Path path={envelope.marker} color={markerColor} style="stroke" strokeWidth={1} opacity={0.9} />
+        <Path path={envelope.marker} color={markerColor} style="stroke" strokeWidth={ts} opacity={0.9} />
         <Path path={envelope.marker} color={markerColor} opacity={0.9} />
       </Canvas>
       {/* dB axis — the actual plotted range, each label in its MIDI level color
@@ -479,7 +480,7 @@ export function SpectrogramPatternView(p: {
   const LEG_W = 26 * ts; // color-scale legend column
   const plotX = PAD_L;
   const plotY = PAD_T;
-  const plotW = Math.max(20, w - PAD_L - LEG_W - 6);
+  const plotW = Math.max(20, w - PAD_L - LEG_W - 6 * ts);
   const plotH = Math.max(20, h - PAD_T - PAD_B);
   const cellW = plotW / SG_COLS;
 
@@ -519,8 +520,8 @@ export function SpectrogramPatternView(p: {
   // Fixed NOW marker at the right edge (scroll mode).
   const nowLine = useMemo(() => {
     const path = Skia.Path.Make();
-    path.moveTo(plotX + plotW - 1, plotY);
-    path.lineTo(plotX + plotW - 1, plotY + plotH);
+    path.moveTo(plotX + plotW - ts, plotY);
+    path.lineTo(plotX + plotW - ts, plotY + plotH);
     return path;
   }, [w, h, ts]);
 
@@ -567,7 +568,7 @@ export function SpectrogramPatternView(p: {
                 ))}
               </Group>
             </Group>
-            <Path path={nowLine} color={WAVE} style="stroke" strokeWidth={1.6} opacity={0.85} />
+            <Path path={nowLine} color={WAVE} style="stroke" strokeWidth={1.6 * ts} opacity={0.85} />
           </>
         ) : (
           <>
@@ -576,10 +577,10 @@ export function SpectrogramPatternView(p: {
             ))}
             {/* Live column highlight + sweep line (worklet, phase clock). */}
             <Path path={cursorBand} color="#ffffff" opacity={0.1} />
-            <Path path={cursorLine} color={WAVE} style="stroke" strokeWidth={1.2} opacity={0.8} />
+            <Path path={cursorLine} color={WAVE} style="stroke" strokeWidth={1.2 * ts} opacity={0.8} />
           </>
         )}
-        <Path path={frame} color={GRID} style="stroke" strokeWidth={1.2} />
+        <Path path={frame} color={GRID} style="stroke" strokeWidth={1.2 * ts} />
         {/* Color-scale legend strip (hot at the top). */}
         <Path path={legend}>
           <LinearGradient
@@ -1022,7 +1023,7 @@ export function WaterfallView(p: {
           rgbStr(mixRgb(mixRgb(st.rgb, WF_RIDGE_LIFT, 0.35 * st.level), WF_COOL_DARK, 0.35 * age)),
         ),
         fillColors: WF_HEAT_STOPS.map((st) => rgbStr(mixRgb(st.rgb, WF_COOL_DARK, dim))),
-        swid: 1.7 - 0.8 * cum,
+        swid: (1.7 - 0.8 * cum) * ts, // ridge line zooms with the range (parity pass 2026-09-26)
         // Anchored to the 0 dB LINE, not the top of the box: the drawing has
         // headroom above 0 for EQ boosts, and letting the gradient span that
         // too would shift every colour down and break the amplitude ramp.
@@ -1082,8 +1083,8 @@ export function WaterfallView(p: {
     const depthGuides = Skia.Path.Make();
     for (const { f } of WF_FRONT_LABELS) {
       const x = geo.xL0 + lgFrac(f) * geo.frontW;
-      ticks.moveTo(x, geo.baseY + 2);
-      ticks.lineTo(x, geo.baseY + 6);
+      ticks.moveTo(x, geo.baseY + 2 * ts);
+      ticks.lineTo(x, geo.baseY + 6 * ts);
       // THE tie line for this frequency: from its front-edge position, running
       // INTO the depth parallel to the recession, so it stays over the SAME
       // frequency at every slice.
@@ -1121,7 +1122,7 @@ export function WaterfallView(p: {
     // the chart?" Use the right edge's own recession instead.
     const rdxTot = geo.dxTot - 0.2 * geo.frontW; // the RIGHT edge's x-run
     const ax0 = geo.xL0 + geo.frontW + 10 * ts;
-    const ay0 = geo.baseY - 2;
+    const ay0 = geo.baseY - 2 * ts;
     const ax1 = ax0 + rdxTot * 0.9;
     const ay1 = ay0 - geo.dyTot * 0.9;
     // Time now increases TOWARD the viewer (t=0 at the back), so the arrow
@@ -1132,7 +1133,7 @@ export function WaterfallView(p: {
     const angA = Math.atan2(ay0 - ay1, ax0 - ax1);
     for (const s of [-1, 1]) {
       arrow.moveTo(ax0, ay0);
-      arrow.lineTo(ax0 - 6 * Math.cos(angA - s * 0.42), ay0 - 6 * Math.sin(angA - s * 0.42));
+      arrow.lineTo(ax0 - 6 * ts * Math.cos(angA - s * 0.42), ay0 - 6 * ts * Math.sin(angA - s * 0.42));
     }
     // dB KEY — a COLOUR key, not a geometric ruler.
     //
@@ -1203,27 +1204,27 @@ export function WaterfallView(p: {
             a line shows through where the range is QUIET and is hidden where it
             is loud, which reads as real depth instead of a grid pasted on top.
             Brightened now that most of each line is hidden. */}
-        <Path path={axes.depthGuides} color="#8d93a3" style="stroke" strokeWidth={1} opacity={0.35} />
+        <Path path={axes.depthGuides} color="#8d93a3" style="stroke" strokeWidth={ts} opacity={0.35} />
         {/* The ringing frequency's guide, brighter than its neighbours so the
             eye can follow the mode back from its label. Still BEHIND the
             slices, so the range occludes it like every other guide. */}
-        <Path path={axes.ringGuide} color={RING_MARK} style="stroke" strokeWidth={1.4} opacity={0.75} />
+        <Path path={axes.ringGuide} color={RING_MARK} style="stroke" strokeWidth={1.4 * ts} opacity={0.75} />
         {/* 1-second bands — bright, Altiverb-style, so time is unmissable. */}
         {/* Chrome must never out-contrast the data: at 0.75 these floor bands
             were brighter than the decayed mountain fills they run behind. They
             stay legible because they EMERGE from behind the ridges. */}
-        <Path path={axes.timeLines} color="#c6ccda" style="stroke" strokeWidth={1.3} opacity={0.45} />
-        <Path path={axes.arrow} color="#4b4e58" style="stroke" strokeWidth={1.2} strokeCap="round" />
+        <Path path={axes.timeLines} color="#c6ccda" style="stroke" strokeWidth={1.3 * ts} opacity={0.45} />
+        <Path path={axes.arrow} color="#4b4e58" style="stroke" strokeWidth={1.2 * ts} strokeCap="round" />
         {/* The mountain range: BACK-TO-FRONT so opaque fills occlude. */}
         {Array.from({ length: WF_SLICES }, (_, k) => {
           const i = WF_SLICES - 1 - k;
           return <WfSlice key={i} slice={geo.slices[i]} index={i} phase={phase} animate={animate} />;
         })}
         {/* Phase A impulse flash on the t=0 slice — the BACK ridge. */}
-        <Path path={geo.slices[WF_SLICES - 1].stroke} color="#ffffff" style="stroke" strokeWidth={2.6} opacity={flashOp}>
-          <BlurMask blur={5} style="normal" />
+        <Path path={geo.slices[WF_SLICES - 1].stroke} color="#ffffff" style="stroke" strokeWidth={2.6 * ts} opacity={flashOp}>
+          <BlurMask blur={5 * ts} style="normal" />
         </Path>
-        <Path path={axes.ticks} color={GRID} style="stroke" strokeWidth={1.2} />
+        <Path path={axes.ticks} color={GRID} style="stroke" strokeWidth={1.2 * ts} />
       </Canvas>
       {/* Frequency labels along the BOTTOM / front edge, one per tie line
           (owner 2026-08-28: "show the freq (Hz) scale numbers ... down"). They
