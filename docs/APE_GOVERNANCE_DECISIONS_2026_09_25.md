@@ -176,3 +176,46 @@ working tree, pushes, publishing (on the owner's word only) and `docs/CROSS_SESS
 - This D34 commit is **local, NOT pushed**: pushing it would also push the new session's
   unpushed `f3be3797`. The new session pushes both when it is ready.
 - The new session's uncommitted edit to `docs/CROSS_SESSION_HANDOFF.md` was left untouched.
+
+
+## D35 · FULL SCREEN is a working surface, not a picture: controls, readouts, everything zooms
+
+**Owner (2026-09-25 night → 2026-09-26 morning walkthrough of Wave Physics):** *"full screen should
+still be interactive with the controls locked at bottom"* · *"make sure the head, speaker (objects)
+and the arrival readouts are also zooming in size"* · *"in Full Screen show any readouts across the
+very top"* · *"when inside a button's choice … temporarily move the user controls above it so they
+can still be used"* · *"make the 'pick a zoom step…' message collapsable — animate it like a roll
+up/down"* · *"make the hide display and full screen buttons a little thinner"* → *"apply it to all
+labs with full screens so they all behave and are thematically similar."*
+
+**Ruled, for every lab with a full-screen display (rack or inline figure):**
+1. The lab's controls are docked at the bottom of the full-screen view and stay live (rack: the
+   lane + keys + trays; inline figures: the page's own control elements, shared state).
+2. With a tray open, the dock rises above the tray card and drops back when it closes; the tray
+   never veils the drawing in full screen.
+3. The lab's readouts run across the top under the zoom bar (rack bezel; inline labs put their
+   live numbers at the top of the dock).
+4. Everything in the drawing zooms with the step — objects, glyphs, icons, ticks, strokes, halos,
+   legends, fader boards. Only genuine controls and rack chrome keep their size.
+5. The zoom hint rolls away on a tap (`?` chip brings it back); the HIDE DISPLAY / FULL SCREEN
+   row is 34 pt with a 44 pt touch target.
+Applied to all twelve full-screen labs 2026-09-26 (`docs/APE_LAB_LEGIBILITY_PASS_2026_09_26.md` §6).
+
+## D36 · A cropped readout drops its label, never its number
+
+**Owner (2026-09-26):** *"if they begin to get cropped, then drop the descriptor text and just show
+the # readout."*
+
+**Ruled:** a bezel cell whose value would be cut off drops its key line and shows the value; if the
+bare value still does not fit, it stacks number over unit. No font ever goes under 9 pt to make
+room. Shared `rack/BezelReadouts.tsx` (`1a69d3ca`); it fixes the Loudness meter and the Sound
+Systems "REVERB HEA…" cells alike.
+
+## D37 · The Bass Guitar Lab plays the recordings
+
+**Owner (2026-09-25 night):** *"wire in the actual bass note recordings that are in the DB to the
+bass guitar lab — it is still using the sound generator instead of the samples we have ready."*
+
+**Ruled:** ▶ streams the published `bass_fretboard` recording for the selection (52 chromatic
+notes, 16 natural harmonics); the additive string model is only the fallback when a recording
+cannot be fetched, and the screen says which is sounding (`db203299`).

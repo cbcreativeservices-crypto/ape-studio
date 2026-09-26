@@ -615,3 +615,37 @@ process is running.
   lose its last line's tail on iOS; give long centred text `alignSelf:'stretch'`.
 - **Tester "bugs" are often unexplained design.** "Locked on the wrong course" was the standing
   requirements (Safety, Grounding, Workplace) placed first with nothing saying why; one label fixed it.
+
+
+## 2026-09-26 — twelve lessons from the eleven-lab legibility night and the morning walkthrough
+
+- **Parallel lab agents work when the shared code is frozen first.** One commit for `rack/` + `kit/`,
+  then eleven agents each owning one lab folder, forbidden from the shared files, committing only
+  their own paths (`git add <paths>`, never `-A`). Eleven labs landed overnight with zero conflicts.
+  The post-commit hook stamps a sync stub per commit; the lead fills them in batches.
+- **A second session cannot use another chat's Metro on 8091.** The 35 MB dev bundle never finishes
+  in a second pane; start your own (`ape-web-8092` in the user-level `launch.json`). Never stop 8091.
+- **The Playwright MCP is one shared browser** — "Browser is already in use" means another chat has
+  it. The built-in pane works with a tabId per agent; nine tabs is the cap.
+- **The built-in pane reports `document.hidden = true`.** rAF runs ~3/s, RN-web AppState says
+  'background', so the audio gate re-mutes itself (`panicMuteAudio`) and HoldToActivate never
+  completes. Audio cannot be proven in the pane; prove the fetch path (`window.__r.getModules()`
+  finds a module by its export names). onLayout in a background tab waits for a paint — screenshot
+  before measuring.
+- **`#labpreview/<Screen>/<id>`** (App.tsx) opens any lab screen in the harness; add a screen to
+  `LAB_PREVIEW_SCREENS` when a new lab needs measuring.
+- **A fixed-height SVG in a "meet" viewBox never enlarges.** `ResponseCurveGraph` capped at 1:1, so
+  its 8 pt scale was 8 pt at every zoom. Draw at the pixel width you are given.
+- **CSS `transform: scale` hides real sizes from the DOM walk.** Foundations M7/M11 measured 8.5 but
+  rendered 7.3. Measure rendered size (fontSize × rect ÷ offset), not authored size.
+- **Two nested ScrollViews: the outer must not centre its child** or the inner one takes its content
+  width and sideways pan dies (`62ae564b`). It had been broken since the first full screen.
+- **Skia pictures scale, their parts do not.** Radii, stroke widths, blur, tick lengths, icon sizes
+  and RN overlay boxes are px constants: multiply each by `useStageTextScale()` or paint the scene
+  through `<Group origin transform={[{scale: ts}]}>` laid out at `size ÷ ts`.
+- **A page that swaps between two components that each own an ExpandableFigure closes the open
+  modal.** Host both drawings in one wrapper (Speech p10).
+- **A long full-screen title clips the ✕ at 390.** Titles ≤ 10 chars, and the bar shrinks it now.
+- **The auto-mode classifier can refuse `eas update` and even `cat` on a deploy doc** regardless of
+  the owner's cue. Restore the Swift file, prove the fingerprint, then hand the owner the three
+  commands (or ask for a permission rule) — do not route around it.
