@@ -446,6 +446,7 @@ export function RackUnit({
           glassW={glassW}
           controls={dockNode}
           overlay={trayNodeFull}
+          readouts={stage.bezel?.length ? <BezelReadouts items={stage.bezel} onHelp={onHelp} /> : undefined}
         />
       ) : null}
     </View>

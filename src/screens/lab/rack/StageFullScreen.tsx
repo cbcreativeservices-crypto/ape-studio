@@ -50,6 +50,7 @@ export function StageFullScreen({
   title = 'DISPLAY',
   controls,
   overlay,
+  readouts,
 }: {
   visible: boolean;
   onClose: () => void;
@@ -66,6 +67,10 @@ export function StageFullScreen({
   controls?: ReactNode;
   /** An overlay layer over the drawing + controls (a rack's tray). */
   overlay?: ReactNode;
+  /** The live readouts (a rack's bezel strip), shown across the top under the
+   *  bar — there is room up there and the numbers belong with the picture
+   *  (owner 2026-09-26). */
+  readouts?: ReactNode;
 }) {
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -153,6 +158,7 @@ export function StageFullScreen({
         </View>
 
         <View style={styles.stack}>
+        {readouts ? <View style={styles.readouts}>{readouts}</View> : null}
         <View style={styles.body} onLayout={(e) => setBodyH(Math.round(e.nativeEvent.layout.height))}>
           {bodyH > 0 ? (
             // Two scrollers = drag in both directions once zoomed in. At 1×
@@ -242,6 +248,7 @@ const styles = StyleSheet.create({
   close: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: '#1b1c20' },
   closeText: { fontSize: 20, color: colors.textSecondary },
   stack: { flex: 1 },
+  readouts: { paddingHorizontal: 8, paddingBottom: 4 },
   controls: { paddingTop: 6 },
   body: { flex: 1, borderTopWidth: 1, borderBottomWidth: 1, borderColor: '#2c2c33', backgroundColor: '#0b0c0e' },
   center: { flexGrow: 1, alignItems: 'center', justifyContent: 'center' },
