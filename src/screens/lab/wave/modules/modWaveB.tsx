@@ -79,7 +79,7 @@ function coverageAtFreq(src: WaveSource, freq: number): number {
 /** Hosts the phase clock next to the Skia view — only rendered when viz ≠ null,
  *  so no conditional hooks ever run in the module bodies. */
 function SceneHero({
-  viz, scene, width, maxH = 300, fixedH, focused, freq, layers, visHz = 0.6, selectedId, onSelect, onDragSource, onDragListener, wallT, sectionView, probes, coverageEdges, labels, delayBars, highlightPath,
+  viz, scene, width, maxH = 300, fixedH, focused, freq, layers, visHz = 0.6, selectedId, onSelect, onDragSource, onDragListener, wallT, sectionView, probes, coverageEdges, labels, delayBars, highlightPath, wallLabels,
 }: {
   viz: WaveVizModule;
   scene: WaveScene;
@@ -113,6 +113,8 @@ function SceneHero({
   delayBars?: { bars: { x: number; y: number; ms: number }[]; maxLenM: number } | null;
   /** One path singled out (Echo's far-wall return). */
   highlightPath?: { x: number; y: number }[] | null;
+  /** Display names per wall (overrides the material label). */
+  wallLabels?: (string | null)[];
 }) {
   const phase = viz.usePhaseClock(focused, visHz);
   const height = fixedH ?? Math.max(150, Math.min(maxH, Math.round((width * scene.h) / scene.w)));
@@ -135,6 +137,7 @@ function SceneHero({
       labels={labels}
       delayBars={delayBars}
       highlightPath={highlightPath}
+      wallLabels={wallLabels}
     />
   );
 }
@@ -150,7 +153,7 @@ const layersValue = (layers: WaveLayers) =>
 /** Rack stage — fit the room into the glass: SceneHero derives height from
  *  width × aspect, so hand it the width that lands on h (Room Builder idiom). */
 function RackScene({
-  viz, scene, w, h, focused, freq, layers, selectedId, onSelect, onDragSource, onDragListener, sectionView, probes, wallT, coverageEdges, labels, delayBars, highlightPath,
+  viz, scene, w, h, focused, freq, layers, selectedId, onSelect, onDragSource, onDragListener, sectionView, probes, wallT, coverageEdges, labels, delayBars, highlightPath, wallLabels,
 }: {
   viz: WaveVizModule | null;
   scene: WaveScene;
@@ -170,6 +173,7 @@ function RackScene({
   labels?: { x: number; y: number; text: string; color?: string; side?: 'right' | 'center' }[];
   delayBars?: { bars: { x: number; y: number; ms: number }[]; maxLenM: number } | null;
   highlightPath?: { x: number; y: number }[] | null;
+  wallLabels?: (string | null)[];
 }) {
   if (!viz) return <VizUnavailableCard />;
   return (
@@ -197,6 +201,7 @@ function RackScene({
         labels={labels}
         delayBars={delayBars}
         highlightPath={highlightPath}
+        wallLabels={wallLabels}
       />
     </View>
   );
@@ -1233,6 +1238,8 @@ type EchoPreset = {
   w: number;
   h: number;
   boundary: [MaterialKey, MaterialKey, MaterialKey, MaterialKey];
+  /** Display names per wall [side, far, side, behind the stage] (canyon ROCK). */
+  wallLabels?: (string | null)[];
 };
 
 // Blurbs quote the round-trip time to the far wall (2·d ÷ 343 m/s): past
@@ -1248,9 +1255,14 @@ type EchoPreset = {
  * the instrument report the time.
  */
 const ECHO_PRESETS: (EchoPreset & { blurb: string })[] = [
-  { key: 'canyon', label: 'CANYON 60 m', w: 60, h: 30, boundary: ['concrete', 'concrete', 'concrete', 'concrete'], blurb: 'A rock face about 55 m from the stage, nothing to absorb: the far wall answers about a third of a second later — a full, distinct HELLO…hello. The classic echo.' },
-  { key: 'gym', label: 'GYM 24 m', w: 24, h: 15, boundary: ['concrete', 'glass', 'wood', 'concrete'], blurb: 'Hard walls 24 m apart: the far wall comes back as a slap you hear as a repeat, while the nearer side walls return fast enough to fuse. Both at once.' },
-  { key: 'church', label: 'CHURCH 30 m', w: 30, h: 14, boundary: ['concrete', 'glass', 'wood', 'glass'], blurb: 'A long stone room: the far-wall return is tangled with many other paths — echo blurring into reverberation.' },
+  // Walls in this top view: [0] top = a side wall · [1] right = the FAR wall
+  // (the echo) · [2] bottom = the other side wall · [3] left = behind the
+  // stage. Each preset's walls now match its own description (walkthrough
+  // 2026-09-26: the church was "a long stone room" drawn glass/wood/glass,
+  // the gym's "hard walls" had a glass far wall and a wood side).
+  { key: 'canyon', label: 'CANYON 60 m', w: 60, h: 30, boundary: ['concrete', 'concrete', 'concrete', 'open'], wallLabels: ['ROCK', 'ROCK', 'ROCK', null], blurb: 'A rock face about 55 m from the stage, nothing to absorb: the far wall answers about a third of a second later — a full, distinct HELLO…hello. The classic echo.' },
+  { key: 'gym', label: 'GYM 24 m', w: 24, h: 15, boundary: ['concrete', 'concrete', 'glass', 'wood'], wallLabels: ['BLOCK WALL', 'BLOCK WALL', 'WINDOWS', 'WOOD BLEACHERS'], blurb: 'Hard walls 24 m apart: the far wall comes back as a slap you hear as a repeat, while the nearer side walls return fast enough to fuse. Both at once.' },
+  { key: 'church', label: 'CHURCH 30 m', w: 30, h: 14, boundary: ['concrete', 'concrete', 'concrete', 'wood'], wallLabels: ['STONE', 'STONE', 'STONE', 'WOOD DOORS'], blurb: 'A long stone room: the far-wall return is tangled with many other paths — echo blurring into reverberation.' },
   { key: 'warehouse', label: 'WAREHOUSE 40 m', w: 40, h: 22, boundary: ['concrete', 'concrete', 'concrete', 'concrete'], blurb: 'All concrete, 40 m deep: late returns that keep bouncing — echoes ON echoes.' },
 ];
 const ECHO_FREQ = 800;
@@ -1401,6 +1413,7 @@ export function EchoModule(p: WaveModuleProps) {
                     layers={layers}
                     onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
                     highlightPath={farPath}
+                    wallLabels={preset.wallLabels}
                   />
                 </StageAspectReport.Provider>
                 <ArrivalTimeline

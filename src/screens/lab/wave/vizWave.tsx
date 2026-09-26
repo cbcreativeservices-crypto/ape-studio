@@ -426,6 +426,10 @@ export type RoomSceneProps = {
   /** One sound path to single out (Echo: source → far wall → listener),
    *  drawn as a bright amber polyline over the rays. Scene metres. */
   highlightPath?: { x: number; y: number }[] | null;
+  /** Display names for the four walls [top, right, bottom, left], overriding
+   *  the material label (Echo's canyon: ROCK, drawn and modelled as concrete).
+   *  null = keep the material's own label. */
+  wallLabels?: (string | null)[];
   /** Wall strip depth on the glass, px (default 9). The Absorption lab draws
    *  its walls deeper so each material reads in section (owner 2026-09-26). */
   wallT?: number;
@@ -1938,7 +1942,8 @@ export function RoomSceneView(p: RoomSceneProps) {
   // house label idiom; rotated for the side walls).
   const midX = (geo.x0 + geo.x1) / 2;
   const midY = (geo.y0 + geo.y1) / 2;
-  const matLabel = (b: number) => (b === panelWall ? 'DIFFUSER' : MATERIALS[scene.boundary[b]].label.toUpperCase());
+  const matLabel = (b: number) =>
+    b === panelWall ? 'DIFFUSER' : p.wallLabels?.[b] ?? MATERIALS[scene.boundary[b]].label.toUpperCase();
   // The pressure rings have a 12 px minimum gap (finer is an unreadable
   // smear). When the true wavelength is finer than that, SAY so on the
   // picture — the bezel prints the true λ (proportion audit 2026-09-26).
