@@ -821,7 +821,8 @@ export function RefractionModule(p: WaveModuleProps) {
   const cGround = speedOfSound(tempC);
   const cAloft = speedOfSound(tempAloft);
   // WIND MUST REACH THE READOUTS (fix 2026-08-28). GradientSceneView bends the
-  // drawn rays with `gradient01 * 1.2 + wind * 0.55`, but BEND and RAY @150m
+  // drawn rays with `(gradient01 + wind * 0.55/1.2) * 0.08` (one model with
+  // these readouts since 2026-09-26); originally BEND and RAY @150m
   // were computed from `grad` alone — so pushing WIND to max curved the rays
   // onto the audience while the bezel still read "STRAIGHT", contradicting the
   // module's own prose ("wind SHEAR … bends rays down"). Express the shear as

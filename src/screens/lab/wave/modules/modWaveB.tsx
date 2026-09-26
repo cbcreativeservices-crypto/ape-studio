@@ -78,7 +78,7 @@ function coverageAtFreq(src: WaveSource, freq: number): number {
 /** Hosts the phase clock next to the Skia view — only rendered when viz ≠ null,
  *  so no conditional hooks ever run in the module bodies. */
 function SceneHero({
-  viz, scene, width, maxH = 300, focused, freq, layers, visHz = 0.6, selectedId, onSelect, onDragSource, onDragListener, wallT,
+  viz, scene, width, maxH = 300, focused, freq, layers, visHz = 0.6, selectedId, onSelect, onDragSource, onDragListener, wallT, sectionView, probes,
 }: {
   viz: WaveVizModule;
   scene: WaveScene;
@@ -96,6 +96,10 @@ function SceneHero({
   onDragListener?: (x: number, y: number) => void;
   /** Wall depth on the glass, px (RoomSceneView default 9). */
   wallT?: number;
+  /** Section (side) view — line array (2026-09-26). */
+  sectionView?: boolean;
+  /** Measurement points the module reads, drawn on the scene. */
+  probes?: { x: number; y: number; label: string }[];
 }) {
   const phase = viz.usePhaseClock(focused, visHz);
   const height = Math.max(150, Math.min(maxH, Math.round((width * scene.h) / scene.w)));
@@ -112,6 +116,8 @@ function SceneHero({
       onDragSource={onDragSource}
       onDragListener={onDragListener}
       wallT={wallT}
+      sectionView={sectionView}
+      probes={probes}
     />
   );
 }
@@ -127,7 +133,7 @@ const layersValue = (layers: WaveLayers) =>
 /** Rack stage — fit the room into the glass: SceneHero derives height from
  *  width × aspect, so hand it the width that lands on h (Room Builder idiom). */
 function RackScene({
-  viz, scene, w, h, focused, freq, layers, selectedId, onSelect, onDragSource, onDragListener,
+  viz, scene, w, h, focused, freq, layers, selectedId, onSelect, onDragSource, onDragListener, sectionView, probes,
 }: {
   viz: WaveVizModule | null;
   scene: WaveScene;
@@ -140,6 +146,8 @@ function RackScene({
   onSelect?: (id: string | null) => void;
   onDragSource?: (id: string, x: number, y: number) => void;
   onDragListener?: (x: number, y: number) => void;
+  sectionView?: boolean;
+  probes?: { x: number; y: number; label: string }[];
 }) {
   if (!viz) return <VizUnavailableCard />;
   return (
@@ -156,6 +164,8 @@ function RackScene({
         onSelect={onSelect}
         onDragSource={onDragSource}
         onDragListener={onDragListener}
+        sectionView={sectionView}
+        probes={probes}
       />
     </View>
   );
@@ -448,6 +458,7 @@ export function LineArrayModule(p: WaveModuleProps) {
             freq={freq}
             layers={layers}
             onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
+            sectionView
           />
         ),
         params: [
@@ -800,6 +811,9 @@ export function CardioidSubModule(p: WaveModuleProps) {
             freq={freq}
             layers={layers}
             onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
+            // The REAR readout's measuring point, drawn (proportion audit
+            // 2026-09-26: it printed a level for an invisible spot).
+            probes={[{ x: CSUB_REAR_PROBE.x, y: CSUB_REAR_PROBE.y, label: 'REAR' }]}
           />
         ),
         params: [
@@ -1105,8 +1119,8 @@ type EchoPreset = {
  * the instrument report the time.
  */
 const ECHO_PRESETS: (EchoPreset & { blurb: string })[] = [
-  { key: 'canyon', label: 'CANYON 60 m', w: 60, h: 30, boundary: ['concrete', 'concrete', 'concrete', 'concrete'], blurb: 'Rock 60 m away, nothing to absorb: the far wall answers about a third of a second later — a full, distinct HELLO…hello. The classic echo.' },
-  { key: 'gym', label: 'GYM 24 m', w: 24, h: 15, boundary: ['concrete', 'glass', 'wood', 'concrete'], blurb: 'Hard walls 24 m apart: the far wall comes back as a slap you hear as a repeat, while the low ceiling fuses. Both at once.' },
+  { key: 'canyon', label: 'CANYON 60 m', w: 60, h: 30, boundary: ['concrete', 'concrete', 'concrete', 'concrete'], blurb: 'A rock face about 55 m from the stage, nothing to absorb: the far wall answers about a third of a second later — a full, distinct HELLO…hello. The classic echo.' },
+  { key: 'gym', label: 'GYM 24 m', w: 24, h: 15, boundary: ['concrete', 'glass', 'wood', 'concrete'], blurb: 'Hard walls 24 m apart: the far wall comes back as a slap you hear as a repeat, while the nearer side walls return fast enough to fuse. Both at once.' },
   { key: 'church', label: 'CHURCH 30 m', w: 30, h: 14, boundary: ['concrete', 'glass', 'wood', 'glass'], blurb: 'A long stone room: the far-wall return is tangled with many other paths — echo blurring into reverberation.' },
   { key: 'warehouse', label: 'WAREHOUSE 40 m', w: 40, h: 22, boundary: ['concrete', 'concrete', 'concrete', 'concrete'], blurb: 'All concrete, 40 m deep: late returns that keep bouncing — echoes ON echoes.' },
 ];
@@ -1662,7 +1676,7 @@ export function RoomBuilderModule(p: WaveModuleProps) {
             kind: 'group',
             id: 'room',
             label: 'ROOM',
-            valueLabel: `${roomW.toFixed(0)}×${roomH.toFixed(0)}m`,
+            valueLabel: `${bezelDim(roomW)}×${bezelDim(roomH)}m`,
             helpKey: 'room_builder',
             render: () => (
               <View style={{ gap: 10 }}>

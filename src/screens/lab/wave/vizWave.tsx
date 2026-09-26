@@ -38,6 +38,7 @@ import {
   Line as SkLine,
   LinearGradient,
   Path,
+  Rect,
   Skia,
   useImage,
   vec,
@@ -286,7 +287,23 @@ function LineBust({ path, stroke, sw }: { path: SkPathT; stroke: string; sw: num
 // / ListenerGlyph vector redraws that distorted the crossing).
 const ICON_HEAD_FRONT = require('../../../../assets/icons/head-front.png');
 
-const HEAD_SIZE = 28; // listener head, px
+const HEAD_SIZE = 28; // listener head icon box on side views / fallback, px
+// REAL SIZES for top-view room objects (owner 2026-09-26: "make sure …
+// speakers, heads, heights, and display stated dimensions are all
+// proportional"). Every room glyph is sized from the room's px-per-metre, so
+// a head is a head-width whatever the room size. A small px FLOOR (× the stage
+// scale) keeps an object findable when a huge room makes it sub-visible —
+// the only place the drawing is allowed to be bigger than life.
+const REAL_HEAD_ICON_M = 0.38; // icon box whose drawn head is ≈ 0.2 m wide
+const REAL_PA_FACE_M = 0.55; // PA cabinet front width
+const REAL_POINT_SPK_M = 0.45; // small point-source speaker width
+const REAL_SUB_M = 0.75; // sub cabinet width
+const REAL_MIC_M = 0.18; // handheld/stand mic length
+const REAL_ARRAY_BOX_H_M = 0.45; // line-array box height (section view)
+const REAL_ARRAY_BOX_D_M = 0.55; // line-array box depth (section view)
+const FLOOR_HEAD_PX = 14;
+const FLOOR_SPK_PX = 8;
+const FLOOR_MIC_PX = 9;
 
 type SkImageT = ReturnType<typeof useImage>;
 
@@ -387,6 +404,12 @@ export type RoomSceneProps = {
   /** Draw the listener as a MICROPHONE (top view, aimed at the nearest
    *  source) instead of a head — the Comb lab is about a mic (2026-09-26). */
   listenerKind?: 'head' | 'mic';
+  /** SECTION (side) view — the Line Array: speaker boxes drawn in section at
+   *  true size and the listener as a standing person (2026-09-26). */
+  sectionView?: boolean;
+  /** Extra measurement points a module READS (e.g. Cardioid's rear probe) —
+   *  drawn so a printed number never refers to an invisible spot. */
+  probes?: { x: number; y: number; label: string }[];
   /** Wall strip depth on the glass, px (default 9). The Absorption lab draws
    *  its walls deeper so each material reads in section (owner 2026-09-26). */
   wallT?: number;
@@ -521,9 +544,10 @@ function buildWalls(
     if (panel && panel.wall === b) {
       // Quadratic-residue diffuser: a row of wooden wells of different depths
       // (sₙ = n² mod 7, repeating) on the structural wall. Deeper panel =
-      // deeper wells = scatters lower (ƒmin = c / 2·depth). Not to scale.
-      const f01 = Math.max(0, Math.min(1, (panel.depthM - QRD_DEPTH_MIN) / (QRD_DEPTH_MAX - QRD_DEPTH_MIN)));
-      const D = T * (0.3 + 0.62 * f01);
+      // deeper wells = scatters lower (ƒmin = c / 2·depth). The deepest well
+      // is the printed DEPTH to scale (owner 2026-09-26: proportional), capped
+      // at the strip.
+      const D = Math.max(1.5 * u, Math.min(T, panel.depthM * pxPerM));
       fill(band(D, T), WALL_BACKING);
       fill(band(0, D), '#0c0d10');
       const ww = Math.max(4 * u, len / 42);
@@ -713,7 +737,23 @@ function buildWalls(
  *  coverage-wedge hint whose half-angle comes from the ACTUAL directivityGain
  *  −6 dB point at this frequency (coverage narrows with frequency — Module 9's
  *  whole lesson rides on this being real). */
-function SpeakerGlyph({ src, x, y, freq, dim }: { src: WaveSource; x: number; y: number; freq: number; dim: boolean }) {
+function SpeakerGlyph({
+  src,
+  x,
+  y,
+  freq,
+  dim,
+  wedgeR = 34,
+}: {
+  src: WaveSource;
+  x: number;
+  y: number;
+  freq: number;
+  dim: boolean;
+  /** Coverage-wedge radius in the glyph's own units (the host scales the
+   *  body to real size; the wedge is an indicator, sized separately). */
+  wedgeR?: number;
+}) {
   const aim = src.aimDeg ?? 0;
   const halfDeg = useMemo(() => speakerHalfDeg(src, freq), [src, freq]);
   const parts = useMemo(() => {
@@ -731,13 +771,13 @@ function SpeakerGlyph({ src, x, y, freq, dim }: { src: WaveSource; x: number; y:
     horn.addRRect(Skia.RRectXY(Skia.XYWHRect(-6.5 * s, -4.2 * s, 13 * s, 2.6 * s), 1.2 * s, 1.2 * s));
     // Coverage wedge hint: a pie opening toward local +y (the front).
     const wedge = Skia.Path.Make();
-    const r = 34;
+    const r = wedgeR;
     const a0 = 90 - halfDeg;
     wedge.moveTo(0, 0);
     wedge.arcToOval(Skia.XYWHRect(-r, -r, 2 * r, 2 * r), a0, halfDeg * 2, false);
     wedge.close();
     return { box, horn, wedge };
-  }, [halfDeg]);
+  }, [halfDeg, wedgeR]);
   return (
     <Group transform={[{ translateX: x }, { translateY: y }, { rotate: (-aim * Math.PI) / 180 }]} opacity={dim ? 0.35 : 1}>
       <Path path={parts.wedge} color={WAVE} opacity={0.08} />
@@ -1724,6 +1764,8 @@ export function RoomSceneView(p: RoomSceneProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, freq, geo, p.layers.pressure, mode]);
 
+  // Listener head icon box at real size (≈0.2 m head), floored for findability.
+  const headPx = Math.max(FLOOR_HEAD_PX * ts, REAL_HEAD_ICON_M * geo.pxPerM);
   // Pulsing point-source dots: ONE derived path for every point source.
   const pointSrcs = useMemo(
     () => scene.sources.filter((s) => s.kind === 'point').map((s) => ({
@@ -1903,7 +1945,7 @@ export function RoomSceneView(p: RoomSceneProps) {
             sources use the small side-view PA speaker (same icon as the
             diffraction lab), owner 2026-08-02. */}
         {pointSrcs.filter((s) => !s.muted).map((s, i) => (
-          <SideSpeakerGlyph key={`spk${i}`} x={s.x} y={s.y} s={1.15 * ts} />
+          <SideSpeakerGlyph key={`spk${i}`} x={s.x} y={s.y} s={Math.max(FLOOR_SPK_PX * ts, REAL_POINT_SPK_M * geo.pxPerM) / 14} />
         ))}
         {/* Object glyphs scale about their own anchor with the text scale, so
             the speaker, the sub and the head grow with the room in FULL SCREEN
@@ -1911,12 +1953,33 @@ export function RoomSceneView(p: RoomSceneProps) {
         {scene.sources.map((s) => {
           const gx = geo.x0 + s.x * geo.pxPerM;
           const gy = geo.y0 + s.y * geo.pxPerM;
+          if (s.kind === 'speaker' && p.sectionView) {
+            // SECTION view (line array): a true-scale box seen from the side —
+            // 0.45 m tall × 0.55 m deep, face toward its aim — not a top-view
+            // cabinet stood on end (it drew each 0.5 m box ≈ 1.5 m tall).
+            const bh = REAL_ARRAY_BOX_H_M * geo.pxPerM;
+            const bd = REAL_ARRAY_BOX_D_M * geo.pxPerM;
+            const rot = ((90 - (s.aimDeg ?? 90)) * Math.PI) / 180;
+            return (
+              <Group key={s.id} transform={[{ translateX: gx }, { translateY: gy }, { rotate: rot }]} opacity={s.muted ? 0.35 : 1}>
+                <Rect x={-bd} y={-bh / 2} width={bd} height={bh}>
+                  <LinearGradient start={vec(-bd, -bh / 2)} end={vec(0, bh / 2)} colors={[BODY_HI, BODY_LO]} />
+                </Rect>
+                <Rect x={-bd} y={-bh / 2} width={bd} height={bh} color="#5a5e6a" style="stroke" strokeWidth={Math.max(0.6, 0.02 * geo.pxPerM)} />
+                <Rect x={-Math.max(1, 0.06 * geo.pxPerM)} y={-bh / 2} width={Math.max(1, 0.06 * geo.pxPerM)} height={bh} color="#101116" />
+              </Group>
+            );
+          }
+          // Body scaled to its real width; the coverage wedge kept at its
+          // on-screen size so the lesson indicator never shrinks with the box.
+          const spkK = Math.max(0.42 * ts, (REAL_PA_FACE_M * geo.pxPerM) / 17.9);
+          const subK = Math.max(0.42 * ts, (REAL_SUB_M * geo.pxPerM) / 18);
           return s.kind === 'speaker' ? (
-            <Group key={s.id} origin={vec(gx, gy)} transform={[{ scale: ts }]}>
-              <SpeakerGlyph src={s} x={gx} y={gy} freq={freq} dim={!!s.muted} />
+            <Group key={s.id} origin={vec(gx, gy)} transform={[{ scale: spkK }]}>
+              <SpeakerGlyph src={s} x={gx} y={gy} freq={freq} dim={!!s.muted} wedgeR={(34 * ts) / spkK} />
             </Group>
           ) : s.kind === 'sub' ? (
-            <Group key={s.id} origin={vec(gx, gy)} transform={[{ scale: ts }]}>
+            <Group key={s.id} origin={vec(gx, gy)} transform={[{ scale: subK }]}>
               <SubGlyph x={gx} y={gy} dim={!!s.muted} />
             </Group>
           ) : s.muted ? (
@@ -1932,7 +1995,17 @@ export function RoomSceneView(p: RoomSceneProps) {
             const my = geo.y0 + scene.listener.y * geo.pxPerM;
             const src = scene.sources[0];
             const ang = src ? Math.atan2(src.y - scene.listener.y, src.x - scene.listener.x) : Math.PI;
-            return <MicTopGlyph x={mx} y={my} angle={ang} s={1.25 * ts} />;
+            return <MicTopGlyph x={mx} y={my} angle={ang} s={Math.max(FLOOR_MIC_PX * ts, REAL_MIC_M * geo.pxPerM) / 23.6} />;
+          })()
+        ) : p.sectionView ? (
+          (() => {
+            // SECTION view: a true-scale standing person whose ear (≈1.55 m)
+            // is the listener point — feet 1.55 m below it.
+            const ex = geo.x0 + scene.listener.x * geo.pxPerM;
+            const feetY = geo.y0 + (scene.listener.y + 1.55) * geo.pxPerM;
+            const fig = Skia.Path.Make();
+            appendStanding(fig, ex, feetY, geo.pxPerM);
+            return <LineBust path={fig} stroke={LINE} sw={Math.max(1, 0.05 * geo.pxPerM)} />;
           })()
         ) : headFrontImg ? (
           <>
@@ -1940,16 +2013,30 @@ export function RoomSceneView(p: RoomSceneProps) {
                 a black node line and blended into bright maps — the lesson's
                 "drag the listener" needs it findable on ANY colour
                 (walkthrough 2026-09-26). */}
-            <Circle cx={geo.x0 + scene.listener.x * geo.pxPerM} cy={geo.y0 + scene.listener.y * geo.pxPerM} r={HEAD_SIZE * 0.62 * ts} color={BG} opacity={0.72} />
-            <Circle cx={geo.x0 + scene.listener.x * geo.pxPerM} cy={geo.y0 + scene.listener.y * geo.pxPerM} r={HEAD_SIZE * 0.62 * ts} color={LINE} style="stroke" strokeWidth={1.3 * ts} opacity={0.9} />
-            <IconMark image={headFrontImg} cx={geo.x0 + scene.listener.x * geo.pxPerM} cy={geo.y0 + scene.listener.y * geo.pxPerM} size={HEAD_SIZE * ts} color={LINE} plate />
-            <IconMark image={headFrontImg} cx={geo.x0 + scene.listener.x * geo.pxPerM} cy={geo.y0 + scene.listener.y * geo.pxPerM} size={HEAD_SIZE * ts} color={ACCENT_GREEN} opacity={0.28} />
+            <Circle cx={geo.x0 + scene.listener.x * geo.pxPerM} cy={geo.y0 + scene.listener.y * geo.pxPerM} r={headPx * 0.62} color={BG} opacity={0.72} />
+            <Circle cx={geo.x0 + scene.listener.x * geo.pxPerM} cy={geo.y0 + scene.listener.y * geo.pxPerM} r={headPx * 0.62} color={LINE} style="stroke" strokeWidth={Math.max(0.8, 0.06 * headPx)} opacity={0.9} />
+            <IconMark image={headFrontImg} cx={geo.x0 + scene.listener.x * geo.pxPerM} cy={geo.y0 + scene.listener.y * geo.pxPerM} size={headPx} color={LINE} plate />
+            <IconMark image={headFrontImg} cx={geo.x0 + scene.listener.x * geo.pxPerM} cy={geo.y0 + scene.listener.y * geo.pxPerM} size={headPx} color={ACCENT_GREEN} opacity={0.28} />
           </>
         ) : (
           <Group origin={vec(geo.x0 + scene.listener.x * geo.pxPerM, geo.y0 + scene.listener.y * geo.pxPerM)} transform={[{ scale: ts }]}>
             <ListenerGlyph x={geo.x0 + scene.listener.x * geo.pxPerM} y={geo.y0 + scene.listener.y * geo.pxPerM} />
           </Group>
         )}
+        {/* Probe points the module reads (Cardioid REAR): a small mic cross. */}
+        {(p.probes ?? []).map((pr, i) => {
+          const px = geo.x0 + pr.x * geo.pxPerM;
+          const py = geo.y0 + pr.y * geo.pxPerM;
+          const r = 5 * ts;
+          return (
+            <Group key={`probe${i}`}>
+              <Circle cx={px} cy={py} r={r} color={BG} opacity={0.75} />
+              <Circle cx={px} cy={py} r={r} color={ACCENT_BLUE} style="stroke" strokeWidth={1.2 * ts} />
+              <SkLine p1={{ x: px - r * 1.6, y: py }} p2={{ x: px + r * 1.6, y: py }} color={ACCENT_BLUE} strokeWidth={1 * ts} />
+              <SkLine p1={{ x: px, y: py - r * 1.6 }} p2={{ x: px, y: py + r * 1.6 }} color={ACCENT_BLUE} strokeWidth={1 * ts} />
+            </Group>
+          );
+        })}
         {/* Selection: amber ring (sources by id, listener as 'listener'). */}
         {selPos ? (
           <Circle cx={selPos.x} cy={selPos.y} r={16 * ts} color={WAVE} style="stroke" strokeWidth={1.6 * ts} opacity={0.85} />
@@ -1959,6 +2046,14 @@ export function RoomSceneView(p: RoomSceneProps) {
           offset here is × ts (the Skia trap, 2026-09-25): the canvas grows in
           FULL SCREEN, RN text does not, so the labels scale themselves. */}
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+        {(p.probes ?? []).map((pr, i) => (
+          <RNText
+            key={`probeL${i}`}
+            style={[styles.wallLabel, { fontSize: 9 * ts, color: ACCENT_BLUE, left: geo.x0 + pr.x * geo.pxPerM + 9 * ts, top: geo.y0 + pr.y * geo.pxPerM - 6 * ts }]}
+          >
+            {pr.label}
+          </RNText>
+        ))}
         <RNText style={[styles.wallLabel, { fontSize: 9 * ts, left: midX - 50 * ts, top: geo.y0 - wallPx - 15 * ts, width: 100 * ts, textAlign: 'center' }]}>
           {matLabel(0)}
         </RNText>
@@ -2548,9 +2643,12 @@ export function GradientSceneView(p: {
 
   const bust = useMemo(() => {
     const path = Skia.Path.Make();
-    appendBust(path, x0px + GRAD_LISTENER_M * ppm, groundY, 1.15 * ts);
+    // Ear (≈13 bust units up) at a standing 1.6 m on the SAME ×20 height scale
+    // as the rays, so a ray printed at ear height visibly reaches the head
+    // (proportion audit 2026-09-26: the bust stood ~0.7 m tall).
+    appendBust(path, x0px + GRAD_LISTENER_M * ppm, groundY, (1.6 * ppmY) / 13);
     return path;
-  }, [x0px, ppm, groundY, ts]);
+  }, [x0px, ppm, ppmY, groundY]);
 
   // "UNIFORM AIR" must account for wind shear too (fix 2026-08-28) — it was
   // printed over a visibly bent ray fan whenever WIND alone did the bending.
