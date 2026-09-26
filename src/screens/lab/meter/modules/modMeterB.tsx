@@ -290,6 +290,7 @@ export function SpectrumModule(p: MeterModuleProps) {
       onHelp={p.help}
       stage={{
         size: 'L', // the shape IS the lesson
+        fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
         badge: 'SYNTHETIC TEACHING PATTERNS — ANALYTIC, NOT A MEASUREMENT',
         onGuide: () => p.help('spectrum_read'),
         bezel: [
@@ -437,6 +438,7 @@ export function SpectrogramModule(p: MeterModuleProps) {
       onHelp={p.help}
       stage={{
         size: 'L',
+        fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
         badge: 'SYNTHETIC TEACHING PATTERNS — ANALYTIC, NOT A MEASUREMENT',
         onGuide: () => p.help('spectrogram_axes'),
         // AXES FIRST (the module's charter) — printed permanently on the bezel.
@@ -749,6 +751,7 @@ export function WaterfallModule(p: MeterModuleProps) {
       onHelp={p.help}
       stage={{
         size: 'L', // the flagship — the collapsing range IS the module
+        fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
         badge: 'SYNTHETIC CSD — DRAWN FROM THE RT60 MODEL, NOT A MEASUREMENT',
         onGuide: () => p.help('waterfall_axes'),
         bezel: [

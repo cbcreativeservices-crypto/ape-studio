@@ -395,6 +395,7 @@ export function WaveformModule(p: MeterModuleProps) {
       onHelp={p.help}
       stage={{
         size: 'L', // the picture IS the module
+        fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
         badge: 'SYNTHESIZED TEACHING SIGNAL · LEVELS IN dBFS',
         bezel,
         onGuide: () => p.help('waveform_read'),
@@ -545,6 +546,7 @@ export function PeakModule(p: MeterModuleProps) {
       onHelp={p.help}
       stage={{
         size: 'L',
+        fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
         badge: 'SYNTHESIZED TEACHING SIGNAL · LEVELS IN dBFS',
         bezel,
         onGuide: () => p.help('peak_meter'),
@@ -674,6 +676,7 @@ export function VuModule(p: MeterModuleProps) {
       onHelp={p.help}
       stage={{
         size: 'L', // the flagship face rendered LARGE
+        fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
         badge: 'SYNTHESIZED TEACHING SIGNAL · dBFS · NEEDLE ~300 ms — BY DESIGN',
         bezel,
         onGuide: () => p.help('vu_meter'),
@@ -813,6 +816,7 @@ export function LoudnessModule(p: MeterModuleProps) {
       onHelp={p.help}
       stage={{
         size: 'L', // taller face + bigger fonts (owner 2026-08-05)
+        fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
         badge: LOUDNESS_MODEL_BADGE,
         bezel,
         onGuide: () => p.help('lufs'),

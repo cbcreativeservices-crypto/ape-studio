@@ -44,6 +44,7 @@ import {
   type WaterfallOpts,
 } from './meterEngine';
 import { colors, fonts } from '../../../theme/tokens';
+import { useStageTextScale } from '../rack/stageAspect';
 import {
   heatColor as levelHeatColor,
   fieldLevelColor,
@@ -133,13 +134,51 @@ function fmtHz(f: number): string {
   return `${(f / 1000).toFixed(2).replace(/\.?0+$/, '')} kHz`;
 }
 
-const axisText = { fontFamily: fonts.mono, fontSize: 8.5, color: AXIS_TEXT } as const;
-const teachText = {
-  fontFamily: fonts.oswaldSemiBold,
-  fontSize: 8,
-  letterSpacing: 1.1,
-  color: TEACH_TEXT,
-} as const;
+/** Legibility floor for every overlay label (owner 2026-09-25: "text too
+ *  small to read … 9 pt minimum"). */
+const AX_MIN = 9;
+const TEACH_LS = 1.1;
+
+/** An RN <Text> label laid over the Skia canvas (axis numbers, the teaching
+ *  captions). THE SKIA TRAP (legibility pass 2026-09-25): the canvas grows
+ *  with its box in FULL SCREEN, RN text does not — so the size is floored at
+ *  AX_MIN and multiplied by StageTextScale (1 on the glass). The caller
+ *  passes the box in px, already scaled where the gutter it sits in scales;
+ *  the text's vertical CENTRE stays where the authored size put it, so a
+ *  tick label still sits on its tick. `teach` = the Oswald teaching caption
+ *  style (FREQUENCY ↑, TIME, Hz); default = the mono axis style. */
+function Ax(p: {
+  x: number;
+  y: number;
+  w?: number;
+  align?: 'left' | 'center' | 'right';
+  size: number;
+  color?: string;
+  teach?: boolean;
+  rotate?: string;
+  children: string;
+}) {
+  const ts = useStageTextScale();
+  const fs = Math.max(AX_MIN, p.size) * ts;
+  return (
+    <RNText
+      style={{
+        position: 'absolute',
+        left: p.x,
+        top: p.y - (fs - p.size) / 2,
+        width: p.w,
+        textAlign: p.align ?? 'center',
+        fontFamily: p.teach ? fonts.oswaldSemiBold : fonts.mono,
+        fontSize: fs,
+        letterSpacing: p.teach ? TEACH_LS * ts : undefined,
+        color: p.color ?? (p.teach ? TEACH_TEXT : AXIS_TEXT),
+        transform: p.rotate ? [{ rotate: p.rotate }] : undefined,
+      }}
+    >
+      {p.children}
+    </RNText>
+  );
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // M5 — SpectrumPatternView: the analyzer hero. The pattern drawn THREE ways
@@ -180,10 +219,13 @@ export function SpectrumPatternView(p: {
   const w = p.width;
   const h = p.height ?? 210;
   const phase = p.phase;
-  const PAD_L = 30;
-  const PAD_R = 8;
-  const PAD_T = 15; // peak-annotation row
-  const PAD_B = 15; // frequency label strip
+  // The three text gutters grow with the overlay labels in FULL SCREEN
+  // (StageTextScale, 1 on the glass) so the dB and Hz scales keep their room.
+  const ts = useStageTextScale();
+  const PAD_L = 30 * ts;
+  const PAD_R = 8 * ts;
+  const PAD_T = 15 * ts; // peak-annotation row
+  const PAD_B = 15 * ts; // frequency label strip
   const plotW = Math.max(20, w - PAD_L - PAD_R);
   const plotH = Math.max(20, h - PAD_T - PAD_B);
   const baseY = PAD_T + plotH;
@@ -225,7 +267,7 @@ export function SpectrumPatternView(p: {
     frame.lineTo(PAD_L, baseY);
     frame.lineTo(PAD_L + plotW, baseY);
     return { grid, ticks, frame };
-  }, [w, h]);
+  }, [w, h, ts]);
 
   // RTA bars — geometry memoized; each bar reads the MAX of 5 sub-samples
   // across its band (band peak-hold, how a real RTA renders narrow lines —
@@ -258,7 +300,7 @@ export function SpectrumPatternView(p: {
       phs.push(TAU * hashN(i * 9.13 + 11));
     }
     return { body, xs, ws, tipBase, dbs, spd, phs };
-  }, [p.pattern, w, h]);
+  }, [p.pattern, w, h, ts]);
   const { xs: barXs, ws: barWs, tipBase: barTipBase, dbs: barDbs, spd: barSpd, phs: barPhs } = bars;
 
   // Per-frame: ONLY the bar tips (≤96 tiny rects) jitter ±1.5 dB on the phase
@@ -321,7 +363,7 @@ export function SpectrumPatternView(p: {
     marker.lineTo(px + 2.6, py - 3);
     marker.close();
     return { curve, under, marker, peakF, px };
-  }, [p.pattern, w, h]);
+  }, [p.pattern, w, h, ts]);
 
   const markerColor = p.pattern === 'feedback' ? ACCENT_RED : WAVE;
 
@@ -366,53 +408,23 @@ export function SpectrumPatternView(p: {
           (blue quiet → red loud) so the left volume scale is color-coded to
           match the bars (owner 2026-08-05). */}
       {SPEC_DB_TICKS.map((dbV) => (
-        <RNText
-          key={`d${dbV}`}
-          style={{
-            position: 'absolute',
-            left: 0,
-            width: PAD_L - 5,
-            top: yOf(dbV) - 5,
-            textAlign: 'right',
-            ...axisText,
-            color: levelColor((dbV - SPEC_DB_FLOOR) / SPEC_DB_SPAN),
-          }}
-        >
+        <Ax key={`d${dbV}`} x={0} w={PAD_L - 5 * ts} y={yOf(dbV) - 5} align="right" size={8.5} color={levelColor((dbV - SPEC_DB_FLOOR) / SPEC_DB_SPAN)}>
           {`${dbV}`}
-        </RNText>
+        </Ax>
       ))}
       {/* Frequency axis — decade labels (minor ticks drawn in Skia above). */}
       {SPEC_DECADES.map((d) => (
-        <RNText
-          key={`f${d.f}`}
-          style={{
-            position: 'absolute',
-            left: Math.max(0, Math.min(w - 30, xOf(d.f) - 15)),
-            width: 30,
-            top: h - 11,
-            textAlign: 'center',
-            ...axisText,
-          }}
-        >
+        <Ax key={`f${d.f}`} x={Math.max(0, Math.min(w - 30 * ts, xOf(d.f) - 15 * ts))} w={30 * ts} y={h - 11 * ts} size={8.5}>
           {d.label}
-        </RNText>
+        </Ax>
       ))}
-      <RNText style={{ position: 'absolute', left: 1, top: h - 11, ...teachText }}>Hz</RNText>
+      <Ax x={1} w={24 * ts} y={h - 11 * ts} align="left" size={8} teach>
+        Hz
+      </Ax>
       {/* Peak Hz label rides the marker. */}
-      <RNText
-        style={{
-          position: 'absolute',
-          left: Math.max(0, Math.min(w - 80, envelope.px - 40)),
-          width: 80,
-          top: 1,
-          textAlign: 'center',
-          fontFamily: fonts.mono,
-          fontSize: 8.5,
-          color: markerColor,
-        }}
-      >
+      <Ax x={Math.max(0, Math.min(w - 80 * ts, envelope.px - 40 * ts))} w={80 * ts} y={1 * ts} size={8.5} color={markerColor}>
         {fmtHz(envelope.peakF)}
-      </RNText>
+      </Ax>
     </View>
   );
 }
@@ -458,10 +470,13 @@ export function SpectrogramPatternView(p: {
   const h = p.height ?? 220;
   const phase = p.phase;
   const mode = p.mode ?? 'scroll';
-  const PAD_L = 16; // rotated FREQUENCY label gutter
-  const PAD_T = 6;
-  const PAD_B = 14; // TIME label strip
-  const LEG_W = 26; // color-scale legend column
+  // The label gutters and the legend column grow with the overlay labels in
+  // FULL SCREEN (StageTextScale, 1 on the glass).
+  const ts = useStageTextScale();
+  const PAD_L = 16 * ts; // rotated FREQUENCY label gutter
+  const PAD_T = 6 * ts;
+  const PAD_B = 14 * ts; // TIME label strip
+  const LEG_W = 26 * ts; // color-scale legend column
   const plotX = PAD_L;
   const plotY = PAD_T;
   const plotW = Math.max(20, w - PAD_L - LEG_W - 6);
@@ -481,13 +496,13 @@ export function SpectrogramPatternView(p: {
       });
     }
     return bucketPaths;
-  }, [p.pattern, w, h]);
+  }, [p.pattern, w, h, ts]);
 
   const frame = useMemo(() => {
     const path = Skia.Path.Make();
     path.addRect(Skia.XYWHRect(plotX, plotY, plotW, plotH));
     return path;
-  }, [w, h]);
+  }, [w, h, ts]);
   const plotRect = useMemo(() => Skia.XYWHRect(plotX, plotY, plotW, plotH), [w, h]);
 
   // SCROLL mode: the loop is cyclic, so the rolling view is the memoized
@@ -496,24 +511,24 @@ export function SpectrogramPatternView(p: {
   const scrollA = useDerivedValue(() => {
     const u = (((phase.value / TAU) % 1) + 1) % 1;
     return [{ translateX: plotW * (1 - u) }];
-  }, [phase, w, h]);
+  }, [phase, w, h, ts]);
   const scrollB = useDerivedValue(() => {
     const u = (((phase.value / TAU) % 1) + 1) % 1;
     return [{ translateX: -plotW * u }];
-  }, [phase, w, h]);
+  }, [phase, w, h, ts]);
   // Fixed NOW marker at the right edge (scroll mode).
   const nowLine = useMemo(() => {
     const path = Skia.Path.Make();
     path.moveTo(plotX + plotW - 1, plotY);
     path.lineTo(plotX + plotW - 1, plotY + plotH);
     return path;
-  }, [w, h]);
+  }, [w, h, ts]);
 
   const legend = useMemo(() => {
     const path = Skia.Path.Make();
-    path.addRect(Skia.XYWHRect(w - LEG_W + 2, plotY + 8, 7, plotH - 16));
+    path.addRect(Skia.XYWHRect(w - LEG_W + 2 * ts, plotY + 8 * ts, 7 * ts, plotH - 16 * ts));
     return path;
-  }, [w, h]);
+  }, [w, h, ts]);
 
   // Per-frame: ONLY the scanning cursor — a snapped live-column highlight
   // band + the sweep line, both on the phase clock.
@@ -523,7 +538,7 @@ export function SpectrogramPatternView(p: {
     const col = Math.min(SG_COLS - 1, Math.floor(u * SG_COLS));
     path.addRect(Skia.XYWHRect(plotX + col * cellW, plotY, cellW, plotH));
     return path;
-  }, [phase, w, h]);
+  }, [phase, w, h, ts]);
   const cursorLine = useDerivedValue(() => {
     const path = Skia.Path.Make();
     const u = ((phase.value / TAU) % 1 + 1) % 1;
@@ -531,7 +546,7 @@ export function SpectrogramPatternView(p: {
     path.moveTo(x, plotY);
     path.lineTo(x, plotY + plotH);
     return path;
-  }, [phase, w, h]);
+  }, [phase, w, h, ts]);
 
   return (
     <View style={{ width: w, height: h }}>
@@ -568,80 +583,32 @@ export function SpectrogramPatternView(p: {
         {/* Color-scale legend strip (hot at the top). */}
         <Path path={legend}>
           <LinearGradient
-            start={vec(0, plotY + 8)}
-            end={vec(0, plotY + plotH - 8)}
+            start={vec(0, plotY + 8 * ts)}
+            end={vec(0, plotY + plotH - 8 * ts)}
             colors={LEGEND_COLORS}
             positions={LEGEND_POS}
           />
         </Path>
       </Canvas>
       {/* AXES ALWAYS TAUGHT. */}
-      <RNText
-        style={{
-          position: 'absolute',
-          left: plotX,
-          width: plotW,
-          top: h - 11,
-          textAlign: 'center',
-          ...teachText,
-        }}
-      >
+      <Ax x={plotX} w={plotW} y={h - 11 * ts} size={8} teach>
         {mode === 'scroll' ? 'OLDER ←  TIME  → NOW' : 'TIME → · FULL 5 s SNAPSHOT'}
-      </RNText>
-      <RNText
-        style={{
-          position: 'absolute',
-          left: 6 - 50,
-          width: 100,
-          top: plotY + plotH / 2 - 6,
-          textAlign: 'center',
-          transform: [{ rotate: '-90deg' }],
-          ...teachText,
-        }}
-      >
+      </Ax>
+      {/* Rotated captions: a 100-px box (× scale) centred on its gutter, then
+          turned — the text runs up the left gutter and down the legend column. */}
+      <Ax x={8 * ts - 50 * ts} w={100 * ts} y={plotY + plotH / 2 - 6} size={8} teach rotate="-90deg">
         FREQUENCY ↑
-      </RNText>
-      <RNText
-        style={{
-          position: 'absolute',
-          left: w - 10 - 50,
-          width: 100,
-          top: plotY + plotH / 2 - 6,
-          textAlign: 'center',
-          transform: [{ rotate: '90deg' }],
-          ...teachText,
-        }}
-      >
+      </Ax>
+      <Ax x={w - 10 * ts - 50 * ts} w={100 * ts} y={plotY + plotH / 2 - 6} size={8} teach rotate="90deg">
         LEVEL
-      </RNText>
-      <RNText
-        style={{
-          position: 'absolute',
-          left: w - LEG_W - 5,
-          width: LEG_W + 4,
-          top: plotY - 4,
-          textAlign: 'center',
-          fontFamily: fonts.mono,
-          fontSize: 7.5,
-          color: AXIS_TEXT,
-        }}
-      >
+      </Ax>
+      {/* HI / LO cap the legend strip, centred on it. */}
+      <Ax x={w - LEG_W + 5.5 * ts - 15 * ts} w={30 * ts} y={plotY - 2 * ts} size={7.5}>
         HI
-      </RNText>
-      <RNText
-        style={{
-          position: 'absolute',
-          left: w - LEG_W - 5,
-          width: LEG_W + 4,
-          top: plotY + plotH - 5,
-          textAlign: 'center',
-          fontFamily: fonts.mono,
-          fontSize: 7.5,
-          color: AXIS_TEXT,
-        }}
-      >
+      </Ax>
+      <Ax x={w - LEG_W + 5.5 * ts - 15 * ts} w={30 * ts} y={plotY + plotH - 5 * ts} size={7.5}>
         LO
-      </RNText>
+      </Ax>
     </View>
   );
 }
@@ -962,16 +929,20 @@ export function WaterfallView(p: {
   const phase = p.phase;
   const animate = p.animate ?? true;
   const o = p.opts;
+  // The axis gutters (dB key at the left, time axis at the right, the Hz
+  // strip along the bottom) grow with the overlay labels in FULL SCREEN
+  // (StageTextScale, 1 on the glass).
+  const ts = useStageTextScale();
 
   // ALL slice geometry — the expensive part — frozen here, keyed on opts.
   // Per-frequency spectrum/RT arrays are hoisted once; each slice's level is
   // then exactly meterEngine.waterfallSliceDb: spectrum(f) − 60·t / RT60(f).
   const geo = useMemo(() => {
-    const xL0 = 30; // dB height-reference gutter at the left
-    const usable = Math.max(60, w - 44);
+    const xL0 = 30 * ts; // dB height-reference gutter at the left
+    const usable = Math.max(60, w - 44 * ts);
     const frontW = usable * 0.72;
     const dxTot = usable * 0.27;
-    const baseY = h - 30;
+    const baseY = h - 30 * ts;
     const dyTot = h * 0.36;
     const ampH = h * 0.31;
     const tMax = waterfallTimeSpan(o); // the window, fitted to THIS room
@@ -1090,7 +1061,7 @@ export function WaterfallView(p: {
     });
     return { slices, xL0, frontW, dxTot, dyTot, baseY, ampH, timeMarks, tMax, ringF };
     // Every band's gain feeds the surface, so key the memo on the map.
-  }, [o.room, o.damping01, o.eqGains, o.qRing, o.reverb, w, h]);
+  }, [o.room, o.damping01, o.eqGains, o.qRing, o.reverb, w, h, ts]);
 
   // Fine axis annotations (all static memo geometry): front-edge freq ticks +
   // baseline, frequency GUIDE LINES running into the depth parallel to the
@@ -1149,7 +1120,7 @@ export function WaterfallView(p: {
     // Owner 2026-08-28: "Why is this time line off the same horizon point as
     // the chart?" Use the right edge's own recession instead.
     const rdxTot = geo.dxTot - 0.2 * geo.frontW; // the RIGHT edge's x-run
-    const ax0 = geo.xL0 + geo.frontW + 10;
+    const ax0 = geo.xL0 + geo.frontW + 10 * ts;
     const ay0 = geo.baseY - 2;
     const ax1 = ax0 + rdxTot * 0.9;
     const ay1 = ay0 - geo.dyTot * 0.9;
@@ -1181,7 +1152,7 @@ export function WaterfallView(p: {
     // Key abuts the plot's left edge; the tick labels keep the full gutter to
     // its left (a "−60" at 10 pt mono needs ~24 px, so this budget is tight and
     // must not be eaten by the key).
-    const keyW = 7;
+    const keyW = 7 * ts;
     const keyX = geo.xL0 - keyW;
     const keyTop = geo.baseY - geo.ampH;
     const ref = Skia.Path.Make();
@@ -1200,7 +1171,7 @@ export function WaterfallView(p: {
       ringGuide.lineTo(geo.xL0 + geo.dxTot + lgFrac(geo.ringF) * geo.frontW * 0.8, geo.baseY - geo.dyTot);
     }
     return { floor, ticks, depthGuides, ringGuide, timeLines, arrow, ref, keyX, keyW, keyTop, ax0, ay0, ax1, ay1, dbTickYs };
-  }, [geo]);
+  }, [geo, ts]);
 
   // Impulse flash: the front slice flares white as each build cycle begins.
   const flashOp = useDerivedValue(() => {
@@ -1260,20 +1231,9 @@ export function WaterfallView(p: {
           mountains it labels; at the front edge each number is next to the
           frequency it names. */}
       {WF_FRONT_LABELS.map((d) => (
-        <RNText
-          key={`f${d.f}`}
-          style={{
-            position: 'absolute',
-            left: Math.max(0, Math.min(w - 34, geo.xL0 + lgFrac(d.f) * geo.frontW - 17)),
-            width: 34,
-            top: geo.baseY + 9,
-            textAlign: 'center',
-            ...axisText,
-            fontSize: 11,
-          }}
-        >
+        <Ax key={`f${d.f}`} x={Math.max(0, Math.min(w - 34 * ts, geo.xL0 + lgFrac(d.f) * geo.frontW - 17 * ts))} w={34 * ts} y={geo.baseY + 9 * ts} size={11}>
           {d.label}
-        </RNText>
+        </Ax>
       ))}
       {/* Names the ringing mode ON THE PLOT. The bezel already prints RIDGE
           <f> Hz, but nothing connected that number to the thin blade standing
@@ -1281,142 +1241,57 @@ export function WaterfallView(p: {
           can teach (a mode OUTLASTS its neighbours even when EQ starts it
           quieter) looked like a rendering artefact. */}
       {geo.ringF != null ? (
-        <RNText
-          style={{
-            position: 'absolute',
-            left: Math.max(0, Math.min(w - 62, geo.xL0 + lgFrac(geo.ringF) * geo.frontW - 31)),
-            width: 62,
-            top: geo.baseY + 22,
-            textAlign: 'center',
-            fontFamily: fonts.mono,
-            fontSize: 9,
-            color: RING_MARK,
-          }}
-        >
+        <Ax x={Math.max(0, Math.min(w - 62 * ts, geo.xL0 + lgFrac(geo.ringF) * geo.frontW - 31 * ts))} w={62 * ts} y={geo.baseY + 22 * ts} size={9} color={RING_MARK}>
           {`RINGS ${geo.ringF < 1000 ? Math.round(geo.ringF) : `${(geo.ringF / 1000).toFixed(1)}k`}`}
-        </RNText>
+        </Ax>
       ) : null}
       {/* Hz caps the RIGHT end of the frequency strip. At the left it sat at
           x 1–27 while the "30" label clamped to x 26, so the unit and the first
           tick touched; and it read as a seventh station rather than as the
           scale's unit. */}
-      <RNText
-        style={{
-          position: 'absolute',
-          // The 20k label is centred in a 34 px box, so it overhangs the front
-          // corner by 17 px — Hz has to start past that, not at the corner.
-          left: Math.min(w - 24, geo.xL0 + geo.frontW + 20),
-          top: geo.baseY + 9,
-          width: 24,
-          textAlign: 'left',
-          ...teachText,
-          fontSize: 11,
-        }}
-      >
+      {/* The 20k label is centred in a 34 px box, so it overhangs the front
+          corner by 17 px — Hz has to start past that, not at the corner. */}
+      <Ax x={Math.min(w - 24 * ts, geo.xL0 + geo.frontW + 20 * ts)} w={24 * ts} y={geo.baseY + 9 * ts} align="left" size={11} teach>
         Hz
-      </RNText>
+      </Ax>
       {/* Second marks, drawn INBOARD of each floor line's right end rather than
           outboard. Outboard they were clamped against the canvas edge and sat
           on top of the time arrow; inboard they need no clamp and leave the
           right margin to the axis. Short units ("1s") so they read as ticks on
           one scale, not as three separate captions. */}
       {geo.timeMarks.map((m) => (
-        <RNText
-          key={`t${m.t}`}
-          style={{
-            position: 'absolute',
-            left: m.x1 - 32,
-            width: 30,
-            top: m.y - 5,
-            textAlign: 'right',
-            fontFamily: fonts.mono,
-            fontSize: 10,
-            color: AXIS_TEXT,
-          }}
-        >
+        <Ax key={`t${m.t}`} x={m.x1 - 32 * ts} w={30 * ts} y={m.y - 5} align="right" size={10}>
           {fmtSec(m.t)}
-        </RNText>
+        </Ax>
       ))}
       {/* TIME depth arrow labels. */}
-      <RNText
-        style={{
-          position: 'absolute',
-          left: Math.min(w - 40, (axes.ax0 + axes.ax1) / 2 + 2),
-          top: (axes.ay0 + axes.ay1) / 2 - 6,
-          ...teachText,
-          fontSize: 11,
-        }}
-      >
+      <Ax x={Math.min(w - 40 * ts, (axes.ax0 + axes.ax1) / 2 + 2)} y={(axes.ay0 + axes.ay1) / 2 - 6} align="left" size={11} teach>
         TIME
-      </RNText>
+      </Ax>
       {/* The arrow's two ends carry the scale's endpoints — 0 s at the back
           (the impulse) and 3 s at the front — so together with the 1s/2s floor
           marks there is ONE time scale reading 0·1·2·3, not two competing
           ones. */}
-      <RNText
-        style={{
-          position: 'absolute',
-          // Clear of the frequency strip that now owns the bottom edge: sits
-          // just outside the front corner, beside the range rather than under it.
-          left: Math.max(0, Math.min(w - 36, axes.ax0 + 4)),
-          top: Math.max(0, axes.ay0 - 12),
-          width: 36,
-          textAlign: 'center',
-          fontFamily: fonts.mono,
-          fontSize: 10,
-          color: AXIS_TEXT,
-        }}
-      >
+      {/* Clear of the frequency strip that now owns the bottom edge: sits
+          just outside the front corner, beside the range rather than under it. */}
+      <Ax x={Math.max(0, Math.min(w - 36 * ts, axes.ax0 + 4))} w={36 * ts} y={Math.max(0, axes.ay0 - 12 * ts)} size={10}>
         {fmtSec(geo.tMax)}
-      </RNText>
-      <RNText
-        style={{
-          position: 'absolute',
-          left: Math.max(0, Math.min(w - 24, axes.ax1 - 4)),
-          top: Math.max(0, axes.ay1 - 13),
-          width: 24,
-          textAlign: 'center',
-          fontFamily: fonts.mono,
-          fontSize: 10,
-          color: AXIS_TEXT,
-        }}
-      >
+      </Ax>
+      <Ax x={Math.max(0, Math.min(w - 24 * ts, axes.ax1 - 4))} w={24 * ts} y={Math.max(0, axes.ay1 - 13 * ts)} size={10}>
         0s
-      </RNText>
+      </Ax>
       {/* dB height reference. */}
       {axes.dbTickYs.map(({ dbV, y }) => (
-        <RNText
-          key={`r${dbV}`}
-          style={{
-            position: 'absolute',
-            left: 0,
-            width: axes.keyX - 2,
-            top: y - 5,
-            textAlign: 'right',
-            fontFamily: fonts.mono,
-            fontSize: 10,
-            color: AXIS_TEXT,
-          }}
-        >
+        <Ax key={`r${dbV}`} x={0} w={axes.keyX - 2} y={y - 5} align="right" size={10}>
           {dbV > 0 ? `+${dbV}` : `${dbV}`}
-        </RNText>
+        </Ax>
       ))}
-      <RNText
-        style={{
-          position: 'absolute',
-          left: 0,
-          width: geo.xL0 - 8,
-          // Clears the "+12" tick, which sits at (baseY - ampH) - 5 and is ~13
-          // px tall — at -15 the caption landed on top of it (owner 2026-08-28:
-          // "the dB marking is showing over the +12").
-          top: geo.baseY - geo.ampH - 30,
-          textAlign: 'right',
-          ...teachText,
-          fontSize: 11,
-        }}
-      >
+      {/* Clears the "+12" tick, which sits at (baseY - ampH) - 5 and is ~13
+          px tall — at -15 the caption landed on top of it (owner 2026-08-28:
+          "the dB marking is showing over the +12"). */}
+      <Ax x={0} w={geo.xL0 - 8 * ts} y={geo.baseY - geo.ampH - 30 * ts} align="right" size={11} teach>
         dB
-      </RNText>
+      </Ax>
     </View>
   );
 }

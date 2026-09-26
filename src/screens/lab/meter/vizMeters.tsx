@@ -49,6 +49,7 @@ import {
 } from './meterEngine';
 import { fonts } from '../../../theme/tokens';
 import { LOUDNESS_STOPS, WAVE_LEVEL_STOPS } from '../../../features/tools/levelColor';
+import { useStageTextScale } from '../rack/stageAspect';
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 
 // House lab palette (visual standards §3).
@@ -150,7 +151,22 @@ function GlowStroke({
   );
 }
 
-/** Absolutely-positioned label over a canvas (vizChain/proximity precedent). */
+/** Legibility floor for every overlay label (owner 2026-09-25: "text too
+ *  small to read … 9 pt minimum"). A label authored smaller is drawn at 9 on
+ *  the glass; labels already at 9 or more are untouched. */
+const LBL_MIN = 9;
+
+/** Absolutely-positioned label over a canvas (vizChain/proximity precedent).
+ *
+ *  Sizing (legibility pass 2026-09-25): the size is floored at LBL_MIN and
+ *  multiplied by StageTextScale — 1 on the glass, `rendered ÷ glass width`
+ *  inside FULL SCREEN. THE SKIA TRAP: the canvas grows with its box, RN text
+ *  does not, so without this the picture doubles and its labels stay small.
+ *  The box grows with the text (width × scale, re-anchored by `align`), and
+ *  the text's vertical CENTRE stays where the authored size put it — so a
+ *  tick label still sits on its tick. A caller whose size is already ≥ 9 and
+ *  that is not in full screen (the SPL/tools meters) renders exactly as
+ *  before. */
 function Lbl(props: {
   x: number;
   y: number;
@@ -168,18 +184,25 @@ function Lbl(props: {
   shadowOffset?: { width: number; height: number };
   children: string;
 }) {
+  const ts = useStageTextScale();
+  const auth = props.size ?? 8;
+  const size = Math.max(LBL_MIN, auth) * ts;
+  const w0 = props.w ?? 40;
+  const w = w0 * ts;
+  const align = props.align ?? 'center';
+  const x = align === 'left' ? props.x : align === 'right' ? props.x + w0 - w : props.x + (w0 - w) / 2;
   return (
     <RNText
       style={{
         position: 'absolute',
-        left: props.x,
-        top: props.y,
-        width: props.w ?? 40,
-        textAlign: props.align ?? 'center',
+        left: x,
+        top: props.y - (size - auth) / 2,
+        width: w,
+        textAlign: align,
         fontFamily: props.font ?? fonts.mono,
-        fontSize: props.size ?? 8,
+        fontSize: size,
         color: props.color ?? TEXT_DIM,
-        letterSpacing: props.ls,
+        letterSpacing: props.ls != null ? props.ls * ts : undefined,
         includeFontPadding: false,
         ...(props.shadowColor
           ? {
@@ -357,6 +380,9 @@ export function WaveformView(p: {
 
   const st = S.stats;
   const statLine = `PK ${st.pkDb.toFixed(1)}  RMS ${st.rmsDb.toFixed(1)}  CF ${st.crest.toFixed(1)} dB`;
+  // Overlay labels grow in FULL SCREEN (StageTextScale); the corner offsets
+  // that hold them grow with them so the stat and DC lines never overlap.
+  const ts = useStageTextScale();
   return (
     <View style={{ width: w, height: h }}>
       <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
@@ -400,11 +426,11 @@ export function WaveformView(p: {
           {`${d}`}
         </Lbl>
       ))}
-      <Lbl x={w - 170} y={4} w={166} align="right" size={7}>
+      <Lbl x={w - 230} y={4 * ts} w={226} align="right" size={7}>
         {statLine}
       </Lbl>
       {Math.abs(st.dc) > 0.004 ? (
-        <Lbl x={w - 170} y={14} w={166} align="right" size={7} color={AMBER}>
+        <Lbl x={w - 230} y={16 * ts} w={226} align="right" size={7} color={AMBER}>
           {`DC ${st.dc >= 0 ? '+' : ''}${st.dc.toFixed(2)}`}
         </Lbl>
       ) : null}
@@ -436,14 +462,17 @@ export function PeakMeterView(p: {
   const sig: SignalKey = p.signal ?? 'sine';
   const livePeak = p.live ? p.live.peakDb : undefined;
   const LOOP = p.loopSeconds ?? 4;
+  // Text-holding gutters grow with the overlay labels in FULL SCREEN (1 on
+  // the glass), so the dB scale, L/R and the OVER lamp keep their room.
+  const ts = useStageTextScale();
 
   // Rack-gear layout: brushed panel, inset bezel well, two LED columns with a
   // tick/label gutter between them.
-  const wellW = Math.min(210, Math.max(150, w * 0.56));
+  const wellW = Math.min(210 * ts, Math.max(150, w * 0.56));
   const wellX = (w - wellW) / 2;
-  const wellY = 30;
-  const wellH = h - wellY - 26;
-  const gutter = 40;
+  const wellY = 30 * ts;
+  const wellH = h - wellY - 26 * ts;
+  const gutter = 40 * ts;
   const padI = 9;
   // Thinner bars, centered in the well (owner 2026-08-05).
   const colWpx = Math.min(16, (wellW - gutter - padI * 2) / 2);
@@ -539,9 +568,9 @@ export function PeakMeterView(p: {
     const well = Skia.Path.Make();
     well.addRRect(Skia.RRectXY(Skia.XYWHRect(wellX - 8, wellY - 8, wellW + 16, wellH + 16), 8, 8));
     const lamp = Skia.Path.Make();
-    lamp.addRRect(Skia.RRectXY(Skia.XYWHRect(w / 2 - 26, 8, 52, 15), 4, 4));
+    lamp.addRRect(Skia.RRectXY(Skia.XYWHRect(w / 2 - 26 * ts, 8 * ts, 52 * ts, 15 * ts), 4 * ts, 4 * ts));
     return { unlit, ticks, well, lamp };
-  }, [w, h]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [w, h, ts]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const envL = E.envL;
   const envR = E.envR;
@@ -697,10 +726,10 @@ export function PeakMeterView(p: {
         </Path>
         <Path path={G.lamp} color={RED} opacity={overO} />
       </Canvas>
-      <Lbl x={10} y={6} w={140} align="left" size={8} font={fonts.oswaldSemiBold} ls={1}>
+      <Lbl x={10} y={6 * ts} w={140} align="left" size={8} font={fonts.oswaldSemiBold} ls={1}>
         PEAK PROGRAM
       </Lbl>
-      <Lbl x={w / 2 - 26} y={11} w={52} size={7.5} color="#f4d9d5" ls={1.5}>
+      <Lbl x={w / 2 - 26} y={11 * ts} w={52} size={7.5} color="#f4d9d5" ls={1.5}>
         OVER
       </Lbl>
       {[0, -6, -12, -20, -30, -40, -50, -60].map((d) => (
@@ -708,16 +737,16 @@ export function PeakMeterView(p: {
           {`${d}`}
         </Lbl>
       ))}
-      <Lbl x={colLx + colWpx / 2 - 10} y={barBot + 6} w={20} size={8} color="#9aa0ac">
+      <Lbl x={colLx + colWpx / 2 - 10} y={barBot + 6 * ts} w={20} size={8} color="#9aa0ac">
         {p.live ? 'M' : 'L'}
       </Lbl>
-      <Lbl x={colRx + colWpx / 2 - 10} y={barBot + 6} w={20} size={8} color="#9aa0ac">
+      <Lbl x={colRx + colWpx / 2 - 10} y={barBot + 6 * ts} w={20} size={8} color="#9aa0ac">
         {p.live ? 'M' : 'R'}
       </Lbl>
-      <Lbl x={w / 2 - 16} y={barBot + 6} w={32} size={6.5}>
+      <Lbl x={w / 2 - 16} y={barBot + 6 * ts} w={32} size={6.5}>
         dBFS
       </Lbl>
-      <Lbl x={10} y={h - 13} w={140} align="left" size={7}>
+      <Lbl x={10} y={h - 13 * ts} w={140} align="left" size={7}>
         {p.live ? 'LIVE INPUT · MONO' : `CREST ${E.crest.toFixed(1)} dB`}
       </Lbl>
     </View>
@@ -1088,8 +1117,11 @@ export function VuMeterView(p: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [LIVE0]);
 
-  const ledX = fx + fw - 22;
-  const ledY = fy + 20;
+  // The fast PEAK LED and its caption sit in the top-right corner; both grow
+  // with the overlay text scale in FULL SCREEN (1 on the glass).
+  const ts = useStageTextScale();
+  const ledX = fx + fw - 22 * ts;
+  const ledY = fy + 20 * ts;
   // VU wordmark seat (owner 2026-07-30, RAISED to the midpoint): the wordmark was
   // riding too LOW, down near the pivot hub. Seat its CENTRE at the MIDPOINT between
   // the blue in-arc bracket numbers (radius ≈ R−15 from the pivot) and the needle
@@ -1133,12 +1165,12 @@ export function VuMeterView(p: {
         {/* Fast PEAK LED beside the face (the contrast lesson in one glance). */}
         {showLed ? (
           <>
-            <Circle cx={ledX} cy={ledY} r={5} color="#42150f" />
-            <Circle cx={ledX} cy={ledY} r={9} color={withAlpha(RED, 0.6)} opacity={ledO}>
+            <Circle cx={ledX} cy={ledY} r={5 * ts} color="#42150f" />
+            <Circle cx={ledX} cy={ledY} r={9 * ts} color={withAlpha(RED, 0.6)} opacity={ledO}>
               <BlurMask blur={6} style="normal" />
             </Circle>
-            <Circle cx={ledX} cy={ledY} r={4.4} color="#ff4d3c" opacity={ledO} />
-            <Circle cx={ledX} cy={ledY} r={5} color="#1d0c09" style="stroke" strokeWidth={1} />
+            <Circle cx={ledX} cy={ledY} r={4.4 * ts} color="#ff4d3c" opacity={ledO} />
+            <Circle cx={ledX} cy={ledY} r={5 * ts} color="#1d0c09" style="stroke" strokeWidth={1} />
           </>
         ) : null}
         {/* Needle: soft ANIMATED drop shadow (offset down-right, blurred) that
@@ -1209,7 +1241,7 @@ export function VuMeterView(p: {
         VU
       </Lbl>
       {showLed ? (
-        <Lbl x={ledX - 20} y={ledY + 9} w={40} size={6.5} color="#8c2f24" ls={1}>
+        <Lbl x={ledX - 20} y={ledY + 9 * ts} w={40} size={6.5} color="#8c2f24" ls={1}>
           PEAK
         </Lbl>
       ) : null}
@@ -1266,18 +1298,22 @@ export function LoudnessView(p: {
   const h = p.height ?? 300;
   const sim = useMemo(() => simulateLoudness(p.signal), [p.signal]);
   const N = sim.momentary.length;
+  // Overlay labels grow in FULL SCREEN (StageTextScale, 1 on the glass); the
+  // gutters that hold them — scale column, title strip, legend strip — grow
+  // with them so nothing collides.
+  const ts = useStageTextScale();
 
   // Layout: M/S bars left · integrated + LRA center · history strip right.
-  const mX = 38;
+  const mX = 38 * ts;
   const barW = 22;
   const sX = mX + barW + 12;
-  const barTop = 36;
-  const barBot = h - 38;
+  const barTop = 36 * ts;
+  const barBot = h - 38 * ts;
   const yL = (v: number) => barBot - ((Math.max(-36, Math.min(0, v)) + 36) / 36) * (barBot - barTop);
   const histW = Math.max(90, w * 0.32);
   const histX = w - 14 - histW;
-  const histTop = 48;
-  const histBot = h - 64;
+  const histTop = 48 * ts;
+  const histBot = h - 64 * ts;
   const yH = (v: number) => histBot - ((Math.max(-36, Math.min(0, v)) + 36) / 36) * (histBot - histTop);
   const hx = (i: number) => histX + (i / (N - 1)) * histW;
   const cX0 = sX + barW + 20;
@@ -1323,7 +1359,7 @@ export function LoudnessView(p: {
     fill.lineTo(hx(N - 1), histBot);
     fill.close();
     // LRA bracket bar around the integrated value.
-    const lraY = 148;
+    const lraY = 148 * ts;
     const lo = sim.integratedLufs - sim.lraLu / 2;
     const hi = sim.integratedLufs + sim.lraLu / 2;
     const lraTrack = Skia.Path.Make();
@@ -1339,7 +1375,7 @@ export function LoudnessView(p: {
     iTick.moveTo(xLufs(sim.integratedLufs), lraY - 8);
     iTick.lineTo(xLufs(sim.integratedLufs), lraY + 8);
     return { panel, wells, ticks, target, hFrame, hGrid, hTarget, poly, fill, lraTrack, lraBar, iTick, lraY };
-  }, [w, h, sim]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [w, h, sim, ts]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const mom = sim.momentary;
   const sho = sim.short;
@@ -1432,50 +1468,50 @@ export function LoudnessView(p: {
         <Path path={G.lraBar} color={BLUE} style="stroke" strokeWidth={1.6} opacity={0.9} />
         <Path path={G.iTick} color={AMBER} style="stroke" strokeWidth={1.6} />
         {/* TP lamp — lights above −1 dBTP. */}
-        <Circle cx={w - 26} cy={20} r={5} color="#1c0f10" />
-        <Circle cx={w - 26} cy={20} r={9} color={withAlpha(RED, 0.6)} opacity={tpO}>
+        <Circle cx={w - 26 * ts} cy={20 * ts} r={5 * ts} color="#1c0f10" />
+        <Circle cx={w - 26 * ts} cy={20 * ts} r={9 * ts} color={withAlpha(RED, 0.6)} opacity={tpO}>
           <BlurMask blur={6} style="normal" />
         </Circle>
-        <Circle cx={w - 26} cy={20} r={4.4} color={RED} opacity={tpO} />
-        <Circle cx={w - 26} cy={20} r={5} color="#000000" style="stroke" strokeWidth={1} opacity={0.7} />
+        <Circle cx={w - 26 * ts} cy={20 * ts} r={4.4 * ts} color={RED} opacity={tpO} />
+        <Circle cx={w - 26 * ts} cy={20 * ts} r={5 * ts} color="#000000" style="stroke" strokeWidth={1} opacity={0.7} />
       </Canvas>
-      <Lbl x={10} y={6} w={200} align="left" size={11} font={fonts.oswaldSemiBold} ls={1}>
+      <Lbl x={10} y={6 * ts} w={200} align="left" size={11} font={fonts.oswaldSemiBold} ls={1}>
         LOUDNESS · LUFS
       </Lbl>
       {[0, -9, -18, -27, -36].map((v) => (
-        <Lbl key={v} x={0} y={yL(v) - 5} w={28} align="right" size={9}>
+        <Lbl key={v} x={mX - 38} y={yL(v) - 5} w={28} align="right" size={9}>
           {`${v}`}
         </Lbl>
       ))}
-      <Lbl x={mX + barW / 2 - 12} y={barBot + 8} w={24} size={11} color="#9aa0ac">
+      <Lbl x={mX + barW / 2 - 12} y={barBot + 8 * ts} w={24} size={11} color="#9aa0ac">
         M
       </Lbl>
-      <Lbl x={sX + barW / 2 - 12} y={barBot + 8} w={24} size={11} color="#9aa0ac">
+      <Lbl x={sX + barW / 2 - 12} y={barBot + 8 * ts} w={24} size={11} color="#9aa0ac">
         S
       </Lbl>
-      <Lbl x={mX - 6} y={yL(-14) - 13} w={90} align="left" size={9} color={AMBER}>
+      <Lbl x={mX - 6} y={yL(-14) - 13 * ts} w={90} align="left" size={9} color={AMBER}>
         TARGET −14
       </Lbl>
       {/* Integrated LUFS — the headline number, enlarged up top. */}
-      <Lbl x={cMid - 95} y={24} w={190} size={48} color={AMBER}>
+      <Lbl x={cMid - 95} y={24 * ts} w={190} size={48} color={AMBER}>
         {sim.integratedLufs.toFixed(1)}
       </Lbl>
-      <Lbl x={cMid - 95} y={80} w={190} size={11} ls={1}>
+      <Lbl x={cMid - 95} y={80 * ts} w={190} size={11} ls={1}>
         LUFS INTEGRATED
       </Lbl>
-      <Lbl x={cMid - 95} y={G.lraY + 12} w={190} size={11} color="#9db4d6">
+      <Lbl x={cMid - 95} y={G.lraY + 12 * ts} w={190} size={11} color="#9db4d6">
         {`LRA ${sim.lraLu.toFixed(1)} LU`}
       </Lbl>
-      <Lbl x={histX} y={histBot + 7} w={histW} size={9}>
+      <Lbl x={histX} y={histBot + 7 * ts} w={histW} size={9}>
         SHORT-TERM · LOOP ≈ 24 s
       </Lbl>
-      <Lbl x={w - 110} y={32} w={98} align="right" size={10} color={over ? RED : TEXT_DIM}>
+      <Lbl x={w - 12 * ts - 98} y={32 * ts} w={98} align="right" size={10} color={over ? RED : TEXT_DIM}>
         {`TP ${sim.truePeakDbtp.toFixed(1)} dBTP`}
       </Lbl>
-      <Lbl x={w - 62} y={12} w={22} align="right" size={9} color={over ? '#f4d9d5' : TEXT_DIM}>
+      <Lbl x={w - 40 * ts - 22} y={12 * ts} w={22} align="right" size={9} color={over ? '#f4d9d5' : TEXT_DIM}>
         TP
       </Lbl>
-      <Lbl x={10} y={h - 16} w={260} align="left" size={9}>
+      <Lbl x={10} y={h - 16 * ts} w={260} align="left" size={9}>
         M · MOMENTARY   S · SHORT-TERM
       </Lbl>
     </View>
@@ -1495,13 +1531,17 @@ export function PhaseMeterView(p: {
 }) {
   const w = p.width;
   const h = p.height ?? 220;
-  const bx0 = 42;
-  const bx1 = w - 42;
-  const by = 20;
+  // Overlay labels grow in FULL SCREEN (StageTextScale, 1 on the glass); the
+  // bar's end gutters (−1 / +1), the title strip and the graticule's top
+  // clearance (M) grow with them.
+  const ts = useStageTextScale();
+  const bx0 = 42 * ts;
+  const bx1 = w - 42 * ts;
+  const by = 20 * ts;
   const bh = 13;
   const cxg = w / 2;
-  const cyg = (54 + (h - 8)) / 2;
-  const Rg = Math.min((h - 70) / 2 - 4, w * 0.3);
+  const cyg = (54 * ts + (h - 8)) / 2;
+  const Rg = Math.min((h - 70 * ts) / 2 - 4, w * 0.3);
 
   // stereoPair + correlationOf are the engine's truth: mono → ρ +1 and a
   // vertical gonio line; 180° → ρ −1 and the horizontal — by construction.
@@ -1555,7 +1595,7 @@ export function PhaseMeterView(p: {
       bticks.lineTo(xOfC(c), by + bh + 6);
     }
     return { corr, px, py: py2, dots, rings, diag, cross, zones, track, bticks };
-  }, [p.width01, p.phaseDeg, w, h]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [p.width01, p.phaseDeg, w, h, ts]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const corr = S.corr;
   const ptsX = S.px;
@@ -1620,10 +1660,10 @@ export function PhaseMeterView(p: {
         </Path>
         <Path path={beam} color="#f2fff5" opacity={0.95} />
       </Canvas>
-      <Lbl x={10} y={4} w={120} align="left" size={7} ls={1}>
+      <Lbl x={10} y={4 * ts} w={120} align="left" size={7} ls={1}>
         CORRELATION
       </Lbl>
-      <Lbl x={w - 90} y={4} w={80} align="right" size={9} color={zoneColor}>
+      <Lbl x={w - 10 * ts - 80} y={4 * ts} w={80} align="right" size={9} color={zoneColor}>
         {`ρ ${corr >= 0 ? '+' : ''}${corr.toFixed(2)}`}
       </Lbl>
       <Lbl x={bx0 - 30} y={by + 2} w={24} align="right" size={8}>
@@ -1632,16 +1672,16 @@ export function PhaseMeterView(p: {
       <Lbl x={bx1 + 6} y={by + 2} w={24} align="left" size={8}>
         +1
       </Lbl>
-      <Lbl x={(bx0 + bx1) / 2 - 10} y={by + bh + 8} w={20} size={7}>
+      <Lbl x={(bx0 + bx1) / 2 - 10} y={by + bh + 8 * ts} w={20} size={7}>
         0
       </Lbl>
-      <Lbl x={cxg - Rg * 0.707 - 24} y={cyg - Rg * 0.707 - 12} w={20} size={8} color="#9aa0ac">
+      <Lbl x={cxg - Rg * 0.707 - 24} y={cyg - Rg * 0.707 - 12 * ts} w={20} size={8} color="#9aa0ac">
         L
       </Lbl>
-      <Lbl x={cxg + Rg * 0.707 + 4} y={cyg - Rg * 0.707 - 12} w={20} size={8} color="#9aa0ac">
+      <Lbl x={cxg + Rg * 0.707 + 4} y={cyg - Rg * 0.707 - 12 * ts} w={20} size={8} color="#9aa0ac">
         R
       </Lbl>
-      <Lbl x={cxg - 10} y={cyg - Rg - 12} w={20} size={7}>
+      <Lbl x={cxg - 10} y={cyg - Rg - 12 * ts} w={20} size={7}>
         M
       </Lbl>
       <Lbl x={cxg + Rg + 4} y={cyg - 4} w={20} align="left" size={7}>
@@ -1664,14 +1704,17 @@ export function StereoImageView(p: {
   const w = p.width;
   const h = p.height ?? 190;
   const cx = w / 2;
-  const oy = h - 64;
+  // Overlay labels grow in FULL SCREEN (StageTextScale, 1 on the glass); the
+  // MID/SIDE rows, their label gutter and the preset strip grow with them.
+  const ts = useStageTextScale();
+  const oy = h - 64 * ts;
   const r0 = 16;
-  const maxLen = Math.min(oy - 24, w / 2 - 42) - r0;
+  const maxLen = Math.min(oy - 24 * ts, w / 2 - 42) - r0;
   const BINS = 41;
-  const msX0 = 52;
+  const msX0 = 52 * ts;
   const msX1 = w - 18;
-  const rowM = h - 44;
-  const rowS = h - 26;
+  const rowM = h - 44 * ts;
+  const rowS = h - 26 * ts;
 
   const S = useMemo(() => {
     // Authored pan-energy distributions — how each preset READS across the
@@ -1730,7 +1773,7 @@ export function StereoImageView(p: {
     capsMs.addRect(Skia.XYWHRect(msX0 + midW - 2, rowM, 2.4, 10));
     capsMs.addRect(Skia.XYWHRect(msX0 + sideW - 2, rowS, 2.4, 10));
     return { energies, base, arcs, wells, midFill, sideFill, capsMs };
-  }, [p.preset, w, h]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [p.preset, w, h, ts]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const energies = S.energies;
 
@@ -1779,7 +1822,7 @@ export function StereoImageView(p: {
       <Lbl x={cx + Math.sin(-72 * DEG) * rL - 10} y={oy - Math.cos(72 * DEG) * rL - 5} w={20} size={9} color="#9aa0ac">
         L
       </Lbl>
-      <Lbl x={cx - 10} y={oy - rL - 8} w={20} size={9} color="#9aa0ac">
+      <Lbl x={cx - 10} y={oy - rL - 8 * ts} w={20} size={9} color="#9aa0ac">
         C
       </Lbl>
       <Lbl x={cx + Math.sin(72 * DEG) * rL - 10} y={oy - Math.cos(72 * DEG) * rL - 5} w={20} size={9} color="#9aa0ac">
@@ -1791,7 +1834,7 @@ export function StereoImageView(p: {
       <Lbl x={12} y={rowS + 1} w={36} align="left" size={7}>
         SIDE
       </Lbl>
-      <Lbl x={w - 90} y={6} w={80} align="right" size={7} color={AMBER} ls={1}>
+      <Lbl x={w - 10 * ts - 80} y={6 * ts} w={80} align="right" size={7} color={AMBER} ls={1}>
         {p.preset.toUpperCase()}
       </Lbl>
     </View>
@@ -1815,6 +1858,9 @@ export function ScopeView(p: {
   const w = p.width;
   const h = p.height ?? 210;
   const xy = p.xy ?? false;
+  // The screen-corner captions grow in FULL SCREEN (StageTextScale); their
+  // inset from the screen edge grows with them.
+  const ts = useStageTextScale();
   const sx = 12;
   const sy = 12;
   const sw = w - 24;
@@ -1950,11 +1996,11 @@ export function ScopeView(p: {
         {!xy ? <Path path={S.trig} color="#69a877" opacity={0.8} /> : null}
         <Path path={S.screen} color="#000000" style="stroke" strokeWidth={2.4} opacity={0.85} />
       </Canvas>
-      <Lbl x={sx + 6} y={sy + sh - 12} w={140} align="left" size={7} color="#5f8a68">
+      <Lbl x={sx + 6} y={sy + sh - 12 * ts} w={140} align="left" size={7} color="#5f8a68">
         {xy ? 'X = L · Y = R' : 'CH 1 · SWEEP LOCK'}
       </Lbl>
       {!xy ? (
-        <Lbl x={sx + sw - 46} y={sy + 4} w={40} align="right" size={7} color="#5f8a68">
+        <Lbl x={sx + sw - 6 * ts - 40} y={sy + 4 * ts} w={40} align="right" size={7} color="#5f8a68">
           TRIG
         </Lbl>
       ) : null}

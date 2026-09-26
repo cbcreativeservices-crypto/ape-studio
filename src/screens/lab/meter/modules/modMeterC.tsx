@@ -210,6 +210,7 @@ export function PhaseModule(p: MeterModuleProps) {
       onHelp={p.help}
       stage={{
         size: 'L',
+        fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
         badge: HONESTY,
         onGuide: () => p.help('phase_meter'),
         bezel,
@@ -363,6 +364,7 @@ export function StereoModule(p: MeterModuleProps) {
       onHelp={p.help}
       stage={{
         size: 'L',
+        fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
         badge: HONESTY,
         onGuide: () => p.help('stereo_width'),
         bezel,
@@ -578,6 +580,7 @@ export function ScopeModule(p: MeterModuleProps) {
       onHelp={p.help}
       stage={{
         size: 'L',
+        fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
         badge: HONESTY,
         onGuide: () => p.help(xy ? 'lissajous' : 'oscilloscope'),
         bezel,
@@ -1137,6 +1140,7 @@ export function DetectiveModule(p: MeterModuleProps) {
       onHelp={p.help}
       stage={{
         size: 'L',
+        fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
         badge: HONESTY,
         onGuide: () => p.help('detective'),
         bezel,
