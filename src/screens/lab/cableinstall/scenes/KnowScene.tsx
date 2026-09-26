@@ -26,7 +26,9 @@
  */
 import { useEffect, useState } from 'react';
 import { AccessibilityInfo, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
-import Svg, { Circle } from 'react-native-svg';
+import Svg from 'react-native-svg';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
+import { CableSection, CableSectionFigure, SECTION_ASPECT } from './knowArt';
 import { colors, fonts } from '../../../../theme/tokens';
 import { CiSection, RuleFeedback, announceComplete } from '../bits';
 import { OptionChip, VerdictBanner } from '../../cable/lessons/bits';
@@ -206,9 +208,9 @@ function CableSwatch({ t, open }: { t: CiCableType; open: boolean }) {
   const sig = SIGNATURE[t.id];
   return (
     <View style={styles.swatchBox} pointerEvents="none">
-      <Svg width={16} height={16} viewBox="0 0 20 20">
-        <Circle cx={10} cy={10} r={7} fill={t.tint} fillOpacity={0.18} stroke={t.tint} strokeWidth={2.2} strokeOpacity={0.8} />
-        <Circle cx={10} cy={10} r={2.4} fill={t.tint} />
+      <Svg width={26} height={26} viewBox="0 0 20 20">
+        {/* the type's real construction, end-on (knowArt) — not a ring-and-dot */}
+        <CableSection cls={t.id} tint={t.tint} cx={10} cy={10} R={8.6} fine={false} />
         {open ? <SwatchFill tint={t.tint} /> : null}
         {open ? <SwatchTerminate tint={t.tint} /> : null}
         {open && m.loops && sig === 'light' ? <SwatchLight tint={t.tint} /> : null}
@@ -226,22 +228,25 @@ function TypeCard({ t, open, viewed, onPress }: { t: CiCableType; open: boolean;
   const noteRows = t.useNote ? 1 : 0;
   const art = CI_CABLE_TYPE_ART[t.id];
   return (
-    <Pressable
-      style={[styles.typeCard, viewed && styles.typeCardSeen]}
-      onPress={onPress}
-      accessibilityRole="button"
-      accessibilityState={{ expanded: open }}
-      aria-expanded={open}
-      accessibilityLabel={`${t.name}, ${useLabel(t.use).toLowerCase()}${viewed ? ', reviewed' : ''}`}
-    >
-      <View style={styles.typeHead}>
+    // Only the HEAD toggles the card: the open body holds its own press
+    // targets (photo, FULL SCREEN) and a nested press fired both.
+    <View style={[styles.typeCard, viewed && styles.typeCardSeen]}>
+      <Pressable
+        style={styles.typeHead}
+        onPress={onPress}
+        hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+        accessibilityRole="button"
+        accessibilityState={{ expanded: open }}
+        aria-expanded={open}
+        accessibilityLabel={`${t.name}, ${useLabel(t.use).toLowerCase()}${viewed ? ', reviewed' : ''}`}
+      >
         <CableSwatch t={t} open={open} />
         <Text style={[styles.typeName, viewed && { color: colors.textPrimary }]} numberOfLines={1}>
           {viewed ? '✓ ' : ''}
           {t.name}
         </Text>
         <Text style={styles.useChip}>{useLabel(t.use)}</Text>
-      </View>
+      </Pressable>
       {open ? (
         <View style={styles.typeBody}>
           {/* The photograph (owner 2026-09-25) opens with the card: the real
@@ -251,6 +256,15 @@ function TypeCard({ t, open, viewed, onPress }: { t: CiCableType; open: boolean;
               <LabPhoto source={art} aspect={CI_CABLE_ART_ASPECT} label={`${t.name}, cut back to show its construction`} />
             </Stagger>
           ) : null}
+          {/* The drawing sits ALONGSIDE the photograph (D23): the photo shows
+              the real thing, the section names what is inside it. */}
+          <Stagger index={0}>
+            <ExpandableFigure
+              aspect={SECTION_ASPECT}
+              title="SECTION"
+              render={(fw, fh) => <CableSectionFigure cls={t.id} tint={t.tint} w={fw} h={fh} />}
+            />
+          </Stagger>
           <Stagger index={0}>
             <Text style={styles.typeSignal}>{t.signal}</Text>
           </Stagger>
@@ -269,7 +283,7 @@ function TypeCard({ t, open, viewed, onPress }: { t: CiCableType; open: boolean;
           ))}
         </View>
       ) : null}
-    </Pressable>
+    </View>
   );
 }
 
@@ -477,7 +491,7 @@ const styles = StyleSheet.create({
   typeCard: { borderRadius: 10, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', paddingVertical: 12, paddingHorizontal: 12, gap: 8 },
   typeCardSeen: { borderColor: 'rgba(55,224,95,.3)' },
   typeHead: { flexDirection: 'row', alignItems: 'center', gap: 9 },
-  swatchBox: { width: 16, height: 16, alignItems: 'center', justifyContent: 'center' },
+  swatchBox: { width: 26, height: 26, alignItems: 'center', justifyContent: 'center' },
   typeName: { flex: 1, fontFamily: fonts.barlowMedium, fontSize: 14, color: colors.textSecondary },
   useChip: { fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 1, color: colors.textSub, borderWidth: 1, borderColor: '#2c2c33', borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2 },
   typeBody: { gap: 5, borderTopWidth: 1, borderTopColor: '#222228', paddingTop: 8 },

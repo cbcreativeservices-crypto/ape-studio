@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 16:24 · ccode · 134226ed
+changed: Cable Install art pass, Stage 1 (Why): the four approval close-ups redrawn as real objects at true scale
+affects other side: nothing — client JS only (Cable Install lab art)
+needs: nothing
+
+
 ### 2026-09-26 16:10 · ccode · cab2a933
 changed: handoff 2026-09-26C: evening — tester fixes, QA pass, builds iOS 32 / Android 15 finished, Cable Install redesign agent running
 affects other side: nothing — docs only (handoff)
