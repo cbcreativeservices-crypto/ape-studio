@@ -181,6 +181,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 12:43 · ccode · 0595a1c2
+changed: Wave Comb: the comb curve is ON the display (room above, response at the mic below, also in FULL SCREEN); opens with the mic 0.5 m from the wall so the notches are deep; the listener is drawn as a microphone aimed at the source
+affects other side: nothing — client JS only (Wave lab drawing)
+needs: nothing
+
+
 ### 2026-09-26 12:35 · ccode · e536683d
 changed: Wave Interference: bezel reads the pair vs ONE speaker (+6.0 dB in step, NULL on a cancellation); absolute level kept in the well; heat map resolution grows with the zoom step so FULL SCREEN stays smooth
 affects other side: nothing — client JS only (Wave lab drawing)
