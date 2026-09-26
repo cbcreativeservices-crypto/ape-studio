@@ -143,6 +143,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-25 22:40 · ccode · 54e48aee
+changed: Sound Systems: every word on a display reads at 9 pt or more on a phone
+affects other side: nothing — client drawing text only
+needs: nothing
+
 ### 2026-09-25 22:01 · ccode · 987cf20e
 changed: Sound Systems: FULL SCREEN view for every drawing display
 affects other side: nothing — client layout only (Sound Systems FULL SCREEN view; label redraw to a 9 pt minimum follows in separate commits).
