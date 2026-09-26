@@ -376,9 +376,12 @@ export function RackUnit({
         <Pressable
           onPress={toggleStage}
           style={[styles.stageToggle, styles.stageToggleFlex]}
-          // 44pt tall by construction — the lesson-reading control must not
-          // repeat the back-button mistake of being too small to hit.
-          hitSlop={{ top: 6, bottom: 6, left: 12, right: 12 }}
+          // The visible bar is 34 pt (owner 2026-09-26: "a little thinner —
+          // they don't need to occupy that much vertical screen space"), but
+          // the TOUCH target stays 44 pt by hit slop — the lesson-reading
+          // control must not repeat the back-button mistake of being too
+          // small to hit.
+          hitSlop={{ top: 5, bottom: 5, left: 12, right: 12 }}
           accessibilityRole="button"
           accessibilityState={{ expanded: !stageCollapsed }}
           accessibilityLabel={stageCollapsed ? 'Show the display' : 'Hide the display to read'}
@@ -399,7 +402,7 @@ export function RackUnit({
           <Pressable
             onPress={onEnlarge}
             style={[styles.stageToggle, styles.stageToggleFlex]}
-            hitSlop={{ top: 6, bottom: 6, left: 6, right: 12 }}
+            hitSlop={{ top: 5, bottom: 5, left: 6, right: 12 }}
             accessibilityRole="button"
             accessibilityLabel="Open the display full screen"
             accessibilityHint="Shows the drawing at full size with zoom"
@@ -501,10 +504,10 @@ const styles = StyleSheet.create({
   wellWrapGrow: { flexGrow: 1 },
   wellScroll: { flexGrow: 0 },
   wellScrollGrow: { flexGrow: 1 },
-  stageToggleRow: { flexDirection: 'row', gap: 8, marginHorizontal: 10, marginTop: 8 },
+  stageToggleRow: { flexDirection: 'row', gap: 8, marginHorizontal: 10, marginTop: 6 },
   stageToggleFlex: { flex: 1 },
   stageToggle: {
-    minHeight: 44,
+    minHeight: 34, // + hitSlop 5/5 = a 44 pt touch target
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,

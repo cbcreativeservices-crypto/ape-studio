@@ -35,7 +35,13 @@ describe('the lab display can collapse for reading', () => {
   test('there is a control, and it is big enough to hit', () => {
     assert.match(code, /SHOW DISPLAY/, 'the show/hide display control is gone');
     assert.match(code, /HIDE DISPLAY/, 'the show/hide display control is gone');
-    assert.match(code, /stageToggle:\s*\{[^}]*minHeight:\s*44/, 'the toggle lost its 44pt minimum height');
+    // Visible bar 34 pt (owner 2026-09-26, thinner row) + hit slop 5 above and
+    // below = the 44 pt touch target the tester report demands.
+    const h = code.match(/stageToggle:\s*\{[^}]*minHeight:\s*(\d+)/);
+    assert.ok(h, 'the toggle lost its minimum height');
+    const slop = code.match(/onPress=\{toggleStage\}[\s\S]*?hitSlop=\{\{ top: (\d+), bottom: (\d+)/);
+    assert.ok(slop, 'the toggle lost its hit slop');
+    assert.ok(Number(h![1]) + Number(slop![1]) + Number(slop![2]) >= 44, 'the toggle touch target fell under 44pt');
   });
 
   test('the glass is not rendered while collapsed', () => {
