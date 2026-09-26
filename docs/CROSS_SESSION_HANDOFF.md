@@ -165,10 +165,34 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 00:15 · ccode · fa535552
+changed: Foundations of Sound: labels ≥ 9 pt + FULL SCREEN (legibility pass)
+affects other side: nothing — client only
+needs: nothing
+
+
+### 2026-09-26 00:13 · ccode · 309e60b3
+changed: Speech & Voice Lab: labels ≥ 9 pt + FULL SCREEN (legibility pass)
+affects other side: nothing — client only
+needs: nothing
+
+
+### 2026-09-26 00:10 · ccode · 6293cb24
+changed: De-Esser: labels ≥ 9 pt + FULL SCREEN (legibility pass)
+affects other side: nothing — client only
+needs: nothing
+
+
+### 2026-09-26 00:05 · ccode · db203299
+changed: Bass Guitar Lab: PLAY streams the real bass recordings; the string model is the fallback
+affects other side: FYI only — the client now calls the `lab-audio` edge function for `bass_fretboard` (72 public rows); no schema change
+needs: nothing
+
+
 ### 2026-09-25 23:48 · ccode · ec08d4b7
 changed: docs: governance D34 - the 2026-09-25 ccode session is retired; 25D addendum (flashcard scroll fix, clean-worktree publish 23:40)
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing — client only
+needs: nothing
 
 
 ### 2026-09-25 23:44 · ccode · f3be3797

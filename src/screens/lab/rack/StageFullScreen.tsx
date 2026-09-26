@@ -111,7 +111,11 @@ export function StageFullScreen({
     <Modal visible={visible} animationType="fade" onRequestClose={onClose} statusBarTranslucent>
       <View style={[styles.root, { paddingTop: insets.top + 6, paddingBottom: insets.bottom + 6, paddingLeft: insets.left, paddingRight: insets.right }]}>
         <View style={styles.bar}>
-          <Text style={styles.title}>{title}</Text>
+          {/* One line, shrinks: a long title ("THE SPEECH SYSTEM") pushed the
+              zoom row and clipped ✕ at 390 (Speech pass 2026-09-26). */}
+          <Text style={styles.title} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
+            {title}
+          </Text>
           <View style={styles.zooms} accessibilityRole="radiogroup" accessibilityLabel="Zoom">
             {ZOOMS.map((z) => {
               const on = z === zoom;
@@ -187,7 +191,7 @@ export function StageFullScreen({
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
   bar: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 12, paddingBottom: 8 },
-  title: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.6, color: colors.textSubAlt },
+  title: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.6, color: colors.textSubAlt, flexShrink: 1, maxWidth: '32%' },
   zooms: { flex: 1, flexDirection: 'row', justifyContent: 'center', gap: 6 },
   zoomBtn: {
     minWidth: 48,
