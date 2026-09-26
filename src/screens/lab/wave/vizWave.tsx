@@ -414,6 +414,10 @@ export type RoomSceneProps = {
    *  the source at aim ± half, across the room — the printed EFF angle,
    *  drawn (2026-09-26). Angles in the source aim convention (0 = +y). */
   coverageEdges?: { x: number; y: number; aimDeg: number; halfDeg: number } | null;
+  /** Object labels in scene metres (Cardioid: FRONT / REAR · Ø · ms /
+   *  AUDIENCE ↓) — 9 pt on a dark plate so they read over any map colour.
+   *  `side` puts the label right of the point (default) or centred on it. */
+  labels?: { x: number; y: number; text: string; color?: string; side?: 'right' | 'center' }[];
   /** Wall strip depth on the glass, px (default 9). The Absorption lab draws
    *  its walls deeper so each material reads in section (owner 2026-09-26). */
   wallT?: number;
@@ -2101,11 +2105,37 @@ export function RoomSceneView(p: RoomSceneProps) {
         {(p.probes ?? []).map((pr, i) => (
           <RNText
             key={`probeL${i}`}
-            style={[styles.wallLabel, { fontSize: 9 * ts, color: ACCENT_BLUE, left: geo.x0 + pr.x * geo.pxPerM + 9 * ts, top: geo.y0 + pr.y * geo.pxPerM - 6 * ts }]}
+            // Dark plate: the blue label vanished on the blue cancelled area
+            // exactly when the cardioid worked (walkthrough 2026-09-26).
+            style={[styles.wallLabel, styles.labelPlate, { fontSize: 9 * ts, color: ACCENT_BLUE, left: geo.x0 + pr.x * geo.pxPerM + 9 * ts, top: geo.y0 + pr.y * geo.pxPerM - 7 * ts, paddingHorizontal: 3 * ts, borderRadius: 3 * ts }]}
           >
             {pr.label}
           </RNText>
         ))}
+        {(p.labels ?? []).map((lb, i) => {
+          const lx = geo.x0 + lb.x * geo.pxPerM;
+          const ly = geo.y0 + lb.y * geo.pxPerM;
+          const centred = lb.side === 'center';
+          return (
+            <RNText
+              key={`objL${i}`}
+              style={[
+                styles.wallLabel,
+                styles.labelPlate,
+                {
+                  fontSize: 9 * ts,
+                  color: lb.color ?? '#dfe4ee',
+                  paddingHorizontal: 3 * ts,
+                  borderRadius: 3 * ts,
+                  top: ly - 7 * ts,
+                  ...(centred ? { left: lx - 60 * ts, width: 120 * ts, textAlign: 'center' as const } : { left: lx }),
+                },
+              ]}
+            >
+              {lb.text}
+            </RNText>
+          );
+        })}
         <RNText style={[styles.wallLabel, { fontSize: 9 * ts, left: midX - 50 * ts, top: geo.y0 - wallPx - 15 * ts, width: 100 * ts, textAlign: 'center' }]}>
           {matLabel(0)}
         </RNText>
@@ -2765,6 +2795,7 @@ export function GradientSceneView(p: {
 const styles = StyleSheet.create({
   // Lab display law (owner 2026-09-25): nothing under 9 pt on the glass. Each
   // use site multiplies fontSize by useStageTextScale() for FULL SCREEN.
+  labelPlate: { backgroundColor: 'rgba(8,9,13,0.72)', overflow: 'hidden' },
   wallLabel: {
     position: 'absolute',
     fontFamily: fonts.mono,

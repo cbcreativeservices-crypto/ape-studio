@@ -78,7 +78,7 @@ function coverageAtFreq(src: WaveSource, freq: number): number {
 /** Hosts the phase clock next to the Skia view — only rendered when viz ≠ null,
  *  so no conditional hooks ever run in the module bodies. */
 function SceneHero({
-  viz, scene, width, maxH = 300, fixedH, focused, freq, layers, visHz = 0.6, selectedId, onSelect, onDragSource, onDragListener, wallT, sectionView, probes, coverageEdges,
+  viz, scene, width, maxH = 300, fixedH, focused, freq, layers, visHz = 0.6, selectedId, onSelect, onDragSource, onDragListener, wallT, sectionView, probes, coverageEdges, labels,
 }: {
   viz: WaveVizModule;
   scene: WaveScene;
@@ -106,6 +106,8 @@ function SceneHero({
   probes?: { x: number; y: number; label: string }[];
   /** A speaker's −6 dB coverage edges (Coverage). */
   coverageEdges?: { x: number; y: number; aimDeg: number; halfDeg: number } | null;
+  /** Object labels in scene metres. */
+  labels?: { x: number; y: number; text: string; color?: string; side?: 'right' | 'center' }[];
 }) {
   const phase = viz.usePhaseClock(focused, visHz);
   const height = fixedH ?? Math.max(150, Math.min(maxH, Math.round((width * scene.h) / scene.w)));
@@ -125,6 +127,7 @@ function SceneHero({
       sectionView={sectionView}
       probes={probes}
       coverageEdges={coverageEdges}
+      labels={labels}
     />
   );
 }
@@ -140,7 +143,7 @@ const layersValue = (layers: WaveLayers) =>
 /** Rack stage — fit the room into the glass: SceneHero derives height from
  *  width × aspect, so hand it the width that lands on h (Room Builder idiom). */
 function RackScene({
-  viz, scene, w, h, focused, freq, layers, selectedId, onSelect, onDragSource, onDragListener, sectionView, probes, wallT, coverageEdges,
+  viz, scene, w, h, focused, freq, layers, selectedId, onSelect, onDragSource, onDragListener, sectionView, probes, wallT, coverageEdges, labels,
 }: {
   viz: WaveVizModule | null;
   scene: WaveScene;
@@ -157,6 +160,7 @@ function RackScene({
   probes?: { x: number; y: number; label: string }[];
   wallT?: number;
   coverageEdges?: { x: number; y: number; aimDeg: number; halfDeg: number } | null;
+  labels?: { x: number; y: number; text: string; color?: string; side?: 'right' | 'center' }[];
 }) {
   if (!viz) return <VizUnavailableCard />;
   return (
@@ -181,6 +185,7 @@ function RackScene({
         probes={probes}
         wallT={wallT}
         coverageEdges={coverageEdges}
+        labels={labels}
       />
     </View>
   );
@@ -859,7 +864,17 @@ export function CardioidSubModule(p: WaveModuleProps) {
             onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
             // The REAR readout's measuring point, drawn (proportion audit
             // 2026-09-26: it printed a level for an invisible spot).
-            probes={[{ x: CSUB_REAR_PROBE.x, y: CSUB_REAR_PROBE.y, label: 'REAR' }]}
+            probes={[{ x: CSUB_REAR_PROBE.x, y: CSUB_REAR_PROBE.y, label: 'REAR MIC' }]}
+            // Which box is which, and what is done to the rear one — the
+            // whole lesson (walkthrough 2026-09-26). Right of each sub, past
+            // its 0.75 m cabinet; AUDIENCE on the listener's side.
+            labels={[
+              { x: CSUB_FRONT.x + 0.6, y: CSUB_FRONT.y, text: 'FRONT SUB' },
+              ...(soloFront
+                ? []
+                : [{ x: CSUB_REAR.x + 0.6, y: CSUB_REAR.y, text: `REAR SUB${rearInv ? ' · Ø' : ''} · ${rearDelayMs.toFixed(1)} ms`, color: '#ffc64d' }]),
+              { x: 7, y: 9.55, text: 'AUDIENCE ↓', side: 'center' as const },
+            ]}
           />
         ),
         params: [
