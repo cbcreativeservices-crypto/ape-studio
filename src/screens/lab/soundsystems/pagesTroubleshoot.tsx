@@ -23,7 +23,8 @@ import { STATION_LABEL, STATION_ORDER, type Station } from '../../../features/so
 import type { DockParam } from '../rack/rackTypes';
 import { ChapterTag, DeeperRow, GoalChips, KeyFact, LabLink, useVisitGoals, VerdictLine } from './bits';
 import { benchMap, MAP_H, MAP_W, ReadingKey, SystemMap, type MapNode, type MapState } from './art/SystemMap';
-import { SoundSystemsRackLayout, StageFit, type SsPageDef } from './rackLayout';
+import { SoundSystemsRackLayout, type SsPageDef } from './rackLayout';
+import { StageFit } from '../rack/StageFit';
 
 export function stateOf(r: Reading): MapState {
   if (r.flags && r.flags.length) return r.signal === 'clip' ? 'clip' : r.signal === 'hot' ? 'hot' : 'flag';

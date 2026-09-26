@@ -32,7 +32,8 @@ import { PlanGlyph } from './art/planArt';
 import { ArrivalTimeline, FeedbackLoop } from './art/diagrams';
 import { BEAM_COLOR, PLOT_BADGE, THROW } from './plot';
 import { gainBezel, gainStageParam } from './gainDock';
-import { lanePos, laneVal, SoundSystemsRackLayout, StageFit, type SsPageDef } from './rackLayout';
+import { lanePos, laneVal, SoundSystemsRackLayout, type SsPageDef } from './rackLayout';
+import { StageFit } from '../rack/StageFit';
 
 /* ── 16 · Gain structure ────────────────────────────────────────────────── */
 

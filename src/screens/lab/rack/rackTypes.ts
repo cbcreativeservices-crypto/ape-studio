@@ -49,6 +49,14 @@ export type RackStage = {
    *  Systems: "text too small to read … these displays may need to be
    *  enlarged"). Labs that do not pass it look exactly as before. */
   onEnlarge?: () => void;
+  /** Let the RACK own FULL SCREEN (2026-09-25, eleven-lab legibility pass):
+   *  the frame shows the button, opens the shared StageFullScreen with this
+   *  same `render`, publishes StageAspectReport so a StageFit drawing zooms
+   *  in its own shape (and a StageBox stage hides the button), and publishes
+   *  StageTextScale so overlay labels grow with the picture. Opt-in: labs
+   *  that do not set it look exactly as before. `onEnlarge` still works for
+   *  a host that wants its own modal. */
+  fullScreen?: boolean;
 };
 
 /** One option inside an options tray. LabChip semantics preserved

@@ -37,7 +37,8 @@ import { GearGlyph } from './art/gearArt';
 import { CableLegend, PLOT_H, PLOT_W, VenueView } from './art/VenueView';
 import { placedToBeams, PLOT_BADGE } from './plot';
 import { BusHears, ConsolePanel, DcaStrip, MatrixStrip, matrixHears, auxHears, mainHears, subgroupHears, SubgroupStrip, type ConsoleColumn } from './art/ConsolePanel';
-import { flipFader, SoundSystemsRackLayout, StageFit, type SsPageDef, type SsRack } from './rackLayout';
+import { flipFader, SoundSystemsRackLayout, type SsPageDef, type SsRack } from './rackLayout';
+import { StageFit } from '../rack/StageFit';
 
 /* ── the builder ─────────────────────────────────────────────────────────── */
 

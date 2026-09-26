@@ -23,7 +23,8 @@ import { GearGlyph, type GlyphKind } from './art/gearArt';
 import { FeedbackLoop, StageboxStrip, type LineReading } from './art/diagrams';
 import { dbFader, fmtDb } from './consoleDock';
 import { gainBezel, gainStageParam } from './gainDock';
-import { flipFader, SoundSystemsRackLayout, StageBox, StageFit, type SsPageDef } from './rackLayout';
+import { flipFader, SoundSystemsRackLayout, StageBox, type SsPageDef } from './rackLayout';
+import { StageFit } from '../rack/StageFit';
 
 function useOperateCredit(id: string, done: boolean, ctx: PageCtx) {
   useEffect(() => {

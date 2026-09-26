@@ -33,6 +33,8 @@ import { DockButton } from './DockButton';
 import { DockTray } from './DockTray';
 import { ParamLane } from './ParamLane';
 import { STAGE_HEIGHTS, type DockParam, type RackStage } from './rackTypes';
+import { StageFullScreen } from './StageFullScreen';
+import { StageAspectReport, type StageReport } from './stageAspect';
 
 export type RackUnitApi = { setScrollLocked: (locked: boolean) => void };
 
@@ -207,6 +209,118 @@ export function RackUnit({
     if (!interacting && glassH !== targetH) setGlassH(targetH);
   }, [interacting, glassH, targetH]);
 
+  // FULL SCREEN owned by the rack (opt-in `stage.fullScreen`, 2026-09-25).
+  // The glass render is wrapped in a StageAspectReport so a view-built stage
+  // (StageBox → `fixed()`) can decline the button: its text would not grow.
+  // The dock and its trays are rendered INSIDE the full-screen view too
+  // (owner 2026-09-25: "the user must still be able to adjust and view their
+  // changes to controls"), sharing this same state — one lane, one bound
+  // param, one open tray, whichever surface is showing.
+  const [full, setFull] = useState(false);
+  const [fixedStage, setFixedStage] = useState(false);
+  const glassReport = useMemo<StageReport>(() => ({ aspect: () => {}, fixed: () => setFixedStage(true) }), []);
+  const ownsFull = stage.fullScreen === true && !fixedStage;
+  const onEnlarge = ownsFull ? () => setFull(true) : stage.onEnlarge;
+
+  const dockNode = (
+    <View style={styles.dock}>
+      {bound ? (
+        <ParamLane
+          label={bound.label}
+          value={bound.value}
+          readout={bound.format(bound.value)}
+          onChange={bound.onChange}
+          onDragActive={setLaneActive}
+          tint={bound.tint}
+          level={bound.level}
+          home={bound.home}
+        />
+      ) : null}
+      <View style={styles.strip}>
+        {params.map((p) => {
+          switch (p.kind) {
+            case 'fader':
+              return (
+                <DockButton
+                  key={p.id}
+                  label={p.label}
+                  value={(p.formatShort ?? p.format)(p.value)}
+                  // A chooser-fader opens a tray first, so it wears the
+                  // OPEN verb glyph, not the bind glyph (the two-verb rule).
+                  glyph={p.chooser ? '▸' : '▪'}
+                  frameTint={p.tint}
+                  selected={effBoundId === p.id || openTrayId === p.id}
+                  onPress={() => {
+                    if (hapticsEnabled()) Haptics.selectionAsync().catch(() => {});
+                    if (p.chooser) setOpenTrayId((cur) => (cur === p.id ? null : p.id));
+                    else setBoundId(p.id);
+                  }}
+                  onLongPress={p.helpKey ? () => onHelp?.(p.helpKey) : undefined}
+                  a11y={
+                    p.chooser
+                      ? `${p.label}: ${p.format(p.value)}. Tap to choose, then adjust on the fader.`
+                      : `${p.label}: ${p.format(p.value)}. Tap to adjust on the fader.`
+                  }
+                />
+              );
+            case 'options':
+            case 'group':
+              return (
+                <DockButton
+                  key={p.id}
+                  label={p.label}
+                  value={p.valueLabel}
+                  glyph="▸"
+                  selected={openTrayId === p.id}
+                  onPress={() => setOpenTrayId((cur) => (cur === p.id ? null : p.id))}
+                  onLongPress={p.helpKey ? () => onHelp?.(p.helpKey) : undefined}
+                  a11y={`${p.label}: ${p.valueLabel}. Tap to open the chooser.`}
+                />
+              );
+            case 'toggle':
+              // Distinct KEY skin + LED: amber-selected means "bound/open"
+              // ONLY (the two-verb rule); an ON toggle must not impersonate it.
+              return (
+                <DockButton
+                  key={p.id}
+                  label={p.label}
+                  value=""
+                  variant="key"
+                  led={p.value}
+                  labelLines={p.labelLines}
+                  onPress={p.onToggle}
+                  onLongPress={p.helpKey ? () => onHelp?.(p.helpKey) : undefined}
+                  a11y={`${p.label}: ${p.value ? 'on' : 'off'}. Tap to toggle.`}
+                />
+              );
+            case 'action':
+              return (
+                <DockButton
+                  key={p.id}
+                  label={p.label}
+                  value=""
+                  variant="key"
+                  frameTint={p.tint}
+                  onPress={p.onPress}
+                  a11y={p.label}
+                />
+              );
+          }
+        })}
+      </View>
+    </View>
+  );
+
+  const closeTray = () => {
+    // Closing a chooser-fader's tray hands over to its slider — that is
+    // what makes one key do both jobs for the sticky case too.
+    if (chooserTray) setBoundId(chooserTray.id);
+    setOpenTrayId(null);
+  };
+  const trayNode = <DockTray param={trayParam} onClose={closeTray} onHelp={onHelp} bottomInset={bottom} />;
+  // In full screen the drawing is what sits behind the tray: no wash.
+  const trayNodeFull = <DockTray param={trayParam} onClose={closeTray} onHelp={onHelp} bottomInset={0} dim={false} />;
+
   return (
     <View style={[styles.root, { paddingBottom: bottom }]}>
       {/* ── STAGE — pinned; structurally cannot leave the screen ─────────── */}
@@ -215,7 +329,9 @@ export function RackUnit({
             still be mounted and still be drawing frames. */}
         {stageCollapsed ? null : (
         <View style={[styles.glass, { height: glassH }]} onLayout={(e) => setGlassW(Math.round(e.nativeEvent.layout.width) - 2)}>
-          {glassW > 0 ? stage.render(glassW, glassH - 2) : null}
+          {glassW > 0 ? (
+            <StageAspectReport.Provider value={glassReport}>{stage.render(glassW, glassH - 2)}</StageAspectReport.Provider>
+          ) : null}
           {/* Smoked-glass sheen (ToolsHub TileGlass language). Decorative. */}
           <LinearGradient
             pointerEvents="none"
@@ -272,12 +388,12 @@ export function RackUnit({
             {stageCollapsed ? '▾  SHOW DISPLAY' : '▴  HIDE DISPLAY'}
           </Text>
         </Pressable>
-        {stage.onEnlarge && !stageCollapsed ? (
+        {onEnlarge && !stageCollapsed ? (
           // FULL SCREEN (owner 2026-09-25): the drawing at the whole phone,
           // with zoom — a button on the faceplate, never a tap on the glass
           // (the glass is the instrument; its taps belong to the page).
           <Pressable
-            onPress={stage.onEnlarge}
+            onPress={onEnlarge}
             style={[styles.stageToggle, styles.stageToggleFlex]}
             hitSlop={{ top: 6, bottom: 6, left: 6, right: 12 }}
             accessibilityRole="button"
@@ -309,92 +425,7 @@ export function RackUnit({
       </View>
 
       {/* ── DOCK — lane + strip; rides directly under the well content ────── */}
-      <View style={styles.dock}>
-        {bound ? (
-          <ParamLane
-            label={bound.label}
-            value={bound.value}
-            readout={bound.format(bound.value)}
-            onChange={bound.onChange}
-            onDragActive={setLaneActive}
-            tint={bound.tint}
-            level={bound.level}
-            home={bound.home}
-          />
-        ) : null}
-        <View style={styles.strip}>
-          {params.map((p) => {
-            switch (p.kind) {
-              case 'fader':
-                return (
-                  <DockButton
-                    key={p.id}
-                    label={p.label}
-                    value={(p.formatShort ?? p.format)(p.value)}
-                    // A chooser-fader opens a tray first, so it wears the
-                    // OPEN verb glyph, not the bind glyph (the two-verb rule).
-                    glyph={p.chooser ? '▸' : '▪'}
-                    frameTint={p.tint}
-                    selected={effBoundId === p.id || openTrayId === p.id}
-                    onPress={() => {
-                      if (hapticsEnabled()) Haptics.selectionAsync().catch(() => {});
-                      if (p.chooser) setOpenTrayId((cur) => (cur === p.id ? null : p.id));
-                      else setBoundId(p.id);
-                    }}
-                    onLongPress={p.helpKey ? () => onHelp?.(p.helpKey) : undefined}
-                    a11y={
-                      p.chooser
-                        ? `${p.label}: ${p.format(p.value)}. Tap to choose, then adjust on the fader.`
-                        : `${p.label}: ${p.format(p.value)}. Tap to adjust on the fader.`
-                    }
-                  />
-                );
-              case 'options':
-              case 'group':
-                return (
-                  <DockButton
-                    key={p.id}
-                    label={p.label}
-                    value={p.valueLabel}
-                    glyph="▸"
-                    selected={openTrayId === p.id}
-                    onPress={() => setOpenTrayId((cur) => (cur === p.id ? null : p.id))}
-                    onLongPress={p.helpKey ? () => onHelp?.(p.helpKey) : undefined}
-                    a11y={`${p.label}: ${p.valueLabel}. Tap to open the chooser.`}
-                  />
-                );
-              case 'toggle':
-                // Distinct KEY skin + LED: amber-selected means "bound/open"
-                // ONLY (the two-verb rule); an ON toggle must not impersonate it.
-                return (
-                  <DockButton
-                    key={p.id}
-                    label={p.label}
-                    value=""
-                    variant="key"
-                    led={p.value}
-                    labelLines={p.labelLines}
-                    onPress={p.onToggle}
-                    onLongPress={p.helpKey ? () => onHelp?.(p.helpKey) : undefined}
-                    a11y={`${p.label}: ${p.value ? 'on' : 'off'}. Tap to toggle.`}
-                  />
-                );
-              case 'action':
-                return (
-                  <DockButton
-                    key={p.id}
-                    label={p.label}
-                    value=""
-                    variant="key"
-                    frameTint={p.tint}
-                    onPress={p.onPress}
-                    a11y={p.label}
-                  />
-                );
-            }
-          })}
-        </View>
-      </View>
+      {dockNode}
 
       {/* Blank faceplate below the raised dock — calm, non-interactive. */}
       <View style={styles.filler} pointerEvents="none" />
@@ -403,18 +434,20 @@ export function RackUnit({
           everything BELOW the stage block — the glass/bezel stay bright and
           live (the load-bearing rule); the dock may dim under the backdrop. */}
       <View style={[styles.trayLayer, { top: stageBlockH }]} pointerEvents="box-none">
-        <DockTray
-          param={trayParam}
-          onClose={() => {
-            // Closing a chooser-fader's tray hands over to its slider — that is
-            // what makes one key do both jobs for the sticky case too.
-            if (chooserTray) setBoundId(chooserTray.id);
-            setOpenTrayId(null);
-          }}
-          onHelp={onHelp}
-          bottomInset={bottom}
-        />
+        {trayNode}
       </View>
+
+      {ownsFull ? (
+        <StageFullScreen
+          visible={full}
+          onClose={() => setFull(false)}
+          render={stage.render}
+          badge={stage.badge}
+          glassW={glassW}
+          controls={dockNode}
+          overlay={trayNodeFull}
+        />
+      ) : null}
     </View>
   );
 }

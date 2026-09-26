@@ -1,8 +1,9 @@
 /**
- * StageFullScreen — a Sound Systems display at the whole phone (owner
- * 2026-09-25: "the new lab has several screens with text too small to read …
- * these displays may need to be enlarged so the user can see them and make use
- * of them" → "do both - 9 pt minimum").
+ * StageFullScreen — a lab display at the whole phone (owner 2026-09-25: "the
+ * new lab has several screens with text too small to read … these displays
+ * may need to be enlarged so the user can see them and make use of them" →
+ * "do both - 9 pt minimum"). Built for Sound Systems; shared by every lab
+ * since the eleven-lab legibility pass (rack/ since 2026-09-25).
  *
  * The pinned glass is at most 250 pt tall, so a busy drawing (the system map,
  * the venue plan, the channel strip) can only be so large there. This view
@@ -18,13 +19,24 @@
  * Turning the phone sideways gives a wider drawing: the Modal allows every
  * orientation (DimModal) and the size is read live from the window.
  * The honesty badge rides along — a disclosure is never left behind.
+ *
+ * The lab's CONTROLS come along (owner 2026-09-25: "the user must still be
+ * able to adjust and view their changes to controls"): a rack passes its dock
+ * (`controls`) and its tray layer (`overlay`); an inline figure passes the
+ * page's own controls. They sit docked under the drawing, pinned — the Rack
+ * Unit law holds in here too: the picture may scroll, operating may not.
+ *
+ * Text that is NOT vector (React Native <Text> laid over a Skia canvas) does
+ * not grow with the box. The view therefore publishes StageTextScale =
+ * rendered width ÷ `glassW` (the width the stage had on the glass), and the
+ * overlay-label helpers multiply their font size by it. See stageAspect.ts.
  */
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Modal } from '../../../components/DimModal';
 import { colors, fonts } from '../../../theme/tokens';
-import { StageAspectReport, type StageReport } from './stageAspect';
+import { StageAspectReport, StageTextScale, type StageReport } from './stageAspect';
 
 const ZOOMS = [1, 1.5, 2, 3] as const;
 
@@ -33,11 +45,27 @@ export function StageFullScreen({
   onClose,
   render,
   badge,
+  glassW,
+  aspect,
+  title = 'DISPLAY',
+  controls,
+  overlay,
 }: {
   visible: boolean;
   onClose: () => void;
   render: (w: number, h: number) => ReactNode;
   badge?: string;
+  /** The width the stage is drawn at on the glass (or inline). Sets
+   *  StageTextScale so overlay labels grow with the drawing. Omit = 1. */
+  glassW?: number;
+  /** A fixed drawing shape the host already knows (an inline figure). A
+   *  StageFit child reports its own and overrides this. */
+  aspect?: number;
+  title?: string;
+  /** The controls, docked under the drawing (a rack's lane + keys). */
+  controls?: ReactNode;
+  /** An overlay layer over the drawing + controls (a rack's tray). */
+  overlay?: ReactNode;
 }) {
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -56,31 +84,34 @@ export function StageFullScreen({
   const [shape, setShape] = useState<{ aspect: number; pad: number } | null>(null);
   const report = useMemo<StageReport>(
     () => ({
-      aspect: (aspect: number, pad: number) =>
-        setShape((cur) => (cur && cur.aspect === aspect && cur.pad === pad ? cur : { aspect, pad })),
+      aspect: (a: number, pad: number) =>
+        setShape((cur) => (cur && cur.aspect === a && cur.pad === pad ? cur : { aspect: a, pad })),
       fixed: () => {},
     }),
     [],
   );
+  const effShape = shape ?? (aspect ? { aspect, pad: 0 } : null);
 
   const padX = 8;
   const fitW = Math.max(120, width - insets.left - insets.right - padX * 2);
   const fitH = Math.max(120, (bodyH || height * 0.7) - 8);
   let baseW = fitW;
   let baseH = fitH;
-  if (shape) {
-    const drawW = Math.min(fitW - shape.pad * 2, (fitH - shape.pad * 2) * shape.aspect);
-    baseW = drawW + shape.pad * 2;
-    baseH = drawW / shape.aspect + shape.pad * 2;
+  if (effShape) {
+    const drawW = Math.min(fitW - effShape.pad * 2, (fitH - effShape.pad * 2) * effShape.aspect);
+    baseW = drawW + effShape.pad * 2;
+    baseH = drawW / effShape.aspect + effShape.pad * 2;
   }
   const w = Math.round(baseW * zoom);
   const h = Math.round(baseH * zoom);
+  // Overlay labels (RN <Text> over Skia) grow by this — 1 on the glass.
+  const textScale = glassW && glassW > 0 ? w / glassW : 1;
 
   return (
     <Modal visible={visible} animationType="fade" onRequestClose={onClose} statusBarTranslucent>
       <View style={[styles.root, { paddingTop: insets.top + 6, paddingBottom: insets.bottom + 6, paddingLeft: insets.left, paddingRight: insets.right }]}>
         <View style={styles.bar}>
-          <Text style={styles.title}>DISPLAY</Text>
+          <Text style={styles.title}>{title}</Text>
           <View style={styles.zooms} accessibilityRole="radiogroup" accessibilityLabel="Zoom">
             {ZOOMS.map((z) => {
               const on = z === zoom;
@@ -104,6 +135,7 @@ export function StageFullScreen({
           </Pressable>
         </View>
 
+        <View style={styles.stack}>
         <View style={styles.body} onLayout={(e) => setBodyH(Math.round(e.nativeEvent.layout.height))}>
           {bodyH > 0 ? (
             // Two scrollers = drag in both directions once zoomed in. At 1×
@@ -121,7 +153,9 @@ export function StageFullScreen({
                 showsHorizontalScrollIndicator={zoom > 1}
               >
                 <View style={{ width: w, height: h }}>
-                  <StageAspectReport.Provider value={report}>{render(w, h)}</StageAspectReport.Provider>
+                  <StageAspectReport.Provider value={report}>
+                    <StageTextScale.Provider value={textScale}>{render(w, h)}</StageTextScale.Provider>
+                  </StageAspectReport.Provider>
                 </View>
               </ScrollView>
             </ScrollView>
@@ -138,6 +172,13 @@ export function StageFullScreen({
             {badge}
           </Text>
         ) : null}
+        {controls ? <View style={styles.controls}>{controls}</View> : null}
+        {overlay ? (
+          <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
+            {overlay}
+          </View>
+        ) : null}
+        </View>
       </View>
     </Modal>
   );
@@ -164,6 +205,8 @@ const styles = StyleSheet.create({
   zoomTextOn: { color: colors.amber },
   close: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: '#1b1c20' },
   closeText: { fontSize: 20, color: colors.textSecondary },
+  stack: { flex: 1 },
+  controls: { paddingTop: 6 },
   body: { flex: 1, borderTopWidth: 1, borderBottomWidth: 1, borderColor: '#2c2c33', backgroundColor: '#0b0c0e' },
   center: { flexGrow: 1, alignItems: 'center', justifyContent: 'center' },
   hint: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textSub, textAlign: 'center', paddingTop: 8, paddingHorizontal: 12 },

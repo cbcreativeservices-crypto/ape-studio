@@ -69,6 +69,7 @@ export function DockTray({
   onClose,
   onHelp,
   bottomInset = 0,
+  dim = true,
 }: {
   /** The open options/group param (null = tray closed, renders nothing). */
   param: Extract<DockParam, { kind: 'options' | 'group' }> | null;
@@ -78,6 +79,11 @@ export function DockTray({
   /** Bottom safe-area (the overlay layer is positioned to the border box, so
    *  the parent's padding does not apply here). */
   bottomInset?: number;
+  /** Wash the area behind the card. Off inside FULL SCREEN (2026-09-25):
+   *  there the drawing IS the area behind the card, and the learner opened
+   *  the tray to A/B while watching it — a veil would defeat the purpose.
+   *  The backdrop still closes the tray on a tap. */
+  dim?: boolean;
 }) {
   const open = param != null;
   useEffect(() => {
@@ -97,7 +103,7 @@ export function DockTray({
       {/* Backdrop dims the WELL only (this overlay lives inside the well wrap —
           the stage above and dock below stay bright and live). */}
       <Pressable
-        style={styles.backdrop}
+        style={[styles.backdrop, !dim && styles.backdropClear]}
         onPress={onClose}
         accessibilityRole="button"
         accessibilityLabel="Close the tray"
@@ -176,6 +182,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: 'rgba(0,0,0,0.72)', // the tools popup backdrop token
   },
+  backdropClear: { backgroundColor: 'transparent' },
   card: {
     position: 'absolute',
     left: 8,

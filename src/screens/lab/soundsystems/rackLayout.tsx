@@ -25,15 +25,17 @@
  * The host (SsPagedLab) gives a rack page the full height and no ScrollView
  * of its own; document pages keep the paged layout.
  */
-import { useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { CollapsibleSection } from '../LabShell';
 import { RackUnit } from '../rack/RackUnit';
 import type { BezelItem, DockParam, StageSize, TrayOption } from '../rack/rackTypes';
 import type { PageDef } from '../kit/PagedLab';
-import { StageFullScreen } from './StageFullScreen';
-import { StageAspectReport, type StageReport } from './stageAspect';
+
+// The fit/box stages moved to the shared rack (2026-09-25); the pages import
+// them from there. Kept here as re-exports so nothing else has to know.
+export { StageBox, StageFit } from '../rack/StageFit';
 
 /** A Sound Systems page: PagedLab's contract plus the rack flag the host reads. */
 export type SsPageDef = PageDef & {
@@ -82,27 +84,17 @@ export function SoundSystemsRackLayout({
   children: ReactNode;
 }) {
   // FULL SCREEN (owner 2026-09-25): the same stage, same page state, at the
-  // whole phone with zoom — see StageFullScreen.
-  const [full, setFull] = useState(false);
-  // Only a DRAWING (a StageFit stage, which reports its aspect) grows with
-  // zoom; a view-built stage (console buses, StageBox) keeps its text size at
-  // any box size, so it gets no FULL SCREEN button.
-  const [fixedStage, setFixedStage] = useState(false);
-  const glassReport = useMemo<StageReport>(() => ({ aspect: () => {}, fixed: () => setFixedStage(true) }), []);
-  const renderGlass = (w: number, h: number) => (
-    <StageAspectReport.Provider value={glassReport}>{rack.stage(w, h)}</StageAspectReport.Provider>
-  );
-  const zoomable = rack.fullScreen !== false && !fixedStage;
+  // whole phone with zoom, the dock along for the ride — the RACK owns it
+  // (`fullScreen`); a StageBox stage declines the button itself.
   return (
-    <>
     <RackUnit
       stage={{
-        render: renderGlass,
+        render: rack.stage,
         size: rack.size ?? 'M',
         badge: rack.badge,
         bezel: rack.bezel,
         hideDragTag: rack.hideDragTag,
-        onEnlarge: zoomable ? () => setFull(true) : undefined,
+        fullScreen: rack.fullScreen !== false,
       }}
       params={rack.params}
       initialParam={rack.initialParam}
@@ -118,41 +110,6 @@ export function SoundSystemsRackLayout({
         </CollapsibleSection>
       </View>
     </RackUnit>
-    <StageFullScreen visible={full} onClose={() => setFull(false)} render={rack.stage} badge={rack.badge} />
-    </>
-  );
-}
-
-/**
- * StageFit — fits a width-driven drawing (the lab's SVG instruments render
- * `width="100%"` with an `aspectRatio` style) inside the glass: the widest
- * box of the drawing's aspect that fits (w, h), centred. The size comes from
- * the glass, so nothing is ever resized mid-interaction.
- */
-export function StageFit({ w, h, aspect, pad = 6, children }: { w: number; h: number; aspect: number; pad?: number; children: ReactNode }) {
-  const report = useContext(StageAspectReport);
-  useEffect(() => {
-    report?.aspect(aspect, pad);
-  }, [report, aspect, pad]);
-  const innerW = Math.max(40, w - pad * 2);
-  const innerH = Math.max(40, h - pad * 2);
-  const fitW = Math.max(40, Math.min(innerW, innerH * aspect));
-  return (
-    <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center' }}>
-      <View style={{ width: fitW }}>{children}</View>
-    </View>
-  );
-}
-
-/** A full-width, vertically centred stage for view-built instruments (the
- *  console's bus bank, the rack of glyphs) that size to their content. */
-export function StageBox({ w, h, pad = 8, children }: { w: number; h: number; pad?: number; children: ReactNode }) {
-  const report = useContext(StageAspectReport);
-  useEffect(() => {
-    report?.fixed();
-  }, [report]);
-  return (
-    <View style={{ width: w, height: h, paddingHorizontal: pad, alignItems: 'stretch', justifyContent: 'center' }}>{children}</View>
   );
 }
 

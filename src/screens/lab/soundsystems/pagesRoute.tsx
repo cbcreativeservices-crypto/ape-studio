@@ -21,7 +21,8 @@ import { ChapterTag, DeeperRow, GoalChips, KeyFact, LabLink, useVisitGoals, Verd
 import { auxHears, BusBank, ConsolePanel, DcaStrip, mainHears, MatrixStrip, matrixHears, subgroupHears, SubgroupStrip } from './art/ConsolePanel';
 import { ChannelStrip, PATCH_H, PatchPanel, STRIP_H, type PatchSocket, type StripStation } from './art/diagrams';
 import { dbFader, fmtDb } from './consoleDock';
-import { flipFader, SoundSystemsRackLayout, StageFit, type SsPageDef } from './rackLayout';
+import { flipFader, SoundSystemsRackLayout, type SsPageDef } from './rackLayout';
+import { StageFit } from '../rack/StageFit';
 
 function useRouteCredit(id: string, done: boolean, ctx: PageCtx) {
   useEffect(() => {

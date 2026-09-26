@@ -30,7 +30,8 @@ import { GearGlyph } from './art/gearArt';
 import { benchMap, chapterOneMap, MAP_H, MAP_W, SystemMap, type MapEdge, type MapNode, type MapVariant } from './art/SystemMap';
 import { FieldKey, PLOT_H, PLOT_W, VenueView } from './art/VenueView';
 import { PLOT_BADGE, layoutToBeams, layoutToPlaced } from './plot';
-import { flipFader, SoundSystemsRackLayout, StageFit, type SsPageDef } from './rackLayout';
+import { flipFader, SoundSystemsRackLayout, type SsPageDef } from './rackLayout';
+import { StageFit } from '../rack/StageFit';
 
 const MAP_BADGE = 'SYSTEM MAP — ILLUSTRATIVE · LEDs chase simulated programme';
 

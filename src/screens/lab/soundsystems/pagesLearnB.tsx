@@ -30,7 +30,8 @@ import { GearGlyph, GearInSvg, INK } from './art/gearArt';
 import { CableLegend, FieldKey, PLOT_H, PLOT_W, VenueView, type PlotBeam } from './art/VenueView';
 import { SplitDiagram, SubFeedRouter, type SubFeedMode } from './art/diagrams';
 import { BEAM_COLOR, placedToBeams, PLOT_BADGE, THROW } from './plot';
-import { flipFader, lanePos, laneVal, SoundSystemsRackLayout, StageFit, type SsPageDef } from './rackLayout';
+import { flipFader, lanePos, laneVal, SoundSystemsRackLayout, type SsPageDef } from './rackLayout';
+import { StageFit } from '../rack/StageFit';
 
 /* ── 8 · Subwoofer feeds ────────────────────────────────────────────────── */
 
