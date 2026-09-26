@@ -413,6 +413,10 @@ const CYCLE_MS = 1600; // one waveform period per lap — a calm, readable drift
  *  line) is pinned to the same ±h/2.2 span the path uses. */
 function TravelingWaveStrip({ points, width, height }: { points: number[]; width?: number; height: number }) {
   const focused = useIsFocused();
+  // Parity pass 2026-09-26: the strip is pixel-driven (no viewBox), so its
+  // midline and the wave's core + glow strokes are × the FULL SCREEN text
+  // scale — as heavy at 2× as the doubled picture. 1 on the glass.
+  const ts = useStageTextScale();
   // The stage hands its width in (so the strip is right on the first frame
   // in FULL SCREEN, where it mounts fresh at a new size); measured otherwise.
   const [measured, setMeasured] = useState(0);
@@ -463,11 +467,11 @@ function TravelingWaveStrip({ points, width, height }: { points: number[]; width
                 ))}
               </LinearGradient>
             </Defs>
-            <Line x1={0} y1={height / 2} x2={w * 1.5} y2={height / 2} stroke={MIDLINE_BLUE} strokeWidth={1} />
+            <Line x1={0} y1={height / 2} x2={w * 1.5} y2={height / 2} stroke={MIDLINE_BLUE} strokeWidth={1 * ts} />
             {/* Level-coloured waveform (SPL-VU standard): soft glow pass under the
                 crisp core stroke (standards §2). */}
-            <Path d={d} stroke="url(#oscWaveLevel)" strokeWidth={4.5} fill="none" opacity={0.14} strokeLinecap="round" />
-            <Path d={d} stroke="url(#oscWaveLevel)" strokeWidth={1.6} fill="none" />
+            <Path d={d} stroke="url(#oscWaveLevel)" strokeWidth={4.5 * ts} fill="none" opacity={0.14} strokeLinecap="round" />
+            <Path d={d} stroke="url(#oscWaveLevel)" strokeWidth={1.6 * ts} fill="none" />
           </Svg>
         </Animated.View>
       ) : (
@@ -490,14 +494,14 @@ const HARMONIC_RAMP_STOPS = Array.from({ length: 8 }, (_, i) => {
   return { offset, color: levelColor(1 - offset) };
 });
 
-function SettleBar({ x, width, amp, chartH }: { x: number; width: number; amp: number; chartH: number }) {
+function SettleBar({ x, width, amp, chartH, ts = 1 }: { x: number; width: number; amp: number; chartH: number; ts?: number }) {
   const av = useSharedValue(amp);
   useEffect(() => {
     av.value = withTiming(amp, { duration: 420, easing: Easing.out(Easing.back(1.3)) });
   }, [amp, av]);
   const animatedProps = useAnimatedProps(() => {
     const a = Math.min(1, Math.max(0, av.value));
-    const h = a > 0.004 ? Math.max(a * (chartH - 10), 2) : 0;
+    const h = a > 0.004 ? Math.max(a * (chartH - 10 * ts), 2 * ts) : 0;
     return { y: chartH - h, height: h, opacity: 0.55 + 0.45 * a };
   });
   // Filled from the shared full-height amplitude ramp (see HARMONIC_RAMP_ID):
@@ -526,17 +530,20 @@ function HarmonicBars({
   // H1–H12 labels: 9 pt on the glass (owner 2026-09-25: 9 pt minimum), grown
   // with the picture in FULL SCREEN — this chart is pixel-driven (no viewBox),
   // so its text would otherwise stay glass-sized while the bars grew.
+  // Parity pass 2026-09-26: the chart's paddings, bar insets, the filter
+  // line and its dots are authored in glass pixels and × ts too, so the
+  // whole recipe (not just its numbers) is 2× at 2×.
   const ts = useStageTextScale();
   const fs = 9 * ts;
-  const labelH = Math.round(fs + 6);
+  const labelH = Math.round(fs + 6 * ts);
   const H = Math.max(40, height - labelH); // chart area; the label strip sits under it
-  const pad = 6;
+  const pad = 6 * ts;
   const bw = (width - pad * 2) / 12;
   const cx = (i: number) => pad + i * bw + bw / 2;
   const overlayPath =
     overlay && overlay.length
       ? overlay
-          .map((g, i) => `${i === 0 ? 'M' : 'L'}${cx(i).toFixed(1)} ${(H - g * (H - 10)).toFixed(1)}`)
+          .map((g, i) => `${i === 0 ? 'M' : 'L'}${cx(i).toFixed(1)} ${(H - g * (H - 10 * ts)).toFixed(1)}`)
           .join(' ')
       : '';
   return (
@@ -553,17 +560,17 @@ function HarmonicBars({
       </Defs>
       <Rect x={0} y={0} width={width} height={H} fill="#0c0c0f" />
       {amps.map((a, i) => (
-        <SettleBar key={i} x={pad + i * bw + 3} width={bw - 6} amp={a} chartH={H} />
+        <SettleBar key={i} x={pad + i * bw + 3 * ts} width={bw - 6 * ts} amp={a} chartH={H} ts={ts} />
       ))}
-      {overlayPath ? <Path d={overlayPath} stroke={colors.amber} strokeWidth={1.4} fill="none" opacity={0.9} /> : null}
+      {overlayPath ? <Path d={overlayPath} stroke={colors.amber} strokeWidth={1.4 * ts} fill="none" opacity={0.9} /> : null}
       {overlay?.map((g, i) => (
-        <Rect key={`d${i}`} x={cx(i) - 1.4} y={H - g * (H - 10) - 1.4} width={2.8} height={2.8} fill={colors.amber} />
+        <Rect key={`d${i}`} x={cx(i) - 1.4 * ts} y={H - g * (H - 10 * ts) - 1.4 * ts} width={2.8 * ts} height={2.8 * ts} fill={colors.amber} />
       ))}
       {amps.map((_, i) => (
         <SvgText
           key={`l${i}`}
           x={pad + i * bw + bw / 2}
-          y={H + labelH - 3}
+          y={H + labelH - 3 * ts}
           fill={colors.textSub}
           fontSize={fs}
           textAnchor="middle"
