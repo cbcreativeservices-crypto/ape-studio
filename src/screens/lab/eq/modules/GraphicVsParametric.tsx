@@ -18,16 +18,13 @@ import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { ResponseCurveGraph, type ResponseCurve } from '../../../../features/lab/fxViz';
 import { CheckQuestion, type CheckSpec } from '../../foundations/bits';
-import { GraphicBoard } from './eqBits';
+import { CurveOverBoard, GraphicBoard } from './eqBits';
 import { colors, fonts } from '../../../../theme/tokens';
 import { RackUnit } from '../../rack/RackUnit';
 import type { DockParam } from '../../rack/rackTypes';
 import { fmtHz, gainColor, graphicActualDb, OCT_CENTERS, Q_1OCT, Q_THIRD, THIRD_CENTERS } from './eqMath';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
-
-// Board block on the stage: 108 track + gap + fader labels (eqBits geometry).
-const BOARD_BLOCK_H = 126;
 
 const CHECK: CheckSpec = {
   question: 'What can a PARAMETRIC band adjust that a GRAPHIC band cannot?',
@@ -103,11 +100,14 @@ export function GraphicVsParametricModule(_p: EqModuleComponentProps) {
             tint: liveIdx != null ? gainColor(gains[liveIdx], 12) : undefined,
           },
         ],
-        render: (w, h) => {
-          const curveTotalH = Math.max(74, h - BOARD_BLOCK_H - 12); // plot + label strip
-          return (
-            <View style={{ width: w, height: h, paddingHorizontal: 8, paddingTop: 6, gap: 4 }}>
-              <ResponseCurveGraph curves={curves} dbRange={15} width={w - 16} totalHeight={curveTotalH} />
+        // Curve over the board; both scale with the FULL SCREEN zoom (parity
+        // pass 2026-09-26). The 1/3-octave board still scrolls sideways.
+        render: (w, h) => (
+          <CurveOverBoard
+            w={w}
+            h={h}
+            graph={(gw, totalH) => <ResponseCurveGraph curves={curves} dbRange={15} width={gw} totalHeight={totalH} />}
+            board={
               <GraphicBoard
                 centers={centers}
                 gains={gains}
@@ -115,9 +115,9 @@ export function GraphicVsParametricModule(_p: EqModuleComponentProps) {
                 onActiveIndex={setActiveIdx}
                 tintFor={(i) => gainColor(gains[i], 12)}
               />
-            </View>
-          );
-        },
+            }
+          />
+        ),
       }}
     >
       <View style={styles.well}>

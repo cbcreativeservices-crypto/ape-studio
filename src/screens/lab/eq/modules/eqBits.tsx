@@ -17,14 +17,20 @@
  *    the 1/3-octave board still scrolls sideways.
  * `onActive` reports which fader is being dragged for live readouts.
  */
-import { useRef, useState } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import { PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { colors, fonts } from '../../../../theme/tokens';
 import { useScrollLock } from '../../LabShell';
 import { usePulseStyle } from '../../../../features/lab/attentionPulse';
+import { useStageTextScale } from '../../rack/stageAspect';
 
 const TRACK_H = 108;
+/** Fader column width at 1× (the board's per-band pitch). */
+const FADER_W = 30;
+/** The board block on a stage at 1×: track + gap + fader label (GraphicTruth
+ *  and GraphicVsParametric reserve this under the curve). */
+export const BOARD_BLOCK_H = 126;
 
 /** One vertical fader: value 0..1 (bottom→top). */
 export function VerticalFader({
@@ -35,12 +41,18 @@ export function VerticalFader({
   tint,
   relative,
   unity,
+  scale = 1,
 }: {
   value: number;
   onChange: (v: number) => void;
   /** Fires true when this fader starts moving, false on release. */
   onActive?: (active: boolean) => void;
   label: string;
+  /** Drawing scale (FULL SCREEN parity pass 2026-09-26): 1 on the glass, the
+   *  stage's text scale when enlarged. The track, cap, slot, ticks and label
+   *  all grow by it — the drag math reads the scaled track through a ref, so
+   *  a finger still maps 1:1 onto the fader it is touching. */
+  scale?: number;
   /** Colour for the thumb/fill when set (else neutral / amber-when-nonzero). */
   tint?: string;
   /** No jump-to-tap: the drag starts from the CURRENT value. Set on boards that
@@ -74,6 +86,9 @@ export function VerticalFader({
   relativeRef.current = relative;
   const valueRef = useRef(value);
   valueRef.current = value;
+  const trackH = TRACK_H * scale;
+  const trackHRef = useRef(trackH);
+  trackHRef.current = trackH;
 
   const done = (grabbed: boolean) => {
     lockRef.current?.(false);
@@ -92,12 +107,12 @@ export function VerticalFader({
           baseRef.current = valueRef.current;
           return;
         }
-        const v = 1 - Math.max(0, Math.min(1, e.nativeEvent.locationY / TRACK_H));
+        const v = 1 - Math.max(0, Math.min(1, e.nativeEvent.locationY / trackHRef.current));
         baseRef.current = v;
         onChangeRef.current(v);
       },
       onPanResponderMove: (_e, g) => {
-        onChangeRef.current(Math.max(0, Math.min(1, baseRef.current - g.dy / TRACK_H)));
+        onChangeRef.current(Math.max(0, Math.min(1, baseRef.current - g.dy / trackHRef.current)));
       },
       onPanResponderRelease: () => done(true),
       onPanResponderTerminate: () => done(true),
@@ -110,10 +125,11 @@ export function VerticalFader({
   const thumbTint = tint ?? (value !== 0.5 ? colors.amber : undefined);
   // The thumb breathes (owner 2026-09-05) so the fader reads as interactable.
   const pulseStyle = usePulseStyle();
+  const k = scale;
   return (
-    <View style={styles.faderWrap}>
+    <View style={[styles.faderWrap, { width: FADER_W * k, gap: 4 * k }]}>
       <View
-        style={styles.track}
+        style={[styles.track, { width: FADER_W * k, height: trackH }]}
         {...pan.panHandlers}
         accessible
         accessibilityRole="adjustable"
@@ -132,12 +148,12 @@ export function VerticalFader({
           onChangeRef.current(Math.max(0, Math.min(1, value + d)));
         }}
       >
-        <View pointerEvents="none" style={styles.trackLine} />
+        <View pointerEvents="none" style={[styles.trackLine, { width: 6 * k, borderRadius: 3 * k }]} />
         {unity == null ? (
-          <View pointerEvents="none" style={styles.centerTick} />
+          <View pointerEvents="none" style={[styles.centerTick, { top: trackH / 2 - k, height: 2 * k }]} />
         ) : (
-          <View pointerEvents="none" style={[styles.unityTick, { top: (1 - unity) * TRACK_H - 1.5 }]}>
-            <Text style={styles.unityMark}>U</Text>
+          <View pointerEvents="none" style={[styles.unityTick, { top: (1 - unity) * trackH - 1.5 * k, height: 3 * k }]}>
+            <Text style={[styles.unityMark, { right: -9 * k, fontSize: 9 * k, lineHeight: 10 * k }]}>U</Text>
           </View>
         )}
         {/* The cap stays BRUSHED METAL and the tint moves to its indicator
@@ -153,17 +169,30 @@ export function VerticalFader({
             you arrive in, periodically had no visible caps at all. ParamLane
             already pulses its cap line only; this brings the third fader into
             the same vocabulary. */}
-        <View pointerEvents="none" style={[styles.thumb, { top: (1 - value) * TRACK_H - 6.5 }]}>
-          <Animated.View style={[styles.thumbLine, thumbTint ? { backgroundColor: thumbTint } : null, pulseStyle]} />
+        <View
+          pointerEvents="none"
+          style={[styles.thumb, { top: (1 - value) * trackH - 6.5 * k, width: 26 * k, height: 14 * k, borderRadius: 3 * k }]}
+        >
+          <Animated.View
+            style={[
+              styles.thumbLine,
+              { marginTop: 4.5 * k, width: 16 * k, height: 2 * k },
+              thumbTint ? { backgroundColor: thumbTint } : null,
+              pulseStyle,
+            ]}
+          />
         </View>
       </View>
-      <Text style={styles.faderLabel}>{label}</Text>
+      <Text style={[styles.faderLabel, { fontSize: 9 * k }]}>{label}</Text>
     </View>
   );
 }
 
 /** A graphic-EQ board over fixed centers. Gains in dB (±range). Boards wider
- *  than 12 bands scroll horizontally (the spec's 1/3-octave presentation). */
+ *  than 12 bands scroll horizontally (the spec's 1/3-octave presentation).
+ *  On a stage the whole board — faders, caps, labels, pitch — grows with the
+ *  FULL SCREEN zoom (owner 2026-09-26: "everything zooms"); the drag keeps
+ *  working because each fader maps the finger through its own scaled track. */
 export function GraphicBoard({
   centers,
   gains,
@@ -181,9 +210,11 @@ export function GraphicBoard({
   tintFor?: (i: number) => string | undefined;
   range?: number;
 }) {
+  const ts = useStageTextScale();
   const faders = centers.map((c, i) => (
     <VerticalFader
       key={c}
+      scale={ts}
       label={c >= 1000 ? `${c / 1000}k` : `${c}`}
       value={(gains[i] + range) / (2 * range)}
       onChange={(v) => onGain(i, Math.round((v * 2 * range - range) * 2) / 2)}
@@ -198,13 +229,40 @@ export function GraphicBoard({
         horizontal
         showsHorizontalScrollIndicator
         directionalLockEnabled
-        contentContainerStyle={styles.boardScroll}
+        contentContainerStyle={[styles.boardScroll, { gap: 6 * ts, paddingRight: 8 * ts }]}
       >
         {faders}
       </ScrollView>
     );
   }
   return <View style={styles.boardRow}>{faders}</View>;
+}
+
+/** The two-part stage GraphicTruth and GraphicVsParametric share: the response
+ *  curve over the fader board. The board block, the padding and the gap all
+ *  scale with the stage's text scale so the curve keeps its share of the glass
+ *  at every zoom and nothing stays phone-sized on a doubled picture. */
+export function CurveOverBoard({
+  w,
+  h,
+  graph,
+  board,
+}: {
+  w: number;
+  h: number;
+  /** The curve, given its pixel width and total height (plot + label strip). */
+  graph: (gw: number, totalH: number) => ReactNode;
+  board: ReactNode;
+}) {
+  const ts = useStageTextScale();
+  const padX = 8 * ts;
+  const curveTotalH = Math.max(74 * ts, h - BOARD_BLOCK_H * ts - 12 * ts);
+  return (
+    <View style={{ width: w, height: h, paddingHorizontal: padX, paddingTop: 6 * ts, gap: 4 * ts }}>
+      {graph(w - 2 * padX, curveTotalH)}
+      {board}
+    </View>
+  );
 }
 
 /** Small labeled action button (RESET · BYPASS · presets). */

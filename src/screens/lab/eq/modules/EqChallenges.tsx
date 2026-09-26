@@ -94,6 +94,15 @@ export function EqChallengesModule(p: EqModuleComponentProps) {
     12,
   );
 
+  // The live readout (the problem, or the overall shift the fix costs) — on
+  // the panel head AND at the top of the FULL SCREEN dock (parity pass
+  // 2026-09-26). Same element, same state.
+  const readout = (
+    <Text style={styles.readout}>
+      {strategy === 'none' ? '250 Hz +6 dB' : `overall shift ≈ ${overallShift >= 0 ? '+' : ''}${overallShift.toFixed(1)} dB`}
+    </Text>
+  );
+
   // The strategy keys — on the page above the graph AND docked inside FULL
   // SCREEN (legibility pass 2026-09-26), so the A/B still works enlarged.
   const strategyButtons = (
@@ -118,9 +127,7 @@ export function EqChallengesModule(p: EqModuleComponentProps) {
           <Text accessibilityRole="header" style={styles.panelEyebrow}>
             {strategy === 'none' ? 'THE PROBLEM' : strategy === 'cut' ? 'STRATEGY: CUT' : 'STRATEGY: BOOST AROUND'}
           </Text>
-          <Text style={styles.readout}>
-            {strategy === 'none' ? '250 Hz +6 dB' : `overall shift ≈ ${overallShift >= 0 ? '+' : ''}${overallShift.toFixed(1)} dB`}
-          </Text>
+          {readout}
         </View>
         <ExpandableFigure
           width={Math.max(120, p.width)}
@@ -137,7 +144,12 @@ export function EqChallengesModule(p: EqModuleComponentProps) {
               mainColor={plotColor}
             />
           )}
-          controls={strategyButtons}
+          controls={
+            <View style={styles.controls}>
+              <View style={styles.dockReadout}>{readout}</View>
+              {strategyButtons}
+            </View>
+          }
         />
         {eqAuditionAvailable() ? (
           // Audible A/B (owner 2026-08-10): the PROBLEM coloration + your chosen
@@ -188,6 +200,8 @@ const styles = StyleSheet.create({
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   honest: { fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 15, color: colors.textSub },
   btnRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  controls: { gap: 10 },
+  dockReadout: { alignItems: 'center' },
   panel: { borderRadius: 12, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 12, gap: 8 },
   panelHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   panelEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.amber, flexShrink: 1 },

@@ -61,6 +61,16 @@ export function WhyEqModule(p: EqModuleComponentProps) {
   // MIDI level colour (owner 2026-08-07): boost warms toward red, a cut stays blue.
   const gc = gainColor(gainDb, GAIN_RANGE);
 
+  // The live readout (region · gain) — on the panel head here AND at the top
+  // of the FULL SCREEN dock (parity pass 2026-09-26: the learner sees the
+  // numbers while enlarged). Same element, same state.
+  const readout = (
+    <Text style={[styles.readout, { color: gc }]}>
+      {fmtHz(region.f)} · {gainDb >= 0 ? '+' : ''}
+      {gainDb.toFixed(1)} dB
+    </Text>
+  );
+
   // The page's own controls — rendered here under the graph AND docked inside
   // FULL SCREEN (legibility pass 2026-09-26: "the user must still be able to
   // adjust and view their changes"). Same elements, same state.
@@ -105,10 +115,7 @@ export function WhyEqModule(p: EqModuleComponentProps) {
       <View style={styles.panel}>
         <View style={styles.panelHead}>
           <Text accessibilityRole="header" style={styles.panelEyebrow}>EQ RESPONSE</Text>
-          <Text style={[styles.readout, { color: gc }]}>
-            {fmtHz(region.f)} · {gainDb >= 0 ? '+' : ''}
-            {gainDb.toFixed(1)} dB
-          </Text>
+          {readout}
         </View>
         <ExpandableFigure
           width={Math.max(120, p.width)}
@@ -116,7 +123,12 @@ export function WhyEqModule(p: EqModuleComponentProps) {
           title="EQ RESPONSE"
           badge="DESIGNED RESPONSE — ANALYTIC"
           render={(w, h) => <ResponseCurveGraph curves={curves} dbRange={GAIN_RANGE + 3} width={w} totalHeight={h} mainColor={gc} />}
-          controls={controls}
+          controls={
+            <View style={styles.controls}>
+              <View style={styles.dockReadout}>{readout}</View>
+              {controls}
+            </View>
+          }
         />
         <Text style={styles.verdict}>
           {gainDb > 0.5
@@ -150,6 +162,7 @@ const styles = StyleSheet.create({
   panelHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   panelEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.amber },
   readout: { fontFamily: fonts.mono, fontSize: 12, color: colors.amber },
+  dockReadout: { alignItems: 'center' },
   verdict: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8, color: colors.textSecondary },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: { borderRadius: 8, borderWidth: 1, borderColor: '#2c2c33', paddingHorizontal: 14, paddingVertical: 8, backgroundColor: '#17171c' },

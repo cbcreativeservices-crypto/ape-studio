@@ -209,11 +209,13 @@ export const responseGraphDb = (yPx: number, plotH: number, dbRange: number): nu
   Math.max(-dbRange, Math.min(dbRange, ((plotH / 2 - yPx) / (plotH / 2 - 8)) * dbRange));
 
 /** Rounded plot panel + hairline frame — shared chrome under every graph. */
-function PlotFrame({ w, h }: { w: number; h: number }) {
+function PlotFrame({ w, h, s = 1 }: { w: number; h: number; s?: number }) {
+  // `s` = the drawing scale (FULL SCREEN parity pass 2026-09-26): the corner
+  // radius and the hairline grow with the picture like everything else.
   return (
     <>
-      <Rect x={0} y={0} width={w} height={h} rx={8} fill={BG} />
-      <Rect x={0.5} y={0.5} width={w - 1} height={h - 1} rx={7.5} stroke={FRAME} strokeWidth={1} fill="none" />
+      <Rect x={0} y={0} width={w} height={h} rx={8 * s} fill={BG} />
+      <Rect x={0.5 * s} y={0.5 * s} width={w - s} height={h - s} rx={7.5 * s} stroke={FRAME} strokeWidth={1 * s} fill="none" />
     </>
   );
 }
@@ -313,12 +315,15 @@ export function ResponseCurveGraph({
           <Stop offset="1" stopColor={AMBER} stopOpacity={0} />
         </LinearGradient>
       </Defs>
-      <PlotFrame w={gw} h={H} />
+      {/* Chrome scales with `ts` too (parity pass 2026-09-26): grid, axis,
+          tick marks and corners are 2×/3× in FULL SCREEN, not phone-sized
+          hairlines on a doubled plot. */}
+      <PlotFrame w={gw} h={H} s={ts} />
       {FREQ_TICKS.map((f) => (
-        <Line key={`g${f}`} x1={xAt(f)} y1={4} x2={xAt(f)} y2={H - 4} stroke={GRID} strokeWidth={0.75} />
+        <Line key={`g${f}`} x1={xAt(f)} y1={4 * ts} x2={xAt(f)} y2={H - 4 * ts} stroke={GRID} strokeWidth={0.75 * ts} />
       ))}
       {[dbRange / 2, -dbRange / 2].map((db) => (
-        <Line key={db} x1={padL} y1={yAt(db)} x2={gw - padR} y2={yAt(db)} stroke={GRID} strokeWidth={0.6} />
+        <Line key={db} x1={padL} y1={yAt(db)} x2={gw - padR} y2={yAt(db)} stroke={GRID} strokeWidth={0.6 * ts} />
       ))}
       {curves.map((c, i) =>
         c.emphasis === 'main' && paths[i].fill ? (
@@ -330,7 +335,7 @@ export function ResponseCurveGraph({
         ) : null,
       )}
       {/* 0 dB reference — deliberately brighter than the rest of the graticule */}
-      <Line x1={padL} y1={H / 2} x2={gw - padR} y2={H / 2} stroke={AXIS} strokeWidth={1.1} />
+      <Line x1={padL} y1={H / 2} x2={gw - padR} y2={H / 2} stroke={AXIS} strokeWidth={1.1 * ts} />
       {curves.map((c, i) =>
         c.emphasis === 'main' ? null : (
           <Path
@@ -350,7 +355,7 @@ export function ResponseCurveGraph({
         c.emphasis === 'main' ? <GlowPath key={`m${i}`} d={paths[i].d} color={c.color ?? mainColor} width={2.2 * ts} /> : null,
       )}
       {FREQ_TICKS.map((f) => (
-        <Line key={`t${f}`} x1={xAt(f)} y1={H - 4} x2={xAt(f)} y2={H} stroke={DIM} strokeWidth={1} strokeOpacity={0.55} />
+        <Line key={`t${f}`} x1={xAt(f)} y1={H - 4 * ts} x2={xAt(f)} y2={H} stroke={DIM} strokeWidth={1 * ts} strokeOpacity={0.55} />
       ))}
       {FREQ_TICKS.map((f) => (
         <SvgText key={f} x={labelX(f)} y={H + 11 * ts} fill={colors.textSub} fontSize={fs} fontFamily={MONO} textAnchor="middle">

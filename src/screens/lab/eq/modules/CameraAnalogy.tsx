@@ -201,6 +201,16 @@ export function CameraAnalogyModule(p: EqModuleComponentProps) {
 
   const meta = STAGE_META[stage];
 
+  // The live readout (frequency · Q · bandwidth) — on the panel head AND at
+  // the top of the FULL SCREEN dock (parity pass 2026-09-26). Same element.
+  const readout = (
+    <Text style={styles.readout}>
+      {stage === 0
+        ? `${fmtHz(eqFreq)} — FIXED`
+        : `${fmtHz(eqFreq)} · Q ${q.toFixed(1)} · ${bwOct.toFixed(2)} oct`}
+    </Text>
+  );
+
   // EQ-type buttons and the two camera sliders — on the page AND docked inside
   // FULL SCREEN (legibility pass 2026-09-26), same elements, same state.
   const stageChips = (
@@ -265,11 +275,7 @@ export function CameraAnalogyModule(p: EqModuleComponentProps) {
       <View style={styles.panel}>
         <View style={styles.panelHead}>
           <Text accessibilityRole="header" style={styles.panelEyebrow}>THE ROOM</Text>
-          <Text style={styles.readout}>
-            {stage === 0
-              ? `${fmtHz(eqFreq)} — FIXED`
-              : `${fmtHz(eqFreq)} · Q ${q.toFixed(1)} · ${bwOct.toFixed(2)} oct`}
-          </Text>
+          {readout}
         </View>
         {/* One figure, two pixel-aligned panels: the room over the response, on
             a shared log-frequency axis. FULL SCREEN enlarges both together. */}
@@ -289,6 +295,7 @@ export function CameraAnalogyModule(p: EqModuleComponentProps) {
           }}
           controls={
             <View style={styles.controls}>
+              <View style={styles.dockReadout}>{readout}</View>
               {stageChips}
               {cameraSliders}
             </View>
@@ -334,6 +341,7 @@ const styles = StyleSheet.create({
   panelHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   panelEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.amber },
   readout: { fontFamily: fonts.mono, fontSize: 11.5, color: colors.amber },
+  dockReadout: { alignItems: 'center' },
   honest: { fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 15, color: colors.textSub },
   lockedRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderRadius: 8, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#101014', paddingHorizontal: 12, paddingVertical: 12, opacity: 0.6 },
   lockedLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textSub },

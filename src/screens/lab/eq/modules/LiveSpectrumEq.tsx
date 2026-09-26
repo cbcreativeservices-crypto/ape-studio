@@ -129,23 +129,26 @@ function SpectrumGlass({
   const LABEL_H = 15 * ts;
   const chartW = Math.max(0, w - GUTTER - 6);
   const chartH = Math.max(60, h - LABEL_H - 4);
-  const floorY = chartH - 8;
-  const pxPerDb = (floorY - ZERO_Y) / -FLOOR_DB;
-  const yForDb = (db: number) => Math.max(2, ZERO_Y - db * pxPerDb);
+  // Everything drawn in pixels scales with `ts` too (parity pass 2026-09-26):
+  // bar caps, peak ticks, grid weights, curve stroke, corners and margins.
+  const zeroY = ZERO_Y * ts;
+  const floorY = chartH - 8 * ts;
+  const pxPerDb = (floorY - zeroY) / -FLOOR_DB;
+  const yForDb = (db: number) => Math.max(2 * ts, zeroY - db * pxPerDb);
 
   // No-mic fallback grid (fix 2026-08-31) — the designed curve always draws.
   const centers = bands ? bands.centers : FALLBACK_CENTERS;
   const n = centers.length;
   const barW = n > 0 && chartW > 0 ? chartW / n : 0;
   const labels = bandLabels(centers);
-  const pad = barW > 3 ? 1 : 0.5;
+  const pad = (barW > 3 * ts ? 1 : 0.5) * ts;
 
   const xForHz = useCallback(
     (f: number) => {
       if (barW <= 0) return 0;
-      return Math.min(chartW - 2, Math.max(2, (fracIndexForHz(f, centers) + 0.5) * barW));
+      return Math.min(chartW - 2 * ts, Math.max(2 * ts, (fracIndexForHz(f, centers) + 0.5) * barW));
     },
-    [centers, barW, chartW],
+    [centers, barW, chartW, ts],
   );
 
   /** Total designed response (dB) of the current EQ at f. */
@@ -189,25 +192,25 @@ function SpectrumGlass({
         {chartW > 0 && (
           <Svg width={chartW} height={chartH}>
             <Defs>
-              <LinearGradient id="liveEqFill" x1="0" y1={ZERO_Y} x2="0" y2={floorY} gradientUnits="userSpaceOnUse">
+              <LinearGradient id="liveEqFill" x1="0" y1={zeroY} x2="0" y2={floorY} gradientUnits="userSpaceOnUse">
                 {LOUDNESS_STOPS.map((s) => (
                   <Stop key={s.pos} offset={String(s.pos)} stopColor={s.color} />
                 ))}
               </LinearGradient>
             </Defs>
-            <Rect x={0} y={0} width={chartW} height={chartH} rx={8} fill={PLOT_BG} />
+            <Rect x={0} y={0} width={chartW} height={chartH} rx={8 * ts} fill={PLOT_BG} />
             {GRID_DBS_MINOR.map((db) => (
-              <Line key={db} x1={2} y1={yForDb(db)} x2={chartW - 2} y2={yForDb(db)} stroke={GRID_MINOR} strokeWidth={0.75} />
+              <Line key={db} x1={2 * ts} y1={yForDb(db)} x2={chartW - 2 * ts} y2={yForDb(db)} stroke={GRID_MINOR} strokeWidth={0.75 * ts} />
             ))}
             {GRID_DBS.map((db) => (
               <Line
                 key={db}
-                x1={2}
+                x1={2 * ts}
                 y1={yForDb(db)}
-                x2={chartW - 2}
+                x2={chartW - 2 * ts}
                 y2={yForDb(db)}
                 stroke={db === 0 ? AXIS : GRID}
-                strokeWidth={db === 0 ? 1.2 : db === FLOOR_DB ? 1.5 : 1}
+                strokeWidth={(db === 0 ? 1.2 : db === FLOOR_DB ? 1.5 : 1) * ts}
               />
             ))}
             {showBars &&
@@ -217,7 +220,7 @@ function SpectrumGlass({
                 const bw = Math.max(1, barW - pad * 2);
                 if (!bands.resolvable[i]) {
                   return (
-                    <Rect key={`slot-${c}`} x={x} y={ZERO_Y} width={bw} height={floorY - ZERO_Y} fill={SLOT_GRAY} fillOpacity={0.14} />
+                    <Rect key={`slot-${c}`} x={x} y={zeroY} width={bw} height={floorY - zeroY} fill={SLOT_GRAY} fillOpacity={0.14} />
                   );
                 }
                 // In COMBINED, the EQ actually shapes the bars (owner
@@ -232,18 +235,18 @@ function SpectrumGlass({
                     {level > FLOOR_DB && (
                       <>
                         <Rect x={x} y={barTop} width={bw} height={floorY - barTop} fill="url(#liveEqFill)" fillOpacity={0.96} />
-                        <Rect x={x - 0.75} y={barTop - 2.5} width={bw + 1.5} height={5} rx={1.5} fill={CAP_HALO} fillOpacity={0.22} />
-                        <Rect x={x} y={barTop - 1.1} width={bw} height={2.2} rx={1} fill={CAP_CORE} fillOpacity={0.95} />
+                        <Rect x={x - 0.75 * ts} y={barTop - 2.5 * ts} width={bw + 1.5 * ts} height={5 * ts} rx={1.5 * ts} fill={CAP_HALO} fillOpacity={0.22} />
+                        <Rect x={x} y={barTop - 1.1 * ts} width={bw} height={2.2 * ts} rx={1 * ts} fill={CAP_CORE} fillOpacity={0.95} />
                       </>
                     )}
                     {peak > FLOOR_DB && (
-                      <Rect x={x + bw * 0.1} y={yForDb(peak) - 1} width={bw * 0.8} height={2} rx={1} fill={PEAK_TICK} fillOpacity={0.95} />
+                      <Rect x={x + bw * 0.1} y={yForDb(peak) - 1 * ts} width={bw * 0.8} height={2 * ts} rx={1 * ts} fill={PEAK_TICK} fillOpacity={0.95} />
                     )}
                   </G>
                 );
               })}
             {showCurve && eqPath != null && (
-              <Path d={eqPath} stroke={CURVE_AMBER} strokeWidth={2} fill="none" strokeOpacity={0.9} />
+              <Path d={eqPath} stroke={CURVE_AMBER} strokeWidth={2 * ts} fill="none" strokeOpacity={0.9} />
             )}
           </Svg>
         )}
