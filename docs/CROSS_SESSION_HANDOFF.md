@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 14:59 · ccode · d8e54200
+changed: docs: session handoff 2026-09-26C (the 16-module Wave Physics walkthrough), governance D38-D43, lessons (C)
+affects other side: nothing — docs only (handoff, D38-D43, lessons)
+needs: nothing
+
+
 ### 2026-09-26 14:57 · ccode · 0981b406
 changed: Wave Room Builder: accuracy note first under the display — what the outside rings show, and that it is a teaching mass-law model with exaggerated fading; measure real isolation with a calibrated meter
 affects other side: nothing — client JS only (Wave lab copy)
