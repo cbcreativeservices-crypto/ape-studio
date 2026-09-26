@@ -829,7 +829,10 @@ export function RefractionModule(p: WaveModuleProps) {
     { k: 'c @ GROUND (20 °C)', v: `${cGround.toFixed(1)} m/s` },
     { k: `c ALOFT (${tempAloft.toFixed(0)} °C)`, v: `${cAloft.toFixed(1)} m/s` },
     { k: 'BEND DIRECTION', v: bend },
-    { k: 'RAY @ 150 m (FROM 2 m)', v: rayH <= 0 ? 'AT THE GROUND — HEARD' : `${rayH.toFixed(1)} m UP` },
+    // Height ABOVE THE GROUND of the level-launched (amber) ray at the
+    // listener — not a direction. "0.7 m UP" beside "BEND DOWN" read as a
+    // contradiction (walkthrough 2026-09-26).
+    { k: 'AMBER RAY HEIGHT @ 150 m (LAUNCHED LEVEL FROM 2 m)', v: rayH <= 0 ? 'AT THE GROUND — HEARD' : `${rayH.toFixed(1)} m ABOVE GROUND` },
   ];
 
   const gradReadout = grad > 0.1 ? 'INVERSION (warm aloft)' : grad < -0.1 ? 'LAPSE (cool aloft)' : 'NEUTRAL';
@@ -850,7 +853,7 @@ export function RefractionModule(p: WaveModuleProps) {
           { k: 'c GROUND', v: `${cGround.toFixed(0)} m/s`, helpKey: 'refraction' },
           { k: `c ALOFT ${tempAloft.toFixed(0)}°`, v: `${cAloft.toFixed(0)} m/s`, flex: 1.15, helpKey: 'refraction' },
           { k: 'BEND', v: effGrad > 0.1 ? 'DOWN' : effGrad < -0.1 ? 'UP' : 'STRAIGHT', helpKey: 'refraction' },
-          { k: 'RAY 150m', v: rayH <= 0 ? 'GROUND' : `${rayH.toFixed(1)} m UP`, helpKey: 'refraction' },
+          { k: 'H @150 m', v: rayH <= 0 ? 'GROUND' : `${rayH.toFixed(1)} m`, helpKey: 'refraction' },
         ],
         stage: (w, h) =>
           viz ? (

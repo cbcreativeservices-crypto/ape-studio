@@ -2236,9 +2236,22 @@ export function BarrierSceneView(p: {
 // UP under a lapse), a distant listener, a warm/cool sky tint telling the
 // temperature profile, wind (optional) skewing the fan.
 
-const GRAD_SCENE_M = 90; // canvas width spans 90 m
+// ONE model for picture and readouts (owner 2026-09-26 walkthrough): the
+// drawing used to bend its rays with an undisclosed 15× gradient over a 90 m
+// scene while the bezel quoted the real one at 150 m. Now both use the same
+// dc/dz (module units × GRAD_PER_UNIT) and the picture is honest about the one
+// thing it exaggerates: HEIGHT, drawn ×GRAD_V_EXAG and tagged on the display.
+// Real refraction is a few metres over hundreds of metres — invisible at 1:1.
+const GRAD_SCENE_M = 400; // canvas width spans 400 m
 const GRAD_TEMP_C = 20;
-const GRAD_SLOPES = [-0.12, -0.06, 0, 0.06, 0.12, 0.18, 0.24]; // launch slopes
+const GRAD_PER_UNIT = 0.08; // (m/s)/m per unit of the module's gradient (±1)
+const GRAD_V_EXAG = 20; // heights drawn ×20 — shown as "HEIGHT ×20"
+const GRAD_LISTENER_M = 150; // the listener, and the bezel's H @150 m ray
+/** Drawn launch slopes (px rise per px run on the picture). The real launch
+ *  angle is slope ÷ GRAD_V_EXAG (0.75 → 2.1°). Index GRAD_HERO is the level
+ *  launch — the amber ray the bezel's H @150 m reads. */
+const GRAD_SLOPES = [-0.3, -0.12, 0, 0.15, 0.3, 0.5, 0.75];
+const GRAD_HERO = 2;
 
 function mixRgb(a: [number, number, number], b: [number, number, number], t: number): string {
   const q = Math.max(0, Math.min(1, t));
@@ -2275,10 +2288,11 @@ function GradientFront({
     const p = Skia.Path.Make();
     let pen = false;
     for (let k = 0; k < GRAD_SLOPES.length; k++) {
-      const y = h0 + GRAD_SLOPES[k] * x + kCurv * x * x;
+      // Real height (m): launch slope is the drawn slope ÷ the exaggeration.
+      const y = h0 + (GRAD_SLOPES[k] / GRAD_V_EXAG) * x + kCurv * x * x;
       if (y < 0.05) { pen = false; continue; }
       const px = x0px + x * ppm;
-      const py = groundY - y * ppm;
+      const py = groundY - y * ppm * GRAD_V_EXAG;
       if (py < 4) { pen = false; continue; }
       if (!pen) { p.moveTo(px, py); pen = true; } else p.lineTo(px, py);
     }
@@ -2309,19 +2323,19 @@ export function GradientSceneView(p: {
     report?.aspect(SIDE_SCENE_ASPECT, 0);
   }, [report]);
   const groundY = h - 16;
-  const ppm = w / GRAD_SCENE_M;
+  const ppm = w / GRAD_SCENE_M; // horizontal px per metre
+  const ppmY = ppm * GRAD_V_EXAG; // vertical px per metre (exaggerated)
   const wind = p.wind01 ?? 0;
-  // Illustrative dc/dz scaling: ±1.2 (m/s)/m puts the ray-curvature radius
-  // R = c/grad near ~300 m, so the bend is clearly visible across the 90 m
-  // scene. Wind shear adds to the effective downwind gradient (disclosed
-  // teaching simplification — same family as the engine's linear-gradient ray).
-  const effGrad = p.gradient01 * 1.2 + wind * 0.55;
+  // The SAME dc/dz the module's BEND / H @150 m readouts use: gradient plus
+  // wind shear as an equivalent gradient (0.55/1.2 relative weight), × 0.08
+  // (m/s)/m. Disclosed teaching simplification — linear-gradient ray.
+  const effGrad = (p.gradient01 + wind * (0.55 / 1.2)) * GRAD_PER_UNIT;
   const c = speedOfSound(GRAD_TEMP_C);
   const kCurv = -effGrad / (2 * c);
   const h0 = 2.0; // source height, m
-  const srcXm = 4;
+  const srcXm = 8;
   const x0px = srcXm * ppm;
-  const maxXm = GRAD_SCENE_M - srcXm - 4;
+  const maxXm = GRAD_SCENE_M - srcXm - 6;
 
   // Static ray fan — heights straight from the ENGINE's refractedRayHeight
   // (plus the launch tilt m·x), sampled to polylines. Memoized per params.
@@ -2330,21 +2344,21 @@ export function GradientSceneView(p: {
     const hot = Skia.Path.Make();
     const N = 46;
     for (let j = 0; j < GRAD_SLOPES.length; j++) {
-      const m = GRAD_SLOPES[j];
-      const target = j === 3 ? hot : dim; // one amber "hero" ray mid-fan
+      const m = GRAD_SLOPES[j] / GRAD_V_EXAG; // real launch slope
+      const target = j === GRAD_HERO ? hot : dim; // amber = the level launch the bezel reads
       let pen = false;
       for (let k = 0; k <= N; k++) {
         const x = (k / N) * maxXm;
-        const y = refractedRayHeight(h0, x, effGrad, GRAD_TEMP_C) + m * x;
+        const y = refractedRayHeight(h0, x, effGrad, GRAD_TEMP_C) + m * x; // real m
         if (y < 0.02) break; // grounded
         const px = x0px + x * ppm;
-        const py = groundY - y * ppm;
+        const py = groundY - y * ppmY;
         if (py < 4) break; // off the top
         if (!pen) { target.moveTo(px, py); pen = true; } else target.lineTo(px, py);
       }
     }
     return { dim, hot };
-  }, [effGrad, maxXm, x0px, ppm, groundY]);
+  }, [effGrad, maxXm, x0px, ppm, ppmY, groundY]);
 
   // Sky: warm/cool vertical tint telling the temperature profile (inversion =
   // warm aloft over cool ground; lapse = the reverse). Thermometer strip at
@@ -2384,9 +2398,9 @@ export function GradientSceneView(p: {
 
   const bust = useMemo(() => {
     const path = Skia.Path.Make();
-    appendBust(path, x0px + 78 * ppm, groundY, 1.15);
+    appendBust(path, x0px + GRAD_LISTENER_M * ppm, groundY, 1.15 * ts);
     return path;
-  }, [x0px, ppm, groundY]);
+  }, [x0px, ppm, groundY, ts]);
 
   // "UNIFORM AIR" must account for wind shear too (fix 2026-08-28) — it was
   // printed over a visibly bent ray fan whenever WIND alone did the bending.
@@ -2419,15 +2433,22 @@ export function GradientSceneView(p: {
         <Path path={windPath} color="#9aa3b5" style="stroke" strokeWidth={1.4} strokeCap="round" opacity={0.7} />
         <Floor w={w} y={groundY} h={h - groundY} />
         {/* Source: small PA on a pole, near the ground at left. */}
-        <SkLine p1={{ x: x0px, y: groundY - h0 * ppm + 9 }} p2={{ x: x0px, y: groundY }} color="#4a4d58" strokeWidth={2} />
-        <SideSpeakerGlyph x={x0px + 4} y={groundY - h0 * ppm} s={1.0 * ts} />
+        <SkLine p1={{ x: x0px, y: groundY - h0 * ppmY + 9 * ts }} p2={{ x: x0px, y: groundY }} color="#4a4d58" strokeWidth={2 * ts} />
+        <SideSpeakerGlyph x={x0px + 4 * ts} y={groundY - h0 * ppmY} s={1.0 * ts} />
         {/* The distant listener. */}
         <LineBust path={bust} stroke={LINE} sw={1.2} />
       </Canvas>
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
         {topLabel ? <RNText style={[styles.sceneLabel, { fontSize: 9 * ts, left: 12 * ts, top: 10 * ts }]}>{topLabel}</RNText> : null}
-        {/* Right of the source pole (x0px) — it used to sit on the speaker. */}
-        <RNText style={[styles.sceneLabel, { fontSize: 9 * ts, left: x0px + 14 * ts, top: groundY - 16 * ts }]}>{botLabel}</RNText>
+        {/* Clear of the speaker: it sits on its pole ABOVE this label now,
+            and the label starts past the cabinet's width (it used to be
+            hidden behind it — walkthrough 2026-09-26). */}
+        <RNText style={[styles.sceneLabel, { fontSize: 9 * ts, left: x0px + 26 * ts, top: groundY - 14 * ts }]}>{botLabel}</RNText>
+        {/* The one exaggeration, said on the picture. */}
+        <RNText style={[styles.sceneLabel, { fontSize: 9 * ts, right: 8 * ts, top: 10 * ts, color: '#c9a45a' }]}>{`HEIGHT ×${GRAD_V_EXAG}`}</RNText>
+        <RNText style={[styles.sceneLabel, { fontSize: 9 * ts, left: x0px + GRAD_LISTENER_M * ppm - 20 * ts, top: groundY + 2 * ts, width: 40 * ts, textAlign: 'center' }]}>
+          {`${GRAD_LISTENER_M} m`}
+        </RNText>
         {Math.abs(wind) >= 0.04 ? (
           <RNText style={[styles.sceneLabel, { fontSize: 9 * ts, left: w * 0.5 - 24 * ts, top: 30 * ts, width: 48 * ts, textAlign: 'center' }]}>WIND</RNText>
         ) : null}
