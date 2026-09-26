@@ -850,7 +850,18 @@ const PULSE_FADE_START = 0.9;
  *  the extra diffuse reflections (multi-bounce paths that reach the listener);
  *  the rest are the line-traced image-source reflections. Every trace ENDS at
  *  the listener. */
-type TraceRay = { pts: number[]; cum: number[]; len: number; order: number; segGain: number[]; free?: boolean };
+type TraceRay = {
+  pts: number[];
+  cum: number[];
+  len: number;
+  order: number;
+  segGain: number[];
+  free?: boolean;
+  /** A fragment of a pulse split by a diffuser: it rides one ray of the
+   *  scatter fan and VANISHES at the ray's end (it does not reach the
+   *  listener, so it must not park anywhere). */
+  split?: boolean;
+};
 
 // The nodes carry LOUDNESS in the app-wide MIDI velocity colours (levelColor:
 // 1 = red / full scale → 0 = MIDI-0 blue / silence — src/features/tools/
@@ -903,6 +914,7 @@ type NodeState = { x: number; y: number; amp: number; r: number };
  *  distance `dist` — travels source→listener, then holds at the listener. */
 function nodeState(ray: TraceRay, dist: number, minLen: number, timeEnv: number): NodeState {
   'worklet';
+  if (ray.split && dist >= ray.len) return { x: 0, y: 0, amp: 0, r: 0 };
   const travelled = Math.min(dist, ray.len); // stop at the listener
   let i = 1;
   while (i < ray.cum.length - 1 && travelled > ray.cum[i]) i++;
@@ -1252,6 +1264,16 @@ export function RoomSceneView(p: RoomSceneProps) {
         // no gain is touched here — which is exactly what the module's ENERGY
         // RETURNED readout claims ("SAME ON OR OFF").
         const sIdx = scatterWall == null ? -1 : img.bounces.indexOf(scatterWall);
+        // Material gain per segment (see segGain below) — needed here too so
+        // the split fragments inherit the loss up to the diffuser.
+        const gains: number[] = [1];
+        {
+          let g = 1;
+          for (let bi = 0; bi < img.bounces.length; bi++) {
+            g *= Math.sqrt(Math.max(0, 1 - alphaAt(scene.boundary[img.bounces[bi]], freq)));
+            gains.push(g);
+          }
+        }
         if (sIdx >= 0 && pts.length > sIdx + 2) {
           // Draw only as far as the scattering bounce...
           path.moveTo(X(pts[0][0]), Y(pts[0][1]));
@@ -1266,6 +1288,19 @@ export function RoomSceneView(p: RoomSceneProps) {
           // 3 = left (marchWall's indices).
           const inX = scatterWall === 1 ? -1 : scatterWall === 3 ? 1 : 0;
           const inY = scatterWall === 0 ? 1 : scatterWall === 2 ? -1 : 0;
+          // The pulse SPLITS at the diffuser (owner 2026-09-26: "the pressure
+          // balls need to split apart when they hit the diffusor, not just
+          // bounce one image out"): one fragment per fan ray, sharing the
+          // incoming leg. Energy is conserved — N fragments each at 1/√N
+          // amplitude carry the same total — so each is smaller and cooler,
+          // and ENERGY RETURNED stays "SAME ON OR OFF".
+          const lead: number[] = [];
+          for (let i = 0; i <= sIdx + 1; i++) lead.push(X(pts[i][0]), Y(pts[i][1]));
+          const leadCum: number[] = [0];
+          for (let i = 1; i <= sIdx + 1; i++) {
+            leadCum.push(leadCum[i - 1] + Math.hypot(lead[i * 2] - lead[(i - 1) * 2], lead[i * 2 + 1] - lead[(i - 1) * 2 + 1]));
+          }
+          const frags: { ex: number; ey: number }[] = [];
           for (let f = 0; f < SCATTER_FAN; f++) {
             const a = (f / (SCATTER_FAN - 1) - 0.5) * SCATTER_ARC;
             const ca = Math.cos(a);
@@ -1282,11 +1317,28 @@ export function RoomSceneView(p: RoomSceneProps) {
             const reach = Math.min(len, Math.hypot(hitF.x - bx, hitF.y - by));
             scatter.moveTo(X(bx), Y(by));
             scatter.lineTo(X(bx + rx * reach), Y(by + ry * reach));
+            frags.push({ ex: X(bx + rx * reach), ey: Y(by + ry * reach) });
+          }
+          const share = 1 / Math.sqrt(Math.max(1, frags.length));
+          const bxPx = lead[(sIdx + 1) * 2];
+          const byPx = lead[(sIdx + 1) * 2 + 1];
+          const leadLen = leadCum[sIdx + 1];
+          for (const fr of frags) {
+            const legLen = Math.hypot(fr.ex - bxPx, fr.ey - byPx);
+            traces.push({
+              pts: [...lead, fr.ex, fr.ey],
+              cum: [...leadCum, leadLen + legLen],
+              len: leadLen + legLen,
+              order,
+              segGain: [...gains.slice(0, sIdx + 1), gains[sIdx + 1] * share],
+              split: true,
+            });
           }
         } else {
           path.moveTo(X(pts[0][0]), Y(pts[0][1]));
           for (let i = 1; i < pts.length; i++) path.lineTo(X(pts[i][0]), Y(pts[i][1]));
         }
+        const splitHere = sIdx >= 0 && pts.length > sIdx + 2;
         // Trace polyline (px) + cumulative lengths for the pulse nodes.
         const flat: number[] = [];
         for (const [mx, my] of pts) flat.push(X(mx), Y(my));
@@ -1307,7 +1359,7 @@ export function RoomSceneView(p: RoomSceneProps) {
           g *= Math.sqrt(Math.max(0, 1 - alphaAt(scene.boundary[img.bounces[bi]], freq)));
           segGain.push(g);
         }
-        traces.push({ pts: flat, cum, len: total, order, segGain });
+        if (!splitHere) traces.push({ pts: flat, cum, len: total, order, segGain });
         // Arrowhead just before the listener, along the final segment.
         const a = pts[pts.length - 2];
         const b = pts[pts.length - 1];
@@ -1430,7 +1482,7 @@ export function RoomSceneView(p: RoomSceneProps) {
   // material-independent by design, so this reference is stable too.
   const minLen = useMemo(() => {
     let m = Infinity;
-    if (traces) for (const r of traces) if (!r.free) m = Math.min(m, r.len);
+    if (traces) for (const r of traces) if (!r.free && !r.split) m = Math.min(m, r.len);
     return Number.isFinite(m) ? m : 1;
   }, [traces]);
   const pulseOrigins = useMemo(() => {
