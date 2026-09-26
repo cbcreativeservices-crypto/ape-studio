@@ -1304,13 +1304,15 @@ export function RoomSceneView(p: RoomSceneProps) {
       // re-labels every reflected tick (owner 2026-08-02). Direct = 0.0 dB ref.
       const relDb = a.levelDb - maxDb;
       const norm = Math.pow(10, relDb / 20); // 0..1 linear, drives tick length
-      const r0 = 14;
-      const r1 = r0 + 8 + 20 * norm;
+      // Sized with the text scale so the fan grows in FULL SCREEN (owner
+      // 2026-09-26: "make sure the head, speaker … are also zooming").
+      const r0 = 14 * ts;
+      const r1 = r0 + (8 + 20 * norm) * ts;
       const color = ARRIVAL_COLORS[Math.min(2, a.bounces.length)];
       let path = byColor.get(color);
       if (!path) { path = Skia.Path.Make(); byColor.set(color, path); }
-      path.moveTo(lx + Math.cos(ang) * r0, ly - 4 + Math.sin(ang) * r0);
-      path.lineTo(lx + Math.cos(ang) * r1, ly - 4 + Math.sin(ang) * r1);
+      path.moveTo(lx + Math.cos(ang) * r0, ly - 4 * ts + Math.sin(ang) * r0);
+      path.lineTo(lx + Math.cos(ang) * r1, ly - 4 * ts + Math.sin(ang) * r1);
       // Sign is decided on the ROUNDED magnitude so a reflection 0.05–0.5 dB
       // under the direct reads '0 dB', never '−0 dB' (B-105).
       const relRounded = Math.round(Math.abs(relDb));
@@ -1322,10 +1324,10 @@ export function RoomSceneView(p: RoomSceneProps) {
     }
     return { ticks: Array.from(byColor, ([color, path]) => ({ path, color })), rows };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key, freq, geo, p.layers.arrivals]);
+  }, [key, freq, geo, ts, p.layers.arrivals]);
 
   // Pulsing listener halo (arrivals layer) — soft breathing, eased by sin.
-  const haloR = useDerivedValue(() => 12 + 2.6 * Math.sin(p.phase.value * 0.7), [p.phase]);
+  const haloR = useDerivedValue(() => (12 + 2.6 * Math.sin(p.phase.value * 0.7)) * ts, [p.phase, ts]);
   const haloOp = useDerivedValue(() => 0.26 + 0.12 * Math.sin(p.phase.value * 0.7), [p.phase]);
 
   // ── PRESSURE ring-train sources (per-source constants precomputed here;
@@ -1514,11 +1516,11 @@ export function RoomSceneView(p: RoomSceneProps) {
         {/* ARRIVALS: tick fan + pulsing listener halo. */}
         {arrivalFan ? (
           <>
-            <Circle cx={geo.x0 + scene.listener.x * geo.pxPerM} cy={geo.y0 + scene.listener.y * geo.pxPerM - 4} r={haloR} color={ACCENT_GREEN} style="stroke" strokeWidth={1.4} opacity={haloOp}>
-              <BlurMask blur={3} style="normal" />
+            <Circle cx={geo.x0 + scene.listener.x * geo.pxPerM} cy={geo.y0 + scene.listener.y * geo.pxPerM - 4 * ts} r={haloR} color={ACCENT_GREEN} style="stroke" strokeWidth={1.4 * ts} opacity={haloOp}>
+              <BlurMask blur={3 * ts} style="normal" />
             </Circle>
             {arrivalFan.ticks.map((t, i) => (
-              <Path key={i} path={t.path} color={t.color} style="stroke" strokeWidth={2} strokeCap="round" opacity={0.85} />
+              <Path key={i} path={t.path} color={t.color} style="stroke" strokeWidth={2 * ts} strokeCap="round" opacity={0.85} />
             ))}
           </>
         ) : null}
@@ -1526,31 +1528,42 @@ export function RoomSceneView(p: RoomSceneProps) {
             sources use the small side-view PA speaker (same icon as the
             diffraction lab), owner 2026-08-02. */}
         {pointSrcs.filter((s) => !s.muted).map((s, i) => (
-          <SideSpeakerGlyph key={`spk${i}`} x={s.x} y={s.y} s={1.15} />
+          <SideSpeakerGlyph key={`spk${i}`} x={s.x} y={s.y} s={1.15 * ts} />
         ))}
-        {scene.sources.map((s) =>
-          s.kind === 'speaker' ? (
-            <SpeakerGlyph key={s.id} src={s} x={geo.x0 + s.x * geo.pxPerM} y={geo.y0 + s.y * geo.pxPerM} freq={freq} dim={!!s.muted} />
+        {/* Object glyphs scale about their own anchor with the text scale, so
+            the speaker, the sub and the head grow with the room in FULL SCREEN
+            instead of staying phone-sized on a doubled floor. */}
+        {scene.sources.map((s) => {
+          const gx = geo.x0 + s.x * geo.pxPerM;
+          const gy = geo.y0 + s.y * geo.pxPerM;
+          return s.kind === 'speaker' ? (
+            <Group key={s.id} origin={vec(gx, gy)} transform={[{ scale: ts }]}>
+              <SpeakerGlyph src={s} x={gx} y={gy} freq={freq} dim={!!s.muted} />
+            </Group>
           ) : s.kind === 'sub' ? (
-            <SubGlyph key={s.id} x={geo.x0 + s.x * geo.pxPerM} y={geo.y0 + s.y * geo.pxPerM} dim={!!s.muted} />
+            <Group key={s.id} origin={vec(gx, gy)} transform={[{ scale: ts }]}>
+              <SubGlyph x={gx} y={gy} dim={!!s.muted} />
+            </Group>
           ) : s.muted ? (
             // Muted point source: the claves icon skips it; show a dim core ring.
-            <Circle key={s.id} cx={geo.x0 + s.x * geo.pxPerM} cy={geo.y0 + s.y * geo.pxPerM} r={3.2} color="#6a6e7a" style="stroke" strokeWidth={1.2} opacity={0.5} />
-          ) : null,
-        )}
+            <Circle key={s.id} cx={gx} cy={gy} r={3.2 * ts} color="#6a6e7a" style="stroke" strokeWidth={1.2 * ts} opacity={0.5} />
+          ) : null;
+        })}
         {/* The listener — the owner's front-head line icon (LINE + a green
             accent wash), falling back to the vector glyph while it loads. */}
         {headFrontImg ? (
           <>
-            <IconMark image={headFrontImg} cx={geo.x0 + scene.listener.x * geo.pxPerM} cy={geo.y0 + scene.listener.y * geo.pxPerM} size={HEAD_SIZE} color={LINE} plate />
-            <IconMark image={headFrontImg} cx={geo.x0 + scene.listener.x * geo.pxPerM} cy={geo.y0 + scene.listener.y * geo.pxPerM} size={HEAD_SIZE} color={ACCENT_GREEN} opacity={0.28} />
+            <IconMark image={headFrontImg} cx={geo.x0 + scene.listener.x * geo.pxPerM} cy={geo.y0 + scene.listener.y * geo.pxPerM} size={HEAD_SIZE * ts} color={LINE} plate />
+            <IconMark image={headFrontImg} cx={geo.x0 + scene.listener.x * geo.pxPerM} cy={geo.y0 + scene.listener.y * geo.pxPerM} size={HEAD_SIZE * ts} color={ACCENT_GREEN} opacity={0.28} />
           </>
         ) : (
-          <ListenerGlyph x={geo.x0 + scene.listener.x * geo.pxPerM} y={geo.y0 + scene.listener.y * geo.pxPerM} />
+          <Group origin={vec(geo.x0 + scene.listener.x * geo.pxPerM, geo.y0 + scene.listener.y * geo.pxPerM)} transform={[{ scale: ts }]}>
+            <ListenerGlyph x={geo.x0 + scene.listener.x * geo.pxPerM} y={geo.y0 + scene.listener.y * geo.pxPerM} />
+          </Group>
         )}
         {/* Selection: amber ring (sources by id, listener as 'listener'). */}
         {selPos ? (
-          <Circle cx={selPos.x} cy={selPos.y} r={16} color={WAVE} style="stroke" strokeWidth={1.6} opacity={0.85} />
+          <Circle cx={selPos.x} cy={selPos.y} r={16 * ts} color={WAVE} style="stroke" strokeWidth={1.6 * ts} opacity={0.85} />
         ) : null}
       </Canvas>
       {/* Labels (outside the canvas — mono, house label idiom). Every size and
@@ -1889,7 +1902,7 @@ export function BarrierSceneView(p: {
           <BlurMask blur={2.4} style="normal" />
         </Circle>
         <Floor w={w} y={groundY} h={h - groundY} />
-        <SideSpeakerGlyph x={sx} y={sy} s={1.15} />
+        <SideSpeakerGlyph x={sx} y={sy} s={1.15 * ts} />
         <LineBust path={bust} stroke={LINE} sw={1.2} />
       </Canvas>
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
@@ -2091,7 +2104,7 @@ export function GradientSceneView(p: {
         <Floor w={w} y={groundY} h={h - groundY} />
         {/* Source: small PA on a pole, near the ground at left. */}
         <SkLine p1={{ x: x0px, y: groundY - h0 * ppm + 9 }} p2={{ x: x0px, y: groundY }} color="#4a4d58" strokeWidth={2} />
-        <SideSpeakerGlyph x={x0px + 4} y={groundY - h0 * ppm} s={1.0} />
+        <SideSpeakerGlyph x={x0px + 4} y={groundY - h0 * ppm} s={1.0 * ts} />
         {/* The distant listener. */}
         <LineBust path={bust} stroke={LINE} sw={1.2} />
       </Canvas>
