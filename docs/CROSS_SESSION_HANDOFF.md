@@ -181,6 +181,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 12:15 · ccode · 1b54b067
+changed: Wave Refraction: one honest model — the drawing uses the readouts' real dc/dz over a 400 m scene with heights drawn x20 (tagged HEIGHT x20); listener at 150 m; H @150 m readout; COOL AIR label clear of the speaker
+affects other side: nothing — client JS only (Wave lab drawing)
+needs: nothing
+
+
 ### 2026-09-26 12:01 · ccode · 9dafbce2
 changed: Wave Diffusion: opens with PRESSURE on; split pulse balls show their 1/N energy share, a clear step down the colour ramp
 affects other side: nothing — client JS only (Wave lab drawing)
