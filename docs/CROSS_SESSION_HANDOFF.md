@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 13:11 · ccode · 3e9499bd
+changed: Wave 9-16: rooms fill their stage (RoomSceneView fits room + label margin in the whole box; sizing to the bare room aspect let the margin eat the room); "RING GAP > λ" tag when the true wavelength is finer than the ring floor (rooms 12 px, diffraction 10 px); Line Array floor drawn as a seated row seen from the side, deep strip
+affects other side: nothing — client JS only (Wave lab drawing)
+needs: nothing
+
+
 ### 2026-09-26 12:58 · ccode · 10748284
 changed: Wave: objects drawn to real size in every room (proportion audit) — head ~0.2 m, PA 0.55 m, point speaker 0.45 m, sub 0.75 m, mic 0.18 m, each floored so it stays findable; Line Array in true section (0.45 m boxes, standing listener); diffuser wells at the printed DEPTH; Cardioid REAR probe drawn; Refraction listener ear at 1.6 m on the x20 scale; Echo copy matches geometry
 affects other side: nothing — client JS only (Wave lab drawing)
