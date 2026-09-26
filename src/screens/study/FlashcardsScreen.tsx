@@ -2051,7 +2051,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 14,
   },
-  fsDef: { fontFamily: fonts.barlowMedium, fontSize: 22, lineHeight: 34, color: colors.textSecondary, textAlign: 'center' },
+  // alignSelf 'stretch' (tester report 2026-09-25, "Impairment" linked card:
+  // "…prohibited on safety-sensi" — the rest missing on iPhone). Inside the
+  // alignItems:'center' scroll the Text was shrink-wrapped to its measured
+  // width; iOS measured a hair narrower than it drew, so the last line lost
+  // its tail. Full width + textAlign center reads the same and cannot clip.
+  fsDef: { fontFamily: fonts.barlowMedium, fontSize: 22, lineHeight: 34, color: colors.textSecondary, textAlign: 'center', alignSelf: 'stretch' },
   center: { flex: 1, backgroundColor: colors.screenBg, alignItems: 'center', justifyContent: 'center', gap: 16, padding: 24 },
   errorText: { fontFamily: fonts.barlowRegular, fontSize: 14, color: colors.textSub, textAlign: 'center' },
   body: { flex: 1, padding: 16, gap: 12 },
