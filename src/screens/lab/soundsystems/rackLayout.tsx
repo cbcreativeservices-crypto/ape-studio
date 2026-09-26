@@ -25,13 +25,15 @@
  * The host (SsPagedLab) gives a rack page the full height and no ScrollView
  * of its own; document pages keep the paged layout.
  */
-import type { ReactNode } from 'react';
+import { useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { CollapsibleSection } from '../LabShell';
 import { RackUnit } from '../rack/RackUnit';
 import type { BezelItem, DockParam, StageSize, TrayOption } from '../rack/rackTypes';
 import type { PageDef } from '../kit/PagedLab';
+import { StageFullScreen } from './StageFullScreen';
+import { StageAspectReport, type StageReport } from './stageAspect';
 
 /** A Sound Systems page: PagedLab's contract plus the rack flag the host reads. */
 export type SsPageDef = PageDef & {
@@ -56,6 +58,10 @@ export type SsRack = {
   initialParam: string;
   /** Suppress the drag tag when the bezel already prints the bound value live. */
   hideDragTag?: boolean;
+  /** FULL SCREEN button (default on). Set false on a view-built stage whose
+   *  text keeps its size at any box size (the console bus columns): zooming
+   *  it would only add empty space. StageBox stages turn it off themselves. */
+  fullScreen?: boolean;
 };
 
 export function SoundSystemsRackLayout({
@@ -75,14 +81,28 @@ export function SoundSystemsRackLayout({
   /** The reading: chapter tag, prompt, goals, prose, checks, go-deeper links. */
   children: ReactNode;
 }) {
+  // FULL SCREEN (owner 2026-09-25): the same stage, same page state, at the
+  // whole phone with zoom — see StageFullScreen.
+  const [full, setFull] = useState(false);
+  // Only a DRAWING (a StageFit stage, which reports its aspect) grows with
+  // zoom; a view-built stage (console buses, StageBox) keeps its text size at
+  // any box size, so it gets no FULL SCREEN button.
+  const [fixedStage, setFixedStage] = useState(false);
+  const glassReport = useMemo<StageReport>(() => ({ aspect: () => {}, fixed: () => setFixedStage(true) }), []);
+  const renderGlass = (w: number, h: number) => (
+    <StageAspectReport.Provider value={glassReport}>{rack.stage(w, h)}</StageAspectReport.Provider>
+  );
+  const zoomable = rack.fullScreen !== false && !fixedStage;
   return (
+    <>
     <RackUnit
       stage={{
-        render: rack.stage,
+        render: renderGlass,
         size: rack.size ?? 'M',
         badge: rack.badge,
         bezel: rack.bezel,
         hideDragTag: rack.hideDragTag,
+        onEnlarge: zoomable ? () => setFull(true) : undefined,
       }}
       params={rack.params}
       initialParam={rack.initialParam}
@@ -98,6 +118,8 @@ export function SoundSystemsRackLayout({
         </CollapsibleSection>
       </View>
     </RackUnit>
+    <StageFullScreen visible={full} onClose={() => setFull(false)} render={rack.stage} badge={rack.badge} />
+    </>
   );
 }
 
@@ -108,6 +130,10 @@ export function SoundSystemsRackLayout({
  * the glass, so nothing is ever resized mid-interaction.
  */
 export function StageFit({ w, h, aspect, pad = 6, children }: { w: number; h: number; aspect: number; pad?: number; children: ReactNode }) {
+  const report = useContext(StageAspectReport);
+  useEffect(() => {
+    report?.aspect(aspect, pad);
+  }, [report, aspect, pad]);
   const innerW = Math.max(40, w - pad * 2);
   const innerH = Math.max(40, h - pad * 2);
   const fitW = Math.max(40, Math.min(innerW, innerH * aspect));
@@ -121,6 +147,10 @@ export function StageFit({ w, h, aspect, pad = 6, children }: { w: number; h: nu
 /** A full-width, vertically centred stage for view-built instruments (the
  *  console's bus bank, the rack of glyphs) that size to their content. */
 export function StageBox({ w, h, pad = 8, children }: { w: number; h: number; pad?: number; children: ReactNode }) {
+  const report = useContext(StageAspectReport);
+  useEffect(() => {
+    report?.fixed();
+  }, [report]);
   return (
     <View style={{ width: w, height: h, paddingHorizontal: pad, alignItems: 'stretch', justifyContent: 'center' }}>{children}</View>
   );

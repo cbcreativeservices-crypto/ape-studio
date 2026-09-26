@@ -252,25 +252,42 @@ export function RackUnit({
           faceplate between the stage and the well, never floated over the
           glass (owner 2026-08-23: nothing may hover over the display). House
           wording, matching the SPL meter's HIDE CONTROLS / HIDE LED. */}
-      <Pressable
-        onPress={toggleStage}
-        style={styles.stageToggle}
-        // 44pt tall by construction — the lesson-reading control must not
-        // repeat the back-button mistake of being too small to hit.
-        hitSlop={{ top: 6, bottom: 6, left: 12, right: 12 }}
-        accessibilityRole="button"
-        accessibilityState={{ expanded: !stageCollapsed }}
-        accessibilityLabel={stageCollapsed ? 'Show the display' : 'Hide the display to read'}
-        accessibilityHint={
-          stageCollapsed
-            ? 'Brings the display back'
-            : 'Gives the lesson the whole screen; the readings stay on screen'
-        }
-      >
-        <Text style={styles.stageToggleText}>
-          {stageCollapsed ? '▾  SHOW DISPLAY' : '▴  HIDE DISPLAY'}
-        </Text>
-      </Pressable>
+      <View style={styles.stageToggleRow}>
+        <Pressable
+          onPress={toggleStage}
+          style={[styles.stageToggle, styles.stageToggleFlex]}
+          // 44pt tall by construction — the lesson-reading control must not
+          // repeat the back-button mistake of being too small to hit.
+          hitSlop={{ top: 6, bottom: 6, left: 12, right: 12 }}
+          accessibilityRole="button"
+          accessibilityState={{ expanded: !stageCollapsed }}
+          accessibilityLabel={stageCollapsed ? 'Show the display' : 'Hide the display to read'}
+          accessibilityHint={
+            stageCollapsed
+              ? 'Brings the display back'
+              : 'Gives the lesson the whole screen; the readings stay on screen'
+          }
+        >
+          <Text style={styles.stageToggleText}>
+            {stageCollapsed ? '▾  SHOW DISPLAY' : '▴  HIDE DISPLAY'}
+          </Text>
+        </Pressable>
+        {stage.onEnlarge && !stageCollapsed ? (
+          // FULL SCREEN (owner 2026-09-25): the drawing at the whole phone,
+          // with zoom — a button on the faceplate, never a tap on the glass
+          // (the glass is the instrument; its taps belong to the page).
+          <Pressable
+            onPress={stage.onEnlarge}
+            style={[styles.stageToggle, styles.stageToggleFlex]}
+            hitSlop={{ top: 6, bottom: 6, left: 6, right: 12 }}
+            accessibilityRole="button"
+            accessibilityLabel="Open the display full screen"
+            accessibilityHint="Shows the drawing at full size with zoom"
+          >
+            <Text style={styles.stageToggleText}>⤢  FULL SCREEN</Text>
+          </Pressable>
+        ) : null}
+      </View>
 
       {/* ── WELL — the only scroller. It wraps its CONTENT height (owner
              2026-08-23): collapse LAB NOTES and the dock rides up directly
@@ -445,10 +462,10 @@ const styles = StyleSheet.create({
   wellWrapGrow: { flexGrow: 1 },
   wellScroll: { flexGrow: 0 },
   wellScrollGrow: { flexGrow: 1 },
+  stageToggleRow: { flexDirection: 'row', gap: 8, marginHorizontal: 10, marginTop: 8 },
+  stageToggleFlex: { flex: 1 },
   stageToggle: {
     minHeight: 44,
-    marginHorizontal: 10,
-    marginTop: 8,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,

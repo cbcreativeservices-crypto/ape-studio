@@ -45,6 +45,10 @@ export type RackStage = {
    *  stages whose BEZEL already prints the bound parameter live, so the tag is
    *  pure redundancy sitting on top of the drawing. */
   hideDragTag?: boolean;
+  /** Opt-in FULL SCREEN control beside HIDE DISPLAY (owner 2026-09-25, Sound
+   *  Systems: "text too small to read … these displays may need to be
+   *  enlarged"). Labs that do not pass it look exactly as before. */
+  onEnlarge?: () => void;
 };
 
 /** One option inside an options tray. LabChip semantics preserved
