@@ -639,7 +639,9 @@ export function DiffusionModule(p: WaveModuleProps) {
     listener: { x: 5, y: 2.2 },
     tempC: 20,
   }));
-  const [layers, setLayers] = useState<WaveLayers>({ pressure: false, heat: false, rays: true, arrivals: true });
+  // PRESSURE starts ON: the pulse bursting apart at the diffuser is the
+  // lesson (owner 2026-09-26).
+  const [layers, setLayers] = useState<WaveLayers>({ pressure: true, heat: false, rays: true, arrivals: true });
   const [diffuser, setDiffuser] = useState(true);
   const [depth, setDepth] = useState(0.2); // meters, snapped 0.05
   const { onDragSource, onDragListener } = useSceneDrag(setScene);

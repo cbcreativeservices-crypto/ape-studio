@@ -1237,9 +1237,10 @@ export function RoomSceneView(p: RoomSceneProps) {
      *
      * ⚠️ THIS is the path the Diffusion module needs, not the free-cast traces
      * below. Those are pulse-tracer nodes, and `traces` is only consumed when
-     * the PRESSURE layer is on — which that module has OFF. The rays a user
-     * actually sees there are these image-source reflections, so a diffuser
-     * that does not change THEM changes nothing on screen.
+     * the PRESSURE layer is on (Diffusion opens with it on since 2026-09-26,
+     * but the learner can turn it off). The rays drawn there are these
+     * image-source reflections, so a diffuser that does not change THEM
+     * changes nothing on screen with PRESSURE off.
      */
     const scatter = Skia.Path.Make();
     const SCATTER_FAN = 11; // rays drawn in place of the one specular bounce
@@ -1308,9 +1309,13 @@ export function RoomSceneView(p: RoomSceneProps) {
           // The pulse SPLITS at the diffuser (owner 2026-09-26: "the pressure
           // balls need to split apart when they hit the diffusor, not just
           // bounce one image out"): one fragment per fan ray, sharing the
-          // incoming leg. Energy is conserved — N fragments each at 1/√N
-          // amplitude carry the same total — so each is smaller and cooler,
-          // and ENERGY RETURNED stays "SAME ON OR OFF".
+          // incoming leg. Each fragment carries 1/N of the reflected ENERGY,
+          // and that share is what its colour shows — so the split reads as a
+          // clear step down the ramp (owner 2026-09-26: "balls after diffusion
+          // show color (amplitude) reduced … due to small reflective
+          // amplitude"). At 1/√N the fragments sat on the meter ramp's wide
+          // green plateau beside the unsplit reflections and the drop was
+          // invisible. The total is unchanged: ENERGY RETURNED stays "SAME".
           const lead: number[] = [];
           for (let i = 0; i <= sIdx + 1; i++) lead.push(X(pts[i][0]), Y(pts[i][1]));
           const leadCum: number[] = [0];
@@ -1336,7 +1341,7 @@ export function RoomSceneView(p: RoomSceneProps) {
             scatter.lineTo(X(bx + rx * reach), Y(by + ry * reach));
             frags.push({ ex: X(bx + rx * reach), ey: Y(by + ry * reach) });
           }
-          const share = 1 / Math.sqrt(Math.max(1, frags.length));
+          const share = 1 / Math.max(1, frags.length);
           const bxPx = lead[(sIdx + 1) * 2];
           const byPx = lead[(sIdx + 1) * 2 + 1];
           const leadLen = leadCum[sIdx + 1];
@@ -1392,8 +1397,9 @@ export function RoomSceneView(p: RoomSceneProps) {
     // diffuser along its WHOLE face, not only where a drawn ray lands, so it is
     // sampled at BURST_HITS points across the wall; at each, the pulse breaks
     // into BURST_FRAGS small balls spread over the scatter arc, each riding to
-    // the first wall it meets and vanishing there. Energy per hit is shared
-    // 1/√N, the same rule as the drawn fans — many dim balls, not new energy.
+    // the first wall it meets and vanishing there. Each ball shows its 1/N
+    // share of the energy, the same rule as the drawn fans — many dim balls,
+    // not new energy.
     // Pulse-only (no lines): the drawn fans stay the readable reference.
     if (scatterWall != null && scene.boundary[scatterWall] !== 'open') {
       const BURST_HITS = 9;
@@ -1404,7 +1410,7 @@ export function RoomSceneView(p: RoomSceneProps) {
       const horizW = scatterWall === 0 || scatterWall === 2;
       const wallLen = horizW ? scene.w : scene.h;
       const wallGain = Math.sqrt(Math.max(0, 1 - alphaAt(scene.boundary[scatterWall], freq)));
-      const share = wallGain / Math.sqrt(BURST_FRAGS);
+      const share = wallGain / BURST_FRAGS;
       for (const s of scene.sources) {
         if (s.muted) continue;
         for (let hI = 0; hI < BURST_HITS; hI++) {
