@@ -1,10 +1,16 @@
-/** Speech & Voice Lab — modules 1–5: anatomy, production, voicing, vowels, consonants. */
-import { useEffect, useState } from 'react';
+/** Speech & Voice Lab — modules 1–5: anatomy, production, voicing, vowels, consonants.
+ *
+ * Legibility pass (owner 2026-09-25): every drawing sits in an ExpandableFigure
+ * (labels ≥ 9 pt, "⤢ FULL SCREEN" under it) and each page builds its picker
+ * ONCE and hands the same element to the page AND to the figure's `controls`,
+ * so the learner can change the picture while it is enlarged. */
+import { useEffect, useState, type ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Ellipse, G, Line, Path, Polygon, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
 import { ANATOMY, CONSONANTS, PRODUCTION, SPEECH_CHECKS, VOICED_PAIRS, VOWELS, shuffleCheck, type Vowel } from '../../../features/speech/speechModel';
 import type { PageCtx } from '../kit/PagedLab';
+import { ExpandableFigure } from '../kit/ExpandableFigure';
 import { Body, Btn, Card, Eyebrow, Lead, Row } from '../tuning/components/primitives';
 import { UnderstandingCheck } from '../tuning/components/check';
 import { FormantChart, HeadCrossSection, VocalFolds } from './speechViz';
@@ -34,10 +40,22 @@ export function PageAnatomy({ ctx }: { ctx: PageCtx }) {
   const [sel, setSel] = useState<string | null>(null);
   const part = ANATOMY.find((a) => a.id === sel);
   const pick = (id: string) => { setSel(id); if (!ctx.isDone) ctx.markDone(); };
+  const picker = (
+    <Row>
+      {ANATOMY.map((a, i) => <Btn key={a.id} label={`${i + 1} · ${a.short.toUpperCase()}`} tone={sel === a.id ? 'primary' : 'plain'} onPress={() => pick(a.id)} a11y={`${i + 1}, ${a.name}${sel === a.id ? ', selected' : ''}`} />)}
+    </Row>
+  );
+  // In full screen the card is off-screen, so a two-line readout rides with the picker.
+  const dock = (
+    <View style={{ gap: 8 }}>
+      <Text style={styles.readout} numberOfLines={2}>{part ? `${ANATOMY.indexOf(part) + 1} · ${part.name.toUpperCase()} — ${part.role}` : 'Tap a number on the drawing, or a button below.'}</Text>
+      {picker}
+    </View>
+  );
   return (
     <View style={{ gap: 12 }}>
       <Lead>Speech is air, a buzz, a set of resonating cavities and a few fast-moving parts. Tap a number to see what each one does.</Lead>
-      <HeadCrossSection selected={sel} onSelect={pick} />
+      <HeadCrossSection selected={sel} onSelect={pick} controls={dock} />
       <Card>
         {part ? (
           <>
@@ -48,9 +66,7 @@ export function PageAnatomy({ ctx }: { ctx: PageCtx }) {
           <Body>Numbered along the path the air takes: lungs first, lips last, with the jaw that frames the mouth closing the list. Dark blue-grey is air space; red is muscle; cream is bone. A simplified side view, not to scale.</Body> // NEW COPY (was "numbered from the lips back and down to the lungs" — the reverse of the actual order)
         )}
       </Card>
-      <Row>
-        {ANATOMY.map((a, i) => <Btn key={a.id} label={`${i + 1} · ${a.short.toUpperCase()}`} tone={sel === a.id ? 'primary' : 'plain'} onPress={() => pick(a.id)} a11y={`${i + 1}, ${a.name}${sel === a.id ? ', selected' : ''}`} />)}
-      </Row>
+      {picker}
     </View>
   );
 }
@@ -86,35 +102,49 @@ export function PageProduction({ ctx }: { ctx: PageCtx }) {
     const i = PRODUCTION.findIndex((s) => s.id !== 'speech' && STAGE_PARTS[s.id].includes(id));
     if (i >= 0) go(i);
   };
+  // The stage strip is a picker (height-capped at 1 : 1, so its labels are authored at 9.5).
+  const strip = (
+    <Svg width="100%" height={56} viewBox="0 0 340 56">
+      {PRODUCTION.map((s, i) => {
+        const x = 4 + i * 67;
+        const on = i === step;
+        const done = i < step;
+        return (
+          <G key={s.id} onPress={() => go(i)}>
+            <Rect x={x} y={6} width={60} height={44} rx={8} fill={on ? colors.cyanBright : '#131316'} stroke={on ? colors.cyanBright : done ? colors.textSub : colors.hairline} />
+            <SvgText x={x + 30} y={24} fontSize={9.5} fill={on ? '#000' : colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{i + 1}</SvgText>
+            <SvgText x={x + 30} y={39} fontSize={9.5} fill={on ? '#000' : done ? colors.textSecondary : colors.textSub} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{s.name.toUpperCase()}</SvgText>
+            {i < last ? <Path d={`M ${x + 62} 24 L ${x + 66} 28 L ${x + 62} 32`} fill="none" stroke={colors.textMuted} strokeWidth={1.5} /> : null}
+          </G>
+        );
+      })}
+    </Svg>
+  );
+  const nav = (
+    <Row>
+      <Btn label="‹ PREVIOUS" onPress={() => go(Math.max(0, step - 1))} disabled={step === 0} />
+      <Btn label="NEXT STAGE ›" tone="primary" onPress={() => go(Math.min(last, step + 1))} disabled={step === last} />
+      {!ctx.reduceMotion ? <Btn label={auto ? '■ STOP' : '▶ PLAY THE SEQUENCE'} onPress={() => { if (!auto && step >= last) setStep(0); setAuto((a) => !a); if (!ctx.isDone) ctx.markDone(); }} /> : null}
+    </Row>
+  );
+  const dock = (
+    <View style={{ gap: 8 }}>
+      {strip}
+      <Text style={styles.readout} numberOfLines={2}>{step + 1} · {st.name.toUpperCase()} — {st.what}</Text>
+      {nav}
+    </View>
+  );
   return (
     <View style={{ gap: 12 }}>
       <Lead>Five stages, always in this order. Air becomes a buzz, the buzz becomes a vowel, movement turns vowels into words.</Lead>
-      <Svg width="100%" height={56} viewBox="0 0 340 56">
-        {PRODUCTION.map((s, i) => {
-          const x = 4 + i * 67;
-          const on = i === step;
-          const done = i < step;
-          return (
-            <G key={s.id} onPress={() => go(i)}>
-              <Rect x={x} y={6} width={60} height={44} rx={8} fill={on ? colors.cyanBright : '#131316'} stroke={on ? colors.cyanBright : done ? colors.textSub : colors.hairline} />
-              <SvgText x={x + 30} y={24} fontSize={8.5} fill={on ? '#000' : colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{i + 1}</SvgText>
-              <SvgText x={x + 30} y={38} fontSize={9} fill={on ? '#000' : done ? colors.textSecondary : colors.textSub} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{s.name.toUpperCase()}</SvgText>
-              {i < last ? <Path d={`M ${x + 62} 24 L ${x + 66} 28 L ${x + 62} 32`} fill="none" stroke={colors.textMuted} strokeWidth={1.5} /> : null}
-            </G>
-          );
-        })}
-      </Svg>
-      <HeadCrossSection selected={null} onSelect={goPart} highlight={STAGE_PARTS[st.id]} />
+      {strip}
+      <HeadCrossSection selected={null} onSelect={goPart} highlight={STAGE_PARTS[st.id]} controls={dock} fsTitle="SEQUENCE" />
       <Card tone="math">
         <Eyebrow>{step + 1} · {st.name.toUpperCase()}</Eyebrow>
         <Body>{st.what}</Body>
         <Text style={styles.see}>What you would see: {st.see}</Text>
       </Card>
-      <Row>
-        <Btn label="‹ PREVIOUS" onPress={() => go(Math.max(0, step - 1))} disabled={step === 0} />
-        <Btn label="NEXT STAGE ›" tone="primary" onPress={() => go(Math.min(last, step + 1))} disabled={step === last} />
-        {!ctx.reduceMotion ? <Btn label={auto ? '■ STOP' : '▶ PLAY THE SEQUENCE'} onPress={() => { if (!auto && step >= last) setStep(0); setAuto((a) => !a); if (!ctx.isDone) ctx.markDone(); }} /> : null}
-      </Row>
+      {nav}
       {ctx.reduceMotion ? <Text style={styles.see}>Reduced motion: step through with the buttons; the sequence does not auto-play.</Text> : null}
     </View>
   );
@@ -126,14 +156,17 @@ export function PageVoicing({ ctx }: { ctx: PageCtx }) {
   const [voiced, setVoiced] = useState(true);
   const [pair, setPair] = useState(0);
   const p = VOICED_PAIRS[pair];
+  const toggle = (
+    <Row>
+      <Btn label={`UNVOICED · ${p.unvoiced}`} tone={!voiced ? 'primary' : 'plain'} onPress={() => { setVoiced(false); if (!ctx.isDone) ctx.markDone(); }} />
+      <Btn label={`VOICED · ${p.voiced}`} tone={voiced ? 'primary' : 'plain'} onPress={() => { setVoiced(true); if (!ctx.isDone) ctx.markDone(); }} />
+    </Row>
+  );
   return (
     <View style={{ gap: 12 }}>
       <Lead>Put a finger on your throat and say "sss", then "zzz". Same mouth, one difference: whether the vocal folds are buzzing.</Lead>
-      <Row>
-        <Btn label={`UNVOICED · ${p.unvoiced}`} tone={!voiced ? 'primary' : 'plain'} onPress={() => { setVoiced(false); if (!ctx.isDone) ctx.markDone(); }} />
-        <Btn label={`VOICED · ${p.voiced}`} tone={voiced ? 'primary' : 'plain'} onPress={() => { setVoiced(true); if (!ctx.isDone) ctx.markDone(); }} />
-      </Row>
-      <VocalFolds voiced={voiced} reduceMotion={ctx.reduceMotion} />
+      {toggle}
+      <VocalFolds voiced={voiced} reduceMotion={ctx.reduceMotion} controls={toggle} />
       <Card>
         <Eyebrow>{voiced ? 'FOLDS TOGETHER, VIBRATING' : 'FOLDS APART, AIR ONLY'}</Eyebrow>
         <Body>{voiced ? `The folds are brought together; air pressure blows them open and they snap shut again, over and over — that is the pitch of the voice. "${p.voiced}" as in "${p.example[1]}".` : `The folds are held open; the only sound is the noise made further up — a burst or a hiss at the ${p.place}. "${p.unvoiced}" as in "${p.example[0]}".`}</Body>
@@ -155,7 +188,7 @@ export function PageVoicing({ ctx }: { ctx: PageCtx }) {
  *  front-low corner pulled inward as on the IPA chart) plus a jaw gauge and
  *  a front view of the lips for the selected vowel. Exported for the design
  *  harness; not used elsewhere. */
-export function VowelChart({ v }: { v: Vowel }) {
+export function VowelChart({ v, controls }: { v: Vowel; controls?: ReactNode }) {
   const W = 340, H = 150;
   const x0 = 40, wq = 160, shift = 56;
   const px = (back: number, height: number) => x0 + back * wq + (1 - height) * (1 - back) * shift;
@@ -169,17 +202,19 @@ export function VowelChart({ v }: { v: Vowel }) {
   const fx = hx + (-46 * Math.cos(rad) - 3 * Math.sin(rad)), fy = hy + (-46 * Math.sin(rad) + 3 * Math.cos(rad));
   const lipRx = v.rounded ? 9 : 17, lipRy = v.rounded ? 9 : 5;
   return (
-    <View accessible accessibilityLabel={`${v.letter}: tongue ${v.height > 0.6 ? 'high' : v.height > 0.3 ? 'mid' : 'low'} and ${v.back > 0.6 ? 'back' : v.back > 0.3 ? 'central' : 'front'}, jaw ${jawOpen > 0.6 ? 'open' : jawOpen > 0.4 ? 'half open' : 'nearly closed'}, lips ${v.rounded ? 'rounded' : 'spread'}.`}>
-      <Svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`}>
+    <ExpandableFigure aspect={W / H} title="VOWEL" controls={controls} render={(w, h) => (
+    <View accessible accessibilityLabel={`${v.letter}: tongue ${v.height > 0.6 ? 'high' : v.height > 0.3 ? 'mid' : 'low'} and ${v.back > 0.6 ? 'back' : v.back > 0.3 ? 'central' : 'front'}, jaw ${jawOpen > 0.6 ? 'open' : jawOpen > 0.4 ? 'half open' : 'nearly closed'}, lips ${v.rounded ? 'rounded' : 'spread'}.`} style={{ width: w, height: h }}>
+      <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
         <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
         {/* the tongue space */}
         <Polygon points={`${px(0, 1)},${py(1)} ${px(1, 1)},${py(1)} ${px(1, 0)},${py(0)} ${px(0, 0)},${py(0)}`} fill="rgba(127,212,255,0.04)" stroke={colors.hairline} />
         <Line x1={px(0, 0.5)} y1={py(0.5)} x2={px(1, 0.5)} y2={py(0.5)} stroke={colors.hairline} strokeDasharray="3,3" />
-        <SvgText x={px(0, 1)} y={py(1) - 8} fontSize={8.5} fill={colors.textMuted} fontFamily={F}>FRONT</SvgText>
-        <SvgText x={px(1, 1)} y={py(1) - 8} fontSize={8.5} fill={colors.textMuted} textAnchor="end" fontFamily={F}>BACK</SvgText>
-        <SvgText x={px(0, 1) - 6} y={py(1) + 4} fontSize={8.5} fill={colors.textMuted} textAnchor="end" fontFamily={F}>HIGH</SvgText>
-        <SvgText x={px(0, 0) - 6} y={py(0) + 3} fontSize={8.5} fill={colors.textMuted} textAnchor="end" fontFamily={F}>LOW</SvgText>
-        <SvgText x={px(0, 0)} y={py(0) + 16} fontSize={8.5} fill={colors.textMuted} fontFamily={F}>tongue position · jaw opens as it drops</SvgText>
+        <SvgText x={px(0, 1)} y={py(1) - 8} fontSize={9} fill={colors.textMuted} fontFamily={F}>FRONT</SvgText>
+        <SvgText x={px(1, 1)} y={py(1) - 8} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={F}>BACK</SvgText>
+        <SvgText x={px(0, 1) - 6} y={py(1) + 4} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={F}>HIGH</SvgText>
+        <SvgText x={px(0, 0) - 6} y={py(0) + 3} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={F}>LOW</SvgText>
+        {/* caption starts at the quadrilateral's left edge so it clears the lips column on the right */}
+        <SvgText x={x0} y={py(0) + 17} fontSize={9} fill={colors.textMuted} fontFamily={F}>tongue position · jaw opens as it drops</SvgText>
         {VOWELS.map((o) => {
           const on = o.id === v.id;
           return (
@@ -190,34 +225,38 @@ export function VowelChart({ v }: { v: Vowel }) {
           );
         })}
         {/* jaw gauge (side view): fixed upper jaw, lower jaw swings on a hinge at the back */}
-        <SvgText x={296} y={20} fontSize={8.5} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>JAW</SvgText>
+        <SvgText x={296} y={20} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>JAW</SvgText>
         <Rect x={272} y={30} width={48} height={6} rx={3} fill="#c9c0ae" />
         <Circle cx={hx} cy={hy} r={2.5} fill={colors.textMuted} />
         <G transform={`rotate(${theta.toFixed(1)} ${hx} ${hy})`}>
           <Rect x={272} y={40} width={48} height={6} rx={3} fill="#8b8b96" />
         </G>
         <Line x1={274} y1={38} x2={fx.toFixed(1)} y2={fy.toFixed(1)} stroke={colors.cyanBright} strokeWidth={1} strokeDasharray="2,2" opacity={jawOpen > 0.15 ? 0.9 : 0} />
-        <SvgText x={296} y={92} fontSize={8.5} fill={colors.textSecondary} textAnchor="middle" fontFamily={F}>{jawOpen > 0.6 ? 'open' : jawOpen > 0.4 ? 'half open' : 'nearly closed'}</SvgText>
+        <SvgText x={296} y={92} fontSize={9} fill={colors.textSecondary} textAnchor="middle" fontFamily={F}>{jawOpen > 0.6 ? 'open' : jawOpen > 0.4 ? 'half open' : 'nearly closed'}</SvgText>
         {/* lips (front view) */}
-        <SvgText x={296} y={106} fontSize={8.5} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>LIPS</SvgText>
+        <SvgText x={296} y={106} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>LIPS</SvgText>
         <Ellipse cx={296} cy={122} rx={lipRx} ry={lipRy} fill="#0a0a0c" stroke="#d78a80" strokeWidth={3} />
-        <SvgText x={296} y={143} fontSize={8.5} fill={colors.textSecondary} textAnchor="middle" fontFamily={F}>{v.rounded ? 'rounded' : 'spread'}</SvgText>
+        <SvgText x={296} y={143} fontSize={9} fill={colors.textSecondary} textAnchor="middle" fontFamily={F}>{v.rounded ? 'rounded' : 'spread'}</SvgText>
       </Svg>
     </View>
+    )} />
   );
 }
 
 export function PageVowels({ ctx }: { ctx: PageCtx }) {
   const [id, setId] = useState('a');
   const v = VOWELS.find((o) => o.id === id)!;
+  const picker = (
+    <Row>
+      {VOWELS.map((o) => <Btn key={o.id} label={`${o.letter} · ${o.sound.split(' ')[0]}`} tone={o.id === id ? 'primary' : 'plain'} onPress={() => { setId(o.id); if (!ctx.isDone) ctx.markDone(); }} a11y={`${o.letter}, ${o.sound}`} />)}
+    </Row>
+  );
   return (
     <View style={{ gap: 12 }}>
       <Lead>A vowel is a tongue position. Where the tongue sits sets which harmonics the mouth boosts — the formants — and that is what you hear as A, E, I, O or U.</Lead>
-      <Row>
-        {VOWELS.map((o) => <Btn key={o.id} label={`${o.letter} · ${o.sound.split(' ')[0]}`} tone={o.id === id ? 'primary' : 'plain'} onPress={() => { setId(o.id); if (!ctx.isDone) ctx.markDone(); }} a11y={`${o.letter}, ${o.sound}`} />)}
-      </Row>
-      <VowelChart v={v} />
-      <FormantChart v={v} title={`${v.letter} · ${v.sound.toUpperCase()} · HARMONICS SHAPED BY THE MOUTH`} />
+      {picker}
+      <VowelChart v={v} controls={picker} />
+      <FormantChart v={v} title={`${v.letter} · ${v.sound.toUpperCase()} · HARMONICS SHAPED BY THE MOUTH`} controls={picker} />
       <Card>
         <Text style={styles.read}>F1 ≈ {v.f1} Hz · F2 ≈ {v.f2} Hz · F3 ≈ {v.f3} Hz — typical adult male; roughly 15–20% higher for women, higher again for children</Text>
         <Body>{v.height > 0.6 ? 'Tongue high, jaw nearly closed → a low first formant.' : 'Tongue low, jaw open → a high first formant.'} {v.back > 0.6 ? 'Tongue back → a low second formant.' : 'Tongue forward → a high second formant.'} {v.rounded ? 'Rounded lips lengthen the tract and pull every formant down a little.' : 'Spread lips keep the tract short.'}</Body>
@@ -235,28 +274,33 @@ export function PageConsonants({ ctx }: { ctx: PageCtx }) {
   const W = 340, H = 62;
   const lo = 20, hi = 12000;
   const x = (f: number) => 10 + ((Math.log(f) - Math.log(lo)) / (Math.log(hi) - Math.log(lo))) * (W - 20);
+  const picker = (
+    <Row>
+      {CONSONANTS.map((o) => <Btn key={o.id} label={o.name.split(' ')[0].toUpperCase()} tone={o.id === id ? 'primary' : 'plain'} onPress={() => { setId(o.id); if (!ctx.isDone) ctx.markDone(); }} a11y={`${o.name}: ${o.examples}`} />)}
+    </Row>
+  );
   return (
     <View style={{ gap: 12 }}>
       <Lead>Consonants are what the mouth does to the air: block it, squeeze it, reroute it, or slide between shapes.</Lead>
-      <Row>
-        {CONSONANTS.map((o) => <Btn key={o.id} label={o.name.split(' ')[0].toUpperCase()} tone={o.id === id ? 'primary' : 'plain'} onPress={() => { setId(o.id); if (!ctx.isDone) ctx.markDone(); }} a11y={`${o.name}: ${o.examples}`} />)}
-      </Row>
+      {picker}
       <Card tone="math">
         <Eyebrow>{c.name.toUpperCase()} · {c.examples}</Eyebrow>
         <Body>{c.how}</Body>
         <Text style={styles.see}>Energy: {c.energy}.</Text>
       </Card>
-      <View accessible accessibilityLabel={`${c.name}: energy mainly between ${c.bandLoHz} and ${c.bandHiHz} hertz, approximate.`}>
-        <Svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+      <ExpandableFigure aspect={W / H} title="ENERGY" controls={picker} render={(w, h) => (
+      <View accessible accessibilityLabel={`${c.name}: energy mainly between ${c.bandLoHz} and ${c.bandHiHz} hertz, approximate.`} style={{ width: w, height: h }}>
+        <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
           <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
           {[50, 100, 200, 500, 1000, 2000, 5000, 10000].map((t) => <Line key={`g${t}`} x1={x(t)} y1={14} x2={x(t)} y2={38} stroke="rgba(255,255,255,0.06)" />)}
           <Rect x={x(c.bandLoHz)} y={16} width={Math.max(2, x(c.bandHiHz) - x(c.bandLoHz))} height={20} rx={4} fill={colors.orange} opacity={0.45} />
           {[50, 100, 200, 500, 1000, 2000, 5000, 10000].map((t) => (
-            <SvgText key={t} x={x(t)} y={H - 8} fontSize={8.5} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>{t >= 1000 ? `${t / 1000}k` : t}</SvgText>
+            <SvgText key={t} x={x(t)} y={H - 8} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>{t >= 1000 ? `${t / 1000}k` : t}</SvgText>
           ))}
-          <SvgText x={W - 8} y={11} fontSize={8.5} fill={colors.textMuted} textAnchor="end" fontFamily={F}>where the energy sits · approximate</SvgText>
+          <SvgText x={W - 8} y={11} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={F}>where the energy sits · approximate</SvgText>
         </Svg>
       </View>
+      )} />
       <Notice>Watch the band jump as you change family: plosives and nasals live low, fricatives and affricates high — that is why one is a pop-filter problem and the other a de-esser problem.</Notice>
       <Card><Body>At the microphone: {c.micNote}</Body></Card>
       <SpeechCheckCard id="nasal-family" />
@@ -268,4 +312,5 @@ const styles = StyleSheet.create({
   see: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, marginTop: 4 },
   read: { color: colors.textSecondary, fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18 },
   notice: { color: colors.cyanBright, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17 },
+  readout: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, paddingHorizontal: 2 },
 });

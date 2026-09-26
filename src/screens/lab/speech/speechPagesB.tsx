@@ -1,5 +1,9 @@
-/** Speech & Voice Lab — modules 6–10 + checks: pop filters, sibilance, distance, voices, problem simulator. */
-import { useEffect, useState } from 'react';
+/** Speech & Voice Lab — modules 6–10 + checks: pop filters, sibilance, distance, voices, problem simulator.
+ *
+ * Legibility pass (owner 2026-09-25): every drawing sits in an ExpandableFigure
+ * (labels ≥ 9 pt, "⤢ FULL SCREEN" under it) and each page builds its picker
+ * ONCE and hands the same element to the page AND to the figure's `controls`. */
+import { useEffect, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, Platform, StyleSheet, Text, View } from 'react-native';
 import Svg, { G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
@@ -7,8 +11,9 @@ import {
   DISTANCE_PRESETS, PROBLEMS, SPEECH_CHECKS, VOICE_RANGES, distanceEffect, plosiveTrace, problemSpectrum, problemTrace, voiceSpectrum, type ProblemId,
 } from '../../../features/speech/speechModel';
 import type { PageCtx } from '../kit/PagedLab';
+import { ExpandableFigure } from '../kit/ExpandableFigure';
 import { Body, Btn, Card, Eyebrow, Lead, Row } from '../tuning/components/primitives';
-import { RangeBars, SpectrumBars, TraceChart } from './speechViz';
+import { RangeBars, SpectrumBars, SpectrumSvg, Title, TraceChart, TraceSvg } from './speechViz';
 import { Notice, SpeechCheckCard } from './speechPagesA';
 
 const F = fonts.barlowMedium;
@@ -20,7 +25,7 @@ const F = fonts.barlowMedium;
 /** Mouth → (pop filter) → capsule. Orange streamlines are the air JET; cyan
  *  arcs are the SOUND wavefronts, which pass the mesh untouched either way.
  *  Exported for the design harness; not used elsewhere. */
-export function PopFilterDiagram({ withFilter }: { withFilter: boolean }) {
+export function PopFilterDiagram({ withFilter, controls }: { withFilter: boolean; controls?: ReactNode }) {
   const W = 340, H = 118;
   const mx = 44, my = 62; // mouth
   const fx = 148; // filter plane
@@ -34,14 +39,15 @@ export function PopFilterDiagram({ withFilter }: { withFilter: boolean }) {
   const jetEnd = withFilter ? fx - 6 : cx - 2;
   const head = (x: number, y: number, dy: number) => `M ${x} ${y} l -7 ${-3.5 + dy} l 0 7 z`;
   return (
-    <View accessible accessibilityLabel={withFilter ? 'Mouth, then a pop filter mesh, then the microphone capsule: the air jet is broken up at the mesh and arrives as weak turbulence; the sound wavefronts pass through unchanged.' : 'Mouth directly in front of the microphone capsule: the air jet arrives at the capsule as one push, together with the sound.'}>
-      <Svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+    <ExpandableFigure aspect={W / H} title="PLOSIVE" controls={controls} render={(w, h) => (
+    <View accessible accessibilityLabel={withFilter ? 'Mouth, then a pop filter mesh, then the microphone capsule: the air jet is broken up at the mesh and arrives as weak turbulence; the sound wavefronts pass through unchanged.' : 'Mouth directly in front of the microphone capsule: the air jet arrives at the capsule as one push, together with the sound.'} style={{ width: w, height: h }}>
+      <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
         <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
         {/* face profile (nose, lips, chin) at the left edge */}
         <Path d="M 1 8 C 14 14 24 24 30 34 C 36 42 30 46 32 50 C 40 52 42 58 36 62 C 42 66 42 72 34 74 C 30 84 20 96 8 110 L 1 110 Z" fill="#17181d" stroke="#3d3f48" strokeWidth={1.2} />
         <Path d="M 33 51 C 40 52 42 57 36 61 Z" fill="#d78a80" />
         <Path d="M 36 63 C 42 66 42 71 34 73 Z" fill="#d78a80" />
-        <SvgText x={20} y={104} fontSize={8.5} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>"P"</SvgText>
+        <SvgText x={20} y={104} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>"P"</SvgText>
         {/* sound wavefronts — pass either way */}
         {[28, 52, 76, 100, 124, 148, 172].map((r) => <Path key={r} d={arc(r)} fill="none" stroke={colors.cyanBright} strokeWidth={1.1} opacity={0.5} />)}
         {/* air jet streamlines */}
@@ -62,7 +68,7 @@ export function PopFilterDiagram({ withFilter }: { withFilter: boolean }) {
             {[[158, 40, 170, 32], [160, 56, 172, 60], [158, 72, 168, 82], [166, 48, 178, 44], [168, 66, 180, 72], [176, 56, 188, 58]].map(([x1, y1, x2, y2]) => (
               <Line key={`${x1}${y1}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke={colors.orange} strokeWidth={1.2} opacity={0.45} strokeLinecap="round" />
             ))}
-            <SvgText x={fx} y={110} fontSize={8.5} fill={colors.textSecondary} textAnchor="middle" fontFamily={F}>pop filter</SvgText>
+            <SvgText x={fx} y={110} fontSize={9} fill={colors.textSecondary} textAnchor="middle" fontFamily={F}>pop filter</SvgText>
           </>
         ) : null}
         {/* microphone: body, grille, diaphragm */}
@@ -70,26 +76,30 @@ export function PopFilterDiagram({ withFilter }: { withFilter: boolean }) {
         <Rect x={cx + 6} y={22} width={62} height={66} rx={9} fill="#121216" stroke="#3a3a42" strokeWidth={1} />
         {[30, 38, 46, 54, 62, 70, 78].map((y) => <Line key={y} x1={cx + 10} y1={y} x2={cx + 64} y2={y} stroke="#2a2a32" strokeWidth={1} />)}
         <Line x1={cx + 14} y1={30} x2={cx + 14} y2={80} stroke={withFilter ? colors.cyanBright : colors.orange} strokeWidth={2.5} strokeLinecap="round" />
-        <SvgText x={cx + 39} y={110} fontSize={8.5} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>capsule</SvgText>
+        <SvgText x={cx + 39} y={110} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>capsule</SvgText>
         {/* legend */}
-        <SvgText x={64} y={14} fontSize={8.5} fill={colors.orange} fontFamily={F}>— air jet</SvgText>
-        <SvgText x={112} y={14} fontSize={8.5} fill={colors.cyanBright} fontFamily={F}>) sound</SvgText>
+        <SvgText x={64} y={14} fontSize={9} fill={colors.orange} fontFamily={F}>— air jet</SvgText>
+        <SvgText x={118} y={14} fontSize={9} fill={colors.cyanBright} fontFamily={F}>) sound</SvgText>
       </Svg>
     </View>
+    )} />
   );
 }
 
 export function PagePopFilter({ ctx }: { ctx: PageCtx }) {
   const [withFilter, setWithFilter] = useState(false);
+  const toggle = (
+    <Row>
+      <Btn label="NO FILTER" tone={!withFilter ? 'primary' : 'plain'} onPress={() => { setWithFilter(false); if (!ctx.isDone) ctx.markDone(); }} />
+      <Btn label="WITH A POP FILTER" tone={withFilter ? 'primary' : 'plain'} onPress={() => { setWithFilter(true); if (!ctx.isDone) ctx.markDone(); }} />
+    </Row>
+  );
   return (
     <View style={{ gap: 12 }}>
       <Lead>A "P" is two things at once: a small sound, and a gust of air. The microphone hears both — the gust as a huge low thump.</Lead>
-      <Row>
-        <Btn label="NO FILTER" tone={!withFilter ? 'primary' : 'plain'} onPress={() => { setWithFilter(false); if (!ctx.isDone) ctx.markDone(); }} />
-        <Btn label="WITH A POP FILTER" tone={withFilter ? 'primary' : 'plain'} onPress={() => { setWithFilter(true); if (!ctx.isDone) ctx.markDone(); }} />
-      </Row>
-      <PopFilterDiagram withFilter={withFilter} />
-      <TraceChart samples={plosiveTrace(240, withFilter)} title={withFilter ? 'AT THE CAPSULE · FILTERED' : 'AT THE CAPSULE · BARE'} a11y={withFilter ? 'Waveform: a small click then the vowel; no low-frequency hump.' : 'Waveform: a huge slow hump — the air blast — swamping the click and the vowel, reaching nearly full scale.'} />
+      {toggle}
+      <PopFilterDiagram withFilter={withFilter} controls={toggle} />
+      <TraceChart samples={plosiveTrace(240, withFilter)} title={withFilter ? 'AT THE CAPSULE · FILTERED' : 'AT THE CAPSULE · BARE'} a11y={withFilter ? 'Waveform: a small click then the vowel; no low-frequency hump.' : 'Waveform: a huge slow hump — the air blast — swamping the click and the vowel, reaching nearly full scale.'} controls={toggle} />
       <Notice>The tiny click at the very start is identical in both traces. The filter removes the slow hump, not the consonant — and notice how close to full scale the bare hump gets.</Notice>
       <Card>
         <Eyebrow>WHY THE MESH WORKS</Eyebrow>
@@ -107,14 +117,17 @@ export function PageSibilance({ ctx }: { ctx: PageCtx }) {
   const sib = problemSpectrum('sibilance', 40);
   const [show, setShow] = useState<'vowel' | 's'>('s');
   const sp = show === 's' ? sib : clean;
+  const toggle = (
+    <Row>
+      <Btn label="VOWEL · AH" tone={show === 'vowel' ? 'primary' : 'plain'} onPress={() => { setShow('vowel'); if (!ctx.isDone) ctx.markDone(); }} />
+      <Btn label={'"S"'} tone={show === 's' ? 'primary' : 'plain'} onPress={() => { setShow('s'); if (!ctx.isDone) ctx.markDone(); }} a11y="The S sound" />
+    </Row>
+  );
   return (
     <View style={{ gap: 12 }}>
       <Lead>Say a long "sss". No pitch, just hiss — air squeezed through a narrow gap and broken up on the edge of the teeth. That turbulence is sibilance.</Lead>
-      <Row>
-        <Btn label="VOWEL · AH" tone={show === 'vowel' ? 'primary' : 'plain'} onPress={() => { setShow('vowel'); if (!ctx.isDone) ctx.markDone(); }} />
-        <Btn label={'"S"'} tone={show === 's' ? 'primary' : 'plain'} onPress={() => { setShow('s'); if (!ctx.isDone) ctx.markDone(); }} a11y="The S sound" />
-      </Row>
-      <SpectrumBars hz={sp.hz} mag={sp.mag} ghost={show === 's' ? clean.mag : undefined} band={[4000, 10000]} bandKind="excess" bandLabel="S LIVES HERE" title={show === 's' ? '"S" · ENERGY 4–10 kHz · VOWEL IN GREY' : 'VOWEL · ENERGY BELOW 1 kHz'} a11y={show === 's' ? 'Spectrum of an S: most energy between 4 and 10 kilohertz, far above the vowel.' : 'Spectrum of a vowel: energy mostly below 1 kilohertz; the 4 to 10 kilohertz band is nearly empty.'} />
+      {toggle}
+      <SpectrumBars hz={sp.hz} mag={sp.mag} ghost={show === 's' ? clean.mag : undefined} band={[4000, 10000]} bandKind="excess" bandLabel="S LIVES HERE" title={show === 's' ? '"S" · ENERGY 4–10 kHz · VOWEL IN GREY' : 'VOWEL · ENERGY BELOW 1 kHz'} a11y={show === 's' ? 'Spectrum of an S: most energy between 4 and 10 kilohertz, far above the vowel.' : 'Spectrum of a vowel: energy mostly below 1 kilohertz; the 4 to 10 kilohertz band is nearly empty.'} controls={toggle} />
       <Notice>Flip between the two: the vowel and the S barely overlap. That gap is what a de-esser exploits — and what a presence boost accidentally targets.</Notice>
       <Card>
         <Eyebrow>WHY IT EXISTS</Eyebrow>
@@ -132,23 +145,25 @@ export function PageSibilance({ ctx }: { ctx: PageCtx }) {
 
 /** Horizontal signed-dB bars with a labelled axis. Exported for the design
  *  harness; not used elsewhere. */
-export function DbBars({ rows }: { rows: { label: string; db: number; color: string }[] }) {
+export function DbBars({ rows, a11y, controls }: { rows: { label: string; db: number; color: string }[]; a11y?: string; controls?: ReactNode }) {
   const W = 340, rowH = 26, H = rows.length * rowH + 26;
   const lo = -40, hi = 66;
   const x = (db: number) => 96 + ((Math.max(lo, Math.min(hi, db)) - lo) / (hi - lo)) * (W - 106);
   // A positive value's label sits just past the bar tip; when that would run
   // off the panel it flips INSIDE the bar (black on the bar colour) instead.
-  const LABEL_W = 36;
+  const LABEL_W = 38;
   const inside = (db: number) => db >= 0 && x(db) + 4 + LABEL_W > W - 6;
   const labelX = (db: number) => (db < 0 ? x(db) - 4 : inside(db) ? x(db) - 4 : x(db) + 4);
   const ticks = [-40, -20, 0, 20, 40, 60];
   return (
-    <Svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+    <ExpandableFigure aspect={W / H} title="DISTANCE" controls={controls} render={(w, h) => (
+    <View accessible={!!a11y} accessibilityLabel={a11y} style={{ width: w, height: h }}>
+    <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
       <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
       {ticks.map((t) => (
         <G key={t}>
           <Line x1={x(t)} y1={4} x2={x(t)} y2={H - 18} stroke={t === 0 ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.06)'} />
-          <SvgText x={x(t)} y={H - 6} fontSize={8.5} fill={t === 0 ? colors.textSecondary : colors.textMuted} textAnchor="middle" fontFamily={F}>{t > 0 ? `+${t}` : t}{t === 0 ? ' dB' : ''}</SvgText>
+          <SvgText x={x(t)} y={H - 6} fontSize={9} fill={t === 0 ? colors.textSecondary : colors.textMuted} textAnchor="middle" fontFamily={F}>{t > 0 ? `+${t}` : t}{t === 0 ? ' dB' : ''}</SvgText>
         </G>
       ))}
       {rows.map((r, i) => {
@@ -159,11 +174,13 @@ export function DbBars({ rows }: { rows: { label: string; db: number; color: str
           <G key={r.label}>
             <SvgText x={90} y={y + 13} fontSize={9} fill={colors.textSecondary} textAnchor="end" fontFamily={F}>{r.label}</SvgText>
             <Rect x={x0} y={y + 3} width={Math.max(1.5, w)} height={14} rx={3} fill={r.color} opacity={flipped ? 0.9 : 0.75} />
-            <SvgText x={labelX(r.db)} y={y + 13} fontSize={8.5} fill={flipped ? '#000' : r.color} textAnchor={r.db >= 0 && !flipped ? 'start' : 'end'} fontFamily={F}>{r.db > 0 ? '+' : ''}{r.db.toFixed(0)} dB</SvgText>
+            <SvgText x={labelX(r.db)} y={y + 13} fontSize={9} fill={flipped ? '#000' : r.color} textAnchor={r.db >= 0 && !flipped ? 'start' : 'end'} fontFamily={F}>{r.db > 0 ? '+' : ''}{r.db.toFixed(0)} dB</SvgText>
           </G>
         );
       })}
     </Svg>
+    </View>
+    )} />
   );
 }
 
@@ -177,15 +194,16 @@ export function PageDistance({ ctx }: { ctx: PageCtx }) {
     { label: 'Proximity bass', db: d.proximityDb, color: colors.gold },
     { label: 'Voice over noise', db: d.snrDb, color: colors.green },
   ];
+  const picker = (
+    <Row>
+      {DISTANCE_PRESETS.map((p) => <Btn key={p} label={`${p}"`} tone={inches === p ? 'primary' : 'plain'} onPress={() => { setInches(p); if (!ctx.isDone) ctx.markDone(); }} a11y={`${p} inch${p === 1 ? '' : 'es'}`} />)}
+    </Row>
+  );
   return (
     <View style={{ gap: 12 }}>
       <Lead>Distance is the biggest control you have and it costs nothing. Every value here is relative to the voice at 12 inches.</Lead>
-      <Row>
-        {DISTANCE_PRESETS.map((p) => <Btn key={p} label={`${p}"`} tone={inches === p ? 'primary' : 'plain'} onPress={() => { setInches(p); if (!ctx.isDone) ctx.markDone(); }} a11y={`${p} inch${p === 1 ? '' : 'es'}`} />)}
-      </Row>
-      <View accessible accessibilityLabel={`At ${inches} inches: direct voice ${d.directDb.toFixed(0)} dB, room ${d.roomDb} dB, plosive air ${d.plosiveDb.toFixed(0)} dB, proximity bass ${d.proximityDb.toFixed(0)} dB, voice over noise ${d.snrDb.toFixed(0)} dB, all relative and illustrative.`}>
-        <DbBars rows={rows} />
-      </View>
+      {picker}
+      <DbBars rows={rows} controls={picker} a11y={`At ${inches} inches: direct voice ${d.directDb.toFixed(0)} dB, room ${d.roomDb} dB, plosive air ${d.plosiveDb.toFixed(0)} dB, proximity bass ${d.proximityDb.toFixed(0)} dB, voice over noise ${d.snrDb.toFixed(0)} dB, all relative and illustrative.`} />
       <Text style={styles.foot}>Relative, illustrative values — inverse-square for the voice, a much steeper fall for the air jet, a typical cardioid proximity curve, a fixed room and noise floor.</Text>
       <Notice>Switch between 12", 6" and 1" and watch two bars: the room never moves, and the plosive bar moves far faster than the voice.</Notice>
       <Card>
@@ -218,7 +236,8 @@ export function PageVoices({ ctx }: { ctx: PageCtx }) {
       <Notice>The bands nearly touch and real voices spill past their edges — the gaps between them are an artefact of averaging, not a rule.</Notice>
       <Card tone="warn">
         <Eyebrow>TYPICAL, NOT FIXED</Eyebrow>
-        <Body>These are population averages for speaking pitch. Real voices overlap freely: a low female voice sits inside the male band, a high male voice reaches into the female band, and a child's range depends on age. Treat the bands as starting points for gain and EQ, never as rules about the person.</Body> // NEW COPY ("a tenor speaks above many women" replaced — true of singing range, not speaking pitch)
+        {/* NEW COPY ("a tenor speaks above many women" replaced — true of singing range, not speaking pitch) */}
+        <Body>These are population averages for speaking pitch. Real voices overlap freely: a low female voice sits inside the male band, a high male voice reaches into the female band, and a child's range depends on age. Treat the bands as starting points for gain and EQ, never as rules about the person.</Body>
       </Card>
       {VOICE_RANGES.map((r) => (
         <Card key={r.id}>
@@ -239,15 +258,25 @@ export function PageProblems({ ctx }: { ctx: PageCtx }) {
   const p = PROBLEMS.find((o) => o.id === id)!;
   const clean = voiceSpectrum(40);
   const sp = problemSpectrum(id, 40);
+  const picker = (
+    <Row>
+      {PROBLEMS.map((o) => <Btn key={o.id} label={o.name.toUpperCase()} tone={o.id === id ? 'primary' : 'plain'} onPress={() => { setId(o.id); if (!ctx.isDone) ctx.markDone(); }} />)}
+    </Row>
+  );
   return (
     <View style={{ gap: 12 }}>
       <Lead>Eight things that go wrong between a mouth and a microphone. Each has a cause you can see, and a fix that starts before any processing.</Lead>
-      <Row>
-        {PROBLEMS.map((o) => <Btn key={o.id} label={o.name.toUpperCase()} tone={o.id === id ? 'primary' : 'plain'} onPress={() => { setId(o.id); if (!ctx.isDone) ctx.markDone(); }} />)}
-      </Row>
-      {p.visual === 'spectrum'
-        ? <SpectrumBars hz={sp.hz} mag={sp.mag} ghost={clean.mag} band={p.band ? [p.band.lo, p.band.hi] : undefined} bandKind={p.band?.kind} bandLabel={p.band?.label} title={`${p.name.toUpperCase()} · VS A CLEAN VOICE (GREY)`} a11y={`Spectrum with ${p.name} compared to a clean voice. ${p.see}`} />
-        : <TraceChart samples={problemTrace(id)} title={`${p.name.toUpperCase()} · WAVEFORM`} a11y={`Waveform showing ${p.name}. ${p.see}`} />}
+      {picker}
+      {/* ONE figure hosts both drawings (same 340 × 130 box), so full screen
+          stays open when a chip swaps the spectrum for a waveform. */}
+      <View style={{ gap: 4 }}>
+        <Title>{p.visual === 'spectrum' ? `${p.name.toUpperCase()} · VS A CLEAN VOICE (GREY)` : `${p.name.toUpperCase()} · WAVEFORM`}</Title>
+        <ExpandableFigure aspect={340 / 130} title="PROBLEM" controls={picker} render={(w, h) => (
+          p.visual === 'spectrum'
+            ? <SpectrumSvg hz={sp.hz} mag={sp.mag} ghost={clean.mag} band={p.band ? [p.band.lo, p.band.hi] : undefined} bandKind={p.band?.kind} bandLabel={p.band?.label} a11y={`Spectrum with ${p.name} compared to a clean voice. ${p.see}`} w={w} h={h} />
+            : <TraceSvg samples={problemTrace(id)} height={130} a11y={`Waveform showing ${p.name}. ${p.see}`} w={w} h={h} />
+        )} />
+      </View>
       <Notice>{p.see}</Notice>
       <Card>
         <Eyebrow>CAUSE</Eyebrow>

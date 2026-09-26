@@ -13,17 +13,26 @@
  * the harmonic stems (bar colour = the bar's relative level). Region tints
  * (excess / loss bands) sit behind the bars; the mouth's filter curve is a
  * response, not a level, and stays gold.
+ *
+ * Legibility pass (owner 2026-09-25, "9 pt minimum" + "full screen should
+ * still be interactive"): every drawing is rendered through ExpandableFigure
+ * at (w, h = w ÷ aspect), so the SVG box always has its viewBox's ratio and
+ * nothing stretches; a "⤢ FULL SCREEN" button sits under each one and the
+ * page's own picker (`controls`) docks under the enlarged drawing. Every
+ * label is authored at ≥ 9 and the drawing never renders below 1 : 1 on a
+ * 375-wide phone, so the smallest rendered text is ≥ 9 pt.
  */
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useId, useState, type ReactNode } from 'react';
 import { Text, View } from 'react-native';
 import Svg, { Circle, Defs, Ellipse, G, Line, LinearGradient, Path, Polyline, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
 import { LOUDNESS_STOPS, MIDLINE_BLUE, WAVE_LEVEL_STOPS, levelColor } from '../../../features/tools/levelColor';
 import { ANATOMY, formantEnvelope, harmonicAmplitudes, type Vowel } from '../../../features/speech/speechModel';
+import { ExpandableFigure } from '../kit/ExpandableFigure';
 
 const F = fonts.barlowMedium;
 
-function Title({ children }: { children: string }) {
+export function Title({ children }: { children: string }) {
   return <Text style={{ color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 1.5 }}>{children}</Text>;
 }
 
@@ -56,13 +65,14 @@ const DISC_R = 10;
  * discs sit off the structures on leader lines, textbook style; the tongue
  * is the one structure large enough to be labelled in place.
  */
-export function HeadCrossSection({ selected, onSelect, highlight }: { selected: string | null; onSelect: (id: string) => void; highlight?: string[] }) {
+export function HeadCrossSection({ selected, onSelect, highlight, controls, fsTitle = 'ANATOMY' }: { selected: string | null; onSelect: (id: string) => void; highlight?: string[]; /** The page's picker, docked under the drawing in full screen. */ controls?: ReactNode; fsTitle?: string }) {
   const hi = (id: string) => selected === id || (highlight?.includes(id) ?? false);
   const fillFor = (id: string, base: string) => (hi(id) ? HI : base);
   const airOpacity = (id: string) => (hi(id) ? 0.6 : 1);
   return (
-    <View accessible accessibilityLabel={`Side-view cross-section of the head, neck and chest with ${ANATOMY.length} numbered structures: ${ANATOMY.map((a, i) => `${i + 1} ${a.name}`).join(', ')}. Use the buttons below the drawing to select one.`}>
-      <Svg width="100%" height={340} viewBox="0 0 300 320">
+    <ExpandableFigure aspect={300 / 320} title={fsTitle} controls={controls} render={(w, h) => (
+    <View accessible accessibilityLabel={`Side-view cross-section of the head, neck and chest with ${ANATOMY.length} numbered structures: ${ANATOMY.map((a, i) => `${i + 1} ${a.name}`).join(', ')}. Use the buttons below the drawing to select one.`} style={{ width: w, height: h }}>
+      <Svg width={w} height={h} viewBox="0 0 300 320">
         <Rect x={0} y={0} width={300} height={320} rx={10} fill="#0a0a0c" stroke={colors.hairline} />
 
         {/* ── silhouette: face (left) → crown → nape → shoulders ── */}
@@ -131,8 +141,8 @@ export function HeadCrossSection({ selected, onSelect, highlight }: { selected: 
         <Path d="M 74 318 C 106 309 208 309 240 318" fill="none" stroke={hi('lungs') ? HI : '#9a8a74'} strokeWidth={2.5} strokeLinecap="round" />
 
         {/* ── caption ── */}
-        <SvgText x={12} y={14} fontSize={8.5} fill={colors.textMuted} fontFamily={F}>SIDE VIEW</SvgText>
-        <SvgText x={12} y={25} fontSize={8.5} fill={colors.textMuted} fontFamily={F}>NOT TO SCALE</SvgText>
+        <SvgText x={12} y={14} fontSize={9} fill={colors.textMuted} fontFamily={F}>SIDE VIEW</SvgText>
+        <SvgText x={12} y={26} fontSize={9} fill={colors.textMuted} fontFamily={F}>NOT TO SCALE</SvgText>
 
         {/* ── numbered tap discs on leader lines ── */}
         {ANATOMY.map((a, i) => {
@@ -158,6 +168,7 @@ export function HeadCrossSection({ selected, onSelect, highlight }: { selected: 
         })}
       </Svg>
     </View>
+    )} />
   );
 }
 
@@ -168,7 +179,7 @@ export function HeadCrossSection({ selected, onSelect, highlight }: { selected: 
  * Voiced: the folds meet at both ends and open as a lens in the middle,
  * cycling; unvoiced: they rest apart in the breathing "V", wide at the back.
  */
-export function VocalFolds({ voiced, reduceMotion }: { voiced: boolean; reduceMotion: boolean }) {
+export function VocalFolds({ voiced, reduceMotion, controls }: { voiced: boolean; reduceMotion: boolean; controls?: ReactNode }) {
   const [phase, setPhase] = useState(0);
   const animate = voiced && !reduceMotion;
   useEffect(() => {
@@ -185,8 +196,9 @@ export function VocalFolds({ voiced, reduceMotion }: { voiced: boolean; reduceMo
     `M ${cx} 32 C ${cx - s * g * 0.55} 44 ${cx - s * g / 2} 58 ${cx - s * g / 2} ${cy} C ${cx - s * g / 2} 78 ${cx - s * g * 0.55} 92 ${cx - s * b / 2} 104 L ${cx - s * 44} 104 C ${cx - s * 52} 88 ${cx - s * 52} 48 ${cx - s * 40} 32 Z`;
   const airY = voiced ? [] : [40, 62, 84];
   return (
-    <View accessible accessibilityLabel={voiced ? 'Vocal folds seen from above, vibrating: they meet along their length and open and close in the middle, producing a buzz.' : 'Vocal folds seen from above, held apart in a V: air passes freely, producing only breath noise.'}>
-      <Svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+    <ExpandableFigure aspect={W / H} title="FOLDS" controls={controls} render={(w, h) => (
+    <View accessible accessibilityLabel={voiced ? 'Vocal folds seen from above, vibrating: they meet along their length and open and close in the middle, producing a buzz.' : 'Vocal folds seen from above, held apart in a V: air passes freely, producing only breath noise.'} style={{ width: w, height: h }}>
+      <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
         <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
         <SvgText x={12} y={13} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium}>LOOKING DOWN THE LARYNX · FRONT AT TOP</SvgText>
         {/* laryngeal inlet, vestibule, epiglottis rim */}
@@ -204,7 +216,7 @@ export function VocalFolds({ voiced, reduceMotion }: { voiced: boolean; reduceMo
         <Ellipse cx={cx - 12} cy={107} rx={9} ry={5} fill={MUCOSA_DEEP} />
         <Ellipse cx={cx + 12} cy={107} rx={9} ry={5} fill={MUCOSA_DEEP} />
         {airY.map((y) => <Polyline key={y} points={`${cx - 4},${y + 8} ${cx},${y} ${cx + 4},${y + 8}`} fill="none" stroke={colors.cyanBright} strokeWidth={1.5} />)}
-        <SvgText x={cx} y={124} fontSize={8.5} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>{voiced ? 'folds meet · gap opens and closes' : 'folds apart · open "V" for breathing'}</SvgText>
+        <SvgText x={cx} y={124} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>{voiced ? 'folds meet · gap opens and closes' : 'folds apart · the breathing "V"'}</SvgText>
         {/* the resulting signal */}
         <SvgText x={206} y={13} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium}>WHAT COMES OUT</SvgText>
         {/* unipolar pulse train on the amplitude ramp: baseline MIDI-0 blue, the
@@ -230,14 +242,13 @@ export function VocalFolds({ voiced, reduceMotion }: { voiced: boolean; reduceMo
         <SvgText x={267} y={118} fontSize={9} fill={voiced ? colors.gold : colors.textSecondary} textAnchor="middle" fontFamily={F}>{voiced ? 'pulses → pitch + harmonics' : 'turbulence → noise, no pitch'}</SvgText>
       </Svg>
     </View>
+    )} />
   );
 }
 
 /* ── spectrum bars ─────────────────────────────────────────────────────── */
 
-export function SpectrumBars({
-  hz, mag, ghost, band, bandKind = 'excess', bandLabel, height = 130, title, a11y,
-}: {
+type SpectrumProps = {
   hz: Float64Array;
   mag: Float64Array;
   /** A second, faint spectrum drawn behind (the "clean" reference). */
@@ -249,9 +260,15 @@ export function SpectrumBars({
   bandKind?: 'excess' | 'loss';
   bandLabel?: string;
   height?: number;
-  title?: string;
   a11y: string;
-}) {
+};
+
+/** The spectrum drawing alone at (w, h) — for a page that hosts several
+ *  drawings in ONE ExpandableFigure (the problem simulator swaps a spectrum
+ *  for a waveform; one wrapper keeps full screen open across the swap). */
+export function SpectrumSvg({
+  hz, mag, ghost, band, bandKind = 'excess', bandLabel, height = 130, a11y, w, h,
+}: SpectrumProps & { w: number; h: number }) {
   const W = 340, H = height, top = 18, bottom = H - 20;
   const n = hz.length;
   const lo = hz[0] * 0.9, hi = hz[n - 1] * 1.1;
@@ -260,12 +277,11 @@ export function SpectrumBars({
   const ticks = [50, 100, 200, 500, 1000, 2000, 5000, 10000].filter((t) => t > lo && t < hi);
   const bandColor = bandKind === 'loss' ? colors.blue : colors.orange;
   return (
-    <View style={{ gap: 4 }} accessible accessibilityLabel={a11y}>
-      {title ? <Title>{title}</Title> : null}
-      <Svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+      <View accessible accessibilityLabel={a11y} style={{ width: w, height: h }}>
+      <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
         <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
         {band ? <Rect x={x(band[0])} y={top - 4} width={Math.max(1, x(band[1]) - x(band[0]))} height={bottom - top + 8} fill={bandColor} opacity={bandKind === 'loss' ? 0.1 : 0.12} /> : null}
-        {band && bandLabel ? <SvgText x={x(band[0]) + 4} y={top + 6} fontSize={8.5} fill={bandColor} fontFamily={fonts.oswaldMedium}>{bandLabel}</SvgText> : null}
+        {band && bandLabel ? <SvgText x={x(band[0]) + 4} y={top + 6} fontSize={9} fill={bandColor} fontFamily={fonts.oswaldMedium}>{bandLabel}</SvgText> : null}
         {ghost
           ? Array.from(ghost, (m, i) => <Rect key={`g${i}`} x={10 + i * bw + 0.5} y={bottom - m * (bottom - top)} width={Math.max(1, bw - 1)} height={m * (bottom - top)} fill={colors.textMuted} opacity={0.35} />)
           : null}
@@ -273,26 +289,38 @@ export function SpectrumBars({
           <Rect key={i} x={10 + i * bw + 0.5} y={bottom - m * (bottom - top)} width={Math.max(1, bw - 1)} height={Math.max(0.5, m * (bottom - top))} fill={levelColor(m)} opacity={0.92} />
         ))}
         {ticks.map((t) => (
-          <SvgText key={t} x={x(t)} y={H - 6} fontSize={8.5} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>{t >= 1000 ? `${t / 1000}k` : t}</SvgText>
+          <SvgText key={t} x={x(t)} y={H - 6} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>{t >= 1000 ? `${t / 1000}k` : t}</SvgText>
         ))}
-        <SvgText x={W - 8} y={12} fontSize={8.5} fill={colors.textMuted} textAnchor="end" fontFamily={F}>relative level · illustrative</SvgText>
+        <SvgText x={W - 8} y={12} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={F}>relative level · illustrative</SvgText>
       </Svg>
+      </View>
+  );
+}
+
+export function SpectrumBars({ title, controls, ...rest }: SpectrumProps & { title?: string; controls?: ReactNode }) {
+  const H = rest.height ?? 130;
+  return (
+    <View style={{ gap: 4 }}>
+      {title ? <Title>{title}</Title> : null}
+      <ExpandableFigure aspect={340 / H} title="SPECTRUM" controls={controls} render={(w, h) => <SpectrumSvg {...rest} w={w} h={h} />} />
     </View>
   );
 }
 
 /* ── formant chart (linear 0–4 kHz: harmonic comb under the mouth's curve) ── */
 
-export function FormantChart({ v, f0 = 120, height = 140, title }: { v: Vowel; f0?: number; height?: number; title?: string }) {
+export function FormantChart({ v, f0 = 120, height = 140, title, controls }: { v: Vowel; f0?: number; height?: number; title?: string; controls?: ReactNode }) {
   const W = 340, H = height, top = 20, bottom = H - 20, maxHz = 4000;
   const x = (f: number) => 10 + (f / maxHz) * (W - 20);
   const env = formantEnvelope(v, 120, maxHz);
   const harm = harmonicAmplitudes(v, f0, maxHz);
   const envPts = Array.from(env.hz, (f, i) => `${x(f).toFixed(1)},${(bottom - env.mag[i] * (bottom - top)).toFixed(1)}`).join(' ');
   return (
-    <View style={{ gap: 4 }} accessible accessibilityLabel={`Harmonics of a ${f0} hertz voice shaped by the mouth for ${v.sound}: peaks near ${v.f1}, ${v.f2} and ${v.f3} hertz. Typical adult-male values, illustrative.`}>
+    <View style={{ gap: 4 }}>
       {title ? <Title>{title}</Title> : null}
-      <Svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+      <ExpandableFigure aspect={W / H} title="FORMANTS" badge="Typical adult-male values · illustrative, not a measurement" controls={controls} render={(w, h) => (
+      <View accessible accessibilityLabel={`Harmonics of a ${f0} hertz voice shaped by the mouth for ${v.sound}: peaks near ${v.f1}, ${v.f2} and ${v.f3} hertz. Typical adult-male values, illustrative.`} style={{ width: w, height: h }}>
+      <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
         <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
         <Polyline points={envPts} fill="none" stroke={colors.gold} strokeWidth={1.5} strokeDasharray="4,3" opacity={0.9} />
         {Array.from(harm.hz, (f, i) => (
@@ -301,13 +329,15 @@ export function FormantChart({ v, f0 = 120, height = 140, title }: { v: Vowel; f
         {[['F1', v.f1], ['F2', v.f2], ['F3', v.f3]].map(([l, f]) => (
           <G key={l as string}>
             <Line x1={x(f as number)} y1={top - 6} x2={x(f as number)} y2={top + 2} stroke={colors.gold} strokeWidth={1.5} />
-            <SvgText x={x(f as number)} y={top - 9} fontSize={8.5} fill={colors.gold} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{l}</SvgText>
+            <SvgText x={x(f as number)} y={top - 9} fontSize={9} fill={colors.gold} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{l}</SvgText>
           </G>
         ))}
         {[0, 1000, 2000, 3000, 4000].map((t) => (
-          <SvgText key={t} x={t === 0 ? 12 : t === 4000 ? W - 12 : x(t)} y={H - 6} fontSize={8.5} fill={colors.textMuted} textAnchor={t === 0 ? 'start' : t === 4000 ? 'end' : 'middle'} fontFamily={F}>{t === 0 ? '0 Hz' : `${t / 1000} kHz`}</SvgText>
+          <SvgText key={t} x={t === 0 ? 12 : t === 4000 ? W - 12 : x(t)} y={H - 6} fontSize={9} fill={colors.textMuted} textAnchor={t === 0 ? 'start' : t === 4000 ? 'end' : 'middle'} fontFamily={F}>{t === 0 ? '0 Hz' : `${t / 1000} kHz`}</SvgText>
         ))}
       </Svg>
+      </View>
+      )} />
       <Text style={{ color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 11, lineHeight: 15 }}>Cyan: the voice's harmonics at {f0} Hz after the mouth has shaped them. Gold: the mouth's resonance curve. Typical adult-male values — illustrative, not a measurement.</Text>
     </View>
   );
@@ -318,14 +348,14 @@ export function FormantChart({ v, f0 = 120, height = 140, title }: { v: Vowel; f
 /** A waveform "at the capsule": the vertical axis is level, so the line is
  *  painted with the app-wide amplitude ramp (blue at the mid line → red at
  *  ±full scale) and the mid line is MIDI-0 blue. */
-export function TraceChart({ samples, height = 120, title, a11y }: { samples: Float64Array; height?: number; title?: string; a11y: string }) {
+/** The waveform drawing alone at (w, h) — see SpectrumSvg. */
+export function TraceSvg({ samples, height = 120, a11y, w, h }: { samples: Float64Array; height?: number; a11y: string; w: number; h: number }) {
   const W = 340, H = height, mid = H / 2, amp = H / 2 - 12;
   const gid = `trace${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
   const pts = Array.from(samples, (s, i) => `${(10 + (i / (samples.length - 1)) * (W - 20)).toFixed(1)},${(mid - s * amp).toFixed(1)}`).join(' ');
   return (
-    <View style={{ gap: 4 }} accessible accessibilityLabel={a11y}>
-      {title ? <Title>{title}</Title> : null}
-      <Svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+      <View accessible accessibilityLabel={a11y} style={{ width: w, height: h }}>
+      <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
         <Defs>
           <LinearGradient id={gid} x1={0} y1={mid - amp} x2={0} y2={mid + amp} gradientUnits="userSpaceOnUse">
             {WAVE_LEVEL_STOPS.map((s) => <Stop key={s.offset} offset={s.offset} stopColor={s.color} />)}
@@ -336,8 +366,17 @@ export function TraceChart({ samples, height = 120, title, a11y }: { samples: Fl
         <Line x1={10} y1={mid + amp} x2={W - 10} y2={mid + amp} stroke="rgba(255,255,255,0.06)" />
         <Line x1={10} y1={mid} x2={W - 10} y2={mid} stroke={MIDLINE_BLUE} strokeWidth={1} />
         <Polyline points={pts} fill="none" stroke={`url(#${gid})`} strokeWidth={1.6} strokeLinejoin="round" />
-        <SvgText x={W - 8} y={12} fontSize={8.5} fill={colors.textMuted} textAnchor="end" fontFamily={F}>time → · full scale at the edges · illustrative</SvgText>
+        <SvgText x={W - 8} y={12} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={F}>time → · full scale at the edges · illustrative</SvgText>
       </Svg>
+      </View>
+  );
+}
+
+export function TraceChart({ samples, height = 120, title, a11y, controls }: { samples: Float64Array; height?: number; title?: string; a11y: string; controls?: ReactNode }) {
+  return (
+    <View style={{ gap: 4 }}>
+      {title ? <Title>{title}</Title> : null}
+      <ExpandableFigure aspect={340 / height} title="WAVEFORM" controls={controls} render={(w, h) => <TraceSvg samples={samples} height={height} a11y={a11y} w={w} h={h} />} />
     </View>
   );
 }
@@ -349,13 +388,15 @@ export function RangeBars({ ranges, loHz, hiHz, a11y }: { ranges: { name: string
   const x = (f: number) => 10 + ((Math.log(f) - Math.log(loHz)) / (Math.log(hiHz) - Math.log(loHz))) * (W - 20);
   const ticks = [60, 100, 150, 200, 300, 400, 500].filter((t) => t >= loHz && t <= hiHz);
   return (
-    <View accessible accessibilityLabel={a11y}>
-      <Svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+    <ExpandableFigure aspect={W / H} title="VOICES" render={(w, h) => (
+    <View accessible accessibilityLabel={a11y} style={{ width: w, height: h }}>
+      <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
         <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
         {ticks.map((t) => (
           <G key={t}>
             <Line x1={x(t)} y1={8} x2={x(t)} y2={H - 18} stroke="rgba(255,255,255,0.07)" />
-            <SvgText x={x(t)} y={H - 6} fontSize={8.5} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>{t} Hz</SvgText>
+            {/* the last tick label hangs left from the panel edge so it never runs off */}
+            <SvgText x={x(t) > W - 18 ? W - 4 : x(t)} y={H - 6} fontSize={9} fill={colors.textMuted} textAnchor={x(t) > W - 18 ? 'end' : 'middle'} fontFamily={F}>{t} Hz</SvgText>
           </G>
         ))}
         {ranges.map((r, i) => {
@@ -370,8 +411,9 @@ export function RangeBars({ ranges, loHz, hiHz, a11y }: { ranges: { name: string
             </G>
           );
         })}
-        <SvgText x={W - 8} y={12} fontSize={8.5} fill={colors.textMuted} textAnchor="end" fontFamily={F}>speaking pitch · typical, not fixed</SvgText>
+        <SvgText x={W - 8} y={12} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={F}>speaking pitch · typical, not fixed</SvgText>
       </Svg>
     </View>
+    )} />
   );
 }
