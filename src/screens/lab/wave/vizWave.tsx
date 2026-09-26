@@ -1187,7 +1187,10 @@ function PulseRing({
 
 /** Loudness-ramp colours for the outside ring (worklet-safe lookup). */
 const OUT_BUCKETS = 24;
-const OUT_COLORS: string[] = Array.from({ length: OUT_BUCKETS }, (_, i) => levelColor(i / (OUT_BUCKETS - 1)));
+// The HEAT MAP's ramp (not the meter ramp): an outside ring must start in the
+// same colour family as the map just inside the wall, and this ramp fades to
+// black at the bottom — so a dying ring vanishes into the background.
+const OUT_COLORS: string[] = Array.from({ length: OUT_BUCKETS }, (_, i) => heatColor(i / (OUT_BUCKETS - 1)));
 
 /** The SLOW ring train carried on beyond a wall (Room Builder, owner
  *  2026-09-26: "time it with the slow concentric rings - not the balls").
@@ -1202,6 +1205,8 @@ function OutsideTrain({
   tlDb,
   maxR,
   scale,
+  rWallPx,
+  lvlIn,
 }: {
   phase: SharedValue<number>;
   srcs: RingSrc[];
@@ -1209,7 +1214,21 @@ function OutsideTrain({
   tlDb: number;
   maxR: number;
   scale: number;
+  /** Distance source → this wall's OUTER face, px (rings measured from here out). */
+  rWallPx: number;
+  /** The room's level just inside this wall, on the heat map's 0..1 window. */
+  lvlIn: number;
 }) {
+  // START just under the colour on the inside of this wall (the room's level
+  // there, on the heat map's window), then FADE TO NOTHING over a reach set
+  // by the wall's loss at this frequency — so the rings END, and bass
+  // reaches further than treble (owner 2026-09-26: "the rings should not go
+  // on forever … start color … just a little under the color … on the other
+  // side"). DEMO shaping: reach = 1500 / TL² m, capped 6 m (drywall: 6 m at
+  // 40 Hz, ≈ 3.4 m at 125 Hz, ≈ 1.4 m at 500 Hz); the THROUGH tags keep the
+  // real numbers.
+  const lvl0 = Math.max(0, lvlIn - 0.06);
+  const reachM = Math.min(6, Math.max(0.05, 1500 / Math.max(1, tlDb) ** 2));
   const buckets: SharedValue<SkPathT>[] = [];
   for (let b = 0; b < OUT_BUCKETS; b++) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -1223,17 +1242,17 @@ function OutsideTrain({
         for (let k = 0; k < K; k++) {
           const r = (f + k) * sp;
           if (r < 2.5) continue;
-          // DEMO scaling (owner 2026-09-26): decay twice real spreading
-          // (−40·log10 r); window (dB + 17) / 47 so 40 Hz through drywall
-          // leaves the wall just warmer than green and 500 Hz+ leaves blue.
-          const rM = Math.max(1, r / pxPerM);
-          const db = -40 * Math.log10(rM) - tlDb;
-          const lvl = Math.max(0, Math.min(1, 1 + (db + 17) / 47));
-          if (Math.round(lvl * (OUT_BUCKETS - 1)) !== b) continue;
+          const dOut = (r - rWallPx) / pxPerM; // metres beyond the wall
+          if (dOut < 0) continue;
+          const frac = 1 - dOut / reachM;
+          if (frac <= 0) continue; // gone — sound does not go on forever
+          const lvl = lvl0 * frac;
+          const bi = Math.round(lvl * (OUT_BUCKETS - 1));
+          if (bi === 0 || bi !== b) continue;
           for (let i = 0; i < srcs.length; i++) p.addCircle(srcs[i].x, srcs[i].y, r);
         }
         return p;
-      }, [phase, srcs, pxPerM, tlDb, maxR]),
+      }, [phase, srcs, pxPerM, maxR, rWallPx, reachM, lvl0]),
     );
   }
   return (
@@ -1241,7 +1260,8 @@ function OutsideTrain({
       {buckets.map((path, b) => (
         // Dimmer when the rings are packed tight (high ƒ): a dense bullseye
         // must not grab attention (owner: "less bright").
-        <Path key={b} path={path} color={OUT_COLORS[b]} style="stroke" strokeWidth={1.2 * scale} opacity={0.55 * Math.min(1, Math.max(0.35, (srcs[0]?.spacing ?? 30) / (30 * scale)))} />
+        // Quiet buckets fade out too, so a ring dims away rather than cutting off.
+        <Path key={b} path={path} color={OUT_COLORS[b]} style="stroke" strokeWidth={1.2 * scale} opacity={0.55 * Math.min(1, Math.max(0.35, (srcs[0]?.spacing ?? 30) / (30 * scale))) * Math.min(1, b / 5)} />
       ))}
     </>
   );
@@ -1913,13 +1933,24 @@ export function RoomSceneView(p: RoomSceneProps) {
       path.addRect(Skia.XYWHRect(x, y, Math.max(0, rw), Math.max(0, rh)));
       return path;
     };
+    // Source → the wall's OUTER face per band (first source), px: the ring's
+    // reach counts from where it emerges, not from under the wall strip.
+    const s0 = scene.sources[0];
+    const sx = geo.x0 + (s0?.x ?? scene.w / 2) * geo.pxPerM;
+    const sy = geo.y0 + (s0?.y ?? scene.h / 2) * geo.pxPerM;
+    // The room's level just inside each wall (0.25 m in, at the point nearest
+    // the source) — the heat map's own calculation and window.
+    const images = scene.sources.map((src) => imageSources(scene, src, freq, 2));
+    const inside = (mx: number, my: number) =>
+      Math.max(0, Math.min(1, (fieldDb(fieldAt(scene, mx, my, freq, images)) + 30) / 42));
+    const s0m = { x: s0?.x ?? scene.w / 2, y: s0?.y ?? scene.h / 2 };
     return [
-      { clip: rect(0, 0, w, geo.y0 - T), tl: outsideCfg.tlDb[0] },
-      { clip: rect(geo.x1 + T, geo.y0 - T, w - geo.x1 - T, geo.hPx + 2 * T), tl: outsideCfg.tlDb[1] },
-      { clip: rect(0, geo.y1 + T, w, h - geo.y1 - T), tl: outsideCfg.tlDb[2] },
-      { clip: rect(0, geo.y0 - T, geo.x0 - T, geo.hPx + 2 * T), tl: outsideCfg.tlDb[3] },
+      { clip: rect(0, 0, w, geo.y0 - T), tl: outsideCfg.tlDb[0], rWall: sy - geo.y0 + T, lvlIn: inside(s0m.x, 0.25) },
+      { clip: rect(geo.x1 + T, geo.y0 - T, w - geo.x1 - T, geo.hPx + 2 * T), tl: outsideCfg.tlDb[1], rWall: geo.x1 - sx + T, lvlIn: inside(scene.w - 0.25, s0m.y) },
+      { clip: rect(0, geo.y1 + T, w, h - geo.y1 - T), tl: outsideCfg.tlDb[2], rWall: geo.y1 - sy + T, lvlIn: inside(s0m.x, scene.h - 0.25) },
+      { clip: rect(0, geo.y0 - T, geo.x0 - T, geo.hPx + 2 * T), tl: outsideCfg.tlDb[3], rWall: sx - geo.x0 + T, lvlIn: inside(0.25, s0m.y) },
     ];
-  }, [outsideCfg, geo, w, h, wallPx]);
+  }, [outsideCfg, geo, w, h, wallPx, scene, freq]);
   // Delay bars: rects behind each source, longest = maxLenM.
   const db = p.delayBars;
   const delayBarPath = useMemo(() => {
@@ -2122,7 +2153,7 @@ export function RoomSceneView(p: RoomSceneProps) {
         {outsideBands && ringSrcs.length > 0
           ? outsideBands.map((band, bi) => (
               <Group key={`out${bi}`} clip={band.clip}>
-                <OutsideTrain phase={p.phase} srcs={ringSrcs} pxPerM={geo.pxPerM} tlDb={band.tl} maxR={Math.hypot(w, h)} scale={ts} />
+                <OutsideTrain phase={p.phase} srcs={ringSrcs} pxPerM={geo.pxPerM} tlDb={band.tl} maxR={Math.hypot(w, h)} scale={ts} rWallPx={band.rWall} lvlIn={band.lvlIn} />
               </Group>
             ))
           : null}
