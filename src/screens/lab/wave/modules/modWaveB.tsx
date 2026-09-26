@@ -280,6 +280,7 @@ function PulseSyncedDecayStage({
   rt60,
   preDelayMs,
   refRt60,
+  aspect,
 }: {
   w: number;
   h: number;
@@ -288,9 +289,13 @@ function PulseSyncedDecayStage({
   rt60: number;
   preDelayMs: number;
   refRt60: number;
+  /** Room width ÷ height — the room takes only the height it needs. */
+  aspect?: number;
 }) {
   const [clock, setClock] = useState<SharedValue<number> | null>(null);
-  const roomH = Math.round(h * 0.58);
+  const roomH = aspect
+    ? Math.min(Math.round(h * 0.58), Math.round((w - 60 * ts) / aspect + 60 * ts))
+    : Math.round(h * 0.58);
   return (
     <View style={{ width: w, height: h }}>
       <StageAspectReport.Provider value={null}>{room(setClock)}</StageAspectReport.Provider>
@@ -678,7 +683,7 @@ export function LineArrayModule(p: WaveModuleProps) {
               { k: 'LEVEL @ LISTENER', v: `${lvl.toFixed(1)} dB` },
             ]}
           />
-          <Badge text="EACH BOX = ONE 30°-NOMINAL SOURCE FROM arrayPositions — HEAT SHOWS THE BOXES COUPLING AT LF AND BEAMING AT HF" />
+          <Badge text="EACH BOX = ONE 30°-NOMINAL SOURCE, HUNG AT THE CHOSEN SPLAY — HEAT SHOWS THE BOXES COUPLING AT LF AND BEAMING AT HF" />
           <Text style={dstyles.caption}>
             SECTION VIEW — x is distance into the venue, y is height (audience floor along the bottom). Drag the listener to a seat.
           </Text>
@@ -731,7 +736,8 @@ export function DelayAlignModule(p: WaveModuleProps) {
   const [listener, setListener] = useState({ x: 8, y: 6 });
 
   const freq = Math.round(80 + freqV * 40);
-  const delayMs = Math.round(delayV * 20 * 20) / 20; // 0..20 ms in 0.05 ms steps
+  // 0.01 ms steps (was 0.05): AUTO-ALIGN printed 6.96 ms and set 6.95 (QA).
+  const delayMs = Math.round(delayV * 20 * 100) / 100; // 0..20 ms
 
   const scene = useMemo<WaveScene>(
     () => ({
@@ -1417,6 +1423,11 @@ export function EchoModule(p: WaveModuleProps) {
     return best;
   }, [arrivals, direct]);
   const echoGapMs = echo && direct ? (echo.t - direct.t) * 1000 : 0;
+  // The room takes only the height its own shape needs at this width (plus
+  // its label margin), never more than 60 %; the timeline gets the rest —
+  // no empty band between them (QA 2026-09-26).
+  const echoRoomH = (w: number, h: number, ts: number) =>
+    Math.min(Math.round(h * 0.6), Math.round((w - 60 * ts) * (scene.h / scene.w) + 60 * ts));
   // THE FAR WALL (right, boundary 1) — the echo every preset's copy
   // describes. The loudest late arrival above is usually the SIDE walls
   // bouncing between each other (canyon: 74 ms vs the rock at ~291 ms), so
@@ -1471,7 +1482,7 @@ export function EchoModule(p: WaveModuleProps) {
                     viz={viz}
                     scene={scene}
                     w={w}
-                    h={Math.round(h * 0.6)}
+                    h={echoRoomH(w, h, ts)}
                     focused={p.focused}
                     freq={ECHO_FREQ}
                     layers={layers}
@@ -1484,7 +1495,7 @@ export function EchoModule(p: WaveModuleProps) {
                   arrivals={arrivals}
                   thresholdMs={ECHO_FUSE_MS}
                   width={w}
-                  height={h - Math.round(h * 0.6)}
+                  height={h - echoRoomH(w, h, ts)}
                   mark={far}
                   markLabel={far ? `FAR WALL ${farGapMs.toFixed(0)} ms` : ''}
                   textScale={ts}
@@ -1657,7 +1668,7 @@ export function ReverbModule(p: WaveModuleProps) {
                     viz={viz}
                     scene={scene}
                     w={w}
-                    h={Math.round(h * 0.58)}
+                    h={Math.min(Math.round(h * 0.58), Math.round((w - 60 * ts) * (scene.h / scene.w) + 60 * ts))}
                     focused={p.focused}
                     freq={REVERB_FREQ}
                     layers={layers}
@@ -1668,6 +1679,7 @@ export function ReverbModule(p: WaveModuleProps) {
                 rt60={rt500}
                 preDelayMs={gapMs}
                 refRt60={hardRt500}
+                aspect={scene.w / scene.h}
               />
             )}
           </StageTextScaleReader>

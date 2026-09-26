@@ -299,7 +299,7 @@ const REAL_PA_FACE_M = 0.55; // PA cabinet front width
 const REAL_POINT_SPK_M = 0.45; // small point-source speaker width
 const REAL_SUB_M = 0.75; // sub cabinet width
 const REAL_MIC_M = 0.18; // handheld/stand mic length
-const REAL_ARRAY_BOX_H_M = 0.45; // line-array box height (section view)
+const REAL_ARRAY_BOX_H_M = 0.5; // line-array box height = the model's 0.5 m pitch (boxes touch)
 const REAL_ARRAY_BOX_D_M = 0.55; // line-array box depth (section view)
 const FLOOR_HEAD_PX = 14;
 const FLOOR_SPK_PX = 8;
@@ -721,23 +721,18 @@ function buildWalls(
       stroke(fibA, '#d4b37c', 0.5 * u, 0.6);
       stroke(fibB, '#6e5530', 0.5 * u, 0.6);
     } else if (mat === 'audience' && section) {
-      // SECTION view (Line Array floor): a seated row seen from the SIDE —
-      // heads on torsos facing the room, chair backs behind them.
-      fill(band(0, T), '#14161d');
-      const heads = Skia.Path.Make();
-      const torsos = Skia.Path.Make();
+      // SECTION view (Line Array floor): the audience FLOOR — rows of seats
+      // seen from the side. No heads: the standing listener is the audience
+      // member here, and heads in the strip put them "standing on the
+      // audience's heads" (QA 2026-09-26).
+      fill(band(0, T), '#1a1d26');
       const chairs = Skia.Path.Make();
       const S = Math.max(7 * u, 0.62 * T);
       for (let t = S / 2; t < len - S / 3; t += S) {
-        const [hx, hy] = P(t, 0.18 * T);
-        heads.addCircle(hx, hy, 0.14 * T);
-        torsos.addPath(poly([[t - 0.16 * T, 0.34 * T], [t + 0.16 * T, 0.34 * T], [t + 0.2 * T, 0.78 * T], [t - 0.2 * T, 0.78 * T]]));
-        seg(chairs, t + 0.28 * T, 0.4 * T, t + 0.28 * T, T);
-        seg(chairs, t - 0.2 * T, 0.78 * T, t + 0.28 * T, 0.78 * T);
+        seg(chairs, t + 0.22 * T, 0.15 * T, t + 0.22 * T, 0.85 * T); // seat back
+        seg(chairs, t - 0.18 * T, 0.5 * T, t + 0.22 * T, 0.5 * T); // seat
       }
       stroke(chairs, '#3b4256', 1.1 * u, 1);
-      fill(torsos, '#3b4256');
-      fill(heads, '#9aa2b8', 0.9);
     } else if (mat === 'audience') {
       // A seated row from above: shoulders and heads, seat backs behind.
       fill(band(0, T), '#14161d');
@@ -2197,6 +2192,9 @@ export function RoomSceneView(p: RoomSceneProps) {
         {/* Object glyphs scale about their own anchor with the text scale, so
             the speaker, the sub and the head grow with the room in FULL SCREEN
             instead of staying phone-sized on a doubled floor. */}
+        {/* Clipped to the room: at low ƒ a speaker's coverage wedge is
+            ~300° and wrapped out over the wall into the margin (QA). */}
+        <Group clip={interior}>
         {scene.sources.map((s) => {
           const gx = geo.x0 + s.x * geo.pxPerM;
           const gy = geo.y0 + s.y * geo.pxPerM;
@@ -2234,6 +2232,7 @@ export function RoomSceneView(p: RoomSceneProps) {
             <Circle key={s.id} cx={gx} cy={gy} r={3.2 * ts} color="#6a6e7a" style="stroke" strokeWidth={1.2 * ts} opacity={0.5} />
           ) : null;
         })}
+        </Group>
         {/* The listener — the owner's front-head line icon (LINE + a green
             accent wash), falling back to the vector glyph while it loads. */}
         {p.listenerKind === 'mic' ? (
@@ -2306,7 +2305,10 @@ export function RoomSceneView(p: RoomSceneProps) {
         {p.outside
           ? ([0, 1, 2, 3] as const).map((b) => {
               const tl = p.outside!.tlDb[b];
-              const text = `THROUGH −${Math.round(tl)} dB`;
+              // "−0 dB" read as a typo: an opening says so, and a wall that
+              // stops nothing at this frequency reads a plain 0 dB (QA).
+              const text =
+                scene.boundary[b] === 'open' ? 'NO WALL — ALL OF IT' : Math.round(tl) === 0 ? 'THROUGH 0 dB' : `THROUGH −${Math.round(tl)} dB`;
               const T = wallPx;
               // Side zones are narrow: their tags run vertically down the
               // middle of the zone, like the side wall names.
