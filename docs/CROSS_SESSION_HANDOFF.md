@@ -181,6 +181,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 12:35 · ccode · e536683d
+changed: Wave Interference: bezel reads the pair vs ONE speaker (+6.0 dB in step, NULL on a cancellation); absolute level kept in the well; heat map resolution grows with the zoom step so FULL SCREEN stays smooth
+affects other side: nothing — client JS only (Wave lab drawing)
+needs: nothing
+
+
 ### 2026-09-26 12:25 · ccode · 70ffad7b
 changed: Wave Diffraction: true-scale scene (module geometry, one px/m both ways, real barrier height, 0.6 m PA on a stand, 1.75 m standing listener); direct rings clipped to the lit region so the wrap is the only sound in the shadow; brighter diffracted train; listener level halo from the bezel's Maekawa loss; SHADOW ZONE readable
 affects other side: nothing — client JS only (Wave lab drawing)
