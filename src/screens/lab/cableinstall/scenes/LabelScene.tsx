@@ -26,12 +26,13 @@
  */
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, Pressable, ScrollView, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
-import Svg, { Circle, G, Path, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
 import { OptionChip, VerdictBanner } from '../../cable/lessons/bits';
 import { DragSlider } from '../../foundations/bits';
 import { CiSection, RuleFeedback, SpecCard, announceComplete } from '../bits';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
+import { Callout, Connector, JacketPath, shade, tint as lighten } from '../svgArt';
 import {
   AG,
   APath,
@@ -134,10 +135,10 @@ function LabelFlag({
         y={y}
         width={reduce ? w : 0.01}
         height={h}
-        rx={1.5}
-        fill="#26262c"
+        rx={1.2}
+        fill="#eceae3"
         stroke={tint}
-        strokeWidth={1}
+        strokeWidth={tint === colors.green ? 1.4 : 0.6}
         opacity={reduce ? 1 : 0}
         animatedProps={flag}
       />
@@ -173,16 +174,7 @@ function TraceBeam({ d }: { d: string }) {
   }));
   return (
     <>
-      <APath
-        d={d}
-        stroke={colors.green}
-        strokeWidth={3.2}
-        fill="none"
-        strokeLinecap="round"
-        strokeDasharray={draw.dashArray}
-        strokeDashoffset={draw.restOffset}
-        animatedProps={draw.animatedProps}
-      />
+      <JacketPath d={d} color={colors.green} width={3.2} pv={draw.progress} len={CABLE_LEN} />
       <APath
         d={d}
         stroke="#eafff1"
@@ -214,43 +206,61 @@ function SystemArt({ w, labeled, found }: { w: number; labeled: boolean; found: 
       }
     >
       <Rect x={2} y={4} width={356} height={144} rx={10} fill="#101014" />
-      {/* rack */}
-      <Rect x={10} y={16} width={56} height={118} rx={4} fill="#17171c" stroke="#3a3c42" strokeWidth={1.4} />
-      {[24, 44, 64, 84, 104].map((y) => (
-        <Rect key={y} x={16} y={y} width={44} height={16} rx={2} fill="#101014" stroke="#2c2c33" strokeWidth={1} />
-      ))}
-      {/* patch panel */}
-      <Rect x={92} y={48} width={64} height={44} rx={3} fill="#17171c" stroke="#3a3c42" strokeWidth={1.4} />
-      {[62, 78].map((y) => (
+      {/* rack R1: frame, rails, the kit with status LEDs */}
+      <Rect x={10} y={16} width={56} height={118} rx={1.4} fill="#23252a" stroke="#0a0a0c" strokeWidth={0.7} />
+      <Rect x={14} y={20} width={48} height={110} fill="#0c0c0f" />
+      {[24, 44, 64, 84, 104].map((y, i) => (
         <G key={y}>
-          {[100, 108, 116, 124, 132, 140, 148].map((x) => (
-            <Circle key={x} cx={x} cy={y} r={1.8} fill="#2c2c33" />
+          <Rect x={16} y={y} width={44} height={16} rx={0.8} fill="#2b2d33" stroke="#101114" strokeWidth={0.4} />
+          <Rect x={19} y={y + 3} width={16} height={2} fill="#1a1b1f" />
+          <Circle cx={56} cy={y + 4} r={0.9} fill={i % 2 ? '#37d97b' : '#ffc64d'} />
+        </G>
+      ))}
+      {/* patch panel PP2: two rows of RJ45 keystones */}
+      <Rect x={92} y={48} width={64} height={44} rx={1.4} fill="#26282d" stroke="#0a0a0c" strokeWidth={0.7} />
+      {[58, 74].map((y) => (
+        <G key={y}>
+          {[97, 105, 113, 121, 129, 137, 145].map((x) => (
+            <G key={x}>
+              <Rect x={x - 3} y={y} width={6} height={6} rx={0.6} fill="#e9e8e3" stroke="#8d8a80" strokeWidth={0.3} />
+              <Rect x={x - 2.1} y={y + 0.9} width={4.2} height={3.6} rx={0.3} fill="#050506" />
+            </G>
           ))}
         </G>
       ))}
-      {/* wall plate */}
-      <Rect x={196} y={54} width={28} height={36} rx={3} fill="#101014" stroke="#6f7378" strokeWidth={1.4} />
-      <Circle cx={210} cy={64} r={3} fill="none" stroke="#6f7378" strokeWidth={1.2} />
-      <Circle cx={210} cy={80} r={3} fill="none" stroke="#6f7378" strokeWidth={1.2} />
-      {/* stage box */}
-      <Rect x={256} y={40} width={88} height={68} rx={5} fill="#17171c" stroke="#3a3c42" strokeWidth={1.4} />
+      {/* wall plate: double-gang, two XLR inserts */}
+      <Rect x={196} y={54} width={28} height={36} rx={1.4} fill="#d9d7d0" stroke="#8d8a80" strokeWidth={0.6} />
+      {[64, 80].map((y) => (
+        <G key={y}>
+          <Circle cx={210} cy={y} r={4.4} fill="#1a1b1f" stroke="#8d8a80" strokeWidth={0.4} />
+          <Circle cx={210} cy={y} r={3} fill="#050506" />
+        </G>
+      ))}
+      {/* stage box: steel box, two columns of XLR-female jacks */}
+      <Rect x={256} y={40} width={88} height={68} rx={2.4} fill="#2b2d33" stroke="#0a0a0c" strokeWidth={0.8} />
+      <Rect x={258} y={42} width={84} height={3} fill="rgba(255,255,255,0.08)" />
       {S_Y.map((y) => (
         <G key={y}>
-          <Circle cx={268} cy={y} r={4} fill="#101014" stroke="#6f7378" strokeWidth={1.2} />
-          <Circle cx={310} cy={y} r={4} fill="#101014" stroke="#2c2c33" strokeWidth={1.2} />
+          {[268, 310].map((x) => (
+            <G key={x}>
+              <Rect x={x - 5.4} y={y - 6} width={10.8} height={12} rx={1} fill="#1b1c20" stroke="#0a0a0c" strokeWidth={0.4} />
+              <Circle cx={x} cy={y} r={4.2} fill="#050506" stroke="#7b7f86" strokeWidth={0.5} />
+              <Circle cx={x - 1.4} cy={y + 0.8} r={0.6} fill="#8d8a7e" />
+              <Circle cx={x + 1.4} cy={y + 0.8} r={0.6} fill="#8d8a7e" />
+              <Circle cx={x} cy={y - 1.2} r={0.6} fill="#8d8a7e" />
+            </G>
+          ))}
         </G>
       ))}
       {/* the four identical cables (crossing on purpose) */}
       {[0, 1, 2, 3].map((i) => (
-        <Path key={i} d={cablePath(i)} stroke="#4fd0e0" strokeWidth={2.2} fill="none" />
+        <JacketPath key={i} d={cablePath(i)} color="#4fd0e0" width={2.4} />
       ))}
       {/* physical cable numbers at the rack exits */}
       {[0, 1, 2, 3].map((i) => (
         <G key={i}>
           <Circle cx={71} cy={RACK_Y[i]} r={8} fill="#17171c" stroke="#6f7378" strokeWidth={1.2} />
-          <SvgText x={71} y={RACK_Y[i] + 3.8} fontSize={10.5} fill={colors.textSecondary} textAnchor="middle">
-            {String(i + 1)}
-          </SvgText>
+          <Callout x={71} y={RACK_Y[i] + 3.6} text={String(i + 1)} size={10.5} color={colors.textSecondary} bg={null} />
         </G>
       ))}
       {/* label flags flip open at both ends once identity is assigned */}
@@ -263,7 +273,7 @@ function SystemArt({ w, labeled, found }: { w: number; labeled: boolean; found: 
             return (
               <G key={i}>
                 <LabelFlag x={156} y={p - 13} w={36} h={12} tint={tint} delay={i * 80} reduce={m.reduce}>
-                  <SvgText x={174} y={p - 4} fontSize={10} fill={isTarget ? colors.green : colors.textSecondary} textAnchor="middle">
+                  <SvgText x={174} y={p - 3.6} fontSize={10} fontFamily={fonts.mono} fill="#17181b" textAnchor="middle">
                     {CABLE_FLAGS[i]}
                   </SvgText>
                 </LabelFlag>
@@ -278,7 +288,7 @@ function SystemArt({ w, labeled, found }: { w: number; labeled: boolean; found: 
         <>
           <TraceBeam d={cablePath(TARGET_CABLE)} />
           <LabelFlag x={156} y={P_Y[PERM_A[TARGET_CABLE]] - 13} w={36} h={12} tint={colors.green} delay={520} reduce={m.reduce}>
-            <SvgText x={174} y={P_Y[PERM_A[TARGET_CABLE]] - 4} fontSize={10} fill={colors.green} textAnchor="middle">
+            <SvgText x={174} y={P_Y[PERM_A[TARGET_CABLE]] - 3.6} fontSize={10} fontFamily={fonts.mono} fill="#0b3d1d" textAnchor="middle">
               {CABLE_FLAGS[TARGET_CABLE]}
             </SvgText>
           </LabelFlag>
@@ -286,18 +296,10 @@ function SystemArt({ w, labeled, found }: { w: number; labeled: boolean; found: 
         </>
       ) : null}
       {/* node names */}
-      <SvgText x={38} y={146} fontSize={10.5} fill="#6f7378" textAnchor="middle">
-        RACK R1
-      </SvgText>
-      <SvgText x={124} y={146} fontSize={10.5} fill="#6f7378" textAnchor="middle">
-        PATCH PP2
-      </SvgText>
-      <SvgText x={210} y={146} fontSize={10.5} fill="#6f7378" textAnchor="middle">
-        WALL PLATE
-      </SvgText>
-      <SvgText x={300} y={146} fontSize={10.5} fill="#6f7378" textAnchor="middle">
-        STAGE BOX
-      </SvgText>
+      <Callout x={38} y={146} text="RACK R1" size={10.5} color="#9ea3ad" bg={null} />
+      <Callout x={124} y={146} text="PATCH PP2" size={10.5} color="#9ea3ad" bg={null} />
+      <Callout x={210} y={146} text="WALL PLATE" size={10.5} color="#9ea3ad" bg={null} />
+      <Callout x={300} y={146} text="STAGE BOX" size={10.5} color="#9ea3ad" bg={null} />
     </Svg>
   );
 }
@@ -398,6 +400,18 @@ function SlackArt({ w, v }: { w: number; v: number }) {
     const b = 44 + a * 1.9;
     return { d: `M204 44 H150 C120 44 118 ${b} 136 ${b} C154 ${b} 152 44 122 44 H72` };
   });
+  const runEdge = useAnimatedProps(() => {
+    const kv = Math.max(0, Math.min(1, k.value));
+    const a = 2 + kv * 22;
+    const b = 44 + a * 1.9;
+    return { d: `M204 44 H150 C120 44 118 ${b} 136 ${b} C154 ${b} 152 44 122 44 H72` };
+  });
+  const runSheen = useAnimatedProps(() => {
+    const kv = Math.max(0, Math.min(1, k.value));
+    const a = 2 + kv * 22;
+    const b = 44 + a * 1.9;
+    return { d: `M204 44 H150 C120 44 118 ${b} 136 ${b} C154 ${b} 152 44 122 44 H72` };
+  });
   /** Two more coils spill out of the bight once the loop stops being managed. */
   const coilA = useAnimatedProps(() => {
     const kv = Math.max(0, Math.min(1, k.value));
@@ -409,6 +423,24 @@ function SlackArt({ w, v }: { w: number; v: number }) {
     };
   });
   const coilB = useAnimatedProps(() => {
+    const kv = Math.max(0, Math.min(1, k.value));
+    const a = 2 + kv * 22;
+    const b = 48 + a * 1.85;
+    return {
+      d: `M196 42 C132 42 128 ${b} 148 ${b} C166 ${b} 162 42 130 42`,
+      opacity: 0.9 * mapRange(kv, CI_SLACK_SCENARIO.goodMax + 0.08, 1, 0, 1),
+    };
+  });
+  const coilAEdge = useAnimatedProps(() => {
+    const kv = Math.max(0, Math.min(1, k.value));
+    const a = 2 + kv * 22;
+    const b = 40 + a * 1.75;
+    return {
+      d: `M188 46 C118 46 112 ${b} 126 ${b} C142 ${b} 140 46 118 46`,
+      opacity: 0.9 * mapRange(kv, CI_SLACK_SCENARIO.goodMax, 0.9, 0, 1),
+    };
+  });
+  const coilBEdge = useAnimatedProps(() => {
     const kv = Math.max(0, Math.min(1, k.value));
     const a = 2 + kv * 22;
     const b = 48 + a * 1.85;
@@ -436,22 +468,24 @@ function SlackArt({ w, v }: { w: number; v: number }) {
   return (
     <Svg accessible width={w} height={h} viewBox="0 0 220 110" accessibilityLabel={`Rack-end service loop visualization. ${CI_SLACK_SCENARIO.notes[zone]}`}>
       <Rect x={2} y={2} width={216} height={106} rx={8} fill="#101014" />
-      {/* rack + termination */}
-      <Rect x={8} y={10} width={56} height={92} rx={4} fill="#17171c" stroke="#3a3c42" strokeWidth={1.4} />
-      {[18, 40, 62, 84].map((y) => (
-        <Rect key={y} x={13} y={y} width={42} height={14} rx={2} fill="#101014" stroke="#2c2c33" strokeWidth={1} />
+      {/* rack + the termination the loop serves */}
+      <Rect x={8} y={10} width={56} height={92} rx={1.4} fill="#23252a" stroke="#0a0a0c" strokeWidth={0.7} />
+      <Rect x={11} y={13} width={50} height={86} fill="#0c0c0f" />
+      {[18, 40, 62, 84].map((y, i) => (
+        <G key={y}>
+          <Rect x={13} y={y} width={42} height={14} rx={0.8} fill="#2b2d33" stroke="#101114" strokeWidth={0.4} />
+          <Circle cx={51} cy={y + 3.4} r={0.8} fill={i % 2 ? '#37d97b' : '#ffc64d'} />
+        </G>
       ))}
-      <Rect x={62} y={40} width={10} height={8} rx={1.5} fill="#101014" stroke="#6f7378" strokeWidth={1.2} />
-      {/* conduit stub feeding the run */}
-      <Rect x={204} y={36} width={12} height={16} rx={2} fill="#101014" stroke="#6f7378" strokeWidth={1.4} />
-      {/* service pathway that excess slack blocks */}
-      <Rect x={76} y={88} width={140} height={16} rx={2} fill="#141418" stroke="#2c2c33" strokeWidth={1} />
-      {[86, 106, 126, 146, 166, 186].map((x) => (
-        <Path key={x} d={`M${x} 102 l8 -12`} stroke="#26262c" strokeWidth={1} />
-      ))}
-      <SvgText x={146} y={98.5} fontSize={7} fill="#6f7378" textAnchor="middle">
-        SERVICE PATHWAY — KEEP CLEAR
-      </SvgText>
+      <Connector kind="xlrM" x={79} y={44} k={0.26} angle={180} jacket="#4fd0e0" />
+      {/* EMT stub with its bushing, feeding the run */}
+      <Rect x={204} y={38.5} width={14} height={11} fill="#9ba1a8" stroke="#3a3d43" strokeWidth={0.4} />
+      <Rect x={202.6} y={37} width={2.6} height={14} rx={0.8} fill="#1b1c20" />
+      {/* the service walkway the excess must never reach */}
+      <Rect x={76} y={88} width={140} height={16} rx={1} fill="#1a1b1f" />
+      <Line x1={76} y1={88} x2={216} y2={88} stroke="#e3b73a" strokeWidth={1.2} />
+      <Line x1={76} y1={88} x2={216} y2={88} stroke="#141518" strokeWidth={1.2} strokeDasharray="2.4 2.4" />
+      <Callout x={146} y={99} text="SERVICE PATHWAY — KEEP CLEAR" size={7} color="#8d9199" bg={null} />
       <ARect
         x={96}
         y={88}
@@ -468,12 +502,18 @@ function SlackArt({ w, v }: { w: number; v: number }) {
         animatedProps={spill}
       />
       {/* the unmanaged extra coils (behind the main run) */}
-      <APath d="M188 46 H118" stroke="#4fd0e0" strokeWidth={2.2} fill="none" opacity={0} animatedProps={coilA} />
-      <APath d="M196 42 H130" stroke="#4fd0e0" strokeWidth={2.2} fill="none" opacity={0} animatedProps={coilB} />
-      {/* the run — one continuous cable, taut to bight */}
-      <APath d="M204 44 H72" stroke="#4fd0e0" strokeWidth={2.4} fill="none" strokeLinecap="round" animatedProps={run} />
-      {/* neck strap on the dressed loop */}
-      <ARect x={131} y={45} width={14} height={11} rx={2} fill="none" stroke="#e8e8ea" strokeWidth={1.2} opacity={0} animatedProps={strap} />
+      <APath d="M188 46 H118" stroke={shade('#4fd0e0', 0.66)} strokeWidth={2.6} fill="none" opacity={0} animatedProps={coilAEdge} />
+      <APath d="M188 46 H118" stroke={shade('#4fd0e0', 0.25)} strokeWidth={1.9} fill="none" opacity={0} animatedProps={coilA} />
+      <APath d="M196 42 H130" stroke={shade('#4fd0e0', 0.66)} strokeWidth={2.6} fill="none" opacity={0} animatedProps={coilBEdge} />
+      <APath d="M196 42 H130" stroke={shade('#4fd0e0', 0.25)} strokeWidth={1.9} fill="none" opacity={0} animatedProps={coilB} />
+      {/* the run — one continuous cable, taut to bight, a shaded jacket */}
+      <APath d="M204 44 H72" stroke={shade('#4fd0e0', 0.66)} strokeWidth={2.8} fill="none" strokeLinecap="round" animatedProps={runEdge} />
+      <APath d="M204 44 H72" stroke={shade('#4fd0e0', 0.25)} strokeWidth={2.1} fill="none" strokeLinecap="round" animatedProps={run} />
+      <G transform="translate(-0.4 -0.5)">
+        <APath d="M204 44 H72" stroke={lighten(shade('#4fd0e0', 0.25), 0.5)} strokeWidth={0.6} fill="none" strokeLinecap="round" opacity={0.8} animatedProps={runSheen} />
+      </G>
+      {/* hook-and-loop neck strap on the dressed loop */}
+      <ARect x={131} y={45} width={14} height={11} rx={2} fill="rgba(35,38,43,0.35)" stroke="#50545b" strokeWidth={2.2} opacity={0} animatedProps={strap} />
       {/* strain at the termination when the run has no give */}
       <APath d="M70 36 l-4 -6 M76 34 v-7 M82 36 l4 -6" stroke="#ff5a48" strokeWidth={1.4} fill="none" opacity={0} animatedProps={strain} />
     </Svg>

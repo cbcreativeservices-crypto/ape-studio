@@ -195,6 +195,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 17:53 · ccode · e9d4f933
+changed: Cable Install art pass, Stage 11 (Building): the building section drawn with real construction and real firestop
+affects other side: nothing — client JS only (Cable Install lab art)
+needs: nothing
+
 ### 2026-09-26 17:49 · ccode · 60e4c579
 changed: Cable Install art pass, Stage 10 (Signal): noise sources and the signal cable drawn as real objects
 affects other side: nothing — client JS only (Cable Install lab art)
