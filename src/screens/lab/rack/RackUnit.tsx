@@ -104,6 +104,7 @@ export function RackUnit({
   const [laneActive, setLaneActive] = useState(false);
   const [glassW, setGlassW] = useState(0);
   const [stageBlockH, setStageBlockH] = useState(0); // tray overlay top edge
+  const [dockH, setDockH] = useState(0); // tray overlay bottom edge (inline)
   const insets = useSafeAreaInsets();
   const bottom = bottomInset ?? insets.bottom;
 
@@ -317,7 +318,9 @@ export function RackUnit({
     if (chooserTray) setBoundId(chooserTray.id);
     setOpenTrayId(null);
   };
-  const trayNode = <DockTray param={trayParam} onClose={closeTray} onHelp={onHelp} bottomInset={bottom} />;
+  // The inline tray layer already stops at the dock's top edge, so the card
+  // needs no safe-area inset of its own.
+  const trayNode = <DockTray param={trayParam} onClose={closeTray} onHelp={onHelp} bottomInset={0} />;
   // In full screen the drawing is what sits behind the tray: no wash.
   // …and its card height is reported so the full-screen view can lift the
   // dock ABOVE the open tray: the learner keeps the lane and keys while
@@ -419,10 +422,12 @@ export function RackUnit({
       {/* `flexGrow: 1` ONLY while collapsed: expanded, the well must keep
           wrapping its content so the dock rides up under short lessons
           (owner 2026-08-23) rather than leaving a dead gap in the middle. */}
-      <View style={[styles.wellWrap, stageCollapsed && styles.wellWrapGrow]}>
+      {/* …and while a tray is open the well grows too, so the dock sits at
+          the bottom and the tray card fills the well above it (below). */}
+      <View style={[styles.wellWrap, (stageCollapsed || trayParam != null) && styles.wellWrapGrow]}>
         <ScrollLockProvider value={setWellLocked}>
           <ScrollView
-            style={[styles.wellScroll, stageCollapsed && styles.wellScrollGrow]}
+            style={[styles.wellScroll, (stageCollapsed || trayParam != null) && styles.wellScrollGrow]}
             contentContainerStyle={styles.well}
             scrollEnabled={!wellLocked}
           >
@@ -432,15 +437,19 @@ export function RackUnit({
       </View>
 
       {/* ── DOCK — lane + strip; rides directly under the well content ────── */}
-      {dockNode}
+      <View onLayout={(e) => setDockH(Math.round(e.nativeEvent.layout.height))}>{dockNode}</View>
 
-      {/* Blank faceplate below the raised dock — calm, non-interactive. */}
-      <View style={styles.filler} pointerEvents="none" />
+      {/* Blank faceplate below the raised dock — calm, non-interactive. Gone
+          while a tray is open: the dock drops to the bottom instead. */}
+      {trayParam ? null : <View style={styles.filler} pointerEvents="none" />}
 
-      {/* Tray overlay at ROOT level (owner 2026-08-23 dock-up layout): covers
-          everything BELOW the stage block — the glass/bezel stay bright and
-          live (the load-bearing rule); the dock may dim under the backdrop. */}
-      <View style={[styles.trayLayer, { top: stageBlockH }]} pointerEvents="box-none">
+      {/* Tray overlay at ROOT level: covers the WELL only — between the stage
+          block and the dock. The glass/bezel stay bright and live (the
+          load-bearing rule) and the DOCK stays live under the tray (owner
+          2026-09-27: "the user should always be able to adjust controls
+          without having to open and close" — the full-screen rule of
+          2026-09-26, inline). */}
+      <View style={[styles.trayLayer, { top: stageBlockH, bottom: dockH + bottom }]} pointerEvents="box-none">
         {trayNode}
       </View>
 
@@ -464,7 +473,7 @@ export function RackUnit({
 const styles = StyleSheet.create({
   root: { flex: 1 },
   filler: { flex: 1 },
-  trayLayer: { position: 'absolute', left: 0, right: 0, bottom: 0 },
+  trayLayer: { position: 'absolute', left: 0, right: 0 },
   // The stage sits on the faceplate: a slim metallic margin around the glass,
   // with breathing room below the shell's mode tabs (owner 2026-08-23).
   stageWrap: { paddingHorizontal: 10, paddingTop: 10 },
