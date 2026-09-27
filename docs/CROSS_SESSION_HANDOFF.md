@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-27 09:59 · ccode · 1f70c457
+changed: Preview harness: add CompressionLab, GateLab, StereoLab
+affects other side: nothing — client JS only (web preview harness) <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: nothing <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-27 08:28 · ccode · 4473b229
 changed: Rack Unit: an open tray no longer covers the dock inline
 affects other side: nothing — client JS only (rack tray layout) <FILL — what A (backend) must re-read or adjust, or "nothing">
