@@ -54,6 +54,9 @@ import { CI_SUPPORT_ITEMS, CI_SUPPORT_SPACING_SPEC } from '../data/scenarios';
 import { CI_CLASS_TINTS } from '../data/cableTypes';
 import { CI_SUPPORT_ART, CI_SUPPORT_ART_ASPECT } from '../data/supportArt';
 import { LabPhoto } from '../../kit/LabPhoto';
+import { ICON_ASPECT, SupportIcon } from './supportIcons';
+import { ConcreteCut, shade, tint as lighten } from '../svgArt';
+import type { SharedValue } from 'react-native-reanimated';
 import { clamp100 } from '../engine/score';
 import {
   ACircle,
@@ -90,214 +93,9 @@ function scrambleOrder(n: number, salt: number): number[] {
   return Array.from({ length: n }, (_, i) => (offset + i * step) % n);
 }
 
-/* ── honest pictograms for the sort (neutral grays — never verdict-tinted) ─ */
-const IC = '#a7adb5'; // hardware stroke
-const IC_DIM = '#6f7378'; // cable circles / secondary
-const SW = 3;
-
-function SupportIcon({ id, w }: { id: string; w: number }) {
-  const h = Math.round((w * 72) / 96);
-  const common = { width: w, height: h, viewBox: '0 0 96 72' } as const;
-  const frame = <Rect x={0} y={0} width={96} height={72} rx={8} fill="#0e0e12" stroke="#232329" strokeWidth={1} />;
-  const cable = (cx: number, cy: number, r = 4) => <Circle key={`${cx}-${cy}`} cx={cx} cy={cy} r={r} fill={IC_DIM} />;
-  switch (id) {
-    case 'jhook':
-      return (
-        <Svg {...common}>
-          {frame}
-          <Rect x={30} y={4} width={12} height={6} rx={1.5} fill="none" stroke={IC} strokeWidth={2} />
-          <Path d="M36 10 V38 a15 15 0 0 0 30 0 v-8" stroke={IC} strokeWidth={SW} fill="none" strokeLinecap="round" />
-          {cable(45, 45)}
-          {cable(53, 46)}
-          {cable(49, 39)}
-        </Svg>
-      );
-    case 'tray':
-      return (
-        <Svg {...common}>
-          {frame}
-          <Path d="M10 24 v26 h76 v-26" stroke={IC} strokeWidth={SW} fill="none" strokeLinecap="round" />
-          {cable(26, 44, 5)}
-          {cable(40, 44, 5)}
-          {cable(54, 44, 5)}
-          {cable(68, 44, 5)}
-        </Svg>
-      );
-    case 'ladder':
-      return (
-        <Svg {...common}>
-          {frame}
-          <Line x1={30} y1={8} x2={30} y2={64} stroke={IC} strokeWidth={SW} strokeLinecap="round" />
-          <Line x1={66} y1={8} x2={66} y2={64} stroke={IC} strokeWidth={SW} strokeLinecap="round" />
-          {[16, 28, 40, 52].map((y) => (
-            <Line key={y} x1={30} y1={y} x2={66} y2={y} stroke={IC} strokeWidth={2.4} />
-          ))}
-        </Svg>
-      );
-    case 'basket':
-      return (
-        <Svg {...common}>
-          {frame}
-          <Path d="M14 24 v22 a8 8 0 0 0 8 8 h52 a8 8 0 0 0 8 -8 v-22" stroke={IC} strokeWidth={2.2} fill="none" />
-          {[26, 38, 50, 62, 74].map((x) => (
-            <Line key={x} x1={x} y1={24} x2={x} y2={52} stroke={IC} strokeWidth={1.5} />
-          ))}
-          <Line x1={14} y1={40} x2={82} y2={40} stroke={IC} strokeWidth={1.5} />
-        </Svg>
-      );
-    case 'conduit':
-      return (
-        <Svg {...common}>
-          {frame}
-          <Rect x={8} y={30} width={80} height={14} rx={7} fill="none" stroke={IC} strokeWidth={SW} />
-          <Rect x={42} y={26} width={12} height={22} rx={3} fill="none" stroke={IC} strokeWidth={2.2} />
-        </Svg>
-      );
-    case 'raceway':
-      return (
-        <Svg {...common}>
-          {frame}
-          <Rect x={12} y={26} width={72} height={18} rx={3} fill="none" stroke={IC} strokeWidth={SW} />
-          <Line x1={12} y1={35} x2={84} y2={35} stroke={IC} strokeWidth={1.6} />
-          <Rect x={74} y={22} width={12} height={26} rx={2} fill="none" stroke={IC} strokeWidth={2} />
-        </Svg>
-      );
-    case 'underfloor':
-      return (
-        <Svg {...common}>
-          {frame}
-          <Line x1={8} y1={24} x2={88} y2={24} stroke={IC} strokeWidth={2.4} />
-          <Line x1={8} y1={30} x2={88} y2={30} stroke={IC} strokeWidth={1.4} />
-          <Rect x={40} y={21} width={16} height={4} rx={1} fill={IC} />
-          <Rect x={30} y={38} width={36} height={18} rx={2} fill="none" stroke={IC} strokeWidth={2.4} />
-          {cable(42, 47)}
-          {cable(54, 47)}
-        </Svg>
-      );
-    case 'vmgr':
-      return (
-        <Svg {...common}>
-          {frame}
-          <Rect x={44} y={8} width={8} height={56} rx={2} fill="none" stroke={IC} strokeWidth={2.4} />
-          {[14, 26, 38, 50, 62].map((y) => (
-            <Line key={y} x1={26} y1={y} x2={44} y2={y} stroke={IC} strokeWidth={SW} strokeLinecap="round" />
-          ))}
-          {[14, 26, 38, 50, 62].map((y) => (
-            <Line key={`r${y}`} x1={52} y1={y} x2={70} y2={y} stroke={IC} strokeWidth={SW} strokeLinecap="round" />
-          ))}
-        </Svg>
-      );
-    case 'hmgr':
-      return (
-        <Svg {...common}>
-          {frame}
-          <Rect x={10} y={30} width={76} height={16} rx={3} fill="none" stroke={IC} strokeWidth={SW} />
-          {[22, 34, 46, 58, 70].map((x) => (
-            <Line key={x} x1={x} y1={30} x2={x} y2={20} stroke={IC} strokeWidth={2.4} strokeLinecap="round" />
-          ))}
-        </Svg>
-      );
-    case 'strap':
-      return (
-        <Svg {...common}>
-          {frame}
-          <Rect x={40} y={6} width={16} height={6} rx={1.5} fill="none" stroke={IC} strokeWidth={2} />
-          <Line x1={48} y1={12} x2={48} y2={20} stroke={IC} strokeWidth={2.4} />
-          <Path d="M30 26 v6 a18 18 0 0 0 36 0 v-6" stroke={IC} strokeWidth={SW} fill="none" strokeLinecap="round" />
-          {cable(42, 38, 5)}
-          {cable(54, 38, 5)}
-          {cable(48, 30, 5)}
-        </Svg>
-      );
-    case 'protector':
-      return (
-        <Svg {...common}>
-          {frame}
-          <Line x1={4} y1={58} x2={92} y2={58} stroke={IC_DIM} strokeWidth={1.6} />
-          <Path d="M8 58 L30 36 h36 L88 58 Z" stroke={IC} strokeWidth={2.6} fill="none" strokeLinejoin="round" />
-          {cable(41, 50)}
-          {cable(57, 50)}
-          <Line x1={20} y1={52} x2={26} y2={46} stroke={IC} strokeWidth={1.4} />
-          <Line x1={70} y1={46} x2={76} y2={52} stroke={IC} strokeWidth={1.4} />
-        </Svg>
-      );
-    case 'plumbing':
-      return (
-        <Svg {...common}>
-          {frame}
-          <Rect x={10} y={26} width={76} height={12} rx={6} fill="none" stroke={IC} strokeWidth={SW} />
-          <Rect x={24} y={23} width={6} height={18} rx={1.5} fill="none" stroke={IC} strokeWidth={2} />
-          <Rect x={66} y={23} width={6} height={18} rx={1.5} fill="none" stroke={IC} strokeWidth={2} />
-          <Path d="M48 44 c-4 7 -4 11 0 13 c4 -2 4 -6 0 -13" stroke="#5bb0ff" strokeWidth={2} fill="none" strokeLinecap="round" />
-        </Svg>
-      );
-    case 'foreign-conduit':
-      return (
-        <Svg {...common}>
-          {frame}
-          <Rect x={8} y={24} width={80} height={14} rx={7} fill="none" stroke={IC} strokeWidth={SW} />
-          <Line x1={58} y1={38} x2={64} y2={48} stroke={IC} strokeWidth={1.6} />
-          <Rect x={58} y={48} width={22} height={14} rx={2} fill="none" stroke={IC} strokeWidth={2} />
-          <Line x1={62} y1={58} x2={68} y2={51} stroke={IC} strokeWidth={1.4} />
-          <Line x1={68} y1={60} x2={74} y2={53} stroke={IC} strokeWidth={1.4} />
-        </Svg>
-      );
-    case 'tile':
-      return (
-        <Svg {...common}>
-          {frame}
-          <Rect x={20} y={16} width={56} height={36} rx={2} fill="none" stroke={IC} strokeWidth={2.4} />
-          {[
-            [32, 26],
-            [46, 36],
-            [60, 24],
-            [38, 44],
-            [58, 42],
-          ].map(([x, y]) => (
-            <Circle key={`${x}-${y}`} cx={x} cy={y} r={1.5} fill={IC_DIM} />
-          ))}
-          <Path d="M12 58 h16 M20 50 v8" stroke={IC} strokeWidth={2.2} fill="none" />
-          <Path d="M68 58 h16 M76 50 v8" stroke={IC} strokeWidth={2.2} fill="none" />
-        </Svg>
-      );
-    case 'grid':
-      return (
-        <Svg {...common}>
-          {frame}
-          <Path d="M48 6 l3 5 l-6 5 l3 5" stroke={IC} strokeWidth={1.8} fill="none" />
-          <Line x1={48} y1={21} x2={48} y2={44} stroke={IC} strokeWidth={SW} />
-          <Line x1={32} y1={44} x2={64} y2={44} stroke={IC} strokeWidth={4} strokeLinecap="round" />
-          <Line x1={32} y1={44} x2={32} y2={39} stroke={IC} strokeWidth={2} />
-          <Line x1={64} y1={44} x2={64} y2={39} stroke={IC} strokeWidth={2} />
-        </Svg>
-      );
-    case 'sprinkler':
-      return (
-        <Svg {...common}>
-          {frame}
-          <Rect x={8} y={18} width={80} height={10} rx={5} fill="none" stroke={IC} strokeWidth={SW} />
-          <Rect x={45} y={28} width={6} height={12} fill="none" stroke={IC} strokeWidth={2} />
-          <Path d="M44 45 l-4 5 M52 45 l4 5 M48 40 v10" stroke={IC} strokeWidth={1.8} fill="none" />
-          <Line x1={38} y1={50} x2={58} y2={50} stroke={IC} strokeWidth={2.5} strokeLinecap="round" />
-        </Svg>
-      );
-    case 'hanger':
-      return (
-        <Svg {...common}>
-          {frame}
-          <Path d="M52 6 a6 6 0 1 0 -8 6 v4" stroke={IC} strokeWidth={2.2} fill="none" strokeLinecap="round" />
-          <Path d="M44 16 L26 46 H70 Z" stroke={IC} strokeWidth={2.2} fill="none" strokeLinejoin="round" />
-        </Svg>
-      );
-    default:
-      return (
-        <Svg {...common}>
-          {frame}
-          <Rect x={24} y={20} width={48} height={32} rx={4} fill="none" stroke={IC} strokeWidth={SW} />
-        </Svg>
-      );
-  }
-}
+/* ── the sort + role illustrations live in supportIcons.tsx (real objects,
+ *    neutral tones — never verdict-tinted) ─────────────────────────────── */
+const IC = '#a7adb5'; // hardware stroke (J-hook in the span)
 
 /* ── A · role cards ─────────────────────────────────────────────────────── */
 const ROLE_CARDS: { key: string; title: string; body: string; icon: string; tint: string }[] = [
@@ -391,18 +189,37 @@ function hotPolyline(ys: number[], ranges: [number, number][]): string {
   return d;
 }
 
-/** A candidate position: the J-hook draws itself in over the dashed ghost. */
+/** One stroke of the J-hook, drawn in with the placement. */
+function HookStroke({ d, p, color, width, opacity = 1, on }: { d: string; p: SharedValue<number>; color: string; width: number; opacity?: number; on: boolean }) {
+  const ap = useAnimatedProps(() => ({
+    strokeDashoffset: HOOK_LEN * (1 - p.value),
+    opacity: opacity * Math.min(1, p.value * 1.5),
+  }));
+  return (
+    <APath
+      d={d}
+      stroke={color}
+      strokeWidth={width}
+      fill="none"
+      strokeLinecap="round"
+      strokeDasharray={HOOK_LEN}
+      strokeDashoffset={on ? 0 : HOOK_LEN}
+      opacity={on ? opacity : 0}
+      animatedProps={ap}
+    />
+  );
+}
+
+/** A candidate position: a J-hook (drop rod from the slab + formed J saddle)
+ *  draws itself in over the dashed ghost. */
 function PosMark({ u, on }: { u: number; on: boolean }) {
   const p = useTween(on ? 1 : 0, on ? CI_MOTION.base : CI_MOTION.quick);
   const x = xOf(u);
-  const hook = useAnimatedProps(() => ({
-    strokeDashoffset: HOOK_LEN * (1 - p.value),
-    opacity: Math.min(1, p.value * 1.5),
-  }));
   const ghost = useAnimatedProps(() => ({
     opacity: Math.max(0, 1 - p.value * 1.4),
     r: 7 - 1.6 * Math.min(1, p.value),
   }));
+  const d = `M${x - 5.2} 22 V37.4 A5.2 5.2 0 0 0 ${x + 5.2} 37.4 V34`;
   return (
     <>
       <ACircle
@@ -411,23 +228,54 @@ function PosMark({ u, on }: { u: number; on: boolean }) {
         r={on ? 5.4 : 7}
         fill="none"
         stroke="#54565c"
-        strokeWidth={1.4}
-        strokeDasharray="3 3"
+        strokeWidth={1}
+        strokeDasharray="2.4 2.4"
         opacity={on ? 0 : 1}
         animatedProps={ghost}
       />
-      <APath
-        d={`M${x} 26 V33 M${x - 8} 33 a8 8 0 0 0 16 0`}
-        stroke={IC}
-        strokeWidth={2.5}
-        fill="none"
-        strokeLinecap="round"
-        strokeDasharray={HOOK_LEN}
-        strokeDashoffset={on ? 0 : HOOK_LEN}
-        opacity={on ? 1 : 0}
-        animatedProps={hook}
-      />
+      {/* the anchor at the soffit, then the formed J */}
+      <HookStroke d={`M${x - 8.2} 22.8 H${x - 2.2}`} p={p} color="#80868f" width={1.8} on={on} />
+      <HookStroke d={d} p={p} color="#23262b" width={2.6} on={on} />
+      <HookStroke d={d} p={p} color="#b9bec5" width={1.7} on={on} />
+      <HookStroke d={`M${x - 5.8} 23 V37`} p={p} color="#ffffff" width={0.45} opacity={0.6} on={on} />
     </>
+  );
+}
+
+/** One tonal layer of the sampled run (shadow / edge / body / sheen), riding
+ *  the same spring as every other layer. */
+function SpanLayer({
+  from,
+  to,
+  k,
+  dx,
+  dy,
+  color,
+  width,
+  opacity = 1,
+}: {
+  from: number[];
+  to: number[];
+  k: SharedValue<number>;
+  dx: number;
+  dy: number;
+  color: string;
+  width: number;
+  opacity?: number;
+}) {
+  const ap = useAnimatedProps(() => {
+    const kv = k.value;
+    let d = '';
+    for (let i = 0; i < SAMPLES; i++) {
+      const y = from[i] + (to[i] - from[i]) * kv + dy;
+      d += `${i === 0 ? 'M' : 'L'}${(SAMPLE_X[i] + dx).toFixed(1)} ${y.toFixed(1)} `;
+    }
+    return { d };
+  });
+  let rest = '';
+  for (let i = 0; i < SAMPLES; i++) rest += `${i === 0 ? 'M' : 'L'}${(SAMPLE_X[i] + dx).toFixed(1)} ${(to[i] + dy).toFixed(1)} `;
+  return (
+    <APath d={rest} stroke={color} strokeWidth={width} fill="none" strokeLinecap="round" strokeLinejoin="round" opacity={opacity} animatedProps={ap} />
   );
 }
 
@@ -508,7 +356,7 @@ const SpanArt = memo(function SpanArt({ w, placed }: { w: number; placed: Set<nu
       }
     }
     // base stays high so reduced motion (no pulse) still reads as strained
-    return { d: d === '' ? 'M0 0' : d, opacity: hotFade.value * (0.76 + 0.24 * pulse.t.value), strokeWidth: 3.5 + 1.8 * pulse.t.value };
+    return { d: d === '' ? 'M0 0' : d, opacity: hotFade.value * (0.42 + 0.22 * pulse.t.value), strokeWidth: 7 + 2.4 * pulse.t.value };
   });
 
   const guideProps = useAnimatedProps(() => ({
@@ -528,12 +376,15 @@ const SpanArt = memo(function SpanArt({ w, placed }: { w: number; placed: Set<nu
       viewBox="0 0 360 132"
       accessibilityLabel={`Twelve-unit span. Supports placed at ${placedUnits.length ? placedUnits.join(' and ') + ' units' : 'no positions'}. ${anyStrained ? 'At least one span sags past the limit.' : 'All spans are inside the sag limit.'}`}
     >
-      <Rect x={0} y={0} width={360} height={132} rx={10} fill="#101014" />
-      {/* structure the supports anchor to */}
-      <Line x1={6} y1={26} x2={354} y2={26} stroke="#33333a" strokeWidth={4} />
-      {/* end terminations — the run ends honestly at both walls */}
-      <Rect x={4} y={34} width={8} height={12} rx={1.5} fill="#26262c" stroke="#6f7378" strokeWidth={1} />
-      <Rect x={348} y={34} width={8} height={12} rx={1.5} fill="#26262c" stroke="#6f7378" strokeWidth={1} />
+      <Rect x={0} y={0} width={360} height={132} rx={10} fill="#0f1014" />
+      {/* structure the supports anchor to: a concrete soffit, a wall at each
+          end — the run leaves one wall and enters the other through bushed
+          openings (a cable never just stops in the air) */}
+      <ConcreteCut x={0} y={8} w={360} h={14} />
+      <ConcreteCut x={0} y={22} w={X0 - 2} h={70} />
+      <ConcreteCut x={X1 + 2} y={22} w={360 - X1 - 2} h={70} />
+      <Rect x={X0 - 3.4} y={CABLE_Y - 5} width={3.4} height={10} rx={0.8} fill="#1b1c20" stroke="#6d7179" strokeWidth={0.5} />
+      <Rect x={X1} y={CABLE_Y - 5} width={3.4} height={10} rx={0.8} fill="#1b1c20" stroke="#6d7179" strokeWidth={0.5} />
       {/* max-sag guide from the spec (½ unit below the cable line) — it steps
           forward while the learner is placing hardware, then rests back */}
       <ALine
@@ -571,27 +422,25 @@ const SpanArt = memo(function SpanArt({ w, placed }: { w: number; placed: Set<nu
       >
         MAX SAG ½ UNIT
       </SvgText>
-      {/* the run itself: one sampled cable that springs between shapes */}
-      <APath
-        d={restD}
-        stroke={CI_CLASS_TINTS.analog}
-        strokeWidth={3.5}
-        fill="none"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        animatedProps={cableProps}
-      />
-      {/* strained spans, glued to the same cable so they ride the settle */}
+      {/* strained spans: a hot halo UNDER the cable, glued to the same samples
+          so it rides the settle — the jacket stays readable on top */}
       <APath
         d={restHotD}
         stroke="#ff9b8f"
-        strokeWidth={3.5}
+        strokeWidth={8}
         fill="none"
         strokeLinecap="round"
         strokeLinejoin="round"
         opacity={hotOn ? 1 : 0}
         animatedProps={hotProps}
       />
+      {/* the run itself: one sampled cable that springs between shapes —
+          drawn as a shaded jacket (shadow, core edge, body, sheen) */}
+      <SpanLayer from={from} to={to} k={k} dx={0.5} dy={1.5} color="rgba(0,0,0,0.5)" width={3.6} />
+      <SpanLayer from={from} to={to} k={k} dx={0} dy={0} color={shade(CI_CLASS_TINTS.analog, 0.66)} width={3.5} />
+      <SpanLayer from={from} to={to} k={k} dx={0} dy={0} color={shade(CI_CLASS_TINTS.analog, 0.28)} width={2.7} />
+      <SpanLayer from={from} to={to} k={k} dx={0} dy={-0.6} color={lighten(shade(CI_CLASS_TINTS.analog, 0.28), 0.5)} width={0.9} opacity={0.8} />
+      <APath d={restD} stroke="none" fill="none" animatedProps={cableProps} />
       {/* candidate positions: placed = J-hook, empty = dashed ghost */}
       {POS_UNITS.map((u, i) => (
         <PosMark key={u} u={u} on={placed.has(i)} />
@@ -616,6 +465,7 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
   const N = CI_SUPPORT_ITEMS.length;
   const passNeeded = Math.ceil(N * 0.8);
   const artW = Math.max(160, width - 26);
+  const picW = Math.min(300, artW);
 
   // B — the sort
   const [attempt, setAttempt] = useState(0);
@@ -815,7 +665,7 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
           {ROLE_CARDS.map((rc, i) => (
             <Stagger key={rc.key} index={i} style={{ width: (width - 8) / 2 }}>
               <View style={[styles.roleCard, { borderColor: rc.tint + '55' }]}>
-                <SupportIcon id={rc.icon} w={56} />
+                <SupportIcon id={rc.icon} w={72} />
                 <Text style={[styles.roleTitle, { color: rc.tint }]}>{rc.title}</Text>
                 <Text style={styles.roleBody}>{rc.body}</Text>
               </View>
@@ -842,9 +692,34 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
             </Text>
             <Text style={styles.itemName}>{item.name}</Text>
             <Appear key={`pic-${idx}`} delay={70}>
-              <View style={{ alignItems: 'center' }}>
-                <SupportIcon id={item.id} w={Math.min(170, artW)} />
-              </View>
+              <ExpandableFigure
+                width={picW}
+                aspect={ICON_ASPECT}
+                title="ITEM"
+                render={(fw) => <SupportIcon id={item.id} w={fw} />}
+                controls={
+                  <View style={styles.pickRow}>
+                    <Pressable
+                      style={[styles.pickBtn, styles.pickApprove, pick === true && styles.pickChosen]}
+                      onPress={() => onPick(true)}
+                      disabled={pick != null}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Approve — yes, hang cable on ${item.name}`}
+                    >
+                      <Text style={[styles.pickText, { color: colors.green }]}>APPROVE</Text>
+                    </Pressable>
+                    <Pressable
+                      style={[styles.pickBtn, styles.pickReject, pick === false && styles.pickChosen]}
+                      onPress={() => onPick(false)}
+                      disabled={pick != null}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Reject — do not hang cable on ${item.name}`}
+                    >
+                      <Text style={[styles.pickText, { color: '#ff9b8f' }]}>REJECT</Text>
+                    </Pressable>
+                  </View>
+                }
+              />
             </Appear>
             <Text style={styles.question}>Would you hang cable on this?</Text>
             <View style={styles.pickRow}>
