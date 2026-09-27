@@ -15,7 +15,7 @@
  * overlay (never a native Modal — the 2026-08-19 iOS lesson); Android back
  * closes the tray first (BackHandler, registered only while open).
  */
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { BackHandler, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { colors, fonts } from '../../../theme/tokens';
@@ -71,6 +71,7 @@ export function DockTray({
   bottomInset = 0,
   dim = true,
   onCardLayout,
+  maxHeight,
 }: {
   /** The open options/group param (null = tray closed, renders nothing). */
   param: Extract<DockParam, { kind: 'options' | 'group' }> | null;
@@ -88,6 +89,10 @@ export function DockTray({
   /** Reports the card's height, so a host can lift its controls above it
    *  (full screen, owner 2026-09-26). */
   onCardLayout?: (h: number) => void;
+  /** Card height cap in dp. Inline the tray layer is exactly the room
+   *  between the stage and the live dock (owner 2026-09-27), so the host
+   *  passes that room and the card may use all of it; unset = 86%. */
+  maxHeight?: number;
 }) {
   const open = param != null;
   useEffect(() => {
@@ -99,7 +104,25 @@ export function DockTray({
     return () => sub.remove();
   }, [open, onClose]);
 
+  // "more ↓" cue (owner 2026-09-27, SE pass): on a 667 pt phone a two-row
+  // tray (ENV: attack + release) is taller than the room above the live dock,
+  // and a clipped row read as "that's all there is". Same cue as flashcards.
+  const [viewH, setViewH] = useState(0);
+  const [contentH, setContentH] = useState(0);
+  const [scrollY, setScrollY] = useState(0);
+  const trayId = param?.id;
+  useEffect(() => setScrollY(0), [trayId]);
+
   if (!param) return null;
+  const blurbSel = param.kind === 'options' ? param.options.find((o) => o.id === param.selectedId) : undefined;
+  const blurbNode = blurbSel?.blurb ? (
+    <View style={styles.blurbBox}>
+      <Text style={styles.blurbName}>{blurbSel.label}</Text>
+      <Text style={styles.blurbText}>{blurbSel.blurb}</Text>
+    </View>
+  ) : null;
+  const overflows = contentH - viewH > 4;
+  const moreBelow = overflows && scrollY + viewH < contentH - 4;
   const sticky = param.kind === 'group' || param.sticky === true;
 
   return (
@@ -112,7 +135,7 @@ export function DockTray({
         accessibilityRole="button"
         accessibilityLabel="Close the tray"
       />
-      <View style={[styles.card, { bottom: 6 + bottomInset }]} onLayout={onCardLayout ? (e) => onCardLayout(Math.round(e.nativeEvent.layout.height)) : undefined}>
+      <View style={[styles.card, { bottom: 6 + bottomInset }, maxHeight != null && maxHeight > 0 && { maxHeight }]} onLayout={onCardLayout ? (e) => onCardLayout(Math.round(e.nativeEvent.layout.height)) : undefined}>
         <View style={styles.head}>
           <Text style={styles.title} numberOfLines={1}>
             {param.label}
@@ -122,7 +145,17 @@ export function DockTray({
             <Text style={styles.close}>✕</Text>
           </Pressable>
         </View>
-        <ScrollView bounces={false} style={styles.body} contentContainerStyle={styles.bodyContent}>
+        <View style={styles.bodyWrap}>
+        <ScrollView
+          key={param.id}
+          bounces={false}
+          style={styles.body}
+          contentContainerStyle={styles.bodyContent}
+          onLayout={(e) => setViewH(e.nativeEvent.layout.height)}
+          onContentSizeChange={(_w, h) => setContentH(h)}
+          onScroll={(e) => setScrollY(e.nativeEvent.contentOffset.y)}
+          scrollEventThrottle={32}
+        >
           {/* WHAT-AM-I-CHANGING readout (owner 2026-08-28): the open tray
               COVERS the lab's teaching prose, so the tray itself explains the
               selected option — tap CLASSROOM and read what a classroom does to
@@ -130,18 +163,11 @@ export function DockTray({
               Sticky trays apply on tap, so this updates live while A/B-ing.
               Rendered only when the selected option carries a blurb — trays of
               self-evident values (frequencies, on/off) are unchanged. */}
-          {param.kind === 'options'
-            ? (() => {
-                const sel = param.options.find((o) => o.id === param.selectedId);
-                if (!sel?.blurb) return null;
-                return (
-                  <View style={styles.blurbBox}>
-                    <Text style={styles.blurbName}>{sel.label}</Text>
-                    <Text style={styles.blurbText}>{sel.blurb}</Text>
-                  </View>
-                );
-              })()
-            : null}
+          {/* …except when the tray is too short for both (SE, 2026-09-27):
+              then the CHOICES come first — they are the controls — and the
+              readout follows them. The total height is the same either way,
+              so the order cannot flip-flop. */}
+          {overflows ? null : blurbNode}
           {param.kind === 'options' ? (
             <View style={styles.grid}>
               {param.options.map((o) => (
@@ -161,6 +187,7 @@ export function DockTray({
           ) : (
             param.render()
           )}
+          {overflows ? blurbNode : null}
           {param.kind === 'options' && param.onReset ? (
             <Pressable
               style={styles.resetBtn}
@@ -172,6 +199,16 @@ export function DockTray({
             </Pressable>
           ) : null}
         </ScrollView>
+        </View>
+        {/* Its own line under the list, never over a chip (an overlaid cue
+            covered SINE 440 Hz on the SE). The line stays while the list
+            overflows — only the text goes at the end — so reaching the end
+            does not resize the scroller under the finger. */}
+        {overflows ? (
+          <Text style={styles.moreText} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+            {moreBelow ? 'more ↓' : ' '}
+          </Text>
+        ) : null}
       </View>
     </View>
   );
@@ -209,7 +246,9 @@ const styles = StyleSheet.create({
   },
   stickyNote: { fontSize: 12, letterSpacing: 0.3, color: colors.textSub },
   close: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, color: colors.textSub, paddingHorizontal: 4 },
+  bodyWrap: { flexShrink: 1, minHeight: 0 },
   body: { flexGrow: 0 },
+  moreText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8, color: '#9aa0a8', textAlign: 'center', marginTop: -4 },
   bodyContent: { gap: 10 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   // TrayChip — PopupOpt tokens (SplMeter popup) at the MIN_FONT 12 floor.

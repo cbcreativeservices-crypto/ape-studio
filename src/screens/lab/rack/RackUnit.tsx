@@ -105,6 +105,7 @@ export function RackUnit({
   const [glassW, setGlassW] = useState(0);
   const [stageBlockH, setStageBlockH] = useState(0); // tray overlay top edge
   const [dockH, setDockH] = useState(0); // tray overlay bottom edge (inline)
+  const [rootH, setRootH] = useState(0); // → the inline tray's room
   const insets = useSafeAreaInsets();
   const bottom = bottomInset ?? insets.bottom;
 
@@ -320,7 +321,10 @@ export function RackUnit({
   };
   // The inline tray layer already stops at the dock's top edge, so the card
   // needs no safe-area inset of its own.
-  const trayNode = <DockTray param={trayParam} onClose={closeTray} onHelp={onHelp} bottomInset={0} />;
+  // …and the card may use ALL of that room (6 dp margins): on a 667 pt phone
+  // the old 86% cap clipped a two-row tray under the fold.
+  const trayRoom = rootH - stageBlockH - dockH - bottom - 12;
+  const trayNode = <DockTray param={trayParam} onClose={closeTray} onHelp={onHelp} bottomInset={0} maxHeight={rootH > 0 ? trayRoom : undefined} />;
   // In full screen the drawing is what sits behind the tray: no wash.
   // …and its card height is reported so the full-screen view can lift the
   // dock ABOVE the open tray: the learner keeps the lane and keys while
@@ -329,7 +333,7 @@ export function RackUnit({
   const trayNodeFull = <DockTray param={trayParam} onClose={closeTray} onHelp={onHelp} bottomInset={0} dim={false} onCardLayout={setFullTrayH} />;
 
   return (
-    <View style={[styles.root, { paddingBottom: bottom }]}>
+    <View style={[styles.root, { paddingBottom: bottom }]} onLayout={(e) => setRootH(Math.round(e.nativeEvent.layout.height))}>
       {/* ── STAGE — pinned; structurally cannot leave the screen ─────────── */}
       <View style={styles.stageWrap} onLayout={(e) => setStageBlockH(Math.round(e.nativeEvent.layout.height))}>
         {/* Not rendered at all when collapsed — a zero-height canvas would
