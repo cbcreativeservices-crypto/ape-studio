@@ -38,9 +38,9 @@
  * identical end states. Training visualization — honest geometry only.
  */
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
-import { JacketPath, shade, tint as lighten } from '../svgArt';
+import { JacketPath, shade, tint as lighten, SVG_A11Y } from '../svgArt';
 import { CeilingDefects, FinishedRoom, GridAndTiles, OtherTrades, PlenumStructure, WallSleeve } from './ceilingArt';
 /** Type-only: the motion kit re-exports the hooks, not the SharedValue type. */
 import type { SharedValue } from 'react-native-reanimated';
@@ -484,8 +484,11 @@ function AboveSvg({
       viewBox={`0 0 ${VB_W} ${VB_H}`}
       accessibilityLabel="Above-ceiling cutaway: structural deck and joists on top, hanger wires, duct, sprinkler main with heads, conduit, cable tray, J-hooks, light fixture, and the grid with tiles at the bottom. Eight suspect details are marked."
       /* both views stay mounted for the reveal — only the live one is readable */
-      accessibilityElementsHidden={!above}
-      importantForAccessibility={above ? 'auto' : 'no-hide-descendants'}
+      /* native-only props: on the web react-native-svg would forward them to
+         the DOM as unknown attributes (a console error per render) */
+      {...(Platform.OS === 'web'
+        ? {}
+        : { accessibilityElementsHidden: !above, importantForAccessibility: above ? ('auto' as const) : ('no-hide-descendants' as const) })}
     >
       {/* the base plate never fades — the cross-dissolve always has a floor */}
       <Rect x={0} y={0} width={VB_W} height={VB_H} rx={10} fill="#131318" />
@@ -580,7 +583,7 @@ function AboveSvg({
 function FinishedShellSvg({ w }: { w: number }) {
   const h = Math.round((w * VB_H) / VB_W);
   return (
-    <Svg accessible
+    <Svg {...SVG_A11Y}
       width={w}
       height={h}
       viewBox={`0 0 ${VB_W} ${VB_H}`}

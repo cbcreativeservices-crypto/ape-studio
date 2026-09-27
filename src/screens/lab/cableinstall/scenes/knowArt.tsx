@@ -252,7 +252,7 @@ export const SECTION: Record<CiCableClass, Spec> = {
       { text: 'OVERALL BRAID', at: [6.1, 2.0] },
       { text: '12 FOILED PAIRS', at: [4.35, 0.3] },
     ],
-    note: 'PORTABLE — BUILT TO BE COILED AND WALKED ON',
+    note: 'PORTABLE — BUILT TO BE COILED AND REDEPLOYED',
   },
   tacfiber: {
     od: 6.0,

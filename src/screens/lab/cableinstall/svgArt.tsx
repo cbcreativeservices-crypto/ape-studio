@@ -35,6 +35,7 @@
  *  • Generic hardware only — no brand likenesses, no trade dress.
  */
 import { useId, useMemo } from 'react';
+import { Platform } from 'react-native';
 import {
   Circle,
   ClipPath,
@@ -86,6 +87,13 @@ export const INK = {
   warn: '#ffc64d',
   info: '#6cc7ff',
 };
+
+/**
+ * `accessible` on an <Svg> groups the drawing for screen readers on iOS /
+ * Android; on the web react-native-svg forwards it to the DOM as a bogus
+ * boolean attribute (a console error on every render). Spread this instead.
+ */
+export const SVG_A11Y: { accessible?: boolean } = Platform.OS === 'web' ? {} : { accessible: true };
 
 /* ══ ids ═══════════════════════════════════════════════════════════════════ */
 

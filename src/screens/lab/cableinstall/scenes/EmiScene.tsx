@@ -45,7 +45,7 @@ import { OptionChip } from '../../cable/lessons/bits';
 import { DragSlider } from '../../foundations/bits';
 import { CiSection, RuleFeedback, announceComplete } from '../bits';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
-import { Callout, JacketPath, shade, useUid } from '../svgArt';
+import { Callout, JacketPath, shade, useUid, SVG_A11Y } from '../svgArt';
 import { CableSection } from './knowArt';
 import { CI_CLASS_TINTS } from '../data/cableTypes';
 import { CI_EMI_CHOICES } from '../data/scenarios';
@@ -282,7 +282,7 @@ function FieldArt({ w, src, dist, balanced, band }: { w: number; src: EmiSource;
 
   return (
     <View style={{ width: w, height: h }}>
-      <Svg accessible
+      <Svg {...SVG_A11Y}
         width={w}
         height={h}
         viewBox="0 0 360 150"

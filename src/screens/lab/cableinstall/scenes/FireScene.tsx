@@ -22,7 +22,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { OptionChip, VerdictBanner } from '../../cable/lessons/bits';
 import { CiSection, RuleFeedback, SpecCard, announceComplete, stableShuffle } from '../bits';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
-import { Callout, CeilingCut, ConcreteCut, JacketPath, StudWallCut } from '../svgArt';
+import { Callout, CeilingCut, ConcreteCut, JacketPath, StudWallCut, SVG_A11Y } from '../svgArt';
 import {
   ACircle,
   AG,
@@ -312,7 +312,7 @@ function BuildingArt({
   const route = sel ? ROUTES[sel] : null;
   const hl = sel ? HL[sel] : null;
   return (
-    <Svg accessible
+    <Svg {...SVG_A11Y}
       width={w}
       height={h}
       viewBox="0 0 360 224"

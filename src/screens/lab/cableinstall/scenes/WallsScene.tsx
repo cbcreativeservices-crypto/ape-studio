@@ -38,7 +38,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
-import { DashPath, shade, tint as lighten } from '../svgArt';
+import { DashPath, shade, tint as lighten, SVG_A11Y } from '../svgArt';
 import { BaseboardRaceway, DoorAssembly, FLOOR_Y, RackFront, RoughOpening, STUD_XS, StudBody, StudFrame, WallPlate, WallScale, WallSurface, thresholdPaths } from './wallsArt';
 /** Type-only: the motion kit re-exports the hooks, not the SharedValue type. */
 import type { SharedValue } from 'react-native-reanimated';
@@ -420,7 +420,7 @@ function RoomSvg({
   };
   const markerTint = (i: number) => (i < wallIdx ? colors.green : wallsActive && i === wallIdx ? colors.amber : '#55555e');
   return (
-    <Svg accessible
+    <Svg {...SVG_A11Y}
       width={w}
       height={h}
       viewBox={`0 0 ${VB_W} ${VB_H}`}

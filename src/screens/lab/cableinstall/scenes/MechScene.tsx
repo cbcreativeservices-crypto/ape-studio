@@ -57,7 +57,7 @@ import { memo, useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Defs, Ellipse, G, Line, LinearGradient, Path, RadialGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
-import { Callout, ConcreteCut, Connector, SvgCable, cableGeo, shade, tint as lighten, useUid } from '../svgArt';
+import { Callout, ConcreteCut, Connector, SvgCable, cableGeo, shade, tint as lighten, useUid, SVG_A11Y } from '../svgArt';
 import type { SharedValue } from 'react-native-reanimated';
 import { colors, fonts } from '../../../../theme/tokens';
 import { CiSection, RuleFeedback, SpecCard, announceComplete } from '../bits';
@@ -566,8 +566,8 @@ function PullStrip({ event, over }: { event: PullEvent['id'] | null; over: boole
       <Line x1={ropeX0} y1={26} x2={302} y2={26} stroke={rope} strokeWidth={4} strokeLinecap="round" />
       <Path d={twist.join('')} stroke={shade(rope, 0.35)} strokeWidth={0.7} />
       <Path d="M303 20 L313 26 L303 32" stroke={rope} strokeWidth={1.6} fill="none" strokeLinejoin="round" />
-      <Callout x={308} y={46} text="PULL" size={9} color={rope} bg={null} anchor="end" />
-      {byConnector ? <Callout x={175} y={47} text="LOAD ON THE TERMINATION" size={9} color="#ff7a68" bg={null} /> : null}
+      <Callout x={308} y={46} text="PULL" size={9.5} color={rope} bg={null} anchor="end" />
+      {byConnector ? <Callout x={175} y={47} text="LOAD ON THE TERMINATION" size={9.5} color="#ff7a68" bg={null} /> : null}
     </G>
   );
 }
@@ -625,7 +625,7 @@ const TensionMeter = memo(function TensionMeter({ w, h, target, event }: { w: nu
   for (let t = 0; t <= 150; t += 10) minor.push(`M${metX(t)} ${MET_Y + 12} v${t % 50 === 0 ? 6 : 3}`);
 
   return (
-    <Svg accessible
+    <Svg {...SVG_A11Y}
       width={w}
       height={h}
       viewBox={`0 0 320 ${MET_VB_H}`}
@@ -666,7 +666,7 @@ const TensionMeter = memo(function TensionMeter({ w, h, target, event }: { w: nu
           {String(tick)}
         </SvgText>
       ))}
-      <SvgText x={metX(100)} y={MET_Y - 7} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={9} letterSpacing={0.8} fill="#ff9b8f">
+      <SvgText x={metX(100)} y={MET_Y - 7} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={9.5} letterSpacing={0.8} fill="#ff9b8f">
         SPEC LIMIT
       </SvgText>
       <SvgText x={MET_X0} y={MET_Y - 7} textAnchor="start" fontFamily={fonts.mono} fontSize={11} fill={colors.amber}>

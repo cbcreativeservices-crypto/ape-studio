@@ -43,7 +43,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { OptionChip } from '../../cable/lessons/bits';
 import { CiSection, RuleFeedback, announceComplete } from '../bits';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
-import { Callout, Connector, JacketPath, shade, tint as lighten } from '../svgArt';
+import { Callout, Connector, JacketPath, shade, tint as lighten, SVG_A11Y } from '../svgArt';
 import { ConsoleTop, DistroTop, DockDoor, ForkliftTop, HazardEdge, MicStandTop, PLAN_LABEL, PlanLabel, RampTop, RigPointTop, RoadCaseTop, SeatRow, StageBoxTop, StageDeck, TapeStrip, WedgeTop } from './floorArt';
 import { CI_CLASS_TINTS } from '../data/cableTypes';
 import { CI_FLOOR_SCENARIOS, CI_OVERUNDER_STEPS, type CiRouteScenario } from '../data/scenarios';
@@ -356,7 +356,7 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
   const mic = CI_CLASS_TINTS.analog;
   const spk = CI_CLASS_TINTS.speaker;
   return (
-    <Svg accessible
+    <Svg {...SVG_A11Y}
       width={w}
       height={h}
       viewBox="0 0 360 205"
@@ -540,7 +540,7 @@ const phaseFor = (i: number, pick: number | null): RoutePhase => (pick == null ?
 function FohPlan({ w, pick }: { w: number; pick: number | null }) {
   const h = Math.round(w * (210 / 360));
   return (
-    <Svg accessible
+    <Svg {...SVG_A11Y}
       width={w}
       height={h}
       viewBox="0 0 360 210"
@@ -596,7 +596,7 @@ function FohPlan({ w, pick }: { w: number; pick: number | null }) {
 function BackstagePlan({ w, pick }: { w: number; pick: number | null }) {
   const h = Math.round(w * (210 / 360));
   return (
-    <Svg accessible
+    <Svg {...SVG_A11Y}
       width={w}
       height={h}
       viewBox="0 0 360 210"
@@ -1012,7 +1012,7 @@ function CoilArt({ w, signs, done }: { w: number; signs: number[]; done: boolean
   }, [done, m.reduce]);
 
   return (
-    <Svg accessible
+    <Svg {...SVG_A11Y}
       width={w}
       height={h}
       viewBox="0 0 360 150"

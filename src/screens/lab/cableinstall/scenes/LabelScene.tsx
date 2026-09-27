@@ -32,7 +32,7 @@ import { OptionChip, VerdictBanner } from '../../cable/lessons/bits';
 import { DragSlider } from '../../foundations/bits';
 import { CiSection, RuleFeedback, SpecCard, announceComplete } from '../bits';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
-import { Callout, Connector, JacketPath, shade, tint as lighten } from '../svgArt';
+import { Callout, Connector, JacketPath, shade, tint as lighten, SVG_A11Y } from '../svgArt';
 import {
   AG,
   APath,
@@ -195,7 +195,7 @@ function SystemArt({ w, labeled, found }: { w: number; labeled: boolean; found: 
   const h = Math.round((w * 150) / 360);
   const veil = useVeil(found, 0.74);
   return (
-    <Svg accessible
+    <Svg {...SVG_A11Y}
       width={w}
       height={h}
       viewBox="0 0 360 150"
@@ -466,7 +466,7 @@ function SlackArt({ w, v }: { w: number; v: number }) {
   });
 
   return (
-    <Svg accessible width={w} height={h} viewBox="0 0 220 110" accessibilityLabel={`Rack-end service loop visualization. ${CI_SLACK_SCENARIO.notes[zone]}`}>
+    <Svg {...SVG_A11Y} width={w} height={h} viewBox="0 0 220 110" accessibilityLabel={`Rack-end service loop visualization. ${CI_SLACK_SCENARIO.notes[zone]}`}>
       <Rect x={2} y={2} width={216} height={106} rx={8} fill="#101014" />
       {/* rack + the termination the loop serves */}
       <Rect x={8} y={10} width={56} height={92} rx={1.4} fill="#23252a" stroke="#0a0a0c" strokeWidth={0.7} />
