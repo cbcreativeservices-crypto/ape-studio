@@ -195,6 +195,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 17:16 · ccode · b5580bd5
+changed: Cable Install art pass, Stage 5 (Supports): all 17 hardware items and the span drawn as real objects
+affects other side: nothing — client JS only (Cable Install lab art)
+needs: nothing
+
 ### 2026-09-26 17:04 · ccode · 225de172
 changed: Cable Install art pass, Stage 4 (Mechanical protection): bend, pull and strap drawn as real objects
 affects other side: nothing — client JS only (Cable Install lab art)

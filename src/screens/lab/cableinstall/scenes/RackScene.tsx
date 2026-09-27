@@ -95,6 +95,10 @@ import {
   withSpring,
   withTiming,
 } from '../motion';
+import type { SharedValue } from 'react-native-reanimated';
+import { CableTie, HookLoopWrap, shade, tint as lighten, useUid } from '../svgArt';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
+import { AudioInterface, Amplifier, BlankPanel, C13Plug, DspInputs, HorizontalManager, NetworkSwitch, PatchPanel, PowerDistro, RK, RackFrame, RackPaints } from './rackArt';
 import type { CiModuleProps } from '../registry';
 
 /* ═══════════════════════ geometry (viewBox 340×420) ═══════════════════════ */
@@ -252,10 +256,70 @@ function SvgToggle({ show, delay = 0, dur = CI_MOTION.base, children }: { show: 
   );
 }
 
+/** One tonal layer of a jacketed cable riding a shared 0..1 install clock. */
+function JacketLayer({
+  d,
+  len,
+  p,
+  color,
+  width,
+  opacity = 1,
+  dx = 0,
+  dy = 0,
+}: {
+  d: string;
+  len: number;
+  p: SharedValue<number> | null;
+  color: string;
+  width: number;
+  opacity?: number;
+  dx?: number;
+  dy?: number;
+}) {
+  const own = useSharedValue(1);
+  const v = p ?? own;
+  const ap = useAnimatedProps(() => ({ strokeDashoffset: len * (1 - v.value) }));
+  const path = (
+    <APath
+      d={d}
+      stroke={color}
+      strokeWidth={width}
+      opacity={opacity}
+      fill="none"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeDasharray={p ? len : undefined}
+      strokeDashoffset={p ? len * (1 - v.value) : undefined}
+      animatedProps={p ? ap : undefined}
+    />
+  );
+  // a STATIC translate only (never animated) — the lit/shadow offsets
+  return dx || dy ? <G transform={`translate(${dx} ${dy})`}>{path}</G> : path;
+}
+
+/**
+ * A jacketed cable along `d`: contact shadow, core edge, body in the class
+ * tint, a sheen on the lit side (upper-left). `p` = the install clock (null =
+ * fully installed). The class tints are the lab's teaching colours; the body
+ * is taken a step darker so it reads as a PVC jacket rather than a neon line.
+ */
+function JacketCable({ d, len, p, color, width, opacity = 1 }: { d: string; len: number; p: SharedValue<number> | null; color: string; width: number; opacity?: number }) {
+  const body = shade(color, 0.22);
+  return (
+    <G opacity={opacity}>
+      <JacketLayer d={d} len={len} p={p} color="rgba(0,0,0,0.5)" width={width * 1.05} dx={width * 0.18} dy={width * 0.35} />
+      <JacketLayer d={d} len={len} p={p} color={shade(color, 0.66)} width={width} />
+      <JacketLayer d={d} len={len} p={p} color={body} width={width * 0.76} />
+      <JacketLayer d={d} len={len} p={p} color={lighten(body, 0.5)} width={Math.max(0.5, width * 0.24)} opacity={0.8} dx={-width * 0.17} dy={-width * 0.2} />
+    </G>
+  );
+}
+
 /**
  * A cable that installs itself along its route — useDrawIn's dash-reveal with
  * ENTRANCE rest semantics (not drawing ⇒ fully drawn, so a static rack, e.g.
- * the Phase-C BEFORE strip, renders complete on the first paint).
+ * the Phase-C BEFORE strip, renders complete on the first paint). Drawn as a
+ * shaded jacket (JacketCable), never a flat stroke.
  */
 function DrawPath({
   d,
@@ -289,23 +353,10 @@ function DrawPath({
     return () => cancelAnimation(p);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enter, delay, dur, len, m.reduce]);
-  const ap = useAnimatedProps(() => ({ strokeDashoffset: len * (1 - p.value) }));
-  return (
-    <APath
-      d={d}
-      stroke={color}
-      strokeWidth={width}
-      opacity={opacity}
-      fill="none"
-      strokeLinecap="round"
-      strokeDasharray={len}
-      strokeDashoffset={enter && !m.reduce ? len : 0}
-      animatedProps={ap}
-    />
-  );
+  return <JacketCable d={d} len={len} p={p} color={color} width={width} opacity={opacity} />;
 }
 
-/** Same reveal, for the coils and service loops that are drawn as ellipses. */
+/** Same reveal, for the coils and service loops (an ellipse as a path). */
 function DrawEllipse({
   cx,
   cy,
@@ -329,35 +380,8 @@ function DrawEllipse({
   enter: boolean;
   delay?: number;
 }) {
-  const m = useCiMotion();
-  const p = useSharedValue(enter && !m.reduce ? 0 : 1);
-  useEffect(() => {
-    cancelAnimation(p);
-    if (!enter || m.reduce) {
-      p.value = 1;
-      return;
-    }
-    p.value = 0;
-    p.value = withDelay(delay, withTiming(1, { duration: Math.min(CI_MOTION.draw, 240 + len * 1.9), easing: CI_EASE.out }));
-    return () => cancelAnimation(p);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enter, delay, len, m.reduce]);
-  const ap = useAnimatedProps(() => ({ strokeDashoffset: len * (1 - p.value) }));
-  return (
-    <AEllipse
-      cx={cx}
-      cy={cy}
-      rx={rx}
-      ry={ry}
-      stroke={color}
-      strokeWidth={width}
-      opacity={opacity}
-      fill="none"
-      strokeDasharray={len}
-      strokeDashoffset={enter && !m.reduce ? len : 0}
-      animatedProps={ap}
-    />
-  );
+  const d = `M${cx - rx} ${cy} a${rx} ${ry} 0 1 0 ${2 * rx} 0 a${rx} ${ry} 0 1 0 ${-2 * rx} 0`;
+  return <DrawPath d={d} len={len} color={color} width={width} opacity={opacity} enter={enter} delay={delay} />;
 }
 
 /** Spring a scalar to its target with the kit's UI spring (markers, ticks). */
@@ -409,147 +433,36 @@ function Band({ index, enter, children }: { index: number; enter: boolean; child
 const Chassis = memo(function Chassis({ dress, enter }: { dress: boolean; enter: boolean }) {
   return (
     <>
-      <Rect x={0} y={0} width={VB_W} height={VB_H} rx={12} fill="#0d0d11" />
+      <Rect x={0} y={0} width={VB_W} height={VB_H} rx={12} fill="#0b0b0e" />
       <Band index={0} enter={enter}>
-        {/* vertical cable managers, both sides */}
-        <Rect x={6} y={20} width={34} height={386} rx={5} fill="#141419" stroke="#26262c" strokeWidth={1} />
-        <Rect x={300} y={20} width={34} height={386} rx={5} fill="#141419" stroke="#26262c" strokeWidth={1} />
-        {MANAGER_SLOT_YS.map((y) => (
-          <G key={y}>
-            <Line x1={6} y1={y} x2={14} y2={y} stroke="#26262c" strokeWidth={2} />
-            <Line x1={32} y1={y} x2={40} y2={y} stroke="#26262c" strokeWidth={2} />
-            <Line x1={300} y1={y} x2={308} y2={y} stroke="#26262c" strokeWidth={2} />
-            <Line x1={326} y1={y} x2={334} y2={y} stroke="#26262c" strokeWidth={2} />
-          </G>
-        ))}
-        {/* rails + mounting holes */}
-        <Rect x={44} y={20} width={10} height={382} fill="#20202a" />
-        <Rect x={286} y={20} width={10} height={382} fill="#20202a" />
-        {RAIL_HOLE_YS.map((y) => (
-          <G key={y}>
-            <Circle cx={49} cy={y} r={1.7} fill="#0d0d11" />
-            <Circle cx={291} cy={y} r={1.7} fill="#0d0d11" />
-          </G>
-        ))}
-        <Rect x={44} y={402} width={252} height={9} rx={3} fill="#1a1a20" stroke="#2c2c33" strokeWidth={1} />
+        <RackFrame dress={dress} />
       </Band>
-
-      <Band index={1} enter={enter}>
-        {/* top panel + cable entry slot (dressed = finished grommet edge) */}
-        <Rect x={44} y={6} width={252} height={14} rx={3} fill="#1a1a20" stroke="#2c2c33" strokeWidth={1} />
-        <Rect x={150} y={9} width={80} height={8} rx={2.5} fill="#0a0a0e" />
-        {dress ? <Rect x={149} y={8} width={82} height={10} rx={3.5} fill="none" stroke="#4a4a52" strokeWidth={1.4} /> : null}
-      </Band>
-
-      {/* ── patch panel (2U) ── */}
       <Band index={2} enter={enter}>
-        <Rect x={54} y={46} width={232} height={40} rx={3} fill="#17171c" stroke="#2c2c33" strokeWidth={1} />
-        {PATCH_XS.map((cx) => (
-          <G key={cx}>
-            <Rect x={cx - 3.5} y={54} width={7} height={7} rx={1} fill="#101014" stroke="#3a3c42" strokeWidth={0.8} />
-            <Rect x={cx - 3.5} y={66} width={7} height={7} rx={1} fill="#101014" stroke="#3a3c42" strokeWidth={0.8} />
-          </G>
-        ))}
-        {dress
-          ? PATCH_XS.map((cx) => (
-              <Rect key={`lb${cx}`} x={cx - 5} y={78} width={10} height={5} rx={1} fill="#2a2416" stroke="#6b5a24" strokeWidth={0.7} />
-            ))
-          : null}
+        <PatchPanel xs={PATCH_XS} dress={dress} />
       </Band>
-
-      {/* ── horizontal manager ── */}
       <Band index={3} enter={enter}>
-        <Rect x={54} y={92} width={232} height={12} rx={2.5} fill="#1c1c22" stroke="#2c2c33" strokeWidth={1} />
-        {HMGR_XS.map((x) => (
-          <Line key={x} x1={x} y1={93} x2={x} y2={103} stroke="#101014" strokeWidth={3} />
-        ))}
+        <HorizontalManager xs={HMGR_XS} />
       </Band>
-
-      {/* ── network switch ── */}
       <Band index={4} enter={enter}>
-        <Rect x={54} y={110} width={232} height={28} rx={3} fill="#17171c" stroke="#2c2c33" strokeWidth={1} />
-        {SWITCH_XS.map((x, i) => (
-          <G key={x}>
-            <Rect x={x} y={119} width={11} height={9} rx={1} fill="#101014" stroke="#3a3c42" strokeWidth={0.8} />
-            <Circle cx={x + 5.5} cy={115} r={1.4} fill={i % 3 === 0 ? '#37d97b' : '#26332a'} />
-          </G>
-        ))}
-        <Rect x={262} y={117} width={16} height={12} rx={1.5} fill="#101014" stroke="#3a3c42" strokeWidth={0.8} />
+        <NetworkSwitch xs={SWITCH_XS} />
       </Band>
-
-      {/* ── DSP (numbered inputs only once the rack is dressed/labeled) ── */}
       <Band index={5} enter={enter}>
-        <Rect x={54} y={144} width={232} height={40} rx={3} fill="#17171c" stroke="#2c2c33" strokeWidth={1} />
-        {DSP_JACK_XS.map((cx, i) => (
-          <G key={cx}>
-            <Circle cx={cx} cy={162} r={6} fill="#101014" stroke="#3a3c42" strokeWidth={1} />
-            <Circle cx={cx} cy={162} r={1.6} fill="#26262c" />
-            {dress ? (
-              <SvgText x={cx} y={180} fontSize={7} fill="#8a8a92" fontFamily={fonts.mono} textAnchor="middle">
-                {String(i + 1)}
-              </SvgText>
-            ) : null}
-          </G>
-        ))}
+        <DspInputs xs={DSP_JACK_XS} dress={dress} />
       </Band>
-
-      {/* ── audio interface ── */}
       <Band index={6} enter={enter}>
-        <Rect x={54} y={190} width={232} height={28} rx={3} fill="#17171c" stroke="#2c2c33" strokeWidth={1} />
-        {IFACE_XS.map((cx) => (
-          <Circle key={cx} cx={cx} cy={204} r={5} fill="#101014" stroke="#3a3c42" strokeWidth={1} />
-        ))}
-        <Circle cx={244} cy={204} r={7} fill="#101014" stroke="#3a3c42" strokeWidth={1.2} />
-        <Circle cx={268} cy={204} r={7} fill="#101014" stroke="#3a3c42" strokeWidth={1.2} />
+        <AudioInterface xs={IFACE_XS} />
       </Band>
-
-      {/* ── blank 1U ── */}
       <Band index={7} enter={enter}>
-        <Rect x={54} y={224} width={232} height={16} rx={2.5} fill="#15151a" stroke="#26262c" strokeWidth={1} />
-        <Circle cx={62} cy={232} r={2} fill="#26262c" />
-        <Circle cx={278} cy={232} r={2} fill="#26262c" />
+        <BlankPanel y={224} h={16} />
       </Band>
-
-      {/* ── amplifier (connector field left · vent grille right) ── */}
       <Band index={8} enter={enter}>
-        <Rect x={54} y={248} width={232} height={68} rx={3} fill="#17171c" stroke="#2c2c33" strokeWidth={1} />
-        <Circle cx={78} cy={272} r={8.5} fill="#101014" stroke="#3a3c42" strokeWidth={1.2} />
-        <Line x1={78} y1={266} x2={78} y2={272} stroke="#3a3c42" strokeWidth={1.6} />
-        <Circle cx={106} cy={272} r={8.5} fill="#101014" stroke="#3a3c42" strokeWidth={1.2} />
-        <Line x1={106} y1={266} x2={106} y2={272} stroke="#3a3c42" strokeWidth={1.6} />
-        <Rect x={130} y={264} width={20} height={15} rx={2} fill="#101014" stroke="#3a3c42" strokeWidth={1} />
-        {AMP_VENT_XS.map((x) => (
-          <Line key={x} x1={x} y1={258} x2={x} y2={306} stroke="#101014" strokeWidth={3.5} />
-        ))}
-        {dress ? (
-          <>
-            <Rect x={70} y={288} width={16} height={6} rx={1} fill="#2a2416" stroke="#6b5a24" strokeWidth={0.7} />
-            <Rect x={98} y={288} width={16} height={6} rx={1} fill="#2a2416" stroke="#6b5a24" strokeWidth={0.7} />
-          </>
-        ) : null}
+        <Amplifier ventXs={AMP_VENT_XS} dress={dress} />
       </Band>
-
-      {/* ── power distro (inlets straight only when dressed) ── */}
       <Band index={9} enter={enter}>
-        <Rect x={54} y={326} width={232} height={30} rx={3} fill="#17171c" stroke="#2c2c33" strokeWidth={1} />
-        {DISTRO_XS.map((x) => (
-          <Rect key={x} x={x} y={334} width={15} height={11} rx={1.5} fill="#101014" stroke="#3a3c42" strokeWidth={0.9} />
-        ))}
-        <Circle cx={273} cy={340} r={4} fill="#101014" stroke="#3a3c42" strokeWidth={1} />
-        {dress ? (
-          <>
-            <Rect x={64} y={333} width={14} height={11} rx={1.5} fill="#101014" stroke="#5a5a64" strokeWidth={1.1} />
-            <Rect x={90} y={333} width={14} height={11} rx={1.5} fill="#101014" stroke="#5a5a64" strokeWidth={1.1} />
-            <Rect x={116} y={333} width={14} height={11} rx={1.5} fill="#101014" stroke="#5a5a64" strokeWidth={1.1} />
-          </>
-        ) : null}
+        <PowerDistro xs={DISTRO_XS} dress={dress} />
       </Band>
-
-      {/* ── blank 2U ── */}
       <Band index={10} enter={enter}>
-        <Rect x={54} y={362} width={232} height={24} rx={2.5} fill="#15151a" stroke="#26262c" strokeWidth={1} />
-        <Circle cx={62} cy={374} r={2} fill="#26262c" />
-        <Circle cx={278} cy={374} r={2} fill="#26262c" />
+        <BlankPanel y={362} h={24} />
       </Band>
     </>
   );
@@ -655,8 +568,13 @@ const BadCables = memo(function BadCables({ enter }: { enter: boolean }) {
       <DrawEllipse cx={40} cy={226} rx={13} ry={11} len={86} color={A} width={2.5} enter={enter} delay={at(380)} />
       <DrawEllipse cx={42} cy={227} rx={8} ry={7} len={56} color={N} width={2.5} enter={enter} delay={at(410)} />
       <SvgIn enter={enter} delay={at(470)}>
-        <Line x1={32} y1={214} x2={50} y2={238} stroke="#e8e8ea" strokeWidth={2} />
-        <Line x1={50} y1={214} x2={32} y2={238} stroke="#e8e8ea" strokeWidth={2} />
+        {/* two ties cinching the loops hard against the rail */}
+        <G transform="rotate(-40 41 226)">
+          <CableTie x={41} y={226} k={RK} halfH={12 / RK} />
+        </G>
+        <G transform="rotate(40 41 226)">
+          <CableTie x={41} y={226} k={RK} halfH={12 / RK} />
+        </G>
       </SvgIn>
 
       {/* ri-7 — ties cinched until the snake is oval (hourglass pinches) */}
@@ -669,8 +587,8 @@ const BadCables = memo(function BadCables({ enter }: { enter: boolean }) {
         delay={at(130)}
       />
       <SvgIn enter={enter} delay={at(300)}>
-        <Rect x={228} y={207} width={3} height={17} fill="#e8e8ea" />
-        <Rect x={270} y={207} width={3} height={17} fill="#e8e8ea" />
+        <CableTie x={229.5} y={216} k={RK} halfH={7.6 / RK} bite={1} />
+        <CableTie x={271.5} y={216} k={RK} halfH={7.6 / RK} bite={1} />
         <Ellipse cx={229.5} cy={216} rx={4.5} ry={8} stroke={flag} strokeWidth={1.3} fill="none" />
         <Ellipse cx={271.5} cy={216} rx={4.5} ry={8} stroke={flag} strokeWidth={1.3} fill="none" />
       </SvgIn>
@@ -680,8 +598,8 @@ const BadCables = memo(function BadCables({ enter }: { enter: boolean }) {
       <DrawPath d="M48 270 L170 271" len={132} color={A} width={3.5} enter={enter} delay={at(380)} />
       <DrawPath d="M48 277 L170 277" len={132} color={P} width={4} enter={enter} delay={at(410)} />
       <SvgIn enter={enter} delay={at(470)}>
-        <Rect x={56} y={258} width={2.5} height={23} fill="#e8e8ea" />
-        <Rect x={158} y={258} width={2.5} height={23} fill="#e8e8ea" />
+        <CableTie x={57} y={269.5} k={RK} halfH={10.5 / RK} />
+        <CableTie x={159} y={270} k={RK} halfH={10.5 / RK} />
       </SvgIn>
 
       {/* ri-6 — loom dressed straight across the amp's intake grille */}
@@ -700,13 +618,13 @@ const BadCables = memo(function BadCables({ enter }: { enter: boolean }) {
       <SvgIn enter={enter} delay={at(500)}>
         {/* static transforms — evaluated at render time, never animated */}
         <G transform="rotate(10 71 338)">
-          <Rect x={64} y={333} width={14} height={11} rx={1.5} fill="#101014" stroke="#5a5a64" strokeWidth={1.2} />
+          <C13Plug x={64} y={333} />
         </G>
         <G transform="rotate(14 97 338)">
-          <Rect x={90} y={333} width={14} height={11} rx={1.5} fill="#101014" stroke="#5a5a64" strokeWidth={1.2} />
+          <C13Plug x={90} y={333} />
         </G>
         <G transform="rotate(8 123 338)">
-          <Rect x={116} y={333} width={14} height={11} rx={1.5} fill="#101014" stroke="#5a5a64" strokeWidth={1.2} />
+          <C13Plug x={116} y={333} />
         </G>
         <Path d="M78 332 l4 -4 M104 331 l4 -4" stroke={flag} strokeWidth={1.2} fill="none" />
       </SvgIn>
@@ -800,21 +718,7 @@ function Loom({
 
   return (
     <G>
-      {install ? (
-        <APath
-          d={d}
-          stroke={tint}
-          strokeWidth={width}
-          fill="none"
-          strokeLinecap="round"
-          opacity={0.92}
-          strokeDasharray={draw.dashArray}
-          strokeDashoffset={draw.restOffset}
-          animatedProps={draw.animatedProps}
-        />
-      ) : (
-        <Path d={d} stroke={tint} strokeWidth={width} fill="none" strokeLinecap="round" opacity={0.92} />
-      )}
+      <JacketCable d={d} len={len} p={install ? draw.progress : null} color={tint} width={width} opacity={0.96} />
       {leaving ? <Retract d={leaving.d} len={leaving.len} tint={tint} width={width} /> : null}
       {flowRun ? (
         <APath
@@ -938,11 +842,15 @@ function Looms({
           />
         );
       })}
-      {/* manager straps riding over the dressed looms */}
+      {/* hook-and-loop wraps retaining the looms in the managers */}
       {TIE_YS.map((y) => (
-        <G key={y} opacity={0.8}>
-          <Line x1={10} y1={y} x2={36} y2={y} stroke="#5a5a64" strokeWidth={2.4} strokeLinecap="round" />
-          <Line x1={304} y1={y} x2={330} y2={y} stroke="#5a5a64" strokeWidth={2.4} strokeLinecap="round" />
+        <G key={y}>
+          <G transform={`rotate(90 23 ${y})`}>
+            <HookLoopWrap x={23} y={y} k={RK} halfH={13 / RK} width={16} />
+          </G>
+          <G transform={`rotate(90 317 ${y})`}>
+            <HookLoopWrap x={317} y={y} k={RK} halfH={13 / RK} width={16} />
+          </G>
         </G>
       ))}
     </AG>
@@ -1017,18 +925,19 @@ function TraceBeam({ run }: { run: boolean }) {
       />
       <SvgToggle show={run} delay={TRACE_DELAY + 120}>
         <Circle cx={175} cy={70} r={7.5} stroke={colors.amber} strokeWidth={2} fill="none" />
-        <Rect x={142} y={80} width={30} height={11} rx={2} fill="#26262c" stroke={colors.amber} strokeWidth={0.8} />
-        <SvgText x={157} y={88.5} fontSize={7} fill={colors.amber} fontFamily={fonts.mono} textAnchor="middle">
+        <Rect x={134} y={78} width={38} height={14} rx={2} fill="#26262c" stroke={colors.amber} strokeWidth={0.8} />
+        <SvgText x={153} y={88.6} fontSize={9.5} fill={colors.amber} fontFamily={fonts.mono} textAnchor="middle">
           A-07
         </SvgText>
       </SvgToggle>
       <SvgToggle show={run} delay={TRACE_DELAY + TRACE_DUR * 0.85}>
         <Circle cx={242} cy={162} r={10} stroke={colors.amber} strokeWidth={2.2} fill="none" />
-        <Rect x={252} y={140} width={30} height={11} rx={2} fill="#26262c" stroke={colors.amber} strokeWidth={0.8} />
-        <SvgText x={267} y={148.5} fontSize={7} fill={colors.amber} fontFamily={fonts.mono} textAnchor="middle">
+        <Rect x={250} y={136} width={38} height={14} rx={2} fill="#26262c" stroke={colors.amber} strokeWidth={0.8} />
+        <SvgText x={269} y={146.6} fontSize={9.5} fill={colors.amber} fontFamily={fonts.mono} textAnchor="middle">
           A-07
         </SvgText>
-        <SvgText x={242} y={185} fontSize={6.5} fill="#e6e6e6" fontFamily={fonts.mono} textAnchor="middle">
+        <Rect x={228} y={174} width={28} height={12} rx={2} fill="#101114" />
+        <SvgText x={242} y={183.4} fontSize={9.5} fill="#e6e6e6" fontFamily={fonts.mono} textAnchor="middle">
           IN 7
         </SvgText>
       </SvgToggle>
@@ -1154,7 +1063,7 @@ type CSel = { jack: number; ok: boolean } | null;
  * plays the Phase-B loom install. Both default OFF for secondary racks (the
  * Phase-C BEFORE strip), which must be complete on their first paint and must
  * never add animating nodes to a screen that already has a beam running.
- * No gradient or clip ids anywhere in this tree, so the two <Svg> roots on
+ * Gradient ids are per root (useUid → RackPaints), so the two <Svg> roots on
  * screen at once cannot collide.
  */
 function RackSvg({
@@ -1186,8 +1095,10 @@ function RackSvg({
 }) {
   const h = Math.round((w * VB_H) / VB_W);
   const dress = mode === 'dress';
+  const uid = useUid();
   return (
     <Svg width={w} height={h} viewBox={`0 0 ${VB_W} ${VB_H}`}>
+      <RackPaints uid={uid}>
       <Chassis dress={dress} enter={enter} />
       {dress ? (
         <Looms assigns={assigns ?? {}} wrongIds={wrongIds} dim={!!cSel?.ok} install={install} flowOn={flowOn} />
@@ -1199,6 +1110,7 @@ function RackSvg({
           veil and the beam have somewhere to animate FROM on the first trace */}
       {cSel !== undefined ? <TraceBeam run={!!cSel?.ok} /> : null}
       {cSel && !cSel.ok ? <WrongJack jack={cSel.jack} gen={wrongGen} /> : null}
+      </RackPaints>
     </Svg>
   );
 }
@@ -1538,6 +1450,85 @@ export function RackScene({ width, completed, onComplete, openSources }: CiModul
   const lastMistake = lastIssue ? (mistakeById(lastIssue.mistakeId) ?? null) : null;
   const activeGroupDef = activeGroup ? (CI_RACK_GROUPS.find((g) => g.id === activeGroup) ?? null) : null;
   const beforeW = Math.max(96, Math.min(130, Math.round(width * 0.34)));
+  const cControls = (
+          <View style={styles.jackRow}>
+            {DSP_JACK_XS.map((_, i) => {
+              const n = i + 1;
+              const sel = cSel?.jack === n;
+              return (
+                <Stagger key={n} index={i} from={6}>
+                  <Pressable
+                    style={[styles.jackBtn, sel && (cSel?.ok ? styles.jackBtnRight : styles.jackBtnWrong)]}
+                    onPress={() => pickJack(n)}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: sel }}
+                    aria-pressed={sel}
+                    accessibilityLabel={`DSP input ${n}`}
+                  >
+                    <Text style={[styles.jackBtnText, sel && { color: colors.textPrimary }]}>{n}</Text>
+                  </Pressable>
+                </Stagger>
+              );
+            })}
+          </View>
+  );
+  const bControls = (
+    <>
+          <View style={styles.chipWrap}>
+            {CI_RACK_GROUPS.map((g, gi) => {
+              const tint = CI_CLASS_TINTS[g.tintKey];
+              const zone = assigns[g.id];
+              const active = activeGroup === g.id;
+              const verdict = wrongB == null ? null : wrongB.includes(g.id) ? 'bad' : 'good';
+              return (
+                <Stagger key={g.id} index={gi} from={6}>
+                  <Pressable
+                    style={[styles.groupChip, active && styles.groupChipActive]}
+                    onPress={() => setActiveGroup(active ? null : g.id)}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: active }}
+                    aria-pressed={active}
+                    accessibilityLabel={`${g.name}${zone ? `, dressed to ${zoneById(zone)?.name ?? zone}` : ', not yet assigned'}${
+                      verdict ? (verdict === 'good' ? ', matches the plan' : ', off the plan') : ''
+                    }`}
+                  >
+                    <View style={[styles.groupDot, { backgroundColor: tint }]} />
+                    <Text style={styles.groupName}>{g.name.toUpperCase()}</Text>
+                    <Text
+                      style={[
+                        styles.groupZone,
+                        verdict === 'bad' && { color: '#ff9b8f' },
+                        verdict === 'good' && { color: colors.green },
+                      ]}
+                    >
+                      {verdict === 'good' ? '✓ ' : verdict === 'bad' ? '✕ ' : ''}
+                      {zone ? ZONE_SHORT[zone] : '—'}
+                    </Text>
+                  </Pressable>
+                </Stagger>
+              );
+            })}
+          </View>
+          {activeGroupDef ? (
+            <Appear key={activeGroupDef.id} style={styles.zoneCard}>
+              <Text style={styles.zoneHead}>DRESS {activeGroupDef.name.toUpperCase()} INTO…</Text>
+              {CI_RACK_ZONES.map((z, zi) => (
+                <Stagger key={z.id} index={zi} from={6}>
+                  <Pressable
+                    style={styles.zoneBtn}
+                    onPress={() => assignZone(z.id)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${z.name}. ${z.note}`}
+                  >
+                    <Text style={styles.zoneBtnName}>{z.name.toUpperCase()}</Text>
+                    <Text style={styles.zoneBtnNote}>{z.note}</Text>
+                  </Pressable>
+                </Stagger>
+              ))}
+            </Appear>
+          ) : null}
+    </>
+  );
 
   return (
     <View style={{ gap: 14 }}>
@@ -1567,50 +1558,60 @@ export function RackScene({ width, completed, onComplete, openSources }: CiModul
             {REQUIRED_FINDS}
             {' problems before you sign anything — tap what’s wrong, or open the suspect list and inspect location by location.'}
           </Text>
-          <View style={{ width, height: svgH }}>
-            <View
-              accessible
-              accessibilityRole="image"
-              accessibilityLabel="Rear view of a badly dressed equipment rack: patch field, horizontal manager, network switch, DSP, audio interface, amplifier, power distribution, and vertical cable managers on both sides. Cabling is tangled, taut, unlabeled and blocking vents."
-            >
-              <RackSvg
-                w={width}
-                mode="bad"
-                enter={intro}
-                found={found}
-                lastFound={lastFound}
-                /* every remaining loop stops the moment the inspection is
-                   satisfied — an ambient loop with nothing left to say is
-                   exactly the tell we are removing from this scene */
-                pulse={hotspots && found.size < REQUIRED_FINDS}
-              />
-            </View>
-            <Pressable
-              accessible={false}
-              importantForAccessibility="no"
-              onPress={onMissTap}
-              style={{ position: 'absolute', left: 0, top: 0, width, height: svgH }}
-            />
-            {CI_RACK_ISSUES.map((iss) => {
-              const hit = HIT[iss.id];
-              const rw = Math.max(44, hit.w * scale);
-              const rh = Math.max(44, hit.h * scale);
-              const left = (hit.x + hit.w / 2) * scale - rw / 2;
-              const top = (hit.y + hit.h / 2) * scale - rh / 2;
-              const isFound = found.has(iss.id);
-              return (
+          <ExpandableFigure
+            width={width}
+            aspect={VB_W / VB_H}
+            title="RACK"
+            badge="Tap what is wrong — every marker works at every zoom."
+            render={(fw) => (
+              <View style={{ width: fw, height: Math.round((fw * VB_H) / VB_W) }}>
+                <View
+                  accessible
+                  accessibilityRole="image"
+                  accessibilityLabel="Rear view of a badly dressed equipment rack: patch field, horizontal manager, network switch, DSP, audio interface, amplifier, power distribution, and vertical cable managers on both sides. Cabling is tangled, taut, unlabeled and blocking vents."
+                >
+                  <RackSvg
+                    w={fw}
+                    mode="bad"
+                    enter={intro}
+                    found={found}
+                    lastFound={lastFound}
+                    /* every remaining loop stops the moment the inspection is
+                       satisfied — an ambient loop with nothing left to say is
+                       exactly the tell we are removing from this scene */
+                    pulse={hotspots && found.size < REQUIRED_FINDS}
+                  />
+                </View>
                 <Pressable
-                  key={iss.id}
-                  onPress={() => findIssue(iss.id)}
-                  style={{ position: 'absolute', left, top, width: rw, height: rh }}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected: lastFound === iss.id }}
-                  aria-pressed={lastFound === iss.id}
-                  accessibilityLabel={`${hit.where}${isFound ? `. Flagged: ${iss.label}` : ''}`}
+                  accessible={false}
+                  importantForAccessibility="no"
+                  onPress={onMissTap}
+                  style={{ position: 'absolute', left: 0, top: 0, width: fw, height: Math.round((fw * VB_H) / VB_W) }}
                 />
-              );
-            })}
-          </View>
+                {CI_RACK_ISSUES.map((iss) => {
+                  const hit = HIT[iss.id];
+                  const sc = fw / VB_W;
+                  const rw = Math.max(44, hit.w * sc);
+                  const rh = Math.max(44, hit.h * sc);
+                  const left = (hit.x + hit.w / 2) * sc - rw / 2;
+                  const top = (hit.y + hit.h / 2) * sc - rh / 2;
+                  const isFound = found.has(iss.id);
+                  return (
+                    <Pressable
+                      key={iss.id}
+                      onPress={() => findIssue(iss.id)}
+                      style={{ position: 'absolute', left, top, width: rw, height: rh }}
+                      accessibilityRole="button"
+                      accessibilityState={{ selected: lastFound === iss.id }}
+                      aria-pressed={lastFound === iss.id}
+                      accessibilityLabel={`${hit.where}${isFound ? `. Flagged: ${iss.label}` : ''}`}
+                    />
+                  );
+                })}
+              </View>
+            )}
+            controls={<FoundCounter found={found.size} required={REQUIRED_FINDS} total={CI_RACK_ISSUES.length} />}
+          />
           <FoundCounter found={found.size} required={REQUIRED_FINDS} total={CI_RACK_ISSUES.length} />
           <OptionChip
             label={listOpen ? '▾ SUSPECT LIST' : '▸ SUSPECT LIST'}
@@ -1674,75 +1675,31 @@ export function RackScene({ width, completed, onComplete, openSources }: CiModul
       {phase === 'b' ? (
         <CiSection title="PHASE B — DRESS: ROUTE EVERY GROUP TO THE PLAN">
           <SpecCard text={CI_RACK_PLAN_NOTE} />
-          <View
-            accessible
-            accessibilityRole="image"
-            accessibilityLabel={`Rear view of the emptied rack. ${
-              Object.keys(assigns).length === 0
-                ? 'No cable groups dressed yet.'
-                : CI_RACK_GROUPS.filter((g) => assigns[g.id])
-                    .map((g) => `${g.name} dressed to ${zoneById(assigns[g.id])?.name ?? assigns[g.id]}`)
-                    .join('; ') + '.'
-            }`}
-          >
-            <RackSvg w={width} mode="dress" install assigns={assigns} wrongIds={wrongB} flowOn={flowOn} />
-          </View>
+          <ExpandableFigure
+            width={width}
+            aspect={VB_W / VB_H}
+            title="RACK"
+            render={(fw) => (
+              <View
+                accessible
+                accessibilityRole="image"
+                accessibilityLabel={`Rear view of the emptied rack. ${
+                  Object.keys(assigns).length === 0
+                    ? 'No cable groups dressed yet.'
+                    : CI_RACK_GROUPS.filter((g) => assigns[g.id])
+                        .map((g) => `${g.name} dressed to ${zoneById(assigns[g.id])?.name ?? assigns[g.id]}`)
+                        .join('; ') + '.'
+                }`}
+              >
+                <RackSvg w={fw} mode="dress" install assigns={assigns} wrongIds={wrongB} flowOn={flowOn} />
+              </View>
+            )}
+            controls={bControls}
+          />
           <Text style={styles.lead}>
             {'Six cable groups arrive at the top entry. Pick a group, then pick where it dresses. Looms draw as you assign — reassign freely until the plan is satisfied.'}
           </Text>
-          <View style={styles.chipWrap}>
-            {CI_RACK_GROUPS.map((g, gi) => {
-              const tint = CI_CLASS_TINTS[g.tintKey];
-              const zone = assigns[g.id];
-              const active = activeGroup === g.id;
-              const verdict = wrongB == null ? null : wrongB.includes(g.id) ? 'bad' : 'good';
-              return (
-                <Stagger key={g.id} index={gi} from={6}>
-                  <Pressable
-                    style={[styles.groupChip, active && styles.groupChipActive]}
-                    onPress={() => setActiveGroup(active ? null : g.id)}
-                    accessibilityRole="button"
-                    accessibilityState={{ selected: active }}
-                    aria-pressed={active}
-                    accessibilityLabel={`${g.name}${zone ? `, dressed to ${zoneById(zone)?.name ?? zone}` : ', not yet assigned'}${
-                      verdict ? (verdict === 'good' ? ', matches the plan' : ', off the plan') : ''
-                    }`}
-                  >
-                    <View style={[styles.groupDot, { backgroundColor: tint }]} />
-                    <Text style={styles.groupName}>{g.name.toUpperCase()}</Text>
-                    <Text
-                      style={[
-                        styles.groupZone,
-                        verdict === 'bad' && { color: '#ff9b8f' },
-                        verdict === 'good' && { color: colors.green },
-                      ]}
-                    >
-                      {verdict === 'good' ? '✓ ' : verdict === 'bad' ? '✕ ' : ''}
-                      {zone ? ZONE_SHORT[zone] : '—'}
-                    </Text>
-                  </Pressable>
-                </Stagger>
-              );
-            })}
-          </View>
-          {activeGroupDef ? (
-            <Appear key={activeGroupDef.id} style={styles.zoneCard}>
-              <Text style={styles.zoneHead}>DRESS {activeGroupDef.name.toUpperCase()} INTO…</Text>
-              {CI_RACK_ZONES.map((z, zi) => (
-                <Stagger key={z.id} index={zi} from={6}>
-                  <Pressable
-                    style={styles.zoneBtn}
-                    onPress={() => assignZone(z.id)}
-                    accessibilityRole="button"
-                    accessibilityLabel={`${z.name}. ${z.note}`}
-                  >
-                    <Text style={styles.zoneBtnName}>{z.name.toUpperCase()}</Text>
-                    <Text style={styles.zoneBtnNote}>{z.note}</Text>
-                  </Pressable>
-                </Stagger>
-              ))}
-            </Appear>
-          ) : null}
+          {bControls}
           {wrongB != null ? (
             wrongB.length === 0 ? (
               <Appear delay={CI_MOTION.quick}>
@@ -1788,50 +1745,39 @@ export function RackScene({ width, completed, onComplete, openSources }: CiModul
       {phase === 'c' ? (
         <CiSection title="PHASE C — SERVICE: THE 30-SECOND SWAP">
           <SpecCard text="WORK ORDER — DSP INPUT 7 reads dead at the console. Identify that one cable end-to-end and replace it. Nothing else may be disturbed: the system is live." />
-          <View style={{ width, height: svgH }}>
-            <View
-              accessible
-              accessibilityRole="image"
-              accessibilityLabel={
-                cSel?.ok
-                  ? 'Dressed rack in trace mode: one cable highlighted from patch label A-07 down the left manager to DSP input 7; every other loom dimmed.'
-                  : 'Rear view of the dressed rack. The DSP row has eight numbered inputs.'
-              }
-            >
-              <RackSvg w={width} mode="dress" assigns={planAssigns} cSel={cSel} wrongGen={wrongGen} />
-            </View>
-            {DSP_JACK_XS.map((cx, i) => (
-              <Pressable
-                key={cx}
-                accessible={false}
-                importantForAccessibility="no"
-                onPress={() => pickJack(i + 1)}
-                hitSlop={3}
-                style={{ position: 'absolute', left: (cx - 14) * scale, top: 146 * scale, width: 28 * scale, height: 34 * scale }}
-              />
-            ))}
-          </View>
-          <Text style={styles.lead}>{'Tap DSP INPUT 7 on the rack — or use the input list.'}</Text>
-          <View style={styles.jackRow}>
-            {DSP_JACK_XS.map((_, i) => {
-              const n = i + 1;
-              const sel = cSel?.jack === n;
-              return (
-                <Stagger key={n} index={i} from={6}>
+          <ExpandableFigure
+            width={width}
+            aspect={VB_W / VB_H}
+            title="RACK"
+            render={(fw) => (
+              <View style={{ width: fw, height: Math.round((fw * VB_H) / VB_W) }}>
+                <View
+                  accessible
+                  accessibilityRole="image"
+                  accessibilityLabel={
+                    cSel?.ok
+                      ? 'Dressed rack in trace mode: one cable highlighted from patch label A-07 down the left manager to DSP input 7; every other loom dimmed.'
+                      : 'Rear view of the dressed rack. The DSP row has eight numbered inputs.'
+                  }
+                >
+                  <RackSvg w={fw} mode="dress" assigns={planAssigns} cSel={cSel} wrongGen={wrongGen} />
+                </View>
+                {DSP_JACK_XS.map((cx, i) => (
                   <Pressable
-                    style={[styles.jackBtn, sel && (cSel?.ok ? styles.jackBtnRight : styles.jackBtnWrong)]}
-                    onPress={() => pickJack(n)}
-                    accessibilityRole="button"
-                    accessibilityState={{ selected: sel }}
-                    aria-pressed={sel}
-                    accessibilityLabel={`DSP input ${n}`}
-                  >
-                    <Text style={[styles.jackBtnText, sel && { color: colors.textPrimary }]}>{n}</Text>
-                  </Pressable>
-                </Stagger>
-              );
-            })}
-          </View>
+                    key={cx}
+                    accessible={false}
+                    importantForAccessibility="no"
+                    onPress={() => pickJack(i + 1)}
+                    hitSlop={3}
+                    style={{ position: 'absolute', left: (cx - 14) * (fw / VB_W), top: 146 * (fw / VB_W), width: 28 * (fw / VB_W), height: 34 * (fw / VB_W) }}
+                  />
+                ))}
+              </View>
+            )}
+            controls={cControls}
+          />
+          <Text style={styles.lead}>{'Tap DSP INPUT 7 on the rack — or use the input list.'}</Text>
+          {cControls}
           {cSel && !cSel.ok ? (
             <Appear key={`wrong-${wrongGen}`}>
               <VerdictBanner
