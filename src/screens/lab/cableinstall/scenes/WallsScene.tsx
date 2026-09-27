@@ -37,7 +37,9 @@
  */
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, StyleSheet, Text, View } from 'react-native';
-import Svg, { Circle, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import { DashPath, shade, tint as lighten } from '../svgArt';
+import { BaseboardRaceway, DoorAssembly, FLOOR_Y, RackFront, RoughOpening, STUD_XS, StudBody, StudFrame, WallPlate, WallScale, WallSurface, thresholdPaths } from './wallsArt';
 /** Type-only: the motion kit re-exports the hooks, not the SharedValue type. */
 import type { SharedValue } from 'react-native-reanimated';
 import { colors, fonts } from '../../../../theme/tokens';
@@ -193,18 +195,20 @@ function InstalledRun({
   width: number;
   delay?: number;
 }) {
-  const { animatedProps, dashArray, restOffset } = useDrawIn(len, { run: true, delay });
+  const { progress } = useDrawIn(len, { run: true, delay });
+  const body = shade(color, 0.25);
+  const lay = { fill: 'none', strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
   return (
-    <APath
-      d={d}
-      stroke={color}
-      strokeWidth={width}
-      fill="none"
-      strokeLinecap="round"
-      strokeDasharray={dashArray}
-      strokeDashoffset={restOffset}
-      animatedProps={animatedProps}
-    />
+    <G>
+      <G transform={`translate(${width * 0.2} ${width * 0.35})`}>
+        <DashPath pv={progress} len={len} d={d} stroke="rgba(0,0,0,0.5)" strokeWidth={width} {...lay} />
+      </G>
+      <DashPath pv={progress} len={len} d={d} stroke={shade(color, 0.65)} strokeWidth={width} {...lay} />
+      <DashPath pv={progress} len={len} d={d} stroke={body} strokeWidth={width * 0.74} {...lay} />
+      <G transform={`translate(${-width * 0.16} ${-width * 0.2})`}>
+        <DashPath pv={progress} len={len} d={d} stroke={lighten(body, 0.5)} strokeWidth={width * 0.24} opacity={0.8} {...lay} />
+      </G>
+    </G>
   );
 }
 
@@ -238,10 +242,15 @@ function ConcealedRun({ d, len, color, width, xr }: { d: string; len: number; co
   );
 }
 
-/** One x-ray stud, arriving on its own beat off the shared x-ray driver. */
+/** One x-ray stud (38 mm at 16 in centres), arriving on its own beat off the
+ *  shared x-ray driver. */
 function Stud({ x, index, xr }: { x: number; index: number; xr: SharedValue<number> }) {
-  const p = useAnimatedProps(() => ({ opacity: mapRange(xr.value, index * 0.045, index * 0.045 + 0.5, 0, 1) }));
-  return <ALine x1={x} y1={16} x2={x} y2={160} stroke="#2e2e36" strokeWidth={2} strokeDasharray="5 5" opacity={0} animatedProps={p} />;
+  const p = useAnimatedProps(() => ({ opacity: mapRange(xr.value, index * 0.03, index * 0.03 + 0.5, 0, 1) }));
+  return (
+    <AG opacity={0} animatedProps={p}>
+      <StudBody x={x} />
+    </AG>
+  );
 }
 
 /** Wall marker ①②③ — breathes while unanswered, springs home when answered. */
@@ -274,13 +283,9 @@ function RatedZone({ active }: { active: boolean }) {
   );
 }
 
-/** The threshold protector, dropped in with mass (CI_EASE.physical overshoots,
- *  so it presses into the floor a hair before settling). */
-const protectorD = (dy: number) => {
-  'worklet';
-  return `M280 ${(167 - dy).toFixed(2)} L288 ${(160 - dy).toFixed(2)} L304 ${(160 - dy).toFixed(2)} L312 ${(167 - dy).toFixed(2)} Z`;
-};
-
+/** The threshold protector (black ramps, yellow lid), dropped in with mass
+ *  (CI_EASE.physical overshoots, so it presses into the floor a hair before
+ *  settling). */
 function Protector({ on }: { on: boolean }) {
   const m = useCiMotion();
   const t = useSharedValue(on ? 1 : 0);
@@ -294,12 +299,15 @@ function Protector({ on }: { on: boolean }) {
     return () => cancelAnimation(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [on, m.reduce]);
-  const rest = useRest(on ? 0.9 : 0);
-  const p = useAnimatedProps(() => ({
-    d: protectorD((1 - t.value) * 26),
-    opacity: Math.min(0.9, t.value * 2.2),
-  }));
-  return <APath d={protectorD(0)} fill={colors.amber} opacity={rest} animatedProps={p} />;
+  const rest = useRest(on ? 1 : 0);
+  const body = useAnimatedProps(() => ({ d: thresholdPaths((1 - t.value) * 26).body, opacity: Math.min(1, t.value * 2.2) }));
+  const lid = useAnimatedProps(() => ({ d: thresholdPaths((1 - t.value) * 26).lid, opacity: Math.min(1, t.value * 2.2) }));
+  return (
+    <>
+      <APath d={thresholdPaths(0).body} fill="#1b1c20" stroke="#050506" strokeWidth={0.5} opacity={rest} animatedProps={body} />
+      <APath d={thresholdPaths(0).lid} fill="#e3b73a" stroke="#6b5520" strokeWidth={0.4} opacity={rest} animatedProps={lid} />
+    </>
+  );
 }
 
 /**
@@ -321,11 +329,17 @@ function DoorCrossing({ relieved, active }: { relieved: boolean; active: boolean
   const k = useSettle(relieved ? 0 : 1, { spring: CI_SPRING });
   const breath = useBreath({ run: active && !relieved, period: 1250 });
   const rest = useRest(relieved ? 0 : 1);
-  const run = useAnimatedProps(() => ({ d: doorD(k.value), strokeWidth: 3.1 - k.value }));
+  const edge = useAnimatedProps(() => ({ d: doorD(k.value), strokeWidth: 3.1 - k.value }));
+  const run = useAnimatedProps(() => ({ d: doorD(k.value), strokeWidth: (3.1 - k.value) * 0.74 }));
+  const sheen = useAnimatedProps(() => ({ d: doorD(k.value), strokeWidth: (3.1 - k.value) * 0.24 }));
   const stress = useAnimatedProps(() => ({ opacity: k.value * (0.55 + 0.45 * breath.value) }));
   return (
     <>
-      <APath d={doorD(rest)} stroke="#37d97b" strokeWidth={3.1 - rest} fill="none" strokeLinecap="round" animatedProps={run} />
+      <APath d={doorD(rest)} stroke={shade('#37d97b', 0.65)} strokeWidth={3.1 - rest} fill="none" strokeLinecap="round" animatedProps={edge} />
+      <APath d={doorD(rest)} stroke={shade('#37d97b', 0.25)} strokeWidth={(3.1 - rest) * 0.74} fill="none" strokeLinecap="round" animatedProps={run} />
+      <G transform="translate(-0.4 -0.5)">
+        <APath d={doorD(rest)} stroke={lighten(shade('#37d97b', 0.25), 0.5)} strokeWidth={(3.1 - rest) * 0.24} fill="none" strokeLinecap="round" opacity={0.8} animatedProps={sheen} />
+      </G>
       <APath d="M285 157.6 L290 153.6 L295 157.6" stroke="#ff5a48" strokeWidth={1.6} fill="none" opacity={rest} animatedProps={stress} />
     </>
   );
@@ -350,14 +364,23 @@ function EdgeExit({ bushed, active }: { bushed: boolean; active: boolean }) {
   const ring = useSettle(bushed ? 1 : 0, { spring: SPRING_UI });
   const breath = useBreath({ run: active && !bushed, period: 1350, delay: 120 });
   const rest = useRest(bushed ? 0 : 1);
+  const edge = useAnimatedProps(() => ({ d: edgeD(k.value) }));
   const run = useAnimatedProps(() => ({ d: edgeD(k.value) }));
+  const sheen = useAnimatedProps(() => ({ d: edgeD(k.value) }));
   const stress = useAnimatedProps(() => ({ opacity: k.value * (0.6 + 0.4 * breath.value) }));
   const bush = useAnimatedProps(() => ({ r: 5.5 * ring.value, opacity: Math.min(1, ring.value * 1.6) }));
+  const bushHi = useAnimatedProps(() => ({ r: 5.5 * ring.value, opacity: 0.6 * Math.min(1, ring.value * 1.6) }));
   return (
     <>
-      <APath d={edgeD(rest)} stroke="#4fd0e0" strokeWidth={3} fill="none" strokeLinecap="round" animatedProps={run} />
+      <APath d={edgeD(rest)} stroke={shade('#4fd0e0', 0.65)} strokeWidth={3} fill="none" strokeLinecap="round" animatedProps={edge} />
+      <APath d={edgeD(rest)} stroke={shade('#4fd0e0', 0.25)} strokeWidth={2.2} fill="none" strokeLinecap="round" animatedProps={run} />
+      <G transform="translate(-0.5 -0.3)">
+        <APath d={edgeD(rest)} stroke={lighten(shade('#4fd0e0', 0.25), 0.5)} strokeWidth={0.7} fill="none" strokeLinecap="round" opacity={0.8} animatedProps={sheen} />
+      </G>
       <APath d="M146 71 L151 77 L157 73" stroke="#ff5a48" strokeWidth={1.6} fill="none" opacity={rest} animatedProps={stress} />
-      <ACircle cx={151} cy={77} r={5.5 * (1 - rest)} fill="none" stroke={colors.green} strokeWidth={2} opacity={1 - rest} animatedProps={bush} />
+      {/* the rubber grommet: black ring, lit rim */}
+      <ACircle cx={151} cy={77} r={5.5 * (1 - rest)} fill="none" stroke="#141518" strokeWidth={2.6} opacity={1 - rest} animatedProps={bush} />
+      <ACircle cx={151} cy={77} r={5.5 * (1 - rest)} fill="none" stroke={colors.green} strokeWidth={0.8} opacity={0.6 * (1 - rest)} animatedProps={bushHi} />
     </>
   );
 }
@@ -403,36 +426,22 @@ function RoomSvg({
       viewBox={`0 0 ${VB_W} ${VB_H}`}
       accessibilityLabel={`Room elevation: equipment rack at left, wall device mid-wall, unfinished opening above it, doorway at right. Three candidate routes A, B, C and three numbered wall zones. X-ray ${xray ? 'on' : 'off'}.`}
     >
-      <Rect x={2} y={6} width={356} height={186} rx={10} fill="#15151a" stroke="#26262c" strokeWidth={1.5} />
+      <Rect x={2} y={6} width={356} height={186} rx={10} fill="#101014" />
+      <WallSurface />
 
-      {/* X-RAY: the wall becomes transparent — cavity wash, then studs on a
-          stagger. Always mounted so this is a dissolve, never a slide swap. */}
-      <ARect x={4} y={14} width={352} height={150} fill="rgba(79,208,224,.045)" opacity={0} animatedProps={cavity} />
-      {[84, 104, 128, 152, 176, 200, 232, 256, 340].map((x, i) => (
+      {/* X-RAY: the wall becomes transparent — cavity wash, the framing, then
+          studs on a stagger. Always mounted so this is a dissolve, never a
+          slide swap. */}
+      <ARect x={4} y={14} width={352} height={FLOOR_Y - 14} fill="#0d0e11" opacity={0} animatedProps={cavity} />
+      <AG opacity={0} animatedProps={cavity}>
+        <StudFrame />
+      </AG>
+      {STUD_XS.map((x, i) => (
         <Stud key={x} x={x} index={i} xr={xr} />
       ))}
 
-      {/* floor + baseboard */}
-      <Rect x={2} y={162} width={356} height={8} fill="#1b1b21" />
-      <Line x1={2} y1={170} x2={358} y2={170} stroke="#2c2c33" strokeWidth={2} />
-      <Rect x={2} y={170} width={356} height={22} fill="#0e0e11" />
-
-      {/* rack (left) */}
-      <Rect x={16} y={58} width={54} height={112} fill="#101014" stroke="#3a3c42" strokeWidth={1.4} />
-      <Line x1={24} y1={62} x2={24} y2={166} stroke="#26262c" strokeWidth={1.5} />
-      <Line x1={62} y1={62} x2={62} y2={166} stroke="#26262c" strokeWidth={1.5} />
-      {[74, 90, 106, 122, 138, 154].map((y) => (
-        <Line key={y} x1={24} y1={y} x2={62} y2={y} stroke="#26262c" strokeWidth={1} />
-      ))}
-      <Rect x={26} y={76} width={32} height={10} rx={1.5} fill="#17171c" stroke="#33333c" strokeWidth={0.8} />
-      <Rect x={26} y={124} width={32} height={10} rx={1.5} fill="#17171c" stroke="#33333c" strokeWidth={0.8} />
-      <Circle cx={55} cy={81} r={1.6} fill={colors.amber} />
-
-      {/* wall device (destination plate) */}
-      <Rect x={206} y={108} width={18} height={26} rx={2} fill="#17171c" stroke="#6f7378" strokeWidth={1.2} />
-      <Circle cx={215} cy={117} r={3} fill="none" stroke="#4fd0e0" strokeWidth={1.4} />
-      <Circle cx={215} cy={128} r={1.2} fill="#55555e" />
-
+      <RackFront />
+      <WallPlate x={215} y={121} />
       {/* rated-wall zone (scenario 2, wall 2) + unknown zone (wall 3) */}
       <RatedZone active={wallsActive && wallIdx === 1} />
       <Rect x={328} y={54} width={26} height={104} fill="rgba(255,255,255,.02)" stroke="#3a3a44" strokeWidth={1} strokeDasharray="4 4" />
@@ -440,28 +449,21 @@ function RoomSvg({
         ?
       </SvgText>
 
-      {/* doorway (right): jambs, header, ajar slab with a gap beneath */}
-      <Rect x={268} y={42} width={56} height={10} fill="#26262c" />
-      <Rect x={268} y={50} width={6} height={120} fill="#26262c" />
-      <Rect x={318} y={50} width={6} height={120} fill="#26262c" />
-      <Path d="M276 50 L312 56 L312 160 L276 166 Z" fill="#191920" stroke="#33333c" strokeWidth={1.2} />
-      <Circle cx={306} cy={110} r={2} fill="#6f7378" />
-
-      {/* unfinished opening + its exiting cable (scenario 4) */}
-      <Path d="M132 62 L149 58 L156 66 L153 78 L138 82 L130 72 Z" fill="#0b0b0e" stroke="#55555e" strokeWidth={1.3} />
+      <DoorAssembly />
+      <RoughOpening />
       <ConcealedRun d="M138 70 L150 76" len={14} color="#4fd0e0" width={2.5} xr={xr} />
       <EdgeExit bushed={bushed} active={edgeActive} />
 
       {/* ROUTE A — baseboard raceway + fittings + in-wall riser to the plate */}
       <FadeGroup to={emph('a')}>
-        <Rect x={70} y={152} width={144} height={10} rx={2} fill="#101014" stroke="#4fd0e0" strokeWidth={1.4} />
-        <Rect x={66} y={150} width={8} height={14} rx={1.5} fill="#17171c" stroke="#4fd0e0" strokeWidth={1.2} />
-        <Rect x={208} y={148} width={12} height={16} rx={2} fill="#17171c" stroke="#4fd0e0" strokeWidth={1.2} />
-        {/* candidate ghost, then the install draws over it on the tap */}
-        <Line x1={76} y1={157} x2={206} y2={157} stroke="#4fd0e0" strokeWidth={1.4} opacity={0.5} />
+        <BaseboardRaceway tone="#4fd0e0" />
+        {/* candidate ghost, then the install draws over it on the tap — seen
+            through the raceway cover, which is where the cable actually is */}
+        <Line x1={76} y1={157} x2={206} y2={157} stroke="#4fd0e0" strokeWidth={1.2} opacity={0.5} />
         {routePick === 'a' ? <InstalledRun d="M76 157 H206" len={130} color="#4fd0e0" width={2.4} /> : null}
+        <Rect x={70} y={151} width={144} height={10} rx={1.2} fill="#d9d7d0" opacity={0.45} />
         {/* the riser is IN the wall — concealed until the x-ray comes up */}
-        <ConcealedRun d="M215 150 L215 134" len={16} color="#4fd0e0" width={2} xr={xr} />
+        <ConcealedRun d="M215 146.5 L215 129.5" len={17} color="#4fd0e0" width={2} xr={xr} />
         <Circle cx={140} cy={157} r={9.5} fill="#101014" stroke="#4fd0e0" strokeWidth={1.4} />
         <SvgText x={140} y={161} fill="#4fd0e0" fontSize={10.5} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">
           A
@@ -470,8 +472,8 @@ function RoomSvg({
 
       {/* ROUTE B — diagonal surface run across the open wall */}
       <FadeGroup to={emph('b')}>
-        <Path d="M70 64 Q140 88 206 112" stroke="#ffd35e" strokeWidth={1.6} fill="none" strokeLinecap="round" opacity={0.5} />
-        {routePick === 'b' ? <InstalledRun d="M70 64 Q140 88 206 112" len={152} color="#ffd35e" width={4} /> : null}
+        <Path d="M70 64 Q140 88 206 112" stroke="#ffd35e" strokeWidth={1.2} fill="none" strokeLinecap="round" opacity={0.5} />
+        {routePick === 'b' ? <InstalledRun d="M70 64 Q140 88 206 112" len={152} color="#ffd35e" width={3.2} /> : null}
         <Circle cx={128} cy={84} r={9.5} fill="#101014" stroke="#ffd35e" strokeWidth={1.4} />
         <SvgText x={128} y={88} fill="#ffd35e" fontSize={10.5} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">
           B
@@ -480,8 +482,8 @@ function RoomSvg({
 
       {/* ROUTE C — floor run through the doorway gap (continues off-room) */}
       <FadeGroup to={emph('c')}>
-        <Path d="M70 167 H266" stroke="#37d97b" strokeWidth={1.6} fill="none" strokeLinecap="round" opacity={0.5} />
-        {routePick === 'c' ? <InstalledRun d="M70 167 H266" len={196} color="#37d97b" width={3.4} /> : null}
+        <Path d="M70 167 H266" stroke="#37d97b" strokeWidth={1.2} fill="none" strokeLinecap="round" opacity={0.5} />
+        {routePick === 'c' ? <InstalledRun d="M70 167 H266" len={196} color="#37d97b" width={3} /> : null}
         <DoorCrossing relieved={protectorOn} active={doorActive} />
         <Path d="M316 167 L344 167" stroke="#37d97b" strokeWidth={2.5} fill="none" strokeDasharray="4 4" />
         <Path d="M344 163 L352 167 L344 171 Z" fill="#37d97b" />
@@ -493,6 +495,8 @@ function RoomSvg({
 
       {/* scenario 3: the protector drops in over the crossing */}
       <Protector on={protectorOn} />
+
+      <WallScale />
 
       {/* scenario 2 wall markers ① ② ③ */}
       {[110, 247, 341].map((x, i) => (
