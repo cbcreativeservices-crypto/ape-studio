@@ -55,7 +55,9 @@
  */
 import { memo, useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
-import Svg, { Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Defs, Ellipse, G, Line, LinearGradient, Path, RadialGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
+import { Callout, ConcreteCut, Connector, SvgCable, cableGeo, shade, tint as lighten, useUid } from '../svgArt';
 import type { SharedValue } from 'react-native-reanimated';
 import { colors, fonts } from '../../../../theme/tokens';
 import { CiSection, RuleFeedback, SpecCard, announceComplete } from '../bits';
@@ -118,22 +120,78 @@ const CX = 150; // the elbow: horizontal run under the ceiling → drop down the
 const CY = 26;
 const R_FLOOR_PX = 2.4; // spring overshoot must never invert the arc
 
-/** The cable itself — memoised on stable props so a drag never re-renders it. */
-const BendCable = memo(function BendCable({ tint, restDia, rSv }: { tint: string; restDia: number; rSv: SharedValue<number> }) {
-  const animatedProps = useAnimatedProps(() => {
-    const r = Math.max(R_FLOOR_PX, rSv.value * DIA_PX);
-    return { d: `M 9 ${CY} H ${(CX - r).toFixed(2)} A ${r.toFixed(2)} ${r.toFixed(2)} 0 0 1 ${CX} ${(CY + r).toFixed(2)} V 124` };
-  });
-  const rest = Math.max(R_FLOOR_PX, restDia * DIA_PX);
+/** The bend's centreline, offset by (ox, oy) — worklet so every layer of the
+ *  jacket rides the same spring. */
+function bendD(rv: number, ox: number, oy: number) {
+  'worklet';
+  const r = Math.max(R_FLOOR_PX, rv * DIA_PX);
+  return `M ${9 + ox} ${CY + oy} H ${(CX - r + ox).toFixed(2)} A ${r.toFixed(2)} ${r.toFixed(2)} 0 0 1 ${CX + ox} ${(CY + r + oy).toFixed(2)} V ${124 + oy}`;
+}
+
+/** One tonal layer of the jacket (shadow / edge / body / sheen / glint). */
+const BendLayer = memo(function BendLayer({
+  rSv,
+  restDia,
+  ox,
+  oy,
+  color,
+  width,
+  opacity = 1,
+}: {
+  rSv: SharedValue<number>;
+  restDia: number;
+  ox: number;
+  oy: number;
+  color: string;
+  width: number;
+  opacity?: number;
+}) {
+  const animatedProps = useAnimatedProps(() => ({ d: bendD(rSv.value, ox, oy) }));
   return (
     <APath
-      d={`M 9 ${CY} H ${CX - rest} A ${rest} ${rest} 0 0 1 ${CX} ${CY + rest} V 124`}
-      stroke={tint}
-      strokeWidth={DIA_PX}
+      d={bendD(restDia, ox, oy)}
+      stroke={color}
+      strokeWidth={width}
       strokeLinecap="round"
+      strokeLinejoin="round"
       fill="none"
+      opacity={opacity}
       animatedProps={animatedProps}
     />
+  );
+});
+
+/** The cable itself: a shaded jacket (contact shadow, core edge, body, sheen,
+ *  glint) — memoised on stable props so a drag never re-renders it. */
+const BendCable = memo(function BendCable({ tint, restDia, rSv }: { tint: string; restDia: number; rSv: SharedValue<number> }) {
+  const body = shade(tint, 0.28);
+  return (
+    <>
+      <BendLayer rSv={rSv} restDia={restDia} ox={0.7} oy={1.3} color="rgba(0,0,0,0.5)" width={DIA_PX * 1.05} />
+      <BendLayer rSv={rSv} restDia={restDia} ox={0} oy={0} color={shade(tint, 0.66)} width={DIA_PX} />
+      <BendLayer rSv={rSv} restDia={restDia} ox={0} oy={0} color={body} width={DIA_PX * 0.78} />
+      <BendLayer rSv={rSv} restDia={restDia} ox={-0.55} oy={-0.55} color={lighten(body, 0.45)} width={DIA_PX * 0.3} opacity={0.75} />
+      <BendLayer rSv={rSv} restDia={restDia} ox={-0.75} oy={-0.75} color="#ffffff" width={0.35} opacity={0.5} />
+    </>
+  );
+});
+
+/** The radius being set, dimensioned: centre mark + a line to the 45° apex. */
+const BendRadiusDim = memo(function BendRadiusDim({ rSv, restDia }: { rSv: SharedValue<number>; restDia: number }) {
+  const line = useAnimatedProps(() => {
+    const r = Math.max(R_FLOOR_PX, rSv.value * DIA_PX);
+    return { x1: CX - r, y1: CY + r, x2: CX - 0.293 * r, y2: CY + 0.293 * r, opacity: r > 10 ? 0.75 : 0 };
+  });
+  const dot = useAnimatedProps(() => {
+    const r = Math.max(R_FLOOR_PX, rSv.value * DIA_PX);
+    return { cx: CX - r, cy: CY + r, opacity: r > 10 ? 0.9 : 0 };
+  });
+  const r0 = Math.max(R_FLOOR_PX, restDia * DIA_PX);
+  return (
+    <>
+      <ALine x1={CX - r0} y1={CY + r0} x2={CX - 0.293 * r0} y2={CY + 0.293 * r0} stroke="#e8e9ec" strokeWidth={0.6} strokeDasharray="2 1.4" opacity={0} animatedProps={line} />
+      <ACircle cx={CX - r0} cy={CY + r0} r={1.3} fill="#e8e9ec" opacity={0} animatedProps={dot} />
+    </>
   );
 });
 
@@ -143,14 +201,14 @@ const BendGhostArc = memo(function BendGhostArc({ specDia, ghostSv }: { specDia:
   const rs = specDia * DIA_PX;
   const animatedProps = useAnimatedProps(() => ({
     opacity: 0.26 + 0.64 * ghostSv.value,
-    strokeWidth: 1.5 + 0.7 * ghostSv.value,
+    strokeWidth: 1.1 + 0.5 * ghostSv.value,
   }));
   return (
     <APath
       d={`M ${CX - rs} ${CY} A ${rs} ${rs} 0 0 1 ${CX} ${CY + rs}`}
       stroke="#37d97b"
-      strokeWidth={1.5}
-      strokeDasharray="5 4"
+      strokeWidth={1.1}
+      strokeDasharray="3 2.4"
       opacity={0.26}
       fill="none"
       animatedProps={animatedProps}
@@ -168,8 +226,8 @@ function BendHotArc({ over, rSv, hotSv }: { over: boolean; rSv: SharedValue<numb
     return {
       d: `M ${(CX - r).toFixed(2)} ${CY} A ${r.toFixed(2)} ${r.toFixed(2)} 0 0 1 ${CX} ${(CY + r).toFixed(2)}`,
       // base stays high so reduced motion (no pulse) still reads as a failure
-      opacity: Math.max(0, Math.min(1, hot)) * (0.8 + 0.2 * pulse.t.value),
-      strokeWidth: DIA_PX * (0.95 + 0.32 * Math.min(1.35, hot) + 0.3 * pulse.t.value),
+      opacity: Math.max(0, Math.min(1, hot)) * (0.62 + 0.18 * pulse.t.value),
+      strokeWidth: DIA_PX * (0.92 + 0.12 * Math.min(1.35, hot) + 0.14 * pulse.t.value),
     };
   });
   return <APath d="M0 0" stroke="#ff9b8f" strokeWidth={DIA_PX} strokeLinecap="round" fill="none" opacity={0} animatedProps={animatedProps} />;
@@ -217,8 +275,11 @@ const BendStrainGlyph = memo(function BendStrainGlyph({ rSv, strainSv }: { rSv: 
   );
 });
 
+const BEND_ASPECT = 200 / 132;
+
 const BendArt = memo(function BendArt({
   w,
+  h,
   tint,
   specDia,
   restDia,
@@ -229,6 +290,7 @@ const BendArt = memo(function BendArt({
   strainSv,
 }: {
   w: number;
+  h: number;
   tint: string;
   specDia: number;
   restDia: number;
@@ -238,20 +300,30 @@ const BendArt = memo(function BendArt({
   hotSv: SharedValue<number>;
   strainSv: SharedValue<number>;
 }) {
-  const h = Math.round((w * 132) / 200);
   return (
     <Svg width={w} height={h} viewBox="0 0 200 132">
-      <Rect x={0} y={0} width={200} height={132} rx={8} fill="#101014" />
-      {/* the corner being turned: ceiling above, wall at right. A tight bend
-          hugs the junction; a generous bend stands off into the free space —
-          which is why the arc sweeps down-left as the slider eases. */}
-      <Rect x={0} y={0} width={200} height={20} fill="#17171c" />
-      <Rect x={154} y={0} width={46} height={132} fill="#17171c" />
-      <Path d="M0 20 H154 V132" stroke="#3a3c42" strokeWidth={1.6} fill="none" />
-      {/* terminations — cable ends honestly at plates */}
-      <Rect x={2} y={21} width={7} height={10} rx={1.5} fill="#26262c" stroke="#6f7378" strokeWidth={1} />
-      <Rect x={142} y={123} width={10} height={7} rx={1.5} fill="#26262c" stroke="#6f7378" strokeWidth={1} />
+      <Rect x={0} y={0} width={200} height={132} rx={8} fill="#0f1014" />
+      {/* the corner being turned, cut in section: concrete soffit above, the
+          wall at right, the floor slab below. A tight bend hugs the junction;
+          a generous bend stands off into the free space — which is why the
+          arc sweeps down-left as the slider eases. */}
+      <ConcreteCut x={0} y={0} w={200} h={18} />
+      <ConcreteCut x={154} y={18} w={46} h={114} />
+      <ConcreteCut x={0} y={124} w={154} h={8} />
+      <ConcreteCut x={0} y={18} w={5} h={106} />
+      {/* the run's ends: out of the left wall through a bushed opening, down
+          into a floor sleeve — a cable never just stops in the air */}
+      <Rect x={4} y={21} width={3.4} height={10} rx={1} fill="#1b1c20" stroke="#6d7179" strokeWidth={0.5} />
+      <Rect x={145} y={119} width={10} height={6} rx={0.8} fill="#80858d" stroke="#2c2f34" strokeWidth={0.5} />
+      <Rect x={144} y={118} width={12} height={2} rx={0.8} fill="#1b1c20" />
+      {/* supports: a P-clip on the soffit, another on the wall */}
+      <Path d={`M36 18 V${CY - 3} A3 3 0 1 0 42 ${CY - 3} V18`} stroke="#b9bec5" strokeWidth={1.1} fill="none" />
+      <Rect x={33} y={18} width={12} height={1.6} fill="#8f949b" />
+      <Path d={`M154 112 H${CX + 3} A3 3 0 1 0 ${CX + 3} 118 H154`} stroke="#b9bec5" strokeWidth={1.1} fill="none" />
+      <Rect x={152.4} y={109} width={1.6} height={12} fill="#8f949b" />
       <BendGhostArc specDia={specDia} ghostSv={ghostSv} />
+      <Callout x={9} y={CY + 16} text={`- - SPEC MIN R = ${specDia}× OD`} anchor="start" size={9} color="#6fe39a" bg="rgba(15,16,20,0.8)" />
+      <BendRadiusDim rSv={rSv} restDia={restDia} />
       <BendCable tint={tint} restDia={restDia} rSv={rSv} />
       <BendHotArc over={over} rSv={rSv} hotSv={hotSv} />
       <BendStrainGlyph rSv={rSv} strainSv={strainSv} />
@@ -345,42 +417,8 @@ function BendCard({
   };
 
   const nudge = (delta: number) => setT((v) => clamp01(v + delta));
-
-  return (
-    <View style={[styles.card, done && styles.cardDone]}>
-      <Text style={styles.cardHead}>
-        {done ? '✓ ' : ''}BEND {index + 1} OF {total} — {ex.cableName.toUpperCase()}
-      </Text>
-      <SpecCard text={ex.specText} />
-      {ex.note ? <Text style={styles.exNote}>{ex.note}</Text> : null}
-      <View
-        accessible
-        accessibilityRole="image"
-        accessibilityLabel={`${ex.cableName}: bend about ${fmtDia(dia)} times cable diameter; specification minimum ${ex.minRadiusDia} times. ${
-          over ? 'Tighter than the specification — strained.' : 'Within the specification.'
-        }`}
-      >
-        <BendArt
-          w={w}
-          tint={tint}
-          specDia={ex.minRadiusDia}
-          restDia={restDiaRef.current}
-          over={over}
-          rSv={rSv}
-          ghostSv={ghostSv}
-          hotSv={hotSv}
-          strainSv={strainSv}
-        />
-      </View>
-      <DragSlider
-        value={t}
-        onChange={(v) => setT(clamp01(v))}
-        label="BEND TIGHTNESS"
-        readout={`≈ ${fmtDia(dia)}× dia · spec ≥ ${ex.minRadiusDia}×`}
-        tint={tint}
-        onDragActive={onDragActive}
-      />
-      <View style={styles.nudgeRow}>
+  const nudgeRow = (
+<View style={styles.nudgeRow}>
         <Pressable
           style={styles.nudgeBtn}
           onPress={() => nudge(-0.08)}
@@ -409,6 +447,57 @@ function BendCard({
           <Text style={[styles.checkText, done && { color: '#0a1a0f' }]}>{done ? 'MEETS SPEC ✓' : 'CHECK BEND'}</Text>
         </Pressable>
       </View>
+  );
+
+  return (
+    <View style={[styles.card, done && styles.cardDone]}>
+      <Text style={styles.cardHead}>
+        {done ? '✓ ' : ''}BEND {index + 1} OF {total} — {ex.cableName.toUpperCase()}
+      </Text>
+      <SpecCard text={ex.specText} />
+      {ex.note ? <Text style={styles.exNote}>{ex.note}</Text> : null}
+      <View
+        accessible
+        accessibilityRole="image"
+        accessibilityLabel={`${ex.cableName}: bend about ${fmtDia(dia)} times cable diameter; specification minimum ${ex.minRadiusDia} times. ${
+          over ? 'Tighter than the specification — strained.' : 'Within the specification.'
+        }`}
+      >
+        <ExpandableFigure
+          width={w}
+          aspect={BEND_ASPECT}
+          title="BEND"
+          render={(fw, fh) => (
+            <BendArt
+              w={fw}
+              h={fh}
+              tint={tint}
+              specDia={ex.minRadiusDia}
+              restDia={restDiaRef.current}
+              over={over}
+              rSv={rSv}
+              ghostSv={ghostSv}
+              hotSv={hotSv}
+              strainSv={strainSv}
+            />
+          )}
+          controls={
+            <View style={{ gap: 8 }}>
+              <Text style={styles.fsReadout}>{`≈ ${fmtDia(dia)}× OD · spec ≥ ${ex.minRadiusDia}× · ${over ? 'TOO TIGHT' : 'WITHIN SPEC'}`}</Text>
+              {nudgeRow}
+            </View>
+          }
+        />
+      </View>
+      <DragSlider
+        value={t}
+        onChange={(v) => setT(clamp01(v))}
+        label="BEND TIGHTNESS"
+        readout={`≈ ${fmtDia(dia)}× dia · spec ≥ ${ex.minRadiusDia}×`}
+        tint={tint}
+        onDragActive={onDragActive}
+      />
+      {nudgeRow}
       {verdict ? (
         <Appear>
           <RuleFeedback
@@ -430,13 +519,64 @@ function BendCard({
 /* ── B — the simplified tension meter (conceptual, 0..150) ──────────────── */
 const MET_X0 = 12;
 const MET_X1 = 308;
+const MET_Y = 64;
 const metX = (v: number) => MET_X0 + ((MET_X1 - MET_X0) * v) / 150;
+const MET_VB_H = 104;
+const METER_ASPECT = 320 / MET_VB_H;
+
+/** The pull, drawn: cable out of a conduit mouth, a woven pulling grip, the
+ *  swivel, the rope — or, for the connector event, the rope hitched round the
+ *  plug (load on the termination). Over the limit the rope reads hot. */
+function PullStrip({ event, over }: { event: PullEvent['id'] | null; over: boolean }) {
+  const cable = cableGeo([{ x: 30, y: 26 }, { x: 90, y: 26 }, { x: 150, y: 26 }], 5.2, 8);
+  const byConnector = event === 'connector';
+  const rope = over || byConnector ? '#ff7a68' : '#d8c9a3';
+  const mesh: string[] = [];
+  for (let i = 0; i < 9; i++) {
+    const x = 150 + i * 5;
+    mesh.push(`M${x} ${21.5 + i * 0.3} L${x + 5} ${30.5 - i * 0.3} M${x} ${30.5 - i * 0.3} L${x + 5} ${21.5 + i * 0.3}`);
+  }
+  const ropeX0 = byConnector ? 196 : 212;
+  const twist: string[] = [];
+  for (let x = ropeX0 + 2; x < 300; x += 3.2) twist.push(`M${x} 24 l2 4`);
+  return (
+    <G>
+      {/* conduit mouth with its bushing */}
+      <Rect x={0} y={16} width={30} height={20} fill="#80858d" stroke="#2c2f34" strokeWidth={0.5} />
+      <Rect x={28} y={14} width={4} height={24} rx={1} fill="#1b1c20" />
+      <SvgCable geo={cable} d={5.2} jacket="#2f7f9f" shadow={false} />
+      {byConnector ? (
+        <G>
+          <Connector kind="xlrF" x={150} y={26} k={0.7} jacket="#2f7f9f" />
+          {/* rope hitched round the connector body — the wrong place for load */}
+          <Path d="M168 19 C172 14 180 14 182 19 M168 33 C172 38 180 38 182 33" stroke={rope} strokeWidth={1.6} fill="none" />
+          <Ellipse cx={175} cy={26} rx={7} ry={8.6} fill="none" stroke={rope} strokeWidth={1.4} />
+        </G>
+      ) : (
+        <G>
+          {/* woven basket grip tapering to its eye */}
+          <Path d="M150 20.5 L195 23.5 L205 26 L195 28.5 L150 31.5 Z" fill="#9aa0a8" opacity={0.35} />
+          <Path d={mesh.join('')} stroke="#c7ccd2" strokeWidth={0.55} />
+          <Path d="M150 20.5 L195 23.5 L205 26 L195 28.5 L150 31.5" stroke="#8f949b" strokeWidth={0.6} fill="none" />
+          <Ellipse cx={207} cy={26} rx={3.2} ry={2.6} fill="none" stroke="#c7ccd2" strokeWidth={1.1} />
+          {/* swivel */}
+          <Rect x={210} y={23} width={6} height={6} rx={1.4} fill="#80858d" stroke="#2c2f34" strokeWidth={0.5} />
+        </G>
+      )}
+      <Line x1={ropeX0} y1={26} x2={302} y2={26} stroke={rope} strokeWidth={4} strokeLinecap="round" />
+      <Path d={twist.join('')} stroke={shade(rope, 0.35)} strokeWidth={0.7} />
+      <Path d="M303 20 L313 26 L303 32" stroke={rope} strokeWidth={1.6} fill="none" strokeLinejoin="round" />
+      <Callout x={308} y={46} text="PULL" size={9} color={rope} bg={null} anchor="end" />
+      {byConnector ? <Callout x={175} y={47} text="LOAD ON THE TERMINATION" size={9} color="#ff7a68" bg={null} /> : null}
+    </G>
+  );
+}
 
 /** The bar sweeps on a spring; an over-limit event drives it PAST the value
  *  and a low-damping spring shudders it back. That is the cable resisting. */
-const TensionMeter = memo(function TensionMeter({ w, target }: { w: number; target: number }) {
+const TensionMeter = memo(function TensionMeter({ w, h, target, event }: { w: number; h: number; target: number; event: PullEvent['id'] | null }) {
   const m = useCiMotion();
-  const h = Math.round((w * 74) / 320);
+  const uid = useUid();
   const overLimit = target > CI_PULL_SPEC.maxTension;
   const v = useSharedValue(target);
   const flash = useSharedValue(0);
@@ -472,53 +612,65 @@ const TensionMeter = memo(function TensionMeter({ w, target }: { w: number; targ
     width: Math.max(0, ((MET_X1 - MET_X0) * Math.max(0, Math.min(150, v.value))) / 150),
   }));
   const limitLine = useAnimatedProps(() => ({
-    strokeWidth: 2 + 2.4 * flash.value,
+    strokeWidth: 1.4 + 2 * flash.value,
     opacity: 0.85 + 0.15 * flash.value,
   }));
   const limitHalo = useAnimatedProps(() => ({
     opacity: Math.max(flash.value * 0.7, (overLimit ? 0.3 : 0) + (overLimit ? 0.4 : 0) * halo.t.value),
-    strokeWidth: 5 + 4 * halo.t.value,
+    strokeWidth: 4 + 3 * halo.t.value,
   }));
 
   const restW = Math.max(0, ((MET_X1 - MET_X0) * Math.max(0, Math.min(150, target))) / 150);
+  const minor: string[] = [];
+  for (let t = 0; t <= 150; t += 10) minor.push(`M${metX(t)} ${MET_Y + 12} v${t % 50 === 0 ? 6 : 3}`);
 
   return (
     <Svg accessible
       width={w}
       height={h}
-      viewBox="0 0 320 74"
+      viewBox={`0 0 320 ${MET_VB_H}`}
       accessibilityLabel={`Tension meter: ${Math.round(target)} of 150 units. Specification limit ${CI_PULL_SPEC.maxTension}. ${
         overLimit ? 'Over the limit.' : 'Within the limit.'
       }`}
     >
-      <Rect x={0} y={0} width={320} height={74} rx={8} fill="#101014" />
-      <Rect x={MET_X0} y={30} width={MET_X1 - MET_X0} height={14} rx={7} fill="#17171c" stroke="#2c2c33" strokeWidth={1} />
+      <Defs>
+        <LinearGradient id={`${uid}ok`} x1="0" y1="0" x2="0" y2="1">
+          <Stop offset="0" stopColor="#6fe39a" />
+          <Stop offset="1" stopColor="#1f9e4f" />
+        </LinearGradient>
+        <LinearGradient id={`${uid}bad`} x1="0" y1="0" x2="0" y2="1">
+          <Stop offset="0" stopColor="#ff8a78" />
+          <Stop offset="1" stopColor="#c23a2c" />
+        </LinearGradient>
+      </Defs>
+      <Rect x={0} y={0} width={320} height={MET_VB_H} rx={8} fill="#0f1014" />
+      <PullStrip event={event} over={overLimit} />
+      <Rect x={MET_X0} y={MET_Y} width={MET_X1 - MET_X0} height={10} rx={5} fill="#17171c" stroke="#2c2c33" strokeWidth={0.8} />
+      {/* the over-limit zone, marked on the scale itself */}
+      <Rect x={metX(100)} y={MET_Y} width={MET_X1 - metX(100)} height={10} fill="rgba(255,90,72,0.12)" />
       <ARect
         x={MET_X0}
-        y={30}
+        y={MET_Y + 1}
         width={restW}
-        height={14}
-        rx={7}
-        fill={overLimit ? '#ff5a48' : '#37d97b'}
-        opacity={0.9}
+        height={8}
+        rx={4}
+        fill={overLimit ? `url(#${uid}bad)` : `url(#${uid}ok)`}
         animatedProps={fill}
       />
-      {[0, 50, 150].map((tick) => (
-        <Line key={tick} x1={metX(tick)} y1={26} x2={metX(tick)} y2={48} stroke="#3a3c42" strokeWidth={1} />
-      ))}
+      <Path d={minor.join('')} stroke="#5b5e66" strokeWidth={0.7} />
       {/* the spec limit: haloed while the bar sits over it, flashed at the crossing */}
-      <ALine x1={metX(100)} y1={24} x2={metX(100)} y2={50} stroke="#ff5a48" strokeWidth={5} opacity={0} animatedProps={limitHalo} />
-      <ALine x1={metX(100)} y1={26} x2={metX(100)} y2={48} stroke="#ff9b8f" strokeWidth={2} opacity={0.85} animatedProps={limitLine} />
+      <ALine x1={metX(100)} y1={MET_Y - 4} x2={metX(100)} y2={MET_Y + 14} stroke="#ff5a48" strokeWidth={4} opacity={0} animatedProps={limitHalo} />
+      <ALine x1={metX(100)} y1={MET_Y - 3} x2={metX(100)} y2={MET_Y + 13} stroke="#ff9b8f" strokeWidth={1.4} opacity={0.85} animatedProps={limitLine} />
       {[0, 50, 100, 150].map((tick) => (
-        <SvgText key={`t${tick}`} x={metX(tick)} y={62} textAnchor="middle" fontFamily={fonts.mono} fontSize={10.5} fill="#8a8b93">
+        <SvgText key={`t${tick}`} x={metX(tick)} y={MET_Y + 30} textAnchor="middle" fontFamily={fonts.mono} fontSize={10} fill="#8a8b93">
           {String(tick)}
         </SvgText>
       ))}
-      <SvgText x={metX(100)} y={18} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={9} letterSpacing={0.8} fill="#ff9b8f">
+      <SvgText x={metX(100)} y={MET_Y - 7} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={9} letterSpacing={0.8} fill="#ff9b8f">
         SPEC LIMIT
       </SvgText>
-      <SvgText x={MET_X1} y={18} textAnchor="end" fontFamily={fonts.mono} fontSize={12} fill={colors.amber}>
-        {`${shown} u`}
+      <SvgText x={MET_X0} y={MET_Y - 7} textAnchor="start" fontFamily={fonts.mono} fontSize={11} fill={colors.amber}>
+        {`TENSION ${shown} u`}
       </SvgText>
     </Svg>
   );
@@ -559,38 +711,93 @@ function bundleShape(raw: number) {
   };
 }
 
-/** One cable in the loom: drifts apart when loose, draws round when secure,
- *  ovalizes (rx/ry, on a spring) when the strap goes past secure. */
-const BundleCable = memo(function BundleCable({ i, tSv, restT }: { i: number; tSv: SharedValue<number>; restT: number }) {
+/** Centre + radii of cable i for a strap tension (worklet — every layer of
+ *  the section rides the same spring). */
+function cableAt(i: number, raw: number) {
+  'worklet';
+  const s = bundleShape(raw);
   const wide = i === 0 || i === 3; // alternate squash axes → pinched look
+  return {
+    cx: B_CX + B_OFFS[i][0] * s.gap + B_JIT[i][0] * s.spread * 2,
+    cy: B_CY + B_OFFS[i][1] * s.gap + B_JIT[i][1] * s.spread * 2,
+    rx: B_R * (1 + (wide ? 0.4 : -0.32) * s.squish),
+    ry: B_R * (1 + (wide ? -0.32 : 0.4) * s.squish),
+  };
+}
+
+/** One layer of a cable's cut end: an ellipse at (dx, dy)·r, scaled (kx, ky). */
+const CableEllipse = memo(function CableEllipse({
+  i,
+  tSv,
+  restT,
+  dx = 0,
+  dy = 0,
+  kx,
+  ky,
+  fill,
+  opacity = 1,
+  stroke,
+  strokeWidth,
+}: {
+  i: number;
+  tSv: SharedValue<number>;
+  restT: number;
+  dx?: number;
+  dy?: number;
+  kx: number;
+  ky: number;
+  fill: string;
+  opacity?: number;
+  stroke?: string;
+  strokeWidth?: number;
+}) {
   const animatedProps = useAnimatedProps(() => {
-    const s = bundleShape(tSv.value);
-    return {
-      cx: B_CX + B_OFFS[i][0] * s.gap + B_JIT[i][0] * s.spread * 2,
-      cy: B_CY + B_OFFS[i][1] * s.gap + B_JIT[i][1] * s.spread * 2,
-      rx: B_R * (1 + (wide ? 0.4 : -0.32) * s.squish),
-      ry: B_R * (1 + (wide ? -0.32 : 0.4) * s.squish),
-    };
+    const c = cableAt(i, tSv.value);
+    return { cx: c.cx + dx * c.rx, cy: c.cy + dy * c.ry, rx: c.rx * kx, ry: c.ry * ky };
   });
-  const r = bundleShape(restT);
+  const c = cableAt(i, restT);
   return (
     <AEllipse
-      cx={B_CX + B_OFFS[i][0] * r.gap + B_JIT[i][0] * r.spread * 2}
-      cy={B_CY + B_OFFS[i][1] * r.gap + B_JIT[i][1] * r.spread * 2}
-      rx={B_R * (1 + (wide ? 0.4 : -0.32) * r.squish)}
-      ry={B_R * (1 + (wide ? -0.32 : 0.4) * r.squish)}
-      fill={BUNDLE_TINTS[i]}
-      opacity={0.85}
-      stroke="#0c0c0c"
-      strokeWidth={1.5}
+      cx={c.cx + dx * c.rx}
+      cy={c.cy + dy * c.ry}
+      rx={c.rx * kx}
+      ry={c.ry * ky}
+      fill={fill}
+      opacity={opacity}
+      stroke={stroke}
+      strokeWidth={strokeWidth}
       animatedProps={animatedProps}
     />
   );
 });
 
-/** The strap: dashed and roomy when slack, solid and closing as it takes up. */
+/** One cable in the loom, cut: jacket wall, the cavity, the twisted pair —
+ *  drifts apart when loose, draws round when secure, OVALIZES (conductors
+ *  squeezed together) when the strap goes past secure. */
+const BundleCable = memo(function BundleCable({ i, tSv, restT, grad }: { i: number; tSv: SharedValue<number>; restT: number; grad: string }) {
+  const t = BUNDLE_TINTS[i];
+  return (
+    <G>
+      <CableEllipse i={i} tSv={tSv} restT={restT} dx={0.12} dy={0.18} kx={1.04} ky={1.04} fill="rgba(0,0,0,0.5)" />
+      <CableEllipse i={i} tSv={tSv} restT={restT} kx={1} ky={1} fill={grad} stroke={shade(t, 0.72)} strokeWidth={0.7} />
+      <CableEllipse i={i} tSv={tSv} restT={restT} kx={0.64} ky={0.64} fill="#0c0c0f" stroke={shade(t, 0.55)} strokeWidth={0.4} />
+      <CableEllipse i={i} tSv={tSv} restT={restT} dx={-0.27} kx={0.27} ky={0.27} fill="#e9e9e4" stroke="#55585f" strokeWidth={0.35} />
+      <CableEllipse i={i} tSv={tSv} restT={restT} dx={0.27} kx={0.27} ky={0.27} fill="#c83b32" stroke="#55585f" strokeWidth={0.35} />
+      <CableEllipse i={i} tSv={tSv} restT={restT} dx={-0.27} kx={0.11} ky={0.11} fill="#d38a50" />
+      <CableEllipse i={i} tSv={tSv} restT={restT} dx={0.27} kx={0.11} ky={0.11} fill="#d38a50" />
+      <CableEllipse i={i} tSv={tSv} restT={restT} dx={-0.38} dy={-0.62} kx={0.36} ky={0.14} fill="#ffffff" opacity={0.16} />
+    </G>
+  );
+});
+
+/** The strap: a nylon band with its ratchet head — dashed and roomy when
+ *  slack, solid and closing as it takes up. */
 const BundleStrap = memo(function BundleStrap({ tSv, restT }: { tSv: SharedValue<number>; restT: number }) {
   const solid = useAnimatedProps(() => {
+    const s = bundleShape(tSv.value);
+    return { rx: s.srx, ry: s.sry, opacity: 1 - Math.max(0, Math.min(1, s.spread / 0.18)) };
+  });
+  const solidEdge = useAnimatedProps(() => {
     const s = bundleShape(tSv.value);
     return { rx: s.srx, ry: s.sry, opacity: 1 - Math.max(0, Math.min(1, s.spread / 0.18)) };
   });
@@ -600,34 +807,41 @@ const BundleStrap = memo(function BundleStrap({ tSv, restT }: { tSv: SharedValue
   });
   const tab = useAnimatedProps(() => {
     const s = bundleShape(tSv.value);
-    const y = B_CY - s.sry - 5;
-    return { d: `M ${B_CX - 5} ${y} h10 a2 2 0 0 1 2 2 v5 a2 2 0 0 1 -2 2 h-10 a2 2 0 0 1 -2 -2 v-5 a2 2 0 0 1 2 -2 z` };
+    const y = B_CY - s.sry - 6;
+    return { d: `M ${B_CX - 6} ${y} h12 a2 2 0 0 1 2 2 v6 a2 2 0 0 1 -2 2 h-12 a2 2 0 0 1 -2 -2 v-6 a2 2 0 0 1 2 -2 z` };
+  });
+  const slot = useAnimatedProps(() => {
+    const s = bundleShape(tSv.value);
+    const y = B_CY - s.sry - 4.2;
+    return { d: `M ${B_CX - 2.2} ${y} h4.4 v6.4 h-4.4 z` };
   });
   const r = bundleShape(restT);
   const restSlack = Math.max(0, Math.min(1, r.spread / 0.18));
-  const restY = B_CY - r.sry - 5;
+  const restY = B_CY - r.sry - 6;
   return (
     <>
-      <AEllipse cx={B_CX} cy={B_CY} rx={r.srx} ry={r.sry} fill="none" stroke="#d8d8dc" strokeWidth={3} opacity={1 - restSlack} animatedProps={solid} />
+      <AEllipse cx={B_CX} cy={B_CY} rx={r.srx} ry={r.sry} fill="none" stroke="#5f5c52" strokeWidth={4.4} opacity={1 - restSlack} animatedProps={solidEdge} />
+      <AEllipse cx={B_CX} cy={B_CY} rx={r.srx} ry={r.sry} fill="none" stroke="#d9d5c7" strokeWidth={3} opacity={1 - restSlack} animatedProps={solid} />
       <AEllipse
         cx={B_CX}
         cy={B_CY}
         rx={r.srx}
         ry={r.sry}
         fill="none"
-        stroke="#d8d8dc"
+        stroke="#d9d5c7"
         strokeWidth={3}
         strokeDasharray="7 6"
         opacity={restSlack}
         animatedProps={dash}
       />
       <APath
-        d={`M ${B_CX - 5} ${restY} h10 a2 2 0 0 1 2 2 v5 a2 2 0 0 1 -2 2 h-10 a2 2 0 0 1 -2 -2 v-5 a2 2 0 0 1 2 -2 z`}
-        fill="#26262c"
-        stroke="#6f7378"
-        strokeWidth={1}
+        d={`M ${B_CX - 6} ${restY} h12 a2 2 0 0 1 2 2 v6 a2 2 0 0 1 -2 2 h-12 a2 2 0 0 1 -2 -2 v-6 a2 2 0 0 1 2 -2 z`}
+        fill="#d4d0c2"
+        stroke="#5f5c52"
+        strokeWidth={0.8}
         animatedProps={tab}
       />
+      <APath d={`M ${B_CX - 2.2} ${restY + 1.8} h4.4 v6.4 h-4.4 z`} fill="#6d6a60" animatedProps={slot} />
     </>
   );
 });
@@ -637,7 +851,7 @@ const BundleBite = memo(function BundleBite({ dx, dy, tSv, restT }: { dx: number
   const animatedProps = useAnimatedProps(() => {
     const s = bundleShape(tSv.value);
     const k = Math.max(0, Math.min(1, s.squish));
-    return { cx: B_CX + dx * s.srx, cy: B_CY + dy * s.sry, r: 3 + 1.6 * k, opacity: k };
+    return { cx: B_CX + dx * s.srx, cy: B_CY + dy * s.sry, r: 2.2 + 1.4 * k, opacity: k * 0.85 };
   });
   const r = bundleShape(restT);
   return (
@@ -674,20 +888,38 @@ function BundleLandPulse({ landed }: { landed: boolean }) {
   return <ACircle cx={B_CX} cy={B_CY} r={30} fill="none" stroke="#37d97b" strokeWidth={2.4} opacity={0} animatedProps={animatedProps} />;
 }
 
-const BundleArt = memo(function BundleArt({ w, tSv, restT, landed }: { w: number; tSv: SharedValue<number>; restT: number; landed: boolean }) {
-  const h = Math.round((w * 132) / 200);
+const BUNDLE_VB_W = 200;
+const BUNDLE_VB_H = 132;
+const BUNDLE_ASPECT = BUNDLE_VB_W / BUNDLE_VB_H;
+
+const BundleArt = memo(function BundleArt({ w, h, tSv, restT, landed }: { w: number; h: number; tSv: SharedValue<number>; restT: number; landed: boolean }) {
+  const uid = useUid();
   return (
-    <Svg width={w} height={h} viewBox="0 0 200 132">
-      <Rect x={0} y={0} width={200} height={132} rx={8} fill="#101014" />
-      <BundleStrap tSv={tSv} restT={restT} />
-      {[0, 1, 2, 3].map((i) => (
-        <BundleCable key={i} i={i} tSv={tSv} restT={restT} />
-      ))}
-      <BundleBite dx={-1} dy={0} tSv={tSv} restT={restT} />
-      <BundleBite dx={1} dy={0} tSv={tSv} restT={restT} />
-      <BundleBite dx={0} dy={-1} tSv={tSv} restT={restT} />
-      <BundleBite dx={0} dy={1} tSv={tSv} restT={restT} />
-      <BundleLandPulse landed={landed} />
+    <Svg width={w} height={h} viewBox={`0 0 ${BUNDLE_VB_W} ${BUNDLE_VB_H}`}>
+      <Defs>
+        {BUNDLE_TINTS.map((t, i) => (
+          <RadialGradient key={i} id={`${uid}j${i}`} cx="36%" cy="30%" r="75%">
+            <Stop offset="0" stopColor={lighten(shade(t, 0.3), 0.3)} />
+            <Stop offset="0.6" stopColor={shade(t, 0.3)} />
+            <Stop offset="1" stopColor={shade(t, 0.62)} />
+          </RadialGradient>
+        ))}
+      </Defs>
+      <Rect x={0} y={0} width={BUNDLE_VB_W} height={BUNDLE_VB_H} rx={8} fill="#0f1014" />
+      <Callout x={8} y={14} text="SECTION THROUGH THE STRAP" anchor="start" size={9} color="#8d9199" bg={null} />
+      {/* the section, enlarged about the bundle centre (a static transform —
+          only the ellipses inside animate) */}
+      <G transform={`translate(${B_CX} ${B_CY + 4}) scale(1.25) translate(${-B_CX} ${-B_CY})`}>
+        {[0, 1, 2, 3].map((i) => (
+          <BundleCable key={i} i={i} tSv={tSv} restT={restT} grad={`url(#${uid}j${i})`} />
+        ))}
+        <BundleStrap tSv={tSv} restT={restT} />
+        <BundleBite dx={-1} dy={0} tSv={tSv} restT={restT} />
+        <BundleBite dx={1} dy={0} tSv={tSv} restT={restT} />
+        <BundleBite dx={0} dy={-1} tSv={tSv} restT={restT} />
+        <BundleBite dx={0} dy={1} tSv={tSv} restT={restT} />
+        <BundleLandPulse landed={landed} />
+      </G>
     </Svg>
   );
 });
@@ -826,7 +1058,19 @@ export function MechScene({ width, completed, onComplete, openSources }: CiModul
       {/* ── B · PULLING ─────────────────────────────────────────────────── */}
       <CiSection title="B · PULLING — STAY INSIDE RATED TENSION">
         <SpecCard text={CI_PULL_SPEC.specText} />
-        <TensionMeter w={artW} target={targetTension} />
+        <ExpandableFigure
+          width={artW}
+          aspect={METER_ASPECT}
+          title="PULL"
+          render={(fw, fh) => <TensionMeter w={fw} h={fh} target={targetTension} event={pullId} />}
+          controls={
+            <View style={styles.chipWrap}>
+              {CI_PULL_SPEC.events.map((ev) => (
+                <OptionChip key={ev.id} label={ev.label} active={pullId === ev.id} onPress={() => pickPull(ev)} />
+              ))}
+            </View>
+          }
+        />
         <Text style={styles.conceptNote}>
           Conceptual meter for judgment training — not an engineering pull calculation. Real pulls are planned from the
           cable's documentation.
@@ -865,7 +1109,26 @@ export function MechScene({ width, completed, onComplete, openSources }: CiModul
           nothing, and past secure the strap starts doing damage.
         </Text>
         <View accessible accessibilityRole="image" accessibilityLabel={`Bundle cross-section, strap tension ${zone}. ${zoneNote}`}>
-          <BundleArt w={artW} tSv={restSv} restT={restRestRef.current} landed={landed} />
+          <ExpandableFigure
+            width={artW}
+            aspect={BUNDLE_ASPECT}
+            title="STRAP"
+            render={(fw, fh) => <BundleArt w={fw} h={fh} tSv={restSv} restT={restRestRef.current} landed={landed} />}
+            controls={
+              <View style={styles.chipWrap}>
+                <OptionChip label="SET LOOSE" active={zone === 'LOOSE'} onPress={() => setRestT(0.15)} />
+                <OptionChip
+                  label="SET SECURE"
+                  active={zone === 'SECURE'}
+                  onPress={() => {
+                    setRestT(0.5);
+                    land();
+                  }}
+                />
+                <OptionChip label="SET EXCESSIVE" active={zone === 'EXCESSIVE'} onPress={() => setRestT(0.85)} />
+              </View>
+            }
+          />
         </View>
         <Text style={styles.zoneLine} accessibilityLiveRegion="polite">
           <Text style={[styles.zoneWord, { color: zoneTint }]}>{zone}</Text>
@@ -959,5 +1222,6 @@ const styles = StyleSheet.create({
   chipWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 },
   zoneLine: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18.5, color: colors.textSecondary },
   zoneWord: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.2 },
+  fsReadout: { fontFamily: fonts.mono, fontSize: 12.5, color: colors.amber, textAlign: 'center' },
   landedLine: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: colors.green },
 });
