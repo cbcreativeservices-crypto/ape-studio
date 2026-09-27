@@ -17,12 +17,13 @@
  */
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
-import Svg, { Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { CheckQuestion } from '../../foundations/bits';
 import { markLabUnit } from '../../../../features/lab/labCompletion';
 import { colors, fonts } from '../../../../theme/tokens';
 import { CiSection, FindProgress, RuleFeedback, announceComplete } from '../bits';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
+import { CeilingCut, ConcreteCut, DuctSide, JacketPath, LadderTraySide } from '../svgArt';
 import {
   ACircle,
   AG,
@@ -139,21 +140,11 @@ function ZoneIn({ children, delay, reduce }: { children: ReactNode; delay: numbe
   );
 }
 
-/** A representative run that installs itself as the scene assembles. */
+/** A representative run that installs itself as the scene assembles — a
+ *  shaded jacket, never a flat stroke. */
 function RunIn({ d, len, color, delay, run }: { d: string; len: number; color: string; delay: number; run: boolean }) {
-  const { animatedProps, dashArray, restOffset } = useDrawIn(len, { run, delay });
-  return (
-    <APath
-      d={d}
-      stroke={color}
-      strokeWidth={2}
-      fill="none"
-      strokeLinecap="round"
-      strokeDasharray={dashArray}
-      strokeDashoffset={restOffset}
-      animatedProps={animatedProps}
-    />
-  );
+  const { progress } = useDrawIn(len, { run, delay });
+  return <JacketPath d={d} color={color} width={2.4} pv={progress} len={len} />;
 }
 
 /** A defect marker's whole life: it arrives, it BREATHES until it is found
@@ -324,58 +315,71 @@ function FacilityScene({
         {/* the facility assembles zone by zone, then the runs install
             themselves, then the findings arrive */}
         <ZoneIn delay={0} reduce={m.reduce}>
-          {/* deck + ceiling structure */}
-          <Line x1={0} y1={8} x2={360} y2={8} stroke="#2c2c33" strokeWidth={3} />
-          {/* tray across ceiling */}
-          <Rect x={24} y={16} width={220} height={9} rx={2} fill="none" stroke="#6f7378" strokeWidth={1.5} />
-          {[44, 84, 124, 164, 204].map((x) => (
-            <Line key={x} x1={x} y1={16} x2={x} y2={25} stroke="#6f7378" strokeWidth={1} />
-          ))}
-          {/* sprinkler pipe */}
-          <Line x1={20} y1={34} x2={250} y2={34} stroke="#8a4a44" strokeWidth={2.4} />
+          {/* structure: the deck above, the slab below */}
+          <ConcreteCut x={0} y={2} w={360} h={7} />
+          <ConcreteCut x={0} y={228} w={360} h={8} />
+          {/* ladder tray across the ceiling space on its rods */}
+          <LadderTraySide x0={24} x1={244} y={26} m={60} rodTo={9} rodEvery={1.2} />
+          {/* red sprinkler main with its pendant heads */}
+          <Rect x={20} y={32.6} width={230} height={2.8} fill="#b8352a" stroke="#4a130d" strokeWidth={0.3} />
+          <Rect x={20} y={32.8} width={230} height={0.7} fill="#ff8a78" opacity={0.6} />
           {[70, 150, 230].map((x) => (
-            <Path key={x} d={`M${x} 34 v5 l-3 4 h6 l-3 -4`} stroke="#8a4a44" strokeWidth={1.2} fill="none" />
+            <G key={x}>
+              <Rect x={x - 0.7} y={35.4} width={1.4} height={25} fill="#b8352a" />
+              <Rect x={x - 1.6} y={60.2} width={3.2} height={1.4} fill="#c9a13c" />
+              <Line x1={x - 2.6} y1={65} x2={x + 2.6} y2={65} stroke="#c9a13c" strokeWidth={0.8} strokeLinecap="round" />
+              <Path d={`M${x - 1} 61.6 L${x - 1.8} 65 M${x + 1} 61.6 L${x + 1.8} 65`} stroke="#c9a13c" strokeWidth={0.5} />
+            </G>
           ))}
-          {/* duct */}
-          <Rect x={120} y={40} width={130} height={14} rx={3} fill="none" stroke="#4a4c52" strokeWidth={1.5} />
-          {/* ceiling grid */}
-          <Line x1={0} y1={62} x2={252} y2={62} stroke="#2c2c33" strokeWidth={2} />
-          {[36, 76, 116, 156, 196, 236].map((x) => (
-            <Line key={x} x1={x} y1={60} x2={x} y2={64} stroke="#3a3c42" strokeWidth={1} />
-          ))}
+          {/* supply duct on straps */}
+          <DuctSide x0={120} x1={250} y={40} h={14} m={60} hangTo={9} />
+          {/* the suspended ceiling on its grid */}
+          <CeilingCut x0={0} x1={252} y={63} m={60} />
         </ZoneIn>
         <ZoneIn delay={90} reduce={m.reduce}>
-          {/* equipment room + rack (right, full height) */}
-          <Line x1={256} y1={8} x2={256} y2={228} stroke="#3a3c42" strokeWidth={2.5} />
+          {/* equipment room: a rated wall (marked), its door, the rack */}
+          <Rect x={254} y={9} width={5} height={219} fill="#241416" />
+          <Rect x={254} y={9} width={1} height={219} fill="#d7d4cc" />
+          <Rect x={258} y={9} width={1} height={219} fill="#d7d4cc" />
+          <Path d="M259 100 l-5 7 M259 130 l-5 7 M259 160 l-5 7" stroke="#ff5a48" strokeWidth={1} opacity={0.7} />
           {/* room names sit where no pooled finding lands (scenarios.ts x/y %):
               the equipment room at x 84-94 / y 30-66, the stage at y >= 70 */}
-          <SvgText x={306} y={223} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={10.5} letterSpacing={1} fill="#54565c">
+          <SvgText x={306} y={223} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={10.5} letterSpacing={1} fill="#6d717a">
             EQUIP ROOM
           </SvgText>
-          <Rect x={276} y={84} width={62} height={128} rx={4} fill="#17171c" stroke="#3a3c42" strokeWidth={1.5} />
-          {[94, 112, 130, 148, 166, 184].map((y) => (
-            <Rect key={y} x={281} y={y} width={52} height={13} rx={2} fill="#101014" stroke="#2c2c33" strokeWidth={1} />
+          <Rect x={276} y={84} width={62} height={128} rx={1.4} fill="#23252a" stroke="#0a0a0c" strokeWidth={0.7} />
+          <Rect x={279} y={87} width={56} height={122} fill="#0c0c0f" />
+          {[94, 112, 130, 148, 166, 184].map((y, i) => (
+            <G key={y}>
+              <Rect x={281} y={y} width={52} height={13} rx={0.8} fill="#2b2d33" stroke="#101114" strokeWidth={0.4} />
+              <Rect x={284} y={y + 3} width={18} height={2} fill="#1a1b1f" />
+              <Circle cx={329} cy={y + 3.6} r={0.9} fill={i % 2 ? '#37d97b' : '#ffc64d'} />
+            </G>
           ))}
-          {/* rated wall marking */}
-          <Path d="M256 100 l-6 8 M256 130 l-6 8 M256 160 l-6 8" stroke="#8a4a44" strokeWidth={1.6} />
-          {/* door in wall */}
-          <Rect x={250} y={196} width={6} height={32} fill="#101014" stroke="#6f7378" strokeWidth={1.2} />
+          {/* door opening in the wall, leaf ajar */}
+          <Rect x={253} y={192} width={7} height={36} fill="#0b0b0d" />
+          <Line x1={259} y1={192} x2={268} y2={226} stroke="#8c8f96" strokeWidth={1.2} />
         </ZoneIn>
         <ZoneIn delay={175} reduce={m.reduce}>
-          {/* stage (left) */}
-          <Rect x={8} y={186} width={104} height={42} rx={3} fill="#141418" stroke="#3a3c42" strokeWidth={1.4} />
-          <Rect x={16} y={196} width={20} height={14} rx={2} fill="#101014" stroke="#6f7378" strokeWidth={1.2} />
-          <SvgText x={92} y={224} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={10.5} letterSpacing={1} fill="#54565c">
+          {/* stage (left): a riser with its skirt and the stage box on it */}
+          <Rect x={8} y={202} width={104} height={26} fill="#2b241c" stroke="#0d0b09" strokeWidth={0.6} />
+          <Rect x={8} y={202} width={104} height={1.6} fill="#6b5a44" />
+          <Path d={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => `M${14 + i * 10} 205 v21`).join('')} stroke="#1c1712" strokeWidth={0.5} />
+          <Rect x={18} y={190} width={18} height={12} rx={1.2} fill="#26282d" stroke="#0a0a0c" strokeWidth={0.6} />
+          {[0, 1, 2].map((i) => (
+            <Circle key={i} cx={22.6 + i * 4.6} cy={196} r={1.4} fill="#050506" stroke="#8d9199" strokeWidth={0.3} />
+          ))}
+          <SvgText x={92} y={222} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={10.5} letterSpacing={1} fill="#8d7a60">
             STAGE
           </SvgText>
         </ZoneIn>
         <ZoneIn delay={250} reduce={m.reduce}>
-          {/* audience floor + aisle */}
-          <Line x1={0} y1={228} x2={360} y2={228} stroke="#2c2c33" strokeWidth={3} />
-          <Path d="M128 228 h44" stroke="#54565c" strokeWidth={2} strokeDasharray="5 4" />
+          {/* audience floor + the aisle (a cable ramp where the run crosses) */}
+          <Rect x={128} y={223} width={44} height={5} rx={1} fill="#1b1c20" />
+          <Rect x={132} y={223.6} width={36} height={2.4} rx={0.6} fill="#e3b73a" />
         </ZoneIn>
         {/* representative runs (honest, terminating) — they install themselves */}
-        <RunIn d="M36 196 C60 196 70 210 96 210 H140" len={130} color="#4fd0e0" delay={300} run={assembled} />
+        <RunIn d="M36 196 C60 196 70 210 96 210 H140" len={140} color="#4fd0e0" delay={300} run={assembled} />
         <RunIn d="M140 210 H196 C220 210 224 200 224 190" len={110} color="#4fd0e0" delay={340} run={assembled} />
         <RunIn d="M32 25 H236 C250 25 252 40 252 60" len={250} color="#37d97b" delay={280} run={assembled} />
         <RunIn d="M252 60 v40 l24 4" len={70} color="#37d97b" delay={380} run={assembled} />
