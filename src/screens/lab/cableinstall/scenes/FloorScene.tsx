@@ -43,6 +43,8 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { OptionChip } from '../../cable/lessons/bits';
 import { CiSection, RuleFeedback, announceComplete } from '../bits';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
+import { Callout, Connector, JacketPath, shade, tint as lighten } from '../svgArt';
+import { ConsoleTop, DistroTop, DockDoor, ForkliftTop, HazardEdge, MicStandTop, PLAN_LABEL, PlanLabel, RampTop, RigPointTop, RoadCaseTop, SeatRow, StageBoxTop, StageDeck, TapeStrip, WedgeTop } from './floorArt';
 import { CI_CLASS_TINTS } from '../data/cableTypes';
 import { CI_FLOOR_SCENARIOS, CI_OVERUNDER_STEPS, type CiRouteScenario } from '../data/scenarios';
 import { evaluateRoute, rankRoutes, type CiRouteFlag } from '../engine/routeEval';
@@ -166,24 +168,25 @@ function SwapPath({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [target, mode, m.reduce]);
 
-  const animatedProps = useAnimatedProps(() => ({
-    strokeDashoffset: len * (1 - v.value),
+  // one clock, three tonal layers (edge / body / sheen) — each its own mapper
+  const mk = () => {
+    'worklet';
     // kill the round cap's leftover dot when the run is fully retracted
-    opacity: v.value < 0.015 ? 0 : 1,
-  }));
-
+    return { strokeDashoffset: len * (1 - v.value), opacity: v.value < 0.015 ? 0 : 1 };
+  };
+  const pEdge = useAnimatedProps(mk);
+  const pBody = useAnimatedProps(mk);
+  const pSheen = useAnimatedProps(mk);
+  const body = shade(tint, 0.22);
+  const common = { d, fill: 'none', strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, strokeDasharray: len, strokeDashoffset: len, opacity: 0 };
   return (
-    <APath
-      d={d}
-      stroke={tint}
-      strokeWidth={width}
-      fill="none"
-      strokeLinecap="round"
-      strokeDasharray={len}
-      strokeDashoffset={len}
-      opacity={0}
-      animatedProps={animatedProps}
-    />
+    <G>
+      <APath {...common} stroke={shade(tint, 0.66)} strokeWidth={width} animatedProps={pEdge} />
+      <APath {...common} stroke={body} strokeWidth={width * 0.74} animatedProps={pBody} />
+      <G transform={`translate(${-width * 0.16} ${-width * 0.2})`}>
+        <APath {...common} stroke={lighten(body, 0.5)} strokeWidth={width * 0.24} animatedProps={pSheen} />
+      </G>
+    </G>
   );
 }
 
@@ -225,11 +228,19 @@ function SwapCircle({
     return () => cancelAnimation(v);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [show, m.reduce]);
-  const animatedProps = useAnimatedProps(() => ({
-    r: Math.max(0.01, r * v.value),
-    opacity: Math.min(1, v.value * 1.8),
-  }));
-  return <ACircle cx={cx} cy={cy} r={show ? r : 0.01} fill="none" stroke={tint} strokeWidth={width} opacity={show ? 1 : 0} animatedProps={animatedProps} />;
+  const mk = () => {
+    'worklet';
+    return { r: Math.max(0.01, r * v.value), opacity: Math.min(1, v.value * 1.8) };
+  };
+  const pEdge = useAnimatedProps(mk);
+  const pBody = useAnimatedProps(mk);
+  const common = { cx, cy, r: show ? r : 0.01, fill: 'none', opacity: show ? 1 : 0 };
+  return (
+    <>
+      <ACircle {...common} stroke={shade(tint, 0.66)} strokeWidth={width} animatedProps={pEdge} />
+      <ACircle {...common} stroke={shade(tint, 0.22)} strokeWidth={width * 0.7} animatedProps={pBody} />
+    </>
+  );
 }
 
 /** Fades a group of static furniture (risers, protectors) with the swap. */
@@ -352,36 +363,28 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
       accessibilityLabel={`Stage plan, training visualization. Mic lines ${routeFixed ? 'edge-routed clear of the performer lane' : 'webbed across the performer lane'}; slack ${slackFixed ? 'dressed at the box' : 'in loose loops on deck'}; monitor feeds ${monFixed ? 'dressed at the edge with a protected crossing' : 'bare across the deck'}.`}
     >
       <Rect x={0} y={0} width={360} height={205} rx={10} fill="#0c0c10" />
-      {/* deck */}
-      <Rect x={6} y={14} width={348} height={158} rx={8} fill="#101014" stroke="#2c2c33" strokeWidth={1.5} />
-      <SvgText x={14} y={30} fill="#6f7378" fontSize={10.5}>STAGE</SvgText>
-      {/* audience edge */}
-      <Line x1={6} y1={180} x2={354} y2={180} stroke="#2c2c33" strokeWidth={1.5} />
-      <SvgText x={180} y={197} fill="#6f7378" fontSize={10.5} textAnchor="middle">AUDIENCE</SvgText>
+      <StageDeck x={6} y={14} w={348} h={158} />
+      <PlanLabel x={14} y={29} text="STAGE" anchor="start" />
+      {/* the deck edge + the audience beyond it */}
+      <Rect x={6} y={172} width={348} height={3} fill="#3a3326" />
+      <PlanLabel x={180} y={193} text="AUDIENCE" />
       {/* performer lane */}
-      <Rect x={96} y={98} width={210} height={52} fill="none" stroke="#6f7378" strokeWidth={1} strokeDasharray="5,4" />
+      <Rect x={96} y={98} width={210} height={52} fill="rgba(255,255,255,0.02)" stroke="#8d9199" strokeWidth={0.8} strokeDasharray="4 3" />
       {/* stage box, downstage-left */}
-      <Rect x={16} y={138} width={36} height={24} rx={3} fill="#17171c" stroke="#6f7378" strokeWidth={1.3} />
-      <SvgText x={34} y={154} fill="#a6a6ad" fontSize={10} textAnchor="middle">BOX</SvgText>
-      {/* mic stands (upstage of the lane) */}
-      {[
-        [120, 84],
-        [200, 76],
-        [282, 84],
-      ].map(([x, y]) => (
-        <G key={`st${x}`}>
-          <Circle cx={x} cy={y} r={4.5} fill="none" stroke="#e8e8ea" strokeWidth={1.5} />
-          <Line x1={x} y1={y + 5} x2={x} y2={y + 11} stroke="#e8e8ea" strokeWidth={1.2} />
-        </G>
-      ))}
-      <SvgText x={200} y={62} fill="#6f7378" fontSize={10.5} textAnchor="middle">MIC STANDS</SvgText>
+      <StageBoxTop x={24} y={138} />
+      <PlanLabel x={33} y={166} text="BOX" size={9.5} />
+      {/* mic stands (upstage of the lane), booms toward the performers */}
+      <MicStandTop x={120} y={84} boom={170} />
+      <MicStandTop x={200} y={76} boom={180} />
+      <MicStandTop x={282} y={84} boom={190} />
+      <PlanLabel x={200} y={60} text="MIC STANDS" />
       {/* monitor wedges at the downstage edge */}
-      {[118, 196, 274].map((x) => (
-        <Path key={`wg${x}`} d={`M${x} 168 h26 l-6 -13 h-14 z`} fill="#17171c" stroke="#6f7378" strokeWidth={1.2} />
+      {[119, 197, 275].map((x) => (
+        <WedgeTop key={`wg${x}`} x={x} y={168} />
       ))}
       {/* monitor world, downstage-right */}
-      <Rect x={318} y={146} width={30} height={20} rx={3} fill="#17171c" stroke="#6f7378" strokeWidth={1.2} />
-      <SvgText x={333} y={160} fill="#a6a6ad" fontSize={10} textAnchor="middle">MON</SvgText>
+      <ConsoleTop x={318} y={146} w={30} h={20} />
+      <PlanLabel x={333} y={141} text="MON" size={9.5} />
 
       {/* MIC ROUTING — the web retracts, the edge route installs itself */}
       <SwapPath d="M40 140 C90 150 110 120 120 90" len={115} tint={mic} width={2.4} mode="bad" fixed={routeFixed} intro={120} />
@@ -404,16 +407,16 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
       <SwapCircle cx={252} cy={140} r={7} tint={spk} width={2} show={!monFixed} />
       <SwapPath d="M322 166 H131" len={200} tint={spk} width={2.6} mode="good" fixed={monFixed} />
       <SwapGroup show={monFixed} delay={220}>
-        {[131, 209, 287].map((x) => (
-          <Line key={`mu${x}`} x1={x} y1={166} x2={x} y2={161} stroke={spk} strokeWidth={2.2} />
+        {/* gaffer tape dressing the feed to the edge, a ramp where feet cross */}
+        {[150, 180, 300].map((x) => (
+          <TapeStrip key={`mu${x}`} x={x} y={166} />
         ))}
-        <Path d="M230 170 l6 -7 h20 l6 7 z" fill="#26262c" stroke="#6f7378" strokeWidth={1.2} />
+        <RampTop x={226} y={160} w={36} h={12} />
       </SwapGroup>
 
       {/* lane label on a dark tag, painted after the cables: the as-found web
           crosses the lane in plain view without crossing the words */}
-      <Rect x={156} y={118} width={90} height={13} rx={2} fill="#0c0c10" opacity={0.86} />
-      <SvgText x={201} y={128} fill="#6f7378" fontSize={10.5} textAnchor="middle">PERFORMER LANE</SvgText>
+      <Callout x={201} y={128} text="PERFORMER LANE" size={10.5} color={PLAN_LABEL} bg="rgba(12,12,16,0.86)" />
       {/* one performer crosses the web — the conflict, shown once */}
       <TrafficPass x1={104} y1={126} x2={300} y2={120} run={!routeFixed} delay={780} duration={1900} crossAt={0.36} />
     </Svg>
@@ -493,17 +496,36 @@ function RoutePath({
     strokeWidth: width * (phase === 'install' ? 1.22 : 1),
   }));
 
+  const installerBody = useAnimatedProps(() => ({
+    strokeDashoffset: len * (1 - p.value),
+    strokeWidth: width * 0.74 * (phase === 'install' ? 1.22 : 1),
+    opacity: dashed ? Math.max(0, 1 - Math.max(0, (p.value - 0.82) / 0.18)) * o.value : o.value,
+  }));
   return (
     <G>
       <APath
         d={d}
-        stroke={tint}
+        stroke={shade(tint, 0.66)}
         strokeWidth={width}
         fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         strokeDasharray={len}
         strokeDashoffset={len}
         opacity={0}
         animatedProps={installer}
+      />
+      <APath
+        d={d}
+        stroke={shade(tint, 0.15)}
+        strokeWidth={width * 0.74}
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeDasharray={len}
+        strokeDashoffset={len}
+        opacity={0}
+        animatedProps={installerBody}
       />
       {dashed ? (
         <APath d={d} stroke={tint} strokeWidth={width} fill="none" strokeDasharray="7,5" opacity={0} animatedProps={settled} />
@@ -525,42 +547,41 @@ function FohPlan({ w, pick }: { w: number; pick: number | null }) {
       accessibilityLabel="Venue plan, training visualization: stage at top, seated audience with a center aisle, perimeter walls with a service door, FOH riser at the bottom. Route A runs down the center aisle; route B follows the perimeter with one protected door crossing; route C hops overhead on rated rigging points."
     >
       <Rect x={0} y={0} width={360} height={210} rx={10} fill="#0c0c10" />
-      <Rect x={6} y={6} width={348} height={198} rx={8} fill="#101014" stroke="#2c2c33" strokeWidth={1.5} />
-      {/* stage + FOH */}
-      <Rect x={60} y={12} width={240} height={36} rx={4} fill="#141418" stroke="#3a3c42" strokeWidth={1.3} />
-      <SvgText x={180} y={34} fill="#a6a6ad" fontSize={10} textAnchor="middle">STAGE</SvgText>
-      <Rect x={150} y={170} width={60} height={26} rx={4} fill="#141418" stroke="#3a3c42" strokeWidth={1.3} />
-      <SvgText x={180} y={187} fill="#a6a6ad" fontSize={10.5} textAnchor="middle">FOH</SvgText>
-      {/* seating rows, center aisle between */}
+      <Rect x={6} y={6} width={348} height={198} rx={8} fill="#131417" stroke="#2c2c33" strokeWidth={1} />
+      {/* stage + FOH riser with the desk */}
+      <StageDeck x={60} y={12} w={240} h={36} />
+      <PlanLabel x={180} y={34} text="STAGE" />
+      <Rect x={150} y={168} width={60} height={30} rx={1.6} fill="#1c1d21" stroke="#3a3c42" strokeWidth={0.8} />
+      <ConsoleTop x={158} y={172} w={44} h={12} />
+      <PlanLabel x={180} y={196} text="FOH" size={9.5} />
+      {/* seating rows either side of the center aisle */}
       {[66, 78, 90, 102, 114, 126, 138, 150].map((y) => (
         <G key={`row${y}`}>
-          <Line x1={62} y1={y} x2={160} y2={y} stroke="#1b1b20" strokeWidth={6} />
-          <Line x1={200} y1={y} x2={298} y2={y} stroke="#1b1b20" strokeWidth={6} />
+          <SeatRow x0={62} x1={162} y={y} />
+          <SeatRow x0={200} x1={300} y={y} />
         </G>
       ))}
-      <SvgText x={174} y={60} fill="#6f7378" fontSize={10.5} textAnchor="end">AISLE</SvgText>
-      <SvgText x={186} y={60} fill="#6f7378" fontSize={10.5}>(EGRESS)</SvgText>
+      <PlanLabel x={174} y={60} text="AISLE" anchor="end" />
+      <PlanLabel x={186} y={60} text="(EGRESS)" anchor="start" />
       {/* service door on the left wall */}
-      <Rect x={3} y={108} width={7} height={22} fill="#26262c" stroke="#6f7378" strokeWidth={1} />
-      <SvgText x={44} y={98} fill="#6f7378" fontSize={10.5} textAnchor="middle">SVC</SvgText>
-      <SvgText x={44} y={110} fill="#6f7378" fontSize={10.5} textAnchor="middle">DOOR</SvgText>
+      <Rect x={3} y={108} width={6} height={22} fill="#3a3c42" />
+      <PlanLabel x={44} y={98} text="SVC" />
+      <PlanLabel x={44} y={110} text="DOOR" />
       {/* main doors on the bottom wall */}
-      <Rect x={58} y={200} width={26} height={6} fill="#26262c" />
-      <Rect x={276} y={200} width={26} height={6} fill="#26262c" />
+      <Rect x={58} y={200} width={26} height={5} fill="#3a3c42" />
+      <Rect x={276} y={200} width={26} height={5} fill="#3a3c42" />
       {/* ROUTE A — center aisle under ramp (amber) */}
       <RoutePath d="M180 48 V170" len={130} tint={ROUTE_TINTS[0]} width={2.8} phase={phaseFor(0, pick)} index={0} />
-      {[64, 80, 96, 112, 128, 144, 160].map((y) => (
-        <Line key={`ramp${y}`} x1={173} y1={y} x2={187} y2={y} stroke="#6f7378" strokeWidth={1.2} />
-      ))}
+      <RampTop x={172} y={60} w={16} h={106} vertical />
       {/* ROUTE B — perimeter with one protected door crossing (teal) */}
       <RoutePath d="M66 48 H26 V178 H150" len={300} tint={ROUTE_TINTS[1]} width={2.8} phase={phaseFor(1, pick)} index={1} />
-      <Path d="M18 112 l8 -5 v22 l-8 -5 z" fill="#26262c" stroke="#6f7378" strokeWidth={1.1} />
+      <RampTop x={20} y={104} w={12} h={30} vertical />
       {/* ROUTE C — overhead hop on rated points (purple, dashed = above the floor) */}
       <RoutePath d="M294 48 C334 72 338 132 214 174" len={200} tint={ROUTE_TINTS[2]} width={2.6} phase={phaseFor(2, pick)} index={2} dashed />
-      <Circle cx={322} cy={78} r={3.2} fill="none" stroke={ROUTE_TINTS[2]} strokeWidth={1.6} />
-      <Circle cx={314} cy={140} r={3.2} fill="none" stroke={ROUTE_TINTS[2]} strokeWidth={1.6} />
-      <SvgText x={308} y={176} fill="#6f7378" fontSize={10.5} textAnchor="middle">OVERHEAD</SvgText>
-      <SvgText x={308} y={188} fill="#6f7378" fontSize={10.5} textAnchor="middle">RATED POINTS</SvgText>
+      <RigPointTop x={322} y={78} color={ROUTE_TINTS[2]} />
+      <RigPointTop x={314} y={140} color={ROUTE_TINTS[2]} />
+      <PlanLabel x={308} y={176} text="OVERHEAD" />
+      <PlanLabel x={308} y={188} text="RATED POINTS" />
       {/* audience crosses the aisle run — once, when the verdicts land */}
       <TrafficPass x1={146} y1={120} x2={216} y2={120} run={pick != null} delay={820} duration={1700} crossAt={0.486} />
       {/* letters */}
@@ -582,43 +603,44 @@ function BackstagePlan({ w, pick }: { w: number; pick: number | null }) {
       accessibilityLabel="Backstage plan, training visualization: dock door at top, the load-in and forklift path running down to the stage, road cases along the right wall, a swinging door on the left wall, distro at left, monitor world at bottom right. Route A crosses the roll path under a mat; route B crosses once at a marked, vehicle-rated protector; route C takes the long perimeter behind the cases."
     >
       <Rect x={0} y={0} width={360} height={210} rx={10} fill="#0c0c10" />
-      <Rect x={6} y={6} width={348} height={198} rx={8} fill="#101014" stroke="#2c2c33" strokeWidth={1.5} />
-      {/* dock + load-in band */}
-      <Rect x={46} y={3} width={50} height={7} fill="#26262c" />
-      <Path d="M52 10 L100 10 L268 204 L200 204 z" fill="#16161b" stroke="#26262c" strokeWidth={1} />
-      <SvgText x={76} y={23} fill="#6f7378" fontSize={10.5} textAnchor="middle">DOCK</SvgText>
-      <SvgText x={160} y={96} fill="#6f7378" fontSize={10.5} textAnchor="middle">LOAD-IN</SvgText>
-      <SvgText x={160} y={109} fill="#6f7378" fontSize={10.5} textAnchor="middle">FORKLIFT PATH</SvgText>
-      {/* forklift glyph */}
-      <Rect x={140} y={52} width={20} height={10} rx={2} fill="none" stroke="#6f7378" strokeWidth={1.2} />
-      <Circle cx={145} cy={65} r={3} fill="none" stroke="#6f7378" strokeWidth={1.2} />
-      <Circle cx={156} cy={65} r={3} fill="none" stroke="#6f7378" strokeWidth={1.2} />
-      <Line x1={160} y1={54} x2={168} y2={54} stroke="#6f7378" strokeWidth={1.2} />
+      <Rect x={6} y={6} width={348} height={198} rx={8} fill="#1a1a1c" stroke="#2c2c33" strokeWidth={1} />
+      {/* dock door + the load-in lane, hazard-striped at both edges */}
+      <DockDoor x={46} w={56} />
+      <Path d="M52 10 L100 10 L268 204 L200 204 z" fill="#202024" />
+      <HazardEdge x1={52} y1={10} x2={200} y2={204} />
+      <HazardEdge x1={100} y1={10} x2={268} y2={204} />
+      <PlanLabel x={76} y={23} text="DOCK" />
+      <PlanLabel x={160} y={96} text="LOAD-IN" />
+      <PlanLabel x={160} y={109} text="FORKLIFT PATH" />
+      <G transform="rotate(49 150 57)">
+        <ForkliftTop x={136} y={51} />
+      </G>
       {/* road cases, right wall */}
       {[36, 66, 96].map((y) => (
-        <Rect key={`case${y}`} x={304} y={y} width={42} height={26} rx={2} fill="#17171c" stroke="#3a3c42" strokeWidth={1.2} />
+        <RoadCaseTop key={`case${y}`} x={304} y={y} w={42} h={26} />
       ))}
-      <SvgText x={325} y={133} fill="#6f7378" fontSize={10.5} textAnchor="middle">CASES</SvgText>
+      <PlanLabel x={325} y={133} text="CASES" />
       {/* door swing on the left wall */}
-      <Line x1={8} y1={150} x2={38} y2={174} stroke="#6f7378" strokeWidth={1.4} />
-      <Path d="M8 188 A38 38 0 0 0 38 174" fill="none" stroke="#6f7378" strokeWidth={1} strokeDasharray="4,4" />
-      <SvgText x={10} y={201} fill="#6f7378" fontSize={10.5}>DOOR SWING</SvgText>
+      <Line x1={8} y1={150} x2={38} y2={174} stroke="#9aa0a8" strokeWidth={1.4} />
+      <Path d="M8 188 A38 38 0 0 0 38 174" fill="none" stroke="#6d7179" strokeWidth={0.8} strokeDasharray="3 3" />
+      <PlanLabel x={10} y={201} text="DOOR SWING" anchor="start" />
       {/* distro + monitor world */}
-      <Rect x={8} y={84} width={40} height={26} rx={3} fill="#17171c" stroke="#6f7378" strokeWidth={1.2} />
-      <SvgText x={28} y={101} fill="#a6a6ad" fontSize={10} textAnchor="middle">DISTRO</SvgText>
-      <Rect x={296} y={168} width={52} height={30} rx={3} fill="#17171c" stroke="#6f7378" strokeWidth={1.2} />
-      <SvgText x={322} y={181} fill="#a6a6ad" fontSize={10.5} textAnchor="middle">MON</SvgText>
-      <SvgText x={322} y={193} fill="#a6a6ad" fontSize={10.5} textAnchor="middle">WORLD</SvgText>
+      <DistroTop x={10} y={86} />
+      <PlanLabel x={26} y={82} text="DISTRO" size={9.5} />
+      <ConsoleTop x={300} y={170} w={44} h={24} />
+      <PlanLabel x={322} y={164} text="MON WORLD" size={9.5} />
       {/* ROUTE A — straight across under a mat (amber) */}
       <RoutePath d="M48 100 L296 178" len={270} tint={ROUTE_TINTS[0]} width={2.8} phase={phaseFor(0, pick)} index={0} />
-      <Rect x={172} y={134} width={30} height={12} rx={2} fill="#1f1f24" stroke="#6f7378" strokeWidth={1.1} />
-      <SvgText x={187} y={130} fill="#6f7378" fontSize={10.5} textAnchor="middle">MAT</SvgText>
+      {/* a rubber mat thrown over the run — not a protector */}
+      <Rect x={172} y={134} width={30} height={12} rx={1} fill="#141518" stroke="#3a3c42" strokeWidth={0.6} />
+      <Path d={[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => `M${174 + i * 3.2} 136 l1.6 1.6 l-1.6 1.6 l1.6 1.6 l-1.6 1.6 l1.6 1.6`).join('')} stroke="#26282d" strokeWidth={0.5} fill="none" />
+      <PlanLabel x={187} y={130} text="MAT" />
       {/* ROUTE B — one marked, vehicle-rated crossing (teal) */}
       <RoutePath d="M48 106 V178 H296" len={330} tint={ROUTE_TINTS[1]} width={2.8} phase={phaseFor(1, pick)} index={1} />
-      <Path d="M206 184 l8 -9 h22 l8 9 z" fill="#26262c" stroke="#6f7378" strokeWidth={1.2} />
+      <RampTop x={202} y={170} w={44} h={16} />
       <Line x1={200} y1={168} x2={200} y2={190} stroke={CI_CLASS_TINTS.speaker} strokeWidth={1.4} strokeDasharray="3,3" />
       <Line x1={248} y1={168} x2={248} y2={190} stroke={CI_CLASS_TINTS.speaker} strokeWidth={1.4} strokeDasharray="3,3" />
-      <SvgText x={224} y={201} fill="#6f7378" fontSize={10.5} textAnchor="middle">RATED + MARKED</SvgText>
+      <PlanLabel x={224} y={201} text="RATED + MARKED" />
       {/* ROUTE C — long perimeter behind the cases (purple) */}
       <RoutePath d="M48 94 V30 H292 V172 H296" len={470} tint={ROUTE_TINTS[2]} width={2.6} phase={phaseFor(2, pick)} index={2} />
       {/* a case rolls the load-in path once — and finds the mat crossing */}
@@ -635,7 +657,7 @@ function RouteLetter({ x, y, i }: { x: number; y: number; i: number }) {
   return (
     <G>
       <Circle cx={x} cy={y} r={9} fill="#17171c" stroke={ROUTE_TINTS[i]} strokeWidth={1.6} />
-      <SvgText x={x} y={y + 3.8} fill={ROUTE_TINTS[i]} fontSize={10.5} textAnchor="middle">{LETTERS[i]}</SvgText>
+      <Callout x={x} y={y + 3.6} text={LETTERS[i]} size={10.5} color={ROUTE_TINTS[i]} bg={null} />
     </G>
   );
 }
@@ -921,20 +943,39 @@ function CoilLoop({ i, sign, writhe, settle, newest }: { i: number; sign: number
     return { d: layD(cx, COIL_CY, ry, rot, over), opacity: Math.max(0, Math.min(1, (p.value - 0.55) / 0.45)) };
   });
 
+  const loopEdge = useAnimatedProps(() => {
+    const k = writhe.value;
+    const g = e.value * settle.value;
+    const rx = COIL_RX * (1 - 0.22 * k) * g;
+    const ry = COIL_RY * (1 + 0.13 * k) * g;
+    const cx = cxBase - (cxBase - COIL_CENTER) * 0.2 * k;
+    const rot = (lean * (10 + 16 * k) * Math.PI) / 180;
+    return { d: loopD(cx, COIL_CY, rx, ry, rot), strokeDashoffset: COIL_DASH * (1 - p.value) };
+  });
+  const loopSheen = useAnimatedProps(() => {
+    const k = writhe.value;
+    const g = e.value * settle.value;
+    const rx = COIL_RX * (1 - 0.22 * k) * g;
+    const ry = COIL_RY * (1 + 0.13 * k) * g;
+    const cx = cxBase - (cxBase - COIL_CENTER) * 0.2 * k;
+    const rot = (lean * (10 + 16 * k) * Math.PI) / 180;
+    return { d: loopD(cx - 0.6, COIL_CY - 0.7, rx, ry, rot), strokeDashoffset: COIL_DASH * (1 - p.value) };
+  });
+
   const restRot = (lean * 10 * Math.PI) / 180;
+  const jb = shade(CI_CLASS_TINTS.analog, 0.3);
+  const loopCommon = {
+    fill: 'none',
+    strokeLinecap: 'round' as const,
+    opacity: newest ? 1 : 0.82,
+    strokeDasharray: COIL_DASH,
+    strokeDashoffset: m.reduce ? 0 : COIL_DASH,
+  };
   return (
     <G>
-      <APath
-        d={loopD(cxBase, COIL_CY, COIL_RX, COIL_RY, restRot)}
-        stroke={CI_CLASS_TINTS.analog}
-        strokeWidth={3.4}
-        fill="none"
-        strokeLinecap="round"
-        opacity={newest ? 1 : 0.78}
-        strokeDasharray={COIL_DASH}
-        strokeDashoffset={m.reduce ? 0 : COIL_DASH}
-        animatedProps={loopProps}
-      />
+      <APath d={loopD(cxBase, COIL_CY, COIL_RX, COIL_RY, restRot)} stroke={shade(CI_CLASS_TINTS.analog, 0.7)} strokeWidth={3.6} {...loopCommon} animatedProps={loopEdge} />
+      <APath d={loopD(cxBase, COIL_CY, COIL_RX, COIL_RY, restRot)} stroke={jb} strokeWidth={2.7} {...loopCommon} animatedProps={loopProps} />
+      <APath d={loopD(cxBase, COIL_CY, COIL_RX, COIL_RY, restRot)} stroke={lighten(jb, 0.5)} strokeWidth={0.8} {...loopCommon} animatedProps={loopSheen} />
       <APath
         d={layD(cxBase, COIL_CY, COIL_RY, restRot, over)}
         stroke="#9be8f2"
@@ -979,17 +1020,16 @@ function CoilArt({ w, signs, done }: { w: number; signs: number[]; done: boolean
     >
       <Rect x={0} y={0} width={360} height={150} rx={10} fill="#0c0c10" />
       {/* cable lead-in from the connector */}
-      <Rect x={4} y={110} width={13} height={13} rx={2} fill="#26262c" stroke="#6f7378" strokeWidth={1.2} />
-      <Path d="M17 116 C48 116 66 100 88 92" stroke={tint} strokeWidth={4} fill="none" strokeLinecap="round" />
+      {/* the lead from its XLR: a real plug, a jacketed tail */}
+      <JacketPath d="M24 116 C48 116 66 100 88 92" color={tint} width={3.6} />
+      <Connector kind="xlrM" x={26} y={116} k={0.34} angle={180} jacket={shade(tint, 0.3)} />
       {signs.length === 0 ? (
         <Ellipse cx={120} cy={76} rx={30} ry={42} fill="none" stroke="#3a3c42" strokeWidth={1.6} strokeDasharray="6,5" />
       ) : null}
       {signs.map((sign, i) => (
         <CoilLoop key={i} i={i} sign={sign} writhe={writhe} settle={settle} newest={i === signs.length - 1} />
       ))}
-      <SvgText x={180} y={143} fill="#6f7378" fontSize={10.5} textAnchor="middle">
-        OVER LOOPS LEAN ONE WAY — UNDER LOOPS MIRROR
-      </SvgText>
+      <Callout x={180} y={143} text="OVER LOOPS LEAN ONE WAY — UNDER LOOPS MIRROR" size={10.5} color={PLAN_LABEL} bg={null} />
     </Svg>
   );
 }
