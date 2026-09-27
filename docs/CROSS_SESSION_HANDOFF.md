@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-27 08:28 · ccode · 4473b229
+changed: Rack Unit: an open tray no longer covers the dock inline
+affects other side: nothing — client JS only (rack tray layout) <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: nothing <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-26 18:51 · ccode · e5f1ca69
 changed: Cable Install QA fixes before the OTA: Ceiling Exercise 2's hook controls dock in FULL SCREEN; Rack Phase B speaker loom lands on the amp's NL4 output (not its fan grille); Walls Q4 copy matches the drawing ("beside the device")
 affects other side: nothing — client JS only (Cable Install lab)

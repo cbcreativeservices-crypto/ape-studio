@@ -54,7 +54,7 @@ describe('the lab display can collapse for reading', () => {
 
   test('the well grows ONLY while collapsed', () => {
     assert.match(code, /wellWrapGrow:\s*\{\s*flexGrow:\s*1\s*\}/, 'the well can no longer take the freed space');
-    assert.match(code, /stageCollapsed && styles\.wellWrapGrow/, 'the grow style is no longer tied to the collapsed state');
+    assert.match(code, /\(stageCollapsed \|\| trayParam != null\) && styles\.wellWrapGrow/, 'the grow style is no longer tied to the collapsed state');
     // Expanded must still wrap content, or short lessons leave a dead gap.
     assert.match(code, /wellWrap:\s*\{\s*flexGrow:\s*0/, 'the expanded well started growing — the dock will stop riding up');
   });
@@ -77,4 +77,9 @@ describe('the lab display can collapse for reading', () => {
     const wipe = readFileSync(join(process.cwd(), 'src', 'features', 'account', 'clearLocalAccountData.ts'), 'utf8');
     assert.match(wipe, /'ape:lab:stageCollapsed'/, 'the reading preference is swept on account switch and will spring back open');
   });
+});
+
+test('an open tray covers the well only — the dock stays live beneath it (owner 2026-09-27)', () => {
+  assert.match(code, /styles\.trayLayer, \{ top: stageBlockH, bottom: dockH \+ bottom \}/, 'the tray layer no longer stops at the dock');
+  assert.match(code, /trayParam \? null : <View style=\{styles\.filler\}/, 'the dock no longer drops to the bottom while a tray is open');
 });
