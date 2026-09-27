@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 18:51 · ccode · e5f1ca69
+changed: Cable Install QA fixes before the OTA: Ceiling Exercise 2's hook controls dock in FULL SCREEN; Rack Phase B speaker loom lands on the amp's NL4 output (not its fan grille); Walls Q4 copy matches the drawing ("beside the device")
+affects other side: nothing — client JS only (Cable Install lab)
+needs: nothing
+
+
 ### 2026-09-26 18:12 · ccode · 1a4b80cc
 changed: Cable Install art pass, review fixes: web console errors, 9-pt floor at 375, one misleading note
 affects other side: nothing — client JS only (Cable Install lab art)
