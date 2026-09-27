@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-27 11:44 · ccode · 87ec850c
+changed: Sound Systems: the slider steps aside while a CONSOLE tray is open
+affects other side: nothing — client JS only (rack tray layout) <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: nothing <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-27 11:28 · ccode · 4b91f348
 changed: Preview harness: add the five Sound Systems mode screens
 affects other side: nothing — client JS only (web preview harness) <FILL — what A (backend) must re-read or adjust, or "nothing">
