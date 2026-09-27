@@ -45,6 +45,8 @@ import { OptionChip } from '../../cable/lessons/bits';
 import { DragSlider } from '../../foundations/bits';
 import { CiSection, RuleFeedback, announceComplete } from '../bits';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
+import { Callout, JacketPath, shade, useUid } from '../svgArt';
+import { CableSection } from './knowArt';
 import { CI_CLASS_TINTS } from '../data/cableTypes';
 import { CI_EMI_CHOICES } from '../data/scenarios';
 import {
@@ -273,6 +275,10 @@ function FieldArt({ w, src, dist, balanced, band }: { w: number; src: EmiSource;
 
   const condA = useAnimatedProps(() => ({ cx: SIG_X0 - split.value, r: 2.6 - 0.05 * split.value }));
   const condB = useAnimatedProps(() => ({ cx: SIG_X0 + split.value, r: 2.6 - 0.05 * split.value }));
+  /* the conductors' insulation rides the same spring */
+  const insA = useAnimatedProps(() => ({ cx: SIG_X0 - split.value, r: 4.2 - 0.1 * split.value }));
+  const insB = useAnimatedProps(() => ({ cx: SIG_X0 + split.value, r: 4.2 - 0.1 * split.value }));
+  const uid = useUid();
 
   return (
     <View style={{ width: w, height: h }}>
@@ -283,7 +289,7 @@ function FieldArt({ w, src, dist, balanced, band }: { w: number; src: EmiSource;
         accessibilityLabel={`Cross-section, conceptual visualization: ${src.label} at left with a conceptual coupling-risk field, signal cable at ${distWord(dist)} spacing, ${balanced ? 'balanced' : 'unbalanced'} interconnect. Exposure ${band.word}. Not measured values.`}
       >
         <Defs>
-          <RadialGradient id="ciEmiFieldGlow" cx="50%" cy="50%" r="50%">
+          <RadialGradient id={`${uid}g`} cx="50%" cy="50%" r="50%">
             <Stop offset="0%" stopColor={src.tint} stopOpacity={0.4} />
             <Stop offset="55%" stopColor={src.tint} stopOpacity={0.16} />
             <Stop offset="100%" stopColor={src.tint} stopOpacity={0} />
@@ -291,7 +297,7 @@ function FieldArt({ w, src, dist, balanced, band }: { w: number; src: EmiSource;
         </Defs>
         <Rect x={0} y={0} width={360} height={150} rx={10} fill="#0c0c10" />
         {/* conceptual coupling-risk field — breathing, because it is live */}
-        <ACircle cx={64} cy={70} r={34 + src.noise * 54} fill="url(#ciEmiFieldGlow)" animatedProps={glowProps} />
+        <ACircle cx={64} cy={70} r={34 + src.noise * 54} fill={`url(#${uid}g)`} animatedProps={glowProps} />
         <ACircle
           cx={64}
           cy={70}
@@ -309,7 +315,7 @@ function FieldArt({ w, src, dist, balanced, band }: { w: number; src: EmiSource;
         </IconFade>
         {/* the source's ROLE line moved out of the drawing into the caption
             below it (legibility pass 2026-09-25: it printed at 6.5 units) */}
-        <SvgText x={64} y={127} fill="#a6a6ad" fontSize={10.5} textAnchor="middle">{src.label}</SvgText>
+        <Callout x={64} y={127} text={src.label} size={10.5} color="#b9bdc6" bg={null} />
         {/* distance guide — stretches with the cable */}
         <ALine
           x1={80}
@@ -322,9 +328,7 @@ function FieldArt({ w, src, dist, balanced, band }: { w: number; src: EmiSource;
           animatedProps={guideProps}
         />
         {/* honesty label — required, in the drawing itself */}
-        <SvgText x={180} y={146} fill="#6f7378" fontSize={10} textAnchor="middle">
-          CONCEPTUAL VISUALIZATION — NOT MEASURED VALUES
-        </SvgText>
+        <Callout x={180} y={146} text="CONCEPTUAL VISUALIZATION — NOT MEASURED VALUES" size={10} color="#8d9199" bg={null} />
       </Svg>
 
       {/* the cable itself moves as a GROUP — the only bulletproof way (motion.tsx) */}
@@ -352,18 +356,20 @@ function FieldArt({ w, src, dist, balanced, band }: { w: number; src: EmiSource;
             <ACircle cx={SIG_X0} cy={70} r={19} fill="none" stroke={BAND_TINTS[0]} strokeWidth={2.4} opacity={0} animatedProps={lowProps} />
             <ACircle cx={SIG_X0} cy={70} r={19} fill="none" stroke={BAND_TINTS[1]} strokeWidth={2.4} opacity={0} animatedProps={modProps} />
             <ACircle cx={SIG_X0} cy={70} r={19} fill="none" stroke={BAND_TINTS[2]} strokeWidth={2.4} opacity={0} animatedProps={highProps} />
-            <Circle cx={SIG_X0} cy={70} r={13} fill="#101014" stroke={sig} strokeWidth={2.6} />
-            <Circle cx={SIG_X0} cy={70} r={9} fill="none" stroke="#9be8f2" strokeWidth={1.3} strokeDasharray="3,2" />
+            {/* a cut cable: jacket wall, braided shield, the conductor(s) */}
+            <Circle cx={SIG_X0 + 0.8} cy={71.4} r={13.4} fill="rgba(0,0,0,0.5)" />
+            <Circle cx={SIG_X0} cy={70} r={13} fill={shade(sig, 0.4)} stroke={shade(sig, 0.72)} strokeWidth={0.8} />
+            <Circle cx={SIG_X0} cy={70} r={12.2} fill="none" stroke={sig} strokeWidth={0.7} opacity={0.5} />
+            <Circle cx={SIG_X0} cy={70} r={9.6} fill="#0b0b0d" />
+            <Circle cx={SIG_X0} cy={70} r={8.8} fill="none" stroke="#c9824a" strokeWidth={1.6} strokeDasharray="0.9 0.7" />
             {/* one conductor splits into a balanced pair, and merges back */}
-            <ACircle cx={SIG_X0} cy={70} r={2.6} fill="#e8e8ea" animatedProps={condA} />
-            <ACircle cx={SIG_X0} cy={70} r={2.6} fill="#e8e8ea" animatedProps={condB} />
-            <SvgText x={SIG_X0} y={103} fill="#a6a6ad" fontSize={10.5} textAnchor="middle">SIGNAL CABLE</SvgText>
-            <SvgText x={SIG_X0} y={114} fill="#6f7378" fontSize={10} textAnchor="middle">
-              {balanced ? 'BALANCED' : 'UNBALANCED'}
-            </SvgText>
-            <SvgText x={SIG_X0} y={125} fill="#6f7378" fontSize={10} textAnchor="middle">
-              + SHIELD
-            </SvgText>
+            <ACircle cx={SIG_X0} cy={70} r={4.2} fill="#e9e9e4" stroke="#5a5d64" strokeWidth={0.4} animatedProps={insA} />
+            <ACircle cx={SIG_X0} cy={70} r={4.2} fill="#c83b32" stroke="#5a5d64" strokeWidth={0.4} animatedProps={insB} />
+            <ACircle cx={SIG_X0} cy={70} r={2.6} fill="#d38a50" animatedProps={condA} />
+            <ACircle cx={SIG_X0} cy={70} r={2.6} fill="#d38a50" animatedProps={condB} />
+            <Callout x={SIG_X0} y={103} text="SIGNAL CABLE" size={10.5} color="#b9bdc6" bg={null} />
+            <Callout x={SIG_X0} y={114} text={balanced ? 'BALANCED' : 'UNBALANCED'} size={10} color="#8d9199" bg={null} />
+            <Callout x={SIG_X0} y={125} text="+ SHIELD" size={10} color="#8d9199" bg={null} />
           </Svg>
         </MovingLayer>
       </View>
@@ -373,62 +379,64 @@ function FieldArt({ w, src, dist, balanced, band }: { w: number; src: EmiSource;
 
 function SourceIcon({ id, tint }: { id: string; tint: string }) {
   if (id === 'xfmr') {
+    // a power transformer from the side: laminated E-I core, two copper coils
     return (
       <G>
-        <Rect x={46} y={54} width={36} height={32} rx={3} fill="#17171c" stroke={tint} strokeWidth={1.6} />
-        <Path d="M55 60 q7 10 0 20" stroke={tint} strokeWidth={1.6} fill="none" />
-        <Path d="M73 60 q-7 10 0 20" stroke={tint} strokeWidth={1.6} fill="none" />
-        <Line x1={62.5} y1={58} x2={62.5} y2={82} stroke="#6f7378" strokeWidth={1.2} />
-        <Line x1={65.5} y1={58} x2={65.5} y2={82} stroke="#6f7378" strokeWidth={1.2} />
+        <Rect x={44} y={52} width={40} height={36} rx={1.2} fill="#3a3c42" stroke="#101114" strokeWidth={0.6} />
+        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
+          <Line key={i} x1={44.5} y1={54 + i * 3.2} x2={83.5} y2={54 + i * 3.2} stroke="#2a2c31" strokeWidth={0.5} />
+        ))}
+        <Rect x={50} y={58} width={11} height={24} rx={2} fill="#b8733e" stroke="#5a3016" strokeWidth={0.5} />
+        <Rect x={67} y={58} width={11} height={24} rx={2} fill="#b8733e" stroke="#5a3016" strokeWidth={0.5} />
+        {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
+          <G key={`w${i}`}>
+            <Line x1={50.5} y1={60 + i * 2.8} x2={60.5} y2={60 + i * 2.8} stroke="#7a4420" strokeWidth={0.5} />
+            <Line x1={67.5} y1={60 + i * 2.8} x2={77.5} y2={60 + i * 2.8} stroke="#7a4420" strokeWidth={0.5} />
+          </G>
+        ))}
+        <Rect x={44} y={50} width={40} height={3} fill="#50545b" />
+        <Rect x={44} y={87} width={40} height={3} fill="#50545b" />
+        <Circle cx={64} cy={70} r={1} fill={tint} opacity={0.01} />
       </G>
     );
   }
   if (id === 'motor') {
+    // an induction motor end-on: finned frame, shaft, terminal box
     return (
       <G>
-        <Circle cx={62} cy={70} r={14} fill="#17171c" stroke={tint} strokeWidth={1.6} />
-        <Rect x={76} y={66} width={11} height={8} rx={2} fill="none" stroke={tint} strokeWidth={1.4} />
-        <Circle cx={62} cy={70} r={4} fill="none" stroke="#6f7378" strokeWidth={1.2} />
+        {Array.from({ length: 16 }, (_, i) => {
+          const a = (i / 16) * Math.PI * 2;
+          return <Line key={i} x1={62 + Math.cos(a) * 14} y1={70 + Math.sin(a) * 14} x2={62 + Math.cos(a) * 17} y2={70 + Math.sin(a) * 17} stroke="#6d7179" strokeWidth={1.6} />;
+        })}
+        <Circle cx={62} cy={70} r={14.5} fill="#34363c" stroke="#101114" strokeWidth={0.6} />
+        <Circle cx={62} cy={70} r={9} fill="#26282d" stroke="#50545b" strokeWidth={0.6} />
+        <Circle cx={62} cy={70} r={3} fill="#9ba1a8" stroke="#3a3d43" strokeWidth={0.5} />
+        <Rect x={55} y={50} width={14} height={7} rx={1} fill="#3a3c42" stroke="#101114" strokeWidth={0.5} />
+        <Rect x={58} y={86} width={8} height={4} fill="#26282d" />
       </G>
     );
   }
   if (id === 'dimmer') {
+    // a dimmer rack front: module faces with breakers and status LEDs
     return (
       <G>
-        <Rect x={46} y={48} width={36} height={44} rx={3} fill="#17171c" stroke={tint} strokeWidth={1.6} />
-        {[57, 70, 83].map((y) => (
-          <G key={y}>
-            <Line x1={52} y1={y} x2={76} y2={y} stroke="#6f7378" strokeWidth={1.4} />
-            <Circle cx={y === 70 ? 68 : 58} cy={y} r={2.6} fill={tint} />
+        <Rect x={44} y={44} width={40} height={52} rx={1.2} fill="#26282d" stroke="#101114" strokeWidth={0.6} />
+        {[0, 1, 2, 3, 4, 5].map((i) => (
+          <G key={i}>
+            <Rect x={46} y={46 + i * 8.2} width={36} height={7.2} rx={0.6} fill="#34363c" stroke="#1b1c20" strokeWidth={0.4} />
+            <Rect x={48} y={48 + i * 8.2} width={5} height={3.4} rx={0.4} fill="#101114" />
+            <Rect x={55} y={48 + i * 8.2} width={5} height={3.4} rx={0.4} fill="#101114" />
+            <Circle cx={78} cy={49.6 + i * 8.2} r={0.9} fill={i % 2 ? '#37d97b' : '#ffc64d'} />
           </G>
         ))}
       </G>
     );
   }
   if (id === 'network') {
-    return (
-      <G>
-        <Circle cx={64} cy={70} r={11} fill="#101014" stroke={tint} strokeWidth={2.2} />
-        {[
-          [-3.5, -3.5],
-          [3.5, -3.5],
-          [-3.5, 3.5],
-          [3.5, 3.5],
-        ].map(([dx, dy]) => (
-          <Circle key={`${dx}${dy}`} cx={64 + dx} cy={70 + dy} r={1.8} fill="#e8e8ea" />
-        ))}
-      </G>
-    );
+    return <CableSection cls="network" tint="#37d97b" cx={64} cy={70} R={12} fine={false} />;
   }
-  // AC feeder
-  return (
-    <G>
-      <Circle cx={64} cy={70} r={14} fill="#101014" stroke={tint} strokeWidth={2.6} />
-      <Circle cx={64} cy={63} r={2.6} fill="#e8e8ea" />
-      <Circle cx={58} cy={74} r={2.6} fill="#e8e8ea" />
-      <Circle cx={70} cy={74} r={2.6} fill="#e8e8ea" />
-    </G>
-  );
+  // AC feeder: a 3-conductor + ground feeder cable, cut
+  return <CableSection cls="power" tint="#ff5a48" cx={64} cy={70} R={15} fine={false} />;
 }
 
 /* ── crossing-geometry previews ─────────────────────────────────────────── */
@@ -491,11 +499,11 @@ function CrossPreview({ kind, w, nonce }: { kind: string; w: number; nonce: numb
 
   return (
     <Svg width={w} height={h} viewBox="0 0 120 64">
-      <Rect x={0} y={0} width={120} height={64} rx={7} fill="#0c0c10" />
-      <Line x1={8} y1={20} x2={112} y2={20} stroke={pow} strokeWidth={3.2} />
+      <Rect x={0} y={0} width={120} height={64} rx={7} fill="#0f1013" />
+      <JacketPath d="M8 20 H112" color={pow} width={3.4} />
       {kind === 'parallel-close' ? (
         <G>
-          <Line x1={8} y1={27} x2={112} y2={27} stroke={sig} strokeWidth={2.6} />
+          <JacketPath d="M8 27 H112" color={sig} width={2.6} />
           {[16, 34, 52, 70, 88, 106].map((x, i) => (
             <CouplingTick key={x} x={x} i={i} cyc={cyc} />
           ))}
@@ -541,7 +549,12 @@ function CrossPreview({ kind, w, nonce }: { kind: string; w: number; nonce: numb
       ) : (
         <G>
           <AG opacity={1} animatedProps={trayPop}>
-            <Rect x={8} y={40} width={104} height={16} rx={2} fill="none" stroke="#6f7378" strokeWidth={1.2} />
+            {/* its own pathway: a ladder tray, side-on */}
+            <Rect x={8} y={52} width={104} height={4} fill="#9ba1a8" stroke="#3a3d43" strokeWidth={0.4} />
+            <Rect x={8} y={40} width={104} height={1.6} fill="#6d737b" />
+            {[14, 26, 38, 50, 62, 74, 86, 98, 110].map((x) => (
+              <Line key={x} x1={x} y1={41.6} x2={x - 1.4} y2={52} stroke="#5d636b" strokeWidth={0.8} />
+            ))}
           </AG>
           <ALine
             x1={12}
