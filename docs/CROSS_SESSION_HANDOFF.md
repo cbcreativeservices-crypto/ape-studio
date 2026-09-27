@@ -197,8 +197,8 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ### 2026-09-27 12:08 · ccode · 33323fea
 changed: Dashboard: remember and follow the TOPIC, not its slot in the carousel
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (study dashboard) <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: nothing <FILL — what you need from A, or "nothing">
 
 
 ### 2026-09-27 11:55 · ccode · 1d67c864
