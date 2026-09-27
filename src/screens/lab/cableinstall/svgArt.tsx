@@ -1251,3 +1251,44 @@ export function WallBoxSide({ x, y, m, tone, dir = -1, depth }: { x: number; y: 
     </G>
   );
 }
+
+/**
+ * A jacketed cable along an SVG path `d` (arcs, beziers — anything), static or
+ * on an install clock `pv` (0..1, with `len` the path's over-estimated length):
+ * contact shadow, core edge, body, sheen on the lit side. Use when the route is
+ * authored as a path string rather than waypoints (SvgCable).
+ */
+export function JacketPath({
+  d,
+  color,
+  width,
+  opacity = 1,
+  pv,
+  len = 0,
+  shadow = true,
+}: {
+  d: string;
+  color: string;
+  width: number;
+  opacity?: number;
+  pv?: SharedValue<number>;
+  len?: number;
+  shadow?: boolean;
+}) {
+  const body = shade(color, 0.22);
+  const lay = { fill: 'none', strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+  return (
+    <G opacity={opacity}>
+      {shadow ? (
+        <G transform={`translate(${width * 0.2} ${width * 0.36})`}>
+          <DashPath pv={pv} len={len} d={d} stroke="rgba(0,0,0,0.5)" strokeWidth={width} {...lay} />
+        </G>
+      ) : null}
+      <DashPath pv={pv} len={len} d={d} stroke={shade(color, 0.66)} strokeWidth={width} {...lay} />
+      <DashPath pv={pv} len={len} d={d} stroke={body} strokeWidth={width * 0.74} {...lay} />
+      <G transform={`translate(${-width * 0.16} ${-width * 0.2})`}>
+        <DashPath pv={pv} len={len} d={d} stroke={tint(body, 0.5)} strokeWidth={Math.max(0.35, width * 0.24)} opacity={0.8} {...lay} />
+      </G>
+    </G>
+  );
+}

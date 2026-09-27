@@ -40,12 +40,15 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import { JacketPath, shade, tint as lighten } from '../svgArt';
+import { CeilingDefects, FinishedRoom, GridAndTiles, OtherTrades, PlenumStructure, WallSleeve } from './ceilingArt';
 /** Type-only: the motion kit re-exports the hooks, not the SharedValue type. */
 import type { SharedValue } from 'react-native-reanimated';
 import { colors, fonts } from '../../../../theme/tokens';
 import { OptionChip, lessonStyles } from '../../cable/lessons/bits';
 import { CiSection, FindProgress, RuleFeedback, SpecCard, announceComplete } from '../bits';
 import { mistakeById } from '../data/mistakes';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { CI_CEILING_DEFECTS, CI_CEILING_INSTALL_STEPS, CI_SUPPORT_SPACING_SPEC } from '../data/scenarios';
 import { clamp100 } from '../engine/score';
 import {
@@ -225,21 +228,11 @@ function Layer({ t, from, to, above, children }: { t: SharedValue<number>; from:
   );
 }
 
-/** A run that installs itself along its path (mounted when it's time). */
+/** A run that installs itself along its path (mounted when it's time) —
+ *  a shaded jacket, never a flat stroke. */
 function InstalledRun({ d, len, color, width, delay = 0 }: { d: string; len: number; color: string; width: number; delay?: number }) {
-  const { animatedProps, dashArray, restOffset } = useDrawIn(len, { run: true, delay });
-  return (
-    <APath
-      d={d}
-      stroke={color}
-      strokeWidth={width}
-      fill="none"
-      strokeLinecap="round"
-      strokeDasharray={dashArray}
-      strokeDashoffset={restOffset}
-      animatedProps={animatedProps}
-    />
-  );
+  const { progress } = useDrawIn(len, { run: true, delay });
+  return <JacketPath d={d} color={color} width={width} pv={progress} len={len} />;
 }
 
 /** A defect marker: breathes on its own phase until found, then springs into
@@ -315,7 +308,13 @@ function PlacedHook({ x }: { x: number }) {
     return `M${x} 28 V${(110 - dy).toFixed(1)} M${x - 5} ${(110 - dy).toFixed(1)} V${(119 - dy).toFixed(1)} Q${x - 5} ${(126 - dy).toFixed(1)} ${x + 2} ${(126 - dy).toFixed(1)} H${x + 6}`;
   };
   const p = useAnimatedProps(() => ({ d: hookD((1 - k.value) * 9), opacity: Math.min(1, k.value * 1.8) }));
-  return <APath d={hookD(0)} stroke="#b9bcc2" strokeWidth={1.8} fill="none" opacity={0} animatedProps={p} />;
+  const q = useAnimatedProps(() => ({ d: hookD((1 - k.value) * 9), opacity: Math.min(1, k.value * 1.8) }));
+  return (
+    <>
+      <APath d={hookD(0)} stroke="#2c2f34" strokeWidth={2.4} fill="none" strokeLinecap="round" opacity={0} animatedProps={p} />
+      <APath d={hookD(0)} stroke="#c3c8cf" strokeWidth={1.3} fill="none" strokeLinecap="round" opacity={0} animatedProps={q} />
+    </>
+  );
 }
 
 /**
@@ -347,32 +346,41 @@ function SagRun({
   const fade = useTween(fadeTo, CI_MOTION.base);
   const { progress } = useDrawIn(RUN_LEN, { run: !!draw, delay: drawDelay ?? 0 });
   const restFade = useRest(fadeTo);
-  const p = useAnimatedProps(() => {
+  /** one worklet builds the run; each tonal layer calls it with its offset */
+  const runD = (dx: number, dy: number) => {
+    'worklet';
     const f = fromArr.value;
     const t = toArr.value;
     let d = '';
     for (let i = 0; i < t.length; i++) {
-      d += `${i === 0 ? 'M' : 'L'}${RUN_XS[i].toFixed(1)} ${(f[i] + (t[i] - f[i]) * k.value).toFixed(1)} `;
+      d += `${i === 0 ? 'M' : 'L'}${(RUN_XS[i] + dx).toFixed(1)} ${(f[i] + (t[i] - f[i]) * k.value + dy).toFixed(1)} `;
     }
-    return {
-      d: `${d}L${SLEEVE_X} ${SLEEVE_Y}`,
-      opacity: fade.value,
-      strokeDashoffset: draw ? RUN_LEN * (1 - progress.value) : 0,
-    };
-  });
+    return `${d}L${SLEEVE_X + dx} ${SLEEVE_Y + dy}`;
+  };
+  const mk = (dx: number, dy: number) => {
+    'worklet';
+    return { d: runD(dx, dy), opacity: fade.value, strokeDashoffset: draw ? RUN_LEN * (1 - progress.value) : 0 };
+  };
+  const pShadow = useAnimatedProps(() => mk(width * 0.2, width * 0.36));
+  const pEdge = useAnimatedProps(() => mk(0, 0));
+  const pBody = useAnimatedProps(() => mk(0, 0));
+  const pSheen = useAnimatedProps(() => mk(-width * 0.16, -width * 0.2));
+  const common = {
+    fill: 'none',
+    strokeLinecap: 'round' as const,
+    strokeLinejoin: 'round' as const,
+    strokeDasharray: draw ? RUN_LEN : undefined,
+    strokeDashoffset: draw ? RUN_LEN : 0,
+    opacity: restFade,
+  };
+  const body = shade(tint, 0.22);
   return (
-    <APath
-      d={restD}
-      stroke={tint}
-      strokeWidth={width}
-      fill="none"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeDasharray={draw ? RUN_LEN : undefined}
-      strokeDashoffset={draw ? RUN_LEN : 0}
-      opacity={restFade}
-      animatedProps={p}
-    />
+    <>
+      <APath d={restD} stroke="rgba(0,0,0,0.5)" strokeWidth={width} {...common} animatedProps={pShadow} />
+      <APath d={restD} stroke={shade(tint, 0.66)} strokeWidth={width} {...common} animatedProps={pEdge} />
+      <APath d={restD} stroke={body} strokeWidth={width * 0.74} {...common} animatedProps={pBody} />
+      <APath d={restD} stroke={lighten(body, 0.5)} strokeWidth={width * 0.24} {...common} animatedProps={pSheen} />
+    </>
   );
 }
 
@@ -484,115 +492,28 @@ function AboveSvg({
 
       {/* ── depth 1: structure ─────────────────────────────────────────── */}
       <Layer t={rv} from={0} to={0.4} above={above}>
-        <Rect x={0} y={4} width={VB_W} height={10} fill="#1d1d24" />
-        {[16, 44, 72, 100, 128, 156, 184, 212, 240, 268, 296, 324, 352].map((x) => (
-          <Line key={x} x1={x} y1={13} x2={x + 7} y2={5} stroke="#2c2c33" strokeWidth={1} />
-        ))}
-        {[20, 80, 140, 200, 260, 320].map((x) => (
-          <Rect key={x} x={x - 3} y={14} width={6} height={14} fill="#22222a" />
-        ))}
-        {/* far wall (the destination) */}
-        <Rect x={336} y={14} width={18} height={150} fill="#1b1b22" stroke="#2c2c33" strokeWidth={1} />
-        {/* hanger wires */}
-        {[50, 110, 170, 230, 290].map((x) => (
-          <Line key={x} x1={x} y1={28} x2={x} y2={162} stroke="#34343c" strokeWidth={0.8} />
-        ))}
+        <PlenumStructure />
       </Layer>
 
       {/* ── depth 2: the other trades' systems ─────────────────────────── */}
       <Layer t={rv} from={0.18} to={0.62} above={above}>
-        {/* ductwork (hung from structure) */}
-        <Line x1={30} y1={28} x2={30} y2={78} stroke="#3a3c42" strokeWidth={1.4} />
-        <Line x1={100} y1={28} x2={100} y2={78} stroke="#3a3c42" strokeWidth={1.4} />
-        <Rect x={12} y={78} width={108} height={26} fill="#1a1a21" stroke="#3a3c42" strokeWidth={1.4} />
-        <Line x1={12} y1={91} x2={120} y2={91} stroke="#26262c" strokeWidth={1} />
-
-        {/* sprinkler main + heads (life-safety — red) */}
-        <Line x1={200} y1={28} x2={200} y2={84} stroke="#3a3c42" strokeWidth={1.2} />
-        <Line x1={310} y1={28} x2={310} y2={84} stroke="#3a3c42" strokeWidth={1.2} />
-        <Line x1={126} y1={84} x2={336} y2={84} stroke="#ff5a48" strokeWidth={3.5} />
-        {[204, 258, 316].map((x) => (
-          <Path key={x} d={`M${x} 84 L${x} 164`} stroke="#ff5a48" strokeWidth={1.6} />
-        ))}
-        {[204, 258, 316].map((x) => (
-          <Circle key={x} cx={x} cy={168.5} r={2.6} fill="#ff5a48" />
-        ))}
-
-        {/* conduit (someone else's system) */}
-        {[180, 260, 330].map((x) => (
-          <Line key={x} x1={x} y1={28} x2={x} y2={44} stroke="#3a3c42" strokeWidth={1.2} />
-        ))}
-        <Line x1={150} y1={44} x2={336} y2={44} stroke="#6f7378" strokeWidth={3.5} />
-        <Line x1={150} y1={44} x2={336} y2={44} stroke="#101014" strokeWidth={1} />
-
-        {/* cable tray section (trapeze-hung), legitimately carrying runs */}
-        <Line x1={70} y1={28} x2={70} y2={116} stroke="#3a3c42" strokeWidth={1.4} />
-        <Line x1={170} y1={28} x2={170} y2={116} stroke="#3a3c42" strokeWidth={1.4} />
-        <Rect x={60} y={116} width={120} height={3} fill="#3a3c42" />
-        <Rect x={60} y={130} width={120} height={3} fill="#3a3c42" />
-        {[66, 78, 90, 102, 114, 126, 138, 150, 162, 174].map((x) => (
-          <Line key={x} x1={x} y1={119} x2={x} y2={130} stroke="#2c2c33" strokeWidth={1} />
-        ))}
-        <Line x1={64} y1={124} x2={177} y2={124} stroke="#4fd0e0" strokeWidth={1.6} opacity={0.7} />
-        <Line x1={64} y1={127} x2={177} y2={127} stroke="#37d97b" strokeWidth={1.6} opacity={0.7} />
-
-        {/* light fixture recessed in the grid */}
-        <Rect x={88} y={146} width={44} height={18} fill="#1c1c23" stroke="#3a3c42" strokeWidth={1.2} />
-        <Rect x={90} y={164} width={40} height={4} fill="#fff3c2" opacity={0.75} />
+        <OtherTrades />
       </Layer>
 
       {/* ── depth 3: the grid + tiles, seen edge-on ────────────────────── */}
       <Layer t={rv} from={0.06} to={0.46} above={above}>
-        <Line x1={0} y1={164} x2={336} y2={164} stroke="#4a4a52" strokeWidth={2} />
-        {[2, 60, 118, 176, 234, 292].map((x) => (
-          <Rect key={x} x={x} y={166} width={x === 292 ? 42 : 54} height={8} fill="#1f1f26" stroke="#15151a" strokeWidth={1} />
-        ))}
-        <Rect x={0} y={176} width={VB_W} height={44} fill="#0d0d10" />
+        <GridAndTiles />
       </Layer>
 
       {/* ── depth 4: the previous contractor's wrongs (Exercise 1) ─────── */}
       <Layer t={rv} from={0.42} to={0.9} above={above}>
-        {/* cd-6 overstuffed J-hook (high trapeze hook) */}
-        <Line x1={194} y1={28} x2={194} y2={58} stroke="#3a3c42" strokeWidth={1.2} />
-        <Path d="M189 58 V68 Q189 74 196 74 H200" stroke="#b9bcc2" strokeWidth={2} fill="none" />
-        <Path d="M186 64 Q194 54 202 64 Q194 72 186 64" stroke="#4fd0e0" strokeWidth={2.2} fill="none" />
-        <Path d="M187 68 Q194 58 201 68 Q194 76 187 68" stroke="#37d97b" strokeWidth={2.2} fill="none" />
-        <Path d="M188 60 Q194 68 200 60" stroke="#c77dff" strokeWidth={2} fill="none" />
-
-        {/* run leaving the crammed hook LEFT: drapes the sprinkler main (cd-2),
-            lands on the light housing (cd-4), ends lying on the tiles (cd-1) */}
-        <Path
-          d="M190 70 Q172 72 162 80 Q158 82 154 88 Q146 100 138 112 Q122 134 112 146 Q98 148 84 152 Q70 156 62 161 Q48 168 36 163 Q30 160 28 161"
-          stroke="#4fd0e0"
-          strokeWidth={2.6}
-          fill="none"
-        />
-        <Rect x={22} y={158} width={7} height={6} rx={1} fill="#26262c" stroke="#6f7378" strokeWidth={0.8} />
-
-        {/* run leaving the hook RIGHT: hard 90° fold (cd-5) into an unmarked
-            wall penetration (cd-7) */}
-        <Path d="M198 72 Q224 84 248 94 Q264 98 274 97 L274 106 L334 106" stroke="#4fd0e0" strokeWidth={2.6} fill="none" />
-        <Path d="M330 99 L344 97 L346 112 L332 114 Z" fill="#0b0b0e" stroke="#55555e" strokeWidth={1.2} />
-
-        {/* cd-3: lone cable sagging deep between tray end and a far J-hook */}
-        <Line x1={300} y1={28} x2={300} y2={110} stroke="#3a3c42" strokeWidth={1.2} />
-        <Path d="M295 110 V118 Q295 124 302 124 H306" stroke="#b9bcc2" strokeWidth={2} fill="none" />
-        <Path d="M180 120 Q240 148 297 120" stroke="#37d97b" strokeWidth={2.6} fill="none" />
-        <Path d="M297 120 L300 116 L300 40" stroke="#37d97b" strokeWidth={2} fill="none" />
-        <Rect x={294} y={32} width={12} height={8} rx={1.5} fill="#1c1c23" stroke="#3a3c42" strokeWidth={1} />
-
-        {/* cd-8: service loop tied high above the rigid duct — unreachable */}
-        <Path d="M2 42 Q20 48 34 58" stroke="#37d97b" strokeWidth={2.4} fill="none" />
-        <Circle cx={43} cy={66} r={10} fill="none" stroke="#37d97b" strokeWidth={2.4} />
-        <Circle cx={43} cy={66} r={6.5} fill="none" stroke="#37d97b" strokeWidth={2} />
-        <Line x1={43} y1={54} x2={43} y2={58} stroke="#e8e8ea" strokeWidth={1.6} />
-        <Path d="M52 72 Q60 92 60 116" stroke="#37d97b" strokeWidth={2.4} fill="none" />
+        <CeilingDefects />
       </Layer>
 
       {/* ── depth 5: the learner's install ─────────────────────────────── */}
       <Layer t={rv} from={0.55} to={1} above={above}>
         {/* far-wall sleeve (the intended, bushed entry) */}
-        <Rect x={330} y={118} width={14} height={8} rx={2} fill="#101014" stroke="#6f7378" strokeWidth={1.2} />
+        <WallSleeve />
         <SleeveRing on={confirmed} />
 
         {/* unit tick marks while placing supports */}
@@ -665,11 +586,7 @@ function FinishedShellSvg({ w }: { w: number }) {
       viewBox={`0 0 ${VB_W} ${VB_H}`}
       accessibilityLabel="Finished room view: a clean suspended ceiling with tiles, one light fixture and sprinkler heads. Nothing above it is visible."
     >
-      <Rect x={0} y={0} width={VB_W} height={VB_H} rx={10} fill="#101014" />
-      <Line x1={12} y1={46} x2={12} y2={196} stroke="#26262c" strokeWidth={2} />
-      <Line x1={348} y1={46} x2={348} y2={196} stroke="#26262c" strokeWidth={2} />
-      <Line x1={12} y1={196} x2={348} y2={196} stroke="#2c2c33" strokeWidth={2} />
-      <Rect x={300} y={120} width={12} height={18} rx={1.5} fill="#17171c" stroke="#3a3c42" strokeWidth={1} />
+      <FinishedRoom />
     </Svg>
   );
 }
@@ -678,7 +595,7 @@ function FinishedShellSvg({ w }: { w: number }) {
 function FinishedTile({ x, index, rv, above }: { x: number; index: number; rv: SharedValue<number>; above: boolean }) {
   const rest = useRest(above ? 0 : 1);
   const p = useAnimatedProps(() => ({ opacity: 1 - ramp(rv.value, index * 0.05, index * 0.05 + 0.34) }));
-  return <ARect x={x} y={36} width={54} height={10} fill="#1c1c22" stroke="#26262c" strokeWidth={1} opacity={rest} animatedProps={p} />;
+  return <ARect x={x} y={36} width={54} height={10} fill="#d4d1c8" stroke="#f4f4f2" strokeWidth={1.2} opacity={rest} animatedProps={p} />;
 }
 
 /** The ceiling plane itself — the layer that lifts away to open the room. */
@@ -827,11 +744,7 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
   const currentStep = stepDone.findIndex((d) => !d);
 
   const artW = Math.max(160, width);
-  const artH = Math.round((artW * VB_H) / VB_W);
-
-  return (
-    <View style={{ gap: 14 }}>
-      {/* view toggle — the owner-spec visibility feature */}
+  const viewToggle = (
       <View style={lessonStyles.chipWrap}>
         <OptionChip
           label="ABOVE CEILING"
@@ -850,67 +763,89 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
           }}
         />
       </View>
+  );
 
-      <View style={{ width: artW, height: artH }}>
-        {/* the cutaway is always mounted — the toggle is a reveal, not a swap */}
-        <AboveSvg
-          w={artW}
-          above={above}
-          rv={rv}
-          found={found}
-          hooks={hooks}
-          showTicks={pathSolved && !confirmed}
-          confirmed={confirmed}
-          fromArr={fromArr}
-          toArr={toArr}
-          settleK={settleK}
-          restD={restD}
-          strain={strain}
-          pulseDefects={above && !fired}
-          runTint={spacing?.ok ? '#c77dff' : '#9a6fd6'}
-        />
-        <Animated.View
-          style={[StyleSheet.absoluteFill, shellStyle]}
-          pointerEvents="none"
-          accessibilityElementsHidden={above}
-          importantForAccessibility={above ? 'no-hide-descendants' : 'auto'}
-        >
-          <FinishedShellSvg w={artW} />
-        </Animated.View>
-        <Animated.View
-          style={[StyleSheet.absoluteFill, ceilingStyle]}
-          pointerEvents="none"
-          accessibilityElementsHidden
-          importantForAccessibility="no-hide-descendants"
-        >
-          <FinishedCeilingSvg w={artW} rv={rv} above={above} />
-        </Animated.View>
-        {/* ≥44dp tap overlays for the defect markers */}
-        {above
-          ? CI_CEILING_DEFECTS.map((d, i) => {
-              const isFound = found.has(d.id);
-              return (
-                <Pressable
-                  key={d.id}
-                  onPress={() => find(d.id)}
-                  disabled={isFound}
-                  accessibilityRole="button"
-                  accessibilityState={{ disabled: isFound }}
-                  aria-disabled={isFound}
-                  accessibilityLabel={isFound ? `Found: ${d.label}` : `Suspect detail ${i + 1} of ${CI_CEILING_DEFECTS.length}`}
-                  style={{
-                    position: 'absolute',
-                    left: (d.x / 100) * artW - 22,
-                    top: (d.y / 100) * artH - 22,
-                    width: 44,
-                    height: 44,
-                    borderRadius: 22,
-                  }}
-                />
-              );
-            })
-          : null}
-      </View>
+  return (
+    <View style={{ gap: 14 }}>
+      {/* view toggle — the owner-spec visibility feature */}
+      {viewToggle}
+
+      <ExpandableFigure
+        width={artW}
+        aspect={VB_W / VB_H}
+        title="CEILING"
+        render={(fw) => {
+          const fh = Math.round((fw * VB_H) / VB_W);
+          return (
+            <View style={{ width: fw, height: fh }}>
+              {/* the cutaway is always mounted — the toggle is a reveal, not a swap */}
+              <AboveSvg
+                w={fw}
+                above={above}
+                rv={rv}
+                found={found}
+                hooks={hooks}
+                showTicks={pathSolved && !confirmed}
+                confirmed={confirmed}
+                fromArr={fromArr}
+                toArr={toArr}
+                settleK={settleK}
+                restD={restD}
+                strain={strain}
+                pulseDefects={above && !fired}
+                runTint={spacing?.ok ? '#c77dff' : '#9a6fd6'}
+              />
+              <Animated.View
+                style={[StyleSheet.absoluteFill, shellStyle]}
+                pointerEvents="none"
+                accessibilityElementsHidden={above}
+                importantForAccessibility={above ? 'no-hide-descendants' : 'auto'}
+              >
+                <FinishedShellSvg w={fw} />
+              </Animated.View>
+              <Animated.View
+                style={[StyleSheet.absoluteFill, ceilingStyle]}
+                pointerEvents="none"
+                accessibilityElementsHidden
+                importantForAccessibility="no-hide-descendants"
+              >
+                <FinishedCeilingSvg w={fw} rv={rv} above={above} />
+              </Animated.View>
+              {/* ≥44dp tap overlays for the defect markers */}
+              {above
+                ? CI_CEILING_DEFECTS.map((d, i) => {
+                    const isFound = found.has(d.id);
+                    return (
+                      <Pressable
+                        key={d.id}
+                        onPress={() => find(d.id)}
+                        disabled={isFound}
+                        accessibilityRole="button"
+                        accessibilityState={{ disabled: isFound }}
+                        aria-disabled={isFound}
+                        accessibilityLabel={isFound ? `Found: ${d.label}` : `Suspect detail ${i + 1} of ${CI_CEILING_DEFECTS.length}`}
+                        style={{
+                          position: 'absolute',
+                          left: (d.x / 100) * fw - 22,
+                          top: (d.y / 100) * fh - 22,
+                          width: 44,
+                          height: 44,
+                          borderRadius: 22,
+                        }}
+                      />
+                    );
+                  })
+                : null}
+            </View>
+          );
+        }}
+        controls={
+          <View style={{ gap: 6 }}>
+            <FindProgress found={foundShown} required={FIND_REQUIRED} total={CI_CEILING_DEFECTS.length} />
+            {viewToggle}
+          </View>
+        }
+      />
       <Text style={styles.legend}>
         {above
           ? 'Deck + joists · hanger wires · duct · sprinkler main (with heads) · conduit · tray · J-hooks · light · grid + tiles.'
