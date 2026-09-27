@@ -842,11 +842,25 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
             </View>
           );
         }}
+        // Exercise 2's hook step docks ITS controls in FULL SCREEN (QA 2026-09-26:
+        // full screen still showed Exercise 1's find count, so hooks could not
+        // be placed there).
         controls={
-          <View style={{ gap: 6 }}>
-            <FindProgress found={foundShown} required={FIND_REQUIRED} total={CI_CEILING_DEFECTS.length} />
-            {viewToggle}
-          </View>
+          ex1Done && pathSolved ? (
+            <View style={{ gap: 6 }}>
+              <View style={lessonStyles.chipWrap}>
+                {HOOK_SLOTS.map((u) => (
+                  <OptionChip key={u} label={`U${u}`} active={hooks.has(u)} disabled={confirmed} onPress={() => toggleHook(u)} />
+                ))}
+              </View>
+              {!confirmed ? <OptionChip label={`CHECK SPACING (${hooks.size} placed)`} action onPress={checkSpacing} /> : null}
+            </View>
+          ) : (
+            <View style={{ gap: 6 }}>
+              <FindProgress found={foundShown} required={FIND_REQUIRED} total={CI_CEILING_DEFECTS.length} />
+              {viewToggle}
+            </View>
+          )
         }
       />
       <Text style={styles.legend}>

@@ -787,7 +787,7 @@ export function WallsScene({ width, completed, onComplete, openSources }: CiModu
         <Appear>
           <CiSection title="4 · SHARP EDGE — THE UNFINISHED OPENING">
             <Text style={styles.lead}>
-              A cable exits the rough opening above the device, folded hard over a raw edge. Pick the fix — the drawing
+              A cable exits the rough opening beside the device, folded hard over a raw edge. Pick the fix — the drawing
               corrects when you do.
             </Text>
             <View style={{ gap: 7 }}>

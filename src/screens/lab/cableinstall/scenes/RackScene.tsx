@@ -782,20 +782,26 @@ function Looms({
         if (zone === 'z-left' || zone === 'z-right') {
           const isL = zone === 'z-left';
           const lane = laneFor(gi, isL);
-          const ty = DEST_Y[g.id];
+          // The speaker loom lands ON the amp's NL4 output (x 106, y 272): it
+          // runs along the amp's top edge (y 244) and drops onto the jack —
+          // it used to end on the fan grille, the very defect Phase A
+          // teaches (QA 2026-09-26).
+          const spk = g.id === 'g-spk';
+          const ty = spk ? 244 : DEST_Y[g.id];
           const wob = ((gi % 3) - 1) * 3;
-          const d = isL ? dLeft(ex, lane, ty, wob) : dRight(ex, lane, ty, wob);
+          const dBase = isL ? dLeft(ex, lane, ty, wob) : dRight(ex, lane, ty, wob);
+          const d = spk ? `${dBase.replace(/L(58|282) 244$/, 'L106 244')} L106 272` : dBase;
           return (
             <Loom
               key={g.id}
               d={d}
-              len={loomLen(ex, lane, ty)}
+              len={loomLen(ex, lane, ty) + (spk ? 200 : 0)}
               tint={tint}
               width={4.2}
               install={install}
               wrong={wrong}
               flowRun={flowRun}
-              tail={<Circle cx={isL ? 58 : 282} cy={ty} r={3.4} fill={tint} />}
+              tail={<Circle cx={spk ? 106 : isL ? 58 : 282} cy={spk ? 272 : ty} r={3.4} fill={tint} />}
               wrongShape={<Path d={d} stroke="#ff5a48" strokeWidth={1.6} fill="none" strokeDasharray="5 4" />}
             />
           );
