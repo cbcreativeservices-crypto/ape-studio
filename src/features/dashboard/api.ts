@@ -91,16 +91,35 @@ export type DashboardData = {
 const LAST_COURSE_KEY = 'ape:lastCourseId';
 const lastTopicKey = (courseId: string) => `ape:lastTopic:${courseId}`;
 
-export async function getLastTopicIndex(courseId: string): Promise<number | null> {
-  const v = await AsyncStorage.getItem(lastTopicKey(courseId));
-  return v == null ? null : Number(v);
+/**
+ * The last topic the learner was on, saved as the TOPIC ID (owner 2026-09-27).
+ *
+ * ⛔ It used to be the carousel INDEX. The carousel is alphabetical by default,
+ * so enrolling in a certificate, LOADing a topic or reordering the deck moved
+ * every topic after the insertion point, and the saved number then pointed at
+ * a different topic — the learner "resumed" somewhere they had never been.
+ *
+ * Returns `{ id }` for the current format, `{ index }` for a value written by
+ * an older build (honoured once, then overwritten by the id on the next move),
+ * or null when nothing is saved.
+ */
+export async function getLastTopic(courseId: string): Promise<{ id: string } | { index: number } | null> {
+  try {
+    const v = await AsyncStorage.getItem(lastTopicKey(courseId));
+    if (v == null) return null;
+    if (v.startsWith('id:')) return { id: v.slice(3) };
+    const n = Number(v);
+    return Number.isFinite(n) && n >= 0 ? { index: Math.floor(n) } : null;
+  } catch {
+    return null; // resume convenience only
+  }
 }
 
-export async function setLastTopicIndex(courseId: string, idx: number): Promise<void> {
-  // A resume convenience: never let it throw into a caller (one of the two
-  // DashboardScreen call sites is bare and unawaited).
+export async function setLastTopic(courseId: string, topicId: string): Promise<void> {
+  // A resume convenience: never let it throw into a caller (the DashboardScreen
+  // call sites are bare and unawaited).
   try {
-    await AsyncStorage.setItem(lastTopicKey(courseId), String(idx));
+    await AsyncStorage.setItem(lastTopicKey(courseId), `id:${topicId}`);
   } catch {
     /* resume convenience only */
   }

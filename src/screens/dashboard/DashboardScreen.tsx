@@ -74,8 +74,8 @@ import { useTopicTrophies, trophyForTopicName } from '../../features/profile/top
 import { colors, fonts, spacing } from '../../theme/tokens';
 import {
   fetchEnrollmentDashboard,
-  getLastTopicIndex,
-  setLastTopicIndex,
+  getLastTopic,
+  setLastTopic,
   type DashboardData,
   type Topic,
 } from '../../features/dashboard/api';
@@ -605,6 +605,8 @@ export function DashboardScreen() {
   const [strandedSession, setStrandedSession] = useState(false);
   const [loading, setLoading] = useState(() => getDashboardCache() == null);
   const [topicIdx, setTopicIdx] = useState(() => getDashboardCache()?.topicIdx ?? 0);
+  /** The topic id the carousel is meant to be showing — see FOLLOW THE TOPIC. */
+  const shownTopicIdRef = useRef<string | undefined>(undefined);
   // During a jog scroll, the TOP container previews this index while the lower
   // rack stays on topicIdx until release (owner 2026-08-01) — keeps it fast.
   const [scrollIdx, setScrollIdx] = useState(0);
@@ -905,10 +907,14 @@ export function DashboardScreen() {
         customOnDashboardRef.current ? FLAGGED_TOPIC_ID : undefined,
       );
       const frontier = frontierId ? Math.max(0, orderedIds.indexOf(frontierId)) : 0;
-      const stored = await getLastTopicIndex(d.currentCourse.id);
-      const idx = stored != null ? Math.min(stored, orderedIds.length - 1) : frontier;
+      const stored = await getLastTopic(d.currentCourse.id);
+      const storedIdx =
+        stored == null ? -1 : 'id' in stored ? orderedIds.indexOf(stored.id) : Math.min(stored.index, orderedIds.length - 1);
+      const idx = storedIdx >= 0 ? storedIdx : frontier;
       setDashboardCache(d, idx); // instant landing next time (owner 2026-08-17)
       if (!mountedRef.current) return; // unmounted mid-fetch — don't setState
+      // Tell the follow-the-topic effect below that this landing is deliberate.
+      shownTopicIdRef.current = orderedIds[idx];
       setTopicIdx(idx);
       setData(d);
     } catch (e: any) {
@@ -1053,10 +1059,11 @@ export function DashboardScreen() {
           )
         : topics.findIndex((t) => slugify(t.name) === topicSlug);
     if (i >= 0) {
+      shownTopicIdRef.current = topics[i].id;
       setTopicIdx(i);
       // A deep-linked topic becomes the LAST KNOWN one (owner 2026-09-01), so
       // the STUDY tab returns the user to what they actually opened last.
-      if (dataRef.current) setLastTopicIndex(dataRef.current.currentCourse.id, i);
+      if (dataRef.current) setLastTopic(dataRef.current.currentCourse.id, topics[i].id);
       navigation.setParams({ focusGs: undefined, topicSlug: undefined });
       return;
     }
@@ -1105,16 +1112,28 @@ export function DashboardScreen() {
       // the real array bounds. A per-course gate will replace the old
       // per-topic frontier stop later.
       if (next < 0 || next > topics.length - 1) return;
+      shownTopicIdRef.current = topics[next].id;
       setTopicIdx(next);
-      setLastTopicIndex(data.currentCourse.id, next);
+      setLastTopic(data.currentCourse.id, topics[next].id);
     },
-    [data, topics.length],
+    [data, topics],
   );
 
-  // Deck can shrink (topic removed) or reorder — keep topicIdx in bounds.
+  // FOLLOW THE TOPIC, NOT THE SLOT (owner 2026-09-27). The deck re-sorts under
+  // the learner — a reload after enrolling or LOADing inserts topics
+  // alphabetically, a deck reorder/remove moves them — and a bare index then
+  // silently shows a DIFFERENT topic. Every deliberate move records the topic
+  // it lands on; when the deck changes, find that topic again. Only if it left
+  // the deck does the index fall back to being clamped in bounds.
   useEffect(() => {
-    setTopicIdx((i) => Math.min(i, Math.max(0, topics.length - 1)));
-  }, [topics.length]);
+    const want = shownTopicIdRef.current;
+    const j = want ? topics.findIndex((t) => t.id === want) : -1;
+    if (j >= 0) setTopicIdx(j);
+    else setTopicIdx((i) => Math.min(i, Math.max(0, topics.length - 1)));
+  }, [topics]);
+  useEffect(() => {
+    shownTopicIdRef.current = topics[topicIdx]?.id;
+  }, [topics, topicIdx]);
 
   const goToRef = useRef(goTo);
   goToRef.current = goTo;
