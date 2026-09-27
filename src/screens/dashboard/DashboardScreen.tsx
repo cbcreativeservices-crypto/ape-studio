@@ -80,7 +80,7 @@ import {
   type Topic,
 } from '../../features/dashboard/api';
 import { getDashboardCache, setDashboardCache } from '../../features/dashboard/dashboardCache';
-import { FREE_ENROLL_GS, useEnrollment } from '../../features/enrollment/enrollmentStore';
+import { FREE_ENROLL_GS, setActiveMany, useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { officialTopicName } from '../../data/officialTopicNames';
 import { Celebration } from '../../features/celebration/Celebration';
 import { celebration } from '../../features/celebration/catalog';
@@ -1080,6 +1080,19 @@ export function DashboardScreen() {
      * to a course this account is not enrolled in — the website's page is the
      * fallback, so clear it rather than retry forever.
      */
+    /**
+     * ⛔ …AND A SWITCHED-OFF TOPIC NEVER ARRIVES (tester report, TestFlight
+     * 2026-09-27, build 32: "App sent me to wrong study page from drumset
+     * micing course" — the same learner, the same symptom, after the fix
+     * above). Enrolling in a certificate adds its topics INACTIVE ("not
+     * loaded onto the Dashboard until LOAD"), and the deck only carries active
+     * ones — so STUDY NOW's `focusGs` (the certificate's first topic) was
+     * waited for forever while the learner sat on a shared core topic, with
+     * a dial that could not reach their course. Asking to study a topic IS
+     * the LOAD: switch it on, the enrollment reload brings it into the deck,
+     * and the armed focus above lands on it.
+     */
+    if (typeof focusGs === 'number' && inactiveGs.current.has(focusGs)) setActiveMany([focusGs], true);
     if (topicSlug) navigation.setParams({ focusGs: undefined, topicSlug: undefined });
   }, [focusGs, topicSlug, topics, navigation]);
   const status = topic ? (data!.progressByTopic.get(topic.id)?.status ?? 'locked') : 'locked';
