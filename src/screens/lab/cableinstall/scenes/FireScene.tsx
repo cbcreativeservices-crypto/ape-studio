@@ -17,11 +17,12 @@
  */
 import { useEffect, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
-import Svg, { G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
 import { OptionChip, VerdictBanner } from '../../cable/lessons/bits';
 import { CiSection, RuleFeedback, SpecCard, announceComplete, stableShuffle } from '../bits';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
+import { Callout, CeilingCut, ConcreteCut, JacketPath, StudWallCut } from '../svgArt';
 import {
   ACircle,
   AG,
@@ -189,12 +190,12 @@ function RouteDraw({ d, len, end }: { d: string; len: number; end: [number, numb
   return (
     <>
       {arrived ? (
-        <Path d={d} stroke={colors.amber} strokeWidth={2.4} fill="none" strokeDasharray="6 5" />
+        <Path d={d} stroke={colors.amber} strokeWidth={1.8} fill="none" strokeDasharray="5 4" strokeLinecap="round" />
       ) : (
         <APath
           d={d}
           stroke={colors.amber}
-          strokeWidth={2.4}
+          strokeWidth={1.8}
           fill="none"
           strokeLinecap="round"
           strokeDasharray={dashArray}
@@ -267,9 +268,7 @@ function SpaceMarker({ cx, cy, n, done, reduce }: { cx: number; cy: number; n: n
   return (
     <G>
       <ACircle cx={cx} cy={cy} r={done ? 10.7 : 9.5} fill="#17171c" stroke={tint} strokeWidth={1.5} animatedProps={p} />
-      <SvgText x={cx} y={cy + 3.8} fontSize={10.5} fill={tint} textAnchor="middle">
-        {String(n)}
-      </SvgText>
+      <Callout x={cx} y={cy + 3.6} text={String(n)} size={10.5} color={tint} bg={null} />
     </G>
   );
 }
@@ -319,86 +318,90 @@ function BuildingArt({
       viewBox="0 0 360 224"
       accessibilityLabel="Building section, training visualization: two floors with a riser shaft on the right. The lower room has a non-rated partition with a cable tray passing through it, a marked fire-rated wall with a conduit sleeve, a quiet ceiling cavity left of the rated wall, and an air-handling ceiling space right of it. Proposed cable routes draw as dashed lines from the rack. All interaction happens in the cards below."
     >
-      <Rect x={6} y={8} width={348} height={204} rx={10} fill="#101014" stroke="#2c2c33" strokeWidth={1.5} />
+      <Rect x={6} y={8} width={348} height={204} rx={10} fill="#111216" />
+      {/* the ground floor slab under the lower room */}
+      <ConcreteCut x={6} y={208} w={348} h={4} />
 
-      {/* floor slab between the two floors (opening at the shaft, sleeved) */}
-      <Rect x={6} y={100} width={290} height={12} fill="#1c1c22" />
-      <Rect x={332} y={100} width={22} height={12} fill="#1c1c22" />
-      {[20, 60, 100, 140, 180, 220, 260].map((x) => (
-        <Line key={x} x1={x} y1={112} x2={x + 10} y2={100} stroke="#26262c" strokeWidth={1} />
+      {/* floor slab between the two floors (the riser opening is sleeved) */}
+      <ConcreteCut x={6} y={100} w={290} h={12} />
+      <ConcreteCut x={332} y={100} w={22} h={12} />
+      <ConcreteCut x={296} y={100} w={12} h={12} />
+      <ConcreteCut x={320} y={100} w={12} h={12} />
+      {/* riser shaft: rated masonry walls, a ladder up the shaft, the cable on it */}
+      <ConcreteCut x={292} y={8} w={4} h={92} />
+      <ConcreteCut x={292} y={112} w={4} h={78} />
+      <ConcreteCut x={292} y={202} w={4} h={6} />
+      <ConcreteCut x={332} y={8} w={4} h={92} />
+      <ConcreteCut x={332} y={112} w={4} h={96} />
+      <Line x1={320} y1={24} x2={320} y2={206} stroke="#6d737b" strokeWidth={1.2} />
+      {Array.from({ length: 12 }, (_, i) => 30 + i * 15).map((y) => (
+        <Line key={y} x1={308} y1={y} x2={320} y2={y} stroke="#5d636b" strokeWidth={0.8} />
       ))}
-      <Rect x={296} y={100} width={12} height={12} fill="#1c1c22" />
-      <Rect x={320} y={100} width={12} height={12} fill="#1c1c22" />
-      {/* conduit sleeve through the slab (floor penetration) + riser cable */}
-      <Rect x={308} y={96} width={12} height={20} rx={2} fill="#101014" stroke="#6f7378" strokeWidth={1.4} />
-      <Path d="M314 24 V208" stroke="#37d97b" strokeWidth={2} />
-
-      {/* riser shaft walls (gap low-left = access opening for the route) */}
-      <Line x1={296} y1={8} x2={296} y2={190} stroke="#3a3c42" strokeWidth={2} />
-      <Line x1={296} y1={202} x2={296} y2={212} stroke="#3a3c42" strokeWidth={2} />
-      <Line x1={332} y1={8} x2={332} y2={212} stroke="#3a3c42" strokeWidth={2} />
-      <SvgText x={314} y={21} fontSize={10.5} fill="#6f7378" textAnchor="middle">
-        RISER
-      </SvgText>
+      <JacketPath d="M314 24 V208" color="#37d97b" width={2.4} />
+      {/* the slab penetration: steel sleeve, firestop sealant top and bottom */}
+      <Rect x={308} y={96} width={12} height={20} rx={1} fill="#80868f" stroke="#2c2f34" strokeWidth={0.5} />
+      <Rect x={308.6} y={95} width={10.8} height={2.6} rx={1} fill="#c8372b" />
+      <Rect x={308.6} y={114.4} width={10.8} height={2.6} rx={1} fill="#c8372b" />
+      <JacketPath d="M314 94 V118" color="#37d97b" width={2.4} shadow={false} />
+      <Callout x={314} y={21} text="RISER" size={10.5} color="#9ea3ad" bg={null} />
 
       {/* upper floor hint: its own suspended ceiling */}
-      <Line x1={12} y1={84} x2={292} y2={84} stroke="#26262c" strokeWidth={1} strokeDasharray="10 4" />
+      <CeilingCut x0={10} x1={292} y={84} m={48} />
 
-      {/* lower-room suspended ceiling (tile lines, hangers, light, grille) */}
-      {[96, 124, 152].map((x) => (
-        <Line key={x} x1={x} y1={112} x2={x} y2={128} stroke="#2c2c33" strokeWidth={0.8} />
-      ))}
-      {[210, 238, 266].map((x) => (
-        <Line key={x} x1={x} y1={112} x2={x} y2={152} stroke="#2c2c33" strokeWidth={0.8} />
-      ))}
-      <Line x1={8} y1={156} x2={76} y2={156} stroke="#3a3c42" strokeWidth={1.6} strokeDasharray="10 3" />
-      <Line x1={84} y1={156} x2={180} y2={156} stroke="#3a3c42" strokeWidth={1.6} strokeDasharray="10 3" />
-      <Line x1={188} y1={156} x2={296} y2={156} stroke="#3a3c42" strokeWidth={1.6} strokeDasharray="10 3" />
-      <Rect x={110} y={150} width={30} height={6} fill="#17171c" stroke="#3a3c42" strokeWidth={1} />
+      {/* lower-room suspended ceiling on its wires, a troffer */}
+      <CeilingCut x0={8} x1={76} y={156} m={48} hangTo={112} />
+      <CeilingCut x0={84} x1={180} y={156} m={48} hangTo={112} />
+      <CeilingCut x0={188} x1={292} y={156} m={48} hangTo={112} />
+      <Path d="M108 156 L112 149 H138 L142 156 Z" fill="#26282d" stroke="#0a0a0c" strokeWidth={0.5} />
+      <Rect x={110} y={156} width={30} height={2.4} fill="#fff3c2" opacity={0.85} />
       {/* return grille + air movement (bay right of the rated wall) */}
-      <Rect x={244} y={152} width={28} height={8} rx={1.5} fill="#101014" stroke="#6f7378" strokeWidth={1.2} />
-      {[154.5, 157].map((y) => (
-        <Line key={y} x1={247} y1={y} x2={269} y2={y} stroke="#3a3c42" strokeWidth={0.8} />
+      <Rect x={244} y={153} width={28} height={6} rx={1} fill="#d9d7d0" stroke="#8d8a80" strokeWidth={0.5} />
+      {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+        <Line key={i} x1={247 + i * 3.6} y1={154} x2={247 + i * 3.6} y2={158} stroke="#8d8a80" strokeWidth={0.8} />
       ))}
-      <Path d="M258 150 V136 M258 136 l-4 6 M258 136 l4 6" stroke="#4fd0e0" strokeWidth={1.4} fill="none" />
-      <Path d="M198 128 h18 m0 0 l-6 -4 m6 4 l-6 4" stroke="#4fd0e0" strokeWidth={1.4} fill="none" />
-      <Path d="M206 142 h18 m0 0 l-6 -4 m6 4 l-6 4" stroke="#4fd0e0" strokeWidth={1.4} fill="none" />
-      <Path d="M266 130 h18 m0 0 l-6 -4 m6 4 l-6 4" stroke="#4fd0e0" strokeWidth={1.4} fill="none" />
+      <Path d="M258 150 V136 M254 141 L258 136 L262 141" stroke="#4fd0e0" strokeWidth={1.2} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <Path d="M198 128 h18 M211 124.5 L216 128 L211 131.5" stroke="#4fd0e0" strokeWidth={1.2} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <Path d="M206 142 h18 M219 138.5 L224 142 L219 145.5" stroke="#4fd0e0" strokeWidth={1.2} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <Path d="M266 130 h18 M279 126.5 L284 130 L279 133.5" stroke="#4fd0e0" strokeWidth={1.2} fill="none" strokeLinecap="round" strokeLinejoin="round" />
 
-      {/* non-rated partition with a framed tray opening (tray penetration) */}
-      <Rect x={76} y={112} width={8} height={12} fill="#1c1c22" stroke="#3a3c42" strokeWidth={1} />
-      <Rect x={76} y={142} width={8} height={70} fill="#1c1c22" stroke="#3a3c42" strokeWidth={1} />
-      <Rect x={74} y={124} width={12} height={18} rx={2} fill="none" stroke="#6f7378" strokeWidth={1.2} />
+      {/* non-rated partition, cut, with a framed tray opening */}
+      <StudWallCut x={77} y0={112} y1={208} t={6} gaps={[[124, 142]]} />
+      <Rect x={76} y={141.2} width={8} height={1.4} fill="#8c8f96" />
 
-      {/* cable tray in the cavity, through the non-rated wall */}
-      <Line x1={14} y1={128} x2={170} y2={128} stroke="#6f7378" strokeWidth={1.6} />
-      <Line x1={14} y1={138} x2={170} y2={138} stroke="#6f7378" strokeWidth={1.6} />
+      {/* ladder tray in the cavity, passing through the non-rated wall */}
+      <Rect x={14} y={127} width={156} height={1.8} fill="#6d737b" />
       {[26, 46, 66, 96, 116, 136, 156].map((x) => (
-        <Line key={x} x1={x} y1={128} x2={x} y2={138} stroke="#6f7378" strokeWidth={0.8} />
+        <Line key={x} x1={x} y1={128.8} x2={x - 1.4} y2={136} stroke="#5d636b" strokeWidth={0.9} />
       ))}
-      <Path d="M16 131 H168" stroke="#37d97b" strokeWidth={1.6} />
-      <Path d="M16 135 H168" stroke="#4fd0e0" strokeWidth={1.6} />
+      <JacketPath d="M16 131 H168" color="#37d97b" width={2.2} />
+      <JacketPath d="M16 134.4 H168" color="#4fd0e0" width={2.2} />
+      <Rect x={13} y={135} width={158} height={4} fill="#9ba1a8" stroke="#3a3d43" strokeWidth={0.4} opacity={0.94} />
+      {[40, 130].map((x) => (
+        <Line key={x} x1={x} y1={112} x2={x} y2={141} stroke="#9aa0a8" strokeWidth={0.7} />
+      ))}
 
-      {/* MARKED rated wall (hatch + placard) with its conduit sleeve */}
-      <Rect x={180} y={112} width={8} height={100} fill="#241416" stroke="#3a3c42" strokeWidth={1} />
+      {/* the MARKED rated wall: two layers of gypsum each face, the rating
+          hatch, a steel sleeve with its firestop through it */}
+      <Rect x={180} y={112} width={8} height={96} fill="#241416" />
+      <Rect x={180} y={112} width={1.6} height={96} fill="#d7d4cc" />
+      <Rect x={186.4} y={112} width={1.6} height={96} fill="#d7d4cc" />
       <RatedHatch active={flowOn && !flowDone} loops={m.loops} />
-      {/* placard beside the rated wall (moved right of the sleeve, 2026-09-25:
-          at 6 units it was unreadable and there is no room left of the wall
-          for a 10-unit line between the ceiling and the plenum route) */}
-      <Rect x={208} y={161} width={98} height={14} rx={2} fill="#1a0f0f" stroke="#ff5a48" strokeWidth={1} />
-      <SvgText x={257} y={171.5} fontSize={10} fill="#ff8a6b" textAnchor="middle">
-        RATED · SEE PLANS
-      </SvgText>
-      <Rect x={172} y={170} width={24} height={12} rx={3} fill="#101014" stroke="#6f7378" strokeWidth={1.4} />
+      {/* placard beside the rated wall */}
+      <Callout x={257} y={171.5} text="RATED · SEE PLANS" size={10} color="#ff8a6b" bg="#1a0f0f" border="#ff5a48" />
+      <Rect x={172} y={172} width={24} height={8} rx={1} fill="#80868f" stroke="#2c2f34" strokeWidth={0.5} />
+      <Rect x={178} y={170.4} width={12} height={11.2} rx={1.4} fill="#c8372b" opacity={0.85} />
+      <Rect x={172} y={174.6} width={24} height={2.8} fill="#141518" />
       <SleeveMarker on={flowOn} done={flowDone} reduce={m.reduce} />
 
       {/* origin rack in the lower room */}
-      <SvgText x={29} y={166} fontSize={10.5} fill="#6f7378" textAnchor="middle">
-        RACK
-      </SvgText>
-      <Rect x={14} y={168} width={30} height={40} rx={3} fill="#17171c" stroke="#3a3c42" strokeWidth={1.4} />
-      {[176, 186, 196].map((y) => (
-        <Rect key={y} x={18} y={y} width={22} height={7} rx={1.5} fill="#101014" stroke="#2c2c33" strokeWidth={0.8} />
+      <Callout x={29} y={165} text="RACK" size={10.5} color="#9ea3ad" bg={null} />
+      <Rect x={14} y={168} width={30} height={40} rx={1.2} fill="#23252a" stroke="#0a0a0c" strokeWidth={0.6} />
+      <Rect x={17} y={171} width={24} height={35} fill="#0c0c0f" />
+      {[173, 181, 189, 197].map((y, i) => (
+        <G key={y}>
+          <Rect x={18} y={y} width={22} height={6} rx={0.6} fill="#2b2d33" stroke="#101114" strokeWidth={0.3} />
+          <Circle cx={37.6} cy={y + 3} r={0.6} fill={i % 2 ? '#37d97b' : '#ffc64d'} />
+        </G>
       ))}
 
       {/* the building responds to attention: the route travels toward the
