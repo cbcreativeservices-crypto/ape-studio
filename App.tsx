@@ -89,6 +89,9 @@ const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   MicPrinciples: MicPrinciplesLabScreen as ComponentType,
   CableInstallLab: CableInstallLabScreen as ComponentType,
   SoundSystemsLab: SoundSystemsLabScreen as ComponentType,
+  CompressionLab: CompressionLabScreen as ComponentType,
+  GateLab: GateLabScreen as ComponentType,
+  StereoLab: StereoLabScreen as ComponentType,
 };
 /** `#labpreview/<Screen>/<id>` → a ToolPreview of that lab, every other lab
  *  screen registered as a sibling so in-lab navigation (a home → a module)
