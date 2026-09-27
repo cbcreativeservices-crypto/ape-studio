@@ -18,7 +18,7 @@
  */
 import { useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
-import { LayoutAnimation, Platform, Pressable, ScrollView, StyleSheet, Text, UIManager, View } from 'react-native';
+import { InteractionManager, LayoutAnimation, Platform, Pressable, ScrollView, StyleSheet, Text, UIManager, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
@@ -347,8 +347,15 @@ export function LabShell({
   }, [scrollLocked, labCoachAction]);
 
   // Audio-output prompt on entry (owner-confirmed 2026-07-25): non-blocking.
+  // AFTER the push transition (2026-09-27): asked during the slide-in, the
+  // gate's popup could fail to present on iOS, leaving the request open with
+  // nothing on screen — and every later tap on the lab's ▶ was refused as
+  // "already asking" (owner report, Bass Guitar Lab: "the play button does
+  // not work"). The gate now also re-presents on such a tap; this removes the
+  // cause.
   useEffect(() => {
-    void requestAudioOutput();
+    const task = InteractionManager.runAfterInteractions(() => void requestAudioOutput());
+    return () => task.cancel();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

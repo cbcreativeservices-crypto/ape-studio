@@ -76,6 +76,9 @@ type Phase = 'closed' | 'safety' | 'explain' | 'hold';
 
 export function AudioOutputGate({ children }: { children: React.ReactNode }) {
   const [phase, setPhase] = useState<Phase>('closed');
+  /** `phase` for the stable API closure (it is created once). */
+  const phaseRef = useRef<Phase>('closed');
+  phaseRef.current = phase;
   // Idle-bypass checkbox (owner 2026-08-01) — session-only, ALWAYS starts unticked
   // when the popup opens (so it never silently persists across launches).
   const [bypassTimer, setBypassTimer] = useState(false);
@@ -108,10 +111,29 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
             resolve(true);
             return;
           }
-          // If a request is already mid-flight, deny this one rather than
-          // stack modals (the user is already deciding).
+          // A request is already mid-flight: JOIN it rather than stack modals
+          // (the user is already deciding). This used to resolve(false) — a
+          // silent refusal, so a second tap on a lab's ▶ while the popup was
+          // still up (or had failed to appear) did nothing at all and read as
+          // a dead play button (owner report 2026-09-27, Bass Guitar Lab).
+          // Both taps now get the one answer the learner gives.
           if (resolver.current) {
-            resolve(false);
+            const first = resolver.current;
+            resolver.current = (ok: boolean) => {
+              first(ok);
+              resolve(ok);
+            };
+            // …and RE-PRESENT it. A tap that reached a ▶ behind the popup proves
+            // the popup is not on screen (a Modal asked for mid-transition can
+            // fail to present on iOS). Close and reopen the same step so it
+            // actually appears; if it was visible, this is one frame's blink.
+            const current = phaseRef.current;
+            if (current !== 'closed') {
+              setPhase('closed');
+              setTimeout(() => {
+                if (resolver.current) setPhase(current);
+              }, 60);
+            }
             return;
           }
           resolver.current = resolve;

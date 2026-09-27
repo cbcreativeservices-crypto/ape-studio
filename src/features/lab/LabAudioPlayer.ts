@@ -30,6 +30,9 @@ import { fetchLabAudio, type LabAudioReason } from './labAudio';
  *  headroom for buffering. */
 const URL_REUSE_MS = 90_000;
 
+/** Longest play() waits for the audio-session mode before playing anyway. */
+const AUDIO_MODE_WAIT_MS = 1500;
+
 function keyOf(labKey: string, assetKey: string): string {
   // The separator is written as an ESCAPE, not as a literal NUL (2026-09-17).
   //
@@ -46,6 +49,8 @@ export class LabAudioPlayer {
   private sub: { remove: () => void } | null = null;
   /** The asset_key currently playing, or null. */
   private activeKey: string | null = null;
+  /** When the current clip was started — see the finish guard. */
+  private startedAt = 0;
   private disposed = false;
   private urlCache = new Map<string, { url: string; at: number }>();
   /** Guards against a play() that resolves AFTER a newer play()/stop()/dispose()
@@ -66,7 +71,18 @@ export class LabAudioPlayer {
 
     // Play even with the iOS silent switch on — a clip the learner started is
     // content, not a notification. Matches earPlayer.
-    await setAudioModeAsync({ playsInSilentMode: true }).catch(() => {});
+    //
+    // BOUNDED (owner report 2026-09-27, iOS 27 / build 32: "the play button in
+    // the bass guitar lab does not work"). The server logs showed the tap never
+    // reached the signed-URL fetch below — and this await is the only thing in
+    // between. It had no timeout, so an audio-session call that never answers
+    // (another engine holding the session) stalled play() for good: no fetch,
+    // no sound, and the lab's ▶ held disabled on `loading`. The mode is a
+    // nicety for the silent switch; it must never be a reason not to play.
+    await Promise.race([
+      setAudioModeAsync({ playsInSilentMode: true }).catch(() => {}),
+      new Promise<void>((r) => setTimeout(r, AUDIO_MODE_WAIT_MS)),
+    ]);
     if (this.disposed || token !== this.playToken) return 'network';
 
     const cacheKey = keyOf(labKey, assetKey);
@@ -93,8 +109,14 @@ export class LabAudioPlayer {
       applyCeiling(p);
       this.player = p;
       try {
+        // Compare against the CURRENT clip (`this.activeKey`), never the
+        // `assetKey` this closure captured: the listener is created once, on
+        // the first play, so it used to recognise only that first clip's end —
+        // every later note finished silently and the lab's ■ stayed lit over
+        // silence (2026-09-27). The short guard ignores a stale finish from
+        // the clip that `replace()` just swapped out.
         this.sub = p.addListener('playbackStatusUpdate', (st: { didJustFinish?: boolean }) => {
-          if (st?.didJustFinish && this.activeKey === assetKey) {
+          if (st?.didJustFinish && this.activeKey != null && Date.now() - this.startedAt > 250) {
             const ended = this.activeKey;
             this.activeKey = null;
             this.onEnded?.(ended);
@@ -108,6 +130,7 @@ export class LabAudioPlayer {
     void this.player.seekTo(0);
     this.player.play();
     this.activeKey = assetKey;
+    this.startedAt = Date.now();
     return 'ok';
   }
 
