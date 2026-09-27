@@ -201,11 +201,20 @@ function routeLocalDest(dest: string): void {
     // Glossary lives in the Study stack inside the Main tabs. `pop: true`
     // returns to the existing Main (RN7 navigate() would otherwise push a
     // second tab shell when a root-level screen is on top).
+    // `initial: false` + `from` match Home's OPEN GLOSSARY: the Study stack
+    // mounts as [Dashboard, Glossary] (never Glossary as its root, which is how
+    // the STUDY tab used to land on the Glossary), and because the person came
+    // from a notification, not the Dashboard, the Glossary's exits return to
+    // Home instead of revealing a Dashboard they never opened (tester report
+    // 2026-09-27 on the Home button — same trap). See GlossaryParams.
+    const glossaryParams: import('./src/screens/glossary/GlossaryScreen').GlossaryParams = {
+      from: 'notification',
+    };
     navigationRef.navigate(
       'Main',
       {
         screen: 'Study',
-        params: { screen: 'Glossary', params: {} },
+        params: { screen: 'Glossary', params: glossaryParams, initial: false },
       },
       { pop: true }
     );

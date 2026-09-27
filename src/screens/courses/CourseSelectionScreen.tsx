@@ -36,6 +36,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { BrandLogo } from '../../components/BrandLogo';
+import type { GlossaryParams } from '../glossary/GlossaryScreen';
 import { GlassButton } from '../../components/GlassButton';
 import { CardArt } from '../../components/CardArt';
 import { StudioButton } from '../../components/StudioButton';
@@ -1363,7 +1364,13 @@ export function CourseSelectionScreen() {
     // into a single mount in React Navigation v7, leaving Glossary as
     // routes[0] — which is exactly how STUDY kept landing on the Glossary
     // (popToTopOnBlur "popped" to a Glossary root).
-    (navigation as any).navigate('Study', { screen: 'Glossary', params: {}, initial: false });
+    // `from: 'home'` (tester 2026-09-27: "From home screen, when I clicked on
+    // the glossary button, it took me here to the study dashboard"): the
+    // Dashboard mounted beneath is only there to keep the STUDY tab sane, so
+    // the Glossary's exits and Android back return HERE, not to it. See
+    // GlossaryParams in GlossaryScreen.
+    const params: GlossaryParams = { from: 'home' };
+    (navigation as any).navigate('Study', { screen: 'Glossary', params, initial: false });
   }, [navigation]);
 
   const openTools = useCallback(() => {

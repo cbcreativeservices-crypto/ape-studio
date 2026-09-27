@@ -371,8 +371,14 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
 
     const clearLocalOnUserChange = (uid: string | null) => {
       if ((uidSeeded.current && uid !== lastUid.current) || (!uidSeeded.current && uid === null)) {
-        void clearAllLocalMethodStates();
-        emitStudyProgress(); // refresh any live dashboard off the cleared mirror
+        // Emit AFTER the clear settles, not beside it: the emit makes a live
+        // dashboard reload, and a reload that raced the async wipe read the
+        // PREVIOUS account's local mirror and merged it into the new one's
+        // panels (audit 2026-09-27). A failed clear still emits — the
+        // dashboard must refresh either way, and this must never reject.
+        void clearAllLocalMethodStates()
+          .catch(() => {})
+          .then(emitStudyProgress);
       }
       lastUid.current = uid;
       uidSeeded.current = true;

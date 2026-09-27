@@ -18,6 +18,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
 
 import { myUserRow } from '../account/myUserRow';
+import { safeSession } from '../../lib/getSessionSafe';
+import { isRealAccount } from '../commercial/realAccount';
 export type TopicStatus = 'locked' | 'unlocked' | 'passed_incomplete' | 'complete';
 
 export type Course = {
@@ -295,19 +297,46 @@ async function resolveItemCounts(
  *
  * `gsList` should be the FULL enrolled order (active + inactive); the caller
  * dims inactive ones by matching topic.global_sequence.
+ *
+ * ⛔ A SIGNED-IN MEMBER IS NEVER SILENTLY DOWNGRADED TO "NO PROGRESS"
+ * (audit 2026-09-27). This used to treat ANY null from `myUserRow()` as a
+ * guest. But `myUserRow()` never throws — it returns null on a getUser()
+ * network failure, on its 5 s stall timeout, and on the cold-start race where
+ * the first read goes out as anon. The Dashboard keeps its on-screen data only
+ * when this THROWS, so a one-off blip replaced a member's good dashboard with
+ * zero progress (every panel powered off) and then CACHED it for next launch.
+ * Now: null + a real account session → getSession() (lets the session hydrate)
+ * and retry once → still null → throw `user_not_found`, which the Dashboard
+ * already maps to its account-setup banner and a silent refresh ignores. A
+ * true guest (no session, or an anonymous device key) keeps the old path.
+ *
+ * `opts.allowMissingUser` is for a caller that has ALREADY handled
+ * `user_not_found` and deliberately wants the free-topic view with empty
+ * progress (the Dashboard's stranded-session self-heal) — without it that
+ * fallback would just throw the same error a second time.
  */
-export async function fetchEnrollmentDashboard(gsList: number[]): Promise<DashboardData> {
-  // Own users row (absent for anonymous/local → progress stays empty).
+export async function fetchEnrollmentDashboard(
+  gsList: number[],
+  opts?: { allowMissingUser?: boolean },
+): Promise<DashboardData> {
+  // Own users row (absent for a guest → progress stays empty).
   let userId = 'local';
   let nickname: string | null = null;
-  try {
-    const user = await myUserRow<{ id: string; nickname: string | null }>('id, nickname');
-    if (user) {
-      userId = user.id;
-      nickname = (user as { nickname: string | null }).nickname ?? null;
+  type Row = { id: string; nickname: string | null };
+  let user = await myUserRow<Row>('id, nickname');
+  if (!user) {
+    // Guest or race? Only a real account session can be a race. The
+    // getSession() read is also the house cold-start fix: by the time it
+    // settles the client has its token, so the retry goes out authenticated.
+    const { data: sess } = await safeSession(supabase.auth.getSession(), 'dashboard/enrollment');
+    if (isRealAccount(sess.session)) {
+      user = await myUserRow<Row>('id, nickname');
+      if (!user && !opts?.allowMissingUser) throw new Error('user_not_found');
     }
-  } catch {
-    // no account — device-local only
+  }
+  if (user) {
+    userId = user.id;
+    nickname = user.nickname ?? null;
   }
 
   const currentCourse: Course = {
@@ -375,7 +404,11 @@ export async function fetchEnrollmentDashboard(gsList: number[]): Promise<Dashbo
   const itemCountByTopic = await resolveItemCounts(topicIds, nameById);
 
   if (userId !== 'local') {
-    const [{ data: prog }, { data: mRows }] = await Promise.all([
+    // Errors THROWN, not read as empty: supabase-js resolves `{ data: null,
+    // error }`, so dropping `error` turned an outage into an authoritative
+    // "nothing studied" that the Dashboard rendered and cached. Throwing lets
+    // its silent refresh keep the good data already on screen.
+    const [{ data: prog, error: progErr }, { data: mRows, error: mErr }] = await Promise.all([
       supabase
         .from('student_achievement_progress')
         .select('achievement_id, status, best_genuine_score, quiz_attempts, lockout_until, date_earned')
@@ -389,6 +422,8 @@ export async function fetchEnrollmentDashboard(gsList: number[]): Promise<Dashbo
         .eq('user_id', userId)
         .in('achievement_id', topicIds),
     ]);
+    if (progErr) throw progErr;
+    if (mErr) throw mErr;
     for (const p of (prog ?? []) as TopicProgress[]) progressByTopic.set(p.achievement_id, p);
     methodRows = (mRows ?? []) as MethodProgressRow[];
   }

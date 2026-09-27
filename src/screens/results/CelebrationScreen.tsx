@@ -47,8 +47,24 @@ export function CelebrationScreen({ navigation, route }: Props) {
   const def = celebration(id);
 
 
-  /** Where the user lands when a celebration is over. */
+  /**
+   * Where the user lands when a celebration is over: the Study Dashboard.
+   *
+   * goBack() FIRST (2026-09-27 audit). Both routes into this screen leave the
+   * existing Main shell — Study tab on its Dashboard — directly beneath it:
+   * QuizScreen popToTop()s the Study stack to the Dashboard before navigating
+   * here, and DashboardScreen's credential check navigates here FROM the
+   * Dashboard. So popping this one screen lands exactly where the old reset
+   * did, without remounting the whole tab shell: the reset threw away the
+   * Dashboard's pending params (a focus not yet landed) and every other tab's
+   * state, Home's deck position included. The reset stays as the fallback for
+   * a Celebration with nothing under it (e.g. a restored navigation state).
+   */
   const toStudy = useCallback(() => {
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+      return;
+    }
     navigation.reset({
       index: 0,
       routes: [{ name: 'Main', params: { screen: 'Study', params: { screen: 'Dashboard' } } }],

@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-27 12:08 · ccode · 33323fea
+changed: Dashboard: remember and follow the TOPIC, not its slot in the carousel
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-27 11:55 · ccode · 1d67c864
 changed: Dashboard: STUDY NOW switches on an inactive certificate topic
 affects other side: nothing — client JS only (dashboard focus) <FILL — what A (backend) must re-read or adjust, or "nothing">

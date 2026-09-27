@@ -326,8 +326,28 @@ export function enqueueSubmission(args: {
 /**
  * Replay queued offline submissions (true submitted_at, submitted_offline).
  * Returns finalized results for caller display; stops quietly while offline.
+ *
+ * ⛔ ONE REPLAY AT A TIME (audit 2026-09-27) — the same guard as the study
+ * queue's `replayQueue`. Dashboard load() runs this first thing, and two loads
+ * can overlap (focus + a progress emit); both passes read the same queued rows,
+ * so the same attempt was submitted twice and the learner saw "Offline quiz
+ * submitted" twice. A second caller now JOINS the pass in flight — it waits for
+ * it, so the progress it fetches next reflects the finalized attempt — but gets
+ * an EMPTY list back: the results belong to the caller that started the pass,
+ * and handing them to both would just print the duplicate notice another way.
  */
-export async function replayQuizSubmissions(): Promise<
+let quizReplayInFlight: Promise<{ achievementId: string; result: SubmitResult }[]> | null = null;
+
+export function replayQuizSubmissions(): Promise<{ achievementId: string; result: SubmitResult }[]> {
+  if (quizReplayInFlight) return quizReplayInFlight.then(() => [], () => []);
+  const run = replayQuizSubmissionsOnce().finally(() => {
+    quizReplayInFlight = null;
+  });
+  quizReplayInFlight = run;
+  return run;
+}
+
+async function replayQuizSubmissionsOnce(): Promise<
   { achievementId: string; result: SubmitResult }[]
 > {
   const rows = getQueuedSubmissions();

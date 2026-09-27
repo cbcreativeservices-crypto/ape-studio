@@ -49,11 +49,18 @@ export const linking: LinkingOptions<RootStackParamList> = {
     initialRouteName: 'Splash',
     screens: {
       // The Home tab is the app's landing, and `/topics/<slug>` opens the
-      // Study tab's Dashboard fronted on that topic (absolute nested path).
+      // Study tab's Dashboard fronted on that topic.
+      //
+      // ⛔ `exact: true` IS WHAT MAKES THIS ABSOLUTE. React Navigation 7 strips
+      // a leading `/` and joins a nested path onto its parents', so the old
+      // `Dashboard: '/topics/:topicSlug'` actually answered to
+      // `/get/topics/<slug>` — every real `/topics/<slug>` link (the URL
+      // topicUrl() prints) resolved to nothing and the app stayed wherever it
+      // was. Proven against the installed getStateFromPath, 2026-09-27.
       Main: {
         path: 'get',
         screens: {
-          Study: { screens: { Dashboard: '/topics/:topicSlug' } },
+          Study: { screens: { Dashboard: { path: 'topics/:topicSlug', exact: true } } },
         },
       },
       // Measurement & Analysis

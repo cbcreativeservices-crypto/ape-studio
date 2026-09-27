@@ -123,6 +123,43 @@ describe('deep links: the navigator and the filter agree', () => {
     }
   });
 
+  it('`/topics/<slug>` resolves to the Study Dashboard (the real router, not a regex)', async () => {
+    // 2026-09-27 audit: `Dashboard: '/topics/:topicSlug'` nested under
+    // `Main: { path: 'get' }` was JOINED by React Navigation 7 into
+    // `/get/topics/<slug>`, so every link topicUrl() prints resolved to
+    // nothing. The claim test above could not see it — the path string was
+    // fine, the nesting was not — so this runs the installed getStateFromPath
+    // against the config as written. `exact: true` is what makes it absolute.
+    const { createRequire } = await import('node:module');
+    const { pathToFileURL } = await import('node:url');
+    const req = createRequire(new URL('../node_modules/@react-navigation/native/package.json', import.meta.url));
+    const corePkg = req.resolve('@react-navigation/core/package.json');
+    const { getStateFromPath } = await import(
+      pathToFileURL(corePkg.replace(/package\.json$/, 'lib/module/getStateFromPath.js')).href
+    );
+    const start = LINKING.indexOf('config: {') + 'config: '.length;
+    const body = LINKING.slice(start, LINKING.indexOf('\n};', start)).replace(/,\s*$/, '');
+    const config = new Function(`return (${body});`)();
+
+    const leaf = (path: string) => {
+      let route = getStateFromPath(path, config)?.routes?.at(-1);
+      const names: string[] = [];
+      while (route) {
+        names.push(route.name);
+        if (!route.state) break;
+        route = route.state.routes[route.state.index ?? route.state.routes.length - 1];
+      }
+      return { names, params: route?.params };
+    };
+
+    const t = leaf('/topics/microphones');
+    assert.deepEqual(t.names, ['Main', 'Study', 'Dashboard']);
+    assert.deepEqual(t.params, { topicSlug: 'microphones' });
+    // Unchanged neighbours: the tab shell alone, and a plain root route.
+    assert.deepEqual(leaf('/get').names, ['Main']);
+    assert.deepEqual(leaf('/tools/multimeter').names, ['MultiMeter']);
+  });
+
   it('still refuses paths the app does NOT handle', () => {
     // Claiming a URL we would handle badly is worse than leaving it to the
     // website, which is the whole reason this filter exists.

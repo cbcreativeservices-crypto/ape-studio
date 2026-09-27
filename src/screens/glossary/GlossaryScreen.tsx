@@ -15,7 +15,7 @@
  * Search by term · empty: "No results for [filter]" · bottom nav visible.
  */
 import { memo, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from 'react';
-import { Alert, AppState, FlatList, Image, ImageBackground, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type StyleProp, type TextStyle } from 'react-native';
+import { Alert, AppState, BackHandler, FlatList, Image, ImageBackground, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type StyleProp, type TextStyle } from 'react-native';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -448,6 +448,21 @@ async function revalidateCorpus(table: 'glossary' | 'glossary_browse_v', haveCou
 }
 
 type Props = NativeStackScreenProps<StudyStackParamList, 'Glossary'>;
+
+/**
+ * Where the Glossary was opened FROM, when that was outside the Study tab.
+ *
+ * Tester report: "From home screen, when I clicked on the glossary button, it
+ * took me here to the study dashboard". Home's OPEN GLOSSARY has to open the
+ * Study stack as [Dashboard, Glossary] (`initial: false`, see
+ * CourseSelectionScreen.openGlossary — Glossary as routes[0] is how the STUDY
+ * tab used to land on the Glossary), so a plain goBack() from here reveals a
+ * Dashboard the person never visited. With `from` set, every way out of the
+ * Glossary returns to Home instead. Absent (opened from the Dashboard) the old
+ * goBack() is exactly right. Declared here rather than in navigation/types.ts
+ * so the two openers can type their params without widening the stack's list.
+ */
+export type GlossaryParams = StudyStackParamList['Glossary'] & { from?: 'home' | 'notification' };
 
 type Entry = {
   id: string;
@@ -1137,6 +1152,7 @@ type BmPopupRow =
 export function GlossaryScreen({ route, navigation }: Props) {
   const insets = useSafeAreaInsets();
   const { achievementId: presetTopicId, query: presetQuery } = route.params ?? {};
+  const openedFrom = (route.params as GlossaryParams | undefined)?.from;
 
   const [entries, setEntries] = useState<Entry[]>([]);
   const [topics, setTopics] = useState<TopicRef[]>([]);
@@ -2576,6 +2592,30 @@ ${COPY.glossaryFreeAllowance}`,
     }, [navigation]),
   );
 
+  // The one way OUT of the Glossary (see GlossaryParams). Opened from outside
+  // the Study tab → back to Home; the Study tab's blur then resets its stack to
+  // the Dashboard (MainTabs resetToRootOnBlur), so STUDY still opens clean.
+  // Opened from the Dashboard → goBack(), as before.
+  const exitGlossary = useCallback(() => {
+    if (openedFrom) (navigation as any).navigate('Home');
+    else navigation.goBack();
+  }, [navigation, openedFrom]);
+
+  // Android hardware back takes the same way out. Only claimed when `from` is
+  // set — otherwise the stack's own pop already lands on the Dashboard the
+  // person came from. Registered on focus so a root screen pushed over the
+  // Glossary (CalcLab via Σ, the Paywall) keeps its own back.
+  useFocusEffect(
+    useCallback(() => {
+      if (!openedFrom) return;
+      const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+        exitGlossary();
+        return true;
+      });
+      return () => sub.remove();
+    }, [openedFrom, exitGlossary]),
+  );
+
   // Jump back to the top whenever the visible set changes filter/search, so the
   // result of tapping a filter is immediately obvious (Booth 2026-07-09).
   // Staggered retries (Booth 2026-07-16): a single scrollToOffset could land
@@ -2646,7 +2686,7 @@ ${COPY.glossaryFreeAllowance}`,
     <GlossaryLockView
       visible={locked}
       resetAt={resetAt}
-      onExit={() => navigation.goBack()}
+      onExit={exitGlossary}
       onMembership={() => {
         if (lastViewedTermRef.current) {
           void AsyncStorage.setItem(RETURN_TERM_KEY, lastViewedTermRef.current).catch(() => {});
@@ -2681,7 +2721,7 @@ ${COPY.glossaryFreeAllowance}`,
           routes: [{ name: 'Splash' }],
         })
       }
-      onExit={() => navigation.goBack()}
+      onExit={exitGlossary}
     />
   );
 

@@ -22,6 +22,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Animated,
+  BackHandler,
   FlatList,
   InteractionManager,
   Modal,
@@ -37,7 +38,7 @@ import { useSharedValue } from 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useFocusEffect, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { StudyStackParamList } from '../../navigation/types';
 import { slugify } from '../../navigation/linkPaths';
@@ -594,6 +595,11 @@ export function DashboardScreen() {
   // during a slow fetch) — the Dashboard is long-lived so it rarely bites, but
   // this makes it airtight. Owner debug audit.
   const mountedRef = useRef(true);
+  /** Latest load() ticket — see ONLY THE NEWEST LOAD MAY LAND. */
+  const loadTicketRef = useRef(0);
+  /** The Dashboard stays mounted UNDER the study screens it opens — anything
+   *  that pops up by itself must check it is actually the screen in front. */
+  const isFocused = useIsFocused();
   useEffect(() => () => { mountedRef.current = false; }, []);
   const [error, setError] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<string | null>(null);
@@ -612,10 +618,12 @@ export function DashboardScreen() {
   const [scrollIdx, setScrollIdx] = useState(0);
   const scrollIdxRef = useRef(0);
   scrollIdxRef.current = scrollIdx;
-  // Jog dial (owner 2026-08-01): the small dial IS the live control — holding it
-  // opens a big mirror wheel and the SAME gesture turns it instantly (no Modal,
-  // no tap-then-grab). The wheel spins endlessly (the topic index WRAPS — no
-  // end-stops). jogActiveRef tells the card's swipe to stand down while held.
+  // Jog dial (owner 2026-08-01): a TAP on the small dial opens the big wheel;
+  // a drag on the big wheel turns it. ("The same press turns it" never worked:
+  // the press stayed with the small dial, so the page scrolled instead — tester
+  // report 2026-09-27, "Data wheel is froze".) The wheel spins endlessly (the
+  // topic index WRAPS — no end-stops). jogActiveRef tells the card's swipe to
+  // stand down while the wheel is open.
   // UI-thread rotation value (owner 2026-08-05): a Reanimated shared value so the
   // overlay dimple tracks the thumb without the JS-Animated bridge lag.
   const jogSpin = useSharedValue(0);
@@ -689,6 +697,9 @@ export function DashboardScreen() {
   const deckPrefsRef = useRef<DeckPrefs>(deckPrefs);
   deckPrefsRef.current = deckPrefs;
   const [deckOpen, setDeckOpen] = useState(false);
+  /** Any of this screen's own popups open — read inside load() (stable callback). */
+  const popupOpenRef = useRef(false);
+  popupOpenRef.current = termsOpen || trophyOpen || deckOpen || upgradeOpen;
 
   // Learning intros (user request 2026-07-18): a COURSE intro before beginning
   // a course and a TOPIC intro before beginning each topic. Auto-shown once
@@ -751,6 +762,18 @@ export function DashboardScreen() {
   );
 
   const load = useCallback(async () => {
+    /**
+     * ONLY THE NEWEST LOAD MAY LAND (dashboard deep-clean, 2026-09-27).
+     * Loads overlap all the time: the focus reload, the enrollment-change
+     * reload (which also runs on mount), and one `onStudyProgress` reload per
+     * flushed study write — leaving a card fires three or more at once. They
+     * resolve in any order, so a load that STARTED before the study write
+     * committed could finish last and paint the pre-write rack (next stage
+     * still dark). Each call takes a ticket; a superseded one returns without
+     * touching state or the cache.
+     */
+    const ticket = ++loadTicketRef.current;
+    const stale = () => ticket !== loadTicketRef.current || !mountedRef.current;
     // Silent refresh (owner 2026-08-17): only show the cold spinner when there
     // is NOTHING to display — with content (state or cache) on screen, the
     // refetch streams in behind it and swaps in via setData.
@@ -762,7 +785,12 @@ export function DashboardScreen() {
       // first so the fetched progress reflects the finalized attempt.
       // M14 (2026-09-07): notify(), not Alert.alert — RN-web's Alert is a no-op,
       // so an offline-submitted quiz/exam result was silently lost on web.
-      const replayed = await replayQuizSubmissions().catch(() => []);
+      // …but not while one of this screen's own popups is open (deep-clean
+      // 2026-09-27): each replayed result raises a notice, AppDialog is a
+      // Modal at the app root, and a Modal opened beside another can render
+      // BEHIND it on Android. The queue keeps; the next load replays it.
+      const replayOk = !popupOpenRef.current;
+      const replayed = replayOk ? await replayQuizSubmissions().catch(() => []) : [];
       for (const { result } of replayed) {
         notify(
           'Offline quiz submitted',
@@ -775,7 +803,7 @@ export function DashboardScreen() {
           `Score ${result.score}. ${QUIZ_OUTCOME_COPY[result.outcome]}`,
         );
       }
-      const examReplayed = await replayExamSubmissions().catch(() => []);
+      const examReplayed = replayOk ? await replayExamSubmissions().catch(() => []) : [];
       for (const { result } of examReplayed) {
         // A HELD PAPER HAS NO SCORE TO REPORT (2026-09-18). Interpolating
         // `result.score` on a held or discarded result printed
@@ -821,9 +849,14 @@ export function DashboardScreen() {
       setGuest(isGuest);
       // A guest also sees all their ACTIVE topics (locked included) so the paywall
       // is reachable; a guest with nothing enrolled falls back to the free topics.
+      // allowMissingUser: this is the guest path AND the stranded-session
+      // fallback below (a session with no users row → free topics + the
+      // account-setup banner). Without it the fallback would throw
+      // user_not_found again and never reach the free topics.
       const guestFetch = () =>
         fetchEnrollmentDashboard(
           enrolledGsRef.current.length > 0 ? enrolledGsRef.current : [...FREE_ENROLL_GS],
+          { allowMissingUser: true },
         );
       let d: DashboardData;
       if (isGuest) {
@@ -911,8 +944,13 @@ export function DashboardScreen() {
       const storedIdx =
         stored == null ? -1 : 'id' in stored ? orderedIds.indexOf(stored.id) : Math.min(stored.index, orderedIds.length - 1);
       const idx = storedIdx >= 0 ? storedIdx : frontier;
+      // Superseded or unmounted mid-fetch: touch NOTHING — not state, and not
+      // the cache either. The cache write used to come first, so a load still
+      // in flight across a sign-out re-filled the just-wiped cache with the
+      // previous account's topics and progress, and the next account's
+      // Dashboard mounted on it.
+      if (stale()) return;
       setDashboardCache(d, idx); // instant landing next time (owner 2026-08-17)
-      if (!mountedRef.current) return; // unmounted mid-fetch — don't setState
       // Tell the follow-the-topic effect below that this landing is deliberate.
       shownTopicIdRef.current = orderedIds[idx];
       setTopicIdx(idx);
@@ -921,7 +959,7 @@ export function DashboardScreen() {
       // A SILENT refresh that fails must never replace good on-screen content
       // with the error screen (owner 2026-08-17) — e.g. a brief offline blip on
       // return. The error state is for the no-content cold path only.
-      if (dataRef.current || !mountedRef.current) return;
+      if (dataRef.current || stale()) return;
       setErrorCode(e?.message ?? 'unknown');
       setError(
         e?.message === 'not_enrolled'
@@ -930,10 +968,12 @@ export function DashboardScreen() {
             // COMMERCIAL WORDING (2026-09-17). "Student record" is the retired
             // institutional vocabulary and means nothing to a customer.
             ? 'Your account setup is not finished yet — finish it to save your progress.'
-            : 'Could not load the dashboard. Check your connection and pull to retry.',
+            // There is no pull-to-refresh on this screen — the Retry button is
+            // the way back (the old text sent people looking for a gesture).
+            : 'Could not load the dashboard. Check your connection and tap Retry.',
       );
     } finally {
-      if (mountedRef.current) setLoading(false);
+      if (!stale()) setLoading(false);
     }
   }, [commercialMode, caps]);
 
@@ -1032,13 +1072,31 @@ export function DashboardScreen() {
       deckPrefs,
       customOnDashboard ? FLAGGED_TOPIC_ID : undefined,
     );
-    const ordered = orderedIds.map((id) => byId.get(id)).filter((t): t is Topic => t != null);
+    let ordered = orderedIds.map((id) => byId.get(id)).filter((t): t is Topic => t != null);
+    // NEVER AN EMPTY DECK WHILE THERE ARE TOPICS (deep-clean 2026-09-27). The
+    // sheet refuses to remove the LAST card, but removals persist by id and
+    // outlive enrollment edits: remove A from [A, B], then UNLOAD B in My
+    // Enrollments, and every member left is a removed one. The screen fell to
+    // "Nothing to show yet." with no deck button to restore them and SIGN OUT
+    // as its main action. Show the hidden members instead.
+    if (ordered.length === 0 && members.length > 0) {
+      ordered = orderDeckIds(
+        members.map((t) => ({ id: t.id, name: t.name })),
+        { ...deckPrefs, removed: [] },
+        customOnDashboard ? FLAGGED_TOPIC_ID : undefined,
+      )
+        .map((id) => byId.get(id))
+        .filter((t): t is Topic => t != null);
+    }
     const removed = members
       .filter((t) => deckPrefs.removed.includes(t.id))
       .map((t) => ({ id: t.id, name: t.name }));
     return { topics: ordered, removedMembers: removed };
   }, [data, customOnDashboard, deckPrefs]);
-  const topic = topics[topicIdx];
+  // Clamped DURING render: the bounds effect below runs after the commit, and
+  // for that one frame a shrunk deck left `topics[topicIdx]` undefined — which
+  // flashed the full error screen (sign-out button included).
+  const topic = topics[Math.min(topicIdx, Math.max(0, topics.length - 1))];
   const isCustom = topic?.id === FLAGGED_TOPIC_ID;
 
   // Study-icon deep link (user request 2026-07-24): when navigated here with a
@@ -1100,8 +1158,19 @@ export function DashboardScreen() {
      * and the armed focus above lands on it.
      */
     if (typeof focusGs === 'number' && inactiveGs.current.has(focusGs)) setActiveMany([focusGs], true);
+    // The same dead wait for a topic the learner REMOVED from the deck (the ✕
+    // in the deck manager): it is loaded but filtered out of the carousel, so
+    // STUDY NOW for it landed on whatever was showing. Asking for it puts it
+    // back; the armed focus then lands on it.
+    if (focusGs != null && dataRef.current) {
+      const want =
+        typeof focusGs === 'string'
+          ? focusGs
+          : dataRef.current.topics.find((t) => t.global_sequence === focusGs)?.id;
+      if (want && deckPrefs.removed.includes(want)) restoreToDeck(want);
+    }
     if (topicSlug) navigation.setParams({ focusGs: undefined, topicSlug: undefined });
-  }, [focusGs, topicSlug, topics, navigation]);
+  }, [focusGs, topicSlug, topics, navigation, deckPrefs]);
   const status = topic ? (data!.progressByTopic.get(topic.id)?.status ?? 'locked') : 'locked';
   const lastTopicIdx = Math.max(0, topics.length - 1);
 
@@ -1137,6 +1206,38 @@ export function DashboardScreen() {
 
   const goToRef = useRef(goTo);
   goToRef.current = goTo;
+
+  // ONE CLOSE PATH FOR THE BIG WHEEL AND THE UPGRADE SHEET (deep-clean
+  // 2026-09-27). Both are plain views over the screen, not Modals, and nothing
+  // listened for Android BACK: it left the Study tab with the overlay still
+  // open (`jogActive` stuck true kept the card swipe disabled), and the same
+  // overlay greeted the learner on return ("Back button doesn't work"). BACK
+  // now closes the top overlay first; leaving the screen closes the wheel;
+  // a deck that shrinks to one topic while the wheel is open closes it too
+  // (a disabled wheel stopped answering taps, leaving only its small ✕).
+  const closeJog = useCallback(() => {
+    if (!jogActiveRef.current) return;
+    jogActiveRef.current = false;
+    setJogActive(false);
+    goToRef.current(scrollIdxRef.current);
+  }, []);
+  useEffect(() => {
+    if (jogActive && topics.length <= 1) closeJog();
+  }, [jogActive, topics.length, closeJog]);
+  useFocusEffect(
+    useCallback(() => {
+      if (!jogActive && !upgradeOpen) return undefined;
+      const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+        if (upgradeOpen) setUpgradeOpen(false);
+        else closeJog();
+        return true;
+      });
+      return () => sub.remove();
+    }, [jogActive, upgradeOpen, closeJog]),
+  );
+  // Blur ONLY (a tab switch, a pushed screen) — not the effect re-running when
+  // the wheel opens, which would close it the instant it appeared.
+  useEffect(() => navigation.addListener('blur', closeJog), [navigation, closeJog]);
   const idxRef = useRef(topicIdx);
   idxRef.current = topicIdx;
 
@@ -1287,6 +1388,8 @@ export function DashboardScreen() {
   }
 
   if (error || !data || !topic) {
+    // A fetch that failed for a reason other than the account itself.
+    const isConnectionError = error != null && errorCode !== 'user_not_found' && errorCode !== 'not_enrolled';
     return (
       <View style={styles.center}>
         <Text style={styles.errorText}>{error ?? 'Nothing to show yet.'}</Text>
@@ -1315,26 +1418,40 @@ export function DashboardScreen() {
         <View style={{ width: 220 }}>
           <StudioButton
             label="Back to Login"
-            variant={errorCode === 'user_not_found' ? 'secondary' : 'primary'}
+            // Primary only when the session itself is the suspect. A plain
+            // connection failure (deep-clean 2026-09-27) made SIGN OUT the
+            // highlighted answer to a network blip — Retry leads there instead.
+            variant={errorCode === 'user_not_found' || isConnectionError ? 'secondary' : 'primary'}
             small
-            onPress={() => {
-              markIntentionalSignOut();
-              void supabase.auth
-                .signOut()
-                .catch(() => {})
-                .then(() => (navigation as any).navigate('Auth'));
-            }}
+            onPress={() =>
+              // Signing out is not undoable from here — ask first.
+              confirmDialog(
+                'Sign out?',
+                'This signs you out of this device and returns to the login screen. Your saved progress stays with your account.',
+                'Sign out',
+                () => {
+                  markIntentionalSignOut();
+                  void supabase.auth
+                    .signOut()
+                    .catch(() => {})
+                    .then(() => (navigation as any).navigate('Auth'));
+                },
+              )
+            }
           />
         </View>
         <View style={{ width: 180 }}>
-          <StudioButton label="Retry" variant="secondary" small onPress={load} />
+          <StudioButton label="Retry" variant={isConnectionError ? 'primary' : 'secondary'} small onPress={load} />
         </View>
       </View>
     );
   }
 
+  // The clamped index (see `topic` above): a raw `topicIdx` one past a shrunk
+  // deck read `topics[topicIdx - 1].id` off undefined and crashed the screen.
+  const shownIdx = Math.min(topicIdx, topics.length - 1);
   const prevStatus =
-    topicIdx > 0 ? (data.progressByTopic.get(topics[topicIdx - 1].id)?.status ?? 'locked') : null;
+    shownIdx > 0 ? (data.progressByTopic.get(topics[shownIdx - 1].id)?.status ?? 'locked') : null;
   const provisional = prevStatus === 'passed_incomplete';
 
   // Enrollment view: this topic is INACTIVE (set aside) — shown but dimmed.
@@ -1569,15 +1686,25 @@ export function DashboardScreen() {
           }
         />
 
-        {/* CELEBRATION NOTICE (owner 2026-09-17) — the step/stage tier, inline.
-            It sits ABOVE the rack rather than over it: this is the same screen
-            whose meters just moved, so the notice explains what the user is
-            already looking at instead of covering it.
+        {/* CELEBRATION NOTICE (owner 2026-09-17). Its slot sits above the rack,
+            but formFor() now returns 'screen' for every tier, so outside
+            Low-Light it opens as a centred popup — see the focus gate below.
 
             The Celebration component handles Low-Light Production Mode itself
             (every tier collapses to this quiet form and no modal is mounted),
             so there is no suppression check to repeat here. */}
-        {pendingCelebration ? (
+        {/* ⛔ ONLY WHEN THIS SCREEN IS IN FRONT, AND NOTHING ELSE IS OPEN
+            (deep-clean 2026-09-27). formFor() now makes every tier a full
+            popup (a Modal), and the Dashboard stays mounted UNDER the study
+            screens — the 30-second study flush reloads it, flashcards reads
+            100%, and "FLASHCARDS COMPLETE" opened OVER the Flashcards screen
+            the learner was still on (or a lab, or the credential screen). Over
+            this screen's own term list / trophy / deck / upgrade sheet / big
+            wheel it stacked a second modal, which on Android can render BEHIND
+            the first and leave nothing tappable ("couldn't press any
+            buttons"). ScreenIntroOverlay learned the same lesson. The
+            celebration is not lost — it waits until the learner is here. */}
+        {isFocused && !termsOpen && !trophyOpen && !deckOpen && !upgradeOpen && !jogActive && pendingCelebration ? (
           <View style={styles.celebrationSlot}>
             <Celebration
               def={celebration(pendingCelebration.id)}
@@ -1753,13 +1880,12 @@ export function DashboardScreen() {
                   fallback={<View style={styles.topicTrophyEmpty} />}
                 />
               </Pressable>
-              {/* Jog dial — hold it and turn; the big mirror wheel opens
-                  instantly and the same gesture scrolls the topics (owner
-                  2026-08-01). Endless spin: the index wraps. Hidden (but still
-                  driving the gesture) while the full-size wheel is open. */}
+              {/* Jog dial — tap it to open the big wheel, then turn the big
+                  wheel (owner 2026-08-01). Endless spin: the index wraps.
+                  Hidden while the full-size wheel is open. */}
               <View style={[styles.topicJog, jogActive && styles.hidden]}>
-                {/* Small dial just OPENS the big wheel (owner 2026-08-06); the
-                    big wheel is the turn control. Tap or press-hold both open. */}
+                {/* Small dial just OPENS the big wheel (owner 2026-08-06), on
+                    tap release; the big wheel is the turn control. */}
                 <JogDial
                   size={96}
                   disabled={topics.length <= 1}
@@ -2346,12 +2472,15 @@ export function DashboardScreen() {
         }}
       />
 
-      {/* Big-wheel jog popup (owner 2026-08-01) — stays open while in use; the
-          ✕ key (or a clean second tap on the dial) closes it (owner 2026-08-06). */}
+      {/* Big-wheel jog popup (owner 2026-08-01) — stays open while turning; the
+          ✕ key, any tap or swipe that is not a turn, Android BACK, or leaving
+          the screen closes it (2026-09-27). */}
       <JogOverlay
         active={jogActive}
         spin={jogSpin}
         disabled={topics.length <= 1}
+        // VoiceOver reads the topic the wheel is on, not a silent change.
+        a11yValueText={topics[scrollIdx]?.name}
         // Drag the big wheel to preview the top container; commit on close.
         onStep={(dir) => {
           const n = topics.length;
@@ -2361,11 +2490,7 @@ export function DashboardScreen() {
           setScrollIdx(next);
           jogCoach.registerAction(); // taught action: a real turn of the wheel
         }}
-        onClose={() => {
-          jogActiveRef.current = false;
-          setJogActive(false);
-          goTo(scrollIdxRef.current);
-        }}
+        onClose={closeJog}
       />
 
       {/* Topic-deck manager (blue Study icon) — reorder / remove / jump / mode. */}

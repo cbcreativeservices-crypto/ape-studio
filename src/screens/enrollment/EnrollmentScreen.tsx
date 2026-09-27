@@ -935,8 +935,16 @@ export function EnrollmentView({
   };
 
   // Continue Learning: best active topic to resume.
+  //
+  // ⛔ NEVER THE LAB (2026-09-27 audit). The Audio Fundamentals lab-proxy
+  // (LAB_REQUIREMENT_GS) is an ordinary active enrollment with a partial %, so
+  // it regularly WON "highest partial" — but the Dashboard drops it from its
+  // deck (DashboardScreen, AUDIO_FUNDAMENTALS_LAB_GS), so `focusGs: 3081` was
+  // never found and the banner's "Resume Audio Fundamentals" opened the
+  // Dashboard on some other topic, the miss left armed. The lab is advanced
+  // in the labs (its row's OPEN LABS), never from here.
   const resume = useMemo(() => {
-    const actives = enrolled.filter((e) => e.active);
+    const actives = enrolled.filter((e) => e.active && e.gs !== LAB_REQUIREMENT_GS);
     if (actives.length === 0) return null;
     let best: { gs: number; pct: number } | null = null;
     for (const e of actives) {
@@ -2165,10 +2173,17 @@ export function EnrollmentView({
           }}
           onStudy={(card) => {
             if (card.kind === 'topics') {
-              goStudy(enrolled[0]?.gs);
+              // The first topic the Dashboard will actually SHOW: active, and
+              // not the lab-proxy it never decks (see `resume`). enrolled[0]
+              // could be the lab, and a focus the Dashboard cannot find stays
+              // armed instead of landing. With nothing active, the first
+              // non-lab topic still goes — the Dashboard activates an inactive
+              // focus itself, which is what enrolled[0] relied on before.
+              const studyable = enrolled.filter((e) => e.gs !== LAB_REQUIREMENT_GS);
+              goStudy((studyable.find((e) => e.active) ?? studyable[0])?.gs);
               return;
             }
-            goStudy(centredBundle?.topics[0]);
+            goStudy(centredBundle?.topics.find((gs) => gs !== LAB_REQUIREMENT_GS));
           }}
         />
 

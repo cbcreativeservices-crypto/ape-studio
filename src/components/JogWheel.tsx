@@ -5,11 +5,12 @@
  * docs/design/JOG_WHEEL_BLUEPRINT_2026_09_05.md).
  *
  * `JogDial` is the SMALL wheel on the Dashboard — purely an OPENER (owner
- * 2026-08-06): a tap or a press-in opens `JogOverlay`, the big centred wheel
- * that is the actual turn control. Drag ANYWHERE on the overlay to turn it
- * (angle about the wheel centre), it steps topics in click DETENTS with a
- * Rigid haptic (no sound), spins endlessly (the topic index wraps, no
- * end-stops), and the ✕ commits + closes.
+ * 2026-08-06): a tap (on RELEASE) opens `JogOverlay`, the big centred wheel
+ * that is the actual turn control. Once it is open, a NEW drag anywhere on the
+ * overlay turns it (angle about the wheel centre); it steps topics in click
+ * DETENTS with a Rigid haptic (no sound), spins endlessly (the topic index
+ * wraps, no end-stops). The ✕, or any tap that is not a turning drag, commits
+ * + closes. The open state sits on a light scrim so it reads as modal.
  *
  * THE OBJECT (Skia): a low, heavy, matte sandblasted-black puck standing proud
  * of the rack panel, seen very slightly from above so a crescent of cylinder
@@ -116,7 +117,11 @@ const SVG_REST_RAD = -Math.PI / 6;
  *  lands still; 8 px turned too many close-taps into a topic change. */
 const DISMISS_SLOP = 22;
 
-const A11Y_ACTIONS = [{ name: 'increment' }, { name: 'decrement' }];
+/** increment/decrement step one detent; activate (double-tap) and magicTap
+ *  (two-finger double-tap) close the wheel — before these a screen-reader user
+ *  had no way out of the full-screen adjustable surface except finding the ✕
+ *  (tester report 2026-09-27, build 32: "Locked screen. Data wheel is froze."). */
+const A11Y_ACTIONS = [{ name: 'increment' }, { name: 'decrement' }, { name: 'activate' }, { name: 'magicTap' }];
 
 const clamp = (v: number, lo: number, hi: number) => (v < lo ? lo : v > hi ? hi : v);
 
@@ -271,11 +276,18 @@ const JogStack = memo(function JogStack({ size, spin }: { size: number; spin?: S
 });
 
 /**
- * The small dial — purely an OPENER (owner 2026-08-06): a tap OR a press-hold
- * both open the big overlay wheel, which is the actual turn control. It does
- * not turn anything itself. No press animation: the Dashboard hides it in the
- * same commit the press opens the wheel, and a real knob neither squashes nor
- * depresses — the honest feedback is the overlay coming up.
+ * The small dial — purely an OPENER (owner 2026-08-06): a TAP opens the big
+ * overlay wheel, which is the actual turn control. It does not turn anything
+ * itself. No press animation: the Dashboard hides it in the same commit the
+ * tap opens the wheel, and a real knob neither squashes nor depresses — the
+ * honest feedback is the overlay coming up.
+ *
+ * Opens on RELEASE (onPress) only. It used to open on onPressIn too, promising
+ * that the same press could turn the big wheel — it never could: the touch
+ * stayed with this Pressable, the overlay's pan surface never saw it, and the
+ * drag fell through to the Dashboard's ScrollView, so the page scrolled under
+ * a wheel that would not turn (tester report 2026-09-27, build 32: "Locked
+ * screen. Data wheel is froze."). Tap to open, then turn with a new drag.
  */
 export function JogDial({
   size = 74,
@@ -286,27 +298,11 @@ export function JogDial({
   disabled?: boolean;
   onOpen: () => void;
 }) {
-  // RN and react-native-web route keyboard, VoiceOver/TalkBack and synthetic
-  // clicks to onPress ONLY, so onPress is the fallback — it opens only if
-  // onPressIn did not already open during this same press.
-  const openedRef = useRef(false);
   return (
     <Pressable
-      onPressIn={() => {
-        if (disabled) return;
-        openedRef.current = true;
-        onOpen();
-      }}
       onPress={() => {
-        if (disabled || openedRef.current) return;
+        if (disabled) return;
         onOpen();
-      }}
-      onPressOut={() => {
-        // onPress (if any) fires synchronously after onPressOut in the same
-        // release; clear the flag once that has had its chance.
-        setTimeout(() => {
-          openedRef.current = false;
-        }, 0);
       }}
       disabled={disabled}
       style={[styles.wrap, { width: size, height: size }, disabled && styles.disabled]}
@@ -322,9 +318,21 @@ export function JogDial({
  * The big centred wheel — the ACTUAL turn control (owner 2026-08-06). Opened by
  * the small dial; once open, DRAG ANYWHERE on the overlay to turn (angle is
  * measured around the wheel's centre, so a straight drag on any side works), it
- * steps topic detents with a haptic, and the ✕ commits + closes. NOT dimmed:
- * the current-topic container behind stays visible and updates as you turn.
- * Mount it at the screen root so it isn't clipped.
+ * steps topic detents with a haptic, and the ✕ commits + closes. So does ANY
+ * release that was not a turning drag — a tap on the wheel, a tap beside it,
+ * or a straight swipe (a scroll attempt) away from it. It used to close only
+ * on a still tap OUTSIDE the wheel, so a tap on the wheel did nothing and a
+ * scroll attempt turned the topic and left it open (tester report 2026-09-27,
+ * build 32: "Locked screen. Data wheel is froze."). A light scrim (0.35 black)
+ * sits behind it so the open state reads as modal rather than a live
+ * Dashboard that ignores you; the current-topic container still shows
+ * through and updates as you turn. Mount it at the screen root so it isn't
+ * clipped.
+ *
+ * Closing is the parent's job (`active` → false): JogOverlay holds no open
+ * state of its own, so a parent may close it on blur / Android back simply by
+ * running the same handler it passes as `onClose`; the `active` effect below
+ * cancels any seat/coast animation and any pending click either way.
  *
  * Under the finger it behaves like a low-mass detented encoder: it is under
  * the finger the instant you touch it (the 50 ms glide, continued — not
@@ -339,12 +347,17 @@ export function JogOverlay({
   onStep,
   onClose,
   disabled = false,
+  a11yValueText,
 }: {
   active: boolean;
   spin: SharedValue<number>;
   onStep: (dir: -1 | 1) => void;
   onClose: () => void;
   disabled?: boolean;
+  /** What the adjustable element announces as its value (e.g. the previewed
+   *  topic's name). Optional — without it a screen reader hears "Topic wheel,
+   *  adjustable" and nothing about where the wheel is. */
+  a11yValueText?: string;
 }) {
   const { width, height } = useWindowDimensions();
   // 23% larger than before (owner 2026-08-01), still capped to fit the screen.
@@ -370,9 +383,11 @@ export function JogOverlay({
   disabledRef.current = disabled;
   const onStepRef = useRef(onStep);
   onStepRef.current = onStep;
-  // Tap-outside-to-close (owner 2026-08-13): a TAP (no rotation) that lands
-  // OUTSIDE the wheel dismisses the overlay; drags still turn it, and a tap ON
-  // the wheel is ignored. Refs so the memoised PanResponder reads live values.
+  // Tap-to-close (owner 2026-08-13; widened 2026-09-27): any release that was
+  // not a turning drag dismisses the overlay — outside the wheel OR on it (a
+  // tap on the wheel used to be ignored, which read as a frozen screen: tester
+  // report 2026-09-27, build 32: "Locked screen. Data wheel is froze."). Drags
+  // still turn it. Refs so the memoised PanResponder reads live values.
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
   const sizeRef = useRef(size);
@@ -384,6 +399,13 @@ export function JogOverlay({
    *  it proves itself a drag — it does not glide the dimple, and it needs a
    *  frank slide (not an 8 px wobble) before it counts as turning. */
   const outsideRef = useRef(false);
+  /** This outside gesture has shown itself to be a straight SWIPE away from /
+   *  toward the wheel (radial travel past the slop before any real travel
+   *  around it) — someone trying to scroll the page. It never turns the wheel;
+   *  its release closes the overlay. Before this, a vertical swipe past 22 px
+   *  counted as a turn, changed the topic and left the wheel open (tester
+   *  report 2026-09-27, build 32: "Locked screen. Data wheel is froze."). */
+  const swipeRef = useRef(false);
   const activeRef = useRef(active);
   activeRef.current = active;
   // Read on EVERY render (the PanResponder is memoised with []): the reduce-
@@ -417,15 +439,19 @@ export function JogOverlay({
     const { x, y } = centerRef.current;
     return (Math.atan2(py - y, px - x) * 180) / Math.PI;
   };
-  const step = (dir: -1 | 1) => {
+  /** Returns whether the step actually fired (false when closed, disabled or
+   *  throttled) so the accessibility path only turns the wheel when the topic
+   *  really moved — wheel and topic must agree at rest. */
+  const step = (dir: -1 | 1): boolean => {
     // Guarded so a stale release timer can never reach the Dashboard after it
     // has committed on close.
-    if (!activeRef.current || disabledRef.current) return;
+    if (!activeRef.current || disabledRef.current) return false;
     const now = Date.now();
-    if (now - lastStepAt.current < MIN_STEP_MS) return; // throttle — slow enough to watch
+    if (now - lastStepAt.current < MIN_STEP_MS) return false; // throttle — slow enough to watch
     lastStepAt.current = now;
     onStepRef.current(dir);
     if (hapticsEnabled()) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid).catch(() => {});
+    return true;
   };
 
   /**
@@ -478,8 +504,15 @@ export function JogOverlay({
   const pan = useMemo(
     () =>
       PanResponder.create({
-        onStartShouldSetPanResponder: () => !disabledRef.current,
-        onMoveShouldSetPanResponder: () => !disabledRef.current,
+        // Claim EVERY touch, disabled or not. The surface is only live while
+        // open (the root's pointerEvents), and it covers the whole screen: if
+        // it stops claiming when the deck drops to one topic while the wheel is
+        // open, nothing under it gets the touch either and there is no way out
+        // but the ✕ (tester report 2026-09-27, build 32: "Locked screen. Data
+        // wheel is froze."). Disabled only means it will not TURN — a release
+        // still closes it.
+        onStartShouldSetPanResponder: () => true,
+        onMoveShouldSetPanResponder: () => true,
         onPanResponderTerminationRequest: () => false,
         onPanResponderGrant: (_e, g) => {
           clearReleaseTimer();
@@ -490,10 +523,13 @@ export function JogOverlay({
           inDead.current = false;
           grantRef.current = { x: g.x0, y: g.y0 };
           movedRef.current = false;
+          swipeRef.current = false;
           {
             const c = centerRef.current;
             outsideRef.current = Math.hypot(g.x0 - c.x, g.y0 - c.y) > sizeRef.current / 2;
           }
+          // Disabled: nothing to turn, so no grab glide — the release closes.
+          if (disabledRef.current) return;
           const now = Date.now();
           grantAt.current = now;
           lastMoveAt.current = now;
@@ -519,10 +555,35 @@ export function JogOverlay({
           spin.value = withTiming(spinTarget.current, { duration: 50, easing: REasing.out(REasing.quad) });
         },
         onPanResponderMove: (_e, g) => {
-          if (disabledRef.current) return;
+          if (disabledRef.current || swipeRef.current) return;
           const now = Date.now();
-          const slop = outsideRef.current ? DISMISS_SLOP : 8;
-          if (!movedRef.current && Math.hypot(g.moveX - grantRef.current.x, g.moveY - grantRef.current.y) > slop) {
+          let promote = false;
+          if (!movedRef.current) {
+            if (outsideRef.current) {
+              // Outside the wheel, only travel AROUND it is a turn. Split the
+              // slide from the grant point into radial (toward / away from
+              // the centre) and tangential (arc length round it) parts: a
+              // straight swipe above or below the wheel — someone trying to
+              // scroll — is almost all radial, and closes on release instead
+              // of stepping the topic.
+              const c = centerRef.current;
+              const r0 = Math.hypot(grantRef.current.x - c.x, grantRef.current.y - c.y);
+              const r1 = Math.hypot(g.moveX - c.x, g.moveY - c.y);
+              let dA = angleAt(g.moveX, g.moveY) - angleAt(grantRef.current.x, grantRef.current.y);
+              while (dA > 180) dA -= 360;
+              while (dA < -180) dA += 360;
+              const radial = Math.abs(r1 - r0);
+              const tangential = (Math.abs(dA) * Math.PI * Math.min(r0, r1)) / 180;
+              if (radial > DISMISS_SLOP && radial >= tangential) {
+                swipeRef.current = true;
+                return;
+              }
+              promote = tangential > DISMISS_SLOP && tangential > radial;
+            } else {
+              promote = Math.hypot(g.moveX - grantRef.current.x, g.moveY - grantRef.current.y) > 8;
+            }
+          }
+          if (promote) {
             movedRef.current = true; // it's a drag (rotation), not a tap
             if (outsideRef.current) {
               // Promoted to a turn: run the grab glide now, the one the
@@ -540,6 +601,10 @@ export function JogOverlay({
             // on the wheel and a tap-outside-to-close stay silent.
             if (hapticsEnabled()) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft).catch(() => {});
           }
+          // Not yet a turning drag: nothing turns and nothing steps, so a press
+          // that lifts inside the slop is purely a close — it can never change
+          // the topic on its way out.
+          if (!movedRef.current) return;
           const { x, y } = centerRef.current;
           if (Math.hypot(g.moveX - x, g.moveY - y) < DEAD_PX) {
             inDead.current = true;
@@ -602,8 +667,11 @@ export function JogOverlay({
             settle();
             return;
           }
-          // A press (no drag) that landed beyond the wheel radius = dismiss.
-          if (outsideRef.current) onCloseRef.current();
+          // ANY release that was not a turning drag = dismiss: a tap on the
+          // wheel, a tap beside it, a straight swipe (scroll attempt), or any
+          // touch while disabled. Only a confirmed turn keeps it open (tester
+          // report 2026-09-27, build 32: "Locked screen. Data wheel is froze.").
+          if (activeRef.current) onCloseRef.current();
         },
         onPanResponderTerminate: () => {
           // The system took the touch mid-drag: still seat the wheel.
@@ -669,18 +737,27 @@ export function JogOverlay({
     [],
   );
 
-  const onA11yAction = (e: AccessibilityActionEvent) => {
-    const name = e.nativeEvent.actionName;
-    const dir: -1 | 1 | 0 = name === 'increment' ? 1 : name === 'decrement' ? -1 : 0;
-    if (dir === 0 || disabledRef.current) return;
-    spinTarget.current += dir * DETENT_DEG;
-    spin.value = allowedRef.current ? withSpring(spinTarget.current, SETTLE_SPRING) : spinTarget.current;
-    step(dir);
-  };
-
   const closeKey = () => {
     if (hapticsEnabled()) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     onClose();
+  };
+
+  const onA11yAction = (e: AccessibilityActionEvent) => {
+    const name = e.nativeEvent.actionName;
+    // Double-tap / magic tap = the ✕ — works even while disabled, so the
+    // screen-reader path always has a way out.
+    if (name === 'activate' || name === 'magicTap') {
+      if (activeRef.current) closeKey();
+      return;
+    }
+    const dir: -1 | 1 | 0 = name === 'increment' ? 1 : name === 'decrement' ? -1 : 0;
+    if (dir === 0) return;
+    // Turn the wheel only when the topic actually stepped: a throttled or
+    // disabled swipe used to advance spinTarget anyway, so the dimple drifted
+    // a detent away from the topic it was showing.
+    if (!step(dir)) return;
+    spinTarget.current += dir * DETENT_DEG;
+    spin.value = allowedRef.current ? withSpring(spinTarget.current, SETTLE_SPRING) : spinTarget.current;
   };
 
   if (!mounted) return null;
@@ -697,10 +774,11 @@ export function JogOverlay({
       >
         <JogStack size={size} spin={spin} />
       </Reanimated.View>
-      {/* Full-screen turn surface — drag anywhere to rotate the wheel. Live
-          from the first frame of the open; inert during the exit fade (the
-          root's pointerEvents). For assistive tech it is an adjustable
-          control: increment/decrement step one detent. */}
+      {/* Full-screen turn surface — drag anywhere to rotate the wheel; any
+          release that was not a turn closes it. Live from the first frame of
+          the open; inert during the exit fade (the root's pointerEvents). For
+          assistive tech it is an adjustable control: increment/decrement step
+          one detent, activate / magic tap close. */}
       <View
         {...pan.panHandlers}
         style={StyleSheet.absoluteFill}
@@ -709,7 +787,8 @@ export function JogOverlay({
         accessible
         accessibilityRole="adjustable"
         accessibilityLabel="Topic wheel"
-        accessibilityHint={Platform.OS === 'web' ? undefined : 'Swipe up or down to change topic'}
+        accessibilityValue={a11yValueText ? { text: a11yValueText } : undefined}
+        accessibilityHint={Platform.OS === 'web' ? undefined : 'Swipe up or down to change topic. Double-tap to close.'}
         accessibilityActions={A11Y_ACTIONS}
         onAccessibilityAction={onA11yAction}
       />
@@ -731,9 +810,14 @@ export function JogOverlay({
 const styles = StyleSheet.create({
   wrap: { alignItems: 'center', justifyContent: 'center' },
   disabled: { opacity: 0.45 },
-  // No dim — the current-topic container behind stays visible and changes as you
-  // turn (owner 2026-08-01).
-  overlay: { alignItems: 'center', justifyContent: 'center', zIndex: 60 },
+  // A LIGHT scrim (was no dim, owner 2026-08-01): undimmed, the Dashboard
+  // looked live while the full-screen surface swallowed every touch — it read
+  // as a frozen screen (tester report 2026-09-27, build 32: "Locked screen.
+  // Data wheel is froze."). 0.35 black says "modal" while the current-topic
+  // container behind stays readable and still changes as you turn. It fades
+  // with the root's presence opacity, and appears instantly under Reduce
+  // Motion like the rest of the overlay.
+  overlay: { alignItems: 'center', justifyContent: 'center', zIndex: 60, backgroundColor: 'rgba(0,0,0,0.35)' },
   wheelBox: { position: 'absolute', pointerEvents: 'none' },
   // ✕ close key at the wheel's top-right corner (owner 2026-08-06) — the one
   // control on the otherwise touch-transparent overlay, so a stuck-open wheel

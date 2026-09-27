@@ -30,3 +30,34 @@ test('a missed numeric focus stays armed until the deck catches up', () => {
   // Only a slug that never resolves is cleared on a miss.
   assert.match(src, /if \(topicSlug\) navigation\.setParams\(\{ focusGs: undefined, topicSlug: undefined \}\);/);
 });
+
+// ── Dashboard deep-clean (2026-09-27) ────────────────────────────────────────
+test('the last topic is saved by id and the carousel follows the topic across re-sorts', () => {
+  assert.match(src, /setLastTopic\(data\.currentCourse\.id, topics\[next\]\.id\)/);
+  assert.match(src, /const j = want \? topics\.findIndex\(\(t\) => t\.id === want\) : -1;/);
+  assert.doesNotMatch(src, /setLastTopicIndex/);
+});
+
+test('only the newest load may land, and the cache is written after the stale check', () => {
+  assert.match(src, /const ticket = \+\+loadTicketRef\.current;/);
+  const staleAt = src.indexOf('if (stale()) return;\n      setDashboardCache(d, idx);');
+  assert.ok(staleAt > 0, 'setDashboardCache must come AFTER the stale/unmounted check (sign-out cache leak)');
+});
+
+test('a self-opening celebration waits until the Dashboard is in front and nothing else is open', () => {
+  assert.match(src, /isFocused && !termsOpen && !trophyOpen && !deckOpen && !upgradeOpen && !jogActive && pendingCelebration/);
+});
+
+test('STUDY NOW for a topic removed from the deck restores it', () => {
+  assert.match(src, /if \(want && deckPrefs\.removed\.includes\(want\)\) restoreToDeck\(want\);/);
+});
+
+test('an all-removed deck shows its topics instead of the sign-out dead end', () => {
+  assert.match(src, /if \(ordered\.length === 0 && members\.length > 0\)/);
+});
+
+test('Android back and blur close the big wheel / upgrade sheet', () => {
+  assert.match(src, /BackHandler\.addEventListener\('hardwareBackPress'/);
+  assert.match(src, /navigation\.addListener\('blur', closeJog\)/);
+  assert.match(src, /onClose=\{closeJog\}/);
+});

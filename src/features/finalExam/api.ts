@@ -546,7 +546,7 @@ export function enqueueExamSubmission(row: QueuedExam): Promise<boolean> {
  * returns its frozen result_payload rather than erroring, so a reject here
  * means the row can never succeed).
  */
-let replayInFlight = false;
+let replayInFlight: Promise<{ awardId: string; result: ExamResult }[]> | null = null;
 
 export function replayExamSubmissions(): Promise<{ awardId: string; result: ExamResult }[]> {
   // THE REPLAY MUST NOT BLOCK A NEW SUBMISSION (2026-09-17, pass 5).
@@ -562,11 +562,18 @@ export function replayExamSubmissions(): Promise<{ awardId: string; result: Exam
   // and takes the lock only for the WRITE at the end, which is the part that
   // actually races. A row queued mid-replay is then read by that final write
   // rather than overwritten by it.
-  if (replayInFlight) return Promise.resolve([]);
-  replayInFlight = true;
-  return replayExamSubmissionsLocked().finally(() => {
-    replayInFlight = false;
+  //
+  // A second caller JOINS the pass in flight (audit 2026-09-27): it used to get
+  // `[]` straight away, so an overlapping Dashboard load went on to fetch
+  // progress BEFORE the replayed exam had landed. It now waits for the pass,
+  // and still gets `[]` — the results belong to the caller that started it, and
+  // returning them twice would show "Offline exam submitted" twice.
+  if (replayInFlight) return replayInFlight.then(() => [], () => []);
+  const run = replayExamSubmissionsLocked().finally(() => {
+    replayInFlight = null;
   });
+  replayInFlight = run;
+  return run;
 }
 
 async function replayExamSubmissionsLocked(): Promise<{ awardId: string; result: ExamResult }[]> {

@@ -53,7 +53,11 @@ export function useEnrollmentProgress(gsList: number[]): Map<number, TopicProg> 
     let alive = true;
     (async () => {
       try {
-        const d = await fetchEnrollmentDashboard(gsList);
+        // allowMissingUser: this screen only DISPLAYS bars, merged with the
+        // device-local mirror below. A session with no users row must still
+        // show that local progress, not the empty map a throw would leave
+        // (fetchEnrollmentDashboard throws user_not_found for the Dashboard).
+        const d = await fetchEnrollmentDashboard(gsList, { allowMissingUser: true });
 
         // Merge the device-local progress mirror OVER the server rows for
         // DISPLAY, exactly like DashboardScreen — so work done offline / before
