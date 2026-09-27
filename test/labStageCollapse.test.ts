@@ -83,3 +83,13 @@ test('an open tray covers the well only — the dock stays live beneath it (owne
   assert.match(code, /styles\.trayLayer, \{ top: stageBlockH, bottom: dockH \+ bottom \}/, 'the tray layer no longer stops at the dock');
   assert.match(code, /trayParam \? null : <View style=\{styles\.filler\}/, 'the dock no longer drops to the bottom while a tray is open');
 });
+
+test('a working-surface tray (the console) takes the lane\'s height; every CONSOLE tray opts in (owner 2026-09-27)', () => {
+  assert.match(code, /bound && !\(trayParam\?\.kind === 'group' && trayParam\.hideLane\)/, 'the lane no longer steps aside for a hideLane tray');
+  for (const f of ['pagesBuild.tsx', 'pagesRoute.tsx']) {
+    const s = readFileSync(join(process.cwd(), 'src', 'screens', 'lab', 'soundsystems', f), 'utf8');
+    const consoles = s.match(/id: 'console',/g)?.length ?? 0;
+    const hidden = s.match(/id: 'console',\s*hideLane: true,/g)?.length ?? 0;
+    assert.equal(hidden, consoles, `${f}: a CONSOLE tray is missing hideLane`);
+  }
+});

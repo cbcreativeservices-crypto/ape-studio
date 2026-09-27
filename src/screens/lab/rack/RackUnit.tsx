@@ -226,7 +226,7 @@ export function RackUnit({
 
   const dockNode = (
     <View style={styles.dock}>
-      {bound ? (
+      {bound && !(trayParam?.kind === 'group' && trayParam.hideLane) ? (
         <ParamLane
           label={bound.label}
           value={bound.value}

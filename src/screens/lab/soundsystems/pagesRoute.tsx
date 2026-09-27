@@ -159,6 +159,7 @@ function PagePrePost({ ctx }: { ctx: PageCtx }) {
     {
       kind: 'group',
       id: 'console',
+      hideLane: true,
       label: 'CONSOLE',
       valueLabel: vox.mute ? 'MUTED' : 'Open',
       render: () => (
@@ -309,6 +310,7 @@ function PageMonitorMixes({ ctx }: { ctx: PageCtx }) {
     {
       kind: 'group',
       id: 'console',
+      hideLane: true,
       label: 'CONSOLE',
       // "ALL PRE" is a claim about sends that exist: with none yet it was
       // vacuously true and the key read ALL PRE on an empty desk.
@@ -381,6 +383,7 @@ function PageGroups({ ctx }: { ctx: PageCtx }) {
     {
       kind: 'group',
       id: 'console',
+      hideLane: true,
       label: 'CONSOLE',
       valueLabel: subgrouped ? 'GROUPED' : 'Open',
       render: () => (
@@ -550,6 +553,7 @@ function PageMatrices({ ctx }: { ctx: PageCtx }) {
     {
       kind: 'group',
       id: 'console',
+      hideLane: true,
       label: 'CONSOLE',
       valueLabel: 'Open',
       render: () => (

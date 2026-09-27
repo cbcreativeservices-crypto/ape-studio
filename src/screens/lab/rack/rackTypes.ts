@@ -150,6 +150,11 @@ export type DockParam =
        *  keep working because the lab renders its own chips. Always sticky. */
       render: () => ReactNode;
       helpKey?: string;
+      /** A WORKING-SURFACE tray (the Sound Systems console): while it is open
+       *  the fader lane steps aside so the tray gets that height; the dock
+       *  keys stay live (owner 2026-09-27: "hide the slider while the console
+       *  tray is open"). */
+      hideLane?: boolean;
     }
   | {
       kind: 'toggle';

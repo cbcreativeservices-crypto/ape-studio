@@ -368,6 +368,7 @@ function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
     ? {
         kind: 'group',
         id: 'console',
+        hideLane: true,
         label: 'CONSOLE',
         valueLabel: routeReqs.length ? `${routeMet}/${routeReqs.length}` : 'Open',
         render: () => (
