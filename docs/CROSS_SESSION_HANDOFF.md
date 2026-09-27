@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-27 12:36 · ccode · d94c6c57
+changed: Lab play buttons: no silent dead ▶ (Bass Guitar Lab report)
+affects other side: nothing — client JS only (lab audio gate/player) <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: nothing <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-27 12:08 · ccode · 33323fea
 changed: Dashboard: remember and follow the TOPIC, not its slot in the carousel
 affects other side: nothing — client JS only (study dashboard) <FILL — what A (backend) must re-read or adjust, or "nothing">
