@@ -676,3 +676,35 @@ process is running.
 - **The built-in pane throttles to ~3 fps and drops the emulated viewport between turns** — set
   `resize_window` at the start of every batch, and catch animations with several short-interval
   screenshots (or read a TEMP-DEBUG global via `javascript_tool`, then remove it).
+
+## 2026-09-27 — lessons from the dashboard deep-clean and the dead ▶ hunt
+
+- **When a button "does nothing", check whether the server ever saw it.** Supabase `query_logs`
+  (`function_edge_logs` / `edge_logs`, filter the user agent `ProAudio/<build> … Darwin/<ver>`)
+  proved the iPhone never called `lab-audio` — the fault was in the app before the fetch, not the
+  recordings. Ask the owner what ELSE is dead: "? and ⓘ dead too, everything else live" turned a
+  sound bug into a presentation bug (all three PRESENT something; iOS refused every presentation).
+- **`InteractionManager.runAfterInteractions` does not wait for react-native-screens' native push
+  animation.** A Modal presented from a screen's mount effect lands mid-push on iOS and can stick
+  half-presented and invisible; UIKit then refuses every later Modal or `presentation:'modal'`
+  screen. Wait for the stack's `transitionEnd` (with a fallback timer) before auto-presenting.
+- **A silent `resolve(false)` in a shared gate reads as a dead button everywhere.** The audio gate
+  refused a second request while one was open; it now joins the open request and re-presents.
+- **Track the TOPIC, not the slot.** An index into an alphabetical deck points at a different
+  topic after any enrol / LOAD / reorder — both the persisted "last topic" and the live `topicIdx`.
+  Save ids; when the list changes, find the id again.
+- **Overlapping loads need a ticket.** Focus reload + enrollment reload + one reload per study
+  flush all ran at once; the slowest won. Take `++ticketRef.current` at the start, bail before any
+  setState/cache write if superseded — and write caches only AFTER that check (a sign-out leaked
+  the previous account's dashboard through the cache).
+- **A focus param that can never resolve waits forever.** `focusGs` for a topic enrolled INACTIVE,
+  removed from the deck, or the lab-proxy gs3081 is never in the deck — fix the cause (switch it
+  on / restore it / never target it), don't just keep it armed.
+- **Self-opening popups on a screen that stays mounted under others must gate on
+  `useIsFocused()`** and on the screen's own popups being closed (the celebration opened over
+  Flashcards and stacked Modals on Android).
+- **Python on this box writes CRLF.** `open(p,'w')` flipped LF sources to CRLF and broke a
+  source-regex guard (`'\n}\n'`). Use `newline=''` or the Edit tool; check `git ls-files --eol`.
+- **React Navigation 7 joins a nested `'/topics/:slug'` onto its parent path** — the leading slash
+  does not make it absolute; `exact: true` does. Prove deep links with the installed
+  `getStateFromPath`, not by reading the config.
