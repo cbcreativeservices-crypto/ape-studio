@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-27 14:11 · ccode · 9e9a60c0
+changed: docs: 2026-09-27 handoff + engineering lessons
+affects other side: nothing — docs only <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: nothing <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-27 13:58 · ccode · 04df512a
 changed: Labs: ask for audio after the native push ends (dead ? / ⓘ / ▶ on iOS)
 affects other side: nothing — client JS only (lab entry audio prompt) <FILL — what A (backend) must re-read or adjust, or "nothing">
