@@ -195,6 +195,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-26 18:12 · ccode · 1a4b80cc
+changed: Cable Install art pass, review fixes: web console errors, 9-pt floor at 375, one misleading note
+affects other side: nothing — client JS only (Cable Install lab art)
+needs: nothing
+
 ### 2026-09-26 18:03 · ccode · af990c15
 changed: Cable Install art pass, Stage 13 (Final inspection): the facility drawn with real construction and real cable
 affects other side: nothing — client JS only (Cable Install lab art)
