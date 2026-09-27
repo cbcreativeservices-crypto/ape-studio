@@ -18,7 +18,7 @@
  */
 import { useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
-import { InteractionManager, LayoutAnimation, Platform, Pressable, ScrollView, StyleSheet, Text, UIManager, View } from 'react-native';
+import { LayoutAnimation, Platform, Pressable, ScrollView, StyleSheet, Text, UIManager, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
@@ -353,9 +353,34 @@ export function LabShell({
   // "already asking" (owner report, Bass Guitar Lab: "the play button does
   // not work"). The gate now also re-presents on such a tap; this removes the
   // cause.
+  //
+  // ⛔ AND "AFTER" MEANS THE NATIVE STACK'S transitionEnd (second report,
+  // same day: still dead after three restarts — and `?` and `ⓘ` dead with it,
+  // everything else live). All three PRESENT something (`ⓘ` a Modal, `?` the
+  // Help screen as `presentation: 'modal'`, ▶ the gate), so the pattern is
+  // iOS refusing every new presentation: the gate's entry popup, presented
+  // mid-push, stuck half-presented and invisible, and UIKit declines to present
+  // anything else while one presentation is still "in progress". The
+  // InteractionManager wait tried first does not see native-stack animations
+  // (react-native-screens runs them natively), so it fired mid-push anyway.
+  // transitionEnd is the real signal; the timer covers a screen with no push
+  // animation (the web harness, a restored state).
   useEffect(() => {
-    const task = InteractionManager.runAfterInteractions(() => void requestAudioOutput());
-    return () => task.cancel();
+    let done = false;
+    const ask = () => {
+      if (done) return;
+      done = true;
+      void requestAudioOutput();
+    };
+    const unsub = (navigation as any).addListener('transitionEnd', (e: { data?: { closing?: boolean } }) => {
+      if (!e?.data?.closing) setTimeout(ask, 120);
+    });
+    const fallback = setTimeout(ask, 1200);
+    return () => {
+      done = true;
+      clearTimeout(fallback);
+      unsub?.();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
