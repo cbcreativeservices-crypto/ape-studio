@@ -1,28 +1,42 @@
 /**
- * SystemMap — a live sound system drawn as a MAP with branches, the way a
- * system tech draws it: three lanes (stage · stage outputs · house), the
- * FOH path and the monitor path leaving the console separately, the
- * network return for a digital stagebox as a double dashed link. Signal-
- * present LEDs on every station chase with programme; a broken station
- * darkens everything downstream of it.
+ * SystemMap — a live sound system drawn as a one-line diagram, the way a
+ * system tech draws it: three COLUMNS (stage · console + racks · loudspeakers),
+ * each read top to bottom — the column's inputs at the top, its outputs at
+ * the bottom — and the hand-off from one column to the next drawn as a
+ * cable running ACROSS at the row where the signal passes on (owner,
+ * TestFlight 2026-09-28: "3 columns rather than 3 rows … horizontal cables
+ * showing at which point they pass signal on"). The FOH path and the monitor
+ * path leave the console separately; a digital stagebox's network link is a
+ * double dashed run. Signal-present LEDs on every station chase with
+ * programme; a broken station darkens everything downstream of it.
  *
- * Nodes are placed on a column/lane grid so the map reads at phone width:
- * five columns 67 apart, three lanes 78 apart in a 354 × 246 box. The box is
- * as wide as the phone's glass allows (aspect ≈ 1.44), so the map draws at
- * ~0.96 px per unit and every word on it — MAP_FS, 9.6 units — reads at
- * 9 pt or more (owner 2026-09-25). A cable's label is printed under the
- * station it FEEDS, in the cable's colour, rather than along the run: runs
- * between neighbouring stations are too short to carry a readable word.
- * The lane names run up the left edge, as a drawing's zone names do.
+ * Routing rules (every cable is orthogonal — a drawing, not a doodle):
+ *   · station → the station directly below it: a straight drop.
+ *   · station → a station further down its own column (a console's aux
+ *     sends past the FOH rack, three sources into one stagebox): the cable
+ *     leaves the bottom, runs down a trunk beside the column and turns back
+ *     in at the top of the station it feeds — nearer feeds on the inner lane,
+ *     so trunks never cross.
+ *   · station → the next column: leaves the right edge, and when the rows
+ *     differ it jogs up or down in the gutter — the farther feed on the inner
+ *     lane, so gutters never cross either.
+ *   · every cable ends in an arrowhead at the station it feeds; a two-way
+ *     link (the network, the snake's returns) carries one at each end.
  *
- * Pure react-native-svg; LEDs and flow animate through Reanimated shared
- * values (primitive props only), and collapse to a steady state under
- * reduced motion.
+ * The box is 354 × 240 (aspect 1.475) so it fills a phone's glass edge to
+ * edge and draws at ~0.97 px per unit; MAP_FS is 10 units, so every word on
+ * it reads at 9 pt or more inline (owner 2026-09-25) and FULL SCREEN zooms
+ * the same drawing. A cable's label (MAIN L/R, AUX 1 · PRE, NETWORK) is
+ * printed in the card of the station it FEEDS, in the cable's colour, and a
+ * probed station's reading takes the same line.
+ *
+ * Pure react-native-svg; LEDs animate through Reanimated shared values
+ * (primitive props only) and collapse to a steady state under reduced motion.
  */
 import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Animated, { useAnimatedProps, type SharedValue } from 'react-native-reanimated';
-import Svg, { Circle, G, Line, Path, Polygon, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, G, Path, Polygon, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { SignalLevel } from '../../../../features/soundsystems/types';
 import { GearInSvg, INK, type GlyphKind } from './gearArt';
@@ -37,12 +51,12 @@ export type MapNode = {
   id: string;
   kind: GlyphKind;
   label: string;
-  /** 0 = stage lane (top), 1 = stage outputs, 2 = house (bottom). */
-  lane: 0 | 1 | 2;
-  /** 0..4 across. Fractional columns are fine (a node between two). */
-  col: number;
+  /** 0 = STAGE (left), 1 = CONSOLE · RACKS (middle), 2 = LOUDSPEAKERS (right). */
+  col: 0 | 1 | 2;
+  /** 0 at the top of the column (its inputs) … 4 at the bottom (its outputs). */
+  row: number;
   state?: MapState;
-  /** A short reading under the label. */
+  /** A short reading printed in the card (a probe's result). */
   value?: string;
   /** Not reached by signal (downstream of a break) — LEDs dark. */
   dark?: boolean;
@@ -58,26 +72,42 @@ export type MapEdge = {
   dashed?: boolean;
   /** Drawn dark: the signal does not pass here. */
   dead?: boolean;
-  /** Edge label at the midpoint. */
+  /** The cable's name, printed in the card of the station it feeds. */
   label?: string;
 };
 
 export const MAP_W = 354;
-const COLS = [47, 113.25, 179.5, 245.75, 312];
-const LANES = [44, 122, 200];
-export const MAP_H = 246;
-/** Every word on the map, in map units (× ~0.96 on a phone = 9.2 pt). */
-const MAP_FS = 9.6;
-/** Station ring radius and the glyph inside it. */
-const RING = 21;
-const GLYPH = 30;
+export const MAP_H = 240;
+/** Every word on the map, in map units (× ~0.97 on a phone ≥ 9.3 pt). */
+const MAP_FS = 10;
+/** Card geometry: three columns of 90-wide cards, 24-unit gutters for the
+ *  cross cables, 18-unit margins for the outer trunks. */
+const CW = 90;
+const CH = 32;
+const GUT = 24;
+const MARGIN = 18;
+const COL_X = [MARGIN, MARGIN + CW + GUT, MARGIN + 2 * (CW + GUT)];
+const ROW_Y0 = 20;
+const ROW_PITCH = 44;
+const ROWS = 5;
+const GLYPH = 22;
+/** Lane spacing for parallel trunks / jogs. */
+const LANE = 5;
 
-export function mapXY(n: { lane: 0 | 1 | 2; col: number }): { x: number; y: number } {
-  const c = Math.max(0, Math.min(4, n.col));
-  const i = Math.floor(c);
-  const f = c - i;
-  const x = i >= 4 ? COLS[4] : COLS[i] + (COLS[i + 1] - COLS[i]) * f;
-  return { x, y: LANES[n.lane] };
+type Box = { x0: number; y0: number; x1: number; y1: number; cx: number; cy: number; col: number; row: number };
+
+function nodeBox(n: { col: 0 | 1 | 2; row: number }): Box {
+  const col = Math.max(0, Math.min(2, n.col));
+  const row = Math.max(0, Math.min(ROWS - 1, n.row));
+  const x0 = COL_X[col];
+  const y0 = ROW_Y0 + row * ROW_PITCH;
+  return { x0, y0, x1: x0 + CW, y1: y0 + CH, cx: x0 + CW / 2, cy: y0 + CH / 2, col, row };
+}
+
+/** A station's centre, for anything that wants to point at it. */
+export function mapXY(n: { col: 0 | 1 | 2; row: number }): { x: number; y: number } {
+  const b = nodeBox(n);
+  return { x: b.cx, y: b.cy };
 }
 
 const STATE_COLOR: Record<MapState, string> = {
@@ -89,60 +119,77 @@ const STATE_COLOR: Record<MapState, string> = {
   unknown: '#3a3f4a',
 };
 
-/** How high a same-lane edge bows to clear the stations it passes over. */
-const BOW = 50;
+type Pt = { x: number; y: number };
 
-/** A straight run between two stations, leaving their rings clear. A run
- *  along one lane that would pass THROUGH another station bows over it
- *  instead — a straight line under a station would read as a chain the
- *  signal does not make. */
-function edgePath(a: { x: number; y: number }, b: { x: number; y: number }, offset = 0, bow = false): string {
-  const dx = b.x - a.x;
-  const dy = b.y - a.y;
-  const len = Math.max(1, Math.hypot(dx, dy));
-  const nx = -dy / len;
-  const ny = dx / len;
-  const r = RING;
-  if (bow) {
-    const ax = a.x + Math.sign(dx) * r * 0.7;
-    const ay = a.y - r * 0.7;
-    const bx = b.x - Math.sign(dx) * r * 0.7;
-    const by = b.y - r * 0.7;
-    return `M ${ax} ${ay} Q ${(ax + bx) / 2} ${a.y - BOW + offset} ${bx} ${by}`;
+/** The orthogonal route of one cable (see the header). `k` is the cable's
+ *  lane when it shares a trunk or a gutter with others. */
+function routeEdge(a: Box, b: Box, k: number): Pt[] {
+  if (a.col === b.col) {
+    if (b.row === a.row + 1) return [{ x: a.cx, y: a.y1 }, { x: b.cx, y: b.y0 }];
+    if (b.row === a.row - 1) return [{ x: a.cx, y: a.y0 }, { x: b.cx, y: b.y1 }];
+    if (b.row === a.row) return [{ x: a.cx, y: a.cy }, { x: b.cx, y: b.cy }];
+    // A trunk beside the column: the outer side (left for the stage and the
+    // racks, right for the loudspeakers — their left gutter is busy with the
+    // cables arriving from the racks).
+    const right = a.col === 2;
+    const exitX = right ? a.x1 - 8 : a.x0 + 8;
+    const lane = right ? a.x1 + 7 + LANE * k : a.x0 - 7 - LANE * k;
+    // Entries 9 apart so two arrowheads into one station stand clear.
+    const entryX = right ? b.x1 - 18 + 9 * k : b.x0 + 18 - 9 * k;
+    const turnY = b.y0 - 10 + 3 * k;
+    return [
+      { x: exitX, y: a.y1 },
+      { x: exitX, y: a.y1 + 6 },
+      { x: lane, y: a.y1 + 6 },
+      { x: lane, y: turnY },
+      { x: entryX, y: turnY },
+      { x: entryX, y: b.y0 },
+    ];
   }
-  const ax = a.x + (dx / len) * r + nx * offset;
-  const ay = a.y + (dy / len) * r + ny * offset;
-  const bx = b.x - (dx / len) * r + nx * offset;
-  const by = b.y - (dy / len) * r + ny * offset;
-  return `M ${ax} ${ay} L ${bx} ${by}`;
+  if (b.col > a.col) {
+    if (b.row === a.row) return [{ x: a.x1, y: a.cy }, { x: b.x0, y: b.cy }];
+    const lane = a.x1 + 5 + LANE * k;
+    return [{ x: a.x1, y: a.cy }, { x: lane, y: a.cy }, { x: lane, y: b.cy }, { x: b.x0, y: b.cy }];
+  }
+  if (b.row === a.row) return [{ x: a.x0, y: a.cy }, { x: b.x1, y: b.cy }];
+  const lane = a.x0 - 5 - LANE * k;
+  return [{ x: a.x0, y: a.cy }, { x: lane, y: a.cy }, { x: lane, y: b.cy }, { x: b.x1, y: b.cy }];
 }
 
-/** The chevron's anchor and direction: the midpoint of a straight run, or
- *  the crown of a bow. */
-function edgeMid(a: { x: number; y: number }, b: { x: number; y: number }, bow: boolean): { x: number; y: number; ux: number; uy: number } {
-  if (bow) return { x: (a.x + b.x) / 2, y: a.y - (BOW + 17) / 2, ux: Math.sign(b.x - a.x), uy: 0 };
-  const dx = b.x - a.x;
-  const dy = b.y - a.y;
+/** The same orthogonal polyline shifted `d` units (horizontals down,
+ *  verticals right) — the second line of a two-way link. */
+function offsetPoly(pts: Pt[], d: number): Pt[] {
+  const n = pts.length;
+  if (n < 2) return pts;
+  const horiz = (i: number) => Math.abs(pts[i + 1].y - pts[i].y) < 1e-6;
+  const out: Pt[] = [];
+  for (let i = 0; i < n; i++) {
+    const prev = i > 0 ? horiz(i - 1) : undefined;
+    const next = i < n - 1 ? horiz(i) : undefined;
+    const h = prev === undefined ? next : prev;
+    if (prev !== undefined && next !== undefined && prev !== next) out.push({ x: pts[i].x + d, y: pts[i].y + d });
+    else out.push(h ? { x: pts[i].x, y: pts[i].y + d } : { x: pts[i].x + d, y: pts[i].y });
+  }
+  return out;
+}
+
+const polyPath = (pts: Pt[]) => pts.map((p, i) => `${i ? 'L' : 'M'} ${p.x} ${p.y}`).join(' ');
+
+/** The arrowhead: its tip ON the station's edge, pointing along the cable's
+ *  last run. Wider than the run and edged in the map's dark, so it reads as
+ *  an arrow rather than a thickening of the line (owner 2026-09-25). */
+function chevron(tipAt: Pt, from: Pt, color: string, key: string) {
+  const dx = tipAt.x - from.x;
+  const dy = tipAt.y - from.y;
   const len = Math.max(1, Math.hypot(dx, dy));
-  return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, ux: dx / len, uy: dy / len };
-}
-
-/** The arrowhead. Wider than the run it sits on and edged in the map's
- *  dark, so it reads as an arrow rather than a thickening of the line (owner
- *  2026-09-25, on the phone: "the green lines are too thick and don't allow
- *  the arrows to be seen"). */
-function chevron(m: { x: number; y: number; ux: number; uy: number }, color: string, both?: boolean) {
-  const { ux, uy } = m;
-  const L = 7.5; // tip to base
-  const W = 4.2; // half-width at the base
-  const tip = (px: number, py: number, s: number) =>
-    `${px + ux * L * 0.55 * s},${py + uy * L * 0.55 * s} ${px - ux * L * 0.45 * s - uy * W},${py - uy * L * 0.45 * s + ux * W} ${px - ux * L * 0.45 * s + uy * W},${py - uy * L * 0.45 * s - ux * W}`;
-  return (
-    <>
-      <Polygon points={tip(m.x, m.y, 1)} fill={color} stroke="#05060a" strokeWidth={0.9} strokeLinejoin="round" />
-      {both ? <Polygon points={tip(m.x - ux * 14, m.y - uy * 14, -1)} fill={color} stroke="#05060a" strokeWidth={0.9} strokeLinejoin="round" /> : null}
-    </>
-  );
+  const ux = dx / len;
+  const uy = dy / len;
+  const L = 7.5;
+  const W = 4.2;
+  const bx = tipAt.x - ux * L;
+  const by = tipAt.y - uy * L;
+  const pts = `${tipAt.x},${tipAt.y} ${bx - uy * W},${by + ux * W} ${bx + uy * W},${by - ux * W}`;
+  return <Polygon key={key} points={pts} fill={color} stroke="#05060a" strokeWidth={0.9} strokeLinejoin="round" />;
 }
 
 function Led({ x, y, state, dark, programme }: { x: number; y: number; state: MapState; dark: boolean; programme: SharedValue<number> }) {
@@ -163,74 +210,98 @@ function Led({ x, y, state, dark, programme }: { x: number; y: number; state: Ma
   );
 }
 
-export function SystemMap({ nodes, edges, selectedId, onTap, a11y, running = true, laneLabels }: { nodes: readonly MapNode[]; edges: readonly MapEdge[]; selectedId?: string | null; onTap?: (id: string) => void; a11y: string; running?: boolean; laneLabels?: readonly [string, string, string] }) {
+export function SystemMap({ nodes, edges, selectedId, onTap, a11y, running = true, columnLabels }: { nodes: readonly MapNode[]; edges: readonly MapEdge[]; selectedId?: string | null; onTap?: (id: string) => void; a11y: string; running?: boolean; columnLabels?: readonly [string, string, string] }) {
   const programme = useProgrammeLevel(running);
-  const pos = useMemo(() => new Map(nodes.map((n) => [n.id, mapXY(n)])), [nodes]);
-  const lanes = laneLabels ?? ['STAGE', 'CONSOLE · RACKS', 'LOUDSPEAKERS'];
-  /** Does a straight run along the lane from a to b pass under another station? */
-  const blocked = (a: { x: number; y: number }, b: { x: number; y: number }) =>
-    Math.abs(a.y - b.y) < 1 && [...pos.values()].some((q) => Math.abs(q.y - a.y) < 1 && q.x > Math.min(a.x, b.x) + 1 && q.x < Math.max(a.x, b.x) - 1);
-  /** A cable's label, printed under the station it feeds (see the header). */
+  const box = useMemo(() => new Map(nodes.map((n) => [n.id, nodeBox(n)])), [nodes]);
+  const cols = columnLabels ?? ['STAGE', 'CONSOLE · RACKS', 'LOUDSPEAKERS'];
+  /** Lane per cable that shares a trunk or a gutter (see routeEdge). */
+  const lanes = useMemo(() => {
+    const groups = new Map<string, { i: number; len: number }[]>();
+    edges.forEach((e, i) => {
+      const a = box.get(e.from);
+      const b = box.get(e.to);
+      if (!a || !b) return;
+      const len = Math.abs(b.row - a.row);
+      if (a.col === b.col) {
+        if (len > 1) (groups.get(`t${a.col}`) ?? groups.set(`t${a.col}`, []).get(`t${a.col}`)!).push({ i, len });
+      } else if (len > 0) {
+        const g = `g${Math.min(a.col, b.col)}`;
+        (groups.get(g) ?? groups.set(g, []).get(g)!).push({ i, len });
+      }
+    });
+    const out = new Map<number, number>();
+    for (const [g, list] of groups) {
+      // A trunk: the nearer feed takes the inner lane. A gutter jog: the
+      // farther feed does — either way the runs nest and never cross.
+      list.sort((p, q) => (g.startsWith('t') ? p.len - q.len : q.len - p.len));
+      list.forEach((it, k) => out.set(it.i, k));
+    }
+    return out;
+  }, [edges, box]);
+  /** A cable's label, printed in the card of the station it feeds. */
   const feedTag = new Map<string, { text: string; color: string }>();
   for (const e of edges) if (e.label && !feedTag.has(e.to)) feedTag.set(e.to, { text: e.label, color: e.level === 'air' ? '#8a8b93' : CABLE_COLORS[e.level] });
   return (
     <View style={styles.wrap} accessible accessibilityRole="image" accessibilityLabel={a11y}>
       <Svg width="100%" viewBox={`0 0 ${MAP_W} ${MAP_H}`} style={{ aspectRatio: MAP_W / MAP_H }}>
         <Rect x={0} y={0} width={MAP_W} height={MAP_H} rx={12} fill="#0e1015" stroke={colors.hairline} strokeWidth={0.8} />
-        {/* lanes: a divider between each pair, the name up the left edge */}
-        {LANES.map((y, i) => (
+        {/* the three columns: a faint zone each, its name across the top */}
+        {COL_X.map((x0, i) => (
           <G key={i}>
-            {i < LANES.length - 1 ? <Line x1={16} y1={y + 49} x2={MAP_W - 8} y2={y + 49} stroke="#1c1f27" strokeWidth={0.8} /> : null}
-            <SvgText x={12} y={y + 10} fontSize={MAP_FS} fill="#5a606c" fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={0.5} transform={`rotate(-90 12 ${y + 10})`}>
-              {lanes[i]}
+            <Rect x={x0 - 3} y={16} width={CW + 6} height={MAP_H - 22} rx={6} fill="#111419" stroke="#1a1d25" strokeWidth={0.8} />
+            <SvgText x={x0 + CW / 2} y={11.5} fontSize={MAP_FS} fill="#6a707c" fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1}>
+              {cols[i]}
             </SvgText>
           </G>
         ))}
-        {/* edges */}
+        {/* cables */}
         {edges.map((e, i) => {
-          const a = pos.get(e.from);
-          const b = pos.get(e.to);
+          const a = box.get(e.from);
+          const b = box.get(e.to);
           if (!a || !b) return null;
           const color = e.level === 'air' ? '#8a8b93' : CABLE_COLORS[e.level];
-          const bow = blocked(a, b);
-          const d = edgePath(a, b, 0, bow);
-          const d2 = e.both ? edgePath(a, b, 3, bow) : null;
-          const mid = edgeMid(a, b, bow);
+          const pts = routeEdge(a, b, lanes.get(i) ?? 0);
+          const d = polyPath(pts);
+          const pts2 = e.both ? offsetPoly(pts, 3) : null;
+          const d2 = pts2 ? polyPath(pts2) : null;
           const dead = !!e.dead;
+          const dash = e.dashed || e.level === 'wireless' ? '3 4' : dead ? '2 4' : undefined;
           return (
             <G key={i} opacity={dead ? 0.3 : 1}>
               {/* Runs are drawn thin (a cable, not a pipe) so the arrowhead
                   stands clear of them — owner 2026-09-25. */}
               <Path d={d} stroke="#05060a" strokeWidth={2.8} fill="none" strokeLinecap="round" strokeLinejoin="round" />
-              <Path d={d} stroke={color} strokeWidth={e.both ? 1.1 : 1.3} fill="none" strokeLinecap="round" strokeLinejoin="round" strokeDasharray={e.dashed || e.level === 'wireless' ? '3 4' : dead ? '2 4' : undefined} />
-              {d2 ? <Path d={d2} stroke={color} strokeWidth={1.1} fill="none" strokeLinecap="round" strokeDasharray="3 4" /> : null}
+              {d2 ? <Path d={d2} stroke="#05060a" strokeWidth={2.8} fill="none" strokeLinecap="round" strokeLinejoin="round" /> : null}
+              <Path d={d} stroke={color} strokeWidth={e.both ? 1.1 : 1.3} fill="none" strokeLinecap="round" strokeLinejoin="round" strokeDasharray={dash} />
+              {d2 ? <Path d={d2} stroke={color} strokeWidth={1.1} fill="none" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="3 4" /> : null}
               {e.level === 'air' ? <Path d={d} stroke="#fff" strokeWidth={0.5} fill="none" opacity={0.25} strokeDasharray="1 3" /> : null}
-              {chevron(mid, color, e.both)}
+              {chevron(pts[pts.length - 1], pts[pts.length - 2], color, 'fwd')}
+              {pts2 ? chevron(pts2[0], pts2[1], color, 'back') : null}
             </G>
           );
         })}
-        {/* nodes */}
+        {/* stations */}
         {nodes.map((n) => {
-          const { x, y } = pos.get(n.id)!;
+          const bx = box.get(n.id)!;
           const sel = selectedId === n.id;
           const state = n.state ?? 'ok';
           const ring = state === 'unknown' ? '#3a3f4a' : STATE_COLOR[state];
           const tag = n.value ? { text: n.value, color: ring } : feedTag.get(n.id);
+          const lines = cardLines(mapLabel(n.label), tag?.text);
+          const textX = bx.x0 + 26;
+          const baseY = lines.length === 1 ? [bx.cy + 3.5] : lines.length === 2 ? [bx.y0 + 12.5, bx.y0 + 24.5] : [bx.y0 + 10.2, bx.y0 + 20.2, bx.y0 + 30.2];
           return (
             <G key={n.id}>
-              <Circle cx={x} cy={y} r={RING} fill="#13161d" stroke={sel ? colors.cyanBright : ring} strokeWidth={sel ? 2 : 1.1} opacity={n.dark ? 0.6 : 1} />
-              {state !== 'ok' && state !== 'unknown' ? <Circle cx={x} cy={y} r={RING} fill={ring} opacity={0.1} /> : null}
-              <GearInSvg kind={n.kind} id={`sm-${n.id}`} x={x} y={y} size={GLYPH} dim={!!n.dark || state === 'none'} power={n.dark || state === 'none' ? 'off' : 'on'} />
-              <Led x={x + 15} y={y - 15} state={state} dark={!!n.dark} programme={programme} />
-              <SvgText x={x} y={y + 31} fontSize={MAP_FS} fill={sel ? colors.cyanBright : colors.textSecondary} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={0.3}>
-                {mapLabel(n.label)}
-              </SvgText>
-              {tag
-                ? tagLines(tag.text, !!n.value && n.lane < 2).map((line, k) => (
-                    <SvgText key={k} x={x} y={y + 42.5 + k * 10.5} fontSize={MAP_FS} fill={tag.color} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={0.3}>{line}</SvgText>
-                  ))
-                : null}
-              {onTap ? <Circle cx={x} cy={y + 6} r={30} fill="transparent" onPress={() => onTap(n.id)} accessibilityLabel={`${n.label}${state === 'unknown' ? ', not probed — tap to probe' : `, reads ${state === 'ok' ? 'healthy' : state === 'none' ? 'no signal' : state}`}${n.value ? `, ${n.value}` : ''}${sel ? ', selected' : ''}`} /> : null}
+              <Rect x={bx.x0} y={bx.y0} width={CW} height={CH} rx={5} fill="#13161d" stroke={sel ? colors.cyanBright : ring} strokeWidth={sel ? 2 : 1.1} opacity={n.dark ? 0.6 : 1} />
+              {state !== 'ok' && state !== 'unknown' ? <Rect x={bx.x0} y={bx.y0} width={CW} height={CH} rx={5} fill={ring} opacity={0.1} /> : null}
+              <GearInSvg kind={n.kind} id={`sm-${n.id}`} x={bx.x0 + 13} y={bx.cy + 1} size={GLYPH} dim={!!n.dark || state === 'none'} power={n.dark || state === 'none' ? 'off' : 'on'} />
+              <Led x={bx.x0 + 1} y={bx.y0 + 1} state={state} dark={!!n.dark} programme={programme} />
+              {lines.map((line, k) => (
+                <SvgText key={k} x={textX} y={baseY[k]} fontSize={MAP_FS} fill={line.tag ? tag!.color : sel ? colors.cyanBright : colors.textSecondary} fontFamily={fonts.oswaldMedium} textAnchor="start" letterSpacing={line.tag ? 0 : 0.3}>
+                  {line.text}
+                </SvgText>
+              ))}
+              {onTap ? <Rect x={bx.x0 - 3} y={bx.y0 - 4} width={CW + 6} height={CH + 8} fill="transparent" onPress={() => onTap(n.id)} accessibilityLabel={`${n.label}${state === 'unknown' ? ', not probed — tap to probe' : `, reads ${state === 'ok' ? 'healthy' : state === 'none' ? 'no signal' : state}`}${n.value ? `, ${n.value}` : ''}${sel ? ', selected' : ''}`} /> : null}
             </G>
           );
         })}
@@ -239,13 +310,15 @@ export function SystemMap({ nodes, edges, selectedId, onTap, a11y, running = tru
   );
 }
 
-/** A reading wider than a column (WRONG CONTENT is ~68 units against a
- *  66-unit column) breaks onto a second line under its station, so it can
- *  never run into its neighbour's. Only above the bottom lane, which has
- *  room below it; the bottom lane's two stations stand far apart. */
-function tagLines(text: string, mayWrap: boolean): string[] {
-  const cut = text.indexOf(' ');
-  return mayWrap && text.length > 12 && cut > 0 ? [text.slice(0, cut), text.slice(cut + 1)] : [text];
+/** The text lines of a card: the station's name (broken onto two lines when
+ *  it is wider than the card's text area — POWERED CABINET), then the cable
+ *  name or the reading, in its own colour. Three lines at most. */
+function cardLines(label: string, tag?: string): { text: string; tag: boolean }[] {
+  const cut = label.indexOf(' ');
+  const nameLines = label.length > 12 && cut > 0 ? [label.slice(0, cut), label.slice(cut + 1)] : [label];
+  const out = nameLines.map((text) => ({ text, tag: false }));
+  if (tag) out.push({ text: tag, tag: true });
+  return out;
 }
 
 /** A station's name as the map prints it: upper case, without a
@@ -281,31 +354,35 @@ export function ReadingKey() {
 
 export type MapVariant = { input: 'snake' | 'stagebox'; house: 'passive' | 'powered' };
 
-/** Chapter 1's map: three sources into the stage input, the console, the
- *  FOH path (in one of two builds) and the monitor path. */
+/** Chapter 1's map: three sources into the stage input (the STAGE column's
+ *  output, at its foot), across to the console at the head of the racks
+ *  column, the FOH path down through processing and amplification (or
+ *  straight across to powered boxes), the monitor path down to the monitor
+ *  amp and the IEM transmitter, and every loudspeaker on its own cable in the
+ *  third column — nothing daisy-chained. */
 export function chapterOneMap(v: MapVariant): { nodes: MapNode[]; edges: MapEdge[] } {
   const stagebox = v.input === 'stagebox';
   const nodes: MapNode[] = [
-    { id: 'mic', kind: 'vocalMic', label: 'Vocal mic', lane: 0, col: 0 },
-    { id: 'di', kind: 'di', label: 'Bass → DI', lane: 0, col: 1 },
-    { id: 'pb', kind: 'playback', label: 'Playback', lane: 0, col: 2 },
-    { id: 'box', kind: stagebox ? 'stagebox' : 'snake', label: stagebox ? 'Stagebox' : 'Snake', lane: 0, col: 3.5 },
-    { id: 'con', kind: 'console', label: 'Console', lane: 1, col: 2.1 },
+    { id: 'mic', kind: 'vocalMic', label: 'Vocal mic', col: 0, row: 0 },
+    { id: 'di', kind: 'di', label: 'Bass → DI', col: 0, row: 1 },
+    { id: 'pb', kind: 'playback', label: 'Playback', col: 0, row: 2 },
+    { id: 'box', kind: stagebox ? 'stagebox' : 'snake', label: stagebox ? 'Stagebox' : 'Snake', col: 0, row: 3 },
+    { id: 'con', kind: 'console', label: 'Console', col: 1, row: 0 },
     ...(v.house === 'passive'
       ? [
-          { id: 'proc', kind: 'processor', label: 'Processor', lane: 1, col: 3.15 } as MapNode,
-          { id: 'amp', kind: 'amp', label: 'Amps', lane: 1, col: 4 } as MapNode,
-          { id: 'top', kind: 'passiveSpeaker', label: 'Tops', lane: 2, col: 3 } as MapNode,
-          { id: 'sub', kind: 'passiveSub', label: 'Subs', lane: 2, col: 4 } as MapNode,
+          { id: 'proc', kind: 'processor', label: 'Processor', col: 1, row: 1 } as MapNode,
+          { id: 'amp', kind: 'amp', label: 'Amps', col: 1, row: 2 } as MapNode,
+          { id: 'top', kind: 'passiveSpeaker', label: 'Tops', col: 2, row: 1 } as MapNode,
+          { id: 'sub', kind: 'passiveSub', label: 'Subs', col: 2, row: 2 } as MapNode,
         ]
       : [
-          { id: 'top', kind: 'poweredSpeaker', label: 'Powered tops', lane: 2, col: 3 } as MapNode,
-          { id: 'sub', kind: 'poweredSub', label: 'Powered sub', lane: 2, col: 4 } as MapNode,
+          { id: 'top', kind: 'poweredSpeaker', label: 'Powered tops', col: 2, row: 1 } as MapNode,
+          { id: 'sub', kind: 'poweredSub', label: 'Powered sub', col: 2, row: 2 } as MapNode,
         ]),
-    { id: 'iemtx', kind: 'iemTx', label: 'IEM TX', lane: 1, col: 0 },
-    { id: 'mamp', kind: 'amp', label: 'Monitor amp', lane: 1, col: 1 },
-    { id: 'wedge', kind: 'wedge', label: 'Wedge', lane: 2, col: 0.5 },
-    { id: 'ear', kind: 'listener', label: 'Listener', lane: 2, col: 2 },
+    { id: 'mamp', kind: 'amp', label: 'Monitor amp', col: 1, row: 3 },
+    { id: 'iemtx', kind: 'iemTx', label: 'IEM TX', col: 1, row: 4 },
+    { id: 'wedge', kind: 'wedge', label: 'Wedge', col: 2, row: 3 },
+    { id: 'ear', kind: 'listener', label: 'Listener', col: 2, row: 4 },
   ];
   const inLevel: SignalLevel = 'mic';
   const edges: MapEdge[] = [
@@ -328,6 +405,7 @@ export function chapterOneMap(v: MapVariant): { nodes: MapNode[]; edges: MapEdge
     { from: 'mamp', to: 'wedge', level: 'speaker' },
     { from: 'con', to: 'iemtx', level: 'line', label: 'AUX 2 · STEREO' },
     { from: 'top', to: 'ear', level: 'air' },
+    { from: 'sub', to: 'ear', level: 'air' },
   ];
   return { nodes, edges };
 }
@@ -339,15 +417,15 @@ export function benchMap(labels: Partial<Record<string, string>>, kinds: Partial
   const L = (id: string, d: string) => labels[id] ?? d;
   const K = (id: string, d: GlyphKind) => kinds[id] ?? d;
   const nodes: MapNode[] = [
-    { id: 'source', kind: K('source', 'vocalMic'), label: L('source', 'Source'), lane: 0, col: 0 },
-    { id: 'cable', kind: K('cable', 'snake'), label: L('cable', 'Cable'), lane: 0, col: 1 },
-    { id: 'stagebox', kind: K('stagebox', 'stagebox'), label: L('stagebox', 'Stage input'), lane: 0, col: 2 },
-    { id: 'consoleIn', kind: 'console', label: L('consoleIn', 'Console IN'), lane: 1, col: 1 },
-    { id: 'consoleOut', kind: 'console', label: L('consoleOut', 'Console OUT'), lane: 1, col: 2 },
-    { id: 'processor', kind: K('processor', 'processor'), label: L('processor', 'Processor'), lane: 1, col: 3 },
-    { id: 'amp', kind: K('amp', 'amp'), label: L('amp', 'Amplifier'), lane: 1, col: 4 },
-    { id: 'speaker', kind: K('speaker', 'passiveSpeaker'), label: L('speaker', 'Loudspeaker'), lane: 2, col: 3.5 },
-    { id: 'listener', kind: K('listener', 'listener'), label: L('listener', 'Listener'), lane: 2, col: 2.2 },
+    { id: 'source', kind: K('source', 'vocalMic'), label: L('source', 'Source'), col: 0, row: 0 },
+    { id: 'cable', kind: K('cable', 'snake'), label: L('cable', 'Cable'), col: 0, row: 1 },
+    { id: 'stagebox', kind: K('stagebox', 'stagebox'), label: L('stagebox', 'Stage input'), col: 0, row: 2 },
+    { id: 'consoleIn', kind: 'console', label: L('consoleIn', 'Console IN'), col: 1, row: 0 },
+    { id: 'consoleOut', kind: 'console', label: L('consoleOut', 'Console OUT'), col: 1, row: 1 },
+    { id: 'processor', kind: K('processor', 'processor'), label: L('processor', 'Processor'), col: 1, row: 2 },
+    { id: 'amp', kind: K('amp', 'amp'), label: L('amp', 'Amplifier'), col: 1, row: 3 },
+    { id: 'speaker', kind: K('speaker', 'passiveSpeaker'), label: L('speaker', 'Loudspeaker'), col: 2, row: 3 },
+    { id: 'listener', kind: K('listener', 'listener'), label: L('listener', 'Listener'), col: 2, row: 4 },
   ];
   const edges: MapEdge[] = [
     { from: 'source', to: 'cable', level: 'mic' },

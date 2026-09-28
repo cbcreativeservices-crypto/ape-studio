@@ -60,7 +60,7 @@ function PageSystem({ ctx }: { ctx: PageCtx }) {
   const latched = useVisitGoals(ctx, goals);
   const node = sel ? map.nodes.find((n) => n.id === sel) : undefined;
   const spec = node && node.kind !== 'listener' ? gearSpec(node.kind) : null;
-  const a11y = `The system map: a vocal microphone, a bass through a DI and playback into the ${v.input === 'snake' ? 'analog snake' : 'digital stagebox'}, then the console. ${v.house === 'passive' ? 'The main mix goes to the processor, the amplifiers, then passive tops and subs.' : 'The main mix goes straight to powered tops, and the sub takes its own console output.'} A pre-fader aux feeds the monitor amplifier and a wedge; a stereo aux feeds the in-ear transmitter. The tops reach the listener through the air. Tap any station.`;
+  const a11y = `The system map, three columns read top to bottom. Stage: a vocal microphone, a bass through a DI and playback into the ${v.input === 'snake' ? 'analog snake' : 'digital stagebox'}, which crosses to the console at the head of the racks column. ${v.house === 'passive' ? 'The main mix goes to the processor, the amplifiers, then passive tops and subs.' : 'The main mix goes straight to powered tops, and the sub takes its own console output.'} A pre-fader aux feeds the monitor amplifier and a wedge; a stereo aux feeds the in-ear transmitter. The tops reach the listener through the air. Tap any station.`;
   const params: DockParam[] = [
     flipFader({
       id: 'station',
@@ -148,7 +148,7 @@ function PageSystem({ ctx }: { ctx: PageCtx }) {
       wellTop={inspect}
     >
       <ChapterTag n={1}>UNDERSTANDING THE COMPLETE PA SYSTEM</ChapterTag>
-      <Body>A live sound reinforcement system as a system technician draws it: sources on the stage lane, the stage input carrying them to the console at front of house, the house path and the monitor path leaving the console separately.</Body>
+      <Body>A live sound reinforcement system as a system technician draws it: three columns — STAGE, CONSOLE · RACKS, LOUDSPEAKERS — each read top to bottom, its inputs at the top and its outputs at the bottom. The cables running across are the hand-offs: the stage input carrying every source to the console, the house path and the monitor path leaving the console separately, each loudspeaker on its own cable.</Body>
       <Prompt>Tap any station. Where does its signal come from — and where does it go next?</Prompt>
       <GoalChips goals={goals} latched={latched} />
       <Card>
