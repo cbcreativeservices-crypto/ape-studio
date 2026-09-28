@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-28 08:04 · ccode · e06628f3
+changed: Cable Install Stage 9: redraw the deck as a real stage plot
+affects other side: nothing — client JS only (cable lab art)
+needs: nothing — client JS only (cable lab art)
+
+
 ### 2026-09-28 07:39 · ccode · cf417014
 changed: Cable Install Stage 6: redraw the rack as a textbook rear elevation
 affects other side: nothing — client JS only (cable lab art)
