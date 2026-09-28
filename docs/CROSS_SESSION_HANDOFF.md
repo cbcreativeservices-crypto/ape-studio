@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-27 21:15 · ccode · 80e83d86
+changed: Labs: TEMP touch probe (triple-tap the lab title) for the dead ?/ⓘ/▶ on iOS
+affects other side: nothing — client JS only (temp lab touch probe) <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: nothing <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-27 14:11 · ccode · 9e9a60c0
 changed: docs: 2026-09-27 handoff + engineering lessons
 affects other side: nothing — docs only <FILL — what A (backend) must re-read or adjust, or "nothing">
