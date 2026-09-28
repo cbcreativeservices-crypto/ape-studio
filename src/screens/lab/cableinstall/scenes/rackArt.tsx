@@ -353,7 +353,7 @@ export function Amplifier({ dress }: { dress: boolean }) {
         <PanelJack key={cx} x={cx} y={AMP.nl4Y} k={RK * 0.86} kind="xlrF" />
       ))}
       <IecInlet x={128} y={y + 50} />
-      <Silk x={145} y={y + 58.6} text="AC IN" />
+      <Silk x={148} y={y + 58.6} text="AC IN" />
       {/* the 120 mm fan behind its punched grille — front-to-rear airflow, so
           this is the EXHAUST */}
       <VentField x={g.x} y={g.y} w={g.w} h={g.h} k={RK} />
