@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-28 10:15 · ccode · 8c45a492
+changed: Cable lab: the amp's rear grille is its exhaust everywhere (Stage 13 ins-12 matched Stage 6)
+affects other side: nothing — client JS only (cable lab text) <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: nothing <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-28 10:11 · ccode · 4ea1d9a2
 changed: Cable Install Stage 6: AC IN silk clear of the amp's seated cord
 affects other side: nothing — client JS only (cable lab art)
@@ -227,8 +233,8 @@ needs: nothing
 
 ### 2026-09-28 08:11 · ccode · f4bf2402
 changed: Labs probe round 3: playback trail (gate, fetch, player status, errors) + ?/ⓘ presses
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (temp lab touch probe) <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: nothing <FILL — what you need from A, or "nothing">
 
 
 ### 2026-09-28 08:05 · ccode · d9487d01
