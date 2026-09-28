@@ -353,7 +353,33 @@ export function LabShell({
   // them. "last touch" moving but "down" not = something covers the buttons
   // INSIDE this screen; neither moving = something covers it from outside.
   const [probeOn, setProbeOn] = useState(false);
-  const [probe, setProbe] = useState({ last: '—', down: 0, up: 0 });
+  const [probe, setProbe] = useState({ last: '—', down: 0, up: 0, hits: '—', frames: '' });
+  // Round 2 (owner: "last touch 338,74 · down 0 / up 0" — the touch reached
+  // this screen but not the top-right group). WHO took it: every container
+  // below stamps a letter as the touch bubbles (O root · H header · T title ·
+  // B buttons · M tabs · R rack). WHERE the group really is: its window frame,
+  // since iOS will not deliver a touch outside a view's own bounds even when
+  // the view draws there.
+  const hitsRef = useRef({ t: 0, s: '' });
+  const stamp = (letter: string) => {
+    if (!probeOn) return;
+    const now = Date.now();
+    if (now - hitsRef.current.t > 120) hitsRef.current.s = '';
+    hitsRef.current.t = now;
+    hitsRef.current.s += letter;
+    const hits = hitsRef.current.s;
+    setProbe((p) => ({ ...p, hits }));
+    const fr = (r: View | null) =>
+      new Promise<string>((res) =>
+        r ? r.measureInWindow((x, y, w, h) => res(`${Math.round(x)},${Math.round(y)} ${Math.round(w)}×${Math.round(h)}`)) : res('?'),
+      );
+    void Promise.all([fr(headerRef.current), fr(rightRef.current), fr(actionRef.current)]).then(([h, r, a]) =>
+      setProbe((p) => ({ ...p, frames: `hdr ${h} · btns ${r} · ▶ ${a}` })),
+    );
+  };
+  const headerRef = useRef<View>(null);
+  const rightRef = useRef<View>(null);
+  const actionRef = useRef<View>(null);
   const titleTaps = useRef<number[]>([]);
   const titleTap = () => {
     const now = Date.now();
@@ -361,7 +387,7 @@ export function LabShell({
     if (titleTaps.current.length >= 3) {
       titleTaps.current = [];
       setProbeOn((v) => !v);
-      setProbe({ last: '—', down: 0, up: 0 });
+      setProbe({ last: '—', down: 0, up: 0, hits: '—', frames: '' });
     }
   };
 
@@ -406,6 +432,7 @@ export function LabShell({
   return (
     <View
       style={[styles.root, { paddingTop: insets.top + 10 }]}
+      onTouchStart={probeOn ? () => stamp('O') : undefined}
       // TEMP TOUCH PROBE (see probe below) — records every touch that reaches
       // this screen, then declines it so nothing about touch handling changes.
       onStartShouldSetResponderCapture={(e) => {
@@ -416,11 +443,16 @@ export function LabShell({
         return false;
       }}
     >
-      <View style={styles.header}>
+      <View style={styles.header} ref={headerRef} onTouchStart={probeOn ? () => stamp('H') : undefined}>
         <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
-        <Pressable style={{ flexShrink: 1, flexGrow: 1 }} onPress={titleTap} accessible={false}>
+        <Pressable
+          style={{ flexShrink: 1, flexGrow: 1 }}
+          onPress={titleTap}
+          accessible={false}
+          onTouchStart={probeOn ? () => stamp('T') : undefined}
+        >
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.subtitle}>{subtitle}</Text>
         </Pressable>
@@ -428,23 +460,33 @@ export function LabShell({
             answers surfaced. */}
         <View
           style={styles.headerRight}
-          onTouchStart={probeOn ? () => setProbe((p) => ({ ...p, down: p.down + 1 })) : undefined}
+          ref={rightRef}
+          onTouchStart={
+            probeOn
+              ? () => {
+                  stamp('B');
+                  setProbe((p) => ({ ...p, down: p.down + 1 }));
+                }
+              : undefined
+          }
           onTouchEnd={probeOn ? () => setProbe((p) => ({ ...p, up: p.up + 1 })) : undefined}
         >
           <HelpKey search="lab" />
           {/* Accuracy/calibration note — global honesty affordance (owner 2026-08-09). */}
           <AccuracyNote compact />
-          {headerAction ? <View style={styles.headerAction}>{headerAction}</View> : null}
+          {headerAction ? <View style={styles.headerAction} ref={actionRef}>{headerAction}</View> : null}
         </View>
       </View>
       {probeOn ? (
         <Text style={styles.probe} accessible={false}>
-          PROBE · last touch {probe.last} · top-right down {probe.down} / up {probe.up}
+          PROBE · last touch {probe.last} · top-right down {probe.down} / up {probe.up} · hit {probe.hits}
+          {' · '}
+          {probe.frames}
         </Text>
       ) : null}
 
       {/* Mode tabs directly under the header (owner 2026-07-29 order). */}
-      <View style={styles.tabRow} accessibilityRole="tablist">
+      <View style={styles.tabRow} accessibilityRole="tablist" onTouchStart={probeOn ? () => stamp('M') : undefined}>
         {modes.map((m) => {
           const selected = mode === m.key;
           const c = MODE_COLORS[m.key];
@@ -503,7 +545,7 @@ export function LabShell({
               </View>
             </ScrollView>
           ) : null}
-          <View style={mode === 'explore' ? styles.rackFill : styles.rackHidden}>
+          <View style={mode === 'explore' ? styles.rackFill : styles.rackHidden} onTouchStart={probeOn ? () => stamp('R') : undefined}>
             <RackUnit
               stage={rack.stage}
               params={rack.params}
