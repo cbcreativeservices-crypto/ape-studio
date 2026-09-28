@@ -524,7 +524,7 @@ export const CI_INSPECTION_POOL: CiInspectionDefect[] = [
   { id: 'ins-9', mistakeId: 'unverified-wall', label: 'Fresh unlabeled hole through the corridor wall', zone: 2, x: 70, y: 55 },
   { id: 'ins-10', mistakeId: 'bad-penetration', label: 'Rated-wall sleeve left open around the bundle', zone: 2, x: 78, y: 48 },
   { id: 'ins-11', mistakeId: 'power-signal-mess', label: 'AC and mic lines share one tight bundle up the wall', zone: 2, x: 62, y: 60 },
-  { id: 'ins-12', mistakeId: 'blocked-vent', label: 'Loom dressed across the amp intake', zone: 3, x: 88, y: 66 },
+  { id: 'ins-12', mistakeId: 'blocked-vent', label: "Loom dressed across the amp's rear exhaust", zone: 3, x: 88, y: 66 },
   { id: 'ins-13', mistakeId: 'blocked-access', label: 'DSP rear unreachable behind a taut trunk', zone: 3, x: 92, y: 58 },
   { id: 'ins-14', mistakeId: 'unlabeled', label: 'Patch field with zero labels', zone: 3, x: 86, y: 50 },
   { id: 'ins-15', mistakeId: 'label-mismatch', label: 'Cable labeled A-07 one end, A-17 the other', zone: 3, x: 90, y: 44 },

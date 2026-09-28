@@ -336,7 +336,8 @@ function Nl4({ cx, cy }: { cx: number; cy: number }) {
 }
 
 /** 3U power amplifier rear: NL4 outputs, XLR-F inputs, the IEC inlet, and
- *  the fan intake behind its grille (which the loom must never cross). */
+ *  the rear fan EXHAUST behind its grille — rack amps breathe front to rear —
+ *  which the loom must never cross. */
 export const AMP = { y: uY(9), h: 3 * U_H, nl4Y: uY(9) + 30, nl4Xs: [76, 104] as const, inXs: [140, 162] as const, grille: { x: 178, y: uY(9) + 6, w: 100, h: 54 } } as const;
 export function Amplifier({ dress }: { dress: boolean }) {
   const y = AMP.y;

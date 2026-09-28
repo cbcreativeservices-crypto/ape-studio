@@ -851,7 +851,7 @@ const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; fo
       </SvgIn>
 
       {/* ── ri-6 · the two NL4 speaker lines out of the amp, dressed straight
-          across the fan intake and wrapped there */}
+          across the rear fan exhaust and wrapped there */}
       <DrawPath d={`M${AMP.nl4Xs[0]} ${AMP.nl4Y} C76 258 80 264 94 264 H176 C190 266 210 262 230 262 H298`} len={250} color={S} width={5} enter={enter} delay={at(200)} />
       <DrawPath d={`M${AMP.nl4Xs[1]} ${AMP.nl4Y} C104 256 110 258 122 258 H176 C192 257 214 256 236 256 H298`} len={220} color={S} width={5} enter={enter} delay={at(260)} />
       <SvgIn enter={enter} delay={at(440)}>
