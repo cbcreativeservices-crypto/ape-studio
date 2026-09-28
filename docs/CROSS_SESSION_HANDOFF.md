@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-28 10:28 · ccode · cb91b1d1
+changed: docs: 2026-09-28 addendum to the handoff
+affects other side: nothing — docs only <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: nothing <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-28 10:15 · ccode · 8c45a492
 changed: Cable lab: the amp's rear grille is its exhaust everywhere (Stage 13 ins-12 matched Stage 6)
 affects other side: nothing — client JS only (cable lab text) <FILL — what A (backend) must re-read or adjust, or "nothing">
