@@ -195,6 +195,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-28 07:39 · ccode · cf417014
+changed: Cable Install Stage 6: redraw the rack as a textbook rear elevation
+affects other side: nothing — client JS only (cable lab art)
+needs: nothing — client JS only (cable lab art)
+
+
+### 2026-09-28 07:22 · ccode · 2cb2b4b1
+changed: Sound Systems: system map redrawn as three columns with cross cables
+affects other side: nothing — client JS only (sound systems map)
+needs: nothing
+
+
 ### 2026-09-27 21:38 · ccode · 56ed3ccd
 changed: Labs probe round 2: which container takes the touch + the buttons' real frames
 affects other side: nothing — client JS only (temp lab touch probe) <FILL — what A (backend) must re-read or adjust, or "nothing">

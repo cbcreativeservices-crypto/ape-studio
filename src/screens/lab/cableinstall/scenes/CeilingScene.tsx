@@ -93,7 +93,7 @@ const HOOK_SLOTS = Array.from({ length: SPAN_UNITS - 1 }, (_, i) => i + 1); // U
 
 /* ── the sag model ──────────────────────────────────────────────────────── */
 /** Height of the supported run (level, as a real ceiling run is). */
-const RUN_Y = 124;
+const RUN_Y = 129.6;
 /** Sag is sampled at fixed x positions so the path morphs with a CONSTANT
  *  command count — the only way a spring can carry it. */
 const SAMPLES = 21;
@@ -104,7 +104,7 @@ const SAG_K = 0.15;
 const SAG_MAX = 20;
 /** Where the run enters the far wall through the bushed sleeve. */
 const SLEEVE_X = 342;
-const SLEEVE_Y = 122;
+const SLEEVE_Y = 126;
 /** Over-estimated path length for the install draw (over-estimate is safe). */
 const RUN_LEN = 230;
 const LEAD_LEN = 200;
@@ -284,8 +284,8 @@ function Tick({ x, index, on }: { x: number; index: number; on: boolean }) {
     return () => cancelAnimation(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, m.reduce]);
-  const p = useAnimatedProps(() => ({ opacity: t.value, y2: 138 + 4 * k.value, strokeWidth: 1.2 + 0.9 * k.value }));
-  return <ALine x1={x} y1={132} x2={x} y2={138} stroke={on ? colors.amber : '#34343c'} strokeWidth={1.2} opacity={0} animatedProps={p} />;
+  const p = useAnimatedProps(() => ({ opacity: t.value, y2: 144 + 4 * k.value, strokeWidth: 1.2 + 0.9 * k.value }));
+  return <ALine x1={x} y1={138} x2={x} y2={144} stroke={on ? colors.amber : '#34343c'} strokeWidth={1.2} opacity={0} animatedProps={p} />;
 }
 
 /** A placed J-hook — the rod stays hung from structure while the cradle drops
@@ -305,14 +305,16 @@ function PlacedHook({ x }: { x: number }) {
   }, [m.reduce]);
   const hookD = (dy: number) => {
     'worklet';
-    return `M${x} 28 V${(110 - dy).toFixed(1)} M${x - 5} ${(110 - dy).toFixed(1)} V${(119 - dy).toFixed(1)} Q${x - 5} ${(126 - dy).toFixed(1)} ${x + 2} ${(126 - dy).toFixed(1)} H${x + 6}`;
+    // rod from the deck anchor, then the formed J (4.5 units = a 3-inch hook)
+    return `M${x} 15 V${(122 - dy).toFixed(1)} M${x - 4.5} ${(122 - dy).toFixed(1)} V${(129.5 - dy).toFixed(1)} A4.5 4.5 0 0 0 ${x + 4.5} ${(129.5 - dy).toFixed(1)} V${(125 - dy).toFixed(1)}`;
   };
   const p = useAnimatedProps(() => ({ d: hookD((1 - k.value) * 9), opacity: Math.min(1, k.value * 1.8) }));
   const q = useAnimatedProps(() => ({ d: hookD((1 - k.value) * 9), opacity: Math.min(1, k.value * 1.8) }));
   return (
     <>
-      <APath d={hookD(0)} stroke="#2c2f34" strokeWidth={2.4} fill="none" strokeLinecap="round" opacity={0} animatedProps={p} />
-      <APath d={hookD(0)} stroke="#c3c8cf" strokeWidth={1.3} fill="none" strokeLinecap="round" opacity={0} animatedProps={q} />
+      <Rect x={x - 2.4} y={14} width={4.8} height={1.4} fill="#9aa0a8" />
+      <APath d={hookD(0)} stroke="#2c2f34" strokeWidth={2.2} fill="none" strokeLinecap="round" opacity={0} animatedProps={p} />
+      <APath d={hookD(0)} stroke="#c3c8cf" strokeWidth={1.2} fill="none" strokeLinecap="round" opacity={0} animatedProps={q} />
     </>
   );
 }
@@ -539,20 +541,20 @@ function AboveSvg({
           k={settleK}
           restD={restD}
           tint={runTint}
-          width={3}
+          width={2.6}
           fadeTo={showTicks ? 1 : 0}
         />
         {/* confirmed: the bundle installs itself, tray lead-in first */}
         {confirmed ? (
           <>
-            <InstalledRun d="M4 146 Q36 142 60 127 L178 124" len={LEAD_LEN} color="#c77dff" width={3} />
+            <InstalledRun d="M0 148 Q34 144 60 129.6 L178 129.6" len={LEAD_LEN} color="#c77dff" width={2.6} />
             <SagRun
               fromArr={fromArr}
               toArr={toArr}
               k={settleK}
               restD={restD}
               tint="#c77dff"
-              width={3}
+              width={2.6}
               fadeTo={1}
               draw
               drawDelay={CI_MOTION.base}

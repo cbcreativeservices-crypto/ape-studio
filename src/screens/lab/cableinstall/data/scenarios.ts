@@ -328,14 +328,14 @@ export type CiCeilingDefect = { id: string; mistakeId: string; label: string; x:
 
 /** Find-the-problems positions on the ceiling cutaway (viewBox 0..100). */
 export const CI_CEILING_DEFECTS: CiCeilingDefect[] = [
-  { id: 'cd-1', mistakeId: 'on-ceiling-tile', label: 'Data bundle lying across the tiles', x: 18, y: 72 },
-  { id: 'cd-2', mistakeId: 'foreign-support', label: 'Audio pair draped over the sprinkler main', x: 44, y: 36 },
-  { id: 'cd-3', mistakeId: 'unsupported-span', label: 'Long span with no support, sagging', x: 62, y: 52 },
-  { id: 'cd-4', mistakeId: 'foreign-support', label: 'Cable resting on the light fixture housing', x: 30, y: 60 },
-  { id: 'cd-5', mistakeId: 'sharp-bend', label: 'Hard 90° fold where the run turns', x: 76, y: 44 },
-  { id: 'cd-6', mistakeId: 'overfilled-pathway', label: 'J-hook stuffed far past its capacity', x: 54, y: 30 },
-  { id: 'cd-7', mistakeId: 'unverified-wall', label: 'Run disappears through an unmarked penetration', x: 90, y: 48 },
-  { id: 'cd-8', mistakeId: 'hidden-loop', label: 'Service loop tied above the rigid duct — unreachable', x: 12, y: 34 },
+  { id: 'cd-1', mistakeId: 'on-ceiling-tile', label: 'Audio pair lying across the tiles', x: 16.7, y: 73.2 },
+  { id: 'cd-2', mistakeId: 'foreign-support', label: 'Audio pair draped over the sprinkler main', x: 44.4, y: 36.4 },
+  { id: 'cd-3', mistakeId: 'unsupported-span', label: 'Long span with no support, sagging', x: 66.7, y: 68.2 },
+  { id: 'cd-4', mistakeId: 'foreign-support', label: 'Cable resting on the light fixture housing', x: 30.6, y: 70 },
+  { id: 'cd-5', mistakeId: 'sharp-bend', label: 'Hard 90° fold where the run turns', x: 76.1, y: 28.2 },
+  { id: 'cd-6', mistakeId: 'overfilled-pathway', label: 'J-hook stuffed far past its capacity', x: 53.9, y: 29.5 },
+  { id: 'cd-7', mistakeId: 'unverified-wall', label: 'Runs disappear through an unmarked penetration', x: 91.7, y: 47.3 },
+  { id: 'cd-8', mistakeId: 'hidden-loop', label: 'Service loop tied above the rigid duct — unreachable', x: 12.2, y: 30.5 },
 ];
 
 export const CI_CEILING_INSTALL_STEPS = [
