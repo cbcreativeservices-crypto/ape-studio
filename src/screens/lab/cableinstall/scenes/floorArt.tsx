@@ -22,8 +22,9 @@ export function PlanLabel({ x, y, text, anchor = 'middle', color = PLAN_LABEL, s
   return <Callout x={x} y={y} text={text} anchor={anchor} size={size} color={color} bg={null} />;
 }
 
-/** Timber stage deck, plank joints running across. */
-export function StageDeck({ x, y, w, h }: { x: number; y: number; w: number; h: number }) {
+/** Timber stage deck, plank joints running across; `grid` draws the plot's
+ *  1 m grid (units per metre) the way a CAD stage plot carries one. */
+export function StageDeck({ x, y, w, h, grid }: { x: number; y: number; w: number; h: number; grid?: number }) {
   const id = useUid();
   const joints: string[] = [];
   for (let yy = y + 9; yy < y + h; yy += 9) joints.push(`M${x + 1} ${yy} H${x + w - 1}`);
@@ -32,6 +33,11 @@ export function StageDeck({ x, y, w, h }: { x: number; y: number; w: number; h: 
   for (let yy = y; yy < y + h - 1; yy += 9) {
     for (let xx = x + ((r % 3) * 40 + 30); xx < x + w; xx += 120) butts.push(`M${xx} ${yy} v9`);
     r++;
+  }
+  const g: string[] = [];
+  if (grid) {
+    for (let xx = x + grid; xx < x + w - 1; xx += grid) g.push(`M${xx} ${y + 1} V${y + h - 1}`);
+    for (let yy = y + grid; yy < y + h - 1; yy += grid) g.push(`M${x + 1} ${yy} H${x + w - 1}`);
   }
   return (
     <G>
@@ -44,33 +50,158 @@ export function StageDeck({ x, y, w, h }: { x: number; y: number; w: number; h: 
       <Rect x={x} y={y} width={w} height={h} rx={4} fill={`url(#${id}d)`} stroke="#0d0b09" strokeWidth={0.8} />
       <Path d={joints.join('')} stroke="#171310" strokeWidth={0.6} />
       <Path d={butts.join('')} stroke="#171310" strokeWidth={0.5} />
+      {g.length ? <Path d={g.join('')} stroke="rgba(255,255,255,0.07)" strokeWidth={0.5} /> : null}
+    </G>
+  );
+}
+
+/** A dimension line with end ticks and its text (plot convention). */
+export function DimLine({ x1, y1, x2, y2, text }: { x1: number; y1: number; x2: number; y2: number; text: string }) {
+  const vert = x1 === x2;
+  const tick = 3;
+  return (
+    <G>
+      <Line x1={x1} y1={y1} x2={x2} y2={y2} stroke={PLAN_LABEL} strokeWidth={0.7} />
+      {vert ? (
+        <Path d={`M${x1 - tick} ${y1} h${2 * tick} M${x2 - tick} ${y2} h${2 * tick}`} stroke={PLAN_LABEL} strokeWidth={0.7} />
+      ) : (
+        <Path d={`M${x1} ${y1 - tick} v${2 * tick} M${x2} ${y2 - tick} v${2 * tick}`} stroke={PLAN_LABEL} strokeWidth={0.7} />
+      )}
+      {vert ? (
+        <G transform={`rotate(-90 ${x1 - 4} ${(y1 + y2) / 2})`}>
+          <PlanLabel x={x1 - 4} y={(y1 + y2) / 2 + 3.4} text={text} size={9.6} />
+        </G>
+      ) : (
+        <PlanLabel x={(x1 + x2) / 2} y={y1 - 2.2} text={text} size={9.6} />
+      )}
+    </G>
+  );
+}
+
+/** A drum kit on its riser, from above: kick, snare, toms, hats, cymbals,
+ *  the throne — the plot iconography every production manager reads. */
+export function DrumKitTop({ x, y }: { x: number; y: number }) {
+  const drum = (cx: number, cy: number, r: number, cymbal = false) => (
+    <G key={`${cx}-${cy}`}>
+      <Circle cx={cx + 0.6} cy={cy + 0.8} r={r} fill="rgba(0,0,0,0.45)" />
+      <Circle cx={cx} cy={cy} r={r} fill={cymbal ? '#8a7a3a' : '#c9c6bc'} stroke={cymbal ? '#4a3f18' : '#4a4a46'} strokeWidth={0.6} />
+      {cymbal ? <Circle cx={cx} cy={cy} r={r * 0.35} fill="none" stroke="#4a3f18" strokeWidth={0.4} /> : <Circle cx={cx} cy={cy} r={r * 0.78} fill="none" stroke="#8d8a80" strokeWidth={0.35} />}
+    </G>
+  );
+  return (
+    <G>
+      {drum(x, y + 2, 7.4)}
+      {drum(x - 9, y - 6, 4.2)}
+      {drum(x - 3.5, y - 9.5, 3.6)}
+      {drum(x + 4, y - 9.5, 3.8)}
+      {drum(x + 11, y - 1, 4.8)}
+      {drum(x - 15, y - 12, 4.6, true)}
+      {drum(x - 11, y - 18, 5.4, true)}
+      {drum(x + 12, y - 15, 6, true)}
+      <Circle cx={x} cy={y + 15} r={3.2} fill="#2a2c31" stroke="#0a0a0c" strokeWidth={0.5} />
+    </G>
+  );
+}
+
+/** A riser (platform) outline with its step, from above. */
+export function RiserTop({ x, y, w, h }: { x: number; y: number; w: number; h: number }) {
+  return (
+    <G>
+      <Rect x={x + 1} y={y + 1.4} width={w} height={h} rx={1} fill="rgba(0,0,0,0.5)" />
+      <Rect x={x} y={y} width={w} height={h} rx={1} fill="#332b22" stroke="#0d0b09" strokeWidth={0.8} />
+      <Path d={`M${x + 1} ${y + 1} H${x + w - 1}`} stroke="rgba(255,255,255,0.1)" strokeWidth={0.6} />
+      <Rect x={x + w / 2 - 8} y={y + h - 0.5} width={16} height={4} rx={0.6} fill="#2a241d" stroke="#0d0b09" strokeWidth={0.6} />
+    </G>
+  );
+}
+
+/** A keyboard on its stand, from above. */
+export function KeysTop({ x, y, w, h }: { x: number; y: number; w: number; h: number }) {
+  const keys: string[] = [];
+  for (let xx = x + 2; xx < x + w - 1; xx += 1.8) keys.push(`M${xx} ${y + h - 1.5} v-${h * 0.45}`);
+  return (
+    <G>
+      <Rect x={x + 0.8} y={y + 1.2} width={w} height={h} rx={1} fill="rgba(0,0,0,0.45)" />
+      <Rect x={x} y={y} width={w} height={h} rx={1} fill="#1d1f24" stroke="#0a0a0c" strokeWidth={0.6} />
+      <Rect x={x + 1.5} y={y + h * 0.5} width={w - 3} height={h * 0.5 - 1.5} fill="#e8e6dd" />
+      <Path d={keys.join('')} stroke="#2a2c31" strokeWidth={0.35} />
+    </G>
+  );
+}
+
+/** A guitar combo amp from above (the grille faces downstage). */
+export function GtrAmpTop({ x, y, w = 22, h = 12 }: { x: number; y: number; w?: number; h?: number }) {
+  return (
+    <G>
+      <Rect x={x + 0.8} y={y + 1.2} width={w} height={h} rx={1.2} fill="rgba(0,0,0,0.45)" />
+      <Rect x={x} y={y} width={w} height={h} rx={1.2} fill="#26221c" stroke="#0a0a0c" strokeWidth={0.6} />
+      <Rect x={x + 2} y={y + h - 3} width={w - 4} height={2} rx={0.5} fill="#6d5a3c" />
+      <Rect x={x + w / 2 - 5} y={y + 1.2} width={10} height={1.6} rx={0.8} fill="#0b0b0d" />
+    </G>
+  );
+}
+
+/** A DI box from above: the small steel box with its jacks. */
+export function DiBoxTop({ x, y }: { x: number; y: number }) {
+  return (
+    <G>
+      <Rect x={x - 4} y={y - 2.6} width={8} height={5.2} rx={0.6} fill="#2a2c31" stroke="#0a0a0c" strokeWidth={0.5} />
+      <Circle cx={x - 2} cy={y} r={0.9} fill="#050506" stroke="#8d9199" strokeWidth={0.3} />
+      <Circle cx={x + 2} cy={y} r={0.9} fill="#050506" stroke="#8d9199" strokeWidth={0.3} />
+    </G>
+  );
+}
+
+/** The snake head (stage box) from above: the steel box, two rows of XLR
+ *  inputs, the trunk leaving toward FOH. */
+export function SnakeHeadTop({ x, y }: { x: number; y: number }) {
+  return (
+    <G>
+      <Rect x={x + 1} y={y + 1.4} width={24} height={14} rx={1.4} fill="rgba(0,0,0,0.5)" />
+      <Rect x={x} y={y} width={24} height={14} rx={1.4} fill="#26282d" stroke="#0a0a0c" strokeWidth={0.6} />
+      {[0, 1, 2, 3, 4, 5].map((i) => (
+        <Circle key={i} cx={x + 3 + i * 3.6} cy={y + 4.2} r={1.25} fill="#050506" stroke="#8d9199" strokeWidth={0.3} />
+      ))}
+      {[0, 1, 2, 3, 4, 5].map((i) => (
+        <Circle key={`b${i}`} cx={x + 3 + i * 3.6} cy={y + 9.8} r={1.25} fill="#050506" stroke="#8d9199" strokeWidth={0.3} />
+      ))}
     </G>
   );
 }
 
 /** A tripod mic stand from above: three legs, the pole, the boom to the mic. */
-export function MicStandTop({ x, y, boom = 0 }: { x: number; y: number; boom?: number }) {
+export function MicStandTop({ x, y, boom = 0, reach = 12 }: { x: number; y: number; boom?: number; reach?: number }) {
   const a = (boom * Math.PI) / 180;
+  const mx = x + Math.sin(a) * reach;
+  const my = y - Math.cos(a) * reach;
   return (
     <G>
       {[90, 210, 330].map((deg) => {
         const r = (deg * Math.PI) / 180;
-        return <Line key={deg} x1={x} y1={y} x2={x + Math.cos(r) * 9} y2={y + Math.sin(r) * 9} stroke="#6d7179" strokeWidth={1.3} strokeLinecap="round" />;
+        return <Line key={deg} x1={x} y1={y} x2={x + Math.cos(r) * 8} y2={y + Math.sin(r) * 8} stroke="#6d7179" strokeWidth={1.3} strokeLinecap="round" />;
       })}
-      <Circle cx={x} cy={y} r={1.8} fill="#2a2c31" stroke="#9aa0a8" strokeWidth={0.6} />
-      <Line x1={x} y1={y} x2={x + Math.sin(a) * 12} y2={y - Math.cos(a) * 12} stroke="#9aa0a8" strokeWidth={0.9} />
-      <Rect x={x + Math.sin(a) * 12 - 1.6} y={y - Math.cos(a) * 12 - 3.4} width={3.2} height={6} rx={1.4} fill="#1b1c20" stroke="#6d7179" strokeWidth={0.5} />
+      <Circle cx={x} cy={y} r={2} fill="#2a2c31" stroke="#9aa0a8" strokeWidth={0.6} />
+      <Line x1={x} y1={y} x2={mx} y2={my} stroke="#9aa0a8" strokeWidth={1} />
+      <G transform={`rotate(${boom} ${mx} ${my})`}>
+        <Rect x={mx - 1.7} y={my - 5} width={3.4} height={7} rx={1.6} fill="#1b1c20" stroke="#8d9199" strokeWidth={0.5} />
+        <Rect x={mx - 1.9} y={my - 6.4} width={3.8} height={3.2} rx={1.6} fill="#3a3c42" stroke="#8d9199" strokeWidth={0.5} />
+      </G>
     </G>
   );
 }
 
-/** A wedge monitor from above (grille face toward the performer). */
-export function WedgeTop({ x, y }: { x: number; y: number }) {
+/** A wedge monitor from above (0.6 × 0.4 m), its grille face toward the
+ *  performer (upstage); `angle` toes it in toward its performer. */
+export function WedgeTop({ x, y, angle = 0 }: { x: number; y: number; angle?: number }) {
+  const w = 19;
+  const h = 13;
   return (
-    <G>
-      <Path d={`M${x} ${y} h24 l-5 -12 h-14 z`} fill="#1d1f24" stroke="#0a0a0c" strokeWidth={0.6} />
-      <Path d={`M${x + 5.6} ${y - 11} h12.8 l3.8 9.4 h-20.4 z`} fill="#2a2c31" />
-      <Path d={[0, 1, 2, 3, 4].map((i) => `M${x + 6 + i * 3} ${y - 10} l-0.8 8`).join('')} stroke="#141518" strokeWidth={0.6} />
+    <G transform={`rotate(${angle} ${x} ${y})`}>
+      <Rect x={x - w / 2 + 0.8} y={y - h / 2 + 1.2} width={w} height={h} rx={1.2} fill="rgba(0,0,0,0.5)" />
+      <Rect x={x - w / 2} y={y - h / 2} width={w} height={h} rx={1.2} fill="#1d1f24" stroke="#0a0a0c" strokeWidth={0.6} />
+      <Rect x={x - w / 2 + 1.2} y={y - h / 2 + 0.8} width={w - 2.4} height={3.2} rx={0.5} fill="#3a3c42" />
+      <Path d={[0, 1, 2, 3, 4, 5, 6].map((i) => `M${x - w / 2 + 2.4 + i * 2.4} ${y - h / 2 + 1.2} v2.4`).join('')} stroke="#141518" strokeWidth={0.5} />
+      <Circle cx={x} cy={y + 2.2} r={3.4} fill="none" stroke="#3a3c42" strokeWidth={0.6} />
     </G>
   );
 }

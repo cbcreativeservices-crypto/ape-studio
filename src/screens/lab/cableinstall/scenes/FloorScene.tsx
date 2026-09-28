@@ -44,7 +44,7 @@ import { OptionChip } from '../../cable/lessons/bits';
 import { CiSection, RuleFeedback, announceComplete } from '../bits';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { Callout, Connector, JacketPath, shade, tint as lighten, SVG_A11Y } from '../svgArt';
-import { ConsoleTop, DistroTop, DockDoor, ForkliftTop, HazardEdge, MicStandTop, PLAN_LABEL, PlanLabel, RampTop, RigPointTop, RoadCaseTop, SeatRow, StageBoxTop, StageDeck, TapeStrip, WedgeTop } from './floorArt';
+import { ConsoleTop, DiBoxTop, DimLine, DistroTop, DockDoor, DrumKitTop, ForkliftTop, GtrAmpTop, HazardEdge, KeysTop, MicStandTop, PLAN_LABEL, PlanLabel, RampTop, RigPointTop, RiserTop, RoadCaseTop, SeatRow, SnakeHeadTop, StageDeck, TapeStrip, WedgeTop } from './floorArt';
 import { CI_CLASS_TINTS } from '../data/cableTypes';
 import { CI_FLOOR_SCENARIOS, CI_OVERUNDER_STEPS, type CiRouteScenario } from '../data/scenarios';
 import { evaluateRoute, rankRoutes, type CiRouteFlag } from '../engine/routeEval';
@@ -350,75 +350,117 @@ function TrafficPass({
   );
 }
 
-/* ── stage plan (A) — redraws each aspect as its call is made ───────────── */
+/* ── stage plan (A) — a real stage plot that redraws each aspect as its call
+   is made. Top-down, audience at the bottom (downstage), SR on the left of
+   the drawing, SL on the right; 10 × 5 m deck at 32 units per metre with the
+   plot's 1 m grid, dimension lines, a drum riser, keys + DI, a guitar amp
+   with its mic, three vocal stands, three wedges toed in, the snake head at
+   DSR and monitor world in the SL wing. ─────────────────────────────────── */
+const PLOT = { x: 16, y: 22, w: 320, h: 160, m: 32 } as const;
+const VOX_XS = [120, 200, 282] as const;
+const VOX_Y = 92;
+const WEDGE_Y = 168;
+const SNAKE = { x: 24, y: 146 } as const;
+const MON = { x: 340, y: 150 } as const;
+
 function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFixed: boolean; slackFixed: boolean; monFixed: boolean }) {
   const h = Math.round(w * (205 / 360));
   const mic = CI_CLASS_TINTS.analog;
   const spk = CI_CLASS_TINTS.speaker;
+  const edgeX = PLOT.x + PLOT.w;
   return (
     <Svg {...SVG_A11Y}
       width={w}
       height={h}
       viewBox="0 0 360 205"
-      accessibilityLabel={`Stage plan, training visualization. Mic lines ${routeFixed ? 'edge-routed clear of the performer lane' : 'webbed across the performer lane'}; slack ${slackFixed ? 'dressed at the box' : 'in loose loops on deck'}; monitor feeds ${monFixed ? 'dressed at the edge with a protected crossing' : 'bare across the deck'}.`}
+      accessibilityLabel={`Stage plot, training visualization: a 10 by 5 metre deck, audience at the bottom. Drum riser upstage centre, keys and a DI stage left, guitar amp stage right, three vocal stands with wedges, the snake head downstage right, monitor world in the stage-left wing. Mic lines ${routeFixed ? 'edge-routed clear of the performer lane' : 'webbed across the performer lane'}; slack ${slackFixed ? 'dressed at the snake head' : 'in loose loops on deck'}; monitor feeds ${monFixed ? 'dressed along the downstage edge with a protected crossing' : 'bare across the deck'}.`}
     >
       <Rect x={0} y={0} width={360} height={205} rx={10} fill="#0c0c10" />
-      <StageDeck x={6} y={14} w={348} h={158} />
-      <PlanLabel x={14} y={29} text="STAGE" anchor="start" />
-      {/* the deck edge + the audience beyond it */}
-      <Rect x={6} y={172} width={348} height={3} fill="#3a3326" />
-      <PlanLabel x={180} y={193} text="AUDIENCE" />
-      {/* performer lane */}
-      <Rect x={96} y={98} width={210} height={52} fill="rgba(255,255,255,0.02)" stroke="#8d9199" strokeWidth={0.8} strokeDasharray="4 3" />
-      {/* stage box, downstage-left */}
-      <StageBoxTop x={24} y={138} />
-      <PlanLabel x={33} y={166} text="BOX" size={9.5} />
-      {/* mic stands (upstage of the lane), booms toward the performers */}
-      <MicStandTop x={120} y={84} boom={170} />
-      <MicStandTop x={200} y={76} boom={180} />
-      <MicStandTop x={282} y={84} boom={190} />
-      <PlanLabel x={200} y={60} text="MIC STANDS" />
-      {/* monitor wedges at the downstage edge */}
-      {[119, 197, 275].map((x) => (
-        <WedgeTop key={`wg${x}`} x={x} y={168} />
+      <StageDeck x={PLOT.x} y={PLOT.y} w={PLOT.w} h={PLOT.h} grid={PLOT.m} />
+      {/* plot conventions: dimensions, stage directions, the audience */}
+      <DimLine x1={PLOT.x} y1={12} x2={edgeX} y2={12} text="10 m" />
+      <DimLine x1={8} y1={PLOT.y} x2={8} y2={PLOT.y + PLOT.h} text="5 m" />
+      <PlanLabel x={100} y={41} text="UPSTAGE" size={9.6} />
+      <PlanLabel x={42} y={106} text="SR" anchor="start" size={9.6} />
+      <PlanLabel x={edgeX - 6} y={62} text="SL" anchor="end" size={9.6} />
+      <Rect x={PLOT.x} y={PLOT.y + PLOT.h} width={PLOT.w} height={3} fill="#3a3326" />
+      <PlanLabel x={196} y={198} text="DOWNSTAGE · AUDIENCE" size={9.6} />
+
+      {/* fixed lines that were already run right: keys DI and the amp mic,
+          under the riser along the upstage edge, then down the SR edge */}
+      <JacketPath d={`M290 55 V26 H25 V${SNAKE.y}`} color={mic} width={2.2} shadow={false} />
+      <JacketPath d={`M44 52 H22 V${SNAKE.y}`} color={mic} width={2.2} shadow={false} />
+
+      {/* upstage furniture */}
+      <RiserTop x={148} y={PLOT.y} w={64} h={50} />
+      <DrumKitTop x={180} y={46} />
+      <PlanLabel x={180} y={70} text="DRUM RISER" size={9.6} />
+      <KeysTop x={262} y={30} w={56} h={16} />
+      <DiBoxTop x={290} y={53} />
+      <PlanLabel x={290} y={64} text="KEYS · DI" size={9.6} />
+      <GtrAmpTop x={40} y={30} />
+      <MicStandTop x={51} y={52} boom={0} reach={6} />
+      <PlanLabel x={51} y={64} text="GTR AMP" size={9.6} />
+
+      {/* the vocal line: stands with booms toward the singers, the lane they
+          work, the wedges toed in at the downstage edge */}
+      {VOX_XS.map((x, i) => (
+        <G key={x}>
+          <MicStandTop x={x} y={VOX_Y} boom={180} reach={12} />
+          <PlanLabel x={x + 9} y={VOX_Y + 9} text={`VOX ${i + 1}`} anchor="start" size={9.6} />
+        </G>
       ))}
-      {/* monitor world, downstage-right */}
-      <ConsoleTop x={318} y={146} w={30} h={20} />
-      <PlanLabel x={333} y={141} text="MON" size={9.5} />
+      <Rect x={96} y={104} width={210} height={48} fill="rgba(255,255,255,0.02)" stroke="#8d9199" strokeWidth={0.8} strokeDasharray="4 3" />
+      {VOX_XS.map((x, i) => (
+        <WedgeTop key={`wg${x}`} x={x - 1} y={WEDGE_Y} angle={i === 0 ? 14 : i === 2 ? -14 : 0} />
+      ))}
 
-      {/* MIC ROUTING — the web retracts, the edge route installs itself */}
-      <SwapPath d="M40 140 C90 150 110 120 120 90" len={115} tint={mic} width={2.4} mode="bad" fixed={routeFixed} intro={120} />
-      <SwapPath d="M44 146 C130 150 170 120 200 82" len={190} tint={mic} width={2.4} mode="bad" fixed={routeFixed} intro={200} />
-      <SwapPath d="M48 150 C170 156 240 130 282 90" len={260} tint={mic} width={2.4} mode="bad" fixed={routeFixed} intro={280} />
-      <SwapPath d="M30 138 V36 H118 V79" len={240} tint={mic} width={2.4} mode="good" fixed={routeFixed} delay={0} />
-      <SwapPath d="M34 138 V40 H198 V71" len={300} tint={mic} width={2.4} mode="good" fixed={routeFixed} delay={90} />
-      <SwapPath d="M38 138 V44 H280 V79" len={380} tint={mic} width={2.4} mode="good" fixed={routeFixed} delay={180} />
+      {/* snake head DSR with its trunk to FOH; monitor world in the SL wing */}
+      <SnakeHeadTop x={SNAKE.x} y={SNAKE.y} />
+      <JacketPath d={`M36 ${SNAKE.y + 14} V196`} color="#5d6068" width={4.2} />
+      <PlanLabel x={52} y={176} text="SNAKE HEAD" anchor="start" size={9.6} />
+      <PlanLabel x={44} y={200} text="TO FOH" anchor="start" size={9.6} />
+      <ConsoleTop x={MON.x} y={MON.y} w={18} h={14} />
+      <PlanLabel x={MON.x + 9} y={MON.y - 4} text="MON" size={9.6} />
 
-      {/* SLACK — loose loops shrink away, the dressed coil lands at the box */}
+      {/* MIC LINES — the web across the lane retracts, the edge route installs */}
+      <SwapPath d={`M48 150 C80 150 106 122 ${VOX_XS[0]} 96`} len={115} tint={mic} width={2.4} mode="bad" fixed={routeFixed} intro={120} />
+      <SwapPath d={`M48 153 C120 158 176 122 ${VOX_XS[1]} 96`} len={200} tint={mic} width={2.4} mode="bad" fixed={routeFixed} intro={200} />
+      <SwapPath d={`M48 156 C160 162 240 124 ${VOX_XS[2]} 96`} len={270} tint={mic} width={2.4} mode="bad" fixed={routeFixed} intro={280} />
+      <SwapPath d={`M28 ${SNAKE.y} V79 H${VOX_XS[0]} V86`} len={250} tint={mic} width={2.4} mode="good" fixed={routeFixed} delay={0} />
+      <SwapPath d={`M31 ${SNAKE.y} V81.5 H${VOX_XS[1]} V86`} len={330} tint={mic} width={2.4} mode="good" fixed={routeFixed} delay={90} />
+      <SwapPath d={`M34 ${SNAKE.y} V84 H${VOX_XS[2]} V86`} len={410} tint={mic} width={2.4} mode="good" fixed={routeFixed} delay={180} />
+
+      {/* SLACK — loose loops in the lane shrink away; a neat coil lands at
+          the snake head */}
       <SwapCircle cx={150} cy={140} r={8} tint={mic} width={2} show={!slackFixed} />
       <SwapCircle cx={166} cy={132} r={6} tint={mic} width={2} show={!slackFixed} />
       <SwapCircle cx={140} cy={126} r={5} tint={mic} width={2} show={!slackFixed} />
-      <SwapCircle cx={64} cy={150} r={7} tint={mic} width={2} show={slackFixed} />
-      <SwapCircle cx={64} cy={150} r={10.5} tint={mic} width={2} show={slackFixed} delay={80} />
+      <SwapCircle cx={64} cy={152} r={7} tint={mic} width={2} show={slackFixed} />
+      <SwapCircle cx={64} cy={152} r={10.5} tint={mic} width={2} show={slackFixed} delay={80} />
 
-      {/* MONITOR FEEDS — bare lines retract, the dressed edge draws in */}
-      <SwapPath d="M322 158 C250 128 215 150 209 155" len={130} tint={spk} width={2.4} mode="bad" fixed={monFixed} intro={360} />
-      <SwapPath d="M322 162 C240 136 180 150 131 157" len={205} tint={spk} width={2.4} mode="bad" fixed={monFixed} intro={430} />
+      {/* MONITOR FEEDS — bare diagonals retract; the dressed edge draws in */}
+      <SwapPath d={`M${MON.x} 157 C300 130 222 150 ${VOX_XS[1] - 2} ${WEDGE_Y - 4}`} len={150} tint={spk} width={2.4} mode="bad" fixed={monFixed} intro={360} />
+      <SwapPath d={`M${MON.x} 160 C262 128 168 152 ${VOX_XS[0] + 2} ${WEDGE_Y - 4}`} len={230} tint={spk} width={2.4} mode="bad" fixed={monFixed} intro={430} />
+      <SwapPath d={`M${MON.x} 154 C318 148 292 158 ${VOX_XS[2] + 2} ${WEDGE_Y - 4}`} len={80} tint={spk} width={2.4} mode="bad" fixed={monFixed} intro={300} />
       <SwapCircle cx={252} cy={140} r={7} tint={spk} width={2} show={!monFixed} />
-      <SwapPath d="M322 166 H131" len={200} tint={spk} width={2.6} mode="good" fixed={monFixed} />
+      <SwapPath d={`M${MON.x} 164 C336 178 330 178 320 178 H${VOX_XS[0] - 10}`} len={250} tint={spk} width={2.6} mode="good" fixed={monFixed} />
+      {VOX_XS.map((x, i) => (
+        <SwapPath key={`tail${x}`} d={`M${x + 6} 178 V${WEDGE_Y + 5}`} len={8} tint={spk} width={2.4} mode="good" fixed={monFixed} delay={260 + i * 40} />
+      ))}
       <SwapGroup show={monFixed} delay={220}>
         {/* gaffer tape dressing the feed to the edge, a ramp where feet cross */}
         {[150, 180, 300].map((x) => (
-          <TapeStrip key={`mu${x}`} x={x} y={166} />
+          <TapeStrip key={`mu${x}`} x={x} y={178} />
         ))}
-        <RampTop x={226} y={160} w={36} h={12} />
+        <RampTop x={226} y={172} w={36} h={12} />
       </SwapGroup>
 
       {/* lane label on a dark tag, painted after the cables: the as-found web
           crosses the lane in plain view without crossing the words */}
-      <Callout x={201} y={128} text="PERFORMER LANE" size={10.5} color={PLAN_LABEL} bg="rgba(12,12,16,0.86)" />
+      <Callout x={201} y={131} text="PERFORMER LANE" size={10.5} color={PLAN_LABEL} bg="rgba(12,12,16,0.86)" />
       {/* one performer crosses the web — the conflict, shown once */}
-      <TrafficPass x1={104} y1={126} x2={300} y2={120} run={!routeFixed} delay={780} duration={1900} crossAt={0.36} />
+      <TrafficPass x1={104} y1={128} x2={300} y2={122} run={!routeFixed} delay={780} duration={1900} crossAt={0.36} />
     </Svg>
   );
 }
