@@ -1,25 +1,47 @@
 /**
- * STAGE 6 — the rack's HARDWARE, drawn (owner 2026-09-26 art pass: the rack
- * was grey rounded rectangles with circle "jacks" and 3-px line "cables").
+ * STAGE 6 — the rack's HARDWARE, drawn as a trade-textbook rear elevation
+ * (owner 2026-09-28: the previous pass was "cartoon cable blobs, a green
+ * spiral, unclear devices, markers floating" — "too poor to be acceptable").
  *
- * Rear view of a 19-inch rack at ≈ 0.495 units per mm, so 1U (44.45 mm) is
- * 22 units — the rails carry real EIA square holes on that pitch, and every
- * connector is at its real size: D-series XLR flanges (26 × 31 mm), RJ45
- * keystones, NL4 speaker jacks, IEC C14 inlets and C13 outlets, a fan grille.
- * The band geometry (y ranges) is the scene's own — hit regions, defects and
- * loom routes are anchored to it — so every part here draws INSIDE the band
- * the old placeholder occupied.
+ * Rear view of a 15U 19-inch rack at RK ≈ 0.495 units per mm (1U = 44.45 mm =
+ * 22 units). Every device sits ON the U grid (its ears on U boundaries, the
+ * way real gear is racked), the rails carry the EIA universal hole pattern,
+ * and every rear-panel part is drawn at its real size: keystone rears on a
+ * 19.3 mm pitch, D-series XLR flanges (26 × 31 mm), NL4 panel jacks, IEC C14
+ * inlets and C13 outlets, an RJ45 field, a 120 mm fan behind its grille.
+ * Plugs are drawn END-ON (the way a rear view sees them), with the cable
+ * leaving the boot.
+ *
+ * Rear panels carry SILKSCREEN (the printed names real equipment has) at the
+ * lab's 9-pt floor so the picture reads before the exercise starts: PATCH,
+ * SWITCH, DSP, INTERFACE, POWER AMP, PDU. Labels a technician ADDS (port
+ * IDs, wrap labels) are separate — their absence is a defect the scene
+ * teaches.
  *
  * Paints are per-SVG-root (useUid) and handed down through RackPaintCtx: two
  * racks can be on screen at once (the Phase-C BEFORE strip) and a duplicate
  * gradient id would resolve to the wrong root.
  */
 import { createContext, useContext, type ReactNode } from 'react';
-import { Circle, Defs, G, Line, LinearGradient, Path, RadialGradient, Rect, Stop } from 'react-native-svg';
-import { Callout, PanelJack, RackRail, Screw, VentField } from '../svgArt';
+import { Circle, Defs, G, Line, LinearGradient, Path, RadialGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
+import { fonts } from '../../../../theme/tokens';
+import { JacketPath, PanelJack, RackRail, Screw, VentField, shade } from '../svgArt';
 
 /** units per millimetre in the rack drawing (1U = 22 units). */
 export const RK = 22 / 44.45;
+/** The U grid: U n occupies y U_TOP + 22n … U_TOP + 22(n+1). */
+export const U_TOP = 18;
+export const U_H = 22;
+export const uY = (n: number) => U_TOP + n * U_H;
+/** 15U of rail. */
+export const RACK_US = 15;
+export const RAIL_Y0 = U_TOP;
+export const RAIL_Y1 = uY(RACK_US);
+/** Device faces span the rails. */
+export const FACE_X = 54;
+export const FACE_W = 232;
+/** Silkscreen / label floor: 9.2 units ≈ 9.3 pt at the inline width (343 px). */
+export const RACK_TEXT = 9.2;
 
 type Paint = { face: string; faceHi: string; mgr: string; zinc: string; jack: string };
 const RackPaintCtx = createContext<Paint>({ face: '#1c1d22', faceHi: '#1c1d22', mgr: '#141419', zinc: '#80868f', jack: '#0b0b0d' });
@@ -31,8 +53,8 @@ export function RackPaints({ uid, children }: { uid: string; children: ReactNode
       <Defs>
         <LinearGradient id={`${uid}f`} x1="0" y1="0" x2="0" y2="1">
           <Stop offset="0" stopColor="#2c2e34" />
-          <Stop offset="0.12" stopColor="#23252a" />
-          <Stop offset="1" stopColor="#17181c" />
+          <Stop offset="0.12" stopColor="#24262b" />
+          <Stop offset="1" stopColor="#191a1e" />
         </LinearGradient>
         <LinearGradient id={`${uid}h`} x1="0" y1="0" x2="0" y2="1">
           <Stop offset="0" stopColor="#34363d" />
@@ -60,37 +82,57 @@ export function RackPaints({ uid, children }: { uid: string; children: ReactNode
 
 const usePaint = () => useContext(RackPaintCtx);
 
-/** A device's rear panel inside its band: powder-coated face, top/bottom lips. */
-export function DeviceFace({ y, h }: { y: number; h: number }) {
+/** Silkscreen on a rear panel (printed, always present; ≥ 9 pt inline). */
+export function Silk({ x, y, text, anchor = 'start', color = '#8f939c' }: { x: number; y: number; text: string; anchor?: 'start' | 'middle' | 'end'; color?: string }) {
+  return (
+    <SvgText x={x} y={y} fontFamily={fonts.oswaldMedium} fontSize={RACK_TEXT} fill={color} textAnchor={anchor} letterSpacing={0.5}>
+      {text}
+    </SvgText>
+  );
+}
+
+/** A device's rear panel inside its U band: powder-coated face, top and
+ *  bottom chassis lips, the four ear screws through the rails. */
+export function DeviceFace({ y, h, label }: { y: number; h: number; label?: string }) {
   const p = usePaint();
   return (
     <G>
-      <Rect x={54} y={y} width={232} height={h} rx={1.2} fill={p.face} stroke="#0a0a0c" strokeWidth={0.6} />
-      <Line x1={55} y1={y + 0.7} x2={285} y2={y + 0.7} stroke="rgba(255,255,255,0.12)" strokeWidth={0.6} />
-      <Line x1={54} y1={y + h - 1.4} x2={286} y2={y + h - 1.4} stroke="rgba(0,0,0,0.5)" strokeWidth={0.6} />
+      <Rect x={FACE_X} y={y + 0.6} width={FACE_W} height={h - 1.2} rx={1} fill={p.face} stroke="#0a0a0c" strokeWidth={0.6} />
+      <Line x1={FACE_X + 1} y1={y + 1.3} x2={FACE_X + FACE_W - 1} y2={y + 1.3} stroke="rgba(255,255,255,0.12)" strokeWidth={0.6} />
+      <Line x1={FACE_X + 1} y1={y + h - 1.4} x2={FACE_X + FACE_W - 1} y2={y + h - 1.4} stroke="rgba(0,0,0,0.5)" strokeWidth={0.6} />
+      {/* rack screws through the ears (one per U boundary pair, top + bottom) */}
+      <Screw x={49} y={y + 3.2} r={1.5} />
+      <Screw x={291} y={y + 3.2} r={1.5} />
+      <Screw x={49} y={y + h - 3.2} r={1.5} />
+      <Screw x={291} y={y + h - 3.2} r={1.5} />
+      {label ? <Silk x={FACE_X + 4} y={y + h - 3.6} text={label} /> : null}
     </G>
   );
 }
 
 /* ── the frame: rails, managers, top + bottom ─────────────────────────────── */
 
-/** A vertical finger manager: back channel, finger columns on both edges. */
+/** A vertical finger duct (plastic fingers every 25 mm, a back channel). */
 function VerticalManager({ x, w }: { x: number; w: number }) {
   const p = usePaint();
   const fingers: number[] = [];
-  for (let y = 24; y < 402; y += 11) fingers.push(y);
+  for (let y = RAIL_Y0 + 5; y < RAIL_Y1 - 4; y += 12.4) fingers.push(y);
   return (
     <G>
-      <Rect x={x} y={20} width={w} height={386} rx={2} fill={p.mgr} stroke="#26272c" strokeWidth={0.6} />
+      <Rect x={x} y={RAIL_Y0} width={w} height={RAIL_Y1 - RAIL_Y0} rx={1.5} fill={p.mgr} stroke="#26272c" strokeWidth={0.6} />
       {fingers.map((y) => (
         <G key={y}>
-          <Path d={`M${x} ${y} H${x + 6} Q${x + 8} ${y} ${x + 8} ${y + 2.4} Q${x + 8} ${y + 4.8} ${x + 6} ${y + 4.8} H${x} Z`} fill="#26282d" stroke="#0a0a0c" strokeWidth={0.4} />
-          <Path d={`M${x + w} ${y} H${x + w - 6} Q${x + w - 8} ${y} ${x + w - 8} ${y + 2.4} Q${x + w - 8} ${y + 4.8} ${x + w - 6} ${y + 4.8} H${x + w} Z`} fill="#26282d" stroke="#0a0a0c" strokeWidth={0.4} />
+          <Path d={`M${x} ${y} H${x + 7} Q${x + 9} ${y} ${x + 9} ${y + 2.4} Q${x + 9} ${y + 4.8} ${x + 7} ${y + 4.8} H${x} Z`} fill="#26282d" stroke="#0a0a0c" strokeWidth={0.4} />
+          <Path d={`M${x + w} ${y} H${x + w - 7} Q${x + w - 9} ${y} ${x + w - 9} ${y + 2.4} Q${x + w - 9} ${y + 4.8} ${x + w - 7} ${y + 4.8} H${x + w} Z`} fill="#26282d" stroke="#0a0a0c" strokeWidth={0.4} />
         </G>
       ))}
     </G>
   );
 }
+
+/** The top panel's cable entry: a rectangular cut-out. Raw sheet edge in the
+ *  bad rack; a brush grommet once dressed. */
+export const ENTRY = { x: 150, w: 80, y: 7, h: 8 } as const;
 
 export function RackFrame({ dress }: { dress: boolean }) {
   const p = usePaint();
@@ -98,182 +140,250 @@ export function RackFrame({ dress }: { dress: boolean }) {
     <G>
       <VerticalManager x={6} w={34} />
       <VerticalManager x={300} w={34} />
-      <RackRail x={45} y0={20} y1={402} k={RK} uTop={19} />
-      <RackRail x={287.1} y0={20} y1={402} k={RK} uTop={19} />
-      <Rect x={44} y={402} width={252} height={9} rx={1.5} fill={p.faceHi} stroke="#0a0a0c" strokeWidth={0.6} />
-      {/* top panel + the cable-entry slot; dressed = a brush-grommet edge */}
-      <Rect x={44} y={6} width={252} height={14} rx={1.5} fill={p.faceHi} stroke="#0a0a0c" strokeWidth={0.6} />
-      <Rect x={150} y={9} width={80} height={8} rx={2.5} fill="#050506" />
+      <RackRail x={45} y0={RAIL_Y0} y1={RAIL_Y1} k={RK} uTop={U_TOP} />
+      <RackRail x={287.1} y0={RAIL_Y0} y1={RAIL_Y1} k={RK} uTop={U_TOP} />
+      {/* bottom panel */}
+      <Rect x={44} y={RAIL_Y1} width={252} height={11} rx={1.5} fill={p.faceHi} stroke="#0a0a0c" strokeWidth={0.6} />
+      {/* top panel + the cable-entry cut-out */}
+      <Rect x={44} y={4} width={252} height={U_TOP - 4} rx={1.5} fill={p.faceHi} stroke="#0a0a0c" strokeWidth={0.6} />
+      <Rect x={ENTRY.x} y={ENTRY.y} width={ENTRY.w} height={ENTRY.h} rx={1} fill="#050506" />
       {dress ? (
         <G>
-          <Rect x={148.5} y={7.6} width={83} height={10.8} rx={3.4} fill="none" stroke="#3a3c42" strokeWidth={1.6} />
-          <Path d={Array.from({ length: 38 }, (_, i) => `M${152 + i * 2} 9.2 v2.6 M${152 + i * 2} 17 v-2.6`).join('')} stroke="#3a3c42" strokeWidth={0.6} />
+          {/* brush grommet: a flanged frame with its bristle strip */}
+          <Rect x={ENTRY.x - 2} y={ENTRY.y - 1.6} width={ENTRY.w + 4} height={ENTRY.h + 3.2} rx={2} fill="none" stroke="#3a3c42" strokeWidth={1.6} />
+          <Path d={Array.from({ length: 39 }, (_, i) => `M${ENTRY.x + 1 + i * 2} ${ENTRY.y + 0.4} v3 M${ENTRY.x + 1 + i * 2} ${ENTRY.y + ENTRY.h - 0.4} v-3`).join('')} stroke="#4a4d54" strokeWidth={0.6} />
+        </G>
+      ) : (
+        // the raw cut edge: a bright, unfinished sheet-metal lip
+        <Rect x={ENTRY.x} y={ENTRY.y} width={ENTRY.w} height={ENTRY.h} rx={0.6} fill="none" stroke="#c9ccd2" strokeWidth={0.5} />
+      )}
+    </G>
+  );
+}
+
+/* ── gear faces (all on the U grid) ─────────────────────────────────────── */
+
+/** 2U 24-port keystone patch panel, REAR: the modules' punch-down rears on a
+ *  19.3 mm pitch, the white designation strip below them, a lacing bar above
+ *  (where the horizontals are dressed once the panel is done right). */
+export const PATCH = { y: uY(0), h: 2 * U_H, modY: 27, modH: 12, stripY: 43, stripH: 9 } as const;
+
+export function PatchPanelRear({ xs, dress }: { xs: number[]; dress: boolean }) {
+  return (
+    <G>
+      <DeviceFace y={PATCH.y} h={PATCH.h} label="PATCH · 24 PORT" />
+      {/* keystone rears: dark module, punch-down cap with its IDC slots */}
+      {xs.map((cx) => (
+        <G key={cx}>
+          <Rect x={cx - 4.2} y={PATCH.modY} width={8.4} height={PATCH.modH} rx={0.6} fill="#121317" stroke="#050506" strokeWidth={0.4} />
+          <Rect x={cx - 3.4} y={PATCH.modY + 1} width={6.8} height={4.6} rx={0.4} fill="#2f3137" stroke="#0a0a0c" strokeWidth={0.3} />
+          <Path d={[0, 1, 2, 3].map((i) => `M${cx - 2.6 + i * 1.7} ${PATCH.modY + 1.6} v3.2`).join('')} stroke="#0a0a0c" strokeWidth={0.5} />
+          <Rect x={cx - 1} y={PATCH.modY + 6.4} width={2} height={4.6} rx={0.3} fill="#0a0a0c" />
+        </G>
+      ))}
+      {/* designation strip: a white write-on strip along the panel */}
+      <Rect x={FACE_X + 4} y={PATCH.stripY} width={FACE_W - 8} height={PATCH.stripH} rx={0.6} fill="#e9e7e0" stroke="#8d8a80" strokeWidth={0.35} />
+      {dress ? (
+        <G>
+          {/* dressed: every port designated (printed, ≥ 9 pt would not fit 24
+              across, so the IDs are drawn as print at true scale) */}
+          {xs.map((cx) => (
+            <Path key={`id${cx}`} d={`M${cx - 3} ${PATCH.stripY + 3} h3.4 M${cx - 3} ${PATCH.stripY + 5.6} h5.6`} stroke="#23252a" strokeWidth={0.9} />
+          ))}
+          {/* the horizontals arrive from a lacing bar above the modules, one
+              per module, retained with hook-and-loop, each with a wrap label */}
+          <Rect x={FACE_X + 6} y={PATCH.y + 3} width={FACE_W - 12} height={2.4} rx={1.2} fill="#9ba1a8" stroke="#2d3036" strokeWidth={0.35} />
+          {xs.map((cx) => (
+            <JacketPath key={`h${cx}`} d={`M${cx} ${PATCH.y + 5} V${PATCH.modY + 1}`} color="#37d97b" width={2.6} shadow={false} />
+          ))}
         </G>
       ) : null}
     </G>
   );
 }
 
-/* ── gear faces (all inside the scene's band geometry) ───────────────────── */
-
-/** 2U patch panel: two rows of RJ45 keystones + the designation strip. */
-export function PatchPanel({ xs, dress }: { xs: number[]; dress: boolean }) {
-  return (
-    <G>
-      <DeviceFace y={46} h={40} />
-      <Screw x={58.5} y={52} r={1.6} />
-      <Screw x={281.5} y={52} r={1.6} />
-      {xs.map((cx) => (
-        <G key={cx}>
-          {[54, 66].map((y) => (
-            <G key={y}>
-              <Rect x={cx - 4} y={y - 0.5} width={8} height={8} rx={0.8} fill="#e9e8e3" stroke="#8d8a80" strokeWidth={0.35} />
-              <Rect x={cx - 2.9} y={y + 0.7} width={5.8} height={5.2} rx={0.4} fill="#050506" />
-              <Rect x={cx - 1.2} y={y + 5.9} width={2.4} height={1} fill="#050506" />
-              <Path d={`M${cx - 2.3} ${y + 1.3} v1.4 M${cx - 1.2} ${y + 1.3} v1.4 M${cx} ${y + 1.3} v1.4 M${cx + 1.2} ${y + 1.3} v1.4 M${cx + 2.3} ${y + 1.3} v1.4`} stroke="#c9a13c" strokeWidth={0.35} />
-            </G>
-          ))}
-        </G>
-      ))}
-      {dress
-        ? xs.map((cx) => (
-            <G key={`lb${cx}`}>
-              <Rect x={cx - 5} y={78} width={10} height={5.4} rx={0.6} fill="#eceae3" stroke="#8d8a80" strokeWidth={0.35} />
-              <Path d={`M${cx - 3.4} 80 h4.6 M${cx - 3.4} 81.8 h6.4`} stroke="#23252a" strokeWidth={0.8} />
-            </G>
-          ))
-        : null}
-    </G>
-  );
-}
-
-/** 1U horizontal finger manager. */
+/** 1U horizontal finger duct. */
+export const HMGR = { y: uY(2), h: U_H } as const;
 export function HorizontalManager({ xs }: { xs: number[] }) {
   const p = usePaint();
   return (
     <G>
-      <Rect x={54} y={92} width={232} height={12} rx={1} fill={p.mgr} stroke="#0a0a0c" strokeWidth={0.6} />
+      <Rect x={FACE_X} y={HMGR.y + 1} width={FACE_W} height={HMGR.h - 2} rx={1} fill={p.mgr} stroke="#0a0a0c" strokeWidth={0.6} />
+      <Screw x={49} y={HMGR.y + 4} r={1.5} />
+      <Screw x={291} y={HMGR.y + 4} r={1.5} />
+      <Screw x={49} y={HMGR.y + HMGR.h - 4} r={1.5} />
+      <Screw x={291} y={HMGR.y + HMGR.h - 4} r={1.5} />
       {xs.map((x) => (
-        <Path key={x} d={`M${x - 3} 104 V95 Q${x - 3} 93 ${x} 93 Q${x + 3} 93 ${x + 3} 95 V104 Z`} fill="#26282d" stroke="#0a0a0c" strokeWidth={0.4} />
+        <Path key={x} d={`M${x - 3.2} ${HMGR.y + HMGR.h - 2} V${HMGR.y + 5} Q${x - 3.2} ${HMGR.y + 2.6} ${x} ${HMGR.y + 2.6} Q${x + 3.2} ${HMGR.y + 2.6} ${x + 3.2} ${HMGR.y + 5} V${HMGR.y + HMGR.h - 2} Z`} fill="#26282d" stroke="#0a0a0c" strokeWidth={0.4} />
       ))}
     </G>
   );
 }
 
-/** 1U network switch: RJ45 ports with link LEDs, an SFP cage. */
+/** 1U network switch, reverse-racked so its ports face the rear with the
+ *  rest of the cabling (AV practice): 8 × RJ45 with link LEDs, two SFP cages. */
+export const SWITCH = { y: uY(3), h: U_H, portY: 0 } as const;
 export function NetworkSwitch({ xs }: { xs: number[] }) {
+  const y = SWITCH.y;
   return (
     <G>
-      <DeviceFace y={110} h={28} />
+      <DeviceFace y={y} h={SWITCH.h} />
+      <Silk x={196} y={y + 14.6} text="SWITCH" />
       {xs.map((x, i) => (
         <G key={x}>
-          <Rect x={x} y={119} width={11} height={9} rx={0.6} fill="#050506" stroke="#6d737b" strokeWidth={0.45} />
-          <Rect x={x + 3.8} y={127.2} width={3.4} height={1.6} fill="#050506" />
-          <Path d={[0, 1, 2, 3, 4, 5, 6, 7].map((k) => `M${x + 1.6 + k * 1.1} 119.8 v1.6`).join('')} stroke="#c9a13c" strokeWidth={0.3} />
-          <Circle cx={x + 2.4} cy={115} r={1.1} fill={i % 3 === 0 ? '#37d97b' : '#1b2a20'} />
-          <Circle cx={x + 8.6} cy={115} r={1.1} fill={i % 3 === 0 ? '#ffc64d' : '#2a2616'} />
+          <Rect x={x} y={y + 8.5} width={11.7} height={9.6} rx={0.6} fill="#050506" stroke="#6d737b" strokeWidth={0.45} />
+          <Rect x={x + 4.1} y={y + 17.4} width={3.5} height={1.6} fill="#050506" />
+          <Path d={[0, 1, 2, 3, 4, 5, 6, 7].map((k) => `M${x + 1.9 + k * 1.15} ${y + 9.3} v1.8`).join('')} stroke="#c9a13c" strokeWidth={0.3} />
+          <Circle cx={x + 2.4} cy={y + 5.4} r={1.1} fill={i % 3 === 0 ? '#37d97b' : '#1b2a20'} />
+          <Circle cx={x + 9.3} cy={y + 5.4} r={1.1} fill={i % 3 === 0 ? '#ffc64d' : '#2a2616'} />
         </G>
       ))}
-      <Rect x={262} y={117} width={16} height={12} rx={0.8} fill="#050506" stroke="#9ba1a8" strokeWidth={0.6} />
-      <Rect x={264} y={119} width={12} height={8} fill="#141518" />
+      {[248, 266].map((x) => (
+        <G key={x}>
+          <Rect x={x} y={y + 7.5} width={15} height={11.5} rx={0.8} fill="#050506" stroke="#9ba1a8" strokeWidth={0.6} />
+          <Rect x={x + 2} y={y + 9.5} width={11} height={7.5} fill="#141518" />
+        </G>
+      ))}
     </G>
   );
 }
 
-/** DSP rear: eight XLR-female inputs on D-series flanges. */
-export function DspInputs({ xs, dress }: { xs: number[]; dress: boolean }) {
+/** 2U DSP rear: 8 XLR-F analog inputs on D-series flanges (numbered on the
+ *  silkscreen), an etherCON-type network port, the IEC inlet. */
+export const DSP = { y: uY(4), h: 2 * U_H, jackY: uY(4) + 14 } as const;
+export function DspRear({ xs, dress }: { xs: number[]; dress: boolean }) {
+  const y = DSP.y;
   return (
     <G>
-      <DeviceFace y={144} h={40} />
+      <DeviceFace y={y} h={DSP.h} />
+      <Silk x={FACE_X + 4} y={y + DSP.h - 3.6} text="DSP · ANALOG IN" />
       {xs.map((cx, i) => (
         <G key={cx}>
-          <PanelJack x={cx} y={162} k={RK} kind="xlrF" />
-          {dress ? <Callout x={cx} y={182} text={String(i + 1)} size={9.5} color="#b9bdc6" bg={null} /> : null}
+          <PanelJack x={cx} y={DSP.jackY} k={RK} kind="xlrF" />
+          <Silk x={cx} y={y + 34.6} text={String(i + 1)} anchor="middle" color={dress ? '#b9bdc6' : '#8f939c'} />
         </G>
       ))}
+      <PanelJack x={266} y={DSP.jackY} k={RK} kind="rj45" />
+      <Silk x={266} y={y + 34.6} text="NET" anchor="middle" />
+      {/* IEC C14 inlet, bottom right */}
+      <IecInlet x={244} y={y + 30} />
     </G>
   );
 }
 
-/** Audio interface: six combo XLR/TRS jacks + two XLR-male outputs. */
+/** IEC C14 chassis inlet (rear), 30 × 22 mm on its plate. */
+export function IecInlet({ x, y }: { x: number; y: number }) {
+  return (
+    <G>
+      <Rect x={x} y={y} width={14} height={11} rx={1} fill="#26282d" stroke="#0a0a0c" strokeWidth={0.45} />
+      <Path d={`M${x + 2.2} ${y + 2} H${x + 11.8} V${y + 6.6} L${x + 9.6} ${y + 9} H${x + 4.4} L${x + 2.2} ${y + 6.6} Z`} fill="#050506" stroke="#6e727a" strokeWidth={0.35} />
+      <Path d={`M${x + 4.6} ${y + 4} v3 M${x + 7} ${y + 3.4} v3 M${x + 9.4} ${y + 4} v3`} stroke="#c9a13c" strokeWidth={0.7} />
+    </G>
+  );
+}
+
+/** 1U audio interface: six combo XLR/TRS inputs and two XLR-M outputs. */
+export const IFACE = { y: uY(6), h: U_H, jackY: uY(6) + 11 } as const;
 export function AudioInterface({ xs }: { xs: number[] }) {
   const p = usePaint();
+  const y = IFACE.y;
   return (
     <G>
-      <DeviceFace y={190} h={28} />
+      <DeviceFace y={y} h={IFACE.h} />
       {xs.map((cx) => (
         <G key={cx}>
-          <Circle cx={cx} cy={204} r={5.2} fill={p.jack} stroke="#6e727a" strokeWidth={0.45} />
-          <Circle cx={cx} cy={204} r={1.7} fill="#050506" stroke="#9ba1a8" strokeWidth={0.35} />
-          <Rect x={cx - 0.9} y={198.8} width={1.8} height={1.4} fill="#050506" />
+          <Circle cx={cx} cy={IFACE.jackY} r={5.4} fill={p.jack} stroke="#6e727a" strokeWidth={0.45} />
+          <Circle cx={cx} cy={IFACE.jackY} r={1.7} fill="#050506" stroke="#9ba1a8" strokeWidth={0.35} />
+          <Rect x={cx - 0.9} y={IFACE.jackY - 5.4} width={1.8} height={1.6} fill="#050506" />
         </G>
       ))}
-      {[244, 268].map((cx) => (
-        <PanelJack key={cx} x={cx} y={204} k={RK * 0.86} kind="xlrM" />
+      <Silk x={xs[xs.length - 1] + 12} y={y + 14.4} text="INTERFACE" />
+      {[254, 274].map((cx) => (
+        <PanelJack key={cx} x={cx} y={IFACE.jackY} k={RK * 0.7} kind="xlrM" />
       ))}
     </G>
   );
 }
 
-/** A blank filler panel of `h` units at `y`. */
-export function BlankPanel({ y, h }: { y: number; h: number }) {
-  return (
-    <G>
-      <DeviceFace y={y} h={h} />
-      <Screw x={60} y={y + h / 2} r={1.7} />
-      <Screw x={280} y={y + h / 2} r={1.7} />
-    </G>
-  );
+/** A blank filler panel of `us` U at U `u`. */
+export function BlankPanel({ u, us }: { u: number; us: number }) {
+  return <DeviceFace y={uY(u)} h={us * U_H} />;
 }
 
-/** A speakON-type NL4 panel jack (round, keyed, on its flange). */
+/** The rack's empty bay: nothing racked, the back of the enclosure visible. */
+export function OpenBay({ u, us }: { u: number; us: number }) {
+  return <Rect x={FACE_X} y={uY(u)} width={FACE_W} height={us * U_H} fill="#08080a" />;
+}
+
+/** An NL4 (speakON-type) panel jack: round, keyed, on its square flange. */
 function Nl4({ cx, cy }: { cx: number; cy: number }) {
   const p = usePaint();
   return (
     <G>
-      <Rect x={cx - 8.2} y={cy - 8.8} width={16.4} height={17.6} rx={1.4} fill="#26282d" stroke="#0a0a0c" strokeWidth={0.5} />
-      <Circle cx={cx} cy={cy} r={7.2} fill={p.jack} stroke="#7b7f86" strokeWidth={0.6} />
+      <Rect x={cx - 8.2} y={cy - 8.2} width={16.4} height={16.4} rx={1.4} fill="#26282d" stroke="#0a0a0c" strokeWidth={0.5} />
+      <Circle cx={cx} cy={cy} r={7} fill={p.jack} stroke="#7b7f86" strokeWidth={0.6} />
       <Circle cx={cx} cy={cy} r={4.2} fill="#141518" stroke="#3a3c42" strokeWidth={0.5} />
-      <Rect x={cx - 1} y={cy - 7.2} width={2} height={3} fill="#050506" />
-      <Screw x={cx - 6} y={cy - 6.8} r={0.9} />
-      <Screw x={cx + 6} y={cy + 6.8} r={0.9} />
+      <Rect x={cx - 1} y={cy - 7} width={2} height={3} fill="#050506" />
+      <Screw x={cx - 6} y={cy - 6} r={0.9} />
+      <Screw x={cx + 6} y={cy + 6} r={0.9} />
     </G>
   );
 }
 
-/** 3U amplifier rear: two NL4 outputs, an IEC C14 inlet, a fan grille. */
-export function Amplifier({ ventXs, dress }: { ventXs: number[]; dress: boolean }) {
-  const x0 = ventXs[0] - 4;
-  const x1 = ventXs[ventXs.length - 1] + 4;
+/** 3U power amplifier rear: NL4 outputs, XLR-F inputs, the IEC inlet, and
+ *  the fan intake behind its grille (which the loom must never cross). */
+export const AMP = { y: uY(9), h: 3 * U_H, nl4Y: uY(9) + 30, nl4Xs: [76, 104] as const, inXs: [140, 162] as const, grille: { x: 178, y: uY(9) + 6, w: 100, h: 54 } } as const;
+export function Amplifier({ dress }: { dress: boolean }) {
+  const y = AMP.y;
+  const g = AMP.grille;
   return (
     <G>
-      <DeviceFace y={248} h={68} />
-      <Nl4 cx={78} cy={272} />
-      <Nl4 cx={106} cy={272} />
-      {/* IEC C14 inlet */}
-      <Rect x={130} y={264} width={20} height={15} rx={1.4} fill="#26282d" stroke="#0a0a0c" strokeWidth={0.5} />
-      <Path d="M133.5 267 H146.5 V273.5 L143.5 276.5 H136.5 L133.5 273.5 Z" fill="#050506" stroke="#6e727a" strokeWidth={0.4} />
-      <Path d="M137 269.5 v4 M140 269.5 v4 M143 269.5 v4" stroke="#c9a13c" strokeWidth={0.8} />
-      {/* the fan grille (intake) */}
-      <VentField x={x0} y={256} w={x1 - x0} h={52} k={RK} />
-      <Circle cx={(x0 + x1) / 2} cy={282} r={23} fill="none" stroke="#2c2e34" strokeWidth={0.9} />
-      <Circle cx={(x0 + x1) / 2} cy={282} r={15} fill="none" stroke="#2c2e34" strokeWidth={0.7} />
-      <Circle cx={(x0 + x1) / 2} cy={282} r={5} fill="#1b1c20" stroke="#2c2e34" strokeWidth={0.6} />
-      {dress ? (
-        <G>
-          {[70, 98].map((x) => (
-            <G key={x}>
-              <Rect x={x} y={288} width={16} height={6} rx={0.6} fill="#eceae3" stroke="#8d8a80" strokeWidth={0.35} />
-              <Path d={`M${x + 2} 290.2 h7 M${x + 2} 292 h11`} stroke="#23252a" strokeWidth={0.7} />
-            </G>
-          ))}
-        </G>
-      ) : null}
+      <DeviceFace y={y} h={AMP.h} label="POWER AMP" />
+      <Silk x={FACE_X + 4} y={y + 12} text="OUTPUTS" />
+      {AMP.nl4Xs.map((cx) => (
+        <Nl4 key={cx} cx={cx} cy={AMP.nl4Y} />
+      ))}
+      <Silk x={AMP.inXs[0] - 8} y={y + 12} text="INPUTS" />
+      {AMP.inXs.map((cx) => (
+        <PanelJack key={cx} x={cx} y={AMP.nl4Y} k={RK * 0.86} kind="xlrF" />
+      ))}
+      <IecInlet x={128} y={y + 50} />
+      <Silk x={144} y={y + 58.6} text="AC IN" />
+      {/* the 120 mm fan behind its punched grille — this is the INTAKE */}
+      <VentField x={g.x} y={g.y} w={g.w} h={g.h} k={RK} />
+      <Circle cx={g.x + g.w / 2} cy={g.y + g.h / 2} r={24} fill="none" stroke="#2c2e34" strokeWidth={0.9} />
+      <Circle cx={g.x + g.w / 2} cy={g.y + g.h / 2} r={15} fill="none" stroke="#2c2e34" strokeWidth={0.7} />
+      {[0, 1, 2, 3, 4].map((i) => {
+        const a = (i / 5) * Math.PI * 2;
+        const cx = g.x + g.w / 2;
+        const cy = g.y + g.h / 2;
+        return <Path key={i} d={`M${cx + Math.cos(a) * 6} ${cy + Math.sin(a) * 6} Q${cx + Math.cos(a + 0.5) * 16} ${cy + Math.sin(a + 0.5) * 16} ${cx + Math.cos(a + 0.9) * 22} ${cy + Math.sin(a + 0.9) * 22}`} stroke="#2c2e34" strokeWidth={2.2} fill="none" strokeLinecap="round" />;
+      })}
+      <Circle cx={g.x + g.w / 2} cy={g.y + g.h / 2} r={5.5} fill="#1b1c20" stroke="#2c2e34" strokeWidth={0.6} />
+      <Silk x={g.x + g.w / 2} y={y + AMP.h - 3.6} text="INTAKE · KEEP CLEAR" anchor="middle" />
+      {/* `dress` is the scene's mode flag — the dressed loom draws its own
+          seated plug (Nl4PlugRear) where it lands */}
+      {dress ? null : null}
     </G>
   );
 }
 
-/** An IEC C13 outlet on the distro. */
+/** An NL4 (speakON-type) cable plug seated in its panel jack, end-on: the
+ *  round black housing, the twist-lock ring, the cable leaving its centre. */
+export function Nl4PlugRear({ x, y }: { x: number; y: number }) {
+  return (
+    <G>
+      <Circle cx={x + 0.8} cy={y + 1.4} r={7.4} fill="rgba(0,0,0,0.5)" />
+      <Circle cx={x} cy={y} r={7.4} fill="#1e2024" stroke="#050506" strokeWidth={0.5} />
+      <Circle cx={x} cy={y} r={5.2} fill="#2a2c31" stroke="#0d0e10" strokeWidth={0.4} />
+      <Path d={`M${x - 5.2} ${y} a5.2 5.2 0 0 1 10.4 0`} stroke="rgba(255,255,255,0.18)" strokeWidth={0.7} fill="none" />
+      <Circle cx={x} cy={y} r={2.4} fill="#0b0b0d" />
+      <Rect x={x - 1.4} y={y - 8.6} width={2.8} height={3} rx={0.6} fill="#2a2c31" stroke="#050506" strokeWidth={0.4} />
+    </G>
+  );
+}
+
+/** An IEC C13 outlet on the PDU. */
 function C13({ x, y }: { x: number; y: number }) {
   return (
     <G>
@@ -284,28 +394,134 @@ function C13({ x, y }: { x: number; y: number }) {
   );
 }
 
-/** A C13 plug seated in an outlet, cord leaving downward. */
+/** A C13 plug seated in an outlet, seen end-on: the moulded body, the
+ *  cord leaving its centre downward. */
 export function C13Plug({ x, y }: { x: number; y: number }) {
   return (
     <G>
-      <Rect x={x - 0.5} y={y - 0.5} width={15} height={12} rx={1.6} fill="#1b1c20" stroke="#3a3c42" strokeWidth={0.6} />
-      <Rect x={x + 1.4} y={y + 1.2} width={11} height={3} rx={0.8} fill="#34363d" />
-      <Rect x={x + 4.5} y={y + 11.5} width={5} height={4} rx={0.8} fill="#1b1c20" />
+      <Rect x={x - 0.6} y={y - 0.6} width={16.2} height={12.2} rx={1.8} fill="#1b1c20" stroke="#3a3c42" strokeWidth={0.6} />
+      <Rect x={x + 1.6} y={y + 1.4} width={11.8} height={2.8} rx={0.8} fill="#34363d" />
+      <Rect x={x + 5} y={y + 11} width={5} height={4.2} rx={0.9} fill="#1b1c20" stroke="#3a3c42" strokeWidth={0.4} />
     </G>
   );
 }
 
-/** 1U power distro: C13 outlets, a breaker. */
+/** 1U PDU rear: eight C13 outlets in a row, the breaker, the inlet. */
+export const PDU = { y: uY(12), h: U_H, outY: uY(12) + 5.5 } as const;
 export function PowerDistro({ xs, dress }: { xs: number[]; dress: boolean }) {
+  const y = PDU.y;
   return (
     <G>
-      <DeviceFace y={326} h={30} />
+      <DeviceFace y={y} h={PDU.h} />
       {xs.map((x) => (
-        <C13 key={x} x={x} y={334} />
+        <C13 key={x} x={x} y={PDU.outY} />
       ))}
-      <Rect x={266} y={333} width={14} height={14} rx={1.4} fill="#26282d" stroke="#0a0a0c" strokeWidth={0.45} />
-      <Rect x={269.5} y={335.5} width={7} height={9} rx={1} fill="#c8372b" />
-      {dress ? [64, 90, 116].map((x) => <C13Plug key={x} x={x} y={333} />) : [64, 90, 116].map((x) => <C13 key={x} x={x} y={334} />)}
+      {/* breaker (rocker with its trip button) + the C14 inlet */}
+      <Rect x={222} y={y + 4} width={14} height={14} rx={1.4} fill="#26282d" stroke="#0a0a0c" strokeWidth={0.45} />
+      <Rect x={225.5} y={y + 6.5} width={7} height={9} rx={1} fill="#c8372b" />
+      <Silk x={243} y={y + 14.4} text="PDU" />
+      <IecInlet x={264} y={y + 5.5} />
+      {dress ? xs.slice(0, 3).map((x) => <C13Plug key={`p${x}`} x={x} y={PDU.outY} />) : null}
+    </G>
+  );
+}
+
+/* ── plugs seen end-on (the rear view of a plugged cable) ────────────────── */
+
+/** An RJ45 plug latched in a port, end-on, with its snagless boot. */
+export function Rj45PlugRear({ x, y, color = '#37d97b' }: { x: number; y: number; color?: string }) {
+  return (
+    <G>
+      <Rect x={x + 0.8} y={y + 0.6} width={10.1} height={8.4} rx={0.6} fill="rgba(215,225,235,0.55)" stroke="#dfe7ef" strokeWidth={0.4} />
+      <Rect x={x + 3.2} y={y + 3.2} width={5.3} height={5.6} rx={1.2} fill={shade(color, 0.3)} stroke="rgba(0,0,0,0.6)" strokeWidth={0.35} />
+      <Rect x={x + 2.4} y={y - 1.4} width={6.9} height={2} rx={0.5} fill="rgba(215,225,235,0.7)" />
+    </G>
+  );
+}
+
+/** A ¼-inch / XLR combo input with a TRS plug in it, end-on. */
+export function TrsPlugRear({ x, y }: { x: number; y: number }) {
+  return (
+    <G>
+      <Circle cx={x + 0.6} cy={y + 1} r={4.2} fill="rgba(0,0,0,0.5)" />
+      <Circle cx={x} cy={y} r={4.2} fill="#262a31" stroke="#0a0a0c" strokeWidth={0.4} />
+      <Circle cx={x} cy={y} r={2.6} fill="#1b1c20" stroke="#2e3036" strokeWidth={0.5} />
+      <Circle cx={x} cy={y} r={1.2} fill="#0b0b0d" />
+    </G>
+  );
+}
+
+/* ── defect helpers (real cable, real hardware, wrong use) ──────────────── */
+
+/**
+ * A tightly wound HANK of excess cable (the "drum"): turns laid side by side
+ * at the cable's own diameter, so it reads as wound cable, not a spiral.
+ * A cable tie holds it; the two tails leave at `tailAngle`.
+ */
+export function Hank({ cx, cy, rx, ry, turns, color, width }: { cx: number; cy: number; rx: number; ry: number; turns: number; color: string; width: number }) {
+  const rings: number[] = [];
+  for (let i = 0; i < turns; i++) rings.push(i);
+  return (
+    <G>
+      {rings.map((i) => {
+        const f = 1 - (i * width * 1.05) / rx;
+        const rxi = rx * f;
+        const ryi = ry * f;
+        return <JacketPath key={i} d={`M${cx - rxi} ${cy} a${rxi} ${ryi} 0 1 0 ${2 * rxi} 0 a${rxi} ${ryi} 0 1 0 ${-2 * rxi} 0`} color={color} width={width} shadow={i === 0} />;
+      })}
+    </G>
+  );
+}
+
+/**
+ * Two cables PLAITED through each other (power + signal twisted together):
+ * anti-phase sine waves, and in each half-period the cable in front is the
+ * one drawn last — a real over-under lay, not two wiggles.
+ */
+export function Plait({ x0, x1, y, amp, period, colors: cs, widths, phase = 0 }: { x0: number; x1: number; y: number; amp: number; period: number; colors: [string, string]; widths: [number, number]; phase?: number }) {
+  const segs: { d: string; k: 0 | 1; over: boolean }[] = [];
+  const half = period / 2;
+  const n = Math.max(1, Math.round((x1 - x0) / half));
+  const sample = (k: 0 | 1, a: number, b: number) => {
+    const pts: string[] = [];
+    const steps = 8;
+    for (let s = 0; s <= steps; s++) {
+      const x = a + ((b - a) * s) / steps;
+      const yy = y + (k === 0 ? 1 : -1) * amp * Math.sin(((x - x0) / period) * Math.PI * 2 + phase);
+      pts.push(`${s === 0 ? 'M' : 'L'}${x.toFixed(1)} ${yy.toFixed(1)}`);
+    }
+    return pts.join(' ');
+  };
+  for (let i = 0; i < n; i++) {
+    const a = x0 + i * half;
+    const b = Math.min(x1, a + half);
+    const front: 0 | 1 = i % 2 === 0 ? 0 : 1;
+    segs.push({ d: sample(front === 0 ? 1 : 0, a, b), k: front === 0 ? 1 : 0, over: false });
+    segs.push({ d: sample(front, a, b), k: front, over: true });
+  }
+  return (
+    <G>
+      {segs.map((s, i) => (
+        <JacketPath key={i} d={s.d} color={cs[s.k]} width={widths[s.k]} shadow={s.over} />
+      ))}
+    </G>
+  );
+}
+
+/** The inspector's red strain flag: two short strokes where cable is loaded. */
+export function StrainFlag({ x, y, angle = 0 }: { x: number; y: number; angle?: number }) {
+  return (
+    <G transform={`rotate(${angle} ${x} ${y})`}>
+      <Path d={`M${x - 3} ${y - 2.4} l-3 -3 M${x + 3} ${y - 2.4} l3 -3`} stroke="#ff7a68" strokeWidth={1.2} strokeLinecap="round" />
+    </G>
+  );
+}
+
+/** A crease where a jacket has been folded past its bend radius. */
+export function Kink({ x, y, angle = 0 }: { x: number; y: number; angle?: number }) {
+  return (
+    <G transform={`rotate(${angle} ${x} ${y})`}>
+      <Path d={`M${x - 1.6} ${y - 2.2} L${x} ${y + 0.4} L${x + 1.6} ${y - 2.2}`} stroke="#f2f4f6" strokeWidth={0.9} fill="none" strokeLinejoin="round" />
     </G>
   );
 }

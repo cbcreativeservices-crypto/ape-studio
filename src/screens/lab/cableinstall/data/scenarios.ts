@@ -265,8 +265,8 @@ export type CiRackIssue = { id: string; mistakeId: string; label: string; /** re
 export const CI_RACK_ISSUES: CiRackIssue[] = [
   { id: 'ri-1', mistakeId: 'power-signal-mess', label: 'Power + mic lines twisted through each other', zone: 0.16 },
   { id: 'ri-2', mistakeId: 'connector-strain', label: 'XLR loom hanging its full weight on the DSP jacks', zone: 0.3 },
-  { id: 'ri-3', mistakeId: 'slack-pile', label: 'A drum of excess Cat6 stuffed behind the switch', zone: 0.4 },
-  { id: 'ri-4', mistakeId: 'unlabeled', label: 'Not one label on the patch field', zone: 0.1 },
+  { id: 'ri-3', mistakeId: 'slack-pile', label: 'A hank of excess Cat6 wound tight and stuffed into the open bay', zone: 0.4 },
+  { id: 'ri-4', mistakeId: 'unlabeled', label: 'Not one designation on the patch panel strip', zone: 0.1 },
   { id: 'ri-5', mistakeId: 'blocked-access', label: 'Amp rear blocked by a taut bundle', zone: 0.62 },
   { id: 'ri-6', mistakeId: 'blocked-vent', label: 'Loom dressed straight across the amp\'s intake', zone: 0.7 },
   { id: 'ri-7', mistakeId: 'crushed-by-tie', label: 'Ties cinched until the snake is oval', zone: 0.48 },
