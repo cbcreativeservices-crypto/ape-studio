@@ -47,3 +47,30 @@ lab-entry popup fix above.
 ## Lessons
 
 `docs/APE_ENGINEERING_LESSONS.md` § "2026-09-27".
+
+## Addendum — 2026-09-28 (owner out for the day; back tonight)
+
+**Published (all builds, prod + preview) from `186da5cd`:** ios-32 `3f07e565`, ios-30 `5eaa3393`,
+android `a8521c16`. Contents: Cable Install stages 6/8/9/11 redrawn (Fable first pass, Opus finish
+with expert + learning reviews — commits cf417014…c604e879, `8c45a492` exhaust wording), Sound
+Systems SYSTEM MAP as three columns (`2cb2b4b1`), and the lab touch/playback PROBE (rounds 1–3).
+**Play Store:** Internal testing release 15 (1.0.0) rolled out 2026-09-28.
+
+**OPEN — Bass lab silent on owner's iPhone (iOS 27, b32).** Evidence so far: the tap reaches ▶
+(probe: hit BHO, down=up=18); the phone DID fetch the recording (lab-audio 200 at 15:01:37Z);
+Silent mode OFF → still silent; the other labs (engine sound) silent too; ? and ⓘ open nothing.
+The round-3 probe (triple-tap the lab title) now lists: ▶ tap → gate → audio-mode (ok/ERR/TIMEOUT)
+→ fetch/cached → player created/replaced + volume → first status updates → ? / i presses.
+**First thing tonight:** get that screenshot; the last line reached is where sound dies.
+REMOVE the probe (LabShell, labProbe.ts, LabAudioPlayer/useLabAudio/BassLab/HelpKey/AccuracyNote
+TEMP lines) once found.
+
+**Cable lab leftovers (agent-reported, not done):** rack rails ~5% wide and the 24-port patch
+panel reads 2U (1U in reality) — needs a rack-geometry refactor; Stage 11's question flow is not on
+the Rack Unit layout; Stage 8 FINISHED VIEW frames the ceiling from a different viewpoint;
+control vs speaker teaching colours (#e0b25e / #ffd35e) nearly identical lab-wide; the other nine
+stages were not surveyed.
+
+**Publishing while agents are mid-edit:** publish from a clean `git worktree` at the wanted commit
+(npm ci there, then copy `.gitignore` + `modules/*/ios|android` from the main folder so the bytes —
+and the fingerprint — match; verify 5d558314 / 02255b7b before any `eas update`).
