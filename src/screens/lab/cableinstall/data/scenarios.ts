@@ -445,7 +445,7 @@ export const CI_EMI_CHOICES: { id: string; label: string; ok: boolean; note: str
 export const CI_FIRE_SPACES: { id: string; label: string; isPlenum?: boolean; question: string; correctIdx: number; options: string[]; reveal: string; ruleId: string }[] = [
   {
     id: 'fs-cavity',
-    label: 'Suspended-ceiling cavity (return air NOT ducted through it)',
+    label: 'Ceiling cavity — return air runs in a duct (the cavity is not the air path)',
     question: 'What is this space, for cable purposes?',
     options: ['A ceiling cavity — not automatically a plenum; verify how air is handled', 'A plenum — every ceiling cavity is one', 'Nothing special — ratings never apply above ceilings'],
     correctIdx: 0,
@@ -454,7 +454,7 @@ export const CI_FIRE_SPACES: { id: string; label: string; isPlenum?: boolean; qu
   },
   {
     id: 'fs-plenum',
-    label: 'Ceiling space actively used for environmental air movement',
+    label: 'Ceiling cavity — return air crosses the open cavity (the cavity is the air path)',
     question: 'What does this space change?',
     options: ['Requirements can extend beyond the cable jacket — materials in the space matter, where adopted', 'Only the cable color', 'Nothing, if the cable is "low voltage"'],
     correctIdx: 0,
@@ -463,11 +463,11 @@ export const CI_FIRE_SPACES: { id: string; label: string; isPlenum?: boolean; qu
   },
   {
     id: 'fs-riser',
-    label: 'Floor-to-floor shaft with a conduit sleeve',
+    label: 'Stacked riser — floor to floor through firestopped slab sleeves',
     question: 'Routing up this shaft means…',
     options: ['Riser-space rules: cable rating for the vertical space AND treatment of the floor penetration', 'Just pull it — vertical runs are unregulated', 'Fill the sleeve with any sealant afterwards'],
     correctIdx: 0,
-    reveal: 'Vertical spaces can carry fire between floors — both the cable and the penetration treatment are part of the installation.',
+    reveal: 'Vertical spaces can carry fire between floors — both the cable and the penetration treatment are part of the installation. And the whole route counts: on the way to the riser this run crosses the open-return cavity and passes through two rated walls, so the cable’s listing must suit every space it passes, and every penetration is treated.',
     ruleId: 'fire-riser-spaces',
   },
 ];

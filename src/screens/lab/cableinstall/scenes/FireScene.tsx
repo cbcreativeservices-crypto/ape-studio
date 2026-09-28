@@ -53,7 +53,7 @@ import type { CiModuleProps } from '../registry';
 type FlowQ = { id: string; q: string; options: string[]; correctIdx: number; reveal: string; ruleId: string };
 
 const FLOW_SPEC =
-  'SIMULATED PROJECT DOCUMENTS — Drawing A-401 marks the corridor wall at the equipment room as a fire-resistance-rated assembly. The cable schedule lists this run\'s cable as rated for every space on the route. On the truck: a tube of generic "fire-rated" sealant. In the submittals: a listed firestop system matched to this wall type and this cable bundle.';
+  'SIMULATED PROJECT DOCUMENTS — Drawing A-401 marks the equipment-room wall as a fire-resistance-rated assembly, slab to slab. The cable schedule lists this run\'s cable as rated for every space on the route. On the truck: a tube of generic "fire-rated" sealant. In the submittals: a listed firestop system matched to this wall type and this cable bundle.';
 
 const FLOW: FlowQ[] = [
   {
@@ -210,7 +210,7 @@ function RouteDraw({ d, len, end }: { d: string; len: number; end: [number, numb
 
 /** Quiet danger: the rated wall's hatching breathes while it is the active
  *  subject (the five-question flow), and rests solid otherwise. */
-function RatedHatch({ active, loops }: { active: boolean; loops: boolean }) {
+function RatedHatch({ active, loops, ys }: { active: boolean; loops: boolean; ys: number[] }) {
   const t = useSharedValue(0);
   useEffect(() => {
     cancelAnimation(t);
@@ -225,7 +225,7 @@ function RatedHatch({ active, loops }: { active: boolean; loops: boolean }) {
   const p = useAnimatedProps(() => ({ opacity: 0.62 + 0.38 * t.value }));
   return (
     <AG opacity={1} animatedProps={p}>
-      {[84, 96, 108, 120, 132, 144, 156, 168, 180, 192, 204].map((y) => (
+      {ys.map((y) => (
         <Path key={y} d={`M${RATED.x} ${y} L${RATED.x + RATED.t} ${y - RATED.t}`} stroke="#ff5a48" strokeWidth={1} strokeOpacity={0.55} />
       ))}
     </AG>
@@ -234,9 +234,7 @@ function RatedHatch({ active, loops }: { active: boolean; loops: boolean }) {
 
 /** The sleeved opening: pulses amber while the five questions are live,
  *  settles green once the flow is answered. */
-function SleeveMarker({ on, done, reduce }: { on: boolean; done: boolean; reduce: boolean }) {
-  const r = useSpringTo(done ? 15 : 20, reduce);
-  const ring = useAnimatedProps(() => ({ r: r.value }));
+function SleeveMarker({ on, done }: { on: boolean; done: boolean; reduce?: boolean }) {
   if (!on) return null;
   return (
     <>
@@ -251,11 +249,7 @@ function SleeveMarker({ on, done, reduce }: { on: boolean; done: boolean; reduce
         strokeWidth={1.6}
         strokeDasharray={done ? undefined : '4 3'}
       />
-      {done ? (
-        <ACircle cx={SLEEVE.cx} cy={SLEEVE.cy} r={20} fill="none" stroke={colors.green} strokeWidth={1.4} opacity={0.75} animatedProps={ring} />
-      ) : (
-        <PulseRing cx={SLEEVE.cx} cy={SLEEVE.cy} r={15} color={colors.amber} run />
-      )}
+      {done ? null : <PulseRing cx={SLEEVE.cx} cy={SLEEVE.cy} r={15} color={colors.amber} run />}
     </>
   );
 }
@@ -274,18 +268,35 @@ function SpaceMarker({ cx, cy, n, done, reduce }: { cx: number; cy: number; n: n
 }
 
 /* ── building-section training visualization ────────────────────────────── */
-/** units per metre in the section. */
+/** Units per metre in the section (drawn to scale: 1 m = 40 units). */
 const BM = 40;
-/** Floor lines: the slab between floors, the lower room's tiles + floor. */
-const SLAB = { y: 64, h: 10 } as const;
-const TILE_Y = 116;
-const FLOOR_Y = 212;
-/** The marked rated wall (slab to slab, two layers of board each face). */
-const RATED = { x: 200, t: 8 } as const;
+/** The slab between the floors, the lower room's tiles and floor. The
+ *  ceiling cavity is 1.3 m deep, the rooms 2.4 m clear. */
+const SLAB = { y: 38, h: 10 } as const;
+const CAV_TOP = SLAB.y + SLAB.h;
+const TILE_Y = 100;
+const FLOOR_Y = 196;
+/** The non-rated partition (store | equipment room). */
+const PART = { x: 84, t: 6 } as const;
+/** The MARKED rated wall — the equipment room's wall to the open office:
+ *  studs with two layers of board each face (about 0.17 m overall). */
+const RATED = { x: 196, t: 7 } as const;
 /** The sleeved opening through it — the five-question penetration. */
-const SLEEVE = { cx: RATED.x + RATED.t / 2, cy: 180, h: 5 } as const;
-/** The riser shaft. */
-const SHAFT = { x0: 296, x1: 336, wall: 4, cableX: 316 } as const;
+const SLEEVE = { cx: RATED.x + RATED.t / 2, cy: 70, h: 6 } as const;
+/** The stacked riser rooms: walls at each floor, the slab continuous with
+ *  its sleeves; the backbone at `cableX`, a spare sleeve at `spareX` that
+ *  the proposed route would use. */
+const SHAFT = { x0: 300, x1: 344, wall: 6, cableX: 328, spareX: 316 } as const;
+/** The rack (side section, 2.0 m tall, 1.0 m deep; front faces left). */
+const RACK_X = 132;
+/** Where the cables drop from the tray to the rack top (a short vertical
+ *  ladder carries them). */
+const DROP = { x0: 140, x1: 154 } as const;
+/** Existing cable colours in the tray (teaching colours, deliberately not the
+ *  cyan of the air arrows). */
+const EXIST_A = '#c4692a';
+const EXIST_B = '#8a8f98';
+const AIR = '#4fd0e0';
 
 /** A small air-movement arrow (teaching colour). */
 function AirArrow({ x, y, dir, len = 10 }: { x: number; y: number; dir: 'up' | 'down' | 'left' | 'right'; len?: number }) {
@@ -299,173 +310,268 @@ function AirArrow({ x, y, dir, len = 10 }: { x: number; y: number; dir: 'up' | '
     dir === 'down' ? `M${ex - h} ${ey - h} L${ex} ${ey} L${ex + h} ${ey - h}` :
     dir === 'right' ? `M${ex - h} ${ey - h} L${ex} ${ey} L${ex - h} ${ey + h}` :
     `M${ex + h} ${ey - h} L${ex} ${ey} L${ex + h} ${ey + h}`;
-  return <Path d={`M${x} ${y} L${ex} ${ey} ${head}`} stroke="#4fd0e0" strokeWidth={1.1} fill="none" strokeLinecap="round" strokeLinejoin="round" />;
+  return <Path d={`M${x} ${y} L${ex} ${ey} ${head}`} stroke={AIR} strokeWidth={1.2} fill="none" strokeLinecap="round" strokeLinejoin="round" />;
 }
 
-/** A return / supply grille set in the tile line. */
+/** A return grille set in the tile line (seen in section: frame and blades). */
 function Grille({ x0, x1 }: { x0: number; x1: number }) {
   const slats: string[] = [];
-  for (let x = x0 + 2.6; x < x1 - 1.5; x += 3.2) slats.push(`M${x} ${TILE_Y + 1} v3.6`);
+  for (let x = x0 + 2.6; x < x1 - 1.5; x += 3.2) slats.push(`M${x} ${TILE_Y - 1.6} l1.6 3.4`);
   return (
     <G>
-      <Rect x={x0} y={TILE_Y} width={x1 - x0} height={5.4} rx={0.8} fill="#d9d7d0" stroke="#8d8a80" strokeWidth={0.5} />
-      <Path d={slats.join('')} stroke="#8d8a80" strokeWidth={0.8} />
+      <Rect x={x0} y={TILE_Y - 2} width={x1 - x0} height={4.4} fill="#1b1c20" stroke="#d9d7d0" strokeWidth={0.6} />
+      <Path d={slats.join('')} stroke="#d9d7d0" strokeWidth={0.7} />
+    </G>
+  );
+}
+
+/** A plain leader: a fine line from the label to a dot on the object. */
+function Lead({ x1, y1, x2, y2, color = '#8d9199' }: { x1: number; y1: number; x2: number; y2: number; color?: string }) {
+  return (
+    <G>
+      <Line x1={x1} y1={y1} x2={x2} y2={y2} stroke={color} strokeWidth={0.6} />
+      <Circle cx={x2} cy={y2} r={1.2} fill={color} />
+    </G>
+  );
+}
+
+/** Firestop at one face of a penetration — the lab's symbol for an installed
+ *  listed system (real products vary in form and colour). */
+function Firestop({ x, y, w, h }: { x: number; y: number; w: number; h: number }) {
+  return <Rect x={x} y={y} width={w} height={h} rx={0.6} fill="#c8372b" stroke="#6e1a13" strokeWidth={0.3} />;
+}
+
+/** Stacked masonry riser walls, coursed, interrupted by the slab. */
+function RiserWall({ x, y0, y1 }: { x: number; y0: number; y1: number }) {
+  const courses: number[] = [];
+  for (let y = y0 + 8; y < y1 - 1; y += 8) courses.push(y);
+  return (
+    <G>
+      <ConcreteCut x={x} y={y0} w={SHAFT.wall} h={y1 - y0} />
+      {courses.map((y) => (
+        <Line key={y} x1={x} y1={y} x2={x + SHAFT.wall} y2={y} stroke="#23252a" strokeWidth={0.45} />
+      ))}
     </G>
   );
 }
 
 /**
- * Section: two floors, the riser shaft on the right. The lower room holds
- * the rack, a non-rated partition that stops at the ceiling, and the MARKED
- * rated wall that runs slab to slab with the sleeved opening. Left of the
- * rated wall the ceiling cavity carries a DUCTED return (a cavity, not a
- * plenum); right of it the return grille opens straight into the cavity —
- * air moves through the space itself. The building RESPONDS to attention:
- * choosing a space routes the cable toward it and fades that space up.
+ * Section, drawn to scale: the floor above, the slab, and the lower floor — a
+ * store and the equipment room separated by a non-rated partition that stops
+ * just above the ceiling, the MARKED rated equipment-room wall running slab
+ * to slab with its sleeve, an open office, and the stacked riser rooms on the
+ * right with firestopped slab sleeves. Left of the rated wall the cavity
+ * carries a DUCTED return (the cavity is not the air path); over the open
+ * office the return grille opens into the cavity and the air crosses the open
+ * space to the return inlet — the cavity IS the air path (washed cyan). The
+ * building RESPONDS: choosing a space routes the cable toward it and fades
+ * that space up; each answer in the five-question flow adds its step to the
+ * penetration (cable through the sleeve → firestop both faces → done).
  */
 function BuildingArt({
   w,
   sel,
   done,
   flowOn,
+  flowStep,
   flowDone,
 }: {
   w: number;
   sel: string | null;
   done: (id: string) => boolean;
   flowOn: boolean;
+  flowStep: number;
   flowDone: boolean;
 }) {
   const m = useCiMotion();
   const h = Math.round((w * 224) / 360);
+  const rackTop = FLOOR_Y - 2 * BM;
+  const wallR = RATED.x + RATED.t;
   const ROUTES: Record<string, { d: string; len: number; end: [number, number] }> = {
-    'fs-cavity': { d: 'M44 132 V100 H128', len: 130, end: [128, 100] },
-    'fs-plenum': { d: `M52 ${SLEEVE.cy} H${RATED.x + RATED.t + 6} V104 H236`, len: 280, end: [236, 104] },
-    'fs-riser': { d: `M52 ${SLEEVE.cy + 4} H${RATED.x + RATED.t + 6} V194 H${SHAFT.cableX} V120`, len: 380, end: [SHAFT.cableX, 120] },
+    'fs-cavity': { d: `M151 ${rackTop} V${SLEEVE.cy} H176`, len: 80, end: [176, SLEEVE.cy] },
+    'fs-plenum': { d: `M151 ${rackTop} V${SLEEVE.cy} H250`, len: 160, end: [250, SLEEVE.cy] },
+    'fs-riser': { d: `M151 ${rackTop} V${SLEEVE.cy} H${SHAFT.spareX} V16`, len: 280, end: [SHAFT.spareX, 16] },
   };
   const HL: Record<string, [number, number, number, number]> = {
-    'fs-cavity': [12, SLAB.y + SLAB.h + 2, RATED.x - 14, TILE_Y - SLAB.y - SLAB.h - 4],
-    'fs-plenum': [RATED.x + RATED.t + 2, SLAB.y + SLAB.h + 2, SHAFT.x0 - RATED.x - RATED.t - 4, TILE_Y - SLAB.y - SLAB.h - 4],
-    'fs-riser': [SHAFT.x0 + SHAFT.wall, 8, SHAFT.x1 - SHAFT.x0 - 2 * SHAFT.wall, FLOOR_Y - 8],
+    'fs-cavity': [10, CAV_TOP + 1.5, RATED.x - 12, TILE_Y - CAV_TOP - 5],
+    'fs-plenum': [wallR + 1.5, CAV_TOP + 1.5, SHAFT.x0 - wallR - 3, TILE_Y - CAV_TOP - 5],
+    'fs-riser': [SHAFT.x0 + SHAFT.wall + 1, 6, SHAFT.x1 - SHAFT.x0 - 2 * SHAFT.wall - 2, FLOOR_Y - 8],
   };
   const MARK: Record<string, [number, number]> = {
-    'fs-cavity': [152, 90],
-    'fs-plenum': [254, 96],
-    'fs-riser': [SHAFT.cableX, 40],
+    'fs-cavity': [176, 88],
+    'fs-plenum': [250, 88],
+    'fs-riser': [SHAFT.spareX + 2, 22],
   };
   const route = sel ? ROUTES[sel] : null;
   const hl = sel ? HL[sel] : null;
-  const cavTop = SLAB.y + SLAB.h;
+  const hatch: number[] = [];
+  for (let y = CAV_TOP + 7; y <= FLOOR_Y; y += 7) hatch.push(y);
+  const board = 0.65;
   return (
     <Svg {...SVG_A11Y}
       width={w}
       height={h}
       viewBox="0 0 360 224"
-      accessibilityLabel="Building section, training visualization: two floors with a riser shaft on the right. The lower room holds the equipment rack, a non-rated partition that stops at the suspended ceiling, and a marked fire-rated wall that runs slab to slab with a sleeved opening. Left of the rated wall the ceiling cavity has a ducted return grille; right of it the return grille opens into the cavity itself, the air-handling space. The riser cable passes the floor slab through a fire-stopped sleeve. Proposed cable routes draw as dashed lines from the rack. All interaction happens in the cards below."
+      accessibilityLabel="Building section drawn to scale, training visualization. Floor above, the concrete slab, and the lower floor: a store and the equipment room with the rack, separated by a non-rated partition that stops just above the suspended ceiling. The equipment-room wall is a marked fire-rated assembly running slab to slab, with a sleeve through it at cable-tray height. Above the store and equipment room the ceiling cavity holds a cable tray and a ducted return — the air stays in the duct; the cavity is not the air path. Over the open office the return grille opens into the cavity and the air crosses the open space to the return inlet — the cavity is the air path. On the right, stacked riser rooms carry a riser-rated backbone through a firestopped slab sleeve, beside a spare sleeve. Proposed cable routes draw as dashed lines from the rack. All interaction happens in the cards below."
     >
-      <Rect x={6} y={2} width={348} height={218} rx={10} fill="#111216" />
+      <Rect x={0} y={0} width={360} height={224} rx={10} fill="#111216" />
 
-      {/* ── structure: ground slab, the slab between floors, the shaft ── */}
+      {/* ── structure: the slab between floors (cut, continuous through the
+          riser with its sleeve openings), the ground slab ── */}
       <ConcreteCut x={6} y={FLOOR_Y} w={348} h={8} />
-      <ConcreteCut x={6} y={SLAB.y} w={SHAFT.x0 - 6} h={SLAB.h} />
-      <ConcreteCut x={SHAFT.x1} y={SLAB.y} w={354 - SHAFT.x1} h={SLAB.h} />
-      {/* shaft floor slab, with the sleeved opening left open */}
-      <ConcreteCut x={SHAFT.x0} y={SLAB.y} w={SHAFT.cableX - 4 - SHAFT.x0} h={SLAB.h} />
-      <ConcreteCut x={SHAFT.cableX + 4} y={SLAB.y} w={SHAFT.x1 - SHAFT.cableX - 4} h={SLAB.h} />
-      {/* shaft walls: masonry, coursed, ground to top */}
+      <ConcreteCut x={6} y={SLAB.y} w={SHAFT.spareX - 3.5 - 6} h={SLAB.h} />
+      <ConcreteCut x={SHAFT.spareX + 3.5} y={SLAB.y} w={SHAFT.cableX - 3.5 - SHAFT.spareX - 3.5} h={SLAB.h} />
+      <ConcreteCut x={SHAFT.cableX + 3.5} y={SLAB.y} w={354 - SHAFT.cableX - 3.5} h={SLAB.h} />
+      {/* riser-room walls, stopping at the slab on each floor */}
       {[SHAFT.x0, SHAFT.x1 - SHAFT.wall].map((x) => (
         <G key={x}>
-          <ConcreteCut x={x} y={8} w={SHAFT.wall} h={FLOOR_Y - 8} />
-          {Array.from({ length: 16 }, (_, i) => 20 + i * 12).map((y) => (
-            <Line key={y} x1={x} y1={y} x2={x + SHAFT.wall} y2={y} stroke="#23252a" strokeWidth={0.45} />
+          <RiserWall x={x} y0={4} y1={SLAB.y} />
+          <RiserWall x={x} y0={SLAB.y + SLAB.h} y1={FLOOR_Y} />
+        </G>
+      ))}
+
+      {/* ── floor above + the scale ── */}
+      <Callout x={14} y={20} text="FLOOR ABOVE" size={9.6} color="#6d717a" bg={null} anchor="start" />
+      <ScaleBar x={104} y={19} m={BM} metres={1} color="#8d9199" />
+
+      {/* ── riser: vertical ladder runway (broken at the slab), the
+          riser-rated backbone strapped to it through its firestopped sleeve,
+          and a spare sleeve beside it, capped with a firestop plug ── */}
+      {[
+        [4, SLAB.y - 5],
+        [SLAB.y + SLAB.h + 5, FLOOR_Y],
+      ].map(([a, b]) => (
+        <G key={a}>
+          <Rect x={SHAFT.cableX + 3} y={a} width={5} height={b - a} fill="#3a3d43" stroke="#1d1f24" strokeWidth={0.4} />
+          {Array.from({ length: Math.floor((b - a) / 12) }, (_, i) => a + 6 + i * 12).map((y) => (
+            <Line key={y} x1={SHAFT.cableX + 3} y1={y} x2={SHAFT.cableX + 8} y2={y} stroke="#6d737b" strokeWidth={0.9} />
           ))}
         </G>
       ))}
-      {/* the shaft-wall sleeve at floor level where the lower route enters */}
-      <Rect x={SHAFT.x0 - 2} y={191} width={SHAFT.wall + 4} height={6} rx={0.8} fill="#80868f" stroke="#2c2f34" strokeWidth={0.5} />
-
-      {/* ── riser shaft: vertical cable runway, the backbone on it, the slab
-          sleeve with firestop top and bottom ── */}
-      <Rect x={SHAFT.cableX + 5} y={12} width={5} height={FLOOR_Y - 12} fill="#3a3d43" stroke="#1d1f24" strokeWidth={0.4} />
-      {Array.from({ length: 16 }, (_, i) => 18 + i * 12).map((y) => (
-        <Line key={y} x1={SHAFT.cableX + 5} y1={y} x2={SHAFT.cableX + 10} y2={y} stroke="#6d737b" strokeWidth={0.9} />
+      <JacketPath d={`M${SHAFT.cableX} 4 V${FLOOR_Y}`} color="#37d97b" width={2.4} />
+      {[24, 80, 124, 168].map((y) => (
+        <Rect key={y} x={SHAFT.cableX - 2.4} y={y} width={10.4} height={2.2} rx={0.6} fill="#23262b" stroke="#0a0a0c" strokeWidth={0.3} />
       ))}
-      <JacketPath d={`M${SHAFT.cableX} 12 V${FLOOR_Y}`} color="#37d97b" width={2.4} />
-      {[40, 100, 140, 176].map((y) => (
-        <Rect key={y} x={SHAFT.cableX - 2.4} y={y} width={9.4} height={2.2} rx={0.6} fill="#23262b" stroke="#0a0a0c" strokeWidth={0.3} />
+      {[SHAFT.cableX, SHAFT.spareX].map((x) => (
+        <G key={x}>
+          <Rect x={x - 3} y={SLAB.y - 3} width={6} height={SLAB.h + 6} fill="#80868f" stroke="#2c2f34" strokeWidth={0.5} />
+          {/* the spare's plug is opened while a route is proposed through it
+              — it is re-firestopped per its system after the pull */}
+          {x === SHAFT.spareX && sel === 'fs-riser' ? null : (
+            <>
+              <Firestop x={x - 3.6} y={SLAB.y - 4.4} w={7.2} h={2.4} />
+              <Firestop x={x - 3.6} y={SLAB.y + SLAB.h + 2} w={7.2} h={2.4} />
+            </>
+          )}
+        </G>
       ))}
-      <Rect x={SHAFT.cableX - 3} y={SLAB.y - 4} width={6} height={SLAB.h + 8} rx={0.8} fill="#80868f" stroke="#2c2f34" strokeWidth={0.5} />
-      <Rect x={SHAFT.cableX - 3.4} y={SLAB.y - 4.6} width={6.8} height={2.4} rx={0.8} fill="#c8372b" />
-      <Rect x={SHAFT.cableX - 3.4} y={SLAB.y + SLAB.h + 2.2} width={6.8} height={2.4} rx={0.8} fill="#c8372b" />
       <JacketPath d={`M${SHAFT.cableX} ${SLAB.y - 5} V${SLAB.y + SLAB.h + 5}`} color="#37d97b" width={2.4} shadow={false} />
-      <Callout x={SHAFT.cableX} y={19} text="RISER" size={10} color="#9ea3ad" bg={null} />
-      <Callout x={SHAFT.cableX} y={166} text="CMR" size={9.6} color="#9ea3ad" bg="rgba(17,18,22,0.9)" />
+      <Callout x={296} y={12} text="STACKED RISER" size={9.6} color="#9ea3ad" bg={null} anchor="end" />
+      <Callout x={296} y={29} text="SLEEVES + FIRESTOP" size={9.6} color="#ff8a6b" bg={null} anchor="end" />
+      <Lead x1={297} y1={26} x2={SHAFT.spareX - 3.5} y2={SLAB.y - 3} color="#ff8a6b" />
+      <Callout x={SHAFT.cableX - 5} y={180} text="CMR" size={9.6} color="#9ea3ad" bg="rgba(17,18,22,0.92)" />
+      {/* the riser-room wall sleeve where a route from the office side enters */}
+      <Rect x={SHAFT.x0 - 3} y={SLEEVE.cy - 3} width={SHAFT.wall + 6} height={6} fill="#80868f" stroke="#2c2f34" strokeWidth={0.5} />
+      <Firestop x={SHAFT.x0 - 4.4} y={SLEEVE.cy - 3.6} w={1.6} h={7.2} />
+      <Firestop x={SHAFT.x0 + SHAFT.wall + 2.8} y={SLEEVE.cy - 3.6} w={1.6} h={7.2} />
 
-      {/* ── upper floor: its own suspended ceiling, a scale bar ── */}
-      <CeilingCut x0={10} x1={SHAFT.x0 - 2} y={52} m={BM} hangTo={12} />
-      <Callout x={60} y={32} text="UPPER FLOOR" size={9.6} color="#6d717a" bg={null} />
-      <ScaleBar x={200} y={36} m={BM} metres={1} color="#8d9199" />
+      {/* ── the suspended ceilings, hung from the slab (wires at 1.2 m,
+          tees at 0.6 m); a cut-out above the rack where its cables rise ── */}
+      <CeilingCut x0={8} x1={RATED.x - 0.5} y={TILE_Y} m={BM} hangTo={CAV_TOP} opening={[DROP.x0 - 2, DROP.x1 + 2]} />
+      <CeilingCut x0={wallR + 0.5} x1={SHAFT.x0 - 0.5} y={TILE_Y} m={BM} hangTo={CAV_TOP} />
 
-      {/* ── lower room's suspended ceiling, hung from the slab; a cut-out
-          above the rack where its cables rise ── */}
-      <CeilingCut x0={10} x1={RATED.x - 1} y={TILE_Y} m={BM} hangTo={cavTop} opening={[34, 50]} />
-      <CeilingCut x0={RATED.x + RATED.t + 1} x1={SHAFT.x0 - 2} y={TILE_Y} m={BM} hangTo={cavTop} />
+      {/* ── SPACE 2 wash: over the open office the cavity itself carries the
+          return air ── */}
+      <Rect x={wallR + 0.6} y={CAV_TOP + 0.6} width={SHAFT.x0 - wallR - 1.2} height={TILE_Y - CAV_TOP - 3} fill={AIR} fillOpacity={sel === 'fs-plenum' ? 0.13 : 0.07} />
 
-      {/* ── SPACE 1 · the cavity left of the rated wall: DUCTED return (a
-          grille with its own duct back to the air handler) + the tray ── */}
-      <DuctSide x0={10} x1={90} y={80} h={14} m={BM} hangTo={cavTop} />
-      <Rect x={64} y={94} width={26} height={TILE_Y - 94} fill="#868b93" stroke="#2c2f34" strokeWidth={0.5} />
-      <Grille x0={62} x1={92} />
-      <AirArrow x={77} y={113} dir="up" len={12} />
-      <AirArrow x={58} y={87} dir="left" len={12} />
-      <AirArrow x={36} y={87} dir="left" len={12} />
-      <LadderTraySide x0={56} x1={RATED.x - 6} y={110} m={BM} rodTo={cavTop} rodEvery={1.5} />
-      <JacketPath d="M40 132 V107 H190" color="#37d97b" width={2.2} />
-      <JacketPath d="M44 132 V104 H190" color="#4fd0e0" width={2.2} />
-      <Callout x={90} y={128} text="DUCTED RETURN" size={9.6} color="#9ea3ad" bg="rgba(17,18,22,0.9)" />
-
-      {/* non-rated partition: stops at the ceiling (a rated wall would not) */}
-      <StudWallCut x={126} y0={TILE_Y} y1={FLOOR_Y} t={5} />
-      <Callout x={156} y={208} text="NON-RATED" size={9.6} color="#9ea3ad" bg={null} />
-
-      {/* ── SPACE 2 · right of the rated wall: the return grille opens into
-          the cavity itself (an air-handling space); supply is ducted to a
-          diffuser ── */}
-      <DuctSide x0={RATED.x + RATED.t + 4} x1={SHAFT.x0 - 4} y={78} h={11} m={BM} hangTo={cavTop} />
-      <Rect x={218} y={89} width={16} height={TILE_Y - 89} fill="#868b93" stroke="#2c2f34" strokeWidth={0.5} />
-      <Grille x0={214} x1={238} />
-      <AirArrow x={222} y={123} dir="down" len={10} />
-      <AirArrow x={230} y={123} dir="down" len={10} />
-      <Grille x0={262} x1={290} />
-      <AirArrow x={270} y={113} dir="up" len={12} />
-      <AirArrow x={282} y={113} dir="up" len={12} />
-      <AirArrow x={262} y={98} dir="left" len={14} />
-      <AirArrow x={248} y={110} dir="left" len={14} />
-      <Callout x={252} y={128} text="PLENUM RETURN" size={9.6} color="#9ea3ad" bg="rgba(17,18,22,0.9)" />
-
-      {/* ── the MARKED rated wall: slab to slab, two layers of board each
-          face, the rating hatch, the sleeve through it ── */}
-      <Rect x={RATED.x} y={cavTop} width={RATED.t} height={FLOOR_Y - cavTop} fill="#241416" />
-      {[0, 1.2, RATED.t - 2.4, RATED.t - 1.2].map((dx) => (
-        <Rect key={dx} x={RATED.x + dx} y={cavTop} width={1.2} height={FLOOR_Y - cavTop} fill="#d7d4cc" />
+      {/* ── SPACE 1 · store + equipment-room cavity: the return air is
+          DUCTED — a grille with its own duct back to the air handler ── */}
+      <DuctSide x0={8} x1={150} y={51} h={10} m={BM} hangTo={CAV_TOP} />
+      <Rect x={30} y={61} width={20} height={TILE_Y - 63} fill="#80858d" stroke="#2c2f34" strokeWidth={0.5} />
+      <Grille x0={27} x1={53} />
+      <AirArrow x={40} y={96} dir="up" len={12} />
+      <AirArrow x={24} y={56} dir="left" len={12} />
+      <AirArrow x={146} y={56} dir="left" len={14} />
+      <SvgText x={98} y={59.4} fontFamily={fonts.oswaldSemiBold} fontSize={9.6} fill="#1b1c20" textAnchor="middle">
+        RETURN DUCT
+      </SvgText>
+      <LadderTraySide x0={60} x1={RATED.x - 6} y={74} m={BM} rodTo={CAV_TOP} rodEvery={1.5} />
+      {/* a short vertical ladder carries the drop from the tray to the rack */}
+      <Rect x={DROP.x0} y={74} width={1.4} height={rackTop - 74} fill="#9ba1a8" />
+      <Rect x={DROP.x1 - 1.4} y={74} width={1.4} height={rackTop - 74} fill="#9ba1a8" />
+      {Array.from({ length: 4 }, (_, i) => 80 + i * 10).map((y) => (
+        <Line key={y} x1={DROP.x0} y1={y} x2={DROP.x1} y2={y} stroke="#5d636b" strokeWidth={0.6} />
       ))}
-      <RatedHatch active={flowOn && !flowDone} loops={m.loops} />
-      <Rect x={RATED.x - 4} y={SLEEVE.cy - SLEEVE.h / 2} width={RATED.t + 8} height={SLEEVE.h} rx={1} fill="#80868f" stroke="#2c2f34" strokeWidth={0.5} />
-      {flowDone ? (
+      {/* existing cables: rack → tray → down into the partition to the
+          store's outlets */}
+      <JacketPath d={`M144 ${rackTop} V71.6 H92 Q87 71.6 87 76 V${TILE_Y - 6}`} color={EXIST_A} width={2} />
+      <JacketPath d={`M147.4 ${rackTop} V70 H94 Q89 70 89 75 V${TILE_Y - 6}`} color={EXIST_B} width={2} />
+      <Callout x={107} y={88} text="CABLE TRAY" size={9.6} color="#9ea3ad" bg="rgba(17,18,22,0.92)" />
+      <Lead x1={107} y1={81} x2={107} y2={74.5} />
+      <Callout x={46} y={113} text="AIR STAYS" size={9.6} color={AIR} bg={null} />
+      <Callout x={46} y={125} text="IN THE DUCT" size={9.6} color={AIR} bg={null} />
+
+      {/* the non-rated partition: stops just above the ceiling */}
+      <StudWallCut x={PART.x} y0={TILE_Y - 8} y1={FLOOR_Y} t={PART.t} />
+      <Callout x={45} y={164} text="NON-RATED" size={9.6} color="#9ea3ad" bg={null} />
+      <Callout x={45} y={177} text="PARTITION" size={9.6} color="#9ea3ad" bg={null} />
+      <Lead x1={66} y1={168} x2={PART.x - 0.5} y2={168} />
+
+      {/* ── SPACE 2 · the open-office cavity: the return grille opens into
+          the cavity, the air crosses the open space to the return inlet (a
+          duct cut in section — one diagonal = return — its open face toward
+          the air) ── */}
+      <Rect x={212} y={50} width={20} height={14} fill="#80858d" stroke="#2c2f34" strokeWidth={0.5} />
+      <Path d="M212 64 L232 50" stroke="#2c2f34" strokeWidth={0.6} />
+      <Path d="M232 50 V64" stroke={AIR} strokeWidth={1.2} strokeDasharray="1.6 1.4" />
+      <Grille x0={264} x1={290} />
+      <AirArrow x={271} y={96} dir="up" len={11} />
+      <AirArrow x={283} y={96} dir="up" len={11} />
+      <Path d="M277 82 Q277 60 262 58" stroke={AIR} strokeWidth={1.2} fill="none" strokeDasharray="2 2" />
+      <AirArrow x={262} y={58} dir="left" len={24} />
+      <Callout x={250} y={113} text="AIR RETURNS" size={9.6} color={AIR} bg={null} />
+      <Callout x={250} y={125} text="THROUGH CAVITY" size={9.6} color={AIR} bg={null} />
+
+      {/* ── the MARKED rated wall: slab to slab (head-of-wall joint at the
+          slab), studs with two layers of board each face, the rating hatch,
+          the sleeve through it ── */}
+      <Rect x={RATED.x} y={CAV_TOP} width={RATED.t} height={FLOOR_Y - CAV_TOP} fill="#241416" />
+      {[0, board, RATED.t - 2 * board, RATED.t - board].map((dx) => (
+        <Rect key={dx} x={RATED.x + dx} y={CAV_TOP} width={board - 0.1} height={FLOOR_Y - CAV_TOP} fill="#d7d4cc" />
+      ))}
+      <Rect x={RATED.x - 0.6} y={CAV_TOP} width={RATED.t + 1.2} height={1.8} fill="#c8372b" opacity={0.85} />
+      <RatedHatch active={flowOn && !flowDone} loops={m.loops} ys={hatch} />
+      <Rect x={RATED.x - 4} y={SLEEVE.cy - SLEEVE.h / 2} width={RATED.t + 8} height={SLEEVE.h} fill="#80868f" stroke="#2c2f34" strokeWidth={0.5} />
+      {flowStep >= 2 ? (
+        /* the penetrant: this run's cable through the sleeve */
+        <JacketPath d={`M${RATED.x - 14} ${SLEEVE.cy} H${wallR + 14}`} color="#c77dff" width={2.2} shadow={false} />
+      ) : null}
+      {flowStep >= 4 ? (
         <G>
-          {/* the listed system, installed: firestop material both faces */}
-          <Rect x={RATED.x - 5} y={SLEEVE.cy - SLEEVE.h / 2 - 1.6} width={2} height={SLEEVE.h + 3.2} rx={0.8} fill="#c8372b" />
-          <Rect x={RATED.x + RATED.t + 3} y={SLEEVE.cy - SLEEVE.h / 2 - 1.6} width={2} height={SLEEVE.h + 3.2} rx={0.8} fill="#c8372b" />
+          {/* the listed system, installed: firestop both faces */}
+          <Firestop x={RATED.x - 5.6} y={SLEEVE.cy - SLEEVE.h / 2 - 1.4} w={1.8} h={SLEEVE.h + 2.8} />
+          <Firestop x={wallR + 3.8} y={SLEEVE.cy - SLEEVE.h / 2 - 1.4} w={1.8} h={SLEEVE.h + 2.8} />
         </G>
       ) : null}
-      <Callout x={262} y={208} text="RATED · SEE PLANS" size={10} color="#ff8a6b" bg="#1a0f0f" border="#ff5a48" />
-      <Line x1={218} y1={205} x2={RATED.x + RATED.t + 1} y2={200} stroke="#ff5a48" strokeWidth={0.6} />
-      <SleeveMarker on={flowOn} done={flowDone} reduce={m.reduce} />
+      <Callout x={RATED.x - 22} y={57} text="SLEEVE" size={9.6} color="#b9bdc6" bg="rgba(17,18,22,0.92)" />
+      <Lead x1={RATED.x - 8} y1={60} x2={RATED.x - 3} y2={SLEEVE.cy - 3} />
+      <Rect x={216} y={156} width={70} height={32} rx={3} fill="#1a0f0f" stroke="#ff5a48" strokeWidth={flowStep >= 1 ? 1.4 : 0.8} />
+      <Callout x={251} y={169} text="RATED WALL" size={9.6} color="#ff8a6b" bg={null} />
+      <Callout x={251} y={182} text="SLAB TO SLAB" size={9.6} color="#ff8a6b" bg={null} />
+      <Line x1={216} y1={172} x2={wallR + 0.5} y2={172} stroke="#ff5a48" strokeWidth={0.6} />
+      <SleeveMarker on={flowOn} done={flowDone} />
 
-      {/* ── the rack in section (2 m tall, 1 m deep) with its labels ── */}
-      <RackSide x={12} floorY={FLOOR_Y} m={BM} />
-      <Callout x={32} y={176} text="RACK" size={10.5} color="#9ea3ad" bg={null} />
-      <Callout x={58} y={208} text="EQUIP RM" size={9.6} color="#6d717a" bg={null} anchor="start" />
+      {/* ── the rack (side section, 2.0 m; front faces the door side) ── */}
+      <RackSide x={RACK_X} floorY={FLOOR_Y} m={BM} />
+      <Callout x={RACK_X + 20} y={188} text="RACK" size={9.6} color="#9ea3ad" bg="rgba(17,18,22,0.92)" />
+      <Callout x={RACK_X - 3} y={150} text="FRONT" size={9.6} color="#8d9199" bg={null} anchor="end" />
+      <Path d={`M${RACK_X - 4} 154 H${RACK_X - 34} M${RACK_X - 30} 151.4 L${RACK_X - 34} 154 L${RACK_X - 30} 156.6`} stroke="#8d9199" strokeWidth={0.7} fill="none" />
+
+      {/* room names under the section */}
+      <Callout x={45} y={217} text="STORE" size={9.6} color="#8d9199" bg={null} />
+      <Callout x={143} y={217} text="EQUIPMENT ROOM" size={9.6} color="#8d9199" bg={null} />
+      <Callout x={251} y={217} text="OPEN OFFICE" size={9.6} color="#8d9199" bg={null} />
+      <Callout x={322} y={217} text="RISER" size={9.6} color="#8d9199" bg={null} />
 
       {/* the building responds to attention: the route travels toward the
           chosen space and that space's highlight fades up behind it */}
@@ -587,14 +693,17 @@ export function FireScene({ width, completed, onComplete, openSources }: CiModul
         aspect={360 / 224}
         title="BUILDING"
         badge="Training visualization — simplified section; teaching colors, not field colors."
-        render={(w) => <BuildingArt w={w} sel={sel} done={(id) => spaceAns[id] != null} flowOn={spacesDone} flowDone={flowDone} />}
+        render={(w) => <BuildingArt w={w} sel={sel} done={(id) => spaceAns[id] != null} flowOn={spacesDone} flowStep={flowAns.length} flowDone={flowDone} />}
         controls={spaceDock}
       />
-      <Text style={styles.tintNote}>
-        TRAINING VISUALIZATION — simplified building section; tints are the lab’s teaching colors, not field colors.
-        Red-hatched wall = marked rated assembly (slab to slab) · plain wall = non-rated partition (stops at the ceiling) ·
-        numbered markers = the three spaces below.
-      </Text>
+      <View style={{ gap: 3 }}>
+        <Text style={styles.tintNote}>TRAINING VISUALIZATION — simplified building section, drawn to scale (see the 1 m bar); teaching colors, not field colors.</Text>
+        <Text style={styles.tintNote}>• Red-hatched wall = marked rated assembly, slab to slab · plain stud wall = non-rated partition, stops just above the ceiling</Text>
+        <Text style={styles.tintNote}>• Cyan arrows = air movement · cyan-washed cavity = the cavity itself carries return air · grey duct = return air kept in a duct</Text>
+        <Text style={styles.tintNote}>• Red caps = an installed listed firestop system (lab symbol — real products vary in form and color)</Text>
+        <Text style={styles.tintNote}>• Amber dashed = your proposed route · violet = this run’s cable · CMR = riser-rated cable listing · numbers = the three spaces below</Text>
+        <Text style={styles.tintNote}>Whether a wall is rated and how a space handles air come from the project drawings — verify with the plans and the AHJ.</Text>
+      </View>
 
       <CiSection title="ROUTE THE CABLE — IDENTIFY EACH SPACE FIRST">
         <Text style={styles.lead}>
