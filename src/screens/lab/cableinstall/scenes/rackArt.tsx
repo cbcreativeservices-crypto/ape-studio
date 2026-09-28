@@ -144,8 +144,10 @@ export function RackFrame({ dress }: { dress: boolean }) {
       <RackRail x={287.1} y0={RAIL_Y0} y1={RAIL_Y1} k={RK} uTop={U_TOP} />
       {/* bottom panel */}
       <Rect x={44} y={RAIL_Y1} width={252} height={11} rx={1.5} fill={p.faceHi} stroke="#0a0a0c" strokeWidth={0.6} />
-      {/* top panel + the cable-entry cut-out */}
-      <Rect x={44} y={4} width={252} height={U_TOP - 4} rx={1.5} fill={p.faceHi} stroke="#0a0a0c" strokeWidth={0.6} />
+      {/* top panel (the full cabinet width, over the managers too) + the
+          cable-entry cut-out */}
+      <Rect x={6} y={4} width={328} height={U_TOP - 4} rx={1.5} fill={p.faceHi} stroke="#0a0a0c" strokeWidth={0.6} />
+      <Silk x={12} y={14.4} text="REAR VIEW" color="#a5a9b2" />
       <Rect x={ENTRY.x} y={ENTRY.y} width={ENTRY.w} height={ENTRY.h} rx={1} fill="#050506" />
       {dress ? (
         <G>
@@ -155,7 +157,7 @@ export function RackFrame({ dress }: { dress: boolean }) {
         </G>
       ) : (
         // the raw cut edge: a bright, unfinished sheet-metal lip
-        <Rect x={ENTRY.x} y={ENTRY.y} width={ENTRY.w} height={ENTRY.h} rx={0.6} fill="none" stroke="#c9ccd2" strokeWidth={0.5} />
+        <Rect x={ENTRY.x} y={ENTRY.y} width={ENTRY.w} height={ENTRY.h} rx={0.4} fill="none" stroke="#dfe2e7" strokeWidth={1.3} />
       )}
     </G>
   );
@@ -166,12 +168,13 @@ export function RackFrame({ dress }: { dress: boolean }) {
 /** 2U 24-port keystone patch panel, REAR: the modules' punch-down rears on a
  *  19.3 mm pitch, the white designation strip below them, a lacing bar above
  *  (where the horizontals are dressed once the panel is done right). */
-export const PATCH = { y: uY(0), h: 2 * U_H, modY: 27, modH: 12, stripY: 43, stripH: 9 } as const;
+export const PATCH = { y: uY(1), h: 2 * U_H, modY: uY(1) + 8, modH: 12, stripY: uY(1) + 22.6, stripH: 9 } as const;
 
 export function PatchPanelRear({ xs, dress }: { xs: number[]; dress: boolean }) {
   return (
     <G>
-      <DeviceFace y={PATCH.y} h={PATCH.h} label="PATCH · 24 PORT" />
+      <DeviceFace y={PATCH.y} h={PATCH.h} />
+      <Silk x={FACE_X + FACE_W - 4} y={PATCH.y + PATCH.h - 3.6} text="PATCH · 24 PORT" anchor="end" />
       {/* keystone rears: dark module, punch-down cap with its IDC slots */}
       {xs.map((cx) => (
         <G key={cx}>
@@ -202,8 +205,9 @@ export function PatchPanelRear({ xs, dress }: { xs: number[]; dress: boolean }) 
   );
 }
 
-/** 1U horizontal finger duct. */
-export const HMGR = { y: uY(2), h: U_H } as const;
+/** 1U horizontal finger duct at the top of the rack: the trunks come through
+ *  the entry into it and are distributed to the vertical managers. */
+export const HMGR = { y: uY(0), h: U_H } as const;
 export function HorizontalManager({ xs }: { xs: number[] }) {
   const p = usePaint();
   return (
@@ -223,7 +227,7 @@ export function HorizontalManager({ xs }: { xs: number[] }) {
 /** 1U network switch, reverse-racked so its ports face the rear with the
  *  rest of the cabling (AV practice): 8 × RJ45 with link LEDs, two SFP cages. */
 export const SWITCH = { y: uY(3), h: U_H, portY: 0 } as const;
-export function NetworkSwitch({ xs }: { xs: number[] }) {
+export function NetworkSwitch({ xs, lit = [] }: { xs: number[]; lit?: number[] }) {
   const y = SWITCH.y;
   return (
     <G>
@@ -234,8 +238,9 @@ export function NetworkSwitch({ xs }: { xs: number[] }) {
           <Rect x={x} y={y + 8.5} width={11.7} height={9.6} rx={0.6} fill="#050506" stroke="#6d737b" strokeWidth={0.45} />
           <Rect x={x + 4.1} y={y + 17.4} width={3.5} height={1.6} fill="#050506" />
           <Path d={[0, 1, 2, 3, 4, 5, 6, 7].map((k) => `M${x + 1.9 + k * 1.15} ${y + 9.3} v1.8`).join('')} stroke="#c9a13c" strokeWidth={0.3} />
-          <Circle cx={x + 2.4} cy={y + 5.4} r={1.1} fill={i % 3 === 0 ? '#37d97b' : '#1b2a20'} />
-          <Circle cx={x + 9.3} cy={y + 5.4} r={1.1} fill={i % 3 === 0 ? '#ffc64d' : '#2a2616'} />
+          {/* link / activity LEDs: lit only where a cable is actually seated */}
+          <Circle cx={x + 2.4} cy={y + 5.4} r={1.1} fill={lit.includes(i) ? '#37d97b' : '#1b2a20'} />
+          <Circle cx={x + 9.3} cy={y + 5.4} r={1.1} fill={lit.includes(i) ? '#ffc64d' : '#2a2616'} />
         </G>
       ))}
       {[248, 266].map((x) => (
@@ -260,13 +265,13 @@ export function DspRear({ xs, dress }: { xs: number[]; dress: boolean }) {
       {xs.map((cx, i) => (
         <G key={cx}>
           <PanelJack x={cx} y={DSP.jackY} k={RK} kind="xlrF" />
-          <Silk x={cx} y={y + 34.6} text={String(i + 1)} anchor="middle" color={dress ? '#b9bdc6' : '#8f939c'} />
+          <Silk x={cx} y={y + 30.4} text={String(i + 1)} anchor="middle" color={dress ? '#b9bdc6' : '#8f939c'} />
         </G>
       ))}
       <PanelJack x={266} y={DSP.jackY} k={RK} kind="rj45" />
-      <Silk x={266} y={y + 34.6} text="NET" anchor="middle" />
-      {/* IEC C14 inlet, bottom right */}
-      <IecInlet x={244} y={y + 30} />
+      <Silk x={266} y={y + 30.4} text="NET" anchor="middle" />
+      {/* IEC C14 inlet, bottom right (the dressed AC loom seats its cord) */}
+      <IecInlet x={236} y={y + 32} />
     </G>
   );
 }
@@ -348,8 +353,9 @@ export function Amplifier({ dress }: { dress: boolean }) {
         <PanelJack key={cx} x={cx} y={AMP.nl4Y} k={RK * 0.86} kind="xlrF" />
       ))}
       <IecInlet x={128} y={y + 50} />
-      <Silk x={144} y={y + 58.6} text="AC IN" />
-      {/* the 120 mm fan behind its punched grille — this is the INTAKE */}
+      <Silk x={145} y={y + 58.6} text="AC IN" />
+      {/* the 120 mm fan behind its punched grille — front-to-rear airflow, so
+          this is the EXHAUST */}
       <VentField x={g.x} y={g.y} w={g.w} h={g.h} k={RK} />
       <Circle cx={g.x + g.w / 2} cy={g.y + g.h / 2} r={24} fill="none" stroke="#2c2e34" strokeWidth={0.9} />
       <Circle cx={g.x + g.w / 2} cy={g.y + g.h / 2} r={15} fill="none" stroke="#2c2e34" strokeWidth={0.7} />
@@ -360,9 +366,9 @@ export function Amplifier({ dress }: { dress: boolean }) {
         return <Path key={i} d={`M${cx + Math.cos(a) * 6} ${cy + Math.sin(a) * 6} Q${cx + Math.cos(a + 0.5) * 16} ${cy + Math.sin(a + 0.5) * 16} ${cx + Math.cos(a + 0.9) * 22} ${cy + Math.sin(a + 0.9) * 22}`} stroke="#2c2e34" strokeWidth={2.2} fill="none" strokeLinecap="round" />;
       })}
       <Circle cx={g.x + g.w / 2} cy={g.y + g.h / 2} r={5.5} fill="#1b1c20" stroke="#2c2e34" strokeWidth={0.6} />
-      <Silk x={g.x + g.w / 2} y={y + AMP.h - 3.6} text="INTAKE · KEEP CLEAR" anchor="middle" />
-      {/* `dress` is the scene's mode flag — the dressed loom draws its own
-          seated plug (Nl4PlugRear) where it lands */}
+      <Silk x={g.x + g.w / 2} y={y + AMP.h - 3.6} text="EXHAUST · KEEP CLEAR" anchor="middle" />
+      {/* `dress` only brightens nothing here: the dressed looms draw their
+          own seated plugs (AC cord, NL4s, input XLRs) where they land */}
       {dress ? null : null}
     </G>
   );
@@ -421,7 +427,8 @@ export function PowerDistro({ xs, dress }: { xs: number[]; dress: boolean }) {
       <Rect x={225.5} y={y + 6.5} width={7} height={9} rx={1} fill="#c8372b" />
       <Silk x={243} y={y + 14.4} text="PDU" />
       <IecInlet x={264} y={y + 5.5} />
-      {dress ? xs.slice(0, 3).map((x) => <C13Plug key={`p${x}`} x={x} y={PDU.outY} />) : null}
+      {/* the dressed AC loom seats its own cords in outlets 1–2 */}
+      {dress ? null : null}
     </G>
   );
 }
@@ -458,16 +465,20 @@ export function TrsPlugRear({ x, y }: { x: number; y: number }) {
  * at the cable's own diameter, so it reads as wound cable, not a spiral.
  * A cable tie holds it; the two tails leave at `tailAngle`.
  */
-export function Hank({ cx, cy, rx, ry, turns, color, width }: { cx: number; cy: number; rx: number; ry: number; turns: number; color: string; width: number }) {
+export function Hank({ cx, cy, rx, ry, turns, color, width, jam = false }: { cx: number; cy: number; rx: number; ry: number; turns: number; color: string; width: number; jam?: boolean }) {
   const rings: number[] = [];
   for (let i = 0; i < turns; i++) rings.push(i);
   return (
     <G>
       {rings.map((i) => {
         const f = 1 - (i * width * 1.05) / rx;
-        const rxi = rx * f;
-        const ryi = ry * f;
-        return <JacketPath key={i} d={`M${cx - rxi} ${cy} a${rxi} ${ryi} 0 1 0 ${2 * rxi} 0 a${rxi} ${ryi} 0 1 0 ${-2 * rxi} 0`} color={color} width={width} shadow={i === 0} />;
+        // jammed: the turns are not concentric — each one sits a little off,
+        // squashed where the hank was forced into the bay
+        const jx = jam ? ((i % 3) - 1) * 2.2 : 0;
+        const jy = jam ? ((i % 2) - 0.5) * 2.6 : 0;
+        const rxi = rx * f + (jam ? (i % 2) * 1.4 : 0);
+        const ryi = ry * f * (jam ? 0.92 + (i % 3) * 0.05 : 1);
+        return <JacketPath key={i} d={`M${cx + jx - rxi} ${cy + jy} a${rxi} ${ryi} 0 1 0 ${2 * rxi} 0 a${rxi} ${ryi} 0 1 0 ${-2 * rxi} 0`} color={color} width={width} shadow={i === 0} />;
       })}
     </G>
   );
@@ -512,16 +523,20 @@ export function Plait({ x0, x1, y, amp, period, colors: cs, widths, phase = 0 }:
 export function StrainFlag({ x, y, angle = 0 }: { x: number; y: number; angle?: number }) {
   return (
     <G transform={`rotate(${angle} ${x} ${y})`}>
-      <Path d={`M${x - 3} ${y - 2.4} l-3 -3 M${x + 3} ${y - 2.4} l3 -3`} stroke="#ff7a68" strokeWidth={1.2} strokeLinecap="round" />
+      <Path d={`M${x - 3} ${y - 2.4} l-3 -3 M${x + 3} ${y - 2.4} l3 -3`} stroke="#ff7a68" strokeWidth={1.6} strokeLinecap="round" />
     </G>
   );
 }
 
-/** A crease where a jacket has been folded past its bend radius. */
+/** A crease where a jacket has been folded past its bend radius: the jacket
+ *  flattened and stress-whitened across the fold, a dark crease line through
+ *  it — a mark ON the cable, never an arrow. `angle` = the cable's direction
+ *  at the fold (0 = horizontal). */
 export function Kink({ x, y, angle = 0 }: { x: number; y: number; angle?: number }) {
   return (
     <G transform={`rotate(${angle} ${x} ${y})`}>
-      <Path d={`M${x - 1.6} ${y - 2.2} L${x} ${y + 0.4} L${x + 1.6} ${y - 2.2}`} stroke="#f2f4f6" strokeWidth={0.9} fill="none" strokeLinejoin="round" />
+      <Rect x={x - 1.3} y={y - 2.3} width={2.6} height={4.6} rx={0.6} fill="#e9ecef" opacity={0.85} />
+      <Line x1={x} y1={y - 2.4} x2={x} y2={y + 2.4} stroke="#0a0a0c" strokeWidth={0.7} />
     </G>
   );
 }
