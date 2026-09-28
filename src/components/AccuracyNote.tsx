@@ -26,6 +26,7 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { Modal } from './DimModal';
 import { colors, fonts } from '../theme/tokens';
+import { labProbe } from '../features/lab/labProbe';
 
 /** LAB / LIVE-TOOL copy (variant "tool") — exported so it stays identical
  *  everywhere it is shown or referenced. */
@@ -108,7 +109,10 @@ export function AccuracyNote({
     <>
       <Pressable
         style={[styles.chip, style]}
-        onPress={() => setOpen(true)}
+        onPress={() => {
+          labProbe('i pressed'); // TEMP probe
+          setOpen(true);
+        }}
         hitSlop={8}
         accessibilityRole="button"
         accessibilityLabel={

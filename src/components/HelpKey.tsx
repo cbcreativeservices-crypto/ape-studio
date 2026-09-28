@@ -7,12 +7,16 @@
 import { Pressable, StyleSheet, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { colors, fonts } from '../theme/tokens';
+import { labProbe } from '../features/lab/labProbe';
 
 export function HelpKey({ search }: { search?: string }) {
   const navigation = useNavigation<any>();
   return (
     <Pressable
-      onPress={() => navigation.navigate('Help', search ? { search } : undefined)}
+      onPress={() => {
+        labProbe('? pressed'); // TEMP probe
+        navigation.navigate('Help', search ? { search } : undefined);
+      }}
       hitSlop={10}
       style={({ pressed }) => [styles.key, pressed && { opacity: 0.7 }]}
       accessibilityRole="button"

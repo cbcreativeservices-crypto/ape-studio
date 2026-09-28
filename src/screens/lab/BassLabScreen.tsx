@@ -50,6 +50,7 @@ import { LabShell, HeaderPlayButton } from './LabShell';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 import { useLabAudio } from '../../features/lab/useLabAudio';
+import { labProbe } from '../../features/lab/labProbe';
 import { BASS_LAB_KEY, frettedSampleKey, harmonicSampleKey, type BassString } from '../../features/lab/bassSamples';
 
 const GEN_LEVEL_DB = -20;
@@ -178,8 +179,16 @@ export function BassLabScreen() {
     const gen = ++genRef.current;
     setGenError('');
     // 1. The recording. play() runs the audio-output gate itself.
+    labProbe(`▶ tap ${sampleKey ?? 'no key'}`); // TEMP probe
     if (sampleKey) {
-      const r = await sample.play(BASS_LAB_KEY, sampleKey);
+      let r: Awaited<ReturnType<typeof sample.play>>;
+      try {
+        r = await sample.play(BASS_LAB_KEY, sampleKey);
+      } catch (e) {
+        labProbe(`play THREW ${(e as Error)?.message ?? e}`); // TEMP probe
+        return;
+      }
+      labProbe(`play → ${r}`); // TEMP probe
       if (gen !== genRef.current) return;
       if (r === 'blocked') return;
       if (r === 'ok') {

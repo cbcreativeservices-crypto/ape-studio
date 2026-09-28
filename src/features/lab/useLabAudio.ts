@@ -36,6 +36,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAudioOutputGate } from '../audio/AudioOutputGate';
 import { LabAudioPlayer } from './LabAudioPlayer';
 import type { LabAudioReason } from './labAudio';
+import { labProbe } from './labProbe';
 
 /** play() outcome. 'ok' + the fetch reasons, plus 'blocked' when the learner
  *  declined the audio-output gate (nothing played, and it is not an error). */
@@ -79,6 +80,7 @@ export function useLabAudio(): UseLabAudio {
       // App-wide audio gate — shows the enable-audio popup on first use and
       // resolves true immediately once enabled. Declined → play nothing.
       const ok = await requestAudioOutput();
+      labProbe(`gate ${ok ? 'ok' : 'REFUSED'}`); // TEMP probe
       if (!ok) {
         setLastResult('blocked');
         return 'blocked';

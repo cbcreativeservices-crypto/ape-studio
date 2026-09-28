@@ -25,6 +25,7 @@ import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-aud
 import { unregisterFilePlayer } from '../audio/filePlayers';
 import { applyCeiling } from '../audio/outputCeiling';
 import { fetchLabAudio, type LabAudioReason } from './labAudio';
+import { labProbe } from './labProbe';
 
 /** Reuse a signed URL only while this fresh — well inside the 120 s TTL, with
  *  headroom for buffering. */
@@ -51,6 +52,8 @@ export class LabAudioPlayer {
   private activeKey: string | null = null;
   /** When the current clip was started — see the finish guard. */
   private startedAt = 0;
+  /** TEMP probe: status updates reported for the current clip. */
+  private probeSeen = 0;
   private disposed = false;
   private urlCache = new Map<string, { url: string; at: number }>();
   /** Guards against a play() that resolves AFTER a newer play()/stop()/dispose()
@@ -79,10 +82,13 @@ export class LabAudioPlayer {
     // (another engine holding the session) stalled play() for good: no fetch,
     // no sound, and the lab's ▶ held disabled on `loading`. The mode is a
     // nicety for the silent switch; it must never be a reason not to play.
-    await Promise.race([
-      setAudioModeAsync({ playsInSilentMode: true }).catch(() => {}),
-      new Promise<void>((r) => setTimeout(r, AUDIO_MODE_WAIT_MS)),
+    const modeWon = await Promise.race([
+      setAudioModeAsync({ playsInSilentMode: true })
+        .then(() => 'mode ok')
+        .catch((e: unknown) => `mode ERR ${(e as Error)?.message ?? e}`),
+      new Promise<string>((r) => setTimeout(() => r('mode TIMEOUT'), AUDIO_MODE_WAIT_MS)),
     ]);
+    labProbe(modeWon); // TEMP probe
     if (this.disposed || token !== this.playToken) return 'network';
 
     const cacheKey = keyOf(labKey, assetKey);
@@ -90,20 +96,25 @@ export class LabAudioPlayer {
     const cached = this.urlCache.get(cacheKey);
     if (cached && Date.now() - cached.at < URL_REUSE_MS) {
       url = cached.url;
+      labProbe('url cached'); // TEMP probe
     } else {
       const { asset, reason } = await fetchLabAudio(labKey, assetKey);
       // A newer request (or teardown) landed while we were fetching — abandon
       // this one without touching the player.
       if (this.disposed || token !== this.playToken) return 'network';
+      labProbe(`fetch ${reason}${asset ? ` ${asset.ext} ${asset.durationMs}ms ${asset.samplerate}Hz ${asset.channels}ch` : ''}`); // TEMP probe
       if (!asset) return reason;
       url = asset.url;
       this.urlCache.set(cacheKey, { url, at: Date.now() });
     }
 
+    try {
     if (this.player) {
       this.player.replace({ uri: url });
+      labProbe('player replaced'); // TEMP probe
     } else {
       const p = createAudioPlayer({ uri: url });
+      labProbe(`player created vol ${Math.round(((p as { volume?: number }).volume ?? -1) * 100) / 100}`); // TEMP probe
       // Hard output ceiling (owner 2026-09-17) — see features/audio/outputCeiling.
       // The native generator has had one all along; file playback had none.
       applyCeiling(p);
@@ -115,7 +126,14 @@ export class LabAudioPlayer {
         // every later note finished silently and the lab's ■ stayed lit over
         // silence (2026-09-27). The short guard ignores a stale finish from
         // the clip that `replace()` just swapped out.
-        this.sub = p.addListener('playbackStatusUpdate', (st: { didJustFinish?: boolean }) => {
+        this.sub = p.addListener('playbackStatusUpdate', (st: any) => {
+          // TEMP probe: the first few status updates of each clip.
+          if (this.probeSeen < 4 || st?.didJustFinish || st?.error) {
+            this.probeSeen++;
+            labProbe(
+              `st loaded=${st?.isLoaded} play=${st?.playing} buf=${st?.isBuffering} t=${Math.round((st?.currentTime ?? 0) * 100) / 100}/${Math.round((st?.duration ?? 0) * 100) / 100} vol=${st?.volume ?? '?'} mute=${st?.mute ?? '?'}${st?.didJustFinish ? ' FINISH' : ''}${st?.error ? ` ERR ${st.error}` : ''}${st?.reasonForWaitingToPlay ? ` wait=${st.reasonForWaitingToPlay}` : ''}`,
+            );
+          }
           if (st?.didJustFinish && this.activeKey != null && Date.now() - this.startedAt > 250) {
             const ended = this.activeKey;
             this.activeKey = null;
@@ -127,8 +145,15 @@ export class LabAudioPlayer {
         // callers must not depend on it for correctness.
       }
     }
+    this.probeSeen = 0; // TEMP probe
     void this.player.seekTo(0);
     this.player.play();
+    labProbe('play() called'); // TEMP probe
+    } catch (e) {
+      // TEMP probe: a throw here used to escape silently — ▶ did nothing.
+      labProbe(`player THREW ${(e as Error)?.message ?? e}`);
+      throw e;
+    }
     this.activeKey = assetKey;
     this.startedAt = Date.now();
     return 'ok';

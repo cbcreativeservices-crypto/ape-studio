@@ -18,6 +18,7 @@
  */
 import { useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
+import { useLabProbeLines } from '../../features/lab/labProbe';
 import { LayoutAnimation, Platform, Pressable, ScrollView, StyleSheet, Text, UIManager, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -353,6 +354,7 @@ export function LabShell({
   // them. "last touch" moving but "down" not = something covers the buttons
   // INSIDE this screen; neither moving = something covers it from outside.
   const [probeOn, setProbeOn] = useState(false);
+  const probeLines = useLabProbeLines();
   const [probe, setProbe] = useState({ last: '—', down: 0, up: 0, hits: '—', frames: '' });
   // Round 2 (owner: "last touch 338,74 · down 0 / up 0" — the touch reached
   // this screen but not the top-right group). WHO took it: every container
@@ -482,6 +484,7 @@ export function LabShell({
           PROBE · last touch {probe.last} · top-right down {probe.down} / up {probe.up} · hit {probe.hits}
           {' · '}
           {probe.frames}
+          {probeLines.map((l) => `\n${l}`).join('')}
         </Text>
       ) : null}
 
