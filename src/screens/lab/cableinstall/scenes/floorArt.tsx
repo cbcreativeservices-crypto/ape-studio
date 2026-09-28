@@ -12,7 +12,7 @@
  * vehicle-rated protector (yellow lids, black ramps). Labels use the lab's
  * fonts (Oswald) — the plans used the browser's default serif before.
  */
-import { Circle, Defs, G, Line, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
+import { Circle, Defs, Ellipse, G, Line, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 import { Callout, useUid } from '../svgArt';
 
 export const PLAN_LABEL = '#8d9199';
@@ -48,9 +48,9 @@ export function StageDeck({ x, y, w, h, grid }: { x: number; y: number; w: numbe
         </LinearGradient>
       </Defs>
       <Rect x={x} y={y} width={w} height={h} rx={4} fill={`url(#${id}d)`} stroke="#0d0b09" strokeWidth={0.8} />
-      <Path d={joints.join('')} stroke="#171310" strokeWidth={0.6} />
-      <Path d={butts.join('')} stroke="#171310" strokeWidth={0.5} />
-      {g.length ? <Path d={g.join('')} stroke="rgba(255,255,255,0.07)" strokeWidth={0.5} /> : null}
+      <Path d={joints.join('')} stroke="#171310" strokeWidth={0.5} opacity={0.55} />
+      <Path d={butts.join('')} stroke="#171310" strokeWidth={0.45} opacity={0.55} />
+      {g.length ? <Path d={g.join('')} stroke="rgba(255,255,255,0.12)" strokeWidth={0.5} /> : null}
     </G>
   );
 }
@@ -104,13 +104,17 @@ export function DrumKitTop({ x, y }: { x: number; y: number }) {
 }
 
 /** A riser (platform) outline with its step, from above. */
-export function RiserTop({ x, y, w, h }: { x: number; y: number; w: number; h: number }) {
+export function RiserTop({ x, y, w, h, step = 'bottom' }: { x: number; y: number; w: number; h: number; step?: 'bottom' | 'right' }) {
   return (
     <G>
       <Rect x={x + 1} y={y + 1.4} width={w} height={h} rx={1} fill="rgba(0,0,0,0.5)" />
       <Rect x={x} y={y} width={w} height={h} rx={1} fill="#332b22" stroke="#0d0b09" strokeWidth={0.8} />
       <Path d={`M${x + 1} ${y + 1} H${x + w - 1}`} stroke="rgba(255,255,255,0.1)" strokeWidth={0.6} />
-      <Rect x={x + w / 2 - 8} y={y + h - 0.5} width={16} height={4} rx={0.6} fill="#2a241d" stroke="#0d0b09" strokeWidth={0.6} />
+      {step === 'bottom' ? (
+        <Rect x={x + w / 2 - 8} y={y + h - 0.5} width={16} height={4} rx={0.6} fill="#2a241d" stroke="#0d0b09" strokeWidth={0.6} />
+      ) : (
+        <Rect x={x + w - 0.5} y={y + h / 2 - 8} width={4} height={16} rx={0.6} fill="#2a241d" stroke="#0d0b09" strokeWidth={0.6} />
+      )}
     </G>
   );
 }
@@ -176,7 +180,9 @@ export function MicStandTop({ x, y, boom = 0, reach = 12 }: { x: number; y: numb
   const my = y - Math.cos(a) * reach;
   return (
     <G>
-      {[90, 210, 330].map((deg) => {
+      {/* one leg under the boom (so the stand can't tip toward the singer),
+          the other two at ±120° */}
+      {[boom - 90, boom + 30, boom + 150].map((deg) => {
         const r = (deg * Math.PI) / 180;
         return <Line key={deg} x1={x} y1={y} x2={x + Math.cos(r) * 8} y2={y + Math.sin(r) * 8} stroke="#6d7179" strokeWidth={1.3} strokeLinecap="round" />;
       })}
@@ -186,6 +192,20 @@ export function MicStandTop({ x, y, boom = 0, reach = 12 }: { x: number; y: numb
         <Rect x={mx - 1.7} y={my - 5} width={3.4} height={7} rx={1.6} fill="#1b1c20" stroke="#8d9199" strokeWidth={0.5} />
         <Rect x={mx - 1.9} y={my - 6.4} width={3.8} height={3.2} rx={1.6} fill="#3a3c42" stroke="#8d9199" strokeWidth={0.5} />
       </G>
+    </G>
+  );
+}
+
+/** A performer's position from above, facing downstage (the audience):
+ *  shoulders 0.45 m, the head, the nose toward the house — the way a plot
+ *  marks where a singer stands. */
+export function PerformerTop({ x, y, m }: { x: number; y: number; m: number }) {
+  const sw = 0.45 * m;
+  return (
+    <G>
+      <Ellipse cx={x} cy={y + 0.6} rx={sw / 2} ry={3.2} fill="#6b7280" stroke="#2a2d33" strokeWidth={0.5} />
+      <Circle cx={x} cy={y - 0.2} r={3} fill="#9aa1ad" stroke="#2a2d33" strokeWidth={0.5} />
+      <Path d={`M${x - 1.1} ${y + 2.5} L${x} ${y + 4} L${x + 1.1} ${y + 2.5}`} fill="#9aa1ad" stroke="#2a2d33" strokeWidth={0.4} />
     </G>
   );
 }

@@ -420,6 +420,7 @@ export const CI_FLOOR_SCENARIOS: CiRouteScenario[] = [
         flags: [
           { ruleId: 'mech-edges', dim: 'protection', cost: 0.35, note: 'Cases get restacked all night — the "safe" wall is a crush zone here.' },
           { ruleId: 'floor-stage-craft', dim: 'routing', cost: 0.2, note: 'Longer isn\'t safer when the perimeter is active work space.' },
+          { ruleId: 'floor-ramp-not-magic', dim: 'safety', cost: 0.2, note: 'It still crosses the load-in lane — at the dock mouth, bare, where the forklift turns.' },
         ],
       },
     ],

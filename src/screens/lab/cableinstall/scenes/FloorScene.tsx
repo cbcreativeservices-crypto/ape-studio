@@ -44,7 +44,7 @@ import { OptionChip } from '../../cable/lessons/bits';
 import { CiSection, RuleFeedback, announceComplete } from '../bits';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { Callout, Connector, JacketPath, shade, tint as lighten, SVG_A11Y } from '../svgArt';
-import { ConsoleTop, DiBoxTop, DimLine, DistroTop, DockDoor, DrumKitTop, ForkliftTop, GtrAmpTop, HazardEdge, KeysTop, MicStandTop, PLAN_LABEL, PlanLabel, RampTop, RigPointTop, RiserTop, RoadCaseTop, SeatRow, SnakeHeadTop, StageDeck, TapeStrip, WedgeTop } from './floorArt';
+import { ConsoleTop, DiBoxTop, DimLine, DistroTop, DockDoor, DrumKitTop, ForkliftTop, GtrAmpTop, HazardEdge, KeysTop, MicStandTop, PerformerTop, PLAN_LABEL, PlanLabel, RampTop, RigPointTop, RiserTop, RoadCaseTop, SeatRow, SnakeHeadTop, StageBoxTop, StageDeck, TapeStrip, WedgeTop } from './floorArt';
 import { CI_CLASS_TINTS } from '../data/cableTypes';
 import { CI_FLOOR_SCENARIOS, CI_OVERUNDER_STEPS, type CiRouteScenario } from '../data/scenarios';
 import { evaluateRoute, rankRoutes, type CiRouteFlag } from '../engine/routeEval';
@@ -81,15 +81,15 @@ type CraftDecision = { id: 'route' | 'slack' | 'mon'; prompt: string; options: C
 const CRAFT_DECISIONS: CraftDecision[] = [
   {
     id: 'route',
-    prompt: 'Mic lines from the stage box to the three stands:',
+    prompt: '① Mic lines from the snake head to the three vocal stands:',
     options: [
-      { id: 'lane', label: 'STRAIGHT RUNS ACROSS THE LANE', ok: false, short: 'That web sits exactly where performers move — feet find cable every time.' },
-      { id: 'edge', label: 'UPSTAGE, THEN ALONG THE EDGES', ok: true, short: 'Edge-routed and out of every lane — the runs disappear from the show.' },
+      { id: 'lane', label: 'STRAIGHT ACROSS THE PLAYING AREA', ok: false, short: 'That web sits exactly where performers move — feet find cable every time.' },
+      { id: 'edge', label: 'UP THE SR EDGE, ALONG THE RISER FACE, TAPED', ok: true, short: 'Bundled up the edge and taped along the riser face — nothing crosses the playing area, and each line drops in beside its singer, not under their feet.' },
     ],
   },
   {
     id: 'slack',
-    prompt: 'The spare cable at the stage box:',
+    prompt: '② The spare mic-cable length:',
     options: [
       { id: 'loops', label: 'LEAVE LOOSE LOOPS ON DECK', ok: false, short: 'Loose loops migrate into lanes and snag feet, stands and wheels.' },
       { id: 'dressed', label: 'DRESS THE SLACK AT THE BOX', ok: true, short: 'Working slack lives coiled at the box — reachable, never underfoot.' },
@@ -97,10 +97,10 @@ const CRAFT_DECISIONS: CraftDecision[] = [
   },
   {
     id: 'mon',
-    prompt: 'Monitor feeds along the downstage edge, where performers cross:',
+    prompt: '③ Monitor feeds from MON to the three wedges:',
     options: [
-      { id: 'bare', label: 'RUN THEM BARE ACROSS THE DECK', ok: false, short: 'Bare lines in the crossing get stepped on all show — and fail at the downbeat.' },
-      { id: 'dressed', label: 'DRESS THE EDGE + PROTECT THE CROSSING', ok: true, short: 'Tight to the monitor line, protected where feet actually cross.' },
+      { id: 'bare', label: 'RUN THEM BARE ACROSS THE DECK', ok: false, short: 'Bare lines where performers walk get stepped on all show — and fail at the downbeat.' },
+      { id: 'dressed', label: 'DRESS THE LIP + PROTECT THE STAIR CROSSING', ok: true, short: 'Taped along the lip behind the wedges; where feet come up the stair, a low-profile cover and glow tape — never a hump at the head of a stair.' },
     ],
   },
 ];
@@ -353,114 +353,220 @@ function TrafficPass({
 /* ── stage plan (A) — a real stage plot that redraws each aspect as its call
    is made. Top-down, audience at the bottom (downstage), SR on the left of
    the drawing, SL on the right; 10 × 5 m deck at 32 units per metre with the
-   plot's 1 m grid, dimension lines, a drum riser, keys + DI, a guitar amp
-   with its mic, three vocal stands, three wedges toed in, the snake head at
-   DSR and monitor world in the SL wing. ─────────────────────────────────── */
+   plot's 1 m grid and dimension line. Drum riser upstage centre (kit facing
+   the house, drum sub-snake at its front corner, step on the SL end), keys
+   SL with the player upstage of them and the DI at the stand end, guitar amp
+   SR with its mic and player, three singers with boom stands just downstage
+   of them and wedges further downstage aimed straight back at them, the
+   snake head DSR (trunk off the SR wing to FOH, split upstage to monitor
+   world in the SL wing), quad boxes fed from the wings, and the stair at the
+   downstage lip. ────────────────────────────────────────────────────────── */
 const PLOT = { x: 16, y: 22, w: 320, h: 160, m: 32 } as const;
 const VOX_XS = [120, 200, 282] as const;
-const VOX_Y = 92;
-const WEDGE_Y = 168;
+/** Singers stand at SINGER_Y facing the house; each stand's base sits just
+ *  downstage of them with the boom reaching back to the mouth. */
+const SINGER_Y = 104;
+const VOX_Y = 120;
+const WEDGE_Y = 162;
+/** The downstage playing area the singers work in. */
+const LANE = { x: 96, y: 130, w: 214, h: 22 } as const;
 const SNAKE = { x: 24, y: 146 } as const;
 const MON = { x: 340, y: 150 } as const;
+const RISER = { x: 148, y: 30, w: 64, h: 52 } as const;
+/** The deck lip, and the monitor feed's dressed line just upstage of it. */
+const LIP_Y = PLOT.y + PLOT.h;
+const MON_RUN_Y = 175;
+const STAIR = { x: 230, w: 30 } as const;
+/** SR-edge lanes (x) — split, keys, amp, the three vocal lines, the drum
+ *  multicore — laid side by side as one taped bundle. */
+const EDGE = { split: 18.6, keys: 21, amp: 23.4, vox: [25.8, 28.2, 30.6], drum: 33 } as const;
+/** Along the riser face: the three vocal lines and the drum multicore. */
+const FACE_Y = [86, 88.4, 90.8] as const;
+const DRUM_Y = 93.2;
+
+/** A numbered hazard badge on the plot, matching the numbered call below —
+ *  amber while the hazard stands, a green tick once it is dressed. */
+function HazardBadge({ x, y, n, fixed }: { x: number; y: number; n: number; fixed: boolean }) {
+  const tint = fixed ? colors.green : colors.amber;
+  return (
+    <G>
+      <Circle cx={x} cy={y} r={6.4} fill="#16161a" stroke={tint} strokeWidth={1.3} />
+      <Callout x={x} y={y + 3.4} text={fixed ? '✓' : String(n)} size={9.6} color={tint} bg={null} />
+    </G>
+  );
+}
 
 function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFixed: boolean; slackFixed: boolean; monFixed: boolean }) {
   const h = Math.round(w * (205 / 360));
   const mic = CI_CLASS_TINTS.analog;
   const spk = CI_CLASS_TINTS.speaker;
+  const pwr = CI_CLASS_TINTS.power;
+  const grey = '#6b6e76';
   const edgeX = PLOT.x + PLOT.w;
+  const drumCx = RISER.x + RISER.w / 2;
+  const drumCy = RISER.y + 26;
   return (
     <Svg {...SVG_A11Y}
       width={w}
       height={h}
       viewBox="0 0 360 205"
-      accessibilityLabel={`Stage plot, training visualization: a 10 by 5 metre deck, audience at the bottom. Drum riser upstage centre, keys and a DI stage left, guitar amp stage right, three vocal stands with wedges, the snake head downstage right, monitor world in the stage-left wing. Mic lines ${routeFixed ? 'edge-routed clear of the performer lane' : 'webbed across the performer lane'}; slack ${slackFixed ? 'dressed at the snake head' : 'in loose loops on deck'}; monitor feeds ${monFixed ? 'dressed along the downstage edge with a protected crossing' : 'bare across the deck'}.`}
+      accessibilityLabel={`Stage plot, training visualization: a 10 by 5 metre deck, audience at the bottom. Drum riser upstage centre with a drum sub-snake, keys stage left, guitar amp and player stage right, three singers facing the audience, each with a boom stand just downstage of them and a wedge further downstage aimed back at them, the downstage playing area, a stair at the downstage lip, the snake head downstage right with its trunk to FOH and a split to monitor world in the stage-left wing. Numbered badges mark the three hazards. Mic lines ${routeFixed ? 'taped up the stage-right edge and along the riser face, clear of the playing area' : 'webbed straight across the playing area'}; spare mic cable ${slackFixed ? 'coiled at the snake head' : 'in loose loops on deck'}; monitor feeds ${monFixed ? 'taped along the downstage lip behind the wedges, with a low-profile cover and glow tape where the stair meets the deck' : 'bare across the deck'}.`}
     >
       <Rect x={0} y={0} width={360} height={205} rx={10} fill="#0c0c10" />
       <StageDeck x={PLOT.x} y={PLOT.y} w={PLOT.w} h={PLOT.h} grid={PLOT.m} />
       {/* plot conventions: dimensions, stage directions, the audience */}
-      <DimLine x1={PLOT.x} y1={12} x2={edgeX} y2={12} text="10 m" />
-      <DimLine x1={8} y1={PLOT.y} x2={8} y2={PLOT.y + PLOT.h} text="5 m" />
-      <PlanLabel x={100} y={41} text="UPSTAGE" size={9.6} />
-      <PlanLabel x={42} y={106} text="SR" anchor="start" size={9.6} />
-      <PlanLabel x={edgeX - 6} y={62} text="SL" anchor="end" size={9.6} />
-      <Rect x={PLOT.x} y={PLOT.y + PLOT.h} width={PLOT.w} height={3} fill="#3a3326" />
-      <PlanLabel x={196} y={198} text="DOWNSTAGE · AUDIENCE" size={9.6} />
+      <DimLine x1={PLOT.x} y1={12} x2={edgeX} y2={12} text="10 m × 5 m" />
+      <PlanLabel x={238} y={41} text="UPSTAGE" size={9.6} />
+      <PlanLabel x={42} y={112} text="SR" anchor="start" size={9.6} />
+      <PlanLabel x={edgeX - 6} y={126} text="SL" anchor="end" size={9.6} />
+      <Rect x={PLOT.x} y={LIP_Y} width={PLOT.w} height={3} fill="#3a3326" />
+      <PlanLabel x={150} y={198} text="DOWNSTAGE · AUDIENCE" size={9.6} />
+      {/* the stage stair with handrails: the one place performers step on and
+          off the deck — feet cross the monitor feed right here */}
+      <Rect x={STAIR.x} y={LIP_Y + 3} width={STAIR.w} height={12} rx={0.8} fill="#2a241d" stroke="#0d0b09" strokeWidth={0.6} />
+      <Path d={`M${STAIR.x} ${LIP_Y + 7} h${STAIR.w} M${STAIR.x} ${LIP_Y + 11} h${STAIR.w}`} stroke="#171310" strokeWidth={0.6} />
+      <Path d={`M${STAIR.x - 1} ${LIP_Y + 2} V${LIP_Y + 16} M${STAIR.x + STAIR.w + 1} ${LIP_Y + 2} V${LIP_Y + 16}`} stroke="#9aa0a8" strokeWidth={1.1} strokeLinecap="round" />
+      <PlanLabel x={264} y={LIP_Y + 13} text="STAIR" anchor="start" size={9.6} />
+      {/* the way performers come up the stair into the playing area */}
+      <Path d={`M${STAIR.x + STAIR.w / 2} ${LIP_Y + 10} V${LANE.y + LANE.h + 2}`} stroke="#b9bdc6" strokeWidth={0.8} strokeDasharray="2 2.4" opacity={0.7} />
+      <Path d={`M${STAIR.x + STAIR.w / 2 - 3} ${LANE.y + LANE.h + 6} l3 -4 l3 4`} stroke="#b9bdc6" strokeWidth={0.8} fill="none" opacity={0.7} />
 
-      {/* fixed lines that were already run right: keys DI and the amp mic,
-          under the riser along the upstage edge, then down the SR edge */}
-      <JacketPath d={`M290 55 V26 H25 V${SNAKE.y}`} color={mic} width={2.2} shadow={false} />
-      <JacketPath d={`M44 52 H22 V${SNAKE.y}`} color={mic} width={2.2} shadow={false} />
-
-      {/* upstage furniture */}
-      <RiserTop x={148} y={PLOT.y} w={64} h={50} />
-      <DrumKitTop x={180} y={46} />
-      <PlanLabel x={180} y={70} text="DRUM RISER" size={9.6} />
-      <KeysTop x={262} y={30} w={56} h={16} />
-      <DiBoxTop x={290} y={53} />
-      <PlanLabel x={290} y={64} text="KEYS · DI" size={9.6} />
+      {/* upstage furniture: the riser (2.0 × 1.6 m, step on the SL end) with
+          the kit facing the house and the drum sub-snake at its front
+          corner; the keys with the player upstage of them; the amp */}
+      <RiserTop x={RISER.x} y={RISER.y} w={RISER.w} h={RISER.h} step="right" />
+      <G transform={`rotate(180 ${drumCx} ${drumCy})`}>
+        <DrumKitTop x={drumCx} y={drumCy} />
+      </G>
+      <StageBoxTop x={RISER.x + 2} y={RISER.y + 4} />
+      <PlanLabel x={drumCx} y={RISER.y + RISER.h - 2} text="DRUMS" size={9.6} />
+      <G transform={`rotate(180 290 52)`}>
+        <KeysTop x={262} y={44} w={56} h={16} />
+      </G>
+      <PerformerTop x={290} y={38} m={PLOT.m} />
+      <DiBoxTop x={323} y={56} />
+      <PlanLabel x={290} y={72} text="KEYS · DI" size={9.6} />
       <GtrAmpTop x={40} y={30} />
-      <MicStandTop x={51} y={52} boom={0} reach={6} />
-      <PlanLabel x={51} y={64} text="GTR AMP" size={9.6} />
+      <MicStandTop x={51} y={50} boom={0} reach={5} />
+      <PerformerTop x={86} y={60} m={PLOT.m} />
+      <PlanLabel x={66} y={39} text="GTR AMP" anchor="start" size={9.6} />
 
-      {/* the vocal line: stands with booms toward the singers, the lane they
-          work, the wedges toed in at the downstage edge */}
+      {/* power: quad boxes fed from the wings, crossing the audio at 90° */}
+      <Path d={`M${PLOT.x} 72 H62`} stroke={pwr} strokeWidth={1.8} strokeLinecap="round" />
+      <Rect x={62} y={69.2} width={7} height={5.6} rx={0.8} fill="#2a2c31" stroke={pwr} strokeWidth={0.6} />
+      <Path d={`M${edgeX} 80 H332`} stroke={pwr} strokeWidth={1.8} strokeLinecap="round" />
+      <Rect x={325} y={77.2} width={7} height={5.6} rx={0.8} fill="#2a2c31" stroke={pwr} strokeWidth={0.6} />
+
+      {/* already dressed before you arrived: the split to monitor world, the
+          keys DI and the amp mic — up the SR edge and along the upstage edge
+          (behind the riser), taped; the drum multicore off the riser face */}
+      <JacketPath d={`M${SNAKE.x + 2} ${SNAKE.y} H${EDGE.split} V23.6 H333.4 V${MON.y + 4} H${MON.x - 2}`} color={grey} width={2.6} shadow={false} />
+      <JacketPath d={`M323 53 V26.2 H${EDGE.keys} V${SNAKE.y}`} color={mic} width={2.2} shadow={false} />
+      <JacketPath d={`M51 55 V58 H${EDGE.amp} V${SNAKE.y}`} color={mic} width={2.2} shadow={false} />
+      <JacketPath d={`M${RISER.x + 2} ${RISER.y + 10} H${RISER.x - 4} V${DRUM_Y} H${EDGE.drum} V${SNAKE.y}`} color={grey} width={2.8} shadow={false} />
+      {[60, 110, 200, 260].map((x) => (
+        <TapeStrip key={`ut${x}`} x={x} y={24.9} len={8} />
+      ))}
+      {[70, 116, 138].map((y) => (
+        <TapeStrip key={`st${y}`} x={25.8} y={y} angle={0} len={19} />
+      ))}
+      {[60, 100].map((x) => (
+        <TapeStrip key={`dt${x}`} x={x} y={DRUM_Y} len={7} />
+      ))}
+
+      {/* the vocal line: singers facing the house, boom stands just downstage
+          of them (a leg under each boom), the playing area, the wedges */}
+      <Rect x={LANE.x} y={LANE.y} width={LANE.w} height={LANE.h} fill="rgba(255,255,255,0.02)" stroke="#8d9199" strokeWidth={0.8} strokeDasharray="4 3" />
+      <PlanLabel x={LANE.x + 4} y={LANE.y + 15} text="PLAYING AREA" anchor="start" size={9.6} />
       {VOX_XS.map((x, i) => (
         <G key={x}>
-          <MicStandTop x={x} y={VOX_Y} boom={180} reach={12} />
-          <PlanLabel x={x + 9} y={VOX_Y + 9} text={`VOX ${i + 1}`} anchor="start" size={9.6} />
+          <MicStandTop x={x} y={VOX_Y} boom={0} reach={7} />
+          <PerformerTop x={x} y={SINGER_Y} m={PLOT.m} />
+          <PlanLabel x={x - 11} y={SINGER_Y + 3.4} text={`VOX ${i + 1}`} anchor="end" size={9.6} />
         </G>
       ))}
-      <Rect x={96} y={104} width={210} height={48} fill="rgba(255,255,255,0.02)" stroke="#8d9199" strokeWidth={0.8} strokeDasharray="4 3" />
-      {VOX_XS.map((x, i) => (
-        <WedgeTop key={`wg${x}`} x={x - 1} y={WEDGE_Y} angle={i === 0 ? 14 : i === 2 ? -14 : 0} />
+      {VOX_XS.map((x) => (
+        <WedgeTop key={`wg${x}`} x={x} y={WEDGE_Y} />
       ))}
+      <PlanLabel x={296} y={WEDGE_Y + 4} text="WEDGES" anchor="start" size={9.6} />
 
-      {/* snake head DSR with its trunk to FOH; monitor world in the SL wing */}
+      {/* snake head DSR: its trunk leaves off the SR side and runs down the
+          wing to FOH — never over the downstage lip into the audience */}
+      <JacketPath d={`M${SNAKE.x} ${SNAKE.y + 7} H10 V200`} color="#5d6068" width={4.2} />
       <SnakeHeadTop x={SNAKE.x} y={SNAKE.y} />
-      <JacketPath d={`M36 ${SNAKE.y + 14} V196`} color="#5d6068" width={4.2} />
-      <PlanLabel x={52} y={176} text="SNAKE HEAD" anchor="start" size={9.6} />
-      <PlanLabel x={44} y={200} text="TO FOH" anchor="start" size={9.6} />
+      <PlanLabel x={50} y={174} text="SNAKE HEAD" anchor="start" size={9.6} />
+      <PlanLabel x={14} y={201} text="TO FOH" anchor="start" size={9.6} />
       <ConsoleTop x={MON.x} y={MON.y} w={18} h={14} />
       <PlanLabel x={MON.x + 9} y={MON.y - 4} text="MON" size={9.6} />
 
-      {/* MIC LINES — the web across the lane retracts, the edge route installs */}
-      <SwapPath d={`M48 150 C80 150 106 122 ${VOX_XS[0]} 96`} len={115} tint={mic} width={2.4} mode="bad" fixed={routeFixed} intro={120} />
-      <SwapPath d={`M48 153 C120 158 176 122 ${VOX_XS[1]} 96`} len={200} tint={mic} width={2.4} mode="bad" fixed={routeFixed} intro={200} />
-      <SwapPath d={`M48 156 C160 162 240 124 ${VOX_XS[2]} 96`} len={270} tint={mic} width={2.4} mode="bad" fixed={routeFixed} intro={280} />
-      <SwapPath d={`M28 ${SNAKE.y} V79 H${VOX_XS[0]} V86`} len={250} tint={mic} width={2.4} mode="good" fixed={routeFixed} delay={0} />
-      <SwapPath d={`M31 ${SNAKE.y} V81.5 H${VOX_XS[1]} V86`} len={330} tint={mic} width={2.4} mode="good" fixed={routeFixed} delay={90} />
-      <SwapPath d={`M34 ${SNAKE.y} V84 H${VOX_XS[2]} V86`} len={410} tint={mic} width={2.4} mode="good" fixed={routeFixed} delay={180} />
+      {/* ① MIC LINES — the web across the playing area retracts; the edge
+          route installs: up the SR edge in the bundle, along the riser face,
+          taped, and down BESIDE each singer (0.6 m clear) to the stand */}
+      <SwapPath d={`M48 150 C80 152 100 134 ${VOX_XS[0]} ${VOX_Y + 1}`} len={115} tint={mic} width={2.4} mode="bad" fixed={routeFixed} intro={120} />
+      <SwapPath d={`M48 153 C120 162 176 138 ${VOX_XS[1]} ${VOX_Y + 1}`} len={200} tint={mic} width={2.4} mode="bad" fixed={routeFixed} intro={200} />
+      <SwapPath d={`M48 156 C160 166 250 142 ${VOX_XS[2]} ${VOX_Y + 1}`} len={270} tint={mic} width={2.4} mode="bad" fixed={routeFixed} intro={280} />
+      {VOX_XS.map((x, i) => (
+        <SwapPath
+          key={`gv${x}`}
+          d={`M${EDGE.vox[i]} ${SNAKE.y} V${FACE_Y[i]} H${x + 20} V${VOX_Y + 1} H${x + 3}`}
+          len={[240, 330, 420][i]}
+          tint={mic}
+          width={2.4}
+          mode="good"
+          fixed={routeFixed}
+          delay={i * 90}
+        />
+      ))}
+      <SwapGroup show={routeFixed} delay={260}>
+        {[52, 92, 132, 172, 214, 252].map((x) => (
+          <TapeStrip key={`ft${x}`} x={x} y={FACE_Y[1]} len={9} />
+        ))}
+        {VOX_XS.map((x) => (
+          <TapeStrip key={`dt${x}`} x={x + 20} y={104} angle={0} len={7} />
+        ))}
+        {VOX_XS.map((x) => (
+          <TapeStrip key={`bt${x}`} x={x + 12} y={VOX_Y + 1} len={6} />
+        ))}
+      </SwapGroup>
 
-      {/* SLACK — loose loops in the lane shrink away; a neat coil lands at
-          the snake head */}
-      <SwapCircle cx={150} cy={140} r={8} tint={mic} width={2} show={!slackFixed} />
-      <SwapCircle cx={166} cy={132} r={6} tint={mic} width={2} show={!slackFixed} />
-      <SwapCircle cx={140} cy={126} r={5} tint={mic} width={2} show={!slackFixed} />
-      <SwapCircle cx={64} cy={152} r={7} tint={mic} width={2} show={slackFixed} />
-      <SwapCircle cx={64} cy={152} r={10.5} tint={mic} width={2} show={slackFixed} delay={80} />
+      {/* ② SLACK — loose loops left in the VOX 1 run shrink away; the spare
+          length lands coiled at the snake head, its tail into the box */}
+      <SwapCircle cx={64} cy={146} r={6} tint={mic} width={2} show={!slackFixed} />
+      <SwapCircle cx={77} cy={141} r={5} tint={mic} width={2} show={!slackFixed} />
+      <SwapCircle cx={88} cy={137} r={4} tint={mic} width={2} show={!slackFixed} />
+      <SwapCircle cx={36} cy={170} r={6} tint={mic} width={2} show={slackFixed} />
+      <SwapCircle cx={36} cy={170} r={9.5} tint={mic} width={2} show={slackFixed} delay={80} />
+      <SwapPath d={`M36 160.5 V164`} len={6} tint={mic} width={2} mode="good" fixed={slackFixed} delay={120} />
 
-      {/* MONITOR FEEDS — bare diagonals retract; the dressed edge draws in */}
+      {/* ③ MONITOR FEEDS — bare diagonals retract; the dressed run draws in
+          along the lip behind the wedges, taped, with a low-profile drop-over
+          cover and glow tape where the stair meets the deck */}
       <SwapPath d={`M${MON.x} 157 C300 130 222 150 ${VOX_XS[1] - 2} ${WEDGE_Y - 4}`} len={150} tint={spk} width={2.4} mode="bad" fixed={monFixed} intro={360} />
       <SwapPath d={`M${MON.x} 160 C262 128 168 152 ${VOX_XS[0] + 2} ${WEDGE_Y - 4}`} len={230} tint={spk} width={2.4} mode="bad" fixed={monFixed} intro={430} />
       <SwapPath d={`M${MON.x} 154 C318 148 292 158 ${VOX_XS[2] + 2} ${WEDGE_Y - 4}`} len={80} tint={spk} width={2.4} mode="bad" fixed={monFixed} intro={300} />
-      <SwapCircle cx={252} cy={140} r={7} tint={spk} width={2} show={!monFixed} />
-      <SwapPath d={`M${MON.x} 164 C336 178 330 178 320 178 H${VOX_XS[0] - 10}`} len={250} tint={spk} width={2.6} mode="good" fixed={monFixed} />
+      <SwapPath d={`M${MON.x} 164 C336 ${MON_RUN_Y} 330 ${MON_RUN_Y} 320 ${MON_RUN_Y} H${VOX_XS[0] - 10}`} len={250} tint={spk} width={2.6} mode="good" fixed={monFixed} />
       {VOX_XS.map((x, i) => (
-        <SwapPath key={`tail${x}`} d={`M${x + 6} 178 V${WEDGE_Y + 5}`} len={8} tint={spk} width={2.4} mode="good" fixed={monFixed} delay={260 + i * 40} />
+        <SwapPath key={`tail${x}`} d={`M${x + 6} ${MON_RUN_Y} V${WEDGE_Y + 5}`} len={8} tint={spk} width={2.4} mode="good" fixed={monFixed} delay={260 + i * 40} />
       ))}
       <SwapGroup show={monFixed} delay={220}>
-        {/* gaffer tape dressing the feed to the edge, a ramp where feet cross */}
-        {[150, 180, 300].map((x) => (
-          <TapeStrip key={`mu${x}`} x={x} y={178} />
+        {[140, 180, 300].map((x) => (
+          <TapeStrip key={`mu${x}`} x={x} y={MON_RUN_Y} />
         ))}
-        <RampTop x={226} y={172} w={36} h={12} />
+        {/* low-profile drop-over cover: flat, bevelled both edges, all on the
+            deck — no hump at the head of a stair */}
+        <Rect x={STAIR.x - 4} y={MON_RUN_Y - 4} width={STAIR.w + 8} height={8} rx={1} fill="#1b1c20" stroke="#050506" strokeWidth={0.5} />
+        <Rect x={STAIR.x - 3} y={MON_RUN_Y - 2.4} width={STAIR.w + 6} height={4.8} rx={0.8} fill="#e3b73a" stroke="#6b5520" strokeWidth={0.4} />
+        {/* glow tape on the lip and the stair nosing */}
+        <Path d={`M${STAIR.x - 6} ${LIP_Y - 0.8} H${STAIR.x + STAIR.w + 6} M${STAIR.x} ${LIP_Y + 6.8} H${STAIR.x + STAIR.w}`} stroke="#d9f7c8" strokeWidth={1.1} strokeDasharray="3 2" />
       </SwapGroup>
 
-      {/* lane label on a dark tag, painted after the cables: the as-found web
-          crosses the lane in plain view without crossing the words */}
-      <Callout x={201} y={131} text="PERFORMER LANE" size={10.5} color={PLAN_LABEL} bg="rgba(12,12,16,0.86)" />
+      {/* the numbered hazards, matching the numbered calls below */}
+      <HazardBadge x={150} y={128} n={1} fixed={routeFixed} />
+      <HazardBadge x={70} y={127} n={2} fixed={slackFixed} />
+      <HazardBadge x={316} y={136} n={3} fixed={monFixed} />
+
       {/* one performer crosses the web — the conflict, shown once */}
-      <TrafficPass x1={104} y1={128} x2={300} y2={122} run={!routeFixed} delay={780} duration={1900} crossAt={0.36} />
+      <TrafficPass x1={300} y1={146} x2={100} y2={148} run={!routeFixed} delay={780} duration={1900} crossAt={0.36} />
     </Svg>
   );
 }
@@ -586,7 +692,7 @@ function FohPlan({ w, pick }: { w: number; pick: number | null }) {
       width={w}
       height={h}
       viewBox="0 0 360 210"
-      accessibilityLabel="Venue plan, training visualization: stage at top, seated audience with a center aisle, perimeter walls with a service door, FOH riser at the bottom. Route A runs down the center aisle; route B follows the perimeter with one protected door crossing; route C hops overhead on rated rigging points."
+      accessibilityLabel="Venue plan, training visualization: stage at top, seated audience with a center aisle, perimeter walls with a service door (not an exit), FOH riser at the bottom, the main exits on the back wall clear of every route. Route A runs down the center aisle; route B follows the perimeter with one protected door crossing; route C hops overhead on rated rigging points."
     >
       <Rect x={0} y={0} width={360} height={210} rx={10} fill="#0c0c10" />
       <Rect x={6} y={6} width={348} height={198} rx={8} fill="#131417" stroke="#2c2c33" strokeWidth={1} />
@@ -609,8 +715,9 @@ function FohPlan({ w, pick }: { w: number; pick: number | null }) {
       <Rect x={3} y={108} width={6} height={22} fill="#3a3c42" />
       <PlanLabel x={44} y={98} text="SVC" />
       <PlanLabel x={44} y={110} text="DOOR" />
-      {/* main doors on the bottom wall */}
-      <Rect x={58} y={200} width={26} height={5} fill="#3a3c42" />
+      {/* main doors (the exits) on the bottom wall, both clear of every
+          route — no run crosses the rear cross-aisle to an exit */}
+      <Rect x={222} y={200} width={26} height={5} fill="#3a3c42" />
       <Rect x={276} y={200} width={26} height={5} fill="#3a3c42" />
       {/* ROUTE A — center aisle under ramp (amber) */}
       <RoutePath d="M180 48 V170" len={130} tint={ROUTE_TINTS[0]} width={2.8} phase={phaseFor(0, pick)} index={0} />
@@ -679,9 +786,11 @@ function BackstagePlan({ w, pick }: { w: number; pick: number | null }) {
       <PlanLabel x={187} y={130} text="MAT" />
       {/* ROUTE B — one marked, vehicle-rated crossing (teal) */}
       <RoutePath d="M48 106 V178 H296" len={330} tint={ROUTE_TINTS[1]} width={2.8} phase={phaseFor(1, pick)} index={1} />
-      <RampTop x={202} y={170} w={44} h={16} />
-      <Line x1={200} y1={168} x2={200} y2={190} stroke={CI_CLASS_TINTS.speaker} strokeWidth={1.4} strokeDasharray="3,3" />
-      <Line x1={248} y1={168} x2={248} y2={190} stroke={CI_CLASS_TINTS.speaker} strokeWidth={1.4} strokeDasharray="3,3" />
+      {/* the protector spans the WHOLE roll lane (its edges cross y 178 at
+          x ≈ 180 and 246), high-vis marked both sides */}
+      <RampTop x={174} y={170} w={78} h={16} />
+      <Line x1={172} y1={168} x2={172} y2={190} stroke={CI_CLASS_TINTS.speaker} strokeWidth={1.4} strokeDasharray="3,3" />
+      <Line x1={254} y1={168} x2={254} y2={190} stroke={CI_CLASS_TINTS.speaker} strokeWidth={1.4} strokeDasharray="3,3" />
       <PlanLabel x={224} y={201} text="RATED + MARKED" />
       {/* ROUTE C — long perimeter behind the cases (purple) */}
       <RoutePath d="M48 94 V30 H292 V172 H296" len={470} tint={ROUTE_TINTS[2]} width={2.6} phase={phaseFor(2, pick)} index={2} />
@@ -1099,6 +1208,14 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
     return d ? craftOk(d) : false;
   };
   const craftDone = CRAFT_DECISIONS.every((d) => craftAnswered(d.id));
+  /** After a wrong call the learner can still SEE the professional way (a
+   *  worked example) — the score keeps the wrong answer. */
+  const [shownFix, setShownFix] = useState<Record<string, boolean>>({});
+  const drawnFixed = (id: string) => craftOkById(id) || shownFix[id] === true;
+  const showFix = (id: string) => {
+    setShownFix((f) => ({ ...f, [id]: true }));
+    AccessibilityInfo.announceForAccessibility('The plot now shows the professional way.');
+  };
   const craftCorrect = CRAFT_DECISIONS.filter((d) => craftOk(d)).length;
 
   /* D state */
@@ -1208,6 +1325,9 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
                 {chosen.short}
               </Text>
             ) : null}
+            {chosen && !chosen.ok && !shownFix[d.id] ? (
+              <OptionChip action label="SHOW THE PROFESSIONAL WAY" onPress={() => showFix(d.id)} />
+            ) : null}
           </View>
         );
       })}
@@ -1275,9 +1395,9 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
       {/* (A) STAGE CRAFT */}
       <CiSection title="STAGE CRAFT — CLEAN UP THE DECK">
         <Text style={s.lead}>
-          Soundcheck in an hour. The deck is as found: mic lines webbed across the performer lane, spare cable in loose
-          loops, monitor feeds bare where feet cross. Make three calls — the plan redraws each part the professional way
-          as you decide it.
+          Soundcheck in an hour. The deck is as found — the numbered badges mark three hazards: ① mic lines webbed
+          across the playing area, ② spare cable in loose loops, ③ monitor feeds bare across the deck. Make three calls —
+          the plot redraws each part the professional way as you get it right.
         </Text>
         {/* The plan may only redraw a part "the professional way" once the call
             was actually CORRECT (fix 2026-08-28). This was keyed on
@@ -1289,13 +1409,18 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
           width={artW}
           aspect={360 / 205}
           title="STAGE PLAN"
-          badge="Training visualization — qualitative plan, training colors only; field cable colors vary."
+          badge="Training visualization — stage plot to scale (1 m grid); teaching colors, field cable colors vary."
           render={(w) => (
-            <StagePlan w={w} routeFixed={craftOkById('route')} slackFixed={craftOkById('slack')} monFixed={craftOkById('mon')} />
+            <StagePlan w={w} routeFixed={drawnFixed('route')} slackFixed={drawnFixed('slack')} monFixed={drawnFixed('mon')} />
           )}
           controls={craftDock}
         />
-        <Text style={s.caption}>Training visualization — qualitative plan, training colors only; field cable colors vary.</Text>
+        <Text style={s.caption}>
+          Training visualization — stage plot to scale (faint grid = 1 m), in the lab’s teaching colors (field cable
+          colors vary): cyan = mic lines · gold = monitor feeds · grey = multicores (trunk to FOH, split to MON, drum
+          sub-snake) · red = AC power to quad boxes · grey strips = gaffer tape · yellow = low-profile cover at the stair ·
+          dashed = the way performers come up the stair. The amp, keys and split lines were already dressed right.
+        </Text>
         <View style={{ gap: 12 }}>
           {CRAFT_DECISIONS.map((d, di) => {
             const answered = craftAnswered(d.id);
@@ -1317,6 +1442,11 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
                 {chosen ? (
                   <Appear delay={RETRACT_MS}>
                     <RuleFeedback ruleId="floor-stage-craft" verdict={chosen.ok ? 'good' : 'bad'} short={chosen.short} openSources={openSources} />
+                    {!chosen.ok && !shownFix[d.id] ? (
+                      <View style={{ marginTop: 7 }}>
+                        <OptionChip action label="SHOW THE PROFESSIONAL WAY ON THE PLOT" onPress={() => showFix(d.id)} />
+                      </View>
+                    ) : null}
                   </Appear>
                 ) : null}
               </Stagger>
