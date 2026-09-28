@@ -195,8 +195,32 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-28 09:17 · ccode · e42729b0
+changed: Cable Install Stage 11: building section redrawn to scale with section conventions
+affects other side: nothing — client JS only (cable lab art)
+needs: nothing
+
+
+### 2026-09-28 08:11 · ccode · f4bf2402
+changed: Labs probe round 3: playback trail (gate, fetch, player status, errors) + ?/ⓘ presses
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-28 08:05 · ccode · d9487d01
+changed: Cable Install Stage 11: redraw the building section to section conventions
+affects other side: nothing — client JS only (cable lab art)
+needs: nothing — client JS only (cable lab art)
+
+
 ### 2026-09-28 08:04 · ccode · e06628f3
 changed: Cable Install Stage 9: redraw the deck as a real stage plot
+affects other side: nothing — client JS only (cable lab art)
+needs: nothing — client JS only (cable lab art)
+
+
+### 2026-09-28 08:03 · ccode · 0f4f0c1e
+changed: Cable Install Stage 8: redraw the ceiling cavity as a building section
 affects other side: nothing — client JS only (cable lab art)
 needs: nothing — client JS only (cable lab art)
 
