@@ -246,7 +246,7 @@ export const CI_RULES: CiRule[] = [
     severity: 'critical',
     studentText: 'Cable may not lie on ceiling tiles or hang from tile grid/support wires.',
     whyText:
-      'Tiles and grid are a finish system, not structure — cable loads them, blocks access, and where the electrical code is adopted this is a violation, not a shortcut. Independent, approved supports exist precisely for this.',
+      'Tiles and grid are a finish system, not structure — cable loads them, blocks access, and where the electrical code is adopted this is a violation, not a shortcut (confirm with the AHJ). Independent, approved supports exist precisely for this.',
     correctionText: 'Lift the cable onto J-hooks/tray/straps anchored to structure, clear of the tiles.',
     sourceRefs: ['nec', 'bicsi_n1'],
   },
@@ -369,7 +369,7 @@ export const CI_RULES: CiRule[] = [
     severity: 'critical',
     studentText: 'Support overhead runs from structure with approved hardware — independent of ceilings, ducts, pipes and other systems.',
     whyText:
-      'Overhead cable that borrows other systems\' supports endangers both systems and the people below. Where the electrical code is adopted this is required; everywhere it is simply how professionals stay out of trouble.',
+      'Overhead cable that borrows other systems\' supports endangers both systems and the people below. Where the electrical code is adopted this is required (confirm with the AHJ); everywhere it is simply how professionals stay out of trouble.',
     sourceRefs: ['nec', 'bicsi_n1', 'mfr_support'],
   },
   {

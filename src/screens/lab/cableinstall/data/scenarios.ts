@@ -256,7 +256,7 @@ export const CI_SUPPORT_ITEMS: CiSupportItem[] = [
 ];
 
 export const CI_SUPPORT_SPACING_SPEC =
-  'SIMULATED SUPPORT SYSTEM SPEC — this J-hook system, at this load: supports every 4 grid units, max sag ½ unit. (Real spacing comes from the support manufacturer + applicable standard.)';
+  'SIMULATED SUPPORT SYSTEM SPEC — this J-hook system, at this load: supports every 4 span units, max sag ½ unit. (Real spacing comes from the support manufacturer + applicable standard.)';
 
 /* ── M6 — rack ─────────────────────────────────────────────────────────── */
 export type CiRackIssue = { id: string; mistakeId: string; label: string; /** rear-view zone 0..1 y */ zone: number };
@@ -330,12 +330,12 @@ export type CiCeilingDefect = { id: string; mistakeId: string; label: string; x:
 export const CI_CEILING_DEFECTS: CiCeilingDefect[] = [
   { id: 'cd-1', mistakeId: 'on-ceiling-tile', label: 'Audio pair lying across the tiles', x: 16.7, y: 73.2 },
   { id: 'cd-2', mistakeId: 'foreign-support', label: 'Audio pair draped over the sprinkler main', x: 44.4, y: 36.4 },
-  { id: 'cd-3', mistakeId: 'unsupported-span', label: 'Long span with no support, sagging', x: 66.7, y: 68.2 },
+  { id: 'cd-3', mistakeId: 'unsupported-span', label: 'Long span with no support, sagging', x: 66.7, y: 71.4 },
   { id: 'cd-4', mistakeId: 'foreign-support', label: 'Cable resting on the light fixture housing', x: 30.6, y: 70 },
   { id: 'cd-5', mistakeId: 'sharp-bend', label: 'Hard 90° fold where the run turns', x: 76.1, y: 28.2 },
-  { id: 'cd-6', mistakeId: 'overfilled-pathway', label: 'J-hook stuffed far past its capacity', x: 53.9, y: 29.5 },
-  { id: 'cd-7', mistakeId: 'unverified-wall', label: 'Runs disappear through an unmarked penetration', x: 91.7, y: 47.3 },
-  { id: 'cd-8', mistakeId: 'hidden-loop', label: 'Service loop tied above the rigid duct — unreachable', x: 12.2, y: 30.5 },
+  { id: 'cd-6', mistakeId: 'overfilled-pathway', label: 'Undersized J-hook stuffed past its capacity — runs spilling off', x: 54.7, y: 29.5 },
+  { id: 'cd-7', mistakeId: 'unverified-wall', label: 'Runs forced through a ragged, unsleeved hole — wall rating unknown', x: 94.2, y: 47.9 },
+  { id: 'cd-8', mistakeId: 'hidden-loop', label: 'Service loop coiled on top of the insulated duct — unreachable', x: 12.2, y: 33 },
 ];
 
 export const CI_CEILING_INSTALL_STEPS = [

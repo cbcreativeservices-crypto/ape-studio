@@ -39,9 +39,9 @@
  */
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
-import Svg, { Circle, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { JacketPath, shade, tint as lighten, SVG_A11Y } from '../svgArt';
-import { CeilingDefects, FinishedRoom, GridAndTiles, OtherTrades, PlenumStructure, WallSleeve } from './ceilingArt';
+import { CeilingDefects, FinishedRoom, GridAndTiles, JHookDrop, OtherTrades, PlenumStructure, WallSleeve } from './ceilingArt';
 /** Type-only: the motion kit re-exports the hooks, not the SharedValue type. */
 import type { SharedValue } from 'react-native-reanimated';
 import { colors, fonts } from '../../../../theme/tokens';
@@ -100,7 +100,9 @@ const SAMPLES = 21;
 const RUN_XS = Array.from({ length: SAMPLES }, (_, i) => SPAN_X0 + (i / (SAMPLES - 1)) * SPAN_UNITS * UNIT_PX);
 /** Dip grows with the SQUARE of the span (real cable physics): a 4-unit span
  *  barely dips, a 12-unit unsupported span bottoms out at the cap. */
-const SAG_K = 0.15;
+const SAG_K = 0.3;
+/** The supplied spec's sag limit (½ span unit), drawn under the run. */
+const SAG_LIMIT = UNIT_PX / 2;
 const SAG_MAX = 20;
 /** Where the run enters the far wall through the bushed sleeve. */
 const SLEEVE_X = 342;
@@ -120,7 +122,7 @@ const PATH_OPTS: { id: string; label: string; good: boolean; short: string }[] =
     id: 'tiles',
     label: 'Lay the bundle across the ceiling tiles',
     good: false,
-    short: 'Tiles are a finish system, not a support — where the electrical code is adopted this is a violation, and defect #1 out there shows how it ends.',
+    short: 'Tiles are a finish system, not a support — where the electrical code is adopted this is a violation (confirm with the AHJ), and defect #1 out there shows how it ends.',
   },
   {
     id: 'duct',
@@ -237,7 +239,7 @@ function InstalledRun({ d, len, color, width, delay = 0 }: { d: string; len: num
 
 /** A defect marker: breathes on its own phase until found, then springs into
  *  its found state and stops. */
-function DefectMarker({ cx, cy, index, found, run }: { cx: number; cy: number; index: number; found: boolean; run: boolean }) {
+function DefectMarker({ cx, cy, index, found, run, quiet }: { cx: number; cy: number; index: number; found: boolean; run: boolean; quiet: boolean }) {
   const breath = useBreath({ run: run && !found, period: 1320 + (index % 4) * 170, delay: index * 185 });
   const k = useSettle(found ? 1 : 0, { spring: SPRING_UI });
   const restRing = useRest(run && !found ? 0.5 : 0);
@@ -246,24 +248,27 @@ function DefectMarker({ cx, cy, index, found, run }: { cx: number; cy: number; i
   const core = useAnimatedProps(() => ({ r: 11 + 1.8 * k.value }));
   const tick = useAnimatedProps(() => ({ opacity: k.value }));
   return (
-    <>
+    <G opacity={quiet ? 0.35 : 1}>
       <ACircle cx={cx} cy={cy} r={11} fill="none" stroke="#6f7378" strokeWidth={1.6} opacity={restRing} animatedProps={ring} />
       <ACircle
         cx={cx}
         cy={cy}
         r={11}
-        fill={found ? 'rgba(55,224,95,.12)' : 'rgba(255,255,255,.02)'}
+        fill="none"
         stroke={found ? colors.green : '#6f7378'}
         strokeWidth={found ? 2 : 1.3}
         strokeDasharray={found ? undefined : '3 4'}
         animatedProps={core}
       />
       <AG opacity={restTick} animatedProps={tick}>
-        <SvgText x={cx} y={cy + 3.5} fill={colors.green} fontSize={10} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">
+        {/* the tick sits on a badge at the ring's shoulder — never over the
+            evidence the ring encloses */}
+        <Circle cx={cx + 9.5} cy={cy - 9.5} r={5.2} fill="#0f1a12" stroke={colors.green} strokeWidth={1.1} />
+        <SvgText x={cx + 9.5} y={cy - 6.2} fill={colors.green} fontSize={9.6} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">
           ✓
         </SvgText>
       </AG>
-    </>
+    </G>
   );
 }
 
@@ -285,11 +290,38 @@ function Tick({ x, index, on }: { x: number; index: number; on: boolean }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, m.reduce]);
   const p = useAnimatedProps(() => ({ opacity: t.value, y2: 144 + 4 * k.value, strokeWidth: 1.2 + 0.9 * k.value }));
-  return <ALine x1={x} y1={138} x2={x} y2={144} stroke={on ? colors.amber : '#34343c'} strokeWidth={1.2} opacity={0} animatedProps={p} />;
+  const n = useAnimatedProps(() => ({ opacity: t.value }));
+  return (
+    <>
+      <ALine x1={x} y1={138} x2={x} y2={144} stroke={on ? colors.amber : '#8d9199'} strokeWidth={1.2} opacity={0} animatedProps={p} />
+      <AG opacity={0} animatedProps={n}>
+        <SvgText x={x} y={157.4} fill={on ? colors.amber : '#b9bdc6'} fontSize={9.6} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">
+          {String(index + 1)}
+        </SvgText>
+      </AG>
+    </>
+  );
 }
 
-/** A placed J-hook — the rod stays hung from structure while the cradle drops
- *  the last few units and settles. */
+/** J-hook geometry for the learner's run: saddle radius, saddle bottom (the
+ *  run's underside), top of the back arm where the rod lands. */
+const HOOK_W = 4.5;
+const HOOK_SADDLE = 131;
+const HOOK_ARM_TOP = HOOK_SADDLE - HOOK_W - 7;
+
+/** A placed hook's rod, drawn in the layer BEHIND the other trades — it hangs
+ *  from the deck and passes behind the main, the conduit and the bundle. */
+function PlacedHookRod({ x }: { x: number }) {
+  return (
+    <>
+      <Rect x={x - HOOK_W - 2.4} y={14} width={4.8} height={1.4} fill="#9aa0a8" />
+      <Line x1={x - HOOK_W} y1={15} x2={x - HOOK_W} y2={HOOK_ARM_TOP} stroke="#9aa0a8" strokeWidth={0.8} />
+    </>
+  );
+}
+
+/** A placed J-hook — hung from its rod, the J drops the last few units and
+ *  settles under the cable. */
 function PlacedHook({ x }: { x: number }) {
   const m = useCiMotion();
   const k = useSharedValue(m.reduce ? 1 : 0);
@@ -305,16 +337,18 @@ function PlacedHook({ x }: { x: number }) {
   }, [m.reduce]);
   const hookD = (dy: number) => {
     'worklet';
-    // rod from the deck anchor, then the formed J (4.5 units = a 3-inch hook)
-    return `M${x} 15 V${(122 - dy).toFixed(1)} M${x - 4.5} ${(122 - dy).toFixed(1)} V${(129.5 - dy).toFixed(1)} A4.5 4.5 0 0 0 ${x + 4.5} ${(129.5 - dy).toFixed(1)} V${(125 - dy).toFixed(1)}`;
+    // the formed J: the rod lands on the tall back arm, the saddle bottom sits
+    // under the cable (run centre 129.6 + half its jacket), a short front lip
+    const top = HOOK_ARM_TOP - dy;
+    const s = HOOK_SADDLE - HOOK_W - dy;
+    return `M${x - HOOK_W} ${top.toFixed(1)} V${s.toFixed(1)} A${HOOK_W} ${HOOK_W} 0 0 0 ${x + HOOK_W} ${s.toFixed(1)} V${(s - 2.6).toFixed(1)}`;
   };
   const p = useAnimatedProps(() => ({ d: hookD((1 - k.value) * 9), opacity: Math.min(1, k.value * 1.8) }));
   const q = useAnimatedProps(() => ({ d: hookD((1 - k.value) * 9), opacity: Math.min(1, k.value * 1.8) }));
   return (
     <>
-      <Rect x={x - 2.4} y={14} width={4.8} height={1.4} fill="#9aa0a8" />
-      <APath d={hookD(0)} stroke="#2c2f34" strokeWidth={2.2} fill="none" strokeLinecap="round" opacity={0} animatedProps={p} />
-      <APath d={hookD(0)} stroke="#c3c8cf" strokeWidth={1.2} fill="none" strokeLinecap="round" opacity={0} animatedProps={q} />
+      <APath d={hookD(0)} stroke="#2c2f34" strokeWidth={2.6} fill="none" strokeLinecap="round" opacity={0} animatedProps={p} />
+      <APath d={hookD(0)} stroke="#c3c8cf" strokeWidth={1.6} fill="none" strokeLinecap="round" opacity={0} animatedProps={q} />
     </>
   );
 }
@@ -412,9 +446,9 @@ function StrainMark({
     for (let i = i0; i <= i1 && i < t.length; i++) {
       d += `${i === i0 ? 'M' : 'L'}${RUN_XS[i].toFixed(1)} ${(f[i] + (t[i] - f[i]) * k.value).toFixed(1)} `;
     }
-    return { d, opacity: fade.value * (0.18 + 0.3 * breath.value) };
+    return { d, opacity: fade.value * (0.12 + 0.2 * breath.value) };
   });
-  return <APath d="" stroke="#ff5a48" strokeWidth={7} fill="none" strokeLinecap="round" opacity={0} animatedProps={p} />;
+  return <APath d="" stroke="#ff5a48" strokeWidth={5.4} fill="none" strokeLinecap="round" opacity={0} animatedProps={p} />;
 }
 
 /** The bushed sleeve: the ring settles green and one landing pulse expands
@@ -461,6 +495,8 @@ function AboveSvg({
   strain,
   pulseDefects,
   runTint,
+  quietDefects,
+  ghost,
 }: {
   w: number;
   above: boolean;
@@ -476,6 +512,8 @@ function AboveSvg({
   strain: { on: boolean; i0: number; i1: number };
   pulseDefects: boolean;
   runTint: string;
+  quietDefects: boolean;
+  ghost: 'tiles' | 'duct' | null;
 }) {
   const h = Math.round((w * VB_H) / VB_W);
   const hookXs = [...hooks].sort((a, b) => a - b).map((u) => SPAN_X0 + u * UNIT_PX);
@@ -498,6 +536,11 @@ function AboveSvg({
       {/* ── depth 1: structure ─────────────────────────────────────────── */}
       <Layer t={rv} from={0} to={0.4} above={above}>
         <PlenumStructure />
+        {/* the learner's hook rods hang from the deck BEHIND the other trades */}
+        {hookXs.map((x) => (
+          <PlacedHookRod key={`r${x}`} x={x} />
+        ))}
+        {showTicks || confirmed ? <PlacedHookRod x={SPAN_X0 + SPAN_UNITS * UNIT_PX - 4} /> : null}
       </Layer>
 
       {/* ── depth 2: the other trades' systems ─────────────────────────── */}
@@ -512,19 +555,43 @@ function AboveSvg({
 
       {/* ── depth 4: the previous contractor's wrongs (Exercise 1) ─────── */}
       <Layer t={rv} from={0.42} to={0.9} above={above}>
-        <CeilingDefects />
+        {/* once the learner is installing, the old contractor's work steps
+            back so their own run is unmistakable */}
+        <G opacity={quietDefects ? 0.3 : 1}>
+          <CeilingDefects />
+        </G>
       </Layer>
 
       {/* ── depth 5: the learner's install ─────────────────────────────── */}
       <Layer t={rv} from={0.55} to={1} above={above}>
         {/* far-wall sleeve (the intended, bushed entry) */}
-        <WallSleeve />
+        {/* its label steps aside while the span's unit numbers are up */}
+        <WallSleeve label={!showTicks} />
         <SleeveRing on={confirmed} />
 
-        {/* unit tick marks while placing supports */}
+        {/* a wrong pathway choice is drawn too — honestly, and struck out */}
+        {ghost === 'tiles' ? (
+          <G>
+            <Path d={`M${SPAN_X0} 130.5 C182 150 186 161.4 198 161.4 H330`} stroke="#c77dff" strokeWidth={2.4} strokeDasharray="5 3" fill="none" />
+            <Path d="M254 150 l12 12 M266 150 l-12 12" stroke="#ff5a48" strokeWidth={2} strokeLinecap="round" />
+          </G>
+        ) : null}
+        {ghost === 'duct' ? (
+          <G>
+            <Path d={`M${SPAN_X0} 130.5 C160 116 134 76.2 118 76.2 H14`} stroke="#c77dff" strokeWidth={2.4} strokeDasharray="5 3" fill="none" />
+            <Path d="M58 64 l12 12 M70 64 l-12 12" stroke="#ff5a48" strokeWidth={2} strokeLinecap="round" />
+          </G>
+        ) : null}
+
+        {/* unit tick marks (numbered) + the spec's sag limit while placing supports */}
+        {showTicks ? (
+          <Line x1={SPAN_X0} y1={RUN_Y + SAG_LIMIT} x2={SPAN_X0 + SPAN_UNITS * UNIT_PX} y2={RUN_Y + SAG_LIMIT} stroke="#ff8a6b" strokeWidth={0.8} strokeDasharray="3 2.4" opacity={0.8} />
+        ) : null}
         {showTicks
           ? HOOK_SLOTS.map((u, i) => <Tick key={u} x={SPAN_X0 + u * UNIT_PX} index={i} on={hooks.has(u)} />)
           : null}
+        {/* the support at the wall end (U12) is already in */}
+        {showTicks || confirmed ? <JHookDrop x={SPAN_X0 + SPAN_UNITS * UNIT_PX} cradleY={HOOK_SADDLE} w={HOOK_W} back={7} top={HOOK_ARM_TOP} /> : null}
 
         {/* placed J-hooks — each drops in and settles */}
         {hookXs.map((x) => (
@@ -547,7 +614,10 @@ function AboveSvg({
         {/* confirmed: the bundle installs itself, tray lead-in first */}
         {confirmed ? (
           <>
-            <InstalledRun d="M0 148 Q34 144 60 129.6 L178 129.6" len={LEAD_LEN} color="#c77dff" width={2.6} />
+            {/* the bundle arrives in the tray, with a dressed service loop
+                left lying in it where a lifted tile reaches it */}
+            <InstalledRun d="M0 129.6 H178" len={LEAD_LEN} color="#c77dff" width={2.6} />
+            <InstalledRun d="M136 129.6 C136 126.6 160 126.6 160 129.6 C160 132.4 136 132.4 136 129.6" len={70} color="#c77dff" width={2} delay={CI_MOTION.base} />
             <SagRun
               fromArr={fromArr}
               toArr={toArr}
@@ -573,6 +643,7 @@ function AboveSvg({
             index={i}
             found={found.has(d.id)}
             run={pulseDefects}
+            quiet={showTicks || confirmed}
           />
         ))}
       </Layer>
@@ -614,8 +685,8 @@ function FinishedCeilingSvg({ w, rv, above }: { w: number; rv: SharedValue<numbe
         <FinishedTile key={i} x={12 + i * 56} index={i} rv={rv} above={above} />
       ))}
       <AG opacity={rest} animatedProps={fittings}>
-        <Rect x={96} y={38} width={44} height={7} fill="#fff3c2" opacity={0.85} />
-        {[204, 316].map((x) => (
+        <Rect x={88} y={38} width={37} height={7} fill="#fff3c2" opacity={0.85} />
+        {[179.3, 252.5, 322.5].map((x) => (
           <Circle key={x} cx={x} cy={49} r={2.6} fill="#9aa0a6" />
         ))}
       </AG>
@@ -741,7 +812,7 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
   const confirmRoute = () => {
     if (confirmed || spacing?.ok !== true) return;
     setConfirmed(true);
-    say('Route confirmed. The bundle runs through tray and hooks with honest sag, clear of the utilities, into the bushed sleeve.');
+    say('Route confirmed. The bundle runs through the tray, with a service loop, then on its own hooks with the sag inside the spec, clear of the other systems, into the bushed sleeve.');
   };
 
   const steps = CI_CEILING_INSTALL_STEPS;
@@ -798,7 +869,9 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
                 restD={restD}
                 strain={strain}
                 pulseDefects={above && !fired}
-                runTint={spacing?.ok ? '#c77dff' : '#9a6fd6'}
+                runTint="#c77dff"
+                quietDefects={ex1Done && (pathSolved || confirmed)}
+                ghost={pathOpt && !pathOpt.good ? (pathOpt.id as 'tiles' | 'duct') : null}
               />
               <Animated.View
                 style={[StyleSheet.absoluteFill, shellStyle]}
@@ -867,7 +940,7 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
       />
       <Text style={styles.legend}>
         {above
-          ? 'Deck + joists · hanger wires · duct · sprinkler main (with heads) · conduit · tray · J-hooks · light · grid + tiles.'
+          ? 'Colour key (teaching colours): grey / blue / orange = other tenants’ bundle · cyan + green = the previous contractor’s runs · violet = your bundle · red = sprinkler. Rings = details to inspect.'
           : 'Clean. Silent. And carrying every one of those violations — which is exactly why above-ceiling work gets skipped, and why inspectors lift tiles.'}
       </Text>
 
@@ -968,8 +1041,8 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
                 <View style={{ gap: 8 }}>
                   <Text style={styles.qLabel}>2 · PLACE J-HOOKS ON THE 12-UNIT SPAN:</Text>
                   <Text style={styles.hint}>
-                    Tap unit positions to place hooks — watch the run re-settle. The tray end (U0) and the wall sleeve
-                    (U12) already count as supports.
+                    Tap unit positions (numbered under the run) to place hooks — watch the run re-settle. The tray end
+                    (U0) and the hook at the wall (U12) are already in. The dashed red line is the spec’s ½-unit sag limit.
                   </Text>
                   <View style={lessonStyles.chipWrap}>
                     {HOOK_SLOTS.map((u) => (
@@ -1009,7 +1082,7 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
                 <RuleFeedback
                   ruleId="ceil-maintain-access"
                   verdict="good"
-                  short="Honest sag inside the given spec, gentle bends, clear of the sprinkler, the duct and the light — and it enters the wall through a bushed sleeve. Every tile still lifts; the next technician can reach all of it."
+                  short="Its own hooks from structure, spaced so the sag stays inside the supplied spec; clear of the sprinkler, the duct and the light; a dressed service loop left in the tray; into the wall through the bushed sleeve (firestopped with the listed system if that wall is rated — verify). Every tile still lifts; the next technician can reach all of it."
                   openSources={openSources}
                 />
               </Appear>
@@ -1033,7 +1106,9 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
 
       <Text style={styles.tintNote}>
         Training visualization — colors identify systems and classes here (sprinkler red, existing runs cyan/green, your
-        bundle violet); actual field colors vary.
+        bundle violet); actual field colors vary, and cable diameters are exaggerated so they read. Drawn to scale otherwise
+        (1 m bar). If a ceiling cavity is a return-air plenum, cable run in it must be listed for that space (or be in a
+        raceway) where the code is adopted — confirm with the plans and the AHJ.
       </Text>
     </View>
   );
