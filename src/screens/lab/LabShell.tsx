@@ -346,6 +346,25 @@ export function LabShell({
     if (scrollLocked) labCoachAction();
   }, [scrollLocked, labCoachAction]);
 
+  // ── TEMP TOUCH PROBE (2026-09-27, REMOVE once found) ─────────────────────
+  // Owner's iPhone: ?, ⓘ and ▶ dead in every lab (work outside labs, work in
+  // the web preview); everything else in the lab works. Triple-tap the lab
+  // title to show where touches land and whether the top-right group feels
+  // them. "last touch" moving but "down" not = something covers the buttons
+  // INSIDE this screen; neither moving = something covers it from outside.
+  const [probeOn, setProbeOn] = useState(false);
+  const [probe, setProbe] = useState({ last: '—', down: 0, up: 0 });
+  const titleTaps = useRef<number[]>([]);
+  const titleTap = () => {
+    const now = Date.now();
+    titleTaps.current = [...titleTaps.current.filter((t) => now - t < 900), now];
+    if (titleTaps.current.length >= 3) {
+      titleTaps.current = [];
+      setProbeOn((v) => !v);
+      setProbe({ last: '—', down: 0, up: 0 });
+    }
+  };
+
   // Audio-output prompt on entry (owner-confirmed 2026-07-25): non-blocking.
   // AFTER the push transition (2026-09-27): asked during the slide-in, the
   // gate's popup could fail to present on iOS, leaving the request open with
@@ -385,22 +404,44 @@ export function LabShell({
   }, []);
 
   return (
-    <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+    <View
+      style={[styles.root, { paddingTop: insets.top + 10 }]}
+      // TEMP TOUCH PROBE (see probe below) — records every touch that reaches
+      // this screen, then declines it so nothing about touch handling changes.
+      onStartShouldSetResponderCapture={(e) => {
+        if (probeOn) {
+          const { pageX, pageY } = e.nativeEvent;
+          setProbe((p) => ({ ...p, last: `${Math.round(pageX)},${Math.round(pageY)}` }));
+        }
+        return false;
+      }}
+    >
       <View style={styles.header}>
         <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
-        <View style={{ flexShrink: 1, flexGrow: 1 }}>
+        <Pressable style={{ flexShrink: 1, flexGrow: 1 }} onPress={titleTap} accessible={false}>
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.subtitle}>{subtitle}</Text>
-        </View>
+        </Pressable>
         {/* Consistent per-screen help (Pillar C) — lands in the hub with lab
             answers surfaced. */}
-        <HelpKey search="lab" />
-        {/* Accuracy/calibration note — global honesty affordance (owner 2026-08-09). */}
-        <AccuracyNote compact />
-        {headerAction ? <View style={styles.headerAction}>{headerAction}</View> : null}
+        <View
+          style={styles.headerRight}
+          onTouchStart={probeOn ? () => setProbe((p) => ({ ...p, down: p.down + 1 })) : undefined}
+          onTouchEnd={probeOn ? () => setProbe((p) => ({ ...p, up: p.up + 1 })) : undefined}
+        >
+          <HelpKey search="lab" />
+          {/* Accuracy/calibration note — global honesty affordance (owner 2026-08-09). */}
+          <AccuracyNote compact />
+          {headerAction ? <View style={styles.headerAction}>{headerAction}</View> : null}
+        </View>
       </View>
+      {probeOn ? (
+        <Text style={styles.probe} accessible={false}>
+          PROBE · last touch {probe.last} · top-right down {probe.down} / up {probe.up}
+        </Text>
+      ) : null}
 
       {/* Mode tabs directly under the header (owner 2026-07-29 order). */}
       <View style={styles.tabRow} accessibilityRole="tablist">
@@ -586,6 +627,8 @@ const styles = StyleSheet.create({
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1.4, color: colors.textPrimary },
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
   headerAction: { marginLeft: 8 },
+  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  probe: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: '#7fe07f', paddingHorizontal: 16, paddingBottom: 4 },
   headerPlay: {
     width: 38,
     height: 38,
