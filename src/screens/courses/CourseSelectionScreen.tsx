@@ -821,7 +821,6 @@ function CourseCardView({
         />
         <View>
           <Text style={styles.cardTitle}>Start Here: Your First Steps in Audio</Text>
-          <Text style={styles.cardToolsSub}>New to audio? Six short lessons, one hands-on lab and 24 starter words.</Text>
         </View>
         <View style={{ alignItems: 'center' }}>
           <View style={{ width: cd.btnW }}>
