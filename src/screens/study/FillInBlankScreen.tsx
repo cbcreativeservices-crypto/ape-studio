@@ -29,6 +29,7 @@ import { LedMeterWell, segmentsForPct } from '../../components/LedMeter';
 import { StudyFsOverlay, FsButton } from '../../components/StudyFsOverlay';
 import { StudioButton } from '../../components/StudioButton';
 import { colors, fonts } from '../../theme/tokens';
+import { cardColumn } from '../../theme/readingColumn';
 import {
   fetchMethodState,
   fetchTopicItems,
@@ -612,7 +613,10 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
   center: { flex: 1, backgroundColor: colors.screenBg, alignItems: 'center', justifyContent: 'center', gap: 16, padding: 24 },
   errorText: { fontFamily: fonts.barlowRegular, fontSize: 14, color: colors.textSub, textAlign: 'center' },
-  body: { flex: 1, padding: 16, gap: 16 },
+  // Tablet (owner 2026-09-29): the study surface - card, answers and its
+  // buttons - sits in the centred card column instead of a 992 pt card with
+  // 380 pt buttons. No-op on a phone.
+  body: { flex: 1, padding: 16, gap: 16, ...cardColumn },
   // 18/29 matches the flashcards body ruling (Booth 2026-07-08).
   sentence: { fontFamily: fonts.barlowRegular, fontSize: 20, lineHeight: 31, color: colors.textSecondary },
   // Grows with the prompt, but yields to the answer grid and the pinned footer

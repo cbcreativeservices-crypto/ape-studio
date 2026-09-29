@@ -39,6 +39,7 @@
 import { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, View, Pressable } from 'react-native';
 import { colors, fonts } from '../../theme/tokens';
+import { cardColumn } from '../../theme/readingColumn';
 import { LIMITS, type CommunityProfile, type Taxonomy } from '../../features/directory/api';
 import { draftAbout } from '../../features/directory/aboutDraft';
 import { Banner, Chip, ChipWrap, CountHint, Helper, PrimaryButton } from './directoryBits';
@@ -363,7 +364,8 @@ function Summary({ title, values }: { title: string; values: string[] }) {
 }
 
 const st = StyleSheet.create({
-  scroll: { padding: 16, paddingBottom: 40, gap: 12 },
+  // Tablet (owner 2026-09-29): card column, centred. No-op on a phone.
+  scroll: { padding: 16, paddingBottom: 40, gap: 12, ...cardColumn },
   why: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 20, color: colors.textSub },
 
   dots: { flexDirection: 'row', gap: 7, paddingVertical: 6 },

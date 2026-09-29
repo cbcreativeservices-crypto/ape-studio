@@ -26,6 +26,9 @@ import { exportCertificate, isAvailable as certificateExportAvailable } from '..
 import { CredentialShareRow } from '../../features/credentials/CredentialShareRow';
 import { fetchEarnedCredentialsByType, fetchNearestCredential, type NearestCredentialResult } from '../../features/achievements/api';
 import type { EarnedCredentialRow } from '../../features/credentials/api';
+// Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
+// and centred instead of stretching rows 990 pt wide. No-op on a phone.
+import { cardColumn } from '../../theme/readingColumn';
 
 /** Slugs whose art 404s (not every credential has a file uploaded yet). Held
  *  per-mount so a failed load falls back to the badge instead of an empty
@@ -98,7 +101,7 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
         <View style={styles.headerRow}>
           <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back" style={styles.backBtn}>
             <Text style={styles.back}>‹</Text>

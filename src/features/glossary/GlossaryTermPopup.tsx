@@ -29,6 +29,7 @@ import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
 import { supabase } from '../../lib/supabase';
 import { corpusTable, fetchDefinitionViaGateway, probeGateway } from './glossaryGateway';
+import { popupCard } from '../../theme/readingColumn';
 
 type Row = { id: string; term: string; definition: string | null; plain_english: string | null };
 
@@ -212,6 +213,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   card: {
+    // Tablet (owner 2026-09-29): centred at the popup width, not edge to edge.
+    ...popupCard,
     backgroundColor: '#101015',
     borderRadius: 14,
     borderWidth: 1,

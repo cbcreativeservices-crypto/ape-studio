@@ -14,6 +14,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { colors, fonts } from '../../theme/tokens';
+import { cardColumn } from '../../theme/readingColumn';
 import { Banner, Chip, ChipWrap, EmptyState, Eyebrow, Helper, Loading, PrimaryButton, SelfReportedNote } from './directoryBits';
 // The country filter has to normalise a typed code exactly the way the profile
 // editor normalises a stored one, or the filter searches for something no
@@ -379,7 +380,8 @@ export function ExploreView({
 }
 
 const st = StyleSheet.create({
-  body: { padding: 14, paddingBottom: 40 },
+  // Tablet (owner 2026-09-29): card column, centred. No-op on a phone.
+  body: { padding: 14, paddingBottom: 40, ...cardColumn },
   moreWrap: { marginTop: 14 },
   lede: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSub },
   input: {

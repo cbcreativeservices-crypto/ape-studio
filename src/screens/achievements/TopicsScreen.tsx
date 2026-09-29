@@ -15,6 +15,9 @@ import { colors, fonts } from '../../theme/tokens';
 import { TrophyImage } from '../../components/TrophyImage';
 import { TrophyModal } from '../../components/TrophyModal';
 import { fetchTopicAchievements, type FieldGroup, type TopicAchievement } from '../../features/achievements/api';
+// Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
+// and centred instead of stretching rows 990 pt wide. No-op on a phone.
+import { cardColumn } from '../../theme/readingColumn';
 
 type FlatSubject = { field: string; subject: string; topics: TopicAchievement[]; earnedCount: number; totalCount: number };
 
@@ -72,7 +75,7 @@ export function TopicsScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
         <View style={styles.headerRow}>
           <Pressable
             onPress={() => navigation.goBack()}

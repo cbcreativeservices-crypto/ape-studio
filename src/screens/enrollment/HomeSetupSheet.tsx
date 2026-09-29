@@ -24,6 +24,7 @@ import { animationsAllowed } from '../../features/settings/a11y';
 import { Modal } from '../../components/DimModal';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../theme/tokens';
+import { cardColumn } from '../../theme/readingColumn';
 
 import { BookIcon } from '../../components/BookIcon';
 import { HomeIcon } from '../../components/HomeIcon';
@@ -323,7 +324,8 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
         </View>
 
         <ScrollView
-          contentContainerStyle={styles.scroll}
+          // Tablet (owner 2026-09-29): card column, centred. No-op on a phone.
+          contentContainerStyle={[styles.scroll, cardColumn]}
           keyboardShouldPersistTaps="handled"
           // While a row is LIFTED for reorder the sheet must not scroll — on
           // device the native ScrollView intercepts the vertical drag and the

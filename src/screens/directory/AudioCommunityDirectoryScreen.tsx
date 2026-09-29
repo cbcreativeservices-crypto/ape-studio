@@ -29,6 +29,7 @@ import {
   type PublicProfile,
   type ReportReason,
 } from '../../features/directory/api';
+import { cardColumn } from '../../theme/readingColumn';
 
 type Tab = 'explore' | 'profile' | 'requests';
 const TABS: { key: Tab; label: string }[] = [
@@ -545,6 +546,9 @@ const st = StyleSheet.create({
   tabTextOn: { color: colors.amber },
   sheetRoot: { flex: 1, backgroundColor: 'rgba(0,0,0,.75)', justifyContent: 'flex-end' },
   sheet: {
+    // Tablet (owner 2026-09-29): the sheet rides centred at the card column
+    // instead of spanning a 1024 pt iPad. No-op on a phone.
+    ...cardColumn,
     maxHeight: '90%',
     backgroundColor: '#141414',
     borderTopLeftRadius: 16,

@@ -5,11 +5,17 @@
  * the screen root, positioned above the content bottom / nav.
  */
 import { useEffect, useRef } from 'react';
-import { AccessibilityInfo, Animated, StyleSheet, Text } from 'react-native';
+import { AccessibilityInfo, Animated, StyleSheet, Text, useWindowDimensions } from 'react-native';
 import { fonts } from '../theme/tokens';
+import { POPUP_MAX_W } from '../theme/readingColumn';
 
 export function CoachMark({ text, bottom = 16 }: { text: string; bottom?: number }) {
   const fade = useRef(new Animated.Value(0)).current;
+  // Tablet (owner 2026-09-29): the pill stops at the popup width, centred —
+  // pinned 40 pt from each edge it ran 1286 pt across a landscape iPad under a
+  // one-line hint. Phones keep the 40 pt insets (the cap never binds).
+  const { width: winW } = useWindowDimensions();
+  const side = Math.max(40, Math.round((winW - POPUP_MAX_W) / 2));
 
   useEffect(() => {
     Animated.timing(fade, { toValue: 1, duration: 400, useNativeDriver: true }).start();
@@ -34,7 +40,7 @@ export function CoachMark({ text, bottom = 16 }: { text: string; bottom?: number
   return (
     <Animated.View
       pointerEvents="none"
-      style={[styles.pill, { bottom, opacity: Animated.multiply(fade, 0.9) }]}
+      style={[styles.pill, { bottom, left: side, right: side, opacity: Animated.multiply(fade, 0.9) }]}
       accessibilityRole="alert"
     >
       <Text style={styles.text}>{text}</Text>

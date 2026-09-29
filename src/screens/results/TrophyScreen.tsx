@@ -30,6 +30,7 @@ import { StudioButton } from '../../components/StudioButton';
 import { TrophyImage } from '../../components/TrophyImage';
 import { supabase } from '../../lib/supabase';
 import { colors, fonts } from '../../theme/tokens';
+import { popupCard } from '../../theme/readingColumn';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Trophy'>;
@@ -152,5 +153,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 16,
   },
-  buttonWrap: { alignSelf: 'stretch', marginTop: 20 },
+  // Tablet (owner 2026-09-29): the Back button stops at the popup width - it
+  // stretched 968 pt under a 150 pt trophy. Full width on a phone, as before.
+  buttonWrap: { ...popupCard, marginTop: 20 },
 });

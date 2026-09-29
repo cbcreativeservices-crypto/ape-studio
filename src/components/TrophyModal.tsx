@@ -10,6 +10,7 @@ import { ALL_ORIENTATIONS } from './modalOrientations';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TrophyImage } from './TrophyImage';
 import { fonts } from '../theme/tokens';
+import { readingColumn } from '../theme/readingColumn';
 import { LowLightDim } from '../features/settings/LowLightLayer';
 
 /**
@@ -135,7 +136,9 @@ const styles = StyleSheet.create({
   /* The overview sits BELOW the tap-to-close scrim, sharing the host's dim.
      No flex: it is sized by its own maxHeight, so the art above keeps every
      pixel the panel does not need. */
-  belowWrap: { paddingHorizontal: 24 },
+  // Tablet (owner 2026-09-29): the overview is prose - the reading column,
+  // centred under the art, instead of 976 pt lines. No-op on a phone.
+  belowWrap: { paddingHorizontal: 24, ...readingColumn },
   frame: {
     borderRadius: 16,
     borderWidth: 2,

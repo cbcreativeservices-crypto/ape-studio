@@ -46,6 +46,7 @@ import {
 import { alreadyMigrated, buildLegacyDraft, markMigrated, type LegacyDraft } from '../../features/directory/legacyMigration';
 import { ProfileSetupFlow } from './ProfileSetupFlow';
 import { confirmDialog, notify as appNotify } from '../../lib/confirm';
+import { cardColumn } from '../../theme/readingColumn';
 
 const WORK_PREFS: { key: WorkPref; label: string }[] = [
   { key: 'remote', label: 'Remote' },
@@ -872,7 +873,8 @@ function PreviewSheet({
 }
 
 const st = StyleSheet.create({
-  body: { padding: 14, paddingBottom: 40 },
+  // Tablet (owner 2026-09-29): card column, centred. No-op on a phone.
+  body: { padding: 14, paddingBottom: 40, ...cardColumn },
   input: {
     backgroundColor: '#101010',
     borderWidth: 1,
@@ -927,6 +929,9 @@ const st = StyleSheet.create({
   legacyRow: { flexDirection: 'row' },
   sheetRoot: { flex: 1, backgroundColor: 'rgba(0,0,0,.75)', justifyContent: 'flex-end' },
   sheet: {
+    // Tablet (owner 2026-09-29): the sheet rides centred at the card column
+    // instead of spanning a 1024 pt iPad. No-op on a phone.
+    ...cardColumn,
     maxHeight: '88%',
     backgroundColor: '#141414',
     borderTopLeftRadius: 16,

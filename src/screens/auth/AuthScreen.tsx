@@ -34,6 +34,7 @@ import { StudioButton } from '../../components/StudioButton';
 import { TextField } from '../../components/TextField';
 import { confirmDialog, notify } from '../../lib/confirm';
 import { colors, fonts, spacing } from '../../theme/tokens';
+import { POPUP_MAX_W } from '../../theme/readingColumn';
 import { clearLocalAccountData, resetAllLocalStores } from '../../features/account/clearLocalAccountData';
 import { getDeviceId } from '../../features/account/deviceIdentity';
 import { claimThisDevice, getActiveDeviceId } from '../../features/account/singleDevice';
@@ -707,7 +708,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(20,20,20,0.72)',
   },
   returnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.9, color: colors.textSecondary },
-  scroll: { paddingHorizontal: 20, gap: 16 },
+  // Tablet (owner 2026-09-29): the sign-in form is a form, not a page - it
+  // sits in a centred column the popup width wide (+ its own 20 pt padding)
+  // instead of fields and buttons 984 pt wide. No-op on a phone.
+  scroll: { paddingHorizontal: 20, gap: 16, width: '100%', maxWidth: POPUP_MAX_W + 40, alignSelf: 'center' },
   header: { alignItems: 'center', gap: spacing.sm, marginTop: 6 },
   wordmark: { fontFamily: fonts.oswaldBold, fontSize: 21, color: colors.textPrimary, paddingVertical: 5 },
   wordmarkAccent: { fontFamily: fonts.oswaldMedium, color: colors.amber },

@@ -26,6 +26,7 @@ import {
   type ThreadMessage,
 } from '../../features/directory/api';
 import { confirmDialog, notify as appNotify } from '../../lib/confirm';
+import { cardColumn } from '../../theme/readingColumn';
 
 const REASONS: { key: ReportReason; label: string }[] = [
   { key: 'spam', label: 'Spam' },
@@ -634,7 +635,8 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
 
 const st = StyleSheet.create({
   allowance: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 6 },
-  body: { padding: 14, paddingBottom: 40 },
+  // Tablet (owner 2026-09-29): card column, centred. No-op on a phone.
+  body: { padding: 14, paddingBottom: 40, ...cardColumn },
   card: {
     backgroundColor: '#181818',
     borderWidth: 1,
@@ -669,6 +671,9 @@ const st = StyleSheet.create({
   linkText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.3, color: colors.textMuted },
   sheetRoot: { flex: 1, backgroundColor: 'rgba(0,0,0,.75)', justifyContent: 'flex-end' },
   sheet: {
+    // Tablet (owner 2026-09-29): the sheet rides centred at the card column
+    // instead of spanning a 1024 pt iPad. No-op on a phone.
+    ...cardColumn,
     backgroundColor: '#141414',
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,

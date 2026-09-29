@@ -6,11 +6,12 @@
  * here." Bottom nav visible (nested in the Achievements tab stack).
  */
 import { useCallback, useMemo, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { colors, fonts } from '../../theme/tokens';
+import { gridColumns } from '../../theme/tablet';
 import { TrophyImage } from '../../components/TrophyImage';
 import { StudioButton } from '../../components/StudioButton';
 import { fetchGalleryV3, type GalleryEntry } from '../../features/achievements/api';
@@ -61,14 +62,19 @@ export function GalleryScreen() {
 
   useFocusEffect(useCallback(() => load(), [load]));
 
-  // Pad to an even length so a lone trailing card keeps its half-width (flex:1
-  // would otherwise stretch it across the row). The spacer renders nothing.
+  // Columns (owner 2026-09-29, tablet pass): two on a phone, as always; a
+  // tablet gains columns instead of stretching each trophy card ~490 pt wide
+  // around a 48 pt badge. 16 pt scroll padding each side, 12 pt row gap.
+  const { width: winW } = useWindowDimensions();
+  const cols = gridColumns(winW - 32, 220, 12, 2, 4);
+  // Pad to a full last row so a lone trailing card keeps its column width
+  // (flex:1 would otherwise stretch it across the row). Spacers render nothing.
   const SPACER = '__spacer__';
   const data = useMemo<GalleryRow[]>(() => {
     const list: GalleryRow[] = entries ?? [];
-    if (list.length % 2 === 1) return [...list, SPACER];
-    return list;
-  }, [entries]);
+    const short = (cols - (list.length % cols)) % cols;
+    return short ? [...list, ...Array<GalleryRow>(short).fill(SPACER)] : list;
+  }, [entries, cols]);
 
   const renderItem = useCallback(
     ({ item }: { item: GalleryRow }) => {
@@ -108,7 +114,9 @@ export function GalleryScreen() {
         data={data}
         keyExtractor={(item, i) => (item === SPACER ? `spacer-${i}` : item.achievementId)}
         renderItem={renderItem}
-        numColumns={2}
+        // numColumns cannot change on a mounted FlatList: re-key on rotation.
+        key={`cols-${cols}`}
+        numColumns={cols}
         columnWrapperStyle={styles.row}
         contentContainerStyle={styles.scroll}
         // Windowing: keep memory bounded when a user has earned many trophies.

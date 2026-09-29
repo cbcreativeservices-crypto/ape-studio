@@ -119,6 +119,7 @@ import { onStudyProgress } from '../../features/study/sync';
 import { useScenarioExempt } from '../../features/study/scenarioExempt';
 import { loadAllLocalMethodStates, mergeItemStates } from '../../features/study/localProgress';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { cardColumn, popupCard } from '../../theme/readingColumn';
 
 // Rack density (owner 2026-08-11): ONE knob scales every rack slot's height
 // together — method rows, quiz, and the section labels — so the whole stack
@@ -2584,7 +2585,11 @@ const styles = StyleSheet.create({
     color: colors.textSub,
     textAlign: 'center',
   },
-  scroll: { padding: 14, paddingBottom: 10, gap: 8 },
+  // Tablet (owner 2026-09-29, tablet pass): the rack stands in the centred
+  // card column. Spanning a 1366 pt landscape iPad, each 1U method panel was a
+  // 20:1 sliver; at 760 it is ~11:1 — a real 19-inch 1U faceplate's 10.9:1.
+  // No-op on a phone.
+  scroll: { padding: 14, paddingBottom: 10, gap: 8, ...cardColumn },
   /* Clears the floating coach pill: bottom 18 + ~37 pill height + breathing
      room. Applied only while the hint shows — see the note at the ScrollView. */
   scrollUnderCoach: { paddingBottom: 72 },
@@ -2603,6 +2608,8 @@ const styles = StyleSheet.create({
   // Topic term-list sheet (Booth 2026-07-18).
   termsBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,.7)', justifyContent: 'center', paddingHorizontal: 18 },
   termsSheet: {
+    // Tablet (owner 2026-09-29): centred at the popup width, not edge to edge.
+    ...popupCard,
     maxHeight: '80%',
     borderRadius: 16,
     borderWidth: 1,

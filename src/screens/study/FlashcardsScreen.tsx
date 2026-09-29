@@ -37,6 +37,7 @@ import { isHazardTerm } from '../../lib/hazard';
 import { useShake } from '../../lib/useShake';
 import { CautionBadge } from '../../components/CautionBadge';
 import { colors, fonts } from '../../theme/tokens';
+import { cardColumn } from '../../theme/readingColumn';
 import {
   fetchGlossaryItemsByIds,
   fetchMethodState,
@@ -2186,7 +2187,10 @@ const styles = StyleSheet.create({
   fsDef: { fontFamily: fonts.barlowMedium, fontSize: 22, lineHeight: 34, color: colors.textSecondary, textAlign: 'center', alignSelf: 'stretch' },
   center: { flex: 1, backgroundColor: colors.screenBg, alignItems: 'center', justifyContent: 'center', gap: 16, padding: 24 },
   errorText: { fontFamily: fonts.barlowRegular, fontSize: 14, color: colors.textSub, textAlign: 'center' },
-  body: { flex: 1, padding: 16, gap: 12 },
+  // Tablet (owner 2026-09-29): the study surface - card, answers and its
+  // buttons - sits in the centred card column instead of a 992 pt card with
+  // 380 pt buttons. No-op on a phone.
+  body: { flex: 1, padding: 16, gap: 12, ...cardColumn },
 
   ledRow: { flexDirection: 'row', alignItems: 'center', gap: 10, alignSelf: 'stretch' },
   ledPct: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: colors.amber, minWidth: 44, textAlign: 'right' },

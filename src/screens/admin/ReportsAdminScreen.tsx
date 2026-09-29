@@ -30,6 +30,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { colors, fonts } from '../../theme/tokens';
+import { cardColumn } from '../../theme/readingColumn';
 import { confirmDialog, notify } from '../../lib/confirm';
 import {
   fetchReportMessages,
@@ -294,7 +295,8 @@ const s = StyleSheet.create({
   tabText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 0.9, color: colors.textSub },
   tabTextOn: { color: colors.amber },
 
-  body: { padding: 14, paddingBottom: 40, gap: 12 },
+  // Tablet (owner 2026-09-29): card column, centred. No-op on a phone.
+  body: { padding: 14, paddingBottom: 40, gap: 12, ...cardColumn },
   muted: { fontFamily: fonts.barlowRegular, fontSize: 14, color: colors.textSub },
 
   warn: { borderLeftWidth: 3, borderLeftColor: colors.red, backgroundColor: 'rgba(255,75,58,.08)', borderRadius: 6, padding: 12, gap: 8 },

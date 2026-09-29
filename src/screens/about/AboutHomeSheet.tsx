@@ -10,7 +10,7 @@ import { Modal } from '../../components/DimModal';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BrandLogo } from '../../components/BrandLogo';
 import { colors, fonts } from '../../theme/tokens';
-import { readingColumn } from '../../theme/readingColumn';
+import { READING_MAX_W, readingColumn } from '../../theme/readingColumn';
 
 /** One eyebrow-headed section. */
 const SECTIONS: { head: string; paras: string[] }[] = [
@@ -164,6 +164,12 @@ const styles = StyleSheet.create({
   },
   card: {
     flex: 1,
+    // Tablet (owner 2026-09-29): the sheet itself is sized to its capped
+    // content (560 + the scroll's 20 pt padding each side) instead of a
+    // 996 pt frame around a 560 column. No-op on a phone.
+    width: '100%',
+    maxWidth: READING_MAX_W + 40,
+    alignSelf: 'center',
     borderRadius: 16,
     borderWidth: 1,
     borderColor: colors.hairlineDim,

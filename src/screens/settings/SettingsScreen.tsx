@@ -78,6 +78,9 @@ import {
 import { SettingsSection } from '../../features/settings/SettingsSection';
 import { osReduceMotionOn } from '../../features/settings/a11y';
 import type { RootStackParamList } from '../../navigation/types';
+// Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
+// and centred instead of stretching rows 990 pt wide. No-op on a phone.
+import { cardColumn } from '../../theme/readingColumn';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
 
@@ -477,7 +480,7 @@ ${LOCAL_LOSS}`
         </Pressable>
       </View>
 
-      <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 20 }]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: insets.bottom + 20 }]}>
         {/* NOTIFICATIONS — transport toggles (server) + the commercial content
             notifications (device-local; server prefs frozen). */}
         {/* Every section starts CLOSED (owner 2026-08-30): six collapsed

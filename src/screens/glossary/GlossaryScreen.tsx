@@ -93,7 +93,7 @@ import {
 } from '../../features/glossary/learningProfiles';
 import { getLabLesson } from '../../features/lab/guidedLessons';
 import type { StudyStackParamList } from '../../navigation/types';
-import { readingColumn } from '../../theme/readingColumn';
+import { readingColumn, cardColumn } from '../../theme/readingColumn';
 
 const BG_GLOSSARY = require('../../../assets/lab-backgrounds/glossary.webp');
 
@@ -3941,7 +3941,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1 },
-  list: { paddingBottom: 16 },
+  // Tablet (owner 2026-09-29): the term list and its expanded definitions sit
+  // in the centred card column instead of running 990 pt wide. No-op on a phone.
+  list: { paddingBottom: 16, ...cardColumn },
   empty: { fontFamily: fonts.barlowRegular, fontSize: 14, color: colors.textSub, paddingTop: 12 },
   offlineRow: { paddingHorizontal: 16, paddingTop: 18, paddingBottom: 28, gap: 8 },
   offlineLabel: {
@@ -4033,7 +4035,7 @@ const styles = StyleSheet.create({
     borderColor: '#3a3a3a',
   },
   viewToggleText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: '#b9b9b9' },
-  cardList: { paddingBottom: 16, gap: 12 },
+  cardList: { paddingBottom: 16, gap: 12, ...cardColumn },
   cardItem: {
     backgroundColor: '#171717',
     borderWidth: 1,

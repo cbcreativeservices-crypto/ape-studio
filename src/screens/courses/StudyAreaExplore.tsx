@@ -33,6 +33,7 @@ import { trackEvent } from '../../features/telemetry/telemetry';
 import { COREQ_TOPIC_GS } from '../awards/awardsData';
 import { credentialArtUrl, credentialEyebrow } from '../awards/CredentialThumb';
 import { CredentialDetailModal, type CredentialDetail } from '../awards/CredentialDetailModal';
+import { cardColumn } from '../../theme/readingColumn';
 
 const CERT_BLUE = '#5bb0ff'; // = AwardsScreen GLOSSARY_BLUE (certificate accent)
 const PROGRAM_PURPLE = '#c4a2ff'; // = AwardsScreen PURPLE (program accent)
@@ -346,6 +347,9 @@ export function StudyAreaExplore({
 const styles = StyleSheet.create({
   scrim: { flex: 1, backgroundColor: 'rgba(0,0,0,0.62)', justifyContent: 'flex-end' },
   sheet: {
+    // Tablet (owner 2026-09-29): the sheet rides centred at the card column
+    // instead of spanning a 1024 pt iPad. No-op on a phone.
+    ...cardColumn,
     backgroundColor: '#141416',
     borderTopLeftRadius: 18,
     borderTopRightRadius: 18,

@@ -13,6 +13,7 @@ import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
 import { NavIcon } from '../../components/nav/NavIcon';
 import type { DeckMode } from '../../features/dashboard/deckOrderStore';
+import { popupCard } from '../../theme/readingColumn';
 
 type Item = { id: string; name: string };
 
@@ -193,6 +194,8 @@ function RowBtn({
 const styles = StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', paddingHorizontal: 18 },
   panel: {
+    // Tablet (owner 2026-09-29): centred at the popup width, not edge to edge.
+    ...popupCard,
     maxHeight: '80%',
     borderRadius: 16,
     borderWidth: 1,

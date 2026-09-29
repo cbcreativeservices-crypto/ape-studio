@@ -75,7 +75,8 @@ import { MIC_LIMITS, toolByKey } from './toolsData';
 import { ApeDsp, type MeterFrame } from '../../../modules/ape-dsp';
 import { useToolHelp, HelpHead, DisplayGuideButton } from '../../features/lab/guidedLessons';
 import type { RootStackParamList } from '../../navigation/types';
-import { readingText } from '../../theme/readingColumn';
+import { CARD_MAX_W, readingText } from '../../theme/readingColumn';
+import { isTabletWindow } from '../../theme/tablet';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SplMeter'>;
 
@@ -986,13 +987,20 @@ export function SplMeterScreen({ navigation }: Props) {
   // Wider (owner 2026-07-30) to fit the left-side AVG (purple) + PEAK (white)
   // readouts beside the bar, the SPL scale to 110, and the red over-100 frame.
   const ledW = 104;
-  const leftColW = winW - 32 - LED_GAP - ledW;
+  // Tablet (owner 2026-09-29, tablet pass): the VU and the reference gauge are
+  // ASPECT-LOCKED (0.56 and 0.92 of their width), so sizing them off a 1024 pt
+  // window made an 878×491 VU over a 992×913 gauge — the gauge pushed below
+  // the fold of a portrait iPad. On a tablet the home instruments size off the
+  // card column instead and sit centred; full-screen VU / gauge still use the
+  // whole window. Phones: `instW === winW`, nothing moves.
+  const instW = isTabletWindow(winW, winH) ? Math.min(winW, CARD_MAX_W) : winW;
+  const leftColW = instW - 32 - LED_GAP - ledW;
   const vuW = leftColW; // the VU fills the left column width
   const vuH = Math.round(vuW * 0.56);
   const [leftColH, setLeftColH] = useState(0);
   // Below the top area: the SPL gauge gets its OWN FULL-WIDTH row so its callout
   // labels sit OUTSIDE the ring with leader lines (3D gauge sizes itself).
-  const dialW = winW - 32;
+  const dialW = instW - 32;
   // Fullscreen (landscape) gauge width — centred with padding: fills the long
   // side but leaves room, and (given the 2:1 aspect) keeps the chips row + margin
   // within the short side. Sized off the SHORT side minus the chips band.
@@ -2980,7 +2988,8 @@ const styles = StyleSheet.create({
   // Below-the-VU row: round SPL gauge (left) + thin LED meter (right).
   heroRow: { flexDirection: 'row', gap: 12, alignItems: 'flex-start', justifyContent: 'center' },
   // Top area: LEFT control column + tall LED down the right.
-  topRow: { flexDirection: 'row', gap: 10, alignItems: 'flex-start' },
+  // alignSelf centre: on a tablet the row is narrower than the scroll (instW).
+  topRow: { flexDirection: 'row', gap: 10, alignItems: 'flex-start', alignSelf: 'center' },
   topLeftCol: { gap: 12 },
   holdResetBtn: { flex: 0, paddingHorizontal: 16, justifyContent: 'center' },
   holdResetBtnSm: { flex: 0, paddingHorizontal: 12, paddingVertical: 6, justifyContent: 'center' },
