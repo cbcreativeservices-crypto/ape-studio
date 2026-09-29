@@ -108,8 +108,6 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
           <Text style={[styles.counter, { color: accent }]}>{rows ? `${rows.length} EARNED` : '—'}</Text>
         </View>
 
-        {message ? <Text style={styles.message}>{message}</Text> : null}
-
         {failed && (!rows || rows.length === 0) ? (
           <View style={styles.errorCard}>
             <Text style={styles.errorText}>
@@ -176,7 +174,10 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
           // module is in the build (matches AwardProgressScreen's honest gate).
           certificateExportAvailable() ? { label: 'DOWNLOAD CERTIFICATE', onPress: download, busy } : null
         }
-        onClose={() => setOpen(null)}
+        onClose={() => {
+          setOpen(null);
+          setMessage(null);
+        }}
       >
         {open && open.slug && !artFailed.has(open.slug) && credentialArtFor(open.slug) ? (
           <Image accessible
@@ -201,6 +202,10 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
             (owner 2026-09-18). The printed certificate keeps the button above:
             that path builds a PDF and already existed. */}
         {open ? <CredentialShareRow credentialName={open.name} onMessage={setMessage} /> : null}
+        {/* Download / share feedback lives INSIDE the modal (bug hunt
+            2026-09-29): on the page it rendered underneath the open modal, so
+            "Could not prepare the certificate" was never seen. */}
+        {message ? <Text style={styles.message}>{message}</Text> : null}
       </TrophyModal>
     </View>
   );
