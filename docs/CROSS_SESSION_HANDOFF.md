@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 14:41 · ccode · 9508a46d
+changed: Glossary + Calculator lab: background art covers wide tablets (resizeMode prop)
+affects other side: nothing — client JS only (background art)
+needs: nothing
+
+
 ### 2026-09-29 14:12 · ccode · f2bc52d7
 changed: Web preview: auto-guest only on the boot visit, so SIGN IN reaches the form
 affects other side: nothing — dev-only web preview behaviour
