@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 11:08 · ccode · f3075049
+changed: Sound Systems Learn 3: system name and scale print in full above the plan
+affects other side: nothing — client JS only (Sound Systems page layout)
+needs: nothing
+
+
 ### 2026-09-29 11:02 · ccode · 368c5c0f
 changed: Sound Systems map: quiet frames for healthy stations; lamp halo no longer full-bright
 affects other side: nothing — client JS only (Sound Systems map styling)
