@@ -143,24 +143,30 @@ export function GalleryScreen() {
   const toggleSelect = (id: string) =>
     setCompareIds((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : ids.length >= 4 ? ids : [...ids, id]));
 
+  // Every edit here applies to the LATEST stored row, one edit at a time:
+  // `current` / `p` are render-time snapshots, so a quick double tap on the
+  // star flipped the same stale value twice, and a rename straight after a
+  // favourite toggle wrote the old favourite back (bug hunt 2026-09-29).
+  const editChain = useRef<Promise<unknown>>(Promise.resolve());
+  const editLatest = (id: string, change: (row: SavedPattern) => SavedPattern | null) => {
+    editChain.current = editChain.current
+      .then(async () => {
+        const row = await patternStore().getPattern(id);
+        const next = row ? change(row) : null;
+        if (next) await upsert(next);
+      })
+      .catch(() => undefined);
+  };
   const rename = (name: string) => {
-    if (!current || name.trim() === current.name) return;
-    void upsert({ ...current, name: name.trim() || current.name });
+    if (!current) return;
+    const n = name.trim();
+    editLatest(current.id, (row) => (n && n !== row.name ? { ...row, name: n } : null));
   };
   const setNotes = (notes: string) => {
-    if (!current || notes === current.notes) return;
-    void upsert({ ...current, notes });
+    if (!current) return;
+    editLatest(current.id, (row) => (notes !== row.notes ? { ...row, notes } : null));
   };
-  // Flip the LATEST stored row, one flip at a time: `p` is a render-time
-  // snapshot, so a quick double tap flipped the same stale value twice
-  // (bug hunt 2026-09-29).
-  const favChain = useRef<Promise<unknown>>(Promise.resolve());
-  const toggleFav = (p: SavedPattern) => {
-    favChain.current = favChain.current.then(async () => {
-      const row = await patternStore().getPattern(p.id);
-      if (row) await upsert({ ...row, favourite: !row.favourite });
-    }).catch(() => undefined);
-  };
+  const toggleFav = (p: SavedPattern) => editLatest(p.id, (row) => ({ ...row, favourite: !row.favourite }));
   // One copy per press: a same-frame double tap used to make two
   // (bug hunt 2026-09-29).
   const duplicating = useRef(false);
