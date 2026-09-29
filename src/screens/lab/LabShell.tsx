@@ -19,7 +19,7 @@
 import { useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { useLabProbeLines } from '../../features/lab/labProbe';
-import { LayoutAnimation, Platform, Pressable, ScrollView, StyleSheet, Text, UIManager, View } from 'react-native';
+import { Animated, Easing, LayoutAnimation, Platform, Pressable, ScrollView, StyleSheet, Text, UIManager, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
@@ -132,28 +132,67 @@ export function HeaderPlayButton({
   onPress,
   disabled,
   label,
+  pending,
 }: {
   playing: boolean;
   onPress: () => void;
   disabled?: boolean;
   /** Optional a11y label override (default Play/Stop). */
   label?: string;
+  /** The start is in flight (tap accepted, sound not yet running) — shows "…". */
+  pending?: boolean;
 }) {
+  // TOUCH CONFIRMATION (owner 2026-09-29, iPhone: "the play button … is
+  // decorative — add an animation so I can confirm it is receiving input").
+  // Three separate signals, so a dead button says WHERE it dies:
+  //   1. a ring bursts out the instant a finger lands (onTouchStart on the
+  //      wrapper — fires even when the Pressable is disabled). GREEN = the
+  //      button was live; AMBER = the touch arrived but the button was
+  //      disabled (e.g. stuck "loading").
+  //   2. the button itself dips while pressed (Pressable pressed state).
+  //   3. the glyph shows "…" once onPress has run and the start is pending.
+  // No ring at all = the touch never reached the button.
+  const ring = useRef(new Animated.Value(0)).current;
+  const [ringLive, setRingLive] = useState(true);
+  const burst = () => {
+    setRingLive(!disabled);
+    ring.stopAnimation();
+    ring.setValue(0);
+    Animated.timing(ring, { toValue: 1, duration: 520, easing: Easing.out(Easing.quad), useNativeDriver: true }).start();
+  };
   return (
-    <Pressable
-      style={[styles.headerPlay, playing && styles.headerPlayOn, disabled && styles.headerPlayOff]}
-      onPress={onPress}
-      disabled={disabled}
-      hitSlop={8}
-      accessibilityRole="button"
-      accessibilityState={{ disabled: !!disabled }}
-      aria-disabled={!!disabled}
-      accessibilityLabel={label ?? (playing ? 'Stop' : 'Play')}
-    >
-      <Text style={[styles.headerPlayGlyph, playing && styles.headerPlayGlyphOn]}>
-        {playing ? '■' : '▶'}
-      </Text>
-    </Pressable>
+    <View onTouchStart={burst} style={styles.headerPlayWrap}>
+      <Animated.View
+        pointerEvents="none"
+        style={[
+          styles.headerPlayRing,
+          { borderColor: ringLive ? '#5ee07a' : colors.amber },
+          {
+            opacity: ring.interpolate({ inputRange: [0, 0.05, 1], outputRange: [0, 0.95, 0] }),
+            transform: [{ scale: ring.interpolate({ inputRange: [0, 1], outputRange: [0.9, 1.9] }) }],
+          },
+        ]}
+      />
+      <Pressable
+        style={({ pressed }) => [
+          styles.headerPlay,
+          playing && styles.headerPlayOn,
+          disabled && styles.headerPlayOff,
+          pressed && !disabled && styles.headerPlayPressed,
+        ]}
+        onPress={onPress}
+        disabled={disabled}
+        hitSlop={8}
+        accessibilityRole="button"
+        accessibilityState={{ disabled: !!disabled, busy: !!pending }}
+        aria-disabled={!!disabled}
+        accessibilityLabel={label ?? (playing ? 'Stop' : 'Play')}
+      >
+        <Text style={[styles.headerPlayGlyph, (playing || pending) && styles.headerPlayGlyphOn]}>
+          {playing ? '■' : pending ? '…' : '▶'}
+        </Text>
+      </Pressable>
+    </View>
   );
 }
 
@@ -503,6 +542,13 @@ export function LabShell({
           {probe.frames}
           {probeLines.map((l) => `\n${l}`).join('')}
         </Text>
+      ) : labId === 'bass' && probeLines.length > 0 ? (
+        // TEMP (owner 2026-09-29): the Bass ▶ is still silent on the iPhone.
+        // Show the last playback steps WITHOUT the triple-tap, so one
+        // screenshot after tapping ▶ says where it stops.
+        <Text style={styles.probe} accessible={false}>
+          {probeLines.slice(-3).join('\n')}
+        </Text>
       ) : null}
 
       {/* Mode tabs directly under the header (owner 2026-07-29 order). */}
@@ -714,6 +760,9 @@ const styles = StyleSheet.create({
   },
   headerPillText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.amber },
   headerPlayOn: { borderColor: 'rgba(255,198,77,.8)', backgroundColor: '#1a1409' },
+  headerPlayWrap: { width: 38, height: 38, alignItems: 'center', justifyContent: 'center' },
+  headerPlayRing: { position: 'absolute', width: 38, height: 38, borderRadius: 19, borderWidth: 3 },
+  headerPlayPressed: { transform: [{ scale: 0.88 }], backgroundColor: '#23232b' },
   headerPlayOff: { opacity: 0.35 },
   headerPlayGlyph: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: colors.textSecondary, marginLeft: 2 },
   headerPlayGlyphOn: { color: colors.amber, marginLeft: 0 },

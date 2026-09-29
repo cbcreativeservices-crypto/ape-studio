@@ -115,6 +115,9 @@ export function BassLabScreen() {
   const [fret, setFret] = useState(0); // open
   const [nodeIdx, setNodeIdx] = useState(0); // ½
   const [running, setRunning] = useState(false);
+  // TEMP (owner 2026-09-29): ▶ shows "…" while a start is in flight, so a
+  // tap that was accepted but never finished is visible on the button.
+  const [starting, setStarting] = useState(false);
   // Something else can silence this lab — backgrounding, shake-to-mute, the
   // idle auto-mute. Without this the transport stayed lit over silence.
   useStopOnAudioMute(setRunning);
@@ -176,6 +179,18 @@ export function BassLabScreen() {
       : harmonicSampleKey(str.key.toLowerCase() as BassString, node.n);
 
   const startNote = useCallback(async () => {
+    setStarting(true);
+    try {
+      await startNoteInner();
+    } catch (e) {
+      labProbe(`start THREW ${(e as Error)?.message ?? e}`); // TEMP probe
+    } finally {
+      setStarting(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [requestAudioOutput, genParams, sample, sampleKey, engineReady]);
+
+  const startNoteInner = async () => {
     const gen = ++genRef.current;
     setGenError('');
     // 1. The recording. play() runs the audio-output gate itself.
@@ -227,7 +242,7 @@ export function BassLabScreen() {
     } catch (e) {
       if (gen === genRef.current) setGenError(AUDIO_UNAVAILABLE_MESSAGE);
     }
-  }, [requestAudioOutput, genParams, sample, sampleKey, engineReady]);
+  };
 
   const stopNote = useCallback(() => {
     genRef.current++;
@@ -287,6 +302,7 @@ export function BassLabScreen() {
       headerAction={
         <HeaderPlayButton
           playing={running}
+          pending={starting && !running}
           // The recordings need no engine; only the fallback does. While the
           // signed URL is being fetched a second tap is ignored, not queued.
           // …but ■ is never disabled (bug hunt 2026-09-29): a re-pluck while
