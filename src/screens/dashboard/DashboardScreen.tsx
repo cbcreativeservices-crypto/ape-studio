@@ -1993,6 +1993,25 @@ export function DashboardScreen() {
             </Text>
           </Pressable>
         ) : null}
+        {/* MEMBERS TOPIC, SAID BEFORE THE TAP (owner, TestFlight 2026-09-28): a
+            free-account tester kept trying to open a locked topic's flashcards
+            and never learned why nothing opened. The lock is now stated up
+            front on the topic itself, the study switches read LOCKED, and a
+            tap opens the centred "Membership required" popup that says how to
+            unlock. */}
+        {actMembershipLocked && !dispIsCustom ? (
+          <Pressable
+            onPress={() => setUpgradeOpen(true)}
+            style={styles.membersNotice}
+            accessibilityRole="button"
+            accessibilityLabel="Members topic. Flashcards, homework and the topic quiz need Academy membership. Tap to see how to unlock."
+          >
+            <Text style={styles.membersNoticeText}>
+              🔒 <Text style={styles.membersNoticeStrong}>MEMBERS TOPIC</Text> — flashcards, homework and the quiz need
+              Academy membership. <Text style={styles.membersNoticeLink}>How to unlock</Text>
+            </Text>
+          </Pressable>
+        ) : null}
         {METHOD_ORDER.map((m, i) => {
           const isApplicable = applicable.has(m.key);
           const cfgRow = rowFor(m.key);
@@ -2130,8 +2149,8 @@ export function DashboardScreen() {
                       // Review gates on `complete` (the RAW value), like the ✓ and
                       // the 0–99 readout above — the rounded pct made 99.6% read
                       // REVIEW while an item was still unstudied (B-086).
-                      label={complete ? 'Review' : pct <= 0 ? 'Start' : 'Continue'}
-                      variant={complete ? 'success' : pct <= 0 ? 'outline' : 'primary'}
+                      label={actMembershipLocked ? 'Locked' : complete ? 'Review' : pct <= 0 ? 'Start' : 'Continue'}
+                      variant={actMembershipLocked ? 'outline' : complete ? 'success' : pct <= 0 ? 'outline' : 'primary'}
                       width={89}
                       height={RACK_SWITCH_H}
                       onPress={() => {
@@ -2266,8 +2285,8 @@ export function DashboardScreen() {
                     </Pressable>
                   ) : (
                     <SwitchButton
-                      label={quizState === 'passed' ? 'Practice' : quizState === 'partial' ? 'Retry' : 'Start'}
-                      variant={quizState === 'passed' ? 'success' : 'primary'}
+                      label={actMembershipLocked ? 'Locked' : quizState === 'passed' ? 'Practice' : quizState === 'partial' ? 'Retry' : 'Start'}
+                      variant={actMembershipLocked ? 'outline' : quizState === 'passed' ? 'success' : 'primary'}
                       width={96}
                       height={RACK_QUIZ_SWITCH_H}
                       onPress={() => {
@@ -3027,6 +3046,18 @@ const styles = StyleSheet.create({
   },
   guestNoticeText: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: '#ffd6d6' },
   guestNoticeLink: { color: '#ffffff', fontFamily: fonts.barlowSemiBold, textDecorationLine: 'underline' },
+  membersNotice: {
+    backgroundColor: '#2a2110',
+    borderWidth: 1,
+    borderColor: 'rgba(255,198,77,0.7)',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginBottom: 10,
+  },
+  membersNoticeText: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: '#ffe8b8' },
+  membersNoticeStrong: { fontFamily: fonts.barlowSemiBold, color: colors.amber },
+  membersNoticeLink: { color: '#ffffff', fontFamily: fonts.barlowSemiBold, textDecorationLine: 'underline' },
   methodRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   // A single corner-pinned mounting screw (owner 2026-08-11). Absolute so it
   // always lands at the true panel corner regardless of content-row height.

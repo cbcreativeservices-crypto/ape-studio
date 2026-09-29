@@ -19,7 +19,8 @@
  * saved progress — a guest's progress is on-device only, which the Dashboard's
  * own banner states.
  */
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Modal } from '../../components/DimModal';
 import { GlassButton } from '../../components/GlassButton';
 import { colors, fonts } from '../../theme/tokens';
 
@@ -40,21 +41,34 @@ export function StudyAccessSheet({
   /** Open the first free topic on the Dashboard. Omitted → offer hidden. */
   onTryFree?: () => void;
 }) {
-  if (!visible) return null;
   const offerFree = !!onTryFree && freeTopicNames.length > 0;
   const names =
     freeTopicNames.length > 1
       ? `${freeTopicNames.slice(0, -1).join(', ')} and ${freeTopicNames[freeTopicNames.length - 1]}`
       : freeTopicNames[0];
   return (
-    // accessibilityViewIsModal keeps VoiceOver inside the sheet (pass 5, W1):
-    // this backdrop is a plain sibling, so without it VoiceOver walks straight
-    // past the sheet into the screen the sheet is covering.
-    <View style={styles.backdrop} accessibilityViewIsModal>
-      <Pressable style={{ flex: 1 }} onPress={onClose} accessibilityRole="button" accessibilityLabel="Dismiss" />
-      <View style={styles.sheet}>
-        <Text style={styles.eyebrow}>ACADEMY STUDY</Text>
-        <Text style={styles.title}>Ready to study this topic?</Text>
+    /**
+     * ⛔ A CENTRED POPUP, NOT A BOTTOM SHEET (owner, TestFlight 2026-09-28):
+     * a free-account tester tapped a locked topic's flashcards, "it wasn't
+     * opening", and nothing made it clear that membership was required or how
+     * to get it. The old sheet was an in-tree bottom sheet inside the
+     * Dashboard — the tab bar is drawn over the bottom of that screen, so the
+     * sheet's own buttons sat under it and the learner saw a dimmed screen
+     * that "did nothing". A Modal draws above everything, centred (the house
+     * popup rule), and says it plainly: MEMBERSHIP REQUIRED, what is locked,
+     * what is free, and how to unlock.
+     */
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose} accessibilityViewIsModal>
+      <View style={styles.backdrop}>
+        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityRole="button" accessibilityLabel="Dismiss" />
+        <View style={styles.sheet}>
+          <ScrollView bounces={false} contentContainerStyle={{ gap: 12 }}>
+        <Text style={styles.eyebrow}>🔒 MEMBERS TOPIC</Text>
+        <Text style={styles.title}>Membership required to study this topic</Text>
+        <Text style={styles.how}>
+          To study it: tap UNLOCK ACADEMY ACCESS below and choose a membership. Everything on this
+          topic opens the moment it is active.
+        </Text>
         <Text style={styles.body}>
           You can explore individual terms in the glossary for free. Academy membership unlocks the
           complete study path for this topic—including flashcards, homework — fill in the blank
@@ -91,30 +105,39 @@ export function StudyAccessSheet({
         <Pressable onPress={onClose} hitSlop={10} accessibilityRole="button" accessibilityLabel="Not now">
           <Text style={styles.dismiss}>NOT NOW</Text>
         </Pressable>
+          </ScrollView>
+        </View>
       </View>
-    </View>
+    </Modal>
   );
 }
 
 const styles = StyleSheet.create({
   backdrop: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    zIndex: 10,
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.72)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 18,
   },
   sheet: {
+    width: '100%',
+    maxWidth: 440,
+    maxHeight: '90%',
     backgroundColor: '#161616',
-    borderTopLeftRadius: 14,
-    borderTopRightRadius: 14,
+    borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#2c2c2c',
+    borderColor: '#3a3226',
     padding: 20,
-    paddingBottom: 28,
-    gap: 12,
+  },
+  how: {
+    fontFamily: fonts.barlowMedium,
+    fontSize: 15,
+    lineHeight: 21,
+    color: colors.textPrimary,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.amber,
+    paddingLeft: 10,
   },
   eyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 2.2, color: colors.amber },
   title: { fontFamily: fonts.oswaldMedium, fontSize: 19, lineHeight: 24, color: colors.textPrimary },
