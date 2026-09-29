@@ -195,8 +195,8 @@ const WS_DISTDELAY: Workspace = {
         const N = n(v.delay) * n(v.sr);
         return [
           { label: 'EXACT SAMPLES', value: N, quantity: 'samples' },
-          { label: 'NEAREST WHOLE SAMPLE', text: `${Math.round(N)} samples (error ${fmt(((Math.round(N) - N) / n(v.sr)) * 1e6)} µs)` },
-          { label: 'ROUNDED DOWN / UP', text: `${Math.floor(N)} / ${Math.ceil(N)} samples` },
+          { label: 'NEAREST WHOLE SAMPLE', text: `${fmtInt(N)} samples (error ${fmt(((Math.round(N) - N) / n(v.sr)) * 1e6)} µs)` },
+          { label: 'ROUNDED DOWN / UP', text: `${fmtInt(Math.floor(N))} / ${fmtInt(Math.ceil(N))} samples` },
         ];
       },
       steps: (v) => {
@@ -205,7 +205,7 @@ const WS_DISTDELAY: Workspace = {
         const N = t * sr;
         return [
           `N = ${fmt(t * 1000)} ms × ${fmt(sr)} Hz = ${fmt(N)} samples.`,
-          `A sample-only DSP must pick a whole number: nearest is ${Math.round(N)}, leaving ${fmt(Math.abs(Math.round(N) - N) / sr * 1e6)} µs of residual — usually negligible, but it is why fractional-delay processing exists.`,
+          `A sample-only DSP must pick a whole number: nearest is ${fmtInt(N)}, leaving ${fmt(Math.abs(Math.round(N) - N) / sr * 1e6)} µs of residual — usually negligible, but it is why fractional-delay processing exists.`,
         ];
       },
       table: (v) => {
@@ -326,7 +326,7 @@ const WS_PHASE: Workspace = {
         const total = 360 * f * dt;
         return [
           `One cycle at ${fmt(f)} Hz lasts ${fmt(1000 / f)} ms; ${fmt(dt * 1000)} ms is ${fmt(f * dt)} of those cycles.`,
-          `φ = 360° × ${fmt(f)} × ${fmt(dt)} s = ${fmt(total)}° total = ${Math.floor(total / 360)} full cycle(s) plus ${fmt(((total % 360) + 360) % 360)}°.`,
+          `φ = 360° × ${fmt(f)} × ${fmt(dt)} s = ${fmt(total)}° total = ${fmtInt(Math.floor(total / 360))} full cycle(s) plus ${fmt(((total % 360) + 360) % 360)}°.`,
         ];
       },
     },
@@ -748,7 +748,7 @@ const WS_LATENCY: Workspace = {
         const N = n(v.t) * n(v.sr);
         return [
           { label: 'EXACT SAMPLES', value: N, quantity: 'samples' },
-          { label: 'NEAREST WHOLE SAMPLE', text: `${Math.round(N)} samples` },
+          { label: 'NEAREST WHOLE SAMPLE', text: `${fmtInt(N)} samples` }, // fmtInt: NaN/∞ read as — (bug hunt 2026-09-29)
         ];
       },
       steps: (v) => [

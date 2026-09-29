@@ -5,7 +5,7 @@
  * steps, short per-step instructions, save. Deliberately a simple vertical
  * list — never a node editor.
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -36,6 +36,36 @@ export function CalcWorkflowEditScreen() {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [dirty, setDirty] = useState(false);
+  // Bug hunt 2026-09-29: a double SAVE ran two upserts and two goBack()s (the
+  // second popped the screen underneath). `savingRef` admits one save at a
+  // time; `leavingRef` lets a saved or confirmed-discard exit past the
+  // unsaved-changes guard below.
+  const savingRef = useRef(false);
+  const leavingRef = useRef(false);
+
+  // Unsaved-changes guard for EVERY back — the header ‹, Android hardware BACK
+  // and the iOS swipe (bug hunt 2026-09-29: only the header ‹ asked, so
+  // hardware BACK silently threw the edits away). Only back/pop actions are
+  // held; a navigation reset (sign-out) is never blocked behind a dialog.
+  useEffect(() => {
+    const unsub = navigation.addListener('beforeRemove', (e) => {
+      if (!dirty || leavingRef.current) return;
+      const t = e.data.action.type;
+      if (t !== 'GO_BACK' && t !== 'POP') return;
+      e.preventDefault();
+      confirmDialog(
+        'Discard changes?',
+        'This workflow has unsaved changes.',
+        'Discard',
+        () => {
+          leavingRef.current = true;
+          navigation.dispatch(e.data.action);
+        },
+        { cancelText: 'Keep editing', destructive: true },
+      );
+    });
+    return unsub;
+  }, [navigation, dirty]);
 
   // Load the workflow being edited (new = blank).
   useEffect(() => {
@@ -84,7 +114,19 @@ export function CalcWorkflowEditScreen() {
   const setNote = (i: number, note: string) =>
     mutate((s) => s.map((st, k) => (k === i ? { ...st, note: note || undefined } : st)));
 
-  const onSave = useCallback(async () => {
+  const onSave = async () => {
+    if (savingRef.current) return;
+    savingRef.current = true;
+    try {
+      await saveOnce();
+    } finally {
+      // Stay latched once saved: the screen is on its way out, and a new
+      // workflow re-saved here would get a second id — a duplicate.
+      if (!leavingRef.current) savingRef.current = false;
+    }
+  };
+
+  const saveOnce = async () => {
     // Defense in depth (owner 2026-08-06): creating a custom workflow is
     // Academy-only — even if this screen is reached some other way, the save
     // itself refuses. Editing an already-saved workflow is unaffected.
@@ -122,19 +164,12 @@ export function CalcWorkflowEditScreen() {
       notify('Save failed', 'The workflow could not be saved. Try again.');
       return;
     }
+    leavingRef.current = true; // saved — nothing to discard on the way out
     navigation.goBack();
-  }, [name, description, steps, editingId, createdAt, navigation, entitlement, resolved]);
-
-  const onBack = () => {
-    if (!dirty) {
-      navigation.goBack();
-      return;
-    }
-    confirmDialog('Discard changes?', 'This workflow has unsaved changes.', 'Discard', () => navigation.goBack(), {
-      cancelText: 'Keep editing',
-      destructive: true,
-    });
   };
+
+  // The beforeRemove guard above asks "Discard changes?" when dirty.
+  const onBack = () => navigation.goBack();
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>

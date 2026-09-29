@@ -7,7 +7,7 @@
  * Updating a project is always a deliberate action on THIS screen — runs never
  * write back into a project.
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -65,6 +65,40 @@ export function CalcProjectsScreen() {
   const [name, setName] = useState('');
   const [notes, setNotes] = useState('');
   const [values, setValues] = useState<DraftValue[]>([]);
+  // Unsaved-changes tracking (bug hunt 2026-09-29): the editor as it was
+  // opened, so BACK can ask before throwing typed values away. Android BACK
+  // used to leave the whole screen mid-edit with no question at all.
+  const openedAsRef = useRef('');
+  const draftKey = (n: string, no: string, vs: DraftValue[]) => JSON.stringify([n, no, vs]);
+  const dirty = editing != null && draftKey(name, notes, values) !== openedAsRef.current;
+  // One save at a time — a double SAVE on a NEW project wrote it twice under
+  // two ids (bug hunt 2026-09-29).
+  const savingRef = useRef(false);
+
+  const closeEditor = useCallback(() => {
+    if (!dirty) {
+      setEditing(null);
+      return;
+    }
+    confirmDialog('Discard changes?', 'This project has unsaved changes.', 'Discard', () => setEditing(null), {
+      cancelText: 'Keep editing',
+      destructive: true,
+    });
+  }, [dirty]);
+
+  // Hardware BACK / iOS swipe while the inline editor is open closes the
+  // editor (asking first when dirty), exactly like the header ‹. Only back/pop
+  // actions are held; a navigation reset (sign-out) always goes through.
+  useEffect(() => {
+    const unsub = navigation.addListener('beforeRemove', (e) => {
+      if (editing == null) return;
+      const t = e.data.action.type;
+      if (t !== 'GO_BACK' && t !== 'POP') return;
+      e.preventDefault();
+      closeEditor();
+    });
+    return unsub;
+  }, [navigation, editing, closeEditor]);
 
   const reload = useCallback(() => {
     void workflowStore.listProjects().then(setProjects);
@@ -97,13 +131,16 @@ export function CalcProjectsScreen() {
     setName('');
     setNotes('');
     setValues([]);
+    openedAsRef.current = draftKey('', '', []);
   };
 
   const openEdit = (p: Project) => {
     setEditing({ id: p.id, createdAt: p.createdAt });
+    const draft = toDraft(p);
     setName(p.name);
     setNotes(p.notes ?? '');
-    setValues(toDraft(p));
+    setValues(draft);
+    openedAsRef.current = draftKey(p.name, p.notes ?? '', draft);
   };
 
   const removeProject = (p: Project) => {
@@ -117,6 +154,16 @@ export function CalcProjectsScreen() {
   };
 
   const saveProject = async () => {
+    if (savingRef.current) return;
+    savingRef.current = true;
+    try {
+      await saveProjectOnce();
+    } finally {
+      savingRef.current = false;
+    }
+  };
+
+  const saveProjectOnce = async () => {
     const trimmed = name.trim();
     if (!trimmed) {
       notify('Name the project', 'Give the project a name before saving.');
@@ -180,7 +227,7 @@ export function CalcProjectsScreen() {
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
         <Pressable
-          onPress={() => (editing ? setEditing(null) : navigation.goBack())}
+          onPress={() => (editing ? closeEditor() : navigation.goBack())}
           hitSlop={10}
           accessibilityRole="button"
           accessibilityLabel="Back"

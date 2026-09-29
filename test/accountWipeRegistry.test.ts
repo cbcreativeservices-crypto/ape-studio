@@ -63,6 +63,8 @@ const EXEMPT: Record<string, string> = {
     'holds a lazily-built store instance, not user data — every read goes to storage',
   'features/cymatics/patternStore.ts': 'same: a store instance, not a cache of rows',
   'features/amp/ampProgress.ts': 'holds a write-queue promise, not user state',
+  'screens/lab/calc/workflowStore.ts':
+    'holds only the write-serialisation promise chain (bug hunt 2026-09-29), not user state — every read goes to storage',
   'screens/glossary/GlossaryScreen.tsx':
     'its module state is the shared glossary CATALOG cache plus a lazily-required component — reference data, identical for every user',
 };

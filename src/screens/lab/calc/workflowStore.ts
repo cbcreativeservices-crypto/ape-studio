@@ -79,26 +79,46 @@ const isResult = (x: unknown): x is SavedRunSummary =>
   Array.isArray((x as SavedRunSummary).inputs) && Array.isArray((x as SavedRunSummary).results);
 
 // ---------------------------------------------------------------------------
+// Write serialisation (bug hunt 2026-09-29)
+// ---------------------------------------------------------------------------
+
+/** Every write below is a read-modify-write of one whole JSON blob. Two in
+ *  flight at once (a double-tapped SAVE, a save racing a reorder, two quick
+ *  favourite toggles) both read the same old list and the later write erased
+ *  the earlier one. Writes now run one at a time on this chain. A failed write
+ *  never jams it — the chain always continues from a settled promise. */
+let writeChain: Promise<unknown> = Promise.resolve();
+function serialWrite<R>(fn: () => Promise<R>): Promise<R> {
+  const run = writeChain.then(fn, fn);
+  writeChain = run.catch(() => {});
+  return run;
+}
+
+// ---------------------------------------------------------------------------
 // Public CRUD — upsert-by-id everywhere; lists stay newest-first
 // ---------------------------------------------------------------------------
 
-async function upsert<T extends { id: string }>(
+function upsert<T extends { id: string }>(
   key: CollectionKey,
   validate: (x: unknown) => x is T,
   item: T,
 ): Promise<boolean> {
-  const list = await loadList(key, validate);
-  const next = [item, ...list.filter((w) => w.id !== item.id)];
-  return saveList(key, next);
+  return serialWrite(async () => {
+    const list = await loadList(key, validate);
+    const next = [item, ...list.filter((w) => w.id !== item.id)];
+    return saveList(key, next);
+  });
 }
 
-async function removeById<T extends { id: string }>(
+function removeById<T extends { id: string }>(
   key: CollectionKey,
   validate: (x: unknown) => x is T,
   id: string,
 ): Promise<boolean> {
-  const list = await loadList(key, validate);
-  return saveList(key, list.filter((w) => w.id !== id));
+  return serialWrite(async () => {
+    const list = await loadList(key, validate);
+    return saveList(key, list.filter((w) => w.id !== id));
+  });
 }
 
 export const workflowStore = {
@@ -107,15 +127,17 @@ export const workflowStore = {
   deleteWorkflow: (id: string) => removeById(KEYS.workflows, isWorkflow, id),
   /** Reorder My Workflows (owner 2026-08-06): swap the workflow with its
    *  neighbour; the stored order IS the display order. */
-  async moveWorkflow(id: string, dir: -1 | 1): Promise<Workflow[]> {
-    const list = await loadList(KEYS.workflows, isWorkflow);
-    const i = list.findIndex((w) => w.id === id);
-    const j = i + dir;
-    if (i < 0 || j < 0 || j >= list.length) return list;
-    const next = [...list];
-    [next[i], next[j]] = [next[j], next[i]];
-    await saveList(KEYS.workflows, next);
-    return next;
+  moveWorkflow(id: string, dir: -1 | 1): Promise<Workflow[]> {
+    return serialWrite(async () => {
+      const list = await loadList(KEYS.workflows, isWorkflow);
+      const i = list.findIndex((w) => w.id === id);
+      const j = i + dir;
+      if (i < 0 || j < 0 || j >= list.length) return list;
+      const next = [...list];
+      [next[i], next[j]] = [next[j], next[i]];
+      await saveList(KEYS.workflows, next);
+      return next;
+    });
   },
 
   listRuns: () => loadList(KEYS.runs, isRun),
@@ -139,11 +161,13 @@ export const workflowStore = {
       return [];
     }
   },
-  async toggleFavorite(id: string): Promise<string[]> {
-    const cur = await workflowStore.getFavorites();
-    const next = cur.includes(id) ? cur.filter((s) => s !== id) : [id, ...cur];
-    await saveList(KEYS.favorites, next);
-    return next;
+  toggleFavorite(id: string): Promise<string[]> {
+    return serialWrite(async () => {
+      const cur = await workflowStore.getFavorites();
+      const next = cur.includes(id) ? cur.filter((s) => s !== id) : [id, ...cur];
+      await saveList(KEYS.favorites, next);
+      return next;
+    });
   },
 
   async getRecents(): Promise<string[]> {
@@ -155,9 +179,11 @@ export const workflowStore = {
       return [];
     }
   },
-  async touchRecent(id: string): Promise<void> {
-    const cur = await workflowStore.getRecents();
-    await saveList(KEYS.recents, [id, ...cur.filter((s) => s !== id)].slice(0, 8));
+  touchRecent(id: string): Promise<void> {
+    return serialWrite(async () => {
+      const cur = await workflowStore.getRecents();
+      await saveList(KEYS.recents, [id, ...cur.filter((s) => s !== id)].slice(0, 8));
+    });
   },
 };
 
