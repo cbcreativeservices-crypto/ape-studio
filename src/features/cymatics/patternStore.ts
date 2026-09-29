@@ -263,27 +263,37 @@ async function saveList<T>(kv: KeyValueStore, key: string, list: T[]): Promise<b
 export function createPatternStore(kv: KeyValueStore): PatternStore {
   const patterns = () => loadList<SavedPattern>(kv, PATTERN_KEYS.patterns, normalisePattern);
   const artworks = () => loadList<Artwork>(kv, PATTERN_KEYS.artwork, normaliseArtwork);
+  // Every write is a read-modify-write of a whole list, so two in flight at
+  // once (a double-tapped SAVE, a favourite during an artwork autosave) could
+  // each read the old list and the second would drop the first's row. Writes
+  // run one after another on this chain (bug hunt 2026-09-29).
+  let chain: Promise<unknown> = Promise.resolve();
+  const serial = <T>(fn: () => Promise<T>): Promise<T> => {
+    const run = chain.then(fn, fn);
+    chain = run.catch(() => undefined);
+    return run;
+  };
   return {
     loadPatterns: patterns,
     async getPattern(id) {
       return (await patterns()).find((p) => p.id === id) ?? null;
     },
-    async upsertPattern(p) {
+    upsertPattern: (p) => serial(async () => {
       const list = await patterns();
       const i = list.findIndex((x) => x.id === p.id);
       const row = { ...p, updatedAt: Date.now() };
       if (i >= 0) list[i] = row;
       else list.unshift(row);
       return saveList(kv, PATTERN_KEYS.patterns, list);
-    },
-    async deletePattern(id) {
+    }),
+    deletePattern: (id) => serial(async () => {
       const list = (await patterns()).filter((x) => x.id !== id);
       const ok = await saveList(kv, PATTERN_KEYS.patterns, list);
       const arts = (await artworks()).filter((a) => a.patternId !== id);
       await saveList(kv, PATTERN_KEYS.artwork, arts);
       return ok;
-    },
-    async duplicatePattern(id) {
+    }),
+    duplicatePattern: (id) => serial(async () => {
       const src = (await patterns()).find((x) => x.id === id);
       if (!src) return null;
       const now = Date.now();
@@ -292,23 +302,23 @@ export function createPatternStore(kv: KeyValueStore): PatternStore {
       list.unshift(copy);
       const ok = await saveList(kv, PATTERN_KEYS.patterns, list);
       return ok ? copy : null;
-    },
+    }),
     async loadArtwork(patternId) {
       return (await artworks()).find((a) => a.patternId === patternId) ?? null;
     },
     loadArtworks: artworks,
-    async saveArtwork(a) {
+    saveArtwork: (a) => serial(async () => {
       const list = await artworks();
       const i = list.findIndex((x) => x.patternId === a.patternId);
       const row = { ...a, updatedAt: Date.now() };
       if (i >= 0) list[i] = row;
       else list.push(row);
       return saveList(kv, PATTERN_KEYS.artwork, list);
-    },
-    async deleteArtwork(patternId) {
+    }),
+    deleteArtwork: (patternId) => serial(async () => {
       const list = (await artworks()).filter((a) => a.patternId !== patternId);
       return saveList(kv, PATTERN_KEYS.artwork, list);
-    },
+    }),
   };
 }
 

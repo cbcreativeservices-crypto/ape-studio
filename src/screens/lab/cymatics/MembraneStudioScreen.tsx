@@ -26,7 +26,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
+import { useIsFocused, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts } from '../../../theme/tokens';
@@ -65,7 +65,7 @@ import type { MembraneViewMode } from './vizMembrane';
 import { useDriveTone } from './useDriveTone';
 import { RES_TINT } from '../../../features/cymatics/resTint';
 import { START_LEVEL_01 } from '../../../features/audio/startLevel';
-import { goToCymatics } from './goToCymatics';
+import { goToCymatics, useStudioKey } from './goToCymatics';
 
 const F_MIN = 20;
 const F_MAX = 6000;
@@ -108,6 +108,13 @@ const CONE_TINT: Record<number, string> = { 1: colors.textSub, 2: '#37e05f', 3: 
 const HEAD_SHORT: Record<HeadId, string> = { mylar10: 'M10', mylar7: 'M7', calfskin: 'Calf', latex: 'Ltx', kevlar: 'Kev' };
 
 export function MembraneStudioScreen() {
+  const route = useRoute<RouteProp<RootStackParamList, 'CymaticsMembraneStudio'>>();
+  // Remount on a new preset — see useStudioKey (bug hunt 2026-09-29).
+  const key = useStudioKey(route.params?.preset);
+  return <MembraneStudio key={key} />;
+}
+
+function MembraneStudio() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'CymaticsMembraneStudio'>>();
   const preset = route.params?.preset ? MEMBRANE_PRESET_BY_ID[route.params.preset] : undefined;
@@ -183,7 +190,11 @@ export function MembraneStudioScreen() {
 
   // ── sound ────────────────────────────────────────────────────────────────
   const tone = useDriveTone(freq, null, amplitude);
-  const driving = tone.running || silentDrive;
+  // Only while this screen is on top: the tone stops on blur but SILENT DRIVE
+  // did not, so a hidden studio kept simulating and sweeping (bug hunt
+  // 2026-09-29). Losing focus also ends a sweep (the effect below).
+  const focused = useIsFocused();
+  const driving = focused && (tone.running || silentDrive);
 
   // Dwell sweep over the head's driven modes (the plate idiom); in the
   // loudspeaker view it walks the cone's stages instead: f_s → piston → ka=1
@@ -423,12 +434,24 @@ export function MembraneStudioScreen() {
       ? 'SIMULATION · CALCULATED Bessel head modes · APPROXIMATED kettle loading (Rossing)'
       : 'SIMULATION · CALCULATED — clamped-membrane Bessel modes';
   // SAVE → the Pattern Gallery (Phase 4): the full state, never a picture.
+  // One save per press: SAVE stays disabled until the write settles, and the
+  // ref catches a same-frame double tap before the re-render (bug hunt
+  // 2026-09-29) — each tap used to write its own gallery row.
+  const [saving, setSaving] = useState(false);
+  const savingRef = useRef(false);
   const savePattern = () => {
+    if (savingRef.current) return;
+    savingRef.current = true;
+    setSaving(true);
     const state = { studio: 'membrane' as const, spec, hz: freq, amplitude, view, driverId };
     const p = newPattern(state, badge, defaultPatternName(state));
     void patternStore()
       .upsertPattern(p)
-      .then((ok) => setSavedMsg(ok ? { id: p.id, name: p.name } : 'failed'));
+      .then((ok) => setSavedMsg(ok ? { id: p.id, name: p.name } : 'failed'))
+      .finally(() => {
+        savingRef.current = false;
+        setSaving(false);
+      });
   };
   const ref11 = modes.find((m) => m.n === 1 && m.s === 1);
   const ratioBase = spec.kettle && ref11 ? ref11 : ex[0];
@@ -443,7 +466,7 @@ export function MembraneStudioScreen() {
         exploreCaption="Tune the head, move the mallet, sweep the modes. Then show the loudspeaker and sweep from its resonance up through breakup."
         headerAction={
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <HeaderTextButton label="SAVE" onPress={savePattern} accessibilityLabel="Save this pattern to the gallery" />
+            <HeaderTextButton label="SAVE" onPress={savePattern} disabled={saving} accessibilityLabel="Save this pattern to the gallery" />
             <HeaderPlayButton playing={tone.running} onPress={togglePlay} disabled={!tone.engineReady} label={tone.running ? 'Stop the drive tone' : 'Play the drive tone'} />
           </View>
         }

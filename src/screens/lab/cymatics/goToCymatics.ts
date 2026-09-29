@@ -19,6 +19,8 @@
  * pop to, so we push normally.
  */
 
+import { useRef } from 'react';
+
 /** Only what this helper touches. */
 type NavLike = {
   navigate: (name: string, params?: object) => void;
@@ -49,4 +51,20 @@ export function goToCymatics(nav: object, name: string, params?: object): void {
     /* fall through to a plain navigate — never block the tap */
   }
   n.navigate(name, params);
+}
+
+/**
+ * The key a studio screen mounts its body under (bug hunt 2026-09-29).
+ *
+ * A studio reads its `preset` once, into initial state. When goToCymatics pops
+ * back to a studio that is already in the stack with a NEW preset (a guided
+ * experiment, a Systems link), the params arrive but the old instance would
+ * keep the old set-up under the new experiment's steps. Keying the body on the
+ * preset remounts it exactly as a fresh push would. A link with no preset
+ * (`{}`) keeps the last key, so an ordinary return keeps what is on the plate.
+ */
+export function useStudioKey(preset: string | undefined): string {
+  const last = useRef(preset ?? '');
+  if (preset) last.current = preset;
+  return last.current;
 }

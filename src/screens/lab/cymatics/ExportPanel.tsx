@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
    *  artwork, legible enough to read in a repost. */
   provenance: {
     fontFamily: fonts.oswaldMedium,
-    fontSize: 8.5,
+    fontSize: 9, // was 8.5 — the 9-pt floor (bug hunt 2026-09-29)
     letterSpacing: 0.9,
     color: '#6d6f74',
     textAlign: 'center',

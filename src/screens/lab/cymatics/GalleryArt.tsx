@@ -85,8 +85,14 @@ export function GalleryArt({
   const latest = useRef(art);
   latest.current = art;
   const dirty = useRef(false);
+  // Skip only the FIRST run — `art === initial` also skipped an undo back to
+  // the starting artwork, so that undo was never saved (bug hunt 2026-09-29).
+  const mounted = useRef(false);
   useEffect(() => {
-    if (art === initial) return;
+    if (!mounted.current) {
+      mounted.current = true;
+      return;
+    }
     dirty.current = true;
     setSaveState('saving');
     const t = setTimeout(() => {
@@ -103,8 +109,14 @@ export function GalleryArt({
   }, [art]);
   useEffect(
     () => () => {
-      if (dirty.current) void patternStore().saveArtwork(latest.current);
+      // The gallery's cache hears the flush too, or its thumbnails show the
+      // pre-edit artwork until the next reload (bug hunt 2026-09-29).
+      if (dirty.current) {
+        void patternStore().saveArtwork(latest.current);
+        onArtwork(latest.current);
+      }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
 

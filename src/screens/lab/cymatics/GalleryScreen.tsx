@@ -15,7 +15,7 @@
  * Every figure here is drawn from the pattern's state through the studios'
  * own science chain (patternField) — nothing is stored as a picture.
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BackHandler, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useFocusEffect, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -127,10 +127,13 @@ export function GalleryScreen() {
     else navigation.goBack();
   };
   // Android hardware BACK walks the modes the same way (an open dock tray
-  // registers later and closes itself first).
+  // registers later and closes itself first). Only while this screen is on
+  // top: a studio pushed over the gallery keeps this listener alive, and it
+  // used to swallow the first BACK there (bug hunt 2026-09-29).
   useEffect(() => {
     if (mode === 'browse') return;
     const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (!navigation.isFocused()) return false;
       back();
       return true;
     });
@@ -148,12 +151,29 @@ export function GalleryScreen() {
     if (!current || notes === current.notes) return;
     void upsert({ ...current, notes });
   };
-  const toggleFav = (p: SavedPattern) => void upsert({ ...p, favourite: !p.favourite });
+  // Flip the LATEST stored row, one flip at a time: `p` is a render-time
+  // snapshot, so a quick double tap flipped the same stale value twice
+  // (bug hunt 2026-09-29).
+  const favChain = useRef<Promise<unknown>>(Promise.resolve());
+  const toggleFav = (p: SavedPattern) => {
+    favChain.current = favChain.current.then(async () => {
+      const row = await patternStore().getPattern(p.id);
+      if (row) await upsert({ ...row, favourite: !row.favourite });
+    }).catch(() => undefined);
+  };
+  // One copy per press: a same-frame double tap used to make two
+  // (bug hunt 2026-09-29).
+  const duplicating = useRef(false);
   const doDuplicate = () => {
-    if (!current) return;
-    void duplicate(current.id).then((copy) => {
-      if (copy) open(copy.id);
-    });
+    if (!current || duplicating.current) return;
+    duplicating.current = true;
+    void duplicate(current.id)
+      .then((copy) => {
+        if (copy) open(copy.id);
+      })
+      .finally(() => {
+        duplicating.current = false;
+      });
   };
   const doDelete = () => {
     if (!current) return;
@@ -177,7 +197,9 @@ export function GalleryScreen() {
   };
   const openInStudio = () => {
     if (!current) return;
-    navigation.navigate(STUDIO_ROUTE[current.state.studio], { saved: current.id });
+    // Back to the studio already in the stack, not a second copy of it
+    // (bug hunt 2026-09-29); `saved` still lands through its effect.
+    goToCymatics(navigation, STUDIO_ROUTE[current.state.studio], { saved: current.id });
   };
 
   const compareItems: CompareItem[] = useMemo(

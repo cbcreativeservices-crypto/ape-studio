@@ -15,6 +15,7 @@ import { EXPERIMENTS, experimentRoute } from '../../../../features/cymatics/pres
 import type { RootStackParamList } from '../../../../navigation/types';
 import type { CymaticsModuleProps } from '../CymaticsModuleScreen';
 import { P } from './shared';
+import { goToCymatics } from '../goToCymatics';
 
 export function ExperimentsModule(_p: CymaticsModuleProps) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -24,7 +25,9 @@ export function ExperimentsModule(_p: CymaticsModuleProps) {
   const [openId, setOpenId] = useState<string | null>(null);
   const open = (e: (typeof EXPERIMENTS)[number]) => {
     const r = experimentRoute(e);
-    navigation.navigate(r.route as 'CymaticsPlateStudio', r.params as { preset: string });
+    // goToCymatics, not a bare navigate: that stacked a second studio. The
+    // studio remounts on the new preset (useStudioKey) — bug hunt 2026-09-29.
+    goToCymatics(navigation, r.route, r.params);
   };
   return (
     <View style={{ gap: 12 }}>

@@ -141,7 +141,8 @@ export function NodesModule({ width, focused, help }: CymaticsModuleProps) {
               strength={res.strength}
               amplitude={0.8}
               view={view}
-              running={tone.running || silent}
+              // Silent drive kept simulating on a hidden page (bug hunt 2026-09-29).
+              running={focused && (tone.running || silent)}
               slowMo={view === 'plate3d'}
               particleCount={1800}
               particleSize={0.4}

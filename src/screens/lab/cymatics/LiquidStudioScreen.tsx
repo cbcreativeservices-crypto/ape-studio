@@ -23,7 +23,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
+import { useIsFocused, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
 import { heatColor } from '../../../features/tools/levelColor';
@@ -58,7 +58,7 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { requireVizLiquid, skiaAvailable } from './skiaGate';
 import type { LiquidViewMode } from './vizLiquid';
 import { useDriveTone } from './useDriveTone';
-import { goToCymatics } from './goToCymatics';
+import { goToCymatics, useStudioKey } from './goToCymatics';
 
 const F_MIN = 10;
 const F_MAX = 200;
@@ -169,6 +169,13 @@ const STAGE_TINT: Record<Stage, string> = {
 };
 
 export function LiquidStudioScreen() {
+  const route = useRoute<RouteProp<RootStackParamList, 'CymaticsLiquidStudio'>>();
+  // Remount on a new preset — see useStudioKey (bug hunt 2026-09-29).
+  const key = useStudioKey(route.params?.preset);
+  return <LiquidStudio key={key} />;
+}
+
+function LiquidStudio() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'CymaticsLiquidStudio'>>();
   const preset = route.params?.preset ? LIQUID_PRESET_BY_ID[route.params.preset] : undefined;
@@ -253,7 +260,11 @@ export function LiquidStudioScreen() {
   // ── sound ────────────────────────────────────────────────────────────────
   const freqB = ratio ? freq * ratio : null;
   const tone = useDriveTone(freq, freqB, posFromG(accel), spec.waveform);
-  const driving = tone.running || silentDrive;
+  // Only while this screen is on top: the tone stops on blur but SILENT DRIVE
+  // did not, so a hidden studio kept simulating and sweeping (bug hunt
+  // 2026-09-29). Losing focus also ends a sweep (the effect below).
+  const focused = useIsFocused();
+  const driving = focused && (tone.running || silentDrive);
 
   // Sweep: log 15 → 150 Hz over 40 s, loops.
   useEffect(() => {
@@ -510,12 +521,24 @@ export function LiquidStudioScreen() {
       : `SIMULATION · APPROXIMATED — Faraday pattern map (${FAMILY_LABEL[st.family].toLowerCase()})`;
   // SAVE → the Pattern Gallery (Phase 4): the full state (dualRatio rides in
   // specLive), never a picture; the badge it carried rides along.
+  // One save per press: SAVE stays disabled until the write settles, and the
+  // ref catches a same-frame double tap before the re-render (bug hunt
+  // 2026-09-29) — each tap used to write its own gallery row.
+  const [saving, setSaving] = useState(false);
+  const savingRef = useRef(false);
   const savePattern = () => {
+    if (savingRef.current) return;
+    savingRef.current = true;
+    setSaving(true);
     const state = { studio: 'liquid' as const, spec: specLive, hz: freq, accelG: accel, view, dualId };
     const p = newPattern(state, badge, defaultPatternName(state));
     void patternStore()
       .upsertPattern(p)
-      .then((ok) => setSavedMsg(ok ? { id: p.id, name: p.name } : 'failed'));
+      .then((ok) => setSavedMsg(ok ? { id: p.id, name: p.name } : 'failed'))
+      .finally(() => {
+        savingRef.current = false;
+        setSaving(false);
+      });
   };
   const stageNum = STAGE_NUM[st.stage];
   const dampTotal = fr.damping.total || 1;
@@ -530,7 +553,7 @@ export function LiquidStudioScreen() {
         exploreCaption="Raise SHAKE past the threshold and watch the stage ladder climb. Swap the liquid, the depth or the dish and the same drive stops working — or works differently."
         headerAction={
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <HeaderTextButton label="SAVE" onPress={savePattern} accessibilityLabel="Save this pattern to the gallery" />
+            <HeaderTextButton label="SAVE" onPress={savePattern} disabled={saving} accessibilityLabel="Save this pattern to the gallery" />
             <HeaderPlayButton playing={tone.running} onPress={togglePlay} disabled={!tone.engineReady} label={tone.running ? 'Stop the drive tone' : 'Play the drive tone'} />
           </View>
         }

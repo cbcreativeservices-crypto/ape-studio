@@ -98,6 +98,9 @@ export function ChangeModule({ focused, help }: CymaticsModuleProps) {
     setA(0);
     setB(1);
     setRevealed(false);
+    // A new variable is a new comparison: B has to move again before REVEAL
+    // unlocks (bug hunt 2026-09-29).
+    setBMoved(false);
   };
   const optA = variable.options[a];
   const optB = variable.options[b];
