@@ -32,6 +32,11 @@ export type CiModuleDef = {
   intro: string;
   /** labCompletion unit marked when the module's exercises complete. */
   unit: string;
+  /** The stage mounts on the RACK UNIT layout (owner rule: a lab page with a
+   *  live display pins it at the top, the well scrolls between, the controls
+   *  dock at the bottom). The host gives it the full height and no ScrollView
+   *  of its own, and hands it `head` to print at the top of its well. */
+  rack?: boolean;
 };
 
 export const CI_MODULES: CiModuleDef[] = [
@@ -111,6 +116,7 @@ export const CI_MODULES: CiModuleDef[] = [
     title: 'Penetrations, Fire & Building Spaces',
     intro: 'Recognize when code requirements are triggered: rated assemblies, air-handling spaces, risers — and what "verify first" means.',
     unit: 'm_fire',
+    rack: true,
   },
   {
     id: 'label',
@@ -162,6 +168,9 @@ export type CiModuleProps = {
   onDims?: (dims: CiDimScores) => void;
   /** Open the host's source sheet on these source ids. */
   openSources: (sourceIds: string[]) => void;
+  /** Rack-layout stages only: the stage heading the host would otherwise
+   *  print above the body (it prints it in the well instead). */
+  head?: { tag: string; title: string; intro: string };
 };
 
 export const CI_TITLE = 'Cable Dressing & Installation';

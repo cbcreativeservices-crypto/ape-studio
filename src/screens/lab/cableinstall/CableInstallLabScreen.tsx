@@ -20,6 +20,7 @@ import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GlassButton } from '../../../components/GlassButton';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
@@ -72,6 +73,7 @@ const COMPLETE_STEP = CI_MODULES.length + 1;
 
 export function CableInstallLabScreen() {
   const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
   const { entitlement, resolved } = useEntitlement();
   // `resolved` REQUIRED (entitlement roll-out 2026-09-11): the provider boots
   // at 'anonymous', and the restore effect below runs on MOUNT — so without it
@@ -265,6 +267,43 @@ export function CableInstallLabScreen() {
   const modDone = mod ? completedUnitsRef.current.has(mod.unit) : false;
   const Body = mod ? MODULE_BODIES[mod.id] : null;
   const myth = pendingMyth ? CI_MYTHS.find((m) => m.id === pendingMyth) : null;
+  /** A rack-layout stage (display pinned, well scrolls, dock at the bottom):
+   *  it gets the full height and no ScrollView of ours; the BACK / NEXT row
+   *  becomes a fixed footer under it. */
+  const rackStage = !!(mod && Body && mod.rack && !myth);
+
+  const navButtons = (
+    <>
+      {/* flex wrappers (design pass 2026-08-31): the buttons rendered
+          content-width — BACK was a ~40pt-wide chiclet. */}
+      <View style={{ flex: 1 }}>
+        <GlassButton label="‹ BACK" tint="teal" height={44} fontSize={13} onPress={prev} />
+      </View>
+      <View style={{ flex: 2 }}>
+        <GlassButton
+          /* Never 'COMPLETE THE STAGE' as a dead end: the control always
+             moves you on, and the completion stage is what tells you what is
+             still outstanding. 'SKIP AHEAD' is honest about what you are
+             doing rather than pretending the stage is finished. */
+          label={step === CI_MODULES.length ? 'FINISH ✓' : modDone ? 'NEXT ›' : 'SKIP AHEAD ›'}
+          tint={modDone ? 'green' : 'gold'}
+          height={44}
+          fontSize={13}
+          /* ⛔ ALWAYS LIVE (owner 2026-09-21 bug pass). The comment above
+             has said "the control always moves you on" since the gate was
+             taken out of `canEnter`, but this button was missed: it was
+             `onPress={modDone ? next : undefined}` with `disabled`, so
+             GlassButton dimmed it to 0.45 and swallowed the press. The
+             loudest control on the screen announced SKIP AHEAD and then
+             did nothing — the exact shape of the complaint that produced
+             the standing rule. Progress is banked per unit, so leaving
+             early costs the stage's credit and nothing else, and the
+             completion stage is what lists what is still outstanding. */
+          onPress={next}
+        />
+      </View>
+    </>
+  );
 
   return (
     <View style={styles.root}>
@@ -331,6 +370,23 @@ export function CableInstallLabScreen() {
         </>
       ) : null}
 
+      {rackStage && mod && Body ? (
+        <>
+          <View style={styles.rackFill}>
+            <Body
+              key={mod.id}
+              width={width}
+              completed={modDone}
+              onComplete={onModuleComplete}
+              onDims={onModuleDims}
+              openSources={openSources}
+              clearedUnits={clearedUnits}
+              head={{ tag: mod.tag, title: mod.title, intro: mod.intro }}
+            />
+          </View>
+          <View style={[styles.rackFooter, { paddingBottom: insets.bottom + 8 }]}>{navButtons}</View>
+        </>
+      ) : (
       <ScrollView ref={scrollRef} contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
         <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width))}>
           {myth ? (
@@ -385,39 +441,9 @@ export function CableInstallLabScreen() {
           ) : null}
         </View>
 
-        {step > INTRO_STEP && step < COMPLETE_STEP && !myth ? (
-          <View style={styles.bottomNav}>
-            {/* flex wrappers (design pass 2026-08-31): the buttons rendered
-                content-width — BACK was a ~40pt-wide chiclet. */}
-            <View style={{ flex: 1 }}>
-              <GlassButton label="‹ BACK" tint="teal" height={44} fontSize={13} onPress={prev} />
-            </View>
-            <View style={{ flex: 2 }}>
-              <GlassButton
-                /* Never 'COMPLETE THE STAGE' as a dead end: the control always
-               moves you on, and the completion stage is what tells you what is
-               still outstanding. 'SKIP AHEAD' is honest about what you are
-               doing rather than pretending the stage is finished. */
-            label={step === CI_MODULES.length ? 'FINISH ✓' : modDone ? 'NEXT ›' : 'SKIP AHEAD ›'}
-                tint={modDone ? 'green' : 'gold'}
-                height={44}
-                fontSize={13}
-                /* ⛔ ALWAYS LIVE (owner 2026-09-21 bug pass). The comment above
-                   has said "the control always moves you on" since the gate was
-                   taken out of `canEnter`, but this button was missed: it was
-                   `onPress={modDone ? next : undefined}` with `disabled`, so
-                   GlassButton dimmed it to 0.45 and swallowed the press. The
-                   loudest control on the screen announced SKIP AHEAD and then
-                   did nothing — the exact shape of the complaint that produced
-                   the standing rule. Progress is banked per unit, so leaving
-                   early costs the stage's credit and nothing else, and the
-                   completion stage is what lists what is still outstanding. */
-                onPress={next}
-              />
-            </View>
-          </View>
-        ) : null}
+        {step > INTRO_STEP && step < COMPLETE_STEP && !myth ? <View style={styles.bottomNav}>{navButtons}</View> : null}
       </ScrollView>
+      )}
 
       <SourceSheet sourceIds={sourceIds} onClose={() => setSourceIds(null)} />
     </View>
@@ -695,6 +721,18 @@ const styles = StyleSheet.create({
   stageTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 19, letterSpacing: 0.5, color: colors.textPrimary },
   stageIntro: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
   bottomNav: { flexDirection: 'row', gap: 10, marginTop: 16 },
+  /** Rack-layout stage: the RackUnit takes the height between the stage nav
+   *  and the fixed BACK / NEXT footer. */
+  rackFill: { flex: 1 },
+  rackFooter: {
+    flexDirection: 'row',
+    gap: 10,
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#1f1f25',
+    backgroundColor: colors.screenBg,
+  },
   introLead: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20.5, color: colors.textSecondary },
   governNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textSub, fontStyle: 'italic' },
   progressLine: { fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 0.6, color: colors.amberLabel },

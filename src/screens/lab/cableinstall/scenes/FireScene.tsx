@@ -13,15 +13,23 @@
  * onComplete({ safety, routing }) ONCE. Replay via `completed` (pre-revealed).
  * Accessibility: every choice is a ≥44dp labeled button; verdicts announce
  * via VerdictBanner; the SVG is a described training visualization — all
- * interaction happens in the cards.
+ * interaction happens in the dock keys and the cards.
+ *
+ * LAYOUT (owner 2026-09-28): the RACK UNIT — the section is pinned on the
+ * glass, the well (the one card in play, then the key) scrolls between, the
+ * three space keys dock at the bottom. The drawing never leaves the screen
+ * while the learner answers, and every answer changes it.
  */
 import { useEffect, useState, type ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
 import { OptionChip, VerdictBanner } from '../../cable/lessons/bits';
 import { CiSection, RuleFeedback, SpecCard, announceComplete, stableShuffle } from '../bits';
-import { ExpandableFigure } from '../../kit/ExpandableFigure';
+import { CollapsibleSection } from '../../LabShell';
+import { RackUnit } from '../../rack/RackUnit';
+import { StageFit } from '../../rack/StageFit';
+import type { DockParam } from '../../rack/rackTypes';
 import { Callout, CeilingCut, ConcreteCut, DuctSide, JacketPath, LadderTraySide, RackSide, ScaleBar, StudWallCut, SVG_A11Y } from '../svgArt';
 import {
   ACircle,
@@ -33,7 +41,6 @@ import {
   CI_MOTION,
   CI_SPRING_UI,
   PulseRing,
-  Stagger,
   cancelAnimation,
   useAnimatedProps,
   useAnimatedStyle,
@@ -412,7 +419,7 @@ function BuildingArt({
       width={w}
       height={h}
       viewBox="0 0 360 224"
-      accessibilityLabel="Building section drawn to scale, training visualization. Floor above, the concrete slab, and the lower floor: a store and the equipment room with the rack, separated by a non-rated partition that stops just above the suspended ceiling. The equipment-room wall is a marked fire-rated assembly running slab to slab, with a sleeve through it at cable-tray height. Above the store and equipment room the ceiling cavity holds a cable tray and a ducted return — the air stays in the duct; the cavity is not the air path. Over the open office the return grille opens into the cavity and the air crosses the open space to the return inlet — the cavity is the air path. On the right, stacked riser rooms carry a riser-rated backbone through a firestopped slab sleeve, beside a spare sleeve. Proposed cable routes draw as dashed lines from the rack. All interaction happens in the cards below."
+      accessibilityLabel="Building section drawn to scale, training visualization. Floor above, the concrete slab, and the lower floor: a store and the equipment room with the rack, separated by a non-rated partition that stops just above the suspended ceiling. The equipment-room wall is a marked fire-rated assembly running slab to slab, with a sleeve through it at cable-tray height. Above the store and equipment room the ceiling cavity holds a cable tray and a ducted return — the air stays in the duct; the cavity is not the air path. Over the open office the return grille opens into the cavity and the air crosses the open space to the return inlet — the cavity is the air path. On the right, stacked riser rooms carry a riser-rated backbone through a firestopped slab sleeve, beside a spare sleeve. Proposed cable routes draw as dashed lines from the rack. Choose a space with the keys under the section; answer in the cards between."
     >
       <Rect x={0} y={0} width={360} height={224} rx={10} fill="#111216" />
 
@@ -546,6 +553,13 @@ function BuildingArt({
         /* the penetrant: this run's cable through the sleeve */
         <JacketPath d={`M${RATED.x - 14} ${SLEEVE.cy} H${wallR + 14}`} color="#c77dff" width={2.2} shadow={false} />
       ) : null}
+      {flowStep === 3 ? (
+        <G>
+          {/* a listed system is REQUIRED here: where it goes, not yet chosen */}
+          <Rect x={RATED.x - 5.6} y={SLEEVE.cy - SLEEVE.h / 2 - 1.4} width={1.8} height={SLEEVE.h + 2.8} fill="none" stroke="#ff8a6b" strokeWidth={0.6} strokeDasharray="1.4 1" />
+          <Rect x={wallR + 3.8} y={SLEEVE.cy - SLEEVE.h / 2 - 1.4} width={1.8} height={SLEEVE.h + 2.8} fill="none" stroke="#ff8a6b" strokeWidth={0.6} strokeDasharray="1.4 1" />
+        </G>
+      ) : null}
       {flowStep >= 4 ? (
         <G>
           {/* the listed system, installed: firestop both faces */}
@@ -615,7 +629,14 @@ function LessonCard({ head, body }: { head: string; body: string }) {
 }
 
 /* ── the scene ──────────────────────────────────────────────────────────── */
-export function FireScene({ width, completed, onComplete, openSources }: CiModuleProps) {
+/** Dock-key names for the three spaces (the numbers match the section). */
+const SPACE_KEY: Record<string, string> = {
+  'fs-cavity': 'DUCTED CAVITY',
+  'fs-plenum': 'OPEN-RETURN CAVITY',
+  'fs-riser': 'RISER',
+};
+
+export function FireScene({ completed, onComplete, openSources, head }: CiModuleProps) {
   const [spaceAns, setSpaceAns] = useState<Record<string, number>>(() => {
     if (!completed) return {};
     const pre: Record<string, number> = {};
@@ -657,111 +678,104 @@ export function FireScene({ width, completed, onComplete, openSources }: CiModul
     maybeFire(spaceAns, next);
   };
 
-  /* ── the controls that change the drawing — rendered on the page AND docked
-     under the drawing in full screen (owner 2026-09-25: "the user must still be
-     able to adjust and view their changes to controls"). State lives here; the
-     elements are simply rendered twice. ──────────────────────────────────── */
-  const spaceDock = (
-    <View style={{ gap: 6, paddingHorizontal: 12 }}>
-      {CI_FIRE_SPACES.map((sp, i) => {
-        const answered = spaceAns[sp.id] != null;
-        const isSel = sel === sp.id;
-        return (
-          <Pressable
-            key={sp.id}
-            onPress={() => setSel(isSel ? null : sp.id)}
-            style={[styles.spaceCard, isSel && styles.spaceCardSel, styles.spaceHead, { paddingVertical: 6 }]}
-            accessibilityRole="button"
-            accessibilityState={{ selected: isSel }}
-            aria-pressed={isSel}
-            accessibilityLabel={`Space ${i + 1}. ${sp.label}${answered ? ', identified' : ''}`}
-          >
-            <View style={[styles.spaceNum, answered && styles.spaceNumDone]}>
-              <Text style={[styles.spaceNumText, answered && { color: colors.green }]}>{answered ? '✓' : i + 1}</Text>
-            </View>
-            <Text style={styles.spaceLabel}>{sp.label}</Text>
-          </Pressable>
-        );
-      })}
-    </View>
-  );
+  /* ── RACK UNIT layout (owner 2026-09-28: "its question flow scrolls away
+     from the drawing"; the standing rule — a lab page with a live display
+     pins it at the top, the well scrolls between, the controls dock at the
+     bottom). The building section is the STAGE, so it never leaves the screen
+     while the learner answers; the three space keys are the DOCK (each one
+     routes the cable toward its space on the section, LED = the space being
+     routed to, ✓ = identified); the well carries the ONE card the learner is
+     working on, then the notes. FULL SCREEN is the rack's own, the dock riding
+     along. ──────────────────────────────────────────────────────────────── */
+  const params: DockParam[] = CI_FIRE_SPACES.map((sp, i) => ({
+    kind: 'toggle' as const,
+    id: sp.id,
+    label: `${i + 1} ${SPACE_KEY[sp.id] ?? ''}${spaceAns[sp.id] != null ? ' ✓' : ''}`,
+    labelLines: 2 as const,
+    value: sel === sp.id,
+    onToggle: () => setSel((cur) => (cur === sp.id ? null : sp.id)),
+  }));
+
+  const selIdx = sel ? CI_FIRE_SPACES.findIndex((s) => s.id === sel) : -1;
+  const selSpace = selIdx >= 0 ? CI_FIRE_SPACES[selIdx] : null;
+  const selAns = selSpace ? spaceAns[selSpace.id] : undefined;
+  const identified = CI_FIRE_SPACES.filter((s) => spaceAns[s.id] != null).length;
+  /** Flow cards held open: the answer just given (its verdict) and the
+   *  question now waiting. Everything before them folds to one line. */
+  const openQs = [flowAns.length - 1, flowAns.length < FLOW.length ? flowAns.length : -1].filter((i) => i >= 0);
+  const foldTo = Math.max(0, flowAns.length - 1);
 
   return (
-    <View style={{ gap: 14 }}>
-      <ExpandableFigure
-        width={width}
-        aspect={360 / 224}
-        title="BUILDING"
-        badge="Training visualization — simplified section; teaching colors, not field colors."
-        render={(w) => <BuildingArt w={w} sel={sel} done={(id) => spaceAns[id] != null} flowOn={spacesDone} flowStep={flowAns.length} flowDone={flowDone} />}
-        controls={spaceDock}
-      />
-      <View style={{ gap: 3 }}>
-        <Text style={styles.tintNote}>TRAINING VISUALIZATION — simplified building section, drawn to scale (see the 1 m bar); teaching colors, not field colors.</Text>
-        <Text style={styles.tintNote}>• Red-hatched wall = marked rated assembly, slab to slab · plain stud wall = non-rated partition, stops just above the ceiling</Text>
-        <Text style={styles.tintNote}>• Cyan arrows = air movement · cyan-washed cavity = the cavity itself carries return air · grey duct = return air kept in a duct</Text>
-        <Text style={styles.tintNote}>• Red caps = an installed listed firestop system (lab symbol — real products vary in form and color)</Text>
-        <Text style={styles.tintNote}>• Amber dashed = your proposed route · violet = this run’s cable · CMR = riser-rated cable listing · numbers = the three spaces below</Text>
-        <Text style={styles.tintNote}>Whether a wall is rated and how a space handles air come from the project drawings — verify with the plans and the AHJ.</Text>
-      </View>
+    <RackUnit
+      stage={{
+        render: (w, h) => {
+          const pad = 4;
+          const aspect = 360 / 224;
+          const fitW = Math.max(40, Math.min(Math.max(40, w - pad * 2), Math.max(40, h - pad * 2) * aspect));
+          return (
+            <StageFit w={w} h={h} aspect={aspect} pad={pad}>
+              <BuildingArt w={fitW} sel={sel} done={(id) => spaceAns[id] != null} flowOn={spacesDone} flowStep={flowAns.length} flowDone={flowDone} />
+            </StageFit>
+          );
+        },
+        size: 'L',
+        badge: 'Training visualization — simplified section, drawn to scale; teaching colors, not field colors.',
+        fullScreen: true,
+      }}
+      params={params}
+      initialParam={CI_FIRE_SPACES[0].id}
+      // the lab host mounts its own BACK / NEXT footer under the rack and pads
+      // the safe area there
+      bottomInset={0}
+    >
+      {/* the stage number is already in the nav row above — the well opens
+          on the title alone, to leave the room for the card in play */}
+      {head ? <Text style={styles.stageTitle}>{head.title}</Text> : null}
 
-      <CiSection title="ROUTE THE CABLE — IDENTIFY EACH SPACE FIRST">
-        <Text style={styles.lead}>
-          Three candidate spaces stand between the rack and where this cable must go. Tap a space to route toward it —
-          then identify what the space means before anything gets pulled.
-        </Text>
-        <View style={{ gap: 10 }}>
-          {CI_FIRE_SPACES.map((s, i) => {
-            const ans = spaceAns[s.id];
-            const answered = ans != null;
-            const isSel = sel === s.id;
-            return (
-              <Stagger key={s.id} index={i} style={[styles.spaceCard, isSel && styles.spaceCardSel]}>
-                <Pressable
-                  onPress={() => setSel(isSel ? null : s.id)}
-                  style={styles.spaceHead}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected: isSel, expanded: isSel }}
-                  aria-pressed={isSel}
-                  aria-expanded={isSel}
-                  accessibilityLabel={`Space ${i + 1}. ${s.label}${answered ? ', identified' : ''}`}
-                >
-                  <View style={[styles.spaceNum, answered && styles.spaceNumDone]}>
-                    <Text style={[styles.spaceNumText, answered && { color: colors.green }]}>{answered ? '✓' : i + 1}</Text>
-                  </View>
-                  <Text style={styles.spaceLabel}>{s.label}</Text>
-                </Pressable>
-                {isSel ? (
-                  <View style={{ gap: 8 }}>
-                    <Text style={styles.spaceQ}>Cable routed toward this space (dashed on the section). {s.question}</Text>
-                    <View style={{ gap: 7 }}>
-                      {stableShuffle(s.options).map(({ item: opt, idx: oi }) => (
-                        <OptionChip
-                          key={oi}
-                          label={opt}
-                          // Show what the LEARNER picked, not the right answer
-                          // (fix 2026-08-28): this highlighted `correctIdx`, so
-                          // a wrong pick lit up the correct chip and the learner
-                          // could not see what they had actually chosen — while
-                          // the banner below told them they were wrong.
-                          active={answered && oi === spaceAns[s.id]}
-                          disabled={answered}
-                          onPress={() => answerSpace(s.id, oi)}
-                        />
-                      ))}
-                    </View>
-                    {answered ? (
-                      <Appear style={{ gap: 8 }}>
-                        <VerdictBanner verdict={ans === s.correctIdx ? 'correct' : 'wrong'} text={s.reveal} />
-                        <RuleFeedback ruleId={s.ruleId} verdict={ans === s.correctIdx ? 'good' : 'bad'} openSources={openSources} />
-                      </Appear>
-                    ) : null}
-                  </View>
-                ) : null}
-              </Stagger>
-            );
-          })}
-        </View>
+      {/* ── STEP 1 · identify the three spaces (one card: the selected one) ── */}
+      <CiSection title={`1 · IDENTIFY EACH SPACE — ${identified} OF ${CI_FIRE_SPACES.length}`}>
+        {selSpace ? (
+          <View key={selSpace.id} style={[styles.spaceCard, styles.spaceCardSel]}>
+            <View style={styles.spaceHead}>
+              <View style={[styles.spaceNum, selAns != null && styles.spaceNumDone]}>
+                <Text style={[styles.spaceNumText, selAns != null && { color: colors.green }]}>{selAns != null ? '✓' : selIdx + 1}</Text>
+              </View>
+              <Text style={styles.spaceLabel}>{selSpace.label}</Text>
+            </View>
+            <Text style={styles.spaceQ}>Cable routed toward space {selIdx + 1} (amber dashes on the section). {selSpace.question}</Text>
+            <View style={{ gap: 7 }}>
+              {stableShuffle(selSpace.options).map(({ item: opt, idx: oi }) => (
+                <OptionChip
+                  key={oi}
+                  label={opt}
+                  // Show what the LEARNER picked, not the right answer
+                  // (fix 2026-08-28): this highlighted `correctIdx`, so a
+                  // wrong pick lit up the correct chip and the learner could
+                  // not see what they had actually chosen — while the banner
+                  // below told them they were wrong.
+                  active={selAns != null && oi === selAns}
+                  disabled={selAns != null}
+                  onPress={() => answerSpace(selSpace.id, oi)}
+                />
+              ))}
+            </View>
+            {selAns != null ? (
+              <Appear style={{ gap: 8 }}>
+                <VerdictBanner verdict={selAns === selSpace.correctIdx ? 'correct' : 'wrong'} text={selSpace.reveal} />
+                <RuleFeedback ruleId={selSpace.ruleId} verdict={selAns === selSpace.correctIdx ? 'good' : 'bad'} openSources={openSources} />
+              </Appear>
+            ) : null}
+          </View>
+        ) : (
+          <Text style={styles.lead}>
+            {spacesDone
+              ? 'All three spaces identified — tap a key below to review one.'
+              : 'Three candidate spaces stand between the rack and where this cable must go. Tap space 1, 2 or 3 on the keys below: the cable routes toward it on the section — then identify what the space means before anything gets pulled.'}
+          </Text>
+        )}
+        {selSpace && !spacesDone && selAns != null ? (
+          <Text style={styles.pendingNote}>Next: tap another numbered space key below.</Text>
+        ) : null}
         {plenumPairDone ? (
           <LessonCard
             head="CEILING CAVITY ≠ AUTOMATICALLY PLENUM"
@@ -770,17 +784,29 @@ export function FireScene({ width, completed, onComplete, openSources }: CiModul
         ) : null}
       </CiSection>
 
-      <CiSection title="ONE RATED-WALL PENETRATION — FIVE QUESTIONS">
+      {/* ── STEP 2 · the five questions at the sleeve ── */}
+      <CiSection title={`2 · ONE RATED-WALL PENETRATION — ${Math.min(flowAns.length, FLOW.length)} OF ${FLOW.length}`}>
         {!spacesDone ? (
-          <Text style={styles.pendingNote}>Identify all three spaces above to unlock the penetration walk-through.</Text>
+          <Text style={styles.pendingNote}>Identify all three spaces to unlock the penetration walk-through.</Text>
         ) : (
           <View style={{ gap: 10 }}>
             <Text style={styles.lead}>
-              You are at the sleeved opening in the marked wall (highlighted on the section). Five questions professionals
-              answer BEFORE the cable goes through — every time.
+              At the sleeved opening in the marked wall (dashed box on the section): five questions professionals answer BEFORE
+              the cable goes through — every time. Each answer adds its step to the drawing.
             </Text>
             <SpecCard text={FLOW_SPEC} />
-            {FLOW.slice(0, Math.min(FLOW.length, flowAns.length + 1)).map((q, qi) => {
+            {/* older answers fold to one line each; the answer just given keeps
+                its verdict open, and the next question opens under it */}
+            {FLOW.slice(0, foldTo).map((q, qi) => {
+              const ok = flowAns[qi] === q.correctIdx;
+              return (
+                <Text key={q.id} style={[styles.flowDoneLine, { color: ok ? colors.green : '#ff9b8f' }]}>
+                  {ok ? '✓' : '✕'} Q{qi + 1} · {q.options[flowAns[qi]]}
+                </Text>
+              );
+            })}
+            {openQs.map((qi) => {
+              const q = FLOW[qi];
               const ans = flowAns[qi];
               const answered = ans != null;
               return (
@@ -795,7 +821,7 @@ export function FireScene({ width, completed, onComplete, openSources }: CiModul
                         key={oi}
                         label={opt}
                         // The learner's own pick (fix 2026-08-28) — see above.
-                        active={answered && oi === flowAns[qi]}
+                        active={answered && oi === ans}
                         disabled={answered}
                         onPress={() => answerFlow(qi, oi)}
                       />
@@ -820,11 +846,23 @@ export function FireScene({ width, completed, onComplete, openSources }: CiModul
         )}
       </CiSection>
 
+      {/* ── the key + scope, below the work ── */}
+      <CollapsibleSection title="READING THE SECTION">
+        <View style={{ gap: 3 }}>
+          <Text style={styles.tintNote}>TRAINING VISUALIZATION — simplified building section, drawn to scale (see the 1 m bar); teaching colors, not field colors.</Text>
+          <Text style={styles.tintNote}>• Red-hatched wall = marked rated assembly, slab to slab · plain stud wall = non-rated partition, stops just above the ceiling</Text>
+          <Text style={styles.tintNote}>• Cyan arrows = air movement · cyan-washed cavity = the cavity itself carries return air · grey duct = return air kept in a duct</Text>
+          <Text style={styles.tintNote}>• Red caps = an installed listed firestop system (lab symbol — real products vary in form and color) · dashed red outline = a listed system is required there</Text>
+          <Text style={styles.tintNote}>• Amber dashed = your proposed route · violet = this run’s cable · CMR = riser-rated cable listing · numbers = the three spaces</Text>
+          <Text style={styles.tintNote}>Whether a wall is rated and how a space handles air come from the project drawings — verify with the plans and the AHJ.</Text>
+        </View>
+      </CollapsibleSection>
+      {head ? <Text style={styles.scopeNote}>{head.intro}</Text> : null}
       <Text style={styles.scopeNote}>
         Awareness training — this stage teaches recognition and verification, not firestop system design. Rated-assembly
         work is executed and verified per the project’s listed systems and the authority having jurisdiction.
       </Text>
-    </View>
+    </RackUnit>
   );
 }
 
@@ -850,6 +888,8 @@ const styles = StyleSheet.create({
   spaceQ: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18.5, color: colors.textSecondary },
   flowCard: { gap: 8, borderRadius: 12, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 12 },
   flowNum: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.4, color: colors.amberLabel },
+  flowDoneLine: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17 },
+  stageTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.5, color: colors.textPrimary },
   flowQ: { fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 19.5, color: colors.textPrimary },
   lessonCard: { gap: 6, borderRadius: 10, borderLeftWidth: 3, borderLeftColor: colors.amber, backgroundColor: '#151310', padding: 12 },
   lessonHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.6, color: colors.amber },
