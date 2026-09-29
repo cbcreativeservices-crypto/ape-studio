@@ -111,3 +111,10 @@ export const SOUND_SYSTEMS_CHECK: readonly UnderstandingQuestion[] = [
     explanation: 'The first station whose reading is not healthy is the fault, or where it became visible. Walking forward finds it in the fewest steps; swapping boxes is guessing.',
   },
 ];
+
+/** LEARN · Wiring: how many connections the learner has judged RIGHT.
+ *  Only correct judgements count toward "Judge all six connections" — six
+ *  wrong answers used to complete the page (bug hunt 2026-09-29). */
+export function rightJudgements(answers: Readonly<Record<number, 'yes' | 'no'>>, truths: readonly ('yes' | 'no')[]): number {
+  return truths.filter((t, i) => answers[i] === t).length;
+}

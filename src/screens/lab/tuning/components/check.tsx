@@ -14,7 +14,7 @@
  * is real retrieval rather than copying. Without `wrong` the legacy
  * behaviour is kept unchanged for the labs that already use this component.
  */
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { Card, Eyebrow } from './primitives';
@@ -36,6 +36,10 @@ export function UnderstandingCheck({
   eyebrow?: string;
 }) {
   const [picked, setPicked] = useState<number | null>(null); // ORIGINAL index
+  // Synchronous guard: a same-frame double tap on the right answer lands
+  // before `disabled` re-renders, and must not fire onCorrect twice
+  // (bug hunt 2026-09-29).
+  const solvedRef = useRef(false);
   const signature = options.join('');
   const order = useMemo(() => {
     const idx = options.map((_, i) => i);
@@ -67,9 +71,13 @@ export function UnderstandingCheck({
             key={i}
             disabled={right}
             onPress={() => {
+              if (solvedRef.current) return;
               setPicked(i);
               const ok = i === correct;
-              if (ok) onCorrect?.();
+              if (ok) {
+                solvedRef.current = true;
+                onCorrect?.();
+              }
               const said = ok ? explain : wrong ? (wrong[i] ?? GENERIC_WRONG) : explain;
               AccessibilityInfo.announceForAccessibility?.(`${ok ? 'Correct.' : 'Not quite.'} ${said}`);
             }}

@@ -23,6 +23,7 @@ import { gearSpec, GEAR, LEVEL_LABEL } from '../../../features/soundsystems/gear
 import { canConnect, EMPTY_SYSTEM, place, slotDef } from '../../../features/soundsystems/system';
 import { ampMatch, ampMatchCopy, CALC_LINKS, fmtOhms, loadVerdict, loadVerdictCopy, parallelLoad, predictedSpl, wattsIntoLoad, type AmpRating } from '../../../features/soundsystems/loads';
 import { SETUP_SEQUENCE } from '../../../features/soundsystems/operate';
+import { rightJudgements } from '../../../features/soundsystems/check';
 import type { GearKind, Placed, SignalLevel, SlotId } from '../../../features/soundsystems/types';
 import type { DockParam } from '../rack/rackTypes';
 import { CalcLink, ChapterTag, DeeperRow, GoalChips, KeyFact, LabLink, Readout, ReadoutRow, useVisitGoals, VerdictLine } from './bits';
@@ -348,7 +349,11 @@ function PageMonitorWorld({ ctx }: { ctx: PageCtx }) {
   const [seen, setSeen] = useState<Set<string>>(new Set(['analog']));
   const [gainDb, setGainDb] = useState(0);
   const [gainMoved, setGainMoved] = useState(false);
-  const [solved, setSolved] = useState(0);
+  // Keyed by question so a same-frame double tap cannot count one check twice
+  // (bug hunt 2026-09-29).
+  const [solvedIds, setSolvedIds] = useState<ReadonlySet<string>>(new Set());
+  const solved = solvedIds.size;
+  const solve = (id: string) => setSolvedIds((s) => (s.has(id) ? s : new Set(s).add(id)));
   const gainMove = gainDb > 0;
   if (gainMove && !gainMoved) setGainMoved(true);
   const goals = [{ label: 'See both splits with a gain move', hit: seen.size >= 2 && gainMoved }, { label: 'Answer both checks', hit: solved >= 2 }];
@@ -423,14 +428,14 @@ function PageMonitorWorld({ ctx }: { ctx: PageCtx }) {
         options={['Gain compensation: the house console applies a −6 dB digital trim automatically', 'Nothing — the house engineer must chase every gain move', 'The analog split absorbs it', 'The main limiter']}
         correct={0}
         explain="One preamp feeds both consoles; gain compensation on the non-owning console cancels the owner’s moves so each engineer keeps an independent mix."
-        onCorrect={() => setSolved((n) => n + 1)}
+        onCorrect={() => solve('gain-share')}
       />
       <UnderstandingCheck
         question="A singer’s wedge should NOT change when the house engineer moves the vocal fader. How is the send tapped?"
         options={['Pre-fader', 'Post-fader', 'Through the subgroup', 'From the main matrix']}
         correct={0}
         explain="Pre-fader: the send takes its copy before the fader, so the fader cannot touch it. Post-fader is for effects, where following the fader is the point."
-        onCorrect={() => setSolved((n) => n + 1)}
+        onCorrect={() => solve('pre-fader')}
       />
     </SoundSystemsRackLayout>
   );
@@ -457,9 +462,6 @@ const PAIRS: readonly { from: GearKind; to: GearKind }[] = [
 
 function PageWiring({ ctx }: { ctx: PageCtx }) {
   const [answers, setAnswers] = useState<Record<number, 'yes' | 'no'>>({});
-  const answered = Object.keys(answers).length;
-  const goals = [{ label: 'Judge all six connections', hit: answered >= PAIRS.length }];
-  const latched = useVisitGoals(ctx, goals);
   // A scratch system with one of each device, so canConnect can judge the pair.
   const verdicts = useMemo(
     () =>
@@ -475,6 +477,13 @@ function PageWiring({ ctx }: { ctx: PageCtx }) {
       }),
     [],
   );
+  // Only a RIGHT judgement counts, and a wrong one keeps its buttons so the
+  // learner can read the verdict and judge again (bug hunt 2026-09-29: six
+  // wrong answers used to complete the page).
+  const truthOf = (i: number): 'yes' | 'no' => (verdicts[i].ok ? 'yes' : 'no');
+  const judged = rightJudgements(answers, PAIRS.map((_, i) => truthOf(i)));
+  const goals = [{ label: 'Judge all six connections', hit: judged >= PAIRS.length }];
+  const latched = useVisitGoals(ctx, goals);
   return (
     <View style={{ gap: 12 }}>
       <ChapterTag n={7}>WIRING AND SYSTEM CONNECTIONS</ChapterTag>
@@ -484,7 +493,7 @@ function PageWiring({ ctx }: { ctx: PageCtx }) {
       {PAIRS.map((p, i) => {
         const v = verdicts[i];
         const ans = answers[i];
-        const truth = v.ok ? 'yes' : 'no';
+        const truth = truthOf(i);
         return (
           <Card key={i} tone={ans ? (ans === truth ? 'ok' : 'warn') : 'plain'}>
             <View style={styles.pairRow}>
@@ -493,16 +502,17 @@ function PageWiring({ ctx }: { ctx: PageCtx }) {
               <GearGlyph kind={p.to} size={40} label={gearSpec(p.to).name} />
               <Text style={styles.pairText}>{gearSpec(p.from).name} → {gearSpec(p.to).name}</Text>
             </View>
-            {!ans ? (
+            {ans ? (
+              <VerdictLine ok={ans === truth} warn={ans !== truth && !v.ok && !('unsafe' in v && v.unsafe)}>
+                {v.ok ? `Connects at ${LEVEL_LABEL[v.level]}.` : v.reason}
+              </VerdictLine>
+            ) : null}
+            {ans !== truth ? (
               <Row>
                 <Btn label="CONNECT" onPress={() => setAnswers((a) => ({ ...a, [i]: 'yes' }))} a11y={`Connect ${gearSpec(p.from).name} to ${gearSpec(p.to).name}`} />
                 <Btn label="REFUSE" tone="danger" onPress={() => setAnswers((a) => ({ ...a, [i]: 'no' }))} a11y={`Refuse ${gearSpec(p.from).name} to ${gearSpec(p.to).name}`} />
               </Row>
-            ) : (
-              <VerdictLine ok={ans === truth} warn={ans !== truth && !v.ok && !('unsafe' in v && v.unsafe)}>
-                {v.ok ? `Connects at ${LEVEL_LABEL[v.level]}.` : v.reason}
-              </VerdictLine>
-            )}
+            ) : null}
           </Card>
         );
       })}

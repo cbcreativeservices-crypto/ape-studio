@@ -46,7 +46,7 @@ const { CAPSTONES, CAPSTONES_IN_ORDER, gradeCapstone } = await import('../src/fe
 const { OUTPUT_CONFIGS, SYSTEM_TYPES, VENUE_CASES } = await import('../src/features/soundsystems/configs.ts');
 const op = await import('../src/features/soundsystems/operate.ts');
 const cov = await import('../src/features/soundsystems/coverage.ts');
-const { SOUND_SYSTEMS_CHECK } = await import('../src/features/soundsystems/check.ts');
+const { SOUND_SYSTEMS_CHECK, rightJudgements } = await import('../src/features/soundsystems/check.ts');
 const { getWorkspace } = await import('../src/screens/lab/calc/registry.ts');
 const progress = await import('../src/features/soundsystems/progress.ts');
 
@@ -642,6 +642,13 @@ describe('understanding check', () => {
       assert.ok(q.options.length >= 3 && q.options.length <= 5, q.id);
       assert.ok(q.explanation.length > 30, q.id);
     }
+  });
+  it('the wiring page counts only RIGHT judgements (bug hunt 2026-09-29)', () => {
+    const truths = ['yes', 'no', 'no', 'yes', 'no', 'yes'] as const;
+    const allWrong = { 0: 'no', 1: 'yes', 2: 'yes', 3: 'no', 4: 'yes', 5: 'no' } as const;
+    assert.equal(rightJudgements(allWrong, truths), 0);
+    assert.equal(rightJudgements({ 0: 'yes', 1: 'yes' }, truths), 1);
+    assert.equal(rightJudgements({ 0: 'yes', 1: 'no', 2: 'no', 3: 'yes', 4: 'no', 5: 'yes' }, truths), 6);
   });
 });
 
