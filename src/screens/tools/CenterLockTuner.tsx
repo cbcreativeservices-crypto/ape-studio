@@ -95,6 +95,12 @@ import {
 
 const A4_CHOICES = [415, 432, 435, 438, 440, 441, 442, 443, 444];
 const CONTROLS_FADE_MS = 5000;
+/** Resting (auto-dimmed) opacity of the chip bar and the ✕. Owner 2026-09-29:
+ *  "dim only 37% of what you are currently auto dimming" — the dim was
+ *  1 − 0.45 = 0.55 (chips) and 1 − 0.6 = 0.4 (✕); 37% of that leaves them
+ *  at 1 − 0.2 = 0.80 and 1 − 0.15 = 0.85. */
+const CHIPS_REST_OPACITY = 0.8;
+const CLOSE_REST_OPACITY = 0.85;
 const METER_RANGE = 50; // ±50 ¢ fixed scale
 const PREFS_KEY = 'ape:centerlock:v1';
 const RECENTS_MAX = 3;
@@ -330,6 +336,11 @@ export function CenterLockTuner() {
   );
 
   const padTop = Math.max(insets.top, landscape ? 8 : 24) + 6;
+  // The chip bar grew (owner 2026-09-28: larger instrument/preset chips), so
+  // the readout reads its REAL height instead of the old 78/38 guess — the
+  // old guess let the readout grow up over the chips and crop their text
+  // (owner 2026-09-29).
+  const [barH, setBarH] = useState(0);
   const padBottom = Math.max(insets.bottom, 10) + 6;
   return (
     <Pressable
@@ -338,12 +349,12 @@ export function CenterLockTuner() {
       accessible={false}
     >
       {/* Top bar — presets, one tap deep; fades after 5 s but stays tappable */}
-      <View style={styles.bar}>
+      <View style={styles.bar} onLayout={(e) => setBarH(Math.round(e.nativeEvent.layout.height))}>
         {/* Faded, not hidden (owner 2026-09-29: "larger — more visible and
             intuitive"): at 18% and deaf to taps, the presets read as gone and the
             first tap only woke them. Now they settle to 45% and a tap on a chip
             works straight away (every chip's onPress calls touch()). */}
-        <View style={[styles.barChips, { opacity: controlsShown ? 1 : 0.45 }]}>
+        <View style={[styles.barChips, { opacity: controlsShown ? 1 : CHIPS_REST_OPACITY }]}>
           {landscape ? (
             <ChipRow>
               {instrumentChips}
@@ -360,7 +371,7 @@ export function CenterLockTuner() {
         <Pressable
           onPress={closeCenterLock}
           hitSlop={16}
-          style={[styles.closeKey, { opacity: controlsShown ? 1 : 0.6 }]}
+          style={[styles.closeKey, { opacity: controlsShown ? 1 : CLOSE_REST_OPACITY }]}
           accessibilityRole="button"
           accessibilityLabel="Close full screen"
         >
@@ -383,6 +394,7 @@ export function CenterLockTuner() {
         height={height}
         padTop={padTop}
         padBottom={padBottom}
+        barH={barH}
         onPickString={pickString}
         onTouch={touch}
       />
@@ -471,6 +483,8 @@ type LiveReadoutProps = {
   /** Root paddings (safe area) so the note can be sized from the space left. */
   padTop: number;
   padBottom: number;
+  /** Measured height of the top chip bar (0 until laid out). */
+  barH: number;
   onPickString: (i: number, current: boolean) => void;
   onTouch: () => void;
 };
@@ -511,6 +525,7 @@ const LiveReadout = memo(function LiveReadout({
   height,
   padTop,
   padBottom,
+  barH,
   onPickString,
   onTouch,
 }: LiveReadoutProps) {
@@ -548,6 +563,11 @@ const LiveReadout = memo(function LiveReadout({
     quietMs: 0,
   });
   const [mainH, setMainH] = useState(0);
+  // Portrait overflow guard (owner 2026-09-29): if the note + meter still come
+  // out taller than the space measured for them, shrink the big note by the
+  // excess so the readout never spills up over the chip bar.
+  const [trim, setTrim] = useState(0);
+  useEffect(() => setTrim(0), [width, height, landscape]);
 
   useEffect(() => {
     // Instrument changed — the piano key, chromatic note and hold mean nothing now.
@@ -787,14 +807,15 @@ const LiveReadout = memo(function LiveReadout({
   // deliver onLayout for this view in the preview.
   const stripH = piano ? 92 : chromatic ? 68 : 74;
   const inputH = 23 + (hint ? 44 : 0);
-  const estimatedMainH = height - padTop - padBottom - (landscape ? 38 : 78) - 32 - stripH - inputH;
+  const bar = barH > 0 ? barH : landscape ? 52 : 110;
+  const estimatedMainH = height - padTop - padBottom - bar - 32 - stripH - inputH;
   const mainAvail = mainH > 0 ? mainH : estimatedMainH;
-  const landscapeAvail = height - padTop - padBottom - 38 - 32;
-  const bigSize = Math.round(
+  const landscapeAvail = height - padTop - padBottom - bar - 32;
+  const bigSize = Math.max(64, -Math.round(trim / NOTE_ROW_EM) + Math.round(
     landscape
       ? Math.max(96, Math.min(height * 0.45, (landscapeAvail - 24 - dirRowH - 44) / NOTE_ROW_EM))
       : Math.max(96, Math.min(180, Math.min(width * 0.48, (mainAvail - FIXED_ABOVE_NOTE) / NOTE_ROW_EM))),
-  );
+  ));
   // One gutter: meter, keys, hold box and SIGNAL share the same width.
   const meterW = landscape ? Math.min(Math.max(240, width - NOTE_COL_W - 76), 720) : Math.min(width - 24, 720);
   const pointerX = (view.shownCents / METER_RANGE) * (meterW / 2);
@@ -1045,8 +1066,16 @@ const LiveReadout = memo(function LiveReadout({
   return (
     <>
       <View style={styles.main} onLayout={(e) => setMainH(Math.round(e.nativeEvent.layout.height))}>
-        {noteBlock}
-        {meter}
+        <View
+          style={styles.mainContent}
+          onLayout={(e) => {
+            const over = Math.round(e.nativeEvent.layout.height) - mainH;
+            if (mainH > 0 && over > 1) setTrim((t) => t + over + 4);
+          }}
+        >
+          {noteBlock}
+          {meter}
+        </View>
       </View>
       {strip}
       {input}
@@ -1256,7 +1285,9 @@ const DIM = '#9a9ea8';
 
 const styles = StyleSheet.create({
   root: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#050506', zIndex: 80 },
-  bar: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, gap: 8 },
+  // zIndex: the bar always paints above the readout, so a readout that ever
+  // outgrows its space can never cover the chip text (owner 2026-09-29).
+  bar: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, gap: 8, zIndex: 2, backgroundColor: '#050506' },
   barChips: { flex: 1 },
   barRows: { flex: 1, gap: 10 },
   chipRowWrap: { flex: 1 },
@@ -1283,7 +1314,8 @@ const styles = StyleSheet.create({
 
   // minHeight 0: on web a flex:1 box will not shrink below its content, which
   // made the measured height feed the note size in a loop and overflow the SE.
-  main: { flex: 1, minHeight: 0, justifyContent: 'center', alignItems: 'center', gap: 18 },
+  main: { flex: 1, minHeight: 0, justifyContent: 'center', alignItems: 'center' },
+  mainContent: { alignItems: 'center', gap: 18 },
   mainLandscape: { flex: 1, minHeight: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 24, paddingHorizontal: 16 },
   rightCol: { alignItems: 'center', justifyContent: 'center', gap: 2 },
   noteBlock: { alignItems: 'center', minWidth: 200 },
