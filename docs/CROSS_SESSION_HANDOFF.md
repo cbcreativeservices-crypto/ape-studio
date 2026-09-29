@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 16:39 · ccode · 70d101c8
+changed: Start Here card: drop the subtitle over the owner's art
+affects other side: nothing — client JS only (Start Here card copy)
+needs: nothing
+
+
 ### 2026-09-29 16:33 · ccode · 5a0fb18e
 changed: Start Here: Your First Steps in Audio — free beginner experience
 affects other side: nothing — client JS only (Start Here beginner lab; also covers eaa5c1ae, additive lab-kit props). Reads glossary_browse_v by exact term name (existing GlossaryTermPopup path); card art start_here.webp in course-cards.
