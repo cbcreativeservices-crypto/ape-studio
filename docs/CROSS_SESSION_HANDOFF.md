@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 11:48 · ccode · c4824442
+changed: Bass lab: preload the whole string, this fret everywhere, then the rest
+affects other side: nothing to change — client JS only (lab audio persistence + preloading). NOTE: the Bass lab now asks the lab-audio edge fn for up to 24 signed URLs when opened with sound on (was ≤ 7, only while playing), and up to 8 more every 80 s while armed — noticeably more lab-audio calls + storage egress (~0.3–0.6 MB per clip)
+needs: nothing
+
+
 ### 2026-09-29 11:44 · ccode · e0ac8dfd
 changed: Tuning lab: save every clip, pre-render each chapter's clips
 affects other side: nothing — client JS only (lab audio persistence + preloading)
