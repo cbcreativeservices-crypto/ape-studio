@@ -32,6 +32,18 @@ import { markLabUnit, registerLabUnits } from '../../../features/lab/labCompleti
 import type { PageCtx } from '../kit/PagedLab';
 import type { SsPageDef } from './rackLayout';
 import { PageMemoryKey } from './pageMemory';
+import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
+import { getLabPreview } from '../../../features/lab/labPreviewStore';
+import { resetSoundSystemsLists, setSoundSystemsSaveBlocked, type SoundSystemsProgress } from '../../../features/soundsystems/progress';
+import { SS_BUILD_ID, SS_OPERATE_ID, SS_ROUTE_ID, SS_TROUBLESHOOT_ID } from './units';
+
+/** Each mode's slice of ape:soundsystems:v1 — what its in-mode RESET clears. */
+const MODE_LISTS: Record<string, readonly (keyof SoundSystemsProgress)[]> = {
+  [SS_BUILD_ID]: ['capstones'],
+  [SS_ROUTE_ID]: ['route'],
+  [SS_OPERATE_ID]: ['operate'],
+  [SS_TROUBLESHOOT_ID]: ['faults', 'forward'],
+};
 
 function useOsReduceMotion(): boolean {
   const [rm, setRm] = useState(false);
@@ -94,16 +106,21 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
   const osReduceMotion = useOsReduceMotion();
   const reduceMotion = osReduceMotion || !animationsAllowed();
 
-  useEffect(() => {
-    let alive = true;
-    void loadPagedProgress(labId).then((p) => {
-      if (!alive) return;
-      progressRef.current = p;
-      setProgress(p);
-      setPage(Math.min(p.lastPage, pagesWithCheck.length - 1));
-    });
-    return () => { alive = false; };
-  }, [labId, pagesWithCheck.length]);
+  // Guest rule (owner 2026-08-12, the cable labs' rule) and PREVIEW EARNS
+  // NOTHING (2026-09-01): a signed-out guest or a members-only preview
+  // neither restores a place nor saves one (bug hunt 2026-09-29). `resolved`
+  // is required — the provider boots at 'anonymous'.
+  const { entitlement, resolved } = useEntitlement();
+  const noSaveRef = useRef(false);
+  noSaveRef.current = getLabPreview().active || (resolved && entitlement === 'anonymous');
+  setSoundSystemsSaveBlocked(noSaveRef.current);
+  // Before the saved progress loads (bug hunt 2026-09-29): a page that marks
+  // itself on mount (the bench intro) is queued, not dropped, and a learner
+  // who has already moved is not yanked back to the saved page.
+  const pendingDoneRef = useRef<number[]>([]);
+  const navigatedRef = useRef(false);
+  const pageRef = useRef(0);
+  pageRef.current = page;
 
   const persist = useCallback((patch: Partial<PagedProgress>) => {
     const base = progressRef.current;
@@ -111,26 +128,53 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
     const next = { ...base, ...patch };
     progressRef.current = next;
     setProgress(next);
-    void savePagedProgress(labId, next);
+    if (!noSaveRef.current) void savePagedProgress(labId, next);
   }, [labId]);
+  const markPageDone = useCallback((i: number) => {
+    const base = progressRef.current;
+    if (!base) {
+      if (!pendingDoneRef.current.includes(i)) pendingDoneRef.current.push(i);
+      return;
+    }
+    const fresh = !base.completed.includes(i);
+    const completed = fresh ? [...base.completed, i].sort((a, b) => a - b) : base.completed;
+    persist({ completed, done: completed.length >= pagesWithCheck.length });
+    // The appended check page is not one of the lab's pages (kit/PagedLab's
+    // 2026-09-21 rule): it banks its own UNDERSTANDING_UNIT above.
+    if (fresh && i < pages.length) onPageDone?.(i);
+  }, [persist, pagesWithCheck.length, pages.length, onPageDone]);
+
+  useEffect(() => {
+    let alive = true;
+    void loadPagedProgress(labId).then((p) => {
+      if (!alive) return;
+      const loaded = noSaveRef.current ? { completed: [], lastPage: 0, done: false } : p;
+      progressRef.current = loaded;
+      setProgress(loaded);
+      if (navigatedRef.current) persist({ lastPage: pageRef.current });
+      else setPage(Math.min(loaded.lastPage, pagesWithCheck.length - 1));
+      const queued = pendingDoneRef.current;
+      pendingDoneRef.current = [];
+      queued.forEach(markPageDone);
+    });
+    return () => { alive = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [labId, pagesWithCheck.length]);
+
   const goTo = useCallback((i: number) => {
     const idx = Math.max(0, Math.min(pagesWithCheck.length - 1, Math.round(i)));
+    navigatedRef.current = true;
     setPage(idx);
     setListOpen(false);
     scrollRef.current?.scrollTo({ y: 0, animated: !reduceMotion });
     persist({ lastPage: idx });
   }, [pagesWithCheck.length, persist, reduceMotion]);
-  const markDone = useCallback(() => {
-    const base = progressRef.current;
-    if (!base) return;
-    const fresh = !base.completed.includes(page);
-    const completed = fresh ? [...base.completed, page].sort((a, b) => a - b) : base.completed;
-    persist({ completed, done: completed.length >= pagesWithCheck.length });
-    // The appended check page is not one of the lab's pages (kit/PagedLab's
-    // 2026-09-21 rule): it banks its own UNDERSTANDING_UNIT above.
-    if (fresh && page < pages.length) onPageDone?.(page);
-  }, [page, persist, pagesWithCheck.length, pages.length, onPageDone]);
-  const doReset = () => void resetPagedProgress(labId).then(() => {
+  const markDone = useCallback(() => markPageDone(page), [markPageDone, page]);
+  // The in-mode RESET clears what the hub's RESET clears for this mode: its
+  // pages AND its slice of ape:soundsystems:v1, so goals read from that
+  // store (solved faults, passed capstones, exercises) do not re-complete
+  // on their own (bug hunt 2026-09-29).
+  const doReset = () => void Promise.all([resetPagedProgress(labId), resetSoundSystemsLists(MODE_LISTS[labId] ?? [])]).then(() => {
     const fresh: PagedProgress = { completed: [], lastPage: 0, done: false };
     progressRef.current = fresh;
     setProgress(fresh);

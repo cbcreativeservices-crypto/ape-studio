@@ -10,6 +10,7 @@
  */
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getLabPreview } from '../lab/labPreviewStore';
 
 const STORAGE_KEY = 'ape:soundsystems:v1';
 
@@ -74,11 +75,21 @@ function persist() {
   void AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(state)).catch(() => {});
 }
 
+/** Set by the lab's host (SsPagedLab) on every render: true for a signed-out
+ *  guest or a members-only preview — the cable labs' guest rule and PREVIEW
+ *  EARNS NOTHING (bug hunt 2026-09-29). A preview records nothing; a guest
+ *  keeps this session's progress in memory but nothing is written. */
+let saveBlocked = false;
+export function setSoundSystemsSaveBlocked(blocked: boolean): void {
+  saveBlocked = blocked;
+}
+
 function add(list: keyof SoundSystemsProgress, id: string) {
+  if (getLabPreview().active) return;
   void hydrate().then(() => {
     if (state[list].includes(id)) return;
     state = { ...state, [list]: [...state[list], id] };
-    persist();
+    if (!saveBlocked) persist();
     emit();
   });
 }
@@ -124,6 +135,18 @@ export async function resetSoundSystemsProgress(): Promise<void> {
   try {
     await AsyncStorage.removeItem(STORAGE_KEY);
   } catch {}
+  emit();
+}
+
+/** One mode's in-lab RESET: clears only that mode's lists, so the in-mode
+ *  and hub resets clear the same stores (bug hunt 2026-09-29). */
+export async function resetSoundSystemsLists(lists: readonly (keyof SoundSystemsProgress)[]): Promise<void> {
+  if (!lists.length) return;
+  await hydrate();
+  const next = { ...state };
+  for (const l of lists) next[l] = [];
+  state = next;
+  if (!saveBlocked) persist();
   emit();
 }
 

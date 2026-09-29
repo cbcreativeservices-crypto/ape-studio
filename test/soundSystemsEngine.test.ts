@@ -668,4 +668,23 @@ describe('progress store', () => {
     progress.resetLocal();
     assert.deepEqual(progress.getSoundSystemsProgress().faults, []);
   });
+  it('a mode reset clears only its lists; a guest session saves nothing (bug hunt 2026-09-29)', async () => {
+    progress.resetLocal();
+    progress.markFaultSolved('nothing', true);
+    progress.markCapstonePassed('speech');
+    await new Promise((r) => setTimeout(r, 5));
+    await progress.resetSoundSystemsLists(['faults', 'forward']);
+    const p = progress.getSoundSystemsProgress();
+    assert.deepEqual(p.faults, []);
+    assert.deepEqual(p.forward, []);
+    assert.deepEqual(p.capstones, ['speech']);
+    const saved = store.get('ape:soundsystems:v1');
+    progress.setSoundSystemsSaveBlocked(true);
+    progress.markRouteDone('patch');
+    await new Promise((r) => setTimeout(r, 5));
+    assert.deepEqual(progress.getSoundSystemsProgress().route, ['patch']);
+    assert.equal(store.get('ape:soundsystems:v1'), saved);
+    progress.setSoundSystemsSaveBlocked(false);
+    progress.resetLocal();
+  });
 });
