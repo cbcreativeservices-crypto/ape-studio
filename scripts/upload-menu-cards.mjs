@@ -32,6 +32,12 @@ const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const BUCKET = 'course-cards';
 const DIR = path.resolve(process.argv[2] || 'assets/Menu Course Cards/webp');
 
+// Shape check (house rule: check a pasted secret's SHAPE): a service-role key
+// is a JWT (eyJ…, three dot-separated parts) or a new-style sb_secret_… key.
+if (SERVICE_KEY && !(/^eyJ[\w-]+\.[\w-]+\.[\w-]+$/.test(SERVICE_KEY) || /^sb_secret_[\w-]+$/.test(SERVICE_KEY))) {
+  console.error('✗ SUPABASE_SERVICE_ROLE_KEY does not look like a service-role key (expected eyJ… or sb_secret_…). Copy the service_role key again.');
+  process.exit(1);
+}
 if (!SERVICE_KEY) {
   console.error('✗ Set SUPABASE_SERVICE_ROLE_KEY in your environment first (see the header of this file).');
   process.exit(1);
@@ -39,7 +45,8 @@ if (!SERVICE_KEY) {
 
 const supabase = createClient(SUPABASE_URL, SERVICE_KEY, { auth: { persistSession: false } });
 
-const NAME_RE = /^area_[a-z0-9-]+\.webp$/;
+// start_here.webp: the Start Here beginner card (owner 2026-09-29).
+const NAME_RE = /^(area_[a-z0-9-]+|start_here)\.webp$/;
 const all = await readdir(DIR);
 const files = all.filter((f) => NAME_RE.test(f)).sort();
 const skipped = all.filter((f) => !NAME_RE.test(f));
