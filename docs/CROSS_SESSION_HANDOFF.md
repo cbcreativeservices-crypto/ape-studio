@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 08:47 · ccode · 6246f137
+changed: Glossary Links toggle: blue sweeps in left→right on, grey sweeps back right→left off
+affects other side: nothing — client JS only (glossary links toggle animation)
+needs: nothing
+
+
 ### 2026-09-29 08:44 · ccode · 9d12f898
 changed: labs: ▶ confirms every touch (ring burst, press dip, … while starting); Bass shows its playback steps
 affects other side: nothing — client JS only (lab ▶ touch feedback + Bass status line)
