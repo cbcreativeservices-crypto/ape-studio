@@ -111,7 +111,15 @@ export function AccuracyNote({
         style={[styles.chip, style]}
         onPress={() => {
           labProbe('i pressed'); // TEMP probe
-          setOpen(true);
+          // Bug hunt 2026-09-29: if iOS refused to present the sheet (another
+          // Modal was up), `open` is stuck true and a plain setOpen(true) is a
+          // no-op forever. Close and reopen so the next tap always presents.
+          if (open) {
+            setOpen(false);
+            requestAnimationFrame(() => setOpen(true));
+          } else {
+            setOpen(true);
+          }
         }}
         hitSlop={8}
         accessibilityRole="button"
