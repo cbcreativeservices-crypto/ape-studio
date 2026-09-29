@@ -204,6 +204,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 16:55 · ccode · ffdbf319
+changed: Android large screens: readouts at the user's font size, tablet wording
+affects other side: nothing — client JS only (Android large-screen pass)
+needs: nothing
+
+
+### 2026-09-29 16:55 · ccode · 94021b4f
+changed: Android large screens: Home deck + orientation follow the live display
+affects other side: nothing — client JS only (Android large-screen pass)
+needs: nothing
+
+
 ### 2026-09-29 16:39 · ccode · 70d101c8
 changed: Start Here card: drop the subtitle over the owner's art
 affects other side: nothing — client JS only (Start Here card copy)
