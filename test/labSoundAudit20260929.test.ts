@@ -91,3 +91,13 @@ test('ear training and Tuning stop on BLUR, not only on unmount', () => {
   assert.match(tun, /useStopOnBlur\(\(\) => player\.stop\(\)\);/);
   assert.match(tun, /useStopWhenSilenced\(status\.playing \|\| !!status\.rendering, \(\) => player\.stop\(\)\);/);
 });
+
+// ── Lesson 3: latency — nothing slow is awaited on every tap ─────────────────
+
+test('earPlayer awaits the audio-session mode once per run, bounded (Tuning + ear training)', () => {
+  const s = read('src/features/ear/earPlayer.ts');
+  assert.doesNotMatch(code(s), /await setAudioModeAsync\(/);
+  const fn = s.slice(s.indexOf('async function settleMode()'));
+  assert.match(fn, /if \(modeSettled\) return;\n\s+await Promise\.race\(\[mode, new Promise<void>\(\(r\) => setTimeout\(r, AUDIO_MODE_WAIT_MS\)\)\]\);\n\s+modeSettled = true;/);
+  assert.match(s, /await settleMode\(\);/);
+});

@@ -56,6 +56,27 @@ async function toBase64(bytes: Uint8Array): Promise<string> {
 let fileNonce = 0;
 const isWeb = Platform.OS === 'web';
 
+/** Longest a load waits for the audio-session mode before going on anyway. */
+const AUDIO_MODE_WAIT_MS = 1500;
+let modeSettled = false;
+/**
+ * Playback category: play even with the iOS silent switch on — a training clip
+ * the learner explicitly started is content, not a notification.
+ *
+ * AWAITED ONCE PER APP RUN (owner 2026-09-29, "not feel like it's thinking").
+ * Every load() used to await setAudioModeAsync, and on the owner's iPhone that
+ * call could hold a tap for up to 1.5 s — every Tuning & Temperament play and
+ * every ear-training trial paid it. LabAudioPlayer.settleMode's rule: the mode
+ * is still re-asserted on every load (something else may have changed it), but
+ * only the first is waited for, and never longer than AUDIO_MODE_WAIT_MS.
+ */
+async function settleMode(): Promise<void> {
+  const mode = setAudioModeAsync({ playsInSilentMode: true }).catch(() => {});
+  if (modeSettled) return;
+  await Promise.race([mode, new Promise<void>((r) => setTimeout(r, AUDIO_MODE_WAIT_MS))]);
+  modeSettled = true;
+}
+
 /**
  * Turn a rendered buffer into a playable uri. Native: base64 → cache WAV file
  * (iOS AVPlayer wants a real file). Web: expo-file-system has no web
@@ -107,9 +128,7 @@ export class EarClipPlayer {
   async load(bufs: Buf[]): Promise<void> {
     if (this.disposed) return;
     await this.unloadFiles();
-    // Playback category: play even with the iOS silent switch on — a training
-    // clip the learner explicitly started is content, not a notification.
-    await setAudioModeAsync({ playsInSilentMode: true }).catch(() => {});
+    await settleMode(); // waited for once per app run — see settleMode
     // ONE CLIP AT A TIME, not Promise.all: the WAV encode and base64 pass are
     // synchronous, so mapping them eagerly ran every clip's encode back-to-back
     // in a single tick (two 10 s stereo mixing-lab variants measured 177 ms in
