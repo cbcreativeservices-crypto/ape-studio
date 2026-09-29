@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 09:37 · ccode · 15b88be5
+changed: labs ▶: backup press when the Pressable never fires; every step writes a probe line
+affects other side: nothing — client JS only (lab ▶ backup press + probe)
+needs: nothing
+
+
 ### 2026-09-29 09:31 · ccode · afb85ab7
 changed: Tuner full screen: chips never cropped by the readout; lighter auto-dim
 affects other side: nothing — client JS only (tuner full-screen layout)
