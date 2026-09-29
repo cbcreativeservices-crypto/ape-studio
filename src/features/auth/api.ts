@@ -9,6 +9,7 @@
 import { supabase } from '../../lib/supabase';
 import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../commercial/realAccount';
+import { markIntentionalSignOut } from './intentionalSignOut';
 
 // The pure helpers live in authErrorCopy.ts so they can be unit-tested without
 // standing up the Supabase client. Re-exported here so every existing call site
@@ -79,7 +80,24 @@ export async function ensureSession(email: string, password: string): Promise<st
   // screen "you are already signed in" — so the account they came to create
   // would never be created. signUp / signInWithPassword below REPLACE the
   // anonymous session, which is exactly what should happen.
-  if (isRealAccount(existing.data.session)) return null;
+  const current = existing.data.session;
+  if (isRealAccount(current)) {
+    // ⛔ ONLY when it is the SAME account (bug hunt 2026-09-29). A real session
+    // survives a half-finished CREATE ACCOUNT (signUp succeeded, the
+    // registration RPC failed) and a password recovery that verified its code.
+    // Returning null for ANY real session meant the next CREATE ACCOUNT — say
+    // after fixing a typo in the email — silently finished registration on the
+    // OLD account and signed the person into it. Same email → resume; any other
+    // email → drop that session and create the account that was asked for.
+    const sessionEmail = (current?.user?.email ?? '').trim().toLowerCase();
+    if (sessionEmail && sessionEmail === email.trim().toLowerCase()) return null;
+    markIntentionalSignOut();
+    try {
+      await supabase.auth.signOut();
+    } catch {
+      // Offline sign-out still clears the local session; signUp below replaces it.
+    }
+  }
 
   const { data, error: signUpError } = await supabase.auth.signUp({ email, password });
   if (!signUpError) {

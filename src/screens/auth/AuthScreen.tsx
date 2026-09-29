@@ -16,6 +16,7 @@ import { useEffect, useRef, useState } from 'react';
 import {
   AccessibilityInfo,
   ActivityIndicator,
+  BackHandler,
   Platform,
   Pressable,
   StyleSheet,
@@ -93,6 +94,14 @@ export function AuthScreen({ navigation }: Props) {
   const [mode, setMode] = useState<'main' | 'recovery'>('main');
   const [resetCode, setResetCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  /** The email whose recovery code has ALREADY been verified (bug hunt
+   *  2026-09-29). verifyOtp CONSUMES the code, so if updatePassword is then
+   *  refused (a breached password), re-verifying the same code on the retry
+   *  always failed and told the user "That code is incorrect or expired" —
+   *  a loop they could not leave without requesting a new code. The recovery
+   *  session from the first verify is still live, so skip straight to the
+   *  update. Cleared whenever a new code is sent or recovery is cancelled. */
+  const verifiedFor = useRef<string | null>(null);
 
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
@@ -362,8 +371,12 @@ export function AuthScreen({ navigation }: Props) {
         setError(err);
         return;
       }
+      // A (re)sent code supersedes any earlier one, so it must be verified again.
+      verifiedFor.current = null;
       setResetCode('');
-      setNewPassword('');
+      // RESEND CODE keeps the new password the user already typed (bug hunt
+      // 2026-09-29) — only the first send starts the panel empty.
+      if (mode !== 'recovery') setNewPassword('');
       setMode('recovery');
       /**
        * ⛔ "IF" IS LOAD-BEARING — do not shorten this to "We emailed a code".
@@ -406,10 +419,14 @@ export function AuthScreen({ navigation }: Props) {
     }
     setBusy(true);
     try {
-      const verifyErr = await verifyRecoveryOtp(email.trim(), resetCode);
-      if (verifyErr) {
-        setError('That code is incorrect or expired. Request a new one and try again.');
-        return;
+      const addr = email.trim().toLowerCase();
+      if (verifiedFor.current !== addr) {
+        const verifyErr = await verifyRecoveryOtp(email.trim(), resetCode);
+        if (verifyErr) {
+          setError('That code is incorrect or expired. Request a new one and try again.');
+          return;
+        }
+        verifiedFor.current = addr;
       }
       const updateErr = await updatePassword(newPassword);
       if (updateErr) {
@@ -417,6 +434,7 @@ export function AuthScreen({ navigation }: Props) {
         return;
       }
       // verifyOtp left an active session; the password is now updated → go in.
+      verifiedFor.current = null;
       setMode('main');
       await claimAndProceed(toMain); // single-device claim on recovery sign-in
     } catch {
@@ -427,12 +445,27 @@ export function AuthScreen({ navigation }: Props) {
   };
 
   const cancelRecovery = () => {
+    verifiedFor.current = null;
     setMode('main');
     setError(null);
     setInfo(null);
     setResetCode('');
     setNewPassword('');
   };
+
+  // ANDROID BACK during recovery = Cancel (bug hunt 2026-09-29). RETURN is
+  // hidden in recovery (see [27] below) so only Cancel leaves the flow, but the
+  // hardware back button still popped the screen — or exited the app from the
+  // root sign-in entry — abandoning a reset whose code was already emailed.
+  useEffect(() => {
+    if (mode !== 'recovery') return;
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      cancelRecovery();
+      return true;
+    });
+    return () => sub.remove();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode]);
 
   return (
     <View style={styles.root}>
