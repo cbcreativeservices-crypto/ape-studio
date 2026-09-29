@@ -64,6 +64,9 @@ import { navigateToPath } from '../../navigation/linking';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Auth'>;
 
+/** Web-preview auto-guest has run in this app load (see the effect below). */
+let autoGuestDoneThisLoad = false;
+
 export function AuthScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
   const { setEntitlement, refreshEntitlement } = useEntitlement();
@@ -250,10 +253,14 @@ export function AuthScreen({ navigation }: Props) {
   // WEB PREVIEW ONLY (dev): auto-enter Guest Mode once so the browser preview
   // boots straight into the app. __DEV__-guarded via devBypass + Platform gate,
   // so the phone dev client and release builds are untouched. See devMode.ts.
-  const autoGuestFired = useRef(false);
+  // ONCE PER APP LOAD (owner 2026-09-29): it used to fire on EVERY visit to
+  // this screen, so in the preview Settings → SIGN IN (and every other
+  // "sign in" button) bounced straight back into guest mode — you could never
+  // reach the form, sign in, or ever see Log out. Only the boot visit
+  // auto-enters; any later visit is deliberate and shows the form.
   useEffect(() => {
-    if (Platform.OS === 'web' && devBypass('webPreviewAutoGuest') && !autoGuestFired.current) {
-      autoGuestFired.current = true;
+    if (Platform.OS === 'web' && devBypass('webPreviewAutoGuest') && !autoGuestDoneThisLoad) {
+      autoGuestDoneThisLoad = true;
       void (async () => {
         // Preserve the dev wordmark tier across the auto-guest wipe
         // (2026-08-31): guest entry clears every ape:* key and persists
