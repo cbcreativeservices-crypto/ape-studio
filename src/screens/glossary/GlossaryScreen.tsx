@@ -27,7 +27,7 @@ import { MethodIcon } from '../../components/MethodIcon';
 import { DeckIcon } from '../../components/DeckIcon';
 import { CoachMark } from '../../components/CoachMark';
 import { ShareIcon } from '../../components/ShareIcon';
-import { LinkIcon } from '../../components/LinkIcon';
+import { LinksToggleLabel } from './LinksToggleLabel';
 import { useGlossaryLinksPref } from '../../features/glossary/linksPref';
 import { ShareTermSheet, type NamedTerm, type ShareTermPayload } from '../../components/ShareTermSheet';
 import type { GlossaryShareTerm } from '../../features/glossary/glossaryShare';
@@ -3008,10 +3008,9 @@ ${COPY.glossaryFreeAllowance}`,
                   accessibilityLabel={linksOn ? 'Turn glossary definition links off' : 'Turn glossary definition links on'}
                   style={styles.linksToggle}
                 >
-                  <LinkIcon size={15} color={linksOn ? LINK_BLUE : colors.textMuted} off={!linksOn} />
-                  <Text style={[styles.linksToggleText, { color: linksOn ? LINK_BLUE : colors.textMuted }]}>
-                    Glossary Links
-                  </Text>
+                  {/* Blue sweeps in left→right on, grey sweeps back right→left
+                      off (owner 2026-09-29). */}
+                  <LinksToggleLabel on={linksOn} onColor={LINK_BLUE} />
                 </Pressable>
               </View>
             )
@@ -4004,7 +4003,6 @@ const styles = StyleSheet.create({
   // definition cross-links, sitting where SELECT used to. Icon + label share the
   // light-blue link colour when lit, grey when dimmed (colour set inline).
   linksToggle: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingBottom: 8, paddingRight: 2 },
-  linksToggleText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.2 },
   entry: { paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#1a1a1a' },
   // Expanded rows get a BORDER around the whole term+definition (like the card
   // popup), persisting on scroll; several can be open at once (user request
