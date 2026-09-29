@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 08:44 · ccode · 9d12f898
+changed: labs: ▶ confirms every touch (ring burst, press dip, … while starting); Bass shows its playback steps
+affects other side: nothing — client JS only (lab ▶ touch feedback + Bass status line)
+needs: nothing
+
+
 ### 2026-09-29 00:23 · ccode · 26d68638
 changed: fix: tuner full screens rotate again under the portrait_up stacks; Mic Selection DONE ignores a double tap
 affects other side: nothing — client JS only (tuner rotation + Mic Selection DONE guard; also covers 0a53d9b4, the ⓘ accuracy sheet reopen fix)
