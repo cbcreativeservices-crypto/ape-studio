@@ -76,12 +76,17 @@ const STAGE_COLLAPSED_KEY = 'ape:lab:stageCollapsed';
  *  between modules never flashes the display back open. */
 let stageCollapsedCache: boolean | null = null;
 
+/** How long full screen takes to leave before a sibling Modal may present
+ *  (its fade is ~250 ms; see leaveFullThen). */
+export const FULL_DISMISS_MS = 350;
+
 export function RackUnit({
   stage,
   params,
   initialParam,
   onHelp,
   bottomInset,
+  active = true,
   children,
 }: {
   stage: RackStage;
@@ -98,6 +103,11 @@ export function RackUnit({
    *  passes 0 so the well is not shortened twice. Additive — every existing
    *  host leaves it undefined. */
   bottomInset?: number;
+  /** False while the host hides this rack without unmounting it (LabShell's
+   *  LEARN / CHECK tabs, `display: 'none'`). An open tray then stays open for
+   *  the hop back, but stops answering Android back — bug hunt 2026-09-29:
+   *  back silently closed a tray nobody could see instead of leaving. */
+  active?: boolean;
   /** The scroll well. A function child receives the well's scroll-lock API
    *  (LabShell parity for legacy in-well drag widgets). */
   children: ReactNode | ((api: RackUnitApi) => ReactNode);
@@ -234,6 +244,32 @@ export function RackUnit({
   const ownsFull = stage.fullScreen === true && !fixedStage;
   const onEnlarge = ownsFull ? () => setFull(true) : stage.onEnlarge;
 
+  // ⛔ NOTHING PRESENTS OVER FULL SCREEN (bug hunt 2026-09-29). Full screen is
+  // a native Modal. A long-press lesson (the lab's GuidedLessonSheet) or a
+  // photo (LabPhotoLightbox) is ANOTHER Modal, mounted beside the rack — a
+  // sibling, not a child. On iOS UIKit refuses to present a second view
+  // controller from one that is already presenting ("already presenting"), so
+  // the sheet never appears while its host's `open` flag is now stuck true:
+  // every later ⓘ sets true→true and does nothing — a dead key. On Android the
+  // sibling opens BEHIND the full-screen dialog. So every route out of the
+  // rack that opens something (help, a tray chip's photo) closes full screen
+  // first and runs once its dismissal has finished. Inline it runs at once.
+  const fullRef = useRef(false);
+  fullRef.current = full;
+  const leaveFullThen = useCallback((fn: () => void) => {
+    if (!fullRef.current) {
+      fn();
+      return;
+    }
+    setFull(false);
+    // The Modal fades out (~250 ms); present only after it is gone.
+    setTimeout(fn, FULL_DISMISS_MS);
+  }, []);
+  const help = useMemo(
+    () => (onHelp ? (helpKey?: string) => leaveFullThen(() => onHelp(helpKey)) : undefined),
+    [onHelp, leaveFullThen],
+  );
+
   const dockNode = (
     <View style={styles.dock}>
       {bound && !(trayParam?.kind === 'group' && trayParam.hideLane) ? (
@@ -267,7 +303,7 @@ export function RackUnit({
                     if (p.chooser) setOpenTrayId((cur) => (cur === p.id ? null : p.id));
                     else setBoundId(p.id);
                   }}
-                  onLongPress={p.helpKey ? () => onHelp?.(p.helpKey) : undefined}
+                  onLongPress={p.helpKey ? () => help?.(p.helpKey) : undefined}
                   a11y={
                     p.chooser
                       ? `${p.label}: ${p.format(p.value)}. Tap to choose, then adjust on the fader.`
@@ -285,7 +321,7 @@ export function RackUnit({
                   glyph="▸"
                   selected={openTrayId === p.id}
                   onPress={() => setOpenTrayId((cur) => (cur === p.id ? null : p.id))}
-                  onLongPress={p.helpKey ? () => onHelp?.(p.helpKey) : undefined}
+                  onLongPress={p.helpKey ? () => help?.(p.helpKey) : undefined}
                   a11y={`${p.label}: ${p.valueLabel}. Tap to open the chooser.`}
                 />
               );
@@ -301,7 +337,7 @@ export function RackUnit({
                   led={p.value}
                   labelLines={p.labelLines}
                   onPress={p.onToggle}
-                  onLongPress={p.helpKey ? () => onHelp?.(p.helpKey) : undefined}
+                  onLongPress={p.helpKey ? () => help?.(p.helpKey) : undefined}
                   a11y={`${p.label}: ${p.value ? 'on' : 'off'}. Tap to toggle.`}
                 />
               );
@@ -334,13 +370,27 @@ export function RackUnit({
   // …and the card may use ALL of that room (6 dp margins): on a 667 pt phone
   // the old 86% cap clipped a two-row tray under the fold.
   const trayRoom = rootH - stageBlockH - dockH - bottom - 12;
-  const trayNode = <DockTray param={trayParam} onClose={closeTray} onHelp={onHelp} bottomInset={0} maxHeight={rootH > 0 ? trayRoom : undefined} />;
+  // A tray chip's own long-press (a reference photo — LabPhotoLightbox, a
+  // sibling Modal) leaves full screen first, like `help` above.
+  const trayRouted = useMemo(
+    () =>
+      trayParam && trayParam.kind === 'options' && trayParam.options.some((o) => o.onLongPress)
+        ? {
+            ...trayParam,
+            options: trayParam.options.map((o) =>
+              o.onLongPress ? { ...o, onLongPress: () => leaveFullThen(o.onLongPress as () => void) } : o,
+            ),
+          }
+        : trayParam,
+    [trayParam, leaveFullThen],
+  );
+  const trayNode = <DockTray param={trayRouted} onClose={closeTray} onHelp={help} bottomInset={0} maxHeight={rootH > 0 ? trayRoom : undefined} active={active} />;
   // In full screen the drawing is what sits behind the tray: no wash.
   // …and its card height is reported so the full-screen view can lift the
   // dock ABOVE the open tray: the learner keeps the lane and keys while
   // choosing (owner 2026-09-26), and the dock drops back when it closes.
   const [fullTrayH, setFullTrayH] = useState(0);
-  const trayNodeFull = <DockTray param={trayParam} onClose={closeTray} onHelp={onHelp} bottomInset={0} dim={false} onCardLayout={setFullTrayH} />;
+  const trayNodeFull = <DockTray param={trayRouted} onClose={closeTray} onHelp={help} bottomInset={0} dim={false} onCardLayout={setFullTrayH} />;
 
   return (
     <View style={[styles.root, { paddingBottom: bottom }]} onLayout={(e) => setRootH(Math.round(e.nativeEvent.layout.height))}>
@@ -370,7 +420,7 @@ export function RackUnit({
         </View>
         )}
         {stage.bezel?.length || stage.onGuide ? (
-          <BezelReadouts items={stage.bezel ?? []} onGuide={stage.onGuide} onHelp={onHelp} />
+          <BezelReadouts items={stage.bezel ?? []} onGuide={stage.onGuide} onHelp={help} />
         ) : null}
         {stage.badge ? (
           // Honesty badge: silk-screened on the FACEPLATE under the unit —
@@ -472,13 +522,23 @@ export function RackUnit({
         <StageFullScreen
           visible={full}
           onClose={() => setFull(false)}
+          // Android back inside full screen closes an open tray FIRST (bug
+          // hunt 2026-09-29): the Modal takes back, not the tray's BackHandler,
+          // so back used to drop the learner out with the tray still open.
+          onBack={() => {
+            if (trayParam) {
+              closeTray();
+              return;
+            }
+            setFull(false);
+          }}
           render={stage.render}
           badge={stage.badge}
           glassW={glassW}
           controls={dockNode}
           overlay={trayNodeFull}
           overlayLift={trayParam ? fullTrayH + 6 : 0}
-          readouts={stage.bezel?.length ? <BezelReadouts items={stage.bezel} onHelp={onHelp} /> : undefined}
+          readouts={stage.bezel?.length ? <BezelReadouts items={stage.bezel} onHelp={help} /> : undefined}
         />
       ) : null}
     </View>

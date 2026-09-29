@@ -23,6 +23,7 @@ import { LayoutAnimation, Platform, Pressable, ScrollView, StyleSheet, Text, UIM
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
+import { areOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
 import { GuidedLessonBody, GuidedLessonSheet, getLabLesson, type LabId } from '../../features/lab/guidedLessons';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { HelpKey } from '../../components/HelpKey';
@@ -335,6 +336,18 @@ export function LabShell({
   // scroll. Owned here so a tab switch always frees it.
   const [scrollLocked, setScrollLocked] = useState(false);
   const [lessonOpen, setLessonOpen] = useState(false);
+  // A tap on the lesson row while `lessonOpen` is already true proves the
+  // sheet is NOT on screen (a visible sheet covers the row) — a presentation
+  // iOS refused, e.g. while another Modal was up. Close and reopen so the tap
+  // is never dead (bug hunt 2026-09-29; the gate's re-present, same idea).
+  const openLesson = () => {
+    if (!lessonOpen) {
+      setLessonOpen(true);
+      return;
+    }
+    setLessonOpen(false);
+    setTimeout(() => setLessonOpen(true), 60);
+  };
   const lesson = getLabLesson(labId);
   // Pillar B coach mark (plan §3), LEGACY labs only: in-panel drag editors look
   // like diagrams until touched. One shared key across every LabShell lab.
@@ -417,6 +430,10 @@ export function LabShell({
     const ask = () => {
       if (done) return;
       done = true;
+      // Low-Light Production Mode (and the dev popup kill-switch): nothing
+      // auto-appears — bug hunt 2026-09-29. The gate still asks when the
+      // learner taps ▶, which is a deliberate act.
+      if (areOverlaysSuppressed()) return;
       void requestAudioOutput();
     };
     const unsub = (navigation as any).addListener('transitionEnd', (e: { data?: { closing?: boolean } }) => {
@@ -554,6 +571,7 @@ export function LabShell({
               params={rack.params}
               initialParam={rack.initialParam}
               onHelp={rack.onHelp}
+              active={mode === 'explore'}
             >
               {(api) => (
                 <View style={styles.panel}>
@@ -572,7 +590,7 @@ export function LabShell({
                     {/* Guided-lesson entry lives at the BOTTOM (owner 2026-07-29). */}
                     <Pressable
                       style={styles.lessonRow}
-                      onPress={() => setLessonOpen(true)}
+                      onPress={openLesson}
                       accessibilityRole="button"
                       accessibilityLabel="Open the guided lesson"
                     >
@@ -609,7 +627,7 @@ export function LabShell({
             {/* Guided-lesson entry lives at the BOTTOM (owner 2026-07-29). */}
             <Pressable
               style={styles.lessonRow}
-              onPress={() => setLessonOpen(true)}
+              onPress={openLesson}
               accessibilityRole="button"
               accessibilityLabel="Open the guided lesson"
             >

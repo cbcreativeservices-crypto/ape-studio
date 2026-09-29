@@ -72,6 +72,7 @@ export function DockTray({
   dim = true,
   onCardLayout,
   maxHeight,
+  active = true,
 }: {
   /** The open options/group param (null = tray closed, renders nothing). */
   param: Extract<DockParam, { kind: 'options' | 'group' }> | null;
@@ -93,16 +94,21 @@ export function DockTray({
    *  between the stage and the live dock (owner 2026-09-27), so the host
    *  passes that room and the card may use all of it; unset = 86%. */
   maxHeight?: number;
+  /** False while the host rack is hidden (LabShell's LEARN / CHECK tabs keep
+   *  it mounted under `display: 'none'`). The tray stays open for the hop
+   *  back but gives up Android back — bug hunt 2026-09-29: back silently
+   *  closed an invisible tray instead of leaving the screen. */
+  active?: boolean;
 }) {
   const open = param != null;
   useEffect(() => {
-    if (!open) return;
+    if (!open || !active) return;
     const sub = BackHandler.addEventListener('hardwareBackPress', () => {
       onClose();
       return true;
     });
     return () => sub.remove();
-  }, [open, onClose]);
+  }, [open, active, onClose]);
 
   // "more ↓" cue (owner 2026-09-27, SE pass): on a 667 pt phone a two-row
   // tray (ENV: attack + release) is taller than the room above the live dock,

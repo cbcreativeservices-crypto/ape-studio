@@ -52,9 +52,14 @@ export function StageFullScreen({
   overlay,
   readouts,
   overlayLift = 0,
+  onBack,
 }: {
   visible: boolean;
   onClose: () => void;
+  /** Android back (the Modal's onRequestClose). A rack passes one that closes
+   *  an open tray before leaving full screen (bug hunt 2026-09-29). Unset =
+   *  onClose. */
+  onBack?: () => void;
   render: (w: number, h: number) => ReactNode;
   badge?: string;
   /** The width the stage is drawn at on the glass (or inline). Sets
@@ -185,7 +190,7 @@ export function StageFullScreen({
   const textScale = glassW && glassW > 0 ? w / glassW : 1;
 
   return (
-    <Modal visible={visible} animationType="fade" onRequestClose={onClose} statusBarTranslucent>
+    <Modal visible={visible} animationType="fade" onRequestClose={onBack ?? onClose} statusBarTranslucent>
       <View style={[styles.root, { paddingTop: insets.top + 6, paddingBottom: insets.bottom + 6, paddingLeft: insets.left, paddingRight: insets.right }]}>
         <View style={styles.bar}>
           {/* One line, shrinks: a long title ("THE SPEECH SYSTEM") pushed the
