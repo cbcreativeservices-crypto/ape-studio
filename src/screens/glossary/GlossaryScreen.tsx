@@ -15,7 +15,7 @@
  * Search by term · empty: "No results for [filter]" · bottom nav visible.
  */
 import { memo, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from 'react';
-import { Alert, AppState, BackHandler, FlatList, Image, ImageBackground, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type StyleProp, type TextStyle } from 'react-native';
+import { AppState, BackHandler, FlatList, Image, ImageBackground, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type StyleProp, type TextStyle } from 'react-native';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -1576,9 +1576,8 @@ ${COPY.glossaryFreeAllowance}`,
    * Everything else FAILS OPEN and leaves the legacy path to fill the detail:
    * a reader must never lose the glossary because the gateway had a bad minute.
    */
-  const openViaGateway = useCallback(
+  const readViaGateway = useCallback(
     async (id: string): Promise<boolean> => {
-      if (detailsRef.current[id]) return true; // already read this session — free
       const r = await fetchDefinitionViaGateway(id);
       if (r.state === 'ok') {
         const { used, lim, window_start, ...detail } = r.row;
@@ -1616,6 +1615,24 @@ ${COPY.glossaryFreeAllowance}`,
       return true;
     },
     [putDetail],
+  );
+  // In-flight metered reads, keyed by term (bug hunt 2026-09-29). Every gateway
+  // call CHARGES a weekly lookup, and `detailsRef` only fills once the first
+  // read lands — so a double-tap on a row/card used to spend two or three
+  // lookups on one term. A second tap now shares the pending read.
+  const gatewayInFlightRef = useRef<Map<string, Promise<boolean>>>(new Map());
+  const openViaGateway = useCallback(
+    (id: string): Promise<boolean> => {
+      if (detailsRef.current[id]) return Promise.resolve(true); // already read this session — free
+      const pending = gatewayInFlightRef.current.get(id);
+      if (pending) return pending;
+      const p = readViaGateway(id).finally(() => {
+        gatewayInFlightRef.current.delete(id);
+      });
+      gatewayInFlightRef.current.set(id, p);
+      return p;
+    },
+    [readViaGateway],
   );
   openViaGatewayRef.current = openViaGateway;
 
