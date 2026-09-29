@@ -8,6 +8,7 @@
 import { AppState, type AppStateStatus, type NativeEventSubscription } from 'react-native';
 import type { Mono } from '../ear/earDsp';
 import { EarClipPlayer } from '../ear/earPlayer';
+import { isAudioOutputEnabled } from '../audio/audioOutputStore';
 import { clipSeconds } from './tuningRender';
 
 export * from './tuningRender';
@@ -57,6 +58,10 @@ export class TuningPlayer {
     if (this.stopTimer) clearTimeout(this.stopTimer);
     await this.ear.load([buf]);
     if (my !== this.token) return;
+    // ⛔ SAFETY (bug hunt 2026-09-29): the gate answered before the WAV
+    // encode/load above; shake-to-mute, the idle lock or backgrounding may
+    // have silenced the app since. Never start a clip into a closed gate.
+    if (!isAudioOutputEnabled()) return;
     this.ear.play(0);
     this.set({ playing: true, label, rendering: null });
     this.stopTimer = setTimeout(() => {

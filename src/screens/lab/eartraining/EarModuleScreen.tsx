@@ -18,6 +18,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
+import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
 import { EarClipPlayer } from '../../../features/ear/earPlayer';
 import { isStereo } from '../../../features/ear/earDsp';
 import { earModuleById } from '../../../features/ear/modules/registry';
@@ -117,6 +118,18 @@ export function EarModuleScreen() {
   const [level, setLevel] = useState(1);
   const [picked, setPicked] = useState<number | null>(null);
   const [playing, setPlaying] = useState<number | null>(null);
+  /** One token per play (bug hunt 2026-09-29): the clear-timer compared only
+   *  the clip INDEX, so a stale timer from an earlier play of the same clip
+   *  (■ then ▶ again inside its length) dropped the chip back to ▶ while the
+   *  replay was still sounding. Only the latest play's timer may clear it. */
+  const playTokenRef = useRef(0);
+  // Shake-to-mute / idle lock / background silence the clip from outside;
+  // put the chip back to ▶ with them (see useStopWhenSilenced).
+  useStopWhenSilenced(playing != null, () => {
+    playTokenRef.current++;
+    playerRef.current?.stop();
+    setPlaying(null);
+  });
   const [plays, setPlays] = useState<number[]>([]);
   const [streak, setStreak] = useState(0);
   const [accuracy, setAccuracy] = useState<number | null>(null);
@@ -247,10 +260,13 @@ export function EarModuleScreen() {
       if (!okOut || !aliveRef.current) return;
       player()?.play(i);
       setPlaying(i);
+      const my = ++playTokenRef.current;
       if (phase === 'answering') setPlays((p) => p.map((n, j) => (j === i ? n + 1 : n)));
       const buf = trial.clips[i].buf;
       const ms = (isStereo(buf) ? buf.l.length : buf.length) / 48;
-      setTimeout(() => setPlaying((cur) => (cur === i ? null : cur)), ms + 60);
+      setTimeout(() => {
+        if (my === playTokenRef.current) setPlaying((cur) => (cur === i ? null : cur));
+      }, ms + 60);
     },
     [trial, phase, plays, playing, replayCap, requestAudioOutput],
   );

@@ -289,7 +289,9 @@ export function BassLabScreen() {
           playing={running}
           // The recordings need no engine; only the fallback does. While the
           // signed URL is being fetched a second tap is ignored, not queued.
-          disabled={sample.loading}
+          // …but ■ is never disabled (bug hunt 2026-09-29): a re-pluck while
+          // sounding sets `loading` too, and a stalled fetch left STOP dead.
+          disabled={sample.loading && !running}
           onPress={() => (running ? stopNote() : void startNote())}
           label={running ? 'Stop' : `Play ${midiName(soundMidi)}, ${soundHz.toFixed(1)} hertz`}
         />

@@ -22,6 +22,7 @@
  * demo-signal / critical-listening one-at-a-time case.
  */
 import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-audio';
+import { isAudioOutputEnabled } from '../audio/audioOutputStore';
 import { unregisterFilePlayer } from '../audio/filePlayers';
 import { applyCeiling } from '../audio/outputCeiling';
 import { fetchLabAudio, type LabAudioReason } from './labAudio';
@@ -33,6 +34,12 @@ const URL_REUSE_MS = 90_000;
 
 /** Longest play() waits for the audio-session mode before playing anyway. */
 const AUDIO_MODE_WAIT_MS = 1500;
+
+/** Longest play() waits for the signed URL (bug hunt 2026-09-29): the edge fn
+ *  call had no timeout, so a stalled request held the lab's transport on
+ *  `loading` for good. Past this the clip reports 'network' — the lab's own
+ *  "could not be fetched" line and fallback take over. */
+export const LAB_AUDIO_FETCH_MS = 8000;
 
 function keyOf(labKey: string, assetKey: string): string {
   // The separator is written as an ESCAPE, not as a literal NUL (2026-09-17).
@@ -66,9 +73,10 @@ export class LabAudioPlayer {
   /**
    * Fetch (or reuse) the signed URL and play the asset from the start, stopping
    * whatever was playing. Returns the fetch reason: 'ok' on success, else
-   * 'auth' | 'not_found' | 'network' (nothing plays). Safe to call repeatedly.
+   * 'auth' | 'not_found' | 'network' (nothing plays), or 'blocked' when the
+   * app silenced output while the URL was in flight. Safe to call repeatedly.
    */
-  async play(labKey: string, assetKey: string): Promise<LabAudioReason> {
+  async play(labKey: string, assetKey: string): Promise<LabAudioReason | 'blocked'> {
     if (this.disposed) return 'network';
     const token = ++this.playToken;
 
@@ -98,7 +106,14 @@ export class LabAudioPlayer {
       url = cached.url;
       labProbe('url cached'); // TEMP probe
     } else {
-      const { asset, reason } = await fetchLabAudio(labKey, assetKey);
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      const { asset, reason } = await Promise.race([
+        fetchLabAudio(labKey, assetKey),
+        new Promise<{ asset: null; reason: LabAudioReason }>((r) => {
+          timer = setTimeout(() => r({ asset: null, reason: 'network' }), LAB_AUDIO_FETCH_MS);
+        }),
+      ]);
+      clearTimeout(timer);
       // A newer request (or teardown) landed while we were fetching — abandon
       // this one without touching the player.
       if (this.disposed || token !== this.playToken) return 'network';
@@ -107,6 +122,13 @@ export class LabAudioPlayer {
       url = asset.url;
       this.urlCache.set(cacheKey, { url, at: Date.now() });
     }
+
+    // ⛔ SAFETY (bug hunt 2026-09-29): the gate was passed BEFORE the awaits
+    // above. Shake-to-mute, the idle lock or backgrounding can land during
+    // them — panicMuteAudio stops the players that exist, not one about to
+    // start — so the clip would begin AFTER the learner silenced the app.
+    // Ask again at the last moment; off means nothing plays.
+    if (!isAudioOutputEnabled()) return 'blocked';
 
     try {
     if (this.player) {

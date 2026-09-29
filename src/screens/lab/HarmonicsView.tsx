@@ -117,7 +117,7 @@ import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import Svg, { Defs, Line, LinearGradient, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES, type EngineConfig, type GenParams, type WaveBucket } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
-import { isFeedbackAllowed, noteAudioActivity, useFeedbackAllowed } from '../../features/audio/audioOutputStore';
+import { isAudioOutputEnabled, isFeedbackAllowed, noteAudioActivity, useFeedbackAllowed } from '../../features/audio/audioOutputStore';
 import { FeedbackAllowRow } from '../../features/audio/FeedbackAllowRow';
 import { guardToneLevelForEngine, LOW_FREQ_ADVISORY } from '../../features/audio/speakerSafety';
 import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
@@ -1325,7 +1325,11 @@ export function HarmonicsView({
    *  belt-and-suspenders cut for every OTHER screen). */
   useEffect(() => {
     if (view !== 'live' || !running) return;
-    if (feedbackAllowed && !genRunning) void startTone();
+    // Auto-start ONLY into an open gate (bug hunt 2026-09-29): after a
+    // shake-to-mute / idle lock the tone stops but the mic keeps capturing,
+    // and this effect re-ran startTone → the audio popup reappeared unasked.
+    // The learner's own LIVE tap (onLiveStart) still asks the gate.
+    if (feedbackAllowed && !genRunning && isAudioOutputEnabled()) void startTone();
     else if (!feedbackAllowed && genRunning) stopTone();
   }, [view, running, feedbackAllowed, genRunning, startTone, stopTone]);
 
