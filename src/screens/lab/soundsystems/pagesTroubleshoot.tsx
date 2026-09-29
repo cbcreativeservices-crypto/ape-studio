@@ -69,6 +69,8 @@ function GroupPage({ group, ctx }: { group: FaultGroup; ctx: PageCtx }) {
   const [probes, setProbes] = useState<Station[]>([]);
   const [last, setLast] = useState<Station | null>(null);
   const [pick, setPick] = useState<number | null>(null);
+  /** How many probes had been taken when the current pick was made. */
+  const [pickedAt, setPickedAt] = useState(0);
   const [order, setOrder] = useState<number[]>([]);
   const solvedHere = cases.filter((c) => progress.faults.includes(c.id)).length;
   const forwardHere = cases.filter((c) => progress.forward.includes(c.id)).length;
@@ -85,6 +87,9 @@ function GroupPage({ group, ctx }: { group: FaultGroup; ctx: PageCtx }) {
   };
   const grade = c && pick != null ? gradeAttempt(c, probes, pick) : null;
   const solved = !!grade?.correct;
+  // A wrong pick locks FAULT until the next probe — naming is earned by
+  // reading, not by cycling the options (bug hunt 2026-09-29).
+  const locked = !!grade && !grade.correct && probes.length === pickedAt;
   useEffect(() => {
     if (c && solved) markFaultSolved(c.id, grade!.forward);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -109,7 +114,7 @@ function GroupPage({ group, ctx }: { group: FaultGroup; ctx: PageCtx }) {
   const gradeText = grade
     ? grade.correct
       ? `Correct${grade.forward ? ' — and a source-forward walk' : ' — but not a forward walk'}. ${grade.probes} probe${grade.probes === 1 ? '' : 's'}; a disciplined walk from ${c ? label(c.startAt) : ''} needs ${grade.minimal}.`
-      : `Not this one. ${grade.sawFault ? 'You have already read the station that changed — look at that reading again.' : 'You have not yet read the station where the reading changes. Keep walking forward.'}`
+      : `Not this one. ${grade.sawFault ? 'You have already read the station that changed — look at that reading again.' : 'You have not yet read the station where the reading changes. Keep walking forward.'} FAULT re-opens after your next probe.`
     : null;
   const params: DockParam[] = [
     {
@@ -146,10 +151,12 @@ function GroupPage({ group, ctx }: { group: FaultGroup; ctx: PageCtx }) {
             id: 'fault',
             label: 'FAULT',
             valueLabel: grade ? (grade.correct ? '✓' : '✗') : 'Name it',
-            options: order.map((i) => ({ id: `${i}`, label: c.options[i], blurb: pick === i && gradeText ? gradeText : 'Tap to name this as the fault.' })),
+            options: order.map((i) => ({ id: `${i}`, label: c.options[i], blurb: pick === i && gradeText ? gradeText : locked ? 'Probe another station before naming the fault again.' : 'Tap to name this as the fault.' })),
             selectedId: pick == null ? null : `${pick}`,
             onSelect: (id) => {
-              if (!solved) setPick(Number(id));
+              if (solved || locked) return;
+              setPick(Number(id));
+              setPickedAt(probes.length);
             },
             sticky: true,
           } as DockParam,
