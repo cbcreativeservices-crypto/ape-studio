@@ -45,6 +45,8 @@ const REGISTRY = fileURLToPath(
 const EXEMPT: Record<string, string> = {
   'screens/lab/rack/RackUnit.tsx':
     "the “hide the display” reading preference is device-level and is on the KEEP list for the same reason as showBigPicture and glossary autoOffline — it records no progress, no identity and no content, only how much room the lesson gets (tester report 2026-09-23)",
+  'screens/auth/AuthScreen.tsx':
+    'autoGuestDoneThisLoad is a dev-only, web-preview-only "the boot auto-guest already ran" latch (owner 2026-09-29) — no identity, no progress, no content, and inert in release builds',
   'features/account/deviceIdentity.ts':
     'the install id is on the KEEP list by design — it identifies the DEVICE for single-device login, not the person',
   'features/tools/measure/calibrationStore.ts':
