@@ -63,22 +63,16 @@ export function isSequenceCorrect(order: readonly string[], sequence: readonly {
   return order.length === sequence.length && order.every((id, i) => id === sequence[i].id);
 }
 
-/** First step out of place, paired with the step it must follow. */
+/** First step out of place, paired with the step it must follow. A prefix
+ *  compare, like LEARN's trace page: the first tap that is not the step due
+ *  at that position is the error, the moment it is tapped — "amps first" is
+ *  caught on its own tap, not only once a later tap lands before it (bug
+ *  hunt 2026-09-29). Taps are unique, so the step due is always an earlier
+ *  step the tapped one must follow. */
 export function firstSequenceError(order: readonly string[], sequence: readonly { id: string }[]): { id: string; mustFollow: string } | null {
-  const want = (id: string) => sequence.findIndex((s) => s.id === id);
-  for (let i = 0; i < order.length; i++) {
-    let best: string | null = null;
-    let bestWant = Infinity;
-    for (let j = i + 1; j < order.length; j++) {
-      const w = want(order[j]);
-      if (w < want(order[i]) && w < bestWant) {
-        best = order[j];
-        bestWant = w;
-      }
-    }
-    if (best) return { id: order[i], mustFollow: best };
-  }
-  return null;
+  const i = order.findIndex((id, k) => id !== sequence[k]?.id);
+  if (i < 0 || i >= sequence.length) return null;
+  return { id: order[i], mustFollow: sequence[i].id };
 }
 
 /* ── chapter 10: the gain-structure chain ────────────────────────────────── */

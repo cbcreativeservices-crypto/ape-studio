@@ -102,7 +102,8 @@ function GroupPage({ group, ctx }: { group: FaultGroup; ctx: PageCtx }) {
   const label = (s: Station) => (c ? stationLabelFor(c, s, STATION_LABEL[s]) : STATION_LABEL[s]);
   const probe = (s: Station) => {
     if (!c || solved) return;
-    setProbes((p) => [...p, s]);
+    // Re-reading the station just read is not a new probe (bug hunt 2026-09-29).
+    setProbes((p) => (p[p.length - 1] === s ? p : [...p, s]));
     setLast(s);
   };
   const gradeText = grade

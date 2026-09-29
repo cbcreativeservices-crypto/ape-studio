@@ -358,6 +358,16 @@ describe('fault library', () => {
     assert.equal(bad.forward, false);
     assert.equal(bad.sawFault, false);
   });
+  it('a guess with no probes, or a walk that skips the start or the fault, is not source-forward (bug hunt 2026-09-29)', () => {
+    const f = FAULTS.find((x) => x.id === 'nothing')!; // startAt consoleIn, faultAt consoleOut
+    assert.equal(gradeAttempt(f, [], f.correct).forward, false);
+    assert.equal(gradeAttempt(f, ['speaker'] as Station[], f.correct).forward, false);
+    assert.equal(gradeAttempt(f, ['consoleIn'] as Station[], f.correct).forward, false);
+    assert.equal(gradeAttempt(f, ['consoleOut', 'speaker'] as Station[], f.correct).forward, false);
+    assert.equal(gradeAttempt(f, ['consoleIn', 'consoleOut'] as Station[], f.correct).forward, true);
+    // a probe before startAt is wasted, not wrong
+    assert.equal(gradeAttempt(f, ['source', 'consoleIn', 'consoleOut'] as Station[], f.correct).forward, true);
+  });
 });
 
 /* ── capstones ───────────────────────────────────────────────────────────── */
@@ -602,6 +612,12 @@ describe('operate models', () => {
     const wrong = [ids[4], ...ids.slice(0, 4), ids[5]];
     assert.equal(op.isSequenceCorrect(wrong, op.POWER_UP), false);
     assert.deepEqual(op.firstSequenceError(wrong, op.POWER_UP), { id: 'amps', mustFollow: 'verify' });
+    // bug hunt 2026-09-29: a wrong first tap is caught on its own tap
+    assert.deepEqual(op.firstSequenceError(['amps'], op.POWER_UP), { id: 'amps', mustFollow: 'verify' });
+    assert.deepEqual(op.firstSequenceError(['verify', 'amps'], op.POWER_UP), { id: 'amps', mustFollow: 'sources' });
+    assert.deepEqual(op.firstSequenceError(['sources'], op.POWER_DOWN), { id: 'sources', mustFollow: 'lower' });
+    assert.equal(op.firstSequenceError(['verify', 'sources'], op.POWER_UP), null);
+    assert.equal(op.firstSequenceError([], op.POWER_UP), null);
     assert.equal(op.SETUP_SEQUENCE.length, 16);
     assert.deepEqual(op.SETUP_SEQUENCE.map((s) => s.n), Array.from({ length: 16 }, (_, i) => i + 1));
   });

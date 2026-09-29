@@ -692,9 +692,6 @@ export function minimalProbes(c: FaultCase): number {
   return STATION_ORDER.indexOf(c.faultAt) - STATION_ORDER.indexOf(c.startAt) + 1;
 }
 
-/** Was the walk forward AND did it start where the symptom says to? A probe
- *  before `startAt` is not wrong, just wasted; only a backward jump breaks
- *  the discipline. */
 export function stationLabelFor(c: FaultCase, s: Station, fallback: string): string {
   return c.labels?.[s] ?? fallback;
 }
@@ -708,10 +705,20 @@ export type AttemptGrade = {
   minimal: number;
 };
 
+/** Was the walk forward AND did it start where the symptom says to AND did
+ *  it reach the fault station? A probe before `startAt` is not wrong, just
+ *  wasted; only a backward jump breaks the discipline. An empty walk, or one
+ *  that skips `startAt` or never reads the fault, is not a walk at all
+ *  (bug hunt 2026-09-29: `isForwardWalk([])` is vacuously true, so a case
+ *  guessed with zero probes was banked as source-forward). */
+export function isDisciplinedWalk(c: FaultCase, probes: readonly Station[]): boolean {
+  return probes.length > 0 && isForwardWalk(probes) && probes.includes(c.startAt) && probes.includes(c.faultAt);
+}
+
 export function gradeAttempt(c: FaultCase, probes: readonly Station[], pick: number): AttemptGrade {
   return {
     correct: pick === c.correct,
-    forward: isForwardWalk(probes),
+    forward: isDisciplinedWalk(c, probes),
     sawFault: probes.includes(c.faultAt),
     probes: probes.length,
     minimal: minimalProbes(c),
