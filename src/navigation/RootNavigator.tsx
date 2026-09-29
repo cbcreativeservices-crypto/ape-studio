@@ -111,6 +111,8 @@ import { EnvelopeLabScreen } from '../screens/lab/envelope/EnvelopeLabScreen';
 import { PatchbayLabScreen } from '../screens/lab/patchbay/PatchbayLabScreen';
 import { ConnectorSelectLabScreen } from '../screens/lab/connectorselect/ConnectorSelectLabScreen';
 import { SoundSystemsLabScreen } from '../screens/lab/soundsystems/SoundSystemsLabScreen';
+import { StartHereScreen } from '../screens/startHere/StartHereScreen';
+import { StartHereTermsScreen } from '../screens/startHere/StartHereTermsScreen';
 import {
   SoundSystemsBuildScreen,
   SoundSystemsLearnScreen,
@@ -594,6 +596,11 @@ export function RootNavigator() {
       <Stack.Screen name="CareerFamily" component={CareerFamilyScreen} options={swipe} />
       <Stack.Screen name="CareerFamilyList" component={CareerFamilyListScreen} options={swipe} />
       <Stack.Screen name="CareerFinderAbout" component={CareerFinderAboutScreen} options={swipe} />
+      {/* Start Here (owner 2026-09-29): FREE for everyone, guests included —
+          deliberately NOT wrapped in withMembershipPreview / MemberGated.
+          No swipe-back: its rack pages carry full-width faders. */}
+      <Stack.Screen name="StartHere" component={StartHereScreen} />
+      <Stack.Screen name="StartHereTerms" component={StartHereTermsScreen} options={swipe} />
       {/* Anonymous public glossary (commercial browse path). */}
       <Stack.Screen name="PublicGlossary" component={PublicGlossaryScreen} />
       {/* CM7: academy paywall (modal; UI only). */}

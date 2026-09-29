@@ -69,6 +69,9 @@ type Card =
    *  2026-07-26; was right of tools/glossary). Opens the 'AudioLearning' fork
    *  (Fundamentals vs Training Labs) → 'EarLab' (NOT a ToolsHub tile). */
   | { kind: 'lab'; id: 'lab' }
+  /** START HERE (owner 2026-09-29): the free beginner experience — its own
+   *  entity, beside Pro Audio Safety. Always free, never gated, no credit. */
+  | { kind: 'startHere'; id: 'startHere' }
   /** Free-topic taster card (Booth 2026-07-11) — gs0 / gs36, after Glossary. */
   | { kind: 'freeTopic'; id: string; gs: number; name: string; courseOrder: number }
   /** Audio-field topic card (legacy kind name 'comingTopic'; owner 2026-08-10):
@@ -287,6 +290,10 @@ const CARD_IMAGE: Record<string, string> = {
   /** Generic topic art — the fallback for a member Home topic card whose
    *  topic has no taster art of its own. */
   topic: 'course_intro-to-audio.webp',
+  /** Start Here (2026-09-29): the owner's own card art, uploaded to the
+   *  course-cards bucket as start_here.webp (941×1672). Until it lands the
+   *  card shows its plain fallback style. */
+  startHere: 'start_here.webp',
   // Free-topic taster cards, keyed `free<gs>` (v3 gs: 3060 Pro Audio Safety ·
   // 3970 DAW taster).
   free3060: 'free_safety.webp',
@@ -348,6 +355,8 @@ function rawCardTitle(item: Card): string | null {
       return 'Professional Audio Glossary';
     case 'lab':
       return 'Audio Fundamentals & Advanced Training Labs';
+    case 'startHere':
+      return 'Start Here: Your First Steps in Audio';
     case 'freeTopic':
     case 'comingTopic':
     case 'showcase':
@@ -370,6 +379,7 @@ function dotColorFor(card: Card): string {
     case 'tools':
     case 'glossary':
     case 'lab':
+    case 'startHere':
     case 'freeTopic':
       return colors.green; // free / included
     case 'comingTopic':
@@ -418,7 +428,7 @@ function cardImageUrl(key: string): string | null {
 // warms 3 s later, one request every 250 ms, so it never competes with what is
 // on screen. CardArt's force-cache keeps a warmed image usable across launches.
 let cardArtWarmed = false;
-const WARM_FIRST_KEYS = ['lab', 'tools', 'glossary'];
+const WARM_FIRST_KEYS = ['lab', 'tools', 'glossary', 'startHere'];
 function warmCardArt() {
   if (cardArtWarmed) return;
   cardArtWarmed = true;
@@ -554,6 +564,7 @@ function CourseCardView({
   onOpenGlossary,
   onOpenTools,
   onOpenLab,
+  onOpenStartHere,
   onOpenPublic,
   onLockedPress,
   onOpenMore,
@@ -568,6 +579,8 @@ function CourseCardView({
   onOpenTools: () => void;
   /** Open the Ear Training & Critical Listening Lab (Phase 1 SHELL). */
   onOpenLab: () => void;
+  /** Open Start Here: Your First Steps in Audio (free, guests included). */
+  onOpenStartHere: () => void;
   /** CM6: open a public course → its commercial dashboard. `isFreeTopic` marks
    *  the free-topic taster cards, which a guest may open (paid cards are gated). */
   onOpenPublic: (order: number, isFreeTopic?: boolean, focusGs?: number) => void;
@@ -791,6 +804,48 @@ function CourseCardView({
             </View>
           </View>
         </CardArt>
+        </Pressable>
+      </View>
+    );
+  }
+  // START HERE (owner 2026-09-29): the free beginner experience. Same
+  // image-backed card language as the lab card; green = free, like the tasters.
+  if (item.kind === 'startHere') {
+    const startUrl = cardImageUrl('startHere');
+    const startInner = (
+      <>
+        <LinearGradient
+          colors={['rgba(8,8,10,0.55)', 'rgba(8,8,10,0)', 'rgba(8,8,10,0.45)', 'rgba(8,8,10,0.95)']}
+          locations={[0, 0.3, 0.58, 1]}
+          style={StyleSheet.absoluteFill}
+        />
+        <View>
+          <Text style={styles.cardTitle}>Start Here: Your First Steps in Audio</Text>
+          <Text style={styles.cardToolsSub}>New to audio? Six short lessons, one hands-on lab and 24 starter words.</Text>
+        </View>
+        <View style={{ alignItems: 'center' }}>
+          <View style={{ width: cd.btnW }}>
+            <GlassButton label="START HERE" tint="green" height={50} onPress={onOpenStartHere} />
+          </View>
+        </View>
+      </>
+    );
+    return (
+      <View style={[styles.cardOuter, cd.outer]}>
+        <View style={styles.cardAbove}>
+          <Text style={[styles.cardAboveText, { color: '#5bff85' }]}>FREE · NEW TO AUDIO?</Text>
+          <View style={[styles.cardAboveRule, { backgroundColor: '#5bff85' }]} />
+        </View>
+        {/* Whole-card tap without a button role — the START HERE key inside is
+            the real button (same reason as the lab card above). */}
+        <Pressable onPress={onOpenStartHere} accessible={false}>
+          {startUrl ? (
+            <CardArt uri={startUrl} style={[styles.card, cd.card, { borderColor: 'rgba(55,224,95,.6)' }]} imageStyle={styles.cardImg}>
+              {startInner}
+            </CardArt>
+          ) : (
+            <View style={[styles.card, cd.card, styles.cardNoImg, { borderColor: 'rgba(55,224,95,.6)' }]}>{startInner}</View>
+          )}
         </Pressable>
       </View>
     );
@@ -1168,6 +1223,10 @@ export function CourseSelectionScreen() {
         { kind: 'lab', id: 'lab' },
         { kind: 'tools', id: 'tools' },
         { kind: 'glossary', id: 'glossary' },
+        // START HERE (owner 2026-09-29: "next to Pro Audio Safety") — the free
+        // beginner experience, first of the free run so a new learner meets
+        // it in the Glossary card's right-hand peek on the very first screen.
+        { kind: 'startHere', id: 'startHere' },
         // The two FREE topics, right after Glossary (Booth 2026-07-11), in this
         // order: Pro Audio Safety then DAW Fundamentals & Session Management
         // (owner 2026-09-17 — "the DAW card to the right of the pro audio
@@ -1255,7 +1314,9 @@ export function CourseSelectionScreen() {
     if (entitlement === 'academy' && (homeGs.length > 0 || homeBundleKeys.length > 0)) {
       // Pinned head cards survive the custom deck: Lab (far left, owner request
       // 2026-07-26) + Tools + Glossary, in deck order.
-      const fixed = cards.filter((c) => c.kind === 'lab' || c.kind === 'tools' || c.kind === 'glossary');
+      // Start Here rides with them (owner 2026-09-29: it is always free and
+      // always reachable from its own Home card).
+      const fixed = cards.filter((c) => c.kind === 'lab' || c.kind === 'tools' || c.kind === 'glossary' || c.kind === 'startHere');
       // gs3081 "Audio Fundamentals" is the LAB-PROXY topic: it exists only so
       // finishing every Audio Fundamentals lab can mark one achievement complete
       // for the certificate core. It is not a study topic and must never be a
@@ -1375,6 +1436,10 @@ export function CourseSelectionScreen() {
 
   const openTools = useCallback(() => {
     (navigation as any).navigate('ToolsHub');
+  }, [navigation]);
+
+  const openStartHere = useCallback(() => {
+    (navigation as any).navigate('StartHere');
   }, [navigation]);
 
   const openLab = useCallback(() => {
@@ -1669,6 +1734,7 @@ export function CourseSelectionScreen() {
               onOpenGlossary={openGlossary}
               onOpenTools={openTools}
               onOpenLab={openLab}
+              onOpenStartHere={openStartHere}
               onOpenPublic={openPublicCourse}
               onLockedPress={() => setUpgradeOpen(true)}
               onOpenMore={openMore}

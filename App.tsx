@@ -53,6 +53,8 @@ import { CareerFinderAboutScreen } from './src/screens/careerfinder/CareerFinder
 // Sound Systems Lab (2026-09-25) — `#soundsystemspreview` walks the hub and
 // all five modes in the browser harness.
 import { SoundSystemsLabScreen } from './src/screens/lab/soundsystems/SoundSystemsLabScreen';
+import { StartHereScreen } from './src/screens/startHere/StartHereScreen';
+import { StartHereTermsScreen } from './src/screens/startHere/StartHereTermsScreen';
 // `#labpreview/<Screen>/<id>` (2026-09-25 legibility pass): any lab screen in
 // the browser harness by name, so a display can be measured without walking
 // Home → OPEN LABS (the app root sometimes rendered blank in the preview).
@@ -103,6 +105,9 @@ const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   CompressionLab: CompressionLabScreen as ComponentType,
   GateLab: GateLabScreen as ComponentType,
   StereoLab: StereoLabScreen as ComponentType,
+  // Start Here (2026-09-29): the free beginner experience + its words.
+  StartHere: StartHereScreen as ComponentType,
+  StartHereTerms: StartHereTermsScreen as ComponentType,
 };
 /** `#labpreview/<Screen>/<id>` → a ToolPreview of that lab, every other lab
  *  screen registered as a sibling so in-lab navigation (a home → a module)

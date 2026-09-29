@@ -193,6 +193,12 @@ export type RootStackParamList = {
   ToolLibrary: { toolKey?: import('../screens/tools/toolsData').ToolKey } | undefined;
   /** LIVE measurement screens (engine build 2026-07-23) — each gates itself
    *  honestly via EngineGate when the engine isn't in the build. */
+  /** Start Here: Your First Steps in Audio (owner 2026-09-29) — the FREE
+   *  beginner experience from its own Home card. Not a lab-catalog entry, not
+   *  membership-gated, no certificate credit. */
+  StartHere: undefined;
+  /** Its 24 starter words — list, flip cards, quiz (pushed over StartHere). */
+  StartHereTerms: undefined;
   SplMeter: undefined;
   Rta: undefined;
   WaveformLive: undefined;
