@@ -18,8 +18,8 @@
  */
 import { useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
-import { useLabProbeLines } from '../../features/lab/labProbe';
-import { Animated, Easing, LayoutAnimation, Platform, Pressable, ScrollView, StyleSheet, Text, UIManager, View } from 'react-native';
+import { labProbe, useLabProbeLines } from '../../features/lab/labProbe';
+import { Animated, Easing, LayoutAnimation, Platform, Pressable, ScrollView, StyleSheet, Text, UIManager, View, type GestureResponderEvent } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
@@ -154,14 +154,52 @@ export function HeaderPlayButton({
   // No ring at all = the touch never reached the button.
   const ring = useRef(new Animated.Value(0)).current;
   const [ringLive, setRingLive] = useState(true);
-  const burst = () => {
+  // BACKUP PRESS (owner 2026-09-29, iPhone: the ring bursts but ▶ never
+  // changes and no probe line appears — the touch reaches this button yet the
+  // Pressable's onPress never fires; something takes the responder). The
+  // wrapper's raw touch events do not go through the responder system, so a
+  // short, still tap that ends here with no onPress fires onPress itself.
+  // `firedRef` makes the two paths one press, never two.
+  const firedRef = useRef(false);
+  const touchRef = useRef({ x: 0, y: 0, t: 0 });
+  const press = (via: string) => {
+    if (firedRef.current) return;
+    firedRef.current = true;
+    labProbe(`▶ press via ${via}`); // TEMP probe
+    onPress();
+  };
+  const burst = (e: GestureResponderEvent) => {
+    firedRef.current = false;
+    touchRef.current = { x: e.nativeEvent.pageX, y: e.nativeEvent.pageY, t: Date.now() };
+    labProbe(`▶ touch${disabled ? ' (DISABLED)' : ''}`); // TEMP probe
     setRingLive(!disabled);
     ring.stopAnimation();
     ring.setValue(0);
     Animated.timing(ring, { toValue: 1, duration: 520, easing: Easing.out(Easing.quad), useNativeDriver: true }).start();
   };
   return (
-    <View onTouchStart={burst} style={styles.headerPlayWrap}>
+    <View
+      onTouchStart={burst}
+      onTouchEnd={(e) => {
+        const t0 = touchRef.current;
+        const moved = Math.hypot(e.nativeEvent.pageX - t0.x, e.nativeEvent.pageY - t0.y);
+        const held = Date.now() - t0.t;
+        // Let the Pressable's own onPress land first (it fires on release).
+        setTimeout(() => {
+          if (firedRef.current) return;
+          if (disabled) {
+            labProbe('▶ release — button disabled, no press'); // TEMP probe
+            return;
+          }
+          if (moved > 14 || held > 1500) {
+            labProbe(`▶ release ignored (moved ${Math.round(moved)} / ${held} ms)`); // TEMP probe
+            return;
+          }
+          press('backup');
+        }, 120);
+      }}
+      style={styles.headerPlayWrap}
+    >
       <Animated.View
         pointerEvents="none"
         style={[
@@ -180,7 +218,8 @@ export function HeaderPlayButton({
           disabled && styles.headerPlayOff,
           pressed && !disabled && styles.headerPlayPressed,
         ]}
-        onPress={onPress}
+        onPressIn={() => labProbe('▶ pressIn')} // TEMP probe
+        onPress={() => press('pressable')}
         disabled={disabled}
         hitSlop={8}
         accessibilityRole="button"
