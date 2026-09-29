@@ -150,7 +150,24 @@ export function GalleryScreen() {
                 </View>
               </View>
             ) : (
-              <Text style={styles.empty}>Earn your first trophy to see it here.</Text>
+              // A real empty state (owner 2026-09-29, tablet pass): one grey
+              // line in the corner of an iPad-sized screen read as broken. An
+              // empty vinyl disc in the gallery's own language, what fills it,
+              // and the way there.
+              <View style={styles.emptyWrap}>
+                <Svg width={112} height={112} viewBox="0 0 112 112" accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+                  <Circle cx={56} cy={56} r={54} fill="#15161b" stroke="#34363f" strokeWidth={2} />
+                  <Circle cx={56} cy={56} r={44} fill="none" stroke="#24262d" strokeWidth={1.2} />
+                  <Circle cx={56} cy={56} r={35} fill="none" stroke="#24262d" strokeWidth={1.2} />
+                  <Circle cx={56} cy={56} r={18} fill={colors.amber} opacity={0.35} />
+                  <Circle cx={56} cy={56} r={3.5} fill="#0b0b0e" />
+                </Svg>
+                <Text style={styles.emptyTitle}>No trophies yet</Text>
+                <Text style={styles.empty}>Earn your first trophy to see it here — pass a topic quiz and it lands in this gallery, newest first.</Text>
+                <View style={{ width: 220, marginTop: 6 }}>
+                  <StudioButton label="Start studying" small onPress={() => (navigation as { navigate: (n: string) => void }).navigate('Study')} />
+                </View>
+              </View>
             )
           ) : null
         }
@@ -166,7 +183,9 @@ const styles = StyleSheet.create({
   backBtn: { alignSelf: 'center' },
   back: { fontFamily: fonts.oswaldSemiBold, fontSize: 28, lineHeight: 28, color: colors.textSub, marginRight: -2 },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, letterSpacing: 1.4, color: colors.textPrimary },
-  empty: { fontFamily: fonts.barlowRegular, fontSize: 14, color: colors.textSub, marginTop: 8 },
+  empty: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSub, textAlign: 'center', maxWidth: 360 },
+  emptyWrap: { alignItems: 'center', gap: 10, paddingTop: 72, paddingHorizontal: 24 },
+  emptyTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, letterSpacing: 1, color: colors.textPrimary, marginTop: 6 },
   errorCard: {
     backgroundColor: '#161616',
     borderWidth: 1,
