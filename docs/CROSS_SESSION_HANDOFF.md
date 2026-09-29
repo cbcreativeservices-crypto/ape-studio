@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 13:25 · ccode · 500a0512
+changed: Awards: 'Explore the Academy' no longer blank after opening at a later page
+affects other side: nothing — client JS only (Awards pager)
+needs: nothing
+
+
 ### 2026-09-29 13:08 · ccode · f2285bc7
 changed: Tablet pass: guard test - tablet rule, grid columns, rack glass, every capped surface
 affects other side: nothing — client JS only (tablet layout pass)
