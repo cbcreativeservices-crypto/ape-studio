@@ -29,6 +29,7 @@ import {
   resetLocal as resetMeasurementStore,
 } from '../tools/measure/measurementStore';
 import { resetLocal as resetLabCompletion } from '../lab/labCompletion';
+import { resetLocal as resetLabVisits } from '../lab/labVisits';
 import { resetLocal as resetExposureMonitor } from '../audio/exposureMonitor';
 import { resetLocal as resetDashboardCache } from '../dashboard/dashboardCache';
 import { clearQueuedBatches } from '../study/studyQueueStorage';
@@ -226,6 +227,7 @@ export function resetAllLocalStores(): void {
   resetHomeCardsStore();
   resetMeasurementStore();
   resetLabCompletion();
+  resetLabVisits();
   // Hearing-exposure dose/sessions/limit — without this the departing user's
   // dose stayed in memory AND was re-persisted under the next account
   // (2026-08-28).
