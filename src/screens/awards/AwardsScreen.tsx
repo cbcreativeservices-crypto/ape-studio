@@ -43,6 +43,7 @@ import {
 } from './awardsData';
 import { fetchV3Programs, fetchV3Certs, fetchV3Curriculum, flattenV3, type V3Credential } from '../../data/v3Curriculum';
 import { CardArt } from '../../components/CardArt';
+import { StudioButton } from '../../components/StudioButton';
 import { credentialArtUrl } from './CredentialThumb';
 import { CredentialDetailModal, type CredentialDetail } from './CredentialDetailModal';
 import type { RootStackParamList } from '../../navigation/types';
@@ -474,7 +475,9 @@ export function AwardsScreen({ navigation, route }: Props) {
     setIdx(i);
     // Landing on Enrollments locks the swipe (exit via Home) — same rule the
     // picker flow applies, kept here so every jump agrees.
-    if (i === ENROLLMENT_IDX) setSwipeLocked(true);
+    // Leaving it unlocks again (bug hunt 2026-09-29) — this used to only ever
+    // lock, so a jump OUT of Enrollments left every other page unswipeable.
+    setSwipeLocked(i === ENROLLMENT_IDX);
     // Instant jump so it does not flash through the pages in between.
     requestAnimationFrame(() => listRef.current?.scrollToIndex({ index: i, animated: false }));
   }, []);
@@ -526,22 +529,31 @@ export function AwardsScreen({ navigation, route }: Props) {
   // Distinguishes "still loading" from "genuinely empty" so the pickers can show
   // an honest empty state instead of just the REQUIRED-CORE banner over blank.
   const [v3Loaded, setV3Loaded] = useState(false);
-  useEffect(() => {
-    let alive = true;
+  // A callback, not a mount-only effect (bug hunt 2026-09-29): the empty
+  // picker told the learner to "pull up again" but there was no refresh
+  // control and nothing re-fetched — a failed first read stuck until the
+  // screen was rebuilt. The pickers' RETRY calls this.
+  const aliveRef = useRef(true);
+  const loadV3 = useCallback(() => {
+    setV3Loaded(false);
     void Promise.all([fetchV3Programs(), fetchV3Certs()]).then(([p, c]) => {
-      if (!alive) return;
+      if (!aliveRef.current) return;
       setV3Programs(p);
       setV3Certs(c);
       setV3Loaded(true);
     });
     void fetchV3Curriculum().then((fields) => {
-      if (!alive) return;
+      if (!aliveRef.current) return;
       setV3TopicNames(new Map(flattenV3(fields).map((t) => [t.gs, t.name] as const)));
     });
-    return () => {
-      alive = false;
-    };
   }, []);
+  useEffect(() => {
+    aliveRef.current = true;
+    loadV3();
+    return () => {
+      aliveRef.current = false;
+    };
+  }, [loadV3]);
   // Both award catalogs listed A–Z by name (user request 2026-07-22).
   const specCertsAZ = useMemo(
     () =>
@@ -932,11 +944,18 @@ export function AwardsScreen({ navigation, route }: Props) {
             </View>
 
             {specCertsAZ.length === 0 ? (
-              <Text style={styles.awardsEmpty}>
-                {v3Loaded
-                  ? 'Specialization certificates aren’t available right now. Pull up again in a moment, or check your connection.'
-                  : 'Loading certificates…'}
-              </Text>
+              <>
+                <Text style={styles.awardsEmpty}>
+                  {v3Loaded
+                    ? 'Specialization certificates aren’t available right now. Check your connection and retry.'
+                    : 'Loading certificates…'}
+                </Text>
+                {v3Loaded ? (
+                  <View style={styles.awardsRetry}>
+                    <StudioButton label="Retry" variant="secondary" small onPress={loadV3} />
+                  </View>
+                ) : null}
+              </>
             ) : null}
 
             {/* Flat rows (2026-09-15): tap → CredentialDetailModal. */}
@@ -1021,11 +1040,18 @@ export function AwardsScreen({ navigation, route }: Props) {
             </View>
 
             {programPathsAZ.length === 0 ? (
-              <Text style={styles.awardsEmpty}>
-                {v3Loaded
-                  ? 'Program paths aren’t available right now. Pull up again in a moment, or check your connection.'
-                  : 'Loading program paths…'}
-              </Text>
+              <>
+                <Text style={styles.awardsEmpty}>
+                  {v3Loaded
+                    ? 'Program paths aren’t available right now. Check your connection and retry.'
+                    : 'Loading program paths…'}
+                </Text>
+                {v3Loaded ? (
+                  <View style={styles.awardsRetry}>
+                    <StudioButton label="Retry" variant="secondary" small onPress={loadV3} />
+                  </View>
+                ) : null}
+              </>
             ) : null}
 
             {/* Flat rows (2026-09-15): tap → CredentialDetailModal. The meta
@@ -1277,6 +1303,7 @@ const styles = StyleSheet.create({
   },
   coreBannerHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.6, color: colors.textSub },
   coreBannerText: { fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
+  awardsRetry: { width: 180, alignSelf: 'center', marginTop: 12 },
   awardsEmpty: {
     fontFamily: fonts.barlowRegular,
     fontSize: 14,
