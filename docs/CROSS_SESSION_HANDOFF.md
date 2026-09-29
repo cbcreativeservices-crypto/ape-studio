@@ -204,6 +204,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 00:09 · ccode · 4a5cd02c
+changed: fix(cymatics): bug hunt 2026-09-29 — gallery, art studio, studios, store
+affects other side: nothing — client JS only (wave/cymatics fixes)
+needs: nothing
+
 ### 2026-09-29 00:09 · ccode · e0a31105
 changed: Lab audio: re-check the gate before a clip starts; no stuck ■; no unasked popup
 affects other side: nothing — client JS only (lab shell/rack fixes)
