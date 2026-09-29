@@ -62,7 +62,7 @@ import Svg, { Circle, Ellipse, G, Line, Path, Rect, Text as SvgText } from 'reac
 import { colors, fonts } from '../../../../theme/tokens';
 import { OptionChip, VerdictBanner } from '../../cable/lessons/bits';
 import { AuthorityBadge, CiSection, FindProgress, RuleFeedback, SpecCard, announceComplete, ruleFor } from '../bits';
-import { CI_CLASS_TINTS } from '../data/cableTypes';
+import { CI_CLASS_KEY, CI_CLASS_TINTS } from '../data/cableTypes';
 import { mistakeById } from '../data/mistakes';
 import { CI_RACK_GROUPS, CI_RACK_ISSUES, CI_RACK_PLAN_NOTE, CI_RACK_ZONES } from '../data/scenarios';
 import type { CiDimScores } from '../engine/score';
@@ -1817,7 +1817,7 @@ export function RackScene({ width, completed, onComplete, openSources }: CiModul
         ))}
       </View>
       <Text style={styles.tintNote}>
-        {'Training visualization — the cable-class colors are a teaching language only; field cable colors vary. The switch is reverse-racked so its ports face the rear with the rest of the cabling; the designation strip is drawn on the rear for the exercise.'}
+        {`Training visualization — the cable-class colors are a teaching language only; field cable colors vary (${CI_CLASS_KEY}). The switch is reverse-racked so its ports face the rear with the rest of the cabling; the designation strip is drawn on the rear for the exercise.`}
       </Text>
 
       {/* ═══════════ PHASE A — inspect the bad rack ═══════════ */}

@@ -1417,8 +1417,8 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
         />
         <Text style={s.caption}>
           Training visualization — stage plot to scale (faint grid = 1 m), in the lab’s teaching colors (field cable
-          colors vary): cyan = mic lines · gold = monitor feeds · grey = multicores (trunk to FOH, split to MON, drum
-          sub-snake) · red = AC power to quad boxes · grey strips = gaffer tape · yellow = low-profile cover at the stair ·
+          colors vary): cyan = mic lines · yellow = monitor (loudspeaker) feeds · grey = multicores (trunk to FOH, split to
+          MON, drum sub-snake) · red = AC power to quad boxes · grey strips = gaffer tape · yellow-lidded ramp = low-profile cover at the stair ·
           dashed = the way performers come up the stair. The amp, keys and split lines were already dressed right.
         </Text>
         <View style={{ gap: 12 }}>

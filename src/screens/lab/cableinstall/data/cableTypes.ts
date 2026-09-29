@@ -39,15 +39,32 @@ export type CiCableType = {
   concerns: string[];
 };
 
-/** Training color language for cable classes — visualization ONLY. */
+/**
+ * Training color language for cable classes — visualization ONLY (field cable
+ * colors vary). The ONE source of truth: every scene, chip dot and legend
+ * takes its class color from here.
+ *
+ * CONTROL is near-white (owner 2026-09-28: it was #e0b25e, a gold almost
+ * identical to SPEAKER's #ffd35e — ΔE ≈ 18 to normal vision, ≈ 17 under
+ * deuteranopia). Near-white carries no hue, so it cannot collide with any of
+ * the five hues around it: control ↔ speaker is now ΔE ≈ 64 (normal vision),
+ * and control's closest pair in the set is ΔE ≈ 38 normal, 28 deuteranopia,
+ * 18 protanopia, 34 tritanopia (Machado 2009 simulation, CIELAB) — no worse
+ * than the set's existing pairs — at 17.2 : 1 on the lab's #0b0b0e background. (Grey jacketed control cable is common in the field
+ * too, but that is incidental — this is a teaching color.)
+ */
 export const CI_CLASS_TINTS = {
   power: '#ff5a48',
   analog: '#4fd0e0',
   network: '#37d97b',
   speaker: '#ffd35e',
   fiber: '#c77dff',
-  control: '#e0b25e',
+  control: '#eef0f3',
 } as const;
+
+/** The class key in words, for captions (keep in step with the tints). */
+export const CI_CLASS_KEY =
+  'red = AC power · cyan = analog audio · green = network · yellow = loudspeaker · white = control · violet = fiber';
 
 export const CI_CABLE_TYPES: CiCableType[] = [
   {

@@ -64,7 +64,7 @@ import { CiSection, RuleFeedback, SpecCard, announceComplete } from '../bits';
 import { DragSlider } from '../../foundations/bits';
 import { OptionChip } from '../../cable/lessons/bits';
 import { CI_BEND_EXERCISES, CI_PULL_SPEC, CI_RESTRAINT_ZONES } from '../data/scenarios';
-import { cableTypeById } from '../data/cableTypes';
+import { CI_CLASS_TINTS, cableTypeById } from '../data/cableTypes';
 import { clamp01, clamp100 } from '../engine/score';
 import {
   ACircle,
@@ -677,7 +677,8 @@ const TensionMeter = memo(function TensionMeter({ w, h, target, event }: { w: nu
 });
 
 /* ── C — bundle cross-section under a strap, driven by strap tension ────── */
-const BUNDLE_TINTS = ['#4fd0e0', '#37d97b', '#ffd35e', '#c77dff'];
+/** Four class-coloured cables in the bundle (analog, network, speaker, fiber). */
+const BUNDLE_TINTS = [CI_CLASS_TINTS.analog, CI_CLASS_TINTS.network, CI_CLASS_TINTS.speaker, CI_CLASS_TINTS.fiber];
 const LOOSE_MAX = CI_RESTRAINT_ZONES.looseMax;
 const SECURE_MAX = CI_RESTRAINT_ZONES.secureMax;
 const B_CX = 100;
