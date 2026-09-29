@@ -279,6 +279,10 @@ export function WaveformView(p: {
   /** Draw the 0 dBFS rails + red flat-top highlights where |x| ≥ 1. */
   showClip?: boolean;
   phase: SharedValue<number>;
+  /** ADDITIVE (Start Here, 2026-09-29): a beginner's view — the shape and its
+   *  gridlines only; no PK/RMS/CF/DC stat line and no dB scale numbers,
+   *  which the free beginner lesson has not taught yet. */
+  plain?: boolean;
 }) {
   const w = p.width;
   const h = p.height ?? 170;
@@ -423,6 +427,8 @@ export function WaveformView(p: {
         </Path>
         <Path path={playhead} color="#e8ecf4" style="stroke" strokeWidth={1.1 * ts} opacity={0.9} />
       </Canvas>
+      {p.plain ? null : (
+        <>
       <Lbl x={3} y={yOf(1) - 4} w={30} align="left" size={7} color={showClip ? RED : TEXT_DIM}>
         0
       </Lbl>
@@ -434,7 +440,9 @@ export function WaveformView(p: {
       <Lbl x={w - 230} y={4 * ts} w={226} align="right" size={7}>
         {statLine}
       </Lbl>
-      {Math.abs(st.dc) > 0.004 ? (
+        </>
+      )}
+      {!p.plain && Math.abs(st.dc) > 0.004 ? (
         <Lbl x={w - 230} y={16 * ts} w={226} align="right" size={7} color={AMBER}>
           {`DC ${st.dc >= 0 ? '+' : ''}${st.dc.toFixed(2)}`}
         </Lbl>
@@ -460,6 +468,10 @@ export function PeakMeterView(p: {
   live?: LiveMeterDrive;
   /** Wall-seconds one phase-clock loop represents (live ballistics scale). */
   loopSeconds?: number;
+  /** ADDITIVE (Start Here, 2026-09-29): a beginner's view — the scale in
+   *  dBFS only; no PEAK PROGRAM / OVER / L-R / CREST legends. The OVER lamp
+   *  itself still lights. */
+  plain?: boolean;
 }) {
   const w = p.width;
   const h = p.height ?? 190;
@@ -735,29 +747,39 @@ export function PeakMeterView(p: {
         </Path>
         <Path path={G.lamp} color={RED} opacity={overO} />
       </Canvas>
+      {p.plain ? null : (
+        <>
       <Lbl x={10} y={6 * ts} w={140} align="left" size={8} font={fonts.oswaldSemiBold} ls={1}>
         PEAK PROGRAM
       </Lbl>
       <Lbl x={w / 2 - 26} y={11 * ts} w={52} size={7.5} color="#f4d9d5" ls={1.5}>
         OVER
       </Lbl>
+        </>
+      )}
       {[0, -6, -12, -20, -30, -40, -50, -60].map((d) => (
         <Lbl key={d} x={w / 2 - 13} y={yDb(d) - 4} w={26} size={6.5}>
           {`${d}`}
         </Lbl>
       ))}
+      {p.plain ? null : (
+        <>
       <Lbl x={colLx + colWpx / 2 - 10} y={barBot + 6 * ts} w={20} size={8} color="#9aa0ac">
         {p.live ? 'M' : 'L'}
       </Lbl>
       <Lbl x={colRx + colWpx / 2 - 10} y={barBot + 6 * ts} w={20} size={8} color="#9aa0ac">
         {p.live ? 'M' : 'R'}
       </Lbl>
+        </>
+      )}
       <Lbl x={w / 2 - 16} y={barBot + 6 * ts} w={32} size={6.5}>
         dBFS
       </Lbl>
+      {p.plain ? null : (
       <Lbl x={10} y={h - 13 * ts} w={140} align="left" size={7}>
         {p.live ? 'LIVE INPUT · MONO' : `CREST ${E.crest.toFixed(1)} dB`}
       </Lbl>
+      )}
     </View>
   );
 }

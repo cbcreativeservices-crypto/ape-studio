@@ -114,7 +114,9 @@ export function visHzFor(freqHz: number): number {
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared tone controller (the shell owns ONE sine voice)
 
-type ToneApi = {
+/** Exported for the free Start Here beginner lab (2026-09-29), which reuses
+ *  this exact voice — same gate, same guards, same stop-on-close. */
+export type ToneApi = {
   engineReady: boolean;
   /** engineVersion ≥ 3 — the 12-harmonic additive voice exists. */
   additiveReady: boolean;
@@ -146,7 +148,7 @@ function additivePayloadOf(f0: number, amps: number[]): number[] {
   return [f0, ...a, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 }
 
-function useCourseTone(engineReady: boolean): ToneApi {
+export function useCourseTone(engineReady: boolean): ToneApi {
   const { requestAudioOutput } = useAudioOutputGate();
   const [playing, setPlaying] = useState(false);
   // Backgrounding, shake-to-mute and the idle auto-mute all call

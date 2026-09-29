@@ -28,7 +28,7 @@
  * because the learner pressed FINISH / DONE / the WHAT'S LEFT chip, and it has
  * no timers or entrance animation. Text ≥ 9 pt at 390 wide (smallest is 10).
  */
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
@@ -64,6 +64,8 @@ export function LabEndScreen({
   doneLabel = 'DONE · BACK TO LABS',
   guest,
   bottomInset,
+  extra,
+  completeTitle,
 }: {
   labTitle: string;
   /** Every unit of the lab, in lab order (checks last). */
@@ -86,12 +88,18 @@ export function LabEndScreen({
   guest?: boolean;
   /** Extra bottom padding when the host has no footer below this. */
   bottomInset?: boolean;
+  /** ADDITIVE (Start Here, 2026-09-29): host content under the lead line and
+   *  above the what's-left list — the beginner lab's "choose what's next". */
+  extra?: ReactNode;
+  /** ADDITIVE: the title when nothing is left, for a host that is not a
+   *  "lab" to its learner (Start Here reads YOU'RE READY). */
+  completeTitle?: string;
 }) {
   const insets = useSafeAreaInsets();
   const autoGuest = useLabEndGuest();
   const isGuest = guest ?? autoGuest;
   const w = whatsLeft(units, cleared);
-  const title = endTitle(w);
+  const title = w.complete && completeTitle ? completeTitle : endTitle(w);
   const [showCredited, setShowCredited] = useState(false);
   // A guest banks nothing to an account, so their rows never read CREDITED.
   const tag = mode === 'credit' && !isGuest ? 'CREDITED' : 'DONE';
@@ -128,6 +136,7 @@ export function LabEndScreen({
         {title}
       </Text>
       <Text style={styles.lead}>{endLead(w, { mode, noun, guest: isGuest })}</Text>
+      {extra}
 
       {w.left.length > 0 ? (
         <View style={styles.list} accessibilityLabel={`${w.left.length} still to do`}>

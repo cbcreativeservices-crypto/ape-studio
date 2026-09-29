@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 16:32 · ccode · bb72bad9
+changed: Foundations air view: sparkle glint no longer grows into a blob
+affects other side: nothing — client JS only (Foundations viz fix found while building Start Here)
+needs: nothing
+
+
 ### 2026-09-29 16:28 · ccode · dafc81de
 changed: Start Here card art: start_here.webp (941x1672) + upload script accepts it
 affects other side: course-cards bucket gains start_here.webp (owner uploads via scripts/upload-menu-cards.mjs)
