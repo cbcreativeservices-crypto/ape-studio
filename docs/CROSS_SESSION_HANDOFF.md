@@ -195,6 +195,30 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-28 22:56 · ccode · 4a0587bd
+changed: Cable Install lab: network class is mint, apart from power red for deuteranopes
+affects other side: nothing — client JS only (cable lab art)
+needs: nothing
+
+
+### 2026-09-28 22:56 · ccode · a970a48b
+changed: Cable Install Stage 11: firestop after verification, next card in view, 9-pt labels
+affects other side: nothing — client JS only (cable lab art)
+needs: nothing
+
+
+### 2026-09-28 22:56 · ccode · 48c7a394
+changed: Cable Install Stage 8: FINISHED VIEW no longer gives away Exercise 2
+affects other side: nothing — client JS only (cable lab art)
+needs: nothing
+
+
+### 2026-09-28 22:56 · ccode · 6beedf0e
+changed: Cable Install Stage 6: a rack an installer would sign off
+affects other side: nothing — client JS only (cable lab art)
+needs: nothing
+
+
 ### 2026-09-28 22:33 · ccode · 637bb656
 changed: Tuner: larger, fully-bordered instrument + preset buttons that stay visible and tappable
 affects other side: nothing — client JS only (tuner / dashboard UI) <FILL — what A (backend) must re-read or adjust, or "nothing">
