@@ -4,7 +4,7 @@
  * identically (MicSelect pixel conventions; verdicts are glyph + words +
  * color, never color alone; accessibility state on every Pressable).
  */
-import { createContext, useContext, useEffect, useRef, useState, useMemo } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState, useMemo } from 'react';
 import { AccessibilityInfo, Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
 import { animationsAllowed } from '../../../../features/settings/a11y';
 import { colors, fonts } from '../../../../theme/tokens';
@@ -18,6 +18,25 @@ import { CORE_PRINCIPLE } from '../data/lessons';
 export const CableStepNavCtx = createContext<((id: CableLessonId) => void) | null>(null);
 export function useCableStepNav() {
   return useContext(CableStepNavCtx);
+}
+
+/** Lesson state the SHELL holds (bug hunt 2026-09-29): only the active lesson
+ *  mounts, so the tester bench's solved cables and both challenges' progress
+ *  were thrown away the moment the learner stepped to another lesson and
+ *  back. The shell provides one plain object for its lifetime; lessons read
+ *  their slot on mount and write it on every change. */
+export const CableShellStateCtx = createContext<Record<string, unknown> | null>(null);
+export function useCableShellState<T>(key: string, initial: T): [T, (next: T) => void] {
+  const store = useContext(CableShellStateCtx);
+  const [v, setV] = useState<T>(() => (store && key in store ? (store[key] as T) : initial));
+  const set = useCallback(
+    (next: T) => {
+      if (store) store[key] = next;
+      setV(next);
+    },
+    [store, key],
+  );
+  return [v, set];
 }
 
 /** Reduce-motion preference (ExposureCheckin subscription pattern — the app

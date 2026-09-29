@@ -17,14 +17,90 @@
  * useCableStepNav (rendered only when the shell provides the context).
  */
 import { useCallback, useRef, useState } from 'react';
-import { AccessibilityInfo, Text, View } from 'react-native';
+import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 import { GlassButton } from '../../../../components/GlassButton';
-import { markLabUnit, useLabCompletion } from '../../../../features/lab/labCompletion';
+import { markLabUnit, useLabClearedUnits, useLabCompletion } from '../../../../features/lab/labCompletion';
+import { colors, fonts } from '../../../../theme/tokens';
 import { CheckQuestion } from '../../foundations/bits';
 import { useCableStepNav } from './bits';
-import { FINAL_UNIT } from '../cableTypes';
+import { CHALLENGE_A_UNIT, CHALLENGE_B_UNIT, FINAL_UNIT, SAFETY_UNITS, type CableLessonId } from '../cableTypes';
+import { CABLE_LESSONS, LESSON_UNITS } from '../data/lessons';
 import { FINAL_QUESTIONS, L12_LESSON, SAFETY_QUESTIONS, type SafetyCheckItem } from '../data/lesson12';
 import { CheckDoneBanner, Eyebrow, LessonBanner, PrincipleBanner, lessonStyles as s } from './bits';
+
+/** One row of the what's-left list: a step with uncleared units. */
+type LeftRow = { id: CableLessonId; step: number; title: string; detail: string };
+
+/**
+ * WHAT'S LEFT (bug hunt 2026-09-29 — owner hard rule: every lab ends with a
+ * "what's left" screen). The final step used to show only "X OF Y UNITS
+ * CLEARED" and DONE ✓ just went back, so a learner could not tell WHICH
+ * units were missing. Every step with an uncleared unit is listed by name;
+ * earlier steps jump there, this step's own banks point down the page.
+ */
+export function outstandingRows(cleared: ReadonlySet<string>): LeftRow[] {
+  const rows: LeftRow[] = [];
+  CABLE_LESSONS.forEach((l, i) => {
+    const missing = LESSON_UNITS[l.id].filter((u) => !cleared.has(u));
+    if (missing.length === 0) return;
+    let detail = 'Knowledge check not yet solved';
+    if (l.id === 'l10_tester') detail = 'Bench not yet cleared — every cable named and dispatched';
+    else if (l.id === 'l11_challenge') {
+      const left = [
+        missing.includes(CHALLENGE_A_UNIT) ? 'Show A (live show)' : null,
+        missing.includes(CHALLENGE_B_UNIT) ? 'Studio B (recording studio)' : null,
+      ].filter(Boolean);
+      detail = `${left.join(' and ')} not yet solved`;
+    } else if (l.id === 'l12_final') {
+      const safetyLeft = missing.filter((u) => SAFETY_UNITS.includes(u)).length;
+      const parts = [
+        missing.includes(FINAL_UNIT) ? 'the general bank' : null,
+        safetyLeft > 0 ? `${safetyLeft} critical safety question${safetyLeft === 1 ? '' : 's'}` : null,
+      ].filter(Boolean);
+      detail = `On this page, below: ${parts.join(' and ')}`;
+    }
+    rows.push({ id: l.id, step: i + 1, title: l.title, detail });
+  });
+  return rows;
+}
+
+function WhatsLeft({ nav }: { nav: ((id: CableLessonId) => void) | null }) {
+  const cleared = useLabClearedUnits('af_cables');
+  const rows = outstandingRows(cleared);
+  if (rows.length === 0) return null;
+  return (
+    <View style={ws.list}>
+      <Text style={ws.head}>WHAT’S LEFT</Text>
+      {rows.map((r) => {
+        const here = r.id === 'l12_final';
+        const inner = (
+          <>
+            <View style={{ flex: 1, gap: 2 }}>
+              <Text style={ws.step}>{`STEP ${r.step} · ${r.title}`}</Text>
+              <Text style={ws.detail}>{r.detail}</Text>
+            </View>
+            {!here && nav ? <Text style={ws.go}>›</Text> : null}
+          </>
+        );
+        return !here && nav ? (
+          <Pressable
+            key={r.id}
+            style={ws.row}
+            onPress={() => nav(r.id)}
+            accessibilityRole="button"
+            accessibilityLabel={`Go to step ${r.step}, ${r.title}. ${r.detail}`}
+          >
+            {inner}
+          </Pressable>
+        ) : (
+          <View key={r.id} style={ws.row} accessibilityLabel={`Step ${r.step}, ${r.title}. ${r.detail}`}>
+            {inner}
+          </View>
+        );
+      })}
+    </View>
+  );
+}
 
 export function Lesson12Body() {
   const completion = useLabCompletion('af_cables');
@@ -76,7 +152,10 @@ export function Lesson12Body() {
           <Text style={s.body}>Credit for this lab is recorded through the Academy’s lab system.</Text>
         </>
       ) : (
-        <Eyebrow text={`LAB PROGRESS · ${completion.cleared} OF ${completion.total} UNITS CLEARED`} />
+        <>
+          <Eyebrow text={`LAB PROGRESS · ${completion.cleared} OF ${completion.total} UNITS CLEARED`} />
+          <WhatsLeft nav={nav} />
+        </>
       )}
 
       {/* ── BANK 1 — GENERAL ─────────────────────────────────────────────── */}
@@ -120,3 +199,20 @@ export function Lesson12Body() {
     </>
   );
 }
+
+const ws = StyleSheet.create({
+  list: { gap: 1, borderWidth: 1, borderColor: '#2a2a2e', borderRadius: 10, overflow: 'hidden' },
+  head: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 11,
+    letterSpacing: 1.4,
+    color: colors.amber,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: '#141416',
+  },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 10, paddingHorizontal: 12, backgroundColor: '#141416' },
+  step: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.6, color: colors.textPrimary },
+  detail: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSecondary },
+  go: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, color: colors.amber },
+});

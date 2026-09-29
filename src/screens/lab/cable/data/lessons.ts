@@ -16,6 +16,7 @@ import {
   SAFETY_UNITS,
   TESTER_UNIT,
   type CableLessonDef,
+  type CableLessonId,
 } from '../cableTypes';
 
 /** The central principle, repeated through the lab (owner spec §3, verbatim
@@ -134,3 +135,20 @@ export const CABLE_UNITS: readonly string[] = [
   ...SAFETY_UNITS,
   FINAL_UNIT,
 ];
+
+/** The af_cables units each STEP must clear (bug hunt 2026-09-29). Drives the
+ *  shell's progress dots (a dot is done when its units are cleared, not when
+ *  the learner has merely paged past it) and Lesson 12's what's-left list. */
+export const LESSON_UNITS = {} as Record<CableLessonId, readonly string[]>;
+for (const l of CABLE_LESSONS) {
+  LESSON_UNITS[l.id] =
+    l.unit != null
+      ? [l.unit]
+      : l.id === 'l10_tester'
+        ? [TESTER_UNIT]
+        : l.id === 'l11_challenge'
+          ? [CHALLENGE_A_UNIT, CHALLENGE_B_UNIT]
+          : l.id === 'l12_final'
+            ? [...SAFETY_UNITS, FINAL_UNIT]
+            : [];
+}

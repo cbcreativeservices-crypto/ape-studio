@@ -39,6 +39,7 @@ import {
   PrincipleBanner,
   VerdictBanner,
   lessonStyles as s,
+  useCableShellState,
   useReduceMotion,
   type Verdict,
 } from './bits';
@@ -144,7 +145,8 @@ export function Lesson10Body() {
   const [faultVerdict, setFaultVerdict] = useState<Verdict | null>(null);
   const [dispPick, setDispPick] = useState<TesterDisposition | null>(null);
   const [dispVerdict, setDispVerdict] = useState<Verdict | null>(null);
-  const [solved, setSolved] = useState<string[]>([]);
+  // Shell-held (bug hunt 2026-09-29): survives stepping to another lesson.
+  const [solved, setSolved] = useCableShellState<string[]>('l10.solved', []);
 
   const cable = TESTER_CABLES.find((c) => c.id === selId) ?? null;
   const cableSolved = cable != null && solved.includes(cable.id);
@@ -192,7 +194,7 @@ export function Lesson10Body() {
         markLabUnit('af_cables', TESTER_UNIT);
       }
     },
-    [cable, solved],
+    [cable, solved, setSolved],
   );
 
   return (

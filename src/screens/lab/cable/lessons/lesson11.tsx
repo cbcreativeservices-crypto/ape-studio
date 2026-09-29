@@ -37,6 +37,7 @@ import {
   PrincipleBanner,
   VerdictBanner,
   lessonStyles as s,
+  useCableShellState,
   useReduceMotion,
   useShuffled,
 } from './bits';
@@ -455,8 +456,10 @@ const EMPTY_WHY: never[] = [];
 
 export function Lesson11Body() {
   const [tab, setTab] = useState<'A' | 'B'>('A');
-  const [progA, setProgA] = useState<ChProgress>(FRESH);
-  const [progB, setProgB] = useState<ChProgress>(FRESH);
+  // Shell-held (bug hunt 2026-09-29): leaving the lesson used to wipe both
+  // challenges back to stage 1.
+  const [progA, setProgA] = useCableShellState<ChProgress>('l11.progA', FRESH);
+  const [progB, setProgB] = useCableShellState<ChProgress>('l11.progB', FRESH);
 
   const def = tab === 'A' ? CHALLENGE_A : CHALLENGE_B;
   const prog = tab === 'A' ? progA : progB;

@@ -24,11 +24,11 @@ import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GlassButton } from '../../../components/GlassButton';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
-import { registerLabUnits, useLabCompletion } from '../../../features/lab/labCompletion';
+import { registerLabUnits, useLabClearedUnits, useLabCompletion } from '../../../features/lab/labCompletion';
 import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
-import { CABLE_LESSONS, CABLE_UNITS, CORE_QUESTION } from './data/lessons';
-import { CableStepNavCtx } from './lessons/bits';
+import { CABLE_LESSONS, CABLE_UNITS, CORE_QUESTION, LESSON_UNITS } from './data/lessons';
+import { CableShellStateCtx, CableStepNavCtx } from './lessons/bits';
 import { LESSON_BODIES } from './lessons';
 
 const STEP_KEY = 'ape:cableStep';
@@ -45,6 +45,17 @@ export function CableLabScreen() {
     registerLabUnits('af_cables', CABLE_UNITS);
   }, []);
   const { cleared, total } = useLabCompletion('af_cables');
+  const clearedUnits = useLabClearedUnits('af_cables');
+  // Lesson state that must outlive the one mounted lesson (bench / challenge
+  // progress — bug hunt 2026-09-29). One object for the screen's lifetime.
+  const [lessonState] = useState<Record<string, unknown>>(() => ({}));
+  // Lessons actually opened (bug hunt 2026-09-29): the dots used `i < step`,
+  // so jumping to lesson 11 painted 1–10 done and announced them "visited".
+  const [visited, setVisited] = useState<ReadonlySet<number>>(() => new Set([0]));
+  const markVisited = useCallback(
+    (n: number) => setVisited((v) => (v.has(n) ? v : new Set(v).add(n))),
+    [],
+  );
 
   // Guest rule (owner 2026-08-12): anonymous users neither restore nor persist
   // their place — every open starts at the first lesson.
@@ -62,16 +73,20 @@ export function CableLabScreen() {
     void AsyncStorage.getItem(STEP_KEY).then((v) => {
       if (navigatedRef.current || noAccountRef.current) return;
       const n = v == null ? NaN : Number(v);
-      if (Number.isInteger(n) && n > 0 && n < CABLE_LESSONS.length) setStep(n);
+      if (Number.isInteger(n) && n > 0 && n < CABLE_LESSONS.length) {
+        setStep(n);
+        markVisited(n);
+      }
     }).catch(() => {});
   }, []);
 
   const goTo = useCallback((n: number) => {
     navigatedRef.current = true;
     setStep(n);
+    markVisited(n);
     scrollRef.current?.scrollTo({ y: 0, animated: false });
     if (!noAccountRef.current) void AsyncStorage.setItem(STEP_KEY, String(n)).catch(() => {});
-  }, []);
+  }, [markVisited]);
 
   const s = CABLE_LESSONS[step];
   const Body = LESSON_BODIES[s.id];
@@ -125,19 +140,24 @@ export function CableLabScreen() {
         </Pressable>
       </View>
       <View style={styles.dotsRow}>
-        {CABLE_LESSONS.map((st, i) => (
-          <Pressable
-            key={st.id}
-            onPress={() => goTo(i)}
-            hitSlop={{ top: 18, bottom: 18, left: 9, right: 9 }}
-            accessibilityRole="button"
-            accessibilityState={{ selected: i === step }}
-            aria-pressed={i === step}
-            accessibilityLabel={`Go to ${st.title}${i === step ? ', current lesson' : i < step ? ', visited' : ''}`}
-          >
-            <View style={[styles.dot, i === step && styles.dotActive, i < step && styles.dotDone]} />
-          </Pressable>
-        ))}
+        {CABLE_LESSONS.map((st, i) => {
+          // Done = this step's units are cleared (LESSON_UNITS), not "paged past".
+          const units = LESSON_UNITS[st.id];
+          const done = units.length > 0 && units.every((u) => clearedUnits.has(u));
+          return (
+            <Pressable
+              key={st.id}
+              onPress={() => goTo(i)}
+              hitSlop={{ top: 18, bottom: 18, left: 9, right: 9 }}
+              accessibilityRole="button"
+              accessibilityState={{ selected: i === step }}
+              aria-pressed={i === step}
+              accessibilityLabel={`Go to ${st.title}${i === step ? ', current lesson' : ''}${done ? ', cleared' : visited.has(i) && i !== step ? ', visited' : ''}`}
+            >
+              <View style={[styles.dot, i === step && styles.dotActive, i !== step && done && styles.dotDone]} />
+            </Pressable>
+          );
+        })}
         {total > 0 ? (
           <Text
             style={styles.progressText}
@@ -151,7 +171,9 @@ export function CableLabScreen() {
         <Text style={styles.stepTitle}>{s.title}</Text>
         <Text style={styles.body}>{s.intro}</Text>
         <CableStepNavCtx.Provider value={goToLesson}>
-          <Body key={s.id} />
+          <CableShellStateCtx.Provider value={lessonState}>
+            <Body key={s.id} />
+          </CableShellStateCtx.Provider>
         </CableStepNavCtx.Provider>
         <View style={styles.navRow}>
           <View style={{ flex: 1 }}>
