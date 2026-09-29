@@ -8,7 +8,7 @@
  * at the MIN_FONT 12 floor.
  */
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import type { BezelItem } from './rackTypes';
 
@@ -62,9 +62,18 @@ function Cell({ it, first, onHelp }: { it: BezelItem; first: boolean; onHelp?: (
   // Once the cell's width is known, a value that would not fit drops its
   // key line and, if the bare number still does not fit, stacks number over
   // unit — the number is never cut and no font ever goes under 9 pt.
+  //
+  // ⛔ AT THE USER'S FONT SIZE, NOT OURS (owner 2026-09-29, Android
+  // large-screen pass). The width estimate assumed font scale 1. Android users
+  // very often raise the system font size (1.3 is common; Android 14 goes to
+  // 2.0), and every glyph grows with it — so a value measured as fitting was
+  // really ~30 % wider and the NUMBER itself was cut to an ellipsis, the one
+  // thing this cell promises never happens. `fontScale` is live from the
+  // window; at the default 1 nothing changes.
+  const { fontScale } = useWindowDimensions();
   const [cellW, setCellW] = useState(0);
   const avail = cellW > 0 ? cellW - CELL_PAD : Infinity;
-  const fits = (s: string) => s.length * V_CH <= avail;
+  const fits = (s: string) => s.length * V_CH * (fontScale || 1) <= avail;
   const cropped = !fits(it.v);
   const parts = cropped ? splitUnit(it.v) : null;
   const stacked = cropped && parts != null && !fits(it.v) ;

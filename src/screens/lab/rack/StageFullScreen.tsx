@@ -33,6 +33,7 @@
  */
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Animated, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { isTabletWindow } from '../../../theme/tablet'; // tablet wording, owner 2026-09-29 (Android large-screen pass)
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Modal } from '../../../components/DimModal';
 import { colors, fonts } from '../../../theme/tokens';
@@ -277,7 +278,7 @@ export function StageFullScreen({
             <Animated.View style={[styles.hintRoll, { maxHeight: hintMaxH, opacity: hintAnim, transform: [{ translateY: hintShift }] }]}>
               <Pressable onPress={toggleHint} accessibilityRole="button" accessibilityLabel="Hide this hint" hitSlop={6}>
                 <Text style={styles.hint}>
-                  {zoom > 1 ? 'Drag to move around the drawing.' : 'Pick a zoom step to look closer. Turn the phone sideways for a wider view.'}
+                  {zoom > 1 ? 'Drag to move around the drawing.' : `Pick a zoom step to look closer. Turn the ${isTabletWindow(width, height) ? 'tablet' : 'phone'} sideways for a wider view.`}
                   <Text style={styles.hintChevron}>  ▾</Text>
                 </Text>
               </Pressable>

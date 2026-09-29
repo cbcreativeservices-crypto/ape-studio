@@ -20,6 +20,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../theme/tokens';
+import { useIsTablet } from '../theme/useIsTablet';
 
 /**
  * True once a landscape-only fullscreen has been open, in portrait, for longer
@@ -44,15 +45,28 @@ export function useLandscapeGrace(active: boolean, isPortrait: boolean, ms = 110
 
 /** The panel itself. `what` names the instrument, e.g. "full VU meter". */
 export function LandscapeRequiredNotice({ what, onClose }: { what: string; onClose: () => void }): ReactNode {
+  // TABLET WORDING (owner 2026-09-29, Android large-screen pass). On a tablet
+  // or an unfolded foldable, Android 16 ignores the app's request to turn the
+  // screen, and the app may be one half of a split screen or a desktop window
+  // — so "your phone's rotation lock is on" was both the wrong device and the
+  // wrong reason. Phones keep their sentence word for word.
+  const tablet = useIsTablet();
   return (
     <View style={styles.wrap} pointerEvents="box-none">
       <View style={styles.card}>
         {/* NEW COPY — owner review. */}
-        <Text style={styles.title}>TURN YOUR PHONE SIDEWAYS</Text>
-        <Text style={styles.body}>
-          The {what} is a landscape view. If the screen will not turn, your phone&apos;s rotation lock is on — switch it
-          off and try again.
-        </Text>
+        <Text style={styles.title}>{tablet ? 'TURN YOUR TABLET SIDEWAYS' : 'TURN YOUR PHONE SIDEWAYS'}</Text>
+        {tablet ? (
+          <Text style={styles.body}>
+            The {what} is a landscape view. Turn the tablet sideways. If the app is sharing the screen with another app,
+            or is in a window, make it full screen first.
+          </Text>
+        ) : (
+          <Text style={styles.body}>
+            The {what} is a landscape view. If the screen will not turn, your phone&apos;s rotation lock is on — switch it
+            off and try again.
+          </Text>
+        )}
         <Pressable style={styles.btn} onPress={onClose} accessibilityRole="button" accessibilityLabel="Close">
           <Text style={styles.btnText}>CLOSE</Text>
         </Pressable>
