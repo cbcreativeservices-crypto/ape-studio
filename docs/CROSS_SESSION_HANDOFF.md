@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 00:23 · ccode · 26d68638
+changed: fix: tuner full screens rotate again under the portrait_up stacks; Mic Selection DONE ignores a double tap
+affects other side: nothing — client JS only (tuner rotation + Mic Selection DONE guard; also covers 0a53d9b4, the ⓘ accuracy sheet reopen fix)
+needs: nothing
+
+
 ### 2026-09-29 00:17 · ccode · 85a39f9a
 changed: fix(tools): one record per SAVE; tuner overlays close on BACK; SignalGen start guards; portrait restored
 affects other side: nothing — client JS only (tools/calc fixes)
@@ -464,14 +470,14 @@ needs: nothing
 
 ### 2026-09-28 23:45 · ccode · dbab81af
 changed: Sign-up: 'account NOT created' + one-tap strong password; LOGIN explains a refused sign-up
-affects other side: nothing — client JS only (sign-up copy + password suggester) <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: nothing <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (sign-up copy + password suggester)
+needs: nothing
 
 
 ### 2026-09-28 23:35 · ccode · 0f317b6d
 changed: Glossary share: hook moved above the early return (Sentry APE-STUDIO-V)
-affects other side: nothing — client JS only (glossary share sheet) <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: nothing <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (glossary share sheet)
+needs: nothing
 
 
 ### 2026-09-28 22:56 · ccode · 4a0587bd
@@ -500,8 +506,8 @@ needs: nothing
 
 ### 2026-09-28 22:33 · ccode · 637bb656
 changed: Tuner: larger, fully-bordered instrument + preset buttons that stay visible and tappable
-affects other side: nothing — client JS only (tuner / dashboard UI) <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: nothing <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (tuner / dashboard UI)
+needs: nothing
 
 
 ### 2026-09-28 22:21 · ccode · 810f9b4f
@@ -524,8 +530,8 @@ needs: nothing
 
 ### 2026-09-28 22:01 · ccode · 93c72e02
 changed: Dashboard: members topics say so before the tap; 'Membership required' is a centred popup
-affects other side: nothing — client JS only (tuner / dashboard UI) nothing — client JS only (dashboard members-topic gate copy) <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: nothing nothing <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (dashboard members-topic gate copy)
+needs: nothing
 
 
 ### 2026-09-28 21:58 · ccode · fbb5b976
@@ -536,20 +542,20 @@ needs: nothing
 
 ### 2026-09-28 21:54 · ccode · b8fadf88
 changed: Tuner: averaged reading + held IN TUNE; live tools keep the screen awake
-affects other side: nothing — client JS only (tuner + tool keep-awake) <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: nothing <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (tuner + tool keep-awake)
+needs: nothing
 
 
 ### 2026-09-28 10:28 · ccode · cb91b1d1
 changed: docs: 2026-09-28 addendum to the handoff
-affects other side: nothing — docs only <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: nothing <FILL — what you need from A, or "nothing">
+affects other side: nothing — docs only
+needs: nothing
 
 
 ### 2026-09-28 10:15 · ccode · 8c45a492
 changed: Cable lab: the amp's rear grille is its exhaust everywhere (Stage 13 ins-12 matched Stage 6)
-affects other side: nothing — client JS only (cable lab text) <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: nothing <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (cable lab text)
+needs: nothing
 
 
 ### 2026-09-28 10:11 · ccode · 4ea1d9a2
@@ -584,8 +590,8 @@ needs: nothing
 
 ### 2026-09-28 08:11 · ccode · f4bf2402
 changed: Labs probe round 3: playback trail (gate, fetch, player status, errors) + ?/ⓘ presses
-affects other side: nothing — client JS only (temp lab touch probe) <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: nothing <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (temp lab touch probe)
+needs: nothing
 
 
 ### 2026-09-28 08:05 · ccode · d9487d01
@@ -620,74 +626,74 @@ needs: nothing
 
 ### 2026-09-27 21:38 · ccode · 56ed3ccd
 changed: Labs probe round 2: which container takes the touch + the buttons' real frames
-affects other side: nothing — client JS only (temp lab touch probe) <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: nothing <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (temp lab touch probe)
+needs: nothing
 
 
 ### 2026-09-27 21:15 · ccode · 80e83d86
 changed: Labs: TEMP touch probe (triple-tap the lab title) for the dead ?/ⓘ/▶ on iOS
-affects other side: nothing — client JS only (temp lab touch probe) <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: nothing <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (temp lab touch probe)
+needs: nothing
 
 
 ### 2026-09-27 14:11 · ccode · 9e9a60c0
 changed: docs: 2026-09-27 handoff + engineering lessons
-affects other side: nothing — docs only <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: nothing <FILL — what you need from A, or "nothing">
+affects other side: nothing — docs only
+needs: nothing
 
 
 ### 2026-09-27 13:58 · ccode · 04df512a
 changed: Labs: ask for audio after the native push ends (dead ? / ⓘ / ▶ on iOS)
-affects other side: nothing — client JS only (lab entry audio prompt) <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: nothing <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (lab entry audio prompt)
+needs: nothing
 
 
 ### 2026-09-27 12:36 · ccode · d94c6c57
 changed: Lab play buttons: no silent dead ▶ (Bass Guitar Lab report)
-affects other side: nothing — client JS only (lab audio gate/player) <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: nothing <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (lab audio gate/player)
+needs: nothing
 
 
 ### 2026-09-27 12:08 · ccode · 33323fea
 changed: Dashboard: remember and follow the TOPIC, not its slot in the carousel
-affects other side: nothing — client JS only (study dashboard) <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: nothing <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (study dashboard)
+needs: nothing
 
 
 ### 2026-09-27 11:55 · ccode · 1d67c864
 changed: Dashboard: STUDY NOW switches on an inactive certificate topic
-affects other side: nothing — client JS only (dashboard focus) <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: nothing <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (dashboard focus)
+needs: nothing
 
 
 ### 2026-09-27 11:44 · ccode · 87ec850c
 changed: Sound Systems: the slider steps aside while a CONSOLE tray is open
-affects other side: nothing — client JS only (rack tray layout) <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: nothing <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (rack tray layout)
+needs: nothing
 
 
 ### 2026-09-27 11:28 · ccode · 4b91f348
 changed: Preview harness: add the five Sound Systems mode screens
-affects other side: nothing — client JS only (web preview harness) <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: nothing <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (web preview harness)
+needs: nothing
 
 
 ### 2026-09-27 10:45 · ccode · 2c3bb363
 changed: Rack trays on short phones: full room, 'more' cue, choices first
-affects other side: nothing — client JS only (rack tray layout) <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: nothing <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (rack tray layout)
+needs: nothing
 
 
 ### 2026-09-27 09:59 · ccode · 1f70c457
 changed: Preview harness: add CompressionLab, GateLab, StereoLab
-affects other side: nothing — client JS only (web preview harness) <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: nothing <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (web preview harness)
+needs: nothing
 
 
 ### 2026-09-27 08:28 · ccode · 4473b229
 changed: Rack Unit: an open tray no longer covers the dock inline
-affects other side: nothing — client JS only (rack tray layout) <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: nothing <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (rack tray layout)
+needs: nothing
 
 
 ### 2026-09-26 18:51 · ccode · e5f1ca69
