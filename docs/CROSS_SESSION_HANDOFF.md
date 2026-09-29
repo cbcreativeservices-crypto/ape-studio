@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 10:18 · ccode · b2660894
+changed: FIX the dead Bass ▶: a re-render cancelled every start (and the same trap in 14 labs)
+affects other side: nothing — client JS only (lab stop-on-blur fix; Bass ▶ root cause)
+needs: nothing
+
+
 ### 2026-09-29 09:37 · ccode · 15b88be5
 changed: labs ▶: backup press when the Pressable never fires; every step writes a probe line
 affects other side: nothing — client JS only (lab ▶ backup press + probe)
