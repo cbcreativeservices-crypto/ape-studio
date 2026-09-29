@@ -1,3 +1,12 @@
+## 2026-09-28 — A -> ccode: ASK (next Android build, with the permissions ASK) — turn on R8 code shrinking
+
+- **Why:** Google's Android vitals now scores "DEX code optimization" (https://developer.android.com/topic/performance/issues/code-optimization): apps shipped without R8 minification/obfuscation get flagged (bigger DEX, slower start, more memory). It is a quality metric, **not** a Play submission blocker.
+- **Current state (A checked the repo):** no `android/` folder (CNG), no `expo-build-properties` in package.json, no minify/proguard setting in app.json or eas.json. Expo's release template defaults minify to off, so build 14 almost certainly shipped **without R8**. Confirm from the merged Gradle config of the next build.
+- **Ask (A's engineering call, owner informed):** add `expo-build-properties` with `android.enableMinifyInReleaseBuilds: true` and `android.enableShrinkResourcesInReleaseBuilds: true`. Ship it in the **same versionCode ≥15 build as the blockedPermissions ASK** — one build, one Play upload.
+- **Gate before upload (R8 can strip classes that native libs reach by reflection):** release-build smoke test on the Pixel covering app launch, sign-in, a quiz, a lab with audio, save-to-Photos, the purchase sheet opening for `academy_monthly` (expo-iap / Play Billing), and a forced Sentry test error. Add keep rules only for whatever breaks; no package-wide `-keep com.foo.**` rules (Google scores those down too).
+- **Bonus:** with R8 on, the build produces `mapping.txt`. Upload it to Play (clears the earlier "no deobfuscation file" warning) and let Sentry upload it for readable Android crash traces.
+- Needs back: the result of the smoke test, plus any keep rules you had to add.
+
 ## 2026-09-26 — A -> ccode: FYI — 2 content applies (owner-approved), no client change needed
 
 - **565 Lab-Gaps questions approved** (`external_ref LABGAPSv2::*`, 113 int/adv terms): were `draft`, so `start_quiz_attempt` never served them. Integrity recheck clean (keys in options, 4 distinct, all linked). Backup `_bkp_lgapprove_qq_20260926`.
@@ -195,6 +204,24 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 00:09 · ccode · e0a31105
+changed: Lab audio: re-check the gate before a clip starts; no stuck ■; no unasked popup
+affects other side: nothing — client JS only (lab shell/rack fixes)
+needs: nothing
+
+
+### 2026-09-29 00:09 · ccode · e2ee6e34
+changed: Lab rack + shell: nothing presents over FULL SCREEN; back never closes a hidden tray
+affects other side: nothing — client JS only (lab shell/rack fixes)
+needs: nothing
+
+
+### 2026-09-29 00:09 · ccode · 4a5cd02c
+changed: fix(cymatics): bug hunt 2026-09-29 — gallery, art studio, studios, store
+affects other side: nothing — client JS only (wave/cymatics fixes)
+needs: nothing
+
+
 ### 2026-09-29 00:08 · ccode · 937698a9
 changed: test: source guards for the 2026-09-29 lab bug hunt fixes
 affects other side: nothing — client JS only (lab bug fixes)
@@ -243,6 +270,12 @@ affects other side: nothing — client JS only (front-door bug fixes)
 needs: nothing
 
 
+### 2026-09-29 00:07 · ccode · 1a6e4f66
+changed: fix(sound-systems): load race, matching resets, guest/preview save rule
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-29 00:07 · ccode · 8916c197
 changed: fix(auth): CREATE ACCOUNT never resumes a different account; recovery retry, BACK, Resend
 affects other side: nothing — client JS only (front-door bug fixes)
@@ -253,6 +286,54 @@ needs: nothing
 changed: Tools: FULL SCREEN for the RTA and the Spectrogram
 affects other side: nothing — client JS only (RTA/spectrogram full screen)
 needs: nothing
+
+
+### 2026-09-29 00:03 · ccode · f4177d7f
+changed: fix(sound-systems): a wrong FAULT pick locks naming until the next probe
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-29 00:03 · ccode · 05db7fdf
+changed: fix(enrollment): drag reorder no longer swaps back; a lift is not a tap
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-29 00:02 · ccode · 76ed4804
+changed: fix(sound-systems): LEARN checks count only right answers, once each
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-29 00:01 · ccode · 7b962f35
+changed: fix(enrollment): shared topics survive bundle add/remove; locked topics stay
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-29 00:00 · ccode · d49a60a4
+changed: fix(sound-systems): an OFF wedge send no longer fails 'every monitor send is PRE'
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-28 23:59 · ccode · 8249b8d4
+changed: fix(sound-systems): page work survives BACK/CONTINUE; CLEAR and DOCUMENT fixes
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-28 23:57 · ccode · 87872fe2
+changed: fix(sound-systems): FINISH never blocked outside the understanding check
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-28 23:57 · ccode · 356520b2
+changed: fix(sound-systems): honest forward-walk grading, prefix sequence check, no double probes
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
 
 
 ### 2026-09-28 23:45 · ccode · dbab81af
