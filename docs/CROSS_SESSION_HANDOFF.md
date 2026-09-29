@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-28 22:01 · ccode · 93c72e02
+changed: Dashboard: members topics say so before the tap; 'Membership required' is a centred popup
+affects other side: nothing — client JS only (dashboard members-topic gate copy) <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: nothing <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-28 21:58 · ccode · fbb5b976
 changed: Cable Install Stage 6: rack redrawn to EIA-310 proportions, 24-port patch panel is 1U
 affects other side: nothing — client JS only (cable lab art)
@@ -203,8 +209,8 @@ needs: nothing
 
 ### 2026-09-28 21:54 · ccode · b8fadf88
 changed: Tuner: averaged reading + held IN TUNE; live tools keep the screen awake
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (tuner + tool keep-awake) <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: nothing <FILL — what you need from A, or "nothing">
 
 
 ### 2026-09-28 10:28 · ccode · cb91b1d1
