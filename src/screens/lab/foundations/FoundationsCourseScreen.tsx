@@ -206,6 +206,13 @@ function useCourseTone(engineReady: boolean): ToneApi {
    * gain changes (kRampSec, "level changes glide instead of stepping"), so a
    * moving fader does not step the waveform. Starving the JS thread while Oboe
    * is streaming is the plausible mechanism, and this removes the starvation.
+   *
+   * Callers call this UNCONDITIONALLY — never gated on `tone.playing` (bug
+   * hunt 2026-09-29). `playing` only flips after genStart() resolves, so a
+   * chip or fader moved between PLAY and that moment was dropped and the tone
+   * started at the old pitch/level. Safe while idle: it writes two refs (which
+   * play() reads after its await) and a genSet() the stopped generator just
+   * stores (ApeDsp.genSet is null-guarded and version-gated).
    */
   const set = useCallback((p: { freqHz?: number; levelDb?: number }) => {
     if (p.freqHz != null) freqRef.current = p.freqHz;
@@ -440,7 +447,7 @@ function M1Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
   const [zones, setZones] = useState(true);
   const pick = (hz: number) => {
     setF(hz);
-    if (tone.playing) tone.set({ freqHz: hz });
+    tone.set({ freqHz: hz });
   };
   const params: DockParam[] = [
     {
@@ -558,7 +565,7 @@ function M3Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       value: amt,
       onChange: (v) => {
         setAmt(v);
-        if (tone.playing) tone.set({ levelDb: levelFor(v) });
+        tone.set({ levelDb: levelFor(v) });
       },
       format: () => readout,
       tint: levelColor(amt),
@@ -632,7 +639,7 @@ function M4Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       value: amt,
       onChange: (v) => {
         setAmt(v);
-        if (tone.playing) tone.set({ levelDb: levelFor(v) });
+        tone.set({ levelDb: levelFor(v) });
       },
       format: () => readout,
       formatShort: () => `${Math.round(amt * 100)}%`,
@@ -716,7 +723,7 @@ function M5Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       onChange: (v) => {
         const hz = Math.round(M5_MIN + v * (M5_MAX - M5_MIN));
         setFreqB(hz);
-        if (tone.playing) tone.set({ freqHz: hz });
+        tone.set({ freqHz: hz });
       },
       format: () => `${freqB} Hz`,
       helpKey: 'rate',
@@ -875,7 +882,7 @@ function M7Rack({ viz, tone, focused, help, wellTop, wellBottom, m7Predicted, on
       onSelect: (id) => {
         const hz = Number(id);
         setF(hz);
-        if (tone.playing) tone.set({ freqHz: hz });
+        tone.set({ freqHz: hz });
       },
       sticky: true,
       helpKey: 'domain_link',
@@ -990,7 +997,7 @@ function M8Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
   const [f, setF] = useState(220);
   const setFreq = (nf: number) => {
     setF(nf);
-    if (tone.playing) tone.set({ freqHz: Math.round(nf) });
+    tone.set({ freqHz: Math.round(nf) });
   };
   const octAbove = Math.log2(f / 110);
   const params: DockParam[] = [
@@ -1137,7 +1144,7 @@ function M9Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       onChange: (v) => {
         setPos(v);
         const hz = Math.round(80 * Math.pow(8000 / 80, v));
-        if (tone.playing) tone.set({ freqHz: hz });
+        tone.set({ freqHz: hz });
       },
       format: () => `${f} Hz`,
       tint: '#37e05f',
@@ -1151,7 +1158,7 @@ function M9Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       value: lvl,
       onChange: (v) => {
         setLvl(v);
-        if (tone.playing) tone.set({ levelDb: -44 + v * 24 });
+        tone.set({ levelDb: -44 + v * 24 });
       },
       // Relative dB — the module's lesson is the DIFFERENCE between SEND and
       // HEARD, which survives intact without surfacing full-scale ten modules
@@ -2091,8 +2098,16 @@ export function FoundationsCourseScreen() {
     }).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  /** Nav lock (bug hunt 2026-09-29): a double-tap on NEXT at module 13/14 ran
+   *  the second tap after the re-render, where the button is already DONE ✓ —
+   *  and left the lab. Taps within 400 ms of a step change are ignored, by
+   *  NEXT/BACK and by DONE alike. */
+  const lastNavAtRef = useRef(0);
+  const navLocked = () => Date.now() - lastNavAtRef.current < 400;
   const goTo = useCallback(
     (n: number) => {
+      if (Date.now() - lastNavAtRef.current < 400) return;
+      lastNavAtRef.current = Date.now();
       navigatedRef.current = true;
       tone.stop(); // each step owns its own sound — never carries over
       setStep(n);
@@ -2194,9 +2209,11 @@ export function FoundationsCourseScreen() {
           <GlassButton
             label={step === STEPS.length - 1 ? 'DONE ✓' : 'NEXT ›'}
             tint="green"
-            onPress={() =>
-              step === STEPS.length - 1 ? navigation.goBack() : goTo(Math.min(STEPS.length - 1, step + 1))
-            }
+            onPress={() => {
+              if (navLocked()) return;
+              if (step === STEPS.length - 1) navigation.goBack();
+              else goTo(Math.min(STEPS.length - 1, step + 1));
+            }}
           />
         </View>
       </View>
