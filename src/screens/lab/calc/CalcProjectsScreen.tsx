@@ -21,6 +21,9 @@ import { QUANTITIES, fmt, parseQuantity, type QuantityKind } from './calcUnits';
 import type { Project } from './workflowModel';
 import { workflowLimitsFor } from './workflowModel';
 import { workflowStore } from './workflowStore';
+// Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
+// and centred instead of stretching rows 990 pt wide. No-op on a phone.
+import { cardColumn } from '../../../theme/readingColumn';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -249,7 +252,7 @@ export function CalcProjectsScreen() {
         )}
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]} keyboardShouldPersistTaps="handled">
         {!editing ? (
           projects.length === 0 ? (
             <Text style={styles.caption}>

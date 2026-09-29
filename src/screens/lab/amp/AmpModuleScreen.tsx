@@ -18,6 +18,9 @@ import { AMP_MODULE_COMPONENTS, BUILT_MODULE_IDS } from './modules';
 import { CheckCard, SectionTitle, TakeawayCard } from './kit';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { LabEndLink, LabEndScreen } from '../kit/LabEndScreen';
+// Tablet (owner 2026-09-29): a reading surface - capped at the reading column
+// and centred instead of running 990 pt wide. No-op on a phone.
+import { readingColumn } from '../../../theme/readingColumn';
 
 export function AmpModuleScreen() {
   const insets = useSafeAreaInsets();
@@ -151,7 +154,7 @@ export function AmpModuleScreen() {
             as EqModuleScreen / GainModuleScreen / WaveModuleScreen. */}
         <AccuracyNote compact detail="This lab MODELS amplifier behaviour on your phone — the numbers and curves are teaching tools, not bench measurements, and any level it plays goes through an UNCALIBRATED output. For real amplifier work use proper test gear." />
       </View>
-      <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 28 }]}>
+      <ScrollView contentContainerStyle={[styles.scroll, readingColumn, { paddingBottom: insets.bottom + 28 }]}>
         <View style={styles.objective}>
           <Text style={styles.objectiveLabel}>OBJECTIVE</Text>
           <Text style={styles.objectiveText}>{mod.objective}</Text>

@@ -17,6 +17,9 @@ import { useState } from 'react';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { DIGITAL_MODULES, type DigitalModuleId } from './modules/registry';
+// Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
+// and centred instead of stretching rows 990 pt wide. No-op on a phone.
+import { cardColumn } from '../../../theme/readingColumn';
 
 const PATH = ['SOUND', 'ANALOG', 'SAMPLES', 'NUMBERS', 'PROCESSING', 'RECONSTRUCTION', 'SOUND'];
 
@@ -55,7 +58,7 @@ export function DigitalLabHomeScreen() {
         </View>
         <AccuracyNote compact />
       </View>
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
         <SignalPathBanner />
         <Text style={styles.body}>
           Follow the complete chain — acoustic sound → microphone → analog voltage → anti-aliasing

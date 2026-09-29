@@ -33,6 +33,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts } from '../../../theme/tokens';
+import { cardColumn } from '../../../theme/readingColumn';
 import { levelColor, levelColorForDb, rampColors } from '../../../features/tools/levelColor';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
@@ -1523,7 +1524,10 @@ const styles = StyleSheet.create({
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
   // Plain-scroll sections (CAPSULE · MISTAKES — reading only) keep the old
   // page rhythm; rack wells carry their own padding.
-  scroll: { padding: 16, paddingBottom: 30, gap: 12 },
+  // Tablet (owner 2026-09-29): the section pages sit in the centred card
+  // column - the capsule cutaway drew ~990 pt square, labels at 26 pt, the
+  // text pushed off the first screen. Figures size off the measured width.
+  scroll: { padding: 16, paddingBottom: 30, gap: 12, ...cardColumn },
   sectionTitle: { fontFamily: fonts.oswaldMedium, fontSize: 20, letterSpacing: 0.6, color: colors.textPrimary },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   panelCard: { gap: 10, borderRadius: 10, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 12 },

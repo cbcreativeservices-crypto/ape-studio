@@ -17,6 +17,7 @@ import { Modal } from '../../../components/DimModal';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
 import type { LessonContent } from './types';
+import { readingColumn } from '../../../theme/readingColumn';
 
 /** A titled block of bullet lines. */
 function BulletBlock({ title, items, accent }: { title: string; items: string[]; accent?: boolean }) {
@@ -242,6 +243,8 @@ const styles = StyleSheet.create({
   backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.55)' },
   backdropTap: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
   sheet: {
+    // Tablet (owner 2026-09-29): capped at the reading column. No-op on a phone.
+    ...readingColumn,
     maxHeight: '88%',
     backgroundColor: colors.screenBg,
     borderTopLeftRadius: 18,

@@ -28,6 +28,10 @@ import { ScrollLockProvider } from '../scrollLock';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
+// Tablet (owner 2026-09-29): a document page — prose and figures, each
+// figure opening full screen — reads in the centred reading column instead of
+// running 990 pt wide. No-op on a phone.
+import { readingColumn } from '../../../theme/readingColumn';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { animationsAllowed } from '../../../features/settings/a11y';
 import { loadPagedProgress, resetPagedProgress, savePagedProgress, type PagedProgress } from '../../../features/lab/pagedProgress';
@@ -355,7 +359,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
           </Pressable>
         </View>
       ) : null}
-      <ScrollView ref={scrollRef} scrollEnabled={!dragLocked} contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 24 }]}>
+      <ScrollView ref={scrollRef} scrollEnabled={!dragLocked} contentContainerStyle={[styles.scroll, readingColumn, { paddingBottom: insets.bottom + 24 }]}>
         <ScrollLockProvider value={setDragLocked}>
         {/* THE NOTE IS NOT PAGE-ONE FURNITURE (corrected 2026-09-17). It was
             inside the `page === 0` block with the subtitle — and this shell

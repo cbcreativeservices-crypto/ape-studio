@@ -16,9 +16,10 @@
  * bucket filenames; an absent LabPhotoLightbox just makes the tile non-tappable.
  */
 import { createContext, useCallback, useContext, useState, type ReactNode } from 'react';
-import { Image, Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View, useWindowDimensions, type StyleProp, type ViewStyle } from 'react-native';
 import { Modal } from '../../components/DimModal';
 import { SUPABASE_URL } from '../../lib/env';
+import { CARD_MAX_W } from '../../theme/readingColumn';
 
 const BUCKET = `${SUPABASE_URL}/storage/v1/object/public/glossary-images`;
 
@@ -32,8 +33,24 @@ const LightboxCtx = createContext<((t: LightboxTarget) => void) | null>(null);
 
 /** Wrap a lab's root once. Holds the single fullscreen photo modal every
  *  <LabPhoto> inside opens on tap; tap the backdrop or ✕ to close. */
+/**
+ * The lightbox card is a square: 92 % of the backdrop's inner width on a
+ * portrait phone (unchanged), but never taller than the window leaves room
+ * for (owner 2026-09-29, tablet pass). A `width: '92%'` + `aspectRatio: 1`
+ * card was a 1238 pt square on a 1024 pt-tall landscape iPad — the photo ran
+ * off the top and bottom of the screen with the close ✕ over it.
+ */
+export function useLightboxSide(): number {
+  const { width, height } = useWindowDimensions();
+  // 40 = the backdrop's 20 pt padding each side; 200 = caption, close ✕ and
+  // safe-area room above and below the card. 760 (the card column) stops a
+  // 13-inch iPad blowing a product shot up past its own pixels.
+  return Math.round(Math.max(160, Math.min((width - 40) * 0.92, height - 200, CARD_MAX_W)));
+}
+
 export function LabPhotoLightbox({ children }: { children: ReactNode }) {
   const [target, setTarget] = useState<LightboxTarget | null>(null);
+  const lbSide = useLightboxSide();
   return (
     <LightboxCtx.Provider value={setTarget}>
       {children}
@@ -50,7 +67,7 @@ export function LabPhotoLightbox({ children }: { children: ReactNode }) {
           accessibilityRole="button"
           accessibilityLabel="Close photo"
         >
-          <View style={styles.lbCard}>
+          <View style={[styles.lbCard, { width: lbSide, height: lbSide }]}>
             {target ? (
               <Image accessible
                 source={{ uri: target.url }}
@@ -149,7 +166,7 @@ const styles = StyleSheet.create({
   },
   zoomIcon: { color: '#fff', fontSize: 11, lineHeight: 13 },
   lbBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.9)', alignItems: 'center', justifyContent: 'center', padding: 20 },
-  lbCard: { width: '92%', aspectRatio: 1, backgroundColor: '#f4f4f5', borderRadius: 14, overflow: 'hidden', padding: 10 },
+  lbCard: { backgroundColor: '#f4f4f5', borderRadius: 14, overflow: 'hidden', padding: 10 },
   lbImage: { width: '100%', height: '100%' },
   lbCaption: {
     marginTop: 14,

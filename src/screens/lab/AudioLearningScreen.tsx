@@ -21,6 +21,9 @@ import { AccuracyNote } from '../../components/AccuracyNote';
 import { CompactBrandBar } from '../../components/CompactBrandBar';
 import type { RootStackParamList } from '../../navigation/types';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+// Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
+// and centred instead of stretching rows 990 pt wide. No-op on a phone.
+import { cardColumn } from '../../theme/readingColumn';
 
 // Card background art (owner 2026-08-22). Bundled PNGs; each ImageBackground
 // carries a LinearGradient scrim so the frame's text and CTA stay legible over
@@ -76,7 +79,7 @@ export function AudioLearningScreen({ navigation }: Props) {
         <AccuracyNote compact />
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
         <Text style={styles.intro}>{INTRO}</Text>
 
         {/* ── Audio Fundamentals — free to start (core labs free) ──────── */}

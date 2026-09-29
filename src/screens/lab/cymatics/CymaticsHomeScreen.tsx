@@ -19,6 +19,9 @@ import { DEFAULT_PLATE, effectiveQ, plateModes, readResonance, sampleField } fro
 import { CYMATICS_MODULES, PLANNED_AREAS, type CymaticsModuleId } from './modules/registry';
 import { requireVizPlate, skiaAvailable } from './skiaGate';
 import { goToCymatics } from './goToCymatics';
+// Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
+// and centred instead of stretching rows 990 pt wide. No-op on a phone.
+import { cardColumn } from '../../../theme/readingColumn';
 
 const HERO_N = 48;
 
@@ -93,7 +96,7 @@ export function CymaticsHomeScreen() {
         </View>
         <AccuracyNote compact />
       </View>
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
         <View style={styles.hero} onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width))}>
           {width > 0 ? <HeroPlate width={width} /> : null}
           <Text style={styles.heroBadge}>SIMULATION · 240 mm ALUMINUM · FREE EDGES · CENTRE-DRIVEN</Text>

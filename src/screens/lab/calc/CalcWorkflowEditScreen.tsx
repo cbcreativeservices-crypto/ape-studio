@@ -19,6 +19,9 @@ import type { Workflow, WorkflowStep } from './workflowModel';
 import { workflowLimitsFor } from './workflowModel';
 import { workflowStore } from './workflowStore';
 import { listCalculators, resolveStep, type CatalogEntry } from './workflowCatalog';
+// Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
+// and centred instead of stretching rows 990 pt wide. No-op on a phone.
+import { cardColumn } from '../../../theme/readingColumn';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -186,7 +189,7 @@ export function CalcWorkflowEditScreen() {
         </Pressable>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]} keyboardShouldPersistTaps="handled">
         <Text style={styles.fieldLabel}>WORKFLOW NAME</Text>
         <TextInput
           style={styles.input}

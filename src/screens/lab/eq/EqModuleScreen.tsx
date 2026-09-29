@@ -34,6 +34,9 @@ import { FindFrequencyModule } from './modules/FindFrequency';
 import { MatchCurveModule } from './modules/MatchCurve';
 import { FixSignalModule } from './modules/FixSignal';
 import { EqChallengesModule } from './modules/EqChallenges';
+// Tablet (owner 2026-09-29): a reading surface - capped at the reading column
+// and centred instead of running 990 pt wide. No-op on a phone.
+import { readingColumn } from '../../../theme/readingColumn';
 
 /** Rack-mode modules (APE_LAB_UX_PROPOSAL 2026-08-23) render the RackUnit
  *  frame THEMSELVES — pinned stage + dock with their own scroll well — so the
@@ -156,7 +159,7 @@ export function EqModuleScreen() {
               </View>
             ) : (
               <ScrollView
-                contentContainerStyle={styles.scroll}
+                contentContainerStyle={[styles.scroll, readingColumn]}
                 keyboardShouldPersistTaps="handled"
                 scrollEnabled={!scrollLocked}
               >

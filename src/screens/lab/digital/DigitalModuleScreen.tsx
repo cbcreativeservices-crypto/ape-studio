@@ -21,6 +21,9 @@ import { AnalogModule, SamplingModule } from './modules/modAnalog';
 import { QuantModule, BinaryModule } from './modules/modQuant';
 import { AdcModule, ProcessingModule } from './modules/modChain';
 import { DacModule, ErrorsModule } from './modules/modDac';
+// Tablet (owner 2026-09-29): a reading surface - capped at the reading column
+// and centred instead of running 990 pt wide. No-op on a phone.
+import { readingColumn } from '../../../theme/readingColumn';
 
 export type DigitalModuleProps = {
   width: number;
@@ -145,7 +148,7 @@ export function DigitalModuleScreen() {
             {width > 0 ? <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} /> : null}
           </View>
         ) : (
-        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" scrollEnabled={!scrollLocked}>
+        <ScrollView contentContainerStyle={[styles.scroll, readingColumn]} keyboardShouldPersistTaps="handled" scrollEnabled={!scrollLocked}>
           <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
             {width > 0 ? <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} /> : null}
           </View>

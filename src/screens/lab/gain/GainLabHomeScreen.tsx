@@ -16,6 +16,9 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { GAIN_MODULES, GAIN_SECTION_META, type GainModuleId } from './modules/registry';
+// Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
+// and centred instead of stretching rows 990 pt wide. No-op on a phone.
+import { cardColumn } from '../../../theme/readingColumn';
 
 const PATH = ['SOURCE', 'PREAMP', 'PROCESSING', 'FADER', 'OUTPUT'];
 
@@ -39,7 +42,7 @@ export function GainLabHomeScreen() {
         </View>
         <AccuracyNote compact />
       </View>
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
         <View style={styles.pathRow}>
           {PATH.map((p, i) => (
             <View key={p} style={styles.pathStep}>

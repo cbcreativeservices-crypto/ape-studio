@@ -35,6 +35,22 @@ import { ParamLane } from './ParamLane';
 import { STAGE_HEIGHTS, type DockParam, type RackStage } from './rackTypes';
 import { StageFullScreen } from './StageFullScreen';
 import { StageAspectReport, type StageReport } from './stageAspect';
+import { READING_MAX_W, readingColumn } from '../../../theme/readingColumn';
+import { isTabletWindow } from '../../../theme/tablet';
+
+/** Tablet glass height as a share of the window height, per declared size
+ *  (owner 2026-09-29, tablet pass). 1366-tall portrait iPad: M 464 · L 546;
+ *  1194-tall: M 406 · L 478; landscape the reserve binds (1024 tall: L 410,
+ *  834 tall: 274). Never below the phone rule. `S` keeps
+ *  the phone height: a lab declares S precisely when its drawing is compact
+ *  (the FX labs' 118 pt signal-flow strip), and a taller glass only floated
+ *  that strip in empty glass. */
+const TABLET_STAGE_SHARE = { S: 0, M: 0.34, L: 0.4 } as const;
+/** Chrome a tablet must keep around the glass: header + tabs, bezel + badge,
+ *  toggles, dock, a paged lab's footer, and a well that still shows a
+ *  paragraph. Measured in landscape (834 pt tall): at 480 the Sound Systems
+ *  well was down to two lines. */
+const TABLET_RESERVE = 560;
 
 export type RackUnitApi = {
   setScrollLocked: (locked: boolean) => void;
@@ -212,7 +228,12 @@ export function RackUnit({
     });
   }, []);
 
-  const { height: winH } = useWindowDimensions();
+  const { width: winW, height: winH } = useWindowDimensions();
+  const tablet = isTabletWindow(winW, winH);
+  // FULL SCREEN state lives up here (it used to sit below the glass sizing)
+  // because the tablet glass needs `fixedStage` — see TABLET_STAGE_SHARE.
+  const [full, setFull] = useState(false);
+  const [fixedStage, setFixedStage] = useState(false);
   // Vertical budget (review 2026-08-23): the stage may never starve the dock.
   // Target = the declared size, auto-dropped one step on short viewports, then
   // clamped so chrome+bezel+dock+a usable well always fit (landscape/split-
@@ -224,7 +245,20 @@ export function RackUnit({
   // tabs/nav (~125) + bezel + badge (~65) + dock (119) + a usable well (~40).
   // 300 under-counted it (judge panel 2026-09-17): on a 550 dp phone the well
   // shrank to 0-40 dp and every tray became a ~120 dp scrolling card.
-  const targetH = Math.min(STAGE_HEIGHTS[effSize], Math.max(100, winH - 350));
+  //
+  // TABLET (owner 2026-09-29, tablet pass): the phone heights (160/200/250)
+  // left a drawing marooned on an iPad — a 250-tall glass 1000 pt wide, the
+  // plan drawn at a third of the width with ~300 pt of blank faceplate under
+  // the dock. On a tablet the glass takes a share of the WINDOW height
+  // instead, still clamped so the well and dock keep their room (a larger
+  // reserve: the tablet well should still show a paragraph in landscape).
+  // A view-built stage (StageBox → `fixed()`) keeps the phone height: its
+  // text does not grow with the box, so more glass would only add air.
+  const phoneTarget = Math.min(STAGE_HEIGHTS[effSize], Math.max(100, winH - 350));
+  const tabletTarget = Math.min(Math.round(winH * TABLET_STAGE_SHARE[size]), winH - TABLET_RESERVE);
+  // Never SMALLER than the phone rule gives the same window (a landscape
+  // iPad mini's 744 pt height keeps the phone glass).
+  const targetH = tablet && !fixedStage ? Math.max(phoneTarget, tabletTarget) : phoneTarget;
   const [glassH, setGlassH] = useState(targetH);
   const interacting = laneActive || trayParam != null;
   useEffect(() => {
@@ -238,8 +272,6 @@ export function RackUnit({
   // (owner 2026-09-25: "the user must still be able to adjust and view their
   // changes to controls"), sharing this same state — one lane, one bound
   // param, one open tray, whichever surface is showing.
-  const [full, setFull] = useState(false);
-  const [fixedStage, setFixedStage] = useState(false);
   const glassReport = useMemo<StageReport>(() => ({ aspect: () => {}, fixed: () => setFixedStage(true) }), []);
   const ownsFull = stage.fullScreen === true && !fixedStage;
   const onEnlarge = ownsFull ? () => setFull(true) : stage.onEnlarge;
@@ -272,6 +304,11 @@ export function RackUnit({
 
   const dockNode = (
     <View style={styles.dock}>
+      {/* Tablet (owner 2026-09-29): the faceplate stays full width but the
+          lane and keys sit in the centred reading column, lined up with the
+          well's notes above them — a single PART key had
+          stretched to 1004 pt on an iPad. Never binds on a phone. */}
+      <View style={styles.dockInner}>
       {bound && !(trayParam?.kind === 'group' && trayParam.hideLane) ? (
         <ParamLane
           label={bound.label}
@@ -355,6 +392,7 @@ export function RackUnit({
               );
           }
         })}
+      </View>
       </View>
     </View>
   );
@@ -493,7 +531,10 @@ export function RackUnit({
           <ScrollView
             ref={wellRef}
             style={[styles.wellScroll, (stageCollapsed || trayParam != null) && styles.wellScrollGrow]}
-            contentContainerStyle={styles.well}
+            // The well is the lab's READING space: on a tablet its notes
+            // cap at the reading column (owner 2026-09-29 — the notes ran
+            // 990 pt wide, ~150 characters a line). No-op on a phone.
+            contentContainerStyle={[styles.well, readingColumn]}
             scrollEnabled={!wellLocked}
           >
             {typeof children === 'function' ? children({ setScrollLocked: setWellLocked, scrollWellTo }) : children}
@@ -615,7 +656,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingTop: 7,
     paddingBottom: 9,
-    gap: 7,
   },
+  dockInner: { width: '100%', maxWidth: READING_MAX_W, alignSelf: 'center', gap: 7 },
   strip: { flexDirection: 'row', gap: 6 },
 });

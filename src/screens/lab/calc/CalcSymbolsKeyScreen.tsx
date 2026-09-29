@@ -17,6 +17,9 @@ import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { SYMBOL_GROUPS } from './symbolsKey';
 import { GlossaryTermPopup } from '../../../features/glossary/GlossaryTermPopup';
+// Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
+// and centred instead of stretching rows 990 pt wide. No-op on a phone.
+import { cardColumn } from '../../../theme/readingColumn';
 
 export function CalcSymbolsKeyScreen() {
   const insets = useSafeAreaInsets();
@@ -41,7 +44,7 @@ export function CalcSymbolsKeyScreen() {
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
         {empty ? (
           <View style={styles.emptyCard}>
             <Text style={styles.emptyTitle}>Symbol key unavailable</Text>

@@ -223,7 +223,11 @@ const styles = StyleSheet.create({
   },
   card: {
     width: '100%',
-    maxWidth: 380,
+    // 460 = the long-read popup width the intro/help sheets share (owner
+    // 2026-09-29, tablet pass): at 380 this — the longest popup in the app —
+    // was a thin scrolling strip in the middle of an iPad. Phones never reach
+    // either cap.
+    maxWidth: 460,
     backgroundColor: '#17181a',
     borderRadius: 14,
     borderWidth: 1.5,

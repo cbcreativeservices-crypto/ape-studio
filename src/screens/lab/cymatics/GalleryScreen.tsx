@@ -21,6 +21,8 @@ import { useFocusEffect, useNavigation, useRoute, type RouteProp } from '@react-
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
+import { CARD_MAX_W, cardColumn } from '../../../theme/readingColumn';
+import { gridColumns } from '../../../theme/tablet';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { formatHz } from '../../../features/cymatics/music';
@@ -64,7 +66,7 @@ function geometryFor(p: SavedPattern): PatternGeometry {
 
 export function GalleryScreen() {
   const insets = useSafeAreaInsets();
-  const { width: ww } = useWindowDimensions();
+  const { width: ww, height: wh } = useWindowDimensions();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'CymaticsGallery'>>();
   const { patterns, reload, upsert, remove, duplicate } = usePatterns();
@@ -215,8 +217,15 @@ export function GalleryScreen() {
 
   const title = mode === 'art' ? 'ART STUDIO' : mode === 'compare' ? 'COMPARE' : mode === 'open' && current ? current.name.toUpperCase() : 'PATTERN GALLERY & ART STUDIO';
   const subtitle = mode === 'browse' ? 'Saved patterns from the three studios — reopen, colour, compare, print.' : 'Cymatics Lab: Sound Made Visible';
-  const contentW = ww - 32;
-  const cardW = Math.floor((contentW - 12) / 2);
+  // Tablet (owner 2026-09-29, tablet pass): the gallery sits in the centred
+  // card column and GAINS columns — two squares sized off a 1024 pt window
+  // were 490 pt tiles (655 pt in landscape). The open pattern is also held
+  // inside the window height so it never runs past the fold sideways. On a
+  // portrait phone every number below equals the old one.
+  const contentW = Math.min(ww, CARD_MAX_W) - 32;
+  const cols = gridColumns(contentW, 200, 12, 2, 4);
+  const cardW = Math.floor((contentW - 12 * (cols - 1)) / cols);
+  const previewW = Math.min(contentW, Math.max(240, wh - 320));
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -245,7 +254,7 @@ export function GalleryScreen() {
           onHelp={help}
         />
       ) : (
-        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={[styles.scroll, cardColumn]} keyboardShouldPersistTaps="handled">
           {mode === 'browse' ? (
             <>
               <View style={styles.chips}>
@@ -333,7 +342,7 @@ export function GalleryScreen() {
           {mode === 'open' && current && currentGeom ? (
             <>
               <View style={styles.preview}>
-                <PatternFigure geometry={currentGeom} artwork={currentArt} width={contentW} height={Math.round(contentW * Math.max(0.8, Math.min(1.2, currentGeom.aspect)))} />
+                <PatternFigure geometry={currentGeom} artwork={currentArt} width={previewW} height={Math.round(previewW * Math.max(0.8, Math.min(1.2, currentGeom.aspect)))} />
                 <Text style={styles.badge}>{/^SIMULATION/i.test(current.badge) ? current.badge : `SIMULATION · ${current.badge}`}</Text>
               </View>
               <View style={styles.chips}>

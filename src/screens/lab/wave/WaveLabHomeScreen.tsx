@@ -16,6 +16,9 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { WAVE_MODULES } from './modules/registry';
+// Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
+// and centred instead of stretching rows 990 pt wide. No-op on a phone.
+import { cardColumn } from '../../../theme/readingColumn';
 
 export function WaveLabHomeScreen() {
   const insets = useSafeAreaInsets();
@@ -39,7 +42,7 @@ export function WaveLabHomeScreen() {
         </View>
         <AccuracyNote compact />
       </View>
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
         {/* Guided Lessons at the very top, before the module list (owner 2026-08-05). */}
         <Pressable
           style={styles.lessonBtnTop}

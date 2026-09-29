@@ -19,6 +19,9 @@ import { GlossaryLinkProvider } from '../../../features/glossary/glossaryLink';
 import { GAIN_MODULES, type GainModuleComponentProps, type GainModuleId } from './modules/registry';
 import { FaderVsGainModule, FollowModule, InputGainModule, IntroModule, LowHighModule } from './modules/modLearn';
 import { FreePlayModule, MultiStageModule, TroubleshootModule } from './modules/modExplore';
+// Tablet (owner 2026-09-29): a reading surface - capped at the reading column
+// and centred instead of running 990 pt wide. No-op on a phone.
+import { readingColumn } from '../../../theme/readingColumn';
 
 /** Rack-mode modules (APE_LAB_UX_PROPOSAL 2026-08-23) render the RackUnit
  *  frame THEMSELVES — pinned stage + dock with their own scroll well — so the
@@ -127,7 +130,7 @@ export function GainModuleScreen() {
               </View>
             ) : (
               <ScrollView
-                contentContainerStyle={styles.scroll}
+                contentContainerStyle={[styles.scroll, readingColumn]}
                 keyboardShouldPersistTaps="handled"
                 scrollEnabled={overflows && !scrollLocked}
                 onLayout={(e) => setViewportH(Math.round(e.nativeEvent.layout.height))}

@@ -31,6 +31,9 @@ import { HarmonyModule } from './modules/modHarmony';
 import { SystemsModule } from './modules/modSystems';
 import { ChangeModule } from './modules/modChange';
 import { ExperimentsModule } from './modules/modExperiments';
+// Tablet (owner 2026-09-29): a reading surface - capped at the reading column
+// and centred instead of running 990 pt wide. No-op on a phone.
+import { readingColumn } from '../../../theme/readingColumn';
 
 export type CymaticsModuleProps = {
   width: number;
@@ -134,7 +137,7 @@ export function CymaticsModuleScreen() {
               {width > 0 ? <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} /> : null}
             </View>
           ) : (
-            <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" scrollEnabled={!scrollLocked}>
+            <ScrollView contentContainerStyle={[styles.scroll, readingColumn]} keyboardShouldPersistTaps="handled" scrollEnabled={!scrollLocked}>
               <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width))}>
                 {width > 0 ? <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} /> : null}
               </View>

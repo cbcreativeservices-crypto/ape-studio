@@ -10,6 +10,7 @@
  */
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useLightboxSide } from '../labPhoto';
 import { Modal } from '../../../components/DimModal';
 import { Canvas, Circle, Group, Line, LinearGradient, Oval, Path, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
 import { CondenserMic as SharedLdcMic, HandheldMic } from '../../../features/lab/micDrawings';
@@ -298,13 +299,14 @@ const LightboxCtx = createContext<((kind: MicKind) => void) | null>(null);
 
 export function MicPhotoLightbox({ children }: { children: ReactNode }) {
   const [kind, setKind] = useState<MicKind | null>(null);
+  const lbSide = useLightboxSide();
   const url = kind ? micImageUrl(kind) : null;
   return (
     <LightboxCtx.Provider value={setKind}>
       {children}
       <Modal accessibilityViewIsModal visible={!!url} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setKind(null)}>
         <Pressable style={styles.lbBackdrop} onPress={() => setKind(null)} accessibilityRole="button" accessibilityLabel="Close photo">
-          <View style={styles.lbCard}>
+          <View style={[styles.lbCard, { width: lbSide, height: lbSide }]}>
             {url ? (
               <Image accessible
                 source={{ uri: url }}
@@ -399,7 +401,7 @@ const styles = StyleSheet.create({
   zoomIcon: { color: '#fff', fontSize: 10, lineHeight: 12 },
   // Fullscreen lightbox.
   lbBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.9)', alignItems: 'center', justifyContent: 'center', padding: 20 },
-  lbCard: { width: '92%', aspectRatio: 1, backgroundColor: '#f4f4f5', borderRadius: 14, overflow: 'hidden', padding: 10 },
+  lbCard: { backgroundColor: '#f4f4f5', borderRadius: 14, overflow: 'hidden', padding: 10 },
   lbImage: { width: '100%', height: '100%' },
   lbClose: { position: 'absolute', top: 44, right: 22 },
   lbCloseX: { color: '#fff', fontSize: 26, fontWeight: '700' },

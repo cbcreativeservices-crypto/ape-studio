@@ -16,6 +16,9 @@ import { AccuracyNote } from '../../components/AccuracyNote';
 import type { RootStackParamList } from '../../navigation/types';
 import { categoryCountLabel, DEV_NOTE, getCategory, type LabLeaf } from './labCatalog';
 import { useLabDone } from '../../features/lab/labCompletion';
+// Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
+// and centred instead of stretching rows 990 pt wide. No-op on a phone.
+import { cardColumn } from '../../theme/readingColumn';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'LabCategory'>;
 
@@ -43,7 +46,7 @@ export function LabCategoryScreen({ navigation, route }: Props) {
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <Header title={cat.name.toUpperCase()} subtitle={categoryCountLabel(cat)} onBack={() => navigation.goBack()} />
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
         <Text style={styles.intro}>{cat.description}</Text>
 
         {cat.families?.map((fam) => (

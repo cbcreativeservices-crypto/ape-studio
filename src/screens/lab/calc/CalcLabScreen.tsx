@@ -12,6 +12,8 @@ import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
+import { cardColumn } from '../../../theme/readingColumn';
+import { useIsTablet } from '../../../theme/useIsTablet';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { confirmDialog } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
@@ -27,6 +29,9 @@ export function CalcLabScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const chain = useChainValue();
+  // Tablet (owner 2026-09-29): three calculator plates a row in the centred
+  // card column instead of two ~490 pt plates. Phones keep two.
+  const tablet = useIsTablet();
   const { isMember, commercialMode, resolved } = useEntitlement();
 
   // ALL workflows are ACADEMY-ONLY (owner 2026-08-13): running a guided
@@ -102,7 +107,7 @@ export function CalcLabScreen() {
           <Text style={styles.keyBtnText}>KEY</Text>
         </Pressable>
       </View>
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
         {/* CALCULATOR WORKFLOWS — moved to the TOP and collapsible (owner
             2026-08-09). templates + my workflows + new + recent. */}
         <View style={{ gap: 8 }}>
@@ -224,7 +229,7 @@ export function CalcLabScreen() {
                   {items.map((w) => (
                     <Pressable
                       key={w.id}
-                      style={styles.tileFrame}
+                      style={[styles.tileFrame, tablet && styles.tileFrameTablet]}
                       onPress={() => navigation.navigate('CalcWorkspace', { id: w.id })}
                       accessibilityRole="button"
                       accessibilityLabel={`${w.name} — ${w.tagline}`}
@@ -283,6 +288,7 @@ const styles = StyleSheet.create({
   section: { gap: 6 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   // Graphite instrument plate: black keyline frame wrapping a machined face.
+  tileFrameTablet: { width: '32%' },
   tileFrame: {
     width: '48%',
     borderRadius: 10,

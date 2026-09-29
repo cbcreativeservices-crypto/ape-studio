@@ -44,6 +44,9 @@ import { summaryToText } from './CalcResultsScreen';
 import { buildReportFromSummary } from './calcReport';
 import { ReportCard } from './ReportCard';
 import * as shareImage from './shareImage';
+// Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
+// and centred instead of stretching rows 990 pt wide. No-op on a phone.
+import { cardColumn } from '../../../theme/readingColumn';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -481,7 +484,7 @@ export function CalcWorkflowRunScreen() {
 
       <KeyboardAwareScrollView
         ref={scrollRef}
-        contentContainerStyle={styles.scroll}
+        contentContainerStyle={[styles.scroll, cardColumn]}
         keyboardShouldPersistTaps="handled"
         bottomOffset={24}
       >

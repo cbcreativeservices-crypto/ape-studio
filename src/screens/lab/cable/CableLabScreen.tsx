@@ -30,6 +30,9 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import { CABLE_LESSONS, CABLE_UNITS, CORE_QUESTION, LESSON_UNITS } from './data/lessons';
 import { CableShellStateCtx, CableStepNavCtx } from './lessons/bits';
 import { LESSON_BODIES } from './lessons';
+// Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
+// and centred instead of stretching rows 990 pt wide. No-op on a phone.
+import { cardColumn } from '../../../theme/readingColumn';
 
 const STEP_KEY = 'ape:cableStep';
 
@@ -166,7 +169,7 @@ export function CableLabScreen() {
         ) : null}
       </View>
 
-      <ScrollView ref={scrollRef} contentContainerStyle={styles.scroll}>
+      <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, cardColumn]}>
         <Text style={styles.tag}>{`${s.tag} · ${step + 1} OF ${CABLE_LESSONS.length}`}</Text>
         <Text style={styles.stepTitle}>{s.title}</Text>
         <Text style={styles.body}>{s.intro}</Text>

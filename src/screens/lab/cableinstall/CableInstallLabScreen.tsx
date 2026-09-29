@@ -59,6 +59,9 @@ import {
   type CiModuleId,
 } from './registry';
 import { MODULE_BODIES } from './scenes';
+// Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
+// and centred instead of stretching rows 990 pt wide. No-op on a phone.
+import { cardColumn } from '../../../theme/readingColumn';
 
 const STEP_KEY = 'ape:ciStep';
 const STATE_KEY = 'ape:ciState';
@@ -416,7 +419,7 @@ export function CableInstallLabScreen() {
           <View style={[styles.rackFooter, { paddingBottom: insets.bottom + 8 }]}>{navButtons}</View>
         </>
       ) : (
-      <ScrollView ref={scrollRef} contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+      <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, cardColumn]} keyboardShouldPersistTaps="handled">
         <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width))}>
           {myth ? (
             <Appear key={myth.id}>

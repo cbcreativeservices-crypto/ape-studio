@@ -51,6 +51,21 @@ export const cardColumn = {
   alignSelf: 'center',
 } as const;
 
+/**
+ * The POPUP card width — the intro/help sheets' long-standing 460, named at
+ * last (owner 2026-09-29, tablet pass) so every centred popup shares it. A
+ * popup card without it (the glossary term popup, the dashboard's term list)
+ * spread edge to edge on an iPad: a 990 pt "popup" is a page, not a popup.
+ */
+export const POPUP_MAX_W = 460;
+
+/** Spread into a centred popup CARD's style. No-op on a phone. */
+export const popupCard = {
+  width: '100%',
+  maxWidth: POPUP_MAX_W,
+  alignSelf: 'center',
+} as const;
+
 /** Alias kept so the Tools hub's tile arithmetic reads a tools-flavoured name. */
 export const TOOL_READING_MAX_W = READING_MAX_W;
 

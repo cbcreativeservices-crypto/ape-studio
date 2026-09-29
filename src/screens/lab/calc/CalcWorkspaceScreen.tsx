@@ -33,6 +33,9 @@ import { FormulaKeyPopup } from './FormulaKeyPopup';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { useSamplingActive } from '../../../features/intro/onboardingSampling';
 import { CALC_WEEKLY_LIMIT, consumeCalc, getCalcStatus, type CalcUsage } from '../../../features/lab/calcUsage';
+// Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
+// and centred instead of stretching rows 990 pt wide. No-op on a phone.
+import { cardColumn } from '../../../theme/readingColumn';
 
 const SIGS = [3, 4, 5] as const;
 
@@ -425,7 +428,7 @@ export function CalcWorkspaceScreen() {
 
       <KeyboardAwareScrollView
         ref={scrollRef}
-        contentContainerStyle={styles.scroll}
+        contentContainerStyle={[styles.scroll, cardColumn]}
         keyboardShouldPersistTaps="handled"
         bottomOffset={24}
       >

@@ -21,6 +21,9 @@ import { workflowStore } from './workflowStore';
 import * as shareImage from './shareImage';
 import { buildReportFromSummary, reportToText } from './calcReport';
 import { ReportCard } from './ReportCard';
+// Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
+// and centred instead of stretching rows 990 pt wide. No-op on a phone.
+import { cardColumn } from '../../../theme/readingColumn';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -86,7 +89,7 @@ export function CalcResultsScreen() {
         <AccuracyNote compact variant="calc" />
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
         {results.length === 0 ? (
           <Text style={styles.caption}>
             Nothing saved yet — finish a workflow run and tap SAVE RESULT on its summary.

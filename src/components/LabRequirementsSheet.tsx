@@ -21,6 +21,7 @@ import { LabChecklist, LabChecklistSummary } from './LabChecklist';
 import { StudioButton } from './StudioButton';
 import type { LabRequirementRow } from '../features/lab/labRequirementList';
 import { colors, fonts } from '../theme/tokens';
+import { cardColumn } from '../theme/readingColumn';
 
 export function LabRequirementsSheet({
   visible,
@@ -105,6 +106,9 @@ export function LabRequirementsSheet({
 const s = StyleSheet.create({
   backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.6)' },
   sheet: {
+    // Tablet (owner 2026-09-29): the sheet rides centred at the card column
+    // instead of spanning a 1024 pt iPad. No-op on a phone.
+    ...cardColumn,
     maxHeight: '88%',
     backgroundColor: '#121214',
     borderTopLeftRadius: 16,

@@ -17,6 +17,9 @@ import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLes
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { METER_MODULES } from './modules/registry';
 import { LabEndLink, LabEndScreen } from '../kit/LabEndScreen';
+// Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
+// and centred instead of stretching rows 990 pt wide. No-op on a phone.
+import { cardColumn } from '../../../theme/readingColumn';
 
 export function MeterLabHomeScreen() {
   const insets = useSafeAreaInsets();
@@ -63,7 +66,7 @@ export function MeterLabHomeScreen() {
           bottomInset
         />
       ) : (
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
         <Text style={styles.body}>
           Every professional display — waveform, peak, VU, LUFS, spectrum, spectrogram, waterfall,
           phase, scope — tells a story to the engineer who can read it. The Academy’s measurement

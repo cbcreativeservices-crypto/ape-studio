@@ -17,6 +17,9 @@ import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { AMP_MODULES } from '../../../features/amp/ampContent';
 import { loadAmpProgress, resetAmpProgress, type AmpProgressState } from '../../../features/amp/ampProgress';
 import { BUILT_MODULE_IDS } from './modules';
+// Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
+// and centred instead of stretching rows 990 pt wide. No-op on a phone.
+import { cardColumn } from '../../../theme/readingColumn';
 
 export function AmpLabHomeScreen() {
   const insets = useSafeAreaInsets();
@@ -72,7 +75,7 @@ export function AmpLabHomeScreen() {
           <AccuracyNote style={styles.accuracyNote} />
         </View>
       </View>
-      <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 24 }]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: insets.bottom + 24 }]}>
         <Text style={styles.body}>
           One question runs through every module: what is the amplifier doing, what load does it see, and
           where does the extra output energy come from? Every screen answers it with a live, synchronized

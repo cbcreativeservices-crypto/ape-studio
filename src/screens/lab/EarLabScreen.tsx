@@ -32,6 +32,9 @@ import {
   type LabLeaf,
   type LabSection,
 } from './labCatalog';
+// Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
+// and centred instead of stretching rows 990 pt wide. No-op on a phone.
+import { cardColumn } from '../../theme/readingColumn';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EarLab'>;
 
@@ -149,7 +152,7 @@ export function EarLabScreen({ navigation, route }: Props) {
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
         <Text style={styles.intro}>{intro}</Text>
 
         {shownSections.map((sec) => {

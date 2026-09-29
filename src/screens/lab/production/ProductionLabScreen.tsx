@@ -37,6 +37,9 @@ import { ReadinessMeter, StageProgressRow } from './ReadinessMeter';
 import { AcceptConditionSheet } from './AcceptConditionSheet';
 import { STATE_TINT } from './FieldRow';
 import { isActivityProject } from '../../../features/production/activities';
+// Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
+// and centred instead of stretching rows 990 pt wide. No-op on a phone.
+import { cardColumn } from '../../../theme/readingColumn';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type R = RouteProp<RootStackParamList, 'ProductionLab'>;
@@ -230,7 +233,7 @@ export function ProductionLabScreen() {
       </View>
 
       <ScrollView
-        contentContainerStyle={[styles.body, { paddingBottom: insets.bottom + 34 }]}
+        contentContainerStyle={[styles.body, cardColumn, { paddingBottom: insets.bottom + 34 }]}
         showsVerticalScrollIndicator={false}
       >
         <Text style={styles.blurb}>{def.blurb}</Text>

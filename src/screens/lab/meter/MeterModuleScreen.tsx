@@ -17,6 +17,9 @@ import { METER_MODULES, type MeterModuleId } from './modules/registry';
 import { WaveformModule, PeakModule, VuModule, LoudnessModule } from './modules/modMeterA';
 import { SpectrumModule, SpectrogramModule, WaterfallModule } from './modules/modMeterB';
 import { PhaseModule, StereoModule, ScopeModule, DetectiveModule } from './modules/modMeterC';
+// Tablet (owner 2026-09-29): a reading surface - capped at the reading column
+// and centred instead of running 990 pt wide. No-op on a phone.
+import { readingColumn } from '../../../theme/readingColumn';
 
 export type MeterModuleProps = {
   width: number;
@@ -103,7 +106,7 @@ export function MeterModuleScreen() {
           {width > 0 ? <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} /> : null}
         </View>
       ) : (
-      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" scrollEnabled={!scrollLocked}>
+      <ScrollView contentContainerStyle={[styles.scroll, readingColumn]} keyboardShouldPersistTaps="handled" scrollEnabled={!scrollLocked}>
         <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
           {width > 0 ? <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} /> : null}
         </View>

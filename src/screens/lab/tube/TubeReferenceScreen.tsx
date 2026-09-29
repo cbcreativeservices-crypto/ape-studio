@@ -21,6 +21,9 @@ import { GlassButton } from '../../../components/GlassButton';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { TUBE_FAMILY_META, searchTubes, type TubeRef } from './tubeRefs';
 import { AccuracyNote } from '../../../components/AccuracyNote';
+// Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
+// and centred instead of stretching rows 990 pt wide. No-op on a phone.
+import { cardColumn } from '../../../theme/readingColumn';
 
 export function TubeReferenceScreen() {
   const insets = useSafeAreaInsets();
@@ -88,7 +91,7 @@ export function TubeReferenceScreen() {
         ) : null}
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]} keyboardShouldPersistTaps="handled">
         {!unlocked ? (
           <View style={styles.lockCard}>
             <Text style={styles.lockEyebrow}>ACADEMY MEMBERS</Text>

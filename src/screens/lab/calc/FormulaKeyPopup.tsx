@@ -21,6 +21,7 @@ import { symbolsInFormula } from './symbolsKey';
 import { GlossaryTermPopup } from '../../../features/glossary/GlossaryTermPopup';
 import { linkifyGlossary } from '../../../features/glossary/glossaryLink';
 import { SuggestCorrectionButton } from '../../../features/study/SuggestCorrectionButton';
+import { cardColumn } from '../../../theme/readingColumn';
 
 export function FormulaKeyPopup({
   fn,
@@ -178,6 +179,9 @@ export function FormulaKeyPopup({
 const styles = StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
   sheet: {
+    // Tablet (owner 2026-09-29): the sheet rides centred at the card column
+    // instead of spanning a 1024 pt iPad. No-op on a phone.
+    ...cardColumn,
     maxHeight: '88%',
     backgroundColor: colors.screenBg,
     borderTopLeftRadius: 18,

@@ -64,6 +64,9 @@ import {
   STAGE_SOURCES,
   type PatternKey,
 } from './micSelectData';
+// Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
+// and centred instead of stretching rows 990 pt wide. No-op on a phone.
+import { cardColumn } from '../../../theme/readingColumn';
 
 const STEP_KEY = 'ape:micSelStep';
 
@@ -1076,7 +1079,7 @@ export function MicSelectLabScreen() {
           bottomInset
         />
       ) : (
-      <ScrollView ref={scrollRef} contentContainerStyle={styles.scroll}>
+      <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, cardColumn]}>
         <Text style={styles.tag}>{`${s.tag} · ${step + 1} OF ${STEPS.length}`}</Text>
         <Text style={styles.stepTitle}>{s.title}</Text>
         <Text style={styles.body}>{s.intro}</Text>

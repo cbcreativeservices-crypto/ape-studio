@@ -23,6 +23,9 @@ import { CHAPTERS, CHAPTER_COUNT, CHAPTER_TITLES } from './chapters';
 import type { LabCtx } from './labCtx';
 import { confirmDialog } from '../../../lib/confirm';
 import { LabEndScreen } from '../kit/LabEndScreen';
+// Tablet (owner 2026-09-29): a reading surface - capped at the reading column
+// and centred instead of running 990 pt wide. No-op on a phone.
+import { readingColumn } from '../../../theme/readingColumn';
 
 export function TuningLabScreen() {
   const insets = useSafeAreaInsets();
@@ -203,7 +206,7 @@ export function TuningLabScreen() {
           onDone={() => navigation.goBack()}
         />
       ) : (
-      <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 24 }]}>
+      <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, readingColumn, { paddingBottom: insets.bottom + 24 }]}>
         {/* This lab LISTENS through the phone's microphone, so the uncalibrated
             caveat is the substance rather than a formality — a tuner is exactly
             the thing someone would otherwise trust as a measurement. It had no

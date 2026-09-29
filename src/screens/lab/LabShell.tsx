@@ -32,6 +32,7 @@ import { COACH_KEYS, useCoachMark } from '../../lib/coachMark';
 import { colors, fonts } from '../../theme/tokens';
 import { ScrollLockCtx, ScrollLockProvider, useScrollLock } from './scrollLock';
 import { RackUnit } from './rack/RackUnit';
+import { readingColumn } from '../../theme/readingColumn';
 import type { DockParam, RackStage } from './rack/rackTypes';
 import { LabUnderstandingCheck } from '../../components/LabUnderstandingCheck';
 import { UNDERSTANDING_UNIT, hasUnderstandingCheck, understandingFor } from '../../features/lab/understanding';
@@ -618,7 +619,9 @@ export function LabShell({
         // (review 2026-08-23).
         <>
           {mode === 'check' ? (
-            <ScrollView contentContainerStyle={styles.scroll}>
+            // LEARN and CHECK are pure reading: the tablet reading column
+            // (owner 2026-09-29, tablet pass). No-op on a phone.
+            <ScrollView contentContainerStyle={[styles.scroll, readingColumn]}>
               <View style={styles.panel}>
                 <LabUnderstandingCheck
                   labTitle={title}
@@ -634,7 +637,7 @@ export function LabShell({
             </ScrollView>
           ) : null}
           {mode === 'learn' ? (
-            <ScrollView contentContainerStyle={styles.scroll}>
+            <ScrollView contentContainerStyle={[styles.scroll, readingColumn]}>
               <View style={styles.panel}>
                 <Text style={styles.caption}>
                   What this lab teaches — definitions, common mistakes, pro tips, and the formula.

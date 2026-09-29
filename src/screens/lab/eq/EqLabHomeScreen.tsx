@@ -16,6 +16,9 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { EQ_MODULES, EQ_SECTION_META, type EqModuleId } from './modules/registry';
+// Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
+// and centred instead of stretching rows 990 pt wide. No-op on a phone.
+import { cardColumn } from '../../../theme/readingColumn';
 
 /** The lab's educational progression, banner-style (Digital Lab idiom). */
 const PATH = ['SEE', 'MANIPULATE', 'HEAR', 'IDENTIFY', 'CORRECT'];
@@ -39,7 +42,7 @@ export function EqLabHomeScreen() {
         </View>
         <AccuracyNote compact detail="This lab can use your phone’s UNCALIBRATED microphone — read the analysis as relative, for learning. For accurate levels use a calibrated SPL meter or measurement mic." />
       </View>
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
         <View style={styles.pathRow}>
           {PATH.map((p, i) => (
             <View key={p} style={styles.pathStep}>

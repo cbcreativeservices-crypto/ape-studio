@@ -18,6 +18,9 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import {
   loadEarProgress, recentAccuracy, type EarProgressState,
 } from '../../../features/ear/earProgress';
+// Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
+// and centred instead of stretching rows 990 pt wide. No-op on a phone.
+import { cardColumn } from '../../../theme/readingColumn';
 
 export function EarTrainingLabScreen() {
   const insets = useSafeAreaInsets();
@@ -49,7 +52,7 @@ export function EarTrainingLabScreen() {
         </View>
         <AccuracyNote compact detail="Every drill here plays through your phone’s UNCALIBRATED output — and through whatever headphones or speakers you are on, which colour it further. Train the SKILL of hearing a change here; judge absolute tonality on monitoring you trust." />
       </View>
-      <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 24 }]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: insets.bottom + 24 }]}>
         <Text style={styles.body}>
           Every drill here renders real signals, plays them, and then shows you the same buffers
           on the analyzers — the habit this lab builds is hearing something and knowing what the
