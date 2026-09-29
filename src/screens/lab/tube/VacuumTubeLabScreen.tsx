@@ -22,7 +22,7 @@
  * lines, the grid's field) — one switch connecting the outside of the tube
  * to what happens inside it.
  */
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
@@ -32,6 +32,8 @@ import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { LabChip } from '../LabShell';
+import { markLabVisit, useLabVisits } from '../../../features/lab/labVisits';
+import { LabEndLink, LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../foundations/bits';
 import { RackUnit } from '../rack/RackUnit';
@@ -102,6 +104,9 @@ type SectionProps = {
   openReference: () => void;
   title: string;
   blurb: string;
+  /** Set on the LAST section only: the FINISH link to the what's-left screen
+   *  (owner 2026-09-29). */
+  onFinish?: () => void;
 };
 
 /** The shared dock tail: ⚡ ELECTRON VIEW toggle (sections that use it) + the
@@ -139,7 +144,7 @@ function stageGlass(
 
 /** Common well tail: title + blurb up top, guided-lesson entry + the no-audio
  *  notice at the bottom (owner 2026-08-19: notices at the bottom). */
-function SectionWell({ title, blurb, help, children }: { title: string; blurb: string; help: (k?: string) => void; children?: ReactNode }) {
+function SectionWell({ title, blurb, help, onFinish, children }: { title: string; blurb: string; help: (k?: string) => void; onFinish?: () => void; children?: ReactNode }) {
   return (
     <>
       <Text style={styles.sectionTitle}>{title}</Text>
@@ -155,6 +160,7 @@ function SectionWell({ title, blurb, help, children }: { title: string; blurb: s
         <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
       </Pressable>
       <Text style={styles.futureNote}>🔈 This lab teaches visually — no audio playback.</Text>
+      {onFinish ? <LabEndLink onPress={onFinish} /> : null}
     </>
   );
 }
@@ -275,7 +281,7 @@ function InsideSection(p: SectionProps) {
         )),
       }}
     >
-      <SectionWell title={p.title} blurb={p.blurb} help={p.help}>
+      <SectionWell title={p.title} blurb={p.blurb} help={p.help} onFinish={p.onFinish}>
         {physics ? <Text style={styles.readout}>{physics}</Text> : null}
         <Text style={styles.caption}>
           {sel
@@ -331,7 +337,7 @@ function FlowSection(p: SectionProps) {
         render: stageGlass(p.viz, (viz, w, h) => <FlowViz viz={viz} width={w} height={h} heat={heat} running={p.focused} />),
       }}
     >
-      <SectionWell title={p.title} blurb={p.blurb} help={p.help}>
+      <SectionWell title={p.title} blurb={p.blurb} help={p.help} onFinish={p.onFinish}>
         <Text style={styles.readout}>{stage.text}</Text>
         <Text style={styles.caption}>
           This is why the vacuum matters: electrons can only fly freely because there is NOTHING in
@@ -397,7 +403,7 @@ function GridSection(p: SectionProps) {
         )),
       }}
     >
-      <SectionWell title={p.title} blurb={p.blurb} help={p.help}>
+      <SectionWell title={p.title} blurb={p.blurb} help={p.help} onFinish={p.onFinish}>
         <Text style={styles.caption}>
           A very small voltage change at the grid controls a much larger current through the tube.
           That sentence is the entire reason vacuum tubes changed the world — read it again while
@@ -433,7 +439,7 @@ function AmplifySection(p: SectionProps) {
         render: stageGlass(p.viz, (viz, w, h) => <AmplifyViz viz={viz} width={w} height={h} running={p.focused} />),
       }}
     >
-      <SectionWell title={p.title} blurb={p.blurb} help={p.help}>
+      <SectionWell title={p.title} blurb={p.blurb} help={p.help} onFinish={p.onFinish}>
         <Text style={styles.caption}>
           Follow the color code: the small BLUE wave rides the blue wire INTO THE GRID — watch the
           grid dots swell in time with it. Inside the glass, the much larger electron stream
@@ -495,7 +501,7 @@ function HighVoltSection(p: SectionProps) {
         render: stageGlass(p.viz, (viz, w, h) => <HvViz viz={viz} width={w} height={h} highB={highB} running={p.focused} />),
       }}
     >
-      <SectionWell title={p.title} blurb={p.blurb} help={p.help}>
+      <SectionWell title={p.title} blurb={p.blurb} help={p.help} onFinish={p.onFinish}>
         <Text style={styles.caption}>
           {highB
             ? 'A high-voltage plate pulls HARD: a dense, fast electron stream with room to swing. This is why tube circuits run at hundreds of volts — the “B+” supply.'
@@ -611,7 +617,7 @@ function TypesSection(p: SectionProps) {
         )),
       }}
     >
-      <SectionWell title={p.title} blurb={p.blurb} help={p.help}>
+      <SectionWell title={p.title} blurb={p.blurb} help={p.help} onFinish={p.onFinish}>
         <Text style={[styles.readout, { color: ink }]}>ADDS: {t.adds}</Text>
         <Text style={styles.caption}>{t.strength}</Text>
         <Text style={styles.caption}>{t.weakness}</Text>
@@ -671,7 +677,7 @@ function BiasSection(p: SectionProps) {
         render: stageGlass(p.viz, (viz, w, h) => <BiasViz viz={viz} width={w} height={h} bias={b} running={p.focused} />),
       }}
     >
-      <SectionWell title={p.title} blurb={p.blurb} help={p.help}>
+      <SectionWell title={p.title} blurb={p.blurb} help={p.help} onFinish={p.onFinish}>
         <Text style={[styles.readout, bad ? styles.readoutBad : null]}>{zone}</Text>
         <Text style={styles.caption}>
           Bias is the idle point — where the tube rests with no signal. Set it mid-curve and the
@@ -727,7 +733,7 @@ function SaturationSection(p: SectionProps) {
         render: stageGlass(p.viz, (viz, w, h) => <SatViz viz={viz} width={w} height={h} drive={drive} running={p.focused} />),
       }}
     >
-      <SectionWell title={p.title} blurb={p.blurb} help={p.help}>
+      <SectionWell title={p.title} blurb={p.blurb} help={p.help} onFinish={p.onFinish}>
         <Text style={styles.caption}>
           WHY it rounds: the valve can only open so far. Near full swing there are no more electrons
           to give (and at the other extreme the stream pinches off), so each extra dB of input buys
@@ -768,7 +774,7 @@ function VersusSection(p: SectionProps) {
         render: stageGlass(p.viz, (viz, w, h) => <VersusViz viz={viz} width={w} height={h} running={p.focused} />),
       }}
     >
-      <SectionWell title={p.title} blurb={p.blurb} help={p.help}>
+      <SectionWell title={p.title} blurb={p.blurb} help={p.help} onFinish={p.onFinish}>
         <View style={styles.vsRow}>
           <View style={{ flex: 1, gap: 2 }}>
             <Text style={styles.vsHead}>TUBE</Text>
@@ -824,6 +830,27 @@ export function VacuumTubeLabScreen() {
     setLessonOpen(true);
   };
 
+  /**
+   * THE LAB ENDS ON THE WHAT'S-LEFT SCREEN (owner 2026-09-29: "every lab ends
+   * with a 'what's left' screen"; always allow review and redo). The chips had
+   * no end at all. This lab banks no credit and kept no record, so it now
+   * remembers which sections were OPENED (labVisits — progress, never credit;
+   * a guest's last only this session). A last WHAT'S LEFT chip, and a FINISH
+   * link at the foot of VS, swap LabEndScreen in for the rack: sections not
+   * yet opened, a jump to each, PRACTISE AGAIN from INSIDE (clears nothing)
+   * and DONE.
+   */
+  const [ending, setEnding] = useState(false);
+  const guest = useLabEndGuest();
+  const visited = useLabVisits('tube');
+  useEffect(() => {
+    markLabVisit('tube', SECTIONS[sectionIdx].key, { persist: !guest });
+  }, [sectionIdx, guest]);
+  const openSection = (i: number) => {
+    setEnding(false);
+    setSectionIdx(i);
+  };
+
   const s = SECTIONS[sectionIdx];
   const sectionProps: SectionProps = {
     viz,
@@ -834,6 +861,7 @@ export function VacuumTubeLabScreen() {
     openReference: () => navigation.navigate('TubeReference'),
     title: s.title,
     blurb: s.blurb,
+    onFinish: sectionIdx === SECTIONS.length - 1 ? () => setEnding(true) : undefined,
   };
 
   return (
@@ -855,13 +883,28 @@ export function VacuumTubeLabScreen() {
           reads as the shell's mode tabs, one horizontal row). */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.navScroll} contentContainerStyle={styles.navRow}>
         {SECTIONS.map((sec, i) => (
-          <LabChip key={sec.key} label={sec.label} selected={sectionIdx === i} onPress={() => setSectionIdx(i)} />
+          <LabChip key={sec.key} label={sec.label} selected={!ending && sectionIdx === i} onPress={() => openSection(i)} />
         ))}
+        <LabChip label="WHAT’S LEFT" selected={ending} onPress={() => setEnding(true)} />
       </ScrollView>
       {/* One RackUnit per section, key-remounted so each section owns its
           state; the frame needs the full remaining height (flex:1). */}
       <View style={styles.rackArea}>
-        <s.Comp key={s.key} {...sectionProps} />
+        {ending ? (
+          <LabEndScreen
+            labTitle="Vacuum Tube Fundamentals"
+            units={SECTIONS.map((sec) => ({ id: sec.key, label: sec.title }))}
+            cleared={visited}
+            mode="progress"
+            noun="section"
+            onJump={(id) => openSection(Math.max(0, SECTIONS.findIndex((sec) => sec.key === id)))}
+            onPracticeAgain={() => openSection(0)}
+            onDone={() => navigation.goBack()}
+            bottomInset
+          />
+        ) : (
+          <s.Comp key={s.key} {...sectionProps} />
+        )}
       </View>
       <GuidedLessonSheet
         visible={lessonOpen}

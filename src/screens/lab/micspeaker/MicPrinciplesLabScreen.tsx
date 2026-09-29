@@ -37,7 +37,8 @@ import { levelColor, levelColorForDb, rampColors } from '../../../features/tools
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { LabChip, CollapsibleSection } from '../LabShell';
-import { markLabUnit, registerLabUnits } from '../../../features/lab/labCompletion';
+import { markLabUnit, registerLabUnits, useLabClearedUnits } from '../../../features/lab/labCompletion';
+import { LabEndLink, LabEndScreen } from '../kit/LabEndScreen';
 import { MIC_PRINCIPLES_LAB_KEY, MIC_PRINCIPLES_UNITS } from './units';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../features/lab/guidedLessons';
 import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../foundations/bits';
@@ -1425,6 +1426,21 @@ export function MicPrinciplesLabScreen() {
     markLabUnit(MIC_PRINCIPLES_LAB_KEY, SECTIONS[sectionIdx].key);
   }, [sectionIdx]);
 
+  /**
+   * THE LAB ENDS ON THE WHAT'S-LEFT SCREEN (owner 2026-09-29: "every lab ends
+   * with a 'what's left' screen"; keep credit, always allow a redo). The chips
+   * had no end at all. A last WHAT'S LEFT chip — and a FINISH link at the foot
+   * of MISTAKES — swap LabEndScreen in for the section: sections not yet
+   * credited, a jump to each, PRACTISE AGAIN from CAPSULE (clears nothing) and
+   * DONE.
+   */
+  const [ending, setEnding] = useState(false);
+  const banked = useLabClearedUnits(MIC_PRINCIPLES_LAB_KEY);
+  const openSection = (i: number) => {
+    setEnding(false);
+    setSectionIdx(i);
+  };
+
   const s = SECTIONS[sectionIdx];
   // Shared well header/footer every section places in its scroll region: the
   // topic nav is READING/navigation, so it lives in the well by design.
@@ -1433,8 +1449,9 @@ export function MicPrinciplesLabScreen() {
       {!skiaAvailable ? <VizUnavailableCard /> : null}
       <View style={styles.chipRow}>
         {SECTIONS.map((sec, i) => (
-          <LabChip key={sec.key} label={sec.label} selected={sectionIdx === i} onPress={() => setSectionIdx(i)} />
+          <LabChip key={sec.key} label={sec.label} selected={sectionIdx === i} onPress={() => openSection(i)} />
         ))}
+        <LabChip label="WHAT’S LEFT" selected={false} onPress={() => setEnding(true)} />
       </View>
       <Text style={styles.sectionTitle}>{s.title}</Text>
       <Text style={styles.body}>{s.blurb}</Text>
@@ -1442,14 +1459,17 @@ export function MicPrinciplesLabScreen() {
   );
   // Guided-lesson entry lives at the BOTTOM (owner 2026-07-29, LabShell v2).
   const wellBottom = (
-    <Pressable
-      style={styles.lessonRow}
-      onPress={() => help(undefined)}
-      accessibilityRole="button"
-      accessibilityLabel="Open the guided lesson"
-    >
-      <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
-    </Pressable>
+    <>
+      <Pressable
+        style={styles.lessonRow}
+        onPress={() => help(undefined)}
+        accessibilityRole="button"
+        accessibilityLabel="Open the guided lesson"
+      >
+        <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
+      </Pressable>
+      {sectionIdx === SECTIONS.length - 1 ? <LabEndLink onPress={() => setEnding(true)} /> : null}
+    </>
   );
 
   return (
@@ -1469,7 +1489,21 @@ export function MicPrinciplesLabScreen() {
           each section declares its own rack, exactly as it owned its own
           panel before. */}
       <View style={{ flex: 1 }}>
-        <s.Comp key={s.key} viz={viz} focused={focused} help={help} wellTop={wellTop} wellBottom={wellBottom} />
+        {ending ? (
+          <LabEndScreen
+            labTitle="Microphone Principles"
+            units={SECTIONS.map((sec) => ({ id: sec.key, label: sec.title }))}
+            cleared={banked}
+            mode="credit"
+            noun="section"
+            onJump={(id) => openSection(Math.max(0, SECTIONS.findIndex((sec) => sec.key === id)))}
+            onPracticeAgain={() => openSection(0)}
+            onDone={() => navigation.goBack()}
+            bottomInset
+          />
+        ) : (
+          <s.Comp key={s.key} viz={viz} focused={focused} help={help} wellTop={wellTop} wellBottom={wellBottom} />
+        )}
       </View>
       <GuidedLessonSheet
         visible={lessonOpen}

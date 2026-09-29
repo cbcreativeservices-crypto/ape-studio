@@ -25,7 +25,8 @@ import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { LabChip, CollapsibleSection } from '../LabShell';
-import { markLabUnit, registerLabUnits } from '../../../features/lab/labCompletion';
+import { markLabUnit, registerLabUnits, useLabClearedUnits } from '../../../features/lab/labCompletion';
+import { LabEndLink, LabEndScreen } from '../kit/LabEndScreen';
 import { SPEAKER_COVERAGE_LAB_KEY, SPEAKER_COVERAGE_UNITS } from './units';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../features/lab/guidedLessons';
 import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../foundations/bits';
@@ -554,6 +555,21 @@ export function SpeakerCoverageLabScreen() {
     },
   ];
 
+  /**
+   * THE LAB ENDS ON THE WHAT'S-LEFT SCREEN (owner 2026-09-29: "every lab ends
+   * with a 'what's left' screen"; keep credit, always allow a redo). The tabs
+   * had no end at all. A last WHAT'S LEFT tab — and a FINISH link at the foot
+   * of the last section — swap LabEndScreen in for the section: sections not
+   * yet credited, a jump to each, PRACTISE AGAIN from the first (clears
+   * nothing) and DONE.
+   */
+  const [ending, setEnding] = useState(false);
+  const banked = useLabClearedUnits(SPEAKER_COVERAGE_LAB_KEY);
+  const openSection = (i: number) => {
+    setEnding(false);
+    setSectionIdx(i);
+  };
+
   const s = SECTIONS[sectionIdx];
   const rack = sectionIdx === 0 ? { stage: topStage, params: topParams } : sectionIdx === 1 ? { stage: sideStage, params: sideParams } : null;
 
@@ -572,10 +588,23 @@ export function SpeakerCoverageLabScreen() {
       {/* Section tabs stay PINNED with the header (the rack's mode-tab row). */}
       <View style={styles.tabRow}>
         {SECTIONS.map((sec, i) => (
-          <LabChip key={sec.key} label={sec.label} selected={sectionIdx === i} onPress={() => setSectionIdx(i)} />
+          <LabChip key={sec.key} label={sec.label} selected={!ending && sectionIdx === i} onPress={() => openSection(i)} />
         ))}
+        <LabChip label="WHAT’S LEFT" selected={ending} onPress={() => setEnding(true)} />
       </View>
-      {rack ? (
+      {ending ? (
+        <LabEndScreen
+          labTitle="Speaker Placement & Coverage"
+          units={SECTIONS.map((sec) => ({ id: sec.key, label: sec.title }))}
+          cleared={banked}
+          mode="credit"
+          noun="section"
+          onJump={(id) => openSection(Math.max(0, SECTIONS.findIndex((sec) => sec.key === id)))}
+          onPracticeAgain={() => openSection(0)}
+          onDone={() => navigation.goBack()}
+          bottomInset
+        />
+      ) : rack ? (
         // ── TOP / SIDE — the Rack Unit: pinned canvas + bezel + dock; only
         //    the teaching prose below scrolls in the well. ───────────────────
         <RackUnit initialParam="aim" params={rack.params} stage={rack.stage} onHelp={help}>
@@ -636,6 +665,7 @@ export function SpeakerCoverageLabScreen() {
           <ConceptsSection help={help} />
           <LessonRow onPress={() => help(undefined)} />
           <FutureAudioNote />
+          {sectionIdx === SECTIONS.length - 1 ? <LabEndLink onPress={() => setEnding(true)} /> : null}
         </ScrollView>
       )}
       <GuidedLessonSheet
