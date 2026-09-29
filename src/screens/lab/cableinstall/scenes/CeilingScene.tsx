@@ -491,13 +491,16 @@ function SleeveRing({ on }: { on: boolean }) {
   );
 }
 
-/** The hooks of the FINISHED run before the learner has installed their own:
- *  a worked example to the supplied spec (a support every 4 units). Once
- *  they confirm Exercise 2 the finished view shows THEIR hooks instead. */
-const FINISHED_EXAMPLE_HOOKS = [4, 8];
+/* The FINISHED view never shows the answer to Exercise 2 (cognitive review
+ * 2026-09-28: it used to draw a worked example with hooks at U4 / U8 — the
+ * exact answer — before the learner had placed a hook). Until the route is
+ * confirmed the new run is a dashed placeholder with no pathway and no hook
+ * positions; once confirmed, the finished view shows THEIR run on THEIR
+ * hooks. */
 
 /** FINISHED VIEW, depth 1: the new run's hook rods, hung from the deck behind
- *  the other trades (same place the placed-hook rods hang). */
+ *  the other trades (same place the placed-hook rods hang). The wall-end
+ *  support (U12) is given in the brief, so it shows either way. */
 function FinishedRods({ hookUnits }: { hookUnits: number[] }) {
   return (
     <>
@@ -506,6 +509,27 @@ function FinishedRods({ hookUnits }: { hookUnits: number[] }) {
       ))}
       <PlacedHookRod x={SPAN_X0 + SPAN_UNITS * UNIT_PX - 4} />
     </>
+  );
+}
+
+/** FINISHED VIEW before Exercise 2 is confirmed: where the new run (and the
+ *  green pair that will share its supports) goes, as a dashed outline — no
+ *  pathway, no hook positions. */
+function FinishedPlaceholder() {
+  const x0 = SPAN_X0 - 2;
+  const x1 = SLEEVE_X - 12;
+  return (
+    <G>
+      <WallSleeve />
+      {/* the green pair's service loop, moved off the duct into the tray
+          (cd-8) — its run beyond the tray end waits for your supports */}
+      <JacketPath d="M92 129.6 C92 126.8 114 126.8 114 129.6 C114 132.2 92 132.2 92 129.6" color="#37d97b" width={2} />
+      <JacketPath d={`M114 ${RUN_Y} H${x0}`} color="#37d97b" width={2.4} />
+      <Rect x={x0} y={RUN_Y - 7} width={x1 - x0} height={18} rx={4} fill="rgba(199,125,255,0.07)" stroke="#c77dff" strokeWidth={1} strokeDasharray="4 3" />
+      <SvgText x={(x0 + x1) / 2} y={RUN_Y + 5.4} fill="#d9b8ff" fontSize={9.6} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={0.4}>
+        YOUR RUN · EXERCISE 2
+      </SvgText>
+    </G>
   );
 }
 
@@ -578,8 +602,8 @@ function AboveSvg({
   const hookUnits = [...hooks].sort((a, b) => a - b);
   const hookXs = hookUnits.map((u) => SPAN_X0 + u * UNIT_PX);
   /** FINISHED shows the learner's own hooks once they have installed the
-   *  run; until then the worked example to the same spec. */
-  const finishedHooks = confirmed ? hookUnits : FINISHED_EXAMPLE_HOOKS;
+   *  run; until then no hooks at all (see FinishedPlaceholder). */
+  const finishedHooks = confirmed ? hookUnits : [];
   return (
     <Svg
       width={w}
@@ -588,7 +612,9 @@ function AboveSvg({
       accessibilityLabel={
         above
           ? 'Above-ceiling section, as found: structural deck and beams on top, hanger wires, duct, sprinkler main with heads, conduit, cable tray, J-hooks, light fixture, and the grid with tiles at the bottom. Eight suspect details are marked.'
-          : 'The same section, finished: every run on its own right-sized J-hooks from structure, clear of the sprinkler main, the duct and the light fixture; the audio pairs in the shared hook route; service loops lying in the tray; both wall entries sleeved and bushed; the new run on its own hooks into the bushed sleeve.'
+          : confirmed
+            ? 'The same section, finished: every run on its own right-sized J-hooks from structure, clear of the sprinkler main, the duct and the light fixture; the audio pairs in the shared hook route; service loops lying in the tray; both wall entries sleeved and bushed; your new run on your hooks into the bushed sleeve.'
+            : 'The same section, finished: every existing run on right-sized J-hooks from structure, clear of the sprinkler main, the duct and the light fixture; the audio pairs in the shared hook route; the wall entry sleeved and bushed. A dashed outline marks where your new run goes — you install it in Exercise 2.'
       }
     >
       {/* the base plate never fades — the cross-dissolve always has a floor */}
@@ -605,7 +631,7 @@ function AboveSvg({
         {showTicks || confirmed ? <PlacedHookRod x={SPAN_X0 + SPAN_UNITS * UNIT_PX - 4} /> : null}
       </Layer>
       <FinishedLayer t={rv} above={above}>
-        <FinishedRods hookUnits={finishedHooks} />
+        {confirmed ? <FinishedRods hookUnits={finishedHooks} /> : null}
       </FinishedLayer>
 
       {/* ── depth 2: the other trades' systems (unchanged by our work) ──── */}
@@ -617,7 +643,7 @@ function AboveSvg({
       {/* ── FINISHED: the corrected installation, in the same space ─────── */}
       <FinishedLayer t={rv} above={above}>
         <CorrectedExisting />
-        <FinishedRun hookUnits={finishedHooks} />
+        {confirmed ? <FinishedRun hookUnits={finishedHooks} /> : <FinishedPlaceholder />}
       </FinishedLayer>
 
       {/* ── depth 4: the previous contractor's wrongs (Exercise 1) ─────── */}
@@ -857,7 +883,7 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
           active={!above}
           onPress={() => {
             setView('finished');
-            say('Finished view. The same section with every violation corrected and the new run on its own hooks.');
+            say(confirmed ? 'Finished view. The same section with every violation corrected and your run on your hooks.' : 'Finished view. The same section with every violation corrected; a dashed outline marks where your run goes.');
           }}
         />
       </View>
@@ -947,9 +973,9 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
       <Text style={styles.legend}>
         {above
           ? 'Colour key (teaching colours): grey / blue / orange = other tenants’ bundle · cyan + green = the previous contractor’s runs · violet = your bundle · red = sprinkler. Rings = details to inspect.'
-          : 'FINISHED — the same section after the work is done right: every run on right-sized J-hooks hung from structure, clear of the sprinkler, the duct and the light; service loops in the tray where a lifted tile reaches them; both wall entries sleeved and bushed; the new run on its own hooks at the supplied spacing' +
-            (confirmed ? ' (yours).' : ' (a worked example — yours replaces it once you install it in Exercise 2).') +
-            ' From the room below, both versions look identical — which is why inspectors lift tiles.'}
+          : confirmed
+            ? 'FINISHED — the same section done right, with your run on your hooks. From the room below, both versions look identical — which is why inspectors lift tiles.'
+            : 'FINISHED — the same section done right; the dashed outline is where your run goes in Exercise 2. From the room below, both versions look identical — which is why inspectors lift tiles.'}
       </Text>
 
       {/* EXERCISE 1 — FIND THE PROBLEMS */}
