@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 11:39 · ccode · 3d0f35ee
+changed: Lab full screen: item names print in full above the display (TitledStage)
+affects other side: nothing — client JS only (full-screen stage titles)
+needs: nothing
+
+
 ### 2026-09-29 11:35 · ccode · d04154aa
 changed: labs sound policy: keep playing when switching screens, stop on close
 affects other side: nothing — client JS only (lab audio persistence + preloading)
