@@ -242,11 +242,16 @@ function PageTrace({ ctx }: { ctx: PageCtx }) {
 /* ── 3 · Ten kinds of system ────────────────────────────────────────────── */
 
 const FLOWN_TYPES = new Set(['line-array']);
+/** Room reserved above the plan for the name + scale lines (two lines each at most). */
+const STAGE_HEAD_H = 50;
 
 function PageSystemTypes({ ctx }: { ctx: PageCtx }) {
   const [id, setId] = useState(SYSTEM_TYPES[0].id);
   const [seen, setSeen] = useState<Set<string>>(new Set([SYSTEM_TYPES[0].id]));
   const t = SYSTEM_TYPES.find((x) => x.id === id)!;
+  // Measured header height per display width (inline and full screen draw the
+  // same stage at different widths, so they keep separate numbers).
+  const [headH, setHeadH] = useState<Record<number, number>>({});
   const goals = [{ label: 'View five system types', hit: seen.size >= 5 }, { label: 'View the line array and the distributed system', hit: seen.has('line-array') && seen.has('distributed') }];
   const latched = useVisitGoals(ctx, goals);
   const pick = (s: string) => {
@@ -274,21 +279,37 @@ function PageSystemTypes({ ctx }: { ctx: PageCtx }) {
         badge: PLOT_BADGE,
         initialParam: 'type',
         hideDragTag: true,
+        // The system's NAME and SCALE were bezel cells, cropped to
+        // "SMALL POWERED-LOU…" / "UP TO RO…" (owner 2026-09-29, full screen).
+        // They now print in full at the top of the display itself, above the
+        // plan, so they read whole inline AND in full screen.
         bezel: [
-          { k: 'TYPE', v: t.name.toUpperCase(), tint: colors.cyanBright, flex: 2 },
-          { k: 'SCALE', v: t.scale.toUpperCase() },
+          { k: 'TYPE', v: `${SYSTEM_TYPES.indexOf(t) + 1} OF 10` },
           { k: 'BOXES', v: `${t.layout.length}`, flex: 0.7 },
           { k: 'SEEN', v: `${seen.size}/10`, flex: 0.8 },
         ],
         stage: (w, h) => (
-          <StageFit w={w} h={h} aspect={PLOT_W / PLOT_H}>
-            <VenueView
-              placed={layoutToPlaced(t.layout, t.powered !== false)}
-              beams={layoutToBeams(t.layout, { flown: FLOWN_TYPES.has(t.id) })}
-              field
-              a11y={`Plan of a ${t.name}: ${t.layout.map((p) => `${p.kind} at ${slotDef(p.slot).label}`).join(', ')}`}
-            />
-          </StageFit>
+          <View style={{ width: w, height: h }}>
+            <View
+              style={styles.stageHead}
+              onLayout={(e) => {
+                const hh = Math.ceil(e.nativeEvent.layout.height);
+                const key = Math.round(w);
+                if (headH[key] !== hh) setHeadH((m) => ({ ...m, [key]: hh }));
+              }}
+            >
+              <Text style={styles.stageName}>{t.name.toUpperCase()}</Text>
+              <Text style={styles.stageScale}>{t.scale.toUpperCase()}</Text>
+            </View>
+            <StageFit w={w} h={Math.max(40, h - (headH[Math.round(w)] ?? STAGE_HEAD_H))} aspect={PLOT_W / PLOT_H}>
+              <VenueView
+                placed={layoutToPlaced(t.layout, t.powered !== false)}
+                beams={layoutToBeams(t.layout, { flown: FLOWN_TYPES.has(t.id) })}
+                field
+                a11y={`Plan of a ${t.name}: ${t.layout.map((p) => `${p.kind} at ${slotDef(p.slot).label}`).join(', ')}`}
+              />
+            </StageFit>
+          </View>
         ),
         params,
       }}
@@ -528,6 +549,9 @@ export const SS_LEARN_PAGES_A: SsPageDef[] = [
 ];
 
 const styles = StyleSheet.create({
+  stageHead: { minHeight: 36, justifyContent: 'center', paddingHorizontal: 10, paddingVertical: 5, gap: 1 },
+  stageName: { color: colors.cyanBright, fontFamily: fonts.oswaldSemiBold, fontSize: 13, lineHeight: 16, letterSpacing: 0.8, textAlign: 'center' },
+  stageScale: { color: colors.amber, fontFamily: fonts.oswaldMedium, fontSize: 11, lineHeight: 14, letterSpacing: 0.6, textAlign: 'center' },
   inspectHead: { flexDirection: 'row', gap: 10, alignItems: 'center' },
   levels: { color: colors.textMuted, fontFamily: fonts.mono, fontSize: 10.5, lineHeight: 14 },
   fromTo: { color: colors.textSecondary, fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18 },
