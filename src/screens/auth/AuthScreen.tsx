@@ -72,6 +72,10 @@ export function AuthScreen({ navigation }: Props) {
   /** The last CREATE ACCOUNT was refused for a breached/weak password — so
    *  no account exists yet (see the LOGIN message below). */
   const [signupRefused, setSignupRefused] = useState(false);
+  /** Consecutive wrong-password LOGINs for the typed email (logs 2026-09-29:
+   *  one person tried 12 times in 3 minutes, and the screen only ever said
+   *  "incorrect"). From the second miss, point at the way out. */
+  const loginMisses = useRef({ email: '', n: 0 });
   /** A passphrase the app suggested, shown in full so it can be saved. */
   const [suggested, setSuggested] = useState<string | null>(null);
   const onSuggestPassword = () => {
@@ -340,10 +344,18 @@ export function AuthScreen({ navigation }: Props) {
         // After a refused CREATE ACCOUNT, "Email or password is incorrect" is a
         // dead end — there is no account to log in to (owner, TestFlight
         // 2026-09-29: a tester kept trying LOGIN and gave up). Say so.
+        const wrong = /incorrect/i.test(err);
+        const typed = email.trim().toLowerCase();
+        if (wrong) {
+          if (loginMisses.current.email !== typed) loginMisses.current = { email: typed, n: 0 };
+          loginMisses.current.n += 1;
+        }
         setError(
-          signupRefused && /incorrect/i.test(err)
+          signupRefused && wrong
             ? 'There is no account for this email yet — the password you chose when creating it was rejected, so it was never created. Tap SUGGEST A STRONG PASSWORD, then CREATE ACCOUNT.'
-            : err,
+            : wrong && loginMisses.current.n >= 2
+              ? 'Email or password is incorrect. Still stuck? Tap “Reset via email” below — we’ll email you a 6-digit code to set a new password. If you never finished creating an account, use CREATE ACCOUNT instead.'
+              : err,
         );
         return;
       }
