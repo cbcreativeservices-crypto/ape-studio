@@ -204,6 +204,30 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 00:15 · ccode · 50f6e978
+changed: fix(dashboard): term list is a centred popup; the deck store keeps one topic
+affects other side: nothing — client JS only (study bug fixes)
+needs: nothing
+
+
+### 2026-09-29 00:15 · ccode · f669d1a1
+changed: fix(study): tutorials wait for Low-Light/focus/fullscreen; no skipped boards; honest scenarios copy
+affects other side: nothing — client JS only (study bug fixes)
+needs: nothing
+
+
+### 2026-09-29 00:15 · ccode · f516987d
+changed: fix(quiz/exam): back held mid-submit, latched skip, resume at the next question
+affects other side: nothing — client JS only (study bug fixes)
+needs: nothing
+
+
+### 2026-09-29 00:14 · ccode · 4c0f7f88
+changed: fix(glossary): a double-tap spends one metered lookup, not two
+affects other side: nothing — client JS only (study bug fixes)
+needs: nothing
+
+
 ### 2026-09-29 00:11 · ccode · 4fecce64
 changed: fix(awards): picker RETRY instead of a dead "pull up again"; goToPage unlocks
 affects other side: nothing — client JS only (enrollment bug fixes)
