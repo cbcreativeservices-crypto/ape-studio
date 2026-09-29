@@ -204,10 +204,53 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 00:17 · ccode · 85a39f9a
+changed: fix(tools): one record per SAVE; tuner overlays close on BACK; SignalGen start guards; portrait restored
+affects other side: nothing — client JS only (tools/calc fixes)
+needs: nothing
+
+
+### 2026-09-29 00:17 · ccode · d2f7b3d0
+changed: fix(calc): BACK asks before discarding edits; one save at a time; serialised store writes
+affects other side: nothing — client JS only (tools/calc fixes)
+needs: nothing
+
+
+### 2026-09-29 00:17 · ccode · 8b49e98c
+changed: fix(study): no auto FULL SCREEN guide in Low-Light; guards for the app-shell bug hunt
+affects other side: nothing — client JS only (app shell fixes)
+needs: nothing
+
+
+### 2026-09-29 00:17 · ccode · 11f2b844
+changed: fix(nav): every native stack defaults to portrait_up, so one tool full screen no longer unlocks the app
+affects other side: nothing — client JS only (app shell fixes)
+needs: nothing
+
+
+### 2026-09-29 00:17 · ccode · 8fa7f8b5
+changed: fix(tools): a superseded mic start no longer kills a newer start's stream
+affects other side: nothing — client JS only (tools/calc fixes)
+needs: nothing
+
+
+### 2026-09-29 00:17 · ccode · a0cf29af
+changed: fix(audio-gate): popups open inside an already-open Modal; ACCEPT race; hold works with a screen reader
+affects other side: nothing — client JS only (app shell fixes)
+needs: nothing
+
+
+### 2026-09-29 00:17 · ccode · 7a0b5d4b
+changed: fix(links): deep-link capture really runs; a signed-out link or reminder waits for sign-in
+affects other side: nothing — client JS only (app shell fixes)
+needs: nothing
+
+
 ### 2026-09-29 00:16 · ccode · 68e8b132
 changed: fix(cymatics): gallery rename/notes/favourite edit the latest row, serialised
 affects other side: nothing — client JS only (wave/cymatics fixes)
 needs: nothing
+
 
 ### 2026-09-29 00:15 · ccode · 50f6e978
 changed: fix(dashboard): term list is a centred popup; the deck store keeps one topic
