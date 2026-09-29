@@ -39,13 +39,15 @@ import { placedToBeams, PLOT_BADGE } from './plot';
 import { BusHears, ConsolePanel, DcaStrip, MatrixStrip, matrixHears, auxHears, mainHears, subgroupHears, SubgroupStrip, type ConsoleColumn } from './art/ConsolePanel';
 import { flipFader, SoundSystemsRackLayout, type SsPageDef, type SsRack } from './rackLayout';
 import { StageFit } from '../rack/StageFit';
+import { usePageMemory } from './pageMemory';
 
 /* ── the builder ─────────────────────────────────────────────────────────── */
 
 type Msg = { text: string; unsafe?: boolean; ok?: boolean };
 
 export function useBuilder(initial: SoundSystem = EMPTY_SYSTEM) {
-  const [system, setSystem] = useState<SoundSystem>(initial);
+  // The plot survives BACK / CONTINUE for the session (bug hunt 2026-09-29).
+  const [system, setSystem] = usePageMemory<SoundSystem>('system', initial);
   const [part, setPart] = useState<GearKind | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [msg, setMsg] = useState<Msg | null>(null);
@@ -350,8 +352,11 @@ function hearsList(cs: ConsoleState, h: RouteUi['hears'][number]) {
 }
 
 function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
-  const b = useBuilder();
-  const [cs, setCs] = useState<ConsoleState>(bandConsole);
+  const built = useBuilder();
+  const [cs, setCs] = usePageMemory<ConsoleState>('console', bandConsole);
+  // CLEAR starts the capstone over — the plot AND the console routing
+  // (bug hunt 2026-09-29: it used to leave the console as routed).
+  const b = { ...built, reset: () => { built.reset(); setCs(bandConsole()); } };
   const grade = useMemo(() => gradeCapstone(capstone, b.system, cs), [capstone, b.system, cs]);
   useEffect(() => {
     if (grade.pass) {

@@ -25,6 +25,7 @@ import { dbFader, fmtDb } from './consoleDock';
 import { gainBezel, gainStageParam } from './gainDock';
 import { flipFader, SoundSystemsRackLayout, StageBox, type SsPageDef } from './rackLayout';
 import { StageFit } from '../rack/StageFit';
+import { usePageMemory } from './pageMemory';
 
 function useOperateCredit(id: string, done: boolean, ctx: PageCtx) {
   useEffect(() => {
@@ -228,8 +229,9 @@ const STRIP_W = 354;
 const STRIP_H = 118;
 
 function PageLineCheck({ ctx }: { ctx: PageCtx }) {
-  const [marks, setMarks] = useState<Record<string, 'ok' | 'fault' | undefined>>({});
-  const [checked, setChecked] = useState<Set<string>>(new Set());
+  // The marks survive BACK / CONTINUE for the session (bug hunt 2026-09-29).
+  const [marks, setMarks] = usePageMemory<Record<string, 'ok' | 'fault' | undefined>>('marks', {});
+  const [checked, setChecked] = usePageMemory<Set<string>>('checked', () => new Set());
   const [sel, setSel] = useState<string>(LINE_OUTPUTS[0].id);
   const correct = ALL_LINES.filter((it) => marks[it.id] && (marks[it.id] === 'ok') === it.healthy).length;
   const done = correct >= ALL_LINES.length;
@@ -485,7 +487,18 @@ function PageShutdown({ ctx }: { ctx: PageCtx }) {
       {DOCS.map((d) => {
         const on = docs.has(d);
         return (
-          <Pressable key={d} onPress={() => setDocs((s) => new Set(s).add(d))} style={styles.docRow} accessibilityRole="checkbox" accessibilityState={{ checked: on }} aria-checked={on} accessibilityLabel={d}>
+          // A checkbox toggles both ways (bug hunt 2026-09-29).
+          <Pressable
+            key={d}
+            onPress={() =>
+              setDocs((s) => {
+                const n = new Set(s);
+                if (n.has(d)) n.delete(d);
+                else n.add(d);
+                return n;
+              })
+            }
+            style={styles.docRow} accessibilityRole="checkbox" accessibilityState={{ checked: on }} aria-checked={on} accessibilityLabel={d}>
             <View style={[styles.docBox, on && styles.docBoxOn]}>{on ? <Text style={styles.docCheck}>✓</Text> : null}</View>
             <Text style={[styles.docText, on && { color: colors.textPrimary }]}>{d}</Text>
           </Pressable>

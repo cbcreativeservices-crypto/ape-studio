@@ -31,6 +31,7 @@ import { UNDERSTANDING_UNIT, understandingFor } from '../../../features/lab/unde
 import { markLabUnit, registerLabUnits } from '../../../features/lab/labCompletion';
 import type { PageCtx } from '../kit/PagedLab';
 import type { SsPageDef } from './rackLayout';
+import { PageMemoryKey } from './pageMemory';
 
 function useOsReduceMotion(): boolean {
   const [rm, setRm] = useState(false);
@@ -159,6 +160,9 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
   const ctx: PageCtx = { reduceMotion, markDone, isDone, goTo };
   const doneCount = progress?.completed.length ?? 0;
   const rack = !!def.rack;
+  // Per-page working state survives BACK / CONTINUE for the session
+  // (pageMemory.ts, bug hunt 2026-09-29).
+  const memoryKey = `${labId}:${page}`;
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
@@ -206,14 +210,18 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
         // Rack page: full height — its RackUnit pins the stage and the dock and
         // owns the scroll well (and its own scroll-lock provider).
         <View style={styles.rackFill}>
-          <Page ctx={ctx} />
+          <PageMemoryKey.Provider value={memoryKey}>
+            <Page key={memoryKey} ctx={ctx} />
+          </PageMemoryKey.Provider>
         </View>
       ) : (
         <ScrollView ref={scrollRef} scrollEnabled={!dragLocked} contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 24 }]}>
           <ScrollLockProvider value={setDragLocked}>
             <AccuracyNote style={styles.accuracy} />
             {page === 0 ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
-            <Page ctx={ctx} />
+            <PageMemoryKey.Provider value={memoryKey}>
+              <Page key={memoryKey} ctx={ctx} />
+            </PageMemoryKey.Provider>
           </ScrollLockProvider>
         </ScrollView>
       )}

@@ -23,6 +23,8 @@ import { ChannelStrip, PATCH_H, PatchPanel, STRIP_H, type PatchSocket, type Stri
 import { dbFader, fmtDb } from './consoleDock';
 import { flipFader, SoundSystemsRackLayout, type SsPageDef } from './rackLayout';
 import { StageFit } from '../rack/StageFit';
+// Console routing survives BACK / CONTINUE for the session (bug hunt 2026-09-29).
+import { usePageMemory } from './pageMemory';
 
 function useRouteCredit(id: string, done: boolean, ctx: PageCtx) {
   useEffect(() => {
@@ -129,7 +131,7 @@ const TAP_OPTIONS = [
 ];
 
 function PagePrePost({ ctx }: { ctx: PageCtx }) {
-  const [cs, setCs] = useState<ConsoleState>(() => setSend(setSend(bandConsole(), 'vox', 'aux1', { db: 0, tap: 'post' }), 'vox', 'aux5', { db: 0, tap: 'pre' }));
+  const [cs, setCs] = usePageMemory<ConsoleState>('console', () => setSend(setSend(bandConsole(), 'vox', 'aux1', { db: 0, tap: 'post' }), 'vox', 'aux5', { db: 0, tap: 'pre' }));
   const vox = cs.channels.find((c) => c.id === 'vox')!;
   const aux1 = hears(auxHears(cs, 'aux1')).find((h) => h.channelId === 'vox');
   const aux5 = hears(auxHears(cs, 'aux5')).find((h) => h.channelId === 'vox');
@@ -259,7 +261,7 @@ function PageWhichTool({ ctx }: { ctx: PageCtx }) {
 const WEDGE_AUXES = ['aux1', 'aux2', 'aux3', 'aux4'] as const;
 
 function PageMonitorMixes({ ctx }: { ctx: PageCtx }) {
-  const [cs, setCs] = useState<ConsoleState>(bandConsole);
+  const [cs, setCs] = usePageMemory<ConsoleState>('console', bandConsole);
   const [chId, setChId] = useState('vox');
   const [auxId, setAuxId] = useState<string>('aux1');
   const auxes = [...WEDGE_AUXES];
@@ -361,7 +363,7 @@ function PageMonitorMixes({ ctx }: { ctx: PageCtx }) {
 /* ── 5 · Subgroups vs DCAs ──────────────────────────────────────────────── */
 
 function PageGroups({ ctx }: { ctx: PageCtx }) {
-  const [cs, setCs] = useState<ConsoleState>(() => setSend(bandConsole(), 'kick', 'aux4', { db: 0, tap: 'pre' }));
+  const [cs, setCs] = usePageMemory<ConsoleState>('console', () => setSend(bandConsole(), 'kick', 'aux4', { db: 0, tap: 'pre' }));
   const drums = ['kick', 'snare', 'oh'];
   const subgrouped = drums.every((d) => cs.channels.find((c) => c.id === d)?.subgroup === 'sub-drums');
   const inMain = drums.every((d) => hears(mainHears(cs)).some((h) => h.channelId === d));
@@ -443,7 +445,7 @@ function PageGroups({ ctx }: { ctx: PageCtx }) {
 /* ── 6 · Mute groups, solo, direct outs ─────────────────────────────────── */
 
 function PageMutes({ ctx }: { ctx: PageCtx }) {
-  const [cs, setCs] = useState<ConsoleState>(() => {
+  const [cs, setCs] = usePageMemory<ConsoleState>('console', () => {
     let s = bandConsole();
     // BAND MUTE holds every band channel; ALL MICS holds every microphone
     // (the DIs and playback are not microphones). Without members the ALL
@@ -515,7 +517,7 @@ function PageMutes({ ctx }: { ctx: PageCtx }) {
 /* ── 7 · Matrices ───────────────────────────────────────────────────────── */
 
 function PageMatrices({ ctx }: { ctx: PageCtx }) {
-  const [cs, setCs] = useState<ConsoleState>(bandConsole);
+  const [cs, setCs] = usePageMemory<ConsoleState>('console', bandConsole);
   const fills = cs.matrices.find((m) => m.id === 'mx-fills')!;
   const lobby = cs.matrices.find((m) => m.id === 'mx-lobby')!;
   const rec = cs.matrices.find((m) => m.id === 'mx-rec')!;
@@ -623,7 +625,7 @@ const DESTINATIONS: readonly { id: string; name: string; short: string; needs: B
 ];
 
 function PagePatch({ ctx }: { ctx: PageCtx }) {
-  const [patch, setPatch] = useState<Record<string, Bus | null>>({});
+  const [patch, setPatch] = usePageMemory<Record<string, Bus | null>>('patch', {});
   const [active, setActive] = useState<string>(DESTINATIONS[0].id);
   const correct = DESTINATIONS.filter((d) => patch[d.id] === d.needs).length;
   const done = correct >= DESTINATIONS.length;
