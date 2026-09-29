@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 09:11 · ccode · 3f43140d
+changed: Lab end screen: count the final check separately (8 modules plus the check, not 9 of 9)
+affects other side: nothing — client JS only (lab end screen wording)
+needs: nothing
+
+
 ### 2026-09-29 09:09 · ccode · 58e58cb7
 changed: test: lab end screens - whatsLeft helper + source guards for every wired lab
 affects other side: nothing — client JS only (lab end screens)
