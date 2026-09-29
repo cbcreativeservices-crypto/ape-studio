@@ -4,9 +4,11 @@
  * One suspended-ceiling CUTAWAY (structural deck + joists, hanger wires, grid
  * + tiles, ductwork, sprinkler main with heads, conduit, a light fixture, a
  * cable tray section, J-hooks) with the owner-spec visibility toggle:
- * FINISHED VIEW (the room from below — clean ceiling, nothing visible) vs
- * ABOVE CEILING (the cutaway with everything). Default ABOVE for the
- * exercises; flipping shows exactly why X-ray understanding matters.
+ * ABOVE CEILING · AS FOUND (the section with the previous contractor's work)
+ * vs FINISHED VIEW — the SAME section, same scale and framing, after the work
+ * is done right (owner 2026-09-28: a true before/after of one space; the old
+ * finished view framed the ceiling from another viewpoint). Default ABOVE for
+ * the exercises.
  *
  * EXERCISE 1 — FIND THE PROBLEMS: the 8 CI_CEILING_DEFECTS drawn at their
  * data positions as visibly-wrong details; tappable ≥44dp markers plus the
@@ -16,9 +18,10 @@
  * 12-unit span to the supplied spec → confirm.
  *
  * MOTION (owner 2026-08-24 — this scene used to be two static slides):
- *   • the FINISHED ↔ ABOVE toggle is a REVEAL, not a swap: the tiles lift away
- *     on a left-to-right stagger while the cutaway fades up in DEPTH ORDER
- *     (deck → services → existing cable → the install). It reverses cleanly.
+ *   • the FINISHED ↔ ABOVE toggle is a CROSS-DISSOLVE over one section: the
+ *     building, the other trades and the grid never move; the corrected work
+ *     fades out as the as-found work fades up in depth order (existing cable
+ *     → the install → the markers). It reverses cleanly.
  *   • unfound defects breathe on INDIVIDUAL phases; a found one stops, springs
  *     into its found state, and the counter ticks up.
  *   • the money moment: every hook placed or pulled RE-SETTLES the run's sag on
@@ -30,7 +33,7 @@
  *     supported run, ending at the bushed sleeve.
  * Primitive-prop animation only (see motion.tsx's hard-won react-native-svg
  * rule): the sag morphs by animating the path's `d`, groups fade via <G
- * opacity>, and the only transform in the file is on a plain RN Animated.View.
+ * opacity>.
  *
  * Completion: both exercises → onComplete({ safety, routing, protection,
  * serviceability }), fired once. A11y: labeled buttons, announced verdicts,
@@ -38,10 +41,10 @@
  * identical end states. Training visualization — honest geometry only.
  */
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { AccessibilityInfo, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
-import { JacketPath, shade, tint as lighten, SVG_A11Y } from '../svgArt';
-import { CeilingDefects, FinishedRoom, GridAndTiles, JHookDrop, OtherTrades, PlenumStructure, WallSleeve } from './ceilingArt';
+import { JacketPath, shade, tint as lighten } from '../svgArt';
+import { CeilingDefects, CorrectedExisting, GridAndTiles, JHookDrop, OtherTrades, PlenumStructure, TRAY, WallSleeve } from './ceilingArt';
 /** Type-only: the motion kit re-exports the hooks, not the SharedValue type. */
 import type { SharedValue } from 'react-native-reanimated';
 import { colors, fonts } from '../../../../theme/tokens';
@@ -56,8 +59,6 @@ import {
   AG,
   ALine,
   APath,
-  ARect,
-  Animated,
   Appear,
   CI_EASE,
   CI_MOTION,
@@ -66,7 +67,6 @@ import {
   Stagger,
   cancelAnimation,
   useAnimatedProps,
-  useAnimatedStyle,
   useCiMotion,
   useCountUp,
   useDrawIn,
@@ -223,6 +223,18 @@ function useBreath({ run, period = 1500, delay = 0 }: { run: boolean; period?: n
 function Layer({ t, from, to, above, children }: { t: SharedValue<number>; from: number; to: number; above: boolean; children: ReactNode }) {
   const rest = useRest(above ? 1 : 0);
   const p = useAnimatedProps(() => ({ opacity: ramp(t.value, from, to) }));
+  return (
+    <AG opacity={rest} animatedProps={p}>
+      {children}
+    </AG>
+  );
+}
+
+/** The FINISHED plane: fully present at rv 0 (finished), gone by the time the
+ *  as-found work has faded up — the two cross-dissolve over one section. */
+function FinishedLayer({ t, above, children }: { t: SharedValue<number>; above: boolean; children: ReactNode }) {
+  const rest = useRest(above ? 0 : 1);
+  const p = useAnimatedProps(() => ({ opacity: 1 - ramp(t.value, 0.08, 0.5) }));
   return (
     <AG opacity={rest} animatedProps={p}>
       {children}
@@ -479,6 +491,53 @@ function SleeveRing({ on }: { on: boolean }) {
   );
 }
 
+/** The hooks of the FINISHED run before the learner has installed their own:
+ *  a worked example to the supplied spec (a support every 4 units). Once
+ *  they confirm Exercise 2 the finished view shows THEIR hooks instead. */
+const FINISHED_EXAMPLE_HOOKS = [4, 8];
+
+/** FINISHED VIEW, depth 1: the new run's hook rods, hung from the deck behind
+ *  the other trades (same place the placed-hook rods hang). */
+function FinishedRods({ hookUnits }: { hookUnits: number[] }) {
+  return (
+    <>
+      {hookUnits.map((u) => (
+        <PlacedHookRod key={u} x={SPAN_X0 + u * UNIT_PX} />
+      ))}
+      <PlacedHookRod x={SPAN_X0 + SPAN_UNITS * UNIT_PX - 4} />
+    </>
+  );
+}
+
+/** FINISHED VIEW, depth 5: the supported run in place — the violet bundle
+ *  (tray lead-in with its service loop, then its own J-hooks at the spec
+ *  spacing, into the bushed sleeve) and the green pair that used to sag off
+ *  the tray end (cd-3), now sharing those hooks, its service loop moved off
+ *  the duct into the tray where a lifted tile reaches it (cd-8). */
+function FinishedRun({ hookUnits }: { hookUnits: number[] }) {
+  const ys = sagProfile(hookUnits);
+  const runD = profileD(ys);
+  let greenD = `M${TRAY.x1} ${RUN_Y} `;
+  for (let i = 1; i < ys.length; i++) greenD += `L${RUN_XS[i].toFixed(1)} ${(ys[i] - 2.4).toFixed(1)} `;
+  greenD += `L${SLEEVE_X} ${SLEEVE_Y - 2.4}`;
+  const green = '#37d97b';
+  const violet = '#c77dff';
+  return (
+    <>
+      <WallSleeve />
+      <JacketPath d="M92 129.6 C92 126.8 114 126.8 114 129.6 C114 132.2 92 132.2 92 129.6" color={green} width={2} />
+      <JacketPath d={greenD} color={green} width={2.4} />
+      <JacketPath d={`M0 ${RUN_Y} H${SPAN_X0}`} color={violet} width={2.6} />
+      <JacketPath d="M136 129.6 C136 126.6 160 126.6 160 129.6 C160 132.4 136 132.4 136 129.6" color={violet} width={2} />
+      <JacketPath d={runD} color={violet} width={2.6} />
+      {hookUnits.map((u) => (
+        <JHookDrop key={u} x={SPAN_X0 + u * UNIT_PX} cradleY={HOOK_SADDLE} w={HOOK_W} back={7} top={HOOK_ARM_TOP} />
+      ))}
+      <JHookDrop x={SPAN_X0 + SPAN_UNITS * UNIT_PX} cradleY={HOOK_SADDLE} w={HOOK_W} back={7} top={HOOK_ARM_TOP} />
+    </>
+  );
+}
+
 /* ── the cutaway (ABOVE CEILING view) ───────────────────────────────────── */
 function AboveSvg({
   w,
@@ -516,42 +575,50 @@ function AboveSvg({
   ghost: 'tiles' | 'duct' | null;
 }) {
   const h = Math.round((w * VB_H) / VB_W);
-  const hookXs = [...hooks].sort((a, b) => a - b).map((u) => SPAN_X0 + u * UNIT_PX);
+  const hookUnits = [...hooks].sort((a, b) => a - b);
+  const hookXs = hookUnits.map((u) => SPAN_X0 + u * UNIT_PX);
+  /** FINISHED shows the learner's own hooks once they have installed the
+   *  run; until then the worked example to the same spec. */
+  const finishedHooks = confirmed ? hookUnits : FINISHED_EXAMPLE_HOOKS;
   return (
     <Svg
       width={w}
       height={h}
       viewBox={`0 0 ${VB_W} ${VB_H}`}
-      accessibilityLabel="Above-ceiling cutaway: structural deck and joists on top, hanger wires, duct, sprinkler main with heads, conduit, cable tray, J-hooks, light fixture, and the grid with tiles at the bottom. Eight suspect details are marked."
-      /* both views stay mounted for the reveal — only the live one is readable */
-      /* native-only props: on the web react-native-svg would forward them to
-         the DOM as unknown attributes (a console error per render) */
-      {...(Platform.OS === 'web'
-        ? {}
-        : { accessibilityElementsHidden: !above, importantForAccessibility: above ? ('auto' as const) : ('no-hide-descendants' as const) })}
+      accessibilityLabel={
+        above
+          ? 'Above-ceiling section, as found: structural deck and beams on top, hanger wires, duct, sprinkler main with heads, conduit, cable tray, J-hooks, light fixture, and the grid with tiles at the bottom. Eight suspect details are marked.'
+          : 'The same section, finished: every run on its own right-sized J-hooks from structure, clear of the sprinkler main, the duct and the light fixture; the audio pairs in the shared hook route; service loops lying in the tray; both wall entries sleeved and bushed; the new run on its own hooks into the bushed sleeve.'
+      }
     >
       {/* the base plate never fades — the cross-dissolve always has a floor */}
       <Rect x={0} y={0} width={VB_W} height={VB_H} rx={10} fill="#131318" />
 
-      {/* ── depth 1: structure ─────────────────────────────────────────── */}
-      <Layer t={rv} from={0} to={0.4} above={above}>
-        <PlenumStructure />
-        {/* the learner's hook rods hang from the deck BEHIND the other trades */}
+      {/* ── depth 1: structure — the SAME in both views (one space, before
+             and after) ─────────────────────────────────────────────────── */}
+      <PlenumStructure />
+      {/* the learner's hook rods hang from the deck BEHIND the other trades */}
+      <Layer t={rv} from={0.55} to={1} above={above}>
         {hookXs.map((x) => (
           <PlacedHookRod key={`r${x}`} x={x} />
         ))}
         {showTicks || confirmed ? <PlacedHookRod x={SPAN_X0 + SPAN_UNITS * UNIT_PX - 4} /> : null}
       </Layer>
+      <FinishedLayer t={rv} above={above}>
+        <FinishedRods hookUnits={finishedHooks} />
+      </FinishedLayer>
 
-      {/* ── depth 2: the other trades' systems ─────────────────────────── */}
-      <Layer t={rv} from={0.18} to={0.62} above={above}>
-        <OtherTrades />
-      </Layer>
+      {/* ── depth 2: the other trades' systems (unchanged by our work) ──── */}
+      <OtherTrades />
 
       {/* ── depth 3: the grid + tiles, seen edge-on ────────────────────── */}
-      <Layer t={rv} from={0.06} to={0.46} above={above}>
-        <GridAndTiles />
-      </Layer>
+      <GridAndTiles />
+
+      {/* ── FINISHED: the corrected installation, in the same space ─────── */}
+      <FinishedLayer t={rv} above={above}>
+        <CorrectedExisting />
+        <FinishedRun hookUnits={finishedHooks} />
+      </FinishedLayer>
 
       {/* ── depth 4: the previous contractor's wrongs (Exercise 1) ─────── */}
       <Layer t={rv} from={0.42} to={0.9} above={above}>
@@ -651,49 +718,6 @@ function AboveSvg({
   );
 }
 
-/* ── the room from below (FINISHED VIEW) — deliberately boring ──────────── */
-/** The shell: walls, floor, the one wall plate. Cross-fades out first. */
-function FinishedShellSvg({ w }: { w: number }) {
-  const h = Math.round((w * VB_H) / VB_W);
-  return (
-    <Svg {...SVG_A11Y}
-      width={w}
-      height={h}
-      viewBox={`0 0 ${VB_W} ${VB_H}`}
-      accessibilityLabel="Finished room view: a clean suspended ceiling with tiles, one light fixture and sprinkler heads. Nothing above it is visible."
-    >
-      <FinishedRoom />
-    </Svg>
-  );
-}
-
-/** One ceiling tile, lifting away on its own beat. */
-function FinishedTile({ x, index, rv, above }: { x: number; index: number; rv: SharedValue<number>; above: boolean }) {
-  const rest = useRest(above ? 0 : 1);
-  const p = useAnimatedProps(() => ({ opacity: 1 - ramp(rv.value, index * 0.05, index * 0.05 + 0.34) }));
-  return <ARect x={x} y={36} width={54} height={10} fill="#d4d1c8" stroke="#f4f4f2" strokeWidth={1.2} opacity={rest} animatedProps={p} />;
-}
-
-/** The ceiling plane itself — the layer that lifts away to open the room. */
-function FinishedCeilingSvg({ w, rv, above }: { w: number; rv: SharedValue<number>; above: boolean }) {
-  const h = Math.round((w * VB_H) / VB_W);
-  const rest = useRest(above ? 0 : 1);
-  const fittings = useAnimatedProps(() => ({ opacity: 1 - ramp(rv.value, 0.02, 0.32) }));
-  return (
-    <Svg width={w} height={h} viewBox={`0 0 ${VB_W} ${VB_H}`} pointerEvents="none">
-      {[0, 1, 2, 3, 4, 5].map((i) => (
-        <FinishedTile key={i} x={12 + i * 56} index={i} rv={rv} above={above} />
-      ))}
-      <AG opacity={rest} animatedProps={fittings}>
-        <Rect x={88} y={38} width={37} height={7} fill="#fff3c2" opacity={0.85} />
-        {[179.3, 252.5, 322.5].map((x) => (
-          <Circle key={x} cx={x} cy={49} r={2.6} fill="#9aa0a6" />
-        ))}
-      </AG>
-    </Svg>
-  );
-}
-
 /* ── the scene ──────────────────────────────────────────────────────────── */
 export function CeilingScene({ width, completed, onComplete, openSources }: CiModuleProps) {
   const allIds = CI_CEILING_DEFECTS.map((d) => d.id);
@@ -721,8 +745,6 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
   /* ── the reveal driver: 0 = finished room, 1 = above the ceiling ─────── */
   const above = view === 'above';
   const rv = useTween(above ? 1 : 0, 720);
-  const shellStyle = useAnimatedStyle(() => ({ opacity: 1 - ramp(rv.value, 0, 0.5) }));
-  const ceilingStyle = useAnimatedStyle(() => ({ transform: [{ translateY: -14 * ramp(rv.value, 0, 0.7) }] }));
 
   /* ── the sag: a spring carries the run from the profile it had to the
        profile the current supports demand (the money moment) ───────────── */
@@ -823,11 +845,11 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
   const viewToggle = (
       <View style={lessonStyles.chipWrap}>
         <OptionChip
-          label="ABOVE CEILING"
+          label="ABOVE CEILING · AS FOUND"
           active={above}
           onPress={() => {
             setView('above');
-            say('Above ceiling view.');
+            say('Above the ceiling, as found.');
           }}
         />
         <OptionChip
@@ -835,7 +857,7 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
           active={!above}
           onPress={() => {
             setView('finished');
-            say('Finished view. From the room, none of the overhead work is visible.');
+            say('Finished view. The same section with every violation corrected and the new run on its own hooks.');
           }}
         />
       </View>
@@ -873,22 +895,6 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
                 quietDefects={ex1Done && (pathSolved || confirmed)}
                 ghost={pathOpt && !pathOpt.good ? (pathOpt.id as 'tiles' | 'duct') : null}
               />
-              <Animated.View
-                style={[StyleSheet.absoluteFill, shellStyle]}
-                pointerEvents="none"
-                accessibilityElementsHidden={above}
-                importantForAccessibility={above ? 'no-hide-descendants' : 'auto'}
-              >
-                <FinishedShellSvg w={fw} />
-              </Animated.View>
-              <Animated.View
-                style={[StyleSheet.absoluteFill, ceilingStyle]}
-                pointerEvents="none"
-                accessibilityElementsHidden
-                importantForAccessibility="no-hide-descendants"
-              >
-                <FinishedCeilingSvg w={fw} rv={rv} above={above} />
-              </Animated.View>
               {/* ≥44dp tap overlays for the defect markers */}
               {above
                 ? CI_CEILING_DEFECTS.map((d, i) => {
@@ -941,7 +947,9 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
       <Text style={styles.legend}>
         {above
           ? 'Colour key (teaching colours): grey / blue / orange = other tenants’ bundle · cyan + green = the previous contractor’s runs · violet = your bundle · red = sprinkler. Rings = details to inspect.'
-          : 'Clean. Silent. And carrying every one of those violations — which is exactly why above-ceiling work gets skipped, and why inspectors lift tiles.'}
+          : 'FINISHED — the same section after the work is done right: every run on right-sized J-hooks hung from structure, clear of the sprinkler, the duct and the light; service loops in the tray where a lifted tile reaches them; both wall entries sleeved and bushed; the new run on its own hooks at the supplied spacing' +
+            (confirmed ? ' (yours).' : ' (a worked example — yours replaces it once you install it in Exercise 2).') +
+            ' From the room below, both versions look identical — which is why inspectors lift tiles.'}
       </Text>
 
       {/* EXERCISE 1 — FIND THE PROBLEMS */}

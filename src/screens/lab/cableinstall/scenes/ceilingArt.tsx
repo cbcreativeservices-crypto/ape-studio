@@ -426,23 +426,44 @@ export function WallSleeve({ label = true }: { label?: boolean }) {
   );
 }
 
-/** FINISHED VIEW — the room from below: walls, floor, a clean tile ceiling. */
-export function FinishedRoom() {
-  const id = useUid();
+/**
+ * FINISHED VIEW — the SAME section, same scale and framing, after the work is
+ * done right (owner 2026-09-28: the old finished view framed the ceiling from
+ * a different viewpoint; above ↔ finished must read as a true before/after of
+ * one space). Every as-found defect, corrected:
+ *   cd-6  the undersized middle hook replaced — all four hooks sized for the
+ *         stack, nothing spilling
+ *   cd-1/2/4  the cyan audio pair no longer drapes over the sprinkler main,
+ *         rests on the troffer or lies on the tiles — it rides the shared
+ *         hook route out of the section
+ *   cd-5/7  no hard fold: the right-hand cyan pair stays in the bundle, which
+ *         runs level into a sleeved, bushed opening (the ragged hole is gone)
+ *   cd-3/8  the green pair is drawn by the scene with the new run (it shares
+ *         its hooks); its service loop lies in the tray, not on the duct
+ */
+export function CorrectedExisting() {
+  const cyan = '#4fd0e0';
+  /** the shared route, now carrying both audio pairs on top of the stack */
+  const stack = [...BUNDLE, cyan, cyan];
+  const topY = BUNDLE_BASE - 1 - (stack.length - 1) * 1.9;
   return (
     <G>
-      <Defs>
-        <LinearGradient id={`${id}w`} x1="0" y1="0" x2="0" y2="1">
-          <Stop offset="0" stopColor="#1f2025" />
-          <Stop offset="1" stopColor="#16171b" />
-        </LinearGradient>
-      </Defs>
-      <Rect x={0} y={0} width={360} height={220} rx={10} fill="#0e0f12" />
-      <Rect x={12} y={46} width={336} height={150} fill={`url(#${id}w)`} />
-      <Rect x={12} y={190} width={336} height={6} fill="#2e2f35" />
-      <Rect x={12} y={196} width={336} height={20} fill="#1a1714" />
-      <Rect x={300} y={120} width={12} height={16} rx={1} fill="#d9d7d0" stroke="#8d8a80" strokeWidth={0.4} />
-      <Circle cx={306} cy={126} r={2.6} fill="#1a1b1f" />
+      <Tag x={100} y={46} text="J-HOOKS" />
+      <Line x1={114} y1={50} x2={124} y2={57} stroke="#6f7378" strokeWidth={0.6} />
+      {/* the wall entry at the route's own elevation — a sleeve through the
+          masonry, bushed — so the bundle runs level straight into it, clear
+          of the sprinkler main below (as found it dived past the main into
+          a ragged hole) */}
+      <Rect x={332} y={topY - 2.6} width={22} height={BUNDLE_BASE - topY + 3.6} rx={1} fill="#80868f" stroke="#2c2f34" strokeWidth={0.5} />
+      {stack.map((c, i) => {
+        const y = BUNDLE_BASE - 1 - i * 1.9;
+        return <JacketPath key={i} d={`M0 ${y} H344`} color={c} width={2} shadow={i === 0} />;
+      })}
+      <Rect x={331} y={topY - 4} width={2.6} height={BUNDLE_BASE - topY + 6.4} rx={0.8} fill="#c5c9cf" stroke="#2c2f34" strokeWidth={0.4} />
+      {/* every hook sized for the stack it carries */}
+      {[66, 132, 197, 262].map((x) => (
+        <JHookDrop key={x} x={x} cradleY={BUNDLE_BASE + 0.4} w={7} lip={11} back={5} />
+      ))}
     </G>
   );
 }
