@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 10:41 · ccode · da333188
+changed: Bass lab: stays armed after a note rings out; nearby notes preload; green readout off
+affects other side: nothing — client JS only (Bass armed transport + clip preloading). Note: more lab-audio edge-fn calls per session while the Bass lab is armed (~7 preloads per change).
+needs: nothing
+
+
 ### 2026-09-29 10:18 · ccode · b2660894
 changed: FIX the dead Bass ▶: a re-render cancelled every start (and the same trap in 14 labs)
 affects other side: nothing — client JS only (lab stop-on-blur fix; Bass ▶ root cause)
