@@ -33,6 +33,7 @@ import { SplitDiagram, SubFeedRouter, type SubFeedMode } from './art/diagrams';
 import { BEAM_COLOR, placedToBeams, PLOT_BADGE, THROW } from './plot';
 import { flipFader, lanePos, laneVal, SoundSystemsRackLayout, type SsPageDef } from './rackLayout';
 import { StageFit } from '../rack/StageFit';
+import { TitledStage } from '../rack/TitledStage';
 
 /* ── 8 · Subwoofer feeds ────────────────────────────────────────────────── */
 
@@ -95,16 +96,18 @@ function PageSubFeeds({ ctx }: { ctx: PageCtx }) {
         size: 'M',
         badge: 'SUB FEED ROUTER — ILLUSTRATIVE · blue = what reaches the subwoofer',
         initialParam: 'feed',
+        // The feed's NAME cropped in its bezel cell ("CROSSOVER-…"): it prints
+        // in full above the router now (owner 2026-09-29, TitledStage). The
+        // bezel keeps the short readouts.
         bezel: [
-          { k: 'FEED', v: f.name.toUpperCase(), tint: colors.cyanBright, flex: 1.3 },
           { k: 'REACHES', v: f.reachesShort, flex: 1.4 },
           { k: 'CONTROL', v: f.controlShort, flex: 1.4 },
           { k: 'VOCAL', v: feed === 'aux' && vocalSend ? 'IN SUBS' : 'CLEAR', tint: feed === 'aux' && vocalSend ? colors.orange : colors.green },
         ],
         stage: (w, h) => (
-          <StageFit w={w} h={h} aspect={354 / 176}>
+          <TitledStage w={w} h={h} aspect={354 / 176} title={f.name}>
             <SubFeedRouter mode={feed} vocalSend={vocalSend && feed === 'aux'} />
-          </StageFit>
+          </TitledStage>
         ),
         params,
       }}
@@ -230,16 +233,17 @@ function PageSubPlacement({ ctx }: { ctx: PageCtx }) {
         badge: PLOT_BADGE,
         initialParam: 'layout',
         hideDragTag: true,
+        // The layout's NAME cropped in its bezel cell ("CARDIOID STACK…"): it
+        // prints in full above the plan now (owner 2026-09-29).
         bezel: [
-          { k: 'LAYOUT', v: l.name.toUpperCase(), tint: colors.cyanBright, flex: 1.6 },
           { k: 'SUBS', v: `${l.placed.length}`, flex: 0.6 },
           { k: 'PATTERN', v: l.pattern, tint: '#6fa8ff', flex: 1.2 },
           { k: 'RIG', v: l.rig, flex: 0.9 },
         ],
         stage: (w, h) => (
-          <StageFit w={w} h={h} aspect={PLOT_W / PLOT_H}>
+          <TitledStage w={w} h={h} aspect={PLOT_W / PLOT_H} title={l.name}>
             <VenueView placed={placed} beams={l.beams} field a11y={`Plan of the ${l.name} subwoofer arrangement. ${l.orient}`} />
-          </StageFit>
+          </TitledStage>
         ),
         params,
       }}
@@ -306,16 +310,16 @@ function PageMonitors({ ctx }: { ctx: PageCtx }) {
         badge: PLOT_BADGE,
         initialParam: 'monitor',
         hideDragTag: true,
+        // MONITOR and STANDS AT cropped in their bezel cells ("IN-EAR MONI…"):
+        // both print in full above the stage now (owner 2026-09-29).
         bezel: [
-          { k: 'MONITOR', v: m.name.toUpperCase(), tint: colors.cyanBright, flex: 1.5 },
-          { k: 'STANDS AT', v: slotDef(m.slot).label.toUpperCase(), flex: 1.3 },
           { k: 'FED BY', v: m.feed, flex: 1.4 },
           { k: 'SEEN', v: `${seen.size}/4`, flex: 0.7 },
         ],
         stage: (w, h) => (
-          <StageFit w={w} h={h} aspect={PLOT_W / PLOT_H}>
+          <TitledStage w={w} h={h} aspect={PLOT_W / PLOT_H} title={m.name} subtitle={`Stands at ${slotDef(m.slot).label}`}>
             <VenueView placed={placed} beams={beams} performers selectedId={sel} onTapPlaced={pick} a11y="Monitor positions on the stage: a wedge, a side fill, a drum fill and an in-ear pack. Tap one to read about it." />
-          </StageFit>
+          </TitledStage>
         ),
         params,
       }}

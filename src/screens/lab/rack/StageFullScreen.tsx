@@ -36,7 +36,7 @@ import { Animated, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimen
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Modal } from '../../../components/DimModal';
 import { colors, fonts } from '../../../theme/tokens';
-import { StageAspectReport, StageTextScale, type StageReport } from './stageAspect';
+import { StageAspectReport, StageInFullScreen, StageTextScale, type StageReport } from './stageAspect';
 
 const ZOOMS = [1, 1.5, 2, 3] as const;
 
@@ -262,7 +262,9 @@ export function StageFullScreen({
               >
                 <View ref={drawRef} style={{ width: w, height: h }} onStartShouldSetResponderCapture={noteTouch}>
                   <StageAspectReport.Provider value={report}>
-                    <StageTextScale.Provider value={textScale}>{render(w, h)}</StageTextScale.Provider>
+                    <StageTextScale.Provider value={textScale}>
+                      <StageInFullScreen.Provider value>{render(w, h)}</StageInFullScreen.Provider>
+                    </StageTextScale.Provider>
                   </StageAspectReport.Provider>
                 </View>
               </ScrollView>

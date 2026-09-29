@@ -31,3 +31,12 @@ export const StageAspectReport = createContext<StageReport | null>(null);
  */
 export const StageTextScale = createContext(1);
 export const useStageTextScale = (): number => useContext(StageTextScale);
+
+/**
+ * StageInFullScreen — true inside the FULL SCREEN view, false on the glass.
+ * TitledStage reads it (owner 2026-09-29): the item's name prints above the
+ * drawing in full screen always, but on the glass only where it costs the
+ * drawing nothing — a header that shrank a height-limited plan pushed its
+ * labels under the 9 pt floor.
+ */
+export const StageInFullScreen = createContext(false);

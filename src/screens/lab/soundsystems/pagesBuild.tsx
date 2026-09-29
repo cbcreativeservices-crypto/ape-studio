@@ -39,6 +39,7 @@ import { placedToBeams, PLOT_BADGE } from './plot';
 import { BusHears, ConsolePanel, DcaStrip, MatrixStrip, matrixHears, auxHears, mainHears, subgroupHears, SubgroupStrip, type ConsoleColumn } from './art/ConsolePanel';
 import { flipFader, SoundSystemsRackLayout, type SsPageDef, type SsRack } from './rackLayout';
 import { StageFit } from '../rack/StageFit';
+import { TitledStage } from '../rack/TitledStage';
 import { usePageMemory } from './pageMemory';
 
 /* ── the builder ─────────────────────────────────────────────────────────── */
@@ -132,7 +133,7 @@ type BuilderRack = { rack: SsRack; wellTop: ReactNode; prompt: string; status: s
  * REMOVE / CLEAR in the dock, counts on the bezel, the live cards in the
  * well-top slot.
  */
-function useBuilderRack(b: ReturnType<typeof useBuilder>, kinds: readonly GearKind[], extras: { bezel?: BezelItem; console?: DockParam; wellTop?: ReactNode } = {}): BuilderRack {
+function useBuilderRack(b: ReturnType<typeof useBuilder>, kinds: readonly GearKind[], extras: { bezel?: BezelItem; console?: DockParam; wellTop?: ReactNode; title?: { title: string; subtitle?: string } } = {}): BuilderRack {
   const sel = b.selected ? b.system.placed.find((p) => p.id === b.selected) : undefined;
   const beams = useMemo(() => placedToBeams(b.system.placed, b.live), [b.system.placed, b.live]);
   const inHand = b.part ? gearSpec(b.part) : null;
@@ -205,8 +206,11 @@ function useBuilderRack(b: ReturnType<typeof useBuilder>, kinds: readonly GearKi
     initialParam: 'part',
     hideDragTag: true,
     bezel,
-    stage: (w, h) => (
-      <StageFit w={w} h={h} aspect={PLOT_W / PLOT_H}>
+    // A capstone's name and venue print above the plot in FULL SCREEN, where
+    // the page's brief is left behind (owner 2026-09-29) — on the glass the
+    // chapter tag right below says it and the plot keeps its full size.
+    stage: (w, h) => {
+      const plot = (
         <VenueView
           placed={b.system.placed}
           links={b.system.links}
@@ -220,8 +224,17 @@ function useBuilderRack(b: ReturnType<typeof useBuilder>, kinds: readonly GearKi
           onTapLink={b.tapLink}
           a11y={`The venue plot. ${b.system.placed.length} device${b.system.placed.length === 1 ? '' : 's'} placed, ${b.system.links.length} cable${b.system.links.length === 1 ? '' : 's'}, ${b.live.size} loudspeaker${b.live.size === 1 ? '' : 's'} live.${b.part ? ` ${b.targets.length} positions accept the ${gearSpec(b.part).name.toLowerCase()}.` : ''}`}
         />
-      </StageFit>
-    ),
+      );
+      return extras.title ? (
+        <TitledStage w={w} h={h} aspect={PLOT_W / PLOT_H} title={extras.title.title} subtitle={extras.title.subtitle}>
+          {plot}
+        </TitledStage>
+      ) : (
+        <StageFit w={w} h={h} aspect={PLOT_W / PLOT_H}>
+          {plot}
+        </StageFit>
+      );
+    },
     params,
   };
   return { rack, wellTop, prompt, status };
@@ -387,6 +400,7 @@ function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
     console: consoleParam,
     bezel: { k: 'REQS', v: grade.pass ? 'PASS' : `${grade.met.length}/${capstone.requirements.length}`, tint: grade.pass ? colors.green : colors.amber, flex: 1 },
     wellTop: requirements,
+    title: { title: capstone.title, subtitle: `Capstone ${capstone.n} of 10 · ${capstone.venue}` },
   });
   return (
     <SoundSystemsRackLayout rack={r.rack} caption={`Capstone ${capstone.n} of 10 · ${capstone.venue}. Build it on the plot from the bin in PART${ui ? ', then open CONSOLE to route it' : ''} — the checklist below fills itself in as you go.`} wellTop={r.wellTop}>

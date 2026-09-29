@@ -24,7 +24,7 @@ import type { DockParam } from '../rack/rackTypes';
 import { ChapterTag, DeeperRow, GoalChips, KeyFact, LabLink, useVisitGoals, VerdictLine } from './bits';
 import { benchMap, MAP_H, MAP_W, ReadingKey, SystemMap, type MapNode, type MapState } from './art/SystemMap';
 import { SoundSystemsRackLayout, type SsPageDef } from './rackLayout';
-import { StageFit } from '../rack/StageFit';
+import { TitledStage } from '../rack/TitledStage';
 
 export function stateOf(r: Reading): MapState {
   if (r.flags && r.flags.length) return r.signal === 'clip' ? 'clip' : r.signal === 'hot' ? 'hot' : 'flag';
@@ -222,14 +222,18 @@ function GroupPage({ group, ctx }: { group: FaultGroup; ctx: PageCtx }) {
         size: 'L',
         badge: BENCH_BADGE,
         initialParam: 'case',
+        // The case's TITLE cropped in its bezel cell ("SIGNAL REACHES THE
+        // MIX…"): it prints in full above the map now, with the fault group
+        // under it (owner 2026-09-29, TitledStage). The bezel
+        // keeps the case number / the solved count.
         bezel: [
-          { k: 'CASE', v: c ? c.title.toUpperCase() : `${solvedHere}/${cases.length} SOLVED`, tint: c ? colors.cyanBright : undefined, flex: 2.2 },
+          { k: 'CASE', v: c ? `${cases.indexOf(c) + 1} OF ${cases.length}` : `${solvedHere}/${cases.length} SOLVED`, flex: 1.2 },
           { k: 'PROBED', v: c ? `${probes.length}` : '—', flex: 0.8 },
           { k: 'READS', v: c && last ? readoutOf(c.reads[last]) : '—', tint: c && last ? (stateOf(c.reads[last]) === 'ok' ? colors.greenBright : colors.orange) : undefined, flex: 1.3 },
           { k: 'GRADE', v: grade ? (grade.correct ? (grade.forward ? '✓✓' : '✓') : '✗') : '—', tint: grade ? (grade.correct ? colors.green : colors.red) : undefined, flex: 0.7 },
         ],
         stage: (w, h) => (
-          <StageFit w={w} h={h} aspect={MAP_W / MAP_H}>
+          <TitledStage w={w} h={h} aspect={MAP_W / MAP_H} title={c ? c.title : g.title} subtitle={c ? g.title : 'Pick a case to put it on the bench'}>
             <SystemMap
               nodes={nodes}
               edges={base.edges}
@@ -238,7 +242,7 @@ function GroupPage({ group, ctx }: { group: FaultGroup; ctx: PageCtx }) {
               selectedId={c ? last ?? c.startAt : null}
               a11y={c ? `The nine stations. ${probes.length} probed. The symptom clears everything before ${label(c.startAt)}. Tap a station to read it.` : 'The nine stations of the bench, nothing probed. Pick a case to begin.'}
             />
-          </StageFit>
+          </TitledStage>
         ),
         params,
       }}
