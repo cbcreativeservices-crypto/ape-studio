@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 11:35 · ccode · d04154aa
+changed: labs sound policy: keep playing when switching screens, stop on close
+affects other side: nothing — client JS only (lab audio persistence + preloading)
+needs: nothing
+
+
 ### 2026-09-29 11:18 · ccode · 80f00bb9
 changed: labs sound audit (3/3): ▶ arms the lab — no more drops to ▶ on a change or a ring-out
 affects other side: nothing — client JS only (lab sound fixes)
