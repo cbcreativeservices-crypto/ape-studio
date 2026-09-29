@@ -29,7 +29,7 @@
  * CredentialDetailModal's measured footer) precisely because a pinned ACCEPT
  * button can be tapped without the text ever having moved.
  */
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
@@ -51,39 +51,46 @@ export function SoundSafetyWarning({
   visible,
   onAccept,
   onDecline,
+  busy = false,
+  embedded = false,
 }: {
   visible: boolean;
   /** Called only when the box is ticked AND the accept button is pressed. */
   onAccept: () => void;
   /** Every other exit: the decline button, the scrim, the hardware back key. */
   onDecline: () => void;
+  /** The acknowledgment is being written — ACCEPT shows it and cannot fire
+   *  twice (bug hunt 2026-09-29). */
+  busy?: boolean;
+  /** Render as an in-tree overlay instead of its own Modal — used when the
+   *  gate hosts it inside an already-open Modal (see DimModal.tsx). */
+  embedded?: boolean;
 }) {
   const [checked, setChecked] = useState(false);
   const { height } = useWindowDimensions();
 
   // The box resets every time the warning opens. A declined-then-reopened
   // warning must not remember a tick from a session the user abandoned.
+  useEffect(() => {
+    if (visible) setChecked(false);
+  }, [visible]);
   const close = useCallback(() => {
     setChecked(false);
     onDecline();
   }, [onDecline]);
 
+  // The tick is KEPT while the acknowledgment is written (it used to clear on
+  // press, so the box emptied under the finger while the save ran); it resets
+  // on the next open instead, above.
   const accept = useCallback(() => {
-    if (!checked) return; // belt and braces — the button is already disabled
-    setChecked(false);
+    if (!checked || busy) return; // belt and braces — the button is already disabled
     onAccept();
-  }, [checked, onAccept]);
+  }, [checked, busy, onAccept]);
 
-  return (
-    <Modal
-      accessibilityViewIsModal
-      visible={visible}
-      transparent
-      animationType="fade"
-      statusBarTranslucent
-      onRequestClose={close}
-    >
-      <View style={styles.backdrop}>
+  const acceptOff = !checked || busy;
+
+  const body = (
+      <View style={[styles.backdrop, embedded ? StyleSheet.absoluteFill : null]} accessibilityViewIsModal>
         {/* The scrim closes WITHOUT accepting. */}
         <Pressable
           style={StyleSheet.absoluteFill}
@@ -151,19 +158,21 @@ export function SoundSafetyWarning({
 
             {/* Buttons live INSIDE the scroll, below the text. See the header. */}
             <Pressable
-              style={[styles.acceptBtn, !checked && styles.acceptBtnOff]}
+              style={[styles.acceptBtn, acceptOff && styles.acceptBtnOff]}
               onPress={accept}
-              disabled={!checked}
+              disabled={!checked || busy}
               accessibilityRole="button"
-              accessibilityState={{ disabled: !checked }}
+              accessibilityState={{ disabled: acceptOff, busy }}
               accessibilityLabel={
-                checked
-                  ? SOUND_SAFETY_ACCEPT
-                  : 'Enable sound. Unavailable until you confirm you have read the warning.'
+                busy
+                  ? 'Saving your acknowledgment'
+                  : checked
+                    ? SOUND_SAFETY_ACCEPT
+                    : 'Enable sound. Unavailable until you confirm you have read the warning.'
               }
             >
-              <Text style={[styles.acceptText, !checked && styles.acceptTextOff]}>
-                {SOUND_SAFETY_ACCEPT}
+              <Text style={[styles.acceptText, acceptOff && styles.acceptTextOff]}>
+                {busy ? 'SAVING…' : SOUND_SAFETY_ACCEPT}
               </Text>
             </Pressable>
 
@@ -182,6 +191,21 @@ export function SoundSafetyWarning({
           </ScrollView>
         </View>
       </View>
+  );
+
+  if (embedded) return visible ? body : null;
+  return (
+    <Modal
+      accessibilityViewIsModal
+      // A root surface: it publishes into hosts, it is never one itself.
+      hostsOverlays={false}
+      visible={visible}
+      transparent
+      animationType="fade"
+      statusBarTranslucent
+      onRequestClose={close}
+    >
+      {body}
     </Modal>
   );
 }

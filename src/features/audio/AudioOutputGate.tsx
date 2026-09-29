@@ -20,10 +20,18 @@
  *     10-min while-open idle timer lives in the store itself.)
  *
  * Popups use the app's Modal backdrop+card idiom (see PrePaywallPrompt).
+ *
+ * ⛔ WHILE ANOTHER MODAL IS OPEN THE POPUPS ARE HOSTED, NOT PRESENTED (bug hunt
+ * 2026-09-29). A lab's FULL SCREEN view, a sheet or a guided lesson is itself a
+ * Modal; a second, root-level Modal asked for on top of it never appears on iOS
+ * and is drawn BEHIND it on Android, so requestAudioOutput() waited on a popup
+ * nobody could see and every ▶ that asked for sound was dead. While any
+ * DimModal is open, the current card is handed to the topmost one
+ * (`setHostedOverlay`) and drawn inside its tree. See DimModal.tsx.
  */
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { AppState, Pressable, StyleSheet, Text, View } from 'react-native';
-import { Modal } from '../../components/DimModal';
+import { Modal, setHostedOverlay, useModalHostOpen } from '../../components/DimModal';
 import { HoldToActivate } from '../../components/HoldToActivate';
 import { getLabPreview } from '../lab/labPreviewStore';
 import { supabase } from '../../lib/supabase';
@@ -86,13 +94,42 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
   const resolver = useRef<((ok: boolean) => void) | null>(null);
   /** Re-render once the persisted acknowledgment has been read at start-up. */
   const [, setAckLoaded] = useState(false);
+  /** Bumped every time a request is settled — an async step that started under
+   *  an older value must not act (bug hunt 2026-09-29, see onAccept). A JOINED
+   *  tap swaps `resolver.current` but not this, so joining never cancels it. */
+  const requestGen = useRef(0);
+  /** The Sound Safety acknowledgment is being written (ACCEPT pressed). */
+  const [savingAck, setSavingAck] = useState(false);
 
   const settle = (ok: boolean) => {
     const r = resolver.current;
     resolver.current = null;
+    requestGen.current += 1;
     setPhase('closed');
     r?.(ok);
   };
+
+  /** A DimModal is on screen: the popups must be hosted inside it. */
+  const hostOpen = useModalHostOpen();
+  /**
+   * The host just CLOSED with a popup still pending. Its dismissal is still
+   * animating, and iOS will not present a new Modal mid-dismissal — so the root
+   * Modal waits out the transition instead of silently failing to appear.
+   */
+  const [rootHold, setRootHold] = useState(false);
+  const prevHostOpen = useRef(hostOpen);
+  useEffect(() => {
+    const was = prevHostOpen.current;
+    prevHostOpen.current = hostOpen;
+    if (hostOpen || !was) {
+      setRootHold(false);
+      return;
+    }
+    setRootHold(true);
+    const t = setTimeout(() => setRootHold(false), 450);
+    return () => clearTimeout(t);
+  }, [hostOpen]);
+  const rootShown = !hostOpen && !rootHold;
 
   const api = useMemo<GateApi>(
     () => ({
@@ -218,181 +255,237 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  const acceptSafety = () => {
+    if (savingAck) return; // one write per ACCEPT — the button is disabled too
+    // The request this ACCEPT belongs to. The write below can take up to
+    // five seconds (bounded getUser + storage); a DECLINE, scrim tap or
+    // BACK in that window settles the request as "no". Without this
+    // check the late write then opened "Audio output is off" for a
+    // request that no longer existed — an orphan popup with nobody
+    // awaiting its answer (bug hunt 2026-09-29).
+    const gen = requestGen.current;
+    setSavingAck(true);
+    // Record FIRST. If the acknowledgment cannot be written we do not
+    // enable sound: an acknowledgment nobody wrote down did not happen,
+    // and proceeding would leave audio on with no evidence of consent.
+    void (async () => {
+      let stored = false;
+      try {
+        stored = await recordSoundSafetyAck({
+          text: soundSafetyFullText(),
+          appVersion: appVersion(),
+          // Bounded: this write settles the AUDIO GATE. A stalled getUser
+          // here never reaches settle(), so the learner could not enable
+          // audio at all — a hang on a safety gate, not just a slow read.
+          userId: (await safeUser(supabase.auth.getUser(), 'soundSafetyAck')).data.user?.id ?? null,
+        });
+      } catch {
+        stored = false;
+      } finally {
+        setSavingAck(false);
+      }
+      if (requestGen.current !== gen) return; // declined meanwhile
+      if (!stored) {
+        settle(false);
+        return;
+      }
+      // Accepted and recorded — now the ordinary per-session steps.
+      setPhase('explain');
+    })();
+  };
+
+  /* POPUP 1 — explain the setting. */
+  const explainBody = (
+    <View style={styles.backdrop} accessibilityViewIsModal>
+      <Pressable
+        style={StyleSheet.absoluteFill}
+        onPress={() => settle(false)}
+        accessibilityRole="button"
+        accessibilityLabel="Close"
+      />
+      <View style={styles.card}>
+        <Text style={styles.title}>Audio output is off</Text>
+        <Text style={styles.body}>
+          This setting must be turned on to allow any sound from the app to be heard.
+        </Text>
+        <Pressable
+          style={styles.btn}
+          onPress={() => setPhase('hold')}
+          accessibilityRole="button"
+          accessibilityLabel="Proceed to enable audio output"
+        >
+          <Text style={styles.btnText}>PROCEED</Text>
+        </Pressable>
+        <Pressable
+          style={styles.btnSecondary}
+          onPress={() => settle(false)}
+          accessibilityRole="button"
+          accessibilityLabel="Close, keep muted"
+        >
+          <Text style={styles.btnSecondaryText}>CLOSE</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+
+  /* POPUP 2 — the 5-second hold to enable. */
+  const holdBody = (
+    <View style={styles.backdrop} accessibilityViewIsModal>
+      <Pressable
+        style={StyleSheet.absoluteFill}
+        onPress={() => settle(false)}
+        accessibilityRole="button"
+        accessibilityLabel="Cancel"
+      />
+      {/* Emergency-mute notice (owner 2026-08-01: moved ABOVE the enable
+          card) — its own RED container so users know it exists BEFORE they
+          need it. ⚠️ It named only the shake gesture, which does nothing
+          where the accelerometer is unavailable and says so to nobody. The
+          tap always works, so it leads. */}
+      <View style={styles.shakeCard}>
+        <Text style={styles.shakeText}>
+          ⚠ TAP THE RED AUDIO OUTPUT ROW AT ANY TIME TO MUTE IMMEDIATELY — OR, ON A PHONE WITH
+          A MOTION SENSOR, SHAKE THE DEVICE.
+        </Text>
+      </View>
+      {/* Enable-audio card. */}
+      <View style={[styles.card, { marginTop: 10 }]}>
+        <Text style={styles.title}>Enable audio output</Text>
+        {/* Owner 2026-09-13, on the Pixel. Two corrections, and the second
+            is the one that matters.
+
+            1. "or when you reopen the app" was a guess at a mechanism that
+               does not exist. Closing the app mutes nothing — no code runs —
+               and reopening triggers no mute either. The setting is simply
+               never SAVED (audioOutputStore is session-only; `enabled`
+               starts false on every JS launch), so each visit begins silent.
+
+            2. Owner, on a draft that listed every re-mute trigger including
+               sign-in: "the user is signed in, they are there using the app
+               … maybe you are trying to be too general rather than what's
+               needed here." Correct. THIS POPUP IS READ AT ONE MOMENT — the
+               user just asked for sound and is deciding. It needs the two
+               facts that bear on that decision, not a spec of the store:
+               sound stays on while they use the app, and it auto-mutes after
+               20 minutes untouched (which the bypass checkbox below refers
+               to, so it cannot be dropped). Sign-in is a transition they
+               already made; relaunch is a problem for a future visit, where
+               they will simply hold again. Shake-to-mute is already stated
+               in the red card above — saying it twice is not clearer.
+
+            CORRECTED 2026-09-17. The clause about switching away was true
+            when it was written: leaving the app did NOT mute it inside the
+            idle window. It does now — backgrounding runs panicMuteAudio(),
+            which was added because seventeen labs could otherwise leave a
+            tone playing indefinitely after the user pressed Home. The
+            sentence had become a promise the app no longer keeps, on the
+            dialog where the user decides to allow sound at all. */}
+        <Text style={styles.body}>
+          Hold the button for 5 seconds to allow sound. It stays on while you're using the app,
+          mutes itself after 20 minutes untouched, and mutes when you leave the app — so nothing
+          is left playing behind you.
+        </Text>
+        <HoldToActivate
+          label="HOLD 5s TO ENABLE AUDIO OUTPUT"
+          onComplete={() => {
+            setIdleBypass(bypassTimer); // defeat auto-off if the box is ticked
+            enableAudioOutput();
+            noteAudioActivity();
+            settle(true);
+          }}
+        />
+        <Pressable
+          style={styles.btnSecondary}
+          onPress={() => settle(false)}
+          accessibilityRole="button"
+          accessibilityLabel="Cancel, keep muted"
+        >
+          <Text style={styles.btnSecondaryText}>CANCEL</Text>
+        </Pressable>
+      </View>
+      {/* Idle-bypass checkbox (owner 2026-08-01) — BELOW the enable card. Tick
+          to keep audio on past the auto-off timer for this session. Resets each
+          time the popup opens. */}
+      <Pressable
+        style={styles.bypassCard}
+        onPress={() => setBypassTimer((v) => !v)}
+        accessibilityRole="checkbox"
+        accessibilityState={{ checked: bypassTimer }}
+        // RNW 0.21 drops the accessibilityState object; aria-checked is what
+        // reaches the DOM, and it is valid (and required) on role=checkbox.
+        aria-checked={bypassTimer}
+        accessibilityLabel="Keep audio on and defeat the auto-off timer for this session"
+      >
+        <View style={[styles.checkbox, bypassTimer && styles.checkboxOn]}>
+          {bypassTimer ? <Text style={styles.checkboxMark}>✓</Text> : null}
+        </View>
+        <Text style={styles.bypassText}>
+          Keep audio on for this session — defeat the {Math.round(IDLE_MS / 60000)}-minute
+          auto-off timer (audio stays on until you mute it).
+        </Text>
+      </Pressable>
+    </View>
+  );
+
+  // Hosted mode — a DimModal is open, so the current card is drawn INSIDE it
+  // (see the note at the top of this file). Re-published every render so the
+  // card's closures stay current; cleared when closed or back at root.
+  const hostedBody = !hostOpen || phase === 'closed'
+    ? null
+    : phase === 'safety'
+      ? (
+        <SoundSafetyWarning
+          embedded
+          visible
+          busy={savingAck}
+          onDecline={() => settle(false)}
+          onAccept={acceptSafety}
+        />
+      )
+      : phase === 'explain'
+        ? explainBody
+        : holdBody;
+  useEffect(() => {
+    setHostedOverlay(hostedBody ? { node: hostedBody, onBack: () => settle(false) } : null);
+  });
+  useEffect(() => () => setHostedOverlay(null), []);
+
   return (
     <AudioOutputGateContext.Provider value={api}>
       {children}
 
       {/* POPUP 0 — the first-use Sound Safety Warning. Once ever, until the
-          warning's version changes. */}
+          warning's version changes. Root Modals below show only while no other
+          Modal is open (`rootShown`); otherwise the card is hosted. */}
       <SoundSafetyWarning
-        visible={phase === 'safety'}
+        visible={phase === 'safety' && rootShown}
+        busy={savingAck}
         onDecline={() => settle(false)}
-        onAccept={() => {
-          // Record FIRST. If the acknowledgment cannot be written we do not
-          // enable sound: an acknowledgment nobody wrote down did not happen,
-          // and proceeding would leave audio on with no evidence of consent.
-          void (async () => {
-            const stored = await recordSoundSafetyAck({
-              text: soundSafetyFullText(),
-              appVersion: appVersion(),
-              // Bounded: this write settles the AUDIO GATE. A stalled getUser
-              // here never reaches settle(), so the learner could not enable
-              // audio at all — a hang on a safety gate, not just a slow read.
-              userId: (await safeUser(supabase.auth.getUser(), 'soundSafetyAck')).data.user?.id ?? null,
-            });
-            if (!stored) {
-              settle(false);
-              return;
-            }
-            // Accepted and recorded — now the ordinary per-session steps.
-            setPhase('explain');
-          })();
-        }}
+        onAccept={acceptSafety}
       />
 
       {/* POPUP 1 — explain the setting. */}
       <Modal accessibilityViewIsModal
-        visible={phase === 'explain'}
+        hostsOverlays={false}
+        visible={phase === 'explain' && rootShown}
         transparent
         animationType="fade"
         statusBarTranslucent
         onRequestClose={() => settle(false)}
       >
-        <View style={styles.backdrop}>
-          <Pressable
-            style={StyleSheet.absoluteFill}
-            onPress={() => settle(false)}
-            accessibilityRole="button"
-            accessibilityLabel="Close"
-          />
-          <View style={styles.card}>
-            <Text style={styles.title}>Audio output is off</Text>
-            <Text style={styles.body}>
-              This setting must be turned on to allow any sound from the app to be heard.
-            </Text>
-            <Pressable
-              style={styles.btn}
-              onPress={() => setPhase('hold')}
-              accessibilityRole="button"
-              accessibilityLabel="Proceed to enable audio output"
-            >
-              <Text style={styles.btnText}>PROCEED</Text>
-            </Pressable>
-            <Pressable
-              style={styles.btnSecondary}
-              onPress={() => settle(false)}
-              accessibilityRole="button"
-              accessibilityLabel="Close, keep muted"
-            >
-              <Text style={styles.btnSecondaryText}>CLOSE</Text>
-            </Pressable>
-          </View>
-        </View>
+        {explainBody}
       </Modal>
 
       {/* POPUP 2 — the 5-second hold to enable. */}
       <Modal accessibilityViewIsModal
-        visible={phase === 'hold'}
+        hostsOverlays={false}
+        visible={phase === 'hold' && rootShown}
         transparent
         animationType="fade"
         statusBarTranslucent
         onRequestClose={() => settle(false)}
       >
-        <View style={styles.backdrop}>
-          <Pressable
-            style={StyleSheet.absoluteFill}
-            onPress={() => settle(false)}
-            accessibilityRole="button"
-            accessibilityLabel="Cancel"
-          />
-          {/* Emergency-mute notice (owner 2026-08-01: moved ABOVE the enable
-              card) — its own RED container so users know it exists BEFORE they
-              need it. ⚠️ It named only the shake gesture, which does nothing
-              where the accelerometer is unavailable and says so to nobody. The
-              tap always works, so it leads. */}
-          <View style={styles.shakeCard}>
-            <Text style={styles.shakeText}>
-              ⚠ TAP THE RED AUDIO OUTPUT ROW AT ANY TIME TO MUTE IMMEDIATELY — OR, ON A PHONE WITH
-              A MOTION SENSOR, SHAKE THE DEVICE.
-            </Text>
-          </View>
-          {/* Enable-audio card. */}
-          <View style={[styles.card, { marginTop: 10 }]}>
-            <Text style={styles.title}>Enable audio output</Text>
-            {/* Owner 2026-09-13, on the Pixel. Two corrections, and the second
-                is the one that matters.
-
-                1. "or when you reopen the app" was a guess at a mechanism that
-                   does not exist. Closing the app mutes nothing — no code runs —
-                   and reopening triggers no mute either. The setting is simply
-                   never SAVED (audioOutputStore is session-only; `enabled`
-                   starts false on every JS launch), so each visit begins silent.
-
-                2. Owner, on a draft that listed every re-mute trigger including
-                   sign-in: "the user is signed in, they are there using the app
-                   … maybe you are trying to be too general rather than what's
-                   needed here." Correct. THIS POPUP IS READ AT ONE MOMENT — the
-                   user just asked for sound and is deciding. It needs the two
-                   facts that bear on that decision, not a spec of the store:
-                   sound stays on while they use the app, and it auto-mutes after
-                   20 minutes untouched (which the bypass checkbox below refers
-                   to, so it cannot be dropped). Sign-in is a transition they
-                   already made; relaunch is a problem for a future visit, where
-                   they will simply hold again. Shake-to-mute is already stated
-                   in the red card above — saying it twice is not clearer.
-
-                CORRECTED 2026-09-17. The clause about switching away was true
-                when it was written: leaving the app did NOT mute it inside the
-                idle window. It does now — backgrounding runs panicMuteAudio(),
-                which was added because seventeen labs could otherwise leave a
-                tone playing indefinitely after the user pressed Home. The
-                sentence had become a promise the app no longer keeps, on the
-                dialog where the user decides to allow sound at all. */}
-            <Text style={styles.body}>
-              Hold the button for 5 seconds to allow sound. It stays on while you're using the app,
-              mutes itself after 20 minutes untouched, and mutes when you leave the app — so nothing
-              is left playing behind you.
-            </Text>
-            <HoldToActivate
-              label="HOLD 5s TO ENABLE AUDIO OUTPUT"
-              onComplete={() => {
-                setIdleBypass(bypassTimer); // defeat auto-off if the box is ticked
-                enableAudioOutput();
-                noteAudioActivity();
-                settle(true);
-              }}
-            />
-            <Pressable
-              style={styles.btnSecondary}
-              onPress={() => settle(false)}
-              accessibilityRole="button"
-              accessibilityLabel="Cancel, keep muted"
-            >
-              <Text style={styles.btnSecondaryText}>CANCEL</Text>
-            </Pressable>
-          </View>
-          {/* Idle-bypass checkbox (owner 2026-08-01) — BELOW the enable card. Tick
-              to keep audio on past the auto-off timer for this session. Resets each
-              time the popup opens. */}
-          <Pressable
-            style={styles.bypassCard}
-            onPress={() => setBypassTimer((v) => !v)}
-            accessibilityRole="checkbox"
-            accessibilityState={{ checked: bypassTimer }}
-            // RNW 0.21 drops the accessibilityState object; aria-checked is what
-            // reaches the DOM, and it is valid (and required) on role=checkbox.
-            aria-checked={bypassTimer}
-            accessibilityLabel="Keep audio on and defeat the auto-off timer for this session"
-          >
-            <View style={[styles.checkbox, bypassTimer && styles.checkboxOn]}>
-              {bypassTimer ? <Text style={styles.checkboxMark}>✓</Text> : null}
-            </View>
-            <Text style={styles.bypassText}>
-              Keep audio on for this session — defeat the {Math.round(IDLE_MS / 60000)}-minute
-              auto-off timer (audio stays on until you mute it).
-            </Text>
-          </Pressable>
-        </View>
+        {holdBody}
       </Modal>
     </AudioOutputGateContext.Provider>
   );

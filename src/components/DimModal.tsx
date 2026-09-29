@@ -18,8 +18,15 @@
  * renders null whenever the mode is off (or while the activation notice is
  * still being read), so this costs nothing in the normal case.
  */
-import type { ReactNode } from 'react';
-import { Modal as RNModal, type ModalProps } from 'react-native';
+import {
+  createContext,
+  useContext,
+  useLayoutEffect,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from 'react';
+import { Modal as RNModal, StyleSheet, View, type ModalProps } from 'react-native';
 import { LowLightDim } from '../features/settings/LowLightLayer';
 import { ALL_ORIENTATIONS } from './modalOrientations';
 
@@ -48,14 +55,145 @@ import { ALL_ORIENTATIONS } from './modalOrientations';
  * genuinely needs to pin a modal can still pass its own value.
  */
 
+/**
+ * ⛔ A SECOND MODAL CANNOT OPEN OVER THE FIRST (bug hunt 2026-09-29).
+ *
+ * The audio-output gate, the Sound Safety Warning and the app's dialogs are
+ * mounted at the app root. Ask one of them for a popup while another Modal is
+ * already up — a lab's FULL SCREEN view, a sheet, a guided lesson — and:
+ *
+ *   • iOS presents a root-level Modal from the root view controller, which is
+ *     already presenting the open one. UIKit refuses ("already presenting")
+ *     and NOTHING appears;
+ *   • Android attaches it to the activity window, BELOW the open Dialog, so
+ *     it is drawn behind the sheet that asked for it.
+ *
+ * Either way the caller is left awaiting a popup nobody can see or touch —
+ * `requestAudioOutput()` never settles, and every ▶ that asks for sound reads
+ * as dead. That is the owner's open iPhone report ("▶ in the Bass lab does
+ * nothing", 2026-09-27).
+ *
+ * THE MECHANISM, so no caller has to remember it: every visible DimModal
+ * registers here as a HOST. A root-level surface that knows it may be asked
+ * for while a Modal is open (see `useModalHostOpen`) publishes its card with
+ * `setHostedOverlay` instead of opening its own Modal, and the TOPMOST open
+ * host draws it as an in-tree overlay — the `embedded` pattern of
+ * PrePaywallPrompt, applied generically. Topmost = deepest nesting, then the
+ * most recently opened — counting only hosts whose `onShow` has fired when
+ * there are any, because a Modal that iOS itself refused to present (the very
+ * failure above) is `visible` but not on screen, and a card drawn inside it
+ * would be just as invisible.
+ *
+ * Android BACK arrives at the host's onRequestClose; while it carries an
+ * overlay, BACK goes to the overlay's own `onBack` instead, so it dismisses
+ * the popup and not the sheet underneath it.
+ */
+type HostedOverlay = { node: ReactNode; onBack: () => void };
+
+let hostSeq = 0;
+let openHosts: { id: number; depth: number; shown: boolean }[] = [];
+let hosted: HostedOverlay | null = null;
+const listeners = new Set<() => void>();
+
+function emit(): void {
+  for (const l of Array.from(listeners)) l();
+}
+function subscribe(l: () => void): () => void {
+  listeners.add(l);
+  return () => {
+    listeners.delete(l);
+  };
+}
+function topHostId(): number | null {
+  const shown = openHosts.filter((h) => h.shown);
+  let top: { id: number; depth: number } | null = null;
+  for (const h of shown.length ? shown : openHosts) {
+    if (!top || h.depth >= top.depth) top = h; // later wins a tie
+  }
+  return top?.id ?? null;
+}
+function markShown(id: number): void {
+  if (!openHosts.some((h) => h.id === id && !h.shown)) return;
+  openHosts = openHosts.map((h) => (h.id === id ? { ...h, shown: true } : h));
+  emit();
+}
+function openHostCount(): number {
+  return openHosts.length;
+}
+function hostedNow(): HostedOverlay | null {
+  return hosted;
+}
+
+/** True while any DimModal is on screen — a root popup must then be hosted. */
+export function useModalHostOpen(): boolean {
+  return useSyncExternalStore(subscribe, openHostCount, openHostCount) > 0;
+}
+
+/** Hand a card to the topmost open DimModal (or clear it with null). */
+export function setHostedOverlay(overlay: HostedOverlay | null): void {
+  if (overlay === hosted) return;
+  hosted = overlay;
+  emit();
+}
+
+/** Nesting depth, so a Modal opened inside another's tree ranks above it. */
+const HostDepth = createContext(0);
+
 export function Modal({
   children,
   supportedOrientations = ALL_ORIENTATIONS,
+  hostsOverlays = true,
   ...rest
-}: ModalProps & { children?: ReactNode }) {
+}: ModalProps & {
+  children?: ReactNode;
+  /** false for the root surfaces that PUBLISH overlays (the audio gate), so
+   *  their own Modal is never mistaken for a host. */
+  hostsOverlays?: boolean;
+}) {
+  const depth = useContext(HostDepth) + 1;
+  const [id] = useState(() => ++hostSeq);
+  const registered = hostsOverlays && !!rest.visible;
+
+  // Layout effect: registered before any native onShow can arrive for it.
+  useLayoutEffect(() => {
+    if (!registered) return;
+    openHosts = [...openHosts, { id, depth, shown: false }];
+    emit();
+    return () => {
+      openHosts = openHosts.filter((h) => h.id !== id);
+      emit();
+    };
+  }, [registered, id, depth]);
+
+  // Only the topmost open host ever sees the overlay; every other DimModal's
+  // snapshot stays null, so publishing re-renders nothing but that one.
+  const mine = useSyncExternalStore(
+    subscribe,
+    () => (registered && topHostId() === id ? hostedNow() : null),
+    () => null,
+  );
+
+  const { onRequestClose, onShow } = rest;
   return (
-    <RNModal supportedOrientations={supportedOrientations} {...rest}>
-      {children}
+    <RNModal supportedOrientations={supportedOrientations}
+      {...rest}
+      onRequestClose={(e) => {
+        if (mine) mine.onBack();
+        else onRequestClose?.(e);
+      }}
+      onShow={(e) => {
+        markShown(id);
+        onShow?.(e);
+      }}
+    >
+      <HostDepth.Provider value={depth}>
+        {children}
+        {mine ? (
+          <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
+            {mine.node}
+          </View>
+        ) : null}
+      </HostDepth.Provider>
       {/* Last child, so it washes over the modal's own content. It is
           pointerEvents="none", so nothing below it loses a touch. */}
       <LowLightDim />

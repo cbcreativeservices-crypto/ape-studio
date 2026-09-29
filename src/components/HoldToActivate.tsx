@@ -9,7 +9,7 @@
  * tint reads as "enable / go" (house success hue).
  */
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../theme/tokens';
 
 const HOLD_MS = 5000;
@@ -46,6 +46,9 @@ export function HoldToActivate({
   const tick = useRef<ReturnType<typeof setInterval> | null>(null);
   const [holding, setHolding] = useState(false);
   const [secs, setSecs] = useState(holdSecs);
+  /** True while a hold was started by an assistive-technology ACTIVATE rather
+   *  than a finger — a stray onPressOut must not cancel it (bug hunt 2026-09-29). */
+  const a11yHold = useRef(false);
 
   const clearTick = () => {
     if (tick.current) {
@@ -61,6 +64,7 @@ export function HoldToActivate({
   }, []);
 
   const reset = () => {
+    a11yHold.current = false;
     anim.current?.stop();
     clearTick();
     setHolding(false);
@@ -84,8 +88,38 @@ export function HoldToActivate({
       clearTick();
       setHolding(false);
       Animated.timing(progress, { toValue: 0, duration: 140, useNativeDriver: false }).start();
-      if (finished) onComplete();
+      const viaA11y = a11yHold.current;
+      a11yHold.current = false;
+      if (finished) {
+        if (viaA11y) AccessibilityInfo.announceForAccessibility(`${label}. Done.`);
+        onComplete();
+      }
     });
+  };
+
+  /**
+   * ⛔ A HOLD NOBODY CAN PERFORM (bug hunt 2026-09-29). The button listened only
+   * to onPressIn/onPressOut — a finger held down. TalkBack, VoiceOver, Switch
+   * Access and Voice Access deliver a single ACTIVATE, not a held touch, so for
+   * those users the gate's one way to turn sound on could never complete.
+   *
+   * ACTIVATE now runs the same timed hold on their behalf, announced at start
+   * and finish so the wait is not silent; ACTIVATE again during the countdown
+   * cancels. The deliberate five seconds are kept — only the finger is not
+   * required.
+   */
+  const onAccessibilityAction = (e: { nativeEvent: { actionName: string } }) => {
+    if (e.nativeEvent.actionName !== 'activate' || disabled) return;
+    if (holding) {
+      reset();
+      AccessibilityInfo.announceForAccessibility('Cancelled.');
+      return;
+    }
+    start();
+    a11yHold.current = true;
+    AccessibilityInfo.announceForAccessibility(
+      `Holding for ${holdSecs} seconds. Activate again to cancel.`,
+    );
   };
 
   const fillWidth = progress.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] });
@@ -93,10 +127,15 @@ export function HoldToActivate({
   return (
     <Pressable
       onPressIn={start}
-      onPressOut={reset}
+      onPressOut={() => {
+        if (!a11yHold.current) reset();
+      }}
       disabled={disabled}
       accessibilityRole="button"
       accessibilityLabel={`${label}. Press and hold for ${holdSecs} seconds.`}
+      accessibilityHint={`Or activate once to start a ${holdSecs}-second timed hold.`}
+      accessibilityActions={[{ name: 'activate' }]}
+      onAccessibilityAction={onAccessibilityAction}
       style={[
         styles.btn,
         compact && styles.btnCompact,

@@ -134,9 +134,11 @@ describe('the Sound Safety gate is wired so it cannot be passed by accident', ()
   });
 
   it('the accept button is disabled until the box is ticked', () => {
-    assert.match(warning, /disabled=\{!checked\}/);
+    // `|| busy` (bug hunt 2026-09-29): also off while the acknowledgment is
+    // being written — the unticked box still disables it on its own.
+    assert.match(warning, /disabled=\{!checked( \|\| busy)?\}/);
     // And the handler refuses too, so a styled-only "disabled" cannot fire.
-    assert.match(warning, /if \(!checked\) return;/);
+    assert.match(warning, /if \(!checked( \|\| busy)?\) return;/);
   });
 
   it('the checkbox starts unticked and resets on every close', () => {
