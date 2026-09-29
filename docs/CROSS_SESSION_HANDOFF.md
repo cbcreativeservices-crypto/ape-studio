@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 15:41 · ccode · f5609b46
+changed: Ear Training drill: card column + fixed answer cells on tablets
+affects other side: nothing — client JS only (tablet layout)
+needs: nothing
+
+
 ### 2026-09-29 14:46 · ccode · 27943c44
 changed: Trophy gallery: a real empty state instead of one grey line
 affects other side: nothing — client JS only (gallery empty state)
