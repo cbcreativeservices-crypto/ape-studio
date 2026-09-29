@@ -59,6 +59,7 @@ import { frameIsLive, healthWarningFlags, meterWarningFlags, useDspEngine, useTo
 import { useRafFrameLoop } from '../../features/tools/engine/useRafFrameLoop';
 import { setSplCalibration, useSplCalibration } from '../../features/tools/measure/calibrationStore';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
+import { useSaveLatch } from '../../features/tools/measure/saveLatch';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type SplLogPayload, type WarningFlag } from '../../features/tools/measure/types';
 import { colors, fonts } from '../../theme/tokens';
@@ -888,6 +889,17 @@ export function SplMeterScreen({ navigation }: Props) {
           : 'portrait';
     navigation.setOptions({ orientation });
   }, [vuFsOpen, vuFsClosing, gaugeFsOpen, gaugeFsClosing, readoutFsOpen, readoutFsClosing, navigation]);
+  // Leaving while a full screen is up (a notification tap, a sign-out reset)
+  // skipped the close path, so the landscape lock outlived the screen. Restore
+  // portrait on unmount — imperative lock AND the route option (bug hunt
+  // 2026-09-29).
+  useEffect(
+    () => () => {
+      lockPortrait();
+      navigation.setOptions({ orientation: 'portrait' });
+    },
+    [navigation],
+  );
   // Hardware BACK (Phase 1, 2026-08-19): the removed Modals handled Android back
   // for free — replicate the same priority now that everything is in-tree. Close
   // the settings popup, then Full VU, then the fullscreen readout, then fall the
@@ -1323,6 +1335,7 @@ export function SplMeterScreen({ navigation }: Props) {
   );
 
   const saveGate = useSaveGate();
+  const saveLatch = useSaveLatch();
   const fsGate = useFullScreenGate();
   /** SAVE LOG → Saved Measurement Library (spec §7; payload = SplLogPayload). */
   const onSaveLog = useCallback(() => {
@@ -1374,6 +1387,8 @@ export function SplMeterScreen({ navigation }: Props) {
       peakDb: shown(m.peakHoldDb),
       avgDb,
     };
+    // One record per tap (bug hunt 2026-09-29): a double-tap SAVE wrote two.
+    if (!saveLatch.claim()) return;
     void saveMeasurement({
       id: Crypto.randomUUID(),
       tool_type: 'spl',

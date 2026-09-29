@@ -69,6 +69,7 @@ import { useSplCalibration } from '../../features/tools/measure/calibrationStore
 import { heatColor, levelColorForDb, MIDLINE_BLUE, rampColors, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { LinearGradient as GradientView } from 'expo-linear-gradient';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
+import { useSaveLatch } from '../../features/tools/measure/saveLatch';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type MultimeterSnapshotPayload } from '../../features/tools/measure/types';
 import { useToolUsage } from '../../features/tools/telemetry';
@@ -974,10 +975,15 @@ export function MultiMeterScreen({ navigation }: Props) {
   }, [state, chips, sgHistory, specView, splOffset, calibrated]);
 
   const saveGate = useSaveGate();
+  const saveLatch = useSaveLatch();
   const confirmSnapshot = useCallback(() => {
     // Academy-only save (owner ruling 2026-09-01): a locked user gets the
     // membership route, never a ✓ for a record they cannot open.
     if (saveGate.locked) {
+      // Close the sheet FIRST (bug hunt 2026-09-29): the membership dialog is
+      // its own Modal, and opened over this sheet's Modal it renders behind it
+      // on Android and is refused on iOS — the tap looked dead.
+      setDraft(null);
       saveGate.prompt();
       return;
     }
@@ -998,6 +1004,8 @@ export function MultiMeterScreen({ navigation }: Props) {
           }
         : {}),
     };
+    // One record per tap (bug hunt 2026-09-29): a double-tap SAVE wrote two.
+    if (!saveLatch.claim()) return;
     void saveMeasurement({
       id: Crypto.randomUUID(),
       tool_type: 'multimeter',
@@ -1023,7 +1031,10 @@ export function MultiMeterScreen({ navigation }: Props) {
     setJustSaved(true);
     if (savedTimer.current) clearTimeout(savedTimer.current);
     savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
-  }, [draft, notes, smoothing, zoom, photoUri, geo]);
+    // saveGate / calibrated / splOffset were missing (bug hunt 2026-09-29): a
+    // stale closure saved the pre-calibration status and offset, and kept a
+    // stale lock verdict after the entitlement resolved.
+  }, [draft, notes, smoothing, zoom, photoUri, geo, saveGate, calibrated, splOffset, saveLatch]);
 
   // ---- Derived render data ---------------------------------------------------
   const liveFlags = running ? meterWarningFlags(liveFrame) : []; // raw: a dead capture must still flag
@@ -1818,11 +1829,13 @@ export function MultiMeterScreen({ navigation }: Props) {
             </View>
           </View>
         </View>
+        {/* Pre-permission explainers — rendered INSIDE the sheet's Modal (bug
+            hunt 2026-09-29). As siblings of it they opened behind the sheet on
+            Android and were refused on iOS; nested, they present over it. They
+            are only ever raised from this sheet's ADD PHOTO / TAG LOCATION. */}
+        <PermissionPrompt {...photoFlow.promptProps} />
+        <PermissionPrompt {...locationFlow.promptProps} />
       </Modal>
-
-      {/* Pre-permission explainers — rendered once; open above the sheet. */}
-      <PermissionPrompt {...photoFlow.promptProps} />
-      <PermissionPrompt {...locationFlow.promptProps} />
       {sheet}
     </View>
   );

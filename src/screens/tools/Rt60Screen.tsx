@@ -38,6 +38,7 @@ import { ApeDsp, type Rt60Band, type Rt60Frame } from '../../../modules/ape-dsp'
 import { GlassButton } from '../../components/GlassButton';
 import { frameIsLive, meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
+import { useSaveLatch } from '../../features/tools/measure/saveLatch';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type WarningFlag } from '../../features/tools/measure/types';
 import { colors, fonts } from '../../theme/tokens';
@@ -373,6 +374,7 @@ export function Rt60Screen({ navigation }: Props) {
   }, [windowFlags, showResults, broadband]);
 
   const saveGate = useSaveGate();
+  const saveLatch = useSaveLatch();
   const headlineMethod = broadband && shownValid(broadband) ? fitOf(broadband) : null;
 
   const onSave = () => {
@@ -389,6 +391,8 @@ export function Rt60Screen({ navigation }: Props) {
     // Downsample the stored curve to ≤200 numeric points (ceil so the cap holds).
     const stride = Math.max(1, Math.ceil(rt60.curveDb.length / 200));
     const decayDb = rt60.curveDb.filter((_, i) => i % stride === 0);
+    // One record per tap (bug hunt 2026-09-29): a double-tap SAVE wrote two.
+    if (!saveLatch.claim()) return;
     void saveMeasurement({
       id: Crypto.randomUUID(),
       tool_type: 'rt60',

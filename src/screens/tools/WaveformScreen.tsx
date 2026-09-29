@@ -48,6 +48,7 @@ import { ColorWheelButton } from '../../components/ColorWheelButton';
 import { PickerSectionHeader, WaveTraceDiagram } from '../../components/ColorTargetDiagrams';
 import { SpectrumColorPicker } from '../../components/SpectrumColorPicker';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
+import { useSaveLatch } from '../../features/tools/measure/saveLatch';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
 import { colors, fonts } from '../../theme/tokens';
@@ -134,6 +135,17 @@ export function WaveformScreen({ navigation }: Props) {
   useEffect(() => {
     navigation.setOptions({ orientation: waveFsOpen && !waveFsClosing ? 'landscape' : 'portrait' });
   }, [waveFsOpen, waveFsClosing, navigation]);
+  // Leaving while a full screen is up (a notification tap, a sign-out reset)
+  // skipped the close path, so the landscape lock outlived the screen. Restore
+  // portrait on unmount — imperative lock AND the route option (bug hunt
+  // 2026-09-29).
+  useEffect(
+    () => () => {
+      lockPortrait();
+      navigation.setOptions({ orientation: 'portrait' });
+    },
+    [navigation],
+  );
   // Finish the close only once the window has actually rotated back to portrait;
   // a 700 ms fallback guards against a rotation that never arrives.
   const fsPortrait = winH > winW;
@@ -307,6 +319,7 @@ export function WaveformScreen({ navigation }: Props) {
   useToolAutoStart(state, onStart, stop);
 
   const saveGate = useSaveGate();
+  const saveLatch = useSaveLatch();
   const fsGate = useFullScreenGate();
 
   /** Save the on-screen envelope to the library (Phase 2, spec §7) —
@@ -319,6 +332,8 @@ export function WaveformScreen({ navigation }: Props) {
       return;
     }
     if (!meter || displayBuckets.length === 0) return;
+    // One record per tap (bug hunt 2026-09-29): a double-tap SAVE wrote two.
+    if (!saveLatch.claim()) return;
     void saveMeasurement({
       id: Crypto.randomUUID(),
       tool_type: 'waveform',

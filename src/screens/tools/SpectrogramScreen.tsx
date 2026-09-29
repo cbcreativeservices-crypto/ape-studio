@@ -48,6 +48,7 @@ import { ApeDsp, type EngineConfig } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { frameIsLive, meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
+import { useSaveLatch } from '../../features/tools/measure/saveLatch';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
 import { colors, fonts } from '../../theme/tokens';
@@ -444,6 +445,7 @@ export function SpectrogramScreen({ navigation }: Props) {
   );
 
   const saveGate = useSaveGate();
+  const saveLatch = useSaveLatch();
 
   /** SAVE SNAPSHOT (spec §12 View 2 → §7 library). Real polled columns only —
    *  exactly what is on screen, with the display scale recorded alongside. */
@@ -458,6 +460,8 @@ export function SpectrogramScreen({ navigation }: Props) {
     const flags = meterWarningFlags(frames.meter);
     const meta = ApeDsp.getSpectrumMeta();
     const routeName = ApeDsp.getInfo()?.routeName;
+    // One record per tap (bug hunt 2026-09-29): a double-tap SAVE wrote two.
+    if (!saveLatch.claim()) return;
     void saveMeasurement({
       id: Crypto.randomUUID(),
       tool_type: 'spectrogram',

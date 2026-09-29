@@ -43,7 +43,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES, type GenModeName, type GenStatus } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { playWithHearingWarning } from '../../features/audio/levelHearingWarning';
-import { noteAudioActivity } from '../../features/audio/audioOutputStore';
+import { isAudioOutputEnabled, noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { EngineGate } from './EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { MIDLINE_BLUE, WAVE_LEVEL_STOPS, levelColorForDb } from '../../features/tools/levelColor';
@@ -382,6 +382,19 @@ export function SignalGenScreen({ navigation }: Props) {
   // tone kept sounding behind a closed screen — the exact thing spec §18
   // forbids. Bumping the generation on teardown makes the late start abort.
   const genRef = useRef(0);
+  // Bug hunt 2026-09-29: the hearing warning is an app-level dialog, so a START
+  // pending on it can be dismissed AFTER this screen is gone — onStart then
+  // took a fresh generation (the teardown bump was already spent) and started
+  // a tone with no screen. `mountedRef` closes that; `startPendingRef` stops a
+  // double START from queueing two warnings (and two starts).
+  const mountedRef = useRef(true);
+  const startPendingRef = useRef(false);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   // Teardown: leaving the screen silences the output AND re-engages the Q4 cap
   // — the unlock is per-session (ruling Q4: "for that session only"; spec §18:
@@ -507,23 +520,37 @@ export function SignalGenScreen({ navigation }: Props) {
     // output and must stay silent unless output is enabled. Runs the enable flow
     // when muted; a decline leaves the generator stopped. (The Q4 safety cap is
     // independent and still applies once running.)
-    const gen = ++genRef.current;
-    const ok = await requestAudioOutput();
-    if (!ok || gen !== genRef.current) return;
-    setGenError('');
     try {
-      const s = await ApeDsp.genStart();
-      if (gen !== genRef.current) {
-        void ApeDsp.genStop(); // screen closed while the native start was in flight
-        return;
+      if (!mountedRef.current) return; // warning dismissed after the screen closed
+      const gen = ++genRef.current;
+      const ok = await requestAudioOutput();
+      if (!ok || gen !== genRef.current || !mountedRef.current) return;
+      setGenError('');
+      try {
+        const s = await ApeDsp.genStart();
+        if (gen !== genRef.current || !mountedRef.current) {
+          void ApeDsp.genStop(); // screen closed while the native start was in flight
+          return;
+        }
+        // Shake-to-mute (or the idle lock) closed the gate while the native
+        // start was in flight: useStopWhenSilenced only acts on a running
+        // screen, so it missed this edge and the transport read PLAYING with
+        // the gate shut (bug hunt 2026-09-29). Honour the mute.
+        if (!isAudioOutputEnabled()) {
+          void ApeDsp.genStop();
+          refreshStatus();
+          return;
+        }
+        setStatus(s);
+        setRunning(true);
+        noteAudioActivity();
+      } catch (e) {
+        if (gen !== genRef.current || !mountedRef.current) return;
+        setGenError(AUDIO_UNAVAILABLE_MESSAGE);
+        setRunning(false);
       }
-      setStatus(s);
-      setRunning(true);
-      noteAudioActivity();
-    } catch (e) {
-      if (gen !== genRef.current) return;
-      setGenError(AUDIO_UNAVAILABLE_MESSAGE);
-      setRunning(false);
+    } finally {
+      startPendingRef.current = false;
     }
   };
 
@@ -694,7 +721,12 @@ export function SignalGenScreen({ navigation }: Props) {
       // carries the hearing reminder — owner 2026-09-13, EVERY press. STOP does
       // not: nothing gets louder by stopping.
       if (running) void onStop();
-      else playWithHearingWarning(() => void onStart());
+      else if (!startPendingRef.current) {
+        // One warning, one start: taps while a start is pending are ignored
+        // (bug hunt 2026-09-29 — a double START queued two warnings).
+        startPendingRef.current = true;
+        playWithHearingWarning(() => void onStart());
+      }
     },
     helpKey: 'status',
   });

@@ -28,7 +28,7 @@
  * the min/max readings, with Reset + Hold controls.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { PermissionsAndroid, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { BackHandler, PermissionsAndroid, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
@@ -36,7 +36,7 @@ import { centsSnap, SkinnedTunerVu, TuneChevrons, VuTunerFullScreen } from './Sk
 import { GlassButton } from '../../components/GlassButton';
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../../features/settings/store';
-import { openCenterLock, openVuTuner, publishTunerFrame, useCenterLockOpen, useVuTunerOpen } from '../../features/tools/tuner/tunerFrameStore';
+import { closeCenterLock, closeVuTuner, openCenterLock, openVuTuner, publishTunerFrame, useCenterLockOpen, useVuTunerOpen } from '../../features/tools/tuner/tunerFrameStore';
 import { useSteadyTuner } from '../../features/tools/tuner/useSteadyTuner';
 import { CenterLockTuner } from './CenterLockTuner';
 import { ColorWheelButton } from '../../components/ColorWheelButton';
@@ -46,6 +46,7 @@ import { LockedButton, MembershipRequiredNote, MEMBERSHIP_REQUIRED, useFullScree
 import { useToolUsage } from '../../features/tools/telemetry';
 import { frameIsLive, meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
+import { useSaveLatch } from '../../features/tools/measure/saveLatch';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type WarningFlag } from '../../features/tools/measure/types';
 import { colors, fonts } from '../../theme/tokens';
@@ -580,6 +581,7 @@ function LivePitchMode({
    *  the tool's shared frequency-log payload (freq/period/BPM/stability/
    *  min/max) with mode disclosed in measurement_settings. */
   const saveGate = useSaveGate();
+  const saveLatch = useSaveLatch();
   const onSave = useCallback(() => {
     // Academy-only save (owner ruling 2026-09-01): a locked user gets the
     // membership route, never a ✓ for a record they cannot open.
@@ -600,6 +602,8 @@ function LivePitchMode({
     const saveFlags = meterWarningFlags(state === 'running' ? frames.meter : null);
     if (s.stabilityLabel === 'Unstable' && !saveFlags.includes('unstable_measurement'))
       saveFlags.push('unstable_measurement');
+    // One record per tap (bug hunt 2026-09-29): a double-tap SAVE wrote two.
+    if (!saveLatch.claim()) return;
     void saveMeasurement({
       id: Crypto.randomUUID(),
       tool_type: 'hzcounter',
@@ -1134,6 +1138,7 @@ function TapMode({ onOpenLibrary, help, helpAll }: { onOpenLibrary: () => void; 
 
   /** Save the session to the Saved Measurement Library (Phase 2, spec §7). */
   const saveGate = useSaveGate();
+  const saveLatch = useSaveLatch();
   const onSave = useCallback(() => {
     // Academy-only save (owner ruling 2026-09-01): a locked user gets the
     // membership route, never a ✓ for a record they cannot open.
@@ -1142,6 +1147,8 @@ function TapMode({ onOpenLibrary, help, helpAll }: { onOpenLibrary: () => void; 
       return;
     }
     if (!stats) return;
+    // One record per tap (bug hunt 2026-09-29): a double-tap SAVE wrote two.
+    if (!saveLatch.claim()) return;
     void saveMeasurement({
       id: Crypto.randomUUID(),
       tool_type: 'hzcounter',
@@ -1271,6 +1278,27 @@ export function FrequencyCounterScreen({ navigation }: Props) {
   useToolUsage('hzcounter'); // T-1 telemetry (this tool skips ToolInfo)
   const centerLockOpen = useCenterLockOpen();
   const vuTunerOpen = useVuTunerOpen();
+  // The fullscreen overlays live in a MODULE-level store (bug hunt
+  // 2026-09-29). Android BACK used to leave the tool with the overlay still
+  // flagged open, so it re-opened itself on the next visit — an auto-appear
+  // (Low-Light rule). BACK now closes whichever overlay is up, and leaving the
+  // screen clears both flags.
+  useEffect(() => {
+    if (!centerLockOpen && !vuTunerOpen) return;
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (vuTunerOpen) closeVuTuner();
+      else closeCenterLock();
+      return true;
+    });
+    return () => sub.remove();
+  }, [centerLockOpen, vuTunerOpen]);
+  useEffect(
+    () => () => {
+      closeCenterLock();
+      closeVuTuner();
+    },
+    [],
+  );
   // Academy-gated extras (owner 2026-08-05): Light Pulse, LEARN/DEMO, and the
   // Saved Measurements library. Free accounts see them locked → Paywall.
   // Via useToolsLocked so the `resolved` hold lives in ONE place (entitlement

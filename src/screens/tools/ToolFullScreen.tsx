@@ -72,6 +72,17 @@ export function useToolFullScreen(navigation: OrientationNav, interceptBack?: ()
   useEffect(() => {
     navigation.setOptions({ orientation: active ? 'landscape' : 'portrait' });
   }, [active, navigation]);
+  // Leaving while a full screen is up (a notification tap, a sign-out reset)
+  // skipped the close path, so the landscape lock outlived the screen. Restore
+  // portrait on unmount — imperative lock AND the route option (bug hunt
+  // 2026-09-29).
+  useEffect(
+    () => () => {
+      lockPortrait();
+      navigation.setOptions({ orientation: 'portrait' });
+    },
+    [navigation],
+  );
   // Finish the close only once the window is portrait again.
   const portrait = winH > winW;
   useEffect(() => {

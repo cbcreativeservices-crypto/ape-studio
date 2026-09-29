@@ -76,6 +76,7 @@ import Svg, { Defs, G, Line, LinearGradient, Rect, Stop } from 'react-native-svg
 import { ApeDsp, type BandsFrame, type EngineConfig, type MeterFrame } from '../../../modules/ape-dsp';
 import { frameIsLive, meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
+import { useSaveLatch } from '../../features/tools/measure/saveLatch';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
 import { LOUDNESS_STOPS, levelColorForDb } from '../../features/tools/levelColor';
@@ -1016,6 +1017,7 @@ export function RtaScreen({ navigation }: Props) {
    *  the NATIVE frame: display-time regrouping (7/15/61) never alters the
    *  stored payload, which stays the engine's 1/1 or 1/3-octave truth. */
   const saveGate = useSaveGate();
+  const saveLatch = useSaveLatch();
   const onSaveTrace = useCallback(() => {
     // Academy-only save (owner ruling 2026-09-01): a locked user gets the
     // membership route, never a ✓ for a record they cannot open.
@@ -1038,6 +1040,8 @@ export function RtaScreen({ navigation }: Props) {
       }
     });
     const routeName = ApeDsp.getInfo()?.routeName;
+    // One record per tap (bug hunt 2026-09-29): a double-tap SAVE wrote two.
+    if (!saveLatch.claim()) return;
     void saveMeasurement({
       id: Crypto.randomUUID(),
       tool_type: 'rta',
