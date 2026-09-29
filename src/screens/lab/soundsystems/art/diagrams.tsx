@@ -423,42 +423,56 @@ export function SubFeedRouter({ mode, vocalSend }: { mode: SubFeedMode; vocalSen
 /* ── 7 · arrival timeline at a back-row ear ──────────────────────────────── */
 
 export function ArrivalTimeline({ needMs, setMs }: { needMs: number; setMs: number }) {
-  const H = 96;
+  // Every word at FS (bug hunt 2026-09-29: the labels were 5–6.5 units, about
+  // 5 pt on a phone). Re-laid out to fit: two label rows over the pulses, the
+  // listener lowered beside the axis, and each label clamped inside the frame.
+  const H = 120;
   const span = Math.max(needMs, setMs) + 40;
   const x0 = 60;
   const x1 = W - 16;
   const tx = (ms: number) => x0 + (ms / span) * (x1 - x0);
   const err = setMs - needMs;
   const fused = Math.abs(err) <= 2;
-  const yBase = 64;
-  const pulse = (ms: number, color: string, h: number) => `M ${tx(ms) - 5} ${yBase} L ${tx(ms) - 1.5} ${yBase - h} L ${tx(ms) + 1.5} ${yBase - h} L ${tx(ms) + 5} ${yBase} Z`;
+  const yBase = 88;
+  /** Keep a centred label of about `chars` characters inside the frame. */
+  const inside = (x: number, chars: number, unit = 4.6) => {
+    const half = (chars * unit) / 2 + 4;
+    return Math.max(8 + half, Math.min(W - 8 - half, x));
+  };
+  // 20 ms ticks, thinned to 40 ms when a long span would crowd the numbers.
+  const step = span > 160 ? 40 : 20;
+  const ticks = Array.from({ length: Math.floor(span / step) + 1 }, (_, i) => i * step);
+  const pulse = (ms: number, h: number) => `M ${tx(ms) - 5} ${yBase} L ${tx(ms) - 1.5} ${yBase - h} L ${tx(ms) + 1.5} ${yBase - h} L ${tx(ms) + 5} ${yBase} Z`;
+  const apart = `${Math.abs(err).toFixed(1)} ms apart`;
   return (
     <Frame h={H} a11y={`Arrivals at a back-row listener: the mains' sound arrives ${needMs.toFixed(1)} milliseconds after the delay tower's would with no delay set; the delay tower is set to ${setMs} milliseconds. ${fused ? 'The two arrivals fuse into one event.' : `They are ${Math.abs(err).toFixed(1)} milliseconds apart — two events.`}`}>
       {/* the listener */}
-      <Path d="M 26 26 C 33 26 38 32 38 39 C 38 45 34 49 31 51 L 31 55 L 21 55 L 21 51 C 18 49 14 45 14 39 C 14 32 19 26 26 26 Z" fill="none" stroke={INK.metalHi} strokeWidth={1.3} strokeLinejoin="round" />
-      <SvgText x={26} y={68} fontSize={5} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1}>BACK ROW</SvgText>
+      <G transform="translate(0 18)">
+        <Path d="M 26 26 C 33 26 38 32 38 39 C 38 45 34 49 31 51 L 31 55 L 21 55 L 21 51 C 18 49 14 45 14 39 C 14 32 19 26 26 26 Z" fill="none" stroke={INK.metalHi} strokeWidth={1.3} strokeLinejoin="round" />
+      </G>
+      <SvgText x={28} y={yBase + 2} fontSize={FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={0.3}>BACK ROW</SvgText>
       {/* time axis */}
       <Line x1={x0} y1={yBase} x2={x1} y2={yBase} stroke="#3a3f4a" strokeWidth={0.8} />
-      {[0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200].filter((t) => t <= span).map((t) => (
+      {ticks.map((t) => (
         <G key={t}>
           <Line x1={tx(t)} y1={yBase} x2={tx(t)} y2={yBase + 3} stroke="#3a3f4a" strokeWidth={0.8} />
-          <SvgText x={tx(t)} y={yBase + 11} fontSize={5} fill={colors.textMuted} fontFamily={fonts.mono} textAnchor="middle">{t}</SvgText>
+          <SvgText x={tx(t)} y={yBase + 13} fontSize={FS} fill={colors.textMuted} fontFamily={fonts.mono} textAnchor="middle">{t}</SvgText>
         </G>
       ))}
-      <SvgText x={x1} y={yBase + 20} fontSize={5} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="end" letterSpacing={1}>ms AFTER THE DELAY TOWER FIRES (UNDELAYED)</SvgText>
+      <SvgText x={x1} y={yBase + 26} fontSize={FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="end" letterSpacing={0.3}>ms AFTER THE DELAY TOWER FIRES (UNDELAYED)</SvgText>
       {fused ? (
         <>
-          <Path d={pulse(needMs, colors.greenBright, 40)} fill={colors.greenBright} opacity={0.9} />
-          <SvgText x={tx(needMs)} y={16} fontSize={6.5} fill={colors.greenBright} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1}>ONE EVENT — MAINS + DELAYS FUSED</SvgText>
+          <Path d={pulse(needMs, 40)} fill={colors.greenBright} opacity={0.9} />
+          <SvgText x={inside(tx(needMs), 32)} y={26} fontSize={FS} fill={colors.greenBright} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={0.4}>ONE EVENT — MAINS + DELAYS FUSED</SvgText>
         </>
       ) : (
         <>
-          <Path d={pulse(needMs, colors.amber, 40)} fill={colors.amber} opacity={0.9} />
-          <Path d={pulse(setMs, colors.cyanBright, 30)} fill={colors.cyanBright} opacity={0.9} />
-          <SvgText x={tx(needMs)} y={16} fontSize={5.5} fill={colors.amber} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1}>MAINS ARRIVE</SvgText>
-          <SvgText x={tx(setMs)} y={28} fontSize={5.5} fill={colors.cyanBright} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1}>DELAYS ARRIVE</SvgText>
-          <Line x1={tx(Math.min(needMs, setMs))} y1={40} x2={tx(Math.max(needMs, setMs))} y2={40} stroke={colors.orange} strokeWidth={0.9} />
-          <SvgText x={(tx(needMs) + tx(setMs)) / 2} y={47} fontSize={5.5} fill={colors.orange} fontFamily={fonts.mono} textAnchor="middle">{`${Math.abs(err).toFixed(1)} ms apart`}</SvgText>
+          <Path d={pulse(needMs, 40)} fill={colors.amber} opacity={0.9} />
+          <Path d={pulse(setMs, 30)} fill={colors.cyanBright} opacity={0.9} />
+          <SvgText x={inside(tx(needMs), 12)} y={14} fontSize={FS} fill={colors.amber} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={0.4}>MAINS ARRIVE</SvgText>
+          <SvgText x={inside(tx(setMs), 13)} y={27} fontSize={FS} fill={colors.cyanBright} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={0.4}>DELAYS ARRIVE</SvgText>
+          <Line x1={tx(Math.min(needMs, setMs))} y1={33} x2={tx(Math.max(needMs, setMs))} y2={33} stroke={colors.orange} strokeWidth={0.9} />
+          <SvgText x={inside((tx(needMs) + tx(setMs)) / 2, apart.length, 5.8)} y={45} fontSize={FS} fill={colors.orange} fontFamily={fonts.mono} textAnchor="middle">{apart}</SvgText>
         </>
       )}
     </Frame>

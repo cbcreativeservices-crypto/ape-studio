@@ -131,17 +131,17 @@ export function ConsolePanel({
           const auxId = col.slice(5);
           return (
             <View key={col} style={styles.headCol}>
-              <Text style={styles.headCell} numberOfLines={1}>
+              <Text style={styles.headCell} numberOfLines={2}>
                 {col === 'fader' ? 'FADER' : col === 'mute' ? 'MUTE' : col === 'main' ? 'L/R' : col === 'sub' ? 'GROUP' : col === 'dca' ? 'DCA' : auxName(auxId).toUpperCase()}
               </Text>
-              {isSend ? <Text style={styles.headSub} numberOfLines={1}>{sendNames?.[auxId] ?? cs.auxes.find((a) => a.id === auxId)?.purpose.toUpperCase()}</Text> : null}
+              {isSend ? <Text style={styles.headSub} numberOfLines={2}>{sendNames?.[auxId] ?? cs.auxes.find((a) => a.id === auxId)?.purpose.toUpperCase()}</Text> : null}
               {isSend && !readonly ? (
                 <View style={styles.allRow}>
                   <Pressable onPress={() => allPre(auxId, 'pre')} style={styles.allBtn} accessibilityRole="button" accessibilityLabel={`All sends to ${auxName(auxId)} pre-fader`}>
-                    <Text style={styles.allText}>ALL PRE</Text>
+                    <Text style={styles.allText} numberOfLines={2}>ALL PRE</Text>
                   </Pressable>
                   <Pressable onPress={() => allPre(auxId, 'post')} style={styles.allBtn} accessibilityRole="button" accessibilityLabel={`All sends to ${auxName(auxId)} post-fader`}>
-                    <Text style={styles.allText}>ALL POST</Text>
+                    <Text style={styles.allText} numberOfLines={2}>ALL POST</Text>
                   </Pressable>
                 </View>
               ) : null}
@@ -550,13 +550,15 @@ const styles = StyleSheet.create({
   panel: { borderRadius: 12, borderWidth: 1, borderColor: '#2b2e36', borderTopColor: '#3a3d46', backgroundColor: '#141418', padding: 6, gap: 4, userSelect: 'none' as never },
   head: { flexDirection: 'row', gap: 4, paddingHorizontal: 2, paddingBottom: 2, alignItems: 'flex-end' },
   headCol: { flex: 1, alignItems: 'center', gap: 2 },
-  headCell: { color: '#8b8b95', fontFamily: fonts.panelSemiBold, fontSize: 8, letterSpacing: 1.4, textAlign: 'center' },
-  headSub: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 8, letterSpacing: 0.8 },
+  // Tray text is never under 9 pt (bug hunt 2026-09-29): tighter tracking
+  // and a second line where a label no longer fits its column.
+  headCell: { color: '#8b8b95', fontFamily: fonts.panelSemiBold, fontSize: 9, letterSpacing: 0.8, textAlign: 'center' },
+  headSub: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 9, letterSpacing: 0.5, textAlign: 'center' },
   allRow: { flexDirection: 'column', gap: 3, alignSelf: 'stretch' },
   allBtn: { minHeight: 22, paddingHorizontal: 4, borderRadius: 3, borderWidth: 1, borderColor: '#3a3a42', backgroundColor: '#1a1a1f', justifyContent: 'center', alignItems: 'center' },
-  allText: { color: '#8b8b95', fontFamily: fonts.panelSemiBold, fontSize: 7, letterSpacing: 0.6 },
+  allText: { color: '#8b8b95', fontFamily: fonts.panelSemiBold, fontSize: 9, letterSpacing: 0.3, textAlign: 'center' },
   tapeCol: { width: 72, justifyContent: 'center', gap: 2 },
-  dblWarn: { color: colors.orange, fontFamily: fonts.oswaldMedium, fontSize: 8, letterSpacing: 0.6 },
+  dblWarn: { color: colors.orange, fontFamily: fonts.oswaldMedium, fontSize: 9, letterSpacing: 0.3 },
   row: { flexDirection: 'row', gap: 4, alignItems: 'center', minHeight: 52, borderTopWidth: 1, borderTopColor: '#1c1e25', paddingTop: 4 },
   cell: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 1, minHeight: 44 },
   faderBody: { width: 26, height: 40, alignItems: 'center' },
@@ -578,7 +580,7 @@ const styles = StyleSheet.create({
   ledGreen: { backgroundColor: colors.greenBright, shadowColor: colors.greenBright, shadowOpacity: 0.9, shadowRadius: 4 },
   preSw: { flexDirection: 'row', alignItems: 'center', gap: 3, minHeight: 20, minWidth: 40, borderRadius: 3, paddingHorizontal: 4, backgroundColor: '#0e0f13', justifyContent: 'center' },
   preOn: { backgroundColor: '#0f2416' },
-  preText: { color: '#8b8b95', fontFamily: fonts.panelSemiBold, fontSize: 8, letterSpacing: 1 },
+  preText: { color: '#8b8b95', fontFamily: fonts.panelSemiBold, fontSize: 9, letterSpacing: 0.6 },
   bus: { borderRadius: 10, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#0e0f13', padding: 10, gap: 5 },
   busHead: { flexDirection: 'row', gap: 10, alignItems: 'flex-start' },
   busTitle: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 1.6 },

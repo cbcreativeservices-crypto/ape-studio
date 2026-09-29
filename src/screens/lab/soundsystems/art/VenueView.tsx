@@ -482,7 +482,7 @@ export const CABLE_COLORS = LEVEL_COLOR;
 const styles = StyleSheet.create({
   wrap: { width: '100%', gap: 6 },
   badge: { position: 'absolute', top: 30, right: 10, borderRadius: 6, borderWidth: 1, borderColor: 'rgba(255,198,77,.45)', backgroundColor: 'rgba(12,12,14,.85)', paddingHorizontal: 7, paddingVertical: 3 },
-  badgeText: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 8.5, letterSpacing: 1.2 },
+  badgeText: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 9, letterSpacing: 1 },
   orientText: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.2, textTransform: 'uppercase' },
   caption: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17 },
   legend: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
