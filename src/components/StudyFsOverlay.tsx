@@ -13,6 +13,7 @@ import { colors, fonts } from '../theme/tokens';
 import { LowLightDim } from '../features/settings/LowLightLayer';
 import { FullscreenIcon } from './FullscreenIcon';
 import { useShake } from '../lib/useShake';
+import { useOverlaysSuppressed } from '../features/dev/popupSuppressStore';
 
 export function StudyFsOverlay({
   visible,
@@ -42,6 +43,7 @@ export function StudyFsOverlay({
   const [showGuide, setShowGuide] = useState(false);
   const guideCount = useRef(0);
   const wasVisible = useRef(false);
+  const suppressed = useOverlaysSuppressed();
 
   useEffect(() => {
     // .catch: an AsyncStorage read CAN reject; unguarded it was an unhandled
@@ -54,13 +56,18 @@ export function StudyFsOverlay({
   }, [guideKey]);
 
   useEffect(() => {
-    if (visible && !wasVisible.current && guideCount.current < 2) {
+    // Low-Light = nothing auto-appears (bug hunt 2026-09-29): the guide stays
+    // down, and is not counted, so it still gets its two showings later.
+    if (visible && !wasVisible.current && guideCount.current < 2 && !suppressed) {
       setShowGuide(true);
       guideCount.current += 1;
       void AsyncStorage.setItem(guideKey, String(guideCount.current)).catch(() => {});
     }
     if (!visible) setShowGuide(false);
     wasVisible.current = visible;
+    // `suppressed` is read, not a trigger: switching Low-Light off mid-session
+    // must not pop the guide over a full screen already in use.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, guideKey]);
 
   // `yieldToMute` (2026-09-17): shake is the app's emergency mute first — see
