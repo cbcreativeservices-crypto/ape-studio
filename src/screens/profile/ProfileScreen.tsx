@@ -1422,7 +1422,11 @@ export function ProfileScreen() {
                   {certificateExportAvailable() && (
                     <Pressable
                       onPress={() => onExportCredential(c)}
-                      disabled={exportingId === c.id}
+                      // Every PDF row waits while ONE is being prepared (bug
+                      // hunt 2026-09-29): a second export started mid-render
+                      // raced the first for the one share sheet, and the
+                      // `exportingId` it overwrote re-enabled the first row.
+                      disabled={exportingId !== null}
                       style={styles.credButton}
                       hitSlop={8}
                       accessibilityRole="button"

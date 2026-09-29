@@ -29,7 +29,7 @@
  * database and refuses with "not permitted" regardless of what this screen
  * does. Hiding it from non-admins is a courtesy, not a control.
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -72,7 +72,18 @@ export function EmployerAdminScreen() {
     void load();
   }, [load]);
 
+  // ONE decision at a time, from the question to the reload (bug hunt
+  // 2026-09-29). `busy` only greys the row once the write starts, so taps made
+  // while the dialog was opening queued more dialogs — Approve and then Reject
+  // for the same applicant would both be asked, and both answered.
+  const inFlight = useRef(false);
+  const release = () => {
+    inFlight.current = false;
+  };
+
   const decide = (app: PendingApplication, action: 'approve' | 'reject') => {
+    if (inFlight.current) return;
+    inFlight.current = true;
     const verb = action === 'approve' ? 'Approve' : 'Reject';
     const body =
       action === 'approve'
@@ -86,23 +97,29 @@ export function EmployerAdminScreen() {
       verb,
       () => {
         void (async () => {
-          setBusy(app.id);
-          const r = await reviewApplication(app.id, action);
-          setBusy(null);
-          if (!r.ok) {
-            notify('Could not save', r.error);
-            return;
+          try {
+            setBusy(app.id);
+            const r = await reviewApplication(app.id, action);
+            setBusy(null);
+            if (!r.ok) {
+              notify('Could not save', r.error);
+              return;
+            }
+            await load();
+          } finally {
+            release();
           }
-          await load();
         })();
       },
       // Approving an UNCONFIRMED applicant is styled as the dangerous action
       // it is, not as the friendly green one.
-      { destructive: action === 'reject' || !app.emailConfirmed },
+      { destructive: action === 'reject' || !app.emailConfirmed, onCancel: release },
     );
   };
 
   const toggleRevoke = (e: ActiveEmployer) => {
+    if (inFlight.current) return;
+    inFlight.current = true;
     const on = e.revokedAt == null;
     confirmDialog(
       on ? `Revoke ${e.companyName}?` : `Restore ${e.companyName}?`,
@@ -112,17 +129,21 @@ export function EmployerAdminScreen() {
       on ? 'Revoke' : 'Restore',
       () => {
         void (async () => {
-          setBusy(e.userId);
-          const r = await setEmployerRevoked(e.userId, on);
-          setBusy(null);
-          if (!r.ok) {
-            notify('Could not save', r.error);
-            return;
+          try {
+            setBusy(e.userId);
+            const r = await setEmployerRevoked(e.userId, on);
+            setBusy(null);
+            if (!r.ok) {
+              notify('Could not save', r.error);
+              return;
+            }
+            await load();
+          } finally {
+            release();
           }
-          await load();
         })();
       },
-      { destructive: on },
+      { destructive: on, onCancel: release },
     );
   };
 

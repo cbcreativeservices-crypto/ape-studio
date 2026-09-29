@@ -13,7 +13,7 @@
  * MEMBERSHIP · ACCOUNT · ONBOARDING HINTS · DELETE ACCOUNT (red, collapsed).
  * Writes are immediate; there is no Save button.
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { ActivityIndicator, Alert, Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { confirmDialog, notify } from '../../lib/confirm';
@@ -217,7 +217,13 @@ export function SettingsScreen({ navigation }: Props) {
   );
   const activeCatCount = WEEKLY_CONCEPT_CATEGORIES.filter((c) => catSched[c]?.active).length;
 
+  // In flight while the queue flush below runs (bug hunt 2026-09-29): every tap
+  // in that window started its own flush and raised its own "Log out?", and
+  // the dialog queue replayed each one after the first was answered.
+  const logoutPending = useRef(false);
   const confirmLogout = useCallback(() => {
+    if (logoutPending.current) return;
+    logoutPending.current = true;
     // confirmDialog: Alert.alert is a no-op on RN-web — Log out was a dead
     // button on the web preview (QA night 2026-09-01).
     // SAY WHAT LOGGING OUT ACTUALLY DOES (2026-09-17, bug-hunt pass 3).
@@ -234,6 +240,7 @@ export function SettingsScreen({ navigation }: Props) {
     // rest does not, and someone who has calibrated a meter against a real SPL
     // reference would never guess that Log out throws it away.
     void (async () => {
+      try {
       /**
        * ⛔ SEND WHAT IS STILL QUEUED **BEFORE** SIGNING OUT. This is the last
        * moment it can be sent at all.
@@ -277,6 +284,10 @@ ${LOCAL_LOSS}`
         },
         { destructive: true },
       );
+      } finally {
+        // The dialog is up now; AppDialog drops an identical second request.
+        logoutPending.current = false;
+      }
     })();
   }, [navigation]);
 
@@ -308,14 +319,35 @@ ${LOCAL_LOSS}`
     [prefs, local],
   );
 
+  /**
+   * Saves of category rows run ONE AT A TIME (bug hunt 2026-09-29). Each save
+   * upserts the WHOLE row, so a day change and a time change tapped in quick
+   * succession could land out of order — the older snapshot arriving last
+   * put the server back to the day or time the user had just changed.
+   */
+  const catSaveChain = useRef<Promise<unknown>>(Promise.resolve());
+
   /** Change ONE category (its own day, time, or on/off) and persist just it. */
   const setCategory = useCallback((category: string, patch: Partial<CategorySchedule>) => {
     setCatSched((prev) => {
       const next = { ...prev[category], ...patch };
-      void saveCategorySchedule(category, next);
+      catSaveChain.current = catSaveChain.current
+        .then(() => saveCategorySchedule(category, next))
+        .catch(() => {});
       return { ...prev, [category]: next };
     });
   }, []);
+
+  /**
+   * The master switch is BUSY from tap until both of its writes settle (bug
+   * hunt 2026-09-29). Tapping it OFF while the ON path was still awaiting
+   * the push token / rows / pref ran the two paths interleaved: OFF's writes
+   * landed first, then ON's pref write — the switch read OFF while the server
+   * was ON and sending. The ref is the guard (two taps can beat a re-render);
+   * the state greys the switch.
+   */
+  const weeklyBusyRef = useRef(false);
+  const [weeklyBusy, setWeeklyBusy] = useState(false);
 
   /**
    * The master Weekly-concept switch. TWO SEPARATE WRITES, TO TWO TABLES.
@@ -350,7 +382,10 @@ ${LOCAL_LOSS}`
    */
   const setWeeklyOn = useCallback(
     async (on: boolean) => {
-      if (!prefs) return;
+      if (!prefs || weeklyBusyRef.current) return;
+      weeklyBusyRef.current = true;
+      setWeeklyBusy(true);
+      try {
       setPrefs({ ...prefs, notify_weekly_concept: on, push_enabled: on ? true : prefs.push_enabled });
       if (on) {
         // [49] (2026-09-07): the old `if (!prefs.push_enabled) …persist push on`
@@ -424,6 +459,10 @@ ${LOCAL_LOSS}`
             Object.fromEntries(Object.entries(prev).map(([k, v]) => [k, { ...v, active: false }])),
           );
         }
+      }
+      } finally {
+        weeklyBusyRef.current = false;
+        setWeeklyBusy(false);
       }
     },
     [prefs, catSched],
@@ -554,7 +593,7 @@ ${LOCAL_LOSS}`
             </View>
             <Toggle
               on={prefs?.notify_weekly_concept ?? false}
-              disabled={!prefs || groupLocked}
+              disabled={!prefs || groupLocked || weeklyBusy}
               label="Weekly concept"
               onChange={(v) => void setWeeklyOn(v)}
             />

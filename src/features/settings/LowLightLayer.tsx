@@ -113,8 +113,11 @@ export function LowLightProductionGate() {
   }, [showInfo, on]);
 
   if (!on || !showInfo) return null;
+  // Android BACK = CANCEL, not PROCEED (bug hunt 2026-09-29). It used to close
+  // the notice with the mode left ON — i.e. backing out of the question
+  // committed the user to a dim, pop-up-free app they had not agreed to.
   return (
-    <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal transparent animationType="fade" visible statusBarTranslucent onRequestClose={() => setShowInfo(false)}>
+    <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal transparent animationType="fade" visible statusBarTranslucent onRequestClose={() => setLowLight(false)}>
       <View style={styles.gateBackdrop}>
         <View style={styles.gateCard}>
           <Text style={styles.gateEyebrow}>LOW-LIGHT PRODUCTION MODE</Text>

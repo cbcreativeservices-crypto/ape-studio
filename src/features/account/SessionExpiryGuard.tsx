@@ -21,6 +21,7 @@ import { safeSession } from '../../lib/getSessionSafe';
 import { navigationRef } from '../../navigation/navigationRef';
 import { consumeIntentionalSignOut } from '../auth/intentionalSignOut';
 import { isRealAccount } from '../commercial/realAccount';
+import { clearAppDialogs } from '../../components/AppDialog';
 
 export function SessionExpiryGuard() {
   // What KIND of session just went away. The SIGNED_OUT event carries no
@@ -47,6 +48,9 @@ export function SessionExpiryGuard() {
       const current = navigationRef.getCurrentRoute()?.name;
       // Already at login / boot — nothing to rescue.
       if (current === 'Auth' || current === 'Splash') return;
+      // A confirm left open on the old screen would reappear over Auth and run
+      // its handler with no session behind it (bug hunt 2026-09-29).
+      clearAppDialogs();
       navigationRef.reset({ index: 0, routes: [{ name: 'Auth' as never }] });
     });
     return () => data.subscription.unsubscribe();

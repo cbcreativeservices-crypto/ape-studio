@@ -19,7 +19,7 @@
  * should not have to scroll past a recruiting panel that will never apply to
  * them.
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Chip, ChipWrap } from '../directory/directoryBits';
@@ -67,6 +67,18 @@ export function EmployerSection() {
   const [tax, setTax] = useState<Taxonomy | null>(null);
   const [picked, setPicked] = useState<Record<string, string[]>>({});
   const [note, setNote] = useState<string | null>(null);
+  /**
+   * SAVES RUN ONE AT A TIME, FROM THE LATEST PICKS (bug hunt 2026-09-29). Each
+   * save writes a kind's WHOLE list, built from `picked` as of the last render,
+   * so two quick taps each dropped the other's chip, their writes could land
+   * out of order, and a failed first save rolled back over the second tap.
+   * `pickedRef` is always the newest list; `saveChain` serialises the writes;
+   * only the newest save for a kind (`seq`) may roll back or set the note.
+   */
+  const pickedRef = useRef(picked);
+  pickedRef.current = picked;
+  const saveChain = useRef<Promise<unknown>>(Promise.resolve());
+  const seq = useRef<Record<string, number>>({});
 
   const load = useCallback(async () => {
     const [state, isVerified] = await Promise.all([
@@ -94,13 +106,19 @@ export function EmployerSection() {
   if (!loaded || (!app && !verified)) return null;
 
   const toggle = async (kind: Kind, slug: string) => {
-    const current = picked[kind] ?? [];
+    const current = pickedRef.current[kind] ?? [];
     const next = current.includes(slug) ? current.filter((s) => s !== slug) : [...current, slug];
+    pickedRef.current = { ...pickedRef.current, [kind]: next };
     setPicked((p) => ({ ...p, [kind]: next }));
-    const res = await setEmployerInterests(kind, next);
+    const mine = (seq.current[kind] = (seq.current[kind] ?? 0) + 1);
+    const run = saveChain.current.then(() => setEmployerInterests(kind, next));
+    saveChain.current = run.catch(() => {});
+    const res = await run.catch(() => ({ ok: false as const, error: 'Couldn’t save that. Check your connection and try again.' }));
+    if (mine !== seq.current[kind]) return; // a newer tap owns the outcome
     if (!res.ok) {
       // Put it back. A chip that stays lit after a failed save is a lie about
       // what the server holds.
+      pickedRef.current = { ...pickedRef.current, [kind]: current };
       setPicked((p) => ({ ...p, [kind]: current }));
       setNote(res.error);
     } else {

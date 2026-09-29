@@ -55,6 +55,19 @@ let current: AppDialogRequest | null = null;
 /** Requests that arrived while one was already showing (see showAppDialog). */
 const queue: AppDialogRequest[] = [];
 let hostCount = 0;
+/** When `current` was put on screen — see ANSWER_GUARD_MS. */
+let shownAt = 0;
+/**
+ * A tap that lands within this long of a dialog appearing is ignored (bug hunt
+ * 2026-09-29). With a queue, answering one dialog puts the NEXT one in the same
+ * spot on the same frame, so the second tap of a double-tap answered a dialog
+ * nobody had read — a duplicate Log out confirmed itself, a queued "Publish?"
+ * said yes. 300 ms is below reading time and above a double-tap interval.
+ */
+export const ANSWER_GUARD_MS = 300;
+
+/** Same title + body ⇒ the same question; used to drop duplicate requests. */
+const sameDialog = (a: AppDialogRequest, b: AppDialogRequest) => a.title === b.title && a.body === b.body;
 const listeners = new Set<() => void>();
 const emit = () => listeners.forEach((l) => l());
 
@@ -69,16 +82,56 @@ export function isAppDialogHostMounted(): boolean {
  * and swallowing the second one would lose the only feedback the user gets.
  */
 export function showAppDialog(req: AppDialogRequest): void {
+  // Rapid taps on one trigger (Log out, Approve, the 18+ switch…) each asked
+  // the same question before the first dialog could cover the button, and the
+  // queue replayed every copy (bug hunt 2026-09-29) — Log out, Publish, quiz
+  // Start's "BEFORE YOU BEGIN", the quiz ‹ "Leave quiz?" (which then surfaced
+  // over the Dashboard), an Enrollment ✕ "Remove X?". An identical request that
+  // is already showing or waiting adds nothing — drop it.
+  //
+  // ⚠️ The dropped copy's handlers are deliberately NOT run: the answer given
+  // to the copy on screen stands for both. Running its onCancel would fire real
+  // side effects mid-question — the single-device takeover's cancel SIGNS THE
+  // USER OUT while they are still deciding. No caller wraps a dialog in a
+  // Promise (checked 2026-09-29), so nothing is left waiting on it.
+  if (current && (sameDialog(current, req) || queue.some((q) => sameDialog(q, req)))) return;
   if (current) {
     queue.push(req);
     return;
   }
   current = req;
+  shownAt = Date.now();
   emit();
+}
+
+/**
+ * Drop every dialog — the one showing and everything queued — WITHOUT running
+ * any of their handlers (bug hunt 2026-09-29). `current` and `queue` live at
+ * module level, so they outlive a forced sign-out: SingleDeviceGuard and
+ * SessionExpiryGuard reset the navigator to Splash / Auth, and a confirm that
+ * was open on the old screen reappeared there — answering it ran the old
+ * screen's handler against an account that was no longer signed in.
+ *
+ * ⚠️ Not "resolve as cancel". Cancel handlers are the old screen's code too,
+ * and some act: a notice's onDone navigates (the "Account created" notice
+ * proceeds into the app), the takeover prompt's cancel signs out. The account
+ * those dialogs were about is gone; the right answer is no answer. Call it
+ * BEFORE the reset, so a notice raised afterwards (SingleDeviceGuard's
+ * "Signed out") is shown normally.
+ */
+export function clearAppDialogs(): void {
+  queue.length = 0;
+  if (current) {
+    current = null;
+    emit();
+  }
 }
 
 /** Close the open dialog, run ONE of its handlers, then drain the queue. */
 function resolve(which: 'confirm' | 'cancel'): void {
+  // Too soon after this dialog appeared — the tail of a double-tap meant for
+  // the one before it, not an answer to this one (see ANSWER_GUARD_MS).
+  if (current && Date.now() - shownAt < ANSWER_GUARD_MS) return;
   const req = current;
   current = null;
   emit();

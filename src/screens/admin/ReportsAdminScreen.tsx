@@ -24,7 +24,7 @@
  * database and refuses with "not permitted" — verified by calling them as
  * `authenticated`. Hiding this screen is a courtesy, not a control.
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -129,10 +129,16 @@ export function ReportsAdminScreen() {
     );
   };
 
+  // Only the conversation opened LAST may land (bug hunt 2026-09-29). Opening
+  // report A and then B while A's fetch was slow let A's messages arrive after
+  // B's and replace them — B's row open, showing A's conversation.
+  const threadReq = useRef(0);
   const openThread = (r: ReportRow) => {
+    const id = ++threadReq.current;
     void (async () => {
       setThread({ id: r.id, msgs: null });
-      setThread({ id: r.id, msgs: await fetchReportMessages(r.id) });
+      const msgs = await fetchReportMessages(r.id);
+      if (id === threadReq.current) setThread({ id: r.id, msgs });
     })();
   };
 

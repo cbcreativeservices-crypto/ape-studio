@@ -11,6 +11,7 @@
 import { useEffect, useRef } from 'react';
 import { AppState, type AppStateStatus } from 'react-native';
 import { notify } from '../../lib/confirm';
+import { clearAppDialogs } from '../../components/AppDialog';
 import { supabase } from '../../lib/supabase';
 import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../commercial/realAccount';
@@ -57,6 +58,9 @@ export function SingleDeviceGuard() {
         await supabase.auth.signOut().catch(() => {});
         await clearLocalAccountData();
         resetAllLocalStores();
+        // Drop any confirm left open on the old screen — it would otherwise
+        // reappear over Splash and run its handler (bug hunt 2026-09-29).
+        clearAppDialogs();
         if (navigationRef.isReady()) {
           navigationRef.reset({ index: 0, routes: [{ name: 'Splash' as never }] });
         }
