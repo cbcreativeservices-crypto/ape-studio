@@ -10,7 +10,7 @@
  * height, no ScrollView, and no bottom lesson row. Prose-only modules keep
  * the document layout — the spec never converts them.
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useIsFocused, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
@@ -20,6 +20,8 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { ScrollLockProvider } from '../LabShell';
+import { markLabVisit, useLabVisits } from '../../../features/lab/labVisits';
+import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 import { CYMATICS_MODULES, type CymaticsModuleId } from './modules/registry';
 import { IntroModule } from './modules/modIntro';
 import { NodesModule } from './modules/modNodes';
@@ -70,8 +72,35 @@ export function CymaticsModuleScreen() {
   const last = CYMATICS_MODULES.length - 1;
   const goToModule = (i: number) => {
     if (i < 0 || i > last) return;
+    setEnding(false);
     (navigation as { setParams: (p: { id: CymaticsModuleId }) => void }).setParams({ id: CYMATICS_MODULES[i].id });
   };
+  // THE LAST MODULE ENDS ON THE WHAT'S-LEFT SCREEN (owner 2026-09-29: "every
+  // lab ends with a 'what's left' screen"). NEXT used to grey out on the last
+  // module — a dead end. It is now FINISH, which swaps LabEndScreen in for the
+  // module: what is still to do (jump links), PRACTISE AGAIN from module 1
+  // (clears nothing), DONE back to the lab home.
+  const [ending, setEnding] = useState(false);
+  // This lab banks no credit and kept no record, so it remembers which
+  // modules were OPENED (labVisits — progress, never credit). Guests: this
+  // session only (house guest rule, owner 2026-08-12).
+  const guest = useLabEndGuest();
+  const visited = useLabVisits('cymatics');
+  useEffect(() => {
+    if (focused) markLabVisit('cymatics', meta.id, { persist: !guest });
+  }, [focused, meta.id, guest]);
+  const endScreen = ending ? (
+    <LabEndScreen
+      labTitle="Cymatics Lab: Sound Made Visible"
+      units={CYMATICS_MODULES.map((m) => ({ id: m.id, label: m.title }))}
+      cleared={visited}
+      mode="progress"
+      onJump={(id) => goToModule(CYMATICS_MODULES.findIndex((m) => m.id === id))}
+      onPracticeAgain={() => goToModule(0)}
+      onDone={() => navigation.goBack()}
+      bottomInset
+    />
+  ) : null;
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -90,30 +119,32 @@ export function CymaticsModuleScreen() {
           <Text style={[styles.navBtn, idx <= 0 && styles.navBtnDisabled]}>‹ PREV</Text>
         </Pressable>
         <View style={{ flex: 1 }} />
-        <Text style={styles.navPos}>MODULE {idx + 1} / {CYMATICS_MODULES.length}</Text>
+        <Text style={styles.navPos}>{ending ? "WHAT'S LEFT" : `MODULE ${idx + 1} / ${CYMATICS_MODULES.length}`}</Text>
         <View style={{ flex: 1 }} />
-        <Pressable onPress={() => goToModule(idx + 1)} disabled={idx >= last} hitSlop={8} accessibilityRole="button" accessibilityLabel="Next module">
-          <Text style={[styles.navBtn, idx >= last && styles.navBtnDisabled]}>NEXT ›</Text>
+        <Pressable onPress={() => (idx >= last ? setEnding(true) : goToModule(idx + 1))} hitSlop={8} accessibilityRole="button" accessibilityLabel={idx >= last ? "Finish the lab and see what's left" : 'Next module'}>
+          <Text style={styles.navBtn}>{idx >= last ? 'FINISH ›' : 'NEXT ›'}</Text>
         </Pressable>
       </View>
-      <ScrollLockProvider value={setScrollLocked}>
-        {RACK_MODULES.has(meta.id) ? (
-          // Rack module: full height — its RackUnit pins stage + dock and owns
-          // the scroll well (incl. the LAB NOTES disclosure and the lesson row).
-          <View style={styles.rackFill} onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 24)}>
-            {width > 0 ? <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} /> : null}
-          </View>
-        ) : (
-          <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" scrollEnabled={!scrollLocked}>
-            <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width))}>
+      {endScreen ?? (
+        <ScrollLockProvider value={setScrollLocked}>
+          {RACK_MODULES.has(meta.id) ? (
+            // Rack module: full height — its RackUnit pins stage + dock and owns
+            // the scroll well (incl. the LAB NOTES disclosure and the lesson row).
+            <View style={styles.rackFill} onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 24)}>
               {width > 0 ? <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} /> : null}
             </View>
-            <Pressable style={styles.lessonRow} onPress={() => help()} accessibilityRole="button" accessibilityLabel="Open the guided lesson">
-              <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
-            </Pressable>
-          </ScrollView>
-        )}
-      </ScrollLockProvider>
+          ) : (
+            <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" scrollEnabled={!scrollLocked}>
+              <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width))}>
+                {width > 0 ? <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} /> : null}
+              </View>
+              <Pressable style={styles.lessonRow} onPress={() => help()} accessibilityRole="button" accessibilityLabel="Open the guided lesson">
+                <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
+              </Pressable>
+            </ScrollView>
+          )}
+        </ScrollLockProvider>
+      )}
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('cymatics')} controlKey={lessonKey} onClose={() => setLessonOpen(false)} />
     </View>
   );

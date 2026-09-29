@@ -12,7 +12,8 @@ import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
-import { markLabUnit } from '../../../features/lab/labCompletion';
+import { markLabUnit, useLabClearedUnits } from '../../../features/lab/labCompletion';
+import { LabEndScreen } from '../kit/LabEndScreen';
 import { ScrollLockProvider } from '../LabShell';
 import { LabPhotoLightbox } from '../labPhoto';
 import { WAVE_MODULES, type WaveModuleId } from './modules/registry';
@@ -105,8 +106,28 @@ export function WaveModuleScreen() {
   const idx = WAVE_MODULES.findIndex((m) => m.id === meta.id);
   const goToModule = (i: number) => {
     if (i < 0 || i >= WAVE_MODULES.length) return;
+    setEnding(false);
     (navigation as { setParams: (p: { id: WaveModuleId }) => void }).setParams({ id: WAVE_MODULES[i].id });
   };
+  // THE LAST MODULE ENDS ON THE WHAT'S-LEFT SCREEN (owner 2026-09-29: "every
+  // lab ends with a 'what's left' screen"). NEXT used to grey out on the last
+  // module — a dead end. It is now FINISH, which swaps LabEndScreen in for the
+  // module: what is still to do (jump links), PRACTISE AGAIN from module 1
+  // (clears nothing — banked credit stays), DONE back to the lab home.
+  const [ending, setEnding] = useState(false);
+  const banked = useLabClearedUnits('af_wave_physics');
+  const endScreen = ending ? (
+    <LabEndScreen
+      labTitle="Wave Physics Laboratory"
+      units={WAVE_MODULES.map((m) => ({ id: m.id, label: m.title }))}
+      cleared={banked}
+      mode="credit"
+      onJump={(id) => goToModule(WAVE_MODULES.findIndex((m) => m.id === id))}
+      onPracticeAgain={() => goToModule(0)}
+      onDone={() => navigation.goBack()}
+      bottomInset
+    />
+  ) : null;
   const last = WAVE_MODULES.length - 1;
 
   return (
@@ -130,44 +151,46 @@ export function WaveModuleScreen() {
           <Text style={[styles.navBtn, idx <= 0 && styles.navBtnDisabled]}>‹ PREV</Text>
         </Pressable>
         <View style={{ flex: 1 }} />
-        <Text style={styles.navPos}>MODULE {idx + 1} / {WAVE_MODULES.length}</Text>
+        <Text style={styles.navPos}>{ending ? "WHAT'S LEFT" : `MODULE ${idx + 1} / ${WAVE_MODULES.length}`}</Text>
         <View style={{ flex: 1 }} />
-        <Pressable onPress={() => goToModule(idx + 1)} disabled={idx >= last} hitSlop={8} accessibilityRole="button" accessibilityLabel="Next module">
-          <Text style={[styles.navBtn, idx >= last && styles.navBtnDisabled]}>NEXT ›</Text>
+        <Pressable onPress={() => (idx >= last ? setEnding(true) : goToModule(idx + 1))} hitSlop={8} accessibilityRole="button" accessibilityLabel={idx >= last ? "Finish the lab and see what's left" : 'Next module'}>
+          <Text style={styles.navBtn}>{idx >= last ? 'FINISH ›' : 'NEXT ›'}</Text>
         </Pressable>
       </View>
-      <ScrollLockProvider value={setScrollLocked}>
-      {RACK_MODULES.has(meta.id) ? (
-        // Rack module: full height — WaveLayout's RackUnit pins stage + dock
-        // and owns the scroll well (incl. its own guided-lesson entry row).
-        <View style={styles.rackFill} onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
-          {width > 0 ? (
-            <LabPhotoLightbox>
-              <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} />
-            </LabPhotoLightbox>
-          ) : null}
-        </View>
-      ) : (
-      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" scrollEnabled={!scrollLocked}>
-        <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
-          {width > 0 ? (
-            <LabPhotoLightbox>
-              <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} />
-            </LabPhotoLightbox>
-          ) : null}
-        </View>
-        {/* Guided-lesson entry lives at the BOTTOM (owner 2026-07-29, LabShell v2). */}
-        <Pressable
-          style={styles.lessonRow}
-          onPress={() => help()}
-          accessibilityRole="button"
-          accessibilityLabel="Open the guided lesson"
-        >
-          <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
-        </Pressable>
-      </ScrollView>
+      {endScreen ?? (
+        <ScrollLockProvider value={setScrollLocked}>
+        {RACK_MODULES.has(meta.id) ? (
+          // Rack module: full height — WaveLayout's RackUnit pins stage + dock
+          // and owns the scroll well (incl. its own guided-lesson entry row).
+          <View style={styles.rackFill} onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
+            {width > 0 ? (
+              <LabPhotoLightbox>
+                <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} />
+              </LabPhotoLightbox>
+            ) : null}
+          </View>
+        ) : (
+        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" scrollEnabled={!scrollLocked}>
+          <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
+            {width > 0 ? (
+              <LabPhotoLightbox>
+                <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} />
+              </LabPhotoLightbox>
+            ) : null}
+          </View>
+          {/* Guided-lesson entry lives at the BOTTOM (owner 2026-07-29, LabShell v2). */}
+          <Pressable
+            style={styles.lessonRow}
+            onPress={() => help()}
+            accessibilityRole="button"
+            accessibilityLabel="Open the guided lesson"
+          >
+            <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
+          </Pressable>
+        </ScrollView>
+        )}
+        </ScrollLockProvider>
       )}
-      </ScrollLockProvider>
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('wave')} controlKey={lessonKey} onClose={() => setLessonOpen(false)} />
     </View>
   );

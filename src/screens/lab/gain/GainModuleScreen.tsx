@@ -13,7 +13,8 @@ import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { ScrollLockProvider } from '../LabShell';
-import { markLabUnit } from '../../../features/lab/labCompletion';
+import { markLabUnit, useLabClearedUnits } from '../../../features/lab/labCompletion';
+import { LabEndScreen } from '../kit/LabEndScreen';
 import { GlossaryLinkProvider } from '../../../features/glossary/glossaryLink';
 import { GAIN_MODULES, type GainModuleComponentProps, type GainModuleId } from './modules/registry';
 import { FaderVsGainModule, FollowModule, InputGainModule, IntroModule, LowHighModule } from './modules/modLearn';
@@ -69,8 +70,28 @@ export function GainModuleScreen() {
   const last = GAIN_MODULES.length - 1;
   const goToModule = (i: number) => {
     if (i < 0 || i > last) return;
+    setEnding(false);
     (navigation as { setParams: (p: { id: GainModuleId }) => void }).setParams({ id: GAIN_MODULES[i].id });
   };
+  // THE LAST MODULE ENDS ON THE WHAT'S-LEFT SCREEN (owner 2026-09-29: "every
+  // lab ends with a 'what's left' screen"). NEXT used to grey out on the last
+  // module — a dead end. It is now FINISH, which swaps LabEndScreen in for the
+  // module: what is still to do (jump links), PRACTISE AGAIN from module 1
+  // (clears nothing — banked credit stays), DONE back to the lab home.
+  const [ending, setEnding] = useState(false);
+  const banked = useLabClearedUnits('af_gain_staging');
+  const endScreen = ending ? (
+    <LabEndScreen
+      labTitle="Gain Staging Lab"
+      units={GAIN_MODULES.map((m) => ({ id: m.id, label: m.title }))}
+      cleared={banked}
+      mode="credit"
+      onJump={(id) => goToModule(GAIN_MODULES.findIndex((m) => m.id === id))}
+      onPracticeAgain={() => goToModule(0)}
+      onDone={() => navigation.goBack()}
+      bottomInset
+    />
+  ) : null;
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -89,34 +110,36 @@ export function GainModuleScreen() {
           <Text style={[styles.navBtn, idx <= 0 && styles.navBtnDisabled]}>‹ PREV</Text>
         </Pressable>
         <View style={{ flex: 1 }} />
-        <Text style={styles.navPos}>MODULE {idx + 1} / {GAIN_MODULES.length}</Text>
+        <Text style={styles.navPos}>{ending ? "WHAT'S LEFT" : `MODULE ${idx + 1} / ${GAIN_MODULES.length}`}</Text>
         <View style={{ flex: 1 }} />
-        <Pressable onPress={() => goToModule(idx + 1)} disabled={idx >= last} hitSlop={8} accessibilityRole="button" accessibilityLabel="Next module">
-          <Text style={[styles.navBtn, idx >= last && styles.navBtnDisabled]}>NEXT ›</Text>
+        <Pressable onPress={() => (idx >= last ? setEnding(true) : goToModule(idx + 1))} hitSlop={8} accessibilityRole="button" accessibilityLabel={idx >= last ? "Finish the lab and see what's left" : 'Next module'}>
+          <Text style={styles.navBtn}>{idx >= last ? 'FINISH ›' : 'NEXT ›'}</Text>
         </Pressable>
       </View>
       <GlossaryLinkProvider>
-        <ScrollLockProvider value={setScrollLocked}>
-          {RACK_MODULES.has(meta.id) ? (
-            // Rack module: full height — the module's RackUnit pins stage +
-            // dock and owns the scroll well.
-            <View style={styles.rackFill} onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
-              {width > 0 ? <Comp width={width} focused={focused} /> : null}
-            </View>
-          ) : (
-            <ScrollView
-              contentContainerStyle={styles.scroll}
-              keyboardShouldPersistTaps="handled"
-              scrollEnabled={overflows && !scrollLocked}
-              onLayout={(e) => setViewportH(Math.round(e.nativeEvent.layout.height))}
-              onContentSizeChange={(_w, h) => setContentH(Math.round(h))}
-            >
-              <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
+        {endScreen ?? (
+          <ScrollLockProvider value={setScrollLocked}>
+            {RACK_MODULES.has(meta.id) ? (
+              // Rack module: full height — the module's RackUnit pins stage +
+              // dock and owns the scroll well.
+              <View style={styles.rackFill} onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
                 {width > 0 ? <Comp width={width} focused={focused} /> : null}
               </View>
-            </ScrollView>
-          )}
-        </ScrollLockProvider>
+            ) : (
+              <ScrollView
+                contentContainerStyle={styles.scroll}
+                keyboardShouldPersistTaps="handled"
+                scrollEnabled={overflows && !scrollLocked}
+                onLayout={(e) => setViewportH(Math.round(e.nativeEvent.layout.height))}
+                onContentSizeChange={(_w, h) => setContentH(Math.round(h))}
+              >
+                <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
+                  {width > 0 ? <Comp width={width} focused={focused} /> : null}
+                </View>
+              </ScrollView>
+            )}
+          </ScrollLockProvider>
+        )}
       </GlossaryLinkProvider>
     </View>
   );

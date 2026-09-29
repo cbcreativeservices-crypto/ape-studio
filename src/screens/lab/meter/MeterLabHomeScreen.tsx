@@ -16,6 +16,7 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { METER_MODULES } from './modules/registry';
+import { LabEndLink, LabEndScreen } from '../kit/LabEndScreen';
 
 export function MeterLabHomeScreen() {
   const insets = useSafeAreaInsets();
@@ -24,6 +25,19 @@ export function MeterLabHomeScreen() {
   // Accordion: every module collapsed by default, only one open at a time.
   const [openId, setOpenId] = useState<string | null>(null);
   const clearedUnits = useLabClearedUnits('af_visual_analysis');
+  /**
+   * WHAT'S LEFT (owner 2026-09-29: "every lab ends with a 'what's left'
+   * screen"). This lab's modules have no PREV/NEXT — every one opens from
+   * here and returns here — so this home is where the lab ends. A SEE WHAT'S
+   * LEFT link under the modules swaps LabEndScreen in for the list: modules
+   * not yet credited, a jump to each, PRACTISE AGAIN from Module 1 (clears
+   * nothing) and DONE.
+   */
+  const [ending, setEnding] = useState(false);
+  const open = (id: (typeof METER_MODULES)[number]['id']) => {
+    setEnding(false);
+    navigation.navigate('MeterModule', { id });
+  };
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -37,6 +51,18 @@ export function MeterLabHomeScreen() {
         </View>
         <AccuracyNote compact detail="These meters run on your phone’s UNCALIBRATED microphone — read them as relative, for learning. For accurate levels use a calibrated SPL meter or measurement mic." />
       </View>
+      {ending ? (
+        <LabEndScreen
+          labTitle="Visual Audio Analysis Lab"
+          units={METER_MODULES.map((m) => ({ id: m.id, label: m.title }))}
+          cleared={clearedUnits}
+          mode="credit"
+          onJump={(id) => open(METER_MODULES.find((m) => m.id === id)?.id ?? METER_MODULES[0].id)}
+          onPracticeAgain={() => open(METER_MODULES[0].id)}
+          onDone={() => navigation.goBack()}
+          bottomInset
+        />
+      ) : (
       <ScrollView contentContainerStyle={styles.scroll}>
         <Text style={styles.body}>
           Every professional display — waveform, peak, VU, LUFS, spectrum, spectrogram, waterfall,
@@ -55,6 +81,7 @@ export function MeterLabHomeScreen() {
             onOpen={() => navigation.navigate('MeterModule', { id: m.id })}
           />
         ))}
+        <LabEndLink label="SEE WHAT’S LEFT ›" onPress={() => setEnding(true)} />
         <Text style={styles.sectionTitle}>USE WHAT YOU LEARNED</Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
           <Pressable accessibilityRole="button" style={styles.toolChip} onPress={() => navigation.navigate('ToolsHub' as never)}>
@@ -69,6 +96,7 @@ export function MeterLabHomeScreen() {
           back here whenever a display doesn’t make sense yet.
         </Text>
       </ScrollView>
+      )}
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('meter')} onClose={() => setLessonOpen(false)} />
     </View>
   );
