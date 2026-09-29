@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 14:12 · ccode · f2bc52d7
+changed: Web preview: auto-guest only on the boot visit, so SIGN IN reaches the form
+affects other side: nothing — dev-only web preview behaviour
+needs: nothing
+
+
 ### 2026-09-29 13:25 · ccode · 500a0512
 changed: Awards: 'Explore the Academy' no longer blank after opening at a later page
 affects other side: nothing — client JS only (Awards pager)
