@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 14:46 · ccode · 27943c44
+changed: Trophy gallery: a real empty state instead of one grey line
+affects other side: nothing — client JS only (gallery empty state)
+needs: nothing
+
+
 ### 2026-09-29 14:42 · ccode · 0ec86a43
 changed: test: exempt the web-preview auto-guest latch from the account-wipe registry
 affects other side: nothing — test only
