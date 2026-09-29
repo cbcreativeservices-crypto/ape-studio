@@ -64,7 +64,9 @@ const STEP_KEY = 'ape:ciStep';
 const STATE_KEY = 'ape:ciState';
 const LAB_KEY = 'af_cable_install' as const;
 
-type CiPersisted = { dims: CiDimScores; myths: string[] };
+/** `run` is present only during a REPEAT LAB run: the stages redone THIS run
+ *  (bug hunt 2026-09-29). Absent = the run is the banked progress. */
+type CiPersisted = { dims: CiDimScores; myths: string[]; run?: string[] };
 
 /** Steps: 0 = intro · 1..13 = stages · 14 = completion. A pending myth
  *  interstitial renders INSTEAD of the target stage until dismissed. */
@@ -94,6 +96,21 @@ export function CableInstallLabScreen() {
   const navigatedRef = useRef(false);
   const scrollRef = useRef<ScrollView | null>(null);
 
+  // Local mirror of completed units (we mark + mirror so a stage flips to done
+  // synchronously; the mirror is hydrated from labCompletion's per-unit set —
+  // replay simply re-runs the module). This is BANKED credit and never shrinks.
+  const completedUnitsRef = useRef<Set<string>>(new Set());
+  // THIS RUN (bug hunt 2026-09-29): REPEAT LAB used to empty the banked
+  // mirror above while the saved per-unit progress stayed full — the counter
+  // read 15/15 over empty dots, the completion screen said "13 of 13 stages
+  // still to finish" for credit already banked, and reopening the lab turned
+  // every dot green again. Dots, resume and what's-left now read this set;
+  // it equals the banked set until a Repeat starts a fresh run (persisted in
+  // ape:ciState `run` so a reopen keeps the run).
+  const runUnitsRef = useRef<Set<string>>(new Set());
+  const repeatedRef = useRef(false);
+  const [, forceTick] = useState(0);
+
   const { complete: labComplete, cleared, total } = useLabCompletion(LAB_KEY);
   const clearedUnits = useLabClearedUnits(LAB_KEY);
 
@@ -109,14 +126,22 @@ export function CableInstallLabScreen() {
       try {
         const [[, rawStep], [, rawState]] = await AsyncStorage.multiGet([STEP_KEY, STATE_KEY]);
         if (!alive || navigatedRef.current) return;
-        if (rawState) {
-          const st = JSON.parse(rawState) as CiPersisted;
-          setDims(st.dims ?? {});
-          setShownMyths(st.myths ?? []);
-        }
+        // Step FIRST (bug hunt 2026-09-29): a corrupt or "null" ape:ciState
+        // threw on `st.dims` before the step was restored, so a damaged
+        // score blob also lost the learner's place.
         if (rawStep != null) {
           const n = Number(rawStep);
           if (Number.isFinite(n) && n >= 0 && n <= COMPLETE_STEP) setStep(n);
+        }
+        if (rawState) {
+          const st = JSON.parse(rawState) as CiPersisted | null;
+          setDims(st?.dims ?? {});
+          setShownMyths(Array.isArray(st?.myths) ? st.myths : []);
+          if (Array.isArray(st?.run)) {
+            repeatedRef.current = true;
+            runUnitsRef.current = new Set(st.run);
+            forceTick((t) => t + 1);
+          }
         }
       } catch {
         /* resume is best-effort */
@@ -129,9 +154,10 @@ export function CableInstallLabScreen() {
 
   const persist = useCallback((nextStep: number, nextDims: CiDimScores, nextMyths: string[]) => {
     if (noAccountRef.current) return;
+    const run = repeatedRef.current ? [...runUnitsRef.current] : undefined;
     void AsyncStorage.multiSet([
       [STEP_KEY, String(nextStep)],
-      [STATE_KEY, JSON.stringify({ dims: nextDims, myths: nextMyths } satisfies CiPersisted)],
+      [STATE_KEY, JSON.stringify({ dims: nextDims, myths: nextMyths, run } satisfies CiPersisted)],
     ]).catch(() => {});
   }, []);
 
@@ -139,21 +165,15 @@ export function CableInstallLabScreen() {
   // the closure's `dims` is the render-time value, so `setDims({}); goTo(1)`
   // wrote the old scores back to ape:ciState (B-164).
   const goTo = useCallback(
-    (n: number, nextDims?: CiDimScores) => {
+    (n: number, nextDims?: CiDimScores, nextMyths?: string[]) => {
       navigatedRef.current = true;
       setStep(n);
       setPendingMyth(null);
-      persist(n, nextDims ?? dims, shownMyths);
+      persist(n, nextDims ?? dims, nextMyths ?? shownMyths);
       scrollRef.current?.scrollTo({ y: 0, animated: false });
     },
     [dims, shownMyths, persist],
   );
-
-  // Local mirror of completed units (we mark + mirror so a stage flips to done
-  // synchronously; the mirror is hydrated from labCompletion's per-unit set —
-  // replay simply re-runs the module).
-  const completedUnitsRef = useRef<Set<string>>(new Set());
-  const [, forceTick] = useState(0);
 
   // HYDRATE THE MIRROR ON RESUME (fix 2026-08-28, reworked B-153 2026-09-02).
   // The 08-28 fix seeded the mirror from the persisted STEP ("being on step n
@@ -171,6 +191,11 @@ export function CableInstallLabScreen() {
         completedUnitsRef.current.add(u);
         added = true;
       }
+      // a Repeat run starts empty: banked credit does not pre-fill it
+      if (!repeatedRef.current && !runUnitsRef.current.has(u)) {
+        runUnitsRef.current.add(u);
+        added = true;
+      }
     }
     if (added) forceTick((t) => t + 1);
   }, [clearedUnits]);
@@ -180,7 +205,7 @@ export function CableInstallLabScreen() {
   // seeded, so canEnter() locked every stage ≥ 2 on resume (B-153).
   let firstIncomplete = COMPLETE_STEP;
   for (let i = 0; i < CI_MODULES.length; i++) {
-    if (!completedUnitsRef.current.has(CI_MODULES[i].unit)) {
+    if (!runUnitsRef.current.has(CI_MODULES[i].unit)) {
       firstIncomplete = i + 1;
       break;
     }
@@ -224,6 +249,7 @@ export function CableInstallLabScreen() {
         completedUnitsRef.current.add(mod.unit);
         markLabUnit(LAB_KEY, mod.unit);
       }
+      runUnitsRef.current.add(mod.unit);
       const merged = newDims ? mergeDims(dims, newDims) : dims;
       setDims(merged);
       persist(step, merged, shownMyths);
@@ -246,7 +272,7 @@ export function CableInstallLabScreen() {
       goTo(1);
       return;
     }
-    if (mod && completedUnitsRef.current.has(mod.unit)) {
+    if (mod && runUnitsRef.current.has(mod.unit)) {
       // Myth interstitial between stages (spec §25) — one per boundary,
       // never repeated across the lab.
       const myth = CI_MYTHS.find((m) => !shownMyths.includes(m.id));
@@ -264,7 +290,10 @@ export function CableInstallLabScreen() {
 
   const prev = () => goTo(Math.max(INTRO_STEP, step - 1));
 
-  const modDone = mod ? completedUnitsRef.current.has(mod.unit) : false;
+  const modDone = mod ? runUnitsRef.current.has(mod.unit) : false;
+  /** The per-unit set a scene resumes from. During a Repeat run the scenes
+   *  start fresh (InspectScene would otherwise jump straight to its quiz). */
+  const sceneClearedUnits = repeatedRef.current ? undefined : clearedUnits;
   const Body = mod ? MODULE_BODIES[mod.id] : null;
   const myth = pendingMyth ? CI_MYTHS.find((m) => m.id === pendingMyth) : null;
   /** A rack-layout stage (display pinned, well scrolls, dock at the bottom):
@@ -344,7 +373,7 @@ export function CableInstallLabScreen() {
           <View style={styles.dotsRow} accessibilityLabel={`${cleared} of ${total} units complete`}>
             {CI_MODULES.map((m, i) => {
               const n = i + 1;
-              const done = completedUnitsRef.current.has(m.unit);
+              const done = runUnitsRef.current.has(m.unit);
               const active = n === step;
               const enterable = canEnter(n);
               return (
@@ -380,7 +409,7 @@ export function CableInstallLabScreen() {
               onComplete={onModuleComplete}
               onDims={onModuleDims}
               openSources={openSources}
-              clearedUnits={clearedUnits}
+              clearedUnits={sceneClearedUnits}
               head={{ tag: mod.tag, title: mod.title, intro: mod.intro }}
             />
           </View>
@@ -410,21 +439,30 @@ export function CableInstallLabScreen() {
             ) : (
               <CompleteStage
                 dims={dims}
-                outstanding={CI_MODULES.map((m, i) => ({ ...m, step: i + 1 })).filter(
-                  (m) => !completedUnitsRef.current.has(m.unit),
-                )}
+                outstanding={CI_MODULES.map((m, i) => ({
+                  ...m,
+                  step: i + 1,
+                  banked: completedUnitsRef.current.has(m.unit),
+                })).filter((m) => !runUnitsRef.current.has(m.unit))}
                 onGoToStage={(n) => goTo(n)}
                 onFieldCheck={() => setShowFieldCheck(true)}
+                canReview={weakestDim(dims) != null}
                 onReview={() => {
                   const worst = weakestDim(dims);
+                  // Nothing below 80 → nothing to review (bug hunt 2026-09-29:
+                  // a null weakest dim fell through to 'route').
+                  if (!worst) return;
                   const target = worst === 'documentation' ? 'label' : worst === 'serviceability' ? 'rack' : worst === 'protection' ? 'mech' : worst === 'safety' ? 'floor' : worst === 'signal' ? 'emi' : 'route';
                   const idx = CI_MODULES.findIndex((m) => m.id === target);
                   goTo(idx + 1);
                 }}
                 onRepeat={() => {
-                  completedUnitsRef.current = new Set();
+                  // A fresh RUN, not a wipe of banked credit (see runUnitsRef).
+                  repeatedRef.current = true;
+                  runUnitsRef.current = new Set();
                   setDims({});
-                  goTo(1, {});
+                  setShownMyths([]);
+                  goTo(1, {}, []);
                 }}
                 onReturn={() => navigation.goBack()}
               />
@@ -435,7 +473,7 @@ export function CableInstallLabScreen() {
               <Text style={styles.stageTitle}>{mod.title}</Text>
               <Text style={styles.stageIntro}>{mod.intro}</Text>
               {width > 0 ? (
-                <Body width={width} completed={modDone} onComplete={onModuleComplete} onDims={onModuleDims} openSources={openSources} clearedUnits={clearedUnits} />
+                <Body width={width} completed={modDone} onComplete={onModuleComplete} onDims={onModuleDims} openSources={openSources} clearedUnits={sceneClearedUnits} />
               ) : null}
             </Appear>
           ) : null}
@@ -612,15 +650,19 @@ function CompleteStage({
   outstanding,
   onGoToStage,
   onFieldCheck,
+  canReview,
   onReview,
   onRepeat,
   onReturn,
 }: {
   dims: CiDimScores;
-  /** Stages not yet completed. Empty = the lab is genuinely finished. */
-  outstanding: { id: string; title: string; step: number }[];
+  /** Stages not yet completed THIS RUN. Empty = the run is finished.
+   *  `banked` = its credit is already saved (a Repeat run). */
+  outstanding: { id: string; title: string; step: number; banked: boolean }[];
   onGoToStage: (step: number) => void;
   onFieldCheck: () => void;
+  /** False when no dimension is below 80 — there is nothing to review. */
+  canReview: boolean;
   onReview: () => void;
   onRepeat: () => void;
   onReturn: () => void;
@@ -632,6 +674,11 @@ function CompleteStage({
    * congratulating someone for a lab they have not finished.
    */
   const done = outstanding.length === 0;
+  // Word the list by credit (bug hunt 2026-09-29): after REPEAT LAB the
+  // stages are unplayed THIS RUN but already credited — "still to finish
+  // before this lab counts toward your credit" was false for them.
+  const unbanked = outstanding.filter((m) => !m.banked).length;
+  const replayOnly = outstanding.length - unbanked;
   return (
     <View style={{ gap: 14 }}>
       <Text style={styles.completeTitle}>
@@ -645,8 +692,9 @@ function CompleteStage({
       ) : (
         <>
           <Text style={styles.introLead}>
-            {outstanding.length} of {CI_MODULES.length} stage{outstanding.length === 1 ? '' : 's'} still to finish before
-            this lab counts toward your credit. Everything you have done so far is saved — pick up wherever you like.
+            {unbanked > 0
+              ? `${unbanked} of ${CI_MODULES.length} stage${unbanked === 1 ? '' : 's'} still to finish before this lab counts toward your credit. Everything you have done so far is saved — pick up wherever you like.${replayOnly > 0 ? ` ${replayOnly} more not replayed this run — already credited.` : ''}`
+              : `${replayOnly} of ${CI_MODULES.length} stage${replayOnly === 1 ? '' : 's'} not replayed this run. Your credit for every stage is already banked — replay them or leave them; nothing is lost.`}
           </Text>
           <View style={styles.leftList}>
             {outstanding.map((m) => (
@@ -655,12 +703,13 @@ function CompleteStage({
                 onPress={() => onGoToStage(m.step)}
                 style={styles.leftRow}
                 accessibilityRole="button"
-                accessibilityLabel={`Go to stage ${m.step}, ${m.title}`}
+                accessibilityLabel={`Go to stage ${m.step}, ${m.title}${m.banked ? ', already credited' : ''}`}
               >
                 <Text style={styles.leftStep}>STAGE {m.step}</Text>
                 <Text style={styles.leftTitle} numberOfLines={1}>
                   {m.title}
                 </Text>
+                {m.banked ? <Text style={styles.leftBanked}>CREDITED</Text> : null}
                 <Text style={styles.leftGo}>›</Text>
               </Pressable>
             ))}
@@ -670,7 +719,11 @@ function CompleteStage({
       <MasteryProfile dims={dims} />
       <Appear delay={CI_MOTION.base} style={{ gap: 8 }}>
         <GlassButton label="VIEW FIELD CHECK" tint="green" height={46} fontSize={13} onPress={onFieldCheck} />
-        <GlassButton label="REVIEW RESULTS" tint="teal" height={44} fontSize={12.5} onPress={onReview} />
+        {canReview ? (
+          <GlassButton label="REVIEW RESULTS" tint="teal" height={44} fontSize={12.5} onPress={onReview} />
+        ) : Object.keys(dims).length > 0 ? (
+          <Text style={styles.reviewLine}>Nothing below 80 — no review recommended.</Text>
+        ) : null}
         <GlassButton label="REPEAT LAB" tint="gold" height={44} fontSize={12.5} onPress={onRepeat} />
         <GlassButton label="RETURN TO TRAINING" tint="teal" height={44} fontSize={12.5} onPress={onReturn} />
       </Appear>
@@ -743,6 +796,7 @@ const styles = StyleSheet.create({
   leftRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 11, paddingHorizontal: 12, backgroundColor: '#141416' },
   leftStep: { fontFamily: fonts.mono, fontSize: 10, letterSpacing: 1, color: colors.amber, width: 64 },
   leftTitle: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 14, color: colors.textSecondary },
+  leftBanked: { fontFamily: fonts.mono, fontSize: 10, letterSpacing: 1, color: colors.green },
   leftGo: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, color: colors.amber },
   completeTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1, color: colors.green },
   profileCard: { gap: 10, borderRadius: 12, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 14 },

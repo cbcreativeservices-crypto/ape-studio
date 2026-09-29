@@ -14,8 +14,8 @@
  * Reuses the app's existing kit (digital/bits, foundations/bits, cable
  * lessons/bits) — no parallel design system.
  */
-import { useState, type ReactNode } from 'react';
-import { AccessibilityInfo, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState, type ReactNode } from 'react';
+import { AccessibilityInfo, BackHandler, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../../../features/settings/store';
 import { colors, fonts } from '../../../theme/tokens';
@@ -109,6 +109,18 @@ export function SpecCard({ text }: { text: string }) {
 
 /* ── sources sheet (host-level in-tree overlay; spec §5) ────────────────── */
 export function SourceSheet({ sourceIds, onClose }: { sourceIds: string[] | null; onClose: () => void }) {
+  // Android back closes the SHEET, not the lab (bug hunt 2026-09-29): it is
+  // an in-tree overlay, so the hardware back went straight to the navigator
+  // and dropped the learner out of the lab. Handlers run newest-first.
+  const open = sourceIds != null;
+  useEffect(() => {
+    if (!open) return;
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      onClose();
+      return true;
+    });
+    return () => sub.remove();
+  }, [open, onClose]);
   if (!sourceIds) return null;
   const list = sourceIds.map(sourceById).filter((s): s is NonNullable<typeof s> => !!s);
   return (
