@@ -29,7 +29,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ApeDsp, GEN_MODES } from '../../../../../modules/ape-dsp';
 import { GlassButton } from '../../../../components/GlassButton';
 import { useAudioOutputGate } from '../../../../features/audio/AudioOutputGate';
-import { noteAudioActivity } from '../../../../features/audio/audioOutputStore';
+import { isAudioOutputEnabled, noteAudioActivity } from '../../../../features/audio/audioOutputStore';
 import { guardToneLevelForEngine } from '../../../../features/audio/speakerSafety';
 import { DisplayGuideButton } from '../../../../features/lab/guidedLessons';
 import { levelColor } from '../../../../features/tools/levelColor';
@@ -45,6 +45,7 @@ import { requireVizSignal, type VizSignalModule } from '../skiaGate';
 import type { WaveKind } from '../vizSignal';
 import type { DigitalModuleProps } from '../DigitalModuleScreen';
 import { useStopWhenSilenced } from '../../../../features/audio/useStopWhenSilenced';
+import { useStopOnBlur } from '../../../../features/audio/useStopOnBlur';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared helpers (pure math — no Skia; duplicated one-liners of the viz math
@@ -427,7 +428,9 @@ function useAliasTone(engineReady: boolean, focused: boolean) {
         });
         try {
           await ApeDsp.genStart();
-          if (gen !== genRef.current) {
+          // A mute that landed while the native start was in flight wins — never
+          // leave a tone sounding into a closed gate (owner 2026-09-29).
+          if (gen !== genRef.current || !isAudioOutputEnabled()) {
             void ApeDsp.genStop();
             return;
           }
@@ -455,7 +458,9 @@ function useAliasTone(engineReady: boolean, focused: boolean) {
   useEffect(() => {
     if (!focused) stop();
   }, [focused, stop]);
-  useEffect(() => () => stop(), [stop]);
+  // Never `useEffect(() => () => stop(), [stop])`: that cleanup also runs
+  // whenever `stop` changes identity (owner 2026-09-29, useStopOnBlur.ts).
+  useStopOnBlur(stop);
   // Keepalive so the mute gate sees us as active while sounding.
   useEffect(() => {
     if (!playing) return;

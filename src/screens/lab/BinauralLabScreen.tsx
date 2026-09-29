@@ -35,7 +35,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Circle, Line, Text as SvgText } from 'react-native-svg';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, BIN_SRC } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
-import { noteAudioActivity } from '../../features/audio/audioOutputStore';
+import { isAudioOutputEnabled, noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { CheckQuestion } from './foundations/bits';
 import { EngineGate } from '../tools/EngineGate';
@@ -137,7 +137,9 @@ export function BinauralLabScreen() {
     pushAll(sources);
     try {
       const st = await ApeDsp.binStart();
-      if (gen !== genRef.current) {
+      // A mute that landed while the native start was in flight wins — never
+      // leave a tone sounding into a closed gate (owner 2026-09-29).
+      if (gen !== genRef.current || !isAudioOutputEnabled()) {
         void ApeDsp.binStop(); // we left while the native start was in flight
         return;
       }

@@ -19,13 +19,13 @@
  *  • Output gate + activity pings + focus-loss stop exactly as every lab.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES, type GenParams } from '../../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
-import { noteAudioActivity } from '../../../features/audio/audioOutputStore';
+import { isAudioOutputEnabled, noteAudioActivity } from '../../../features/audio/audioOutputStore';
 import { guardAdditiveForEngine } from '../../../features/audio/speakerSafety';
 import type { EngineState } from '../../../features/tools/engine/useDspEngine';
 import { useStopOnAudioMute } from '../../../features/audio/useStopOnAudioMute';
+import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
 import { useStopOnBlur } from '../../../features/audio/useStopOnBlur';
 
 const ACTIVITY_MS = 500;
@@ -106,7 +106,9 @@ export function useDriveTone(hzA: number, hzB: number | null, amplitude01: numbe
     ApeDsp.genSet(params(hzA, hzB, amplitude01, wave));
     try {
       await ApeDsp.genStart();
-      if (gen !== genRef.current) {
+      // A mute that landed while the native start was in flight wins — never
+      // leave a tone sounding into a closed gate (owner 2026-09-29).
+      if (gen !== genRef.current || !isAudioOutputEnabled()) {
         void ApeDsp.genStop();
         return;
       }
@@ -122,6 +124,10 @@ export function useDriveTone(hzA: number, hzB: number | null, amplitude01: numbe
     void ApeDsp.genStop();
     setRunning(false);
   }, []);
+  // Shake-to-mute (and the idle/background lock) silences the voices from
+  // outside this screen; every other lab tone had this and the Cymatics
+  // drive did not (owner 2026-09-29 sound audit). See useStopWhenSilenced.
+  useStopWhenSilenced(running, stop);
 
   const retune = useCallback(
     (a: number, b: number | null, amp: number, w: DriveWave = 'sine') => {

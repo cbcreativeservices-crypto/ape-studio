@@ -51,7 +51,7 @@ import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
-import { noteAudioActivity } from '../../features/audio/audioOutputStore';
+import { isAudioOutputEnabled, noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { GuidedLessonSheet, getLabLesson, SOURCE_LESSON, type LabId, type LessonContent } from '../../features/lab/guidedLessons';
 import { GrLadder, GrMeter } from '../../features/lab/fxViz';
 import { EngineGate } from '../tools/EngineGate';
@@ -315,7 +315,9 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
     pushAllParams(values);
     try {
       await ApeDsp.genStart();
-      if (gen !== genRef.current) {
+      // A mute that landed while the native start was in flight wins — never
+      // leave a tone sounding into a closed gate (owner 2026-09-29).
+      if (gen !== genRef.current || !isAudioOutputEnabled()) {
         void ApeDsp.genStop();
         ApeDsp.fxReset();
         return;

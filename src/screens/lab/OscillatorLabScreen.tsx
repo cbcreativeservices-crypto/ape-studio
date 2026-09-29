@@ -49,7 +49,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
-import { noteAudioActivity } from '../../features/audio/audioOutputStore';
+import { isAudioOutputEnabled, noteAudioActivity } from '../../features/audio/audioOutputStore';
 import {
   guardToneLevelForEngine,
   guardAdditiveForEngine,
@@ -171,7 +171,9 @@ export function OscillatorLabScreen() {
     ApeDsp.genSet(paramsFor(wave, f0));
     try {
       await ApeDsp.genStart();
-      if (gen !== genRef.current) {
+      // A mute that landed while the native start was in flight wins — never
+      // leave a tone sounding into a closed gate (owner 2026-09-29).
+      if (gen !== genRef.current || !isAudioOutputEnabled()) {
         void ApeDsp.genStop();
         return;
       }

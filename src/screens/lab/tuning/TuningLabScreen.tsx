@@ -13,6 +13,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
+import { useStopOnBlur } from '../../../features/audio/useStopOnBlur';
+import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
 import { animationsAllowed } from '../../../features/settings/a11y';
 import { C4_ET } from '../../../features/tuning/tuningMath';
 import { TuningPlayer, type PlayerStatus } from '../../../features/tuning/tuningAudio';
@@ -28,6 +30,11 @@ export function TuningLabScreen() {
   const { requestAudioOutput } = useAudioOutputGate();
   const player = useMemo(() => new TuningPlayer(requestAudioOutput), [requestAudioOutput]);
   const [status, setStatus] = useState<PlayerStatus>({ playing: false, label: null });
+  // Owner 2026-09-29 sound audit: the lab stopped only on unmount and on
+  // backgrounding. A pushed screen (glossary, lesson) now silences it too, and
+  // a shake-to-mute / idle lock also cancels a clip still RENDERING.
+  useStopOnBlur(() => player.stop());
+  useStopWhenSilenced(status.playing || !!status.rendering, () => player.stop());
 
   /**
    * W16 (2026-09-18): the sound line in the footer is `accessibilityLiveRegion`

@@ -29,7 +29,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Circle, Defs, G, Line, LinearGradient, Path, RadialGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, MOD_PARAM } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
-import { noteAudioActivity } from '../../features/audio/audioOutputStore';
+import { isAudioOutputEnabled, noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
@@ -241,7 +241,9 @@ export function ModularLabScreen() {
     pushPatch(patch);
     try {
       await ApeDsp.modStart();
-      if (gen !== genRef.current) {
+      // A mute that landed while the native start was in flight wins — never
+      // leave a tone sounding into a closed gate (owner 2026-09-29).
+      if (gen !== genRef.current || !isAudioOutputEnabled()) {
         void ApeDsp.modStop(); // we left while the native start was in flight
         return;
       }

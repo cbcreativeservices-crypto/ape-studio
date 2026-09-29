@@ -41,7 +41,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, FX, FX_PARAM, EQ_BAND_TYPES, GEN_MODES } from '../../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
 import { playWithHearingWarning } from '../../../features/audio/levelHearingWarning';
-import { noteAudioActivity } from '../../../features/audio/audioOutputStore';
+import { isAudioOutputEnabled, noteAudioActivity } from '../../../features/audio/audioOutputStore';
 import { guardAdditiveForEngine, guardNoiseLevelForEngine, guardToneLevelForEngine } from '../../../features/audio/speakerSafety';
 import { eqResponseDb } from '../../../features/lab/fxViz';
 import { LabReviewButton } from '../../../features/lab/LabReviewButton';
@@ -262,7 +262,9 @@ export function FoundationsPlaygroundScreen() {
     pushFx();
     try {
       await ApeDsp.genStart();
-      if (gen !== genRef.current) {
+      // A mute that landed while the native start was in flight wins — never
+      // leave a tone sounding into a closed gate (owner 2026-09-29).
+      if (gen !== genRef.current || !isAudioOutputEnabled()) {
         void ApeDsp.genStop();
         return;
       }

@@ -1267,6 +1267,12 @@ export function HarmonicsView({
           void ApeDsp.genStop();
           return false;
         }
+        // A mute that landed while the native start was in flight wins — never
+        // leave a tone sounding into a closed gate (owner 2026-09-29).
+        if (!isAudioOutputEnabled()) {
+          void ApeDsp.genStop();
+          return false;
+        }
         setGenRunning(true);
         noteAudioActivity();
         return true;

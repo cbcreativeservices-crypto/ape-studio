@@ -19,6 +19,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
 import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
+import { useStopOnBlur } from '../../../features/audio/useStopOnBlur';
 import { EarClipPlayer } from '../../../features/ear/earPlayer';
 import { isStereo } from '../../../features/ear/earDsp';
 import { earModuleById } from '../../../features/ear/modules/registry';
@@ -126,6 +127,13 @@ export function EarModuleScreen() {
   // Shake-to-mute / idle lock / background silence the clip from outside;
   // put the chip back to ▶ with them (see useStopWhenSilenced).
   useStopWhenSilenced(playing != null, () => {
+    playTokenRef.current++;
+    playerRef.current?.stop();
+    setPlaying(null);
+  });
+  // Leaving the screen (a pushed lesson/glossary, not only BACK) silences the
+  // clip — it used to stop only on unmount (owner 2026-09-29 sound audit).
+  useStopOnBlur(() => {
     playTokenRef.current++;
     playerRef.current?.stop();
     setPlaying(null);

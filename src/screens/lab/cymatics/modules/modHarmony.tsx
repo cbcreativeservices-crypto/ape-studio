@@ -24,7 +24,7 @@ import Svg, { Defs, Line, LinearGradient as SvgGradient, Path, Stop } from 'reac
 import { LinearGradient } from 'expo-linear-gradient';
 import { ApeDsp, GEN_MODES } from '../../../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../../../features/audio/AudioOutputGate';
-import { noteAudioActivity } from '../../../../features/audio/audioOutputStore';
+import { isAudioOutputEnabled, noteAudioActivity } from '../../../../features/audio/audioOutputStore';
 import { guardAdditiveForEngine } from '../../../../features/audio/speakerSafety';
 import { MIDLINE_BLUE, WAVE_LEVEL_STOPS, rampColors } from '../../../../features/tools/levelColor';
 import { formatHz, nearestNote } from '../../../../features/cymatics/music';
@@ -99,7 +99,9 @@ function useRatioTone(f0: number, n1: number, n2: number, detune: number) {
     ApeDsp.genSet(params());
     try {
       await ApeDsp.genStart();
-      if (g !== gen.current) {
+      // A mute that landed while the native start was in flight wins — never
+      // leave a tone sounding into a closed gate (owner 2026-09-29).
+      if (g !== gen.current || !isAudioOutputEnabled()) {
         void ApeDsp.genStop();
         return;
       }

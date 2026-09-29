@@ -49,7 +49,7 @@ import { ApeDsp, GEN_MODES } from '../../../../modules/ape-dsp';
 import { GlassButton } from '../../../components/GlassButton';
 import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
-import { noteAudioActivity } from '../../../features/audio/audioOutputStore';
+import { isAudioOutputEnabled, noteAudioActivity } from '../../../features/audio/audioOutputStore';
 import { guardAdditiveForEngine, guardToneLevelForEngine } from '../../../features/audio/speakerSafety';
 import { playWithHearingWarning } from '../../../features/audio/levelHearingWarning';
 import { EngineGate } from '../../tools/EngineGate';
@@ -173,7 +173,9 @@ function useCourseTone(engineReady: boolean): ToneApi {
         });
         try {
           await ApeDsp.genStart();
-          if (gen !== genRef.current) {
+          // A mute that landed while the native start was in flight wins — never
+          // leave a tone sounding into a closed gate (owner 2026-09-29).
+          if (gen !== genRef.current || !isAudioOutputEnabled()) {
             void ApeDsp.genStop();
             return;
           }
@@ -245,7 +247,9 @@ function useCourseTone(engineReady: boolean): ToneApi {
         });
         try {
           await ApeDsp.genStart();
-          if (gen !== genRef.current) {
+          // A mute that landed while the native start was in flight wins — never
+          // leave a tone sounding into a closed gate (owner 2026-09-29).
+          if (gen !== genRef.current || !isAudioOutputEnabled()) {
             void ApeDsp.genStop();
             return;
           }
@@ -281,7 +285,9 @@ function useCourseTone(engineReady: boolean): ToneApi {
         stereoRef.current = true;
         try {
           await ApeDsp.genStart();
-          if (gen !== genRef.current) {
+          // A mute that landed while the native start was in flight wins — never
+          // leave a tone sounding into a closed gate (owner 2026-09-29).
+          if (gen !== genRef.current || !isAudioOutputEnabled()) {
             void ApeDsp.genStop();
             return;
           }
