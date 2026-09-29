@@ -538,9 +538,13 @@ export function ScenariosScreen({ route }: Props) {
       <View style={[styles.center, { paddingTop: insets.top }]}>
         <StudyHeader method="scenarios" title="SCENARIO" />
         <Text style={styles.doneTitle}>ALL THREE ROUNDS COMPLETE</Text>
+        {/* Branched (bug hunt 2026-09-29): when the last round did not reach the
+         *  server, the meter is NOT full and the quiz is NOT unlocked yet — the
+         *  report screen already says so; this one used to contradict it. */}
         <Text style={styles.emptyBody}>
-          You've worked through every scenario for this topic — the scenarios meter on your Dashboard
-          is full, and the topic quiz is unlocked.
+          {roundSaved === false
+            ? 'You’ve worked through every scenario for this topic. Your last round is saved on this device but hasn’t reached your account yet — the scenarios meter fills and the topic quiz unlocks once it syncs, next time you’re online.'
+            : "You've worked through every scenario for this topic — the scenarios meter on your Dashboard is full, and the topic quiz is unlocked."}
         </Text>
         <View style={{ width: 240, marginTop: 8, gap: 10 }}>
           <StudioButton

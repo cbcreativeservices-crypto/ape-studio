@@ -117,7 +117,12 @@ export function MatchingScreen({ navigation, route }: Props) {
       if (mounted.current) fn();
     }, ms);
     flashTimers.current.add(t);
+    return t;
   };
+  // The board-complete auto-advance, kept so a manual move can cancel it (bug
+  // hunt 2026-09-29): NEXT / swipe / shake inside ADVANCE_MS moved one board,
+  // then the still-pending advance moved another — a board skipped unseen.
+  const autoAdvanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Pace timer (practice aid — device-local settings, never blocks study).
   const { settings: pace, setEnabled, setPreset } = usePaceSettings('matching');
@@ -290,6 +295,11 @@ export function MatchingScreen({ navigation, route }: Props) {
     // 2026-07-15). Prev/Next + shake stay "real" interactions (touch()).
     (dir: 1 | -1, opts?: { silent?: boolean }) => {
       if (boards.length === 0) return;
+      if (autoAdvanceTimer.current) {
+        clearTimeout(autoAdvanceTimer.current);
+        flashTimers.current.delete(autoAdvanceTimer.current);
+        autoAdvanceTimer.current = null;
+      }
       if (!opts?.silent) session.current?.touch();
       setBoardIdx((i) => (i + dir + boards.length) % boards.length);
       setSelectedLeft(null);
@@ -411,7 +421,10 @@ export function MatchingScreen({ navigation, route }: Props) {
            * signalled: the header LED reads 100% and the Dashboard fires the
            * `matching-complete` celebration.
            */
-          scheduleFlash(() => goBoardRef.current(1), ADVANCE_MS);
+          autoAdvanceTimer.current = scheduleFlash(() => {
+            autoAdvanceTimer.current = null;
+            goBoardRef.current(1);
+          }, ADVANCE_MS);
         }
       } else {
         wrongPairRef.current = { left: selectedLeft, right: rightId }; // ref first (see above)

@@ -26,7 +26,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TopicWelcomeSheet } from '../../features/intro/TopicWelcomeSheet';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { GlassButton } from '../../components/GlassButton';
 import { LedMeterWell, segmentsForPct } from '../../components/LedMeter';
@@ -62,6 +62,7 @@ import { LowLightDim } from '../../features/settings/LowLightLayer';
 import { consumeDevPreview } from '../../features/dev/devPreview';
 import { devBypass } from '../../config/devMode';
 import { IntroSheet, ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
+import { useOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
 import { INTRO_STORAGE_PREFIX } from '../../features/intro/screenIntros';
 import { emitStudyProgress, StudySession } from '../../features/study/sync';
 import { markTermsExempt } from '../../features/study/termsExempt';
@@ -616,6 +617,19 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   // dev always-show-intros bypass), so it kept popping back up (user report
   // 2026-07-23).
   const t2Offered = useRef(false);
+  // ⛔ NOTHING AUTO-APPEARS WHERE IT CANNOT BE WANTED (bug hunt 2026-09-29).
+  // The 45 s timer and the 5-swipe trigger opened the tutorial in Low-Light
+  // mode, on another tab (this screen stays mounted), and over the fullscreen
+  // card. While blocked a tutorial is DEFERRED — held, not marked seen — and
+  // opens the moment the block lifts.
+  const overlaysSuppressed = useOverlaysSuppressed();
+  const isFocused = useIsFocused();
+  const tutorialBlocked = overlaysSuppressed || !isFocused || fullscreen;
+  const tutorialBlockedRef = useRef(tutorialBlocked);
+  tutorialBlockedRef.current = tutorialBlocked;
+  const [pendingTutorial, setPendingTutorial] = useState<
+    null | 'flashcardsCustomize' | 'flashcardsPower'
+  >(null);
 
   useEffect(() => {
     void AsyncStorage.multiGet([
@@ -634,6 +648,12 @@ export function FlashcardsScreen({ navigation, route }: Props) {
 
   const showTutorial = useCallback(
     (key: 'flashcardsCustomize' | 'flashcardsPower', onDone?: () => void) => {
+      if (tutorialBlockedRef.current) {
+        // A long-press still gets what it reached for; the tutorial waits.
+        if (onDone) onDone();
+        else setPendingTutorial((cur) => cur ?? key);
+        return;
+      }
       setTutorial((cur) => (cur ? cur : { key, onDone }));
       if (key === 'flashcardsPower') t3Done.current = true;
       else t2Done.current = true;
@@ -643,6 +663,11 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   );
   const showTutorialRef = useRef(showTutorial);
   showTutorialRef.current = showTutorial;
+  useEffect(() => {
+    if (tutorialBlocked || !pendingTutorial) return;
+    setPendingTutorial(null);
+    showTutorialRef.current(pendingTutorial);
+  }, [tutorialBlocked, pendingTutorial]);
 
   const dismissTutorial = useCallback(() => {
     setTutorial((cur) => {
@@ -1906,7 +1931,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
 
       {/* T1 on entry; T2/T3 fire on the triggers above. */}
       <ScreenIntroOverlay introKey="flashcards" />
-      {tutorial ? <IntroSheet introKey={tutorial.key} onDismiss={dismissTutorial} /> : null}
+      {tutorial && !tutorialBlocked ? <IntroSheet introKey={tutorial.key} onDismiss={dismissTutorial} /> : null}
 
       {/* Session timer: length picker + expiry banner (owner 2026-08-13). */}
       <SessionTimerModal timer={sessionTimer} />

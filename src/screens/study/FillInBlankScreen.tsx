@@ -282,6 +282,12 @@ export function FillInBlankScreen({ navigation, route }: Props) {
     // engagement timer alive and never count toward the study gate (Booth
     // 2026-07-15). Prev/Next stay "real" interactions.
     if (!opts?.silent) session.current?.touch();
+    // Cancel a pending answer auto-advance (bug hunt 2026-09-29) — otherwise a
+    // manual move inside FEEDBACK_MS is followed by the timer's own +1.
+    if (advanceTimer.current) {
+      clearTimeout(advanceTimer.current);
+      advanceTimer.current = null;
+    }
     setPicked(null);
     setQIdx((i) => i + dir);
   }, []);
@@ -582,7 +588,10 @@ export function FillInBlankScreen({ navigation, route }: Props) {
           ) : null
         }
         onClose={() => setFullscreen(false)}
-        onShakePrev={() => goTo(-1)}
+        onShakePrev={() => {
+          // Held while feedback shows, like the swipes (bug hunt 2026-09-29).
+          if (!picked) goTo(-1);
+        }}
         onSwipePrev={() => {
           if (!picked) goTo(-1, { silent: true });
         }}
