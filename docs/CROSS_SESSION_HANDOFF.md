@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-28 23:35 · ccode · 0f317b6d
+changed: Glossary share: hook moved above the early return (Sentry APE-STUDIO-V)
+affects other side: nothing — client JS only (glossary share sheet) <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: nothing <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-28 22:56 · ccode · 4a0587bd
 changed: Cable Install lab: network class is mint, apart from power red for deuteranopes
 affects other side: nothing — client JS only (cable lab art)
