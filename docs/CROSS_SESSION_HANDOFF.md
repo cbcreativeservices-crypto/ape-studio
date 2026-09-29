@@ -195,6 +195,42 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 00:08 · ccode · 937698a9
+changed: test: source guards for the 2026-09-29 lab bug hunt fixes
+affects other side: nothing — client JS only (lab bug fixes)
+needs: nothing
+
+
+### 2026-09-29 00:08 · ccode · bf70cedf
+changed: fix(labs): early taps survive the progress load; console legends ≥ 9 pt; mic photos zoom
+affects other side: nothing — client JS only (lab bug fixes)
+needs: nothing
+
+
+### 2026-09-29 00:08 · ccode · 96580f8c
+changed: fix(production): one project per tap; stale saves never roll back; accept/NA sheets keep text
+affects other side: nothing — client JS only (lab bug fixes)
+needs: nothing
+
+
+### 2026-09-29 00:08 · ccode · bf99d8a4
+changed: fix(tube): pinch then one-finger drag pans instead of flipping the sheet
+affects other side: nothing — client JS only (lab bug fixes)
+needs: nothing
+
+
+### 2026-09-29 00:08 · ccode · e789f986
+changed: fix(foundations): tone changes during PLAY start are kept; double-tap NEXT cannot hit DONE
+affects other side: nothing — client JS only (lab bug fixes)
+needs: nothing
+
+
+### 2026-09-29 00:08 · ccode · 9301cab7
+changed: fix(mixing): no queued play under a pushed lab; ■ never over silence; goal chips remember
+affects other side: nothing — client JS only (lab bug fixes)
+needs: nothing
+
+
 ### 2026-09-29 00:07 · ccode · af18302e
 changed: fix(directory): one send at a time, BLOCK confirms, report acknowledged, saves serialised
 affects other side: nothing — client JS only (front-door bug fixes)
