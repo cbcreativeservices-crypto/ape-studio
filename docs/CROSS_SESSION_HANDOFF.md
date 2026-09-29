@@ -195,6 +195,24 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 00:07 · ccode · af18302e
+changed: fix(directory): one send at a time, BLOCK confirms, report acknowledged, saves serialised
+affects other side: nothing — client JS only (front-door bug fixes)
+needs: nothing
+
+
+### 2026-09-29 00:07 · ccode · c24cbd27
+changed: fix(dialogs+settings): no replayed duplicate dialogs; racing saves; Low-Light BACK declines
+affects other side: nothing — client JS only (front-door bug fixes)
+needs: nothing
+
+
+### 2026-09-29 00:07 · ccode · 8916c197
+changed: fix(auth): CREATE ACCOUNT never resumes a different account; recovery retry, BACK, Resend
+affects other side: nothing — client JS only (front-door bug fixes)
+needs: nothing
+
+
 ### 2026-09-29 00:05 · ccode · 9e8215ab
 changed: Tools: FULL SCREEN for the RTA and the Spectrogram
 affects other side: nothing — client JS only (RTA/spectrogram full screen)
