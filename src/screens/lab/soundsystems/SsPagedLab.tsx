@@ -151,7 +151,11 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
   const Page = def.Component;
   const isDone = !!progress?.completed.includes(page);
   const last = page === pagesWithCheck.length - 1;
-  const finishBlocked = last && !!def.manualDone && !isDone;
+  // Labs never block navigation: FINISH waits only on the appended
+  // understanding check (kit/PagedLab's case). A mode with no check ends on a
+  // manualDone exercise page, and FINISH must leave it whether or not the
+  // exercise passed (bug hunt 2026-09-29).
+  const finishBlocked = last && !!check && page === pages.length && !isDone;
   const ctx: PageCtx = { reduceMotion, markDone, isDone, goTo };
   const doneCount = progress?.completed.length ?? 0;
   const rack = !!def.rack;
