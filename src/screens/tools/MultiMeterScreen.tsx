@@ -1154,6 +1154,17 @@ export function MultiMeterScreen({ navigation }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bands, plotW, zoom]);
   const anyUnresolvable = visibleBands.some((b) => !b.ok);
+  // Owner 2026-09-29: the sub-bass 1/6-oct bands are shown, not grayed —
+  // they share an FFT bin, so say where the shared zone ends (sixthOctave.ts).
+  const estimatedBelowHz = useMemo(() => {
+    const est = bands?.estimated;
+    if (!est) return null;
+    let top = -1;
+    est.forEach((e, i) => {
+      if (e) top = i;
+    });
+    return top < 0 ? null : Math.round(bands!.centers[top] * Math.pow(2, 1 / 12));
+  }, [bands]);
 
   const freqTicks = useMemo(() => {
     const targets = [31.5, 63, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
@@ -1426,6 +1437,11 @@ export function MultiMeterScreen({ navigation }: Props) {
               <Text style={styles.unitLine}>relative dB · uncalibrated</Text>
               {anyUnresolvable && (
                 <Text style={styles.grayNote}>grayed bands: insufficient resolution at this setting</Text>
+              )}
+              {estimatedBelowHz != null && (
+                <Text style={styles.grayNote}>
+                  {`below ${estimatedBelowHz} Hz the bands are narrower than one FFT step, so neighbours share a reading — the rumble is real, the exact pitch is coarse`}
+                </Text>
               )}
             </View>
 

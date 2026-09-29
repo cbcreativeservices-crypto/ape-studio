@@ -989,6 +989,17 @@ export function RtaScreen({ navigation }: Props) {
     setHasClipped(false);
   }, [resetPeakHold]);
 
+  // Mic-open pop (owner 2026-09-29: PK HOLD read 0.0 in red while no band's
+  // peak-hold got near −30). Opening the mic can produce a one-off start-up
+  // transient that latches the whole-signal peak hold (and the red clip flag)
+  // for the rest of the session. Clear the holds once, 0.6 s after capture
+  // starts, so the readout reflects the sound being measured.
+  useEffect(() => {
+    if (state !== 'running') return;
+    const id = setTimeout(onResetPeak, 600);
+    return () => clearTimeout(id);
+  }, [state, onResetPeak]);
+
   // STOP must not collapse the tool back to the intro card (that shrinks the
   // ScrollView and jumps the scroll). Hold the view mounted via micPaused; the
   // button toggles START/STOP in place. Cleared once we're truly running again.
@@ -1087,6 +1098,17 @@ export function RtaScreen({ navigation }: Props) {
   // the verdict the hub watchdog and micSession already use.
   const meter = state === 'running' && frameIsLive(frames.meter) ? frames.meter : null;
   const anyUnresolvable = displayBands != null && displayBands.resolvable.some((r) => !r);
+  // Owner 2026-09-29: the sub-bass 1/6-oct bands are shown, not grayed —
+  // they share an FFT bin, so say where the shared zone ends (sixthOctave.ts).
+  const estimatedBelowHz = useMemo(() => {
+    const est = displayBands?.estimated;
+    if (!est) return null;
+    let top = -1;
+    est.forEach((e, i) => {
+      if (e) top = i;
+    });
+    return top < 0 ? null : Math.round(displayBands!.centers[top] * Math.pow(2, 1 / 12));
+  }, [displayBands]);
 
   // LEVEL bezel cell: tap cycles the C/A/Z weighting (the old vertical unit
   // stack, condensed to the bezel's one-value grammar — same order, same
@@ -1372,6 +1394,11 @@ export function RtaScreen({ navigation }: Props) {
         {/* Q2 honesty note for the pinned glass — reads in the well. */}
         {anyUnresolvable && (
           <Text style={styles.grayNote}>grayed bands: insufficient resolution at this setting</Text>
+        )}
+        {estimatedBelowHz != null && (
+          <Text style={styles.grayNote}>
+            {`below ${estimatedBelowHz} Hz the bands are narrower than one FFT step, so neighbours share a reading — the rumble is real, the exact pitch is coarse (HI-RES sharpens it)`}
+          </Text>
         )}
 
         <Pressable
