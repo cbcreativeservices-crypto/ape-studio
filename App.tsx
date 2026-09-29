@@ -32,6 +32,7 @@ import { MultiMeterScreen } from './src/screens/tools/MultiMeterScreen';
 import { FrequencyCounterScreen } from './src/screens/tools/FrequencyCounterScreen';
 import { WaveformScreen } from './src/screens/tools/WaveformScreen';
 import { RtaScreen } from './src/screens/tools/RtaScreen';
+import { SpectrogramScreen } from './src/screens/tools/SpectrogramScreen';
 import { ToolsHubScreen } from './src/screens/tools/ToolsHubScreen';
 import { ToolDemoPreview } from './src/screens/tools/ToolDemoPreview';
 import { CalcWorkspaceScreen } from './src/screens/lab/calc/CalcWorkspaceScreen';
@@ -91,6 +92,9 @@ const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   SoundSystemsLab: SoundSystemsLabScreen as ComponentType,
   CenterLockTuner: CenterLockTuner as ComponentType,
   AuthScreen: AuthScreen as ComponentType,
+  // The two live tools with the 2026-09-29 full screen (member-gated routes).
+  RtaScreen: RtaScreen as ComponentType,
+  SpectrogramScreen: SpectrogramScreen as ComponentType,
   SoundSystemsLearn: SoundSystemsLearnScreen as ComponentType,
   SoundSystemsBuild: SoundSystemsBuildScreen as ComponentType,
   SoundSystemsRoute: SoundSystemsRouteScreen as ComponentType,

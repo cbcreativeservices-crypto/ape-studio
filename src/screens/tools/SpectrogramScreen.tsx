@@ -51,7 +51,10 @@ import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
 import { colors, fonts } from '../../theme/tokens';
-import { useSaveGate } from './ToolLockUi';
+import { useFullScreenGate, useSaveGate } from './ToolLockUi';
+import { FsChooser, FsKey, ToolFullScreenView, fsTextScale, useToolFullScreen, type FsChoiceSection } from './ToolFullScreen';
+import { BezelReadouts } from '../lab/rack/BezelReadouts';
+import type { BezelItem } from '../lab/rack/rackTypes';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { heatColor, levelColorForDb } from '../../features/tools/levelColor';
 // The raster maths, the colour ramp and the log frequency axis live in ONE
@@ -84,8 +87,9 @@ const HISTORY_COLS = 160; // rolling columns → 160 × 0.125 s = 20 s
 const DYN_RANGES = [40, 60, 80] as const;
 
 const GRID_H = 256; // grid pixel height; each of the 128 rows is 2 px tall
-/** Frequency → y within the grid (log axis, low frequencies at the bottom). */
-const yForHz = (hz: number) => freqFraction(hz) * GRID_H;
+/** Frequency → y within a grid `h` px tall (log axis, low frequencies at the
+ *  bottom). The inline grid is GRID_H; the full screen passes its own. */
+const yForHz = (hz: number, h: number = GRID_H) => freqFraction(hz) * h;
 
 const fmtDb = (v: number | null | undefined) =>
   v != null && Number.isFinite(v) ? `${(Math.abs(v) < 0.05 ? 0 : v) > 0 ? '+' : ''}${(Math.abs(v) < 0.05 ? 0 : v).toFixed(1)}` : '—';
@@ -201,12 +205,15 @@ const SpectrogramGrid = memo(function SpectrogramGrid({
   dynRange,
   width,
   speed,
+  height = GRID_H,
 }: {
   history: SpectroColumnData[];
   anchor: number;
   dynRange: number;
   width: number;
   speed: number;
+  /** Grid height — GRID_H inline, the free height in the full screen. */
+  height?: number;
 }) {
   // The whole history is one image; it rebuilds only when a new column lands
   // (8 Hz) or the dynamic range changes — never on the 15 Hz meter poll (memo).
@@ -243,6 +250,7 @@ const SpectrogramGrid = memo(function SpectrogramGrid({
   //    leaves this component.
   useEffect(() => () => img?.dispose(), [img]);
   if (width <= 0 || history.length === 0) return null;
+  const GH = height;
   // Each column is `speed`× wider → the waterfall scrolls `speed`× faster and
   // shows ~HISTORY_COLS/speed columns; the rest scroll off the (clipped) left.
   const colW = (width / HISTORY_COLS) * speed;
@@ -250,20 +258,20 @@ const SpectrogramGrid = memo(function SpectrogramGrid({
   const imgX = width - imgW; // newest column flush to the right edge
   const colsPer5s = 5000 / SPECTRO_POLL_MS; // 5 s of real time in columns (cadence is fixed)
   return (
-    <View style={{ width, height: GRID_H }}>
+    <View style={{ width, height: GH }}>
       {/* Smooth raster — one Skia SkImage, bilinear-scaled to the chart. */}
       <Canvas style={StyleSheet.absoluteFill}>
-        {img ? <SkiaImage image={img} x={imgX} y={0} width={imgW} height={GRID_H} fit="fill" /> : null}
+        {img ? <SkiaImage image={img} x={imgX} y={0} width={imgW} height={GH} fit="fill" /> : null}
       </Canvas>
       {/* Subtle static grid — frequency decades + 5 s time marks — over the raster. */}
-      <Svg width={width} height={GRID_H} style={StyleSheet.absoluteFill}>
+      <Svg width={width} height={GH} style={StyleSheet.absoluteFill}>
         {FREQ_LABELS.map((l) => (
           <Line
             key={l.text}
             x1={0}
             x2={width}
-            y1={yForHz(l.hz)}
-            y2={yForHz(l.hz)}
+            y1={yForHz(l.hz, GH)}
+            y2={yForHz(l.hz, GH)}
             stroke="#4a4a58"
             strokeWidth={1}
             strokeDasharray="3 5"
@@ -276,14 +284,14 @@ const SpectrogramGrid = memo(function SpectrogramGrid({
             x1={width - k * colsPer5s * colW}
             x2={width - k * colsPer5s * colW}
             y1={0}
-            y2={GRID_H}
+            y2={GH}
             stroke="#3c3c48"
             strokeWidth={1}
             strokeDasharray="3 5"
             strokeOpacity={0.55}
           />
         ))}
-        <Rect x={0.5} y={0.5} width={width - 1} height={GRID_H - 1} stroke="#26262c" strokeWidth={1} fill="none" />
+        <Rect x={0.5} y={0.5} width={width - 1} height={GH - 1} stroke="#26262c" strokeWidth={1} fill="none" />
       </Svg>
     </View>
   );
@@ -478,6 +486,37 @@ export function SpectrogramScreen({ navigation }: Props) {
     savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
   }, [state, history, frames, dynRange]);
 
+  // ---- FULL SCREEN (owner 2026-09-29) — the audio tools' landscape full
+  // screen (ToolFullScreen: Waveform mechanism, D35 working surface). Same
+  // `history` the inline grid draws: no second capture, no second poll.
+  const fsGate = useFullScreenGate();
+  const [fsChooser, setFsChooser] = useState<null | 'speed' | 'range'>(null);
+  const fs = useToolFullScreen(navigation, () => {
+    if (fsChooser == null) return false;
+    setFsChooser(null);
+    return true;
+  });
+  const fsSections: FsChoiceSection[] | null =
+    fsChooser === 'speed'
+      ? [
+          {
+            title: 'SCROLL SPEED',
+            options: [1, 2, 3].map((v) => ({ id: String(v), label: `${v}×` })),
+            selectedId: String(speed),
+            onSelect: (id) => setSpeed(Number(id) as 1 | 2 | 3),
+          },
+        ]
+      : fsChooser === 'range'
+        ? [
+            {
+              title: 'DYNAMIC RANGE',
+              options: DYN_RANGES.map((r) => ({ id: String(r), label: `${r} dB` })),
+              selectedId: String(dynRange),
+              onSelect: (id) => setDynRange(Number(id)),
+            },
+          ]
+        : null;
+
   const liveFlags = state === 'running' ? meterWarningFlags(frames.meter) : [];
   // A METER MUST NOT KEEP READING AFTER THE MIC IS RELEASED. `stop()` releases
   // the mic and halts polling but never clears `frames`, so the last live frame
@@ -493,6 +532,93 @@ export function SpectrogramScreen({ navigation }: Props) {
   // the verdict the hub watchdog and micSession already use.
   const meter = state === 'running' && frameIsLive(frames.meter) ? frames.meter : null;
   const canSave = state === 'running' && history.length > 0;
+
+  // Full-screen readouts: the stat row, printed on the house bezel strip (peak
+  // numbers on the level ramp, flat #ff5a48 before there is a level; MIC taps
+  // to pause/resume like the RTA's).
+  const peakTint = (db: number | null | undefined) => (db != null && Number.isFinite(db) ? levelColorForDb(db) : '#ff5a48');
+  const fsBezel: BezelItem[] = [
+    { k: 'OBS MAX', v: `${fmtDb(observedMax)} dB`, tint: peakTint(observedMax), helpKey: readoutKey('OBS MAX') },
+    { k: 'PEAK', v: `${fmtDb(meter?.peakDb)} dB`, tint: peakTint(meter?.peakDb), helpKey: readoutKey('PEAK') },
+    { k: 'HISTORY', v: `${history.length}/${HISTORY_COLS}`, helpKey: readoutKey('HISTORY') },
+    {
+      k: 'MIC',
+      v: state === 'running' ? (frozen ? 'FROZEN' : 'LIVE') : micPaused ? 'PAUSED' : '—',
+      tint: state === 'running' ? undefined : '#7a7f8a',
+      onPress: state === 'running' ? onStop : onStart,
+      flex: 0.9,
+    },
+  ];
+
+  /** The full-screen waterfall: frequency gutter · raster · colour scale, with
+   *  the time axis under the raster — all text scaled with the drawing. */
+  const renderFsSpectro = (w: number, h: number) => {
+    const ts = fsTextScale(w, h);
+    const gutterW = Math.round(34 * ts);
+    const legendW = Math.round(46 * ts);
+    const timeH = Math.round(18 * ts);
+    const gridW = Math.max(40, w - gutterW - legendW - 8);
+    const gridH = Math.max(80, h - timeH - 8);
+    const fsz = 12 * ts;
+    const colW = (gridW / HISTORY_COLS) * speed;
+    const colsPer5s = 5000 / SPECTRO_POLL_MS;
+    const timeMarks = [1, 2, 3, 4]
+      .map((k) => ({ k, x: gridW - k * colsPer5s * colW }))
+      .filter((m) => m.x >= 20 * ts);
+    return (
+      <View style={{ width: w, height: h, paddingTop: 4 }}>
+        <View style={{ flexDirection: 'row', height: gridH }}>
+          <View style={{ width: gutterW, height: gridH }}>
+            {FREQ_LABELS.map((l) => (
+              <Text
+                key={l.text}
+                style={[styles.gutterLabel, { top: yForHz(l.hz, gridH) - 8 * ts, width: gutterW - 4, fontSize: fsz }]}
+              >
+                {l.text}
+              </Text>
+            ))}
+          </View>
+          <Pressable
+            style={{ width: gridW, height: gridH, backgroundColor: '#07070d', borderRadius: 4, overflow: 'hidden' }}
+            onPress={state === 'running' ? onStop : onStart}
+            accessibilityRole="button"
+            accessibilityLabel={state === 'running' ? 'Tap to stop capture' : 'Tap to start capture'}
+          >
+            <SpectrogramGrid history={history} anchor={anchor} dynRange={dynRange} width={gridW} speed={speed} height={gridH} />
+            {history.length === 0 && (
+              <Text style={[styles.waitingText, { top: gridH / 2 - 9 * ts, fontSize: 13 * ts }]}>
+                {state === 'running' ? 'waiting for first spectrum frames…' : 'tap to start capture'}
+              </Text>
+            )}
+            {frozen ? <Text style={[styles.fsFrozen, { fontSize: fsz }]}>FROZEN</Text> : null}
+          </Pressable>
+          {/* Colour scale — the fixed 0 dBFS anchor at the top, the selected
+              range at the bottom (the same heat ramp the raster uses). */}
+          <View style={{ width: legendW, height: gridH, flexDirection: 'row', paddingLeft: 6, gap: 4 }}>
+            <View style={{ width: Math.round(10 * ts), height: gridH, borderRadius: 3, overflow: 'hidden' }}>
+              {Array.from({ length: 32 }, (_, i) => (
+                <View key={i} style={{ flex: 1, backgroundColor: heatColor((31 - i + 0.5) / 32) }} />
+              ))}
+            </View>
+            <View style={{ flex: 1, justifyContent: 'space-between' }}>
+              <Text style={[styles.legendText, { fontSize: fsz }]}>{`${Math.round(anchor)} dB`}</Text>
+              <Text style={[styles.legendText, { fontSize: fsz }]}>{`${Math.round(anchor - dynRange / 2)}`}</Text>
+              <Text style={[styles.legendText, { fontSize: fsz }]}>{`${Math.round(anchor - dynRange)}`}</Text>
+            </View>
+          </View>
+        </View>
+        {/* Time axis — newest at the right, one mark per real 5 s. */}
+        <View style={{ height: timeH, marginLeft: gutterW, width: gridW }}>
+          {timeMarks.map((m) => (
+            <Text key={m.k} style={[styles.timeMark, { left: m.x - 24 * ts, width: 48 * ts, fontSize: fsz }]}>
+              −{m.k * 5} s
+            </Text>
+          ))}
+          <Text style={[styles.timeMark, { right: 0, width: 40 * ts, fontSize: fsz, textAlign: 'right' }]}>now</Text>
+        </View>
+      </View>
+    );
+  };
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -579,13 +705,17 @@ export function SpectrogramScreen({ navigation }: Props) {
                   accessibilityRole="button"
                   accessibilityLabel={state === 'running' ? 'Tap to stop capture' : 'Tap to start capture'}
                 >
-                  <SpectrogramGrid
-                    history={history}
-                    anchor={anchor}
-                    dynRange={dynRange}
-                    width={chartW}
-                    speed={speed}
-                  />
+                  {/* One copy of the live raster at a time: the inline grid
+                      steps aside while the full screen draws it. */}
+                  {fs.shown ? null : (
+                    <SpectrogramGrid
+                      history={history}
+                      anchor={anchor}
+                      dynRange={dynRange}
+                      width={chartW}
+                      speed={speed}
+                    />
+                  )}
                   {history.length === 0 && (
                     <Text style={styles.waitingText}>waiting for first spectrum frames…</Text>
                   )}
@@ -619,6 +749,18 @@ export function SpectrogramScreen({ navigation }: Props) {
                 />
               ))}
             </View>
+
+            {/* ⛶ FULLSCREEN — the audio tools' key (Waveform), through the
+                tools' fullscreen gate. Landscape; readouts on top, controls
+                docked, the waterfall drawn large. */}
+            <Pressable
+              style={styles.fsBtn}
+              onPress={() => fsGate.gate(fs.openFs)}
+              accessibilityRole="button"
+              accessibilityLabel="Open fullscreen (landscape)"
+            >
+              <Text style={styles.fsBtnText}>⛶ FULLSCREEN</Text>
+            </Pressable>
 
             {/* Controls (spec §12): dynamic range · freeze · save snapshot. */}
             <View style={styles.ctrlRow}>
@@ -718,6 +860,33 @@ export function SpectrogramScreen({ navigation }: Props) {
           time and frequency detail; noise floor may appear as low-level background energy.
         </Text>
       </ScrollView>
+
+      {/* ── FULL SCREEN (owner 2026-09-29) — root-level overlay, never a
+          native Modal. ── */}
+      <ToolFullScreenView
+        fs={fs}
+        title="SPECTROGRAM"
+        readouts={<BezelReadouts items={fsBezel} onGuide={helpAll} onHelp={(k) => { if (k) help(k); }} />}
+        controls={[
+          <FsKey key="speed" label="SPEED" value={`${speed}×`} onPress={() => setFsChooser('speed')} a11y={`Scroll speed ${speed} times. Tap to change.`} />,
+          <FsKey key="range" label="DYN RANGE" value={`${dynRange} dB`} onPress={() => setFsChooser('range')} a11y={`Dynamic range ${dynRange} decibels. Tap to change.`} />,
+          <FsKey
+            key="freeze"
+            label="FREEZE"
+            value={frozen ? 'FROZEN' : 'LIVE'}
+            active={frozen}
+            onPress={toggleFreeze}
+            a11y={frozen ? 'Resume scrolling' : 'Freeze display'}
+          />,
+        ]}
+        renderDisplay={renderFsSpectro}
+        footer={
+          <Text style={styles.fsBadge} numberOfLines={1}>
+            relative dB · uncalibrated approximate · time → · ~{((HISTORY_COLS / speed) * SPECTRO_POLL_MS / 1000).toFixed(0)} s visible
+          </Text>
+        }
+      />
+      <FsChooser sections={fs.active ? fsSections : null} onClose={() => setFsChooser(null)} />
       {sheet}
     </View>
   );
@@ -772,6 +941,21 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   timeLine: { fontFamily: fonts.mono, fontSize: 12, color: colors.textMuted },
+
+  // Full screen (owner 2026-09-29).
+  fsBtn: {
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#3a3a3a',
+    backgroundColor: '#161616',
+    paddingVertical: 11,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  fsBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.2, color: colors.textSecondary },
+  fsBadge: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.6, color: '#6d6f75', textAlign: 'center' },
+  fsFrozen: { position: 'absolute', top: 6, right: 8, fontFamily: fonts.oswaldSemiBold, letterSpacing: 1.6, color: '#dcc9ff' },
+  timeMark: { position: 'absolute', top: 2, fontFamily: fonts.mono, color: colors.textMuted, textAlign: 'center' },
 
   // Colormap legend — continuous quantized strip (dark → blue → … → red).
   legendRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },

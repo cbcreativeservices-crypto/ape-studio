@@ -85,7 +85,9 @@ import { deriveSixthOctave, NO_LEVEL, SIXTH_BANDS, type DisplayBands } from '../
 import { ColorWheelButton } from '../../components/ColorWheelButton';
 import { RtaBarsDiagram } from '../../components/ColorTargetDiagrams';
 import { colors, fonts } from '../../theme/tokens';
-import { useSaveGate } from './ToolLockUi';
+import { useFullScreenGate, useSaveGate } from './ToolLockUi';
+import { FsChooser, FsKey, ToolFullScreenView, fsTextScale, useToolFullScreen, type FsChoiceSection } from './ToolFullScreen';
+import { BezelReadouts } from '../lab/rack/BezelReadouts';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { EngineGate } from './EngineGate';
 import { useToolHelp, readoutKey } from '../../features/lab/guidedLessons';
@@ -254,6 +256,8 @@ const ZERO_Y = 16; // 0 dBFS gridline; the zone above is REAL headroom (F1)
 const GRID_DBS = [0, -30, -60, FLOOR_DB];
 const GRID_DBS_MINOR = [-15, -45, -75];
 const LABEL_TARGETS = [63, 250, 1000, 4000, 16000] as const;
+/** Every octave — the full-screen axis has room for them all. */
+const LABEL_TARGETS_DENSE = [31.5, 63, 125, 250, 500, 1000, 2000, 4000, 8000, 16000] as const;
 
 // Visual standards 2026-07-29 rule 2 — chart chrome + LED palette. Copied
 // locally from the fxViz grammar (shared idiom, not a cross-feature import).
@@ -273,9 +277,9 @@ const SLOT_GRAY = '#55555f'; // Q2 honest gray — unchanged
 
 /** Nearest band index per labeled center — skip when over half an octave off
  *  (1/1-octave mode has no 63 Hz twin problem; sparse sets dedupe by index). */
-function bandLabels(centers: number[]): { i: number; text: string }[] {
+function bandLabels(centers: number[], dense = false): { i: number; text: string }[] {
   const out: { i: number; text: string }[] = [];
-  for (const hz of LABEL_TARGETS) {
+  for (const hz of dense ? LABEL_TARGETS_DENSE : LABEL_TARGETS) {
     let best = -1;
     let bestDist = Infinity;
     for (let i = 0; i < centers.length; i++) {
@@ -373,9 +377,13 @@ function RtaGlass({
   flatColor,
   pianoOn,
   pitchIdx,
+  ts = 1,
 }: {
   w: number;
   h: number;
+  /** Text/chrome scale (FULL SCREEN, D35 "everything zooms"): the axis text,
+   *  gutters, caps and ticks grow with the drawing. 1 on the rack glass. */
+  ts?: number;
   bands: DisplayBands | null;
   mode: BandMode;
   alpha: number;
@@ -389,35 +397,43 @@ function RtaGlass({
   pianoOn: boolean;
   pitchIdx: number | null;
 }) {
-  const GUTTER = 32;
-  const HEAD_H = 18;
-  const LABEL_H = 16;
-  const PIANO_BLOCK = PIANO_H + 14; // keybed + C-octave label row
+  const GUTTER = Math.round(32 * ts);
+  const HEAD_H = Math.round(18 * ts);
+  const LABEL_H = Math.round(16 * ts);
+  const PIANO_BLOCK = Math.round((PIANO_H + 14) * ts); // keybed + C-octave label row
   const chartW = Math.max(0, w - GUTTER - 8);
   const chartH = Math.max(60, h - HEAD_H - LABEL_H - (pianoOn ? PIANO_BLOCK + 2 : 0) - 6);
+  const zeroY = ZERO_Y * ts;
   const floorY = chartH - 8;
-  const pxPerDb = (floorY - ZERO_Y) / -FLOOR_DB;
+  const pxPerDb = (floorY - zeroY) / -FLOOR_DB;
   /** dBFS → y. Values above 0 dBFS climb into the headroom zone; only the SVG
    *  edge (y=2) limits geometry — numbers are never clamped (F1). */
-  const yForDb = (db: number) => Math.max(2, ZERO_Y - db * pxPerDb);
+  const yForDb = (db: number) => Math.max(2, zeroY - db * pxPerDb);
 
   const n = bands ? bands.centers.length : 0;
   const barW = n > 0 && chartW > 0 ? chartW / n : 0;
-  const labels = bands ? bandLabels(bands.centers) : [];
+  // Full screen: an octave label wherever there is room for one.
+  const labels = bands ? bandLabels(bands.centers, ts > 1 && chartW / 10 >= 50 * ts) : [];
   const pad = barW > 3 ? 1 : 0.5;
+  // Label the minor 15 dB lines too when they sit far enough apart.
+  const gutterDbs = ts > 1 && pxPerDb * 15 >= 22 * ts ? [...GRID_DBS, ...GRID_DBS_MINOR] : GRID_DBS;
+  const fs12 = 12 * ts;
 
   return (
     <View style={styles.glassBody}>
-      <View style={styles.glassHead}>
-        <Text accessibilityRole="header" style={styles.panelEyebrow}>LIVE RTA</Text>
-        <Text style={styles.panelSettings}>{metaFor(mode, alpha, fftSize)}</Text>
+      <View style={[styles.glassHead, { minHeight: HEAD_H }]}>
+        <Text accessibilityRole="header" style={[styles.panelEyebrow, { fontSize: fs12 }]}>LIVE RTA</Text>
+        <Text style={[styles.panelSettings, { fontSize: fs12 }]}>{metaFor(mode, alpha, fftSize)}</Text>
       </View>
 
       <View style={styles.chartRow}>
         {/* dB gutter — dBFS scale marks matching the gridlines. */}
-        <View style={[styles.gutter, { height: chartH }]}>
-          {GRID_DBS.map((db) => (
-            <Text key={db} style={[styles.gutterLabel, { top: yForDb(db) - 8 }]}>
+        <View style={{ width: GUTTER, height: chartH }}>
+          {gutterDbs.map((db) => (
+            <Text
+              key={db}
+              style={[styles.gutterLabel, { top: yForDb(db) - 8 * ts, width: GUTTER - 4, fontSize: fs12 }]}
+            >
               {db}
             </Text>
           ))}
@@ -434,7 +450,7 @@ function RtaGlass({
                 <LinearGradient
                   id="rtaBarFill"
                   x1="0"
-                  y1={ZERO_Y}
+                  y1={zeroY}
                   x2="0"
                   y2={floorY}
                   gradientUnits="userSpaceOnUse"
@@ -448,7 +464,7 @@ function RtaGlass({
                 <LinearGradient
                   id="rtaBarFillMidi"
                   x1="0"
-                  y1={ZERO_Y}
+                  y1={zeroY}
                   x2="0"
                   y2={floorY}
                   gradientUnits="userSpaceOnUse"
@@ -493,9 +509,9 @@ function RtaGlass({
                       <Rect
                         key={`slot-${c}`}
                         x={x}
-                        y={ZERO_Y}
+                        y={zeroY}
                         width={w}
-                        height={floorY - ZERO_Y}
+                        height={floorY - zeroY}
                         fill={SLOT_GRAY}
                         fillOpacity={0.14}
                       />
@@ -521,18 +537,18 @@ function RtaGlass({
                           {/* Glow cap: soft halo + bright core at the tip. */}
                           <Rect
                             x={x - 0.75}
-                            y={barTop - 2.5}
+                            y={barTop - 2.5 * ts}
                             width={w + 1.5}
-                            height={5}
+                            height={5 * ts}
                             rx={1.5}
                             fill={CAP_HALO}
                             fillOpacity={0.22}
                           />
                           <Rect
                             x={x}
-                            y={barTop - 1.1}
+                            y={barTop - 1.1 * ts}
                             width={w}
-                            height={2.2}
+                            height={2.2 * ts}
                             rx={1}
                             fill={CAP_CORE}
                             fillOpacity={0.95}
@@ -542,9 +558,9 @@ function RtaGlass({
                       {peak > FLOOR_DB && (
                         <Rect
                           x={x + w * 0.1}
-                          y={yForDb(peak) - 1}
+                          y={yForDb(peak) - ts}
                           width={w * 0.8}
-                          height={2}
+                          height={2 * ts}
                           rx={1}
                           fill={PEAK_TICK}
                           fillOpacity={0.95}
@@ -556,12 +572,12 @@ function RtaGlass({
             </Svg>
           )}
           {/* Band-center frequency labels, aligned under their bars. */}
-          <View style={styles.labelRow}>
+          <View style={{ height: LABEL_H }}>
             {chartW > 0 &&
               labels.map((l) => (
                 <Text
                   key={l.text}
-                  style={[styles.freqLabel, { left: (l.i + 0.5) * barW - 24 }]}
+                  style={[styles.freqLabel, { left: (l.i + 0.5) * barW - 24 * ts, width: 48 * ts, fontSize: fs12 }]}
                 >
                   {l.text}
                 </Text>
@@ -573,7 +589,7 @@ function RtaGlass({
       {/* Piano map stacked inside the glass (owner 2026-08-05) when toggled.
           The honesty line moved verbatim to the stage badge; the gray-band
           note reads in the well. */}
-      {pianoOn && <PianoStrip bands={bands} highlightIdx={pitchIdx} />}
+      {pianoOn && <PianoStrip bands={bands} highlightIdx={pitchIdx} ts={ts} gutter={GUTTER} />}
     </View>
   );
 }
@@ -663,7 +679,18 @@ function fracIndexForHz(hz: number, centers: number[]): number | null {
   return n - 1;
 }
 
-function PianoStrip({ bands, highlightIdx }: { bands: DisplayBands | null; highlightIdx: number | null }) {
+function PianoStrip({
+  bands,
+  highlightIdx,
+  ts = 1,
+  gutter = 32,
+}: {
+  bands: DisplayBands | null;
+  highlightIdx: number | null;
+  ts?: number;
+  gutter?: number;
+}) {
+  const PH = Math.round(PIANO_H * ts);
   const [w, setW] = useState(0);
   const centers = bands?.centers ?? [];
   const n = centers.length;
@@ -697,19 +724,19 @@ function PianoStrip({ bands, highlightIdx }: { bands: DisplayBands | null; highl
 
   return (
     <View style={styles.pianoRow}>
-      <View style={styles.pianoGutter} />
+      <View style={{ width: gutter }} />
       <View style={styles.pianoArea} onLayout={(e) => setW(Math.round(e.nativeEvent.layout.width))}>
         {w > 0 && n > 0 && (
-          <Svg width={w} height={PIANO_H}>
+          <Svg width={w} height={PH}>
             {/* Keybed */}
-            <Rect x={0} y={0} width={w} height={PIANO_H} rx={4} fill={KEYBED} />
+            <Rect x={0} y={0} width={w} height={PH} rx={4} fill={KEYBED} />
             {/* Detected-note highlight UNDER the keys/lines (owner 2026-08-10). */}
             {hi && !hi.black && (
-              <Rect x={hi.x - hiBw / 2} y={1} width={hiBw} height={PIANO_H - 2} rx={2.5} fill={KEY_HILITE} />
+              <Rect x={hi.x - hiBw / 2} y={1} width={hiBw} height={PH - 2} rx={2.5} fill={KEY_HILITE} />
             )}
             {/* White-key separators */}
             {whiteXs.map((x, i) => (
-              <Line key={`w-${i}`} x1={x} y1={0} x2={x} y2={PIANO_H} stroke={KEY_LINE} strokeWidth={0.75} />
+              <Line key={`w-${i}`} x1={x} y1={0} x2={x} y2={PH} stroke={KEY_LINE} strokeWidth={0.75} />
             ))}
             {/* Black keys — upper ~60%, centered on their Hz position */}
             {blackKeys.map((k, i) => {
@@ -720,7 +747,7 @@ function PianoStrip({ bands, highlightIdx }: { bands: DisplayBands | null; highl
                   x={k.x - bw / 2}
                   y={0}
                   width={bw}
-                  height={PIANO_H * 0.62}
+                  height={PH * 0.62}
                   rx={1.5}
                   fill={KEY_BLACK}
                 />
@@ -732,7 +759,7 @@ function PianoStrip({ bands, highlightIdx }: { bands: DisplayBands | null; highl
                 x={hi.x - Math.max(2, barW * 0.55) / 2}
                 y={0}
                 width={Math.max(2, barW * 0.55)}
-                height={PIANO_H * 0.62}
+                height={PH * 0.62}
                 rx={1.5}
                 fill={KEY_HILITE}
               />
@@ -740,15 +767,19 @@ function PianoStrip({ bands, highlightIdx }: { bands: DisplayBands | null; highl
           </Svg>
         )}
         {/* C-octave labels under the keybed */}
-        <View style={styles.pianoLabelRow}>
+        <View style={{ height: Math.round(14 * ts) }}>
           {octaveLabels.map((l) => (
-            <Text key={l.text} style={[styles.pianoLabel, { left: l.x - 12 }]}>
+            <Text key={l.text} style={[styles.pianoLabel, { left: l.x - 12 * ts, width: 24 * ts, fontSize: 12 * ts }]}>
               {l.text}
             </Text>
           ))}
         </View>
         {/* Detected-note readout, pinned above its key. */}
-        {hi && <Text style={[styles.pianoNote, { left: Math.max(0, Math.min(w - 36, hi.x - 18)) }]}>♪ {hi.label}</Text>}
+        {hi && (
+          <Text style={[styles.pianoNote, { left: Math.max(0, Math.min(w - 36 * ts, hi.x - 18 * ts)), width: 36 * ts, fontSize: 11 * ts }]}>
+            ♪ {hi.label}
+          </Text>
+        )}
       </View>
     </View>
   );
@@ -1069,6 +1100,50 @@ export function RtaScreen({ navigation }: Props) {
     if ((Number.isFinite(p) && p >= 0) || (Number.isFinite(h) && h >= 0)) setHasClipped(true);
   }, [meter]);
 
+  // ---- FULL SCREEN (owner 2026-09-29) — the audio tools' landscape full
+  // screen (ToolFullScreen: Waveform mechanism, D35 working surface). Opened
+  // from the rack faceplate's ⤢ FULL SCREEN key via the tools' fullscreen
+  // gate; draws the SAME live bands, so there is no second capture.
+  const fsGate = useFullScreenGate();
+  const [fsChooser, setFsChooser] = useState<null | 'bands' | 'avg'>(null);
+  const fs = useToolFullScreen(navigation, () => {
+    if (fsChooser == null) return false;
+    setFsChooser(null);
+    return true;
+  });
+  const fsSections: FsChoiceSection[] | null =
+    fsChooser === 'bands'
+      ? [
+          {
+            title: 'BANDING',
+            options: BAND_MODES.map((m) => ({ id: String(m), label: String(m) })),
+            selectedId: String(mode),
+            onSelect: (id) => applyMode(Number(id) as BandMode),
+          },
+        ]
+      : fsChooser === 'avg'
+        ? [
+            {
+              title: 'AVERAGING',
+              options: AVG_CHOICES.map((c) => ({ id: c.label, label: c.label })),
+              selectedId: AVG_CHOICES.find((c) => c.alpha === alpha)?.label ?? '',
+              onSelect: (id) => {
+                const c = AVG_CHOICES.find((x) => x.label === id);
+                if (c) applyAlpha(c.alpha);
+              },
+            },
+            {
+              title: 'RESOLUTION',
+              options: [
+                { id: 'std', label: 'STD' },
+                { id: 'hires', label: 'HI-RES' },
+              ],
+              selectedId: hiRes ? 'hires' : 'std',
+              onSelect: (id) => applyHiRes(id === 'hires'),
+            },
+          ]
+        : null;
+
   // ---- Rack declarations (rebuilt every render — trays and bezel stay live) ----
   const levelDb = weightedFastDb(meter, weighting);
   const avgLabel = AVG_CHOICES.find((c) => c.alpha === alpha)?.label ?? `α ${alpha.toFixed(2)}`;
@@ -1215,6 +1290,31 @@ export function RtaScreen({ navigation }: Props) {
     { kind: 'action', id: 'save', label: justSaved ? 'SAVED ✓' : saveGate.label('SAVE'), onPress: onSaveTrace },
   ];
 
+  /** The live glass at any size — the rack stage and the full screen share it.
+   *  Tap = pause/resume capture on both (the tool's glass convention). */
+  const renderGlass = (w: number, h: number, ts = 1) => (
+    <Pressable
+      onPress={state === 'running' ? onStop : onStart}
+      accessibilityRole="button"
+      accessibilityLabel={state === 'running' ? 'Tap to stop capture' : 'Tap to start capture'}
+      style={{ width: w, height: h }}
+    >
+      <RtaGlass
+        w={w}
+        h={h}
+        bands={displayBands}
+        mode={mode}
+        alpha={alpha}
+        fftSize={fftSize}
+        midiColors={colorsOn}
+        flatColor={rtaColor}
+        pianoOn={pianoOn}
+        pitchIdx={pitchIdx}
+        ts={ts}
+      />
+    </Pressable>
+  );
+
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
@@ -1243,31 +1343,16 @@ export function RtaScreen({ navigation }: Props) {
           badge: 'relative dB · uncalibrated approximate',
           onGuide: helpAll,
           bezel,
-          render: (w, h) => (
-            // Tap-glass = pause/resume capture. The 2026-08-21 inert-display
-            // workaround is retired: the stage sits OUTSIDE any ScrollView, so
-            // a scroll-touch can no longer read as an accidental tap — the
-            // original tap affordance is restored (LiveSpectrumEq idiom).
-            <Pressable
-              onPress={state === 'running' ? onStop : onStart}
-              accessibilityRole="button"
-              accessibilityLabel={state === 'running' ? 'Tap to stop capture' : 'Tap to start capture'}
-              style={{ width: w, height: h }}
-            >
-              <RtaGlass
-                w={w}
-                h={h}
-                bands={displayBands}
-                mode={mode}
-                alpha={alpha}
-                fftSize={fftSize}
-                midiColors={colorsOn}
-                flatColor={rtaColor}
-                pianoOn={pianoOn}
-                pitchIdx={pitchIdx}
-              />
-            </Pressable>
-          ),
+          // ⤢ FULL SCREEN on the faceplate (the rack's own key, host-owned
+          // view): landscape, readouts on top, controls docked.
+          onEnlarge: () => fsGate.gate(fs.openFs),
+          // Tap-glass = pause/resume capture. The 2026-08-21 inert-display
+          // workaround is retired: the stage sits OUTSIDE any ScrollView, so
+          // a scroll-touch can no longer read as an accidental tap — the
+          // original tap affordance is restored (LiveSpectrumEq idiom).
+          // While the full screen is up the glass draws nothing: one copy of
+          // the live display at a time.
+          render: (w, h) => (fs.shown ? <View style={{ width: w, height: h }} /> : renderGlass(w, h)),
         }}
       >
         {/* WELL — reading only. Honest not-ready card (absent/spike/denied/
@@ -1308,6 +1393,31 @@ export function RtaScreen({ navigation }: Props) {
           strongly affects the result.
         </Text>
       </RackUnit>
+
+      {/* ── FULL SCREEN (owner 2026-09-29) — bezel readouts across the top,
+          the controls docked, the glass re-drawn large with its axis text
+          scaled. Root-level overlay, never a native Modal. ── */}
+      <ToolFullScreenView
+        fs={fs}
+        title="SPECTRUM ANALYZER / RTA"
+        readouts={<BezelReadouts items={bezel} onGuide={helpAll} onHelp={(k) => { if (k) help(k); }} />}
+        controls={[
+          <FsKey key="bands" label="BANDS" value={String(mode)} onPress={() => setFsChooser('bands')} a11y={`Banding ${mode} bands. Tap to change.`} />,
+          <FsKey
+            key="avg"
+            label="AVG"
+            value={`${avgLabel}${hiRes ? '·HR' : ''}`}
+            onPress={() => setFsChooser('avg')}
+            a11y={`Averaging ${avgLabel}${hiRes ? ', high resolution' : ''}. Tap to change.`}
+          />,
+          <FsKey key="colors" label="COLORS" value={colorsOn ? 'ON' : 'OFF'} active={colorsOn} onPress={() => setColorsOn(!colorsOn)} a11y={colorsOn ? 'Colors, on' : 'Colors, off'} />,
+          <FsKey key="piano" label="PIANO" value={pianoOn ? 'ON' : 'OFF'} active={pianoOn} onPress={() => setPianoOn((v) => !v)} a11y={pianoOn ? 'Piano map, on' : 'Piano map, off'} />,
+          <FsKey key="rst" label="PEAK HOLD" value="RESET" onPress={onResetPeak} a11y="Reset peak hold" />,
+        ]}
+        renderDisplay={(w, h) => renderGlass(w, h, fsTextScale(w, h))}
+        footer={<Text style={styles.fsBadge} numberOfLines={1}>relative dB · uncalibrated approximate</Text>}
+      />
+      <FsChooser sections={fs.active ? fsSections : null} onClose={() => setFsChooser(null)} />
       {sheet}
     </View>
   );
@@ -1359,6 +1469,8 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     textAlign: 'center',
   },
+  // Full-screen honesty line (the stage badge, verbatim).
+  fsBadge: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.6, color: '#6d6f75', textAlign: 'center' },
   grayNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSubAlt, ...readingText },
 
   // The old stat-grid / LEVEL-toggle styles are gone: those readouts live on
