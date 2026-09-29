@@ -457,8 +457,18 @@ export function EnrollmentView({
   // the card rides under the thumb while the list re-sorts beneath it.
   const dragY = useRef(new Animated.Value(0)).current;
   const [liftedId, setLiftedId] = useState<string | null>(null);
+  // A hold that LIFTS and then releases without dragging used to fall through
+  // as a tap on whatever Pressable sat under the thumb (collapse, LOADED,
+  // Study…). Set on lift, cleared on the next touch; inner presses on a
+  // reorderable row go through unlessLifted (bug hunt 2026-09-29).
+  const liftConsumedRef = useRef(false);
+  const unlessLifted = (fn: () => void) => () => {
+    if (liftConsumedRef.current) return;
+    fn();
+  };
   const beginLift = (id: string) => {
     liftedIdRef.current = id;
+    liftConsumedRef.current = true;
     dragY.setValue(0);
     setLiftedId(id);
     Animated.spring(liftAnim, { toValue: 1, useNativeDriver: true, friction: 5, tension: 90 }).start();
@@ -553,8 +563,15 @@ export function EnrollmentView({
       onPanResponderGrant: () => {
         dragAccum.current = 0;
       },
-      onPanResponderMove: (_e, g) => {
+      onPanResponderMove: (e) => {
         if (liftedIdRef.current !== id || !move) return; // only while lifted
+        // ⛔ Finger travel from the TOUCH START, not g.dy (bug hunt 2026-09-29).
+        // containerPan builds a NEW PanResponder every render, and every
+        // committed swap re-renders — the new one's gestureState.dy starts
+        // back at 0 while dragAccum kept the swap, so the next event read a
+        // full row of travel the other way and swapped straight back (the
+        // "jumps / swaps back" drag). pageY − touchStart survives re-renders.
+        const dy = e.nativeEvent.pageY - touchStartRef.current.y;
         // Multi-row drag (owner 2026-09-13): each step is sized by the height
         // of the NEIGHBOR being passed, read from the rendered order — a thin
         // collapsed row next to a tall expanded one needs different travel.
@@ -564,7 +581,7 @@ export function EnrollmentView({
         const arr = id.startsWith('t:') ? rowOrder.current.topics : rowOrder.current.bundles;
         let animated = false;
         for (let guard = 0; guard < 24; guard++) {
-          const remaining = g.dy - dragAccum.current;
+          const remaining = dy - dragAccum.current;
           const dir: -1 | 1 = remaining > 0 ? 1 : -1;
           const i = arr.indexOf(id);
           const nb = i >= 0 ? arr[i + dir] : undefined;
@@ -586,7 +603,7 @@ export function EnrollmentView({
         }
         // Ride under the thumb: finger travel minus the distance already
         // committed as swaps.
-        dragY.setValue(g.dy - dragAccum.current);
+        dragY.setValue(dy - dragAccum.current);
       },
       onPanResponderRelease: (_e, g) => {
         if (liftedIdRef.current === id) {
@@ -607,6 +624,7 @@ export function EnrollmentView({
   const reorderTouchProps = (id: string) => ({
     onTouchStart: (ev: GestureResponderEvent) => {
       touchStartRef.current = { x: ev.nativeEvent.pageX, y: ev.nativeEvent.pageY };
+      liftConsumedRef.current = false; // a fresh touch — taps count again
       if (holdTimer.current) clearTimeout(holdTimer.current);
       holdTimer.current = setTimeout(() => beginLift(id), 500);
     },
@@ -1507,7 +1525,7 @@ export function EnrollmentView({
                   🔒
                 </Text>
               ) : null}
-              <Pressable style={[styles.card, !e.active && styles.cardInactive, isCore && styles.cardCore, styles.collapsedCard]} onPress={() => toggleCollapse(tid)} accessibilityRole="button" accessibilityLabel={`Expand ${nameFor(e.gs)}`}>
+              <Pressable style={[styles.card, !e.active && styles.cardInactive, isCore && styles.cardCore, styles.collapsedCard]} onPress={unlessLifted(() => toggleCollapse(tid))} accessibilityRole="button" accessibilityLabel={`Expand ${nameFor(e.gs)}`}>
                 {isCore ? <RowTint color={COREQ_TINT} /> : null}
                 <Text style={styles.collapseTri}>▸</Text>
                 <Text style={styles.collapsedTitle} numberOfLines={1}>
@@ -1522,7 +1540,7 @@ export function EnrollmentView({
                     add/remove from the study deck without expanding. Core-locked
                     topics stay on and can't be toggled. */}
                 <Pressable
-                  onPress={coreLocked ? undefined : () => toggleActive(e.gs)}
+                  onPress={coreLocked ? undefined : unlessLifted(() => toggleActive(e.gs))}
                   disabled={coreLocked}
                   hitSlop={8}
                   accessibilityRole="button"
@@ -1536,7 +1554,7 @@ export function EnrollmentView({
                 {/* Study icon alongside the 3-card icon (owner 2026-08-01): lit +
                     opens the Dashboard when the topic is in the deck. */}
                 <Pressable
-                  onPress={showActive ? () => goStudy(e.gs) : undefined}
+                  onPress={showActive ? unlessLifted(() => goStudy(e.gs)) : undefined}
                   disabled={!showActive}
                   hitSlop={8}
                   accessibilityRole="button"
@@ -1581,7 +1599,7 @@ export function EnrollmentView({
                   still (500 ms) to lift it, then drag up/down to reorder (user
                   request 2026-07-23; the ☰ handle was removed). */}
               <View style={styles.cardTop}>
-                <Pressable style={styles.collapseBtn} onPress={() => toggleCollapse(tid)} hitSlop={6} accessibilityRole="button" accessibilityLabel={`Collapse ${nameFor(e.gs)}`}>
+                <Pressable style={styles.collapseBtn} onPress={unlessLifted(() => toggleCollapse(tid))} hitSlop={6} accessibilityRole="button" accessibilityLabel={`Collapse ${nameFor(e.gs)}`}>
                   <Text style={styles.collapseTri}>▾</Text>
                 </Pressable>
                 <Text style={[styles.cardName, !e.active && styles.dim]} numberOfLines={2}>
@@ -1627,7 +1645,7 @@ export function EnrollmentView({
                     the deck, gray when not; tap toggles (user request 2026-07-23). */}
                 <Pressable hitSlop={6}
                   style={styles.bookToggle}
-                  onPress={coreLocked ? undefined : () => toggleActive(e.gs)}
+                  onPress={coreLocked ? undefined : unlessLifted(() => toggleActive(e.gs))}
                   disabled={coreLocked}
                   accessibilityRole="button"
                   accessibilityState={{ disabled: coreLocked, selected: showActive }}
@@ -1644,7 +1662,7 @@ export function EnrollmentView({
                     blue = tap to open the Dashboard with it loaded. */}
                 <Pressable hitSlop={6}
                   style={[styles.studyNavBtn, !showActive && styles.dimMore]}
-                  onPress={showActive ? () => goStudy(e.gs) : undefined}
+                  onPress={showActive ? unlessLifted(() => goStudy(e.gs)) : undefined}
                   disabled={!showActive}
                   accessibilityRole="button"
                   accessibilityState={{ disabled: !showActive }}
@@ -1671,7 +1689,7 @@ export function EnrollmentView({
                 {!isCore && !HOME_SETUP_HIDDEN_FOR_LAUNCH ? (
                   <Pressable
                     style={[styles.homeToggle, !showActive && styles.dimMore]}
-                    onPress={() => toggleOnHome(e.gs)}
+                    onPress={unlessLifted(() => toggleOnHome(e.gs))}
                     accessibilityRole="button"
                     accessibilityState={{ selected: homeSet.has(e.gs) }}
                     aria-pressed={homeSet.has(e.gs)}
