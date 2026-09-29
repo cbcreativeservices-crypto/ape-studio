@@ -13,10 +13,11 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { AMP_MODULES, ampModuleById, checksForModule } from '../../../features/amp/ampContent';
-import { emptyAmpModule, updateAmpProgress } from '../../../features/amp/ampProgress';
+import { emptyAmpModule, updateAmpProgress, type AmpProgressState } from '../../../features/amp/ampProgress';
 import { AMP_MODULE_COMPONENTS, BUILT_MODULE_IDS } from './modules';
 import { CheckCard, SectionTitle, TakeawayCard } from './kit';
 import { AccuracyNote } from '../../../components/AccuracyNote';
+import { LabEndLink, LabEndScreen } from '../kit/LabEndScreen';
 
 export function AmpModuleScreen() {
   const insets = useSafeAreaInsets();
@@ -69,6 +70,22 @@ export function AmpModuleScreen() {
   const answeredCount = checks.filter((c) => c.id in checksAnswered).length;
   const allChecksAnswered = answeredCount === checks.length && !needsFinal;
 
+  /**
+   * THE LAST MODULE ENDS ON THE WHAT'S-LEFT SCREEN (owner 2026-09-29: "every
+   * lab ends with a 'what's left' screen"; keep credit, always allow a redo).
+   * Completing Module 8 used to just go back. It now shows LabEndScreen with
+   * the progress read back from ape:amp:v1 — the modules not yet marked
+   * complete and the final assessment (best result — a later retake never
+   * un-passes it). PRACTISE AGAIN reopens Module 1 and clears nothing.
+   */
+  const [endState, setEndState] = useState<AmpProgressState | null>(null);
+  const showEnd = useCallback(() => {
+    // A no-op mutate: reads the progress queued behind every earlier write.
+    void updateAmpProgress(() => {}).then(setEndState);
+  }, []);
+  const idx = AMP_MODULES.findIndex((x) => x.id === mod.id);
+  const next = AMP_MODULES.slice(idx + 1).find((x) => BUILT_MODULE_IDS.includes(x.id));
+
   const complete = useCallback(() => {
     setDone(true);
     // Queued behind every earlier write (checks, Module 8's final) — nothing
@@ -77,11 +94,47 @@ export function AmpModuleScreen() {
       const m = s.modules[mod.id] ?? emptyAmpModule();
       s.modules[mod.id] = { ...m, done: true };
     });
-    const idx = AMP_MODULES.findIndex((x) => x.id === mod.id);
-    const next = AMP_MODULES.slice(idx + 1).find((x) => BUILT_MODULE_IDS.includes(x.id));
     if (next) navigation.replace('AmpModule', { id: next.id });
-    else navigation.goBack();
-  }, [mod.id, navigation]);
+    else showEnd();
+  }, [mod.id, navigation, next, showEnd]);
+
+  if (endState) {
+    const built = AMP_MODULES.filter((x) => BUILT_MODULE_IDS.includes(x.id));
+    const final = endState.bestFinal ?? endState.final;
+    const cleared = new Set<string>(built.filter((x) => endState.modules[x.id]?.done).map((x) => x.id));
+    if (endState.bestFinal?.passed || endState.final?.passed) cleared.add('final');
+    return (
+      <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+        <View style={styles.header}>
+          <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back to the lab home">
+            <Text style={styles.back}>‹</Text>
+          </Pressable>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.title}>AMPLIFIER PRINCIPLES LAB</Text>
+            <Text style={styles.subtitle}>What’s left</Text>
+          </View>
+        </View>
+        <LabEndScreen
+          labTitle="Amplifier Principles Lab"
+          units={[
+            ...built.map((x) => ({ id: x.id, label: x.title })),
+            {
+              id: 'final',
+              label: 'Final assessment',
+              kind: 'check' as const,
+              detail: final ? `Best so far: ${Math.round(final.scorePct)}%${final.passed ? ' — passed' : ''}` : 'In Module 8 — not yet submitted',
+            },
+          ]}
+          cleared={cleared}
+          mode="progress"
+          onJump={(id) => navigation.replace('AmpModule', { id: id === 'final' ? 'apply' : (id as typeof mod.id) })}
+          onPracticeAgain={() => navigation.replace('AmpModule', { id: built[0]?.id ?? mod.id })}
+          onDone={() => navigation.goBack()}
+          bottomInset
+        />
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -138,6 +191,11 @@ export function AmpModuleScreen() {
               ? 'Submit the final assessment above to complete the lab.'
               : `Answer the ${checks.length} check${checks.length > 1 ? 's' : ''} above to continue — a wrong pick is fine, the explanation is the point.`}
           </Text>
+        ) : null}
+        {/* Labs never block navigation (owner 2026-09-29): on the last module
+            the what's-left screen is reachable before the final is in. */}
+        {!next ? (
+          <LabEndLink onPress={showEnd} />
         ) : null}
       </ScrollView>
     </View>

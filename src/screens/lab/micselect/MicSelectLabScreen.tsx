@@ -23,6 +23,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Canvas, Line as SkLine, Path as SkPath, Skia, vec } from '@shopify/react-native-skia';
 import { GlassButton } from '../../../components/GlassButton';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
+import { markLabVisit, useLabVisits } from '../../../features/lab/labVisits';
+import { LabEndScreen } from '../kit/LabEndScreen';
 import { colors, fonts } from '../../../theme/tokens';
 import { CheckQuestion } from '../foundations/bits';
 import { MicPhotoLightbox, MicVisual } from './micArt';
@@ -994,10 +996,26 @@ export function MicSelectLabScreen() {
   const goTo = useCallback((n: number) => {
     lastNavAtRef.current = Date.now();
     navigatedRef.current = true;
+    setEnding(false);
     setStep(n);
     scrollRef.current?.scrollTo({ y: 0, animated: false });
     if (!noAccountRef.current) void AsyncStorage.setItem(STEP_KEY, String(n)).catch(() => {});
   }, []);
+
+  /**
+   * THE LAST LESSON ENDS ON THE WHAT'S-LEFT SCREEN (owner 2026-09-29: "every
+   * lab ends with a 'what's left' screen"; always allow review and redo).
+   * DONE ✓ used to just go back. This lab banks no credit, so it now remembers
+   * which lessons were OPENED (labVisits — progress, never credit; guests keep
+   * it for this session only, the lab's own guest rule) and DONE opens
+   * LabEndScreen: lessons not yet opened, a jump to each, PRACTISE AGAIN from
+   * Lesson 1 (clears nothing) and DONE.
+   */
+  const [ending, setEnding] = useState(false);
+  const visited = useLabVisits('micselect');
+  useEffect(() => {
+    markLabVisit('micselect', STEPS[step].key, { persist: !noAccountRef.current });
+  }, [step]);
 
   const s = STEPS[step];
 
@@ -1026,16 +1044,15 @@ export function MicSelectLabScreen() {
           <Text style={[styles.navBtn, step === 0 && styles.navBtnDisabled]}>‹ PREV</Text>
         </Pressable>
         <View style={{ flex: 1 }} />
-        <Text style={styles.navPos}>{`STEP ${step + 1} / ${STEPS.length}`}</Text>
+        <Text style={styles.navPos}>{ending ? 'WHAT’S LEFT' : `STEP ${step + 1} / ${STEPS.length}`}</Text>
         <View style={{ flex: 1 }} />
         <Pressable
-          onPress={() => goTo(Math.min(STEPS.length - 1, step + 1))}
-          disabled={step === STEPS.length - 1}
+          onPress={() => (step === STEPS.length - 1 ? setEnding(true) : goTo(Math.min(STEPS.length - 1, step + 1)))}
           hitSlop={8}
           accessibilityRole="button"
-          accessibilityLabel="Next lesson"
+          accessibilityLabel={step === STEPS.length - 1 ? "Finish the lab and see what's left" : 'Next lesson'}
         >
-          <Text style={[styles.navBtn, step === STEPS.length - 1 && styles.navBtnDisabled]}>NEXT ›</Text>
+          <Text style={styles.navBtn}>{step === STEPS.length - 1 ? 'FINISH ›' : 'NEXT ›'}</Text>
         </Pressable>
       </View>
       <View style={styles.dotsRow}>
@@ -1046,6 +1063,19 @@ export function MicSelectLabScreen() {
         ))}
       </View>
 
+      {ending ? (
+        <LabEndScreen
+          labTitle="Microphone Selection Lab"
+          units={STEPS.map((st) => ({ id: st.key, label: st.title, detail: st.tag === 'OPTIONAL' ? 'Optional' : undefined }))}
+          cleared={visited}
+          mode="progress"
+          noun="lesson"
+          onJump={(id) => goTo(Math.max(0, STEPS.findIndex((st) => st.key === id)))}
+          onPracticeAgain={() => goTo(0)}
+          onDone={() => navigation.goBack()}
+          bottomInset
+        />
+      ) : (
       <ScrollView ref={scrollRef} contentContainerStyle={styles.scroll}>
         <Text style={styles.tag}>{`${s.tag} · ${step + 1} OF ${STEPS.length}`}</Text>
         <Text style={styles.stepTitle}>{s.title}</Text>
@@ -1059,11 +1089,12 @@ export function MicSelectLabScreen() {
             <GlassButton
               label={step === STEPS.length - 1 ? 'DONE ✓' : 'NEXT ›'}
               tint="green"
-              onPress={() => (step === STEPS.length - 1 ? (Date.now() - lastNavAtRef.current < 400 ? undefined : navigation.goBack()) : goTo(Math.min(STEPS.length - 1, step + 1)))}
+              onPress={() => (step === STEPS.length - 1 ? (Date.now() - lastNavAtRef.current < 400 ? undefined : setEnding(true)) : goTo(Math.min(STEPS.length - 1, step + 1)))}
             />
           </View>
         </View>
       </ScrollView>
+      )}
     </View>
     </MicPhotoLightbox>
   );

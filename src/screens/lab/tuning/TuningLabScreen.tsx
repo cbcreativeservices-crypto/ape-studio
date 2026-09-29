@@ -20,6 +20,7 @@ import { loadTuningProgress, resetTuningProgress, saveTuningProgress, type Tunin
 import { CHAPTERS, CHAPTER_COUNT, CHAPTER_TITLES } from './chapters';
 import type { LabCtx } from './labCtx';
 import { confirmDialog } from '../../../lib/confirm';
+import { LabEndScreen } from '../kit/LabEndScreen';
 
 export function TuningLabScreen() {
   const insets = useSafeAreaInsets();
@@ -50,6 +51,8 @@ export function TuningLabScreen() {
   const [rootHz, setRootHz] = useState(C4_ET);
   const [mathView, setMathView] = useState(false);
   const [listOpen, setListOpen] = useState(false);
+  // The what's-left end screen (owner 2026-09-29), shown in place of the chapter.
+  const [ending, setEnding] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
   const reduceMotion = !animationsAllowed();
 
@@ -78,6 +81,7 @@ export function TuningLabScreen() {
   const goTo = useCallback(
     (idx: number) => {
       player.stop(); // leaving a chapter stops its audio
+      setEnding(false);
       setChapter(idx);
       setListOpen(false);
       scrollRef.current?.scrollTo({ y: 0, animated: !reduceMotion });
@@ -119,6 +123,21 @@ export function TuningLabScreen() {
 
   const ctx: LabCtx = { rootHz, setRootHz, mathView, reduceMotion, player, markDone, isDone };
   const Chapter = def.Component;
+
+  /**
+   * THE LAST CHAPTER ENDS ON THE WHAT'S-LEFT SCREEN (owner 2026-09-29: "every
+   * lab ends with a 'what's left' screen"; always allow review and redo).
+   * CONTINUE used to grey out on the last chapter — a dead end. It is now
+   * FINISH, which swaps LabEndScreen in for the chapter: the chapters not yet
+   * done (this lab's own device progress — no credit), a jump to each,
+   * PRACTISE AGAIN from the first chapter (clears nothing) and DONE.
+   */
+  const finish = () => {
+    player.stop();
+    setListOpen(false);
+    setEnding(true);
+  };
+  const endCleared = new Set((progress?.completed ?? []).map(String));
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
@@ -163,6 +182,18 @@ export function TuningLabScreen() {
         </View>
       ) : null}
 
+      {ending ? (
+        <LabEndScreen
+          labTitle="Tuning & Temperament Lab"
+          units={CHAPTERS.map((c) => ({ id: String(c.index), label: c.title }))}
+          cleared={endCleared}
+          mode="progress"
+          noun="chapter"
+          onJump={(id) => goTo(Number(id))}
+          onPracticeAgain={() => goTo(CHAPTERS[0].index)}
+          onDone={() => navigation.goBack()}
+        />
+      ) : (
       <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 24 }]}>
         {/* This lab LISTENS through the phone's microphone, so the uncalibrated
             caveat is the substance rather than a formality — a tuner is exactly
@@ -177,6 +208,7 @@ export function TuningLabScreen() {
         ) : null}
         <Chapter ctx={ctx} />
       </ScrollView>
+      )}
 
       {/* sound status + navigation */}
       <View style={[styles.footer, { paddingBottom: insets.bottom + 8 }]}>
@@ -190,13 +222,12 @@ export function TuningLabScreen() {
           <Text style={styles.navText}>‹ BACK</Text>
         </Pressable>
         <Pressable
-          onPress={() => builtNext && goTo(builtNext.index)}
-          disabled={!builtNext}
-          style={[styles.navBtn, styles.navNext, !builtNext && { opacity: 0.35 }]}
+          onPress={() => (builtNext ? goTo(builtNext.index) : finish())}
+          style={[styles.navBtn, styles.navNext]}
           accessibilityRole="button"
-          accessibilityLabel={builtNext ? `Continue to chapter ${builtNext.index}` : 'Last available chapter'}
+          accessibilityLabel={builtNext ? `Continue to chapter ${builtNext.index}` : "Finish the lab and see what's left"}
         >
-          <Text style={[styles.navText, { color: colors.green }]}>CONTINUE ›</Text>
+          <Text style={[styles.navText, { color: colors.green }]}>{builtNext ? 'CONTINUE ›' : 'FINISH ›'}</Text>
         </Pressable>
       </View>
     </View>

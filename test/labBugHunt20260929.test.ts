@@ -39,7 +39,8 @@ test('Foundations: tone.set is never gated on tone.playing, and NEXT/DONE share 
   const s = read('src/screens/lab/foundations/FoundationsCourseScreen.tsx');
   assert.doesNotMatch(s, /if \(tone\.playing\) tone\.set\(/);
   assert.match(s, /const navLocked = \(\) => Date\.now\(\) - lastNavAtRef\.current < 400;/);
-  assert.match(s, /if \(navLocked\(\)\) return;\s*\n\s*if \(step === STEPS\.length - 1\) navigation\.goBack\(\);/);
+  // DONE now opens the what's-left screen (owner 2026-09-29) — still behind the lock.
+  assert.match(s, /if \(navLocked\(\)\) return;\s*\n\s*if \(step === STEPS\.length - 1\) finish\(\);/);
 });
 
 test('tube card: one-finger drag tests the LIVE scale and a pinch hands over to pan', () => {

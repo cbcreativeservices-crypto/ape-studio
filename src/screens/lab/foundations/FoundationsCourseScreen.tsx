@@ -59,7 +59,8 @@ import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
-import { markLabUnit, registerLabUnits } from '../../../features/lab/labCompletion';
+import { markLabUnit, registerLabUnits, useLabClearedUnits } from '../../../features/lab/labCompletion';
+import { LabEndScreen } from '../kit/LabEndScreen';
 import { FOUNDATIONS_LAB_KEY, FOUNDATIONS_STEP_COUNT, FOUNDATIONS_UNITS } from './units';
 import { RackUnit } from '../rack/RackUnit';
 import type { BezelItem, DockParam } from '../rack/rackTypes';
@@ -2110,6 +2111,7 @@ export function FoundationsCourseScreen() {
       lastNavAtRef.current = Date.now();
       navigatedRef.current = true;
       tone.stop(); // each step owns its own sound — never carries over
+      setEnding(false);
       setStep(n);
       // Persist the place only for registered accounts — guests never resume.
       if (!noAccountRef.current) void AsyncStorage.setItem(STEP_KEY, String(n)).catch(() => {});
@@ -2128,6 +2130,20 @@ export function FoundationsCourseScreen() {
   useEffect(() => {
     markLabUnit(FOUNDATIONS_LAB_KEY, String(step));
   }, [step]);
+
+  /**
+   * THE LAST MODULE ENDS ON THE WHAT'S-LEFT SCREEN (owner 2026-09-29: "every
+   * lab ends with a 'what's left' screen"; keep credit, always allow a redo).
+   * DONE ✓ on Module 14 used to just go back. It now swaps LabEndScreen in for
+   * the rack: every module not yet credited (af_foundations units), a jump to
+   * each, PRACTISE AGAIN from Module 1 (clears nothing) and DONE.
+   */
+  const [ending, setEnding] = useState(false);
+  const banked = useLabClearedUnits(FOUNDATIONS_LAB_KEY);
+  const finish = () => {
+    tone.stop();
+    setEnding(true);
+  };
 
   const s = STEPS[step];
   const openPlayground = useCallback(() => {
@@ -2211,7 +2227,7 @@ export function FoundationsCourseScreen() {
             tint="green"
             onPress={() => {
               if (navLocked()) return;
-              if (step === STEPS.length - 1) navigation.goBack();
+              if (step === STEPS.length - 1) finish();
               else goTo(Math.min(STEPS.length - 1, step + 1));
             }}
           />
@@ -2271,13 +2287,12 @@ export function FoundationsCourseScreen() {
             deliberate space either side. Same header renders all 14 modules, so
             this is "all foundations of sound screens" by construction. */}
         <Pressable
-          onPress={() => goTo(Math.min(STEPS.length - 1, step + 1))}
-          disabled={step === STEPS.length - 1}
+          onPress={() => (step === STEPS.length - 1 ? finish() : goTo(Math.min(STEPS.length - 1, step + 1)))}
           hitSlop={{ top: 14, bottom: 14, left: 10, right: 10 }}
           accessibilityRole="button"
-          accessibilityLabel="Next module"
+          accessibilityLabel={step === STEPS.length - 1 ? "Finish the lab and see what's left" : 'Next module'}
         >
-          <Text style={[styles.navBtn, step === STEPS.length - 1 && styles.navBtnDisabled]}>NEXT ›</Text>
+          <Text style={styles.navBtn}>{step === STEPS.length - 1 ? 'FINISH ›' : 'NEXT ›'}</Text>
         </Pressable>
         {/* Owner 2026-09-13: "the module #/# readout trade places with NEXT>".
             Puts the three VERBS together — START, PREV, NEXT all move you — and
@@ -2285,7 +2300,7 @@ export function FoundationsCourseScreen() {
             control. It also lands the row's only non-button furthest from the
             thumb, which is where a readout belongs. */}
         <Text style={styles.navPos}>
-          MODULE {step + 1} / {STEPS.length}
+          {ending ? 'WHAT’S LEFT' : `MODULE ${step + 1} / ${STEPS.length}`}
         </Text>
       </View>
 
@@ -2305,6 +2320,18 @@ export function FoundationsCourseScreen() {
       {/* The current module's Rack Unit — keyed per step so each module mounts
           fresh (its own state, its own initial lane bind), exactly as the old
           per-step panels did. The frame owns the scroll well + dock. */}
+      {ending ? (
+        <LabEndScreen
+          labTitle="Foundations of Sound"
+          units={STEPS.map((st, i) => ({ id: String(i), label: st.title }))}
+          cleared={banked}
+          mode="credit"
+          onJump={(id) => goTo(Number(id))}
+          onPracticeAgain={() => goTo(0)}
+          onDone={() => navigation.goBack()}
+          bottomInset
+        />
+      ) : (
       <View style={styles.rackWrap}>
         <s.Rack
           key={s.key}
@@ -2319,6 +2346,7 @@ export function FoundationsCourseScreen() {
           onM7Predict={setM7Predicted}
         />
       </View>
+      )}
 
       <GuidedLessonSheet
         visible={lessonOpen}
