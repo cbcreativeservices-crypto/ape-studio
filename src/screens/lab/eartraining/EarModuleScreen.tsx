@@ -29,6 +29,8 @@ import {
   type EarProgressState,
 } from '../../../features/ear/earProgress';
 import { SeeItView } from './SeeItView';
+import { useIsTablet } from '../../../theme/useIsTablet';
+import { cardColumn } from '../../../theme/readingColumn';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 
 const FATIGUE_MS = 15 * 60 * 1000;
@@ -84,6 +86,9 @@ function roundVerdict(pct: number): string {
 
 export function EarModuleScreen() {
   const insets = useSafeAreaInsets();
+  // Tablet pass (owner 2026-09-29): the drill sits in the 760 card column and
+  // its answer grid keeps fixed cells instead of stretching to the edges.
+  const isTablet = useIsTablet();
   const navigation = useNavigation();
   const route = useRoute<RouteProp<RootStackParamList, 'EarModule'>>();
   const mod = earModuleById(route.params.id);
@@ -393,7 +398,7 @@ export function EarModuleScreen() {
         </View>
       </View>
 
-      <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 24 }]}>
+      <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: insets.bottom + 24 }]}>
         {needsAck ? (
           <View style={styles.ackCard}>
             <Text style={styles.ackTitle}>HEADPHONES REQUIRED</Text>
@@ -489,6 +494,9 @@ export function EarModuleScreen() {
                           styles.answerChip,
                           layout.compact && styles.answerChipCompact,
                           { minWidth: `${Math.floor(100 / layout.perRow) - 2}%` },
+                          // Tablet (owner 2026-09-29): a row's LAST chip grew to the
+                          // full width ("16 kHz" was a 770 pt bar). Fixed cells.
+                          isTablet && { flexGrow: 0, width: `${Math.floor(100 / layout.perRow) - 2}%` },
                           isCorrect && styles.answerCorrect,
                           isWrongPick && styles.answerWrong,
                         ]}
