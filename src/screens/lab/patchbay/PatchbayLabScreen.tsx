@@ -62,6 +62,7 @@ export function PatchbayLabScreen() {
       subtitle="Top is the source. Bottom is the destination. A normal is the path that exists when you do nothing — and patching changes that path."
       pages={PAGES}
       onPageDone={onPageDone}
+      creditLabKey={PATCHBAY_LAB_KEY}
     />
   );
 }

@@ -60,6 +60,7 @@ export function ConnectorSelectLabScreen() {
       subtitle="A connector’s shape does not determine the signal, cable construction, level, or protocol — ask what the equipment expects, what the cable is built as, and whether the connection is safe."
       pages={PAGES}
       onPageDone={onPageDone}
+      creditLabKey={CONNECTOR_SELECT_LAB_KEY}
     />
   );
 }

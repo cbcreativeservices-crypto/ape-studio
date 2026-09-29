@@ -13,6 +13,13 @@
  * API contract (all seven labs depend on it — additive changes only):
  *   PageCtx  { reduceMotion, markDone, isDone, goTo? }
  *   PageDef  { title, short, Component, manualDone? }
+ *
+ * THE LAST PAGE ENDS ON THE WHAT'S-LEFT SCREEN (owner 2026-09-29: "every lab
+ * ends with a 'what's left' screen"; keep credit, always allow review and
+ * redo). FINISH used to just go back. It now opens LabEndScreen in place of
+ * the page: every page not yet done by name with a jump link, the check (if
+ * authored) as its own row, PRACTISE AGAIN (page 1, clears nothing) and DONE.
+ * FINISH is never held any more — an unpassed check is listed, not a wall.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type JSX } from 'react';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
@@ -40,8 +47,9 @@ export type PageDef = {
   short: string;
   Component: (p: { ctx: PageCtx }) => JSX.Element;
   /** The page marks ITSELF done (a checks page that needs its answers): the
-   *  Continue / Finish button will not mark it on the learner's behalf, and
-   *  Finish stays disabled on a last page until the page has marked itself. */
+   *  Continue / Finish button will not mark it on the learner's behalf. (Finish
+   *  used to stay disabled until it had; since owner 2026-09-29 it opens the
+   *  what's-left screen, which lists the unmarked page instead.) */
   manualDone?: boolean;
 };
 
@@ -65,9 +73,10 @@ function useOsReduceMotion(): boolean {
 
 import { LabUnderstandingCheck } from '../../../components/LabUnderstandingCheck';
 import { UNDERSTANDING_UNIT, understandingFor } from '../../../features/lab/understanding';
-import { markLabUnit, registerLabUnits } from '../../../features/lab/labCompletion';
+import { markLabUnit, registerLabUnits, useLabClearedUnits, type LabKey } from '../../../features/lab/labCompletion';
+import { LabEndScreen, type LabEndUnit } from './LabEndScreen';
 
-export function PagedLab({ labId, title, subtitle, pages, onPageDone }: {
+export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabKey }: {
   labId: string;
   title: string;
   subtitle: string;
@@ -76,6 +85,11 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone }: {
    *  page is newly marked done — lets a lab feed external completion tracking
    *  (labCompletion units) without touching the shell's own persistence. */
   onPageDone?: (index: number) => void;
+  /** ADDITIVE (owner 2026-09-29, the what's-left screen): the labCompletion
+   *  key this lab banks certificate credit under, one unit per page named
+   *  `p<n>` (1-based — the Patchbay / Connector Select convention). Banked
+   *  pages read CREDITED on the end screen even after RESET LAB PROGRESS. */
+  creditLabKey?: LabKey;
 }) {
   /**
    * ⛔ THE UNDERSTANDING CHECK IS APPENDED HERE, FOR ALL 33 PagedLab LABS AT
@@ -128,6 +142,10 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone }: {
   const progressRef = useRef<PagedProgress | null>(null);
   const [page, setPage] = useState(0);
   const [listOpen, setListOpen] = useState(false);
+  // The what's-left end screen (owner 2026-09-29) — shown in place of the page.
+  const [ending, setEnding] = useState(false);
+  const bankedPages = useLabClearedUnits(creditLabKey ?? labId);
+  const bankedCheck = useLabClearedUnits(labId);
   // Drag-vs-scroll lock (owner device pass 2026-09-11): the mixing console's
   // fader and pan pot live INSIDE this page scroller, and on device the native
   // scroll view steals a vertical gesture before any JS responder can argue -
@@ -199,6 +217,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone }: {
   const goTo = useCallback((i: number) => {
     const idx = Math.max(0, Math.min(pagesWithCheck.length - 1, Math.round(i)));
     navigatedRef.current = true;
+    setEnding(false);
     setPage(idx);
     setListOpen(false);
     scrollRef.current?.scrollTo({ y: 0, animated: !reduceMotion });
@@ -247,10 +266,51 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone }: {
   const Page = def.Component;
   const isDone = !!progress?.completed.includes(page);
   const last = page === pagesWithCheck.length - 1;
-  // A self-marking last page (checks) holds Finish until it has marked itself.
-  const finishBlocked = last && !!def.manualDone && !isDone;
   const ctx: PageCtx = { reduceMotion, markDone, isDone, goTo };
   const doneCount = progress?.completed.length ?? 0;
+
+  // What's-left inputs: a page counts when it is done in this shell's own
+  // progress OR its credit unit is banked (so RESET LAB PROGRESS, which clears
+  // only the page dots, never makes banked credit read as missing).
+  const endUnits: LabEndUnit[] = pagesWithCheck.map((p, i) =>
+    check && i === pages.length
+      ? { id: String(i), label: 'Check your understanding', kind: 'check', detail: 'Every answer correct — retry until you are.' }
+      : { id: String(i), label: p.title },
+  );
+  const endCleared = new Set<string>();
+  pagesWithCheck.forEach((_, i) => {
+    const banked = check && i === pages.length
+      ? bankedCheck.has(UNDERSTANDING_UNIT)
+      : !!creditLabKey && bankedPages.has(`p${i + 1}`);
+    if (banked || progress?.completed.includes(i)) endCleared.add(String(i));
+  });
+
+  if (ending) {
+    return (
+      <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
+        <View style={styles.header}>
+          <Pressable onPress={() => navigation.goBack()} style={styles.backBtn} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Leave the lab">
+            <Text style={styles.back}>‹</Text>
+          </Pressable>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.kicker} numberOfLines={1}>{title.toUpperCase()} · END</Text>
+            <Text style={styles.title} numberOfLines={2}>Where you are</Text>
+          </View>
+        </View>
+        <LabEndScreen
+          labTitle={title}
+          units={endUnits}
+          cleared={endCleared}
+          mode={creditLabKey ? 'credit' : 'progress'}
+          noun="page"
+          onJump={(id) => goTo(Number(id))}
+          onPracticeAgain={() => goTo(0)}
+          onDone={() => navigation.goBack()}
+          bottomInset
+        />
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
@@ -319,20 +379,19 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone }: {
         <View style={{ flex: 1 }} />
         <Pressable
           onPress={() => {
-            if (finishBlocked) return;
             if (!def.manualDone) markDone();
-            // FINISH on the last page used to do nothing visible — it read as a
-            // dead button (Bug+Hater night K2-01). Finishing now LEAVES the lab,
-            // which is what the label promises; progress is already persisted.
+            // FINISH on the last page used to do nothing visible (Bug+Hater
+            // night K2-01), then just left the lab. It now opens the what's-left
+            // screen (owner 2026-09-29) — never held, never a dead end.
             if (!last) goTo(page + 1);
-            else navigation.goBack();
+            else {
+              setEnding(true);
+              setListOpen(false);
+            }
           }}
-          disabled={finishBlocked}
-          style={[styles.navBtn, styles.navNext, finishBlocked && { opacity: 0.45 }]}
+          style={[styles.navBtn, styles.navNext]}
           accessibilityRole="button"
-          accessibilityState={{ disabled: finishBlocked }}
-          aria-disabled={finishBlocked}
-          accessibilityLabel={!last ? 'Continue to the next page' : finishBlocked ? 'Finish the lab — complete this page first' : 'Finish the lab'}
+          accessibilityLabel={!last ? 'Continue to the next page' : "Finish the lab and see what's left"}
         >
           <Text style={[styles.navText, { color: colors.green }]}>{!last ? 'CONTINUE ›' : progress?.done ? 'COMPLETE ✓' : 'FINISH ›'}</Text>
         </Pressable>
