@@ -459,7 +459,7 @@ export const CI_FIRE_SPACES: { id: string; label: string; isPlenum?: boolean; qu
     question: 'What does this space change?',
     options: ['Requirements can extend beyond the cable jacket — materials in the space matter, where adopted', 'Only the cable color', 'Nothing, if the cable is "low voltage"'],
     correctIdx: 0,
-    reveal: 'Air-handling spaces carry requirements for what may live in them. That\'s why the identification step comes first.',
+    reveal: 'Air-handling spaces carry requirements for what may live in them. Where the NEC is adopted, cable exposed in a space used for environmental air must be plenum-listed — CMP for communications cable, CL2P / CL3P for Class 2 / 3 audio and control — or run in a raceway suited to the space, and other materials there are limited too. Confirm with the project documents and the AHJ. That\'s why the identification step comes first.',
     ruleId: 'fire-plenum-not-assumed',
   },
   {

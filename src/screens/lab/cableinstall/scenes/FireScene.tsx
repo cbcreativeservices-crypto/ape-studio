@@ -20,14 +20,14 @@
  * three space keys dock at the bottom. The drawing never leaves the screen
  * while the learner answers, and every answer changes it.
  */
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
 import { OptionChip, VerdictBanner } from '../../cable/lessons/bits';
 import { CiSection, RuleFeedback, SpecCard, announceComplete, stableShuffle } from '../bits';
 import { CollapsibleSection } from '../../LabShell';
-import { RackUnit } from '../../rack/RackUnit';
+import { RackUnit, type RackUnitApi } from '../../rack/RackUnit';
 import { StageFit } from '../../rack/StageFit';
 import type { DockParam } from '../../rack/rackTypes';
 import { Callout, CeilingCut, ConcreteCut, DuctSide, JacketPath, LadderTraySide, RackSide, ScaleBar, StudWallCut, SVG_A11Y } from '../svgArt';
@@ -53,6 +53,7 @@ import {
   withTiming,
 } from '../motion';
 import { CI_FIRE_SPACES } from '../data/scenarios';
+import { CI_CLASS_TINTS } from '../data/cableTypes';
 import { clamp100 } from '../engine/score';
 import type { CiModuleProps } from '../registry';
 
@@ -392,6 +393,11 @@ function BuildingArt({
 }) {
   const m = useCiMotion();
   const h = Math.round((w * 224) / 360);
+  /** Label size in drawing units, held at >= 9 pt ON SCREEN: at the inline
+   *  width (~358 px) 9.6 units is ~9.5 pt, but on a phone under ~700 pt tall
+   *  the rack's stage shrinks to 200 pt and the section fits ~308 px wide -
+   *  9.6 units would print at ~8.2 pt, so the labels grow with the fit. */
+  const fs = Math.max(9.6, (9.2 * 360) / Math.max(1, w));
   const rackTop = FLOOR_Y - 2 * BM;
   const wallR = RATED.x + RATED.t;
   const ROUTES: Record<string, { d: string; len: number; end: [number, number] }> = {
@@ -438,8 +444,8 @@ function BuildingArt({
       ))}
 
       {/* ── floor above + the scale ── */}
-      <Callout x={14} y={20} text="FLOOR ABOVE" size={9.6} color="#6d717a" bg={null} anchor="start" />
-      <ScaleBar x={104} y={19} m={BM} metres={1} color="#8d9199" />
+      <Callout x={14} y={20} text="FLOOR ABOVE" size={fs} color="#6d717a" bg={null} anchor="start" />
+      <ScaleBar x={104} y={19} m={BM} metres={1} color="#8d9199" size={fs} />
 
       {/* ── riser: vertical ladder runway (broken at the slab), the
           riser-rated backbone strapped to it through its firestopped sleeve,
@@ -455,7 +461,7 @@ function BuildingArt({
           ))}
         </G>
       ))}
-      <JacketPath d={`M${SHAFT.cableX} 4 V${FLOOR_Y}`} color="#37d97b" width={2.4} />
+      <JacketPath d={`M${SHAFT.cableX} 4 V${FLOOR_Y}`} color={CI_CLASS_TINTS.network} width={2.4} />
       {[24, 80, 124, 168].map((y) => (
         <Rect key={y} x={SHAFT.cableX - 2.4} y={y} width={10.4} height={2.2} rx={0.6} fill="#23262b" stroke="#0a0a0c" strokeWidth={0.3} />
       ))}
@@ -472,11 +478,11 @@ function BuildingArt({
           )}
         </G>
       ))}
-      <JacketPath d={`M${SHAFT.cableX} ${SLAB.y - 5} V${SLAB.y + SLAB.h + 5}`} color="#37d97b" width={2.4} shadow={false} />
-      <Callout x={296} y={12} text="STACKED RISER" size={9.6} color="#9ea3ad" bg={null} anchor="end" />
-      <Callout x={296} y={29} text="SLEEVES + FIRESTOP" size={9.6} color="#ff8a6b" bg={null} anchor="end" />
+      <JacketPath d={`M${SHAFT.cableX} ${SLAB.y - 5} V${SLAB.y + SLAB.h + 5}`} color={CI_CLASS_TINTS.network} width={2.4} shadow={false} />
+      <Callout x={296} y={12} text="STACKED RISER" size={fs} color="#9ea3ad" bg={null} anchor="end" />
+      <Callout x={296} y={29} text="SLEEVES + FIRESTOP" size={fs} color="#ff8a6b" bg={null} anchor="end" />
       <Lead x1={297} y1={26} x2={SHAFT.spareX - 3.5} y2={SLAB.y - 3} color="#ff8a6b" />
-      <Callout x={SHAFT.cableX - 5} y={180} text="CMR" size={9.6} color="#9ea3ad" bg="rgba(17,18,22,0.92)" />
+      <Callout x={SHAFT.cableX - 5} y={180} text="CMR" size={fs} color="#9ea3ad" bg="rgba(17,18,22,0.92)" />
       {/* the riser-room wall sleeve where a route from the office side enters */}
       <Rect x={SHAFT.x0 - 3} y={SLEEVE.cy - 3} width={SHAFT.wall + 6} height={6} fill="#80868f" stroke="#2c2f34" strokeWidth={0.5} />
       <Firestop x={SHAFT.x0 - 4.4} y={SLEEVE.cy - 3.6} w={1.6} h={7.2} />
@@ -499,7 +505,7 @@ function BuildingArt({
       <AirArrow x={40} y={96} dir="up" len={12} />
       <AirArrow x={24} y={56} dir="left" len={12} />
       <AirArrow x={146} y={56} dir="left" len={14} />
-      <SvgText x={98} y={59.4} fontFamily={fonts.oswaldSemiBold} fontSize={9.6} fill="#1b1c20" textAnchor="middle">
+      <SvgText x={98} y={59.4} fontFamily={fonts.oswaldSemiBold} fontSize={fs} fill="#1b1c20" textAnchor="middle">
         RETURN DUCT
       </SvgText>
       <LadderTraySide x0={60} x1={RATED.x - 6} y={74} m={BM} rodTo={CAV_TOP} rodEvery={1.5} />
@@ -513,15 +519,15 @@ function BuildingArt({
           store's outlets */}
       <JacketPath d={`M144 ${rackTop} V71.6 H92 Q87 71.6 87 76 V${TILE_Y - 6}`} color={EXIST_A} width={2} />
       <JacketPath d={`M147.4 ${rackTop} V70 H94 Q89 70 89 75 V${TILE_Y - 6}`} color={EXIST_B} width={2} />
-      <Callout x={107} y={88} text="CABLE TRAY" size={9.6} color="#9ea3ad" bg="rgba(17,18,22,0.92)" />
+      <Callout x={107} y={88} text="CABLE TRAY" size={fs} color="#9ea3ad" bg="rgba(17,18,22,0.92)" />
       <Lead x1={107} y1={81} x2={107} y2={74.5} />
-      <Callout x={46} y={113} text="AIR STAYS" size={9.6} color={AIR} bg={null} />
-      <Callout x={46} y={125} text="IN THE DUCT" size={9.6} color={AIR} bg={null} />
+      <Callout x={46} y={113} text="AIR STAYS" size={fs} color={AIR} bg={null} />
+      <Callout x={46} y={125} text="IN THE DUCT" size={fs} color={AIR} bg={null} />
 
       {/* the non-rated partition: stops just above the ceiling */}
       <StudWallCut x={PART.x} y0={TILE_Y - 8} y1={FLOOR_Y} t={PART.t} />
-      <Callout x={45} y={164} text="NON-RATED" size={9.6} color="#9ea3ad" bg={null} />
-      <Callout x={45} y={177} text="PARTITION" size={9.6} color="#9ea3ad" bg={null} />
+      <Callout x={45} y={164} text="NON-RATED" size={fs} color="#9ea3ad" bg={null} />
+      <Callout x={45} y={177} text="PARTITION" size={fs} color="#9ea3ad" bg={null} />
       <Lead x1={66} y1={168} x2={PART.x - 0.5} y2={168} />
 
       {/* ── SPACE 2 · the open-office cavity: the return grille opens into
@@ -536,8 +542,8 @@ function BuildingArt({
       <AirArrow x={283} y={96} dir="up" len={11} />
       <Path d="M277 82 Q277 60 262 58" stroke={AIR} strokeWidth={1.2} fill="none" strokeDasharray="2 2" />
       <AirArrow x={262} y={58} dir="left" len={24} />
-      <Callout x={250} y={113} text="AIR RETURNS" size={9.6} color={AIR} bg={null} />
-      <Callout x={250} y={125} text="THROUGH CAVITY" size={9.6} color={AIR} bg={null} />
+      <Callout x={250} y={113} text="AIR RETURNS" size={fs} color={AIR} bg={null} />
+      <Callout x={250} y={125} text="THROUGH CAVITY" size={fs} color={AIR} bg={null} />
 
       {/* ── the MARKED rated wall: slab to slab (head-of-wall joint at the
           slab), studs with two layers of board each face, the rating hatch,
@@ -553,39 +559,44 @@ function BuildingArt({
         /* the penetrant: this run's cable through the sleeve */
         <JacketPath d={`M${RATED.x - 14} ${SLEEVE.cy} H${wallR + 14}`} color="#c77dff" width={2.2} shadow={false} />
       ) : null}
-      {flowStep === 3 ? (
+      {flowStep === 3 || flowStep === 4 ? (
         <G>
-          {/* a listed system is REQUIRED here: where it goes, not yet chosen */}
-          <Rect x={RATED.x - 5.6} y={SLEEVE.cy - SLEEVE.h / 2 - 1.4} width={1.8} height={SLEEVE.h + 2.8} fill="none" stroke="#ff8a6b" strokeWidth={0.6} strokeDasharray="1.4 1" />
-          <Rect x={wallR + 3.8} y={SLEEVE.cy - SLEEVE.h / 2 - 1.4} width={1.8} height={SLEEVE.h + 2.8} fill="none" stroke="#ff8a6b" strokeWidth={0.6} strokeDasharray="1.4 1" />
+          {/* Q3: a listed system is REQUIRED here - dashed, where it goes.
+              Q4: the listed system matched to this wall and these cables -
+              the outline firms up, still empty: nothing is installed until
+              the last question (verify when unsure) is answered, because
+              that verification comes BEFORE the work (expert review
+              2026-09-28). */}
+          <Rect x={RATED.x - 5.6} y={SLEEVE.cy - SLEEVE.h / 2 - 1.4} width={1.8} height={SLEEVE.h + 2.8} fill="none" stroke="#ff8a6b" strokeWidth={flowStep === 4 ? 0.9 : 0.6} strokeDasharray={flowStep === 4 ? undefined : '1.4 1'} />
+          <Rect x={wallR + 3.8} y={SLEEVE.cy - SLEEVE.h / 2 - 1.4} width={1.8} height={SLEEVE.h + 2.8} fill="none" stroke="#ff8a6b" strokeWidth={flowStep === 4 ? 0.9 : 0.6} strokeDasharray={flowStep === 4 ? undefined : '1.4 1'} />
         </G>
       ) : null}
-      {flowStep >= 4 ? (
+      {flowStep >= 5 ? (
         <G>
-          {/* the listed system, installed: firestop both faces */}
+          {/* the listed system, installed after verification: firestop both faces */}
           <Firestop x={RATED.x - 5.6} y={SLEEVE.cy - SLEEVE.h / 2 - 1.4} w={1.8} h={SLEEVE.h + 2.8} />
           <Firestop x={wallR + 3.8} y={SLEEVE.cy - SLEEVE.h / 2 - 1.4} w={1.8} h={SLEEVE.h + 2.8} />
         </G>
       ) : null}
-      <Callout x={RATED.x - 22} y={57} text="SLEEVE" size={9.6} color="#b9bdc6" bg="rgba(17,18,22,0.92)" />
+      <Callout x={RATED.x - 22} y={57} text="SLEEVE" size={fs} color="#b9bdc6" bg="rgba(17,18,22,0.92)" />
       <Lead x1={RATED.x - 8} y1={60} x2={RATED.x - 3} y2={SLEEVE.cy - 3} />
       <Rect x={216} y={156} width={70} height={32} rx={3} fill="#1a0f0f" stroke="#ff5a48" strokeWidth={flowStep >= 1 ? 1.4 : 0.8} />
-      <Callout x={251} y={169} text="RATED WALL" size={9.6} color="#ff8a6b" bg={null} />
-      <Callout x={251} y={182} text="SLAB TO SLAB" size={9.6} color="#ff8a6b" bg={null} />
+      <Callout x={251} y={169} text="RATED WALL" size={fs} color="#ff8a6b" bg={null} />
+      <Callout x={251} y={182} text="SLAB TO SLAB" size={fs} color="#ff8a6b" bg={null} />
       <Line x1={216} y1={172} x2={wallR + 0.5} y2={172} stroke="#ff5a48" strokeWidth={0.6} />
       <SleeveMarker on={flowOn} done={flowDone} />
 
       {/* ── the rack (side section, 2.0 m; front faces the door side) ── */}
       <RackSide x={RACK_X} floorY={FLOOR_Y} m={BM} />
-      <Callout x={RACK_X + 20} y={188} text="RACK" size={9.6} color="#9ea3ad" bg="rgba(17,18,22,0.92)" />
-      <Callout x={RACK_X - 3} y={150} text="FRONT" size={9.6} color="#8d9199" bg={null} anchor="end" />
+      <Callout x={RACK_X + 20} y={188} text="RACK" size={fs} color="#9ea3ad" bg="rgba(17,18,22,0.92)" />
+      <Callout x={RACK_X - 3} y={150} text="FRONT" size={fs} color="#8d9199" bg={null} anchor="end" />
       <Path d={`M${RACK_X - 4} 154 H${RACK_X - 34} M${RACK_X - 30} 151.4 L${RACK_X - 34} 154 L${RACK_X - 30} 156.6`} stroke="#8d9199" strokeWidth={0.7} fill="none" />
 
       {/* room names under the section */}
-      <Callout x={45} y={217} text="STORE" size={9.6} color="#8d9199" bg={null} />
-      <Callout x={143} y={217} text="EQUIPMENT ROOM" size={9.6} color="#8d9199" bg={null} />
-      <Callout x={251} y={217} text="OPEN OFFICE" size={9.6} color="#8d9199" bg={null} />
-      <Callout x={322} y={217} text="RISER" size={9.6} color="#8d9199" bg={null} />
+      <Callout x={45} y={217} text="STORE" size={fs} color="#8d9199" bg={null} />
+      <Callout x={143} y={217} text="EQUIPMENT ROOM" size={fs} color="#8d9199" bg={null} />
+      <Callout x={251} y={217} text="OPEN OFFICE" size={fs} color="#8d9199" bg={null} />
+      <Callout x={322} y={217} text="RISER" size={fs} color="#8d9199" bg={null} />
 
       {/* the building responds to attention: the route travels toward the
           chosen space and that space's highlight fades up behind it */}
@@ -705,6 +716,33 @@ export function FireScene({ completed, onComplete, openSources, head }: CiModule
   const openQs = [flowAns.length - 1, flowAns.length < FLOW.length ? flowAns.length : -1].filter((i) => i >= 0);
   const foldTo = Math.max(0, flowAns.length - 1);
 
+  /* ── keep the card in play in view (cognitive review 2026-09-28): the well
+     is ~200 pt tall on a phone, so the question that opens under a verdict
+     lands below the fold with nothing to say it is there. After each answer
+     the well scrolls so the verdict's last lines and the NEXT card's title
+     are on screen (the closing lesson card after Q5). Positions come from
+     measureLayout against one wrapper at the top of the well. ──────────── */
+  const wellApi = useRef<RackUnitApi | null>(null);
+  const wrapRef = useRef<View>(null);
+  const wrapY = useRef(0);
+  const nextRef = useRef<View>(null);
+  const answeredCount = flowAns.length;
+  useEffect(() => {
+    if (completed || answeredCount === 0) return;
+    const id = setTimeout(() => {
+      const node = nextRef.current;
+      const wrap = wrapRef.current;
+      if (!node || !wrap || !wellApi.current) return;
+      node.measureLayout(
+        wrap,
+        (_x, y) => wellApi.current?.scrollWellTo(wrapY.current + y - 72),
+        () => {},
+      );
+    }, 120);
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [answeredCount]);
+
   return (
     <RackUnit
       stage={{
@@ -728,6 +766,17 @@ export function FireScene({ completed, onComplete, openSources, head }: CiModule
       // the safe area there
       bottomInset={0}
     >
+      {(api: RackUnitApi) => {
+        wellApi.current = api;
+        return (
+      <View
+        ref={wrapRef}
+        collapsable={false}
+        style={styles.wellWrap}
+        onLayout={(e) => {
+          wrapY.current = e.nativeEvent.layout.y;
+        }}
+      >
       {/* the stage number is already in the nav row above — the well opens
           on the title alone, to leave the room for the card in play */}
       {head ? <Text style={styles.stageTitle}>{head.title}</Text> : null}
@@ -810,7 +859,9 @@ export function FireScene({ completed, onComplete, openSources, head }: CiModule
               const ans = flowAns[qi];
               const answered = ans != null;
               return (
-                <Appear key={q.id} style={styles.flowCard}>
+                // the question now waiting is the one the well scrolls to
+                <View key={q.id} ref={answered ? undefined : nextRef} collapsable={false}>
+                <Appear style={styles.flowCard}>
                   <Text style={styles.flowNum}>
                     QUESTION {qi + 1} / {FLOW.length}
                   </Text>
@@ -834,13 +885,16 @@ export function FireScene({ completed, onComplete, openSources, head }: CiModule
                     </Appear>
                   ) : null}
                 </Appear>
+                </View>
               );
             })}
             {flowDone ? (
+              <View ref={nextRef} collapsable={false}>
               <LessonCard
                 head="FIRESTOPPING IS A SYSTEM — NOT RED SEALANT"
                 body="A listed firestop system specifies the assembly, the penetrating items, the annular space and the materials together, tested as one. No tube of sealant is “fire rated” outside the system it was tested in — matching the listed system to this wall and these cables IS the installation."
               />
+              </View>
             ) : null}
           </View>
         )}
@@ -852,7 +906,7 @@ export function FireScene({ completed, onComplete, openSources, head }: CiModule
           <Text style={styles.tintNote}>TRAINING VISUALIZATION — simplified building section, drawn to scale (see the 1 m bar); teaching colors, not field colors.</Text>
           <Text style={styles.tintNote}>• Red-hatched wall = marked rated assembly, slab to slab · plain stud wall = non-rated partition, stops just above the ceiling</Text>
           <Text style={styles.tintNote}>• Cyan arrows = air movement · cyan-washed cavity = the cavity itself carries return air · grey duct = return air kept in a duct</Text>
-          <Text style={styles.tintNote}>• Red caps = an installed listed firestop system (lab symbol — real products vary in form and color) · dashed red outline = a listed system is required there</Text>
+          <Text style={styles.tintNote}>• Red caps = an installed listed firestop system (lab symbol — real products vary in form and color) · dashed red outline = a listed system is required there · solid outline = the matched system, not yet installed</Text>
           <Text style={styles.tintNote}>• Amber dashed = your proposed route · violet = this run’s cable · CMR = riser-rated cable listing · numbers = the three spaces</Text>
           <Text style={styles.tintNote}>Whether a wall is rated and how a space handles air come from the project drawings — verify with the plans and the AHJ.</Text>
         </View>
@@ -862,11 +916,16 @@ export function FireScene({ completed, onComplete, openSources, head }: CiModule
         Awareness training — this stage teaches recognition and verification, not firestop system design. Rated-assembly
         work is executed and verified per the project’s listed systems and the authority having jurisdiction.
       </Text>
+      </View>
+        );
+      }}
     </RackUnit>
   );
 }
 
 const styles = StyleSheet.create({
+  /** The well's content wrapper — keeps the rack well's own 10-pt rhythm. */
+  wellWrap: { gap: 10 },
   tintNote: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.8, lineHeight: 13, color: colors.textSub },
   lead: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
   spaceCard: { gap: 10, borderRadius: 12, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 12 },

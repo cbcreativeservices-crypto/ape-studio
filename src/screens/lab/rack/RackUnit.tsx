@@ -19,7 +19,7 @@
  * During any lane drag a DRAG TAG rides the glass bottom edge with the live
  * value (the Faceplate graft) — the value is never hidden under the finger.
  */
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -36,7 +36,13 @@ import { STAGE_HEIGHTS, type DockParam, type RackStage } from './rackTypes';
 import { StageFullScreen } from './StageFullScreen';
 import { StageAspectReport, type StageReport } from './stageAspect';
 
-export type RackUnitApi = { setScrollLocked: (locked: boolean) => void };
+export type RackUnitApi = {
+  setScrollLocked: (locked: boolean) => void;
+  /** Scroll the well to a content offset (additive, 2026-09-28: a question
+   *  flow that opens its next card below the fold brings it into view).
+   *  Nothing calls it unless a lab asks. */
+  scrollWellTo: (y: number) => void;
+};
 
 /**
  * HIDE DISPLAY — give the lesson the whole screen.
@@ -101,6 +107,10 @@ export function RackUnit({
   const [boundId, setBoundId] = useState(validInitial ? initialParam : (faders[0]?.id ?? ''));
   const [openTrayId, setOpenTrayId] = useState<string | null>(null);
   const [wellLocked, setWellLocked] = useState(false);
+  const wellRef = useRef<ScrollView>(null);
+  const scrollWellTo = useCallback((y: number) => {
+    wellRef.current?.scrollTo({ y: Math.max(0, y), animated: true });
+  }, []);
   const [laneActive, setLaneActive] = useState(false);
   const [glassW, setGlassW] = useState(0);
   const [stageBlockH, setStageBlockH] = useState(0); // tray overlay top edge
@@ -431,11 +441,12 @@ export function RackUnit({
       <View style={[styles.wellWrap, (stageCollapsed || trayParam != null) && styles.wellWrapGrow]}>
         <ScrollLockProvider value={setWellLocked}>
           <ScrollView
+            ref={wellRef}
             style={[styles.wellScroll, (stageCollapsed || trayParam != null) && styles.wellScrollGrow]}
             contentContainerStyle={styles.well}
             scrollEnabled={!wellLocked}
           >
-            {typeof children === 'function' ? children({ setScrollLocked: setWellLocked }) : children}
+            {typeof children === 'function' ? children({ setScrollLocked: setWellLocked, scrollWellTo }) : children}
           </ScrollView>
         </ScrollLockProvider>
       </View>
