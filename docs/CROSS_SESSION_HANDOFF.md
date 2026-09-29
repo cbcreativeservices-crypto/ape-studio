@@ -204,6 +204,30 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 00:10 · ccode · 4a780f7b
+changed: test: source guards for the 2026-09-29 cable labs bug hunt fixes
+affects other side: nothing — client JS only (cable lab fixes)
+needs: nothing
+
+
+### 2026-09-29 00:10 · ccode · 3be07b0e
+changed: Cable Fundamentals: a what's-left list, kept bench progress, honest dots (bug hunt 2026-09-29)
+affects other side: nothing — client JS only (cable lab fixes)
+needs: nothing
+
+
+### 2026-09-29 00:10 · ccode · 31643437
+changed: Cable Install screen: REPEAT LAB is a fresh run, not a credit wipe (bug hunt 2026-09-29)
+affects other side: nothing — client JS only (cable lab fixes)
+needs: nothing
+
+
+### 2026-09-29 00:10 · ccode · 7df9e8e5
+changed: Cable Install scenes: bug hunt 2026-09-29 — retry no longer sticks, no double taps
+affects other side: nothing — client JS only (cable lab fixes)
+needs: nothing
+
+
 ### 2026-09-29 00:09 · ccode · 4a5cd02c
 changed: fix(cymatics): bug hunt 2026-09-29 — gallery, art studio, studios, store
 affects other side: nothing — client JS only (wave/cymatics fixes)
