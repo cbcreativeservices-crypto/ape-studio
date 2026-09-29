@@ -130,7 +130,7 @@ import {
 } from './src/screens/lab/soundsystems/modeScreens';
 import { navigationRef } from './src/navigation/navigationRef';
 import { linking } from './src/navigation/linking';
-import { attachLinkCapture } from './src/navigation/pendingLink';
+import { attachLinkCapture, pendingLinkUrl, setPendingLink } from './src/navigation/pendingLink';
 import { recordAppSession } from './src/features/review/reviewPrompt';
 import { startAutoUpdate } from './src/features/updates/startAutoUpdate';
 import { drainStudyQueue } from './src/features/study/sync';
@@ -201,10 +201,43 @@ const navTheme: Theme = {
   },
 };
 
+/** The public link path for each LOCAL reminder `dest`, so a tap that arrives
+ *  signed out can be parked in pendingLink and resumed after sign-in. */
+const LOCAL_DEST_PATH: Record<string, string> = {
+  glossary: 'glossary',
+  awards: 'awards/curriculum',
+};
+
 /** Route a LOCAL reminder's `dest` to its screen. Module scope so both the
  *  live listener and NavigationContainer's cold-start drain share one map —
  *  the two paths silently diverging is how the cold-start tap got lost. */
 function routeLocalDest(dest: string): void {
+  /**
+   * ⛔ NOTHING SITS ABOVE `Auth` — A REMINDER TAP INCLUDED (bug hunt 2026-09-29).
+   *
+   * A reminder tapped while signed out navigated straight to Main / Awards on
+   * top of the login screen: the app shell with no account behind it, the
+   * state Splash and pendingLink.ts already forbid for deep links. The stack
+   * says whether they are signed out (Splash makes `Auth` the base in exactly
+   * that case), so park the destination in pendingLink — AuthScreen resumes it
+   * after sign-in — and navigate nowhere.
+   *
+   * Still on Splash (a cold-start tap, drained from onReady): navigate as
+   * before AND park it. Signed in, Splash keeps the pushed route and clears
+   * the parked copy; signed out, Splash drops the route and the parked copy
+   * is what survives sign-in.
+   */
+  let base: string | undefined;
+  try {
+    base = navigationRef.isReady() ? navigationRef.getRootState()?.routes?.[0]?.name : undefined;
+  } catch {
+    base = undefined;
+  }
+  if (base === 'Auth' || base === 'Splash') {
+    const path = LOCAL_DEST_PATH[dest];
+    if (path) setPendingLink(pendingLinkUrl(path));
+    if (base === 'Auth') return;
+  }
   if (dest === 'glossary') {
     // Glossary lives in the Study stack inside the Main tabs. `pop: true`
     // returns to the existing Main (RN7 navigate() would otherwise push a

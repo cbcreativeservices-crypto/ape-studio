@@ -73,6 +73,19 @@ export function pendingLinkUrl(path: string): string {
  * import threw `ReferenceError: Linking is not defined` during boot. This is
  * the app's root: nothing here may be able to throw, and a missing Linking
  * simply means no deep links on that platform — never a broken launch.
+ *
+ * ⛔ LITERAL `require`, NEVER `eval('require')` (bug hunt 2026-09-29). Every
+ * lazy load in this function used to go through `eval('require')(…)` to hide
+ * it from Metro. Under Metro/Hermes there is no global `require` for eval to
+ * find, so each one THREW, the catch swallowed it, and this whole function was
+ * a silent no-op in every shipped build: `setPendingLink` was never called
+ * (so `consumePendingLink()` always returned null and no link survived
+ * sign-in), and the NOTHING-SITS-ABOVE-`Auth` correction below never ran (so a
+ * link arriving while signed out pushed a members' lab straight over the login
+ * screen). Same trap as `features/tools/capture/optionalModule.ts`, which
+ * documents it. A literal `require` inside a try is what Metro bundles; the
+ * node tests that import this module never CALL this function, so they still
+ * load nothing from React Native or React Navigation.
  */
 /** Just the two members we use, so the lazy require needs no RN type import. */
 /** Only what the warm-link guard touches. */
@@ -91,7 +104,7 @@ export function attachLinkCapture(): () => void {
   let linking: LinkingLike | null = null;
   try {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const rn = eval('require')('react-native') as { Linking?: LinkingLike };
+    const rn = require('react-native') as { Linking?: LinkingLike };
     linking = rn?.Linking ?? null;
   } catch {
     linking = null;
@@ -127,18 +140,19 @@ export function attachLinkCapture(): () => void {
        * when this fires, and scoped to link arrivals only: an ordinary push
        * above Auth during registration is none of this function's business.
        */
-      setTimeout(() => {
+      const correct = () => {
         try {
           /**
            * Required LAZILY, like the `react-native` require above and for the
            * same reason: this module is loaded by node tests that have neither
            * React Navigation nor a navigation container. A static import here
            * pulled both into their module graph and broke linkPaths.test.ts.
+           * Literal requires — see the ⛔ note above this function.
            */
           // eslint-disable-next-line @typescript-eslint/no-var-requires
-          const nav = eval('require')('./navigationRef') as { navigationRef?: NavRefLike };
+          const nav = require('./navigationRef') as { navigationRef?: NavRefLike };
           // eslint-disable-next-line @typescript-eslint/no-var-requires
-          const rnav = eval('require')('@react-navigation/native') as {
+          const rnav = require('@react-navigation/native') as {
             CommonActions?: { reset(cfg: unknown): unknown };
           };
           const navigationRef = nav?.navigationRef;
@@ -147,15 +161,28 @@ export function attachLinkCapture(): () => void {
           if (!navigationRef.isReady()) return;
           const state = navigationRef.getRootState();
           const routes = state?.routes ?? [];
-          if (routes.length > 1 && routes[0]?.name === 'Auth') {
-            navigationRef.dispatch(
-              CommonActions.reset({ index: 0, routes: [{ name: 'Auth', params: routes[0].params }] }),
-            );
+          const base = routes[0]?.name;
+          if (base === 'Auth') {
+            if (routes.length > 1) {
+              navigationRef.dispatch(
+                CommonActions.reset({ index: 0, routes: [{ name: 'Auth', params: routes[0].params }] }),
+              );
+            }
+            return;
           }
+          // SIGNED IN (the base is the app, not Auth or the booting Splash):
+          // React Navigation has already opened the link, so there is nothing
+          // to resume. Holding it would replay a stale destination after a
+          // later sign-out → sign-in in this launch (bug hunt 2026-09-29).
+          if (base && base !== 'Splash') clearPendingLink();
         } catch {
           /* navigation not mounted — nothing to correct */
         }
-      }, 0);
+      };
+      // A tick for React Navigation to apply the URL, and once more shortly
+      // after in case its dispatch landed later than that tick.
+      setTimeout(correct, 0);
+      setTimeout(correct, 250);
     });
     return () => {
       try {
