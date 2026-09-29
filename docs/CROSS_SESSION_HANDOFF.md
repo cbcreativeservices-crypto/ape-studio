@@ -228,6 +228,24 @@ affects other side: nothing — client JS only (study bug fixes)
 needs: nothing
 
 
+### 2026-09-29 00:12 · ccode · d877b744
+changed: fix(sound-systems): goal chips start latched on a finished page
+affects other side: nothing — client JS only (sound systems fixes)
+needs: nothing
+
+
+### 2026-09-29 00:12 · ccode · 25bfcfbe
+changed: chore(sound-systems): remove the unrendered PartsBin
+affects other side: nothing — client JS only (sound systems fixes)
+needs: nothing
+
+
+### 2026-09-29 00:12 · ccode · f5b77878
+changed: fix(sound-systems): console tray, arrival timeline and plot badge text >= 9 pt
+affects other side: nothing — client JS only (sound systems fixes)
+needs: nothing
+
+
 ### 2026-09-29 00:11 · ccode · 4fecce64
 changed: fix(awards): picker RETRY instead of a dead "pull up again"; goToPage unlocks
 affects other side: nothing — client JS only (enrollment bug fixes)
@@ -263,11 +281,6 @@ changed: Cable Install scenes: bug hunt 2026-09-29 — retry no longer sticks, n
 affects other side: nothing — client JS only (cable lab fixes)
 needs: nothing
 
-
-### 2026-09-29 00:09 · ccode · 4a5cd02c
-changed: fix(cymatics): bug hunt 2026-09-29 — gallery, art studio, studios, store
-affects other side: nothing — client JS only (wave/cymatics fixes)
-needs: nothing
 
 ### 2026-09-29 00:09 · ccode · e0a31105
 changed: Lab audio: re-check the gate before a clip starts; no stuck ■; no unasked popup
@@ -337,8 +350,8 @@ needs: nothing
 
 ### 2026-09-29 00:07 · ccode · 1a6e4f66
 changed: fix(sound-systems): load race, matching resets, guest/preview save rule
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (sound systems fixes)
+needs: nothing
 
 
 ### 2026-09-29 00:07 · ccode · 8916c197
@@ -355,8 +368,8 @@ needs: nothing
 
 ### 2026-09-29 00:03 · ccode · f4177d7f
 changed: fix(sound-systems): a wrong FAULT pick locks naming until the next probe
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (sound systems fixes)
+needs: nothing
 
 
 ### 2026-09-29 00:03 · ccode · 05db7fdf
@@ -367,8 +380,8 @@ needs: nothing
 
 ### 2026-09-29 00:02 · ccode · 76ed4804
 changed: fix(sound-systems): LEARN checks count only right answers, once each
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (sound systems fixes)
+needs: nothing
 
 
 ### 2026-09-29 00:01 · ccode · 7b962f35
@@ -379,26 +392,26 @@ needs: nothing
 
 ### 2026-09-29 00:00 · ccode · d49a60a4
 changed: fix(sound-systems): an OFF wedge send no longer fails 'every monitor send is PRE'
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (sound systems fixes)
+needs: nothing
 
 
 ### 2026-09-28 23:59 · ccode · 8249b8d4
 changed: fix(sound-systems): page work survives BACK/CONTINUE; CLEAR and DOCUMENT fixes
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (sound systems fixes)
+needs: nothing
 
 
 ### 2026-09-28 23:57 · ccode · 87872fe2
 changed: fix(sound-systems): FINISH never blocked outside the understanding check
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (sound systems fixes)
+needs: nothing
 
 
 ### 2026-09-28 23:57 · ccode · 356520b2
 changed: fix(sound-systems): honest forward-walk grading, prefix sequence check, no double probes
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (sound systems fixes)
+needs: nothing
 
 
 ### 2026-09-28 23:45 · ccode · dbab81af
