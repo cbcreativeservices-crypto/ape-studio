@@ -90,6 +90,7 @@ const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   CableInstallLab: CableInstallLabScreen as ComponentType,
   SoundSystemsLab: SoundSystemsLabScreen as ComponentType,
   CenterLockTuner: CenterLockTuner as ComponentType,
+  AuthScreen: AuthScreen as ComponentType,
   SoundSystemsLearn: SoundSystemsLearnScreen as ComponentType,
   SoundSystemsBuild: SoundSystemsBuildScreen as ComponentType,
   SoundSystemsRoute: SoundSystemsRouteScreen as ComponentType,
@@ -167,6 +168,7 @@ import { lockPortrait } from './src/lib/screenOrientationSafe';
 import { initTelemetry, trackScreen, wrapRoot } from './src/features/telemetry/telemetry';
 import { colors, fontAssets } from './src/theme/tokens';
 import { CenterLockTuner } from './src/screens/tools/CenterLockTuner';
+import { AuthScreen } from './src/screens/auth/AuthScreen';
 
 // Crash reporting + anonymous analytics (owner-approved 2026-09-16), booted
 // FIRST so a failure anywhere below is already caught. Privacy contract +

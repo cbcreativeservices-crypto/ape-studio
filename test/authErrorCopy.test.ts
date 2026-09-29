@@ -73,3 +73,9 @@ test('the client rule cannot catch a breached password — which is why mapping 
   // "Password1" satisfies every client-side rule and is in every breach list.
   assert.equal(passwordIssue('Password1'), null);
 });
+
+test('a breached password says the account was NOT created and points at the suggester (2026-09-29)', () => {
+  const copy = friendlyAuthError({ message: 'Password is known to be weak and easy to guess, please choose a different one.' });
+  assert.match(copy!, /NOT created/);
+  assert.match(copy!, /SUGGEST A STRONG PASSWORD/);
+});

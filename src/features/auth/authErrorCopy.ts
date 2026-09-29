@@ -53,7 +53,9 @@ export function friendlyAuthError(error: { message?: string } | null | undefined
    * whether a password has leaked. So this must be mapped, not prevented.
    */
   if (/known to be weak|weak.*password|password.*(leaked|breach|pwned)/i.test(m)) {
-    return 'That password has appeared in a known data breach, so it can’t be used. Please choose a different one — a few unrelated words work well.';
+    // "NOT created" up front (owner, 2026-09-29: a tester could not get past
+    // this, then kept trying LOGIN for an account that never existed).
+    return 'Your account was NOT created yet — that password has appeared in a known data breach, so it can’t be used. Tap SUGGEST A STRONG PASSWORD (or type a different one — a few unrelated words work well), then tap CREATE ACCOUNT again.';
   }
   // The server can also enforce its own length policy, which may not match the
   // 8-character rule below. Relay it as a password problem rather than as the

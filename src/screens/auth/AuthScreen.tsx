@@ -53,6 +53,8 @@ import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 // Import kept alongside the disabled mount below so re-enabling is one line.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { AppWelcomeOverlay } from '../../features/intro/AppWelcomeOverlay';
+import * as Crypto from 'expo-crypto';
+import { suggestPassword } from '../../features/auth/suggestPassword';
 import { resetAmplitudeOrientation } from '../../features/lab/amplitudeOrientation';
 import type { RootStackParamList } from '../../navigation/types';
 import { consumePendingLink } from '../../navigation/pendingLink';
@@ -66,6 +68,23 @@ export function AuthScreen({ navigation }: Props) {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  /** The last CREATE ACCOUNT was refused for a breached/weak password — so
+   *  no account exists yet (see the LOGIN message below). */
+  const [signupRefused, setSignupRefused] = useState(false);
+  /** A passphrase the app suggested, shown in full so it can be saved. */
+  const [suggested, setSuggested] = useState<string | null>(null);
+  const onSuggestPassword = () => {
+    // Secure random source; the words and digits are drawn independently.
+    const randomInt = (n: number) => {
+      const b = Crypto.getRandomBytes(4);
+      const v = ((b[0] << 24) | (b[1] << 16) | (b[2] << 8) | b[3]) >>> 0;
+      return v % n;
+    };
+    const pw = suggestPassword(randomInt);
+    setPassword(pw);
+    setSuggested(pw);
+    setError(null);
+  };
   // Optional organization invitation / promo / access code (user request
   // 2026-07-22).
   const [accessCode, setAccessCode] = useState('');
@@ -252,9 +271,11 @@ export function AuthScreen({ navigation }: Props) {
     try {
       const result = await registerCommercialUser(email.trim(), password);
       if (!result.success) {
+        setSignupRefused(/data breach|too short/i.test(result.error ?? ''));
         setError(result.error);
         return;
       }
+      setSignupRefused(false);
       // Optional access/promo code (owner 2026-08-21: comp accounts / event
       // offers). Best-effort AFTER the account exists — a bad or not-yet-live
       // code never blocks the finished signup; the user just lands as free.
@@ -307,7 +328,14 @@ export function AuthScreen({ navigation }: Props) {
     try {
       const err = await signIn(email.trim(), password);
       if (err) {
-        setError(err);
+        // After a refused CREATE ACCOUNT, "Email or password is incorrect" is a
+        // dead end — there is no account to log in to (owner, TestFlight
+        // 2026-09-29: a tester kept trying LOGIN and gave up). Say so.
+        setError(
+          signupRefused && /incorrect/i.test(err)
+            ? 'There is no account for this email yet — the password you chose when creating it was rejected, so it was never created. Tap SUGGEST A STRONG PASSWORD, then CREATE ACCOUNT.'
+            : err,
+        );
         return;
       }
       await claimAndProceed(toMain); // [12] 2026-09-07: toMain lands on Home (MainTabs initialRoute = Course Selection), same as create-account
@@ -514,6 +542,15 @@ export function AuthScreen({ navigation }: Props) {
               New account? Choose a password you don’t use anywhere else — a few unrelated words is ideal. Passwords
               found in known data breaches are rejected.
             </Text>
+            {/* One tap to a password the breach check will accept (owner,
+                2026-09-29). Shown in full so it can be saved or written down. */}
+            <StudioButton label="Suggest a strong password" variant="secondary" small onPress={onSuggestPassword} />
+            {suggested && suggested === password ? (
+              <Text style={styles.suggested} selectable>
+                Your new password: <Text style={styles.suggestedPw}>{suggested}</Text>
+                {'\n'}Save it (your phone may offer to) or write it down, then tap CREATE ACCOUNT.
+              </Text>
+            ) : null}
 
             {/* Optional organization / promo access code + its explanation. */}
             <TextField
@@ -633,6 +670,8 @@ const styles = StyleSheet.create({
   betaNote: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.amberLabel },
   // Access-code explanation (user request 2026-07-22).
   codeHint: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.textSub, marginTop: -8 },
+  suggested: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 20, color: colors.textSecondary },
+  suggestedPw: { fontFamily: fonts.barlowSemiBold, color: colors.amber, letterSpacing: 0.4 },
   error: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 19, color: colors.red },
   info: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 19, color: colors.green },
   busyWrap: { height: 48, alignItems: 'center', justifyContent: 'center' },
