@@ -107,14 +107,20 @@ import {
   DSP,
   DspRear,
   Hank,
+  HMGR2,
   HorizontalManager,
   IFACE,
   Kink,
+  MGR_L,
+  MGR_R,
   NetworkSwitch,
   Nl4PlugRear,
   OpenBay,
   PATCH,
+  PATCH_XS,
   PDU,
+  RAIL_L_X,
+  SFP_XS,
   PatchPanelRear,
   Plait,
   PowerDistro,
@@ -142,29 +148,28 @@ const REQUIRED_FINDS = 10;
  *  suspect list (no spoilers); (mx, my) is where the marker sits — ON the
  *  defect, never floating beside it. */
 const HIT: Record<string, { x: number; y: number; w: number; h: number; mx: number; my: number; where: string }> = {
-  'ri-9': { x: 118, y: -4, w: 120, h: 28, mx: 192, my: 13, where: 'Top cable entry' },
-  'ri-4': { x: 40, y: 44, w: 140, h: 40, mx: 110, my: 69, where: 'Patch panel — designation strip' },
-  'ri-13': { x: 184, y: 44, w: 116, h: 40, mx: 236, my: 62, where: 'Patch panel — port 22 and its cable' },
+  'ri-9': { x: 118, y: -4, w: 112, h: 28, mx: 192, my: 13, where: 'Top cable entry' },
+  'ri-4': { x: 40, y: 44, w: 190, h: 40, mx: 110, my: 57, where: 'Patch panel — designation strip' },
+  'ri-13': { x: 230, y: 24, w: 70, h: 38, mx: 253, my: 44, where: 'Patch panel — port 22 and its cable' },
   'ri-1': { x: 56, y: 18, w: 134, h: 26, mx: 124, my: 29, where: 'Horizontal duct at the top' },
-  'ri-8': { x: 0, y: 84, w: 52, h: 48, mx: 45, my: 100, where: 'Left rail at the switch' },
+  'ri-8': { x: 0, y: 84, w: 58, h: 48, mx: 50, my: 100, where: 'Left rail at the switch' },
   'ri-2': { x: 180, y: 106, w: 120, h: 46, mx: 214, my: 133, where: 'DSP inputs 6–8' },
   'ri-12': { x: 0, y: 150, w: 100, h: 68, mx: 52, my: 188, where: 'Interface inputs → left manager' },
   'ri-3': { x: 104, y: 172, w: 100, h: 44, mx: 172, my: 194, where: 'Open bay' },
   'ri-7': { x: 200, y: 186, w: 100, h: 30, mx: 247, my: 200, where: 'Bundle right of the open bay' },
-  'ri-11': { x: 0, y: 218, w: 44, h: 36, mx: 40, my: 233, where: 'Left rail beside the amp' },
-  'ri-5': { x: 46, y: 224, w: 126, h: 30, mx: 112, my: 245, where: 'Amp — connector field' },
+  'ri-11': { x: 0, y: 218, w: 58, h: 36, mx: 53, my: 233, where: 'Left rail beside the amp' },
+  'ri-5': { x: 60, y: 224, w: 112, h: 30, mx: 112, my: 245, where: 'Amp — connector field' },
   'ri-6': { x: 176, y: 250, w: 124, h: 30, mx: 232, my: 262, where: 'Amp — rear fan exhaust' },
-  'ri-10': { x: 46, y: 282, w: 126, h: 26, mx: 88, my: 298, where: 'PDU — outlets 1–3' },
+  'ri-10': { x: 60, y: 282, w: 112, h: 26, mx: 92, my: 298, where: 'PDU — outlets 1–3' },
   'ri-14': { x: 176, y: 306, w: 124, h: 40, mx: 238, my: 323, where: 'Below the PDU' },
 };
 
-/** 24 keystone rears on a 19 mm pitch. */
-const PATCH_XS = Array.from({ length: 24 }, (_, i) => 60 + i * 9.5);
 const HMGR_XS = Array.from({ length: 14 }, (_, i) => 66 + i * 16);
-const SWITCH_XS = [60, 76, 92, 108, 124, 140, 156, 172];
+/** RJ45 cages (left edges) on a 16-unit (32 mm) pitch. */
+const SWITCH_XS = [64, 80, 96, 112, 128, 144, 160, 176];
 const DSP_JACK_XS = [70, 94, 118, 142, 166, 190, 214, 238];
 const IFACE_XS = [70, 92, 114, 136, 158, 180];
-const DISTRO_XS = Array.from({ length: 8 }, (_, i) => 60 + i * 19);
+const DISTRO_XS = Array.from({ length: 8 }, (_, i) => 64 + i * 19);
 const TIE_YS = [60, 118, 176, 234, 292, 336];
 
 /* ── motion timing for this scene (see the header note) ──────────────────── */
@@ -226,7 +231,7 @@ const loomLen = (ex: number, lane: number, ty: number) => Math.round((Math.abs(e
 /** Lanes are allocated by GROUP INDEX, never by assignment order, so
  *  reassigning one group can never shuffle another group's route (which would
  *  set five looms re-installing at once). */
-const laneFor = (gi: number, left: boolean) => (left ? 12 + gi * 4 : 328 - gi * 4);
+const laneFor = (gi: number, left: boolean) => (left ? MGR_L.x + 10 + gi * 4 : MGR_R.x + MGR_R.w - 10 - gi * 4);
 const hmgrY = (gi: number) => 24 + gi * 2.4;
 const entryCx = (gi: number) => 188 + gi * 3;
 
@@ -296,8 +301,8 @@ function ControlTail({ isL }: { isL: boolean }) {
   const x0 = isL ? 58 : 282;
   return (
     <G>
-      <JacketPath d={harnessD(x0, ANALOG_Y - 4.4, 266, DSP.jackY)} color={C} width={2.2} />
-      <Rj45PlugRear x={266 - 5.85} y={DSP.jackY - 4.8} color={C} />
+      <JacketPath d={harnessD(x0, ANALOG_Y - 4.4, DSP.netX, DSP.jackY)} color={C} width={2.2} />
+      <Rj45PlugRear x={DSP.netX - 5.85} y={DSP.jackY - 4.8} color={C} />
     </G>
   );
 }
@@ -325,7 +330,7 @@ function NetTail({ isL }: { isL: boolean }) {
 function FiberTail({ isL }: { isL: boolean }) {
   const F = CI_CLASS_TINTS.fiber;
   const x0 = isL ? 58 : 282;
-  const cx = 255.5;
+  const cx = SFP_XS[0] + 7.5;
   return (
     <G>
       <JacketPath d={harnessD(x0, NET_Y - 2.2, cx, SWITCH.y + 13)} color={F} width={1.8} />
@@ -634,6 +639,7 @@ const Chassis = memo(function Chassis({ dress, enter }: { dress: boolean; enter:
       </Band>
       <Band index={3} enter={enter}>
         <PatchPanelRear xs={PATCH_XS} dress={dress} />
+        <HorizontalManager xs={HMGR_XS} y={HMGR2.y} />
       </Band>
       <Band index={4} enter={enter}>
         <NetworkSwitch xs={SWITCH_XS} lit={dress ? [0, 1, 2, 3] : [0, 4]} />
@@ -690,6 +696,8 @@ const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; fo
   const S = CI_CLASS_TINTS.speaker;
   const at = (rel: number) => CHAOS_AT + rel;
   const modTop = PATCH.modY;
+  /** Patch port 22 (index 21). */
+  const P22 = PATCH_XS[21];
 
   /* ri-9 — the horizontals: entry x → keystone module, over the raw lip */
   const drops: [number, number][] = [[160, 1], [169, 4], [178, 2], [187, 7], [196, 5], [205, 10], [214, 8]];
@@ -720,19 +728,9 @@ const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; fo
 
       {/* ── ri-13 · the one labelled cable: its flag says N-012, the strip under
           its port says N-007 — the two ends disagree */}
-      <DrawPath d={`M222 0 V13.6 L224 20 C228 30 232 38 236 44.5 H258 Q264 44.5 266 47 L${PATCH_XS[22]} ${modTop + 1}`} len={110} color={N} width={3} enter={enter} delay={at(230)} />
-      <SvgIn enter={enter} delay={at(520)}>
-        <Rect x={235.4} y={41} width={28} height={9} rx={0.8} fill="rgba(0,0,0,0.45)" />
-        <Rect x={234.5} y={40} width={28} height={9} rx={0.8} fill="#eceae3" stroke="#8d8a80" strokeWidth={0.35} />
-        <SvgText x={248.5} y={47.2} fontFamily={fonts.mono} fontSize={RACK_TEXT} fill="#17181b" textAnchor="middle">
-          N-012
-        </SvgText>
-        <SvgText x={PATCH_XS[22] - 2} y={PATCH.stripY + 7.2} fontFamily={fonts.mono} fontSize={RACK_TEXT} fill="#17181b" textAnchor="middle">
-          N-007
-        </SvgText>
-      </SvgIn>
-      {/* ── ri-4 · ports 1–12: the designation strip is blank (drawn blank by
-          the panel itself — the absence IS the defect) */}
+      <DrawPath d={`M222 0 V13.6 L224 20 C227 27 ${P22} 24 ${P22} 32 V${modTop + 1}`} len={90} color={N} width={3} enter={enter} delay={at(230)} />
+      {/* ── ri-4 · the designation strip is blank (drawn blank by the panel
+          itself — the absence IS the defect) */}
 
       {/* ── ri-1 · an IEC cord and a mic line plaited through each other along
           the manager row (power in with signal, no plan) */}
@@ -741,9 +739,22 @@ const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; fo
       <SvgIn enter={enter} delay={at(300)}>
         <Plait x0={58} x1={190} y={29} amp={4.2} period={44} colors={[P, A]} widths={[4, 3.2]} />
       </SvgIn>
-      {/* the cord goes on down the patch and switch faces to the DSP inlet;
-          the mic line to DSP input 2 */}
-      <DrawPath d="M190 29 C272 29 283 42 283 96 C283 142 250 162 243.5 153.2" len={200} color={P} width={4} enter={enter} delay={at(360)} />
+      {/* the cord goes on over the patch panel and down the right edge of the
+          switch face to the DSP inlet; the mic line to DSP input 2 */}
+      <DrawPath d="M190 29 C214 23 262 21 272 25 C278 28 279 36 279 48 V96 C279 142 250 162 243.5 153.2" len={200} color={P} width={4} enter={enter} delay={at(360)} />
+      <SvgIn enter={enter} delay={at(520)}>
+        {/* ri-13: the wrap-label flag, folded round the cable just above its
+            port — and the strip under that port, which disagrees */}
+        <Line x1={P22 - 3.2} y1={33.5} x2={P22 - 1.2} y2={33.5} stroke="#eceae3" strokeWidth={1.4} />
+        <Rect x={P22 - 30.1} y={30} width={28} height={9} rx={0.8} fill="rgba(0,0,0,0.45)" />
+        <Rect x={P22 - 31} y={29} width={28} height={9} rx={0.8} fill="#eceae3" stroke="#8d8a80" strokeWidth={0.35} />
+        <SvgText x={P22 - 17} y={36.2} fontFamily={fonts.mono} fontSize={RACK_TEXT} fill="#17181b" textAnchor="middle">
+          N-012
+        </SvgText>
+        <SvgText x={P22} y={PATCH.stripY + 6.7} fontFamily={fonts.mono} fontSize={RACK_TEXT} fill="#17181b" textAnchor="middle">
+          N-007
+        </SvgText>
+      </SvgIn>
       <DrawPath d={`M58 29 C44 60 70 110 ${DSP_JACK_XS[1]} ${DSP.jackY}`} len={100} color={A} width={3.2} enter={enter} delay={at(380)} />
       <SvgIn enter={enter} delay={at(520)}>
         <C13Plug x={236} y={DSP.y + 32} />
@@ -752,10 +763,10 @@ const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; fo
 
       {/* ── ri-8 · Cat6 out of switch port 1, folded 180° round the rail edge
           into the manager — a crease where the jacket gave */}
-      <DrawPath d="M65 97.3 H48 C43 97.3 43 104 48 104 L56 104 C60 104 60 110 57 116 C52 128 44 134 32 140 C29 142 28 146 28 152 V346" len={320} color={N} width={3} enter={enter} delay={at(250)} />
+      <DrawPath d={`M${SWITCH_XS[0] + 5.85} 97.3 H${RAIL_L_X + 3} C${RAIL_L_X - 2} 97.3 ${RAIL_L_X - 2} 104 ${RAIL_L_X + 3} 104 L${RAIL_L_X + 11} 104 C${RAIL_L_X + 15} 104 ${RAIL_L_X + 15} 110 ${RAIL_L_X + 12} 116 C${RAIL_L_X + 7} 128 ${RAIL_L_X - 1} 134 ${RAIL_L_X - 13} 140 C${RAIL_L_X - 16} 142 ${RAIL_L_X - 17} 146 ${RAIL_L_X - 17} 152 V346`} len={320} color={N} width={3} enter={enter} delay={at(250)} />
       <SvgIn enter={enter} delay={at(420)}>
         <Rj45PlugRear x={SWITCH_XS[0]} y={SWITCH.y + 8.5} color={N} />
-        <Kink x={44.2} y={100.6} angle={-90} />
+        <Kink x={RAIL_L_X - 0.8} y={100.6} angle={-90} />
       </SvgIn>
 
       {/* ── ri-2 · three XLRs in DSP inputs 6–8, the cables pulled away at an
@@ -809,22 +820,22 @@ const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; fo
 
       {/* ── ri-11 · service loops cinched hard against the rail with two ties,
           in the corner beside the amp — slack no hand can reach */}
-      <DrawPath d="M40 224 C36 216 28 210 22 200 V120" len={130} color={A} width={3.2} enter={enter} delay={at(380)} />
-      <DrawPath d="M42 227 C36 220 26 214 18 206 V130" len={120} color={N} width={3} enter={enter} delay={at(400)} />
+      <DrawPath d="M46 224 C42 216 32 210 26 200 V120" len={130} color={A} width={3.2} enter={enter} delay={at(380)} />
+      <DrawPath d="M48 227 C42 220 30 214 22 206 V130" len={120} color={N} width={3} enter={enter} delay={at(400)} />
       <SvgIn enter={enter} delay={at(440)}>
-        <JacketPath d="M35 232 a12 9.5 0 1 0 24 0 a12 9.5 0 1 0 -24 0" color={A} width={3.2} />
-        <JacketPath d="M39 233 a8 6.5 0 1 0 16 0 a8 6.5 0 1 0 -16 0" color={N} width={3} />
-        <G transform="rotate(90 49 227)">
-          <CableTie x={49} y={227} k={RK} halfH={18} black />
+        <JacketPath d="M41 232 a12 9.5 0 1 0 24 0 a12 9.5 0 1 0 -24 0" color={A} width={3.2} />
+        <JacketPath d="M45 233 a8 6.5 0 1 0 16 0 a8 6.5 0 1 0 -16 0" color={N} width={3} />
+        <G transform="rotate(90 55 227)">
+          <CableTie x={55} y={227} k={RK} halfH={18} black />
         </G>
-        <G transform="rotate(90 49 238)">
-          <CableTie x={49} y={238} k={RK} halfH={18} black />
+        <G transform="rotate(90 55 238)">
+          <CableTie x={55} y={238} k={RK} halfH={18} black />
         </G>
         {/* the loops are cinched THROUGH the rail: the rail comes back over
             them, so the slack sits in the corner no hand reaches */}
-        <RackRail x={45} y0={220} y1={246} k={RK} uTop={U_TOP} />
+        <RackRail x={RAIL_L_X} y0={220} y1={246} k={RK} uTop={U_TOP} />
       </SvgIn>
-      <DrawPath d="M40 240 C34 250 30 262 30 280 V346" len={120} color={A} width={3.2} enter={enter} delay={at(470)} />
+      <DrawPath d="M46 240 C40 250 36 262 36 280 V346" len={120} color={A} width={3.2} enter={enter} delay={at(470)} />
 
       {/* ── ri-7 · the loom out of the right manager, cinched to an hourglass
           at two over-tightened ties, then down into the bay behind the amp */}
@@ -1104,11 +1115,11 @@ function Looms({
       {/* hook-and-loop wraps retaining the looms in the managers */}
       {TIE_YS.map((y) => (
         <G key={y}>
-          <G transform={`rotate(90 23 ${y})`}>
-            <HookLoopWrap x={23} y={y} k={RK} halfH={13 / RK} width={16} />
+          <G transform={`rotate(90 ${MGR_L.x + MGR_L.w / 2} ${y})`}>
+            <HookLoopWrap x={MGR_L.x + MGR_L.w / 2} y={y} k={RK} halfH={15 / RK} width={16} />
           </G>
-          <G transform={`rotate(90 317 ${y})`}>
-            <HookLoopWrap x={317} y={y} k={RK} halfH={13 / RK} width={16} />
+          <G transform={`rotate(90 ${MGR_R.x + MGR_R.w / 2} ${y})`}>
+            <HookLoopWrap x={MGR_R.x + MGR_R.w / 2} y={y} k={RK} halfH={15 / RK} width={16} />
           </G>
         </G>
       ))}
@@ -1827,7 +1838,7 @@ export function RackScene({ width, completed, onComplete, openSources }: CiModul
                 <View
                   accessible
                   accessibilityRole="image"
-                  accessibilityLabel="Rear view of a badly dressed equipment rack: patch field, horizontal manager, network switch, DSP, audio interface, amplifier, power distribution, and vertical cable managers on both sides. Cabling is tangled, taut, unlabeled and blocking vents."
+                  accessibilityLabel="Rear view of a badly dressed equipment rack: a 1U patch panel between two horizontal managers, network switch, DSP, audio interface, amplifier, power distribution, and vertical cable managers on both sides. Cabling is tangled, taut, unlabeled and blocking vents."
                 >
                   <RackSvg
                     w={fw}

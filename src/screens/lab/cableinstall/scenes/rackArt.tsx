@@ -4,10 +4,16 @@
  * spiral, unclear devices, markers floating" — "too poor to be acceptable").
  *
  * Rear view of a 15U 19-inch rack at RK ≈ 0.495 units per mm (1U = 44.45 mm =
- * 22 units). Every device sits ON the U grid (its ears on U boundaries, the
- * way real gear is racked), the rails carry the EIA universal hole pattern,
+ * 22 units), drawn to EIA-310 (owner 2026-09-28: the rails were ~5 % too far
+ * apart and the patch panel was 2U): hole centres 465.1 mm apart on 15.9 mm
+ * rail flanges, so the clear opening between the rails is 450 mm and the
+ * rails' outer edges span the 482.6 mm (19 in) panel width. Every device sits
+ * ON the U grid at its real height (patch 1U, switch 1U, DSP 2U, interface 1U,
+ * amp 3U, PDU 1U), the rails carry the EIA universal square-hole pattern
+ * (holes at 0.25 / 0.875 / 1.5 in within each U: 0.625-in spacing inside a U,
+ * 0.5 in across the boundary),
  * and every rear-panel part is drawn at its real size: keystone rears on a
- * 19.3 mm pitch, D-series XLR flanges (26 × 31 mm), NL4 panel jacks, IEC C14
+ * 16.6 mm pitch in groups of six, D-series XLR flanges (26 × 31 mm), NL4 panel jacks, IEC C14
  * inlets and C13 outlets, an RJ45 field, a 120 mm fan behind its grille.
  * Plugs are drawn END-ON (the way a rear view sees them), with the cable
  * leaving the boot.
@@ -25,7 +31,10 @@
 import { createContext, useContext, type ReactNode } from 'react';
 import { Circle, Defs, G, Line, LinearGradient, Path, RadialGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { fonts } from '../../../../theme/tokens';
+import { CI_CLASS_TINTS } from '../data/cableTypes';
 import { JacketPath, PanelJack, RackRail, Screw, VentField, shade } from '../svgArt';
+
+const NETWORK_TINT = CI_CLASS_TINTS.network;
 
 /** units per millimetre in the rack drawing (1U = 22 units). */
 export const RK = 22 / 44.45;
@@ -37,9 +46,25 @@ export const uY = (n: number) => U_TOP + n * U_H;
 export const RACK_US = 15;
 export const RAIL_Y0 = U_TOP;
 export const RAIL_Y1 = uY(RACK_US);
-/** Device faces span the rails. */
-export const FACE_X = 54;
-export const FACE_W = 232;
+/** EIA-310 horizontal geometry, centred on the drawing. */
+export const RACK_CX = 170;
+/** Rail flange width (15.9 mm). */
+export const RAIL_W = 15.9 * RK;
+/** Mounting-hole centres, 465.1 mm apart. */
+export const HOLE_L = RACK_CX - (465.1 * RK) / 2;
+export const HOLE_R = RACK_CX + (465.1 * RK) / 2;
+/** Rail x (left edge of each flange); the holes sit on the flange centre line. */
+export const RAIL_L_X = HOLE_L - RAIL_W / 2;
+export const RAIL_R_X = HOLE_R - RAIL_W / 2;
+/** Clear opening between the rails: RAIL_IN_L … RAIL_IN_R = 450 mm. */
+export const RAIL_IN_L = RAIL_L_X + RAIL_W;
+export const RAIL_IN_R = RAIL_R_X;
+/** Device chassis (seen from the rear) inside the opening: 444 mm wide. */
+export const FACE_X = 60;
+export const FACE_W = 220;
+/** An ear screw sits in the 0.25-in hole of its top U and the 1.5-in hole of
+ *  its bottom U — 6.35 mm in from each device edge. */
+const EAR_Y = 6.35 * RK;
 /** Silkscreen / label floor: 9.2 units ≈ 9.3 pt at the inline width (343 px). */
 export const RACK_TEXT = 9.2;
 
@@ -101,10 +126,10 @@ export function DeviceFace({ y, h, label }: { y: number; h: number; label?: stri
       <Line x1={FACE_X + 1} y1={y + 1.3} x2={FACE_X + FACE_W - 1} y2={y + 1.3} stroke="rgba(255,255,255,0.12)" strokeWidth={0.6} />
       <Line x1={FACE_X + 1} y1={y + h - 1.4} x2={FACE_X + FACE_W - 1} y2={y + h - 1.4} stroke="rgba(0,0,0,0.5)" strokeWidth={0.6} />
       {/* rack screws through the ears (one per U boundary pair, top + bottom) */}
-      <Screw x={49} y={y + 3.2} r={1.5} />
-      <Screw x={291} y={y + 3.2} r={1.5} />
-      <Screw x={49} y={y + h - 3.2} r={1.5} />
-      <Screw x={291} y={y + h - 3.2} r={1.5} />
+      <Screw x={HOLE_L} y={y + EAR_Y} r={1.5} />
+      <Screw x={HOLE_R} y={y + EAR_Y} r={1.5} />
+      <Screw x={HOLE_L} y={y + h - EAR_Y} r={1.5} />
+      <Screw x={HOLE_R} y={y + h - EAR_Y} r={1.5} />
       {label ? <Silk x={FACE_X + 4} y={y + h - 3.6} text={label} /> : null}
     </G>
   );
@@ -133,17 +158,20 @@ function VerticalManager({ x, w }: { x: number; w: number }) {
 /** The top panel's cable entry: a rectangular cut-out. Raw sheet edge in the
  *  bad rack; a brush grommet once dressed. */
 export const ENTRY = { x: 150, w: 80, y: 7, h: 8 } as const;
+/** The vertical finger managers, outboard of the rails (80 mm wide each). */
+export const MGR_L = { x: 6, w: 40 } as const;
+export const MGR_R = { x: 294, w: 40 } as const;
 
 export function RackFrame({ dress }: { dress: boolean }) {
   const p = usePaint();
   return (
     <G>
-      <VerticalManager x={6} w={34} />
-      <VerticalManager x={300} w={34} />
-      <RackRail x={45} y0={RAIL_Y0} y1={RAIL_Y1} k={RK} uTop={U_TOP} />
-      <RackRail x={287.1} y0={RAIL_Y0} y1={RAIL_Y1} k={RK} uTop={U_TOP} />
+      <VerticalManager x={MGR_L.x} w={MGR_L.w} />
+      <VerticalManager x={MGR_R.x} w={MGR_R.w} />
+      <RackRail x={RAIL_L_X} y0={RAIL_Y0} y1={RAIL_Y1} k={RK} uTop={U_TOP} />
+      <RackRail x={RAIL_R_X} y0={RAIL_Y0} y1={RAIL_Y1} k={RK} uTop={U_TOP} />
       {/* bottom panel */}
-      <Rect x={44} y={RAIL_Y1} width={252} height={11} rx={1.5} fill={p.faceHi} stroke="#0a0a0c" strokeWidth={0.6} />
+      <Rect x={RAIL_L_X} y={RAIL_Y1} width={RAIL_R_X + RAIL_W - RAIL_L_X} height={11} rx={1.5} fill={p.faceHi} stroke="#0a0a0c" strokeWidth={0.6} />
       {/* top panel (the full cabinet width, over the managers too) + the
           cable-entry cut-out */}
       <Rect x={6} y={4} width={328} height={U_TOP - 4} rx={1.5} fill={p.faceHi} stroke="#0a0a0c" strokeWidth={0.6} />
@@ -165,39 +193,42 @@ export function RackFrame({ dress }: { dress: boolean }) {
 
 /* ── gear faces (all on the U grid) ─────────────────────────────────────── */
 
-/** 2U 24-port keystone patch panel, REAR: the modules' punch-down rears on a
- *  19.3 mm pitch, the white designation strip below them, a lacing bar above
- *  (where the horizontals are dressed once the panel is done right). */
-export const PATCH = { y: uY(1), h: 2 * U_H, modY: uY(1) + 8, modH: 12, stripY: uY(1) + 22.6, stripH: 9 } as const;
+/** 1U 24-port keystone patch panel, REAR — a 24-port panel is ONE rack unit:
+ *  one row of 24 keystone modules (14.5 mm wide) in four groups of six on a
+ *  16.6 mm pitch, the white designation strip under the row. */
+export const PATCH = { y: uY(1), h: U_H, modY: uY(1) + 2, modH: 9.6, modW: 14.5 * RK, stripY: uY(1) + 13, stripH: 7.6 } as const;
+/** Port centres: groups of six on a 16.6 mm pitch, 6.9 mm extra between groups. */
+export const PATCH_XS = Array.from({ length: 24 }, (_, i) => RACK_CX - 99.4 + i * 8.2 + Math.floor(i / 6) * 3.4);
 
 export function PatchPanelRear({ xs, dress }: { xs: number[]; dress: boolean }) {
   return (
     <G>
       <DeviceFace y={PATCH.y} h={PATCH.h} />
-      <Silk x={FACE_X + FACE_W - 4} y={PATCH.y + PATCH.h - 3.6} text="PATCH · 24 PORT" anchor="end" />
       {/* keystone rears: dark module, punch-down cap with its IDC slots */}
-      {xs.map((cx) => (
-        <G key={cx}>
-          <Rect x={cx - 4.2} y={PATCH.modY} width={8.4} height={PATCH.modH} rx={0.6} fill="#121317" stroke="#050506" strokeWidth={0.4} />
-          <Rect x={cx - 3.4} y={PATCH.modY + 1} width={6.8} height={4.6} rx={0.4} fill="#2f3137" stroke="#0a0a0c" strokeWidth={0.3} />
-          <Path d={[0, 1, 2, 3].map((i) => `M${cx - 2.6 + i * 1.7} ${PATCH.modY + 1.6} v3.2`).join('')} stroke="#0a0a0c" strokeWidth={0.5} />
-          <Rect x={cx - 1} y={PATCH.modY + 6.4} width={2} height={4.6} rx={0.3} fill="#0a0a0c" />
-        </G>
-      ))}
-      {/* designation strip: a white write-on strip along the panel */}
-      <Rect x={FACE_X + 4} y={PATCH.stripY} width={FACE_W - 8} height={PATCH.stripH} rx={0.6} fill="#e9e7e0" stroke="#8d8a80" strokeWidth={0.35} />
+      {xs.map((cx) => {
+        const hw = PATCH.modW / 2;
+        return (
+          <G key={cx}>
+            <Rect x={cx - hw} y={PATCH.modY} width={PATCH.modW} height={PATCH.modH} rx={0.6} fill="#121317" stroke="#050506" strokeWidth={0.4} />
+            <Rect x={cx - hw + 0.7} y={PATCH.modY + 0.8} width={PATCH.modW - 1.4} height={3.8} rx={0.4} fill="#2f3137" stroke="#0a0a0c" strokeWidth={0.3} />
+            <Path d={[0, 1, 2, 3].map((i) => `M${cx - 2.25 + i * 1.5} ${PATCH.modY + 1.3} v2.8`).join('')} stroke="#0a0a0c" strokeWidth={0.45} />
+            <Rect x={cx - 0.9} y={PATCH.modY + 5.4} width={1.8} height={3.6} rx={0.3} fill="#0a0a0c" />
+          </G>
+        );
+      })}
+      {/* designation strip: a white write-on strip under the port row */}
+      <Rect x={xs[0] - 5} y={PATCH.stripY} width={xs[xs.length - 1] - xs[0] + 10} height={PATCH.stripH} rx={0.6} fill="#e9e7e0" stroke="#8d8a80" strokeWidth={0.35} />
       {dress ? (
         <G>
           {/* dressed: every port designated (printed, ≥ 9 pt would not fit 24
               across, so the IDs are drawn as print at true scale) */}
           {xs.map((cx) => (
-            <Path key={`id${cx}`} d={`M${cx - 3} ${PATCH.stripY + 3} h3.4 M${cx - 3} ${PATCH.stripY + 5.6} h5.6`} stroke="#23252a" strokeWidth={0.9} />
+            <Path key={`id${cx}`} d={`M${cx - 2.8} ${PATCH.stripY + 2.4} h3.2 M${cx - 2.8} ${PATCH.stripY + 4.8} h5.4`} stroke="#23252a" strokeWidth={0.9} />
           ))}
-          {/* the horizontals arrive from a lacing bar above the modules, one
-              per module, retained with hook-and-loop, each with a wrap label */}
-          <Rect x={FACE_X + 6} y={PATCH.y + 3} width={FACE_W - 12} height={2.4} rx={1.2} fill="#9ba1a8" stroke="#2d3036" strokeWidth={0.35} />
+          {/* the horizontals drop out of the horizontal manager directly
+              above, one per module, into its punch-down */}
           {xs.map((cx) => (
-            <JacketPath key={`h${cx}`} d={`M${cx} ${PATCH.y + 5} V${PATCH.modY + 1}`} color="#37d97b" width={2.6} shadow={false} />
+            <JacketPath key={`h${cx}`} d={`M${cx} ${PATCH.y - 2} V${PATCH.modY + 1}`} color={NETWORK_TINT} width={2.4} shadow={false} />
           ))}
         </G>
       ) : null}
@@ -208,17 +239,21 @@ export function PatchPanelRear({ xs, dress }: { xs: number[]; dress: boolean }) 
 /** 1U horizontal finger duct at the top of the rack: the trunks come through
  *  the entry into it and are distributed to the vertical managers. */
 export const HMGR = { y: uY(0), h: U_H } as const;
-export function HorizontalManager({ xs }: { xs: number[] }) {
+/** …and a second 1U duct directly UNDER the 1U patch panel — the textbook
+ *  manager / patch panel / manager stack above the switch. */
+export const HMGR2 = { y: uY(2), h: U_H } as const;
+export function HorizontalManager({ xs, y = HMGR.y }: { xs: number[]; y?: number }) {
   const p = usePaint();
+  const h = U_H;
   return (
     <G>
-      <Rect x={FACE_X} y={HMGR.y + 1} width={FACE_W} height={HMGR.h - 2} rx={1} fill={p.mgr} stroke="#0a0a0c" strokeWidth={0.6} />
-      <Screw x={49} y={HMGR.y + 4} r={1.5} />
-      <Screw x={291} y={HMGR.y + 4} r={1.5} />
-      <Screw x={49} y={HMGR.y + HMGR.h - 4} r={1.5} />
-      <Screw x={291} y={HMGR.y + HMGR.h - 4} r={1.5} />
+      <Rect x={FACE_X} y={y + 1} width={FACE_W} height={h - 2} rx={1} fill={p.mgr} stroke="#0a0a0c" strokeWidth={0.6} />
+      <Screw x={HOLE_L} y={y + EAR_Y} r={1.5} />
+      <Screw x={HOLE_R} y={y + EAR_Y} r={1.5} />
+      <Screw x={HOLE_L} y={y + h - EAR_Y} r={1.5} />
+      <Screw x={HOLE_R} y={y + h - EAR_Y} r={1.5} />
       {xs.map((x) => (
-        <Path key={x} d={`M${x - 3.2} ${HMGR.y + HMGR.h - 2} V${HMGR.y + 5} Q${x - 3.2} ${HMGR.y + 2.6} ${x} ${HMGR.y + 2.6} Q${x + 3.2} ${HMGR.y + 2.6} ${x + 3.2} ${HMGR.y + 5} V${HMGR.y + HMGR.h - 2} Z`} fill="#26282d" stroke="#0a0a0c" strokeWidth={0.4} />
+        <Path key={x} d={`M${x - 3.2} ${y + h - 2} V${y + 5} Q${x - 3.2} ${y + 2.6} ${x} ${y + 2.6} Q${x + 3.2} ${y + 2.6} ${x + 3.2} ${y + 5} V${y + h - 2} Z`} fill="#26282d" stroke="#0a0a0c" strokeWidth={0.4} />
       ))}
     </G>
   );
@@ -227,6 +262,8 @@ export function HorizontalManager({ xs }: { xs: number[] }) {
 /** 1U network switch, reverse-racked so its ports face the rear with the
  *  rest of the cabling (AV practice): 8 × RJ45 with link LEDs, two SFP cages. */
 export const SWITCH = { y: uY(3), h: U_H, portY: 0 } as const;
+/** The two SFP cages at the right end of the switch (left edges). */
+export const SFP_XS = [240, 258] as const;
 export function NetworkSwitch({ xs, lit = [] }: { xs: number[]; lit?: number[] }) {
   const y = SWITCH.y;
   return (
@@ -243,7 +280,7 @@ export function NetworkSwitch({ xs, lit = [] }: { xs: number[]; lit?: number[] }
           <Circle cx={x + 9.3} cy={y + 5.4} r={1.1} fill={lit.includes(i) ? '#ffc64d' : '#2a2616'} />
         </G>
       ))}
-      {[248, 266].map((x) => (
+      {SFP_XS.map((x) => (
         <G key={x}>
           <Rect x={x} y={y + 7.5} width={15} height={11.5} rx={0.8} fill="#050506" stroke="#9ba1a8" strokeWidth={0.6} />
           <Rect x={x + 2} y={y + 9.5} width={11} height={7.5} fill="#141518" />
@@ -255,7 +292,7 @@ export function NetworkSwitch({ xs, lit = [] }: { xs: number[]; lit?: number[] }
 
 /** 2U DSP rear: 8 XLR-F analog inputs on D-series flanges (numbered on the
  *  silkscreen), an etherCON-type network port, the IEC inlet. */
-export const DSP = { y: uY(4), h: 2 * U_H, jackY: uY(4) + 14 } as const;
+export const DSP = { y: uY(4), h: 2 * U_H, jackY: uY(4) + 14, netX: 261 } as const;
 export function DspRear({ xs, dress }: { xs: number[]; dress: boolean }) {
   const y = DSP.y;
   return (
@@ -268,8 +305,8 @@ export function DspRear({ xs, dress }: { xs: number[]; dress: boolean }) {
           <Silk x={cx} y={y + 30.4} text={String(i + 1)} anchor="middle" color={dress ? '#b9bdc6' : '#8f939c'} />
         </G>
       ))}
-      <PanelJack x={266} y={DSP.jackY} k={RK} kind="rj45" />
-      <Silk x={266} y={y + 30.4} text="NET" anchor="middle" />
+      <PanelJack x={DSP.netX} y={DSP.jackY} k={RK} kind="rj45" />
+      <Silk x={DSP.netX} y={y + 30.4} text="NET" anchor="middle" />
       {/* IEC C14 inlet, bottom right (the dressed AC loom seats its cord) */}
       <IecInlet x={236} y={y + 32} />
     </G>
@@ -437,7 +474,7 @@ export function PowerDistro({ xs, dress }: { xs: number[]; dress: boolean }) {
 /* ── plugs seen end-on (the rear view of a plugged cable) ────────────────── */
 
 /** An RJ45 plug latched in a port, end-on, with its snagless boot. */
-export function Rj45PlugRear({ x, y, color = '#37d97b' }: { x: number; y: number; color?: string }) {
+export function Rj45PlugRear({ x, y, color = NETWORK_TINT }: { x: number; y: number; color?: string }) {
   return (
     <G>
       <Rect x={x + 0.8} y={y + 0.6} width={10.1} height={8.4} rx={0.6} fill="rgba(215,225,235,0.55)" stroke="#dfe7ef" strokeWidth={0.4} />
