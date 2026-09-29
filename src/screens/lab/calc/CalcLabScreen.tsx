@@ -78,7 +78,11 @@ export function CalcLabScreen() {
   }, [navigation, loadRecent]);
 
   return (
-    <ImageBackground source={BG_CALC} style={[styles.root, { paddingTop: insets.top + 10 }]} imageStyle={styles.bgImage}>
+    <ImageBackground source={BG_CALC} style={[styles.root, { paddingTop: insets.top + 10 }]} imageStyle={styles.bgImage}
+      // resizeMode as a PROP (owner 2026-09-29, tablet pass): react-native-web
+      // ignores it inside imageStyle, so the art sat as a narrow strip on a
+      // wide landscape iPad in the preview. The prop works on every platform.
+      resizeMode="cover">
       <View style={styles.header}>
         <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>

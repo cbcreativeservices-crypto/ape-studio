@@ -2747,6 +2747,10 @@ ${COPY.glossaryFreeAllowance}`,
       source={loading ? BG_GLOSSARY : undefined}
       style={[styles.root, { paddingTop: insets.top }]}
       imageStyle={styles.bgImage}
+      // resizeMode as a PROP (owner 2026-09-29, tablet pass): react-native-web
+      // ignores it inside imageStyle, so the art sat as a narrow strip on a
+      // wide landscape iPad in the preview. The prop works on every platform.
+      resizeMode="cover"
     >
       {glossaryHelp.sheet}
       <View style={styles.header}>
