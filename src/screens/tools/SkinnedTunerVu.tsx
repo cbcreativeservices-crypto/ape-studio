@@ -52,6 +52,7 @@ import { lockPortrait, unlockOrientation } from '../../lib/screenOrientationSafe
 import { closeVuTuner, useTunerFrame } from '../../features/tools/tuner/tunerFrameStore';
 import { useToolColorPref } from '../../features/tools/waveColorPref';
 import { colors, fonts } from '../../theme/tokens';
+import { useSteadyTuner } from '../../features/tools/tuner/useSteadyTuner';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 export const TUNER_SKIN = require('../../../assets/tool-strips/tuner_skin.webp');
@@ -506,8 +507,11 @@ export function VuTunerFullScreen() {
   }, []);
 
   const note = frame.accepted && frame.freq != null ? fsNoteFor(frame.freq, frame.a4) : null;
-  const cents = note != null ? note.cents : null;
-  const inTune = note != null && Math.abs(note.cents) < 1;
+  // Same steadied reading + held IN TUNE as the inline tuner (tester feedback
+  // 2026-09-28) — see useSteadyTuner. Only an accepted live frame counts.
+  const steady = useSteadyTuner(note != null ? note.cents : null);
+  const cents = note == null ? null : (steady.cents ?? note.cents);
+  const inTune = note != null && steady.inTune;
 
   /**
    * W16 (2026-09-18) — the cents stream must NEVER be spoken.

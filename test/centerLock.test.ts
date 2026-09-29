@@ -40,6 +40,10 @@ import {
   stepChromatic,
   stepHold,
   stepLock,
+  averageCents,
+  AVERAGE_MS,
+  RELEASE_CENTS,
+  RELEASE_MS,
   stepTarget,
   TRANSPOSITIONS,
   TUNINGS,
@@ -118,12 +122,31 @@ test('lock confirms once after CONFIRM_MS inside ±2 ¢ and re-arms on leaving',
   assert.equal(l.justConfirmed, true, 'exactly one confirmation event');
   l = stepLock(l, 0.2, CONFIRM_MS + 100);
   assert.equal(l.justConfirmed, false, 'does not repeat while inside');
+  // Hysteresis (2026-09-28): a wobble just past ±2 ¢ no longer drops IN TUNE…
   l = stepLock(l, IN_TUNE_CENTS + 0.5, CONFIRM_MS + 200);
-  assert.equal(l.confirmed, false, 'leaving the zone re-arms');
-  l = stepLock(l, 0.1, CONFIRM_MS + 300);
-  l = stepLock(l, 0.1, CONFIRM_MS + 300 + CONFIRM_MS);
+  assert.equal(l.confirmed, true, 'a small wobble inside ±RELEASE_CENTS holds the lock');
+  // …a real drift past ±RELEASE_CENTS must persist RELEASE_MS to release it.
+  l = stepLock(l, RELEASE_CENTS + 1, CONFIRM_MS + 300);
+  assert.equal(l.confirmed, true, 'a brief excursion does not release');
+  l = stepLock(l, RELEASE_CENTS + 1, CONFIRM_MS + 300 + RELEASE_MS);
+  assert.equal(l.confirmed, false, 'a sustained drift releases');
+  l = stepLock(l, 0.1, CONFIRM_MS + 700);
+  l = stepLock(l, 0.1, CONFIRM_MS + 700 + CONFIRM_MS);
   assert.equal(l.justConfirmed, true, 'confirms again after re-entry and a fresh hold');
   assert.equal(stepLock(l, null, 9999).confirmed, false, 'silence releases the lock');
+});
+
+test('averageCents steadies a wobbling reading but snaps to a new note', () => {
+  let avg: number | null = null;
+  const wobble = [1.8, -2.6, 2.4, -1.9, 2.7, -2.2, 1.6, -2.5];
+  for (let i = 0; i < 40; i++) avg = averageCents(avg, wobble[i % wobble.length], 16.7);
+  assert.ok(avg != null && Math.abs(avg) < IN_TUNE_CENTS, 'a ±2.7 ¢ wobble averages inside the in-tune zone');
+  assert.equal(averageCents(0.3, 60, 16.7), 60, 'a big jump (new note) is not smeared');
+  assert.equal(averageCents(0.3, null, 16.7), null, 'silence resets');
+  const one = averageCents(0, 10, 100) as number;
+  const two = averageCents(averageCents(0, 10, 50), 10, 50) as number;
+  near(one, two, 0.01);
+  near(AVERAGE_MS, 200, 1);
 });
 
 test('damping is fast far from centre and heavier near it, frame-rate independent', () => {

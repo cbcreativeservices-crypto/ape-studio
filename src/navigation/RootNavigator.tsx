@@ -147,6 +147,7 @@ import { CareerFamilyListScreen } from '../screens/careerfinder/CareerFamilyList
 import { CareerFinderAboutScreen } from '../screens/careerfinder/CareerFinderAboutScreen';
 import { MainTabs } from './MainTabs';
 import type { RootStackParamList } from './types';
+import { withKeepAwake } from '../features/tools/withKeepAwake';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -160,14 +161,14 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 // Foundations course itself (it OPENS with the orientation) stay ungated.
 const Gated = {
   ToolDemo: withAmplitudeOrientation(ToolDemoScreen),
-  SplMeter: withAmplitudeOrientation(SplMeterScreen),
-  Rta: withAmplitudeOrientation(RtaScreen),
-  Waveform: withAmplitudeOrientation(WaveformScreen),
-  SignalGen: withAmplitudeOrientation(SignalGenScreen),
-  Spectrogram: withAmplitudeOrientation(SpectrogramScreen),
-  Rt60: withAmplitudeOrientation(Rt60Screen),
-  FrequencyCounter: withAmplitudeOrientation(FrequencyCounterScreen),
-  MultiMeter: withAmplitudeOrientation(MultiMeterScreen),
+  SplMeter: withKeepAwake(withAmplitudeOrientation(SplMeterScreen), 'spl'),
+  Rta: withKeepAwake(withAmplitudeOrientation(RtaScreen), 'rta'),
+  Waveform: withKeepAwake(withAmplitudeOrientation(WaveformScreen), 'waveform'),
+  SignalGen: withKeepAwake(withAmplitudeOrientation(SignalGenScreen), 'signalgen'),
+  Spectrogram: withKeepAwake(withAmplitudeOrientation(SpectrogramScreen), 'spectrogram'),
+  Rt60: withKeepAwake(withAmplitudeOrientation(Rt60Screen), 'rt60'),
+  FrequencyCounter: withKeepAwake(withAmplitudeOrientation(FrequencyCounterScreen), 'freqcounter'),
+  MultiMeter: withKeepAwake(withAmplitudeOrientation(MultiMeterScreen), 'multimeter'),
   HarmonicLab: withAmplitudeOrientation(HarmonicLabScreen),
   OscillatorLab: withAmplitudeOrientation(OscillatorLabScreen),
   NoiseLab: withAmplitudeOrientation(NoiseLabScreen),

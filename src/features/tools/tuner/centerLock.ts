@@ -9,8 +9,9 @@
  *  • target selection: AUTO picks the nearest string and only re-targets after
  *    a different string has been closer for a short, stable stretch — never on
  *    a single frame, never because a harmonic flickered; MANUAL locks a string;
- *  • the lock state machine: IN TUNE only after CONFIRM_MS inside ±IN_TUNE_CENTS,
- *    one confirmation per entry, released only when the pitch leaves the zone;
+ *  • the lock state machine: IN TUNE only after CONFIRM_MS inside ±IN_TUNE_CENTS
+ *    (read from AVERAGED cents), one confirmation per entry, released only after
+ *    the pitch has drifted beyond ±RELEASE_CENTS for RELEASE_MS (hysteresis);
  *  • display damping: fast when far from centre, heavier as it approaches;
  *  • the magnitude colour spectrum (never red/green alone).
  *
@@ -588,19 +589,59 @@ export function stepTarget(state: TargetState, nearestIdx: number, nowMs: number
   return state;
 }
 
-/** The lock state machine. `confirmed` flips true once per entry into the zone. */
-export type LockState = { inZoneSince: number | null; confirmed: boolean };
+/**
+ * ── STEADIER, NOT LOOSER (tester feedback 2026-09-28) ─────────────────────
+ * "Too fast and accurate — it never wants to say a note is in tune; it
+ * shimmers in and out." The lock read the RAW per-frame cents, and a plucked
+ * string's pitch wobbles a few cents frame to frame, so one frame past ±2 ¢
+ * dropped IN TUNE. Three fixes, the ±2 ¢ entry zone unchanged:
+ *   1. the lock and the needle read AVERAGED cents (averageCents, ~AVERAGE_MS);
+ *   2. HYSTERESIS: once IN TUNE, it holds until the averaged pitch has been
+ *      beyond ±RELEASE_CENTS for RELEASE_MS (entering stays strict, leaving
+ *      needs a real drift) — how hardware stage tuners behave;
+ *   3. heavier needle damping near centre (dampCents).
+ */
+/** Time constant of the pitch averaging feeding the lock and the needle. */
+export const AVERAGE_MS = 200;
+/** Once IN TUNE, the averaged pitch must leave this band to start releasing. */
+export const RELEASE_CENTS = 4;
+/** …and stay out this long before IN TUNE is released. */
+export const RELEASE_MS = 300;
+/** A jump bigger than this is a new note/string: the average snaps to it. */
+const AVERAGE_JUMP_CENTS = 35;
 
-export const INITIAL_LOCK: LockState = { inZoneSince: null, confirmed: false };
+/** Time-based exponential average of the cents reading (null resets it). */
+export function averageCents(avg: number | null, raw: number | null, dtMs: number): number | null {
+  if (raw == null) return null;
+  if (avg == null || Math.abs(raw - avg) > AVERAGE_JUMP_CENTS) return raw;
+  const alpha = 1 - Math.exp(-Math.max(0, dtMs) / AVERAGE_MS);
+  return avg + (raw - avg) * alpha;
+}
+
+/** The lock state machine. `confirmed` flips true once per entry into the zone. */
+export type LockState = { inZoneSince: number | null; confirmed: boolean; outSince?: number | null };
+
+export const INITIAL_LOCK: LockState = { inZoneSince: null, confirmed: false, outSince: null };
 
 export function stepLock(state: LockState, cents: number | null, nowMs: number): LockState & { justConfirmed: boolean } {
-  if (cents == null || Math.abs(cents) > IN_TUNE_CENTS) {
-    return { inZoneSince: null, confirmed: false, justConfirmed: false }; // leaving the zone re-arms
+  if (cents == null) {
+    return { inZoneSince: null, confirmed: false, outSince: null, justConfirmed: false }; // silence releases
+  }
+  const a = Math.abs(cents);
+  if (state.confirmed) {
+    // Holding: a wobble inside ±RELEASE_CENTS changes nothing; a real drift
+    // must persist for RELEASE_MS before IN TUNE lets go.
+    if (a <= RELEASE_CENTS) return { inZoneSince: state.inZoneSince, confirmed: true, outSince: null, justConfirmed: false };
+    const out = state.outSince ?? nowMs;
+    if (nowMs - out >= RELEASE_MS) return { inZoneSince: null, confirmed: false, outSince: null, justConfirmed: false };
+    return { inZoneSince: state.inZoneSince, confirmed: true, outSince: out, justConfirmed: false };
+  }
+  if (a > IN_TUNE_CENTS) {
+    return { inZoneSince: null, confirmed: false, outSince: null, justConfirmed: false }; // outside the entry zone
   }
   const since = state.inZoneSince ?? nowMs;
   const stable = nowMs - since >= CONFIRM_MS;
-  const justConfirmed = stable && !state.confirmed;
-  return { inZoneSince: since, confirmed: state.confirmed || stable, justConfirmed };
+  return { inZoneSince: since, confirmed: stable, outSince: null, justConfirmed: stable };
 }
 
 /**
@@ -610,7 +651,9 @@ export function stepLock(state: LockState, cents: number | null, nowMs: number):
  */
 export function dampCents(shown: number, raw: number, dtMs: number): number {
   const distance = Math.abs(raw);
-  const alphaPerFrame = distance > 20 ? 0.6 : distance > CLOSE_CENTS ? 0.4 : 0.22;
+  // Near centre the needle settles rather than twitches (2026-09-28: was 0.22 /
+  // 0.4 — it read every cent of a string's natural wobble).
+  const alphaPerFrame = distance > 20 ? 0.6 : distance > CLOSE_CENTS ? 0.25 : 0.1;
   const frames = Math.max(0.25, Math.min(4, dtMs / 16.7));
   const alpha = 1 - Math.pow(1 - alphaPerFrame, frames);
   return shown + (raw - shown) * alpha;

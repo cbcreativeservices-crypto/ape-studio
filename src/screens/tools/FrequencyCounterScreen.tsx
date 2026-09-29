@@ -37,6 +37,7 @@ import { GlassButton } from '../../components/GlassButton';
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../../features/settings/store';
 import { openCenterLock, openVuTuner, publishTunerFrame, useCenterLockOpen, useVuTunerOpen } from '../../features/tools/tuner/tunerFrameStore';
+import { useSteadyTuner } from '../../features/tools/tuner/useSteadyTuner';
 import { CenterLockTuner } from './CenterLockTuner';
 import { ColorWheelButton } from '../../components/ColorWheelButton';
 import { TunerDiagram } from '../../components/ColorTargetDiagrams';
@@ -546,9 +547,20 @@ function LivePitchMode({
       a4,
     });
   }, [shownFreq, accepted, live?.confidence, live?.levelDb, a4]);
-  // In tune within ±1 cent (owner 2026-08-05) — LIVE only (a held/stale reading
-  // must never light the container green).
-  const tunerInTune = kind === 'tuner' && accepted && note != null && Math.abs(note.cents) < 1;
+  /**
+   * STEADIER TUNER (tester feedback 2026-09-28: "too fast and accurate — it
+   * never wants to say a note is in tune; it shimmers in and out"). The meter,
+   * chevrons and cents text read the AVERAGED cents, and IN TUNE comes from the
+   * CenterLock state machine: ±2 ¢ held for CONFIRM_MS to enter, then held
+   * until the pitch drifts past ±RELEASE_CENTS for RELEASE_MS (hysteresis).
+   * Was: raw per-frame cents, green only while |cents| < 1 on every frame.
+   * LIVE only — a held/stale reading never lights the container green.
+   */
+  const liveCents = kind === 'tuner' && accepted && note != null ? note.cents : null;
+  const steady = useSteadyTuner(liveCents);
+  const tunerInTune = kind === 'tuner' && accepted && steady.inTune;
+  /** What the tuner displays: the averaged reading live, the held value when held. */
+  const tunerCents = note == null ? null : liveCents != null && steady.cents != null ? steady.cents : note.cents;
   const stats = computePitchStats(histRef.current);
   const outOfRange =
     accepted && live != null && (live.freq < PITCH_RANGE_HZ.min || live.freq > PITCH_RANGE_HZ.max);
@@ -656,7 +668,7 @@ function LivePitchMode({
               VU-style tuner on the amber skin — ±30¢, center = in tune. */}
           <SkinnedTunerVu
             hzText={shownFreq != null ? `${fmtHz(shownFreq)} Hz` : '— Hz'}
-            cents={note != null ? note.cents : null}
+            cents={tunerCents}
             dim={isHeld}
             inTune={tunerInTune}
             tuneColor={tunerColor}
@@ -698,16 +710,16 @@ function LivePitchMode({
             {/* Direction cue (owner 2026-09-10): the meter above already shows
                 the cents dial — no duplicate mini-bar here. Chevrons march
                 toward the fix: flat → right (tune up), sharp → left (down). */}
-            <TuneChevrons cents={note != null ? note.cents : null} dim={isHeld} tuneColor={tunerColor} />
+            <TuneChevrons cents={tunerCents} dim={isHeld} tuneColor={tunerColor} />
             <Text
               style={[
                 styles.centsLabel,
-                note != null && !isHeld && Math.abs(note.cents) < 5 && styles.centsLabelInTune,
+                tunerCents != null && !isHeld && Math.abs(tunerCents) < 5 && styles.centsLabelInTune,
                 isHeld && styles.readoutDim,
               ]}
             >
               {note != null && shownFreq != null
-                ? `${centsSnap(note.cents) >= 0 ? '+' : ''}${centsSnap(note.cents).toFixed(1)} cents · ${fmtHz(shownFreq)} Hz`
+                ? `${centsSnap(tunerCents ?? note.cents) >= 0 ? '+' : ''}${centsSnap(tunerCents ?? note.cents).toFixed(1)} cents · ${fmtHz(shownFreq)} Hz`
                 : 'no stable pitch'}
             </Text>
           </View>

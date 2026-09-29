@@ -52,6 +52,7 @@ import {
   courseHint,
   courses,
   dampCents,
+  averageCents,
   directionText,
   displayNote,
   fmtCents,
@@ -523,6 +524,8 @@ const LiveReadout = memo(function LiveReadout({
   const chromMidi = useRef<number | null>(null);
   const partialRef = useRef(1);
   const shownRef = useRef(0);
+  /** Averaged cents feeding the lock + needle (null = no reading yet). */
+  const avgCentsRef = useRef<number | null>(null);
   const lastTickAt = useRef(0);
   const lastFrameAt = useRef(0);
   const lastAcceptedAt = useRef(Date.now());
@@ -626,9 +629,14 @@ const LiveReadout = memo(function LiveReadout({
     } else if (piano) {
       target = chromMidi.current != null ? pianoTarget(chromMidi.current, a4, stretchAmount) : view.target;
     }
-    const lockInput = rawCents != null && Math.abs(rawCents) < OCTAVE_CENTS ? rawCents : null;
+    // The lock and the needle read the AVERAGED pitch, not the raw frame
+    // (2026-09-28: a string's natural wobble made IN TUNE shimmer) — see
+    // averageCents / stepLock's hysteresis in centerLock.ts.
+    const inRange = rawCents != null && Math.abs(rawCents) < OCTAVE_CENTS ? rawCents : null;
+    avgCentsRef.current = averageCents(avgCentsRef.current, inRange, dt);
+    const lockInput = avgCentsRef.current;
     const lock = stepLock(lockRef.current, lockInput, now);
-    lockRef.current = { inZoneSince: lock.inZoneSince, confirmed: lock.confirmed };
+    lockRef.current = { inZoneSince: lock.inZoneSince, confirmed: lock.confirmed, outSince: lock.outSince };
     const idx = targetRef.current.target;
     if (lock.justConfirmed) {
       haptic('success');
@@ -652,12 +660,17 @@ const LiveReadout = memo(function LiveReadout({
     } else {
       driftSince.current = null;
     }
-    if (rawCents != null) shownRef.current = dampCents(shownRef.current, Math.max(-METER_RANGE, Math.min(METER_RANGE, rawCents)), dt);
+    const needleCents = lockInput ?? rawCents;
+    if (needleCents != null) shownRef.current = dampCents(shownRef.current, Math.max(-METER_RANGE, Math.min(METER_RANGE, needleCents)), dt);
     holdRef.current = chromatic ? stepHold(holdRef.current, hz != null ? target.note : null, lockInput, now) : INITIAL_HOLD;
     const next: ViewState = {
       target,
       targetIdx: idx,
-      rawCents,
+      // The READING the screen prints, colours and speaks: the AVERAGED pitch
+      // (2026-09-28 — the per-frame value made the readout flicker too fast to
+      // read). Outside the octave band there is no average, so the raw value
+      // still reports "octave off" honestly.
+      rawCents: lockInput ?? rawCents,
       shownCents: shownRef.current,
       confirmed: lock.confirmed,
       partial: partialRef.current,
