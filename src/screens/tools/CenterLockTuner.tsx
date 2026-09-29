@@ -337,9 +337,13 @@ export function CenterLockTuner() {
       onPress={touch}
       accessible={false}
     >
-      {/* Top bar — presets, one tap deep; dims after 5 s, a tap wakes it */}
+      {/* Top bar — presets, one tap deep; fades after 5 s but stays tappable */}
       <View style={styles.bar}>
-        <View style={[styles.barChips, { opacity: controlsShown ? 1 : 0.18 }]} pointerEvents={controlsShown ? 'auto' : 'none'}>
+        {/* Faded, not hidden (owner 2026-09-29: "larger — more visible and
+            intuitive"): at 18% and deaf to taps, the presets read as gone and the
+            first tap only woke them. Now they settle to 45% and a tap on a chip
+            works straight away (every chip's onPress calls touch()). */}
+        <View style={[styles.barChips, { opacity: controlsShown ? 1 : 0.45 }]}>
           {landscape ? (
             <ChipRow>
               {instrumentChips}
@@ -1242,7 +1246,7 @@ function Chip({
       accessibilityLabel={label}
       accessibilityHint={accessibilityHint}
     >
-      <Text style={[styles.chipText, on && styles.chipTextOn]}>{label}</Text>
+      <Text style={[styles.chipText, caret && styles.chipTextPrimary, on && styles.chipTextOn]}>{label}</Text>
       {caret ? <View style={[styles.caret, { borderColor: on ? colors.amber : colors.textSecondary }]} /> : null}
     </Pressable>
   );
@@ -1254,19 +1258,26 @@ const styles = StyleSheet.create({
   root: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#050506', zIndex: 80 },
   bar: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, gap: 8 },
   barChips: { flex: 1 },
-  barRows: { flex: 1, gap: 6 },
+  barRows: { flex: 1, gap: 10 },
   chipRowWrap: { flex: 1 },
-  chips: { gap: 6, alignItems: 'center', paddingRight: 28 },
+  // paddingVertical: the horizontal ScrollView clipped the chips' top and
+  // bottom borders on iOS, so they read as bare side lines, not buttons.
+  chips: { gap: 8, alignItems: 'center', paddingRight: 34, paddingVertical: 3 },
   chipGap: { width: 10 },
-  chipMore: { position: 'absolute', right: 0, top: 0, bottom: 0, width: 26, alignItems: 'flex-end', justifyContent: 'center', backgroundColor: '#050506' },
-  chipMoreText: { fontSize: 22, lineHeight: 24, color: colors.amber, fontWeight: '700' },
-  chip: { borderRadius: 8, borderWidth: 1, borderColor: '#2a2b31', backgroundColor: '#121318', paddingVertical: 8, paddingHorizontal: 12, minHeight: 36, justifyContent: 'center' },
-  chipSmall: { paddingHorizontal: 9 },
-  chipWithCaret: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  caret: { width: 8, height: 8, borderRightWidth: 2, borderBottomWidth: 2, transform: [{ rotate: '45deg' }], marginTop: -4 },
+  chipMore: { position: 'absolute', right: 0, top: 0, bottom: 0, width: 32, alignItems: 'flex-end', justifyContent: 'center', backgroundColor: '#050506' },
+  chipMoreText: { fontSize: 28, lineHeight: 30, color: colors.amber, fontWeight: '700' },
+  // Bigger, clearly-bordered buttons (owner 2026-09-29: "make the tuner
+  // instrument tray and instrument option buttons larger — more visible and
+  // intuitive"). Was 11 pt on a 36 pt chip.
+  chip: { borderRadius: 10, borderWidth: 1.5, borderColor: '#3a3b44', backgroundColor: '#15161c', paddingVertical: 10, paddingHorizontal: 16, minHeight: 46, justifyContent: 'center' },
+  chipSmall: { paddingHorizontal: 12 },
+  // The instrument picker is the primary control: largest, with a clear caret.
+  chipWithCaret: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 50, paddingHorizontal: 18 },
+  caret: { width: 11, height: 11, borderRightWidth: 2.5, borderBottomWidth: 2.5, transform: [{ rotate: '45deg' }], marginTop: -5 },
   chipOn: { borderColor: colors.amber, backgroundColor: '#1d1708' },
-  chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.9, color: colors.textSecondary },
+  chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1, color: colors.textSecondary },
   chipTextOn: { color: colors.amber },
+  chipTextPrimary: { fontSize: 17, letterSpacing: 1.2 },
   closeKey: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center', backgroundColor: '#111214', borderWidth: 1, borderColor: '#2a2b31' },
   closeX: { fontSize: 17, color: '#e8ecf2', fontWeight: '600' },
 
