@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 11:11 · ccode · 407870b9
+changed: labs sound audit (1/3): starts honour a mute that lands mid-start; blur stops everywhere
+affects other side: nothing — client JS only (lab sound fixes)
+needs: nothing
+
+
 ### 2026-09-29 11:08 · ccode · f3075049
 changed: Sound Systems Learn 3: system name and scale print in full above the plan
 affects other side: nothing — client JS only (Sound Systems page layout)
