@@ -204,6 +204,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 00:11 · ccode · 4fecce64
+changed: fix(awards): picker RETRY instead of a dead "pull up again"; goToPage unlocks
+affects other side: nothing — client JS only (enrollment bug fixes)
+needs: nothing
+
+
+### 2026-09-29 00:11 · ccode · 4fd03279
+changed: fix(credentials): download/share message shows inside the trophy modal
+affects other side: nothing — client JS only (enrollment bug fixes)
+needs: nothing
+
+
 ### 2026-09-29 00:10 · ccode · 4a780f7b
 changed: test: source guards for the 2026-09-29 cable labs bug hunt fixes
 affects other side: nothing — client JS only (cable lab fixes)
@@ -325,8 +337,8 @@ needs: <FILL — what you need from A, or "nothing">
 
 ### 2026-09-29 00:03 · ccode · 05db7fdf
 changed: fix(enrollment): drag reorder no longer swaps back; a lift is not a tap
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (enrollment bug fixes)
+needs: nothing
 
 
 ### 2026-09-29 00:02 · ccode · 76ed4804
@@ -337,8 +349,8 @@ needs: <FILL — what you need from A, or "nothing">
 
 ### 2026-09-29 00:01 · ccode · 7b962f35
 changed: fix(enrollment): shared topics survive bundle add/remove; locked topics stay
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing — client JS only (enrollment bug fixes)
+needs: nothing
 
 
 ### 2026-09-29 00:00 · ccode · d49a60a4
