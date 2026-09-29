@@ -1299,6 +1299,13 @@ export function FrequencyCounterScreen({ navigation }: Props) {
     },
     [],
   );
+  // Every stack now pins orientation 'portrait_up' in its screenOptions (bug
+  // hunt 2026-09-29, navOrientation.ts), and react-native-screens' route option
+  // wins over expo's unlockOrientation(). So the tuner full screens, which
+  // free-rotate, must also open the ROUTE option — same as SPL's readout.
+  useEffect(() => {
+    navigation.setOptions({ orientation: centerLockOpen || vuTunerOpen ? 'all' : 'portrait_up' });
+  }, [centerLockOpen, vuTunerOpen, navigation]);
   // Academy-gated extras (owner 2026-08-05): Light Pulse, LEARN/DEMO, and the
   // Saved Measurements library. Free accounts see them locked → Paywall.
   // Via useToolsLocked so the `resolved` hold lives in ONE place (entitlement

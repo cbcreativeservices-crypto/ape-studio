@@ -987,7 +987,12 @@ export function MicSelectLabScreen() {
     }).catch(() => {});
   }, []);
 
+  // Bug hunt 2026-09-29: a double tap on NEXT at the second-to-last lesson
+  // landed its second tap on DONE ✓ and left the lab. DONE ignores taps
+  // within 400 ms of a lesson change (same guard as Foundations).
+  const lastNavAtRef = useRef(0);
   const goTo = useCallback((n: number) => {
+    lastNavAtRef.current = Date.now();
     navigatedRef.current = true;
     setStep(n);
     scrollRef.current?.scrollTo({ y: 0, animated: false });
@@ -1054,7 +1059,7 @@ export function MicSelectLabScreen() {
             <GlassButton
               label={step === STEPS.length - 1 ? 'DONE ✓' : 'NEXT ›'}
               tint="green"
-              onPress={() => (step === STEPS.length - 1 ? navigation.goBack() : goTo(Math.min(STEPS.length - 1, step + 1)))}
+              onPress={() => (step === STEPS.length - 1 ? (Date.now() - lastNavAtRef.current < 400 ? undefined : navigation.goBack()) : goTo(Math.min(STEPS.length - 1, step + 1)))}
             />
           </View>
         </View>
