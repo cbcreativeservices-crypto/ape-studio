@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-28 22:21 · ccode · 810f9b4f
+changed: Cable Install lab: CONTROL is near-white, clearly apart from SPEAKER
+affects other side: nothing — client JS only (cable lab art)
+needs: nothing
+
+
 ### 2026-09-28 22:16 · ccode · e7ecfcc2
 changed: Cable Install Stage 8: FINISHED VIEW is the same section, finished
 affects other side: nothing — client JS only (cable lab art)
