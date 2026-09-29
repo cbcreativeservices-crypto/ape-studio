@@ -243,7 +243,7 @@ export function GearFader({
           return (
             <View key={t.db} pointerEvents="none">
               <View style={[s.tick, t.unity && s.tickUnity, { top: y }]} />
-              <Text style={[s.tickLabel, t.unity && s.tickLabelUnity, { top: y - 4.5 }]}>{t.label}</Text>
+              <Text style={[s.tickLabel, t.unity && s.tickLabelUnity, { top: y - 5.5 }]}>{t.label}</Text>
             </View>
           );
         })}
@@ -607,7 +607,10 @@ const s = StyleSheet.create({
   // the scale, not a light. The CAP's amber line keeps full brightness; that
   // one is the moving part. 0.95 × 0.21 ≈ 0.2.
   tickUnity: { backgroundColor: colors.amberLabel, opacity: 0.2, height: 2, left: 22, width: 20 },
-  tickLabel: { position: 'absolute', left: 2, width: 22, textAlign: 'right', color: INK, fontFamily: fonts.mono, fontSize: 7.5 },
+  // ≥ 9 pt on a phone (bug hunt 2026-09-29 — was 7.5 / 8). The tightest pair of
+  // scale marks (30 ↔ 40) sits ~12.7 pt apart, so 9-pt mono still clears; the
+  // label's `top` offset above moved from 4.5 to 5.5 to stay centred on its tick.
+  tickLabel: { position: 'absolute', left: 2, width: 22, textAlign: 'right', color: INK, fontFamily: fonts.mono, fontSize: 9 },
   tickLabelUnity: { color: colors.amberLabel },
   cap: {
     position: 'absolute',
@@ -637,10 +640,10 @@ const s = StyleSheet.create({
    *  hand. Space-between rather than centred so the value sits at the strip's
    *  edge, the furthest point on this row from a fingertip on the knob face. */
   knobHead: { alignSelf: 'stretch', flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' },
-  legend: { color: INK, fontFamily: fonts.panelSemiBold, fontSize: 8, letterSpacing: 2 },
+  legend: { color: INK, fontFamily: fonts.panelSemiBold, fontSize: 9, letterSpacing: 2 },
   knobValue: { color: colors.textSecondary, fontFamily: fonts.mono, fontSize: 10.5 },
   pointer: { position: 'absolute', width: 3, height: 11, borderRadius: 1.5, backgroundColor: colors.amber },
-  knobEnd: { position: 'absolute', bottom: 6, color: INK, fontFamily: fonts.panelSemiBold, fontSize: 8 },
+  knobEnd: { position: 'absolute', bottom: 6, color: INK, fontFamily: fonts.panelSemiBold, fontSize: 9 },
 
   gearBtn: {
     minHeight: 30,

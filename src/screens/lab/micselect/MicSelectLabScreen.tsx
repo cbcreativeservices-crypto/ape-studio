@@ -146,6 +146,13 @@ function TypesStep() {
     if (!t) return null;
     return (
       <View style={styles.detailCol}>
+        {/* The full-size, ZOOMABLE photo (bug hunt 2026-09-29). The grid
+            thumbnails are zoomable={false} because they sit inside buttons, on
+            the promise (micArt.tsx) that the lightbox is reachable from here —
+            but this panel drew no photo, so no Lesson-1 mic could be enlarged. */}
+        <View style={styles.detailPhoto}>
+          <MicVisual kind={t.kind} w={64} h={96} />
+        </View>
         <Text style={styles.detailName}>{t.name}</Text>
         <Text style={styles.detailKlass}>{t.klass === 'transducer' ? 'TRANSDUCER PRINCIPLE' : 'DESIGN / FORM FACTOR'}</Text>
         <Text style={styles.detailHead}>WHAT IT IS</Text>
@@ -1146,6 +1153,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   detailCol: { flex: 1, gap: 5 },
+  detailPhoto: { alignSelf: 'flex-start', marginBottom: 2 },
   compareRow: {
     flexDirection: 'row',
     gap: 10,

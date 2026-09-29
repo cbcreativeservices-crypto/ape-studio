@@ -139,20 +139,58 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone }: {
   const osReduceMotion = useOsReduceMotion();
   const reduceMotion = osReduceMotion || !animationsAllowed();
 
+  /**
+   * Taps that land BEFORE saved progress has loaded (bug hunt 2026-09-29).
+   * persist()/markDone() used to return early with no base, so a NEXT or a
+   * page-done in that window was simply dropped — and then the restore below
+   * snapped the learner back to their saved page. Now: once the learner has
+   * navigated, the restore keeps THEIR page, and done-marks / the last page
+   * made before the load are merged in and saved when it resolves.
+   */
+  const navigatedRef = useRef(false);
+  const preloadRef = useRef<{ lastPage?: number; done: Set<number> }>({ done: new Set() });
+  const onPageDoneRef = useRef(onPageDone);
+  onPageDoneRef.current = onPageDone;
+
   useEffect(() => {
     let alive = true;
+    navigatedRef.current = false;
+    preloadRef.current = { done: new Set() };
     void loadPagedProgress(labId).then((p) => {
       if (!alive) return;
-      progressRef.current = p;
-      setProgress(p);
-      setPage(Math.min(p.lastPage, pagesWithCheck.length - 1));
+      const pre = preloadRef.current;
+      preloadRef.current = { done: new Set() };
+      let next = p;
+      if (navigatedRef.current || pre.done.size > 0) {
+        const fresh = [...pre.done].filter((i) => !p.completed.includes(i));
+        const completed = [...p.completed, ...fresh].sort((a, b) => a - b);
+        next = {
+          ...p,
+          completed,
+          done: completed.length >= pagesWithCheck.length,
+          lastPage: pre.lastPage ?? p.lastPage,
+        };
+        void savePagedProgress(labId, next);
+        // Same rule as markDone: the appended check page is not a lab page.
+        for (const i of fresh) if (i < pages.length) onPageDoneRef.current?.(i);
+      }
+      progressRef.current = next;
+      setProgress(next);
+      if (!navigatedRef.current) setPage(Math.min(p.lastPage, pagesWithCheck.length - 1));
     });
     return () => { alive = false; };
+    // pages.length only feeds the check-page rule above; it moves with
+    // pagesWithCheck.length.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [labId, pagesWithCheck.length]);
 
   const persist = useCallback((patch: Partial<PagedProgress>) => {
     const base = progressRef.current;
-    if (!base) return;
+    if (!base) {
+      // Not loaded yet — remember the place; the load merges it (see above).
+      if (patch.lastPage != null) preloadRef.current.lastPage = patch.lastPage;
+      return;
+    }
     const next = { ...base, ...patch };
     progressRef.current = next;
     setProgress(next);
@@ -160,6 +198,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone }: {
   }, [labId]);
   const goTo = useCallback((i: number) => {
     const idx = Math.max(0, Math.min(pagesWithCheck.length - 1, Math.round(i)));
+    navigatedRef.current = true;
     setPage(idx);
     setListOpen(false);
     scrollRef.current?.scrollTo({ y: 0, animated: !reduceMotion });
@@ -167,7 +206,10 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone }: {
   }, [pagesWithCheck.length, persist, reduceMotion]);
   const markDone = useCallback(() => {
     const base = progressRef.current;
-    if (!base) return;
+    if (!base) {
+      preloadRef.current.done.add(page); // merged + saved once the load resolves
+      return;
+    }
     const fresh = !base.completed.includes(page);
     const completed = fresh ? [...base.completed, page].sort((a, b) => a - b) : base.completed;
     persist({ completed, done: completed.length >= pagesWithCheck.length });
