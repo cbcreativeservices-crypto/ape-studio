@@ -455,9 +455,13 @@ export function AirParticlesView({
     const om = 2 * Math.PI * visHz;
     const e0 = Math.floor(t / SPARKLE_LIFE);
     for (let s = 0; s < 2; s++) {
-      const ts = t + s * (SPARKLE_LIFE / 2);
-      const e = Math.floor(ts / SPARKLE_LIFE);
-      const u = ts - e * SPARKLE_LIFE; // 0..LIFE within this slot's tenure
+      // `tSlot`, not `ts` (fix 2026-09-29): this local used to be called
+      // `ts` and SHADOWED the stage text scale below, so the glint radius
+      // `… * fade * ts` grew with the clock — after a minute on screen the
+      // "sparkle" was a blinding blob covering the ear.
+      const tSlot = t + s * (SPARKLE_LIFE / 2);
+      const e = Math.floor(tSlot / SPARKLE_LIFE);
+      const u = tSlot - e * SPARKLE_LIFE; // 0..LIFE within this slot's tenure
       // SLOT 0 IS THE CENTRE SLOT — it only ever picks a home from the middle
       // band, so something followable is always wiggling where the eye is.
       // Slot 1 roams the whole field, which is what keeps the effect alive and
