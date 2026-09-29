@@ -21,7 +21,7 @@
  * into a line input) renders as a warning, not a shrug.
  */
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import type { PageCtx } from '../kit/PagedLab';
 import { Body, Btn, Card, Eyebrow, Prompt, Row } from '../tuning/components/primitives';
@@ -123,36 +123,6 @@ export function useBuilder(initial: SoundSystem = EMPTY_SYSTEM) {
   }, []);
 
   return { system, part, setPart, selected, setSelected, msg, targets, live, trace: t, tapSlot, tapPlaced, tapLink, remove, reset, refusals, sawUnsafe };
-}
-
-/** The illustrated parts bin — kept for the document form and the tray. */
-export function PartsBin({ kinds, part, onPick, system }: { kinds: readonly GearKind[]; part: GearKind | null; onPick: (k: GearKind | null) => void; system: SoundSystem }) {
-  return (
-    <View style={styles.bin} accessibilityRole="list">
-      {kinds.map((k) => {
-        const spec = gearSpec(k);
-        const placedN = system.placed.filter((p) => p.kind === k).length;
-        const exhausted = !spec.many && placedN >= 1;
-        const sel = part === k;
-        return (
-          <Pressable
-            key={k}
-            style={[styles.binTile, sel && styles.binTileOn, exhausted && { opacity: 0.4 }]}
-            onPress={() => onPick(sel ? null : k)}
-            disabled={exhausted}
-            accessibilityRole="button"
-            accessibilityState={{ selected: sel, disabled: exhausted }}
-            aria-pressed={sel}
-            accessibilityLabel={`${spec.name}${placedN ? `, ${placedN} placed` : ''}${exhausted ? ', already in the build' : ''}`}
-          >
-            <GearGlyph kind={k} size={40} />
-            <Text style={[styles.binLabel, sel && { color: colors.amber }]} numberOfLines={2}>{spec.short}</Text>
-            {placedN ? <Text style={styles.binCount}>×{placedN}</Text> : null}
-          </Pressable>
-        );
-      })}
-    </View>
-  );
 }
 
 type BuilderRack = { rack: SsRack; wellTop: ReactNode; prompt: string; status: string };
@@ -441,11 +411,6 @@ export const SS_BUILD_PAGES: SsPageDef[] = [
 ];
 
 const styles = StyleSheet.create({
-  bin: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  binTile: { width: 72, minHeight: 74, borderRadius: 10, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#101013', alignItems: 'center', paddingVertical: 5, paddingHorizontal: 2, gap: 1 },
-  binTileOn: { borderColor: colors.amber, backgroundColor: '#1a1409' },
-  binLabel: { color: colors.textSecondary, fontFamily: fonts.oswaldMedium, fontSize: 8.5, letterSpacing: 0.6, textAlign: 'center' },
-  binCount: { position: 'absolute', top: 3, right: 5, color: colors.amber, fontFamily: fonts.mono, fontSize: 9 },
   hand: { flexDirection: 'row', gap: 10, alignItems: 'center', borderRadius: 10, borderWidth: 1, borderColor: 'rgba(255,198,77,.45)', backgroundColor: '#1a1409', padding: 8 },
   inspect: { flexDirection: 'row', gap: 10, alignItems: 'center' },
   small: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
