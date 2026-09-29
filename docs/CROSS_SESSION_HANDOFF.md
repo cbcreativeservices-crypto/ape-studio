@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-28 22:08 · ccode · b390fb07
+changed: Cable Install Stage 11: building section on the Rack Unit layout
+affects other side: nothing — client JS only (cable lab art)
+needs: nothing
+
+
 ### 2026-09-28 22:01 · ccode · 93c72e02
 changed: Dashboard: members topics say so before the tap; 'Membership required' is a centred popup
 affects other side: nothing — client JS only (dashboard members-topic gate copy) <FILL — what A (backend) must re-read or adjust, or "nothing">
