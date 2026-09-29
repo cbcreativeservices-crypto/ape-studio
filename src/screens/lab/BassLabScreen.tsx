@@ -261,14 +261,31 @@ export function BassLabScreen() {
     setRunning(false);
     setSource(null);
   }, [sampleStop]);
-  // A recording is a one-shot (~2.5 s): when it ends on its own the transport
-  // drops back to ▶ — the display never claims to be sounding over silence.
+  // STAYS ACTIVE (owner 2026-09-29: "I switched strings and it muted — it
+  // should stay active"). ▶ arms the lab: the transport stays ■ after a
+  // recording (a ~2.5 s one-shot) rings out, and every string / fret / node
+  // change plays the new note until ■ is pressed. It used to drop back to ▶
+  // when the clip ended, so the next change was silent.
+  //
+  // TIGHTER RESPONSE (same note): while armed, the notes a learner is likely
+  // to pick next — frets ±2 on this string and this fret on the other
+  // strings (or every node here and this node on the other strings) — load in
+  // the background, so a change plays from memory instead of waiting on the
+  // network.
+  const samplePreload = sample.preload;
   useEffect(() => {
-    if (running && source === 'recording' && !sample.loading && sample.active == null) {
-      setRunning(false);
-      setSource(null);
+    if (!running) return;
+    const here = str.key.toLowerCase() as BassString;
+    const keys: string[] = [];
+    if (mode === 'fretted') {
+      for (let f = fret - 2; f <= fret + 2; f++) if (f >= 0 && f <= NUM_FRETS && f !== fret) keys.push(frettedSampleKey(here, f));
+      for (const st of STRINGS) if (st.key !== str.key) keys.push(frettedSampleKey(st.key.toLowerCase() as BassString, fret));
+    } else {
+      for (const nd of NODES) if (nd.n !== node.n) keys.push(harmonicSampleKey(here, nd.n) ?? '');
+      for (const st of STRINGS) if (st.key !== str.key) keys.push(harmonicSampleKey(st.key.toLowerCase() as BassString, node.n) ?? '');
     }
-  }, [running, source, sample.loading, sample.active]);
+    samplePreload(BASS_LAB_KEY, keys.filter(Boolean));
+  }, [running, mode, str.key, fret, node.n, samplePreload]);
   // Shake-to-mute (and the idle/background lock) silences the voices from
   // outside this screen; without this the transport would keep saying it is
   // playing. See useStopWhenSilenced.

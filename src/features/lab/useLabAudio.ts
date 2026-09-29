@@ -47,6 +47,9 @@ export interface UseLabAudio {
   play: (labKey: string, assetKey: string) => Promise<LabAudioPlayResult>;
   /** Stop playback (also cancels an in-flight play). */
   stop: () => void;
+  /** Load these clips in the background so the next play() starts at once
+   *  (owner 2026-09-29). Silent; stable identity. */
+  preload: (labKey: string, assetKeys: readonly string[]) => void;
   /** asset_key currently sounding, or null. */
   active: string | null;
   /** true between the tap and audio start (signed-URL fetch in flight). */
@@ -106,5 +109,9 @@ export function useLabAudio(): UseLabAudio {
     setActive(null);
   }, []);
 
-  return { play, stop, active, loading, lastResult };
+  const preload = useCallback((labKey: string, assetKeys: readonly string[]) => {
+    playerRef.current?.preload(labKey, assetKeys);
+  }, []);
+
+  return { play, stop, preload, active, loading, lastResult };
 }

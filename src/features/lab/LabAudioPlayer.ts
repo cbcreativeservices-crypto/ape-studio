@@ -52,9 +52,30 @@ function keyOf(labKey: string, assetKey: string): string {
   return `${labKey}\u0000${assetKey}`;
 }
 
+/** Most clips kept loaded at once (owner 2026-09-29: "tighten the time between
+ *  the change and hearing it"). A bass clip is ~0.5 MB of WAV; 16 is small. */
+const POOL_MAX = 16;
+/** Most preloads fetched at once, so a burst never starves the tapped note. */
+const PRELOAD_CONCURRENCY = 3;
+
+type PoolEntry = {
+  assetKey: string;
+  player: AudioPlayer;
+  sub: { remove: () => void } | null;
+  /** When the signed URL behind this player was issued. A player older than
+   *  URL_REUSE_MS is rebuilt: the stream may re-request byte ranges on a
+   *  replay, and an expired URL would fail silently. */
+  at: number;
+  lastUsed: number;
+};
+
 export class LabAudioPlayer {
-  private player: AudioPlayer | null = null;
-  private sub: { remove: () => void } | null = null;
+  /** Loaded players, keyed by keyOf(lab, asset). A pooled note plays at once —
+   *  no edge-fn round trip, no stream buffering (owner 2026-09-29). */
+  private pool = new Map<string, PoolEntry>();
+  /** In-flight loads, so a preload and a tap on the same note share one fetch. */
+  private loading = new Map<string, Promise<PoolEntry | LabAudioReason>>();
+  private current: PoolEntry | null = null;
   /** The asset_key currently playing, or null. */
   private activeKey: string | null = null;
   /** When the current clip was started — see the finish guard. */
@@ -63,97 +84,85 @@ export class LabAudioPlayer {
   private probeSeen = 0;
   private disposed = false;
   private urlCache = new Map<string, { url: string; at: number }>();
+  /** The audio-session mode is awaited once (bounded); after that it is re-sent
+   *  without waiting — it used to hold every tap for up to 1.5 s. */
+  private modeSettled = false;
   /** Guards against a play() that resolves AFTER a newer play()/stop()/dispose()
    *  — only the latest request may touch the player. */
   private playToken = 0;
-  /** Called when a clip finishes on its own, so a ▶/■ UI can drop back to idle.
-   *  Optional. */
+  /** Called when a clip finishes on its own. Optional. */
   onEnded: ((assetKey: string) => void) | null = null;
 
-  /**
-   * Fetch (or reuse) the signed URL and play the asset from the start, stopping
-   * whatever was playing. Returns the fetch reason: 'ok' on success, else
-   * 'auth' | 'not_found' | 'network' (nothing plays), or 'blocked' when the
-   * app silenced output while the URL was in flight. Safe to call repeatedly.
-   */
-  async play(labKey: string, assetKey: string): Promise<LabAudioReason | 'blocked'> {
-    if (this.disposed) return 'network';
-    const token = ++this.playToken;
-
+  private async settleMode(): Promise<void> {
     // Play even with the iOS silent switch on — a clip the learner started is
-    // content, not a notification. Matches earPlayer.
-    //
-    // BOUNDED (owner report 2026-09-27, iOS 27 / build 32: "the play button in
-    // the bass guitar lab does not work"). The server logs showed the tap never
-    // reached the signed-URL fetch below — and this await is the only thing in
-    // between. It had no timeout, so an audio-session call that never answers
-    // (another engine holding the session) stalled play() for good: no fetch,
-    // no sound, and the lab's ▶ held disabled on `loading`. The mode is a
-    // nicety for the silent switch; it must never be a reason not to play.
-    const modeWon = await Promise.race([
-      setAudioModeAsync({ playsInSilentMode: true })
-        .then(() => 'mode ok')
-        .catch((e: unknown) => `mode ERR ${(e as Error)?.message ?? e}`),
+    // content, not a notification. BOUNDED (2026-09-27): a session call that
+    // never answers must never be a reason not to play.
+    const mode = setAudioModeAsync({ playsInSilentMode: true })
+      .then(() => 'mode ok')
+      .catch((e: unknown) => `mode ERR ${(e as Error)?.message ?? e}`);
+    if (this.modeSettled) return;
+    const won = await Promise.race([
+      mode,
       new Promise<string>((r) => setTimeout(() => r('mode TIMEOUT'), AUDIO_MODE_WAIT_MS)),
     ]);
-    labProbe(modeWon); // TEMP probe
-    if (this.disposed || token !== this.playToken) return 'network';
+    labProbe(won); // TEMP probe
+    this.modeSettled = true;
+  }
 
+  private async signedUrl(labKey: string, assetKey: string): Promise<{ url: string; at: number } | LabAudioReason> {
     const cacheKey = keyOf(labKey, assetKey);
-    let url: string | null = null;
     const cached = this.urlCache.get(cacheKey);
-    if (cached && Date.now() - cached.at < URL_REUSE_MS) {
-      url = cached.url;
-      labProbe('url cached'); // TEMP probe
-    } else {
-      let timer: ReturnType<typeof setTimeout> | undefined;
-      const { asset, reason } = await Promise.race([
-        fetchLabAudio(labKey, assetKey),
-        new Promise<{ asset: null; reason: LabAudioReason }>((r) => {
-          timer = setTimeout(() => r({ asset: null, reason: 'network' }), LAB_AUDIO_FETCH_MS);
-        }),
-      ]);
-      clearTimeout(timer);
-      // A newer request (or teardown) landed while we were fetching — abandon
-      // this one without touching the player.
-      if (this.disposed || token !== this.playToken) return 'network';
-      labProbe(`fetch ${reason}${asset ? ` ${asset.ext} ${asset.durationMs}ms ${asset.samplerate}Hz ${asset.channels}ch` : ''}`); // TEMP probe
-      if (!asset) return reason;
-      url = asset.url;
-      this.urlCache.set(cacheKey, { url, at: Date.now() });
-    }
+    if (cached && Date.now() - cached.at < URL_REUSE_MS) return cached;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const { asset, reason } = await Promise.race([
+      fetchLabAudio(labKey, assetKey),
+      new Promise<{ asset: null; reason: LabAudioReason }>((r) => {
+        timer = setTimeout(() => r({ asset: null, reason: 'network' }), LAB_AUDIO_FETCH_MS);
+      }),
+    ]);
+    clearTimeout(timer);
+    if (!asset) return reason;
+    const hit = { url: asset.url, at: Date.now() };
+    this.urlCache.set(cacheKey, hit);
+    return hit;
+  }
 
-    // ⛔ SAFETY (bug hunt 2026-09-29): the gate was passed BEFORE the awaits
-    // above. Shake-to-mute, the idle lock or backgrounding can land during
-    // them — panicMuteAudio stops the players that exist, not one about to
-    // start — so the clip would begin AFTER the learner silenced the app.
-    // Ask again at the last moment; off means nothing plays.
-    if (!isAudioOutputEnabled()) return 'blocked';
-
+  private release(k: string, e: PoolEntry): void {
+    if (this.pool.get(k) === e) this.pool.delete(k);
+    e.sub?.remove();
+    // Off the safety registry before the handle dies (2026-09-17).
+    unregisterFilePlayer(e.player);
     try {
-    if (this.player) {
-      this.player.replace({ uri: url });
-      labProbe('player replaced'); // TEMP probe
-    } else {
-      const p = createAudioPlayer({ uri: url });
-      labProbe(`player created vol ${Math.round(((p as { volume?: number }).volume ?? -1) * 100) / 100}`); // TEMP probe
+      e.player.remove();
+    } catch {
+      // already gone
+    }
+    if (this.current === e) this.current = null;
+  }
+
+  /** A loaded player for this note — pooled if fresh, else fetched + created. */
+  private load(labKey: string, assetKey: string): Promise<PoolEntry | LabAudioReason> {
+    const k = keyOf(labKey, assetKey);
+    const have = this.pool.get(k);
+    if (have && Date.now() - have.at < URL_REUSE_MS) return Promise.resolve(have);
+    const inflight = this.loading.get(k);
+    if (inflight) return inflight;
+    const job = (async (): Promise<PoolEntry | LabAudioReason> => {
+      const u = await this.signedUrl(labKey, assetKey);
+      if (typeof u === 'string') return u;
+      if (this.disposed) return 'network';
+      const player = createAudioPlayer({ uri: u.url });
       // Hard output ceiling (owner 2026-09-17) — see features/audio/outputCeiling.
-      // The native generator has had one all along; file playback had none.
-      applyCeiling(p);
-      this.player = p;
+      applyCeiling(player);
+      const entry: PoolEntry = { assetKey, player, sub: null, at: u.at, lastUsed: Date.now() };
       try {
-        // Compare against the CURRENT clip (`this.activeKey`), never the
-        // `assetKey` this closure captured: the listener is created once, on
-        // the first play, so it used to recognise only that first clip's end —
-        // every later note finished silently and the lab's ■ stayed lit over
-        // silence (2026-09-27). The short guard ignores a stale finish from
-        // the clip that `replace()` just swapped out.
-        this.sub = p.addListener('playbackStatusUpdate', (st: any) => {
+        entry.sub = player.addListener('playbackStatusUpdate', (st: any) => {
+          if (this.current !== entry) return;
           // TEMP probe: the first few status updates of each clip.
           if (this.probeSeen < 4 || st?.didJustFinish || st?.error) {
             this.probeSeen++;
             labProbe(
-              `st loaded=${st?.isLoaded} play=${st?.playing} buf=${st?.isBuffering} t=${Math.round((st?.currentTime ?? 0) * 100) / 100}/${Math.round((st?.duration ?? 0) * 100) / 100} vol=${st?.volume ?? '?'} mute=${st?.mute ?? '?'}${st?.didJustFinish ? ' FINISH' : ''}${st?.error ? ` ERR ${st.error}` : ''}${st?.reasonForWaitingToPlay ? ` wait=${st.reasonForWaitingToPlay}` : ''}`,
+              `st loaded=${st?.isLoaded} play=${st?.playing} buf=${st?.isBuffering} t=${Math.round((st?.currentTime ?? 0) * 100) / 100}/${Math.round((st?.duration ?? 0) * 100) / 100}${st?.didJustFinish ? ' FINISH' : ''}${st?.error ? ` ERR ${st.error}` : ''}`,
             );
           }
           if (st?.didJustFinish && this.activeKey != null && Date.now() - this.startedAt > 250) {
@@ -163,17 +172,90 @@ export class LabAudioPlayer {
           }
         });
       } catch {
-        // Older expo-audio without the event: didJustFinish simply never fires;
-        // callers must not depend on it for correctness.
+        // Older expo-audio without the event: didJustFinish never fires.
       }
+      const old = this.pool.get(k);
+      if (old && old !== this.current) this.release(k, old);
+      this.pool.set(k, entry);
+      this.evict();
+      return entry;
+    })();
+    this.loading.set(k, job);
+    void job.finally(() => this.loading.delete(k));
+    return job;
+  }
+
+  /** Keep the pool at POOL_MAX — least-recently-used first, never the one playing. */
+  private evict(): void {
+    while (this.pool.size > POOL_MAX) {
+      let oldestK: string | null = null;
+      let oldest = Infinity;
+      for (const [k, e] of this.pool) {
+        if (e === this.current) continue;
+        if (e.lastUsed < oldest) {
+          oldest = e.lastUsed;
+          oldestK = k;
+        }
+      }
+      if (oldestK == null) return;
+      this.release(oldestK, this.pool.get(oldestK)!);
     }
-    this.probeSeen = 0; // TEMP probe
-    void this.player.seekTo(0);
-    this.player.play();
-    labProbe('play() called'); // TEMP probe
+  }
+
+  /**
+   * Load these notes in the background so a later play() starts at once
+   * (owner 2026-09-29). Silent: nothing plays. Safe to call on every change.
+   */
+  preload(labKey: string, assetKeys: readonly string[]): void {
+    if (this.disposed) return;
+    const todo = assetKeys.filter((a) => {
+      const k = keyOf(labKey, a);
+      const e = this.pool.get(k);
+      return !(e && Date.now() - e.at < URL_REUSE_MS) && !this.loading.has(k);
+    });
+    let i = 0;
+    const next = (): void => {
+      if (this.disposed || i >= todo.length) return;
+      const a = todo[i++];
+      void this.load(labKey, a).finally(next);
+    };
+    for (let n = 0; n < PRELOAD_CONCURRENCY; n++) next();
+  }
+
+  /**
+   * Play the asset from the start, stopping whatever was playing. Returns 'ok',
+   * else 'auth' | 'not_found' | 'network' (nothing plays), or 'blocked' when
+   * the app silenced output meanwhile. Safe to call repeatedly.
+   */
+  async play(labKey: string, assetKey: string): Promise<LabAudioReason | 'blocked'> {
+    if (this.disposed) return 'network';
+    const token = ++this.playToken;
+    const pooled = this.pool.has(keyOf(labKey, assetKey));
+    await this.settleMode();
+    if (this.disposed || token !== this.playToken) return 'network';
+    const got = await this.load(labKey, assetKey);
+    if (this.disposed || token !== this.playToken) return 'network';
+    if (typeof got === 'string') {
+      labProbe(`fetch ${got}`); // TEMP probe
+      return got;
+    }
+    labProbe(pooled ? 'clip ready (preloaded)' : 'clip loaded'); // TEMP probe
+
+    // ⛔ SAFETY (bug hunt 2026-09-29): the gate was passed BEFORE the awaits
+    // above. Shake-to-mute, the idle lock or backgrounding can land during
+    // them, so ask again at the last moment; off means nothing plays.
+    if (!isAudioOutputEnabled()) return 'blocked';
+
+    try {
+      if (this.current && this.current !== got) this.current.player.pause();
+      this.current = got;
+      got.lastUsed = Date.now();
+      this.probeSeen = 0; // TEMP probe
+      void got.player.seekTo(0);
+      got.player.play();
+      labProbe('play() called'); // TEMP probe
     } catch (e) {
-      // TEMP probe: a throw here used to escape silently — ▶ did nothing.
-      labProbe(`player THREW ${(e as Error)?.message ?? e}`);
+      labProbe(`player THREW ${(e as Error)?.message ?? e}`); // TEMP probe
       throw e;
     }
     this.activeKey = assetKey;
@@ -184,7 +266,7 @@ export class LabAudioPlayer {
   /** Stop playback (any in-flight play() is also cancelled). */
   stop(): void {
     this.playToken++;
-    this.player?.pause();
+    this.current?.player.pause();
     this.activeKey = null;
   }
 
@@ -193,16 +275,12 @@ export class LabAudioPlayer {
     return this.activeKey;
   }
 
-  /** Terminal — release the native player + listener. */
+  /** Terminal — release every native player + listener. */
   dispose(): void {
     this.disposed = true;
     this.playToken++;
-    this.sub?.remove();
-    this.sub = null;
-    // Off the safety registry before the handle dies (2026-09-17).
-    unregisterFilePlayer(this.player);
-    this.player?.remove();
-    this.player = null;
+    for (const [k, e] of [...this.pool]) this.release(k, e);
+    this.current = null;
     this.activeKey = null;
     this.urlCache.clear();
   }

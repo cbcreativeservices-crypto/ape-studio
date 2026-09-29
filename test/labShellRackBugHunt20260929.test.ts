@@ -50,8 +50,10 @@ test('LP1 safety: a lab clip / tuning clip re-checks the gate right before it st
   const p = read('src/features/lab/LabAudioPlayer.ts');
   const gate = p.indexOf("if (!isAudioOutputEnabled()) return 'blocked';");
   assert.ok(gate > 0, 'LabAudioPlayer re-checks the gate');
-  assert.ok(gate < p.indexOf('this.player.replace({ uri: url });'), 'before replace()');
-  assert.ok(gate < p.indexOf('this.player.play();'), 'before play()');
+  // Pooled players (owner 2026-09-29): the re-check sits after every await
+  // and before the pooled clip is started.
+  assert.ok(gate > p.lastIndexOf('await this.load('), 'after the last await');
+  assert.ok(gate < p.indexOf('got.player.play();'), 'before play()');
   const t = read('src/features/tuning/tuningAudio.ts');
   assert.match(t, /await this\.ear\.load\(\[buf\]\);\n\s+if \(my !== this\.token\) return;\n(\s+\/\/[^\n]*\n)+\s+if \(!isAudioOutputEnabled\(\)\) return;\n\s+this\.ear\.play\(0\);/);
 });

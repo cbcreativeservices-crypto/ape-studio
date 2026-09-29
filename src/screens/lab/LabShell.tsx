@@ -581,13 +581,6 @@ export function LabShell({
           {probe.frames}
           {probeLines.map((l) => `\n${l}`).join('')}
         </Text>
-      ) : labId === 'bass' && probeLines.length > 0 ? (
-        // TEMP (owner 2026-09-29): the Bass ▶ is still silent on the iPhone.
-        // Show the last playback steps WITHOUT the triple-tap, so one
-        // screenshot after tapping ▶ says where it stops.
-        <Text style={styles.probe} accessible={false}>
-          {probeLines.slice(-3).join('\n')}
-        </Text>
       ) : null}
 
       {/* Mode tabs directly under the header (owner 2026-07-29 order). */}
