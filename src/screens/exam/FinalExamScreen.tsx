@@ -426,7 +426,10 @@ export function FinalExamScreen({ navigation, route }: Props) {
     if (!payload) return;
     if (qIdx + 1 >= payload.items.length) void doSubmit();
     else {
-      setQIdx((i) => i + 1);
+      // Clamped (bug hunt 2026-09-29): two advances from the same render both
+      // read the same `qIdx`, and an unclamped increment ran past the last
+      // item into a `!question` spinner that never resolved.
+      setQIdx((i) => Math.min(i + 1, payload.items.length - 1));
       // A11Y (2026-09-18, pass 5 · W5): the quiz says where you are and the
       // exam did not. The counter is redrawn in place, so without this the
       // question silently becomes a different question — in the one place in
@@ -445,7 +448,16 @@ export function FinalExamScreen({ navigation, route }: Props) {
   const recordAndAdvance = useCallback(
     (slot: number, value: AnswerValue) => {
       answers.current[String(slot)] = value; // F4: slot-keyed VALUES
-      if (payload) saveAttemptDraft(payload.attempt_id, { answers: answers.current, qIdx });
+      // Save the NEXT index, not this one (bug hunt 2026-09-29): the draft is
+      // written after this answer is recorded, so resuming at `qIdx` reopened
+      // a question already answered. Clamped to the last item: a crash after
+      // the final answer resumes there, and answering it again submits.
+      if (payload) {
+        saveAttemptDraft(payload.attempt_id, {
+          answers: answers.current,
+          qIdx: Math.min(qIdx + 1, payload.items.length - 1),
+        });
+      }
       if (advanceTimer.current) clearTimeout(advanceTimer.current);
       advanceTimer.current = setTimeout(advance, HIGHLIGHT_MS);
     },
@@ -552,11 +564,17 @@ export function FinalExamScreen({ navigation, route }: Props) {
   // M3 (launch audit 2026-09-09; ported from QuizScreen): a malformed options
   // payload renders no controls; record an empty answer for the slot and move
   // on rather than stranding the learner until the 10-minute force-submit.
+  //
+  // LATCHED (bug hunt 2026-09-29). This called `advance()` directly with no
+  // guard, and `advance` re-opens `pickedRef` — so a double tap advanced twice:
+  // it skipped a real question, or on the last two ran past the end into an
+  // endless spinner. It now goes through the same latch + draft save + timer
+  // as a real answer, so the second tap is dropped.
   const skipQuestion = useCallback(() => {
-    if (!question) return;
-    answers.current[String(question.slot_index)] = '';
-    advance();
-  }, [question, advance]);
+    if (!question || pickedRef.current) return;
+    pickedRef.current = true;
+    recordAndAdvance(question.slot_index, '');
+  }, [question, recordAndAdvance]);
 
   /* ---- Android hardware-back routes through the exit confirm (launch audit
      2026-09-09; ported from QuizScreen). Without this, gestureEnabled:false only
@@ -564,8 +582,13 @@ export function FinalExamScreen({ navigation, route }: Props) {
      screen instantly — abandoning the sitting with no "answers will be wiped"
      confirm. ---- */
   useEffect(() => {
-    if (!payload || submitting) return;
+    if (!payload) return;
     const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      // WHILE SUBMITTING, SWALLOW IT (bug hunt 2026-09-29). This effect used to
+      // bail out when `submitting`, leaving Android's system back live: it
+      // popped the screen mid-submit and the result had nowhere to land. The
+      // submit is bounded (api.ts), so holding here always resolves.
+      if (submitting) return true;
       if (submitted.current) return false;
       confirmExit();
       return true; // handled
@@ -646,8 +669,9 @@ export function FinalExamScreen({ navigation, route }: Props) {
      *
      * `FinalExam` is a ROOT-stack route, and the root navigator sets
      * `headerShown: false, gestureEnabled: false`; the route re-asserts the
-     * gesture. The Android hardware-back interceptor deliberately skips this
-     * branch (`if (!payload || submitting) return`), which leaves Android's
+     * gesture. The Android hardware-back interceptor deliberately skips the
+     * start half (`if (!payload) return`; it swallows back while submitting
+     * since the bug hunt of 2026-09-29), which leaves Android's
      * system back working — iOS had no header, no swipe and no button at all.
      * Force-quit was the only exit, on the graded capstone that issues the
      * credential.

@@ -343,7 +343,10 @@ export function QuizScreen({ navigation, route }: Props) {
     if (!payload) return;
     if (qIdx + 1 >= payload.questions.length) void doSubmit();
     else {
-      setQIdx((i) => i + 1);
+      // Clamped (bug hunt 2026-09-29): two advances from the same render both
+      // read the same `qIdx`, and an unclamped increment ran past the last
+      // question into a `!question` spinner that never resolved.
+      setQIdx((i) => Math.min(i + 1, payload.questions.length - 1));
       // A11Y (2026-09-06): the counter changed silently — say where we are.
       // W10 (2026-09-18): the counter alone told a screen-reader user that
       // SOMETHING changed but never what — the question text is redrawn in
@@ -360,8 +363,13 @@ export function QuizScreen({ navigation, route }: Props) {
      Without this, gestureEnabled:false only blocks the iOS swipe and hardware-
      back drops the learner out of a live timed attempt with no confirm. ---- */
   useEffect(() => {
-    if (!payload || submitting) return;
+    if (!payload) return;
     const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      // WHILE SUBMITTING, SWALLOW IT (bug hunt 2026-09-29). This effect used to
+      // bail out when `submitting`, leaving Android's system back live: it
+      // popped the screen mid-submit and the result had nowhere to land. The
+      // submit is bounded (api.ts), so holding here always resolves.
+      if (submitting) return true;
       if (submitted.current) return false;
       confirmExit();
       return true; // we handled it
@@ -384,7 +392,16 @@ export function QuizScreen({ navigation, route }: Props) {
       answers.current[String(slot)] = value; // F4: slot-keyed VALUES
       // Persist after every answer. Fire-and-forget — an answer must never wait
       // on a disk write to register.
-      if (payload) saveAttemptDraft(payload.attempt_id, { answers: answers.current, qIdx });
+      // Save the NEXT index, not this one (bug hunt 2026-09-29): the draft is
+      // written after this answer is recorded, so resuming at `qIdx` reopened
+      // a question already answered. Clamped to the last question: a crash after
+      // the final answer resumes there, and answering it again submits.
+      if (payload) {
+        saveAttemptDraft(payload.attempt_id, {
+          answers: answers.current,
+          qIdx: Math.min(qIdx + 1, payload.questions.length - 1),
+        });
+      }
       if (advanceTimer.current) clearTimeout(advanceTimer.current);
       advanceTimer.current = setTimeout(advance, HIGHLIGHT_MS);
     },
@@ -488,11 +505,17 @@ export function QuizScreen({ navigation, route }: Props) {
   // M3 (2026-09-07): a malformed options payload renders no controls; record an
   // empty answer for the slot and move on rather than stranding the learner
   // until the 10-minute force-submit.
+  //
+  // LATCHED (bug hunt 2026-09-29). This called `advance()` directly with no
+  // guard, and `advance` re-opens `pickedRef` — so a double tap advanced twice:
+  // it skipped a real question, or on the last two ran past the end into an
+  // endless spinner. It now goes through the same latch + draft save + timer
+  // as a real answer, so the second tap is dropped.
   const skipQuestion = useCallback(() => {
-    if (!question) return;
-    answers.current[String(question.slot_index)] = '';
-    advance();
-  }, [question, advance]);
+    if (!question || pickedRef.current) return;
+    pickedRef.current = true;
+    recordAndAdvance(question.slot_index, '');
+  }, [question, recordAndAdvance]);
 
   /* ---- states ---- */
   if (startError) {
