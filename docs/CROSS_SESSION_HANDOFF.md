@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 11:44 · ccode · e0ac8dfd
+changed: Tuning lab: save every clip, pre-render each chapter's clips
+affects other side: nothing — client JS only (lab audio persistence + preloading)
+needs: nothing
+
+
 ### 2026-09-29 11:39 · ccode · 3d0f35ee
 changed: Lab full screen: item names print in full above the display (TitledStage)
 affects other side: nothing — client JS only (full-screen stage titles)
