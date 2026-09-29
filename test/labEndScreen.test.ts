@@ -72,7 +72,7 @@ describe('endLead — honest wording', () => {
   const part = whatsLeft(UNITS, new Set(['a']));
   const done = whatsLeft(UNITS, new Set(['a', 'b', 'c', 'check']));
   it('credit labs say what still counts toward credit, and that practising never removes it', () => {
-    assert.match(endLead(part, { mode: 'credit', noun: 'module' }), /^3 modules of 4 still to finish before this lab counts toward your credit/);
+    assert.match(endLead(part, { mode: 'credit', noun: 'module' }), /^2 modules of 3 plus the check still to finish before this lab counts toward your credit/);
     assert.match(endLead(done, { mode: 'credit', noun: 'module' }), /never removes credit/);
   });
   it('progress-only labs never mention credit', () => {

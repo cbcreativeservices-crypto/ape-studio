@@ -82,10 +82,18 @@ export function endLead(
 ): string {
   const { mode, noun, guest } = opts;
   const plural = (n: number) => `${n} ${noun}${n === 1 ? '' : 's'}`;
+  // A check row (final exam / understanding check) is not a module or page —
+  // count it separately so "8 modules + the check" never reads "9 modules of 9".
+  const all = [...w.left, ...w.credited];
+  const unitsTotal = all.filter((r) => r.kind !== 'check').length;
+  const unitsLeft = w.left.filter((r) => r.kind !== 'check').length;
+  const checkLeft = w.left.some((r) => r.kind === 'check');
+  const what = `${plural(unitsLeft)} of ${unitsTotal}${checkLeft ? ' plus the check' : ''}`;
+  const onlyCheck = unitsLeft === 0 && checkLeft;
   if (guest) {
     return w.complete
       ? `You have been through every ${noun}. You are browsing as a guest, so none of this is saved — sign in to keep your progress.`
-      : `${plural(w.left.length)} of ${w.total} still to go. You are browsing as a guest, so nothing here is saved — sign in to keep your progress.`;
+      : `${onlyCheck ? 'Only the check is left' : `${what} still to go`}. You are browsing as a guest, so nothing here is saved — sign in to keep your progress.`;
   }
   if (w.complete) {
     return mode === 'credit'
@@ -93,6 +101,6 @@ export function endLead(
       : `Every ${noun} is done. Review any of them, or practise the whole lab again — practising never clears what you have done.`;
   }
   return mode === 'credit'
-    ? `${plural(w.left.length)} of ${w.total} still to finish before this lab counts toward your credit. Everything you have done is saved — jump straight to any of them.`
-    : `${plural(w.left.length)} of ${w.total} not done yet. Everything you have done is saved on this device — jump straight to any of them.`;
+    ? `${onlyCheck ? 'Only the check is left' : `${what} still to finish`} before this lab counts toward your credit. Everything you have done is saved — jump straight to any of them.`
+    : `${onlyCheck ? 'Only the check is left' : `${what} not done yet`}. Everything you have done is saved on this device — jump straight to any of them.`;
 }
