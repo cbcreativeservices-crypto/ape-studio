@@ -20,6 +20,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { colors, fonts } from '../../../theme/tokens';
 import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
 import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
+import { useStopOnClose } from '../../../features/audio/useStopOnBlur';
 import { isAudioOutputEnabled } from '../../../features/audio/audioOutputStore';
 import { navigationRef } from '../../../navigation/navigationRef';
 import { EarClipPlayer } from '../../../features/ear/earPlayer';
@@ -297,18 +298,22 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
   //    a silent page. Blur now also drops `active`.
   //  • A QUEUED PLAY UNDER THE NEXT SCREEN: tap ▶ MY MIX, then OPEN THE EQ LAB
   //    while it is RENDERING — the render finished under the pushed EQ Lab and
-  //    played `pendingRef`. Blur now forgets the queued play, and focusedRef
-  //    AND the output gate are checked before anything is started.
+  //    played `pendingRef`. focusedRef AND the output gate are checked before
+  //    anything is started.
+  //
+  // SUPERSEDED IN PART (owner 2026-09-29, later): "only stop when closed, keep
+  // playing when switching screens". What is SOUNDING now plays on under a
+  // pushed screen and stops on close (useStopOnClose below); opening a lab
+  // that makes its own sound (the EQ Lab's audition) stops it first, through
+  // labOutputOwner — never two labs at once. A NEW start (a queued render
+  // finishing, a console-edit replay) still never begins under another
+  // screen: focusedRef stays the gate for starts.
   const focusedRef = useRef(true);
   useFocusEffect(
     useCallback(() => {
       focusedRef.current = true;
       return () => {
         focusedRef.current = false;
-        pendingRef.current = null;
-        setPending(null);
-        playerRef.current?.stop();
-        setActive(null);
       };
     }, []),
   );
@@ -496,6 +501,9 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
     stop();
   }, [stop]);
   useStopWhenSilenced(active != null || pending != null, stopAll);
+  // Stops on CLOSE, or when another sound lab comes to the front — not on
+  // blur (owner 2026-09-29; see the focus note above).
+  useStopOnClose(stopAll);
 
   return { status, play, stop, active, pending, measured, heard };
 }

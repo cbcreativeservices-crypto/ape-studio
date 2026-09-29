@@ -58,6 +58,7 @@ import { RackUnit } from '../lab/rack/RackUnit';
 import type { DockParam } from '../lab/rack/rackTypes';
 import type { RootStackParamList } from '../../navigation/types';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
+import { useStopOnClose } from '../../features/audio/useStopOnBlur';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SignalGen'>;
 
@@ -567,6 +568,13 @@ export function SignalGenScreen({ navigation }: Props) {
   // outside this screen; without this the transport would keep saying it is
   // playing. See useStopWhenSilenced.
   useStopWhenSilenced(running, () => {
+    void onStop();
+  });
+  // Already plays on under other screens and stops on close (the teardown
+  // above). This joins it to "one lab owns the output" (owner 2026-09-29):
+  // opening a lab that makes its own sound stops the generator first, and
+  // opening the generator stops a lab still sounding behind it.
+  useStopOnClose(() => {
     void onStop();
   });
 

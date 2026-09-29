@@ -70,7 +70,7 @@ import { requireViz, type VizModule } from './skiaGate';
 import { START_LEVEL_01 } from '../../../features/audio/startLevel';
 import { useStopOnAudioMute } from '../../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
-import { useStopOnBlur } from '../../../features/audio/useStopOnBlur';
+import { useStopOnClose } from '../../../features/audio/useStopOnBlur';
 
 const STEP_KEY = 'ape:fosStep';
 const ACTIVITY_MS = 500;
@@ -317,7 +317,7 @@ function useCourseTone(engineReady: boolean): ToneApi {
   // playing. See useStopWhenSilenced.
   useStopWhenSilenced(playing, stop);
 
-  useStopOnBlur(stop); // never on a re-render (owner 2026-09-29, useStopOnBlur.ts)
+  useStopOnClose(stop); // on CLOSE, not blur - keeps playing under other screens (owner 2026-09-29, useStopOnBlur.ts)
   useEffect(() => {
     if (!playing) return;
     const id = setInterval(noteAudioActivity, ACTIVITY_MS);

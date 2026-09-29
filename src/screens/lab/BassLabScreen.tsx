@@ -52,7 +52,7 @@ import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 import { useLabAudio } from '../../features/lab/useLabAudio';
 import { labProbe } from '../../features/lab/labProbe';
 import { BASS_LAB_KEY, frettedSampleKey, harmonicSampleKey, type BassString } from '../../features/lab/bassSamples';
-import { useStopOnBlur } from '../../features/audio/useStopOnBlur';
+import { useStopOnClose } from '../../features/audio/useStopOnBlur';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -293,7 +293,7 @@ export function BassLabScreen() {
   // playing. See useStopWhenSilenced.
   useStopWhenSilenced(running, stopNote);
 
-  useStopOnBlur(stopNote); // never on a re-render (owner 2026-09-29, useStopOnBlur.ts)
+  useStopOnClose(stopNote); // on CLOSE, not blur - keeps playing under other screens (owner 2026-09-29, useStopOnBlur.ts)
   useEffect(() => {
     if (!running) return;
     const id = setInterval(noteAudioActivity, ACTIVITY_MS);

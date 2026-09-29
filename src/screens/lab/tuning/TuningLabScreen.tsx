@@ -13,7 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
-import { useStopOnBlur } from '../../../features/audio/useStopOnBlur';
+import { useStopOnClose } from '../../../features/audio/useStopOnBlur';
 import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
 import { animationsAllowed } from '../../../features/settings/a11y';
 import { C4_ET } from '../../../features/tuning/tuningMath';
@@ -31,9 +31,11 @@ export function TuningLabScreen() {
   const player = useMemo(() => new TuningPlayer(requestAudioOutput), [requestAudioOutput]);
   const [status, setStatus] = useState<PlayerStatus>({ playing: false, label: null });
   // Owner 2026-09-29 sound audit: the lab stopped only on unmount and on
-  // backgrounding. A pushed screen (glossary, lesson) now silences it too, and
-  // a shake-to-mute / idle lock also cancels a clip still RENDERING.
-  useStopOnBlur(() => player.stop());
+  // backgrounding; a shake-to-mute / idle lock also cancels a clip still
+  // RENDERING. Owner 2026-09-29 (later): "only stop when closed" — a clip
+  // plays on under a pushed screen (glossary, lesson) and stops on close, or
+  // when another sound lab comes to the front (labOutputOwner).
+  useStopOnClose(() => player.stop());
   useStopWhenSilenced(status.playing || !!status.rendering, () => player.stop());
 
   /**

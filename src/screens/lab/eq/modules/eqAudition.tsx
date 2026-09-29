@@ -26,7 +26,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { MiniBtn } from './eqBits';
 import { useStopOnAudioMute } from '../../../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../../../features/audio/useStopWhenSilenced';
-import { useStopOnBlur } from '../../../../features/audio/useStopOnBlur';
+import { useStopOnClose } from '../../../../features/audio/useStopOnBlur';
 
 const GEN_LEVEL_DB = -20; // house default; the core enforces the −12 dBFS cap
 const ACTIVITY_MS = 500;
@@ -124,8 +124,8 @@ export function EqAuditionBar({ bands }: { bands: EqBandSpec[] }) {
     if (running && available) pushBands(bands);
   }, [bands, running, available]);
 
-  // Blur/unmount: never leave a test signal running behind another screen.
-  useStopOnBlur(stop); // never on a re-render (owner 2026-09-29, useStopOnBlur.ts)
+  // Close: never leave a test signal running once the lab is gone (owner 2026-09-29: keeps playing under other screens; a sound lab brought to the front stops it).
+  useStopOnClose(stop); // on CLOSE, not blur - keeps playing under other screens (owner 2026-09-29, useStopOnBlur.ts)
   useEffect(() => {
     if (!running) return;
     const id = setInterval(noteAudioActivity, ACTIVITY_MS);

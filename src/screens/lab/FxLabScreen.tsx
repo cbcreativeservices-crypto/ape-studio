@@ -64,7 +64,7 @@ import type { BezelItem, DockParam } from './rack/rackTypes';
 import type { FxAnimModel } from './fxAnim';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
-import { useStopOnBlur } from '../../features/audio/useStopOnBlur';
+import { useStopOnClose } from '../../features/audio/useStopOnBlur';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -342,7 +342,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
   // playing. See useStopWhenSilenced.
   useStopWhenSilenced(running, stop);
 
-  useStopOnBlur(stop); // never on a re-render (owner 2026-09-29, useStopOnBlur.ts)
+  useStopOnClose(stop); // on CLOSE, not blur - keeps playing under other screens (owner 2026-09-29, useStopOnBlur.ts)
   useEffect(() => {
     if (!running) return;
     const id = setInterval(noteAudioActivity, ACTIVITY_MS);

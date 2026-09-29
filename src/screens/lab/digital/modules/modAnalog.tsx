@@ -20,7 +20,7 @@
  * ALIAS AUDIO (owner-approved — the lab's one real audio demo): mirrors
  * FoundationsCourseScreen's ApeDsp plumbing exactly — engine gate via
  * EngineGate state, audio-output mute gate (requestAudioOutput), generation
- * token, keepalive interval, stop on blur/unmount via `focused`. The badge
+ * token, keepalive interval, stop on CLOSE (owner 2026-09-29). The badge
  * discloses it as a SYNTHESIZED PREDICTION of what an unfiltered converter
  * would produce.
  */
@@ -45,7 +45,7 @@ import { requireVizSignal, type VizSignalModule } from '../skiaGate';
 import type { WaveKind } from '../vizSignal';
 import type { DigitalModuleProps } from '../DigitalModuleScreen';
 import { useStopWhenSilenced } from '../../../../features/audio/useStopWhenSilenced';
-import { useStopOnBlur } from '../../../../features/audio/useStopOnBlur';
+import { useStopOnClose } from '../../../../features/audio/useStopOnBlur';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared helpers (pure math — no Skia; duplicated one-liners of the viz math
@@ -408,7 +408,7 @@ const CHECK_AA: CheckSpec = {
 
 /** The alias-audio tone — FoundationsCourseScreen's plumbing, mirrored:
  *  audio-output gate → genSet/genStart with generation token → keepalive →
- *  stop on blur/unmount. */
+ *  stop on close (owner 2026-09-29). */
 function useAliasTone(engineReady: boolean, focused: boolean) {
   const { requestAudioOutput } = useAudioOutputGate();
   const [playing, setPlaying] = useState<PlayWhich | null>(null);
@@ -494,13 +494,12 @@ function useAliasTone(engineReady: boolean, focused: boolean) {
   // playing. See useStopWhenSilenced.
   useStopWhenSilenced(playing !== null, stop);
 
-  // Stop on blur and on unmount (host keeps modules mounted under pushes).
-  useEffect(() => {
-    if (!focused) stop();
-  }, [focused, stop]);
-  // Never `useEffect(() => () => stop(), [stop])`: that cleanup also runs
-  // whenever `stop` changes identity (owner 2026-09-29, useStopOnBlur.ts).
-  useStopOnBlur(stop);
+  // Stop on CLOSE, not on blur (owner 2026-09-29: "keep playing when switching
+  // screens") — the tone carries on under a pushed screen; a sound lab that
+  // comes to the front stops it (labOutputOwner). Never
+  // `useEffect(() => () => stop(), [stop])`: that cleanup also runs whenever
+  // `stop` changes identity (owner 2026-09-29, useStopOnBlur.ts).
+  useStopOnClose(stop);
   // Keepalive so the mute gate sees us as active while sounding.
   useEffect(() => {
     if (!playing) return;

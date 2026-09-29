@@ -41,7 +41,7 @@ import { HarmonographMachine, INK_DEFAULT, drawTurns } from './HarmonographMachi
 import { HarmonographViewer } from './HarmonographViewer';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
-import { useStopOnBlur } from '../../features/audio/useStopOnBlur';
+import { useStopOnClose } from '../../features/audio/useStopOnBlur';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -263,7 +263,7 @@ export function HarmonographLabScreen() {
   // playing. See useStopWhenSilenced.
   useStopWhenSilenced(running, stopInterval);
 
-  useStopOnBlur(stopInterval); // never on a re-render (owner 2026-09-29, useStopOnBlur.ts)
+  useStopOnClose(stopInterval); // on CLOSE, not blur - keeps playing under other screens (owner 2026-09-29, useStopOnBlur.ts)
   useEffect(() => {
     if (!running) return;
     const id = setInterval(noteAudioActivity, ACTIVITY_MS);

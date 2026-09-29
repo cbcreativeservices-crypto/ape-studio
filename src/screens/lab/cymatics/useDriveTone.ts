@@ -26,7 +26,7 @@ import { guardAdditiveForEngine } from '../../../features/audio/speakerSafety';
 import type { EngineState } from '../../../features/tools/engine/useDspEngine';
 import { useStopOnAudioMute } from '../../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
-import { useStopOnBlur } from '../../../features/audio/useStopOnBlur';
+import { useStopOnClose } from '../../../features/audio/useStopOnBlur';
 
 const ACTIVITY_MS = 500;
 
@@ -143,7 +143,7 @@ export function useDriveTone(hzA: number, hzB: number | null, amplitude01: numbe
     retune(hzA, hzB, amplitude01, wave);
   }, [hzA, hzB, amplitude01, wave, retune]);
 
-  useStopOnBlur(stop); // never on a re-render (owner 2026-09-29, useStopOnBlur.ts)
+  useStopOnClose(stop); // on CLOSE, not blur - keeps playing under other screens (owner 2026-09-29, useStopOnBlur.ts)
   useEffect(() => {
     if (!running) return;
     const id = setInterval(noteAudioActivity, ACTIVITY_MS);

@@ -10,14 +10,16 @@ import { readFileSync } from 'node:fs';
 
 const read = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 
-test('mixing: blur forgets the queued play and drops ■; a queued play needs focus AND an open gate', () => {
+test('mixing: plays on under other screens, stops on close; a queued play needs focus AND an open gate', () => {
   const s = read('src/screens/lab/mixing/kit.tsx');
   const blur = s.slice(s.indexOf('const focusedRef = useRef(true);'));
   assert.ok(blur.length > 0, 'focusedRef exists');
   const cleanup = blur.slice(0, blur.indexOf('}, []),'));
   assert.match(cleanup, /focusedRef\.current = false;/);
-  assert.match(cleanup, /pendingRef\.current = null;/);
-  assert.match(cleanup, /setActive\(null\);/);
+  // Owner 2026-09-29: "only stop when closed" — blur no longer stops.
+  assert.doesNotMatch(cleanup, /\.stop\(\)|setActive\(null\)/);
+  assert.match(s, /useStopOnClose\(stopAll\);/);
+  assert.match(s.slice(s.indexOf('const stopAll = useCallback(')), /pendingRef\.current = null;/);
   assert.match(s, /if \(want && focusedRef\.current && isAudioOutputEnabled\(\)\)/);
   assert.match(s, /useStopWhenSilenced\(active != null \|\| pending != null, stopAll\)/);
 });

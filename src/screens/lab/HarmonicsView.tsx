@@ -155,6 +155,7 @@ import { HarmonicCard } from './HarmonicCard';
 import { HarmonicStems } from './HarmonicStems';
 import { animationsAllowed } from '../../features/settings/a11y';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
+import { useStopOnBlur } from '../../features/audio/useStopOnBlur';
 
 type ViewMode = 'model' | 'live';
 type AxisMode = 'log' | 'lin';
@@ -1300,6 +1301,12 @@ export function HarmonicsView({
   // outside this screen; without this the transport would keep saying it is
   // playing. See useStopWhenSilenced.
   useStopWhenSilenced(genRunning, stopTone);
+  // EXCEPTION to "only stop when closed" (owner 2026-09-29): this tone is the
+  // mic-measured reference, and the mic must stop on blur (privacy), so the
+  // tone stops on blur with it (the focus cleanup below). This line makes
+  // Harmonics claim the output when it comes to the front, so a lab still
+  // sounding behind it stops first (labOutputOwner).
+  useStopOnBlur(stopTone);
 
   /** Full stop: tone + capture + history (mode switch / live STOP). */
   const stopAll = useCallback(() => {

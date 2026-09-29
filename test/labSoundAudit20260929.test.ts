@@ -33,7 +33,8 @@ test('repo-wide: no effect cleanup stops sound AND re-runs when that stop change
   // `useFocusEffect(useCallback(() => () => stop(), [stop]))` and its
   // useEffect twin run the CLEANUP whenever `stop` changes identity — the
   // render a start causes then cancels that start (the dead Bass ▶). Use
-  // useStopOnBlur(stop), or a ref to the latest stop in a []-deps effect.
+  // useStopOnClose(stop) / useStopOnBlur(stop), or a ref to the latest stop
+  // in a []-deps effect.
   const bad = /\(\)\s*=>\s*\(\)\s*=>\s*\{?\s*(?:void\s+)?(\w*(?:stop|Stop|pause|Pause|dispose|Dispose)\w*)\(\);?\s*\}?\s*,\s*\[[^\]]*\b\1\b[^\]]*\]/;
   const hits = srcFiles().filter((f) => bad.test(code(read(f))));
   assert.deepEqual(hits, []);
@@ -47,9 +48,10 @@ test('the guard regex itself catches both the one-line and the block form', () =
   assert.doesNotMatch('useFocusEffect(useCallback(() => () => stopRef.current(), []));', bad);
 });
 
-test('modAnalog: the unmount stop is useStopOnBlur, not a [stop]-deps cleanup', () => {
+test('modAnalog: the unmount stop is useStopOnClose, not a [stop]-deps cleanup', () => {
   const s = read('src/screens/lab/digital/modules/modAnalog.tsx');
-  assert.match(s, /useStopOnBlur\(stop\);/);
+  assert.match(s, /useStopOnClose\(stop\);/);
+  assert.doesNotMatch(code(s), /if \(!focused\) stop\(\);/); // owner 2026-09-29: not on blur
 });
 
 // ── Lesson 4: safety — a start re-checks the gate after its awaits ───────────
@@ -81,14 +83,14 @@ test('every native generator start re-checks the output gate after the start res
 test('Cymatics drive tone follows a mute (useStopWhenSilenced), like every other lab tone', () => {
   const s = read('src/screens/lab/cymatics/useDriveTone.ts');
   assert.match(s, /useStopWhenSilenced\(running, stop\);/);
-  assert.match(s, /useStopOnBlur\(stop\);/);
+  assert.match(s, /useStopOnClose\(stop\);/);
 });
 
-test('ear training and Tuning stop on BLUR, not only on unmount', () => {
+test('ear training stops on BLUR (exception); Tuning stops on CLOSE (owner 2026-09-29)', () => {
   const ear = read('src/screens/lab/eartraining/EarModuleScreen.tsx');
   assert.match(ear, /useStopOnBlur\(\(\) => \{\n\s+playTokenRef\.current\+\+;\n\s+playerRef\.current\?\.stop\(\);\n\s+setPlaying\(null\);/);
   const tun = read('src/screens/lab/tuning/TuningLabScreen.tsx');
-  assert.match(tun, /useStopOnBlur\(\(\) => player\.stop\(\)\);/);
+  assert.match(tun, /useStopOnClose\(\(\) => player\.stop\(\)\);/);
   assert.match(tun, /useStopWhenSilenced\(status\.playing \|\| !!status\.rendering, \(\) => player\.stop\(\)\);/);
 });
 
@@ -136,7 +138,7 @@ test('Harmonograph: an unclean ratio goes quiet but stays armed; ■ stays press
 
 test('Cymatics ratio pair: an unplayable pair goes quiet, PLAY stays on and stays reachable', () => {
   const s = read('src/screens/lab/cymatics/modules/modHarmony.tsx');
-  const eff = s.slice(s.indexOf('const startRef = useRef(start);'), s.indexOf('useStopOnBlur(stop);'));
+  const eff = s.slice(s.indexOf('const startRef = useRef(start);'), s.indexOf('useStopOnClose(stop);'));
   assert.doesNotMatch(eff, /\bstop\(\)/);
   assert.match(eff, /void startRef\.current\(\); \/\/ playable again — sound again/);
   assert.match(s, /\.\.\.\(tone\.playable \|\| tone\.running \? \[\{ kind: 'toggle'/);
