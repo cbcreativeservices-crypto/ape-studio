@@ -46,6 +46,7 @@ import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../../features/commercial/realAccount';
 import { SUPABASE_URL } from '../../lib/env';
 import { colors, fonts } from '../../theme/tokens';
+import { cardDimsFor, type CardDims } from './cardDims';
 import { setLastCourse } from '../../features/dashboard/api';
 import { confirmDialog, notify } from '../../lib/confirm';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
@@ -169,8 +170,6 @@ const CARD_W = Math.min(Math.round(BASE_W * 0.7 * 0.93), CARD_MAX_W);
 const SCREEN_LONG = Math.max(SCREEN.width, SCREEN.height);
 const CARD_H = Math.max(260, Math.min(409, SCREEN_LONG - 394)); // was a flat 409
 const CARD_GAP = 14;
-/** Lit switch width on the cards — narrower than the card (Booth 2026-07-09q). */
-const CARD_BTN_W = Math.round(CARD_W * 0.62);
 
 /**
  * TABLETS GET A BIGGER CARD (owner iPad report 2026-09-26: "fix the size issue
@@ -199,22 +198,35 @@ const CARD_BTN_W = Math.round(CARD_W * 0.62);
  * edge (an iPad mini's is 744; the widest phone's is 430), and the phone path
  * returns exactly the constants above.
  */
-const IS_TABLET = BASE_W >= 600;
-const PHONE_CARD_RATIO = 409 / 280;
-const DECK_CHROME_H = 394;
-const TABLET_CARD_MAX_H = 720;
-type CardDims = { w: number; h: number; btnW: number; outer: { width: number }; card: { width: number; height: number } };
-const PHONE_DIMS: CardDims = { w: CARD_W, h: CARD_H, btnW: CARD_BTN_W, outer: { width: CARD_W }, card: { width: CARD_W, height: CARD_H } };
-function cardDimsFor(windowW: number, windowH: number): CardDims {
-  if (!IS_TABLET) return PHONE_DIMS;
-  const tallest = Math.max(300, Math.min(TABLET_CARD_MAX_H, windowH - DECK_CHROME_H));
-  const w = Math.max(CARD_W, Math.min(Math.round(tallest / PHONE_CARD_RATIO), Math.round(windowW * 0.46)));
-  const h = Math.round(w * PHONE_CARD_RATIO);
-  return { w, h, btnW: Math.round(w * 0.62), outer: { width: w }, card: { width: w, height: h } };
-}
+/**
+ * ⛔ THE TABLET TEST AND THE PHONE CARD NOW FOLLOW THE LIVE WINDOW (owner
+ * 2026-09-29, Android large-screen pass).
+ *
+ * `IS_TABLET` used to be `BASE_W >= 600` — the PHYSICAL SCREEN, read ONCE at
+ * module scope. That holds on an iPhone and an iPad in full screen, and fails
+ * on every Android large-screen shape:
+ *   • a FOLDABLE keeps its JS alive across fold/unfold, so a phone booted
+ *     folded kept the phone-sized card on the unfolded 673 × 841 inner
+ *     screen, and one booted unfolded kept "tablet" when folded shut;
+ *   • a Chromebook / desktop-mode WINDOW or an Android split-screen pane is
+ *     smaller than the screen: a 400 × 700 window on a 1366 × 768 display
+ *     took the tablet branch and drew a 409-pt card with 306 pt of room, so
+ *     the title and OPEN button were sliced off (the 2026-09-22 defect again);
+ *   • measured in the web preview (which behaves like a desktop window): the
+ *     module-scope `Dimensions.get('screen')` came back empty (0) and every card
+ *     rendered 0 pt wide — the whole deck collapsed into columns of letters.
+ *
+ * Now: tablet = `isTabletWindow` of the LIVE window (the shared rule), and the
+ * phone card is sized from the live SCREEN only while the window fills it
+ * (every phone, full screen — byte-identical to before), else from the live
+ * WINDOW (split screen, a desktop window, a zero screen report).
+ */
+// The arithmetic lives in ./cardDims (pure, so a node test can drive it).
 function useCardDims(): CardDims {
   const { width, height } = useWindowDimensions();
-  return useMemo(() => cardDimsFor(width, height), [width, height]);
+  // Read the screen LIVE (a foldable's screen changes under a running app).
+  const screen = Dimensions.get('screen');
+  return useMemo(() => cardDimsFor(width, height, screen.width, screen.height), [width, height, screen.width, screen.height]);
 }
 // Session landing memory (owner 2026-07-30). These module-level vars survive
 // component remounts but RESET when the app process restarts — which is exactly

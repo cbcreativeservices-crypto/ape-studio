@@ -6,7 +6,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ScreenErrorBoundary } from '../components/ScreenErrorBoundary';
 import { NAV_PUSH, NAV_PUSH_REDUCED, useReduceMotionNav } from './reduceMotionNav';
-import { NAV_PORTRAIT } from './navOrientation'; // bug hunt 2026-09-29 — see that file
+import { useNavOrientation } from './navOrientation'; // bug hunt 2026-09-29 — see that file
 import { DashboardScreen } from '../screens/dashboard/DashboardScreen';
 import { FlashcardsScreen } from '../screens/study/FlashcardsScreen';
 import { FillInBlankScreen } from '../screens/study/FillInBlankScreen';
@@ -24,6 +24,8 @@ export function StudyStack() {
   // Motion). Glossary ⇄ Dashboard are EQUAL-LEVEL destinations → fade-through.
   const reduceMotion = useReduceMotionNav();
   const push = reduceMotion ? NAV_PUSH_REDUCED : NAV_PUSH;
+  // Portrait on phones, free on tablets (owner 2026-09-29, Android large-screen pass).
+  const navOrientation = useNavOrientation();
   return (
     // gestureEnabled:false everywhere: study/quiz screens own horizontal swipes
     // (card prev/next, matching boards) and Dashboard is reached only via the
@@ -31,7 +33,7 @@ export function StudyStack() {
     // wipe-confirm back control.
     <Stack.Navigator
       initialRouteName="Dashboard"
-      screenOptions={{ headerShown: false, gestureEnabled: false, ...NAV_PORTRAIT, ...push }}
+      screenOptions={{ headerShown: false, gestureEnabled: false, ...navOrientation, ...push }}
       // Per-screen error containment (2026-09-11). Innermost boundary wins, so
       // a broken study method is contained HERE — the Dashboard below it, the
       // tab bar and the session all survive. Renders a Fragment while healthy,

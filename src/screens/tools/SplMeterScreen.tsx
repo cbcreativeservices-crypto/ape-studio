@@ -46,6 +46,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
 import { GlassButton } from '../../components/GlassButton';
 import { lockLandscape, lockPortrait, unlockOrientation } from '../../lib/screenOrientationSafe';
+import { restingOrientation } from '../../navigation/navOrientation'; // tablets rest free — owner 2026-09-29 (Android large-screen pass)
 import { requireVizMeters, type VizMetersModule } from '../lab/meter/skiaGate';
 import { CollapsibleSection } from '../lab/LabShell';
 import type { LiveMeterDrive, PeakHoldMode } from '../lab/meter/vizMeters';
@@ -887,7 +888,7 @@ export function SplMeterScreen({ navigation }: Props) {
         ? 'landscape'
         : readoutFsOpen && !readoutFsClosing
           ? 'all'
-          : 'portrait';
+          : restingOrientation('portrait');
     navigation.setOptions({ orientation });
   }, [vuFsOpen, vuFsClosing, gaugeFsOpen, gaugeFsClosing, readoutFsOpen, readoutFsClosing, navigation]);
   // Leaving while a full screen is up (a notification tap, a sign-out reset)
@@ -897,7 +898,7 @@ export function SplMeterScreen({ navigation }: Props) {
   useEffect(
     () => () => {
       lockPortrait();
-      navigation.setOptions({ orientation: 'portrait' });
+      navigation.setOptions({ orientation: restingOrientation('portrait') });
     },
     [navigation],
   );

@@ -60,6 +60,7 @@ import { PermissionPrompt, usePermissionFlow } from '../../features/permissions/
 import type { RootStackParamList } from '../../navigation/types';
 import { levelColorForDb } from '../../features/tools/levelColor';
 import { readingText } from '../../theme/readingColumn';
+import { restingOrientation } from '../../navigation/navOrientation'; // tablets rest free — owner 2026-09-29 (Android large-screen pass)
 
 type Props = NativeStackScreenProps<RootStackParamList, 'FrequencyCounter'>;
 
@@ -1304,7 +1305,7 @@ export function FrequencyCounterScreen({ navigation }: Props) {
   // wins over expo's unlockOrientation(). So the tuner full screens, which
   // free-rotate, must also open the ROUTE option — same as SPL's readout.
   useEffect(() => {
-    navigation.setOptions({ orientation: centerLockOpen || vuTunerOpen ? 'all' : 'portrait_up' });
+    navigation.setOptions({ orientation: centerLockOpen || vuTunerOpen ? 'all' : restingOrientation('portrait_up') });
   }, [centerLockOpen, vuTunerOpen, navigation]);
   // Academy-gated extras (owner 2026-08-05): Light Pulse, LEARN/DEMO, and the
   // Saved Measurements library. Free accounts see them locked → Paywall.

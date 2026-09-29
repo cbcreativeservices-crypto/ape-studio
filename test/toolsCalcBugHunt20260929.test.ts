@@ -88,7 +88,8 @@ test('A4 — landscape full screens restore portrait on unmount', () => {
     const src = read(f);
     assert.match(
       src,
-      /\(\) => \(\) => \{\s*lockPortrait\(\);\s*navigation\.setOptions\(\{ orientation: 'portrait' \}\);\s*\},\s*\[navigation\]/,
+      // 'portrait' on a phone; restingOrientation() frees a tablet (Android large-screen pass 2026-09-29).
+      /\(\) => \(\) => \{\s*lockPortrait\(\);\s*navigation\.setOptions\(\{ orientation: restingOrientation\('portrait'\) \}\);\s*\},\s*\[navigation\]/,
       f,
     );
   }

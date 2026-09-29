@@ -38,12 +38,14 @@ import { BackHandler, Pressable, StyleSheet, Text, View, useWindowDimensions } f
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { lockLandscape, lockPortrait } from '../../lib/screenOrientationSafe';
 import { useLandscapeGrace } from '../../components/LandscapeRequiredNotice';
+import { isTabletWindow } from '../../theme/tablet';
+import { restingOrientation } from '../../navigation/navOrientation'; // tablets rest free — owner 2026-09-29 (Android large-screen pass)
 import { colors, fonts } from '../../theme/tokens';
 
 /** Left control-column width in the landscape full screen (Waveform: 108). */
 export const FS_CTRL_W = 112;
 
-type OrientationNav = { setOptions: (o: { orientation: 'landscape' | 'portrait' }) => void };
+type OrientationNav = { setOptions: (o: { orientation: 'landscape' | 'portrait' | 'default' }) => void };
 
 export type ToolFullScreenState = {
   /** Open, or still covering the screen while it rotates back. */
@@ -70,7 +72,7 @@ export function useToolFullScreen(navigation: OrientationNav, interceptBack?: ()
     else lockPortrait();
   }, [active]);
   useEffect(() => {
-    navigation.setOptions({ orientation: active ? 'landscape' : 'portrait' });
+    navigation.setOptions({ orientation: active ? 'landscape' : restingOrientation('portrait') });
   }, [active, navigation]);
   // Leaving while a full screen is up (a notification tap, a sign-out reset)
   // skipped the close path, so the landscape lock outlived the screen. Restore
@@ -79,7 +81,7 @@ export function useToolFullScreen(navigation: OrientationNav, interceptBack?: ()
   useEffect(
     () => () => {
       lockPortrait();
-      navigation.setOptions({ orientation: 'portrait' });
+      navigation.setOptions({ orientation: restingOrientation('portrait') });
     },
     [navigation],
   );
@@ -221,7 +223,8 @@ export function ToolFullScreenView({
               {Children.map(controls, (c) => (c ? <View style={styles.ctrlCell}>{c}</View> : null))}
             </View>
           ) : null}
-          <Text style={styles.hint}>Turn the phone sideways for the widest view.</Text>
+          {/* "tablet" on a tablet (owner 2026-09-29, Android large-screen pass). */}
+          <Text style={styles.hint}>Turn the {isTabletWindow(winW, winH) ? 'tablet' : 'phone'} sideways for the widest view.</Text>
         </View>
       ) : (
         // Mid-rotation / closing: the opaque cover alone (plus a way out).

@@ -42,7 +42,8 @@ test('the shared full screen is a root overlay that rotates and restores', () =>
   assert.doesNotMatch(code, /<Modal\b/, 'never a native Modal');
   assert.match(code, /lockLandscape\(\)/, 'forces landscape on open');
   assert.match(code, /lockPortrait\(\)/, 'restores portrait on close');
-  assert.match(code, /orientation:\s*active \? 'landscape' : 'portrait'/, 'declarative route orientation');
+  // Phones rest 'portrait'; restingOrientation() frees a tablet (Android large-screen pass 2026-09-29).
+  assert.match(code, /orientation:\s*active \? 'landscape' : restingOrientation\('portrait'\)/, 'declarative route orientation');
   assert.match(code, /hardwareBackPress/, 'Android back closes it');
   assert.match(code, /accessibilityLabel="Close fullscreen"/, 'the same close key as the Waveform');
 });

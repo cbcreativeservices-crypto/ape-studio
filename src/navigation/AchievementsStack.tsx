@@ -10,7 +10,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ScreenErrorBoundary } from '../components/ScreenErrorBoundary';
 import { NAV_PUSH, NAV_PUSH_REDUCED, useReduceMotionNav } from './reduceMotionNav';
-import { NAV_PORTRAIT } from './navOrientation'; // bug hunt 2026-09-29 — see that file
+import { useNavOrientation } from './navOrientation'; // bug hunt 2026-09-29 — see that file
 import { AchievementsHomeScreen } from '../screens/achievements/AchievementsHomeScreen';
 import { TopicsScreen } from '../screens/achievements/TopicsScreen';
 import { GalleryScreen } from '../screens/achievements/GalleryScreen';
@@ -25,10 +25,12 @@ export function AchievementsStack() {
   // (short fade under Reduce Motion).
   const reduceMotion = useReduceMotionNav();
   const push = reduceMotion ? NAV_PUSH_REDUCED : NAV_PUSH;
+  // Portrait on phones, free on tablets (owner 2026-09-29, Android large-screen pass).
+  const navOrientation = useNavOrientation();
   return (
     <Stack.Navigator
       initialRouteName="AchievementsHome"
-      screenOptions={{ headerShown: false, ...NAV_PORTRAIT, ...push }}
+      screenOptions={{ headerShown: false, ...navOrientation, ...push }}
       // Per-screen error containment (2026-09-11) — see ScreenErrorBoundary.
       // Inside the card, Fragment while healthy: no layout, no gesture change.
       screenLayout={({ children, navigation, route }) => (

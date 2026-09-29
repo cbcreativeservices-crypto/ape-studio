@@ -147,7 +147,10 @@ describe('A4 — every native stack defaults to portrait', () => {
   });
   for (const f of ['RootNavigator', 'StudyStack', 'AchievementsStack']) {
     test(`${f} spreads it into screenOptions`, () => {
-      assert.match(code(`src/navigation/${f}.tsx`), /screenOptions=\{\{[^}]*\.\.\.NAV_PORTRAIT/);
+      // Via useNavOrientation(): NAV_PORTRAIT on a phone, free on a tablet
+      // (Android large-screen pass 2026-09-29 — test/androidLargeScreenPass).
+      assert.match(code(`src/navigation/${f}.tsx`), /const navOrientation = useNavOrientation\(\);/);
+      assert.match(code(`src/navigation/${f}.tsx`), /screenOptions=\{\{[^}]*\.\.\.navOrientation/);
     });
   }
 });

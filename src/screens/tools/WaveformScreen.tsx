@@ -35,6 +35,7 @@ import { BackHandler, Platform, Pressable, ScrollView, StyleSheet, Text, View, u
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { lockLandscape, lockPortrait } from '../../lib/screenOrientationSafe';
+import { restingOrientation } from '../../navigation/navOrientation'; // tablets rest free — owner 2026-09-29 (Android large-screen pass)
 import Svg, { Defs, G, Line, LinearGradient, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { Canvas, Path as SkiaPath, LinearGradient as SkiaGradient, Skia, vec } from '@shopify/react-native-skia';
 import * as Crypto from 'expo-crypto';
@@ -133,7 +134,7 @@ export function WaveformScreen({ navigation }: Props) {
     else lockPortrait();
   }, [waveFsOpen, waveFsClosing]);
   useEffect(() => {
-    navigation.setOptions({ orientation: waveFsOpen && !waveFsClosing ? 'landscape' : 'portrait' });
+    navigation.setOptions({ orientation: waveFsOpen && !waveFsClosing ? 'landscape' : restingOrientation('portrait') });
   }, [waveFsOpen, waveFsClosing, navigation]);
   // Leaving while a full screen is up (a notification tap, a sign-out reset)
   // skipped the close path, so the landscape lock outlived the screen. Restore
@@ -142,7 +143,7 @@ export function WaveformScreen({ navigation }: Props) {
   useEffect(
     () => () => {
       lockPortrait();
-      navigation.setOptions({ orientation: 'portrait' });
+      navigation.setOptions({ orientation: restingOrientation('portrait') });
     },
     [navigation],
   );

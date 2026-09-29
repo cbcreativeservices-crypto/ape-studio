@@ -12,7 +12,7 @@ import { AppDialogHost } from '../components/AppDialog';
 import { MembershipGateHost } from '../features/commercial/MembershipGate';
 import { ScreenErrorBoundary } from '../components/ScreenErrorBoundary';
 import { NAV_FADE, NAV_PUSH, NAV_PUSH_REDUCED, useReduceMotionNav } from './reduceMotionNav';
-import { NAV_PORTRAIT } from './navOrientation'; // bug hunt 2026-09-29 — see that file
+import { useNavOrientation } from './navOrientation'; // bug hunt 2026-09-29 — see that file
 import { SplashScreen } from '../screens/SplashScreen';
 import { AuthScreen } from '../screens/auth/AuthScreen';
 import { ResultsScreen } from '../screens/results/ResultsScreen';
@@ -358,11 +358,13 @@ export function RootNavigator() {
   // full-width sliders (the 2026-08-11 ruling still governs slider screens).
   const reduceMotion = useReduceMotionNav();
   const push = reduceMotion ? NAV_PUSH_REDUCED : NAV_PUSH;
+  // Portrait on phones, free on tablets (owner 2026-09-29, Android large-screen pass).
+  const navOrientation = useNavOrientation();
   const swipe = { gestureEnabled: true } as const; // safe pilot set only
   return (
     <Stack.Navigator
       initialRouteName="Splash"
-      screenOptions={{ headerShown: false, gestureEnabled: false, ...NAV_PORTRAIT, ...push }}
+      screenOptions={{ headerShown: false, gestureEnabled: false, ...navOrientation, ...push }}
       /*
        * LOW-LIGHT WASH LIVES HERE, not at the app root (owner 2026-08-31:
        * "I opened Settings in low-light and it wasn't in low-light").

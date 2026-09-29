@@ -12,6 +12,7 @@
  * it. Every method call is additionally wrapped.
  */
 import { requireOptionalNativeModule } from 'expo-modules-core';
+import { isTabletDisplay } from '../theme/useIsTablet';
 
 type ScreenOrientationModule = typeof import('expo-screen-orientation');
 
@@ -35,11 +36,22 @@ export function getScreenOrientation(): ScreenOrientationModule | null {
 }
 
 /** Lock the device to upright portrait. No-op (and never throws) when the native
- *  module is absent. */
+ *  module is absent.
+ *
+ *  ON A TABLET THIS UNLOCKS INSTEAD (owner 2026-09-29, Android large-screen
+ *  pass): portrait is the PHONE rule. An Android 12L–15 tablet letterboxes a
+ *  portrait-locked app into a phone-shaped strip when held sideways; Android
+ *  16 and iPadOS ignore the lock on a tablet anyway. See navOrientation.ts.
+ *  Every caller means "back to the app's resting orientation", so the one
+ *  switch lives here. Phones lock PORTRAIT_UP exactly as before. */
 export function lockPortrait(): void {
   const so = getScreenOrientation();
   if (!so) return;
   try {
+    if (isTabletDisplay()) {
+      so.unlockAsync().catch(() => {});
+      return;
+    }
     so.lockAsync(so.OrientationLock.PORTRAIT_UP).catch(() => {});
   } catch {
     /* ignore */

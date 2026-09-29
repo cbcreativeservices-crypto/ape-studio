@@ -5,7 +5,7 @@
  */
 import { useEffect, type ComponentType } from 'react';
 import { useFonts } from 'expo-font';
-import { AppState, Platform, View } from 'react-native';
+import { AppState, Dimensions, Platform, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { DarkTheme, NavigationContainer, type Theme } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -174,6 +174,7 @@ import { LowLightProductionGate } from './src/features/settings/LowLightLayer';
 import { registerLowLightTap, touchLowLight } from './src/features/settings/lowLight';
 import { useAccountLocalSync } from './src/features/account/accountLocalSync';
 import { lockPortrait } from './src/lib/screenOrientationSafe';
+import { isTabletDisplay } from './src/theme/useIsTablet';
 import { initTelemetry, trackScreen, wrapRoot } from './src/features/telemetry/telemetry';
 import { colors, fontAssets } from './src/theme/tokens';
 import { CenterLockTuner } from './src/screens/tools/CenterLockTuner';
@@ -397,12 +398,30 @@ function App() {
   // lock PORTRAIT_UP once at boot. The SPL fullscreen unlocks on entry and
   // re-locks PORTRAIT_UP on exit; nothing else touches orientation. lockPortrait
   // is a no-op (never throws) on dev clients that predate the native module.
+  //
+  // Phones only (owner 2026-09-29, Android large-screen pass): on a tablet
+  // lockPortrait() UNLOCKS — see screenOrientationSafe / navOrientation. A
+  // foldable changes class under a running app (folded = phone, unfolded =
+  // tablet), so the rule is re-applied when — and only when — the display
+  // class flips; a plain rotation never re-locks (a full screen may be up).
   useEffect(() => {
     try {
       lockPortrait();
     } catch {
       /* orientation is best-effort — never let it break boot */
     }
+    let tablet = isTabletDisplay();
+    const sub = Dimensions.addEventListener('change', () => {
+      const now = isTabletDisplay();
+      if (now === tablet) return;
+      tablet = now;
+      try {
+        lockPortrait();
+      } catch {
+        /* best-effort */
+      }
+    });
+    return () => sub.remove();
   }, []);
 
   // Hold on a dark surface until fonts resolve (avoids a white flash + FOUT) —
