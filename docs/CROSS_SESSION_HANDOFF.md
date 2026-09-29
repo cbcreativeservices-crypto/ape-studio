@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 11:18 · ccode · 80f00bb9
+changed: labs sound audit (3/3): ▶ arms the lab — no more drops to ▶ on a change or a ring-out
+affects other side: nothing — client JS only (lab sound fixes)
+needs: nothing
+
+
 ### 2026-09-29 11:12 · ccode · b815e935
 changed: labs sound audit (2/3): clip labs no longer wait on the audio session every tap
 affects other side: nothing — client JS only (lab sound fixes)
