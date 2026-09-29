@@ -787,8 +787,11 @@ export function LacingBar({ x0, x1, y, k }: { x0: number; x1: number; y: number;
     <G>
       <Defs>
         <LinearGradient id={`${id}r`} x1="0" y1="0" x2="0" y2="1">
-          <Stop offset="0" stopColor={ZINC.hi} />
-          <Stop offset="0.4" stopColor="#f3f5f7" />
+          {/* matte zinc (expert review 2026-09-28): the old near-white
+              highlight read as the same object as the near-white CONTROL
+              cable resting on it */}
+          <Stop offset="0" stopColor="#b3b8bf" />
+          <Stop offset="0.4" stopColor="#c2c6cc" />
           <Stop offset="0.7" stopColor={ZINC.mid} />
           <Stop offset="1" stopColor={ZINC.lo} />
         </LinearGradient>
@@ -917,9 +920,9 @@ export function DropShadow({ cx, cy, rx, ry, opacity = 0.5 }: { cx: number; cy: 
  * at the universal pattern — 6.35 / 22.2 / 38.1 mm within each 44.45 mm U.
  * (x, y0..y1) = the rail's left edge and extent; `uTop` = y of a U boundary.
  */
-export function RackRail({ x, y0, y1, k, uTop }: { x: number; y0: number; y1: number; k: number; uTop?: number }) {
+export function RackRail({ x, y0, y1, k, uTop, flange = 15.9 }: { x: number; y0: number; y1: number; k: number; uTop?: number; flange?: number }) {
   const id = useUid();
-  const w = 15.9 * k;
+  const w = flange * k;
   const U = 44.45 * k;
   const start = uTop ?? y0;
   const holes: string[] = [];
@@ -1191,7 +1194,7 @@ export function PersonScale({ x, floorY, m, color = '#4a4f59' }: { x: number; fl
 }
 
 /** A graphic scale bar: `metres` long, ticked each metre, labelled. */
-export function ScaleBar({ x, y, m, metres = 2, color = INK.sub }: { x: number; y: number; m: number; metres?: number; color?: string }) {
+export function ScaleBar({ x, y, m, metres = 2, color = INK.sub, size = 9.5 }: { x: number; y: number; m: number; metres?: number; color?: string; size?: number }) {
   const ticks: string[] = [];
   for (let i = 0; i <= metres; i++) ticks.push(`M${x + i * m} ${y - 2.5} v5`);
   return (
@@ -1199,7 +1202,7 @@ export function ScaleBar({ x, y, m, metres = 2, color = INK.sub }: { x: number; 
       <Line x1={x} y1={y} x2={x + metres * m} y2={y} stroke={color} strokeWidth={0.9} />
       <Path d={ticks.join('')} stroke={color} strokeWidth={0.9} />
       <Rect x={x} y={y - 1.2} width={m} height={2.4} fill={color} />
-      <SvgText x={x + metres * m + 4} y={y + 3.4} fontFamily={fonts.oswaldSemiBold} fontSize={9.5} fill={color}>
+      <SvgText x={x + metres * m + 4} y={y + 3.4} fontFamily={fonts.oswaldSemiBold} fontSize={size} fill={color}>
         {`${metres} m`}
       </SvgText>
     </G>

@@ -119,8 +119,10 @@ import {
   PATCH,
   PATCH_XS,
   PDU,
+  RAIL_FLANGE_MM,
   RAIL_L_X,
-  SFP_XS,
+  SFP_CX,
+  SW_CX,
   PatchPanelRear,
   Plait,
   PowerDistro,
@@ -157,16 +159,14 @@ const HIT: Record<string, { x: number; y: number; w: number; h: number; mx: numb
   'ri-12': { x: 0, y: 150, w: 100, h: 68, mx: 52, my: 188, where: 'Interface inputs → left manager' },
   'ri-3': { x: 104, y: 172, w: 100, h: 44, mx: 172, my: 194, where: 'Open bay' },
   'ri-7': { x: 200, y: 186, w: 100, h: 30, mx: 247, my: 200, where: 'Bundle right of the open bay' },
-  'ri-11': { x: 0, y: 218, w: 58, h: 36, mx: 53, my: 233, where: 'Left rail beside the amp' },
-  'ri-5': { x: 60, y: 224, w: 112, h: 30, mx: 112, my: 245, where: 'Amp — connector field' },
-  'ri-6': { x: 176, y: 250, w: 124, h: 30, mx: 232, my: 262, where: 'Amp — rear fan exhaust' },
-  'ri-10': { x: 60, y: 282, w: 112, h: 26, mx: 92, my: 298, where: 'PDU — outlets 1–3' },
-  'ri-14': { x: 176, y: 306, w: 124, h: 40, mx: 238, my: 323, where: 'Below the PDU' },
+  'ri-11': { x: 0, y: 248, w: 58, h: 34, mx: 53, my: 263, where: 'Left rail beside the amp' },
+  'ri-5': { x: 60, y: 268, w: 112, h: 30, mx: 112, my: 289, where: 'Amp — connector field' },
+  'ri-6': { x: 176, y: 294, w: 124, h: 30, mx: 232, my: 306, where: 'Amp — rear fan exhaust' },
+  'ri-10': { x: 60, y: 326, w: 112, h: 30, mx: 92, my: 342, where: 'PDU — outlets 1–3' },
+  'ri-14': { x: 176, y: 346, w: 124, h: 20, mx: 238, my: 352.5, where: 'Below the PDU' },
 };
 
 const HMGR_XS = Array.from({ length: 14 }, (_, i) => 66 + i * 16);
-/** RJ45 cages (left edges) on a 16-unit (32 mm) pitch. */
-const SWITCH_XS = [64, 80, 96, 112, 128, 144, 160, 176];
 const DSP_JACK_XS = [70, 94, 118, 142, 166, 190, 214, 238];
 const IFACE_XS = [70, 92, 114, 136, 158, 180];
 const DISTRO_XS = Array.from({ length: 8 }, (_, i) => 64 + i * 19);
@@ -195,9 +195,10 @@ const FLOW_MS = 2600;
 const ENTRY_XS = [221, 156, 169, 208, 182, 195];
 /** Plausible terminating gear height per group. */
 const DEST_Y: Record<string, number> = {
-  'g-ac': PDU.y + 26,
+  'g-ac': PDU.y + 19.5,
   'g-analog': 107,
-  'g-net': 87,
+  // the horizontals turn in behind the jacks-to-rear patch panel
+  'g-net': PATCH.y + 14,
   'g-spk': AMP.nl4Y,
   'g-ctl': 102.6,
   'g-fib': 84.8,
@@ -209,6 +210,14 @@ const DEST_Y: Record<string, number> = {
  *  over the cabinet's top edge (that is Phase A's ri-9). */
 function dLeft(ex: number, lane: number, ty: number, wob: number): string {
   const yd = 29 + wob;
+  if (ty - yd < 44) {
+    // a short drop (the horizontals to the patch panel, one U below the duct)
+    return (
+      `M${ex} 4 C${ex} 16 ${ex - 2} ${yd} ${ex - 12} ${yd} ` +
+      `L${lane + 14} ${yd} C${lane + 4} ${yd} ${lane} ${yd + 4} ${lane} ${yd + 10} ` +
+      `L${lane} ${ty - 8} C${lane} ${ty - 2} ${lane + 4} ${ty} ${lane + 12} ${ty} L58 ${ty}`
+    );
+  }
   return (
     `M${ex} 4 C${ex} 16 ${ex - 2} ${yd} ${ex - 12} ${yd} ` +
     `L${lane + 22} ${yd} C${lane + 6} ${yd} ${lane} ${yd + 8} ${lane} ${yd + 20} ` +
@@ -217,6 +226,13 @@ function dLeft(ex: number, lane: number, ty: number, wob: number): string {
 }
 function dRight(ex: number, lane: number, ty: number, wob: number): string {
   const yd = 29 + wob;
+  if (ty - yd < 44) {
+    return (
+      `M${ex} 4 C${ex} 16 ${ex + 2} ${yd} ${ex + 12} ${yd} ` +
+      `L${lane - 14} ${yd} C${lane - 4} ${yd} ${lane} ${yd + 4} ${lane} ${yd + 10} ` +
+      `L${lane} ${ty - 8} C${lane} ${ty - 2} ${lane - 4} ${ty} ${lane - 12} ${ty} L282 ${ty}`
+    );
+  }
   return (
     `M${ex} 4 C${ex} 16 ${ex + 2} ${yd} ${ex + 12} ${yd} ` +
     `L${lane - 22} ${yd} C${lane - 6} ${yd} ${lane} ${yd + 8} ${lane} ${yd + 20} ` +
@@ -243,10 +259,11 @@ const entryCx = (gi: number) => 188 + gi * 3;
    plug. ───────────────────────────────────────────────────────────────── */
 /** Where each group's loom crosses the rail (the harness height). */
 const ANALOG_Y = 107;
+/** The fiber patch rides the switch's top lip at this height. */
 const NET_Y = 87;
-/** The rear lacing bar across the open bay: the amp's input lines and the
- *  speaker loom are retained on it. */
-const LACE_Y = 208;
+/** The rear lacing bar just above the amp (on the rear rails, over the
+ *  blank): the speaker loom is retained on it and drops onto the NL4s. */
+const LACE_Y = AMP.y - 10;
 /** A second lacing bar higher in the bay carries the line-level runs, so
  *  they never share a support with the speaker loom. */
 const SIG_LACE_Y = 184;
@@ -280,10 +297,10 @@ function AnalogTail({ isL }: { isL: boolean }) {
       <JacketPath d={`M254 ${IFACE.jackY} V${SIG_LACE_Y - 6} Q254 ${SIG_LACE_Y - 2} 250 ${SIG_LACE_Y - 2} H146 Q140 ${SIG_LACE_Y - 2} 140 ${SIG_LACE_Y + 4} V${AMP.nl4Y}`} color={A} width={2.2} />
       <JacketPath d={`M274 ${IFACE.jackY} V${SIG_LACE_Y - 2.6} Q274 ${SIG_LACE_Y + 1.4} 270 ${SIG_LACE_Y + 1.4} H168 Q162 ${SIG_LACE_Y + 1.4} 162 ${SIG_LACE_Y + 7.4} V${AMP.nl4Y}`} color={A} width={2.2} />
       {[254, 274].map((x) => (
-        <PlugRearView key={`o${x}`} x={x} y={IFACE.jackY} k={RK * 0.7} />
+        <PlugRearView key={`o${x}`} x={x} y={IFACE.jackY} k={RK} />
       ))}
       {AMP.inXs.map((x) => (
-        <PlugRearView key={`i${x}`} x={x} y={AMP.nl4Y} k={RK * 0.86} />
+        <PlugRearView key={`i${x}`} x={x} y={AMP.nl4Y} k={RK} />
       ))}
       {[200, 230].map((x) => (
         <HookLoopWrap key={`w${x}`} x={x} y={SIG_LACE_Y} k={RK} halfH={3.6} width={6} />
@@ -302,42 +319,63 @@ function ControlTail({ isL }: { isL: boolean }) {
   return (
     <G>
       <JacketPath d={harnessD(x0, ANALOG_Y - 4.4, DSP.netX, DSP.jackY)} color={C} width={2.2} />
-      <Rj45PlugRear x={DSP.netX - 5.85} y={DSP.jackY - 4.8} color={C} />
+      <Rj45PlugRear cx={DSP.netX} cy={DSP.jackY} color={C} />
     </G>
   );
 }
 
-/** Network: four patch cords into switch ports 1–4, dressed along the
- *  switch's top lip. */
-function NetTail({ isL }: { isL: boolean }) {
+/** Network (expert review 2026-09-28: horizontal cable never lands in
+ *  active gear): the horizontals come down the manager and turn in behind
+ *  the jacks-to-rear patch panel to its punch-downs on the inside face (the
+ *  loom itself); short patch cords then join panel ports 1–4 to switch
+ *  ports 1–4 straight down through the manager under the panel. */
+function NetTail() {
   const N = CI_CLASS_TINTS.network;
-  const x0 = isL ? 58 : 282;
-  const ports = SWITCH_XS.slice(0, 4);
-  const order = ports.map((px) => px + 5.85).sort((a, b) => Math.abs(a - x0) - Math.abs(b - x0));
+  const mTop = HMGR2.y + 4;
+  const mBot = HMGR2.y + HMGR2.h - 4;
+  const mid = (mTop + mBot) / 2;
+  const ports = [0, 1, 2, 3];
   return (
     <G>
-      {order.map((cx, k) => (
-        <JacketPath key={cx} d={harnessD(x0, NET_Y + 1.4 - k * 0.8, cx, SWITCH.y + 12)} color={N} width={2.1} shadow={k === 0} />
+      {ports.map((i) => {
+        const px = PATCH_XS[i];
+        const sx = SW_CX[i];
+        return (
+          <JacketPath
+            key={`c${i}`}
+            d={`M${px} ${PATCH.jackCy} V${mTop} C${px} ${mid} ${sx} ${mid} ${sx} ${mBot} V${SWITCH.portCy}`}
+            color={N}
+            width={2}
+            shadow={i === 0}
+          />
+        );
+      })}
+      {ports.map((i) => (
+        <Rj45PlugRear key={`p${i}`} cx={PATCH_XS[i]} cy={PATCH.jackCy} color={N} />
       ))}
-      {ports.map((px) => (
-        <Rj45PlugRear key={px} x={px} y={SWITCH.y + 8.5} color={N} />
+      {ports.map((i) => (
+        <Rj45PlugRear key={`s${i}`} cx={SW_CX[i]} cy={SWITCH.portCy} color={N} />
       ))}
     </G>
   );
 }
 
-/** Fiber: one duplex LC patch into the switch's first SFP cage. */
+/** Fiber: one duplex LC patch into the switch's first SFP cage — the duplex
+ *  LC clip seen end-on at its real size (~12.5 × 9 mm). */
 function FiberTail({ isL }: { isL: boolean }) {
   const F = CI_CLASS_TINTS.fiber;
   const x0 = isL ? 58 : 282;
-  const cx = SFP_XS[0] + 7.5;
+  const cx = SFP_CX[0];
+  const cy = SWITCH.portCy;
+  const w = 12.5 * RK;
+  const h = 9 * RK;
   return (
     <G>
-      <JacketPath d={harnessD(x0, NET_Y - 2.2, cx, SWITCH.y + 13)} color={F} width={1.8} />
+      <JacketPath d={harnessD(x0, NET_Y - 2.2, cx, cy)} color={F} width={1.8} />
       {/* duplex LC plug end-on: two latched ferrule bodies in their clip */}
-      <Rect x={cx - 5.2} y={SWITCH.y + 9} width={10.4} height={8.6} rx={1} fill="#e8e6dd" stroke="#6b6a63" strokeWidth={0.4} />
-      <Rect x={cx - 4} y={SWITCH.y + 10.4} width={3.4} height={5.8} rx={0.6} fill={shade(F, 0.2)} />
-      <Rect x={cx + 0.6} y={SWITCH.y + 10.4} width={3.4} height={5.8} rx={0.6} fill={shade(F, 0.2)} />
+      <Rect x={cx - w / 2} y={cy - h / 2} width={w} height={h} rx={0.6} fill="#d9d6ca" stroke="#6b6a63" strokeWidth={0.35} />
+      <Rect x={cx - w / 2 + 0.7} y={cy - h / 2 + 0.7} width={w / 2 - 1.1} height={h - 1.4} rx={0.4} fill={shade(F, 0.2)} />
+      <Rect x={cx + 0.4} y={cy - h / 2 + 0.7} width={w / 2 - 1.1} height={h - 1.4} rx={0.4} fill={shade(F, 0.2)} />
     </G>
   );
 }
@@ -361,7 +399,7 @@ function SpeakerTail() {
 
 /** AC: the PDU's own feed seated in its inlet, and two IEC cords from its
  *  outlets — one up the right manager to the DSP, one short to the amp
- *  directly above. */
+ *  directly above the PDU. */
 function AcTail() {
   const P = CI_CLASS_TINTS.power;
   const o1 = DISTRO_XS[0] + 7.6;
@@ -373,7 +411,7 @@ function AcTail() {
     <G>
       <JacketPath d={`M${o1} ${boot} V${boot + 4} Q${o1} ${boot + 8} ${o1 + 4} ${boot + 8} H318 Q322 ${boot + 8} 322 ${boot + 4} V${dspBoot.y + 4.3} Q322 ${dspBoot.y + 0.3} 318 ${dspBoot.y + 0.3} H${dspBoot.x}`} color={P} width={3} />
       {/* the PDU's own feed, up from the right manager into its inlet */}
-      <JacketPath d={`M282 ${PDU.y + 26} H276 Q271.5 ${PDU.y + 26} 271.5 ${PDU.y + 21}`} color={P} width={3.6} />
+      <JacketPath d={`M282 ${PDU.y + 19.5} H273.6`} color={P} width={3.6} />
       <JacketPath d={`M${o2} ${boot} C${o2} ${boot + 12} ${ampBoot.x} ${boot + 12} ${ampBoot.x} ${boot - 6} V${ampBoot.y}`} color={P} width={3} />
       <C13Plug x={DISTRO_XS[0]} y={PDU.outY} />
       <C13Plug x={DISTRO_XS[1]} y={PDU.outY} />
@@ -387,7 +425,7 @@ function AcTail() {
 function GroupTail({ id, isL }: { id: string; isL: boolean }) {
   if (id === 'g-analog') return <AnalogTail isL={isL} />;
   if (id === 'g-ctl') return <ControlTail isL={isL} />;
-  if (id === 'g-net') return <NetTail isL={isL} />;
+  if (id === 'g-net') return <NetTail />;
   if (id === 'g-fib') return <FiberTail isL={isL} />;
   if (id === 'g-spk') return <SpeakerTail />;
   return <AcTail />;
@@ -642,7 +680,7 @@ const Chassis = memo(function Chassis({ dress, enter }: { dress: boolean; enter:
         <HorizontalManager xs={HMGR_XS} y={HMGR2.y} />
       </Band>
       <Band index={4} enter={enter}>
-        <NetworkSwitch xs={SWITCH_XS} lit={dress ? [0, 1, 2, 3] : [0, 4]} />
+        <NetworkSwitch lit={dress ? [0, 1, 2, 3] : [0, 4]} />
       </Band>
       <Band index={5} enter={enter}>
         <DspRear xs={DSP_JACK_XS} dress={dress} />
@@ -652,23 +690,21 @@ const Chassis = memo(function Chassis({ dress, enter }: { dress: boolean; enter:
       </Band>
       <Band index={7} enter={enter}>
         <OpenBay u={7} us={2} />
-        {/* dressed: two rear lacing bars across the bay — line level on the
-            upper, the speaker loom on the lower, never sharing a support */}
-        {dress ? (
-          <>
-            <LacingBar x0={60} x1={280} y={SIG_LACE_Y} k={RK} />
-            <LacingBar x0={60} x1={280} y={LACE_Y} k={RK} />
-          </>
-        ) : null}
+        {/* dressed: two rear lacing bars — line level across the open bay,
+            the speaker loom just above the amp, never sharing a support */}
+        {dress ? <LacingBar x0={60} x1={280} y={SIG_LACE_Y} k={RK} /> : null}
       </Band>
       <Band index={8} enter={enter}>
+        <BlankPanel u={9} us={2} />
+        {dress ? <LacingBar x0={60} x1={280} y={LACE_Y} k={RK} /> : null}
+      </Band>
+      {/* heaviest lowest (expert review 2026-09-28): the 3U amp sits on the
+          PDU at the bottom of the rack, carried on rear supports */}
+      <Band index={9} enter={enter}>
         <Amplifier dress={dress} />
       </Band>
-      <Band index={9} enter={enter}>
-        <PowerDistro xs={DISTRO_XS} dress={dress} />
-      </Band>
       <Band index={10} enter={enter}>
-        <BlankPanel u={13} us={2} />
+        <PowerDistro xs={DISTRO_XS} dress={dress} />
       </Band>
     </>
   );
@@ -695,14 +731,14 @@ const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; fo
   const N = CI_CLASS_TINTS.network;
   const S = CI_CLASS_TINTS.speaker;
   const at = (rel: number) => CHAOS_AT + rel;
-  const modTop = PATCH.modY;
   /** Patch port 22 (index 21). */
   const P22 = PATCH_XS[21];
 
-  /* ri-9 — the horizontals: entry x → keystone module, over the raw lip */
+  /* ri-9 — the horizontals: entry x → over the raw lip → down behind the
+     jacks-to-rear patch panel to their punch-downs on its inside face */
   const drops: [number, number][] = [[160, 1], [169, 4], [178, 2], [187, 7], [196, 5], [205, 10], [214, 8]];
   const dropD = (ex: number, cx: number) =>
-    `M${ex} 0 V13.6 L${(ex + (cx - ex) * 0.08).toFixed(1)} 17.4 C${(ex + (cx - ex) * 0.5).toFixed(1)} 30 ${cx} 30 ${cx} ${modTop + 1}`;
+    `M${ex} 0 V13.6 L${(ex + (cx - ex) * 0.08).toFixed(1)} 17.4 C${(ex + (cx - ex) * 0.5).toFixed(1)} 30 ${cx} 30 ${cx} ${PATCH.y - 0.5}`;
 
   /* ri-7 — six-pair loom, crushed to an hourglass at two over-tight ties */
   const crush = (x: number) => 1 - 0.68 * Math.exp(-((x - 226) * (x - 226)) / 48) - 0.68 * Math.exp(-((x - 268) * (x - 268)) / 48);
@@ -726,9 +762,10 @@ const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; fo
         <Kink x={214} y={14.8} />
       </SvgIn>
 
-      {/* ── ri-13 · the one labelled cable: its flag says N-012, the strip under
-          its port says N-007 — the two ends disagree */}
-      <DrawPath d={`M222 0 V13.6 L224 20 C227 27 ${P22} 24 ${P22} 32 V${modTop + 1}`} len={90} color={N} width={3} enter={enter} delay={at(230)} />
+      {/* ── ri-13 · the one labelled cable — a patch cord in port 22, up into
+          the top duct: its flag says N-012, the strip under its port says
+          N-007 — the two ends disagree */}
+      <DrawPath d={`M${P22} ${PATCH.jackCy} V30 C${P22} 25 ${P22 + 4} 23 ${P22 + 12} 23 H288`} len={90} color={N} width={2.4} enter={enter} delay={at(230)} />
       {/* ── ri-4 · the designation strip is blank (drawn blank by the panel
           itself — the absence IS the defect) */}
 
@@ -745,6 +782,7 @@ const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; fo
       <SvgIn enter={enter} delay={at(520)}>
         {/* ri-13: the wrap-label flag, folded round the cable just above its
             port — and the strip under that port, which disagrees */}
+        <Rj45PlugRear cx={P22} cy={PATCH.jackCy} color={N} />
         <Line x1={P22 - 3.2} y1={33.5} x2={P22 - 1.2} y2={33.5} stroke="#eceae3" strokeWidth={1.4} />
         <Rect x={P22 - 30.1} y={30} width={28} height={9} rx={0.8} fill="rgba(0,0,0,0.45)" />
         <Rect x={P22 - 31} y={29} width={28} height={9} rx={0.8} fill="#eceae3" stroke="#8d8a80" strokeWidth={0.35} />
@@ -763,9 +801,9 @@ const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; fo
 
       {/* ── ri-8 · Cat6 out of switch port 1, folded 180° round the rail edge
           into the manager — a crease where the jacket gave */}
-      <DrawPath d={`M${SWITCH_XS[0] + 5.85} 97.3 H${RAIL_L_X + 3} C${RAIL_L_X - 2} 97.3 ${RAIL_L_X - 2} 104 ${RAIL_L_X + 3} 104 L${RAIL_L_X + 11} 104 C${RAIL_L_X + 15} 104 ${RAIL_L_X + 15} 110 ${RAIL_L_X + 12} 116 C${RAIL_L_X + 7} 128 ${RAIL_L_X - 1} 134 ${RAIL_L_X - 13} 140 C${RAIL_L_X - 16} 142 ${RAIL_L_X - 17} 146 ${RAIL_L_X - 17} 152 V346`} len={320} color={N} width={3} enter={enter} delay={at(250)} />
+      <DrawPath d={`M${SW_CX[0]} 97.3 H${RAIL_L_X + 3} C${RAIL_L_X - 2} 97.3 ${RAIL_L_X - 2} 104 ${RAIL_L_X + 3} 104 L${RAIL_L_X + 11} 104 C${RAIL_L_X + 15} 104 ${RAIL_L_X + 15} 110 ${RAIL_L_X + 12} 116 C${RAIL_L_X + 7} 128 ${RAIL_L_X - 1} 134 ${RAIL_L_X - 13} 140 C${RAIL_L_X - 16} 142 ${RAIL_L_X - 17} 146 ${RAIL_L_X - 17} 152 V346`} len={320} color={N} width={3} enter={enter} delay={at(250)} />
       <SvgIn enter={enter} delay={at(420)}>
-        <Rj45PlugRear x={SWITCH_XS[0]} y={SWITCH.y + 8.5} color={N} />
+        <Rj45PlugRear cx={SW_CX[0]} cy={SWITCH.portCy} color={N} />
         <Kink x={RAIL_L_X - 0.8} y={100.6} angle={-90} />
       </SvgIn>
 
@@ -812,30 +850,30 @@ const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; fo
           <CableTie x={149} y={194} k={RK} halfH={22} black />
         </G>
       </SvgIn>
-      <DrawPath d={`M174 176 C168 150 140 124 ${SWITCH_XS[4] + 6} 102`} len={100} color={N} width={3} enter={enter} delay={at(330)} />
+      <DrawPath d={`M174 176 C168 150 ${SW_CX[4] + 30} 124 ${SW_CX[4]} ${SWITCH.portCy + 2}`} len={100} color={N} width={3} enter={enter} delay={at(330)} />
       <DrawPath d="M176 212 L177 216" len={6} color={N} width={3} enter={enter} delay={at(330)} />
       <SvgIn enter={enter} delay={at(430)}>
-        <Rj45PlugRear x={SWITCH_XS[4]} y={SWITCH.y + 8.5} color={N} />
+        <Rj45PlugRear cx={SW_CX[4]} cy={SWITCH.portCy} color={N} />
       </SvgIn>
 
       {/* ── ri-11 · service loops cinched hard against the rail with two ties,
           in the corner beside the amp — slack no hand can reach */}
-      <DrawPath d="M46 224 C42 216 32 210 26 200 V120" len={130} color={A} width={3.2} enter={enter} delay={at(380)} />
-      <DrawPath d="M48 227 C42 220 30 214 22 206 V130" len={120} color={N} width={3} enter={enter} delay={at(400)} />
+      <DrawPath d="M46 254 C42 246 32 240 26 230 V120" len={160} color={A} width={3.2} enter={enter} delay={at(380)} />
+      <DrawPath d="M48 257 C42 250 30 244 22 236 V130" len={150} color={N} width={3} enter={enter} delay={at(400)} />
       <SvgIn enter={enter} delay={at(440)}>
-        <JacketPath d="M41 232 a12 9.5 0 1 0 24 0 a12 9.5 0 1 0 -24 0" color={A} width={3.2} />
-        <JacketPath d="M45 233 a8 6.5 0 1 0 16 0 a8 6.5 0 1 0 -16 0" color={N} width={3} />
-        <G transform="rotate(90 55 227)">
-          <CableTie x={55} y={227} k={RK} halfH={18} black />
+        <JacketPath d="M41 262 a12 9.5 0 1 0 24 0 a12 9.5 0 1 0 -24 0" color={A} width={3.2} />
+        <JacketPath d="M45 263 a8 6.5 0 1 0 16 0 a8 6.5 0 1 0 -16 0" color={N} width={3} />
+        <G transform="rotate(90 55 257)">
+          <CableTie x={55} y={257} k={RK} halfH={18} black />
         </G>
-        <G transform="rotate(90 55 238)">
-          <CableTie x={55} y={238} k={RK} halfH={18} black />
+        <G transform="rotate(90 55 268)">
+          <CableTie x={55} y={268} k={RK} halfH={18} black />
         </G>
         {/* the loops are cinched THROUGH the rail: the rail comes back over
             them, so the slack sits in the corner no hand reaches */}
-        <RackRail x={RAIL_L_X} y0={220} y1={246} k={RK} uTop={U_TOP} />
+        <RackRail x={RAIL_L_X} y0={250} y1={276} k={RK} uTop={U_TOP} flange={RAIL_FLANGE_MM} />
       </SvgIn>
-      <DrawPath d="M46 240 C40 250 36 262 36 280 V346" len={120} color={A} width={3.2} enter={enter} delay={at(470)} />
+      <DrawPath d="M46 270 C40 280 36 292 36 310 V346" len={90} color={A} width={3.2} enter={enter} delay={at(470)} />
 
       {/* ── ri-7 · the loom out of the right manager, cinched to an hourglass
           at two over-tightened ties, then down into the bay behind the amp */}
@@ -852,32 +890,32 @@ const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; fo
 
       {/* ── ri-5 · a strapped, taut bundle run dead straight across the amp's
           connector field — nothing behind it can be reached */}
-      <DrawPath d="M40 239 H172 C178 239 180 243 180 251 V318 C180 330 186 336.4 196 336.4 H298" len={330} color={S} width={5} enter={enter} delay={at(350)} />
-      <DrawPath d="M40 243.4 H172 C177 243.4 176.6 247 176.6 253 V318 C176.6 332 184 340.6 196 340.6 H298" len={330} color={A} width={3.2} enter={enter} delay={at(380)} />
-      <DrawPath d="M40 247.6 H172 C173.6 247.6 173 251 173 255 V318 C173 334 182 344.4 196 344.4 H298" len={330} color={P} width={4} enter={enter} delay={at(410)} />
-      <DrawPath d="M40 251.6 H169 C170 251.6 169.6 255 169.6 257 V312 C169.6 328 176 332 186 332 H298" len={330} color={A} width={3.2} enter={enter} delay={at(430)} />
+      <DrawPath d="M42 283 H166 Q170 283 170 279 V240 Q170 236 174 236 H298" len={330} color={S} width={5} enter={enter} delay={at(350)} />
+      <DrawPath d="M42 287.4 H169.4 Q173.4 287.4 173.4 283.4 V244.4 Q173.4 240.4 177.4 240.4 H298" len={330} color={A} width={3.2} enter={enter} delay={at(380)} />
+      <DrawPath d="M42 291.6 H172.8 Q176.8 291.6 176.8 287.6 V248.6 Q176.8 244.6 180.8 244.6 H298" len={330} color={P} width={4} enter={enter} delay={at(410)} />
+      <DrawPath d="M42 295.6 H176.2 Q180.2 295.6 180.2 291.6 V252.6 Q180.2 248.6 184.2 248.6 H298" len={330} color={A} width={3.2} enter={enter} delay={at(430)} />
       <SvgIn enter={enter} delay={at(480)}>
-        <CableTie x={60} y={245.4} k={RK} halfH={17} />
-        <CableTie x={158} y={245.4} k={RK} halfH={17} />
+        <CableTie x={60} y={289.4} k={RK} halfH={17} />
+        <CableTie x={158} y={289.4} k={RK} halfH={17} />
       </SvgIn>
 
       {/* ── ri-6 · the two NL4 speaker lines out of the amp, dressed straight
           across the rear fan exhaust and wrapped there */}
-      <DrawPath d={`M${AMP.nl4Xs[0]} ${AMP.nl4Y} C76 258 80 264 94 264 H176 C190 266 210 262 230 262 H298`} len={250} color={S} width={5} enter={enter} delay={at(200)} />
-      <DrawPath d={`M${AMP.nl4Xs[1]} ${AMP.nl4Y} C104 256 110 258 122 258 H176 C192 257 214 256 236 256 H298`} len={220} color={S} width={5} enter={enter} delay={at(260)} />
+      <DrawPath d={`M${AMP.nl4Xs[0]} ${AMP.nl4Y} C76 302 80 308 94 308 H176 C190 310 210 306 230 306 H298`} len={250} color={S} width={5} enter={enter} delay={at(200)} />
+      <DrawPath d={`M${AMP.nl4Xs[1]} ${AMP.nl4Y} C104 300 110 302 122 302 H176 C192 301 214 300 236 300 H298`} len={220} color={S} width={5} enter={enter} delay={at(260)} />
       <SvgIn enter={enter} delay={at(440)}>
         <Nl4PlugRear x={AMP.nl4Xs[0]} y={AMP.nl4Y} />
         <Nl4PlugRear x={AMP.nl4Xs[1]} y={AMP.nl4Y} />
-        <HookLoopWrap x={202} y={260} k={RK} halfH={12} width={16} />
-        <HookLoopWrap x={262} y={259} k={RK} halfH={12} width={16} />
+        <HookLoopWrap x={202} y={304} k={RK} halfH={12} width={16} />
+        <HookLoopWrap x={262} y={303} k={RK} halfH={12} width={16} />
       </SvgIn>
 
       {/* ── ri-10 · three C13 plugs levered sideways because their cords are
           hauled to the right into one tight tie */}
-      <DrawPath d={`M${DISTRO_XS[0] + 7.5} 303 C80 311 112 309 150 306`} len={90} color={P} width={4} enter={enter} delay={at(440)} />
-      <DrawPath d={`M${DISTRO_XS[1] + 7.5} 303 C100 312 126 310 150 307.5`} len={70} color={P} width={4} enter={enter} delay={at(460)} />
-      <DrawPath d={`M${DISTRO_XS[2] + 7.5} 303 C118 312 136 311 150 309`} len={52} color={P} width={4} enter={enter} delay={at(480)} />
-      <DrawPath d={`M135.5 ${AMP.y + 65.2} C135.5 290 146 300 150 306`} len={50} color={P} width={4} enter={enter} delay={at(470)} />
+      <DrawPath d={`M${DISTRO_XS[0] + 7.5} 347 C80 355 112 353 150 350`} len={90} color={P} width={4} enter={enter} delay={at(440)} />
+      <DrawPath d={`M${DISTRO_XS[1] + 7.5} 347 C100 356 126 354 150 351.5`} len={70} color={P} width={4} enter={enter} delay={at(460)} />
+      <DrawPath d={`M${DISTRO_XS[2] + 7.5} 347 C118 356 136 355 150 353`} len={52} color={P} width={4} enter={enter} delay={at(480)} />
+      <DrawPath d={`M135.5 ${AMP.y + 65.2} C135.5 334 146 344 150 350`} len={50} color={P} width={4} enter={enter} delay={at(470)} />
       <SvgIn enter={enter} delay={at(520)}>
         {/* static transforms — evaluated at render time, never animated */}
         <C13Plug x={128} y={AMP.y + 50} />
@@ -887,18 +925,18 @@ const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; fo
           </G>
         ))}
         {flag('ri-10') ? [0, 1, 2].map((i) => <StrainFlag key={i} x={DISTRO_XS[i] + 12} y={PDU.outY - 1} angle={30} />) : null}
-        <G transform="rotate(-8 152 307.5)">
-          <CableTie x={152} y={307.5} k={RK} halfH={8} black />
+        <G transform="rotate(-8 152 351.5)">
+          <CableTie x={152} y={351.5} k={RK} halfH={8} black />
         </G>
       </SvgIn>
 
       {/* ── ri-14 · the AC feeds run on as one cord bundle and are plaited
           through the amp's analog input line under the PDU */}
-      <DrawPath d="M152 307.5 C160 311 168 317 176 322" len={40} color={P} width={6} enter={enter} delay={at(500)} />
-      <DrawPath d={`M${AMP.inXs[0]} ${AMP.nl4Y} C140 262 148 276 156 282 L166 304 C170 314 172 320 176 322`} len={110} color={A} width={3.2} enter={enter} delay={at(170)} />
+      <DrawPath d="M152 351.5 C160 352.5 168 353.5 176 354" len={40} color={P} width={6} enter={enter} delay={at(500)} />
+      <DrawPath d={`M${AMP.inXs[0]} ${AMP.nl4Y} C140 306 148 320 156 326 L166 344 C170 350 172 353 176 354`} len={110} color={A} width={3.2} enter={enter} delay={at(170)} />
       <SvgIn enter={enter} delay={at(540)}>
-        <PlugRearView x={AMP.inXs[0]} y={AMP.nl4Y} k={RK * 0.86} />
-        <Plait x0={176} x1={298} y={322} amp={5} period={48} colors={[P, A]} widths={[6, 3.2]} />
+        <PlugRearView x={AMP.inXs[0]} y={AMP.nl4Y} k={RK} />
+        <Plait x0={176} x1={298} y={354} amp={3.4} period={48} colors={[P, A]} widths={[6, 3.2]} />
       </SvgIn>
     </>
   );
@@ -1045,8 +1083,8 @@ function Looms({
         if (zone === 'z-left' || zone === 'z-right') {
           const isL = zone === 'z-left';
           const lane = laneFor(gi, isL);
-          // The speaker loom lands ON the amp's NL4 output: it crosses the
-          // open bay just above the amp's top edge and drops onto the jack —
+          // The speaker loom lands ON the amp's NL4 output: it crosses on the
+          // lacing bar just above the amp's top edge and drops onto the jack —
           // it used to end on the fan grille, the very defect Phase A
           // teaches (QA 2026-09-26).
           const spk = g.id === 'g-spk';
@@ -1274,7 +1312,10 @@ function DefectMarker({ id, found, hot, pulse, index }: { id: string; found: boo
     <G>
       {!found && breathing ? (
         <>
-          <Circle cx={cx} cy={cy} r={9} fill="rgba(255,198,77,0.06)" stroke={colors.amberLabel} strokeWidth={1.3} strokeDasharray="3 3" opacity={0.85} />
+          {/* a dark outline under the dashes, so the ring still reads where it
+              sits on yellow (loudspeaker) cable */}
+          <Circle cx={cx} cy={cy} r={9} fill="none" stroke="rgba(0,0,0,0.8)" strokeWidth={3.2} />
+          <Circle cx={cx} cy={cy} r={9} fill="rgba(255,198,77,0.06)" stroke={colors.amberLabel} strokeWidth={1.3} strokeDasharray="3 3" opacity={0.95} />
           <PulseRing cx={cx} cy={cy} r={9} color={colors.amberLabel} run strokeWidth={1.2} />
         </>
       ) : null}
@@ -1817,7 +1858,7 @@ export function RackScene({ width, completed, onComplete, openSources }: CiModul
         ))}
       </View>
       <Text style={styles.tintNote}>
-        {`Training visualization — the cable-class colors are a teaching language only; field cable colors vary (${CI_CLASS_KEY}). The switch is reverse-racked so its ports face the rear with the rest of the cabling; the designation strip is drawn on the rear for the exercise.`}
+        {`Training visualization — the cable-class colors are a teaching language only; field cable colors vary (${CI_CLASS_KEY}). The switch is reverse-racked and the patch panel is mounted jacks-to-rear, so every port faces the rear with the rest of the cabling: the horizontals land on the panel’s punch-downs, and short patch cords join the panel to the switch. The 3U amp sits lowest, on the PDU, with rear supports.`}
       </Text>
 
       {/* ═══════════ PHASE A — inspect the bad rack ═══════════ */}

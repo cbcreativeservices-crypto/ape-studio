@@ -5,11 +5,13 @@
  *
  * Rear view of a 15U 19-inch rack at RK ≈ 0.495 units per mm (1U = 44.45 mm =
  * 22 units), drawn to EIA-310 (owner 2026-09-28: the rails were ~5 % too far
- * apart and the patch panel was 2U): hole centres 465.1 mm apart on 15.9 mm
- * rail flanges, so the clear opening between the rails is 450 mm and the
- * rails' outer edges span the 482.6 mm (19 in) panel width. Every device sits
- * ON the U grid at its real height (patch 1U, switch 1U, DSP 2U, interface 1U,
- * amp 3U, PDU 1U), the rails carry the EIA universal square-hole pattern
+ * apart and the patch panel was 2U): hole centres 465.1 mm apart on 15 mm
+ * rail flanges, so the clear opening between the rails is 450 mm (the EIA
+ * minimum) and the 482.6 mm (19 in) panel ears overlap the rails. Every
+ * device sits ON the U grid at its real height (patch 1U, switch 1U, DSP 2U,
+ * interface 1U, amp 3U, PDU 1U) — heaviest lowest: the amp sits on the PDU at
+ * the bottom (expert review 2026-09-28) — and the rails carry the EIA
+ * universal square-hole pattern
  * (holes at 0.25 / 0.875 / 1.5 in within each U: 0.625-in spacing inside a U,
  * 0.5 in across the boundary),
  * and every rear-panel part is drawn at its real size: keystone rears on a
@@ -48,8 +50,9 @@ export const RAIL_Y0 = U_TOP;
 export const RAIL_Y1 = uY(RACK_US);
 /** EIA-310 horizontal geometry, centred on the drawing. */
 export const RACK_CX = 170;
-/** Rail flange width (15.9 mm). */
-export const RAIL_W = 15.9 * RK;
+/** Rail flange width (15 mm — 465.1 − 15 leaves the 450 mm EIA opening). */
+export const RAIL_FLANGE_MM = 15;
+export const RAIL_W = RAIL_FLANGE_MM * RK;
 /** Mounting-hole centres, 465.1 mm apart. */
 export const HOLE_L = RACK_CX - (465.1 * RK) / 2;
 export const HOLE_R = RACK_CX + (465.1 * RK) / 2;
@@ -117,19 +120,26 @@ export function Silk({ x, y, text, anchor = 'start', color = '#8f939c' }: { x: n
 }
 
 /** A device's rear panel inside its U band: powder-coated face, top and
- *  bottom chassis lips, the four ear screws through the rails. */
-export function DeviceFace({ y, h, label }: { y: number; h: number; label?: string }) {
+ *  bottom chassis lips. `rear` = the unit is fixed to the REAR rails (the
+ *  reverse-racked switch, the jacks-to-rear patch panel, the PDU), so its ear
+ *  screws are drawn; front-mounted gear shows only its chassis from here
+ *  (expert review 2026-09-28: front-ear screws do not appear in a rear view). */
+export function DeviceFace({ y, h, label, rear = false }: { y: number; h: number; label?: string; rear?: boolean }) {
   const p = usePaint();
   return (
     <G>
       <Rect x={FACE_X} y={y + 0.6} width={FACE_W} height={h - 1.2} rx={1} fill={p.face} stroke="#0a0a0c" strokeWidth={0.6} />
       <Line x1={FACE_X + 1} y1={y + 1.3} x2={FACE_X + FACE_W - 1} y2={y + 1.3} stroke="rgba(255,255,255,0.12)" strokeWidth={0.6} />
       <Line x1={FACE_X + 1} y1={y + h - 1.4} x2={FACE_X + FACE_W - 1} y2={y + h - 1.4} stroke="rgba(0,0,0,0.5)" strokeWidth={0.6} />
-      {/* rack screws through the ears (one per U boundary pair, top + bottom) */}
-      <Screw x={HOLE_L} y={y + EAR_Y} r={1.5} />
-      <Screw x={HOLE_R} y={y + EAR_Y} r={1.5} />
-      <Screw x={HOLE_L} y={y + h - EAR_Y} r={1.5} />
-      <Screw x={HOLE_R} y={y + h - EAR_Y} r={1.5} />
+      {/* rack screws through the ears into the rear rails (rear-mounted only) */}
+      {rear ? (
+        <>
+          <Screw x={HOLE_L} y={y + EAR_Y} r={1.5} />
+          <Screw x={HOLE_R} y={y + EAR_Y} r={1.5} />
+          <Screw x={HOLE_L} y={y + h - EAR_Y} r={1.5} />
+          <Screw x={HOLE_R} y={y + h - EAR_Y} r={1.5} />
+        </>
+      ) : null}
       {label ? <Silk x={FACE_X + 4} y={y + h - 3.6} text={label} /> : null}
     </G>
   );
@@ -168,8 +178,8 @@ export function RackFrame({ dress }: { dress: boolean }) {
     <G>
       <VerticalManager x={MGR_L.x} w={MGR_L.w} />
       <VerticalManager x={MGR_R.x} w={MGR_R.w} />
-      <RackRail x={RAIL_L_X} y0={RAIL_Y0} y1={RAIL_Y1} k={RK} uTop={U_TOP} />
-      <RackRail x={RAIL_R_X} y0={RAIL_Y0} y1={RAIL_Y1} k={RK} uTop={U_TOP} />
+      <RackRail x={RAIL_L_X} y0={RAIL_Y0} y1={RAIL_Y1} k={RK} uTop={U_TOP} flange={RAIL_FLANGE_MM} />
+      <RackRail x={RAIL_R_X} y0={RAIL_Y0} y1={RAIL_Y1} k={RK} uTop={U_TOP} flange={RAIL_FLANGE_MM} />
       {/* bottom panel */}
       <Rect x={RAIL_L_X} y={RAIL_Y1} width={RAIL_R_X + RAIL_W - RAIL_L_X} height={11} rx={1.5} fill={p.faceHi} stroke="#0a0a0c" strokeWidth={0.6} />
       {/* top panel (the full cabinet width, over the managers too) + the
@@ -193,26 +203,34 @@ export function RackFrame({ dress }: { dress: boolean }) {
 
 /* ── gear faces (all on the U grid) ─────────────────────────────────────── */
 
-/** 1U 24-port keystone patch panel, REAR — a 24-port panel is ONE rack unit:
- *  one row of 24 keystone modules (14.5 mm wide) in four groups of six on a
- *  16.6 mm pitch, the white designation strip under the row. */
-export const PATCH = { y: uY(1), h: U_H, modY: uY(1) + 2, modH: 9.6, modW: 14.5 * RK, stripY: uY(1) + 13, stripH: 7.6 } as const;
+/** 1U 24-port keystone patch panel mounted JACKS-TO-REAR on the rear rails
+ *  (expert review 2026-09-28: with a reverse-racked switch the panel's jacks
+ *  must face the same way, or no patch cord can join them). The horizontals
+ *  terminate on the modules' punch-downs on the panel's inside face; from
+ *  here you see the jack faces — one row of 24 keystones (14.5 mm wide) in
+ *  four groups of six on a 16.6 mm pitch — and the designation strip under
+ *  the row. `jackCy` = the RJ45 opening's centre. */
+export const PATCH = { y: uY(1), h: U_H, modY: uY(1) + 2, modH: 9.6, modW: 14.5 * RK, jackCy: uY(1) + 6.2, stripY: uY(1) + 13, stripH: 7.6 } as const;
 /** Port centres: groups of six on a 16.6 mm pitch, 6.9 mm extra between groups. */
 export const PATCH_XS = Array.from({ length: 24 }, (_, i) => RACK_CX - 99.4 + i * 8.2 + Math.floor(i / 6) * 3.4);
 
 export function PatchPanelRear({ xs, dress }: { xs: number[]; dress: boolean }) {
   return (
     <G>
-      <DeviceFace y={PATCH.y} h={PATCH.h} />
-      {/* keystone rears: dark module, punch-down cap with its IDC slots */}
+      <DeviceFace y={PATCH.y} h={PATCH.h} rear />
+      {/* keystone jack faces: the module's face, the RJ45 opening (11.7 ×
+          8.4 mm) with its contact fingers and the latch slot under it */}
       {xs.map((cx) => {
         const hw = PATCH.modW / 2;
+        const ow = 11.7 * RK;
+        const oh = 8.4 * RK;
+        const oy = PATCH.jackCy - oh / 2;
         return (
           <G key={cx}>
-            <Rect x={cx - hw} y={PATCH.modY} width={PATCH.modW} height={PATCH.modH} rx={0.6} fill="#121317" stroke="#050506" strokeWidth={0.4} />
-            <Rect x={cx - hw + 0.7} y={PATCH.modY + 0.8} width={PATCH.modW - 1.4} height={3.8} rx={0.4} fill="#2f3137" stroke="#0a0a0c" strokeWidth={0.3} />
-            <Path d={[0, 1, 2, 3].map((i) => `M${cx - 2.25 + i * 1.5} ${PATCH.modY + 1.3} v2.8`).join('')} stroke="#0a0a0c" strokeWidth={0.45} />
-            <Rect x={cx - 0.9} y={PATCH.modY + 5.4} width={1.8} height={3.6} rx={0.3} fill="#0a0a0c" />
+            <Rect x={cx - hw} y={PATCH.modY} width={PATCH.modW} height={PATCH.modH} rx={0.6} fill="#1d1e23" stroke="#050506" strokeWidth={0.4} />
+            <Rect x={cx - ow / 2} y={oy} width={ow} height={oh} rx={0.3} fill="#050506" stroke="#4a4d54" strokeWidth={0.3} />
+            <Path d={[0, 1, 2, 3, 4, 5, 6, 7].map((i) => `M${cx - 2.25 + i * 0.64} ${oy + 0.3} v1.1`).join('')} stroke="#c9a13c" strokeWidth={0.22} />
+            <Rect x={cx - 0.9} y={oy + oh} width={1.8} height={1.1} fill="#050506" />
           </G>
         );
       })}
@@ -224,11 +242,6 @@ export function PatchPanelRear({ xs, dress }: { xs: number[]; dress: boolean }) 
               across, so the IDs are drawn as print at true scale) */}
           {xs.map((cx) => (
             <Path key={`id${cx}`} d={`M${cx - 2.8} ${PATCH.stripY + 2.4} h3.2 M${cx - 2.8} ${PATCH.stripY + 4.8} h5.4`} stroke="#23252a" strokeWidth={0.9} />
-          ))}
-          {/* the horizontals drop out of the horizontal manager directly
-              above, one per module, into its punch-down */}
-          {xs.map((cx) => (
-            <JacketPath key={`h${cx}`} d={`M${cx} ${PATCH.y - 2} V${PATCH.modY + 1}`} color={NETWORK_TINT} width={2.4} shadow={false} />
           ))}
         </G>
       ) : null}
@@ -248,6 +261,7 @@ export function HorizontalManager({ xs, y = HMGR.y }: { xs: number[]; y?: number
   return (
     <G>
       <Rect x={FACE_X} y={y + 1} width={FACE_W} height={h - 2} rx={1} fill={p.mgr} stroke="#0a0a0c" strokeWidth={0.6} />
+      {/* the rear managers are fixed to the rear rails */}
       <Screw x={HOLE_L} y={y + EAR_Y} r={1.5} />
       <Screw x={HOLE_R} y={y + EAR_Y} r={1.5} />
       <Screw x={HOLE_L} y={y + h - EAR_Y} r={1.5} />
@@ -260,30 +274,44 @@ export function HorizontalManager({ xs, y = HMGR.y }: { xs: number[]; y?: number
 }
 
 /** 1U network switch, reverse-racked so its ports face the rear with the
- *  rest of the cabling (AV practice): 8 × RJ45 with link LEDs, two SFP cages. */
-export const SWITCH = { y: uY(3), h: U_H, portY: 0 } as const;
-/** The two SFP cages at the right end of the switch (left edges). */
-export const SFP_XS = [240, 258] as const;
-export function NetworkSwitch({ xs, lit = [] }: { xs: number[]; lit?: number[] }) {
+ *  rest of the cabling (AV practice): 8 × RJ45 with link LEDs, two SFP cages
+ *  — every part at its real size (expert review 2026-09-28: the ports were
+ *  drawn ~2× too big): a port's shielded jack 14 × 12.5 mm on a 15 mm pitch,
+ *  an SFP cage 14 × 9.5 mm. Port 1 sits under patch port 1 so the patch
+ *  cords drop almost straight. */
+export const SWITCH = { y: uY(3), h: U_H, portCy: uY(3) + 12.6 } as const;
+const SW_PITCH = 15 * RK;
+/** Port centres (x), ports 1–8. */
+export const SW_CX = Array.from({ length: 8 }, (_, i) => RACK_CX - 99.4 + i * SW_PITCH);
+/** Port shield size. */
+export const SW_PORT = { w: 14 * RK, h: 12.5 * RK } as const;
+/** The two SFP cages at the right end of the switch (centres). */
+export const SFP_CX = [246, 256] as const;
+export const SFP_CAGE = { w: 14 * RK, h: 9.5 * RK } as const;
+export function NetworkSwitch({ lit = [] }: { lit?: number[] }) {
   const y = SWITCH.y;
+  const cy = SWITCH.portCy;
+  const ow = 11.7 * RK;
+  const oh = 8.4 * RK;
   return (
     <G>
-      <DeviceFace y={y} h={SWITCH.h} />
-      <Silk x={196} y={y + 14.6} text="SWITCH" />
-      {xs.map((x, i) => (
-        <G key={x}>
-          <Rect x={x} y={y + 8.5} width={11.7} height={9.6} rx={0.6} fill="#050506" stroke="#6d737b" strokeWidth={0.45} />
-          <Rect x={x + 4.1} y={y + 17.4} width={3.5} height={1.6} fill="#050506" />
-          <Path d={[0, 1, 2, 3, 4, 5, 6, 7].map((k) => `M${x + 1.9 + k * 1.15} ${y + 9.3} v1.8`).join('')} stroke="#c9a13c" strokeWidth={0.3} />
+      <DeviceFace y={y} h={SWITCH.h} rear />
+      <Silk x={160} y={y + 14.6} text="SWITCH" />
+      {SW_CX.map((cx, i) => (
+        <G key={cx}>
+          <Rect x={cx - SW_PORT.w / 2} y={cy - SW_PORT.h / 2} width={SW_PORT.w} height={SW_PORT.h} rx={0.4} fill="#6d737b" stroke="#2c2f34" strokeWidth={0.3} />
+          <Rect x={cx - ow / 2} y={cy - oh / 2} width={ow} height={oh} rx={0.3} fill="#050506" />
+          <Rect x={cx - 0.9} y={cy + oh / 2 - 0.2} width={1.8} height={1.1} fill="#050506" />
+          <Path d={[0, 1, 2, 3, 4, 5, 6, 7].map((k) => `M${cx - 2.25 + k * 0.64} ${cy - oh / 2 + 0.3} v1.1`).join('')} stroke="#c9a13c" strokeWidth={0.22} />
           {/* link / activity LEDs: lit only where a cable is actually seated */}
-          <Circle cx={x + 2.4} cy={y + 5.4} r={1.1} fill={lit.includes(i) ? '#37d97b' : '#1b2a20'} />
-          <Circle cx={x + 9.3} cy={y + 5.4} r={1.1} fill={lit.includes(i) ? '#ffc64d' : '#2a2616'} />
+          <Circle cx={cx - 1.8} cy={y + 4.4} r={0.8} fill={lit.includes(i) ? '#37d97b' : '#1b2a20'} />
+          <Circle cx={cx + 1.8} cy={y + 4.4} r={0.8} fill={lit.includes(i) ? '#ffc64d' : '#2a2616'} />
         </G>
       ))}
-      {SFP_XS.map((x) => (
-        <G key={x}>
-          <Rect x={x} y={y + 7.5} width={15} height={11.5} rx={0.8} fill="#050506" stroke="#9ba1a8" strokeWidth={0.6} />
-          <Rect x={x + 2} y={y + 9.5} width={11} height={7.5} fill="#141518" />
+      {SFP_CX.map((cx) => (
+        <G key={cx}>
+          <Rect x={cx - SFP_CAGE.w / 2} y={cy - SFP_CAGE.h / 2} width={SFP_CAGE.w} height={SFP_CAGE.h} rx={0.4} fill="#050506" stroke="#9ba1a8" strokeWidth={0.45} />
+          <Rect x={cx - SFP_CAGE.w / 2 + 0.8} y={cy - SFP_CAGE.h / 2 + 0.8} width={SFP_CAGE.w - 1.6} height={SFP_CAGE.h - 1.6} fill="#141518" />
         </G>
       ))}
     </G>
@@ -341,7 +369,7 @@ export function AudioInterface({ xs }: { xs: number[] }) {
       ))}
       <Silk x={xs[xs.length - 1] + 12} y={y + 14.4} text="INTERFACE" />
       {[254, 274].map((cx) => (
-        <PanelJack key={cx} x={cx} y={IFACE.jackY} k={RK * 0.7} kind="xlrM" />
+        <PanelJack key={cx} x={cx} y={IFACE.jackY} k={RK} kind="xlrM" />
       ))}
     </G>
   );
@@ -375,33 +403,45 @@ function Nl4({ cx, cy }: { cx: number; cy: number }) {
 /** 3U power amplifier rear: NL4 outputs, XLR-F inputs, the IEC inlet, and
  *  the rear fan EXHAUST behind its grille — rack amps breathe front to rear —
  *  which the loom must never cross. */
-export const AMP = { y: uY(9), h: 3 * U_H, nl4Y: uY(9) + 30, nl4Xs: [76, 104] as const, inXs: [140, 162] as const, grille: { x: 178, y: uY(9) + 6, w: 100, h: 54 } } as const;
+export const AMP = { y: uY(11), h: 3 * U_H, nl4Y: uY(11) + 30, nl4Xs: [76, 104] as const, inXs: [140, 162] as const, grille: { x: 178, y: uY(11) + 6, w: 100, h: 54 } } as const;
 export function Amplifier({ dress }: { dress: boolean }) {
   const y = AMP.y;
   const g = AMP.grille;
   return (
     <G>
       <DeviceFace y={y} h={AMP.h} label="POWER AMP" />
+      {/* rear-support brackets: a 3U amp is carried at the back as well as
+          by its front ears — an L-bracket from each rear rail under the
+          chassis side */}
+      {[
+        [RAIL_L_X, FACE_X - RAIL_L_X + 2],
+        [FACE_X + FACE_W - 2, RAIL_R_X + RAIL_W - (FACE_X + FACE_W - 2)],
+      ].map(([bx, bw]) => (
+        <G key={bx}>
+          <Rect x={bx} y={y + AMP.h - 13} width={bw} height={11} rx={0.8} fill="#80868f" stroke="#2c2f34" strokeWidth={0.45} />
+          <Screw x={bx < RACK_CX ? HOLE_L : HOLE_R} y={y + AMP.h - 7.5} r={1.5} />
+        </G>
+      ))}
       <Silk x={FACE_X + 4} y={y + 12} text="OUTPUTS" />
       {AMP.nl4Xs.map((cx) => (
         <Nl4 key={cx} cx={cx} cy={AMP.nl4Y} />
       ))}
       <Silk x={AMP.inXs[0] - 8} y={y + 12} text="INPUTS" />
       {AMP.inXs.map((cx) => (
-        <PanelJack key={cx} x={cx} y={AMP.nl4Y} k={RK * 0.86} kind="xlrF" />
+        <PanelJack key={cx} x={cx} y={AMP.nl4Y} k={RK} kind="xlrF" />
       ))}
       <IecInlet x={128} y={y + 50} />
       <Silk x={148} y={y + 58.6} text="AC IN" />
-      {/* the 120 mm fan behind its punched grille — front-to-rear airflow, so
+      {/* a 92 mm fan behind its punched grille — front-to-rear airflow, so
           this is the EXHAUST */}
       <VentField x={g.x} y={g.y} w={g.w} h={g.h} k={RK} />
-      <Circle cx={g.x + g.w / 2} cy={g.y + g.h / 2} r={24} fill="none" stroke="#2c2e34" strokeWidth={0.9} />
+      <Circle cx={g.x + g.w / 2} cy={g.y + g.h / 2} r={(92 / 2) * RK} fill="none" stroke="#2c2e34" strokeWidth={0.9} />
       <Circle cx={g.x + g.w / 2} cy={g.y + g.h / 2} r={15} fill="none" stroke="#2c2e34" strokeWidth={0.7} />
       {[0, 1, 2, 3, 4].map((i) => {
         const a = (i / 5) * Math.PI * 2;
         const cx = g.x + g.w / 2;
         const cy = g.y + g.h / 2;
-        return <Path key={i} d={`M${cx + Math.cos(a) * 6} ${cy + Math.sin(a) * 6} Q${cx + Math.cos(a + 0.5) * 16} ${cy + Math.sin(a + 0.5) * 16} ${cx + Math.cos(a + 0.9) * 22} ${cy + Math.sin(a + 0.9) * 22}`} stroke="#2c2e34" strokeWidth={2.2} fill="none" strokeLinecap="round" />;
+        return <Path key={i} d={`M${cx + Math.cos(a) * 6} ${cy + Math.sin(a) * 6} Q${cx + Math.cos(a + 0.5) * 15} ${cy + Math.sin(a + 0.5) * 15} ${cx + Math.cos(a + 0.9) * 21} ${cy + Math.sin(a + 0.9) * 21}`} stroke="#2c2e34" strokeWidth={2.2} fill="none" strokeLinecap="round" />;
       })}
       <Circle cx={g.x + g.w / 2} cy={g.y + g.h / 2} r={5.5} fill="#1b1c20" stroke="#2c2e34" strokeWidth={0.6} />
       <Silk x={g.x + g.w / 2} y={y + AMP.h - 3.6} text="EXHAUST · KEEP CLEAR" anchor="middle" />
@@ -450,13 +490,14 @@ export function C13Plug({ x, y }: { x: number; y: number }) {
   );
 }
 
-/** 1U PDU rear: eight C13 outlets in a row, the breaker, the inlet. */
-export const PDU = { y: uY(12), h: U_H, outY: uY(12) + 5.5 } as const;
+/** 1U PDU rear (on the rear rails, at the bottom under the amp): eight C13
+ *  outlets in a row, the breaker, the inlet. */
+export const PDU = { y: uY(14), h: U_H, outY: uY(14) + 5.5 } as const;
 export function PowerDistro({ xs, dress }: { xs: number[]; dress: boolean }) {
   const y = PDU.y;
   return (
     <G>
-      <DeviceFace y={y} h={PDU.h} />
+      <DeviceFace y={y} h={PDU.h} rear />
       {xs.map((x) => (
         <C13 key={x} x={x} y={PDU.outY} />
       ))}
@@ -473,13 +514,17 @@ export function PowerDistro({ xs, dress }: { xs: number[]; dress: boolean }) {
 
 /* ── plugs seen end-on (the rear view of a plugged cable) ────────────────── */
 
-/** An RJ45 plug latched in a port, end-on, with its snagless boot. */
-export function Rj45PlugRear({ x, y, color = NETWORK_TINT }: { x: number; y: number; color?: string }) {
+/** An RJ45 plug latched in a port, seen end-on from the cable side at its
+ *  real size (expert review 2026-09-28): the snagless boot (~13 × 10 mm)
+ *  around the cable, centred on the port at (cx, cy). */
+export function Rj45PlugRear({ cx, cy, color = NETWORK_TINT }: { cx: number; cy: number; color?: string }) {
+  const bw = 13 * RK;
+  const bh = 10 * RK;
   return (
     <G>
-      <Rect x={x + 0.8} y={y + 0.6} width={10.1} height={8.4} rx={0.6} fill="rgba(215,225,235,0.55)" stroke="#dfe7ef" strokeWidth={0.4} />
-      <Rect x={x + 3.2} y={y + 3.2} width={5.3} height={5.6} rx={1.2} fill={shade(color, 0.3)} stroke="rgba(0,0,0,0.6)" strokeWidth={0.35} />
-      <Rect x={x + 2.4} y={y - 1.4} width={6.9} height={2} rx={0.5} fill="rgba(215,225,235,0.7)" />
+      <Rect x={cx - bw / 2 + 0.4} y={cy - bh / 2 + 0.6} width={bw} height={bh} rx={1} fill="rgba(0,0,0,0.5)" />
+      <Rect x={cx - bw / 2} y={cy - bh / 2} width={bw} height={bh} rx={1} fill={shade(color, 0.45)} stroke="rgba(0,0,0,0.7)" strokeWidth={0.35} />
+      <Circle cx={cx} cy={cy + 0.2} r={3.2 * RK} fill={shade(color, 0.2)} stroke="rgba(0,0,0,0.6)" strokeWidth={0.3} />
     </G>
   );
 }
