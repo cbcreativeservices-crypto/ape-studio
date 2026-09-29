@@ -204,6 +204,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 00:16 · ccode · 68e8b132
+changed: fix(cymatics): gallery rename/notes/favourite edit the latest row, serialised
+affects other side: nothing — client JS only (wave/cymatics fixes)
+needs: nothing
+
 ### 2026-09-29 00:15 · ccode · 50f6e978
 changed: fix(dashboard): term list is a centred popup; the deck store keeps one topic
 affects other side: nothing — client JS only (study bug fixes)
