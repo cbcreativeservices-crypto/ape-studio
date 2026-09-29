@@ -24,7 +24,7 @@
  * Accessibility: every choice is a labeled button (no color-only state, no
  * drag); verdicts announce via VerdictBanner; targets ≥44dp.
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg from 'react-native-svg';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
@@ -301,15 +301,20 @@ export function KnowScene({ completed, onComplete, openSources }: CiModuleProps)
     );
   }, [viewed.size]);
   const [ans, setAns] = useState<Record<string, DrillAnswers>>({});
-  const [fired, setFired] = useState(completed);
+  // Synchronous mirrors (bug hunt 2026-09-29): the lock read the render-time
+  // `ans`, so two taps in one frame both passed it — the second replaced a
+  // locked answer (or dropped a sibling field) and could fire onComplete twice.
+  const ansRef = useRef(ans);
+  const firedRef = useRef(completed);
 
   const pick = <K extends keyof DrillAnswers>(sid: string, field: K, value: DrillAnswers[K]) => {
-    const cur = ans[sid] ?? {};
+    const cur = ansRef.current[sid] ?? {};
     if (cur[field] != null) return; // each call locks once made
-    const next = { ...ans, [sid]: { ...cur, [field]: value } };
+    const next = { ...ansRef.current, [sid]: { ...cur, [field]: value } };
+    ansRef.current = next;
     setAns(next);
-    if (!fired && allAnswered(next)) {
-      setFired(true);
+    if (!firedRef.current && allAnswered(next)) {
+      firedRef.current = true;
       const { dims } = drillScore(next);
       announceComplete('Stage 2 complete. Installation method follows cable type and use case.');
       onComplete(dims);

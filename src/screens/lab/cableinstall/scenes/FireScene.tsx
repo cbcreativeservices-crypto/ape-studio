@@ -656,16 +656,21 @@ export function FireScene({ completed, onComplete, openSources, head }: CiModule
   });
   const [flowAns, setFlowAns] = useState<number[]>(() => (completed ? FLOW.map((q) => q.correctIdx) : []));
   const [sel, setSel] = useState<string | null>(completed ? CI_FIRE_SPACES[CI_FIRE_SPACES.length - 1].id : null);
-  const [fired, setFired] = useState(completed);
+  // Synchronous mirrors (bug hunt 2026-09-29): the answer locks read
+  // render-time state, so a same-frame double tap changed a locked answer
+  // (answerFlow) or could fire onComplete twice.
+  const spaceAnsRef = useRef(spaceAns);
+  const flowAnsRef = useRef(flowAns);
+  const firedRef = useRef(completed);
 
   const spacesDone = CI_FIRE_SPACES.every((s) => spaceAns[s.id] != null);
   const flowDone = flowAns.length >= FLOW.length;
   const plenumPairDone = spaceAns['fs-cavity'] != null && spaceAns['fs-plenum'] != null;
 
   const maybeFire = (spaces: Record<string, number>, flow: number[]) => {
-    if (fired) return;
+    if (firedRef.current) return;
     if (!CI_FIRE_SPACES.every((s) => spaces[s.id] != null) || flow.length < FLOW.length) return;
-    setFired(true);
+    firedRef.current = true;
     const spaceWrong = CI_FIRE_SPACES.filter((s) => spaces[s.id] !== s.correctIdx).length;
     const flowWrong = FLOW.filter((q, i) => flow[i] !== q.correctIdx).length;
     announceComplete('Stage 11 complete.');
@@ -676,17 +681,19 @@ export function FireScene({ completed, onComplete, openSources, head }: CiModule
   };
 
   const answerSpace = (id: string, idx: number) => {
-    if (spaceAns[id] != null) return;
-    const next = { ...spaceAns, [id]: idx };
+    if (spaceAnsRef.current[id] != null) return;
+    const next = { ...spaceAnsRef.current, [id]: idx };
+    spaceAnsRef.current = next;
     setSpaceAns(next);
-    maybeFire(next, flowAns);
+    maybeFire(next, flowAnsRef.current);
   };
 
   const answerFlow = (qi: number, idx: number) => {
-    if (flowAns.length !== qi) return;
-    const next = [...flowAns, idx];
+    if (flowAnsRef.current.length !== qi) return;
+    const next = [...flowAnsRef.current, idx];
+    flowAnsRef.current = next;
     setFlowAns(next);
-    maybeFire(spaceAns, next);
+    maybeFire(spaceAnsRef.current, next);
   };
 
   /* ── RACK UNIT layout (owner 2026-09-28: "its question flow scrolls away

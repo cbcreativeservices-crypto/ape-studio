@@ -1195,6 +1195,10 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
   const [backPick, setBackPick] = useState<string | null>(null);
   const [signs, setSigns] = useState<number[]>([]);
   const [coilMistakes, setCoilMistakes] = useState(0);
+  // Synchronous mirror (bug hunt 2026-09-29): addLoop read the render-time
+  // `signs`, so a same-frame double tap counted one wrong loop as two
+  // coilMistakes (and restartCoil could charge the shake-out twice).
+  const signsRef = useRef<number[]>([]);
   const firedRef = useRef(completed);
 
   const artW = Math.max(160, width);
@@ -1247,10 +1251,12 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
   const redStyle = useAnimatedStyle(() => ({ opacity: Math.max(0, 1 - Math.abs(bandT.value - 2)) }));
 
   const addLoop = (sign: 1 | -1) => {
-    if (coilDone || signs.length >= 6) return;
-    const i = signs.length;
+    const cur = signsRef.current;
+    if (coilDone || cur.length >= 6) return;
+    const i = cur.length;
     if (sign !== expectedSign(i)) setCoilMistakes((m) => m + 1);
-    const nextSigns = [...signs, sign];
+    const nextSigns = [...cur, sign];
+    signsRef.current = nextSigns;
     setSigns(nextSigns);
     const t = Math.abs(nextSigns.reduce((a, b) => a + b, 0));
     AccessibilityInfo.announceForAccessibility(
@@ -1258,7 +1264,8 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
     );
   };
   const restartCoil = () => {
-    if (signs.length === 0) return;
+    if (signsRef.current.length === 0) return;
+    signsRef.current = [];
     setSigns([]);
     setCoilMistakes((m) => m + 1);
     AccessibilityInfo.announceForAccessibility('Coil shaken out — start again with a natural over loop.');
@@ -1266,17 +1273,19 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
 
   const pickCraft = (d: CraftDecision, o: CraftOption) => {
     if (craftAnswered(d.id)) return;
-    setCraft((c) => ({ ...c, [d.id]: o.id }));
+    // keep-first (bug hunt 2026-09-29): a same-frame second tap must not
+    // replace the locked call
+    setCraft((c) => (c[d.id] != null ? c : { ...c, [d.id]: o.id }));
     AccessibilityInfo.announceForAccessibility(o.ok ? 'Good call.' : 'Not the professional call.');
   };
 
   const pickRoute = (which: 'foh' | 'back', id: string) => {
     if (which === 'foh') {
       if (fohPick != null) return;
-      setFohPick(id);
+      setFohPick((p) => p ?? id);
     } else {
       if (backPick != null) return;
-      setBackPick(id);
+      setBackPick((p) => p ?? id);
     }
     AccessibilityInfo.announceForAccessibility('Route selected — all three verdicts revealed below.');
   };

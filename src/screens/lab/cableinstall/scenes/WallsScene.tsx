@@ -567,8 +567,11 @@ export function WallsScene({ width, completed, onComplete, openSources }: CiModu
     if (!right) wrongs.current.s2 += 1;
     say(right ? `Correct. ${WALL_GOOD_SHORT[wall.id] ?? ''}` : 'Not the professional action for this wall.');
   };
+  // Absolute, not functional (bug hunt 2026-09-29): `(i) => i + 1` let a
+  // same-frame double tap on NEXT WALL advance twice and skip a wall unseen.
   const nextWall = () => {
-    setWallIdx((i) => i + 1);
+    if (!wallRight) return;
+    setWallIdx(wallIdx + 1);
     setWallPick(null);
   };
 

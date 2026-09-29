@@ -1716,7 +1716,9 @@ export function RackScene({ width, completed, onComplete, openSources }: CiModul
 
   /* ── Phase C handlers ── */
   const pickJack = (n: number) => {
-    if (replaced) return;
+    // Solved is solved (bug hunt 2026-09-29): once input 7 is traced, a stray
+    // tap on another jack used to count a wrong jack and drop the answer.
+    if (replaced || cSel?.ok) return;
     if (n === 7) {
       setCSel({ jack: 7, ok: true });
       AccessibilityInfo.announceForAccessibility('Input 7 selected. One cable highlights end to end: labeled A-007 at DSP input 7, along the analog harness, up the left manager, labeled A-007 again where it enters the rack. Everything else dims.');
@@ -1755,6 +1757,15 @@ export function RackScene({ width, completed, onComplete, openSources }: CiModul
   };
 
   const phaseDone: Record<Phase, boolean> = { a: aDone, b: bDone, c: cDone, d: dDone };
+  /* A completed stage revisited starts with no findings (they are not kept),
+     so the counter read 0 / N beside the phase's ✓ chip (bug hunt
+     2026-09-29). Say it passed until the learner starts a new walk. */
+  const aCounter =
+    completed && found.size === 0 ? (
+      <Text style={styles.lead}>✓ Phase A passed on an earlier visit — tap the markers to inspect again.</Text>
+    ) : (
+      <FoundCounter found={found.size} required={REQUIRED_FINDS} total={CI_RACK_ISSUES.length} />
+    );
   const phaseOpen: Record<Phase, boolean> = { a: true, b: aDone, c: bDone, d: cDone };
 
   const lastIssue = lastFound ? (CI_RACK_ISSUES.find((i) => i.id === lastFound) ?? null) : null;
@@ -1921,9 +1932,9 @@ export function RackScene({ width, completed, onComplete, openSources }: CiModul
                 })}
               </View>
             )}
-            controls={<FoundCounter found={found.size} required={REQUIRED_FINDS} total={CI_RACK_ISSUES.length} />}
+            controls={aCounter}
           />
-          <FoundCounter found={found.size} required={REQUIRED_FINDS} total={CI_RACK_ISSUES.length} />
+          {aCounter}
           <OptionChip
             label={listOpen ? '▾ SUSPECT LIST' : '▸ SUSPECT LIST'}
             active={listOpen}

@@ -760,6 +760,10 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
   const [confirmed, setConfirmed] = useState(completed);
   const [fired, setFired] = useState(completed);
   const wrongs = useRef({ path: 0, spacing: 0 });
+  /** Failing hook layouts already charged (bug hunt 2026-09-29): pressing
+   *  CHECK SPACING again on the SAME failing layout took another −8 each
+   *  time. One penalty per distinct layout. */
+  const failedLayouts = useRef(new Set<string>());
 
   const m = useCiMotion();
   const say = (t: string) => AccessibilityInfo.announceForAccessibility(t);
@@ -854,7 +858,10 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
     const ok = maxGap <= SPEC_MAX_GAP;
     const extra = ok && hooks.size > Math.ceil(SPAN_UNITS / SPEC_MAX_GAP) - 1;
     setSpacing({ ok, maxGap, extra });
-    if (!ok) wrongs.current.spacing += 1;
+    if (!ok && !failedLayouts.current.has(hookKey)) {
+      failedLayouts.current.add(hookKey);
+      wrongs.current.spacing += 1;
+    }
     say(ok ? 'Spacing meets the supplied specification.' : `Widest span is ${maxGap} units — the supplied spec says every ${SPEC_MAX_GAP}.`);
   };
   const confirmRoute = () => {
@@ -961,6 +968,9 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
                 ))}
               </View>
               {!confirmed ? <OptionChip label={`CHECK SPACING (${hooks.size} placed)`} action onPress={checkSpacing} /> : null}
+              {/* step 3 docked too (bug hunt 2026-09-29): without it the learner
+                  had to leave full screen to finish the exercise. */}
+              {spacing?.ok && !confirmed ? <OptionChip label="CONFIRM THE ROUTE ✓" action onPress={confirmRoute} /> : null}
             </View>
           ) : (
             <View style={{ gap: 6 }}>

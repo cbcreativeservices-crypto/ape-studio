@@ -503,7 +503,10 @@ function VerdictCard({
 export function RouteScene({ width, completed, onComplete, openSources }: CiModuleProps) {
   const [xrays, setXrays] = useState<Record<string, boolean>>({});
   const [picks, setPicks] = useState<Record<string, string>>({});
-  const [fired, setFired] = useState(completed);
+  // Synchronous mirrors (bug hunt 2026-09-29): a same-frame double tap read
+  // the stale `picks`, so the second tap replaced the locked route.
+  const picksRef = useRef(picks);
+  const firedRef = useRef(completed);
   const mapW = Math.max(280, width);
 
   const ranked = useMemo(() => {
@@ -520,8 +523,9 @@ export function RouteScene({ width, completed, onComplete, openSources }: CiModu
   };
 
   const select = (sid: string, oid: string) => {
-    if (picks[sid]) return;
-    const next = { ...picks, [sid]: oid };
+    if (picksRef.current[sid]) return;
+    const next = { ...picksRef.current, [sid]: oid };
+    picksRef.current = next;
     setPicks(next);
     const sc = CI_ROUTE_SCENARIOS.find((x) => x.id === sid);
     const rk = ranked[sid];
@@ -534,8 +538,8 @@ export function RouteScene({ width, completed, onComplete, openSources }: CiModu
         );
       }
     }
-    if (!fired && CI_ROUTE_SCENARIOS.every((x) => next[x.id] != null)) {
-      setFired(true);
+    if (!firedRef.current && CI_ROUTE_SCENARIOS.every((x) => next[x.id] != null)) {
+      firedRef.current = true;
       let dims: CiDimScores = {};
       for (const x of CI_ROUTE_SCENARIOS) {
         const chosen = x.options.find((op) => op.id === next[x.id]);

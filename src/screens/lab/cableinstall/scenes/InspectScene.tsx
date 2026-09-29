@@ -522,8 +522,10 @@ export function InspectScene({ width, completed, onComplete, onDims, openSources
     // H-2b (2026-09-18): report the inspection's scores NOW, not only at
     // onComplete. `passDims` is component state, so leaving the lab between
     // the inspection and the knowledge check used to discard it entirely and
-    // the capstone scored nothing. Merging is idempotent for identical dims,
-    // so the onComplete below re-reporting them is a no-op.
+    // the capstone scored nothing. NOT idempotent (bug hunt 2026-09-29):
+    // mergeDims AVERAGES into the running profile, so merging the same dims a
+    // second time at onComplete pulled every dimension further toward this
+    // pass. onQuizSolved therefore completes WITHOUT dims when onDims is wired.
     onDims?.(dims);
     markLabUnit(LAB_KEY, CI_INSPECT_PASS_UNIT);
     announceComplete('Inspection passed. Knowledge check unlocked.');
@@ -533,13 +535,18 @@ export function InspectScene({ width, completed, onComplete, onDims, openSources
   const onQuizSolved = () => {
     quizSolvedRef.current += 1;
     setQuizSolved(quizSolvedRef.current);
-    if (quizSolvedRef.current >= quiz.length && !firedRef.current) {
+    if (quizSolvedRef.current < quiz.length) return;
+    // Credit fires once; the phase flip does not (bug hunt 2026-09-29): after
+    // NEW INSPECTION ATTEMPT ↻ firedRef stays true, and with setPhase inside
+    // the guard the retry sat on KNOWLEDGE CHECK 5 / 5 forever.
+    if (!firedRef.current) {
       firedRef.current = true;
       markLabUnit(LAB_KEY, CI_FINAL_CHECK_UNIT);
       announceComplete('Knowledge check complete. Lab complete.');
-      onComplete(passDims);
-      setPhase('done');
+      // The dims already went in through onDims at sign-off (see above).
+      onComplete(onDims ? undefined : passDims);
     }
+    setPhase('done');
   };
 
   /* Docked under the drawing in full screen (owner 2026-09-25): the progress

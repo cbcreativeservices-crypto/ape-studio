@@ -473,6 +473,10 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
   const [idx, setIdx] = useState(completed ? N : 0);
   const [correct, setCorrect] = useState(completed ? N : 0);
   const [pick, setPick] = useState<boolean | null>(null);
+  // Synchronous answer lock (bug hunt 2026-09-29): `pick` is render-time
+  // state, so two taps in the same frame both saw `pick == null` and counted
+  // a right answer twice. Same guard as CheckQuestion's.
+  const pickedRef = useRef(false);
   const [finishedLive, setFinishedLive] = useState(false); // banner only after a live run
   const [sortPassed, setSortPassed] = useState(completed);
   const correctAtPassRef = useRef(completed ? N : 0);
@@ -524,7 +528,8 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
   );
 
   const onPick = (saidOk: boolean) => {
-    if (!item || pick != null) return;
+    if (!item || pick != null || pickedRef.current) return;
+    pickedRef.current = true;
     setPick(saidOk);
     const right = saidOk === item.ok;
     if (right) setCorrect((c) => c + 1);
@@ -537,6 +542,7 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
     const nIdx = idx + 1;
     setIdx(nIdx);
     setPick(null);
+    pickedRef.current = false;
     if (nIdx >= N) {
       setFinishedLive(true);
       const pass = correct >= passNeeded;
@@ -571,6 +577,7 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
     setIdx(0);
     setCorrect(0);
     setPick(null);
+    pickedRef.current = false;
     setFinishedLive(false);
     if (!m.reduce) {
       cardFade.value = 0;
