@@ -14,11 +14,13 @@
  *  • MiniConsole — fader/pan/mute/Ø strips with stepper controls (44 pt,
  *    screen-reader adjustable; steppers, not drags — WCAG 2.5.7).
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { AccessibilityInfo, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { colors, fonts } from '../../../theme/tokens';
 import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
+import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
+import { isAudioOutputEnabled } from '../../../features/audio/audioOutputStore';
 import { navigationRef } from '../../../navigation/navigationRef';
 import { EarClipPlayer } from '../../../features/ear/earPlayer';
 import { Btn, Row, useMarkWhen } from '../tuning/components/primitives';
@@ -149,7 +151,12 @@ export function MixMantra() {
 /** Sticky exploration goals (patchbay pattern): each goal latches once its
  *  predicate has been true; all latched → the page marks itself done. */
 export function useVisitGoals(ctx: PageCtx, goals: { label: string; hit: boolean }[]): boolean[] {
-  const seen = useRef<boolean[]>(goals.map(() => false));
+  const seen = useRef<boolean[]>(goals.map(() => ctx.isDone));
+  // A page already finished (this visit or an earlier one — isDone can arrive
+  // after the first render, once saved progress loads) shows every goal met.
+  // The chips used to restart at ○ / "not yet" on every mount (bug hunt
+  // 2026-09-29). Before the loop, so a finished page announces nothing.
+  if (ctx.isDone && !seen.current.every(Boolean)) seen.current = goals.map(() => true);
   goals.forEach((g, i) => {
     if (g.hit && !seen.current[i]) {
       seen.current[i] = true;
@@ -280,7 +287,28 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
    * unmount — blur should silence the lab, not throw away the render the
    * learner comes back to.
    */
-  useFocusEffect(useCallback(() => () => playerRef.current?.stop(), []));
+  //
+  // Bug hunt 2026-09-29 — two holes the stop-on-blur left open:
+  //  • ■ OVER SILENCE: blur paused the player but never cleared `active`, so
+  //    the pressed button still read "■ MY MIX" when the learner came back to
+  //    a silent page. Blur now also drops `active`.
+  //  • A QUEUED PLAY UNDER THE NEXT SCREEN: tap ▶ MY MIX, then OPEN THE EQ LAB
+  //    while it is RENDERING — the render finished under the pushed EQ Lab and
+  //    played `pendingRef`. Blur now forgets the queued play, and focusedRef
+  //    AND the output gate are checked before anything is started.
+  const focusedRef = useRef(true);
+  useFocusEffect(
+    useCallback(() => {
+      focusedRef.current = true;
+      return () => {
+        focusedRef.current = false;
+        pendingRef.current = null;
+        setPending(null);
+        playerRef.current?.stop();
+        setActive(null);
+      };
+    }, []),
+  );
 
   // New variant set → old renders (AND old listening credit) are stale.
   useEffect(() => {
@@ -380,7 +408,12 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
       const want = pendingRef.current;
       pendingRef.current = null;
       setPending(null);
-      if (want) {
+      // A queued play fires only onto a screen that is still in front AND an
+      // output gate that is still open. Shake-to-mute, the idle auto-mute or
+      // backgrounding can land inside the 0.5–2 s render; playing then would
+      // sound with the gate locked (bug hunt 2026-09-29). Either check failing
+      // drops the request — the learner presses ▶ again.
+      if (want && focusedRef.current && isAudioOutputEnabled()) {
         const i = idsRef.current.indexOf(want);
         if (i >= 0) {
           playerRef.current.play(i);
@@ -393,12 +426,18 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
       if (my === renderSeqRef.current) renderingSigRef.current = null;
     }
   }, [signature, variants]);
+  /** play() awaits the audio gate before it may start a render; the renderAll
+   *  its closure captured can be a render stale by then (a fader moved while
+   *  the gate was up) and would render the OLD console (bug hunt 2026-09-29).
+   *  Always call the newest one after the await. */
+  const renderAllRef = useRef(renderAll);
+  renderAllRef.current = renderAll;
 
   const play = useCallback(
     (id: string) => {
       void (async () => {
         if (!(await requestAudioOutput())) return;
-        if (!aliveRef.current) return;
+        if (!aliveRef.current || !focusedRef.current) return;
         // REFS, not `status`: the gate above is an await, and this closure's
         // `status` is the value from the render that created it. idsRef is set
         // and cleared in lockstep with status ('ready' ⇔ non-empty), so it is
@@ -407,7 +446,7 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
         if (idsRef.current.length === 0) {
           pendingRef.current = id;
           setPending(id);
-          void renderAll();
+          void renderAllRef.current();
           return;
         }
         const i = idsRef.current.indexOf(id);
@@ -417,13 +456,23 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
         setHeard((h) => (h.includes(id) ? h : [...h, id]));
       })();
     },
-    [renderAll, requestAudioOutput],
+    [requestAudioOutput],
   );
 
   const stop = useCallback(() => {
     playerRef.current?.stop();
     setActive(null);
   }, []);
+
+  // Backgrounding, shake-to-mute and the idle auto-mute close the output gate
+  // from outside the lab — unwind ■ (and any queued play) with it, so the
+  // transport never reads "playing" over silence (bug hunt 2026-09-29).
+  const stopAll = useCallback(() => {
+    pendingRef.current = null;
+    setPending(null);
+    stop();
+  }, [stop]);
+  useStopWhenSilenced(active != null || pending != null, stopAll);
 
   return { status, play, stop, active, pending, measured, heard };
 }
@@ -588,11 +637,15 @@ export function MiniConsole({
 }: {
   tracks: readonly TrackId[];
   value: MixSettings;
-  onChange: (next: MixSettings) => void;
+  /** A state DISPATCHER, not a plain callback: two faders moved in the same
+   *  frame each spread the same stale `value`, and the second write erased the
+   *  first. The functional updater merges onto the latest state instead (bug
+   *  hunt 2026-09-29). Every caller passes its useState setter. */
+  onChange: Dispatch<SetStateAction<MixSettings>>;
   show?: ConsoleShow;
 }) {
   const change = (id: TrackId, next: Partial<TrackSettings>) =>
-    onChange({ ...value, [id]: { ...FLAT, ...(value[id] ?? {}), ...next } });
+    onChange((prev) => ({ ...prev, [id]: { ...FLAT, ...(prev[id] ?? {}), ...next } }));
   const anySolo = tracks.some((id) => !!value[id]?.solo);
   // Owner ruling 2026-09-11: the pan band is off limits to the channel
   // scroller. Refusing the gesture in JS was not enough on device — the native

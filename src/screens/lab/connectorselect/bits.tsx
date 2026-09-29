@@ -32,7 +32,12 @@ export function LessonCard() {
  *  predicate has been true; when ALL have latched the page marks itself
  *  done. Announces each new latch for assistive tech. */
 export function useVisitGoals(ctx: PageCtx, goals: { label: string; hit: boolean }[]): boolean[] {
-  const seen = useRef<boolean[]>(goals.map(() => false));
+  const seen = useRef<boolean[]>(goals.map(() => ctx.isDone));
+  // A page already finished (this visit or an earlier one — isDone can arrive
+  // after the first render, once saved progress loads) shows every goal met.
+  // The chips used to restart at ○ / "not yet" on every mount (bug hunt
+  // 2026-09-29). Before the loop, so a finished page announces nothing.
+  if (ctx.isDone && !seen.current.every(Boolean)) seen.current = goals.map(() => true);
   goals.forEach((g, i) => {
     if (g.hit && !seen.current[i]) {
       seen.current[i] = true;
