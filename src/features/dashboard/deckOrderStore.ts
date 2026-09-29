@@ -71,9 +71,21 @@ export function setDeckOrder(order: string[]): void {
   commit({ ...prefs, order: [...order] });
 }
 
-/** Remove a topic from the deck (also drops it from the custom order). */
-export function removeFromDeck(id: string): void {
+/**
+ * Remove a topic from the deck (also drops it from the custom order).
+ *
+ * `deckIds` = the topics currently on the deck. When given, the store refuses
+ * to remove the LAST one (bug hunt 2026-09-29): the Dashboard's
+ * `topics.length <= 1` guard reads a render-old list, so two quick ✕ taps both
+ * passed it. The check here runs against the live `prefs.removed`, so the
+ * second tap sees the first.
+ */
+export function removeFromDeck(id: string, deckIds?: readonly string[]): void {
   if (prefs.removed.includes(id)) return;
+  if (deckIds) {
+    const left = deckIds.filter((x) => x !== id && !prefs.removed.includes(x));
+    if (left.length === 0) return;
+  }
   commit({ ...prefs, removed: [...prefs.removed, id], order: prefs.order.filter((x) => x !== id) });
 }
 

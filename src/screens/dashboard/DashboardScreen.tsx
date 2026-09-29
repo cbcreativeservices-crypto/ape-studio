@@ -2350,16 +2350,18 @@ export function DashboardScreen() {
         onClose={() => setTrophyOpen(false)}
       />
 
-      {/* Topic term list (Booth 2026-07-18): every term in the current topic. */}
+      {/* Topic term list (Booth 2026-07-18): every term in the current topic.
+          A CENTRED card that fades, like TopicDeckSheet — house rule: popups,
+          never pull-up sheets (bug hunt 2026-09-29). */}
       <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal
         visible={termsOpen}
         transparent
-        animationType="slide"
+        animationType="fade"
         statusBarTranslucent
         onRequestClose={() => setTermsOpen(false)}
       >
         <View style={styles.termsBackdrop}>
-          <View style={[styles.termsSheet, { paddingBottom: insets.bottom + 12 }]}>
+          <View style={styles.termsSheet}>
             <View style={styles.termsHead}>
               <View style={{ flex: 1 }}>
                 <Text style={styles.termsEyebrow}>
@@ -2527,7 +2529,9 @@ export function DashboardScreen() {
         // on the last topic; this is the belt-and-braces guard behind it.
         onRemove={(id) => {
           if (topics.length <= 1) return;
-          removeFromDeck(id);
+          // The store re-checks against its live list — this one can be a
+          // render old (bug hunt 2026-09-29).
+          removeFromDeck(id, topics.map((t) => t.id));
         }}
         onRestore={restoreToDeck}
         onSelect={(id) => {
@@ -2597,11 +2601,10 @@ const styles = StyleSheet.create({
   strandedRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
 
   // Topic term-list sheet (Booth 2026-07-18).
-  termsBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,.7)', justifyContent: 'flex-end' },
+  termsBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,.7)', justifyContent: 'center', paddingHorizontal: 18 },
   termsSheet: {
-    maxHeight: '78%',
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
+    maxHeight: '80%',
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: '#2a2b2e',
     backgroundColor: '#141517',
