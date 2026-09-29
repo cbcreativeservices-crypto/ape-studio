@@ -105,8 +105,10 @@ const vocalReverbPost = (cs: ConsoleState) => {
 };
 const bandOnDca = (cs: ConsoleState) => cs.channels.filter((c) => c.family !== 'speech' && c.family !== 'playback').every((c) => c.dca === 'dca-band');
 const fourMonitorMixes = (cs: ConsoleState) => ['aux1', 'aux2', 'aux3', 'aux4'].every((a) => hears(auxBus(cs, a)).length > 0);
+// A send at OFF (≤ −60 dB) is no send — an unused wedge stepped ▼ must not
+// fail "every monitor send is PRE" (bug hunt 2026-09-29).
 const monitorsPre = (cs: ConsoleState) =>
-  cs.channels.every((c) => ['aux1', 'aux2', 'aux3', 'aux4'].every((a) => !c.sends[a] || c.sends[a].tap === 'pre'));
+  cs.channels.every((c) => ['aux1', 'aux2', 'aux3', 'aux4'].every((a) => !c.sends[a] || c.sends[a].db <= -60 || c.sends[a].tap === 'pre'));
 const fillsFromMain = (cs: ConsoleState) => 'main' in cs.matrices.find((m) => m.id === 'mx-fills')!.inputs && hears(matrixBus(cs, 'mx-fills')).length > 0;
 const lobbyFromMainAndMc = (cs: ConsoleState) => {
   const m = cs.matrices.find((x) => x.id === 'mx-lobby')!;

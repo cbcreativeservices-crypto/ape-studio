@@ -497,6 +497,14 @@ describe('capstones', () => {
       assert.deepEqual(g.unmet, [], `${c.id} unmet: ${g.unmet.join(', ')}`);
     });
   }
+  it('an OFF post-fader wedge send is no send — "every monitor send is PRE" still holds (bug hunt 2026-09-29)', () => {
+    const c = CAPSTONES.find((x) => x.id === 'monitors')!;
+    const { s, cs } = referenceBuild('monitors');
+    const off = con.setSend(cs, 'keys', 'aux1', { db: -90, tap: 'post' });
+    assert.deepEqual(gradeCapstone(c, s, off).unmet, []);
+    const live = con.setSend(cs, 'keys', 'aux1', { db: -10, tap: 'post' });
+    assert.ok(gradeCapstone(c, s, live).unmet.includes('pre'));
+  });
   it('capstone 2 rejects a stereo pair; capstone 4 rejects tops fed through the sub', () => {
     const stereo = referenceBuild('speech');
     assert.ok(gradeCapstone(CAPSTONES[1], stereo.s, stereo.cs).unmet.includes('mono'));

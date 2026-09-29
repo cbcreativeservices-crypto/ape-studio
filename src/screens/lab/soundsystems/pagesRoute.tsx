@@ -266,7 +266,10 @@ function PageMonitorMixes({ ctx }: { ctx: PageCtx }) {
   const [auxId, setAuxId] = useState<string>('aux1');
   const auxes = [...WEDGE_AUXES];
   const each = auxes.map((a) => hears(auxHears(cs, a)).length);
-  const allPre = cs.channels.every((c) => auxes.every((a) => !c.sends[a] || c.sends[a].tap === 'pre'));
+  // A send stepped down to OFF (≤ −60 dB) is no send: stepping an unused
+  // wedge ▼, or riding SEND to the bottom, leaves a post-tap OFF send that
+  // must not block "every monitor send is PRE" (bug hunt 2026-09-29).
+  const allPre = cs.channels.every((c) => auxes.every((a) => !c.sends[a] || c.sends[a].db <= -60 || c.sends[a].tap === 'pre'));
   const done = each.every((n) => n >= 2) && allPre;
   useRouteCredit('monitors', done, ctx);
   const goals = [{ label: 'Every wedge hears at least two channels', hit: each.every((n) => n >= 2) }, { label: 'Every monitor send is PRE-fader', hit: allPre && each.some((n) => n > 0) }];
