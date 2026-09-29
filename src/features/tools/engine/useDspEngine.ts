@@ -26,6 +26,7 @@ import {
 } from '../../../../modules/ape-dsp';
 import { micReleaseOnBackgroundEnabled } from '../../settings/store';
 import { acquireMic, releaseMic, releaseMicNow } from './micSession';
+import { releaseOnSupersede } from './startSupersede';
 import { markMicAcquire } from '../devTiming';
 import type { WarningFlag } from '../measure/types';
 
@@ -93,6 +94,13 @@ export function useDspEngine(config: EngineConfig, poll: {
   // when the screen stops/blur/unmounts before the native promise resolves —
   // otherwise the poll interval leaks past teardown.
   const genRef = useRef(0);
+  // Double START / STOP→START while the HAL is still opening (bug hunt
+  // 2026-09-29). `latestStartRef` is the generation of the most recent start()
+  // — a superseded start only hands the stream back when no NEWER start owns
+  // it (releaseOnSupersede). `inFlightRef` lets a second START that lands while
+  // the first is still opening join it instead of spawning a rival.
+  const latestStartRef = useRef(0);
+  const inFlightRef = useRef<{ gen: number; promise: Promise<void> } | null>(null);
 
   const stopPolling = useCallback(() => {
     if (timer.current) clearInterval(timer.current);
@@ -101,7 +109,13 @@ export function useDspEngine(config: EngineConfig, poll: {
 
   const start = useCallback(async () => {
     if (state === 'absent' || state === 'spike') return;
+    // A start is already opening and nothing has superseded it — join it.
+    const pending = inFlightRef.current;
+    if (pending && pending.gen === genRef.current) return pending.promise;
     const gen = ++genRef.current;
+    latestStartRef.current = gen;
+    let settle: () => void = () => {};
+    inFlightRef.current = { gen, promise: new Promise<void>((r) => (settle = r)) };
     setState('starting');
     // Watchdog (QA night 2026-09-01 — the launch-triage "spinner trap" class):
     // if the permission prompt or mic open never settles, 'starting' froze
@@ -142,7 +156,13 @@ export function useDspEngine(config: EngineConfig, poll: {
         // guarantee now lives in `finally` — every return leaves a resolved
         // state — so nothing here needs to set it, but nothing may remove that
         // guarantee either.
-        releaseMic();
+        //
+        // …but ONLY when a stop/blur/unmount/watchdog superseded it. When a
+        // NEWER start did, that start owns the shared stream: releasing here
+        // armed the 1.5 s debounce after its acquire had cancelled the last
+        // one, and doStop() then killed the mic under a 'running' screen (bug
+        // hunt 2026-09-29).
+        if (releaseOnSupersede(gen, latestStartRef.current)) releaseMic();
         return;
       }
       setState('running');
@@ -170,6 +190,8 @@ export function useDspEngine(config: EngineConfig, poll: {
       setState(/denied|access is off/i.test(msg) ? 'denied' : 'error');
     } finally {
       clearTimeout(watchdog);
+      if (inFlightRef.current?.gen === gen) inFlightRef.current = null;
+      settle();
       // THE GUARANTEE: no return path may leave the engine sitting on
       // 'starting' once the watchdog is gone. Every branch above either
       // resolved the state itself ('running' / 'denied' / 'error') — in which
@@ -180,7 +202,10 @@ export function useDspEngine(config: EngineConfig, poll: {
       // 'idle' is the honest landing: capture is not running and the engine is
       // ready, so the screen can offer START. It must NOT be 'error' — nothing
       // failed; the start was simply superseded by a stop, blur or unmount.
-      setState((s) => (s === 'starting' ? 'idle' : s));
+      //
+      // A start superseded by a NEWER start leaves the state alone — that
+      // start's 'starting' is live, not stranded (bug hunt 2026-09-29).
+      if (latestStartRef.current === gen) setState((s) => (s === 'starting' ? 'idle' : s));
     }
   }, [state, stopPolling]);
 
