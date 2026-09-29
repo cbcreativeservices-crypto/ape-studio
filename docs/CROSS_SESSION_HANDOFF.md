@@ -204,6 +204,24 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 13:08 · ccode · f2285bc7
+changed: Tablet pass: guard test - tablet rule, grid columns, rack glass, every capped surface
+affects other side: nothing — client JS only (tablet layout pass)
+needs: nothing
+
+
+### 2026-09-29 13:08 · ccode · d1c4a8e6
+changed: Tablet pass: study, dashboard, glossary, trophies, settings, community, sign-in and popups sized for iPad
+affects other side: nothing — client JS only (tablet layout pass)
+needs: nothing
+
+
+### 2026-09-29 13:08 · ccode · 60e0b287
+changed: Tablet pass: labs use the iPad - taller rack glass, capped well/dock, lab lists and pages in columns
+affects other side: nothing — client JS only (tablet layout pass)
+needs: nothing
+
+
 ### 2026-09-29 11:59 · ccode · a6a69759
 changed: Sign in: from the second wrong password, point at 'Reset via email'
 affects other side: nothing — client JS only (sign-in copy)
