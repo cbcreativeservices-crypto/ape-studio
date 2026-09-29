@@ -110,6 +110,9 @@ export function mapXY(n: { col: 0 | 1 | 2; row: number }): { x: number; y: numbe
   return { x: b.cx, y: b.cy };
 }
 
+/** A healthy station's frame — green, but a quarter of the lamp's intensity. */
+const OK_FRAME = 'rgba(91,255,133,0.32)';
+
 const STATE_COLOR: Record<MapState, string> = {
   ok: colors.greenBright,
   none: '#5a5f6a',
@@ -200,11 +203,20 @@ function Led({ x, y, state, dark, programme }: { x: number; y: number; state: Ma
     if (state === 'clip') return { opacity: programme.value > 0.82 ? 1 : 0.3 };
     return { opacity: 0.45 + 0.55 * (programme.value > 0.3 ? 1 : 0) };
   });
+  // The halo used to share `props`, whose animated opacity (up to 1) overrode
+  // its static 0.2 — every lamp wore a full-brightness 7.5-unit green disc.
+  const haloProps = useAnimatedProps(() => {
+    if (dark || state === 'none' || state === 'unknown') return { opacity: 0 };
+    if (state === 'clip') return { opacity: programme.value > 0.82 ? 0.22 : 0.05 };
+    return { opacity: programme.value > 0.3 ? 0.16 : 0.06 };
+  });
   return (
     <G>
-      <ACircle cx={x} cy={y} r={7.5} fill={color} opacity={0.2} animatedProps={props} />
+      {/* Halo kept small and faint (owner 2026-09-29: the lamps read as thick
+          green blobs over the card text). */}
+      {state === 'unknown' ? null : <ACircle cx={x} cy={y} r={4.8} fill={color} animatedProps={haloProps} />}
       {/* not probed: a larger dark lamp with a readable '?' in it */}
-      <ACircle cx={x} cy={y} r={state === 'unknown' ? 6.4 : 3.6} fill={color} stroke="#000" strokeWidth={0.6} animatedProps={props} />
+      <ACircle cx={x} cy={y} r={state === 'unknown' ? 6.4 : 2.8} fill={color} stroke="#000" strokeWidth={0.6} animatedProps={props} />
       {state === 'unknown' ? <SvgText x={x} y={y + 3.4} fontSize={MAP_FS} fill={INK.metalHi} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">?</SvgText> : null}
     </G>
   );
@@ -286,13 +298,19 @@ export function SystemMap({ nodes, edges, selectedId, onTap, a11y, running = tru
           const sel = selectedId === n.id;
           const state = n.state ?? 'ok';
           const ring = state === 'unknown' ? '#3a3f4a' : STATE_COLOR[state];
+          // Owner 2026-09-29: "the green frames are too intense and thick — hard
+          // to read the text". A healthy station is the NORMAL case, so its
+          // frame is quiet: a thin, dim green. Only a station that needs
+          // attention (hot / clip / flag) keeps a strong coloured frame.
+          const frame = state === 'ok' ? OK_FRAME : ring;
+          const frameW = state === 'ok' ? 0.7 : 1.1;
           const tag = n.value ? { text: n.value, color: ring } : feedTag.get(n.id);
           const lines = cardLines(mapLabel(n.label), tag?.text);
           const textX = bx.x0 + 26;
           const baseY = lines.length === 1 ? [bx.cy + 3.5] : lines.length === 2 ? [bx.y0 + 12.5, bx.y0 + 24.5] : [bx.y0 + 10.2, bx.y0 + 20.2, bx.y0 + 30.2];
           return (
             <G key={n.id}>
-              <Rect x={bx.x0} y={bx.y0} width={CW} height={CH} rx={5} fill="#13161d" stroke={sel ? colors.cyanBright : ring} strokeWidth={sel ? 2 : 1.1} opacity={n.dark ? 0.6 : 1} />
+              <Rect x={bx.x0} y={bx.y0} width={CW} height={CH} rx={5} fill="#13161d" stroke={sel ? colors.cyanBright : frame} strokeWidth={sel ? 1.6 : frameW} opacity={n.dark ? 0.6 : 1} />
               {state !== 'ok' && state !== 'unknown' ? <Rect x={bx.x0} y={bx.y0} width={CW} height={CH} rx={5} fill={ring} opacity={0.1} /> : null}
               <GearInSvg kind={n.kind} id={`sm-${n.id}`} x={bx.x0 + 13} y={bx.cy + 1} size={GLYPH} dim={!!n.dark || state === 'none'} power={n.dark || state === 'none' ? 'off' : 'on'} />
               <Led x={bx.x0 + 1} y={bx.y0 + 1} state={state} dark={!!n.dark} programme={programme} />
