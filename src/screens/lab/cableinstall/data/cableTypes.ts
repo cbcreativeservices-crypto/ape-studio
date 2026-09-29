@@ -52,11 +52,21 @@ export type CiCableType = {
  * 18 protanopia, 34 tritanopia (Machado 2009 simulation, CIELAB) — no worse
  * than the set's existing pairs — at 17.2 : 1 on the lab's #0b0b0e background. (Grey jacketed control cable is common in the field
  * too, but that is incidental — this is a teaching color.)
+ *
+ * NETWORK is a mint green (review 2026-09-28: #37d97b sat ΔE ≈ 22 from
+ * power red under deuteranopia — the most common colour-vision deficiency —
+ * where the two looms run side by side in the rack). #2ee699 lifts that pair
+ * to ΔE ≈ 32 deuteranopia / 33 protanopia and every protanopia pair to ≥ 31,
+ * while staying plainly green and apart from analog cyan (ΔE ≈ 54). Left
+ * as is, deliberately: analog ↔ network under TRITANOPIA stays ≈ 10 — six
+ * hue classes cannot all separate for every deficiency, tritanopia is rare
+ * (≈ 1 in 10 000), and the classes are also told apart by the chip labels,
+ * the managers they dress and the connectors they land on.
  */
 export const CI_CLASS_TINTS = {
   power: '#ff5a48',
   analog: '#4fd0e0',
-  network: '#37d97b',
+  network: '#2ee699',
   speaker: '#ffd35e',
   fiber: '#c77dff',
   control: '#eef0f3',

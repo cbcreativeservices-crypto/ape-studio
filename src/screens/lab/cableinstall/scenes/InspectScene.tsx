@@ -49,6 +49,7 @@ import {
   withTiming,
 } from '../motion';
 import { CI_CATEGORY_META, mistakeById, type CiMistakeCategory } from '../data/mistakes';
+import { CI_CLASS_TINTS } from '../data/cableTypes';
 import { CI_DEFECT_ART, CI_DEFECT_ART_ASPECT } from '../data/defectArt';
 import { LabPhoto } from '../../kit/LabPhoto';
 import { CI_INSPECTION_DRAW, CI_INSPECTION_POOL, CI_QUIZ_BANK, CI_QUIZ_DRAW, type CiInspectionDefect } from '../data/scenarios';
@@ -379,11 +380,11 @@ function FacilityScene({
           <Rect x={132} y={223.6} width={36} height={2.4} rx={0.6} fill="#e3b73a" />
         </ZoneIn>
         {/* representative runs (honest, terminating) — they install themselves */}
-        <RunIn d="M36 196 C60 196 70 210 96 210 H140" len={140} color="#4fd0e0" delay={300} run={assembled} />
-        <RunIn d="M140 210 H196 C220 210 224 200 224 190" len={110} color="#4fd0e0" delay={340} run={assembled} />
-        <RunIn d="M32 25 H236 C250 25 252 40 252 60" len={250} color="#37d97b" delay={280} run={assembled} />
-        <RunIn d="M252 60 v40 l24 4" len={70} color="#37d97b" delay={380} run={assembled} />
-        <RunIn d="M352 228 v-140 l-14 -4" len={160} color="#ff5a48" delay={360} run={assembled} />
+        <RunIn d="M36 196 C60 196 70 210 96 210 H140" len={140} color={CI_CLASS_TINTS.analog} delay={300} run={assembled} />
+        <RunIn d="M140 210 H196 C220 210 224 200 224 190" len={110} color={CI_CLASS_TINTS.analog} delay={340} run={assembled} />
+        <RunIn d="M32 25 H236 C250 25 252 40 252 60" len={250} color={CI_CLASS_TINTS.network} delay={280} run={assembled} />
+        <RunIn d="M252 60 v40 l24 4" len={70} color={CI_CLASS_TINTS.network} delay={380} run={assembled} />
+        <RunIn d="M352 228 v-140 l-14 -4" len={160} color={CI_CLASS_TINTS.power} delay={360} run={assembled} />
         {/* defect markers */}
         {defects.map((d, i) => {
           const st = states[d.id];

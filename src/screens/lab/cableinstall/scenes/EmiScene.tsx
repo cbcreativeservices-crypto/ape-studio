@@ -81,7 +81,7 @@ const EMI_SOURCES: EmiSource[] = [
   { id: 'xfmr', label: 'TRANSFORMER', noise: 0.85, tint: '#ff5a48', role: 'Stray magnetic field at the core' },
   { id: 'motor', label: 'MOTOR', noise: 0.8, tint: '#ff5a48', role: 'Broadband electrical hash' },
   { id: 'dimmer', label: 'DIMMER RACK', noise: 1, tint: '#ff5a48', role: 'Phase-chopped current — the classic offender' },
-  { id: 'network', label: 'NETWORK CABLE', noise: 0.3, tint: '#37d97b', role: 'Low-level balanced data — a quiet neighbor' },
+  { id: 'network', label: 'NETWORK CABLE', noise: 0.3, tint: CI_CLASS_TINTS.network, role: 'Low-level balanced data — a quiet neighbor' },
 ];
 
 /* ── the seven real levers (rule 'emi-no-universal-distance') ───────────── */
@@ -433,7 +433,7 @@ function SourceIcon({ id, tint }: { id: string; tint: string }) {
     );
   }
   if (id === 'network') {
-    return <CableSection cls="network" tint="#37d97b" cx={64} cy={70} R={12} fine={false} />;
+    return <CableSection cls="network" tint={CI_CLASS_TINTS.network} cx={64} cy={70} R={12} fine={false} />;
   }
   // AC feeder: a 3-conductor + ground feeder cable, cut
   return <CableSection cls="power" tint="#ff5a48" cx={64} cy={70} R={15} fine={false} />;
