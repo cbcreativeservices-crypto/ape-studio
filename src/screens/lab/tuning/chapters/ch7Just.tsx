@@ -12,7 +12,7 @@ import {
 } from '../../../../features/tuning/tuningMath';
 import { renderNotes, renderPartials } from '../../../../features/tuning/tuningAudio';
 import type { ChapterProps } from '../labCtx';
-import { Body, Btn, Card, CentsRail, EquationStage, Eyebrow, Lead, MathLine, Prompt, RatioTile, Row, type RailMarker } from '../components/primitives';
+import { Body, Btn, Card, CentsRail, EquationStage, Eyebrow, Lead, MathLine, Prompt, RatioTile, Row, usePreloadClips, type RailMarker } from '../components/primitives';
 import { HarmonicComparison } from '../components/harmonicLadder';
 import { UnderstandingCheck } from '../components/check';
 
@@ -40,6 +40,18 @@ export function Ch7Just({ ctx }: ChapterProps) {
   const [mode, setMode] = useState<'keep' | 'retune'>('keep');
   const root = ctx.rootHz;
   const hz = (r: number) => frequencyFromRatio(root, r);
+  // Saved + pre-rendered clips (owner 2026-09-29): the fixed buttons' clips render in the background.
+  usePreloadClips(
+    ctx.player,
+    () => [
+      () => renderNotes([root], 1, 'rich'),
+      () => renderNotes([hz(5 / 4)], 1, 'rich'),
+      () => renderNotes([hz(3 / 2)], 1, 'rich'),
+      () => renderNotes([root, hz(5 / 4), hz(3 / 2)], 2.2, 'rich'),
+      () => renderPartials([root * 5, hz(5 / 4) * 4], 2),
+    ],
+    String(root),
+  );
 
   const markers: RailMarker[] = JUST.notes.slice(0, revealed).map((n, i) => ({ id: `${n.spelling}${i}`, cents: n.value.cents, label: n.spelling, role: i === revealed - 1 ? 'operation' : 'neutral', emphasis: i === revealed - 1, row: i % 2 }));
 

@@ -378,6 +378,21 @@ const renderThenPlay = (player: TuningPlayer, make: () => Mono, label: string) =
   void player.renderAndPlay(make, label);
 };
 
+/**
+ * Pre-render the clips this chapter can play (owner 2026-09-29: "load in
+ * audio clip starts … in each screen"). Background, after first paint, never
+ * plays — see TuningPlayer.preload. Re-runs when `key` changes (the root, a
+ * selection); clips already saved are free. The thunks must be the SAME
+ * render calls the buttons make, or the tap simply renders fresh.
+ */
+export function usePreloadClips(player: TuningPlayer, makes: () => (() => Mono)[], key: string): void {
+  const ref = useRef(makes);
+  ref.current = makes;
+  useEffect(() => {
+    player.preload(ref.current());
+  }, [player, key]);
+}
+
 /* ── AudioComparisonControls (A / B / Alternate / Together / Stop) ───────── */
 
 export function AudioComparisonControls({
@@ -398,6 +413,7 @@ export function AudioComparisonControls({
   const run = (make: () => Mono, l: string) => renderThenPlay(player, make, l);
   const abLabel = `${labelA} then ${labelB}`;
   const togLabel = `${labelA} + ${labelB}`;
+  usePreloadClips(player, () => [a, b, ...(together ? [together] : []), () => concatWithGap(a(), b())], `${labelA}|${labelB}`);
   const mark = (own: string, text: string) => (rendering === own ? `… ${text}` : text);
   return (
     <View style={{ gap: 6 }}>
@@ -423,6 +439,7 @@ export function PlayStop({ player, render, label }: { player: TuningPlayer; rend
   const rendering = status.rendering ?? null;
   const run = (make: () => Mono, l: string) => renderThenPlay(player, make, l);
   const mine = status.playing && status.label === label;
+  usePreloadClips(player, () => [render], label);
   return (
     <Row>
       <Btn label={rendering === label ? `… ${label}` : mine ? `♪ ${label}` : `▶ ${label}`} onPress={() => run(render, label)} a11y={`Play ${label}`} />

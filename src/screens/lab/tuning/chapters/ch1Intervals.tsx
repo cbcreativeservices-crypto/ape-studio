@@ -10,7 +10,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { centsToRatio, frequencyFromRatio, nearestLandmark, ratioToCents } from '../../../../features/tuning/tuningMath';
 import { renderNotes } from '../../../../features/tuning/tuningAudio';
 import type { ChapterProps } from '../labCtx';
-import { Body, Btn, Card, Eyebrow, Lead, MathLine, Prompt, Row, dec } from '../components/primitives';
+import { Body, Btn, Card, Eyebrow, Lead, MathLine, Prompt, Row, dec, usePreloadClips } from '../components/primitives';
 import { DragRail } from '../components/dragRail';
 import { UnderstandingCheck } from '../components/check';
 
@@ -32,6 +32,9 @@ export function Ch1Intervals({ ctx }: ChapterProps) {
   const playRoot = () => void ctx.player.renderAndPlay(() => renderNotes([ctx.rootHz], 1.2, timbre), 'root');
   const playUpper = () => void ctx.player.renderAndPlay(() => renderNotes([upperHz], 1.2, timbre), 'upper note');
   const playBoth = () => void ctx.player.renderAndPlay(() => renderNotes([ctx.rootHz, upperHz], 1.6, timbre), 'both notes');
+  // Saved + pre-rendered clips (owner 2026-09-29): the fixed buttons' clips render in the background.
+  // (The slider's upper note is not pre-rendered: it changes every frame of a drag.)
+  usePreloadClips(ctx.player, () => [() => renderNotes([ctx.rootHz], 1.2, timbre), () => renderNotes([rootLow, ctx.rootHz], 1.4, timbre), () => renderNotes([ctx.rootHz, ctx.rootHz * 2], 1.4, timbre)], String(ctx.rootHz));
 
   const octaveInfo = useMemo(
     () => ({

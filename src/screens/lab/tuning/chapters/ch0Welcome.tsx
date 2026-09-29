@@ -8,7 +8,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { renderNotes } from '../../../../features/tuning/tuningAudio';
 import type { ChapterProps } from '../labCtx';
-import { Body, Btn, Card, CentsRail, Lead, Row, type RailMarker } from '../components/primitives';
+import { Body, Btn, Card, CentsRail, Lead, Row, usePreloadClips, type RailMarker } from '../components/primitives';
 
 export function Ch0Welcome({ ctx }: ChapterProps) {
   const [stage, setStage] = useState<0 | 1 | 2 | 3>(0);
@@ -29,6 +29,9 @@ export function Ch0Welcome({ ctx }: ChapterProps) {
     { id: 'oct', cents: 1200, label: 'octave 2:1', role: stage >= 2 ? 'octave' : 'neutral', emphasis: stage >= 2 },
     ...faint,
   ];
+
+  // Saved + pre-rendered clips (owner 2026-09-29): the fixed buttons' clips render in the background.
+  usePreloadClips(ctx.player, () => [() => renderNotes([ctx.rootHz], 1.2, 'rich'), () => renderNotes([ctx.rootHz * 2], 1.2, 'rich')], String(ctx.rootHz));
 
   const hearRoot = () => {
     clearTimers();

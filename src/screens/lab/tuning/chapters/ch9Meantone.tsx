@@ -14,7 +14,7 @@ import {
 } from '../../../../features/tuning/tuningMath';
 import { renderNotes, renderSequence } from '../../../../features/tuning/tuningAudio';
 import type { ChapterProps } from '../labCtx';
-import { Body, Btn, Card, CentsRail, DeviationMeter, EquationStage, Eyebrow, Lead, MathLine, Prompt, RatioTile, Row, useMarkWhen, type RailMarker } from '../components/primitives';
+import { Body, Btn, Card, CentsRail, DeviationMeter, EquationStage, Eyebrow, Lead, MathLine, Prompt, RatioTile, Row, useMarkWhen, usePreloadClips, type RailMarker } from '../components/primitives';
 import { HarmonicComparison } from '../components/harmonicLadder';
 import { UnderstandingCheck } from '../components/check';
 
@@ -49,6 +49,17 @@ export function Ch9Meantone({ ctx }: ChapterProps) {
   const gSharp = hz(normalizeRatioToOctave(Math.pow(MEANTONE_FIFTH.numericRatio, 8)));
   const eFlatAbove = gSharp * centsToRatio(wolf.wolfCents);
   const normalFifthFrom = (f: number) => f * MEANTONE_FIFTH.numericRatio;
+  // Saved + pre-rendered clips (owner 2026-09-29): the fixed buttons' clips render in the background.
+  usePreloadClips(
+    ctx.player,
+    () => [
+      () => renderNotes([root, root * 1.5], 1.4, 'rich'),
+      () => renderNotes([root, root * MEANTONE_FIFTH.numericRatio], 1.4, 'rich'),
+      () => renderNotes([gSharp, normalFifthFrom(gSharp)], 1.6, 'rich'),
+      () => renderNotes([gSharp, eFlatAbove], 1.6, 'rich'),
+    ],
+    String(root),
+  );
 
   const stepSlider = (d: number) => setFifthCents(+Math.max(690, Math.min(705, fifthCents + d)).toFixed(2));
 

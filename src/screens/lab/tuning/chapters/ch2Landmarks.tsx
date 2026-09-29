@@ -8,7 +8,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { LANDMARKS, frequencyFromRatio } from '../../../../features/tuning/tuningMath';
 import { renderNotes } from '../../../../features/tuning/tuningAudio';
 import type { ChapterProps } from '../labCtx';
-import { Body, Btn, Card, CentsRail, Eyebrow, Lead, Prompt, RatioTile, Row } from '../components/primitives';
+import { Body, Btn, Card, CentsRail, Eyebrow, Lead, Prompt, RatioTile, Row, usePreloadClips } from '../components/primitives';
 import { DragRail } from '../components/dragRail';
 import { UnderstandingCheck } from '../components/check';
 
@@ -27,6 +27,15 @@ export function Ch2Landmarks({ ctx }: ChapterProps) {
   // The octave's exact label is "2" (no slash): default the denominator to 1
   // or the whole-number preview rendered "2:NaN" with an empty lower row.
   const [num, den = 1] = card.value.exactLabel.split('/').map(Number);
+  // Saved + pre-rendered clips (owner 2026-09-29): the fixed buttons' clips render in the background.
+  usePreloadClips(
+    ctx.player,
+    () => [
+      ...CARDS.map((c) => () => renderNotes([ctx.rootHz, frequencyFromRatio(ctx.rootHz, c.value.numericRatio)], 1.6, 'rich')),
+      () => renderNotes([ctx.rootHz, ctx.rootHz * 1.5], 1.6, 'rich'),
+    ],
+    String(ctx.rootHz),
+  );
 
   return (
     <View style={{ gap: 12 }}>

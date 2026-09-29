@@ -13,7 +13,7 @@ import {
 } from '../../../../features/tuning/tuningMath';
 import { renderNotes, renderPartials } from '../../../../features/tuning/tuningAudio';
 import type { ChapterProps } from '../labCtx';
-import { Body, Btn, Card, DeviationMeter, Eyebrow, Lead, MathLine, Prompt, Row, useMarkWhen } from '../components/primitives';
+import { Body, Btn, Card, DeviationMeter, Eyebrow, Lead, MathLine, Prompt, Row, useMarkWhen, usePreloadClips } from '../components/primitives';
 import { HarmonicComparison, BeatingModel } from '../components/harmonicLadder';
 import { UnderstandingCheck } from '../components/check';
 
@@ -63,6 +63,17 @@ export function Ch4Harmonics({ ctx }: ChapterProps) {
 
   const playFull = () => void ctx.player.renderAndPlay(() => renderNotes([f, thirdHz], 2.2, 'rich'), `full tones · ${useSlider ? `${cents.toFixed(1)} ¢` : THIRDS[third].label}`);
   const playPartials = () => void ctx.player.renderAndPlay(() => renderPartials([p5, p4], 2.2), `isolated partials · ${p5.toFixed(1)} + ${p4.toFixed(1)} Hz`);
+  // Saved + pre-rendered clips (owner 2026-09-29): the fixed buttons' clips render in the background.
+  // Every preset third, both views (the slider's value changes every frame and is not pre-rendered).
+  usePreloadClips(
+    ctx.player,
+    () =>
+      (Object.keys(THIRDS) as Third[]).flatMap((t) => {
+        const th = frequencyFromRatio(f, THIRDS[t].value.numericRatio);
+        return [() => renderNotes([f, th], 2.2, 'rich'), () => renderPartials([p5, harmonicFrequency(th, 4)], 2.2)];
+      }),
+    String(f),
+  );
 
   const step = (d: number) => {
     setUseSlider(true);

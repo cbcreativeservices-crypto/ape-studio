@@ -55,7 +55,8 @@ test('LP1 safety: a lab clip / tuning clip re-checks the gate right before it st
   assert.ok(gate > p.lastIndexOf('await this.load('), 'after the last await');
   assert.ok(gate < p.indexOf('got.player.play();'), 'before play()');
   const t = read('src/features/tuning/tuningAudio.ts');
-  assert.match(t, /await this\.ear\.load\(\[buf\]\);\n\s+if \(my !== this\.token\) return;\n(\s+\/\/[^\n]*\n)+\s+if \(!isAudioOutputEnabled\(\)\) return;\n\s+this\.ear\.play\(0\);/);
+  // Saved clips (owner 2026-09-29): the pooled voice or the one-slot `ear`.
+  assert.match(t, /await this\.ear\.load\(\[buf\]\);\n\s+if \(my !== this\.token \|\| !voice\) return;\n(\s+\/\/[^\n]*\n)+\s+if \(!isAudioOutputEnabled\(\)\) return;\n\s+this\.voice = voice;\n\s+voice\.play\(0\);/);
 });
 
 test('LP5 Bass lab: ■ is never disabled, and the signed-URL fetch is bounded', () => {
