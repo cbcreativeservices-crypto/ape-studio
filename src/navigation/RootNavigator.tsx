@@ -12,6 +12,7 @@ import { AppDialogHost } from '../components/AppDialog';
 import { MembershipGateHost } from '../features/commercial/MembershipGate';
 import { ScreenErrorBoundary } from '../components/ScreenErrorBoundary';
 import { NAV_FADE, NAV_PUSH, NAV_PUSH_REDUCED, useReduceMotionNav } from './reduceMotionNav';
+import { NAV_PORTRAIT } from './navOrientation'; // bug hunt 2026-09-29 — see that file
 import { SplashScreen } from '../screens/SplashScreen';
 import { AuthScreen } from '../screens/auth/AuthScreen';
 import { ResultsScreen } from '../screens/results/ResultsScreen';
@@ -359,7 +360,7 @@ export function RootNavigator() {
   return (
     <Stack.Navigator
       initialRouteName="Splash"
-      screenOptions={{ headerShown: false, gestureEnabled: false, ...push }}
+      screenOptions={{ headerShown: false, gestureEnabled: false, ...NAV_PORTRAIT, ...push }}
       /*
        * LOW-LIGHT WASH LIVES HERE, not at the app root (owner 2026-08-31:
        * "I opened Settings in low-light and it wasn't in low-light").

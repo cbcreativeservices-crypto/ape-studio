@@ -6,6 +6,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ScreenErrorBoundary } from '../components/ScreenErrorBoundary';
 import { NAV_PUSH, NAV_PUSH_REDUCED, useReduceMotionNav } from './reduceMotionNav';
+import { NAV_PORTRAIT } from './navOrientation'; // bug hunt 2026-09-29 — see that file
 import { DashboardScreen } from '../screens/dashboard/DashboardScreen';
 import { FlashcardsScreen } from '../screens/study/FlashcardsScreen';
 import { FillInBlankScreen } from '../screens/study/FillInBlankScreen';
@@ -30,7 +31,7 @@ export function StudyStack() {
     // wipe-confirm back control.
     <Stack.Navigator
       initialRouteName="Dashboard"
-      screenOptions={{ headerShown: false, gestureEnabled: false, ...push }}
+      screenOptions={{ headerShown: false, gestureEnabled: false, ...NAV_PORTRAIT, ...push }}
       // Per-screen error containment (2026-09-11). Innermost boundary wins, so
       // a broken study method is contained HERE — the Dashboard below it, the
       // tab bar and the session all survive. Renders a Fragment while healthy,
