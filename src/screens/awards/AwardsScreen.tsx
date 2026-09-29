@@ -446,6 +446,8 @@ export function AwardsScreen({ navigation, route }: Props) {
   // page never freezes it mid-snap.
   const [swipeLocked, setSwipeLocked] = useState(startIdx === ENROLLMENT_IDX);
   const listRef = useRef<FlatList<PageKey>>(null);
+  /** The start page is applied once, on the list's first layout. */
+  const startedAtRef = useRef(false);
 
   /**
    * Move the pager to a page. USE THIS, NEVER `navigate('Awards', …)`.
@@ -863,7 +865,24 @@ export function AwardsScreen({ navigation, route }: Props) {
         scrollEnabled={!swipeLocked}
         showsHorizontalScrollIndicator={false}
         keyExtractor={(c) => c}
-        initialScrollIndex={startIdx}
+        // BLANK "EXPLORE THE ACADEMY" (owner 2026-09-29, found in the tablet
+        // pass, phones too): with initialScrollIndex the list starts its render
+        // window AT that page and leaves a blank spacer for the pages before
+        // it; a non-animated scrollToIndex back to page 0 moves the view but
+        // never reports a scroll, so the window never moved and Explore stayed
+        // a blank spacer. No initialScrollIndex: all five pages render from
+        // index 0, and the start page is reached by offset (contentOffset +
+        // one scrollToIndex on first layout, for platforms that ignore it).
+        contentOffset={{ x: startIdx * screenW, y: 0 }}
+        onLayout={() => {
+          if (startedAtRef.current) return;
+          startedAtRef.current = true;
+          if (startIdx > 0) listRef.current?.scrollToIndex({ index: startIdx, animated: false });
+        }}
+        initialNumToRender={PAGE_ORDER.length}
+        maxToRenderPerBatch={PAGE_ORDER.length}
+        windowSize={PAGE_ORDER.length * 2 + 1}
+        removeClippedSubviews={false}
         getItemLayout={(_d, i) => ({ length: screenW, offset: screenW * i, index: i })}
         onViewableItemsChanged={onViewable}
         viewabilityConfig={{ itemVisiblePercentThreshold: 60 }}
