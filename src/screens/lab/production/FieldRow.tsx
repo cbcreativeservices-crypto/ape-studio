@@ -42,6 +42,8 @@ export function FieldRow({
 }) {
   const [naOpen, setNaOpen] = useState(false);
   const [naDraft, setNaDraft] = useState(naReason ?? '');
+  /** SAVE tapped with an empty reason — show why nothing happened. */
+  const [naNeedReason, setNaNeedReason] = useState(false);
   const isNa = Boolean(naReason && naReason.trim());
 
   return (
@@ -78,28 +80,57 @@ export function FieldRow({
           offering a silent dismiss. readiness.ts only accepts it with one. */}
       {!isNa && field.allowNa !== false ? (
         naOpen ? (
-          <View style={styles.naEdit}>
-            <TextInput
-              style={[styles.input, styles.naInput]}
-              value={naDraft}
-              onChangeText={setNaDraft}
-              placeholder="Why does this not apply?"
-              placeholderTextColor={colors.textMuted}
-              accessibilityLabel={`Reason ${field.label} does not apply`}
-            />
-            <Pressable
-              style={styles.naSave}
-              onPress={() => {
-                if (naDraft.trim()) {
-                  onSetNa(naDraft.trim());
+          // Bug hunt 2026-09-29: this editor had no way out — no CANCEL, and an
+          // empty SAVE silently did nothing — so a learner who opened it by
+          // mistake was stuck with it. CANCEL closes it; an empty SAVE says a
+          // reason is needed.
+          <View>
+            <View style={styles.naEdit}>
+              <TextInput
+                style={[styles.input, styles.naInput]}
+                value={naDraft}
+                onChangeText={(t) => {
+                  setNaDraft(t);
+                  if (t.trim()) setNaNeedReason(false);
+                }}
+                placeholder="Why does this not apply?"
+                placeholderTextColor={colors.textMuted}
+                accessibilityLabel={`Reason ${field.label} does not apply`}
+              />
+              <Pressable
+                style={styles.naCancel}
+                onPress={() => {
                   setNaOpen(false);
-                }
-              }}
-              accessibilityRole="button"
-              accessibilityLabel="Save reason"
-            >
-              <Text style={styles.naSaveText}>SAVE</Text>
-            </Pressable>
+                  setNaDraft('');
+                  setNaNeedReason(false);
+                }}
+                accessibilityRole="button"
+                accessibilityLabel={`Cancel — keep ${field.label} applicable`}
+              >
+                <Text style={styles.naCancelText}>CANCEL</Text>
+              </Pressable>
+              <Pressable
+                style={styles.naSave}
+                onPress={() => {
+                  if (naDraft.trim()) {
+                    onSetNa(naDraft.trim());
+                    setNaOpen(false);
+                    setNaNeedReason(false);
+                  } else {
+                    setNaNeedReason(true);
+                  }
+                }}
+                accessibilityRole="button"
+                accessibilityLabel="Save reason"
+              >
+                <Text style={styles.naSaveText}>SAVE</Text>
+              </Pressable>
+            </View>
+            {naNeedReason ? (
+              <Text style={styles.naHint} accessibilityLiveRegion="polite">
+                A reason is needed — say why this does not apply, or CANCEL.
+              </Text>
+            ) : null}
           </View>
         ) : (
           <Pressable
@@ -649,6 +680,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   naSaveText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8, color: colors.amber },
+  naCancel: {
+    borderWidth: 1,
+    borderColor: colors.hairline,
+    borderRadius: 7,
+    paddingVertical: 9,
+    paddingHorizontal: 10,
+  },
+  naCancelText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8, color: colors.textSub },
+  naHint: { fontFamily: fonts.barlowRegular, fontSize: 12, color: colors.amber, marginTop: 6 },
 
   table: { gap: 10 },
   tableRow: { flexDirection: 'row', gap: 9, alignItems: 'flex-start' },

@@ -15,7 +15,7 @@
  * timeline and no promise attached, per the standing copy rule. Both labs are
  * fully authored as of 2026-09-17, so today that path draws nothing.
  */
-import { Fragment, useCallback, useMemo, useState } from 'react';
+import { Fragment, useCallback, useMemo, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
@@ -140,21 +140,32 @@ export function ProductionLabScreen() {
     return { stages: resolved, report: readProject(resolved, project) };
   }, [project, def, lab]);
 
+  /** In-flight guard (bug hunt 2026-09-29): a double tap on a START A
+   *  PROJECT row ran start() twice before the first upsert resolved and
+   *  created TWO projects. A ref, not state — the second tap arrives before
+   *  React re-renders. */
+  const startingRef = useRef(false);
   const start = useCallback(
     async (pathway: PathwayId) => {
-      const p = newProject(lab, pathway, `${PATHWAY_LABEL[pathway]} ${def.newProjectNoun}`);
-      // A new project that did not reach storage looks identical to one that
-      // did, right up until the learner closes the app (2026-09-17).
-      const ok = await projectStore().upsert(p);
-      if (!ok) {
-        notify(
-          'Could not create the project',
-          'This device could not save a new project. Free up some space and try again.',
-        );
-        return;
+      if (startingRef.current) return;
+      startingRef.current = true;
+      try {
+        const p = newProject(lab, pathway, `${PATHWAY_LABEL[pathway]} ${def.newProjectNoun}`);
+        // A new project that did not reach storage looks identical to one that
+        // did, right up until the learner closes the app (2026-09-17).
+        const ok = await projectStore().upsert(p);
+        if (!ok) {
+          notify(
+            'Could not create the project',
+            'This device could not save a new project. Free up some space and try again.',
+          );
+          return;
+        }
+        await reload();
+        setOpenId(p.id);
+      } finally {
+        startingRef.current = false;
       }
-      await reload();
-      setOpenId(p.id);
     },
     [reload, lab, def],
   );
@@ -162,18 +173,31 @@ export function ProductionLabScreen() {
   /**
    * Record an accepted condition. The store refuses one without a name AND a
    * reason, so this cannot become a dismiss button even by accident.
+   *
+   * Resolves true only once the acceptance is on disk (bug hunt 2026-09-29).
+   * A refused save used to close the sheet silently — and the sheet had
+   * already wiped the typed name and reason — so the learner saw nothing
+   * happen and had to retype. Now: say so, keep the sheet open, keep the text.
    */
   const acceptCondition = useCallback(
-    async (acceptedBy: string, reason: string) => {
-      if (!project || !accepting) return;
+    async (acceptedBy: string, reason: string): Promise<boolean> => {
+      if (!project || !accepting) return false;
       const saved = await projectStore().acceptCondition(lab, project.id, {
         ruleId: accepting.ruleId,
         acceptedBy,
         reason,
         at: Date.now(),
       });
+      if (!saved) {
+        notify(
+          'Not recorded',
+          'This device could not save the accepted condition. Your name and reason are still in the sheet — try again.',
+        );
+        return false;
+      }
       setAccepting(null);
-      if (saved) await reload();
+      await reload();
+      return true;
     },
     [project, accepting, reload, lab],
   );
@@ -394,7 +418,7 @@ export function ProductionLabScreen() {
       <AcceptConditionSheet
         finding={accepting}
         onCancel={() => setAccepting(null)}
-        onAccept={(name, reason) => void acceptCondition(name, reason)}
+        onAccept={acceptCondition}
       />
     </View>
   );

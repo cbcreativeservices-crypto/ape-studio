@@ -113,13 +113,25 @@ export function ProductionStageScreen() {
     );
   }, [saveFailed]);
 
+  /**
+   * Write sequence (bug hunt 2026-09-29). Every keystroke / chip tap is its own
+   * write, and each resolves with the store's snapshot AS OF THAT WRITE. Typing
+   * "ab" quickly meant the "a" snapshot landed after the optimistic "ab" and
+   * rolled the field back (and a fast second chip tap un-lit the first until
+   * its own save came home). Only the LATEST write may replace the optimistic
+   * state; earlier ones are superseded by definition.
+   */
+  const writeSeqRef = useRef(0);
+
   const setValue = useCallback(
     async (fieldId: string, v: FieldValue) => {
       if (!project) return;
+      const my = ++writeSeqRef.current;
       // Optimistic: the field must feel immediate, and the store is the record.
       setProject((cur) => (cur ? { ...cur, values: { ...cur.values, [valueKey(stageId, fieldId)]: v } } : cur));
       const saved = await projectStore().setValue(lab, project.id, stageId, fieldId, v);
       if (saved) {
+        if (my !== writeSeqRef.current) return; // a newer write is in flight
         setProject(saved);
         setSaveFailed(false);
       } else {
@@ -132,8 +144,10 @@ export function ProductionStageScreen() {
   const setNa = useCallback(
     async (fieldId: string, reason: string) => {
       if (!project) return;
+      const my = ++writeSeqRef.current;
       const saved = await projectStore().setNa(lab, project.id, stageId, fieldId, reason);
       if (saved) {
+        if (my !== writeSeqRef.current) return; // a newer write is in flight
         setProject(saved);
         setSaveFailed(false);
       } else {

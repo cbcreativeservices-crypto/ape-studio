@@ -13,7 +13,7 @@
  * worst control this lab could ship. The acceptance then prints in the packet,
  * so proceeding with a known gap is visible rather than buried.
  */
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Modal } from '../../../components/DimModal';
 import { colors, fonts } from '../../../theme/tokens';
@@ -27,16 +27,52 @@ export function AcceptConditionSheet({
   /** The blocker being accepted. Null closes the sheet. */
   finding: Finding | null;
   onCancel: () => void;
-  onAccept: (acceptedBy: string, reason: string) => void;
+  /** Resolves true once saved. False keeps the sheet open with the text. */
+  onAccept: (acceptedBy: string, reason: string) => Promise<boolean>;
 }) {
   const [name, setName] = useState('');
   const [reason, setReason] = useState('');
-  const ready = name.trim().length > 0 && reason.trim().length > 0;
+  const [saving, setSaving] = useState(false);
+  const ready = name.trim().length > 0 && reason.trim().length > 0 && !saving;
 
-  const close = () => {
+  // Bug hunt 2026-09-29 — typed text is only thrown away on purpose:
+  //  • RECORD IT clears the fields only AFTER the save succeeded (it used to
+  //    clear them before, so a failed save lost them);
+  //  • a stray backdrop tap / Android BACK closes the sheet but KEEPS the
+  //    draft, so reopening the same blocker brings it back;
+  //  • CANCEL is the explicit discard;
+  //  • a DIFFERENT blocker starts blank — a draft belongs to its own rule.
+  const draftRuleRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!finding) return;
+    if (draftRuleRef.current !== finding.ruleId) {
+      draftRuleRef.current = finding.ruleId;
+      setName('');
+      setReason('');
+    }
+  }, [finding]);
+
+  const discard = () => {
     setName('');
     setReason('');
     onCancel();
+  };
+  /** Backdrop / BACK: close without discarding. */
+  const close = () => onCancel();
+
+  const record = async () => {
+    if (!ready) return;
+    setSaving(true);
+    try {
+      const ok = await onAccept(name.trim(), reason.trim());
+      if (ok) {
+        setName('');
+        setReason('');
+        draftRuleRef.current = null;
+      }
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -99,17 +135,13 @@ export function AcceptConditionSheet({
             />
 
             <View style={styles.actions}>
-              <Pressable style={styles.cancel} onPress={close} accessibilityRole="button" accessibilityLabel="Cancel">
+              <Pressable style={styles.cancel} onPress={discard} accessibilityRole="button" accessibilityLabel="Cancel and discard what you typed">
                 <Text style={styles.cancelText}>CANCEL</Text>
               </Pressable>
               <Pressable
                 style={[styles.accept, !ready && styles.acceptOff]}
                 disabled={!ready}
-                onPress={() => {
-                  onAccept(name.trim(), reason.trim());
-                  setName('');
-                  setReason('');
-                }}
+                onPress={() => void record()}
                 accessibilityRole="button"
                 accessibilityState={{ disabled: !ready }}
                 accessibilityLabel="Record this accepted condition"
@@ -117,7 +149,7 @@ export function AcceptConditionSheet({
                 <Text style={[styles.acceptText, !ready && styles.acceptTextOff]}>RECORD IT</Text>
               </Pressable>
             </View>
-            {!ready ? (
+            {!ready && !saving ? (
               // Say WHY the control is unavailable rather than leaving the user
               // to guess at a greyed-out button.
               <Text style={styles.needBoth}>Both a name and a reason are needed.</Text>
