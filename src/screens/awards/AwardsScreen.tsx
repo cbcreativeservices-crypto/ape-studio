@@ -31,7 +31,7 @@ import { consumeDevPreview } from '../../features/dev/devPreview';
 import { CurriculumView } from '../curriculum/CurriculumScreen';
 import { DirectoryView } from '../directory/DirectoryScreen';
 import { EnrollmentView } from '../enrollment/EnrollmentScreen';
-import { addTopics, setActiveMany } from '../../features/enrollment/enrollmentStore';
+import { addTopics, addTopicsUnloaded } from '../../features/enrollment/enrollmentStore';
 import { addBundle, bundleKey, removeBundle, useBundles, type BundleKind } from '../../features/enrollment/enrolledBundlesStore';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import {
@@ -660,8 +660,9 @@ export function AwardsScreen({ navigation, route }: Props) {
       // its topics (added, not loaded onto the Dashboard until LOAD).
       if (kind) {
         addBundle(kind, label, gsList);
-        addTopics(gsList);
-        setActiveMany(gsList, false);
+        // Only the NEW topics go in unloaded; a shared topic already loaded for
+        // another credential stays loaded (bug hunt 2026-09-29).
+        addTopicsUnloaded(gsList);
         // The required cores join the list on the first cert/program (user
         // request 2026-07-22).
         addTopics([...COREQ_TOPIC_GS]);
@@ -713,8 +714,7 @@ export function AwardsScreen({ navigation, route }: Props) {
         return;
       }
       addBundle(kind, c.name, c.topics);
-      addTopics(c.topics);
-      setActiveMany(c.topics, false);
+      addTopicsUnloaded(c.topics); // new topics only (bug hunt 2026-09-29)
       addTopics([...COREQ_TOPIC_GS]);
       if (resolved && entitlement === 'anonymous') setPayPrompt({ label: c.name });
     },

@@ -22,6 +22,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
 import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../commercial/realAccount';
+import { freshGs } from './enrollmentPlan';
 
 export type EnrollTopic = { gs: number; favorite: boolean; active: boolean };
 
@@ -320,6 +321,18 @@ export function addTopics(gsList: number[]): number {
   if (additions.length === 0) return 0;
   commit([...list, ...additions]);
   return additions.length;
+}
+
+/** Bundle enrol (bug hunt 2026-09-29): add the NEW topics of a bundle
+ *  UNLOADED (not on the Dashboard until LOAD) while leaving topics that were
+ *  already enrolled exactly as they were. The old addTopics +
+ *  setActiveMany(all, false) pair unloaded shared topics the user had loaded
+ *  for another credential. Returns how many were newly added. */
+export function addTopicsUnloaded(gsList: number[]): number {
+  const fresh = freshGs(list.map((e) => e.gs), gsList);
+  if (fresh.length === 0) return 0;
+  commit([...list, ...fresh.map((gs) => ({ gs, favorite: false, active: false }))]);
+  return fresh.length;
 }
 
 export function addTopic(gs: number): void {

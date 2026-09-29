@@ -22,7 +22,10 @@ import { subjectMeta } from '../../data/subjectMeta';
 import { topicCopy } from '../../data/topicCopy';
 import { useCurriculumStats } from '../../features/curriculum/curriculumStats';
 import { useAcademyStats } from '../../features/curriculum/academyStats';
-import { addTopic, removeTopic, useEnrollment } from '../../features/enrollment/enrollmentStore';
+import { addTopic, isFreeEnrollGs, removeTopic, useEnrollment } from '../../features/enrollment/enrollmentStore';
+import { useEnrollmentProgress } from '../../features/enrollment/enrollmentProgress';
+import { COREQ_TOPIC_GS } from '../awards/awardsData';
+import { notify } from '../../lib/confirm';
 import { AboutHomeSheet } from '../about/AboutHomeSheet';
 import { markAboutOpened, useAboutOpened } from '../../features/onboarding/attractStore';
 import { AttractRing } from '../../features/onboarding/AttractCue';
@@ -216,6 +219,23 @@ export function CurriculumView({
   // enrolment live (owner 2026-09-15).
   const enrolledList = useEnrollment();
   const enrolledGs = useMemo(() => new Set(enrolledList.map((e) => e.gs)), [enrolledList]);
+  // The topic popup's checkbox used to remove a locked co-requisite core or a
+  // free topic — both stay, same rule as Enrollments (bug hunt 2026-09-29).
+  const coreProg = useEnrollmentProgress(COREQ_TOPIC_GS);
+  const toggleEnrollTopic = (gs: number) => {
+    if (!enrolledGs.has(gs)) return addTopic(gs);
+    const coreLocked = COREQ_TOPIC_GS.includes(gs) && (coreProg.get(gs)?.pct ?? 0) < 100;
+    if (coreLocked || isFreeEnrollGs(gs)) {
+      notify(
+        'This topic stays',
+        coreLocked
+          ? 'Required co-requisites stay in your list until you complete them.'
+          : 'Your free topics are always part of your list.',
+      );
+      return;
+    }
+    removeTopic(gs);
+  };
   const subjectsAZ = v3Subjects; // already Field → Subject order
   // Build a TopicDetail (subject/field + term coverage + Computer C per-topic
   // copy, keyed by gs in src/data/topicCopy.ts) for a topic. Used for the open
@@ -612,7 +632,7 @@ export function CurriculumView({
       next={topicView.next}
       onStep={onTopicStep}
       onClose={() => setViewTopic(null)}
-      onEnrollTopic={(gs) => (enrolledGs.has(gs) ? removeTopic(gs) : addTopic(gs))}
+      onEnrollTopic={toggleEnrollTopic}
       isTopicEnrolled={(gs) => enrolledGs.has(gs)}
     />
     {/* About sheet opened by the temporary "About the Academy" link above. Same

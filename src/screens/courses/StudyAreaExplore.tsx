@@ -26,7 +26,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { officialTopicName } from '../../data/officialTopicNames';
 import { STUDY_AREA_CREDENTIALS } from '../../data/studyAreaCredentials';
 import { fetchV3Certs, fetchV3Curriculum, fetchV3Programs, flattenV3, type V3Credential } from '../../data/v3Curriculum';
-import { addTopics, setActiveMany } from '../../features/enrollment/enrollmentStore';
+import { addTopics, addTopicsUnloaded } from '../../features/enrollment/enrollmentStore';
 import { addBundle, bundleKey, removeBundle, useBundles, type BundleKind } from '../../features/enrollment/enrolledBundlesStore';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { trackEvent } from '../../features/telemetry/telemetry';
@@ -136,8 +136,7 @@ export function StudyAreaExplore({
         return;
       }
       addBundle(kind, c.name, c.topics);
-      addTopics(c.topics);
-      setActiveMany(c.topics, false);
+      addTopicsUnloaded(c.topics); // new topics only (bug hunt 2026-09-29)
       addTopics([...COREQ_TOPIC_GS]);
       if (resolved && entitlement === 'anonymous') setPayPrompt({ label: c.name });
     },

@@ -38,6 +38,7 @@ import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { useEnrollmentProgress } from '../../features/enrollment/enrollmentProgress';
 import {
   addTopics,
+  addTopicsUnloaded,
   getEnrollment,
   isFreeEnrollGs,
   moveTopic,
@@ -50,6 +51,7 @@ import {
   useEnrollment,
   type EnrollTopic,
 } from '../../features/enrollment/enrollmentStore';
+import { removableOnBundleDrop } from '../../features/enrollment/enrollmentPlan';
 import {
   addBundle,
   bundleKey,
@@ -782,26 +784,25 @@ export function EnrollmentView({
   const ensureCores = () => addTopics([...COREQ_TOPIC_GS]);
   const addWholeCert = (name: string, topics: number[]) => {
     addBundle('cert', name, topics);
-    addTopics(topics);
-    setActiveMany(topics, false); // not loaded onto the Dashboard until LOAD
+    // NEW topics only, not loaded onto the Dashboard until LOAD; a shared topic
+    // already loaded for another credential keeps its state (bug hunt 2026-09-29).
+    addTopicsUnloaded(topics);
     ensureCores();
   };
   const addWholeProgram = (name: string, topics: number[]) => {
     addBundle('program', name, topics);
-    addTopics(topics);
-    setActiveMany(topics, false);
+    addTopicsUnloaded(topics);
     ensureCores();
   };
   // Whole SUBJECT — all its topics as one amber subject bundle (user request
   // 2026-07-22), mirroring cert/program add-all.
   const addWholeSubject = (name: string, topics: number[]) => {
     addBundle('subject', name, topics);
-    addTopics(topics);
-    setActiveMany(topics, false);
+    addTopicsUnloaded(topics);
   };
   // Whole FIELD — enroll its topics (owner 2026-08-18). Fields do NOT create a
   // bundle card (unlike subjects); toggle state derives from enrollment.
-  const addWholeField = (topics: number[]) => { addTopics(topics); setActiveMany(topics, false); };
+  const addWholeField = (topics: number[]) => { addTopicsUnloaded(topics); };
   const removeWholeField = (topics: number[]) => { topics.forEach((gs) => { if (!isFreeEnrollGs(gs)) removeTopic(gs); }); };
   // REMOVE ALL — drop a cert/program/subject bundle AND its topics from the
   // enrollment list (user request 2026-07-22). The two mandatory free topics are
@@ -810,18 +811,19 @@ export function EnrollmentView({
     const key = bundleKey(kind, name);
     removeBundle(key);
     removeHomeBundle(key);
-    topics.forEach((gs) => {
-      if (!isFreeEnrollGs(gs)) removeTopic(gs);
-    });
+    // A topic another still-enrolled bundle contains stays (bug hunt
+    // 2026-09-29) — removing a program used to strip the shared topics out of
+    // the certificate that also lists them.
+    const others = bundles.filter((b) => b.key !== key).map((b) => b.topics);
+    removableOnBundleDrop(topics, others, isFreeEnrollGs).forEach((gs) => removeTopic(gs));
     // The core co-requisites were auto-enrolled (and locked) FOR a certificate
     // or program. Once no cert/program bundle remains, they are no longer
     // required — drop them too, or they sit as permanently un-removable
     // "Required 🔒" rows (Bug+Hater night C1-03). The mandatory free topics stay.
     const stillCredentialed = bundles.some((b) => b.key !== key && (b.kind === 'cert' || b.kind === 'program'));
     if (!stillCredentialed) {
-      COREQ_TOPIC_GS.forEach((gs) => {
-        if (!isFreeEnrollGs(gs)) removeTopic(gs);
-      });
+      // …unless a remaining subject bundle lists one (bug hunt 2026-09-29).
+      removableOnBundleDrop(COREQ_TOPIC_GS, others, isFreeEnrollGs).forEach((gs) => removeTopic(gs));
     }
   };
   const removeBundleEntry = (key: string) => {
@@ -1072,11 +1074,25 @@ export function EnrollmentView({
     // Required cores can't be removed UNTIL completed; then the ✕ can hide them
     // from the list above (user request 2026-07-22).
     const coreLocked = COREQ_TOPIC_GS.includes(gs) && (prog.get(gs)?.pct ?? 0) < 100;
+    // A row tap on an enrolled locked core or free topic used to REMOVE it —
+    // the ✕ was hidden but the row itself still toggled (bug hunt 2026-09-29).
+    const locked = on && (coreLocked || isFreeEnrollGs(gs));
     return (
       <View key={gs} style={styles.topicRow}>
         <Pressable
           style={styles.topicRowMain}
-          onPress={() => toggleTopic(gs)}
+          onPress={() => {
+            if (locked) {
+              notify(
+                'This topic stays',
+                coreLocked
+                  ? 'Required co-requisites stay in your list until you complete them.'
+                  : 'Your free topics are always part of your list.',
+              );
+              return;
+            }
+            toggleTopic(gs);
+          }}
           accessibilityRole="button"
           accessibilityState={{ selected: on }}
           aria-pressed={on}
@@ -1090,7 +1106,7 @@ export function EnrollmentView({
         </Pressable>
         {/* Explicit remove-from-enrollment icon — hidden for required cores until
             they are completed (user request 2026-07-22). */}
-        {on && !coreLocked ? (
+        {on && !locked ? (
           <Pressable
             style={styles.topicRemove}
             onPress={() => removeTopic(gs)}
