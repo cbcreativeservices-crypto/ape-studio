@@ -87,6 +87,14 @@ function useRatioTone(f0: number, n1: number, n2: number, detune: number) {
   useStopOnAudioMute(setRunning);
 
   const gen = useRef(0);
+  // STAYS ARMED (owner 2026-09-29: ▶ arms a lab — every change plays the new
+  // sound until ■). A pair this build cannot play (a detune without the dual
+  // engine) used to STOP the tone, and setting DETUNE back was silent. Now
+  // PLAY stays on: the tone goes quiet while the pair is unplayable and comes
+  // back by itself when it is playable again. `want` = should be sounding;
+  // `sounding` = the generator was started for it.
+  const want = useRef(false);
+  const sounding = useRef(false);
   const params = useCallback(() => {
     if (detuned) return { mode: GEN_MODES.dual, frequency: f0 * n1, dual: { freqB: f0 * n2 * (1 + detune), levelB: 1 }, levelDb: -18 };
     return { mode: GEN_MODES.additive, additive: guardAdditiveForEngine(ratioPayload(f0, n1, n2)), levelDb: -18 };
@@ -94,6 +102,7 @@ function useRatioTone(f0: number, n1: number, n2: number, detune: number) {
   const start = useCallback(async () => {
     if (!playable) return;
     const g = ++gen.current;
+    want.current = true;
     const ok = await requestAudioOutput();
     if (!ok || g !== gen.current) return;
     ApeDsp.genSet(params());
@@ -101,10 +110,15 @@ function useRatioTone(f0: number, n1: number, n2: number, detune: number) {
       await ApeDsp.genStart();
       // A mute that landed while the native start was in flight wins — never
       // leave a tone sounding into a closed gate (owner 2026-09-29).
-      if (g !== gen.current || !isAudioOutputEnabled()) {
+      if (!isAudioOutputEnabled()) {
         void ApeDsp.genStop();
         return;
       }
+      if (g !== gen.current) {
+        if (!want.current) void ApeDsp.genStop(); // stopped/quieted meanwhile
+        return;
+      }
+      sounding.current = true;
       setRunning(true);
       noteAudioActivity();
     } catch {
@@ -113,6 +127,8 @@ function useRatioTone(f0: number, n1: number, n2: number, detune: number) {
   }, [playable, requestAudioOutput, params]);
   const stop = useCallback(() => {
     gen.current++;
+    want.current = false;
+    sounding.current = false;
     void ApeDsp.genStop();
     setRunning(false);
   }, []);
@@ -120,15 +136,27 @@ function useRatioTone(f0: number, n1: number, n2: number, detune: number) {
   // outside this screen; without this the transport would keep saying it is
   // playing. See useStopWhenSilenced.
   useStopWhenSilenced(running, stop);
+  const startRef = useRef(start);
+  startRef.current = start;
   useEffect(() => {
     if (!running) return;
     if (!playable) {
-      stop();
+      // Quiet, still armed (see `want`).
+      gen.current++;
+      want.current = false;
+      if (sounding.current) {
+        sounding.current = false;
+        void ApeDsp.genStop();
+      }
+      return;
+    }
+    if (!sounding.current) {
+      void startRef.current(); // playable again — sound again
       return;
     }
     ApeDsp.genSet(params());
     noteAudioActivity();
-  }, [running, playable, params, stop]);
+  }, [running, playable, params]);
   useStopOnBlur(stop); // never on a re-render (owner 2026-09-29, useStopOnBlur.ts)
   useEffect(() => {
     if (!running) return;
@@ -336,7 +364,8 @@ export function HarmonyModule({ help, focused }: CymaticsModuleProps) {
       helpKey: 'ratio',
     },
     { kind: 'options', id: 'view', label: 'VIEW', valueLabel: VIEWS.find((v) => v.id === view)!.short, options: VIEWS.map((v) => ({ id: v.id, label: v.label, blurb: v.blurb })), selectedId: view, onSelect: (id) => setView(id as ViewId), sticky: true, helpKey: 'lissajous' },
-    ...(tone.playable ? [{ kind: 'toggle', id: 'play', label: 'PLAY', value: tone.running, onToggle: () => (tone.running ? tone.stop() : void tone.start()) } as DockParam] : []),
+    // Shown while armed too, so an armed-but-quiet pair can always be stopped.
+    ...(tone.playable || tone.running ? [{ kind: 'toggle', id: 'play', label: 'PLAY', value: tone.running, onToggle: () => (tone.running ? tone.stop() : void tone.start()) } as DockParam] : []),
   ];
 
   return (

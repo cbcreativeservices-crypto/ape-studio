@@ -143,9 +143,12 @@ export function EqAuditionBar({ bands }: { bands: EqBandSpec[] }) {
           active={source === s.key}
           onPress={() => {
             setSource(s.key);
+            // Switch the signal IN PLACE while playing (the FX lab's
+            // pickSource idiom) — it used to stop and restart, flashing ▶ and
+            // re-asking the gate on every A/B (owner 2026-09-29: ▶ stays armed).
             if (running) {
-              stop();
-              void start(s.key);
+              ApeDsp.genSet({ levelDb: GEN_LEVEL_DB, ...s.gen });
+              noteAudioActivity();
             }
           }}
         />

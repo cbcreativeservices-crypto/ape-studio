@@ -101,3 +101,66 @@ test('earPlayer awaits the audio-session mode once per run, bounded (Tuning + ea
   assert.match(fn, /if \(modeSettled\) return;\n\s+await Promise\.race\(\[mode, new Promise<void>\(\(r\) => setTimeout\(r, AUDIO_MODE_WAIT_MS\)\)\]\);\n\s+modeSettled = true;/);
   assert.match(s, /await settleMode\(\);/);
 });
+
+// ── Lesson 2: ▶ arms the lab — the transport stays ■ and changes re-sound ────
+
+test('Autotune: the pass ringing out keeps ■; an AMOUNT/SPEED change replays it', () => {
+  const s = read('src/screens/lab/AutotuneLabScreen.tsx');
+  assert.match(s, /if \(idx >= MELODY\.length\) \{\n\s+hush\(\);/);
+  assert.doesNotMatch(s, /if \(playing\) stop\(\);/);
+  assert.match(s, /\}, \[amount, speedKey\]\);/);
+  assert.match(s, /if \(armedRef\.current\) void playRef\.current\(\);/);
+  // A superseded start only stops the generator when nothing newer wants it.
+  assert.match(s, /if \(!wantRef\.current\) void ApeDsp\.genStop\(\);/);
+  // ■ cancels a replay that is already scheduled.
+  assert.match(s, /armedRef\.current = false; \/\/ a replay already scheduled must not fire/);
+});
+
+test('FM: armed PLUCK/BELL strike again when a control settles; a ■ cancels it', () => {
+  const s = read('src/screens/lab/FmLabScreen.tsx');
+  assert.match(s, /if \(env\.decaySec <= 0\) return;/);
+  assert.match(s, /if \(wantRef\.current\) void strikeRef\.current\(\);/);
+  assert.match(s, /if \(!wantRef\.current\) void ApeDsp\.genStop\(\);/);
+});
+
+test('Harmonograph: an unclean ratio goes quiet but stays armed; ■ stays pressable', () => {
+  const s = read('src/screens/lab/HarmonographLabScreen.tsx');
+  assert.doesNotMatch(s, /retuneOrStop/);
+  const fn = s.slice(s.indexOf('const retuneOrHush = '), s.indexOf('const pickRatio = '));
+  assert.doesNotMatch(fn, /stopInterval\(\)/);
+  assert.match(fn, /void soundInterval\(m\);/);
+  assert.match(fn, /hushInterval\(\);/);
+  assert.match(s, /disabled=\{!playable && !running/);
+  assert.doesNotMatch(s, /if \(d !== 0 && running\) stopInterval\(\);/);
+});
+
+test('Cymatics ratio pair: an unplayable pair goes quiet, PLAY stays on and stays reachable', () => {
+  const s = read('src/screens/lab/cymatics/modules/modHarmony.tsx');
+  const eff = s.slice(s.indexOf('const startRef = useRef(start);'), s.indexOf('useStopOnBlur(stop);'));
+  assert.doesNotMatch(eff, /\bstop\(\)/);
+  assert.match(eff, /void startRef\.current\(\); \/\/ playable again — sound again/);
+  assert.match(s, /\.\.\.\(tone\.playable \|\| tone\.running \? \[\{ kind: 'toggle'/);
+});
+
+test('Digital alias tone: leaving 40 Hz–16 kHz goes quiet, not STOP; the button can always stop', () => {
+  const s = read('src/screens/lab/digital/modules/modAnalog.tsx');
+  assert.match(s, /retarget\(playing, target, target >= PLAY_MIN_HZ && target <= PLAY_MAX_HZ\);/);
+  assert.match(s, /disabled=\{!canInput && playing !== 'input'/);
+  assert.match(s, /disabled=\{!canAlias && playing !== 'alias'/);
+});
+
+test('EQ audition: switching PINK/SWEEP while playing retargets in place (no stop/restart)', () => {
+  const s = read('src/screens/lab/eq/modules/eqAudition.tsx');
+  assert.doesNotMatch(s, /stop\(\);\n\s+void start\(s\.key\);/);
+  assert.match(s, /if \(running\) \{\n\s+ApeDsp\.genSet\(\{ levelDb: GEN_LEVEL_DB, \.\.\.s\.gen \}\);/);
+});
+
+test('mixing: ■ stays lit after the clip ends; a console edit replays the same variant', () => {
+  const s = read('src/screens/lab/mixing/kit.tsx');
+  assert.match(s, /playerRef\.current\.onEnded = null;/);
+  assert.match(s, /const again = activeRef\.current \?\? pendingRef\.current;/);
+  const eff = s.slice(s.indexOf('const again = activeRef.current'), s.indexOf('}, [signature]);'));
+  assert.match(eff, /if \(!aliveRef\.current \|\| !focusedRef\.current \|\| !isAudioOutputEnabled\(\)\) return;/);
+  assert.match(eff, /void renderAllRef\.current\(\);/);
+  assert.match(eff, /return \(\) => clearTimeout\(t\);/);
+});

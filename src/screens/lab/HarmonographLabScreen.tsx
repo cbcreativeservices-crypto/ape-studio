@@ -30,7 +30,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
-import { noteAudioActivity } from '../../features/audio/audioOutputStore';
+import { isAudioOutputEnabled, noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { guardAdditiveForEngine, speakerGuardDb, SPEAKER_HPF_HZ } from '../../features/audio/speakerSafety';
 import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
@@ -194,31 +194,64 @@ export function HarmonographLabScreen() {
     [stereoReady, intervalPayload],
   );
 
-  const startInterval = useCallback(async () => {
-    // Only sound real integer-harmonic pairs (never a sub-audio pendulum pair).
-    // PLAY = the MATCHED ratio rendered as harmonics of BASE_F0 (the pendulums
-    // themselves are below hearing); only a clean, locked ratio sounds.
-    if (!additiveReady || detune !== 0 || !matched) return;
+  // STAYS ARMED (owner 2026-09-29: ▶ arms a lab — every change plays the new
+  // sound until ■). Only a clean, locked ratio can sound honestly, so moving
+  // off one used to STOP the lab (▶), and landing back on a clean ratio was
+  // silent. Now the transport stays ■: the tone goes quiet while the ratio is
+  // not clean (or detuned) and comes back by itself on the next clean ratio.
+  // `wantRef` = the generator SHOULD be sounding; `soundingRef` = it is.
+  const wantRef = useRef(false);
+  const soundingRef = useRef(false);
+
+  /** Start the generator on a clean pair (the ▶ press and the armed resume). */
+  const soundInterval = useCallback(async (m: { n1: number; n2: number }) => {
     const gen = ++genRef.current;
+    wantRef.current = true;
     const ok = await requestAudioOutput();
     if (!ok || gen !== genRef.current) return;
     setGenError('');
-    ApeDsp.genSet(intervalGenParams(matched.n1, matched.n2));
+    ApeDsp.genSet(intervalGenParams(m.n1, m.n2));
     try {
       await ApeDsp.genStart();
-      if (gen !== genRef.current) {
+      // A mute that landed while the native start was in flight wins — never
+      // leave a tone sounding into a closed gate (owner 2026-09-29).
+      if (!isAudioOutputEnabled()) {
         void ApeDsp.genStop();
         return;
       }
+      if (gen !== genRef.current) {
+        if (!wantRef.current) void ApeDsp.genStop(); // stopped/hushed meanwhile
+        return;
+      }
+      soundingRef.current = true;
       setRunning(true);
       noteAudioActivity();
     } catch (e) {
       if (gen === genRef.current) setGenError(AUDIO_UNAVAILABLE_MESSAGE);
     }
-  }, [additiveReady, detune, matched, requestAudioOutput, intervalGenParams]);
+  }, [requestAudioOutput, intervalGenParams]);
+
+  const startInterval = useCallback(async () => {
+    // Only sound real integer-harmonic pairs (never a sub-audio pendulum pair).
+    // PLAY = the MATCHED ratio rendered as harmonics of BASE_F0 (the pendulums
+    // themselves are below hearing); only a clean, locked ratio sounds.
+    if (!additiveReady || detune !== 0 || !matched) return;
+    await soundInterval(matched);
+  }, [additiveReady, detune, matched, soundInterval]);
+
+  /** Armed but not clean: silence the tone, keep ■. */
+  const hushInterval = () => {
+    genRef.current++; // an in-flight resume must not start into a hush
+    wantRef.current = false;
+    if (!soundingRef.current) return;
+    soundingRef.current = false;
+    void ApeDsp.genStop();
+  };
 
   const stopInterval = useCallback(() => {
     genRef.current++;
+    wantRef.current = false;
+    soundingRef.current = false;
     void ApeDsp.genStop();
     // Clear the (global) stereo flag so the next mono tool doesn't inherit the
     // hard-panned dual-oscillator (no-op below v5).
@@ -238,15 +271,20 @@ export function HarmonographLabScreen() {
   }, [running]);
 
   // Retune the interval audio to the new pair's MATCHED ratio (as harmonics of
-  // BASE_F0), or stop if the ratio is no longer clean — never fake a tone.
-  const retuneOrStop = (a: number, b: number) => {
+  // BASE_F0), or go quiet while the ratio is not clean — never fake a tone.
+  // Armed (■) either way; a clean ratio after a quiet stretch sounds again.
+  const retuneOrHush = (a: number, b: number, d: number = detune) => {
     if (!running) return;
     const m = matchRatio(a, b);
-    if (m && detune === 0) {
-      ApeDsp.genSet(intervalGenParams(m.n1, m.n2));
-      noteAudioActivity();
+    if (m && d === 0) {
+      if (soundingRef.current) {
+        ApeDsp.genSet(intervalGenParams(m.n1, m.n2));
+        noteAudioActivity();
+      } else {
+        void soundInterval(m);
+      }
     } else {
-      stopInterval();
+      hushInterval();
     }
   };
   // Ratio chip: KEEP OSC 1 (your speed), set OSC 2 to form the interval ratio
@@ -255,7 +293,7 @@ export function HarmonographLabScreen() {
     const r = RATIOS[i];
     const nn2 = n1 * (r.n2 / r.n1);
     setN2(nn2);
-    retuneOrStop(n1, nn2);
+    retuneOrHush(n1, nn2);
   };
   // Slider-driven oscillator frequency (harmonic number; may be fractional).
   const setOsc = (which: 1 | 2, nn: number) => {
@@ -263,11 +301,11 @@ export function HarmonographLabScreen() {
     const b = which === 2 ? nn : n2;
     if (which === 1) setN1(nn);
     else setN2(nn);
-    retuneOrStop(a, b);
+    retuneOrHush(a, b);
   };
   const pickDetune = (d: (typeof DETUNES)[number]['key']) => {
     setDetune(d);
-    if (d !== 0 && running) stopInterval(); // audio can't honestly follow a detuned ratio
+    retuneOrHush(n1, n2, d); // audio can't honestly follow a detuned ratio — quiet, still armed
   };
 
   const hz1 = ratio.n1 * BASE_F0;
@@ -314,7 +352,7 @@ export function HarmonographLabScreen() {
       headerAction={
         <HeaderPlayButton
           playing={running}
-          disabled={!playable}
+          disabled={!playable && !running /* armed-and-quiet must still stop */}
           onPress={() => (running ? stopInterval() : void startInterval())}
           label={running ? 'Stop' : 'Play interval'}
         />

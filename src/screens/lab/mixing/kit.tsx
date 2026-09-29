@@ -230,6 +230,9 @@ export interface MixPlayback {
   heard: readonly string[];
 }
 
+/** Armed: a settled console edit re-renders and replays after this pause. */
+const REPLAY_MS = 350;
+
 /** Decide → render → listen. Renders ALL variants of the set on first play
  *  (so A/B switching is instant afterwards), with real measurements. */
 export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
@@ -310,8 +313,17 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
     }, []),
   );
 
+  // STAYS ARMED (owner 2026-09-29: ▶ arms a lab — every change plays the new
+  // sound until ■). A console edit while a variant is sounding (or has rung
+  // out with ■ still lit) re-renders the set and plays that SAME variant
+  // again once the console settles (REPLAY_MS) — it used to drop to ▶ and wait
+  // for a press. activeRef mirrors `active` for this effect.
+  const activeRef = useRef<string | null>(null);
+  activeRef.current = active;
+
   // New variant set → old renders (AND old listening credit) are stale.
   useEffect(() => {
+    const again = activeRef.current ?? pendingRef.current;
     // Stop the sounding render FIRST. It is now stale — the console moved under
     // it — and without this the scribble strips light the new solo state while
     // the learner's ears carry on with the previous, un-soloed mix for the rest
@@ -332,6 +344,17 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
     // value.
     renderSeqRef.current++;
     renderingSigRef.current = null;
+    if (!again) return;
+    // Armed: replay the same variant on the new console. The queued play goes
+    // through renderAll's own focus + open-gate checks; a blur or a mute
+    // inside the pause forgets it here.
+    const t = setTimeout(() => {
+      if (!aliveRef.current || !focusedRef.current || !isAudioOutputEnabled()) return;
+      pendingRef.current = again;
+      setPending(again);
+      void renderAllRef.current();
+    }, REPLAY_MS);
+    return () => clearTimeout(t);
   }, [signature]);
 
   const renderAll = useCallback(async () => {
@@ -376,11 +399,11 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
       }
       if (!playerRef.current) {
         playerRef.current = new EarClipPlayer();
-        // Natural end of a clip → the ▶/■ state stops claiming "playing" over
-        // silence (design pass 2).
-        playerRef.current.onEnded = () => {
-          if (aliveRef.current) setActive(null);
-        };
+        // Natural end of a clip: ■ STAYS LIT (owner 2026-09-29 — ▶ arms the
+        // lab; the next console change plays the new mix). It used to drop
+        // back to ▶ here (design pass 2), so a change after the clip ended
+        // was silent until the learner pressed again.
+        playerRef.current.onEnded = null;
       }
       // The superseded-render check sits BEFORE load() on purpose: load() is
       // what writes the temp WAVs, so a loser never creates files to strand.

@@ -413,11 +413,21 @@ function useAliasTone(engineReady: boolean, focused: boolean) {
   const { requestAudioOutput } = useAudioOutputGate();
   const [playing, setPlaying] = useState<PlayWhich | null>(null);
   const genRef = useRef(0);
+  // STAYS ARMED (owner 2026-09-29: ▶ arms a lab — every change plays the new
+  // sound until ■). Riding FREQ through Nyquist walks the alias down through
+  // 0 Hz, and the input past 16 kHz — both leave the playable window, which
+  // used to STOP the tone, so the ride went silent for good. Now the button
+  // stays STOP: the tone goes quiet outside the window and comes back by
+  // itself inside it (retarget). `wantRef` = should be sounding;
+  // `soundingRef` = the generator was started for it.
+  const wantRef = useRef(false);
+  const soundingRef = useRef(false);
 
   const play = useCallback(
     (which: PlayWhich, freqHz: number) => {
       if (!engineReady) return;
       const gen = ++genRef.current;
+      wantRef.current = true;
       void (async () => {
         const ok = await requestAudioOutput();
         if (!ok || gen !== genRef.current) return;
@@ -430,10 +440,15 @@ function useAliasTone(engineReady: boolean, focused: boolean) {
           await ApeDsp.genStart();
           // A mute that landed while the native start was in flight wins — never
           // leave a tone sounding into a closed gate (owner 2026-09-29).
-          if (gen !== genRef.current || !isAudioOutputEnabled()) {
+          if (!isAudioOutputEnabled()) {
             void ApeDsp.genStop();
             return;
           }
+          if (gen !== genRef.current) {
+            if (!wantRef.current) void ApeDsp.genStop(); // stopped/quieted meanwhile
+            return;
+          }
+          soundingRef.current = true;
           setPlaying(which);
           noteAudioActivity();
         } catch {
@@ -446,9 +461,34 @@ function useAliasTone(engineReady: boolean, focused: boolean) {
 
   const stop = useCallback(() => {
     genRef.current++;
+    wantRef.current = false;
+    soundingRef.current = false;
     void ApeDsp.genStop();
     setPlaying(null);
   }, []);
+
+  /** Armed: follow a new target — retune inside the playable window, go quiet
+   *  outside it (still armed), sound again on the way back in. */
+  const retarget = useCallback(
+    (which: PlayWhich, freqHz: number, inWindow: boolean) => {
+      if (!inWindow) {
+        genRef.current++; // an in-flight resume must not start out of window
+        wantRef.current = false;
+        if (soundingRef.current) {
+          soundingRef.current = false;
+          void ApeDsp.genStop();
+        }
+        return;
+      }
+      if (!soundingRef.current) {
+        play(which, freqHz);
+        return;
+      }
+      ApeDsp.genSet({ frequency: freqHz, levelDb: guardToneLevelForEngine(LEVEL_DB, freqHz) });
+      noteAudioActivity();
+    },
+    [play],
+  );
   // Shake-to-mute (and the idle/background lock) silences the voices from
   // outside this screen; without this the transport would keep saying it is
   // playing. See useStopWhenSilenced.
@@ -468,7 +508,7 @@ function useAliasTone(engineReady: boolean, focused: boolean) {
     return () => clearInterval(id);
   }, [playing]);
 
-  return { playing, play, stop };
+  return { playing, play, stop, retarget };
 }
 
 function SamplingHero({
@@ -550,20 +590,16 @@ export function SamplingModule(p: DigitalModuleProps) {
   });
   const engineReady = gate === 'idle';
   const tone = useAliasTone(engineReady, p.focused);
-  const { playing, play, stop } = tone;
+  const { playing, play, stop, retarget } = tone;
 
   // Retune LIVE while sounding: hold PLAY PREDICTED ALIAS and sweep the input
   // through Nyquist — the pitch folds back down (phase-continuous genSet).
+  // Outside ~40 Hz–16 kHz the tone goes quiet but stays armed (retarget).
   useEffect(() => {
     if (!playing) return;
     const target = playing === 'input' ? f : alias;
-    if (target < PLAY_MIN_HZ || target > PLAY_MAX_HZ) {
-      stop();
-      return;
-    }
-    ApeDsp.genSet({ frequency: target, levelDb: guardToneLevelForEngine(LEVEL_DB, target) });
-    noteAudioActivity();
-  }, [playing, f, alias, stop]);
+    retarget(playing, target, target >= PLAY_MIN_HZ && target <= PLAY_MAX_HZ);
+  }, [playing, f, alias, retarget]);
 
   const canInput = f >= PLAY_MIN_HZ && f <= PLAY_MAX_HZ;
   const canAlias = alias >= PLAY_MIN_HZ && alias <= PLAY_MAX_HZ;
@@ -724,7 +760,7 @@ export function SamplingModule(p: DigitalModuleProps) {
                 tint="green"
                 height={46}
                 fontSize={13.5}
-                disabled={!canInput}
+                disabled={!canInput && playing !== 'input' /* armed-and-quiet must still stop */}
                 onPress={() => (playing === 'input' ? stop() : play('input', f))}
               />
               <GlassButton
@@ -732,7 +768,7 @@ export function SamplingModule(p: DigitalModuleProps) {
                 tint={aliased ? 'gold' : 'green'}
                 height={46}
                 fontSize={13.5}
-                disabled={!canAlias}
+                disabled={!canAlias && playing !== 'alias' /* armed-and-quiet must still stop */}
                 onPress={() => (playing === 'alias' ? stop() : play('alias', alias))}
               />
               {!aliased ? (

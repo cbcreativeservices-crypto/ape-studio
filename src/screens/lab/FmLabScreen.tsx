@@ -29,7 +29,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Line, Rect, Text as SvgText } from 'react-native-svg';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
-import { noteAudioActivity } from '../../features/audio/audioOutputStore';
+import { isAudioOutputEnabled, noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
@@ -42,6 +42,8 @@ import { useStopOnBlur } from '../../features/audio/useStopOnBlur';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
+/** Armed PLUCK/BELL: a settled control change strikes again after this pause. */
+const RESTRIKE_MS = 150;
 const NYQUIST = 24000; // display Nyquist (48 kHz engine rate)
 
 const CARRIERS = [110, 220, 440] as const;
@@ -128,6 +130,10 @@ export function FmLabScreen() {
 
   // ---- Audio (generator FM mode; strike = retrigger) -------------------------
   const genRef = useRef(0);
+  /** The voice SHOULD be sounding (armed). A superseded strike only stops the
+   *  generator when nothing newer wants it — back-to-back re-strikes while
+   *  armed must never kill each other (owner 2026-09-29). */
+  const wantRef = useRef(false);
 
   const pushParams = useCallback(() => {
     ApeDsp.genSet({
@@ -141,6 +147,7 @@ export function FmLabScreen() {
   const strike = useCallback(async () => {
     if (!fmReady) return;
     const gen = ++genRef.current;
+    wantRef.current = true;
     const ok = await requestAudioOutput();
     if (!ok || gen !== genRef.current) return;
     setGenError('');
@@ -149,8 +156,14 @@ export function FmLabScreen() {
       // genStart on a running tone = the STRIKE (click-free retrigger — the
       // env dip restarts the index-decay envelope).
       await ApeDsp.genStart();
-      if (gen !== genRef.current) {
+      // A mute that landed while the native start was in flight wins — never
+      // leave a tone sounding into a closed gate (owner 2026-09-29).
+      if (!isAudioOutputEnabled()) {
         void ApeDsp.genStop();
+        return;
+      }
+      if (gen !== genRef.current) {
+        if (!wantRef.current) void ApeDsp.genStop(); // stopped meanwhile
         return;
       }
       setRunning(true);
@@ -162,6 +175,7 @@ export function FmLabScreen() {
 
   const stop = useCallback(() => {
     genRef.current++;
+    wantRef.current = false;
     void ApeDsp.genStop();
     setRunning(false);
   }, []);
@@ -178,12 +192,25 @@ export function FmLabScreen() {
   }, [running]);
 
   // Control changes retarget in place while sounding (index/ratio ramp
-  // natively; sustained env follows live — decayed envs need a new STRIKE).
+  // natively; sustained env follows live).
+  //
+  // STAYS ARMED (owner 2026-09-29: ▶ arms a lab — every change plays the new
+  // sound until ■). PLUCK and BELL decay to a plain tone within a second, so
+  // a change after that used to be inaudible until the learner struck again;
+  // now, once the control settles (RESTRIKE_MS), the voice is struck again
+  // with the new setting. strike is read from a ref so a start's own
+  // re-render can never re-run this.
+  const strikeRef = useRef(strike);
+  strikeRef.current = strike;
   useEffect(() => {
-    if (running) {
-      pushParams();
-      noteAudioActivity();
-    }
+    if (!running) return;
+    pushParams();
+    noteAudioActivity();
+    if (env.decaySec <= 0) return;
+    const t = setTimeout(() => {
+      if (wantRef.current) void strikeRef.current(); // not after a ■ meanwhile
+    }, RESTRIKE_MS);
+    return () => clearTimeout(t);
   }, [carrier, ratioIdx, index, envKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23) ────────────────────────────

@@ -32,7 +32,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
-import { noteAudioActivity } from '../../features/audio/audioOutputStore';
+import { isAudioOutputEnabled, noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { CheckQuestion } from './foundations/bits';
 import { EngineGate } from '../tools/EngineGate';
@@ -47,6 +47,8 @@ const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
 const NOTE_MS = 1100; // per melody note
 const TICK_MS = 50; // 20 Hz audio glide updates (≤30 Hz bridge rule)
+/** Armed: a settled AMOUNT/SPEED change replays the pass after this pause. */
+const REPLAY_MS = 250;
 
 const NOTE_NAMES = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'] as const;
 const midiName = (m: number) => `${NOTE_NAMES[m % 12]}${Math.floor(m / 12) - 1}`;
@@ -133,13 +135,31 @@ export function AutotuneLabScreen() {
     timerRef.current = null;
   }, []);
 
-  const stop = useCallback(() => {
+  // STAYS ARMED (owner 2026-09-29: ▶ arms a lab — "it should stay active").
+  // The melody is a one-shot pass: when it ends the generator stops but the
+  // transport stays ■, and an AMOUNT or SPEED change while armed silences the
+  // pass at once and plays it again with the new setting once the control
+  // settles (REPLAY_MS). It used to end the pass and drop back to ▶, so the
+  // next change was silent. `wantRef` = the generator SHOULD be sounding: a
+  // superseded start only stops the generator when nothing newer wants it, so
+  // a replay can never be killed by the start it replaced.
+  const wantRef = useRef(false);
+  const armedRef = useRef(playing);
+  armedRef.current = playing;
+  /** Silence the pass but stay armed (■). */
+  const hush = useCallback(() => {
     genRef.current++;
+    wantRef.current = false;
     clearTimer();
     void ApeDsp.genStop();
-    setPlaying(false);
     setActiveNote(-1);
   }, [clearTimer]);
+
+  const stop = useCallback(() => {
+    armedRef.current = false; // a replay already scheduled must not fire
+    hush();
+    setPlaying(false);
+  }, [hush]);
   // Shake-to-mute (and the idle/background lock) silences the voices from
   // outside this screen; without this the transport would keep saying it is
   // playing. See useStopWhenSilenced.
@@ -147,11 +167,12 @@ export function AutotuneLabScreen() {
 
   const play = useCallback(async () => {
     const gen = ++genRef.current;
+    wantRef.current = true;
     const ok = await requestAudioOutput();
     if (!ok || gen !== genRef.current) return;
     setGenError('');
-    // Capture the controls at press time — the pass corrects with ONE setting
-    // (changing controls mid-pass restarts on the next press, honest A/B).
+    // Capture the controls at start — the pass corrects with ONE setting (a
+    // control change while armed replays the whole pass — honest A/B).
     const amt = amount;
     const tc = tau;
     const startHz = (i: number) => midiHz(MELODY[i].midi) * Math.pow(2, MELODY[i].offCents / 1200);
@@ -166,8 +187,14 @@ export function AutotuneLabScreen() {
       if (gen === genRef.current) setGenError(AUDIO_UNAVAILABLE_MESSAGE);
       return;
     }
-    if (gen !== genRef.current) {
+    // A mute that landed while the native start was in flight wins — never
+    // leave a tone sounding into a closed gate (owner 2026-09-29).
+    if (!isAudioOutputEnabled()) {
       void ApeDsp.genStop();
+      return;
+    }
+    if (gen !== genRef.current) {
+      if (!wantRef.current) void ApeDsp.genStop(); // stopped/hushed meanwhile
       return;
     }
     setPlaying(true);
@@ -181,7 +208,7 @@ export function AutotuneLabScreen() {
       const elapsed = Date.now() - t0;
       const idx = Math.floor(elapsed / NOTE_MS);
       if (idx >= MELODY.length) {
-        stop();
+        hush(); // the pass rang out — silent, but still armed (■)
         return;
       }
       setActiveNote((cur) => (cur === idx ? cur : idx));
@@ -197,7 +224,20 @@ export function AutotuneLabScreen() {
       );
       noteAudioActivity();
     }, TICK_MS);
-  }, [requestAudioOutput, amount, tau, additiveReady, clearTimer, stop]);
+  }, [requestAudioOutput, amount, tau, additiveReady, clearTimer, hush]);
+
+  // Armed: a settled AMOUNT/SPEED change plays the pass again (see wantRef).
+  // Refs, so this effect runs on the control change only — never because a
+  // start re-rendered the screen.
+  const playRef = useRef(play);
+  playRef.current = play;
+  useEffect(() => {
+    if (!armedRef.current) return;
+    const t = setTimeout(() => {
+      if (armedRef.current) void playRef.current();
+    }, REPLAY_MS);
+    return () => clearTimeout(t);
+  }, [amount, speedKey]);
 
   useStopOnBlur(stop); // never on a re-render (owner 2026-09-29, useStopOnBlur.ts)
   useEffect(() => {
@@ -270,7 +310,9 @@ export function AutotuneLabScreen() {
             // The value IS the lane position — correction amount is linear 0..1.
             value: amount,
             onChange: (v) => {
-              if (playing) stop(); // lockstep rule: a control change ends the pass
+              // Lockstep rule: a control change ends the running pass; armed, it
+              // replays with the new setting (owner 2026-09-29).
+              if (playing) hush();
               setAmount(v);
             },
             format: () => fmtAmount(amount),
@@ -286,7 +328,7 @@ export function AutotuneLabScreen() {
             onSelect: (id) => {
               const s = SPEEDS.find((x) => x.key === id);
               if (!s) return;
-              if (playing) stop(); // lockstep rule
+              if (playing) hush(); // lockstep rule; armed, it replays (above)
               setSpeedKey(s.key);
             },
             sticky: true, // A/B snap vs glide while the curves redraw — the lesson
