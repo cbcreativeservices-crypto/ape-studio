@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 16:28 · ccode · dafc81de
+changed: Start Here card art: start_here.webp (941x1672) + upload script accepts it
+affects other side: course-cards bucket gains start_here.webp (owner uploads via scripts/upload-menu-cards.mjs)
+needs: nothing
+
+
 ### 2026-09-29 15:41 · ccode · f5609b46
 changed: Ear Training drill: card column + fixed answer cells on tablets
 affects other side: nothing — client JS only (tablet layout)
