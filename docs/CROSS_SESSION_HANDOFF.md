@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-28 23:45 · ccode · dbab81af
+changed: Sign-up: 'account NOT created' + one-tap strong password; LOGIN explains a refused sign-up
+affects other side: nothing — client JS only (sign-up copy + password suggester) <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: nothing <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-28 23:35 · ccode · 0f317b6d
 changed: Glossary share: hook moved above the early return (Sentry APE-STUDIO-V)
 affects other side: nothing — client JS only (glossary share sheet) <FILL — what A (backend) must re-read or adjust, or "nothing">
