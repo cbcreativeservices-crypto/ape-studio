@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 16:33 · ccode · 5a0fb18e
+changed: Start Here: Your First Steps in Audio — free beginner experience
+affects other side: nothing — client JS only (Start Here beginner lab; also covers eaa5c1ae, additive lab-kit props). Reads glossary_browse_v by exact term name (existing GlossaryTermPopup path); card art start_here.webp in course-cards.
+needs: nothing. (Glossary gap for A/Comp B if wanted: no sound-sense entry for "Source" — the existing "Source" is the FET terminal.)
+
+
 ### 2026-09-29 16:32 · ccode · bb72bad9
 changed: Foundations air view: sparkle glint no longer grows into a blob
 affects other side: nothing — client JS only (Foundations viz fix found while building Start Here)
