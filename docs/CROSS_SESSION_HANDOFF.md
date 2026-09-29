@@ -204,6 +204,30 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 09:09 · ccode · dfe4fcba
+changed: RTA 61-band: the low end always shows; PK HOLD no longer latches the mic-open pop
+affects other side: nothing — client JS only (RTA low-end bands + peak-hold start-up clear)
+needs: nothing
+
+
+### 2026-09-29 09:09 · ccode · f5ddb939
+changed: Module labs: the greyed last NEXT is now FINISH -> what's-left (owner 2026-09-29)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-29 09:08 · ccode · b2dbe829
+changed: PagedLab: FINISH opens the what's-left screen instead of just leaving (owner 2026-09-29)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-09-29 09:08 · ccode · 5aa37bcd
+changed: labs: shared what's-left END SCREEN (LabEndScreen + labEnd helper + labVisits)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-09-29 08:47 · ccode · 6246f137
 changed: Glossary Links toggle: blue sweeps in left→right on, grey sweeps back right→left off
 affects other side: nothing — client JS only (glossary links toggle animation)
