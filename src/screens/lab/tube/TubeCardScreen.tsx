@@ -233,8 +233,19 @@ export function TubeCardScreen() {
 
           if (Math.abs(g.dx) > 4 || Math.abs(g.dy) > 4) s.moved = true;
 
-          // One finger, zoomed in → pan (clamped to edges).
-          if (s.startScale > 1.01) {
+          // Two fingers → one (bug hunt 2026-09-29): pinch, lift a finger, keep
+          // dragging. This branch used to test `s.startScale` — the PRE-pinch
+          // scale — so a pinch that began at 1× fell into swipe mode, lurched
+          // by the whole gesture's dx and could flip the sheet. The remaining
+          // finger now PANS, re-based so the image does not jump. g.dx/dy run
+          // from the grant, hence start = current − cumulative delta.
+          if (s.mode === 'pinch') {
+            s.mode = 'pan';
+            s.startTx = cur.current.tx - g.dx;
+            s.startTy = cur.current.ty - g.dy;
+          }
+          // One finger, zoomed in (LIVE scale) → pan (clamped to edges).
+          if (s.mode === 'pan' || cur.current.scale > 1.01) {
             s.mode = 'pan';
             const m = maxT(cur.current.scale);
             setTransform(
@@ -295,7 +306,8 @@ export function TubeCardScreen() {
             return;
           }
 
-          if (s.mode === 'pinch' && cur.current.scale < 1.05) {
+          // 'pan' too: a pinch finished on one finger is now a pan (see Move).
+          if ((s.mode === 'pinch' || s.mode === 'pan') && cur.current.scale < 1.05) {
             Animated.parallel([
               Animated.spring(scaleAV, { toValue: 1, useNativeDriver: false }),
               Animated.spring(txAV, { toValue: 0, useNativeDriver: false }),
