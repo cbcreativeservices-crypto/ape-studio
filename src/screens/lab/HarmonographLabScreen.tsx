@@ -41,6 +41,7 @@ import { HarmonographMachine, INK_DEFAULT, drawTurns } from './HarmonographMachi
 import { HarmonographViewer } from './HarmonographViewer';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
+import { useStopOnBlur } from '../../features/audio/useStopOnBlur';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -229,7 +230,7 @@ export function HarmonographLabScreen() {
   // playing. See useStopWhenSilenced.
   useStopWhenSilenced(running, stopInterval);
 
-  useFocusEffect(useCallback(() => () => stopInterval(), [stopInterval]));
+  useStopOnBlur(stopInterval); // never on a re-render (owner 2026-09-29, useStopOnBlur.ts)
   useEffect(() => {
     if (!running) return;
     const id = setInterval(noteAudioActivity, ACTIVITY_MS);

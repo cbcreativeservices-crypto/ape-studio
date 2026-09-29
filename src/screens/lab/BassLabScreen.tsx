@@ -52,6 +52,7 @@ import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 import { useLabAudio } from '../../features/lab/useLabAudio';
 import { labProbe } from '../../features/lab/labProbe';
 import { BASS_LAB_KEY, frettedSampleKey, harmonicSampleKey, type BassString } from '../../features/lab/bassSamples';
+import { useStopOnBlur } from '../../features/audio/useStopOnBlur';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -130,6 +131,15 @@ export function BassLabScreen() {
   // the FALLBACK, used only when the recording cannot be fetched, and the
   // lab says so on screen. `source` is what is sounding right now.
   const sample = useLabAudio();
+  // ⛔ THE BASS ▶ BUG (owner's iPhone, 2026-09-27 → 09-29): `sample` is a NEW
+  // object every render, and stopNote depended on it — so every render made a
+  // new stopNote, the useFocusEffect below re-ran, and its CLEANUP called
+  // stopNote(): genRef++ and sample.stop(). Tapping ▶ re-renders (pending,
+  // loading), so each start was cancelled by its own re-render — the clip
+  // was fetched (server logs: 200) and then silently abandoned. Depend on the
+  // STABLE callbacks only.
+  const samplePlay = sample.play;
+  const sampleStop = sample.stop;
   const [source, setSource] = useState<'recording' | 'model' | null>(null);
   const [sampleNote, setSampleNote] = useState('');
 
@@ -188,7 +198,7 @@ export function BassLabScreen() {
       setStarting(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [requestAudioOutput, genParams, sample, sampleKey, engineReady]);
+  }, [requestAudioOutput, genParams, samplePlay, sampleKey, engineReady]);
 
   const startNoteInner = async () => {
     const gen = ++genRef.current;
@@ -198,7 +208,7 @@ export function BassLabScreen() {
     if (sampleKey) {
       let r: Awaited<ReturnType<typeof sample.play>>;
       try {
-        r = await sample.play(BASS_LAB_KEY, sampleKey);
+        r = await samplePlay(BASS_LAB_KEY, sampleKey);
       } catch (e) {
         labProbe(`play THREW ${(e as Error)?.message ?? e}`); // TEMP probe
         return;
@@ -246,11 +256,11 @@ export function BassLabScreen() {
 
   const stopNote = useCallback(() => {
     genRef.current++;
-    sample.stop();
+    sampleStop();
     void ApeDsp.genStop();
     setRunning(false);
     setSource(null);
-  }, [sample]);
+  }, [sampleStop]);
   // A recording is a one-shot (~2.5 s): when it ends on its own the transport
   // drops back to ▶ — the display never claims to be sounding over silence.
   useEffect(() => {
@@ -264,7 +274,7 @@ export function BassLabScreen() {
   // playing. See useStopWhenSilenced.
   useStopWhenSilenced(running, stopNote);
 
-  useFocusEffect(useCallback(() => () => stopNote(), [stopNote]));
+  useStopOnBlur(stopNote); // never on a re-render (owner 2026-09-29, useStopOnBlur.ts)
   useEffect(() => {
     if (!running) return;
     const id = setInterval(noteAudioActivity, ACTIVITY_MS);

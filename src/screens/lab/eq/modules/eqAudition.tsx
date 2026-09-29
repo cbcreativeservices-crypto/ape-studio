@@ -26,6 +26,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { MiniBtn } from './eqBits';
 import { useStopOnAudioMute } from '../../../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../../../features/audio/useStopWhenSilenced';
+import { useStopOnBlur } from '../../../../features/audio/useStopOnBlur';
 
 const GEN_LEVEL_DB = -20; // house default; the core enforces the −12 dBFS cap
 const ACTIVITY_MS = 500;
@@ -122,7 +123,7 @@ export function EqAuditionBar({ bands }: { bands: EqBandSpec[] }) {
   }, [bands, running, available]);
 
   // Blur/unmount: never leave a test signal running behind another screen.
-  useFocusEffect(useCallback(() => () => stop(), [stop]));
+  useStopOnBlur(stop); // never on a re-render (owner 2026-09-29, useStopOnBlur.ts)
   useEffect(() => {
     if (!running) return;
     const id = setInterval(noteAudioActivity, ACTIVITY_MS);

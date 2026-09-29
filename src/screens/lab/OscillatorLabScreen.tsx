@@ -68,6 +68,7 @@ import { additivePayload, buildPreset, effectiveAmp, synthWaveform, type PresetK
 import { levelColor, MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
+import { useStopOnBlur } from '../../features/audio/useStopOnBlur';
 
 const GEN_LEVEL_DB = -20; // Q4 default; cap stays locked
 const ACTIVITY_MS = 500; // 2 Hz keepalive (SignalGen idiom)
@@ -192,7 +193,7 @@ export function OscillatorLabScreen() {
   useStopWhenSilenced(running, stopTone);
 
   // Stop on blur/unmount; keepalive while sounding.
-  useFocusEffect(useCallback(() => () => stopTone(), [stopTone]));
+  useStopOnBlur(stopTone); // never on a re-render (owner 2026-09-29, useStopOnBlur.ts)
   useEffect(() => {
     if (!running) return;
     const id = setInterval(noteAudioActivity, ACTIVITY_MS);

@@ -55,6 +55,7 @@ import { CheckQuestion } from './foundations/bits';
 import { LabShell, HeaderPlayButton } from './LabShell';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
+import { useStopOnBlur } from '../../features/audio/useStopOnBlur';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -190,7 +191,7 @@ export function NoiseLabScreen() {
   // playing. See useStopWhenSilenced.
   useStopWhenSilenced(running, stopNoise);
 
-  useFocusEffect(useCallback(() => () => stopNoise(), [stopNoise]));
+  useStopOnBlur(stopNoise); // never on a re-render (owner 2026-09-29, useStopOnBlur.ts)
   useEffect(() => {
     if (!running) return;
     const id = setInterval(noteAudioActivity, ACTIVITY_MS);

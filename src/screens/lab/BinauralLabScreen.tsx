@@ -44,6 +44,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { LabShell, LabChip, HeaderPlayButton } from './LabShell';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
+import { useStopOnBlur } from '../../features/audio/useStopOnBlur';
 
 const ACTIVITY_MS = 500;
 const MIN_DIST = 0.5;
@@ -158,7 +159,7 @@ export function BinauralLabScreen() {
   // playing. See useStopWhenSilenced.
   useStopWhenSilenced(running, stop);
 
-  useFocusEffect(useCallback(() => () => stop(), [stop]));
+  useStopOnBlur(stop); // never on a re-render (owner 2026-09-29, useStopOnBlur.ts)
   useEffect(() => {
     if (!running) return;
     const id = setInterval(() => {

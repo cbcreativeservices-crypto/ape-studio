@@ -62,6 +62,7 @@ import { visHzFor } from './FoundationsCourseScreen';
 import { START_LEVEL_01 } from '../../../features/audio/startLevel';
 import { useStopOnAudioMute } from '../../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
+import { useStopOnBlur } from '../../../features/audio/useStopOnBlur';
 
 const ACTIVITY_MS = 500;
 const SPEED_OF_SOUND = 343;
@@ -283,7 +284,7 @@ export function FoundationsPlaygroundScreen() {
   // playing. See useStopWhenSilenced.
   useStopWhenSilenced(playing, stop);
 
-  useFocusEffect(useCallback(() => () => stop(), [stop]));
+  useStopOnBlur(stop); // never on a re-render (owner 2026-09-29, useStopOnBlur.ts)
   useEffect(() => {
     if (!playing) return;
     const id = setInterval(noteAudioActivity, ACTIVITY_MS);

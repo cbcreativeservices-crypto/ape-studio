@@ -38,6 +38,7 @@ import { P } from './shared';
 import { useStopOnAudioMute } from '../../../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../../../features/audio/useStopWhenSilenced';
 import { goToCymatics } from '../goToCymatics';
+import { useStopOnBlur } from '../../../../features/audio/useStopOnBlur';
 
 const B_MIN = 55;
 const B_MAX = 440;
@@ -126,7 +127,7 @@ function useRatioTone(f0: number, n1: number, n2: number, detune: number) {
     ApeDsp.genSet(params());
     noteAudioActivity();
   }, [running, playable, params, stop]);
-  useFocusEffect(useCallback(() => () => stop(), [stop]));
+  useStopOnBlur(stop); // never on a re-render (owner 2026-09-29, useStopOnBlur.ts)
   useEffect(() => {
     if (!running) return;
     const id = setInterval(noteAudioActivity, 500);

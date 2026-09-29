@@ -26,6 +26,7 @@ import { noteAudioActivity } from '../../../features/audio/audioOutputStore';
 import { guardAdditiveForEngine } from '../../../features/audio/speakerSafety';
 import type { EngineState } from '../../../features/tools/engine/useDspEngine';
 import { useStopOnAudioMute } from '../../../features/audio/useStopOnAudioMute';
+import { useStopOnBlur } from '../../../features/audio/useStopOnBlur';
 
 const ACTIVITY_MS = 500;
 
@@ -136,7 +137,7 @@ export function useDriveTone(hzA: number, hzB: number | null, amplitude01: numbe
     retune(hzA, hzB, amplitude01, wave);
   }, [hzA, hzB, amplitude01, wave, retune]);
 
-  useFocusEffect(useCallback(() => () => stop(), [stop]));
+  useStopOnBlur(stop); // never on a re-render (owner 2026-09-29, useStopOnBlur.ts)
   useEffect(() => {
     if (!running) return;
     const id = setInterval(noteAudioActivity, ACTIVITY_MS);
