@@ -130,11 +130,17 @@ export function ShareTermSheet({
     [staged, effSections],
   );
 
-  if (!payload) return <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={false} transparent onRequestClose={onClose} />;
-
   /** The action waiting on the long-message confirm, or null. Stored as a
-   *  function IN a function, or React would call it as a state updater. */
+   *  function IN a function, or React would call it as a state updater.
+   *
+   *  ⛔ MUST STAY ABOVE THE EARLY RETURN BELOW (Sentry APE-STUDIO-V, iPhone 14
+   *  Plus, build 30, 2026-09-26: "Rendered more hooks than during the previous
+   *  render" on the Glossary screen). It used to sit after `if (!payload)
+   *  return …`, so the closed sheet ran one hook fewer than the open one and
+   *  tapping SHARE threw on the very render that opened it. */
   const [pendingLargeShare, setPendingLargeShare] = useState<(() => void) | null>(null);
+
+  if (!payload) return <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={false} transparent onRequestClose={onClose} />;
 
   const multi = staged.length > 1;
   const isLarge = staged.length >= LARGE_SHARE_THRESHOLD;
