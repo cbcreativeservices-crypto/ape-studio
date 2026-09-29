@@ -3,7 +3,7 @@
  * directory is a compact professional layer, not a social product, so it reuses
  * the app's existing chip/row/section idiom rather than inventing a look.
  */
-import type { ReactNode } from 'react';
+import { useCallback, useRef, useState, type ReactNode } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../theme/tokens';
 
@@ -135,6 +135,31 @@ export function EmptyState({ title, lines }: { title: string; lines: string[] })
       ))}
     </View>
   );
+}
+
+/**
+ * One send at a time (bug hunt 2026-09-29). SEND, SEND REQUEST, SEND REPORT,
+ * ACCEPT / DECLINE / WITHDRAW all stayed live while their request was out, so
+ * a double-tap sent the message, the contact request or the report twice.
+ * `run` ignores a second task until the first has settled; `sending` is for
+ * greying the button. The ref, not the state, is the guard — two taps can land
+ * before React re-renders with `sending` true.
+ */
+export function useSending(): [boolean, (task: () => Promise<unknown>) => void] {
+  const inFlight = useRef(false);
+  const [sending, setSending] = useState(false);
+  const run = useCallback((task: () => Promise<unknown>) => {
+    if (inFlight.current) return;
+    inFlight.current = true;
+    setSending(true);
+    void task()
+      .catch(() => {})
+      .finally(() => {
+        inFlight.current = false;
+        setSending(false);
+      });
+  }, []);
+  return [sending, run];
 }
 
 export function PrimaryButton({

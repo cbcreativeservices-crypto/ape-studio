@@ -113,6 +113,22 @@ export function MyProfileView() {
   const [p, setP] = useState<CommunityProfile>(EMPTY_COMMUNITY_PROFILE);
   const pRef = useRef(p);
   pRef.current = p;
+  /**
+   * SAVES RUN ONE AT A TIME (bug hunt 2026-09-29). Every save writes the WHOLE
+   * profile, so two in flight could land out of order — an older snapshot
+   * arriving last overwrote the newer tap on the server — and a failed older
+   * save rolled the screen back over taps made after it. `saveChain`
+   * serialises them; `saveSeq` lets only the LATEST save touch the error line
+   * and the rollback (a later successful save already carries the earlier edit).
+   */
+  const saveChain = useRef<Promise<unknown>>(Promise.resolve());
+  const saveSeq = useRef(0);
+  /** The last profile handed to the server (or read from it) — the unmount
+   *  flush below compares against it. */
+  const lastSent = useRef<CommunityProfile | null>(null);
+  /** True once the server's profile has been read. Before that the editor
+   *  holds the EMPTY default, which must never be flushed over a real profile. */
+  const hydrated = useRef(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -169,7 +185,12 @@ export function MyProfileView() {
         }
         setTax(t);
         setCreds(c);
-        if (mine.status === 'ok') setP(mine.profile);
+        if (mine.status === 'ok') {
+          setP(mine.profile);
+          pRef.current = mine.profile;
+        }
+        lastSent.current = pRef.current;
+        hydrated.current = true;
         // Only offer to carry the old profile over when there is genuinely no new
         // one yet — never overwrite something the member has already built here,
         // and never on the strength of a request that failed (handled above).
@@ -206,18 +227,44 @@ export function MyProfileView() {
   /** One save path. Every edit goes through the server so the caps, the About
    *  rules and the specialty/area rule are applied by the same code that will
    *  be applied at publish time. */
-  const persist = useCallback(async (next: CommunityProfile) => {
+  const persist = useCallback((next: CommunityProfile): Promise<boolean> => {
     const prev = pRef.current;
     setP(next);
+    pRef.current = next;
+    lastSent.current = next;
     setSaving(true);
-    const res = await saveCommunityProfile(next);
-    setSaving(false);
-    setErr(res.ok ? null : res.error);
-    // Roll back on refusal (QA night 2026-09-01): a guest's tapped chip
-    // stayed visually selected after the server said no.
-    if (!res.ok && prev) setP(prev);
-    return res.ok;
+    const seq = ++saveSeq.current;
+    const run = saveChain.current.then(async () => {
+      const res = await saveCommunityProfile(next);
+      if (seq !== saveSeq.current) return res.ok; // a newer save owns the outcome
+      setSaving(false);
+      setErr(res.ok ? null : res.error);
+      // Roll back on refusal (QA night 2026-09-01): a guest's tapped chip
+      // stayed visually selected after the server said no.
+      if (!res.ok && prev) {
+        setP(prev);
+        pRef.current = prev;
+        lastSent.current = prev;
+      }
+      return res.ok;
+    });
+    saveChain.current = run.catch(() => {});
+    return run;
   }, []);
+
+  // FLUSH ON LEAVE (bug hunt 2026-09-29). The text fields save on blur, but
+  // switching the Directory tab UNMOUNTS this view — and a tab tap does not
+  // reliably blur the field first — so whatever was typed since the last save
+  // vanished. Save the latest edit on the way out if it was never sent.
+  useEffect(
+    () => () => {
+      if (hydrated.current && pRef.current !== lastSent.current) {
+        const latest = pRef.current;
+        saveChain.current = saveChain.current.then(() => saveCommunityProfile(latest)).catch(() => {});
+      }
+    },
+    [],
+  );
 
   const toggleArea = (slug: string) => {
     const has = p.areas.includes(slug);
@@ -255,13 +302,27 @@ export function MyProfileView() {
     return g;
   }, [p.displayName, p.primaryArea, p.roles.length]);
 
+  // One publish/unpublish at a time (bug hunt 2026-09-29): while the server
+  // call is out the switch has not moved yet, so further taps re-ran the whole
+  // 18+ → Publish chain and queued a second copy of every question.
+  const publishing = useRef(false);
+  const sendPublish = (on: boolean, adult?: boolean) => {
+    if (publishing.current) return;
+    publishing.current = true;
+    void publishCommunityProfile(on, adult)
+      .then((r) => (r.ok ? refresh() : setErr(r.error)))
+      .finally(() => {
+        publishing.current = false;
+      });
+  };
   const onPublish = (on: boolean) => {
+    if (publishing.current) return;
     if (!on) {
       confirmThen(
         'Unpublish your profile?',
         'Your public page goes offline immediately and you are removed from directory search. Your draft is kept here, and your earned credentials are not affected.',
         'Unpublish',
-        () => void publishCommunityProfile(false).then((r) => (r.ok ? refresh() : setErr(r.error))),
+        () => sendPublish(false),
       );
       return;
     }
@@ -274,7 +335,7 @@ export function MyProfileView() {
         'Publish your community profile?',
         'Your display name, areas, specialties, How I’m Involved and About My Work become visible to anyone with your link. Your private account name, email address, learning progress, quiz scores, notes and unselected credentials are never published.',
         'Publish',
-        () => void publishCommunityProfile(true, adult).then((r) => (r.ok ? refresh() : setErr(r.error))),
+        () => sendPublish(true, adult),
       );
     if (p.adultConfirmed) {
       go(false);

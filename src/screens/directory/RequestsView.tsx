@@ -11,7 +11,7 @@ import { FlatList, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleS
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
-import { Banner, Chip, ChipWrap, EmptyState, Eyebrow, Helper, Loading, PrimaryButton } from './directoryBits';
+import { Banner, Chip, ChipWrap, EmptyState, Eyebrow, Helper, Loading, PrimaryButton, useSending } from './directoryBits';
 import {
   blockThread,
   fetchContactThreads,
@@ -73,12 +73,15 @@ const IncomingCard = memo(function IncomingCard({
   onOpen,
   onReload,
   onError,
+  acting,
 }: {
   t: ContactThread;
   onAct: (t: ContactThread, action: ThreadAction) => void;
   onOpen: (t: ContactThread) => void;
   onReload: () => Promise<void>;
   onError: (e: string) => void;
+  /** An accept/decline/withdraw is in flight — see `act`. */
+  acting: boolean;
 }) {
   return (
     <View style={st.card}>
@@ -88,9 +91,9 @@ const IncomingCard = memo(function IncomingCard({
       <Text style={st.status}>{STATUS_LABEL[t.status]}</Text>
       {t.status === 'pending' ? (
         <View style={st.row}>
-          <PrimaryButton label="ACCEPT" tone="green" onPress={() => onAct(t, 'accept')} />
+          <PrimaryButton label="ACCEPT" tone="green" disabled={acting} onPress={() => onAct(t, 'accept')} />
           <View style={{ width: 8 }} />
-          <PrimaryButton label="DECLINE" onPress={() => onAct(t, 'decline')} />
+          <PrimaryButton label="DECLINE" disabled={acting} onPress={() => onAct(t, 'decline')} />
         </View>
       ) : null}
       {t.status === 'accepted' ? (
@@ -135,10 +138,12 @@ const OutgoingCard = memo(function OutgoingCard({
   t,
   onAct,
   onOpen,
+  acting,
 }: {
   t: ContactThread;
   onAct: (t: ContactThread, action: ThreadAction) => void;
   onOpen: (t: ContactThread) => void;
+  acting: boolean;
 }) {
   return (
     <View style={st.card}>
@@ -147,7 +152,7 @@ const OutgoingCard = memo(function OutgoingCard({
       <Text style={st.msg}>{t.message}</Text>
       <Text style={st.status}>{STATUS_LABEL[t.status]}</Text>
       {t.status === 'pending' ? (
-        <PrimaryButton label="WITHDRAW" onPress={() => onAct(t, 'withdraw')} />
+        <PrimaryButton label="WITHDRAW" disabled={acting} onPress={() => onAct(t, 'withdraw')} />
       ) : null}
       {t.status === 'accepted' ? (
         <PrimaryButton label={`OPEN CONVERSATION (${t.messageCount})`} onPress={() => onOpen(t)} />
@@ -179,15 +184,21 @@ export function RequestsView() {
     void load();
   }, [load]);
 
+  // One answer at a time, until the list has reloaded (bug hunt 2026-09-29):
+  // the buttons stayed live while the answer was out, so a double-tap sent
+  // ACCEPT twice, or ACCEPT and then DECLINE for the same request.
+  const [acting, runAct] = useSending();
   const act = useCallback(
     (t: ContactThread, action: ThreadAction) => {
-      void respondToRequest(t.id, action).then(async (r) => {
-        if (!r.ok) return setErr(r.error);
-        setErr(null);
-        await load();
-      });
+      runAct(() =>
+        respondToRequest(t.id, action).then(async (r) => {
+          if (!r.ok) return setErr(r.error);
+          setErr(null);
+          await load();
+        }),
+      );
     },
-    [load],
+    [load, runAct],
   );
 
   const openThread = useCallback((t: ContactThread) => setOpen(t), []);
@@ -218,12 +229,13 @@ export function RequestsView() {
             onOpen={openThread}
             onReload={load}
             onError={setErr}
+            acting={acting}
           />
         );
       }
-      return <OutgoingCard t={item.thread} onAct={act} onOpen={openThread} />;
+      return <OutgoingCard t={item.thread} onAct={act} onOpen={openThread} acting={acting} />;
     },
-    [act, openThread, load],
+    [act, openThread, load, acting],
   );
 
   // Never loaded and the fetch failed → say so and offer a retry (not "none").
@@ -346,6 +358,7 @@ function ReportLink({
   const [detail, setDetail] = useState('');
   /** On by default — see the note by the chip. */
   const [alsoBlock, setAlsoBlock] = useState(true);
+  const [reporting, runReport] = useSending();
   return (
     <>
       <Pressable
@@ -403,8 +416,9 @@ function ReportLink({
             <PrimaryButton
               label="SEND REPORT"
               tone="danger"
+              disabled={reporting}
               onPress={() =>
-                void reportMember({
+                runReport(() => reportMember({
                   token: thread.otherToken,
                   requestId: thread.id,
                   reason,
@@ -428,7 +442,7 @@ function ReportLink({
                       : 'We review reports and act on them. The other member is not told that you reported them.',
                   );
                   await onDone();
-                })
+                }))
               }
             />
             <PrimaryButton label="CANCEL" onPress={() => setOpen(false)} />
@@ -459,6 +473,7 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
   const [err, setErr] = useState<string | null>(null);
   /** Remaining allowance. null = unknown, which must read as ALLOWED. */
   const [allow, setAllow] = useState<ContactAllowance | null>(null);
+  const [sending, runSend] = useSending();
 
   // [75] (2026-09-07): a failed message fetch used to render as an empty
   // conversation; surface it instead (the reply box still works).
@@ -593,6 +608,7 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
             label="SEND"
             tone="green"
             disabled={
+              sending ||
               !body.trim() ||
               allow?.awaitingReply === true ||
               allow?.messagesLeftHereToday === 0 ||
@@ -600,12 +616,14 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
               allow?.messagesLeftThisWeek === 0
             }
             onPress={() =>
-              void sendThreadMessage(thread.id, body.trim()).then(async (r) => {
-                if (!r.ok) return setErr(r.error);
-                setErr(null);
-                setBody('');
-                await load();
-              })
+              runSend(() =>
+                sendThreadMessage(thread.id, body.trim()).then(async (r) => {
+                  if (!r.ok) return setErr(r.error);
+                  setErr(null);
+                  setBody('');
+                  await load();
+                }),
+              )
             }
           />
         </View>

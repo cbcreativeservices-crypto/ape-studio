@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
-import { Banner, Chip, ChipWrap, Helper, Loading, PrimaryButton, SelfReportedNote } from './directoryBits';
+import { Banner, Chip, ChipWrap, Helper, Loading, PrimaryButton, SelfReportedNote, useSending } from './directoryBits';
 import { ExploreView } from './ExploreView';
 import { MyProfileView } from './MyProfileView';
 import { RequestsView } from './RequestsView';
@@ -124,6 +124,11 @@ function MemberSheet({
   const [contactOpen, setContactOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
   const [sent, setSent] = useState(false);
+  /** A report went through — acknowledged in the sheet (see the BLOCK note). */
+  const [reported, setReported] = useState(false);
+  /** BLOCK was tapped and is waiting for its confirmation. */
+  const [confirmBlock, setConfirmBlock] = useState(false);
+  const [blocking, runBlock] = useSending();
 
   // Load in an effect, never during render: calling a setter while rendering is
   // how you get an endless fetch loop the moment the fetch resolves.
@@ -132,6 +137,8 @@ function MemberSheet({
     if (!token) {
       setData(null);
       setSent(false);
+      setReported(false);
+      setConfirmBlock(false);
       setErr(null);
       setSettled(false);
       return;
@@ -198,6 +205,12 @@ function MemberSheet({
             <>
               {err ? <Banner tone="warn">{err}</Banner> : null}
               {sent ? <Banner tone="good">Request sent. You’ll see the reply under Requests.</Banner> : null}
+              {reported ? (
+                <Banner tone="good">
+                  Report received. We review reports and act on them. The other member is not told that you
+                  reported them.
+                </Banner>
+              ) : null}
               {p.primaryArea ? <Text style={st.area}>{p.primaryArea}</Text> : null}
               {p.about ? <Text style={st.about}>{p.about}</Text> : null}
               {p.specialties.length ? (
@@ -255,15 +268,43 @@ function MemberSheet({
                 <PrimaryButton label="SEND A CONTACT REQUEST" tone="green" onPress={() => setContactOpen(true)} />
               ) : null}
 
+              {/* ── BLOCK ASKS FIRST, INSIDE THE SHEET (bug hunt 2026-09-29) ──
+                  BLOCK acted on a single tap here, while the same control in
+                  Requests confirms first — so one stray tap silently removed
+                  a member from both directories. Same copy as Requests.
+                  ⚠️ The confirm is drawn IN this sheet, not via confirmDialog:
+                  on Android AppDialogHost is a sibling window that lands
+                  BEHIND an open <Modal> (see ShareTermSheet), which would make
+                  BLOCK a dead button. The report acknowledgement above is an
+                  in-sheet banner for the same reason. */}
+              {confirmBlock ? (
+                <View style={{ gap: 10 }}>
+                  <Text style={st.credHead}>{`BLOCK ${p.displayName.toUpperCase()}?`}</Text>
+                  <Helper>
+                    They will not be able to contact you again, and neither of you will see the other in the
+                    directory. Any open conversation closes.
+                  </Helper>
+                  <PrimaryButton
+                    label="BLOCK"
+                    tone="danger"
+                    disabled={blocking}
+                    onPress={() =>
+                      runBlock(() =>
+                        blockMember(token, true).then((r) => {
+                          setConfirmBlock(false);
+                          if (!r.ok) return setErr(r.error);
+                          onBlocked?.(token);
+                          onClose();
+                        }),
+                      )
+                    }
+                  />
+                  <PrimaryButton label="CANCEL" onPress={() => setConfirmBlock(false)} />
+                </View>
+              ) : (
               <View style={st.row}>
                 <Pressable
-                  onPress={() =>
-                    void blockMember(token, true).then((r) => {
-                      if (!r.ok) return setErr(r.error);
-                      onBlocked?.(token);
-                      onClose();
-                    })
-                  }
+                  onPress={() => setConfirmBlock(true)}
                   hitSlop={6}
                   style={st.link}
                   accessibilityRole="button"
@@ -281,6 +322,7 @@ function MemberSheet({
                   <Text style={st.linkText}>REPORT</Text>
                 </Pressable>
               </View>
+              )}
 
               <SelfReportedNote />
 
@@ -305,9 +347,13 @@ function MemberSheet({
                 open={reportOpen}
                 onClose={() => setReportOpen(false)}
                 onSend={(reason, detail) =>
-                  void reportMember({ token, reason, detail }).then((r) => {
+                  reportMember({ token, reason, detail }).then((r) => {
                     setReportOpen(false);
-                    if (!r.ok) setErr(r.error);
+                    if (!r.ok) return setErr(r.error);
+                    // A report that vanishes silently reads as one that was
+                    // not received (bug hunt 2026-09-29; Requests says so too).
+                    setErr(null);
+                    setReported(true);
                   })
                 }
               />
@@ -342,6 +388,7 @@ function ContactSheet({
    * someone contacting anybody at all (owner 2026-09-19).
    */
   const [allow, setAllow] = useState<ContactAllowance | null>(null);
+  const [sending, runSend] = useSending();
   useEffect(() => {
     if (!open) return;
     let alive = true;
@@ -406,8 +453,8 @@ function ContactSheet({
           <PrimaryButton
             label="SEND REQUEST"
             tone="green"
-            disabled={!purpose || !message.trim() || allow?.requestsLeftThisWeek === 0}
-            onPress={() => void onSend(purpose ?? '', message.trim()).then((ok) => ok && setMessage(''))}
+            disabled={sending || !purpose || !message.trim() || allow?.requestsLeftThisWeek === 0}
+            onPress={() => runSend(() => onSend(purpose ?? '', message.trim()).then((ok) => ok && setMessage('')))}
           />
           <PrimaryButton label="CANCEL" onPress={onClose} />
         </View>
@@ -431,11 +478,12 @@ function ReportSheet({
 }: {
   open: boolean;
   onClose: () => void;
-  onSend: (reason: ReportReason, detail: string) => void;
+  onSend: (reason: ReportReason, detail: string) => Promise<unknown>;
 }) {
   const insets = useSafeAreaInsets();
   const [reason, setReason] = useState<ReportReason>('spam');
   const [detail, setDetail] = useState('');
+  const [sending, runSend] = useSending();
   return (
     <Modal accessibilityViewIsModal visible={open} transparent animationType="slide" onRequestClose={onClose}>
       {/* Keyboard trap — see the note on the contact composer above. */}
@@ -460,7 +508,12 @@ function ReportSheet({
             maxLength={1000}
             accessibilityLabel="Report details"
           />
-          <PrimaryButton label="SEND REPORT" tone="danger" onPress={() => onSend(reason, detail)} />
+          <PrimaryButton
+            label="SEND REPORT"
+            tone="danger"
+            disabled={sending}
+            onPress={() => runSend(() => onSend(reason, detail))}
+          />
           <PrimaryButton label="CANCEL" onPress={onClose} />
         </View>
       </KeyboardAvoidingView>

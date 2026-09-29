@@ -11,7 +11,7 @@
  * the About paragraph: free-text search over a personal description is exactly
  * how you fish for the characteristics that are not allowed to be filters.
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { colors, fonts } from '../../theme/tokens';
 import { Banner, Chip, ChipWrap, EmptyState, Eyebrow, Helper, Loading, PrimaryButton, SelfReportedNote } from './directoryBits';
@@ -75,7 +75,16 @@ export function ExploreView({
     void loadTax();
   }, [loadTax]);
 
+  /**
+   * Which search is current (bug hunt 2026-09-29). Filters change faster than
+   * searches return, and the answers can arrive in any order: an older, slower
+   * search landed last and replaced the list with results for filters no
+   * longer selected, and the FIRST search to finish cleared the spinner while
+   * the current one was still out. Only the latest request may touch either.
+   */
+  const reqId = useRef(0);
   const run = useCallback(async (filters: DirectoryFilters) => {
+    const id = ++reqId.current;
     setBusy(true);
     setPage(0);
     // try/finally, not a bare sequence: the spinner must be cleared by the
@@ -86,8 +95,9 @@ export function ExploreView({
     try {
       out = await searchDirectory(filters);
     } finally {
-      setBusy(false);
+      if (id === reqId.current) setBusy(false);
     }
+    if (id !== reqId.current) return; // superseded by a newer search
     if (out.status === 'error') {
       setErr(out.error);
       setRows([]);
@@ -104,6 +114,7 @@ export function ExploreView({
    *  that a thirty-first could not be fetched, is the wrong trade. */
   const loadMore = useCallback(async () => {
     const next = page + 1;
+    const id = reqId.current;
     setLoadingMore(true);
     let out: Awaited<ReturnType<typeof searchDirectory>>;
     try {
@@ -111,6 +122,9 @@ export function ExploreView({
     } finally {
       setLoadingMore(false);
     }
+    // The filters changed while this page was out — it belongs to a list
+    // that is no longer on screen.
+    if (id !== reqId.current) return;
     if (out.status === 'error') {
       setErr(out.error);
       return;
