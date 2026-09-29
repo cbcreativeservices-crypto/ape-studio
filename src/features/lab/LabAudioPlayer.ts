@@ -30,7 +30,7 @@ import { labProbe } from './labProbe';
 
 /** Reuse a signed URL only while this fresh — well inside the 120 s TTL, with
  *  headroom for buffering. */
-const URL_REUSE_MS = 90_000;
+export const URL_REUSE_MS = 90_000;
 
 /** Longest play() waits for the audio-session mode before playing anyway. */
 const AUDIO_MODE_WAIT_MS = 1500;
@@ -53,10 +53,21 @@ function keyOf(labKey: string, assetKey: string): string {
 }
 
 /** Most clips kept loaded at once (owner 2026-09-29: "tighten the time between
- *  the change and hearing it"). A bass clip is ~0.5 MB of WAV; 16 is small. */
-const POOL_MAX = 16;
-/** Most preloads fetched at once, so a burst never starves the tapped note. */
-const PRELOAD_CONCURRENCY = 3;
+ *  the change and hearing it"; later the same day: "load in … as many as
+ *  possible with still good function … if it isn't too much extra on the
+ *  user's memory").
+ *
+ *  MEMORY BUDGET: a bass clip is ~0.3–0.6 MB of WAV, so 28 loaded players is
+ *  ≤ ~17 MB of audio held by the native players — about one photo-heavy
+ *  screen's worth — released on close (dispose). Callers plan at most
+ *  PRELOAD_MAX of them, leaving headroom so the notes a learner TAPS are
+ *  never evicted by the plan itself. */
+export const POOL_MAX = 28;
+/** Most clips a screen asks to preload at once (see POOL_MAX). */
+export const PRELOAD_MAX = 24;
+/** Most preloads fetched at once — two, so a tapped note (its own fetch) is
+ *  never starved behind a burst. */
+const PRELOAD_CONCURRENCY = 2;
 
 type PoolEntry = {
   assetKey: string;
@@ -208,16 +219,28 @@ export class LabAudioPlayer {
    */
   preload(labKey: string, assetKeys: readonly string[]): void {
     if (this.disposed) return;
+    const now = Date.now();
     const todo = assetKeys.filter((a) => {
       const k = keyOf(labKey, a);
       const e = this.pool.get(k);
-      return !(e && Date.now() - e.at < URL_REUSE_MS) && !this.loading.has(k);
+      const fresh = !!e && now - e.at < URL_REUSE_MS;
+      // Still wanted: count it as used now, so the eviction keeps the notes
+      // the NEW plan wants over the ones only an old plan did.
+      if (fresh) e!.lastUsed = now;
+      return !fresh && !this.loading.has(k);
     });
     let i = 0;
+    // A refused signed URL (a guest / preview without access) refuses the
+    // rest of the batch too — stop instead of spending a call per note.
+    let refused = false;
     const next = (): void => {
-      if (this.disposed || i >= todo.length) return;
+      if (this.disposed || refused || i >= todo.length) return;
       const a = todo[i++];
-      void this.load(labKey, a).finally(next);
+      void this.load(labKey, a)
+        .then((r) => {
+          if (r === 'auth') refused = true;
+        })
+        .finally(next);
     };
     for (let n = 0; n < PRELOAD_CONCURRENCY; n++) next();
   }

@@ -35,11 +35,11 @@
  */
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import Svg, { Circle, Defs, LinearGradient, Line, Path, RadialGradient, Rect, Stop } from 'react-native-svg';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
-import { isAudioOutputEnabled, noteAudioActivity } from '../../features/audio/audioOutputStore';
+import { isAudioOutputEnabled, noteAudioActivity, useAudioOutputEnabled } from '../../features/audio/audioOutputStore';
 import { guardAdditiveForEngine, speakerGuardDb, SPEAKER_HPF_HZ } from '../../features/audio/speakerSafety';
 import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { CheckQuestion } from './foundations/bits';
@@ -50,6 +50,8 @@ import { LabShell, HeaderPlayButton } from './LabShell';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 import { useLabAudio } from '../../features/lab/useLabAudio';
+import { PRELOAD_MAX, URL_REUSE_MS } from '../../features/lab/LabAudioPlayer';
+import { gridPreloadOrder } from '../../features/lab/labPreloadPlan';
 import { labProbe } from '../../features/lab/labProbe';
 import { BASS_LAB_KEY, frettedSampleKey, harmonicSampleKey, type BassString } from '../../features/lab/bassSamples';
 import { useStopOnClose } from '../../features/audio/useStopOnBlur';
@@ -274,20 +276,42 @@ export function BassLabScreen() {
   // strings (or every node here and this node on the other strings) — load in
   // the background, so a change plays from memory instead of waiting on the
   // network.
+  //
+  // MORE, AND SOONER (owner 2026-09-29, later: "load in audio clip starts (as
+  // many as possible with still good function) in each screen"). Loading now
+  // starts once sound output is ON — armed or not — in gridPreloadOrder: the
+  // current note, the whole current string, this fret on every string, then
+  // the rest nearest-first, capped at PRELOAD_MAX (the pool's budget, see
+  // LabAudioPlayer). Nothing plays. Only while this screen is in front, so a
+  // lab left sounding under another screen does not keep fetching. Signed
+  // URLs age out after URL_REUSE_MS, so while ARMED the nearest few are
+  // re-loaded just before that — the next change still plays from memory.
   const samplePreload = sample.preload;
+  const outputOn = useAudioOutputEnabled();
+  const focused = useIsFocused();
+  const [refreshTick, setRefreshTick] = useState(0);
   useEffect(() => {
-    if (!running) return;
-    const here = str.key.toLowerCase() as BassString;
-    const keys: string[] = [];
-    if (mode === 'fretted') {
-      for (let f = fret - 2; f <= fret + 2; f++) if (f >= 0 && f <= NUM_FRETS && f !== fret) keys.push(frettedSampleKey(here, f));
-      for (const st of STRINGS) if (st.key !== str.key) keys.push(frettedSampleKey(st.key.toLowerCase() as BassString, fret));
-    } else {
-      for (const nd of NODES) if (nd.n !== node.n) keys.push(harmonicSampleKey(here, nd.n) ?? '');
-      for (const st of STRINGS) if (st.key !== str.key) keys.push(harmonicSampleKey(st.key.toLowerCase() as BassString, node.n) ?? '');
-    }
+    if (!running || !outputOn || !focused) return;
+    const id = setInterval(() => setRefreshTick((t) => t + 1), URL_REUSE_MS - 10_000);
+    return () => clearInterval(id);
+  }, [running, outputOn, focused]);
+  const lastTickRef = useRef(0);
+  useEffect(() => {
+    if (!outputOn || !focused) return;
+    // A refresh re-loads only the nearest 8 (fewer lab-audio calls); a change
+    // or an open plans the full budget.
+    const refresh = refreshTick !== lastTickRef.current;
+    lastTickRef.current = refreshTick;
+    const fretted = mode === 'fretted';
+    const cols = fretted ? NUM_FRETS + 1 : NODES.length;
+    const col = fretted ? fret : nodeIdx;
+    const plan = gridPreloadOrder(STRINGS.length, cols, stringIdx, col, refresh ? 8 : PRELOAD_MAX);
+    const keys = plan.map(([r, c]) => {
+      const s = STRINGS[r].key.toLowerCase() as BassString;
+      return fretted ? frettedSampleKey(s, c) : (harmonicSampleKey(s, NODES[c].n) ?? '');
+    });
     samplePreload(BASS_LAB_KEY, keys.filter(Boolean));
-  }, [running, mode, str.key, fret, node.n, samplePreload]);
+  }, [outputOn, focused, mode, stringIdx, fret, nodeIdx, refreshTick, samplePreload]);
   // Shake-to-mute (and the idle/background lock) silences the voices from
   // outside this screen; without this the transport would keep saying it is
   // playing. See useStopWhenSilenced.

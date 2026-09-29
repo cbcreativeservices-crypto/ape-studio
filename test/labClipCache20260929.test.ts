@@ -137,3 +137,37 @@ test('Tuning: chapters get the memoised renderers; saved clips play from a poole
   // Close releases every saved clip.
   assert.match(s.slice(s.indexOf('  dispose(): void {')), /this\.pool\.clear\(\);/);
 });
+
+// ── Bass lab: what loads first ───────────────────────────────────────────────
+
+import { gridPreloadOrder } from '../src/features/lab/labPreloadPlan.ts';
+
+test('grid plan: current note, then the whole string nearest-first, then this fret on every string', () => {
+  const plan = gridPreloadOrder(4, 13, 1, 5, 100); // A string, fret 5
+  assert.deepEqual(plan[0], [1, 5]);
+  const row = plan.slice(1, 13);
+  assert.ok(row.every(([r]) => r === 1), 'the rest of the current string comes next');
+  assert.deepEqual(row.slice(0, 2).map(([, c]) => c).sort(), [4, 6]); // nearest frets first
+  const col = plan.slice(13, 16);
+  assert.ok(col.every(([, c]) => c === 5), 'then fret 5 on every other string');
+  assert.equal(plan.length, 52); // every note, once
+  assert.equal(new Set(plan.map((p) => p.join())).size, 52);
+});
+
+test('grid plan: capped to the budget, and stays inside the grid at the edges', () => {
+  assert.equal(gridPreloadOrder(4, 13, 0, 0, 24).length, 24);
+  assert.ok(gridPreloadOrder(4, 13, 3, 12, 60).every(([r, c]) => r >= 0 && r < 4 && c >= 0 && c < 13));
+  assert.deepEqual(gridPreloadOrder(4, 13, 0, 0, 0), []);
+});
+
+test('Bass lab: preloads the plan once sound is on (armed or not), within the pool budget; nothing plays', () => {
+  const p = read('src/features/lab/LabAudioPlayer.ts');
+  assert.match(p, /export const POOL_MAX = 28;/);
+  assert.match(p, /export const PRELOAD_MAX = 24;/);
+  const pre = p.slice(p.indexOf('  preload(labKey'), p.indexOf('  async play('));
+  assert.doesNotMatch(pre, /\.play\(/);
+  assert.match(pre, /if \(r === 'auth'\) refused = true;/);
+  const b = read('src/screens/lab/BassLabScreen.tsx');
+  assert.match(b, /if \(!outputOn \|\| !focused\) return;/);
+  assert.match(b, /gridPreloadOrder\(STRINGS\.length, cols, stringIdx, col, refresh \? 8 : PRELOAD_MAX\)/);
+});
