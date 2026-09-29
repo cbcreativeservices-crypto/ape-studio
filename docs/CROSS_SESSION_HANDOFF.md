@@ -195,6 +195,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 00:05 · ccode · 9e8215ab
+changed: Tools: FULL SCREEN for the RTA and the Spectrogram
+affects other side: nothing — client JS only (RTA/spectrogram full screen)
+needs: nothing
+
+
 ### 2026-09-28 23:45 · ccode · dbab81af
 changed: Sign-up: 'account NOT created' + one-tap strong password; LOGIN explains a refused sign-up
 affects other side: nothing — client JS only (sign-up copy + password suggester) <FILL — what A (backend) must re-read or adjust, or "nothing">
