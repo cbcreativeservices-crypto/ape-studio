@@ -35,6 +35,8 @@ import {
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../theme/readingColumn';
+import { useIsTablet } from '../../theme/useIsTablet';
+import { GlassPanel, GlassTile } from '../tools/GlassTile';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EarLab'>;
 
@@ -77,7 +79,7 @@ export function EarLabScreen({ navigation, route }: Props) {
   // Accordion (owner 2026-08-07): every lab row loads COLLAPSED (name + reveal
   // triangle); at most ONE row is expanded at a time, and the expanded row
   // carries an explicit [OPEN] button — the triangle never opens the lab.
-  const [expandedKey, setExpandedKey] = useState<string | null>(null);
+  const tablet = useIsTablet();
 
   // navigate is over-strict about the (route, params?) tuple across a union of
   // routes; go loose (the app-wide escape hatch) since routes/params come from
@@ -178,32 +180,59 @@ export function EarLabScreen({ navigation, route }: Props) {
                 <Text style={styles.sectionTitle}>{sec.title}</Text>
                 <Text style={styles.sectionNote}>{secLocked ? 'Members only · preview' : isMember ? '' : sec.note}</Text>
               </View>
+              {/* GLASS TILES (owner 2026-09-30: "convert the 2 lab menus … into
+                  the panel tile animated button layout we are now using for the
+                  audio tools and calculators … a subtitle now can be added. keep
+                  the categories clear"). Each category keeps its heading; its
+                  labs sit below as the hub's glass tiles on the hub panel —
+                  name + subtitle + access tag, one tap opens (no accordion). */}
               {sectionCategories(sec.key).map((cat) => (
                 <View key={cat.id} style={styles.catBlock}>
-                  {cat.kind === 'hub' ? (
-                    // A hub subject is one lab environment — a tappable header that
-                    // opens its own module drill-down (e.g. the Calculator Lab).
-                    <CategoryLabel cat={cat} locked={secLocked && !cat.alwaysFree} onPress={() => openHub(cat)} />
-                  ) : (
-                    <>
-                      <CategoryLabel cat={cat} />
-                      {categoryEntries(cat).map((leaf) => {
-                        const k = `${cat.id}:${leaf.name}`;
+                  <CategoryLabel cat={cat} />
+                  <GlassPanel style={[styles.tileGrid, !tablet && styles.tilePanelPhone]}>
+                    {cat.kind === 'hub' ? (
+                      // A hub subject is ONE lab environment (e.g. the Calculator
+                      // Lab): one full-width tile opens its own drill-down.
+                      <GlassTile
+                        style={styles.tileFull}
+                        glassStyle={styles.tileFace}
+                        onPress={() => openHub(cat)}
+                        accessibilityLabel={`${cat.name}, ${categoryCountLabel(cat)}${secLocked && !cat.alwaysFree ? ', Academy members only' : ''}`}
+                      >
+                        {/* The heading above already names it; the tile says what's inside. */}
+                        <Text style={[styles.tileName, cat.accent === 'purple' && styles.catNamePurple]} numberOfLines={2}>
+                          {categoryCountLabel(cat)} ›
+                        </Text>
+                        <Text style={styles.tileSub} numberOfLines={3}>{cat.hubBlurb}</Text>
+                        {secLocked && !cat.alwaysFree ? <Text style={styles.tileTagLock}>🔒 MEMBERS</Text> : null}
+                      </GlassTile>
+                    ) : (
+                      categoryEntries(cat).map((leaf) => {
+                        const locked = leafLocked(leaf, sec.key) && leaf.status !== 'development';
+                        const free = freeIncluded(leaf, sec.key);
+                        const dev = leaf.status === 'development';
                         return (
-                          <LabRow
-                            key={k}
-                            leaf={leaf}
-                            locked={leafLocked(leaf, sec.key)}
-                            freeIncluded={freeIncluded(leaf, sec.key)}
-                            expanded={expandedKey === k}
-                            onToggle={() => setExpandedKey((cur) => (cur === k ? null : k))}
-                            onOpen={() => openLeaf(leaf, sec.key)}
-                            inset
-                          />
+                          <GlassTile
+                            key={`${cat.id}:${leaf.name}`}
+                            style={tablet ? styles.tileThird : styles.tileHalf}
+                            glassStyle={styles.tileFace}
+                            onPress={() => openLeaf(leaf, sec.key)}
+                            accessibilityLabel={`${leaf.name}. ${leaf.blurb}${locked ? ' Academy members only — opens the preview.' : ''}${free ? ' Included free.' : ''}`}
+                          >
+                            <Text style={styles.tileName} numberOfLines={2}>{leaf.name}</Text>
+                            <Text style={styles.tileSub} numberOfLines={3}>{leaf.blurb}</Text>
+                            {dev ? (
+                              <Text style={styles.soon}>PLANNED</Text>
+                            ) : locked ? (
+                              <Text style={styles.tileTagLock}>🔒 MEMBERS</Text>
+                            ) : free ? (
+                              <Text style={styles.freeTag}>FREE</Text>
+                            ) : null}
+                          </GlassTile>
                         );
-                      })}
-                    </>
-                  )}
+                      })
+                    )}
+                  </GlassPanel>
                 </View>
               ))}
             </View>
@@ -372,6 +401,16 @@ const styles = StyleSheet.create({
   sectionNote: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.textSub },
 
   catBlock: { gap: 8, marginTop: 4 },
+  // Glass tile grid (owner 2026-09-30) — two a row on phones, three on tablets.
+  tileGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 10 },
+  tilePanelPhone: { padding: 7 },
+  tileHalf: { width: '48.5%' },
+  tileThird: { width: '32%' },
+  tileFull: { width: '100%' },
+  tileFace: { minHeight: 118, padding: 12, gap: 5, backgroundColor: '#101116' },
+  tileName: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.4, color: colors.amber },
+  tileSub: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 16, color: '#d4d6da', flexGrow: 1 },
+  tileTagLock: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.textSub },
 
   // Subject header (its labs are the tappable rows beneath).
   catLabel: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingTop: 2 },
