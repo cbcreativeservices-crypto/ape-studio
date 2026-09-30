@@ -43,6 +43,14 @@ const FUND_DESC =
   'The bedrock of professional audio: how sound behaves, how we hear it, and how ' +
   'signal moves through a system. Core labs are free — the deeper Fundamentals ' +
   'unlock with membership.';
+// MEMBER copy (owner 2026-09-29): no "free" / "with membership" marketing to
+// people who already pay — same sentences, without the selling half.
+const INTRO_MEMBER =
+  'Build your foundational knowledge or strengthen your understanding through ' +
+  'interactive practice.';
+const FUND_DESC_MEMBER =
+  'The bedrock of professional audio: how sound behaves, how we hear it, and how ' +
+  'signal moves through a system.';
 const FUND_CERT = 'Required for every Academy certificate';
 const TRAIN_DESC =
   'Go further: interactive demonstrations, visualizations, hands-on controls, ' +
@@ -80,13 +88,13 @@ export function AudioLearningScreen({ navigation }: Props) {
       </View>
 
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
-        <Text style={styles.intro}>{INTRO}</Text>
+        <Text style={styles.intro}>{locked ? INTRO : INTRO_MEMBER}</Text>
 
         {/* ── Audio Fundamentals — free to start (core labs free) ──────── */}
         <Pressable
           onPress={goFundamentals}
           accessibilityRole="button"
-          accessibilityLabel="Audio Fundamentals. Free to start. Required for every Academy certificate. Explore fundamentals."
+          accessibilityLabel={`Audio Fundamentals. ${locked ? 'Free to start. ' : ''}Required for every Academy certificate. Explore fundamentals.`}
           style={({ pressed }) => [styles.card, styles.cardFree, pressed && styles.cardPressed]}
         >
           <ImageBackground
@@ -104,12 +112,14 @@ export function AudioLearningScreen({ navigation }: Props) {
             <View style={styles.cardHead}>
               <View style={{ gap: 6 }}>
                 <Text style={styles.cardTitle}>Audio Fundamentals</Text>
-                <View style={[styles.badge, styles.badgeFree]}>
-                  <Text style={styles.badgeFreeText}>FREE TO START</Text>
-                </View>
+                {locked ? (
+                  <View style={[styles.badge, styles.badgeFree]}>
+                    <Text style={styles.badgeFreeText}>FREE TO START</Text>
+                  </View>
+                ) : null}
               </View>
             </View>
-            <Text style={styles.cardDesc}>{FUND_DESC}</Text>
+            <Text style={styles.cardDesc}>{locked ? FUND_DESC : FUND_DESC_MEMBER}</Text>
             <View style={styles.certNote}>
               <Text style={styles.certGlyph}>🎓</Text>
               <Text style={styles.certText}>{FUND_CERT}</Text>
@@ -147,11 +157,11 @@ export function AudioLearningScreen({ navigation }: Props) {
             <View style={styles.cardHead}>
               <View style={{ gap: 6 }}>
                 <Text style={styles.cardTitle}>Advanced Training Labs</Text>
-                <View style={[styles.badge, styles.badgeMember]}>
-                  <Text style={styles.badgeMemberText}>
-                    {!locked ? 'ACADEMY MEMBERSHIP' : '🔒 ACADEMY MEMBERSHIP'}
-                  </Text>
-                </View>
+                {locked ? (
+                  <View style={[styles.badge, styles.badgeMember]}>
+                    <Text style={styles.badgeMemberText}>🔒 ACADEMY MEMBERSHIP</Text>
+                  </View>
+                ) : null}
               </View>
             </View>
             <Text style={styles.cardDesc}>{TRAIN_DESC}</Text>

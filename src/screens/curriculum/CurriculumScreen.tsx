@@ -44,6 +44,7 @@ import { FAMILY_COUNT } from '../../features/careerfinder/families';
 import { computeResult } from '../../features/careerfinder/scoring';
 import { useCareerFinder } from '../../features/careerfinder/store';
 import { readingColumn } from '../../theme/readingColumn';
+import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 
 /**
  * What the Academy sets out to do.
@@ -121,6 +122,8 @@ export function CurriculumView({
   // The Career Finder entry is a button beside SUBJECTS (owner 2026-09-04):
   // tapping it opens the green container as a popup.
   const [showFinder, setShowFinder] = useState(false);
+  // Members never see "free" marketing (owner 2026-09-29).
+  const { isMember } = useEntitlement();
   // Curriculum view split (owner 2026-09-15): TOPICS (flat list of every topic)
   // vs SUBJECTS (the expandable subject → topics tree).
   const [curTab, setCurTab] = useState<'topics' | 'subjects'>('subjects');
@@ -166,8 +169,8 @@ export function CurriculumView({
     if (answered > 0) {
       return { blurb: `You’re at question ${Math.min(QUESTION_COUNT, finderRec.index + 1)} of ${QUESTION_COUNT}. Your answers are saved.`, pill: 'CONTINUE ›', a11y: `Audio Career Finder, Beta. Continue at question ${finderRec.index + 1} of ${QUESTION_COUNT}.`, route: 'CareerFinderQuiz' };
     }
-    return { blurb: `Which kinds of audio work would you enjoy? ${QUESTION_COUNT} questions, ${FAMILY_COUNT} career families, ${fmt(CAREER_COUNT)} ways to work in audio. About five minutes.`, pill: 'START ›', a11y: `Audio Career Finder, Beta. ${QUESTION_COUNT} questions, ${FAMILY_COUNT} career families, ${fmt(CAREER_COUNT)} ways to work in audio. Free, about five minutes.`, route: 'CareerFinder' };
-  }, [finderRec]);
+    return { blurb: `Which kinds of audio work would you enjoy? ${QUESTION_COUNT} questions, ${FAMILY_COUNT} career families, ${fmt(CAREER_COUNT)} ways to work in audio. About five minutes.`, pill: 'START ›', a11y: `Audio Career Finder, Beta. ${QUESTION_COUNT} questions, ${FAMILY_COUNT} career families, ${fmt(CAREER_COUNT)} ways to work in audio. ${isMember ? '' : 'Free, '}about five minutes.`, route: 'CareerFinder' };
+  }, [finderRec, isMember]);
 
   // LIVE v3 curriculum (owner 2026-08-06) — replaces the retired v2 matrix.
   const [v3Subjects, setV3Subjects] = useState<{ order: number; name: string; field: string; topics: { gs: number; name: string }[] }[]>([]);
@@ -230,7 +233,7 @@ export function CurriculumView({
         'This topic stays',
         coreLocked
           ? 'Required co-requisites stay in your list until you complete them.'
-          : 'Your free topics are always part of your list.',
+          : 'This topic is always part of your list.',
       );
       return;
     }
@@ -605,7 +608,7 @@ export function CurriculumView({
         <Pressable style={StyleSheet.absoluteFill} onPress={() => setShowFinder(false)} accessibilityRole="button" accessibilityLabel="Dismiss" />
         <View style={styles.finderModal}>
           <View style={styles.finderEyebrowRow}>
-            <Text style={styles.finderEyebrow}>CAREER DISCOVERY LAB · FREE</Text>
+            <Text style={styles.finderEyebrow}>{isMember ? 'CAREER DISCOVERY LAB' : 'CAREER DISCOVERY LAB · FREE'}</Text>
             <View style={styles.finderBeta}><Text style={styles.finderBetaText}>BETA</Text></View>
           </View>
           <Text style={styles.finderTitle}>Audio Career Finder</Text>

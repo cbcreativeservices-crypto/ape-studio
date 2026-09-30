@@ -11,6 +11,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BrandLogo } from '../../components/BrandLogo';
 import { colors, fonts } from '../../theme/tokens';
 import { READING_MAX_W, readingColumn } from '../../theme/readingColumn';
+import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+
+/** Free-tier lines a MEMBER never sees (owner 2026-09-29: no membership
+ *  marketing, and no pointing out what is free, to people who already pay). */
+const FREE_TIER_LINES = new Set<string>([
+  'The Pro Audio Glossary is the foundation of the app and is available free. '
+    + 'Free use includes 14 definitions a week; Academy membership removes the limit.',
+  'You do not have to enroll in the Academy to use the app as a reference.',
+]);
 
 /** One eyebrow-headed section. */
 const SECTIONS: { head: string; paras: string[] }[] = [
@@ -76,6 +85,7 @@ const PATHWAYS: string[] = [
 ];
 
 export function AboutHomeSheet({ visible, onClose }: { visible: boolean; onClose: () => void }) {
+  const { isMember } = useEntitlement();
   const insets = useSafeAreaInsets();
   return (
     <Modal accessibilityViewIsModal visible={visible} animationType="fade" transparent onRequestClose={onClose}>
@@ -110,7 +120,7 @@ export function AboutHomeSheet({ visible, onClose }: { visible: boolean; onClose
             {SECTIONS.map((s) => (
               <View key={s.head} style={styles.section}>
                 <Text style={styles.eyebrow}>{s.head}</Text>
-                {s.paras.map((p, i) => (
+                {s.paras.filter((p) => !(isMember && FREE_TIER_LINES.has(p))).map((p, i) => (
                   <Text key={i} style={styles.body}>
                     {p}
                   </Text>

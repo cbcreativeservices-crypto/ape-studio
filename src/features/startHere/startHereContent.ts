@@ -425,7 +425,7 @@ export const SECTIONS: readonly StartSection[] = [
         paras: [
           'In about 30 minutes — six short lessons, and you can stop whenever you like — you will learn the handful of ideas the rest of the app is built on: what sound is, how it becomes audio, what the equipment does, and how sound is measured and shown on a screen.',
           'You will not need any equipment. For the few sounds, use headphones if you can — phone speakers cannot play the lowest tones well. Turn your volume down before you press PLAY, then raise it slowly to a comfortable level.',
-          'Nothing here is graded and nothing is locked. It is free for everyone, and you can jump ahead or go back whenever you like.',
+          'Nothing here is graded and nothing is locked. You can jump ahead or go back whenever you like.',
         ],
       },
     ],
@@ -789,7 +789,7 @@ export const SECTIONS: readonly StartSection[] = [
           'Keep headphones and speakers at a comfortable level. If you have to raise your voice to talk over the sound, or your ears ring or feel dull afterwards, it was too loud.',
           'Loud sound can damage hearing permanently, and the damage adds up over time. Turn it down, take breaks, and use hearing protection around loud music and machinery.',
           'A rule of thumb technicians use: 85 dBA for 8 hours is a common workplace limit, and every 3 dB louder halves the safe time (the NIOSH guideline). Measure with a calibrated meter, not a phone.',
-          'The free Pro Audio Safety topic, right next to this one on the Home screen, covers safe listening in depth.',
+          'The Pro Audio Safety topic, right next to this one on the Home screen, covers safe listening in depth.',
         ],
       },
     ],

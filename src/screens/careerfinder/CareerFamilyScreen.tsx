@@ -19,6 +19,7 @@ import { officialTopicName } from '../../data/officialTopicNames';
 import { isRegulatedTitle } from '../../features/careerfinder/careerIndex';
 import { fetchV3Curriculum, flattenV3 } from '../../data/v3Curriculum';
 import { toggleTopic, useEnrollment } from '../../features/enrollment/enrollmentStore';
+import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { computeResult, explainFamily } from '../../features/careerfinder/scoring';
 import { CAREER_INDEX_VERSION, CENTRALITY, careersInFamily, centralitySplit, entryPoints, familyFieldOf, familyView, type Career } from '../../features/careerfinder/careerIndex';
 import { answeredCount, toggleSavedFamily, useCareerFinder } from '../../features/careerfinder/store';
@@ -28,6 +29,8 @@ const PAGE = 12;
 const START_HERE = 3;
 
 export function CareerFamilyScreen() {
+  // Members never see "free" / membership marketing (owner 2026-09-29).
+  const { isMember } = useEntitlement();
   const navigation = useNavigation();
   const { params } = useRoute<RouteProp<RootStackParamList, 'CareerFamily'>>();
   const fam = familyView(params.id);
@@ -143,7 +146,9 @@ export function CareerFamilyScreen() {
                 a line promising some. Adding to the study list IS free and does
                 work for everyone, which is what the sentence now says and all it
                 says. */}
-            <Body muted>These Academy topics lead into this family. Tap one to add it to your study list — adding is free, and studying a topic needs Academy membership unless it is marked free.</Body>
+            <Body muted>{isMember
+              ? 'These Academy topics lead into this family. Tap one to add it to your study list.'
+              : 'These Academy topics lead into this family. Tap one to add it to your study list — adding is free, and studying a topic needs Academy membership unless it is marked free.'}</Body>
             <Text style={styles.startHere}>START HERE</Text>
             {topicsToShow.map((gs) => {
               const on = enrolledGs.has(gs);

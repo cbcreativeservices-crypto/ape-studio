@@ -1246,8 +1246,8 @@ function L6Safe({ ctx: _ctx }: { ctx: PageCtx }) {
       }
     >
       <View style={styles.btnRow}>
-        <Pressable onPress={env.openSafety} style={styles.linkBtn} accessibilityRole="button" accessibilityLabel="Open the free Pro Audio Safety topic">
-          <Text style={styles.linkText}>PRO AUDIO SAFETY · FREE TOPIC ›</Text>
+        <Pressable onPress={env.openSafety} style={styles.linkBtn} accessibilityRole="button" accessibilityLabel="Open the Pro Audio Safety topic">
+          <Text style={styles.linkText}>PRO AUDIO SAFETY TOPIC ›</Text>
         </Pressable>
         <Pressable onPress={env.openTerms} style={styles.linkBtn} accessibilityRole="button" accessibilityLabel="Practise all 24 starter words">
           <Text style={styles.linkText}>PRACTISE ALL 24 STARTER WORDS ›</Text>

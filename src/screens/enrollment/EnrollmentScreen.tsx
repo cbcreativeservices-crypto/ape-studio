@@ -1105,7 +1105,7 @@ export function EnrollmentView({
                 'This topic stays',
                 coreLocked
                   ? 'Required co-requisites stay in your list until you complete them.'
-                  : 'Your free topics are always part of your list.',
+                  : 'This topic is always part of your list.',
               );
               return;
             }
@@ -1635,7 +1635,7 @@ export function EnrollmentView({
               <View style={styles.cardActionRow}>
                 <Text style={[styles.cardSubject, !showActive && styles.dimMore]} numberOfLines={1}>
                   {subjectFor(e.gs)}
-                  {free && !isCore ? '  ·  Free' : ''}
+                  {free && !isCore && !paid ? '  ·  Free' : ''}
                 </Text>
                 {/* ("Required" + the "🔒 until completed" caption moved to the
                     title row above — owner 2026-09-20. The toggle is still

@@ -760,7 +760,7 @@ ${LOCAL_LOSS}`
             <View style={{ flex: 1, paddingRight: 10 }}>
               <Text style={styles.rowLabel}>Keep the glossary on this phone</Text>
               <Text style={styles.rowHint}>
-                Academy members: saves all 31,858 terms in the background (about 5 MB) so the
+                {isMember ? 'Saves' : 'Academy members: saves'} all 31,858 terms in the background (about 5 MB) so the
                 glossary works with no signal — on a ship, a flight, or a tour with no wi-fi. Turn
                 off to save only the terms you actually read.
               </Text>

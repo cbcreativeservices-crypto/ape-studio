@@ -47,6 +47,15 @@ const FUNDAMENTALS_INTRO =
   'Start free with the essentials — level and amplitude, the foundations of ' +
   'sound, and wave physics. The deeper Fundamentals labs open with Academy ' +
   'membership.';
+// MEMBER copy (owner 2026-09-29): no "free" / "unlocked by membership"
+// marketing to people who already pay.
+const INTRO_MEMBER =
+  'A professional audio curriculum in two parts: Audio Fundamentals and the ' +
+  'Advanced Training Labs. Choose a lab to hear it, see it, measure it, and take ' +
+  'it apart.';
+const FUNDAMENTALS_INTRO_MEMBER =
+  'The essentials — level and amplitude, the foundations of sound, and wave ' +
+  'physics — and the deeper Fundamentals labs that build on them.';
 const TRAINING_INTRO_MEMBER =
   'Your members-only workbench: interactive demonstrations, visualizations, ' +
   'controls and guided experiments across every audio discipline.';
@@ -109,7 +118,9 @@ export function EarLabScreen({ navigation, route }: Props) {
         : 'AUDIO FUNDAMENTALS & ADVANCED TRAINING LABS';
   const headerSub =
     section === 'fundamentals'
-      ? 'Free to start — more with membership'
+      ? isMember
+        ? 'The foundations of professional audio'
+        : 'Free to start — more with membership'
       : section === 'training'
         ? isMember
           ? 'Members-only hands-on labs'
@@ -117,12 +128,16 @@ export function EarLabScreen({ navigation, route }: Props) {
         : "The Academy's hands-on labs";
   const intro =
     section === 'fundamentals'
-      ? FUNDAMENTALS_INTRO
+      ? isMember
+        ? FUNDAMENTALS_INTRO_MEMBER
+        : FUNDAMENTALS_INTRO
       : section === 'training'
         ? isMember
           ? TRAINING_INTRO_MEMBER
           : TRAINING_INTRO_FREE
-        : INTRO;
+        : isMember
+          ? INTRO_MEMBER
+          : INTRO;
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -161,7 +176,7 @@ export function EarLabScreen({ navigation, route }: Props) {
             <View key={sec.key} style={styles.section}>
               <View style={styles.sectionHead}>
                 <Text style={styles.sectionTitle}>{sec.title}</Text>
-                <Text style={styles.sectionNote}>{secLocked ? 'Members only · preview' : sec.note}</Text>
+                <Text style={styles.sectionNote}>{secLocked ? 'Members only · preview' : isMember ? '' : sec.note}</Text>
               </View>
               {sectionCategories(sec.key).map((cat) => (
                 <View key={cat.id} style={styles.catBlock}>

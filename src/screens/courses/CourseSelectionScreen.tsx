@@ -812,7 +812,10 @@ function CourseCardView({
               labs are free to START — the Fundamentals core opens to everyone
               and the Advanced labs come with membership — so the wording says
               that rather than implying the whole shelf is included. */}
-          <Text style={[styles.cardAboveText, { color: '#5bff85' }]}>FREE TO BEGIN AND EXPLORE</Text>
+          {/* Members never see "free" marketing (owner 2026-09-29): it tells a
+              free user what membership adds, and only points out to a member
+              what they could have had for nothing. */}
+          <Text style={[styles.cardAboveText, { color: '#5bff85' }]}>{isMember ? 'TRAINING LABS' : 'FREE TO BEGIN AND EXPLORE'}</Text>
           <View style={[styles.cardAboveRule, { backgroundColor: '#5bff85' }]} />
         </View>
         {/* Whole-card tap, but NOT announced as a button: the real button is
@@ -873,7 +876,7 @@ function CourseCardView({
     return (
       <View style={[styles.cardOuter, cd.outer]}>
         <View style={styles.cardAbove}>
-          <Text style={[styles.cardAboveText, { color: '#5bff85' }]}>FREE · NEW TO AUDIO?</Text>
+          <Text style={[styles.cardAboveText, { color: '#5bff85' }]}>{isMember ? 'NEW TO AUDIO?' : 'FREE · NEW TO AUDIO?'}</Text>
           <View style={[styles.cardAboveRule, { backgroundColor: '#5bff85' }]} />
         </View>
         {/* Whole-card tap without a button role — the START HERE key inside is
@@ -994,12 +997,14 @@ function CourseCardView({
           ? lockedEyebrow
           : '#ffc64d';
   // Cards the student can mark into their own deck (academy mode).
+  // Members get plain descriptions, never "free"/"included" marketing
+  // (owner 2026-09-29).
   const eyebrow = isTools
-    ? 'INCLUDED FOR EVERYONE'
+    ? isMember ? 'MEASUREMENT TOOLS' : 'INCLUDED FOR EVERYONE'
     : isGlossary
-      ? 'INCLUDED FOR EVERYONE'
+      ? isMember ? 'REFERENCE' : 'INCLUDED FOR EVERYONE'
       : free
-        ? 'FREE TOPIC' // keep the free-topic subtitle in every mode (2026-07-18 fix)
+        ? isMember ? 'TOPIC' : 'FREE TOPIC' // keep the free-topic subtitle for free users (2026-07-18 fix)
         : coming
           ? // NEW COPY 2026-09-03, owner review. These cards used to read
             // "Specialization Certificate", which the carousel rule now
@@ -1027,7 +1032,7 @@ function CourseCardView({
         <Text style={styles.cardTitle}>{title}</Text>
         {/* Tools tutorial line lives INSIDE the card, below the title (Booth
             2026-07-15) — blue, over the art. */}
-        {isTools ? (
+        {isTools && !isMember ? (
           <Text style={styles.cardToolsSub}>Learn how to use them with tutorials in Academy Mode</Text>
         ) : null}
         {/* COURSE cards show their topic count below the title, in blue

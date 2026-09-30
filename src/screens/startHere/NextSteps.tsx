@@ -12,6 +12,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../theme/tokens';
 import { NEXT_HANDOFF, NEXT_STEPS, accessTag, type NextStep } from '../../features/startHere/startHereContent';
+import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 
 export function NextSteps({
   onRoute,
@@ -22,7 +23,13 @@ export function NextSteps({
 }) {
   const open = (s: NextStep) => (s.to.kind === 'glossary' ? onGlossary() : onRoute(s.to.route, s.to.params));
   const best = NEXT_STEPS.flatMap((g) => g.steps).find((s) => s.best);
-  const tag = (s: NextStep) => (s.mic ? `${accessTag(s.access)} · USES YOUR MIC` : accessTag(s.access));
+  // Members see no FREE / MEMBERS access tags (owner 2026-09-29: no
+  // membership marketing to people who already pay) — everything opens.
+  const { isMember } = useEntitlement();
+  const tag = (s: NextStep) => {
+    const a = isMember ? '' : accessTag(s.access);
+    return s.mic ? (a ? `${a} · USES YOUR MIC` : 'USES YOUR MIC') : a;
+  };
   return (
     <View style={styles.wrap}>
       <Text style={styles.handoff}>{NEXT_HANDOFF}</Text>
@@ -33,13 +40,13 @@ export function NextSteps({
           onPress={() => open(best)}
           style={[styles.row, styles.bestRow]}
           accessibilityRole="button"
-          accessibilityLabel={`Best next step: ${best.title}. ${best.blurb} ${tag(best)}. Opens it.`}
+          accessibilityLabel={`Best next step: ${best.title}. ${best.blurb}${tag(best) ? ` ${tag(best)}.` : ''} Opens it.`}
         >
           <View style={{ flex: 1, gap: 3 }}>
             <Text style={styles.bestEyebrow}>BEST NEXT STEP</Text>
             <View style={styles.titleRow}>
               <Text style={styles.title}>{best.title}</Text>
-              <Text style={[styles.tag, styles.tagFree]}>{tag(best)}</Text>
+              {tag(best) ? <Text style={[styles.tag, styles.tagFree]}>{tag(best)}</Text> : null}
             </View>
             <Text style={styles.blurb}>{best.blurb}</Text>
           </View>
@@ -61,7 +68,7 @@ export function NextSteps({
               <View style={{ flex: 1, gap: 3 }}>
                 <View style={styles.titleRow}>
                   <Text style={styles.title}>{s.title}</Text>
-                  <Text style={[styles.tag, s.access === 'free' ? styles.tagFree : styles.tagMember]}>{tag(s)}</Text>
+                  {tag(s) ? <Text style={[styles.tag, s.access === 'free' ? styles.tagFree : styles.tagMember]}>{tag(s)}</Text> : null}
                 </View>
                 <Text style={styles.blurb}>{s.blurb}</Text>
               </View>
