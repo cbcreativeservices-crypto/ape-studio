@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-30 07:36 · ccode · 804e883c
+changed: Member membership page, negative calculator inputs error, popups centred
+affects other side: nothing
+needs: nothing
+
+
 ### 2026-09-30 01:35 · ccode · f8b5a8f2
 changed: Overnight toddler + cat bug pass 2026-09-30 (all areas)
 affects other side: nothing required; FYI suggestions only: get_glossary_definition per-term dedupe (optional); client now handles Play pending purchases without calling validate-purchase
