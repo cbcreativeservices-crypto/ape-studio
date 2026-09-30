@@ -214,6 +214,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-30 09:31 · ccode · afd46b71
+changed: Day bug pass 1 of 3 (2026-09-30): 88 fixes across all areas
+affects other side: nothing (client only; settings notification-prefs read now filters by user_id)
+needs: nothing
+
+
 ### 2026-09-30 08:46 · ccode · 5cec591a
 changed: Native (next build): stop tones on headphone/BT unplug; iPad mic-stop crash guard
 affects other side: nothing (native module change; ships in the next EAS build)
