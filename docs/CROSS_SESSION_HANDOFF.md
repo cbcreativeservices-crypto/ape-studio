@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-30 00:17 · ccode · cc16f3ba
+changed: Calculator lab: 10 categories as a 2x5 grid of containers + centred popup
+affects other side: nothing
+needs: nothing
+
+
 ### 2026-09-30 00:12 · ccode · c1c79ce6
 changed: Members: no Membership header link; 'Manage membership' in Settings
 affects other side: nothing
