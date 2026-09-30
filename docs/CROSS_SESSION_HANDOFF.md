@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 23:56 · ccode · abdbeab7
+changed: No 'free' / membership marketing shown to members
+affects other side: nothing (app copy only, gated on useEntitlement().isMember)
+needs: nothing
+
+
 ### 2026-09-29 23:26 · ccode · ad88f85b
 changed: Speaker animations in time with the air, pressure bands and graph
 affects other side: nothing
