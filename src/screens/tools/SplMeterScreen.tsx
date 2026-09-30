@@ -53,7 +53,7 @@ import type { LiveMeterDrive, PeakHoldMode } from '../lab/meter/vizMeters';
 import { ColorWheelButton } from '../../components/ColorWheelButton';
 import { LedColorPicker } from '../../components/LedColorPicker';
 import { ContributeCalibrationPrompt } from '../../components/ContributeCalibrationPrompt';
-import { buildDeviceKey } from '../../features/tools/measure/deviceProfile';
+import { buildDeviceKey, crowdsourceDeclined } from '../../features/tools/measure/deviceProfile';
 import { fetchCommunityProfile, type CommunityProfile } from '../../features/tools/measure/catalogClient';
 import { resolveLedFill, useLedAvgColorPref, useLedColorPref } from '../../features/tools/ledScheme';
 import { frameIsLive, healthWarningFlags, meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
@@ -762,7 +762,10 @@ export function SplMeterScreen({ navigation }: Props) {
   const commitCalibration = useCallback((o: number) => {
     setSplCalibration(o);
     setCalibrating(false);
-    setContribOffset(o);
+    // NOT NOW sticks (owner 2026-09-30): only ask someone who hasn't declined.
+    void crowdsourceDeclined().then((declined) => {
+      if (!declined) setContribOffset(o);
+    });
   }, []);
   // Community starting point for this phone model (null until the catalog has
   // enough contributions AND the native batch supplies the device model).

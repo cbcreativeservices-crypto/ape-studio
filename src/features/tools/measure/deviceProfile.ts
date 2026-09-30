@@ -198,6 +198,17 @@ export async function hasCrowdsourceConsent(): Promise<boolean> {
   }
 }
 
+/** True once the user has said NOT NOW (stored '0') — the post-calibration
+ *  prompt then stays quiet (owner 2026-09-30: it kept coming back). Never
+ *  answered → false, so a first calibration still asks. */
+export async function crowdsourceDeclined(): Promise<boolean> {
+  try {
+    return (await AsyncStorage.getItem(CONSENT_KEY)) === '0';
+  } catch {
+    return false;
+  }
+}
+
 /** Set the opt-in flag. Revoking (false) also clears any queued contributions —
  *  nothing already collected should survive a withdrawal of consent. */
 export async function setCrowdsourceConsent(on: boolean): Promise<void> {

@@ -12,12 +12,12 @@
  * FEATURE card: dimmed scrim, dark card, amber title, GET MEMBERSHIP
  * glass-adjacent CTA → Paywall, quiet NOT NOW.
  */
-import { useSyncExternalStore } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 // ⛔ DimModal, not react-native's Modal — otherwise this surface lights a
 //    dark control room to full brightness in Low-Light Production Mode.
-import { Modal } from '../../components/DimModal';
+import { Modal, rootModalHoldMs, setHostedOverlay, useModalHostOpen } from '../../components/DimModal';
 import { navigationRef } from '../../navigation/navigationRef';
 import { colors, fonts } from '../../theme/tokens';
 
@@ -71,10 +71,29 @@ function useMembershipGate(): MembershipGatePayload | null {
 export function MembershipGateHost() {
   const focused = useIsFocused();
   const gate = useMembershipGate();
-  if (!focused || gate == null) return null;
-  return (
-    <Modal accessibilityViewIsModal visible transparent animationType="fade" onRequestClose={closeMembershipGate}>
-      <Pressable style={styles.scrim} onPress={closeMembershipGate} accessible={false}>
+
+  /**
+   * ⛔ THE GATE ASKED FOR WHILE ANOTHER MODAL IS OPEN (bug hunt 2026-09-30) —
+   * AppDialogHost's fix, applied here. iOS refuses to present this host's own
+   * Modal over an open sheet or a lab's FULL SCREEN (NOTHING appears; Android
+   * draws it behind). Now: another Modal open ⇒ the card is drawn inside it
+   * via DimModal's keyed hosting ('membership'); one just closed ⇒ wait out its
+   * dismissal first; otherwise present our own Modal exactly as before.
+   */
+  const otherModalOpen = useModalHostOpen(true);
+  const live = focused && gate != null;
+  const hostedMode = live && otherModalOpen;
+  const holdMs = live && !otherModalOpen ? rootModalHoldMs() : 0;
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    if (holdMs <= 0) return;
+    const t = setTimeout(() => setTick((n) => n + 1), holdMs);
+    return () => clearTimeout(t);
+  }, [holdMs]);
+
+  const card =
+    gate == null ? null : (
+      <Pressable style={styles.scrim} onPress={closeMembershipGate} accessible={false} accessibilityViewIsModal>
         {/* Stop card taps from falling through to the scrim's dismiss. */}
         <Pressable style={styles.card} onPress={() => {}} accessible={false}>
           <Text style={styles.lock}>🔒</Text>
@@ -96,6 +115,32 @@ export function MembershipGateHost() {
           </Pressable>
         </Pressable>
       </Pressable>
+    );
+
+  // Only the focused host publishes; re-published each render so the card is
+  // current, cleared (null) once the gate closes, and withdrawn on blur/unmount.
+  useEffect(() => {
+    if (!focused) return;
+    setHostedOverlay(hostedMode && card ? { node: card, onBack: closeMembershipGate } : null, 'membership');
+  });
+  useEffect(() => {
+    if (!focused) return;
+    return () => setHostedOverlay(null, 'membership');
+  }, [focused]);
+
+  if (!live || hostedMode || holdMs > 0) return null;
+  return (
+    <Modal
+      accessibilityViewIsModal
+      // Hosts other overlays (the audio gate) if asked for over the gate, but
+      // is not "another Modal" to this host's own choice above.
+      overlayPublisher
+      visible
+      transparent
+      animationType="fade"
+      onRequestClose={closeMembershipGate}
+    >
+      {card}
     </Modal>
   );
 }

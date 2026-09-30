@@ -93,7 +93,7 @@ import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../../features/commercial/realAccount';
 import { confirmDialog, notify } from '../../lib/confirm';
 import { LOCK_TITLE, lockReason, type LockedPanel, type MethodGates } from '../../features/study/lockReason';
-import { markIntentionalSignOut } from '../../features/auth/intentionalSignOut';
+import { consumeIntentionalSignOut, markIntentionalSignOut } from '../../features/auth/intentionalSignOut';
 import { fetchGlossaryItemsByIds, fetchTopicItems } from '../../features/study/api';
 import { type MethodPctRow, smoothMethodPct, topicOverallPct } from '../../features/dashboard/topicPct';
 import { setLastStudyLocation } from '../../features/study/lastStudyLocation';
@@ -560,6 +560,23 @@ const STUDY_ROUTES: Partial<
   matching: 'Matching',
   scenarios: 'Scenarios',
 };
+
+/**
+ * Sign out, or SAY it didn't happen (2026-09-30, same as Settings › Log out).
+ * Offline, supabase-js signOut() returns { error } and KEEPS the local
+ * session — going to Auth anyway put the person straight back in, signed in,
+ * with no word. Navigate only once the sign-out really happened.
+ */
+async function signOutOrSay(onDone: () => void): Promise<void> {
+  markIntentionalSignOut();
+  const { error } = await supabase.auth.signOut().catch((e: unknown) => ({ error: e as Error }));
+  if (error) {
+    consumeIntentionalSignOut(); // no SIGNED_OUT is coming for it
+    notify('Couldn’t log out', 'We couldn’t reach the Academy to sign you out — check your connection and try again.');
+    return;
+  }
+  onDone();
+}
 
 export function DashboardScreen() {
   const insets = useSafeAreaInsets();
@@ -1437,11 +1454,7 @@ export function DashboardScreen() {
                 'This signs you out of this device and returns to the login screen. Your saved progress stays with your account.',
                 'Sign out',
                 () => {
-                  markIntentionalSignOut();
-                  void supabase.auth
-                    .signOut()
-                    .catch(() => {})
-                    .then(() => (navigation as any).navigate('Auth'));
+                  void signOutOrSay(() => (navigation as any).navigate('Auth'));
                 },
               )
             }
@@ -1749,11 +1762,7 @@ export function DashboardScreen() {
                 variant="secondary"
                 small
                 onPress={() => {
-                  markIntentionalSignOut();
-                  void supabase.auth
-                    .signOut()
-                    .catch(() => {})
-                    .then(() => (navigation as any).navigate('Auth'));
+                  void signOutOrSay(() => (navigation as any).navigate('Auth'));
                 }}
               />
             </View>

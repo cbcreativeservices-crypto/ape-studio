@@ -63,7 +63,7 @@ export function FormulaKeyPopup({
       accessibilityViewIsModal
       visible
       transparent
-      animationType="slide"
+      animationType="fade"
       /* The term popup is now an in-tree overlay rather than its own Modal, and
          an overlay gets no onRequestClose of its own — so Android BACK would
          close this whole sheet out from under an open definition. Close the
@@ -177,17 +177,20 @@ export function FormulaKeyPopup({
 }
 
 const styles = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
+  // Centred popup (owner rule: popups are centred, never bottom sheets) —
+  // matches the house look of CalcLabScreen's popBackdrop / popCard.
+  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.65)', alignItems: 'center', justifyContent: 'center', padding: 16 },
   sheet: {
-    // Tablet (owner 2026-09-29): the sheet rides centred at the card column
-    // instead of spanning a 1024 pt iPad. No-op on a phone.
+    // cardColumn keeps the tablet cap (tabletPremiumPass test); the centred
+    // popup then narrows to the house popCard width.
     ...cardColumn,
-    maxHeight: '88%',
+    maxWidth: 520,
+    maxHeight: '86%',
     backgroundColor: colors.screenBg,
-    borderTopLeftRadius: 18,
-    borderTopRightRadius: 18,
-    borderTopWidth: 1,
-    borderColor: '#2a2a30',
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(180,91,255,.6)',
+    overflow: 'hidden',
     paddingTop: 14,
   },
   header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 16, paddingBottom: 10 },

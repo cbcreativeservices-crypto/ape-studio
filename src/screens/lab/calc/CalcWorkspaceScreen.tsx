@@ -536,9 +536,14 @@ export function CalcWorkspaceScreen() {
         </View>
         {fn.note ? <Text style={styles.caption}>{fn.note}</Text> : null}
         {chain ? (
-          <Text style={styles.chainBanner}>
-            CHAIN: {chain.label} from {chain.fromWorkspace} is ready — any matching input offers “USE”.
-          </Text>
+          <View style={styles.chainRow}>
+            <Text style={[styles.chainBanner, { flex: 1 }]}>
+              CHAIN: {chain.label} from {chain.fromWorkspace} is ready — any matching input offers “USE”.
+            </Text>
+            <Pressable onPress={() => setChainValue(null)} hitSlop={8} accessibilityRole="button" accessibilityLabel="Clear the calculation chain">
+              <Text style={styles.chainClear}>✕ CLEAR</Text>
+            </Pressable>
+          </View>
         ) : null}
 
         {/* Explanation sections — collapsible, default open, remembered per user
@@ -746,6 +751,8 @@ const styles = StyleSheet.create({
   formula: { fontFamily: fonts.mono, fontSize: 13, color: colors.textPrimary, flexShrink: 1 },
   formulaKey: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.8, color: colors.purple },
   chainBanner: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17, color: '#5bff85' },
+  chainRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
+  chainClear: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textSub, paddingTop: 1 },
   mistake: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 19, color: colors.textSecondary },
   warnBlock: { borderLeftWidth: 3, borderLeftColor: colors.amber, backgroundColor: '#151310', borderRadius: 6, padding: 10, marginTop: 4 },
   warnBlockText: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.textSecondary },

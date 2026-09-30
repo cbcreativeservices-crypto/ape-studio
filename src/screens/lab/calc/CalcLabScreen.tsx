@@ -17,7 +17,7 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import { confirmDialog } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { COMING_SOON, SECTION_META, WORKSPACES } from './registry';
-import { useChainValue } from './chainStore';
+import { setChainValue, useChainValue } from './chainStore';
 import { workflowStore } from './workflowStore';
 import type { Workflow } from './workflowModel';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
@@ -196,11 +196,17 @@ export function CalcLabScreen() {
           ) : null}
         </View>
 
+        {/* The chain can be cleared (owner 2026-09-30); sign-out clears it too. */}
         {chain ? (
-          <Text style={styles.chainBanner}>
-            ⛓ CHAIN ACTIVE: {chain.label} from {chain.fromWorkspace} — open any calculator with a
-            matching input and tap USE.
-          </Text>
+          <View style={styles.chainRow}>
+            <Text style={[styles.chainBanner, { flex: 1 }]}>
+              ⛓ CHAIN ACTIVE: {chain.label} from {chain.fromWorkspace} — open any calculator with a
+              matching input and tap USE.
+            </Text>
+            <Pressable onPress={() => setChainValue(null)} hitSlop={8} accessibilityRole="button" accessibilityLabel="Clear the calculation chain">
+              <Text style={styles.chainClear}>✕ CLEAR</Text>
+            </Pressable>
+          </View>
         ) : null}
 
         {/* Screen description — collapsible (owner 2026-08-09). */}
@@ -374,6 +380,8 @@ const styles = StyleSheet.create({
   tileName: { fontFamily: fonts.oswaldMedium, fontSize: 15, letterSpacing: 0.3, color: '#f2f3f5' },
   tileTag: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 16, color: '#c7cace' },
   chainBanner: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17, color: '#5bff85' },
+  chainRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
+  chainClear: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textSub, paddingTop: 1 },
   soonWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 },
   soonChip: { borderRadius: 7, borderWidth: 1, borderColor: '#232329', paddingHorizontal: 9, paddingVertical: 5, backgroundColor: '#101014' },
   soonText: { fontFamily: fonts.barlowMedium, fontSize: 11.5, color: '#5c5d66' },
