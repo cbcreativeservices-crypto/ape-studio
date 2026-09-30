@@ -860,7 +860,8 @@ function CourseCardView({
           style={StyleSheet.absoluteFill}
         />
         <View>
-          <Text style={styles.cardTitle}>Start Here: Your First Steps in Audio</Text>
+          {/* Owner 2026-09-29: the subtitle on its own line. */}
+          <Text style={styles.cardTitle}>{'Start Here:\nYour First Steps in Audio'}</Text>
         </View>
         <View style={{ alignItems: 'center' }}>
           <View style={{ width: cd.btnW }}>
