@@ -38,7 +38,7 @@
  * ENROLL / VIEW PROGRESS / CLOSE footer — so every specialization topic
  * scrolls fully into view above the fixed footer, on small screens too.
  */
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Image, Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { DetailPager } from '../../components/detailSwipe';
@@ -78,6 +78,8 @@ const CARD_BORDER = 1;
 /** Footer height before its first onLayout (two buttons + CLOSE row). Enrolled
  *  adds two more, but the footer re-measures on layout — this is only the seed. */
 const FOOTER_SEED = 152;
+/** A second ENROLL tap inside this window is a double tap, not a choice. */
+const ENROLL_REPEAT_MS = 700;
 
 /** The Study tab's own icon, so STUDY NOW looks like where it sends you. */
 const STUDY_ICON = require('../../../assets/icons/nav/nav-study.png');
@@ -151,6 +153,7 @@ export function CredentialDetailModal({
   const [artFailedSlugs, setArtFailedSlugs] = useState<ReadonlySet<string>>(() => new Set());
   const [scrimH, setScrimH] = useState(0);
   const [footerH, setFooterH] = useState(FOOTER_SEED);
+  const lastEnrollAt = useRef(0);
   const budget = Math.min(Math.round(height * 0.88), scrimH > 0 ? scrimH - SCRIM_PAD * 2 : Infinity);
   const scrollMax = Math.max(120, budget - footerH - CARD_BORDER * 2);
 
@@ -327,7 +330,16 @@ export function CredentialDetailModal({
               <View style={styles.footer} onLayout={(e) => setFooterH(Math.round(e.nativeEvent.layout.height))}>
                 <Pressable
                   style={({ pressed }) => [styles.enrollBtn, enrolled && styles.enrollBtnDone, pressed && styles.btnPressed]}
-                  onPress={() => onEnroll(credential)}
+                  onPress={() => {
+                    // ENROLL toggles (ENROLLED ✓ unenrols). A double tap used to
+                    // enrol and then immediately unenrol — the learner saw
+                    // ENROLL again and the credential was gone (bug pass
+                    // 2026-09-30). A repeat within ENROLL_REPEAT_MS is ignored.
+                    const now = Date.now();
+                    if (now - lastEnrollAt.current < ENROLL_REPEAT_MS) return;
+                    lastEnrollAt.current = now;
+                    onEnroll(credential);
+                  }}
                   accessibilityRole="button"
                   accessibilityState={{ checked: enrolled }}
                   accessibilityLabel={enrolled ? `Enrolled in ${credential.name}` : `Enroll in ${credential.name}`}

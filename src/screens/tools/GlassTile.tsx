@@ -56,6 +56,14 @@ export function GlassOverlay() {
   );
 }
 
+/** When the last tile (ANY tile) was activated. Each tile holds its own busy
+ *  flag and 90 ms beat, so two different tiles tapped inside one beat both
+ *  fired — two labs pushed on top of each other in the Ear Lab (toddler pass
+ *  2026-09-30; the hub fixed the same thing with its one-open latch). Shared,
+ *  so one activation per navigation across every GlassTile. */
+let lastActivateAt = -Infinity;
+const ACTIVATE_LATCH_MS = 450; // the beat + the push getting under way; short enough that a popup's own tiles stay tappable
+
 export function GlassTile({
   children,
   onPress,
@@ -103,6 +111,9 @@ export function GlassTile({
   };
   const activate = () => {
     if (busy.current) return;
+    const now = Date.now();
+    if (now - lastActivateAt < ACTIVATE_LATCH_MS) return;
+    lastActivateAt = now;
     busy.current = true;
     if (hapticsEnabled()) Haptics.selectionAsync().catch(() => {});
     // Hold the sunk + lit state a beat so the power-on reads (hub: 90 ms).

@@ -81,6 +81,8 @@ export function ScenariosScreen({ route }: Props) {
   /** Did the server actually record the round this report is for?
    *  `null` = still asking. Drives the honest line on the report card. */
   const [roundSaved, setRoundSaved] = useState<boolean | null>(null);
+  /** Which finishRound the pending save belongs to — see finishRound. */
+  const roundSaveTokenRef = useRef(0);
   // Why the nocontent view is showing: 'empty' = topic genuinely has no
   // scenarios (marked exempt so the quiz can still unlock); 'error' = the
   // homework failed to load (recoverable, NOT exempt).
@@ -188,6 +190,11 @@ export function ScenariosScreen({ route }: Props) {
       clearInteraction();
       setReport(buildRoundReport(r, rq, answersRef.current));
       setRoundSaved(null); // asking; the report says so until we know
+      // Only THIS round's answer may set the flag (bug pass 1, 2026-09-30): the
+      // save is an unbounded network call, so on a slow link round 1's reply
+      // could land on round 2's report (or the done screen) and state the
+      // wrong round as saved or unsaved.
+      const token = ++roundSaveTokenRef.current;
       setView('report');
       // Local "round finished" sentinel so the Dashboard's dev fast-complete can
       // treat scenarios as done even on topics with very few questions (owner
@@ -203,7 +210,7 @@ export function ScenariosScreen({ route }: Props) {
             prev ? { ...prev, roundsCompleted: Math.max(prev.roundsCompleted, roundsCompleted) } : prev,
           );
         }
-        setRoundSaved(saved);
+        if (token === roundSaveTokenRef.current) setRoundSaved(saved);
       });
     },
     [achievementId],

@@ -55,7 +55,12 @@ export function SingleDeviceGuard() {
         // This guard handles its own navigation (reset to Splash below), so mark
         // the sign-out intentional — SessionExpiryGuard must not also reset.
         markIntentionalSignOut();
-        await supabase.auth.signOut().catch(() => {});
+        // ⛔ scope 'local' (2026-09-30 day pass). supabase-js signs out
+        // GLOBALLY by default — every session of the account, server-side. So
+        // the displaced device revoked the NEW device's refresh token too, and
+        // the device the person had just chosen to continue on was bounced to
+        // the login screen at its next token refresh (within the hour).
+        await supabase.auth.signOut({ scope: 'local' }).catch(() => {});
         await clearLocalAccountData();
         resetAllLocalStores();
         // Drop any confirm left open on the old screen — it would otherwise

@@ -143,6 +143,8 @@ export function FmLabScreen() {
       levelDb: GEN_LEVEL_DB,
     });
   }, [carrier, ratio, index, env]);
+  const pushRef = useRef(pushParams);
+  pushRef.current = pushParams;
 
   const strike = useCallback(async () => {
     if (!fmReady) return;
@@ -166,6 +168,11 @@ export function FmLabScreen() {
         if (!wantRef.current) void ApeDsp.genStop(); // stopped meanwhile
         return;
       }
+      // A carrier/ratio/index/envelope picked while the start was in flight
+      // skipped its live push (running was still false, so the effect below
+      // returned) — send the newest now, so the spectrum and the voice agree
+      // (bug hunt 2026-09-30 day; Oscillator's fix).
+      if (pushRef.current !== pushParams) pushRef.current();
       setRunning(true);
       noteAudioActivity();
     } catch (e) {

@@ -42,23 +42,31 @@ export function StudyFsOverlay({
 }) {
   const [showGuide, setShowGuide] = useState(false);
   const guideCount = useRef(0);
+  /** The stored count has been read (bug hunt 2026-09-30, pass 1). Opening full
+   *  screen before the read resolved counted from 0 and WROTE "1" over a
+   *  stored "2" — so a retired guide came back, twice more. */
+  const guideLoaded = useRef(false);
   const wasVisible = useRef(false);
   const suppressed = useOverlaysSuppressed();
 
   useEffect(() => {
+    guideLoaded.current = false;
     // .catch: an AsyncStorage read CAN reject; unguarded it was an unhandled
     // rejection. A failed read just leaves the count at 0 (guide shows again).
     AsyncStorage.getItem(guideKey)
       .then((v) => {
         if (v) guideCount.current = Number(v) || 0;
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => {
+        guideLoaded.current = true;
+      });
   }, [guideKey]);
 
   useEffect(() => {
     // Low-Light = nothing auto-appears (bug hunt 2026-09-29): the guide stays
     // down, and is not counted, so it still gets its two showings later.
-    if (visible && !wasVisible.current && guideCount.current < 2 && !suppressed) {
+    if (visible && !wasVisible.current && guideLoaded.current && guideCount.current < 2 && !suppressed) {
       setShowGuide(true);
       guideCount.current += 1;
       void AsyncStorage.setItem(guideKey, String(guideCount.current)).catch(() => {});

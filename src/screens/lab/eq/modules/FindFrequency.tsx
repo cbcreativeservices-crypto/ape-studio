@@ -139,8 +139,13 @@ export function FindFrequencyModule(_p: EqModuleComponentProps) {
   }, []);
 
   const sel = bands[Math.min(selIdx, bands.length - 1)];
-  const setSel = (patch: Partial<UserBand>) =>
+  // Moving a band clears the last CHECK (bug pass 2026-09-30): the bezel kept
+  // reading PASS — and the well "✓ CORRECTED" with the old selection — over a
+  // curve the learner had since pulled off the target.
+  const setSel = (patch: Partial<UserBand>) => {
+    setVerdict(null);
     setBands((prev) => prev.map((b, i) => (i === selIdx ? { ...b, ...patch } : b)));
+  };
 
   // What the audition plays: the HIDDEN coloration plus the user's correction
   // bands — all peaks, exactly the curve the plot shows (owner 2026-08-10).

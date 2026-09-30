@@ -102,19 +102,23 @@ describe('A2 — gate popups are hosted inside an open Modal', () => {
   });
 
   test('the gate publishes to the host while one is open', () => {
-    assert.match(gate, /const hostOpen = useModalHostOpen\(\)/);
+    // 'gate' (2026-09-30 pass 1): its own popups are hosts now, skipped here.
+    assert.match(gate, /const hostOpen = useModalHostOpen\('gate'\)/);
     assert.match(gate, /setHostedOverlay\(hostedBody \?/);
   });
 
-  test('the gate\'s own root Modals show only when no host is open, and never host', () => {
+  // Revised 2026-09-30 (pass 1): the root Modals now HOST (a confirm raised
+  // over one is drawn inside it) as the 'gate' publisher, which the gate's own
+  // count skips — see sharedInfraBugHunt20260930Pass1.
+  test('the gate\'s own root Modals show only when no host is open, as the gate publisher', () => {
     const roots = [...gate.matchAll(/<Modal[\s\S]*?>/g)].map((m) => m[0]);
     assert.equal(roots.length, 2, 'expected the explain + hold root Modals');
     for (const r of roots) {
-      assert.match(r, /hostsOverlays=\{false\}/);
+      assert.match(r, /overlayPublisher="gate"/);
       assert.match(r, /&& rootShown\}/);
     }
     assert.match(gate, /visible=\{phase === 'safety' && rootShown\}/);
-    assert.match(warning, /hostsOverlays=\{false\}/);
+    assert.match(warning, /overlayPublisher="gate"/);
     assert.match(warning, /if \(embedded\) return visible \? body : null;/);
   });
 });

@@ -111,11 +111,11 @@ test('amp: RESET is a practice reset (done + best final kept); unanswered checks
   assert.match(m8, /navigation\.push\('AmpModule', \{ id \}\);/);
 });
 
-test('Sound Systems: resets drop page memory and re-mount; guests/previews never delete saved pages; hub link pops', () => {
+test('Sound Systems: resets drop page memory and re-mount (a practice run — nothing deleted, 2026-09-30 day); hub link pops', () => {
   const pm = read('src/screens/lab/soundsystems/pageMemory.ts');
   assert.match(pm, /export function clearPageMemory/);
   const ss = read('src/screens/lab/soundsystems/SsPagedLab.tsx');
-  assert.match(ss, /noSaveRef\.current \? Promise\.resolve\(\) : resetPagedProgress\(labId\)/);
+  assert.doesNotMatch(ss, /resetPagedProgress\(/);
   assert.match(ss, /clearPageMemory\(\[labId\]\);/);
   assert.match(ss, /<Page key=\{`\$\{memoryKey\}:\$\{resetSeq\}`\}/);
   assert.match(read('src/screens/lab/soundsystems/SoundSystemsLabScreen.tsx'), /clearPageMemory\(SS_MODES\.map/);

@@ -1124,7 +1124,7 @@ const styles = StyleSheet.create({
   ampArrowRta: { position: 'absolute', left: 1, top: 2 }, // spectrum/RTA (full height)
   // Spectrogram time axis: light-gray arrow + "time" label, below the display
   spectroTimeRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 1 },
-  spectroTimeLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 8.5, letterSpacing: 1, color: ARROW_GRAY },
+  spectroTimeLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1, color: ARROW_GRAY }, // ≥ 9 pt (lab display rule)
   // (Dynamics are drawn in a Skia Canvas now — see GradientBar — so no RN text styles here.)
   qlRow: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 2 },
   lmSpacer: { opacity: 0 }, // invisible LOW/HIGH copy sizing the flank so the arrow == bar width

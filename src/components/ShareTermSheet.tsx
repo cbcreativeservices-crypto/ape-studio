@@ -191,8 +191,16 @@ export function ShareTermSheet({
   const doShareText = () =>
     confirmLargeThen(() => {
       // .catch: a rejected share sheet (cancel on some platforms) must not
-      // surface as an unhandled rejection; onClose still runs.
-      void Share.share({ message }).catch(() => {}).finally(onClose);
+      // surface as an unhandled rejection; onClose still runs. `busy` greys the
+      // share buttons meanwhile, so a double tap cannot stack a second system
+      // share sheet (bug hunt 2026-09-30, pass 1) — the image path already did.
+      setBusy(true);
+      void Share.share({ message })
+        .catch(() => {})
+        .finally(() => {
+          setBusy(false);
+          onClose();
+        });
     });
 
   const doShareImage = () =>

@@ -75,7 +75,19 @@ export function ReportsAdminScreen() {
     void load();
   }, [load]);
 
+  // ONE decision at a time, from the question to the reload (bug hunt
+  // 2026-09-30) — the fix EmployerAdminScreen got on 09-29, missed here.
+  // `busy` greys the row only once the write starts, so BAN then WARN tapped
+  // before the first dialog covered the row queued BOTH questions; answering
+  // both left the member merely warned — the later answer overwrote the ban.
+  const inFlight = useRef(false);
+  const release = () => {
+    inFlight.current = false;
+  };
+
   const act = (r: ReportRow, status: AccountStatus, days?: number) => {
+    if (inFlight.current) return;
+    inFlight.current = true;
     const what =
       status === 'warned' ? 'Warn' :
       status === 'suspended' ? `Suspend for ${days} days` :
@@ -94,45 +106,56 @@ export function ReportsAdminScreen() {
       what,
       () => {
         void (async () => {
-          setBusy(r.id);
-          const res = await setAccountStanding({
-            userId: r.reportedUser,
-            status,
-            until: days ? new Date(Date.now() + days * 86400_000).toISOString() : null,
-            reason: r.reason,
-            publicNote: null,
-            privateNote: r.detail ?? null,
-            reportIds: [r.id],
-          });
-          setBusy(null);
-          if (!res.ok) {
-            notify('Could not save', res.error);
-            return;
+          try {
+            setBusy(r.id);
+            const res = await setAccountStanding({
+              userId: r.reportedUser,
+              status,
+              until: days ? new Date(Date.now() + days * 86400_000).toISOString() : null,
+              reason: r.reason,
+              publicNote: null,
+              privateNote: r.detail ?? null,
+              reportIds: [r.id],
+            });
+            setBusy(null);
+            if (!res.ok) {
+              notify('Could not save', res.error);
+              return;
+            }
+            await load();
+          } finally {
+            release();
           }
-          await load();
         })();
       },
-      { destructive: status === 'banned' || status === 'suspended' },
+      { destructive: status === 'banned' || status === 'suspended', onCancel: release },
     );
   };
 
   const dismiss = (r: ReportRow) => {
+    if (inFlight.current) return;
+    inFlight.current = true;
     confirmDialog(
       'Dismiss this report?',
       'It is kept on the record and still counts toward this member’s prior-report total. No action is taken against them.',
       'Dismiss',
       () => {
         void (async () => {
-          setBusy(r.id);
-          const res = await resolveReport(r.id, 'dismissed');
-          setBusy(null);
-          if (!res.ok) {
-            notify('Could not save', res.error);
-            return;
+          try {
+            setBusy(r.id);
+            const res = await resolveReport(r.id, 'dismissed');
+            setBusy(null);
+            if (!res.ok) {
+              notify('Could not save', res.error);
+              return;
+            }
+            await load();
+          } finally {
+            release();
           }
-          await load();
         })();
       },
+      { onCancel: release },
     );
   };
 

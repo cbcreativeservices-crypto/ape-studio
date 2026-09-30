@@ -58,7 +58,8 @@ describe('glossary works offline once loaded', () => {
     }
     // And that exemption is real, not an accident of ordering.
     assert.match(native, /export async function clearCorpus[\s\S]*DELETE FROM glossary_corpus'/);
-    assert.match(native, /INSERT OR REPLACE INTO glossary_corpus \(id, term, achievement_id, definition, src\)/);
+    // An upsert since 2026-09-30 (pass 2): a re-save keeps the definitions.
+    assert.match(native, /INSERT INTO glossary_corpus \(id, term, achievement_id, definition, src\)/);
   });
 
   test('web never claims to be available offline', () => {

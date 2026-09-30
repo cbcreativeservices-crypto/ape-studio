@@ -304,7 +304,14 @@ const PASS_MARK = 5;
 
 export function PageSpeechChecks({ ctx }: { ctx: PageCtx }) {
   const [n, setN] = useState(0);
-  const bump = () => setN((c) => { if (c + 1 >= PASS_MARK) ctx.markDone(); return c + 1; });
+  const bump = () => setN((c) => c + 1);
+  // Marked from an effect, not inside the updater (bug hunt 2026-09-30 day):
+  // an updater can run during render, where the host's setState is a React
+  // error ("cannot update a component while rendering a different one").
+  const { isDone, markDone } = ctx;
+  useEffect(() => {
+    if (n >= PASS_MARK && !isDone) markDone();
+  }, [n, isDone, markDone]);
 
   // W16 (2026-09-18): Android-only live region; on iOS the score never reached
   // a screen reader on a page that GATES on it. One answer at a time.

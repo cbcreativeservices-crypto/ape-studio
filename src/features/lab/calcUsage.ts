@@ -156,7 +156,14 @@ export async function consumeCalc(): Promise<CalcUsage> {
 /** Read the current week's usage without spending a credit (for the counter). */
 export async function getCalcStatus(): Promise<CalcUsage> {
   try {
-    const { data, error } = await supabase.rpc('calc_usage_status');
+    // Bounded like consumeCalc (bug pass 2026-09-30): a stalled read left the
+    // "# / 5" counter missing for the life of the screen; a timeout rejects
+    // into the device window below, exactly like an error.
+    const { data, error } = await withDeadline(
+      async () => await supabase.rpc('calc_usage_status'),
+      'calc_usage_status',
+      8000,
+    );
     const row = (data as Row[] | null)?.[0];
     // Falls back to the DEVICE window rather than a blank "no cap" — the
     // counter vanishing while offline is what made the bypass discoverable.

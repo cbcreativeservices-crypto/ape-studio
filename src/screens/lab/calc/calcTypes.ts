@@ -33,6 +33,11 @@ export type FieldDef = {
   help?: string;
   /** Feasibility check on the BASE value; message shown, calc still runs. */
   warn?: { test: (x: number) => boolean; msg: string };
+  /** A physically non-negative value on a kind that is otherwise signed
+   *  ('number', 'ratio', 'db', 'list' …) — capacitance in µF, a channel count,
+   *  a list of impedances or durations. A negative entry is an ERROR exactly
+   *  like a negative frequency (see calcUnits NON_NEGATIVE_KINDS). */
+  nonNegative?: boolean;
 };
 
 export type OutputVal =

@@ -105,8 +105,13 @@ let hostedList: (HostedOverlay & { key: string })[] = NO_OVERLAYS;
 let hostSeq = 0;
 /** `publisher`: the Modal of a surface that itself publishes into hosts when
  *  another Modal is open (AppDialog). It still HOSTS, but it must not count as
- *  "another Modal" to its own publisher, or it would flip itself in and out. */
-let openHosts: { id: number; depth: number; shown: boolean; publisher: boolean }[] = [];
+ *  "another Modal" to its own publisher, or it would flip itself in and out.
+ *  A string names WHICH publisher (bug hunt 2026-09-30, pass 1): the audio
+ *  gate's root popups were no host at all, so a confirm/notice raised while
+ *  one was up presented a second root Modal — refused on iOS, and AppDialog's
+ *  `current` never cleared, queueing every later confirm (Log out included)
+ *  behind it. Named, each publisher skips only its OWN Modal. */
+let openHosts: { id: number; depth: number; shown: boolean; publisher: string | false }[] = [];
 /** When the last host closed — its dismissal is still animating for a while. */
 let lastHostClosedAt = 0;
 /**
@@ -146,14 +151,43 @@ function openHostCount(): number {
 function openNonPublisherCount(): number {
   return openHosts.filter((h) => !h.publisher).length;
 }
+/** Per-publisher counters, created once each so useSyncExternalStore sees a
+ *  stable getSnapshot. `except`: every open host but these publishers';
+ *  `only`: just this publisher's. */
+const counters = new Map<string, () => number>();
+function counter(kind: 'except' | 'only', names: string[]): () => number {
+  const k = `${kind}:${names.join(',')}`;
+  let f = counters.get(k);
+  if (!f) {
+    f =
+      kind === 'except'
+        ? () => openHosts.filter((h) => !h.publisher || !names.includes(h.publisher)).length
+        : () => openHosts.filter((h) => !!h.publisher && names.includes(h.publisher)).length;
+    counters.set(k, f);
+  }
+  return f;
+}
+
+/** True while the named publisher's OWN Modal is open (AppDialog asks about
+ *  the audio gate's root popup — see AppDialogHost). */
+export function usePublisherModalOpen(name: string): boolean {
+  const count = counter('only', [name]);
+  return useSyncExternalStore(subscribe, count, count) > 0;
+}
 function hostedNow(): (HostedOverlay & { key: string })[] {
   return hostedList;
 }
 
 /** True while any DimModal is on screen — a root popup must then be hosted.
- *  `exceptPublishers`: ignore publisher Modals (AppDialog asking about others). */
-export function useModalHostOpen(exceptPublishers = false): boolean {
-  const count = exceptPublishers ? openNonPublisherCount : openHostCount;
+ *  `exceptPublishers`: true ignores every publisher Modal; names ignore only
+ *  those publishers' own Modals (the audio gate passes 'gate'). */
+export function useModalHostOpen(exceptPublishers: boolean | string | string[] = false): boolean {
+  const count =
+    typeof exceptPublishers === 'string' || Array.isArray(exceptPublishers)
+      ? counter('except', ([] as string[]).concat(exceptPublishers))
+      : exceptPublishers
+        ? openNonPublisherCount
+        : openHostCount;
   return useSyncExternalStore(subscribe, count, count) > 0;
 }
 
@@ -216,28 +250,30 @@ export function Modal({
   ...rest
 }: ModalProps & {
   children?: ReactNode;
-  /** false for the root surfaces that PUBLISH overlays (the audio gate), so
-   *  their own Modal is never mistaken for a host. */
+  /** false = never a host. (The audio gate used this until 2026-09-30; its
+   *  popups now host as the 'gate' publisher — see `overlayPublisher`.) */
   hostsOverlays?: boolean;
   /** The Modal of a surface that publishes when OTHER Modals are open but can
-   *  host the audio gate itself (AppDialog) — see `useModalHostOpen`. */
-  overlayPublisher?: boolean;
+   *  host the audio gate itself (AppDialog) — see `useModalHostOpen`. A string
+   *  names the publisher, so only that publisher skips it. */
+  overlayPublisher?: boolean | string;
 }) {
   const depth = useContext(HostDepth) + 1;
   const [id] = useState(() => ++hostSeq);
   const registered = hostsOverlays && !!rest.visible;
+  const publisher: string | false = overlayPublisher === true ? 'publisher' : overlayPublisher || false;
 
   // Layout effect: registered before any native onShow can arrive for it.
   useLayoutEffect(() => {
     if (!registered) return;
-    openHosts = [...openHosts, { id, depth, shown: false, publisher: overlayPublisher }];
+    openHosts = [...openHosts, { id, depth, shown: false, publisher }];
     emit();
     return () => {
       openHosts = openHosts.filter((h) => h.id !== id);
       lastHostClosedAt = Date.now();
       emit();
     };
-  }, [registered, id, depth, overlayPublisher]);
+  }, [registered, id, depth, publisher]);
 
   // Only the topmost open host ever sees the overlays; every other DimModal's
   // snapshot stays empty, so publishing re-renders nothing but that one.

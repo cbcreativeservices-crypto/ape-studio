@@ -49,6 +49,11 @@ export function HoldToActivate({
   /** True while a hold was started by an assistive-technology ACTIVATE rather
    *  than a finger — a stray onPressOut must not cancel it (bug hunt 2026-09-29). */
   const a11yHold = useRef(false);
+  /** The LATEST onComplete (bug hunt 2026-09-30, pass 1): the one captured at
+   *  press-in went stale — tick the gate's "keep audio on" box during a timed
+   *  (screen-reader) hold and the completed hold applied the old, unticked value. */
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
 
   const clearTick = () => {
     if (tick.current) {
@@ -97,7 +102,7 @@ export function HoldToActivate({
       a11yHold.current = false;
       if (finished) {
         if (viaA11y) AccessibilityInfo.announceForAccessibility(`${label}. Done.`);
-        onComplete();
+        onCompleteRef.current();
       }
     });
   };

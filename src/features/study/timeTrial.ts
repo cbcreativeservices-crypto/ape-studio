@@ -214,16 +214,34 @@ function finalize(m: PaceMethodKey): void {
   recompute(m);
   emit(m);
 
-  if (passed) {
-    // Fire-and-forget, error-swallowing (paceRecords.ts style). SAFE NO-OP for
-    // now — see recordTimeTrialPass below; the parent wires real crediting.
-    void recordTimeTrialPass({
-      topicId: st.topicId ?? '',
-      method: m,
-      correctCount: st.correctCount,
-      seconds: TIME_TRIAL_SECONDS,
-    }).catch(() => {});
-  }
+  if (passed) creditWithRetry(m, st.topicId ?? '', st.correctCount, 0);
+}
+
+/**
+ * ⛔ A PASS THE SERVER NEVER HEARD ABOUT WAS CREDIT LOST (bug pass 1, 2026-09-30).
+ *
+ * The credit call was fired ONCE. A trial that ends at 0:00 on a train, in a
+ * lift, or in the second a phone switches networks lost it outright: the panel
+ * still said "This study method is cleared toward unlocking the quiz", the
+ * `trial_passed` flag was never set, and nothing ever tried again. Fifteen
+ * minutes of work at quiz pace, gone. `credit_time_trial` only sets a flag, so
+ * repeating it is harmless — retry on a bounded backoff.
+ *
+ * The timers live in `creditRetries` so `resetTimeTrials` (the account wipe)
+ * cancels them: a retry must never land under the NEXT account.
+ */
+const CREDIT_RETRY_MS = [5_000, 15_000, 45_000, 120_000, 300_000];
+const creditRetries = new Set<ReturnType<typeof setTimeout>>();
+
+function creditWithRetry(m: PaceMethodKey, topicId: string, correctCount: number, attempt: number): void {
+  void recordTimeTrialPass({ topicId, method: m, correctCount, seconds: TIME_TRIAL_SECONDS }).then((ok) => {
+    if (ok || attempt >= CREDIT_RETRY_MS.length) return;
+    const t = setTimeout(() => {
+      creditRetries.delete(t);
+      creditWithRetry(m, topicId, correctCount, attempt + 1);
+    }, CREDIT_RETRY_MS[attempt]);
+    creditRetries.add(t);
+  });
 }
 
 /** Start (or restart) a 15:00 time trial for a method against a topic. */
@@ -308,6 +326,9 @@ export function dismissTimeTrial(method: PaceMethodKey): void {
  */
 export function resetTimeTrials(): void {
   for (const method of [...timers.keys()]) clearTimer(method);
+  // …and any pending credit retry, for the same reason (see creditWithRetry).
+  creditRetries.forEach((t) => clearTimeout(t));
+  creditRetries.clear();
   states.clear();
   snapshots.clear();
   timers.clear();
@@ -371,7 +392,7 @@ export async function recordTimeTrialPass(args: {
   method: PaceMethodKey;
   correctCount: number;
   seconds: number;
-}): Promise<void> {
+}): Promise<boolean> {
   try {
     // supabase-js RESOLVES with { error } rather than throwing, so the catch
     // below is dead code for RPC errors — check `error` explicitly. This credit
@@ -383,11 +404,13 @@ export async function recordTimeTrialPass(args: {
     });
     if (error) {
       console.warn('[time-trial] credit_time_trial failed:', error.message);
-    } else {
-      emitStudyProgress(); // credit landed — refresh any live Dashboard/quiz gate
+      return false;
     }
+    emitStudyProgress(); // credit landed — refresh any live Dashboard/quiz gate
+    return true;
   } catch (e) {
     // Swallow the throw path: crediting is best-effort; never disrupts study.
     console.warn('[time-trial] credit_time_trial threw:', (e as Error).message);
+    return false;
   }
 }

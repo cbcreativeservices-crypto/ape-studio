@@ -22,7 +22,7 @@
  * checks `isAppDialogHostMounted()` and falls back to the platform dialog if
  * this host is not live.
  */
-import { useEffect, useState, useSyncExternalStore } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 // ⛔ DimModal, NOT react-native's Modal. This component hosts ~72
@@ -31,7 +31,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 //    full brightness in a dark control room — the one thing that mode
 //    promises will not happen. DimModal carries the <LowLightDim/> wash and
 //    passes every prop straight through.
-import { Modal, rootModalHoldMs, setHostedOverlay, useModalHostOpen } from './DimModal';
+import { Modal, rootModalHoldMs, setHostedOverlay, useModalHostOpen, usePublisherModalOpen } from './DimModal';
 import { colors, fonts } from '../theme/tokens';
 
 export type AppDialogRequest = {
@@ -197,7 +197,22 @@ export function AppDialogHost() {
    * silently behind it until the app was killed. Now: another Modal open ⇒ the
    * card is drawn inside it; one just closed ⇒ wait out its dismissal first.
    */
-  const otherModalOpen = useModalHostOpen(true);
+  // Only THIS host's own Modal is skipped: the membership gate's popup is
+  // another Modal like any sheet (bug hunt 2026-09-30, pass 1).
+  const sheetOpen = useModalHostOpen(['dialog', 'gate']);
+  /**
+   * The AUDIO GATE's root popup is another Modal too — a notice raised while
+   * "Audio output is off" / the hold / the Sound Safety Warning was up
+   * presented a second root Modal: refused on iOS, `current` never cleared, and
+   * every later confirm queued behind it. So the card is drawn inside the
+   * gate's popup. Tie-break: the gate hosts itself inside an open dialog, so if
+   * both present in one frame the DIALOG keeps its own Modal (`ownModal`, last
+   * render's choice) and the gate moves in — never both moving, which would
+   * flip-flop forever.
+   */
+  const gateOpen = usePublisherModalOpen('gate');
+  const ownModal = useRef(false);
+  const otherModalOpen = sheetOpen || (gateOpen && !ownModal.current);
   const live = focused && req != null;
   const hostedMode = live && otherModalOpen;
   const holdMs = live && !otherModalOpen ? rootModalHoldMs() : 0;
@@ -251,13 +266,14 @@ export function AppDialogHost() {
     return () => setHostedOverlay(null, 'dialog');
   }, [focused]);
 
-  if (!live || hostedMode || holdMs > 0) return null;
+  ownModal.current = live && !hostedMode && holdMs <= 0;
+  if (!ownModal.current) return null;
   return (
     <Modal
       accessibilityViewIsModal
       // Hosts the audio gate if it is asked for over a dialog, but is not
       // "another Modal" to this host's own choice above.
-      overlayPublisher
+      overlayPublisher="dialog"
       visible
       transparent
       animationType="fade"

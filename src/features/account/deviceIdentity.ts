@@ -11,10 +11,25 @@ import * as Crypto from 'expo-crypto';
 export const DEVICE_ID_KEY = 'ape:deviceId';
 
 let cached: string | null = null;
+/**
+ * ONE first read at a time (2026-09-30 day pass). Two callers arriving before
+ * the first had cached (the glossary meter and a sign-in's device claim, say)
+ * each read an empty key and each MINTED a different id; the claim could go
+ * out under one while the displacement check later compared the other, and
+ * the device read as displaced by itself and signed itself out.
+ */
+let pending: Promise<string> | null = null;
 
 /** The stable device id, creating + persisting it on first use. */
-export async function getDeviceId(): Promise<string> {
-  if (cached) return cached;
+export function getDeviceId(): Promise<string> {
+  if (cached) return Promise.resolve(cached);
+  pending ??= readOrCreate().finally(() => {
+    pending = null;
+  });
+  return pending;
+}
+
+async function readOrCreate(): Promise<string> {
   try {
     const existing = await AsyncStorage.getItem(DEVICE_ID_KEY);
     if (existing) {

@@ -42,6 +42,7 @@ import { DetailPager } from '../../components/detailSwipe';
 import { TrophyImage } from '../../components/TrophyImage';
 import { topicImagePath } from '../../data/topicImages';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { isFreeEnrollGs } from '../../features/enrollment/enrollmentStore';
 import { LowLightDim } from '../../features/settings/LowLightLayer';
 import { colors, fonts } from '../../theme/tokens';
 import { REQUIRES_LABEL, type Career } from '../../data/careerRequirement';
@@ -241,8 +242,11 @@ export function TopicDetailModal({
                         condition here, at the moment the box is ticked. */}
                     <Text style={styles.ackText}>
                       {enrolled
-                        ? needsMembership
-                          ? 'Saved to your list — studying this topic needs Academy membership.'
+                        ? // Pro Audio Safety + DAW are free for everyone (FREE_ENROLL_GS):
+                          // telling a free user they need membership to study them
+                          // was false (bug pass 2026-09-30).
+                          needsMembership && !isFreeEnrollGs(topic.gs)
+                          ?'Saved to your list — studying this topic needs Academy membership.'
                           : 'Added to My Enrollments'
                         : 'Add this topic to My Enrollments'}
                     </Text>

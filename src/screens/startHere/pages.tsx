@@ -313,8 +313,10 @@ function L1Vibrate({ ctx: _ctx }: { ctx: PageCtx }) {
       label: 'VIBRATION',
       value: vib,
       onToggle: () => {
-        // No vibration, no sound: switching it off silences the tone too.
-        if (vib && tone.playing) tone.stop();
+        // No vibration, no sound: switching it off silences the tone too —
+        // including a PLAY still starting (`playing` flips only once the
+        // engine is up; stop() cancels that start). Bug pass 2026-09-30.
+        if (vib) tone.stop();
         setVib(!vib);
       },
     },
@@ -814,7 +816,10 @@ function sourceParam(first: FirstSignal, tone: ToneApi): DockParam {
     options: FIRST_SOURCES.map((s) => ({ id: s.id, label: s.label, blurb: s.blurb })),
     selectedId: first.source,
     onSelect: (id) => {
-      if (id === 'voice' && tone.playing) tone.stop(); // your voice needs no tone
+      // Your voice needs no tone — and the voice source has no PLAY key, so a
+      // start still in flight must be cancelled too, or it would sound with no
+      // way to stop it here (bug pass 2026-09-30).
+      if (id === 'voice') tone.stop();
       first.setSource(id as FirstSource);
     },
     sticky: true,

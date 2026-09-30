@@ -260,9 +260,19 @@ export async function fetchNotificationPrefs(): Promise<NotificationPrefs | null
   if (__DEV__ && devPrefsOverride) return devPrefsOverride;
   // Member-only table: without a session the read can only 401.
   if (!(await hasSafeSession(supabase.auth.getSession(), 'fetchNotificationPrefs'))) return null;
+  /**
+   * ⛔ SAY WHOSE ROW (2026-09-30 day pass) — the myUserRow lesson. The table
+   * carries `admin_all_notif_prefs` (ALL, is_admin()), so for an ADMIN this
+   * unfiltered read returned every member's row and `.maybeSingle()` failed:
+   * Settings told the owner "Couldn't load your notification settings" on
+   * every visit. The update below already filters on user_id.
+   */
+  const me = await myUserRow<{ id: string }>('id');
+  if (!me) return null;
   const { data, error } = await supabase
     .from('notification_preferences')
     .select('push_enabled, email_enabled, notify_weekly_concept, notify_trophy, notify_quiz_unlock, notify_method_complete')
+    .eq('user_id', me.id)
     .maybeSingle();
   if (error) {
     console.warn('[settings] prefs fetch failed:', error.message);
@@ -300,6 +310,7 @@ export async function updateNotificationPref(
     .eq('user_id', user.id)
     .select('user_id');
   if (error) console.warn('[settings] pref update failed:', error.message);
-  else if (!data?.length) console.warn('[settings] pref update matched no row for user', user.id);
+  // No account id in the log (personal-data rule; see EntitlementProvider).
+  else if (!data?.length) console.warn('[settings] pref update matched no row');
   return !error && !!data?.length;
 }

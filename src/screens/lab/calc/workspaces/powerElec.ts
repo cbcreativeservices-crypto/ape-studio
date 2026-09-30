@@ -51,7 +51,7 @@ const TRANSFORMER: Workspace = {
   fields: [
     { key: 'zp', name: 'PRIMARY IMPEDANCE', quantity: 'impedance', placeholder: '600', help: 'Impedance seen at the primary (input) side.', warn: { test: (x) => x <= 0, msg: 'Impedance must be greater than zero.' } },
     { key: 'zs', name: 'SECONDARY IMPEDANCE', quantity: 'impedance', placeholder: '150', help: 'Impedance of the load on the secondary (output) side.', warn: { test: (x) => x <= 0, msg: 'Impedance must be greater than zero.' } },
-    { key: 'turns', name: 'TURNS RATIO (primary:secondary)', quantity: 'number', placeholder: '2', help: 'Primary turns ÷ secondary turns.', warn: { test: (x) => x <= 0, msg: 'Turns ratio must be greater than zero.' } },
+    { key: 'turns', name: 'TURNS RATIO (primary:secondary)', quantity: 'number', nonNegative: true, placeholder: '2', help: 'Primary turns ÷ secondary turns.', warn: { test: (x) => x <= 0, msg: 'Turns ratio must be greater than zero.' } },
   ],
   functions: [
     {
@@ -136,7 +136,7 @@ const PADS: Workspace = {
     'Pi-pad: series R = Z·(K²−1)/(2K), each shunt R = Z·(K+1)/(K−1).',
   glossary: ['Attenuation', 'Impedance', 'Decibel', 'Gain Staging', 'Pad'],
   fields: [
-    { key: 'atten', name: 'ATTENUATION', quantity: 'db', placeholder: '20', help: 'How many dB to drop the signal.', warn: { test: (x) => x <= 0, msg: 'Attenuation must be greater than zero dB.' } },
+    { key: 'atten', name: 'ATTENUATION', quantity: 'db', nonNegative: true, placeholder: '20', help: 'How many dB to drop the signal.', warn: { test: (x) => x <= 0, msg: 'Attenuation must be greater than zero dB.' } },
     { key: 'z', name: 'CHARACTERISTIC IMPEDANCE', quantity: 'impedance', placeholder: '600', help: 'The line impedance the pad must match on both sides.', warn: { test: (x) => x <= 0, msg: 'Impedance must be greater than zero.' } },
   ],
   functions: [
@@ -294,7 +294,9 @@ const VDROP: Workspace = {
         const A = (RHO_CU * 2 * n(v.len)) / Rmax;
         const awgReal = awgFromAreaM2(A);
         return [
-          { label: 'REQUIRED AREA', value: A * 1e6, quantity: 'number', chainable: false },
+          // Unit in the LABEL: a 'number' output prints no unit of its own, so
+          // "REQUIRED AREA 2.155" left mm² vs m² vs kcmil to guesswork.
+          { label: 'REQUIRED AREA (mm²)', value: A * 1e6, quantity: 'number', chainable: false },
           // ⛔ NOT 'USE THIS AWG'. The old label read as a recommendation for a number
           //    derived ONLY from the drop budget: 5 m / 20 A / 120 V / 3% returns 17 AWG,
           //    which on a 20 A branch circuit is a fire. The ampacity check is the
@@ -350,7 +352,7 @@ const RACK: Workspace = {
   fields: [
     { key: 'watts', name: 'TOTAL POWER DRAW', quantity: 'power', placeholder: '800', help: 'Sum of every device’s real power draw under load.', warn: { test: (x) => x <= 0, msg: 'Power must be greater than zero.' } },
     { key: 'mains', name: 'MAINS VOLTAGE', quantity: 'voltage', placeholder: '120', help: 'Wall voltage: 120 V (US) or 230 V (EU).', warn: { test: (x) => x <= 0, msg: 'Voltage must be greater than zero.' } },
-    { key: 'dTempF', name: 'ALLOWABLE TEMP RISE (°F)', quantity: 'number', placeholder: '10', help: 'How many °F warmer the rack exhaust may be than the intake.', warn: { test: (x) => x <= 0, msg: 'Temperature rise must be greater than zero.' } },
+    { key: 'dTempF', name: 'ALLOWABLE TEMP RISE (°F)', quantity: 'number', nonNegative: true, placeholder: '10', help: 'How many °F warmer the rack exhaust may be than the intake.', warn: { test: (x) => x <= 0, msg: 'Temperature rise must be greater than zero.' } },
     { key: 'breaker', name: 'BREAKER RATING', quantity: 'current', placeholder: '15', help: 'The circuit breaker’s amp rating, for the safe-load figure.', warn: { test: (x) => x <= 0, msg: 'Breaker rating must be greater than zero.' } },
   ],
   functions: [
@@ -369,7 +371,7 @@ const RACK: Workspace = {
         const btu = W * 3.412;
         return [
           { label: 'MAINS CURRENT', value: W / n(v.mains), quantity: 'current' },
-          { label: 'HEAT OUTPUT', value: btu, quantity: 'number', chainable: false },
+          { label: 'HEAT OUTPUT (BTU/hr)', value: btu, quantity: 'number', chainable: false },
           { label: 'COOLING AIRFLOW (CFM)', value: btu / (1.08 * n(v.dTempF)), quantity: 'number', chainable: false },
         ];
       },
@@ -442,8 +444,8 @@ const COMPLEXZ: Workspace = {
   glossary: ['Impedance', 'Reactance', 'Resonance', 'Capacitor', 'Inductor', 'Resistance'],
   fields: [
     { key: 'r', name: 'RESISTANCE', quantity: 'impedance', placeholder: '8', help: 'Series resistance in ohms.', warn: { test: (x) => x < 0, msg: 'Resistance cannot be negative.' } },
-    { key: 'indmH', name: 'INDUCTANCE (mH)', quantity: 'number', placeholder: '1', help: 'Inductance in millihenries.', warn: { test: (x) => x < 0, msg: 'Inductance cannot be negative.' } },
-    { key: 'capuF', name: 'CAPACITANCE (µF)', quantity: 'number', placeholder: '10', help: 'Capacitance in microfarads.', warn: { test: (x) => x <= 0, msg: 'Capacitance must be greater than zero.' } },
+    { key: 'indmH', name: 'INDUCTANCE (mH)', quantity: 'number', nonNegative: true, placeholder: '1', help: 'Inductance in millihenries.', warn: { test: (x) => x < 0, msg: 'Inductance cannot be negative.' } },
+    { key: 'capuF', name: 'CAPACITANCE (µF)', quantity: 'number', nonNegative: true, placeholder: '10', help: 'Capacitance in microfarads.', warn: { test: (x) => x <= 0, msg: 'Capacitance must be greater than zero.' } },
     { key: 'f', name: 'FREQUENCY', quantity: 'frequency', placeholder: '1000', help: 'The frequency to evaluate the impedance at.', warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
   ],
   functions: [
@@ -507,7 +509,7 @@ const COMPLEXZ: Workspace = {
         const f0 = 1 / (2 * Math.PI * Math.sqrt(L * C));
         return [
           { label: 'RESONANT FREQUENCY', value: f0, quantity: 'frequency' },
-          { label: 'ANGULAR FREQUENCY ω₀', value: 2 * Math.PI * f0, quantity: 'number', chainable: false },
+          { label: 'ANGULAR FREQUENCY ω₀ (rad/s)', value: 2 * Math.PI * f0, quantity: 'number', chainable: false },
         ];
       },
       steps: (v) => {

@@ -498,8 +498,14 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
    */
   const shareCardRef = useRef<View>(null);
   const [shareTarget, setShareTarget] = useState<SavedMeasurement | null>(null);
+  // One image share at a time (toddler pass 2026-09-30). onLayout can fire more
+  // than once for the hidden card, and each call captured and opened its own
+  // share sheet; a second row's SHARE tapped mid-capture swapped the target
+  // under the first and was then cleared by it — silently never shared.
+  const shareBusyRef = useRef(false);
 
   const onRowShare = useCallback((m: SavedMeasurement) => {
+    if (shareBusyRef.current) return;
     // MultiMeter and tap-log deliberately have no drawable preview — their
     // honest presentation IS the numbers — so those go straight to text rather
     // than sharing an empty frame.
@@ -507,18 +513,27 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
       void shareMeasurements([m]);
       return;
     }
+    shareBusyRef.current = true;
     setShareTarget(m);
   }, []);
 
   /** Runs once the hidden card has laid out — see the host's onLayout. */
+  const capturingRef = useRef(false);
   const captureAndShareTarget = useCallback(async () => {
     const m = shareTarget;
-    if (!m) return;
+    if (!m || capturingRef.current) return;
+    capturingRef.current = true;
     // The picture AND the words. The card carries the measurement; the message
     // carries the company name and the academy URL, which the OS renders as a
     // TAPPABLE link — burning that URL into the image made it a picture of a
     // link instead (owner, 2026-09-11: the blue link had disappeared).
-    const ok = await shareImage.captureAndShare(shareCardRef.current, m.title, measurementShareText(m));
+    let ok = false;
+    try {
+      ok = await shareImage.captureAndShare(shareCardRef.current, m.title, measurementShareText(m));
+    } finally {
+      capturingRef.current = false;
+      shareBusyRef.current = false;
+    }
     setShareTarget(null);
     // Never leave the user with nothing: a capture that could not happen falls
     // back to the text share rather than silently doing nothing. It does NOT

@@ -41,16 +41,28 @@ const MAX_PASSES = 140;
 /** Let the launch finish before competing with it for the network. */
 const SETTLE_MS = 8000;
 
-let running = false;
-let cancelled = false;
+/**
+ * ⛔ A RUN TOKEN, NOT A `running` + `cancelled` PAIR (bug hunt 2026-09-30,
+ * pass 2). With the pair, a cancel followed by a restart inside the 8 s settle
+ * — the Settings switch flicked off and on, an account switch from one member
+ * to another — found `running` still true and returned, and then the old run
+ * woke, saw `cancelled` and quit: no save at all for the rest of the session.
+ * And `running` was only set AFTER the awaited preference read, so two calls in
+ * the same moment both started a download.
+ *
+ * Every start and every cancel bumps `runId`; a run is live only while its own
+ * id is still current, and a new start supersedes a cancelled one at once.
+ */
+let runId = 0;
+let liveRun = 0;
 
 /** Stop the current run (sign-out, the switch going off, the screen taking over). */
 export function cancelGlossaryPrefetch(): void {
-  cancelled = true;
+  runId += 1;
 }
 
 export function glossaryPrefetchRunning(): boolean {
-  return running;
+  return liveRun !== 0 && liveRun === runId;
 }
 
 /**
@@ -58,14 +70,16 @@ export function glossaryPrefetchRunning(): boolean {
  * immediately when a run is already in flight, and does nothing once complete.
  */
 export async function prefetchGlossary(table: CorpusTable = 'glossary_browse_v'): Promise<void> {
-  if (!OFFLINE_AVAILABLE || running) return;
-  if (!(await autoOfflineEnabled())) return;
+  if (!OFFLINE_AVAILABLE || glossaryPrefetchRunning()) return;
+  runId += 1;
+  const mine = runId;
+  liveRun = mine;
+  const cancelled = () => runId !== mine;
 
-  running = true;
-  cancelled = false;
   try {
+    if (!(await autoOfflineEnabled())) return;
     await new Promise((r) => setTimeout(r, SETTLE_MS));
-    if (cancelled) return;
+    if (cancelled()) return;
     // Members only run this, so any teasers a free reader left behind go first
     // — otherwise they count as "saved" and are never replaced.
     await alignDefinitionTier(table, 'member');
@@ -74,16 +88,16 @@ export async function prefetchGlossary(table: CorpusTable = 'glossary_browse_v')
     const stats = await corpusStats(table);
     if (!stats.terms) {
       const terms = await fetchCorpusTerms(table);
-      if (cancelled) return;
+      if (cancelled()) return;
       await saveTerms(table, terms);
     }
 
     for (let pass = 0; pass < MAX_PASSES; pass += 1) {
-      if (cancelled) return;
+      if (cancelled()) return;
       const ids = await idsMissingDefinitions(table, PAGE);
       if (!ids.length) return; // complete
       const rows = await fetchDefinitionsFor(table, ids);
-      if (cancelled) return;
+      if (cancelled()) return;
       await saveDefinitions(table, rows);
       // A page where nothing was storable means those ids are NULL upstream and
       // will come back every pass — stop rather than spin.
@@ -95,6 +109,6 @@ export async function prefetchGlossary(table: CorpusTable = 'glossary_browse_v')
     // Offline, rate-limited, signed out mid-run: keep whatever landed and try
     // again next launch. There is nothing here worth telling the reader about.
   } finally {
-    running = false;
+    if (liveRun === mine) liveRun = 0;
   }
 }

@@ -16,7 +16,7 @@ import { memo, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import type { CalcFunction, CalcTable, CalcValues, FieldDef, OutputVal } from './calcTypes';
-import { NEGATIVE_MSG, NON_NEGATIVE_KINDS, fmt, negativeInput, parseList, parseQuantity, unitsFor } from './calcUnits';
+import { NEGATIVE_MSG, fmt, isNonNegativeField, negativeInput, parseList, parseQuantity, unitsFor } from './calcUnits';
 
 
 export function defaultUnitIdx(f: FieldDef): number {
@@ -137,7 +137,8 @@ export const FieldRow = memo(
     // either being absent.
     const typed = parseQuantity(raw);
     const baseVal = isList || typed === null ? NaN : unit.toBase(typed);
-    const negative = NON_NEGATIVE_KINDS.has(field.quantity) && Number.isFinite(baseVal) && baseVal < 0;
+    const negative =
+      isNonNegativeField(field) && (isList ? parseList(raw).some((x) => x < 0) : Number.isFinite(baseVal) && baseVal < 0);
     const warn = negative
       ? NEGATIVE_MSG
       : field.warn && Number.isFinite(baseVal) && field.warn.test(baseVal)

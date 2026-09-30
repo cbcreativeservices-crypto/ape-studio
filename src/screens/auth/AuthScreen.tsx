@@ -200,7 +200,10 @@ export function AuthScreen({ navigation }: Props) {
         {
           onCancel: () => {
             markIntentionalSignOut();
-            void supabase.auth.signOut().catch(() => {});
+            // scope 'local' (2026-09-30 day pass): the default is GLOBAL, which
+            // revoked the OTHER device's session too — the very device the
+            // person just chose to keep signed in.
+            void supabase.auth.signOut({ scope: 'local' }).catch(() => {});
           },
         },
       );

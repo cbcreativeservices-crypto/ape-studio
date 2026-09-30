@@ -44,16 +44,17 @@ describe('S1 — app dialogs never present over (or just after) another Modal', 
   });
 
   test('a publisher Modal is not "another Modal" to itself', () => {
-    assert.match(dim, /export function useModalHostOpen\(exceptPublishers = false\)/);
-    assert.match(dim, /publisher: overlayPublisher/);
+    // Keyed since pass 1 of 2026-09-30 — see sharedInfraBugHunt20260930Pass1.
+    assert.match(dim, /export function useModalHostOpen\(exceptPublishers: boolean \| string \| string\[\] = false\)/);
+    assert.match(dim, /const publisher: string \| false = overlayPublisher === true \? 'publisher' : overlayPublisher \|\| false;/);
   });
 
   test('AppDialogHost hosts inside an open Modal and waits out a closing one', () => {
-    assert.match(dlg, /useModalHostOpen\(true\)/);
+    assert.match(dlg, /useModalHostOpen\(\['dialog', 'gate'\]\)/);
     assert.match(dlg, /setHostedOverlay\([\s\S]*?'dialog'\)/);
     assert.match(dlg, /rootModalHoldMs\(\)/);
-    assert.match(dlg, /if \(!live \|\| hostedMode \|\| holdMs > 0\) return null;/);
-    assert.match(dlg, /overlayPublisher/);
+    assert.match(dlg, /ownModal\.current = live && !hostedMode && holdMs <= 0;/);
+    assert.match(dlg, /overlayPublisher="dialog"/);
   });
 
   test('the audio gate still publishes under its own key', () => {

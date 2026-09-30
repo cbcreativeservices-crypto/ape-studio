@@ -7,7 +7,7 @@
  * their earned-trophy state. Replaces the old Field→Subject→Grid drill (three
  * screens) and the rejected per-field rainbow palette.
  */
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -54,6 +54,8 @@ export function TopicsScreen() {
   // [11] (2026-09-07): track a load error separately from a loaded-empty result
   // so a failed fetch shows an error, not a silent empty subject list.
   const [loadError, setLoadError] = useState(false);
+  const fieldsRef = useRef(fields);
+  fieldsRef.current = fields;
 
   useFocusEffect(
     useCallback(() => {
@@ -65,6 +67,10 @@ export function TopicsScreen() {
           setTotal(totalCount);
         })
         .catch(() => {
+          // Keep what is on screen (bug pass 1, 2026-09-30): this refetches on
+          // every focus, so one offline return wiped the earned-trophy list to
+          // an error. The error is for the empty state only (AchievementsHome).
+          if (fieldsRef.current && fieldsRef.current.length > 0) return;
           setFields([]);
           setLoadError(true);
         });

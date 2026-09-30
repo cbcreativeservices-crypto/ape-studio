@@ -564,13 +564,13 @@ const WS_ELECTRONICS: Workspace = {
     'output. Fine for audio design intuition; not a substitute for a circuit simulator.',
   glossary: ['Resistance', 'Impedance', 'Capacitor', 'Inductor', 'Voltage divider', 'Cutoff frequency', 'Reactance'],
   fields: [
-    { key: 'rlist', name: 'RESISTORS (Ω, comma-separated)', quantity: 'list', placeholder: '8, 8, 16', help: 'The resistor (or speaker) values to combine, in ohms, separated by commas.' },
+    { key: 'rlist', name: 'RESISTORS (Ω, comma-separated)', quantity: 'list', nonNegative: true, placeholder: '8, 8, 16', help: 'The resistor (or speaker) values to combine, in ohms, separated by commas.' },
     { key: 'vin', name: 'INPUT VOLTAGE', quantity: 'voltage', placeholder: '1', help: 'Voltage across the whole divider (top of R1 to bottom of R2).' },
     { key: 'r1', name: 'R1 (SERIES / TOP)', quantity: 'impedance', placeholder: '10000', help: 'The series resistor between input and output.', warn: { test: (x) => x < 0, msg: 'Resistance cannot be negative.' } },
     { key: 'r2', name: 'R2 (SHUNT / BOTTOM)', quantity: 'impedance', placeholder: '10000', help: 'The resistor from output to ground — the output is taken across it.', warn: { test: (x) => x <= 0, msg: 'R2 must be positive — 0 Ω shorts the output to ground.' } },
     { key: 'f', name: 'FREQUENCY', quantity: 'frequency', placeholder: '1000', help: 'The frequency at which to evaluate the reactance or filter.', warn: { test: (x) => x <= 0, msg: 'Frequency must be positive.' } },
-    { key: 'cap', name: 'CAPACITANCE (µF)', quantity: 'number', placeholder: '1', help: 'Capacitance in MICROFARADS (µF) — the tool converts to farads internally (×10⁻⁶).', warn: { test: (x) => x <= 0, msg: 'Capacitance must be positive.' } },
-    { key: 'ind', name: 'INDUCTANCE (mH)', quantity: 'number', placeholder: '10', help: 'Inductance in MILLIHENRIES (mH) — the tool converts to henries internally (×10⁻³).', warn: { test: (x) => x <= 0, msg: 'Inductance must be positive.' } },
+    { key: 'cap', name: 'CAPACITANCE (µF)', quantity: 'number', nonNegative: true, placeholder: '1', help: 'Capacitance in MICROFARADS (µF) — the tool converts to farads internally (×10⁻⁶).', warn: { test: (x) => x <= 0, msg: 'Capacitance must be positive.' } },
+    { key: 'ind', name: 'INDUCTANCE (mH)', quantity: 'number', nonNegative: true, placeholder: '10', help: 'Inductance in MILLIHENRIES (mH) — the tool converts to henries internally (×10⁻³).', warn: { test: (x) => x <= 0, msg: 'Inductance must be positive.' } },
     { key: 'r', name: 'RESISTANCE', quantity: 'impedance', placeholder: '10000', help: 'The R of the RC network.', warn: { test: (x) => x <= 0, msg: 'Resistance must be positive.' } },
   ],
   functions: [
@@ -804,9 +804,9 @@ const WS_QBW: Workspace = {
   glossary: ['Q factor', 'Bandwidth', 'Center frequency', 'Octave', 'Parametric EQ', 'Filter'],
   fields: [
     { key: 'fc', name: 'CENTER FREQUENCY', quantity: 'frequency', placeholder: '1000', help: 'The frequency at the middle (geometric mean) of the band.', warn: { test: (x) => x <= 0, msg: 'Center frequency must be positive.' } },
-    { key: 'q', name: 'Q', quantity: 'number', placeholder: '1.41', help: 'Quality factor: fc ÷ bandwidth. Higher Q = narrower band.', warn: { test: (x) => x <= 0, msg: 'Q must be positive.' } },
+    { key: 'q', name: 'Q', quantity: 'number', nonNegative: true, placeholder: '1.41', help: 'Quality factor: fc ÷ bandwidth. Higher Q = narrower band.', warn: { test: (x) => x <= 0, msg: 'Q must be positive.' } },
     { key: 'bw', name: 'BANDWIDTH', quantity: 'frequency', placeholder: '709', help: 'Width between the −3 dB edge frequencies.', warn: { test: (x) => x <= 0, msg: 'Bandwidth must be positive.' } },
-    { key: 'noct', name: 'WIDTH IN OCTAVES', quantity: 'number', placeholder: '1', help: 'Bandwidth expressed as octaves between the edges: N = log2(f2/f1).', warn: { test: (x) => x <= 0, msg: 'Octave width must be positive.' } },
+    { key: 'noct', name: 'WIDTH IN OCTAVES', quantity: 'number', nonNegative: true, placeholder: '1', help: 'Bandwidth expressed as octaves between the edges: N = log2(f2/f1).', warn: { test: (x) => x <= 0, msg: 'Octave width must be positive.' } },
     { key: 'gain', name: 'GAIN', quantity: 'db', placeholder: '9', help: 'Boost (+) or cut (−) at the center of the parametric bell.' },
     { key: 'flo', name: 'LOWER FREQUENCY', quantity: 'frequency', placeholder: '100', help: 'The bottom of the range whose logarithmic (musical) center you want.', warn: { test: (x) => x <= 0, msg: 'Frequency must be positive.' } },
     { key: 'fhi', name: 'UPPER FREQUENCY', quantity: 'frequency', placeholder: '400', help: 'The top of the range whose logarithmic (musical) center you want.', warn: { test: (x) => x <= 0, msg: 'Frequency must be positive.' } },

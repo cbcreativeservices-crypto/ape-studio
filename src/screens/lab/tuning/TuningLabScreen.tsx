@@ -18,11 +18,11 @@ import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced
 import { animationsAllowed } from '../../../features/settings/a11y';
 import { C4_ET } from '../../../features/tuning/tuningMath';
 import { TuningPlayer, type PlayerStatus } from '../../../features/tuning/tuningAudio';
-import { loadTuningProgress, resetTuningProgress, saveTuningProgress, type TuningProgress } from '../../../features/tuning/tuningProgress';
+import { loadTuningProgress, saveTuningProgress, type TuningProgress } from '../../../features/tuning/tuningProgress';
 import { CHAPTERS, CHAPTER_COUNT, CHAPTER_TITLES } from './chapters';
 import type { LabCtx } from './labCtx';
 import { confirmDialog } from '../../../lib/confirm';
-import { LabEndScreen } from '../kit/LabEndScreen';
+import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 // Tablet (owner 2026-09-29): a reading surface - capped at the reading column
 // and centred instead of running 990 pt wide. No-op on a phone.
 import { readingColumn } from '../../../theme/readingColumn';
@@ -63,6 +63,13 @@ export function TuningLabScreen() {
   // PagedLab pattern): a chapter's late callback (SHOW ME finishing after
   // CONTINUE) spread its render-time copy and reverted lastChapter / mathView.
   const progressRef = useRef<TuningProgress | null>(null);
+  // HOUSE GUEST RULE (kit/PagedLab's; bug hunt 2026-09-30 day): a signed-out
+  // guest or a members-only preview neither restores a place nor saves one.
+  // This shell saved and restored for everyone — while its own end screen
+  // told the guest "nothing here is saved". Same reading as that screen.
+  const guest = useLabEndGuest();
+  const guestRef = useRef(guest);
+  guestRef.current = guest;
   const [chapter, setChapter] = useState(0);
   const [rootHz, setRootHz] = useState(C4_ET);
   const [mathView, setMathView] = useState(false);
@@ -75,8 +82,9 @@ export function TuningLabScreen() {
   useEffect(() => {
     const unsub = player.subscribe(setStatus);
     let alive = true;
-    void loadTuningProgress().then((p) => {
+    void loadTuningProgress().then((stored) => {
       if (!alive) return;
+      const p: TuningProgress = guestRef.current ? { completed: [], lastChapter: 0, done: false, mathView: false } : stored;
       progressRef.current = p;
       setProgress(p);
       setMathView(p.mathView);
@@ -96,7 +104,7 @@ export function TuningLabScreen() {
     const next = { ...base, ...patch };
     progressRef.current = next;
     setProgress(next);
-    void saveTuningProgress(next);
+    if (!guestRef.current) void saveTuningProgress(next);
   }, []);
 
   const goTo = useCallback(
@@ -125,18 +133,17 @@ export function TuningLabScreen() {
     persist({ mathView: next });
   };
 
+  // A PRACTICE reset, never a credit wipe (owner 2026-09-29: "resets start a
+  // fresh practice run; they never wipe banked credit"; bug hunt 2026-09-30
+  // day, the Amp lab's fix). It used to remove the whole key — every
+  // completed chapter, this lab's only record of them. Now it starts over
+  // from the first chapter and the completed chapters stay complete.
   const confirmReset = () =>
     confirmDialog(
-      'Reset this lab?',
-      'Clears your chapter progress for the Tuning & Temperament Lab only.',
-      'Reset',
-      () =>
-        void resetTuningProgress().then(() => {
-          progressRef.current = { completed: [], lastChapter: 0, done: false, mathView };
-          setProgress(progressRef.current);
-          setChapter(0);
-        }),
-      { destructive: true },
+      'Start a fresh practice run?',
+      'Goes back to the first chapter of the Tuning & Temperament Lab. Chapters you have completed stay complete.',
+      'Start over',
+      () => goTo(CHAPTERS[0].index),
     );
 
   const def = CHAPTERS.find((c) => c.index === chapter) ?? CHAPTERS[0];
@@ -199,8 +206,8 @@ export function TuningLabScreen() {
               </Pressable>
             );
           })}
-          <Pressable onPress={confirmReset} style={styles.listRow} accessibilityRole="button" accessibilityLabel="Reset this lab's progress">
-            <Text style={[styles.listText, { color: colors.textMuted }]}>RESET LAB PROGRESS</Text>
+          <Pressable onPress={confirmReset} style={styles.listRow} accessibilityRole="button" accessibilityLabel="Start a fresh practice run from the first chapter">
+            <Text style={[styles.listText, { color: colors.textMuted }]}>START OVER (PRACTICE)</Text>
           </Pressable>
         </View>
       ) : null}

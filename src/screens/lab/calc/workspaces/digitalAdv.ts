@@ -36,7 +36,7 @@ const CLOCKDRIFT: Workspace = {
   glossary: ['Sample Rate', 'Word Clock', 'Jitter', 'Synchronization'],
   fields: [
     { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Sample rate of the digital link.', warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
-    { key: 'ppm', name: 'CLOCK ERROR (ppm)', quantity: 'number', placeholder: '50', help: 'Frequency error in parts per million between the two clocks.', warn: { test: (x) => x <= 0, msg: 'Clock error must be greater than zero.' } },
+    { key: 'ppm', name: 'CLOCK ERROR (ppm)', quantity: 'number', nonNegative: true, placeholder: '50', help: 'Frequency error in parts per million between the two clocks.', warn: { test: (x) => x <= 0, msg: 'Clock error must be greater than zero.' } },
     { key: 'dur', name: 'DURATION', quantity: 'time', defaultUnit: 'min', placeholder: '60', help: 'How long the two devices run unsynced.', warn: { test: (x) => x <= 0, msg: 'Duration must be greater than zero.' } },
     { key: 'maxSlip', name: 'SLIP BUDGET', quantity: 'samples', placeholder: '1', help: 'How many samples of slip you can tolerate before it matters.', warn: { test: (x) => x <= 0, msg: 'Slip budget must be greater than zero.' } },
   ],
@@ -124,7 +124,7 @@ const NETAUDIO: Workspace = {
     'and switch; treat the wire figure as an estimate.',
   glossary: ['Sample Rate', 'Bit Depth', 'Bandwidth', 'Latency', 'Packet'],
   fields: [
-    { key: 'channels', name: 'CHANNELS', quantity: 'number', placeholder: '64', help: 'Number of audio channels in one direction.', warn: { test: (x) => x <= 0, msg: 'Channels must be greater than zero.' } },
+    { key: 'channels', name: 'CHANNELS', quantity: 'number', nonNegative: true, placeholder: '64', help: 'Number of audio channels in one direction.', warn: { test: (x) => x <= 0, msg: 'Channels must be greater than zero.' } },
     { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Sample rate of each channel.', warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
     { key: 'bitdepth', name: 'BIT DEPTH', quantity: 'bitdepth', placeholder: '24', help: 'Bits per sample carried on the wire.', warn: { test: (x) => x <= 0, msg: 'Bit depth must be greater than zero.' } },
     { key: 'packetms', name: 'PACKET TIME', quantity: 'time', defaultUnit: 'ms', placeholder: '1', help: 'Audio time carried per packet — smaller = lower latency, more overhead.', warn: { test: (x) => x <= 0, msg: 'Packet time must be greater than zero.' } },
@@ -220,11 +220,11 @@ const TIMECODE: Workspace = {
     'factor. Drop-frame label mechanics are described, not renumbered here.',
   glossary: ['Timecode', 'Frame Rate', 'Synchronization', 'Sample Rate'],
   fields: [
-    { key: 'frames', name: 'FRAME COUNT', quantity: 'number', placeholder: '9000', help: 'Total number of frames.', warn: { test: (x) => x < 0, msg: 'Frame count cannot be negative.' } },
-    { key: 'fps', name: 'FRAME RATE (fps)', quantity: 'number', placeholder: '25', help: 'Frames per second: 24, 25, 29.97, or 30.', warn: { test: (x) => x <= 0, msg: 'Frame rate must be greater than zero.' } },
-    { key: 'hours', name: 'HOURS', quantity: 'number', placeholder: '0', help: 'Hours component of the timecode.' },
-    { key: 'mins', name: 'MINUTES', quantity: 'number', placeholder: '6', help: 'Minutes component of the timecode.' },
-    { key: 'secs', name: 'SECONDS', quantity: 'number', placeholder: '0', help: 'Seconds component of the timecode.' },
+    { key: 'frames', name: 'FRAME COUNT', quantity: 'number', nonNegative: true, placeholder: '9000', help: 'Total number of frames.', warn: { test: (x) => x < 0, msg: 'Frame count cannot be negative.' } },
+    { key: 'fps', name: 'FRAME RATE (fps)', quantity: 'number', nonNegative: true, placeholder: '25', help: 'Frames per second: 24, 25, 29.97, or 30.', warn: { test: (x) => x <= 0, msg: 'Frame rate must be greater than zero.' } },
+    { key: 'hours', name: 'HOURS', quantity: 'number', nonNegative: true, placeholder: '0', help: 'Hours component of the timecode.' },
+    { key: 'mins', name: 'MINUTES', quantity: 'number', nonNegative: true, placeholder: '6', help: 'Minutes component of the timecode.' },
+    { key: 'secs', name: 'SECONDS', quantity: 'number', nonNegative: true, placeholder: '0', help: 'Seconds component of the timecode.' },
     { key: 'dur', name: 'NOMINAL DURATION', quantity: 'time', defaultUnit: 'min', placeholder: '60', help: 'Program duration to evaluate the pulldown offset over.', warn: { test: (x) => x <= 0, msg: 'Duration must be greater than zero.' } },
   ],
   functions: [
@@ -353,8 +353,8 @@ const FIRLEN: Workspace = {
   fields: [
     { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Processing sample rate.', warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
     { key: 'trans', name: 'TRANSITION WIDTH', quantity: 'frequency', placeholder: '100', help: 'Hz between passband edge and stopband edge.', warn: { test: (x) => x <= 0, msg: 'Transition width must be greater than zero.' } },
-    { key: 'atten', name: 'STOPBAND ATTENUATION', quantity: 'db', placeholder: '60', help: 'How deep the stopband rejection must be, in dB.', warn: { test: (x) => x <= 0, msg: 'Attenuation must be greater than zero.' } },
-    { key: 'taps', name: 'TAP COUNT', quantity: 'number', placeholder: '1024', help: 'Filter length in taps, for the reverse latency calc.', warn: { test: (x) => x <= 0, msg: 'Tap count must be greater than zero.' } },
+    { key: 'atten', name: 'STOPBAND ATTENUATION', quantity: 'db', nonNegative: true, placeholder: '60', help: 'How deep the stopband rejection must be, in dB.', warn: { test: (x) => x <= 0, msg: 'Attenuation must be greater than zero.' } },
+    { key: 'taps', name: 'TAP COUNT', quantity: 'number', nonNegative: true, placeholder: '1024', help: 'Filter length in taps, for the reverse latency calc.', warn: { test: (x) => x <= 0, msg: 'Tap count must be greater than zero.' } },
   ],
   functions: [
     {
@@ -443,7 +443,7 @@ const CONVOLUTION: Workspace = {
   fields: [
     { key: 'irSec', name: 'IR LENGTH', quantity: 'time', defaultUnit: 's', placeholder: '2', help: 'Duration of the impulse response.', warn: { test: (x) => x <= 0, msg: 'IR length must be greater than zero.' } },
     { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Processing sample rate.', warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
-    { key: 'channels', name: 'CHANNELS', quantity: 'number', placeholder: '2', help: 'Number of channels processed.', warn: { test: (x) => x <= 0, msg: 'Channels must be greater than zero.' } },
+    { key: 'channels', name: 'CHANNELS', quantity: 'number', nonNegative: true, placeholder: '2', help: 'Number of channels processed.', warn: { test: (x) => x <= 0, msg: 'Channels must be greater than zero.' } },
     { key: 'block', name: 'BLOCK SIZE', quantity: 'samples', placeholder: '512', help: 'Processing block / FFT partition size, for the latency figure.', warn: { test: (x) => x <= 0, msg: 'Block size must be greater than zero.' } },
   ],
   functions: [
@@ -537,8 +537,8 @@ const BITDEPTH: Workspace = {
     'noise, jitter, and reference limits — treat it as the physics limit, not a spec you will measure.',
   glossary: ['Bit Depth', 'Dynamic Range', 'Quantization', 'Dither', 'Signal-to-Noise Ratio'],
   fields: [
-    { key: 'bits', name: 'BIT DEPTH', quantity: 'number', placeholder: '24', help: 'Bits per sample — common PCM depths are 16, 24 and 32.', warn: { test: (x) => x <= 0 || x > 64, msg: 'Bit depth should be a positive number of bits (common values: 16, 24, 32).' } },
-    { key: 'dr', name: 'TARGET DYNAMIC RANGE', quantity: 'db', placeholder: '96', help: 'A dynamic range in dB you want to find the required bit depth for.', warn: { test: (x) => x <= 0, msg: 'Dynamic range must be positive.' } },
+    { key: 'bits', name: 'BIT DEPTH', quantity: 'number', nonNegative: true, placeholder: '24', help: 'Bits per sample — common PCM depths are 16, 24 and 32.', warn: { test: (x) => x <= 0 || x > 64, msg: 'Bit depth should be a positive number of bits (common values: 16, 24, 32).' } },
+    { key: 'dr', name: 'TARGET DYNAMIC RANGE', quantity: 'db', nonNegative: true, placeholder: '96', help: 'A dynamic range in dB you want to find the required bit depth for.', warn: { test: (x) => x <= 0, msg: 'Dynamic range must be positive.' } },
   ],
   functions: [
     {

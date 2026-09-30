@@ -132,7 +132,13 @@ export function HelpScreen() {
               </View>
               <View style={styles.panel}>
                 {c.entries.map((e, i) => (
-                  <Entry key={e.id} entry={e} last={i === c.entries.length - 1} open={open === e.id} onToggle={() => toggle(e.id)} onJump={(route, params) => navigation.navigate(route, params)} />
+                  // `pop: true` (bug hunt 2026-09-30): Help is opened FROM Settings,
+                  // and under React Navigation 7 a plain navigate never returns
+                  // to a route lower in the stack — "Open Settings" pushed a
+                  // SECOND Settings over Help, and Settings → Help → Settings →
+                  // Help… grew a back-trail without end. Back to the one below
+                  // when it is there; pushed as before when it is not.
+                  <Entry key={e.id} entry={e} last={i === c.entries.length - 1} open={open === e.id} onToggle={() => toggle(e.id)} onJump={(route, params) => navigation.navigate(route, params, { pop: true })} />
                 ))}
               </View>
             </View>

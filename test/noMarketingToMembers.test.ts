@@ -42,5 +42,5 @@ test('members reach Membership from Settings; the header links are for non-membe
   assert.match(src('src/screens/courses/CourseSelectionScreen.tsx'), /\{resolved && !isMember \? \(\s*<Pressable\s*style=\{\[styles\.membershipBtn/);
   assert.match(src('src/screens/curriculum/CurriculumScreen.tsx'), /\{tierResolved && !isMember \? \(\s*<Pressable\s*hitSlop=\{6\}\s*style=\{\[styles\.membershipCta/);
   const settings = src('src/screens/settings/SettingsScreen.tsx');
-  assert.match(settings, /\{isMember \? \(\s*<Pressable[\s\S]{0,200}navigate\('Paywall'\)[\s\S]{0,200}Manage membership/);
+  assert.match(settings, /\{tierKnown && isMember \? \(\s*<Pressable[\s\S]{0,200}navigate\('Paywall'\)[\s\S]{0,200}Manage membership/);
 });

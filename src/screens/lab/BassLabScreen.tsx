@@ -163,6 +163,9 @@ export function BassLabScreen() {
 
   // ---- Audio (v3 additive pluck / single harmonic; v2 sine fallback) ---------
   const genRef = useRef(0);
+  /** The start that last called genStart (the model fallback) — see the
+   *  superseded branch in startNoteInner. */
+  const modelGenRef = useRef(0);
 
   /** Additive payload for the selection: FRETTED = idealized pluck (amps 1/n at
    *  the fretted fundamental) · HARMONICS = the single exact harmonic n of the
@@ -243,12 +246,22 @@ export function BassLabScreen() {
     if (!ok || gen !== genRef.current) return;
     setSource('model');
     ApeDsp.genSet(genParams());
+    modelGenRef.current = gen;
     try {
       await ApeDsp.genStart();
       // A mute that landed while the native start was in flight wins — never
       // leave a tone sounding into a closed gate (owner 2026-09-29).
-      if (gen !== genRef.current || !isAudioOutputEnabled()) {
+      if (!isAudioOutputEnabled()) {
         void ApeDsp.genStop();
+        return;
+      }
+      if (gen !== genRef.current) {
+        // Superseded. Stop the generator only if no NEWER start has started
+        // it since (bug hunt 2026-09-30 day): a double tap on ▶ in the model
+        // fallback used to have start #1 resolve late and stop start #2's
+        // tone, leaving ■ lit over silence. A ■, a close or a recording that
+        // took over still stop it — none of them start the generator.
+        if (modelGenRef.current === gen) void ApeDsp.genStop();
         return;
       }
       setRunning(true);

@@ -106,6 +106,7 @@ import {
 import { TermSelectIcons } from '../../features/flags/TermSelectIcons';
 import { LowLightDim } from '../../features/settings/LowLightLayer';
 import { consumeDevPreview } from '../../features/dev/devPreview';
+import { areOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
 import { devBypass } from '../../config/devMode';
 import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
 import { CoachMark } from '../../components/CoachMark';
@@ -754,6 +755,12 @@ export function DashboardScreen() {
   // would be worse than congratulating them a moment later.
   useFocusEffect(
     useCallback(() => {
+      // LOW-LIGHT: NOTHING AUTO-APPEARS, AND A WHOLE SCREEN IS NOT AN EXCEPTION
+      // (bug pass 1, 2026-09-30). This pushed the Celebration route over the
+      // Dashboard during a live show. Skipping is lossless — `confirmShown` is
+      // never called, so the credential is found again on the next focus once
+      // the mode is off.
+      if (areOverlaysSuppressed()) return undefined;
       let alive = true;
       void checkCredentials().then((c) => {
         // Nothing has been recorded yet: `confirmShown` is what spends the
@@ -761,7 +768,7 @@ export function DashboardScreen() {
         // it. Dropping the result here (the learner navigated away during the
         // read) leaves the credential un-celebrated, so the next visit finds it
         // again — which is the whole point.
-        if (!alive || !c) return;
+        if (!alive || !c || areOverlaysSuppressed()) return;
         c.confirmShown();
         (navigation as any).navigate('Celebration', { id: c.event.id, values: c.values });
       });
@@ -808,7 +815,14 @@ export function DashboardScreen() {
       // 2026-09-27): each replayed result raises a notice, AppDialog is a
       // Modal at the app root, and a Modal opened beside another can render
       // BEHIND it on Android. The queue keeps; the next load replays it.
-      const replayOk = !popupOpenRef.current;
+      //
+      // …nor while this screen is not the one in front, nor in Low-Light (bug
+      // pass 1, 2026-09-30). load() also runs from the study-progress bus and
+      // the enrollment reload while the Dashboard sits UNDER a study method or
+      // on another tab, so "Offline quiz submitted" popped over Flashcards, a
+      // lab, or a live show. Same rule, same lossless wait: the focus reload
+      // replays it.
+      const replayOk = !popupOpenRef.current && navigation.isFocused() && !areOverlaysSuppressed();
       const replayed = replayOk ? await replayQuizSubmissions().catch(() => []) : [];
       for (const { result } of replayed) {
         notify(
@@ -994,7 +1008,7 @@ export function DashboardScreen() {
     } finally {
       if (!stale()) setLoading(false);
     }
-  }, [commercialMode, caps]);
+  }, [commercialMode, caps, navigation]);
 
   useFocusEffect(
     useCallback(() => {

@@ -18,7 +18,7 @@
  *  - Controls pinned to the bottom; card flexes to fill.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactElement, type ReactNode } from 'react';
-import { AccessibilityInfo, ActivityIndicator, FlatList, Image, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, ActivityIndicator, BackHandler, FlatList, Image, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { confirmDialog } from '../../lib/confirm';
 import Svg, { Circle, Ellipse, Path } from 'react-native-svg';
@@ -1273,6 +1273,24 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     },
     fullscreen,
     { yieldToMute: true },
+  );
+
+  // ANDROID BACK CLOSES THE TOP OVERLAY FIRST (bug pass 1, 2026-09-30). The
+  // FILTERS popup and the linked-term viewer are plain in-tree views, not
+  // Modals, so nothing heard BACK: it popped the whole Flashcards screen out
+  // from under a popup the learner was only trying to close. (Inside full
+  // screen the Modal's own onRequestClose handles it.) Same rule as the
+  // Dashboard's big wheel and upgrade sheet.
+  useFocusEffect(
+    useCallback(() => {
+      if (fullscreen || (!linkedTerm && !filtersOpen)) return undefined;
+      const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+        if (linkedTerm) setLinkedTerm(null);
+        else setFiltersOpen(false);
+        return true;
+      });
+      return () => sub.remove();
+    }, [fullscreen, linkedTerm, filtersOpen]),
   );
 
   if (error) {

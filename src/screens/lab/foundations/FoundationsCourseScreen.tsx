@@ -2277,7 +2277,9 @@ export function FoundationsCourseScreen() {
           <Text style={[styles.navBtn, step === 0 && styles.navBtnDisabled]}>⏮ START</Text>
         </Pressable>
         <Pressable
-          onPress={() => goTo(Math.max(0, step - 1))}
+          // From WHAT'S LEFT, PREV returns to Module 14 — goTo(step - 1)
+          // skipped it (bug pass 2026-09-30).
+          onPress={() => (ending ? setEnding(false) : goTo(Math.max(0, step - 1)))}
           disabled={step === 0}
           hitSlop={{ top: 14, bottom: 14, left: 10, right: 10 }}
           accessibilityRole="button"

@@ -521,6 +521,17 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
   const threadId = thread?.id ?? null;
   const openId = useRef<string | null>(threadId);
   openId.current = threadId;
+  /**
+   * Unsent replies, per conversation (bug hunt 2026-09-30). Closing the sheet —
+   * ✕, Android BACK, a stray tap — wiped whatever had been typed, because the
+   * reset below cleared `body` on every open and close. Kept for as long as
+   * the Requests tab is mounted; a successful SEND drops its entry.
+   */
+  const drafts = useRef(new Map<string, string>());
+  const editBody = (t: string) => {
+    setBody(t);
+    if (threadId) drafts.current.set(threadId, t);
+  };
 
   // [75] (2026-09-07): a failed message fetch used to render as an empty
   // conversation; surface it instead (the reply box still works).
@@ -548,7 +559,7 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
   useEffect(() => {
     setMsgs([]);
     setErr(null);
-    setBody('');
+    setBody(threadId ? (drafts.current.get(threadId) ?? '') : '');
     setAllow(null);
   }, [threadId]);
 
@@ -615,7 +626,7 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
           <TextInput
             style={st.input}
             value={body}
-            onChangeText={setBody}
+            onChangeText={editBody}
             placeholder="Write a reply"
             placeholderTextColor={colors.textMuted}
             multiline
@@ -667,6 +678,12 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
             onPress={() =>
               runSend(() =>
                 sendThreadMessage(thread.id, body.trim()).then(async (r) => {
+                  // `thread` is the one this press was made in.
+                  if (r.ok) drafts.current.delete(thread.id);
+                  // Closed or switched while it was out: this answer is about
+                  // a conversation no longer on screen — its error must not
+                  // land on the next one, nor its clear wipe that one's draft.
+                  if (openId.current !== thread.id) return;
                   if (!r.ok) return setErr(r.error);
                   setErr(null);
                   setBody('');

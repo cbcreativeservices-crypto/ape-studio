@@ -104,9 +104,24 @@ export async function saveTerms(src: string, rows: OfflineTerm[]): Promise<void>
   // corpus is partial, and anything that reads it in that window must see
   // "nothing stored" rather than a truncated glossary.
   await db.runAsync('DELETE FROM glossary_meta WHERE k = ?', [completeKey(src)]);
-  // A term removed upstream must disappear locally too, so the set is replaced
-  // rather than merged.
-  await db.runAsync('DELETE FROM glossary_corpus WHERE src = ?', [src]);
+  /**
+   * A term removed upstream must disappear locally too — but the DEFINITIONS
+   * already on the phone must survive (bug hunt 2026-09-30, pass 2).
+   *
+   * This used to DELETE every row and re-insert with definition NULL. The
+   * screen's revalidate runs it whenever the term COUNT moves, so one new term
+   * upstream wiped a member's whole saved glossary (and every term a free
+   * reader had kept) the moment they opened the Glossary — the background
+   * save only refills on the NEXT launch, so the cruise reader who opened it
+   * once before sailing had terms and no definitions.
+   *
+   * So: park the current rows under a stale src, upsert the new list by id
+   * (which moves each surviving row back and keeps its definition), then drop
+   * whatever is still parked. A run killed midway leaves parked rows that the
+   * next run revives or drops the same way.
+   */
+  const parked = `${src}#stale`;
+  await db.runAsync('UPDATE glossary_corpus SET src = ? WHERE src = ?', [parked, src]);
 
   for (let i = 0; i < rows.length; i += ROWS_PER_INSERT) {
     const batch = rows.slice(i, i + ROWS_PER_INSERT);
@@ -114,7 +129,8 @@ export async function saveTerms(src: string, rows: OfflineTerm[]): Promise<void>
     const params: (string | null)[] = [];
     for (const r of batch) params.push(r.id, r.term, r.achievement_id, src);
     await db.runAsync(
-      `INSERT OR REPLACE INTO glossary_corpus (id, term, achievement_id, definition, src) VALUES ${values}`,
+      `INSERT INTO glossary_corpus (id, term, achievement_id, definition, src) VALUES ${values}
+       ON CONFLICT(id) DO UPDATE SET term = excluded.term, achievement_id = excluded.achievement_id, src = excluded.src`,
       params,
     );
     // Hand the thread back between batches. Deliberately NOT inside one big
@@ -124,6 +140,8 @@ export async function saveTerms(src: string, rows: OfflineTerm[]): Promise<void>
     await new Promise((r) => setTimeout(r, 0));
   }
 
+  // Terms that are gone upstream.
+  await db.runAsync('DELETE FROM glossary_corpus WHERE src = ?', [parked]);
   // Only now is the corpus whole.
   await setMeta(completeKey(src), String(rows.length));
 }

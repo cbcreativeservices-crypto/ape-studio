@@ -279,16 +279,24 @@ export const NON_NEGATIVE_KINDS: ReadonlySet<QuantityKind> = new Set<QuantityKin
   'bpm', 'samples', 'samplerate', 'bitdepth', 'datasize', 'datarate',
 ]);
 export const NEGATIVE_MSG = 'Can’t be negative.';
-/** The first input of `fn` holding an impossible negative, or null. */
+/** True when this field can never hold a negative — by its kind, or by its own
+ *  `nonNegative` flag (a µF capacitance or a channel count rides the signed
+ *  'number' kind, so the kind alone let −1 µF compute a negative cutoff). */
+export function isNonNegativeField(f: Pick<FieldDef, 'quantity' | 'nonNegative'>): boolean {
+  return NON_NEGATIVE_KINDS.has(f.quantity) || f.nonNegative === true;
+}
+/** The first input of `fn` holding an impossible negative, or null. Lists are
+ *  checked element by element (a −30 min interval used to REDUCE a noise dose). */
 export function negativeInput(
   fn: Pick<CalcFunction, 'inputs'>,
   values: CalcValues,
-  fields: Pick<FieldDef, 'key' | 'name' | 'quantity'>[],
-): Pick<FieldDef, 'key' | 'name' | 'quantity'> | null {
+  fields: Pick<FieldDef, 'key' | 'name' | 'quantity' | 'nonNegative'>[],
+): Pick<FieldDef, 'key' | 'name' | 'quantity' | 'nonNegative'> | null {
   for (const key of fn.inputs) {
     const f = fields.find((x) => x.key === key);
     const v = values[key];
-    if (f && NON_NEGATIVE_KINDS.has(f.quantity) && typeof v === 'number' && v < 0) return f;
+    if (!f || !isNonNegativeField(f)) continue;
+    if (typeof v === 'number' ? v < 0 : Array.isArray(v) && v.some((x) => x < 0)) return f;
   }
   return null;
 }

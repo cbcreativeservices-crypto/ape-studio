@@ -53,10 +53,10 @@ const WS_COMPRESSOR: Workspace = {
   glossary: ['Compression', 'Threshold', 'Ratio', 'Gain Reduction', 'Makeup Gain', 'Dynamic Range'],
   fields: [
     { key: 'thr', name: 'THRESHOLD', quantity: 'db', placeholder: '-20', help: 'The level (dBFS) above which compression begins. Below it, the signal is untouched.' },
-    { key: 'ratio', name: 'RATIO (n:1)', quantity: 'number', placeholder: '4', help: 'How many dB must go IN above threshold for 1 dB to come OUT above it. 4 means 4:1.', warn: { test: (x) => x < 1, msg: 'Ratio must be at least 1:1 (1:1 is no compression).' } },
+    { key: 'ratio', name: 'RATIO (n:1)', quantity: 'number', nonNegative: true, placeholder: '4', help: 'How many dB must go IN above threshold for 1 dB to come OUT above it. 4 means 4:1.', warn: { test: (x) => x < 1, msg: 'Ratio must be at least 1:1 (1:1 is no compression).' } },
     { key: 'inLvl', name: 'INPUT LEVEL', quantity: 'db', placeholder: '-8', help: 'The incoming signal level (dBFS) whose compressed output you want.' },
     { key: 'targetOut', name: 'TARGET OUTPUT', quantity: 'db', placeholder: '-17', help: 'The output level (dBFS) you want a given input to land on.' },
-    { key: 'targetGr', name: 'TARGET GAIN REDUCTION', quantity: 'db', placeholder: '3', help: 'How many dB of gain reduction you want on a given input.', warn: { test: (x) => x < 0, msg: 'Gain reduction is a positive number of dB.' } },
+    { key: 'targetGr', name: 'TARGET GAIN REDUCTION', quantity: 'db', nonNegative: true, placeholder: '3', help: 'How many dB of gain reduction you want on a given input.', warn: { test: (x) => x < 0, msg: 'Gain reduction is a positive number of dB.' } },
   ],
   functions: [
     {
@@ -120,6 +120,12 @@ const WS_COMPRESSOR: Workspace = {
         const out = n(v.targetOut);
         const above = inp - thr;
         const outAbove = out - thr;
+        // The note's own precondition, enforced: input above threshold and the
+        // target between threshold and input. Outside it the division printed a
+        // confident "−2.4:1" (target below threshold) or "0.5:1" (target above
+        // the input — an expander, not a compressor). Throw → runCompute shows
+        // "no valid result" instead of a ratio no compressor can be set to.
+        if (!(above > 0 && outAbove > 0 && out <= inp)) throw new Error('target outside the compressor range');
         const ratio = above / outAbove;
         return [
           { label: 'REQUIRED RATIO (n:1)', value: ratio, quantity: 'number' },

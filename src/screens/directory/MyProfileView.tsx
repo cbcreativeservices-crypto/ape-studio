@@ -126,6 +126,16 @@ export function MyProfileView() {
   const saveSeq = useRef(0);
   /** Same idea for the featured-credential picker, which has its own RPC. */
   const featuredSeq = useRef(0);
+  /**
+   * Featured writes run ONE AT A TIME too (bug hunt 2026-09-30, pass 2). Each
+   * write replaces the whole list, and two quick chip taps sent two unordered
+   * RPCs: the older list could land last and win on the server while the
+   * screen showed the newer one. `featuredOk` is the last list the server
+   * accepted — what a refused write rolls back to (the tap before it may
+   * itself have been refused, so "the list before this tap" is not it).
+   */
+  const featuredChain = useRef<Promise<unknown>>(Promise.resolve());
+  const featuredOk = useRef<string[] | null>(null);
   /** The last profile handed to the server (or read from it) — the unmount
    *  flush below compares against it. */
   const lastSent = useRef<CommunityProfile | null>(null);
@@ -160,6 +170,16 @@ export function MyProfileView() {
    * "skip the guide" flag would silently outlive the reason for it.
    */
   const [useGuide, setUseGuide] = useState<boolean | null>(null);
+  /**
+   * The derived default, LATCHED once the profile has loaded (bug hunt
+   * 2026-09-30). It was re-derived on every render, so it flipped under the
+   * member's fingers: typing the first letter of a display name in the guide
+   * (areas and roles already chosen) made the profile "finished" and swapped
+   * the whole guide for the editor mid-word; clearing the name in the editor
+   * swapped the editor for the guide. Cleared on delete so a now-empty
+   * profile gets the guide again.
+   */
+  const guideDefault = useRef<boolean | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -312,7 +332,11 @@ export function MyProfileView() {
   const sendPublish = (on: boolean, adult?: boolean) => {
     if (publishing.current) return;
     publishing.current = true;
-    void publishCommunityProfile(on, adult)
+    // Behind any save still out (bug hunt 2026-09-30): tapping the switch
+    // straight from the display-name box blurs it into a save, and the publish
+    // raced it — the server checked a profile that did not have the name yet.
+    void saveChain.current
+      .then(() => publishCommunityProfile(on, adult))
       .then((r) => (r.ok ? refresh() : setErr(r.error)))
       .finally(() => {
         publishing.current = false;
@@ -353,8 +377,32 @@ export function MyProfileView() {
   };
 
   const refresh = useCallback(async () => {
+    // ── NEVER READ OVER AN EDIT (bug hunt 2026-09-30) ──────────────────────
+    // Type in About, then tap a visibility switch: the tap goes to the switch
+    // (keyboardShouldPersistTaps) so the box may not even blur, or it blurs
+    // into a save that is still out. This re-read then replaced the screen
+    // with the server's OLDER profile — the text vanished, and the next save
+    // of any field sent that older copy back, erasing it on the server too.
+    // Wait for queued saves; if anything is still unsent or a newer save
+    // started meanwhile, take only the switch state the server owns.
+    await saveChain.current;
+    const seq = saveSeq.current;
     const mine = await fetchMyCommunityProfile();
-    if (mine.status === 'ok') {
+    if (mine.status === 'ok' && (seq !== saveSeq.current || pRef.current !== lastSent.current)) {
+      const s = mine.profile;
+      const clean = pRef.current === lastSent.current;
+      const next: CommunityProfile = {
+        ...pRef.current,
+        published: s.published,
+        discoverable: s.discoverable,
+        contactEnabled: s.contactEnabled,
+        adultConfirmed: s.adultConfirmed,
+        publicToken: s.publicToken,
+      };
+      pRef.current = next;
+      if (clean) lastSent.current = next;
+      setP(next);
+    } else if (mine.status === 'ok') {
       // Straight from the server, so nothing here is unsent — without this the
       // flush-on-leave re-saved the whole profile after every publish/toggle.
       pRef.current = mine.profile;
@@ -409,7 +457,8 @@ export function MyProfileView() {
   const setupUnfinished =
     !p.published && (!p.displayName.trim() || !p.areas.length || !p.roles.length);
 
-  if ((useGuide ?? setupUnfinished) && !p.published) {
+  if (guideDefault.current === null) guideDefault.current = setupUnfinished;
+  if ((useGuide ?? guideDefault.current) && !p.published) {
     return (
       <ProfileSetupFlow
         tax={tax}
@@ -645,18 +694,27 @@ export function MyProfileView() {
                       ? p.featuredCredentialIds.filter((x) => x !== c.id)
                       : [...p.featuredCredentialIds, c.id];
                     const prevIds = p.featuredCredentialIds;
+                    // Nothing in flight on the first tap, so the list on screen
+                    // is the server's.
+                    if (featuredOk.current === null) featuredOk.current = prevIds;
                     setP({ ...p, featuredCredentialIds: ids });
                     // The result was dropped (bug hunt 2026-09-30): a refused or
                     // failed write left the chip lit, so the member believed a
                     // credential was on their public profile when it was not.
-                    // Only the LATEST tap may report or roll back.
+                    // Only the LATEST tap may report or roll back; writes are
+                    // chained so they land in tap order (see featuredChain).
                     const seq = ++featuredSeq.current;
-                    void setFeaturedCredentials(ids).then((r) => {
-                      if (seq !== featuredSeq.current) return;
-                      if (r.ok) return setErr(null);
-                      setErr(r.error);
-                      setP((cur) => ({ ...cur, featuredCredentialIds: prevIds }));
-                    });
+                    const run = featuredChain.current
+                      .then(() => setFeaturedCredentials(ids))
+                      .then((r) => {
+                        if (r.ok) featuredOk.current = ids;
+                        if (seq !== featuredSeq.current) return;
+                        if (r.ok) return setErr(null);
+                        setErr(r.error);
+                        const back = featuredOk.current ?? prevIds;
+                        setP((cur) => ({ ...cur, featuredCredentialIds: back }));
+                      });
+                    featuredChain.current = run.catch(() => {});
                   }}
                 />
               );
@@ -719,8 +777,13 @@ export function MyProfileView() {
             'This removes your public page, your directory listing and everything you selected here. Your account, your studies and your earned credentials are not affected, and your credentials stay verifiable by their own link. Safety records from any blocks or reports are kept.',
             'Delete',
             () =>
-              void deleteCommunityProfile().then((r) => {
+              // Behind any save still out (bug hunt 2026-09-30): the blur of
+              // a text box into this button queued a save, and it could land
+              // AFTER the delete and re-create the profile just removed.
+              void saveChain.current.then(() => deleteCommunityProfile()).then((r) => {
                 if (!r.ok) return setErr(r.error);
+                guideDefault.current = null;
+                featuredOk.current = null;
                 // Mark the blank as already SENT (bug hunt 2026-09-30). Only
                 // `p` changed here, so the flush-on-leave below saw an unsent
                 // edit and saved the empty profile on the next tab switch —

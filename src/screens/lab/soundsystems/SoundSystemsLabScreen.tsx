@@ -21,10 +21,10 @@ import { HelpKey } from '../../../components/HelpKey';
 import { colors, fonts } from '../../../theme/tokens';
 import { readingColumn } from '../../../theme/readingColumn';
 import { confirmDialog } from '../../../lib/confirm';
-import { loadPagedProgress, resetPagedProgress } from '../../../features/lab/pagedProgress';
+import { loadPagedProgress, savePagedProgress } from '../../../features/lab/pagedProgress';
 import { useLabClearedUnits } from '../../../features/lab/labCompletion';
 import { UNDERSTANDING_UNIT } from '../../../features/lab/understanding';
-import { resetSoundSystemsProgress, useSoundSystemsProgress } from '../../../features/soundsystems/progress';
+import { useSoundSystemsProgress } from '../../../features/soundsystems/progress';
 import { CAPSTONES } from '../../../features/soundsystems/capstones';
 import { FAULTS } from '../../../features/soundsystems/faults';
 import { SS_LEARN_ID, SS_MODES, SS_PAGE_COUNTS, type SsModeId } from './units';
@@ -82,13 +82,26 @@ export function SoundSystemsLabScreen() {
 
   const go = (route: string) => navigation.navigate(route as never);
 
+  // A PRACTICE reset, never a credit wipe — the owner's answer to exactly
+  // this button (2026-09-29: "resets start a fresh practice run; they never
+  // wipe banked credit"; bug hunt 2026-09-30 day). It used to delete every
+  // page, capstone, exercise and solved fault — the rows WHAT IS LEFT counts
+  // toward credit. Now every mode's working state is dropped and each mode
+  // reopens at its first page; everything completed stays completed.
   const reset = () => {
-    confirmDialog('Reset this lab?', 'Clears your pages, capstones, exercises and solved faults for the Sound Systems Lab only.', 'Reset', () => {
-      // Session page memory too (bug hunt 2026-09-30), or a reset capstone /
-      // console re-mounted finished and re-completed itself on the next visit.
-      clearPageMemory(SS_MODES.map((m) => m.labId));
-      void Promise.all([...SS_MODES.map((m) => resetPagedProgress(m.labId)), resetSoundSystemsProgress()]).then(refresh);
-    }, { destructive: true });
+    confirmDialog(
+      'Start a fresh practice run?',
+      'Every mode starts again from its first page. Pages, capstones, exercises and faults you have completed stay credited.',
+      'Start over',
+      () => {
+        clearPageMemory(SS_MODES.map((m) => m.labId));
+        void Promise.all(
+          SS_MODES.map((m) =>
+            loadPagedProgress(m.labId).then((p) => (p.lastPage === 0 ? undefined : savePagedProgress(m.labId, { ...p, lastPage: 0 }))),
+          ),
+        ).then(refresh);
+      },
+    );
   };
 
   return (
@@ -169,8 +182,8 @@ export function SoundSystemsLabScreen() {
           )}
         </View>
 
-        <Pressable onPress={reset} style={styles.resetRow} accessibilityRole="button" accessibilityLabel="Reset this lab's progress">
-          <Text style={styles.resetText}>RESET LAB PROGRESS</Text>
+        <Pressable onPress={reset} style={styles.resetRow} accessibilityRole="button" accessibilityLabel="Start a fresh practice run in every mode">
+          <Text style={styles.resetText}>START OVER (PRACTICE)</Text>
         </Pressable>
       </ScrollView>
     </View>

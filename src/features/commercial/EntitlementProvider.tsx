@@ -249,6 +249,11 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
   // when the account changes (owner 2026-08-11).
   const lastUid = useRef<string | null>(null);
   const uidSeeded = useRef(false);
+  /** A server read has already applied a tier for the current identity. The
+   *  boot path's cached tier lands after an AsyncStorage await, and must not
+   *  overwrite a FRESHER answer the INITIAL_SESSION read already applied
+   *  (2026-09-30 day pass). */
+  const serverTierApplied = useRef(false);
 
   // Server-driven entitlement (owner 2026-08-06): a no-account guest is
   // 'anonymous'; a signed-in account reads its real tier from the `entitlements`
@@ -299,6 +304,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
       // read was in flight, and applying its answer would be applying the
       // previous user's standing to the current one.
       if (current()) {
+        serverTierApplied.current = true;
         setEntitlementState(tier);
         // REMEMBER IT, so a later boot with no network does not start this
         // member at 'anonymous' and lock them out of everything they paid for.
@@ -405,11 +411,27 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
         // auth uid, so an account switch cannot inherit it, and 'anonymous' is
         // never cached — so this can only ever restore standing somebody
         // genuinely had, never invent it.
+        const bootIdentity = identityOf(data.session);
         if (isRealAccount(data.session)) {
           const uid = data.session?.user?.id ?? null;
           const remembered = await loadLastTier(uid);
-          if (remembered && alive && !devOverrode.current) setEntitlementState(remembered);
+          // Only while this is still the same person, and only if no server
+          // read has answered in the meantime (INITIAL_SESSION runs its own
+          // read concurrently): a cache that lands late must neither replace a
+          // fresher tier nor re-apply a member's standing after a sign-out.
+          if (
+            remembered &&
+            alive &&
+            !devOverrode.current &&
+            !serverTierApplied.current &&
+            lastUid.current === bootIdentity
+          ) {
+            setEntitlementState(remembered);
+          }
         }
+        // The session this read was for has since changed — the auth event for
+        // the new identity has already started its own read.
+        if (lastUid.current !== bootIdentity) return;
         await deriveWithRetry(isRealAccount(data.session));
       })
       .catch(() => {
@@ -454,7 +476,22 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
             }).catch(() => {});
           }
         }
-        clearLocalOnUserChange(identityOf(session));
+        // A DIFFERENT PERSON is not "the tier we already know" (2026-09-30 day
+        // pass). `tierKnown` stayed true from the previous identity — the
+        // SIGNED_OUT read settles on a known 'anonymous' — so the account that
+        // signed in next was asserted to be a guest until its own read landed,
+        // and indefinitely if that read failed: Settings "GUEST — NO ACCOUNT"
+        // with DELETE ACCOUNT hidden, the paywall's "Create an account first"
+        // to somebody signed in, and memberStanding sweeping their reminders.
+        // And a direct account-to-account switch must not carry the previous
+        // account's tier over while the new one's read is in flight.
+        const identity = identityOf(session);
+        if (uidSeeded.current && identity !== lastUid.current) {
+          setTierKnown(false);
+          serverTierApplied.current = false;
+          if (lastUid.current !== null && !devOverrode.current) setEntitlementState('anonymous');
+        }
+        clearLocalOnUserChange(identity);
         void deriveWithRetry(isRealAccount(session));
       }
     });
@@ -522,6 +559,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
         return false;
       }
       if (!devOverrode.current) {
+        serverTierApplied.current = true;
         setEntitlementState(tier);
         // A tier the server just answered IS known (2026-09-30). Without this,
         // a member whose boot read failed and whose retries ran out stayed

@@ -17,7 +17,9 @@ export function MicFeedbackGuard() {
   const muted = useSpeakerFeedbackMuted();
   useEffect(() => {
     // Mic just went hot without the override → silence the speaker immediately.
-    if (muted) void ApeDsp.genStop();
+    // .catch: a native rejection here was an unhandled rejection (bug hunt
+    // 2026-09-30, pass 1) — panicMute guards the same call the same way.
+    if (muted) void ApeDsp.genStop().catch(() => {});
   }, [muted]);
   return null;
 }

@@ -1229,7 +1229,7 @@ const styles = StyleSheet.create({
   },
   srcMark: { position: 'absolute', width: 88, alignItems: 'center' },
   srcLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.6 },
-  srcVerdict: { fontFamily: fonts.oswaldSemiBold, fontSize: 8.5, letterSpacing: 0.5, opacity: 0.9 },
+  srcVerdict: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.5, opacity: 0.9 }, // ≥ 9 pt (lab display rule)
   reasonRow: {
     borderRadius: 8,
     borderWidth: 1,

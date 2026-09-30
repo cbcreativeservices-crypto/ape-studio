@@ -259,7 +259,7 @@ const DRIVER: Workspace = {
     { key: 'f', name: 'FREQUENCY', quantity: 'frequency', placeholder: '40', help: 'The frequency to evaluate output at.', warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
     { key: 'dist', name: 'DISTANCE', quantity: 'length', placeholder: '1', help: 'Listening distance (half-space).', warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
     { key: 'fs', name: 'DRIVER RESONANCE (fs)', quantity: 'frequency', placeholder: '25', help: 'Free-air resonance of the driver.', warn: { test: (x) => x <= 0, msg: 'fs must be greater than zero.' } },
-    { key: 'qts', name: 'TOTAL Q (Qts)', quantity: 'number', placeholder: '0.4', help: 'Total driver Q at resonance.', warn: { test: (x) => x <= 0, msg: 'Qts must be greater than zero.' } },
+    { key: 'qts', name: 'TOTAL Q (Qts)', quantity: 'number', nonNegative: true, placeholder: '0.4', help: 'Total driver Q at resonance.', warn: { test: (x) => x <= 0, msg: 'Qts must be greater than zero.' } },
     { key: 'vas', name: 'COMPLIANCE VOLUME (Vas)', quantity: 'volume', defaultUnit: 'l', placeholder: '50', help: 'Volume of air with the same compliance as the suspension.', warn: { test: (x) => x <= 0, msg: 'Vas must be greater than zero.' } },
     { key: 'vb', name: 'BOX VOLUME (Vb)', quantity: 'volume', defaultUnit: 'l', placeholder: '30', help: 'Internal net volume of the enclosure.', warn: { test: (x) => x <= 0, msg: 'Box volume must be greater than zero.' } },
     { key: 'av', name: 'PORT AREA', quantity: 'area', defaultUnit: 'm2', placeholder: '0.005', help: 'Cross-sectional area of the vent.', warn: { test: (x) => x <= 0, msg: 'Port area must be greater than zero.' } },

@@ -45,10 +45,15 @@ async function hydrate(): Promise<void> {
       try {
         const raw = await AsyncStorage.getItem(KEY);
         const parsed: unknown = raw ? JSON.parse(raw) : null;
+        // In range too (toddler pass 2026-09-30): the stepper is clamped now,
+        // but an offset mashed below 0 BEFORE the clamp shipped is still on
+        // disk, and it pins every SPL reading to 0.0 dB for good — the device
+        // reads as uncalibrated instead until the user calibrates again.
         if (
           parsed != null &&
           typeof (parsed as SplCalibration).offsetDb === 'number' &&
-          Number.isFinite((parsed as SplCalibration).offsetDb)
+          Number.isFinite((parsed as SplCalibration).offsetDb) &&
+          clampCalOffset((parsed as SplCalibration).offsetDb) === (parsed as SplCalibration).offsetDb
         ) {
           cal = parsed as SplCalibration;
         }

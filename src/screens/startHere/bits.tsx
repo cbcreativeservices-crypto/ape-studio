@@ -14,7 +14,7 @@
  * Everything here is USER-INITIATED: nothing auto-appears (Low-Light
  * Production Mode), no timers, no entrance animation. Smallest text 11 pt.
  */
-import { createContext, useContext, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Modal } from '../../components/DimModal';
 import { starterGlossaryEntry } from '../../features/startHere/startHereGlossary';
@@ -167,15 +167,20 @@ export function SortExerciseView({ ex, onAllDone }: { ex: SortExercise; onAllDon
     return idx;
   });
   const doneCount = ex.items.filter((it, i) => answers[i] === it.bin).length;
+  // All sorted → tell the page, from an effect (bug pass 2026-09-30). It used
+  // to be called INSIDE the setAnswers updater: a side effect in an updater
+  // runs whenever React replays it (twice under StrictMode) and sets the
+  // SCREEN's state while this component renders.
+  const allDone = doneCount === ex.items.length;
+  const onAllDoneRef = useRef(onAllDone);
+  onAllDoneRef.current = onAllDone;
+  useEffect(() => {
+    if (allDone) onAllDoneRef.current?.();
+  }, [allDone]);
   const pick = (i: number, bin: 0 | 1) => {
     if (answers[i] === ex.items[i].bin) return;
     if (bin === ex.items[i].bin) {
-      setAnswers((a) => {
-        const next = { ...a, [i]: bin };
-        const n = ex.items.filter((it, k) => next[k] === it.bin).length;
-        if (n === ex.items.length) onAllDone?.();
-        return next;
-      });
+      setAnswers((a) => ({ ...a, [i]: bin }));
       setWrong((w) => ({ ...w, [i]: undefined }));
     } else {
       setWrong((w) => ({ ...w, [i]: bin }));

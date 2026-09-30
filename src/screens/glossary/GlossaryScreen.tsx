@@ -17,11 +17,12 @@
 import { memo, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from 'react';
 import { AppState, BackHandler, FlatList, Image, ImageBackground, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type StyleProp, type TextStyle } from 'react-native';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
+import { HOST_DISMISS_MS } from '../../components/DimModal';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MethodIcon } from '../../components/MethodIcon';
 import { DeckIcon } from '../../components/DeckIcon';
@@ -45,6 +46,7 @@ import { useCoachMark } from '../../lib/coachMark';
 import { sendFeedback } from '../../lib/feedback';
 import { confirmDialog, notify } from '../../lib/confirm';
 import { fetchCorpusTerms, fetchDefinitionsFor, yieldToUi } from '../../features/glossary/corpusFetch';
+import { cancelGlossaryPrefetch } from '../../features/glossary/offlinePrefetch';
 import {
   OFFLINE_AVAILABLE,
   alignDefinitionTier,
@@ -1438,6 +1440,15 @@ ${COPY.glossaryFreeAllowance}`,
   // lists), the only ways out are exit or membership. `resetAt` drives the
   // countdown. `lastViewedTermRef` = the term to reopen after they upgrade.
   const [locked, setLocked] = useState(false);
+  // The lock stands aside while GET ACADEMY MEMBERSHIP hands over to the
+  // Paywall (see lockOverlay); re-armed every time the Glossary regains focus.
+  const [lockHandoff, setLockHandoff] = useState(false);
+  const isFocused = useIsFocused();
+  useFocusEffect(
+    useCallback(() => {
+      setLockHandoff(false);
+    }, []),
+  );
   const [resetAt, setResetAt] = useState<number | null>(null);
   const lastViewedTermRef = useRef<string | null>(null);
 
@@ -1771,17 +1782,29 @@ ${COPY.glossaryFreeAllowance}`,
   const suppressBack = useRef(false);
 
   /** Open a term in the popup as the trail ROOT (card tap / list-link first hop). */
+  // Only the LATEST root open lands (bug hunt 2026-09-30, pass 2): tap card A
+  // (slow read), then card B (fast) — A's read used to arrive last and replace
+  // B on screen. A still counts as read (its detail is cached, re-opening it is
+  // free); it just no longer jumps in over the term the reader picked after it.
+  const openSeqRef = useRef(0);
+  const registerCoach = coach.registerAction;
   const openPopupRoot = useCallback(
     async (id: string) => {
+      const seq = ++openSeqRef.current;
       if (!(await gateDefinitionOpen(id))) return; // opening = a lookup
+      if (seq !== openSeqRef.current) return;
       recordRecent(id);
-      coach.registerAction();
+      registerCoach();
       void fetchDetails(id);
       ensureDefsRef.current([id]); // a cross-link hop may never have been on screen
       popupScrollY.current = 0;
       setPopupTrail([{ id, offset: 0 }]);
     },
-    [recordRecent, coach, fetchDetails, gateDefinitionOpen],
+    // ⛔ `coach.registerAction`, NOT `coach` (pass 2): useCoachMark returns a
+    // fresh object every render, which re-created this callback every render —
+    // and with it the return-to-term effect below, which re-read AsyncStorage
+    // on every keystroke and every repaint of this screen.
+    [recordRecent, registerCoach, fetchDetails, gateDefinitionOpen],
   );
 
   /** Follow a cross-link: remember where we are, then hop to the new term.
@@ -1789,6 +1812,7 @@ ${COPY.glossaryFreeAllowance}`,
    *  they DO update "last viewed" so a post-upgrade return lands on this term. */
   const openLinked = useCallback(
     (id: string) => {
+      openSeqRef.current += 1; // a root open still in flight must not land over this hop
       lastViewedTermRef.current = id;
       ensureDefsRef.current([id]); // hopped-to term may never have been rendered
       setChooser(null);
@@ -2129,6 +2153,10 @@ ${COPY.glossaryFreeAllowance}`,
     if (resolved && !isMember) return;
     savingRef.current = true;
     cancelSaveRef.current = false;
+    // The screen takes over from the background save (pass 2): both walk
+    // idsMissingDefinitions from the same first page, so running side by side
+    // downloaded every page twice on the metered link this warns about.
+    cancelGlossaryPrefetch();
     setSavingOffline(true);
     try {
       // Teasers a free reader left behind would otherwise count as saved.
@@ -2208,11 +2236,19 @@ ${COPY.glossaryFreeAllowance}`,
       if (!want.length) return;
       for (const id of want) requestedDefsRef.current.add(id);
 
+      /**
+       * ⛔ FILL BLANKS ONLY (bug hunt 2026-09-30, pass 2). A free reader who
+       * tapped a row before this batch landed had the gateway's FULL text put
+       * on the entry — and this merge then overwrote it with the 120-character
+       * teaser the browse view returns, on a term they had just paid a lookup
+       * for. A tier change blanks every entry first, so a blank is the only
+       * thing this ever needs to fill.
+       */
       const merge = (rows: { id: string; definition: string | null }[]): boolean => {
         let changed = false;
         for (const r of rows) {
           const e = entryByIdRef.current.get(r.id);
-          if (e && r.definition && e.definition !== r.definition) {
+          if (e && r.definition && e.definition === '') {
             e.definition = r.definition;
             changed = true;
           }
@@ -2233,6 +2269,13 @@ ${COPY.glossaryFreeAllowance}`,
             ? await loadStoredDefinitions(table, want).catch(() => new Map<string, string>())
             : new Map<string, string>();
           const fromDisk = [...stored.entries()].map(([id, definition]) => ({ id, definition }));
+          // Same guard as the network step below: the reader can change while
+          // the disk is read, and a stale tier's text must not fill the blanks
+          // the tier change just made.
+          if (defTierRef.current !== tier) {
+            for (const id of want) requestedDefsRef.current.delete(id);
+            return;
+          }
           if (merge(fromDisk)) setDefRev((n) => n + 1);
 
           // 2. Only what the device did not have.
@@ -2275,9 +2318,26 @@ ${COPY.glossaryFreeAllowance}`,
     if (ENTRIES_DEF_TIER !== null && ENTRIES_DEF_TIER !== defTier) {
       for (const e of entries) e.definition = '';
       requestedDefsRef.current = new Set();
+      /**
+       * ⛔ THE DETAIL BODIES ARE THE LAST READER'S TOO (bug hunt 2026-09-30,
+       * pass 2). A free reader who tapped COMMON MISTAKES' lock, bought, and
+       * came back to the still-mounted Glossary re-opened the same term and
+       * read "—": its detail was cached from the free read (common_mistakes
+       * masked), and a cached detail short-circuits every re-read. Drop them,
+       * and the "already charged" set with them, then refill whatever is open
+       * right now through the unmetered detail read.
+       */
+      detailsRef.current = {};
+      setDetails({});
+      consumedRef.current = new Set();
+      const open = new Set([...expandedIdsRef.current, ...popupTrail.map((p) => p.id)]);
+      for (const id of open) void fetchDetails(id);
+      if (open.size) ensureDefsRef.current([...open]);
     }
     ENTRIES_DEF_TIER = defTier;
     setDefRev((n) => n + 1);
+    // popupTrail / fetchDetails are read at the moment the tier flips, not tracked.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defTier, entries]);
 
   const termIndexRef = useRef(termIndex);
@@ -2386,6 +2446,11 @@ ${COPY.glossaryFreeAllowance}`,
    *  user can expand it into a multi-term share. */
   const shareTerm = useCallback(
     async (e: Entry) => {
+      // A refused metered read (out of lookups → the lock is going up; or the
+      // key needs renewing) must not open the share sheet anyway (pass 2): it
+      // opened ON TOP of the lock, offering the 120-character teaser as the
+      // term's definition. openViaGateway answers false only for those two.
+      if (serverMetersRef.current && !detailsRef.current[e.id] && !(await openViaGatewayRef.current(e.id))) return;
       const primary = await buildShareTerm(e.id);
       if (!primary) return;
       const index = termIndexRef.current;
@@ -2798,16 +2863,30 @@ ${COPY.glossaryFreeAllowance}`,
   // sits above everything and captures all touches — no scroll / search / lists
   // — while the glossary stays mounted and dimmed behind it. The reopen-after-
   // upgrade effect returns the user to their last term after they buy in.
+  //
+  // ⛔ FOCUS-GATED (bug hunt 2026-09-30, pass 2). GET ACADEMY MEMBERSHIP pushes
+  // the Paywall — a `presentation: 'modal'` screen — while this lock's own
+  // Modal stayed visible: iOS will not present over an open Modal, so the
+  // conversion button did nothing at all (Android drew the Paywall beneath
+  // the lock). Hidden while the Glossary is not the focused screen; coming
+  // back still locked shows it again, and the focus effect re-checks the week.
   const lockOverlay = (
     <GlossaryLockView
-      visible={locked}
+      visible={locked && isFocused && !lockHandoff}
       resetAt={resetAt}
       onExit={exitGlossary}
       onMembership={() => {
+        if (lockHandoff) return; // a second tap during the hand-off
         if (lastViewedTermRef.current) {
           void AsyncStorage.setItem(RETURN_TERM_KEY, lastViewedTermRef.current).catch(() => {});
         }
-        (navigation as unknown as { navigate: (r: string) => void }).navigate('Paywall');
+        // Close the lock FIRST and present the Paywall once its dismissal has
+        // finished — iOS refuses a presentation while a Modal animates away.
+        setLockHandoff(true);
+        setTimeout(
+          () => (navigation as unknown as { navigate: (r: string) => void }).navigate('Paywall'),
+          HOST_DISMISS_MS,
+        );
       }}
       onExpired={() => {
         // Window elapsed while sitting on the lock → re-check; if the user now

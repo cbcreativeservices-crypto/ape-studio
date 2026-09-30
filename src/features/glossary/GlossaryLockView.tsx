@@ -16,7 +16,7 @@
  * filled/dominant element; the reset countdown is secondary (mono readout, below
  * the title); tokens over magic hex; 48pt targets; SR labels + header role.
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import { Modal } from '../../components/DimModal';
@@ -87,9 +87,21 @@ export function GlossaryLockView({
     return () => clearInterval(id);
   }, [visible]);
   const msLeft = resetAt != null ? resetAt - now : null;
+  /**
+   * ONCE per reset time (bug hunt 2026-09-30, pass 2). The caller passes an
+   * inline `onExpired`, a new function every render, so this effect re-ran —
+   * and re-sent the status RPC — on every repaint of the glossary behind the
+   * lock and every 30 s tick, for as long as the server still said "locked"
+   * (its window and this phone's clock rarely agree to the second). Now one
+   * check per 30 s tick, which still retries a server that is a little behind.
+   */
+  const firedForRef = useRef<number | null>(null);
+  const expired = visible && msLeft != null && msLeft <= 0;
   useEffect(() => {
-    if (visible && msLeft != null && msLeft <= 0) onExpired?.();
-  }, [visible, msLeft, onExpired]);
+    if (!expired || firedForRef.current === now) return;
+    firedForRef.current = now;
+    onExpired?.();
+  }, [expired, now, onExpired]);
 
   return (
     <Modal

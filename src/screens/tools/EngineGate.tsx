@@ -14,7 +14,9 @@
  * OPEN SETTINGS — self-contained via Linking.openSettings(), no host wiring
  * needed. Copy adapts to which controls are actually present.
  */
-import { Linking, Platform, StyleSheet, Text, View } from 'react-native';
+import { useContext, useEffect, useRef } from 'react';
+import { AppState, Linking, Platform, StyleSheet, Text, View } from 'react-native';
+import { NavigationContext } from '@react-navigation/native';
 import { GlassButton } from '../../components/GlassButton';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
@@ -57,6 +59,30 @@ export function EngineGate({
    *  keep compiling; without it the copy claims no in-card recovery. */
   onRetry?: () => void;
 }) {
+  // iOS DENIED → SETTINGS → BACK (toddler pass 2026-09-30). The card sends the
+  // user to Settings and says "then return here" — but on iOS it has no retry
+  // key (iOS never re-asks), so after switching the microphone ON they came
+  // back to the same MICROPHONE ACCESS IS OFF card with no way forward except
+  // leaving the tool. Returning to the app is the one signal we get, so retry
+  // then. iOS only: a denied start there fails silently (no dialog), whereas
+  // Android's start() re-requests and would pop the OS prompt on every return.
+  // Only while this screen is the one in front: a denied tool left under a
+  // pushed screen must never open the mic behind it (spec §18).
+  const nav = useContext(NavigationContext);
+  const navRef = useRef(nav);
+  navRef.current = nav;
+  const retryRef = useRef(onRetry);
+  retryRef.current = onRetry;
+  const retryOnReturn = Platform.OS === 'ios' && state === 'denied' && !!onRetry;
+  useEffect(() => {
+    if (!retryOnReturn) return undefined;
+    const sub = AppState.addEventListener('change', (s) => {
+      if (s !== 'active') return;
+      if (navRef.current && !navRef.current.isFocused()) return;
+      retryRef.current?.();
+    });
+    return () => sub.remove();
+  }, [retryOnReturn]);
   if (state === 'idle' || state === 'starting' || state === 'running') return null;
   // Android can re-show the OS mic dialog via a plain re-request (unless the
   // user chose "Don't ask again" — then the request resolves denied instantly

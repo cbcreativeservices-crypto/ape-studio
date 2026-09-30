@@ -104,6 +104,7 @@ const WS_BPM: Workspace = {
       key: 'beatsPerCycle',
       name: 'BEATS PER CYCLE',
       quantity: 'number',
+      nonNegative: true,
       placeholder: '4',
       help: 'How many beats one full LFO cycle should span (4 = whole note in 4/4, 0.5 = 8th note).',
     },
@@ -528,6 +529,7 @@ const WS_FILESIZE: Workspace = {
       key: 'ch',
       name: 'CHANNELS',
       quantity: 'number',
+      nonNegative: true,
       placeholder: '2',
       help: 'Channels in the file: 1 = mono, 2 = stereo.',
     },
@@ -551,6 +553,7 @@ const WS_FILESIZE: Workspace = {
       key: 'tracks',
       name: 'TRACK COUNT',
       quantity: 'number',
+      nonNegative: true,
       placeholder: '24',
       help: 'Simultaneously recording tracks in the session (each at the channel count above).',
     },
@@ -847,6 +850,7 @@ const WS_SABINE: Workspace = {
       key: 'surfaces',
       name: 'SURFACE AREAS',
       quantity: 'list',
+      nonNegative: true,
       placeholder: '20, 20, 12.5',
       help: 'Comma-separated areas in m², one per surface (walls, floor, ceiling, panels…).',
     },
@@ -854,6 +858,7 @@ const WS_SABINE: Workspace = {
       key: 'coeffs',
       name: 'ABSORPTION COEFFICIENTS α',
       quantity: 'list',
+      nonNegative: true,
       placeholder: '0.05, 0.3, 0.9',
       help: 'One α (0–1) per surface, in the SAME ORDER as the areas list.',
     },
@@ -905,6 +910,17 @@ const WS_SABINE: Workspace = {
         const al = arr(v.coeffs);
         const A = S.reduce((sum, s, i) => sum + s * (al[i] ?? 0), 0);
         return [
+          // Mismatched lists used to pair SILENTLY — a surface with no α counted
+          // as zero absorption and the RT60 came out long with nothing said (the
+          // same hole dose.ts closed 2026-09-01). Announce it the same way.
+          ...(S.length !== al.length
+            ? [
+                {
+                  label: 'CHECK INPUTS',
+                  text: `You entered ${S.length} areas but ${al.length} coefficients — only the first ${Math.min(S.length, al.length)} pairs are counted.`,
+                },
+              ]
+            : []),
           { label: 'TOTAL ABSORPTION A', value: A, quantity: 'area' },
           { label: 'RT60', value: (SABINE_K * n(v.vol)) / A, quantity: 'time', unit: 's' },
         ];
@@ -1029,6 +1045,7 @@ const WS_TREATMENT: Workspace = {
       key: 'alpha',
       name: 'PANEL ABSORPTION α',
       quantity: 'number',
+      nonNegative: true,
       placeholder: '0.9',
       help: 'Absorption coefficient of the panel, 0–1 (from the datasheet, ISO 354 lab value).',
       warn: { test: (x) => x <= 0 || x > 1.2, msg: 'α should be 0–1 in practice; lab values slightly above 1.0 should be treated as ≈1.' },

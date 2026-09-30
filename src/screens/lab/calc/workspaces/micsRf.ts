@@ -127,7 +127,7 @@ const MICSENS: Workspace = {
     'sensitivity(V/Pa)·p. dBu referenced to 0.7746 V, dBV to 1 V. Ideal, pre-loading figures.',
   glossary: ['Sensitivity', 'Sound Pressure Level', 'Decibel', 'Microphone (Mic)', 'dBu'],
   fields: [
-    { key: 'mvpa', name: 'SENSITIVITY (mV/Pa)', quantity: 'number', placeholder: '15', help: 'Output in millivolts for a 1 Pa (94 dB SPL) input.', warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
+    { key: 'mvpa', name: 'SENSITIVITY (mV/Pa)', quantity: 'number', nonNegative: true, placeholder: '15', help: 'Output in millivolts for a 1 Pa (94 dB SPL) input.', warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
     { key: 'dbvpa', name: 'SENSITIVITY (dBV/Pa)', quantity: 'number', placeholder: '-36.5', help: 'Output in dB relative to 1 V/Pa.' },
     { key: 'spl', name: 'SOUND PRESSURE LEVEL', quantity: 'spl', placeholder: '94', help: 'SPL at the capsule to find the output for.', warn: { test: (x) => x < 0, msg: 'SPL cannot be negative.' } },
   ],
@@ -229,7 +229,7 @@ const RFLINK: Workspace = {
   glossary: ['Radio Frequency', 'Wireless', 'Decibel', 'Antenna', 'Gain'],
   fields: [
     { key: 'dist', name: 'LINK DISTANCE', quantity: 'length', placeholder: '50', help: 'Transmitter-to-receiver distance.', warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
-    { key: 'freqMHz', name: 'FREQUENCY (MHz)', quantity: 'number', placeholder: '550', help: 'RF carrier frequency in megahertz.', warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
+    { key: 'freqMHz', name: 'FREQUENCY (MHz)', quantity: 'number', nonNegative: true, placeholder: '550', help: 'RF carrier frequency in megahertz.', warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
     { key: 'ptx', name: 'TRANSMIT POWER (dBm)', quantity: 'number', placeholder: '10', help: 'Transmitter output power in dBm (10 dBm = 10 mW).' },
     { key: 'gtx', name: 'TX ANTENNA GAIN', quantity: 'db', placeholder: '2', help: 'Transmit antenna gain (dBi), minus any cable loss.' },
     { key: 'grx', name: 'RX ANTENNA GAIN', quantity: 'db', placeholder: '2', help: 'Receive antenna gain (dBi), minus any cable loss.' },

@@ -129,6 +129,14 @@ export function EarModuleScreen() {
    *  (■ then ▶ again inside its length) dropped the chip back to ▶ while the
    *  replay was still sounding. Only the latest play's timer may clear it. */
   const playTokenRef = useRef(0);
+  /** Synchronous twins of `phase` / `playing` for the tap handlers (bug hunt
+   *  2026-09-30 day): a same-frame double tap reads the render-time closure,
+   *  so a doubled answer tap scored the trial TWICE (streak, level ladder and
+   *  the saved history all counted it twice) and a doubled ▶ spent two of the
+   *  top level's two replays on one listen. */
+  const answeredRef = useRef(false);
+  const playReqRef = useRef(false);
+  const playingNowRef = useRef<number | null>(null);
   // Shake-to-mute / idle lock / background silence the clip from outside;
   // put the chip back to ▶ with them (see useStopWhenSilenced).
   useStopWhenSilenced(playing != null, () => {
@@ -143,6 +151,7 @@ export function EarModuleScreen() {
     playerRef.current?.stop();
     setPlaying(null);
   });
+  playingNowRef.current = playing;
   const [plays, setPlays] = useState<number[]>([]);
   const [streak, setStreak] = useState(0);
   const [accuracy, setAccuracy] = useState<number | null>(null);
@@ -219,6 +228,7 @@ export function EarModuleScreen() {
           // the play chips will retry the pipeline on the next trial.
         }
         if (!aliveRef.current) return;
+        answeredRef.current = false;
         setTrial(t);
         setPhase('answering');
       } finally {
@@ -267,16 +277,27 @@ export function EarModuleScreen() {
     async (i: number) => {
       if (!trial) return;
       // The ■ chip means STOP — tapping the clip that is playing stops it.
-      if (playing === i) {
+      if (playing === i || playingNowRef.current === i) {
         player()?.stop();
+        playingNowRef.current = null;
         setPlaying(null);
         return;
       }
       if (phase === 'answering' && plays[i] >= replayCap) return;
-      const okOut = await requestAudioOutput();
+      // One start at a time: the second tap of a double tap is dropped, not
+      // counted as a second replay (see answeredRef).
+      if (playReqRef.current) return;
+      playReqRef.current = true;
+      let okOut = false;
+      try {
+        okOut = await requestAudioOutput();
+      } finally {
+        playReqRef.current = false;
+      }
       // The gate is an await — the learner can leave while it is open.
       if (!okOut || !aliveRef.current) return;
       player()?.play(i);
+      playingNowRef.current = i;
       setPlaying(i);
       const my = ++playTokenRef.current;
       if (phase === 'answering') setPlays((p) => p.map((n, j) => (j === i ? n + 1 : n)));
@@ -291,7 +312,8 @@ export function EarModuleScreen() {
 
   const onAnswer = useCallback(
     (i: number) => {
-      if (!mod || !trial || phase !== 'answering') return;
+      if (!mod || !trial || phase !== 'answering' || answeredRef.current) return;
+      answeredRef.current = true;
       player()?.stop();
       setPlaying(null);
       setPicked(i);

@@ -255,7 +255,12 @@ function LiquidStudio() {
     return () => {
       alive = false;
     };
-  }, [savedId]);
+  // Keyed on the params OBJECT, not the id (bug pass 2026-09-30): OPEN IN
+  // STUDIO pops back to a studio already in the stack, and reopening the
+  // SAME pattern after tweaking the plate left the id unchanged, so the
+  // saved configuration was never re-applied. Every popTo brings a new object.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [route.params]);
 
   // ── sound ────────────────────────────────────────────────────────────────
   const freqB = ratio ? freq * ratio : null;

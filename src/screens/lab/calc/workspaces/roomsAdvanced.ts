@@ -59,7 +59,7 @@ const EYRING: Workspace = {
   fields: [
     { key: 'vol', name: 'ROOM VOLUME', quantity: 'volume', placeholder: '120', help: 'Length × width × height of the room.', warn: { test: (x) => x <= 0, msg: 'Volume must be greater than zero.' } },
     { key: 'surf', name: 'TOTAL SURFACE AREA', quantity: 'area', placeholder: '160', help: 'Sum of all boundary surfaces (walls, floor, ceiling).', warn: { test: (x) => x <= 0, msg: 'Surface area must be greater than zero.' } },
-    { key: 'aBar', name: 'AVERAGE ABSORPTION (ā)', quantity: 'number', placeholder: '0.3', help: 'Area-weighted mean absorption coefficient, 0 (reflective) to ~1 (fully absorptive).', warn: { test: (x) => x <= 0 || x >= 1, msg: 'Average absorption must be between 0 and 1 (exclusive).' } },
+    { key: 'aBar', name: 'AVERAGE ABSORPTION (ā)', quantity: 'number', nonNegative: true, placeholder: '0.3', help: 'Area-weighted mean absorption coefficient, 0 (reflective) to ~1 (fully absorptive).', warn: { test: (x) => x <= 0 || x >= 1, msg: 'Average absorption must be between 0 and 1 (exclusive).' } },
     { key: 'rtTarget', name: 'TARGET RT60', quantity: 'time', defaultUnit: 's', placeholder: '0.3', help: 'A reverberation time you want to design toward.', warn: { test: (x) => x <= 0, msg: 'RT60 must be greater than zero.' } },
   ],
   functions: [
@@ -247,7 +247,7 @@ const ABSORBER: Workspace = {
     't = panel thickness, D = hole diameter). Real Q depends on damping and construction.',
   glossary: ['Absorption Coefficient', 'Resonance', 'Room Mode', 'Standing wave', 'Reverberation'],
   fields: [
-    { key: 'mass', name: 'PANEL MASS (kg/m²)', quantity: 'number', placeholder: '5', help: 'Surface mass of the membrane, kilograms per square metre.', warn: { test: (x) => x <= 0, msg: 'Mass must be greater than zero.' } },
+    { key: 'mass', name: 'PANEL MASS (kg/m²)', quantity: 'number', nonNegative: true, placeholder: '5', help: 'Surface mass of the membrane, kilograms per square metre.', warn: { test: (x) => x <= 0, msg: 'Mass must be greater than zero.' } },
     { key: 'gap', name: 'AIR GAP DEPTH', quantity: 'length', defaultUnit: 'cm', placeholder: '5', help: 'Depth of the sealed air cavity behind the panel.', warn: { test: (x) => x <= 0, msg: 'Gap must be greater than zero.' } },
     { key: 'openPct', name: 'PERFORATION (open area)', quantity: 'percent', placeholder: '5', help: 'Fraction of the panel that is open holes, in percent.', warn: { test: (x) => x <= 0 || x >= 100, msg: 'Open area must be between 0 and 100%.' } },
     { key: 'depth', name: 'CAVITY DEPTH', quantity: 'length', defaultUnit: 'cm', placeholder: '10', help: 'Depth of the air cavity behind the perforated panel.', warn: { test: (x) => x <= 0, msg: 'Depth must be greater than zero.' } },
@@ -349,9 +349,9 @@ const TRANSMISSION: Workspace = {
     'STC, ISO 10140), not computed here.',
   glossary: ['Transmission Loss', 'Decibel', 'Sound Isolation', 'Mass Law', 'Frequency'],
   fields: [
-    { key: 'mass', name: 'PANEL MASS (kg/m²)', quantity: 'number', placeholder: '25', help: 'Surface mass of the wall/panel, kilograms per square metre.', warn: { test: (x) => x <= 0, msg: 'Mass must be greater than zero.' } },
+    { key: 'mass', name: 'PANEL MASS (kg/m²)', quantity: 'number', nonNegative: true, placeholder: '25', help: 'Surface mass of the wall/panel, kilograms per square metre.', warn: { test: (x) => x <= 0, msg: 'Mass must be greater than zero.' } },
     { key: 'f', name: 'FREQUENCY', quantity: 'frequency', placeholder: '125', help: 'The frequency you want the isolation at.', warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
-    { key: 'tlTarget', name: 'TARGET TRANSMISSION LOSS', quantity: 'db', placeholder: '40', help: 'An isolation figure (in dB) you want to achieve.', warn: { test: (x) => x <= 0, msg: 'Target TL must be greater than zero.' } },
+    { key: 'tlTarget', name: 'TARGET TRANSMISSION LOSS', quantity: 'db', nonNegative: true, placeholder: '40', help: 'An isolation figure (in dB) you want to achieve.', warn: { test: (x) => x <= 0, msg: 'Target TL must be greater than zero.' } },
   ],
   functions: [
     {
@@ -406,7 +406,7 @@ const TRANSMISSION: Workspace = {
         const f = n(v.f);
         const m = Math.pow(10, (tl + 47) / 20) / f;
         return [
-          { label: 'REQUIRED PANEL MASS', value: m, quantity: 'number' },
+          { label: 'REQUIRED PANEL MASS (kg/m²)', value: m, quantity: 'number' },
           { label: 'MASS IN lb/ft²', value: m * 0.204816, quantity: 'number', chainable: false },
         ];
       },

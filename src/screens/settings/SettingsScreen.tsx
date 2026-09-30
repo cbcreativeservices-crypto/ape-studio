@@ -899,8 +899,12 @@ ${LOCAL_LOSS}`
             </Text>
           </View>
           {/* Members manage their membership HERE (owner 2026-09-30): the
-              Home / Curriculum "Membership" links are hidden from them. */}
-          {isMember ? (
+              Home / Curriculum "Membership" links are hidden from them.
+              `tierKnown &&` (2026-09-30 day pass): the Paywall shows the
+              members' page only for a KNOWN member, so a member running on the
+              offline cached tier tapped this and landed on plan cards and
+              prices. Same gate as the Status row above. */}
+          {tierKnown && isMember ? (
             <Pressable
               style={[styles.row, styles.rowBorder]}
               onPress={() => (navigation as any).navigate('Paywall')}

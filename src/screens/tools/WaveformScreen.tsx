@@ -592,11 +592,10 @@ export function WaveformScreen({ navigation }: Props) {
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll}>
-        {/* Honest not-ready states (absent / spike / denied / error). */}
+        {/* Honest not-ready states (absent / spike / denied / error). The
+            gate's own TRY AGAIN is the retry — this screen used to add a second
+            one under it, so 'error' showed two identical keys (2026-09-30). */}
         <EngineGate state={state} lastError={lastError} onRetry={start} />
-        {state === 'error' ? (
-          <GlassButton label="TRY AGAIN" tint="teal" height={52} fontSize={15} onPress={() => void start()} />
-        ) : null}
 
         {/* Opens straight into the live oscilloscope (auto-start). */}
         {!micPaused && (state === 'idle' || state === 'starting') ? (

@@ -128,7 +128,9 @@ export function CymaticsModuleScreen() {
         <AccuracyNote compact />
       </View>
       <View style={styles.topNav}>
-        <Pressable onPress={() => goToModule(idx - 1)} disabled={idx <= 0} hitSlop={8} accessibilityRole="button" accessibilityLabel="Previous module">
+        {/* From WHAT'S LEFT, PREV returns to the last module — goToModule(idx - 1)
+            skipped it (bug pass 2026-09-30). */}
+        <Pressable onPress={() => (ending ? setEnding(false) : goToModule(idx - 1))} disabled={idx <= 0} hitSlop={8} accessibilityRole="button" accessibilityLabel="Previous module">
           <Text style={[styles.navBtn, idx <= 0 && styles.navBtnDisabled]}>‹ PREV</Text>
         </Pressable>
         <View style={{ flex: 1 }} />

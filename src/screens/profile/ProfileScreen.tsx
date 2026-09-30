@@ -273,7 +273,7 @@ export function ProfileScreen() {
   // CM7 (Booth 2026-07-11): commercial variant — nickname · Album · trophies ·
   // completion records; HIDE the student-ID card (QR, AP&E ID) + MIC/PA/REC/MIX
   // certs. Institutional users keep Screen 10 exactly.
-  const { commercialMode, caps, entitlement, resolved } = useEntitlement();
+  const { commercialMode, caps, entitlement, resolved, tierKnown } = useEntitlement();
   // Public / networking profile (device-local for now — backend frozen).
   const [pub, setPub] = useState<PublicProfile>(EMPTY_PUBLIC_PROFILE);
   // "Terms learned" — the self-assessed KNOWN list (client-side; no server metric
@@ -655,14 +655,18 @@ export function ProfileScreen() {
     // was offered "UPGRADE TO ACADEMY" — their own membership sold back to them
     // for a frame. Settings already does exactly this (`!resolved ? 'CHECKING…'`);
     // Profile is its parent screen and must not contradict it.
-    const statusLabel = !resolved
+    // `tierKnown`, not `resolved` (2026-09-30 day pass) — Settings moved to it
+    // on 2026-09-17 because `resolved` flips even when the read FAILED; here
+    // that still told an offline member "REFERENCE MODE" and sold them
+    // UPGRADE TO ACADEMY.
+    const statusLabel = !tierKnown
       ? 'CHECKING…'
       : academy
         ? 'ACADEMY MEMBER'
         : entitlement === 'lapsed'
           ? 'MEMBERSHIP LAPSED'
           : 'REFERENCE MODE';
-    const statusColor = !resolved
+    const statusColor = !tierKnown
       ? colors.textSubAlt
       : academy
         ? colors.green
@@ -1174,7 +1178,7 @@ export function ProfileScreen() {
             defaultOpen={ppSeq > 0 || (hydrated && !profileComplete)}
           >
             <Text style={styles.sectionIntro}>
-              {resolved && entitlement === 'anonymous'
+              {tierKnown && entitlement === 'anonymous'
                 ? 'Guest changes stay on this device only until the app closes — create an account to keep them.'
                 : 'Changes save as you type.'}
             </Text>
@@ -1505,7 +1509,7 @@ export function ProfileScreen() {
               until `resolved`: offering a member a purchase they already own is
               the upsell-honesty failure, and it is cheaper to show the button a
               beat late than to show it wrongly (entitlement audit 2026-09-11). */}
-          {resolved && !academy && (
+          {tierKnown && !academy && (
             <View style={{ marginTop: 4 }}>
               <GlassButton
                 label={entitlement === 'lapsed' ? 'RENEW ACADEMY' : 'UPGRADE TO ACADEMY'}

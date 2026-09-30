@@ -68,6 +68,11 @@ const PLOT_FRAME = '#262b36';
  *  (silence, blue). See the rt60DecayRamp gradient for why. */
 const DECAY_RAMP = Array.from({ length: 7 }, (_, i) => levelColor(1 - i / 6));
 const TICK_TEXT = '#a6a6ad';
+/** Axis-label size in viewBox units. The plot is ~306–336 pt wide inside a
+ *  320-unit viewBox, so it renders at ×0.96–1.0 — the old 8 drew 7.6–8 pt,
+ *  under the 9 pt display floor (toddler pass 2026-09-30). 9.5 × 0.956 at a
+ *  360-wide phone = 9.1 pt. */
+const TICK_FONT = 9.5;
 
 /** §13 discipline lines — always visible with results (spec Required warnings). */
 const DISCIPLINE = [
@@ -193,7 +198,7 @@ function DecayCurve({ curveDb, stepSec }: { curveDb: number[]; stepSec: number }
             key={`t${db}`}
             x={CURVE_W - 5}
             y={yFor(db) - 3}
-            fontSize={8}
+            fontSize={TICK_FONT}
             fontFamily={fonts.mono}
             fill={colors.amberLabel}
             textAnchor="end"
@@ -224,13 +229,13 @@ function DecayCurve({ curveDb, stepSec }: { curveDb: number[]; stepSec: number }
             />
           </>
         ) : null}
-        <SvgText x={2} y={CURVE_H + 13} fontSize={8} fontFamily={fonts.mono} fill={TICK_TEXT}>
+        <SvgText x={2} y={CURVE_H + 13} fontSize={TICK_FONT} fontFamily={fonts.mono} fill={TICK_TEXT}>
           0 s
         </SvgText>
         <SvgText
           x={CURVE_W - 2}
           y={CURVE_H + 13}
-          fontSize={8}
+          fontSize={TICK_FONT}
           fontFamily={fonts.mono}
           fill={TICK_TEXT}
           textAnchor="end"

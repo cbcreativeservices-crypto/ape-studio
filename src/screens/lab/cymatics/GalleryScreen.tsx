@@ -106,7 +106,12 @@ export function GalleryScreen() {
     if (!paramId) return;
     setCurrentId(paramId);
     setMode('open');
-  }, [paramId]);
+    // Keyed on the params OBJECT (bug pass 2026-09-30): the studio's "Open the
+    // gallery ›" pops back here, and pressing it again for the SAME pattern
+    // (after browsing away) left the id unchanged, so the gallery stayed on
+    // the grid. Every popTo brings a new object.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [route.params]);
 
   const current = useMemo(() => patterns?.find((p) => p.id === currentId) ?? null, [patterns, currentId]);
   const currentGeom = useMemo(() => (current ? geometryFor(current) : null), [current]);
@@ -196,6 +201,10 @@ export function GalleryScreen() {
             delete n[current.id];
             return n;
           });
+          // A deleted pattern leaves the compare selection too: it kept
+          // counting toward "COMPARE 2 ›", which then opened on one pattern
+          // (bug pass 2026-09-30).
+          setCompareIds((ids) => ids.filter((x) => x !== current.id));
           setCurrentId(null);
           setMode('browse');
         });

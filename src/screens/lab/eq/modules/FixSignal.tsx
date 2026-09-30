@@ -111,6 +111,13 @@ export function FixSignalModule(_p: EqModuleComponentProps) {
     12,
   );
 
+  // Moving the band clears the last CHECK (bug pass 2026-09-30): the bezel kept
+  // reading FIXED over a curve the learner had since pulled off the target.
+  const moveBand = (f: (b: UserBand) => UserBand) => {
+    setChecked(null);
+    setBand(f);
+  };
+
   const check = () => {
     const freqOk = Math.abs(Math.log2(band.f / sc.hidden.f)) <= 1 / 3;
     const gainOk = Math.abs(band.g + sc.hidden.g) <= 3 && band.g * sc.hidden.g < 0;
@@ -123,7 +130,7 @@ export function FixSignalModule(_p: EqModuleComponentProps) {
       id: 'freq',
       label: 'FREQ',
       value: normFromF(band.f),
-      onChange: (t) => setBand((b) => ({ ...b, f: fFromNorm(t) })),
+      onChange: (t) => moveBand((b) => ({ ...b, f: fFromNorm(t) })),
       format: () => fmtHz(band.f),
     },
     {
@@ -132,7 +139,7 @@ export function FixSignalModule(_p: EqModuleComponentProps) {
       label: 'GAIN',
       level: true,
       value: (band.g + 18) / 36,
-      onChange: (t) => setBand((b) => ({ ...b, g: Math.round((t * 36 - 18) * 2) / 2 })),
+      onChange: (t) => moveBand((b) => ({ ...b, g: Math.round((t * 36 - 18) * 2) / 2 })),
       format: () => `${band.g >= 0 ? '+' : ''}${band.g.toFixed(1)} dB`,
       formatShort: () => `${band.g >= 0 ? '+' : ''}${band.g.toFixed(1)}`,
       tint: gainColor(band.g, 18),
@@ -142,7 +149,7 @@ export function FixSignalModule(_p: EqModuleComponentProps) {
       id: 'q',
       label: 'Q',
       value: Math.log(band.q / 0.3) / Math.log(12 / 0.3),
-      onChange: (t) => setBand((b) => ({ ...b, q: 0.3 * Math.pow(12 / 0.3, Math.max(0, Math.min(1, t))) })),
+      onChange: (t) => moveBand((b) => ({ ...b, q: 0.3 * Math.pow(12 / 0.3, Math.max(0, Math.min(1, t))) })),
       format: () => `Q ${band.q.toFixed(2)} · ${bwOctFromQ(band.q).toFixed(2)} oct`,
       formatShort: () => `Q${band.q.toFixed(1)}`,
     },

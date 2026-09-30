@@ -312,6 +312,16 @@ export function CalcWorkspaceScreen() {
               <Text style={styles.resultPlaceholder}>
                 Your answer appears here. Fill in the values below to calculate.
               </Text>
+            ) : computeError ? (
+              // BEFORE the capped gate (bug pass 2026-09-30): a free account
+              // spent one of its weekly calculations to be told "can’t be
+              // negative" / "no valid result". An error reveals no answer, so
+              // it costs nothing.
+              <Text style={styles.warnText}>
+                {negativeField
+                  ? `⚠ ${negativeField} can’t be negative — enter a positive value.`
+                  : '⚠ These values don’t produce a valid result — check for zeros or reversed inputs.'}
+              </Text>
             ) : capped && !resultUnlocked ? (
               <View style={{ gap: 8 }}>
                 <Pressable
@@ -327,12 +337,6 @@ export function CalcWorkspaceScreen() {
                   Tap CALCULATE to reveal the answer — this uses one of your {usage?.limit ?? CALC_WEEKLY_LIMIT} free calculations this week.
                 </Text>
               </View>
-            ) : computeError ? (
-              <Text style={styles.warnText}>
-                {negativeField
-                  ? `⚠ ${negativeField} can’t be negative — enter a positive value.`
-                  : '⚠ These values don’t produce a valid result — check for zeros or reversed inputs.'}
-              </Text>
             ) : (
               <View style={{ gap: 8 }}>
                 {outputs.map((o, oi) =>

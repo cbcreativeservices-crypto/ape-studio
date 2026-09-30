@@ -1087,6 +1087,10 @@ const LiveReadout = memo(function LiveReadout({
 function RepeatKey({ label, onStep, disabled, accessibilityLabel, narrow }: { label: string; onStep: () => void; disabled: boolean; accessibilityLabel: string; narrow?: boolean }) {
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const interval = useRef<ReturnType<typeof setInterval> | null>(null);
+  // A hold that started repeating owns its steps: Pressable still fires onPress
+  // on release after a long hold (no onLongPress here), so every hold used to
+  // land ONE KEY PAST where the user let go (toddler pass 2026-09-30).
+  const repeated = useRef(false);
   const stop = () => {
     if (timer.current) clearTimeout(timer.current);
     if (interval.current) clearInterval(interval.current);
@@ -1097,12 +1101,19 @@ function RepeatKey({ label, onStep, disabled, accessibilityLabel, narrow }: { la
   return (
     <Pressable
       onPress={() => {
+        if (repeated.current) {
+          repeated.current = false;
+          return;
+        }
         if (!disabled) onStep();
       }}
       onPressIn={() => {
+        repeated.current = false;
         if (disabled) return;
         stop();
         timer.current = setTimeout(() => {
+          repeated.current = true;
+          onStep(); // the first repeat lands now, so a release just after 450 ms still stepped once
           interval.current = setInterval(onStep, 90);
         }, 450);
       }}

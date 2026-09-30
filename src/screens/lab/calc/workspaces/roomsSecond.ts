@@ -39,7 +39,7 @@ const CRITICAL_DISTANCE: Workspace = {
   fields: [
     { key: 'vol', name: 'ROOM VOLUME', quantity: 'volume', placeholder: '300', help: 'Length × width × height of the room.', warn: { test: (x) => x <= 0, msg: 'Volume must be greater than zero.' } },
     { key: 'rt60', name: 'REVERBERATION TIME (RT60)', quantity: 'time', defaultUnit: 's', placeholder: '0.8', help: 'Time for the reverberant tail to decay 60 dB.', warn: { test: (x) => x <= 0, msg: 'RT60 must be greater than zero.' } },
-    { key: 'q', name: 'DIRECTIVITY (Q)', quantity: 'number', placeholder: '1', help: 'Source directivity factor: omni ≈ 1, cardioid ≈ 3, horn ≈ 10+.', warn: { test: (x) => x <= 0, msg: 'Directivity Q must be greater than zero.' } },
+    { key: 'q', name: 'DIRECTIVITY (Q)', quantity: 'number', nonNegative: true, placeholder: '1', help: 'Source directivity factor: omni ≈ 1, cardioid ≈ 3, horn ≈ 10+.', warn: { test: (x) => x <= 0, msg: 'Directivity Q must be greater than zero.' } },
     { key: 'r', name: 'LISTENING DISTANCE', quantity: 'length', placeholder: '3', help: 'How far the listener or mic is from the source.', warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
   ],
   functions: [

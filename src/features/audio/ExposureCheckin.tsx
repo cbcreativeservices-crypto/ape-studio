@@ -20,6 +20,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { navigationRef } from '../../navigation/navigationRef';
 import { areOverlaysSuppressed } from '../dev/popupSuppressStore';
+import { hapticsEnabled } from '../settings/store';
 import { colors, fonts } from '../../theme/tokens';
 import {
   exposureMessage,
@@ -103,7 +104,9 @@ export function ExposureCheckin() {
       // 2026-08-12); critical dose warnings show anywhere.
       if ((kind === 'routine' || kind === 'advisory') && !onAudioScreen()) return;
       setShow({ kind, snap });
-      if (snap.settings.haptics) void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+      // The monitor's own haptics switch AND Settings → Haptics (bug hunt
+      // 2026-09-30, pass 1): the app-wide OFF buzzed here regardless.
+      if (snap.settings.haptics && hapticsEnabled()) void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
       // Concise announcement; focus is NOT moved (§23) so activities continue.
       AccessibilityInfo.announceForAccessibility(
         `Listening exposure check-in. ${fmtDuration(snap.todayActiveSec)} today. ` +

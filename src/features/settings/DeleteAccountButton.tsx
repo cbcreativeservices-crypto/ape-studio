@@ -5,7 +5,7 @@
  * caller's personal records + identity; any future registry link then resolves to a
  * generic "account deleted" page (no personal info).
  */
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { confirmDialog, notify } from '../../lib/confirm';
 import { supabase } from '../../lib/supabase';
@@ -31,6 +31,15 @@ export function DeleteAccountButton({ onDeleted }: { onDeleted: () => void }) {
     }
   };
 
+  // Stop everything on unmount (bug hunt 2026-09-30, pass 1). Settings closed
+  // mid-hold (Android BACK with a finger still down) never delivers
+  // onPressOut, so the hold ran on unseen and, at 5 s, raised "Delete account
+  // permanently?" over whatever screen the user had gone back to.
+  useEffect(() => () => {
+    anim.current?.stop();
+    clearTick();
+  }, []);
+
   const reset = () => {
     anim.current?.stop();
     clearTick();
@@ -41,6 +50,10 @@ export function DeleteAccountButton({ onDeleted }: { onDeleted: () => void }) {
 
   const start = () => {
     if (busy) return;
+    // A second press-in over a live hold (a second finger) must not orphan the
+    // first countdown — same fix as HoldToActivate.
+    anim.current?.stop();
+    clearTick();
     setHolding(true);
     setSecs(5);
     progress.setValue(0);

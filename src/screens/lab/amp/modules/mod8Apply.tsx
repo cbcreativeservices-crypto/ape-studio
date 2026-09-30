@@ -102,6 +102,7 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
   const [diagIdx, setDiagIdx] = useState(0);
   const [diagPick, setDiagPick] = useState<WaveKind | null>(null);
   const [diagScore, setDiagScore] = useState<{ right: number; total: number }>({ right: 0, total: 0 });
+  const diagScoredRef = useRef(-1);
   const diagKind = DIAG_ORDER[diagIdx];
   const diagWave = useMemo(() => waveFor(diagKind), [diagKind]);
   const diagInput = useMemo(() => sineCycle(1), []);
@@ -273,6 +274,11 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
               key={k.key}
               disabled={diagPick != null}
               onPress={() => {
+                // One scored pick per waveform (bug hunt 2026-09-30 day): a
+                // same-frame double tap lands before `disabled` re-renders and
+                // counted the waveform twice ("5 of 4").
+                if (diagScoredRef.current === diagIdx) return;
+                diagScoredRef.current = diagIdx;
                 setDiagPick(k.key);
                 setDiagScore((s) => ({ right: s.right + (diagAccepted.includes(k.key) ? 1 : 0), total: s.total + 1 }));
               }}
@@ -304,7 +310,7 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
           ) : (
             <>
               <Text style={styles.score}>Diagnosis round: {diagScore.right} of {diagScore.total} — {diagScore.right >= DIAG_PASS ? 'you can read an amplifier.' : 'revisit Modules 3, 5 and 6 for the ones that fooled you.'}</Text>
-              <Pressable style={styles.nextBtn} onPress={() => { setDiagIdx(0); setDiagPick(null); setDiagScore({ right: 0, total: 0 }); }} accessibilityRole="button" accessibilityLabel="Repeat the diagnosis round">
+              <Pressable style={styles.nextBtn} onPress={() => { diagScoredRef.current = -1; setDiagIdx(0); setDiagPick(null); setDiagScore({ right: 0, total: 0 }); }} accessibilityRole="button" accessibilityLabel="Repeat the diagnosis round">
                 <Text style={styles.nextText}>REPEAT THE ROUND ›</Text>
               </Pressable>
             </>

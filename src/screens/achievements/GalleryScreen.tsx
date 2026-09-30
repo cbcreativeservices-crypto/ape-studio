@@ -5,7 +5,7 @@
  * Tap → Trophy (entry=gallery). Empty: "Earn your first trophy to see it
  * here." Bottom nav visible (nested in the Achievements tab stack).
  */
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -49,12 +49,20 @@ export function GalleryScreen() {
   // who has earned trophies they've earned nothing (error-vs-empty class the
   // launch audit fixed on Home/CredentialWall/Topics but missed here).
   const [loadError, setLoadError] = useState(false);
+  const entriesRef = useRef(entries);
+  entriesRef.current = entries;
 
   const load = useCallback(() => {
     setLoadError(false);
     fetchGalleryV3()
       .then(setEntries)
       .catch(() => {
+        // KEEP WHAT IS ON SCREEN (bug pass 1, 2026-09-30). This runs on every
+        // focus — including the way BACK from a trophy opened here — so one
+        // offline refetch replaced a gallery of earned trophies with an error
+        // card. Same rule as AchievementsHome: the error is for the empty
+        // state only.
+        if (entriesRef.current && entriesRef.current.length > 0) return;
         setEntries([]);
         setLoadError(true);
       });

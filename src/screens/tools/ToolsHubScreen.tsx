@@ -808,6 +808,14 @@ const ToolTile = memo(function ToolTile({
   const sink = useRef(new Animated.Value(0)).current;
   const glow = useRef(new Animated.Value(0)).current;
   const busy = useRef(false);
+  // The 90 ms beat's timer, cleared on unmount (toddler pass 2026-09-30): a
+  // tile tap followed by HOME / Android BACK inside the beat unmounted the hub,
+  // then the beat still fired openTool — pushing ToolInfo over wherever the
+  // user had just gone. GlassTile (the calculator copy) already clears its own.
+  const beat = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (beat.current) clearTimeout(beat.current);
+  }, []);
 
   const animateIn = () =>
     Animated.parallel([
@@ -845,7 +853,8 @@ const ToolTile = memo(function ToolTile({
     // Hold the sunk + illuminated state a beat so the "power on" reads, then exit.
     // Perf (rev 22): trimmed 190→90 ms — still reads as a power-on tap but halves
     // the fixed latency before navigation starts.
-    setTimeout(() => {
+    beat.current = setTimeout(() => {
+      beat.current = null;
       markToolNavigate(tool);
       onActivate(tool);
       sink.setValue(0);
@@ -947,6 +956,16 @@ export function ToolsHubScreen({ navigation }: Props) {
     },
     [hubCoachRetire, stopForNavigation, navigation],
   );
+  // The hub's OTHER doors share the same one-open-per-navigation latch
+  // (toddler pass 2026-09-30): a tile's 90 ms beat and a SAVED MEASUREMENTS /
+  // training row / dosimeter tap inside it pushed two screens on top of each
+  // other, whichever order they landed in.
+  const openOnce = useCallback((go: () => void) => {
+    const now = Date.now();
+    if (now - lastOpenRef.current < 700) return;
+    lastOpenRef.current = now;
+    go();
+  }, []);
   // Defer the tile displays until the open transition finishes so the heavy SVG
   // art / skin PNG / minis never render synchronously during navigation (owner
   // 2026-08-19: the screen was slow to open). The frame + titles paint instantly;
@@ -1077,7 +1096,7 @@ export function ToolsHubScreen({ navigation }: Props) {
                 Listening Exposure Monitor's readings and settings. */}
             <View style={styles.heroTitleRow}>
               <Text style={styles.heroTitle}>Measurement{'\n'}& Analysis</Text>
-              <DosimeterChip onOpen={() => navigation.navigate('ExposureMonitor')} />
+              <DosimeterChip onOpen={() => openOnce(() => navigation.navigate('ExposureMonitor'))} />
             </View>
             <View style={styles.heroRule} />
           </View>
@@ -1131,7 +1150,7 @@ export function ToolsHubScreen({ navigation }: Props) {
               accounts see it grayed + locked; a tap routes to the Paywall. */}
           <Pressable
             style={[styles.libraryRow, !isMember && styles.lockedRow]}
-            onPress={() => (isMember ? navigation.navigate('ToolLibrary', undefined) : navigation.navigate('Paywall'))}
+            onPress={() => openOnce(() => (isMember ? navigation.navigate('ToolLibrary', undefined) : navigation.navigate('Paywall')))}
             accessibilityRole="button"
             accessibilityLabel={isMember ? 'Saved measurements' : 'Saved measurements — Academy membership required'}
           >
@@ -1154,9 +1173,11 @@ export function ToolsHubScreen({ navigation }: Props) {
                     key={m.key}
                     style={[styles.trainingRow, !isMember && styles.lockedRow]}
                     onPress={() =>
-                      isMember
-                        ? navigation.navigate('ConceptModule', { conceptKey: m.key })
-                        : navigation.navigate('Paywall')
+                      openOnce(() =>
+                        isMember
+                          ? navigation.navigate('ConceptModule', { conceptKey: m.key })
+                          : navigation.navigate('Paywall'),
+                      )
                     }
                     accessibilityRole="button"
                     accessibilityLabel={isMember ? m.title : `${m.title} — Academy membership required`}

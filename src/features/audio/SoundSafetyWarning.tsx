@@ -197,8 +197,9 @@ export function SoundSafetyWarning({
   return (
     <Modal
       accessibilityViewIsModal
-      // A root surface: it publishes into hosts, it is never one itself.
-      hostsOverlays={false}
+      // A root surface of the audio gate: it publishes into other hosts, and
+      // hosts a confirm raised over it — skipped by the gate's own count.
+      overlayPublisher="gate"
       visible={visible}
       transparent
       animationType="fade"

@@ -416,8 +416,19 @@ export function SignalGenScreen({ navigation }: Props) {
   useEffect(() => {
     if (!running) return;
     const t = setInterval(() => {
-      setStatus(ApeDsp.genStatus());
+      const s = ApeDsp.genStatus();
+      setStatus(s);
       setInfo(ApeDsp.getInfo());
+      // The generator stopped native-side (session interruption, route
+      // teardown, engine error): the GEN cell already says STOP, but the dock
+      // key still read STOP off this local flag — so the next press "stopped"
+      // a silent generator and it took two presses to get sound back, while
+      // this poll kept refreshing the output idle timer for a tone that was
+      // not playing (toddler pass 2026-09-30). Follow the engine.
+      if (s && !s.running) {
+        setRunning(false);
+        return;
+      }
       noteAudioActivity();
     }, STATUS_POLL_MS);
     return () => clearInterval(t);

@@ -260,7 +260,15 @@ export function QuizScreen({ navigation, route }: Props) {
           notify(
             'Submit failed',
             QUIZ_SUBMIT_ERROR_COPY[parseSubmitError((e as Error).message ?? '')] ?? QUIZ_SUBMIT_ERROR_COPY.unknown,
-            () => navigation.goBack(),
+            // STALE ONCE THE SCREEN IS GONE (bug pass 1, 2026-09-30). The latch
+            // is released above, so the 0:00 force-submit (or a second app
+            // switch) can still land while this dialog is open — and succeed,
+            // popping this screen for Results. OK then dispatched goBack from a
+            // route that no longer exists; it bubbles up and pops the Results
+            // the learner is reading. Same defect as the Leave-quiz confirm.
+            () => {
+              if (mountedRef.current) navigation.goBack();
+            },
           );
         }
       } finally {

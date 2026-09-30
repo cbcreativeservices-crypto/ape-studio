@@ -205,7 +205,7 @@ const WS_SPL_ADD: Workspace = {
   fields: [
     { key: 'levels', name: 'SOURCE LEVELS', quantity: 'list', placeholder: '95, 92, 88', help: 'The individual levels in dB SPL, comma-separated — one per source.' },
     { key: 'lvl', name: 'LEVEL OF ONE SOURCE', quantity: 'spl', placeholder: '95', help: 'The level a single one of the identical sources produces at the listening position.' },
-    { key: 'count', name: 'NUMBER OF SOURCES', quantity: 'number', placeholder: '4', help: 'How many identical, uncorrelated sources are running.', warn: { test: (x) => x < 1, msg: 'Need at least one source.' } },
+    { key: 'count', name: 'NUMBER OF SOURCES', quantity: 'number', nonNegative: true, placeholder: '4', help: 'How many identical, uncorrelated sources are running.', warn: { test: (x) => x < 1, msg: 'Need at least one source.' } },
     { key: 'delta', name: 'TARGET INCREASE', quantity: 'db', placeholder: '6', help: 'How many dB louder than ONE source you want the combined total to be.' },
     { key: 'la', name: 'LOUDER SOURCE', quantity: 'spl', placeholder: '95', help: 'Level of the first source at the listening position.' },
     { key: 'lb', name: 'QUIETER SOURCE', quantity: 'spl', placeholder: '84', help: 'Level of the second source at the listening position.' },
@@ -387,7 +387,7 @@ const WS_DOSE: Workspace = {
   fields: [
     { key: 'lex', name: 'EXPOSURE LEVEL', quantity: 'spl', placeholder: '94', help: 'The A-weighted level (dBA) the person is exposed to.' },
     { key: 'doseLevels', name: 'INTERVAL LEVELS', quantity: 'list', placeholder: '85, 94, 100', help: 'A-weighted level (dBA) of each interval, comma-separated — paired by position with the durations below.' },
-    { key: 'doseMins', name: 'INTERVAL DURATIONS', quantity: 'list', placeholder: '240, 90, 30', help: 'Duration of each interval in MINUTES, comma-separated — same order as the levels.' },
+    { key: 'doseMins', name: 'INTERVAL DURATIONS', quantity: 'list', nonNegative: true, placeholder: '240, 90, 30', help: 'Duration of each interval in MINUTES, comma-separated — same order as the levels.' },
   ],
   functions: [
     {
@@ -672,7 +672,7 @@ const WS_MIC_GAIN: Workspace = {
     'load impedance. This workspace models the spec-sheet number at 94 dB SPL = 1 Pa exactly.',
   glossary: ['Sensitivity', 'Sound Pressure Level', 'Decibel', 'Gain Staging', 'Headroom', 'Preamplifier'],
   fields: [
-    { key: 'sens', name: 'MIC SENSITIVITY (mV/Pa)', quantity: 'number', placeholder: '2', help: 'Millivolts out per pascal (94 dB SPL). Dynamics ≈ 1–3 mV/Pa; condensers ≈ 8–40 mV/Pa. If your spec sheet gives dBV/Pa instead, convert it first in Mic Sensitivity & Output.', warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
+    { key: 'sens', name: 'MIC SENSITIVITY (mV/Pa)', quantity: 'number', nonNegative: true, placeholder: '2', help: 'Millivolts out per pascal (94 dB SPL). Dynamics ≈ 1–3 mV/Pa; condensers ≈ 8–40 mV/Pa. If your spec sheet gives dBV/Pa instead, convert it first in Mic Sensitivity & Output.', warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
     { key: 'spl', name: 'SOURCE SPL AT THE MIC', quantity: 'spl', placeholder: '94', help: 'The sound pressure level arriving at the capsule.' },
     { key: 'target', name: 'TARGET LEVEL', quantity: 'db', placeholder: '4', help: 'The output level you want after the preamp, in dBu (+4 dBu = pro line level).' },
     { key: 'headroom', name: 'HEADROOM', quantity: 'db', placeholder: '12', help: 'Safety margin left below the target for peaks — subtracted from the required gain.' },

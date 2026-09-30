@@ -110,8 +110,11 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
     r?.(ok);
   };
 
-  /** A DimModal is on screen: the popups must be hosted inside it. */
-  const hostOpen = useModalHostOpen();
+  /** A DimModal is on screen: the popups must be hosted inside it. The gate's
+   *  own popups are hosts too (overlayPublisher="gate", so a confirm raised
+   *  over one is drawn inside it) — they are skipped here, or the gate would
+   *  flip itself in and out. */
+  const hostOpen = useModalHostOpen('gate');
   /**
    * The host just CLOSED with a popup still pending. Its dismissal is still
    * animating, and iOS will not present a new Modal mid-dismissal — so the root
@@ -479,7 +482,7 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
 
       {/* POPUP 1 — explain the setting. */}
       <Modal accessibilityViewIsModal
-        hostsOverlays={false}
+        overlayPublisher="gate"
         visible={phase === 'explain' && rootShown}
         transparent
         animationType="fade"
@@ -491,7 +494,7 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
 
       {/* POPUP 2 — the 5-second hold to enable. */}
       <Modal accessibilityViewIsModal
-        hostsOverlays={false}
+        overlayPublisher="gate"
         visible={phase === 'hold' && rootShown}
         transparent
         animationType="fade"

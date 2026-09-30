@@ -12,7 +12,7 @@
  * accessibility label both read from it, so it never has to be changed twice.
  * Fully data-driven from labCatalog.
  */
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -85,6 +85,17 @@ export function EarLabScreen({ navigation, route }: Props) {
   // routes; go loose (the app-wide escape hatch) since routes/params come from
   // the typed labCatalog.
   const go = navigation.navigate as unknown as (route: string, params?: object) => void;
+  // One lab per tap (bug pass 2026-09-30): each glass tile guards only ITSELF
+  // for its 90 ms beat, so two different tiles tapped together each pushed a
+  // lab — two labs stacked (and a second preview flag armed). A second open
+  // inside 600 ms of the first is ignored, before anything is armed.
+  const lastOpenAt = useRef(0);
+  const claimOpen = () => {
+    const now = Date.now();
+    if (now - lastOpenAt.current < 600) return false;
+    lastOpenAt.current = now;
+    return true;
+  };
 
   // Members-only labs. Free users still OPEN the real lab (live readouts /
   // animations / mic), but a preview flag makes the root overlay gray it out,
@@ -100,12 +111,12 @@ export function EarLabScreen({ navigation, route }: Props) {
     !isMember && sec === 'fundamentals' && !leaf.member && leaf.status !== 'development';
 
   const openLeaf = (leaf: LabLeaf, sec: LabSection) => {
-    if (!leaf.route) return;
+    if (!leaf.route || !claimOpen()) return;
     if (leafLocked(leaf, sec)) startLabPreview(leaf.route, leaf.name);
     go(leaf.route, leaf.params);
   };
   const openHub = (cat: LabCategory) => {
-    if (cat.kind !== 'hub') return;
+    if (cat.kind !== 'hub' || !claimOpen()) return;
     // alwaysFree hubs (the Calculator Laboratory) never enter preview mode.
     if (sectionLocked(cat.section) && !cat.alwaysFree) startLabPreview(cat.route, cat.name);
     go(cat.route, cat.params);

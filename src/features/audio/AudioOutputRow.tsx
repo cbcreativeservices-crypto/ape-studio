@@ -31,9 +31,11 @@ import { useAudioOutputGate } from './AudioOutputGate';
 import {
   IDLE_MS,
   disableAudioOutput,
+  enableAudioOutput,
   noteAudioActivity,
   useAudioOutputEnabled,
 } from './audioOutputStore';
+import { isAcknowledged } from './soundSafetyAck';
 
 // Idle auto-mute window in minutes, derived from the store constant so this hint
 // can never drift from the real timer (matches AudioOutputGate.tsx's copy).
@@ -83,6 +85,15 @@ export function AudioOutputRow() {
       <HoldToActivate
         label="HOLD 5s TO TURN ON AUDIO OUTPUT"
         onComplete={() => {
+          // Warning already accepted: THIS was the deliberate 5-second hold, so
+          // enable now. Asking the gate here raised its explain → hold popups on
+          // top — a SECOND five-second hold for the same intent, not the
+          // "invisible" step promised above (bug hunt 2026-09-30, pass 1).
+          if (isAcknowledged()) {
+            enableAudioOutput();
+            noteAudioActivity();
+            return;
+          }
           // Through the gate, never around it — the gate owns the first-use
           // safety warning, and it is the only thing entitled to enable sound.
           void requestAudioOutput().then((ok) => {

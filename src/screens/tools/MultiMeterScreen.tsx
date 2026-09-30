@@ -1699,8 +1699,12 @@ export function MultiMeterScreen({ navigation }: Props) {
               <Pressable accessibilityHint="Press and hold for an explanation." onLongPress={() => help('detection')} delayLongPress={350}>
                 <Text accessibilityRole="header" style={styles.panelEyebrow}>SMART DETECTION</Text>
               </Pressable>
-              {chips.length === 0 ? (
-                <Text style={styles.detectEmpty}>no conditions detected right now</Text>
+              {/* captureLive (toddler pass 2026-09-30): the chips are only
+                  recomputed by the live poll, so after STOP or a stall the last
+                  CLIPPING / FEEDBACK verdict stayed lit under "right now" beside
+                  panels that had correctly gone dark. */}
+              {!captureLive || chips.length === 0 ? (
+                <Text style={styles.detectEmpty}>{captureLive ? 'no conditions detected right now' : 'not listening — no live signal'}</Text>
               ) : (
                 <View style={styles.detectWrap}>
                   {chips.map((c) => (

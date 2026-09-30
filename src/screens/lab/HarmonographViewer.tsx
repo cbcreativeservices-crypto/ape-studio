@@ -149,21 +149,35 @@ export function HarmonographViewer(props: {
   // and the button row; landscape scrolls (the ScrollView keeps it reachable).
   const paper = Math.max(180, Math.min(Math.min(ww, wh) - 76, 520));
 
-  const doShare = () => {
-    if (!avail.share || busy) return;
+  // Synchronous twin of `busy` (bug hunt 2026-09-30 day): a same-frame double
+  // tap on SAVE read the render-time `busy` false twice and put TWO copies of
+  // the drawing in Photos (and a doubled SHARE had iOS refuse the second
+  // sheet). Set before the first await, released with `busy`.
+  const busyRef = useRef(false);
+  const claim = () => {
+    if (busyRef.current) return false;
+    busyRef.current = true;
     setBusy(true);
+    return true;
+  };
+  const release = () => {
+    busyRef.current = false;
+    setBusy(false);
+  };
+
+  const doShare = () => {
+    if (!avail.share || busy || !claim()) return;
     setMsg('');
     void shareImage
       .captureAndShare(cardRef.current, 'Harmonograph drawing')
       .then((ok) => {
         if (!ok) setMsg('Sharing as an image isn’t available on this device.');
       })
-      .finally(() => setBusy(false));
+      .finally(release);
   };
 
   const doSave = () => {
-    if (busy) return;
-    setBusy(true);
+    if (busy || !claim()) return;
     setMsg('');
     void saveToPhotos(cardRef.current)
       .then((r) => {
@@ -177,12 +191,11 @@ export function HarmonographViewer(props: {
                 : 'Saving failed — please try again.',
         );
       })
-      .finally(() => setBusy(false));
+      .finally(release);
   };
 
   const doPrint = () => {
-    if (busy) return;
-    setBusy(true);
+    if (busy || !claim()) return;
     setMsg('');
     void printCard(cardRef.current)
       .then((ok) => {
@@ -194,7 +207,7 @@ export function HarmonographViewer(props: {
               : 'Printing isn’t available on this device.',
           );
       })
-      .finally(() => setBusy(false));
+      .finally(release);
   };
 
   const wheelPress = () => {

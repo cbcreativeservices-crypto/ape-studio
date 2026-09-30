@@ -88,6 +88,7 @@ import { labRequirementsFor } from '../../data/labRequirements';
 import { AttractRing } from '../../features/onboarding/AttractCue';
 import { markDeckStepped, useHomeAttract } from '../../features/onboarding/attractStore';
 import { readingColumn } from '../../theme/readingColumn';
+import { CERTIFICATE_REQUIRES_EXAM } from '../../features/finalExam/tenure';
 
 /**
  * Audio Fundamentals — the one REQUIRED LAB in the shared core (the other
@@ -194,6 +195,8 @@ function withAlpha(hex: string, a: number): string {
   return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`;
 }
 const DRAG_ROW_H = 84; // drag distance per reorder step (tuned for collapsed + expanded cards)
+/** ADD ALL ⇄ REMOVE ALL: a second press inside this window is a double tap. */
+const BULK_REPEAT_MS = 700;
 
 type FilterKey = 'az' | 'home' | 'done' | 'new';
 
@@ -789,6 +792,17 @@ export function EnrollmentView({
   const guard = (action: () => void) => {
     if (paid) action();
     else setPayPrompt(true);
+  };
+  // ADD ALL flips to REMOVE ALL in place, so a double tap added a whole
+  // credential and then stripped it (and its topics) straight back out — no
+  // confirm, since REMOVE ALL has none (bug pass 2026-09-30). A repeat press
+  // within BULK_REPEAT_MS of the last bulk action is ignored.
+  const lastBulkAt = useRef(0);
+  const bulkOnce = (fn: () => void) => {
+    const now = Date.now();
+    if (now - lastBulkAt.current < BULK_REPEAT_MS) return;
+    lastBulkAt.current = now;
+    fn();
   };
 
   // Bundles (cert/program) — user request 2026-07-22. Adding a bundle records it
@@ -1501,6 +1515,10 @@ export function EnrollmentView({
           const coreLocked = isCore && pct < 100 && isEnrolled;
           const showActive = (coreLocked || e.active) && isEnrolled;
           const activeGreen = acc && showActive;
+          // A synthesised (not enrolled) requirement row's UNLOADED pill was a
+          // dead control: toggleActive only flips topics already in the list.
+          // Tapping it now enrols the topic LOADED (bug pass 2026-09-30).
+          const toggleDeck = () => (isEnrolled ? toggleActive(e.gs) : void addTopics([e.gs]));
           // Reorder (custom order only): hold 2 s to lift, drag to sort. The
           // gesture lives on the container wrapper via containerPan/reorderTouch.
           const tid = `t:${e.gs}`;
@@ -1540,7 +1558,7 @@ export function EnrollmentView({
                     add/remove from the study deck without expanding. Core-locked
                     topics stay on and can't be toggled. */}
                 <Pressable
-                  onPress={coreLocked ? undefined : unlessLifted(() => toggleActive(e.gs))}
+                  onPress={coreLocked ? undefined : unlessLifted(toggleDeck)}
                   disabled={coreLocked}
                   hitSlop={8}
                   accessibilityRole="button"
@@ -1645,7 +1663,7 @@ export function EnrollmentView({
                     the deck, gray when not; tap toggles (user request 2026-07-23). */}
                 <Pressable hitSlop={6}
                   style={styles.bookToggle}
-                  onPress={coreLocked ? undefined : unlessLifted(() => toggleActive(e.gs))}
+                  onPress={coreLocked ? undefined : unlessLifted(toggleDeck)}
                   disabled={coreLocked}
                   accessibilityRole="button"
                   accessibilityState={{ disabled: coreLocked, selected: showActive }}
@@ -1698,7 +1716,9 @@ export function EnrollmentView({
                     <HomeIcon color={homeSet.has(e.gs) ? colors.amber : GRAY} filled={homeSet.has(e.gs)} size={20} />
                   </Pressable>
                 ) : null}
-                {!coreLocked ? (
+                {/* Not on a synthesised (un-enrolled) row: there is nothing to
+                    remove, so the hold did nothing (bug pass 2026-09-30). */}
+                {!coreLocked && isEnrolled ? (
                   <HoldToRemove onComplete={() => removeTopic(e.gs)} accessibilityLabel="Remove from enrollment" />
                 ) : null}
               </View>
@@ -2163,7 +2183,13 @@ export function EnrollmentView({
                       'Every requirement on this card has to reach 100% before the Final Exam opens.' +
                         '\n\nStill outstanding:\n' +
                         list.join('\n') +
-                        '\n\nThe certificate itself also needs one complete paid month of membership. You can still take the exam before that month is over.',
+                        // Gated on the real server flag (bug pass 2026-09-30),
+                        // like AwardProgressScreen and ExamBriefing: while it is
+                        // false the paid-month rule is not enforced, so stating
+                        // it here was false.
+                        (CERTIFICATE_REQUIRES_EXAM
+                          ? '\n\nThe certificate itself also needs one complete paid month of membership. You can still take the exam before that month is over.'
+                          : ''),
                     );
                     return;
                   }
@@ -2217,6 +2243,10 @@ export function EnrollmentView({
               goStudy((studyable.find((e) => e.active) ?? studyable[0])?.gs);
               return;
             }
+            // STUDY ALL "loads its N topics and opens your dashboard" (its own
+            // label) — it only ever navigated, so an UNLOADED credential opened
+            // the dashboard with one topic in the deck (bug pass 2026-09-30).
+            if (centredBundle) setBundleLoad(centredBundle, true);
             goStudy(centredBundle?.topics.find((gs) => gs !== LAB_REQUIREMENT_GS));
           }}
         />
@@ -2413,7 +2443,7 @@ export function EnrollmentView({
                           {c.name}
                         </Text>
                       </Pressable>
-                      <Pressable style={[styles.addAllBtn, added && styles.removeAllBtn]} onPress={() => (added ? removeWhole('cert', c.name, c.specializationTopics) : addWholeCert(c.name, c.specializationTopics))} accessibilityRole="button" accessibilityLabel={added ? `Remove all ${c.name}` : `Add whole ${c.name}`}>
+                      <Pressable style={[styles.addAllBtn, added && styles.removeAllBtn]} onPress={() => bulkOnce(() => (added ? removeWhole('cert', c.name, c.specializationTopics) : addWholeCert(c.name, c.specializationTopics)))} accessibilityRole="button" accessibilityLabel={added ? `Remove all ${c.name}` : `Add whole ${c.name}`}>
                         <Text style={[styles.addAllText, added && styles.removeAllText]}>{added ? 'REMOVE ALL' : 'ADD ALL'}</Text>
                       </Pressable>
                     </View>
@@ -2439,7 +2469,7 @@ export function EnrollmentView({
                             {p.name}
                           </Text>
                         </Pressable>
-                        <Pressable style={[styles.addAllBtn, added && styles.removeAllBtn]} onPress={() => (added ? removeWhole('program', p.name, p.requiredTopics) : addWholeProgram(p.name, p.requiredTopics))} accessibilityRole="button" accessibilityLabel={added ? `Remove all ${p.name}` : `Add whole ${p.name}`}>
+                        <Pressable style={[styles.addAllBtn, added && styles.removeAllBtn]} onPress={() => bulkOnce(() => (added ? removeWhole('program', p.name, p.requiredTopics) : addWholeProgram(p.name, p.requiredTopics)))} accessibilityRole="button" accessibilityLabel={added ? `Remove all ${p.name}` : `Add whole ${p.name}`}>
                           <Text style={[styles.addAllText, added && styles.removeAllText]}>{added ? 'REMOVE ALL' : 'ADD ALL'}</Text>
                         </Pressable>
                       </View>
@@ -2462,7 +2492,7 @@ export function EnrollmentView({
                             <Text style={styles.subjectChevron}>{open ? '▾' : '▸'}</Text>
                             <Text style={[styles.subjectName, { color: colors.green }]} numberOfLines={2}>{f.name}</Text>
                           </Pressable>
-                          <Pressable style={[styles.addAllBtn, added && styles.removeAllBtn]} onPress={() => (added ? removeWholeField(fieldGs) : addWholeField(fieldGs))} accessibilityRole="button" accessibilityLabel={added ? `Remove all topics in ${f.name}` : `Add all topics in ${f.name}`}>
+                          <Pressable style={[styles.addAllBtn, added && styles.removeAllBtn]} onPress={() => bulkOnce(() => (added ? removeWholeField(fieldGs) : addWholeField(fieldGs)))} accessibilityRole="button" accessibilityLabel={added ? `Remove all topics in ${f.name}` : `Add all topics in ${f.name}`}>
                             <Text style={[styles.addAllText, added && styles.removeAllText]}>{added ? 'REMOVE ALL' : 'ADD ALL'}</Text>
                           </Pressable>
                         </View>
@@ -2494,7 +2524,7 @@ export function EnrollmentView({
                               {s.name}
                             </Text>
                           </Pressable>
-                          <Pressable style={[styles.addAllBtn, added && styles.removeAllBtn]} onPress={() => (added ? removeWhole('subject', s.name, subjectGs) : addWholeSubject(s.name, subjectGs))} accessibilityRole="button" accessibilityLabel={added ? `Remove all ${s.name}` : `Add all topics in ${s.name}`}>
+                          <Pressable style={[styles.addAllBtn, added && styles.removeAllBtn]} onPress={() => bulkOnce(() => (added ? removeWhole('subject', s.name, subjectGs) : addWholeSubject(s.name, subjectGs)))} accessibilityRole="button" accessibilityLabel={added ? `Remove all ${s.name}` : `Add all topics in ${s.name}`}>
                             <Text style={[styles.addAllText, added && styles.removeAllText]}>{added ? 'REMOVE ALL' : 'ADD ALL'}</Text>
                           </Pressable>
                         </View>

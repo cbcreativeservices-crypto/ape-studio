@@ -64,7 +64,8 @@ describe('community directory', () => {
   const editor = code('src/screens/directory/MyProfileView.tsx');
 
   test('C3: deleting marks the blank profile as already sent', () => {
-    const del = between(editor, 'deleteCommunityProfile().then(', 'setP(EMPTY_COMMUNITY_PROFILE);');
+    // Chained behind queued saves since the day pass (see the D3 guard).
+    const del = between(editor, 'deleteCommunityProfile()).then(', 'setP(EMPTY_COMMUNITY_PROFILE);');
     assert.match(del, /lastSent\.current = EMPTY_COMMUNITY_PROFILE/);
     assert.match(del, /pRef\.current = EMPTY_COMMUNITY_PROFILE/);
   });
@@ -72,7 +73,8 @@ describe('community directory', () => {
   test('C4: a featured-credential write reports and rolls back on failure', () => {
     const pick = between(editor, 'setFeaturedCredentials(ids)', '});');
     assert.match(pick, /setErr\(r\.error\)/);
-    assert.match(pick, /featuredCredentialIds: prevIds/);
+    // Rolls back to the last list the server ACCEPTED (day pass, D4).
+    assert.match(pick, /featuredCredentialIds: back/);
   });
 
   test('C5: the guided setup bounds the display name like the editor', () => {

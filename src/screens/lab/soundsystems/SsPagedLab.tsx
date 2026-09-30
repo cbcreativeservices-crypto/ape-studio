@@ -28,7 +28,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { readingColumn } from '../../../theme/readingColumn';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { animationsAllowed } from '../../../features/settings/a11y';
-import { loadPagedProgress, resetPagedProgress, savePagedProgress, type PagedProgress } from '../../../features/lab/pagedProgress';
+import { loadPagedProgress, savePagedProgress, type PagedProgress } from '../../../features/lab/pagedProgress';
 import { confirmDialog } from '../../../lib/confirm';
 import { LabUnderstandingCheck } from '../../../components/LabUnderstandingCheck';
 import { UNDERSTANDING_UNIT, understandingFor } from '../../../features/lab/understanding';
@@ -38,16 +38,7 @@ import type { SsPageDef } from './rackLayout';
 import { PageMemoryKey, clearPageMemory } from './pageMemory';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { getLabPreview } from '../../../features/lab/labPreviewStore';
-import { resetSoundSystemsLists, setSoundSystemsSaveBlocked, type SoundSystemsProgress } from '../../../features/soundsystems/progress';
-import { SS_BUILD_ID, SS_OPERATE_ID, SS_ROUTE_ID, SS_TROUBLESHOOT_ID } from './units';
-
-/** Each mode's slice of ape:soundsystems:v1 — what its in-mode RESET clears. */
-const MODE_LISTS: Record<string, readonly (keyof SoundSystemsProgress)[]> = {
-  [SS_BUILD_ID]: ['capstones'],
-  [SS_ROUTE_ID]: ['route'],
-  [SS_OPERATE_ID]: ['operate'],
-  [SS_TROUBLESHOOT_ID]: ['faults', 'forward'],
-};
+import { setSoundSystemsSaveBlocked } from '../../../features/soundsystems/progress';
 
 function useOsReduceMotion(): boolean {
   const [rm, setRm] = useState(false);
@@ -175,32 +166,31 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
     persist({ lastPage: idx });
   }, [pagesWithCheck.length, persist, reduceMotion]);
   const markDone = useCallback(() => markPageDone(page), [markPageDone, page]);
-  // The in-mode RESET clears what the hub's RESET clears for this mode: its
-  // pages AND its slice of ape:soundsystems:v1, so goals read from that
-  // store (solved faults, passed capstones, exercises) do not re-complete
-  // on their own (bug hunt 2026-09-29).
-  // Also (bug hunt 2026-09-30): the session's page memory is dropped and the
-  // current page re-mounted, or a finished capstone / console came back
-  // finished and re-marked itself; and a guest or preview never deletes the
-  // device's real saved pages (it never wrote them).
-  const doReset = () => void Promise.all([noSaveRef.current ? Promise.resolve() : resetPagedProgress(labId), resetSoundSystemsLists(MODE_LISTS[labId] ?? [])]).then(() => {
+  // The in-mode RESET (bug hunt 2026-09-30): the session's page memory is
+  // dropped and the current page re-mounted, so a capstone / console starts
+  // its working state fresh.
+  //
+  // A PRACTICE reset, never a credit wipe (owner 2026-09-29, answering this
+  // lab's RESET: "resets start a fresh practice run; they never wipe banked
+  // credit"; bug hunt 2026-09-30 day). It used to delete the mode's completed
+  // pages and its capstones / exercises / solved faults — the rows the hub's
+  // WHAT IS LEFT counts toward credit. Now it drops the session's working
+  // state and re-mounts from page 1; everything completed stays completed
+  // (the fault bench already says "SOLVED BEFORE" for a re-run).
+  const doReset = () => {
     clearPageMemory([labId]);
-    const fresh: PagedProgress = { completed: [], lastPage: 0, done: false };
-    progressRef.current = fresh;
-    setProgress(fresh);
-    setPage(0);
+    goTo(0);
     setResetSeq((n) => n + 1);
-    setListOpen(false);
-  });
+  };
   const confirmReset = () => {
-    const message = `Clears your progress for ${title} only.`;
+    const message = `Starts ${title} again from its first page. Pages, capstones, exercises and faults you have completed stay credited.`;
     if (Platform.OS === 'web') {
       // react-native-web's Alert is a no-op: keep the guard with the browser's confirm.
       const confirm = (globalThis as unknown as { confirm?: (m: string) => boolean }).confirm;
-      if (typeof confirm !== 'function' || confirm(`Reset this lab? ${message}`)) doReset();
+      if (typeof confirm !== 'function' || confirm(`Start a fresh practice run? ${message}`)) doReset();
       return;
     }
-    confirmDialog('Reset this lab?', message, 'Reset', doReset, { destructive: true });
+    confirmDialog('Start a fresh practice run?', message, 'Start over', doReset);
   };
 
   const def = pagesWithCheck[page];
@@ -256,8 +246,8 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
               </Pressable>
             );
           })}
-          <Pressable onPress={confirmReset} style={[styles.listRow, styles.listReset]} accessibilityRole="button" accessibilityLabel="Reset this lab's progress">
-            <Text style={[styles.listText, { color: colors.textMuted }]}>RESET LAB PROGRESS</Text>
+          <Pressable onPress={confirmReset} style={[styles.listRow, styles.listReset]} accessibilityRole="button" accessibilityLabel="Start a fresh practice run from the first page">
+            <Text style={[styles.listText, { color: colors.textMuted }]}>START OVER (PRACTICE)</Text>
           </Pressable>
         </ScrollView>
       ) : null}

@@ -8,6 +8,14 @@ import { fmt, fmtInt } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 const arr = (v: number | number[]) => (typeof v === 'number' ? [v] : v);
+/** Speaker impedances, all > 0 — or throw (→ runCompute's "check for zeros"
+ *  state). These lists used to `.filter(z > 0)`, so "8, 0" (a shorted speaker
+ *  line) silently became "8" and reported a safe 8 Ω load for a dead short. */
+const impedances = (v: number | number[]): number[] => {
+  const zs = arr(v);
+  if (zs.some((z) => !(z > 0))) throw new Error('impedance must be greater than zero');
+  return zs;
+};
 
 /* ------------------------------------------------------------------ */
 /* 1 · Loudspeaker SPL & Amplifier Power                              */
@@ -87,6 +95,7 @@ const WS_SPEAKERPOWER: Workspace = {
       key: 'nspk',
       name: 'NUMBER OF SPEAKERS',
       quantity: 'number',
+      nonNegative: true,
       placeholder: '1',
       help: 'Identical boxes covering the same listener. Bonus assumes UNCORRELATED sources.',
       warn: { test: (x) => x < 1 || !Number.isInteger(x), msg: 'Enter a whole number of speakers, 1 or more.' },
@@ -278,6 +287,7 @@ const WS_IMPEDANCE: Workspace = {
       key: 'zlist',
       name: 'SPEAKER IMPEDANCES',
       quantity: 'list',
+      nonNegative: true,
       placeholder: '8, 8, 4',
       help: 'Nominal impedance of each speaker in ohms, comma-separated (e.g. "8, 8, 4").',
     },
@@ -285,6 +295,7 @@ const WS_IMPEDANCE: Workspace = {
       key: 'z4',
       name: 'FOUR IMPEDANCES (2×2)',
       quantity: 'list',
+      nonNegative: true,
       placeholder: '8, 8, 8, 8',
       help: 'Exactly four values: speakers 1+2 form one parallel pair, 3+4 the other; the pairs go in series.',
     },
@@ -302,7 +313,7 @@ const WS_IMPEDANCE: Workspace = {
       keySymbols: ['/', 'Σ', 'Z', 'x₁'],
       note: 'Parallel branches all see the amplifier’s full voltage — lower impedances draw a bigger power share.',
       compute: (v) => {
-        const zs = arr(v.zlist).filter((z) => z > 0);
+        const zs = impedances(v.zlist);
         if (zs.length < 1) return [{ label: 'INPUT', text: 'Enter at least one impedance (e.g. "8, 8").' }];
         const ztot = 1 / zs.reduce((s, z) => s + 1 / z, 0);
         const shares = zs.map((z) => (ztot / z) * 100);
@@ -322,7 +333,7 @@ const WS_IMPEDANCE: Workspace = {
         return out;
       },
       steps: (v) => {
-        const zs = arr(v.zlist).filter((z) => z > 0);
+        const zs = impedances(v.zlist);
         if (zs.length < 1) return ['Enter at least one impedance to combine.'];
         const inv = zs.reduce((s, z) => s + 1 / z, 0);
         return [
@@ -343,7 +354,7 @@ const WS_IMPEDANCE: Workspace = {
       keySymbols: ['Σ', 'Z', 'x₁'],
       note: 'Series speakers share the amplifier’s current; the amp delivers LESS total power into the raised load.',
       compute: (v) => {
-        const zs = arr(v.zlist).filter((z) => z > 0);
+        const zs = impedances(v.zlist);
         if (zs.length < 1) return [{ label: 'INPUT', text: 'Enter at least one impedance (e.g. "8, 8").' }];
         const ztot = zs.reduce((s, z) => s + z, 0);
         return [
@@ -355,7 +366,7 @@ const WS_IMPEDANCE: Workspace = {
         ];
       },
       steps: (v) => {
-        const zs = arr(v.zlist).filter((z) => z > 0);
+        const zs = impedances(v.zlist);
         if (zs.length < 1) return ['Enter at least one impedance to combine.'];
         return [`Ztot = ${zs.map((z) => fmt(z)).join(' + ')} = ${fmt(zs.reduce((s, z) => s + z, 0))} Ω — always higher than the highest single speaker.`];
       },
@@ -372,7 +383,7 @@ const WS_IMPEDANCE: Workspace = {
       keySymbols: ['∥', 'Z', 'x₁'],
       note: 'The classic four-speaker wiring: two parallel pairs placed in series — four 8 Ω boxes land back at 8 Ω.',
       compute: (v) => {
-        const zs = arr(v.z4).filter((z) => z > 0);
+        const zs = impedances(v.z4);
         if (zs.length !== 4) {
           return [{ label: 'INPUT', text: `This wiring needs exactly FOUR impedances (you entered ${zs.length}). Example: "8, 8, 8, 8".` }];
         }
@@ -394,7 +405,7 @@ const WS_IMPEDANCE: Workspace = {
         return out;
       },
       steps: (v) => {
-        const zs = arr(v.z4).filter((z) => z > 0);
+        const zs = impedances(v.z4);
         if (zs.length !== 4) return ['Enter exactly four impedances — speakers 1+2 make one parallel pair, 3+4 the other.'];
         const [z1, z2, z3, z4] = zs as [number, number, number, number];
         const pairA = (z1 * z2) / (z1 + z2);
@@ -707,6 +718,7 @@ const WS_CV70: Workspace = {
       key: 'taps',
       name: 'TAP SETTINGS',
       quantity: 'list',
+      nonNegative: true,
       placeholder: '10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10',
       help: 'Every speaker’s selected tap wattage, comma-separated — the TAP, not the speaker’s power rating.',
     },

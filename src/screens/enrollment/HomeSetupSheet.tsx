@@ -65,7 +65,13 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
   // on every tap regardless of the count.
   const tapCount = useRef(0);
   useEffect(() => {
-    if (visible) tapCount.current = 0; // fresh count each time the sheet opens
+    if (!visible) return;
+    tapCount.current = 0; // fresh count each time the sheet opens
+    // …and no notice left over from the last visit (bug pass 2026-09-30): a
+    // second tap that landed on CANCEL / ✕ raised the prompt AND closed the
+    // sheet, so the next open showed "Membership required" before any tap.
+    setPayOpen(false);
+    setWarn(false);
   }, [visible]);
   const onAnyTap = () => {
     if (paid) return;

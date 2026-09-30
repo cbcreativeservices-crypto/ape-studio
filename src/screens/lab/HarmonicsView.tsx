@@ -754,8 +754,8 @@ function HarmonicStage({
           <SvgText
             key={`c${m}`}
             x={PIANO_W - 3}
-            y={(yTop + yBot) / 2 + 2.5}
-            fontSize={7}
+            y={(yTop + yBot) / 2 + 3.2}
+            fontSize={9} // ≥ 9 pt on a phone (lab display rule); the Svg is 1:1 pt, no viewBox
             fill="#3c3c44"
             textAnchor="end"
           >

@@ -299,6 +299,8 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
   // only stops/resets when nothing newer wants it — otherwise its fxReset
   // disabled the effect the newer start had just enabled.
   const wantRef = useRef(false);
+  const latestRef = useRef({ sourceIdx, values });
+  latestRef.current = { sourceIdx, values };
 
   const pushAllParams = useCallback(
     (vals: Record<number, number>) => {
@@ -334,6 +336,12 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
         }
         return;
       }
+      // A source/fader moved while the start was in flight skipped its live
+      // push (running was still false) — send the newest now, so the display
+      // and the audio agree (bug hunt 2026-09-30 day; Oscillator's fix).
+      const latest = latestRef.current;
+      if (latest.sourceIdx !== sourceIdx) ApeDsp.genSet({ levelDb: GEN_LEVEL_DB, ...config.sources[latest.sourceIdx].gen });
+      if (latest.values !== values) pushAllParams(latest.values);
       setRunning(true);
       noteAudioActivity();
     } catch (e) {
