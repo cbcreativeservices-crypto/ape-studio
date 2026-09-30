@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 22:34 · ccode · c2c8710a
+changed: TestFlight feedback: carousel heading follows the card; Scenarios waits for NEXT
+affects other side: nothing — client JS only (Home heading, Scenarios pacing)
+needs: nothing
+
+
 ### 2026-09-29 22:31 · ccode · b48b3fa2
 changed: Home: compact header in short windows so the card is never cut off
 affects other side: nothing — client JS only (Home layout)
