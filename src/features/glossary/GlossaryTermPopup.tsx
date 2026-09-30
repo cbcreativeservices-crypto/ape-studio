@@ -37,6 +37,7 @@ export function GlossaryTermPopup({
   termName,
   onClose,
   embedded,
+  preloaded,
 }: {
   /** The term to show, or null when the popup is closed. */
   termName: string | null;
@@ -49,6 +50,10 @@ export function GlossaryTermPopup({
    *  would appear to do nothing at all. Same rule and the same fix as
    *  `components/PrePaywallPrompt`. Identical look either way. */
   embedded?: boolean;
+  /** A full entry the caller already has (owner 2026-09-29: Start Here's
+   *  starter words open FREE). Shown as-is: no corpus read, no metered
+   *  gateway call, so it never spends a weekly lookup. */
+  preloaded?: { term: string; definition: string; plain_english: string } | null;
 }) {
   const [row, setRow] = useState<Row | null>(null);
   const [loading, setLoading] = useState(false);
@@ -73,6 +78,14 @@ export function GlossaryTermPopup({
     let cancelled = false;
     if (!termName) {
       setRow(null);
+      setNotFound(false);
+      setLoadError(false);
+      setPartial(null);
+      setLoading(false);
+      return;
+    }
+    if (preloaded) {
+      setRow({ id: 'preloaded', term: preloaded.term, definition: preloaded.definition, plain_english: preloaded.plain_english });
       setNotFound(false);
       setLoadError(false);
       setPartial(null);
@@ -149,7 +162,8 @@ export function GlossaryTermPopup({
     return () => {
       cancelled = true;
     };
-  }, [termName]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [termName, preloaded?.term]);
 
   const body = (
     <Pressable

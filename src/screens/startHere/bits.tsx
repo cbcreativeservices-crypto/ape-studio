@@ -17,6 +17,7 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Modal } from '../../components/DimModal';
+import { starterGlossaryEntry } from '../../features/startHere/startHereGlossary';
 import { GlossaryTermPopup } from '../../features/glossary/GlossaryTermPopup';
 import { colors, fonts } from '../../theme/tokens';
 import { popupCard } from '../../theme/readingColumn';
@@ -66,7 +67,7 @@ export function TermSheet({ termId, onClose }: { termId: string | null; onClose:
             <Text style={styles.doneText}>DONE</Text>
           </Pressable>
         </Pressable>
-        {full ? <GlossaryTermPopup embedded termName={full} onClose={() => setFull(null)} /> : null}
+        {full ? <GlossaryTermPopup embedded termName={full} preloaded={starterGlossaryEntry(full)} onClose={() => setFull(null)} /> : null}
       </Pressable>
     </Modal>
   );
