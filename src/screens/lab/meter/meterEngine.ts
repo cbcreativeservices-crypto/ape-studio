@@ -127,6 +127,156 @@ export function renderSignal(key: SignalKey, n = 1024, seed = 1): number[] {
   return out;
 }
 
+/**
+ * REAL-TIME-BASE audio for the WAVEFORM displays (owner 2026-09-29: "the wiggly
+ * waveform lines … are incorrect and not how waveforms are drawn … DO NOT draw
+ * stylized audio like this ever again").
+ *
+ * `renderSignal` squeezes ~14 slow cycles across the whole strip, so a
+ * waveform built from it drew one or two fat wiggles per syllable — a cartoon
+ * worm, not audio. This renders ~1.5 s of audio at a real sample rate with real
+ * pitches (a voice at ~130 Hz with vowel formants, a plucked guitar, a 220 Hz
+ * tone…), so the per-column min/max drawing becomes what a DAW / editor
+ * overview actually shows: a dense envelope, symmetric about the centre line,
+ * with syllables, attacks, decays and silent gaps.
+ *
+ * Each signal is scaled so its PEAK equals `renderSignal`'s for the same key,
+ * so every level, gain and clip lesson reads the same numbers.
+ */
+export const OVERVIEW_SR = 11025;
+export const OVERVIEW_N = 16384; // ≈ 1.49 s at OVERVIEW_SR
+
+const legacyPeak = (key: SignalKey, seed: number) => {
+  const x = renderSignal(key, 2048, seed);
+  let m = 0;
+  for (const v of x) m = Math.max(m, Math.abs(v));
+  return m;
+};
+
+/** Periodic tone of a named shape at f Hz, sample time t (s). */
+function toneAt(shape: 'sine' | 'square' | 'triangle' | 'saw', f: number, t: number): number {
+  const ph = TAU * f * t;
+  if (shape === 'sine') return Math.sin(ph);
+  let s = 0;
+  if (shape === 'square') { for (let h = 1; h <= 15; h += 2) s += Math.sin(h * ph) / h; return s * (4 / Math.PI); }
+  if (shape === 'triangle') { for (let h = 1; h <= 15; h += 2) s += (Math.pow(-1, (h - 1) / 2) / (h * h)) * Math.sin(h * ph); return s * (8 / (Math.PI * Math.PI)); }
+  for (let h = 1; h <= 16; h++) s += Math.sin(h * ph) / h;
+  return s * (2 / Math.PI);
+}
+
+/** A voiced syllable sample: harmonics of f0 weighted by vowel formants. */
+function vowelAt(f0: number, formants: readonly number[], t: number): number {
+  let s = 0;
+  for (let k = 1; k <= 28; k++) {
+    const fk = k * f0;
+    if (fk > 4800) break;
+    let w = 0.12 / k;
+    for (const F of formants) w += Math.exp(-(((fk - F) / 170) ** 2));
+    s += w * Math.sin(TAU * fk * t + k * 0.7);
+  }
+  return s;
+}
+
+/** Steady signals look the same over any stretch of time, so they are drawn
+ *  over ~12 s: every pixel column then holds several whole cycles and the band
+ *  is even, as a DAW shows a sustained tone — never moiré stripes from a
+ *  column narrower than one cycle. */
+const STEADY: SignalKey[] = ['sine', 'square', 'triangle', 'saw', 'organ'];
+
+export function renderOverview(key: SignalKey, n = STEADY.includes(key) ? OVERVIEW_N * 8 : OVERVIEW_N, seed = 1): number[] {
+  const out = new Array<number>(n).fill(0);
+  const sr = OVERVIEW_SR;
+  const env = (t: number, a: number, r: number, len: number) =>
+    t < 0 || t > len ? 0 : Math.min(1, t / a) * Math.min(1, (len - t) / r);
+  for (let i = 0; i < n; i++) {
+    const t = i / sr;
+    let v = 0;
+    switch (key) {
+      case 'sine': case 'square': case 'triangle': case 'saw':
+        v = toneAt(key, 220, t);
+        break;
+      case 'whitenoise':
+        v = rnd(i, seed);
+        break;
+      case 'pinknoise':
+        v = (rnd(i, seed) + rnd(i >> 1, seed + 1) + rnd(i >> 2, seed + 2) + rnd(i >> 3, seed + 3)) * 0.5;
+        break;
+      case 'speech': {
+        // "Pro audio — start here." Syllables: [start s, length s, f0, formants, loud].
+        const syl: [number, number, number, number[], number][] = [
+          [0.04, 0.16, 132, [700, 1220, 2600], 1],
+          [0.22, 0.13, 124, [500, 1500, 2500], 0.8],
+          [0.42, 0.18, 138, [300, 2300, 3000], 0.9],
+          [0.64, 0.12, 128, [600, 1000, 2500], 0.7],
+          [0.9, 0.2, 140, [750, 1200, 2600], 1],
+          [1.14, 0.17, 118, [400, 2000, 2550], 0.75],
+        ];
+        for (const [s0, len, f0, fm, loud] of syl) {
+          const dt = t - s0;
+          if (dt >= 0 && dt <= len) {
+            // Pitch glides a little through each syllable, like a real voice.
+            const f = f0 * (1 + 0.06 * Math.sin((Math.PI * dt) / len));
+            v += loud * env(dt, 0.02, 0.05, len) * vowelAt(f, fm, dt);
+          }
+        }
+        // Fricatives ("s", "t", "h"): short bright noise bursts between vowels.
+        for (const [s0, len, amp] of [[0.37, 0.05, 0.25], [0.83, 0.07, 0.3], [1.36, 0.08, 0.22]] as const) {
+          const dt = t - s0;
+          if (dt >= 0 && dt <= len) v += amp * env(dt, 0.008, 0.02, len) * (rnd(i, seed + 11) - rnd(i - 1, seed + 11)) * 0.9;
+        }
+        v += 0.004 * rnd(i, seed + 3); // room noise floor in the gaps
+        break;
+      }
+      case 'guitar': {
+        for (const [s0, f0] of [[0.05, 110], [0.55, 146.8], [1.0, 164.8]] as const) {
+          const dt = t - s0;
+          if (dt < 0) continue;
+          const a = Math.min(1, dt / 0.003);
+          for (let k = 1; k <= 10; k++) v += (a / k) * Math.exp(-dt * (1.4 + 0.55 * k)) * Math.sin(TAU * k * f0 * dt + k);
+        }
+        break;
+      }
+      case 'kick': {
+        for (const s0 of [0.1, 0.85]) {
+          const dt = t - s0;
+          if (dt < 0) continue;
+          const f = 50 + 120 * Math.exp(-dt * 35);
+          v += Math.exp(-dt * 9) * Math.sin(TAU * f * dt);
+          if (dt < 0.003) v += (1 - dt / 0.003) * 0.8;
+        }
+        break;
+      }
+      case 'snare': {
+        for (const s0 of [0.3, 1.05]) {
+          const dt = t - s0;
+          if (dt < 0) continue;
+          v += Math.exp(-dt * 22) * (0.65 * rnd(i, seed + 4) + 0.45 * Math.sin(TAU * 190 * dt));
+        }
+        break;
+      }
+      case 'organ': {
+        for (const f of [130.8, 196, 261.6]) for (const h of [1, 2, 3, 4]) v += Math.sin(TAU * f * h * t + h) / (h * 1.4);
+        break;
+      }
+      case 'music': {
+        const beat = (t * 2) % 0.5; // 120 BPM eighths
+        v += 0.9 * Math.exp(-(t % 0.5) * 9) * Math.sin(TAU * (50 + 90 * Math.exp(-(t % 0.5) * 35)) * (t % 0.5));
+        v += 0.35 * Math.exp(-beat * 18) * rnd(i, seed + 9);
+        for (const f of [110, 164.8, 220]) v += 0.18 * Math.sin(TAU * f * t);
+        break;
+      }
+    }
+    out[i] = v;
+  }
+  // Match the legacy PEAK so every level / gain / clip lesson keeps its numbers.
+  let pk = 0;
+  for (const v of out) pk = Math.max(pk, Math.abs(v));
+  const target = legacyPeak(key, seed);
+  const k = pk > 0 ? target / pk : 0;
+  for (let i = 0; i < n; i++) out[i] = Math.max(-1.2, Math.min(1.2, out[i] * k));
+  return out;
+}
+
 // ── Meter math ───────────────────────────────────────────────────────────────
 
 export const peakOf = (x: number[]) => x.reduce((m, v) => Math.max(m, Math.abs(v)), 0);

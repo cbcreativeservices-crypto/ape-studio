@@ -264,7 +264,7 @@ function WelcomePage({ ctx: _ctx }: { ctx: PageCtx }) {
     <DocPage page={page}>
       {env.guest ? (
         <Text style={styles.guestNote}>
-          You’re browsing as a guest, so the app won’t remember your place if you leave. Sign in any time to keep it.
+          You’re not signed in, so the app won’t remember your place if you leave. Sign in any time to keep it.
         </Text>
       ) : null}
       <Card tint="rgba(255,198,77,.35)">

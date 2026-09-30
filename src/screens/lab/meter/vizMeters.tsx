@@ -42,6 +42,7 @@ import {
   dcOf,
   peakOf,
   renderSignal,
+  renderOverview,
   rmsOf,
   simulateLoudness,
   stereoPair,
@@ -50,6 +51,11 @@ import {
 import { fonts } from '../../../theme/tokens';
 import { LOUDNESS_STOPS, WAVE_LEVEL_STOPS } from '../../../features/tools/levelColor';
 import { useStageTextScale } from '../rack/stageAspect';
+
+/** LED ramp for the peak meter: top of the column (0 dBFS) = pos 0 = red,
+ *  bottom (−60 dBFS) = MIDI-0 blue — LOUDNESS_STOPS as-is. */
+const LED_COLS = LOUDNESS_STOPS.map((st) => st.color);
+const LED_POS = LOUDNESS_STOPS.map((st) => st.pos);
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 
 // House lab palette (visual standards §3).
@@ -300,11 +306,21 @@ export function WaveformView(p: {
   const yOf = (a: number) => h / 2 - (a / AMAX) * half;
 
   const S = useMemo(() => {
-    const n = 2048;
-    const raw = renderSignal(p.signal, n);
+    // DRAW real audio at a real time base (owner 2026-09-29: never stylized
+    // audio). Program material — and every signal in the beginner view — is
+    // ~1.5 s of audio at real pitches, so min/max per column reads as a DAW
+    // overview. A steady tone in the meter modules stays an oscilloscope view
+    // (a handful of true cycles), which is how a scope really shows a tone.
+    const TONES: SignalKey[] = ['sine', 'square', 'triangle', 'saw'];
+    const overview = p.plain || !TONES.includes(p.signal);
+    const raw = overview ? renderOverview(p.signal) : renderSignal(p.signal, 2048);
+    const n = raw.length;
     const sgn = inv ? -1 : 1;
     const x = raw.map((v) => sgn * v * gain + dc);
-    const stats = { pkDb: db(peakOf(x)), rmsDb: db(rmsOf(x)), crest: crestDb(x), dc: dcOf(x) };
+    // The readouts keep the meter engine's reference buffer so every lesson's
+    // PK / RMS / crest numbers are unchanged (peaks match by construction).
+    const ref = overview ? renderSignal(p.signal, 2048).map((v) => sgn * v * gain + dc) : x;
+    const stats = { pkDb: db(peakOf(ref)), rmsDb: db(rmsOf(ref)), crest: crestDb(ref), dc: dcOf(ref) };
     // Per-column min/max at DEVICE-PIXEL density (owner: hero resolution).
     const cols = Math.max(96, Math.min(Math.round(w * DPR), n));
     const colW = w / cols;
@@ -723,17 +739,31 @@ export function PeakMeterView(p: {
         <Path path={G.well} color={withAlpha(RED, 0.22)} opacity={overO} />
         <Path path={G.well} color="#000000" style="stroke" strokeWidth={1.6 * ts} opacity={0.8} />
         <Path path={G.well} color="#3d4049" style="stroke" strokeWidth={0.8 * ts} opacity={0.5} />
-        {/* Unlit LED stacks — the meter face at rest. */}
-        <Path path={G.unlit[0]} color="#122419" opacity={0.95} />
-        <Path path={G.unlit[1]} color="#2a2312" opacity={0.95} />
-        <Path path={G.unlit[2]} color="#2b1412" opacity={0.95} />
+        {/* LED colours = the house LOUDNESS standard (levelColor.ts), pinned
+            to the ABSOLUTE scale: every LED's colour is fixed by the dB it
+            stands for — −60 dBFS MIDI-0 blue, the wide green healthy band,
+            then yellow, orange, red at 0 dBFS (owner 2026-09-29: the old
+            fixed green/amber/red blocks broke the standard). Unlit LEDs show
+            the same ramp, dark. */}
+        {[0, 1, 2].map((z) => (
+          <Path key={`u${z}`} path={G.unlit[z as 0 | 1 | 2]} opacity={0.2}>
+            <LinearGradient start={vec(0, barTop)} end={vec(0, barBot)} colors={LED_COLS} positions={LED_POS} />
+          </Path>
+        ))}
         {/* Lit stacks (per-frame). */}
-        <Path path={litGreen} color="#43e97b" />
-        <Path path={litAmber} color={AMBER} />
-        <Path path={litRed} color="#ff5f4e" opacity={0.6}>
+        <Path path={litGreen}>
+          <LinearGradient start={vec(0, barTop)} end={vec(0, barBot)} colors={LED_COLS} positions={LED_POS} />
+        </Path>
+        <Path path={litAmber}>
+          <LinearGradient start={vec(0, barTop)} end={vec(0, barBot)} colors={LED_COLS} positions={LED_POS} />
+        </Path>
+        <Path path={litRed} opacity={0.6}>
+          <LinearGradient start={vec(0, barTop)} end={vec(0, barBot)} colors={LED_COLS} positions={LED_POS} />
           <BlurMask blur={4 * ts} style="normal" />
         </Path>
-        <Path path={litRed} color="#ff5f4e" />
+        <Path path={litRed}>
+          <LinearGradient start={vec(0, barTop)} end={vec(0, barBot)} colors={LED_COLS} positions={LED_POS} />
+        </Path>
         {/* Floating peak-hold caps. */}
         <Path path={caps} color="#f2f5fa" />
         <Path path={G.ticks} color="#565a64" style="stroke" strokeWidth={ts} />

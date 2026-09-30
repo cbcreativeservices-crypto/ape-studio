@@ -92,8 +92,8 @@ export function endLead(
   const onlyCheck = unitsLeft === 0 && checkLeft;
   if (guest) {
     return w.complete
-      ? `You have been through every ${noun}. You are browsing as a guest, so none of this is saved — sign in to keep your progress.`
-      : `${onlyCheck ? 'Only the check is left' : `${what} still to go`}. You are browsing as a guest, so nothing here is saved — sign in to keep your progress.`;
+      ? `You have been through every ${noun}. You are not signed in, so none of this is saved — sign in to keep your progress.`
+      : `${onlyCheck ? 'Only the check is left' : `${what} still to go`}. You are not signed in, so nothing here is saved — sign in to keep your progress.`;
   }
   if (w.complete) {
     return mode === 'credit'

@@ -182,7 +182,7 @@ export function PaywallScreen({ navigation }: Props) {
         'Create an account first',
         // ⚠️ "your progress comes with you" was false — see the note on the
         // Dashboard guest notice; signing in resets the local stores.
-        'Membership is attached to your account, so you need one before you can buy. Creating it takes a moment; work done as a guest stays on this device and does not transfer.',
+        'Membership is attached to your account, so you need one before you can buy. Creating it takes a moment; work done without an account stays on this device and does not transfer.',
         'Create account',
         () => (navigation as any).navigate('Auth'),
         { cancelText: 'Not now' },
