@@ -214,6 +214,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-30 08:46 · ccode · 5cec591a
+changed: Native (next build): stop tones on headphone/BT unplug; iPad mic-stop crash guard
+affects other side: nothing (native module change; ships in the next EAS build)
+needs: nothing
+
+
 ### 2026-09-30 08:27 · ccode · 23c5adca
 changed: Tile panels get the Audio Tools aged-metal texture (calculators + lab menus)
 affects other side: nothing
