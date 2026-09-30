@@ -410,6 +410,9 @@ const WS_PITCH: Workspace = {
       compute: (v) => {
         const f1 = n(v.f);
         const f2 = n(v.f2);
+        // A 0 Hz tone has no pitch (bug pass 3, 2026-09-30): f₂ = 0 printed a
+        // confident RATIO 0 × beside "≈ — (— semitones down)".
+        if (!(f1 > 0) || !(f2 > 0)) throw new Error('frequencies must be greater than zero');
         const st = 12 * Math.log2(f2 / f1);
         return [
           { label: 'RATIO', value: f2 / f1, quantity: 'ratio' },
@@ -719,6 +722,10 @@ const WS_ROOMMODES: Workspace = {
           ['W', n(v.wid)],
           ['H', n(v.hei)],
         ];
+        // Text-only rows escape the NaN-only rule (bug pass 3, 2026-09-30): a
+        // 0 m dimension (or a sub-absolute-zero temperature) printed "— Hz"
+        // fundamentals — and cost a capped account a weekly calculation.
+        if (!Number.isFinite(c) || dims.some(([, L]) => !(L > 0))) throw new Error('dimensions must be greater than zero');
         const out: { label: string; text: string }[] = [
           { label: 'LENGTH FUNDAMENTAL (1,0,0)', text: `${fmt(c / (2 * n(v.len)))} Hz` },
           { label: 'WIDTH FUNDAMENTAL (0,1,0)', text: `${fmt(c / (2 * n(v.wid)))} Hz` },
@@ -1064,6 +1071,11 @@ const WS_TREATMENT: Workspace = {
       keySymbols: ['Δ', '·', '/', '−', 'α'],
       compute: (v) => {
         const V = n(v.vol);
+        // A 0 s RT60 (current or target) is not a room (bug pass 3,
+        // 2026-09-30): current 0 printed "0 PANELS · PREDICTED RT60 0 s" and
+        // target 0 a "PREDICTED RT60 WITH — PANELS" of 0 s. Throw → the
+        // standard "check for zeros" state.
+        if (!(n(v.rtCur) > 0) || !(n(v.rtTgt) > 0)) throw new Error('RT60 must be greater than zero');
         const aCur = (SABINE_K * V) / n(v.rtCur);
         const aTgt = (SABINE_K * V) / n(v.rtTgt);
         const dA = aTgt - aCur;

@@ -21,6 +21,7 @@
  */
 import { supabase } from '../../lib/supabase';
 import { safeSession } from '../../lib/getSessionSafe';
+import { withDeadline } from '../../lib/boundedCall';
 import { isRealAccount } from './realAccount';
 
 export type RedeemStatus =
@@ -86,7 +87,16 @@ export async function redeemAccessCode(code: string): Promise<RedeemResult> {
   if (!isRealAccount(sess.session)) return result('not_authenticated');
 
   try {
-    const { data, error } = await supabase.rpc('redeem_access_code', { p_code: trimmed });
+    // BOUNDED (bug pass 3, 2026-09-30): a stalled RPC left Settings' REDEEM
+    // spinning with no Cancel (iOS has no BACK) and Create Account on its
+    // spinner after the account already existed. A stall is NOT 'unavailable'
+    // — that copy promises the code was not used, and after a timeout we do
+    // not know — so it answers 'error' ("try again"; a used code then reads
+    // "already active").
+    const { data, error } = await withDeadline(
+      async () => await supabase.rpc('redeem_access_code', { p_code: trimmed }),
+      'redeem_access_code',
+    );
     if (error) {
       // PGRST202 (function missing) = migration not run yet → fail open.
       console.warn('[access-code] redeem_access_code error:', error.message);
@@ -101,7 +111,8 @@ export async function redeemAccessCode(code: string): Promise<RedeemResult> {
       message: payload.message || undefined,
     });
   } catch (e) {
-    console.warn('[access-code] redeem threw:', (e as Error).message);
-    return result('unavailable');
+    const message = (e as Error)?.message ?? '';
+    console.warn('[access-code] redeem threw:', message);
+    return result(/redeem_access_code timeout/.test(message) ? 'error' : 'unavailable');
   }
 }

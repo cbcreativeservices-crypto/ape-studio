@@ -17,6 +17,7 @@ import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { AMP_MODULES } from '../../../features/amp/ampContent';
 import { loadAmpProgress, resetAmpProgress, setAmpSaveBlocked, type AmpProgressState } from '../../../features/amp/ampProgress';
 import { useLabEndGuest } from '../kit/LabEndScreen';
+import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { BUILT_MODULE_IDS } from './modules';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
@@ -31,7 +32,12 @@ export function AmpLabHomeScreen() {
   // progress is neither restored nor written (see ampProgress).
   setAmpSaveBlocked(useLabEndGuest());
 
+  // ⛔ WAIT FOR `resolved` (bug pass 3, 2026-09-30; the kit/PagedLab fix):
+  // before the tier is known the save-block flag reads false, so a signed-out
+  // device's first read restored the previous account's modules.
+  const { resolved } = useEntitlement();
   const reload = useCallback(() => {
+    if (!resolved) return;
     let alive = true;
     void loadAmpProgress().then((s) => {
       if (alive) setProgress(s);
@@ -39,7 +45,7 @@ export function AmpLabHomeScreen() {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [resolved]);
   useFocusEffect(reload);
 
   const built = AMP_MODULES.filter((m) => BUILT_MODULE_IDS.includes(m.id));

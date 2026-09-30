@@ -10,6 +10,7 @@ import { supabase } from '../../lib/supabase';
 import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../commercial/realAccount';
 import { markIntentionalSignOut } from './intentionalSignOut';
+import { softDeadline } from '../../lib/boundedCall';
 
 // The pure helpers live in authErrorCopy.ts so they can be unit-tested without
 // standing up the Supabase client. Re-exported here so every existing call site
@@ -127,6 +128,42 @@ export async function ensureSession(email: string, password: string): Promise<st
   // Surface the SIGN-IN failure (the operative one — e.g. wrong password), mapped
   // to offline copy when it's a network error, rather than the stale signUp error.
   return friendlyAuthError(signIn.error);
+}
+
+/**
+ * Sign THIS DEVICE out even when the server cannot be reached (bug pass 3,
+ * 2026-09-30) — for the two cases where the server has ALREADY decided this
+ * device is out: the account was deleted, or another device took it over.
+ *
+ * supabase-js revokes on the server first and, when that request fails
+ * (offline, a stall), returns { error } and KEEPS the local session. Ignored,
+ * the app wiped the device, reset to Splash, found the session still there and
+ * walked straight back in — a deleted account still signed in; a displaced
+ * device re-displaced and re-wiped every poll. So: local scope, one retry, then
+ * the local half of signOut() done directly (the stored session removed and
+ * SIGNED_OUT emitted, exactly what signOut() does once its server call answers).
+ *
+ * NOT for an ordinary Log out, which deliberately refuses offline and says so.
+ * Never rejects. The caller marks the sign-out intentional first.
+ */
+export async function signOutThisDevice(): Promise<void> {
+  const attempt = () =>
+    softDeadline<unknown>(
+      async () => (await supabase.auth.signOut({ scope: 'local' })).error ?? null,
+      new Error('signOut failed'),
+      'signOut',
+      8000,
+    );
+  let error = await attempt();
+  if (error) {
+    markIntentionalSignOut(); // the 8 s marker may have lapsed during the first try
+    error = await attempt();
+  }
+  if (error) {
+    markIntentionalSignOut();
+    const auth = supabase.auth as unknown as { _removeSession?: () => Promise<void> };
+    await softDeadline(async () => await auth._removeSession?.(), undefined, 'removeSession', 5000);
+  }
 }
 
 export async function signIn(email: string, password: string): Promise<string | null> {

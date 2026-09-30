@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
 import { colors, fonts } from '../../../theme/tokens';
-import { confirmDialog, notify } from '../../../lib/confirm';
+import { afterDialogCloses, confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { QUANTITIES, fmt, parseQuantity, type QuantityKind } from './calcUnits';
@@ -121,7 +121,7 @@ export function CalcProjectsScreen() {
         'Project limit reached',
         `Your account keeps up to ${limits.savedProjects} projects. Academy membership removes the limit.`,
         'See membership',
-        () => (navigation as any).navigate('Paywall'),
+        afterDialogCloses(() => (navigation as any).navigate('Paywall')),
         { cancelText: 'Not now' },
       );
     }

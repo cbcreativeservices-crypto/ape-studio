@@ -18,6 +18,7 @@ import { AMP_MODULE_COMPONENTS, BUILT_MODULE_IDS } from './modules';
 import { CheckCard, SectionTitle, TakeawayCard } from './kit';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { LabEndLink, LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
+import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 // Tablet (owner 2026-09-29): a reading surface - capped at the reading column
 // and centred instead of running 990 pt wide. No-op on a phone.
 import { readingColumn } from '../../../theme/readingColumn';
@@ -39,7 +40,12 @@ export function AmpModuleScreen() {
   // learner items they had just answered in the final.
   const checks = mod.id === 'apply' ? [] : checksForModule(mod.id);
 
+  // ⛔ WAIT FOR `resolved` (bug pass 3, 2026-09-30; the kit/PagedLab fix):
+  // before the tier is known the save-block flag reads false, so a signed-out
+  // device restored the previous account's checks — and wrote `visited`.
+  const { resolved } = useEntitlement();
   useEffect(() => {
+    if (!resolved) return;
     let alive = true;
     void updateAmpProgress((s) => {
       const m = s.modules[mod.id] ?? emptyAmpModule();
@@ -55,7 +61,7 @@ export function AmpModuleScreen() {
     return () => {
       alive = false;
     };
-  }, [mod.id]);
+  }, [mod.id, resolved]);
 
   const onCheck = useCallback(
     (id: string, correct: boolean) => {

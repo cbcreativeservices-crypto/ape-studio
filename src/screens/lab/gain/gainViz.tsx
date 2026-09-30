@@ -107,8 +107,11 @@ export function StageMeterV({ node, height = VM_H }: { node: ChainNode; height?:
       ) : node.distorted ? (
         <Text style={styles.distBadge}>DIST</Text>
       ) : (
-        // 64 wide, centred under the 34-pt meter: at 9 pt "OVERLOAD" /
-        // "QUIET SOURCE" no longer break mid-word in the narrow wrap.
+        // 44 wide, centred under the 34-pt meter: at 9 pt "OVERLOAD" (~38 pt)
+        // no longer breaks mid-word; "QUIET SOURCE" wraps at the space as it
+        // always did. Bug pass 3: pass 2's 64 let QUIET SOURCE run ~52 pt on
+        // one line, into the PREAMP column's label on a 7-column X-Ray chain
+        // at 360 wide (column pitch ~45 pt).
         <Text style={[styles.vRegion, styles.vRegionUnder, { color: col }]}>{regionLabelFor(node)}</Text>
       )}
     </View>
@@ -632,7 +635,7 @@ const styles = StyleSheet.create({
   // ≥ 9 pt on a phone (bug pass 2 2026-09-30 — vRegion / fixedTagText /
   // slotUnder were 8.5, slotLedLabel 8).
   vRegion: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.4 },
-  vRegionUnder: { width: 64, textAlign: 'center' },
+  vRegionUnder: { width: 44, textAlign: 'center' },
   clipBadge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 0.8, color: '#fff', backgroundColor: '#c62f22', borderRadius: 3, paddingHorizontal: 4, paddingVertical: 1, overflow: 'hidden' },
   distBadge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.5, color: '#ff7a1e' },
 

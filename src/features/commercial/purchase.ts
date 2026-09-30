@@ -16,6 +16,7 @@
  * crashes, and nothing is fake-granted. Rebuild the dev/preview app to enable IAP.
  */
 import { supabase } from '../../lib/supabase';
+import { withDeadline } from '../../lib/boundedCall';
 import { optionalModule } from '../tools/capture/optionalModule';
 import {
   INAPP_SKUS,
@@ -94,14 +95,26 @@ type ValidationResult = { ok: true } | { ok: false; reason: string | null };
 
 async function validateWithServer(p: IapPurchase): Promise<ValidationResult> {
   try {
-    const { data, error } = await supabase.functions.invoke('validate-purchase', {
-      body: {
-        platform: p.platform ?? null,
-        productId: p.productId ?? null,
-        purchaseToken: p.purchaseToken ?? null,
-        transactionId: p.transactionId ?? null,
-      },
-    });
+    // BOUNDED (bug pass 3, 2026-09-30). The connection dropping mid-purchase
+    // is the ordinary case for this call — the store sheet has just taken the
+    // phone away from the app — and a socket that stops answering never
+    // settled: the buyer, already charged, watched CONTINUE's spinner forever.
+    // A stall now reads as the failed verification it is ("If you were
+    // charged, use Restore Purchases"); the transaction stays unfinished, so
+    // the store re-delivers it and it validates then.
+    const { data, error } = await withDeadline(
+      () =>
+        supabase.functions.invoke('validate-purchase', {
+          body: {
+            platform: p.platform ?? null,
+            productId: p.productId ?? null,
+            purchaseToken: p.purchaseToken ?? null,
+            transactionId: p.transactionId ?? null,
+          },
+        }),
+      'validate-purchase',
+      30000,
+    );
     if (error) {
       console.warn('[iap] validate-purchase failed:', error.message);
       return { ok: false, reason: null };
@@ -324,8 +337,12 @@ export async function buyPlan(planId: PlanId): Promise<void> {
  *  - 'none'        the store answered and holds no academy purchase — genuine empty
  *  - 'error'       the store or the validation call failed — retryable, NOT "none"
  *  - 'unavailable' IAP native module missing in this build (needs a rebuild)
+ *  - 'linked'      verified, but already linked to ANOTHER account (not an error to retry)
  */
-export type RestoreResult = 'restored' | 'none' | 'error' | 'unavailable';
+export type RestoreResult = 'restored' | 'none' | 'error' | 'unavailable' | 'linked';
+
+/** The linked-receipt copy, for the Paywall's restore result. */
+export const LINKED_MESSAGE = purchaseErrorMessage('receipt_already_linked');
 
 /**
  * Restore previous purchases (App Store requirement). Re-validates each held
@@ -341,9 +358,15 @@ export async function restorePurchases(): Promise<RestoreResult> {
     // An academy purchase WAS found but validation failed (offline, edge
     // function down) — that is an error to retry, never "nothing to restore".
     let validationFailed = false;
+    // Every failure was the server saying "verified, but it belongs to another
+    // account" (bug pass 3, 2026-09-30). That is not a connection problem, and
+    // "check your connection and try again" sent the person round in circles.
+    let linkedOnly = true;
     for (const p of purchases) {
       if (!p.productId || !planIdForSku(p.productId)) continue;
-      if ((await validateWithServer(p)).ok) {
+      const v = await validateWithServer(p);
+      if (!v.ok && v.reason !== 'receipt_already_linked') linkedOnly = false;
+      if (v.ok) {
         restored = true;
         try {
           await iap.finishTransaction({ purchase: p, isConsumable: false });
@@ -355,6 +378,7 @@ export async function restorePurchases(): Promise<RestoreResult> {
       }
     }
     if (restored) return 'restored';
+    if (validationFailed && linkedOnly) return 'linked';
     return validationFailed ? 'error' : 'none';
   } catch (e) {
     console.warn('[iap] restore failed:', (e as Error).message);

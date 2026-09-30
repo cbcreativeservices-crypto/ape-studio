@@ -38,8 +38,10 @@ test('the boot cache never overwrites a server answer or outlives a sign-out', (
 });
 
 test('single-device sign-outs are LOCAL — never the default global revoke', () => {
-  assert.match(guard, /supabase\.auth\.signOut\(\{ scope: 'local' \}\)/);
+  // Pass 3: via signOutThisDevice (local scope + a forced local removal offline).
+  assert.match(guard, /await signOutThisDevice\(\);/);
   assert.doesNotMatch(guard, /supabase\.auth\.signOut\(\)/);
+  assert.match(read('src/features/auth/api.ts'), /supabase\.auth\.signOut\(\{ scope: 'local' \}\)/);
   const cancel = auth.slice(auth.indexOf('onCancel: () => {'), auth.indexOf('onCancel: () => {') + 500);
   assert.match(cancel, /supabase\.auth\.signOut\(\{ scope: 'local' \}\)/);
 });

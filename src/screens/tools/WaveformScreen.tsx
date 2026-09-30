@@ -279,7 +279,16 @@ export function WaveformScreen({ navigation }: Props) {
     setHasClipped(false);
   }, [meter]);
 
+  // Whose freeze is on screen (toddler pass 3 2026-09-30): onStart releases
+  // only the one STOP pinned. It used to clear ANY freeze, so a trace the user
+  // FROZE to study vanished on every auto-resume — back from VIEW SAVED
+  // MEASUREMENTS, or back to the app after Home released the mic — against the
+  // rule written in onStart itself.
+  const frozenRef = useRef(frozen);
+  frozenRef.current = frozen;
+  const stopFrozeRef = useRef(false);
   const toggleFreeze = useCallback(() => {
+    stopFrozeRef.current = false; // freezing or unfreezing by hand makes it the user's
     setFrozen((f) => (f ? null : liveBuckets));
   }, [liveBuckets]);
 
@@ -294,7 +303,10 @@ export function WaveformScreen({ navigation }: Props) {
     // trace on screen labelled LIVE, with the mic released: the picture was
     // the owner's intent, the label was a lie. Pinning it to the buckets we
     // actually have honours the ruling AND makes the badge true.
-    setFrozen((f) => f ?? liveBuckets);
+    if (frozenRef.current == null) {
+      stopFrozeRef.current = true;
+      setFrozen(liveBuckets);
+    }
     setMicPaused(true);
     stop();
   }, [stop, liveBuckets]);
@@ -308,7 +320,10 @@ export function WaveformScreen({ navigation }: Props) {
     setHasClipped(false); // fresh capture = fresh clip latch
     // Release the STOP freeze so the viewer goes live again. (A freeze the user
     // set deliberately with the FREEZE control is theirs to clear.)
-    setFrozen(null);
+    if (stopFrozeRef.current) {
+      stopFrozeRef.current = false;
+      setFrozen(null);
+    }
     void start();
   }, [start]);
   // Clear the paused flag ONLY when truly running (never during 'starting').

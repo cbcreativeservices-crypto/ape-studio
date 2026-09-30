@@ -27,6 +27,7 @@ import {
   OFFLINE_AVAILABLE,
   alignDefinitionTier,
   corpusStats,
+  getMeta,
   idsMissingDefinitions,
   saveDefinitions,
   saveTerms,
@@ -85,8 +86,14 @@ export async function prefetchGlossary(table: CorpusTable = 'glossary_browse_v')
     await alignDefinitionTier(table, 'member');
 
     // The term list first — it is what makes the glossary OPEN offline at all.
+    // ⛔ "Some terms" is not "the term list" (bug hunt 2026-09-30, pass 3). A
+    // term save killed midway (backgrounded and reclaimed, a crash) leaves
+    // rows but no completeness marker — loadTerms then reads the store as
+    // EMPTY, so the glossary does not open offline at all — and `!stats.terms`
+    // skipped the re-save for good. The marker must match the rows.
     const stats = await corpusStats(table);
-    if (!stats.terms) {
+    const complete = Number(await getMeta(`terms_complete:${table}`));
+    if (!stats.terms || complete !== stats.terms) {
       const terms = await fetchCorpusTerms(table);
       if (cancelled()) return;
       await saveTerms(table, terms);

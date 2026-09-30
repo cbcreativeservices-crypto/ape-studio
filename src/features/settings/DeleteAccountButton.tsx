@@ -9,8 +9,9 @@ import { useEffect, useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { confirmDialog, notify } from '../../lib/confirm';
 import { supabase } from '../../lib/supabase';
-import { softDeadline, withDeadline } from '../../lib/boundedCall';
+import { withDeadline } from '../../lib/boundedCall';
 import { markIntentionalSignOut } from '../auth/intentionalSignOut';
+import { signOutThisDevice } from '../auth/api';
 import { clearLocalAccountData, resetAllLocalStores } from '../account/clearLocalAccountData';
 import { colors, fonts } from '../../theme/tokens';
 
@@ -109,7 +110,15 @@ export function DeleteAccountButton({ onDeleted }: { onDeleted: () => void }) {
        * leave a deleted account's data on the device, still apparently signed
        * in. Proceeding is the safe direction: the wipe must happen either way.
        */
-      await softDeadline(async () => await supabase.auth.signOut(), undefined, 'signOut', 8000);
+      /**
+       * ⛔ THE SIGN-OUT RESULT IS NOT IGNORED (bug pass 3, 2026-09-30). supabase-js
+       * revokes on the server first and, when that request fails (offline, a
+       * stall), RETURNS { error } and KEEPS the local session — so the app went
+       * to Splash still signed in as an account that no longer exists.
+       * signOutThisDevice: local scope, a retry, then the local session removed
+       * regardless — the server has already erased the account.
+       */
+      await signOutThisDevice();
       // Backend is gone; now wipe the device-local user data + reset the
       // in-memory store caches so no stale academic state survives to the next
       // account (user bug 2026-07-26). No JS reload available (expo-updates not

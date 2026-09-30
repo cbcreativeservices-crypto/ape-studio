@@ -984,13 +984,18 @@ export function MicSelectLabScreen() {
   noAccountRef.current = resolved && entitlement === 'anonymous';
   const navigatedRef = useRef(false);
 
+  // ⛔ WAIT FOR `resolved` (bug pass 3, 2026-09-30; the kit/PagedLab fix):
+  // a read that landed before the tier was known saw noAccountRef false, so a
+  // signed-out device restored the previous account's lesson. `resolved`
+  // flips once, bounded — a signed-in learner is not held.
   useEffect(() => {
+    if (!resolved) return;
     void AsyncStorage.getItem(STEP_KEY).then((v) => {
       if (navigatedRef.current || noAccountRef.current) return;
       const n = v == null ? NaN : Number(v);
       if (Number.isInteger(n) && n > 0 && n < STEPS.length) setStep(n);
     }).catch(() => {});
-  }, []);
+  }, [resolved]);
 
   // Bug hunt 2026-09-29: a double tap on NEXT at the second-to-last lesson
   // landed its second tap on DONE ✓ and left the lab. DONE ignores taps

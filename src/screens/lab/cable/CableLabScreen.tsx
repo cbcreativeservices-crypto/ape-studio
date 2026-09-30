@@ -74,7 +74,12 @@ export function CableLabScreen() {
   const lastNavAtRef = useRef(0);
   const leavingRef = useRef(false);
 
+  // ⛔ WAIT FOR `resolved` (bug pass 3, 2026-09-30; the kit/PagedLab fix):
+  // a read that landed before the tier was known saw noAccountRef false, so a
+  // signed-out device restored the previous account's lesson. `resolved`
+  // flips once, bounded — a signed-in learner is not held.
   useEffect(() => {
+    if (!resolved) return;
     void AsyncStorage.getItem(STEP_KEY).then((v) => {
       if (navigatedRef.current || noAccountRef.current) return;
       const n = v == null ? NaN : Number(v);
@@ -83,7 +88,8 @@ export function CableLabScreen() {
         markVisited(n);
       }
     }).catch(() => {});
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resolved]);
 
   const goTo = useCallback((n: number) => {
     navigatedRef.current = true;

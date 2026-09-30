@@ -19,6 +19,7 @@ import { navigationRef } from '../../navigation/navigationRef';
 import { clearLocalAccountData, resetAllLocalStores } from './clearLocalAccountData';
 import { isDisplaced } from './singleDevice';
 import { markIntentionalSignOut } from '../auth/intentionalSignOut';
+import { signOutThisDevice } from '../auth/api';
 
 /** Foreground displacement-poll interval — now just a BACKSTOP to the realtime
  *  subscription (which carries the instant case), so it runs slowly to reduce RPC
@@ -60,7 +61,12 @@ export function SingleDeviceGuard() {
         // the displaced device revoked the NEW device's refresh token too, and
         // the device the person had just chosen to continue on was bounced to
         // the login screen at its next token refresh (within the hour).
-        await supabase.auth.signOut({ scope: 'local' }).catch(() => {});
+        // signOutThisDevice (bug pass 3, 2026-09-30): `.catch` never saw a
+        // failure — supabase-js RESOLVES { error } offline and keeps the
+        // session, so the wipe + Splash below found it still there, walked back
+        // in, and the next poll displaced and wiped the device again. The
+        // server has already moved the account on; this device goes regardless.
+        await signOutThisDevice();
         await clearLocalAccountData();
         resetAllLocalStores();
         // Drop any confirm left open on the old screen — it would otherwise

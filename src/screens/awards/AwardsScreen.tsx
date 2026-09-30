@@ -49,6 +49,8 @@ import { CredentialDetailModal, type CredentialDetail } from './CredentialDetail
 import type { RootStackParamList } from '../../navigation/types';
 import { CERTIFICATE_REQUIRES_EXAM } from '../../features/finalExam/tenure';
 import { readingColumn } from '../../theme/readingColumn';
+import { animationsAllowed } from '../../features/settings/a11y';
+import { useOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
 
 const SPEC_CERT_KEY = 'ape:specCert'; // chosen Specialization Certificate name (Level 1)
 const PROGRAM_PATH_KEY = 'ape:programPath'; // chosen program path name (Level 2)
@@ -276,14 +278,21 @@ const SWEEP_BAND = 46;
 function BackSweep({ label, tint }: { label: string; tint: string }) {
   const [w, setW] = useState(0);
   const x = useSharedValue(0);
+  // ⛔ MOTION GATES (bug pass 3 2026-09-30): the sweep ran under reduced motion
+  // AND in Low-Light Production Mode, where nothing may draw attention to
+  // itself unbidden — the same gates AttractCue and LabScopeSweep keep.
+  const suppressed = useOverlaysSuppressed();
   useEffect(() => {
-    if (w <= 0) return;
+    if (w <= 0 || suppressed || !animationsAllowed()) {
+      x.value = 0; // parked off the left edge (hidden), never frozen mid-sweep
+      return;
+    }
     let alive = true;
     const run = () => { if (!alive) return; x.value = 0; x.value = withTiming(1, { duration: SWEEP_MS, easing: Easing.inOut(Easing.cubic) }); };
     const first = setTimeout(run, 1200);
     const iv = setInterval(run, SWEEP_EVERY_MS);
     return () => { alive = false; clearTimeout(first); clearInterval(iv); cancelAnimation(x); };
-  }, [w, x]);
+  }, [w, x, suppressed]);
   const winStyle = useAnimatedStyle(() => ({ transform: [{ translateX: -SWEEP_BAND + x.value * (w + SWEEP_BAND) }] }));
   const innerStyle = useAnimatedStyle(() => ({ transform: [{ translateX: SWEEP_BAND - x.value * (w + SWEEP_BAND) }] }));
   return (

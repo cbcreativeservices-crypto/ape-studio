@@ -30,12 +30,12 @@ import { colors, fonts } from '../../theme/tokens';
 import { useAudioOutputGate } from './AudioOutputGate';
 import {
   IDLE_MS,
-  disableAudioOutput,
   enableAudioOutput,
   noteAudioActivity,
   useAudioOutputEnabled,
 } from './audioOutputStore';
 import { isAcknowledged } from './soundSafetyAck';
+import { panicMuteAudio } from './panicMute';
 
 // Idle auto-mute window in minutes, derived from the store constant so this hint
 // can never drift from the real timer (matches AudioOutputGate.tsx's copy).
@@ -52,7 +52,11 @@ export function AudioOutputRow() {
   if (on) {
     return (
       <Pressable
-        onPress={disableAudioOutput}
+        // panicMuteAudio, not disableAudioOutput (bug pass 3, 2026-09-30):
+        // the gate's red card promises this row mutes IMMEDIATELY, but the
+        // flag alone left a native tone (generator / binaural / modular) or
+        // speech sounding in any screen not listening for the gate.
+        onPress={() => panicMuteAudio()}
         accessibilityRole="switch"
         accessibilityState={{ checked: true }}
         aria-checked={true}

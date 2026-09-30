@@ -288,6 +288,13 @@ export function RackUnit({
   // first and runs once its dismissal has finished. Inline it runs at once.
   const fullRef = useRef(false);
   fullRef.current = full;
+  // The pending present, cleared on unmount (bug pass 3, 2026-09-30): a
+  // long-press ⓘ in full screen followed at once by NEXT / back fired this
+  // rack's lesson 350 ms later over the next module (or a screen already gone).
+  const leaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (leaveTimer.current) clearTimeout(leaveTimer.current);
+  }, []);
   const leaveFullThen = useCallback((fn: () => void) => {
     if (!fullRef.current) {
       fn();
@@ -295,7 +302,11 @@ export function RackUnit({
     }
     setFull(false);
     // The Modal fades out (~250 ms); present only after it is gone.
-    setTimeout(fn, FULL_DISMISS_MS);
+    if (leaveTimer.current) clearTimeout(leaveTimer.current);
+    leaveTimer.current = setTimeout(() => {
+      leaveTimer.current = null;
+      fn();
+    }, FULL_DISMISS_MS);
   }, []);
   const help = useMemo(
     () => (onHelp ? (helpKey?: string) => leaveFullThen(() => onHelp(helpKey)) : undefined),

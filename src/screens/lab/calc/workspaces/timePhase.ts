@@ -850,6 +850,9 @@ const WS_FFT: Workspace = {
       compute: (v) => {
         const N = n(v.N);
         const sr = n(v.sr);
+        // A 0-point FFT / 0 Hz rate is no transform (bug pass 3, 2026-09-30):
+        // it printed a confident "WINDOW DURATION 0 ms" beside a "—" bin.
+        if (!(N > 0) || !(sr > 0)) throw new Error('FFT size and sample rate must be greater than zero');
         return [
           { label: 'BIN SPACING', value: sr / N, quantity: 'frequency' },
           { label: 'WINDOW DURATION', value: N / sr, quantity: 'time', unit: 'ms' },
@@ -879,6 +882,9 @@ const WS_FFT: Workspace = {
       compute: (v) => {
         const sr = n(v.sr);
         const df = n(v.df);
+        // Δf = 0 asked for an infinite FFT (bug pass 3, 2026-09-30): the rows
+        // read "— points" beside a confident "ACTUAL RESOLUTION 0 Hz".
+        if (!(df > 0) || !(sr > 0)) throw new Error('resolution and sample rate must be greater than zero');
         const N = sr / df;
         const pow2 = Math.pow(2, Math.ceil(Math.log2(Math.max(1, N))));
         return [
@@ -914,6 +920,8 @@ const WS_FFT: Workspace = {
       compute: (v) => {
         const N = n(v.N);
         const sr = n(v.sr);
+        // Same guard as resFromSize (bug pass 3): "With 0 points … — Hz apart".
+        if (!(N > 0) || !(sr > 0)) throw new Error('FFT size and sample rate must be greater than zero');
         const df = sr / N;
         const T = N / sr;
         return [

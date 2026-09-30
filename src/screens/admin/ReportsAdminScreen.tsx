@@ -53,7 +53,11 @@ export function ReportsAdminScreen() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
-  const [thread, setThread] = useState<{ id: string; msgs: ReportMessage[] | null } | null>(null);
+  // `failed` (bug hunt 2026-09-30, pass 3): fetchReportMessages answers null on
+  // a refusal or a dropped connection, and null is also "still loading" — so a
+  // failed read said "Loading the conversation…" for good, with the READ link
+  // already swapped out and no way to ask again.
+  const [thread, setThread] = useState<{ id: string; msgs: ReportMessage[] | null; failed?: boolean } | null>(null);
 
   // Only the latest read may land (bug hunt 2026-09-30): OPEN → ALL → OPEN
   // faster than the queue answered let the ALL list arrive last and sit under
@@ -168,7 +172,7 @@ export function ReportsAdminScreen() {
     void (async () => {
       setThread({ id: r.id, msgs: null });
       const msgs = await fetchReportMessages(r.id);
-      if (id === threadReq.current) setThread({ id: r.id, msgs });
+      if (id === threadReq.current) setThread({ id: r.id, msgs, failed: msgs === null });
     })();
   };
 
@@ -249,7 +253,12 @@ export function ReportsAdminScreen() {
 
               {thread?.id === r.id ? (
                 <View style={s.thread}>
-                  {thread.msgs === null ? (
+                  {thread.failed ? (
+                    <Pressable onPress={() => openThread(r)} hitSlop={8} accessibilityRole="button" accessibilityLabel="Could not load the conversation. Retry">
+                      <Text style={s.muted}>Could not load the conversation.</Text>
+                      <Text style={s.retry}>RETRY</Text>
+                    </Pressable>
+                  ) : thread.msgs === null ? (
                     <Text style={s.muted}>Loading the conversation…</Text>
                   ) : thread.msgs.length === 0 ? (
                     <Text style={s.muted}>No messages — this report is not about a conversation.</Text>

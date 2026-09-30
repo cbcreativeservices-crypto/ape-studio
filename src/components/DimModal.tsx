@@ -247,9 +247,14 @@ export function Modal({
   supportedOrientations = ALL_ORIENTATIONS,
   hostsOverlays = true,
   overlayPublisher = false,
+  lowLightDim = true,
   ...rest
 }: ModalProps & {
   children?: ReactNode;
+  /** false = no Low-Light wash inside this Modal. For a surface that MUST be
+   *  read at full brightness by another device (Profile's full-ID code:
+   *  "BRIGHTEN TO SCAN"). Default true — every other Modal keeps the promise. */
+  lowLightDim?: boolean;
   /** false = never a host. (The audio gate used this until 2026-09-30; its
    *  popups now host as the 'gate' publisher — see `overlayPublisher`.) */
   hostsOverlays?: boolean;
@@ -311,7 +316,7 @@ export function Modal({
             </HostDepth.Provider>
             {/* Last child, so it washes over the modal's own content. It is
                 pointerEvents="none", so nothing below it loses a touch. */}
-            <LowLightDim />
+            {lowLightDim ? <LowLightDim /> : null}
           </>
         );
         // Web: pinned to the visible viewport (see readWebBox). Native: as is.

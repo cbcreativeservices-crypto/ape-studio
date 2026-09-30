@@ -86,7 +86,13 @@ export function StartHereScreen() {
   const [ending, setEnding] = useState(false);
   const [listOpen, setListOpen] = useState(false);
 
+  // Wait for `resolved` before restoring (bug pass 3 2026-09-30, the PagedLab
+  // rule): a load that landed while the tier was still unknown saw
+  // noAccountRef false, so a signed-out device restored the PREVIOUS
+  // account's place and ticks. `resolved` flips once, bounded; ticks made
+  // meanwhile are merged below.
   useEffect(() => {
+    if (!resolved) return;
     let alive = true;
     void loadPagedProgress(START_HERE_ID).then((p) => {
       if (!alive) return;
@@ -104,7 +110,7 @@ export function StartHereScreen() {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [resolved]);
 
   const persist = useCallback((next: PagedProgress) => {
     progressRef.current = next;

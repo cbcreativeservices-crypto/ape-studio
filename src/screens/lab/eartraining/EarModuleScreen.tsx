@@ -29,6 +29,7 @@ import {
   type EarProgressState,
 } from '../../../features/ear/earProgress';
 import { useLabEndGuest } from '../kit/LabEndScreen';
+import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { SeeItView } from './SeeItView';
 import { useIsTablet } from '../../../theme/useIsTablet';
 import { cardColumn } from '../../../theme/readingColumn';
@@ -243,7 +244,13 @@ export function EarModuleScreen() {
   );
 
   // Boot: progress + first trial.
+  // ⛔ WAITS FOR `resolved` (bug pass 3, 2026-09-30; the kit/PagedLab fix):
+  // before the tier is known the save-block flag reads false, so a signed-out
+  // device restored — and then kept saving over — the previous account's
+  // ladder. `resolved` flips once, bounded; the screen shows RENDERING.
+  const { resolved } = useEntitlement();
   useEffect(() => {
+    if (!resolved) return;
     aliveRef.current = true;
     let alive = true;
     (async () => {
@@ -265,7 +272,7 @@ export function EarModuleScreen() {
       playerRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [resolved]);
 
   // 15-minute fatigue nudge (spec §1) — checked once a minute.
   useEffect(() => {

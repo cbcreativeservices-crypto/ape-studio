@@ -28,6 +28,17 @@
  */
 import { Alert, Platform } from 'react-native';
 import { isAppDialogHostMounted, showAppDialog } from '../components/AppDialog';
+import { HOST_DISMISS_MS } from '../components/DimModal';
+
+/** For a dialog handler that opens a `presentation: 'modal'` screen (Paywall,
+ *  Settings, Help…): iOS refuses to present while the dialog's own Modal is
+ *  still animating away, so the tap did nothing. Run it after the dismissal,
+ *  the same wait GlossaryScreen uses. */
+export function afterDialogCloses(fn: () => void): () => void {
+  return () => {
+    setTimeout(fn, HOST_DISMISS_MS);
+  };
+}
 
 /** Two-button confirm. `onCancel` (optional) runs on explicit cancel too —
  *  needed by flows where "Cancel" has a side effect (e.g. sign-out). It also

@@ -49,7 +49,8 @@ describe('MembershipGateHost hosts inside an open Modal', () => {
   });
 
   test('otherwise presents its own DimModal as before, marked overlayPublisher', () => {
-    assert.match(host, /if \(!live \|\| hostedMode \|\| holdMs > 0\) return null;/);
+    // Bug pass 3: the same condition, recorded as `ownModal` for the tie-break.
+    assert.match(host, /ownModal\.current = live && !hostedMode && holdMs <= 0;\s*if \(!ownModal\.current\) return null;/);
     assert.match(host, /<Modal[\s\S]*?overlayPublisher[\s\S]*?onRequestClose=\{closeMembershipGate\}/);
     assert.match(host, /\{card\}\s*<\/Modal>/);
   });

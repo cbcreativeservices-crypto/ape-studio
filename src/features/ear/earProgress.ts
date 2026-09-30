@@ -66,8 +66,20 @@ export function setEarSaveBlocked(blocked: boolean): void {
   saveBlocked = blocked;
 }
 
+/** A state handed out WHILE blocked (the empty guest ladder) is never saved,
+ *  even after the flag clears (bug pass 3, 2026-09-30). A signed-in learner
+ *  whose first tier read failed reads 'anonymous' until a retry lands; the
+ *  drill screen loaded that empty ladder at mount and, once unblocked, wrote
+ *  it back over every module's real ladder. The drill saves the SAME object
+ *  it loaded (mutated in place), so membership follows it. */
+const blockedLoads = new WeakSet<EarProgressState>();
+
 export async function loadEarProgress(): Promise<EarProgressState> {
-  if (saveBlocked) return { ...EMPTY, modules: {} };
+  if (saveBlocked) {
+    const s: EarProgressState = { ...EMPTY, modules: {} };
+    blockedLoads.add(s);
+    return s;
+  }
   try {
     const raw = await AsyncStorage.getItem(KEY);
     if (!raw) return { ...EMPTY, modules: {} };
@@ -79,7 +91,7 @@ export async function loadEarProgress(): Promise<EarProgressState> {
 }
 
 export async function saveEarProgress(s: EarProgressState): Promise<void> {
-  if (saveBlocked) return;
+  if (saveBlocked || blockedLoads.has(s)) return;
   try {
     await AsyncStorage.setItem(KEY, JSON.stringify(s));
   } catch {

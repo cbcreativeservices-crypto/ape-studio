@@ -12,7 +12,7 @@
  * FEATURE card: dimmed scrim, dark card, amber title, GET MEMBERSHIP
  * glass-adjacent CTA → Paywall, quiet NOT NOW.
  */
-import { useEffect, useState, useSyncExternalStore } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 // ⛔ DimModal, not react-native's Modal — otherwise this surface lights a
@@ -34,6 +34,9 @@ const emit = () => listeners.forEach((l) => l());
 
 export function openMembershipGate(payload: MembershipGatePayload): void {
   current = payload;
+  // A new gate supersedes an earlier hosted GET MEMBERSHIP that is still
+  // waiting — its answer (NOT NOW included) is the one that counts.
+  paywallPending = null;
   emit();
 }
 
@@ -62,10 +65,22 @@ function useMembershipGate(): MembershipGatePayload | null {
  * behind — so the button read as dead. A hosted tap now records the request
  * here, and the focused host opens the Paywall once no other Modal is open and
  * the last one has finished animating away (see the effect in the host).
+ *
+ * ⛔ PASS 3 (2026-09-30): the request is tied to the HOST that took the tap and
+ * is short-lived. As a bare `true` it fired on whichever screen was focused
+ * next (a sheet that navigated away handed an unrelated screen a Paywall), and
+ * it fired however long the full screen stayed open (close it ten minutes
+ * later → a Paywall out of nowhere). Now it is dropped when that screen blurs
+ * or unmounts, when a newer gate opens, and when it is older than
+ * PAYWALL_PENDING_TTL_MS; the timer re-checks it is still THE request, so two
+ * hosts can never both navigate.
  */
-let paywallPending = false;
+type PaywallRequest = { host: number; at: number };
+const PAYWALL_PENDING_TTL_MS = 60_000;
+let paywallPending: PaywallRequest | null = null;
+let hostSeq = 0;
 const getPaywallPending = () => paywallPending;
-function setPaywallPending(v: boolean): void {
+function setPaywallPending(v: PaywallRequest | null): void {
   if (paywallPending === v) return;
   paywallPending = v;
   emit();
@@ -97,7 +112,14 @@ export function MembershipGateHost() {
    * via DimModal's keyed hosting ('membership'); one just closed ⇒ wait out its
    * dismissal first; otherwise present our own Modal exactly as before.
    */
-  const otherModalOpen = useModalHostOpen(true);
+  // Bug pass 3 (2026-09-30): `true` ignored the dialog's and the audio gate's
+  // popups, so the card asked for over either presented a second root Modal —
+  // refused on iOS. They count now, with AppDialog's tie-break: whichever of us
+  // already holds its own Modal keeps it and the other moves in (no flip-flop).
+  const sheetOpen = useModalHostOpen(true);
+  const anyOtherOpen = useModalHostOpen('membership');
+  const ownModal = useRef(false);
+  const otherModalOpen = sheetOpen || (anyOtherOpen && !ownModal.current);
   const live = focused && gate != null;
   const hostedMode = live && otherModalOpen;
   const holdMs = live && !otherModalOpen ? rootModalHoldMs() : 0;
@@ -111,15 +133,28 @@ export function MembershipGateHost() {
   // The Paywall a HOSTED card asked for: opened by the focused screen's host
   // once nothing else is on screen to refuse it. A Modal opening again inside
   // the wait re-runs this and cancels the timer.
+  const [hostId] = useState(() => ++hostSeq);
   const pending = useSyncExternalStore(subscribe, getPaywallPending, getPaywallPending);
   useEffect(() => {
-    if (!focused || !pending || otherModalOpen) return;
+    if (!pending || pending.host !== hostId) return;
+    // Left the screen that asked (or it went away): the request goes with it.
+    if (!focused) return setPaywallPending(null);
+    if (otherModalOpen) return;
+    // Too late to still be an answer to that tap — never a Paywall out of nowhere.
+    if (Date.now() - pending.at > PAYWALL_PENDING_TTL_MS) return setPaywallPending(null);
     const t = setTimeout(() => {
-      setPaywallPending(false);
+      if (paywallPending !== pending) return; // superseded or already taken
+      setPaywallPending(null);
       if (navigationRef.isReady()) navigationRef.navigate('Paywall');
     }, rootModalHoldMs());
     return () => clearTimeout(t);
-  }, [focused, pending, otherModalOpen]);
+  }, [focused, pending, otherModalOpen, hostId]);
+  useEffect(
+    () => () => {
+      if (paywallPending?.host === hostId) setPaywallPending(null);
+    },
+    [hostId],
+  );
 
   const card =
     gate == null ? null : (
@@ -135,7 +170,7 @@ export function MembershipGateHost() {
               closeMembershipGate();
               // Hosted inside another Modal: the Paywall cannot present over it
               // yet — ask for it once that Modal has closed (see paywallPending).
-              if (hostedMode) setPaywallPending(true);
+              if (hostedMode) setPaywallPending({ host: hostId, at: Date.now() });
               else if (navigationRef.isReady()) navigationRef.navigate('Paywall');
             }}
             accessibilityRole="button"
@@ -161,13 +196,14 @@ export function MembershipGateHost() {
     return () => setHostedOverlay(null, 'membership');
   }, [focused]);
 
-  if (!live || hostedMode || holdMs > 0) return null;
+  ownModal.current = live && !hostedMode && holdMs <= 0;
+  if (!ownModal.current) return null;
   return (
     <Modal
       accessibilityViewIsModal
       // Hosts other overlays (the audio gate) if asked for over the gate, but
       // is not "another Modal" to this host's own choice above.
-      overlayPublisher
+      overlayPublisher="membership"
       visible
       transparent
       animationType="fade"

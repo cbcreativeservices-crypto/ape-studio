@@ -42,6 +42,8 @@ export function SpeakButton({
   const mine = useRef(false); // is the global utterance this button's?
   /** False once unmounted — see the await in onPress. */
   const alive = useRef(true);
+  /** Which of this button's utterances is current — see Speech.speak below. */
+  const utterance = useRef(0);
   const { requestAudioOutput } = useAudioOutputGate();
 
   useEffect(() => {
@@ -76,23 +78,29 @@ export function SpeakButton({
     setPlaying(true);
     activeReset = reset;
     noteAudioActivity();
+    // Bug pass 3: the STOPPED callback of this button's previous utterance
+    // (a double tap through the gate, or stop → play again quickly) arrives
+    // after the new one started and reset it — the icon read idle while the
+    // term was still being read, and the next tap spoke it over again.
+    const my = ++utterance.current;
+    const ours = () => mine.current && utterance.current === my;
     Speech.speak(text, {
       language: 'en-US', // device's default ENGLISH voice, regardless of locale
       onDone: () => {
-        if (mine.current) {
+        if (ours()) {
           reset();
           activeReset = null;
         }
       },
       onStopped: () => {
-        if (mine.current) {
+        if (ours()) {
           reset();
           activeReset = null; // parity with onDone/onError — don't strand a
           // setState closure for an unmounted row in the global slot
         }
       },
       onError: () => {
-        if (mine.current) {
+        if (ours()) {
           reset();
           activeReset = null;
         }

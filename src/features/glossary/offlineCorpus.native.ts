@@ -129,8 +129,14 @@ export async function saveTerms(src: string, rows: OfflineTerm[]): Promise<void>
     const params: (string | null)[] = [];
     for (const r of batch) params.push(r.id, r.term, r.achievement_id, src);
     await db.runAsync(
+      // A definition survives only from THIS src's own rows (live or parked) —
+      // `id` is the key across every src, and a row moved in from another src
+      // must not carry text written for a different reader (pass 3).
       `INSERT INTO glossary_corpus (id, term, achievement_id, definition, src) VALUES ${values}
-       ON CONFLICT(id) DO UPDATE SET term = excluded.term, achievement_id = excluded.achievement_id, src = excluded.src`,
+       ON CONFLICT(id) DO UPDATE SET term = excluded.term, achievement_id = excluded.achievement_id,
+         definition = CASE WHEN glossary_corpus.src IN (excluded.src, excluded.src || '#stale')
+                           THEN glossary_corpus.definition END,
+         src = excluded.src`,
       params,
     );
     // Hand the thread back between batches. Deliberately NOT inside one big
@@ -206,7 +212,12 @@ const tierKey = (src: string) => `defs_tier:${src}`;
 
 export async function alignDefinitionTier(src: string, tier: 'member' | 'free'): Promise<void> {
   if ((await getMeta(tierKey(src))) === tier) return;
-  await db.runAsync('UPDATE glossary_corpus SET definition = NULL WHERE src = ?', [src]);
+  // The PARKED rows too (pass 3): a term save killed midway leaves rows under
+  // `${src}#stale`, and the next save revives them WITH their definitions —
+  // so a tier change in between had to clear those as well, or a free
+  // reader's teasers came back as a new member's "saved" text (and the
+  // reverse handed a member's full text to the next free reader).
+  await db.runAsync('UPDATE glossary_corpus SET definition = NULL WHERE src = ? OR src = ?', [src, `${src}#stale`]);
   await setMeta(tierKey(src), tier);
 }
 

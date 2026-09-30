@@ -29,10 +29,11 @@ test('Ear training: a guest\'s ladder is neither restored nor written (ape:ear:v
   const s = read('src/features/ear/earProgress.ts');
   assert.match(s, /export function setEarSaveBlocked\(blocked: boolean\): void \{\n\s*saveBlocked = blocked;/);
   const load = s.slice(s.indexOf('export async function loadEarProgress'), s.indexOf('export async function saveEarProgress'));
-  const l = load.indexOf('if (saveBlocked) return { ...EMPTY, modules: {} };');
+  // pass 3 shape: the blocked (empty) state is also remembered as never-saveable
+  const l = load.indexOf('if (saveBlocked) {');
   assert.ok(l >= 0 && l < load.indexOf('AsyncStorage.getItem'));
   const save = s.slice(s.indexOf('export async function saveEarProgress'), s.indexOf('/** Pure: apply one scored trial'));
-  const w = save.indexOf('if (saveBlocked) return;');
+  const w = save.indexOf('if (saveBlocked || blockedLoads.has(s)) return;');
   assert.ok(w >= 0 && w < save.indexOf('AsyncStorage.setItem'));
   for (const f of ['src/screens/lab/eartraining/EarTrainingLabScreen.tsx', 'src/screens/lab/eartraining/EarModuleScreen.tsx']) {
     assert.match(read(f), /setEarSaveBlocked\(useLabEndGuest\(\)\);/, f);

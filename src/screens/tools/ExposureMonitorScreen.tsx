@@ -8,7 +8,7 @@
  * time is tracked exactly; level is estimated, labeled, never fabricated).
  * No engagement mechanics, no rewards for exposure (§28).
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { Alert, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { confirmDialog, notify } from '../../lib/confirm';
@@ -103,6 +103,7 @@ export function ExposureMonitorScreen() {
   const [snap, setSnap] = useState<ExposureSnapshot>(getExposureSnapshot());
   const [history, setHistory] = useState<DayRecord[]>([]);
   const [range, setRange] = useState<7 | 30>(7);
+  const exportingRef = useRef(false);
 
   useEffect(() => subscribeExposure(() => setSnap(getExposureSnapshot())), []);
   // Dev-only tap→mount timing (owner report 2026-09-05: a second open took 10 s+).
@@ -430,6 +431,12 @@ export function ExposureMonitorScreen() {
               hitSlop={10}
               accessibilityRole="button"
               onPress={() => {
+                // One export at a time (toddler pass 3 2026-09-30): a double tap
+                // opened a second share over the first, which the OS refuses —
+                // and that refusal raised "Export didn't complete" over a share
+                // sheet that was working.
+                if (exportingRef.current) return;
+                exportingRef.current = true;
                 // Share.share rejects on web ("Share is not supported") and can
                 // reject on device (no share target) — never leave it unhandled
                 // and silent (B-069).
@@ -443,7 +450,10 @@ export function ExposureMonitorScreen() {
                       'Export didn’t complete',
                       'Your exposure history could not be shared from this device. Nothing was deleted — it is all still on the Exposure screen.',
                     ),
-                  );
+                  )
+                  .finally(() => {
+                    exportingRef.current = false;
+                  });
               }}
             >
               <Text style={styles.chipText}>Export history</Text>

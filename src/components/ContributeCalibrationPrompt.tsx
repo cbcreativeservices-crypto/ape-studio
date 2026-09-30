@@ -75,6 +75,12 @@ export function ContributeCalibrationPrompt({
   };
 
   const decline = async () => {
+    // One answer per prompt (toddler pass 3 2026-09-30): NOT NOW tapped while
+    // CONTRIBUTE was still writing turned consent OFF under a contribution
+    // that then queued anyway (or, the other way round, a CONTRIBUTE landing
+    // after NOT NOW's write switched consent back ON). The first answer wins.
+    if (sendingRef.current) return;
+    sendingRef.current = true;
     try {
       await setCrowdsourceConsent(false); // don't nag; re-enable in Settings
     } catch {

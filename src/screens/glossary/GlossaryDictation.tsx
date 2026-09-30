@@ -60,16 +60,21 @@ export function GlossaryDictation({ onText }: { onText: (t: string) => void }) {
   // user tapping the mic again — so navigating away mid-dictation (tap a term,
   // switch tabs) left the OS recording indicator lit and the mic held until the
   // platform's own silence timeout, contending with the tools' DSP stream.
-  useEffect(
-    () => () => {
+  // Left while the permission prompt was up (pass 3): the answer arrived after
+  // this button was gone and start() opened the mic with nothing left on
+  // screen to stop it — the cleanup below had already run.
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
       try {
         ExpoSpeechRecognitionModule.stop();
       } catch {
         // already stopped / module absent — nothing to release
       }
-    },
-    [],
-  );
+    };
+  }, []);
 
   const toggle = useCallback(async () => {
     if (dictating) {
@@ -80,6 +85,10 @@ export function GlossaryDictation({ onText }: { onText: (t: string) => void }) {
     startingRef.current = true;
     try {
       const perm = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
+      if (!mountedRef.current) {
+        startingRef.current = false;
+        return;
+      }
       if (!perm.granted) {
         startingRef.current = false;
         notify(

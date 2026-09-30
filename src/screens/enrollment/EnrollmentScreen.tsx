@@ -19,7 +19,7 @@ import { officialTopicName } from '../../data/officialTopicNames';
 import { ActivityIndicator, Animated, LayoutAnimation, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, UIManager, View, type GestureResponderEvent, type LayoutChangeEvent } from 'react-native';
 import { animationsAllowed } from '../../features/settings/a11y';
 import { useOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
-import { Modal } from '../../components/DimModal';
+import { HOST_DISMISS_MS, Modal } from '../../components/DimModal';
 import { HoldToActivate } from '../../components/HoldToActivate';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -396,6 +396,16 @@ export function EnrollmentView({
   // (by order index), mirroring openSubject.
   const [openField, setOpenField] = useState<number | null>(enrollUi.openField);
   const [payPrompt, setPayPrompt] = useState(false);
+  // The pending EXPLORE MEMBERSHIP → Paywall hand-off (see the prompt below).
+  // Cleared on unmount: leaving the screen mid-hand-off must not throw the
+  // Paywall up over wherever the user went.
+  const payHandoff = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (payHandoff.current) clearTimeout(payHandoff.current);
+    },
+    [],
+  );
   const [homeSetupOpen, setHomeSetupOpen] = useState(false);
   const [homeFull, setHomeFull] = useState(false);
   // Clear-list confirm popup (owner 2026-08-01): the bottom red ✕ is now a fixed
@@ -2607,8 +2617,16 @@ export function EnrollmentView({
         ]}
         primaryLabel="EXPLORE MEMBERSHIP?"
         onPrimary={() => {
+          // The Paywall is a modal presentation, and iOS refuses one while
+          // this prompt's own Modal is still fading out — EXPLORE MEMBERSHIP
+          // did nothing (bug pass 3 2026-09-30; GlossaryScreen's hand-off).
+          // One hand-off at a time: a double tap must not queue two Paywalls.
+          if (payHandoff.current) return;
           setPayPrompt(false);
-          navigation.navigate('Paywall');
+          payHandoff.current = setTimeout(() => {
+            payHandoff.current = null;
+            navigation.navigate('Paywall');
+          }, HOST_DISMISS_MS);
         }}
         dismissLabel="RETURN"
       />
@@ -2645,6 +2663,12 @@ export function EnrollmentView({
               onComplete={() => {
                 setClearConfirmOpen(false);
                 resetEnrollment();
+                // The new-user default holds no certificates or programs
+                // either. resetEnrollment clears topics only, so every
+                // credential stayed in the deck — now listing its requirements
+                // as un-enrolled rows, still REMOVE ALL in Browse, and still
+                // pinning the co-requisites to Home (bug pass 3 2026-09-30).
+                getBundles().forEach((b) => removeBundleEntry(b.key));
               }}
             />
             <Pressable style={styles.clearCancel} onPress={() => setClearConfirmOpen(false)} accessibilityRole="button" accessibilityLabel="Cancel">

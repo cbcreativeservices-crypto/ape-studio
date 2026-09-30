@@ -161,7 +161,19 @@ const WS_COMPRESSOR: Workspace = {
         const inp = n(v.inLvl);
         const r = n(v.ratio);
         const gr = n(v.targetGr);
-        const above = r > 1 ? (gr * r) / (r - 1) : Infinity;
+        // At 1:1 (or below) no threshold exists — SAY so (bug pass 3,
+        // 2026-09-30). This returned ±∞ rows, which the NaN-only rule in
+        // runCompute now turns into a bare "check for zeros" error that hid
+        // the steps' own "raise the ratio first" answer.
+        if (!(r > 1)) {
+          return [
+            {
+              label: 'NO THRESHOLD',
+              text: `At ${fmt(r)}:1 the compressor makes no gain reduction, so no threshold produces ${fmt(gr)} dB — raise the ratio above 1:1 first.`,
+            },
+          ];
+        }
+        const above = (gr * r) / (r - 1);
         const thr = inp - above;
         return [
           { label: 'SET THRESHOLD TO', value: thr, quantity: 'db' },

@@ -15,7 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
-import { confirmDialog } from '../../../lib/confirm';
+import { afterDialogCloses, confirmDialog } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GlassButton } from '../../../components/GlassButton';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
@@ -47,7 +47,7 @@ export function TubeReferenceScreen() {
         'Tube Reference — Academy',
         'The full-screen tube reference cards are a feature of Academy membership.',
         'See membership',
-        () => navigation.navigate('Paywall'),
+        afterDialogCloses(() => navigation.navigate('Paywall')),
         { cancelText: 'Not now' },
       );
       return;

@@ -99,7 +99,9 @@ export function StudyFsOverlay({
   ).current;
 
   return (
-    <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={visible} animationType="fade" onRequestClose={onClose}>
+    // Android BACK takes the TOP layer (bug pass 3, 2026-09-30): with the guide
+    // card up, BACK used to throw the learner out of full screen instead.
+    <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={visible} animationType="fade" onRequestClose={showGuide ? () => setShowGuide(false) : onClose}>
       <View style={styles.root} {...pan.panHandlers}>
         <Pressable style={styles.close} onPress={onClose} hitSlop={16} accessibilityRole="button" accessibilityLabel="Close full screen">
           <Text style={styles.closeText}>✕</Text>

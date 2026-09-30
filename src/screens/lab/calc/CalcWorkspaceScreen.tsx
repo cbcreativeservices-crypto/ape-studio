@@ -9,7 +9,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { Alert, Pressable, ScrollView, Share, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
-import { confirmDialog, notify } from '../../../lib/confirm';
+import { afterDialogCloses, confirmDialog, notify } from '../../../lib/confirm';
 import { LinearGradient } from 'expo-linear-gradient';
 import { KeyboardAwareScrollView } from '../../../features/keyboard/keyboardControllerSafe';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
@@ -199,7 +199,7 @@ export function CalcWorkspaceScreen() {
     // glossaryCap.ts already uses for guests), so `allowed` is meaningful even
     // when `unavailable` is true. The check below is therefore the ONLY gate,
     // and it applies in both cases.
-    const seePlans = () => (navigation as unknown as { navigate: (r: string) => void }).navigate('Paywall');
+    const seePlans = afterDialogCloses(() => (navigation as unknown as { navigate: (r: string) => void }).navigate('Paywall'));
     if (!u.allowed) {
       confirmDialog(
         'Weekly limit reached',

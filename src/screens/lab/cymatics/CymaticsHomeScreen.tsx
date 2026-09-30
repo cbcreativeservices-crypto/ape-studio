@@ -4,7 +4,7 @@
  * first figure — then the studio, the five Phase-1 modules, and the planned
  * areas as dimmed rows (no promises, no dates).
  */
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
@@ -82,7 +82,18 @@ export function CymaticsHomeScreen() {
   const [lessonOpen, setLessonOpen] = useState(false);
   const [openId, setOpenId] = useState<CymaticsModuleId | null>(null);
   const [width, setWidth] = useState(0);
-  const open = (id: CymaticsModuleId) => goToCymatics(navigation, 'CymaticsModule', { id });
+  // One screen per tap (bug pass 3 2026-09-30): the four studio buttons sit
+  // stacked, and two tapped together each pushed a studio — two live studios
+  // stacked, each with its own drive voice. A second open inside 600 ms of
+  // the first is ignored (the Ear Lab / Start Here idiom).
+  const lastOpenAt = useRef(0);
+  const go = (name: string, params: object) => {
+    const now = Date.now();
+    if (now - lastOpenAt.current < 600) return;
+    lastOpenAt.current = now;
+    goToCymatics(navigation, name, params);
+  };
+  const open = (id: CymaticsModuleId) => go('CymaticsModule', { id });
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -125,19 +136,19 @@ export function CymaticsHomeScreen() {
           to find it yourself.
         </Text>
 
-        <Pressable style={styles.studioBtn} onPress={() => goToCymatics(navigation, 'CymaticsPlateStudio', {})} accessibilityRole="button" accessibilityLabel="Open the Chladni Plate Studio">
+        <Pressable style={styles.studioBtn} onPress={() => go('CymaticsPlateStudio', {})} accessibilityRole="button" accessibilityLabel="Open the Chladni Plate Studio">
           <Text style={styles.studioBtnText}>OPEN THE CHLADNI PLATE STUDIO ›</Text>
           <Text style={styles.studioBtnSub}>Build a plate · drive it with a tone · seven synchronised views</Text>
         </Pressable>
-        <Pressable style={[styles.studioBtn, styles.studioBtnLiquid]} onPress={() => goToCymatics(navigation, 'CymaticsLiquidStudio', {})} accessibilityRole="button" accessibilityLabel="Open the Liquid Cymatics Studio">
+        <Pressable style={[styles.studioBtn, styles.studioBtnLiquid]} onPress={() => go('CymaticsLiquidStudio', {})} accessibilityRole="button" accessibilityLabel="Open the Liquid Cymatics Studio">
           <Text style={[styles.studioBtnText, { color: '#7fd4ff' }]}>OPEN THE LIQUID CYMATICS STUDIO ›</Text>
           <Text style={styles.studioBtnSub}>A dish on a shaker · Faraday waves at half the drive frequency · eight liquids</Text>
         </Pressable>
-        <Pressable style={[styles.studioBtn, styles.studioBtnMembrane]} onPress={() => goToCymatics(navigation, 'CymaticsMembraneStudio', {})} accessibilityRole="button" accessibilityLabel="Open the Membrane and Loudspeaker Studio">
+        <Pressable style={[styles.studioBtn, styles.studioBtnMembrane]} onPress={() => go('CymaticsMembraneStudio', {})} accessibilityRole="button" accessibilityLabel="Open the Membrane and Loudspeaker Studio">
           <Text style={[styles.studioBtnText, { color: '#e2c48a' }]}>OPEN THE MEMBRANE &amp; LOUDSPEAKER STUDIO ›</Text>
           <Text style={styles.studioBtnSub}>Tune and strike a drumhead · why a timpani has a pitch · a loudspeaker cone from piston to breakup</Text>
         </Pressable>
-        <Pressable style={[styles.studioBtn, styles.studioBtnGallery]} onPress={() => goToCymatics(navigation, 'CymaticsGallery', {})} accessibilityRole="button" accessibilityLabel="Open the Pattern Gallery and Art Studio">
+        <Pressable style={[styles.studioBtn, styles.studioBtnGallery]} onPress={() => go('CymaticsGallery', {})} accessibilityRole="button" accessibilityLabel="Open the Pattern Gallery and Art Studio">
           <Text style={[styles.studioBtnText, { color: colors.programPurple }]}>OPEN THE PATTERN GALLERY &amp; ART STUDIO ›</Text>
           <Text style={styles.studioBtnSub}>Save a pattern from any studio · colour it · compare 2 or 4 · art print or lab sheet</Text>
         </Pressable>

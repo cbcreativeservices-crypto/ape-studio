@@ -38,6 +38,7 @@ import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 // (session expiry, the single-device notice) was refused on iOS and drawn
 // behind it on Android. It also brings the Low-Light wash.
 import { Modal } from '../../components/DimModal';
+import { HOST_DISMISS_MS } from '../../components/DimModal';
 import { useSharedValue } from 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -626,6 +627,29 @@ export function DashboardScreen() {
    *  that pops up by itself must check it is actually the screen in front. */
   const isFocused = useIsFocused();
   useEffect(() => () => { mountedRef.current = false; }, []);
+  /**
+   * CLOSE THE POPUP, THEN PRESENT THE NEXT ONE (bug pass 3, 2026-09-30).
+   * UNLOCK ACADEMY ACCESS closed the study-access sheet and pushed the Paywall
+   * (a `presentation: 'modal'` screen) in the same tap, and STUDY FLASHCARDS on
+   * a locked Custom List closed the term list and opened the study-access sheet
+   * in the same tap. iOS refuses a presentation while a Modal is still
+   * animating away, so both did nothing. Same hand-off as GlossaryScreen: wait
+   * HOST_DISMISS_MS. One pending hand-off at a time — a double tap is one.
+   */
+  const handoffTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const afterPopupCloses = useCallback((next: () => void) => {
+    if (handoffTimerRef.current) return;
+    handoffTimerRef.current = setTimeout(() => {
+      handoffTimerRef.current = null;
+      if (mountedRef.current) next();
+    }, HOST_DISMISS_MS);
+  }, []);
+  useEffect(
+    () => () => {
+      if (handoffTimerRef.current) clearTimeout(handoffTimerRef.current);
+    },
+    [],
+  );
   const [error, setError] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<string | null>(null);
   /** No Supabase session at all (Guest Mode). Drives the red "progress isn't
@@ -2474,7 +2498,8 @@ export function DashboardScreen() {
                     // The second way into custom-list study — gate it too, or
                     // the first gate is decoration.
                     if (customListLocked) {
-                      setUpgradeOpen(true);
+                      // After the term list has gone (afterPopupCloses).
+                      afterPopupCloses(() => setUpgradeOpen(true));
                       return;
                     }
                     navigation.navigate('Flashcards', {
@@ -2513,7 +2538,8 @@ export function DashboardScreen() {
         onClose={() => setUpgradeOpen(false)}
         onUnlock={() => {
           setUpgradeOpen(false);
-          (navigation as any).navigate('Paywall');
+          // After the sheet has gone — see afterPopupCloses.
+          afterPopupCloses(() => (navigation as any).navigate('Paywall'));
         }}
         // Always name both free topics; the action adapts to where they are.
         freeTopicNames={freeTopicOffer.map((f) => f.name)}

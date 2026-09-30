@@ -19,6 +19,7 @@ import {
   type WaveKind, type AppClassChoice, type AmpModuleId,
 } from '../../../../features/amp/ampContent';
 import { loadAmpProgress, updateAmpProgress, type AmpProgressState } from '../../../../features/amp/ampProgress';
+import { useEntitlement } from '../../../../features/commercial/EntitlementProvider';
 import { AmpRig, type RigTrace } from '../AmpRig';
 import { Body, Card, ControlGrid, ControlSlider, FaultBanner, HonestyBadge, SectionTitle, SegRow } from '../kit';
 import type { AmpModuleProps } from './index';
@@ -88,7 +89,10 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
     navigation.push('AmpModule', { id });
   };
 
+  // Wait for the tier (bug pass 3, 2026-09-30; see AmpModuleScreen).
+  const { resolved } = useEntitlement();
   useEffect(() => {
+    if (!resolved) return;
     let alive = true;
     void loadAmpProgress().then((s) => {
       if (alive) setProgress(s);
@@ -96,7 +100,7 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [resolved]);
 
   /* waveform diagnosis */
   const [diagIdx, setDiagIdx] = useState(0);

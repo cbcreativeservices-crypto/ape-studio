@@ -11,7 +11,10 @@
  * after the ruling (react-native-qrcode-svg already installed).
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Image, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+// DimModal (bug pass 3): the full-screen ID is a HOST, so a root popup asked
+// for while it is up draws inside it instead of behind it (iOS: not at all).
+import { Modal } from '../../components/DimModal';
 import { KeyboardAwareScrollView } from '../../features/keyboard/keyboardControllerSafe';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -44,7 +47,7 @@ import {
   type PublicProfile,
 } from '../../features/profile/publicProfile';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
-import { LowLightDim, LowLightRow } from '../../features/settings/LowLightLayer';
+import { LowLightRow } from '../../features/settings/LowLightLayer';
 import { useLowLight } from '../../features/settings/lowLight';
 import { AudioOutputRow } from '../../features/audio/AudioOutputRow';
 import { DevVisualIndex } from '../../features/dev/DevVisualIndex';
@@ -1466,6 +1469,9 @@ export function ProfileScreen() {
             animationType="fade"
             onRequestClose={closeFullId}
             supportedOrientations={['portrait', 'landscape']}
+            // The low-light wash comes with DimModal; BRIGHTEN TO SCAN lifts it
+            // until the card closes (it was hand-mounted here before).
+            lowLightDim={!brightId}
           >
             <Pressable
               style={styles.fullId}
@@ -1503,12 +1509,11 @@ export function ProfileScreen() {
                 {brightId ? 'Low-light resumes when you close this' : 'Tap anywhere to close'}
               </Text>
               {/* A Modal renders in its OWN native view hierarchy, so the root
-                  LowLightDim does not reach it — which is why ShareTermSheet,
-                  StudyFsOverlay and TrophyModal each re-mount it. Without this
-                  the ID is the one surface that ignores Low-Light Production
-                  Mode, and it opens full-bright white in a dark venue: exactly
-                  the flash the mode promises will not happen. */}
-              {brightId ? null : <LowLightDim />}
+                  LowLightDim does not reach it. DimModal mounts the wash for
+                  us (lowLightDim above): without it the ID is the one surface
+                  that ignores Low-Light Production Mode, and it opens
+                  full-bright white in a dark venue — exactly the flash the
+                  mode promises will not happen. */}
             </Pressable>
           </Modal>
 

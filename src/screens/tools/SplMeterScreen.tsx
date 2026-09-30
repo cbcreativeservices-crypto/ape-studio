@@ -353,10 +353,14 @@ function Chip({
  *  BOTTOM. A NEW warning fires one brief haptic pulse and FLASHES prominently for
  *  5 s, then drops into the steady accumulated list below it. Every flag that has
  *  ever appeared stays in the list (deduped) even if its condition later clears. */
-function LiveWarnings({ flags }: { flags: WarningFlag[] }) {
-  const [seen, setSeen] = useState<WarningFlag[]>([]);
+function LiveWarnings({ flags, memory }: { flags: WarningFlag[]; memory: { current: WarningFlag[] } }) {
+  // `memory` is owned by the SCREEN (toddler pass 3 2026-09-30): HOME and the
+  // DIGITAL view each mount their own copy of this list, so every HOME ⇄
+  // DIGITAL switch started it empty — each standing warning buzzed and flashed
+  // again as "new", and one whose condition had cleared fell off the list.
+  const [seen, setSeen] = useState<WarningFlag[]>(() => memory.current);
   const [flashing, setFlashing] = useState<Set<WarningFlag>>(new Set());
-  const seenRef = useRef<Set<WarningFlag>>(new Set());
+  const seenRef = useRef<Set<WarningFlag>>(new Set(memory.current));
   const timers = useRef<Map<WarningFlag, ReturnType<typeof setTimeout>>>(new Map());
   const flash = useRef(new Animated.Value(1)).current;
 
@@ -365,6 +369,7 @@ function LiveWarnings({ flags }: { flags: WarningFlag[] }) {
     for (const f of flags) {
       if (seenRef.current.has(f)) continue;
       seenRef.current.add(f);
+      memory.current = [...memory.current, f];
       setSeen((prev) => [...prev, f]);
       setFlashing((prev) => new Set(prev).add(f));
       if (hapticsEnabled()) void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(() => {});
@@ -820,6 +825,8 @@ export function SplMeterScreen({ navigation }: Props) {
     // dark rather than leaving dashes with no explanation.
     ...(captureDead ? (['engine_inactive'] as WarningFlag[]) : []),
   ];
+  /** Warnings already announced — shared by the HOME and DIGITAL lists. */
+  const warnSeenRef = useRef<WarningFlag[]>([]);
 
   // ── Full-screen VU popup (owner directive 2026-07-29) ─────────────────────
   // Skia meters load ONLY through the meter gate (§1.7 honest fallback).
@@ -1752,7 +1759,7 @@ export function SplMeterScreen({ navigation }: Props) {
         </CollapsibleSection>
 
         {/* Amber warnings, at the very BOTTOM (owner 2026-07-30). */}
-        <LiveWarnings flags={flags} />
+        <LiveWarnings flags={flags} memory={warnSeenRef} />
       </ScrollView>
       </View>
       ) : (
@@ -2115,7 +2122,7 @@ export function SplMeterScreen({ navigation }: Props) {
                 )}
 
                 {/* Amber warnings at the bottom — flash 5 s + haptic, then list. */}
-                <LiveWarnings flags={flags} />
+                <LiveWarnings flags={flags} memory={warnSeenRef} />
               </>
             )}
           </ScrollView>

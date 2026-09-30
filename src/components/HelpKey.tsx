@@ -19,7 +19,10 @@ export function HelpKey({ search }: { search?: string }) {
         // navigate() PUSHES a second Help when one is already lower in the
         // stack (Help → a linked screen → ?), so BACK walked through two.
         // Popping back to the existing Help keeps one, with these params.
-        navigation.navigate('Help', search ? { search } : undefined, { pop: true });
+        // ALWAYS a search, '' when none (bug pass 3): popping back to a Help
+        // that an earlier "?" pre-filled kept that old filter, because
+        // HelpScreen re-applies the search only when one is sent.
+        navigation.navigate('Help', { search: search ?? '' }, { pop: true });
       }}
       hitSlop={10}
       style={({ pressed }) => [styles.key, pressed && { opacity: 0.7 }]}

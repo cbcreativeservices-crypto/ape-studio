@@ -14,7 +14,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { cardColumn } from '../../../theme/readingColumn';
 import { useIsTablet } from '../../../theme/useIsTablet';
 import { AccuracyNote } from '../../../components/AccuracyNote';
-import { confirmDialog } from '../../../lib/confirm';
+import { afterDialogCloses, confirmDialog } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { COMING_SOON, SECTION_META, WORKSPACES } from './registry';
 import { setChainValue, useChainValue } from './chainStore';
@@ -51,7 +51,7 @@ export function CalcLabScreen() {
       'Workflows are an Academy feature',
       'Calculator workflows — running a guided multi-step sequence, using templates, or building your own — are part of Academy membership. Every individual calculator stays open to browse, with 5 free calculations a week; membership removes that limit.',
       'See membership',
-      () => (navigation as any).navigate('Paywall'),
+      afterDialogCloses(() => (navigation as any).navigate('Paywall')),
       { cancelText: 'Not now' },
     );
   };

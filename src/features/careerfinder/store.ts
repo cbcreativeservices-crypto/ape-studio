@@ -55,6 +55,8 @@ let state: FinderRecord = EMPTY();
 let hydrated = false;
 let hydrating: Promise<void> | null = null;
 let wrote = false;
+/** Bumped by resetLocal — see the fence in hydrateCareerFinder. */
+let generation = 0;
 const listeners = new Set<() => void>();
 
 const VALID_IDS = new Set<string>(QUESTIONS.map((q) => q.id));
@@ -106,12 +108,22 @@ function persist(next: FinderRecord) {
 export function hydrateCareerFinder(): Promise<void> {
   if (hydrated) return Promise.resolve();
   if (hydrating) return hydrating;
+  // Generation fence (bug hunt 2026-09-30, pass 3 — the fence pass 2 gave the
+  // enrollment / bundles / deck / last-study stores). A read still out when
+  // resetLocal() runs for an account switch landed AFTER the reset and put the
+  // departing user's answers, results, saved families and feedback back in
+  // memory for the next person — and marked the store hydrated with them.
+  const g = generation;
   hydrating = AsyncStorage.getItem(KEY)
     .then((raw) => {
-      if (!wrote && raw) state = clean(JSON.parse(raw));
+      if (g === generation && !wrote && raw) state = clean(JSON.parse(raw));
     })
     .catch(() => {})
-    .then(() => { hydrated = true; emit(); });
+    .then(() => {
+      if (g !== generation) return;
+      hydrated = true;
+      emit();
+    });
   return hydrating;
 }
 
@@ -194,6 +206,7 @@ export function setCareerFinderFeedback(answer: FeedbackAnswer, note = ''): void
 
 /** In-memory reset for an account switch (clearLocalAccountData registry). */
 export function resetLocal(): void {
+  generation += 1;
   state = EMPTY();
   hydrated = false;
   hydrating = null;

@@ -115,7 +115,9 @@ export function EqAuditionBar({ bands }: { bands: EqBandSpec[] }) {
         // A mute that landed while the native start was in flight wins — never
         // leave a tone sounding into a closed gate (owner 2026-09-29).
         if (gen !== genRef.current || !isAudioOutputEnabled()) {
-          if (stopGenRef.current > gen || !isAudioOutputEnabled()) {
+          // Only while that stop() is still the latest act (bug pass 3): ▶ ■ ▶
+          // inside one native start must not silence the third ▶.
+          if (stopGenRef.current === genRef.current || !isAudioOutputEnabled()) {
             void ApeDsp.genStop();
             ApeDsp.fxReset();
           }

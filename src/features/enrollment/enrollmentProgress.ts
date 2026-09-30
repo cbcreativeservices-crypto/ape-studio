@@ -113,7 +113,12 @@ export function useEnrollmentProgress(gsList: number[]): Map<number, TopicProg> 
         }
         if (alive) setMap(out);
       } catch {
-        if (alive) setMap(new Map());
+        // KEEP WHAT IS ON SCREEN (bug pass 3, 2026-09-30). This refetches on
+        // every enrollment edit and exemption change, so one offline refetch
+        // dropped every bar the learner had earned to 0% — work that looked
+        // lost. Same rule as the Trophy Gallery / Topics fix: a failure only
+        // decides what an EMPTY screen shows — and the map starts empty, so
+        // leaving it untouched is exactly that.
       }
     })();
     return () => {

@@ -273,6 +273,17 @@ export function useHubPreviewEngine(): HubPreview {
           return;
         }
       }
+      // STALLED ⇒ REST, NOT FROZEN (toddler pass 3 2026-09-30). Until the
+      // watchdog above acts (~1 s, and up to ~5 s once its one retry is spent)
+      // this went on emitting the dead engine's LAST frame — the SPL needle
+      // held a plausible level and the scopes a frozen trace, dressed as live.
+      // Emit the empty store instead (the minis' own at-rest state) and start
+      // the spectrogram fresh so a gap is never stitched into its history.
+      if (stalled) {
+        cols = [];
+        if (data !== EMPTY) emit(EMPTY);
+        return;
+      }
       let spectroCols = data.spectroCols;
       if (tick % SPECTRO_EVERY === 0) {
         const meta = ApeDsp.getSpectrumMeta();

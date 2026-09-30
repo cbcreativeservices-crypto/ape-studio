@@ -12,7 +12,8 @@ const read = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), 'u
 test('LP3 rack: nothing presents over FULL SCREEN — help and tray long-presses leave it first', () => {
   const s = read('src/screens/lab/rack/RackUnit.tsx');
   assert.match(s, /const leaveFullThen = useCallback\(\(fn: \(\) => void\) => \{/);
-  assert.match(s, /setFull\(false\);\n\s+\/\/ The Modal fades out[^\n]*\n\s+setTimeout\(fn, FULL_DISMISS_MS\);/);
+  // Bug pass 3 (2026-09-30): the timer is kept in a ref and cleared on unmount.
+  assert.match(s, /setFull\(false\);\n\s+\/\/ The Modal fades out[^\n]*\n[\s\S]{0,120}?leaveTimer\.current = setTimeout\(\(\) => \{\n\s+leaveTimer\.current = null;\n\s+fn\(\);\n\s+\}, FULL_DISMISS_MS\);/);
   assert.match(s, /\(helpKey\?: string\) => leaveFullThen\(\(\) => onHelp\(helpKey\)\)/);
   // No surface calls the lab's onHelp directly any more — only through `help`.
   assert.doesNotMatch(s, /onHelp\?\.\(p\.helpKey\)/);

@@ -151,6 +151,13 @@ let ENTRIES_TABLE: 'glossary' | 'glossary_browse_v' | null = null;
 // them — so the cache outlives an account switch holding the last reader's
 // text. See the defTier effect in the screen.
 let ENTRIES_DEF_TIER: 'member' | 'free' | null = null;
+// …and WHO read them (bug hunt 2026-09-30, pass 3). The tier alone does not
+// tell two free readers apart: free reader A's paid lookups put the gateway's
+// FULL text on the cached entries, and a different free reader (or a guest)
+// on the same phone then heard it read aloud from the collapsed row's speaker
+// for nothing — the tier never moved, so nothing was blanked. undefined =
+// not yet known.
+let ENTRIES_UID: string | null | undefined = undefined;
 
 /** How long a key may stay undecided before the screen admits it is stuck. */
 const KEY_WAIT_MS = 9000;
@@ -1261,6 +1268,8 @@ export function GlossaryScreen({ route, navigation }: Props) {
   const [gateway, setGateway] = useState<GatewayProbe | undefined>(undefined);
   const [consent, setConsent] = useState<ConsentRecord | undefined>(undefined);
   const [hasSession, setHasSession] = useState<boolean | undefined>(undefined);
+  /** The signed-in uid (a device key's too); undefined until the first read. */
+  const [readerUid, setReaderUid] = useState<string | null | undefined>(undefined);
   const [declinedThisVisit, setDeclinedThisVisit] = useState(false);
   // Set when minting failed. FAIL OPEN: a guest must never be locked out of the
   // glossary because anonymous sign-ins are switched off in the dashboard, or
@@ -1275,12 +1284,17 @@ export function GlossaryScreen({ route, navigation }: Props) {
     void probeGateway().then((g) => alive && setGateway(g));
     void readConsent().then((c) => alive && setConsent(c));
     void safeSession(supabase.auth.getSession(), 'Glossary')
-      .then(({ data }) => alive && setHasSession(!!data.session))
+      .then(({ data }) => {
+        if (!alive) return;
+        setHasSession(!!data.session);
+        setReaderUid(data.session?.user?.id ?? null);
+      })
       .catch(() => alive && setHasSession(false));
     // The key can appear (minted here) or vanish (purged after 7 days, or the
     // user signed in) while this screen is mounted.
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
       setHasSession(!!session);
+      setReaderUid(session?.user?.id ?? null);
     });
     return () => {
       alive = false;
@@ -2351,7 +2365,8 @@ ${COPY.glossaryFreeAllowance}`,
   // entitlement resolved, when ensureDefinitions deliberately did nothing.
   useEffect(() => {
     if (!defTier || !entries.length) return;
-    if (ENTRIES_DEF_TIER !== null && ENTRIES_DEF_TIER !== defTier) {
+    const readerChanged = readerUid !== undefined && ENTRIES_UID !== undefined && ENTRIES_UID !== readerUid;
+    if ((ENTRIES_DEF_TIER !== null && ENTRIES_DEF_TIER !== defTier) || readerChanged) {
       for (const e of entries) e.definition = '';
       requestedDefsRef.current = new Set();
       /**
@@ -2371,10 +2386,11 @@ ${COPY.glossaryFreeAllowance}`,
       if (open.size) ensureDefsRef.current([...open]);
     }
     ENTRIES_DEF_TIER = defTier;
+    if (readerUid !== undefined) ENTRIES_UID = readerUid;
     setDefRev((n) => n + 1);
     // popupTrail / fetchDetails are read at the moment the tier flips, not tracked.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [defTier, entries]);
+  }, [defTier, entries, readerUid]);
 
   const termIndexRef = useRef(termIndex);
   termIndexRef.current = termIndex;

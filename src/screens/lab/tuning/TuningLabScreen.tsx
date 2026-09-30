@@ -23,6 +23,7 @@ import { CHAPTERS, CHAPTER_COUNT, CHAPTER_TITLES } from './chapters';
 import type { LabCtx } from './labCtx';
 import { confirmDialog } from '../../../lib/confirm';
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
+import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 // Tablet (owner 2026-09-29): a reading surface - capped at the reading column
 // and centred instead of running 990 pt wide. No-op on a phone.
 import { readingColumn } from '../../../theme/readingColumn';
@@ -70,6 +71,11 @@ export function TuningLabScreen() {
   const guest = useLabEndGuest();
   const guestRef = useRef(guest);
   guestRef.current = guest;
+  // Progress restored AS A GUEST (empty) is never written, even once the
+  // tier clears (bug pass 3, 2026-09-30): a signed-in learner whose first
+  // tier read failed reads 'anonymous' until a retry lands, and the empty
+  // copy then overwrote their completed chapters — credit removed.
+  const loadedAsGuestRef = useRef(false);
   const [chapter, setChapter] = useState(0);
   const [rootHz, setRootHz] = useState(C4_ET);
   const [mathView, setMathView] = useState(false);
@@ -81,22 +87,37 @@ export function TuningLabScreen() {
 
   useEffect(() => {
     const unsub = player.subscribe(setStatus);
+    return () => {
+      unsub();
+      player.dispose(); // stops and releases every voice when the lab unmounts
+    };
+  }, [player]);
+
+  // ⛔ WAIT FOR `resolved` BEFORE RESTORING (bug pass 3, 2026-09-30; the
+  // kit/PagedLab fix). A load that landed first read the guest flag as false
+  // (the provider boots at 'anonymous'-but-unresolved), so a signed-out
+  // device restored the previous account's place. `resolved` flips once,
+  // bounded, after the first read attempt — a signed-in learner is not held.
+  // A chapter picked meanwhile is kept, not yanked back to the saved one.
+  const { resolved } = useEntitlement();
+  const navigatedRef = useRef(false);
+  useEffect(() => {
+    if (!resolved) return;
     let alive = true;
     void loadTuningProgress().then((stored) => {
       if (!alive) return;
+      loadedAsGuestRef.current = guestRef.current;
       const p: TuningProgress = guestRef.current ? { completed: [], lastChapter: 0, done: false, mathView: false } : stored;
       progressRef.current = p;
       setProgress(p);
       setMathView(p.mathView);
       const built = CHAPTERS.map((c) => c.index);
-      setChapter(built.includes(p.lastChapter) ? p.lastChapter : 0);
+      if (!navigatedRef.current) setChapter(built.includes(p.lastChapter) ? p.lastChapter : 0);
     });
     return () => {
       alive = false;
-      unsub();
-      player.dispose(); // stops and releases every voice when the lab unmounts
     };
-  }, [player]);
+  }, [resolved]);
 
   const persist = useCallback((patch: Partial<TuningProgress>) => {
     const base = progressRef.current;
@@ -104,12 +125,13 @@ export function TuningLabScreen() {
     const next = { ...base, ...patch };
     progressRef.current = next;
     setProgress(next);
-    if (!guestRef.current) void saveTuningProgress(next);
+    if (!guestRef.current && !loadedAsGuestRef.current) void saveTuningProgress(next);
   }, []);
 
   const goTo = useCallback(
     (idx: number) => {
       player.stop(); // leaving a chapter stops its audio
+      navigatedRef.current = true;
       setEnding(false);
       setChapter(idx);
       setListOpen(false);

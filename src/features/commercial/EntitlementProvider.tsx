@@ -18,6 +18,7 @@ import { devBypass } from '../../config/devMode';
 import { DEV_COMMERCIAL_FLAG_KEY, DEV_ENTITLEMENT_KEY, FLAG_DEFAULTS } from '../../config/flags';
 import { supabase } from '../../lib/supabase';
 import { safeSession } from '../../lib/getSessionSafe';
+import { withDeadline } from '../../lib/boundedCall';
 import { classifyExpiry, verdictKeepsAccess } from './entitlementExpiry';
 import { setMemberStanding } from './memberStanding';
 import { requestLocalNotifSync } from '../notifications/localSchedule';
@@ -140,6 +141,23 @@ function academyTierFromRows(rows: EntRow[]): Entitlement {
     );
   }
   return active ? 'academy' : rows.length > 0 ? 'lapsed' : 'free';
+}
+
+/**
+ * The caller's academy rows, BOUNDED (bug pass 3, 2026-09-30). getSession() at
+ * boot was bounded but the read after it was not, and the boot `.finally()`
+ * that flips `resolved` waits on it: a socket that stops answering (the stall
+ * this app has seen) left CourseSelection on its bare spinner for the whole
+ * run, and a Paywall refresh after a purchase spinning with it. A stall now
+ * reads as the failed read it is — tier kept, retries scheduled, `false` out.
+ */
+const ENTITLEMENT_READ_MS = 15000;
+function readAcademyRows(): Promise<{ data: unknown[] | null; error: { message: string } | null }> {
+  return withDeadline(
+    async () => await supabase.from('entitlements').select('product, status, expires_at').eq('product', 'academy'),
+    'entitlement read',
+    ENTITLEMENT_READ_MS,
+  ).catch((e: unknown) => ({ data: null, error: { message: (e as Error)?.message ?? 'read failed' } }));
 }
 
 type EntitlementContextValue = {
@@ -288,10 +306,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
         if (current()) setEntitlementState('anonymous');
         return true;
       }
-      const { data, error } = await supabase
-        .from('entitlements')
-        .select('product, status, expires_at')
-        .eq('product', 'academy');
+      const { data, error } = await readAcademyRows();
       if (error) {
         // supabase-js RESOLVES with { error }; a transient RLS/network failure
         // must NOT silently downgrade a paying member to free. Keep the current
@@ -544,10 +559,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
         setEntitlementState('anonymous');
         return 'anonymous';
       }
-      const { data, error } = await supabase
-        .from('entitlements')
-        .select('product, status, expires_at')
-        .eq('product', 'academy');
+      const { data, error } = await readAcademyRows();
       if (error) {
         // Don't downgrade on a transient read failure (see deriveAndApply).
         console.warn('[entitlement] refresh read failed, keeping current tier:', error.message);

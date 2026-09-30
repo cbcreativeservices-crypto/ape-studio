@@ -17,7 +17,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
 import { colors, fonts } from '../../../theme/tokens';
-import { confirmDialog, notify } from '../../../lib/confirm';
+import { afterDialogCloses, confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import type { Workflow } from './workflowModel';
@@ -76,7 +76,7 @@ export function CalcWorkflowsScreen() {
     if (!atLimit) return true;
     // confirmDialog, not Alert.alert: RN-web's Alert is a no-op, so these
     // gates were silent taps on the web preview (B-018/B-062).
-    const seePlans = () => (navigation as any).navigate('Paywall');
+    const seePlans = afterDialogCloses(() => (navigation as any).navigate('Paywall'));
     if (limits.savedWorkflows === 0) {
       confirmDialog(
         action === 'duplicate' ? 'Customize this template?' : 'Build your own workflow?',

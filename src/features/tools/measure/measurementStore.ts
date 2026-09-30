@@ -155,14 +155,23 @@ async function migrateLegacyKey(): Promise<SavedMeasurement[]> {
   return carried;
 }
 
+/** Bumped by resetLocal (account wipe / switch). A hydrate that was already
+ *  reading when the wipe ran must not land afterwards: it would put the
+ *  PREVIOUS account's rows back on screen, and every later save would merge
+ *  into them (toddler pass 3 2026-09-30 — the generation fence the other
+ *  per-account stores gained today). */
+let generation = 0;
+
 async function hydrate(): Promise<void> {
   if (hydrated) return;
   if (!hydrating) {
+    const gen = generation;
     hydrating = (async () => {
+      let next: SavedMeasurement[];
       try {
         const carried = await migrateLegacyKey();
         const rows = await readAllRows();
-        list = carried.length > 0 && rows.length === 0
+        next = carried.length > 0 && rows.length === 0
           ? carried
           : sanitize(
               rows.flatMap((r) => {
@@ -174,8 +183,10 @@ async function hydrate(): Promise<void> {
               }),
             );
       } catch {
-        list = []; // corrupt store — start clean rather than crash
+        next = []; // corrupt store — start clean rather than crash
       }
+      if (gen !== generation) return; // wiped mid-read — the next hydrate reads the cleared store
+      list = next;
       hydrated = true;
       emit();
     })();
@@ -305,6 +316,7 @@ export async function clearStoredMeasurements(): Promise<void> {
  *  Clears the list + hydrated flags and emits so live useMeasurements() hooks
  *  re-render empty; the next read re-hydrates from the (cleared) storage. */
 export function resetLocal(): void {
+  generation++;
   list = [];
   hydrated = false;
   hydrating = null;

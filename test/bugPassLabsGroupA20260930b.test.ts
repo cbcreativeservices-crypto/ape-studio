@@ -44,7 +44,9 @@ test('labels that would collide at 9 pt were moved apart, not overlapped', () =>
   const dac = read('src/screens/lab/digital/vizDac.tsx');
   assert.match(dac, /\{ right: 10, top: h - 13 \}\]\}>VALUE ERROR/);
   const gain = read('src/screens/lab/gain/gainViz.tsx');
-  assert.match(gain, /vRegionUnder: \{ width: 64, textAlign: 'center' \}/);
+  // Pass 3: 44, not pass 2's 64 — 64 let "QUIET SOURCE" run into the next
+  // column's label on a 7-column chain at 360 wide.
+  assert.match(gain, /vRegionUnder: \{ width: 44, textAlign: 'center' \}/);
 });
 
 test('the EQ mic modules pass onRetry to the engine gate', () => {
@@ -63,17 +65,22 @@ test('a superseded start silences the generator only after a stop()', () => {
     const src = read(p);
     assert.doesNotMatch(src, unconditional, p);
     assert.match(src, /stopGenRef\.current = \+\+genRef\.current;/, p);
-    assert.match(src, /if \(stopGenRef\.current > gen \|\| !isAudioOutputEnabled\(\)\)/, p);
+    // Pass 3 tightened pass 2's `stopGen > gen` to "the stop is still the
+    // latest act" — see bugPassLabsGroupA20260930c.test.ts.
+    assert.match(src, /if \(stopGenRef\.current === genRef\.current \|\| !isAudioOutputEnabled\(\)\)/, p);
   }
   // The course voice has three starts (sine, additive, stereo) — all guarded.
   const course = read('src/screens/lab/foundations/FoundationsCourseScreen.tsx');
-  assert.equal(course.match(/if \(stopGenRef\.current > gen \|\| !isAudioOutputEnabled\(\)\) void ApeDsp\.genStop\(\);/g)?.length, 3);
+  assert.equal(course.match(/if \(stopGenRef\.current === genRef\.current \|\| !isAudioOutputEnabled\(\)\) void ApeDsp\.genStop\(\);/g)?.length, 3);
 });
 
-test('the Cymatics drive keeps one start in flight', () => {
+test('the Cymatics drive: a double-tap on ▶ leaves the newer start sounding', () => {
+  // Pass 2 pinned a one-start-in-flight lock here; pass 3 replaced it with the
+  // stop-generation rule (the lock swallowed ▶ after ■, and every ▶ while the
+  // output popup was up).
   const src = read('src/screens/lab/cymatics/useDriveTone.ts');
-  assert.match(src, /if \(!engineReady \|\| startingRef\.current\) return;\s*\n\s*startingRef\.current = true;/);
-  assert.match(src, /\} finally \{\s*\n\s*startingRef\.current = false;/);
+  assert.doesNotMatch(src, /startingRef/);
+  assert.match(src, /stopGenRef\.current = \+\+genRef\.current;/);
 });
 
 test('EQ audition plays the chip picked last, even mid-start', () => {

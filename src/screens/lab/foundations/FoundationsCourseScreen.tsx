@@ -162,6 +162,9 @@ export function useCourseTone(engineReady: boolean): ToneApi {
   // the first start was in flight), that stop landed AFTER the newer
   // genStart: silence under a lit transport. Only a stop() (or a closed gate)
   // since this start may silence the generator; a newer play owns it.
+  // Bug pass 3: and only when that stop() is still the LATEST thing — ▶ ■ ▶
+  // mashed inside one native start had the first start's genStop land after
+  // the third's genStart (`stopGen > gen` was true): silence under a lit ■.
   const stopGenRef = useRef(0);
   const freqRef = useRef(220);
   const levelRef = useRef(-24);
@@ -185,7 +188,7 @@ export function useCourseTone(engineReady: boolean): ToneApi {
           // A mute that landed while the native start was in flight wins — never
           // leave a tone sounding into a closed gate (owner 2026-09-29).
           if (gen !== genRef.current || !isAudioOutputEnabled()) {
-            if (stopGenRef.current > gen || !isAudioOutputEnabled()) void ApeDsp.genStop();
+            if (stopGenRef.current === genRef.current || !isAudioOutputEnabled()) void ApeDsp.genStop();
             return;
           }
           setPlaying(true);
@@ -259,7 +262,7 @@ export function useCourseTone(engineReady: boolean): ToneApi {
           // A mute that landed while the native start was in flight wins — never
           // leave a tone sounding into a closed gate (owner 2026-09-29).
           if (gen !== genRef.current || !isAudioOutputEnabled()) {
-            if (stopGenRef.current > gen || !isAudioOutputEnabled()) void ApeDsp.genStop();
+            if (stopGenRef.current === genRef.current || !isAudioOutputEnabled()) void ApeDsp.genStop();
             return;
           }
           setPlaying(true);
@@ -297,7 +300,7 @@ export function useCourseTone(engineReady: boolean): ToneApi {
           // A mute that landed while the native start was in flight wins — never
           // leave a tone sounding into a closed gate (owner 2026-09-29).
           if (gen !== genRef.current || !isAudioOutputEnabled()) {
-            if (stopGenRef.current > gen || !isAudioOutputEnabled()) void ApeDsp.genStop();
+            if (stopGenRef.current === genRef.current || !isAudioOutputEnabled()) void ApeDsp.genStop();
             return;
           }
           setPlaying(true);
@@ -2103,8 +2106,15 @@ export function FoundationsCourseScreen() {
   // The restore is DROPPED if the student already navigated before AsyncStorage
   // resolved — their tap wins over the stored position.
   const navigatedRef = useRef(false);
+  // Wait for `resolved` before restoring (bug pass 3 2026-09-30, the PagedLab
+  // rule): a read that landed while the tier was still unknown saw
+  // noAccountRef false, so a signed-out device resumed the PREVIOUS account's
+  // step. `resolved` flips once, bounded — a member is never held.
   useEffect(() => {
+    if (!resolved) return;
+    let alive = true;
     void AsyncStorage.getItem(STEP_KEY).then((v) => {
+      if (!alive) return;
       if (navigatedRef.current) return; // the user's own tap already won
       if (noAccountRef.current) return; // no account: always begin at the first step
       const n = v == null ? NaN : Number(v);
@@ -2113,8 +2123,11 @@ export function FoundationsCourseScreen() {
         setStep(n);
       }
     }).catch(() => {});
+    return () => {
+      alive = false;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [resolved]);
   /** Nav lock (bug hunt 2026-09-29): a double-tap on NEXT at module 13/14 ran
    *  the second tap after the re-render, where the button is already DONE ✓ —
    *  and left the lab. Taps within 400 ms of a step change are ignored, by

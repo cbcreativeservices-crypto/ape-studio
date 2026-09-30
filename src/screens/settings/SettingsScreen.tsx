@@ -333,7 +333,10 @@ ${LOCAL_LOSS}`
   const setPref = useCallback(
     (key: keyof NotificationPrefs, value: boolean) => {
       if (!prefs) return;
-      setPrefs({ ...prefs, [key]: value }); // optimistic
+      // optimistic — as an UPDATER (bug pass 3): two switches tapped in one
+      // frame both spread the same stale `prefs`, so the second tap's render
+      // put the first switch back while its server write went through.
+      setPrefs((p) => (p ? { ...p, [key]: value } : p));
       updateNotificationPref(key, value).then((ok) => {
         if (!ok) {
           setPrefs((p) => (p ? { ...p, [key]: !value } : p)); // revert

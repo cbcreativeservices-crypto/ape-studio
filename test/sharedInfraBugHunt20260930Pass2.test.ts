@@ -36,7 +36,8 @@ const code = (p: string) =>
 
 describe('Q1 — HelpKey returns to an existing Help', () => {
   test('navigate carries { pop: true }', () => {
-    assert.match(code('src/components/HelpKey.tsx'), /navigation\.navigate\('Help', search \? \{ search \} : undefined, \{ pop: true \}\)/);
+    // Pass 3: the search is always sent ('' when none) — see Pass3 R9.
+    assert.match(code('src/components/HelpKey.tsx'), /navigation\.navigate\('Help', \{ search: search \?\? '' \}, \{ pop: true \}\)/);
   });
 });
 
@@ -68,7 +69,8 @@ describe('Q3 — the gate re-presents only a root popup, after its dismissal, fo
   test('skips a hosted card; waits HOST_DISMISS_MS; checks the request generation', () => {
     assert.match(join, /if \(current !== 'closed' && !hostOpenRef\.current\)/);
     assert.match(join, /const gen = requestGen\.current;/);
-    assert.match(join, /if \(resolver\.current && requestGen\.current === gen\) setPhase\(current\);\s*\}, HOST_DISMISS_MS\);/);
+    // Pass 3 added `&& phaseRef.current === 'closed'` (see Pass3 R4).
+    assert.match(join, /if \(resolver\.current && requestGen\.current === gen[^)]*\) setPhase\(current\);\s*\}, HOST_DISMISS_MS\);/);
     assert.doesNotMatch(join, /\}, 60\);/);
   });
   test('hostOpenRef mirrors hostOpen every render', () => {

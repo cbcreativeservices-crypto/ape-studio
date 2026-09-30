@@ -46,6 +46,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const FOCAL_KEY = 'ape:mixing:focal';
 let focalCurrent: string | null = null;
+/** Chosen in THIS app run (never read from storage) — what a guest sees. */
+let focalSession: string | null = null;
 const focalListeners = new Set<() => void>();
 // A MODULE-LEVEL read: it runs at import time, so a rejection here has no
 // component to surface in and becomes a bare unhandled rejection at startup.
@@ -74,6 +76,8 @@ void AsyncStorage.getItem(FOCAL_KEY)
 export function resetMixingCommitments(): void {
   focalCurrent = null;
   prioritiesCurrent = [];
+  focalSession = null;
+  prioritiesSession = null;
   focalListeners.forEach((l) => l());
   prioritiesListeners.forEach((l) => l());
 }
@@ -95,16 +99,24 @@ export function useFocalChoice(): [string | null, (id: string) => void] {
   }, []);
   const set = useCallback((id: string) => {
     focalCurrent = id;
+    focalSession = id;
     focalListeners.forEach((l) => l());
     if (!guestRef.current) void AsyncStorage.setItem(FOCAL_KEY, id).catch(() => {});
   }, []);
-  return [focalCurrent, set];
+  // ...and nothing is RESTORED for a guest either (bug pass 3, 2026-09-30):
+  // the import-time read above restored the stored choice for everyone, so a
+  // signed-out device showed the previous account's focal point as "what you
+  // said". A guest sees only what they chose this session. useLabEndGuest
+  // waits for `resolved`, so a signed-in learner is never hidden their own.
+  return [guestRef.current ? focalSession : focalCurrent, set];
 }
 
 /* ── the AML mix-priorities commitment (page 2 → echoed at the final) ────── */
 
 const PRIORITIES_KEY = 'ape:mixing:priorities';
 let prioritiesCurrent: string[] = [];
+/** Committed in THIS app run (never read from storage) — what a guest sees. */
+let prioritiesSession: string[] | null = null;
 const prioritiesListeners = new Set<() => void>();
 void AsyncStorage.getItem(PRIORITIES_KEY)
   .then((v) => {
@@ -135,15 +147,20 @@ export function useMixPriorities(): [readonly string[], (id: string) => void] {
     };
   }, []);
   const toggle = useCallback((id: string) => {
-    prioritiesCurrent = prioritiesCurrent.includes(id)
-      ? prioritiesCurrent.filter((x) => x !== id)
-      : prioritiesCurrent.length >= 3
-        ? prioritiesCurrent
-        : [...prioritiesCurrent, id];
+    // A guest edits their OWN session list, never the restored one.
+    const base = guestRef.current ? (prioritiesSession ?? []) : prioritiesCurrent;
+    const next = base.includes(id)
+      ? base.filter((x) => x !== id)
+      : base.length >= 3
+        ? base
+        : [...base, id];
+    prioritiesCurrent = next;
+    prioritiesSession = next;
     prioritiesListeners.forEach((l) => l());
     if (!guestRef.current) void AsyncStorage.setItem(PRIORITIES_KEY, JSON.stringify(prioritiesCurrent)).catch(() => {});
   }, []);
-  return [prioritiesCurrent, toggle];
+  // Nothing restored for a guest (bug pass 3, 2026-09-30) — see useFocalChoice.
+  return [guestRef.current ? (prioritiesSession ?? []) : prioritiesCurrent, toggle];
 }
 
 /** The lab's central lesson (owner brief, verbatim) — repeated on purpose. */

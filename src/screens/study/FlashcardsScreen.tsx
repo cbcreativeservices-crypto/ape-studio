@@ -24,6 +24,7 @@ import { AccessibilityInfo, ActivityIndicator, BackHandler, FlatList, Image, Pan
 // inside full screen / the term list could not appear on iOS (and drew behind
 // on Android). The Low-Light wash comes with it.
 import { Modal } from '../../components/DimModal';
+import { HOST_DISMISS_MS } from '../../components/DimModal';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { confirmDialog } from '../../lib/confirm';
 import Svg, { Circle, Ellipse, Path } from 'react-native-svg';
@@ -674,11 +675,17 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     showTutorialRef.current(pendingTutorial);
   }, [tutorialBlocked, pendingTutorial]);
 
+  // The follow-on waits for the tutorial's Modal to finish going (bug pass 3,
+  // 2026-09-30): a chip long-press shows T3 first and then opens the term list
+  // — a second Modal — and iOS refuses a presentation while the first is still
+  // animating away, so the list the learner reached for never appeared.
+  const tutorialRef = useRef(tutorial);
+  tutorialRef.current = tutorial;
   const dismissTutorial = useCallback(() => {
-    setTutorial((cur) => {
-      cur?.onDone?.();
-      return null;
-    });
+    const done = tutorialRef.current?.onDone;
+    tutorialRef.current = null; // a double tap runs the follow-on once
+    setTutorial(null);
+    if (done) setTimeout(done, HOST_DISMISS_MS);
   }, []);
 
   // T3 opened via a category long-press: show the tutorial first, then continue

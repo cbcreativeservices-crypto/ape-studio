@@ -305,6 +305,13 @@ export function ScenariosScreen({ route }: Props) {
   };
 
   const advance = useCallback(() => {
+    // ONE ADVANCE PER ANSWER (bug pass 3, 2026-09-30). NEXT and the verdict
+    // banner both call this, and a double tap lands before the re-render that
+    // hides them — on the round's last item that ran finishRound twice: two
+    // complete_scenario_round calls, or two queued 'complete' entries offline.
+    // The answer latch is set by every judge and cleared by clearInteraction()
+    // below, so the second call finds it already released.
+    if (answeredItemRef.current === null) return;
     clearInteraction();
     const nextI = nextUnanswered(idx + 1);
     if (nextI === -1) finishRound(roundQuestions, activeRound);

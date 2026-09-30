@@ -283,7 +283,10 @@ export function SignalChainLabScreen() {
       noteAudioActivity();
     } catch (e) {
       if (gen === genRef.current) setGenError(AUDIO_UNAVAILABLE_MESSAGE);
-      ApeDsp.fxReset();
+      // Only a start that still owns the chain disarms it (bug pass 3,
+      // 2026-09-30): a SUPERSEDED start failing late reset the newer start's
+      // chain — ■ lit, the pills lit, the tone playing dry.
+      if (gen === genRef.current || !wantRef.current) ApeDsp.fxReset();
     }
   }, [fxReady, requestAudioOutput, sourceIdx, enabled, pushChain]);
 

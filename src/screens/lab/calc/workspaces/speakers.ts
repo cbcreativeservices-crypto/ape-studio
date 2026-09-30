@@ -814,6 +814,9 @@ const WS_CV70: Workspace = {
         const prated = n(v.prated);
         const tapw = n(v.tapw);
         const hr = n(v.hr);
+        // A 0 W tap adds nothing (bug pass 3, 2026-09-30): ÷0 made `more`
+        // Infinity and the answer read "— more speakers at 0 W taps fit".
+        if (!(tapw > 0)) throw new Error('tap wattage must be greater than zero');
         const usable = prated / Math.pow(10, hr / 10);
         const more = Math.max(0, Math.floor((usable - load) / tapw));
         return [

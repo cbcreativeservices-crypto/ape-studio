@@ -152,6 +152,11 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   const { entitlement, resolved } = useEntitlement();
   const guestRef = useRef(false);
   guestRef.current = resolved && entitlement === 'anonymous';
+  // A copy restored AS A GUEST is the empty guest copy. If the tier later turns
+  // out signed-in (a failed first read reads 'anonymous'), saving it would
+  // write that empty copy over real progress — credit is never removed. So a
+  // guest-loaded copy is never saved (bug pass 3, 2026-09-30).
+  const loadedAsGuestRef = useRef(false);
   const [page, setPage] = useState(0);
   const [listOpen, setListOpen] = useState(false);
   // The what's-left end screen (owner 2026-09-29) — shown in place of the page.
@@ -183,11 +188,21 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   onPageDoneRef.current = onPageDone;
 
   useEffect(() => {
-    let alive = true;
     navigatedRef.current = false;
     preloadRef.current = { done: new Set() };
+  }, [labId, pagesWithCheck.length]);
+
+  // ⛔ WAIT FOR `resolved` BEFORE RESTORING (bug pass 3, 2026-09-30). A load
+  // that landed first read guestRef as false (the tier was still unknown), so
+  // a signed-out device restored the PREVIOUS account's place. `resolved` flips
+  // once, bounded, after the first read attempt — a signed-in learner is never
+  // held, and taps made meanwhile are kept by preloadRef and merged here.
+  useEffect(() => {
+    if (!resolved) return;
+    let alive = true;
     void loadPagedProgress(labId).then((loaded) => {
       if (!alive) return;
+      loadedAsGuestRef.current = guestRef.current;
       const p: PagedProgress = guestRef.current ? { completed: [], lastPage: 0, done: false } : loaded;
       const pre = preloadRef.current;
       preloadRef.current = { done: new Set() };
@@ -201,7 +216,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
           done: completed.length >= pagesWithCheck.length,
           lastPage: pre.lastPage ?? p.lastPage,
         };
-        if (!guestRef.current) void savePagedProgress(labId, next);
+        if (!guestRef.current && !loadedAsGuestRef.current) void savePagedProgress(labId, next);
         // Same rule as markDone: the appended check page is not a lab page.
         for (const i of fresh) if (i < pages.length) onPageDoneRef.current?.(i);
       }
@@ -213,7 +228,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
     // pages.length only feeds the check-page rule above; it moves with
     // pagesWithCheck.length.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [labId, pagesWithCheck.length]);
+  }, [labId, pagesWithCheck.length, resolved]);
 
   const persist = useCallback((patch: Partial<PagedProgress>) => {
     const base = progressRef.current;
@@ -225,7 +240,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
     const next = { ...base, ...patch };
     progressRef.current = next;
     setProgress(next);
-    if (!guestRef.current) void savePagedProgress(labId, next);
+    if (!guestRef.current && !loadedAsGuestRef.current) void savePagedProgress(labId, next);
   }, [labId]);
   const goTo = useCallback((i: number) => {
     const idx = Math.max(0, Math.min(pagesWithCheck.length - 1, Math.round(i)));

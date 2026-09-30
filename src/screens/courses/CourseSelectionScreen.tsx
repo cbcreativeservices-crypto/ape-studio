@@ -58,6 +58,8 @@ import { setBundleLoaded, useBundles } from '../../features/enrollment/enrolledB
 import { isFreeEnrollGs, setActiveMany, useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { BookIcon } from '../../components/BookIcon';
 import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
+import { HOST_DISMISS_MS } from '../../components/DimModal';
+import { useOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
 import { AboutHomeSheet } from '../about/AboutHomeSheet';
 import { isFirstAppOpen } from '../../features/startHere/firstOpen';
 import { StudyAreaExplore } from './StudyAreaExplore';
@@ -546,11 +548,17 @@ function CardShimmer({ active, dims }: { active: boolean; dims: CardDims }) {
     };
   }, []);
 
+  // ⛔ LOW-LIGHT GATE (bug pass 3 2026-09-30): the featured-card sweep kept
+  // lighting up every 37 s in Low-Light Production Mode, where nothing may
+  // draw attention to itself unbidden (AttractCue / LoadPill / LabScopeSweep).
+  const suppressed = useOverlaysSuppressed();
+  const off = reduceMotion || suppressed;
+
   const angle = useSharedValue(0); // sweep rotation, 0..2π
   const glow = useSharedValue(0); // stroke opacity envelope
 
   useEffect(() => {
-    if (!active || reduceMotion) {
+    if (!active || off) {
       glow.value = 0;
       return;
     }
@@ -577,14 +585,14 @@ function CardShimmer({ active, dims }: { active: boolean; dims: CardDims }) {
       clearInterval(iv);
       glow.value = 0;
     };
-  }, [active, reduceMotion, angle, glow]);
+  }, [active, off, angle, glow]);
 
   // Start the pass at the LOWER-LEFT corner (owner 2026-08-16), travelling
   // clockwise — up the left edge, across the top, down the right. The corner's
   // sweep angle in screen coords (y down): π − atan(CARD_H/CARD_W).
   const transform = useDerivedValue(() => [{ rotate: angle.value + startRad }], [startRad]);
 
-  if (!active || reduceMotion) return null;
+  if (!active || off) return null;
   return (
     <Canvas
       pointerEvents="none"
@@ -1660,6 +1668,17 @@ export function CourseSelectionScreen() {
 
   // A lapsed member's saved Home cards stay put but can't be opened (user request
   // 2026-07-23).
+  // RENEW → Paywall waits out the dialog's own Modal (bug pass 3 2026-09-30):
+  // the Paywall is a modal presentation, and iOS refuses one while the
+  // confirm dialog is still fading out, so RENEW did nothing. Same hand-off
+  // as GlossaryScreen; one at a time, and dropped if Home unmounts first.
+  const renewHandoff = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (renewHandoff.current) clearTimeout(renewHandoff.current);
+    },
+    [],
+  );
   const membershipExpired = useCallback(() => {
     // Alert.alert is a no-op on RN-web — a lapsed user's tap did nothing at all
     // on the web preview (QA night 2026-09-01).
@@ -1667,7 +1686,13 @@ export function CourseSelectionScreen() {
       'Membership Expired',
       'Your membership has expired. Renew to open your saved Home cards and continue studying.',
       'Renew',
-      () => (navigation as any).navigate('Paywall'),
+      () => {
+        if (renewHandoff.current) return;
+        renewHandoff.current = setTimeout(() => {
+          renewHandoff.current = null;
+          (navigation as any).navigate('Paywall');
+        }, HOST_DISMISS_MS);
+      },
       { cancelText: 'Not now' },
     );
   }, [navigation]);

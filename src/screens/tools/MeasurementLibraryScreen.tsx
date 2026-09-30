@@ -96,8 +96,22 @@ function measurementShareText(m: SavedMeasurement): string {
   return `${header}\n\n${m.title}\n\n${footer}`;
 }
 
+/** One text share at a time (toddler pass 3 2026-09-30): a double tap on a
+ *  row's SHARE (text-only tools) or the bulk SHARE raised a second sheet over
+ *  the first. The image path has its own latch (shareBusyRef). */
+let textShareBusy = false;
+
 async function shareMeasurements(ms: SavedMeasurement[]): Promise<void> {
-  if (ms.length === 0) return;
+  if (ms.length === 0 || textShareBusy) return;
+  textShareBusy = true;
+  try {
+    await shareMeasurementsNow(ms);
+  } finally {
+    textShareBusy = false;
+  }
+}
+
+async function shareMeasurementsNow(ms: SavedMeasurement[]): Promise<void> {
   // Common branding (owner 2026-08-10): the SAME header + footer as every other
   // share surface — no more stale "AP&E" abbreviation, no missing footer.
   const subtitle = ms.length === 1 ? 'Saved Measurement' : `Saved Measurements · ${ms.length}`;

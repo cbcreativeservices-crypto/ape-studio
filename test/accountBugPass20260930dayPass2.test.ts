@@ -15,11 +15,12 @@ const profile = read('src/screens/profile/ProfileScreen.tsx');
 
 test('GET MEMBERSHIP from a HOSTED gate waits for the host Modal to close', () => {
   const cta = gate.slice(gate.indexOf('closeMembershipGate();\n'), gate.indexOf('accessibilityLabel="Get Academy membership"'));
-  assert.match(cta, /if \(hostedMode\) setPaywallPending\(true\);\s*else if \(navigationRef\.isReady\(\)\) navigationRef\.navigate\('Paywall'\);/);
+  // Pass 3 tied the request to the tapping host (see accountBugPass20260930dayPass3).
+  assert.match(cta, /if \(hostedMode\) setPaywallPending\(\{ host: hostId, at: Date\.now\(\) \}\);\s*else if \(navigationRef\.isReady\(\)\) navigationRef\.navigate\('Paywall'\);/);
   const effect = gate.slice(gate.indexOf('const pending = useSyncExternalStore'));
-  assert.match(effect, /if \(!focused \|\| !pending \|\| otherModalOpen\) return;/);
-  assert.match(effect, /setPaywallPending\(false\);\s*if \(navigationRef\.isReady\(\)\) navigationRef\.navigate\('Paywall'\);\s*\}, rootModalHoldMs\(\)\);/);
-  assert.match(effect, /return \(\) => clearTimeout\(t\);\s*\}, \[focused, pending, otherModalOpen\]\);/);
+  assert.match(effect, /if \(otherModalOpen\) return;/);
+  assert.match(effect, /setPaywallPending\(null\);\s*if \(navigationRef\.isReady\(\)\) navigationRef\.navigate\('Paywall'\);\s*\}, rootModalHoldMs\(\)\);/);
+  assert.match(effect, /return \(\) => clearTimeout\(t\);\s*\}, \[focused, pending, otherModalOpen, hostId\]\);/);
 });
 
 test('deliberate sign-outs are LOCAL — Log out, Guest Mode, ensureSession, recovery cancel', () => {

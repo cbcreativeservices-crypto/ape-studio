@@ -125,10 +125,14 @@ export function AuthScreen({ navigation }: Props) {
    * synchronous; the second tap is dropped.
    */
   const inFlight = useRef(false);
-  const begin = (): boolean => {
-    if (inFlight.current) return false;
+  /** Busy, unconditionally — for work a dialog starts after its action ended. */
+  const hold = () => {
     inFlight.current = true;
     setBusy(true);
+  };
+  const begin = (): boolean => {
+    if (inFlight.current) return false;
+    hold();
     return true;
   };
   const end = () => {
@@ -195,9 +199,13 @@ export function AuthScreen({ navigation }: Props) {
         'This account is signed in on another device. Continue here and sign that device out?',
         'Continue',
         () => {
+          // Held busy until it lands (bug pass 3) — the form is live again
+          // behind this dialog, and a second LOGIN mid-claim started a second
+          // sign-in and a second takeover prompt.
+          hold();
           // [16] (2026-09-07): proceed even if the claim fails (fails open per
           // the comment above) rather than a silent no-op with no .catch.
-          void claimThisDevice().then(proceed, proceed);
+          void claimThisDevice().then(proceed, proceed).finally(end);
         },
         {
           onCancel: () => {
@@ -205,7 +213,13 @@ export function AuthScreen({ navigation }: Props) {
             // scope 'local' (2026-09-30 day pass): the default is GLOBAL, which
             // revoked the OTHER device's session too — the very device the
             // person just chose to keep signed in.
-            void supabase.auth.signOut({ scope: 'local' }).catch(() => {});
+            void supabase.auth.signOut({ scope: 'local' }).catch(() => {}).finally(end);
+            // BUSY UNTIL THAT SIGN-OUT LANDS (bug pass 3, 2026-09-30). LOGIN
+            // tapped again straight after Cancel signed in while this was still
+            // in flight, and its late removal then deleted the NEW session:
+            // Continue on the second prompt went into the app signed out.
+            // (Set after the call; the promise settles on a later tick.)
+            hold();
           },
         },
       );
@@ -272,8 +286,12 @@ export function AuthScreen({ navigation }: Props) {
     // the next person fresh (this is the guest path only). Bug+Hater night B1-02.
     const finderRecord = await AsyncStorage.getItem('ape:careerfinder:v1');
     await clearLocalAccountData({ total: true });
-    resetAllLocalStores();
+    // Written back BEFORE the store reset (bug pass 3, 2026-09-30): the reset
+    // emits, a mounted Finder screen re-subscribes and re-hydrates at once, and
+    // in the old order it read the just-wiped key — loaded EMPTY, marked itself
+    // hydrated, and the guest's next answer overwrote the saved record.
     if (finderRecord) await AsyncStorage.setItem('ape:careerfinder:v1', finderRecord);
+    resetAllLocalStores();
     // The amplitude-orientation flag is a device-level onboarding flag that an
     // ACCOUNT switch deliberately keeps, so resetAllLocalStores() leaves its
     // in-memory `done` alone — but the total wipe above just removed its key,
@@ -512,7 +530,10 @@ export function AuthScreen({ navigation }: Props) {
     // password set and no single-device claim. Cancel means not signed in.
     if (verifiedFor.current !== null) {
       markIntentionalSignOut();
-      void supabase.auth.signOut({ scope: 'local' }).catch(() => {});
+      void supabase.auth.signOut({ scope: 'local' }).catch(() => {}).finally(end);
+      // Busy until it lands (bug pass 3): a LOGIN tapped straight after Cancel
+      // had its fresh session deleted by this sign-out finishing late.
+      hold();
     }
     verifiedFor.current = null;
     setMode('main');

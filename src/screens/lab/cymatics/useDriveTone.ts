@@ -97,41 +97,39 @@ export function useDriveTone(hzA: number, hzB: number | null, amplitude01: numbe
     [dualReady, additiveReady],
   );
 
-  // One start in flight at a time (bug pass 2 2026-09-30). `running` flips
-  // only once the engine is up, so a double-tap on ▶ ran start() twice; the
-  // first one then saw a newer generation and called genStop() AFTER the
-  // second genStart — silence under a lit STOP key. A stop() during the start
-  // still cancels it through the generation token.
-  const startingRef = useRef(false);
+  // `running` flips only once the engine is up, so a double-tap on ▶ runs
+  // start() twice; the first one then sees a newer generation. It may only
+  // genStop() when the LATEST act was a stop() (or the gate closed) — a newer
+  // ▶ owns the generator, and a stop landing after its genStart left silence
+  // under a lit STOP key (bug pass 2). Bug pass 3: pass 2's "one start in
+  // flight" lock is gone — it swallowed a ▶ tapped after ■ inside one native
+  // start, and while the output popup was up (or failed to present) every
+  // further ▶ was dead, so the gate's re-present-on-second-tap never ran.
+  const stopGenRef = useRef(0);
   const start = useCallback(async () => {
-    if (!engineReady || startingRef.current) return;
-    startingRef.current = true;
+    if (!engineReady) return;
+    const gen = ++genRef.current;
+    const ok = await requestAudioOutput();
+    if (!ok || gen !== genRef.current) return;
+    setError('');
+    ApeDsp.genSet(params(hzA, hzB, amplitude01, wave));
     try {
-      const gen = ++genRef.current;
-      const ok = await requestAudioOutput();
-      if (!ok || gen !== genRef.current) return;
-      setError('');
-      ApeDsp.genSet(params(hzA, hzB, amplitude01, wave));
-      try {
-        await ApeDsp.genStart();
-        // A mute that landed while the native start was in flight wins — never
-        // leave a tone sounding into a closed gate (owner 2026-09-29).
-        if (gen !== genRef.current || !isAudioOutputEnabled()) {
-          void ApeDsp.genStop();
-          return;
-        }
-        setRunning(true);
-        noteAudioActivity();
-      } catch (e) {
-        if (gen === genRef.current) setError(AUDIO_UNAVAILABLE_MESSAGE);
+      await ApeDsp.genStart();
+      // A mute that landed while the native start was in flight wins — never
+      // leave a tone sounding into a closed gate (owner 2026-09-29).
+      if (gen !== genRef.current || !isAudioOutputEnabled()) {
+        if (stopGenRef.current === genRef.current || !isAudioOutputEnabled()) void ApeDsp.genStop();
+        return;
       }
-    } finally {
-      startingRef.current = false;
+      setRunning(true);
+      noteAudioActivity();
+    } catch (e) {
+      if (gen === genRef.current) setError(AUDIO_UNAVAILABLE_MESSAGE);
     }
   }, [engineReady, requestAudioOutput, params, hzA, hzB, amplitude01, wave]);
 
   const stop = useCallback(() => {
-    genRef.current++;
+    stopGenRef.current = ++genRef.current;
     void ApeDsp.genStop();
     setRunning(false);
   }, []);

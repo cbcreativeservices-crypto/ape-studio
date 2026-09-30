@@ -128,8 +128,12 @@ export function CableInstallLabScreen() {
   }, []);
 
   // Resume (guest rule: anonymous users neither restore nor persist).
+  // ⛔ WAIT FOR `resolved` (bug pass 3, 2026-09-30; the kit/PagedLab fix):
+  // run on mount, the read saw noAccountRef false before the tier was known,
+  // so a signed-out device restored the previous account's stage, scores and
+  // run. `resolved` flips once, bounded — a signed-in learner is not held.
   useEffect(() => {
-    if (noAccountRef.current) return;
+    if (!resolved || noAccountRef.current) return;
     let alive = true;
     void (async () => {
       try {
@@ -159,7 +163,7 @@ export function CableInstallLabScreen() {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [resolved]);
 
   const persist = useCallback((nextStep: number, nextDims: CiDimScores, nextMyths: string[]) => {
     if (noAccountRef.current) return;

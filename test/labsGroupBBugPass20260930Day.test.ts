@@ -34,7 +34,8 @@ test('Sound Systems: hub and in-mode RESET keep pages, capstones, exercises and 
 test('Tuning follows the house guest rule its own end screen promises', () => {
   const t = read('src/screens/lab/tuning/TuningLabScreen.tsx');
   assert.match(t, /const guest = useLabEndGuest\(\);/);
-  assert.match(t, /if \(!guestRef\.current\) void saveTuningProgress\(next\);/);
+  // pass 3: a copy restored as a guest is never written either
+  assert.match(t, /if \(!guestRef\.current && !loadedAsGuestRef\.current\) void saveTuningProgress\(next\);/);
   assert.match(t, /guestRef\.current \? \{ completed: \[\], lastChapter: 0, done: false, mathView: false \} : stored/);
 });
 

@@ -19,6 +19,7 @@ import {
   loadEarProgress, recentAccuracy, setEarSaveBlocked, type EarProgressState,
 } from '../../../features/ear/earProgress';
 import { useLabEndGuest } from '../kit/LabEndScreen';
+import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
@@ -32,8 +33,13 @@ export function EarTrainingLabScreen() {
   // ladder is neither restored nor written (see earProgress).
   setEarSaveBlocked(useLabEndGuest());
 
+  // ⛔ WAIT FOR `resolved` (bug pass 3, 2026-09-30; the kit/PagedLab fix):
+  // before the tier is known the save-block flag reads false, so a signed-out
+  // device's first read restored the previous account's ladders.
+  const { resolved } = useEntitlement();
   useFocusEffect(
     useCallback(() => {
+      if (!resolved) return;
       let alive = true;
       void loadEarProgress().then((s) => {
         if (alive) setProgress(s);
@@ -41,7 +47,7 @@ export function EarTrainingLabScreen() {
       return () => {
         alive = false;
       };
-    }, []),
+    }, [resolved]),
   );
 
   return (

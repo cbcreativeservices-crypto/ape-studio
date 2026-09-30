@@ -4,7 +4,7 @@
  * Persisted per device; `null` = the tool's default trace colour. Mirrors
  * `useColorModePref`. Applies to the FLAT trace (COLORS/MIDI-gradient off).
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 /** Curated palette shown in the picker (first is the app default teal). */
@@ -35,18 +35,24 @@ export const WAVE_COLOR_SWATCHES = [
  *  nothing change. Ungating the door without ungating the room. */
 export function useToolColorPref(key: string): [string | null, (c: string | null) => void] {
   const [color, setColor] = useState<string | null>(null);
+  // A pick landing before the stored value was read must win (toddler pass 3
+  // 2026-09-30) — the late read used to put the OLD colour back over it.
+  const touched = useRef(false);
   useEffect(() => {
     let alive = true;
-    void (async () => {
-      const raw = await AsyncStorage.getItem(key);
-      if (alive && raw) setColor(raw);
-    })();
+    touched.current = false;
+    AsyncStorage.getItem(key)
+      .then((raw) => {
+        if (alive && !touched.current && raw) setColor(raw);
+      })
+      .catch(() => {}); // unreadable → keep the default
     return () => {
       alive = false;
     };
   }, [key]);
   const set = useCallback(
     (c: string | null) => {
+      touched.current = true;
       setColor(c);
       if (c) void AsyncStorage.setItem(key, c).catch(() => {});
       else void AsyncStorage.removeItem(key).catch(() => {});

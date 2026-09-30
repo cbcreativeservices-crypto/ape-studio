@@ -681,17 +681,28 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
               // outright — whatever was typed during a slow send was wiped,
               // draft included. Only the text that was actually sent is cleared.
               const sentRaw = body;
+              // …and the sent text is cleared even when more was typed after it
+              // (bug hunt 2026-09-30, pass 3). Pass 2 kept the WHOLE box in that
+              // case — the message already delivered plus the new words — so the
+              // next SEND delivered the first message a second time.
+              const unsent = (cur: string) =>
+                cur.startsWith(sentRaw) ? cur.slice(sentRaw.length).replace(/^\s+/, '') : cur;
               runSend(() =>
                 sendThreadMessage(thread.id, sentRaw.trim()).then(async (r) => {
                   // `thread` is the one this press was made in.
-                  if (r.ok && drafts.current.get(thread.id) === sentRaw) drafts.current.delete(thread.id);
+                  const draft = drafts.current.get(thread.id);
+                  if (r.ok && draft !== undefined) {
+                    const rest = unsent(draft);
+                    if (rest) drafts.current.set(thread.id, rest);
+                    else drafts.current.delete(thread.id);
+                  }
                   // Closed or switched while it was out: this answer is about
                   // a conversation no longer on screen — its error must not
                   // land on the next one, nor its clear wipe that one's draft.
                   if (openId.current !== thread.id) return;
                   if (!r.ok) return setErr(r.error);
                   setErr(null);
-                  setBody((cur) => (cur === sentRaw ? '' : cur));
+                  setBody(unsent);
                   await load();
                 }),
               );

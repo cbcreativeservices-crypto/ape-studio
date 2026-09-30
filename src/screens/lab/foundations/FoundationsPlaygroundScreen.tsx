@@ -270,7 +270,9 @@ export function FoundationsPlaygroundScreen() {
       // was in flight) this genStop landed AFTER that start — silence under a
       // lit ■ (bug pass 2 2026-09-30).
       if (gen !== genRef.current || !isAudioOutputEnabled()) {
-        if (stopGenRef.current > gen || !isAudioOutputEnabled()) void ApeDsp.genStop();
+        // …and only while that stop() is still the latest act (bug pass 3):
+        // ▶ ■ ▶ inside one native start must not silence the third ▶.
+        if (stopGenRef.current === genRef.current || !isAudioOutputEnabled()) void ApeDsp.genStop();
         return;
       }
       setPlaying(true);

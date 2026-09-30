@@ -346,7 +346,10 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
       noteAudioActivity();
     } catch (e) {
       if (gen === genRef.current) setGenError(AUDIO_UNAVAILABLE_MESSAGE);
-      ApeDsp.fxReset();
+      // Only a start that still owns the effect disarms it (bug pass 3,
+      // 2026-09-30): a SUPERSEDED start failing late reset the newer start's
+      // effect — ■ lit, the faders set, the tone playing dry.
+      if (gen === genRef.current || !wantRef.current) ApeDsp.fxReset();
     }
   }, [fxReady, requestAudioOutput, config, sourceIdx, values, pushAllParams]);
 

@@ -34,6 +34,7 @@ import Svg, { Circle, Line, Polyline, RadialGradient, Defs, Stop, Path } from 'r
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts } from '../../theme/tokens';
 import { animationsAllowed } from '../../features/settings/a11y';
+import { useOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
 
 export type InsideStat = {
   id: string;
@@ -231,7 +232,13 @@ export function InsideStats({
   const [box, setBox] = useState({ w: Math.max(260, winW - 94), h: Math.max(260, winW - 94) });
   const w = box.w;
   const h = box.h;
-  const anim = animationsAllowed();
+  // ⛔ LOW-LIGHT GATE, not just reduced motion (bug pass 3 2026-09-30): the
+  // lightning re-crackled every 206 ms and the gold/amber glows breathed in
+  // Low-Light Production Mode, where nothing may draw attention to itself
+  // unbidden — the rule AttractCue, LoadPill and LabScopeSweep already keep.
+  // The static (anim = false) rendering below is the existing fallback.
+  const suppressed = useOverlaysSuppressed();
+  const anim = animationsAllowed() && !suppressed;
 
   const cx = w / 2;
   const cy = h / 2;
@@ -272,7 +279,10 @@ export function InsideStats({
   // breathe as the About the Academy cue (owner 2026-09-15).
   const gold = useSharedValue(anim ? 0 : 1);
   useEffect(() => {
-    if (!anim) return;
+    if (!anim) {
+      gold.value = 1; // the static level, as when it mounts without motion
+      return;
+    }
     gold.value = withRepeat(withTiming(1, { duration: 1600, easing: Easing.inOut(Easing.ease) }), -1, true);
     return () => cancelAnimation(gold);
   }, [anim, gold]);

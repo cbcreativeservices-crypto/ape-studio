@@ -25,6 +25,7 @@ import {
   detachPaywallHandlers,
   initPurchases,
   isCancel,
+  LINKED_MESSAGE,
   restorePurchases,
 } from '../../features/commercial/purchase';
 import type { PlanId } from '../../features/commercial/iapProducts';
@@ -286,6 +287,10 @@ export function PaywallScreen({ navigation }: Props) {
           case 'none':
             // The store ANSWERED and holds nothing — the only case this copy is true.
             notify('Nothing to restore', 'No previous Academy purchase was found for this store account.');
+            return;
+          case 'linked':
+            // Verified, but on another account — not a connection problem.
+            notify('Restore didn’t finish', LINKED_MESSAGE);
             return;
           case 'unavailable':
             notify(

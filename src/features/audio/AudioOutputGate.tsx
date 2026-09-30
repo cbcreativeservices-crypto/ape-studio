@@ -184,7 +184,10 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
               const gen = requestGen.current;
               setPhase('closed');
               setTimeout(() => {
-                if (resolver.current && requestGen.current === gen) setPhase(current);
+                // …and only if nothing moved it meanwhile (bug pass 3): an
+                // ACCEPT whose write landed inside the wait has already
+                // stepped on to 'explain' — restoring 'safety' re-asked it.
+                if (resolver.current && requestGen.current === gen && phaseRef.current === 'closed') setPhase(current);
               }, HOST_DISMISS_MS);
             }
             return;

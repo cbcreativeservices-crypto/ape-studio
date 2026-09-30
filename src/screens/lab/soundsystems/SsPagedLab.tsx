@@ -117,6 +117,7 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
   const navigatedRef = useRef(false);
   const pageRef = useRef(0);
   pageRef.current = page;
+  const loadedNoSaveRef = useRef(false);
 
   const persist = useCallback((patch: Partial<PagedProgress>) => {
     const base = progressRef.current;
@@ -124,7 +125,11 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
     const next = { ...base, ...patch };
     progressRef.current = next;
     setProgress(next);
-    if (!noSaveRef.current) void savePagedProgress(labId, next);
+    // A copy restored while no-save (the empty guest copy) is never written,
+    // even once the tier clears (bug pass 3, 2026-09-30): a signed-in learner
+    // whose first tier read failed reads 'anonymous' until a retry lands, and
+    // the empty copy then overwrote their completed pages — credit removed.
+    if (!noSaveRef.current && !loadedNoSaveRef.current) void savePagedProgress(labId, next);
   }, [labId]);
   const markPageDone = useCallback((i: number) => {
     const base = progressRef.current;
@@ -140,10 +145,17 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
     if (fresh && i < pages.length) onPageDone?.(i);
   }, [persist, pagesWithCheck.length, pages.length, onPageDone]);
 
+  // ⛔ WAIT FOR `resolved` BEFORE RESTORING (bug pass 3, 2026-09-30; the
+  // kit/PagedLab fix). A load that landed first read noSaveRef as false (the
+  // tier was still unknown), so a signed-out device restored the previous
+  // account's place. `resolved` flips once, bounded — a signed-in learner is
+  // not held; pages marked or reached meanwhile are queued above and merged.
   useEffect(() => {
+    if (!resolved) return;
     let alive = true;
     void loadPagedProgress(labId).then((p) => {
       if (!alive) return;
+      loadedNoSaveRef.current = noSaveRef.current;
       const loaded = noSaveRef.current ? { completed: [], lastPage: 0, done: false } : p;
       progressRef.current = loaded;
       setProgress(loaded);
@@ -155,7 +167,7 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
     });
     return () => { alive = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [labId, pagesWithCheck.length]);
+  }, [labId, pagesWithCheck.length, resolved]);
 
   const goTo = useCallback((i: number) => {
     const idx = Math.max(0, Math.min(pagesWithCheck.length - 1, Math.round(i)));

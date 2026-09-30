@@ -82,7 +82,11 @@ const EYRING: Workspace = {
         return [
           { label: 'RT60 (EYRING)', value: eyring, quantity: 'time', unit: 's' },
           { label: 'RT60 (SABINE)', value: sabine, quantity: 'time', unit: 's', chainable: false },
-          { label: 'SABINE OVER-ESTIMATE', value: ((sabine - eyring) / sabine) * 100, quantity: 'percent', chainable: false },
+          // Over-estimate RELATIVE TO EYRING (bug pass 3, 2026-09-30): this was
+          // (S − E)/S — how much SHORTER Eyring is (15.9 % for the placeholder
+          // room) — under a label saying how far Sabine OVER-estimates
+          // (0.4025 s vs 0.3385 s is 18.9 % over).
+          { label: 'SABINE OVER-ESTIMATE', value: ((sabine - eyring) / eyring) * 100, quantity: 'percent', chainable: false },
         ];
       },
       steps: (v) => {
@@ -94,7 +98,7 @@ const EYRING: Workspace = {
         return [
           `Sabine: 0.161 × ${fmt(V)} ÷ (${fmt(S)} × ${fmt(a)}) = ${fmt(sabine)} s.`,
           `Eyring uses −ln(1−ā) = −ln(${fmt(1 - a)}) = ${fmt(-Math.log(1 - a))} in place of ā.`,
-          `Eyring: 0.161 × ${fmt(V)} ÷ (${fmt(S)} × ${fmt(-Math.log(1 - a))}) = ${fmt(eyring)} s — ${fmt(((sabine - eyring) / sabine) * 100)}% shorter than Sabine.`,
+          `Eyring: 0.161 × ${fmt(V)} ÷ (${fmt(S)} × ${fmt(-Math.log(1 - a))}) = ${fmt(eyring)} s — ${fmt(((sabine - eyring) / sabine) * 100)}% shorter than Sabine, so Sabine reads ${fmt(((sabine - eyring) / eyring) * 100)}% long.`,
         ];
       },
     },
