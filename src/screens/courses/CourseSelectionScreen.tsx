@@ -59,8 +59,7 @@ import { isFreeEnrollGs, setActiveMany, useEnrollment } from '../../features/enr
 import { BookIcon } from '../../components/BookIcon';
 import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 import { AboutHomeSheet } from '../about/AboutHomeSheet';
-import { loadPagedProgress } from '../../features/lab/pagedProgress';
-import { START_HERE_ID } from '../../features/startHere/startHereContent';
+import { isFirstAppOpen } from '../../features/startHere/firstOpen';
 import { StudyAreaExplore } from './StudyAreaExplore';
 import { AttractRing, AttractText } from '../../features/onboarding/AttractCue';
 import { useHomeAttract, noteHomeSeen, markExploreOpened, markAboutOpened, markEnrolled } from '../../features/onboarding/attractStore';
@@ -1165,13 +1164,15 @@ export function CourseSelectionScreen() {
   const sidePad = Math.max(0, Math.round((windowW - cd.w) / 2));
   const navigation = useNavigation();
   const [cards, setCards] = useState<Card[] | null>(null);
-  // Has this learner finished Start Here? (owner 2026-09-29 — new users land on
-  // it until they have.) Device-local, same record Start Here itself keeps.
-  const [startHereFinished, setStartHereFinished] = useState(false);
+  // Is this the app's FIRST open on this device? (owner 2026-09-29: "The intro
+  // lab should be the default spot only for the first time the user opens the
+  // app" — every later open lands on Glossary as normal.) null until known, so
+  // the landing below waits for the answer instead of guessing.
+  const [firstOpen, setFirstOpen] = useState<boolean | null>(null);
   useEffect(() => {
     let alive = true;
-    void loadPagedProgress(START_HERE_ID).then((p) => {
-      if (alive) setStartHereFinished(p.done);
+    void isFirstAppOpen().then((v) => {
+      if (alive) setFirstOpen(v);
     });
     return () => {
       alive = false;
@@ -1427,13 +1428,14 @@ export function CourseSelectionScreen() {
     if (!deck || deck.length === 0) return;
     const findId = (id: string) => deck.findIndex((c) => c.id === id);
     const glossaryIdx = Math.max(0, deck.findIndex((c) => c.kind === 'glossary'));
-    // NEW USERS LAND ON START HERE (owner 2026-09-29): until someone has
-    // finished Start Here, the cold-start landing is its card, not Glossary.
-    // A member's own Home default / latest Home card still wins below.
+    // THE FIRST APP OPEN LANDS ON START HERE (owner 2026-09-29); every later
+    // open lands on Glossary as normal. A member's own Home default / latest
+    // Home card still wins below.
     const startHereIdx = deck.findIndex((c) => c.kind === 'startHere');
+    if (!sessionLanded && firstOpen === null) return; // wait for the answer
     let target: number;
     if (!sessionLanded) {
-      target = !startHereFinished && startHereIdx >= 0 ? startHereIdx : glossaryIdx;
+      target = firstOpen && startHereIdx >= 0 ? startHereIdx : glossaryIdx;
       if (defaultHomeGs != null) {
         const i = findId(`home-${defaultHomeGs}`);
         if (i >= 0) target = i;
@@ -1454,7 +1456,7 @@ export function CourseSelectionScreen() {
     const t = setTimeout(() => listRef.current?.scrollToIndex({ index: target, animated: false }), 0);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cards, defaultHomeGs]);
+  }, [cards, defaultHomeGs, firstOpen]);
 
   const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
     const idx = viewableItems[0]?.index;

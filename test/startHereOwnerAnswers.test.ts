@@ -1,6 +1,6 @@
 /**
  * Owner answers 2026-09-29 on Start Here:
- *  - new users land on Start Here (until they have finished it);
+ *  - the FIRST app open lands on Start Here; every later open on Glossary;
  *  - its word links open full glossary entries WITHOUT spending weekly lookups.
  */
 import { test } from 'node:test';
@@ -26,8 +26,14 @@ test('the Start Here popup passes the built-in entry, and a preloaded entry skip
   assert.ok(pre > 0 && pre < popup.indexOf('fetchDefinitionViaGateway(hit.id)'), 'preloaded returns before the gateway call');
 });
 
-test('first landing picks Start Here until it is finished', () => {
+test('Start Here is the landing only on the first app open; Glossary after', () => {
+  // Owner 2026-09-29 (revised): "The intro lab should be the default spot only
+  // for the first time the user opens the app."
   const home = readFileSync('src/screens/courses/CourseSelectionScreen.tsx', 'utf8');
-  assert.match(home, /target = !startHereFinished && startHereIdx >= 0 \? startHereIdx : glossaryIdx;/);
-  assert.match(home, /loadPagedProgress\(START_HERE_ID\)/);
+  assert.match(home, /target = firstOpen && startHereIdx >= 0 \? startHereIdx : glossaryIdx;/);
+  assert.match(home, /isFirstAppOpen\(\)/);
+  const fo = readFileSync('src/features/startHere/firstOpen.ts', 'utf8');
+  // The flag is written on the first read, so the NEXT launch is not first.
+  assert.ok(fo.indexOf('if (seen) return false;') < fo.indexOf("setItem(FIRST_OPEN_KEY, '1')"));
+  assert.match(fo, /seenHomeBefore/);
 });

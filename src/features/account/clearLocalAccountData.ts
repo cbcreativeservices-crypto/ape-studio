@@ -128,6 +128,7 @@ const KEEP: ReadonlySet<string> = new Set<string>([
   'ape:lab:stageCollapsed',
   'ape:splCalOffset', // device mic calibration — hardware (governance R1)
   'ape:deviceId', // stable per-install id for single-device login (survives switch)
+  'ape:homeFirstOpenDone', // device's first app open already happened (Start Here landing, owner 2026-09-29)
   'ape:dev:commercialMode', // dev-only override
   'ape:dev:entitlement', // dev-only override
   'ape:devSuppressPopups', // dev-only override
