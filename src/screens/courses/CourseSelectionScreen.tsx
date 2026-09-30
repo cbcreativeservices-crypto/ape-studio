@@ -46,7 +46,7 @@ import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../../features/commercial/realAccount';
 import { SUPABASE_URL } from '../../lib/env';
 import { colors, fonts } from '../../theme/tokens';
-import { cardDimsFor, type CardDims } from './cardDims';
+import { cardDimsFor, isCompactHeader, type CardDims } from './cardDims';
 import { setLastCourse } from '../../features/dashboard/api';
 import { confirmDialog, notify } from '../../lib/confirm';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
@@ -1129,7 +1129,11 @@ export function CourseSelectionScreen() {
   // card size does not - see CARD_W above): the padding that centres the first
   // and last card. Read from the hook so rotation and an iPad Split View drag
   // re-centre the deck instead of leaving it offset by half the width change.
-  const { width: windowW } = useWindowDimensions();
+  const { width: windowW, height: windowH } = useWindowDimensions();
+  // Short window (split screen / small desktop window): drop the logo, the
+  // eyebrow line and "Start Learning" so the card fits (owner 2026-09-29).
+  const screenDims = Dimensions.get('screen');
+  const compactHeader = isCompactHeader(windowW, windowH, screenDims.width, screenDims.height);
   const cd = useCardDims();
   const sidePad = Math.max(0, Math.round((windowW - cd.w) / 2));
   const navigation = useNavigation();
@@ -1628,7 +1632,7 @@ export function CourseSelectionScreen() {
           }}
           delayLongPress={600}
         >
-          <BrandLogo size={54} />
+          {compactHeader ? null : <BrandLogo size={54} />}
         </Pressable>
         <Pressable
           onLongPress={() => {
@@ -1644,7 +1648,7 @@ export function CourseSelectionScreen() {
             Pro Audio <Text style={styles.heroAccent}>Training Academy</Text>
           </Text>
         </Pressable>
-        <Text style={styles.heroEyebrow}>PROFESSIONAL AUDIO GLOSSARY</Text>
+        {compactHeader ? null : <Text style={styles.heroEyebrow}>PROFESSIONAL AUDIO GLOSSARY</Text>}
       </View>
 
       {/* Two links above the course carousel (user request 2026-07-17): the
@@ -1734,7 +1738,7 @@ export function CourseSelectionScreen() {
         </View>
       </View>
 
-      <Text style={styles.academyTitle}>Start Learning</Text>
+      {compactHeader ? null : <Text style={styles.academyTitle}>Start Learning</Text>}
 
       {/* M8 (2026-09-07): the "stranded session" recovery banner was dead code
           (setStrandedSession was only ever called with false) and REMOVED — a
