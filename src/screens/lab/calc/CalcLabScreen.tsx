@@ -7,7 +7,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { ImageBackground, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -23,6 +22,7 @@ import { workflowStore } from './workflowStore';
 import type { Workflow } from './workflowModel';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { Modal } from '../../../components/DimModal';
+import { GlassPanel, GlassTile } from '../../tools/GlassTile';
 import type { CalcSectionId } from './calcTypes';
 
 const BG_CALC = require('../../../../assets/lab-backgrounds/calc-lab.webp');
@@ -219,28 +219,30 @@ export function CalcLabScreen() {
             (owner 2026-09-30: "instead of 10 expandable bullet list points …
             2 column of 5 rows of containers"). A tap opens that category's
             calculators in a centred popup — popups, never pulldowns. */}
+        <GlassPanel style={tablet ? undefined : styles.panelPhone}>
         <View style={styles.catGrid}>
           {SECTION_META.map((sec) => {
             const count = WORKSPACES.filter((w) => w.section === sec.id).length;
             if (count === 0) return null;
             return (
-              <Pressable
+              // The Audio Tools hub's glass hardware (owner 2026-09-30): black
+              // recess, raised bevelled glass with the softbox reflection,
+              // sinks + powers on when pressed.
+              <GlassTile
                 key={sec.id}
                 style={styles.catFrame}
+                glassStyle={[styles.catFace, tablet && styles.catFaceTablet]}
                 onPress={() => setOpenSec(sec.id)}
-                accessibilityRole="button"
                 accessibilityLabel={`${sec.title}. ${sec.note} ${count} calculators. Opens the list.`}
               >
-                <LinearGradient colors={['#4a4c52', '#3a3c42', '#2b2d31']} locations={[0, 0.45, 1]} style={styles.catFace}>
-                  <View pointerEvents="none" style={styles.tileTopLight} />
-                  <Text style={styles.catTitle} numberOfLines={2}>{sec.title}</Text>
-                  <Text style={styles.catNote} numberOfLines={3}>{sec.note}</Text>
-                  <Text style={styles.catCount}>{count} CALCULATORS ›</Text>
-                </LinearGradient>
-              </Pressable>
+                <Text style={[styles.catTitle, tablet && styles.catTitleTablet]} numberOfLines={2}>{sec.title}</Text>
+                <Text style={[styles.catNote, tablet && styles.catNoteTablet]} numberOfLines={4}>{sec.note}</Text>
+                <Text style={[styles.catCount, tablet && styles.catCountTablet]}>{count} CALCULATORS ›</Text>
+              </GlassTile>
             );
           })}
         </View>
+        </GlassPanel>
         {COMING_SOON.map((group) => (
           <View key={group.title} style={{ gap: 6 }}>
             <Text style={styles.sectionTitle}>{group.title}</Text>
@@ -278,26 +280,24 @@ export function CalcLabScreen() {
                   <Text style={styles.popClose}>✕</Text>
                 </Pressable>
               </View>
-              <ScrollView contentContainerStyle={styles.grid}>
+              <ScrollView>
+                <GlassPanel style={styles.grid}>
                 {openItems.map((w) => (
-                  <Pressable
+                  <GlassTile
                     key={w.id}
                     style={[styles.tileFrame, tablet && styles.tileFrameTablet]}
+                    glassStyle={styles.tile}
                     onPress={() => {
                       setOpenSec(null);
                       navigation.navigate('CalcWorkspace', { id: w.id });
                     }}
-                    accessibilityRole="button"
                     accessibilityLabel={`${w.name} — ${w.tagline}`}
                   >
-                    {/* Graphite instrument plate (owner 2026-08-23). */}
-                    <LinearGradient colors={['#4a4c52', '#3a3c42', '#2b2d31']} locations={[0, 0.45, 1]} style={styles.tile}>
-                      <View pointerEvents="none" style={styles.tileTopLight} />
-                      <Text style={styles.tileName} numberOfLines={2}>{w.name}</Text>
-                      <Text style={styles.tileTag} numberOfLines={2}>{w.tagline}</Text>
-                    </LinearGradient>
-                  </Pressable>
+                    <Text style={styles.tileName} numberOfLines={2}>{w.name}</Text>
+                    <Text style={styles.tileTag} numberOfLines={2}>{w.tagline}</Text>
+                  </GlassTile>
                 ))}
+                </GlassPanel>
               </ScrollView>
             </View>
           ) : null}
@@ -323,17 +323,19 @@ const styles = StyleSheet.create({
   cardName: { fontFamily: fonts.oswaldMedium, fontSize: 15.5, letterSpacing: 0.5, color: colors.textPrimary },
   // The ten category containers: 2 columns × 5 rows (owner 2026-09-30).
   catGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 10 },
-  catFrame: {
-    width: '48.5%',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(180,91,255,.55)', // the lab's purple
-    overflow: 'hidden',
-  },
-  catFace: { minHeight: 132, padding: 12, gap: 5, justifyContent: 'space-between' },
+  // The recess (GlassTile supplies the rim, the black cut and the glass).
+  catFrame: { width: '48.5%' },
+  // Phones: a thinner panel margin so the two containers keep their room.
+  panelPhone: { padding: 7 },
+  catFace: { minHeight: 132, padding: 12, gap: 5, justifyContent: 'space-between', backgroundColor: '#101116' },
   catTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1, color: colors.amber },
   catNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 16, color: '#d4d6da', flex: 1 },
   catCount: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.1, color: colors.purple },
+  // Tablet: the containers are ~370 pt wide, so the type grows with them.
+  catFaceTablet: { minHeight: 150, padding: 16 },
+  catTitleTablet: { fontSize: 19 },
+  catNoteTablet: { fontSize: 15, lineHeight: 20 },
+  catCountTablet: { fontSize: 13 },
   // The category popup (centred).
   popBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.65)', alignItems: 'center', justifyContent: 'center', padding: 16 },
   popCard: {
@@ -355,20 +357,13 @@ const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   // Graphite instrument plate: black keyline frame wrapping a machined face.
   tileFrameTablet: { width: '32%' },
-  tileFrame: {
-    width: '48%',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#000',
-    overflow: 'hidden',
-  },
+  tileFrame: { width: '48%' },
   tile: {
-    borderRadius: 9,
     paddingVertical: 12,
     paddingHorizontal: 12,
     gap: 3,
+    backgroundColor: '#101116',
   },
-  tileTopLight: { position: 'absolute', top: 0, left: 8, right: 8, height: 1, backgroundColor: 'rgba(255,255,255,0.16)' },
   tileName: { fontFamily: fonts.oswaldMedium, fontSize: 15, letterSpacing: 0.3, color: '#f2f3f5' },
   tileTag: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 16, color: '#c7cace' },
   chainBanner: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17, color: '#5bff85' },

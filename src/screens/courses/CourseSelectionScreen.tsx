@@ -46,7 +46,7 @@ import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../../features/commercial/realAccount';
 import { SUPABASE_URL } from '../../lib/env';
 import { colors, fonts } from '../../theme/tokens';
-import { cardDimsFor, isCompactHeader, type CardDims } from './cardDims';
+import { dotRowFit, cardDimsFor, isCompactHeader, type CardDims } from './cardDims';
 import { setLastCourse } from '../../features/dashboard/api';
 import { confirmDialog, notify } from '../../lib/confirm';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
@@ -614,6 +614,24 @@ function CardShimmer({ active, dims }: { active: boolean; dims: CardDims }) {
   );
 }
 
+/**
+ * A card's caption above the frame, ALWAYS one line (small-screen pass
+ * 2026-09-30): "FREE · NEW TO AUDIO? (BEG LEVEL)" wrapped to two clipped lines
+ * on a 360-wide Android phone. The house 2.2 letter-spacing tightens to fit
+ * the card width (estimate: Oswald SemiBold 12 ≈ 6.1 pt a glyph), and on
+ * native the font may shrink a little more if a device font runs wide.
+ */
+function Eyebrow({ text, color, w }: { text: string; color: string; w: number }) {
+  const n = Math.max(1, text.length);
+  const avail = w - 8;
+  const ls = Math.max(0.3, Math.min(2.2, (avail - n * 6.1) / Math.max(1, n - 1)));
+  return (
+    <Text style={[styles.cardAboveText, { color, letterSpacing: ls }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>
+      {text}
+    </Text>
+  );
+}
+
 /** One carousel card — full-bleed art (when available) + gradient + overlay. */
 function CourseCardView({
   item,
@@ -672,7 +690,7 @@ function CourseCardView({
     return (
       <View style={[styles.cardOuter, cd.outer]}>
         <View style={styles.cardAbove}>
-          <Text style={[styles.cardAboveText, { color: '#5bb0ff' }]}>SPECIALIZATION CERTIFICATES</Text>
+          <Eyebrow color={'#5bb0ff'} w={cd.w} text={'SPECIALIZATION CERTIFICATES'} />
           <View style={[styles.cardAboveRule, { backgroundColor: '#5bb0ff' }]} />
         </View>
         <Pressable
@@ -730,7 +748,7 @@ function CourseCardView({
     return (
       <View style={[styles.cardOuter, cd.outer]}>
         <View style={styles.cardAbove}>
-          <Text style={[styles.cardAboveText, { color: '#c4a2ff' }]}>Professional Program Certificate</Text>
+          <Eyebrow color={'#c4a2ff'} w={cd.w} text={'Professional Program Certificate'} />
           <View style={[styles.cardAboveRule, { backgroundColor: '#c4a2ff' }]} />
         </View>
         {/* Not announced as a button — same reason as the other cards: it
@@ -767,7 +785,7 @@ function CourseCardView({
     return (
       <View style={[styles.cardOuter, cd.outer]}>
         <View style={styles.cardAbove}>
-          <Text style={[styles.cardAboveText, { color: '#c4a2ff' }]}>MY TOPIC</Text>
+          <Eyebrow color={'#c4a2ff'} w={cd.w} text={'MY TOPIC'} />
           <View style={[styles.cardAboveRule, { backgroundColor: '#c4a2ff' }]} />
         </View>
         <Pressable onPress={() => onOpenTopic(item.gs)} accessibilityRole="button" accessibilityLabel={`Study ${item.name}`}>
@@ -801,7 +819,7 @@ function CourseCardView({
     return (
       <View style={[styles.cardOuter, cd.outer]}>
         <View style={styles.cardAbove}>
-          <Text style={[styles.cardAboveText, { color: tint }]}>{label}</Text>
+          <Eyebrow color={tint} w={cd.w} text={label} />
           <View style={[styles.cardAboveRule, { backgroundColor: tint }]} />
         </View>
         <Pressable
@@ -838,7 +856,7 @@ function CourseCardView({
           {/* Members never see "free" marketing (owner 2026-09-29): it tells a
               free user what membership adds, and only points out to a member
               what they could have had for nothing. */}
-          <Text style={[styles.cardAboveText, { color: '#5bff85' }]}>{isMember ? 'TRAINING LABS' : 'FREE TO BEGIN AND EXPLORE'}</Text>
+          <Eyebrow color={'#5bff85'} w={cd.w} text={isMember ? 'TRAINING LABS' : 'FREE TO BEGIN AND EXPLORE'} />
           <View style={[styles.cardAboveRule, { backgroundColor: '#5bff85' }]} />
         </View>
         {/* Whole-card tap, but NOT announced as a button: the real button is
@@ -899,7 +917,7 @@ function CourseCardView({
     return (
       <View style={[styles.cardOuter, cd.outer]}>
         <View style={styles.cardAbove}>
-          <Text style={[styles.cardAboveText, { color: '#5bff85' }]}>{isMember ? 'NEW TO AUDIO? (BEG LEVEL)' : 'FREE · NEW TO AUDIO? (BEG LEVEL)'}</Text>
+          <Eyebrow color={'#5bff85'} w={cd.w} text={isMember ? 'NEW TO AUDIO? (BEG LEVEL)' : 'FREE · NEW TO AUDIO? (BEG LEVEL)'} />
           <View style={[styles.cardAboveRule, { backgroundColor: '#5bff85' }]} />
         </View>
         {/* Whole-card tap without a button role — the START HERE key inside is
@@ -953,7 +971,7 @@ function CourseCardView({
     return (
       <View style={[styles.cardOuter, cd.outer]}>
         <View style={styles.cardAbove}>
-          <Text style={[styles.cardAboveText, { color }]}>{eyebrow}</Text>
+          <Eyebrow color={color} w={cd.w} text={eyebrow} />
           <View style={[styles.cardAboveRule, { backgroundColor: color }]} />
         </View>
         {/* Whole-card tap without a button role — the key inside is the real
@@ -980,7 +998,7 @@ function CourseCardView({
     return (
       <View style={[styles.cardOuter, cd.outer]}>
         <View style={styles.cardAbove}>
-          <Text style={[styles.cardAboveText, { color: '#ffc64d' }]}>STUDY AREA</Text>
+          <Eyebrow color={'#ffc64d'} w={cd.w} text={'STUDY AREA'} />
           <View style={[styles.cardAboveRule, { backgroundColor: '#ffc64d' }]} />
         </View>
         <Pressable onPress={openArea} accessible={false}>
@@ -1221,7 +1239,7 @@ function CourseCardView({
     <View style={[styles.cardOuter, cd.outer]}>
       {eyebrow ? (
         <View style={styles.cardAbove}>
-          <Text style={[styles.cardAboveText, { color: eyebrowColor }]}>{eyebrow}</Text>
+          <Eyebrow color={eyebrowColor} w={cd.w} text={eyebrow} />
           <View style={[styles.cardAboveRule, { backgroundColor: eyebrowColor }]} />
         </View>
       ) : null}
@@ -1504,6 +1522,7 @@ export function CourseSelectionScreen() {
     // Home Setup now owns course selection + default position.
     return cards;
   }, [cards, entitlement, homeGs, homeBundleKeys, bundles, v3NameIndex]);
+  const dotFit = dotRowFit(displayDeck?.length ?? 0, windowW);
 
 
   // Latest deck for the (stable) onViewableItemsChanged callback to read.
@@ -1947,10 +1966,13 @@ export function CourseSelectionScreen() {
         }}
       />
 
+      {/* ONE ROW of dots, always (small-screen pass 2026-09-30): the two new
+          cards made the row wrap on a 375-wide phone, and the second row pushed
+          the carousel down and clipped the card captions. */}
       {/* Push the scroll dots down to sit just above the bottom nav bar. */}
       <View style={{ flex: 1 }} />
 
-      <View style={styles.dots}>
+      <View style={[styles.dots, { gap: dotFit.gap }]}>
         {(displayDeck ?? []).map((c, i) => {
           const color = dotColorFor(c);
           const active = i === activeIdx;
@@ -1959,9 +1981,9 @@ export function CourseSelectionScreen() {
               key={c.id}
               style={[
                 styles.dot,
-                { backgroundColor: color, opacity: active ? 1 : 0.4 },
+                { width: dotFit.size, height: dotFit.size, backgroundColor: color, opacity: active ? 1 : 0.4 },
                 active && {
-                  width: 18,
+                  width: dotFit.size + 11,
                   shadowColor: color,
                   shadowOpacity: 1,
                   shadowRadius: 6,

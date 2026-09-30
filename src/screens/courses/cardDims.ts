@@ -66,3 +66,21 @@ export function cardDimsFor(windowW: number, windowH: number, screenW: number, s
   const w = Math.max(phone.w, Math.min(Math.round(tallest / PHONE_CARD_RATIO), Math.round(windowW * 0.46)));
   return dims(w, Math.round(w * PHONE_CARD_RATIO));
 }
+
+/**
+ * The carousel's dot row ALWAYS fits one line (small-screen pass 2026-09-30).
+ * Adding the Calculator + Career Finder cards made 7-pt dots with 6-pt gaps
+ * wrap on a 375-wide phone; the second row pushed the carousel down and
+ * clipped the card captions. Keep the house size when it fits; otherwise
+ * tighten the gap (to 3) and then the dot (to 4) until it does.
+ */
+export function dotRowFit(count: number, windowW: number): { size: number; gap: number } {
+  const avail = Math.max(0, windowW - 32); // the row's side margins
+  const need = (size: number, gap: number) => count * size + 11 + Math.max(0, count - 1) * gap; // +11: the wide active dot
+  for (const size of [7, 6, 5, 4]) {
+    for (const gap of [6, 5, 4, 3]) {
+      if (need(size, gap) <= avail) return { size, gap };
+    }
+  }
+  return { size: 4, gap: 2 };
+}
