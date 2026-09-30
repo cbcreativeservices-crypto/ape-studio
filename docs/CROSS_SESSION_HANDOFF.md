@@ -214,6 +214,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-30 10:18 · ccode · 9f392572
+changed: Bug pass 3 of 3 (2026-09-30 day): 69 new fixes + 10 corrections to earlier-pass fixes (79 total; the commit subject's split is wrong)
+affects other side: nothing (client only; validate-purchase / redeem_access_code calls now time out client-side at 30 s / bounded — server unchanged)
+needs: nothing
+
+
 ### 2026-09-30 09:57 · ccode · 56dc5ef2
 changed: Day bug pass 2 of 3 (2026-09-30): 82 fixes
 affects other side: nothing (client only)
