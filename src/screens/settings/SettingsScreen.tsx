@@ -870,6 +870,19 @@ ${LOCAL_LOSS}`
                       : 'FREE'}
             </Text>
           </View>
+          {/* Members manage their membership HERE (owner 2026-09-30): the
+              Home / Curriculum "Membership" links are hidden from them. */}
+          {isMember ? (
+            <Pressable
+              style={[styles.row, styles.rowBorder]}
+              onPress={() => (navigation as any).navigate('Paywall')}
+              accessibilityRole="button"
+              accessibilityLabel="Manage membership"
+            >
+              <Text style={styles.rowLabel}>Manage membership</Text>
+              <Text style={styles.chevron}>›</Text>
+            </Pressable>
+          ) : null}
           <Pressable
             style={styles.row}
             onPress={() => {

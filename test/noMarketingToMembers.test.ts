@@ -35,3 +35,12 @@ test('every other surface branches its free / membership copy on membership', ()
   ];
   for (const [f, re] of cases) assert.match(src(f), re, f);
 });
+
+test('members reach Membership from Settings; the header links are for non-members only', () => {
+  // Owner 2026-09-30: "for members: remove membership link in top right and
+  // have members find it in settings instead".
+  assert.match(src('src/screens/courses/CourseSelectionScreen.tsx'), /\{resolved && !isMember \? \(\s*<Pressable\s*style=\{\[styles\.membershipBtn/);
+  assert.match(src('src/screens/curriculum/CurriculumScreen.tsx'), /\{tierResolved && !isMember \? \(\s*<Pressable\s*hitSlop=\{6\}\s*style=\{\[styles\.membershipCta/);
+  const settings = src('src/screens/settings/SettingsScreen.tsx');
+  assert.match(settings, /\{isMember \? \(\s*<Pressable[\s\S]{0,200}navigate\('Paywall'\)[\s\S]{0,200}Manage membership/);
+});

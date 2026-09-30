@@ -1286,7 +1286,7 @@ export function CourseSelectionScreen() {
     requestAnimationFrame(() => listRef.current?.scrollToIndex({ index: activeIdx, animated: false }));
   }, [windowW, activeIdx]);
   // CM2 — commercial mode + entitlement (mock provider; server truth later).
-  const { commercialMode, entitlement, caps, resolved, setCommercialMode, setEntitlement } = useEntitlement();
+  const { commercialMode, entitlement, caps, resolved, isMember, setCommercialMode, setEntitlement } = useEntitlement();
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   // Top-left "About" text button → the About popup (owner 2026-08-12).
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -1732,16 +1732,20 @@ export function CourseSelectionScreen() {
       <AboutHomeSheet visible={aboutOpen} onClose={() => setAboutOpen(false)} />
 
       {/* Top-right Membership button (owner 2026-08-12): opposite About →
-          opens the academy Paywall. Same absolute-corner treatment. */}
-      <Pressable
-        style={[styles.membershipBtn, { top: insets.top + 8 }]}
-        onPress={() => (navigation as any).navigate('Paywall')}
-        hitSlop={12}
-        accessibilityRole="button"
-        accessibilityLabel="Membership"
-      >
-        <Text style={styles.aboutBtnText}>Membership</Text>
-      </Pressable>
+          opens the academy Paywall. Same absolute-corner treatment.
+          NOT for members (owner 2026-09-30): they manage their membership
+          from Settings › MEMBERSHIP. Hidden until the tier is known. */}
+      {resolved && !isMember ? (
+        <Pressable
+          style={[styles.membershipBtn, { top: insets.top + 8 }]}
+          onPress={() => (navigation as any).navigate('Paywall')}
+          hitSlop={12}
+          accessibilityRole="button"
+          accessibilityLabel="Membership"
+        >
+          <Text style={styles.aboutBtnText}>Membership</Text>
+        </Pressable>
+      ) : null}
 
       {/* Home-screen hero: large, centered logo + wordmark, dropped a little
           lower so this reads as the app's front door, not a small header

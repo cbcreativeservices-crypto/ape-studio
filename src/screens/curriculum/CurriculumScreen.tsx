@@ -123,7 +123,7 @@ export function CurriculumView({
   // tapping it opens the green container as a popup.
   const [showFinder, setShowFinder] = useState(false);
   // Members never see "free" marketing (owner 2026-09-29).
-  const { isMember } = useEntitlement();
+  const { isMember, resolved: tierResolved } = useEntitlement();
   // Curriculum view split (owner 2026-09-15): TOPICS (flat list of every topic)
   // vs SUBJECTS (the expandable subject → topics tree).
   const [curTab, setCurTab] = useState<'topics' | 'subjects'>('subjects');
@@ -377,15 +377,18 @@ export function CurriculumView({
           <AttractRing active={!aboutOpened} />
           <Text style={styles.aboutCtaText} numberOfLines={1}>About the Academy</Text>
         </Pressable>
-        <Pressable
-          hitSlop={6}
-          style={[styles.membershipCta, styles.halfFlex]}
-          onPress={() => (navigation as { navigate: (name: 'Paywall') => void }).navigate('Paywall')}
-          accessibilityRole="button"
-          accessibilityLabel="Membership"
-        >
-          <Text style={styles.membershipText} numberOfLines={1}>Membership</Text>
-        </Pressable>
+        {/* Not for members (owner 2026-09-30): Settings › MEMBERSHIP. */}
+        {tierResolved && !isMember ? (
+          <Pressable
+            hitSlop={6}
+            style={[styles.membershipCta, styles.halfFlex]}
+            onPress={() => (navigation as { navigate: (name: 'Paywall') => void }).navigate('Paywall')}
+            accessibilityRole="button"
+            accessibilityLabel="Membership"
+          >
+            <Text style={styles.membershipText} numberOfLines={1}>Membership</Text>
+          </Pressable>
+        ) : null}
       </View>
 
       {/* "Academy at a Glance" hero (owner concept 2026-09-15): a HUB-AND-SPOKE
