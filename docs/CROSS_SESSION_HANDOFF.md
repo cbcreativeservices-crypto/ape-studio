@@ -214,6 +214,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-30 08:05 · ccode · 7e1ea038
+changed: Lab menus (Fundamentals + Advanced Training) use the glass tile layout
+affects other side: nothing
+needs: nothing
+
+
 ### 2026-09-30 07:57 · ccode · a9c660b5
 changed: Morning list: centred formula key, hosted membership lock, offline sign-out, SPL NOT NOW, chain CLEAR
 affects other side: nothing
