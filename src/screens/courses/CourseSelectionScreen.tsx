@@ -74,6 +74,12 @@ type Card =
   /** START HERE (owner 2026-09-29): the free beginner experience — its own
    *  entity, beside Pro Audio Safety. Always free, never gated, no credit. */
   | { kind: 'startHere'; id: 'startHere' }
+  /** Audio Calculator Laboratory (owner 2026-09-30) — its own card, between
+   *  Tools and Glossary; PURPLE frame (the calculators' theme). */
+  | { kind: 'calculators'; id: 'calculators' }
+  /** Audio Career Finder (owner 2026-09-30) — its own card, between Glossary
+   *  and Start Here; GREEN frame (free). */
+  | { kind: 'careerFinder'; id: 'careerFinder' }
   /** Free-topic taster card (Booth 2026-07-11) — gs0 / gs36, after Glossary. */
   | { kind: 'freeTopic'; id: string; gs: number; name: string; courseOrder: number }
   /** Audio-field topic card (legacy kind name 'comingTopic'; owner 2026-08-10):
@@ -239,9 +245,13 @@ function useCardDims(): CardDims {
 export function deckHeadline(kind: Card['kind'] | undefined): string {
   switch (kind) {
     case 'lab':
-      return 'Start Learning';
+      return 'Start Interactive Laboratories'; // owner 2026-09-30
     case 'tools':
       return 'Measure Audio';
+    case 'calculators':
+      return 'Calculate Audio';
+    case 'careerFinder':
+      return 'Find Your Audio Career';
     case 'glossary':
       return 'Look Up a Term';
     case 'startHere':
@@ -397,6 +407,10 @@ function rawCardTitle(item: Card): string | null {
       return 'Audio Fundamentals & Advanced Training Labs';
     case 'startHere':
       return 'Start Here: Your First Steps in Audio';
+    case 'calculators':
+      return 'Audio Calculator Laboratory';
+    case 'careerFinder':
+      return 'Audio Career Finder';
     case 'freeTopic':
     case 'comingTopic':
     case 'showcase':
@@ -420,8 +434,11 @@ function dotColorFor(card: Card): string {
     case 'glossary':
     case 'lab':
     case 'startHere':
+    case 'careerFinder':
     case 'freeTopic':
       return colors.green; // free / included
+    case 'calculators':
+      return colors.purple; // the calculators' purple theme
     case 'comingTopic':
     case 'showcase':
       return colors.amber; // standalone topic / study-area showcase
@@ -605,6 +622,8 @@ function CourseCardView({
   onOpenTools,
   onOpenLab,
   onOpenStartHere,
+  onOpenCalculators,
+  onOpenCareerFinder,
   onOpenPublic,
   onLockedPress,
   onOpenMore,
@@ -621,6 +640,10 @@ function CourseCardView({
   onOpenLab: () => void;
   /** Open Start Here: Your First Steps in Audio (free, guests included). */
   onOpenStartHere: () => void;
+  /** Open the Audio Calculator Laboratory. */
+  onOpenCalculators: () => void;
+  /** Open the Audio Career Finder. */
+  onOpenCareerFinder: () => void;
   /** CM6: open a public course → its commercial dashboard. `isFreeTopic` marks
    *  the free-topic taster cards, which a guest may open (paid cards are gated). */
   onOpenPublic: (order: number, isFreeTopic?: boolean, focusGs?: number) => void;
@@ -876,7 +899,7 @@ function CourseCardView({
     return (
       <View style={[styles.cardOuter, cd.outer]}>
         <View style={styles.cardAbove}>
-          <Text style={[styles.cardAboveText, { color: '#5bff85' }]}>{isMember ? 'NEW TO AUDIO?' : 'FREE · NEW TO AUDIO?'}</Text>
+          <Text style={[styles.cardAboveText, { color: '#5bff85' }]}>{isMember ? 'NEW TO AUDIO? (BEG LEVEL)' : 'FREE · NEW TO AUDIO? (BEG LEVEL)'}</Text>
           <View style={[styles.cardAboveRule, { backgroundColor: '#5bff85' }]} />
         </View>
         {/* Whole-card tap without a button role — the START HERE key inside is
@@ -888,6 +911,60 @@ function CourseCardView({
             </CardArt>
           ) : (
             <View style={[styles.card, cd.card, styles.cardNoImg, { borderColor: 'rgba(55,224,95,.6)' }]}>{startInner}</View>
+          )}
+        </Pressable>
+      </View>
+    );
+  }
+  // CALCULATORS + CAREER FINDER (owner 2026-09-30): each its own card, same
+  // image-backed language as Start Here. Calculators wear the calculators'
+  // PURPLE; the Career Finder GREEN (free). Art arrives from the owner — until
+  // it is in CARD_IMAGE the card paints its solid fallback.
+  if (item.kind === 'calculators' || item.kind === 'careerFinder') {
+    const calc = item.kind === 'calculators';
+    const url = cardImageUrl(item.kind);
+    const color = calc ? '#c4a2ff' : '#5bff85';
+    const border = calc ? 'rgba(150,90,220,.6)' : 'rgba(55,224,95,.6)';
+    const eyebrow = calc ? 'AUDIO CALCULATORS' : isMember ? 'CAREER DISCOVERY' : 'FREE · CAREER DISCOVERY';
+    const onPress = calc ? onOpenCalculators : onOpenCareerFinder;
+    const inner = (
+      <>
+        <LinearGradient
+          colors={['rgba(8,8,10,0.55)', 'rgba(8,8,10,0)', 'rgba(8,8,10,0.45)', 'rgba(8,8,10,0.95)']}
+          locations={[0, 0.3, 0.58, 1]}
+          style={StyleSheet.absoluteFill}
+        />
+        <View>
+          <Text style={styles.cardTitle}>{displayCardTitle(item)}</Text>
+        </View>
+        <View style={{ alignItems: 'center' }}>
+          <View style={{ width: cd.btnW }}>
+            <GlassButton
+              label={calc ? 'OPEN CALCULATORS' : 'OPEN CAREER FINDER'}
+              tint={calc ? 'purple' : 'green'}
+              height={50}
+              fontSize={13}
+              onPress={onPress}
+            />
+          </View>
+        </View>
+      </>
+    );
+    return (
+      <View style={[styles.cardOuter, cd.outer]}>
+        <View style={styles.cardAbove}>
+          <Text style={[styles.cardAboveText, { color }]}>{eyebrow}</Text>
+          <View style={[styles.cardAboveRule, { backgroundColor: color }]} />
+        </View>
+        {/* Whole-card tap without a button role — the key inside is the real
+            button (same reason as the lab card above). */}
+        <Pressable onPress={onPress} accessible={false}>
+          {url ? (
+            <CardArt uri={url} style={[styles.card, cd.card, { borderColor: border }]} imageStyle={styles.cardImg}>
+              {inner}
+            </CardArt>
+          ) : (
+            <View style={[styles.card, cd.card, styles.cardNoImg, { borderColor: border }]}>{inner}</View>
           )}
         </Pressable>
       </View>
@@ -1285,7 +1362,11 @@ export function CourseSelectionScreen() {
         // request 2026-07-26).
         { kind: 'lab', id: 'lab' },
         { kind: 'tools', id: 'tools' },
+        // Owner 2026-09-30: Calculators between Tools and Glossary; Career
+        // Finder between Glossary and Start Here — each its own card.
+        { kind: 'calculators', id: 'calculators' },
         { kind: 'glossary', id: 'glossary' },
+        { kind: 'careerFinder', id: 'careerFinder' },
         // START HERE (owner 2026-09-29: "next to Pro Audio Safety") — the free
         // beginner experience, first of the free run so a new learner meets
         // it in the Glossary card's right-hand peek on the very first screen.
@@ -1379,7 +1460,15 @@ export function CourseSelectionScreen() {
       // 2026-07-26) + Tools + Glossary, in deck order.
       // Start Here rides with them (owner 2026-09-29: it is always free and
       // always reachable from its own Home card).
-      const fixed = cards.filter((c) => c.kind === 'lab' || c.kind === 'tools' || c.kind === 'glossary' || c.kind === 'startHere');
+      const fixed = cards.filter(
+        (c) =>
+          c.kind === 'lab' ||
+          c.kind === 'tools' ||
+          c.kind === 'calculators' ||
+          c.kind === 'glossary' ||
+          c.kind === 'careerFinder' ||
+          c.kind === 'startHere',
+      );
       // gs3081 "Audio Fundamentals" is the LAB-PROXY topic: it exists only so
       // finishing every Audio Fundamentals lab can mark one achievement complete
       // for the certificate core. It is not a study topic and must never be a
@@ -1508,6 +1597,14 @@ export function CourseSelectionScreen() {
 
   const openStartHere = useCallback(() => {
     (navigation as any).navigate('StartHere');
+  }, [navigation]);
+
+  const openCalculators = useCallback(() => {
+    (navigation as any).navigate('CalcLab');
+  }, [navigation]);
+
+  const openCareerFinder = useCallback(() => {
+    (navigation as any).navigate('CareerFinder');
   }, [navigation]);
 
   const openLab = useCallback(() => {
@@ -1807,6 +1904,8 @@ export function CourseSelectionScreen() {
               onOpenTools={openTools}
               onOpenLab={openLab}
               onOpenStartHere={openStartHere}
+              onOpenCalculators={openCalculators}
+              onOpenCareerFinder={openCareerFinder}
               onOpenPublic={openPublicCourse}
               onLockedPress={() => setUpgradeOpen(true)}
               onOpenMore={openMore}

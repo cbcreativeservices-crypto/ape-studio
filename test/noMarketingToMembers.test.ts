@@ -13,7 +13,8 @@ const src = (p: string) => readFileSync(p, 'utf8');
 test('Home card eyebrows: plain labels for members', () => {
   const s = src('src/screens/courses/CourseSelectionScreen.tsx');
   assert.match(s, /isMember \? 'TRAINING LABS' : 'FREE TO BEGIN AND EXPLORE'/);
-  assert.match(s, /isMember \? 'NEW TO AUDIO\?' : 'FREE · NEW TO AUDIO\?'/);
+  assert.match(s, /isMember \? 'NEW TO AUDIO\? \(BEG LEVEL\)' : 'FREE · NEW TO AUDIO\? \(BEG LEVEL\)'/);
+  assert.match(s, /isMember \? 'CAREER DISCOVERY' : 'FREE · CAREER DISCOVERY'/);
   assert.match(s, /isMember \? 'MEASUREMENT TOOLS' : 'INCLUDED FOR EVERYONE'/);
   assert.match(s, /isMember \? 'REFERENCE' : 'INCLUDED FOR EVERYONE'/);
   assert.match(s, /isMember \? 'TOPIC' : 'FREE TOPIC'/);
