@@ -22,6 +22,8 @@ import { useChainValue } from './chainStore';
 import { workflowStore } from './workflowStore';
 import type { Workflow } from './workflowModel';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
+import { Modal } from '../../../components/DimModal';
+import type { CalcSectionId } from './calcTypes';
 
 const BG_CALC = require('../../../../assets/lab-backgrounds/calc-lab.webp');
 
@@ -56,11 +58,14 @@ export function CalcLabScreen() {
   };
   const onNewWorkflow = () => gateWorkflow(() => navigation.navigate('CalcWorkflowEdit', {}));
 
-  // Collapsible sections (owner 2026-08-09): workflows + description + each
-  // calculator category. Default open; local state (not persisted).
+  // Collapsible sections (owner 2026-08-09): workflows + description. The
+  // calculator categories are a container grid + popup (owner 2026-09-30).
   const [wfOpen, setWfOpen] = useState(false); // default collapsed (owner 2026-08-09)
   const [descOpen, setDescOpen] = useState(true);
-  const [openSecs, setOpenSecs] = useState<Record<string, boolean>>({});
+  // The category whose calculators are showing in the centred popup.
+  const [openSec, setOpenSec] = useState<CalcSectionId | null>(null);
+  const openMeta = openSec ? SECTION_META.find((m) => m.id === openSec) ?? null : null;
+  const openItems = openSec ? WORKSPACES.filter((w) => w.section === openSec) : [];
 
   // Most-recent saved workflow (owner spec 2026-08-06) — quick jump on the home.
   const [recent, setRecent] = useState<Workflow | null>(null);
@@ -210,49 +215,32 @@ export function CalcLabScreen() {
           ) : null}
         </View>
 
-        {/* Dense two-column grid. Categories default COLLAPSED and only one
-            opens at a time (owner 2026-08-23), matching the lab-menu accordion
-            idiom; each calculator is a compact tile (name + one-line tagline). */}
-        {SECTION_META.map((sec) => {
-          const items = WORKSPACES.filter((w) => w.section === sec.id);
-          if (items.length === 0) return null;
-          const open = openSecs[sec.id] ?? false;
-          return (
-            <View key={sec.id} style={styles.section}>
+        {/* THE TEN CATEGORIES as a 2-column grid of containers, five rows
+            (owner 2026-09-30: "instead of 10 expandable bullet list points …
+            2 column of 5 rows of containers"). A tap opens that category's
+            calculators in a centred popup — popups, never pulldowns. */}
+        <View style={styles.catGrid}>
+          {SECTION_META.map((sec) => {
+            const count = WORKSPACES.filter((w) => w.section === sec.id).length;
+            if (count === 0) return null;
+            return (
               <Pressable
-                onPress={() => setOpenSecs((m) => (m[sec.id] ? {} : { [sec.id]: true }))}
+                key={sec.id}
+                style={styles.catFrame}
+                onPress={() => setOpenSec(sec.id)}
                 accessibilityRole="button"
-                accessibilityState={{ expanded: open }}
-                aria-expanded={open}
-                accessibilityLabel={`${sec.title} calculators`}
+                accessibilityLabel={`${sec.title}. ${sec.note} ${count} calculators. Opens the list.`}
               >
-                <Text style={styles.sectionTitle}>{open ? '▾' : '▸'}  {sec.title}</Text>
+                <LinearGradient colors={['#4a4c52', '#3a3c42', '#2b2d31']} locations={[0, 0.45, 1]} style={styles.catFace}>
+                  <View pointerEvents="none" style={styles.tileTopLight} />
+                  <Text style={styles.catTitle} numberOfLines={2}>{sec.title}</Text>
+                  <Text style={styles.catNote} numberOfLines={3}>{sec.note}</Text>
+                  <Text style={styles.catCount}>{count} CALCULATORS ›</Text>
+                </LinearGradient>
               </Pressable>
-              {open ? (
-                <View style={styles.grid}>
-                  {items.map((w) => (
-                    <Pressable
-                      key={w.id}
-                      style={[styles.tileFrame, tablet && styles.tileFrameTablet]}
-                      onPress={() => navigation.navigate('CalcWorkspace', { id: w.id })}
-                      accessibilityRole="button"
-                      accessibilityLabel={`${w.name} — ${w.tagline}`}
-                    >
-                      {/* Graphite instrument plate (owner 2026-08-23): matches the
-                          tools hub / calc-rack material — top-lit machined face on
-                          a black keyline, opaque over the screen's background. */}
-                      <LinearGradient colors={['#4a4c52', '#3a3c42', '#2b2d31']} locations={[0, 0.45, 1]} style={styles.tile}>
-                        <View pointerEvents="none" style={styles.tileTopLight} />
-                        <Text style={styles.tileName} numberOfLines={2}>{w.name}</Text>
-                        <Text style={styles.tileTag} numberOfLines={1}>{w.tagline}</Text>
-                      </LinearGradient>
-                    </Pressable>
-                  ))}
-                </View>
-              ) : null}
-            </View>
-          );
-        })}
+            );
+          })}
+        </View>
         {COMING_SOON.map((group) => (
           <View key={group.title} style={{ gap: 6 }}>
             <Text style={styles.sectionTitle}>{group.title}</Text>
@@ -270,6 +258,51 @@ export function CalcLabScreen() {
           </View>
         ))}
       </ScrollView>
+      <Modal
+        accessibilityViewIsModal
+        visible={openMeta != null}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setOpenSec(null)}
+      >
+        <View style={styles.popBackdrop}>
+          <Pressable style={StyleSheet.absoluteFill} onPress={() => setOpenSec(null)} accessibilityRole="button" accessibilityLabel="Close" />
+          {openMeta ? (
+            <View style={[styles.popCard, tablet && styles.popCardTablet]}>
+              <View style={styles.popHead}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.popTitle}>{openMeta.title}</Text>
+                  <Text style={styles.caption}>{openMeta.note}</Text>
+                </View>
+                <Pressable onPress={() => setOpenSec(null)} hitSlop={10} accessibilityRole="button" accessibilityLabel="Close">
+                  <Text style={styles.popClose}>✕</Text>
+                </Pressable>
+              </View>
+              <ScrollView contentContainerStyle={styles.grid}>
+                {openItems.map((w) => (
+                  <Pressable
+                    key={w.id}
+                    style={[styles.tileFrame, tablet && styles.tileFrameTablet]}
+                    onPress={() => {
+                      setOpenSec(null);
+                      navigation.navigate('CalcWorkspace', { id: w.id });
+                    }}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${w.name} — ${w.tagline}`}
+                  >
+                    {/* Graphite instrument plate (owner 2026-08-23). */}
+                    <LinearGradient colors={['#4a4c52', '#3a3c42', '#2b2d31']} locations={[0, 0.45, 1]} style={styles.tile}>
+                      <View pointerEvents="none" style={styles.tileTopLight} />
+                      <Text style={styles.tileName} numberOfLines={2}>{w.name}</Text>
+                      <Text style={styles.tileTag} numberOfLines={2}>{w.tagline}</Text>
+                    </LinearGradient>
+                  </Pressable>
+                ))}
+              </ScrollView>
+            </View>
+          ) : null}
+        </View>
+      </Modal>
     </ImageBackground>
   );
 }
@@ -288,8 +321,37 @@ const styles = StyleSheet.create({
   sectionTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.4, color: colors.amber, marginTop: 2 },
   card: { borderRadius: 10, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 12, gap: 3 },
   cardName: { fontFamily: fonts.oswaldMedium, fontSize: 15.5, letterSpacing: 0.5, color: colors.textPrimary },
-  // Dense two-column calculator grid (owner 2026-08-09).
-  section: { gap: 6 },
+  // The ten category containers: 2 columns × 5 rows (owner 2026-09-30).
+  catGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 10 },
+  catFrame: {
+    width: '48.5%',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(180,91,255,.55)', // the lab's purple
+    overflow: 'hidden',
+  },
+  catFace: { minHeight: 132, padding: 12, gap: 5, justifyContent: 'space-between' },
+  catTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1, color: colors.amber },
+  catNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 16, color: '#d4d6da', flex: 1 },
+  catCount: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.1, color: colors.purple },
+  // The category popup (centred).
+  popBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.65)', alignItems: 'center', justifyContent: 'center', padding: 16 },
+  popCard: {
+    width: '100%',
+    maxWidth: 520,
+    maxHeight: '86%',
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(180,91,255,.6)',
+    backgroundColor: '#121215',
+    padding: 14,
+    gap: 10,
+  },
+  popCardTablet: { maxWidth: 720 },
+  popHead: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
+  popTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1.2, color: colors.amber },
+  popClose: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, color: colors.textSub, paddingHorizontal: 4 },
+  // Calculator tiles inside the popup.
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   // Graphite instrument plate: black keyline frame wrapping a machined face.
   tileFrameTablet: { width: '32%' },
