@@ -230,6 +230,33 @@ function useCardDims(): CardDims {
   const screen = Dimensions.get('screen');
   return useMemo(() => cardDimsFor(width, height, screen.width, screen.height), [width, height, screen.width, screen.height]);
 }
+/**
+ * The line above the carousel names what the CENTRED card is for (TestFlight
+ * feedback 2026-09-30: "Start learning over the labs, Measure audio over audio
+ * tools, Look up a term over glossary, Begin here over the new intro to audio
+ * lab, Start learning a topic over Pro Audio Safety and DAW Fundamentals,
+ * Explore topics to enroll in over the study area cards").
+ */
+export function deckHeadline(kind: Card['kind'] | undefined): string {
+  switch (kind) {
+    case 'lab':
+      return 'Start Learning';
+    case 'tools':
+      return 'Measure Audio';
+    case 'glossary':
+      return 'Look Up a Term';
+    case 'startHere':
+      return 'Begin Here';
+    case 'freeTopic':
+    case 'comingTopic':
+    case 'homeTopic':
+      return 'Start Learning a Topic';
+    case 'showcase':
+      return 'Explore Topics to Enroll In';
+    default:
+      return 'Start Learning';
+  }
+}
 // Session landing memory (owner 2026-07-30). These module-level vars survive
 // component remounts but RESET when the app process restarts — which is exactly
 // the "cold start vs in-session return" signal we need:
@@ -1738,7 +1765,11 @@ export function CourseSelectionScreen() {
         </View>
       </View>
 
-      {compactHeader ? null : <Text style={styles.academyTitle}>Start Learning</Text>}
+      {compactHeader ? null : (
+        <Text style={styles.academyTitle} accessibilityLiveRegion="polite">
+          {deckHeadline(displayDeck?.[activeIdx]?.kind)}
+        </Text>
+      )}
 
       {/* M8 (2026-09-07): the "stranded session" recovery banner was dead code
           (setStrandedSession was only ever called with false) and REMOVED — a

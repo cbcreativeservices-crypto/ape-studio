@@ -10,7 +10,7 @@
  * Robustness: rounds are built from whatever scenarios exist per term (0/1/2/3),
  * so short buckets just yield shorter later rounds — never a crash.
  *
- * In-round: inline ✓/✕ + explanation, no retry, auto-advance. Progress persists
+ * In-round: inline ✓/✕ + explanation, no retry; NEXT › moves on (no auto-advance since 2026-09-30). Progress persists
  * server-side (mid-round resume). The Ear Training (S12) method was retired
  * (Booth 2026-07-26).
  */
@@ -350,7 +350,10 @@ export function ScenariosScreen({ route }: Props) {
           screenReaderOn() ? ' Double tap to continue.' : ''
         }`,
       );
-      if (!screenReaderOn()) advanceTimer.current = setTimeout(advance, EXPLANATION_MS);
+      // NO AUTO-ADVANCE (TestFlight 2026-09-29: "the correct or wrong answer
+      // disappears and I'm just trying to scroll down to read it"). The
+      // explanation stays until the learner taps NEXT — for everyone now, not
+      // only screen-reader users (W18 above).
     },
     [item, activeRound, achievementId, advance],
   );
@@ -683,13 +686,12 @@ export function ScenariosScreen({ route }: Props) {
             <View style={[styles.banner, feedback.correct ? styles.bannerOk : styles.bannerWrong]}>
               <Text style={[styles.bannerText, { color: feedback.correct ? '#7dffa1' : '#ffb3a8' }]}>
                 {feedback.correct ? '✓ Correct — ' : '✕ Not quite — '}
-                {feedback.text} <Text style={styles.bannerHint}>
-                  {screenReaderOn() ? '(tap to continue)' : '(auto-advance in 3s · tap to skip)'}
-                </Text>
+                {feedback.text}
               </Text>
             </View>
           </Pressable>
         )}
+        {feedback && <StudioButton label="Next ›" variant="success" onPress={advance} />}
 
         <Text style={styles.counter}>
           ITEM {idx + 1} OF {total} · ROUND {activeRound} OF {SCENARIO_ROUNDS}
