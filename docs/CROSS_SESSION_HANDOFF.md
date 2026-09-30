@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 22:24 · ccode · ba27a118
+changed: Start Here: new users land on it; its word links open full entries for free
+affects other side: nothing — client only; note 21 glossary entries are copied into the app (startHereGlossary.ts) — if A edits those entries, tell ccode to refresh the copy
+needs: nothing
+
+
 ### 2026-09-29 16:55 · ccode · ffdbf319
 changed: Android large screens: readouts at the user's font size, tablet wording
 affects other side: nothing — client JS only (Android large-screen pass)
