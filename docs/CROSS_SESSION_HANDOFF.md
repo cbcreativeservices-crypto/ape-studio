@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-30 00:57 · ccode · 2bb0551b
+changed: Home: owner art for the Calculator + Career Finder cards
+affects other side: nothing (two new files already in the course-cards bucket)
+needs: nothing
+
+
 ### 2026-09-30 00:49 · ccode · 875f3bc4
 changed: Size pass + glass calculator tiles
 affects other side: nothing
