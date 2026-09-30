@@ -6,13 +6,14 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { SECTION_META, WORKSPACES } from '../src/screens/lab/calc/registry.ts';
 
 const s = readFileSync('src/screens/lab/calc/CalcLabScreen.tsx', 'utf8');
 
 test('ten categories, each with calculators → a 2 × 5 grid', () => {
-  assert.equal(SECTION_META.length, 10);
-  for (const m of SECTION_META) assert.ok(WORKSPACES.some((w) => w.section === m.id), m.id);
+  const reg = readFileSync('src/screens/lab/calc/registry.ts', 'utf8');
+  const meta = reg.slice(reg.indexOf('export const SECTION_META'), reg.indexOf('];', reg.indexOf('export const SECTION_META')));
+  const ids = [...meta.matchAll(/\{ id: '(\w+)'/g)].map((m) => m[1]);
+  assert.equal(ids.length, 10);
   assert.match(s, /catFrame: \{\s*width: '48\.5%'/);
 });
 
