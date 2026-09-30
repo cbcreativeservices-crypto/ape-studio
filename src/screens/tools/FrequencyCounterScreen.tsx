@@ -401,6 +401,15 @@ function LivePitchMode({
     { pitchEnabled: true },
     { meter: true, pitch: true },
   );
+  // A failed / denied mic renders EngineGate (TRY AGAIN) here — UNDER a tuner
+  // full screen, which kept saying "PLAY A STRING" as if it were listening.
+  // Close the overlays so the honest gate is what the user sees.
+  useEffect(() => {
+    if (state === 'error' || state === 'denied') {
+      closeCenterLock();
+      closeVuTuner();
+    }
+  }, [state]);
   const [a4, setA4] = useState(440);
   // Which setup tray is open (owner 2026-09-10): tuning standard / low-cut /
   // high-cut — one at a time, from the horizontal button row.
@@ -640,7 +649,7 @@ function LivePitchMode({
     setJustSaved(true);
     if (savedTimer.current) clearTimeout(savedTimer.current);
     savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
-  }, [state, frames.pitch, frames.meter]);
+  }, [state, frames.pitch, frames.meter, saveGate, saveLatch]);
 
   if (state === 'absent' || state === 'spike' || state === 'denied' || state === 'error') {
     return <EngineGate state={state} lastError={lastError} onRetry={start} />;
@@ -1177,7 +1186,7 @@ function TapMode({ onOpenLibrary, help, helpAll }: { onOpenLibrary: () => void; 
     setJustSaved(true);
     if (savedTimer.current) clearTimeout(savedTimer.current);
     savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
-  }, [stats, flags]);
+  }, [stats, flags, saveGate, saveLatch]);
 
   return (
     <>
@@ -1284,15 +1293,19 @@ export function FrequencyCounterScreen({ navigation }: Props) {
   // flagged open, so it re-opened itself on the next visit — an auto-appear
   // (Low-Light rule). BACK now closes whichever overlay is up, and leaving the
   // screen clears both flags.
+  // Then, with no overlay up, BACK steps out of a mode to the mode menu — the
+  // same step the header ‹ BACK takes (toddler pass 2026-09-30: Android BACK
+  // skipped the menu and left the whole tool, the SPL digital-view rule).
   useEffect(() => {
-    if (!centerLockOpen && !vuTunerOpen) return;
+    if (!centerLockOpen && !vuTunerOpen && mode == null) return;
     const sub = BackHandler.addEventListener('hardwareBackPress', () => {
       if (vuTunerOpen) closeVuTuner();
-      else closeCenterLock();
+      else if (centerLockOpen) closeCenterLock();
+      else setMode(null);
       return true;
     });
     return () => sub.remove();
-  }, [centerLockOpen, vuTunerOpen]);
+  }, [centerLockOpen, vuTunerOpen, mode]);
   useEffect(
     () => () => {
       closeCenterLock();

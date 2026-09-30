@@ -1081,7 +1081,7 @@ export function RtaScreen({ navigation }: Props) {
     setJustSaved(true);
     if (savedTimer.current) clearTimeout(savedTimer.current);
     savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
-  }, [state, frames, fraction, alpha]);
+  }, [state, frames, fraction, alpha, saveGate, saveLatch]);
 
   const liveFlags = state === 'running' ? meterWarningFlags(frames.meter) : [];
   // A METER MUST NOT KEEP READING AFTER THE MIC IS RELEASED. `stop()` releases

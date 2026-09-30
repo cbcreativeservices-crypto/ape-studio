@@ -28,10 +28,48 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from
 import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
 import { supabase } from '../../lib/supabase';
-import { corpusTable, fetchDefinitionViaGateway, probeGateway } from './glossaryGateway';
+import {
+  classifyGatewayError,
+  corpusTable,
+  fetchDefinitionViaGateway,
+  probeGateway,
+  type DefinitionResult,
+} from './glossaryGateway';
 import { popupCard } from '../../theme/readingColumn';
 
 type Row = { id: string; term: string; definition: string | null; plain_english: string | null };
+
+/**
+ * ⛔ ONE LOOKUP PER TERM PER SESSION (bug hunt 2026-09-30).
+ *
+ * Every gateway call charges a weekly lookup, and this popup made one on every
+ * open: tap a calculator chip, DONE, tap it again — two of the fourteen for one
+ * term. Closing mid-load made it worse: the charge still landed, the result was
+ * thrown away, and the reopen paid again. The Glossary screen's rule is that a
+ * term already read this session is free; this keeps the same rule here.
+ *
+ * Keyed to the signed-in uid, so another identity on the phone (a sign-out, a
+ * new guest key) never inherits the last one's full text. Faults are not kept.
+ */
+const READS = new Map<string, Promise<DefinitionResult>>();
+let readsUid: string | null | undefined;
+supabase.auth.onAuthStateChange((_e, session) => {
+  const uid = session?.user?.id ?? null;
+  if (uid !== readsUid) {
+    READS.clear();
+    readsUid = uid;
+  }
+});
+function readOnce(id: string): Promise<DefinitionResult> {
+  const hit = READS.get(id);
+  if (hit) return hit;
+  const p = fetchDefinitionViaGateway(id).then((r) => {
+    if (r.state !== 'ok' && READS.get(id) === p) READS.delete(id);
+    return r;
+  });
+  READS.set(id, p);
+  return p;
+}
 
 export function GlossaryTermPopup({
   termName,
@@ -73,6 +111,16 @@ export function GlossaryTermPopup({
    * lookups" and no upgrade path; the popup's only control is DONE.
    */
   const [partial, setPartial] = useState<null | 'limit-reached' | 'other'>(null);
+  /**
+   * ⛔ A GUEST WITH NO DEVICE KEY IS NOT OFFLINE (bug hunt 2026-09-30).
+   *
+   * `glossary_browse_v` is granted to `authenticated` only, so a guest who has
+   * not yet agreed to the glossary's temporary device ID gets 42501 here — and
+   * every lab / calculator term link told them to "check your connection" on a
+   * connection that was fine. The consent lives on the Glossary screen, so
+   * that is where this sends them.
+   */
+  const [needsKey, setNeedsKey] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -80,6 +128,7 @@ export function GlossaryTermPopup({
       setRow(null);
       setNotFound(false);
       setLoadError(false);
+      setNeedsKey(false);
       setPartial(null);
       setLoading(false);
       return;
@@ -88,6 +137,7 @@ export function GlossaryTermPopup({
       setRow({ id: 'preloaded', term: preloaded.term, definition: preloaded.definition, plain_english: preloaded.plain_english });
       setNotFound(false);
       setLoadError(false);
+      setNeedsKey(false);
       setPartial(null);
       setLoading(false);
       return;
@@ -95,6 +145,10 @@ export function GlossaryTermPopup({
     setLoading(true);
     setNotFound(false);
     setLoadError(false);
+    setNeedsKey(false);
+    // A new term must not inherit the last one's "this is only the opening"
+    // note — it was only ever cleared on close.
+    setPartial(null);
     setRow(null);
     (async () => {
       // Case-insensitive exact match on the display name. `ilike` with no
@@ -111,7 +165,8 @@ export function GlossaryTermPopup({
       if (cancelled) return;
       const hit = (data && data[0]) as Row | undefined;
       if (!hit) {
-        if (error) setLoadError(true);
+        if (error && classifyGatewayError(error) === 'denied') setNeedsKey(true);
+        else if (error) setLoadError(true);
         else setNotFound(true);
         setLoading(false);
         return;
@@ -123,7 +178,7 @@ export function GlossaryTermPopup({
       // gateway for the real text; a refusal (out of lookups, or no device key)
       // simply leaves the teaser on screen with the caller's "OPEN THE
       // GLOSSARY ›" link, which is where the lock and the upgrade path live.
-      const full = await fetchDefinitionViaGateway(hit.id);
+      const full = await readOnce(hit.id);
       if (cancelled) return;
       if (full.state !== 'ok') {
         // Say which kind of short it is. `sign-in-required` and `not-deployed`
@@ -189,7 +244,12 @@ export function GlossaryTermPopup({
             {loadError ? (
               <Text style={styles.muted}>Couldn’t load this term — please check your connection and try again.</Text>
             ) : null}
-            {row?.definition?.trim() ? <Text style={styles.def}>{row.definition.trim()}</Text> : null}
+            {needsKey ? (
+              <Text style={styles.muted}>
+                Open the Glossary once and allow its temporary device ID — then terms open here too.
+              </Text>
+            ) : null}
+            {row?.definition?.trim() ?<Text style={styles.def}>{row.definition.trim()}</Text> : null}
             {partial ? (
               <Text style={styles.partial}>
                 {partial === 'limit-reached'

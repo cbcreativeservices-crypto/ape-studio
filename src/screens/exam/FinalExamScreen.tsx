@@ -540,6 +540,11 @@ export function FinalExamScreen({ navigation, route }: Props) {
       'Your answers will be wiped immediately. This does not end the attempt — the clock keeps running and coming back puts you into the same sitting with the same questions and less time left.',
       'Leave & wipe',
       () => {
+        // Stale once submitted — same as the quiz twin (bug pass 2026-09-30):
+        // a dialog left open until the 0:00 force-submit outlived this screen,
+        // and its goBack then fired from a route that had been replaced by the
+        // result.
+        if (submitted.current) return;
         answers.current = {};
         // The learner CHOSE to wipe, so the saved draft goes with it — otherwise
         // the next arrival would restore exactly what this dialog promised to

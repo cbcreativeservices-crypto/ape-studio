@@ -303,6 +303,24 @@ export function Lesson10Body() {
       {allDone ? (
         <CheckDoneBanner text="Bench cleared — all eight cables tested de-energized, every fault named from its map, every disposition decided." />
       ) : null}
+      {/* Practice is always allowed (owner 2026-09-29; bug hunt 2026-09-30).
+          The TESTER_UNIT is banked in labCompletion — this clears only the run. */}
+      {allDone ? (
+        <OptionChip
+          label="PRACTISE AGAIN ↻"
+          action
+          onPress={() => {
+            setSolved([]);
+            setSelId(null);
+            setConnected(false);
+            setTested(false);
+            setFaultPick(null);
+            setFaultVerdict(null);
+            setDispPick(null);
+            setDispVerdict(null);
+          }}
+        />
+      ) : null}
 
       <LessonBanner text={L10_LESSON} />
     </>

@@ -212,14 +212,18 @@ export function StartHereScreen() {
     navigation.popTo('Main', { screen: 'Study', params: { screen: 'Glossary', params: { from: 'home' }, initial: false } });
   };
 
-  const doReset = () =>
-    void resetPagedProgress(START_HERE_ID).then(() => {
+  const doReset = () => {
+    // START OVER lands on the welcome page, which has no PLAY to stop a tone
+    // started on a lab page — so it stops here, like every other page change.
+    tone.stop();
+    return void resetPagedProgress(START_HERE_ID).then(() => {
       const fresh: PagedProgress = { completed: [], lastPage: 0, done: false };
       progressRef.current = fresh;
       setProgress(fresh);
       setPage(0);
       setListOpen(false);
     });
+  };
   const confirmReset = () => {
     const message = 'Clears your place and the ticks in Start Here only.';
     if (Platform.OS === 'web') {

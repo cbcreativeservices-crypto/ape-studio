@@ -40,6 +40,7 @@ import { RackUnit } from '../rack/RackUnit';
 import type { DockParam } from '../rack/rackTypes';
 import { requireTubeViz, type TubeVizModule } from './skiaGate';
 import { TUBE_INK } from './tubeInks';
+import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 
 // ── Screen-owned data (no Skia dependency) ──────────────────────────────────
 
@@ -842,10 +843,15 @@ export function VacuumTubeLabScreen() {
    */
   const [ending, setEnding] = useState(false);
   const guest = useLabEndGuest();
+  const { resolved: entResolved } = useEntitlement();
   const visited = useLabVisits('tube');
   useEffect(() => {
+    // Wait for the tier (bug hunt 2026-09-30): the provider boots at
+    // 'anonymous'-but-unresolved, so a cold-start guest's first section was
+    // PERSISTED before `guest` could turn true.
+    if (!entResolved) return;
     markLabVisit('tube', SECTIONS[sectionIdx].key, { persist: !guest });
-  }, [sectionIdx, guest]);
+  }, [sectionIdx, guest, entResolved]);
   const openSection = (i: number) => {
     setEnding(false);
     setSectionIdx(i);

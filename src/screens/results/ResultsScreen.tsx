@@ -15,7 +15,7 @@
  * (Explanations are NOT client-readable — quiz_questions is admin-only; gap
  * D-3 logged for the backend session.)
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -70,12 +70,25 @@ export function ResultsScreen({ navigation, route }: Props) {
   const questionText = (slot: string) =>
     questions.find((q) => q.slot === Number(slot))?.text ?? `Question ${slot}`;
 
-  const toDashboard = useCallback(
-    () => navigation.reset({ index: 0, routes: [{ name: 'Main', params: { screen: 'Study', params: { screen: 'Dashboard' } } }] }),
-    [navigation],
-  );
+  /**
+   * ONE EXIT PER SCREEN (bug pass 2026-09-30). Both buttons RESET the root,
+   * and a RESET is honoured even from a screen that is already gone — so a
+   * double tap rebuilt the whole tab shell twice, and on Retake mounted two
+   * QuizScreens back to back, each starting an attempt with its own freshly
+   * minted intent id (the first had not been persisted when the second read
+   * it). A ref, because the second tap lands before any re-render.
+   */
+  const leavingRef = useRef(false);
+
+  const toDashboard = useCallback(() => {
+    if (leavingRef.current) return;
+    leavingRef.current = true;
+    navigation.reset({ index: 0, routes: [{ name: 'Main', params: { screen: 'Study', params: { screen: 'Dashboard' } } }] });
+  }, [navigation]);
 
   const retake = useCallback(async () => {
+    if (leavingRef.current) return;
+    leavingRef.current = true;
     await clearQuizIntent(achievementId); // new attempt intent = fresh draw
     // `initial: false` (same root fix as CourseSelectionScreen → Glossary):
     // the fresh Study stack mounts its initialRouteName (Dashboard) as

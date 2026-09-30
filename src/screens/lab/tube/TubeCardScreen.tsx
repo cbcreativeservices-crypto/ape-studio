@@ -117,6 +117,13 @@ export function TubeCardScreen() {
   const resetTransform = () => {
     setTransform(1, 0, 0);
   };
+  // Rotation / iPad split resize (bug hunt 2026-09-30): the zoom was fitted
+  // to the OLD area, so the card sat off-centre or part off-screen until the
+  // next gesture. Re-fit whenever the area changes.
+  useEffect(() => {
+    resetTransform();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [area.w, area.h]);
 
   const session = useRef({
     mode: 'idle' as 'idle' | 'pinch' | 'pan' | 'swipe',

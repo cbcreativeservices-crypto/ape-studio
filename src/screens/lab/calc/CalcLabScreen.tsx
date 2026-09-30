@@ -6,7 +6,7 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
-import { ImageBackground, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { BackHandler, ImageBackground, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -21,7 +21,6 @@ import { useChainValue } from './chainStore';
 import { workflowStore } from './workflowStore';
 import type { Workflow } from './workflowModel';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
-import { Modal } from '../../../components/DimModal';
 import { GlassPanel, GlassTile } from '../../tools/GlassTile';
 import type { CalcSectionId } from './calcTypes';
 
@@ -66,6 +65,15 @@ export function CalcLabScreen() {
   const [openSec, setOpenSec] = useState<CalcSectionId | null>(null);
   const openMeta = openSec ? SECTION_META.find((m) => m.id === openSec) ?? null : null;
   const openItems = openSec ? WORKSPACES.filter((w) => w.section === openSec) : [];
+  // Android BACK closes the popup before it leaves the lab.
+  useEffect(() => {
+    if (!openSec) return;
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      setOpenSec(null);
+      return true;
+    });
+    return () => sub.remove();
+  }, [openSec]);
 
   // Most-recent saved workflow (owner spec 2026-08-06) — quick jump on the home.
   const [recent, setRecent] = useState<Workflow | null>(null);
@@ -260,14 +268,13 @@ export function CalcLabScreen() {
           </View>
         ))}
       </ScrollView>
-      <Modal
-        accessibilityViewIsModal
-        visible={openMeta != null}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setOpenSec(null)}
-      >
-        <View style={styles.popBackdrop}>
+      {/* The category popup is drawn IN the screen (owner 2026-09-30: it
+          sat skewed off-screen). As a separate Modal it centred on the host
+          window, which on the web preview is not the app's box; in-tree it
+          centres on the calculator screen itself everywhere, and it never has
+          to present over another Modal on iOS. Android BACK closes it first. */}
+      {openMeta ? (
+        <View style={[StyleSheet.absoluteFill, styles.popBackdrop]} accessibilityViewIsModal>
           <Pressable style={StyleSheet.absoluteFill} onPress={() => setOpenSec(null)} accessibilityRole="button" accessibilityLabel="Close" />
           {openMeta ? (
             <View style={[styles.popCard, tablet && styles.popCardTablet]}>
@@ -302,7 +309,7 @@ export function CalcLabScreen() {
             </View>
           ) : null}
         </View>
-      </Modal>
+      ) : null}
     </ImageBackground>
   );
 }
@@ -337,7 +344,7 @@ const styles = StyleSheet.create({
   catNoteTablet: { fontSize: 15, lineHeight: 20 },
   catCountTablet: { fontSize: 13 },
   // The category popup (centred).
-  popBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.65)', alignItems: 'center', justifyContent: 'center', padding: 16 },
+  popBackdrop: { zIndex: 50, elevation: 50, backgroundColor: 'rgba(0,0,0,0.65)', alignItems: 'center', justifyContent: 'center', padding: 16 },
   popCard: {
     width: '100%',
     maxWidth: 520,

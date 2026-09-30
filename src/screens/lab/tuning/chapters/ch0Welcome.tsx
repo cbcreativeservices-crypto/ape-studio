@@ -6,7 +6,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
-import { renderNotes } from '../../../../features/tuning/tuningAudio';
+import { concatWithGap, renderNotes } from '../../../../features/tuning/tuningAudio';
 import type { ChapterProps } from '../labCtx';
 import { Body, Btn, Card, CentsRail, Lead, Row, usePreloadClips, type RailMarker } from '../components/primitives';
 
@@ -31,15 +31,20 @@ export function Ch0Welcome({ ctx }: ChapterProps) {
   ];
 
   // Saved + pre-rendered clips (owner 2026-09-29): the fixed buttons' clips render in the background.
-  usePreloadClips(ctx.player, () => [() => renderNotes([ctx.rootHz], 1.2, 'rich'), () => renderNotes([ctx.rootHz * 2], 1.2, 'rich')], String(ctx.rootHz));
+  // ONE clip, root then octave (bug hunt 2026-09-30): the octave used to be a
+  // second play fired by a 1.4 s timer, which the footer ■, shake-to-mute and
+  // another lab's claim never cleared — so it sounded after STOP, raised the
+  // sound popup by itself after a mute, or played over another lab. Any stop
+  // now silences the whole question; the timers only pace the picture.
+  const questionClip = () => concatWithGap(renderNotes([ctx.rootHz], 1.2, 'rich'), renderNotes([ctx.rootHz * 2], 1.2, 'rich'), 0.2);
+  usePreloadClips(ctx.player, () => [questionClip], String(ctx.rootHz));
 
   const hearRoot = () => {
     clearTimers();
     setStage(1);
-    void ctx.player.renderAndPlay(() => renderNotes([ctx.rootHz], 1.2, 'rich'), 'root');
+    void ctx.player.renderAndPlay(questionClip, 'root, then octave');
     timers.current.push(setTimeout(() => {
       setStage(2);
-      void ctx.player.renderAndPlay(() => renderNotes([ctx.rootHz * 2], 1.2, 'rich'), 'octave');
       timers.current.push(setTimeout(() => setStage(3), 1300));
     }, 1400));
   };

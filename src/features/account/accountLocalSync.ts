@@ -61,18 +61,38 @@ async function syncLocalToIdentity(identity: string): Promise<void> {
  */
 export function useAccountLocalSync(): void {
   useEffect(() => {
+    /**
+     * ONE SYNC AT A TIME (2026-09-30 bug pass). Each sync reads the marker,
+     * wipes, then writes the new marker — three awaits. Two auth events close
+     * together (sign out → sign straight in as someone else; SIGNED_IN racing
+     * INITIAL_SESSION) ran interleaved: both read the SAME old marker, and
+     * whichever finished last wrote ITS identity — so the marker could name an
+     * account that is no longer signed in, and the next switch skipped the
+     * wipe. Chained, each sync sees the marker the previous one wrote.
+     */
+    let chain: Promise<void> = Promise.resolve();
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
       // SIGNED_IN (login), SIGNED_OUT (logout → guest), INITIAL_SESSION (cold
       // start). TOKEN_REFRESHED and the like keep the same identity, so the
       // prev===identity guard above no-ops them.
-      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'INITIAL_SESSION') {
+      // PASSWORD_RECOVERY too: the in-app password reset signs in through
+      // verifyOtp, which supabase-js announces as PASSWORD_RECOVERY and never
+      // as SIGNED_IN — so the guest's (or previous account's) local data was
+      // carried into the recovered account, then wiped at the next cold start.
+      if (
+        event === 'SIGNED_IN' ||
+        event === 'SIGNED_OUT' ||
+        event === 'INITIAL_SESSION' ||
+        event === 'PASSWORD_RECOVERY'
+      ) {
         // ⚠️ An ANONYMOUS session maps to the GUEST identity (''), not to its
         // own uid. The glossary's temporary device key would otherwise read as
         // "a different user signed in" and wipe the guest's enrollment, Home
         // cards and lab state — once on accepting it, and again every time the
         // 7-day purge forces a new one. The dialog promises the opposite:
         // "none of your progress is stored with it".
-        void syncLocalToIdentity(isRealAccount(session) ? (session?.user?.id ?? '') : '');
+        const identity = isRealAccount(session) ? (session?.user?.id ?? '') : '';
+        chain = chain.then(() => syncLocalToIdentity(identity)).catch(() => {});
       }
     });
     return () => {

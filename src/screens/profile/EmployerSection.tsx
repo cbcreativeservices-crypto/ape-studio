@@ -210,7 +210,13 @@ export function EmployerSection() {
       {!verified ? (
         <Pressable
           style={styles.link}
-          onPress={() => void Linking.openURL(APPLY_URL)}
+          // `void` does not handle a rejection: no browser / a blocked open was
+          // an unhandled promise rejection (2026-09-30 bug pass). Say where to go.
+          onPress={() =>
+            void Linking.openURL(APPLY_URL).catch(() =>
+              setNote('Couldn’t open the website — visit proaudiotrainingacademy.com/employers/apply in your browser.'),
+            )
+          }
           accessibilityRole="link"
           accessibilityLabel="Open your employer application on the website"
         >

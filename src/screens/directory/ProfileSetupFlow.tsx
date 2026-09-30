@@ -230,7 +230,11 @@ export function ProfileSetupFlow({
             placeholder="e.g. Sam Okafor, or Sam O."
             placeholderTextColor={colors.textMuted}
             style={st.input}
-            maxLength={60}
+            // = DISPLAY_NAME_MAX in MyProfileView (not imported: that file
+            // imports this one). The guide allowed 60, twice what the full
+            // editor allows and what the member sheet header can hold, and
+            // the server does not bound it (bug hunt 2026-09-30).
+            maxLength={30}
             accessibilityLabel="Public display name"
           />
         ) : null}

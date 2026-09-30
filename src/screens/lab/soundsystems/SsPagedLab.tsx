@@ -35,7 +35,7 @@ import { UNDERSTANDING_UNIT, understandingFor } from '../../../features/lab/unde
 import { markLabUnit, registerLabUnits } from '../../../features/lab/labCompletion';
 import type { PageCtx } from '../kit/PagedLab';
 import type { SsPageDef } from './rackLayout';
-import { PageMemoryKey } from './pageMemory';
+import { PageMemoryKey, clearPageMemory } from './pageMemory';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { getLabPreview } from '../../../features/lab/labPreviewStore';
 import { resetSoundSystemsLists, setSoundSystemsSaveBlocked, type SoundSystemsProgress } from '../../../features/soundsystems/progress';
@@ -105,6 +105,7 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
   const progressRef = useRef<PagedProgress | null>(null);
   const [page, setPage] = useState(0);
   const [listOpen, setListOpen] = useState(false);
+  const [resetSeq, setResetSeq] = useState(0);
   const [dragLocked, setDragLocked] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
   const osReduceMotion = useOsReduceMotion();
@@ -178,11 +179,17 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
   // pages AND its slice of ape:soundsystems:v1, so goals read from that
   // store (solved faults, passed capstones, exercises) do not re-complete
   // on their own (bug hunt 2026-09-29).
-  const doReset = () => void Promise.all([resetPagedProgress(labId), resetSoundSystemsLists(MODE_LISTS[labId] ?? [])]).then(() => {
+  // Also (bug hunt 2026-09-30): the session's page memory is dropped and the
+  // current page re-mounted, or a finished capstone / console came back
+  // finished and re-marked itself; and a guest or preview never deletes the
+  // device's real saved pages (it never wrote them).
+  const doReset = () => void Promise.all([noSaveRef.current ? Promise.resolve() : resetPagedProgress(labId), resetSoundSystemsLists(MODE_LISTS[labId] ?? [])]).then(() => {
+    clearPageMemory([labId]);
     const fresh: PagedProgress = { completed: [], lastPage: 0, done: false };
     progressRef.current = fresh;
     setProgress(fresh);
     setPage(0);
+    setResetSeq((n) => n + 1);
     setListOpen(false);
   });
   const confirmReset = () => {
@@ -259,7 +266,7 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
         // owns the scroll well (and its own scroll-lock provider).
         <View style={styles.rackFill}>
           <PageMemoryKey.Provider value={memoryKey}>
-            <Page key={memoryKey} ctx={ctx} />
+            <Page key={`${memoryKey}:${resetSeq}`} ctx={ctx} />
           </PageMemoryKey.Provider>
         </View>
       ) : (
@@ -268,7 +275,7 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
             <AccuracyNote style={styles.accuracy} />
             {page === 0 ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
             <PageMemoryKey.Provider value={memoryKey}>
-              <Page key={memoryKey} ctx={ctx} />
+              <Page key={`${memoryKey}:${resetSeq}`} ctx={ctx} />
             </PageMemoryKey.Provider>
           </ScrollLockProvider>
         </ScrollView>

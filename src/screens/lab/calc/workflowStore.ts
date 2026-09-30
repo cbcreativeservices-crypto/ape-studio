@@ -102,10 +102,12 @@ function upsert<T extends { id: string }>(
   key: CollectionKey,
   validate: (x: unknown) => x is T,
   item: T,
+  keepPlace = false,
 ): Promise<boolean> {
   return serialWrite(async () => {
     const list = await loadList(key, validate);
-    const next = [item, ...list.filter((w) => w.id !== item.id)];
+    const at = keepPlace ? list.findIndex((w) => w.id === item.id) : -1;
+    const next = at >= 0 ? list.map((w, i) => (i === at ? item : w)) : [item, ...list.filter((w) => w.id !== item.id)];
     return saveList(key, next);
   });
 }
@@ -123,7 +125,10 @@ function removeById<T extends { id: string }>(
 
 export const workflowStore = {
   listWorkflows: () => loadList(KEYS.workflows, isWorkflow),
-  saveWorkflow: (w: Workflow) => upsert(KEYS.workflows, isWorkflow, w),
+  // keepPlace: My Workflows is user-ordered (moveWorkflow below — "the stored
+  // order IS the display order"), and every EDIT → SAVE jumped the edited one
+  // back to the top, undoing the ▲▼ order. New workflows still go first.
+  saveWorkflow: (w: Workflow) => upsert(KEYS.workflows, isWorkflow, w, true),
   deleteWorkflow: (id: string) => removeById(KEYS.workflows, isWorkflow, id),
   /** Reorder My Workflows (owner 2026-08-06): swap the workflow with its
    *  neighbour; the stored order IS the display order. */

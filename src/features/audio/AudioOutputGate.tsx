@@ -205,7 +205,9 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
       // Only a real sign-in re-mutes. Opening the glossary mints an ANONYMOUS
       // session, which arrives here as SIGNED_IN — silencing the app mid-lab
       // for a reason the user could never connect to what they just did.
-      if (event === 'SIGNED_IN' && isRealAccount(session)) disableAudioOutput();
+      // PASSWORD_RECOVERY is how auth-js announces the in-app password-reset
+      // sign-in (bug pass 2026-09-30) — the same new-session mute applies.
+      if ((event === 'SIGNED_IN' || event === 'PASSWORD_RECOVERY') && isRealAccount(session)) disableAudioOutput();
     });
     const appSub = AppState.addEventListener('change', (state) => {
       // ── LEAVING THE APP SILENCES IT (2026-09-17, bug-hunt pass 2) ──────────
@@ -237,7 +239,10 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
       // 'background' is the state that actually means they have gone, and it is
       // the one where the Android Oboe stream would otherwise play on forever.
       if (state === 'background') {
-        if (isAudioOutputEnabled()) panicMuteAudio();
+        // Unconditional (bug pass 2026-09-30): a native generator still live
+        // while the gate already reads muted must stop too. Muting an already
+        // muted gate changes nothing else.
+        panicMuteAudio();
         return;
       }
       if (

@@ -117,6 +117,7 @@ import { QUIZ_OUTCOME_COPY, replayQuizSubmissions } from '../../features/quiz/ap
 import { EXAM_OUTCOME_COPY, replayExamSubmissions } from '../../features/finalExam/api';
 import { onStudyProgress } from '../../features/study/sync';
 import { useScenarioExempt } from '../../features/study/scenarioExempt';
+import { useTermsExempt } from '../../features/study/termsExempt';
 import { loadAllLocalMethodStates, mergeItemStates } from '../../features/study/localProgress';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { cardColumn, popupCard } from '../../theme/readingColumn';
@@ -1000,6 +1001,11 @@ export function DashboardScreen() {
   // on mount and re-renders when a topic is confirmed to have no scenarios, so
   // the quiz gate below can unlock without a manual reload.
   useScenarioExempt();
+  // …and to the TERMS exemption, which is read through smoothPct exactly the
+  // same way but was never subscribed anywhere (bug pass 2026-09-30): its
+  // stored set loaded only when Flashcards marked a topic, so after a relaunch
+  // a confirmed-empty topic sat at 0% with its whole chain locked again.
+  useTermsExempt();
 
   // Toggle Course ⇄ My Enrollment (user request 2026-07-22) — reload at once.
   const switchMode = useCallback(

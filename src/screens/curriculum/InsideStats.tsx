@@ -82,15 +82,23 @@ const NUM_ABOVE = 17;
 const countedOnce = new Set<string>();
 
 function CountUp({ id, target, style, glowAnimatedStyle }: { id: string; target: number | null; style: object; glowAnimatedStyle?: object }) {
-  const done = countedOnce.has(id);
-  const [n, setN] = useState<number | null>(done ? target : null);
+  // Seeded ONCE, at mount (overnight hunt 2026-09-30). Read per render, `done`
+  // flipped true on the very next render after the effect below marked the id
+  // — and the first animation frame's own setN (or the parent's 206 ms crackle
+  // re-render) is that render — so the effect re-ran, cancelled the rAF and
+  // snapped to the target: the one-time count-up never actually counted.
+  // A ref, so a LATER target change (a live count replacing the fallback)
+  // snaps to the new figure instead of counting up a second time.
+  const counted = useRef(countedOnce.has(id));
+  const [n, setN] = useState<number | null>(counted.current ? target : null);
   useEffect(() => {
     if (target == null) return;
-    if (done || !animationsAllowed()) {
+    if (counted.current || !animationsAllowed()) {
       countedOnce.add(id);
       setN(target);
       return;
     }
+    counted.current = true;
     countedOnce.add(id);
     const DURATION = 2000;
     const start = Date.now();
@@ -104,7 +112,7 @@ function CountUp({ id, target, style, glowAnimatedStyle }: { id: string; target:
     };
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
-  }, [id, target, done]);
+  }, [id, target]);
   const display = n == null ? '—' : fmt(n);
   // Crisp text on top; a separate glow layer behind (slightly enlarged) so the
   // number stays sharp while the halo breathes around it with a gap.

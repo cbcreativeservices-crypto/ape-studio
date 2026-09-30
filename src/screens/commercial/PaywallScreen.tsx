@@ -9,7 +9,7 @@
  * the source of truth at purchase. Store product IDs: features/commercial/
  * iapProducts.ts. Owner setup: docs/APE_IAP_PLAN_2026_08_21.md.
  */
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -20,7 +20,13 @@ import { colors, fonts } from '../../theme/tokens';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { consumePendingLink } from '../../navigation/pendingLink';
 import { navigateToPath } from '../../navigation/linking';
-import { buyPlan, detachPaywallHandlers, initPurchases, restorePurchases } from '../../features/commercial/purchase';
+import {
+  buyPlan,
+  detachPaywallHandlers,
+  initPurchases,
+  isCancel,
+  restorePurchases,
+} from '../../features/commercial/purchase';
 import type { PlanId } from '../../features/commercial/iapProducts';
 import type { RootStackParamList } from '../../navigation/types';
 import { readingColumn } from '../../theme/readingColumn';
@@ -46,6 +52,15 @@ export function PaywallScreen({ navigation }: Props) {
   // Whether in-app purchasing is usable in THIS build (native module present +
   // store connection). Assume true until init says otherwise.
   const [available, setAvailable] = useState(true);
+  /**
+   * A purchase or restore is IN FLIGHT (2026-09-30 bug pass). `busy` swaps
+   * CONTINUE for a spinner, but only after a re-render — two taps in the same
+   * frame both reached `buyPlan`, opening a second store request on top of the
+   * first. The store refuses the second, its rejection cleared `busy` and put
+   * up an error while the first sheet was still open, and CONTINUE came back
+   * under it. A ref is synchronous, so the second tap is dropped.
+   */
+  const inFlight = useRef(false);
 
   useEffect(() => {
     let alive = true;
@@ -72,6 +87,7 @@ export function PaywallScreen({ navigation }: Props) {
         .catch(() => false) // belt-and-braces; the provider guards internally
         .then((tier) => {
           if (!alive) return;
+          inFlight.current = false;
           setBusy(false);
           // THE READ COMPLETING IS NOT THE SAME AS BEING A MEMBER (2026-09-17).
           // The old boolean resolved true for 'anonymous', 'free' and 'lapsed'
@@ -96,6 +112,7 @@ export function PaywallScreen({ navigation }: Props) {
             'Your payment went through and your membership is recorded. We couldn’t refresh your access on this device yet — check your connection and retry.',
             'Retry', // Ratified by the owner 2026-09-14
             () => {
+              inFlight.current = true;
               setBusy(true);
               reflectPurchase();
             },
@@ -112,6 +129,7 @@ export function PaywallScreen({ navigation }: Props) {
       },
       onError: (message) => {
         if (!alive) return;
+        inFlight.current = false;
         setBusy(false);
         if (message) notify('Purchase', message);
       },
@@ -196,10 +214,21 @@ export function PaywallScreen({ navigation }: Props) {
       );
       return;
     }
+    if (inFlight.current) return;
+    inFlight.current = true;
     setBusy(true);
     buyPlan(selected as PlanId).catch((e: unknown) => {
+      // The purchase error LISTENER reports store failures too, so a rejection
+      // here can be the second report of one failure. If the listener already
+      // cleared the flight, it has spoken — stay quiet. A CANCEL is never an
+      // error (the listener treats it as silent; this path showed the raw
+      // "user cancelled" string as a dialog).
+      const wasInFlight = inFlight.current;
+      inFlight.current = false;
       setBusy(false);
-      notify('Purchase', (e as Error)?.message ?? 'The purchase could not be started.');
+      const err = e as { code?: unknown; message?: string } | null;
+      if (!wasInFlight || isCancel(err?.code) || isCancel(err?.message)) return;
+      notify('Purchase', err?.message ?? 'The purchase could not be started.');
     });
   };
 
@@ -225,8 +254,14 @@ export function PaywallScreen({ navigation }: Props) {
       );
       return;
     }
+    if (inFlight.current) return;
+    inFlight.current = true;
     setBusy(true);
     restorePurchases()
+      .finally(() => {
+        // Released before any dialog below goes up, whatever the outcome.
+        inFlight.current = false;
+      })
       .then(async (result) => {
         // `refreshed` means "their access is live on this device", so it asks
         // for the tier rather than for a completed read (2026-09-17) — telling

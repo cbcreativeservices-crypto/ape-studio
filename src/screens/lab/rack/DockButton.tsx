@@ -76,7 +76,7 @@ export function DockButton({
   const [fired, setFired] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const handlePress = useCallback(() => {
-    if (hapticsEnabled()) void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (hapticsEnabled()) void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     if (isAction) {
       setFired(true);
       if (timer.current) clearTimeout(timer.current);

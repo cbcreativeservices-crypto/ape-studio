@@ -422,6 +422,14 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
         if (alive) setResolved(true); // first read attempted — first paint can proceed
       });
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      // PASSWORD_RECOVERY IS A SIGN-IN (2026-09-30 bug pass). The in-app reset
+      // (AuthScreen → verifyRecoveryOtp) creates the session with verifyOtp,
+      // and supabase-js announces a recovery verify as PASSWORD_RECOVERY, never
+      // SIGNED_IN. Ignoring it left a paying member who had just reset their
+      // password at the signed-out boot tier — 'anonymous', known and final —
+      // for the whole app run: every paid lab locked, the paywall asking them
+      // to create the account they had just signed into.
+      if (event === 'PASSWORD_RECOVERY') event = 'SIGNED_IN';
       if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'INITIAL_SESSION') {
         // A REAL sign-in OR sign-out ends any dev tier override (owner
         // 2026-08-12; extended to SIGNED_IN per launch-triage). The wordmark
@@ -513,7 +521,19 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
         console.warn('[entitlement] refresh answer belongs to a previous session, discarded');
         return false;
       }
-      if (!devOverrode.current) setEntitlementState(tier);
+      if (!devOverrode.current) {
+        setEntitlementState(tier);
+        // A tier the server just answered IS known (2026-09-30). Without this,
+        // a member whose boot read failed and whose retries ran out stayed
+        // `tierKnown: false` after a successful purchase / restore / redeem —
+        // Settings read CHECKING… for the rest of the run and memberStanding
+        // never armed their notifications.
+        setTierKnown(true);
+        // And remember it, exactly as the boot read does. Otherwise the cache
+        // still holds the PRE-purchase tier ('free'), and the next offline cold
+        // start showed a member who had just paid the non-member app.
+        void saveLastTier(uidAtStart, tier);
+      }
       return tier;
     } catch (e) {
       console.warn('[entitlement] refresh threw, keeping current tier:', (e as Error)?.message);

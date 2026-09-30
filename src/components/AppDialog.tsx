@@ -22,7 +22,7 @@
  * checks `isAppDialogHostMounted()` and falls back to the platform dialog if
  * this host is not live.
  */
-import { useEffect, useSyncExternalStore } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 // ⛔ DimModal, NOT react-native's Modal. This component hosts ~72
@@ -31,7 +31,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 //    full brightness in a dark control room — the one thing that mode
 //    promises will not happen. DimModal carries the <LowLightDim/> wash and
 //    passes every prop straight through.
-import { Modal } from './DimModal';
+import { Modal, rootModalHoldMs, setHostedOverlay, useModalHostOpen } from './DimModal';
 import { colors, fonts } from '../theme/tokens';
 
 export type AppDialogRequest = {
@@ -185,18 +185,33 @@ export function AppDialogHost() {
       hostCount -= 1;
     };
   }, []);
-  if (!focused || req == null) return null;
-  const isNotice = req.confirmText == null;
-  return (
-    <Modal
-      accessibilityViewIsModal
-      visible
-      transparent
-      animationType="fade"
-      // Android BACK counts as declining, not as a silent dismissal.
-      onRequestClose={() => resolve('cancel')}
-    >
-      <Pressable style={styles.scrim} onPress={() => resolve('cancel')} accessible={false}>
+
+  /**
+   * ⛔ A DIALOG ASKED FOR WHILE ANOTHER MODAL IS OPEN (bug hunt 2026-09-30).
+   * DimModal.tsx names "the app's dialogs" among the root surfaces that cannot
+   * present over an open Modal, but only the audio gate was ever moved onto its
+   * hosting mechanism. A confirm raised from a sheet or a lab's FULL SCREEN —
+   * or a notice fired as that sheet closes (Settings → Redeem: close + "Code
+   * applied" in one tap) — was refused by iOS, so NOTHING appeared, and
+   * `current` never cleared: every later confirm (Log out included) queued
+   * silently behind it until the app was killed. Now: another Modal open ⇒ the
+   * card is drawn inside it; one just closed ⇒ wait out its dismissal first.
+   */
+  const otherModalOpen = useModalHostOpen(true);
+  const live = focused && req != null;
+  const hostedMode = live && otherModalOpen;
+  const holdMs = live && !otherModalOpen ? rootModalHoldMs() : 0;
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    if (holdMs <= 0) return;
+    const t = setTimeout(() => setTick((n) => n + 1), holdMs);
+    return () => clearTimeout(t);
+  }, [holdMs]);
+
+  const isNotice = req?.confirmText == null;
+  const card =
+    req == null ? null : (
+      <Pressable style={styles.scrim} onPress={() => resolve('cancel')} accessible={false} accessibilityViewIsModal>
         {/* Stop card taps falling through to the scrim's dismiss. */}
         <Pressable style={styles.card} onPress={() => {}} accessible={false}>
           <Text style={styles.title}>{req.title}</Text>
@@ -223,6 +238,33 @@ export function AppDialogHost() {
           )}
         </Pressable>
       </Pressable>
+    );
+
+  // Only the focused host publishes; re-published each render so the card is
+  // current, and withdrawn when this screen blurs or unmounts.
+  useEffect(() => {
+    if (!focused) return;
+    setHostedOverlay(hostedMode && card ? { node: card, onBack: () => resolve('cancel') } : null, 'dialog');
+  });
+  useEffect(() => {
+    if (!focused) return;
+    return () => setHostedOverlay(null, 'dialog');
+  }, [focused]);
+
+  if (!live || hostedMode || holdMs > 0) return null;
+  return (
+    <Modal
+      accessibilityViewIsModal
+      // Hosts the audio gate if it is asked for over a dialog, but is not
+      // "another Modal" to this host's own choice above.
+      overlayPublisher
+      visible
+      transparent
+      animationType="fade"
+      // Android BACK counts as declining, not as a silent dismissal.
+      onRequestClose={() => resolve('cancel')}
+    >
+      {card}
     </Modal>
   );
 }

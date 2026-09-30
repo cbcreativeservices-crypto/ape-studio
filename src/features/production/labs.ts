@@ -78,12 +78,14 @@ export function labDef(lab: LabKind): LabDef {
 
 /** The authored stage, within one lab. */
 export function authoredStage(lab: LabKind, stageId: string): StageDef | undefined {
-  return LABS[lab].stages.find((s) => s.stageId === stageId);
+  // `?.`: a hand-typed deep link can carry any :lab (2026-09-30) — an
+  // unknown one reads as 'not available', never a render crash.
+  return LABS[lab]?.stages.find((s) => s.stageId === stageId);
 }
 
 /** The stage carrying an activity, within one lab. */
 export function stageForActivity(lab: LabKind, activityId: string): StageDef | undefined {
-  return LABS[lab].stages.find((s) => s.activity?.activityId === activityId);
+  return LABS[lab]?.stages.find((s) => s.activity?.activityId === activityId);
 }
 
 /** Every lab, in the order the catalog lists them. */

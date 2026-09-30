@@ -1439,6 +1439,12 @@ export function CourseSelectionScreen() {
   useFocusEffect(
     useCallback(() => {
       load();
+      // Leaving Home drops a pending Study Area EXPLORE (overnight hunt
+      // 2026-09-30): tapped on a slow network, the picker stays invisible
+      // until the catalog lands — and if the user had already tapped away
+      // (Certificates, a tab), it then popped up over THAT screen, or its
+      // fallback yanked them to Explore.
+      return () => setExploreArea(null);
     }, [load]),
   );
 
@@ -1550,6 +1556,12 @@ export function CourseSelectionScreen() {
     // Home card still wins below.
     const startHereIdx = deck.findIndex((c) => c.kind === 'startHere');
     if (!sessionLanded && firstOpen === null) return; // wait for the answer
+    // ⛔ WAIT FOR `resolved` TOO (overnight hunt 2026-09-30). The deck is not
+    // mounted until the entitlement read lands (spinner below), so a landing
+    // run before then scrolled a null list AND spent `sessionLanded` — the
+    // cold start then opened on the far-left Lab card instead of Glossary /
+    // Start Here, and a member's deck was measured before it was theirs.
+    if (!resolved) return;
     let target: number;
     if (!sessionLanded) {
       target = firstOpen && startHereIdx >= 0 ? startHereIdx : glossaryIdx;
@@ -1573,7 +1585,7 @@ export function CourseSelectionScreen() {
     const t = setTimeout(() => listRef.current?.scrollToIndex({ index: target, animated: false }), 0);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cards, defaultHomeGs, firstOpen]);
+  }, [cards, defaultHomeGs, firstOpen, resolved]);
 
   const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
     const idx = viewableItems[0]?.index;

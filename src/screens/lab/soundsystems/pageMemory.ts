@@ -16,6 +16,15 @@ const memory = new Map<string, unknown>();
 /** `${labId}:${pageIndex}` — provided by SsPagedLab around the current page. */
 export const PageMemoryKey = createContext<string>('');
 
+/** RESET (bug hunt 2026-09-30): drop every page's working state for these
+ *  modes, or a reset capstone / route / line check re-mounted finished and
+ *  re-completed itself on the next visit. */
+export function clearPageMemory(labIds: readonly string[]): void {
+  for (const k of Array.from(memory.keys())) {
+    if (labIds.some((id) => k.startsWith(`${id}:`))) memory.delete(k);
+  }
+}
+
 export function usePageMemory<T>(name: string, init: T | (() => T)): [T, Dispatch<SetStateAction<T>>] {
   const scope = useContext(PageMemoryKey);
   const key = `${scope}:${name}`;

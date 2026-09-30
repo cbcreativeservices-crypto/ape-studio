@@ -316,12 +316,14 @@ export function Rt60Screen({ navigation }: Props) {
 
   // Latch capture-window conditions while armed/recording.
   useEffect(() => {
-    if ((rtState !== 1 && rtState !== 2) || !meter) return;
+    // liveFrame, not `meter`: `meter` is null exactly when the capture is dead,
+    // so gating on it meant the raw dead-capture flags below could never latch.
+    if ((rtState !== 1 && rtState !== 2) || !liveFrame) return;
     setWindowFlags((prev) => {
       const next = [...prev];
-      if (meter.clipRuns > clipBaseRef.current && !next.includes('input_clipping'))
+      if (liveFrame.clipRuns > clipBaseRef.current && !next.includes('input_clipping'))
         next.push('input_clipping');
-      if (meter.droppedFrames > dropBaseRef.current && !next.includes('capture_dropout'))
+      if (liveFrame.droppedFrames > dropBaseRef.current && !next.includes('capture_dropout'))
         next.push('capture_dropout');
       // Both clipRuns and droppedFrames are baselined above; take the rest of the
       // live flags as-is (they're not session-cumulative counters).
@@ -329,12 +331,16 @@ export function Rt60Screen({ navigation }: Props) {
         if (f !== 'input_clipping' && f !== 'capture_dropout' && !next.includes(f)) next.push(f);
       return next.length === prev.length ? prev : next;
     });
-  }, [meter, rtState]);
+  }, [liveFrame, rtState]);
 
   /** ARM / RE-ARM: baseline the window, ensure capture is running, arm native. */
   const armCapture = useCallback(async () => {
     if (state !== 'running') await start(); // returning from the library etc.
     const base = ApeDsp.getMeterFrame();
+    // start() resolves the same on denied / timeout / supersede. With no live
+    // capture, arming would wipe a retained unsaved result for nothing and
+    // leave a stray arm on the shared engine.
+    if (!base?.running) return;
     clipBaseRef.current = base?.clipRuns ?? 0;
     dropBaseRef.current = base?.droppedFrames ?? 0;
     setWindowFlags([]);
@@ -355,8 +361,22 @@ export function Rt60Screen({ navigation }: Props) {
   }, [start]);
   const onStop = useCallback(() => {
     setMicPaused(true);
+    // Disarm the NATIVE capture machine too. Only the CANCEL button did, and
+    // adopting a warm stream (START within the release debounce, or ToolInfo
+    // holding the mic warm) never resets it — so an ARMED/RECORDING capture
+    // abandoned by STOP or by leaving surfaced later as a DONE "measurement"
+    // the user never made, with no window flags. A retained DONE survives this
+    // (the poll above keeps it when the native side reads Off).
+    ApeDsp.rt60Cancel();
     stop();
   }, [stop]);
+  useEffect(() => {
+    const unsub = navigation.addListener('blur', () => ApeDsp.rt60Cancel());
+    return () => {
+      unsub();
+      ApeDsp.rt60Cancel();
+    };
+  }, [navigation]);
 
   // Open straight into the live capture panel — no redundant START screen
   // (owner 2026-08-01). The user still ARMS each measurement explicitly.

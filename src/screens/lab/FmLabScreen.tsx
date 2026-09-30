@@ -398,7 +398,10 @@ export function FmLabScreen() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const PAD = 14;
-const LEGEND_H = 18; // color-key strip inside the glass, under the plot
+// Color-key strip inside the glass, under the plot. Two lines (bug hunt
+// 2026-09-30): the key wraps on every phone glass, and at 18 the fixed-height
+// glass clipped line two — "red dashed = ALIASED past Nyquist".
+const LEGEND_H = 30;
 
 /** The sideband stick spectrum: |J_k(I)| at fc ± k·fm, k = 0..K where K covers
  *  Carson + 2. Folds (negative frequencies / above-Nyquist) are drawn dashed

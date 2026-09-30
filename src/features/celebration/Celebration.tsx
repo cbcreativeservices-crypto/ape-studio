@@ -34,6 +34,7 @@ import * as Haptics from 'expo-haptics';
 import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
 import { useOverlaysSuppressed } from '../dev/popupSuppressStore';
+import { hapticsEnabled } from '../settings/store';
 import type { CelebrationAction, CelebrationActionKind, CelebrationDef, CelebrationValues } from './types';
 import { fill, formFor } from './types';
 
@@ -65,6 +66,7 @@ export function Celebration({
   useEffect(() => {
     if (suppressed || def.encouragement) return;
     if (def.tier !== 'milestone' && def.tier !== 'credential') return;
+    if (!hapticsEnabled()) return; // Settings → Haptics OFF (bug hunt 2026-09-30)
     void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
   }, [def.tier, def.encouragement, suppressed]);
 

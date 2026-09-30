@@ -26,6 +26,7 @@ import { fetchEnrollmentDashboard, type MethodProgressRow, type TopicStatus } fr
 import { topicOverallPct } from '../dashboard/topicPct';
 import { loadAllLocalMethodStates, mergeItemStates } from '../study/localProgress';
 import { useScenarioExempt } from '../study/scenarioExempt';
+import { useTermsExempt } from '../study/termsExempt';
 
 export type TopicProg = { pct: number; status: TopicStatus };
 
@@ -45,6 +46,10 @@ export function useEnrollmentProgress(gsList: number[]): Map<number, TopicProg> 
   // set (an Enrollments-first open would otherwise read it EMPTY and show an
   // exempt topic at 75%) and recomputes when a topic is confirmed empty.
   const exemptVersion = useScenarioExempt();
+  // The terms exemption the same way (bug pass 2026-09-30): `useTermsExempt`
+  // had no caller anywhere, so the stored set was only ever loaded by a
+  // Flashcards visit — after a relaunch a confirmed-empty topic read 0% again.
+  const termsExemptVersion = useTermsExempt();
   useEffect(() => {
     if (!gsList.length) {
       setMap(new Map());
@@ -115,6 +120,6 @@ export function useEnrollmentProgress(gsList: number[]): Map<number, TopicProg> 
       alive = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key, exemptVersion]);
+  }, [key, exemptVersion, termsExemptVersion]);
   return map;
 }

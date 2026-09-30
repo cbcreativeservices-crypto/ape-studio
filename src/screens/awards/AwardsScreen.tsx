@@ -573,12 +573,20 @@ export function AwardsScreen({ navigation, route }: Props) {
   );
 
   useEffect(() => {
-    AsyncStorage.getItem(SPEC_CERT_KEY).then((v) => {
-      if (v) setSpecCert(v);
-    });
-    AsyncStorage.getItem(PROGRAM_PATH_KEY).then((v) => {
-      if (v) setProgramPath(v);
-    });
+    // `cur ?? v`: a row tapped before this slow read lands is the newer pick
+    // and must not be overwritten by (then re-persisted as) the stored one;
+    // `.catch`: a failed storage read is not an unhandled rejection
+    // (overnight hunt 2026-09-30).
+    AsyncStorage.getItem(SPEC_CERT_KEY)
+      .then((v) => {
+        if (v) setSpecCert((cur) => cur ?? v);
+      })
+      .catch(() => {});
+    AsyncStorage.getItem(PROGRAM_PATH_KEY)
+      .then((v) => {
+        if (v) setProgramPath((cur) => cur ?? v);
+      })
+      .catch(() => {});
     // Dev Visual Index: auto-open a picker for preview (TEMPORARY).
     if (consumeDevPreview('awards:specPicker')) setPicker('specializations');
     else if (consumeDevPreview('awards:programPicker')) setPicker('programs');

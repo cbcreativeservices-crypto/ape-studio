@@ -58,7 +58,7 @@ import { fetchCommunityProfile, type CommunityProfile } from '../../features/too
 import { resolveLedFill, useLedAvgColorPref, useLedColorPref } from '../../features/tools/ledScheme';
 import { frameIsLive, healthWarningFlags, meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { useRafFrameLoop } from '../../features/tools/engine/useRafFrameLoop';
-import { setSplCalibration, useSplCalibration } from '../../features/tools/measure/calibrationStore';
+import { clampCalOffset, setSplCalibration, useSplCalibration } from '../../features/tools/measure/calibrationStore';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { useSaveLatch } from '../../features/tools/measure/saveLatch';
 import { evaluateQuality } from '../../features/tools/measure/quality';
@@ -910,10 +910,10 @@ export function SplMeterScreen({ navigation }: Props) {
   useEffect(() => {
     const onBack = () => {
       if (settingPopup != null) { setSettingPopup(null); return true; }
-      if (gaugeFsOpen && !gaugeFsClosing) { setGaugeFsClosing(true); return true; }
+      if (gaugeFsOpen) { if (!gaugeFsClosing) setGaugeFsClosing(true); return true; } // held while closing: a 2nd BACK mid rotate-out left the tool
       if (ledFsOpen) { setLedFsOpen(false); return true; }
-      if (vuFsOpen && !vuFsClosing) { setVuFsClosing(true); return true; }
-      if (readoutFsOpen && !readoutFsClosing) { setReadoutFsClosing(true); return true; }
+      if (vuFsOpen) { if (!vuFsClosing) setVuFsClosing(true); return true; } // held while closing: a 2nd BACK mid rotate-out left the tool
+      if (readoutFsOpen) { if (!readoutFsClosing) setReadoutFsClosing(true); return true; } // held while closing: a 2nd BACK mid rotate-out left the tool
       if (view === 'digital') { setView('home'); return true; }
       return false;
     };
@@ -1147,6 +1147,17 @@ export function SplMeterScreen({ navigation }: Props) {
       avg5Ref.current = NaN;
       lastAvg5PushRef.current = 0;
       setAvg5Db(NaN);
+      // Forget the last live frame's time (toddler pass 2026-09-30): kept
+      // across STOP→START, the first not-yet-live frames of the NEXT session
+      // measured their gap from the OLD session's last frame, so every
+      // restart (and every auto-resume on refocus) instantly declared the
+      // capture dead — a spurious ENGINE INACTIVE warning, a haptic, and a
+      // permanent entry in the warning list. A fresh session starts clean.
+      lastFrameRef.current = 0;
+      if (deadRef.current) {
+        deadRef.current = false;
+        setCaptureDead(false);
+      }
     }
   }, [running, liveRmsDb, livePeakDb]);
   // A weighting change restarts the 5 s window — the old ring holds the other
@@ -1419,7 +1430,7 @@ export function SplMeterScreen({ navigation }: Props) {
     if (savedTimer.current) clearTimeout(savedTimer.current);
     savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state, weighting, response, offset, cal]);
+  }, [state, weighting, response, offset, cal, saveGate, saveLatch]);
 
   return (
     <View style={styles.root}>
@@ -1669,7 +1680,7 @@ export function SplMeterScreen({ navigation }: Props) {
                       <Pressable
                         key={step}
                         style={styles.ctrlBtn}
-                        onPress={() => setDraftOffset((d) => Math.round((d + step) * 2) / 2)}
+                        onPress={() => setDraftOffset((d) => clampCalOffset(Math.round((d + step) * 2) / 2))}
                         accessibilityRole="button"
                         accessibilityLabel={`Adjust ${step > 0 ? 'up' : 'down'} ${Math.abs(step)} dB`}
                       >
@@ -2022,7 +2033,7 @@ export function SplMeterScreen({ navigation }: Props) {
                           <Pressable
                             key={step}
                             style={styles.ctrlBtn}
-                            onPress={() => setDraftOffset((d) => Math.round((d + step) * 2) / 2)}
+                            onPress={() => setDraftOffset((d) => clampCalOffset(Math.round((d + step) * 2) / 2))}
                             accessibilityRole="button"
                             accessibilityLabel={`Adjust ${step > 0 ? 'up' : 'down'} ${Math.abs(step)} dB`}
                           >

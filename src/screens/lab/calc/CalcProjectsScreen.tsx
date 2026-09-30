@@ -196,7 +196,10 @@ export function CalcProjectsScreen() {
         if (label || v.raw.trim()) skipped += 1;
         continue;
       }
-      if (out.some((x) => x.label === label)) continue; // labels stay unique
+      if (out.some((x) => x.label === label)) {
+        skipped += 1; // labels stay unique — but say a row was left out, never silently
+        continue;
+      }
       out.push({ label, quantity: kind, baseValue: base });
     }
     const now = new Date().toISOString();
@@ -216,7 +219,7 @@ export function CalcProjectsScreen() {
     if (skipped > 0) {
       notify(
         'Project saved, some rows skipped',
-        `${skipped} row${skipped === 1 ? '' : 's'} had no label or no readable value, so ${skipped === 1 ? 'it was' : 'they were'} not saved. Everything else was saved.`,
+        `${skipped} row${skipped === 1 ? '' : 's'} had no label, no readable value or a repeated label, so ${skipped === 1 ? 'it was' : 'they were'} not saved. Everything else was saved.`,
       );
     }
     setEditing(null);

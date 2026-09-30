@@ -9,7 +9,7 @@
  * — WHAT TO DO NEXT. No percentages anywhere. When nothing stood out strongly
  * the headings say "closest to your answers", never "match".
  */
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -22,7 +22,7 @@ import { familyFieldOf, familyMetaOf, isRegulatedTitle } from '../../features/ca
 import { FAMILY_COUNT } from '../../features/careerfinder/families';
 import { QUESTION_COUNT } from '../../features/careerfinder/questions';
 import { LAB_FOR_DIMENSION } from '../../features/careerfinder/labsForDimension';
-import { resetCareerFinder, setCareerFinderFeedback, setQuestionIndex, toggleSavedFamily, useCareerFinder, type FeedbackAnswer } from '../../features/careerfinder/store';
+import { getCareerFinder, resetCareerFinder, setCareerFinderFeedback, setQuestionIndex, toggleSavedFamily, useCareerFinder, type FeedbackAnswer } from '../../features/careerfinder/store';
 import { confirmReset } from './CareerFinderScreen';
 import { BetaPill, Body, Card, CountTag, CtaButton, DimChip, DimensionSpectrum, FinderShell, Lead, RankBadge, SectionLabel, TextLink } from './kit';
 
@@ -36,6 +36,18 @@ export function CareerFinderResultsScreen() {
   const strongestCodes = result.strongest.map((d) => d.code);
   const [note, setNote] = useState(rec.feedback?.note ?? '');
   const [meanings, setMeanings] = useState(false);
+  // Keep the typed note on the way out (bug hunt 2026-09-30). It saved only on
+  // blur, and ‹ back / Android BACK with the keyboard up does not reliably blur
+  // first, so the note someone had just written was gone next visit.
+  const noteRef = useRef(note);
+  noteRef.current = note;
+  useEffect(
+    () => () => {
+      const fb = getCareerFinder().feedback;
+      if (fb && fb.note !== noteRef.current) setCareerFinderFeedback(fb.answer, noteRef.current);
+    },
+    [],
+  );
 
   // "Match" is a fit claim the answers may not support: when nothing stood
   // out strongly the headings describe proximity instead.

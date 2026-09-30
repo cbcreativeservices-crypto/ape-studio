@@ -12,10 +12,10 @@
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { colors, fonts } from '../../theme/tokens';
-import { QUESTION_COUNT } from '../../features/careerfinder/questions';
+import { QUESTIONS, QUESTION_COUNT } from '../../features/careerfinder/questions';
 import { FAMILY_COUNT, familyById } from '../../features/careerfinder/families';
 import { CAREER_COUNT } from '../../features/careerfinder/careerIndex';
-import { allAnswered, answeredCount, resetCareerFinder, setQuestionIndex, useCareerFinder, useCareerFinderHydrated } from '../../features/careerfinder/store';
+import { allAnswered, answeredCount, firstUnansweredIndex, resetCareerFinder, setQuestionIndex, useCareerFinder, useCareerFinderHydrated } from '../../features/careerfinder/store';
 import { BetaPill, Body, Card, CtaButton, FinderShell, Lead, SectionLabel, TextLink } from './kit';
 import { confirmDialog } from '../../lib/confirm';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
@@ -49,6 +49,12 @@ export function CareerFinderScreen() {
   const hydrated = useCareerFinderHydrated();
   const answered = answeredCount(rec);
   const inProgress = answered > 0 && !rec.completed;
+  // The question CONTINUE actually opens — the quiz's own resume rule. The
+  // stored index still points at a question already answered when someone
+  // answers and leaves inside the auto-advance beat, and the button then
+  // promised "question 5" and opened question 6 (bug hunt 2026-09-30).
+  const stored = QUESTIONS[rec.index];
+  const resumeAt = allAnswered(rec) || (stored && !(stored.id in rec.responses)) ? rec.index : firstUnansweredIndex(rec);
   const savedFamilies = rec.saved.map(familyById).filter((f): f is NonNullable<typeof f> => !!f);
 
   const start = () => navigation.navigate('CareerFinderQuiz');
@@ -83,7 +89,7 @@ export function CareerFinderScreen() {
         </View>
       ) : inProgress ? (
         <View style={styles.actions}>
-          <CtaButton label={`CONTINUE · QUESTION ${Math.min(QUESTION_COUNT, rec.index + 1)} OF ${QUESTION_COUNT}`} tone="green" onPress={start} a11y={`Continue at question ${rec.index + 1} of ${QUESTION_COUNT}`} />
+          <CtaButton label={`CONTINUE · QUESTION ${Math.min(QUESTION_COUNT, resumeAt + 1)} OF ${QUESTION_COUNT}`} tone="green" onPress={start} a11y={`Continue at question ${resumeAt + 1} of ${QUESTION_COUNT}`} />
           <Text style={styles.note}>{answered} of {QUESTION_COUNT} answered · saved on this phone{allAnswered(rec) ? ' · all answered' : ''}</Text>
         </View>
       ) : (

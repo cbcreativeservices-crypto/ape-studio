@@ -232,6 +232,12 @@ export function SignalChainLabScreen() {
   }, []);
 
   const genRef = useRef(0);
+  // Double-tap ▶ (bug hunt 2026-09-30, FmLab's pattern): a superseded start
+  // only stops/resets when nothing newer wants it — its fxReset otherwise
+  // bypassed the chain the newer start had just pushed.
+  const wantRef = useRef(false);
+  const latestRef = useRef({ sourceIdx, enabled });
+  latestRef.current = { sourceIdx, enabled };
 
   /** Push defaults + enables for the current map (targets-first per module). */
   const pushChain = useCallback((en: Record<number, boolean>) => {
@@ -246,6 +252,7 @@ export function SignalChainLabScreen() {
   const start = useCallback(async () => {
     if (!fxReady) return;
     const gen = ++genRef.current;
+    wantRef.current = true;
     const ok = await requestAudioOutput();
     if (!ok || gen !== genRef.current) return;
     setGenError('');
@@ -255,11 +262,23 @@ export function SignalChainLabScreen() {
       await ApeDsp.genStart();
       // A mute that landed while the native start was in flight wins — never
       // leave a tone sounding into a closed gate (owner 2026-09-29).
-      if (gen !== genRef.current || !isAudioOutputEnabled()) {
+      if (!isAudioOutputEnabled()) {
         void ApeDsp.genStop();
         ApeDsp.fxReset();
         return;
       }
+      if (gen !== genRef.current) {
+        if (!wantRef.current) {
+          void ApeDsp.genStop(); // stopped meanwhile
+          ApeDsp.fxReset();
+        }
+        return;
+      }
+      // Pills/source tapped while the start was in flight skipped their live
+      // push (running was still false) — send the newest chain now.
+      const latest = latestRef.current;
+      if (latest.sourceIdx !== sourceIdx) ApeDsp.genSet({ levelDb: GEN_LEVEL_DB, ...SOURCES[latest.sourceIdx].gen });
+      if (latest.enabled !== enabled) pushChain(latest.enabled);
       setRunning(true);
       noteAudioActivity();
     } catch (e) {
@@ -270,6 +289,7 @@ export function SignalChainLabScreen() {
 
   const stop = useCallback(() => {
     genRef.current++;
+    wantRef.current = false;
     void ApeDsp.genStop();
     ApeDsp.fxReset();
     setRunning(false);

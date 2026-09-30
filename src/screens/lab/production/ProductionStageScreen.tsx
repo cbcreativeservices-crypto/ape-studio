@@ -161,7 +161,10 @@ export function ProductionStageScreen() {
     <KeyboardAvoidingView
       style={styles.root}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={insets.top + 8}
+      // The KAV IS the screen root at y = 0 (no navigator header), so its
+      // offset is 0 — insets.top + 8 left the form's last ~60 pt under the
+      // iOS keyboard (bug hunt 2026-09-30).
+      keyboardVerticalOffset={0}
     >
       <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
         <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
@@ -169,7 +172,7 @@ export function ProductionStageScreen() {
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text style={styles.kicker}>
-            {`${labDef(lab).title.replace(/^Audio /, '').toUpperCase()}`}
+            {`${(labDef(lab)?.title ?? 'Production').replace(/^Audio /, '').toUpperCase()}`}
             {stage ? ` · STAGE ${stage.num}` : ''}
           </Text>
           <Text style={styles.title} numberOfLines={1}>

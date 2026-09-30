@@ -557,7 +557,9 @@ export function VuTunerFullScreen() {
       </Pressable>
       <View style={fs.center}>
         <View style={{ width: meterW }}>
-          <SkinnedTunerVu hzText={hzText} cents={cents} dim={false} inTune={inTune} tuneColor={tunerColor} />
+          {/* dim a HELD value, exactly as the inline display does (dim={isHeld}) —
+              the full screen printed the held Hz at full brightness as if live. */}
+          <SkinnedTunerVu hzText={hzText} cents={cents} dim={frame.freq != null && !frame.accepted} inTune={inTune} tuneColor={tunerColor} />
         </View>
         <View
           style={fs.noteRow}

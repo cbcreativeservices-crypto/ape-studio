@@ -427,11 +427,15 @@ export function MatchingScreen({ navigation, route }: Props) {
           }, ADVANCE_MS);
         }
       } else {
-        wrongPairRef.current = { left: selectedLeft, right: rightId }; // ref first (see above)
-        setWrongPair({ left: selectedLeft, right: rightId });
+        const wrong = { left: selectedLeft, right: rightId };
+        wrongPairRef.current = wrong; // ref first (see above)
+        setWrongPair(wrong);
+        // Clear only what THIS miss set (bug pass 2026-09-30): NEXT / swipe
+        // inside WRONG_FLASH_MS moves to a new board, and the learner's first
+        // pick there was wiped when this timer landed on it.
         scheduleFlash(() => {
-          setWrongPair(null);
-          setSelectedLeft(null);
+          setWrongPair((w) => (w === wrong ? null : w));
+          setSelectedLeft((cur) => (cur === wrong.left ? null : cur));
         }, WRONG_FLASH_MS);
       }
     },

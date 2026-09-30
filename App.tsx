@@ -289,6 +289,17 @@ function App() {
   useEffect(() => {
     const open = (payload: Parameters<typeof queueWeeklyConcept>[0]) => {
       if (navigationRef.isReady()) {
+        // ⛔ NOTHING SITS ABOVE `Auth` (bug hunt 2026-09-30): routeLocalDest and
+        // pendingLink already refuse this, but a weekly-concept push tapped
+        // while signed out pushed its card straight over the login screen.
+        // Splash as the base is fine — it drops the route if signed out.
+        let base: string | undefined;
+        try {
+          base = navigationRef.getRootState()?.routes?.[0]?.name;
+        } catch {
+          base = undefined;
+        }
+        if (base === 'Auth') return;
         navigationRef.navigate('WeeklyConcept', payload);
       } else {
         queueWeeklyConcept(payload);

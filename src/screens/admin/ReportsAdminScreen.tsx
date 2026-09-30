@@ -55,10 +55,16 @@ export function ReportsAdminScreen() {
   const [busy, setBusy] = useState<string | null>(null);
   const [thread, setThread] = useState<{ id: string; msgs: ReportMessage[] | null } | null>(null);
 
+  // Only the latest read may land (bug hunt 2026-09-30): OPEN → ALL → OPEN
+  // faster than the queue answered let the ALL list arrive last and sit under
+  // the OPEN tab, with its count in the OPEN label.
+  const loadReq = useRef(0);
   const load = useCallback(async () => {
+    const id = ++loadReq.current;
     setLoading(true);
     setErr(null);
     const r = await fetchReportQueue(tab);
+    if (id !== loadReq.current) return;
     // null is a refusal or a dropped connection, NOT an empty queue.
     if (r === null) setErr('Could not load the report queue. Check your connection and try again.');
     setRows(r);

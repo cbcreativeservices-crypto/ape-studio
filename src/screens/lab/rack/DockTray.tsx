@@ -44,7 +44,7 @@ function TrayChip({
       onPress={() => {
         // Selecting an option is the main verb in a tray — it should be felt
         // as well as seen (the dock keys got the same treatment).
-        if (hapticsEnabled()) void Haptics.selectionAsync();
+        if (hapticsEnabled()) void Haptics.selectionAsync().catch(() => {});
         onPress();
       }}
       onLongPress={onLongPress}

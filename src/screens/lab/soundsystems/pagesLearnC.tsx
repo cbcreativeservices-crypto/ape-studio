@@ -612,7 +612,7 @@ function PageWrap({ ctx }: { ctx: PageCtx }) {
         <Body>The understanding check follows this page. Every question must be answered correctly; retry until it is — a wrong answer is a question you have not finished yet.</Body>
       </Card>
       <DeeperRow>
-        <LabLink route="SoundSystemsLab" label="Lab home — what is left" />
+        <LabLink pop route="SoundSystemsLab" label="Lab home — what is left" />
       </DeeperRow>
     </View>
   );

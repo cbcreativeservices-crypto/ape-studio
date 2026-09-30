@@ -5,7 +5,7 @@
  * FINAL). ALL COPY IS NEW — owner ratification pending
  * (docs/APE_MIXING_LAB_COPY_2026_09_11.md).
  */
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { Body, Btn, Card, Eyebrow, Lead, Prompt, Row } from '../tuning/components/primitives';
@@ -38,23 +38,28 @@ function PageTranslation({ ctx }: { ctx: PageCtx }) {
     [],
   );
   const pb = useMixPlayback(variants);
+  const guard = useRunGuard();
   const measure = async () => {
-    if (measuring) return;
+    if (measuring || !guard.claim()) return;
     setMeasuring(true);
     try {
       // Staged with yields (device freeze lesson, p17): render, breathe,
       // LUFS, breathe, true-peak — the JS thread never blocks in one burst.
       await new Promise<void>((r) => setTimeout(r, 30));
+      if (!guard.alive()) return;
       const m = renderMix(QC_PANS, masterDb);
       await new Promise<void>((r) => setTimeout(r, 30));
+      if (!guard.alive()) return;
       const lufs = loudnessLufsEstimate(m.stereo);
       await new Promise<void>((r) => setTimeout(r, 30));
+      if (!guard.alive()) return;
       const tp = truePeakDbEstimate(m.stereo);
       setMeasured({ lufs, tp, masterDb });
       // iOS VoiceOver never hears LiveRegion lines — announce (design P1-4).
       AccessibilityInfo.announceForAccessibility?.(`Loudness ${lufs.toFixed(1)} LUFS. True peak ${tp.toFixed(1)} dB true peak.`);
     } finally {
-      setMeasuring(false);
+      guard.release();
+      if (guard.alive()) setMeasuring(false);
     }
   };
   const goals = [
@@ -177,28 +182,57 @@ const breathe = () => new Promise<void>((r) => setTimeout(r, 30));
  *  −∞/broken verdicts identically at a quarter of the render cost. */
 const NULL_SECONDS = 2.5;
 
+/** Leaving mid-run (bug hunt 2026-09-30): the staged render loops kept going
+ *  after unmount, and renderMix re-synthesized the ~15 MB session stems the
+ *  unmount had just released — a frozen JS thread on whatever screen came
+ *  next, and a cache nothing would free. `alive()` is checked after every
+ *  yield; `claim()` is a synchronous one-run lock (a same-frame double tap
+ *  both read the render-time flag false). */
+function useRunGuard() {
+  const alive = useRef(true);
+  const busy = useRef(false);
+  useEffect(
+    () => () => {
+      alive.current = false;
+    },
+    [],
+  );
+  return {
+    alive: () => alive.current,
+    claim: () => (busy.current ? false : (busy.current = true)),
+    release: () => {
+      busy.current = false;
+    },
+  };
+}
+
 function PageReconstruction({ ctx }: { ctx: PageCtx }) {
   const [running, setRunning] = useState(false);
   const [stage, setStage] = useState('');
   const [result, setResult] = useState<{ linear: number; withBus: number } | null>(null);
   const [checkDone, setCheckDone] = useState(false);
+  const guard = useRunGuard();
   const runNull = async () => {
-    if (running) return;
+    if (running || !guard.claim()) return;
     setRunning(true);
     try {
       setStage('RENDERING THE FULL MIX… 1/4');
       await breathe();
+      if (!guard.alive()) return;
       const full = renderMix({}, 0, { seconds: NULL_SECONDS });
       setStage('RENDERING THE RHYTHM STEM… 2/4');
       await breathe();
+      if (!guard.alive()) return;
       const rhythm = renderMix(stemSettings(RHYTHM), 0, { seconds: NULL_SECONDS });
       setStage('RENDERING THE MUSIC STEM… 3/4');
       await breathe();
+      if (!guard.alive()) return;
       const music = renderMix(stemSettings(TRACK_IDS.filter((t) => !RHYTHM.includes(t))), 0, { seconds: NULL_SECONDS });
       const summed = sumStereo([rhythm.stereo, music.stereo]);
       const linear = nullResidueDb(summed, full.stereo);
       setStage('RENDERING WITH THE BUS COMPRESSOR… 4/4');
       await breathe();
+      if (!guard.alive()) return;
       const fullBus = renderMix({}, 0, { seconds: NULL_SECONDS, busComp: { thresholdDb: -18, ratio: 4, attackMs: 10, releaseMs: 150 } });
       const withBus = nullResidueDb(summed, fullBus.stereo);
       setResult({ linear, withBus });
@@ -206,8 +240,11 @@ function PageReconstruction({ ctx }: { ctx: PageCtx }) {
         `Clean bus residue ${linear.toFixed(0)} dB — the stems null. With the bus compressor, residue ${withBus.toFixed(0)} dB — reconstruction broken.`,
       );
     } finally {
-      setStage('');
-      setRunning(false);
+      guard.release();
+      if (guard.alive()) {
+        setStage('');
+        setRunning(false);
+      }
     }
   };
   const goals = [

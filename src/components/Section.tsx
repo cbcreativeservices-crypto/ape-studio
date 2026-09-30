@@ -53,7 +53,7 @@ export function Section({
     if (animationsAllowed()) {
       LayoutAnimation.configureNext(LayoutAnimation.create(160, 'easeInEaseOut', 'opacity'));
     }
-    if (hapticsEnabled()) void Haptics.selectionAsync();
+    if (hapticsEnabled()) void Haptics.selectionAsync().catch(() => {});
     setOpen((v) => {
       if (!v) onOpen?.();
       return !v;

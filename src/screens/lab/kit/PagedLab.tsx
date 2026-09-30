@@ -36,6 +36,7 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import { animationsAllowed } from '../../../features/settings/a11y';
 import { loadPagedProgress, resetPagedProgress, savePagedProgress, type PagedProgress } from '../../../features/lab/pagedProgress';
 import { confirmDialog } from '../../../lib/confirm';
+import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 
 export type PageCtx = {
   reduceMotion: boolean;
@@ -144,6 +145,13 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   // Latest persisted state, so two writes in one tap (mark done + advance)
   // never clobber each other through a stale render closure.
   const progressRef = useRef<PagedProgress | null>(null);
+  // HOUSE GUEST RULE (bug pass 2026-09-30): a signed-out guest's place is
+  // neither restored nor saved — the end screen tells them "nothing here is
+  // saved". `resolved` REQUIRED: the provider boots at 'anonymous', and a
+  // signed-in learner must not be treated as a guest before the tier is known.
+  const { entitlement, resolved } = useEntitlement();
+  const guestRef = useRef(false);
+  guestRef.current = resolved && entitlement === 'anonymous';
   const [page, setPage] = useState(0);
   const [listOpen, setListOpen] = useState(false);
   // The what's-left end screen (owner 2026-09-29) — shown in place of the page.
@@ -178,8 +186,9 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
     let alive = true;
     navigatedRef.current = false;
     preloadRef.current = { done: new Set() };
-    void loadPagedProgress(labId).then((p) => {
+    void loadPagedProgress(labId).then((loaded) => {
       if (!alive) return;
+      const p: PagedProgress = guestRef.current ? { completed: [], lastPage: 0, done: false } : loaded;
       const pre = preloadRef.current;
       preloadRef.current = { done: new Set() };
       let next = p;
@@ -192,7 +201,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
           done: completed.length >= pagesWithCheck.length,
           lastPage: pre.lastPage ?? p.lastPage,
         };
-        void savePagedProgress(labId, next);
+        if (!guestRef.current) void savePagedProgress(labId, next);
         // Same rule as markDone: the appended check page is not a lab page.
         for (const i of fresh) if (i < pages.length) onPageDoneRef.current?.(i);
       }
@@ -216,7 +225,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
     const next = { ...base, ...patch };
     progressRef.current = next;
     setProgress(next);
-    void savePagedProgress(labId, next);
+    if (!guestRef.current) void savePagedProgress(labId, next);
   }, [labId]);
   const goTo = useCallback((i: number) => {
     const idx = Math.max(0, Math.min(pagesWithCheck.length - 1, Math.round(i)));

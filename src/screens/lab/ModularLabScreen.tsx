@@ -231,10 +231,14 @@ export function ModularLabScreen() {
   // modStart() was still in flight left the sequencer sounding with no stop
   // affordance. Same pattern as BassLabScreen/AutotuneLabScreen.
   const genRef = useRef(0);
+  // Double-tap ▶ (bug hunt 2026-09-30, FmLab's pattern): a superseded start
+  // only stops the sequencer when nothing newer wants it.
+  const wantRef = useRef(false);
 
   const start = useCallback(async () => {
     if (!modReady) return;
     const gen = ++genRef.current;
+    wantRef.current = true;
     const ok = await requestAudioOutput();
     if (!ok || gen !== genRef.current) return;
     setGenError('');
@@ -243,8 +247,12 @@ export function ModularLabScreen() {
       await ApeDsp.modStart();
       // A mute that landed while the native start was in flight wins — never
       // leave a tone sounding into a closed gate (owner 2026-09-29).
-      if (gen !== genRef.current || !isAudioOutputEnabled()) {
-        void ApeDsp.modStop(); // we left while the native start was in flight
+      if (!isAudioOutputEnabled()) {
+        void ApeDsp.modStop();
+        return;
+      }
+      if (gen !== genRef.current) {
+        if (!wantRef.current) void ApeDsp.modStop(); // we left while the native start was in flight
         return;
       }
       setRunning(true);
@@ -256,6 +264,7 @@ export function ModularLabScreen() {
 
   const stop = useCallback(() => {
     genRef.current++;
+    wantRef.current = false;
     void ApeDsp.modStop();
     setRunning(false);
     setEnvLevel(0);

@@ -4,7 +4,7 @@
  * scored across six dimensions, the final assessment drawn from the scored
  * pool, and the completion summary with links back into the modules.
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -76,6 +76,17 @@ const CH_START = { source: 0.8, mixer: 0.5, amp: 0.5, mode: 'stereo' as const, s
 export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [progress, setProgress] = useState<AmpProgressState | null>(null);
+  // Summary links PUSH the module (bug hunt 2026-09-30): navigate() to the
+  // current route name only swapped params on this screen, so the learner
+  // landed at Module 8's deep scroll offset inside another module and BACK
+  // skipped the summary. A push needs its own double-tap lock.
+  const lastOpenRef = useRef(0);
+  const openModule = (id: AmpModuleId) => {
+    const now = Date.now();
+    if (now - lastOpenRef.current < 700) return;
+    lastOpenRef.current = now;
+    navigation.push('AmpModule', { id });
+  };
 
   useEffect(() => {
     let alive = true;
@@ -476,7 +487,7 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
       <Card>
         <Text style={styles.sumLabel}>MODULES</Text>
         {summary.mods.map((m) => (
-          <Pressable key={m.id} onPress={() => navigation.navigate('AmpModule', { id: m.id })} style={styles.sumRow} accessibilityRole="button" accessibilityLabel={`Open module ${m.num}, ${m.title}`}>
+          <Pressable key={m.id} onPress={() => openModule(m.id)} style={styles.sumRow} accessibilityRole="button" accessibilityLabel={`Open module ${m.num}, ${m.title}`}>
             <Text style={[styles.sumMark, { color: m.done ? colors.green : colors.textMuted }]}>{m.done ? '✓' : '○'}</Text>
             <Text style={styles.sumText}>{m.num}. {m.title}</Text>
             <Text style={styles.sumLink}>open ›</Text>
@@ -490,7 +501,7 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
         <Text style={styles.sumLabel}>NEEDS REVIEW · {summary.review.length}</Text>
         {summary.review.length === 0 ? <Text style={styles.sumSmall}>Nothing flagged — every module check you answered was right on the first pick{finalSubmitted ? ', and the final was clean' : ''}.</Text> : null}
         {summary.review.map((r) => (
-          <Pressable key={r.q} onPress={() => navigation.navigate('AmpModule', { id: r.moduleId })} style={styles.sumRow} accessibilityRole="button" accessibilityLabel={`Review in module: ${r.q}`}>
+          <Pressable key={r.q} onPress={() => openModule(r.moduleId)} style={styles.sumRow} accessibilityRole="button" accessibilityLabel={`Review in module: ${r.q}`}>
             <Text style={[styles.sumSmall, { color: colors.gold, flex: 1 }]}>↺ {r.q}</Text>
           </Pressable>
         ))}

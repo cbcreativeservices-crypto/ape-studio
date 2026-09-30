@@ -131,7 +131,8 @@ describe('every listed lab wires the shared end screen', () => {
     for (const p of ['wave/WaveModuleScreen', 'digital/DigitalModuleScreen', 'gain/GainModuleScreen', 'eq/EqModuleScreen', 'cymatics/CymaticsModuleScreen']) {
       const s = src(`src/screens/lab/${p}.tsx`);
       assert.doesNotMatch(s, /disabled=\{idx >= last\}/, p);
-      assert.match(s, /idx >= last \? setEnding\(true\) : goToModule\(idx \+ 1\)/, p);
+      // (2026-09-30: behind a 400 ms double-tap lock, in onNext.)
+      assert.match(s, /if \(idx >= last\) setEnding\(true\);\s*else goToModule\(idx \+ 1\);/, p);
       assert.match(s, /'FINISH ›'/, p);
     }
   });

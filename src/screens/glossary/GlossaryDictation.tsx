@@ -9,7 +9,7 @@
  * crashing the whole screen. The mic appears — and works — once a new EAS build
  * bundles the native module.
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable } from 'react-native';
 import Svg, { Path, Rect } from 'react-native-svg';
 import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from 'expo-speech-recognition';
@@ -34,9 +34,23 @@ function MicGlyph({ color, size = 19 }: { color: string; size?: number }) {
 export function GlossaryDictation({ onText }: { onText: (t: string) => void }) {
   const [dictating, setDictating] = useState(false);
 
-  useSpeechRecognitionEvent('start', () => setDictating(true));
-  useSpeechRecognitionEvent('end', () => setDictating(false));
-  useSpeechRecognitionEvent('error', () => setDictating(false));
+  // A double tap reached start() twice (bug hunt 2026-09-30): `dictating` only
+  // flips on the recognizer's 'start' event, so both taps saw false, and the
+  // second start's busy 'error' flipped the button back to idle over a live
+  // mic. One start at a time until the recognizer answers either way.
+  const startingRef = useRef(false);
+  useSpeechRecognitionEvent('start', () => {
+    startingRef.current = false;
+    setDictating(true);
+  });
+  useSpeechRecognitionEvent('end', () => {
+    startingRef.current = false;
+    setDictating(false);
+  });
+  useSpeechRecognitionEvent('error', () => {
+    startingRef.current = false;
+    setDictating(false);
+  });
   useSpeechRecognitionEvent('result', (e) => {
     const t = e.results?.[0]?.transcript;
     if (typeof t === 'string') onText(t);
@@ -62,9 +76,12 @@ export function GlossaryDictation({ onText }: { onText: (t: string) => void }) {
       ExpoSpeechRecognitionModule.stop();
       return;
     }
+    if (startingRef.current) return;
+    startingRef.current = true;
     try {
       const perm = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
       if (!perm.granted) {
+        startingRef.current = false;
         notify(
           'Microphone access is off',
           'Dictation needs microphone and speech recognition access. If you are not asked again, turn them on for this app in your device Settings. You can still type your search.',
@@ -83,6 +100,7 @@ export function GlossaryDictation({ onText }: { onText: (t: string) => void }) {
         requiresOnDeviceRecognition: true,
       });
     } catch {
+      startingRef.current = false;
       setDictating(false);
     }
   }, [dictating]);

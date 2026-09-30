@@ -2296,7 +2296,14 @@ export function FoundationsCourseScreen() {
             deliberate space either side. Same header renders all 14 modules, so
             this is "all foundations of sound screens" by construction. */}
         <Pressable
-          onPress={() => (step === STEPS.length - 1 ? finish() : goTo(Math.min(STEPS.length - 1, step + 1)))}
+          onPress={() => {
+            // The same nav lock as the bottom NEXT/DONE: a double-tap here at
+            // module 13 otherwise ran FINISH on the second tap and skipped
+            // module 14 (bug hunt 2026-09-30).
+            if (navLocked()) return;
+            if (step === STEPS.length - 1) finish();
+            else goTo(Math.min(STEPS.length - 1, step + 1));
+          }}
           hitSlop={{ top: 14, bottom: 14, left: 10, right: 10 }}
           accessibilityRole="button"
           accessibilityLabel={step === STEPS.length - 1 ? "Finish the lab and see what's left" : 'Next module'}

@@ -169,7 +169,21 @@ export function HeaderPlayButton({
     labProbe(`▶ press via ${via}`); // TEMP probe
     onPress();
   };
+  // The previous touch's backup timer must die with the next touch (bug hunt
+  // 2026-09-30): a fast ▶-then-■ reset firedRef, so touch 1's timer fired a
+  // SECOND start from its stale onPress and touch 2's real stop was swallowed.
+  const backupRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (backupRef.current) clearTimeout(backupRef.current);
+    },
+    [],
+  );
   const burst = (e: GestureResponderEvent) => {
+    if (backupRef.current) {
+      clearTimeout(backupRef.current);
+      backupRef.current = null;
+    }
     firedRef.current = false;
     touchRef.current = { x: e.nativeEvent.pageX, y: e.nativeEvent.pageY, t: Date.now() };
     labProbe(`▶ touch${disabled ? ' (DISABLED)' : ''}`); // TEMP probe
@@ -186,7 +200,9 @@ export function HeaderPlayButton({
         const moved = Math.hypot(e.nativeEvent.pageX - t0.x, e.nativeEvent.pageY - t0.y);
         const held = Date.now() - t0.t;
         // Let the Pressable's own onPress land first (it fires on release).
-        setTimeout(() => {
+        if (backupRef.current) clearTimeout(backupRef.current);
+        backupRef.current = setTimeout(() => {
+          backupRef.current = null;
           if (firedRef.current) return;
           if (disabled) {
             labProbe('▶ release — button disabled, no press'); // TEMP probe
@@ -263,10 +279,14 @@ export function CollapsibleSection({
   children,
   startOpen = true,
   onHelp,
+  keepMounted = false,
 }: {
   title: string;
   children: ReactNode;
   startOpen?: boolean;
+  /** Keep the body mounted (zero height) while collapsed — for bodies that
+   *  own sheets/Modals which must still open from elsewhere. */
+  keepMounted?: boolean;
   /** Optional ⓘ on the section header row. */
   onHelp?: () => void;
 }) {
@@ -305,7 +325,18 @@ export function CollapsibleSection({
           </Pressable>
         ) : null}
       </View>
-      {open ? <View style={styles.sectionBody}>{children}</View> : null}
+      {open ? (
+        <View style={styles.sectionBody}>{children}</View>
+      ) : keepMounted ? (
+        // Collapsed but MOUNTED (bug hunt 2026-09-30): the rack well's LAB
+        // NOTES carry the lab's own sheets (guided lesson, THD, viewer).
+        // Unmounting them made every ⓘ / long-press / inset tap dead while
+        // collapsed — and the sheet popped up by itself on the next expand.
+        // Zero height, not display:none, so a sheet's Modal still presents.
+        <View style={styles.sectionBodyCollapsed} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
+          {children}
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -665,7 +696,7 @@ export function LabShell({
                       inside a collapsed section is an instruction unread. */}
                   {rack.wellTop}
                   <Text style={styles.caption}>{exploreCaption}</Text>
-                  <CollapsibleSection title="LAB NOTES">
+                  <CollapsibleSection title="LAB NOTES" keepMounted>
                     <Text style={styles.intro}>{intro}</Text>
                     {typeof children === 'function' ? children(api) : children}
                     {/* Guided-lesson entry lives at the BOTTOM (owner 2026-07-29). */}
@@ -831,6 +862,7 @@ const styles = StyleSheet.create({
   sectionTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.3, color: colors.textSecondary, flexGrow: 1 },
   sectionHelp: { fontFamily: fonts.barlowMedium, fontSize: 14, color: colors.textSub },
   sectionBody: { paddingHorizontal: 12, paddingBottom: 12, gap: 10 },
+  sectionBodyCollapsed: { height: 0, overflow: 'hidden' },
 
   lessonRow: {
     borderRadius: 9,

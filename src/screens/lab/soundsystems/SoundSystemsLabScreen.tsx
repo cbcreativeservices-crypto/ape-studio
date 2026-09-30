@@ -29,6 +29,7 @@ import { CAPSTONES } from '../../../features/soundsystems/capstones';
 import { FAULTS } from '../../../features/soundsystems/faults';
 import { SS_LEARN_ID, SS_MODES, SS_PAGE_COUNTS, type SsModeId } from './units';
 import { GearGlyph, type GlyphKind } from './art/gearArt';
+import { clearPageMemory } from './pageMemory';
 
 const MODE_GLYPH: Record<SsModeId, GlyphKind> = {
   learn: 'console',
@@ -83,6 +84,9 @@ export function SoundSystemsLabScreen() {
 
   const reset = () => {
     confirmDialog('Reset this lab?', 'Clears your pages, capstones, exercises and solved faults for the Sound Systems Lab only.', 'Reset', () => {
+      // Session page memory too (bug hunt 2026-09-30), or a reset capstone /
+      // console re-mounted finished and re-completed itself on the next visit.
+      clearPageMemory(SS_MODES.map((m) => m.labId));
       void Promise.all([...SS_MODES.map((m) => resetPagedProgress(m.labId)), resetSoundSystemsProgress()]).then(refresh);
     }, { destructive: true });
   };

@@ -144,7 +144,11 @@ export function CredentialDetailModal({
    * CredentialWall already does this; the chooser did not, so the same
    * credential looked finished in one place and broken in the other.
    */
-  const [artFailed, setArtFailed] = useState(false);
+  // KEYED BY SLUG (overnight hunt 2026-09-30): one shared boolean meant the
+  // first credential without art stamped the placeholder over EVERY credential
+  // after it — swiping ‹ › (the pager renders the neighbours too) or opening
+  // the next one — and never cleared while the modal stayed mounted.
+  const [artFailedSlugs, setArtFailedSlugs] = useState<ReadonlySet<string>>(() => new Set());
   const [scrimH, setScrimH] = useState(0);
   const [footerH, setFooterH] = useState(FOOTER_SEED);
   const budget = Math.min(Math.round(height * 0.88), scrimH > 0 ? scrimH - SCRIM_PAD * 2 : Infinity);
@@ -166,6 +170,7 @@ export function CredentialDetailModal({
     const total = coreCount + c.topics.length;
     const ownNoun = isCert ? 'specialization' : 'program';
     const listHead = isCert ? 'SPECIALIZATION TOPICS' : 'REQUIRED TOPICS';
+    const artFailed = artFailedSlugs.has(c.slug);
     return (
       <ScrollView
         style={{ maxHeight: scrollMax }}
@@ -186,7 +191,7 @@ export function CredentialDetailModal({
             uri={credentialArtUrl(c.slug)}
             style={styles.artFill}
             imageStyle={styles.artImg}
-            onExhausted={() => setArtFailed(true)}
+            onExhausted={() => setArtFailedSlugs((s) => (s.has(c.slug) ? s : new Set(s).add(c.slug)))}
           />
           {artFailed ? (
             // A deliberate, labelled placeholder rather than a blank well. The

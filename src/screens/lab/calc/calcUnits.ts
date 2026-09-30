@@ -218,6 +218,12 @@ export function parseQuantity(raw: string): number | null {
     const decimal = t.lastIndexOf('.') > t.lastIndexOf(',') ? '.' : ',';
     const grouping = decimal === '.' ? ',' : '.';
     if ((decimal === '.' ? dots : commas) > 1) return null; // two decimal points
+    // The grouping must be REAL grouping (three digits per group), exactly as
+    // the commas-only branch demands — otherwise a typo like `1,5.3` or
+    // `10,00.5` had its comma stripped and came back as 15.3 / 1000.5.
+    const g = grouping === '.' ? '\\.' : ',';
+    const d = decimal === '.' ? '\\.' : ',';
+    if (!new RegExp(`^[+-]?\\d{1,3}(${g}\\d{3})+${d}\\d*([eE][+-]?\\d+)?$`).test(t)) return null;
     normalised = t.split(grouping).join('');
     if (decimal === ',') normalised = normalised.replace(',', '.');
   } else if (commas > 0) {

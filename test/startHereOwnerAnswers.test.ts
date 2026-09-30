@@ -23,7 +23,7 @@ test('the Start Here popup passes the built-in entry, and a preloaded entry skip
   assert.match(bits, /preloaded=\{starterGlossaryEntry\(full\)\}/);
   const popup = readFileSync('src/features/glossary/GlossaryTermPopup.tsx', 'utf8');
   const pre = popup.indexOf('if (preloaded) {');
-  assert.ok(pre > 0 && pre < popup.indexOf('fetchDefinitionViaGateway(hit.id)'), 'preloaded returns before the gateway call');
+  assert.ok(pre > 0 && pre < popup.indexOf('readOnce(hit.id)'), 'preloaded returns before the gateway call');
 });
 
 test('Start Here is the landing only on the first app open; Glossary after', () => {

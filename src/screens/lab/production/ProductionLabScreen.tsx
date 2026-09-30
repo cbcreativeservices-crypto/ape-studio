@@ -205,9 +205,19 @@ export function ProductionLabScreen() {
     [project, accepting, reload, lab],
   );
 
+  // One export at a time (bug hunt 2026-09-30): a double tap printed twice,
+  // iOS refused the second share ("another share request is being
+  // processed") and the learner was told the packet failed over an open sheet.
+  const sharingRef = useRef(false);
   const sharePacket = useCallback(async () => {
-    if (!project || !report) return;
-    const res = await exportPacketPdf({ project, stages, report });
+    if (!project || !report || sharingRef.current) return;
+    sharingRef.current = true;
+    let res: Awaited<ReturnType<typeof exportPacketPdf>>;
+    try {
+      res = await exportPacketPdf({ project, stages, report });
+    } finally {
+      sharingRef.current = false;
+    }
     if (res.ok) return;
     notify(
       'Packet not shared',
@@ -266,7 +276,12 @@ export function ProductionLabScreen() {
                   <Pressable
                     key={p.id}
                     style={[styles.switchChip, p.id === openId && styles.switchChipOn]}
-                    onPress={() => setOpenId(p.id)}
+                    onPress={() => {
+                      // A kept (failed) rename draft belongs to THIS project,
+                      // never the next one (2026-09-30).
+                      setNameDraft(null);
+                      setOpenId(p.id);
+                    }}
                     accessibilityRole="button"
                     accessibilityState={{ selected: p.id === openId }}
                   >
@@ -293,8 +308,9 @@ export function ProductionLabScreen() {
                 style={styles.projectNameInput}
                 value={nameDraft ?? project.name}
                 onChangeText={setNameDraft}
+                // Blur alone commits: DONE submits AND blurs, so both handlers
+                // saved twice (two failure popups on a full disk). 2026-09-30.
                 onBlur={commitName}
-                onSubmitEditing={commitName}
                 returnKeyType="done"
                 selectTextOnFocus
                 accessibilityLabel="Project name — edit to rename"

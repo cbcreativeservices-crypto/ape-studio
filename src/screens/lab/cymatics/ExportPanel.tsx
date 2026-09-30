@@ -117,13 +117,21 @@ export function ExportPanel({ subject, onHelp }: { subject: ExportSubject; onHel
   };
   const name = subject.kind === 'pattern' ? subject.pattern.name : 'cymatics-compare';
 
+  // A REF, not the `busy` state: both taps of a double-tap run before the
+  // re-render, so the state still read false and a second share sheet / print
+  // dialog stacked on the first (bug hunt 2026-09-30).
+  const busyRef = useRef(false);
   const run = (job: () => Promise<string>) => {
-    if (busy) return;
+    if (busyRef.current) return;
+    busyRef.current = true;
     setBusy(true);
     setMsg('');
     void job()
-      .then(setMsg)
-      .finally(() => setBusy(false));
+      .then(setMsg, () => setMsg('That didn’t complete — try again.'))
+      .finally(() => {
+        busyRef.current = false;
+        setBusy(false);
+      });
   };
   const doShare = () =>
     run(async () => {

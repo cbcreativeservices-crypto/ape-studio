@@ -94,6 +94,9 @@ export function AcceptConditionSheet({
             contentContainerStyle={styles.body}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
+            // The reason box and RECORD IT sat under the keyboard on a small
+            // phone (2026-09-30): let iOS inset the scroll for it.
+            automaticallyAdjustKeyboardInsets
           >
             <Text style={styles.kicker}>ACCEPT A CONDITION</Text>
             <Text style={styles.title}>{finding?.title}</Text>

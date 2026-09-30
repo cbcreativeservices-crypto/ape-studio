@@ -30,6 +30,7 @@ import { StudioButton } from '../../components/StudioButton';
 import { TrophyImage } from '../../components/TrophyImage';
 import { supabase } from '../../lib/supabase';
 import { colors, fonts } from '../../theme/tokens';
+import { hapticsEnabled } from '../../features/settings/store';
 import { popupCard } from '../../theme/readingColumn';
 import type { RootStackParamList } from '../../navigation/types';
 
@@ -73,7 +74,7 @@ export function TrophyScreen({ navigation, route }: Props) {
   }, [achievementId]);
 
   useEffect(() => {
-    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    if (hapticsEnabled()) void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
     // No auto-advance. This is a trophy the user deliberately opened, so it
     // stays open until they close it — the 5-second timer existed only for the
     // quiz-win path, which is now the celebration engine's.

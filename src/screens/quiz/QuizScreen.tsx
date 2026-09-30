@@ -484,6 +484,12 @@ export function QuizScreen({ navigation, route }: Props) {
       'Your answers will be wiped immediately. This does not end the attempt — the clock keeps running and coming back puts you into the same sitting with the same questions and less time left.',
       'Leave & wipe',
       () => {
+        // STALE ONCE SUBMITTED (bug pass 2026-09-30). The dialog is app-level
+        // and outlives this screen: left open until the clock force-submits,
+        // it sat over Results/Celebration, and this goBack — dispatched from a
+        // route that no longer exists — is unhandled there and bubbles to the
+        // parent navigators, where it can pop the result the learner is reading.
+        if (submitted.current) return;
         answers.current = {};
         // ⛔ AND THE SAVED DRAFT GOES WITH THEM. Without this the dialog's
         //    promise ("Your answers will be wiped immediately") was true of

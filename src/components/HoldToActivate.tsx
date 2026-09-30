@@ -74,6 +74,11 @@ export function HoldToActivate({
 
   const start = () => {
     if (disabled) return;
+    // A second start over a live hold (a screen-reader ACTIVATE, then a finger
+    // press-in) overwrote `tick` without clearing it: the orphan interval ran
+    // forever and, on reaching 0, cleared the NEW countdown (bug hunt 2026-09-30).
+    anim.current?.stop();
+    clearTick();
     setHolding(true);
     setSecs(holdSecs);
     progress.setValue(0);

@@ -8,7 +8,7 @@
  * "requires proper system design", never a blanket "never patch microphones" —
  * professional installations designed for mic patching exist.
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, Platform, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import type { PageCtx, PageDef } from '../kit/PagedLab';
@@ -176,9 +176,14 @@ function DesignRowCard({ row, onSettled }: { row: (typeof DESIGN_ROWS)[number]; 
   // multi-acceptable tradeoff notes are the content, so a learner who settled
   // on FULL must still be able to read what HALF would have bought them. The
   // completion latch fires once, on the first acceptable pick.
+  // A synchronous latch (bug hunt 2026-09-30): two fingers on two acceptable
+  // options in one frame both read `settled` false, counted the row twice and
+  // could complete (and credit) the page with a row still unsettled.
+  const settledRef = useRef(false);
   const pick = (kind: PairKind) => {
     setPicked(kind);
-    if (row.verdicts[kind].ok && !settled) {
+    if (row.verdicts[kind].ok && !settledRef.current) {
+      settledRef.current = true;
       setSettled(true);
       onSettled();
     }

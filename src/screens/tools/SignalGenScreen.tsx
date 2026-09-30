@@ -556,6 +556,10 @@ export function SignalGenScreen({ navigation }: Props) {
   };
 
   const onStop = async () => {
+    // A stop (another lab claiming the output, shake-to-mute) that lands while
+    // a START is still awaiting the native genStart must win: invalidate that
+    // start so it stops instead of sounding after the stop.
+    genRef.current++;
     try {
       await ApeDsp.genStop();
     } finally {

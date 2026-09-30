@@ -446,6 +446,10 @@ function ChallengeBlock({
       ) : null}
 
       {prog.stage >= total ? <CheckDoneBanner text={def.doneText} /> : null}
+      {/* Practice is always allowed (owner 2026-09-29; bug hunt 2026-09-30):
+          Lesson 12's RETRY FINAL CHALLENGE landed here with nothing to retry.
+          Credit is banked in labCompletion — this clears only the run. */}
+      {prog.stage >= total ? <OptionChip label="PRACTISE AGAIN ↻" action onPress={() => setProg(FRESH)} /> : null}
     </>
   );
 }

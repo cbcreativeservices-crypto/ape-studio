@@ -19,6 +19,16 @@ export type SplCalibration = {
   setAt: string;
 };
 
+/** The offset range the community catalog accepts (docs/MIC_CATALOG_2026_08_21.sql:
+ *  `offset_db between 0 and 200`). The calibrate stepper had no bound, so mashing
+ *  −5 went negative — every reading then clamped to 0.0 dB SPL — and the one
+ *  out-of-range contribution failed the whole upload batch on every retry. */
+export const CAL_OFFSET_MIN_DB = 0;
+export const CAL_OFFSET_MAX_DB = 200;
+export function clampCalOffset(db: number): number {
+  return Math.min(CAL_OFFSET_MAX_DB, Math.max(CAL_OFFSET_MIN_DB, db));
+}
+
 let cal: SplCalibration | null = null;
 let hydrated = false;
 let hydrating: Promise<void> | null = null;

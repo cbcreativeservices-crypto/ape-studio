@@ -52,7 +52,7 @@
  */
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
-import { AppState, Image, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { AppState, BackHandler, Image, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { Modal } from '../../components/DimModal';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useIsFocused } from '@react-navigation/native';
@@ -61,7 +61,7 @@ import * as Crypto from 'expo-crypto';
 import Svg, { Defs, G, Line, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 import { ApeDsp, type EngineConfig } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
-import { frameIsLive, meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
+import { frameIsLive, isMicPermissionPromptOpen, meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
 import { releaseMicNow } from '../../features/tools/engine/micSession';
 import { micReleaseOnBackgroundEnabled } from '../../features/settings/store';
 import { deriveSixthOctave, NO_LEVEL, SIXTH_BANDS, SIXTH_EDGE, type DisplayBands } from '../../features/tools/sixthOctave';
@@ -468,6 +468,13 @@ export function MultiMeterScreen({ navigation }: Props) {
     if (state !== 'running') return;
     let tick = 0;
     const id = setInterval(() => {
+      // ⛔ A STALLED CAPTURE MUST NOT KEEP MINTING COLUMNS (toddler pass
+      // 2026-09-30 — the Spectrogram's 2026-09-22 ruling, which this poll
+      // missed). `state` stays 'running' through a stall, so this went on
+      // deriving 61 bands, a dominant peak and a new mini-spectrogram column
+      // from the engine's LAST spectrum — a scrolling, savable picture beside
+      // cells that had correctly blanked. Already-captured columns stay.
+      if (!frameIsLive(framesRef.current.meter)) return;
       const meta = ApeDsp.getSpectrumMeta();
       const spec = ApeDsp.getSpectrum();
       if (!meta || meta.sampleRate <= 0 || meta.fftSize <= 0 || spec.length === 0) return;
@@ -612,6 +619,16 @@ export function MultiMeterScreen({ navigation }: Props) {
   // invent a weighted peak, which is not standard practice.
   const [unitMode, setUnitMode] = useState<UnitMode>('C');
   const [unitPopup, setUnitPopup] = useState(false);
+  // The READOUT MODE popup is an in-screen overlay, not a Modal, so Android
+  // BACK went past it and left the tool. BACK closes the popup first.
+  useEffect(() => {
+    if (!unitPopup) return;
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      setUnitPopup(false);
+      return true;
+    });
+    return () => sub.remove();
+  }, [unitPopup]);
   const cal = useSplCalibration();
   const splOffset = cal?.offsetDb ?? NOMINAL_OFFSET;
   const calibrated = cal?.offsetDb != null;
@@ -683,7 +700,9 @@ export function MultiMeterScreen({ navigation }: Props) {
   // `running` gate added 2026-08-28: specView is not cleared on STOP, so after
   // stopping this panel kept rendering a frequency captioned "from spectrum
   // peak" off a dead mic, while every other panel had correctly gone dark.
-  const dominant: { hz: number; source: 'pitch' | 'spectrum' } | null = !running
+  // `captureLive`, not `running` (2026-09-30): a stalled capture stays
+  // 'running', and the spectrum peak it last produced read on as dominant.
+  const dominant: { hz: number; source: 'pitch' | 'spectrum' } | null = !captureLive
     ? null
     : accepted && live != null
       ? { hz: live.freq, source: 'pitch' }
@@ -704,13 +723,14 @@ export function MultiMeterScreen({ navigation }: Props) {
   const cursorInfo = useMemo(() => {
     // `running` gate (2026-08-28): specView survives STOP, so the cursor chip
     // kept reading Hz/dB off a frozen envelope after the mic was off.
-    if (!running || cursorX == null || plotW <= 0 || specView == null) return null;
+    // captureLive (2026-09-30): a stalled capture stays 'running'.
+    if (!captureLive || cursorX == null || plotW <= 0 || specView == null) return null;
     const frac = Math.max(0, Math.min(1, cursorX / plotW));
     const hz = zoom.min * Math.pow(zoom.max / zoom.min, frac);
     const i = Math.max(0, Math.min(ENV_POINTS - 1, Math.round(frac * ENV_POINTS - 0.5)));
     const db = specView.env[i];
     return { hz, db: db > FLOOR_DB - 20 ? db : null };
-  }, [running, cursorX, plotW, specView, zoom]);
+  }, [captureLive, cursorX, plotW, specView, zoom]);
 
   // ---- Settings changes -----------------------------------------------------
   const applySmoothing = useCallback(
@@ -732,7 +752,10 @@ export function MultiMeterScreen({ navigation }: Props) {
   }, [resetPeakHold]);
 
   const onStart = useCallback(() => {
-    setMicPaused(false);
+    // Do NOT clear micPaused here (same rule as the SPL meter, 2026-07-30): the
+    // `running` effect above clears it once the mic is truly up. Clearing it now
+    // dropped every panel back to the intro card for the whole 'starting'
+    // window (5–10 s cold on Android — every return from the background).
     // Fresh run = fresh derived state (stale holds/history/chips would lie).
     clearEnv();
     sgBinsRef.current = null;
@@ -817,6 +840,7 @@ export function MultiMeterScreen({ navigation }: Props) {
     const sub = AppState.addEventListener('change', (s) => {
       if (!micReleaseOnBackgroundEnabled()) return; // OFF → keep the warm session
       if (s === 'background') {
+        if (isMicPermissionPromptOpen()) return; // the Android permission dialog pauses the activity
         // 'inactive' (app-switcher peek, a permission alert) is NOT backgrounding.
         /**
          * ⛔ 'starting' RELEASES TOO (2026-09-23 overnight hunt).
@@ -909,7 +933,9 @@ export function MultiMeterScreen({ navigation }: Props) {
     const fr = framesRef.current;
     const m = fr.meter;
     const bands = fr.bands;
-    if (state !== 'running' || m == null || bands == null || bands.centers.length === 0) return;
+    // frameIsLive: a stalled capture keeps its last frame (never null), so the
+    // snapshot saved readings off a stopped mic while the cells showed blank.
+    if (state !== 'running' || m == null || !frameIsLive(m) || bands == null || bands.centers.length === 0) return;
     // Q2: persist ONLY resolvable bands (the spectrum_trace rule — storing a
     // flagged-unresolvable level would fabricate data on replay).
     const bandsHz: number[] = [];
@@ -1038,7 +1064,10 @@ export function MultiMeterScreen({ navigation }: Props) {
 
   // ---- Derived render data ---------------------------------------------------
   const liveFlags = running ? meterWarningFlags(liveFrame) : []; // raw: a dead capture must still flag
-  const bands = running ? sixthBands : null; // 61-band 1/6-oct (owner rev 24)
+  // 61-band 1/6-oct (owner rev 24). captureLive, not running (2026-09-30):
+  // the RTA's "no bars without a live capture" ruling (2026-09-22) — a stall
+  // left the last bands standing beside blanked numbers.
+  const bands = captureLive ? sixthBands : null;
   const info = running ? ApeDsp.getInfo() : null;
   const half = SCOPE_H / 2;
 

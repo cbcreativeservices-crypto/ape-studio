@@ -117,16 +117,29 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
     void loadPublicProfile()
       .then((p) => setRegistryName(p.registryName || p.name || ''))
       .catch(() => {});
+    // Drop the last account's QR before anything else (bug hunt 2026-09-30).
+    // This view stays mounted across sign-out / sign-in, so the previous
+    // user's scannable credential QR showed under the new account while the
+    // fetch was out — and for good if that fetch threw, because the reject
+    // arm only set `qrFailed` and the QR branch renders first.
+    setQrToken(null);
+    let alive = true;
     if (accountConfirmed) {
       setQrFailed(false);
       void fetchMyQrToken().then(
         (t) => {
+          if (!alive) return; // an older session's answer
           setQrToken(t);
           setQrFailed(t == null);
         },
-        () => setQrFailed(true),
+        () => {
+          if (alive) setQrFailed(true);
+        },
       );
     }
+    return () => {
+      alive = false;
+    };
   }, [accountConfirmed]);
   // A member is listed as "User" until they earn their first certificate or
   // program, then "Graduate" (user request 2026-07-22). Proxy: any enrolled

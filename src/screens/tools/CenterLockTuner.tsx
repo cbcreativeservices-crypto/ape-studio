@@ -1208,7 +1208,12 @@ function Chevron({ i, dir, tint, progress, allowed, scale }: { i: number; dir: -
  *  stand still in tune. Rate is proportional to cents; no engine changes.
  *  `endLabels` prints FLAT/SHARP inside the band when the scale row is hidden. */
 function StrobeBand({ cents, width, tint, endLabels }: { cents: number | null; width: number; tint: string; endLabels?: boolean }) {
-  const [offset, setOffset] = useState(0);
+  // A SharedValue, not React state (toddler pass 2026-09-30): the drift is
+  // advanced every animation frame, and `setOffset` per frame re-rendered this
+  // band (and its stripes) 60 times a second — the meter rule is SharedValues
+  // per frame, never React state per frame.
+  const offset = useSharedValue(0);
+  const slide = useAnimatedStyle(() => ({ transform: [{ translateX: offset.value }] }));
   const centsRef = useRef<number | null>(cents);
   centsRef.current = cents;
   useEffect(() => {
@@ -1221,20 +1226,22 @@ function StrobeBand({ cents, width, tint, endLabels }: { cents: number | null; w
       last = now;
       const c = centsRef.current;
       if (c != null) off = (off + c * 12 * dt + STRIPE_PERIOD * 1000) % STRIPE_PERIOD; // 12 px/s per cent
-      setOffset(off);
+      offset.value = off;
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => {
       if (raf != null) cancelAnimationFrame(raf);
     };
-  }, []);
+  }, [offset]);
   const n = Math.ceil(width / STRIPE_PERIOD) + 2;
   return (
     <View style={[styles.strobe, { width }]} accessible accessibilityLabel="Strobe view: stripes stand still when in tune">
-      {Array.from({ length: n }, (_, i) => (
-        <View key={i} style={[styles.stripe, { left: i * STRIPE_PERIOD - STRIPE_PERIOD + offset, backgroundColor: tint }]} />
-      ))}
+      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, slide]}>
+        {Array.from({ length: n }, (_, i) => (
+          <View key={i} style={[styles.stripe, { left: i * STRIPE_PERIOD - STRIPE_PERIOD, backgroundColor: tint }]} />
+        ))}
+      </Animated.View>
       {endLabels ? (
         <>
           <Text style={[styles.strobeEnd, { left: 6 }]}>FLAT</Text>

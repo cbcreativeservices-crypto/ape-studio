@@ -96,7 +96,7 @@ export function MeterModuleScreen() {
           <Text style={styles.title}>{meta.title.toUpperCase()}</Text>
           <Text style={styles.subtitle}>Visual Audio Analysis Lab</Text>
         </View>
-        <AccuracyNote compact detail="These meters run on your phone’s UNCALIBRATED microphone — read them as relative, for learning. For accurate levels use a calibrated SPL meter or measurement mic." />
+        <AccuracyNote compact detail="These displays are driven by built-in teaching signals, not your microphone — read them to learn what each meter shows. For accurate levels use a calibrated SPL meter or measurement mic." />
       </View>
       <ScrollLockProvider value={setScrollLocked}>
       {RACK_MODULES.has(meta.id) ? (

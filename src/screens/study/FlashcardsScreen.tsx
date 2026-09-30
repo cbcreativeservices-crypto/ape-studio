@@ -1936,7 +1936,13 @@ export function FlashcardsScreen({ navigation, route }: Props) {
 
       {/* Session timer: length picker + expiry banner (owner 2026-08-13). */}
       <SessionTimerModal timer={sessionTimer} />
-      <SessionTimerBanner timer={sessionTimer} />
+      {/* The expiry banner is a Modal that fires on its own clock, so it takes
+          the same hold as the tutorials (bug pass 2026-09-30): this screen stays
+          mounted on another tab, and it popped "Session time is up" over the
+          Lab or Home and swallowed every tap there for 4.5 s — or opened in
+          Low-Light, or as a second Modal over the fullscreen card. `expired`
+          simply waits and shows when the learner is back here. */}
+      {tutorialBlocked ? null : <SessionTimerBanner timer={sessionTimer} />}
 
     </View>
   );

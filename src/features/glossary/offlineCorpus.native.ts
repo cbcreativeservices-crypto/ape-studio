@@ -168,6 +168,30 @@ export async function saveDefinitions(
   });
 }
 
+/**
+ * ⛔ WHOSE DEFINITIONS THESE ARE (bug hunt 2026-09-30).
+ *
+ * `src` used to be what kept a guest's teasers apart from a member's full text
+ * (`glossary` vs `glossary_browse_v`). Since 2026-09-20 EVERY reader pages
+ * `glossary_browse_v`, which masks `definition` to 120 characters for anyone
+ * who is not a member — so a free reader's teasers and a member's full text
+ * landed under the same src. A free reader who then joined kept the teasers on
+ * the phone for good (the offline save only fills NULLs, and the "all saved"
+ * readout counted them), and the reverse handed a member's full text to
+ * whoever used the phone next.
+ *
+ * So the store records which tier wrote its definitions, and a different tier
+ * drops them (the terms stay). The first run after this ships has no record
+ * and clears once — a member's background save simply refills.
+ */
+const tierKey = (src: string) => `defs_tier:${src}`;
+
+export async function alignDefinitionTier(src: string, tier: 'member' | 'free'): Promise<void> {
+  if ((await getMeta(tierKey(src))) === tier) return;
+  await db.runAsync('UPDATE glossary_corpus SET definition = NULL WHERE src = ?', [src]);
+  await setMeta(tierKey(src), tier);
+}
+
 /** How complete the offline copy is — drives the "available offline" readout. */
 export async function corpusStats(src: string): Promise<{ terms: number; definitions: number }> {
   const r = await db.getFirstAsync<{ terms: number; definitions: number }>(

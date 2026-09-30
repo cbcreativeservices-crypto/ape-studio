@@ -185,6 +185,11 @@ export function EarModuleScreen() {
       try {
         setPhase('rendering');
         setPicked(null);
+        // Stop the clip too, not only the chip (bug hunt 2026-09-30): NEXT
+        // during a replay left it sounding, and expo-audio's replace() on a
+        // PLAYING player resumes — so the next trial's clip started unasked.
+        playTokenRef.current++;
+        playerRef.current?.stop();
         setPlaying(null);
         // Trial synthesis is a synchronous DSP burst — measured up to ~110 ms
         // per trial in Node (several times that on a phone), and makeFresh

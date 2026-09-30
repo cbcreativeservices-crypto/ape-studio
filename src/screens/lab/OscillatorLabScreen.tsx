@@ -146,6 +146,12 @@ export function OscillatorLabScreen() {
 
   // -- Tone lifecycle (generation-counter stale guard, one tone owner) -------
   const genRef = useRef(0);
+  // Double-tap ▶ (bug hunt 2026-09-30, FmLab's pattern): a superseded start
+  // only stops the generator when nothing newer wants it — otherwise start #1
+  // resolving late stopped start #2's tone and left ■ lit over silence.
+  const wantRef = useRef(false);
+  const latestRef = useRef<[PresetKey, number]>([wave, f0]);
+  latestRef.current = [wave, f0];
 
   /** Params for the CURRENT wave: additive recipe on v3, sine on v2. */
   const paramsFor = useCallback(
@@ -165,6 +171,7 @@ export function OscillatorLabScreen() {
 
   const startTone = useCallback(async () => {
     const gen = ++genRef.current;
+    wantRef.current = true;
     const ok = await requestAudioOutput();
     if (!ok || gen !== genRef.current) return;
     setGenError('');
@@ -173,10 +180,18 @@ export function OscillatorLabScreen() {
       await ApeDsp.genStart();
       // A mute that landed while the native start was in flight wins — never
       // leave a tone sounding into a closed gate (owner 2026-09-29).
-      if (gen !== genRef.current || !isAudioOutputEnabled()) {
+      if (!isAudioOutputEnabled()) {
         void ApeDsp.genStop();
         return;
       }
+      if (gen !== genRef.current) {
+        if (!wantRef.current) void ApeDsp.genStop(); // stopped meanwhile
+        return;
+      }
+      // A wave/pitch picked while the start was in flight skipped its live
+      // push (running was still false) — send the newest one now (2026-09-30).
+      const [lw, lf] = latestRef.current;
+      if (lw !== wave || lf !== f0) ApeDsp.genSet(paramsFor(lw, lf));
       setRunning(true);
       noteAudioActivity();
     } catch (e) {
@@ -186,6 +201,7 @@ export function OscillatorLabScreen() {
 
   const stopTone = useCallback(() => {
     genRef.current++;
+    wantRef.current = false;
     void ApeDsp.genStop();
     setRunning(false);
   }, []);

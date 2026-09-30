@@ -162,8 +162,9 @@ export function WaveformScreen({ navigation }: Props) {
         setWavePopup(null);
         return true;
       }
-      if (waveFsOpen && !waveFsClosing) {
-        setWaveFsClosing(true);
+      // While closing too — a second BACK mid rotate-out popped the tool.
+      if (waveFsOpen) {
+        if (!waveFsClosing) setWaveFsClosing(true);
         return true;
       }
       return false;
@@ -333,13 +334,20 @@ export function WaveformScreen({ navigation }: Props) {
       return;
     }
     if (!meter || displayBuckets.length === 0) return;
+    // The peak of the envelope being SAVED, not the live meter's: saving while
+    // FROZEN paired a frozen clipped clap with "peak −48 dBFS" read off the
+    // silence after it. Same floor as the engine (−120). Clip count is the one
+    // the screen shows (tap-to-reset baseline), not the session total.
+    let env = 0;
+    for (const b of displayBuckets) env = Math.max(env, Math.abs(b.min), Math.abs(b.max));
+    const peakDb = Math.max(-120, 20 * Math.log10(env + 1e-12));
     // One record per tap (bug hunt 2026-09-29): a double-tap SAVE wrote two.
     if (!saveLatch.claim()) return;
     void saveMeasurement({
       id: Crypto.randomUUID(),
       tool_type: 'waveform',
       created_at: new Date().toISOString(),
-      title: `Waveform — ${shownSec.toFixed(1)} s · peak ${fmtDb(meter.peakDb)} dBFS`,
+      title: `Waveform — ${shownSec.toFixed(1)} s · peak ${fmtDb(peakDb)} dBFS`,
       notes: '',
       input_device: 'Device microphone (uncalibrated)',
       calibration_status: 'not_applicable',
@@ -351,15 +359,15 @@ export function WaveformScreen({ navigation }: Props) {
         kind: 'waveform_snapshot',
         envelope: displayBuckets.map((b) => ({ min: b.min, max: b.max })),
         durationSec: displayBuckets.length * bucketSec,
-        peakDbfs: meter.peakDb, // never clamped — may exceed 0 dBFS (F1)
-        clippedRuns: meter.clipRuns,
+        peakDbfs: peakDb, // never clamped above — may exceed 0 dBFS (F1)
+        clippedRuns: frozen ? displayBuckets.filter((b, i) => b.clipped && !displayBuckets[i - 1]?.clipped).length : clipShown,
         channels: 1,
       },
     });
     setJustSaved(true);
     if (savedTimer.current) clearTimeout(savedTimer.current);
     savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
-  }, [meter, displayBuckets, shownSec, zoom, windowSec, flags, bucketSec]);
+  }, [meter, displayBuckets, shownSec, zoom, windowSec, flags, bucketSec, frozen, clipShown, saveGate, saveLatch]);
 
   // ---- Scope geometry (pure display math over REAL buckets) ----------------
   // Builds: a closed min/max envelope area (gradient fill), the envelope
@@ -860,7 +868,10 @@ export function WaveformScreen({ navigation }: Props) {
           accessibilityRole="button"
           accessibilityLabel="Close"
         >
-          <View style={styles.popupCard}>
+          {/* The card swallows its own taps: a tap between swatches or on the
+              title bubbled to the backdrop and closed the (deliberately open)
+              colour chooser. */}
+          <Pressable style={styles.popupCard} onPress={() => {}} accessible={false}>
             {wavePopup === 'color' ? (
               /* "Show, don't label" (owner redesign 2026-09-01): the live mini
                  trace shows exactly what this popup recolours. */
@@ -988,7 +999,7 @@ export function WaveformScreen({ navigation }: Props) {
               </Pressable>
             ) : null}
 
-          </View>
+          </Pressable>
         </Pressable>
       ) : null}
       {sheet}

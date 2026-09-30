@@ -1050,7 +1050,9 @@ export function MicSelectLabScreen() {
         <Text style={styles.navPos}>{ending ? 'WHAT’S LEFT' : `STEP ${step + 1} / ${STEPS.length}`}</Text>
         <View style={{ flex: 1 }} />
         <Pressable
-          onPress={() => (step === STEPS.length - 1 ? setEnding(true) : goTo(Math.min(STEPS.length - 1, step + 1)))}
+          // Same 400 ms lock as the bottom DONE (bug hunt 2026-09-30): a double
+          // NEXT on the second-to-last lesson skipped the last one into FINISH.
+          onPress={() => (step === STEPS.length - 1 ? (Date.now() - lastNavAtRef.current < 400 ? undefined : setEnding(true)) : goTo(Math.min(STEPS.length - 1, step + 1)))}
           hitSlop={8}
           accessibilityRole="button"
           accessibilityLabel={step === STEPS.length - 1 ? "Finish the lab and see what's left" : 'Next lesson'}

@@ -6,7 +6,7 @@
  * and a short message. Nothing is a conversation until the recipient accepts.
  * No email address appears anywhere in this screen, in either direction.
  */
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Modal } from '../../components/DimModal';
@@ -100,50 +100,75 @@ const IncomingCard = memo(function IncomingCard({
       {t.status === 'accepted' ? (
         <PrimaryButton label={`OPEN CONVERSATION (${t.messageCount})`} onPress={() => onOpen(t)} />
       ) : null}
-      <View style={st.row}>
-        <Pressable
-          onPress={() =>
-            confirmThen(
-              `Block ${t.otherDisplayName}?`,
-              'They will not be able to contact you again, and neither of you will see the other in the directory. Any open conversation closes.',
-              'Block',
-              // ── THREAD-SCOPED, NOT TOKEN-SCOPED (2026-09-19) ─────────
-              // This sent `t.otherToken ?? ''`. An EMPLOYER has no community
-              // profile, so contact_threads returns a null token and '' was
-              // cast to uuid — the button threw `invalid input syntax for
-              // type uuid: ""` at the member. "Block an abusive user" was
-              // simply not true for the one party who can message you
-              // without publishing anything. The request id identifies the
-              // counterparty for every kind of thread.
-              () =>
-                void blockThread(t.id, true).then((r) =>
-                  r.ok ? onReload() : onError(r.error),
-                ),
-            )
-          }
-          hitSlop={6}
-          style={st.link}
-          accessibilityRole="button"
-          accessibilityLabel={`Block ${t.otherDisplayName}`}
-        >
-          <Text style={st.linkText}>BLOCK</Text>
-        </Pressable>
-        <ReportLink thread={t} onDone={onReload} onError={onError} />
-      </View>
+      <ThreadModeration t={t} onReload={onReload} onError={onError} />
     </View>
   );
 });
+
+/**
+ * BLOCK + REPORT for one thread. Lifted out of the incoming card (bug hunt
+ * 2026-09-30) because a SENT request becomes a two-way conversation the moment
+ * it is accepted, and that card had neither control: whoever you wrote to
+ * could reply with anything and the Requests screen gave you no way to block
+ * or report them. Both calls are thread-scoped, so they work from either side.
+ */
+function ThreadModeration({
+  t,
+  onReload,
+  onError,
+}: {
+  t: ContactThread;
+  onReload: () => Promise<void>;
+  onError: (e: string) => void;
+}) {
+  return (
+    <View style={st.row}>
+      <Pressable
+        onPress={() =>
+          confirmThen(
+            `Block ${t.otherDisplayName}?`,
+            'They will not be able to contact you again, and neither of you will see the other in the directory. Any open conversation closes.',
+            'Block',
+            // ── THREAD-SCOPED, NOT TOKEN-SCOPED (2026-09-19) ─────────
+            // This sent `t.otherToken ?? ''`. An EMPLOYER has no community
+            // profile, so contact_threads returns a null token and '' was
+            // cast to uuid — the button threw `invalid input syntax for
+            // type uuid: ""` at the member. "Block an abusive user" was
+            // simply not true for the one party who can message you
+            // without publishing anything. The request id identifies the
+            // counterparty for every kind of thread.
+            () =>
+              void blockThread(t.id, true).then((r) =>
+                r.ok ? onReload() : onError(r.error),
+              ),
+          )
+        }
+        hitSlop={6}
+        style={st.link}
+        accessibilityRole="button"
+        accessibilityLabel={`Block ${t.otherDisplayName}`}
+      >
+        <Text style={st.linkText}>BLOCK</Text>
+      </Pressable>
+      <ReportLink thread={t} onDone={onReload} onError={onError} />
+    </View>
+  );
+}
 
 /** A sent (outgoing) request card. */
 const OutgoingCard = memo(function OutgoingCard({
   t,
   onAct,
   onOpen,
+  onReload,
+  onError,
   acting,
 }: {
   t: ContactThread;
   onAct: (t: ContactThread, action: ThreadAction) => void;
   onOpen: (t: ContactThread) => void;
+  onReload: () => Promise<void>;
+  onError: (e: string) => void;
   acting: boolean;
 }) {
   return (
@@ -156,7 +181,11 @@ const OutgoingCard = memo(function OutgoingCard({
         <PrimaryButton label="WITHDRAW" disabled={acting} onPress={() => onAct(t, 'withdraw')} />
       ) : null}
       {t.status === 'accepted' ? (
-        <PrimaryButton label={`OPEN CONVERSATION (${t.messageCount})`} onPress={() => onOpen(t)} />
+        <>
+          <PrimaryButton label={`OPEN CONVERSATION (${t.messageCount})`} onPress={() => onOpen(t)} />
+          {/* Accepted = they can now write back — see ThreadModeration. */}
+          <ThreadModeration t={t} onReload={onReload} onError={onError} />
+        </>
       ) : null}
     </View>
   );
@@ -234,7 +263,16 @@ export function RequestsView() {
           />
         );
       }
-      return <OutgoingCard t={item.thread} onAct={act} onOpen={openThread} acting={acting} />;
+      return (
+        <OutgoingCard
+          t={item.thread}
+          onAct={act}
+          onOpen={openThread}
+          onReload={load}
+          onError={setErr}
+          acting={acting}
+        />
+      );
     },
     [act, openThread, load, acting],
   );
@@ -476,11 +514,21 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
   const [allow, setAllow] = useState<ContactAllowance | null>(null);
   const [sending, runSend] = useSending();
 
+  // Which conversation is open NOW (bug hunt 2026-09-30). The clear below only
+  // helps if nothing lands after it: a slow fetch for conversation A — or the
+  // reload after a SEND in A — resolved after A was closed and B opened, and
+  // wrote A's messages and A's allowance under B's name. Every await checks.
+  const threadId = thread?.id ?? null;
+  const openId = useRef<string | null>(threadId);
+  openId.current = threadId;
+
   // [75] (2026-09-07): a failed message fetch used to render as an empty
   // conversation; surface it instead (the reply box still works).
   const load = useCallback(async () => {
     if (!thread) return;
-    const r = await fetchThreadMessages(thread.id);
+    const id = thread.id;
+    const r = await fetchThreadMessages(id);
+    if (openId.current !== id) return;
     if (!r.ok) {
       setErr(r.error);
       return;
@@ -489,14 +537,14 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
     setMsgs(r.rows);
     // Allowance rides along with the messages so the count is right after
     // every send, and a failure leaves it null (= unknown = allowed).
-    setAllow(await fetchContactAllowance(thread.id));
+    const a = await fetchContactAllowance(id);
+    if (openId.current === id) setAllow(a);
   }, [thread]);
 
   // Clear the previous conversation BEFORE fetching the next one (network audit
   // 2026-09-11). This sheet stays mounted across opens, and a failed fetch keeps
   // whatever `msgs` already held — so opening a second conversation offline
   // displayed the FIRST member's messages under the second member's name.
-  const threadId = thread?.id ?? null;
   useEffect(() => {
     setMsgs([]);
     setErr(null);

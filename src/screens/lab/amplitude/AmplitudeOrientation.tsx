@@ -1045,6 +1045,12 @@ export function AmplitudeOrientationGatePage() {
           <Text style={styles.gateBack}>‹</Text>
         </Pressable>
         <Text style={styles.gateIntro}>{GATE_INTRO}</Text>
+        {/* The standing calibration note (bug hunt 2026-09-30): this gate
+            shows the same teaching as the lab page, which carries it. */}
+        <AccuracyNote
+          compact
+          detail="This lab teaches how amplitude and level RELATE — the ramps and colours are a teaching scale, not a calibrated one, and your phone’s screen and output are both uncalibrated. Learn the relationship here; read real levels on real meters."
+        />
       </View>
       <ScrollView contentContainerStyle={styles.gateScroll}>
         <AmplitudeColorBody />

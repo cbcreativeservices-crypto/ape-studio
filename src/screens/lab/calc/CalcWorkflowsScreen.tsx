@@ -9,7 +9,7 @@
  * Saving is entitlement-gated via WORKFLOW_LIMITS (gate on entitlement — house
  * rule); hitting a limit routes to the Paywall, never a silent failure.
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -108,8 +108,21 @@ export function CalcWorkflowsScreen() {
     void workflowStore.moveWorkflow(id, dir).then(setMine);
   };
 
+  // One copy per tap (toddler pass 2026-09-30): a double-tapped DUPLICATE ran
+  // two saves under two fresh ids — two copies in My Workflows, and the second
+  // navigate re-pointed the open builder at the second one.
+  const duplicatingRef = useRef(false);
   const duplicate = async (src: Workflow) => {
+    if (duplicatingRef.current) return;
     if (!guardSave('duplicate')) return;
+    duplicatingRef.current = true;
+    try {
+      await duplicateOnce(src);
+    } finally {
+      duplicatingRef.current = false;
+    }
+  };
+  const duplicateOnce = async (src: Workflow) => {
     const now = new Date().toISOString();
     const copy: Workflow = {
       ...src,

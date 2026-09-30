@@ -50,10 +50,10 @@ export function AmpLabHomeScreen() {
     // a silent tap on the web preview (B-018/B-062).
     confirmDialog(
       'Reset this lab?',
-      'Clears your Amplifier Principles progress, checks, and final result. Nothing else in the app is affected.',
+      'Starts a fresh practice run: clears your answered checks and your latest final attempt. Completed modules and your best final result are kept. Nothing else in the app is affected.',
       'Reset',
       () => {
-        void resetAmpProgress().then(() => setProgress({ modules: {} }));
+        void resetAmpProgress().then(setProgress);
       },
       { destructive: true },
     );

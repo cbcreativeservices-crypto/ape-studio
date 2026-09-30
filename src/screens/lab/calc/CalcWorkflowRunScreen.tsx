@@ -34,7 +34,7 @@ import { confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import type { CalcFunction, FieldDef, OutputVal, Workspace } from './calcTypes';
-import { fmt, unitsFor } from './calcUnits';
+import { fmt, parseQuantity, unitsFor } from './calcUnits';
 import { FieldRow, buildValues, defaultUnitIdx, formatOutput, runCompute, type ComputeResult } from './calcPanel';
 import type { BoundInput, Project, SavedRunSummary, ValueSource, Workflow, WorkflowRun } from './workflowModel';
 import { workflowLimitsFor } from './workflowModel';
@@ -145,7 +145,14 @@ export function CalcWorkflowRunScreen() {
       const runs = await workflowStore.listRuns();
       const draft = runs.find((r) => r.workflowId === valid.id && !r.completedAt);
       if (!alive) return;
-      if (draft && limits.canResume && draft.steps.length === valid.steps.length) {
+      // A draft started BEFORE the workflow was last edited is keyed to the old
+      // steps (inputs by step index + field key): a reorder/swap with the same
+      // step count resumed values into different calculators. Start fresh.
+      const draftFits =
+        draft != null &&
+        draft.steps.length === valid.steps.length &&
+        !(Date.parse(draft.startedAt) < Date.parse(valid.updatedAt));
+      if (draft && limits.canResume && draftFits) {
         // confirmDialog: Alert.alert is a no-op on RN-web, so `run` was never
         // set and the screen stayed on "Loading workflow…" with no exit
         // (B-013/B-063). The cancel path ALWAYS sets a run — no dismissal
@@ -155,7 +162,14 @@ export function CalcWorkflowRunScreen() {
           'An unfinished run of this workflow was found.',
           'Resume',
           () => setRun(draft),
-          { cancelText: 'Start over', onCancel: () => setRun(blank()) },
+          {
+            cancelText: 'Start over',
+            onCancel: () => {
+              // The abandoned draft goes, or it is offered again next time.
+              void workflowStore.deleteRun(draft.id);
+              setRun(blank());
+            },
+          },
         );
       } else {
         setRun(blank());
@@ -172,6 +186,9 @@ export function CalcWorkflowRunScreen() {
   const persist = useCallback(async (): Promise<boolean> => {
     const r = runRef.current;
     if (!r || !limits.canResume) return false;
+    // Nothing entered yet: saving the blank run made every later open of this
+    // workflow ask "Resume previous progress?" about a run that has no progress.
+    if (r.stepIndex === 0 && !r.completedAt && r.steps.every((st) => Object.keys(st.inputs).length === 0)) return true;
     return workflowStore.saveRun(r);
   }, [limits.canResume]);
   useEffect(() => {
@@ -209,7 +226,9 @@ export function CalcWorkflowRunScreen() {
           const o = up?.result.outputs.find(
             (x): x is Extract<OutputVal, { value: number }> => 'value' in x && x.label === (b.source as { outputLabel: string }).outputLabel,
           );
-          if (o && o.quantity === f.quantity) {
+          // Finite only: fmt(NaN) is "—", which the field then flagged as the
+          // user's own unreadable typing.
+          if (o && o.quantity === f.quantity && Number.isFinite(o.value)) {
             const units = unitsFor(f.quantity, f.unitIds);
             const u = units[unitSel[f.key] % units.length];
             effRaw[f.key] = fmt(u.fromBase(o.value), 6);
@@ -284,9 +303,21 @@ export function CalcWorkflowRunScreen() {
   const onCycleUnit = (f: FieldDef) => {
     const units = unitsFor(f.quantity, f.unitIds);
     const existing = run?.steps[idx]?.inputs[f.key];
-    const nextIdx = ((existing?.unitIdx ?? defaultUnitIdx(f)) + 1) % units.length;
+    const curIdx = existing?.unitIdx ?? defaultUnitIdx(f);
+    const nextIdx = (curIdx + 1) % units.length;
+    // A value that CAME FROM somewhere (a saved project, a workflow constant)
+    // is a quantity, not digits: cycling the unit must convert it. Keeping the
+    // digits turned a project's 10 m into 10 ft under the project's own label.
+    let raw = existing?.raw ?? '';
+    if (existing && (existing.source.kind === 'project' || existing.source.kind === 'fixed')) {
+      const typed = parseQuantity(raw);
+      if (typed !== null) {
+        const from = units[curIdx % units.length];
+        raw = fmt(units[nextIdx].fromBase(from.toBase(typed)), 6);
+      }
+    }
     setBound(f.key, {
-      raw: existing?.raw ?? '',
+      raw,
       unitIdx: nextIdx,
       source: existing?.source ?? { kind: 'manual' },
     });
@@ -335,7 +366,13 @@ export function CalcWorkflowRunScreen() {
 
   const goTo = (next: number) => {
     setRecalcNote(null);
-    setRun((r) => (r ? { ...r, stepIndex: next } : r));
+    // Stepping back INTO the steps re-opens a finished run (toddler pass
+    // 2026-09-30). `completedAt` used to survive the step back, so edits made
+    // after FINISH were saved on a run marked complete — which the resume
+    // search skips — and were lost on the next visit. FINISH stamps it again.
+    setRun((r) => (r ? { ...r, stepIndex: next, completedAt: next < n ? undefined : r.completedAt } : r));
+    // Same reason for the SAVED ✓: the saved summary may no longer match.
+    if (next < n) setResultSaved(false);
     void persist();
   };
 
@@ -553,7 +590,7 @@ export function CalcWorkflowRunScreen() {
                         // Honor `chainable: false` (Bug+Hater night J2-01): outputs like TRAVEL PER
         // MILLISECOND share a quantity with DISTANCE but are the wrong physical
         // thing to chain into it — they produced a silently bogus downstream result.
-        if ('value' in o && o.quantity === f.quantity && o.chainable !== false) sources.push({ fromStep: k, label: o.label });
+        if ('value' in o && o.quantity === f.quantity && o.chainable !== false && Number.isFinite(o.value)) sources.push({ fromStep: k, label: o.label });
                       }
                     }
                   }
@@ -622,14 +659,16 @@ export function CalcWorkflowRunScreen() {
                       <Text style={styles.caption}>Fill in the values above to calculate.</Text>
                     )
                   ) : (
-                    cur.result.outputs.map((o) =>
+                    // Keys by label+index (as CalcWorkspaceScreen, QA night
+                    // 2026-09-01): duplicate output labels collided here too.
+                    cur.result.outputs.map((o, oi) =>
                       'value' in o ? (
-                        <Pressable accessibilityRole="button" key={o.label} style={styles.resultRow} onPress={() => setOutUnit((m) => ({ ...m, [`${idx}:${o.label}`]: (m[`${idx}:${o.label}`] ?? 0) + 1 }))}>
+                        <Pressable accessibilityRole="button" key={`${o.label}#${oi}`} style={styles.resultRow} onPress={() => setOutUnit((m) => ({ ...m, [`${idx}:${o.label}`]: (m[`${idx}:${o.label}`] ?? 0) + 1 }))}>
                           <Text style={styles.resultLabel}>{o.label}</Text>
                           <Text style={styles.resultValue}>{formatOutput(o, 4, outUnit[`${idx}:${o.label}`] ?? 0)}</Text>
                         </Pressable>
                       ) : (
-                        <Text key={o.label} style={styles.resultNote}>
+                        <Text key={`${o.label}#${oi}`} style={styles.resultNote}>
                           <Text style={styles.resultLabel}>{o.label}  </Text>
                           {o.text}
                         </Text>
@@ -656,7 +695,12 @@ export function CalcWorkflowRunScreen() {
             <TextInput
               style={styles.notesInput}
               value={run.notes ?? ''}
-              onChangeText={(t) => setRun((r) => (r ? { ...r, notes: t } : r))}
+              onChangeText={(t) => {
+                setRun((r) => (r ? { ...r, notes: t } : r));
+                // The saved copy no longer matches — re-arm SAVE rather than
+                // keep claiming SAVED ✓ over notes that were never stored.
+                setResultSaved(false);
+              }}
               placeholder="Optional notes saved and shared with this result"
               placeholderTextColor="#4c4d55"
               multiline

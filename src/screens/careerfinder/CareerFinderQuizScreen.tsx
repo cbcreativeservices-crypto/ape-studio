@@ -76,7 +76,15 @@ export function CareerFinderQuizScreen() {
     AccessibilityInfo.announceForAccessibility?.(`Question ${idx + 1} of ${QUESTION_COUNT}`);
   }, [fade]);
 
+  // ONE finish (bug hunt 2026-09-30). Answering Q28 arms a 450 ms auto-finish,
+  // and SEE MY RESULTS is live in that window, so answer-then-tap (or a double
+  // tap on the button) froze the result twice and fired a second REPLACE from
+  // a route that had already been replaced.
+  const finished = useRef(false);
   const finish = useCallback(() => {
+    if (finished.current) return;
+    finished.current = true;
+    if (timer.current) { clearTimeout(timer.current); timer.current = null; }
     completeCareerFinder();
     // REPLACE, not push: the finished quiz must not sit under the results, or
     // a swipe-back from results would land on question 28. Results and quiz
@@ -92,6 +100,10 @@ export function CareerFinderQuizScreen() {
     const delay = animationsAllowed() ? ADVANCE_MS : 0;
     timer.current = setTimeout(() => {
       timer.current = null;
+      // Left during the beat (‹ back, Android BACK): the screen can outlive
+      // the pop by an animation, and the old timer then finished the Finder —
+      // marking it complete — and REPLACED a route that was already gone.
+      if (!navigation.isFocused()) return;
       if (!last) go(index + 1);
       else if (allAnswered({ ...rec, responses: { ...rec.responses, [q.id]: value } })) finish();
     }, delay);

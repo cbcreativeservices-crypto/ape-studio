@@ -207,8 +207,20 @@ async function sendComplete(achievementId: string, round: number): Promise<numbe
       p_round: round,
     });
     if (error) return null;
+    /**
+     * ⛔ 0 IS "NOTHING WAS WRITTEN", NOT SUCCESS (bug pass 2026-09-30).
+     *
+     * `complete_scenario_round` returns 0 — with no error — when it did nothing:
+     * no auth uid, no `users` row yet (the cold start before
+     * register_commercial_user), or no homework row. Its own comment says "the
+     * client retries". This read `Number(data) || round`, which turned that 0
+     * into the round number: the round was reported saved, never queued, never
+     * retried, and the scenarios meter (so the quiz) stayed where it was.
+     */
+    const n = Number(data);
+    if (!Number.isFinite(n) || n <= 0) return null;
     emitStudyProgress(); // refresh any live Dashboard LED
-    return Number(data) || round;
+    return n;
   } catch {
     return null;
   }

@@ -133,7 +133,11 @@ export function buildReportFromSummary(s: SavedRunSummary): SharedCalculatorRepo
   const inputs: SharedReportValue[] = [];
   s.inputs.forEach((i, idx) => {
     if (isPriorStepImport(i.source)) return;
-    const key = i.label.toLowerCase();
+    // Label AND value: two steps that each take a DISTANCE with different
+    // values are two inputs — keying on the label alone dropped the second
+    // from the card, the shared text and the saved result. A true repeat
+    // (same label, same value, same unit) still collapses to one line.
+    const key = `${i.label.toLowerCase()}|${i.value}|${i.unit ?? ''}`;
     if (seen.has(key)) return;
     seen.add(key);
     const projectDetail = i.source && i.source !== 'Entered manually' ? i.source : undefined;

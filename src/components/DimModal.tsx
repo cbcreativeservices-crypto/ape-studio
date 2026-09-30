@@ -90,9 +90,31 @@ import { ALL_ORIENTATIONS } from './modalOrientations';
  */
 type HostedOverlay = { node: ReactNode; onBack: () => void };
 
+/**
+ * More than one root surface publishes (bug hunt 2026-09-30): the audio gate
+ * AND the app's confirm/notice dialogs (AppDialog). One shared slot let each
+ * wipe the other — the gate re-publishes (null when closed) on every render —
+ * so overlays are KEYED. They draw in publish order, the latest on top, and
+ * Android BACK goes to the topmost.
+ */
+const hosted = new Map<string, HostedOverlay>();
+const NO_OVERLAYS: (HostedOverlay & { key: string })[] = [];
+let hostedList: (HostedOverlay & { key: string })[] = NO_OVERLAYS;
+
 let hostSeq = 0;
-let openHosts: { id: number; depth: number; shown: boolean }[] = [];
-let hosted: HostedOverlay | null = null;
+/** `publisher`: the Modal of a surface that itself publishes into hosts when
+ *  another Modal is open (AppDialog). It still HOSTS, but it must not count as
+ *  "another Modal" to its own publisher, or it would flip itself in and out. */
+let openHosts: { id: number; depth: number; shown: boolean; publisher: boolean }[] = [];
+/** When the last host closed — its dismissal is still animating for a while. */
+let lastHostClosedAt = 0;
+/**
+ * iOS will not present a Modal from a view controller whose previous Modal is
+ * still animating away: the request is refused and NOTHING appears (the
+ * audio gate learned this first — its `rootHold`). A root surface that is
+ * asked for just as a host closes waits this long before presenting its own.
+ */
+export const HOST_DISMISS_MS = 450;
 const listeners = new Set<() => void>();
 
 function emit(): void {
@@ -120,19 +142,33 @@ function markShown(id: number): void {
 function openHostCount(): number {
   return openHosts.length;
 }
-function hostedNow(): HostedOverlay | null {
-  return hosted;
+function openNonPublisherCount(): number {
+  return openHosts.filter((h) => !h.publisher).length;
+}
+function hostedNow(): (HostedOverlay & { key: string })[] {
+  return hostedList;
 }
 
-/** True while any DimModal is on screen — a root popup must then be hosted. */
-export function useModalHostOpen(): boolean {
-  return useSyncExternalStore(subscribe, openHostCount, openHostCount) > 0;
+/** True while any DimModal is on screen — a root popup must then be hosted.
+ *  `exceptPublishers`: ignore publisher Modals (AppDialog asking about others). */
+export function useModalHostOpen(exceptPublishers = false): boolean {
+  const count = exceptPublishers ? openNonPublisherCount : openHostCount;
+  return useSyncExternalStore(subscribe, count, count) > 0;
 }
 
-/** Hand a card to the topmost open DimModal (or clear it with null). */
-export function setHostedOverlay(overlay: HostedOverlay | null): void {
-  if (overlay === hosted) return;
-  hosted = overlay;
+/** Milliseconds a root Modal should still wait for a closing host to finish
+ *  animating away (0 = present now). See HOST_DISMISS_MS. */
+export function rootModalHoldMs(now = Date.now()): number {
+  return Math.max(0, lastHostClosedAt + HOST_DISMISS_MS - now);
+}
+
+/** Hand a card to the topmost open DimModal (or clear it with null). `key`
+ *  names the publisher, so two publishers never overwrite each other. */
+export function setHostedOverlay(overlay: HostedOverlay | null, key = 'gate'): void {
+  if (overlay === (hosted.get(key) ?? null)) return;
+  if (overlay) hosted.set(key, overlay);
+  else hosted.delete(key);
+  hostedList = hosted.size ? Array.from(hosted, ([k, o]) => ({ ...o, key: k })) : NO_OVERLAYS;
   emit();
 }
 
@@ -143,12 +179,16 @@ export function Modal({
   children,
   supportedOrientations = ALL_ORIENTATIONS,
   hostsOverlays = true,
+  overlayPublisher = false,
   ...rest
 }: ModalProps & {
   children?: ReactNode;
   /** false for the root surfaces that PUBLISH overlays (the audio gate), so
    *  their own Modal is never mistaken for a host. */
   hostsOverlays?: boolean;
+  /** The Modal of a surface that publishes when OTHER Modals are open but can
+   *  host the audio gate itself (AppDialog) — see `useModalHostOpen`. */
+  overlayPublisher?: boolean;
 }) {
   const depth = useContext(HostDepth) + 1;
   const [id] = useState(() => ++hostSeq);
@@ -157,28 +197,30 @@ export function Modal({
   // Layout effect: registered before any native onShow can arrive for it.
   useLayoutEffect(() => {
     if (!registered) return;
-    openHosts = [...openHosts, { id, depth, shown: false }];
+    openHosts = [...openHosts, { id, depth, shown: false, publisher: overlayPublisher }];
     emit();
     return () => {
       openHosts = openHosts.filter((h) => h.id !== id);
+      lastHostClosedAt = Date.now();
       emit();
     };
-  }, [registered, id, depth]);
+  }, [registered, id, depth, overlayPublisher]);
 
-  // Only the topmost open host ever sees the overlay; every other DimModal's
-  // snapshot stays null, so publishing re-renders nothing but that one.
+  // Only the topmost open host ever sees the overlays; every other DimModal's
+  // snapshot stays empty, so publishing re-renders nothing but that one.
   const mine = useSyncExternalStore(
     subscribe,
-    () => (registered && topHostId() === id ? hostedNow() : null),
-    () => null,
+    () => (registered && topHostId() === id ? hostedNow() : NO_OVERLAYS),
+    () => NO_OVERLAYS,
   );
+  const topOverlay = mine.length ? mine[mine.length - 1] : null;
 
   const { onRequestClose, onShow } = rest;
   return (
     <RNModal supportedOrientations={supportedOrientations}
       {...rest}
       onRequestClose={(e) => {
-        if (mine) mine.onBack();
+        if (topOverlay) topOverlay.onBack();
         else onRequestClose?.(e);
       }}
       onShow={(e) => {
@@ -188,11 +230,11 @@ export function Modal({
     >
       <HostDepth.Provider value={depth}>
         {children}
-        {mine ? (
-          <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
-            {mine.node}
+        {mine.map((o) => (
+          <View key={o.key} style={StyleSheet.absoluteFill} pointerEvents="box-none">
+            {o.node}
           </View>
-        ) : null}
+        ))}
       </HostDepth.Provider>
       {/* Last child, so it washes over the modal's own content. It is
           pointerEvents="none", so nothing below it loses a touch. */}

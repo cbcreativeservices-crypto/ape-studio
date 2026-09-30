@@ -62,6 +62,7 @@ import { MODULE_BODIES } from './scenes';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
+import { ScrollLockProvider } from '../scrollLock';
 
 const STEP_KEY = 'ape:ciStep';
 const STATE_KEY = 'ape:ciState';
@@ -96,6 +97,10 @@ export function CableInstallLabScreen() {
   const [showObjectives, setShowObjectives] = useState(false);
   const [showFieldCheck, setShowFieldCheck] = useState(false);
   const [width, setWidth] = useState(0);
+  const [dragLocked, setDragLocked] = useState(false);
+  // A slider unmounted mid-drag (stage change) never sends its release —
+  // never leave the page unscrollable.
+  useEffect(() => setDragLocked(false), [step]);
   const navigatedRef = useRef(false);
   const scrollRef = useRef<ScrollView | null>(null);
 
@@ -338,7 +343,7 @@ export function CableInstallLabScreen() {
   );
 
   return (
-    <View style={styles.root}>
+    <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
         <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
@@ -419,7 +424,11 @@ export function CableInstallLabScreen() {
           <View style={[styles.rackFooter, { paddingBottom: insets.bottom + 8 }]}>{navButtons}</View>
         </>
       ) : (
-      <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, cardColumn]} keyboardShouldPersistTaps="handled">
+      // Drag-vs-scroll lock (bug hunt 2026-09-30): the Mech / Label / EMI
+      // DragSliders lock through ScrollLockCtx, and this host provided none, so
+      // a slightly diagonal drag scrolled the page instead of the slider.
+      <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, cardColumn]} keyboardShouldPersistTaps="handled" scrollEnabled={!dragLocked}>
+        <ScrollLockProvider value={setDragLocked}>
         <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width))}>
           {myth ? (
             <Appear key={myth.id}>
@@ -431,7 +440,9 @@ export function CableInstallLabScreen() {
               started={firstIncomplete > 1 || cleared > 0}
               showObjectives={showObjectives}
               onToggleObjectives={() => setShowObjectives((o) => !o)}
-              onStart={() => goTo(Math.min(firstIncomplete, CI_MODULES.length))}
+              // A finished run's START LAB starts at stage 1, not the last
+              // stage (bug hunt 2026-09-30).
+              onStart={() => goTo(firstIncomplete <= CI_MODULES.length ? firstIncomplete : 1)}
               resumeLabel={firstIncomplete > 1 && firstIncomplete <= CI_MODULES.length ? `CONTINUE — STAGE ${firstIncomplete}` : null}
               progressLine={`${cleared} of ${total} units complete`}
               onSources={() => setSourceIds(['nec', 'osha', 'bldg_fire', 'ada', 'tia568', 'tia569', 'tia606', 'tia607', 'bicsi_n1', 'bicsi_itsimm', 'bicsi_tdmm', 'avixa_f502_01', 'avixa_f502_02', 'avixa_f501_01', 'avixa_verify', 'aes48', 'iso14763', 'en50174', 'nema_tray', 'mfr_cable', 'mfr_support', 'firestop_listed', 'ufgs'])}
@@ -483,6 +494,7 @@ export function CableInstallLabScreen() {
         </View>
 
         {step > INTRO_STEP && step < COMPLETE_STEP && !myth ? <View style={styles.bottomNav}>{navButtons}</View> : null}
+        </ScrollLockProvider>
       </ScrollView>
       )}
 
@@ -757,7 +769,9 @@ function FieldCheckStage({ onBack }: { onBack: () => void }) {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.screenBg, paddingTop: 54 },
+  // Top padding follows the safe area (bug hunt 2026-09-30): a fixed 54 put
+  // the back chevron under a Dynamic Island (inset 59-62).
+  root: { flex: 1, backgroundColor: colors.screenBg },
   header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 8 },
   back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 15.5, letterSpacing: 1.1, color: colors.textPrimary },

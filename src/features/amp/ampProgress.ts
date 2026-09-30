@@ -74,9 +74,22 @@ export function updateAmpProgress(mutate: (s: AmpProgressState) => void): Promis
   return run;
 }
 
-/** Reset affects ONLY this lab's key (spec: confirmation handled by the UI). */
-export async function resetAmpProgress(): Promise<void> {
-  try {
-    await AsyncStorage.removeItem(KEY);
-  } catch {}
+/**
+ * Reset affects ONLY this lab's key (spec: confirmation handled by the UI).
+ *
+ * A PRACTICE reset, never a credit wipe (owner 2026-09-29: "resets start a
+ * fresh practice run; they never wipe banked credit"; bug hunt 2026-09-30).
+ * It used to remove the whole key — every module's `done` and the best final
+ * result, the lab's only record of credit. Now the checks, the resume point
+ * and the latest final attempt clear; `done` and `bestFinal` are kept.
+ */
+export function resetAmpProgress(): Promise<AmpProgressState> {
+  return updateAmpProgress((s) => {
+    for (const id of Object.keys(s.modules) as AmpModuleId[]) {
+      s.modules[id] = { ...emptyAmpModule(), done: !!s.modules[id]?.done };
+    }
+    if (!s.bestFinal && s.final) s.bestFinal = s.final;
+    s.final = undefined;
+    s.lastModule = undefined;
+  });
 }

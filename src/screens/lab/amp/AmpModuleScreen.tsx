@@ -192,8 +192,20 @@ export function AmpModuleScreen() {
           <Text style={styles.requirement}>
             {needsFinal
               ? 'Submit the final assessment above to complete the lab.'
-              : `Answer the ${checks.length} check${checks.length > 1 ? 's' : ''} above to continue — a wrong pick is fine, the explanation is the point.`}
+              : `Answer the ${checks.length} check${checks.length > 1 ? 's' : ''} above to mark this module complete — a wrong pick is fine, the explanation is the point. You can skip ahead and come back.`}
           </Text>
+        ) : null}
+        {/* Labs never block navigation (owner 2026-09-20; bug hunt 2026-09-30):
+            an unanswered check costs credit, never the way forward. */}
+        {!allChecksAnswered && next ? (
+          <Pressable
+            onPress={() => navigation.replace('AmpModule', { id: next.id })}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={`Skip ahead to ${next.title} without marking this module complete`}
+          >
+            <Text style={styles.skip}>SKIP AHEAD ›</Text>
+          </Pressable>
         ) : null}
         {/* Labs never block navigation (owner 2026-09-29): on the last module
             the what's-left screen is reachable before the final is in. */}
@@ -223,4 +235,5 @@ const styles = StyleSheet.create({
   completeBtnDim: { opacity: 0.45 },
   completeText: { color: colors.green, fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1.5 },
   requirement: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, textAlign: 'center' },
+  skip: { color: colors.textSub, fontFamily: fonts.oswaldMedium, fontSize: 13, letterSpacing: 1.5, textAlign: 'center', paddingVertical: 10 },
 });

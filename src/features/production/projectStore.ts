@@ -217,9 +217,13 @@ export function createProjectStore(kv: KeyValueStore): ProjectStore {
   }
 
   return {
-    load: list,
-    async get(lab, id) {
-      return (await list(lab)).find((p) => p.id === id) ?? null;
+    // Reads join the same queue (bug hunt 2026-09-30): a screen that read the
+    // list while keystroke writes were still queued held a stale copy, and a
+    // rename (`upsert({...project, name})`) then wrote that copy back over the
+    // answers. The private `list` is what the queued jobs use, so no deadlock.
+    load: (lab) => serialize(lab, () => list(lab)),
+    get(lab, id) {
+      return serialize(lab, async () => (await list(lab)).find((p) => p.id === id) ?? null);
     },
     upsert(p) {
       // Same queue as `mutate`: an upsert racing a keystroke would drop whichever

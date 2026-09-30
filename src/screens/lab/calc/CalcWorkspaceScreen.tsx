@@ -8,7 +8,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
-import { Alert, Pressable, Share, StyleSheet, Text, View, type ScrollView } from 'react-native';
+import { Alert, Pressable, ScrollView, Share, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { confirmDialog, notify } from '../../../lib/confirm';
 import { LinearGradient } from 'expo-linear-gradient';
 import { KeyboardAwareScrollView } from '../../../features/keyboard/keyboardControllerSafe';
@@ -43,6 +43,12 @@ export function CalcWorkspaceScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'CalcWorkspace'>>();
+  // The pinned stage's result body scrolls inside a capped height: with a long
+  // table (a noise-dose schedule, a note table) or WORKED STEPS open it grew
+  // without bound, squeezed the input well below to nothing and pushed SHARE /
+  // the bezel off a 360×640 screen with no way to scroll to them.
+  const { height: winH } = useWindowDimensions();
+  const stageBodyMax = Math.max(160, Math.round(winH * 0.4));
   const ws: Workspace | undefined = getWorkspace(route.params.id);
   const chain = useChainValue();
 
@@ -289,6 +295,7 @@ export function CalcWorkspaceScreen() {
               YOUR ANSWER — {fn.name.toUpperCase().replace(/\bDBFS\b/g, 'dBFS').replace(/\bDBU\b/g, 'dBu').replace(/\bDBV\b/g, 'dBV').replace(/\bDB\b/g, 'dB')}
             </Text>
             {counterText ? <Text style={styles.usageCounter}>{counterText}</Text> : null}
+            <ScrollView style={{ maxHeight: stageBodyMax }} nestedScrollEnabled keyboardShouldPersistTaps="handled">
             {mustSignIn ? (
               <View style={{ gap: 10 }}>
                 <Text style={styles.resultPlaceholder}>Create a free account (or sign in) to run calculations.</Text>
@@ -397,6 +404,7 @@ export function CalcWorkspaceScreen() {
                 </Pressable>
               </View>
             )}
+            </ScrollView>
           </View>
           {/* Bezel readouts under the glass. */}
           <View style={styles.bezel}>

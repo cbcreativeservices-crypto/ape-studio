@@ -295,6 +295,10 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
 
   // -- Audio lifecycle (generation-guarded; chain reset on every stop) -------
   const genRef = useRef(0);
+  // Double-tap ▶ (bug hunt 2026-09-30, FmLab's pattern): a superseded start
+  // only stops/resets when nothing newer wants it — otherwise its fxReset
+  // disabled the effect the newer start had just enabled.
+  const wantRef = useRef(false);
 
   const pushAllParams = useCallback(
     (vals: Record<number, number>) => {
@@ -308,6 +312,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
   const start = useCallback(async () => {
     if (!fxReady) return;
     const gen = ++genRef.current;
+    wantRef.current = true;
     const ok = await requestAudioOutput();
     if (!ok || gen !== genRef.current) return;
     setGenError('');
@@ -317,9 +322,16 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
       await ApeDsp.genStart();
       // A mute that landed while the native start was in flight wins — never
       // leave a tone sounding into a closed gate (owner 2026-09-29).
-      if (gen !== genRef.current || !isAudioOutputEnabled()) {
+      if (!isAudioOutputEnabled()) {
         void ApeDsp.genStop();
         ApeDsp.fxReset();
+        return;
+      }
+      if (gen !== genRef.current) {
+        if (!wantRef.current) {
+          void ApeDsp.genStop(); // stopped meanwhile
+          ApeDsp.fxReset();
+        }
         return;
       }
       setRunning(true);
@@ -332,6 +344,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
 
   const stop = useCallback(() => {
     genRef.current++;
+    wantRef.current = false;
     void ApeDsp.genStop();
     ApeDsp.fxReset(); // leave NOTHING armed for the next lab
     setRunning(false);

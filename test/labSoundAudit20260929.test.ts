@@ -70,7 +70,9 @@ test('every native generator start re-checks the output gate after the start res
     'src/screens/lab/foundations/FoundationsPlaygroundScreen.tsx',
   ]) {
     const s = read(f);
-    assert.match(s, /await ApeDsp\.(gen|bin|mod)Start\(\);\n(\s*\/\/[^\n]*\n)*\s*if \(\w+ !== \w+(\.current)? \|\| !isAudioOutputEnabled\(\)\) \{/, f);
+    // The gate check may stand alone (2026-09-30: the double-tap ▶ fix split it
+    // from the stale-generation check, FmLab's shape) — it must still come first.
+    assert.match(s, /await ApeDsp\.(gen|bin|mod)Start\(\);\n(\s*\/\/[^\n]*\n)*\s*if \((\w+ !== \w+(\.current)? \|\| )?!isAudioOutputEnabled\(\)\) \{/, f);
   }
   const course = read('src/screens/lab/foundations/FoundationsCourseScreen.tsx');
   assert.equal((course.match(/if \(gen !== genRef\.current \|\| !isAudioOutputEnabled\(\)\) \{/g) ?? []).length, 3, 'sine, additive and stereo starts');

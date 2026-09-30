@@ -108,7 +108,11 @@ export function AttractText({
   glow?: boolean;
   children: ReactNode;
 }) {
-  const motion = active && animationsAllowed();
+  // Low-Light gate, same as AttractRing above (bug hunt 2026-09-30): the ring
+  // was corrected and the About text beside it kept breathing in Low-Light
+  // Production Mode, where nothing may draw attention to itself unbidden.
+  const suppressed = useOverlaysSuppressed();
+  const motion = active && !suppressed && animationsAllowed();
   const t = useBreathe(active, motion, 1);
   const aStyle = useAnimatedStyle(() => ({ opacity: 0.6 + t.value * 0.4 }));
   return (

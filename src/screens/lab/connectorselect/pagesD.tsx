@@ -211,7 +211,10 @@ function PageFinal({ ctx }: { ctx: PageCtx }) {
               q={q}
               num={i + 1}
               answer={answers.get(q.id)}
-              onAnswer={(orig) => setAnswers((prev) => new Map(prev).set(q.id, orig))}
+              // First answer wins (bug hunt 2026-09-30): two fingers in one
+              // frame both passed the card's render-time lock, and the second
+              // silently replaced the answer already announced.
+              onAnswer={(orig) => setAnswers((prev) => (prev.has(q.id) ? prev : new Map(prev).set(q.id, orig)))}
             />
           ))}
           {!result ? (

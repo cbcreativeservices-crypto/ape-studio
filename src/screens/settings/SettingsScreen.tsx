@@ -37,7 +37,7 @@ import { sendFeedback } from '../../lib/feedback';
 import { redeemAccessCode } from '../../features/commercial/accessCode';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { supabase } from '../../lib/supabase';
-import { markIntentionalSignOut } from '../../features/auth/intentionalSignOut';
+import { consumeIntentionalSignOut, markIntentionalSignOut } from '../../features/auth/intentionalSignOut';
 import { replayQueue } from '../../features/study/sync';
 import { replayQuizSubmissions } from '../../features/quiz/api';
 import { flushScenarioQueue, pendingScenarioCount } from '../../features/study/scenarioHomework';
@@ -138,9 +138,15 @@ export function SettingsScreen({ navigation }: Props) {
   // ACCOUNT section for an account that does not exist.
   const isGuest = entitlement === 'anonymous';
 
+  // `redeemBusy` is state, so two taps on REDEEM (or REDEEM + the keyboard's
+  // done key) in one frame both read it false and redeemed twice — the second
+  // came back "already active" and stacked a second dialog. The ref is the
+  // guard; the state drives the spinner (2026-09-30 bug pass).
+  const redeemBusyRef = useRef(false);
   const submitRedeem = useCallback(async () => {
     const code = redeemCode.trim();
-    if (!code || redeemBusy) return;
+    if (!code || redeemBusyRef.current) return;
+    redeemBusyRef.current = true;
     setRedeemBusy(true);
     try {
       const res = await redeemAccessCode(code);
@@ -149,9 +155,10 @@ export function SettingsScreen({ navigation }: Props) {
       setRedeemCode('');
       notify(res.ok ? 'Code applied' : 'Code not applied', res.message);
     } finally {
+      redeemBusyRef.current = false;
       setRedeemBusy(false);
     }
-  }, [redeemCode, redeemBusy, refreshEntitlement]);
+  }, [redeemCode, refreshEntitlement]);
 
   // M12 (2026-09-07): prefs load, retryable and error-aware.
   const reloadPrefs = useCallback(async () => {
@@ -281,7 +288,26 @@ ${LOCAL_LOSS}`
         () => {
           void (async () => {
             markIntentionalSignOut();
-            await supabase.auth.signOut();
+            /**
+             * ⛔ OFFLINE, signOut() DOES NOT SIGN OUT (2026-09-30 bug pass).
+             * supabase-js revokes on the server first and, when that request
+             * fails for any reason other than 401/403/404, RETURNS { error }
+             * and keeps the local session. We ignored the result and reset to
+             * Splash — which found the session still there and put the person
+             * straight back in, signed in, with no word that Log out had done
+             * nothing. Say so instead, and let them retry when back online.
+             */
+            const { error } = await supabase.auth
+              .signOut()
+              .catch((e: unknown) => ({ error: e as Error }));
+            if (error) {
+              consumeIntentionalSignOut(); // no SIGNED_OUT is coming for it
+              notify(
+                'Couldn’t log out',
+                'We couldn’t reach the Academy to sign you out — check your connection and try again.',
+              );
+              return;
+            }
             navigation.reset({ index: 0, routes: [{ name: 'Splash' }] });
           })();
         },
@@ -772,7 +798,9 @@ ${LOCAL_LOSS}`
                 setAutoOfflineState(v);
                 void setAutoOffline(v);
                 if (!v) cancelGlossaryPrefetch();
-                else void prefetchGlossary();
+                // Members only (bug pass 2026-09-30): a free reader would
+                // download ~5 MB of 120-character teasers.
+                else if (isMember) void prefetchGlossary();
               }}
             />
           </View>

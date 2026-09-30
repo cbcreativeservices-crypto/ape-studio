@@ -159,7 +159,7 @@ function DosimeterChip({ onOpen }: { onOpen: () => void }) {
     <Pressable
       onPress={() => {
         markToolTap('dosimeter');
-        void Haptics.selectionAsync().catch(() => {});
+        if (hapticsEnabled()) void Haptics.selectionAsync().catch(() => {});
         markToolNavigate('dosimeter');
         onOpen();
       }}
@@ -930,8 +930,15 @@ export function ToolsHubScreen({ navigation }: Props) {
   const hubCoach = useCoachMark(COACH_KEYS.toolsHub, 1);
   const { retire: hubCoachRetire } = hubCoach;
   const { stopForNavigation } = hubPreview;
+  // Each tile holds its own 90 ms beat and its own busy flag, so two tiles
+  // tapped inside one beat (toddler, two fingers) both fired — FrequencyCounter
+  // AND MultiMeter pushed on top of each other. One open per navigation.
+  const lastOpenRef = useRef(0);
   const openTool = useCallback(
     (key: ToolKey) => {
+      const now = Date.now();
+      if (now - lastOpenRef.current < 700) return;
+      lastOpenRef.current = now;
       hubCoachRetire(); // they found the door — never say it again
       stopForNavigation();
       if (key === 'hzcounter') navigation.navigate('FrequencyCounter');

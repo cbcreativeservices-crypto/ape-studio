@@ -47,6 +47,7 @@ import { confirmDialog, notify } from '../../lib/confirm';
 import { fetchCorpusTerms, fetchDefinitionsFor, yieldToUi } from '../../features/glossary/corpusFetch';
 import {
   OFFLINE_AVAILABLE,
+  alignDefinitionTier,
   corpusStats,
   idsMissingDefinitions,
   loadDefinitions as loadStoredDefinitions,
@@ -133,6 +134,12 @@ let ENTRIES_CACHE: Promise<Entry[]> | null = null;
 // and serving a member 120-character teasers out of a stale cache would look
 // like the definitions had been truncated. See loadAllEntries.
 let ENTRIES_TABLE: 'glossary' | 'glossary_browse_v' | null = null;
+// WHOSE definitions have been merged into the cached entries (bug hunt
+// 2026-09-30). The table no longer tells a member from a free reader — both
+// page `glossary_browse_v`, which masks definitions to a teaser for one of
+// them — so the cache outlives an account switch holding the last reader's
+// text. See the defTier effect in the screen.
+let ENTRIES_DEF_TIER: 'member' | 'free' | null = null;
 
 /** How long a key may stay undecided before the screen admits it is stuck. */
 const KEY_WAIT_MS = 9000;
@@ -1297,6 +1304,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
     if (r.ok) {
       // The corpus source changes with the key (the browse view is granted to
       // `authenticated`), so the cached probe answer has to be re-taken.
+      setHasSession(true); // a key in hand — see the renewal branch below
       resetGatewayProbe();
       void probeGateway().then(setGateway);
       return;
@@ -1334,6 +1342,16 @@ ${COPY.glossaryFreeAllowance}`,
       void mintDeviceKey().then((r) => {
         mintingRef.current = false;
         if (r.ok) {
+          /**
+           * ⛔ SAY THE KEY IS HERE (bug hunt 2026-09-30). `mintDeviceKey` returns
+           * ok WITHOUT minting when a session is already stored — which is the
+           * normal case after the gateway's `sign_in_required` set hasSession
+           * false over a session the client still holds (the cold-start anon
+           * race). No auth event fires for a key that never changed, so
+           * nothing flipped hasSession back and the screen sat in 'mint' for
+           * the rest of the visit: keyReady false, the focus reload skipped.
+           */
+          setHasSession(true);
           resetGatewayProbe();
           void probeGateway().then(setGateway);
         } else {
@@ -1948,7 +1966,11 @@ ${COPY.glossaryFreeAllowance}`,
   // were last on (owner 2026-09-10). The key is written only when they leave via
   // the lock view's membership button, and cleared here on the single reopen.
   useEffect(() => {
-    if (capped) return;
+    // `!resolved` too (bug hunt 2026-09-30): `capped` is false BEFORE the
+    // entitlement read lands, so on a cold open a reader who left the lock for
+    // the paywall and never bought had the key consumed and the term opened in
+    // that window — past the lock, before the meter knew who they were.
+    if (!resolved || capped) return;
     let alive = true;
     AsyncStorage.getItem(RETURN_TERM_KEY)
       .then((id) => {
@@ -1960,7 +1982,7 @@ ${COPY.glossaryFreeAllowance}`,
     return () => {
       alive = false;
     };
-  }, [capped, openPopupRoot]);
+  }, [resolved, capped, openPopupRoot]);
 
   // Retry for the offline empty-state card. loadAllEntries() does NOT cache a
   // rejection, so re-running it after reconnecting genuinely re-fetches.
@@ -2086,8 +2108,18 @@ ${COPY.glossaryFreeAllowance}`,
     void corpusStats(table).then(setOfflineStats, () => {});
   }, [table]);
 
+  // Synchronous twin of `savingOffline` (bug hunt 2026-09-30): a double tap on
+  // SAVE ALL lands both taps in the same render, both read `savingOffline`
+  // false, and two loops downloaded the same pages side by side — twice the
+  // data on exactly the metered connection this feature warns about.
+  const savingRef = useRef(false);
+  // Leaving the screen stops the save ("Keep this screen open"), rather than
+  // leaving an unstoppable loop running with nothing on screen to stop it.
+  useEffect(() => () => {
+    cancelSaveRef.current = true;
+  }, []);
   const saveWholeGlossary = useCallback(async () => {
-    if (savingOffline) {
+    if (savingOffline || savingRef.current) {
       cancelSaveRef.current = true;
       return;
     }
@@ -2095,9 +2127,12 @@ ${COPY.glossaryFreeAllowance}`,
     // entitlement or a future caller must not be able to start a 4 MB download
     // the reader is not entitled to. The UI is not the enforcement.
     if (resolved && !isMember) return;
+    savingRef.current = true;
     cancelSaveRef.current = false;
     setSavingOffline(true);
     try {
+      // Teasers a free reader left behind would otherwise count as saved.
+      if (resolved) await alignDefinitionTier(table, 'member');
       // Bounded rather than `while (true)`: a server that keeps returning the
       // same ids (a definition that is NULL upstream) would otherwise spin
       // forever. 80 passes x 400 covers 32,000 terms.
@@ -2121,6 +2156,7 @@ ${COPY.glossaryFreeAllowance}`,
       );
       refreshOfflineStats();
     } finally {
+      savingRef.current = false;
       setSavingOffline(false);
       cancelSaveRef.current = false;
     }
@@ -2151,8 +2187,19 @@ ${COPY.glossaryFreeAllowance}`,
       ensureDefsRef.current(ids);
     }, 60);
   }, []);
+  /** Whose definitions the browse view hands this reader: 'member' gets the
+   *  text, 'free' the teaser. null until entitlement resolves. */
+  const defTier: 'member' | 'free' | null = resolved ? (isMember ? 'member' : 'free') : null;
+  const defTierRef = useRef(defTier);
+  defTierRef.current = defTier;
   const ensureDefinitions = useCallback(
     (ids: string[]) => {
+      // Nothing until we know whose text this is: the browse view answers a
+      // member with the definition and everyone else with a 120-character
+      // teaser, and both are stored under the same table. The defTier effect
+      // repaints the rows (and so re-queues them) once entitlement resolves.
+      const tier = defTierRef.current;
+      if (!tier) return;
       const want = ids.filter((id) => {
         if (requestedDefsRef.current.has(id)) return false;
         const e = entryByIdRef.current.get(id);
@@ -2177,7 +2224,14 @@ ${COPY.glossaryFreeAllowance}`,
         try {
           // 1. THE DEVICE FIRST. On a ship with no signal this is the only step
           //    that runs, and it is why the glossary still works there.
-          const stored = await loadStoredDefinitions(table, want).catch(() => new Map<string, string>());
+          //    Only once the device copy is known to be THIS tier's text.
+          const diskOk = await alignDefinitionTier(table, tier).then(
+            () => true,
+            () => false,
+          );
+          const stored = diskOk
+            ? await loadStoredDefinitions(table, want).catch(() => new Map<string, string>())
+            : new Map<string, string>();
           const fromDisk = [...stored.entries()].map(([id, definition]) => ({ id, definition }));
           if (merge(fromDisk)) setDefRev((n) => n + 1);
 
@@ -2185,9 +2239,15 @@ ${COPY.glossaryFreeAllowance}`,
           const missing = want.filter((id) => !stored.has(id));
           if (!missing.length) return;
           const rows = await fetchDefinitionsFor(table, missing);
+          // The reader changed mid-fetch (signed out / joined): this text is
+          // the previous tier's — drop it and let the rows ask again.
+          if (defTierRef.current !== tier) {
+            for (const id of want) requestedDefsRef.current.delete(id);
+            return;
+          }
           if (merge(rows)) setDefRev((n) => n + 1);
           // 3. Keep them, so this reader never pays for them twice.
-          void saveStoredDefinitions(table, rows).catch(() => {});
+          if (diskOk) void saveStoredDefinitions(table, rows).catch(() => {});
         } catch {
           // Network miss: let these ids be retried the next time the rows are
           // drawn. Anything already served from disk stays on screen.
@@ -2204,6 +2264,21 @@ ${COPY.glossaryFreeAllowance}`,
   useEffect(() => {
     requestedDefsRef.current = new Set();
   }, [table]);
+
+  // A different reader (sign-out, a new account, joining mid-session) must not
+  // keep the last one's definitions: the session cache is shared across mounts
+  // and holds teasers for one tier and full text for the other. Blank them so
+  // the rows re-ask; the bump also re-queues rows that were drawn before
+  // entitlement resolved, when ensureDefinitions deliberately did nothing.
+  useEffect(() => {
+    if (!defTier || !entries.length) return;
+    if (ENTRIES_DEF_TIER !== null && ENTRIES_DEF_TIER !== defTier) {
+      for (const e of entries) e.definition = '';
+      requestedDefsRef.current = new Set();
+    }
+    ENTRIES_DEF_TIER = defTier;
+    setDefRev((n) => n + 1);
+  }, [defTier, entries]);
 
   const termIndexRef = useRef(termIndex);
   termIndexRef.current = termIndex;
@@ -2622,10 +2697,34 @@ ${COPY.glossaryFreeAllowance}`,
   // set — otherwise the stack's own pop already lands on the Dashboard the
   // person came from. Registered on focus so a root screen pushed over the
   // Glossary (CalcLab via Σ, the Paywall) keeps its own back.
+  //
+  // ⛔ AN OPEN OVERLAY COMES FIRST (bug hunt 2026-09-30). The term popup, the
+  // WHICH SENSE? chooser and the topic list are in-tree Views, not Modals, so
+  // nothing else claims BACK while they are up — and BACK left the whole
+  // Glossary with a definition open, instead of closing it the way ✕ / the
+  // back pill do. Read through a ref so the listener is not re-registered on
+  // every hop.
+  const overlayBackRef = useRef<() => boolean>(() => false);
+  overlayBackRef.current = () => {
+    if (chooser) {
+      setChooser(null);
+      return true;
+    }
+    if (popupTrail.length > 0) {
+      setPopupTrail((t) => t.slice(0, -1)); // one hop, like the back pill
+      return true;
+    }
+    if (filter === 'topic' && topicPickerOpen) {
+      setTopicPickerOpen(false);
+      return true;
+    }
+    return false;
+  };
   useFocusEffect(
     useCallback(() => {
-      if (!openedFrom) return;
       const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+        if (overlayBackRef.current()) return true;
+        if (!openedFrom) return false;
         exitGlossary();
         return true;
       });

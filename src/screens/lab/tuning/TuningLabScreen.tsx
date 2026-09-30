@@ -59,6 +59,10 @@ export function TuningLabScreen() {
     AccessibilityInfo.announceForAccessibility(soundLine);
   }, [soundLine]);
   const [progress, setProgress] = useState<TuningProgress | null>(null);
+  // Every save builds on the NEWEST progress (bug hunt 2026-09-30, the
+  // PagedLab pattern): a chapter's late callback (SHOW ME finishing after
+  // CONTINUE) spread its render-time copy and reverted lastChapter / mathView.
+  const progressRef = useRef<TuningProgress | null>(null);
   const [chapter, setChapter] = useState(0);
   const [rootHz, setRootHz] = useState(C4_ET);
   const [mathView, setMathView] = useState(false);
@@ -73,6 +77,7 @@ export function TuningLabScreen() {
     let alive = true;
     void loadTuningProgress().then((p) => {
       if (!alive) return;
+      progressRef.current = p;
       setProgress(p);
       setMathView(p.mathView);
       const built = CHAPTERS.map((c) => c.index);
@@ -85,7 +90,11 @@ export function TuningLabScreen() {
     };
   }, [player]);
 
-  const persist = useCallback((next: TuningProgress) => {
+  const persist = useCallback((patch: Partial<TuningProgress>) => {
+    const base = progressRef.current;
+    if (!base) return;
+    const next = { ...base, ...patch };
+    progressRef.current = next;
     setProgress(next);
     void saveTuningProgress(next);
   }, []);
@@ -97,22 +106,23 @@ export function TuningLabScreen() {
       setChapter(idx);
       setListOpen(false);
       scrollRef.current?.scrollTo({ y: 0, animated: !reduceMotion });
-      if (progress) persist({ ...progress, lastChapter: idx });
+      persist({ lastChapter: idx });
     },
-    [player, progress, persist, reduceMotion],
+    [player, persist, reduceMotion],
   );
 
   const markDone = useCallback(() => {
-    if (!progress) return;
-    const completed = progress.completed.includes(chapter) ? progress.completed : [...progress.completed, chapter].sort((a, b) => a - b);
+    const base = progressRef.current;
+    if (!base) return;
+    const completed = base.completed.includes(chapter) ? base.completed : [...base.completed, chapter].sort((a, b) => a - b);
     const done = completed.length >= CHAPTER_COUNT;
-    persist({ ...progress, completed, done });
-  }, [progress, chapter, persist]);
+    persist({ completed, done });
+  }, [chapter, persist]);
 
   const toggleMath = () => {
     const next = !mathView;
     setMathView(next);
-    if (progress) persist({ ...progress, mathView: next });
+    persist({ mathView: next });
   };
 
   const confirmReset = () =>
@@ -122,7 +132,8 @@ export function TuningLabScreen() {
       'Reset',
       () =>
         void resetTuningProgress().then(() => {
-          setProgress({ completed: [], lastChapter: 0, done: false, mathView });
+          progressRef.current = { completed: [], lastChapter: 0, done: false, mathView };
+          setProgress(progressRef.current);
           setChapter(0);
         }),
       { destructive: true },
@@ -207,11 +218,11 @@ export function TuningLabScreen() {
         />
       ) : (
       <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, readingColumn, { paddingBottom: insets.bottom + 24 }]}>
-        {/* This lab LISTENS through the phone's microphone, so the uncalibrated
-            caveat is the substance rather than a formality — a tuner is exactly
-            the thing someone would otherwise trust as a measurement. It had no
-            note at all until 2026-09-17. */}
-        <AccuracyNote style={styles.accuracyNote} detail="Pitch is read through this phone's microphone and audio path, neither of which is calibrated. Use a dedicated tuner for work that has to be right." />
+        {/* This lab PLAYS synthesized tones — it never uses the microphone
+            (the note said it did until 2026-09-30, factually wrong). What the
+            learner hears passes through an uncalibrated output and speaker or
+            headphones, so the caveat is still the substance. */}
+        <AccuracyNote style={styles.accuracyNote} detail="The tones here are synthesized exactly, but you hear them through this phone's uncalibrated output and your speaker or headphones. Use a dedicated tuner or a calibrated reference for work that has to be right." />
         {def.objective ? (
           <View style={styles.objective} accessible accessibilityLabel={`In this chapter: ${def.objective}`}>
             <Text style={styles.objectiveKicker}>IN THIS CHAPTER</Text>

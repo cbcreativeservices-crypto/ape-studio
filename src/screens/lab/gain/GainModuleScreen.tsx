@@ -4,7 +4,7 @@
  * ScrollLockProvider (DragSliders win their horizontal drags) + prev/next
  * module nav.
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useIsFocused, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
@@ -71,6 +71,16 @@ export function GainModuleScreen() {
   const overflows = contentH > viewportH + 2;
   const idx = GAIN_MODULES.findIndex((m) => m.id === meta.id);
   const last = GAIN_MODULES.length - 1;
+  // Double-tap lock (bug hunt 2026-09-30): the second tap of a double-tap on
+  // NEXT at the second-last module landed after the re-render, where NEXT is
+  // already FINISH, and skipped the last module. Taps within 400 ms are ignored.
+  const nextTapAt = useRef(0);
+  const onNext = () => {
+    if (Date.now() - nextTapAt.current < 400) return;
+    nextTapAt.current = Date.now();
+    if (idx >= last) setEnding(true);
+    else goToModule(idx + 1);
+  };
   const goToModule = (i: number) => {
     if (i < 0 || i > last) return;
     setEnding(false);
@@ -115,7 +125,7 @@ export function GainModuleScreen() {
         <View style={{ flex: 1 }} />
         <Text style={styles.navPos}>{ending ? "WHAT'S LEFT" : `MODULE ${idx + 1} / ${GAIN_MODULES.length}`}</Text>
         <View style={{ flex: 1 }} />
-        <Pressable onPress={() => (idx >= last ? setEnding(true) : goToModule(idx + 1))} hitSlop={8} accessibilityRole="button" accessibilityLabel={idx >= last ? "Finish the lab and see what's left" : 'Next module'}>
+        <Pressable onPress={onNext} hitSlop={8} accessibilityRole="button" accessibilityLabel={idx >= last ? "Finish the lab and see what's left" : 'Next module'}>
           <Text style={styles.navBtn}>{idx >= last ? 'FINISH ›' : 'NEXT ›'}</Text>
         </Pressable>
       </View>

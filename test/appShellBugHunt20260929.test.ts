@@ -94,11 +94,11 @@ describe('A2 — gate popups are hosted inside an open Modal', () => {
   const warning = code('src/features/audio/SoundSafetyWarning.tsx');
 
   test('DimModal registers visible hosts and draws the hosted overlay', () => {
-    assert.match(dim, /export function useModalHostOpen\(\)/);
+    assert.match(dim, /export function useModalHostOpen\(/);
     assert.match(dim, /export function setHostedOverlay\(/);
-    assert.match(dim, /\{mine\.node\}/);
-    // BACK goes to the overlay first, not the sheet under it.
-    assert.match(dim, /if \(mine\) mine\.onBack\(\);/);
+    assert.match(dim, /\{o\.node\}/);
+    // BACK goes to the (topmost) overlay first, not the sheet under it.
+    assert.match(dim, /if \(topOverlay\) topOverlay\.onBack\(\);/);
   });
 
   test('the gate publishes to the host while one is open', () => {

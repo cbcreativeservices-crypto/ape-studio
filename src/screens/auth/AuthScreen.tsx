@@ -114,6 +114,25 @@ export function AuthScreen({ navigation }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  /**
+   * One account action at a time (2026-09-30 bug pass). `busy` hides the
+   * buttons only after a re-render, so a double tap on CREATE ACCOUNT ran two
+   * signUp + register calls for the same email (the second fell into the
+   * "already registered → sign in" path and raced the first), and LOGIN then
+   * GUEST in the same frame signed in and wiped the device at once. A ref is
+   * synchronous; the second tap is dropped.
+   */
+  const inFlight = useRef(false);
+  const begin = (): boolean => {
+    if (inFlight.current) return false;
+    inFlight.current = true;
+    setBusy(true);
+    return true;
+  };
+  const end = () => {
+    inFlight.current = false;
+    setBusy(false);
+  };
 
   /**
    * SPEAK THE RESULT ON iOS (2026-09-18).
@@ -201,7 +220,7 @@ export function AuthScreen({ navigation }: Props) {
    * with no student record) following the guest into Main recreated the
    * load-error retry loop forever. */
   const enterGuest = async () => {
-    setBusy(true);
+    if (!begin()) return;
     setError(null);
     // M4 (2026-09-07): the whole flow is guarded. Previously only signOut was
     // in a try; if any AsyncStorage/store reset below threw, setBusy(false) and
@@ -246,7 +265,7 @@ export function AuthScreen({ navigation }: Props) {
     } catch {
       setError('Could not start Guest Mode. Please try again.');
     } finally {
-      setBusy(false);
+      end();
     }
   };
 
@@ -288,7 +307,7 @@ export function AuthScreen({ navigation }: Props) {
       setError(pwIssue);
       return;
     }
-    setBusy(true);
+    if (!begin()) return;
     try {
       const result = await registerCommercialUser(email.trim(), password);
       if (!result.success) {
@@ -333,7 +352,7 @@ export function AuthScreen({ navigation }: Props) {
       // the account had been created.
       setError('Couldn’t reach the Academy — check your connection and try again.');
     } finally {
-      setBusy(false);
+      end();
     }
   };
 
@@ -345,7 +364,7 @@ export function AuthScreen({ navigation }: Props) {
       setError('Enter your email and password.');
       return;
     }
-    setBusy(true);
+    if (!begin()) return;
     try {
       const err = await signIn(email.trim(), password);
       if (err) {
@@ -371,7 +390,7 @@ export function AuthScreen({ navigation }: Props) {
     } catch {
       setError('Couldn’t reach the Academy — check your connection and try again.');
     } finally {
-      setBusy(false);
+      end();
     }
   };
 
@@ -384,7 +403,7 @@ export function AuthScreen({ navigation }: Props) {
       setError('Enter your email above first, then tap Reset via email.');
       return;
     }
-    setBusy(true);
+    if (!begin()) return;
     try {
       const err = await requestPasswordReset(email.trim());
       if (err) {
@@ -419,7 +438,7 @@ export function AuthScreen({ navigation }: Props) {
     } catch {
       setError('Couldn’t send the reset email — check your connection and try again.');
     } finally {
-      setBusy(false);
+      end();
     }
   };
 
@@ -437,7 +456,7 @@ export function AuthScreen({ navigation }: Props) {
       setError(pwIssue);
       return;
     }
-    setBusy(true);
+    if (!begin()) return;
     try {
       const addr = email.trim().toLowerCase();
       if (verifiedFor.current !== addr) {
@@ -460,7 +479,7 @@ export function AuthScreen({ navigation }: Props) {
     } catch {
       setError('Couldn’t reach the Academy — check your connection and try again.');
     } finally {
-      setBusy(false);
+      end();
     }
   };
 

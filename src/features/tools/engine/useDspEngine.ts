@@ -25,21 +25,35 @@ import {
   type WaveBucket,
 } from '../../../../modules/ape-dsp';
 import { micReleaseOnBackgroundEnabled } from '../../settings/store';
-import { acquireMic, releaseMic, releaseMicNow } from './micSession';
+import { acquireMic, micAcquireSeq, releaseMic, releaseMicNow } from './micSession';
 import { releaseOnSupersede } from './startSupersede';
 import { markMicAcquire } from '../devTiming';
 import type { WarningFlag } from '../measure/types';
 
 /** Android runtime mic-permission request (iOS requests it natively inside the
  *  module). Returns true if granted. No-op → true on non-Android. */
+/** True while the Android RECORD_AUDIO system dialog is up. That dialog pauses
+ *  the activity, so AppState reports 'background' — and the tools' background
+ *  release (which also releases in 'starting') tore the start down, discarded
+ *  the Deny, and re-prompted on 'active': two prompts for one Deny. */
+let micPermissionPromptOpen = false;
+export function isMicPermissionPromptOpen(): boolean {
+  return micPermissionPromptOpen;
+}
+
 async function ensureMicPermission(): Promise<boolean> {
   if (Platform.OS !== 'android') return true;
   try {
     // Perf (rev 22): check first — once granted, skip the request() bridge
     // round-trip that ran on EVERY engine start (every tool open + hub resume).
     if (await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO)) return true;
-    const res = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO);
-    return res === PermissionsAndroid.RESULTS.GRANTED;
+    micPermissionPromptOpen = true;
+    try {
+      const res = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO);
+      return res === PermissionsAndroid.RESULTS.GRANTED;
+    } finally {
+      micPermissionPromptOpen = false;
+    }
   } catch {
     return false;
   }
@@ -143,7 +157,9 @@ export function useDspEngine(config: EngineConfig, poll: {
       // Dev timing (owner 2026-09-05): warm adopt should be ~0 ms; a cold HAL
       // open is the documented 5-10 s — the Metro line says which one happened.
       const acquireAt = Date.now();
-      await acquireMic(configRef.current, freshStartRef.current);
+      const acquiring = acquireMic(configRef.current, freshStartRef.current);
+      const mySeq = micAcquireSeq(); // read synchronously — see micAcquireSeq
+      await acquiring;
       markMicAcquire(freshStartRef.current ? 'hub (fresh start)' : 'tool (adopt or start)', acquireAt, 'capture live');
       if (gen !== genRef.current) {
         // Torn down while starting — hand the stream back (debounced, so a fast
@@ -162,6 +178,11 @@ export function useDspEngine(config: EngineConfig, poll: {
         // armed the 1.5 s debounce after its acquire had cancelled the last
         // one, and doStop() then killed the mic under a 'running' screen (bug
         // hunt 2026-09-29).
+        //
+        // …and not when ANOTHER screen acquired after us (the hub torn down by
+        // stopForNavigation, its cold start joined by the opened tool): that
+        // screen owns the stream now, and our release would kill it.
+        if (micAcquireSeq() !== mySeq) return;
         if (releaseOnSupersede(gen, latestStartRef.current)) releaseMic();
         return;
       }
@@ -262,6 +283,8 @@ export function useToolAutoStart(state: EngineState, start: () => void, stop?: (
    *  going after a few tries should sit on START and let the user decide, not
    *  hammer the audio HAL. */
   const rearms = useRef(0);
+  /** Released by the background handler below; cleared on return. */
+  const releasedForBg = useRef(false);
   const MAX_REARMS = 3;
   /** Live view of `state` for the focus callbacks, which are created once. */
   const liveState = useRef(state);
@@ -321,7 +344,12 @@ export function useToolAutoStart(state: EngineState, start: () => void, stop?: (
     // 'idle', and silently re-opening the mic there would break the integrity
     // rule that DSP only runs when the user started it. `ranOnce` is what keeps
     // those two identical-looking 'idle's apart.
-    if (state === 'idle' && done.current && !ranOnce.current && rearms.current < MAX_REARMS) {
+    // …and NEVER while released for the background: Home pressed during the
+    // first 'starting' dropped the state to 'idle' here, the one-shot re-armed,
+    // and start() re-opened the mic in the background moments after the
+    // release (Android keeps the JS thread running). The 'active' handler
+    // below resumes on return.
+    if (state === 'idle' && done.current && !ranOnce.current && rearms.current < MAX_REARMS && !releasedForBg.current) {
       rearms.current += 1;
       done.current = false;
     }
@@ -371,12 +399,12 @@ export function useToolAutoStart(state: EngineState, start: () => void, stop?: (
   startRef.current = start;
   const stopRef = useRef(stop);
   stopRef.current = stop;
-  const releasedForBg = useRef(false);
   useEffect(() => {
     if (!stop) return undefined;
     const sub = AppState.addEventListener('change', (s) => {
       if (!micReleaseOnBackgroundEnabled()) return; // OFF → keep the warm session
       if (s === 'background') {
+        if (micPermissionPromptOpen) return; // the permission dialog, not the user leaving
         // 'inactive' (app-switcher peek, a permission alert) is NOT backgrounding
         // — only a real 'background' releases, so we don't tear down mid-prompt.
         /**

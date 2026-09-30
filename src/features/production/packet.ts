@@ -109,7 +109,12 @@ export function docControl(project: ProductionProject, report: ReadinessReport):
     // document handed to a paying client, whose revision history would then
     // read out of order against their own records.
     revisionDate: localDay(project.updatedAt),
-    author: String(project.values[valueKey('define', 'project_lead')] ?? 'Unattributed'),
+    // Post-Production has no `define` stage — its lead is the brief's
+    // supervisor — and a cleared lead ('') is not an author (2026-09-30).
+    author: (() => {
+      const lead = project.values[project.lab === 'postprod' ? valueKey('brief', 'supervisor') : valueKey('define', 'project_lead')];
+      return typeof lead === 'string' && lead.trim() ? lead.trim() : 'Unattributed';
+    })(),
     approvalStatus: VERDICT_LABEL[project.lab][report.verdict],
   };
 }

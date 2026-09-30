@@ -17,6 +17,7 @@ import {
   type CalibrationContribution,
   type DeviceKey,
 } from './deviceProfile';
+import { CAL_OFFSET_MAX_DB, CAL_OFFSET_MIN_DB } from './calibrationStore';
 
 const TABLE = 'mic_calibration_contributions';
 const VIEW = 'mic_catalog_public';
@@ -43,9 +44,17 @@ export async function uploadQueuedContributions(): Promise<void> {
     if (!(await hasCrowdsourceConsent())) return;
     const q = await getQueuedContributions();
     if (q.length === 0) return;
+    // A row the server's CHECK (offset 0–200) will refuse fails the WHOLE batch,
+    // and the queue is only cleared on success — so one bad offset (queued before
+    // the calibrate stepper was clamped) blocked every later contribution forever.
+    const ok = q.filter((c) => Number.isFinite(c.offsetDb) && c.offsetDb >= CAL_OFFSET_MIN_DB && c.offsetDb <= CAL_OFFSET_MAX_DB);
+    if (ok.length === 0) {
+      await clearContributionQueue();
+      return;
+    }
     const { error } = await supabase
       .from(TABLE)
-      .upsert(q.map(toRow), { onConflict: 'contribution_id', ignoreDuplicates: true });
+      .upsert(ok.map(toRow), { onConflict: 'contribution_id', ignoreDuplicates: true });
     if (!error) await clearContributionQueue();
   } catch {
     /* offline / transient — the queue persists and retries next time */

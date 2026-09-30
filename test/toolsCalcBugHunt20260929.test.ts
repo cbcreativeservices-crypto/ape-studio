@@ -22,7 +22,8 @@ const read = (rel: string) => readFileSync(new URL(`../src/${rel}`, import.meta.
 test('T2 — FrequencyCounter closes the tuner overlays on BACK and on unmount', () => {
   const src = read('screens/tools/FrequencyCounterScreen.tsx');
   assert.match(src, /BackHandler\.addEventListener\('hardwareBackPress'/);
-  assert.match(src, /if \(vuTunerOpen\) closeVuTuner\(\);\s*else closeCenterLock\(\);\s*return true;/);
+  // 2026-09-30: with no overlay up, BACK then steps out of the mode.
+  assert.match(src, /if \(vuTunerOpen\) closeVuTuner\(\);\s*else if \(centerLockOpen\) closeCenterLock\(\);\s*else setMode\(null\);\s*return true;/);
   assert.match(src, /\(\) => \(\) => \{\s*closeCenterLock\(\);\s*closeVuTuner\(\);/);
 });
 

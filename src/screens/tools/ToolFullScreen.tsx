@@ -106,8 +106,10 @@ export function useToolFullScreen(navigation: OrientationNav, interceptBack?: ()
   useEffect(() => {
     const sub = BackHandler.addEventListener('hardwareBackPress', () => {
       if (interceptRef.current?.()) return true;
-      if (open && !closing) {
-        setClosing(true);
+      // While closing too: a second BACK inside the ≤700 ms rotate-out used to
+      // fall through and pop the whole tool.
+      if (open) {
+        if (!closing) setClosing(true);
         return true;
       }
       return false;

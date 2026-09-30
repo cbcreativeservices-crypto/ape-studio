@@ -19,7 +19,7 @@ import { useFocusEffect, useNavigation, useRoute, type RouteProp } from '@react-
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
-import { notify } from '../../../lib/confirm';
+import { confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { checkActivity, seedActivityProject, type ActivityResult } from '../../../features/production/activities';
@@ -135,7 +135,10 @@ export function ProductionActivityScreen() {
         showsVerticalScrollIndicator={false}
       >
         <Text style={styles.prompt}>{activity.prompt}</Text>
-        <Text style={styles.pathway}>{PATHWAY_LABEL[pathway]}</Text>
+        {/* The RESUMED attempt's pathway, not the route's (2026-09-30): an
+            exercise started from a Podcast project and reopened from a Music
+            one resumes the Podcast work, and must say so. */}
+        <Text style={styles.pathway}>{PATHWAY_LABEL[project?.pathway ?? pathway]}</Text>
 
         <Pressable
           style={styles.openBtn}
@@ -221,7 +224,17 @@ export function ProductionActivityScreen() {
 
         <Pressable
           style={styles.restart}
-          onPress={() => void restart()}
+          // One stray tap under the debrief replaced the whole repair (and a
+          // SOLVED result) with the broken seed — confirm first (2026-09-30).
+          onPress={() =>
+            confirmDialog(
+              'Start this exercise again?',
+              'Your repairs so far are replaced by the original broken plan. You can redo it as often as you like.',
+              'Start again',
+              () => void restart(),
+              { destructive: true },
+            )
+          }
           accessibilityRole="button"
           accessibilityLabel="Start this exercise again from the beginning"
         >

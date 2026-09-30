@@ -159,9 +159,15 @@ export function NoiseLabScreen() {
 
   // -- Noise lifecycle (one tone owner, stale-guarded) -----------------------
   const genRef = useRef(0);
+  // Double-tap ▶ (bug hunt 2026-09-30, FmLab's pattern): a superseded start
+  // only stops the generator when nothing newer wants it.
+  const wantRef = useRef(false);
+  const colorRef = useRef(color);
+  colorRef.current = color;
 
   const startNoise = useCallback(async () => {
     const gen = ++genRef.current;
+    wantRef.current = true;
     const ok = await requestAudioOutput();
     if (!ok || gen !== genRef.current) return;
     setGenError('');
@@ -172,9 +178,19 @@ export function NoiseLabScreen() {
       await ApeDsp.genStart();
       // A mute that landed while the native start was in flight wins — never
       // leave a tone sounding into a closed gate (owner 2026-09-29).
-      if (gen !== genRef.current || !isAudioOutputEnabled()) {
+      if (!isAudioOutputEnabled()) {
         void ApeDsp.genStop();
         return;
+      }
+      if (gen !== genRef.current) {
+        if (!wantRef.current) void ApeDsp.genStop(); // stopped meanwhile
+        return;
+      }
+      // A color picked while the start was in flight skipped its live push
+      // (running was still false) — send the newest one now (2026-09-30).
+      const latest = colorRef.current;
+      if (latest !== color) {
+        ApeDsp.genSet({ mode: COLORS.find((c) => c.key === latest)!.mode, levelDb: guardNoiseLevelForEngine(GEN_LEVEL_DB, latest) });
       }
       setRunning(true);
       noteAudioActivity();
@@ -185,6 +201,7 @@ export function NoiseLabScreen() {
 
   const stopNoise = useCallback(() => {
     genRef.current++;
+    wantRef.current = false;
     void ApeDsp.genStop();
     setRunning(false);
   }, []);
@@ -441,7 +458,7 @@ function SlopeChart({
   const VH = H + 16; // plot + the frequency-label strip
   const W = Math.max(240, (w / Math.max(1, h)) * VH);
   const padL = 8;
-  const padR = 34; // room for line labels at the right edge
+  const padR = 40; // room for line labels at the right edge (9.5-unit text, 2026-09-30)
   const OCT_LO = Math.log2(20 / 1000); // ≈ −5.64 octaves re 1 kHz
   const OCT_HI = Math.log2(20000 / 1000); // ≈ +4.32
   const DB_RANGE = 38; // ±38 dB vertical
@@ -550,7 +567,7 @@ function SlopeChart({
           x={W - padR + 3}
           y={Math.min(Math.max(l.endY + 3, 10), H - 4)}
           fill={NOISE_TINTS[l.key]}
-          fontSize={8}
+          fontSize={9.5} // ≥ 9 pt even on a short phone (S glass, scale ≈ 0.95)
           fontWeight={l.key === selectedKey ? 'bold' : 'normal'}
         >
           {l.label}
@@ -562,7 +579,7 @@ function SlopeChart({
           x={xAt(Math.log2(f / 1000))}
           y={H + 12}
           fill={colors.textSub}
-          fontSize={8}
+          fontSize={9.5} // ≥ 9 pt even on a short phone (S glass, scale ≈ 0.95)
           textAnchor="middle"
         >
           {f >= 1000 ? `${f / 1000}k` : `${f}`}

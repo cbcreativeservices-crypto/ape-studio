@@ -305,24 +305,51 @@ export function WaveformView(p: {
   const half = h / 2 - 8 * ts;
   const yOf = (a: number) => h / 2 - (a / AMAX) * half;
 
-  const S = useMemo(() => {
-    // DRAW real audio at a real time base (owner 2026-09-29: never stylized
-    // audio). Program material — and every signal in the beginner view — is
-    // ~1.5 s of audio at real pitches, so min/max per column reads as a DAW
-    // overview. A steady tone in the meter modules stays an oscilloscope view
-    // (a handful of true cycles), which is how a scope really shows a tone.
-    const TONES: SignalKey[] = ['sine', 'square', 'triangle', 'saw'];
-    const overview = p.plain || !TONES.includes(p.signal);
+  // DRAW real audio at a real time base (owner 2026-09-29: never stylized
+  // audio). Program material — and every signal in the beginner view — is
+  // ~1.5 s of audio at real pitches, so min/max per column reads as a DAW
+  // overview. A steady tone in the meter modules stays an oscilloscope view
+  // (a handful of true cycles), which is how a scope really shows a tone.
+  const TONES: SignalKey[] = ['sine', 'square', 'triangle', 'saw'];
+  const overview = p.plain || !TONES.includes(p.signal);
+  // ⚠️ The audio and its per-column RAW min/max depend on the signal and the
+  // width only — NEVER on the fader (bug hunt 2026-09-30). renderOverview is
+  // 16 k–131 k samples of synthesis (tens of ms on V8, far more on Hermes);
+  // it used to rerun on every dB step of a gain/peak fader and froze the
+  // drag. Gain, polarity and DC are an affine map, so they are applied to the
+  // cached per-column extremes below — the identical picture, per frame cheap.
+  const R = useMemo(() => {
     const raw = overview ? renderOverview(p.signal) : renderSignal(p.signal, 2048);
     const n = raw.length;
-    const sgn = inv ? -1 : 1;
-    const x = raw.map((v) => sgn * v * gain + dc);
     // The readouts keep the meter engine's reference buffer so every lesson's
     // PK / RMS / crest numbers are unchanged (peaks match by construction).
-    const ref = overview ? renderSignal(p.signal, 2048).map((v) => sgn * v * gain + dc) : x;
-    const stats = { pkDb: db(peakOf(ref)), rmsDb: db(rmsOf(ref)), crest: crestDb(ref), dc: dcOf(ref) };
+    const ref = overview ? renderSignal(p.signal, 2048) : raw;
     // Per-column min/max at DEVICE-PIXEL density (owner: hero resolution).
     const cols = Math.max(96, Math.min(Math.round(w * DPR), n));
+    const rMin = new Array<number>(cols);
+    const rMax = new Array<number>(cols);
+    for (let c = 0; c < cols; c++) {
+      const i0 = Math.floor((c * n) / cols);
+      const i1 = Math.max(i0 + 1, Math.floor(((c + 1) * n) / cols));
+      let mn = Infinity;
+      let mx = -Infinity;
+      for (let i = i0; i < i1; i++) {
+        const v = raw[i];
+        if (v < mn) mn = v;
+        if (v > mx) mx = v;
+      }
+      rMin[c] = mn;
+      rMax[c] = mx;
+    }
+    return { ref, cols, rMin, rMax };
+  }, [p.signal, overview, w]);
+
+  const S = useMemo(() => {
+    const sgn = inv ? -1 : 1;
+    const k = sgn * gain;
+    const ref = R.ref.map((v) => k * v + dc);
+    const stats = { pkDb: db(peakOf(ref)), rmsDb: db(rmsOf(ref)), crest: crestDb(ref), dc: dcOf(ref) };
+    const cols = R.cols;
     const colW = w / cols;
     const lim = showClip ? 1 : 1.2; // showClip shears the tops at the rails
     const topA = new Array<number>(cols);
@@ -330,15 +357,12 @@ export function WaveformView(p: {
     const clT = new Array<boolean>(cols);
     const clB = new Array<boolean>(cols);
     for (let c = 0; c < cols; c++) {
-      const i0 = Math.floor((c * n) / cols);
-      const i1 = Math.max(i0 + 1, Math.floor(((c + 1) * n) / cols));
-      let mn = Infinity;
-      let mx = -Infinity;
-      for (let i = i0; i < i1; i++) {
-        const v = x[i];
-        if (v < mn) mn = v;
-        if (v > mx) mx = v;
-      }
+      // min/max of (k·v + dc) over the column = the raw extremes, mapped
+      // (swapped when k < 0 — inverted polarity).
+      const a = k * R.rMin[c] + dc;
+      const b = k * R.rMax[c] + dc;
+      const mn = Math.min(a, b);
+      const mx = Math.max(a, b);
       clT[c] = mx >= 1;
       clB[c] = mn <= -1;
       topA[c] = Math.min(lim, mx);
@@ -388,7 +412,7 @@ export function WaveformView(p: {
     // waveform goes red while clipping, back to the MIDI ramp when under.)
     const clipping = clT.some(Boolean) || clB.some(Boolean);
     return { body, caps, grid, rails, stats, clipping };
-  }, [p.signal, gain, dc, inv, showClip, w, h, ts]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [R, gain, dc, inv, showClip, w, h, ts]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Playhead sweeping the loop on the phase clock (the ONLY per-frame path).
   const playhead = useDerivedValue(() => {

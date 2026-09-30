@@ -16,6 +16,7 @@ import { useEffect, useRef } from 'react';
 import * as Haptics from 'expo-haptics';
 import { Accelerometer } from 'expo-sensors';
 import { useAudioOutputEnabled } from './audioOutputStore';
+import { hapticsEnabled } from '../settings/store';
 import { panicMuteAudio } from './panicMute';
 
 const SHAKE_G = 1.9; // total acceleration magnitude (g) that counts as a jolt
@@ -50,7 +51,9 @@ export function ShakeToMute() {
           if (jolts.current.length >= NEED) {
             jolts.current = [];
             try {
-              void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+              // Honour Settings → Haptics OFF, and catch the ASYNC rejection
+              // (a try around a promise catches nothing) — bug hunt 2026-09-30.
+              if (hapticsEnabled()) void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(() => {});
             } catch {
               /* haptics optional */
             }

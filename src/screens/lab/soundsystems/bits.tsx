@@ -52,17 +52,20 @@ export function GoalChips({ goals, latched }: { goals: { label: string }[]; latc
 }
 
 /** Navigate the root stack by name; inert in a preview harness. */
-function go(route: string, params?: object) {
+function go(route: string, params?: object, pop = false) {
   try {
-    if (navigationRef.isReady()) (navigationRef as unknown as { navigate: (r: string, p?: object) => void }).navigate(route, params);
+    if (navigationRef.isReady()) (navigationRef as unknown as { navigate: (r: string, p?: object, o?: { pop?: boolean }) => void }).navigate(route, params, pop ? { pop: true } : undefined);
   } catch {
     /* preview harness: no-op */
   }
 }
 
 /** Cross-lab link — the "go deeper" row the owner asked for (link out, never duplicate). */
-export function LabLink({ route, label, params }: { route: string; label: string; params?: object }) {
-  return <Btn label={`${label} ›`} onPress={() => go(route, params)} a11y={`Open ${label}`} />;
+/** `pop`: go BACK to that screen when it is already in the stack (the lab's
+ *  own hub) — React Navigation 7's navigate pushes a duplicate otherwise, and
+ *  the stale page left under it later saved over newer progress (2026-09-30). */
+export function LabLink({ route, label, params, pop }: { route: string; label: string; params?: object; pop?: boolean }) {
+  return <Btn label={`${label} ›`} onPress={() => go(route, params, pop)} a11y={`Open ${label}`} />;
 }
 
 /** Open a calculator workspace — every number on a page has one of these beside it. */

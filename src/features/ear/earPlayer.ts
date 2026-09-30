@@ -123,10 +123,16 @@ export class EarClipPlayer {
    *  naturally, so a UI's ▶/■ state can stop claiming "playing" over silence.
    *  Optional — the ear lab's existing behaviour is unchanged when unset. */
   onEnded: ((i: number) => void) | null = null;
+  /** Newest load wins (bug hunt 2026-09-30): the mixing lab re-renders on a
+   *  fader nudge while a load is still writing. The older load then set
+   *  `files` after the newer load's unloadFiles() had already run, and the
+   *  newer one overwrote it — the older WAVs (≈2 MB each) were never deleted. */
+  private loadGen = 0;
 
   /** Load a trial's clips (index-addressed). Previous files are deleted. */
   async load(bufs: Buf[]): Promise<void> {
     if (this.disposed) return;
+    const gen = ++this.loadGen;
     await this.unloadFiles();
     await settleMode(); // waited for once per app run — see settleMode
     // ONE CLIP AT A TIME, not Promise.all: the WAV encode and base64 pass are
@@ -141,7 +147,7 @@ export class EarClipPlayer {
       uris.push(uri);
       // Torn down mid-load: delete what we have already written and stop before
       // any player is created. Nothing else holds these paths.
-      if (this.disposed) {
+      if (this.disposed || gen !== this.loadGen) {
         await Promise.all(uris.map((u) => freeWavUri(u)));
         return;
       }

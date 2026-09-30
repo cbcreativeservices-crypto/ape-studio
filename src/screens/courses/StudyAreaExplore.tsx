@@ -45,14 +45,22 @@ function loadCatalog() {
   if (!catalogPromise) {
     catalogPromise = Promise.all([fetchV3Certs(), fetchV3Programs(), fetchV3Curriculum()]).then(([certs, programs, fields]) => {
       const r = { certs, programs, names: new Map(flattenV3(fields).map((t) => [t.gs, t.name] as const)) };
-      if (certs.length === 0 && programs.length === 0) catalogPromise = null; // don't cache a dead read
+      // Don't cache a dead read — or a HALF-dead one: the lenient fetchers turn
+      // one failed half into [], and caching that hid every certificate (or
+      // every program) for the rest of the session (overnight hunt 2026-09-30).
+      if (isDeadCatalog(r)) catalogPromise = null;
       return r;
     });
   }
   return catalogPromise;
 }
 
-const analyticsKey = (area: string) => area.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+/** A catalog read that failed in either half (the live catalog is never empty). */
+function isDeadCatalog(c: { certs: unknown[]; programs: unknown[] }): boolean {
+  return c.certs.length === 0 || c.programs.length === 0;
+}
+
+const analyticsKey =(area: string) => area.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
 
 export function StudyAreaExplore({
   area,
@@ -118,8 +126,16 @@ export function StudyAreaExplore({
   }, [area, catalog]);
 
   // Reset the chosen credential whenever the sheet closes.
+  // …and forget a DEAD catalog (overnight hunt 2026-09-30). The route effect
+  // runs on [area, catalog]; with a failed read still in state, the next
+  // EXPLORE routed straight to the fallback off that stale [] before the fresh
+  // fetch could land — and the fresh result was then dropped (area already
+  // null), so one offline tap broke EXPLORE for the rest of the session.
   useEffect(() => {
-    if (!area) setDetail(null);
+    if (!area) {
+      setDetail(null);
+      setCatalog((c) => (c && isDeadCatalog(c) ? null : c));
+    }
   }, [area]);
 
   const nameForGs = useCallback((gs: number) => officialTopicName(gs, catalog?.names.get(gs)), [catalog]);

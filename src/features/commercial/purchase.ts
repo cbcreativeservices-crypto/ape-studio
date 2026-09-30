@@ -44,6 +44,8 @@ type IapPurchase = {
   purchaseToken?: string;
   transactionId?: string;
   platform?: string;
+  /** OpenIAP: 'pending' | 'purchased' | 'unknown'. */
+  purchaseState?: string;
 };
 
 export type PurchaseHandlers = {
@@ -74,7 +76,7 @@ let connected = false;
 let listeners: Sub[] = [];
 let handlers: PurchaseHandlers | null = null;
 
-function isCancel(code: unknown): boolean {
+export function isCancel(code: unknown): boolean {
   return String(code ?? '').toLowerCase().includes('cancel');
 }
 
@@ -112,6 +114,10 @@ async function validateWithServer(p: IapPurchase): Promise<ValidationResult> {
     return { ok: false, reason: null };
   }
 }
+
+/** A purchase the store has accepted but not yet completed (see the listener). */
+export const PENDING_MESSAGE =
+  'Your purchase is waiting for the payment to complete. Your Academy access will unlock automatically once the store confirms it — you don’t need to buy again.';
 
 /** What to tell the person. Only the linked-receipt case is not a failure. */
 function purchaseErrorMessage(reason: string | null): string {
@@ -192,6 +198,18 @@ export async function initPurchases(h: PurchaseHandlers): Promise<boolean> {
           // finishTransaction is the part that matters: unacknowledged Google
           // purchases are AUTO-REFUNDED after 72 hours, so a customer who paid
           // silently loses both the money and the access.
+          //
+          // A PENDING purchase is not a failure (2026-09-30 bug pass). Play
+          // delivers slow payment methods (cash, some bank transfers) as
+          // purchaseState 'pending': nothing is charged yet, the server rightly
+          // refuses to verify it, and we were telling the buyer "We couldn't
+          // verify that purchase" — which invites buying again. Say what is
+          // true and do NOT finish it; the store re-delivers it here once it
+          // completes, and that delivery validates normally.
+          if (purchase?.purchaseState === 'pending') {
+            handlers?.onError(PENDING_MESSAGE);
+            return;
+          }
           const result = await validateWithServer(purchase);
           if (result.ok) {
             try {

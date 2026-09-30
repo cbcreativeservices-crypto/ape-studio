@@ -48,6 +48,8 @@ let startInFlight: Promise<void> | null = null;
  *  just opened instead of claiming it. Behaviour on every un-interrupted path is
  *  unchanged (the token still matches). */
 let startGen = 0;
+/** See micAcquireSeq(). */
+let acquireSeq = 0;
 
 function cancelPendingRelease(): void {
   if (releaseTimer) {
@@ -82,7 +84,24 @@ function captureAlive(): boolean {
  * reporting as running but has actually stopped delivering frames (the frozen-
  * preview bug on returning to the tools menu). Tools omit it and adopt.
  */
-export async function acquireMic(cfg: EngineConfig, forceRestart = false): Promise<void> {
+export function acquireMic(cfg: EngineConfig, forceRestart = false): Promise<void> {
+  acquireSeq++;
+  return acquireInner(cfg, forceRestart);
+}
+
+/**
+ * How many acquires have been made, by ANY screen. A start superseded by its
+ * own stop reads this to tell "nobody wants the stream" from "another screen
+ * joined it": the hub's cold start, torn down by stopForNavigation() and then
+ * JOINED by the opened tool, used to call releaseMic() when that shared start
+ * resolved — arming the 1.5 s stop AFTER the tool's acquire had cancelled the
+ * last one, so the mic died under a tool reading RUNNING (2026-09-30).
+ */
+export function micAcquireSeq(): number {
+  return acquireSeq;
+}
+
+async function acquireInner(cfg: EngineConfig, forceRestart = false): Promise<void> {
   cancelPendingRelease();
   ApeDsp.setEngineConfig(cfg); // live reconfig — cheap, never restarts capture
   if (forceRestart && streamState !== 'stopped') {
@@ -109,29 +128,47 @@ export async function acquireMic(cfg: EngineConfig, forceRestart = false): Promi
     void ApeDsp.stop();
   }
   if (streamState === 'starting') return startInFlight ?? Promise.resolve();
+  if (startInFlight) {
+    // An ORPHANED start (a stop disowned it while the HAL was still opening —
+    // Home pressed mid cold-open, then back). Starting again now let its late
+    // `ApeDsp.stop()` land AFTER our start and kill the new stream, while we
+    // flagged it 'open': a tool reading RUNNING over a dead mic. Let the orphan
+    // close its stream first, then acquire afresh (re-checking the state).
+    try {
+      await startInFlight;
+    } catch {
+      /* the orphan's failure is not ours */
+    }
+    return acquireInner(cfg);
+  }
   streamState = 'starting';
   const myGen = ++startGen;
-  startInFlight = (async () => {
+  // eslint-disable-next-line prefer-const -- read inside its own body's finally
+  let attempt: Promise<void> | null = null;
+  attempt = (async () => {
     try {
       await ApeDsp.start();
       if (myGen !== startGen) {
         // A stop landed while the HAL was still opening. The owner is gone, so
         // close the stream we just opened rather than flagging it open — see
-        // the startGen docblock.
-        void ApeDsp.stop();
+        // the startGen docblock. Awaited, so a waiting acquire starts after it.
+        await ApeDsp.stop();
         return;
       }
       streamState = 'open';
       setMicActive(true); // mic now capturing → the interlock arms
     } catch (e) {
-      streamState = 'stopped';
-      setMicActive(false);
+      if (myGen === startGen) {
+        streamState = 'stopped';
+        setMicActive(false);
+      }
       throw e;
     } finally {
-      startInFlight = null;
+      if (startInFlight === attempt) startInFlight = null;
     }
   })();
-  return startInFlight;
+  startInFlight = attempt;
+  return attempt;
 }
 
 /** Schedule a debounced stop. Cancelled if acquireMic/holdMicWarm lands within

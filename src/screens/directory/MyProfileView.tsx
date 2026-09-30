@@ -124,6 +124,8 @@ export function MyProfileView() {
    */
   const saveChain = useRef<Promise<unknown>>(Promise.resolve());
   const saveSeq = useRef(0);
+  /** Same idea for the featured-credential picker, which has its own RPC. */
+  const featuredSeq = useRef(0);
   /** The last profile handed to the server (or read from it) — the unmount
    *  flush below compares against it. */
   const lastSent = useRef<CommunityProfile | null>(null);
@@ -352,7 +354,13 @@ export function MyProfileView() {
 
   const refresh = useCallback(async () => {
     const mine = await fetchMyCommunityProfile();
-    if (mine.status === 'ok') setP(mine.profile);
+    if (mine.status === 'ok') {
+      // Straight from the server, so nothing here is unsent — without this the
+      // flush-on-leave re-saved the whole profile after every publish/toggle.
+      pRef.current = mine.profile;
+      lastSent.current = mine.profile;
+      setP(mine.profile);
+    }
     // A failed re-read after a successful publish/toggle leaves the switches
     // showing what we last knew — say so rather than let a stale row look live.
     else if (mine.status === 'error') setErr(mine.error);
@@ -636,8 +644,19 @@ export function MyProfileView() {
                     const ids = on
                       ? p.featuredCredentialIds.filter((x) => x !== c.id)
                       : [...p.featuredCredentialIds, c.id];
+                    const prevIds = p.featuredCredentialIds;
                     setP({ ...p, featuredCredentialIds: ids });
-                    void setFeaturedCredentials(ids);
+                    // The result was dropped (bug hunt 2026-09-30): a refused or
+                    // failed write left the chip lit, so the member believed a
+                    // credential was on their public profile when it was not.
+                    // Only the LATEST tap may report or roll back.
+                    const seq = ++featuredSeq.current;
+                    void setFeaturedCredentials(ids).then((r) => {
+                      if (seq !== featuredSeq.current) return;
+                      if (r.ok) return setErr(null);
+                      setErr(r.error);
+                      setP((cur) => ({ ...cur, featuredCredentialIds: prevIds }));
+                    });
                   }}
                 />
               );
@@ -702,6 +721,13 @@ export function MyProfileView() {
             () =>
               void deleteCommunityProfile().then((r) => {
                 if (!r.ok) return setErr(r.error);
+                // Mark the blank as already SENT (bug hunt 2026-09-30). Only
+                // `p` changed here, so the flush-on-leave below saw an unsent
+                // edit and saved the empty profile on the next tab switch —
+                // re-creating the community profile the member had just
+                // deleted.
+                pRef.current = EMPTY_COMMUNITY_PROFILE;
+                lastSent.current = EMPTY_COMMUNITY_PROFILE;
                 setP(EMPTY_COMMUNITY_PROFILE);
               }),
           )

@@ -610,7 +610,7 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
             </Text>
           </Pressable>
         )}
-        {all.length >= 1 && (
+        {(selectMode || all.length >= 1) && (
           <Pressable
             style={[styles.selectBtn, selectMode && styles.selectBtnOn]}
             onPress={() => {

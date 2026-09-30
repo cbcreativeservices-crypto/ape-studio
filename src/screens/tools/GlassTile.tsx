@@ -13,7 +13,7 @@
  * the display powers on (a cool glow ramps up), with the selection haptic tick
  * on the confirmed press — exactly the hub's timings.
  */
-import { useRef, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { Animated, Easing, Platform, Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
@@ -73,6 +73,13 @@ export function GlassTile({
   const sink = useRef(new Animated.Value(0)).current;
   const glow = useRef(new Animated.Value(0)).current;
   const busy = useRef(false);
+  // The 90 ms beat's timer. Cleared on unmount so a tile that goes away
+  // mid-press (the calc popup closed by its ✕/backdrop inside the beat, or a
+  // second tile's popup-closing tap) never fires its navigation afterwards.
+  const beat = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (beat.current) clearTimeout(beat.current);
+  }, []);
 
   const animateIn = () =>
     Animated.parallel([
@@ -98,7 +105,8 @@ export function GlassTile({
     busy.current = true;
     if (hapticsEnabled()) Haptics.selectionAsync().catch(() => {});
     // Hold the sunk + lit state a beat so the power-on reads (hub: 90 ms).
-    setTimeout(() => {
+    beat.current = setTimeout(() => {
+      beat.current = null;
       onPress();
       sink.setValue(0);
       glow.setValue(0);

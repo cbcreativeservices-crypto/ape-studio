@@ -488,7 +488,7 @@ export function SpectrogramScreen({ navigation }: Props) {
     setJustSaved(true);
     if (savedTimer.current) clearTimeout(savedTimer.current);
     savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
-  }, [state, history, frames, dynRange]);
+  }, [state, history, frames, dynRange, saveGate, saveLatch]);
 
   // ---- FULL SCREEN (owner 2026-09-29) — the audio tools' landscape full
   // screen (ToolFullScreen: Waveform mechanism, D35 working surface). Same

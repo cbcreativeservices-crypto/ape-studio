@@ -76,3 +76,16 @@ test('the edit screen guards a double SAVE with a ref', () => {
   const src = readFileSync(new URL('../src/screens/lab/calc/CalcWorkflowEditScreen.tsx', import.meta.url), 'utf8');
   assert.match(src, /if \(savingRef\.current\) return;/);
 });
+
+test('re-saving an edited workflow keeps its place in the user order (2026-09-30)', async () => {
+  await workflowStore.saveWorkflow(wf('a'));
+  await workflowStore.saveWorkflow(wf('b'));
+  await workflowStore.saveWorkflow(wf('c')); // list: c, b, a
+  await workflowStore.moveWorkflow('c', 1); // user order: b, c, a
+  await workflowStore.saveWorkflow({ ...wf('a'), name: 'edited' });
+  const list = await workflowStore.listWorkflows();
+  assert.deepEqual(list.map((w) => w.id), ['b', 'c', 'a']);
+  assert.equal(list[2].name, 'edited');
+  await workflowStore.saveWorkflow(wf('d'));
+  assert.equal((await workflowStore.listWorkflows())[0].id, 'd', 'a NEW workflow still goes first');
+});

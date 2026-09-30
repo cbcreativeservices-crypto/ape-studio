@@ -608,7 +608,10 @@ export function SpeakerCoverageLabScreen() {
       ) : rack ? (
         // ── TOP / SIDE — the Rack Unit: pinned canvas + bezel + dock; only
         //    the teaching prose below scrolls in the well. ───────────────────
-        <RackUnit initialParam="aim" params={rack.params} stage={rack.stage} onHelp={help}>
+        // Keyed per section (bug hunt 2026-09-30): TOP → SIDE kept the well's
+        // scroll offset and landed mid-way down SIDE's notes. Section state
+        // lives in this host, so the remount loses nothing.
+        <RackUnit key={s.key} initialParam="aim" params={rack.params} stage={rack.stage} onHelp={help}>
           <Text style={styles.sectionTitle}>{s.title}</Text>
           <Text style={styles.body}>{s.blurb}</Text>
           {sectionIdx === 0 ? (

@@ -655,7 +655,11 @@ export function ScenariosScreen({ route }: Props) {
                   isSeq
                     ? tapStep(opt)
                     : isMulti
-                      ? setMultiSel((cur) => {
+                      ? // Frozen once judged (bug pass 2026-09-30): the cells stay
+                        // live for multi-select, so taps after CONFIRM re-coloured
+                        // the verdict's selection into one that was never graded.
+                        !feedback &&
+                        setMultiSel((cur) => {
                           const next = new Set(cur);
                           if (next.has(opt)) next.delete(opt);
                           else next.add(opt);

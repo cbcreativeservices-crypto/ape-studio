@@ -178,7 +178,9 @@ test('useStopOnClose: []-deps unmount stop through a ref, and it yields to a new
 
 test('safety paths are untouched: background + shake still silence every voice and file player', () => {
   const gate = read('src/features/audio/AudioOutputGate.tsx');
-  assert.match(gate, /if \(state === 'background'\) \{\n\s+if \(isAudioOutputEnabled\(\)\) panicMuteAudio\(\);/);
+  // Unconditional since 2026-09-30: a generator live while the gate already
+  // reads muted is silenced too.
+  assert.match(gate, /if \(state === 'background'\) \{[\s\S]{0,300}?\n\s+panicMuteAudio\(\);\n\s+return;/);
   const panic = read('src/features/audio/panicMute.ts');
   assert.match(panic, /stopAllFilePlayers\(\);/);
 });

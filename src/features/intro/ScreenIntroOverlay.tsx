@@ -67,7 +67,9 @@ export function useScreenIntro(key: IntroKey, sessionOnly = false, hold = false)
     (async () => {
       const seen = await AsyncStorage.getItem(INTRO_STORAGE_PREFIX + key);
       if (alive && seen == null) setVisible(true);
-    })();
+      // A failed read shows nothing — an intro is never worth an unhandled
+      // rejection on every screen that hosts one (bug hunt 2026-09-30).
+    })().catch(() => {});
     return () => {
       alive = false;
     };

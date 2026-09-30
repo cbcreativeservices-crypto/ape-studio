@@ -25,6 +25,7 @@
  */
 import {
   OFFLINE_AVAILABLE,
+  alignDefinitionTier,
   corpusStats,
   idsMissingDefinitions,
   saveDefinitions,
@@ -65,6 +66,9 @@ export async function prefetchGlossary(table: CorpusTable = 'glossary_browse_v')
   try {
     await new Promise((r) => setTimeout(r, SETTLE_MS));
     if (cancelled) return;
+    // Members only run this, so any teasers a free reader left behind go first
+    // — otherwise they count as "saved" and are never replaced.
+    await alignDefinitionTier(table, 'member');
 
     // The term list first — it is what makes the glossary OPEN offline at all.
     const stats = await corpusStats(table);
