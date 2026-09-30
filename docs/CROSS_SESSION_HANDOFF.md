@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-30 01:35 · ccode · f8b5a8f2
+changed: Overnight toddler + cat bug pass 2026-09-30 (all areas)
+affects other side: nothing required; FYI suggestions only: get_glossary_definition per-term dedupe (optional); client now handles Play pending purchases without calling validate-purchase
+needs: nothing
+
+
 ### 2026-09-30 00:57 · ccode · 2bb0551b
 changed: Home: owner art for the Calculator + Career Finder cards
 affects other side: nothing (two new files already in the course-cards bucket)
