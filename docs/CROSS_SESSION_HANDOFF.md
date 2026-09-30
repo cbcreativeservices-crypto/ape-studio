@@ -1,3 +1,13 @@
+## 2026-09-30 — A -> ccode: store-purchase setup live (Google); 1 file to commit; 3 client bugs from the first real Play purchase
+
+- **Server side done 2026-09-29 (A + owner, verified):** `store-notifications` DEPLOYED (v1, `--no-verify-jwt`, from your commit 8252188c); secret `STORE_NOTIFY_SLUG` set; Google RTDN live (topic `play-rtdn` → push subscription → handler; Google's test message returned 200). Supabase auth emails now sent from **Pro Audio Training Academy <info@proaudiotrainingacademy.com>** via Resend SMTP. **Email OTP length changed 8 → 6** to match `AuthScreen` (`/^\d{6}$/`); the server was sending 8-digit codes, so password reset was impossible.
+- **COMMIT PLEASE — `supabase/functions/validate-purchase/index.ts`** (A's local edit, already deployed to prod 2026-09-29): diagnostic `console.warn` lines only. They log Google's HTTP status and error text, `not_verified`, and `no_user_row`, and never the token or key. No logic change. Without them, a refusal was invisible. Please also commit the still-pending `supabase/migrations/2026092601_remove_discount_access_codes.sql` + the two docs edits.
+- **BUG 1 (HIGH, entitlement):** signed in via **password-reset code** → Settings showed "Sign in / create account" (tier `anonymous`) and the paywall would say "Create an account first" until the app was force-closed and reopened. Hypothesis, unconfirmed: the recovery sign-in (`verifyRecoveryOtp` then `updatePassword`) emits PASSWORD_RECOVERY / USER_UPDATED, and `EntitlementProvider` only re-derives on SIGNED_IN / SIGNED_OUT / INITIAL_SESSION (line ~425). Repro: Pixel, reset password in-app, open Settings.
+- **BUG 2 (MEDIUM, copy):** Restore shows "We couldn't reach the store…" for every `validationFailed` (`restorePurchases` → `'error'`), including when the server answered `not_verified` / `no_user_row`. The store WAS reached, and the text sends the user to check their connection. Suggest distinct copy for "server refused" versus "network error".
+- **BUG 3 (for your awareness, data):** the owner's own account (info@) had **no `public.users` row**. It was created 07-13, before sign-up called `register_commercial_user`, so `validate-purchase` returned `no_user_row` after a real charge. A fixed that row. It is the only real account without one (verified 0 left). Consider having `validate-purchase` (or app start) call `register_commercial_user` when the row is missing, so a paying user can never hit this.
+- **Status of the first real purchase (owner, academy_monthly, $9.99, 2026-09-29 13:04 PT):** Google verification still returns **401 "insufficient permissions"** for the service account (Play permission propagation / app-access tick pending). Not acknowledged → Play auto-refunds ~2026-10-02 13:04 PT unless Restore succeeds first. `requestPurchase({google:{skus}})` itself worked on build 14 (purchase sheet + charge OK; RTDN arrived).
+- Needs back: ACK + commit hashes; your read on BUG 1's cause.
+
 ## 2026-09-28 — A -> ccode: ASK (next Android build, with the permissions ASK) — turn on R8 code shrinking
 
 - **Why:** Google's Android vitals now scores "DEX code optimization" (https://developer.android.com/topic/performance/issues/code-optimization): apps shipped without R8 minification/obfuscation get flagged (bigger DEX, slower start, more memory). It is a quality metric, **not** a Play submission blocker.
@@ -203,6 +213,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 ---
 
 ## LOG (newest first)
+
+### 2026-09-30 07:57 · ccode · a9c660b5
+changed: Morning list: centred formula key, hosted membership lock, offline sign-out, SPL NOT NOW, chain CLEAR
+affects other side: nothing
+needs: nothing
+
 
 ### 2026-09-30 07:36 · ccode · 804e883c
 changed: Member membership page, negative calculator inputs error, popups centred
