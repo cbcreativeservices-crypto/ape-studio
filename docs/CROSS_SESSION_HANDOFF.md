@@ -214,6 +214,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-30 08:14 · ccode · 0e4af22d
+changed: Lab menu: drop the Calculator Lab (own Home card now); pack tiles left
+affects other side: nothing
+needs: nothing
+
+
 ### 2026-09-30 08:05 · ccode · 7e1ea038
 changed: Lab menus (Fundamentals + Advanced Training) use the glass tile layout
 affects other side: nothing
