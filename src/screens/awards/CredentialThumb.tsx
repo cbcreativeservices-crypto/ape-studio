@@ -17,12 +17,12 @@
  * collapses via ▴ COLLAPSE — so ✕ can only ever mean "close this image".
  */
 import { useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Modal } from '../../components/DimModal';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CardArt } from '../../components/CardArt';
 import { CredentialAboutPanel, hasCredentialAbout } from '../../components/CredentialAboutPanel';
-import { LowLightDim } from '../../features/settings/LowLightLayer';
 import { colors, fonts } from '../../theme/tokens';
 
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || 'https://yjgolswjggmlpeowvtxr.supabase.co';
@@ -177,7 +177,6 @@ export function CredentialArtViewer({
             {hasAbout ? 'TAP OUTSIDE TO CLOSE' : 'TAP ANYWHERE TO CLOSE'}
           </Text>
         </Pressable>
-        <LowLightDim />
       </Modal>
     </>
   );

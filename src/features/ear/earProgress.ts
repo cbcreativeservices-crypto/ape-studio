@@ -50,7 +50,24 @@ export function emptyModuleProgress(): EarModuleProgress {
   return { level: 1, trials: [], bestStreak: 0, streak: 0, total: 0, totalScore: 0, mastered: 0 };
 }
 
+/**
+ * HOUSE GUEST RULE (owner 2026-08-12; bug hunt 2026-09-30 pass 2): a
+ * signed-out guest or a members-only preview neither restores progress nor
+ * saves it. The screens set this FLAG on every render, from the live
+ * entitlement (like setSoundSystemsSaveBlocked). While blocked `ape:ear:v1`
+ * is neither read nor written: every load starts at level 1 and saves go
+ * nowhere. The drill screen keeps its own ladder, streak and round for the
+ * visit, so the guest trains normally — only persistence stops (leave and
+ * return restores nothing). No user data is held here, so an account change
+ * has nothing to reset.
+ */
+let saveBlocked = false;
+export function setEarSaveBlocked(blocked: boolean): void {
+  saveBlocked = blocked;
+}
+
 export async function loadEarProgress(): Promise<EarProgressState> {
+  if (saveBlocked) return { ...EMPTY, modules: {} };
   try {
     const raw = await AsyncStorage.getItem(KEY);
     if (!raw) return { ...EMPTY, modules: {} };
@@ -62,6 +79,7 @@ export async function loadEarProgress(): Promise<EarProgressState> {
 }
 
 export async function saveEarProgress(s: EarProgressState): Promise<void> {
+  if (saveBlocked) return;
   try {
     await AsyncStorage.setItem(KEY, JSON.stringify(s));
   } catch {

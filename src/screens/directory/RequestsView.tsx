@@ -675,22 +675,27 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
               allow?.messagesLeftToday === 0 ||
               allow?.messagesLeftThisWeek === 0
             }
-            onPress={() =>
+            onPress={() => {
+              // What this press sent (bug hunt 2026-09-30, pass 2). The box
+              // stays editable while SEND is out, and a success cleared it
+              // outright — whatever was typed during a slow send was wiped,
+              // draft included. Only the text that was actually sent is cleared.
+              const sentRaw = body;
               runSend(() =>
-                sendThreadMessage(thread.id, body.trim()).then(async (r) => {
+                sendThreadMessage(thread.id, sentRaw.trim()).then(async (r) => {
                   // `thread` is the one this press was made in.
-                  if (r.ok) drafts.current.delete(thread.id);
+                  if (r.ok && drafts.current.get(thread.id) === sentRaw) drafts.current.delete(thread.id);
                   // Closed or switched while it was out: this answer is about
                   // a conversation no longer on screen — its error must not
                   // land on the next one, nor its clear wipe that one's draft.
                   if (openId.current !== thread.id) return;
                   if (!r.ok) return setErr(r.error);
                   setErr(null);
-                  setBody('');
+                  setBody((cur) => (cur === sentRaw ? '' : cur));
                   await load();
                 }),
-              )
-            }
+              );
+            }}
           />
         </View>
       </KeyboardAvoidingView>

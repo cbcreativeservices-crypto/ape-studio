@@ -16,8 +16,9 @@ import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { EAR_MODULES } from '../../../features/ear/modules/registry';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import {
-  loadEarProgress, recentAccuracy, type EarProgressState,
+  loadEarProgress, recentAccuracy, setEarSaveBlocked, type EarProgressState,
 } from '../../../features/ear/earProgress';
+import { useLabEndGuest } from '../kit/LabEndScreen';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
@@ -27,6 +28,9 @@ export function EarTrainingLabScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [openId, setOpenId] = useState<string | null>(null);
   const [progress, setProgress] = useState<EarProgressState | null>(null);
+  // HOUSE GUEST RULE (bug hunt 2026-09-30 pass 2): a signed-out guest's
+  // ladder is neither restored nor written (see earProgress).
+  setEarSaveBlocked(useLabEndGuest());
 
   useFocusEffect(
     useCallback(() => {

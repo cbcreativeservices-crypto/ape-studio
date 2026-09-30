@@ -57,9 +57,9 @@ const WS_LEVEL: Workspace = {
   glossary: ['Decibel', 'dBu', 'dBV', 'dBFS', 'Gain', 'Voltage'],
   fields: [
     { key: 'dbu', name: 'LEVEL (dBu)', quantity: 'db', placeholder: '4', help: 'Level referenced to 0.775 V RMS — the professional line-level scale.' },
-    { key: 'vFromDbu', name: 'VOLTAGE', quantity: 'voltage', placeholder: '1.228', help: 'RMS signal voltage to express on the dBu scale.', warn: { test: (x) => x <= 0, msg: 'Voltage must be positive — dB scales have no level for 0 V or negative RMS values.' } },
+    { key: 'vFromDbu', name: 'VOLTAGE', quantity: 'voltage', nonNegative: true, placeholder: '1.228', help: 'RMS signal voltage to express on the dBu scale.', warn: { test: (x) => x <= 0, msg: 'Voltage must be positive — dB scales have no level for 0 V or negative RMS values.' } },
     { key: 'dbv', name: 'LEVEL (dBV)', quantity: 'db', placeholder: '-10', help: 'Level referenced to 1 V RMS — the consumer line-level scale.' },
-    { key: 'vFromDbv', name: 'VOLTAGE', quantity: 'voltage', placeholder: '0.316', help: 'RMS signal voltage to express on the dBV scale.', warn: { test: (x) => x <= 0, msg: 'Voltage must be positive — dB scales have no level for 0 V or negative RMS values.' } },
+    { key: 'vFromDbv', name: 'VOLTAGE', quantity: 'voltage', nonNegative: true, placeholder: '0.316', help: 'RMS signal voltage to express on the dBV scale.', warn: { test: (x) => x <= 0, msg: 'Voltage must be positive — dB scales have no level for 0 V or negative RMS values.' } },
     { key: 'dbx', name: 'LEVEL (dBu or dBV)', quantity: 'db', placeholder: '4', help: 'A level on either scale — the converter shows both readings of the same voltage.' },
     { key: 'ampRatio', name: 'AMPLITUDE RATIO', quantity: 'ratio', placeholder: '2', help: 'Linear ratio of voltages, sound pressures, or fader positions (out ÷ in).', warn: { test: (x) => x <= 0, msg: 'Ratio must be positive — a zero or negative ratio has no dB value.' } },
     { key: 'powRatio', name: 'POWER RATIO', quantity: 'ratio', placeholder: '2', help: 'Linear ratio of powers or intensities (out ÷ in) — watts, not volts.', warn: { test: (x) => x <= 0, msg: 'Ratio must be positive — a zero or negative ratio has no dB value.' } },
@@ -336,10 +336,10 @@ const WS_OHMS: Workspace = {
     'ratings follow formal methods (IEC 60268-3/-5), which this tool models but does not replace.',
   glossary: ['Power', 'Voltage', 'Current', 'Impedance', 'RMS', 'Amplifier', 'Loudspeaker'],
   fields: [
-    { key: 'vrms', name: 'VOLTAGE (RMS)', quantity: 'voltage', placeholder: '28.3', help: 'RMS signal voltage across the load — what all the power formulas assume.', warn: { test: (x) => x <= 0, msg: 'Voltage must be positive.' } },
+    { key: 'vrms', name: 'VOLTAGE (RMS)', quantity: 'voltage', nonNegative: true, placeholder: '28.3', help: 'RMS signal voltage across the load — what all the power formulas assume.', warn: { test: (x) => x <= 0, msg: 'Voltage must be positive.' } },
     { key: 'z', name: 'IMPEDANCE', quantity: 'impedance', placeholder: '8', help: 'Load impedance (nominal) — treated as a plain resistance in this model.', warn: { test: (x) => x <= 0, msg: 'Impedance must be positive — 0 Ω is a short circuit.' } },
     { key: 'p', name: 'POWER', quantity: 'power', placeholder: '100', help: 'Average (RMS) power delivered to the load.', warn: { test: (x) => x <= 0, msg: 'Power must be positive.' } },
-    { key: 'vpk', name: 'PEAK VOLTAGE', quantity: 'voltage', placeholder: '40', help: 'The waveform’s crest voltage, as read on an oscilloscope.', warn: { test: (x) => x <= 0, msg: 'Peak voltage must be positive.' } },
+    { key: 'vpk', name: 'PEAK VOLTAGE', quantity: 'voltage', nonNegative: true, placeholder: '40', help: 'The waveform’s crest voltage, as read on an oscilloscope.', warn: { test: (x) => x <= 0, msg: 'Peak voltage must be positive.' } },
   ],
   functions: [
     {

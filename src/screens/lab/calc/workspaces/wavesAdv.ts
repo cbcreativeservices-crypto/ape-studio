@@ -171,11 +171,16 @@ const IMD: Workspace = {
       compute: (v) => {
         const f1 = n(v.f1);
         const f2 = n(v.f2);
+        // LOWER / UPPER by the tones' ORDER, not their entry order (bug pass 2,
+        // 2026-09-30): with f₁ = 20 kHz, f₂ = 19 kHz the "LOWER" row printed
+        // 21 kHz and the "UPPER" row 18 kHz.
+        const lo = Math.min(f1, f2);
+        const hi = Math.max(f1, f2);
         return [
           { label: '2ND-ORDER DIFFERENCE (f₂−f₁)', value: Math.abs(f2 - f1), quantity: 'frequency' },
           { label: '2ND-ORDER SUM (f₁+f₂)', value: f1 + f2, quantity: 'frequency', chainable: false },
-          { label: '3RD-ORDER LOWER (2f₁−f₂)', value: Math.abs(2 * f1 - f2), quantity: 'frequency', chainable: false },
-          { label: '3RD-ORDER UPPER (2f₂−f₁)', value: Math.abs(2 * f2 - f1), quantity: 'frequency', chainable: false },
+          { label: '3RD-ORDER LOWER (2·lower − higher)', value: Math.abs(2 * lo - hi), quantity: 'frequency', chainable: false },
+          { label: '3RD-ORDER UPPER (2·higher − lower)', value: Math.abs(2 * hi - lo), quantity: 'frequency', chainable: false },
         ];
       },
       table: (v) => {

@@ -30,6 +30,7 @@ import { FAULTS } from '../../../features/soundsystems/faults';
 import { SS_LEARN_ID, SS_MODES, SS_PAGE_COUNTS, type SsModeId } from './units';
 import { GearGlyph, type GlyphKind } from './art/gearArt';
 import { clearPageMemory } from './pageMemory';
+import { useLabEndGuest } from '../kit/LabEndScreen';
 
 const MODE_GLYPH: Record<SsModeId, GlyphKind> = {
   learn: 'console',
@@ -48,6 +49,7 @@ export function SoundSystemsLabScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const progress = useSoundSystemsProgress();
+  const guest = useLabEndGuest();
   const learnUnits = useLabClearedUnits(SS_LEARN_ID);
   const [pages, setPages] = useState<Record<SsModeId, number>>({ learn: 0, build: 0, route: 0, operate: 0, troubleshoot: 0 });
 
@@ -156,7 +158,13 @@ export function SoundSystemsLabScreen() {
           ) : (
             <>
               <Text style={styles.leftLead}>
-                Everything you have done is saved. Move through the lab in any order — this list is what still counts toward credit, and each row opens where you left off.
+                {/* HOUSE GUEST RULE (bug hunt 2026-09-30 pass 2): a signed-out
+                    guest's modes write nothing (setSoundSystemsSaveBlocked), so
+                    "everything you have done is saved" was false for them —
+                    kit/labEnd's guest wording instead. */}
+                {guest
+                  ? 'You are not signed in, so nothing here is saved — sign in to keep your progress. Move through the lab in any order — this list is what still counts toward credit.'
+                  : 'Everything you have done is saved. Move through the lab in any order — this list is what still counts toward credit, and each row opens where you left off.'}
               </Text>
               {outstanding.map((r) => (
                 <Pressable key={r.id} onPress={() => go(SS_MODES.find((m) => m.id === r.id)!.route)} style={styles.leftRow} accessibilityRole="button" accessibilityLabel={`${r.label}: ${r.done} of ${r.total}. ${r.hint}`}>

@@ -91,11 +91,13 @@ export async function ensureSession(email: string, password: string): Promise<st
     // email → drop that session and create the account that was asked for.
     const sessionEmail = (current?.user?.email ?? '').trim().toLowerCase();
     if (sessionEmail && sessionEmail === email.trim().toLowerCase()) return null;
+    // scope 'local' (bug pass 2, 2026-09-30): dropping the half-created
+    // session on THIS device must not revoke the account's other sessions.
     markIntentionalSignOut();
     try {
-      await supabase.auth.signOut();
+      await supabase.auth.signOut({ scope: 'local' });
     } catch {
-      // Offline sign-out still clears the local session; signUp below replaces it.
+      // signUp below replaces the session either way.
     }
   }
 

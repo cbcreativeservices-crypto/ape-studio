@@ -64,15 +64,25 @@ export type ComputeResult = {
   negativeField?: string | null;
 };
 
-/** Compute once, guarded — a throwing formula reports an error, never crashes. */
+/** Compute once, guarded — a throwing formula (or one whose every number is
+ *  NaN/∞) reports an error, never crashes and never shows a panel of dashes. */
 export function runCompute(fn: CalcFunction | null, values: CalcValues | null, fields?: FieldDef[]): ComputeResult {
   if (!fn || !values) return { outputs: [], steps: [], table: null, computeError: false };
   // An impossible negative is an ERROR, never a wrong-signed answer.
   const neg = fields ? negativeInput(fn, values, fields) : null;
   if (neg) return { outputs: [], steps: [], table: null, computeError: true, negativeField: neg.name };
   try {
+    const outputs = fn.compute(values);
+    // A result with numbers in it where EVERY number is NaN/∞ is not an answer
+    // (bug pass 2, 2026-09-30): a 0 Hz wavelength or a 0 V dBu read as a panel
+    // of "—" — and a capped account spent a weekly calculation to reveal it.
+    // It is the same "check for zeros" error a throwing formula gets.
+    const nums = outputs.filter((o): o is Extract<OutputVal, { value: number }> => 'value' in o);
+    if (nums.length > 0 && nums.every((o) => !Number.isFinite(o.value))) {
+      return { outputs: [], steps: [], table: null, computeError: true };
+    }
     return {
-      outputs: fn.compute(values),
+      outputs,
       steps: fn.steps ? fn.steps(values) : [],
       table: fn.table ? fn.table(values) : null,
       computeError: false,

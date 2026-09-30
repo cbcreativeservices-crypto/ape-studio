@@ -202,6 +202,8 @@ export function HarmonographLabScreen() {
   // `wantRef` = the generator SHOULD be sounding; `soundingRef` = it is.
   const wantRef = useRef(false);
   const soundingRef = useRef(false);
+  const latestRef = useRef({ n1, n2, detune });
+  latestRef.current = { n1, n2, detune };
 
   /** Start the generator on a clean pair (the ▶ press and the armed resume). */
   const soundInterval = useCallback(async (m: { n1: number; n2: number }) => {
@@ -223,9 +225,22 @@ export function HarmonographLabScreen() {
         if (!wantRef.current) void ApeDsp.genStop(); // stopped/hushed meanwhile
         return;
       }
-      soundingRef.current = true;
       setRunning(true);
       noteAudioActivity();
+      // A ratio / slider / detune moved while the native start was in flight
+      // skipped retuneOrHush (running was still false), so the tone kept the
+      // pair pressed ▶ on — sounding a clean interval under a detuned or
+      // different figure (bug hunt 2026-09-30 pass 2, the Fx/FM pass-1 fix).
+      // Follow the NEWEST state: retune, or go quiet but stay armed (■).
+      const latest = latestRef.current;
+      const lm = matchRatio(latest.n1, latest.n2);
+      if (!lm || latest.detune !== 0) {
+        wantRef.current = false;
+        void ApeDsp.genStop();
+        return;
+      }
+      if (lm.n1 !== m.n1 || lm.n2 !== m.n2) ApeDsp.genSet(intervalGenParams(lm.n1, lm.n2));
+      soundingRef.current = true;
     } catch (e) {
       if (gen === genRef.current) setGenError(AUDIO_UNAVAILABLE_MESSAGE);
     }
@@ -333,7 +348,8 @@ export function HarmonographLabScreen() {
     setDampKey('medium');
     setRotary(true);
     setDetune(0.01);
-    if (running) stopInterval();
+    // …or a start still in flight (wantRef): it would land ■ over the reset.
+    if (running || wantRef.current) stopInterval();
     newDrawing();
   };
 

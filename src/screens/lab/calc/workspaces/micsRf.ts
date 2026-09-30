@@ -58,7 +58,10 @@ const STEREOMIC: Workspace = {
       keySymbols: ['θ', 'Δ', '·', '/', 'c'],
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
-        const path = n(v.spacing) * Math.sin(n(v.angle) * DEG);
+        // |…| (bug pass 2, 2026-09-30): the extra distance to the FARTHER mic.
+        // A source at −30° (the other side) printed a −20 cm path, a negative
+        // delay and a "−858 Hz" comb null.
+        const path = Math.abs(n(v.spacing) * Math.sin(n(v.angle) * DEG));
         return [
           { label: 'PATH DIFFERENCE', value: path, quantity: 'length', unit: 'cm' },
           { label: 'ARRIVAL DELAY Δt', value: path / c, quantity: 'time', unit: 'ms' },
@@ -67,9 +70,9 @@ const STEREOMIC: Workspace = {
       },
       steps: (v) => {
         const c = speedOfSoundAir(n(v.temp));
-        const path = n(v.spacing) * Math.sin(n(v.angle) * DEG);
+        const path = Math.abs(n(v.spacing) * Math.sin(n(v.angle) * DEG));
         return [
-          `c = ${fmt(c)} m/s. Path difference = ${fmt(n(v.spacing))}·sin(${fmt(n(v.angle))}°) = ${fmt(path)} m.`,
+          `c = ${fmt(c)} m/s. Path difference = |${fmt(n(v.spacing))}·sin(${fmt(n(v.angle))}°)| = ${fmt(path)} m.`,
           `Δt = ${fmt(path)} ÷ ${fmt(c)} = ${fmt((path / c) * 1000)} ms.`,
           `Summed to mono, the first null is at c/(2·path) = ${fmt(c / (2 * path))} Hz (nulls repeat at odd multiples).`,
         ];

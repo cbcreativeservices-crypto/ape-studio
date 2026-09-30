@@ -28,7 +28,7 @@
  * same screen, and the wording can be edited in one file without touching any
  * caller.
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useRef } from 'react';
 import { View, StyleSheet } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -60,6 +60,15 @@ export function CelebrationScreen({ navigation, route }: Props) {
    * state, Home's deck position included. The reset stays as the fallback for
    * a Celebration with nothing under it (e.g. a restored navigation state).
    */
+  /**
+   * ONE EXIT PER SCREEN (bug pass 2, 2026-09-30) — same latch as ResultsScreen.
+   * A RESET is honoured even from a screen that is already leaving, so a double
+   * tap on "Trophy case" rebuilt the whole tab shell twice, and a double tap on
+   * DONE could goBack() twice (popping the Dashboard's parent too). A ref,
+   * because the second tap lands before any re-render.
+   */
+  const leavingRef = useRef(false);
+
   const toStudy = useCallback(() => {
     if (navigation.canGoBack()) {
       navigation.goBack();
@@ -73,6 +82,8 @@ export function CelebrationScreen({ navigation, route }: Props) {
 
   const onAction = useCallback(
     (kind: CelebrationActionKind) => {
+      if (leavingRef.current) return;
+      leavingRef.current = true;
       switch (kind) {
         case 'view-results':
           // The quiz result is handed through so REVIEW RESULTS works from

@@ -14,7 +14,7 @@
  * Visuals (design-reference 20-s12-ear-training panel): 48px play/pause cap,
  * recessed progress bar, "N PLAYS" (left) + "m:ss / m:ss" mono (right).
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { requireOptionalNativeModule } from 'expo-modules-core';
@@ -55,6 +55,14 @@ function LivePlayer({ uri }: { uri: string }) {
   const status = expoAudio!.useAudioPlayerStatus(player);
   const [plays, setPlays] = useState(0);
   const { requestAudioOutput } = useAudioOutputGate();
+  const asking = useRef(0);
+  const alive = useRef(true);
+  useEffect(() => {
+    alive.current = true;
+    return () => {
+      alive.current = false;
+    };
+  }, []);
 
   // THE THIRD PLAYER, AND THE ONE THAT WAS MISSED (2026-09-17).
   //
@@ -93,14 +101,27 @@ function LivePlayer({ uri }: { uri: string }) {
     // on, so this costs a returning user nothing; it resolves false for a free
     // user behind the lab-preview glass and when the person declines, and in
     // both cases the right outcome is simply not to play.
-    void requestAudioOutput().then((allowed) => {
-      if (!allowed) return;
-      // A finished track restarts from the top; count each fresh start.
-      if (status.didJustFinish || pos >= dur - 0.05) player.seekTo(0);
-      player.play();
-      noteAudioActivity();
-      setPlays((n) => n + 1);
-    });
+    // One request at a time, and nothing after unmount (bug hunt 2026-09-30,
+    // pass 2): a double tap counted two PLAYS, and leaving the screen while
+    // the gate was up played a player the hook had already released — a throw
+    // inside this .then, i.e. an unhandled rejection, or sound from a screen
+    // that was gone.
+    // Every tap still ASKS (a second tap is how the gate re-presents a popup
+    // that failed to appear), but only the latest tap's answer plays.
+    const mine = ++asking.current;
+    void requestAudioOutput()
+      .then((allowed) => {
+        if (!allowed || !alive.current || mine !== asking.current) return;
+        // The native flag, not the render's: a second tap before the status
+        // event re-rendered found `playing` still false and counted again.
+        if (player.playing) return;
+        // A finished track restarts from the top; count each fresh start.
+        if (status.didJustFinish || pos >= dur - 0.05) player.seekTo(0);
+        player.play();
+        noteAudioActivity();
+        setPlays((n) => n + 1);
+      })
+      .catch(() => {});
   };
 
   return (

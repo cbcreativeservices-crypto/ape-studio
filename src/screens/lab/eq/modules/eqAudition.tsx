@@ -76,11 +76,20 @@ export function EqAuditionBar({ bands }: { bands: EqBandSpec[] }) {
   useStopOnAudioMute(setRunning);
 
   const [source, setSource] = useState<SourceKey>('pink');
+  // The chip the learner picked LAST, read by start() at the engine write
+  // (bug pass 2 2026-09-30): a chip tapped while ▶ was still starting only
+  // set state — `running` was false, so nothing was pushed — and the old
+  // source played under the new chip.
+  const sourceRef = useRef<SourceKey>('pink');
   const [error, setError] = useState('');
   const genRef = useRef(0);
+  // Generation of the last stop(): a superseded start may only silence the
+  // generator when a stop() came after it — never when the newer thing is a
+  // second ▶ (double-tap), whose genStart that genStop would land after.
+  const stopGenRef = useRef(0);
 
   const stop = useCallback(() => {
-    genRef.current++;
+    stopGenRef.current = ++genRef.current;
     void ApeDsp.genStop();
     ApeDsp.fxReset(); // leave NOTHING armed for the next lab (FxLab rule)
     setRunning(false);
@@ -91,13 +100,14 @@ export function EqAuditionBar({ bands }: { bands: EqBandSpec[] }) {
   useStopWhenSilenced(running, stop);
 
   const start = useCallback(
-    async (srcKey: SourceKey) => {
+    async (_srcKey: SourceKey) => {
       if (!available) return;
       const gen = ++genRef.current;
       const ok = await requestAudioOutput();
       if (!ok || gen !== genRef.current) return;
       setError('');
-      const src = SOURCES.find((s) => s.key === srcKey)!;
+      const srcOf = (k: SourceKey) => SOURCES.find((s) => s.key === k)!;
+      const src = srcOf(sourceRef.current); // the latest chip, not the tap-time one
       ApeDsp.genSet({ levelDb: GEN_LEVEL_DB, ...src.gen });
       pushBands(bands);
       try {
@@ -105,10 +115,13 @@ export function EqAuditionBar({ bands }: { bands: EqBandSpec[] }) {
         // A mute that landed while the native start was in flight wins — never
         // leave a tone sounding into a closed gate (owner 2026-09-29).
         if (gen !== genRef.current || !isAudioOutputEnabled()) {
-          void ApeDsp.genStop();
-          ApeDsp.fxReset();
+          if (stopGenRef.current > gen || !isAudioOutputEnabled()) {
+            void ApeDsp.genStop();
+            ApeDsp.fxReset();
+          }
           return;
         }
+        if (sourceRef.current !== src.key) ApeDsp.genSet({ levelDb: GEN_LEVEL_DB, ...srcOf(sourceRef.current).gen });
         setRunning(true);
         noteAudioActivity();
       } catch (e) {
@@ -142,6 +155,7 @@ export function EqAuditionBar({ bands }: { bands: EqBandSpec[] }) {
           label={s.label}
           active={source === s.key}
           onPress={() => {
+            sourceRef.current = s.key;
             setSource(s.key);
             // Switch the signal IN PLACE while playing (the FX lab's
             // pickSource idiom) — it used to stop and restart, flashing ▶ and

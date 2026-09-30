@@ -166,6 +166,8 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
     persist({ lastPage: idx });
   }, [pagesWithCheck.length, persist, reduceMotion]);
   const markDone = useCallback(() => markPageDone(page), [markPageDone, page]);
+  const lastNavAtRef = useRef(0);
+  const leavingRef = useRef(false);
   // The in-mode RESET (bug hunt 2026-09-30): the session's page memory is
   // dropped and the current page re-mounted, so a capstone / console starts
   // its working state fresh.
@@ -278,9 +280,19 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
         <Pressable
           onPress={() => {
             if (finishBlocked) return;
+            // Double tap (bug hunt 2026-09-30 pass 2, MicSelect's 400 ms
+            // guard): the second CONTINUE on the second-to-last page landed on
+            // FINISH and left the lab; a doubled FINISH ran goBack() twice and
+            // popped the hub under it too.
+            if (last && (Date.now() - lastNavAtRef.current < 400 || leavingRef.current)) return;
             if (!def.manualDone) markDone();
-            if (!last) goTo(page + 1);
-            else navigation.goBack();
+            if (!last) {
+              lastNavAtRef.current = Date.now();
+              goTo(page + 1);
+            } else {
+              leavingRef.current = true;
+              navigation.goBack();
+            }
           }}
           disabled={finishBlocked}
           style={[styles.navBtn, styles.navNext, finishBlocked && { opacity: 0.45 }]}

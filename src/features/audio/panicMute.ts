@@ -27,12 +27,27 @@ export function panicMuteAudio(): void {
   // This is the shake-to-mute SAFETY path. A native rejection here must not
   // become an unhandled rejection at the exact moment a safety feature fires —
   // and it must not stop the synchronous silencing below from running.
-  void ApeDsp.genStop().catch(() => {});
-  void ApeDsp.binStop().catch(() => {});
-  void ApeDsp.modStop().catch(() => {});
-  ApeDsp.fxReset();
+  //
+  // …and a SYNCHRONOUS native throw must not either (bug hunt 2026-09-30,
+  // pass 2): fxReset() is a plain sync native call, and a throw from it (or
+  // from a native stop before its promise exists) skipped everything below —
+  // disableAudioOutput() included, so the shake "muted" and left the gate on.
+  const quiet = (f: () => unknown) => {
+    try {
+      void Promise.resolve(f()).catch(() => {});
+    } catch {
+      /* this voice is idle or absent — the others still stop */
+    }
+  };
+  quiet(() => ApeDsp.genStop());
+  quiet(() => ApeDsp.binStop());
+  quiet(() => ApeDsp.modStop());
+  quiet(() => ApeDsp.fxReset());
   try {
-    Speech.stop();
+    // Speech.stop() returns a Promise: the try alone caught nothing async,
+    // so a native rejection surfaced unhandled on the safety path (bug hunt
+    // 2026-09-30, pass 2).
+    void Promise.resolve(Speech.stop()).catch(() => {});
   } catch {
     /* nothing speaking */
   }

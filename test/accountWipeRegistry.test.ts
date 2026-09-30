@@ -66,7 +66,10 @@ const EXEMPT: Record<string, string> = {
   'features/production/projectStore.ts':
     'holds a lazily-built store instance, not user data — every read goes to storage',
   'features/cymatics/patternStore.ts': 'same: a store instance, not a cache of rows',
-  'features/amp/ampProgress.ts': 'holds a write-queue promise, not user state',
+  'features/amp/ampProgress.ts':
+    'holds a write-queue promise and the guest save-block FLAG (bug hunt 2026-09-30 pass 2) — the flag is re-set from the live entitlement on every render of the lab’s screens; no user data',
+  'features/ear/earProgress.ts':
+    'holds only the guest save-block FLAG (bug hunt 2026-09-30 pass 2), re-set from the live entitlement on every render of the lab’s screens — no user data; every read goes to storage',
   'screens/lab/calc/workflowStore.ts':
     'holds only the write-serialisation promise chain (bug hunt 2026-09-29), not user state — every read goes to storage',
   'screens/glossary/GlossaryScreen.tsx':

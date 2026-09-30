@@ -804,6 +804,8 @@ export function EnrollmentView({
     lastBulkAt.current = now;
     fn();
   };
+  // Same guard for a single browse row's ＋/✓ toggle, keyed by the row.
+  const lastRowTap = useRef<{ gs: number; at: number }>({ gs: -1, at: 0 });
 
   // Bundles (cert/program) — user request 2026-07-22. Adding a bundle records it
   // AND enrolls its topics individually. LOAD/UNLOAD bulk-toggle those topics'
@@ -1123,6 +1125,12 @@ export function EnrollmentView({
               );
               return;
             }
+            // The row toggles (＋ ⇄ ✓), so a double tap added the topic and
+            // removed it again (bug pass 2 2026-09-30). A repeat on the SAME
+            // row inside BULK_REPEAT_MS is ignored; other rows stay quick.
+            const now = Date.now();
+            if (lastRowTap.current.gs === gs && now - lastRowTap.current.at < BULK_REPEAT_MS) return;
+            lastRowTap.current = { gs, at: now };
             toggleTopic(gs);
           }}
           accessibilityRole="button"

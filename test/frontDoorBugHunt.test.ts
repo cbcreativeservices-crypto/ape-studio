@@ -23,7 +23,8 @@ describe('auth (F1, F2, F12, F15)', () => {
   it('ensureSession only resumes a real session for the SAME email; otherwise signs out first', () => {
     const body = api.slice(api.indexOf('export async function ensureSession'), api.indexOf('supabase.auth.signUp('));
     assert.match(body, /sessionEmail\s*===\s*email\.trim\(\)\.toLowerCase\(\)\)\s*return null/);
-    assert.match(body, /markIntentionalSignOut\(\);\s*\n\s*try \{\s*\n\s*await supabase\.auth\.signOut\(\)/);
+    // Local scope since bug pass 2 (2026-09-30) — never the account's other sessions.
+    assert.match(body, /markIntentionalSignOut\(\);\s*\n\s*try \{\s*\n\s*await supabase\.auth\.signOut\(\{ scope: 'local' \}\)/);
     assert.doesNotMatch(body, /if \(isRealAccount\([^)]*\)\) return null;/);
   });
 
@@ -39,7 +40,8 @@ describe('auth (F1, F2, F12, F15)', () => {
   it('hardware BACK during recovery cancels it', () => {
     assert.match(
       auth,
-      /if \(mode !== 'recovery'\) return;\s*\n\s*const sub = BackHandler\.addEventListener\('hardwareBackPress', \(\) => \{\s*\n\s*cancelRecovery\(\);\s*\n\s*return true;/,
+      // (bug pass 2, 2026-09-30: …except mid-request, when BACK is swallowed.)
+      /if \(mode !== 'recovery'\) return;\s*\n\s*const sub = BackHandler\.addEventListener\('hardwareBackPress', \(\) => \{[\s\S]{0,400}?if \(inFlight\.current\) return true;\s*\n\s*cancelRecovery\(\);\s*\n\s*return true;/,
     );
   });
 });

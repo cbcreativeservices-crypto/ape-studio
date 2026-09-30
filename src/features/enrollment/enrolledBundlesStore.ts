@@ -37,12 +37,19 @@ function commit(next: EnrolledBundle[]) {
   emit();
 }
 
+// Bumped by resetLocal (bug pass 2, 2026-09-30) — same race as enrollmentStore:
+// a read in flight across an account wipe must not restore the previous user's
+// bundles.
+let generation = 0;
+
 async function hydrate(): Promise<void> {
   if (hydrated) return;
   if (!hydrating) {
+    const gen = generation;
     hydrating = (async () => {
       try {
         const raw = await AsyncStorage.getItem(KEY);
+        if (gen !== generation) return;
         if (raw) {
           const p = JSON.parse(raw);
           if (Array.isArray(p)) {
@@ -60,6 +67,7 @@ async function hydrate(): Promise<void> {
       } catch {
         // start empty
       }
+      if (gen !== generation) return;
       hydrated = true;
       emit();
     })();
@@ -114,6 +122,7 @@ export function loadedBundleGs(): number[] {
  *  Clears the list + hydrated flags and emits so live useBundles() hooks
  *  re-render empty; the next read re-hydrates from the (cleared) storage. */
 export function resetLocal(): void {
+  generation++;
   list = [];
   hydrated = false;
   hydrating = null;

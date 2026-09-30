@@ -26,12 +26,19 @@ function emit() {
   listeners.forEach((l) => l());
 }
 
+// Bumped by resetLocal (bug pass 2, 2026-09-30): this store hydrates at module
+// load, which is exactly when the boot-time identity check may wipe it — a read
+// already in flight must not land the previous user's deck back in memory.
+let generation = 0;
+
 function hydrate(): Promise<void> {
   if (hydrated) return Promise.resolve();
   if (!hydrating) {
+    const gen = generation;
     hydrating = (async () => {
       try {
         const raw = await AsyncStorage.getItem(KEY);
+        if (gen !== generation) return;
         if (raw) {
           const p = JSON.parse(raw) as Partial<DeckPrefs>;
           const strs = (v: unknown): string[] =>
@@ -41,6 +48,7 @@ function hydrate(): Promise<void> {
       } catch {
         // corrupt/absent → keep default (alphabetical)
       }
+      if (gen !== generation) return;
       hydrated = true;
       emit();
     })();
@@ -123,6 +131,7 @@ export function orderDeckIds(all: { id: string; name: string }[], p: DeckPrefs, 
  *  removed by the `ape:*` sweep; this drops the cache so the next user doesn't
  *  briefly see the previous user's deck order until relaunch. */
 export function resetLocal(): void {
+  generation++;
   prefs = { ...DEFAULT };
   hydrated = false;
   hydrating = null;

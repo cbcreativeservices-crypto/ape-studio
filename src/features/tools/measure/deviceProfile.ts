@@ -250,6 +250,20 @@ export async function getQueuedContributions(): Promise<CalibrationContribution[
   }
 }
 
+/** Remove only these contributions (the ones just uploaded or discarded) —
+ *  anything queued WHILE the upload was in flight survives for the next drain. */
+export async function removeQueuedContributions(ids: readonly string[]): Promise<void> {
+  if (ids.length === 0) return;
+  try {
+    const drop = new Set(ids);
+    const left = (await getQueuedContributions()).filter((c) => !drop.has(c.contributionId));
+    if (left.length === 0) await AsyncStorage.removeItem(QUEUE_KEY);
+    else await AsyncStorage.setItem(QUEUE_KEY, JSON.stringify(left));
+  } catch {
+    /* best-effort — a leftover row is deduped server-side on retry */
+  }
+}
+
 export async function clearContributionQueue(): Promise<void> {
   try {
     await AsyncStorage.removeItem(QUEUE_KEY);

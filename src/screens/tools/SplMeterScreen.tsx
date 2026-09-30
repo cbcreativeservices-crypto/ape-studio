@@ -43,6 +43,7 @@ import { hapticsEnabled } from '../../features/settings/store';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSharedValue } from 'react-native-reanimated';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useIsFocused } from '@react-navigation/native';
 import * as Crypto from 'expo-crypto';
 import { GlassButton } from '../../components/GlassButton';
 import { lockLandscape, lockPortrait, unlockOrientation } from '../../lib/screenOrientationSafe';
@@ -910,7 +911,14 @@ export function SplMeterScreen({ navigation }: Props) {
   // the settings popup, then Full VU, then the fullscreen readout, then fall the
   // digital view back to home; only when nothing is open does the default back
   // (leave the screen) proceed.
+  // Only while THIS screen is in front (toddler pass 2 2026-09-30): the
+  // digital view's VIEW SAVED MEASUREMENTS pushes the library over a still-
+  // mounted meter, and BackHandler runs the newest listener first — so BACK on
+  // the library flipped the hidden meter to its home view and returned true,
+  // and the library would not go back.
+  const backFocused = useIsFocused();
   useEffect(() => {
+    if (!backFocused) return undefined;
     const onBack = () => {
       if (settingPopup != null) { setSettingPopup(null); return true; }
       if (gaugeFsOpen) { if (!gaugeFsClosing) setGaugeFsClosing(true); return true; } // held while closing: a 2nd BACK mid rotate-out left the tool
@@ -922,7 +930,7 @@ export function SplMeterScreen({ navigation }: Props) {
     };
     const sub = BackHandler.addEventListener('hardwareBackPress', onBack);
     return () => sub.remove();
-  }, [settingPopup, gaugeFsOpen, gaugeFsClosing, vuFsOpen, vuFsClosing, readoutFsOpen, readoutFsClosing, ledFsOpen, view]);
+  }, [backFocused, settingPopup, gaugeFsOpen, gaugeFsClosing, vuFsOpen, vuFsClosing, readoutFsOpen, readoutFsClosing, ledFsOpen, view]);
   // User setting for the LED meter's peak-hold cap linger (owner 2026-07-30).
   const [holdMode, setHoldMode] = useState<PeakHoldMode>('1s');
   // RANGE (owner 2026-07-30): the environmental SPL that reads 0 VU. The wide VU

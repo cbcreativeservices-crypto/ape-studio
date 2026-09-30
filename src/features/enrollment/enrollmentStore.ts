@@ -236,9 +236,15 @@ function scheduleServerSync(delayMs = 800) {
   }, delayMs);
 }
 
+// Bumped by resetLocal (bug pass 2, 2026-09-30): a hydrate that was already
+// reading storage when the account was wiped must not write the previous
+// user's list back over the reset.
+let generation = 0;
+
 async function hydrate(): Promise<void> {
   if (hydrated) return;
   if (!hydrating) {
+    const gen = generation;
     hydrating = (async () => {
       let loaded: EnrollTopic[] = [];
       try {
@@ -259,7 +265,7 @@ async function hydrate(): Promise<void> {
       let migrated = false;
       try {
         const seeded = await AsyncStorage.getItem(SEED_KEY);
-        if (seeded !== '1') {
+        if (seeded !== '1' && gen === generation) {
           // Migrate: drop retired free/placeholder gs (LEGACY_FREE_GS) so testers
           // don't keep stale unnamed rows — this is what clears the pre-v3
           // gs100/gs1240 that rendered as "Topic gsN".
@@ -274,12 +280,15 @@ async function hydrate(): Promise<void> {
           }));
           loaded = [...freeAdd, ...loaded];
           migrated = loaded.length !== before || freeAdd.length > 0;
-          await AsyncStorage.setItem(SEED_KEY, '1');
-          await AsyncStorage.setItem(KEY, JSON.stringify(loaded));
+          if (gen === generation) {
+            await AsyncStorage.setItem(SEED_KEY, '1');
+            if (gen === generation) await AsyncStorage.setItem(KEY, JSON.stringify(loaded));
+          }
         }
       } catch {
         // seeding is best-effort
       }
+      if (gen !== generation) return; // wiped mid-read — resetLocal re-hydrates
       list = loaded;
       hydrated = true;
       emit();
@@ -409,10 +418,14 @@ export function resetLocal(): void {
   // The next identity must reconcile against ITS OWN server list, not inherit
   // the departing user's "already checked".
   reconciled = false;
+  generation++;
   list = [];
   hydrated = false;
   hydrating = null;
   emit();
+  // Mounted useEnrollment() hooks only hydrate on mount — re-hydrate for them
+  // now so they pick up the fresh (re-seeded) list instead of staying empty.
+  if (listeners.size > 0) void hydrate(); // hydrate emits when it lands
 }
 
 /** Move an entry up (-1) or down (+1) in the user's order. */

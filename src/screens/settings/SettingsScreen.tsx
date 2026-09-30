@@ -296,9 +296,15 @@ ${LOCAL_LOSS}`
              * Splash — which found the session still there and put the person
              * straight back in, signed in, with no word that Log out had done
              * nothing. Say so instead, and let them retry when back online.
+             *
+             * scope 'local' (bug pass 2, 2026-09-30): the default is GLOBAL —
+             * it revoked every session of the account, so logging out of the
+             * phone also signed the person out of the website. Local still
+             * revokes THIS session on the server first, so the offline case
+             * above is unchanged.
              */
             const { error } = await supabase.auth
-              .signOut()
+              .signOut({ scope: 'local' })
               .catch((e: unknown) => ({ error: e as Error }));
             if (error) {
               consumeIntentionalSignOut(); // no SIGNED_OUT is coming for it
@@ -520,7 +526,11 @@ ${LOCAL_LOSS}`
             // already shows '…' until `resolved`; this header did not, so the same
             // screen simultaneously said "ACADEMY — ACTIVE" and "members" (i.e.
             // you are not one). Neither claim is knowable before the read lands.
-            if (!resolved) return '…';
+            // Neutral until the tier is KNOWN (bug pass 2, 2026-09-30) — not
+            // just `resolved`, which flips after a FAILED read too: a member
+            // offline with no cached tier was told "members" and sold their own
+            // membership below. A cached/known member shows their switches.
+            if (!tierKnown && !isMember) return '…';
             if (!isMember) return 'members';
             // Count NOTIFICATION STREAMS only (owner 2026-09-01): the master
             // "Phone notifications" and Email switches are TRANSPORTS — with
@@ -532,7 +542,7 @@ ${LOCAL_LOSS}`
             return n ? `${n} on` : 'all off';
           })()}
         >
-          {!resolved ? (
+          {!tierKnown && !isMember ? (
             /* Pre-resolve: assert NEITHER direction. Showing the 🔒 upsell would
                sell a member their own membership; showing the live switches would
                flash member UI at a guest. A neutral line costs one beat and lies

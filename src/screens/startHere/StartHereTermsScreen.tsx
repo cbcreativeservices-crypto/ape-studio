@@ -13,7 +13,7 @@
  *
  * Pushed over Start Here, so BACK returns to the exact page the learner left.
  */
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -213,6 +213,10 @@ function Quiz({ group }: { group: TermGroupId | 'all' }) {
   const [i, setI] = useState(0);
   const [picked, setPicked] = useState<number | null>(null);
   const [score, setScore] = useState(0);
+  // One answer per question (bug pass 2 2026-09-30): `picked` is state, so a
+  // wrong option and the right one mashed in the same frame both passed the
+  // `picked != null` check — the second overwrote the first and scored.
+  const answeredRef = useRef(-1);
   const finished = i >= items.length;
   if (finished) {
     return (
@@ -222,7 +226,7 @@ function Quiz({ group }: { group: TermGroupId | 'all' }) {
           {score} of {items.length}
         </Text>
         <Text style={styles.intro}>{score === items.length ? 'Every one right. You know your starter words.' : 'Words you missed are worth a look in WORDS or FLIP CARDS — then try a fresh quiz.'}</Text>
-        <Pressable onPress={() => { setSeed(seed + 7919); setI(0); setPicked(null); setScore(0); }} style={styles.primaryBtn} accessibilityRole="button" accessibilityLabel="New quiz">
+        <Pressable onPress={() => { answeredRef.current = -1; setSeed(seed + 7919); setI(0); setPicked(null); setScore(0); }} style={styles.primaryBtn} accessibilityRole="button" accessibilityLabel="New quiz">
           <Text style={styles.primaryText}>NEW QUIZ</Text>
         </Pressable>
       </View>
@@ -246,7 +250,8 @@ function Quiz({ group }: { group: TermGroupId | 'all' }) {
           <Pressable
             key={o}
             onPress={() => {
-              if (picked != null) return;
+              if (picked != null || answeredRef.current === i) return;
+              answeredRef.current = i;
               setPicked(k);
               if (k === q.correctIdx) setScore(score + 1);
             }}

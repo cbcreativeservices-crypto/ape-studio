@@ -20,7 +20,7 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { ShareIcon } from '../../../components/ShareIcon';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { CalcValues, FieldDef, OutputVal, Workspace } from './calcTypes';
-import { fmt, unitsFor } from './calcUnits';
+import { chainFits, fmt, unitsFor } from './calcUnits';
 import { getWorkspace } from './registry';
 import { setChainValue, useChainValue } from './chainStore';
 import { useCalcSectionOpen } from './calcPrefs';
@@ -458,7 +458,9 @@ export function CalcWorkspaceScreen() {
           <Text style={styles.eyebrowTight}>INPUTS</Text>
           {fields.map((f) => {
             const units = unitsFor(f.quantity, f.unitIds);
-            const canChain = chain && chain.quantity === f.quantity && f.quantity !== 'list';
+            // Unit-aware, not kind-only (bug pass 2): a kg/m² never fills a µF,
+            // a dBV never fills a dBu.
+            const canChain = chain && chainFits(chain.label, chain.quantity, f);
             // Chain USE rides the shared FieldRow's footer slot. Only rendered
             // while a chain value is armed (footer stays undefined otherwise so
             // the row's memo keeps skipping re-renders).

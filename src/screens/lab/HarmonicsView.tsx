@@ -1254,6 +1254,7 @@ export function HarmonicsView({
       // (solo passes { frequency: n×f0 }); playModel passes its own guarded
       // levelDb in `params`, which wins via the spread.
       const guardHz = params?.frequency ?? f0Ref.current;
+      const sentF0 = f0Ref.current;
       ApeDsp.genSet({
         mode: GEN_MODES.sine,
         frequency: f0Ref.current,
@@ -1273,6 +1274,14 @@ export function HarmonicsView({
         if (!isAudioOutputEnabled()) {
           void ApeDsp.genStop();
           return false;
+        }
+        // An F0 picked while the native start was in flight skipped its live
+        // retune (genRunning was still false) — the plain fundamental kept
+        // the OLD pitch under the new axis (bug hunt 2026-09-30 pass 2, the
+        // Fx/FM pass-1 fix). Solo is stopped by pickF0 and the additive
+        // model rides the funnel, so only the plain sine needs this.
+        if (!params && f0Ref.current !== sentF0) {
+          ApeDsp.genSet({ frequency: f0Ref.current, levelDb: guardToneLevelForEngine(GEN_LEVEL_DB, f0Ref.current) });
         }
         setGenRunning(true);
         noteAudioActivity();
@@ -1953,7 +1962,10 @@ export function HarmonicsView({
             <>
               {/* Runtime capture failures (denied/error) — honest cards. */}
               {state === 'denied' || state === 'error' ? (
-                <EngineGate state={state} lastError={lastError} />
+                // onRetry = the LIVE start (bug hunt 2026-09-30 pass 2): without
+                // it the error card had no TRY AGAIN and Android's denied card
+                // no ALLOW MICROPHONE (see EngineGate's "EVERY HOST MUST PASS").
+                <EngineGate state={state} lastError={lastError} onRetry={() => void onLiveStart()} />
               ) : null}
               {/* Feedback override: LIVE mode is the ONE place the app needs mic
                   + speaker together, so the user must physically accept the

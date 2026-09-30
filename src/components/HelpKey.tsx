@@ -15,7 +15,11 @@ export function HelpKey({ search }: { search?: string }) {
     <Pressable
       onPress={() => {
         labProbe('? pressed'); // TEMP probe
-        navigation.navigate('Help', search ? { search } : undefined);
+        // `pop: true` (bug hunt 2026-09-30, pass 2): React Navigation 7's
+        // navigate() PUSHES a second Help when one is already lower in the
+        // stack (Help → a linked screen → ?), so BACK walked through two.
+        // Popping back to the existing Help keeps one, with these params.
+        navigation.navigate('Help', search ? { search } : undefined, { pop: true });
       }}
       hitSlop={10}
       style={({ pressed }) => [styles.key, pressed && { opacity: 0.7 }]}

@@ -18,7 +18,22 @@ let bundleList: string[] = []; // bundle keys on Home (cert:/program: keys)
 let defaultGs: number | null = null; // topic the Home carousel opens on (user 2026-07-24)
 let hydrated = false;
 let hydrating: Promise<void> | null = null;
+// Bumped by resetLocal so a hydrate still in flight from the previous account
+// cannot land its list afterwards (bug pass 2 2026-09-30).
+let generation = 0;
+// Writes made before the saved list has loaded (e.g. the Enrollments core-slot
+// effect on first mount). They are replayed on top of the loaded list instead
+// of saving a partial list over it (bug pass 2 2026-09-30).
+let pending: (() => void)[] = [];
 const listeners = new Set<() => void>();
+
+/** True (and the op queued) when the saved list has not loaded yet. */
+function deferUntilHydrated(op: () => void): boolean {
+  if (hydrated) return false;
+  pending.push(op);
+  void hydrate();
+  return true;
+}
 
 function emit() {
   listeners.forEach((l) => l());
@@ -41,25 +56,38 @@ export function homeCardCount(): number {
 async function hydrate(): Promise<void> {
   if (hydrated) return;
   if (!hydrating) {
+    const gen = generation;
     hydrating = (async () => {
+      let nextList: number[] = [];
+      let nextBundles: string[] = [];
+      let nextDefault: number | null = null;
       try {
         const raw = await AsyncStorage.getItem(KEY);
         if (raw) {
           const p = JSON.parse(raw);
-          if (Array.isArray(p)) list = [...new Set(p.filter((g) => typeof g === 'number'))].slice(0, HOME_MAX);
+          if (Array.isArray(p)) nextList = [...new Set(p.filter((g) => typeof g === 'number'))].slice(0, HOME_MAX);
         }
         const rawB = await AsyncStorage.getItem(BKEY);
         if (rawB) {
           const pb = JSON.parse(rawB);
-          if (Array.isArray(pb)) bundleList = [...new Set(pb.filter((k) => typeof k === 'string'))];
+          if (Array.isArray(pb)) nextBundles = [...new Set(pb.filter((k) => typeof k === 'string'))];
         }
         const rawD = await AsyncStorage.getItem(DKEY);
         const dg = rawD ? parseInt(rawD, 10) : NaN;
-        defaultGs = Number.isFinite(dg) && list.includes(dg) ? dg : null;
+        nextDefault = Number.isFinite(dg) && nextList.includes(dg) ? dg : null;
       } catch {
         // start empty
       }
+      // resetLocal ran while this read was in flight — the old account's list
+      // must not come back.
+      if (gen !== generation) return;
+      list = nextList;
+      bundleList = nextBundles;
+      defaultGs = nextDefault;
       hydrated = true;
+      const ops = pending;
+      pending = [];
+      ops.forEach((op) => op());
       emit();
     })();
   }
@@ -74,7 +102,8 @@ export function getHomeGs(): number[] {
 /** Commit a new ordered list (deduped, capped). Used by the Home Setup sheet's
  *  Save action. */
 export function setHomeGs(gs: number[]): void {
-  list = [...new Set(gs)].slice(0, HOME_MAX);
+  if (deferUntilHydrated(() => setHomeGs(gs))) return;
+  list =[...new Set(gs)].slice(0, HOME_MAX);
   if (defaultGs != null && !list.includes(defaultGs)) {
     defaultGs = null;
     persistDefault();
@@ -91,6 +120,7 @@ export function isOnHome(gs: number): boolean {
 /** Toggle a single topic on/off Home (per-card book toggle, user request
  *  2026-07-22). Returns 'full' without adding when already at HOME_MAX. */
 export function toggleHome(gs: number): 'added' | 'removed' | 'full' {
+  if (deferUntilHydrated(() => void toggleHome(gs))) return 'added';
   if (list.includes(gs)) {
     list = list.filter((g) => g !== gs);
     if (defaultGs === gs) {
@@ -112,6 +142,7 @@ export function toggleHome(gs: number): 'added' | 'removed' | 'full' {
  *  if the cap blocked it. Used to auto-reserve the required core courses' Home
  *  slots (user request 2026-07-22). */
 export function ensureHome(gs: number): boolean {
+  if (deferUntilHydrated(() => void ensureHome(gs))) return true;
   if (list.includes(gs)) return true;
   if (homeCardCount() >= HOME_MAX) return false;
   list = [...list, gs];
@@ -123,6 +154,7 @@ export function ensureHome(gs: number): boolean {
 /** Remove a topic from Home if present (e.g. a core course, once completed,
  *  auto-frees its reserved slot — user request 2026-07-22). */
 export function removeHome(gs: number): void {
+  if (deferUntilHydrated(() => removeHome(gs))) return;
   if (!list.includes(gs)) return;
   list = list.filter((g) => g !== gs);
   if (defaultGs === gs) {
@@ -142,6 +174,7 @@ export function isBundleOnHome(key: string): boolean {
 
 /** Toggle a cert/program bundle card on/off Home (counts toward HOME_MAX). */
 export function toggleHomeBundle(key: string): 'added' | 'removed' | 'full' {
+  if (deferUntilHydrated(() => void toggleHomeBundle(key))) return 'added';
   if (bundleList.includes(key)) {
     bundleList = bundleList.filter((k) => k !== key);
     persistBundles();
@@ -157,6 +190,7 @@ export function toggleHomeBundle(key: string): 'added' | 'removed' | 'full' {
 
 /** Drop a bundle from Home (e.g. when it's removed from the registry). */
 export function removeHomeBundle(key: string): void {
+  if (deferUntilHydrated(() => removeHomeBundle(key))) return;
   if (!bundleList.includes(key)) return;
   bundleList = bundleList.filter((k) => k !== key);
   persistBundles();
@@ -200,6 +234,8 @@ export function resetLocal(): void {
   defaultGs = null;
   hydrated = false;
   hydrating = null;
+  generation += 1;
+  pending = [];
   emit();
 }
 
@@ -216,6 +252,7 @@ export function getDefaultHomeGs(): number | null {
 /** Set (or clear, with null) the default landing card. A gs that isn't a current
  *  Home topic is ignored (stored as null). */
 export function setDefaultHomeGs(gs: number | null): void {
+  if (deferUntilHydrated(() => setDefaultHomeGs(gs))) return;
   defaultGs = gs != null && list.includes(gs) ? gs : null;
   persistDefault();
   emit();

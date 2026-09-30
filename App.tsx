@@ -266,7 +266,10 @@ function routeLocalDest(dest: string): void {
       { pop: true }
     );
   } else if (dest === 'awards') {
-    navigationRef.navigate('Awards', { category: 'curriculum' });
+    // `pop: true` like the glossary branch above (bug hunt 2026-09-30, pass
+    // 2): a reminder tapped with Awards already lower in the stack pushed a
+    // SECOND Awards, and BACK walked through both.
+    navigationRef.navigate('Awards', { category: 'curriculum' }, { pop: true });
   }
 }
 
@@ -300,7 +303,9 @@ function App() {
           base = undefined;
         }
         if (base === 'Auth') return;
-        navigationRef.navigate('WeeklyConcept', payload);
+        // `pop: true`: a second push tapped while an earlier card is lower
+        // in the stack returns to it with the new payload, not a second card.
+        navigationRef.navigate('WeeklyConcept', payload, { pop: true });
       } else {
         queueWeeklyConcept(payload);
       }

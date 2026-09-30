@@ -25,9 +25,12 @@ export function NextSteps({
   const best = NEXT_STEPS.flatMap((g) => g.steps).find((s) => s.best);
   // Members see no FREE / MEMBERS access tags (owner 2026-09-29: no
   // membership marketing to people who already pay) — everything opens.
-  const { isMember } = useEntitlement();
+  // `resolved` (bug pass 2 2026-09-30): the provider boots at 'anonymous', so
+  // a paying member saw FREE / MEMBERS tags until the tier read landed. Not
+  // yet known ⇒ no tags (the EarLab first-paint rule).
+  const { isMember, resolved } = useEntitlement();
   const tag = (s: NextStep) => {
-    const a = isMember ? '' : accessTag(s.access);
+    const a = isMember || !resolved ? '' : accessTag(s.access);
     return s.mic ? (a ? `${a} · USES YOUR MIC` : 'USES YOUR MIC') : a;
   };
   return (

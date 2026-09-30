@@ -15,9 +15,19 @@
  * Search by term · empty: "No results for [filter]" · bottom nav visible.
  */
 import { memo, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from 'react';
-import { AppState, BackHandler, FlatList, Image, ImageBackground, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type StyleProp, type TextStyle } from 'react-native';
+import { AppState, BackHandler, FlatList, Image, ImageBackground, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type StyleProp, type TextStyle } from 'react-native';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
-import { HOST_DISMISS_MS } from '../../components/DimModal';
+/**
+ * ⛔ DimModal, NOT react-native's Modal (bug hunt 2026-09-30, pass 2). The
+ * media viewer, the held-chip list and the bookmark popup were raw Modals with
+ * a hand-mounted LowLightDim: the wash was there, but none of them was a
+ * HOST. So the notice the bookmark popup raises as it closes ("Removed from
+ * list"), or any confirm asked for while one was open, presented a second root
+ * Modal over one iOS was still showing or dismissing — refused, nothing
+ * appeared, and the app's dialog queue stuck behind it. DimModal carries the
+ * wash itself, so the hand-mounted ones are gone.
+ */
+import { HOST_DISMISS_MS, Modal } from '../../components/DimModal';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -32,7 +42,6 @@ import { LinksToggleLabel } from './LinksToggleLabel';
 import { useGlossaryLinksPref } from '../../features/glossary/linksPref';
 import { ShareTermSheet, type NamedTerm, type ShareTermPayload } from '../../components/ShareTermSheet';
 import type { GlossaryShareTerm } from '../../features/glossary/glossaryShare';
-import { LowLightDim } from '../../features/settings/LowLightLayer';
 import { BookmarkIcon, HoldHintPressable, TermSelectIcons } from '../../features/flags/TermSelectIcons';
 import { SpeakButton, stopAllSpeech } from '../../components/SpeakButton';
 import { StudioButton } from '../../components/StudioButton';
@@ -1298,11 +1307,21 @@ export function GlossaryScreen({ route, navigation }: Props) {
     // microseconds apart. mintDeviceKey() now dedupes as well; this keeps the
     // effect from even trying.
     mintingRef.current = true;
+    /**
+     * ⛔ AND THE DIALOG'S FLAG (bug hunt 2026-09-30, pass 2). ALLOW TEMPORARY
+     * ID on the NOT NOW card clears `declinedThisVisit` while no consent is on
+     * file yet (it is written just below), so keyState passed through 'ask'
+     * and the effect raised the consent dialog AGAIN over a mint already under
+     * way — and a NOT NOW there answered "nothing was stored" after the consent
+     * and the key had both been written. The reader has already answered.
+     */
+    askingRef.current = true;
     setDeclinedThisVisit(false);
     await writeConsent();
     setConsent({ granted: true, at: Date.now() });
     const r = await mintDeviceKey();
     mintingRef.current = false;
+    askingRef.current = false;
     if (r.ok) {
       // The corpus source changes with the key (the browse view is granted to
       // `authenticated`), so the cached probe answer has to be re-taken.
@@ -1918,7 +1937,15 @@ ${COPY.glossaryFreeAllowance}`,
           // below would be a guaranteed 42501 once the revokes land — and the
           // guest would see "check your connection" over a perfectly good one.
           // The screen stays in its loading state behind the dialog.
-          if (!keyReady) return;
+          if (!keyReady) {
+            // …until the key is STUCK (pass 2). keyStuck promised "the error
+            // card it already has, which carries a RETRY", but only `loading`
+            // was cleared here — so the empty list said "No results for All.
+            // Try a shorter word" to someone who had searched for nothing,
+            // with no retry. Say it is a load problem.
+            if (alive && keyStuck) setLoadError(true);
+            return;
+          }
           // GLOSSARY LOCK (owner 2026-09-10): detect whether a capped user is out
           // of weekly lookups → show the lock card. The corpus STILL loads so the
           // lock sits over a real, dimmed glossary ("full screen lock over a
@@ -2144,7 +2171,11 @@ ${COPY.glossaryFreeAllowance}`,
   }, []);
   const saveWholeGlossary = useCallback(async () => {
     if (savingOffline || savingRef.current) {
-      cancelSaveRef.current = true;
+      // Only a tap on "SAVING — TAP TO STOP" stops it (pass 2). A double tap
+      // on SAVE ALL lands its second tap in the same render as the first —
+      // before that label exists — and read as STOP: the save quit after one
+      // page and the button went back to SAVE ALL, as if it had never started.
+      if (savingOffline) cancelSaveRef.current = true;
       return;
     }
     // Belt and braces: the control is already member-only, but a saved-off
@@ -2178,10 +2209,15 @@ ${COPY.glossaryFreeAllowance}`,
       }
       refreshOfflineStats();
     } catch {
-      notify(
-        'Couldn’t finish saving',
-        'The glossary is partly saved and what was stored is kept. Try again when you have a steadier connection.',
-      );
+      // Not after the reader has left the screen or tapped STOP (pass 2): a
+      // page still in flight then failed and this popped up, unasked, over
+      // whatever they had moved on to (Low-Light: nothing auto-appears).
+      if (!cancelSaveRef.current) {
+        notify(
+          'Couldn’t finish saving',
+          'The glossary is partly saved and what was stored is kept. Try again when you have a steadier connection.',
+        );
+      }
       refreshOfflineStats();
     } finally {
       savingRef.current = false;
@@ -2587,7 +2623,9 @@ ${COPY.glossaryFreeAllowance}`,
     setBmCtx('glossary');
     bmBaseline.current = new Set(getBookmarks('glossary'));
     setBmOpen(true);
-    void listBookmarkContexts().then(setBmContexts);
+    // Unreadable storage leaves the switcher at its zero counts rather than
+    // surfacing as an unhandled rejection (pass 2).
+    void listBookmarkContexts().then(setBmContexts, () => {});
   }, []);
 
   // Switch the popup to another context's bookmarks; re-baseline so removals are
@@ -3806,7 +3844,6 @@ ${COPY.glossaryFreeAllowance}`,
           ) : null}
           <Text style={styles.mediaHint}>TAP TO CLOSE</Text>
         </Pressable>
-        <LowLightDim />
       </Modal>
 
       {/* Held-chip term list (user request 2026-07-22) — the members of one set
@@ -3862,7 +3899,6 @@ ${COPY.glossaryFreeAllowance}`,
             </Pressable>
           </View>
         </View>
-        <LowLightDim />
       </Modal>
 
       {/* Single bookmark popup (redesign, user request 2026-07-25) — the SELECTED
@@ -3904,7 +3940,6 @@ ${COPY.glossaryFreeAllowance}`,
             </Pressable>
           </View>
         </View>
-        <LowLightDim />
       </Modal>
 
       {/* Topic-filter member gate (user request 2026-07-25) — a brief hint that
@@ -3917,8 +3952,11 @@ ${COPY.glossaryFreeAllowance}`,
         lines={['Filtering the glossary by topic is an active-membership feature.', COPY.upgradePhrase]}
         primaryLabel="EXPLORE MEMBERSHIP?"
         onPrimary={() => {
+          // Same hand-off as the weekly lock's (pass 2): the Paywall is a
+          // modal presentation, and iOS refuses one while this prompt's own
+          // Modal is still fading out — EXPLORE MEMBERSHIP did nothing.
           setTopicGate(false);
-          (navigation as any).navigate('Paywall');
+          setTimeout(() => (navigation as any).navigate('Paywall'), HOST_DISMISS_MS);
         }}
       />
 

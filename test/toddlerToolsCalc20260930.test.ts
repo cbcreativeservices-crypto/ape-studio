@@ -52,7 +52,8 @@ test('4 — Frequency Counter: BACK leaves a mode before leaving the tool', () =
   const src = read('screens/tools/FrequencyCounterScreen.tsx');
   assert.match(src, /if \(!centerLockOpen && !vuTunerOpen && mode == null\) return;/);
   assert.match(src, /else setMode\(null\);\s*return true;/);
-  assert.match(src, /\}, \[centerLockOpen, vuTunerOpen, mode\]\);/);
+  // backFocused joined the deps in day pass 2 (the handler only runs focused).
+  assert.match(src, /\}, \[backFocused, centerLockOpen, vuTunerOpen, mode\]\);/);
 });
 
 test('5 — workflow runner re-opens a finished run when a step is revisited', () => {

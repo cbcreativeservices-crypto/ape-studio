@@ -232,10 +232,18 @@ function finalize(m: PaceMethodKey): void {
  */
 const CREDIT_RETRY_MS = [5_000, 15_000, 45_000, 120_000, 300_000];
 const creditRetries = new Set<ReturnType<typeof setTimeout>>();
+/**
+ * Bumped by `resetTimeTrials` (bug pass 2, 2026-09-30). Clearing the queued
+ * timeouts was not enough: a credit call already IN FLIGHT when the account
+ * was wiped came back failed (often BECAUSE of the sign-out) and armed a fresh
+ * retry after the wipe — which then landed under the next account.
+ */
+let creditGeneration = 0;
 
 function creditWithRetry(m: PaceMethodKey, topicId: string, correctCount: number, attempt: number): void {
+  const gen = creditGeneration;
   void recordTimeTrialPass({ topicId, method: m, correctCount, seconds: TIME_TRIAL_SECONDS }).then((ok) => {
-    if (ok || attempt >= CREDIT_RETRY_MS.length) return;
+    if (ok || attempt >= CREDIT_RETRY_MS.length || gen !== creditGeneration) return;
     const t = setTimeout(() => {
       creditRetries.delete(t);
       creditWithRetry(m, topicId, correctCount, attempt + 1);
@@ -329,6 +337,7 @@ export function resetTimeTrials(): void {
   // …and any pending credit retry, for the same reason (see creditWithRetry).
   creditRetries.forEach((t) => clearTimeout(t));
   creditRetries.clear();
+  creditGeneration++;
   states.clear();
   snapshots.clear();
   timers.clear();

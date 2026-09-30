@@ -14,7 +14,7 @@
  *  • ConceptBadge — the standing "CONCEPTUAL MODEL — SLOWED FOR VISIBILITY"
  *    disclosure every animated panel carries.
  */
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { LayoutAnimation, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { levelColor, rampColors } from '../../../features/tools/levelColor';
@@ -182,10 +182,25 @@ export function DragSlider({
   const ctxLock = useScrollLock();
   const lockRef = useRef({ ctx: ctxLock, prop: onDragActive });
   lockRef.current = { ctx: ctxLock, prop: onDragActive };
+  // Held while a finger is down, so an UNMOUNT mid-drag (a second finger on
+  // NEXT / a page jump) still releases the host's scroll lock — no release or
+  // terminate ever fires for a slider that is gone, and the page stayed
+  // frozen (bug pass 2 2026-09-30).
+  const draggingRef = useRef(false);
   const setLock = (v: boolean) => {
+    draggingRef.current = v;
     lockRef.current.ctx?.(v);
     lockRef.current.prop?.(v);
   };
+  useEffect(
+    () => () => {
+      if (!draggingRef.current) return;
+      draggingRef.current = false;
+      lockRef.current.ctx?.(false);
+      lockRef.current.prop?.(false);
+    },
+    [],
+  );
 
   // ANCHORED drag math (owner 2026-08-07 fix): the grant tap positions the
   // value once from locationX, then every move applies gestureState.dx to that

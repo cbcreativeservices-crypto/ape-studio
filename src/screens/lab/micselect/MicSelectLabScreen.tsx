@@ -1017,8 +1017,13 @@ export function MicSelectLabScreen() {
   const [ending, setEnding] = useState(false);
   const visited = useLabVisits('micselect');
   useEffect(() => {
+    // Wait for the tier (bug hunt 2026-09-30 pass 2 — the Tube lab's fix): the
+    // provider boots at 'anonymous'-but-unresolved, so a cold-start guest's
+    // first lesson was PERSISTED before the guest rule could apply. Re-runs
+    // when the tier lands, so that lesson is still recorded.
+    if (!resolved) return;
     markLabVisit('micselect', STEPS[step].key, { persist: !noAccountRef.current });
-  }, [step]);
+  }, [step, resolved, entitlement]);
 
   const s = STEPS[step];
 

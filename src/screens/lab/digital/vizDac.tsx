@@ -88,7 +88,7 @@ function GlowStroke({
 const tiny = {
   position: 'absolute' as const,
   fontFamily: fonts.oswaldSemiBold,
-  fontSize: 8,
+  fontSize: 9, // ≥ 9 pt on a phone (bug pass 2 2026-09-30 — was 8)
   letterSpacing: 0.8,
   color: LABEL,
 };
@@ -419,7 +419,7 @@ export function DacChainStrip({ width, running, height = 76 }: { width: number; 
               marginRight: i < 5 ? gap : 0,
               textAlign: 'center',
               fontFamily: fonts.oswaldSemiBold,
-              fontSize: 8,
+              fontSize: 9,
               letterSpacing: 0.3,
               color: i >= 4 ? withAlpha(WAVE, 0.85) : LABEL,
             }}
@@ -769,7 +769,10 @@ export function JitterView({
       </Canvas>
       <RNText style={[tiny, { left: x0, top: 0, color: withAlpha(GREEN, 0.8) }]}>IDEAL CLOCK</RNText>
       <RNText style={[tiny, { left: x0, top: 54, color: withAlpha(RED, 0.85) }]}>WITH JITTER (EXAGGERATED)</RNText>
-      <RNText style={[tiny, { right: 10, top: waveTop - 12 }]}>VALUE ERROR ≈ SLOPE × TIMING ERROR</RNText>
+      {/* Bottom-right under the wave: at 9 pt the old spot (top: waveTop − 12)
+          ran into "WITH JITTER (EXAGGERATED)" on a 390-wide phone (bug pass 2
+          2026-09-30). */}
+      <RNText style={[tiny, { right: 10, top: h - 13 }]}>VALUE ERROR ≈ SLOPE × TIMING ERROR</RNText>
     </View>
   );
 }

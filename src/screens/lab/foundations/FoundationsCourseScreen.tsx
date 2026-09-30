@@ -156,6 +156,13 @@ export function useCourseTone(engineReady: boolean): ToneApi {
   // Without this the transport stays lit over silence.
   useStopOnAudioMute(setPlaying);
   const genRef = useRef(0);
+  // The generation of the last stop() (bug pass 2 2026-09-30). A start that
+  // finds itself superseded used to genStop() unconditionally — but when the
+  // newer thing is another PLAY (a double-tap, or a second chip tapped while
+  // the first start was in flight), that stop landed AFTER the newer
+  // genStart: silence under a lit transport. Only a stop() (or a closed gate)
+  // since this start may silence the generator; a newer play owns it.
+  const stopGenRef = useRef(0);
   const freqRef = useRef(220);
   const levelRef = useRef(-24);
 
@@ -178,7 +185,7 @@ export function useCourseTone(engineReady: boolean): ToneApi {
           // A mute that landed while the native start was in flight wins — never
           // leave a tone sounding into a closed gate (owner 2026-09-29).
           if (gen !== genRef.current || !isAudioOutputEnabled()) {
-            void ApeDsp.genStop();
+            if (stopGenRef.current > gen || !isAudioOutputEnabled()) void ApeDsp.genStop();
             return;
           }
           setPlaying(true);
@@ -252,7 +259,7 @@ export function useCourseTone(engineReady: boolean): ToneApi {
           // A mute that landed while the native start was in flight wins — never
           // leave a tone sounding into a closed gate (owner 2026-09-29).
           if (gen !== genRef.current || !isAudioOutputEnabled()) {
-            void ApeDsp.genStop();
+            if (stopGenRef.current > gen || !isAudioOutputEnabled()) void ApeDsp.genStop();
             return;
           }
           setPlaying(true);
@@ -290,7 +297,7 @@ export function useCourseTone(engineReady: boolean): ToneApi {
           // A mute that landed while the native start was in flight wins — never
           // leave a tone sounding into a closed gate (owner 2026-09-29).
           if (gen !== genRef.current || !isAudioOutputEnabled()) {
-            void ApeDsp.genStop();
+            if (stopGenRef.current > gen || !isAudioOutputEnabled()) void ApeDsp.genStop();
             return;
           }
           setPlaying(true);
@@ -304,7 +311,7 @@ export function useCourseTone(engineReady: boolean): ToneApi {
   );
 
   const stop = useCallback(() => {
-    genRef.current++;
+    stopGenRef.current = ++genRef.current;
     if (stereoRef.current) {
       // Harmonograph idiom: the stereo split is GLOBAL engine state — clear it
       // on stop so mono tools never inherit a hard-panned pair.

@@ -28,7 +28,7 @@
  * because the learner pressed FINISH / DONE / the WHAT'S LEFT chip, and it has
  * no timers or entrance animation. Text ≥ 9 pt at 390 wide (smallest is 10).
  */
-import { useState, type ReactNode } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
@@ -101,6 +101,18 @@ export function LabEndScreen({
   const w = whatsLeft(units, cleared);
   const title = w.complete && completeTitle ? completeTitle : endTitle(w);
   const [showCredited, setShowCredited] = useState(false);
+  // ONE exit (bug pass 2026-09-30): a double tap on DONE ran the host's
+  // goBack() twice and popped a second screen (Amp, Tuning, Mic Selection,
+  // Tube, Mic Principles, Speaker Coverage, every PagedLab).
+  // A time window, not a one-way latch, so a host whose DONE does not leave
+  // (it just changes page) still works on the next deliberate tap.
+  const doneAt = useRef(0);
+  const done = () => {
+    const now = Date.now();
+    if (now - doneAt.current < 700) return;
+    doneAt.current = now;
+    onDone();
+  };
   // A guest banks nothing to an account, so their rows never read CREDITED.
   const tag = mode === 'credit' && !isGuest ? 'CREDITED' : 'DONE';
 
@@ -165,7 +177,7 @@ export function LabEndScreen({
 
       <View style={styles.actions}>
         <GlassButton label="PRACTISE AGAIN FROM THE START" tint="gold" height={46} fontSize={12.5} onPress={onPracticeAgain} />
-        <GlassButton label={doneLabel} tint="green" height={46} fontSize={12.5} onPress={onDone} />
+        <GlassButton label={doneLabel} tint="green" height={46} fontSize={12.5} onPress={done} />
       </View>
       <Text style={styles.note}>
         {isGuest

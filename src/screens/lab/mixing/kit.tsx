@@ -27,6 +27,7 @@ import { EarClipPlayer } from '../../../features/ear/earPlayer';
 import { Btn, Row, useMarkWhen } from '../tuning/components/primitives';
 import { GearButton, GearFader, GearKnob, ScribbleStrip, StripFrame } from '../kit/gear';
 import type { PageCtx } from '../kit/PagedLab';
+import { useLabEndGuest } from '../kit/LabEndScreen';
 import {
   FLAT,
   matchGainDb,
@@ -79,6 +80,12 @@ export function resetMixingCommitments(): void {
 
 export function useFocalChoice(): [string | null, (id: string) => void] {
   const [, force] = useState(0);
+  // HOUSE GUEST RULE (bug hunt 2026-09-30 pass 2): kit/PagedLab saves no
+  // page progress for a signed-out guest (its end screen: "nothing here is
+  // saved"), but this commitment was written and came back on the next open.
+  // A guest's choice now lives in memory for the session only.
+  const guestRef = useRef(false);
+  guestRef.current = useLabEndGuest();
   useEffect(() => {
     const l = () => force((n) => n + 1);
     focalListeners.add(l);
@@ -89,7 +96,7 @@ export function useFocalChoice(): [string | null, (id: string) => void] {
   const set = useCallback((id: string) => {
     focalCurrent = id;
     focalListeners.forEach((l) => l());
-    void AsyncStorage.setItem(FOCAL_KEY, id).catch(() => {});
+    if (!guestRef.current) void AsyncStorage.setItem(FOCAL_KEY, id).catch(() => {});
   }, []);
   return [focalCurrent, set];
 }
@@ -117,6 +124,9 @@ void AsyncStorage.getItem(PRIORITIES_KEY)
 /** The learner's three declared mix priorities — a commitment, not an answer. */
 export function useMixPriorities(): [readonly string[], (id: string) => void] {
   const [, force] = useState(0);
+  // HOUSE GUEST RULE — see useFocalChoice.
+  const guestRef = useRef(false);
+  guestRef.current = useLabEndGuest();
   useEffect(() => {
     const l = () => force((n) => n + 1);
     prioritiesListeners.add(l);
@@ -131,7 +141,7 @@ export function useMixPriorities(): [readonly string[], (id: string) => void] {
         ? prioritiesCurrent
         : [...prioritiesCurrent, id];
     prioritiesListeners.forEach((l) => l());
-    void AsyncStorage.setItem(PRIORITIES_KEY, JSON.stringify(prioritiesCurrent)).catch(() => {});
+    if (!guestRef.current) void AsyncStorage.setItem(PRIORITIES_KEY, JSON.stringify(prioritiesCurrent)).catch(() => {});
   }, []);
   return [prioritiesCurrent, toggle];
 }

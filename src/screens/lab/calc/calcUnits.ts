@@ -285,6 +285,67 @@ export const NEGATIVE_MSG = 'Can’t be negative.';
 export function isNonNegativeField(f: Pick<FieldDef, 'quantity' | 'nonNegative'>): boolean {
   return NON_NEGATIVE_KINDS.has(f.quantity) || f.nonNegative === true;
 }
+/**
+ * Unit tags written into a label or field name — "LEVEL (dBV)", "PANEL MASS
+ * (kg/m²)", "CAPACITANCE (µF)". Two kinds are catch-alls whose ONE display unit
+ * cannot tell them apart: 'number' (µF, kg/m², ppm, LUFS, mV/Pa … and plain
+ * counts) and 'db' (dBu, dBV and relative dB). The chain used to match on the
+ * kind alone, so a panel mass filled a capacitance and a dBV result filled a dBu
+ * field — a silent 2.2 dB error in a lab that teaches exactly that difference.
+ * Order matters: compound units are matched (and removed) before their parts.
+ */
+const UNIT_TAGS: [string, RegExp][] = [
+  ['dBV/Pa', /dBV\/Pa/g],
+  ['mV/Pa', /mV\/Pa/g],
+  ['dBFS', /\bdBFS\b/g],
+  ['dBTP', /\bdBTP\b/g],
+  ['dBu', /\bdBu\b/g],
+  ['dBV', /\bdBV\b/g],
+  ['dBm', /\bdBm\b/g],
+  ['LUFS', /\bLUFS\b/g],
+  ['LU', /\bLU\b/g],
+  ['µF', /µF/g],
+  ['mH', /\bmH\b/g],
+  ['kg/m²', /kg\/m²/g],
+  ['lb/ft²', /lb\/ft²/g],
+  ['MHz', /MHz/g],
+  ['ppm', /\bppm\b/g],
+  ['°F', /°F/g],
+  ['AWG', /\bAWG\b/g],
+  ['fps', /\bfps\b/g],
+  ['rad/s', /rad\/s/g],
+  ['BTU/hr', /BTU\/hr/g],
+  ['mm²', /mm²/g],
+  ['cm³', /cm³/g],
+];
+export function unitTags(text: string): string[] {
+  // "IF THIS IS dBu → in dBV" is a dBV value: only the result side counts.
+  let t = text.includes('→') ? text.slice(text.lastIndexOf('→') + 1) : text;
+  const out: string[] = [];
+  for (const [tag, re] of UNIT_TAGS) {
+    if (t.search(re) >= 0) {
+      out.push(tag);
+      t = t.replace(re, ' ');
+    }
+  }
+  return out;
+}
+/**
+ * May a chained / imported / project value (`label`, `quantity`) fill `field`?
+ * The kinds must match (as before). On 'db', two NAMED references must agree
+ * (dBV never fills dBu; an unnamed relative dB still fits either way). On
+ * 'number', the unit tags must be identical — a kg/m² or a dBV/Pa never fills a
+ * µF or a plain count, and a plain count never fills a named unit.
+ */
+export function chainFits(label: string, quantity: QuantityKind, field: Pick<FieldDef, 'name' | 'quantity'>): boolean {
+  if (quantity !== field.quantity || quantity === 'list') return false;
+  if (quantity !== 'db' && quantity !== 'number') return true;
+  const a = unitTags(label);
+  const b = unitTags(field.name);
+  const shared = a.some((x) => b.includes(x));
+  if (quantity === 'db') return a.length === 0 || b.length === 0 || shared;
+  return (a.length === 0 && b.length === 0) || shared;
+}
 /** The first input of `fn` holding an impossible negative, or null. Lists are
  *  checked element by element (a −30 min interval used to REDUCE a noise dose). */
 export function negativeInput(

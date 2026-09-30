@@ -40,7 +40,10 @@ const FFT = 4096;
 const AXIS_FONT = fonts.barlowCondensedMedium;
 const READOUT_FONT = fonts.mono;
 const LABEL_FONT = fonts.oswaldMedium;
-const AXIS_PX = 8.5; // ≈ the 8.5-in-340 floor scaled to this 320 viewBox
+// ≥ 9 pt on a phone (owner 2026-09-25 hard rule; bug hunt 2026-09-30 pass 2):
+// every plot here is a fixed-HEIGHT Svg with width 100%, so the fit scale is
+// min(width / 320, 1) — never above 1 — and 8.5 drew 8.5 pt axis labels.
+const AXIS_PX = 9;
 
 const clampHz = (hz: number) => Math.max(F_LO, Math.min(F_HI, hz));
 const xOf = (hz: number) =>

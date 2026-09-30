@@ -102,6 +102,7 @@ export function CableInstallLabScreen() {
   // never leave the page unscrollable.
   useEffect(() => setDragLocked(false), [step]);
   const navigatedRef = useRef(false);
+  const leavingRef = useRef(false);
   const scrollRef = useRef<ScrollView | null>(null);
 
   // Local mirror of completed units (we mark + mirror so a stage flips to done
@@ -478,7 +479,13 @@ export function CableInstallLabScreen() {
                   setShownMyths([]);
                   goTo(1, {}, []);
                 }}
-                onReturn={() => navigation.goBack()}
+                // One exit (bug hunt 2026-09-30 pass 2): a doubled RETURN ran
+                // goBack() twice and popped the screen under the lab too.
+                onReturn={() => {
+                  if (leavingRef.current) return;
+                  leavingRef.current = true;
+                  navigation.goBack();
+                }}
               />
             )
           ) : mod && Body ? (

@@ -13,11 +13,11 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { AMP_MODULES, ampModuleById, checksForModule } from '../../../features/amp/ampContent';
-import { emptyAmpModule, updateAmpProgress, type AmpProgressState } from '../../../features/amp/ampProgress';
+import { emptyAmpModule, setAmpSaveBlocked, updateAmpProgress, type AmpProgressState } from '../../../features/amp/ampProgress';
 import { AMP_MODULE_COMPONENTS, BUILT_MODULE_IDS } from './modules';
 import { CheckCard, SectionTitle, TakeawayCard } from './kit';
 import { AccuracyNote } from '../../../components/AccuracyNote';
-import { LabEndLink, LabEndScreen } from '../kit/LabEndScreen';
+import { LabEndLink, LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 // Tablet (owner 2026-09-29): a reading surface - capped at the reading column
 // and centred instead of running 990 pt wide. No-op on a phone.
 import { readingColumn } from '../../../theme/readingColumn';
@@ -28,6 +28,9 @@ export function AmpModuleScreen() {
   const route = useRoute<RouteProp<RootStackParamList, 'AmpModule'>>();
   const mod = ampModuleById(route.params.id);
   const Component = AMP_MODULE_COMPONENTS[mod.id];
+  // HOUSE GUEST RULE (bug hunt 2026-09-30 pass 2): a signed-out guest's
+  // progress is neither restored nor written (see ampProgress).
+  setAmpSaveBlocked(useLabEndGuest());
   const [checksAnswered, setChecksAnswered] = useState<Record<string, boolean>>({});
   const [done, setDone] = useState(false);
   const [finalSubmitted, setFinalSubmitted] = useState(false);

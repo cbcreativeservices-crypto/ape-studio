@@ -25,7 +25,6 @@ import {
   BackHandler,
   FlatList,
   InteractionManager,
-  Modal,
   PanResponder,
   Pressable,
   ScrollView,
@@ -34,6 +33,11 @@ import {
   View,
 } from 'react-native';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
+// DimModal, not react-native's (bug pass 2, 2026-09-30): the term list was the
+// one raw Modal left on this screen, so a root dialog raised while it was open
+// (session expiry, the single-device notice) was refused on iOS and drawn
+// behind it on Android. It also brings the Low-Light wash.
+import { Modal } from '../../components/DimModal';
 import { useSharedValue } from 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -104,7 +108,6 @@ import {
   useTermList,
 } from '../../features/flags/flaggedStore';
 import { TermSelectIcons } from '../../features/flags/TermSelectIcons';
-import { LowLightDim } from '../../features/settings/LowLightLayer';
 import { consumeDevPreview } from '../../features/dev/devPreview';
 import { areOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
 import { devBypass } from '../../config/devMode';
@@ -570,7 +573,9 @@ const STUDY_ROUTES: Partial<
  */
 async function signOutOrSay(onDone: () => void): Promise<void> {
   markIntentionalSignOut();
-  const { error } = await supabase.auth.signOut().catch((e: unknown) => ({ error: e as Error }));
+  // Local scope (bug pass 2026-09-30): sign THIS device out, not the website
+  // or the user's other sessions — same as Settings › Log out.
+  const { error } = await supabase.auth.signOut({ scope: 'local' }).catch((e: unknown) => ({ error: e as Error }));
   if (error) {
     consumeIntentionalSignOut(); // no SIGNED_OUT is coming for it
     notify('Couldn’t log out', 'We couldn’t reach the Academy to sign you out — check your connection and try again.');
@@ -654,7 +659,7 @@ export function DashboardScreen() {
   const jogCoach = useCoachMark(COACH_KEYS.dashboardJog, 2);
   // CM6 (Booth 2026-07-11): commercialMode renders a PUBLIC course (seq order
   // from the seed) through this same screen; institutional path unchanged.
-  const { commercialMode, caps, entitlement, resolved } = useEntitlement();
+  const { commercialMode, caps, entitlement, resolved, tierKnown } = useEntitlement();
   // Membership gate (user request 2026-08-12): a free user may LOAD a locked/paid
   // topic into the Dashboard, but studying it raises the Academy upgrade sheet.
   const [upgradeOpen, setUpgradeOpen] = useState(false);
@@ -1621,8 +1626,11 @@ export function DashboardScreen() {
   // as broken rather than gated. The pseudo-topic carries
   // `global_sequence: null`, so the free-topic clause below cannot match it and
   // this fails CLOSED for every non-member.
+  // `tierKnown`, not `resolved` (bug pass 2026-09-30): `resolved` flips even
+  // when the read FAILED, so an offline member with no cached tier was shown
+  // the study-access upsell. The study screens still check on the server.
   const actMembershipLocked = studyMethodLocked({
-    resolved,
+    resolved: tierKnown,
     entitlement,
     displayedGs: dispTopic.global_sequence,
     freeGs: FREE_ENROLL_GS,
@@ -1630,7 +1638,7 @@ export function DashboardScreen() {
   // The ★ Custom List's own lock — NOT `actMembershipLocked`, which reads the
   // DISPLAYED topic while this panel renders on the COMMITTED one. See the
   // docblocks in features/commercial/studyGate.ts.
-  const customListLocked = customListLockedFn({ resolved, entitlement });
+  const customListLocked = customListLockedFn({ resolved: tierKnown, entitlement });
   // The free topics that are actually in THIS deck, with their index, so the
   // study-access sheet can offer a real jump (owner 2026-09-17). Order follows
   // FREE_ENROLL_GS, not deck order, so the offer reads the same every time.
@@ -2494,7 +2502,6 @@ export function DashboardScreen() {
             </View>
           </View>
         </View>
-        <LowLightDim />
       </Modal>
 
       {/* Study gate (user request 2026-08-12/13): a locked/paid topic loads and is

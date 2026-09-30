@@ -31,7 +31,7 @@
  */
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { AppState, Pressable, StyleSheet, Text, View } from 'react-native';
-import { Modal, setHostedOverlay, useModalHostOpen } from '../../components/DimModal';
+import { HOST_DISMISS_MS, Modal, setHostedOverlay, useModalHostOpen } from '../../components/DimModal';
 import { HoldToActivate } from '../../components/HoldToActivate';
 import { getLabPreview } from '../lab/labPreviewStore';
 import { supabase } from '../../lib/supabase';
@@ -115,6 +115,9 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
    *  over one is drawn inside it) — they are skipped here, or the gate would
    *  flip itself in and out. */
   const hostOpen = useModalHostOpen('gate');
+  /** `hostOpen` for the stable API closure. */
+  const hostOpenRef = useRef(hostOpen);
+  hostOpenRef.current = hostOpen;
   /**
    * The host just CLOSED with a popup still pending. Its dismissal is still
    * animating, and iOS will not present a new Modal mid-dismissal — so the root
@@ -168,12 +171,21 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
             // the popup is not on screen (a Modal asked for mid-transition can
             // fail to present on iOS). Close and reopen the same step so it
             // actually appears; if it was visible, this is one frame's blink.
+            //
+            // Bug hunt 2026-09-30, pass 2: (a) a HOSTED card is drawn in-tree
+            // and is always on screen, so it is left alone; (b) a root popup
+            // that WAS on screen is still fading out 60 ms later, and iOS
+            // refuses to present over a dismissal in progress — the re-present
+            // itself failed and the popup vanished for good. Wait out the
+            // dismissal (HOST_DISMISS_MS), and only for THIS request: a
+            // cancel + new request meanwhile must not be jumped to this step.
             const current = phaseRef.current;
-            if (current !== 'closed') {
+            if (current !== 'closed' && !hostOpenRef.current) {
+              const gen = requestGen.current;
               setPhase('closed');
               setTimeout(() => {
-                if (resolver.current) setPhase(current);
-              }, 60);
+                if (resolver.current && requestGen.current === gen) setPhase(current);
+              }, HOST_DISMISS_MS);
             }
             return;
           }

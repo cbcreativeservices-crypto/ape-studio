@@ -35,7 +35,24 @@ export function emptyAmpModule(): AmpModuleProgress {
   return { visited: false, done: false, checks: {} };
 }
 
+/**
+ * HOUSE GUEST RULE (owner 2026-08-12; bug hunt 2026-09-30 pass 2): a
+ * signed-out guest or a members-only preview neither restores progress nor
+ * saves it — the lab's own end screen tells them "nothing here is saved".
+ * The screens set this FLAG on every render, from the live entitlement (like
+ * setSoundSystemsSaveBlocked). While blocked `ape:amp:v1` is neither read nor
+ * written: every load starts empty and saves go nowhere. The guest keeps
+ * using the lab normally — checks, COMPLETE & CONTINUE, the final — inside
+ * each screen; only persistence stops (leave and return restores nothing).
+ * No user data is held here, so an account change has nothing to reset.
+ */
+let saveBlocked = false;
+export function setAmpSaveBlocked(blocked: boolean): void {
+  saveBlocked = blocked;
+}
+
 export async function loadAmpProgress(): Promise<AmpProgressState> {
+  if (saveBlocked) return { modules: {} };
   try {
     const raw = await AsyncStorage.getItem(KEY);
     if (!raw) return { modules: {} };
@@ -47,6 +64,7 @@ export async function loadAmpProgress(): Promise<AmpProgressState> {
 }
 
 export async function saveAmpProgress(s: AmpProgressState): Promise<void> {
+  if (saveBlocked) return;
   try {
     await AsyncStorage.setItem(KEY, JSON.stringify(s));
   } catch {

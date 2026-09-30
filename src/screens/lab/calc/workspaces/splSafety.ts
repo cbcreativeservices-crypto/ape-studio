@@ -55,7 +55,7 @@ const WS_SPL_DIST: Workspace = {
     { key: 'l1', name: 'KNOWN LEVEL L₁', quantity: 'spl', placeholder: '100', help: 'The measured or specified level at the reference distance.' },
     { key: 'd1', name: 'REFERENCE DISTANCE d₁', quantity: 'length', placeholder: '1', help: 'The distance at which L₁ was measured (often 1 m on spec sheets).', warn: { test: (x) => x <= 0, msg: 'Reference distance must be greater than zero.' } },
     { key: 'd2', name: 'NEW DISTANCE d₂', quantity: 'length', placeholder: '8', help: 'The distance where you want to know (or set) the level.', warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
-    { key: 'rate', name: 'FALLOFF PER DOUBLING', quantity: 'db', placeholder: '4.5', help: 'dB lost each time distance doubles: 6 = point source, 3 = ideal line source, real arrays land between.' },
+    { key: 'rate', name: 'FALLOFF PER DOUBLING', quantity: 'db', nonNegative: true, placeholder: '4.5', help: 'dB lost each time distance doubles: 6 = point source, 3 = ideal line source, real arrays land between.' },
     { key: 'lTarget', name: 'TARGET LEVEL AT d₂', quantity: 'spl', placeholder: '96', help: 'The level you want the listener at d₂ to receive.' },
   ],
   functions: [

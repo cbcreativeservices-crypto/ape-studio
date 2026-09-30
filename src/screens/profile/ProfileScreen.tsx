@@ -320,7 +320,13 @@ export function ProfileScreen() {
     }, [loadProfile, resolved]),
   );
 
+  /** Synchronous twin of `exportingId` (bug pass 2, 2026-09-30): `disabled`
+   *  only lands after a re-render, so two taps in one frame — on one row or
+   *  two — both started an export and raced for the one share sheet. */
+  const exportingRef = useRef(false);
   const onExportCredential = useCallback(async (row: EarnedCredentialRow) => {
+    if (exportingRef.current) return;
+    exportingRef.current = true;
     setCredMessage(null);
     setExportingId(row.id);
     const res = await exportCertificate({
@@ -328,6 +334,7 @@ export function ProfileScreen() {
       awardType: row.type,
       earnedAt: row.awardedAt,
     });
+    exportingRef.current = false;
     setExportingId(null);
     if (res.ok) return;
     setCredMessage(

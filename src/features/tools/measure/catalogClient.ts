@@ -11,9 +11,9 @@
  */
 import { supabase } from '../../../lib/supabase';
 import {
-  clearContributionQueue,
   getQueuedContributions,
   hasCrowdsourceConsent,
+  removeQueuedContributions,
   type CalibrationContribution,
   type DeviceKey,
 } from './deviceProfile';
@@ -48,14 +48,17 @@ export async function uploadQueuedContributions(): Promise<void> {
     // and the queue is only cleared on success — so one bad offset (queued before
     // the calibrate stepper was clamped) blocked every later contribution forever.
     const ok = q.filter((c) => Number.isFinite(c.offsetDb) && c.offsetDb >= CAL_OFFSET_MIN_DB && c.offsetDb <= CAL_OFFSET_MAX_DB);
+    // Remove ONLY the rows read above — a contribution queued while the upload
+    // was in flight must survive (clearing the whole queue dropped it).
+    const drained = q.map((c) => c.contributionId);
     if (ok.length === 0) {
-      await clearContributionQueue();
+      await removeQueuedContributions(drained);
       return;
     }
     const { error } = await supabase
       .from(TABLE)
       .upsert(ok.map(toRow), { onConflict: 'contribution_id', ignoreDuplicates: true });
-    if (!error) await clearContributionQueue();
+    if (!error) await removeQueuedContributions(drained);
   } catch {
     /* offline / transient — the queue persists and retries next time */
   }

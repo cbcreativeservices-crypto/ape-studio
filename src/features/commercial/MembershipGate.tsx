@@ -55,6 +55,23 @@ function useMembershipGate(): MembershipGatePayload | null {
 }
 
 /**
+ * ⛔ GET MEMBERSHIP FROM A HOSTED CARD (bug pass 2, 2026-09-30). The Paywall is
+ * a `presentation: 'modal'` screen. Navigating to it while the DimModal that
+ * HOSTS this card (a sheet, a lab's full screen) is still up is the refusal the
+ * hosting exists to avoid — iOS presents nothing, Android draws the Paywall
+ * behind — so the button read as dead. A hosted tap now records the request
+ * here, and the focused host opens the Paywall once no other Modal is open and
+ * the last one has finished animating away (see the effect in the host).
+ */
+let paywallPending = false;
+const getPaywallPending = () => paywallPending;
+function setPaywallPending(v: boolean): void {
+  if (paywallPending === v) return;
+  paywallPending = v;
+  emit();
+}
+
+/**
  * Rendered PER SCREEN from RootNavigator's `screenLayout` (2026-09-13), NOT once
  * at the App root as it was from 2026-09-10. A root-level overlay is INVISIBLE
  * on the seven `presentation: 'modal'` screens - RootNavigator spells out why,
@@ -91,6 +108,19 @@ export function MembershipGateHost() {
     return () => clearTimeout(t);
   }, [holdMs]);
 
+  // The Paywall a HOSTED card asked for: opened by the focused screen's host
+  // once nothing else is on screen to refuse it. A Modal opening again inside
+  // the wait re-runs this and cancels the timer.
+  const pending = useSyncExternalStore(subscribe, getPaywallPending, getPaywallPending);
+  useEffect(() => {
+    if (!focused || !pending || otherModalOpen) return;
+    const t = setTimeout(() => {
+      setPaywallPending(false);
+      if (navigationRef.isReady()) navigationRef.navigate('Paywall');
+    }, rootModalHoldMs());
+    return () => clearTimeout(t);
+  }, [focused, pending, otherModalOpen]);
+
   const card =
     gate == null ? null : (
       <Pressable style={styles.scrim} onPress={closeMembershipGate} accessible={false} accessibilityViewIsModal>
@@ -103,7 +133,10 @@ export function MembershipGateHost() {
             style={styles.cta}
             onPress={() => {
               closeMembershipGate();
-              if (navigationRef.isReady()) navigationRef.navigate('Paywall');
+              // Hosted inside another Modal: the Paywall cannot present over it
+              // yet — ask for it once that Modal has closed (see paywallPending).
+              if (hostedMode) setPaywallPending(true);
+              else if (navigationRef.isReady()) navigationRef.navigate('Paywall');
             }}
             accessibilityRole="button"
             accessibilityLabel="Get Academy membership"

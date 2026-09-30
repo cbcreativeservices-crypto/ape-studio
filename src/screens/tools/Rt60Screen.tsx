@@ -338,9 +338,17 @@ export function Rt60Screen({ navigation }: Props) {
     });
   }, [liveFrame, rtState]);
 
+  /** Bumped by STOP, blur and unmount — an ARM still awaiting start() drops. */
+  const armGenRef = useRef(0);
   /** ARM / RE-ARM: baseline the window, ensure capture is running, arm native. */
   const armCapture = useCallback(async () => {
+    // STOP / leaving while the start below is still opening the mic must win
+    // (toddler pass 2 2026-09-30): the late rt60Arm() otherwise armed the
+    // shared engine behind a stopped or closed screen — the exact "DONE
+    // measurement the user never made" onStop's cancel exists to prevent.
+    const gen = ++armGenRef.current;
     if (state !== 'running') await start(); // returning from the library etc.
+    if (gen !== armGenRef.current) return;
     const base = ApeDsp.getMeterFrame();
     // start() resolves the same on denied / timeout / supersede. With no live
     // capture, arming would wipe a retained unsaved result for nothing and
@@ -372,13 +380,18 @@ export function Rt60Screen({ navigation }: Props) {
     // abandoned by STOP or by leaving surfaced later as a DONE "measurement"
     // the user never made, with no window flags. A retained DONE survives this
     // (the poll above keeps it when the native side reads Off).
+    armGenRef.current++;
     ApeDsp.rt60Cancel();
     stop();
   }, [stop]);
   useEffect(() => {
-    const unsub = navigation.addListener('blur', () => ApeDsp.rt60Cancel());
+    const unsub = navigation.addListener('blur', () => {
+      armGenRef.current++;
+      ApeDsp.rt60Cancel();
+    });
     return () => {
       unsub();
+      armGenRef.current++;
       ApeDsp.rt60Cancel();
     };
   }, [navigation]);

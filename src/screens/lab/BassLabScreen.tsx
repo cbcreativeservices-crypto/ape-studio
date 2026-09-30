@@ -227,6 +227,11 @@ export function BassLabScreen() {
         setSampleNote('');
         setRunning(true);
         noteAudioActivity();
+        // A string / fret / node picked while the recording was being fetched
+        // skipped its re-pluck (retune: running was still false), so the OLD
+        // note rang under the new selection (bug hunt 2026-09-30 pass 2, the
+        // Fx/FM pass-1 fix). Pluck the newest one.
+        if (latestRef.current.sampleKey !== sampleKey) void latestRef.current.startNote();
         return;
       }
       setSampleNote(
@@ -264,12 +269,19 @@ export function BassLabScreen() {
         if (modelGenRef.current === gen) void ApeDsp.genStop();
         return;
       }
+      // Same for the model: a selection changed during the native start is
+      // sent now (see the recording branch above).
+      if (latestRef.current.genParams !== genParams) ApeDsp.genSet(latestRef.current.genParams());
       setRunning(true);
       noteAudioActivity();
     } catch (e) {
       if (gen === genRef.current) setGenError(AUDIO_UNAVAILABLE_MESSAGE);
     }
   };
+
+  /** The newest render's selection, read after a start's awaits. */
+  const latestRef = useRef({ sampleKey, genParams, startNote });
+  latestRef.current = { sampleKey, genParams, startNote };
 
   const stopNote = useCallback(() => {
     genRef.current++;

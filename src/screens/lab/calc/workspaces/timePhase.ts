@@ -7,6 +7,8 @@ import type { Workspace } from '../calcTypes';
 import { fmt, fmtInt, speedOfSoundAir } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
+/** An angle folded into [0, 360) — −90 → 270, 450 → 90 (NaN stays NaN). */
+const wrap360 = (deg: number) => ((deg % 360) + 360) % 360;
 
 /* ------------------------------------------------------------------ */
 /* 1 · Distance · Delay · Samples                                      */
@@ -341,7 +343,10 @@ const WS_PHASE: Workspace = {
       keySymbols: ['Δ', 'φ', '/', '·', 'f'],
       note: 'Cycle ambiguity: phase repeats every 360°, so φ, φ+360°, φ+720°… all fit — a single phase reading cannot fix the absolute delay.',
       compute: (v) => {
-        const dt = n(v.phi) / (360 * n(v.f));
+        // Wrapped into 0–360° first (bug pass 2, 2026-09-30): 450° printed a
+        // "SMALLEST" offset of 1.25 ms when 0.25 ms fits, and −90° a negative
+        // delay. A reading one cycle on (or a lead) is the same reading.
+        const dt = wrap360(n(v.phi)) / (360 * n(v.f));
         const cycle = 1 / n(v.f);
         return [
           { label: 'SMALLEST TIME OFFSET', value: dt, quantity: 'time', unit: 'ms' },
@@ -350,10 +355,12 @@ const WS_PHASE: Workspace = {
         ];
       },
       steps: (v) => {
-        const phi = n(v.phi);
+        const phiIn = n(v.phi);
+        const phi = wrap360(phiIn);
         const f = n(v.f);
         const dt = phi / (360 * f);
         return [
+          ...(phi !== phiIn ? [`${fmt(phiIn)}° reads the same as ${fmt(phi)}° (whole cycles removed).`] : []),
           `Δt = ${fmt(phi)}° ÷ (360 × ${fmt(f)} Hz) = ${fmt(dt * 1000)} ms — the SMALLEST delay that produces this reading.`,
           `Because phase wraps every ${fmt(1000 / f)} ms at ${fmt(f)} Hz, delays of ${fmt((dt + 1 / f) * 1000)} ms, ${fmt((dt + 2 / f) * 1000)} ms, … read identically; the true offset needs more information (impulse response or broadband phase slope).`,
         ];

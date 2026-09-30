@@ -184,6 +184,7 @@ export function FoundationsPlaygroundScreen() {
 
   // ── Audio push (targets-first; safe at UI rate) ────────────────────────────
   const genRef = useRef(0);
+  const stopGenRef = useRef(0); // generation of the last stop() — see start()
   const stateRef = useRef({ source, wave, noise, sweepKey, freq, levelDb, amps, phases });
   stateRef.current = { source, wave, noise, sweepKey, freq, levelDb, amps, phases };
 
@@ -264,8 +265,12 @@ export function FoundationsPlaygroundScreen() {
       await ApeDsp.genStart();
       // A mute that landed while the native start was in flight wins — never
       // leave a tone sounding into a closed gate (owner 2026-09-29).
+      // Only a stop() since this start (or a closed gate) may silence it: when
+      // the newer thing is another start (a double-tap on ▶ while the first
+      // was in flight) this genStop landed AFTER that start — silence under a
+      // lit ■ (bug pass 2 2026-09-30).
       if (gen !== genRef.current || !isAudioOutputEnabled()) {
-        void ApeDsp.genStop();
+        if (stopGenRef.current > gen || !isAudioOutputEnabled()) void ApeDsp.genStop();
         return;
       }
       setPlaying(true);
@@ -276,7 +281,7 @@ export function FoundationsPlaygroundScreen() {
   }, [requestAudioOutput, pushSource, pushFx]);
 
   const stop = useCallback(() => {
-    genRef.current++;
+    stopGenRef.current = ++genRef.current;
     void ApeDsp.genStop();
     ApeDsp.fxReset(); // no effect leakage into other labs (house rule)
     setPlaying(false);

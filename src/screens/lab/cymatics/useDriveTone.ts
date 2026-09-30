@@ -97,25 +97,36 @@ export function useDriveTone(hzA: number, hzB: number | null, amplitude01: numbe
     [dualReady, additiveReady],
   );
 
+  // One start in flight at a time (bug pass 2 2026-09-30). `running` flips
+  // only once the engine is up, so a double-tap on ▶ ran start() twice; the
+  // first one then saw a newer generation and called genStop() AFTER the
+  // second genStart — silence under a lit STOP key. A stop() during the start
+  // still cancels it through the generation token.
+  const startingRef = useRef(false);
   const start = useCallback(async () => {
-    if (!engineReady) return;
-    const gen = ++genRef.current;
-    const ok = await requestAudioOutput();
-    if (!ok || gen !== genRef.current) return;
-    setError('');
-    ApeDsp.genSet(params(hzA, hzB, amplitude01, wave));
+    if (!engineReady || startingRef.current) return;
+    startingRef.current = true;
     try {
-      await ApeDsp.genStart();
-      // A mute that landed while the native start was in flight wins — never
-      // leave a tone sounding into a closed gate (owner 2026-09-29).
-      if (gen !== genRef.current || !isAudioOutputEnabled()) {
-        void ApeDsp.genStop();
-        return;
+      const gen = ++genRef.current;
+      const ok = await requestAudioOutput();
+      if (!ok || gen !== genRef.current) return;
+      setError('');
+      ApeDsp.genSet(params(hzA, hzB, amplitude01, wave));
+      try {
+        await ApeDsp.genStart();
+        // A mute that landed while the native start was in flight wins — never
+        // leave a tone sounding into a closed gate (owner 2026-09-29).
+        if (gen !== genRef.current || !isAudioOutputEnabled()) {
+          void ApeDsp.genStop();
+          return;
+        }
+        setRunning(true);
+        noteAudioActivity();
+      } catch (e) {
+        if (gen === genRef.current) setError(AUDIO_UNAVAILABLE_MESSAGE);
       }
-      setRunning(true);
-      noteAudioActivity();
-    } catch (e) {
-      if (gen === genRef.current) setError(AUDIO_UNAVAILABLE_MESSAGE);
+    } finally {
+      startingRef.current = false;
     }
   }, [engineReady, requestAudioOutput, params, hzA, hzB, amplitude01, wave]);
 

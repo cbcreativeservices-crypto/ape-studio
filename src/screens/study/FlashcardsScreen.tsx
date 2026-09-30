@@ -18,7 +18,12 @@
  *  - Controls pinned to the bottom; card flexes to fill.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactElement, type ReactNode } from 'react';
-import { AccessibilityInfo, ActivityIndicator, BackHandler, FlatList, Image, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, ActivityIndicator, BackHandler, FlatList, Image, PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+// DimModal, not react-native's (bug pass 2, 2026-09-30): the raw Modal was no
+// overlay HOST, so a SpeakButton's audio-output gate or a confirm raised from
+// inside full screen / the term list could not appear on iOS (and drew behind
+// on Android). The Low-Light wash comes with it.
+import { Modal } from '../../components/DimModal';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { confirmDialog } from '../../lib/confirm';
 import Svg, { Circle, Ellipse, Path } from 'react-native-svg';
@@ -59,7 +64,6 @@ import {
   useTermList,
 } from '../../features/flags/flaggedStore';
 import { BookmarkIcon, TermSelectIcons } from '../../features/flags/TermSelectIcons';
-import { LowLightDim } from '../../features/settings/LowLightLayer';
 import { consumeDevPreview } from '../../features/dev/devPreview';
 import { devBypass } from '../../config/devMode';
 import { IntroSheet, ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
@@ -1873,7 +1877,6 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             </View>
           ) : null}
         </View>
-        <LowLightDim />
       </Modal>
 
       {/* Term list — long-press a filter chip to see everything in that set. */}
@@ -1936,7 +1939,6 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             </Pressable>
           </View>
         </View>
-        <LowLightDim />
       </Modal>
 
       {/* Linked-term viewer for the normal (non-fullscreen) card view. */}

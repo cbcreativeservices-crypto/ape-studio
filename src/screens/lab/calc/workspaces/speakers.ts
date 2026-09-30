@@ -707,6 +707,7 @@ const WS_CV70: Workspace = {
       key: 'vline',
       name: 'LINE VOLTAGE',
       quantity: 'voltage',
+      nonNegative: true,
       placeholder: '70.7',
       help: '70.7, 100, or 25. US systems are 70.7 V ("70 V"); 100 V is common internationally.',
       warn: {

@@ -19,6 +19,7 @@ import { AccessibilityInfo, Animated, PanResponder, Pressable, StyleSheet, Text,
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { navigationRef } from '../../navigation/navigationRef';
+import { setHostedOverlay, useModalHostOpen } from '../../components/DimModal';
 import { areOverlaysSuppressed } from '../dev/popupSuppressStore';
 import { hapticsEnabled } from '../settings/store';
 import { colors, fonts } from '../../theme/tokens';
@@ -80,13 +81,18 @@ export function ExposureCheckin() {
 
   useEffect(() => {
     let alive = true;
-    void AccessibilityInfo.isReduceMotionEnabled().then((v) => {
-      if (alive) setReduceMotion(v);
-    });
-    const sub = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduceMotion);
+    // Guarded like reduceMotionNav / NavIcon (bug hunt 2026-09-30, pass 2):
+    // this mounts at the app ROOT, so a platform that does not report the
+    // flag rejected unhandled during boot.
+    void AccessibilityInfo.isReduceMotionEnabled?.()
+      .then((v) => {
+        if (alive) setReduceMotion(!!v);
+      })
+      .catch(() => {});
+    const sub = AccessibilityInfo.addEventListener?.('reduceMotionChanged', setReduceMotion);
     return () => {
       alive = false;
-      sub.remove();
+      sub?.remove?.();
     };
   }, []);
 
@@ -129,8 +135,27 @@ export function ExposureCheckin() {
     }),
   ).current;
 
-  if (!show) return null;
-  const { kind, snap } = show;
+  /**
+   * ⛔ A ROOT SIBLING IS DRAWN UNDER ANY OPEN MODAL (bug hunt 2026-09-30,
+   * pass 2). This panel is an in-tree view at the app root, so during a lab's
+   * FULL SCREEN, a sheet or a popup a "DOSE REACHED" check-in slid in BEHIND it
+   * — the one hearing-safety notice that must be seen. While a DimModal is
+   * open the panel is handed to the topmost one (as the gate and dialogs are,
+   * see DimModal.tsx), and BACK dismisses it. The Low-Light / kill-switch
+   * check above is unchanged: nothing more appears than before.
+   */
+  const hostOpen = useModalHostOpen();
+  const panel = show ? renderPanel(show) : null;
+  useEffect(() => {
+    setHostedOverlay(hostOpen && panel ? { node: panel, onBack: dismiss } : null, 'exposure');
+  });
+  useEffect(() => () => setHostedOverlay(null, 'exposure'), []);
+  useEffect(() => () => {
+    if (hideTimer.current) clearTimeout(hideTimer.current);
+  }, []);
+  return hostOpen ? null : panel;
+
+  function renderPanel({ kind, snap }: { kind: CheckinKind; snap: ExposureSnapshot }) {
   const ks = KIND_STYLE[kind];
   const translateY = reduceMotion
     ? 0
@@ -139,7 +164,18 @@ export function ExposureCheckin() {
 
   const openMonitor = () => {
     dismiss();
-    if (navigationRef.isReady()) navigationRef.navigate('ExposureMonitor' as never);
+    // Hosted, the Monitor would open BEHIND the Modal that holds this panel —
+    // a tap that seemed to do nothing. Hosted, the panel just dismisses.
+    if (hostOpen) return;
+    // `pop: true`: with the Monitor already lower in the stack (Monitor → a
+    // lab → this panel) RN7's navigate() pushed a SECOND Monitor.
+    if (navigationRef.isReady()) {
+      (navigationRef as unknown as { navigate: (r: string, p?: object, o?: { pop?: boolean }) => void }).navigate(
+        'ExposureMonitor',
+        undefined,
+        { pop: true },
+      );
+    }
   };
 
   return (
@@ -148,7 +184,7 @@ export function ExposureCheckin() {
       style={[styles.panel, { paddingTop: insets.top + 6, borderColor: ks.border, transform: [{ translateY }], opacity }]}
       accessibilityLiveRegion="polite"
     >
-      <Pressable onPress={openMonitor} accessibilityRole="button" accessibilityLabel="Open the Listening Exposure Monitor">
+      <Pressable onPress={openMonitor} accessibilityRole="button" accessibilityLabel={hostOpen ? 'Dismiss the listening exposure check-in' : 'Open the Listening Exposure Monitor'}>
         <View style={styles.headRow}>
           <Text style={[styles.title, kind === 'reached' && { color: AUDIO_RED }]}>{ks.title}</Text>
           <Pressable onPress={dismiss} hitSlop={12} accessibilityRole="button" accessibilityLabel="Dismiss">
@@ -169,7 +205,7 @@ export function ExposureCheckin() {
         </Text>
         <Text style={styles.message}>{exposureMessage(snap)}</Text>
         <View style={styles.actionRow}>
-          <Text style={styles.action}>VIEW EXPOSURE ›</Text>
+          {hostOpen ? <View /> : <Text style={styles.action}>VIEW EXPOSURE ›</Text>}
           <Text style={styles.dismissHint}>swipe up to dismiss</Text>
         </View>
       </Pressable>
@@ -177,6 +213,7 @@ export function ExposureCheckin() {
       <View style={[styles.bottomLine, kind === 'reached' && { height: LINE_THICK * 2 }]} />
     </Animated.View>
   );
+  }
 }
 
 const styles = StyleSheet.create({

@@ -15,7 +15,8 @@ import { confirmDialog } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { AMP_MODULES } from '../../../features/amp/ampContent';
-import { loadAmpProgress, resetAmpProgress, type AmpProgressState } from '../../../features/amp/ampProgress';
+import { loadAmpProgress, resetAmpProgress, setAmpSaveBlocked, type AmpProgressState } from '../../../features/amp/ampProgress';
+import { useLabEndGuest } from '../kit/LabEndScreen';
 import { BUILT_MODULE_IDS } from './modules';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
@@ -26,6 +27,9 @@ export function AmpLabHomeScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [openId, setOpenId] = useState<string | null>(null);
   const [progress, setProgress] = useState<AmpProgressState | null>(null);
+  // HOUSE GUEST RULE (bug hunt 2026-09-30 pass 2): a signed-out guest's
+  // progress is neither restored nor written (see ampProgress).
+  setAmpSaveBlocked(useLabEndGuest());
 
   const reload = useCallback(() => {
     let alive = true;

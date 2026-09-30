@@ -10,7 +10,7 @@
  * PDF download; the waiting slot taps into the existing AwardProgress screen
  * (the in-progress checklist + Final Exam gate) rather than duplicating it.
  */
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -84,10 +84,17 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
 
   useFocusEffect(useCallback(() => load(), [load]));
 
+  // SYNCHRONOUS LATCH (bug pass 2, 2026-09-30). `busy` disables the button only
+  // after a re-render, so a double tap started two exports: two share sheets,
+  // the second refused by iOS — and its failure put "Could not prepare the
+  // certificate" under the sheet that had actually worked.
+  const exportingRef = useRef(false);
   const download = useCallback(async () => {
-    if (!open) return;
+    if (!open || exportingRef.current) return;
+    exportingRef.current = true;
     setBusy(true);
     const res = await exportCertificate({ credentialName: open.name, awardType: open.type, earnedAt: open.awardedAt });
+    exportingRef.current = false;
     setBusy(false);
     if (res.ok) return;
     setMessage(

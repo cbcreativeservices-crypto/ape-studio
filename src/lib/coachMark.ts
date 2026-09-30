@@ -56,7 +56,16 @@ export function useCoachMark(storageKey: string, dismissAfter: number) {
 
   useEffect(() => {
     if (started.current) return; // once per mount
-    if (suppressed) return; // suppressed → never show (untouched on toggle-off; re-entry re-decides)
+    // Suppressed → never show (untouched on toggle-off; re-entry re-decides).
+    // `started` is set HERE too (bug hunt 2026-09-30, pass 2): `suppressed` is
+    // an effect dependency, so switching Low-Light off (the six-tap cancel) or
+    // the sampler ending re-ran this with `started` still false and popped the
+    // hint over a screen already in use — the "toggle-off" this line promised
+    // not to touch. Same rule as StudyFsOverlay's guide.
+    if (suppressed) {
+      started.current = true;
+      return;
+    }
     started.current = true;
     // DEV BYPASS (Booth 2026-07-18): first-time experience on EVERY entry —
     // show regardless of the persisted retire counter (counter untouched).

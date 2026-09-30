@@ -332,6 +332,12 @@ export function MyProfileView() {
   const sendPublish = (on: boolean, adult?: boolean) => {
     if (publishing.current) return;
     publishing.current = true;
+    // An edit never SENT goes first (bug hunt 2026-09-30, pass 2). The switch
+    // and the guide's button are taps the ScrollView hands straight to them
+    // (keyboardShouldPersistTaps), so a name typed and not yet blurred had no
+    // save in the chain at all — the gaps check passed on the screen's copy
+    // and the server was asked to publish a profile without it.
+    if (hydrated.current && pRef.current !== lastSent.current) void persist(pRef.current);
     // Behind any save still out (bug hunt 2026-09-30): tapping the switch
     // straight from the display-name box blurs it into a save, and the publish
     // raced it — the server checked a profile that did not have the name yet.
@@ -458,6 +464,11 @@ export function MyProfileView() {
     !p.published && (!p.displayName.trim() || !p.areas.length || !p.roles.length);
 
   if (guideDefault.current === null) guideDefault.current = setupUnfinished;
+  // Published during this visit ⇒ the editor is theirs from here (bug hunt
+  // 2026-09-30, pass 2). The latch above kept the guide default from the load,
+  // so publishing from the guide and then UNPUBLISHING in the editor swapped
+  // the editor back out for the guide under the member's finger.
+  if (p.published) guideDefault.current = false;
   if ((useGuide ?? guideDefault.current) && !p.published) {
     return (
       <ProfileSetupFlow

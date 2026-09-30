@@ -233,9 +233,9 @@ const VDROP: Workspace = {
   fields: [
     { key: 'awg', name: 'WIRE GAUGE (AWG)', quantity: 'number', placeholder: '16', help: 'American Wire Gauge — smaller number = thicker wire.' },
     { key: 'len', name: 'RUN LENGTH (one way)', quantity: 'length', placeholder: '30', help: 'One-way cable length; the calc doubles it for the return path.', warn: { test: (x) => x <= 0, msg: 'Length must be greater than zero.' } },
-    { key: 'current', name: 'CURRENT', quantity: 'current', placeholder: '3', help: 'Current the load draws through the cable.', warn: { test: (x) => x <= 0, msg: 'Current must be greater than zero.' } },
-    { key: 'vsrc', name: 'SUPPLY VOLTAGE', quantity: 'voltage', placeholder: '48', help: 'Source voltage, for the percentage-drop figure.', warn: { test: (x) => x <= 0, msg: 'Voltage must be greater than zero.' } },
-    { key: 'pct', name: 'ALLOWABLE DROP', quantity: 'percent', placeholder: '3', help: 'The maximum voltage drop you will accept, in percent.', warn: { test: (x) => x <= 0, msg: 'Allowable drop must be greater than zero.' } },
+    { key: 'current', name: 'CURRENT', quantity: 'current', nonNegative: true, placeholder: '3', help: 'Current the load draws through the cable.', warn: { test: (x) => x <= 0, msg: 'Current must be greater than zero.' } },
+    { key: 'vsrc', name: 'SUPPLY VOLTAGE', quantity: 'voltage', nonNegative: true, placeholder: '48', help: 'Source voltage, for the percentage-drop figure.', warn: { test: (x) => x <= 0, msg: 'Voltage must be greater than zero.' } },
+    { key: 'pct', name: 'ALLOWABLE DROP', quantity: 'percent', nonNegative: true, placeholder: '3', help: 'The maximum voltage drop you will accept, in percent.', warn: { test: (x) => x <= 0, msg: 'Allowable drop must be greater than zero.' } },
   ],
   functions: [
     {
@@ -351,9 +351,9 @@ const RACK: Workspace = {
   glossary: ['Power', 'Current', 'Voltage', 'Amplifier'],
   fields: [
     { key: 'watts', name: 'TOTAL POWER DRAW', quantity: 'power', placeholder: '800', help: 'Sum of every device’s real power draw under load.', warn: { test: (x) => x <= 0, msg: 'Power must be greater than zero.' } },
-    { key: 'mains', name: 'MAINS VOLTAGE', quantity: 'voltage', placeholder: '120', help: 'Wall voltage: 120 V (US) or 230 V (EU).', warn: { test: (x) => x <= 0, msg: 'Voltage must be greater than zero.' } },
+    { key: 'mains', name: 'MAINS VOLTAGE', quantity: 'voltage', nonNegative: true, placeholder: '120', help: 'Wall voltage: 120 V (US) or 230 V (EU).', warn: { test: (x) => x <= 0, msg: 'Voltage must be greater than zero.' } },
     { key: 'dTempF', name: 'ALLOWABLE TEMP RISE (°F)', quantity: 'number', nonNegative: true, placeholder: '10', help: 'How many °F warmer the rack exhaust may be than the intake.', warn: { test: (x) => x <= 0, msg: 'Temperature rise must be greater than zero.' } },
-    { key: 'breaker', name: 'BREAKER RATING', quantity: 'current', placeholder: '15', help: 'The circuit breaker’s amp rating, for the safe-load figure.', warn: { test: (x) => x <= 0, msg: 'Breaker rating must be greater than zero.' } },
+    { key: 'breaker', name: 'BREAKER RATING', quantity: 'current', nonNegative: true, placeholder: '15', help: 'The circuit breaker’s amp rating, for the safe-load figure.', warn: { test: (x) => x <= 0, msg: 'Breaker rating must be greater than zero.' } },
   ],
   functions: [
     {

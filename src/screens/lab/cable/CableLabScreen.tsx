@@ -71,6 +71,8 @@ export function CableLabScreen() {
   const noAccountRef = useRef(resolved && entitlement === 'anonymous');
   noAccountRef.current = resolved && entitlement === 'anonymous';
   const navigatedRef = useRef(false);
+  const lastNavAtRef = useRef(0);
+  const leavingRef = useRef(false);
 
   useEffect(() => {
     void AsyncStorage.getItem(STEP_KEY).then((v) => {
@@ -186,7 +188,20 @@ export function CableLabScreen() {
             <GlassButton
               label={step === last ? 'DONE ✓' : 'NEXT ›'}
               tint="green"
-              onPress={() => (step === last ? navigation.goBack() : goTo(Math.min(last, step + 1)))}
+              onPress={() => {
+                // Double tap (bug hunt 2026-09-30 pass 2, MicSelect's 400 ms
+                // guard): the second NEXT on lesson 11 landed on DONE ✓ and
+                // left the lab before the what's-left of lesson 12 was seen;
+                // a doubled DONE ran goBack() twice and popped a second screen.
+                if (step !== last) {
+                  lastNavAtRef.current = Date.now();
+                  goTo(Math.min(last, step + 1));
+                  return;
+                }
+                if (Date.now() - lastNavAtRef.current < 400 || leavingRef.current) return;
+                leavingRef.current = true;
+                navigation.goBack();
+              }}
             />
           </View>
         </View>

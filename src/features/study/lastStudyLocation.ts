@@ -35,6 +35,7 @@ let hydrated = false;
 // `hydrated` before its await) never clobbers a fresh value with the stale
 // stored one. Owner debug audit.
 let wrote = false;
+let generation = 0;
 
 function emit(): void {
   listeners.forEach((l) => l());
@@ -61,9 +62,13 @@ export function getLastStudyLocation(): LastStudyLocation {
 async function hydrate(): Promise<void> {
   if (hydrated) return;
   hydrated = true;
+  const gen = generation;
   try {
     const raw = await AsyncStorage.getItem(STORAGE_KEY);
     if (wrote || !raw) return; // a write landed during load — don't clobber it
+    // An account wipe landed during load (bug pass 2, 2026-09-30): resetLocal
+    // clears `wrote`, so without this the previous user's spot came back.
+    if (gen !== generation) return;
     const parsed = JSON.parse(raw) as { kind?: unknown; route?: unknown; achievementId?: unknown; topicName?: unknown };
     if (parsed?.kind === 'dashboard') {
       current = { kind: 'dashboard' };
@@ -92,6 +97,7 @@ async function hydrate(): Promise<void> {
  *  Clears the current location + hydrated flag and emits so live hooks re-render
  *  null; the next read re-hydrates from the (cleared) storage. */
 export function resetLocal(): void {
+  generation++;
   current = null;
   hydrated = false;
   wrote = false;

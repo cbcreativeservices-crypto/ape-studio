@@ -34,7 +34,7 @@ import { confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import type { CalcFunction, FieldDef, OutputVal, Workspace } from './calcTypes';
-import { fmt, parseQuantity, unitsFor } from './calcUnits';
+import { chainFits, fmt, parseQuantity, unitsFor } from './calcUnits';
 import { FieldRow, buildValues, defaultUnitIdx, formatOutput, runCompute, type ComputeResult } from './calcPanel';
 import type { BoundInput, Project, SavedRunSummary, ValueSource, Workflow, WorkflowRun } from './workflowModel';
 import { workflowLimitsFor } from './workflowModel';
@@ -223,12 +223,19 @@ export function CalcWorkflowRunScreen() {
         if (b && b.source.kind === 'prior-step') {
           // LIVE import: derive from the upstream step's CURRENT output.
           const up = out[b.source.stepIndex];
-          const o = up?.result.outputs.find(
-            (x): x is Extract<OutputVal, { value: number }> => 'value' in x && x.label === (b.source as { outputLabel: string }).outputLabel,
-          );
+          const srcRef = b.source;
+          const isNum = (x: OutputVal | undefined): x is Extract<OutputVal, { value: number }> => !!x && 'value' in x;
+          // By label; else by position when the label carries an input that
+          // has since changed (see ValueSource.outputIndex).
+          let o = up?.result.outputs.find((x): x is Extract<OutputVal, { value: number }> => isNum(x) && x.label === srcRef.outputLabel);
+          if (!o && srcRef.outputIndex != null) {
+            const at = up?.result.outputs[srcRef.outputIndex];
+            if (isNum(at) && at.chainable !== false) o = at;
+          }
           // Finite only: fmt(NaN) is "—", which the field then flagged as the
-          // user's own unreadable typing.
-          if (o && o.quantity === f.quantity && Number.isFinite(o.value)) {
+          // user's own unreadable typing. chainFits: the same unit rule as the
+          // offer below — a relabelled output must still fit this field.
+          if (o && chainFits(o.label, o.quantity, f) && o.quantity === f.quantity && Number.isFinite(o.value)) {
             const units = unitsFor(f.quantity, f.unitIds);
             const u = units[unitSel[f.key] % units.length];
             effRaw[f.key] = fmt(u.fromBase(o.value), 6);
@@ -323,11 +330,11 @@ export function CalcWorkflowRunScreen() {
     });
   };
 
-  const importFrom = (f: FieldDef, fromStep: number, outputLabel: string) => {
+  const importFrom = (f: FieldDef, fromStep: number, outputLabel: string, outputIndex: number) => {
     setBound(f.key, {
       raw: '',
       unitIdx: run?.steps[idx]?.inputs[f.key]?.unitIdx ?? defaultUnitIdx(f),
-      source: { kind: 'prior-step', stepIndex: fromStep, outputLabel },
+      source: { kind: 'prior-step', stepIndex: fromStep, outputLabel, outputIndex },
     });
     setRecalcNote(null);
   };
@@ -583,15 +590,16 @@ export function CalcWorkflowRunScreen() {
                   const b = run.steps[idx]?.inputs[f.key];
                   const src = b ? sourceLabel(b.source, stepName, run.projectName) : null;
                   // Compatible earlier results (matching quantity, numeric only).
-                  const sources: { fromStep: number; label: string }[] = [];
+                  const sources: { fromStep: number; label: string; index: number }[] = [];
                   if (f.quantity !== 'list') {
                     for (let k = 0; k < idx; k++) {
-                      for (const o of computed[k]?.result.outputs ?? []) {
+                      (computed[k]?.result.outputs ?? []).forEach((o, oi) => {
                         // Honor `chainable: false` (Bug+Hater night J2-01): outputs like TRAVEL PER
         // MILLISECOND share a quantity with DISTANCE but are the wrong physical
         // thing to chain into it — they produced a silently bogus downstream result.
-        if ('value' in o && o.quantity === f.quantity && o.chainable !== false && Number.isFinite(o.value)) sources.push({ fromStep: k, label: o.label });
-                      }
+        // chainFits (bug pass 2): the unit must fit too — a kg/m² never fills a µF.
+        if ('value' in o && chainFits(o.label, o.quantity, f) && o.chainable !== false && Number.isFinite(o.value)) sources.push({ fromStep: k, label: o.label, index: oi });
+                      });
                     }
                   }
                   const isImport = b?.source.kind === 'prior-step';
@@ -608,7 +616,7 @@ export function CalcWorkflowRunScreen() {
                             <Pressable
                               key={`${s.fromStep}-${s.label}`}
                               style={styles.srcBtn}
-                              onPress={() => importFrom(f, s.fromStep, s.label)}
+                              onPress={() => importFrom(f, s.fromStep, s.label, s.index)}
                               accessibilityRole="button"
                               accessibilityLabel={`Use ${s.label} from step ${s.fromStep + 1}`}
                             >
@@ -619,7 +627,7 @@ export function CalcWorkflowRunScreen() {
                       {/* Compatible values from the attached project (Phase 4). */}
                       {!isImport && attachedProject && f.quantity !== 'list'
                         ? attachedProject.values
-                            .filter((v) => v.quantity === f.quantity)
+                            .filter((v) => chainFits(v.label, v.quantity, f))
                             .slice(0, 4)
                             .map((v) => (
                               <Pressable

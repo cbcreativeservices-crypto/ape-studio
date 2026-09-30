@@ -82,8 +82,9 @@ describe('conversation sheet', () => {
   });
 
   test('D5b: a SEND only touches the conversation it was sent from', () => {
-    const send = between(sheet, 'sendThreadMessage(thread.id, body.trim())', 'await load();');
-    assert.match(send, /if \(r\.ok\) drafts\.current\.delete\(thread\.id\);/);
+    // Pass 2 renamed the sent text `sentRaw` (see the pass-2 guards).
+    const send = between(sheet, 'sendThreadMessage(thread.id, sentRaw.trim())', 'await load();');
+    assert.match(send, /if \(r\.ok && drafts\.current\.get\(thread\.id\) === sentRaw\) drafts\.current\.delete\(thread\.id\);/);
     const guard = send.indexOf('if (openId.current !== thread.id) return;');
     assert.ok(guard > 0 && guard < send.indexOf('setErr('), 'the open-thread check must come before any state write');
   });

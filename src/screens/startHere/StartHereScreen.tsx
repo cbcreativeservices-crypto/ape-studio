@@ -182,6 +182,16 @@ export function StartHereScreen() {
   }, [navigation, tone]);
 
   // ── outward links (always stop the tone first) ──────────────────────────
+  // One screen per tap (bug pass 2 2026-09-30): two different NEXT STEPS rows
+  // (or a route chip + WORDS) tapped together each pushed a screen — two
+  // stacked. A second open inside 600 ms of the first is ignored.
+  const lastOpenAt = useRef(0);
+  const claimOpen = () => {
+    const now = Date.now();
+    if (now - lastOpenAt.current < 600) return false;
+    lastOpenAt.current = now;
+    return true;
+  };
   const env: StartEnv = {
     tone,
     gate,
@@ -192,14 +202,17 @@ export function StartHereScreen() {
     guest: resolved && entitlement === 'anonymous',
     first: { source, setSource, freq, setFreq, gainDb, setGainDb, unplug, setUnplug },
     openRoute: (route, params) => {
+      if (!claimOpen()) return;
       tone.stop();
       navigation.navigate(route, params);
     },
     openTerms: () => {
+      if (!claimOpen()) return;
       tone.stop();
       navigation.navigate('StartHereTerms');
     },
     openSafety: () => {
+      if (!claimOpen()) return;
       tone.stop();
       // popTo, not navigate: navigate('Main') would PUSH a second tab shell.
       navigation.popTo('Main', { screen: 'Study', params: { screen: 'Dashboard', params: { focusGs: SAFETY_GS } } });
@@ -208,6 +221,7 @@ export function StartHereScreen() {
   };
 
   const openGlossary = () => {
+    if (!claimOpen()) return;
     tone.stop();
     navigation.popTo('Main', { screen: 'Study', params: { screen: 'Glossary', params: { from: 'home' }, initial: false } });
   };

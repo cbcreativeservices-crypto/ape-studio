@@ -47,7 +47,9 @@ import {
   verifyRecoveryOtp,
 } from '../../features/auth/api';
 import { supabase } from '../../lib/supabase';
-import { markIntentionalSignOut } from '../../features/auth/intentionalSignOut';
+import { consumeIntentionalSignOut, markIntentionalSignOut } from '../../features/auth/intentionalSignOut';
+import { safeSession } from '../../lib/getSessionSafe';
+import { isRealAccount } from '../../features/commercial/realAccount';
 import { COPY } from '../../lib/copy';
 import { registerCommercialUser } from '../../features/commercial/commercialAuth';
 import { redeemAccessCode } from '../../features/commercial/accessCode';
@@ -229,13 +231,30 @@ export function AuthScreen({ navigation }: Props) {
     // in a try; if any AsyncStorage/store reset below threw, setBusy(false) and
     // toHome() never ran — a permanent spinner on the primary no-account entry.
     try {
-    try {
-      // Guest entry signs out to establish the anon session — NOT a session loss.
-      // Mark it so SessionExpiryGuard doesn't bounce the guest back to login.
-      markIntentionalSignOut();
-      await supabase.auth.signOut();
-    } catch {
-      // Offline sign-out failure is fine — local session is still cleared.
+    // Guest entry signs out to establish the anon session — NOT a session loss.
+    // Mark it so SessionExpiryGuard doesn't bounce the guest back to login.
+    markIntentionalSignOut();
+    // scope 'local' (bug pass 2, 2026-09-30): leaving THIS device for Guest
+    // Mode must not revoke the account's other sessions (the website).
+    const { error: outError } = await supabase.auth
+      .signOut({ scope: 'local' })
+      .catch((e: unknown) => ({ error: e as Error }));
+    /**
+     * ⛔ OFFLINE, signOut() KEEPS THE SESSION (bug pass 2, 2026-09-30). The old
+     * comment here said "local session is still cleared" — supabase-js returns
+     * { error } and keeps it. Guest Mode then wiped the device and went in
+     * with the ACCOUNT still signed in: no auth event, so the account's tier
+     * stayed live under a "guest", and the next launch put them straight back
+     * in the account. With no account session left (none, or a device key),
+     * there is nothing to undo and Guest Mode proceeds as before.
+     */
+    if (outError) {
+      const { data: still } = await safeSession(supabase.auth.getSession(), 'AuthScreen/guest');
+      if (isRealAccount(still.session)) {
+        consumeIntentionalSignOut(); // no SIGNED_OUT is coming for it
+        setError('Couldn’t reach the Academy — check your connection and try again.');
+        return;
+      }
     }
     // Guest Mode is a deliberate "fresh, no account" start (user bug 2026-08-12):
     // wipe the previous account's device-local data — the enrollment list, Home
@@ -487,6 +506,14 @@ export function AuthScreen({ navigation }: Props) {
   };
 
   const cancelRecovery = () => {
+    // A VERIFIED code left a live recovery session (bug pass 2, 2026-09-30).
+    // Cancelling kept it: the person stood on the sign-in screen actually
+    // signed in, and the next launch took them into the account with no new
+    // password set and no single-device claim. Cancel means not signed in.
+    if (verifiedFor.current !== null) {
+      markIntentionalSignOut();
+      void supabase.auth.signOut({ scope: 'local' }).catch(() => {});
+    }
     verifiedFor.current = null;
     setMode('main');
     setError(null);
@@ -502,6 +529,11 @@ export function AuthScreen({ navigation }: Props) {
   useEffect(() => {
     if (mode !== 'recovery') return;
     const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      // Not mid-request (bug pass 2): BACK while the code was being verified
+      // "cancelled" the panel, then the in-flight verify + update finished
+      // and signed the person in anyway. The visible Cancel is hidden while
+      // busy for the same reason; BACK waits too.
+      if (inFlight.current) return true;
       cancelRecovery();
       return true;
     });

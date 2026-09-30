@@ -34,16 +34,16 @@
  * Now the card budget is measured from the scrim actually on screen and the
  * ScrollView gets its OWN explicit bound: budget − measured footer − border.
  */
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Modal } from '../../components/DimModal';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { DetailPager } from '../../components/detailSwipe';
 import { TrophyImage } from '../../components/TrophyImage';
 import { topicImagePath } from '../../data/topicImages';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { isFreeEnrollGs } from '../../features/enrollment/enrollmentStore';
-import { LowLightDim } from '../../features/settings/LowLightLayer';
 import { colors, fonts } from '../../theme/tokens';
 import { REQUIRES_LABEL, type Career } from '../../data/careerRequirement';
 
@@ -71,6 +71,8 @@ const CARD_BG = '#141416';
 const CARD_BORDER = 1;
 /** Footer height before its first onLayout (minHeight 48 + top rule). */
 const FOOTER_SEED = 49;
+/** A second tick inside this window is a double tap, not a choice. */
+const ACK_REPEAT_MS = 700;
 
 export function TopicDetailModal({
   topic,
@@ -119,6 +121,7 @@ export function TopicDetailModal({
   const needsMembership = resolved && entitlement !== 'academy';
   const [scrimH, setScrimH] = useState(0);
   const [footerH, setFooterH] = useState(FOOTER_SEED);
+  const lastAckAt = useRef(0);
   const budget = Math.min(Math.round(height * 0.86), scrimH > 0 ? scrimH - SCRIM_PAD * 2 : Infinity);
   const scrollMax = Math.max(120, budget - footerH - CARD_BORDER * 2);
 
@@ -227,7 +230,15 @@ export function TopicDetailModal({
                 {canEnroll ? (
                   <Pressable
                     style={styles.ackRow}
-                    onPress={() => { if (topic) onEnrollTopic?.(topic.gs); }}
+                    onPress={() => {
+                      // The box toggles, so a double tap enrolled the topic and
+                      // removed it again — the twin of the credential ENROLL
+                      // double tap (bug pass 2 2026-09-30).
+                      const now = Date.now();
+                      if (now - lastAckAt.current < ACK_REPEAT_MS) return;
+                      lastAckAt.current = now;
+                      if (topic) onEnrollTopic?.(topic.gs);
+                    }}
                     accessibilityRole="checkbox"
                     accessibilityState={{ checked: enrolled }}
                     accessibilityLabel="Add this topic to my enrolled studies"
@@ -265,7 +276,6 @@ export function TopicDetailModal({
           ) : null}
         </View>
       </View>
-      <LowLightDim />
     </Modal>
   );
 }

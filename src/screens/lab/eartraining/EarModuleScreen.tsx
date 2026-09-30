@@ -25,9 +25,10 @@ import { isStereo } from '../../../features/ear/earDsp';
 import { earModuleById } from '../../../features/ear/modules/registry';
 import type { EarTrial } from '../../../features/ear/earTypes';
 import {
-  applyTrial, emptyModuleProgress, loadEarProgress, recentAccuracy, saveEarProgress,
+  applyTrial, emptyModuleProgress, loadEarProgress, recentAccuracy, saveEarProgress, setEarSaveBlocked,
   type EarProgressState,
 } from '../../../features/ear/earProgress';
+import { useLabEndGuest } from '../kit/LabEndScreen';
 import { SeeItView } from './SeeItView';
 import { useIsTablet } from '../../../theme/useIsTablet';
 import { cardColumn } from '../../../theme/readingColumn';
@@ -93,6 +94,9 @@ export function EarModuleScreen() {
   const route = useRoute<RouteProp<RootStackParamList, 'EarModule'>>();
   const mod = earModuleById(route.params.id);
   const { requestAudioOutput } = useAudioOutputGate();
+  // HOUSE GUEST RULE (bug hunt 2026-09-30 pass 2): a signed-out guest's
+  // ladder is neither restored nor written (see earProgress).
+  setEarSaveBlocked(useLabEndGuest());
 
   const playerRef = useRef<EarClipPlayer | null>(null);
   /** FALSE once the screen has torn down. beginTrial now spans several ticks

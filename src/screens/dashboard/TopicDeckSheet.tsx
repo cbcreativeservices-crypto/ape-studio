@@ -8,6 +8,7 @@
  *   • tap a topic to jump straight to it in the Dashboard.
  * Custom is never the default — the user must engage it here.
  */
+import { useRef } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
@@ -45,12 +46,20 @@ export function TopicDeckSheet({
 }) {
   const custom = mode === 'custom';
 
+  // The order the LAST tap produced (bug pass 2, 2026-09-30). Two quick ↑/↓
+  // taps land before the parent re-renders, so both computed from the same
+  // stale `active` and only one move survived. Keyed on the `active` array it
+  // was built from: once fresh props arrive they win again.
+  const lastOrderRef = useRef<{ src: Item[]; ids: string[] } | null>(null);
+
   const move = (id: string, dir: -1 | 1) => {
-    const ids = active.map((t) => t.id);
+    const prev = lastOrderRef.current;
+    const ids = prev && prev.src === active ? [...prev.ids] : active.map((t) => t.id);
     const i = ids.indexOf(id);
     const j = i + dir;
     if (i < 0 || j < 0 || j >= ids.length) return;
     [ids[i], ids[j]] = [ids[j], ids[i]];
+    lastOrderRef.current = { src: active, ids };
     onReorder(ids);
   };
 

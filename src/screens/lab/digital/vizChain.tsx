@@ -594,13 +594,16 @@ export function AdcChainView({
       ))}
       {xray ? (
         <>
-          <RNText style={{ position: 'absolute', left: xray.shCx - 40, width: 80, top: xrayY + 30, textAlign: 'center', fontFamily: fonts.barlowCondensedSemiBold, fontSize: 8.5, color: withAlpha(AMBER, 0.75) }}>
+          {/* ≥ 9 pt (bug pass 2 2026-09-30). S&H and QUANT centres sit one
+              tile (~47 pt) apart at 390 wide, so the two labels lean 6 pt
+              away from each other to clear at 9 pt. */}
+          <RNText style={{ position: 'absolute', left: xray.shCx - 46, width: 80, top: xrayY + 30, textAlign: 'center', fontFamily: fonts.barlowCondensedSemiBold, fontSize: 9, color: withAlpha(AMBER, 0.75) }}>
             HOLD WINDOWS
           </RNText>
-          <RNText style={{ position: 'absolute', left: xray.qCx - 40, width: 80, top: xrayY + 30, textAlign: 'center', fontFamily: fonts.barlowCondensedSemiBold, fontSize: 8.5, color: withAlpha(AMBER, 0.75) }}>
+          <RNText style={{ position: 'absolute', left: xray.qCx - 34, width: 80, top: xrayY + 30, textAlign: 'center', fontFamily: fonts.barlowCondensedSemiBold, fontSize: 9, color: withAlpha(AMBER, 0.75) }}>
             LEVEL RUNGS
           </RNText>
-          <RNText style={{ position: 'absolute', left: xray.frCx - 40, width: 80, top: xrayY + 30, textAlign: 'center', fontFamily: fonts.barlowCondensedSemiBold, fontSize: 8.5, color: withAlpha(GREEN, 0.75) }}>
+          <RNText style={{ position: 'absolute', left: xray.frCx - 40, width: 80, top: xrayY + 30, textAlign: 'center', fontFamily: fonts.barlowCondensedSemiBold, fontSize: 9, color: withAlpha(GREEN, 0.75) }}>
             8-BIT FRAMES
           </RNText>
         </>
@@ -757,7 +760,7 @@ export function SampleHoldView({
         INPUT <RNText style={{ color: AMBER }}> · HELD</RNText>
         <RNText style={{ color: GREEN }}> · CODE OUT</RNText>
       </RNText>
-      <RNText style={{ position: 'absolute', left: PL, top: h - 15, fontFamily: fonts.mono, fontSize: 8.5, color: AXIS_TEXT }}>
+      <RNText style={{ position: 'absolute', left: PL, top: h - 15, fontFamily: fonts.mono, fontSize: 9, color: AXIS_TEXT }}>
         sample clock →
       </RNText>
     </View>
@@ -1012,19 +1015,22 @@ export function GainStagingView({
         ))}
         <RoundedRect x={Math.min(Math.max(markerX - 1.5, PL), w - 11)} y={zoneY - 3} width={3} height={14} r={1.5} color={LINE} />
       </Canvas>
-      <RNText style={{ position: 'absolute', left: PL + 4, top: fsY - 11, fontFamily: fonts.mono, fontSize: 8.5, color: withAlpha(RED, 0.9) }}>
+      <RNText style={{ position: 'absolute', left: PL + 4, top: fsY - 11, fontFamily: fonts.mono, fontSize: 9, color: withAlpha(RED, 0.9) }}>
         0 dBFS (digital full scale)
       </RNText>
-      <RNText style={{ position: 'absolute', left: PL + 4, top: top - 1, fontFamily: fonts.mono, fontSize: 8.5, color: withAlpha(RED, 0.55) }}>
+      {/* Right end of the rail: the rail sits only ~3 dB (≈ 10 pt on a 200-pt
+          stage) above full scale, so at the left it printed on top of the
+          "0 dBFS" label (bug pass 2 2026-09-30). */}
+      <RNText style={{ position: 'absolute', right: w - plotR + 4, top: top - 1, fontFamily: fonts.mono, fontSize: 9, color: withAlpha(RED, 0.55) }}>
         analog rail
       </RNText>
-      <RNText style={{ position: 'absolute', left: PL + 4, top: mid + 6, fontFamily: fonts.mono, fontSize: 8.5, color: AXIS_TEXT }}>
+      <RNText style={{ position: 'absolute', left: PL + 4, top: mid + 6, fontFamily: fonts.mono, fontSize: 9, color: AXIS_TEXT }}>
         noise floor (drawn)
       </RNText>
-      <RNText style={{ position: 'absolute', left: mAx - 6, width: meterW + 12, top: mBot + 2, textAlign: 'center', fontFamily: fonts.barlowCondensedSemiBold, fontSize: 8.5, color: AXIS_TEXT }}>
+      <RNText style={{ position: 'absolute', left: mAx - 6, width: meterW + 12, top: mBot + 2, textAlign: 'center', fontFamily: fonts.barlowCondensedSemiBold, fontSize: 9, color: AXIS_TEXT }}>
         ANLG
       </RNText>
-      <RNText style={{ position: 'absolute', left: mDx - 6, width: meterW + 12, top: mBot + 2, textAlign: 'center', fontFamily: fonts.barlowCondensedSemiBold, fontSize: 8.5, color: AXIS_TEXT }}>
+      <RNText style={{ position: 'absolute', left: mDx - 6, width: meterW + 12, top: mBot + 2, textAlign: 'center', fontFamily: fonts.barlowCondensedSemiBold, fontSize: 9, color: AXIS_TEXT }}>
         DIG
       </RNText>
       {zones.map((z) => (
@@ -1127,17 +1133,17 @@ export function IntFloatRangeView({ width, height = 148 }: { width: number; heig
         </RNText>
       ))}
       {[-200, -100, 0, 100, 200].map((db) => (
-        <RNText key={db} style={{ position: 'absolute', left: xOf(db) - 20, width: 40, top: axisY + 6, textAlign: 'center', fontFamily: fonts.mono, fontSize: 8.5, color: AXIS_TEXT }}>
+        <RNText key={db} style={{ position: 'absolute', left: xOf(db) - 20, width: 40, top: axisY + 6, textAlign: 'center', fontFamily: fonts.mono, fontSize: 9, color: AXIS_TEXT }}>
           {db > 0 ? `+${db}` : `${db}`}
         </RNText>
       ))}
-      <RNText style={{ position: 'absolute', left: xOf(-30) - 44, width: 88, top: 8, textAlign: 'center', fontFamily: fonts.barlowCondensedSemiBold, fontSize: 8.5, color: withAlpha(AMBER, 0.85) }}>
+      <RNText style={{ position: 'absolute', left: xOf(-30) - 44, width: 88, top: 8, textAlign: 'center', fontFamily: fonts.barlowCondensedSemiBold, fontSize: 9, color: withAlpha(AMBER, 0.85) }}>
         AUDIO WINDOW
       </RNText>
-      <RNText style={{ position: 'absolute', left: xOf(0) - 2, top: axisY - 12, fontFamily: fonts.mono, fontSize: 8.5, color: withAlpha(RED, 0.9) }}>
+      <RNText style={{ position: 'absolute', left: xOf(0) - 2, top: axisY - 12, fontFamily: fonts.mono, fontSize: 9, color: withAlpha(RED, 0.9) }}>
         0 dBFS
       </RNText>
-      <RNText style={{ position: 'absolute', right: 2, top: rowY(3), fontFamily: fonts.mono, fontSize: 8.5, color: GREEN }}>
+      <RNText style={{ position: 'absolute', right: 2, top: rowY(3), fontFamily: fonts.mono, fontSize: 9, color: GREEN }}>
         …
       </RNText>
     </View>
@@ -1420,7 +1426,7 @@ export function FloatHeadroomView({
       <RNText style={{ position: 'absolute', left: x1, width: paneW, top: 6, fontFamily: fonts.barlowCondensedSemiBold, fontSize: 9.5, letterSpacing: 0.6, color: AXIS_TEXT }}>
         FIXED-POINT RENDER (24-BIT)
       </RNText>
-      <RNText style={{ position: 'absolute', left: x0 + 3, top: mid - fsOff - 12, fontFamily: fonts.mono, fontSize: 8.5, color: withAlpha(RED, 0.85) }}>
+      <RNText style={{ position: 'absolute', left: x0 + 3, top: mid - fsOff - 12, fontFamily: fonts.mono, fontSize: 9, color: withAlpha(RED, 0.85) }}>
         0 dBFS
       </RNText>
       <RNText style={{ position: 'absolute', left: x0, width: paneW, top: meterY + meterH + 4, fontFamily: fonts.mono, fontSize: 9, color: floatOver ? AMBER : GREEN }}>

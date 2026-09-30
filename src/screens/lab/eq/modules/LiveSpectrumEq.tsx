@@ -426,7 +426,7 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
           the FREQ/GAIN/Q lanes (touching one switches the band on), and work the challenges.
         </GlossaryText>
 
-        <EngineGate state={state} lastError={lastError} />
+        <EngineGate state={state} lastError={lastError} onRetry={onStart} />
         {!micPaused && (state === 'idle' || state === 'starting') && (
           <Text style={styles.starting}>Starting the analyzer…</Text>
         )}

@@ -249,7 +249,7 @@ const ABSORBER: Workspace = {
   fields: [
     { key: 'mass', name: 'PANEL MASS (kg/m²)', quantity: 'number', nonNegative: true, placeholder: '5', help: 'Surface mass of the membrane, kilograms per square metre.', warn: { test: (x) => x <= 0, msg: 'Mass must be greater than zero.' } },
     { key: 'gap', name: 'AIR GAP DEPTH', quantity: 'length', defaultUnit: 'cm', placeholder: '5', help: 'Depth of the sealed air cavity behind the panel.', warn: { test: (x) => x <= 0, msg: 'Gap must be greater than zero.' } },
-    { key: 'openPct', name: 'PERFORATION (open area)', quantity: 'percent', placeholder: '5', help: 'Fraction of the panel that is open holes, in percent.', warn: { test: (x) => x <= 0 || x >= 100, msg: 'Open area must be between 0 and 100%.' } },
+    { key: 'openPct', name: 'PERFORATION (open area)', quantity: 'percent', nonNegative: true, placeholder: '5', help: 'Fraction of the panel that is open holes, in percent.', warn: { test: (x) => x <= 0 || x >= 100, msg: 'Open area must be between 0 and 100%.' } },
     { key: 'depth', name: 'CAVITY DEPTH', quantity: 'length', defaultUnit: 'cm', placeholder: '10', help: 'Depth of the air cavity behind the perforated panel.', warn: { test: (x) => x <= 0, msg: 'Depth must be greater than zero.' } },
     { key: 'thick', name: 'PANEL THICKNESS', quantity: 'length', defaultUnit: 'mm', placeholder: '12', help: 'Thickness of the perforated panel.', warn: { test: (x) => x <= 0, msg: 'Thickness must be greater than zero.' } },
     { key: 'hole', name: 'HOLE DIAMETER', quantity: 'length', defaultUnit: 'mm', placeholder: '8', help: 'Diameter of each perforation.', warn: { test: (x) => x <= 0, msg: 'Hole diameter must be greater than zero.' } },
@@ -270,7 +270,9 @@ const ABSORBER: Workspace = {
         const f0 = 60 / Math.sqrt(n(v.mass) * n(v.gap));
         return [
           { label: 'RESONANT FREQUENCY', value: f0, quantity: 'frequency' },
-          { label: 'USEFUL BAND (≈ ±½ oct)', value: f0, quantity: 'frequency', chainable: false },
+          // A BAND, not f₀ again (bug pass 2, 2026-09-30): this row printed the
+          // resonance a second time under a label promising a range.
+          { label: 'USEFUL BAND (≈ ±½ oct)', text: `${fmt(f0 / Math.SQRT2)}–${fmt(f0 * Math.SQRT2)} Hz` },
         ];
       },
       steps: (v) => {

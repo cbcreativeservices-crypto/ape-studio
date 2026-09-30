@@ -14,6 +14,9 @@ import * as Optical from '../../../../modules/ape-optical';
 
 const WINDOW_S = 3.5; // rolling analysis window
 const POLL_MS = 100; // pull cadence (native buffers frames; we dedupe by seq)
+/** No new camera frame for this long ⇒ the reading is stale and blanks. Far
+ *  above any real frame interval (even a 15 fps camera delivers every 67 ms). */
+const STALE_MS = 1000;
 
 export type OpticalState =
   | 'absent' // native module not in this build → needs the new dev build
@@ -125,8 +128,21 @@ export function useOpticalCounter(active: boolean): { state: OpticalState; readi
           return;
         }
         setState('running');
+        let lastNewAt = Date.now();
         poll = setInterval(() => {
           const batch = Optical.getSamples(seqRef.current);
+          // NO NEW FRAMES, NO READING (toddler pass 2 2026-09-30). A camera
+          // taken away mid-session (iPad multitasking, a call, another app, an
+          // Android background disconnect) stops delivering frames, but this
+          // poll kept re-estimating the SAME buffered window and printed its
+          // flash rate as live indefinitely. Blank it until frames return.
+          if (batch && batch.seq > seqRef.current && batch.ts.length) lastNewAt = Date.now();
+          else if (Date.now() - lastNewAt > STALE_MS) {
+            tsRef.current = []; // a gap is never stitched into the next window
+            lumaRef.current = [];
+            setReading((r) => (r === null ? r : null));
+            return;
+          }
           if (!batch) return;
           if (batch.lastError) setLastError(batch.lastError);
           if (batch.seq > seqRef.current && batch.ts.length) {

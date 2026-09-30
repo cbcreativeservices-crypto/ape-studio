@@ -58,6 +58,13 @@ export function ExploreView({
    *  (overnight hunt 2026-09-23). */
   const [page, setPage] = useState(0);
   const [loadingMore, setLoadingMore] = useState(false);
+  /**
+   * A failed "Show more", kept apart from `err` (bug hunt 2026-09-30, pass 2).
+   * It went into `err`, and `err` renders INSTEAD of the list — so the thirty
+   * results on screen vanished to report that a thirty-first could not load,
+   * the very trade loadMore's own note refuses, and RETRY restarted at page 1.
+   */
+  const [moreErr, setMoreErr] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
 
@@ -88,6 +95,7 @@ export function ExploreView({
     const id = ++reqId.current;
     setBusy(true);
     setPage(0);
+    setMoreErr(null);
     // try/finally, not a bare sequence: the spinner must be cleared by the
     // language, not by reaching the next statement. searchDirectory is bounded
     // now and returns its errors rather than throwing, but a future throw
@@ -127,10 +135,10 @@ export function ExploreView({
     // that is no longer on screen.
     if (id !== reqId.current) return;
     if (out.status === 'error') {
-      setErr(out.error);
+      setMoreErr(out.error);
       return;
     }
-    setErr(null);
+    setMoreErr(null);
     setPage(next);
     // De-duplicate by token: a member published between the two requests shifts
     // the window, and React would otherwise throw on the duplicate key.
@@ -147,7 +155,11 @@ export function ExploreView({
 
   // Debounce the text box so a search does not fire per keystroke.
   useEffect(() => {
-    const t = setTimeout(() => setF((prev) => ({ ...prev, q })), 350);
+    // Same text ⇒ same filters object (bug hunt 2026-09-30, pass 2). This ran
+    // on mount with q '' and handed back a NEW object, so every visit to
+    // Explore searched twice: the list loaded, then flipped back to the
+    // spinner 350 ms later for an identical search. CLEAR ALL did the same.
+    const t = setTimeout(() => setF((prev) => ((prev.q ?? '') === q ? prev : { ...prev, q })), 350);
     return () => clearTimeout(t);
   }, [q]);
 
@@ -365,6 +377,7 @@ export function ExploreView({
           ))}
           {hasMore ? (
             <View style={st.moreWrap}>
+              {moreErr ? <Banner tone="warn">{moreErr}</Banner> : null}
               <PrimaryButton
                 label={loadingMore ? 'Loading…' : 'Show more members'}
                 onPress={() => void loadMore()}

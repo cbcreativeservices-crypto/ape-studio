@@ -374,7 +374,7 @@ export function SeeingFrequencyModule(_p: EqModuleComponentProps) {
         </GlossaryText>
 
         {/* Honest not-ready card (absent/spike/denied/error). */}
-        <EngineGate state={state} lastError={lastError} />
+        <EngineGate state={state} lastError={lastError} onRetry={onStart} />
         {!micPaused && (state === 'idle' || state === 'starting') && (
           <Text style={styles.starting}>Starting the analyzer…</Text>
         )}

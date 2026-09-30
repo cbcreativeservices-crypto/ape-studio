@@ -44,7 +44,11 @@ export type Workflow = {
 /** Where a bound input value came from — shown as the source label. */
 export type ValueSource =
   | { kind: 'manual' }
-  | { kind: 'prior-step'; stepIndex: number; outputLabel: string }
+  /** `outputIndex` (bug pass 2, 2026-09-30): some labels carry their inputs
+   *  ("RECOMMENDED GAIN LEAVING 12 dB HEADROOM", "EXACT A4"), so editing the
+   *  upstream step renamed the output and the import went blank. The position
+   *  is the fallback when the label no longer matches. Optional: older drafts. */
+  | { kind: 'prior-step'; stepIndex: number; outputLabel: string; outputIndex?: number }
   | { kind: 'project'; projectId: string; valueLabel: string }
   | { kind: 'fixed' } // a constant saved in the workflow itself
   | { kind: 'override'; replaced: ValueSource }; // manually replaced an import

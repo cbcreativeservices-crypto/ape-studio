@@ -88,7 +88,8 @@ test('MultiMeter: no snapshot off a dead mic; START from pause keeps the panels;
 test('RT60: STOP / leaving disarms the native capture; re-arm needs a live mic; dead-capture flags latch', () => {
   const src = read('screens/tools/Rt60Screen.tsx');
   assert.match(src, /setMicPaused\(true\);[\s\S]{0,700}?ApeDsp\.rt60Cancel\(\);\s*stop\(\);/);
-  assert.match(src, /addListener\('blur', \(\) => ApeDsp\.rt60Cancel\(\)\)/);
+  // Day pass 2: the blur listener also drops a pending ARM before cancelling.
+  assert.match(src, /addListener\('blur', \(\) => \{\s*armGenRef\.current\+\+;\s*ApeDsp\.rt60Cancel\(\);\s*\}\)/);
   assert.match(src, /if \(!base\?\.running\) return;/);
   assert.match(src, /\(rtState !== 1 && rtState !== 2\) \|\| !liveFrame\) return;/);
 });

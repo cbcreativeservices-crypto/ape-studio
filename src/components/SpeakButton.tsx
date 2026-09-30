@@ -18,7 +18,13 @@ let activeReset: (() => void) | null = null;
 
 /** Stop any in-progress speech app-wide (also used on screen blur). */
 export function stopAllSpeech() {
-  Speech.stop();
+  // Speech.stop() is async — catch it, or a native rejection is unhandled
+  // (bug hunt 2026-09-30, pass 2).
+  try {
+    void Promise.resolve(Speech.stop()).catch(() => {});
+  } catch {
+    /* nothing speaking */
+  }
   activeReset?.();
   activeReset = null;
 }
@@ -34,15 +40,18 @@ export function SpeakButton({
 }) {
   const [playing, setPlaying] = useState(false);
   const mine = useRef(false); // is the global utterance this button's?
+  /** False once unmounted — see the await in onPress. */
+  const alive = useRef(true);
   const { requestAudioOutput } = useAudioOutputGate();
 
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    alive.current = true;
+    return () => {
+      alive.current = false;
       // Unmounting while speaking (row recycled, popup closed) → stop.
       if (mine.current) stopAllSpeech();
-    },
-    [],
-  );
+    };
+  }, []);
 
   const reset = () => {
     mine.current = false;
@@ -57,7 +66,11 @@ export function SpeakButton({
     // AUDIO-OUTPUT GATE (owner request 2026-07-25): TTS is app-emitted sound and
     // must be silent unless output is enabled. Runs the enable flow when muted.
     const ok = await requestAudioOutput();
-    if (!ok) return;
+    // The button left the screen while the gate was up (the term sheet
+    // closed, the user went back): speaking now would read a term nobody is
+    // looking at, from a button no longer there to stop it (bug hunt
+    // 2026-09-30, pass 2).
+    if (!ok || !alive.current) return;
     stopAllSpeech(); // cancel whichever term was speaking
     mine.current = true;
     setPlaying(true);

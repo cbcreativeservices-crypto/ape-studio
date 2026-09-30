@@ -107,7 +107,9 @@ export function StageMeterV({ node, height = VM_H }: { node: ChainNode; height?:
       ) : node.distorted ? (
         <Text style={styles.distBadge}>DIST</Text>
       ) : (
-        <Text style={[styles.vRegion, { color: col }]}>{regionLabelFor(node)}</Text>
+        // 64 wide, centred under the 34-pt meter: at 9 pt "OVERLOAD" /
+        // "QUIET SOURCE" no longer break mid-word in the narrow wrap.
+        <Text style={[styles.vRegion, styles.vRegionUnder, { color: col }]}>{regionLabelFor(node)}</Text>
       )}
     </View>
   );
@@ -627,7 +629,10 @@ const styles = StyleSheet.create({
   vFill: { position: 'absolute', left: 1, right: 1, bottom: 0, borderRadius: 2, opacity: 0.95 },
   vCeil: { position: 'absolute', left: -1, right: -1, height: 2, backgroundColor: '#ff5f4e' },
   vNoise: { position: 'absolute', left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(158,158,168,0.42)' },
-  vRegion: { fontFamily: fonts.oswaldSemiBold, fontSize: 8.5, letterSpacing: 0.4 },
+  // ≥ 9 pt on a phone (bug pass 2 2026-09-30 — vRegion / fixedTagText /
+  // slotUnder were 8.5, slotLedLabel 8).
+  vRegion: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.4 },
+  vRegionUnder: { width: 64, textAlign: 'center' },
   clipBadge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 0.8, color: '#fff', backgroundColor: '#c62f22', borderRadius: 3, paddingHorizontal: 4, paddingVertical: 1, overflow: 'hidden' },
   distBadge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.5, color: '#ff7a1e' },
 
@@ -646,7 +651,7 @@ const styles = StyleSheet.create({
   colReadout: { fontFamily: fonts.mono, fontSize: 10 },
   colNote: { fontFamily: fonts.barlowRegular, fontSize: 9.5, lineHeight: 12, color: colors.textSub, textAlign: 'center', maxWidth: 84 },
   fixedTag: { borderRadius: 4, borderWidth: 1, borderColor: '#33353d', paddingHorizontal: 6, paddingVertical: 2, backgroundColor: '#101014' },
-  fixedTagText: { fontFamily: fonts.oswaldSemiBold, fontSize: 8.5, letterSpacing: 0.8, color: colors.textSub },
+  fixedTagText: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.8, color: colors.textSub },
 
   // rack stage — the chain as columns inside the pinned glass (2026-08-23)
   stageGlass: { paddingHorizontal: 10, paddingVertical: 6, gap: 6 },
@@ -677,8 +682,8 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   slotQ: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, color: colors.textSub },
-  slotUnder: { fontFamily: fonts.oswaldSemiBold, fontSize: 8.5, letterSpacing: 0.4, color: colors.textSub },
-  slotLedLabel: { fontFamily: fonts.mono, fontSize: 8, color: colors.textSub, marginTop: 2 },
+  slotUnder: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.4, color: colors.textSub },
+  slotLedLabel: { fontFamily: fonts.mono, fontSize: 9, color: colors.textSub, marginTop: 2 },
 
   // stage rows — left ¾ data panel, right ¼ device + cable (owner 2026-08-10)
   stageRow: { flexDirection: 'row', gap: 8, alignItems: 'stretch' },

@@ -39,11 +39,11 @@
  * scrolls fully into view above the fixed footer, on small screens too.
  */
 import { useRef, useState } from 'react';
-import { Image, Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Modal } from '../../components/DimModal';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { DetailPager } from '../../components/detailSwipe';
 import { CardArt } from '../../components/CardArt';
-import { LowLightDim } from '../../features/settings/LowLightLayer';
 import { colors, fonts } from '../../theme/tokens';
 import { credentialCopy } from '../../data/credentialCopy';
 import { REQUIRES_LABEL } from '../../data/careerRequirement';
@@ -404,7 +404,6 @@ export function CredentialDetailModal({
       {/* ABOVE the card, INSIDE this Modal — a sibling Modal would be drawn
           beneath it on Android. See components/PrePaywallPrompt. */}
       {overlay}
-      <LowLightDim />
     </Modal>
   );
 }

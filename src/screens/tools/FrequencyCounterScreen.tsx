@@ -31,6 +31,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BackHandler, PermissionsAndroid, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useIsFocused } from '@react-navigation/native';
 import * as Crypto from 'expo-crypto';
 import { centsSnap, SkinnedTunerVu, TuneChevrons, VuTunerFullScreen } from './SkinnedTunerVu';
 import { GlassButton } from '../../components/GlassButton';
@@ -1296,7 +1297,13 @@ export function FrequencyCounterScreen({ navigation }: Props) {
   // Then, with no overlay up, BACK steps out of a mode to the mode menu — the
   // same step the header ‹ BACK takes (toddler pass 2026-09-30: Android BACK
   // skipped the menu and left the whole tool, the SPL digital-view rule).
+  // …and only while this screen is in front (toddler pass 2 2026-09-30): VIEW
+  // SAVED MEASUREMENTS / the Paywall push over a counter still in a mode, and
+  // BackHandler runs the newest listener first — BACK there reset the hidden
+  // counter's mode and returned true, so the pushed screen would not go back.
+  const backFocused = useIsFocused();
   useEffect(() => {
+    if (!backFocused) return;
     if (!centerLockOpen && !vuTunerOpen && mode == null) return;
     const sub = BackHandler.addEventListener('hardwareBackPress', () => {
       if (vuTunerOpen) closeVuTuner();
@@ -1305,7 +1312,7 @@ export function FrequencyCounterScreen({ navigation }: Props) {
       return true;
     });
     return () => sub.remove();
-  }, [centerLockOpen, vuTunerOpen, mode]);
+  }, [backFocused, centerLockOpen, vuTunerOpen, mode]);
   useEffect(
     () => () => {
       closeCenterLock();
