@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 23:26 · ccode · ad88f85b
+changed: Speaker animations in time with the air, pressure bands and graph
+affects other side: nothing
+needs: nothing
+
+
 ### 2026-09-29 23:08 · ccode · 080f008f
 changed: Start Here card: subtitle on its own line
 affects other side: nothing
