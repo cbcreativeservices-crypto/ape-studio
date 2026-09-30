@@ -6,11 +6,11 @@
  * screen is opened, then never again.
  */
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { Modal, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
+import { PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import { ALL_ORIENTATIONS } from './modalOrientations';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors, fonts } from '../theme/tokens';
-import { LowLightDim } from '../features/settings/LowLightLayer';
+import { Modal } from './DimModal';
 import { FullscreenIcon } from './FullscreenIcon';
 import { useShake } from '../lib/useShake';
 import { useOverlaysSuppressed } from '../features/dev/popupSuppressStore';
@@ -113,7 +113,6 @@ export function StudyFsOverlay({
           </View>
         ) : null}
       </View>
-      <LowLightDim />
     </Modal>
   );
 }

@@ -25,14 +25,14 @@
  *    behave exactly as they did before this existed.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
 import { safeUser } from '../../lib/getSessionSafe';
 import { useOverlaysSuppressed } from '../dev/popupSuppressStore';
-import { LowLightDim } from '../settings/LowLightLayer';
+import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
 
 export const WELCOME_SEEN_PREFIX = 'ape:welcome:seen:';
@@ -152,7 +152,6 @@ export function TopicWelcomeSheet({ topicId, enabled = true }: { topicId: string
           </Pressable>
         </Pressable>
       </Pressable>
-      <LowLightDim />
     </Modal>
   );
 }

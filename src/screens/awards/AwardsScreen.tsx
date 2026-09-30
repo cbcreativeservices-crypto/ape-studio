@@ -17,7 +17,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Animated, { Easing, cancelAnimation, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { officialTopicName } from '../../data/officialTopicNames';
 import { HelpKey } from '../../components/HelpKey';
-import { FlatList, Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions, type ViewToken } from 'react-native';
+import { FlatList, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions, type ViewToken } from 'react-native';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -26,7 +26,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { CompactBrandBar } from '../../components/CompactBrandBar';
 import { BrandLogo } from '../../components/BrandLogo';
 import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
-import { LowLightDim } from '../../features/settings/LowLightLayer';
+import { Modal } from '../../components/DimModal';
 import { consumeDevPreview } from '../../features/dev/devPreview';
 import { CurriculumView } from '../curriculum/CurriculumScreen';
 import { DirectoryView } from '../directory/DirectoryScreen';
@@ -1034,7 +1034,6 @@ export function AwardsScreen({ navigation, route }: Props) {
           }
           onClose={() => setDetail(null)}
         />
-        <LowLightDim />
       </Modal>
 
       {/* LEVEL 2 — choose an established Program Path (TBD course sets). */}
@@ -1128,7 +1127,6 @@ export function AwardsScreen({ navigation, route }: Props) {
           }
           onClose={() => setDetail(null)}
         />
-        <LowLightDim />
       </Modal>
 
       {/* Anonymous ENROLL → brief "won't be saved" notice (user request

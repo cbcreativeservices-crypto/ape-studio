@@ -5,13 +5,13 @@
  * Presentation only — no data fetching, no navigation.
  */
 import { type ReactNode } from 'react';
-import { Modal, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { ALL_ORIENTATIONS } from './modalOrientations';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TrophyImage } from './TrophyImage';
 import { fonts } from '../theme/tokens';
 import { readingColumn } from '../theme/readingColumn';
-import { LowLightDim } from '../features/settings/LowLightLayer';
+import { Modal } from './DimModal';
 
 /**
  * The art is sized against BOTH axes - 82% of the width but only 55% of the
@@ -119,7 +119,6 @@ export function TrophyModal({
           <View style={[styles.belowWrap, { paddingBottom: insets.bottom + 12 }]}>{below}</View>
         ) : null}
       </View>
-      <LowLightDim />
     </Modal>
   );
 }

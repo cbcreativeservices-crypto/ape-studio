@@ -350,6 +350,54 @@ export function PaywallScreen({ navigation }: Props) {
 
   const showManage = resolved && (entitlement === 'academy' || entitlement === 'lapsed');
 
+  // MEMBERS GET THEIR OWN PAGE (owner 2026-09-30: "for members they should
+  // get their own page - not the free user upsale"). Settings › Manage
+  // membership lands here; no plan cards, prices or CONTINUE — just their
+  // status and the ways to manage it. `tierKnown`, never a guess.
+  if (tierKnown && isMember) {
+    return (
+      <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
+        <Pressable
+          onPress={() => navigation.goBack()}
+          hitSlop={12}
+          accessibilityRole="button"
+          accessibilityLabel="Close"
+          style={styles.close}
+        >
+          <Text style={styles.closeGlyph}>✕</Text>
+        </Pressable>
+        <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 16 }]}>
+          <Text style={styles.eyebrow}>ACADEMY MEMBERSHIP</Text>
+          <Text style={styles.title}>Your membership is active</Text>
+          {/* Ratified by the owner 2026-09-14 (the member notice on CONTINUE). */}
+          <Text style={styles.body}>
+            Your Academy access is already active. If you bought a monthly or annual plan, manage it in your app-store
+            subscription settings.
+          </Text>
+          <View style={styles.promiseRow}>
+            <Text style={styles.promiseCheck}>✓</Text>
+            <Text style={styles.valueLine}>
+              Every topic, certificate and lab is included. Enroll in as many as you like — choosing more never costs more.
+            </Text>
+          </View>
+          <GlassButton label="MANAGE SUBSCRIPTION" tint="blue" height={54} fontSize={15} onPress={onManage} />
+          <Pressable onPress={busy ? undefined : onRestore} accessibilityRole="button" hitSlop={8}>
+            <Text style={styles.restore}>Restore purchases</Text>
+          </Pressable>
+          <View style={styles.policyRow}>
+            <Pressable onPress={() => openPolicy('terms')} accessibilityRole="link" hitSlop={8}>
+              <Text style={styles.policyLink}>Terms of Use</Text>
+            </Pressable>
+            <Text style={styles.policyDot}>·</Text>
+            <Pressable onPress={() => openPolicy('privacy')} accessibilityRole="link" hitSlop={8}>
+              <Text style={styles.policyLink}>Privacy Policy</Text>
+            </Pressable>
+          </View>
+        </ScrollView>
+      </View>
+    );
+  }
+
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
       <Pressable

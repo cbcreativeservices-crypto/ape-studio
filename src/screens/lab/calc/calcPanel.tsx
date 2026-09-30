@@ -16,7 +16,8 @@ import { memo, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import type { CalcFunction, CalcTable, CalcValues, FieldDef, OutputVal } from './calcTypes';
-import { fmt, parseList, parseQuantity, unitsFor } from './calcUnits';
+import { NEGATIVE_MSG, NON_NEGATIVE_KINDS, fmt, negativeInput, parseList, parseQuantity, unitsFor } from './calcUnits';
+
 
 export function defaultUnitIdx(f: FieldDef): number {
   if (!f.defaultUnit) return 0;
@@ -59,11 +60,16 @@ export type ComputeResult = {
   steps: string[];
   table: CalcTable | null;
   computeError: boolean;
+  /** Name of the input that made computeError by being negative (else null). */
+  negativeField?: string | null;
 };
 
 /** Compute once, guarded — a throwing formula reports an error, never crashes. */
-export function runCompute(fn: CalcFunction | null, values: CalcValues | null): ComputeResult {
+export function runCompute(fn: CalcFunction | null, values: CalcValues | null, fields?: FieldDef[]): ComputeResult {
   if (!fn || !values) return { outputs: [], steps: [], table: null, computeError: false };
+  // An impossible negative is an ERROR, never a wrong-signed answer.
+  const neg = fields ? negativeInput(fn, values, fields) : null;
+  if (neg) return { outputs: [], steps: [], table: null, computeError: true, negativeField: neg.name };
   try {
     return {
       outputs: fn.compute(values),
@@ -131,7 +137,12 @@ export const FieldRow = memo(
     // either being absent.
     const typed = parseQuantity(raw);
     const baseVal = isList || typed === null ? NaN : unit.toBase(typed);
-    const warn = field.warn && Number.isFinite(baseVal) && field.warn.test(baseVal) ? field.warn.msg : null;
+    const negative = NON_NEGATIVE_KINDS.has(field.quantity) && Number.isFinite(baseVal) && baseVal < 0;
+    const warn = negative
+      ? NEGATIVE_MSG
+      : field.warn && Number.isFinite(baseVal) && field.warn.test(baseVal)
+        ? field.warn.msg
+        : null;
     // Say WHY nothing is being calculated. The strict parser is deliberately
     // silent about input it cannot read, and silence on its own reads as a
     // broken calculator to someone who has just filled the field in.

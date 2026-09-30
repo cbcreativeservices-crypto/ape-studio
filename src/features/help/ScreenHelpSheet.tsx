@@ -12,11 +12,11 @@
  * never fights the dev kill-switch or Low-Light mode.
  */
 import { useCallback, useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../theme/tokens';
-import { LowLightDim } from '../settings/LowLightLayer';
+import { Modal } from '../../components/DimModal';
 
 export type HelpSection = { heading?: string; body: string };
 export type HelpLink = { label: string; onPress: () => void };
@@ -85,7 +85,6 @@ export function ScreenHelpSheet({
           </ScrollView>
         </View>
       </View>
-      <LowLightDim />
     </Modal>
   );
 }

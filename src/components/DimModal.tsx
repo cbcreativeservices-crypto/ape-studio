@@ -21,12 +21,13 @@
 import {
   createContext,
   useContext,
+  useEffect,
   useLayoutEffect,
   useState,
   useSyncExternalStore,
   type ReactNode,
 } from 'react';
-import { Modal as RNModal, StyleSheet, View, type ModalProps } from 'react-native';
+import { Modal as RNModal, Platform, StyleSheet, View, type ModalProps } from 'react-native';
 import { LowLightDim } from '../features/settings/LowLightLayer';
 import { ALL_ORIENTATIONS } from './modalOrientations';
 
@@ -172,6 +173,38 @@ export function setHostedOverlay(overlay: HostedOverlay | null, key = 'gate'): v
   emit();
 }
 
+/**
+ * WEB ONLY — the box the app actually occupies (owner 2026-09-30: "make sure
+ * pop ups are centered"). react-native-web's Modal portal is sized from
+ * window.innerWidth/innerHeight; in the browser preview those can read far
+ * larger than the visible viewport (852×1844 while the app shows 390×844), so
+ * every popup centred off to the lower right. The visual viewport is the box
+ * the user sees; the popup's content is pinned to it. Native: null, untouched.
+ */
+function readWebBox(): { w: number; h: number } | null {
+  if (Platform.OS !== 'web' || typeof window === 'undefined') return null;
+  const vv = window.visualViewport;
+  const w = vv?.width ?? document.documentElement.clientWidth;
+  const h = vv?.height ?? document.documentElement.clientHeight;
+  return w > 0 && h > 0 ? { w: Math.round(w), h: Math.round(h) } : null;
+}
+function useWebBox(active: boolean): { w: number; h: number } | null {
+  const [box, setBox] = useState(() => (active ? readWebBox() : null));
+  useEffect(() => {
+    if (!active || Platform.OS !== 'web' || typeof window === 'undefined') return;
+    const update = () => setBox(readWebBox());
+    update();
+    const vv = window.visualViewport;
+    window.addEventListener('resize', update);
+    vv?.addEventListener('resize', update);
+    return () => {
+      window.removeEventListener('resize', update);
+      vv?.removeEventListener('resize', update);
+    };
+  }, [active]);
+  return active ? box : null;
+}
+
 /** Nesting depth, so a Modal opened inside another's tree ranks above it. */
 const HostDepth = createContext(0);
 
@@ -214,6 +247,7 @@ export function Modal({
     () => NO_OVERLAYS,
   );
   const topOverlay = mine.length ? mine[mine.length - 1] : null;
+  const webBox = useWebBox(!!rest.visible);
 
   const { onRequestClose, onShow } = rest;
   return (
@@ -228,17 +262,31 @@ export function Modal({
         onShow?.(e);
       }}
     >
-      <HostDepth.Provider value={depth}>
-        {children}
-        {mine.map((o) => (
-          <View key={o.key} style={StyleSheet.absoluteFill} pointerEvents="box-none">
-            {o.node}
+      {(() => {
+        const body = (
+          <>
+            <HostDepth.Provider value={depth}>
+              {children}
+              {mine.map((o) => (
+                <View key={o.key} style={StyleSheet.absoluteFill} pointerEvents="box-none">
+                  {o.node}
+                </View>
+              ))}
+            </HostDepth.Provider>
+            {/* Last child, so it washes over the modal's own content. It is
+                pointerEvents="none", so nothing below it loses a touch. */}
+            <LowLightDim />
+          </>
+        );
+        // Web: pinned to the visible viewport (see readWebBox). Native: as is.
+        return webBox ? (
+          <View style={{ position: 'absolute', left: 0, top: 0, width: webBox.w, height: webBox.h, overflow: 'hidden' }}>
+            {body}
           </View>
-        ))}
-      </HostDepth.Provider>
-      {/* Last child, so it washes over the modal's own content. It is
-          pointerEvents="none", so nothing below it loses a touch. */}
-      <LowLightDim />
+        ) : (
+          body
+        );
+      })()}
     </RNModal>
   );
 }

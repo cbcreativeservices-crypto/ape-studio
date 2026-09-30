@@ -19,14 +19,14 @@
  * capture reuses the calc shareImage chain. Definitions are never rewritten.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Modal, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { ALL_ORIENTATIONS } from './modalOrientations';
 import { notify } from '../lib/confirm';
 import { GlassButton } from './GlassButton';
 import { StudioButton } from './StudioButton';
 import { ShareIcon } from './ShareIcon';
 import { colors, fonts } from '../theme/tokens';
-import { LowLightDim } from '../features/settings/LowLightLayer';
+import { Modal } from './DimModal';
 import {
   DEFAULT_SECTIONS,
   LARGE_SHARE_THRESHOLD,
@@ -560,7 +560,6 @@ export function ShareTermSheet({
         </View>
       ) : null}
 
-      <LowLightDim />
     </Modal>
   );
 }

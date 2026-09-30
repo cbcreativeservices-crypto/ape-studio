@@ -106,7 +106,7 @@ export function CalcWorkspaceScreen() {
   const values: CalcValues | null = useMemo(() => buildValues(fields, raw, unitIdx), [fields, raw, unitIdx]);
 
   // Compute once per (function, values) — NOT on every keystroke's re-render.
-  const { outputs, steps, table, computeError } = useMemo(() => runCompute(fn, values), [fn, values]);
+  const { outputs, steps, table, computeError, negativeField } = useMemo(() => runCompute(fn, values, fields), [fn, values, fields]);
 
   // ---- Capped-calc gate (owner 2026-08-13): FREE/LAPSED accounts get 5
   // calculation OUTPUTS per rolling week (server-enforced via calc_consume;
@@ -328,7 +328,11 @@ export function CalcWorkspaceScreen() {
                 </Text>
               </View>
             ) : computeError ? (
-              <Text style={styles.warnText}>⚠ These values don’t produce a valid result — check for zeros or reversed inputs.</Text>
+              <Text style={styles.warnText}>
+                {negativeField
+                  ? `⚠ ${negativeField} can’t be negative — enter a positive value.`
+                  : '⚠ These values don’t produce a valid result — check for zeros or reversed inputs.'}
+              </Text>
             ) : (
               <View style={{ gap: 8 }}>
                 {outputs.map((o, oi) =>

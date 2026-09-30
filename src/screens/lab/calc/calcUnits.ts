@@ -19,6 +19,8 @@ const lin = (k: number): Pick<UnitDef, 'toBase' | 'fromBase'> => ({
 });
 const ident = lin(1);
 
+import type { CalcFunction, CalcValues, FieldDef } from './calcTypes';
+
 export type QuantityKind =
   | 'frequency' // base Hz
   | 'time' // base s
@@ -262,4 +264,31 @@ export function parseList(raw: string): number[] {
     out.push(n);
   }
   return out;
+}
+
+/**
+ * Quantities that cannot physically be negative (owner 2026-09-30: "fix the
+ * neg results to show error"). A negative frequency, time, distance, power,
+ * impedance… is not an input the formulas can answer honestly — f = −100 Hz
+ * used to give a confident T = −10 ms. Levels (dB, SPL, sensitivity), voltage,
+ * current, temperature, angle, cents, ratios, percentages and plain numbers
+ * CAN be negative and are left alone.
+ */
+export const NON_NEGATIVE_KINDS: ReadonlySet<QuantityKind> = new Set<QuantityKind>([
+  'frequency', 'time', 'length', 'speed', 'power', 'impedance', 'area', 'volume',
+  'bpm', 'samples', 'samplerate', 'bitdepth', 'datasize', 'datarate',
+]);
+export const NEGATIVE_MSG = 'Can’t be negative.';
+/** The first input of `fn` holding an impossible negative, or null. */
+export function negativeInput(
+  fn: Pick<CalcFunction, 'inputs'>,
+  values: CalcValues,
+  fields: Pick<FieldDef, 'key' | 'name' | 'quantity'>[],
+): Pick<FieldDef, 'key' | 'name' | 'quantity'> | null {
+  for (const key of fn.inputs) {
+    const f = fields.find((x) => x.key === key);
+    const v = values[key];
+    if (f && NON_NEGATIVE_KINDS.has(f.quantity) && typeof v === 'number' && v < 0) return f;
+  }
+  return null;
 }

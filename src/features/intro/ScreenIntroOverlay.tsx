@@ -9,7 +9,7 @@
  * tutorial designs can replace the content without touching the wiring.
  */
 import { useCallback, useEffect, useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -17,7 +17,7 @@ import { devBypass } from '../../config/devMode';
 import { useOverlaysSuppressed } from '../dev/popupSuppressStore';
 import { useSamplingActive } from './onboardingSampling';
 import { colors, fonts } from '../../theme/tokens';
-import { LowLightDim } from '../settings/LowLightLayer';
+import { Modal } from '../../components/DimModal';
 import { INTRO_STORAGE_PREFIX, SCREEN_INTROS, type IntroKey } from './screenIntros';
 
 // Session-only "seen" flags — in-memory, cleared on app process restart — for
@@ -165,7 +165,6 @@ export function IntroSheet({
           )}
         </View>
       </Pressable>
-      <LowLightDim />
     </Modal>
   );
 }

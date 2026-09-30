@@ -8,10 +8,10 @@
  *  - "Let's get started" is live from the first frame (owner 2026-09-20). The
  *    9-second minimum is gone; see the note on the component.
  */
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { colors, fonts } from '../../theme/tokens';
-import { LowLightDim } from '../settings/LowLightLayer';
+import { Modal } from '../../components/DimModal';
 import { SCREEN_INTROS } from './screenIntros';
 import { useScreenIntro } from './ScreenIntroOverlay';
 
@@ -56,7 +56,6 @@ export function AppWelcomeOverlay() {
           </Pressable>
         </View>
       </View>
-      <LowLightDim />
     </Modal>
   );
 }

@@ -5,11 +5,11 @@
  * that aren't authored yet show a muted "Coming soon" so the shape is visible
  * during development.
  */
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../theme/tokens';
-import { LowLightDim } from '../settings/LowLightLayer';
+import { Modal } from '../../components/DimModal';
 import { useOverlaysSuppressed } from '../dev/popupSuppressStore';
 import { useSamplingActive } from './onboardingSampling';
 import { isIntroEmpty, type LearningIntro } from './learningIntros';
@@ -98,7 +98,6 @@ export function LearningIntroSheet({
           </Pressable>
         </Pressable>
       </Pressable>
-      <LowLightDim />
     </Modal>
   );
 }

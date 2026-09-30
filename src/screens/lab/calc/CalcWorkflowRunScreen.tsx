@@ -240,7 +240,7 @@ export function CalcWorkflowRunScreen() {
         }
       }
       const values = resolved ? buildValues(fields, effRaw, unitSel) : null;
-      const result = runCompute(resolved?.fn ?? null, values);
+      const result = runCompute(resolved?.fn ?? null, values, fields);
       out.push({ resolved, fields, effRaw, result, complete: values != null && !result.computeError });
     });
     return out;
@@ -654,7 +654,11 @@ export function CalcWorkflowRunScreen() {
                   <Text style={styles.resultEyebrow}>YOUR ANSWER — {cur.resolved.fn.name.toUpperCase()}</Text>
                   {!cur.complete ? (
                     cur.result.computeError ? (
-                      <Text style={styles.warnText}>⚠ These values don’t produce a valid result — check for zeros or reversed inputs.</Text>
+                      <Text style={styles.warnText}>
+                        {cur.result.negativeField
+                          ? `⚠ ${cur.result.negativeField} can’t be negative — enter a positive value.`
+                          : '⚠ These values don’t produce a valid result — check for zeros or reversed inputs.'}
+                      </Text>
                     ) : (
                       <Text style={styles.caption}>Fill in the values above to calculate.</Text>
                     )
