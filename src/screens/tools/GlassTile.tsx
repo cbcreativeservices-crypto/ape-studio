@@ -13,11 +13,12 @@
  * the display powers on (a cool glow ramps up), with the selection haptic tick
  * on the confirmed press — exactly the hub's timings.
  */
-import { useEffect, useRef, type ReactNode } from 'react';
+import { memo, useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Animated, Easing, Platform, Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../../features/settings/store';
+import Svg, { Circle, Defs, Ellipse, Line, LinearGradient as SvgLinearGradient, RadialGradient, Rect, Stop } from 'react-native-svg';
 import { HUB_LIGHT, TILE_GAP } from './TileChassis';
 
 const TILE_SINK = 1; // px the glass sinks when pressed (the hub's value)
@@ -144,23 +145,157 @@ export function GlassPanel({ children, style }: { children: ReactNode; style?: S
   return (
     <View style={styles.panelShadow}>
       <View style={[styles.panel, style]}>
-        <LinearGradient
-          pointerEvents="none"
-          colors={['#3a3a3e', '#46464b', '#2c2c30']}
-          locations={[0, 0.42, 1]}
-          style={StyleSheet.absoluteFill}
-        />
-        <LinearGradient
-          pointerEvents="none"
-          colors={['rgba(255,255,255,0)', 'rgba(255,255,255,0.07)', 'rgba(255,255,255,0)']}
-          locations={[0, 0.3, 0.62]}
-          style={StyleSheet.absoluteFill}
-        />
+        <PanelTexture />
         {children}
       </View>
     </View>
   );
 }
+
+/* ── PANEL TEXTURE (owner 2026-09-30: "like in audio tools - add texture to
+ * the backgrounds … of the tile buttons (all 3 screens)"). The Audio Tools
+ * hub's aged rack blank (ToolsHubScreen PanelFace): the same coat, the
+ * softbox sheen, uneven anodising (dark / chalky-light / faintly warm
+ * blotches), bead-blast grit, near-horizontal scuffs, hairline scratches and
+ * the lit top lip / shadowed bottom edge. Generated ONCE per panel size from a
+ * fixed seed, so the wear never shifts between launches. Tiles sit on top, so
+ * only the margins and gutters show it — exactly as on the hub. Decorative. */
+type PBlotch = { cx: number; cy: number; rx: number; ry: number; rot: number; kind: 'dark' | 'light' | 'warm' };
+type PMark = { x1: number; y1: number; x2: number; y2: number; a: number; light: boolean };
+type PSpeck = { cx: number; cy: number; r: number; a: number; light: boolean };
+
+function seeded(seed: number) {
+  let v = seed >>> 0;
+  return () => {
+    v ^= v << 13;
+    v ^= v >>> 17;
+    v ^= v << 5;
+    return ((v >>> 0) % 1_000_000) / 1_000_000;
+  };
+}
+
+function buildTexture(w: number, h: number) {
+  const rnd = seeded(0x9e3779b9);
+  const seg = (x: number, y: number, len: number, deg: number) => {
+    const a = (deg * Math.PI) / 180;
+    return { x1: x, y1: y, x2: x + Math.cos(a) * len, y2: y + Math.sin(a) * len };
+  };
+  // Density scales with area so a small panel isn't crowded and a tall one
+  // isn't bare (the hub's counts are for a ~360×620 blank).
+  const k = Math.max(0.35, Math.min(2.5, (w * h) / (360 * 620)));
+  const blotches: PBlotch[] = [];
+  for (let i = 0; i < Math.round(26 * k); i++) {
+    const kind: PBlotch['kind'] = i % 5 === 0 ? 'warm' : i % 2 ? 'dark' : 'light';
+    const upper = kind === 'light' ? rnd() < 0.7 : rnd() < 0.3;
+    const cy = upper ? rnd() * h * 0.5 : h * 0.5 + rnd() * h * 0.5;
+    const rx = Math.min(w * 0.34, 30 + rnd() * 90);
+    blotches.push({ cx: rnd() * w, cy, rx, ry: rx * (0.45 + rnd() * 0.5), rot: rnd() * 180, kind });
+  }
+  const scuffs: PMark[] = [];
+  for (let i = 0; i < Math.round(34 * k); i++) {
+    const light = rnd() < 0.25;
+    scuffs.push({
+      ...seg(rnd() * w, (0.2 + 0.8 * rnd()) * h, 5 + rnd() * 16, (rnd() - 0.5) * 30),
+      a: light ? 0.09 + rnd() * 0.03 : 0.13 + rnd() * 0.07,
+      light,
+    });
+  }
+  const scratches: PMark[] = [
+    { ...seg(w * (0.12 + rnd() * 0.2), h - 4 - rnd() * 5, w * (0.25 + rnd() * 0.25), (rnd() - 0.5) * 2.5), a: 0.14, light: true },
+    { ...seg(w * (0.45 + rnd() * 0.25), 3 + rnd() * 5, w * (0.12 + rnd() * 0.18), (rnd() - 0.5) * 2), a: 0.14, light: true },
+    { ...seg(w - 6 + (rnd() - 0.5) * 4, h * (0.55 + rnd() * 0.25), 24 + rnd() * 36, 90 + (rnd() - 0.5) * 10), a: 0.14, light: true },
+  ];
+  const specks: PSpeck[] = [];
+  for (let i = 0; i < Math.round(290 * k); i++) {
+    specks.push({ cx: rnd() * w, cy: rnd() * h, r: 0.5 + rnd() * 0.5, a: 0.09 + rnd() * 0.06, light: rnd() > 0.5 });
+  }
+  return { blotches, scuffs, scratches, specks };
+}
+
+const PanelTexture = memo(function PanelTexture() {
+  const [size, setSize] = useState({ w: 0, h: 0 });
+  // Unique gradient ids per panel: several panels share a screen, and on the
+  // web SVG ids are document-global.
+  const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
+  const tex = useMemo(() => (size.w > 0 && size.h > 0 ? buildTexture(size.w, size.h) : null), [size.w, size.h]);
+  const fill = { dark: `url(#pd${uid})`, light: `url(#pl${uid})`, warm: `url(#pw${uid})` } as const;
+  return (
+    <View
+      pointerEvents="none"
+      style={StyleSheet.absoluteFill}
+      onLayout={(e) => {
+        const { width, height } = e.nativeEvent.layout;
+        setSize((p) => (p.w === Math.round(width) && p.h === Math.round(height) ? p : { w: Math.round(width), h: Math.round(height) }));
+      }}
+    >
+      {tex ? (
+        <Svg width={size.w} height={size.h}>
+          <Defs>
+            <SvgLinearGradient id={`pf${uid}`} x1="0" y1="0" x2="0" y2="1">
+              <Stop offset="0" stopColor="#3a3a3e" />
+              <Stop offset="0.42" stopColor="#46464b" />
+              <Stop offset="1" stopColor="#2c2c30" />
+            </SvgLinearGradient>
+            <RadialGradient id={`ps${uid}`} cx="50%" cy="50%" r="50%">
+              <Stop offset="0" stopColor="#fff" stopOpacity={0.08} />
+              <Stop offset="1" stopColor="#fff" stopOpacity={0} />
+            </RadialGradient>
+            <RadialGradient id={`pd${uid}`} cx="50%" cy="50%" r="50%">
+              <Stop offset="0" stopColor="#000" stopOpacity={0.2} />
+              <Stop offset="0.55" stopColor="#000" stopOpacity={0.08} />
+              <Stop offset="1" stopColor="#000" stopOpacity={0} />
+            </RadialGradient>
+            <RadialGradient id={`pl${uid}`} cx="50%" cy="50%" r="50%">
+              <Stop offset="0" stopColor="#fff" stopOpacity={0.16} />
+              <Stop offset="0.55" stopColor="#fff" stopOpacity={0.07} />
+              <Stop offset="1" stopColor="#fff" stopOpacity={0} />
+            </RadialGradient>
+            <RadialGradient id={`pw${uid}`} cx="50%" cy="50%" r="50%">
+              <Stop offset="0" stopColor="#9a7d52" stopOpacity={0.18} />
+              <Stop offset="1" stopColor="#9a7d52" stopOpacity={0} />
+            </RadialGradient>
+          </Defs>
+          <Rect x={0} y={0} width={size.w} height={size.h} fill={`url(#pf${uid})`} />
+          <Ellipse cx={size.w / 2} cy={Math.min(size.h * 0.18, 140)} rx={size.w * 0.6} ry={Math.min(size.h * 0.45, 320)} fill={`url(#ps${uid})`} />
+          {tex.blotches.map((b, i) => (
+            <Ellipse
+              key={`b${i}`}
+              cx={b.cx}
+              cy={b.cy}
+              rx={b.rx}
+              ry={b.ry}
+              transform={`rotate(${b.rot.toFixed(1)} ${b.cx.toFixed(1)} ${b.cy.toFixed(1)})`}
+              fill={fill[b.kind]}
+            />
+          ))}
+          {tex.specks.map((g, i) => (
+            <Circle key={`s${i}`} cx={g.cx} cy={g.cy} r={g.r} fill={g.light ? `rgba(255,255,255,${g.a.toFixed(3)})` : `rgba(0,0,0,${g.a.toFixed(3)})`} />
+          ))}
+          {tex.scuffs.map((m, i) => (
+            <Line
+              key={`m${i}`}
+              x1={m.x1}
+              y1={m.y1}
+              x2={m.x2}
+              y2={m.y2}
+              stroke={m.light ? `rgba(255,255,255,${m.a.toFixed(3)})` : `rgba(0,0,0,${m.a.toFixed(3)})`}
+              strokeWidth={1}
+              strokeLinecap="round"
+            />
+          ))}
+          {tex.scratches.map((m, i) => (
+            <Line key={`sc${i}`} x1={m.x1} y1={m.y1 - 1} x2={m.x2} y2={m.y2 - 1} stroke="rgba(0,0,0,0.16)" strokeWidth={1} strokeLinecap="round" />
+          ))}
+          {tex.scratches.map((m, i) => (
+            <Line key={`sl${i}`} x1={m.x1} y1={m.y1} x2={m.x2} y2={m.y2} stroke={`rgba(255,255,255,${m.a})`} strokeWidth={1} strokeLinecap="round" />
+          ))}
+          <Line x1={0} y1={0.5} x2={size.w} y2={0.5} stroke={HUB_LIGHT.lip} strokeWidth={1} />
+          <Line x1={0} y1={size.h - 0.5} x2={size.w} y2={size.h - 0.5} stroke={HUB_LIGHT.lipShadow} strokeWidth={1} />
+        </Svg>
+      ) : null}
+    </View>
+  );
+});
 
 const styles = StyleSheet.create({
   panel: { borderRadius: 0, borderWidth: 1, borderColor: '#000', padding: 12, overflow: 'hidden' },
