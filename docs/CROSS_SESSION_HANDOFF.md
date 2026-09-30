@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-29 23:03 · ccode · d9c9bbb7
+changed: Home lands on Start Here only on the first app open; Glossary after
+affects other side: nothing (app-only, device-local AsyncStorage flag)
+needs: nothing
+
+
 ### 2026-09-29 22:52 · ccode · 04da802f
 changed: Real waveforms (no stylized audio), peak LED meter on the loudness standard, 'not signed in' wording
 affects other side: nothing (app-only: meter display drawing + wording)
