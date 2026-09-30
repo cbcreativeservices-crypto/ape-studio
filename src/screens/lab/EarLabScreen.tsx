@@ -402,7 +402,9 @@ const styles = StyleSheet.create({
 
   catBlock: { gap: 8, marginTop: 4 },
   // Glass tile grid (owner 2026-09-30) — two a row on phones, three on tablets.
-  tileGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 10 },
+  // Packed from the left (a 2-lab category on a 3-column tablet row must not
+  // push its tiles to the two edges).
+  tileGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', columnGap: 8, rowGap: 10 },
   tilePanelPhone: { padding: 7 },
   tileHalf: { width: '48.5%' },
   tileThird: { width: '32%' },

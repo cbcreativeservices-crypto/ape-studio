@@ -489,7 +489,11 @@ export function categoryCount(cat: LabCategory): number {
 
 /** Categories belonging to a top-level section, in catalog order. */
 export function sectionCategories(section: LabSection): LabCategory[] {
-  const cats = LAB_CATEGORIES.filter((c) => c.section === section);
+  // The Audio Calculator Laboratory has its OWN Home card now (owner
+  // 2026-09-30: "Remove the Audio Calculator lab out of adv training labs"),
+  // so it is no longer listed in the lab menus. Its catalog entry stays for
+  // anything that looks it up by id.
+  const cats = LAB_CATEGORIES.filter((c) => c.section === section && c.id !== 'calculators');
   // Training Lab is listed A→Z by category name (owner 2026-08-10). Audio
   // Fundamentals keeps its deliberate Sound → Acoustics → Signal order.
   return section === 'training' ? [...cats].sort((a, b) => a.name.localeCompare(b.name)) : cats;
