@@ -1107,11 +1107,17 @@ export function ThreeWindowView({
   const spkW = Math.min(120 * k, Math.max(96 * k, width * 0.36));
   const gap = 6 * k;
   const airW = Math.max(60, width - spkW - gap);
-  const originX = spkW * 0.72; // the speaker's cone-mouth x — the wave is born here
+  // The wave is born where the drawn AIR begins — the air the cone pushes on
+  // (owner 2026-09-29: "the speaker looks out of time to the particles …
+  // and the color bands"). It used to start at the cone mouth, a blank strip
+  // (~⅓ wavelength) short of the first molecule, so the molecules beside the
+  // cone lagged it by ~⅓ of a cycle and nothing visibly linked. Now the
+  // nearest molecules move WITH the cone (ξ = A·sin ωt at the edge, the cone's
+  // own law) and the bands/graph peaks carry on from there.
+  const originX = spkW + gap;
   const lambdaPx = airW / 2.2; // one spatial scale shared by air + graph
-  // Shift the air's phase so its compressions line up with the FULL-WIDTH graph
-  // whose wave starts at originX: air-local x=0 sits at screen (spkW+gap).
-  const airPhasePx = spkW + gap - originX;
+  // Air-local x=0 sits at screen originX, so the air needs no phase shift.
+  const airPhasePx = 0;
   return (
     <View style={{ gap: 4 * k }}>
       <View style={{ flexDirection: 'row', gap }}>

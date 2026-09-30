@@ -849,7 +849,7 @@ function SourceStage({ viz, w, h, source, f, focused }: { viz: VizModule; w: num
       <Text style={[styles.winLabel, { fontSize: 10 * ts }]}>
         {source === 'voice' ? 'YOUR VOICE — a vibration pushing on the air' : `TEST TONE — ${f} Hz, one steady pitch`}
       </Text>
-      <viz.PressureGraphView clock={clock} width={w} height={graphH} visHz={visHz} amp={0.75} lambdaPx={lambda} originX={srcW * 0.7} />
+      <viz.PressureGraphView clock={clock} width={w} height={graphH} visHz={visHz} amp={0.75} lambdaPx={lambda} originX={srcW + 6} />
     </View>
   );
 }

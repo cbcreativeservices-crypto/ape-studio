@@ -198,9 +198,19 @@ function strokeScale(w: number): number {
 // (b) mic diaphragm riding the arriving pressure,
 // (c) continuous voltage scrolling out of the mic/preamp.
 
-/** One traveling pressure band (compression = amber, rarefaction = blue). The
- *  band travels mouth→mic in exactly one cycle, so the diaphragm riding
- *  sourceSample(phase) is phase-locked with the arriving front. */
+/** One traveling pressure band (compression = amber, rarefaction = blue).
+ *
+ *  IN TIME WITH THE CONE (owner 2026-09-29: "make sure that when we show a
+ *  speaker moving that it is in sync with the … display next to it"). The
+ *  cone makes ONE compression and ONE rarefaction per cycle: a compression
+ *  leaves the mouth as the cone drives forward through centre (pressure ∝ cone
+ *  velocity, cos θ = 1 at θ ≡ 0), a rarefaction half a cycle later. The old
+ *  law spaced six alternating bands 1/6 cycle apart — three compressions per
+ *  cone stroke, 3× the speaker's rate.
+ *
+ *  Each band takes count/2 whole cycles to reach the mic, so the
+ *  diaphragm riding sourceSample(phase) stays phase-locked with the arriving
+ *  front (a whole-cycle delay ≡ no phase change). */
 function PressureBand({
   phase,
   idx,
@@ -220,15 +230,16 @@ function PressureBand({
   amp: number;
   k: number;
 }) {
-  const frac0 = idx / count;
-  const r = useDerivedValue(() => {
-    const f = (phase.value / (2 * Math.PI) + frac0) % 1;
-    return 5 * k + f * span;
-  }, [phase, span, k]);
-  const op = useDerivedValue(() => {
-    const f = (phase.value / (2 * Math.PI) + frac0) % 1;
-    return (1 - f) * (0.14 + 0.42 * amp);
-  }, [phase, amp]);
+  // Band idx is born at cycle offset idx/2: even = compressions (θ ≡ 0),
+  // odd = rarefactions (θ ≡ π). f = 0…1 over its count/2-cycle flight.
+  const travel = count / 2;
+  const f01 = (ph: number) => {
+    'worklet';
+    const age = ph / (2 * Math.PI) - idx / 2;
+    return (((age % travel) + travel) % travel) / travel;
+  };
+  const r = useDerivedValue(() => 5 * k + f01(phase.value) * span, [phase, span, k]);
+  const op = useDerivedValue(() => (1 - f01(phase.value)) * (0.14 + 0.42 * amp), [phase, amp]);
   return (
     <Circle
       cx={cx}
@@ -242,7 +253,7 @@ function PressureBand({
   );
 }
 
-const BAND_COUNT = 6;
+const BAND_COUNT = 6; // 3 compressions + 3 rarefactions in flight (each flies 3 whole cycles)
 const BAND_IDX = [0, 1, 2, 3, 4, 5];
 
 export function AnalogChainView({
