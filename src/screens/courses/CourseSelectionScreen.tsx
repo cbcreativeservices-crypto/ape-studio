@@ -344,6 +344,9 @@ const CARD_IMAGE: Record<string, string> = {
    *  course-cards bucket as start_here.webp (941×1672). Until it lands the
    *  card shows its plain fallback style. */
   startHere: 'start_here.webp',
+  /** Calculator + Career Finder cards (owner art 2026-09-30, 941×1672). */
+  calculators: 'calc_lab.webp',
+  careerFinder: 'career_finder.webp',
   // Free-topic taster cards, keyed `free<gs>` (v3 gs: 3060 Pro Audio Safety ·
   // 3970 DAW taster).
   free3060: 'free_safety.webp',
@@ -485,7 +488,7 @@ function cardImageUrl(key: string): string | null {
 // warms 3 s later, one request every 250 ms, so it never competes with what is
 // on screen. CardArt's force-cache keeps a warmed image usable across launches.
 let cardArtWarmed = false;
-const WARM_FIRST_KEYS = ['lab', 'tools', 'glossary', 'startHere'];
+const WARM_FIRST_KEYS = ['lab', 'tools', 'calculators', 'glossary', 'careerFinder', 'startHere'];
 function warmCardArt() {
   if (cardArtWarmed) return;
   cardArtWarmed = true;
@@ -936,8 +939,8 @@ function CourseCardView({
   }
   // CALCULATORS + CAREER FINDER (owner 2026-09-30): each its own card, same
   // image-backed language as Start Here. Calculators wear the calculators'
-  // PURPLE; the Career Finder GREEN (free). Art arrives from the owner — until
-  // it is in CARD_IMAGE the card paints its solid fallback.
+  // PURPLE; the Career Finder GREEN (free). Owner art: calc_lab.webp /
+  // career_finder.webp in the course-cards bucket.
   if (item.kind === 'calculators' || item.kind === 'careerFinder') {
     const calc = item.kind === 'calculators';
     const url = cardImageUrl(item.kind);

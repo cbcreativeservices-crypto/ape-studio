@@ -46,7 +46,7 @@ if (!SERVICE_KEY) {
 const supabase = createClient(SUPABASE_URL, SERVICE_KEY, { auth: { persistSession: false } });
 
 // start_here.webp: the Start Here beginner card (owner 2026-09-29).
-const NAME_RE = /^(area_[a-z0-9-]+|start_here)\.webp$/;
+const NAME_RE = /^(area_[a-z0-9-]+|start_here|calc_lab|career_finder)\.webp$/;
 const all = await readdir(DIR);
 const files = all.filter((f) => NAME_RE.test(f)).sort();
 const skipped = all.filter((f) => !NAME_RE.test(f));
