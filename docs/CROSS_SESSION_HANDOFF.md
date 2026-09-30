@@ -204,6 +204,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-30 00:10 · ccode · 1141be18
+changed: Home: Calculator + Career Finder cards, lab headline, Start Here BEG LEVEL
+affects other side: nothing (card art will go to the course-cards bucket when the owner supplies it)
+needs: nothing
+
+
 ### 2026-09-29 23:56 · ccode · abdbeab7
 changed: No 'free' / membership marketing shown to members
 affects other side: nothing (app copy only, gated on useEntitlement().isMember)
