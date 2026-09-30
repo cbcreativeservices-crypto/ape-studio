@@ -39,6 +39,15 @@ class ApeDspModule : Module() {
 
   companion object {
     init { System.loadLibrary("apedspjni") }
+
+    /** Outputs that are NOT the loudspeaker: full range (no speaker HPF), and
+     *  losing one while a voice plays is an unplug. */
+    val PRIVATE_OUTPUTS = intArrayOf(
+      AudioDeviceInfo.TYPE_WIRED_HEADPHONES, AudioDeviceInfo.TYPE_WIRED_HEADSET,
+      AudioDeviceInfo.TYPE_BLUETOOTH_A2DP, AudioDeviceInfo.TYPE_BLUETOOTH_SCO,
+      AudioDeviceInfo.TYPE_USB_HEADSET, AudioDeviceInfo.TYPE_USB_DEVICE,
+      AudioDeviceInfo.TYPE_AUX_LINE, AudioDeviceInfo.TYPE_LINE_ANALOG,
+    )
   }
 
   // ---- JNI (symbols in ApeDspJni.cpp) ----
@@ -104,6 +113,11 @@ class ApeDspModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ApeDsp")
 
+    // HEADPHONES UNPLUGGED / BLUETOOTH DROPPED (next-build queue, 2026-09-30).
+    // Sent after every output voice has been stopped natively; the JS side
+    // (AudioOutputGate) silences the app so each screen shows STOPPED.
+    Events("onOutputLost")
+
     OnCreate {
       handle = nativeCreate()
       // React to output route changes (headphone plug/unplug, BT connect) so the
@@ -113,7 +127,20 @@ class ApeDspModule : Module() {
       if (am != null) {
         val cb = object : AudioDeviceCallback() {
           override fun onAudioDevicesAdded(added: Array<out AudioDeviceInfo>?) { refreshOutputRouteAndHpf() }
-          override fun onAudioDevicesRemoved(removed: Array<out AudioDeviceInfo>?) { refreshOutputRouteAndHpf() }
+          override fun onAudioDevicesRemoved(removed: Array<out AudioDeviceInfo>?) {
+            refreshOutputRouteAndHpf()
+            // A private output (headphones / BT / USB / line) went away. Android
+            // would move a tone to the loudspeaker — or, with our Oboe stream on
+            // that device, let it die silently while the screen still read RUN.
+            // Stop every voice HERE (no JS round trip), then tell JS.
+            val lostPrivate = removed?.any { it.isSink && PRIVATE_OUTPUTS.contains(it.type) } == true
+            if (lostPrivate && handle != 0L && anyVoiceRunning()) {
+              nativeGenStop(handle)
+              nativeBinStop(handle)
+              nativeModStop(handle)
+              sendEvent("onOutputLost", mapOf("reason" to "device-removed"))
+            }
+          }
         }
         deviceCallback = cb
         am.registerAudioDeviceCallback(cb, null)
@@ -432,17 +459,14 @@ class ApeDspModule : Module() {
       .any { it.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO }
   }
 
+  private fun anyVoiceRunning(): Boolean =
+    genStatusMap()["running"] == true || binStatusMap()["running"] == true || modStatusMap()["running"] == true
+
   private fun refreshOutputRouteAndHpf() {
     if (handle == 0L) return
     val am = appContext.reactContext?.getSystemService(Context.AUDIO_SERVICE) as? AudioManager ?: return
-    val nonSpeaker = intArrayOf(
-      AudioDeviceInfo.TYPE_WIRED_HEADPHONES, AudioDeviceInfo.TYPE_WIRED_HEADSET,
-      AudioDeviceInfo.TYPE_BLUETOOTH_A2DP, AudioDeviceInfo.TYPE_BLUETOOTH_SCO,
-      AudioDeviceInfo.TYPE_USB_HEADSET, AudioDeviceInfo.TYPE_USB_DEVICE,
-      AudioDeviceInfo.TYPE_AUX_LINE, AudioDeviceInfo.TYPE_LINE_ANALOG,
-    )
     val outs = am.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
-    val hasNonSpeaker = outs.any { nonSpeaker.contains(it.type) }
+    val hasNonSpeaker = outs.any { PRIVATE_OUTPUTS.contains(it.type) }
     outputRoute = if (hasNonSpeaker) "Headphones" else "Speaker"
     // 150 Hz matches JS speakerSafety SPEAKER_HPF_HZ.
     nativeGenSetHpf(handle, if (hasNonSpeaker) 0.0 else 150.0)
@@ -538,4 +562,5 @@ class ApeDspModule : Module() {
     "centers" to emptyList<Any?>(), "levelsDb" to emptyList<Any?>(),
     "peakHoldDb" to emptyList<Any?>(), "resolvable" to emptyList<Any?>(),
   )
+
 }

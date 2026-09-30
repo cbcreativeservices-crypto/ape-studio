@@ -68,15 +68,24 @@ public class ApeDspModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ApeDsp")
 
+    // HEADPHONES UNPLUGGED / BLUETOOTH DROPPED (next-build queue, 2026-09-30).
+    // Sent after every output voice has been stopped natively; the JS side
+    // (AudioOutputGate) silences the app so each screen shows STOPPED.
+    Events("onOutputLost")
+
     AsyncFunction("start") { (promise: Promise) in
       self.desiredRunning = true
       self.requestPermissionAndStart(promise: promise)
     }
 
+    // MAIN QUEUE (Sentry APE-STUDIO-T): Expo ran this on a background queue,
+    // racing the route/interruption observers (main) that also stop/restart
+    // the engine — the crash was a js-stop touching the input node while the
+    // session was being torn down behind a backgrounded app.
     AsyncFunction("stop") { () -> Void in
       self.desiredRunning = false
       self.stopCapture(reason: "js-stop")
-    }
+    }.runOnQueue(.main)
 
     // Synchronous pull — small dictionary at display rate (≤30 Hz from JS).
     Function("getFrame") { () -> [String: Any] in
@@ -509,7 +518,13 @@ public class ApeDspModule: Module {
      */
     if let engine = engine {
       if engine.isRunning { engine.stop() }
-      if tapInstalled { engine.inputNode.removeTap(onBus: 0) }
+      // Only touch inputNode while an input route exists: with the session torn
+      // down behind a backgrounded app there is none, and inputNode would rebuild
+      // against missing hardware (the crash). The engine is released just below,
+      // which drops its tap with it.
+      if tapInstalled && !AVAudioSession.sharedInstance().currentRoute.inputs.isEmpty {
+        engine.inputNode.removeTap(onBus: 0)
+      }
     }
     tapInstalled = false
     engine = nil
@@ -602,6 +617,21 @@ public class ApeDspModule: Module {
         // speaker-safety HPF must follow speaker↔headphone transitions even when
         // the capture-restart path below is skipped.
         self.refreshOutputRouteAndHpf()
+        // A PRIVATE output (headphones / BT / USB / line) went away while a voice
+        // played: iOS would carry the tone on through the loudspeaker at the same
+        // level. Stop every voice HERE (no JS round trip), then tell JS.
+        let lostRaw = (note.userInfo?[AVAudioSessionRouteChangeReasonKey] as? UInt) ?? 0
+        if AVAudioSession.RouteChangeReason(rawValue: lostRaw) == .oldDeviceUnavailable,
+           self.core.anyOutputRunning(),
+           let prev = note.userInfo?[AVAudioSessionRouteChangePreviousRouteKey] as? AVAudioSessionRouteDescription,
+           prev.outputs.contains(where: { $0.portType != .builtInSpeaker && $0.portType != .builtInReceiver }) {
+          self.core.genStop()
+          self.core.binStop()
+          self.core.modStop()
+          self.teardownOutputIfIdle()
+          self.logEvent("output route LOST — voices stopped")
+          self.sendEvent("onOutputLost", ["reason": "device-removed"])
+        }
         guard self.running, !self.restarting else { return }
         // iOS fires a route-change for OUR OWN session configuration
         // (.categoryChange/.override) the moment capture starts — reacting to

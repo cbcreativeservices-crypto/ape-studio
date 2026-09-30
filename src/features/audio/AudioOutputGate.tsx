@@ -63,6 +63,7 @@ import {
   setIdleBypass,
 } from './audioOutputStore';
 import { panicMuteAudio } from './panicMute';
+import { onOutputLost } from '../../../modules/ape-dsp';
 
 type GateApi = { requestAudioOutput: () => Promise<boolean> };
 
@@ -198,6 +199,13 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
       alive = false;
     };
   }, []);
+
+  // HEADPHONES UNPLUGGED / BLUETOOTH DROPPED (build after 2026-09-30): the
+  // native engine has already stopped every voice; muting here brings every
+  // screen's transport to STOPPED (useStopWhenSilenced) instead of RUN over
+  // silence, and a restart asks for output again — never straight to the
+  // loudspeaker. Builds without the event never fire it.
+  useEffect(() => onOutputLost(() => panicMuteAudio()), []);
 
   // AUTO-RE-MUTE (login + foreground-after-idle). Registered once at root.
   useEffect(() => {

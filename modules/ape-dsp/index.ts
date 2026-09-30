@@ -357,6 +357,24 @@ try {
 // EVERY frame getter — doubling bridge traffic at the 15 Hz poll.
 let cachedEngineVersion: number | null = null;
 
+/**
+ * HEADPHONES UNPLUGGED / BLUETOOTH DROPPED (build after 2026-09-30). The native
+ * side has ALREADY stopped every output voice when this fires; the listener's
+ * job is to bring the app's state in line (AudioOutputGate mutes, so every
+ * screen's useStopWhenSilenced shows STOPPED). Builds without the event simply
+ * never call it. Returns an unsubscribe.
+ */
+export function onOutputLost(cb: () => void): () => void {
+  const emitter = native as unknown as { addListener?: (e: string, f: () => void) => { remove(): void } } | null;
+  if (!emitter?.addListener) return () => {};
+  try {
+    const sub = emitter.addListener('onOutputLost', cb);
+    return () => sub.remove();
+  } catch {
+    return () => {};
+  }
+}
+
 /** Decode a native byte payload into a Float32Array (little-endian). */
 function toFloat32(bytes: Uint8Array | null | undefined): Float32Array {
   if (!bytes || bytes.byteLength < 4) return new Float32Array(0);
