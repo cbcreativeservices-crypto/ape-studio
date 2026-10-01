@@ -232,6 +232,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-01 10:17 · ccode · f49bdb5d
+changed: Lab audio: read recorded WAVs and process them in JS
+affects other side: nothing (client only; reads existing lab-audio bucket via the lab-audio edge function, no schema change)
+needs: nothing
+
+
 ### 2026-10-01 06:13 · ccode · 6d7b3b93
 changed: Night bug pass 3 of 3 (2026-10-01): 36 new fixes + 7 corrections
 affects other side: nothing (client only)
