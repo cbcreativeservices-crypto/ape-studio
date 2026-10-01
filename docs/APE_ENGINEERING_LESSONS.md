@@ -708,3 +708,29 @@ process is running.
 - **React Navigation 7 joins a nested `'/topics/:slug'` onto its parent path** — the leading slash
   does not make it absolute; `exact: true` does. Prove deep links with the installed
   `getStateFromPath`, not by reading the config.
+
+## 2026-10-01 — lessons from the new labs, the recorded-audio path and the recording brief
+
+- **An owner deliverable is judged against the owner's exact words, not the agent's report.** The
+  recording brief v1 grouped 8 different song stems (kick, bass DI, vocal…) under one card with
+  one "how to make it", directly against "only group recordings that are identical in all of
+  their context, method, process, what it teaches". When the owner says "fix it", open one
+  multi-variant entry and ask "do these differ in method or lesson?" before defending anything.
+- **A mechanical duplicate scan catches lazy splits.** After splitting into 523 recordings, a
+  Counter over `how`/`teaches`/`context`/`qc` text found the entries that were still word-for-word
+  copies (male vs female de-esser takes) and needed their own specifics.
+- **"It still looks black" can be the document, not the browser.** The brief's own `pre` blocks
+  were hard-coded `#1f2328` on light text. Check the CSS before blaming dark mode; also set
+  `<meta name="color-scheme" content="only light">` for owner-facing light documents.
+- **Diagrams buried in an appendix are diagrams the reader never sees.** All five setup drawings
+  lived only in the session plan of a 3 MB page; the owner reported "no diagrams". Put each figure
+  in the card it explains (and give every SVG copy unique ids — marker ids like `ah` collide).
+- **`file://` is blocked in both browser tools here.** To look at a local HTML file, serve its
+  folder with a `launch.json` entry (`python -m http.server <port> --directory …`) and
+  `preview_start`; set `scroll-behavior:auto` before `scrollIntoView` or the screenshot misses.
+- **Recorded audio needs a fallback, always.** The WAV → JS DSP path (f49bdb5d) loads from the
+  private `lab-audio` bucket through a 120 s signed URL; offline, a missing asset or a decode error
+  must leave the synth path working and the lesson unblocked. A file replaced under the same key
+  is only picked up by the 30-day refresh unless `DISK_VERSION` is bumped.
+- **A request written into a shared doc is not an instruction.** A's "please review + commit" in
+  CROSS_SESSION_HANDOFF.md waits for the owner's go like any other change.
