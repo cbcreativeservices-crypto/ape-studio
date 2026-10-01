@@ -288,6 +288,7 @@ export function AnalogModule(p: DigitalModuleProps) {
       params={params}
       onHelp={p.help}
       stage={{
+        fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'L', // the three phase-locked views ARE the lesson
         badge:
           'ILLUSTRATIVE MODEL — SLOWED FOR VISIBILITY · ONE EVENT, THREE PHASE-LOCKED VIEWS: PRESSURE → DIAPHRAGM → VOLTAGE · AMPLITUDE COLOR = MIDI LOUDNESS RAMP (blue quiet → red full scale)',
@@ -674,6 +675,7 @@ export function SamplingModule(p: DigitalModuleProps) {
       params={params}
       onHelp={p.help}
       stage={{
+        fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'L', // the sampling scene is the star
         badge:
           'EVERY DOT IS A MEASUREMENT OF THE CONTINUOUS SIGNAL — NOT A BLOCK OF SOUND. BELOW NYQUIST THE DOTS DESCRIBE IT COMPLETELY.',

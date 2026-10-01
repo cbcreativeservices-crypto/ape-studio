@@ -297,23 +297,37 @@ function PageInside({ ctx }: { ctx: PageCtx }) {
     { label: 'Pass the check', hit: checkOk },
   ];
   const latched = useVisitGoals(ctx, goals);
+  // The construction picker is built ONCE and handed to the page AND to the
+  // section's docked controls, with the name + layers as the readout, so the
+  // learner can cut the next cable open without leaving full screen
+  // (full-screen pass 2026-09-30).
+  const picker = (
+    <ScrollView horizontal showsHorizontalScrollIndicator contentContainerStyle={styles.chipScroll}>
+      {CROSS_SECTIONS.map((s) => (
+        <Btn key={s.id} label={seen.has(s.id) ? `✓ ${s.name}` : s.name} tone={active === s.id ? 'primary' : 'plain'} selected={active === s.id} onPress={() => { setActive(s.id); setSeen((prev) => new Set(prev).add(s.id)); }} a11y={s.name} />
+      ))}
+    </ScrollView>
+  );
+  const sectionDock = (
+    <View style={styles.sectionDock}>
+      <Text style={styles.sectionName}>{section.name.toUpperCase()}</Text>
+      <Text style={styles.layer} numberOfLines={2}>{section.layers.map((l, i) => `${i + 1}. ${l}`).join('  ·  ')}</Text>
+      {picker}
+    </View>
+  );
   return (
     <View style={{ gap: 10 }}>
       <StationTag>STATION 4 · WHAT IS INSIDE THE CABLE</StationTag>
       <Lead>The jacket hides the part that actually decides whether a connection works. Cut eight cables open and compare.</Lead>
       <Text style={styles.swipeCue}>{CROSS_SECTIONS.length} CONSTRUCTIONS — SWIPE →</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator contentContainerStyle={styles.chipScroll}>
-        {CROSS_SECTIONS.map((s) => (
-          <Btn key={s.id} label={seen.has(s.id) ? `✓ ${s.name}` : s.name} tone={active === s.id ? 'primary' : 'plain'} selected={active === s.id} onPress={() => { setActive(s.id); setSeen((prev) => new Set(prev).add(s.id)); }} a11y={s.name} />
-        ))}
-      </ScrollView>
+      {picker}
       <Card>
         {/* The drawing keeps the labelled layers; the photograph sits beside
             it where the width allows and wraps beneath it on a phone (owner
             2026-09-25: alongside, never instead). */}
         <View style={styles.insideRow}>
-          <View style={{ alignItems: 'center' }} accessible accessibilityRole="image" accessibilityLabel={`Cross-section diagram: ${section.name}. Layers from outside in: ${section.layers.join(', ')}.`}>
-            <CrossSectionView kind={section.id} />
+          <View style={{ width: 160 }}>
+            <CrossSectionView kind={section.id} width={160} a11y={`Cross-section diagram: ${section.name}. Layers from outside in: ${section.layers.join(', ')}.`} controls={sectionDock} />
           </View>
           <LabPhoto source={SECTION_PHOTO[section.id]} aspect={PHOTO_ASPECT} label={`${section.name}, the cut end`} caption="THE CUT END, ON THE BENCH" style={styles.insidePhoto} />
         </View>
@@ -373,6 +387,8 @@ const styles = StyleSheet.create({
   declareGate: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12.5 },
   declareVerdict: { color: colors.green, fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 18 },
   layerRow: { gap: 2 },
+  sectionDock: { paddingHorizontal: 12, gap: 6 },
+  sectionName: { color: colors.cyanBright, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.5 },
   layer: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 12.5 },
   jobLine: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1 },
 });

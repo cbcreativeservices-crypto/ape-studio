@@ -23,6 +23,28 @@ export function freshGs(enrolledGs: Iterable<number>, gsList: readonly number[])
   return out;
 }
 
+/**
+ * What a "study THIS topic" request (STUDY NOW's `focusGs`) must do to the
+ * enrollment list so the topic reaches the Dashboard deck, which carries only
+ * ACTIVE enrolled topics (student report 2026-09-30: Explore → Post-Production
+ * Audio → STUDY NOW landed on Pro Audio Safety).
+ *   'none'     — already enrolled and active;
+ *   'activate' — enrolled but switched off (the 09-27 fix);
+ *   'enroll'   — NOT ENROLLED AT ALL. The credential's bundle can outlive its
+ *                topics (Clear enrollment list kept bundles until 2026-09-30,
+ *                and a topic can be removed on its own), so the popup still
+ *                says ENROLLED and offers STUDY NOW for a topic the deck can
+ *                never receive. The armed focus waited forever on topic 0.
+ */
+export function studyFocusAction(
+  enrolled: readonly { gs: number; active: boolean }[],
+  gs: number,
+): 'none' | 'activate' | 'enroll' {
+  const e = enrolled.find((x) => x.gs === gs);
+  if (!e) return 'enroll';
+  return e.active ? 'none' : 'activate';
+}
+
 /** The topics of a bundle being removed that may leave the enrollment list:
  *  not kept by `keep` (the mandatory free topics) and not contained in any
  *  OTHER still-enrolled bundle. */

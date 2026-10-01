@@ -27,6 +27,7 @@ import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import { markLabUnit } from '../../../../features/lab/labCompletion';
 import { RackUnit } from '../../rack/RackUnit';
 import type { DockParam } from '../../rack/rackTypes';
+import { SView } from '../../stageScale';
 import { ChainStage, DragSlider, GainBtn, stageStatus, stageTint, type StageColSpec } from '../gainViz';
 import { chainIsHealthy, computeChain, type Stage } from '../gainEngine';
 import type { GainModuleComponentProps } from './registry';
@@ -161,6 +162,7 @@ export function MultiStageModule(_p: GainModuleComponentProps) {
       initialParam="pre"
       params={params}
       stage={{
+        fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'L',
         badge: BADGE,
         bezel: [
@@ -294,6 +296,7 @@ export function FreePlayModule(_p: GainModuleComponentProps) {
       initialParam="src"
       params={params}
       stage={{
+        fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'L',
         badge: BADGE,
         bezel: [
@@ -454,6 +457,7 @@ export function TroubleshootModule(_p: GainModuleComponentProps) {
       initialParam="fix"
       params={params}
       stage={{
+        fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'L',
         badge: BADGE,
         bezel: [
@@ -467,8 +471,9 @@ export function TroubleshootModule(_p: GainModuleComponentProps) {
             <ChainStage w={w} h={h} cols={cols} />
             {healthy ? (
               // The all-healthy trophy frame (owner spec) — now drawn on the
-              // glass itself, where the whole restored chain is visible.
-              <View pointerEvents="none" style={styles.trophyFrame} />
+              // glass itself, where the whole restored chain is visible. Its
+              // 3-pt border zooms with the stage in FULL SCREEN (SView).
+              <SView pointerEvents="none" style={styles.trophyFrame} />
             ) : null}
           </View>
         ),

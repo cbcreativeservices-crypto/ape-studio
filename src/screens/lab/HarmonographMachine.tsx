@@ -34,8 +34,9 @@
  *    ARC LENGTH at the current time (head glued to the nib); a wet-ink head
  *    rides the reveal as a short bright dash window.
  */
-import { memo, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useContext, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
+import { StageAspectReport, StageInFullScreen } from './rack/stageAspect';
 import Svg, {
   Circle,
   Defs,
@@ -478,6 +479,20 @@ export const HarmonographMachine = memo(function HarmonographMachine({
   const sc = box.w > 0 ? Math.min(box.w / VBW, box.h / VBH) : 0;
   const offX = (box.w - VBW * sc) / 2,
     offY = (box.h - VBH * sc) / 2;
+
+  /* FULL SCREEN (2026-09-30): the machine is one fixed viewBox, so every
+     shaft, disc, ink line and label already zooms with the box. Report its
+     shape so the full-screen canvas is the drawing's own at every step (no
+     blank margin to pan across); a no-op on the glass. */
+  const report = useContext(StageAspectReport);
+  useEffect(() => {
+    report?.aspect(VBW / VBH, 0);
+  }, [report]);
+  /* THE DRAWING inset opens the share/print viewer — a sibling Modal. Nothing
+     presents over the full-screen Modal (iOS refuses, Android hides it behind),
+     so the tap is withheld in there: leave full screen, then tap the inset. */
+  const inFull = useContext(StageInFullScreen);
+  const insetPress = inFull ? undefined : onInsetPress;
 
   /* ── animated props — primitives only, explicit and unrolled ─────────── */
   const shaftABelow = useAnimatedProps(() => {
@@ -945,9 +960,9 @@ export const HarmonographMachine = memo(function HarmonographMachine({
       </Svg>
 
       {/* THE DRAWING inset is tappable — opens the fullscreen viewer. */}
-      {onInsetPress && sc > 0 ? (
+      {insetPress && sc > 0 ? (
         <Pressable
-          onPress={onInsetPress}
+          onPress={insetPress}
           accessibilityRole="button"
           accessibilityLabel="Open the drawing fullscreen"
           style={{

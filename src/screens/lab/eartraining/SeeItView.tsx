@@ -14,11 +14,12 @@
  *     relative dB — traces are identity-coded (cyan / green / gold, never
  *     red) so A and B can be told apart; no level meaning is implied.
  */
-import { useMemo } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { LinearGradient as RnLinearGradient } from 'expo-linear-gradient';
-import Svg, { Defs, Line, LinearGradient, Polygon, Polyline, Rect, Stop, Text as SvgText } from 'react-native-svg';
+import Svg, { Defs, G, Line, LinearGradient, Polygon, Polyline, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
+import { ExpandableFigure } from '../kit/ExpandableFigure';
 import { powerSpectrumDb, sumToMono, isStereo, rmsDb, SR, type Buf, type Mono } from '../../../features/ear/earDsp';
 import type { EarTrial, SeeIt } from '../../../features/ear/earTypes';
 import { levelColor, rampColors } from '../../../features/tools/levelColor';
@@ -115,7 +116,12 @@ function logSpectrum(x: Mono): { hz: Float32Array; db: Float32Array } {
   return { hz, db };
 }
 
-function SpectrumSeeIt({ spec, trial }: { spec: Extract<SeeIt, { kind: 'spectrum' }>; trial: EarTrial }) {
+/** The page's transport (play A / play B) + the caption, docked under the
+ *  enlarged plot in FULL SCREEN so the learner can hear it again while
+ *  looking (D35, full-screen pass 2026-09-30). */
+type Dock = { controls?: ReactNode };
+
+function SpectrumSeeIt({ spec, trial, controls }: { spec: Extract<SeeIt, { kind: 'spectrum' }>; trial: EarTrial } & Dock) {
   const traces = useMemo(() => spec.clips.map((ci) => logSpectrum(mono(trial.clips[ci].buf))), [spec, trial]);
   const points = useMemo(
     () =>
@@ -161,8 +167,9 @@ function SpectrumSeeIt({ spec, trial }: { spec: Extract<SeeIt, { kind: 'spectrum
     (spec.slopeGuides ? ', with 0, minus 3 and minus 6 dB per octave slope guides' : '');
 
   return (
-    <View accessible accessibilityRole="image" accessibilityLabel={a11y}>
-      <Svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`}>
+    <ExpandableFigure aspect={W / H} title="SPECTRUM" controls={controls} render={(w, h) => (
+    <View style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={a11y}>
+      <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
         <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
         {spec.bands?.map((b) => {
           const x = xOf(b.lo);
@@ -276,10 +283,11 @@ function SpectrumSeeIt({ spec, trial }: { spec: Extract<SeeIt, { kind: 'spectrum
         ))}
       </Svg>
     </View>
+    )} />
   );
 }
 
-function WaveSeeIt({ spec, trial }: { spec: Extract<SeeIt, { kind: 'wave' }>; trial: EarTrial }) {
+function WaveSeeIt({ spec, trial, controls }: { spec: Extract<SeeIt, { kind: 'wave' }>; trial: EarTrial } & Dock) {
   const lanes = useMemo(
     () =>
       spec.clips.map((ci) => {
@@ -316,8 +324,9 @@ function WaveSeeIt({ spec, trial }: { spec: Extract<SeeIt, { kind: 'wave' }>; tr
     (deltaMs != null ? `, markers ${deltaMs} milliseconds apart` : '');
 
   return (
-    <View accessible accessibilityRole="image" accessibilityLabel={a11y}>
-      <Svg width="100%" height={Hw} viewBox={`0 0 ${W} ${Hw}`}>
+    <ExpandableFigure aspect={W / Hw} title="WAVEFORM" controls={controls} render={(w, h) => (
+    <View style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={a11y}>
+      <Svg width={w} height={h} viewBox={`0 0 ${W} ${Hw}`}>
         <Defs>
           {lanes.map((_, i) => {
             const laneTop = top + i * (laneH + gap);
@@ -396,10 +405,17 @@ function WaveSeeIt({ spec, trial }: { spec: Extract<SeeIt, { kind: 'wave' }>; tr
         ))}
       </Svg>
     </View>
+    )} />
   );
 }
 
-function GonioSeeIt({ spec, trial }: { spec: Extract<SeeIt, { kind: 'gonio' }>; trial: EarTrial }) {
+/** Goniometer pane geometry, in viewBox units: panes side by side with the
+ *  correlation readout drawn INSIDE the SVG so it zooms with the trace. */
+const GONIO_PANE = 140;
+const GONIO_GAP = 14;
+const GONIO_FOOT = 18;
+
+function GonioSeeIt({ spec, trial, controls }: { spec: Extract<SeeIt, { kind: 'gonio' }>; trial: EarTrial } & Dock) {
   const panes = useMemo(
     () =>
       spec.clips.slice(0, 2).map((ci) => {
@@ -429,17 +445,19 @@ function GonioSeeIt({ spec, trial }: { spec: Extract<SeeIt, { kind: 'gonio' }>; 
       }),
     [spec, trial],
   );
+  // ONE drawing: the panes side by side, the correlation readout as SVG text
+  // under each, so the whole thing is a fixed-aspect figure for full screen
+  // (it used to be two fixed 140 pt Svgs with RN captions that could not zoom).
+  const n = panes.length;
+  const GW = n * GONIO_PANE + (n - 1) * GONIO_GAP;
+  const GH = GONIO_PANE + GONIO_FOOT;
+  const a11y = panes.map((p) => `Goniometer for ${clipName(p.label)}, correlation ${p.corr.toFixed(2)}`).join('. ');
   return (
-    <View style={{ flexDirection: 'row', gap: 14, justifyContent: 'center' }}>
+    <ExpandableFigure aspect={GW / GH} title="GONIOMETER" controls={controls} render={(w, h) => (
+    <View style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={a11y}>
+      <Svg width={w} height={h} viewBox={`0 0 ${GW} ${GH}`}>
       {panes.map((p, i) => (
-        <View
-          key={i}
-          style={{ alignItems: 'center', gap: 3 }}
-          accessible
-          accessibilityRole="image"
-          accessibilityLabel={`Goniometer for ${clipName(p.label)}, correlation ${p.corr.toFixed(2)}`}
-        >
-          <Svg width={140} height={140} viewBox="0 0 140 140">
+        <G key={i} x={i * (GONIO_PANE + GONIO_GAP)}>
             <Rect x={0} y={0} width={140} height={140} rx={10} fill="#0a0a0c" stroke={colors.hairline} />
             <Line x1={70} y1={8} x2={70} y2={132} stroke="rgba(255,255,255,0.10)" />
             <Line x1={8} y1={70} x2={132} y2={70} stroke="rgba(255,255,255,0.10)" />
@@ -451,13 +469,14 @@ function GonioSeeIt({ spec, trial }: { spec: Extract<SeeIt, { kind: 'gonio' }>; 
             <SvgText x={70} y={131} fontSize={AXIS_PX} fontFamily={AXIS_FONT} fill={colors.textMuted} textAnchor="middle">
               M up · S across
             </SvgText>
-          </Svg>
-          <Text style={styles.levelDb}>
-            {p.label !== '▶' ? `${p.label} · ` : ''}corr {p.corr.toFixed(2)}
-          </Text>
-        </View>
+            <SvgText x={70} y={GONIO_PANE + 13} fontSize={10} fontFamily={LABEL_FONT} fill={colors.textPrimary} textAnchor="middle">
+              {p.label !== '▶' ? `${p.label} · ` : ''}corr {p.corr.toFixed(2)}
+            </SvgText>
+        </G>
       ))}
+      </Svg>
     </View>
+    )} />
   );
 }
 
@@ -496,17 +515,27 @@ function LevelsSeeIt({ spec, trial }: { spec: Extract<SeeIt, { kind: 'levels' }>
   );
 }
 
-export function SeeItView({ trial }: { trial: EarTrial }) {
+/** `controls`: the screen's transport chips, docked under the enlarged plot
+ *  in FULL SCREEN with the caption as the readout (full-screen pass
+ *  2026-09-30). The LEVELS panel is view-built (RN bars + text) and stays
+ *  inline — its text would not grow with the box. */
+export function SeeItView({ trial, controls }: { trial: EarTrial; controls?: ReactNode }) {
   const spec = trial.seeIt;
+  const dock = (
+    <View style={styles.dock}>
+      <Text style={styles.caption} numberOfLines={3}>{spec.caption}</Text>
+      {controls}
+    </View>
+  );
   return (
     <View style={styles.wrap}>
       <Text style={styles.eyebrow}>SEE IT</Text>
       {spec.kind === 'spectrum' ? (
-        <SpectrumSeeIt spec={spec} trial={trial} />
+        <SpectrumSeeIt spec={spec} trial={trial} controls={dock} />
       ) : spec.kind === 'wave' ? (
-        <WaveSeeIt spec={spec} trial={trial} />
+        <WaveSeeIt spec={spec} trial={trial} controls={dock} />
       ) : spec.kind === 'gonio' ? (
-        <GonioSeeIt spec={spec} trial={trial} />
+        <GonioSeeIt spec={spec} trial={trial} controls={dock} />
       ) : (
         <LevelsSeeIt spec={spec} trial={trial} />
       )}
@@ -526,6 +555,7 @@ export function SeeItView({ trial }: { trial: EarTrial }) {
 
 const styles = StyleSheet.create({
   wrap: { gap: 6, marginTop: 10 },
+  dock: { paddingHorizontal: 12, gap: 8 },
   eyebrow: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.5 },
   caption: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17 },
   legendRow: { flexDirection: 'row', gap: 14 },

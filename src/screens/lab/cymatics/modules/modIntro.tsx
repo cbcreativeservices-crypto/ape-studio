@@ -16,6 +16,14 @@ import { requireVizPlate, skiaAvailable } from '../skiaGate';
 import type { CymaticsModuleProps } from '../CymaticsModuleScreen';
 import { P, PlateDemo, ResponseStrip, excitableModes } from './shared';
 import { goToCymatics } from '../goToCymatics';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
+import { useStageTextScale } from '../../rack/stageAspect';
+
+/** The honesty badge printed on a figure — grows with it in FULL SCREEN (D35). */
+function FigBadge({ text }: { text: string }) {
+  const s = useStageTextScale();
+  return <Text style={[P.badge, { position: 'absolute', left: 8 * s, bottom: 6 * s, fontSize: 12 * s, letterSpacing: 1.2 * s }]}>{text}</Text>;
+}
 
 export function IntroModule({ width, focused }: CymaticsModuleProps) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -35,10 +43,21 @@ export function IntroModule({ width, focused }: CymaticsModuleProps) {
         rarefaction — and each molecule only moves back and forth a tiny distance around where it started.
       </Text>
       {viz ? (
-        <View style={{ borderRadius: 10, overflow: 'hidden' }}>
-          <viz.PressureWaveStrip width={width} height={96} running={focused} />
-          <Text style={[P.badge, { position: 'absolute', left: 8, bottom: 6 }]}>ILLUSTRATIVE — AIR MOLECULES, LONGITUDINAL WAVE</Text>
-        </View>
+        // FULL SCREEN (house rule D35, 2026-09-30): a live figure in a document
+        // page gets the kit's ⤢ button under it; the same strip is drawn at the
+        // zoomed size (vizPlate scales its molecules with the box).
+        <ExpandableFigure
+          width={width}
+          aspect={width / 96}
+          title="PRESSURE WAVE"
+          badge="ILLUSTRATIVE — AIR MOLECULES, LONGITUDINAL WAVE"
+          render={(w, h) => (
+            <View style={{ width: w, height: h, borderRadius: 10, overflow: 'hidden' }}>
+              <viz.PressureWaveStrip width={w} height={h} running={focused} />
+              <FigBadge text="ILLUSTRATIVE — AIR MOLECULES, LONGITUDINAL WAVE" />
+            </View>
+          )}
+        />
       ) : null}
 
       <Text style={P.h}>VIBRATION MOVES THINGS</Text>
@@ -54,10 +73,26 @@ export function IntroModule({ width, focused }: CymaticsModuleProps) {
           <LabChip label={`Off resonance · ${formatHz(f1 * 0.78)}`} selected={!atResonance} onPress={() => setAtResonance(false)} />
         </View>
         {!atResonance ? <Text style={P.caption}>Now tap AT RESONANCE — the drive level does not change, only the frequency.</Text> : null}
-        <View style={{ borderRadius: 8, overflow: 'hidden' }}>
-          <PlateDemo width={width - 26} spec={spec} hz={hz} view="particles" running={focused} />
-          <Text style={[P.badge, { position: 'absolute', left: 8, bottom: 6 }]}>SIMULATION · 240 mm ALUMINUM · CENTRE-DRIVEN</Text>
-        </View>
+        <ExpandableFigure
+          width={width - 26}
+          aspect={1 / 0.66}
+          title="SAND ON THE PLATE"
+          badge="SIMULATION · 240 mm ALUMINUM · CENTRE-DRIVEN"
+          // The page's own AT / OFF RESONANCE chips ride along, docked under
+          // the plate in full screen (they share this module's state).
+          controls={
+            <View style={[P.chips, { paddingHorizontal: 12 }]}>
+              <LabChip label={`At resonance · ${formatHz(f1)}`} selected={atResonance} onPress={() => setAtResonance(true)} />
+              <LabChip label={`Off resonance · ${formatHz(f1 * 0.78)}`} selected={!atResonance} onPress={() => setAtResonance(false)} />
+            </View>
+          }
+          render={(w, h) => (
+            <View style={{ width: w, height: h, borderRadius: 8, overflow: 'hidden' }}>
+              <PlateDemo width={w} height={h} spec={spec} hz={hz} view="particles" running={focused} />
+              <FigBadge text="SIMULATION · 240 mm ALUMINUM · CENTRE-DRIVEN" />
+            </View>
+          )}
+        />
         <ResponseStrip width={width - 26} modes={modes} Q={Q} hz={hz} fMin={60} fMax={2000} />
         <Text style={P.caption}>
           {atResonance
@@ -72,10 +107,18 @@ export function IntroModule({ width, focused }: CymaticsModuleProps) {
         place of maximal movement — the sand is thrown clear. Regions on opposite sides of a nodal line move in opposite directions: while
         one lobe rises, its neighbour falls.
       </Text>
-      <View style={{ borderRadius: 10, overflow: 'hidden' }}>
-        <PlateDemo width={width} spec={spec} hz={f1} view="phase" running={focused} />
-        <Text style={[P.badge, { position: 'absolute', left: 8, bottom: 6 }]}>PHASE VIEW · AMBER RISES WHILE BLUE FALLS</Text>
-      </View>
+      <ExpandableFigure
+        width={width}
+        aspect={1 / 0.66}
+        title="PHASE VIEW"
+        badge="PHASE VIEW · AMBER RISES WHILE BLUE FALLS"
+        render={(w, h) => (
+          <View style={{ width: w, height: h, borderRadius: 10, overflow: 'hidden' }}>
+            <PlateDemo width={w} height={h} spec={spec} hz={f1} view="phase" running={focused} />
+            <FigBadge text="PHASE VIEW · AMBER RISES WHILE BLUE FALLS" />
+          </View>
+        )}
+      />
 
       <Text style={P.h}>WHY ONLY AT RESONANCE</Text>
       <Text style={P.body}>

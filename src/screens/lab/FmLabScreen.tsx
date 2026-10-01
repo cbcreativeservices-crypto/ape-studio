@@ -36,6 +36,7 @@ import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { CheckQuestion } from './foundations/bits';
 import { LabShell, HeaderPlayButton } from './LabShell';
+import { useStageTextScale } from './rack/stageAspect';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../features/audio/useStopOnBlur';
@@ -243,6 +244,7 @@ export function FmLabScreen() {
         onHelp: openLesson,
         stage: {
           size: 'L', // the spectrum IS the lab (lockstep hero) — earns the tall glass
+          fullScreen: true, // the rack's ⤢ FULL SCREEN (full-screen build 2026-09-30)
           badge: 'SIDEBAND SPECTRUM — EXACT BESSEL AMPLITUDES J_k(I) · THE MATH THE VOICE PLAYS',
           onGuide: () => openLesson('display'),
           bezel: [
@@ -415,7 +417,15 @@ const LEGEND_H = 30;
  *  at their folded position — honest about aliasing rather than hiding it.
  *  Sized by the stage glass (w × h) — never self-measured on the stage. */
 function SidebandGraph({ fc, fm, index, w, h }: { fc: number; fm: number; index: number; w: number; h: number }) {
-  const gh = h - LEGEND_H;
+  // FULL SCREEN (2026-09-30, D35 "everything zooms"): the graph is authored
+  // in GLASS pixels and painted through a viewBox of (w ÷ ts) × (gh ÷ ts), so
+  // the sticks, baseline, pads and the two SVG labels are all × the step; the
+  // RN legend under it multiplies its own font and strip height. ts = 1 on the
+  // glass, so the glass picture is unchanged.
+  const ts = useStageTextScale();
+  const gh = h - LEGEND_H * ts;
+  const lw = w / ts; // logical (glass-pixel) width
+  const lgh = gh / ts; // logical graph height
 
   const sticks = useMemo(() => {
     const K = Math.min(24, Math.ceil(index + 2) + 2);
@@ -452,13 +462,13 @@ function SidebandGraph({ fc, fm, index, w, h }: { fc: number; fm: number; index:
 
   return (
     <View style={{ width: w, height: h }}>
-      <Svg width={w} height={gh}>
-        <Rect x={0} y={0} width={w} height={gh} fill="#0c0c0f" />
+      <Svg width={w} height={gh} viewBox={`0 0 ${lw} ${lgh}`}>
+        <Rect x={0} y={0} width={lw} height={lgh} fill="#0c0c0f" />
         {/* Baseline + carrier marker. */}
-        <Line x1={PAD} y1={gh - 22} x2={w - PAD} y2={gh - 22} stroke="#3a3b46" strokeWidth={1.5} />
+        <Line x1={PAD} y1={lgh - 22} x2={lw - PAD} y2={lgh - 22} stroke="#3a3b46" strokeWidth={1.5} />
         {sticks.map((s, i) => {
-          const x = PAD + (s.f / fMax) * (w - 2 * PAD);
-          const sh = s.a * (gh - 50);
+          const x = PAD + (s.f / fMax) * (lw - 2 * PAD);
+          const sh = s.a * (lgh - 50);
           // Folded sticks never wear carrier green (QA night 2026-09-01):
           // a reflect landing exactly on fc contradicted the legend.
           const isCarrier = s.fold === 'none' && Math.abs(s.f - fc) < 1e-6;
@@ -466,9 +476,9 @@ function SidebandGraph({ fc, fm, index, w, h }: { fc: number; fm: number; index:
             <Fragment key={i}>
               <Line
                 x1={x}
-                y1={gh - 22}
+                y1={lgh - 22}
                 x2={x}
-                y2={gh - 22 - sh}
+                y2={lgh - 22 - sh}
                 stroke={s.fold === 'alias' ? '#ff6b5e' : isCarrier ? '#5bff85' : colors.amber}
                 strokeWidth={isCarrier ? 3 : 2}
                 strokeDasharray={s.fold !== 'none' ? '3 3' : undefined}
@@ -477,10 +487,10 @@ function SidebandGraph({ fc, fm, index, w, h }: { fc: number; fm: number; index:
             </Fragment>
           );
         })}
-        <SvgText x={PAD + (fc / fMax) * (w - 2 * PAD)} y={gh - 8} fill="#5bff85" fontSize={9.5} textAnchor="middle">
+        <SvgText x={PAD + (fc / fMax) * (lw - 2 * PAD)} y={lgh - 8} fill="#5bff85" fontSize={9.5} textAnchor="middle">
           {`fc ${fc}`}
         </SvgText>
-        <SvgText x={w - PAD} y={gh - 8} fill="#4a4a52" fontSize={9.5} textAnchor="end">
+        <SvgText x={lw - PAD} y={lgh - 8} fill="#4a4a52" fontSize={9.5} textAnchor="end">
           {`${(fMax / 1000).toFixed(1)} kHz`}
         </SvgText>
       </Svg>
@@ -490,7 +500,7 @@ function SidebandGraph({ fc, fm, index, w, h }: { fc: number; fm: number; index:
           "red dashed = ALIASED past Nyquist", the only thing that explains the
           red trace. It was truncating at the DESIGN text size, not just a
           large one. It wraps now. */}
-      <Text style={styles.legend}>
+      <Text style={[styles.legend, ts !== 1 ? { fontSize: 10.5 * ts, paddingTop: 2 * ts } : null]}>
         green = carrier · amber = sidebands · dim dashed = reflected below 0 Hz · red dashed = ALIASED past Nyquist
       </Text>
     </View>

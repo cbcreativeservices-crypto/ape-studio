@@ -34,6 +34,7 @@ import {
   BlurMask,
   Canvas,
   DashPathEffect,
+  Group,
   Line as SkLine,
   LinearGradient,
   Path,
@@ -50,6 +51,7 @@ import {
 } from 'react-native-reanimated';
 import { distShape, eqResponseDb, type EqBandSpec } from '../../features/lab/fxViz';
 import { usePhaseClock } from './foundations/viz';
+import { useStageTextScale } from './rack/stageAspect';
 import { WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { colors, fonts } from '../../theme/tokens';
 
@@ -68,6 +70,15 @@ const STAGE_GREEN_DK1 = '#1b4a29';
 const STAGE_GREEN_DK2 = '#0a1a10';
 
 const FLOW_H = 118;
+/* FULL SCREEN (owner D35, 2026-09-30: "EVERYTHING in the drawing zooms with
+ * the step"). Every flow is laid out in GLASS units — the width the hero has
+ * on the rack's glass, FLOW_H tall — and painted through one
+ * <Group transform={[{ scale: ts }]}> where ts = useStageTextScale() (1 on
+ * the glass, rendered ÷ glass width in full screen). So a stroke, a blur, a
+ * dash, a radius, a margin and the worklet paths all grow with the zoom step
+ * at no per-frame cost, and the React Native <Text> labels laid over the
+ * canvas (IN ▸ / ▸ OUT / the processor name) multiply their own points by the
+ * same ts — the Skia trap in stageAspect.ts. */
 /** The effect stage sits at this fraction of the width. */
 const STAGE_FRAC = 0.42;
 const PI2 = Math.PI * 2;
@@ -302,13 +313,16 @@ function FlowScene({
   children: ReactNode;
 }) {
   const stageX = w * STAGE_FRAC;
+  // (w, h) are GLASS units; the box on screen is (w, h) × ts — see FLOW_H.
+  const ts = useStageTextScale();
   const glowOp = useDerivedValue(
     () => (glow ? 0.1 + Math.min(Math.max(glow.value, 0), 1) * 0.42 : 0.12),
     [glow],
   );
   return (
-    <View style={{ width: w, height: h }}>
-      <Canvas style={{ position: 'absolute', width: w, height: h }}>
+    <View style={{ width: w * ts, height: h * ts }}>
+      <Canvas style={{ position: 'absolute', width: w * ts, height: h * ts }}>
+        <Group transform={[{ scale: ts }]}>
         <RoundedRect x={0} y={0} width={w} height={h} r={8} color={BG} />
         <SkLine p1={{ x: 4, y: h / 2 }} p2={{ x: w - 4, y: h / 2 }} color={ZERO} strokeWidth={1.1} />
         {children}
@@ -322,14 +336,28 @@ function FlowScene({
         </RoundedRect>
         <RoundedRect x={stageX - 6} y={7} width={12} height={h - 14} r={5} color="rgba(55,224,95,.7)" style="stroke" strokeWidth={1.2} />
         <RoundedRect x={0.5} y={0.5} width={w - 1} height={h - 1} r={7.5} color={FRAME} style="stroke" strokeWidth={1} />
+        </Group>
       </Canvas>
-      {/* Emphasized IN / OUT labels (owner 2026-08-05) — larger, bold, chipped. */}
-      <Text style={[flowStyles.io, { left: 6, top: 4 }]}>IN ▸</Text>
-      <Text style={[flowStyles.io, { right: 6, top: 4 }]}>▸ OUT</Text>
+      {/* Emphasized IN / OUT labels (owner 2026-08-05) — larger, bold, chipped.
+          RN text over Skia: its points and chip grow by ts themselves. */}
+      <Text style={[flowStyles.io, ioScaled(ts), { left: 6 * ts, top: 4 * ts }]}>IN ▸</Text>
+      <Text style={[flowStyles.io, ioScaled(ts), { right: 6 * ts, top: 4 * ts }]}>▸ OUT</Text>
       {/* Processor name written VERTICALLY along the green divider bar. */}
-      <Text style={[flowStyles.stageLbl, { left: stageX - 45, top: h / 2 - 9, width: 90 }]}>{label}</Text>
+      <Text
+        style={[
+          flowStyles.stageLbl,
+          { fontSize: 12 * ts, letterSpacing: 2 * ts, left: (stageX - 45) * ts, top: (h / 2 - 9) * ts, width: 90 * ts },
+        ]}
+      >
+        {label}
+      </Text>
     </View>
   );
+}
+
+/** The IN/OUT chip's point-sized parts at the stage text scale. */
+function ioScaled(ts: number) {
+  return { fontSize: 14 * ts, letterSpacing: 1.4 * ts, paddingHorizontal: 4 * ts, borderRadius: 3 * ts };
 }
 
 // ───────────────────────────────────────────────────────────── EQ flow ──
@@ -1256,6 +1284,11 @@ function FlowBody({ model, w, active, grDb }: { model: FxAnimModel; w: number; a
  *  LIVE measured gain reduction (dynamics labs) — 0 elsewhere/when stopped. */
 export function FxAnimHero({ model, active, grDb = 0 }: { model: FxAnimModel; active: boolean; grDb?: number }) {
   const [w, setW] = useState(0);
+  // FULL SCREEN: the measured width is the ZOOMED width; the flow is laid out
+  // in glass units (width ÷ ts) and painted ×ts, so the whole picture — not
+  // just its width — grows with the step (see FLOW_H).
+  const ts = useStageTextScale();
+  const glassUnitsW = w / ts;
   return (
     <View
       style={flowStyles.wrap}
@@ -1266,7 +1299,7 @@ export function FxAnimHero({ model, active, grDb = 0 }: { model: FxAnimModel; ac
       accessible
       accessibilityLabel="Animated signal-flow model: the input wave enters the effect stage and emerges transformed by the current settings"
     >
-      {w >= 80 ? <FlowBody model={model} w={w} active={active} grDb={grDb} /> : <View style={{ height: FLOW_H }} />}
+      {glassUnitsW >= 80 ? <FlowBody model={model} w={glassUnitsW} active={active} grDb={grDb} /> : <View style={{ height: FLOW_H * ts }} />}
     </View>
   );
 }
@@ -1274,24 +1307,19 @@ export function FxAnimHero({ model, active, grDb = 0 }: { model: FxAnimModel; ac
 const flowStyles = StyleSheet.create({
   wrap: { width: '100%' },
   // Emphasized IN / OUT signal-flow labels — large, bold, on a subtle chip.
+  // Point sizes live in ioScaled() so they ride the stage text scale.
   io: {
     position: 'absolute',
     fontFamily: fonts.oswaldBold,
-    fontSize: 14,
-    letterSpacing: 1.4,
     color: colors.textPrimary,
     backgroundColor: 'rgba(12,12,15,.72)',
-    paddingHorizontal: 4,
-    borderRadius: 3,
     overflow: 'hidden',
   },
   // Processor name along the divider — rotated to run vertically down the bar,
-  // green to match it (owner 2026-08-05).
+  // green to match it (owner 2026-08-05). Size/spacing set inline × ts.
   stageLbl: {
     position: 'absolute',
     fontFamily: fonts.oswaldSemiBold,
-    fontSize: 12,
-    letterSpacing: 2,
     textAlign: 'center',
     color: STAGE_GREEN,
     transform: [{ rotate: '-90deg' }],

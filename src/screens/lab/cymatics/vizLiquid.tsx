@@ -51,8 +51,9 @@ import { useDerivedValue, useFrameCallback, useSharedValue } from 'react-native-
 import { MIDLINE_BLUE, WAVE_LEVEL_STOPS, heatColor, heatRgbW } from '../../../features/tools/levelColor';
 import type { LiquidSpec, LiquidState, Stage } from '../../../features/cymatics/faraday';
 import { colors, fonts } from '../../../theme/tokens';
+import { useStageTextScale } from '../rack/stageAspect';
 
-export type LiquidViewMode = 'rig' | 'surface' | 'height' | 'contours' | 'refraction' | 'liquid3d' | 'section';
+export type LiquidViewMode ='rig' | 'surface' | 'height' | 'contours' | 'refraction' | 'liquid3d' | 'section';
 
 export const LIQUID_VIEW_LABELS: Record<LiquidViewMode, string> = {
   rig: 'THE RIG',
@@ -114,7 +115,16 @@ export type LiquidViewProps = {
 };
 
 export function LiquidView(p: LiquidViewProps) {
-  const { width, height, spec, state, gridA, gridB, N, view } = p;
+  const { width: boxW, height: boxH, spec, state, gridA, gridB, N, view } = p;
+  // FULL SCREEN (house rule D35, 2026-09-30): laid out in GLASS units (box ÷
+  // StageTextScale — 1 on the glass) and painted through one scaled Group, so
+  // the rig, the dish, every stroke and the surface image grow with the
+  // picture; the N×N field is unchanged (same cost at every zoom). The RN
+  // labels over the rig ride a scaled overlay the same size. Touches are
+  // mapped back into glass units.
+  const s = useStageTextScale();
+  const width = boxW / s;
+  const height = boxH / s;
   const circle = spec.shape === 'circle' || spec.shape === 'ring';
   const aspect = spec.shape === 'rect' ? Math.max(0.5, Math.min(1, spec.aspect)) : 1;
   const pad = 14;
@@ -588,28 +598,34 @@ export function LiquidView(p: LiquidViewProps) {
   dragRef.current = p.dragTarget;
   const cbRef = useRef(p.onSection);
   cbRef.current = p.onSection;
-  const geom = useRef({ oy, dishH });
-  geom.current = { oy, dishH };
+  const geom = useRef({ oy, dishH, s });
+  geom.current = { oy, dishH, s };
+  // The touch arrives in box px; the dish is laid out in glass units.
+  const sliceAt = (yBox: number) => cbRef.current?.(Math.max(0, Math.min(1, (yBox / geom.current.s - geom.current.oy) / geom.current.dishH)));
   const pan = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => dragRef.current != null,
       onMoveShouldSetPanResponder: () => dragRef.current != null,
-      onPanResponderGrant: (e) => cbRef.current?.(Math.max(0, Math.min(1, (e.nativeEvent.locationY - geom.current.oy) / geom.current.dishH))),
-      onPanResponderMove: (e) => cbRef.current?.(Math.max(0, Math.min(1, (e.nativeEvent.locationY - geom.current.oy) / geom.current.dishH))),
+      onPanResponderGrant: (e) => sliceAt(e.nativeEvent.locationY),
+      onPanResponderMove: (e) => sliceAt(e.nativeEvent.locationY),
     }),
   ).current;
 
   const rimColor = '#9aa0a8';
   const showImage = !isRig && !is3d;
+  // The RN labels: a glass-sized layer scaled about its centre into the box.
+  const glassOverlay = { position: 'absolute' as const, left: 0, top: 0, width, height, transform: [{ translateX: (boxW - width) / 2 }, { translateY: (boxH - height) / 2 }, { scale: s }] };
 
   return (
     <View
-      style={{ width, height }}
+      style={{ width: boxW, height: boxH }}
       accessible
       accessibilityLabel={`Liquid display, ${LIQUID_VIEW_LABELS[view].toLowerCase()} view, ${state.stage}${p.dragTarget ? ', drag on the dish to move the slice' : ''}`}
       {...pan.panHandlers}
     >
-      <Canvas style={{ width, height }}>
+      <Canvas style={{ width: boxW, height: boxH }}>
+       {/* Everything below is in glass units; this one Group is the zoom. */}
+       <Group transform={[{ scale: s }]}>
         {isRig ? (
           <Group>
             {/* Lamp + light cone (a real cone, brightest at the aperture) */}
@@ -729,9 +745,10 @@ export function LiquidView(p: LiquidViewProps) {
             <Oval x={dish3d.x} y={dish3d.y} width={dish3d.w} height={dish3d.h} style="stroke" strokeWidth={1} color="rgba(255,255,255,0.4)" />
           </Group>
         ) : null}
+       </Group>
       </Canvas>
       {isRig ? (
-        <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+        <View pointerEvents="none" style={glassOverlay}>
           {/* Right-hand labels are width-capped; the long LIQUID caption hangs off
               the LEFT rim instead (it used to run off the right edge). */}
           <Text numberOfLines={1} style={[styles.lbl, { left: rig.cx + rig.dishHalfW + 6, maxWidth: width - (rig.cx + rig.dishHalfW + 12), top: rig.dishRimY - 2 }]}>DISH</Text>

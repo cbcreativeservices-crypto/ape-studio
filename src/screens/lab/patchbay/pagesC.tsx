@@ -47,6 +47,19 @@ function PageStudioBay({ ctx }: { ctx: PageCtx }) {
     touchedRef.current = true;
     setPlugState((prev) => (jack === 'top' ? { ...prev, top: !prev.top } : { ...prev, bottom: !prev.bottom }));
   };
+  // Built once, shared by the page and both figures' docks (full-screen pass
+  // 2026-09-30). In the PAIR's full screen the bay is off-screen, so a row of
+  // pair keys docks there too — the learner can walk every column without
+  // leaving the enlarged drawing. (No `key={selected}` on the pair any more:
+  // a remount would close the full screen on every selection.)
+  const chips = <GoalChips goals={goals} latched={latched} />;
+  const pairKeys = (
+    <Row>
+      {STUDIO_PAIRS.map((p) => (
+        <Btn key={p.n} label={String(p.n).padStart(2, '0')} tone={selected === p.n ? 'primary' : 'plain'} selected={selected === p.n} onPress={() => select(p.n)} a11y={`Select pair ${p.n}: ${p.sourceLabel} over ${p.destLabel}`} />
+      ))}
+    </Row>
+  );
   return (
     <View style={{ gap: 12 }}>
       <Lead>
@@ -61,9 +74,9 @@ function PageStudioBay({ ctx }: { ctx: PageCtx }) {
         reduceMotion={ctx.reduceMotion}
         // cords patched below mirror as stubs up here — the zoom loop closes
         plugs={{ [selected]: { top: plugState.top, bottom: plugState.bottom } }}
+        controls={chips}
       />
       <PatchPairView
-        key={selected}
         state={state}
         sourceLabel={pair.sourceLabel}
         destLabel={pair.destLabel}
@@ -73,8 +86,10 @@ function PageStudioBay({ ctx }: { ctx: PageCtx }) {
         reduceMotion={ctx.reduceMotion}
         hideFaceplate
         caption={`PAIR ${String(pair.n).padStart(2, '0')} · ${pair.config === 'thru' ? 'THRU' : 'HALF-NORMAL (COMMON)'} — same rules as always.`}
+        controls={<>{pairKeys}{chips}</>}
+        fsTitle={`PAIR ${String(pair.n).padStart(2, '0')}`}
       />
-      <GoalChips goals={goals} latched={latched} />
+      {chips}
       <Body>
         Notice the layout logic: recording paths, mic pres, and monitoring live on half-normal pairs. The two processor pairs
         are wired THRU — a later page shows exactly why that choice is a safety rule, not a style.
@@ -97,16 +112,21 @@ function PageZeroCables({ ctx }: { ctx: PageCtx }) {
   useMarkWhen(revealed && solved, () => {
     if (!ctx.isDone) ctx.markDone();
   });
+  // The reveal key, built once: on the page and docked under the bay in
+  // full screen (full-screen pass 2026-09-30).
+  const revealBtn = (
+    <Row>
+      <Btn label={reveal ? 'HIDE THE NORMALS' : 'SHOW THE INVISIBLE NORMALS'} tone="primary" onPress={() => setReveal((v) => !v)} />
+    </Row>
+  );
   return (
     <View style={{ gap: 12 }}>
       <Lead>
         Look at this bay: not one patch cord anywhere. And yet — recording runs, the pres feed the console, the monitors play.
         Where are the connections?
       </Lead>
-      <StudioBayView pairs={STUDIO_PAIRS} showNormals={reveal} reduceMotion={ctx.reduceMotion} />
-      <Row>
-        <Btn label={reveal ? 'HIDE THE NORMALS' : 'SHOW THE INVISIBLE NORMALS'} tone="primary" onPress={() => setReveal((v) => !v)} />
-      </Row>
+      <StudioBayView pairs={STUDIO_PAIRS} showNormals={reveal} reduceMotion={ctx.reduceMotion} controls={revealBtn} />
+      {revealBtn}
       <Card tone="math">
         <Text style={local.big}>A properly designed normalled patchbay runs its standard signal path with ZERO front-panel cables.</Text>
         <Body>
@@ -144,6 +164,7 @@ function PageOverpatch({ ctx }: { ctx: PageCtx }) {
   const flow = resolvePair(state);
   const goals = [{ label: 'OVERPATCH IT (patch the bottom)', hit: flow.destinationHears === 'patch' }];
   const latched = useVisitGoals(ctx, goals);
+  const chips = <GoalChips goals={goals} latched={latched} />;
   return (
     <View style={{ gap: 12 }}>
       <Lead>Two professional words for what you have been doing all along:</Lead>
@@ -166,8 +187,10 @@ function PageOverpatch({ ctx }: { ctx: PageCtx }) {
             ? 'OVERPATCHED — C feeds B; the normal path is on hold until the cord comes out.'
             : 'The NORMAL PATH — A feeds B automatically. Now overpatch: put source C into the BOTTOM jack.'
         }
+        controls={chips}
+        fsTitle="OVERPATCH"
       />
-      <GoalChips goals={goals} latched={latched} />
+      {chips}
       <Body>
         In a larger studio you will hear it exactly like this: “the tape returns are NORMALLED to the monitor path — OVERPATCH
         line 3 if you need the drum machine.” You now speak the language.
@@ -197,6 +220,15 @@ function PageProcessorChain({ ctx }: { ctx: PageCtx }) {
   // Compressor pair: THRU — it only joins the chain by cable. Its OUT is only
   // alive while the chain feeds its IN (sourceLive keeps the diagram honest).
   const compState = { config: 'thru' as const, topPlugged: inserted, bottomPlugged: inserted };
+  // The insert/bypass key and the chips, built once: on the page and docked
+  // under BOTH pair drawings in full screen (full-screen pass 2026-09-30).
+  const insertBtn = (
+    <Row>
+      <Btn label={inserted ? '⏏ BYPASS PROCESSOR' : '● INSERT COMPRESSOR'} tone="primary" onPress={() => setInserted((v) => !v)} />
+    </Row>
+  );
+  const chips = <GoalChips goals={goals} latched={latched} />;
+  const dock = <>{insertBtn}{chips}</>;
   return (
     <View style={{ gap: 12 }}>
       <Lead>
@@ -217,10 +249,10 @@ function PageProcessorChain({ ctx }: { ctx: PageCtx }) {
             ? 'The vocal leaves on ① SEND (top tap), and the processed signal returns on ② RETURN (bottom — breaking the normal).'
             : 'BYPASSED — no cords: the vocal rides its normal straight to the console.'
         }
+        controls={dock}
+        fsTitle="VOCAL PAIR"
       />
-      <Row>
-        <Btn label={inserted ? '⏏ BYPASS PROCESSOR' : '● INSERT COMPRESSOR'} tone="primary" onPress={() => setInserted((v) => !v)} />
-      </Row>
+      {insertBtn}
       <PatchPairView
         state={compState}
         sourceLabel="COMPRESSOR OUT"
@@ -235,8 +267,10 @@ function PageProcessorChain({ ctx }: { ctx: PageCtx }) {
             ? 'The THRU processor pair, cabled in: ① feeds COMP IN below; COMP OUT rides ② back to the console.'
             : 'The processor pair at rest: THRU, nothing connected, its output idle — the compressor waits until it is invited.'
         }
+        controls={dock}
+        fsTitle="PROCESSOR PAIR"
       />
-      <GoalChips goals={goals} latched={latched} />
+      {chips}
       <Body>
         Read the chain when inserted: Vocal Out → ① → Compressor In → PROCESSING → Compressor Out → ② → Console In (normal
         broken by ②). Bypass = pull both cords: the vocal’s own normal instantly restores the direct path. You are now

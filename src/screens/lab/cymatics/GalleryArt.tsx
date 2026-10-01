@@ -237,6 +237,12 @@ export function GalleryArt({
           bezel,
           onGuide: () => onHelp('art_fill'),
           hideDragTag: true,
+          // FULL SCREEN as a working surface (house rule D35, 2026-09-30): the
+          // art board at the whole phone, UNDO/REDO on top, FILL/STYLE/WEIGHT
+          // docked. PatternFigure fits its frame to the box it is given and
+          // scales its line weights by frame ÷ LINE_REF_W, so the figure and
+          // every stroke grow together; the tap maps through the same frame.
+          fullScreen: true,
           render: (w, h) => <PatternFigure geometry={geometry} artwork={art} width={w} height={h} interactive onTap={(x, y) => tap(x, y, w, h)} />,
         }}
         params={params}

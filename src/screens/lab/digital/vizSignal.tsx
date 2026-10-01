@@ -35,6 +35,8 @@ import {
 import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
 import { fonts } from '../../../theme/tokens';
 import { levelColor, WAVE_LEVEL_STOPS } from '../../../features/tools/levelColor';
+import { useStageTextScale } from '../rack/stageAspect';
+import { SText } from '../stageScale';
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 
 // Lab palette (house tokens — amber signal, blue energy, green good, red problem).
@@ -279,8 +281,12 @@ export function AnalogChainView({
   cycles: number;
   height?: number;
 }) {
-  const w = width;
-  const h = height;
+  // FULL SCREEN (D35): laid out at the glass size and painted through a
+  // scaled Group, so the speaker, bands, mic and trace zoom as one picture;
+  // the overlay labels (SText) grow with it. 1 on the glass = unchanged.
+  const ts = useStageTextScale();
+  const w = width / ts;
+  const h = height / ts;
   const k = strokeScale(w);
   const midY = h / 2;
 
@@ -433,8 +439,9 @@ export function AnalogChainView({
   }, [phase, wave, amp, distortion, polarity, noise, cycles, gx0, gw, midY, ampPx]);
 
   return (
-    <View style={{ width: w, height: h }}>
-      <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+    <View style={{ width, height }}>
+      <Canvas style={{ width, height, backgroundColor: BG }}>
+        <Group transform={[{ scale: ts }]}>
         {/* Scene depth: floor line under the physical objects. */}
         <SkLine p1={vec(4, h - 10)} p2={vec(micX + micLen + 4 * k, h - 10)} color="#17171c" strokeWidth={2} />
 
@@ -537,15 +544,16 @@ export function AnalogChainView({
             positions={WAVE_LEVEL_STOPS.map((s) => s.offset)}
           />
         </Path>
+        </Group>
       </Canvas>
 
-      <RNText style={[lbl.tag, { left: magX, top: h - 24 }]}>SPEAKER</RNText>
-      <RNText style={[lbl.tag, { left: mouthX + 8 * k, top: 3 }]}>PRESSURE →</RNText>
-      <RNText style={[lbl.tag, { left: micX - 10 * k, top: h - 24 }]}>MIC</RNText>
-      <RNText style={[lbl.tagAmber, { left: gx0, top: 3 }]}>CONTINUOUS VOLTAGE →</RNText>
-      <RNText style={[lbl.mono, { left: gx0 + 2, top: midY - ampPx - 12 }]}>+1.0</RNText>
-      <RNText style={[lbl.mono, { left: gx0 + 2, top: midY - 12 }]}>0</RNText>
-      <RNText style={[lbl.mono, { left: gx0 + 2, top: midY + ampPx + 1 }]}>−1.0</RNText>
+      <SText style={[lbl.tag, { left: magX, top: h - 24 }]}>SPEAKER</SText>
+      <SText style={[lbl.tag, { left: mouthX + 8 * k, top: 3 }]}>PRESSURE →</SText>
+      <SText style={[lbl.tag, { left: micX - 10 * k, top: h - 24 }]}>MIC</SText>
+      <SText style={[lbl.tagAmber, { left: gx0, top: 3 }]}>CONTINUOUS VOLTAGE →</SText>
+      <SText style={[lbl.mono, { left: gx0 + 2, top: midY - ampPx - 12 }]}>+1.0</SText>
+      <SText style={[lbl.mono, { left: gx0 + 2, top: midY - 12 }]}>0</SText>
+      <SText style={[lbl.mono, { left: gx0 + 2, top: midY + ampPx + 1 }]}>−1.0</SText>
     </View>
   );
 }
@@ -580,8 +588,10 @@ export function SamplingView({
   slopeDbOct: number;
   height?: number;
 }) {
-  const w = width;
-  const h = height;
+  // FULL SCREEN (D35): glass-size layout painted through a scaled Group.
+  const ts = useStageTextScale();
+  const w = width / ts;
+  const h = height / ts;
   const k = strokeScale(w);
   const pad = 8;
   const gw = w - pad * 2;
@@ -663,8 +673,9 @@ export function SamplingView({
   const reconVisible = showRecon || aliasVisible;
 
   return (
-    <View style={{ width: w, height: h }}>
-      <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+    <View style={{ width, height }}>
+      <Canvas style={{ width, height, backgroundColor: BG }}>
+        <Group transform={[{ scale: ts }]}>
         <SkLine p1={vec(pad, midY)} p2={vec(pad + gw, midY)} color={GRID} strokeWidth={1.1} />
         {/* Sampling instants — the measurement grid in time. */}
         <Path path={geo.sticks} color={GHOST} style="stroke" strokeWidth={1} />
@@ -705,24 +716,25 @@ export function SamplingView({
         <Path path={cursorDot} color={ACCENT_GREEN} opacity={0.9}>
           <BlurMask blur={3} style="solid" />
         </Path>
+        </Group>
       </Canvas>
 
-      <RNText style={[lbl.tagAmber, { left: pad, top: 3 }]}>
+      <SText style={[lbl.tagAmber, { left: pad, top: 3 }]}>
         {aliased ? 'TRUE INPUT (DIM) — ABOVE NYQUIST' : 'INPUT — CONTINUOUS'}
-      </RNText>
+      </SText>
       {aliasVisible ? (
-        <RNText style={[lbl.tagRed, { right: pad, top: 3 }]}>
+        <SText style={[lbl.tagRed, { right: pad, top: 3 }]}>
           ALIAS ≈ {fmtHzViz(aliasHz)} — THE DOTS FIT THIS
-        </RNText>
+        </SText>
       ) : aliasRemoved ? (
-        <RNText style={[lbl.tagGreen, { right: pad, top: 3 }]}>ALIAS REMOVED — FILTERED BEFORE THE SAMPLER</RNText>
+        <SText style={[lbl.tagGreen, { right: pad, top: 3 }]}>ALIAS REMOVED — FILTERED BEFORE THE SAMPLER</SText>
       ) : showRecon ? (
-        <RNText style={[lbl.tagGreen, { right: pad, top: 3 }]}>RECONSTRUCTED = THE SINE ITSELF (EXACT)</RNText>
+        <SText style={[lbl.tagGreen, { right: pad, top: 3 }]}>RECONSTRUCTED = THE SINE ITSELF (EXACT)</SText>
       ) : null}
-      <RNText style={[lbl.mono, { left: pad, top: h - 14 }]}>0</RNText>
-      <RNText style={[lbl.mono, { right: pad, top: h - 14 }]}>
+      <SText style={[lbl.mono, { left: pad, top: h - 14 }]}>0</SText>
+      <SText style={[lbl.mono, { right: pad, top: h - 14 }]}>
         {(T * 1000).toFixed(T * 1000 < 1 ? 3 : 2)} ms
-      </RNText>
+      </SText>
     </View>
   );
 }

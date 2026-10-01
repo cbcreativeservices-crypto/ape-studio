@@ -11,6 +11,29 @@ import { rampColors } from '../../../../features/tools/levelColor';
 import { effectiveQ, modeResponse, plateModes, readResonance, sampleField, type PlateMode, type PlateSpec } from '../../../../features/cymatics/plateModes';
 import { requireVizPlate, skiaAvailable } from '../skiaGate';
 import type { PlateViewMode } from '../vizPlate';
+import { useStageTextScale } from '../../rack/stageAspect';
+
+/**
+ * FULL SCREEN (house rule D35, 2026-09-30) for a stage drawn with
+ * react-native-svg or plain Views: lay the drawing out in GLASS units (the
+ * box ÷ StageTextScale — 1 on the glass) and paint it scaled into the real
+ * box, so every px constant — stroke, node dot, label — grows with the
+ * picture. `svg` goes on the <Svg> (its viewBox is the glass-unit box);
+ * `overlay` is the style for a glass-sized View of RN labels scaled about its
+ * centre into the box.
+ */
+export function useGlassUnits(boxW: number, boxH: number) {
+  const s = useStageTextScale();
+  const w = boxW / s;
+  const h = boxH / s;
+  return {
+    s,
+    w,
+    h,
+    svg: { width: boxW, height: boxH, viewBox: `0 0 ${w} ${h}` },
+    overlay: { position: 'absolute' as const, left: 0, top: 0, width: w, height: h, transform: [{ translateX: (boxW - w) / 2 }, { translateY: (boxH - h) / 2 }, { scale: s }] },
+  };
+}
 
 export const P = StyleSheet.create({
   h: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: colors.amber, marginTop: 6 },

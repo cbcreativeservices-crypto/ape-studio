@@ -378,6 +378,10 @@ export function HarmonographLabScreen() {
         onHelp: openLesson,
         stage: {
           size: 'L', // the figure IS the lab — earns the tall glass
+          // The rack's ⤢ FULL SCREEN (full-screen build 2026-09-30). The
+          // machine is one fixed viewBox, so it zooms whole; the share/print
+          // viewer (THE DRAWING inset) stays as it is and opens from the glass.
+          fullScreen: true,
           badge: 'RIGID-BODY MACHINE — DRAWN FROM THE EQUATIONS',
           onGuide: () => openLesson('display'),
           // OSC readouts now live ON the machine (each pendulum wears its own

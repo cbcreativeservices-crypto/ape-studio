@@ -144,6 +144,16 @@ function PageThreeThings({ ctx }: { ctx: PageCtx }) {
     { label: 'Open all 4 questions', hit: seenQs.size >= FOUR_QUESTIONS.length },
   ];
   const latched = useVisitGoals(ctx, goals);
+  // In full screen the part list is off-screen, so the selected part's name
+  // and blurb ride under the drawing as its readout (full-screen pass
+  // 2026-09-30); the drawing's own tap zones are the control.
+  const partRec = CABLE_PARTS.find((p) => p.id === part);
+  const partReadout = (
+    <View style={styles.partDock}>
+      <Text style={styles.partName}>{partRec ? partRec.name.toUpperCase() : 'TAP A ZONE ON THE DRAWING'}</Text>
+      {partRec ? <Text style={styles.partBlurb} numberOfLines={4}>{partRec.blurb}</Text> : null}
+    </View>
+  );
   return (
     <View style={{ gap: 10 }}>
       <StationTag>STATION 1 · CONNECTOR, CABLE AND SIGNAL</StationTag>
@@ -155,7 +165,7 @@ function PageThreeThings({ ctx }: { ctx: PageCtx }) {
             that names each part — jacket, shield, insulation, conductors are
             all visible in the photograph. */}
         <LabPhoto source={ANATOMY_PHOTO} aspect={PHOTO_ASPECT} label="a microphone cable stripped back — jacket, copper braid shield, cotton filler, the twisted blue and white pair, and bare stranded conductors" caption="STRIPPED BACK — JACKET · BRAID · FILLER · PAIR · CONDUCTORS" />
-        <ExplodedCable selected={part} onSelect={selectPart} />
+        <ExplodedCable selected={part} onSelect={selectPart} controls={partReadout} />
         <ConceptList
           items={CABLE_PARTS.map((p) => ({ id: p.id, name: p.name, blurb: p.blurb }))}
           opened={seenParts}
@@ -289,5 +299,8 @@ const styles = StyleSheet.create({
   cautionEyebrow: { color: colors.red, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1.5 },
   cautionText: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18 },
   toggleRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  partDock: { paddingHorizontal: 12, gap: 3 },
+  partName: { color: colors.cyanBright, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.5 },
+  partBlurb: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18 },
   search: { minHeight: 44, borderRadius: 10, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#0c0d0f', color: colors.textPrimary, fontFamily: fonts.barlowRegular, fontSize: 13.5, paddingHorizontal: 12 },
 });

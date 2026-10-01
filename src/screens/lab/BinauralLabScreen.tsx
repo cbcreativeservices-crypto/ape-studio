@@ -29,7 +29,7 @@
  * engineVersion ≥ 7 — below it the stage + lessons work and the build
  * requirement is stated.
  */
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { PanResponder, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Circle, Line, Text as SvgText } from 'react-native-svg';
@@ -42,6 +42,7 @@ import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { LabShell, LabChip, HeaderPlayButton } from './LabShell';
+import { StageAspectReport } from './rack/stageAspect';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../features/audio/useStopOnBlur';
@@ -225,6 +226,7 @@ export function BinauralLabScreen() {
         onHelp: openLesson,
         stage: {
           size: 'L', // the overhead stage IS the lab — earns the tall glass
+          fullScreen: true, // the rack's ⤢ FULL SCREEN (full-screen build 2026-09-30)
           badge: 'SIMPLIFIED BINAURAL — NOT MEASURED HRTF',
           onGuide: () => openLesson('display'),
           bezel: [
@@ -476,11 +478,24 @@ function azimuthWord(az: number): string {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
+/** The stage's logical square — the 'L' glass's inner height on a phone, so
+ *  the glass picture is the one the lab always had (scale ≈ 1 there). FULL
+ *  SCREEN (2026-09-30, D35 "everything zooms"): the Svg paints this fixed
+ *  viewBox into whatever square it is given, so the rings, head, sources,
+ *  labels and strokes all grow with the step. The stage is a SQUARE inside a
+ *  wide glass, so the rack's width-based text scale is not its growth — the
+ *  viewBox is. */
+const STAGE_U = 248;
+/** Label size in logical units: never under 9.5 pt rendered, even where a
+ *  short phone's 'M' glass paints the square smaller than STAGE_U. */
+const stageFont = (pt: number, s: number) => pt / Math.min(1, s);
+
 /** The overhead stage: head at center (nose UP = 0° azimuth, +90° right),
  *  distance rings at 1/2/3/4 m, sources draggable. One PanResponder; the grab
  *  picks the nearest source, moves stream angle+radius. Sized by the rack
  *  glass (square of the smaller glass dimension) — pinned, so no scroll-lock
- *  wiring remains. */
+ *  wiring remains. Geometry is in STAGE_U logical units; a touch arrives in
+ *  pixels and is divided by the paint scale. */
 function Stage({
   size,
   sources,
@@ -494,8 +509,16 @@ function Stage({
   onSelect: (i: number) => void;
   onMove: (i: number, azDeg: number, dist: number) => void;
 }) {
-  const c = size / 2;
+  const s = size / STAGE_U; // paint scale: px per logical unit
+  const c = STAGE_U / 2;
   const rMax = c - 16; // radius of the 4 m ring
+  const fs = stageFont(9.5, s);
+  // Tell FULL SCREEN the drawing is square, so its canvas at every zoom is
+  // the stage's own shape (no blank margin to pan across). A no-op on the glass.
+  const report = useContext(StageAspectReport);
+  useEffect(() => {
+    report?.aspect(1, 0);
+  }, [report]);
 
   const toXY = useCallback(
     (s: Source) => {
@@ -507,18 +530,20 @@ function Stage({
   );
 
   // Refs so the PanResponder (created once) always sees current state.
-  const stateRef = useRef({ sources, toXY, onSelect, onMove, c, rMax });
-  stateRef.current = { sources, toXY, onSelect, onMove, c, rMax };
+  const stateRef = useRef({ sources, toXY, onSelect, onMove, c, rMax, s });
+  stateRef.current = { sources, toXY, onSelect, onMove, c, rMax, s };
   const dragIdx = useRef(-1);
-  const dragBase = useRef({ x: 0, y: 0 }); // finger pos at grab — anchored-drag base
+  const dragBase = useRef({ x: 0, y: 0 }); // finger pos at grab (logical) — anchored-drag base
 
   const pan = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: (e) => {
         const st = stateRef.current;
-        const { locationX: x, locationY: y } = e.nativeEvent;
+        // Pixels → logical units (the Svg paints STAGE_U into `size`).
+        const x = e.nativeEvent.locationX / st.s;
+        const y = e.nativeEvent.locationY / st.s;
         let best = -1;
-        let bestD = 40; // grab radius (px)
+        let bestD = 40; // grab radius (logical units ≈ px on the glass)
         st.sources.forEach((s, i) => {
           const p = st.toXY(s);
           const d = Math.hypot(p.x - x, p.y - y);
@@ -542,8 +567,8 @@ function Stage({
         // Anchored delta (owner 2026-08-23): base + gestureState reproduces the
         // true finger position without re-basing, so dragging past the pad bounds
         // no longer teleports the source to the far side.
-        const x = dragBase.current.x + g.dx;
-        const y = dragBase.current.y + g.dy;
+        const x = dragBase.current.x + g.dx / st.s;
+        const y = dragBase.current.y + g.dy / st.s;
         const dx = x - st.c;
         const dy = y - st.c;
         let az = (Math.atan2(dx, -dy) * 180) / Math.PI; // 0 = up (front)
@@ -564,7 +589,7 @@ function Stage({
 
   return (
     <View {...pan.panHandlers}>
-      <Svg width={size} height={size}>
+      <Svg width={size} height={size} viewBox={`0 0 ${STAGE_U} ${STAGE_U}`}>
         {/* Distance rings (1..4 m). */}
         {[1, 2, 3, 4].map((m) => (
           <Circle
@@ -577,18 +602,18 @@ function Stage({
             fill="none"
           />
         ))}
-        <SvgText x={c + 4} y={c - rMax + 12} fill="#4a4a52" fontSize={9}>
+        <SvgText x={c + 4} y={c - rMax + 12} fill="#4a4a52" fontSize={fs}>
           4 m
         </SvgText>
         {/* Front axis + FRONT/BEHIND labels. */}
         <Line x1={c} y1={c - rMax} x2={c} y2={c + rMax} stroke="#1e1e24" strokeWidth={1} />
-        <SvgText x={c} y={12} fill={colors.textSub} fontSize={9.5} textAnchor="middle">
+        <SvgText x={c} y={12} fill={colors.textSub} fontSize={fs} textAnchor="middle">
           FRONT 0°
         </SvgText>
-        <SvgText x={c} y={size - 4} fill={colors.textSub} fontSize={9.5} textAnchor="middle">
+        <SvgText x={c} y={STAGE_U - 4} fill={colors.textSub} fontSize={fs} textAnchor="middle">
           BEHIND ±180°
         </SvgText>
-        <SvgText x={size - 6} y={c + 3} fill={colors.textSub} fontSize={9.5} textAnchor="end">
+        <SvgText x={STAGE_U - 6} y={c + 3} fill={colors.textSub} fontSize={fs} textAnchor="end">
           +90°
         </SvgText>
         {/* The head (nose up). */}

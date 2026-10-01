@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, type ReactNode } from 'react';
 /**
  * JackCutaway — the inside of one normalled patch point, side cutaway
  * (spec §6 + the §21 X-ray insertion model). The single most important
@@ -22,6 +22,7 @@ import { useEffect } from 'react';
 import { AccessibilityInfo, Platform, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { CONTACT_OPEN_AT, contactsOpen } from '../engine/patchbay';
 import { FlowPath, PB, useFlowPhase } from './PatchPairView';
 
@@ -39,12 +40,16 @@ function leafTipY(insertion: number): number {
   return 104 - lift * 20;
 }
 
-export function JackCutaway({ insertion, reduceMotion, showConductors }: {
+export function JackCutaway({ insertion, reduceMotion, showConductors, controls }: {
   insertion: number;
   reduceMotion: boolean;
   /** §23 (Phase B): label the plug's TIP / RING / SLEEVE bands — the reveal
    *  that "one line" has been a balanced circuit all along. */
   showConductors?: boolean;
+  /** The page's PLUG INSERTION slider (+ goal chips), docked under the
+   *  drawing in FULL SCREEN so the plug can be driven there (D35,
+   *  full-screen pass 2026-09-30). The % / contacts readout rides on top. */
+  controls?: ReactNode;
 }) {
   const open = contactsOpen(insertion);
 
@@ -71,9 +76,36 @@ export function JackCutaway({ insertion, reduceMotion, showConductors }: {
   const leafShape = `M 292 57 Q 226 ${leafY - 15} ${CONTACT_X} ${leafY - 2.6} L ${CONTACT_X} ${leafY + 2.6} Q 228 ${leafY - 7} 292 66 Z`;
   const leafCenter = `M 292 61 Q 227 ${leafY - 11} ${CONTACT_X} ${leafY}`;
 
+  const badge = `CONCEPTUAL MODEL — real jacks open partway through insertion; the exact point varies by design (this model opens at ${Math.round(CONTACT_OPEN_AT * 100)}%).`;
+  // The readout row is the figure's READOUT: under the drawing on the page
+  // and at the top of the docked controls in full screen — one element.
+  const readout = (
+    <View style={styles.readoutRow}>
+      <Text style={styles.pct}>{Math.round(insertion * 100)}%</Text>
+      <Text style={[styles.state, { color: open ? PB.break : PB.flow }]} accessibilityLiveRegion="polite">
+        {open ? 'CONTACTS OPEN — NORMAL BROKEN' : 'CONTACTS TOUCHING — NORMAL INTACT'}
+      </Text>
+    </View>
+  );
+
   return (
-    <View style={styles.wrap} accessible accessibilityRole="image" accessibilityLabel={a11y}>
-      <Svg width="100%" height={undefined} viewBox={`0 0 ${W} ${H}`} style={{ aspectRatio: W / H }}>
+    <View style={styles.wrap}>
+      {/* The accessible image node is the DRAWING, not the card: an accessible
+          card would flatten the FULL SCREEN button (and the docked slider)
+          away from screen readers. */}
+      <ExpandableFigure
+        aspect={W / H}
+        title="INSIDE THE JACK"
+        badge={badge}
+        controls={
+          <View style={styles.dock}>
+            {readout}
+            {controls}
+          </View>
+        }
+        render={(w, h) => (
+      <View style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={a11y}>
+      <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
         {/* jack body + front bushing */}
         <Rect x={62} y={30} width={262} height={134} rx={8} fill="#101013" stroke="#34353b" strokeWidth={1.4} />
         <Rect x={42} y={80} width={20} height={44} rx={3} fill="#1a1b1f" stroke="#3d3e44" strokeWidth={1.4} />
@@ -134,13 +166,11 @@ export function JackCutaway({ insertion, reduceMotion, showConductors }: {
           <SvgText x={10} y={106} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={1}>← PLUG OUT</SvgText>
         )}
       </Svg>
-      <View style={styles.readoutRow}>
-        <Text style={styles.pct}>{Math.round(insertion * 100)}%</Text>
-        <Text style={[styles.state, { color: open ? PB.break : PB.flow }]} accessibilityLiveRegion="polite">
-          {open ? 'CONTACTS OPEN — NORMAL BROKEN' : 'CONTACTS TOUCHING — NORMAL INTACT'}
-        </Text>
       </View>
-      <Text style={styles.badge}>CONCEPTUAL MODEL — real jacks open partway through insertion; the exact point varies by design (this model opens at {Math.round(CONTACT_OPEN_AT * 100)}%).</Text>
+        )}
+      />
+      {readout}
+      <Text style={styles.badge}>{badge}</Text>
     </View>
   );
 }
@@ -148,6 +178,7 @@ export function JackCutaway({ insertion, reduceMotion, showConductors }: {
 const styles = StyleSheet.create({
   wrap: { width: '100%', gap: 5, borderRadius: 12, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#0d0d10', padding: 10 },
   readoutRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  dock: { paddingHorizontal: 12, gap: 8 },
   pct: { color: colors.textPrimary, fontFamily: fonts.mono, fontSize: 15 },
   state: { fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 1 },
   badge: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },

@@ -18,11 +18,13 @@ import { join } from 'node:path';
 
 const src = readFileSync(join(process.cwd(), 'src', 'screens', 'dashboard', 'DashboardScreen.tsx'), 'utf8');
 
-test('a focused topic that is enrolled but inactive is switched on', () => {
+test('a focused topic that is inactive OR not enrolled at all is brought onto the deck', () => {
+  // 2026-09-30: the inactive-only switch missed a topic the bundle outlived
+  // (studyFocusEnroll.test.ts). ensureStudyTopic covers both.
   assert.match(
     src,
-    /typeof focusGs === 'number' && inactiveGs\.current\.has\(focusGs\)\) setActiveMany\(\[focusGs\], true\)/,
-    'STUDY NOW on a switched-off certificate topic would again land on the wrong topic',
+    /if \(typeof focusGs === 'number'\) void ensureStudyTopic\(focusGs\);/,
+    'STUDY NOW on a switched-off or un-enrolled credential topic would again land on the wrong topic',
   );
 });
 

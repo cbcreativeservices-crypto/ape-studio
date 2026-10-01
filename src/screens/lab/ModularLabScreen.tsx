@@ -36,6 +36,7 @@ import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { CheckQuestion } from './foundations/bits';
 import { LabShell, LabChip, HeaderPlayButton } from './LabShell';
+import { useStageTextScale } from './rack/stageAspect';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../features/audio/useStopOnBlur';
@@ -332,6 +333,7 @@ export function ModularLabScreen() {
         onHelp: openLesson,
         stage: {
           size: 'L', // the live signal path IS the lab — earns the tall glass
+          fullScreen: true, // the rack's ⤢ FULL SCREEN (full-screen build 2026-09-30)
           badge: 'SIGNAL FLOW — THE ACTUAL NATIVE PATH · ACTIVE ROUTINGS LIT',
           onGuide: () => openLesson('display'),
           bezel: [
@@ -633,8 +635,8 @@ const SEQ_COLOR = '#ff8d7a';
  *  2026-08-23: sized by the stage's (w, h) instead of self-measuring — the mod
  *  row anchors to the bottom so the cables gain sag room on the tall glass. */
 function PatchDiagram({
-  w,
-  h,
+  w: pw,
+  h: ph,
   patch,
   envLevel,
   activeStep,
@@ -652,6 +654,13 @@ function PatchDiagram({
   /** Tap a box → open that section's "what it does" help. */
   onBox: (key: string) => void;
 }) {
+  // FULL SCREEN (2026-09-30, D35 "everything zooms"): the diagram is authored
+  // in GLASS pixels (w, h below) and painted through a viewBox of (pw ÷ ts) ×
+  // (ph ÷ ts), so the plates, screws, cables, plugs, LEDs, the env meter and
+  // every label are × the step. ts = 1 on the glass — unchanged there.
+  const ts = useStageTextScale();
+  const w = pw / ts;
+  const h = ph / ts;
   const boxW = Math.min(74, (w - 60) / 4);
   const boxH = 34;
   const topY = 22;
@@ -723,7 +732,7 @@ function PatchDiagram({
 
   return (
     <View>
-      <Svg width={w} height={h}>
+      <Svg width={pw} height={ph} viewBox={`0 0 ${w} ${h}`}>
         <Defs>
           <LinearGradient id="mdBg" x1="0" y1="0" x2="0" y2="1">
             <Stop offset="0%" stopColor="#14141a" />

@@ -571,6 +571,11 @@ function LiquidStudio() {
             onGuide: () => openLesson('liquid_display'),
             bezel,
             hideDragTag: true, // SHAKE (the bound lane) is printed on the bezel
+            // FULL SCREEN as a working surface (house rule D35, 2026-09-30):
+            // the same render at the whole phone, bezel on top, dock docked;
+            // vizLiquid draws through a scaled group so the dish, the rig
+            // and its labels all grow with the picture.
+            fullScreen: true,
             render: (w, h) =>
               viz ? (
                 <viz.LiquidView

@@ -21,6 +21,8 @@ import { AdvancedMixingLabScreen } from './src/screens/lab/mixing/AdvancedMixing
 import { ConnectorSelectLabScreen } from './src/screens/lab/connectorselect/ConnectorSelectLabScreen';
 import { ToolPreview } from './src/screens/tools/ToolPreview';
 import { MicPrinciplesLabScreen } from './src/screens/lab/micspeaker/MicPrinciplesLabScreen';
+import { SpeakerCoverageLabScreen } from './src/screens/lab/micspeaker/SpeakerCoverageLabScreen';
+import { VacuumTubeLabScreen } from './src/screens/lab/tube/VacuumTubeLabScreen';
 // The two window-width-driven screens (2026-09-13). Both size their carousel
 // from the live window, and NEITHER had a harness of any kind - so the iPad
 // layout of the FIRST screen a store reviewer sees could not be looked at.
@@ -56,11 +58,21 @@ import { SoundSystemsLabScreen } from './src/screens/lab/soundsystems/SoundSyste
 import { StartHereScreen } from './src/screens/startHere/StartHereScreen';
 import { StartHereTermsScreen } from './src/screens/startHere/StartHereTermsScreen';
 import { PlateStudioScreen } from './src/screens/lab/cymatics/PlateStudioScreen';
+import { TuningLabScreen } from './src/screens/lab/tuning/TuningLabScreen';
+import { DigitalModuleScreen } from './src/screens/lab/digital/DigitalModuleScreen';
+import { GainModuleScreen } from './src/screens/lab/gain/GainModuleScreen';
+import { CymaticsModuleScreen } from './src/screens/lab/cymatics/CymaticsModuleScreen';
+import { LiquidStudioScreen } from './src/screens/lab/cymatics/LiquidStudioScreen';
+import { MembraneStudioScreen } from './src/screens/lab/cymatics/MembraneStudioScreen';
+import { GalleryScreen as CymaticsGalleryScreen } from './src/screens/lab/cymatics/GalleryScreen';
 // `#labpreview/<Screen>/<id>` (2026-09-25 legibility pass): any lab screen in
 // the browser harness by name, so a display can be measured without walking
 // Home → OPEN LABS (the app root sometimes rendered blank in the preview).
 import { DeEsserLabScreen } from './src/screens/lab/deesser/DeEsserLabScreen';
 import { SpeechLabScreen } from './src/screens/lab/speech/SpeechLabScreen';
+import { PatchbayLabScreen } from './src/screens/lab/patchbay/PatchbayLabScreen';
+import { EarTrainingLabScreen } from './src/screens/lab/eartraining/EarTrainingLabScreen';
+import { EarModuleScreen } from './src/screens/lab/eartraining/EarModuleScreen';
 import { WaveLabHomeScreen } from './src/screens/lab/wave/WaveLabHomeScreen';
 import { WaveModuleScreen } from './src/screens/lab/wave/WaveModuleScreen';
 import { MeterLabHomeScreen } from './src/screens/lab/meter/MeterLabHomeScreen';
@@ -70,6 +82,14 @@ import { FoundationsPlaygroundScreen } from './src/screens/lab/foundations/Found
 import { AmpLabHomeScreen } from './src/screens/lab/amp/AmpLabHomeScreen';
 import { AmpModuleScreen } from './src/screens/lab/amp/AmpModuleScreen';
 import { OscillatorLabScreen } from './src/screens/lab/OscillatorLabScreen';
+// Full-screen build, group 2 (2026-09-30): the seven single-page rack labs.
+import { NoiseLabScreen } from './src/screens/lab/NoiseLabScreen';
+import { HarmonicLabScreen } from './src/screens/lab/HarmonicLabScreen';
+import { FmLabScreen } from './src/screens/lab/FmLabScreen';
+import { ModularLabScreen } from './src/screens/lab/ModularLabScreen';
+import { BinauralLabScreen } from './src/screens/lab/BinauralLabScreen';
+import { AutotuneLabScreen } from './src/screens/lab/AutotuneLabScreen';
+import { HarmonographLabScreen } from './src/screens/lab/HarmonographLabScreen';
 import { EnvelopeLabScreen } from './src/screens/lab/envelope/EnvelopeLabScreen';
 import { BassLabScreen } from './src/screens/lab/BassLabScreen';
 import { EqLabScreen } from './src/screens/lab/fxLabConfigs';
@@ -77,6 +97,12 @@ import { EqLabScreen } from './src/screens/lab/fxLabConfigs';
 const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   DeEsserLab: DeEsserLabScreen as ComponentType,
   SpeechLab: SpeechLabScreen as ComponentType,
+  // Full-screen pass group 6 (2026-09-30): the patchbay, the connectors
+  // lab and the ear-training trial shell, by name.
+  PatchbayLab: PatchbayLabScreen as ComponentType,
+  ConnectorSelectLab: ConnectorSelectLabScreen as ComponentType,
+  EarTrainingLab: EarTrainingLabScreen as ComponentType,
+  EarModule: EarModuleScreen as ComponentType,
   WaveLab: WaveLabHomeScreen as ComponentType,
   WaveModule: WaveModuleScreen as ComponentType,
   MeterLab: MeterLabHomeScreen as ComponentType,
@@ -86,11 +112,21 @@ const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   AmpLab: AmpLabHomeScreen as ComponentType,
   AmpModule: AmpModuleScreen as ComponentType,
   OscillatorLab: OscillatorLabScreen as ComponentType,
+  NoiseLab: NoiseLabScreen as ComponentType,
+  HarmonicLab: HarmonicLabScreen as ComponentType,
+  FmLab: FmLabScreen as ComponentType,
+  ModularLab: ModularLabScreen as ComponentType,
+  BinauralLab: BinauralLabScreen as ComponentType,
+  AutotuneLab: AutotuneLabScreen as ComponentType,
+  HarmonographLab: HarmonographLabScreen as ComponentType,
   EnvelopeLab: EnvelopeLabScreen as ComponentType,
   BassLab: BassLabScreen as ComponentType,
   EqLab: EqLabScreen as ComponentType,
   EqModule: EqModuleScreen as ComponentType,
   MicPrinciples: MicPrinciplesLabScreen as ComponentType,
+  // Full-screen build group 4 (2026-09-30): the coverage maps and the tube lab, by name.
+  SpeakerCoverage: SpeakerCoverageLabScreen as ComponentType,
+  VacuumTube: VacuumTubeLabScreen as ComponentType,
   CableInstallLab: CableInstallLabScreen as ComponentType,
   SoundSystemsLab: SoundSystemsLabScreen as ComponentType,
   CenterLockTuner: CenterLockTuner as ComponentType,
@@ -112,6 +148,21 @@ const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   // Cymatics Chladni plate (TestFlight build 32 fix pass): the dock and the
   // bezel can be measured here; the plate itself needs Skia (native only).
   CymaticsPlateStudio: PlateStudioScreen as ComponentType,
+  // Tuning & Temperament (TestFlight build 32 rack rebuild, 2026-09-30).
+  TuningLab: TuningLabScreen as ComponentType,
+  // The rest of the Cymatics Lab (full-screen pass 2026-09-30): the rack
+  // modules by id (CymaticsModule/nodes|change|harmony|systems), the Liquid
+  // and Membrane studios and the Gallery art board. The Skia studios show
+  // their dock and bezel here; the drawing itself is native-only.
+  CymaticsModule: CymaticsModuleScreen as ComponentType,
+  CymaticsLiquidStudio: LiquidStudioScreen as ComponentType,
+  CymaticsMembraneStudio: MembraneStudioScreen as ComponentType,
+  CymaticsGallery: CymaticsGalleryScreen as ComponentType,
+  // Full-screen build, group 3 (2026-09-30): Digital Audio + Gain Staging
+  // module pages (`/<id>`). The Digital Skia scenes need CanvasKit (native
+  // only); the rack chrome and the Gain chain columns measure here.
+  DigitalModule: DigitalModuleScreen as ComponentType,
+  GainModule: GainModuleScreen as ComponentType,
 };
 /** `#labpreview/<Screen>/<id>` → a ToolPreview of that lab, every other lab
  *  screen registered as a sibling so in-lab navigation (a home → a module)

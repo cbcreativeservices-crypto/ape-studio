@@ -28,6 +28,7 @@ import {
   BlurMask,
   Canvas,
   Circle,
+  Group,
   Line as SkLine,
   LinearGradient,
   Path,
@@ -38,6 +39,8 @@ import {
 import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
 import { usePhaseClock } from '../foundations/viz';
 import { fonts } from '../../../theme/tokens';
+import { useStageTextScale } from '../rack/stageAspect';
+import { SText } from '../stageScale';
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 
 const BG = '#0c0c0f';
@@ -128,8 +131,12 @@ export function ReconstructionView({
   xray: boolean;
 }) {
   const phase = usePhaseClock(running, 0.42);
-  const w = width;
-  const h = height;
+  // FULL SCREEN (D35): glass-size layout painted through a scaled Group —
+  // samples, ZOH steps, the reconstructed curve, clock ticks and the LPF
+  // inset zoom as one picture; the X-RAY labels (SText) grow with it.
+  const ts = useStageTextScale();
+  const w = width / ts;
+  const h = height / ts;
   const mid = h / 2;
   const amp = h * 0.3;
   const x0 = 8;
@@ -222,8 +229,9 @@ export function ReconstructionView({
   }, [w]);
 
   return (
-    <View style={{ width: w, height: h }}>
-      <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
+    <View style={{ width, height }}>
+      <Canvas style={{ position: 'absolute', width, height, backgroundColor: BG }}>
+        <Group transform={[{ scale: ts }]}>
         <SkLine p1={{ x: 0, y: mid }} p2={{ x: w, y: mid }} color={GRID} strokeWidth={1.1} />
         {/* ④ ORIGINAL — soft wide ghost of the pre-ADC analog. */}
         {showOriginal ? (
@@ -247,11 +255,12 @@ export function ReconstructionView({
             <Path path={inset.curve} color={GREEN} style="stroke" strokeWidth={1.6} />
           </>
         ) : null}
+        </Group>
       </Canvas>
       {xray ? (
         <>
-          <RNText style={[tiny, { left: 8, top: h - 22 }]}>DAC CLOCK</RNText>
-          <RNText style={[tiny, { right: 12, top: 8, color: withAlpha(GREEN, 0.85) }]}>RECON LPF</RNText>
+          <SText style={[tiny, { left: 8, top: h - 22 }]}>DAC CLOCK</SText>
+          <SText style={[tiny, { right: 12, top: 8, color: withAlpha(GREEN, 0.85) }]}>RECON LPF</SText>
         </>
       ) : null}
     </View>
@@ -682,8 +691,11 @@ export function JitterView({
   height?: number;
 }) {
   const phase = usePhaseClock(running, 0.32);
-  const w = width;
-  const h = height;
+  // FULL SCREEN (D35): glass-size layout painted through a scaled Group —
+  // clock strips, whiskers, dots and the wave zoom as one picture.
+  const ts = useStageTextScale();
+  const w = width / ts;
+  const h = height / ts;
   const NT = 13;
   const x0 = 10;
   const xs = useMemo(() => Array.from({ length: NT }, (_, n) => x0 + (n / (NT - 1)) * (w - 20)), [w]);
@@ -755,8 +767,9 @@ export function JitterView({
   }, [phase, xs, mid, amp, k]);
 
   return (
-    <View style={{ width: w, height: h }}>
-      <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
+    <View style={{ width, height }}>
+      <Canvas style={{ position: 'absolute', width, height, backgroundColor: BG }}>
+        <Group transform={[{ scale: ts }]}>
         <SkLine p1={{ x: x0, y: yIdeal }} p2={{ x: w - 10, y: yIdeal }} color={GHOST} strokeWidth={1} />
         <SkLine p1={{ x: x0, y: yJit }} p2={{ x: w - 10, y: yJit }} color={GHOST} strokeWidth={1} />
         <Path path={strips.ideal} color={GREEN} style="stroke" strokeWidth={1.6} opacity={0.9} />
@@ -766,13 +779,14 @@ export function JitterView({
         <GlowStroke path={wave} color={WAVE} width={2.2} />
         <Path path={whiskers} color={RED} style="stroke" strokeWidth={1.6} />
         <Path path={idealDots} color={BLUE} />
+        </Group>
       </Canvas>
-      <RNText style={[tiny, { left: x0, top: 0, color: withAlpha(GREEN, 0.8) }]}>IDEAL CLOCK</RNText>
-      <RNText style={[tiny, { left: x0, top: 54, color: withAlpha(RED, 0.85) }]}>WITH JITTER (EXAGGERATED)</RNText>
+      <SText style={[tiny, { left: x0, top: 0, color: withAlpha(GREEN, 0.8) }]}>IDEAL CLOCK</SText>
+      <SText style={[tiny, { left: x0, top: 54, color: withAlpha(RED, 0.85) }]}>WITH JITTER (EXAGGERATED)</SText>
       {/* Bottom-right under the wave: at 9 pt the old spot (top: waveTop − 12)
           ran into "WITH JITTER (EXAGGERATED)" on a 390-wide phone (bug pass 2
           2026-09-30). */}
-      <RNText style={[tiny, { right: 10, top: h - 13 }]}>VALUE ERROR ≈ SLOPE × TIMING ERROR</RNText>
+      <SText style={[tiny, { right: 10, top: h - 13 }]}>VALUE ERROR ≈ SLOPE × TIMING ERROR</SText>
     </View>
   );
 }

@@ -31,6 +31,9 @@ function PageDirectional({ ctx }: { ctx: PageCtx }) {
     { label: 'SEE THE PARALLEL (bottom on this bay)', hit: flow.isMerge },
   ];
   const latched = useVisitGoals(ctx, goals);
+  // Built once: on the page and docked under the pair in full screen
+  // (full-screen pass 2026-09-30).
+  const chips = <GoalChips goals={goals} latched={latched} />;
   return (
     <View style={{ gap: 12 }}>
       <Lead>
@@ -50,8 +53,10 @@ function PageDirectional({ ctx }: { ctx: PageCtx }) {
             ? 'PARALLEL — on a top-breaking bay the bottom does NOT break: two feeds arrive at once. One reason the common bay breaks on the bottom instead.'
             : 'This bay breaks on the TOP. Try both jacks and compare against the common bay you know.'
         }
+        controls={chips}
+        fsTitle="TOP-BREAKING"
       />
-      <GoalChips goals={goals} latched={latched} />
+      {chips}
       <Card tone="warn">
         <Eyebrow>THE RULE THAT TRAVELS</Eyebrow>
         <Body>
@@ -68,14 +73,17 @@ function PageDirectional({ ctx }: { ctx: PageCtx }) {
 
 function PageConductors({ ctx }: { ctx: PageCtx }) {
   const [insertion, setInsertion] = useState(0.9);
+  // The slider, built once: on the page and docked under the cutaway in
+  // full screen (full-screen pass 2026-09-30).
+  const slider = <ControlSlider label="PLUG INSERTION" value={insertion} min={0} max={1} step={0.01} onChange={setInsertion} format={(v) => `${Math.round(v * 100)}%`} />;
   return (
     <View style={{ gap: 12 }}>
       <Lead>
         One more layer of honesty. Every “one line” in this lab has really been THREE conductors — a balanced audio circuit.
         The plug you have been driving carries them as its metal bands.
       </Lead>
-      <JackCutaway insertion={insertion} reduceMotion={ctx.reduceMotion} showConductors />
-      <ControlSlider label="PLUG INSERTION" value={insertion} min={0} max={1} step={0.01} onChange={setInsertion} format={(v) => `${Math.round(v * 100)}%`} />
+      <JackCutaway insertion={insertion} reduceMotion={ctx.reduceMotion} showConductors controls={slider} />
+      {slider}
       <Card>
         <Eyebrow>T · R · S</Eyebrow>
         <Body>

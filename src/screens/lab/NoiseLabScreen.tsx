@@ -27,7 +27,7 @@
  * Sound lifecycle = the SignalGen idiom (gate → genSet/genStart → stale
  * guard → 2 Hz keepalive → stop on toggle/blur/unmount).
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Line, Path, Rect, Text as SvgText } from 'react-native-svg';
@@ -53,6 +53,7 @@ import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { CheckQuestion } from './foundations/bits';
 import { LabShell, HeaderPlayButton } from './LabShell';
+import { StageAspectReport } from './rack/stageAspect';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../features/audio/useStopOnBlur';
@@ -253,6 +254,10 @@ export function NoiseLabScreen() {
         onHelp: openLesson,
         stage: {
           size: 'M',
+          // The rack's ⤢ FULL SCREEN (full-screen build 2026-09-30). The slope
+          // chart draws through a viewBox that follows the box's shape, so
+          // every line, tick and label zooms with the step by itself.
+          fullScreen: true,
           // Honesty badge tracks the view, verbatim from the pre-rack layout.
           badge: speakerView
             ? `PHONE SPEAKER OUTPUT — ${SPEAKER_HPF_HZ} Hz HPF ON ${selected.label}`
@@ -457,6 +462,15 @@ function SlopeChart({
   const H = 150;
   const VH = H + 16; // plot + the frequency-label strip
   const W = Math.max(240, (w / Math.max(1, h)) * VH);
+  // FULL SCREEN (2026-09-30): the chart's viewBox follows the box's shape
+  // down to 240:166, so in a tall portrait body it would letterbox and leave
+  // blank canvas to pan across at 2×. Report the chart's own shape and the
+  // full-screen canvas is exactly the chart at every step (stable: a box of
+  // this shape yields this same W). A no-op on the glass.
+  const report = useContext(StageAspectReport);
+  useEffect(() => {
+    report?.aspect(W / VH, 0);
+  }, [report, W, VH]);
   const padL = 8;
   const padR = 40; // room for line labels at the right edge (9.5-unit text, 2026-09-30)
   const OCT_LO = Math.log2(20 / 1000); // ≈ −5.64 octaves re 1 kHz

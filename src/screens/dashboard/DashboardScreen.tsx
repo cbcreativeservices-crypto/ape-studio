@@ -86,7 +86,7 @@ import {
   type Topic,
 } from '../../features/dashboard/api';
 import { getDashboardCache, setDashboardCache } from '../../features/dashboard/dashboardCache';
-import { FREE_ENROLL_GS, setActiveMany, useEnrollment } from '../../features/enrollment/enrollmentStore';
+import { FREE_ENROLL_GS, ensureStudyTopic, useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { officialTopicName } from '../../data/officialTopicNames';
 import { Celebration } from '../../features/celebration/Celebration';
 import { celebration } from '../../features/celebration/catalog';
@@ -1190,6 +1190,21 @@ export function DashboardScreen() {
       // the STUDY tab returns the user to what they actually opened last.
       if (dataRef.current) setLastTopic(dataRef.current.currentCourse.id, topics[i].id);
       navigation.setParams({ focusGs: undefined, topicSlug: undefined });
+      /**
+       * A NON-MEMBER WHO ASKED FOR A MEMBERS TOPIC IS TOLD SO, CENTRED (owner
+       * 2026-09-30, after the Post-Production report). STUDY NOW is a request
+       * to study, so it answers like a tap on the topic's study method does:
+       * the study-access popup. Not on a free topic, never for a member (the
+       * gate is false), never before the tier is known, never in Low-Light. After
+       * HOST_DISMISS_MS — the Explore / credential popup is still fading out.
+       */
+      if (
+        typeof focusGs === 'number' &&
+        !areOverlaysSuppressed() &&
+        studyMethodLocked({ resolved: tierKnown, entitlement, displayedGs: topics[i].global_sequence, freeGs: FREE_ENROLL_GS })
+      ) {
+        afterPopupCloses(() => setUpgradeOpen(true));
+      }
       return;
     }
     /**
@@ -1224,7 +1239,13 @@ export function DashboardScreen() {
      * the LOAD: switch it on, the enrollment reload brings it into the deck,
      * and the armed focus above lands on it.
      */
-    if (typeof focusGs === 'number' && inactiveGs.current.has(focusGs)) setActiveMany([focusGs], true);
+    // ⛔ …AND A TOPIC THAT IS NOT ENROLLED AT ALL NEVER ARRIVES EITHER (student
+    // report 2026-09-30: Explore → Post-Production Audio → STUDY NOW → Pro
+    // Audio Safety). The credential's BUNDLE outlived its topics, so its popup
+    // still offered STUDY NOW, but gs3000 was neither active nor inactive and
+    // the inactive-only switch never fired. ensureStudyTopic enrols it or switches it
+    // on, after the stored list has loaded (studyFocusAction).
+    if (typeof focusGs === 'number') void ensureStudyTopic(focusGs);
     // The same dead wait for a topic the learner REMOVED from the deck (the ✕
     // in the deck manager): it is loaded but filtered out of the carousel, so
     // STUDY NOW for it landed on whatever was showing. Asking for it puts it
@@ -1237,6 +1258,7 @@ export function DashboardScreen() {
       if (want && deckPrefs.removed.includes(want)) restoreToDeck(want);
     }
     if (topicSlug) navigation.setParams({ focusGs: undefined, topicSlug: undefined });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- tier is read at landing only
   }, [focusGs, topicSlug, topics, navigation, deckPrefs]);
   const status = topic ? (data!.progressByTopic.get(topic.id)?.status ?? 'locked') : 'locked';
   const lastTopicIdx = Math.max(0, topics.length - 1);

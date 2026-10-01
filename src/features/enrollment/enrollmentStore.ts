@@ -22,7 +22,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
 import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../commercial/realAccount';
-import { freshGs } from './enrollmentPlan';
+import { freshGs, studyFocusAction } from './enrollmentPlan';
 
 export type EnrollTopic = { gs: number; favorite: boolean; active: boolean };
 
@@ -392,6 +392,17 @@ export function setActiveMany(gsList: number[], active: boolean): void {
     return e;
   });
   if (changed) commit(next);
+}
+
+/** STUDY NOW / any `focusGs` request: make sure `gs` is enrolled AND active so
+ *  the Dashboard deck can receive it (see studyFocusAction). Waits for the
+ *  stored list first — adding to an un-hydrated `list` would persist a
+ *  one-topic list over the learner's real enrollment. */
+export async function ensureStudyTopic(gs: number): Promise<void> {
+  await hydrate();
+  const action = studyFocusAction(list, gs);
+  if (action === 'enroll') addTopics([gs]);
+  else if (action === 'activate') setActiveMany([gs], true);
 }
 
 /** Reset the enrollment list to the NEW-USER DEFAULT (the seeded FREE topics).

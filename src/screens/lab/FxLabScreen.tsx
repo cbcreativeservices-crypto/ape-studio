@@ -46,7 +46,7 @@
  * are pushed BEFORE the node is enabled (targets-first, mirrors genSet), and
  * stop disables the whole chain (fxReset) so no lab leaks effects into another.
  */
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
@@ -61,6 +61,7 @@ import { HeaderPlayButton, LabChip, LabShell } from './LabShell';
 import { skiaAvailable } from './foundations/skiaGate';
 import { CheckQuestion, type CheckSpec } from './foundations/bits';
 import type { BezelItem, DockParam } from './rack/rackTypes';
+import { StageAspectReport, StageInFullScreen, useStageTextScale } from './rack/stageAspect';
 import type { FxAnimModel } from './fxAnim';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
@@ -250,8 +251,110 @@ function faderVal(s: FxFaderSpec, pos: number): number {
   return s.snap ? s.snap(v) : v;
 }
 
+/* ── THE GLASS DRAWING, and the same drawing in FULL SCREEN ─────────────────
+ * Owner 2026-09-30 (D35 — full screen is a WORKING surface): "full screen on
+ * most labs … Stereo image, gate, compressor, limiter". The rack owns the
+ * button and the viewer (stage.fullScreen); this component is what it draws,
+ * on the glass AND inside the viewer, so the two never drift apart:
+ *
+ *  - It lays out in GLASS units × ts (useStageTextScale: 1 on the glass,
+ *    rendered ÷ glass width in the viewer). The flow hero paints itself
+ *    through a scaled Skia Group (fxAnim) and the GR ladder multiplies every
+ *    one of its pixels by the same `scale`, so EVERYTHING zooms with the step
+ *    — the ladder comes along because the learner works the compressor in
+ *    full screen and must see the reduction move. The live GR number is
+ *    already a bezel cell, so it rides the viewer's top readouts too.
+ *  - It reports the GLASS's own shape (width ÷ height) through
+ *    StageAspectReport, so the viewer's canvas at every zoom is the glass
+ *    scaled, not a tall box with a thin strip in it. The glass instance records
+ *    the shape; the viewer instance reports it (1× = the whole drawing).
+ *  - The static (pre-Skia) hero is a fixed-height SVG whose text cannot grow:
+ *    it reports `fixed()`, and the rack shows no FULL SCREEN key — the
+ *    StageBox rule. Every shipping client has Skia, so all 12 labs get it.
+ */
+function FxStage({
+  w,
+  h,
+  shape,
+  onShape,
+  onToggle,
+  running,
+  pollGr,
+  grDb,
+  anim,
+  staticHero,
+}: {
+  w: number;
+  h: number;
+  /** The glass's width ÷ height (host state): the glass instance reports it
+   *  through `onShape`, the viewer instance zooms in it. State, not a ref, so
+   *  a rotation while the viewer is up re-reports the new shape. */
+  shape: number;
+  onShape: (shape: number) => void;
+  onToggle?: () => void;
+  running: boolean;
+  pollGr?: 'comp' | 'gate' | 'limiter';
+  grDb: number;
+  /** The animated hero, or null when the static hero holds the stage. */
+  anim: ReactNode | null;
+  staticHero: ReactNode;
+}) {
+  const ts = useStageTextScale();
+  const inFull = useContext(StageInFullScreen);
+  const report = useContext(StageAspectReport);
+  const hasAnim = anim != null;
+  useEffect(() => {
+    if (!inFull && w > 0 && h > 0) onShape(w / h);
+  }, [inFull, w, h, onShape]);
+  useEffect(() => {
+    if (!report) return;
+    if (!hasAnim) {
+      report.fixed(); // a fixed-height SVG: no FULL SCREEN key
+      return;
+    }
+    if (inFull) report.aspect(shape, 0);
+  }, [report, hasAnim, inFull, shape]);
+  // Glass units: on the glass this is (w, h); in the viewer the box is the
+  // glass × ts, so dividing by ts gives the glass back.
+  const gh = h / ts;
+  return (
+    // Tapping the display toggles play/stop (owner 2026-07-31).
+    <Pressable
+      style={{ width: w, height: h, flexDirection: 'row', alignItems: 'center' }}
+      onPress={onToggle}
+      accessibilityRole="button"
+      accessibilityLabel={running ? 'Tap to stop the effect audio' : 'Tap to play the source through the effect'}
+    >
+      <View style={{ flex: 1, justifyContent: 'center' }}>
+        {hasAnim ? anim : <View style={{ paddingHorizontal: 6 }}>{staticHero}</View>}
+      </View>
+      {/* The console's GR ladder, standing to the RIGHT of the display
+          exactly as it does on the desk (owner 2026-09-11, from a Midas
+          `dyn` page). It hangs from 0 at the top and grows DOWNWARD
+          with the amount of reduction — gain reduction is a
+          subtraction, and the meter reads like one. Dynamics labs only;
+          fed the same real fxGrStatus value as the bezel cell, and 0
+          while nothing is sounding. In full screen it scales with the
+          drawing (`scale`), never left behind at glass size. */}
+      {pollGr ? (
+        <View style={{ paddingRight: 4 * ts, paddingLeft: 2 * ts }}>
+          <GrLadder
+            grDb={running ? grDb : 0}
+            maxDb={pollGr === 'gate' ? 70 : 30}
+            height={Math.max(60, gh - 26)}
+            scale={ts}
+          />
+        </View>
+      ) : null}
+    </Pressable>
+  );
+}
+
 export function FxLabScreen({ config }: { config: FxLabConfig }) {
   const { requestAudioOutput } = useAudioOutputGate();
+  // The glass's width ÷ height — what FULL SCREEN zooms in (see FxStage).
+  // Seeded with a 390-wide phone's 'S' glass; the glass reports its own.
+  const [glassShape, setGlassShape] = useState(368 / 158);
   const focused = useIsFocused();
 
   const [gate] = useState<EngineState>(() => {
@@ -537,38 +640,25 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
           badge: animOnStage ? ANIM_BADGE : config.heroBadge,
           onGuide: () => openLesson('display'),
           bezel,
+          // FULL SCREEN (owner 2026-09-30, D35): the rack's button + viewer,
+          // with the dock docked, the bezel (incl. the live GR cell) across
+          // the top and the tray rising above. FxStage draws the same picture
+          // in both places and scales every pixel; the static-hero path
+          // declines the key (its SVG text cannot grow).
+          fullScreen: true,
           render: (w, h) => (
-            // Tapping the display toggles play/stop (owner 2026-07-31).
-            <Pressable
-              style={{ width: w, height: h, flexDirection: 'row', alignItems: 'center' }}
-              onPress={fxReady ? () => (running ? stop() : void start()) : undefined}
-              accessibilityRole="button"
-              accessibilityLabel={running ? 'Tap to stop the effect audio' : 'Tap to play the source through the effect'}
-            >
-              <View style={{ flex: 1, justifyContent: 'center' }}>
-                {AnimHero ? (
-                  <AnimHero model={config.anim!(values)} active={focused} grDb={running ? grDb : 0} />
-                ) : (
-                  <View style={{ paddingHorizontal: 6 }}>{config.Hero(values, config.sources[sourceIdx])}</View>
-                )}
-              </View>
-              {/* The console's GR ladder, standing to the RIGHT of the display
-                  exactly as it does on the desk (owner 2026-09-11, from a Midas
-                  `dyn` page). It hangs from 0 at the top and grows DOWNWARD
-                  with the amount of reduction — gain reduction is a
-                  subtraction, and the meter reads like one. Dynamics labs only;
-                  fed the same real fxGrStatus value as the bezel cell, and 0
-                  while nothing is sounding. */}
-              {config.pollGr ? (
-                <View style={{ paddingRight: 4, paddingLeft: 2 }}>
-                  <GrLadder
-                    grDb={running ? grDb : 0}
-                    maxDb={config.pollGr === 'gate' ? 70 : 30}
-                    height={Math.max(60, h - 26)}
-                  />
-                </View>
-              ) : null}
-            </Pressable>
+            <FxStage
+              w={w}
+              h={h}
+              shape={glassShape}
+              onShape={setGlassShape}
+              onToggle={fxReady ? () => (running ? stop() : void start()) : undefined}
+              running={running}
+              pollGr={config.pollGr}
+              grDb={grDb}
+              anim={AnimHero ? <AnimHero model={config.anim!(values)} active={focused} grDb={running ? grDb : 0} /> : null}
+              staticHero={AnimHero ? null : config.Hero(values, config.sources[sourceIdx])}
+            />
           ),
         },
         params: dockParams,

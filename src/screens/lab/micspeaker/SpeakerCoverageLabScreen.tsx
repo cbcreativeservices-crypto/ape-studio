@@ -34,6 +34,7 @@ import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '.
 import { jetColor } from './viz';
 import { RackUnit } from '../rack/RackUnit';
 import type { DockParam, RackStage } from '../rack/rackTypes';
+import { GlassShape, useGlassSize } from '../glassShape';
 import { requireMsViz } from './skiaGate';
 
 // Dispersion presets the screen owns (no Skia dependency for the labels).
@@ -240,6 +241,12 @@ export function SpeakerCoverageLabScreen() {
   const [lineArray, setLineArray] = useState(false);
   const [rearDelay, setRearDelay] = useState(false);
   const [timeAligned, setTimeAligned] = useState(true);
+  // FULL SCREEN (full-screen build 2026-09-30, hard rule D35): both maps are
+  // laid out in glass points and painted through a scaled Group, so the
+  // full-screen box keeps each glass's shape (GlassShape) and every zoom step
+  // is the glass map, larger — cabinets, seats, people, wavefronts and field.
+  const topGlass = useGlassSize();
+  const sideGlass = useGlassSize();
 
   const [lessonKey, setLessonKey] = useState<string | undefined>(undefined);
   const [lessonOpen, setLessonOpen] = useState(false);
@@ -271,6 +278,7 @@ export function SpeakerCoverageLabScreen() {
   // ── TOP VIEW rack declaration ─────────────────────────────────────────────
   const topStage: RackStage = {
     size: 'L', // the map IS the lab — earns the tall glass
+    fullScreen: true, // the rack shows ⤢ FULL SCREEN; the dock and trays ride inside
     badge: TOP_BADGE,
     onGuide: () => help('top_view'),
     bezel: [
@@ -296,23 +304,26 @@ export function SpeakerCoverageLabScreen() {
       { k: 'AIM', v: fillsTarget ? '—' : `${active.aim}°`, helpKey: 'aim' },
       { k: 'PATTERN', v: topDisp.label, flex: 1.2, helpKey: 'dispersion' },
     ],
-    render: (w, h) =>
-      viz ? (
-        <viz.TopCoverageView
-          width={w}
-          height={h}
-          spk1x01={s1.x}
-          spk1AimDeg={s1.aim}
-          spk2On={twoOn}
-          spk2x01={s2.x}
-          spk2AimDeg={s2.aim}
-          hDeg={topDisp.hDeg}
-          frontFills={fills}
-          fillSpread01={fillSpread}
-        />
-      ) : (
-        <VizUnavailableCard />
-      ),
+    render: (w, h) => (
+      <GlassShape w={w} h={h} glass={topGlass}>
+        {viz ? (
+          <viz.TopCoverageView
+            width={w}
+            height={h}
+            spk1x01={s1.x}
+            spk1AimDeg={s1.aim}
+            spk2On={twoOn}
+            spk2x01={s2.x}
+            spk2AimDeg={s2.aim}
+            hDeg={topDisp.hDeg}
+            frontFills={fills}
+            fillSpread01={fillSpread}
+          />
+        ) : (
+          <VizUnavailableCard />
+        )}
+      </GlassShape>
+    ),
   };
 
   // Owner 2026-08-31: POS/AIM/PATTERN already read out on the bezel and the
@@ -417,6 +428,7 @@ export function SpeakerCoverageLabScreen() {
   // ── SIDE VIEW rack declaration ────────────────────────────────────────────
   const sideStage: RackStage = {
     size: 'L',
+    fullScreen: true, // the rack shows ⤢ FULL SCREEN; the dock and trays ride inside
     badge: SIDE_BADGE,
     onGuide: () => help('side_view'),
     bezel: [
@@ -433,26 +445,29 @@ export function SpeakerCoverageLabScreen() {
         helpKey: 'room_shape',
       },
     ],
-    render: (w, h) =>
-      viz ? (
-        <viz.SideCoverageView
-          width={w}
-          height={h}
-          h01={h01}
-          tiltDeg={tilt}
-          vDeg={sideDisp.vDeg}
-          stage01={stage01}
-          ceil01={ceil01}
-          depth01={depth01}
-          sloped={sloped}
-          delayOn={delayOn}
-          lineArray={lineArray}
-          rearDelayOn={rearDelay}
-          timeAligned={timeAligned}
-        />
-      ) : (
-        <VizUnavailableCard />
-      ),
+    render: (w, h) => (
+      <GlassShape w={w} h={h} glass={sideGlass}>
+        {viz ? (
+          <viz.SideCoverageView
+            width={w}
+            height={h}
+            h01={h01}
+            tiltDeg={tilt}
+            vDeg={sideDisp.vDeg}
+            stage01={stage01}
+            ceil01={ceil01}
+            depth01={depth01}
+            sloped={sloped}
+            delayOn={delayOn}
+            lineArray={lineArray}
+            rearDelayOn={rearDelay}
+            timeAligned={timeAligned}
+          />
+        ) : (
+          <VizUnavailableCard />
+        )}
+      </GlassShape>
+    ),
   };
 
   const sideParams: DockParam[] = [

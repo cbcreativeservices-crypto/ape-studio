@@ -129,6 +129,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { CheckQuestion } from './foundations/bits';
 import { HeaderPlayButton, type LabShellExploreApi } from './LabShell';
 import type { BezelItem, DockParam, RackStage } from './rack/rackTypes';
+import { useStageTextScale } from './rack/stageAspect';
 import {
   additivePayload,
   AMP_FLOOR,
@@ -233,9 +234,9 @@ const MIN_SLOPE_HARMONICS = 3;
 /** Waveform strip path from a ±1-normalized wave (shared by the live model
  *  wave and the A/B ghost — identical scaling so the shapes compare). The
  *  strip height is the stage's, so ±1 maps to mid ∓ (waveH/2 − 4). */
-function buildWavePath(wave: readonly number[], w: number, waveH: number): string {
+function buildWavePath(wave: readonly number[], w: number, waveH: number, ts = 1): string {
   const mid = waveH / 2;
-  const amp = waveH / 2 - 4;
+  const amp = waveH / 2 - 4 * ts;
   let d = '';
   for (let i = 0; i < wave.length; i++) {
     d += `${i === 0 ? 'M' : 'L'}${((i / (wave.length - 1)) * w).toFixed(1)},${(mid - wave[i] * amp).toFixed(1)}`;
@@ -471,9 +472,19 @@ function HarmonicStage({
   waveFrames: WaveBucket[];
   running: boolean;
 }) {
+  // FULL SCREEN (2026-09-30, D35 "everything zooms"): the three panels are
+  // view-built (flex rows, RN gutter labels, pixel-sized Svgs), so every px
+  // constant below — pads, the strip height, the gutters, band thickness,
+  // label gap, fonts, strokes — is × the rack's text scale. 1 on the glass.
+  const ts = useStageTextScale();
+  const pad = STAGE_PAD * ts;
+  const gutterW = GUTTER_W * ts;
+  const pianoW = PIANO_W * ts;
+  const bandH = BAND_H * ts;
+  const labelGap = MIN_LABEL_GAP * ts;
   // Vertical split: top row (shared frequency axis) + thin waveform strip.
-  const waveH = WAVE_STRIP_H;
-  const topH = Math.max(60, h - STAGE_PAD * 2 - waveH - 4);
+  const waveH = WAVE_STRIP_H * ts;
+  const topH = Math.max(60 * ts, h - pad * 2 - waveH - 4 * ts);
 
   const [specW, setSpecW] = useState(0);
   const [sliceW, setSliceW] = useState(0);
@@ -520,8 +531,8 @@ function HarmonicStage({
   );
 
   const modelWavePath = useMemo(
-    () => (waveW <= 0 ? '' : buildWavePath(modelWave, waveW, waveH)),
-    [modelWave, waveW, waveH],
+    () => (waveW <= 0 ? '' : buildWavePath(modelWave, waveW, waveH, ts)),
+    [modelWave, waveW, waveH, ts],
   );
 
   /** A/B ghost — snapshot A (a stored copy: editing B never mutates it),
@@ -531,8 +542,8 @@ function HarmonicStage({
     () =>
       ghost == null || waveW <= 0
         ? ''
-        : buildWavePath(synthWaveform(ghost, WAVE_POINTS, WAVE_CYCLES), waveW, waveH),
-    [ghost, waveW, waveH],
+        : buildWavePath(synthWaveform(ghost, WAVE_POINTS, WAVE_CYCLES), waveW, waveH, ts),
+    [ghost, waveW, waveH, ts],
   );
 
   /** Live spectrum slice — the NEWEST column as a rotated curve (level → x). */
@@ -547,10 +558,10 @@ function HarmonicStage({
       // Sentinel cells registered nothing — pin to the floor, never a level.
       const frac =
         v <= CELL_FLOOR_DB ? 0 : Math.min(1, Math.max(0, (v - floorLevel) / LIVE_RANGE_DB));
-      d += `${r === 0 ? 'M' : 'L'}${(frac * (sliceW - 2)).toFixed(1)},${(topH - (r + 0.5) * cellH).toFixed(1)}`;
+      d += `${r === 0 ? 'M' : 'L'}${(frac * (sliceW - 2 * ts)).toFixed(1)},${(topH - (r + 0.5) * cellH).toFixed(1)}`;
     }
     return d;
-  }, [view, sliceW, history, observedMax, topH]);
+  }, [view, sliceW, history, observedMax, topH, ts]);
 
   /** Live waveform strip — real envelope buckets (newest-first → reversed),
    *  vertical stroke segments (WaveformScreen idiom). */
@@ -572,7 +583,7 @@ function HarmonicStage({
     // (no size pulsing, no transient-crush "outline"), expands only past 0 dBFS.
     const scaleMax = Math.max(1.05, observed);
     const mid = waveH / 2;
-    const usable = mid - 3;
+    const usable = mid - 3 * ts;
     const y = (v: number) => Math.min(waveH - 1, Math.max(1, mid - (v * usable) / scaleMax));
     // MIN/MAX downsample the fine buckets to a bounded column count — keeps every
     // peak (DAW envelope) at high resolution, one filled body (no outline), light.
@@ -609,7 +620,7 @@ function HarmonicStage({
     // green at the zero line), the SPL-VU standard shared across the app.
     const fullPix = usable / scaleMax;
     return { area: top + bottomRev + 'Z', gradY0: mid - fullPix, gradY1: mid + fullPix };
-  }, [view, waveW, waveFrames, waveH]);
+  }, [view, waveW, waveFrames, waveH, ts]);
 
   /** Per-row heatmap y endpoints for THIS stage height — keyed on topH only,
    *  so they are effectively mount-time (the glass never resizes during an
@@ -674,10 +685,11 @@ function HarmonicStage({
           y1={m.y}
           y2={m.y}
           stroke="rgba(55,224,95,0.20)"
-          strokeDasharray="3 5"
+          strokeWidth={1 * ts}
+          strokeDasharray={`${3 * ts} ${5 * ts}`}
         />
       )),
-    [markers],
+    [markers, ts],
   );
 
   // "n: hz · note ±¢" — nearest equal-tempered note + signed cents. On the
@@ -688,17 +700,21 @@ function HarmonicStage({
     const out: ReactElement[] = [];
     let lastY = Number.POSITIVE_INFINITY;
     for (const m of markers) {
-      if (lastY - m.y < MIN_LABEL_GAP) continue;
+      if (lastY - m.y < labelGap) continue;
       lastY = m.y;
       const c = m.note.cents;
       out.push(
-        <Text key={m.n} style={[styles.markerLabel, { top: m.y - 6 }]} numberOfLines={1}>
+        <Text
+          key={m.n}
+          style={[styles.markerLabel, { top: m.y - 6 * ts, right: 4 * ts, width: gutterW - 6 * ts, fontSize: 9 * ts }]}
+          numberOfLines={1}
+        >
           {`${m.n}: ${hzShort(m.hz)} · ${m.note.label} ${c >= 0 ? '+' : ''}${c}¢`}
         </Text>,
       );
     }
     return out;
-  }, [markers]);
+  }, [markers, labelGap, gutterW, ts]);
 
   /** PIANO GUTTER (LOG axis only) — one key per semitone in [fLo, fHi]; log
    *  spacing makes every octave (and so every key) equal height, RX-style.
@@ -717,7 +733,7 @@ function HarmonicStage({
     const mHi = Math.floor(69 + 12 * Math.log2(fHiLog / 440));
     const harmonicKeys = new Set(markers.map((mk) => mk.note.midi));
     const nodes: ReactElement[] = [
-      <Rect key="bg" x={0} y={0} width={PIANO_W} height={topH} fill="#e7e8ec" />,
+      <Rect key="bg" x={0} y={0} width={pianoW} height={topH} fill="#e7e8ec" />,
     ];
     for (let m = mLo; m <= mHi; m++) {
       const pc = ((m % 12) + 12) % 12;
@@ -728,7 +744,7 @@ function HarmonicStage({
       if (kh <= 0) continue;
       if (BLACK_PC.has(pc)) {
         nodes.push(
-          <Rect key={`k${m}`} x={0} y={yTop} width={PIANO_W * 0.62} height={kh} fill="#131318" />,
+          <Rect key={`k${m}`} x={0} y={yTop} width={pianoW * 0.62} height={kh} fill="#131318" />,
         );
       } else if (pc === 4 || pc === 11) {
         // White-white boundary above E (→F) and B (→C).
@@ -736,26 +752,26 @@ function HarmonicStage({
           <Line
             key={`b${m}`}
             x1={0}
-            x2={PIANO_W}
+            x2={pianoW}
             y1={yTop}
             y2={yTop}
             stroke="rgba(0,0,0,0.35)"
-            strokeWidth={0.75}
+            strokeWidth={0.75 * ts}
           />,
         );
       }
       if (harmonicKeys.has(m)) {
         nodes.push(
-          <Rect key={`h${m}`} x={0} y={yTop} width={PIANO_W} height={kh} fill="rgba(255,170,0,0.4)" />,
+          <Rect key={`h${m}`} x={0} y={yTop} width={pianoW} height={kh} fill="rgba(255,170,0,0.4)" />,
         );
       }
       if (pc === 0) {
         nodes.push(
           <SvgText
             key={`c${m}`}
-            x={PIANO_W - 3}
-            y={(yTop + yBot) / 2 + 3.2}
-            fontSize={9} // ≥ 9 pt on a phone (lab display rule); the Svg is 1:1 pt, no viewBox
+            x={pianoW - 3 * ts}
+            y={(yTop + yBot) / 2 + 3.2 * ts}
+            fontSize={9 * ts} // ≥ 9 pt on a phone (lab display rule); the Svg is 1:1 pt, no viewBox — × ts in FULL SCREEN
             fill="#3c3c44"
             textAnchor="end"
           >
@@ -765,22 +781,22 @@ function HarmonicStage({
       }
     }
     return (
-      <Svg width={PIANO_W} height={topH} pointerEvents="none">
+      <Svg width={pianoW} height={topH} pointerEvents="none">
         {nodes}
       </Svg>
     );
-  }, [axis, fLo, fHiLog, markers, topH]);
+  }, [axis, fLo, fHiLog, markers, topH, pianoW, ts]);
 
   // Model-wave velocity-ramp axis: ±1 normalized maps to mid ∓ amp (see
   // buildWavePath), so full scale sits at these y's — blue mid line → red peaks.
-  const modelAmpPix = waveH / 2 - 4;
+  const modelAmpPix = waveH / 2 - 4 * ts;
 
   return (
-    <View style={{ width: w, height: h, padding: STAGE_PAD, gap: 4 }}>
+    <View style={{ width: w, height: h, padding: pad, gap: 4 * ts }}>
       {/* TOP ROW — marker gutter · spectrogram · slice (live) · piano (LOG). */}
       <View style={[styles.topRow, { height: topH }]}>
         {/* Harmonic markers on the shared frequency axis (n: hz). */}
-        <View style={{ width: GUTTER_W, height: topH }}>{markerLabels}</View>
+        <View style={{ width: gutterW, height: topH }}>{markerLabels}</View>
 
         {/* MAIN — spectrogram (heatmap). */}
         <View
@@ -795,9 +811,9 @@ function HarmonicStage({
                   <Rect
                     key={m.n}
                     x={0}
-                    y={m.y - BAND_H / 2}
+                    y={m.y - bandH / 2}
                     width={specW}
-                    height={BAND_H}
+                    height={bandH}
                     // ODD/EVEN highlight tints the groups apart (legend by
                     // the toggle); otherwise the MIDI ramp by level, opened up
                     // over the practical window so loud harmonics still differ.
@@ -826,7 +842,7 @@ function HarmonicStage({
                   {markerLines}
                 </Svg>
                 {history.length === 0 ? (
-                  <Text style={[styles.awaitText, { top: topH / 2 - 9 }]}>
+                  <Text style={[styles.awaitText, { top: topH / 2 - 9 * ts, fontSize: 13 * ts }]}>
                     {running ? 'waiting for spectrum frames…' : 'no capture — tap the display or press ▶'}
                   </Text>
                 ) : null}
@@ -840,11 +856,12 @@ function HarmonicStage({
               style={[
                 styles.playhead,
                 {
+                  width: 2 * ts,
                   transform: [
                     {
                       translateX: sweep.interpolate({
                         inputRange: [0, 1],
-                        outputRange: [0, Math.max(0, specW - 2)],
+                        outputRange: [0, Math.max(0, specW - 2 * ts)],
                       }),
                     },
                   ],
@@ -861,14 +878,14 @@ function HarmonicStage({
             live readout, so it stays in REAL SIGNAL mode. */}
         {view === 'live' ? (
           <View
-            style={styles.slicePanel}
+            style={[styles.slicePanel, { marginLeft: 6 * ts }]}
             onLayout={(e) => setSliceW(Math.round(e.nativeEvent.layout.width))}
           >
             {sliceW > 0 ? (
               <Svg width={sliceW} height={topH}>
                 {markerLines}
                 {liveSlicePath !== '' ? (
-                  <Path d={liveSlicePath} stroke={colors.greenBright} strokeWidth={1.5} fill="none" />
+                  <Path d={liveSlicePath} stroke={colors.greenBright} strokeWidth={1.5 * ts} fill="none" />
                 ) : null}
               </Svg>
             ) : null}
@@ -876,7 +893,7 @@ function HarmonicStage({
         ) : null}
 
         {/* FAR RIGHT — piano-key gutter (LOG axis only; display-only). */}
-        {axis === 'log' ? <View style={[styles.pianoGutter, { height: topH }]}>{pianoSvg}</View> : null}
+        {axis === 'log' ? <View style={[styles.pianoGutter, { height: topH, width: pianoW, marginLeft: 4 * ts }]}>{pianoSvg}</View> : null}
       </View>
 
       {/* BOTTOM — waveform strip (full width; model playhead matches the
@@ -916,7 +933,7 @@ function HarmonicStage({
                 </LinearGradient>
               ) : null}
             </Defs>
-            <Line x1={0} x2={waveW} y1={waveH / 2} y2={waveH / 2} stroke={MIDLINE_BLUE} strokeWidth={1} />
+            <Line x1={0} x2={waveW} y1={waveH / 2} y2={waveH / 2} stroke={MIDLINE_BLUE} strokeWidth={1 * ts} />
             {view === 'model' ? (
               <>
                 {/* A/B ghost first so the live edit draws on top. */}
@@ -924,13 +941,13 @@ function HarmonicStage({
                   <Path
                     d={ghostWavePath}
                     stroke="rgba(255,255,255,0.45)"
-                    strokeWidth={1.2}
-                    strokeDasharray="4 4"
+                    strokeWidth={1.2 * ts}
+                    strokeDasharray={`${4 * ts} ${4 * ts}`}
                     fill="none"
                   />
                 ) : null}
                 {modelWavePath !== '' ? (
-                  <Path d={modelWavePath} stroke="url(#harmModelLevel)" strokeWidth={1.8} fill="none" />
+                  <Path d={modelWavePath} stroke="url(#harmModelLevel)" strokeWidth={1.8 * ts} fill="none" />
                 ) : null}
               </>
             ) : liveWave ? (
@@ -944,11 +961,12 @@ function HarmonicStage({
             style={[
               styles.playhead,
               {
+                width: 2 * ts,
                 transform: [
                   {
                     translateX: sweep.interpolate({
                       inputRange: [0, 1],
-                      outputRange: [0, Math.max(0, waveW - 2)],
+                      outputRange: [0, Math.max(0, waveW - 2 * ts)],
                     }),
                   },
                 ],
@@ -1695,6 +1713,7 @@ export function HarmonicsView({
     onHelp: openLesson,
     stage: {
       size: 'L', // the three linked panels ARE the lab — earns the tall glass
+      fullScreen: true, // the rack's ⤢ FULL SCREEN (full-screen build 2026-09-30)
       // INTEGRITY BADGE — permanent, per mode (TRAINING DEMO badge idiom):
       // the model is math, never a measurement; live is honest dBFS,
       // uncalibrated. Text preserved verbatim from the in-panel badges.

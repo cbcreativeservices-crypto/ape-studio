@@ -47,6 +47,7 @@ import { useDerivedValue, useFrameCallback, useSharedValue } from 'react-native-
 import { MIDLINE_BLUE, WAVE_LEVEL_STOPS, heatColor, heatRgbW } from '../../../features/tools/levelColor';
 import { HEAD_BY_ID, type ConeRead, type Driver, type MembraneSpec } from '../../../features/cymatics/membrane';
 import { colors, fonts } from '../../../theme/tokens';
+import { useStageTextScale } from '../rack/stageAspect';
 
 export type MembraneViewMode = 'head' | 'heat' | 'phase' | 'nodes' | 'head3d' | 'section' | 'speaker';
 
@@ -115,7 +116,16 @@ export type MembraneViewProps = {
 };
 
 export function MembraneView(p: MembraneViewProps) {
-  const { width, height, spec, grid, N, view } = p;
+  const { width: boxW, height: boxH, spec, grid, N, view } = p;
+  // FULL SCREEN (house rule D35, 2026-09-30): laid out in GLASS units (box ÷
+  // StageTextScale — 1 on the glass) and painted through one scaled Group, so
+  // the head, the hoop, the mallet, the cone and every stroke grow with the
+  // picture; the N×N field is unchanged (same cost at every zoom). The RN
+  // labels ride a scaled overlay the same size. Touches are mapped back into
+  // glass units.
+  const s = useStageTextScale();
+  const width = boxW / s;
+  const height = boxH / s;
   const head = HEAD_BY_ID[spec.head];
   const isSpeaker = view === 'speaker';
   const is3d = view === 'head3d';
@@ -422,8 +432,8 @@ export function MembraneView(p: MembraneViewProps) {
   dragRef.current = p.dragTarget;
   const cbRef = useRef({ onStrike: p.onStrike, onSection: p.onSection });
   cbRef.current = { onStrike: p.onStrike, onSection: p.onSection };
-  const geom = useRef({ cx, cy, R, oy, D });
-  geom.current = { cx, cy, R, oy, D };
+  const geom = useRef({ cx, cy, R, oy, D, s });
+  geom.current = { cx, cy, R, oy, D, s };
   const pan = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => dragRef.current != null,
@@ -432,10 +442,13 @@ export function MembraneView(p: MembraneViewProps) {
       onPanResponderMove: (e) => place(e.nativeEvent.locationX, e.nativeEvent.locationY),
     }),
   ).current;
-  function place(lx: number, ly: number) {
+  function place(lxBox: number, lyBox: number) {
     const g = geom.current;
     const t = dragRef.current;
     if (!t) return;
+    // The touch arrives in box px; the head is laid out in glass units.
+    const lx = lxBox / g.s;
+    const ly = lyBox / g.s;
     if (t === 'section') {
       cbRef.current.onSection?.(Math.max(0, Math.min(1, (ly - g.oy) / g.D)));
       return;
@@ -456,6 +469,8 @@ export function MembraneView(p: MembraneViewProps) {
     return path;
   }, [cx, cy, R]);
   const showMesh = mesh != null && (view === 'heat' || view === 'phase' || view === 'nodes' || view === 'section');
+  // The RN labels: a glass-sized layer scaled about its centre into the box.
+  const glassOverlay = { position: 'absolute' as const, left: 0, top: 0, width, height, transform: [{ translateX: (boxW - width) / 2 }, { translateY: (boxH - height) / 2 }, { scale: s }] };
 
   return (
     // ANNOUNCE THE STAGE (design pass, 2026-09-17). The plate and liquid views
@@ -463,12 +478,14 @@ export function MembraneView(p: MembraneViewProps) {
     // the loudspeaker were the only instruments in the lab invisible to a
     // screen reader. Same sentence shape as vizPlate, so the three read alike.
     <View
-      style={{ width, height }}
+      style={{ width: boxW, height: boxH }}
       accessible
       accessibilityLabel={`${isSpeaker ? 'Loudspeaker' : 'Drum head'} display, ${MEMBRANE_VIEW_LABELS[view].toLowerCase()} view, response ${Math.round(p.strength * 100)} percent`}
       {...pan.panHandlers}
     >
-      <Canvas style={{ width, height }}>
+      <Canvas style={{ width: boxW, height: boxH }}>
+       {/* Everything below is in glass units; this one Group is the zoom. */}
+       <Group transform={[{ scale: s }]}>
         {!isSpeaker && !is3d ? (
           <Group>
             {/* Shell + hoop (the drum from above): a wooden shell ring, a metal hoop, tension rods */}
@@ -568,9 +585,10 @@ export function MembraneView(p: MembraneViewProps) {
             <Circle cx={spk.fx} cy={spk.fy} r={spk.fR * 0.2} style="stroke" strokeWidth={1} color="rgba(255,255,255,0.35)" />
           </Group>
         ) : null}
+       </Group>
       </Canvas>
       {isSpeaker && p.cone ? (
-        <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+        <View pointerEvents="none" style={glassOverlay}>
           <Text numberOfLines={1} style={[styles.lbl, { left: 10, top: 6 }]}>CUTAWAY · {p.cone.driver.label.toUpperCase()}</Text>
           <Text numberOfLines={1} style={[styles.lbl, { left: spk.fx - spk.fR - 10, top: 6, width: spk.fR * 2 + 20, textAlign: 'center' }]}>CONE FROM THE FRONT</Text>
           <Text numberOfLines={1} style={[styles.lbl, { left: 10, top: height - 18, color: colors.textSub }]}>
@@ -580,7 +598,7 @@ export function MembraneView(p: MembraneViewProps) {
         </View>
       ) : null}
       {!isSpeaker ? (
-        <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+        <View pointerEvents="none" style={glassOverlay}>
           <Text numberOfLines={1} style={[styles.lbl, { left: 10, top: height - 18, color: colors.textSub }]}>
             {head.label.toUpperCase()} · Ø {spec.diameterMm} mm · {(spec.tensionNpm / 1000).toFixed(1)} kN/m{spec.kettle ? ' · KETTLE' : ''}
           </Text>

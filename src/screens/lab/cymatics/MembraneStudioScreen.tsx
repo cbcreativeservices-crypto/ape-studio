@@ -484,6 +484,11 @@ function MembraneStudio() {
             onGuide: () => openLesson('membrane_display'),
             bezel,
             hideDragTag: true,
+            // FULL SCREEN as a working surface (house rule D35, 2026-09-30):
+            // the same render at the whole phone, bezel on top, dock docked;
+            // vizMembrane draws through a scaled group so the head, the cone
+            // and their labels all grow with the picture.
+            fullScreen: true,
             render: (w, h) =>
               viz ? (
                 <viz.MembraneView

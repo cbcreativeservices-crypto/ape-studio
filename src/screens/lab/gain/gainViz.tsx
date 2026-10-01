@@ -31,6 +31,8 @@ import { levelColor, rampColors } from '../../../features/tools/levelColor';
 import { LinearGradient as GradientView } from 'expo-linear-gradient';
 import { DragSlider } from '../foundations/bits';
 import { VerticalFader } from '../eq/modules/eqBits';
+import { useStageTextScale } from '../rack/stageAspect';
+import { useScaledStyles } from '../stageScale';
 import {
   computeChain,
   meterFill,
@@ -77,42 +79,46 @@ export function StageMeterV({ node, height = VM_H }: { node: ChainNode; height?:
   const fill = meterFill(node.level);
   const col = levelColor(fill);
   const { peak, reset: resetPeak } = usePeakHold(fill);
+  // FULL SCREEN (D35): the track width, ceiling hairline, peak line and the
+  // 9-pt region label all zoom with the stage (1 on the glass = unchanged;
+  // the caller passes `height` already scaled).
+  const s = useScaledStyles(styles);
   return (
-    <View style={styles.vWrap}>
+    <View style={s.vWrap}>
       <Pressable
         onPress={resetPeak}
         accessibilityRole="button"
         accessibilityLabel="Peak hold. Double tap to clear."
-        style={[styles.vTrack, { height }]}
+        style={[s.vTrack, { height }]}
       >
         {/* zones, bottom-up: too-low · healthy · hot/over */}
-        <View style={[styles.vZone, { bottom: 0, height: pct(ZONE_LOW_FILL), backgroundColor: '#13233f' }]} />
-        <View style={[styles.vZone, { bottom: pct(ZONE_LOW_FILL), height: pct(ZONE_HOT_FILL - ZONE_LOW_FILL), backgroundColor: '#122a17' }]} />
-        <View style={[styles.vZone, { bottom: pct(ZONE_HOT_FILL), height: pct(1 - ZONE_HOT_FILL), backgroundColor: '#2a1410' }]} />
-        <GradientView colors={rampColors(fill)} start={{ x: 0, y: 1 }} end={{ x: 0, y: 0 }} style={[styles.vFill, { height: pct(fill) }]} />
+        <View style={[s.vZone, { bottom: 0, height: pct(ZONE_LOW_FILL), backgroundColor: '#13233f' }]} />
+        <View style={[s.vZone, { bottom: pct(ZONE_LOW_FILL), height: pct(ZONE_HOT_FILL - ZONE_LOW_FILL), backgroundColor: '#122a17' }]} />
+        <View style={[s.vZone, { bottom: pct(ZONE_HOT_FILL), height: pct(1 - ZONE_HOT_FILL), backgroundColor: '#2a1410' }]} />
+        <GradientView colors={rampColors(fill)} start={{ x: 0, y: 1 }} end={{ x: 0, y: 0 }} style={[s.vFill, { height: pct(fill) }]} />
         {/* Cumulative noise floor — grey hiss eating the meter from below.
             This is the visual referent for the too-low lesson (learning pass
             2026-08-31): pile on late gain and watch the hiss ride up. */}
         {meterFill(node.noise) > 0.005 ? (
-          <View style={[styles.vNoise, { height: pct(meterFill(node.noise)) }]} />
+          <View style={[s.vNoise, { height: pct(meterFill(node.noise)) }]} />
         ) : null}
-        <View style={[styles.vCeil, { bottom: pct(ZONE_CLIP_FILL) }]} />
+        <View style={[s.vCeil, { bottom: pct(ZONE_CLIP_FILL) }]} />
         {/* Peak hold — stays at the highest level this stage reached until it
             is cleared. Drawn ABOVE the ceiling line so a peak that hit the
             wall is still visible against it. */}
-        {peak > 0.01 ? <View style={[styles.vPeak, { bottom: pct(peak) }]} /> : null}
+        {peak > 0.01 ? <View style={[s.vPeak, { bottom: pct(peak) }]} /> : null}
       </Pressable>
       {node.stageClipped ? (
-        <Text style={styles.clipBadge}>CLIP</Text>
+        <Text style={s.clipBadge}>CLIP</Text>
       ) : node.distorted ? (
-        <Text style={styles.distBadge}>DIST</Text>
+        <Text style={s.distBadge}>DIST</Text>
       ) : (
         // 44 wide, centred under the 34-pt meter: at 9 pt "OVERLOAD" (~38 pt)
         // no longer breaks mid-word; "QUIET SOURCE" wraps at the space as it
         // always did. Bug pass 3: pass 2's 64 let QUIET SOURCE run ~52 pt on
         // one line, into the PREAMP column's label on a 7-column X-Ray chain
         // at 360 wide (column pitch ~45 pt).
-        <Text style={[styles.vRegion, styles.vRegionUnder, { color: col }]}>{regionLabelFor(node)}</Text>
+        <Text style={[s.vRegion, s.vRegionUnder, { color: col }]}>{regionLabelFor(node)}</Text>
       )}
     </View>
   );
@@ -272,73 +278,79 @@ export type StageColSpec = {
  *  columns inside the glass, height-parametric. Faders live on the dock — the
  *  columns show only what the signal is DOING at each point. */
 export function ChainStage({ w, h, cols }: { w: number; h: number; cols: StageColSpec[] }) {
-  const meterH = Math.max(44, h - 110);
+  // FULL SCREEN (D35): a view-built stage — every px in its StyleSheet
+  // (fonts, meter widths, LEDs, tags, gaps) is multiplied by the stage text
+  // scale and the flex layout fills the real (w, h); the icon and the meter
+  // height scale by hand. 1 on the glass = exactly as before.
+  const ts = useStageTextScale();
+  const s = useScaledStyles(styles);
+  const meterH = Math.max(44, h / ts - 110) * ts;
   return (
-    <View style={[styles.stageGlass, { width: w, height: h }]}>
+    <View style={[s.stageGlass, { width: w, height: h }]}>
       {/* Signal path header: INPUT ▸ … ▸ OUTPUT */}
-      <View style={styles.pathRow}>
-        <Text style={styles.pathEnd}>INPUT</Text>
-        <View style={styles.pathLine} />
-        <Text style={styles.pathArrowBig}>▸</Text>
-        <View style={styles.pathLine} />
-        <Text style={styles.pathEnd}>OUTPUT</Text>
+      <View style={s.pathRow}>
+        <Text style={s.pathEnd}>INPUT</Text>
+        <View style={s.pathLine} />
+        <Text style={s.pathArrowBig}>▸</Text>
+        <View style={s.pathLine} />
+        <Text style={s.pathEnd}>OUTPUT</Text>
       </View>
-      <View style={styles.stageCols}>
+      <View style={s.stageCols}>
         {cols.map((c, i) => {
           const display = c.display ?? 'meter';
           const inner = (
-            <View style={[styles.stageCol, c.active && styles.stageColActive]}>
-              <StageIcon kind={c.kind} size={20} />
-              <Text style={styles.colName} numberOfLines={1} adjustsFontSizeToFit>
+            <View style={[s.stageCol, c.active && s.stageColActive]}>
+              <StageIcon kind={c.kind} size={20 * ts} />
+              <Text style={s.colName} numberOfLines={1} adjustsFontSizeToFit>
                 {c.name}
               </Text>
               {display === 'meter' ? (
                 <StageMeterV node={c.node} height={meterH} />
               ) : display === 'leds' ? (
-                <View style={styles.slotWrap}>
-                  <View style={[styles.slotBox, { height: meterH }]}>
-                    <View style={[styles.led, c.node.level > LOW_EDGE && styles.ledSig]} />
-                    <Text style={styles.slotLedLabel}>SIG</Text>
-                    <View style={[styles.led, c.node.stageClipped && styles.ledClip, { marginTop: 8 }]} />
-                    <Text style={styles.slotLedLabel}>CLIP</Text>
+                <View style={s.slotWrap}>
+                  <View style={[s.slotBox, { height: meterH }]}>
+                    <View style={[s.led, c.node.level > LOW_EDGE && s.ledSig]} />
+                    <Text style={s.slotLedLabel}>SIG</Text>
+                    <View style={[s.led, c.node.stageClipped && s.ledClip, { marginTop: 8 }]} />
+                    <Text style={s.slotLedLabel}>CLIP</Text>
                   </View>
-                  <Text style={styles.slotUnder}> </Text>
+                  <Text style={s.slotUnder}> </Text>
                 </View>
               ) : (
-                <View style={styles.slotWrap}>
-                  <View style={[styles.slotBox, { height: meterH }]}>
-                    <Text style={styles.slotQ}>?</Text>
+                <View style={s.slotWrap}>
+                  <View style={[s.slotBox, { height: meterH }]}>
+                    <Text style={s.slotQ}>?</Text>
                   </View>
-                  <Text style={styles.slotUnder}>INSPECT</Text>
+                  <Text style={s.slotUnder}>INSPECT</Text>
                 </View>
               )}
               {c.readout ? (
-                <Text style={[styles.colReadout, { color: stageTint(c.node) }]} numberOfLines={1}>
+                <Text style={[s.colReadout, { color: stageTint(c.node) }]} numberOfLines={1}>
                   {c.readout}
                 </Text>
               ) : c.fixed ? (
-                <View style={styles.fixedTag}>
-                  <Text style={styles.fixedTagText}>FIXED</Text>
+                <View style={s.fixedTag}>
+                  <Text style={s.fixedTagText}>FIXED</Text>
                 </View>
               ) : (
-                <Text style={styles.colReadout}> </Text>
+                <Text style={s.colReadout}> </Text>
               )}
             </View>
           );
           return (
-            <View key={c.key} style={styles.stageColWrap}>
+            <View key={c.key} style={s.stageColWrap}>
               {/* Arrow tint guarded on display (fix 2026-08-31): a red arrow
                   between HIDDEN columns pointed straight at the Troubleshoot
                   fault. */}
               {i > 0 ? (
-                <Text style={[styles.stageArrow, c.node.distorted && display !== 'hidden' && { color: '#ff5f4e' }]}>▸</Text>
+                <Text style={[s.stageArrow, c.node.distorted && display !== 'hidden' && { color: '#ff5f4e' }]}>▸</Text>
               ) : null}
               {c.onPress ? (
                 <Pressable
                   onPress={c.onPress}
                   accessibilityRole="button"
                   accessibilityLabel={`${c.name} stage — tap to inspect`}
-                  style={styles.stageColPress}
+                  style={s.stageColPress}
                 >
                   {inner}
                 </Pressable>

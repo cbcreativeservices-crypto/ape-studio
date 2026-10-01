@@ -97,6 +97,9 @@ function PageThru({ ctx }: { ctx: PageCtx }) {
     { label: 'COMPLETE THE ROUTE (both jacks)', hit: routed },
   ];
   const latched = useVisitGoals(ctx, goals);
+  // The goal chips are built ONCE and handed to the page AND to the figure's
+  // docked controls (full-screen pass 2026-09-30) — they share state.
+  const chips = <GoalChips goals={goals} latched={latched} />;
   return (
     <View style={{ gap: 12 }}>
       <Lead>
@@ -114,8 +117,10 @@ function PageThru({ ctx }: { ctx: PageCtx }) {
         bottomPatchLabel={routed ? 'FROM TOP JACK' : 'YOUR CABLE'}
         onToggleJack={toggle}
         reduceMotion={ctx.reduceMotion}
+        controls={chips}
+        fsTitle="THRU PAIR"
       />
-      <GoalChips goals={goals} latched={latched} />
+      {chips}
       <Prompt>
         First patch ONLY the top jack, and before reading the status line, answer for yourself: where does the console’s
         signal go now? Then patch the bottom too and connect the two by cable.
@@ -190,15 +195,19 @@ function PageContact({ ctx }: { ctx: PageCtx }) {
     { label: 'RESTORE IT (pull the plug back out)', hit: wasOpenRef.current && !open },
   ];
   const latched = useVisitGoals(ctx, goals);
+  // Slider + chips built once: on the page and docked under the cutaway in
+  // full screen, so the plug can be driven there (full-screen pass 2026-09-30).
+  const slider = <ControlSlider label="PLUG INSERTION" value={insertion} min={0} max={1} step={0.01} onChange={setInsertion} format={(v) => `${Math.round(v * 100)}%`} />;
+  const chips = <GoalChips goals={goals} latched={latched} />;
   return (
     <View style={{ gap: 12 }}>
       <Lead>
         Why does plugging in change the routing? Because a normal is not software. It is a spring contact — and the plug
         physically moves it. Drive the plug in slowly and watch the metal.
       </Lead>
-      <JackCutaway insertion={insertion} reduceMotion={ctx.reduceMotion} />
-      <ControlSlider label="PLUG INSERTION" value={insertion} min={0} max={1} step={0.01} onChange={setInsertion} format={(v) => `${Math.round(v * 100)}%`} />
-      <GoalChips goals={goals} latched={latched} />
+      <JackCutaway insertion={insertion} reduceMotion={ctx.reduceMotion} controls={<>{slider}{chips}</>} />
+      {slider}
+      {chips}
       <Body>
         At rest, the tip spring presses on the normal contact and the source flows to the destination. As the plug seats, its
         tip wedges under the spring and lifts it off — the normal is BROKEN, and the spring now touches the plug instead: the
@@ -231,6 +240,7 @@ function PageFullStates({ ctx }: { ctx: PageCtx }) {
         : !state.topPlugged && state.bottomPlugged
           ? 'C — the bottom insertion broke it the other way: your patch replaced the source, which now dead-ends at its jack.'
           : 'D — both patched: the pair no longer behaves as a pair. Two independent reroutes.';
+  const chips = <GoalChips goals={goals} latched={latched} />;
   return (
     <View style={{ gap: 12 }}>
       <Lead>
@@ -247,8 +257,10 @@ function PageFullStates({ ctx }: { ctx: PageCtx }) {
         onToggleJack={toggle}
         reduceMotion={ctx.reduceMotion}
         caption={stateCaption}
+        controls={chips}
+        fsTitle="FULL-NORMAL"
       />
-      <GoalChips goals={goals} latched={latched} />
+      {chips}
     </View>
   );
 }
@@ -264,6 +276,7 @@ function PageHalfSurprise({ ctx }: { ctx: PageCtx }) {
     { label: 'THEN DO IT (patch the top)', hit: flow.isSplit },
   ];
   const latched = useVisitGoals(ctx, goals);
+  const chips = <GoalChips goals={goals} latched={latched} />;
   return (
     <View style={{ gap: 12 }}>
       <Lead>
@@ -305,8 +318,10 @@ function PageHalfSurprise({ ctx }: { ctx: PageCtx }) {
               ? 'The normal DID NOT break. One source, two destinations — this is the split.'
               : 'Jacks unlocked — now patch the TOP and watch the normal.'
         }
+        controls={chips}
+        fsTitle="HALF-NORMAL"
       />
-      <GoalChips goals={goals} latched={latched} />
+      {chips}
       {flow.isSplit ? (
         <>
           <Card tone="ok">

@@ -8,7 +8,7 @@
  * while A holds, and the bezel prints both plates' resonance states. No
  * fader — the drive is locked on purpose (the Echo-module precedent).
  */
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { DEFAULT_PLATE, effectiveQ, plateModes, readResonance, sampleField, type PlateShape, type PlateSpec } from '../../../../features/cymatics/plateModes';
@@ -18,7 +18,7 @@ import type { PlateViewMode } from '../vizPlate';
 import type { CymaticsModuleProps } from '../CymaticsModuleScreen';
 import { requireVizPlate, skiaAvailable } from '../skiaGate';
 import { CymaticsRackLayout } from './rackLayout';
-import { P } from './shared';
+import { P, useGlassUnits } from './shared';
 import { RES_TINT } from '../../../../features/cymatics/resTint';
 
 type VarId = 'material' | 'size' | 'thickness' | 'shape' | 'driver' | 'support' | 'damping';
@@ -64,6 +64,28 @@ function useSide(spec: PlateSpec, hz: number) {
     const res = readResonance(hz, modes, Q);
     return { res, Q, grid: sampleField(spec, modes, hz, Q, N) };
   }, [spec, hz]);
+}
+
+/** Two plates side by side on one glass. FULL SCREEN (D35): the gutter and the
+ *  A / B tags are laid out in glass units and scaled with the picture (each
+ *  plate scales itself through vizPlate). */
+function PairStage({ w, h, tagA, tagB, plateA, plateB }: { w: number; h: number; tagA: string; tagB: string; plateA: (w: number, h: number) => ReactNode; plateB: (w: number, h: number) => ReactNode }) {
+  const { s } = useGlassUnits(w, h);
+  const gap = 6 * s;
+  const half = Math.floor((w - gap) / 2);
+  const tag = { left: 6 * s, top: 4 * s, fontSize: 12 * s, letterSpacing: 1.1 * s, paddingHorizontal: 4 * s, borderRadius: 3 * s };
+  return (
+    <View style={{ width: w, height: h, flexDirection: 'row', gap }}>
+      <View style={{ width: half, height: h }}>
+        {plateA(half, h)}
+        <Text style={[styles.tag, tag]}>{tagA}</Text>
+      </View>
+      <View style={{ width: half, height: h }}>
+        {plateB(half, h)}
+        <Text style={[styles.tag, tag]}>{tagB}</Text>
+      </View>
+    </View>
+  );
 }
 
 export function ChangeModule({ focused, help }: CymaticsModuleProps) {
@@ -144,21 +166,9 @@ export function ChangeModule({ focused, help }: CymaticsModuleProps) {
           { k: `A · ${optA.short}`, v: A.res.state.toUpperCase(), tint: RES_TINT[A.res.state], helpKey: 'resonance', flex: 1.2 },
           { k: `B · ${optB.short}`, v: B.res.state.toUpperCase(), tint: RES_TINT[B.res.state], helpKey: 'resonance', flex: 1.2 },
         ],
-        stage: (w, h) => {
-          const half = Math.floor((w - 6) / 2);
-          return (
-            <View style={{ width: w, height: h, flexDirection: 'row', gap: 6 }}>
-              <View style={{ width: half, height: h }}>
-                {plate(half, h, specA, A)}
-                <Text style={styles.tag}>A · {optA.label.toUpperCase()}</Text>
-              </View>
-              <View style={{ width: half, height: h }}>
-                {plate(half, h, specB, B)}
-                <Text style={styles.tag}>B · {optB.label.toUpperCase()}</Text>
-              </View>
-            </View>
-          );
-        },
+        stage: (w, h) => (
+          <PairStage w={w} h={h} tagA={`A · ${optA.label.toUpperCase()}`} tagB={`B · ${optB.label.toUpperCase()}`} plateA={(pw, ph) => plate(pw, ph, specA, A)} plateB={(pw, ph) => plate(pw, ph, specB, B)} />
+        ),
         params,
       }}
       caption="Pick what VARIES, predict, then flick B across its options while A holds. The tone never changes — read RES for each plate on the bezel."

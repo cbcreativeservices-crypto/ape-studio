@@ -175,6 +175,7 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
       params={params}
       onHelp={help}
       stage={{
+        fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'L', // the four-layer hero IS the module
         badge: 'CONCEPTUAL MODEL — SLOWED FOR VISIBILITY · ZOH DRAWN AS THE INTERMEDIATE STAGE IT IS',
         onGuide: () => help('reconstruction'),
@@ -441,6 +442,7 @@ export function ErrorsModule({ width: _width, focused, help }: DigitalModuleProp
       params={params}
       onHelp={help}
       stage={{
+        fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'M', // the jitter scene operates; the charter reads below
         badge: 'TIMING DEVIATION EXAGGERATED ×1000 FOR VISIBILITY — ILLUSTRATIVE MODEL',
         onGuide: () => help('jitter'),

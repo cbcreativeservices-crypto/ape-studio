@@ -103,8 +103,11 @@ export function PageProduction({ ctx }: { ctx: PageCtx }) {
     if (i >= 0) go(i);
   };
   // The stage strip is a picker (height-capped at 1 : 1, so its labels are authored at 9.5).
-  const strip = (
-    <Svg width="100%" height={56} viewBox="0 0 340 56">
+  // Drawn at (w, h): inline through ExpandableFigure (full-screen pass
+  // 2026-09-30 — it was the one unwrapped drawing in this lab) and, compact,
+  // inside the head drawing's own dock.
+  const stripAt = (w: number | string, h: number) => (
+    <Svg width={w} height={h} viewBox="0 0 340 56">
       {PRODUCTION.map((s, i) => {
         const x = 4 + i * 67;
         const on = i === step;
@@ -120,6 +123,8 @@ export function PageProduction({ ctx }: { ctx: PageCtx }) {
       })}
     </Svg>
   );
+  const strip = stripAt('100%', 56);
+  const readout = <Text style={styles.readout} numberOfLines={2}>{step + 1} · {st.name.toUpperCase()} — {st.what}</Text>;
   const nav = (
     <Row>
       <Btn label="‹ PREVIOUS" onPress={() => go(Math.max(0, step - 1))} disabled={step === 0} />
@@ -130,14 +135,16 @@ export function PageProduction({ ctx }: { ctx: PageCtx }) {
   const dock = (
     <View style={{ gap: 8 }}>
       {strip}
-      <Text style={styles.readout} numberOfLines={2}>{step + 1} · {st.name.toUpperCase()} — {st.what}</Text>
+      {readout}
       {nav}
     </View>
   );
   return (
     <View style={{ gap: 12 }}>
       <Lead>Five stages, always in this order. Air becomes a buzz, the buzz becomes a vowel, movement turns vowels into words.</Lead>
-      {strip}
+      <ExpandableFigure aspect={340 / 56} title="STAGES" controls={<View style={{ gap: 8, paddingHorizontal: 12 }}>{readout}{nav}</View>} render={(w, h) => (
+        <View style={{ width: w, height: h }} accessible accessibilityLabel={`The five stages of speech production in order: ${PRODUCTION.map((s, i) => `${i + 1} ${s.name}`).join(', ')}. Stage ${step + 1}, ${st.name}, is selected.`}>{stripAt(w, h)}</View>
+      )} />
       <HeadCrossSection selected={null} onSelect={goPart} highlight={STAGE_PARTS[st.id]} controls={dock} fsTitle="SEQUENCE" />
       <Card tone="math">
         <Eyebrow>{step + 1} · {st.name.toUpperCase()}</Eyebrow>

@@ -11,9 +11,11 @@
  * a whisper): the two teaching states of the zero-cables page. Patched
  * columns show a gold cord stub at the plugged jack.
  */
+import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, G, Line, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import type { StudioPair } from '../engine/scenariosB';
 import { FlowPath, PB, useFlowPhase } from './PatchPairView';
 
@@ -27,8 +29,11 @@ const STEP = 39; // column spacing
 export type BayPlugs = Record<number, { top?: boolean; bottom?: boolean } | undefined>;
 
 export function StudioBayView({
-  pairs, selected, onSelect, showNormals, plugs = {}, reduceMotion = false,
+  pairs, selected, onSelect, showNormals, plugs = {}, reduceMotion = false, controls,
 }: {
+  /** The page's controls (reveal button, goal chips), docked under the bay
+   *  in FULL SCREEN (D35, full-screen pass 2026-09-30). */
+  controls?: ReactNode;
   pairs: StudioPair[];
   selected?: number | null;
   onSelect?: (n: number) => void;
@@ -45,10 +50,24 @@ export function StudioBayView({
       .map((p) => `Pair ${p.n}: ${p.sourceLabel} over ${p.destLabel}, ${p.config === 'thru' ? 'thru' : 'half-normal'}.`)
       .join(' ') +
     (showNormals ? ' Internal normals shown flowing on pairs one to six; the processor pairs are thru — no internal connection.' : '');
+  const legend = <Text style={styles.legend}>TOP ROW = SOURCES · BOTTOM ROW = DESTINATIONS</Text>;
   return (
     <View style={styles.wrap}>
-      <View style={{ width: '100%' }}>
-        <Svg accessible accessibilityRole="image" accessibilityLabel={a11y} width="100%" height={undefined} viewBox={`0 0 ${W} ${H}`} style={{ aspectRatio: W / H }}>
+      {/* The bay through ExpandableFigure: the same column taps at the page
+          width and at the zoomed size, the legend and the page's controls
+          docked under it in full screen. */}
+      <ExpandableFigure
+        aspect={W / H}
+        title="STUDIO BAY"
+        controls={
+          <View style={styles.dock}>
+            {legend}
+            {controls}
+          </View>
+        }
+        render={(w, h) => (
+      <View style={{ width: w, height: h }}>
+        <Svg accessible accessibilityRole="image" accessibilityLabel={a11y} width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
           <Rect x={0} y={4} width={W} height={H - 8} rx={7} fill={PB.panel} stroke={PB.panelEdge} />
           <Circle cx={12} cy={H / 2} r={2.4} fill="#3a3b41" />
           <Circle cx={W - 12} cy={H / 2} r={2.4} fill="#3a3b41" />
@@ -102,8 +121,10 @@ export function StudioBayView({
           </View>
         ) : null}
       </View>
+        )}
+      />
       {/* Row legend as real text (the SVG header stays short + readable). */}
-      <Text style={styles.legend}>TOP ROW = SOURCES · BOTTOM ROW = DESTINATIONS</Text>
+      {legend}
     </View>
   );
 }
@@ -113,4 +134,5 @@ const styles = StyleSheet.create({
   tapRow: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
   colTap: { position: 'absolute', top: 0, height: '100%', minHeight: 44 },
   legend: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 1 },
+  dock: { paddingHorizontal: 12, gap: 8 },
 });

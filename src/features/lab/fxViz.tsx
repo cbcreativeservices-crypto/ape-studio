@@ -945,11 +945,20 @@ export function GrLadder({
   grDb,
   maxDb = 24,
   height = 104,
+  scale = 1,
 }: {
   grDb: number;
   maxDb?: number;
+  /** The LED column's height in GLASS units (before `scale`). */
   height?: number;
+  /** FULL SCREEN (owner D35, 2026-09-30): the host passes its stage text
+   *  scale and EVERY pixel of the ladder — segments, gaps, padding, radii, the
+   *  head and the tick numbers — grows with the zoom step, so the meter the
+   *  learner works the compressor against is as big as the drawing beside
+   *  it. 1 on the glass and everywhere else. */
+  scale?: number;
 }) {
+  const s = scale;
   const segs = 16;
   const frac = Math.min(Math.max(grDb, 0) / maxDb, 1);
   const lit = Math.round(frac * segs);
@@ -961,12 +970,13 @@ export function GrLadder({
   // padding, so the scale beside it must be offset by the same amount or every
   // number sits 2 pt off the segment it labels — small, and exactly the kind of
   // thing that makes a meter feel untrustworthy up close.
-  const SEG_GAP = 2;
-  const STACK_PAD = 2;
-  const segH = Math.max(3, (height - (segs - 1) * SEG_GAP) / segs);
+  const SEG_GAP = 2 * s;
+  const STACK_PAD = 2 * s;
+  const colH = height * s;
+  const segH = Math.max(3 * s, (colH - (segs - 1) * SEG_GAP) / segs);
   return (
     <View
-      style={ladderStyles.wrap}
+      style={[ladderStyles.wrap, { gap: 3 * s }]}
       accessible
       accessibilityRole="progressbar"
       accessibilityLabel="Gain reduction"
@@ -979,24 +989,27 @@ export function GrLadder({
       aria-valuenow={grDb}
       aria-valuetext={`${grDb.toFixed(1)} decibels of reduction`}
     >
-      <Text style={ladderStyles.head}>GR</Text>
-      <View style={ladderStyles.body}>
-        <View style={ladderStyles.stack}>
+      <Text style={[ladderStyles.head, { fontSize: 9 * s, letterSpacing: 1.2 * s }]}>GR</Text>
+      <View style={[ladderStyles.body, { gap: 3 * s }]}>
+        <View style={[ladderStyles.stack, { gap: SEG_GAP, padding: STACK_PAD, borderRadius: 3 * s }]}>
           {Array.from({ length: segs }, (_, i) => (
             <View
               key={i}
               style={[
                 ladderStyles.seg,
-                { height: segH },
+                { height: segH, width: 12 * s, borderRadius: 1.5 * s },
                 // Lit from the TOP down — index 0 is the first to light.
                 i < lit ? { backgroundColor: GR_SEG_COLORS[Math.min(GR_SEGS - 1, Math.round((i / (segs - 1)) * (GR_SEGS - 1)))] } : null,
               ]}
             />
           ))}
         </View>
-        <View style={[ladderStyles.scale, { height, marginTop: STACK_PAD }]}>
+        <View style={[ladderStyles.scale, { width: 13 * s, height: colH, marginTop: STACK_PAD }]}>
           {ticks.map((d) => (
-            <Text key={d} style={[ladderStyles.tick, { top: (d / maxDb) * height - 5 }]}>
+            // 9 pt mono on the glass (lab display floor, owner 2026-09-25 —
+            // was 8), ×s in full screen; centred on its segment by half the
+            // line (~5 pt at 9).
+            <Text key={d} style={[ladderStyles.tick, { fontSize: 9 * s, top: (d / maxDb) * colH - 5 * s }]}>
               {d}
             </Text>
           ))}
@@ -1006,23 +1019,20 @@ export function GrLadder({
   );
 }
 
-const SEG_GAP_STYLE = 2;
-
+// Every pixel size of the ladder is set inline × `scale` (FULL SCREEN); the
+// sheet holds only what has no size.
 const ladderStyles = StyleSheet.create({
-  wrap: { alignItems: 'center', gap: 3 },
-  head: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1.2, color: colors.textSub },
-  body: { flexDirection: 'row', alignItems: 'flex-start', gap: 3 },
+  wrap: { alignItems: 'center' },
+  head: { fontFamily: fonts.oswaldSemiBold, color: colors.textSub },
+  body: { flexDirection: 'row', alignItems: 'flex-start' },
   stack: {
-    gap: SEG_GAP_STYLE,
-    padding: 2,
-    borderRadius: 3,
     backgroundColor: '#0a0a0c',
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: FRAME,
   },
-  seg: { width: 12, borderRadius: 1.5, backgroundColor: '#1d1d24' },
-  scale: { width: 13 },
-  tick: { position: 'absolute', left: 0, fontFamily: fonts.mono, fontSize: 8, color: colors.textSub },
+  seg: { backgroundColor: '#1d1d24' },
+  scale: {},
+  tick: { position: 'absolute', left: 0, fontFamily: fonts.mono, color: colors.textSub },
 });
 
 const lissaStyles = StyleSheet.create({

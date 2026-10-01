@@ -34,7 +34,7 @@ import type { DockParam } from '../../rack/rackTypes';
 import type { RootStackParamList } from '../../../../navigation/types';
 import type { CymaticsModuleProps } from '../CymaticsModuleScreen';
 import { CymaticsRackLayout } from './rackLayout';
-import { P } from './shared';
+import { P, useGlassUnits } from './shared';
 import { useStopOnAudioMute } from '../../../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../../../features/audio/useStopWhenSilenced';
 import { goToCymatics } from '../goToCymatics';
@@ -181,7 +181,10 @@ function wavePath(f: (t: number) => number, w: number, y0: number, amp: number):
 }
 
 /** Three ± waveforms on one glass, each on the amplitude ramp about its own MIDI-0 blue zero line. */
-function WavesStage({ w, h, fA, fB, fSum, labels }: { w: number; h: number; fA: (t: number) => number; fB: (t: number) => number; fSum: (t: number) => number; labels: [string, string, string] }) {
+function WavesStage({ w: boxW, h: boxH, fA, fB, fSum, labels }: { w: number; h: number; fA: (t: number) => number; fB: (t: number) => number; fSum: (t: number) => number; labels: [string, string, string] }) {
+  // FULL SCREEN (D35): glass units; the SVG scales by viewBox, the RN labels
+  // ride a scaled overlay, so strokes, zero lines and names all grow together.
+  const { w, h, svg, overlay } = useGlassUnits(boxW, boxH);
   const rowH = h / 3;
   const amp = rowH * 0.36;
   const rows = useMemo(
@@ -198,11 +201,11 @@ function WavesStage({ w, h, fA, fB, fSum, labels }: { w: number; h: number; fA: 
     // accessibility labels anywhere, so the three stacked waveforms — the whole
     // demonstration that harmony is a RATIO — were silent.
     <View
-      style={{ width: w, height: h }}
+      style={{ width: boxW, height: boxH }}
       accessible
       accessibilityLabel={`Three stacked waveforms: ${labels[0]}, ${labels[1]}, and their sum ${labels[2]}`}
     >
-      <Svg width={w} height={h}>
+      <Svg {...svg}>
         <Defs>
           {rows.map((r) => (
             <SvgGradient key={r.id} id={r.id} x1="0" y1={r.y0 - r.a} x2="0" y2={r.y0 + r.a} gradientUnits="userSpaceOnUse">
@@ -219,17 +222,20 @@ function WavesStage({ w, h, fA, fB, fSum, labels }: { w: number; h: number; fA: 
           <Path key={r.id + 'p'} d={paths[i]} stroke={`url(#${r.id})`} strokeWidth={2} fill="none" />
         ))}
       </Svg>
-      {rows.map((r, i) => (
-        <Text key={r.id + 'l'} numberOfLines={1} style={[styles.lbl, { top: r.y0 - rowH * 0.5 + 4, maxWidth: w - 20 }]}>
-          {labels[i]}
-        </Text>
-      ))}
+      <View pointerEvents="none" style={overlay}>
+        {rows.map((r, i) => (
+          <Text key={r.id + 'l'} numberOfLines={1} style={[styles.lbl, { top: r.y0 - rowH * 0.5 + 4, maxWidth: w - 20 }]}>
+            {labels[i]}
+          </Text>
+        ))}
+      </View>
     </View>
   );
 }
 
 /** The Lissajous figure — its own slow phase clock, so the precession never re-renders the rack. */
-function LissajousStage({ w, h, n1, n2, detune, running }: { w: number; h: number; n1: number; n2: number; detune: number; running: boolean }) {
+function LissajousStage({ w: boxW, h: boxH, n1, n2, detune, running }: { w: number; h: number; n1: number; n2: number; detune: number; running: boolean }) {
+  const { w, h, svg } = useGlassUnits(boxW, boxH); // FULL SCREEN: glass units, scaled viewBox
   const [phase, setPhase] = useState(0);
   useEffect(() => {
     if (!running || detune <= 0.0005) return;
@@ -249,7 +255,7 @@ function LissajousStage({ w, h, n1, n2, detune, running }: { w: number; h: numbe
     return s;
   }, [w, h, R, n1, n2, detune, phase]);
   return (
-    <Svg width={w} height={h}>
+    <Svg {...svg}>
       <Line x1={w / 2} y1={h / 2 - R} x2={w / 2} y2={h / 2 + R} stroke="#2a2b33" strokeWidth={1} />
       <Line x1={w / 2 - R} y1={h / 2} x2={w / 2 + R} y2={h / 2} stroke="#2a2b33" strokeWidth={1} />
       <Path d={d} stroke={colors.amber} strokeWidth={1.6} fill="none" />
@@ -257,12 +263,15 @@ function LissajousStage({ w, h, n1, n2, detune, running }: { w: number; h: numbe
   );
 }
 
-function SpectrumStage({ w, h, f1, f2 }: { w: number; h: number; f1: number; f2: number }) {
+function SpectrumStage({ w: boxW, h: boxH, f1, f2 }: { w: number; h: number; f1: number; f2: number }) {
+  // FULL SCREEN (D35): plain Views laid out in glass units on a scaled layer.
+  const { w, h, overlay } = useGlassUnits(boxW, boxH);
   const lo = 40;
   const hi = 3000;
   const x = (f: number) => (Math.log(f / lo) / Math.log(hi / lo)) * (w - 40) + 20;
   return (
-    <View style={{ width: w, height: h }}>
+    <View style={{ width: boxW, height: boxH }}>
+     <View style={overlay}>
       <View style={{ position: 'absolute', left: 20, right: 20, bottom: 26, height: 1, backgroundColor: MIDLINE_BLUE }} />
       {[f1, f2].map((f, k) => (
         <View key={k} style={{ position: 'absolute', left: x(f) - 9, bottom: 26 }}>
@@ -274,6 +283,7 @@ function SpectrumStage({ w, h, f1, f2 }: { w: number; h: number; f1: number; f2:
           {formatHz(f)}
         </Text>
       ))}
+     </View>
     </View>
   );
 }

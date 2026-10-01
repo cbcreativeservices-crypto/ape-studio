@@ -18,7 +18,7 @@ import type { DockParam } from '../../rack/rackTypes';
 import type { RootStackParamList } from '../../../../navigation/types';
 import type { CymaticsModuleProps } from '../CymaticsModuleScreen';
 import { CymaticsRackLayout } from './rackLayout';
-import { P } from './shared';
+import { P, useGlassUnits } from './shared';
 // Cross-links go through goToCymatics so they return to a studio already in
 // the stack instead of stacking a second one (bug hunt 2026-09-29).
 import { goToCymatics } from '../goToCymatics';
@@ -37,7 +37,8 @@ function usePhase(running: boolean) {
 }
 
 /** A string's n-th harmonic as a standing wave, between a nut and a bridge. */
-function StringDemo({ w, h, n, running }: { w: number; h: number; n: number; running: boolean }) {
+function StringDemo({ w: boxW, h: boxH, n, running }: { w: number; h: number; n: number; running: boolean }) {
+  const { w, h, svg } = useGlassUnits(boxW, boxH); // FULL SCREEN: glass units, scaled viewBox
   const phase = usePhase(running);
   const amp = Math.min(h * 0.3, 40);
   const d = useMemo(() => {
@@ -51,7 +52,7 @@ function StringDemo({ w, h, n, running }: { w: number; h: number; n: number; run
     return s;
   }, [w, h, n, phase, amp]);
   return (
-    <Svg width={w} height={h}>
+    <Svg {...svg}>
       <Defs>
         <SvgGradient id="strg" x1="0" y1={h / 2 - amp} x2="0" y2={h / 2 + amp} gradientUnits="userSpaceOnUse">
           {STOPS.map((s, k) => (
@@ -76,7 +77,8 @@ function StringDemo({ w, h, n, running }: { w: number; h: number; n: number; run
 }
 
 /** An open pipe's pressure standing wave (n-th mode): a drawn tube with open ends. */
-function PipeDemo({ w, h, n, running }: { w: number; h: number; n: number; running: boolean }) {
+function PipeDemo({ w: boxW, h: boxH, n, running }: { w: number; h: number; n: number; running: boolean }) {
+  const { w, h, svg } = useGlassUnits(boxW, boxH); // FULL SCREEN: glass units, scaled viewBox
   const phase = usePhase(running);
   const amp = Math.min(h * 0.24, 30);
   const d = useMemo(() => {
@@ -92,7 +94,7 @@ function PipeDemo({ w, h, n, running }: { w: number; h: number; n: number; runni
   const top = h / 2 - amp - 16;
   const bot = h / 2 + amp + 16;
   return (
-    <Svg width={w} height={h}>
+    <Svg {...svg}>
       <Defs>
         <SvgGradient id="pipg" x1="0" y1={h / 2 - amp} x2="0" y2={h / 2 + amp} gradientUnits="userSpaceOnUse">
           {STOPS.map((s, k) => (
@@ -121,7 +123,8 @@ function PipeDemo({ w, h, n, running }: { w: number; h: number; n: number; runni
 }
 
 /** Acoustic levitation: a standing wave between a transducer horn and a reflector holds beads at the pressure nodes. */
-function LevitationDemo({ w, h, running }: { w: number; h: number; running: boolean }) {
+function LevitationDemo({ w: boxW, h: boxH, running }: { w: number; h: number; running: boolean }) {
+  const { w, h, svg } = useGlassUnits(boxW, boxH); // FULL SCREEN: glass units, scaled viewBox
   const phase = usePhase(running);
   const n = 5;
   const top = 26;
@@ -137,7 +140,7 @@ function LevitationDemo({ w, h, running }: { w: number; h: number; running: bool
     return s;
   }, [w, h, phase, top, bot]);
   return (
-    <Svg width={w} height={h}>
+    <Svg {...svg}>
       <Defs>
         <SvgGradient id="levg" x1={w / 2 - 26} y1="0" x2={w / 2 + 26} y2="0" gradientUnits="userSpaceOnUse">
           {STOPS.map((s, k) => (
@@ -177,7 +180,8 @@ function LevitationDemo({ w, h, running }: { w: number; h: number; running: bool
  */
 
 /** A dish on a shaker. The DISH moves at the drive rate; the SURFACE ripples at HALF it. */
-function WaterDemo({ w, h, running }: { w: number; h: number; running: boolean }) {
+function WaterDemo({ w: boxW, h: boxH, running }: { w: number; h: number; running: boolean }) {
+  const { w, h, svg } = useGlassUnits(boxW, boxH); // FULL SCREEN: glass units, scaled viewBox
   const phase = usePhase(running);
   const lobes = 6;
   /** The two clocks are the teaching point, so they are written as two numbers. */
@@ -202,7 +206,7 @@ function WaterDemo({ w, h, running }: { w: number; h: number; running: boolean }
   }, [left, right, restY, surf, amp]);
 
   return (
-    <Svg width={w} height={h}>
+    <Svg {...svg}>
       <Defs>
         <SvgGradient id="watg" x1="0" y1={restY - amp} x2="0" y2={restY + amp} gradientUnits="userSpaceOnUse">
           {STOPS.map((s, k) => (
@@ -247,7 +251,8 @@ function WaterDemo({ w, h, running }: { w: number; h: number; running: boolean }
 }
 
 /** A loudspeaker in section, face up, with grains on the cone: piston below breakup, modes above it. */
-function SpeakerDemo({ w, h, running }: { w: number; h: number; running: boolean }) {
+function SpeakerDemo({ w: boxW, h: boxH, running }: { w: number; h: number; running: boolean }) {
+  const { w, h, svg } = useGlassUnits(boxW, boxH); // FULL SCREEN: glass units, scaled viewBox
   const phase = usePhase(running);
   const cx = w / 2;
   const R = Math.min(w * 0.36, 130);
@@ -277,7 +282,7 @@ function SpeakerDemo({ w, h, running }: { w: number; h: number; running: boolean
   const grains = [-0.75, -0.5, -0.25, 0.25, 0.5, 0.75];
 
   return (
-    <Svg width={w} height={h}>
+    <Svg {...svg}>
       <Defs>
         <SvgGradient id="spkg" x1="0" y1={rimY - amp} x2="0" y2={rimY + depth + amp} gradientUnits="userSpaceOnUse">
           {STOPS.map((s, k) => (
@@ -315,7 +320,8 @@ function SpeakerDemo({ w, h, running }: { w: number; h: number; running: boolean
 }
 
 /** A bell, with its mouth flexing in the (2,0) mode — the lowest way a bell can ring. */
-function BellDemo({ w, h, running }: { w: number; h: number; running: boolean }) {
+function BellDemo({ w: boxW, h: boxH, running }: { w: number; h: number; running: boolean }) {
+  const { w, h, svg } = useGlassUnits(boxW, boxH); // FULL SCREEN: glass units, scaled viewBox
   const phase = usePhase(running);
   const cx = w / 2;
   const topY = 22;
@@ -342,7 +348,7 @@ function BellDemo({ w, h, running }: { w: number; h: number; running: boolean })
     `Z`;
 
   return (
-    <Svg width={w} height={h}>
+    <Svg {...svg}>
       <Defs>
         <SvgGradient id="bellg" x1="0" y1="0" x2="1" y2="0" gradientUnits="objectBoundingBox">
           <Stop offset="0%" stopColor="#8a6a2e" />
@@ -462,24 +468,38 @@ export function SystemsModule({ focused, help }: CymaticsModuleProps) {
           { k: 'NODES', v: hasHarmonic ? `${n + 1}` : (s.nodesLabel ?? '—'), helpKey: 'systems' },
           { k: 'FAMILY', v: s.harmonic === null ? '1-D wave' : s.harmonic ? 'HARMONIC' : 'INHARM.', tint: s.harmonic === null ? undefined : s.harmonic ? '#37e05f' : '#ff6b5e', helpKey: 'harmonics', flex: 1.2 },
         ],
-        stage: (w, h) =>
-          sys === 'string' ? (
-            <StringDemo w={w} h={h} n={n} running={focused} />
-          ) : sys === 'pipe' ? (
-            <PipeDemo w={w} h={h} n={n} running={focused} />
-          ) : sys === 'levitation' ? (
-            <LevitationDemo w={w} h={h} running={focused} />
+        stage: (w, h) => {
+          // FULL SCREEN (house rule D35, 2026-09-30): the full-screen body is
+          // far taller than the 200-pt glass, and these drawings are laid out
+          // height-relative (the bell's mouth at h − 40, the levitation column
+          // from 26 to h − 26, the dish between 0.34 h and 0.68 h), so given
+          // the whole body they stretched into columns. Each is held to the
+          // glass's own proportion (≈ 0.57 × width; ≈ 0.47 with the footer
+          // row) and centred — 1× is the glass picture, larger; the zoom
+          // steps scale that box. On the glass itself this is a no-op.
+          const dh = Math.min(h, Math.round(w * 0.57));
+          const dhF = Math.min(h - 34, Math.round(w * 0.47));
+          return sys === 'string' || sys === 'pipe' || sys === 'levitation' ? (
+            <View style={{ width: w, height: h, justifyContent: 'center' }}>
+              {sys === 'string' ? (
+                <StringDemo w={w} h={dh} n={n} running={focused} />
+              ) : sys === 'pipe' ? (
+                <PipeDemo w={w} h={dh} n={n} running={focused} />
+              ) : (
+                <LevitationDemo w={w} h={dh} running={focused} />
+              )}
+            </View>
           ) : (
             // The drawing takes the stage; the pointer to the full studio sits
             // under it rather than in place of it.
             <View style={{ width: w, height: h }}>
-              <View style={{ flex: 1 }}>
+              <View style={{ flex: 1, justifyContent: 'center' }}>
                 {sys === 'water' ? (
-                  <WaterDemo w={w} h={h - 34} running={focused} />
+                  <WaterDemo w={w} h={dhF} running={focused} />
                 ) : sys === 'speaker' ? (
-                  <SpeakerDemo w={w} h={h - 34} running={focused} />
+                  <SpeakerDemo w={w} h={dhF} running={focused} />
                 ) : (
-                  <BellDemo w={w} h={h - 34} running={focused} />
+                  <BellDemo w={w} h={dhF} running={focused} />
                 )}
               </View>
               {s.link ? (
@@ -493,7 +513,8 @@ export function SystemsModule({ focused, help }: CymaticsModuleProps) {
                 </Pressable>
               ) : null}
             </View>
-          ),
+          );
+        },
         params,
       }}
       caption="Open SYSTEM and step through what vibrates in each; for the string and the pipe, ride HARMONIC and count the nodes."

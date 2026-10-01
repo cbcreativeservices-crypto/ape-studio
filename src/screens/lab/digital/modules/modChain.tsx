@@ -169,6 +169,7 @@ export function AdcModule({ width, focused, help }: DigitalModuleProps) {
       params={params}
       onHelp={help}
       stage={{
+        fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'M', // gain scene pins; the chain + S&H stations read in the well
         badge: 'ILLUSTRATIVE MODEL — level axis compressed so the noise floor stays visible; noise drawn exaggerated',
         onGuide: () => help('gain_staging'),
@@ -366,6 +367,7 @@ export function ProcessingModule({ width, focused, help }: DigitalModuleProps) {
       params={params}
       onHelp={help}
       stage={{
+        fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'L', // the two-fates bus is the star
         badge: 'ILLUSTRATIVE MODEL — one drawn bus; the fixed path clamps at full scale exactly as a 24-bit render does',
         onGuide: () => help('gain_above_zero'),

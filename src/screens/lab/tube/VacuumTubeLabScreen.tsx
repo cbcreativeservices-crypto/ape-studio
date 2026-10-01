@@ -22,7 +22,7 @@
  * lines, the grid's field) — one switch connecting the outside of the tube
  * to what happens inside it.
  */
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState, type MutableRefObject, type ReactNode } from 'react';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
@@ -38,6 +38,7 @@ import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLes
 import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../foundations/bits';
 import { RackUnit } from '../rack/RackUnit';
 import type { DockParam } from '../rack/rackTypes';
+import { GlassShape, useGlassSize, type GlassSize } from '../glassShape';
 import { requireTubeViz, type TubeVizModule } from './skiaGate';
 import { TUBE_INK } from './tubeInks';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
@@ -128,19 +129,28 @@ function tailParams(p: SectionProps, usesElectron: boolean): DockParam[] {
   return out;
 }
 
-/** Stage renderer with the honest no-Skia fallback centered in the glass. */
+/** Stage renderer with the honest no-Skia fallback centered in the glass.
+ *  FULL SCREEN (full-screen build 2026-09-30, hard rule D35): every tube
+ *  drawing is laid out in glass points and painted through a Group scaled by
+ *  StageTextScale (tube/viz.tsx), so the full-screen box keeps the glass's
+ *  shape (GlassShape, one `glass` ref per section) and each zoom step is the
+ *  glass drawing, larger — bottle, electrodes, electrons, waves, glows. */
 function stageGlass(
   viz: TubeVizModule | null,
+  glass: MutableRefObject<GlassSize | null>,
   draw: (viz: TubeVizModule, w: number, h: number) => ReactNode,
 ): (w: number, h: number) => ReactNode {
-  return (w, h) =>
-    viz ? (
-      draw(viz, w, h)
-    ) : (
-      <View style={{ width: w, height: h, justifyContent: 'center', padding: 14 }}>
-        <VizUnavailableCard />
-      </View>
-    );
+  return (w, h) => (
+    <GlassShape w={w} h={h} glass={glass}>
+      {viz ? (
+        draw(viz, w, h)
+      ) : (
+        <View style={{ width: w, height: h, justifyContent: 'center', padding: 14 }}>
+          <VizUnavailableCard />
+        </View>
+      )}
+    </GlassShape>
+  );
 }
 
 /** Common well tail: title + blurb up top, guided-lesson entry + the no-audio
@@ -212,6 +222,7 @@ function InsideSection(p: SectionProps) {
   const airInside = !visible.includes('envelope') || !visible.includes('vacuum');
   const flowing = emitting && !airInside && visible.includes('plate');
   const current = !flowing ? 'NONE' : visible.includes('grid') ? 'METERED' : 'WIDE OPEN';
+  const glass = useGlassSize();
 
   const params: DockParam[] = [
     {
@@ -270,6 +281,7 @@ function InsideSection(p: SectionProps) {
       onHelp={p.help}
       stage={{
         size: 'L',
+        fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN, PARTS tray and E-VIEW ride inside
         badge: 'ILLUSTRATIVE MODEL — SCHEMATIC CROSS-SECTION, NOT MEASURED TUBE DATA',
         onGuide: () => p.help('cutaway'),
         bezel: [
@@ -277,7 +289,7 @@ function InsideSection(p: SectionProps) {
           { k: 'EMISSION', v: emitting ? 'ON' : 'OFF', tint: emitting ? undefined : DIM, helpKey: 'cutaway' },
           { k: 'CURRENT', v: current, tint: flowing ? '#5bff85' : DIM, flex: 1.3, helpKey: 'cutaway' },
         ],
-        render: stageGlass(p.viz, (viz, w, h) => (
+        render: stageGlass(p.viz, glass, (viz, w, h) => (
           <CutawayViz viz={viz} width={w} height={h} kind="pentode" highlight={highlight} electron={p.electron} running={p.focused} visible={visible} />
         )),
       }}
@@ -306,6 +318,7 @@ function FlowSection(p: SectionProps) {
   const stageNum = FLOW_STAGES.indexOf(stage) + 1;
   const current = heat > 0.7 ? (heat - 0.7) / 0.3 : 0;
   const heatWord = (v: number) => (v < 0.15 ? 'cold' : v < 0.7 ? 'warming…' : 'conducting');
+  const glass = useGlassSize();
 
   const params: DockParam[] = [
     {
@@ -328,6 +341,7 @@ function FlowSection(p: SectionProps) {
       onHelp={p.help}
       stage={{
         size: 'L',
+        fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN with the WARM-UP lane docked inside
         badge: 'CONCEPTUAL — the warm-up sequence, slowed and drawn; real electrons are invisible and countless',
         onGuide: () => p.help('warm_up'),
         bezel: [
@@ -335,7 +349,7 @@ function FlowSection(p: SectionProps) {
           { k: 'STAGE', v: `${stageNum}/5`, helpKey: 'warm_up' },
           { k: 'PLATE I', v: pct(current), tint: current > 0 ? '#5bff85' : DIM, helpKey: 'warm_up' },
         ],
-        render: stageGlass(p.viz, (viz, w, h) => <FlowViz viz={viz} width={w} height={h} heat={heat} running={p.focused} />),
+        render: stageGlass(p.viz, glass, (viz, w, h) => <FlowViz viz={viz} width={w} height={h} heat={heat} running={p.focused} />),
       }}
     >
       <SectionWell title={p.title} blurb={p.blurb} help={p.help} onFinish={p.onFinish}>
@@ -371,6 +385,7 @@ const GRID_CHECK: CheckSpec = {
 function GridSection(p: SectionProps) {
   const [v, setV] = useState(0.5);
   const word = (x: number) => (x < 0.15 ? 'very negative — cutoff' : x > 0.85 ? 'barely negative — full flow' : 'partly negative');
+  const glass = useGlassSize();
 
   const params: DockParam[] = [
     {
@@ -393,13 +408,14 @@ function GridSection(p: SectionProps) {
       onHelp={p.help}
       stage={{
         size: 'L',
+        fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN with the GRID V lane and E-VIEW docked inside
         badge: "CONCEPTUAL — electron view adds the grid's repelling field lines; conduction is illustrative",
         onGuide: () => p.help('grid_voltage'),
         bezel: [
           { k: 'GRID', v: v < 0.15 ? 'CUTOFF' : v > 0.85 ? 'FULL FLOW' : 'PARTIAL', flex: 1.2, helpKey: 'grid_voltage' },
           { k: 'PLATE I', v: pct(v), tint: v > 0.9 ? '#ffd76b' : '#5bff85', helpKey: 'grid_voltage' },
         ],
-        render: stageGlass(p.viz, (viz, w, h) => (
+        render: stageGlass(p.viz, glass, (viz, w, h) => (
           <GridViz viz={viz} width={w} height={h} cond={v} electron={p.electron} running={p.focused} />
         )),
       }}
@@ -423,6 +439,7 @@ function GridViz({ viz, width, height, cond, electron, running }: { viz: TubeViz
 // ── 4 · Amplification ───────────────────────────────────────────────────────
 
 function AmplifySection(p: SectionProps) {
+  const glass = useGlassSize();
   return (
     <RackUnit
       initialParam="none"
@@ -430,6 +447,7 @@ function AmplifySection(p: SectionProps) {
       onHelp={p.help}
       stage={{
         size: 'L',
+        fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN
         badge: 'ILLUSTRATIVE — gain drawn ~×7; the output is INVERTED (that sign-flip is real tube behavior)',
         onGuide: () => p.help('amplification'),
         bezel: [
@@ -437,7 +455,7 @@ function AmplifySection(p: SectionProps) {
           { k: 'IN', v: 'GRID', tint: TUBE_INK.grid, helpKey: 'amplification' },
           { k: 'OUT', v: 'PLATE', tint: TUBE_INK.plate, helpKey: 'amplification' },
         ],
-        render: stageGlass(p.viz, (viz, w, h) => <AmplifyViz viz={viz} width={w} height={h} running={p.focused} />),
+        render: stageGlass(p.viz, glass, (viz, w, h) => <AmplifyViz viz={viz} width={w} height={h} running={p.focused} />),
       }}
     >
       <SectionWell title={p.title} blurb={p.blurb} help={p.help} onFinish={p.onFinish}>
@@ -466,6 +484,7 @@ function AmplifyViz({ viz, width, height, running }: { viz: TubeVizModule; width
 
 function HighVoltSection(p: SectionProps) {
   const [highB, setHighB] = useState(false);
+  const glass = useGlassSize();
 
   const params: DockParam[] = [
     {
@@ -492,6 +511,7 @@ function HighVoltSection(p: SectionProps) {
       onHelp={p.help}
       stage={{
         size: 'L',
+        fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN with the SUPPLY tray inside
         badge: 'CONCEPTUAL — attraction strength drawn as arrow length and electron count',
         onGuide: () => p.help('high_voltage'),
         bezel: [
@@ -499,7 +519,7 @@ function HighVoltSection(p: SectionProps) {
           { k: 'PULL', v: highB ? 'STRONG' : 'WEAK', tint: highB ? '#5bff85' : DIM, helpKey: 'high_voltage' },
           { k: 'STREAM', v: highB ? 'DENSE' : 'SPARSE', tint: highB ? '#5bff85' : DIM, helpKey: 'high_voltage' },
         ],
-        render: stageGlass(p.viz, (viz, w, h) => <HvViz viz={viz} width={w} height={h} highB={highB} running={p.focused} />),
+        render: stageGlass(p.viz, glass, (viz, w, h) => <HvViz viz={viz} width={w} height={h} highB={highB} running={p.focused} />),
       }}
     >
       <SectionWell title={p.title} blurb={p.blurb} help={p.help} onFinish={p.onFinish}>
@@ -578,6 +598,7 @@ function TypesSection(p: SectionProps) {
   const [idx, setIdx] = useState(0);
   const t = TYPES[idx];
   const ink = TUBE_INK[t.newPart];
+  const glass = useGlassSize();
 
   const params: DockParam[] = [
     {
@@ -606,6 +627,7 @@ function TypesSection(p: SectionProps) {
       onHelp={p.help}
       stage={{
         size: 'L',
+        fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN with the TYPE tray and E-VIEW inside
         badge: "ILLUSTRATIVE — the newest grid GLOWS in its ink · red dots = secondary emission (the tetrode's problem, the pentode's fix)",
         onGuide: () => p.help('tube_types'),
         bezel: [
@@ -613,7 +635,7 @@ function TypesSection(p: SectionProps) {
           { k: 'GRIDS', v: t.grids, helpKey: 'tube_types' },
           { k: 'NEW', v: t.newShort, tint: ink, flex: 1.3, helpKey: 'tube_types' },
         ],
-        render: stageGlass(p.viz, (viz, w, h) => (
+        render: stageGlass(p.viz, glass, (viz, w, h) => (
           <CutawayViz viz={viz} width={w} height={h} kind={t.kind} highlight={t.newPart} electron={p.electron} running={p.focused} secondary={idx > 0} />
         )),
       }}
@@ -646,6 +668,7 @@ function BiasSection(p: SectionProps) {
   const [b, setB] = useState(0.5);
   const bad = b < 0.22 || b > 0.8;
   const zone = b < 0.22 ? 'TOO NEGATIVE — CUTOFF: the bottom of the swing flatlines' : b > 0.8 ? 'TOO POSITIVE — SATURATION: the top of the swing flattens' : 'CORRECT BIAS — the swing rides the straight part of the curve';
+  const glass = useGlassSize();
 
   const params: DockParam[] = [
     {
@@ -669,13 +692,14 @@ function BiasSection(p: SectionProps) {
       onHelp={p.help}
       stage={{
         size: 'L',
+        fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN with the BIAS lane docked inside
         badge: 'ILLUSTRATIVE TRANSFER CURVE (normalized) — left: the operating point riding the curve · right: the resulting output',
         onGuide: () => p.help('bias'),
         bezel: [
           { k: 'BIAS', v: pct(b), helpKey: 'bias' },
           { k: 'ZONE', v: b < 0.22 ? 'CUTOFF' : b > 0.8 ? 'SATURATION' : 'LINEAR', tint: bad ? '#ff6b5e' : '#5bff85', flex: 1.3, helpKey: 'bias' },
         ],
-        render: stageGlass(p.viz, (viz, w, h) => <BiasViz viz={viz} width={w} height={h} bias={b} running={p.focused} />),
+        render: stageGlass(p.viz, glass, (viz, w, h) => <BiasViz viz={viz} width={w} height={h} bias={b} running={p.focused} />),
       }}
     >
       <SectionWell title={p.title} blurb={p.blurb} help={p.help} onFinish={p.onFinish}>
@@ -702,6 +726,7 @@ function BiasViz({ viz, width, height, bias, running }: { viz: TubeVizModule; wi
 function SaturationSection(p: SectionProps) {
   const [drive, setDrive] = useState(0.2);
   const state = drive < 0.3 ? 'CLEAN' : drive < 0.7 ? 'WARMING' : 'SATURATED';
+  const glass = useGlassSize();
 
   const params: DockParam[] = [
     {
@@ -725,13 +750,14 @@ function SaturationSection(p: SectionProps) {
       onHelp={p.help}
       stage={{
         size: 'L',
+        fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN with the DRIVE lane docked inside
         badge: 'ILLUSTRATIVE — normalized tanh curve (left, vs the straight dashed ideal) · input & output waves (right)',
         onGuide: () => p.help('saturation'),
         bezel: [
           { k: 'DRIVE', v: pct(drive), helpKey: 'saturation' },
           { k: 'STATE', v: state, tint: drive < 0.3 ? '#5bff85' : drive < 0.7 ? undefined : '#ffd76b', flex: 1.2, helpKey: 'saturation' },
         ],
-        render: stageGlass(p.viz, (viz, w, h) => <SatViz viz={viz} width={w} height={h} drive={drive} running={p.focused} />),
+        render: stageGlass(p.viz, glass, (viz, w, h) => <SatViz viz={viz} width={w} height={h} drive={drive} running={p.focused} />),
       }}
     >
       <SectionWell title={p.title} blurb={p.blurb} help={p.help} onFinish={p.onFinish}>
@@ -759,6 +785,7 @@ function SatViz({ viz, width, height, drive, running }: { viz: TubeVizModule; wi
 // ── 9 · Tube vs transistor ──────────────────────────────────────────────────
 
 function VersusSection(p: SectionProps) {
+  const glass = useGlassSize();
   return (
     <RackUnit
       initialParam="none"
@@ -766,13 +793,14 @@ function VersusSection(p: SectionProps) {
       onHelp={p.help}
       stage={{
         size: 'L',
+        fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN
         badge: 'ILLUSTRATIVE — left: electrons crossing a vacuum · right: carriers crossing semiconductor junctions',
         onGuide: () => p.help('tube_vs_transistor'),
         bezel: [
           { k: 'TUBE', v: 'VACUUM', tint: TUBE_INK.plate, helpKey: 'tube_vs_transistor' },
           { k: 'TRANSISTOR', v: 'JUNCTION', tint: TUBE_INK.grid, flex: 1.2, helpKey: 'tube_vs_transistor' },
         ],
-        render: stageGlass(p.viz, (viz, w, h) => <VersusViz viz={viz} width={w} height={h} running={p.focused} />),
+        render: stageGlass(p.viz, glass, (viz, w, h) => <VersusViz viz={viz} width={w} height={h} running={p.focused} />),
       }}
     >
       <SectionWell title={p.title} blurb={p.blurb} help={p.help} onFinish={p.onFinish}>

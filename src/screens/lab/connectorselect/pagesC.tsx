@@ -12,7 +12,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { Body, Btn, Card, Eyebrow, Lead, Prompt, useStableShuffle } from '../tuning/components/primitives';
 import type { PageCtx, PageDef } from '../kit/PagedLab';
 import { ConnectorPhoto, GoalChips, StationTag, useVisitGoals, VerdictRows } from './bits';
-import { Lamp } from './art';
+import { TesterFace } from './art';
 import { SCENARIOS, type Scenario } from './data/scenarios';
 import { getConnector } from '../cable/data/registry';
 import { evaluateChoice, type Verdict } from './engine/evaluate';
@@ -167,39 +167,51 @@ export function TesterRig({ fault, onSolved, reduceMotion }: { fault: FaultCase;
       AccessibilityInfo.announceForAccessibility?.('Not this fault — test more point pairs, flex the cable, or inspect the connector.');
     }
   };
+  // The bench's keys are built ONCE and handed to the card AND to the tester
+  // face's docked controls, so the whole bench — pick A, pick B, flex,
+  // inspect, reseat — works in full screen (full-screen pass 2026-09-30).
+  // The lamp moved out of the middle column into the face above the keys.
+  const panel = (
+    <View style={styles.testerPanel}>
+      <View style={styles.testerCol}>
+        <Text style={styles.testerColLabel}>END A</Text>
+        {contacts.map((c, i) => (
+          <Btn key={c} label={shorts[i]} tone={aSel === i ? 'primary' : 'plain'} selected={aSel === i} onPress={() => setASel(i)} a11y={`End A test point ${c}`} />
+        ))}
+      </View>
+      <View style={styles.testerCol}>
+        <Text style={styles.testerColLabel}>END B</Text>
+        {contacts.map((c, i) => (
+          <Btn key={c} label={shorts[i]} tone={bSel === i ? 'primary' : 'plain'} selected={bSel === i} onPress={() => setBSel(i)} a11y={`End B test point ${c}`} />
+        ))}
+      </View>
+    </View>
+  );
+  const actions = (
+    <View style={styles.testerActions}>
+      <Btn label={wiggling ? 'FLEXING…' : 'FLEX THE CABLE'} tone={wiggling ? 'primary' : 'plain'} selected={wiggling} onPress={() => setWiggling((w) => !w)} a11y={wiggling ? 'Stop flexing the cable' : 'Flex the cable while testing'} />
+      <Btn label={inspected ? '✓ INSPECTED' : 'INSPECT'} tone={inspected ? 'primary' : 'plain'} selected={inspected} onPress={() => setInspected(true)} a11y="Inspect the connectors visually" />
+      {/* RESEAT renders on EVERY rig (design pass: only showing it on the
+          half-seated cable answered that fault by its mere presence). On a
+          properly seated cable it is a harmless, truthful no-op. */}
+      <Btn label={reseated ? '✓ RESEATED' : 'RESEAT PLUG'} tone={reseated ? 'primary' : 'plain'} selected={reseated} onPress={() => setReseated(true)} a11y="Push the connector fully home" />
+    </View>
+  );
   return (
     <Card>
       <Eyebrow>{solved ? '✓ DIAGNOSED' : 'ON THE BENCH'}</Eyebrow>
       <Body>{fault.handed}</Body>
       <Text style={styles.contactKey}>{contacts.map((c, i) => `${shorts[i]} = ${c}`).join('   ·   ')}</Text>
-      <View style={styles.testerPanel}>
-        <View style={styles.testerCol}>
-          <Text style={styles.testerColLabel}>END A</Text>
-          {contacts.map((c, i) => (
-            <Btn key={c} label={shorts[i]} tone={aSel === i ? 'primary' : 'plain'} selected={aSel === i} onPress={() => setASel(i)} a11y={`End A test point ${c}`} />
-          ))}
-        </View>
-        <View style={styles.testerMid}>
-          <Lamp state={lamp ?? 'dark'} pulse={blink} />
-          <Text style={[styles.lampWord, { color: lamp === 'lit' ? colors.green : lamp === 'flicker' ? colors.gold : colors.textMuted }]}>
-            {aSel != null && bSel != null ? lampWord : 'PICK A + B'}
-          </Text>
-        </View>
-        <View style={styles.testerCol}>
-          <Text style={styles.testerColLabel}>END B</Text>
-          {contacts.map((c, i) => (
-            <Btn key={c} label={shorts[i]} tone={bSel === i ? 'primary' : 'plain'} selected={bSel === i} onPress={() => setBSel(i)} a11y={`End B test point ${c}`} />
-          ))}
-        </View>
-      </View>
-      <View style={styles.testerActions}>
-        <Btn label={wiggling ? 'FLEXING…' : 'FLEX THE CABLE'} tone={wiggling ? 'primary' : 'plain'} selected={wiggling} onPress={() => setWiggling((w) => !w)} a11y={wiggling ? 'Stop flexing the cable' : 'Flex the cable while testing'} />
-        <Btn label={inspected ? '✓ INSPECTED' : 'INSPECT'} tone={inspected ? 'primary' : 'plain'} selected={inspected} onPress={() => setInspected(true)} a11y="Inspect the connectors visually" />
-        {/* RESEAT renders on EVERY rig (design pass: only showing it on the
-            half-seated cable answered that fault by its mere presence). On a
-            properly seated cable it is a harmless, truthful no-op. */}
-        <Btn label={reseated ? '✓ RESEATED' : 'RESEAT PLUG'} tone={reseated ? 'primary' : 'plain'} selected={reseated} onPress={() => setReseated(true)} a11y="Push the connector fully home" />
-      </View>
+      <TesterFace
+        state={lamp ?? 'dark'}
+        pulse={blink}
+        a={aSel != null ? contacts[aSel] : null}
+        b={bSel != null ? contacts[bSel] : null}
+        word={lampWord}
+        controls={<View style={styles.testerDock}>{panel}{actions}</View>}
+      />
+      {panel}
+      {actions}
       {inspected ? (
         <View style={styles.noteBox}>
           <Text style={styles.noteText}>{fault.inspect}</Text>
@@ -263,9 +275,8 @@ const styles = StyleSheet.create({
   testerPanel: { flexDirection: 'row', gap: 8, alignItems: 'flex-start' },
   testerCol: { flex: 1, gap: 6 },
   testerColLabel: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1.5, textAlign: 'center' },
-  testerMid: { width: 76, alignItems: 'center', justifyContent: 'center', gap: 4, paddingTop: 22 },
-  lampWord: { fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1, textAlign: 'center' },
   testerActions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  testerDock: { paddingHorizontal: 12, gap: 8 },
   gateText: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12 },
   solvedText: { color: colors.green, fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 18 },
   wrongText: { color: colors.gold, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18 },

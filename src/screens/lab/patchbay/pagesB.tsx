@@ -60,6 +60,9 @@ function PageTap({ ctx }: { ctx: PageCtx }) {
     { label: 'REPLACE THE SOURCE (bottom — normal breaks)', hit: flow.destinationHears === 'patch' },
   ];
   const latched = useVisitGoals(ctx, goals);
+  // Built once: on the page and docked under the pair in full screen
+  // (full-screen pass 2026-09-30).
+  const chips = <GoalChips goals={goals} latched={latched} />;
   return (
     <View style={{ gap: 12 }}>
       <Lead>
@@ -74,8 +77,10 @@ function PageTap({ ctx }: { ctx: PageCtx }) {
         bottomPatchLabel="DRUM MACHINE"
         onToggleJack={toggle}
         reduceMotion={ctx.reduceMotion}
+        controls={chips}
+        fsTitle="THE TAP"
       />
-      <GoalChips goals={goals} latched={latched} />
+      {chips}
       <Card>
         <Eyebrow>WORDS YOU WILL HEAR FOR THE TOP-JACK TRICK</Eyebrow>
         <Body>tap · mult · split · monitor · parallel feed — all describing the same move: a copy of the source taken without interrupting its normal destination.</Body>

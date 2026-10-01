@@ -1075,8 +1075,15 @@ export function PolarPatternView({
   srcX: number;
   srcY: number;
 }) {
-  const w = width;
-  const h = height;
+  // FULL SCREEN (2026-09-30, hard rule D35 — everything zooms): laid out in
+  // GLASS points (w ÷ ts × h ÷ ts) and painted through one <Group> scaled by
+  // StageTextScale, so the mic, the source, the field, the ripples and every
+  // stroke are 2× at 2×. srcX/srcY arrive in glass points (the host divides
+  // the full-screen drag by the same scale). The field is memoized at glass
+  // resolution, so a zoom step never rebuilds its 40 000 cells.
+  const ts = useStageTextScale();
+  const w = width / ts;
+  const h = height / ts;
   const cx = w / 2;
   const cy = h / 2;
   const R = Math.min(w, h) / 2 - 16;
@@ -1142,7 +1149,8 @@ export function PolarPatternView({
   const field = usePolarFieldBuckets(w, h, cx, cy, R, a, b);
 
   return (
-    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+    <Canvas style={{ width, height, backgroundColor: BG }}>
+     <Group transform={[{ scale: ts }]}>
       {/* Conceptual pickup FIELD: polar gain × 1/d falloff through the jet
           colormap — 50×50 cells in ≤32 bucket paths, memoized per pattern.
           Smooth lobes glow red on-axis and fall to deep navy in the nulls. */}
@@ -1185,6 +1193,7 @@ export function PolarPatternView({
         <BlurMask blur={7} style="normal" />
       </Circle>
       <CabinetSide x={sx} y={sy} tiltDeg={srcTiltDeg} scale={1.55} />
+     </Group>
     </Canvas>
   );
 }
@@ -1204,8 +1213,11 @@ export function DistanceView({
   /** 0 = closest working distance · 1 = far. */
   dist01: number;
 }) {
-  const w = width;
-  const h = height;
+  // FULL SCREEN (2026-09-30): glass-point layout, one scaled <Group> — the
+  // talker, the mic, the wavefronts and the field all grow with the step.
+  const ts = useStageTextScale();
+  const w = width / ts;
+  const h = height / ts;
   const mid = h / 2;
   const srcX = 22;
   const micX = 64 + dist01 * (w - 110);
@@ -1268,7 +1280,8 @@ export function DistanceView({
   }, [w, h, srcX, mid]);
 
   return (
-    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+    <Canvas style={{ width, height, backgroundColor: BG }}>
+     <Group transform={[{ scale: ts }]}>
       {/* Heat field: direct sound fading into the room glow. */}
       {field.map((p, i) => (
         <Path key={i} path={p} color={JET_BUCKETS[i]} opacity={0.92} />
@@ -1292,6 +1305,7 @@ export function DistanceView({
       />
       {/* The mic at working distance, grille facing the talker (3.2 : 1). */}
       <HandheldMic x={micX} y={mid} angleDeg={-90} grilleR={8} bodyLen={37} />
+     </Group>
     </Canvas>
   );
 }
@@ -1953,8 +1967,11 @@ export function PopFilterView({
   height?: number;
   mode: 'none' | 'pop' | 'foam' | 'blimp';
 }) {
-  const w = width;
-  const h = height;
+  // FULL SCREEN (2026-09-30): glass-point layout, one scaled <Group> — the
+  // talker, the mic, the barrier and the air puffs all grow with the step.
+  const ts = useStageTextScale();
+  const w = width / ts;
+  const h = height / ts;
   const mid = h / 2;
   const srcX = 24;
   // Pulled in so the properly proportioned body (grilleR 8 / bodyLen 37,
@@ -2078,7 +2095,8 @@ export function PopFilterView({
   }, [phase, srcX, micX, barX, mid, mode, pass, gx]);
 
   return (
-    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+    <Canvas style={{ width, height, backgroundColor: BG }}>
+     <Group transform={[{ scale: ts }]}>
       <Floor w={w} y={h - 12} h={12} />
       <GlowStroke path={sound} color={WAVE} width={1.6} opacity={0.6} />
       {/* Wind puffs: soft-glowing air, not sound. */}
@@ -2132,6 +2150,7 @@ export function PopFilterView({
         </>
       ) : null}
       <Vignette w={w} h={h} />
+     </Group>
     </Canvas>
   );
 }
@@ -2165,13 +2184,21 @@ export function ShockMountView({
   width,
   height = 262,
   shockMount,
+  scale,
 }: {
   phase: SharedValue<number>;
   width: number;
   height?: number;
   shockMount: boolean;
+  /** The scene is a FIXED 262-pt drawing. `scale` paints it that many times
+   *  larger — the canvas is width × 262·scale, laid out width ÷ scale wide —
+   *  so the host fits it to its glass by height, and FULL SCREEN grows it with
+   *  the step (hard rule D35). Default: StageTextScale. */
+  scale?: number;
 }) {
-  const w = width;
+  const ts = useStageTextScale();
+  const s = scale ?? ts;
+  const w = width / s;
   const h = height;
   const cx = w / 2;
   // Fraction of the stand's motion that reaches the mic. IDENTICAL to the
@@ -2370,13 +2397,17 @@ export function ShockMountView({
     right: 0,
     textAlign: 'center' as const,
     fontFamily: fonts.oswaldSemiBold,
-    fontSize: 9.5,
-    letterSpacing: 1.1,
+    // 9.5 pt at scale 1, floored at the 9-pt lab minimum: the L glass (248 pt)
+    // fits the 262-pt scene at 0.946 → 8.99 pt, which the old RN transform
+    // silently shipped. Grows with the step in full screen.
+    fontSize: Math.max(9, 9.5 * s),
+    letterSpacing: 1.1 * s,
   };
 
   return (
-    <View style={{ width: w, height: h }}>
-      <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
+    <View style={{ width, height: h * s }}>
+      <Canvas style={{ position: 'absolute', width, height: h * s, backgroundColor: BG }}>
+       <Group transform={[{ scale: s }]}>
         <Floor w={w} y={FLOOR_Y} h={h - FLOOR_Y} />
         {/* The shake is applied HERE — at the floor. */}
         <GlowStroke path={arrows} color={ACCENT_RED} width={2} opacity={0.9} />
@@ -2435,11 +2466,12 @@ export function ShockMountView({
         </Path>
         <Path path={standMarker} color={ACCENT_RED} />
         <Vignette w={w} h={h} />
+       </Group>
       </Canvas>
-      <RNText style={[label, { top: 3, color: capColor }]}>
+      <RNText style={[label, { top: 3 * s, color: capColor }]}>
         {`AT THE CAPSULE — ${pct}% OF THE SHAKE`}
       </RNText>
-      <RNText style={[label, { top: h - 15, color: ACCENT_RED }]}>
+      <RNText style={[label, { top: (h - 15) * s, color: ACCENT_RED }]}>
         STAND SHAKE — 100% (THE SOURCE)
       </RNText>
     </View>
@@ -2464,8 +2496,11 @@ export function StereoTechniqueView({
   height?: number;
   tech: StereoTech;
 }) {
-  const w = width;
-  const h = height;
+  // FULL SCREEN (2026-09-30): glass-point layout, one scaled <Group> — the
+  // deck, the pair, the wedges and the field all grow with the step.
+  const ts = useStageTextScale();
+  const w = width / ts;
+  const h = height / ts;
   const cx = w / 2;
   const cy = h * 0.72;
   // The stage is now a real DECK with a front LIP (owner 2026-07-29: it had
@@ -2610,7 +2645,8 @@ export function StereoTechniqueView({
   }, [w]);
 
   return (
-    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+    <Canvas style={{ width, height, backgroundColor: BG }}>
+     <Group transform={[{ scale: ts }]}>
       {/* Conceptual pickup FIELD from the pair — ≤32 quantized jet buckets. */}
       {field.map((p, i) => (
         <Path key={i} path={p} color={JET_BUCKETS[i]} opacity={0.92} />
@@ -2666,6 +2702,7 @@ export function StereoTechniqueView({
         <PencilMic key={i} x={m.x} y={m.y} angleDeg={m.angDeg} scale={1.1} />
       ))}
       <Vignette w={w} h={h} />
+     </Group>
     </Canvas>
   );
 }
@@ -2772,8 +2809,15 @@ export function cupResponseDb(f: number, pos01: number): number {
 export function HandPlacementView({
   width,
   pos01,
+  scale,
 }: {
   width: number;
+  /** The panel is a FIXED 216-pt drawing. `scale` paints it that many times
+   *  larger (canvas width × 216·scale, laid out width ÷ scale wide): the host
+   *  fits it to a short glass, and FULL SCREEN grows it with the step (hard
+   *  rule D35). The drag maps through the same number. Default:
+   *  StageTextScale. */
+  scale?: number;
   /** 0 = hand resting on the TAIL of the handle … 1 = hand centred on the
    *  grille ball. Zone thresholds are DERIVED from the drawn geometry — see
    *  the grip-zone block above: <GRIP_P_CORRECT low handle (neutral) ·
@@ -2782,7 +2826,9 @@ export function HandPlacementView({
    *  ≥GRIP_P_FULL full cup (red). */
   pos01: number;
 }) {
-  const w = width;
+  const ts = useStageTextScale();
+  const s = scale ?? ts;
+  const w = width / s;
   const h = 216;
   const micX = w * 0.17;
   const { a, b, ripple } = cupMorph(pos01);
@@ -2882,7 +2928,8 @@ export function HandPlacementView({
   const liveColor = pos01 < GRIP_P_RIM ? WAVE : pos01 < GRIP_P_FULL ? ACCENT_ORANGE : ACCENT_RED;
 
   return (
-    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+    <Canvas style={{ width, height: h * s, backgroundColor: BG }}>
+     <Group transform={[{ scale: s }]}>
       {/* Panel frames. */}
       <SkLine p1={{ x: w * 0.34, y: 8 }} p2={{ x: w * 0.34, y: h - 8 }} color={GHOST} strokeWidth={1.4} />
       <SkLine p1={{ x: w * 0.36, y: h * 0.53 }} p2={{ x: w - 6, y: h * 0.53 }} color={GHOST} strokeWidth={1.4} />
@@ -2904,6 +2951,7 @@ export function HandPlacementView({
         <LinearGradient start={vec(0, ry0)} end={vec(0, ry0 + rh)} colors={[withAlpha(liveColor, 0.2), withAlpha(liveColor, 0.02)]} />
       </Path>
       <GlowStroke path={resp} color={liveColor} width={2.2} />
+     </Group>
     </Canvas>
   );
 }
@@ -3438,8 +3486,13 @@ export function TopCoverageView({
    *  Default reproduces the old fixed 0.3/0.7 positions. */
   fillSpread01?: number;
 }) {
-  const w = width;
-  const h = height;
+  // FULL SCREEN (2026-09-30, hard rule D35): glass-point layout, one outer
+  // <Group> scaled by StageTextScale — the plan, its seats, the cabinets, the
+  // wavefronts and the map all grow with the step. The level model is
+  // unchanged: it is computed in glass points, as on the glass.
+  const ts = useStageTextScale();
+  const w = width / ts;
+  const h = height / ts;
   const stageH = 26;
   const audY0 = stageH + 8;
   const audH = h - audY0 - 8;
@@ -3568,7 +3621,8 @@ export function TopCoverageView({
   const mainCabS = 0.7;
 
   return (
-    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+    <Canvas style={{ width, height, backgroundColor: BG }}>
+     <Group transform={[{ scale: ts }]}>
       <Group transform={sceneTransform(w, h)}>
         {/* Stage deck with depth + a hint of the band. */}
         <Path path={stage}>
@@ -3594,6 +3648,7 @@ export function TopCoverageView({
           <CabinetTop key={i} x={s.x} y={s.y} aimDeg={s.aim} small={s.small} scale={s.small ? 1 : mainCabS} tint={s.tint} />
         ))}
       </Group>
+     </Group>
     </Canvas>
   );
 }
@@ -3790,8 +3845,12 @@ export function SideCoverageView({
   /** Rear speaker fires late by the propagation delay so arrivals fuse. */
   timeAligned?: boolean;
 }) {
-  const w = width;
-  const h = height;
+  // FULL SCREEN (2026-09-30, hard rule D35): glass-point layout, one outer
+  // <Group> scaled by StageTextScale — room, cabinets, people and the field
+  // all grow with the step; the level model is computed in glass points.
+  const ts = useStageTextScale();
+  const w = width / ts;
+  const h = height / ts;
   const floorY = h - 16;
   const ceilY = 18 + (1 - ceil01) * 42;
   const stageW = 44;
@@ -4076,7 +4135,8 @@ export function SideCoverageView({
   }, [alignPhase]);
 
   return (
-    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+    <Canvas style={{ width, height, backgroundColor: BG }}>
+     <Group transform={[{ scale: ts }]}>
       <Group transform={sceneTransform(w, h)}>
         {/* Room: ceiling line + gradient floor. */}
         <Path path={geo.room} color={GRID} style="stroke" strokeWidth={1.6} />
@@ -4136,6 +4196,7 @@ export function SideCoverageView({
           />
         ) : null}
       </Group>
+     </Group>
     </Canvas>
   );
 }

@@ -44,6 +44,11 @@ export type CymaticsRack = {
   onHelp?: (key?: string) => void;
   /** Suppress the drag tag when the bezel already prints the bound value live. */
   hideDragTag?: boolean;
+  /** FULL SCREEN as a working surface (house rule D35, 2026-09-30): the rack
+   *  draws this same `stage` at the whole phone with the bezel on top and the
+   *  dock docked. ON for every Cymatics rack module; a module whose drawing
+   *  cannot scale would set false. */
+  fullScreen?: boolean;
 };
 
 export function CymaticsRackLayout({
@@ -68,6 +73,7 @@ export function CymaticsRackLayout({
         bezel: rack.bezel,
         onGuide: rack.onGuide,
         hideDragTag: rack.hideDragTag,
+        fullScreen: rack.fullScreen ?? true,
       }}
       params={rack.params}
       initialParam={rack.initialParam}

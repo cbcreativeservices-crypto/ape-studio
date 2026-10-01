@@ -35,6 +35,7 @@ import { MIDLINE_BLUE, WAVE_LEVEL_STOPS, heatColor } from '../../../features/too
 import { MATERIAL_BY_ID } from '../../../features/cymatics/materials';
 import { plateAspect, type PlateSpec } from '../../../features/cymatics/plateModes';
 import { isLibraryShape, libraryInside, librarySnapInside, loadLibraryShape } from '../../../features/cymatics/modalLibrary';
+import { useStageTextScale } from '../rack/stageAspect';
 
 export type PlateViewMode = 'particles' | 'heat' | 'overlay' | 'phase' | 'nodes' | 'plate3d' | 'section';
 
@@ -139,7 +140,16 @@ export type PlateViewProps = {
 };
 
 export function PlateView(p: PlateViewProps) {
-  const { width, height, spec, grid, N, view } = p;
+  const { width: boxW, height: boxH, spec, grid, N, view } = p;
+  // FULL SCREEN (house rule D35, 2026-09-30): the drawing is laid out in GLASS
+  // units (box ÷ StageTextScale — 1 on the glass) and painted through one
+  // scaled Group, so every px constant — sand grain, stroke, driver puck,
+  // clamp post — grows with the picture. The particle COUNT is unchanged
+  // (same N, same physics cost at every zoom): the grains get bigger, not
+  // more numerous. Touches are mapped back into glass units.
+  const s = useStageTextScale();
+  const width = boxW / s;
+  const height = boxH / s;
   const mat = MATERIAL_BY_ID[spec.material];
   const circle = spec.shape === 'circle';
   // MODAL-LIBRARY shapes (spec 1.3): the plate is a solved mask + outline,
@@ -530,8 +540,8 @@ export function PlateView(p: PlateViewProps) {
   dragRef.current = p.dragTarget;
   const cbRef = useRef({ onPlace: p.onPlace, onSection: p.onSection });
   cbRef.current = { onPlace: p.onPlace, onSection: p.onSection };
-  const geom = useRef({ ox, oy, plateW, plateH, aspect, circle, lib });
-  geom.current = { ox, oy, plateW, plateH, aspect, circle, lib };
+  const geom = useRef({ ox, oy, plateW, plateH, aspect, circle, lib, s });
+  geom.current = { ox, oy, plateW, plateH, aspect, circle, lib, s };
   const pan = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => dragRef.current != null,
@@ -540,10 +550,13 @@ export function PlateView(p: PlateViewProps) {
       onPanResponderMove: (e) => place(e.nativeEvent.locationX, e.nativeEvent.locationY),
     }),
   ).current;
-  function place(lx: number, ly: number) {
+  function place(lxBox: number, lyBox: number) {
     const g = geom.current;
     const t = dragRef.current;
     if (!t) return;
+    // The touch arrives in box px; the plate is laid out in glass units.
+    const lx = lxBox / g.s;
+    const ly = lyBox / g.s;
     let x = (lx - g.ox) / g.plateW;
     let y = ((ly - g.oy) / g.plateH) * g.aspect;
     if (t === 'section') {
@@ -577,12 +590,14 @@ export function PlateView(p: PlateViewProps) {
 
   return (
     <View
-      style={{ width, height }}
+      style={{ width: boxW, height: boxH }}
       accessible
       accessibilityLabel={`Plate display, ${VIEW_LABELS[view].toLowerCase()} view, response ${Math.round(p.strength * 100)} percent${p.dragTarget ? `, drag on the plate to move the ${p.dragTarget === 'section' ? 'slice' : p.dragTarget}` : ''}`}
       {...pan.panHandlers}
     >
-      <Canvas style={{ width, height }}>
+      <Canvas style={{ width: boxW, height: boxH }}>
+       {/* Everything below is in glass units; this one Group is the zoom. */}
+       <Group transform={[{ scale: s }]}>
         {/* Bench shadow under the plate */}
         <Group>
           <Path path={outline} color="rgba(0,0,0,0.55)" transform={[{ translateY: 6 }]} />
@@ -688,6 +703,7 @@ export function PlateView(p: PlateViewProps) {
             ) : null}
           </Group>
         ) : null}
+       </Group>
       </Canvas>
     </View>
   );
@@ -696,7 +712,12 @@ export function PlateView(p: PlateViewProps) {
 /** Intro strip: a pressure wave travelling as compressions / rarefactions of
  *  air, then the same vibration moving a plate — the first animated beat of
  *  "What is cymatics?". Pure Skia + one clock; nothing to configure. */
-export function PressureWaveStrip({ width, height, running }: { width: number; height: number; running: boolean }) {
+export function PressureWaveStrip({ width: boxW, height: boxH, running }: { width: number; height: number; running: boolean }) {
+  // FULL SCREEN (D35): laid out in glass units, painted through a scaled
+  // Group — the molecules grow with the strip, their number does not.
+  const s = useStageTextScale();
+  const width = boxW / s;
+  const height = boxH / s;
   const clock = useSharedValue(0);
   const cb = useFrameCallback((info) => {
     const dt = Math.min(info.timeSincePreviousFrame ?? 16, 48) / 1000;
@@ -721,9 +742,11 @@ export function PressureWaveStrip({ width, height, running }: { width: number; h
     return out;
   }, [width, height]);
   return (
-    <Canvas style={{ width, height }}>
-      <Rect x={0} y={0} width={width} height={height} color="#0b0b10" />
-      <Points points={pts} mode="points" strokeWidth={5} strokeCap="round" color="#7fd4ff" />
+    <Canvas style={{ width: boxW, height: boxH }}>
+      <Group transform={[{ scale: s }]}>
+        <Rect x={0} y={0} width={width} height={height} color="#0b0b10" />
+        <Points points={pts} mode="points" strokeWidth={5} strokeCap="round" color="#7fd4ff" />
+      </Group>
     </Canvas>
   );
 }

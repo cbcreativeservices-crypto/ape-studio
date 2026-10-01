@@ -85,6 +85,7 @@ export function IntroModule(_p: GainModuleComponentProps) {
       initialParam="src"
       params={params}
       stage={{
+        fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'M',
         badge: BADGE,
         bezel: [
@@ -148,6 +149,7 @@ export function InputGainModule(_p: GainModuleComponentProps) {
       initialParam="pre"
       params={params}
       stage={{
+        fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'M',
         badge: BADGE,
         bezel: [
@@ -233,6 +235,7 @@ export function FollowModule(_p: GainModuleComponentProps) {
       initialParam="pre"
       params={params}
       stage={{
+        fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'M',
         badge: BADGE,
         bezel: [
@@ -353,6 +356,7 @@ export function LowHighModule(_p: GainModuleComponentProps) {
       initialParam="pre"
       params={params}
       stage={{
+        fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'M',
         badge: BADGE,
         bezel: [
@@ -458,6 +462,7 @@ export function FaderVsGainModule(_p: GainModuleComponentProps) {
       initialParam="pre"
       params={params}
       stage={{
+        fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'M',
         badge: BADGE,
         bezel: [

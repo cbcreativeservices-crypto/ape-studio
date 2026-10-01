@@ -47,6 +47,7 @@ import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { LabShell, HeaderPlayButton } from './LabShell';
+import { useStageTextScale } from './rack/stageAspect';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 import { useLabAudio } from '../../features/lab/useLabAudio';
@@ -395,6 +396,7 @@ export function BassLabScreen() {
         onHelp: openLesson,
         stage: {
           size: 'L', // the fretboard IS the lab — earns the tall glass
+          fullScreen: true, // the rack's ⤢ FULL SCREEN (full-screen build 2026-09-30)
           badge: 'TRUE FRET GEOMETRY — NUT → BRIDGE · DRAWN FROM THE EQUATIONS',
           onGuide: () => openLesson('display'),
           bezel:
@@ -643,15 +645,26 @@ function Fretboard({
   height: number;
   onPick: (stringIdx: number, fretOrNode: number) => void;
 }) {
-  const w = width;
-  const svgH = Math.max(80, height - LABELS_H);
+  // FULL SCREEN (2026-09-30, D35 "everything zooms"): the board is authored
+  // in GLASS pixels (w, svgH below) and painted through a viewBox of
+  // (width ÷ ts) × (pixel height ÷ ts), so the frets, inlays, strings, the
+  // standing wave, node markers and the finger dot are all × the step; the
+  // NUT / fractions / BRIDGE strip under it (RN text) multiplies its own font.
+  // A tap arrives in pixels and is divided back to glass units. ts = 1 on the
+  // glass — the glass picture is unchanged.
+  const ts = useStageTextScale();
+  const w = width / ts;
+  const pxSvgH = Math.max(80 * ts, height - LABELS_H * ts);
+  const svgH = pxSvgH / ts;
   const stringTop = Math.max(24, Math.round((svgH - 3 * STRING_GAP) / 2));
 
   const onPress = useCallback(
-    (x: number, y: number) => {
+    (px: number, py: number) => {
       // Web preview: locationX/Y can arrive undefined → NaN row → the whole
       // app unmounted (no root error boundary). Reproduced 2026-08-31.
-      if (w <= 0 || !Number.isFinite(x) || !Number.isFinite(y)) return;
+      if (w <= 0 || !Number.isFinite(px) || !Number.isFinite(py)) return;
+      const x = px / ts;
+      const y = py / ts;
       // Row → string (clamped).
       const row = Math.min(3, Math.max(0, Math.round((y - stringTop) / STRING_GAP)));
       const si = ROW_TO_STRING[row] ?? 0;
@@ -682,7 +695,7 @@ function Fretboard({
         onPick(si, best);
       }
     },
-    [w, stringTop, mode, onPick],
+    [w, ts, stringTop, mode, onPick],
   );
 
   // Standing wave on the selected string: FRETTED = one lobe over the vibrating
@@ -736,7 +749,7 @@ function Fretboard({
           accessibilityRole="button"
           accessibilityLabel="Fretboard — tap a string and fret"
         >
-          <Svg width={w} height={svgH}>
+          <Svg width={width} height={pxSvgH} viewBox={`0 0 ${w} ${svgH}`}>
             <Defs>
               {/* Wood: vertical walnut gradient (light from upper-left). */}
               <LinearGradient id="fbWood" x1="0" y1="0" x2="0" y2="1">
@@ -934,17 +947,17 @@ function Fretboard({
           </Svg>
         </Pressable>
       ) : (
-        <View style={{ height: svgH }} />
+        <View style={{ height: pxSvgH }} />
       )}
       {/* Nut/bridge + fraction labels under the board. */}
-      <View style={styles.fbLabels}>
-        <Text style={styles.fbLabel}>NUT</Text>
+      <View style={[styles.fbLabels, ts !== 1 ? { marginTop: 3 * ts, paddingHorizontal: 8 * ts } : null]}>
+        <Text style={[styles.fbLabel, ts !== 1 ? { fontSize: 9.5 * ts, letterSpacing: ts } : null]}>NUT</Text>
         {mode === 'fretted' ? (
-          <Text style={styles.fbLabel}>5 ≈ ¾ · 7 ≈ ⅔ · 12 = ½</Text>
+          <Text style={[styles.fbLabel, ts !== 1 ? { fontSize: 9.5 * ts, letterSpacing: ts } : null]}>5 ≈ ¾ · 7 ≈ ⅔ · 12 = ½</Text>
         ) : (
-          <Text style={styles.fbLabel}>nodes at ½ · ⅓ · ¼ · ⅕</Text>
+          <Text style={[styles.fbLabel, ts !== 1 ? { fontSize: 9.5 * ts, letterSpacing: ts } : null]}>nodes at ½ · ⅓ · ¼ · ⅕</Text>
         )}
-        <Text style={styles.fbLabel}>BRIDGE</Text>
+        <Text style={[styles.fbLabel, ts !== 1 ? { fontSize: 9.5 * ts, letterSpacing: ts } : null]}>BRIDGE</Text>
       </View>
     </View>
   );

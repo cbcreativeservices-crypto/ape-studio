@@ -31,6 +31,7 @@ import {
   Canvas,
   Circle,
   DashPathEffect,
+  Group,
   Line as SkLine,
   LinearGradient,
   Path,
@@ -40,6 +41,7 @@ import {
   vec,
 } from '@shopify/react-native-skia';
 import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
+import { useStageTextScale } from '../rack/stageAspect';
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 import { MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../../features/tools/levelColor';
 import { TUBE_INK, TUBE_INK_EXTRA } from './tubeInks';
@@ -222,8 +224,15 @@ export function TubeCutawayView({
    *  secondaries leak back. Each part visibly earns its place. */
   visible?: readonly TubePart[];
 }) {
-  const w = width;
-  const h = height;
+  // FULL SCREEN (2026-09-30, hard rule D35 — everything zooms): the scene is
+  // laid out in GLASS points (w ÷ ts × h ÷ ts) and the whole canvas is painted
+  // through one <Group> scaled by StageTextScale, so at 2× every bottle,
+  // electrode, electron, stroke and glow is exactly twice its glass size. The
+  // host keeps the box in the glass's shape (lab/glassShape.tsx). ts = 1 on
+  // the glass, so the picture there is untouched.
+  const ts = useStageTextScale();
+  const w = width / ts;
+  const h = height / ts;
   const cx = w / 2;
   const topY = 16;
   const baseY = h - 46;
@@ -506,7 +515,8 @@ export function TubeCutawayView({
 
   const stackH = stackBot - stackTop;
   return (
-    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+    <Canvas style={{ width, height, backgroundColor: BG }}>
+      <Group transform={[{ scale: ts }]}>
       <Vignette w={w} h={h} />
       {/* Ground shadow lifting the bottle off the floor. */}
       <RoundedRect x={cx - 52} y={h - 8} width={104} height={4.5} r={2.2} color="#000000" opacity={0.5}>
@@ -687,6 +697,7 @@ export function TubeCutawayView({
       {[-3, -2, -1, 0, 1, 2, 3].map((i) => (
         <Pin key={i} x={cx + i * 12} y={baseY + 18} h={12} />
       ))}
+      </Group>
     </Canvas>
   );
 }
@@ -706,8 +717,15 @@ export function ElectronFlowView({
   /** 0 = cold … 1 = fully conducting (the warm-up slider). */
   heat01: number;
 }) {
-  const w = width;
-  const h = height;
+  // FULL SCREEN (2026-09-30, hard rule D35 — everything zooms): the scene is
+  // laid out in GLASS points (w ÷ ts × h ÷ ts) and the whole canvas is painted
+  // through one <Group> scaled by StageTextScale, so at 2× every bottle,
+  // electrode, electron, stroke and glow is exactly twice its glass size. The
+  // host keeps the box in the glass's shape (lab/glassShape.tsx). ts = 1 on
+  // the glass, so the picture there is untouched.
+  const ts = useStageTextScale();
+  const w = width / ts;
+  const h = height / ts;
   const cathX = 46;
   const plateX = w - 40;
   const top = 26;
@@ -776,7 +794,8 @@ export function ElectronFlowView({
   }, [phase, cathX, plateX, top, bot, heat01]);
 
   return (
-    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+    <Canvas style={{ width, height, backgroundColor: BG }}>
+      <Group transform={[{ scale: ts }]}>
       <Vignette w={w} h={h} />
       {/* Heater: layered warm glow behind the sleeve. */}
       <Circle cx={cathX - 12} cy={midY} r={glowROuter} color={GLOW} opacity={0.3}>
@@ -808,6 +827,7 @@ export function ElectronFlowView({
         <BlurMask blur={4.5} style="normal" />
       </Path>
       <Path path={electrons} color={ELECTRON} opacity={0.9} />
+      </Group>
     </Canvas>
   );
 }
@@ -829,8 +849,15 @@ export function GridControlView({
   cond: number;
   electronView: boolean;
 }) {
-  const w = width;
-  const h = height;
+  // FULL SCREEN (2026-09-30, hard rule D35 — everything zooms): the scene is
+  // laid out in GLASS points (w ÷ ts × h ÷ ts) and the whole canvas is painted
+  // through one <Group> scaled by StageTextScale, so at 2× every bottle,
+  // electrode, electron, stroke and glow is exactly twice its glass size. The
+  // host keeps the box in the glass's shape (lab/glassShape.tsx). ts = 1 on
+  // the glass, so the picture there is untouched.
+  const ts = useStageTextScale();
+  const w = width / ts;
+  const h = height / ts;
   const cathX = 40;
   const gridX = w * 0.46;
   const plateX = w - 38;
@@ -885,7 +912,8 @@ export function GridControlView({
   }, [phase, cathX, gridX, plateX, top, bot, cond]);
 
   return (
-    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+    <Canvas style={{ width, height, backgroundColor: BG }}>
+      <Group transform={[{ scale: ts }]}>
       <Vignette w={w} h={h} />
       {/* The grid's repelling field (electron view) — in the grid's blue ink. */}
       <Path path={field} color={INK.grid} style="stroke" strokeWidth={2.6} opacity={0.3}>
@@ -914,6 +942,7 @@ export function GridControlView({
         <BlurMask blur={4.5} style="normal" />
       </Path>
       <Path path={electrons} color={ELECTRON} opacity={0.9} />
+      </Group>
     </Canvas>
   );
 }
@@ -930,8 +959,15 @@ export function AmplifyView({
   width: number;
   height?: number;
 }) {
-  const w = width;
-  const h = height;
+  // FULL SCREEN (2026-09-30, hard rule D35 — everything zooms): the scene is
+  // laid out in GLASS points (w ÷ ts × h ÷ ts) and the whole canvas is painted
+  // through one <Group> scaled by StageTextScale, so at 2× every bottle,
+  // electrode, electron, stroke and glow is exactly twice its glass size. The
+  // host keeps the box in the glass's shape (lab/glassShape.tsx). ts = 1 on
+  // the glass, so the picture there is untouched.
+  const ts = useStageTextScale();
+  const w = width / ts;
+  const h = height / ts;
   const mid = h / 2;
   const inX0 = 8;
   const inX1 = w * 0.3;
@@ -1053,7 +1089,8 @@ export function AmplifyView({
   }, [phase, mid, inX0, inX1, outX0, outX1]);
 
   return (
-    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+    <Canvas style={{ width, height, backgroundColor: BG }}>
+      <Group transform={[{ scale: ts }]}>
       <Vignette w={w} h={h} />
       {/* The mid line is 0 amplitude → always MIDI-0 blue (owner 2026-07-31). */}
       <SkLine p1={{ x: 0, y: mid }} p2={{ x: w, y: mid }} color={MIDLINE_BLUE} strokeWidth={1} />
@@ -1123,6 +1160,7 @@ export function AmplifyView({
       <Path path={waves} style="stroke" strokeWidth={2.2} strokeJoin="round">
         <LinearGradient start={vec(0, mid - 52)} end={vec(0, mid + 52)} colors={WAVE_LEVEL_COLORS} positions={WAVE_LEVEL_POS} />
       </Path>
+      </Group>
     </Canvas>
   );
 }
@@ -1141,8 +1179,15 @@ export function HighVoltageView({
   height?: number;
   highB: boolean;
 }) {
-  const w = width;
-  const h = height;
+  // FULL SCREEN (2026-09-30, hard rule D35 — everything zooms): the scene is
+  // laid out in GLASS points (w ÷ ts × h ÷ ts) and the whole canvas is painted
+  // through one <Group> scaled by StageTextScale, so at 2× every bottle,
+  // electrode, electron, stroke and glow is exactly twice its glass size. The
+  // host keeps the box in the glass's shape (lab/glassShape.tsx). ts = 1 on
+  // the glass, so the picture there is untouched.
+  const ts = useStageTextScale();
+  const w = width / ts;
+  const h = height / ts;
   const cathX = 44;
   const plateX = w - 44;
   const top = 22;
@@ -1190,7 +1235,8 @@ export function HighVoltageView({
   }, [plateX, top, bot, highB]);
 
   return (
-    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+    <Canvas style={{ width, height, backgroundColor: BG }}>
+      <Group transform={[{ scale: ts }]}>
       <Vignette w={w} h={h} />
       {/* Cathode (teal ink) and plate (amber ink) — real metal structures. */}
       <CathodeSleeve x={cathX - 5} y={top} w={10} h={bot - top} r={5} />
@@ -1223,6 +1269,7 @@ export function HighVoltageView({
         <BlurMask blur={4.5} style="normal" />
       </Path>
       <Path path={electrons} color={ELECTRON} opacity={0.9} />
+      </Group>
     </Canvas>
   );
 }
@@ -1242,8 +1289,15 @@ export function BiasView({
   /** 0 = far too negative (cutoff) … 0.5 ≈ linear … 1 = too positive (sat). */
   bias01: number;
 }) {
-  const w = width;
-  const h = height;
+  // FULL SCREEN (2026-09-30, hard rule D35 — everything zooms): the scene is
+  // laid out in GLASS points (w ÷ ts × h ÷ ts) and the whole canvas is painted
+  // through one <Group> scaled by StageTextScale, so at 2× every bottle,
+  // electrode, electron, stroke and glow is exactly twice its glass size. The
+  // host keeps the box in the glass's shape (lab/glassShape.tsx). ts = 1 on
+  // the glass, so the picture there is untouched.
+  const ts = useStageTextScale();
+  const w = width / ts;
+  const h = height / ts;
   const cw = w * 0.56; // curve region
   const cx0 = 10;
   const cy0 = 14;
@@ -1311,7 +1365,8 @@ export function BiasView({
   }, [phase, bias01, cx0, cw, cy0, chh, ox0, ow]);
 
   return (
-    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+    <Canvas style={{ width, height, backgroundColor: BG }}>
+      <Group transform={[{ scale: ts }]}>
       <Vignette w={w} h={h} />
       {/* Soft zone shading: cutoff (left) and saturation (right) regions. */}
       <RoundedRect x={cx0} y={cy0} width={xOfV(0.25) - cx0} height={chh} r={0}>
@@ -1343,6 +1398,7 @@ export function BiasView({
         <BlurMask blur={5} style="normal" />
       </Path>
       <Path path={dyn} color={WAVE} style="stroke" strokeWidth={2.2} strokeJoin="round" />
+      </Group>
     </Canvas>
   );
 }
@@ -1362,8 +1418,15 @@ export function SaturationView({
   /** 0 = tiny signal (linear) … 1 = pushed hard (rounded peaks). */
   drive01: number;
 }) {
-  const w = width;
-  const h = height;
+  // FULL SCREEN (2026-09-30, hard rule D35 — everything zooms): the scene is
+  // laid out in GLASS points (w ÷ ts × h ÷ ts) and the whole canvas is painted
+  // through one <Group> scaled by StageTextScale, so at 2× every bottle,
+  // electrode, electron, stroke and glow is exactly twice its glass size. The
+  // host keeps the box in the glass's shape (lab/glassShape.tsx). ts = 1 on
+  // the glass, so the picture there is untouched.
+  const ts = useStageTextScale();
+  const w = width / ts;
+  const h = height / ts;
   const cs = Math.min(w * 0.42, h - 24); // square transfer plot
   const cx0 = 8;
   const cy0 = (h - cs) / 2;
@@ -1431,7 +1494,8 @@ export function SaturationView({
   }, [phase, wx0, ww, midOut, ampMax, drive]);
 
   return (
-    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+    <Canvas style={{ width, height, backgroundColor: BG }}>
+      <Group transform={[{ scale: ts }]}>
       <Vignette w={w} h={h} />
       {/* Soft zone shading where the curve flattens (top & bottom). */}
       <RoundedRect x={cx0} y={cy0} width={cs} height={cs * 0.14} r={0}>
@@ -1472,6 +1536,7 @@ export function SaturationView({
       <Path path={waveOut} style="stroke" strokeWidth={2.2} strokeJoin="round">
         <LinearGradient start={vec(0, midOut - ampMax)} end={vec(0, midOut + ampMax)} colors={WAVE_LEVEL_COLORS} positions={WAVE_LEVEL_POS} />
       </Path>
+      </Group>
     </Canvas>
   );
 }
@@ -1488,8 +1553,15 @@ export function TubeVsTransistorView({
   width: number;
   height?: number;
 }) {
-  const w = width;
-  const h = height;
+  // FULL SCREEN (2026-09-30, hard rule D35 — everything zooms): the scene is
+  // laid out in GLASS points (w ÷ ts × h ÷ ts) and the whole canvas is painted
+  // through one <Group> scaled by StageTextScale, so at 2× every bottle,
+  // electrode, electron, stroke and glow is exactly twice its glass size. The
+  // host keeps the box in the glass's shape (lab/glassShape.tsx). ts = 1 on
+  // the glass, so the picture there is untouched.
+  const ts = useStageTextScale();
+  const w = width / ts;
+  const h = height / ts;
   const half = w / 2;
   const top = 22;
   const bot = h - 22;
@@ -1652,7 +1724,8 @@ export function TubeVsTransistorView({
   const faceW = art.bw2 * 2 - 12;
   const faceH = art.bBot - art.bTop - 14;
   return (
-    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+    <Canvas style={{ width, height, backgroundColor: BG }}>
+      <Group transform={[{ scale: ts }]}>
       <Vignette w={w} h={h} />
       {/* Divider. */}
       <SkLine p1={{ x: half, y: 8 }} p2={{ x: half, y: h - 8 }} color={GHOST} strokeWidth={1.4} />
@@ -1726,6 +1799,7 @@ export function TubeVsTransistorView({
         <BlurMask blur={4} style="normal" />
       </Path>
       <Path path={carriers} color={ELECTRON} opacity={0.9} />
+      </Group>
     </Canvas>
   );
 }
@@ -1742,8 +1816,15 @@ export function TubeGlyph({
   height?: number;
   kind: 'preamp' | 'power';
 }) {
-  const w = width;
-  const h = height;
+  // FULL SCREEN (2026-09-30, hard rule D35 — everything zooms): the scene is
+  // laid out in GLASS points (w ÷ ts × h ÷ ts) and the whole canvas is painted
+  // through one <Group> scaled by StageTextScale, so at 2× every bottle,
+  // electrode, electron, stroke and glow is exactly twice its glass size. The
+  // host keeps the box in the glass's shape (lab/glassShape.tsx). ts = 1 on
+  // the glass, so the picture there is untouched.
+  const ts = useStageTextScale();
+  const w = width / ts;
+  const h = height / ts;
   const cx = w / 2;
   const bw = kind === 'power' ? 34 : 20; // bottle half-width
   const topY = kind === 'power' ? 8 : 16;
@@ -1765,7 +1846,8 @@ export function TubeGlyph({
   const edge = kind === 'power' ? METAL : GLASS;
 
   return (
-    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+    <Canvas style={{ width, height, backgroundColor: BG }}>
+      <Group transform={[{ scale: ts }]}>
       {/* Warm filament glint deep in the bottle. */}
       <Circle cx={cx} cy={baseY - 14} r={kind === 'power' ? 11 : 8} color={GLOW} opacity={0.4}>
         <BlurMask blur={9} style="normal" />
@@ -1798,6 +1880,7 @@ export function TubeGlyph({
           <LinearGradient start={vec(cx + i * (bw * 0.42) - 1.2, baseY + 8)} end={vec(cx + i * (bw * 0.42) + 1.2, baseY + 8)} colors={['#c9ccd4', '#5b5e66']} />
         </RoundedRect>
       ))}
+      </Group>
     </Canvas>
   );
 }

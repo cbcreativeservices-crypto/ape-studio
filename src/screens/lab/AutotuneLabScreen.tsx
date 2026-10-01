@@ -39,6 +39,7 @@ import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { LabShell, HeaderPlayButton } from './LabShell';
+import { useStageTextScale } from './rack/stageAspect';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../features/audio/useStopOnBlur';
@@ -276,6 +277,7 @@ export function AutotuneLabScreen() {
         onHelp: openLesson,
         stage: {
           size: 'L', // the cents grid IS the lab — earns the tall glass
+          fullScreen: true, // the rack's ⤢ FULL SCREEN (full-screen build 2026-09-30)
           badge: 'CENTS GRID — THE DRAWN CURVE IS THE EXACT RETUNE MATH THE AUDIO FOLLOWS',
           onGuide: () => openLesson('cents_grid'),
           bezel: [
@@ -290,7 +292,7 @@ export function AutotuneLabScreen() {
             // The residual: where the worst note (45¢ flat) ENDS after correction.
             { k: 'ENDS', v: `${remaining(MELODY[3].offCents)}¢`, helpKey: 'correction' },
           ],
-          render: (_w, h) => (
+          render: (w, h) => (
             // Tapping the display toggles play/stop (owner 2026-07-31) — same
             // gate as the header button.
             <Pressable
@@ -298,7 +300,7 @@ export function AutotuneLabScreen() {
               accessibilityRole="button"
               accessibilityLabel={playing ? 'Tap to stop' : 'Tap to play'}
             >
-              <CentsGrid amount={amount} tau={tau} activeNote={activeNote} height={h} />
+              <CentsGrid amount={amount} tau={tau} activeNote={activeNote} width={w} height={h} />
             </Pressable>
           ),
         },
@@ -444,15 +446,26 @@ function CentsGrid({
   amount,
   tau,
   activeNote,
+  width,
   height,
 }: {
   amount: number;
   tau: number;
   activeNote: number;
+  /** The stage hands its width in (right on the first frame in FULL SCREEN,
+   *  where the grid mounts fresh at a new size); measured when absent. */
+  width?: number;
   height: number;
 }) {
-  const [w, setW] = useState(0);
-  const h = height;
+  // FULL SCREEN (2026-09-30, D35 "everything zooms"): the grid is authored in
+  // GLASS pixels and painted through a viewBox of (w ÷ ts) × (h ÷ ts), so the
+  // gridlines, curves, row highlight, cents labels and note names are all ×
+  // the step. ts = 1 on the glass, so the glass picture is unchanged.
+  const ts = useStageTextScale();
+  const [measured, setMeasured] = useState(0);
+  const pw = width && width > 0 ? width : measured; // pixel width
+  const w = pw / ts; // logical (glass-pixel) width
+  const h = height / ts; // logical height
   const rowH = (h - TOP_AXIS - 8) / MELODY.length;
   const padY = Math.max(4, Math.min(8, rowH * 0.18)); // row inner breathing room
 
@@ -488,9 +501,9 @@ function CentsGrid({
   }, [w, rowH, padY, amount, tau, xOf]);
 
   return (
-    <View onLayout={(e) => setW(Math.round(e.nativeEvent.layout.width))}>
+    <View onLayout={width && width > 0 ? undefined : (e) => setMeasured(Math.round(e.nativeEvent.layout.width))}>
       {w > 0 ? (
-        <Svg width={w} height={h}>
+        <Svg width={pw} height={height} viewBox={`0 0 ${w} ${h}`}>
           <Rect x={0} y={0} width={w} height={h} fill="#0c0c0f" />
           {/* Vertical semitone gridlines + note names. */}
           {Array.from({ length: hiM - loM + 1 }, (_, k) => {
@@ -558,7 +571,7 @@ function CentsGrid({
           ))}
         </Svg>
       ) : (
-        <View style={{ height: h }} />
+        <View style={{ height }} />
       )}
     </View>
   );

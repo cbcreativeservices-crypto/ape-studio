@@ -408,6 +408,43 @@ export function EarModuleScreen() {
   const trialNo = Math.min(ROUND, roundAnswered + (phase === 'feedback' ? 0 : 1));
   const roundPct = roundAnswered ? roundScore / roundAnswered : 0;
 
+  // The transport is built ONCE and handed to the page AND to the SEE IT
+  // panel's full-screen dock, so the learner can hear the clip again while
+  // the plot is enlarged (D35, full-screen pass 2026-09-30) — same element,
+  // same state.
+  const transport = trial ? (
+    <View style={styles.transportRow}>
+      {trial.clips.map((c, i) => {
+        const capped = phase === 'answering' && plays[i] >= replayCap;
+        const name = c.label === '▶' ? 'the clip' : `clip ${c.label}`;
+        return (
+          <Pressable
+            key={i}
+            onPress={() => void onPlay(i)}
+            disabled={capped}
+            style={[styles.clipChip, playing === i && styles.clipChipActive, capped && styles.clipChipCapped]}
+            accessibilityRole="button"
+            accessibilityLabel={playing === i ? `Stop ${name}` : `Play ${name}`}
+            accessibilityHint={capped ? 'No replays left at this level' : undefined}
+            accessibilityState={{ disabled: capped }}
+            // Twin of accessibilityState, which RNW 0.21 drops. The value
+            // the DOM actually gets comes from the `disabled` prop above
+            // (RNW's Pressable emits its own aria-disabled after spreading
+            // props); both say `capped`, so the two agree.
+            aria-disabled={capped}
+          >
+            <Text style={[styles.clipText, playing === i && styles.clipTextActive]}>
+              {playing === i ? '■' : '▶'} {c.label !== '▶' ? c.label : ''}
+            </Text>
+            {phase === 'answering' && replayCap !== Infinity ? (
+              <Text style={styles.capText}>{Math.max(0, replayCap - plays[i])} left</Text>
+            ) : null}
+          </Pressable>
+        );
+      })}
+    </View>
+  ) : null;
+
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
@@ -488,36 +525,7 @@ export function EarModuleScreen() {
                   Trial {trialNo} of {ROUND} · Streak {streak}
                 </Text>
                 <Text style={styles.question}>{trial.question}</Text>
-                <View style={styles.transportRow}>
-                  {trial.clips.map((c, i) => {
-                    const capped = phase === 'answering' && plays[i] >= replayCap;
-                    const name = c.label === '▶' ? 'the clip' : `clip ${c.label}`;
-                    return (
-                      <Pressable
-                        key={i}
-                        onPress={() => void onPlay(i)}
-                        disabled={capped}
-                        style={[styles.clipChip, playing === i && styles.clipChipActive, capped && styles.clipChipCapped]}
-                        accessibilityRole="button"
-                        accessibilityLabel={playing === i ? `Stop ${name}` : `Play ${name}`}
-                        accessibilityHint={capped ? 'No replays left at this level' : undefined}
-                        accessibilityState={{ disabled: capped }}
-                        // Twin of accessibilityState, which RNW 0.21 drops. The value
-                        // the DOM actually gets comes from the `disabled` prop above
-                        // (RNW's Pressable emits its own aria-disabled after spreading
-                        // props); both say `capped`, so the two agree.
-                        aria-disabled={capped}
-                      >
-                        <Text style={[styles.clipText, playing === i && styles.clipTextActive]}>
-                          {playing === i ? '■' : '▶'} {c.label !== '▶' ? c.label : ''}
-                        </Text>
-                        {phase === 'answering' && replayCap !== Infinity ? (
-                          <Text style={styles.capText}>{Math.max(0, replayCap - plays[i])} left</Text>
-                        ) : null}
-                      </Pressable>
-                    );
-                  })}
-                </View>
+                {transport}
 
                 <View style={styles.answerWrap}>
                   {trial.answers.map((a, i) => {
@@ -586,7 +594,7 @@ export function EarModuleScreen() {
                     ) : null}
                     <Text style={styles.reveal}>{trial.reveal}</Text>
                     <Text style={styles.hearAgain}>Hear it again with the answer in mind — the chips above stay live.</Text>
-                    <SeeItView trial={trial} />
+                    <SeeItView trial={trial} controls={transport} />
                     {roundDone ? (
                       <View style={styles.roundCard} accessible accessibilityRole="summary">
                         <Text style={styles.roundTitle}>ROUND COMPLETE</Text>

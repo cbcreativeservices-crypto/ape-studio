@@ -25,7 +25,7 @@
  * two-tier guided-lesson popup ('mic' lesson); the bezel ⓘ opens the display
  * guide.
  */
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useContext, useEffect, useRef, useState, type MutableRefObject, type ReactNode } from 'react';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
@@ -45,6 +45,8 @@ import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../fe
 import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../foundations/bits';
 import { RackUnit } from '../rack/RackUnit';
 import type { DockParam } from '../rack/rackTypes';
+import { StageAspectReport, StageInFullScreen, useStageTextScale } from '../rack/stageAspect';
+import { GlassShape, useGlassSize, type GlassSize } from '../glassShape';
 import { requireMsViz, skiaAvailable, type MsVizModule } from './skiaGate';
 import { MicCutaway } from './MicCutaway';
 import { MIC_ASPECT } from './micCutawayAsset';
@@ -440,29 +442,6 @@ function PolarSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
   const g = gainAt(pat.a, pat.b, angle);
   const angle360 = ((angle % 360) + 360) % 360;
 
-  const posBaseRef = useRef({ x: 0, y: 0 }); // anchored-drag base — see onPanResponderGrant
-  const pan = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => false,
-      onMoveShouldSetPanResponder: (_e, gs) => Math.abs(gs.dx) > 4 || Math.abs(gs.dy) > 4,
-      onPanResponderGrant: (e, gs) => {
-        setDragged(true); // clears the drag-discovery chip
-        // Anchor to the gesture START (owner 2026-08-23): base = location − dx.
-        posBaseRef.current = { x: e.nativeEvent.locationX - gs.dx, y: e.nativeEvent.locationY - gs.dy };
-      },
-      onPanResponderMove: (_e, gs) => {
-        // Free positioning: the head follows the finger. base + gestureState
-        // reproduces the true finger position without re-basing, so it no longer
-        // teleports when the finger leaves the canvas bounds. The ONLY limit is
-        // the collision floor against the mic's silhouette.
-        const d = dimsRef.current;
-        if (!d) return;
-        setSrc(clampPolarSource(posBaseRef.current.x + gs.dx, posBaseRef.current.y + gs.dy, d.w, d.h));
-      },
-      onPanResponderTerminationRequest: () => false,
-    }),
-  ).current;
-
   const params: DockParam[] = [
     {
       kind: 'options',
@@ -487,6 +466,7 @@ function PolarSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
       onHelp={help}
       stage={{
         size: 'L', // the pickup field IS the lab — earns the tall glass
+        fullScreen: true, // full-screen build 2026-09-30: the rack shows ⤢ FULL SCREEN; the drag and the field zoom together (PolarStage)
         // De-laminated (design+learning pass 2026-08-31): the badge carries the
         // HONESTY claim + the model's equation only. The operating instruction
         // ("drag the speaker anywhere") lived at the badge's clamped tail and
@@ -508,22 +488,21 @@ function PolarSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
           },
         ],
         render: (w, h) => (
-          <View
-            style={{ width: w, height: h }}
-            onLayout={() => setDims((d) => (d && d.w === w && d.h === h ? d : { w, h }))}
-            {...pan.panHandlers}
-          >
-            {viz && eff ? (
-              <PolarViz viz={viz} width={w} height={h} a={pat.a} b={pat.b} src={eff} running={focused} />
-            ) : viz ? null : (
-              <VizUnavailableCard />
-            )}
-            {!dragged ? (
-              <View pointerEvents="none" style={styles.dragChip}>
-                <Text style={styles.dragChipText}>DRAG THE SPEAKER — ANYWHERE</Text>
-              </View>
-            ) : null}
-          </View>
+          <PolarStage
+            w={w}
+            h={h}
+            viz={viz}
+            a={pat.a}
+            b={pat.b}
+            eff={eff}
+            dims={dims}
+            dimsRef={dimsRef}
+            onDims={(gw, gh) => setDims((d) => (d && d.w === gw && d.h === gh ? d : { w: gw, h: gh }))}
+            dragged={dragged}
+            onDragged={() => setDragged(true)}
+            setSrc={setSrc}
+            running={focused}
+          />
         ),
       }}
     >
@@ -551,6 +530,102 @@ function PolarSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
       />
       {wellBottom}
     </RackUnit>
+  );
+}
+/**
+ * The polar glass — one instance on the glass, a second inside FULL SCREEN
+ * (full-screen build 2026-09-30, hard rule D35). The source lives in GLASS
+ * points: the glass instance records the glass size (`dims`), the full-screen
+ * instance reports that shape so its box is the glass × scale at every zoom
+ * step and sideways, and PolarPatternView paints through a <Group> scaled by
+ * StageTextScale. Each instance owns its OWN PanResponder, dividing the
+ * finger by its own scale, so a drag at 2× lands on the same glass point the
+ * bezel's SOURCE angle is read from. The drag-discovery chip grows with the
+ * picture.
+ */
+function PolarStage({
+  w,
+  h,
+  viz,
+  a,
+  b,
+  eff,
+  dims,
+  dimsRef,
+  onDims,
+  dragged,
+  onDragged,
+  setSrc,
+  running,
+}: {
+  w: number;
+  h: number;
+  viz: MsVizModule | null;
+  a: number;
+  b: number;
+  eff: { x: number; y: number } | null;
+  dims: { w: number; h: number } | null;
+  dimsRef: MutableRefObject<{ w: number; h: number } | null>;
+  onDims: (w: number, h: number) => void;
+  dragged: boolean;
+  onDragged: () => void;
+  setSrc: (p: { x: number; y: number }) => void;
+  running: boolean;
+}) {
+  const full = useContext(StageInFullScreen);
+  const report = useContext(StageAspectReport);
+  const ts = useStageTextScale();
+  useEffect(() => {
+    if (full && dims) report?.aspect(dims.w / dims.h, 0);
+  }, [full, report, dims]);
+  const tsRef = useRef(ts);
+  tsRef.current = ts;
+  const posBaseRef = useRef({ x: 0, y: 0 }); // anchored-drag base — see onPanResponderGrant
+  const pan = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => false,
+      onMoveShouldSetPanResponder: (_e, gs) => Math.abs(gs.dx) > 4 || Math.abs(gs.dy) > 4,
+      onPanResponderGrant: (e, gs) => {
+        onDragged(); // clears the drag-discovery chip
+        // Anchor to the gesture START (owner 2026-08-23): base = location − dx —
+        // in glass points (÷ the instance's scale).
+        const k = tsRef.current;
+        posBaseRef.current = { x: (e.nativeEvent.locationX - gs.dx) / k, y: (e.nativeEvent.locationY - gs.dy) / k };
+      },
+      onPanResponderMove: (_e, gs) => {
+        // Free positioning: the head follows the finger. base + gestureState
+        // reproduces the true finger position without re-basing, so it no longer
+        // teleports when the finger leaves the canvas bounds. The ONLY limit is
+        // the collision floor against the mic's silhouette.
+        const d = dimsRef.current;
+        if (!d) return;
+        const k = tsRef.current;
+        setSrc(clampPolarSource(posBaseRef.current.x + gs.dx / k, posBaseRef.current.y + gs.dy / k, d.w, d.h));
+      },
+      onPanResponderTerminationRequest: () => false,
+    }),
+  ).current;
+  return (
+    <View
+      style={{ width: w, height: h }}
+      // Only the GLASS instance measures: the full-screen box is derived from it.
+      onLayout={full ? undefined : () => onDims(w, h)}
+      {...pan.panHandlers}
+    >
+      {viz && eff ? (
+        <PolarViz viz={viz} width={w} height={h} a={a} b={b} src={eff} running={running} />
+      ) : viz ? null : (
+        <VizUnavailableCard />
+      )}
+      {!dragged ? (
+        <View
+          pointerEvents="none"
+          style={[styles.dragChip, { bottom: 10 * ts, borderRadius: 7 * ts, paddingHorizontal: 10 * ts, paddingVertical: 5 * ts }]}
+        >
+          <Text style={[styles.dragChipText, { fontSize: 10.5 * ts, letterSpacing: 1.4 * ts }]}>DRAG THE SPEAKER — ANYWHERE</Text>
+        </View>
+      ) : null}
+    </View>
   );
 }
 function PolarViz({
@@ -596,6 +671,7 @@ function DistanceSection({ viz, focused, help, wellTop, wellBottom }: SectionPro
   const ROOM_E = Math.pow(4 / 12, 2); // equal shares at 12 in
   const direct = directE / (directE + ROOM_E);
   const room = ROOM_E / (directE + ROOM_E);
+  const glass = useGlassSize();
 
   const params: DockParam[] = [
     {
@@ -617,6 +693,7 @@ function DistanceSection({ viz, focused, help, wellTop, wellBottom }: SectionPro
       onHelp={help}
       stage={{
         size: 'M',
+        fullScreen: true, // full-screen build 2026-09-30: the rack shows ⤢ FULL SCREEN; the scene zooms as one (DistanceView's scaled Group)
         badge: 'CONCEPTUAL SOUND FIELD — ILLUSTRATIVE MODEL, NOT A MEASUREMENT · direct energy fading into the room glow; wavefronts slowed for visibility',
         onGuide: () => help('distance'),
         bezel: [
@@ -629,8 +706,11 @@ function DistanceSection({ viz, focused, help, wellTop, wellBottom }: SectionPro
           { k: 'DIRECT', v: `${Math.round(direct * 100)}%`, tint: levelColor(direct), helpKey: 'distance' },
           { k: 'ROOM', v: `${Math.round(room * 100)}%`, tint: levelColor(room), helpKey: 'distance' },
         ],
-        render: (w, h) =>
-          viz ? <DistanceViz viz={viz} width={w} height={h} d01={d01} running={focused} /> : <VizUnavailableCard />,
+        render: (w, h) => (
+          <GlassShape w={w} h={h} glass={glass}>
+            {viz ? <DistanceViz viz={viz} width={w} height={h} d01={d01} running={focused} /> : <VizUnavailableCard />}
+          </GlassShape>
+        ),
       }}
     >
       {wellTop}
@@ -691,6 +771,7 @@ function ProximitySection({ viz, focused, help, wellTop, wellBottom }: SectionPr
   const [directional, setDirectional] = useState(true);
   const inches = Math.round((12 - d01 * 11) * 10) / 10;
   const boostDb = proxBoostForInches(inches);
+  const glass = useGlassSize();
 
   const params: DockParam[] = [
     {
@@ -744,18 +825,22 @@ function ProximitySection({ viz, focused, help, wellTop, wellBottom }: SectionPr
         render: (w, h) => {
           if (!viz) return <VizUnavailableCard />;
           const sceneH = Math.round(h * 0.5);
+          // GlassShape (2026-09-30): sideways, the full-screen box keeps the
+          // glass's shape, so the glass-point scene never collapses.
           return (
-            <View style={{ width: w, height: h }}>
-              <ProxApproachViz viz={viz} width={w} height={sceneH} inches={inches} boostDb={boostDb} directional={directional} running={focused} />
-              <viz.ResponseCurveView
-                width={w}
-                height={h - sceneH}
-                dbAt={(f) => (directional ? viz.proximityDb(f, boostDb) : 0)}
-                floorDb={0}
-                ceilDb={12}
-                vStops={directional ? PROX_STOPS : undefined}
-              />
-            </View>
+            <GlassShape w={w} h={h} glass={glass}>
+              <View style={{ width: w, height: h }}>
+                <ProxApproachViz viz={viz} width={w} height={sceneH} inches={inches} boostDb={boostDb} directional={directional} running={focused} />
+                <viz.ResponseCurveView
+                  width={w}
+                  height={h - sceneH}
+                  dbAt={(f) => (directional ? viz.proximityDb(f, boostDb) : 0)}
+                  floorDb={0}
+                  ceilDb={12}
+                  vStops={directional ? PROX_STOPS : undefined}
+                />
+              </View>
+            </GlassShape>
           );
         },
       }}
@@ -806,6 +891,7 @@ function ProxApproachViz({
 
 function OffAxisSection({ viz, help, wellTop, wellBottom }: SectionProps) {
   const [angle, setAngle] = useState(0);
+  const glass = useGlassSize();
 
   const params: DockParam[] = [
     {
@@ -849,19 +935,24 @@ function OffAxisSection({ viz, help, wellTop, wellBottom }: SectionProps) {
         ],
         render: (w, h) => {
           if (!viz) return <VizUnavailableCard />;
-          const micH = Math.min(110, Math.round(h * 0.42));
+          // The mic panel's 110-pt cap is a glass-point cap: in FULL SCREEN
+          // it grows with the step, like everything else (D35).
+          const ts = glass.current ? w / glass.current.w : 1;
+          const micH = Math.min(110 * ts, Math.round(h * 0.42));
           return (
-            <View style={{ width: w, height: h }}>
-              <viz.OffAxisMicView width={w} height={micH} angleDeg={angle} />
-              <viz.ResponseCurveView
-                width={w}
-                height={h - micH}
-                dbAt={(f) => viz.offAxisDb(f, angle)}
-                floorDb={-26}
-                ceilDb={6}
-                vStops={OFFAXIS_STOPS}
-              />
-            </View>
+            <GlassShape w={w} h={h} glass={glass}>
+              <View style={{ width: w, height: h }}>
+                <viz.OffAxisMicView width={w} height={micH} angleDeg={angle} />
+                <viz.ResponseCurveView
+                  width={w}
+                  height={h - micH}
+                  dbAt={(f) => viz.offAxisDb(f, angle)}
+                  floorDb={-26}
+                  ceilDb={6}
+                  vStops={OFFAXIS_STOPS}
+                />
+              </View>
+            </GlassShape>
           );
         },
       }}
@@ -900,6 +991,7 @@ function PopSection({ viz, focused, help, wellTop, wellBottom }: SectionProps) {
   const m = POP_MODES[modeIdx];
   // Magnitude wears the ramp; stoplight hexes stay for verdicts only.
   const blastTint = levelColor(m.pass);
+  const glass = useGlassSize();
 
   const params: DockParam[] = [
     {
@@ -925,14 +1017,18 @@ function PopSection({ viz, focused, help, wellTop, wellBottom }: SectionProps) {
       onHelp={help}
       stage={{
         size: 'M',
+        fullScreen: true, // full-screen build 2026-09-30: the rack shows ⤢ FULL SCREEN; the scene zooms as one (PopFilterView's scaled Group)
         badge: 'CONCEPTUAL — blue = the air blast (wind), amber = the voice; the voice always passes',
         onGuide: () => help('pop_filter'),
         bezel: [
           { k: 'BARRIER', v: m.label, flex: 1.5, helpKey: 'pop_filter' },
           { k: 'BLAST AT CAPSULE', v: `${Math.round(m.pass * 100)}%`, tint: blastTint, flex: 1.5, helpKey: 'pop_filter' },
         ],
-        render: (w, h) =>
-          viz ? <PopViz viz={viz} width={w} height={h} mode={m.key} running={focused} /> : <VizUnavailableCard />,
+        render: (w, h) => (
+          <GlassShape w={w} h={h} glass={glass}>
+            {viz ? <PopViz viz={viz} width={w} height={h} mode={m.key} running={focused} /> : <VizUnavailableCard />}
+          </GlassShape>
+        ),
       }}
     >
       {wellTop}
@@ -962,6 +1058,7 @@ const SHOCK_H = 262;
 
 function ShockSection({ viz, focused, help, wellTop, wellBottom }: SectionProps) {
   const [shock, setShock] = useState(false);
+  const glass = useGlassSize();
 
   // The lab's cleanest single-variable experiment (90% → 15% into the mic) hid
   // behind its weakest control: one dim toggle reading as a caption. Six other
@@ -999,6 +1096,7 @@ function ShockSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
       onHelp={help}
       stage={{
         size: 'L',
+        fullScreen: true, // full-screen build 2026-09-30: the rack shows ⤢ FULL SCREEN; the 262-pt scene is painted at h ÷ 262 (sharp vectors, labels too)
         badge: 'CONCEPTUAL — the STAND is being shaken (red readout, bottom). The readout above the capsule shows how much of that shake actually arrives at the mic; with a shock mount you can watch the elastic bands take up the difference.',
         onGuide: () => help('shock_mount'),
         bezel: [
@@ -1008,14 +1106,18 @@ function ShockSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
         ],
         render: (w, h) => {
           if (!viz) return <VizUnavailableCard />;
-          const s = Math.min(1, h / SHOCK_H);
-          /* (render body unchanged) */
+          // The scene is PAINTED at h ÷ 262 (ShockMountView's `scale`): the
+          // Skia vectors and the two labels are re-drawn sharp at that size,
+          // where the old RN transform magnified a glass-sized raster. In
+          // FULL SCREEN the box keeps the glass width over 262 (GlassShape
+          // fixedH), so every zoom step is the glass scene, larger.
+          const s = h / SHOCK_H;
           return (
-            <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-              <View style={{ width: w / s, height: SHOCK_H, transform: [{ scale: s }] }}>
-                <ShockViz viz={viz} width={w / s} shock={shock} running={focused} />
+            <GlassShape w={w} h={h} glass={glass} fixedH={SHOCK_H}>
+              <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                <ShockViz viz={viz} width={w} scale={s} shock={shock} running={focused} />
               </View>
-            </View>
+            </GlassShape>
           );
         },
       }}
@@ -1047,9 +1149,9 @@ function ShockSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
     </RackUnit>
   );
 }
-function ShockViz({ viz, width, shock, running }: { viz: MsVizModule; width: number; shock: boolean; running: boolean }) {
+function ShockViz({ viz, width, scale, shock, running }: { viz: MsVizModule; width: number; scale: number; shock: boolean; running: boolean }) {
   const phase = viz.usePhaseClock(running, 0.8);
-  return <viz.ShockMountView phase={phase} width={width} shockMount={shock} />;
+  return <viz.ShockMountView phase={phase} width={width} scale={scale} shockMount={shock} />;
 }
 
 // ── 5 · Stereo techniques ───────────────────────────────────────────────────
@@ -1057,6 +1159,7 @@ function ShockViz({ viz, width, shock, running }: { viz: MsVizModule; width: num
 function StereoSection({ viz, help, wellTop, wellBottom }: SectionProps) {
   const [techIdx, setTechIdx] = useState(0);
   const t = STEREO_TECHS[techIdx];
+  const glass = useGlassSize();
 
   const params: DockParam[] = [
     {
@@ -1084,13 +1187,18 @@ function StereoSection({ viz, help, wellTop, wellBottom }: SectionProps) {
       onHelp={help}
       stage={{
         size: 'L',
+        fullScreen: true, // full-screen build 2026-09-30: the rack shows ⤢ FULL SCREEN; the pair and its field zoom as one (StereoTechniqueView's scaled Group)
         badge: "CONCEPTUAL PICKUP FIELD — ILLUSTRATIVE MODEL, NOT A MEASUREMENT · the two capsules' |A + B·cosθ| gains × 1/d, summed for this technique's geometry · the lit deck at the top is the stage",
         onGuide: () => help('stereo_pair'),
         bezel: [
           { k: 'TECHNIQUE', v: t.label, flex: 1.3, helpKey: 'stereo_pair' },
           { k: 'STEREO FROM', v: t.from, flex: 1.3, helpKey: 'stereo_pair' },
         ],
-        render: (w, h) => (viz ? <viz.StereoTechniqueView width={w} height={h} tech={t.key} /> : <VizUnavailableCard />),
+        render: (w, h) => (
+          <GlassShape w={w} h={h} glass={glass}>
+            {viz ? <viz.StereoTechniqueView width={w} height={h} tech={t.key} /> : <VizUnavailableCard />}
+          </GlassShape>
+        ),
       }}
     >
       {wellTop}
@@ -1159,30 +1267,7 @@ function HandSection({ viz, focused, help, wellTop, wellBottom }: SectionProps) 
   const [why, setWhy] = useState(false);
   const [wellW, setWellW] = useState(0);
   const zone = zoneAt(pos);
-
-  const baseYRef = useRef(0); // anchored-drag base — see onPanResponderGrant
-  const pan = useRef(
-    PanResponder.create({
-      // Claim on TOUCH START — kept from the in-scroll era (harmless on the
-      // stage, where no ScrollView competes; the GRIP lane and the POSITION
-      // tray remain the no-drag alternatives).
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: (_e, gs) => Math.abs(gs.dy) > 2,
-      onPanResponderGrant: (e, gs) => {
-        // Anchor to the gesture's START Y (owner 2026-08-23): base + gestureState.dy
-        // reproduces the true finger Y without re-basing, so dragging past the
-        // canvas edge no longer whips the hand to the opposite end.
-        baseYRef.current = e.nativeEvent.locationY - gs.dy;
-        setPos(Math.max(0, Math.min(1, 1 - (baseYRef.current - 16) / 184)));
-      },
-      onPanResponderMove: (_e, gs) => {
-        // Drag the hand along the mic body: top of the canvas = full cup.
-        const y = baseYRef.current + gs.dy;
-        setPos(Math.max(0, Math.min(1, 1 - (y - 16) / 184)));
-      },
-      onPanResponderTerminationRequest: () => false,
-    }),
-  ).current;
+  const glass = useGlassSize();
 
   const params: DockParam[] = [
     {
@@ -1218,6 +1303,7 @@ function HandSection({ viz, focused, help, wellTop, wellBottom }: SectionProps) 
       onHelp={help}
       stage={{
         size: 'L', // three synchronized panels — earns the tall glass
+        fullScreen: true, // full-screen build 2026-09-30: the rack shows ⤢ FULL SCREEN; the 216-pt panel and its drag zoom together (HandStage)
         badge: 'THREE SYNCHRONIZED PANELS — mic & hand · polar pattern (ghost = intended cardioid) · frequency response. ILLUSTRATIVE MODEL',
         onGuide: () => help('hand_position'),
         bezel: [
@@ -1234,13 +1320,7 @@ function HandSection({ viz, focused, help, wellTop, wellBottom }: SectionProps) 
             helpKey: 'cupping_why',
           },
         ],
-        render: (w, h) => (
-          <View style={{ width: w, height: h, justifyContent: 'center' }}>
-            <View {...pan.panHandlers}>
-              {viz ? <viz.HandPlacementView width={w} pos01={pos} /> : <VizUnavailableCard />}
-            </View>
-          </View>
-        ),
+        render: (w, h) => <HandStage w={w} h={h} viz={viz} pos={pos} setPos={setPos} glass={glass} />,
       }}
     >
       {wellTop}
@@ -1259,6 +1339,69 @@ function HandSection({ viz, focused, help, wellTop, wellBottom }: SectionProps) 
       <CheckQuestion spec={CUP_CHECK} />
       {wellBottom}
     </RackUnit>
+  );
+}
+
+/**
+ * The hand-grip glass — one instance on the glass, a second inside FULL
+ * SCREEN (full-screen build 2026-09-30, hard rule D35). The panel is a fixed
+ * 216-pt drawing: on the glass it sits at scale 1 (shrinking only to fit a
+ * short glass); in full screen the box keeps the glass width over 216
+ * (GlassShape fixedH) and the panel is PAINTED at h ÷ 216, so each zoom step
+ * re-draws it sharp, larger. Each instance owns its own PanResponder and
+ * divides the finger by its own scale: the drag maps the canvas y-range
+ * 16…200 → pos 1…0 in panel points, unchanged.
+ */
+function HandStage({
+  w,
+  h,
+  viz,
+  pos,
+  setPos,
+  glass,
+}: {
+  w: number;
+  h: number;
+  viz: MsVizModule | null;
+  pos: number;
+  setPos: (p: number) => void;
+  glass: MutableRefObject<GlassSize | null>;
+}) {
+  const full = useContext(StageInFullScreen);
+  const s = full ? h / HAND_PANEL_H : Math.min(1, h / HAND_PANEL_H);
+  const sRef = useRef(s);
+  sRef.current = s;
+  const baseYRef = useRef(0); // anchored-drag base — see onPanResponderGrant
+  const pan = useRef(
+    PanResponder.create({
+      // Claim on TOUCH START — kept from the in-scroll era (harmless on the
+      // stage, where no ScrollView competes; the GRIP lane and the POSITION
+      // tray remain the no-drag alternatives).
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: (_e, gs) => Math.abs(gs.dy) > 2,
+      onPanResponderGrant: (e, gs) => {
+        // Anchor to the gesture's START Y (owner 2026-08-23): base + gestureState.dy
+        // reproduces the true finger Y without re-basing, so dragging past the
+        // canvas edge no longer whips the hand to the opposite end.
+        baseYRef.current = (e.nativeEvent.locationY - gs.dy) / sRef.current;
+        setPos(Math.max(0, Math.min(1, 1 - (baseYRef.current - 16) / 184)));
+      },
+      onPanResponderMove: (_e, gs) => {
+        // Drag the hand along the mic body: top of the canvas = full cup.
+        const y = baseYRef.current + gs.dy / sRef.current;
+        setPos(Math.max(0, Math.min(1, 1 - (y - 16) / 184)));
+      },
+      onPanResponderTerminationRequest: () => false,
+    }),
+  ).current;
+  return (
+    <GlassShape w={w} h={h} glass={glass} fixedH={HAND_PANEL_H}>
+      <View style={{ width: w, height: h, justifyContent: 'center' }}>
+        <View {...pan.panHandlers}>
+          {viz ? <viz.HandPlacementView width={w} pos01={pos} scale={s} /> : <VizUnavailableCard />}
+        </View>
+      </View>
+    </GlassShape>
   );
 }
 

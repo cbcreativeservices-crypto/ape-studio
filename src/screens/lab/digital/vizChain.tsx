@@ -41,6 +41,8 @@ import {
 } from 'react-native-reanimated';
 import { fonts } from '../../../theme/tokens';
 import { rampColors } from '../../../features/tools/levelColor';
+import { useStageTextScale } from '../rack/stageAspect';
+import { SText } from '../stageScale';
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 
 const BG = '#0c0c0f';
@@ -803,8 +805,12 @@ export function GainStagingView({
   /** Pre-conversion peak level the slider commands, dB re full scale. */
   driveDb: number;
 }) {
-  const w = width;
-  const h = height;
+  // FULL SCREEN (D35): laid out at the glass size and painted through a
+  // scaled Group — wave, rails, meters, lamps and zone strip zoom as one
+  // picture; the overlay labels (SText) grow with it. 1 on the glass.
+  const ts = useStageTextScale();
+  const w = width / ts;
+  const h = height / ts;
   const PL = 8;
   const meterW = 14;
   const meterGap = 10;
@@ -962,8 +968,9 @@ export function GainStagingView({
   const markerX = dbToX(driveDb);
 
   return (
-    <View style={{ width: w, height: h }}>
-      <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
+    <View style={{ width, height }}>
+      <Canvas style={{ position: 'absolute', width, height, backgroundColor: BG }}>
+        <Group transform={[{ scale: ts }]}>
         <Path path={frame} color={GHOST} style="stroke" strokeWidth={1} />
         {/* Analog rail (the preamp's own limit) — OUTSIDE digital full scale */}
         <Path path={railLines} color={withAlpha(RED, 0.4)} style="stroke" strokeWidth={1}>
@@ -1014,27 +1021,28 @@ export function GainStagingView({
           <RoundedRect key={z.label} x={z.x0} y={zoneY} width={z.x1 - z.x0 - 1.5} height={8} r={2} color={withAlpha(z.c, 0.3)} />
         ))}
         <RoundedRect x={Math.min(Math.max(markerX - 1.5, PL), w - 11)} y={zoneY - 3} width={3} height={14} r={1.5} color={LINE} />
+        </Group>
       </Canvas>
-      <RNText style={{ position: 'absolute', left: PL + 4, top: fsY - 11, fontFamily: fonts.mono, fontSize: 9, color: withAlpha(RED, 0.9) }}>
+      <SText style={{ position: 'absolute', left: PL + 4, top: fsY - 11, fontFamily: fonts.mono, fontSize: 9, color: withAlpha(RED, 0.9) }}>
         0 dBFS (digital full scale)
-      </RNText>
+      </SText>
       {/* Right end of the rail: the rail sits only ~3 dB (≈ 10 pt on a 200-pt
           stage) above full scale, so at the left it printed on top of the
           "0 dBFS" label (bug pass 2 2026-09-30). */}
-      <RNText style={{ position: 'absolute', right: w - plotR + 4, top: top - 1, fontFamily: fonts.mono, fontSize: 9, color: withAlpha(RED, 0.55) }}>
+      <SText style={{ position: 'absolute', right: w - plotR + 4, top: top - 1, fontFamily: fonts.mono, fontSize: 9, color: withAlpha(RED, 0.55) }}>
         analog rail
-      </RNText>
-      <RNText style={{ position: 'absolute', left: PL + 4, top: mid + 6, fontFamily: fonts.mono, fontSize: 9, color: AXIS_TEXT }}>
+      </SText>
+      <SText style={{ position: 'absolute', left: PL + 4, top: mid + 6, fontFamily: fonts.mono, fontSize: 9, color: AXIS_TEXT }}>
         noise floor (drawn)
-      </RNText>
-      <RNText style={{ position: 'absolute', left: mAx - 6, width: meterW + 12, top: mBot + 2, textAlign: 'center', fontFamily: fonts.barlowCondensedSemiBold, fontSize: 9, color: AXIS_TEXT }}>
+      </SText>
+      <SText style={{ position: 'absolute', left: mAx - 6, width: meterW + 12, top: mBot + 2, textAlign: 'center', fontFamily: fonts.barlowCondensedSemiBold, fontSize: 9, color: AXIS_TEXT }}>
         ANLG
-      </RNText>
-      <RNText style={{ position: 'absolute', left: mDx - 6, width: meterW + 12, top: mBot + 2, textAlign: 'center', fontFamily: fonts.barlowCondensedSemiBold, fontSize: 9, color: AXIS_TEXT }}>
+      </SText>
+      <SText style={{ position: 'absolute', left: mDx - 6, width: meterW + 12, top: mBot + 2, textAlign: 'center', fontFamily: fonts.barlowCondensedSemiBold, fontSize: 9, color: AXIS_TEXT }}>
         DIG
-      </RNText>
+      </SText>
       {zones.map((z) => (
-        <RNText
+        <SText
           key={z.label}
           style={{
             position: 'absolute',
@@ -1049,7 +1057,7 @@ export function GainStagingView({
           }}
         >
           {z.label}
-        </RNText>
+        </SText>
       ))}
     </View>
   );
@@ -1261,8 +1269,11 @@ export function FloatHeadroomView({
   /** When true, a −gain trim is applied downstream (animated). */
   trim: boolean;
 }) {
-  const w = width;
-  const h = height;
+  // FULL SCREEN (D35): glass-size layout painted through a scaled Group; the
+  // pane plates, waves, flats and meters zoom as one picture with the labels.
+  const ts = useStageTextScale();
+  const w = width / ts;
+  const h = height / ts;
   const paneW = (w - 24) / 2;
   const x0 = 8;
   const x1 = 16 + paneW;
@@ -1386,8 +1397,9 @@ export function FloatHeadroomView({
   const floatOver = busDb > 0.01 && !trim;
 
   return (
-    <View style={{ width: w, height: h }}>
-      <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
+    <View style={{ width, height }}>
+      <Canvas style={{ position: 'absolute', width, height, backgroundColor: BG }}>
+        <Group transform={[{ scale: ts }]}>
         {/* Pane plates */}
         {[x0, x1].map((px) => (
           <RoundedRect key={px} x={px - 3} y={top - 4} width={paneW + 6} height={plotH + 8} r={7} style="stroke" strokeWidth={1} color={GHOST} />
@@ -1419,22 +1431,23 @@ export function FloatHeadroomView({
           <LinearGradient start={vec(x1 + paneW, 0)} end={vec(x1, 0)} colors={METER_RAMP} />
         </Path>
         <Path path={statics.zeroMarks} color={withAlpha(RED, 0.85)} style="stroke" strokeWidth={1.2} />
+        </Group>
       </Canvas>
-      <RNText style={{ position: 'absolute', left: x0, width: paneW, top: 6, fontFamily: fonts.barlowCondensedSemiBold, fontSize: 9.5, letterSpacing: 0.6, color: trim ? GREEN : BLUE }}>
+      <SText style={{ position: 'absolute', left: x0, width: paneW, top: 6, fontFamily: fonts.barlowCondensedSemiBold, fontSize: 9.5, letterSpacing: 0.6, color: trim ? GREEN : BLUE }}>
         FLOAT INTERNAL PATH
-      </RNText>
-      <RNText style={{ position: 'absolute', left: x1, width: paneW, top: 6, fontFamily: fonts.barlowCondensedSemiBold, fontSize: 9.5, letterSpacing: 0.6, color: AXIS_TEXT }}>
+      </SText>
+      <SText style={{ position: 'absolute', left: x1, width: paneW, top: 6, fontFamily: fonts.barlowCondensedSemiBold, fontSize: 9.5, letterSpacing: 0.6, color: AXIS_TEXT }}>
         FIXED-POINT RENDER (24-BIT)
-      </RNText>
-      <RNText style={{ position: 'absolute', left: x0 + 3, top: mid - fsOff - 12, fontFamily: fonts.mono, fontSize: 9, color: withAlpha(RED, 0.85) }}>
+      </SText>
+      <SText style={{ position: 'absolute', left: x0 + 3, top: mid - fsOff - 12, fontFamily: fonts.mono, fontSize: 9, color: withAlpha(RED, 0.85) }}>
         0 dBFS
-      </RNText>
-      <RNText style={{ position: 'absolute', left: x0, width: paneW, top: meterY + meterH + 4, fontFamily: fonts.mono, fontSize: 9, color: floatOver ? AMBER : GREEN }}>
+      </SText>
+      <SText style={{ position: 'absolute', left: x0, width: paneW, top: meterY + meterH + 4, fontFamily: fonts.mono, fontSize: 9, color: floatOver ? AMBER : GREEN }}>
         {trim ? `restored: ${(-6).toFixed(1)} dBFS — intact` : `bus peak: ${busDb >= 0 ? '+' : ''}${busDb.toFixed(1)} dBFS`}
-      </RNText>
-      <RNText style={{ position: 'absolute', left: x1, width: paneW, top: meterY + meterH + 4, fontFamily: fonts.mono, fontSize: 9, color: busDb > 0.01 ? RED : GREEN }}>
+      </SText>
+      <SText style={{ position: 'absolute', left: x1, width: paneW, top: meterY + meterH + 4, fontFamily: fonts.mono, fontSize: 9, color: busDb > 0.01 ? RED : GREEN }}>
         {busDb > 0.01 ? (trim ? 'quieter — still clipped' : 'flat-topped at 0.0 dBFS') : `peak: ${busDb.toFixed(1)} dBFS`}
-      </RNText>
+      </SText>
     </View>
   );
 }

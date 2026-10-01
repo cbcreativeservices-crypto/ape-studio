@@ -198,6 +198,7 @@ export function QuantModule(p: DigitalModuleProps) {
       params={params}
       onHelp={p.help}
       stage={{
+        fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'L', // the step grid + whiskers are the lesson
         badge: errorOnly
           ? `ERROR VIEW — VERTICAL ZOOM ×${fmtGroup(levels)} (±½ STEP FILLS THE PANEL)`
@@ -407,6 +408,7 @@ export function BinaryModule(p: DigitalModuleProps) {
       params={params}
       onHelp={p.help}
       stage={{
+        fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'M', // the 28-sample strip reads fine at medium height
         onGuide: () => p.help('binary_sample'),
         bezel: [

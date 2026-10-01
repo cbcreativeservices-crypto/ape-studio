@@ -27,10 +27,11 @@
  * the accessible Svg (an `accessible` ancestor would flatten them away from
  * VoiceOver — design pass 2026-09-10).
  */
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { AccessibilityInfo, Animated, Easing, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { resolvePair, type PairState } from '../engine/patchbay';
 
 /* Animated SVG parts — module level, or every render makes a new component
@@ -59,6 +60,12 @@ const TOP_Y = 96; // top jack center
 const BOT_Y = 208; // bottom jack center
 const DASH = 12; // marching-dash period
 const FACE_H = 66;
+/** Gap between the faceplate strip and the schematic, in viewBox units, so
+ *  the two drawings + gap are ONE fixed-aspect figure for FULL SCREEN
+ *  (full-screen pass 2026-09-30): aspect = W ÷ (FACE_H + FACE_GAP + H). */
+const FACE_GAP = 6;
+export const PATCH_PAIR_ASPECT = W / (FACE_H + FACE_GAP + H);
+export const PATCH_PAIR_ASPECT_BARE = W / H;
 
 /** One flowing/idle line along an SVG path. Marching dashes while `flowing`
  *  (static solid under reduce-motion), dim when merely possible. Shared with
@@ -133,7 +140,7 @@ function JackGlyph({ y, plugged, label }: { y: number; plugged: boolean; label: 
  *  aligned with the schematic spine below, dim neighbor columns for context
  *  (design pass 2026-09-10 — the old strip drew the pair side-by-side and
  *  fought the lab's own "signal falls downhill" model). */
-function Faceplate({ topPlugged, bottomPlugged }: { topPlugged: boolean; bottomPlugged: boolean }) {
+function Faceplate({ topPlugged, bottomPlugged, w }: { topPlugged: boolean; bottomPlugged: boolean; w: number }) {
   const ROW_TOP = 22;
   const ROW_BOT = 48;
   const neighbor = (cx: number, cy: number) => (
@@ -149,7 +156,7 @@ function Faceplate({ topPlugged, bottomPlugged }: { topPlugged: boolean; bottomP
     </G>
   );
   return (
-    <Svg width="100%" height={undefined} viewBox={`0 0 ${W} ${FACE_H}`} style={{ aspectRatio: W / FACE_H }}>
+    <Svg width={w} height={(w * FACE_H) / W} viewBox={`0 0 ${W} ${FACE_H}`}>
       <Rect x={0} y={2} width={W} height={FACE_H - 4} rx={6} fill={PB.panel} stroke={PB.panelEdge} />
       <Circle cx={12} cy={FACE_H / 2} r={2.4} fill="#3a3b41" />
       <Circle cx={W - 12} cy={FACE_H / 2} r={2.4} fill="#3a3b41" />
@@ -194,11 +201,18 @@ export type PatchPairViewProps = {
    *  false, connected paths render dim (possible, inactive) and the status
    *  says the source is idle. */
   sourceLive?: boolean;
+  /** The page's controls for this pair (goal chips, buttons, a slider),
+   *  docked under the drawing in FULL SCREEN so the learner can patch AND
+   *  operate there (owner rule D35, full-screen pass 2026-09-30). The status
+   *  line and caption ride at the top of the dock as the readouts. */
+  controls?: ReactNode;
+  /** Title in the full-screen bar (default PATCH PAIR). */
+  fsTitle?: string;
 };
 
 export function PatchPairView({
   state, sourceLabel, destLabel, topPatchLabel = 'PATCH DESTINATION', bottomPatchLabel = 'ALTERNATE SOURCE',
-  onToggleJack, reduceMotion, hideFaceplate, caption, sourceLive = true,
+  onToggleJack, reduceMotion, hideFaceplate, caption, sourceLive = true, controls, fsTitle = 'PATCH PAIR',
 }: PatchPairViewProps) {
   const flow = resolvePair(state);
   const anythingFlowing = ((flow.normalActive || flow.topFeedsPatch) && sourceLive) || flow.bottomFeedsDestination;
@@ -268,14 +282,48 @@ export function PatchPairView({
     `Patch pair, ${state.config === 'thru' ? 'thru' : state.config === 'full' ? 'full normal' : 'half normal'} configuration. ` +
     `Top jack ${state.topPlugged ? 'has a patch cord' : 'empty'}, bottom jack ${state.bottomPlugged ? 'has a patch cord' : 'empty'}. ${status}.`;
 
+  // The status line (and the page's caption) are the pair's READOUTS: under
+  // the drawing on the page, and at the top of the docked controls in FULL
+  // SCREEN — the same elements, so they can never disagree.
+  const statusEl = (
+    <Text
+      style={[
+        styles.status,
+        flow.isSplit && { color: PB.flow },
+        flow.normalBroken && { color: hazard ? PB.hazard : PB.break },
+      ]}
+      accessibilityLiveRegion="polite"
+    >
+      {status}
+    </Text>
+  );
+  const captionEl = caption ? <Text style={styles.caption}>{caption}</Text> : null;
+
   return (
     <View style={styles.wrap}>
-      {!hideFaceplate ? <Faceplate topPlugged={state.topPlugged} bottomPlugged={state.bottomPlugged} /> : null}
-      <View style={{ width: '100%' }}>
+      {/* Faceplate + schematic are ONE fixed-aspect drawing through
+          ExpandableFigure: the same taps at the page width and at the zoomed
+          size, "⤢ FULL SCREEN" under it, the page's controls docked there
+          (full-screen pass 2026-09-30). The gap between the two SVGs is in
+          viewBox units so the stack keeps its aspect at every zoom. */}
+      <ExpandableFigure
+        aspect={hideFaceplate ? PATCH_PAIR_ASPECT_BARE : PATCH_PAIR_ASPECT}
+        title={fsTitle}
+        controls={
+          <View style={styles.dock}>
+            {statusEl}
+            {captionEl}
+            {controls}
+          </View>
+        }
+        render={(w) => (
+      <View style={{ width: w, gap: (w * FACE_GAP) / W }}>
+      {!hideFaceplate ? <Faceplate topPlugged={state.topPlugged} bottomPlugged={state.bottomPlugged} w={w} /> : null}
+      <View style={{ width: w, height: (w * H) / W }}>
         {/* The Svg is the accessible image node; the tap overlays are its
             SIBLINGS so screen readers reach them (an accessible ancestor would
             flatten them away). */}
-        <Svg accessible accessibilityRole="image" accessibilityLabel={a11y} width="100%" height={undefined} viewBox={`0 0 ${W} ${H}`} style={{ aspectRatio: W / H }}>
+        <Svg accessible accessibilityRole="image" accessibilityLabel={a11y} width={w} height={(w * H) / W} viewBox={`0 0 ${W} ${H}`}>
           {/* SOURCE device and its permanent rear wiring down to the TOP jack */}
           <DeviceBox y={10} label={sourceLabel} sub="SOURCE · OUTPUT" accent={PB.source} />
           <FlowPath d={`M ${CX} 44 L ${CX} ${TOP_Y - 11}`} flowing={sourceLive} phase={phase} reduceMotion={reduceMotion} />
@@ -381,17 +429,11 @@ export function PatchPairView({
           </>
         ) : null}
       </View>
-      <Text
-        style={[
-          styles.status,
-          flow.isSplit && { color: PB.flow },
-          flow.normalBroken && { color: hazard ? PB.hazard : PB.break },
-        ]}
-        accessibilityLiveRegion="polite"
-      >
-        {status}
-      </Text>
-      {caption ? <Text style={styles.caption}>{caption}</Text> : null}
+      </View>
+        )}
+      />
+      {statusEl}
+      {captionEl}
     </View>
   );
 }
@@ -408,6 +450,8 @@ const styles = StyleSheet.create({
    *  ⚠️ The dev harness caps itself at maxWidth 480 — BELOW the break-even — so
    *  this is structurally invisible on the one surface a developer can drive. */
   jackTap: { position: 'absolute', left: 0, width: '52%', height: `${(52 / H) * 100}%`, minHeight: 44 },
+  /** The full-screen dock: readouts (status, caption) then the page's controls. */
+  dock: { paddingHorizontal: 12, gap: 8 },
   status: { color: colors.textSecondary, fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17 },
   caption: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
 });

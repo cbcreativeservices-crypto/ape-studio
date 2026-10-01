@@ -43,6 +43,7 @@ import {
 } from '@shopify/react-native-skia';
 import { Easing, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { colors, fonts } from '../../../theme/tokens';
+import { useStageTextScale } from '../rack/stageAspect';
 
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 
@@ -96,11 +97,11 @@ function smoothThrough(xs: number[], ys: number[]): SkPathT {
  * clipping error near 0 dBFS is visually clamped at the frame edge).
  */
 export function QuantView({
-  width,
+  width: fullW,
   bits,
   levelDb,
   errorOnly,
-  height = 184,
+  height: fullH = 184,
 }: {
   width: number;
   bits: number;
@@ -109,7 +110,12 @@ export function QuantView({
   errorOnly: boolean;
   height?: number;
 }) {
-  const H = height;
+  // FULL SCREEN (D35): the grid, dots, whiskers and glows are laid out at
+  // the glass size and painted through a scaled Group, so the whole picture
+  // zooms with the step. 1 on the glass = unchanged.
+  const ts = useStageTextScale();
+  const width = fullW / ts;
+  const H = fullH / ts;
   const geo = useMemo(() => {
     const padX = 10;
     const innerW = width - padX * 2;
@@ -200,7 +206,8 @@ export function QuantView({
   const { padX, midY, ampPx, levelLines, drawIndividual, sigPath, origDots, quantDots, whiskers, recon, errPath, errFill } = geo;
 
   return (
-    <Canvas style={{ width, height: H, backgroundColor: BG, borderRadius: 8 }}>
+    <Canvas style={{ width: fullW, height: fullH, backgroundColor: BG, borderRadius: 8 }}>
+      <Group transform={[{ scale: ts }]}>
       {/* Zero / midline (both views). */}
       <SkLine p1={{ x: padX, y: midY }} p2={{ x: width - padX, y: midY }} color="#3a3a42" strokeWidth={1} />
       {errorOnly ? (
@@ -252,6 +259,7 @@ export function QuantView({
           <Path path={quantDots} color={ACCENT_GREEN} />
         </Group>
       )}
+      </Group>
     </Canvas>
   );
 }
@@ -476,11 +484,11 @@ const INS_PAD = 14;
  * signed 16-bit ints, normalized here as v/32768.
  */
 export function InspectStripView({
-  width,
+  width: fullW,
   values,
   selected,
   onSelect,
-  height = INS_H,
+  height: fullH = INS_H,
 }: {
   width: number;
   /** Signed 16-bit sample values (−32768..32767). */
@@ -489,7 +497,11 @@ export function InspectStripView({
   onSelect: (i: number) => void;
   height?: number;
 }) {
-  const h = height;
+  // FULL SCREEN (D35): glass-size layout painted through a scaled Group;
+  // the finger's X is divided by the same scale so the pick stays true.
+  const ts = useStageTextScale();
+  const width = fullW / ts;
+  const h = fullH / ts;
   const n = values.length;
   const innerW = width - INS_PAD * 2;
   const dx = n > 1 ? innerW / (n - 1) : innerW;
@@ -501,8 +513,10 @@ export function InspectStripView({
   dxRef.current = dx;
   const nRef = useRef(n);
   nRef.current = n;
+  const tsRef = useRef(ts);
+  tsRef.current = ts;
   const pick = (locX: number) => {
-    const i = Math.round((locX - INS_PAD) / dxRef.current);
+    const i = Math.round((locX / tsRef.current - INS_PAD) / dxRef.current);
     onSelectRef.current(Math.max(0, Math.min(nRef.current - 1, i)));
   };
   const baseXRef = useRef(0); // anchored-drag base — avoids locationX re-base whip
@@ -547,7 +561,8 @@ export function InspectStripView({
 
   return (
     <View {...pan.panHandlers}>
-      <Canvas pointerEvents="none" style={{ width, height: h, backgroundColor: BG, borderRadius: 8 }}>
+      <Canvas pointerEvents="none" style={{ width: fullW, height: fullH, backgroundColor: BG, borderRadius: 8 }}>
+        <Group transform={[{ scale: ts }]}>
         <SkLine p1={{ x: INS_PAD - 6, y: geo.midY }} p2={{ x: width - INS_PAD + 6, y: geo.midY }} color="#3a3a42" strokeWidth={1} />
         <Path path={geo.trace} color={ACCENT_BLUE} style="stroke" strokeWidth={3.4} opacity={0.16}>
           <BlurMask blur={4} style="normal" />
@@ -562,6 +577,7 @@ export function InspectStripView({
         </Circle>
         <Circle cx={selX} cy={selY} r={4.4} color={ACCENT_GREEN} />
         <Circle cx={selX} cy={selY} r={6.5} color={ACCENT_GREEN} style="stroke" strokeWidth={1} opacity={0.8} />
+        </Group>
       </Canvas>
     </View>
   );

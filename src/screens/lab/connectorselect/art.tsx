@@ -10,9 +10,11 @@
  * layer lists in data/practice.ts. Diagrammatic, not photoreal — these are
  * teaching sections, and nothing here pretends to be a measurement.
  */
+import type { ReactNode } from 'react';
 import { View } from 'react-native';
 import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
-import { colors } from '../../../theme/tokens';
+import { colors, fonts } from '../../../theme/tokens';
+import { ExpandableFigure } from '../kit/ExpandableFigure';
 import type { SectionKind } from './data/practice';
 
 /* ── exploded cable ──────────────────────────────────────────────────────── */
@@ -45,12 +47,21 @@ const HIT_ZONES: readonly { id: string; x: number; w: number }[] = [
   { id: 'conductors', x: 314, w: 46 },
 ];
 
-export function ExplodedCable({ selected, onSelect }: { selected: string | null; onSelect: (id: string) => void }) {
+const EXPLODED_W = 360;
+const EXPLODED_H = 150;
+
+/** `controls`: the page's readout for the selected part, docked under the
+ *  drawing in FULL SCREEN (D35, full-screen pass 2026-09-30); the SVG hit
+ *  zones are the control itself and keep working at every zoom. The drawing
+ *  is rendered through ExpandableFigure at (w, w ÷ aspect) — it used to be a
+ *  fixed 150 pt tall and letterboxed at every width. */
+export function ExplodedCable({ selected, onSelect, controls }: { selected: string | null; onSelect: (id: string) => void; controls?: ReactNode }) {
   const hi = (id: string) => (selected === id ? INK.hi : undefined);
   const sw = (id: string) => (selected === id ? 2.5 : 1);
   return (
-    <View accessible accessibilityRole="image" accessibilityLabel="Exploded cable diagram: equipment jack on the left, then the plug, strain relief, and the cable opened up layer by layer — jacket, shield, insulation, signal conductors. Tap a zone or use the part list below.">
-      <Svg viewBox="0 0 360 150" width="100%" height={150}>
+    <ExpandableFigure aspect={EXPLODED_W / EXPLODED_H} title="THE CABLE" controls={controls} render={(w, h) => (
+    <View style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel="Exploded cable diagram: equipment jack on the left, then the plug, strain relief, and the cable opened up layer by layer — jacket, shield, insulation, signal conductors. Tap a zone or use the part list below.">
+      <Svg viewBox={`0 0 ${EXPLODED_W} ${EXPLODED_H}`} width={w} height={h}>
         {/* equipment panel + jack */}
         <Rect x={4} y={30} width={46} height={90} rx={6} fill={INK.panel} stroke={hi('jack') ?? '#33373d'} strokeWidth={sw('jack')} onPress={() => onSelect('jack')} />
         <Circle cx={27} cy={75} r={14} fill="#0c0d0f" stroke={hi('jack') ?? INK.metalDark} strokeWidth={sw('jack')} onPress={() => onSelect('jack')} />
@@ -102,7 +113,9 @@ export function ExplodedCable({ selected, onSelect }: { selected: string | null;
           <Rect x={314} y={68} width={40} height={3.4} fill={INK.copper} stroke={hi('conductors') ?? '#a8862c'} strokeWidth={sw('conductors') - 0.5} />
           <Rect x={314} y={79} width={40} height={3.4} fill={INK.copper} stroke={hi('conductors') ?? '#a8862c'} strokeWidth={sw('conductors') - 0.5} />
         </G>
-        <SvgText x={334} y={60} fill={hi('conductors') ?? '#7d8590'} fontSize={10} textAnchor="middle">CONDUCTORS</SvgText>
+        {/* Anchored at the right edge: centred on 334 it ran past the
+            viewBox and read "CONDUCTOR" (full-screen pass 2026-09-30). */}
+        <SvgText x={357} y={60} fill={hi('conductors') ?? '#7d8590'} fontSize={10} textAnchor="end">CONDUCTORS</SvgText>
 
         {/* full-height invisible tap zones on top — the real touch targets */}
         {HIT_ZONES.map((z) => (
@@ -110,6 +123,7 @@ export function ExplodedCable({ selected, onSelect }: { selected: string | null;
         ))}
       </Svg>
     </View>
+    )} />
   );
 }
 
@@ -126,7 +140,10 @@ function Pair({ cx, cy, r = 7, gap = 8, tint = INK.copper }: { cx: number; cy: n
   );
 }
 
-export function CrossSectionView({ kind }: { kind: SectionKind }) {
+/** `width`: the inline size (the page sets it beside the photograph);
+ *  `controls`: the page's construction picker + layer readout, docked under
+ *  the section in FULL SCREEN (full-screen pass 2026-09-30). */
+export function CrossSectionView({ kind, width = 120, a11y, controls }: { kind: SectionKind; width?: number; a11y?: string; controls?: ReactNode }) {
   const C = 60; // center
   let inner: React.ReactNode = null;
   let rings: { r: number; fill: string; stroke?: string }[] = [];
@@ -208,12 +225,16 @@ export function CrossSectionView({ kind }: { kind: SectionKind }) {
       break;
   }
   return (
-    <Svg viewBox="0 0 120 120" width={120} height={120}>
+    <ExpandableFigure aspect={1} width={width} title="CROSS-SECTION" controls={controls} render={(w, h) => (
+    <View style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={a11y}>
+    <Svg viewBox="0 0 120 120" width={w} height={h}>
       {rings.map((ring, i) => (
         <Circle key={i} cx={C} cy={C} r={ring.r} fill={ring.fill} stroke={ring.stroke ?? '#0c0d0f'} strokeWidth={1} />
       ))}
       {inner}
     </Svg>
+    </View>
+    )} />
   );
 }
 
@@ -226,5 +247,55 @@ export function Lamp({ state, pulse }: { state: 'lit' | 'dark' | 'flicker'; puls
       <Circle cx={14} cy={14} r={11} fill={fill} stroke="#0c0d0f" strokeWidth={2} opacity={state === 'flicker' && pulse ? 0.35 : 1} />
       {state !== 'dark' ? <Circle cx={10.5} cy={10.5} r={3} fill="#ffffff" opacity={0.5} /> : null}
     </Svg>
+  );
+}
+
+const FACE_W = 340;
+const FACE_H = 72;
+
+/**
+ * TesterFace — the continuity tester's face as ONE drawing: the lamp, the
+ * two test points under probe and the lamp's word, all SVG so everything
+ * zooms (D35, full-screen pass 2026-09-30). Rendered through
+ * ExpandableFigure; the page docks its END A / END B keys and the FLEX ·
+ * INSPECT · RESEAT actions under it (`controls`) so the whole bench works
+ * in full screen. Text ≥ 9 in a 340-wide viewBox.
+ */
+export function TesterFace({ state, pulse, a, b, word, controls }: {
+  state: 'lit' | 'dark' | 'flicker';
+  pulse?: boolean;
+  /** Contact names under probe at each end, or null before a pick. */
+  a: string | null;
+  b: string | null;
+  /** The lamp's word (LIT / FLICKERING / DARK / PICK A + B). */
+  word: string;
+  controls?: ReactNode;
+}) {
+  const fill = state === 'lit' ? colors.green : state === 'flicker' ? colors.gold : '#26262b';
+  const wordColor = state === 'lit' ? colors.green : state === 'flicker' ? colors.gold : colors.textMuted;
+  const ready = a != null && b != null;
+  const a11y = ready ? `Continuity lamp ${word}: end A ${a} to end B ${b}.` : 'Continuity tester: pick a test point on each end to read the lamp.';
+  return (
+    <ExpandableFigure aspect={FACE_W / FACE_H} title="THE TESTER" controls={controls} render={(w, h) => (
+    <View style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={a11y}>
+    <Svg viewBox={`0 0 ${FACE_W} ${FACE_H}`} width={w} height={h}>
+      <Rect x={0} y={0} width={FACE_W} height={FACE_H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
+      <SvgText x={10} y={14} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={1.4}>CONTINUITY TESTER</SvgText>
+      {/* the lamp */}
+      <Circle cx={40} cy={42} r={18} fill="#141416" stroke="#2c2c33" strokeWidth={1} />
+      <Circle cx={40} cy={42} r={14} fill={fill} stroke="#0c0d0f" strokeWidth={2} opacity={state === 'flicker' && pulse ? 0.35 : 1} />
+      {state !== 'dark' ? <Circle cx={35.5} cy={37.5} r={4} fill="#ffffff" opacity={0.5} /> : null}
+      <SvgText x={40} y={68} fontSize={9} fill={wordColor} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={1}>{ready ? word : 'LAMP'}</SvgText>
+      {/* the two probes: END A → lamp → END B */}
+      <SvgText x={80} y={32} fontSize={9} fill={colors.amberLabel} fontFamily={fonts.oswaldMedium} letterSpacing={1.4}>END A</SvgText>
+      <SvgText x={80} y={48} fontSize={12} fill={a ? colors.textPrimary : colors.textMuted} fontFamily={fonts.oswaldMedium}>{a ?? '—'}</SvgText>
+      <Line x1={178} y1={42} x2={200} y2={42} stroke={ready ? wordColor : '#3a3b41'} strokeWidth={2} strokeLinecap="round" />
+      <Path d="M 196 37 L 202 42 L 196 47" fill="none" stroke={ready ? wordColor : '#3a3b41'} strokeWidth={2} strokeLinecap="round" />
+      <SvgText x={212} y={32} fontSize={9} fill={colors.amberLabel} fontFamily={fonts.oswaldMedium} letterSpacing={1.4}>END B</SvgText>
+      <SvgText x={212} y={48} fontSize={12} fill={b ? colors.textPrimary : colors.textMuted} fontFamily={fonts.oswaldMedium}>{b ?? '—'}</SvgText>
+      <SvgText x={80} y={66} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={1}>{ready ? `PATH A→B: ${word}` : 'PICK A + B'}</SvgText>
+    </Svg>
+    </View>
+    )} />
   );
 }
