@@ -232,6 +232,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-01 06:13 · ccode · 6d7b3b93
+changed: Night bug pass 3 of 3 (2026-10-01): 36 new fixes + 7 corrections
+affects other side: nothing (client only)
+needs: nothing
+
+
 ### 2026-10-01 05:57 · ccode · 049bf10d
 changed: Night bug pass 2 of 3 (2026-10-01): 59 new fixes + 7 corrections
 affects other side: nothing (client only)
