@@ -50,6 +50,8 @@ async function boundedSignIn<T extends { data: { session?: unknown } | null }>(
   } catch (e) {
     void call.then(
       (late) => {
+        // signOutThisDevice re-checks for a newer sign-in before it removes
+        // anything (night bug pass 3) — one may start during its server wait.
         if (!late?.data?.session || mine !== signInAttempt) return;
         markIntentionalSignOut();
         void signOutThisDevice();
@@ -143,11 +145,12 @@ export async function ensureSession(email: string, password: string): Promise<st
     // scope 'local' (bug pass 2, 2026-09-30): dropping the half-created
     // session on THIS device must not revoke the account's other sessions.
     markIntentionalSignOut();
-    try {
-      await supabase.auth.signOut({ scope: 'local' });
-    } catch {
-      // signUp below replaces the session either way.
-    }
+    // signOutThisDevice (night bug pass 3, 2026-10-01) — local scope, bounded,
+    // never rejects. A bare signOut() that stalled held CREATE ACCOUNT on a
+    // spinner with every button hidden, and one that answered late removed the
+    // account signUp below had just created. (signUp replaces the session
+    // either way, so a failure here still changes nothing.)
+    await signOutThisDevice();
   }
 
   const { data, error: signUpError } = await boundedSignIn(
@@ -201,23 +204,87 @@ export async function ensureSession(email: string, password: string): Promise<st
  * Never rejects. The caller marks the sign-out intentional first.
  */
 export async function signOutThisDevice(): Promise<void> {
-  const attempt = () =>
-    softDeadline<unknown>(
-      async () => (await supabase.auth.signOut({ scope: 'local' })).error ?? null,
-      new Error('signOut failed'),
-      'signOut',
-      8000,
-    );
-  let error = await attempt();
-  if (error) {
-    markIntentionalSignOut(); // the 8 s marker may have lapsed during the first try
-    error = await attempt();
+  /**
+   * ⛔ NO signOut() LEFT IN FLIGHT (night bug pass 3, 2026-10-01). This used to
+   * call supabase-js's signOut and, after 8 s, give up waiting on it. The
+   * deadline cannot cancel it: a stalled call that answered later still ran
+   * signOut's local half — removing WHATEVER session was stored by then. Signed
+   * back in meanwhile, the person lost the NEW session to the old call. So the
+   * server half (revoking THIS session's token — a late answer touches only
+   * that token) and the local half (removing the stored session) are now done
+   * separately, and only the local half, which this function runs itself after
+   * the bounded wait, can touch what is stored.
+   */
+  const gen = signInAttempt;
+  const tokenOf = (s: unknown) => (s as { access_token?: string } | null)?.access_token ?? null;
+  const token = tokenOf((await safeSession(supabase.auth.getSession(), 'signOutThisDevice')).data.session);
+  if (token) {
+    const revoke = () =>
+      softDeadline<unknown>(
+        async () => (await supabase.auth.admin.signOut(token, 'local')).error ?? null,
+        new Error('signOut failed'),
+        'signOut',
+        8000,
+      );
+    if (await revoke()) await revoke(); // one retry, as before
   }
-  if (error) {
-    markIntentionalSignOut();
-    const auth = supabase.auth as unknown as { _removeSession?: () => Promise<void> };
+  // A NEWER SIGN-IN WON while the server half was waiting: its session is the
+  // one stored now, and it is not this function's to remove. (A newer attempt
+  // that has not landed, or failed, leaves the old token stored — removed.)
+  if (gen !== signInAttempt) {
+    const now = tokenOf((await safeSession(supabase.auth.getSession(), 'signOutThisDevice')).data.session);
+    if (now !== token) return;
+  }
+  markIntentionalSignOut();
+  const auth = supabase.auth as unknown as { _removeSession?: () => Promise<void> };
+  if (typeof auth._removeSession === 'function') {
     await softDeadline(async () => await auth._removeSession?.(), undefined, 'removeSession', 5000);
+  } else {
+    // A supabase-js without the private local half: the public sign-out, bounded.
+    await softDeadline(async () => void (await supabase.auth.signOut({ scope: 'local' })), undefined, 'signOut', 8000);
   }
+}
+
+/**
+ * The deliberate, REFUSING sign-out (Guest Mode) without a call left in flight
+ * (night bug pass 3, 2026-10-01). Same contract as `signOut({ scope: 'local' })`
+ * — on any failure, `{ error }` and the session KEPT; a stall rejects with
+ * "signOut timeout" — but the server half and the local half are split as in
+ * signOutThisDevice, so a refused (timed-out) call can never land later and
+ * remove a session the person signed into after the refusal.
+ */
+export async function signOutLocalRefusing(ms: number): Promise<{ error: Error | null }> {
+  // Not safeSession: its timeout reads as "no session", which would skip the
+  // server half and drop a live account locally. A stalled read refuses.
+  let session: unknown;
+  try {
+    session = (await withDeadline(() => supabase.auth.getSession(), 'signOut', ms)).data.session;
+  } catch (e) {
+    return { error: e as Error };
+  }
+  const token = (session as { access_token?: string } | null)?.access_token ?? null;
+  if (token) {
+    let error: Error | null;
+    try {
+      error = (await withDeadline(async () => (await supabase.auth.admin.signOut(token, 'local')).error, 'signOut', ms)) ?? null;
+    } catch (e) {
+      return { error: e as Error }; // the stall: "signOut timeout after …"
+    }
+    // As supabase-js: a token the server no longer knows (401/403/404) is
+    // already signed out there, and the local half goes ahead.
+    const status = (error as { status?: number } | null)?.status;
+    if (error && status !== 401 && status !== 403 && status !== 404) return { error };
+  }
+  // Re-marked: the caller's 8 s marker can lapse across the two bounded waits.
+  markIntentionalSignOut();
+  const auth = supabase.auth as unknown as { _removeSession?: () => Promise<void> };
+  if (typeof auth._removeSession !== 'function') {
+    return await withDeadline(() => supabase.auth.signOut({ scope: 'local' }), 'signOut', ms).catch((e: unknown) => ({
+      error: e as Error,
+    }));
+  }
+  await softDeadline(async () => await auth._removeSession?.(), undefined, 'removeSession', 5000);
+  return { error: null };
 }
 
 export async function signIn(email: string, password: string): Promise<string | null> {
@@ -265,6 +332,9 @@ export async function verifyRecoveryOtp(email: string, token: string): Promise<s
   return friendlyAuthError(error);
 }
 
+/** An updateUser that timed out or lost the connection may still have landed. */
+let updateUnanswered = false;
+
 /** Set a new password on the active (recovery) session. Returns error or null. */
 export async function updatePassword(newPassword: string): Promise<string | null> {
   const { error } = await withDeadline(
@@ -278,7 +348,18 @@ export async function updatePassword(newPassword: string): Promise<string | null
   // generic failure — a SET NEW PASSWORD that could never succeed, for a
   // password that was already set. The recovery code proved the address, and
   // the account's password is exactly the one asked for.
+  // ONLY AFTER AN EARLIER ATTEMPT WENT UNANSWERED (night bug pass 3): on a
+  // first try the same answer means the person typed their CURRENT password —
+  // the server's own "should be different" line says so, and is shown.
   const code = (error as { code?: string } | null)?.code;
-  if (code === 'same_password' || /different from the old password/i.test(error?.message ?? '')) return null;
+  if (
+    updateUnanswered &&
+    (code === 'same_password' || /different from the old password/i.test(error?.message ?? ''))
+  ) {
+    updateUnanswered = false;
+    return null;
+  }
+  if (!error) updateUnanswered = false;
+  else if (/timeout|network|fetch/i.test(error.message ?? '')) updateUnanswered = true;
   return friendlyAuthError(error);
 }

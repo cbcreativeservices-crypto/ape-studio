@@ -17,9 +17,23 @@ export type TuningProgress = {
 
 const EMPTY: TuningProgress = { completed: [], lastChapter: 0, done: false, mathView: false };
 
+/** The last read of storage itself FAILED (night pass 3, 2026-10-01; the Amp
+ *  lab's pass-2 fix). The empty fallback must never be written back: the lab
+ *  persists on every chapter move, so one failed read used to overwrite every
+ *  completed chapter — credit removed. Saves stay off until a read succeeds.
+ *  Not account state: the next lab mount re-reads and clears it. */
+const storage = { readFailed: false };
+
 export async function loadTuningProgress(): Promise<TuningProgress> {
+  let raw: string | null;
   try {
-    const raw = await AsyncStorage.getItem(KEY);
+    raw = await AsyncStorage.getItem(KEY);
+    storage.readFailed = false;
+  } catch {
+    storage.readFailed = true;
+    return { ...EMPTY, completed: [] };
+  }
+  try {
     if (!raw) return { ...EMPTY, completed: [] };
     const p = JSON.parse(raw) as Partial<TuningProgress>;
     return {
@@ -34,6 +48,7 @@ export async function loadTuningProgress(): Promise<TuningProgress> {
 }
 
 export async function saveTuningProgress(p: TuningProgress): Promise<void> {
+  if (storage.readFailed) return; // never write an unreadable read's empty copy back
   try {
     await AsyncStorage.setItem(KEY, JSON.stringify(p));
   } catch {}

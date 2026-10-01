@@ -37,7 +37,9 @@ test('a hosted GET MEMBERSHIP is tied to the tapping host, short-lived, and fire
 
 test('delete + displacement sign THIS device out even offline', () => {
   const fn = api.slice(api.indexOf('export async function signOutThisDevice'), api.indexOf('export async function signIn('));
-  assert.match(fn, /signOut\(\{ scope: 'local' \}\)\)\.error \?\? null/);
+  // Night pass 3: the server half is the token revoke (local scope); the local
+  // half is run by signOutThisDevice itself, never left inside a stalled signOut().
+  assert.match(fn, /admin\.signOut\(token, 'local'\)\)\.error \?\? null/);
   assert.match(fn, /_removeSession\?\.\(\)/);
   assert.match(del, /await signOutThisDevice\(\);\s*\/\/ Backend is gone/);
   assert.doesNotMatch(del, /supabase\.auth\.signOut\(/);

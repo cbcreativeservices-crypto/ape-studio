@@ -230,7 +230,7 @@ function modeBlurb(kind: 'axial' | 'tangential' | 'oblique'): string {
 }
 
 function SaveTray({ ctx }: { ctx: RoomLabCtx }) {
-  const { design, update, guest, resolved, saveCurrent } = ctx;
+  const { design, update, guest, preview, resolved, saveCurrent } = ctx;
   const [saved, setSaved] = useState<string | null>(null);
   return (
     <View style={{ gap: 10 }}>
@@ -243,20 +243,31 @@ function SaveTray({ ctx }: { ctx: RoomLabCtx }) {
       <Caption>{`START is the baseline the diff reads from; OPTION A and B are the alternatives. Flip between them with the LAYOUT key. ${design.layouts.length} position${design.layouts.length === 1 ? '' : 's'} kept in this design.`}</Caption>
       <TrayHeading>SAVE THE WHOLE DESIGN</TrayHeading>
       <TrayButton
-        label={guest ? 'SAVE (NOT KEPT — NOT SIGNED IN)' : 'SAVE DESIGN TO THIS DEVICE'}
+        label={guest ? (preview ? 'SAVE (NOT KEPT — PREVIEW)' : 'SAVE (NOT KEPT — NOT SIGNED IN)') : 'SAVE DESIGN TO THIS DEVICE'}
         tint={guest ? 'dim' : 'green'}
         onPress={() => {
           // Before the tier is known the store is save-blocked for everyone, so
           // a signed-in member read "you are not signed in" (night pass 2,
           // 2026-10-01). Neutral until `resolved`.
+          // A signed-in members-only PREVIEW is not "not signed in" (night
+          // pass 3, 2026-10-01).
           const known = resolved;
+          const asPreview = preview;
           void saveCurrent().then((ok) =>
-            setSaved(ok ? 'Saved on this device.' : known ? 'Kept for this session only — you are not signed in, so designs are not saved.' : 'Not saved yet — still checking your account. Tap SAVE again in a moment.'),
+            setSaved(
+              ok
+                ? 'Saved on this device.'
+                : !known
+                  ? 'Not saved yet — still checking your account. Tap SAVE again in a moment.'
+                  : asPreview
+                    ? 'Kept for this session only — this lab is part of membership, and designs made in a preview are not saved.'
+                    : 'Kept for this session only — you are not signed in, so designs are not saved.',
+            ),
           );
         }}
       />
       {saved ? <Caption>{saved}</Caption> : null}
-      <Caption>{guest ? 'You can design freely; nothing is saved until you sign in.' : 'The REVIEW module lists saved designs and compares a saved "before" with the current setup.'}</Caption>
+      <Caption>{guest ? (preview ? 'You can design freely; designs made in a preview are not saved.' : 'You can design freely; nothing is saved until you sign in.') : 'The REVIEW module lists saved designs and compares a saved "before" with the current setup.'}</Caption>
     </View>
   );
 }

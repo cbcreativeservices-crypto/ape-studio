@@ -56,10 +56,19 @@ export function EmployerAdminScreen() {
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
 
+  // Only the latest read may land (night pass 3, 2026-10-01) — the fence
+  // ReportsAdminScreen has. RETRY, or a slow first read still out when a
+  // decision's reload went, could answer LAST with the queue as it stood
+  // before the decision: the approved applicant back under AWAITING REVIEW,
+  // offering APPROVE again, and its early answer cleared the spinner while
+  // the current read was still out.
+  const loadReq = useRef(0);
   const load = useCallback(async () => {
+    const id = ++loadReq.current;
     setLoading(true);
     setErr(null);
     const [p, a] = await Promise.all([fetchPendingApplications(), fetchActiveEmployers()]);
+    if (id !== loadReq.current) return;
     // A null here is a refusal or a dropped connection, NOT an empty queue.
     // Showing "nothing to review" when the read failed is how a queue gets
     // quietly ignored for a week.

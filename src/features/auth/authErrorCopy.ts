@@ -30,6 +30,11 @@ export function friendlyAuthError(error: { message?: string } | null | undefined
   if (/email not confirmed/i.test(m)) {
     return 'Please confirm your email, then sign in.';
   }
+  // A first SET NEW PASSWORD with the account's current password (night bug
+  // pass 3, 2026-10-01) — fell through to the generic line, which never said why.
+  if (/different from the old password/i.test(m)) {
+    return 'That is already this account’s password — choose a different one.';
+  }
   if (/rate limit|too many/i.test(m)) {
     return 'Too many attempts — wait a moment and try again.';
   }

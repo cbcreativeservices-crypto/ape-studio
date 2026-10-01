@@ -20,7 +20,7 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { ShareIcon } from '../../../components/ShareIcon';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { CalcValues, FieldDef, OutputVal, Workspace } from './calcTypes';
-import { chainFits, fmt, unitsFor } from './calcUnits';
+import { chainFits, fmtCarried, unitsFor } from './calcUnits';
 import { getWorkspace } from './registry';
 import { setChainValue, useChainValue } from './chainStore';
 import { useCalcSectionOpen } from './calcPrefs';
@@ -502,7 +502,7 @@ export function CalcWorkspaceScreen() {
                 style={styles.chainUse}
                 onPress={() => {
                   const u = units[(unitIdx[f.key] ?? defaultUnitIdx(f)) % units.length];
-                  setRaw((r) => ({ ...r, [f.key]: fmt(u.fromBase(chain.baseValue), 6) }));
+                  setRaw((r) => ({ ...r, [f.key]: fmtCarried(u.fromBase(chain.baseValue), f.quantity) }));
                 }}
                 accessibilityRole="button"
                 accessibilityLabel={`Use ${chain.label} from the calculation chain`}

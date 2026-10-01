@@ -53,8 +53,10 @@ export function RoomDesignLabScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [idx, setIdx] = useState(0);
   const [ending, setEnding] = useState(false);
-  const { resolved } = useEntitlement();
+  const { resolved, entitlement } = useEntitlement();
   const guest = useLabEndGuest();
+  // A guest who IS signed in is a members-only preview, not a signed-out guest.
+  const preview = resolved && guest && entitlement !== 'anonymous';
   const visited = useLabVisits(ROOM_LAB_ID);
   const saved = useRoomDesigns();
 
@@ -83,6 +85,7 @@ export function RoomDesignLabScreen() {
       analysis,
       units: design.room.units,
       guest: !resolved ? false : guest,
+      preview,
       resolved,
       saved,
       saveCurrent: (name?: string) => {
@@ -98,7 +101,7 @@ export function RoomDesignLabScreen() {
       },
       deleteSaved: (id: string) => deleteRoomDesign(id),
     }),
-    [design, update, analysis, guest, resolved, saved],
+    [design, update, analysis, guest, preview, resolved, saved],
   );
 
   const go = useCallback((i: number) => {

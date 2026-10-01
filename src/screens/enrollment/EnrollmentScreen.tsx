@@ -22,7 +22,7 @@ import { useOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
 import { HOST_DISMISS_MS, Modal } from '../../components/DimModal';
 import { HoldToActivate } from '../../components/HoldToActivate';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { colors, fonts } from '../../theme/tokens';
 import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 import { HomeSetupSheet } from './HomeSetupSheet';
@@ -300,6 +300,7 @@ const enrollUi = {
 export function EnrollmentView({
   showBrand = true,
   onOpenCategory,
+  onScreen = true,
 }: {
   showBrand?: boolean;
   /**
@@ -315,9 +316,15 @@ export function EnrollmentView({
    * standalone mount, where the route really is not focused yet.
    */
   onOpenCategory?: (key: 'curriculum' | 'specialization' | 'program' | 'directory' | 'enrollment') => void;
+  /** False while the Awards pager shows another page — the lab row's sweep
+   *  stops (see LabScopeSweep `live`). */
+  onScreen?: boolean;
 }) {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
+  // A screen pushed over this one leaves it mounted (night pass 3 2026-10-01).
+  const isFocused = useIsFocused();
+  const sweepLive = onScreen && isFocused;
   // `resolved` hold (entitlement roll-out 2026-09-11): the provider boots at
   // 'anonymous', so before the server read landed every row painted as locked
   // for a paying member and any LOAD / Home-toggle tap raised PrePaywallPrompt
@@ -1470,7 +1477,7 @@ export function EnrollmentView({
           {/* Light blue wash — see RowTint. FIRST child, so it sits behind
               the trace and the text. */}
           <RowTint color={LAB_TINT} />
-          <LabScopeSweep color={colors.blue} />
+          <LabScopeSweep color={colors.blue} live={sweepLive} />
           {/* Title, meter and % are the SAME sizes as a collapsed topic row
               below it (owner 2026-09-19), so the lab reads as one of the list
               rather than as a panel that wandered in. */}

@@ -34,11 +34,11 @@ import { confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import type { CalcFunction, FieldDef, OutputVal, Workspace } from './calcTypes';
-import { chainFits, fmt, parseQuantity, unitsFor } from './calcUnits';
+import { chainFits, fmt, fmtCarried, parseQuantity, unitsFor } from './calcUnits';
 import { FieldRow, buildValues, defaultUnitIdx, formatOutput, runCompute, type ComputeResult } from './calcPanel';
 import type { BoundInput, Project, SavedRunSummary, ValueSource, Workflow, WorkflowRun } from './workflowModel';
 import { workflowLimitsFor } from './workflowModel';
-import { workflowStore } from './workflowStore';
+import { workflowGeneration, workflowStore } from './workflowStore';
 import { WORKFLOW_TEMPLATES, resolveStep, validateWorkflow } from './workflowCatalog';
 import { summaryToText } from './CalcResultsScreen';
 import { buildReportFromSummary } from './calcReport';
@@ -112,6 +112,10 @@ export function CalcWorkflowRunScreen() {
   runRef.current = run;
   /** The draft the user said "Start over" to — deleted once the new run saves. */
   const abandonedDraftRef = useRef<string | null>(null);
+  // The account this screen's run belongs to (night bug pass 3, 2026-10-01):
+  // every save passes it, so the 1 s autosave or a SAVE that lands after a
+  // sign-out wipe is dropped instead of writing this run into the next session.
+  const storeGenRef = useRef(workflowGeneration());
   // The share-card view captured for SHARE AS IMAGE (buttons live outside it).
   const shareRef = useRef<View | null>(null);
 
@@ -195,13 +199,13 @@ export function CalcWorkflowRunScreen() {
     // Nothing entered yet: saving the blank run made every later open of this
     // workflow ask "Resume previous progress?" about a run that has no progress.
     if (r.stepIndex === 0 && !r.completedAt && r.steps.every((st) => Object.keys(st.inputs).length === 0)) return true;
-    const ok = await workflowStore.saveRun(r);
+    const ok = await workflowStore.saveRun(r, storeGenRef.current);
     // "Start over" was chosen: the old draft is retired now that the new run
     // has real progress saved in its place (see the resume prompt).
     const old = abandonedDraftRef.current;
     if (ok && old && old !== r.id) {
       abandonedDraftRef.current = null;
-      void workflowStore.deleteRun(old);
+      void workflowStore.deleteRun(old, storeGenRef.current);
     }
     return ok;
   }, [limits.canResume]);
@@ -258,7 +262,7 @@ export function CalcWorkflowRunScreen() {
           if (o && chainFits(o.label, o.quantity, f) && o.quantity === f.quantity && Number.isFinite(o.value)) {
             const units = unitsFor(f.quantity, f.unitIds);
             const u = units[unitSel[f.key] % units.length];
-            effRaw[f.key] = fmt(u.fromBase(o.value), 6);
+            effRaw[f.key] = fmtCarried(u.fromBase(o.value), f.quantity);
           } else {
             effRaw[f.key] = ''; // upstream incomplete/missing — honestly empty
           }
@@ -379,7 +383,7 @@ export function CalcWorkflowRunScreen() {
     const uIdx = run?.steps[idx]?.inputs[f.key]?.unitIdx ?? defaultUnitIdx(f);
     const u = units[uIdx % units.length];
     setBound(f.key, {
-      raw: fmt(u.fromBase(v.baseValue), 6),
+      raw: fmtCarried(u.fromBase(v.baseValue), f.quantity),
       unitIdx: uIdx,
       source: { kind: 'project', projectId: run?.projectId ?? '', valueLabel: v.label },
     });
@@ -485,9 +489,10 @@ export function CalcWorkflowRunScreen() {
       notify('Result limit reached', `Free accounts keep up to ${limits.savedResults} results. Academy membership removes the limit.`);
       return;
     }
-    const ok = await workflowStore.saveResult(summary);
+    const ok = await workflowStore.saveResult(summary, storeGenRef.current);
     if (ok) setResultSaved(true);
-    else notify('Save failed', 'The result could not be saved. Try again.');
+    // Fenced by an account wipe: nothing failed, and no popup for the next person.
+    else if (storeGenRef.current === workflowGeneration()) notify('Save failed', 'The result could not be saved. Try again.');
   };
 
   // ---- Render ---------------------------------------------------------------

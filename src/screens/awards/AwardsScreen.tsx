@@ -969,7 +969,11 @@ export function AwardsScreen({ navigation, route }: Props) {
             </View>
           ) : item === 'enrollment' ? (
             <View style={{ width: screenW }}>
-              <EnrollmentView showBrand={false} onOpenCategory={goToPage} />
+              <EnrollmentView
+                showBrand={false}
+                onOpenCategory={goToPage}
+                onScreen={currentKey === 'enrollment'}
+              />
             </View>
           ) : (
             <AwardPageView page={awardPage(item)} onBuild={setPicker} summaryForTier={summaryForTier} />

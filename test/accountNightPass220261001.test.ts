@@ -26,7 +26,8 @@ test('a sign-in that lands after its deadline is signed back out unless a newer 
 
 test('a password update that already landed is not reported as a failure on the retry', () => {
   const fn = body(api, 'export async function updatePassword', '\n}\n');
-  assert.match(fn, /code === 'same_password' \|\| \/different from the old password\/i\.test\(error\?\.message \?\? ''\)\) return null;/);
+  // Night pass 3: only once an earlier attempt went unanswered.
+  assert.match(fn, /updateUnanswered &&\s*\(code === 'same_password' \|\| \/different from the old password\/i\.test\(error\?\.message \?\? ''\)\)\s*\) \{\s*updateUnanswered = false;\s*return null;/);
 });
 
 test('takeover Cancel and recovery Cancel sign out bounded and for sure, holding the form until done', () => {
@@ -37,13 +38,16 @@ test('takeover Cancel and recovery Cancel sign out bounded and for sure, holding
   assert.match(rec, /void signOutThisDevice\(\)\.finally\(end\);[\s\S]*?hold\(\);/);
   assert.doesNotMatch(rec, /supabase\.auth\.signOut\(/);
   // signOutThisDevice itself never hangs: every step is softDeadline-bounded.
-  const sotd = body(api, 'export async function signOutThisDevice', 'export async function signIn(');
-  assert.equal((sotd.match(/softDeadline/g) ?? []).length, 2);
+  const sotd = body(api, 'export async function signOutThisDevice', 'export async function signOutLocalRefusing');
+  // (Night pass 3: three — the server revoke, the local removal, and the
+  // public-signOut fallback for a client without the private local half.)
+  assert.equal((sotd.match(/softDeadline/g) ?? []).length, 3);
 });
 
 test('Guest Mode sign-out is bounded, and a stall refuses without the lock-queued session check', () => {
-  const guest = body(auth, 'const enterGuest = async', 'const finderRecord');
-  assert.match(guest, /withDeadline\(\(\) => supabase\.auth\.signOut\(\{ scope: 'local' \}\), 'signOut', \d+\)/);
+  const guest = body(auth, 'const enterGuest = async', 'await runAfterAccountSync(');
+  // Night pass 3: through signOutLocalRefusing (bounded, nothing left in flight).
+  assert.match(guest, /await signOutLocalRefusing\(\d+\);/);
   const stall = guest.indexOf('/signOut timeout/.test(');
   assert.ok(stall > 0);
   assert.ok(stall < guest.indexOf('safeSession(supabase.auth.getSession()'));

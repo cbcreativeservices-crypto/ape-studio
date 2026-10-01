@@ -35,7 +35,7 @@ export function IntroModule({ ctx }: { ctx: RoomLabCtx }) {
       <Card>
         <SectionTitle title="HOW THE LAB RUNS" />
         <Caption>CREATE THE ROOM → MONITORING SETUP → EXPLORE PLACEMENT → ADD TREATMENT → REVIEW. Each live module is a rack: the plan on the display, readouts on its bezel, controls docked below, and FULL SCREEN when you want the drawing big. Drag on the plan, or ride the lane.</Caption>
-        <Text style={styles.note}>{ctx.guest ? 'You are not signed in: design freely, but nothing is saved.' : 'Designs can be saved on this device and compared later.'}</Text>
+        <Text style={styles.note}>{ctx.guest ? (ctx.preview ? 'This lab is part of membership: design freely, but designs made in a preview are not saved.' : 'You are not signed in: design freely, but nothing is saved.') :'Designs can be saved on this device and compared later.'}</Text>
       </Card>
       <LabNextButton />
     </View>

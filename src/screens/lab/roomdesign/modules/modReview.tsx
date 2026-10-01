@@ -38,7 +38,7 @@ import { treatmentSummary } from './modTreatment';
 const MINI_PLAN_H = 180;
 
 export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
-  const { design, update, analysis: a, units, guest, saved, saveCurrent, loadSaved, deleteSaved } = ctx;
+  const { design, update, analysis: a, units, guest, preview, saved, saveCurrent, loadSaved, deleteSaved } = ctx;
   const room = design.room;
   const lay = design.layouts[design.active] ?? design.layouts[0];
   const b = a.bounds;
@@ -164,7 +164,11 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
       <Card>
         <SectionTitle title="SAVED DESIGNS — BEFORE AND AFTER" />
         {guest ? (
-          <Caption>You are not signed in, so designs are not saved. You can keep working on this one; sign in to save it.</Caption>
+          <Caption>
+            {preview
+              ? 'This lab is part of membership — designs made in a preview are not saved. You can keep working on this one.'
+              : 'You are not signed in, so designs are not saved. You can keep working on this one; sign in to save it.'}
+          </Caption>
         ) : (
           <>
             <TrayButton

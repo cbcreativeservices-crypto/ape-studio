@@ -162,9 +162,9 @@ test('EQ audition: switching PINK/SWEEP while playing retargets in place (no sto
 test('mixing: ■ stays lit after the clip ends; a console edit replays the same variant', () => {
   const s = read('src/screens/lab/mixing/kit.tsx');
   assert.match(s, /playerRef\.current\.onEnded = null;/);
-  assert.match(s, /const again = activeRef\.current \?\? pendingRef\.current;/);
+  assert.match(s, /const again = activeRef\.current \?\? pendingRef\.current(?: \?\? replayIdRef\.current)?;/);
   const eff = s.slice(s.indexOf('const again = activeRef.current'), s.indexOf('}, [signature]);'));
   assert.match(eff, /if \(!aliveRef\.current \|\| !focusedRef\.current \|\| !isAudioOutputEnabled\(\)\) return;/);
   assert.match(eff, /void renderAllRef\.current\(\);/);
-  assert.match(eff, /return \(\) => clearTimeout\(t\);/);
+  assert.match(eff, /return \(\) => (?:\{\s*)?clearTimeout\(t\);/);
 });

@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
-import { Banner, Chip, ChipWrap, Helper, Loading, PrimaryButton, SelfReportedNote, useSending } from './directoryBits';
+import { Banner, Chip, ChipWrap, Helper, Loading, PrimaryButton, SelfReportedNote, useSending, useSendingPer } from './directoryBits';
 import { ExploreView } from './ExploreView';
 import { MyProfileView } from './MyProfileView';
 import { RequestsView } from './RequestsView';
@@ -129,7 +129,10 @@ function MemberSheet({
   const [reported, setReported] = useState(false);
   /** BLOCK was tapped and is waiting for its confirmation. */
   const [confirmBlock, setConfirmBlock] = useState(false);
-  const [blocking, runBlock] = useSending();
+  // Per member (night pass 3): this sheet outlives each member, and one shared
+  // lock left B's BLOCK dead while A's block was still out.
+  const [blockingFor, runBlockFor] = useSendingPer();
+  const blocking = blockingFor(token);
   /**
    * Which member is open NOW (bug hunt 2026-10-01). SEND REQUEST, SEND REPORT
    * and BLOCK answer after a round trip, and closing the sheet while one is out
@@ -300,7 +303,7 @@ function MemberSheet({
                     tone="danger"
                     disabled={blocking}
                     onPress={() =>
-                      runBlock(() =>
+                      runBlockFor(token, () =>
                         blockMember(token, true).then((r) => {
                           if (r.ok) onBlocked?.(token);
                           if (liveToken.current !== token) return;

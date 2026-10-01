@@ -51,6 +51,14 @@ export function GalleryScreen() {
   const [loadError, setLoadError] = useState(false);
   const entriesRef = useRef(entries);
   entriesRef.current = entries;
+  // ONE EXIT for ‹ (night bug pass 3, 2026-10-01): a double tap's second
+  // goBack() from the popped route bubbled up and switched to the Home tab.
+  const leavingRef = useRef(false);
+  const leave = useCallback(() => {
+    if (leavingRef.current) return;
+    leavingRef.current = true;
+    (navigation as any).goBack();
+  }, [navigation]);
 
   const load = useCallback(() => {
     setLoadError(false);
@@ -135,7 +143,7 @@ export function GalleryScreen() {
         ListHeaderComponent={
           <View style={styles.headerRow}>
             <Pressable
-              onPress={() => (navigation as any).goBack()}
+              onPress={leave}
               hitSlop={10}
               accessibilityRole="button"
               accessibilityLabel="Back"

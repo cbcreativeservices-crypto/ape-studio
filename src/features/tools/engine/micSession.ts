@@ -63,16 +63,36 @@ let acquireSeq = 0;
  */
 let stopInFlight: Promise<void> | null = null;
 
-/** ApeDsp.stop(), tracked in `stopInFlight` until it settles. Never rejects. */
+/**
+ * ⛔ A STOP THAT NEVER SETTLES MUST NOT BLOCK EVERY FUTURE START (night pass 3
+ * 2026-10-01). Every acquire waits on `stopInFlight` (and the orphan path on a
+ * start whose late close is awaited). A native stop that never resolved — a
+ * wedged HAL, a bridge call lost across a reload — would have left the mic
+ * unopenable for the rest of the app's life: each tool's START hit its 12 s
+ * watchdog, TRY AGAIN joined the same dead wait. Capped: past this, the stop
+ * is treated as done (a normal close takes well under a second). Overlapping
+ * a truly wedged stop is the lesser harm; the dead-capture checks still catch
+ * a stream it kills.
+ */
+const STOP_SETTLE_CAP_MS = 4000;
+
+/** ApeDsp.stop(), tracked in `stopInFlight` until it settles or the cap
+ *  passes. Never rejects. */
 function closeStream(): Promise<void> {
-  const p: Promise<void> = ApeDsp.stop()
-    .then(
-      () => undefined,
-      () => undefined, // already dead — nothing more to close
-    )
-    .finally(() => {
-      if (stopInFlight === p) stopInFlight = null;
-    });
+  const p: Promise<void> = new Promise<void>((resolve) => {
+    const cap = setTimeout(resolve, STOP_SETTLE_CAP_MS);
+    const done = () => {
+      clearTimeout(cap);
+      resolve();
+    };
+    try {
+      ApeDsp.stop().then(done, done); // a rejection = already dead, nothing more to close
+    } catch {
+      done();
+    }
+  }).finally(() => {
+    if (stopInFlight === p) stopInFlight = null;
+  });
   stopInFlight = p;
   return p;
 }
@@ -201,8 +221,10 @@ async function acquireInner(cfg: EngineConfig, forceRestart = false): Promise<vo
       if (myGen !== startGen) {
         // A stop landed while the HAL was still opening. The owner is gone, so
         // close the stream we just opened rather than flagging it open — see
-        // the startGen docblock. Awaited, so a waiting acquire starts after it.
-        await ApeDsp.stop();
+        // the startGen docblock. Awaited, so a waiting acquire starts after it
+        // — through closeStream, so a stop that never settles cannot hold this
+        // start (and every acquire queued behind it) open forever.
+        await closeStream();
         return;
       }
       streamState = 'open';

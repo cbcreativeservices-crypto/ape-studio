@@ -244,7 +244,12 @@ function useWebBox(active: boolean): WebBox | null {
       vv?.removeEventListener('scroll', update);
     };
   }, [active]);
-  return active ? box : null;
+  // A Modal mounted hidden has no box yet on its first visible render: read it
+  // now (night pass 3, 2026-10-01). Returning null for that one frame rendered
+  // the content unwrapped, and the effect's box then wrapped it in a new View —
+  // every child mounted twice on each first opening (effects, entrance
+  // animations and on-mount requests ran twice).
+  return active ? (box ?? readWebBox()) : null;
 }
 
 /** Nesting depth, so a Modal opened inside another's tree ranks above it. */

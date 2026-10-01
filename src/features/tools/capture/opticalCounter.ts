@@ -31,6 +31,29 @@ const STALE_MS = 1000;
  */
 let priorClose: Promise<void> = Promise.resolve();
 
+/**
+ * ⛔ …BUT NEVER WAIT FOREVER (night pass 3 2026-10-01). A native start() or
+ * stop() that never settled (a wedged camera session, a call lost across a
+ * reload) left priorClose pending for good, and every later run sat on
+ * 'starting' with no camera and no way out short of killing the app. Past
+ * this cap the previous close counts as settled (a real open + close takes a
+ * second or two); overlapping a truly wedged session is the lesser harm.
+ */
+const CLOSE_SETTLE_CAP_MS = 5000;
+
+/** Settles when `p` does, or after CLOSE_SETTLE_CAP_MS — whichever is first.
+ *  Never rejects. */
+function settledWithin(p: Promise<unknown>): Promise<void> {
+  return new Promise<void>((resolve) => {
+    const cap = setTimeout(resolve, CLOSE_SETTLE_CAP_MS);
+    const done = () => {
+      clearTimeout(cap);
+      resolve();
+    };
+    p.then(done, done);
+  });
+}
+
 export type OpticalState =
   | 'absent' // native module not in this build → needs the new dev build
   | 'idle'
@@ -216,11 +239,9 @@ export function useOpticalCounter(active: boolean): { state: OpticalState; readi
       if (poll) clearInterval(poll);
       void Optical.stop();
       // The next run starts only after this one's start has settled and any
-      // late close has landed (and this stop, re-issued in order after it).
-      priorClose = run.then(() => Optical.stop()).then(
-        () => undefined,
-        () => undefined,
-      );
+      // late close has landed (and this stop, re-issued in order after it) —
+      // capped, so a call that never settles cannot wedge every later run.
+      priorClose = settledWithin(run.then(() => Optical.stop()));
     };
   }, [live, reset]);
 

@@ -62,7 +62,7 @@ describe('community profile editor', () => {
 describe('conversation sheet', () => {
   test('E3: a SEND clears only the text it sent', () => {
     const sheet = between(code('src/screens/directory/RequestsView.tsx'), 'function ThreadSheet(', 'const st = StyleSheet.create');
-    assert.match(sheet, /const sentRaw = body;[\s\S]*?runSend\(\(\) =>\s*sendThreadMessage\(thread\.id, sentRaw\.trim\(\)\)/);
+    assert.match(sheet, /const sentRaw = body;[\s\S]*?runSendIn\(thread\.id, \(\) =>\s*sendThreadMessage\(thread\.id, sentRaw\.trim\(\)\)/);
     // Pass 3 (F1) widened "only the sent text" to a sent PREFIX as well.
     assert.match(sheet, /setBody\(unsent\);/);
     assert.doesNotMatch(sheet, /setBody\(''\);\s*await load\(\);/);

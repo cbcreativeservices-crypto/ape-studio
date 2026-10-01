@@ -16,7 +16,7 @@ import { memo, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import type { CalcFunction, CalcTable, CalcValues, FieldDef, OutputVal } from './calcTypes';
-import { NEGATIVE_MSG, fmt, isNonNegativeField, negativeInput, parseList, parseQuantity, unitsFor } from './calcUnits';
+import { NEGATIVE_MSG, fmt, isNonNegativeField, negativeInput, parseList, parseQuantity, unitsFor, wholeCount } from './calcUnits';
 
 
 export function defaultUnitIdx(f: FieldDef): number {
@@ -103,9 +103,9 @@ export function formatOutput(o: Extract<OutputVal, { value: number }>, sig: numb
   // "65540 samples" and 00:59:56 at 30 fps read "107900" TOTAL FRAMES instead
   // of 107880 — a count that does not exist. Counts ride the one-unit
   // 'samples' / 'number' kinds; above 1e7 fmt's exponent form still applies.
-  if ((o.quantity === 'samples' || o.quantity === 'number') && Number.isInteger(o.value) && Math.abs(o.value) < 1e7) {
-    return `${o.value === 0 ? 0 : o.value}${u.label ? ' ' + u.label : ''}`;
-  }
+  // Whole up to float noise counts too (night bug pass 3) — see wholeCount.
+  const whole = wholeCount(o.value, o.quantity);
+  if (whole !== null) return `${whole}${u.label ? ' ' + u.label : ''}`;
   return `${fmt(u.fromBase(o.value), sig)}${u.label ? ' ' + u.label : ''}`;
 }
 

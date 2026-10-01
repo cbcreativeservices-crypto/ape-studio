@@ -56,7 +56,9 @@ test('no auth.getSession() or auth.getUser() is awaited unbounded', () => {
       // preceded by safeSession( / safeUser( / hasSafeSession( on the same
       // expression. Look back a short way for one of those.
       const before = src.slice(Math.max(0, m.index! - 120), m.index!);
-      if (!/(safeSession|safeUser|hasSafeSession)\s*\(/.test(before)) {
+      // withDeadline(() => …getSession()) is a bound too (night pass 3: the
+      // refusing Guest sign-out must tell a stall from "no session").
+      if (!/(safeSession|safeUser|hasSafeSession|withDeadline)\s*\(/.test(before)) {
         offenders.push(`${name} → auth.${m[1]}()`);
       }
     }

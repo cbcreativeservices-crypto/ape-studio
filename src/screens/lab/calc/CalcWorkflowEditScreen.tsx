@@ -17,7 +17,7 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import type { Workflow, WorkflowStep } from './workflowModel';
 import { workflowLimitsFor } from './workflowModel';
-import { workflowStore } from './workflowStore';
+import { workflowGeneration, workflowStore } from './workflowStore';
 import { listCalculators, resolveStep, type CatalogEntry } from './workflowCatalog';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
@@ -45,6 +45,9 @@ export function CalcWorkflowEditScreen() {
   // unsaved-changes guard below.
   const savingRef = useRef(false);
   const leavingRef = useRef(false);
+  // The account this editor's steps belong to (night bug pass 3, 2026-10-01):
+  // a SAVE landing after a sign-out wipe is dropped, never written for the next person.
+  const storeGenRef = useRef(workflowGeneration());
 
   // Unsaved-changes guard for EVERY back — the header ‹, Android hardware BACK
   // and the iOS swipe (bug hunt 2026-09-29: only the header ‹ asked, so
@@ -144,6 +147,12 @@ export function CalcWorkflowEditScreen() {
     // these notices were silent on the web preview (B-018/B-062).
     // workflowLimitsFor: the 'anonymous' boot row would refuse a member's save
     // until the entitlement read landed (roll-out 2026-09-11).
+    // Not before the tier is known (night bug pass 3, 2026-10-01): pre-resolve
+    // the limits are the academy row, so a free account's NEW workflow saved.
+    if (!editingId && !resolved) {
+      notify('One moment', 'Still checking your account. Tap SAVE again in a moment.');
+      return;
+    }
     if (!editingId && workflowLimitsFor(entitlement, resolved).savedWorkflows === 0) {
       notify(
         'Build your own workflow?',
@@ -169,9 +178,10 @@ export function CalcWorkflowEditScreen() {
       createdAt: createdAt ?? now,
       updatedAt: now,
     };
-    const ok = await workflowStore.saveWorkflow(w);
+    const ok = await workflowStore.saveWorkflow(w, storeGenRef.current);
     if (!ok) {
-      notify('Save failed', 'The workflow could not be saved. Try again.');
+      // Fenced by an account wipe (night bug pass 3): no popup for the next person.
+      if (storeGenRef.current === workflowGeneration()) notify('Save failed', 'The workflow could not be saved. Try again.');
       return;
     }
     leavingRef.current = true; // saved — nothing to discard on the way out

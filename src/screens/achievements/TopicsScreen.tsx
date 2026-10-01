@@ -56,6 +56,14 @@ export function TopicsScreen() {
   const [loadError, setLoadError] = useState(false);
   const fieldsRef = useRef(fields);
   fieldsRef.current = fields;
+  // ONE EXIT for ‹ (night bug pass 3, 2026-10-01): a double tap's second
+  // goBack() from the popped route bubbled up and switched to the Home tab.
+  const leavingRef = useRef(false);
+  const leave = useCallback(() => {
+    if (leavingRef.current) return;
+    leavingRef.current = true;
+    navigation.goBack();
+  }, [navigation]);
 
   useFocusEffect(
     useCallback(() => {
@@ -84,7 +92,7 @@ export function TopicsScreen() {
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
         <View style={styles.headerRow}>
           <Pressable
-            onPress={() => navigation.goBack()}
+            onPress={leave}
             hitSlop={10}
             accessibilityRole="button"
             accessibilityLabel="Back"

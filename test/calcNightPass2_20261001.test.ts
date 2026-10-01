@@ -42,10 +42,9 @@ const fn = (wsId: string, key: string) => {
 
 test('C1 integer counts are shown exactly (formatOutput source contract)', () => {
   const src = read('screens/lab/calc/calcPanel.tsx');
-  assert.match(
-    src,
-    /if \(\(o\.quantity === 'samples' \|\| o\.quantity === 'number'\) && Number\.isInteger\(o\.value\) && Math\.abs\(o\.value\) < 1e7\) \{/,
-  );
+  // Widened in night pass 3 to snap float-noise counts too (see calcNightPass3).
+  assert.match(src, /const whole = wholeCount\(o\.value, o\.quantity\);/);
+  assert.match(read('screens/lab/calc/calcUnits.ts'), /if \(quantity !== 'samples' && quantity !== 'number'\) return null;/);
   // The values that used to round: both are whole numbers of the count kinds.
   const outs = fn('timecode', 'toFrames').compute({ hours: 0, mins: 59, secs: 56, fps: 30 });
   const frames = outs.find((o) => o.label === 'TOTAL FRAMES') as { value: number; quantity: string };

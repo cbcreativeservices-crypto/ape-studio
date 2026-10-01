@@ -32,12 +32,13 @@ test('deliberate sign-outs are LOCAL — Log out, Guest Mode, ensureSession, rec
   assert.doesNotMatch(settings, /\.signOut\(\)/);
   assert.doesNotMatch(auth, /\.signOut\(\)/);
   const ensure = api.slice(api.indexOf('export async function ensureSession'), api.indexOf('supabase.auth.signUp('));
-  assert.match(ensure, /signOut\(\{ scope: 'local' \}\)/);
+  // Night pass 3: via signOutThisDevice (local scope, bounded, no late removal).
+  assert.match(ensure, /await signOutThisDevice\(\);/);
   assert.doesNotMatch(api, /\.signOut\(\)/);
 });
 
 test('Guest Mode refuses to go in while an ACCOUNT session survived a failed sign-out', () => {
-  const guest = auth.slice(auth.indexOf('const enterGuest = async'), auth.indexOf('const finderRecord'));
+  const guest = auth.slice(auth.indexOf('const enterGuest = async'), auth.indexOf('await runAfterAccountSync('));
   assert.match(guest, /if \(outError\) \{[\s\S]*?if \(isRealAccount\(still\.session\)\) \{\s*consumeIntentionalSignOut\(\);[\s\S]*?return;/);
 });
 

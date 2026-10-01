@@ -73,6 +73,14 @@ export function CalcWorkflowsScreen() {
    *  Academy feature (owner 2026-08-06). The copy names the ACTION the user
    *  actually pressed, not a generic "saving" line. */
   const guardSave = (action: 'create' | 'duplicate'): boolean => {
+    // Not before the tier is known (night bug pass 3, 2026-10-01): `limits` is
+    // the unlimited academy row until the entitlement read lands, so a free
+    // account (0 custom workflows) could DUPLICATE a template — or open the
+    // builder and save one — in that window. `resolved` always flips.
+    if (!resolved) {
+      notify('One moment', 'Still checking your account. Tap again in a moment.');
+      return false;
+    }
     if (!atLimit) return true;
     // confirmDialog, not Alert.alert: RN-web's Alert is a no-op, so these
     // gates were silent taps on the web preview (B-018/B-062).

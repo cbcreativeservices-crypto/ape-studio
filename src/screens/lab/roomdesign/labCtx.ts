@@ -14,6 +14,10 @@ export type RoomLabCtx = {
   /** A signed-out guest or a members-only preview: designs are not saved,
    *  and the lab says so plainly. */
   guest: boolean;
+  /** Of those, a SIGNED-IN members-only preview (night pass 3, 2026-10-01):
+   *  `guest` covers both, and the preview user — who IS signed in — was told
+   *  "you are not signed in". The cable lab's PREVIEW wording (completeCopy). */
+  preview: boolean;
   /** The entitlement tier is known. Before it is, `guest` reads false and a
    *  save stays in memory — say neither "saved" nor "not signed in". */
   resolved: boolean;

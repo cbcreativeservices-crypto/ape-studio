@@ -63,6 +63,14 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
   // moment later.
   const { entitlement, resolved } = useEntitlement();
   const guest = resolved && entitlement === 'anonymous';
+  // ONE EXIT for ‹ (night bug pass 3, 2026-10-01): a double tap's second
+  // goBack() from the popped route bubbled up and switched to the Home tab.
+  const leavingRef = useRef(false);
+  const leave = useCallback(() => {
+    if (leavingRef.current) return;
+    leavingRef.current = true;
+    navigation.goBack();
+  }, [navigation]);
   const [rows, setRows] = useState<EarnedCredentialRow[] | null>(null);
   const [nearest, setNearest] = useState<NearestCredentialResult | null>(null);
   const [open, setOpen] = useState<EarnedCredentialRow | null>(null);
@@ -110,7 +118,7 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
         <View style={styles.headerRow}>
-          <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back" style={styles.backBtn}>
+          <Pressable onPress={leave} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back" style={styles.backBtn}>
             <Text style={styles.back}>‹</Text>
           </Pressable>
           <Text style={styles.title}>{title}</Text>

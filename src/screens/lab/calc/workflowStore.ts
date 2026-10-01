@@ -27,10 +27,27 @@ const KEYS = {
 type CollectionKey = (typeof KEYS)[keyof typeof KEYS];
 
 // ---------------------------------------------------------------------------
+// Account-wipe fence (night bug pass 3, 2026-10-01)
+// ---------------------------------------------------------------------------
+
+/** Bumped by resetLocal() at every account wipe. Every write carries the
+ *  generation it was ASKED for in, and is dropped if a wipe has happened since:
+ *  a still-mounted runner's 1 s autosave or beforeRemove save, or a project
+ *  editor SAVE, landing after the sign-out sweep otherwise wrote the departing
+ *  account's draft/project back under `ape:calcwf:*` for the next person.
+ *  Screens that hold an account's data in state pass their MOUNT generation, so
+ *  a save they request after the wipe is fenced too. */
+let generation = 0;
+export function workflowGeneration(): number {
+  return generation;
+}
+
+// ---------------------------------------------------------------------------
 // Load / save with damage quarantine
 // ---------------------------------------------------------------------------
 
 async function loadList<T>(key: CollectionKey, validate: (x: unknown) => x is T): Promise<T[]> {
+  const gen = generation;
   try {
     const raw = await AsyncStorage.getItem(key);
     if (raw == null) return [];
@@ -38,7 +55,8 @@ async function loadList<T>(key: CollectionKey, validate: (x: unknown) => x is T)
     if (!Array.isArray(parsed)) throw new Error('not an array');
     // Keep the valid rows; quarantine the rest instead of crashing or deleting.
     const good = parsed.filter(validate);
-    if (good.length !== parsed.length) {
+    // Not after a wipe: these rows were read from the departing account.
+    if (good.length !== parsed.length && gen === generation) {
       const bad = parsed.filter((x) => !validate(x));
       void AsyncStorage.setItem(`${key}:damaged`, JSON.stringify(bad)).catch(() => {});
       void AsyncStorage.setItem(key, JSON.stringify(good)).catch(() => {});
@@ -48,14 +66,16 @@ async function loadList<T>(key: CollectionKey, validate: (x: unknown) => x is T)
     // Whole blob unreadable — quarantine it and start empty.
     try {
       const raw = await AsyncStorage.getItem(key);
-      if (raw != null) await AsyncStorage.setItem(`${key}:damaged`, raw);
+      if (raw != null && gen === generation) await AsyncStorage.setItem(`${key}:damaged`, raw);
       await AsyncStorage.removeItem(key);
     } catch {}
     return [];
   }
 }
 
-async function saveList<T>(key: CollectionKey, list: T[]): Promise<boolean> {
+async function saveList<T>(key: CollectionKey, list: T[], gen: number): Promise<boolean> {
+  // Wiped since this write was asked for — nothing of that account is written.
+  if (gen !== generation) return false;
   try {
     await AsyncStorage.setItem(key, JSON.stringify(list));
     return true;
@@ -103,12 +123,13 @@ function upsert<T extends { id: string }>(
   validate: (x: unknown) => x is T,
   item: T,
   keepPlace = false,
+  gen = generation,
 ): Promise<boolean> {
   return serialWrite(async () => {
     const list = await loadList(key, validate);
     const at = keepPlace ? list.findIndex((w) => w.id === item.id) : -1;
     const next = at >= 0 ? list.map((w, i) => (i === at ? item : w)) : [item, ...list.filter((w) => w.id !== item.id)];
-    return saveList(key, next);
+    return saveList(key, next, gen);
   });
 }
 
@@ -116,23 +137,26 @@ function removeById<T extends { id: string }>(
   key: CollectionKey,
   validate: (x: unknown) => x is T,
   id: string,
+  gen = generation,
 ): Promise<boolean> {
   return serialWrite(async () => {
     const list = await loadList(key, validate);
-    return saveList(key, list.filter((w) => w.id !== id));
+    return saveList(key, list.filter((w) => w.id !== id), gen);
   });
 }
 
+/** `gen` (optional, every write): the generation the caller's data belongs to —
+ *  a screen passes its mount-time workflowGeneration(). Default: now. */
 export const workflowStore = {
   listWorkflows: () => loadList(KEYS.workflows, isWorkflow),
   // keepPlace: My Workflows is user-ordered (moveWorkflow below — "the stored
   // order IS the display order"), and every EDIT → SAVE jumped the edited one
   // back to the top, undoing the ▲▼ order. New workflows still go first.
-  saveWorkflow: (w: Workflow) => upsert(KEYS.workflows, isWorkflow, w, true),
-  deleteWorkflow: (id: string) => removeById(KEYS.workflows, isWorkflow, id),
+  saveWorkflow: (w: Workflow, gen = generation) => upsert(KEYS.workflows, isWorkflow, w, true, gen),
+  deleteWorkflow: (id: string, gen = generation) => removeById(KEYS.workflows, isWorkflow, id, gen),
   /** Reorder My Workflows (owner 2026-08-06): swap the workflow with its
    *  neighbour; the stored order IS the display order. */
-  moveWorkflow(id: string, dir: -1 | 1): Promise<Workflow[]> {
+  moveWorkflow(id: string, dir: -1 | 1, gen = generation): Promise<Workflow[]> {
     return serialWrite(async () => {
       const list = await loadList(KEYS.workflows, isWorkflow);
       const i = list.findIndex((w) => w.id === id);
@@ -140,22 +164,22 @@ export const workflowStore = {
       if (i < 0 || j < 0 || j >= list.length) return list;
       const next = [...list];
       [next[i], next[j]] = [next[j], next[i]];
-      await saveList(KEYS.workflows, next);
+      await saveList(KEYS.workflows, next, gen);
       return next;
     });
   },
 
   listRuns: () => loadList(KEYS.runs, isRun),
-  saveRun: (r: WorkflowRun) => upsert(KEYS.runs, isRun, r),
-  deleteRun: (id: string) => removeById(KEYS.runs, isRun, id),
+  saveRun: (r: WorkflowRun, gen = generation) => upsert(KEYS.runs, isRun, r, false, gen),
+  deleteRun: (id: string, gen = generation) => removeById(KEYS.runs, isRun, id, gen),
 
   listProjects: () => loadList(KEYS.projects, isProject),
-  saveProject: (p: Project) => upsert(KEYS.projects, isProject, p),
-  deleteProject: (id: string) => removeById(KEYS.projects, isProject, id),
+  saveProject: (p: Project, gen = generation) => upsert(KEYS.projects, isProject, p, false, gen),
+  deleteProject: (id: string, gen = generation) => removeById(KEYS.projects, isProject, id, gen),
 
   listResults: () => loadList(KEYS.results, isResult),
-  saveResult: (r: SavedRunSummary) => upsert(KEYS.results, isResult, r),
-  deleteResult: (id: string) => removeById(KEYS.results, isResult, id),
+  saveResult: (r: SavedRunSummary, gen = generation) => upsert(KEYS.results, isResult, r, false, gen),
+  deleteResult: (id: string, gen = generation) => removeById(KEYS.results, isResult, id, gen),
 
   async getFavorites(): Promise<string[]> {
     try {
@@ -166,11 +190,11 @@ export const workflowStore = {
       return [];
     }
   },
-  toggleFavorite(id: string): Promise<string[]> {
+  toggleFavorite(id: string, gen = generation): Promise<string[]> {
     return serialWrite(async () => {
       const cur = await workflowStore.getFavorites();
       const next = cur.includes(id) ? cur.filter((s) => s !== id) : [id, ...cur];
-      await saveList(KEYS.favorites, next);
+      await saveList(KEYS.favorites, next, gen);
       return next;
     });
   },
@@ -184,13 +208,25 @@ export const workflowStore = {
       return [];
     }
   },
-  touchRecent(id: string): Promise<void> {
+  touchRecent(id: string, gen = generation): Promise<void> {
     return serialWrite(async () => {
       const cur = await workflowStore.getRecents();
-      await saveList(KEYS.recents, [id, ...cur.filter((s) => s !== id)].slice(0, 8));
+      await saveList(KEYS.recents, [id, ...cur.filter((s) => s !== id)].slice(0, 8), gen);
     });
   },
 };
+
+/** Account switch / sign-out wipe (night bug pass 3, 2026-10-01). The keys
+ *  themselves are removed by clearLocalAccountData's `ape:*` sweep; this holds
+ *  no in-memory copy, so the reset is the fence: every write asked for before
+ *  it (queued on the write chain, or still mid read-modify-write) is dropped
+ *  instead of re-creating the departing account's blob after the sweep.
+ *  Registered in resetAllLocalStores (src/features/account/clearLocalAccountData.ts). */
+export function resetLocal(): void {
+  generation++;
+}
+/** The name resetAllLocalStores imports this store's reset under. */
+export const resetCalcWorkflowStore = resetLocal;
 
 /** Hook: a collection that reloads on focus-count bump. Minimal by design —
  *  screens call `reload()` after their own mutations. */

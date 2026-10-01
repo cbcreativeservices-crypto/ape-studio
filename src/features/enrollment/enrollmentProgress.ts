@@ -27,6 +27,9 @@ import { topicOverallPct } from '../dashboard/topicPct';
 import { loadAllLocalMethodStates, mergeItemStates } from '../study/localProgress';
 import { useScenarioExempt } from '../study/scenarioExempt';
 import { useTermsExempt } from '../study/termsExempt';
+import { onStudyProgress } from '../study/sync';
+import { supabase } from '../../lib/supabase';
+import { isRealAccount } from '../commercial/realAccount';
 
 export type TopicProg = { pct: number; status: TopicStatus };
 
@@ -50,6 +53,41 @@ export function useEnrollmentProgress(gsList: number[]): Map<number, TopicProg> 
   // had no caller anywhere, so the stored set was only ever loaded by a
   // Flashcards visit — after a relaunch a confirmed-empty topic read 0% again.
   const termsExemptVersion = useTermsExempt();
+  /**
+   * IDENTITY FENCE (night bug pass 3, 2026-10-01). A failed refetch keeps the
+   * map on screen (below) — and nothing refetched on an account switch at all,
+   * so a Profile / Enrollment screen still mounted across a sign-out kept the
+   * departing account's bars, and an offline refetch kept them for good. On a
+   * change of identity the map is dropped and refetched (the cleanup's `alive`
+   * fences any fetch still in flight for the old account), and refetched once
+   * more when the local-mirror wipe that follows announces itself, so the
+   * first refetch cannot have merged the departing account's device rows.
+   */
+  const [identityVersion, setIdentityVersion] = useState(0);
+  useEffect(() => {
+    let current: string | undefined;
+    let awaitingWipe = false;
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+      const id = isRealAccount(session) ? (session?.user?.id ?? '') : '';
+      if (current === undefined || id === current) {
+        current = id;
+        return;
+      }
+      current = id;
+      awaitingWipe = true;
+      setMap(new Map());
+      setIdentityVersion((v) => v + 1);
+    });
+    const offProgress = onStudyProgress(() => {
+      if (!awaitingWipe) return;
+      awaitingWipe = false;
+      setIdentityVersion((v) => v + 1);
+    });
+    return () => {
+      data.subscription.unsubscribe();
+      offProgress();
+    };
+  }, []);
   useEffect(() => {
     if (!gsList.length) {
       setMap(new Map());
@@ -125,6 +163,6 @@ export function useEnrollmentProgress(gsList: number[]): Map<number, TopicProg> 
       alive = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key, exemptVersion, termsExemptVersion]);
+  }, [key, exemptVersion, termsExemptVersion, identityVersion]);
   return map;
 }

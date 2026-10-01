@@ -179,9 +179,13 @@ export function useHomeAttract(): AttractFlags {
  *  which shows until About is viewed by EITHER path (Home cue or that link both
  *  call markAboutOpened) and then retires permanently. */
 export function useAboutOpened(): boolean {
-  const [v, setV] = useState<boolean>(() => state.aboutDone);
+  // Unknown reads as OPENED (night pass 3, 2026-10-01) — the quiet-when-unknown
+  // rule computeFlags got in pass 2, missed here. Before the record was read
+  // `aboutDone` was its false default, so Explore reached before hydration
+  // breathed its About ring at someone who had opened About long ago.
+  const [v, setV] = useState<boolean>(() => !hydrated || state.aboutDone);
   useEffect(() => {
-    const l = () => setV(state.aboutDone);
+    const l = () => setV(!hydrated || state.aboutDone);
     listeners.add(l);
     void hydrate().then(l);
     return () => {

@@ -110,8 +110,15 @@ export function ExposureMonitorScreen() {
   useEffect(() => {
     markToolMount('ExposureMonitor', 'dosimeter');
   }, []);
+  // ORDERING FENCE (night pass 3 2026-10-01): a history read started before
+  // "Delete all" could resolve after it and put the deleted days back on
+  // screen. Only the NEWEST request may land; Delete all bumps it first.
+  const historyReq = useRef(0);
   useEffect(() => {
-    void getExposureHistory().then(setHistory);
+    const req = ++historyReq.current;
+    void getExposureHistory().then((h) => {
+      if (req === historyReq.current) setHistory(h);
+    });
   }, [snap.todayActiveSec === 0]); // refresh after deletes; live today rides the snapshot
 
   const s = snap.settings;
@@ -484,7 +491,12 @@ export function ExposureMonitorScreen() {
                   'Delete ALL exposure history?',
                   'Every stored day will be removed. This cannot be undone.',
                   'Delete all',
-                  () => void deleteExposureHistory().then(() => setHistory([])),
+                  () => {
+                    const req = ++historyReq.current; // drops any read already in flight
+                    void deleteExposureHistory().then(() => {
+                      if (req === historyReq.current) setHistory([]);
+                    });
+                  },
                   { destructive: true },
                 )
               }

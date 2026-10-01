@@ -17,10 +17,10 @@ import { colors, fonts } from '../../../theme/tokens';
 import { afterDialogCloses, confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
-import { QUANTITIES, fmt, parseQuantity, type QuantityKind } from './calcUnits';
+import { QUANTITIES, fmtCarried, parseQuantity, type QuantityKind } from './calcUnits';
 import type { Project } from './workflowModel';
 import { workflowLimitsFor } from './workflowModel';
-import { workflowStore } from './workflowStore';
+import { workflowGeneration, workflowStore } from './workflowStore';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
@@ -50,7 +50,7 @@ function toDraft(p: Project): DraftValue[] {
   return p.values.map((v) => {
     const kindIdx = Math.max(0, PROJECT_KINDS.findIndex((k) => k.kind === v.quantity));
     const units = QUANTITIES[PROJECT_KINDS[kindIdx].kind];
-    return { label: v.label, kindIdx, unitIdx: 0, raw: fmt(units[0].fromBase(v.baseValue), 6) };
+    return { label: v.label, kindIdx, unitIdx: 0, raw: fmtCarried(units[0].fromBase(v.baseValue), PROJECT_KINDS[kindIdx].kind) };
   });
 }
 
@@ -77,6 +77,10 @@ export function CalcProjectsScreen() {
   // One save at a time — a double SAVE on a NEW project wrote it twice under
   // two ids (bug hunt 2026-09-29).
   const savingRef = useRef(false);
+  // The account this editor's values belong to (night bug pass 3, 2026-10-01):
+  // a SAVE that lands after a sign-out wipe is dropped by the store, never
+  // written into the next session's projects.
+  const storeGenRef = useRef(workflowGeneration());
 
   const closeEditor = useCallback(() => {
     if (!dirty) {
@@ -231,9 +235,10 @@ export function CalcProjectsScreen() {
       createdAt: editing?.createdAt ?? now,
       updatedAt: now,
     };
-    const ok = await workflowStore.saveProject(p);
+    const ok = await workflowStore.saveProject(p, storeGenRef.current);
     if (!ok) {
-      notify('Save failed', 'The project could not be saved. Try again.');
+      // Fenced by an account wipe: nothing failed, and no popup for the next person.
+      if (storeGenRef.current === workflowGeneration()) notify('Save failed', 'The project could not be saved. Try again.');
       return;
     }
     if (skipped > 0) {

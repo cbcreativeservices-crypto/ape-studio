@@ -12,6 +12,20 @@
  */
 import { supabase } from '../../lib/supabase';
 import { hasSafeSession } from '../../lib/getSessionSafe';
+import { withDeadline } from '../../lib/boundedCall';
+
+/**
+ * The two admin WRITES are bounded (night bug pass 3, 2026-10-01). supabase-js
+ * has no fetch timeout: a stalled approve / reject / revoke never settled, the
+ * row stayed busy, and the admin queue was locked until a relaunch. A timeout
+ * cannot say whether the write landed, so it says exactly that. The two queue
+ * READS share the bound: the reload after a decision holds the same lock, and
+ * a stalled one locked the queue just the same (a timeout reads as null — the
+ * screen's "could not load" line, never an empty queue).
+ */
+const ADMIN_WRITE_MS = 20000;
+const ADMIN_TIMEOUT_COPY = 'Couldn’t confirm — check the list after reconnecting.';
+const isTimeout = (e: unknown) => /timeout/.test((e as Error | null)?.message ?? '');
 
 export type EmployerApplicationStatus = 'pending' | 'approved' | 'rejected' | 'withdrawn';
 
@@ -195,7 +209,7 @@ export async function amIAdmin(): Promise<boolean> {
 
 export async function fetchPendingApplications(): Promise<PendingApplication[] | null> {
   try {
-    const { data, error } = await supabase.rpc('employer_pending_list');
+    const { data, error } = await withDeadline(async () => await supabase.rpc('employer_pending_list'), 'employer_pending_list', ADMIN_WRITE_MS);
     if (error) return null;
     return ((data ?? []) as Record<string, unknown>[]).map((r) => ({
       id: String(r.id),
@@ -219,7 +233,7 @@ export async function fetchPendingApplications(): Promise<PendingApplication[] |
 
 export async function fetchActiveEmployers(): Promise<ActiveEmployer[] | null> {
   try {
-    const { data, error } = await supabase.rpc('employer_active_list');
+    const { data, error } = await withDeadline(async () => await supabase.rpc('employer_active_list'), 'employer_active_list', ADMIN_WRITE_MS);
     if (error) return null;
     return ((data ?? []) as Record<string, unknown>[]).map((r) => ({
       userId: String(r.user_id),
@@ -239,16 +253,21 @@ export async function reviewApplication(
   note?: string,
 ): Promise<SaveOk> {
   try {
-    const { error } = await supabase.rpc('employer_review', {
-      p_id: id,
-      p_action: action,
-      p_note: note ?? null,
-    });
+    const { error } = await withDeadline(
+      async () => await supabase.rpc('employer_review', {
+        p_id: id,
+        p_action: action,
+        p_note: note ?? null,
+      }),
+      'employer_review',
+      ADMIN_WRITE_MS,
+    );
     // Never the raw Postgres string under a two-word title, and say what
     // did NOT happen — an approve/revoke failure used to leave the reviewer
     // unable to tell whether the applicant's state had changed.
     return error ? { ok: false, error: 'That change could not be saved. Nothing was changed for this account — reload the queue and try again.' } : { ok: true };
-  } catch {
+  } catch (e) {
+    if (isTimeout(e)) return { ok: false, error: ADMIN_TIMEOUT_COPY };
     // Not a connection failure: supabase-js RESOLVES with `{ error }`
     // when the network drops, so only a thrown exception lands here.
     return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };
@@ -257,15 +276,20 @@ export async function reviewApplication(
 
 export async function setEmployerRevoked(userId: string, revoked: boolean): Promise<SaveOk> {
   try {
-    const { error } = await supabase.rpc('employer_revoke', {
-      p_user: userId,
-      p_revoked: revoked,
-    });
+    const { error } = await withDeadline(
+      async () => await supabase.rpc('employer_revoke', {
+        p_user: userId,
+        p_revoked: revoked,
+      }),
+      'employer_revoke',
+      ADMIN_WRITE_MS,
+    );
     // Never the raw Postgres string under a two-word title, and say what
     // did NOT happen — an approve/revoke failure used to leave the reviewer
     // unable to tell whether the applicant's state had changed.
     return error ? { ok: false, error: 'That change could not be saved. Nothing was changed for this account — reload the queue and try again.' } : { ok: true };
-  } catch {
+  } catch (e) {
+    if (isTimeout(e)) return { ok: false, error: ADMIN_TIMEOUT_COPY };
     // Not a connection failure: supabase-js RESOLVES with `{ error }`
     // when the network drops, so only a thrown exception lands here.
     return { ok: false, error: 'Something went wrong and that wasn’t saved. Your changes are still on this screen — try again.' };

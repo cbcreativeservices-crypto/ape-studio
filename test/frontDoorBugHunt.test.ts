@@ -24,7 +24,8 @@ describe('auth (F1, F2, F12, F15)', () => {
     const body = api.slice(api.indexOf('export async function ensureSession'), api.indexOf('supabase.auth.signUp('));
     assert.match(body, /sessionEmail\s*===\s*email\.trim\(\)\.toLowerCase\(\)\)\s*return null/);
     // Local scope since bug pass 2 (2026-09-30) — never the account's other sessions.
-    assert.match(body, /markIntentionalSignOut\(\);\s*\n\s*try \{\s*\n\s*await supabase\.auth\.signOut\(\{ scope: 'local' \}\)/);
+    // Night pass 3 (2026-10-01): through signOutThisDevice — bounded, no late removal.
+    assert.match(body, /markIntentionalSignOut\(\);[\s\S]*?await signOutThisDevice\(\);/);
     assert.doesNotMatch(body, /if \(isRealAccount\([^)]*\)\) return null;/);
   });
 
@@ -51,7 +52,8 @@ describe('AppDialog queue (F3)', () => {
 
   it('drops a request identical to the one showing or queued', () => {
     assert.match(dlg, /a\.title === b\.title && a\.body === b\.body/);
-    assert.match(dlg, /if \(current && \(sameDialog\(current, req\) \|\| queue\.some\(\(q\) => sameDialog\(q, req\)\)\)\) return;/);
+    // (night pass 3, 2026-10-01: the queue is checked with no dialog up too.)
+    assert.match(dlg, /if \(\(current && sameDialog\(current, req\)\) \|\| queue\.some\(\(q\) => sameDialog\(q, req\)\)\) return;/);
   });
 
   it('ignores an answer that lands within the guard window of a dialog appearing', () => {
@@ -86,7 +88,8 @@ describe('directory sends (F4, F5, F6)', () => {
   });
 
   it('every send goes through useSending', () => {
-    assert.match(req, /runSend\(\(\) =>\s*\n\s*sendThreadMessage\(/);
+    // Per-thread lock since night pass 3 (2026-10-01) — still one send at a time per thread.
+    assert.match(req, /runSendIn\(thread\.id, \(\) =>\s*\n\s*sendThreadMessage\(/);
     assert.match(req, /runReport\(\(\) => reportMember\(/);
     assert.match(req, /runAct\(\(\) =>\s*\n\s*respondToRequest\(/);
     assert.match(dir, /runSend\(\(\) => onSend\(purpose/);

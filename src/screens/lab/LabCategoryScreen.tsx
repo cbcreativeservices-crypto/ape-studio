@@ -7,7 +7,7 @@
  * language. Purely data-driven from labCatalog — adding a lab needs no change
  * here.
  */
-import { Fragment, useState } from 'react';
+import { Fragment, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -16,6 +16,8 @@ import { AccuracyNote } from '../../components/AccuracyNote';
 import type { RootStackParamList } from '../../navigation/types';
 import { categoryCountLabel, DEV_NOTE, getCategory, type LabLeaf } from './labCatalog';
 import { useLabDone } from '../../features/lab/labCompletion';
+import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { startLabPreview } from '../../features/lab/labPreviewStore';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../theme/readingColumn';
@@ -28,6 +30,8 @@ export function LabCategoryScreen({ navigation, route }: Props) {
   // Accordion (owner 2026-08-07): rows load collapsed; one expanded at a time;
   // the expanded row opens via an explicit [OPEN] button.
   const [expandedKey, setExpandedKey] = useState<string | null>(null);
+  const { isMember, resolved } = useEntitlement();
+  const lastOpenAt = useRef(0);
 
   if (!cat || cat.kind !== 'list') {
     return (
@@ -39,8 +43,20 @@ export function LabCategoryScreen({ navigation, route }: Props) {
   }
 
   const go = navigation.navigate as unknown as (route: string, params?: object) => void;
+  // The Ear Lab's open rule (night pass 3, 2026-10-01). This screen is still
+  // reachable by the `labs/:id` deep link, and its OPEN went straight to the
+  // lab: a resolved non-member opening a members-only lab whose route is not
+  // gated at the screen (withMembershipPreview gates only routes that are
+  // members-only EVERYWHERE in the catalog) got it live. And two OPEN taps
+  // inside the beat pushed the lab twice.
+  const lockedLeaf = (leaf: LabLeaf) => resolved && !isMember && (cat.section === 'training' || !!leaf.member);
   const open = (leaf: LabLeaf) => {
-    if (leaf.route) go(leaf.route, leaf.params);
+    if (!leaf.route) return;
+    const now = Date.now();
+    if (now - lastOpenAt.current < 600) return;
+    lastOpenAt.current = now;
+    if (lockedLeaf(leaf)) startLabPreview(leaf.route, leaf.name);
+    go(leaf.route, leaf.params);
   };
 
   return (

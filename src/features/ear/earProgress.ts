@@ -80,8 +80,19 @@ export async function loadEarProgress(): Promise<EarProgressState> {
     blockedLoads.add(s);
     return s;
   }
+  let raw: string | null;
   try {
-    const raw = await AsyncStorage.getItem(KEY);
+    raw = await AsyncStorage.getItem(KEY);
+  } catch {
+    // Storage itself could not be read (night pass 3, 2026-10-01; the Amp
+    // lab's pass-2 fix): this empty ladder says nothing about what is stored,
+    // and the drill saves it on the first answer — over every module's real
+    // ladder and mastered level. Never written back, like a blocked load.
+    const s: EarProgressState = { ...EMPTY, modules: {} };
+    blockedLoads.add(s);
+    return s;
+  }
+  try {
     if (!raw) return { ...EMPTY, modules: {} };
     const p = JSON.parse(raw) as EarProgressState;
     return { modules: p.modules ?? {}, subBassOk: p.subBassOk !== false };

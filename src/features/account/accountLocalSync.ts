@@ -21,6 +21,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
 import { isRealAccount } from '../commercial/realAccount';
 import { clearLocalAccountData, resetAllLocalStores } from './clearLocalAccountData';
+import { softDeadline } from '../../lib/boundedCall';
 
 /** Marker holding the id of the user whose data currently lives on the device.
  *  Deliberately NOT on clearLocalAccountData's KEEP list — it is re-written
@@ -52,6 +53,32 @@ async function syncLocalToIdentity(identity: string): Promise<void> {
 }
 
 /**
+ * The one queue every identity wipe runs on (moved to module scope, night bug
+ * pass 3, 2026-10-01, so Guest Mode's own wipe can join it — see below).
+ */
+let chain: Promise<void> = Promise.resolve();
+
+/**
+ * Run `fn` AFTER every identity sync already queued, and hold the next one
+ * until it finishes (night bug pass 3, 2026-10-01).
+ *
+ * Account → Guest Mode ran TWO wipes at once: the SIGNED_OUT sync below and
+ * Guest Mode's total wipe. Each sweep lists the keys, then removes them; the
+ * sync's sweep that lagged behind Guest Mode deleted the Career Finder record
+ * Guest Mode had just written back. Queued, the two cannot interleave. The
+ * wait is bounded so a stalled storage call cannot hold Guest Mode for ever.
+ */
+export function runAfterAccountSync<T>(fn: () => Promise<T>, waitMs = 15000): Promise<T> {
+  const prev = chain;
+  const result = softDeadline(() => prev, undefined, 'accountSync/wait', waitMs).then(fn);
+  chain = result.then(
+    () => {},
+    () => {},
+  );
+  return result;
+}
+
+/**
  * Mount once at the app root. Clears device-local data whenever the IDENTITY
  * changes — a different user signs in, OR the user signs OUT / enters no-account
  * (identity ''). This is what makes a LOG OUT (and a fresh Guest start) reset the
@@ -70,7 +97,6 @@ export function useAccountLocalSync(): void {
      * account that is no longer signed in, and the next switch skipped the
      * wipe. Chained, each sync sees the marker the previous one wrote.
      */
-    let chain: Promise<void> = Promise.resolve();
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
       // SIGNED_IN (login), SIGNED_OUT (logout → guest), INITIAL_SESSION (cold
       // start). TOKEN_REFRESHED and the like keep the same identity, so the

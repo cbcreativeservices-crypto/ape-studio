@@ -15,11 +15,23 @@ import type { ItemStates } from './api';
 const PREFIX = 'ape:localMethod:'; // + `${achievementId}:${methodKey}`
 const keyFor = (achievementId: string, methodKey: string) => `${PREFIX}${achievementId}:${methodKey}`;
 
+/**
+ * WIPE FENCE (night bug pass 3, 2026-10-01). clearAllLocalMethodStates lists
+ * the keys, THEN removes them; AsyncStorage runs calls in order, so a mirror
+ * write issued between those two steps created a key the removal never saw —
+ * the departing account's progress, merged into the next account's Dashboard.
+ * Any write issued while a wipe is running is the departing account's (the
+ * identity change is what started the wipe), so it is dropped. A write issued
+ * BEFORE the wipe is queued ahead of the key listing and removed with the rest.
+ */
+let clearsInFlight = 0;
+
 export async function saveLocalMethodStates(
   achievementId: string,
   methodKey: string,
   states: ItemStates,
 ): Promise<void> {
+  if (clearsInFlight > 0) return;
   try {
     await AsyncStorage.setItem(keyFor(achievementId, methodKey), JSON.stringify(states));
   } catch {
@@ -32,11 +44,14 @@ export async function saveLocalMethodStates(
  *  across accounts — e.g. a fresh free/no-account login starts clear
  *  (owner 2026-08-11). Server rows remain the source of truth for real users. */
 export async function clearAllLocalMethodStates(): Promise<void> {
+  clearsInFlight++;
   try {
     const keys = (await AsyncStorage.getAllKeys()).filter((k) => k.startsWith(PREFIX));
     if (keys.length > 0) await AsyncStorage.multiRemove(keys);
   } catch {
     /* non-fatal */
+  } finally {
+    clearsInFlight--;
   }
 }
 

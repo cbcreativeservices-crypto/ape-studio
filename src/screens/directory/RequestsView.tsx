@@ -11,7 +11,7 @@ import { FlatList, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleS
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
-import { Banner, Chip, ChipWrap, EmptyState, Eyebrow, Helper, Loading, PrimaryButton, useSending } from './directoryBits';
+import { Banner, Chip, ChipWrap, EmptyState, Eyebrow, Helper, Loading, PrimaryButton, useSending, useSendingPer } from './directoryBits';
 import {
   blockThread,
   fetchContactThreads,
@@ -512,7 +512,10 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
   const [err, setErr] = useState<string | null>(null);
   /** Remaining allowance. null = unknown, which must read as ALLOWED. */
   const [allow, setAllow] = useState<ContactAllowance | null>(null);
-  const [sending, runSend] = useSending();
+  // Per conversation (night pass 3, 2026-10-01): this sheet stays mounted
+  // across threads, and one shared lock left SEND dead in B — and swallowed
+  // the tap — while a send in A was still out.
+  const [sendingIn, runSendIn] = useSendingPer();
 
   // Which conversation is open NOW (bug hunt 2026-09-30). The clear below only
   // helps if nothing lands after it: a slow fetch for conversation A — or the
@@ -521,6 +524,7 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
   const threadId = thread?.id ?? null;
   const openId = useRef<string | null>(threadId);
   openId.current = threadId;
+  const sending = sendingIn(threadId);
   /**
    * Unsent replies, per conversation (bug hunt 2026-09-30). Closing the sheet —
    * ✕, Android BACK, a stray tap — wiped whatever had been typed, because the
@@ -697,7 +701,7 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
               // next SEND delivered the first message a second time.
               const unsent = (cur: string) =>
                 cur.startsWith(sentRaw) ? cur.slice(sentRaw.length).replace(/^\s+/, '') : cur;
-              runSend(() =>
+              runSendIn(thread.id, () =>
                 sendThreadMessage(thread.id, sentRaw.trim()).then(async (r) => {
                   // `thread` is the one this press was made in.
                   const draft = drafts.current.get(thread.id);

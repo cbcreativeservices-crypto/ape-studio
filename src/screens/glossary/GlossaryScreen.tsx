@@ -53,7 +53,7 @@ import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 import { COPY } from '../../lib/copy';
 import { useCoachMark } from '../../lib/coachMark';
 import { sendFeedback } from '../../lib/feedback';
-import { confirmDialog, notify } from '../../lib/confirm';
+import { afterDialogCloses, confirmDialog, notify } from '../../lib/confirm';
 import { fetchCorpusTerms, fetchDefinitionsFor, yieldToUi } from '../../features/glossary/corpusFetch';
 import { cancelGlossaryPrefetch } from '../../features/glossary/offlinePrefetch';
 import {
@@ -1364,11 +1364,17 @@ ${COPY.glossaryFreeAllowance}`,
         },
         {
           cancelText: COPY.glossaryDeviceKeyNotNow,
-          onCancel: () => {
+          // NOT NOW raises the device-key card, a Modal of its own — after this
+          // dialog's Modal has faded out (night pass 3, 2026-10-01). Raised at
+          // once, iOS refused to present it over the closing dialog, and with
+          // `visible` already true it never tried again: the guest sat on a
+          // glossary that would not load, with no card and no way back in.
+          // `askingRef` stays claimed through the wait so nothing re-asks.
+          onCancel: afterDialogCloses(() => {
             askingRef.current = false;
             // NOT NOW writes NOTHING — "nothing was stored" has to be true.
             setDeclinedThisVisit(true);
-          },
+          }),
         },
       );
     }

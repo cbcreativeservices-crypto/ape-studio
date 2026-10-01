@@ -94,9 +94,22 @@ export function showAppDialog(req: AppDialogRequest): void {
   // side effects mid-question — the single-device takeover's cancel SIGNS THE
   // USER OUT while they are still deciding. No caller wraps a dialog in a
   // Promise (checked 2026-09-29), so nothing is left waiting on it.
-  if (current && (sameDialog(current, req) || queue.some((q) => sameDialog(q, req)))) return;
+  // The queue is checked with no dialog up as well (night pass 3,
+  // 2026-10-01): while a hand-off holds the queue (holdAppDialogQueue)
+  // `current` is empty and the queue is not, so a repeat of a waiting request
+  // used to show at once AND again when the hold released.
+  if ((current && sameDialog(current, req)) || queue.some((q) => sameDialog(q, req))) return;
   if (current) {
     queue.push(req);
+    return;
+  }
+  // A request made DURING a hand-off waits in line too: shown now, its Modal
+  // would block the modal screen the hand-off is about to present (iOS) —
+  // the very thing the hold exists for — and it would jump the dialogs
+  // already waiting. The hold is bounded, so this delays, never strands.
+  if (drainHeldUntil > Date.now()) {
+    queue.push(req);
+    drainQueue();
     return;
   }
   current = req;

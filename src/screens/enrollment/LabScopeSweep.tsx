@@ -182,7 +182,19 @@ const WAVEFORMS: Record<string, string> = Object.fromEntries(
 /** The quiet baseline either side of the letter. */
 const LEAD = `M0 ${MID} L${TRACE_W} ${MID}`;
 
-export function LabScopeSweep({ color }: { color: string }) {
+export function LabScopeSweep({
+  color,
+  live = true,
+}: {
+  color: string;
+  /**
+   * Is the row actually on screen? (night pass 3 2026-10-01) The Awards pager
+   * keeps the Enrollments page mounted while another page shows, and a pushed
+   * screen keeps it mounted beneath — the sweep kept running passes (and
+   * re-rendering) unseen. false = stop and stay invisible, as under Low-Light.
+   */
+  live?: boolean;
+}) {
   const [w, setW] = useState(0);
   const { width: windowW } = useWindowDimensions();
   const [edge, setEdge] = useState<'top' | 'bottom'>('top');
@@ -196,7 +208,7 @@ export function LabScopeSweep({ color }: { color: string }) {
   const suppressed = useOverlaysSuppressed();
 
   useEffect(() => {
-    if (w <= 0 || suppressed || !animationsAllowed()) return;
+    if (w <= 0 || !live || suppressed || !animationsAllowed()) return;
     let alive = true;
     let timer: ReturnType<typeof setTimeout> | undefined;
 
@@ -238,8 +250,12 @@ export function LabScopeSweep({ color }: { color: string }) {
       alive = false;
       if (timer) clearTimeout(timer);
       x.stopAnimation();
+      // Park it at the far-left end, where the opacity ramp is 0 — a pass cut
+      // off mid-card (off page, Low-Light switched on) must not freeze there
+      // as a visible static waveform.
+      x.setValue(0);
     };
-  }, [w, windowW, suppressed, x]);
+  }, [w, windowW, live, suppressed, x]);
 
   const onLayout = (e: LayoutChangeEvent) => setW(Math.round(e.nativeEvent.layout.width));
 

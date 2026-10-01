@@ -36,6 +36,7 @@ import { confirmDialog, notify } from '../../lib/confirm';
 import { colors, fonts, spacing } from '../../theme/tokens';
 import { POPUP_MAX_W } from '../../theme/readingColumn';
 import { clearLocalAccountData, resetAllLocalStores } from '../../features/account/clearLocalAccountData';
+import { runAfterAccountSync } from '../../features/account/accountLocalSync';
 import { getDeviceId } from '../../features/account/deviceIdentity';
 import { claimThisDevice, getActiveDeviceId } from '../../features/account/singleDevice';
 import {
@@ -43,6 +44,7 @@ import {
   passwordIssue,
   requestPasswordReset,
   signIn,
+  signOutLocalRefusing,
   signOutThisDevice,
   updatePassword,
   verifyRecoveryOtp,
@@ -50,7 +52,6 @@ import {
 import { supabase } from '../../lib/supabase';
 import { consumeIntentionalSignOut, markIntentionalSignOut } from '../../features/auth/intentionalSignOut';
 import { safeSession } from '../../lib/getSessionSafe';
-import { withDeadline } from '../../lib/boundedCall';
 import { isRealAccount } from '../../features/commercial/realAccount';
 import { COPY } from '../../lib/copy';
 import { registerCommercialUser } from '../../features/commercial/commercialAuth';
@@ -254,6 +255,11 @@ export function AuthScreen({ navigation }: Props) {
     try {
     // Guest entry signs out to establish the anon session — NOT a session loss.
     // Mark it so SessionExpiryGuard doesn't bounce the guest back to login.
+    // The Career Finder record (see below) is read BEFORE the sign-out (night
+    // bug pass 3, 2026-10-01): signing an ACCOUNT out emits SIGNED_OUT, whose
+    // identity sync sweeps every `ape:*` key — read after it, the record was
+    // already gone, or not, depending on which got to storage first.
+    const finderRecord = await AsyncStorage.getItem('ape:careerfinder:v1');
     markIntentionalSignOut();
     // scope 'local' (bug pass 2, 2026-09-30): leaving THIS device for Guest
     // Mode must not revoke the account's other sessions (the website).
@@ -263,10 +269,14 @@ export function AuthScreen({ navigation }: Props) {
     // WITHOUT the session check below: the stalled signOut still holds
     // supabase-js's session lock, so getSession() would queue behind it, time
     // out as "no session" and let Guest Mode in over a live account.
-    const { error: outError } = await withDeadline(() => supabase.auth.signOut({ scope: 'local' }), 'signOut', 10000).catch(
-      (e: unknown) => ({ error: e as Error }),
-    );
+    // NOTHING LEFT IN FLIGHT (night bug pass 3, 2026-10-01): a stalled
+    // signOut() refused here still ran its local half whenever it answered —
+    // after LOGIN, that removed the account just signed into.
+    // signOutLocalRefusing splits the server and local halves, so a refusal
+    // changes nothing, then or later.
+    const { error: outError } = await signOutLocalRefusing(10000);
     if (outError && /signOut timeout/.test(outError.message ?? '')) {
+      consumeIntentionalSignOut(); // no SIGNED_OUT is coming for it
       setError('Couldn’t reach the Academy — check your connection and try again.');
       return;
     }
@@ -301,22 +311,26 @@ export function AuthScreen({ navigation }: Props) {
     // device-local lab whose copy promises "Your answers stay on this phone" —
     // so its record survives a guest re-entry. An ACCOUNT switch still starts
     // the next person fresh (this is the guest path only). Bug+Hater night B1-02.
-    const finderRecord = await AsyncStorage.getItem('ape:careerfinder:v1');
-    await clearLocalAccountData({ total: true });
-    // Written back BEFORE the store reset (bug pass 3, 2026-09-30): the reset
-    // emits, a mounted Finder screen re-subscribes and re-hydrates at once, and
-    // in the old order it read the just-wiped key — loaded EMPTY, marked itself
-    // hydrated, and the guest's next answer overwrote the saved record.
-    if (finderRecord) await AsyncStorage.setItem('ape:careerfinder:v1', finderRecord);
-    resetAllLocalStores();
-    // The amplitude-orientation flag is a device-level onboarding flag that an
-    // ACCOUNT switch deliberately keeps, so resetAllLocalStores() leaves its
-    // in-memory `done` alone — but the total wipe above just removed its key,
-    // and a guest must see the gate NOW, not only after a relaunch (B-154).
-    resetAmplitudeOrientation();
-    // Write the no-account marker so the next boot's sync sees the SAME
-    // identity instead of null→'' and wiping again (QA night 2026-09-01).
-    await AsyncStorage.setItem('ape:localUserId', '');
+    // QUEUED BEHIND THE SIGN-OUT'S OWN WIPE (night bug pass 3, 2026-10-01):
+    // the SIGNED_OUT identity sync and this total wipe ran side by side, and
+    // the sync's sweep landing late deleted the record written back here.
+    await runAfterAccountSync(async () => {
+      await clearLocalAccountData({ total: true });
+      // Written back BEFORE the store reset (bug pass 3, 2026-09-30): the reset
+      // emits, a mounted Finder screen re-subscribes and re-hydrates at once, and
+      // in the old order it read the just-wiped key — loaded EMPTY, marked itself
+      // hydrated, and the guest's next answer overwrote the saved record.
+      if (finderRecord) await AsyncStorage.setItem('ape:careerfinder:v1', finderRecord);
+      resetAllLocalStores();
+      // The amplitude-orientation flag is a device-level onboarding flag that an
+      // ACCOUNT switch deliberately keeps, so resetAllLocalStores() leaves its
+      // in-memory `done` alone — but the total wipe above just removed its key,
+      // and a guest must see the gate NOW, not only after a relaunch (B-154).
+      resetAmplitudeOrientation();
+      // Write the no-account marker so the next boot's sync sees the SAME
+      // identity instead of null→'' and wiping again (QA night 2026-09-01).
+      await AsyncStorage.setItem('ape:localUserId', '');
+    });
     setEntitlement('anonymous');
     toHome();
     } catch {

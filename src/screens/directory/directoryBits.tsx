@@ -162,6 +162,31 @@ export function useSending(): [boolean, (task: () => Promise<unknown>) => void] 
   return [sending, run];
 }
 
+/**
+ * useSending, one lock PER KEY (night pass 3, 2026-10-01). MemberSheet and the
+ * conversation sheet stay mounted across members / threads, so one shared lock
+ * meant a BLOCK or SEND still out for member A greyed — and swallowed — BLOCK or
+ * SEND for member B until A's answer landed. The same key still cannot run
+ * twice at once. `busy(key)` greys the button for the key on screen.
+ */
+export function useSendingPer(): [(key: string | null) => boolean, (key: string, task: () => Promise<unknown>) => void] {
+  const inFlight = useRef(new Set<string>());
+  const [busyKeys, setBusyKeys] = useState<ReadonlySet<string>>(() => new Set());
+  const run = useCallback((key: string, task: () => Promise<unknown>) => {
+    if (inFlight.current.has(key)) return;
+    inFlight.current.add(key);
+    setBusyKeys(new Set(inFlight.current));
+    void task()
+      .catch(() => {})
+      .finally(() => {
+        inFlight.current.delete(key);
+        setBusyKeys(new Set(inFlight.current));
+      });
+  }, []);
+  const busy = useCallback((key: string | null) => key != null && busyKeys.has(key), [busyKeys]);
+  return [busy, run];
+}
+
 export function PrimaryButton({
   label,
   onPress,

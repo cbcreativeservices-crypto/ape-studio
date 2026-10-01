@@ -166,6 +166,31 @@ export function fmt(x: number, sig = 4): string {
   return p.includes('.') ? p.replace(/\.?0+$/, '') : p;
 }
 
+/** A whole COUNT of the one-unit count kinds ('samples' / 'number'), or null.
+ *  Whole up to float noise counts (night bug pass 3, 2026-10-01): 0.35 s ×
+ *  44100 Hz is 15434.999999999998 in binary and printed as "15430" taps at 4
+ *  figures. The snap is 1e-9 RELATIVE — finer than any sig-fig setting shows —
+ *  so a tiny genuine value (1e-12) is never snapped to 0. From 1e7 up, null
+ *  (fmt's exponent form applies). */
+export function wholeCount(x: number, quantity: string): number | null {
+  if (quantity !== 'samples' && quantity !== 'number') return null;
+  if (!Number.isFinite(x)) return null;
+  const whole = Math.round(x);
+  if (Math.abs(x - whole) > 1e-9 * Math.abs(x) || Math.abs(whole) >= 1e7) return null;
+  return whole === 0 ? 0 : whole; // never "-0"
+}
+
+/** The text a carried-in value (a chained result, an earlier workflow step's
+ *  output, a saved project value) is written into an input field as — 6 sig
+ *  figs, except a whole COUNT, which goes in exact (night bug pass 3,
+ *  2026-10-01): 6 figures turned 1,200,001 TOTAL FRAMES into 1200000 in the
+ *  next step, and re-saved a 7-digit project count one off on any edit.
+ *  `x` is already in the field's display unit. */
+export function fmtCarried(x: number, quantity: string): string {
+  const whole = wholeCount(x, quantity);
+  return whole !== null ? String(whole) : fmt(x, 6);
+}
+
 /** Format a whole-number count for interpolation into text/steps/labels —
  *  '—' for a non-finite value, same convention as fmt(). Use this instead of
  *  `${Math.round(x)}` / `${x}` so a zero input never prints NaN/Infinity. */

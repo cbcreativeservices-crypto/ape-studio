@@ -442,12 +442,22 @@ export function MatchingScreen({ navigation, route }: Props) {
     [board, selectedLeft, locked, wrongPair],
   );
 
+  // ONE EXIT for the error / empty Back buttons (night bug pass 3,
+  // 2026-10-01) — the Quiz latch. A double tap's second goBack() came from a
+  // route already popped and switched tabs. A ref: both taps beat a re-render.
+  const leavingRef = useRef(false);
+  const leave = useCallback(() => {
+    if (leavingRef.current) return;
+    leavingRef.current = true;
+    navigation.goBack();
+  }, [navigation]);
+
   if (error) {
     return (
       <View style={styles.center}>
         <Text style={styles.errorText}>{error}</Text>
         <View style={{ width: 180 }}>
-          <StudioButton label="Back" variant="secondary" small onPress={() => navigation.goBack()} />
+          <StudioButton label="Back" variant="secondary" small onPress={leave} />
         </View>
       </View>
     );
@@ -460,7 +470,7 @@ export function MatchingScreen({ navigation, route }: Props) {
       <View style={styles.center}>
         <Text style={styles.errorText}>This topic has no matching items yet.</Text>
         <View style={{ width: 180 }}>
-          <StudioButton label="Back" variant="secondary" small onPress={() => navigation.goBack()} />
+          <StudioButton label="Back" variant="secondary" small onPress={leave} />
         </View>
       </View>
     );

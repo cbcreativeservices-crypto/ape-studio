@@ -98,9 +98,13 @@ export function ExposureCheckin() {
 
   const dismiss = () => {
     if (hideTimer.current) clearTimeout(hideTimer.current);
-    Animated.timing(slide, { toValue: 0, duration: reduceMotion ? 120 : 260, useNativeDriver: true }).start(() =>
-      setShow(null),
-    );
+    // Only a slide-out that FINISHED clears the panel (night pass 3,
+    // 2026-10-01): a check-in arriving mid-dismiss starts the slide-in on the
+    // same value, which stops this one and calls back with finished:false —
+    // clearing the NEW check-in (a "DOSE REACHED" included) as it appeared.
+    Animated.timing(slide, { toValue: 0, duration: reduceMotion ? 120 : 260, useNativeDriver: true }).start(({ finished }) => {
+      if (finished) setShow(null);
+    });
   };
 
   useEffect(() => {

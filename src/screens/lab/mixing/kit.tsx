@@ -288,6 +288,20 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
    *    await instead of racing the new one to load(). */
   const renderingSigRef = useRef<string | null>(null);
   const renderSeqRef = useRef(0);
+  /** The armed replay (night pass 3, 2026-10-01 — the Mastering lab's fix).
+   *  The variant outlives one effect run: a fader DRAG changes the set on
+   *  every tick, and by the second tick `active` and `pending` were already
+   *  null, so the replay was forgotten and a drag silently stopped the sound
+   *  it promised to replay. Cleared when the replay fires or is cancelled;
+   *  a ▶ press or a stop/mute/close inside the pause cancels it, so the old
+   *  variant cannot start over the one just pressed. */
+  const replayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const replayIdRef = useRef<string | null>(null);
+  const cancelReplay = useCallback(() => {
+    if (replayTimerRef.current != null) clearTimeout(replayTimerRef.current);
+    replayTimerRef.current = null;
+    replayIdRef.current = null;
+  }, []);
 
   const signature = useMemo(() => JSON.stringify(variants), [variants]);
 
@@ -355,7 +369,8 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
 
   // New variant set → old renders (AND old listening credit) are stale.
   useEffect(() => {
-    const again = activeRef.current ?? pendingRef.current;
+    const again = activeRef.current ?? pendingRef.current ?? replayIdRef.current;
+    replayIdRef.current = again;
     // Stop the sounding render FIRST. It is now stale — the console moved under
     // it — and without this the scribble strips light the new solo state while
     // the learner's ears carry on with the previous, un-soloed mix for the rest
@@ -381,12 +396,18 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
     // through renderAll's own focus + open-gate checks; a blur or a mute
     // inside the pause forgets it here.
     const t = setTimeout(() => {
+      replayTimerRef.current = null;
+      replayIdRef.current = null;
       if (!aliveRef.current || !focusedRef.current || !isAudioOutputEnabled()) return;
       pendingRef.current = again;
       setPending(again);
       void renderAllRef.current();
     }, REPLAY_MS);
-    return () => clearTimeout(t);
+    replayTimerRef.current = t;
+    return () => {
+      clearTimeout(t);
+      if (replayTimerRef.current === t) replayTimerRef.current = null;
+    };
   }, [signature]);
 
   const renderAll = useCallback(async () => {
@@ -476,6 +497,18 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
           setHeard((h) => (h.includes(want) ? h : [...h, want]));
         }
       }
+    } catch {
+      // A clip write failing (disk full, cache cleared — EarClipPlayer.load
+      // rethrows) escaped the `void renderAll()` callers as an unhandled
+      // rejection and left the page reading RENDERING with the queued play
+      // stuck (night pass 3, 2026-10-01 — the Mastering lab's fix). Back to
+      // idle: the next ▶ renders afresh.
+      if (current()) {
+        idsRef.current = [];
+        pendingRef.current = null;
+        setPending(null);
+        setStatus('idle');
+      }
     } finally {
       // Only the generation that still owns the slot may release it.
       if (my === renderSeqRef.current) renderingSigRef.current = null;
@@ -490,6 +523,7 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
 
   const play = useCallback(
     (id: string) => {
+      cancelReplay();
       void (async () => {
         if (!(await requestAudioOutput())) return;
         if (!aliveRef.current || !focusedRef.current) return;
@@ -511,7 +545,7 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
         setHeard((h) => (h.includes(id) ? h : [...h, id]));
       })();
     },
-    [requestAudioOutput],
+    [requestAudioOutput, cancelReplay],
   );
 
   const stop = useCallback(() => {
@@ -523,10 +557,11 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
   // from outside the lab — unwind ■ (and any queued play) with it, so the
   // transport never reads "playing" over silence (bug hunt 2026-09-29).
   const stopAll = useCallback(() => {
+    cancelReplay();
     pendingRef.current = null;
     setPending(null);
     stop();
-  }, [stop]);
+  }, [stop, cancelReplay]);
   useStopWhenSilenced(active != null || pending != null, stopAll);
   // Stops on CLOSE, or when another sound lab comes to the front — not on
   // blur (owner 2026-09-29; see the focus note above).

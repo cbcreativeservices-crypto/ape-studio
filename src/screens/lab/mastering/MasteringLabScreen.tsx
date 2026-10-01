@@ -92,6 +92,8 @@ export function MasteringLabScreen() {
   loadedRef.current = loaded;
   /** A move (module or step) made before the first load landed. */
   const movedRef = useRef(false);
+  /** Module 8 ticks made before the first load landed (merged by the load). */
+  const preProjectRef = useRef<{ checks: string[]; qc: string[] }>({ checks: [], qc: [] });
 
   // ⛔ WAIT FOR `resolved` before the first read (the kit/PagedLab fix): the
   // save-block flag reads false until the tier is known.
@@ -112,9 +114,17 @@ export function MasteringLabScreen() {
         setAnswers(s.modules[s.lastModule]?.answers ?? {});
         setStepRaw(s.lastStep ?? 0);
       }
+      // Module 8 ticks made before the load landed join the stored lists
+      // (they were never written: onProjectState waits for the load), and
+      // Module 8 remounts on `loaded` (its key) to read the merged lists —
+      // it used to keep its empty pre-load lists and the next tick
+      // overwrote the stored ones (night pass 3, 2026-10-01).
       const p = s.modules.project;
-      setProject({ checks: p?.checks ?? [], qc: p?.qc ?? [] });
-      setQcComplete((p?.qc?.length ?? 0) >= PROJECT_QC.length);
+      const pre = preProjectRef.current;
+      const checks = [...new Set([...(p?.checks ?? []), ...pre.checks])];
+      const qc = [...new Set([...(p?.qc ?? []), ...pre.qc])];
+      setProject({ checks, qc });
+      setQcComplete(qc.length >= PROJECT_QC.length);
       setLoaded(true);
     });
     return () => {
@@ -159,6 +169,13 @@ export function MasteringLabScreen() {
   /** Module 8's ticks persist (guest rule inside the store). */
   const onProjectState = useCallback((checks: string[], qc: string[]) => {
     setProject({ checks, qc });
+    // Not before the first load: the lists here were built on an empty
+    // pre-load copy, so writing them replaced the stored ticks. Held for the
+    // load to merge instead.
+    if (!loadedRef.current) {
+      preProjectRef.current = { checks, qc };
+      return;
+    }
     void updateMasteringProgress((s) => {
       const m = s.modules.project ?? emptyMasteringModule();
       s.modules.project = { ...m, checks, qc };
@@ -326,7 +343,7 @@ export function MasteringLabScreen() {
         {end ?? (
           <View style={styles.body}>
             <StepHostContext.Provider value={host}>
-              <Component key={mod.id} onAnswered={onAnswered} onQcComplete={setQcComplete} savedChecks={project.checks} savedQc={project.qc} onProjectState={onProjectState} />
+              <Component key={mod.id === 'project' && !loaded ? 'project:pre-load' : mod.id} onAnswered={onAnswered} onQcComplete={setQcComplete} savedChecks={project.checks} savedQc={project.qc} onProjectState={onProjectState} />
             </StepHostContext.Provider>
           </View>
         )}

@@ -99,10 +99,12 @@ test('amp: a FINISH read landing after a strip move does not reopen the end scre
 
 test('room design: save wording stays neutral until the tier is known', () => {
   assert.match(read('src/screens/lab/roomdesign/labCtx.ts'), /resolved: boolean;/);
-  assert.match(read('src/screens/lab/roomdesign/RoomDesignLabScreen.tsx'), /guest: !resolved \? false : guest,\s*resolved,/);
+  assert.match(read('src/screens/lab/roomdesign/RoomDesignLabScreen.tsx'), /guest: !resolved \? false : guest,\s*preview,\s*resolved,/);
   const e = read('src/screens/lab/roomdesign/modules/modExplore.tsx');
   assert.match(e, /const known = resolved;/);
-  assert.match(e, /known \? 'Kept for this session only — you are not signed in, so designs are not saved\.' : 'Not saved yet — still checking your account/);
+  // Night pass 3 split the resolved branch into guest / preview wording.
+  assert.match(e, /: !known\s*\? 'Not saved yet — still checking your account/);
+  assert.match(e, /'Kept for this session only — you are not signed in, so designs are not saved\.'/);
 });
 
 test('room design: a duplicate ADD selects the item already there', () => {

@@ -89,7 +89,7 @@ test('R1 resume prompt dismissal never deletes the saved draft by itself', () =>
   const onCancel = src.slice(src.indexOf("cancelText: 'Start over'"), src.indexOf('setRun(blank());', src.indexOf("cancelText: 'Start over'")));
   assert.doesNotMatch(onCancel, /deleteRun/);
   assert.match(onCancel, /abandonedDraftRef\.current = draft\.id;/);
-  assert.match(src, /if \(ok && old && old !== r\.id\) \{\s*abandonedDraftRef\.current = null;\s*void workflowStore\.deleteRun\(old\);/);
+  assert.match(src, /if \(ok && old && old !== r\.id\) \{\s*abandonedDraftRef\.current = null;\s*void workflowStore\.deleteRun\(old(, storeGenRef\.current)?\);/);
 });
 
 test('E1/P1 double-tapped ✕ removes one row; project limit re-checked at save', () => {

@@ -60,5 +60,5 @@ test('Terms exemption is hydrated wherever topic % is computed', () => {
   assert.ok(dash.indexOf('useTermsExempt();') < dash.indexOf('if (loading && !data) {'));
   const prog = read('features', 'enrollment', 'enrollmentProgress.ts');
   assert.match(prog, /const termsExemptVersion = useTermsExempt\(\);/);
-  assert.match(prog, /\[key, exemptVersion, termsExemptVersion\]/);
+  assert.match(prog, /\[key, exemptVersion, termsExemptVersion(?:, identityVersion)?\]/);
 });

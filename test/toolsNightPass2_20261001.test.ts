@@ -248,7 +248,8 @@ test('4 — Light Pulse: every start waits for the previous run’s close', () =
   const fx = src.slice(src.indexOf('const run = priorClose'), src.indexOf('return { state, reading, lastError };'));
   assert.match(fx, /if \(cancelled\) return; \/\/ superseded[^\n]*\n\s*await Optical\.start\(\);/);
   assert.match(fx, /if \(cancelled\) \{[\s\S]*?await Optical\.stop\(\);\s*return;\s*\}/, 'the late close is awaited, not fired');
-  assert.match(fx, /priorClose = run\.then\(\(\) => Optical\.stop\(\)\)/);
+  // Pass 3: the chain is capped (settledWithin) so a call that never settles cannot wedge it.
+  assert.match(fx, /priorClose = settledWithin\(run\.then\(\(\) => Optical\.stop\(\)\)\)/);
 });
 
 test('5 — MultiMeter locked SAVE: the sheet is a DimModal, so the gate waits out its close', () => {

@@ -49,6 +49,8 @@ const EXEMPT: Record<string, string> = {
     "the “hide the display” reading preference is device-level and is on the KEEP list for the same reason as showBigPicture and glossary autoOffline — it records no progress, no identity and no content, only how much room the lesson gets (tester report 2026-09-23)",
   'screens/auth/AuthScreen.tsx':
     'autoGuestDoneThisLoad is a dev-only, web-preview-only "the boot auto-guest already ran" latch (owner 2026-09-29) — no identity, no progress, no content, and inert in release builds',
+  'features/account/accountLocalSync.ts':
+    'its module-level `chain` is the wipe queue itself (night bug pass 3, 2026-10-01) — a promise that orders the wipes, holding no user data; resetting it from inside a wipe would un-order them',
   'features/account/deviceIdentity.ts':
     'the install id is on the KEEP list by design — it identifies the DEVICE for single-device login, not the person',
   'features/tools/measure/calibrationStore.ts':
@@ -74,6 +76,8 @@ const EXEMPT: Record<string, string> = {
     'holds only the guest save-block FLAG (bug hunt 2026-09-30 pass 2), re-set from the live entitlement on every render of the lab’s screens — no user data; every read goes to storage',
   'screens/lab/calc/workflowStore.ts':
     'holds only the write-serialisation promise chain (bug hunt 2026-09-29), not user state — every read goes to storage',
+  'features/study/localProgress.ts':
+    'holds only a count of wipes in flight (night bug pass 3, 2026-10-01) that fences mirror writes racing the wipe — no user data; every read goes to storage, and EntitlementProvider clears the ape:localMethod:* keys on an identity change',
   'screens/glossary/GlossaryScreen.tsx':
     'its module state is the shared glossary CATALOG cache plus a lazily-required component — reference data, identical for every user',
 };

@@ -51,6 +51,7 @@ import { resetCelebrationsSeen } from '../celebration/celebrationSeen';
 import { resetGenCapSession } from '../tools/genCapSession';
 import { resetLocal as resetSoundSystemsProgress } from '../soundsystems/progress';
 import { resetLocal as resetRoomDesigns } from '../roomdesign/roomDesignStore';
+import { resetCalcWorkflowStore } from '../../screens/lab/calc/workflowStore';
 
 /**
  * Keys that MUST survive an account wipe: device-hardware calibration (per
@@ -334,4 +335,7 @@ export function resetAllLocalStores(): void {
   // Room Design & Monitoring Lab: the saved room designs are the departing
   // user's rooms. Fenced, so an in-flight read cannot restore them.
   resetRoomDesigns();
+  // Calculator workflows: the departing user's favourites, recents and saved
+  // runs. Fenced, so a write queued before the wipe cannot re-create them.
+  resetCalcWorkflowStore();
 }
