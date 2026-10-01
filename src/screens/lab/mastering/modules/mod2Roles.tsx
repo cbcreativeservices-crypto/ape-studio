@@ -6,7 +6,7 @@
 import { useState } from 'react';
 import { flipFader } from '../MasteringRack';
 import { ModuleSteps } from '../steps';
-import { Body, Card, CompareTable, KeyTerms, Point, ScenarioCard, SectionTitle } from '../kit';
+import { Body, Card, CompareTable, KeyTerms, Point, ScenarioDeck, SectionTitle } from '../kit';
 import { CONTROL_ITEMS, CONTROL_OWNER_LABEL, KEY_TERMS, ROLE_SCENARIOS } from '../masteringContent';
 import { CONTROL_ASPECT, ControlMapStage, controlItemById } from '../stages';
 import { MODEL_BADGE, type ModuleProps } from './shared';
@@ -48,7 +48,7 @@ export function Mod2Roles({ onAnswered }: ModuleProps) {
               { k: 'ADDRESSED BY', v: CONTROL_OWNER_LABEL[item.owner].toUpperCase().split(' —')[0], flex: 1.6 },
             ],
             params: [
-              flipFader({ id: 'item', label: 'REQUEST', items: CONTROL_ITEMS, selectedId: itemId, onSelect: setItemId, name: (c) => c.label, short: (c) => c.label.split(' ')[0], blurb: (c) => c.why, title: 'A CLIENT REQUEST', sticky: true }),
+              flipFader({ id: 'item', label: 'REQUEST', items: CONTROL_ITEMS, selectedId: itemId, onSelect: setItemId, name: (c) => c.label, short: (c) => c.short, blurb: (c) => c.why, title: 'A CLIENT REQUEST', sticky: true }),
             ],
             initialParam: 'item',
             hideDragTag: true,
@@ -64,13 +64,7 @@ export function Mod2Roles({ onAnswered }: ModuleProps) {
         },
         {
           key: 'practice', title: 'Which role?', kind: 'PRACTICE', layout: 'read',
-          body: (
-            <>
-              {ROLE_SCENARIOS.map((s) => (
-                <ScenarioCard key={s.id} s={s} onAnswered={(ok) => onAnswered(s.id, ok)} />
-              ))}
-            </>
-          ),
+          body: <ScenarioDeck scenarios={ROLE_SCENARIOS} onAnswered={onAnswered} />,
         },
         {
           key: 'review', title: 'Review', kind: 'REVIEW', layout: 'read',

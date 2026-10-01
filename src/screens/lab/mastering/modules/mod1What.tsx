@@ -9,7 +9,7 @@ import { Text } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { faderParam } from '../MasteringRack';
 import { ModuleSteps } from '../steps';
-import { Body, Card, KeyTerms, Point, ScenarioCard, SectionTitle, VersionRow, lufsTint, measureBezel } from '../kit';
+import { Body, Card, KeyTerms, PlaybackStatus, Point, ScenarioDeck, SectionTitle, lufsTint, matchBezel, measureBezel, unmatchedWarning } from '../kit';
 import { KEY_TERMS, TRIAGE_SCENARIOS } from '../masteringContent';
 import { PIPELINE, PIPELINE_ASPECT, PIPELINE_SHORT, PipelineStage, WAVE_ASPECT, WaveOverviewStage } from '../stages';
 import { useMasterPlayback, type MasterVariant } from '../useMasterPlayback';
@@ -59,7 +59,7 @@ export function Mod1What({ onAnswered }: ModuleProps) {
           },
           well: (
             <>
-              <Body>Ride STAGE across the chain. Recording captures the performances; editing chooses and tidies them; mixing balances many tracks into one stereo mix; mastering evaluates and prepares that approved mix; distribution delivers it. Mastering is the last listening, decision-making and delivery stage before the music leaves the building.</Body>
+              <Body>Ride STAGE across the chain: mastering is the last listening, decision-making and delivery stage before the music leaves the building.</Body>
               <Card>
                 <Point title="One file in, one file out">The mastering engineer usually receives a finished stereo (or multichannel) mix. Everything that follows acts on the whole programme at once.</Point>
                 <Point title="Which is the foundation of this lab">Mastering can improve and unify a project. It cannot independently rebalance the individual tracks inside a stereo mix — the bezel's WORKS ON cell says why.</Point>
@@ -98,7 +98,7 @@ export function Mod1What({ onAnswered }: ModuleProps) {
             badge: RENDER_BADGE,
             bezel: [
               ...measureBezel(m, CEILING),
-              { k: 'MATCH', v: matched ? (m && m.matchDb ? `${m.matchDb.toFixed(1)} dB` : 'ON') : 'OFF', tint: matched ? colors.cyan : colors.textMuted },
+              matchBezel(matched, loud?.matchDb, 'LOUDER'),
             ],
             params: [
               { kind: 'toggle', id: 'match', label: 'MATCH LEVEL', value: matched, onToggle: () => setMatched((v) => !v) },
@@ -111,16 +111,20 @@ export function Mod1What({ onAnswered }: ModuleProps) {
           },
           well: (
             <>
-              <VersionRow versions={variants} active={pb.active} pending={pb.pending} rendering={pb.status === 'rendering'} onPlay={pb.play} onStop={pb.stop} />
+              <PlaybackStatus versions={variants} active={pb.active} pending={pb.pending} rendering={pb.status === 'rendering'} matched={matched} matchDb={m?.matchDb} labels="▶ MIX or ▶ LOUDER" />
               <Body>
-                Play THE MIX, then LOUDER: the same mix driven 8 dB into a peak limiter with its ceiling at {CEILING} dBFS. With MATCH LEVEL on, both play at the loudness of the quieter one — the louder version is turned DOWN by the difference of the two loudness estimates (LUFS), attenuation only, so nothing clips. Switch MATCH off and hear what the extra level does to your judgement.
+                Play THE MIX, then LOUDER: the same mix driven 8 dB into a peak limiter with its ceiling at {CEILING} dBFS. With MATCH LEVEL on, both play at the loudness of the quieter one — the louder version is turned DOWN by the difference between the two loudness estimates, in LU (1 LU = 1 dB), attenuation only, so nothing clips.
               </Body>
+              <Card tone="warn">
+                <Point title="Before you switch MATCH off">{unmatchedWarning(mix?.lufs, loud?.lufs, 'LOUDER')} Unmatched, nothing replays by itself after a change — you press ▶ each time. Then hear what the extra level does to your judgement.</Point>
+              </Card>
               {mix && loud ? (
                 <Card tone="accent">
                   <Text style={{ color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 13.5, lineHeight: 18 }}>
                     Measured: THE MIX <Text style={{ color: lufsTint(mix.lufs) }}>{mix.lufs.toFixed(1)} LUFS</Text>, PLR {mix.plr.toFixed(1)} dB · LOUDER <Text style={{ color: lufsTint(loud.lufs) }}>{loud.lufs.toFixed(1)} LUFS</Text>, PLR {loud.plr.toFixed(1)} dB, max gain reduction {loud.maxGrDb.toFixed(1)} dB.
                     {matched ? ` LOUDER is played at ${loud.matchDb.toFixed(1)} dB so both sit at ${Math.min(mix.lufs, loud.lufs).toFixed(1)} LUFS.` : ' Unmatched: the louder version will read fuller and brighter simply because it is louder.'}
                   </Text>
+                  <Body>TRUE PK reads over 0 dBTP here on purpose: this is a sample-peak limiter with no look-ahead. A release limiter reads true peak (oversampled) and leaves margin for the encoder — Modules 6 and 7.</Body>
                 </Card>
               ) : null}
               <Card>
@@ -133,12 +137,7 @@ export function Mod1What({ onAnswered }: ModuleProps) {
         {
           key: 'practice', title: 'Mix issue or mastering issue?', kind: 'PRACTICE', layout: 'read',
           body: (
-            <>
-              <Body>Each situation below has a likely next step: a mastering adjustment, a mix revision, or more information from the client. Decide, then read why.</Body>
-              {TRIAGE_SCENARIOS.map((s) => (
-                <ScenarioCard key={s.id} s={s} keepOrder onAnswered={(ok) => onAnswered(s.id, ok)} />
-              ))}
-            </>
+            <ScenarioDeck scenarios={TRIAGE_SCENARIOS} keepOrder onAnswered={onAnswered} intro="Each situation has a likely next step: a mastering adjustment, a mix revision, or more information from the client. Decide, then read why." />
           ),
         },
         {
@@ -147,7 +146,7 @@ export function Mod1What({ onAnswered }: ModuleProps) {
             <>
               <SectionTitle>KEY IDEAS</SectionTitle>
               <Card>
-                <Body>• Mastering sits between mixing and distribution: the final creative and technical stage.</Body>
+                <Body>• Mastering sits between mixing and release: the final creative and technical stage.</Body>
                 <Body>• It addresses the whole programme — tone, dynamics, level, consistency, sequencing, delivery.</Body>
                 <Body>• It cannot rebalance the elements inside a stereo mix; that is a mix revision.</Body>
                 <Body>• Fresh ears, a reliable room and matched-level comparisons are what make its judgements trustworthy.</Body>
@@ -161,4 +160,3 @@ export function Mod1What({ onAnswered }: ModuleProps) {
     />
   );
 }
-

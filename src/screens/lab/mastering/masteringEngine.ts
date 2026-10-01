@@ -137,6 +137,68 @@ export function peakLimiter(s: Stereo, driveDb: number, ceilingDb: number, relea
   return { out: { l, r }, grDb, maxGrDb: maxGr };
 }
 
+/* ── one version through the chain ───────────────────────────────────────── */
+
+export type MasterProcess = {
+  /** Broad tonal lean, dB (+ brighter, − warmer). */
+  tiltDb?: number;
+  /** M/S width multiplier (1 = as mixed). */
+  width?: number;
+  /** Drive into the limiter, dB. */
+  driveDb?: number;
+  /** Limiter ceiling, dBFS (sample peak). Omit = no limiter. */
+  ceilingDb?: number;
+  /** Plain output trim, dB (after everything). */
+  trimDb?: number;
+};
+
+/** PEAK SAFETY (safety review 2026-10-01, finding 12): any drive or trim
+ *  ABOVE unity without an explicit ceiling runs through the lab's own
+ *  limiter at this ceiling — a soft, programme-dependent clamp, never a hard
+ *  clip. A version that only attenuates, or that already has a ceiling,
+ *  passes untouched. */
+export const SAFETY_CEILING_DB = -0.3;
+
+/** True when a process would raise level with nothing holding the peaks. */
+export function needsSafetyCeiling(p: MasterProcess): boolean {
+  return p.ceilingDb == null && ((p.driveDb ?? 0) > 0 || (p.trimDb ?? 0) > 0);
+}
+
+/** One version of the master through the chain: tilt → width → drive →
+ *  limiter → trim → (safety ceiling). Pure. */
+export function renderVersion(base: Stereo, p: MasterProcess): { out: Stereo; grDb: number[]; maxGrDb: number } {
+  let s = base;
+  if (p.tiltDb) s = tiltEq(s, p.tiltDb);
+  if (p.width != null && p.width !== 1) s = stereoWidth(s, p.width);
+  let grDb: number[] = [];
+  let maxGrDb = 0;
+  if (p.ceilingDb != null) {
+    const lim = peakLimiter(s, p.driveDb ?? 0, p.ceilingDb);
+    s = lim.out;
+    grDb = lim.grDb;
+    maxGrDb = lim.maxGrDb;
+  } else if (p.driveDb) {
+    s = applyGain(s, p.driveDb);
+  }
+  if (p.trimDb) s = applyGain(s, p.trimDb);
+  if (needsSafetyCeiling(p)) {
+    const lim = peakLimiter(s, 0, SAFETY_CEILING_DB);
+    s = lim.out;
+    grDb = lim.grDb;
+    maxGrDb = lim.maxGrDb;
+  }
+  return { out: s, grDb, maxGrDb };
+}
+
+/** THE AUTO-REPLAY RULE (safety review 2026-10-01, finding 1b): after a
+ *  fader or MATCH change, the version that was sounding replays by itself
+ *  ONLY while matched-level listening is on. Unmatched, LOUDER is 7–11 LU
+ *  louder than the mix, so a fader nudge must never restart it unannounced:
+ *  the transport stops and waits for a press. Pure. */
+export function autoReplayAllowed(matched: boolean, again: string | null): string | null {
+  return matched ? again : null;
+}
+
 /* ── measurement ─────────────────────────────────────────────────────────── */
 
 export type Measure = {
@@ -246,22 +308,43 @@ export function overview(s: Stereo, columns = 160): Overview {
  */
 export function perceivedBalanceShift(levelDbSpl: number, referenceDbSpl = 83): { bassDb: number; trebleDb: number } {
   const d = (levelDbSpl - referenceDbSpl) / 10; // decades of 10 dB
-  // Contours bunch together at low frequency: roughly 1 dB of apparent bass
-  // per 2 dB of level near the reference, flattening above it.
-  const bassDb = Math.max(-12, Math.min(6, 4 * Math.tanh(d * 0.9)));
-  const trebleDb = Math.max(-4, Math.min(2, 1.2 * Math.tanh(d * 0.9)));
+  // A soft-saturating curve of the level difference: the ISO 226 contours
+  // bunch together at 50 Hz, so the apparent bass shift is steep near the
+  // reference (about −5.3 dB at 65, −6.4 at 55) and flattens above it
+  // (about +2.5 at 90). The treble shift is a smaller version of the same.
+  const bassDb = Math.max(-12, Math.min(6, 7 * Math.tanh(d * 0.55)));
+  const trebleDb = Math.max(-4, Math.min(2, 1.5 * Math.tanh(d * 0.55)));
   return { bassDb: Number(bassDb.toFixed(2)), trebleDb: Number(trebleDb.toFixed(2)) };
+}
+
+/** The NIOSH recommended exposure limit: 85 dBA over 8 hours, halving for
+ *  every 3 dB above (88 → 4 h, 91 → 2 h, 94 → 1 h, 97 → 30 min, 100 →
+ *  15 min). Below 85 the daily limit is "8 h+" — a full working day. */
+export const NIOSH_LIMIT_DBA = 85;
+export function dailyLimitHours(levelDbSpl: number): number {
+  return 8 * Math.pow(2, (NIOSH_LIMIT_DBA - levelDbSpl) / 3);
+}
+/** The DAILY LIMIT readout: "8 h+" below the action level; hours, then
+ *  minutes, above it. */
+export function dailyLimitLabel(levelDbSpl: number): string {
+  if (levelDbSpl < NIOSH_LIMIT_DBA) return '8 h+';
+  const h = dailyLimitHours(levelDbSpl);
+  if (h >= 1) return `${Math.abs(h - Math.round(h)) < 0.05 ? h.toFixed(0) : h.toFixed(1)} h`;
+  return `${Math.max(1, Math.round(h * 60))} min`;
 }
 
 /** Hearing-safety reading for a monitoring level: the lab never encourages
  *  loud monitoring. Boundaries follow the NIOSH recommended exposure limit
- *  (85 dBA over 8 h, 3 dB exchange rate) — a sensible mastering session sits
- *  well under it. */
+ *  (85 dBA over 8 h, 3 dB exchange rate): 'sensible' stays UNDER the limit
+ *  (≤ 83), 'hot' brackets it (84–88, where the daily clock is already
+ *  running), 'unsafe' is 89 and up (2 h or less a day). A C-weighted music
+ *  reading is a few dB higher than the A-weighted one the limit is quoted
+ *  in, so this scale errs on the safe side. */
 export function monitoringAdvice(levelDbSpl: number): { tone: 'low' | 'sensible' | 'hot' | 'unsafe'; note: string } {
-  if (levelDbSpl < 70) return { tone: 'low', note: 'Quiet: fine for checking, but tonal judgements made this quietly read thin. Compare at your usual level.' };
-  if (levelDbSpl <= 85) return { tone: 'sensible', note: 'A sensible, repeatable working level: comparisons mean something and a full day is survivable.' };
-  if (levelDbSpl <= 92) return { tone: 'hot', note: 'Hot: everything sounds bigger, fatigue sets in within the hour, and the exposure clock is running. Turn it down for decisions.' };
-  return { tone: 'unsafe', note: 'Unsafe for working: hearing damage risk rises quickly here. Nothing in mastering needs this level.' };
+  if (levelDbSpl < 70) return { tone: 'low', note: 'Quiet: a useful check for what survives at low level — but make tonal decisions at your reference level, because a quiet listen reads thin.' };
+  if (levelDbSpl <= 83) return { tone: 'sensible', note: 'A sensible, repeatable working level, under the daily exposure limit: comparisons mean something and a full day is survivable.' };
+  if (levelDbSpl <= 88) return { tone: 'hot', note: 'Hot: at 85 dBA the recommended daily limit is 8 hours; every 3 dB above halves it. Everything sounds bigger here and fatigue sets in within the hour. Turn it down for decisions.' };
+  return { tone: 'unsafe', note: 'Unsafe for working: two hours or less a day at this level, and the hearing damage risk rises quickly. Nothing in mastering needs this level.' };
 }
 
 /* ── monitoring path (Module 3) ──────────────────────────────────────────── */
@@ -285,26 +368,42 @@ export const PATH_DEVICE_NAMES: Record<PathDevice, string> = {
  * one. A controller with a built-in DAC is a legitimate variant, so the DAC
  * may be absent when the controller is present (noted, not failed).
  */
-export function checkMonitorPath(chain: readonly PathDevice[]): { ok: boolean; notes: string[] } {
+export type PathGrade = 'empty' | 'fail' | 'minimal' | 'complete';
+
+export function checkMonitorPath(chain: readonly PathDevice[]): { ok: boolean; grade: PathGrade; jobs: number; reason: string; notes: string[] } {
   const notes: string[] = [];
   const idx = (d: PathDevice) => chain.indexOf(d);
   const has = (d: PathDevice) => idx(d) >= 0;
-  if (chain.length === 0) return { ok: false, notes: ['Nothing connected yet. Start where the audio starts: the playback software.'] };
+  if (chain.length === 0) return { ok: false, grade: 'empty', jobs: 0, reason: 'Nothing connected yet.', notes: ['Nothing connected yet. Start where the audio starts: the playback software.'] };
   if (chain[0] !== 'daw') notes.push('The chain starts at the DAW or playback software — that is where the file is read.');
   if (!has('passive') && !has('active')) notes.push('No loudspeakers yet: nothing turns the signal back into sound.');
   if (has('passive') && has('active')) notes.push('Pick one loudspeaker type for this path.');
   if (has('passive') && !has('amp')) notes.push('Passive monitors need a power amplifier before them.');
   if (has('active') && has('amp')) notes.push('Active monitors already contain their amplifiers — an external power amp in front of them is wrong (and risks damage).');
   if (has('dac') && idx('dac') < idx('daw')) notes.push('Conversion comes after playback, not before.');
-  if (has('monitorCtl') && has('dac') && idx('monitorCtl') < idx('dac')) notes.push('The monitor controller sits after the converter — it controls the analog level to the speakers.');
+  if (has('monitorCtl') && has('dac') && idx('monitorCtl') < idx('dac')) notes.push('An analog monitor controller sits after the converter — it controls the analog level to the speakers. A digital controller converts inside itself; an EXTERNAL converter after the controller is the wrong order.');
   if (has('amp') && has('monitorCtl') && idx('amp') < idx('monitorCtl')) notes.push('Level control belongs before the power amplifier.');
   const spk = has('passive') ? idx('passive') : idx('active');
   if (spk >= 0 && spk !== chain.length - 1) notes.push('The loudspeakers are the end of the chain.');
   if (has('amp') && has('passive') && idx('amp') > idx('passive')) notes.push('The amplifier drives the speakers, so it comes before them.');
   if (!has('monitorCtl')) notes.push('No monitor controller: level is being set somewhere else (a DAW fader or an interface knob). It works, but a repeatable, calibrated listening level is harder to keep.');
   if (!has('dac') && has('monitorCtl')) notes.push('No separate converter: fine if the controller or interface converts internally — many do.');
-  const ok = notes.every((n) => n.startsWith('No monitor controller') || n.startsWith('No separate converter'));
-  return { ok: ok && (has('passive') || has('active')) && chain[0] === 'daw', notes };
+  if (!has('dac') && !has('monitorCtl')) notes.push('No converter and no controller: the interface is doing both jobs and the level is a software fader. Minimal, not complete.');
+  const soft = (n: string) => n.startsWith('No monitor controller') || n.startsWith('No separate converter') || n.startsWith('No converter and no controller');
+  const works = notes.every(soft) && (has('passive') || has('active')) && chain[0] === 'daw';
+  // The five JOBS: playback, conversion, level, amplification, air. An
+  // active monitor covers amplification; a controller counts as the level
+  // job (and may convert inside itself).
+  const jobs = (has('daw') ? 1 : 0) + (has('dac') || has('monitorCtl') ? 1 : 0) + (has('monitorCtl') ? 1 : 0) + (has('amp') || has('active') ? 1 : 0) + (has('passive') || has('active') ? 1 : 0);
+  // COMPLETE needs the level job covered by a controller and ≥ 4 jobs; a
+  // chain that works without one is MINIMAL (level set in software).
+  const grade: PathGrade = !works ? 'fail' : jobs >= 4 && has('monitorCtl') ? 'complete' : 'minimal';
+  const reason = grade === 'complete'
+    ? (has('dac') ? 'Every job in order — real systems vary in how boxes share them.' : 'Every job covered — the controller converts inside itself.')
+    : grade === 'minimal'
+      ? 'Works, but no controller: level set in software, nothing calibrated.'
+      : (notes.find((n) => !soft(n)) ?? notes[0] ?? '');
+  return { ok: works, grade, jobs, reason, notes };
 }
 
 /* ── sequencing (Module 8) ───────────────────────────────────────────────── */
@@ -313,14 +412,20 @@ export type SeqTrack = { id: string; title: string; seconds: number; lufs: numbe
 
 export type SeqBlock = { id: string; startSec: number; endSec: number; title: string; lufs: number; fadeOutSec: number };
 
-/** Lay an ordered set of tracks on a timeline with `gapSec` between them. */
-export function layoutSequence(order: readonly SeqTrack[], gapSec: number): { blocks: SeqBlock[]; totalSec: number } {
+/** A crossfade in this lab overlaps neighbours by this much (the gap reads
+ *  "XF" and is drawn as 0 — the next track starts inside the fade-out). */
+export const XF_OVERLAP_SEC = 2;
+
+/** Lay an ordered set of tracks on a timeline with `gapSec` between them, or
+ *  — with `crossfade` — overlapping by XF_OVERLAP_SEC (gap 0). */
+export function layoutSequence(order: readonly SeqTrack[], gapSec: number, crossfade = false): { blocks: SeqBlock[]; totalSec: number } {
   let t = 0;
   const blocks: SeqBlock[] = [];
+  const step = crossfade ? -XF_OVERLAP_SEC : Math.max(0, gapSec);
   for (let i = 0; i < order.length; i++) {
     const tr = order[i];
     blocks.push({ id: tr.id, title: tr.title, startSec: t, endSec: t + tr.seconds, lufs: tr.lufs, fadeOutSec: tr.fadeOutSec });
-    t += tr.seconds + (i < order.length - 1 ? gapSec : 0);
+    t += tr.seconds + (i < order.length - 1 ? step : 0);
   }
   return { blocks, totalSec: t };
 }

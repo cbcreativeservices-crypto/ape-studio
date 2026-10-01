@@ -8,12 +8,15 @@
  *  • Monitoring advice never encourages loud; the facts are facts.
  */
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, it } from 'node:test';
 import {
-  CD_RED_BOOK, applyGain, checkMonitorPath, layoutSequence, matchedGains, maxLoudnessStep, measure, monitoringAdvice, overview, peakLimiter,
-  perceivedBalanceShift, samplePeakDb, stereoWidth, tiltEq, wavBytes,
+  CD_RED_BOOK, XF_OVERLAP_SEC, applyGain, checkMonitorPath, dailyLimitHours, dailyLimitLabel, layoutSequence, matchedGains, maxLoudnessStep, measure,
+  monitoringAdvice, overview, peakLimiter, perceivedBalanceShift, samplePeakDb, stereoWidth, tiltEq, wavBytes,
 } from '../src/screens/lab/mastering/masteringEngine.ts';
 import { SR, makeRng, pinkNoise, sine, type Stereo } from '../src/features/ear/earDsp.ts';
+import { loudnessLufsEstimate } from '../src/screens/lab/mixing/engine/advanced.ts';
 
 /** A 2 s test programme: pink noise with a sine under it, −12 dBFS-ish. */
 function programme(seconds = 2, gainLin = 0.25): Stereo {
@@ -117,6 +120,25 @@ describe('the monitoring path', () => {
     // a controller that converts internally
     assert.equal(checkMonitorPath(['daw', 'monitorCtl', 'active']).ok, true);
   });
+  it('grades a working-but-minimal chain apart from a complete one (cognitive review finding 5)', () => {
+    assert.equal(checkMonitorPath(['daw', 'dac', 'monitorCtl', 'amp', 'passive']).grade, 'complete');
+    assert.equal(checkMonitorPath(['daw', 'monitorCtl', 'active']).grade, 'complete', 'the controller converts inside itself');
+    const minimal = checkMonitorPath(['daw', 'active']);
+    assert.equal(minimal.ok, true, 'DAW → active monitors WORKS');
+    assert.equal(minimal.grade, 'minimal', '…but it is not PATH COMPLETE');
+    assert.match(minimal.reason, /no controller/i);
+    assert.equal(checkMonitorPath(['daw', 'dac', 'active']).grade, 'minimal', 'no controller → minimal even with a converter');
+    assert.equal(checkMonitorPath(['daw', 'dac', 'monitorCtl', 'amp', 'active']).grade, 'fail');
+    assert.equal(checkMonitorPath([]).grade, 'empty');
+    for (const chain of [['daw', 'active'], ['daw', 'monitorCtl', 'active'], ['daw', 'dac', 'amp', 'passive']] as const) {
+      assert.ok(checkMonitorPath(chain).reason.length > 10, 'a one-line reason for the glass');
+    }
+  });
+  it('an EXTERNAL converter after the controller fails; the wording names the analog / digital controller cases', () => {
+    const r = checkMonitorPath(['daw', 'monitorCtl', 'dac', 'active']);
+    assert.equal(r.ok, false);
+    assert.ok(r.notes.some((n) => /analog monitor controller/.test(n) && /digital controller converts inside itself/.test(n)));
+  });
   it('rejects the wrong pairings and the wrong order', () => {
     assert.equal(checkMonitorPath(['daw', 'dac', 'monitorCtl', 'amp', 'active']).ok, false, 'active monitors + external amp');
     assert.equal(checkMonitorPath(['daw', 'dac', 'monitorCtl', 'passive']).ok, false, 'passive monitors with no amp');
@@ -129,20 +151,53 @@ describe('the monitoring path', () => {
 });
 
 describe('monitoring level — hearing safety', () => {
-  it('never calls a loud level good; the sensible band ends at the 85 dB action level', () => {
+  it('never calls a loud level good; "sensible" stays UNDER the 85 dBA limit (safety review finding 2)', () => {
     assert.equal(monitoringAdvice(78).tone, 'sensible');
-    assert.equal(monitoringAdvice(85).tone, 'sensible');
-    assert.equal(monitoringAdvice(90).tone, 'hot');
+    assert.equal(monitoringAdvice(83).tone, 'sensible');
+    assert.equal(monitoringAdvice(84).tone, 'hot');
+    assert.equal(monitoringAdvice(85).tone, 'hot', '85 dBA is the 8-hour limit, not a sensible all-day level');
+    assert.equal(monitoringAdvice(88).tone, 'hot');
+    assert.equal(monitoringAdvice(89).tone, 'unsafe');
+    assert.equal(monitoringAdvice(90).tone, 'unsafe');
     assert.equal(monitoringAdvice(96).tone, 'unsafe');
     assert.equal(monitoringAdvice(62).tone, 'low');
-    for (const l of [90, 96, 100]) assert.doesNotMatch(monitoringAdvice(l).note, /better|turn it up|louder is/i);
+    assert.match(monitoringAdvice(85).note, /85 dBA[^.]*8 hours/i);
+    assert.match(monitoringAdvice(85).note, /every 3 dB above halves it/i);
+    assert.match(monitoringAdvice(62).note, /reference level/i);
+    for (const l of [84, 90, 96, 100]) assert.doesNotMatch(monitoringAdvice(l).note, /better|turn it up|louder is|survivable/i);
     assert.match(monitoringAdvice(96).note, /hearing/i);
   });
-  it('the perceived-balance model: quieter reads thinner, louder reads fuller, bounded', () => {
+  it('DAILY LIMIT follows NIOSH: 8 h at 85 dBA, halved every 3 dB; "8 h+" below the limit', () => {
+    assert.equal(dailyLimitLabel(80), '8 h+');
+    assert.equal(dailyLimitLabel(84), '8 h+');
+    assert.equal(dailyLimitLabel(85), '8 h');
+    assert.equal(dailyLimitLabel(88), '4 h');
+    assert.equal(dailyLimitLabel(91), '2 h');
+    assert.equal(dailyLimitLabel(94), '1 h');
+    assert.equal(dailyLimitLabel(92), '1.6 h');
+    assert.equal(dailyLimitLabel(97), '30 min');
+    assert.equal(dailyLimitLabel(100), '15 min');
+    assert.ok(Math.abs(dailyLimitHours(88) - 4) < 1e-9);
+  });
+  it('the perceived-balance model (ISO 226-style, simplified): −5.3 at 65, −6.4 at 55, +2.5 at 90, bounded', () => {
     assert.ok(perceivedBalanceShift(65).bassDb < 0);
     assert.ok(perceivedBalanceShift(95).bassDb > 0);
     assert.equal(perceivedBalanceShift(83).bassDb, 0);
+    assert.ok(Math.abs(perceivedBalanceShift(65).bassDb - -5.3) < 0.15, `65 dB → ${perceivedBalanceShift(65).bassDb}`);
+    assert.ok(Math.abs(perceivedBalanceShift(55).bassDb - -6.4) < 0.15, `55 dB → ${perceivedBalanceShift(55).bassDb}`);
+    assert.ok(Math.abs(perceivedBalanceShift(90).bassDb - 2.5) < 0.15, `90 dB → ${perceivedBalanceShift(90).bassDb}`);
     assert.ok(perceivedBalanceShift(120).bassDb <= 6 && perceivedBalanceShift(30).bassDb >= -12);
+  });
+});
+
+describe('K-weighting at the house rate (audio review finding 12)', () => {
+  it('a 997 Hz full-scale sine, LEFT ONLY, reads −3.01 LUFS within 0.1 (the BS.1770 reference case)', () => {
+    const s = sine(997, 2);
+    const l = new Float32Array(s.length);
+    const r = new Float32Array(s.length);
+    for (let i = 0; i < s.length; i++) l[i] = s[i];
+    const lufs = loudnessLufsEstimate({ l, r });
+    assert.ok(Math.abs(lufs - -3.01) < 0.1, `got ${lufs.toFixed(3)} LUFS`);
   });
 });
 
@@ -157,6 +212,11 @@ describe('sequencing and the facts', () => {
     assert.equal(l.totalSec, 100 + 2 + 200 + 2 + 50);
     assert.equal(l.blocks[1].startSec, 102);
     assert.equal(maxLoudnessStep(tracks), 8);
+    // CROSSFADE: gap 0, neighbours overlap by XF_OVERLAP_SEC (cognitive review finding 3).
+    const x = layoutSequence(tracks, 2, true);
+    assert.equal(x.blocks[1].startSec, 100 - XF_OVERLAP_SEC);
+    assert.equal(x.totalSec, 100 + 200 + 50 - 2 * XF_OVERLAP_SEC);
+    assert.ok(x.blocks[1].startSec < x.blocks[0].endSec, 'the next track starts inside the fade');
   });
   it('Red Book is 16-bit / 44.1 kHz / stereo and a WAV size follows from it', () => {
     assert.deepEqual(CD_RED_BOOK, { bitDepth: 16, sampleRateHz: 44100, channels: 2 });
@@ -181,5 +241,39 @@ describe('the real programme (the house session through the mastering chain)', (
     const played = measure(applyGain(loud, g.loud));
     assert.ok(Math.abs(played.lufs - mBase.lufs) < 0.3, `matched within 0.3 LU (${(played.lufs - mBase.lufs).toFixed(2)})`);
     releaseSessionStems();
+  });
+  it('Module 5: tilt + the +2 dB trim gives the match ≥ 1.5 dB of bite, peak-safe (cognitive finding 1b, safety finding 12)', async () => {
+    const { DELIVERED_MIX, DELIVERED_TRIM_DB } = await import('../src/screens/lab/mastering/masteringEngine.ts');
+    const { renderMix, releaseSessionStems } = await import('../src/screens/lab/mixing/audio/mixAudio.ts');
+    const { renderVersion, needsSafetyCeiling, SAFETY_CEILING_DB } = await import('../src/screens/lab/mastering/masteringEngine.ts');
+    const base = renderMix(DELIVERED_MIX, DELIVERED_TRIM_DB).stereo;
+    const mBase = measure(base);
+    const eq = renderVersion(base, { tiltDb: 1.5, trimDb: 2 });
+    const mEq = measure(eq.out);
+    assert.ok(mEq.lufs - mBase.lufs >= 1.5, `WITH EQ reads ≥ 1.5 LU louder (got ${(mEq.lufs - mBase.lufs).toFixed(2)})`);
+    assert.ok(samplePeakDb(eq.out) <= SAFETY_CEILING_DB + 1e-3, 'the trim is held under the safety ceiling');
+    const g = matchedGains({ mix: mBase.lufs, eq: mEq.lufs });
+    assert.ok(g.eq <= -1.5, `WITH EQ is matched down by ≥ 1.5 dB (got ${g.eq.toFixed(2)})`);
+    assert.equal(needsSafetyCeiling({ tiltDb: 1.5, trimDb: 2 }), true);
+    assert.equal(needsSafetyCeiling({ driveDb: 8, ceilingDb: -0.3 }), false, 'an explicit ceiling is its own safety');
+    assert.equal(needsSafetyCeiling({ trimDb: -3 }), false, 'attenuation never needs one');
+    assert.equal(needsSafetyCeiling({}), false);
+    releaseSessionStems();
+  });
+});
+
+describe('the auto-replay rule (safety review finding 1b)', () => {
+  it('a fader or MATCH change replays the sounding version ONLY while matched', async () => {
+    const { autoReplayAllowed } = await import('../src/screens/lab/mastering/masteringEngine.ts');
+    assert.equal(autoReplayAllowed(true, 'loud'), 'loud');
+    assert.equal(autoReplayAllowed(false, 'loud'), null, 'unmatched: stop and wait for a press');
+    assert.equal(autoReplayAllowed(true, null), null);
+  });
+  it('a hard clip never appears in the render path; the safety ceiling is the lab limiter; the hook applies the rule', () => {
+    const engine = readFileSync(join(process.cwd(), 'src/screens/lab/mastering/masteringEngine.ts'), 'utf8');
+    assert.match(engine, /if \(needsSafetyCeiling\(p\)\) \{\s*const lim = peakLimiter\(s, 0, SAFETY_CEILING_DB\);/);
+    assert.doesNotMatch(engine.replace(/hi\[c\] = Math\.max\(-1, Math\.min\(1, mx\)\);|lo\[c\] = Math\.max\(-1, Math\.min\(1, mn\)\);/g, ''), /Math\.max\(-1, Math\.min\(1,/, 'no hard clamp on audio samples (the overview picture clamps for drawing only)');
+    const hook = readFileSync(join(process.cwd(), 'src/screens/lab/mastering/useMasterPlayback.ts'), 'utf8');
+    assert.match(hook, /autoReplayAllowed\(matched, activeRef\.current \?\? pendingRef\.current\)/);
   });
 });

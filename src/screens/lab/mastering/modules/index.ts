@@ -10,7 +10,20 @@ import { Mod6Loudness } from './mod6Loudness';
 import { Mod7Release } from './mod7Release';
 import { Mod8Project } from './mod8Project';
 
-export type MasteringModuleComponent = ComponentType<ModuleProps & { onQcComplete: (complete: boolean) => void }>;
+export type MasteringModuleComponent = ComponentType<ModuleProps & {
+  onQcComplete: (complete: boolean) => void;
+  /** Module 8's persisted ticks (host-owned, guest rule applied). */
+  savedChecks?: readonly string[];
+  savedQc?: readonly string[];
+  onProjectState?: (checks: string[], qc: string[]) => void;
+}>;
+
+/** Steps per module — static, so PREV on a module's first step can land on
+ *  the previous module's LAST step (cognitive review finding 18). Pinned
+ *  against the module files by test/masteringLabStructure.test.ts. */
+export const MASTERING_STEP_COUNTS: Record<MasteringModuleId, number> = {
+  what: 5, roles: 4, room: 5, tools: 5, workflow: 5, loudness: 6, release: 4, project: 5,
+};
 
 export const MASTERING_MODULE_COMPONENTS: Record<MasteringModuleId, MasteringModuleComponent> = {
   what: Mod1What,

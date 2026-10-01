@@ -47,6 +47,14 @@ export function measureBezel(m: { peakDb: number; truePeakDb: number; lufs: numb
   ];
 }
 
+/** The steady MATCH cell (cognitive review 2026-10-01, finding 10): the
+ *  key carries the unit, the value says what the louder version plays at
+ *  — independent of which version is on the glass. */
+export function matchBezel(matched: boolean, loudGainDb: number | undefined, loudLabel: string): BezelItem {
+  const v = !matched ? 'OFF' : loudGainDb != null && loudGainDb !== 0 ? `${loudGainDb.toFixed(1)} on ${loudLabel}` : 'ON ▶';
+  return { k: 'MATCH dB', v, tint: matched ? colors.cyan : colors.gold, flex: 1.7 };
+}
+
 /* ── text ────────────────────────────────────────────────────────────────── */
 
 export function SectionTitle({ children }: { children: ReactNode }) {
@@ -150,21 +158,29 @@ function shuffled(n: number, seed: number): number[] {
 /**
  * One scenario, one pick. Correct BY VALUE. The first pick is what the
  * module records (a retry is encouraged and explained, never penalised).
+ *
+ * FEEDBACK ORDER (cognitive review 2026-10-01): a wrong pick names THAT
+ * option as the one that does not fit and keeps the card open; the full
+ * explanation is revealed by the correct pick, so the learner reasons
+ * before reading the answer. `compact` lays the options out as two-column
+ * chips (the eight-option tool bank).
  */
-export function ScenarioCard({ s, onAnswered, keepOrder }: { s: Scenario; onAnswered?: (correct: boolean) => void; keepOrder?: boolean }) {
+export function ScenarioCard({ s, onAnswered, keepOrder, compact }: { s: Scenario; onAnswered?: (correct: boolean) => void; keepOrder?: boolean; compact?: boolean }) {
   const seed = useRef(Math.floor(Math.random() * 0x7fffffff)).current;
   const order = useMemo(() => (keepOrder ? s.options.map((_, i) => i) : shuffled(s.options.length, seed ^ s.id.length)), [s, seed, keepOrder]);
   const [picked, setPicked] = useState<string | null>(null);
+  const [wrongPicks, setWrongPicks] = useState<string[]>([]);
   const reported = useRef(false);
   const correct = picked === s.correct;
   return (
     <Card tone="accent">
       <Text style={styles.q}>{s.prompt}</Text>
-      <View style={{ gap: 6 }}>
+      <View style={compact ? styles.optGrid : { gap: 6 }}>
         {order.map((i) => {
           const o = s.options[i];
           const isRight = picked != null && correct && o === s.correct;
           const isWrongPick = picked === o && !correct;
+          const wasWrong = wrongPicks.includes(o);
           return (
             <Pressable
               key={o}
@@ -172,29 +188,83 @@ export function ScenarioCard({ s, onAnswered, keepOrder }: { s: Scenario; onAnsw
               onPress={() => {
                 const ok = o === s.correct;
                 setPicked(o);
+                if (!ok) setWrongPicks((w) => (w.includes(o) ? w : [...w, o]));
                 if (!reported.current) {
                   reported.current = true;
                   onAnswered?.(ok);
                 }
-                AccessibilityInfo.announceForAccessibility?.(ok ? 'Correct.' : 'Not quite — read the explanation, then choose again.');
+                AccessibilityInfo.announceForAccessibility?.(ok ? 'Correct.' : `${o}: not the best fit. Choose again.`);
               }}
-              style={[styles.opt, isRight && styles.optRight, isWrongPick && styles.optWrong]}
+              style={[styles.opt, compact && styles.optChip, isRight && styles.optRight, isWrongPick && styles.optWrong, wasWrong && !isWrongPick && styles.optDim]}
               accessibilityRole="button"
               accessibilityState={{ disabled: picked != null && correct, selected: picked === o }}
               aria-pressed={picked === o}
               accessibilityLabel={o}
             >
-              <Text style={[styles.optText, isRight && { color: colors.green }, isWrongPick && { color: colors.red }]}>{o}</Text>
+              <Text style={[styles.optText, compact && styles.optChipText, isRight && { color: colors.green }, isWrongPick && { color: colors.red }, wasWrong && !isWrongPick && { color: colors.textMuted }]}>{o}</Text>
             </Pressable>
           );
         })}
       </View>
       {picked != null ? (
         <Text style={[styles.explain, { color: correct ? colors.green : colors.gold }]}>
-          {correct ? `✓ ${s.explain}` : `✗ Not quite. ${s.explain} — now choose the option that fits.`}
+          {correct
+            ? `✓ ${s.explain}`
+            : `✗ "${picked}" is not the best fit here — it does not address what the situation actually asks for. Choose again; the full explanation appears with the option that does.`}
         </Text>
       ) : null}
     </Card>
+  );
+}
+
+/**
+ * A PRACTICE deck: one scenario at a time with "3 of 8", PREV / NEXT CARD
+ * keys and the first-answer rule stated on the page. Every card stays
+ * mounted (hidden, not unmounted) so a pick survives paging back.
+ */
+export function ScenarioDeck({ scenarios, onAnswered, keepOrder, compact, intro }: {
+  scenarios: readonly Scenario[];
+  onAnswered: (scenarioId: string, correct: boolean) => void;
+  keepOrder?: boolean;
+  compact?: boolean;
+  intro?: string;
+}) {
+  const [cur, setCur] = useState(0);
+  const n = scenarios.length;
+  const i = Math.min(cur, Math.max(0, n - 1));
+  return (
+    <View style={{ gap: 10 }}>
+      {intro ? <Body>{intro}</Body> : null}
+      <View style={styles.deckBar}>
+        <Text style={styles.deckCount}>{`CARD ${i + 1} OF ${n}`}</Text>
+        <Text style={styles.deckRule}>Your FIRST answer on each card is the one recorded. A retry is explained, never penalised.</Text>
+      </View>
+      {scenarios.map((s, k) => (
+        <View key={s.id} style={k === i ? null : styles.hidden} accessibilityElementsHidden={k !== i} importantForAccessibility={k === i ? 'auto' : 'no-hide-descendants'}>
+          <ScenarioCard s={s} keepOrder={keepOrder} compact={compact} onAnswered={(ok) => onAnswered(s.id, ok)} />
+        </View>
+      ))}
+      <View style={styles.deckKeys}>
+        <KeyButton label="‹ PREV CARD" onPress={() => setCur((c) => Math.max(0, c - 1))} disabled={i === 0} />
+        <KeyButton label="NEXT CARD ›" onPress={() => setCur((c) => Math.min(n - 1, c + 1))} disabled={i >= n - 1} tint={colors.green} />
+      </View>
+    </View>
+  );
+}
+
+/** A proper 44-pt key for an in-well action (REVEAL THE KEY, DRAW THE MIX). */
+export function KeyButton({ label, onPress, disabled, tint }: { label: string; onPress: () => void; disabled?: boolean; tint?: string }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={disabled}
+      style={[styles.key, tint && !disabled ? { borderColor: tint } : null, disabled && styles.keyOff]}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: !!disabled }}
+      accessibilityLabel={label}
+    >
+      <Text style={[styles.keyText, tint && !disabled ? { color: tint } : null, disabled && { color: colors.textMuted }]}>{label}</Text>
+    </Pressable>
   );
 }
 
@@ -226,42 +296,37 @@ export function Checklist({ items, chosen, onToggle, reveal }: { items: readonly
   );
 }
 
-/** The dock-side version row for a LISTEN page (the AbPlayer look): one key
- *  per version, ■ while sounding, … while rendering. */
-export function VersionRow({ versions, active, pending, rendering, onPlay, onStop }: {
+/** The LISTEN page's STATUS LINE (cognitive review 2026-10-01, finding 11):
+ *  the dock keys are the only transport; the well reports what is sounding,
+ *  at what gain, and whether it is matched. One sentence, live. */
+export function PlaybackStatus({ versions, active, pending, rendering, matched, matchDb, labels }: {
   versions: readonly { id: string; label: string }[];
   active: string | null;
   pending: string | null;
   rendering: boolean;
-  onPlay: (id: string) => void;
-  onStop: () => void;
+  matched: boolean;
+  /** The matched-level gain of the sounding version (dB, ≤ 0). */
+  matchDb?: number;
+  /** The dock's play keys, for the idle hint ("▶ MIX or ▶ LOUDER"). */
+  labels?: string;
 }) {
+  const name = (id: string | null) => versions.find((v) => v.id === id)?.label ?? '';
+  let text: string;
+  if (rendering) text = `rendering ${name(pending)} — real DSP on the whole programme, one moment…`;
+  else if (active) text = `sounding ${name(active)} · ${matchDb ? `played at ${matchDb.toFixed(1)} dB · matched` : matched ? 'played as rendered · matched' : 'UNMATCHED — as rendered'}`;
+  else text = `stopped · press ${labels ?? 'a ▶ key'} in the dock${matched ? '' : ' — MATCH is OFF: unmatched, LOUDER plays at its full level'}`;
   return (
-    <View style={{ gap: 6 }}>
-      <View style={styles.row}>
-        {versions.map((v) => {
-          const isActive = active === v.id;
-          const isPending = pending === v.id;
-          return (
-            <Pressable
-              key={v.id}
-              onPress={() => (isActive ? onStop() : onPlay(v.id))}
-              style={[styles.vbtn, (isActive || isPending) && styles.vbtnOn]}
-              accessibilityRole="button"
-              accessibilityLabel={isActive ? `Stop ${v.label}` : isPending ? `${v.label} is rendering` : `Play ${v.label}`}
-            >
-              <Text style={[styles.vbtnText, (isActive || isPending) && { color: colors.green }]}>{isActive ? `■ ${v.label}` : isPending ? `… ${v.label}` : `▶ ${v.label}`}</Text>
-            </Pressable>
-          );
-        })}
-      </View>
-      {rendering ? (
-        <Text style={styles.rendering} accessibilityLiveRegion="polite">
-          RENDERING — real DSP on the whole programme, one moment…
-        </Text>
-      ) : null}
-    </View>
+    <Text style={[styles.status, !matched && !rendering ? { color: colors.gold } : null]} accessibilityLiveRegion="polite">
+      {text.toUpperCase()}
+    </Text>
   );
+}
+
+/** The volume warning (safety review 2026-10-01, finding 1a), printed live
+ *  from the two measured loudness estimates. */
+export function unmatchedWarning(mixLufs: number | undefined, loudLufs: number | undefined, loudName = 'LOUDER', fallback = '8–11'): string {
+  const step = mixLufs != null && loudLufs != null && Number.isFinite(mixLufs) && Number.isFinite(loudLufs) ? Math.max(0, loudLufs - mixLufs) : null;
+  return `Turn your volume down first — unmatched, ${loudName} steps up by about ${step != null ? step.toFixed(0) : fallback} dB.`;
 }
 
 const styles = StyleSheet.create({
@@ -302,9 +367,17 @@ const styles = StyleSheet.create({
   checkBox: { color: colors.textSub, fontFamily: fonts.barlowMedium, fontSize: 17, lineHeight: 20 },
   checkText: { color: colors.textSecondary, fontFamily: fonts.barlowMedium, fontSize: 13.5, lineHeight: 18 },
   checkWhy: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 16 },
-  row: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  vbtn: { minHeight: 44, paddingHorizontal: 12, justifyContent: 'center', borderRadius: 8, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#101013' },
-  vbtnOn: { borderColor: colors.green, backgroundColor: '#0f1d14' },
-  vbtnText: { color: colors.amber, fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1 },
-  rendering: { color: colors.cyanBright, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.2 },
+  status: { color: colors.cyanBright, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.2, lineHeight: 15 },
+  optGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  optChip: { flexBasis: '48%', flexGrow: 1, paddingHorizontal: 8 },
+  optChipText: { fontSize: 12.5, lineHeight: 16 },
+  optDim: { borderColor: colors.hairline, opacity: 0.55 },
+  hidden: { display: 'none' },
+  deckBar: { gap: 2 },
+  deckCount: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 2 },
+  deckRule: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
+  deckKeys: { flexDirection: 'row', gap: 8 },
+  key: { flex: 1, minHeight: 44, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 12, borderRadius: 8, borderWidth: 1, borderColor: colors.amber, backgroundColor: '#101013' },
+  keyOff: { borderColor: colors.hairline },
+  keyText: { color: colors.amber, fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.2 },
 });

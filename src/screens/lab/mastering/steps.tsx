@@ -34,7 +34,9 @@ export const StepHostContext = createContext<StepHost | null>(null);
 export function ModuleSteps({ steps }: { steps: MasteringStep[] }) {
   const host = useContext(StepHostContext);
   const onSteps = host?.onSteps;
-  const titleKey = steps.map((s) => `${s.kind} · ${s.title}`).join('\u0001');
+  // "REVIEW · Review" would read "NEXT: REVIEW · REVIEW ›" on the strip
+  // (cognitive review finding 23): drop the kind when it equals the title.
+  const titleKey = steps.map((s) => (s.kind === s.title.toUpperCase() ? s.title : `${s.kind} · ${s.title}`)).join('\u0001');
   useEffect(() => {
     onSteps?.(titleKey.split('\u0001'));
   }, [onSteps, titleKey]);

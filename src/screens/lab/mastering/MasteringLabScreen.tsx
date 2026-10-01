@@ -8,18 +8,21 @@
  *     [⏮] [‹ PREV]   MODULE 3 · STEP 2 / 5 ▾   [NEXT ›]
  *
  * ‹ PREV / NEXT › walk a module's steps and roll over to the neighbouring
- * module; the readout opens CONTENTS (the eight modules — experienced users
- * jump straight to equipment, workflow or delivery); FINISH › on the last
- * step of Module 8 opens the what's-left screen (owner: every lab ends on
- * one; labs never block navigation).
+ * module (PREV lands on the previous module's LAST step); the readout opens
+ * CONTENTS (the eight modules — experienced users jump straight to
+ * equipment, workflow or delivery); FINISH › on the last step of Module 8
+ * opens the what's-left screen (owner: every lab ends on one; labs never
+ * block navigation).
  *
- * CREDIT: a module banks when every one of its decision scenarios has been
- * answered (Module 8 also needs its QC checklist complete). NEXT past a
- * module's last step banks it first — the way forward never costs credit.
- * Credit is never removed: START OVER (PRACTICE) clears answers and the
- * resume point, keeps `done`. HOUSE GUEST RULE: a signed-out guest or a
- * members-only preview restores nothing and saves nothing; the first load
- * waits for the entitlement tier to be `resolved`.
+ * CREDIT: a module banks THE MOMENT every one of its decision scenarios has
+ * been answered (Module 8 also needs its QC checklist complete) — on the
+ * answer itself, not on NEXT, so leaving by ‹, CONTENTS or a what's-left row
+ * never loses it (cognitive review 2026-10-01, finding 2). NEXT past a
+ * module's last step still banks as the fallback. Credit is never removed:
+ * START OVER (PRACTICE) clears answers and the resume point, keeps `done`.
+ * HOUSE GUEST RULE: a signed-out guest or a members-only preview restores
+ * nothing and saves nothing; the first load waits for the entitlement tier
+ * to be `resolved`.
  *
  * MODELLED ON amp/AmpModuleScreen.tsx (steps + racks), without the per-module
  * route: a module change is a state change on this one screen.
@@ -36,9 +39,9 @@ import { useEntitlement } from '../../../features/commercial/EntitlementProvider
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { retainSessionStems } from '../mixing/audio/mixAudio';
-import { MASTERING_MODULES, masteringModuleById, scenariosForModule, type MasteringModuleId } from './masteringContent';
+import { MASTERING_MODULES, PROJECT_QC, masteringModuleById, scenariosForModule, type MasteringModuleId } from './masteringContent';
 import { emptyMasteringModule, resetMasteringPractice, setMasteringSaveBlocked, updateMasteringProgress, type MasteringProgressState } from './masteringProgress';
-import { MASTERING_MODULE_COMPONENTS } from './modules';
+import { MASTERING_MODULE_COMPONENTS, MASTERING_STEP_COUNTS } from './modules';
 import { StepHostContext, type StepHost } from './steps';
 import { TakeawayCard } from './kit';
 import { releaseProgramme } from './useMasterPlayback';
@@ -72,6 +75,7 @@ export function MasteringLabScreen() {
   const [answers, setAnswers] = useState<Record<string, boolean>>({});
   const [doneIds, setDoneIds] = useState<ReadonlySet<string>>(() => new Set());
   const [qcComplete, setQcComplete] = useState(false);
+  const [project, setProject] = useState<{ checks: string[]; qc: string[] }>({ checks: [], qc: [] });
   const [endState, setEndState] = useState<MasteringProgressState | null>(null);
   const [loaded, setLoaded] = useState(false);
 
@@ -92,6 +96,9 @@ export function MasteringLabScreen() {
         setAnswers(s.modules[s.lastModule]?.answers ?? {});
         setStepRaw(s.lastStep ?? 0);
       }
+      const p = s.modules.project;
+      setProject({ checks: p?.checks ?? [], qc: p?.qc ?? [] });
+      setQcComplete((p?.qc?.length ?? 0) >= PROJECT_QC.length);
       setLoaded(true);
     });
     return () => {
@@ -104,11 +111,15 @@ export function MasteringLabScreen() {
     setEndState(null);
     setModId(id);
     setStepRaw(atStep);
-    setQcComplete(false);
     void updateMasteringProgress((s) => {
       s.lastModule = id;
       s.lastStep = atStep;
-    }).then((s) => setAnswers(s.modules[id]?.answers ?? {}));
+    }).then((s) => {
+      setAnswers(s.modules[id]?.answers ?? {});
+      const p = s.modules.project;
+      setProject({ checks: p?.checks ?? [], qc: p?.qc ?? [] });
+      setQcComplete((p?.qc?.length ?? 0) >= PROJECT_QC.length);
+    });
   }, []);
 
   const onAnswered = useCallback(
@@ -121,6 +132,15 @@ export function MasteringLabScreen() {
     },
     [modId],
   );
+
+  /** Module 8's ticks persist (guest rule inside the store). */
+  const onProjectState = useCallback((checks: string[], qc: string[]) => {
+    setProject({ checks, qc });
+    void updateMasteringProgress((s) => {
+      const m = s.modules.project ?? emptyMasteringModule();
+      s.modules.project = { ...m, checks, qc };
+    });
+  }, []);
 
   const scenarios = scenariosForModule(mod.id);
   const answeredCount = scenarios.filter((s) => s.id in answers).length;
@@ -135,6 +155,12 @@ export function MasteringLabScreen() {
       s.modules[modId] = { ...m, done: true };
     });
   }, [modId]);
+
+  // BANK ON COMPLETION: the moment the last decision (or the last QC line)
+  // lands, credit is written — before any navigation.
+  useEffect(() => {
+    if (loaded && complete && !done) bank();
+  }, [loaded, complete, done, bank]);
 
   const setStep = useCallback(
     (i: number) => {
@@ -164,6 +190,12 @@ export function MasteringLabScreen() {
     },
     [modId, openModule, setStep],
   );
+  /** PREV on a module's first step → the previous module's LAST step. */
+  const rollPrev = useCallback(() => {
+    const prev = MASTERING_MODULES[idx - 1];
+    if (!prev) return;
+    openModule(prev.id, Math.max(0, MASTERING_STEP_COUNTS[prev.id] - 1));
+  }, [idx, openModule]);
   const showEnd = useCallback(() => {
     void updateMasteringProgress(() => {}).then(setEndState);
   }, []);
@@ -172,8 +204,8 @@ export function MasteringLabScreen() {
     if (complete && !done) bank();
   }, [complete, done, bank]);
   const sub = useMemo(
-    () => (stepCount > 1 ? { index: stepIdx, count: stepCount, titles: stepTitles, go: setStep } : undefined),
-    [stepCount, stepIdx, stepTitles, setStep],
+    () => (stepCount > 1 ? { index: stepIdx, count: stepCount, titles: stepTitles, go: setStep, onRollPrev: rollPrev } : undefined),
+    [stepCount, stepIdx, stepTitles, setStep, rollPrev],
   );
   const units = useMemo(() => MASTERING_MODULES.map((x) => ({ id: x.id, title: x.title, done: doneIds.has(x.id) })), [doneIds]);
 
@@ -216,11 +248,9 @@ export function MasteringLabScreen() {
       <Text style={styles.requirement}>
         {done
           ? 'This module is credited. Review it any time — practising never removes credit.'
-          : complete
-            ? 'Every decision answered — NEXT / FINISH below credits this module and moves on.'
-            : mod.id === 'project'
-              ? `Credit for this module: answer the ${scenarios.length} track decisions and complete the QC checklist (${answeredCount} of ${scenarios.length} answered). NEXT still moves on; you can come back.`
-              : `Credit for this module: answer its ${scenarios.length} decisions on the PRACTICE step (${answeredCount} of ${scenarios.length} so far). A wrong pick is fine — the explanation is the point. NEXT still moves on; you can come back.`}
+          : mod.id === 'project'
+            ? `Credit for this module: answer the ${scenarios.length} track decisions and complete the QC checklist (${answeredCount} of ${scenarios.length} answered). Credit lands the moment the last one does. NEXT still moves on; you can come back.`
+            : `Credit for this module: answer its ${scenarios.length} decisions on the PRACTICE step (${answeredCount} of ${scenarios.length} so far). A wrong pick is fine — the explanation is the point. Credit lands the moment the last one does. NEXT still moves on; you can come back.`}
       </Text>
     </>
   );
@@ -261,7 +291,7 @@ export function MasteringLabScreen() {
         {end ?? (
           <View style={styles.body}>
             <StepHostContext.Provider value={host}>
-              <Component key={mod.id} onAnswered={onAnswered} onQcComplete={setQcComplete} />
+              <Component key={mod.id} onAnswered={onAnswered} onQcComplete={setQcComplete} savedChecks={project.checks} savedQc={project.qc} onProjectState={onProjectState} />
             </StepHostContext.Provider>
           </View>
         )}

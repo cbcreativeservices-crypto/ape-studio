@@ -32,22 +32,13 @@ import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced
 import { useStopOnClose } from '../../../features/audio/useStopOnBlur';
 import { LOOP_S, renderMix } from '../mixing/audio/mixAudio.ts';
 import {
-  DELIVERED_MIX, DELIVERED_TRIM_DB, applyGain, matchedGains, measure, overview, peakLimiter, stereoWidth, tiltEq,
-  type Measure, type Overview,
+  DELIVERED_MIX, DELIVERED_TRIM_DB, applyGain, autoReplayAllowed, matchedGains, measure, overview, renderVersion,
+  type MasterProcess, type Measure, type Overview,
 } from './masteringEngine';
 
-export type MasterProcess = {
-  /** Broad tonal lean, dB (+ brighter, − warmer). */
-  tiltDb?: number;
-  /** M/S width multiplier (1 = as mixed). */
-  width?: number;
-  /** Drive into the limiter, dB. */
-  driveDb?: number;
-  /** Limiter ceiling, dBFS (sample peak). Omit = no limiter. */
-  ceilingDb?: number;
-  /** Plain output trim, dB (after everything). */
-  trimDb?: number;
-};
+// The pure pieces live in masteringEngine.ts (testable without Metro);
+// re-exported here for the modules that import them from the hook.
+export { SAFETY_CEILING_DB, autoReplayAllowed, needsSafetyCeiling, renderVersion, type MasterProcess } from './masteringEngine';
 
 export type MasterVariant = {
   id: string;
@@ -92,25 +83,6 @@ export function programmeIfRendered(): Stereo | null {
 /** Free the cached render (the lab screen releases it on close). */
 export function releaseProgramme(): void {
   programmeCache = null;
-}
-
-/** One version of the master through the chain. Pure; exported for tests. */
-export function renderVersion(base: Stereo, p: MasterProcess): { out: Stereo; grDb: number[]; maxGrDb: number } {
-  let s = base;
-  if (p.tiltDb) s = tiltEq(s, p.tiltDb);
-  if (p.width != null && p.width !== 1) s = stereoWidth(s, p.width);
-  let grDb: number[] = [];
-  let maxGrDb = 0;
-  if (p.ceilingDb != null) {
-    const lim = peakLimiter(s, p.driveDb ?? 0, p.ceilingDb);
-    s = lim.out;
-    grDb = lim.grDb;
-    maxGrDb = lim.maxGrDb;
-  } else if (p.driveDb) {
-    s = applyGain(s, p.driveDb);
-  }
-  if (p.trimDb) s = applyGain(s, p.trimDb);
-  return { out: s, grDb, maxGrDb };
 }
 
 export function useMasterPlayback(variants: readonly MasterVariant[], matched: boolean): MasterPlayback {
@@ -173,9 +145,10 @@ export function useMasterPlayback(variants: readonly MasterVariant[], matched: b
 
   // A new variant set (a fader moved, MATCH toggled): the renders are stale.
   // If a version was sounding, replay the SAME version once the change
-  // settles (the mixing lab's "▶ arms the lab" rule).
+  // settles (the mixing lab's "▶ arms the lab" rule) — but ONLY while
+  // matched (autoReplayAllowed): unmatched, nothing restarts without a press.
   useEffect(() => {
-    const again = activeRef.current ?? pendingRef.current;
+    const again = autoReplayAllowed(matched, activeRef.current ?? pendingRef.current);
     playerRef.current?.stop();
     setStatus('idle');
     setActive(null);
@@ -192,6 +165,7 @@ export function useMasterPlayback(variants: readonly MasterVariant[], matched: b
       void renderAllRef.current();
     }, 350);
     return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `matched` is part of `signature`
   }, [signature]);
 
   const renderAll = useCallback(async () => {

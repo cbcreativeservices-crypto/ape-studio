@@ -1,17 +1,18 @@
 /**
- * Module 7 — Mastering for release. LEARN (read: the delivery contexts, with
- * facts kept apart from EXAMPLES) → EXPLORE (rack: the delivery checklist —
- * pick a destination, read its sample brief, confirm every line) →
+ * Module 7 — Mastering for release. LEARN (read: the five client briefs,
+ * one illustrated object per destination — the facts and examples live on
+ * the EXPLORE page beside the checklist, once) → EXPLORE (rack: the delivery
+ * checklist — pick a destination, read its brief, confirm every line) →
  * PRACTICE → REVIEW.
  */
 import { useState } from 'react';
 import { colors } from '../../../../theme/tokens';
 import { flipFader } from '../MasteringRack';
 import { ModuleSteps } from '../steps';
-import { Body, Card, Checklist, KeyTerms, Point, ScenarioCard, SectionTitle } from '../kit';
+import { Body, Card, Checklist, KeyTerms, Point, ScenarioDeck, SectionTitle } from '../kit';
 import { DESTINATIONS, KEY_TERMS, RELEASE_SCENARIOS } from '../masteringContent';
 import { CD_PLAY_MINUTES, CD_RED_BOOK, wavBytes } from '../masteringEngine';
-import { DeliverySheetStage, SHEET_ASPECT } from '../stages';
+import { DEST_ART_ASPECT, DeliverySheetStage, DestinationArt, ReadFigure, SHEET_ASPECT, type DestinationArtKind } from '../stages';
 import type { ModuleProps } from './shared';
 
 export function Mod7Release({ onAnswered }: ModuleProps) {
@@ -36,12 +37,11 @@ export function Mod7Release({ onAnswered }: ModuleProps) {
           key: 'contexts', title: 'Delivery contexts', kind: 'LEARN', layout: 'read',
           body: (
             <>
-              <Body>Every destination has its own CURRENT requirements and every client has a request. The engineer confirms both, delivers exactly that, and documents it. Below, FACTS are facts; EXAMPLES are labelled as examples to verify against the destination's current specification — they are not the rule.</Body>
+              <Body>Every destination has its own CURRENT requirements and every client has a request. Five briefs, five different deliveries — the facts, the labelled examples and the checklist for each are on the next page, beside the sheet.</Body>
               {DESTINATIONS.map((d) => (
                 <Card key={d.id}>
                   <Point title={d.name}>{d.brief}</Point>
-                  {d.facts.map((f) => <Body key={f}>• FACT — {f}</Body>)}
-                  {d.examples.map((e) => <Body key={e}>• EXAMPLE — {e}</Body>)}
+                  <ReadFigure aspect={DEST_ART_ASPECT} render={(w, h) => <DestinationArt width={w} height={h} kind={d.id as DestinationArtKind} />} />
                 </Card>
               ))}
               <Card tone="accent">
@@ -75,7 +75,7 @@ export function Mod7Release({ onAnswered }: ModuleProps) {
           },
           well: (
             <>
-              <Body>Ride DESTINATION, read the sample brief, then open CONFIRM and tick each line as something you would verify before exporting. The sheet on the display fills in as you go — every destination has its own list.</Body>
+              <Body>Ride DESTINATION, read the sample brief, then open CONFIRM and tick each line as something you would verify before exporting. The sheet on the display fills in as you go — every destination has its own list. FACTS are facts; EXAMPLES are labelled as examples to verify against the destination's current specification — they are not the rule.</Body>
               <Card tone="accent">
                 <Point title={dest.name}>{dest.brief}</Point>
                 {dest.facts.map((f) => <Body key={f}>• FACT — {f}</Body>)}
@@ -86,13 +86,7 @@ export function Mod7Release({ onAnswered }: ModuleProps) {
         },
         {
           key: 'practice', title: 'Release decisions', kind: 'PRACTICE', layout: 'read',
-          body: (
-            <>
-              {RELEASE_SCENARIOS.map((s) => (
-                <ScenarioCard key={s.id} s={s} onAnswered={(ok) => onAnswered(s.id, ok)} />
-              ))}
-            </>
-          ),
+          body: <ScenarioDeck scenarios={RELEASE_SCENARIOS} onAnswered={onAnswered} />,
         },
         {
           key: 'review', title: 'Review', kind: 'REVIEW', layout: 'read',
@@ -101,7 +95,8 @@ export function Mod7Release({ onAnswered }: ModuleProps) {
               <SectionTitle>KEY IDEAS</SectionTitle>
               <Card>
                 <Body>• Streaming, CD, vinyl, broadcast/picture and alternate versions each have their own current requirements.</Body>
-                <Body>• Facts (Red Book, BS.1770, the existence of R128 and A/85) stay fixed; example numbers are verified against the spec of the day.</Body>
+                <Body>• Facts (Red Book, BS.1770, what R128 and A/85 specify) stay fixed; example numbers are verified against the spec of the day.</Body>
+                <Body>• Sample-rate conversion first, dither to 16-bit as the very last step, once.</Body>
                 <Body>• Metadata and documentation are part of the delivery.</Body>
               </Card>
               <KeyTerms terms={KEY_TERMS.release} />

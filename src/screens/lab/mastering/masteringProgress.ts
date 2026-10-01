@@ -22,6 +22,11 @@ export type MasteringModuleProgress = {
   done: boolean;
   /** scenario id → answered correctly on the first pick. */
   answers: Record<string, boolean>;
+  /** Module 8 only: the ticked listening-check ids and QC ids, so a remount
+   *  (or a return from the what's-left screen) does not lose the lists.
+   *  Under the same guest rule as everything else here. */
+  checks?: string[];
+  qc?: string[];
 };
 
 export type MasteringProgressState = {

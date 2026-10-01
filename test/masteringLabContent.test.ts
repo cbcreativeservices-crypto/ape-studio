@@ -14,7 +14,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, it } from 'node:test';
 import {
-  ALL_SCENARIOS, CONTROL_ITEMS, DESTINATIONS, KEY_TERMS, MASTERING_MODULES, PROJECT_CHECKS, PROJECT_QC, PROJECT_SEQUENCES, PROJECT_TRACKS,
+  ALL_SCENARIOS, CONTROL_ITEMS, DESTINATIONS, INSPECTION_SHEET, KEY_TERMS, MASTERING_MODULES, PROJECT_CHECKS, PROJECT_QC, PROJECT_SEQUENCES, PROJECT_TRACKS,
   TOOL_GROUPS, TOOL_OPTIONS, TOOL_SCENARIOS, TRIAGE_OPTIONS, TRIAGE_SCENARIOS, scenariosForModule,
 } from '../src/screens/lab/mastering/masteringContent.ts';
 
@@ -80,6 +80,48 @@ describe('answer keys', () => {
   });
   it('key terms exist for every module', () => {
     for (const m of MASTERING_MODULES) assert.ok((KEY_TERMS[m.id] ?? []).length >= 2, `${m.id} key terms`);
+  });
+  it('bezel / dock short names never crop: sequences ≤ 12 chars, control items ≤ 9 and unique', () => {
+    for (const s of PROJECT_SEQUENCES) assert.ok(s.short.length <= 12, `${s.id}: "${s.short}"`);
+    for (const c of CONTROL_ITEMS) assert.ok(c.short.length <= 9, `${c.id}: "${c.short}"`);
+    assert.equal(new Set(CONTROL_ITEMS.map((c) => c.short)).size, CONTROL_ITEMS.length, 'no duplicate dock names');
+    assert.ok(CONTROL_ITEMS.every((c) => !/,$/.test(c.short)));
+  });
+  it('the length cue is gone: no module has the correct option as the longest in more than half its cards', () => {
+    for (const m of MASTERING_MODULES) {
+      const list = scenariosForModule(m.id).filter((s) => s.options !== TRIAGE_OPTIONS && s.options !== TOOL_OPTIONS);
+      if (list.length === 0) continue;
+      const longest = list.filter((s) => s.options.every((o) => o === s.correct || o.length < s.correct.length)).length;
+      assert.ok(longest <= Math.ceil(list.length / 2), `${m.id}: the correct option is the longest in ${longest} of ${list.length} cards`);
+    }
+  });
+  it('the reviewed wording landed: k3 clip gain, k4 mixer unavailable, k6 un-glued, e1 brief, e2 "where", l3 services differ', () => {
+    const by = (id: string) => ALL_SCENARIOS.find((s) => s.id === id)!;
+    assert.match(by('k3').explain, /clip-gain edit/);
+    assert.match(by('k4').prompt, /the mixer is not available/);
+    assert.match(by('k6').prompt, /un-glued/);
+    assert.doesNotMatch(by('k6').prompt, /never quite lifts/);
+    assert.match(by('e1').prompt, /we like the drive of the references/);
+    assert.match(by('e1').explain, /the first question is information/);
+    assert.match(by('e2').prompt, /Where is that handled\?/);
+    assert.match(by('e2').explain, /^A mastering decision — here the decision is to keep the step/);
+    assert.match(by('l3').explain, /services differ on whether they turn quiet masters up/);
+    assert.match(by('t7').explain, /the first one is information/);
+  });
+  it('dither is the LAST process after sample-rate conversion; the streaming list says no dither on 24-bit; CD asks for ISRC + UPC/EAN', () => {
+    const cd = DESTINATIONS.find((d) => d.id === 'cd')!;
+    assert.ok(cd.facts.some((f) => /Convert the sample rate first \(48 → 44\.1 kHz\), then reduce to 16-bit with dither as the LAST process; dither once/.test(f)));
+    assert.ok(cd.confirm.some((c) => /ISRC per track and the UPC\/EAN/.test(c)));
+    const st = DESTINATIONS.find((d) => d.id === 'streaming')!;
+    assert.ok(st.confirm.some((c) => /No dither on the 24-bit deliverables/.test(c)));
+    const vinyl = DESTINATIONS.find((d) => d.id === 'vinyl')!;
+    assert.ok(vinyl.facts.some((f) => /Inner-groove distortion/.test(f)));
+    const bc = DESTINATIONS.find((d) => d.id === 'broadcast')!;
+    assert.ok(bc.facts.some((f) => /R128 specifies −23 LUFS/.test(f) && /A\/85 specifies −24 LKFS/.test(f) && /not a target for music/.test(f)), 'the R128 / A/85 numbers are stated as FACTS about those standards');
+    assert.ok(PROJECT_QC.some((q) => /DC offset or polarity\/channel swap/.test(q.label)));
+    assert.ok(PROJECT_QC.some((q) => /^Reopened and played every exported file through/.test(q.label)));
+    assert.ok(PROJECT_QC.some((q) => /sample rate and bit depth/.test(q.label)));
+    assert.ok(INSPECTION_SHEET.some((r) => /DC offset/.test(r.field)));
   });
 });
 

@@ -18,6 +18,7 @@ import {
   SR,
   applyBiquad,
   rbj,
+  type Biquad,
   type Mono,
   type Stereo,
 } from '../../../../features/ear/earDsp.ts';
@@ -88,10 +89,16 @@ export function decodeMidSide(m: Mono, side: Mono, widthAmount = 1): Stereo {
 /* ── Loudness (BS.1770-style ESTIMATE) ───────────────────────────────────── */
 
 // K-weighting per ITU-R BS.1770: a high-shelf (+4 dB, ~1.68 kHz) then a
-// high-pass (~38 Hz). rbj coefficients approximate the spec filters closely
-// enough for a labeled ESTIMATE (never certified metering).
-const kShelf = rbj(1681, 0.7071, 3.99958, 'highshelf');
-const kHp = rbj(38.135, 0.5, 0, 'highpass');
+// high-pass (~38 Hz). At the house rate (48 kHz) these are the PUBLISHED
+// BS.1770 coefficients (pre-filter + RLB), normalised to a0 = 1; at any other
+// rate the rbj approximations stand in. Still a labeled ESTIMATE, never
+// certified metering (mastering-lab audio review 2026-10-01, finding 12).
+const kShelf: Biquad = SR === 48000
+  ? { b0: 1.53512485958697, b1: -2.69169618940638, b2: 1.19839281085285, a1: -1.69065929318241, a2: 0.73248077421585 }
+  : rbj(1681, 0.7071, 3.99958, 'highshelf');
+const kHp: Biquad = SR === 48000
+  ? { b0: 1, b1: -2, b2: 1, a1: -1.99004745483398, a2: 0.99007225036621 }
+  : rbj(38.135, 0.5, 0, 'highpass');
 
 function kWeight(x: Mono): Mono {
   return applyBiquad(applyBiquad(x, kShelf), kHp);

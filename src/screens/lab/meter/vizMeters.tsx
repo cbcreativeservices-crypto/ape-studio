@@ -1387,13 +1387,29 @@ export function LoudnessView(p: {
    *  mastering lab's rule is that the right loudness depends on content and
    *  destination, so its meter must not print one number as the target. */
   targetLufs?: number | null;
+  /** ADDITIVE (Mastering Lab, 2026-10-01): a gain offset in dB applied to
+   *  momentary, short-term, integrated and true-peak alike, so a GAIN fader
+   *  visibly moves the loudness face. Default 0 keeps the Visual Audio
+   *  Analysis lab bit-for-bit as before. */
+  gainDb?: number;
 }) {
   const w = p.width;
   const targetLufs = p.targetLufs === undefined ? -14 : p.targetLufs;
+  const gainDb = p.gainDb ?? 0;
   // Taller face + bigger fonts (owner 2026-08-05: the display was too small to
   // read). The integrated LUFS numeral is the headline, enlarged up top.
   const h = p.height ?? 300;
-  const sim = useMemo(() => simulateLoudness(p.signal), [p.signal]);
+  const sim = useMemo(() => {
+    const s = simulateLoudness(p.signal);
+    if (!gainDb) return s;
+    return {
+      ...s,
+      momentary: s.momentary.map((v) => v + gainDb),
+      short: s.short.map((v) => v + gainDb),
+      integratedLufs: Math.round((s.integratedLufs + gainDb) * 10) / 10,
+      truePeakDbtp: Math.round((s.truePeakDbtp + gainDb) * 10) / 10,
+    };
+  }, [p.signal, gainDb]);
   const N = sim.momentary.length;
   // Overlay labels grow in FULL SCREEN (StageTextScale, 1 on the glass); the
   // gutters that hold them — scale column, title strip, legend strip — grow
