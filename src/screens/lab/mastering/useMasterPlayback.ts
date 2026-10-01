@@ -104,9 +104,16 @@ export function useMasterPlayback(variants: readonly MasterVariant[], matched: b
    *  old version would start anyway — or override the version just pressed
    *  (bug pass 2026-10-01). */
   const replayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /** The version the armed replay will play. It outlives one effect run: a
+   *  fader DRAG changes the set on every tick, and by the second tick
+   *  `active` and `pending` were already null, so the replay was forgotten
+   *  and a drag silently stopped the sound it promised to replay (night
+   *  pass 2, 2026-10-01). Cleared only when the replay fires or is cancelled. */
+  const replayIdRef = useRef<string | null>(null);
   const cancelReplay = useCallback(() => {
     if (replayTimerRef.current != null) clearTimeout(replayTimerRef.current);
     replayTimerRef.current = null;
+    replayIdRef.current = null;
   }, []);
   const signature = useMemo(() => JSON.stringify({ variants, matched }), [variants, matched]);
 
@@ -158,7 +165,8 @@ export function useMasterPlayback(variants: readonly MasterVariant[], matched: b
   // settles (the mixing lab's "▶ arms the lab" rule) — but ONLY while
   // matched (autoReplayAllowed): unmatched, nothing restarts without a press.
   useEffect(() => {
-    const again = autoReplayAllowed(matched, activeRef.current ?? pendingRef.current);
+    const again = autoReplayAllowed(matched, activeRef.current ?? pendingRef.current ?? replayIdRef.current);
+    replayIdRef.current = again;
     playerRef.current?.stop();
     setStatus('idle');
     setActive(null);
@@ -171,6 +179,7 @@ export function useMasterPlayback(variants: readonly MasterVariant[], matched: b
     const armedEpoch = getSoundStopEpoch();
     const t = setTimeout(() => {
       replayTimerRef.current = null;
+      replayIdRef.current = null;
       if (!aliveRef.current || !focusedRef.current || !isAudioOutputEnabled()) return;
       // Every sound was stopped meanwhile (left the app, another lab): stay quiet.
       if (getSoundStopEpoch() !== armedEpoch) return;
@@ -254,6 +263,18 @@ export function useMasterPlayback(variants: readonly MasterVariant[], matched: b
           setActive(want);
           setHeard((h) => (h.includes(want) ? h : [...h, want]));
         }
+      }
+    } catch {
+      // A clip write failing (disk full, cache cleared — EarClipPlayer.load
+      // rethrows) used to escape the `void renderAll()` callers as an
+      // unhandled rejection and leave the page reading RENDERING forever with
+      // the queued play stuck (night pass 2, 2026-10-01). Back to idle: the
+      // next ▶ renders afresh.
+      if (current()) {
+        idsRef.current = [];
+        pendingRef.current = null;
+        setPending(null);
+        setStatus('idle');
       }
     } finally {
       if (my === renderSeqRef.current) renderingSigRef.current = null;

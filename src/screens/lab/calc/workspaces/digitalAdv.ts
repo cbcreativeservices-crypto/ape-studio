@@ -265,7 +265,7 @@ const TIMECODE: Workspace = {
       steps: (v) => {
         const totS = n(v.frames) / n(v.fps);
         return [
-          `Time = ${fmt(n(v.frames))} frames ÷ ${fmt(n(v.fps))} fps = ${fmt(totS)} s.`,
+          `Time = ${fmt(n(v.frames), 9)} frames ÷ ${fmt(n(v.fps), 6)} fps = ${fmt(totS)} s.`,
           `Broken out into HH:MM:SS:FF in the table below (frame remainder uses the whole-frame rate).`,
         ];
       },
@@ -297,9 +297,9 @@ const TIMECODE: Workspace = {
         const fpsInt = Math.round(n(v.fps));
         const frames = Math.round(totS * fpsInt);
         return [
-          `Timecode seconds = ${fmt(n(v.hours))}·3600 + ${fmt(n(v.mins))}·60 + ${fmt(n(v.secs))} = ${fmt(totS)} s.`,
-          `Frames = ${fmt(totS)} × ${fmt(fpsInt)} (whole frames per timecode second) = ${fmt(frames, 9)}.`,
-          `At ${fmt(n(v.fps))} fps those frames take ${fmt(frames)} ÷ ${fmt(n(v.fps))} = ${fmt(frames / n(v.fps))} s of real time.`,
+          `Timecode seconds = ${fmt(n(v.hours))}·3600 + ${fmt(n(v.mins))}·60 + ${fmt(n(v.secs))} = ${fmt(totS, 9)} s.`,
+          `Frames = ${fmt(totS, 9)} × ${fmt(fpsInt)} (whole frames per timecode second) = ${fmt(frames, 9)}.`,
+          `At ${fmt(n(v.fps), 6)} fps those frames take ${fmt(frames, 9)} ÷ ${fmt(n(v.fps), 6)} = ${fmt(frames / n(v.fps))} s of real time.`,
         ];
       },
     },

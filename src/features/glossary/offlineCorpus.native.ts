@@ -240,9 +240,31 @@ export async function saveDefinitions(
  */
 const tierKey = (src: string) => `defs_tier:${src}`;
 
+/**
+ * Aligns queued and not yet run, per src (night pass 2, 2026-10-01). The fast
+ * path reads the tier ON DISK, which is stale while an align for the other
+ * tier is still waiting its turn behind a term save: member → free → member
+ * inside one save, and the member's align returned at once ("already member"),
+ * then the queued free align ran, tagged the store 'free' and the member's
+ * full text was saved under that tag — served offline to the next free reader
+ * (and the reverse filed a free reader's teasers as a member's "saved" text).
+ * While one waits, every align queues too.
+ */
+const aligning = new Map<string, number>();
+function alignDone(src: string): void {
+  const n = (aligning.get(src) ?? 1) - 1;
+  if (n > 0) aligning.set(src, n);
+  else aligning.delete(src);
+}
+
 export async function alignDefinitionTier(src: string, tier: 'member' | 'free'): Promise<void> {
-  if ((await getMeta(tierKey(src))) === tier) return; // unqueued fast path
-  await serial(() => alignNow(src, tier)); // in order with the writes
+  if (!aligning.has(src) && (await getMeta(tierKey(src))) === tier && !aligning.has(src)) return;
+  aligning.set(src, (aligning.get(src) ?? 0) + 1);
+  try {
+    await serial(() => alignNow(src, tier));
+  } finally {
+    alignDone(src);
+  }
 }
 
 async function alignNow(src: string, tier: 'member' | 'free'): Promise<void> {
@@ -275,6 +297,17 @@ export function idsMissingDefinitions(src: string, limit: number): Promise<strin
     )) as { id: string }[];
     return rows.map((r) => r.id);
   });
+}
+
+/**
+ * Resolves once every write queued before this call has finished (night pass
+ * 2, 2026-10-01). The background save reads the term-list stats unqueued, and
+ * mid-saveTerms (the screen's first download or its revalidate) the marker is
+ * gone and the rows parked — so it read "incomplete" and paged the whole term
+ * list again, 1.5 MB on the metered link it is careful about, then rewrote it.
+ */
+export function writesSettled(): Promise<void> {
+  return serial(async () => {});
 }
 
 export async function getMeta(k: string): Promise<string | null> {

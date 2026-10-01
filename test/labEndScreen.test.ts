@@ -186,7 +186,8 @@ describe('every listed lab wires the shared end screen', () => {
     // The strip's FINISH › (and the CONTENTS footer) call showEnd; the end
     // screen renders under the same header + strip, PREV leaves it.
     assert.match(s, /finish: showEnd/);
-    assert.match(s, /const unEnd = useCallback\(\(\) => setEndState\(null\), \[\]\);/);
+    // night pass 2 (2026-10-01): unEnd also fences a FINISH read still queued
+    assert.match(s, /const unEnd = useCallback\(\(\) => \{\s*endReq\.current\+\+;\s*setEndState\(null\);\s*\}, \[\]\);/);
     assert.match(s, /ending: !!endState/);
     assert.match(s, /<LabEndScreen\s*\n\s*labTitle=\{LAB_TITLE\}/);
     assert.match(s, /onPracticeAgain=\{\(\) => navigation\.replace\('AmpModule', \{ id: built\[0\]\?\.id \?\? mod\.id \}\)\}/);

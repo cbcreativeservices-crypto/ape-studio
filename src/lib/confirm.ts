@@ -27,7 +27,7 @@
  * to the platform dialog, which is ugly but WORKS.
  */
 import { Alert, Platform } from 'react-native';
-import { isAppDialogHostMounted, showAppDialog } from '../components/AppDialog';
+import { holdAppDialogQueue, isAppDialogHostMounted, showAppDialog } from '../components/AppDialog';
 import { HOST_DISMISS_MS } from '../components/DimModal';
 
 /** For a dialog handler that opens a `presentation: 'modal'` screen (Paywall,
@@ -36,6 +36,10 @@ import { HOST_DISMISS_MS } from '../components/DimModal';
  *  the same wait GlossaryScreen uses. */
 export function afterDialogCloses(fn: () => void): () => void {
   return () => {
+    // A dialog queued behind this one waits for the hand-off: its Modal going
+    // up first would block the modal screen on iOS (night pass 2, 2026-10-01).
+    // Twice the wait: the dialog's dismissal, then the screen's presentation.
+    holdAppDialogQueue(HOST_DISMISS_MS * 2);
     setTimeout(fn, HOST_DISMISS_MS);
   };
 }

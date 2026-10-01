@@ -50,6 +50,32 @@ let startInFlight: Promise<void> | null = null;
 let startGen = 0;
 /** See micAcquireSeq(). */
 let acquireSeq = 0;
+/**
+ * A native stop still closing the HAL (night pass 2 2026-10-01). Every stop
+ * flips `streamState` to 'stopped' BEFORE ApeDsp.stop() settles, with no
+ * start in flight — so an acquire landing inside that await (a tool opening
+ * while the hub's forceRestart is closing the stream, or a quick return after
+ * releaseMicNow) saw a clean 'stopped' and issued ApeDsp.start() while the
+ * stop was still running. Natively the two interleave (iOS runs stop on the
+ * main queue and start on a background one, each flipping desiredRunning), so
+ * the late stop could kill the fresh stream we then flagged 'open' — RUNNING
+ * over a dead mic. A fresh start now waits for this to settle first.
+ */
+let stopInFlight: Promise<void> | null = null;
+
+/** ApeDsp.stop(), tracked in `stopInFlight` until it settles. Never rejects. */
+function closeStream(): Promise<void> {
+  const p: Promise<void> = ApeDsp.stop()
+    .then(
+      () => undefined,
+      () => undefined, // already dead — nothing more to close
+    )
+    .finally(() => {
+      if (stopInFlight === p) stopInFlight = null;
+    });
+  stopInFlight = p;
+  return p;
+}
 
 function cancelPendingRelease(): void {
   if (releaseTimer) {
@@ -64,7 +90,7 @@ function doStop(): void {
   if (streamState === 'stopped') return;
   streamState = 'stopped';
   setMicActive(false); // mic released → the feedback interlock disarms
-  void ApeDsp.stop();
+  void closeStream();
 }
 
 /** True when a currently-open stream is actually delivering live frames (not an
@@ -107,16 +133,26 @@ async function acquireInner(cfg: EngineConfig, forceRestart = false): Promise<vo
   if (forceRestart && streamState !== 'stopped') {
     // Race-safe hard reset: let any in-flight start settle, then fully stop
     // (awaited) so the fresh open below can't overlap a half-torn-down HAL.
+    //
+    // Released while we wait / while this stop closes (the app backgrounded
+    // mid-resume → releaseMicNow; night pass 2 2026-10-01): the owner is gone,
+    // so do not reopen. The caller's own generation guard was bumped by that
+    // same release.
+    const genAtEntry = startGen;
     if (startInFlight) {
       try {
         await startInFlight;
       } catch {
         /* fall through to the stop + fresh start */
       }
+      // Released during that wait: the release already stopped the stream.
+      if (startGen !== genAtEntry && (streamState as StreamState) === 'stopped' && !startInFlight) return;
     }
+    const genAtStop = startGen;
     streamState = 'stopped';
     startInFlight = null;
-    await ApeDsp.stop();
+    await closeStream();
+    if (startGen !== genAtStop) return;
   }
   if (streamState === 'open') {
     if (captureAlive()) {
@@ -129,12 +165,10 @@ async function acquireInner(cfg: EngineConfig, forceRestart = false): Promise<vo
     // second it killed the fresh stream we then flagged 'open' — the exact
     // RUNNING-over-a-dead-mic the orphan handling exists to prevent. Then
     // re-check from the top: another acquire may have started one meanwhile.
+    // Tracked in stopInFlight (night pass 2): a second acquire landing inside
+    // this await waits for the close instead of starting under it.
     streamState = 'stopped';
-    try {
-      await ApeDsp.stop();
-    } catch {
-      /* already dead — start afresh regardless */
-    }
+    await closeStream();
     return acquireInner(cfg);
   }
   if (streamState === 'starting') return startInFlight ?? Promise.resolve();
@@ -149,6 +183,12 @@ async function acquireInner(cfg: EngineConfig, forceRestart = false): Promise<vo
     } catch {
       /* the orphan's failure is not ours */
     }
+    return acquireInner(cfg);
+  }
+  if (stopInFlight) {
+    // A stop is still closing the HAL (see stopInFlight). Let it finish, then
+    // re-check from the top — whoever owned that stop may have started afresh.
+    await stopInFlight;
     return acquireInner(cfg);
   }
   streamState = 'starting';

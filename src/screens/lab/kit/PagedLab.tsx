@@ -180,6 +180,11 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   // as LabShell/RackUnit (owner 2026-07-30): drag primitives grab the nearest
   // ScrollLockProvider and freeze the page for exactly the gesture's duration.
   const [dragLocked, setDragLocked] = useState(false);
+  // A new page never inherits a frozen scroller (night pass 2, 2026-10-01):
+  // a drag on the old page's fader/pot plus a second finger on NEXT / PREV /
+  // CONTENTS unmounted the control mid-gesture, its release never came, and
+  // the new page could not scroll.
+  useEffect(() => setDragLocked(false), [page, ending]);
   const scrollRef = useRef<ScrollView>(null);
   const osReduceMotion = useOsReduceMotion();
   const reduceMotion = osReduceMotion || !animationsAllowed();
@@ -212,9 +217,18 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
     let alive = true;
     void loadPagedProgress(labId).then((loaded) => {
       if (!alive) return;
+      // GUEST → SIGNED-IN mid-visit (night pass 2, 2026-10-01): a signed-in
+      // learner whose boot tier read failed works as a "guest" until the real
+      // tier arrives. The pages they finished meanwhile were on screen; the
+      // re-load replaced them with the stored copy and they vanished. They are
+      // carried over like taps made before a load — ADDED to the real copy,
+      // which is then saved (nothing is removed, and the empty guest copy
+      // itself is still never written).
+      const carried = loadedAsGuestRef.current && !guestRef.current ? progressRef.current?.completed ?? [] : [];
       loadedAsGuestRef.current = guestRef.current;
       const p: PagedProgress = guestRef.current ? { completed: [], lastPage: 0, done: false } : loaded;
       const pre = preloadRef.current;
+      for (const i of carried) pre.done.add(i);
       preloadRef.current = { done: new Set() };
       let next = p;
       if (navigatedRef.current || pre.done.size > 0) {

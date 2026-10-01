@@ -22,6 +22,7 @@ import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLes
 import { ScrollLockProvider } from '../LabShell';
 import { markLabVisit, useLabVisits } from '../../../features/lab/labVisits';
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
+import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { CYMATICS_MODULES, type CymaticsModuleId } from './modules/registry';
 import { IntroModule } from './modules/modIntro';
@@ -97,10 +98,14 @@ export function CymaticsModuleScreen() {
   // modules were OPENED (labVisits — progress, never credit). Guests: this
   // session only (house guest rule, owner 2026-08-12).
   const guest = useLabEndGuest();
+  const { resolved } = useEntitlement();
   const visited = useLabVisits('cymatics');
+  // Wait for `resolved` (the Room Design rule): before it a guest reads as a
+  // member, so a guest's first module was SAVED to the device (night pass 2,
+  // 2026-10-01). The effect re-runs when the tier lands.
   useEffect(() => {
-    if (focused) markLabVisit('cymatics', meta.id, { persist: !guest });
-  }, [focused, meta.id, guest]);
+    if (focused && resolved) markLabVisit('cymatics', meta.id, { persist: !guest });
+  }, [focused, resolved, meta.id, guest]);
   const nav = useLabNav({
     units: CYMATICS_MODULES.map((m) => ({ id: m.id, title: m.title, done: visited.has(m.id) })),
     index: idx,

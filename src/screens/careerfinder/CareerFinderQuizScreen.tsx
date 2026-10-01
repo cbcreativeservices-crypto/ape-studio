@@ -42,7 +42,17 @@ export function CareerFinderQuizScreen() {
   const [index, setIndex] = useState(rec.index);
   const [seeded, setSeeded] = useState(false);
   useEffect(() => {
-    if (!hydrated || seeded) return;
+    // An account switch with the quiz still mounted (SingleDeviceGuard wipes
+    // from any screen) resets the store to unhydrated and re-hydrates it
+    // empty. Seed again from THAT record (night pass 2, 2026-10-01): the
+    // departing user's place — question 15, say — stayed on screen over the
+    // next person's blank record, with CONTINUE dead and SEE MY RESULTS
+    // unreachable until they paged back by hand.
+    if (!hydrated) {
+      if (seeded) setSeeded(false);
+      return;
+    }
+    if (seeded) return;
     // Where to open: if everything is answered (a "change my answers" review),
     // honour the stored index — the caller sets it to 0 so review starts at
     // Q1. Otherwise resume at the stored question if it is unanswered, else at

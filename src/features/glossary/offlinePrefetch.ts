@@ -31,6 +31,7 @@ import {
   idsMissingDefinitions,
   saveDefinitions,
   saveTerms,
+  writesSettled,
 } from './offlineCorpus';
 import { fetchCorpusTerms, fetchDefinitionsFor, yieldToUi, type CorpusTable } from './corpusFetch';
 import { autoOfflineEnabled } from './autoOfflinePref';
@@ -95,6 +96,10 @@ export async function prefetchGlossary(table: CorpusTable = 'glossary_browse_v')
     // rows but no completeness marker — loadTerms then reads the store as
     // EMPTY, so the glossary does not open offline at all — and `!stats.terms`
     // skipped the re-save for good. The marker must match the rows.
+    // After any term save already running (the screen's download/revalidate):
+    // mid-save the marker is gone and this would re-page the list (pass 2).
+    await writesSettled();
+    if (cancelled()) return;
     const stats = await corpusStats(table);
     const complete = Number(await getMeta(`terms_complete:${table}`));
     if (!stats.terms || complete !== stats.terms) {

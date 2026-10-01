@@ -215,14 +215,20 @@ export function setHostedOverlay(overlay: HostedOverlay | null, key = 'gate'): v
  * every popup centred off to the lower right. The visual viewport is the box
  * the user sees; the popup's content is pinned to it. Native: null, untouched.
  */
-function readWebBox(): { w: number; h: number } | null {
+// `x`/`y` (night pass 2, 2026-10-01): the portal is fixed to the LAYOUT
+// viewport, so a pinch-zoomed and panned visual viewport sits offset inside it
+// — pinned at 0,0 the popup centred in a box the user was not looking at.
+type WebBox = { x: number; y: number; w: number; h: number };
+function readWebBox(): WebBox | null {
   if (Platform.OS !== 'web' || typeof window === 'undefined') return null;
   const vv = window.visualViewport;
   const w = vv?.width ?? document.documentElement.clientWidth;
   const h = vv?.height ?? document.documentElement.clientHeight;
-  return w > 0 && h > 0 ? { w: Math.round(w), h: Math.round(h) } : null;
+  const x = Math.round(vv?.offsetLeft ?? 0);
+  const y = Math.round(vv?.offsetTop ?? 0);
+  return w > 0 && h > 0 ? { x, y, w: Math.round(w), h: Math.round(h) } : null;
 }
-function useWebBox(active: boolean): { w: number; h: number } | null {
+function useWebBox(active: boolean): WebBox | null {
   const [box, setBox] = useState(() => (active ? readWebBox() : null));
   useEffect(() => {
     if (!active || Platform.OS !== 'web' || typeof window === 'undefined') return;
@@ -231,9 +237,11 @@ function useWebBox(active: boolean): { w: number; h: number } | null {
     const vv = window.visualViewport;
     window.addEventListener('resize', update);
     vv?.addEventListener('resize', update);
+    vv?.addEventListener('scroll', update);
     return () => {
       window.removeEventListener('resize', update);
       vv?.removeEventListener('resize', update);
+      vv?.removeEventListener('scroll', update);
     };
   }, [active]);
   return active ? box : null;
@@ -321,7 +329,7 @@ export function Modal({
         );
         // Web: pinned to the visible viewport (see readWebBox). Native: as is.
         return webBox ? (
-          <View style={{ position: 'absolute', left: 0, top: 0, width: webBox.w, height: webBox.h, overflow: 'hidden' }}>
+          <View style={{ position: 'absolute', left: webBox.x, top: webBox.y, width: webBox.w, height: webBox.h, overflow: 'hidden' }}>
             {body}
           </View>
         ) : (

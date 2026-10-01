@@ -78,7 +78,7 @@ test('settings: redeem is guarded by a ref, not by the state it sets', () => {
 
 test('settings: Log out checks signOut’s result before leaving the screen', () => {
   const at = settings.indexOf('markIntentionalSignOut();');
-  const block = settings.slice(at, at + 1600);
+  const block = settings.slice(at, at + 2600);
   assert.ok(block.indexOf('if (error)') > 0);
   assert.ok(block.indexOf('if (error)') < block.indexOf("navigation.reset({ index: 0, routes: [{ name: 'Splash' }] })"));
 });

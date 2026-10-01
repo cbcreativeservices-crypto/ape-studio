@@ -214,6 +214,12 @@ export function RoomPlanView({
         const d = endDrag();
         if (d) ref.current.onDragEnd?.(d.id);
       },
+      // Asked but refused (another view held the responder and kept it):
+      // start had already held the transform and the aspect, and nothing
+      // else would ever let go of them (night pass 2, 2026-10-01).
+      onPanResponderReject: () => {
+        endDrag();
+      },
       onPanResponderTerminationRequest: () => false,
     }),
   ).current;

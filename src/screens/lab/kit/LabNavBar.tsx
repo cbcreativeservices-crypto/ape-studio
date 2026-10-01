@@ -56,6 +56,21 @@ export function useLabNavContext(): LabNav | null {
 const LEAVE_LATCH_MS = 700;
 
 /**
+ * ONE leave window shared by the header ‹ and the end screen's DONE (night
+ * pass 2, 2026-10-01). Each had its own 700 ms window, so ‹ with one finger
+ * and DONE with another (both on screen on the what's-left page) ran two
+ * goBack()s and popped the screen under the lab as well. Returns true when
+ * this tap may leave; false while another leave tap is inside the window.
+ */
+let lastLeaveAt = 0;
+export function claimLabLeave(): boolean {
+  const now = Date.now();
+  if (now - lastLeaveAt < LEAVE_LATCH_MS) return false;
+  lastLeaveAt = now;
+  return true;
+}
+
+/**
  * The lab header: ‹ (LEAVE THE LAB — stack pop, same as Android BACK; never
  * blocked, never confirmed), title over subtitle, and an optional `right`
  * group (AccuracyNote, HelpKey, a play button). `onTitlePress`, `onTouchStart`
@@ -77,11 +92,8 @@ export function LabHeader({
   headerRef?: Ref<View>;
 }) {
   const navigation = useNavigation();
-  const leftAt = useRef(0);
   const leave = () => {
-    const now = Date.now();
-    if (now - leftAt.current < LEAVE_LATCH_MS) return;
-    leftAt.current = now;
+    if (!claimLabLeave()) return;
     navigation.goBack();
   };
   return (

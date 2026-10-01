@@ -42,8 +42,9 @@ test('single-device sign-outs are LOCAL — never the default global revoke', ()
   assert.match(guard, /await signOutThisDevice\(\);/);
   assert.doesNotMatch(guard, /supabase\.auth\.signOut\(\)/);
   assert.match(read('src/features/auth/api.ts'), /supabase\.auth\.signOut\(\{ scope: 'local' \}\)/);
-  const cancel = auth.slice(auth.indexOf('onCancel: () => {'), auth.indexOf('onCancel: () => {') + 500);
-  assert.match(cancel, /supabase\.auth\.signOut\(\{ scope: 'local' \}\)/);
+  const cancel = auth.slice(auth.indexOf('onCancel: () => {'), auth.indexOf('onCancel: () => {') + 1400);
+  // Night pass 2: via signOutThisDevice — local scope, bounded, forced local removal.
+  assert.match(cancel, /void signOutThisDevice\(\)\.finally\(end\);/);
 });
 
 test('the install id is minted once even when first asked for twice at once', () => {

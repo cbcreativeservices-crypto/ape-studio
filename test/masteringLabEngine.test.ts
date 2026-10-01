@@ -274,6 +274,7 @@ describe('the auto-replay rule (safety review finding 1b)', () => {
     assert.match(engine, /if \(needsSafetyCeiling\(p\)\) \{\s*const lim = peakLimiter\(s, 0, SAFETY_CEILING_DB\);/);
     assert.doesNotMatch(engine.replace(/hi\[c\] = Math\.max\(-1, Math\.min\(1, mx\)\);|lo\[c\] = Math\.max\(-1, Math\.min\(1, mn\)\);/g, ''), /Math\.max\(-1, Math\.min\(1,/, 'no hard clamp on audio samples (the overview picture clamps for drawing only)');
     const hook = readFileSync(join(process.cwd(), 'src/screens/lab/mastering/useMasterPlayback.ts'), 'utf8');
-    assert.match(hook, /autoReplayAllowed\(matched, activeRef\.current \?\? pendingRef\.current\)/);
+    // Night pass 2 (2026-10-01): the armed replay id carries across a drag.
+    assert.match(hook, /autoReplayAllowed\(matched, activeRef\.current \?\? pendingRef\.current \?\? replayIdRef\.current\)/);
   });
 });

@@ -20,13 +20,15 @@ const wipe = read('src/features/account/clearLocalAccountData.ts');
 const body = (src: string, start: string, end: string) => src.slice(src.indexOf(start), src.indexOf(end, src.indexOf(start)));
 
 test('every auth WRITE is bounded and a stall reads as the offline error', () => {
-  for (const call of [
-    'supabase.auth.signUp(',
-    'supabase.auth.signInWithPassword(',
-    'supabase.auth.resetPasswordForEmail(',
-    'supabase.auth.verifyOtp(',
-    'supabase.auth.updateUser(',
-  ]) {
+  // Night pass 2: the calls that ESTABLISH a session go through boundedSignIn
+  // (the same deadline, plus signing a late success back out).
+  for (const call of ['supabase.auth.signUp(', 'supabase.auth.signInWithPassword(', 'supabase.auth.verifyOtp(']) {
+    for (let i = api.indexOf(call); i !== -1; i = api.indexOf(call, i + 1)) {
+      assert.match(api.slice(Math.max(0, i - 80), i), /boundedSignIn\(\s*\(\) =>\s*$/, `${call} at ${i} is not inside boundedSignIn`);
+    }
+  }
+  assert.match(api, /return await withDeadline\(\(\) => call, label, AUTH_CALL_MS\);/);
+  for (const call of ['supabase.auth.resetPasswordForEmail(', 'supabase.auth.updateUser(']) {
     for (let i = api.indexOf(call); i !== -1; i = api.indexOf(call, i + 1)) {
       const before = api.slice(Math.max(0, i - 80), i);
       assert.match(before, /withDeadline\(\s*\(\) =>\s*$/, `${call} at ${i} is not inside withDeadline`);

@@ -206,7 +206,13 @@ export function CalcWorkflowRunScreen() {
     return ok;
   }, [limits.canResume]);
   useEffect(() => {
-    const unsub = navigation.addListener('beforeRemove', () => {
+    const unsub = navigation.addListener('beforeRemove', (e) => {
+      // Not on a root RESET (night bug pass 2, 2026-10-01): that is a sign-out
+      // or a single-device kick, which wipes this device's `ape:*` data around
+      // the reset (SingleDeviceGuard wipes first, then resets) — so saving here
+      // could write the previous account's draft back into the next session's
+      // storage after the wipe. Every other exit still saves.
+      if (e.data.action.type === 'RESET') return;
       void persist();
     });
     return unsub;
@@ -463,6 +469,13 @@ export function CalcWorkflowRunScreen() {
 
   const saveResult = async () => {
     if (!summary) return;
+    // Not before the tier is known (night bug pass 2, 2026-10-01): `limits` is
+    // the unlimited academy row until the entitlement read lands, so a guest
+    // (0 results) or a free account at its 10 could save past the limit.
+    if (!resolved) {
+      notify('One moment', 'Still checking your account. Tap SAVE RESULT again in a moment.');
+      return;
+    }
     if (limits.savedResults === 0) {
       notify('Sign in to save results', 'Saving workflow results needs an account. You can still share this result now.');
       return;

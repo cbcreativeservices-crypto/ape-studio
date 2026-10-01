@@ -167,6 +167,21 @@ export function FinalExamScreen({ navigation, route }: Props) {
   const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => () => { if (advanceTimer.current) clearTimeout(advanceTimer.current); }, []);
 
+  /**
+   * ONE EXIT PER SCREEN for the plain back buttons (night bug pass 2,
+   * 2026-10-01) — NOT YET on the briefing, Back on the error states, GO BACK on
+   * the slow-start hold. FinalExam is a ROOT-stack route, so a double tap's
+   * second goBack() was not a no-op: it popped the screen now on top — the
+   * AwardProgress the learner came from. Same latch as FinalExamResult. A ref,
+   * because both taps can land before any re-render.
+   */
+  const leavingRef = useRef(false);
+  const leave = useCallback(() => {
+    if (leavingRef.current) return;
+    leavingRef.current = true;
+    navigation.goBack();
+  }, [navigation]);
+
   /* ---- attempt start (online-only; idempotent resume) ---- */
   useEffect(() => {
     // No attempt, no clock, until the briefing has been read and accepted.
@@ -619,7 +634,7 @@ export function FinalExamScreen({ navigation, route }: Props) {
       <ExamBriefing
         awardName={awardName}
         onBegin={() => setBegun(true)}
-        onBack={() => navigation.goBack()}
+        onBack={leave}
       />
     );
   }
@@ -659,7 +674,7 @@ export function FinalExamScreen({ navigation, route }: Props) {
               onPress={() => (navigation as any).navigate('Paywall')}
             />
           )}
-          <StudioButton label="Back" variant="secondary" small onPress={() => navigation.goBack()} />
+          <StudioButton label="Back" variant="secondary" small onPress={leave} />
         </View>
       </View>
     );
@@ -671,7 +686,7 @@ export function FinalExamScreen({ navigation, route }: Props) {
           This Final Exam has no questions available right now. Please try again later.
         </Text>
         <View style={{ width: 200 }}>
-          <StudioButton label="Back" variant="secondary" small onPress={() => navigation.goBack()} />
+          <StudioButton label="Back" variant="secondary" small onPress={leave} />
         </View>
       </View>
     );
@@ -701,7 +716,7 @@ export function FinalExamScreen({ navigation, route }: Props) {
      * `accessibilityLiveRegion` does nothing and a screen-reader user would
      * not know a button had appeared.
      */
-    return <ExamHold submitting={submitting} onBack={() => navigation.goBack()} />;
+    return <ExamHold submitting={submitting} onBack={leave} />;
   }
 
   const isMatching = question.question_type === 'matching';

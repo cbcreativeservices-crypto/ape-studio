@@ -98,6 +98,14 @@ export function formatOutput(o: Extract<OutputVal, { value: number }>, sig: numb
   const units = unitsFor(o.quantity);
   const startIdx = o.unit ? Math.max(0, units.findIndex((u) => u.id === o.unit)) : 0;
   const u = units[(startIdx + unitOffset) % units.length];
+  // A whole-number COUNT is exact, never rounded to sig figs (night bug pass 2,
+  // 2026-10-01): at the default 4 figures a 65536-point MINIMUM FFT SIZE read
+  // "65540 samples" and 00:59:56 at 30 fps read "107900" TOTAL FRAMES instead
+  // of 107880 — a count that does not exist. Counts ride the one-unit
+  // 'samples' / 'number' kinds; above 1e7 fmt's exponent form still applies.
+  if ((o.quantity === 'samples' || o.quantity === 'number') && Number.isInteger(o.value) && Math.abs(o.value) < 1e7) {
+    return `${o.value === 0 ? 0 : o.value}${u.label ? ' ' + u.label : ''}`;
+  }
   return `${fmt(u.fromBase(o.value), sig)}${u.label ? ' ' + u.label : ''}`;
 }
 

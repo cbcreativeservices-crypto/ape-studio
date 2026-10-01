@@ -143,7 +143,9 @@ describe('StageFullScreen wires the rules in', () => {
   test('sizes from the pure maths', () => {
     assert.match(src, /baseSize\(\{ fitW, fitH, shape: effShape \}\)/);
     assert.match(src, /const steps = zoomSteps\(fit\)/);
-    assert.match(src, /const zoom = factorOf\(steps, stepKey\)/);
+    // shownKey (night pass 2): a FIT key a rotation removed falls back to 1×.
+    assert.match(src, /const shownKey = steps\.some\(\(s\) => s\.key === stepKey\) \? stepKey : '1';/);
+    assert.match(src, /const zoom = factorOf\(steps, shownKey\)/);
   });
 
   test('every opening is still 1×', () => {

@@ -109,13 +109,17 @@ function isPristineSeed(l: EnrollTopic[]): boolean {
  * seed. Anyone who has actually edited their enrollments on this phone is
  * holding the phone, and their intent wins.
  */
-async function reconcileFromServer(): Promise<boolean> {
+async function reconcileFromServer(gen: number): Promise<boolean> {
   if (reconciled) return false;
   try {
     const { data, error } = await supabase
       .from('user_topic_enrollments')
       .select('gs, favorite, active, position')
       .order('position', { ascending: true });
+    // Wiped while reading (night bug pass 2, 2026-10-01): these are the
+    // DEPARTING account's rows, and the reset's empty `list` reads as a
+    // pristine seed — adopting them would hand them to the next account.
+    if (gen !== generation) return false;
     if (error) {
       console.warn('[enrollment] could not read the server list:', error.message);
       return false;
@@ -152,16 +156,25 @@ async function reconcileFromServer(): Promise<boolean> {
     return false;
   } finally {
     // Latched only AFTER the attempt, so a throw on the way in does not disable
-    // the pull for the rest of the run.
-    reconciled = true;
+    // the pull for the rest of the run — and never for the NEXT identity, which
+    // resetLocal has just re-opened.
+    if (gen === generation) reconciled = true;
   }
 }
 function scheduleServerSync(delayMs = 800) {
   if (syncTimer) clearTimeout(syncTimer);
   syncTimer = setTimeout(() => {
+    // THE CALLBACK ALREADY RUNNING IS FENCED TOO (night bug pass 2,
+    // 2026-10-01). resetLocal cancels an ARMED timer, but a callback already
+    // past it kept going across the wipe: its push carried the reset's empty
+    // `list` under whatever session was current by then, and its failure
+    // branch re-armed the retry AFTER the reset — the 2026-08-28 hole (an
+    // empty list pushed over the next account's master list) by a side door.
+    const gen = generation;
     void (async () => {
       try {
         const { data } = await safeSession(supabase.auth.getSession(), 'enrollmentStore');
+        if (gen !== generation) return;
         // Guests (incl. an anonymous device key) keep enrollment device-local:
         // syncing would write a master list for a uid deleted within the week.
         if (!isRealAccount(data.session)) return;
@@ -201,9 +214,10 @@ function scheduleServerSync(delayMs = 800) {
         // the same hazard the exam-queue fix in this same batch argues against.
         // Four seconds, then go.
         await Promise.race([
-          reconcileFromServer(),
+          reconcileFromServer(gen),
           new Promise((r) => setTimeout(r, 4000)),
         ]);
+        if (gen !== generation) return;
         // supabase-js RESOLVES with { error } — the old dead catch never saw RPC
         // errors, so a failed FINAL sync left the server master list stale with
         // no retry until the user next edited enrollment (backend gates v3
@@ -211,6 +225,7 @@ function scheduleServerSync(delayMs = 800) {
         const { error } = await supabase.rpc('sync_my_enrollments', {
           p_items: list.map((e, i) => ({ gs: e.gs, favorite: e.favorite, active: e.active, position: i })),
         });
+        if (gen !== generation) return; // wiped meanwhile — never re-arm for the next account
         if (error) {
           if (syncRetries < MAX_SYNC_RETRIES) {
             syncRetries++;
@@ -223,6 +238,7 @@ function scheduleServerSync(delayMs = 800) {
         }
         syncRetries = 0; // success
       } catch (e) {
+        if (gen !== generation) return; // see the fence above
         // Transport throw (network) — same bounded backoff.
         if (syncRetries < MAX_SYNC_RETRIES) {
           syncRetries++;

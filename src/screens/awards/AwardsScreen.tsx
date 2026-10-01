@@ -799,7 +799,10 @@ export function AwardsScreen({ navigation, route }: Props) {
     (c: CredentialDetail) => {
       setDetail(null);
       setPicker(null);
-      const first = c.topics[0];
+      // The first STUDYABLE topic (night pass 2 2026-10-01): a core / the lab
+      // requirement (gs3081, no study deck) as topics[0] would leave the
+      // focus armed and never landing. Hardening — no live credential does it.
+      const first = c.topics.find((gs) => !COREQ_TOPIC_GS.includes(gs));
       /* popTo, not navigate — same rule the rest of this screen follows. RN7
          pushes a SECOND tab shell on a navigate to a non-focused route, so
          Back returns to a duplicate Awards pager instead of leaving. */

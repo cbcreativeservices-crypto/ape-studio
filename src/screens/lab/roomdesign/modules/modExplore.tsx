@@ -230,7 +230,7 @@ function modeBlurb(kind: 'axial' | 'tangential' | 'oblique'): string {
 }
 
 function SaveTray({ ctx }: { ctx: RoomLabCtx }) {
-  const { design, update, guest, saveCurrent } = ctx;
+  const { design, update, guest, resolved, saveCurrent } = ctx;
   const [saved, setSaved] = useState<string | null>(null);
   return (
     <View style={{ gap: 10 }}>
@@ -246,7 +246,13 @@ function SaveTray({ ctx }: { ctx: RoomLabCtx }) {
         label={guest ? 'SAVE (NOT KEPT — NOT SIGNED IN)' : 'SAVE DESIGN TO THIS DEVICE'}
         tint={guest ? 'dim' : 'green'}
         onPress={() => {
-          void saveCurrent().then((ok) => setSaved(ok ? 'Saved on this device.' : 'Kept for this session only — you are not signed in, so designs are not saved.'));
+          // Before the tier is known the store is save-blocked for everyone, so
+          // a signed-in member read "you are not signed in" (night pass 2,
+          // 2026-10-01). Neutral until `resolved`.
+          const known = resolved;
+          void saveCurrent().then((ok) =>
+            setSaved(ok ? 'Saved on this device.' : known ? 'Kept for this session only — you are not signed in, so designs are not saved.' : 'Not saved yet — still checking your account. Tap SAVE again in a moment.'),
+          );
         }}
       />
       {saved ? <Caption>{saved}</Caption> : null}

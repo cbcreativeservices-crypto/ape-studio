@@ -15,7 +15,7 @@
  * "NEXT: <step> ›" at the end of every well is LabNextButton (automatic in a
  * RackUnit well, appended to a read step's document here).
  */
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -112,9 +112,16 @@ export function AmpModuleScreen() {
    * it). PRACTISE AGAIN reopens Module 1 and clears nothing.
    */
   const [endState, setEndState] = useState<AmpProgressState | null>(null);
+  // Bumped by every move away from the end screen (night pass 2, 2026-10-01):
+  // FINISH then a quick strip tap left the queued read to land afterwards and
+  // throw the end screen back over the module just chosen.
+  const endReq = useRef(0);
   const showEnd = useCallback(() => {
+    const my = ++endReq.current;
     // A no-op mutate: reads the progress queued behind every earlier write.
-    void updateAmpProgress(() => {}).then(setEndState);
+    void updateAmpProgress(() => {}).then((s) => {
+      if (my === endReq.current) setEndState(s);
+    });
   }, []);
   const built = useMemo(() => AMP_MODULES.filter((x) => BUILT_MODULE_IDS.includes(x.id)), []);
   const idx = Math.max(0, built.findIndex((x) => x.id === mod.id));
@@ -154,6 +161,7 @@ export function AmpModuleScreen() {
   // the new module mounts fresh at its first step with its own tap lock.
   const go = useCallback(
     (i: number) => {
+      endReq.current++;
       setEndState(null);
       const target = built[Math.max(0, Math.min(built.length - 1, i))];
       if (!target) return;
@@ -165,7 +173,10 @@ export function AmpModuleScreen() {
     },
     [built, mod.id, navigation],
   );
-  const unEnd = useCallback(() => setEndState(null), []);
+  const unEnd = useCallback(() => {
+    endReq.current++;
+    setEndState(null);
+  }, []);
   // NEXT past the last step / FINISH: bank the module first when its checks
   // are all in — the way forward never costs credit. With checks still open
   // it simply moves on (the old skip-ahead link; labs never block navigation).

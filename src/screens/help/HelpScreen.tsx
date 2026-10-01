@@ -64,6 +64,9 @@ export function HelpScreen() {
     wasEmptyRef.current = noResults;
   }, [noResults]);
 
+  /** A hints reset is running — see the RESET row. */
+  const resetting = useRef(false);
+
   const toggle = (id: string) => {
     if (animationsAllowed()) LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setOpen((cur) => (cur === id ? null : id));
@@ -200,15 +203,23 @@ export function HelpScreen() {
           <View style={styles.panel}>
             <Pressable
               style={styles.row}
-              onPress={() =>
-                Promise.all([resetCoachMarks(), resetScreenIntros(), resetAmplitudeOrientation(), resetOnboarding()]).then(
-                  () => notify('Hints reset', 'Onboarding hints and the welcome greeting will show again on next open.'),
-                  // Three of these rethrow a storage failure, and there was no
-                  // handler: an unhandled rejection and a tap that did nothing
-                  // (bug hunt 2026-09-30).
-                  () => notify('Couldn’t reset hints', 'Something went wrong on this device. Try again.'),
-                )
-              }
+              onPress={() => {
+                // One reset at a time (night pass 2, 2026-10-01): a double tap
+                // ran it twice and stacked two "Hints reset" popups.
+                if (resetting.current) return;
+                resetting.current = true;
+                Promise.all([resetCoachMarks(), resetScreenIntros(), resetAmplitudeOrientation(), resetOnboarding()])
+                  .then(
+                    () => notify('Hints reset', 'Onboarding hints and the welcome greeting will show again on next open.'),
+                    // Three of these rethrow a storage failure, and there was no
+                    // handler: an unhandled rejection and a tap that did nothing
+                    // (bug hunt 2026-09-30).
+                    () => notify('Couldn’t reset hints', 'Something went wrong on this device. Try again.'),
+                  )
+                  .finally(() => {
+                    resetting.current = false;
+                  });
+              }}
               accessibilityRole="button"
             >
               <Text style={styles.rowLabel}>Replay onboarding hints</Text>

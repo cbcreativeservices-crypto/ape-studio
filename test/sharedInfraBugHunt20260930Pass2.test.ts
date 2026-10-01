@@ -132,6 +132,7 @@ describe('Q7 — no duplicate screens from reminders and pushes', () => {
 test('LabEndScreen DONE ignores a repeat tap within 700 ms (no double goBack)', async () => {
   const { readFileSync } = await import('node:fs');
   const s = readFileSync('src/screens/lab/kit/LabEndScreen.tsx', 'utf8');
-  assert.match(s, /if \(now - doneAt\.current < 700\) return;/);
+  // Night pass 2 (2026-10-01): the window is now shared with the header ‹.
+  assert.match(s, /if \(!claimLabLeave\(\)\) return;\s*onDone\(\);/);
   assert.match(s, /onPress=\{done\}/);
 });

@@ -27,7 +27,7 @@
  * MODELLED ON amp/AmpModuleScreen.tsx (steps + racks), without the per-module
  * route: a module change is a state change on this one screen.
  */
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -66,8 +66,12 @@ export function MasteringLabScreen() {
   }, []);
 
   // HOUSE GUEST RULE: neither restore nor save for a guest / a preview.
-  setMasteringSaveBlocked(useLabEndGuest());
+  // Blocked until the tier is `resolved` too (the Room Design rule): before
+  // then a guest reads as a member, so a tap in that window SAVED a guest's
+  // answers and resume point (night pass 2, 2026-10-01).
+  const guest = useLabEndGuest();
   const { resolved } = useEntitlement();
+  setMasteringSaveBlocked(guest || !resolved);
 
   const [modId, setModId] = useState<MasteringModuleId>('what');
   const [step, setStepRaw] = useState(0);
@@ -82,6 +86,12 @@ export function MasteringLabScreen() {
   const mod = masteringModuleById(modId);
   const idx = MASTERING_MODULES.findIndex((m) => m.id === modId);
   const Component = MASTERING_MODULE_COMPONENTS[mod.id];
+  const modIdRef = useRef(modId);
+  modIdRef.current = modId;
+  const loadedRef = useRef(loaded);
+  loadedRef.current = loaded;
+  /** A move (module or step) made before the first load landed. */
+  const movedRef = useRef(false);
 
   // ⛔ WAIT FOR `resolved` before the first read (the kit/PagedLab fix): the
   // save-block flag reads false until the tier is known.
@@ -91,7 +101,13 @@ export function MasteringLabScreen() {
     void updateMasteringProgress(() => {}).then((s) => {
       if (!alive) return;
       setDoneIds(new Set(MASTERING_MODULES.filter((x) => s.modules[x.id]?.done).map((x) => x.id)));
-      if (s.lastModule && MASTERING_MODULES.some((m) => m.id === s.lastModule)) {
+      if (movedRef.current) {
+        // The learner moved before the tier resolved (CONTENTS, PREV/NEXT):
+        // stay where they are — the resume point used to yank them back
+        // (night pass 2, 2026-10-01) — and restore that module's answers.
+        const here = s.modules[modIdRef.current]?.answers ?? {};
+        setAnswers((prev) => ({ ...prev, ...here }));
+      } else if (s.lastModule && MASTERING_MODULES.some((m) => m.id === s.lastModule)) {
         setModId(s.lastModule);
         setAnswers(s.modules[s.lastModule]?.answers ?? {});
         setStepRaw(s.lastStep ?? 0);
@@ -108,6 +124,7 @@ export function MasteringLabScreen() {
 
   // Module answers follow the module; the resume point is written on move.
   const openModule = useCallback((id: MasteringModuleId, atStep = 0) => {
+    if (!loadedRef.current) movedRef.current = true;
     setEndState(null);
     setModId(id);
     setStepRaw(atStep);
@@ -170,6 +187,7 @@ export function MasteringLabScreen() {
 
   const setStep = useCallback(
     (i: number) => {
+      if (!loadedRef.current) movedRef.current = true;
       setStepRaw(i);
       void updateMasteringProgress((s) => {
         s.lastStep = i;
@@ -221,7 +239,10 @@ export function MasteringLabScreen() {
 
   const doReset = () =>
     void resetMasteringPractice().then((s) => {
-      setDoneIds(new Set(MASTERING_MODULES.filter((x) => s.modules[x.id]?.done).map((x) => x.id)));
+      // Credit only grows: a guest's store reads back empty, so replacing the
+      // set wiped this session's banked modules on a practice reset (night
+      // pass 2, 2026-10-01).
+      setDoneIds((prev) => new Set([...prev, ...MASTERING_MODULES.filter((x) => s.modules[x.id]?.done).map((x) => x.id)]));
       openModule('what', 0);
     });
   const confirmReset = () => {
@@ -274,7 +295,11 @@ export function MasteringLabScreen() {
 
   let end: ReactNode = null;
   if (endState) {
-    const cleared = new Set<string>(MASTERING_MODULES.filter((x) => endState.modules[x.id]?.done).map((x) => x.id));
+    // This session's banked modules count too: a guest's store reads back
+    // empty (nothing is saved for a guest), so the end screen listed every
+    // module still to do after they had worked through all eight (night
+    // pass 2, 2026-10-01).
+    const cleared = new Set<string>([...doneIds, ...MASTERING_MODULES.filter((x) => endState.modules[x.id]?.done).map((x) => x.id)]);
     end = (
       <LabEndScreen
         labTitle={`${MASTERING_LAB_TITLE}: ${SUBTITLE}`}

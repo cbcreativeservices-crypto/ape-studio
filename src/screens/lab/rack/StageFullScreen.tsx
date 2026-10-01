@@ -174,7 +174,11 @@ export function StageFullScreen({
   const { w: baseW, h: baseH } = baseSize({ fitW, fitH, shape: effShape });
   const fit = fitFactor({ baseW, baseH, fitW, fitH });
   const steps = zoomSteps(fit);
-  const zoom = factorOf(steps, stepKey);
+  // A rotation can take the FIT step away while it is selected (night pass 2,
+  // 2026-10-01): the drawing fell back to 1× but no key read selected. The
+  // key that is actually showing is the one lit.
+  const shownKey = steps.some((s) => s.key === stepKey) ? stepKey : '1';
+  const zoom = factorOf(steps, shownKey);
   const w = Math.round(baseW * zoom);
   const h = Math.round(baseH * zoom);
   const rotate = wantsRotate({ landscape, baseH, fitH, fit });
@@ -251,7 +255,7 @@ export function StageFullScreen({
           </Text>
           <View style={[styles.zooms, fold.readoutsInBar && readouts ? styles.zoomsTight : null]} accessibilityRole="radiogroup" accessibilityLabel="Zoom">
             {steps.map((s) => {
-              const on = s.key === stepKey;
+              const on = s.key === shownKey;
               return (
                 <Pressable
                   key={s.key}
@@ -287,7 +291,7 @@ export function StageFullScreen({
             // Two scrollers = drag in both directions once zoomed in. At 1×
             // the drawing fits and neither scrolls.
             <ScrollView
-              key={`v${stepKey}`}
+              key={`v${shownKey}`}
               ref={vScroll}
               onContentSizeChange={(_cw, ch) => anchorScroll('y', ch)}
               // The outer (vertical) content must NOT centre its child

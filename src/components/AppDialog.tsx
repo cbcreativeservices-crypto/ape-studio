@@ -127,6 +127,30 @@ export function clearAppDialogs(): void {
   }
 }
 
+/**
+ * A HAND-OFF HOLDS THE QUEUE (night pass 2, 2026-10-01). A handler wrapped in
+ * `afterDialogCloses` (lib/confirm.ts — "See plans" → Paywall) navigates to a
+ * `presentation: 'modal'` screen HOST_DISMISS_MS later. Draining the queue at
+ * once put the next dialog's Modal up first, so iOS refused to present the
+ * Paywall over it (the dead tap again) — or, on Android, the Paywall opened
+ * behind the card. Held, the next dialog waits for the hand-off to land and
+ * then shows on the screen that is focused by then.
+ */
+let drainHeldUntil = 0;
+export function holdAppDialogQueue(ms: number): void {
+  drainHeldUntil = Math.max(drainHeldUntil, Date.now() + ms);
+}
+function drainQueue(): void {
+  if (current) return; // a newer dialog is up; its own resolve drains
+  const wait = drainHeldUntil - Date.now();
+  if (wait > 0) {
+    setTimeout(drainQueue, wait);
+    return;
+  }
+  const next = queue.shift();
+  if (next) showAppDialog(next);
+}
+
 /** Close the open dialog, run ONE of its handlers, then drain the queue. */
 function resolve(which: 'confirm' | 'cancel'): void {
   // Too soon after this dialog appeared — the tail of a double-tap meant for
@@ -142,10 +166,7 @@ function resolve(which: 'confirm' | 'cancel'): void {
   // unconditionally sent the next request back through showAppDialog, which
   // saw the handler's dialog in `current` and pushed it onto the BACK of the
   // queue — so [A, B] came out as handler → B → A (owner 2026-09-20 bug pass).
-  if (!current) {
-    const next = queue.shift();
-    if (next) showAppDialog(next);
-  }
+  if (!current) drainQueue();
 }
 
 const subscribe = (cb: () => void) => {

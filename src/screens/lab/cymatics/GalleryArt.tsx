@@ -99,6 +99,11 @@ export function GalleryArt({
       void patternStore()
         .saveArtwork(art)
         .then((ok) => {
+          // An edit made while this save was writing is still unsaved: an
+          // older save landing must not clear `dirty` (the unmount flush
+          // then skipped it — the edit was lost on leaving) or read SAVED
+          // (night pass 2, 2026-10-01).
+          if (latest.current !== art) return;
           setSaveState(ok ? 'saved' : 'failed');
           dirty.current = !ok;
         });

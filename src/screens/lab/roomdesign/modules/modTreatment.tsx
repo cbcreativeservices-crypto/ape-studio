@@ -64,6 +64,16 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
   };
 
   const setItems = (fn: (ts: Treatment[]) => Treatment[]) => update((d) => ({ ...d, treatment: fn(d.treatment) }));
+  /** Select + ring what an ADD put in. When the add was dropped as a duplicate
+   *  (sameSpot), select the twin already there: the dropped id matched nothing,
+   *  so the selection fell back to the FIRST item and THICK / SIZE then shaped
+   *  a different panel than the one just tapped in (night pass 2, 2026-10-01). */
+  const selectAdded = (t: Treatment) => {
+    const twin = design.treatment.find((x) => sameSpot(x, t));
+    const id = twin ? twin.id : t.id;
+    setSelId(id);
+    flashItem(id);
+  };
   const patchSel = (patch: Partial<Treatment>) => {
     if (!sel) return;
     setItems((ts) => ts.map((t) => (t.id === sel.id ? { ...t, ...patch } : t)));
@@ -122,8 +132,7 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
     // stack two identical panels on the same reflection point (bug pass
     // 2026-10-01).
     setItems((ts) => (ts.some((x) => sameSpot(x, t)) ? ts : [...ts, t]));
-    setSelId(t.id);
-    flashItem(t.id);
+    selectAdded(t);
   };
   const addTraps = () => {
     const have = new Set(design.treatment.filter((t) => t.kind === 'basstrap').map((t) => t.wall));
@@ -164,8 +173,7 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
     // A double tap made two items in the same place (bug pass 2026-10-01);
     // a second one goes in once the first has been dragged away.
     setItems((ts) => (ts.some((x) => sameSpot(x, t)) ? ts : [...ts, t]));
-    setSelId(t.id);
-    flashItem(t.id);
+    selectAdded(t);
   };
 
   const bezel: BezelItem[] = [

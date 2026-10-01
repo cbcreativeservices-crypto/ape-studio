@@ -62,8 +62,8 @@ test('a restore linked to another account says so, not "check your connection"',
 });
 
 test('the sign-in form stays busy while a takeover cancel / recovery cancel sign-out is in flight', () => {
-  const cancel = auth.slice(auth.indexOf('onCancel: () => {'), auth.indexOf('onCancel: () => {') + 900);
-  assert.match(cancel, /\.catch\(\(\) => \{\}\)\.finally\(end\);[\s\S]*?hold\(\);/);
+  const cancel = auth.slice(auth.indexOf('onCancel: () => {'), auth.indexOf('onCancel: () => {') + 1400);
+  assert.match(cancel, /signOutThisDevice\(\)\.finally\(end\);[\s\S]*?hold\(\);/);
   assert.match(auth, /hold\(\);\s*\/\/[^\n]*\n[^\n]*\n\s*void claimThisDevice\(\)\.then\(proceed, proceed\)\.finally\(end\);/);
   const rec = auth.slice(auth.indexOf('const cancelRecovery = () => {'), auth.indexOf("setMode('main');\n    setError(null);"));
   assert.match(rec, /\.finally\(end\);[\s\S]*?hold\(\);/);

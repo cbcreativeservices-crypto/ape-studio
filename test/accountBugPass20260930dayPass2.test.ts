@@ -27,7 +27,8 @@ test('GET MEMBERSHIP from a HOSTED gate waits for the host Modal to close', () =
 });
 
 test('deliberate sign-outs are LOCAL — Log out, Guest Mode, ensureSession, recovery cancel', () => {
-  assert.match(settings, /\.signOut\(\{ scope: 'local' \}\)\s*\.catch\(\(e: unknown\) => \(\{ error: e as Error \}\)\)/);
+  // Night pass 2: bounded, and a stall still reads as the error it is.
+  assert.match(settings, /withDeadline\(\(\) => supabase\.auth\.signOut\(\{ scope: 'local' \}\), 'signOut', \d+\)\.catch\(\s*\(e: unknown\) => \(\{ error: e as Error \}\)/);
   assert.doesNotMatch(settings, /\.signOut\(\)/);
   assert.doesNotMatch(auth, /\.signOut\(\)/);
   const ensure = api.slice(api.indexOf('export async function ensureSession'), api.indexOf('supabase.auth.signUp('));
@@ -42,7 +43,7 @@ test('Guest Mode refuses to go in while an ACCOUNT session survived a failed sig
 
 test('cancelling recovery after a verified code signs that recovery session out', () => {
   const cancel = auth.slice(auth.indexOf('const cancelRecovery = () => {'), auth.indexOf('setMode(\'main\');\n    setError(null);'));
-  assert.match(cancel, /if \(verifiedFor\.current !== null\) \{\s*markIntentionalSignOut\(\);\s*void supabase\.auth\.signOut\(\{ scope: 'local' \}\)/);
+  assert.match(cancel, /if \(verifiedFor\.current !== null\) \{\s*markIntentionalSignOut\(\);\s*(\/\/[^\n]*\n\s*)*void signOutThisDevice\(\)/);
 });
 
 test('Settings NOTIFICATIONS never upsells a member whose tier is not known yet', () => {

@@ -101,6 +101,19 @@ export function QuizScreen({ navigation, route }: Props) {
   const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => () => { if (advanceTimer.current) clearTimeout(advanceTimer.current); }, []);
 
+  /**
+   * ONE EXIT for the plain Back buttons on the start-error and no-questions
+   * states (night bug pass 2, 2026-10-01). A double tap ran goBack() twice:
+   * the second, from a route already popped, went to the tab navigator and
+   * switched tabs, so the learner landed on Home instead of the Dashboard.
+   */
+  const leavingRef = useRef(false);
+  const leave = useCallback(() => {
+    if (leavingRef.current) return;
+    leavingRef.current = true;
+    navigation.goBack();
+  }, [navigation]);
+
   /* ---- attempt start (online-only; idempotent resume) ---- */
   useEffect(() => {
     let alive = true;
@@ -553,7 +566,7 @@ export function QuizScreen({ navigation, route }: Props) {
               }}
             />
           )}
-          <StudioButton label="Back" variant="secondary" small onPress={() => navigation.goBack()} />
+          <StudioButton label="Back" variant="secondary" small onPress={leave} />
         </View>
       </View>
     );
@@ -568,7 +581,7 @@ export function QuizScreen({ navigation, route }: Props) {
           This quiz has no questions available right now. Please try again later.
         </Text>
         <View style={{ width: 200 }}>
-          <StudioButton label="Back" variant="secondary" small onPress={() => navigation.goBack()} />
+          <StudioButton label="Back" variant="secondary" small onPress={leave} />
         </View>
       </View>
     );

@@ -32,7 +32,7 @@
  * lives on a light "scribble strip" at the BOTTOM of the strip, where real
  * consoles put the tape.
  */
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import {
   AccessibilityInfo,
   PanResponder,
@@ -46,6 +46,31 @@ import Svg, { Circle, Line } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
 import { usePulseStyle } from '../../../features/lab/attentionPulse';
 import { useScrollLock } from '../scrollLock';
+
+/**
+ * The nearest page scroll-lock, RELEASED ON UNMOUNT if this control still
+ * holds it (night pass 2, 2026-10-01). A fader or pot unmounted mid-drag — a
+ * second finger on NEXT / PREV, or ✕ on the full-screen view whose dock
+ * carried it — never got its release, so the page it left behind stayed
+ * frozen: no scrolling until some other drag happened to unlock it.
+ */
+function useOwnedScrollLock(): { current: (locked: boolean) => void } {
+  const ctxLock = useScrollLock();
+  const ctxRef = useRef(ctxLock);
+  ctxRef.current = ctxLock;
+  const held = useRef(false);
+  const lockRef = useRef((locked: boolean) => {
+    held.current = locked;
+    ctxRef.current?.(locked);
+  });
+  useEffect(
+    () => () => {
+      if (held.current) ctxRef.current?.(false);
+    },
+    [],
+  );
+  return lockRef;
+}
 
 /* ── shared hardware palette (quiet, engraved, amber-accented) ───────────── */
 
@@ -139,9 +164,7 @@ export function GearFader({
   // scroll screen instead of move"). The capture-claim and the termination
   // handoff are JS-side arguments; on glass the native scroll view does not
   // argue, it takes — unless it is disabled first.
-  const ctxLock = useScrollLock();
-  const lockRef = useRef(ctxLock);
-  lockRef.current = ctxLock;
+  const lockRef = useOwnedScrollLock();
 
   const responder = useMemo(
     () =>
@@ -340,9 +363,7 @@ export function GearKnob({
   const bandW = useRef(KNOB_SVG); // measured band width, for the tap L/R split
   // Same page-scroll freeze as the fader — a pot turn is a vertical drag, and
   // the page scroller stole it on device exactly the same way.
-  const ctxLock = useScrollLock();
-  const lockRef = useRef(ctxLock);
-  lockRef.current = ctxLock;
+  const lockRef = useOwnedScrollLock();
   const activeRef = useRef(onGestureActive);
   activeRef.current = onGestureActive;
 

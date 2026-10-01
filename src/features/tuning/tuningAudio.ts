@@ -103,7 +103,12 @@ export class TuningPlayer {
     if (inflight) return inflight;
     const job = (async (): Promise<EarClipPlayer | null> => {
       const p = new EarClipPlayer();
-      await p.load([buf]);
+      try {
+        await p.load([buf]);
+      } catch (e) {
+        p.dispose(); // never pooled — nothing else would release it
+        throw e;
+      }
       if (this.disposed) {
         p.dispose();
         return null;
@@ -112,7 +117,10 @@ export class TuningPlayer {
       return p;
     })();
     this.loadingClips.set(key, job);
-    void job.finally(() => this.loadingClips.delete(key));
+    // .finally() hands back a NEW promise carrying the job's rejection; left
+    // bare, a failed load was an unhandled rejection even though play() and
+    // preload() both handle the job itself (night pass 2, 2026-10-01).
+    job.finally(() => this.loadingClips.delete(key)).catch(() => {});
     return job;
   }
 
@@ -131,8 +139,11 @@ export class TuningPlayer {
     let voice: EarClipPlayer | null = this.ear;
     if (key) {
       this.wantKey = key;
-      voice = await this.loadClip(key, buf);
-      if (this.wantKey === key) this.wantKey = null;
+      try {
+        voice = await this.loadClip(key, buf);
+      } finally {
+        if (this.wantKey === key) this.wantKey = null; // unpinned on a failed load too
+      }
     } else await this.ear.load([buf]);
     if (my !== this.token || !voice) return;
     // ⛔ SAFETY (bug hunt 2026-09-29): the gate answered before the WAV

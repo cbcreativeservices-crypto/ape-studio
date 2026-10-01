@@ -83,6 +83,7 @@ export function RoomDesignLabScreen() {
       analysis,
       units: design.room.units,
       guest: !resolved ? false : guest,
+      resolved,
       saved,
       saveCurrent: (name?: string) => {
         const d = name ? { ...design, name } : design;

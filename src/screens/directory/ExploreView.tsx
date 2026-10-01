@@ -58,6 +58,8 @@ export function ExploreView({
    *  (overnight hunt 2026-09-23). */
   const [page, setPage] = useState(0);
   const [loadingMore, setLoadingMore] = useState(false);
+  /** The server handed back an empty page — see loadMore. */
+  const [ended, setEnded] = useState(false);
   /**
    * A failed "Show more", kept apart from `err` (bug hunt 2026-09-30, pass 2).
    * It went into `err`, and `err` renders INSTEAD of the list — so the thirty
@@ -96,6 +98,10 @@ export function ExploreView({
     setBusy(true);
     setPage(0);
     setMoreErr(null);
+    // A "Show more" still out for the OLD list must not leave the new one's
+    // button reading "Loading…" and dead until it lands (night pass 2).
+    setLoadingMore(false);
+    setEnded(false);
     // try/finally, not a bare sequence: the spinner must be cleared by the
     // language, not by reaching the next statement. searchDirectory is bounded
     // now and returns its errors rather than throwing, but a future throw
@@ -129,7 +135,7 @@ export function ExploreView({
     try {
       out = await searchDirectory(f, next);
     } finally {
-      setLoadingMore(false);
+      if (id === reqId.current) setLoadingMore(false);
     }
     // The filters changed while this page was out — it belongs to a list
     // that is no longer on screen.
@@ -140,6 +146,12 @@ export function ExploreView({
     }
     setMoreErr(null);
     setPage(next);
+    // An empty page is the end of the list, whatever `total` says (night pass
+    // 2). The de-duplication below means `rows` can fall short of `total` for
+    // good — a member published between pages lands on a page already read —
+    // and `hasMore` alone then kept a "Show more members" button that fetched
+    // an empty page on every tap, forever.
+    if (out.results.length === 0) setEnded(true);
     // De-duplicate by token: a member published between the two requests shifts
     // the window, and React would otherwise throw on the duplicate key.
     setRows((prev) => {
@@ -187,8 +199,10 @@ export function ExploreView({
     () => (hiddenTokens?.length ? rows.filter((r) => !hiddenTokens.includes(r.publicToken)) : rows),
     [rows, hiddenTokens],
   );
-  const visibleTotal = Math.max(0, total - (rows.length - visibleRows.length));
-  const hasMore = rows.length < total;
+  // At the end of the list the count IS what is listed — `total` can sit above
+  // it after a shifted window (see loadMore).
+  const visibleTotal = ended ? visibleRows.length : Math.max(0, total - (rows.length - visibleRows.length));
+  const hasMore = !ended && rows.length < total;
 
   const specialtyPool = useMemo(
     () =>

@@ -63,6 +63,7 @@ import { useOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
 import { AboutHomeSheet } from '../about/AboutHomeSheet';
 import { isFirstAppOpen } from '../../features/startHere/firstOpen';
 import { StudyAreaExplore } from './StudyAreaExplore';
+import { COREQ_TOPIC_GS } from '../awards/awardsData';
 import { AttractRing, AttractText } from '../../features/onboarding/AttractCue';
 import { useHomeAttract, noteHomeSeen, markExploreOpened, markAboutOpened, markEnrolled } from '../../features/onboarding/attractStore';
 
@@ -2001,7 +2002,9 @@ export function CourseSelectionScreen() {
         // Once enrolled: straight into the dashboard with this credential's
         // FIRST topic already loaded, or across to My Enrollments.
         onStudy={(c) => {
-          const first = c.topics[0];
+          // First STUDYABLE topic — never a core / the lab requirement (gs3081),
+          // whose focus would never land (night pass 2 2026-10-01, hardening).
+          const first = c.topics.find((gs) => !COREQ_TOPIC_GS.includes(gs));
           (navigation as any).navigate('Study', {
             screen: 'Dashboard',
             params: first != null ? { focusGs: first } : undefined,

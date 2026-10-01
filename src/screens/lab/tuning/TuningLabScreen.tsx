@@ -82,6 +82,11 @@ export function TuningLabScreen() {
   const loadedAsGuestRef = useRef(false);
   /** The BASIC/MATH pick made before the stored progress landed. */
   const mathPickedRef = useRef<boolean | null>(null);
+  /** Chapters completed before the stored progress landed (night pass 2,
+   *  2026-10-01): markDone had no base yet and dropped them — a check answered
+   *  while the tier was still resolving never counted, and useMarkWhen does
+   *  not fire twice. Merged into the stored copy when it arrives. */
+  const pendingDoneRef = useRef<number[]>([]);
   const [chapter, setChapter] = useState(0);
   const [rootHz, setRootHz] = useState(C4_ET);
   const [mathView, setMathView] = useState(false);
@@ -116,6 +121,13 @@ export function TuningLabScreen() {
       // BASIC/MATH tapped before the load landed is kept (bug pass
       // 2026-10-01): the stored flag used to yank the toggle straight back.
       if (mathPickedRef.current != null) p = { ...p, mathView: mathPickedRef.current };
+      const early = pendingDoneRef.current.filter((c) => !p.completed.includes(c));
+      pendingDoneRef.current = [];
+      if (early.length) {
+        const completed = [...p.completed, ...early].sort((a, b) => a - b);
+        p = { ...p, completed, done: completed.length >= CHAPTER_COUNT };
+        if (!guestRef.current) void saveTuningProgress(p);
+      }
       progressRef.current = p;
       setProgress(p);
       setMathView(p.mathView);
@@ -150,7 +162,10 @@ export function TuningLabScreen() {
 
   const markDone = useCallback(() => {
     const base = progressRef.current;
-    if (!base) return;
+    if (!base) {
+      if (!pendingDoneRef.current.includes(chapter)) pendingDoneRef.current.push(chapter);
+      return;
+    }
     const completed = base.completed.includes(chapter) ? base.completed : [...base.completed, chapter].sort((a, b) => a - b);
     const done = completed.length >= CHAPTER_COUNT;
     persist({ completed, done });

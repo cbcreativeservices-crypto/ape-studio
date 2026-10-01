@@ -38,6 +38,7 @@ import { sendFeedback } from '../../lib/feedback';
 import { redeemAccessCode } from '../../features/commercial/accessCode';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { supabase } from '../../lib/supabase';
+import { softDeadline, withDeadline } from '../../lib/boundedCall';
 import { consumeIntentionalSignOut, markIntentionalSignOut } from '../../features/auth/intentionalSignOut';
 import { replayQueue } from '../../features/study/sync';
 import { replayQuizSubmissions } from '../../features/quiz/api';
@@ -268,7 +269,18 @@ export function SettingsScreen({ navigation }: Props) {
        * Flushing here needs no schema change and no per-user queue: online,
        * which is the ordinary case, the work simply lands.
        */
-      await Promise.allSettled([replayQueue(), replayQuizSubmissions(), flushScenarioQueue()]);
+      // BOUNDED (night bug pass 2, 2026-10-01): a send that never answered
+      // held logoutPending — Log out did nothing, ever, until a relaunch. After
+      // the limit the dialog goes up anyway, and the count below says honestly
+      // what is still unsent (the sends carry on behind it).
+      await softDeadline(
+        async () => {
+          await Promise.allSettled([replayQueue(), replayQuizSubmissions(), flushScenarioQueue()]);
+        },
+        undefined,
+        'logout/flush',
+        15000,
+      );
       const stranded =
         getQueuedBatches().length + getQueuedSubmissions().length + (await pendingScenarioCount().catch(() => 0));
 
@@ -304,9 +316,13 @@ ${LOCAL_LOSS}`
              * revokes THIS session on the server first, so the offline case
              * above is unchanged.
              */
-            const { error } = await supabase.auth
-              .signOut({ scope: 'local' })
-              .catch((e: unknown) => ({ error: e as Error }));
+            // BOUNDED (night bug pass 2): a stalled sign-out read as nothing
+            // at all — no spinner, no message. It now says it could not log
+            // out; if the stalled call lands later anyway, its SIGNED_OUT is
+            // not marked, and SessionExpiryGuard takes the person to sign-in.
+            const { error } = await withDeadline(() => supabase.auth.signOut({ scope: 'local' }), 'signOut', 15000).catch(
+              (e: unknown) => ({ error: e as Error }),
+            );
             if (error) {
               consumeIntentionalSignOut(); // no SIGNED_OUT is coming for it
               notify(

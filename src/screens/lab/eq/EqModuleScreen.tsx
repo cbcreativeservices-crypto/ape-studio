@@ -16,6 +16,7 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { ScrollLockProvider } from '../LabShell';
 import { markLabVisit, useLabVisits } from '../../../features/lab/labVisits';
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
+import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { GlossaryLinkProvider } from '../../../features/glossary/glossaryLink';
 import { EQ_MODULES, type EqModuleComponentProps, type EqModuleId } from './modules/registry';
@@ -113,10 +114,14 @@ export function EqModuleScreen() {
   // modules were OPENED (labVisits — progress, never credit). Guests: this
   // session only (house guest rule, owner 2026-08-12).
   const guest = useLabEndGuest();
+  const { resolved } = useEntitlement();
   const visited = useLabVisits('eq');
+  // Wait for `resolved` (the Room Design rule): before it a guest reads as a
+  // member, so a guest's first module was SAVED to the device (night pass 2,
+  // 2026-10-01). The effect re-runs when the tier lands.
   useEffect(() => {
-    if (focused) markLabVisit('eq', meta.id, { persist: !guest });
-  }, [focused, meta.id, guest]);
+    if (focused && resolved) markLabVisit('eq', meta.id, { persist: !guest });
+  }, [focused, resolved, meta.id, guest]);
   const nav = useLabNav({
     units: EQ_MODULES.map((m) => ({ id: m.id, title: m.title, done: visited.has(m.id) })),
     index: idx,

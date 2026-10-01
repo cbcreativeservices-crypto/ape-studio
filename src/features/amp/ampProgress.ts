@@ -51,10 +51,23 @@ export function setAmpSaveBlocked(blocked: boolean): void {
   saveBlocked = blocked;
 }
 
+/** States read while storage itself FAILED (night pass 2, 2026-10-01): the
+ *  empty fallback must never be written back. Every update is a load + save,
+ *  and the Amp home now runs one on each focus, so one failed read used to
+ *  overwrite every completed module and the best final with an empty copy. */
+const unreadable = new WeakSet<AmpProgressState>();
+
 export async function loadAmpProgress(): Promise<AmpProgressState> {
   if (saveBlocked) return { modules: {} };
+  let raw: string | null;
   try {
-    const raw = await AsyncStorage.getItem(KEY);
+    raw = await AsyncStorage.getItem(KEY);
+  } catch {
+    const s: AmpProgressState = { modules: {} };
+    unreadable.add(s);
+    return s;
+  }
+  try {
     if (!raw) return { modules: {} };
     const p = JSON.parse(raw) as AmpProgressState;
     return { modules: p.modules ?? {}, lastModule: p.lastModule, final: p.final, bestFinal: p.bestFinal };
@@ -65,6 +78,7 @@ export async function loadAmpProgress(): Promise<AmpProgressState> {
 
 export async function saveAmpProgress(s: AmpProgressState): Promise<void> {
   if (saveBlocked) return;
+  if (unreadable.has(s)) return; // never write an unreadable read's empty copy back
   try {
     await AsyncStorage.setItem(KEY, JSON.stringify(s));
   } catch {

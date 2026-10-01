@@ -143,6 +143,12 @@ export type AttractFlags = {
 };
 
 function computeFlags(now: number): AttractFlags {
+  // Unknown is QUIET (night pass 2, 2026-10-01). Before the stored record has
+  // been read every cue computed from the all-false defaults, so on each cold
+  // launch a returning user's Home lit the Explore ring and breathed About for
+  // the length of the storage read — "start here" pointers at things they had
+  // used for weeks. Nothing is cued until we know.
+  if (!hydrated) return { explore: false, about: false, enrollments: false, enrolledOnce: false, deckNext: false };
   const explore = !state.exploreDone;
   const aboutWindowOpen = state.firstSeenAt == null || now - state.firstSeenAt < ABOUT_WINDOW_MS;
   const about = !state.aboutDone && aboutWindowOpen;

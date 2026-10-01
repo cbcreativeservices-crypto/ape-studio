@@ -28,7 +28,7 @@
  * because the learner pressed FINISH / DONE / the WHAT'S LEFT chip, and it has
  * no timers or entrance animation. Text ≥ 9 pt at 390 wide (smallest is 10).
  */
-import { useRef, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
@@ -37,7 +37,7 @@ import { GlassButton } from '../../../components/GlassButton';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { useLabPreview } from '../../../features/lab/labPreviewStore';
 import { endLead, endTitle, whatsLeft, type LabEndRow, type LabEndUnit } from './labEnd';
-import { LabNextButton } from './LabNavBar';
+import { LabNextButton, claimLabLeave } from './LabNavBar';
 
 export type { LabEndUnit } from './labEnd';
 
@@ -107,11 +107,10 @@ export function LabEndScreen({
   // Tube, Mic Principles, Speaker Coverage, every PagedLab).
   // A time window, not a one-way latch, so a host whose DONE does not leave
   // (it just changes page) still works on the next deliberate tap.
-  const doneAt = useRef(0);
+  // The window is SHARED with the header ‹ (claimLabLeave, night pass 2
+  // 2026-10-01): ‹ + DONE together popped two screens.
   const done = () => {
-    const now = Date.now();
-    if (now - doneAt.current < 700) return;
-    doneAt.current = now;
+    if (!claimLabLeave()) return;
     onDone();
   };
   // A guest banks nothing to an account, so their rows never read CREDITED.

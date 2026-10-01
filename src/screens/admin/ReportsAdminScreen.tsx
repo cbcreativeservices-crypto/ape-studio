@@ -78,6 +78,15 @@ export function ReportsAdminScreen() {
   useEffect(() => {
     void load();
   }, [load]);
+  /**
+   * The reload after a decision reads the tab on screen THEN (night pass 2,
+   * 2026-10-01). `act` / `dismiss` closed over the `load` of the render the
+   * button was tapped in, so OPEN → BAN → confirm → tap ALL while the write
+   * was out: the stale OPEN reload went last, bumped `loadReq` past the ALL
+   * read, and the OPEN list landed under the ALL tab.
+   */
+  const loadRef = useRef(load);
+  loadRef.current = load;
 
   // ONE decision at a time, from the question to the reload (bug hunt
   // 2026-09-30) — the fix EmployerAdminScreen got on 09-29, missed here.
@@ -126,7 +135,7 @@ export function ReportsAdminScreen() {
               notify('Could not save', res.error);
               return;
             }
-            await load();
+            await loadRef.current();
           } finally {
             release();
           }
@@ -153,7 +162,7 @@ export function ReportsAdminScreen() {
               notify('Could not save', res.error);
               return;
             }
-            await load();
+            await loadRef.current();
           } finally {
             release();
           }

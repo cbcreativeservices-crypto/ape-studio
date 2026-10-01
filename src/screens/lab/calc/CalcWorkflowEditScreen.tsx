@@ -104,8 +104,13 @@ export function CalcWorkflowEditScreen() {
     setPickerOpen(false);
     setSearch('');
   };
-  const move = (i: number, dir: -1 | 1) => {
+  // By the step itself, not its index (night bug pass 2, 2026-10-01) — same
+  // trap as ✕ below: a double-tapped ▲ carried index i twice, so the second
+  // swap put the step straight back where it started.
+  const move = (step: WorkflowStep, dir: -1 | 1) => {
     mutate((s) => {
+      const i = s.indexOf(step);
+      if (i < 0) return s;
       const j = i + dir;
       if (j < 0 || j >= s.length) return s;
       const next = [...s];
@@ -232,8 +237,8 @@ export function CalcWorkflowEditScreen() {
                     <Text style={styles.stepWs}>{r ? r.ws.name : `${s.workspaceId} · ${s.fnKey}`}</Text>
                   </View>
                   <View style={styles.stepBtns}>
-                    <StepBtn label="▲" a11y={`Move step ${i + 1} up`} disabled={i === 0} onPress={() => move(i, -1)} />
-                    <StepBtn label="▼" a11y={`Move step ${i + 1} down`} disabled={i === steps.length - 1} onPress={() => move(i, 1)} />
+                    <StepBtn label="▲" a11y={`Move step ${i + 1} up`} disabled={i === 0} onPress={() => move(s, -1)} />
+                    <StepBtn label="▼" a11y={`Move step ${i + 1} down`} disabled={i === steps.length - 1} onPress={() => move(s, 1)} />
                     <StepBtn label="✕" a11y={`Remove step ${i + 1}`} onPress={() => removeStep(s)} danger />
                   </View>
                 </View>

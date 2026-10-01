@@ -146,6 +146,17 @@ export function CalcWorkspaceScreen() {
   // Set once a CALCULATE has answered, so a slower boot-time status read can't
   // land afterwards and roll the "# / N" counter back to the older count.
   const usageFromConsumeRef = useRef(false);
+  // False once the screen is gone (night bug pass 2, 2026-10-01): consumeCalc
+  // can take up to its 8 s deadline, and a user who tapped CALCULATE and then
+  // backed out got "Weekly limit reached" / the halfway notice popping up over
+  // whatever screen they had moved on to.
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
   // Signature of the current calculation: function + THIS function's entered
   // values + input units. Editing any of its inputs re-arms the CALCULATE
   // button; the SAME inputs show the already-revealed answer for free.
@@ -204,6 +215,7 @@ export function CalcWorkspaceScreen() {
       consumingRef.current = false;
       setConsuming(false);
     }
+    if (!mountedRef.current) return;
     usageFromConsumeRef.current = true;
     setUsage(u);
     // ⚠️ NO LONGER SHORT-CIRCUITS ON `unavailable` (2026-09-18).

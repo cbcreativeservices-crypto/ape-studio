@@ -19,6 +19,18 @@ const POLL_MS = 100; // pull cadence (native buffers frames; we dedupe by seq)
  *  above any real frame interval (even a 15 fps camera delivers every 67 ms). */
 const STALE_MS = 1000;
 
+/**
+ * The previous session's close, settled (night pass 2 2026-10-01). A run torn
+ * down while the camera was still opening closes it LATE — when its start()
+ * finally resolves. A new run (STOP → START, or the Home-and-back reopen added
+ * in pass 1) issued its start() at once, so that late stop landed second and
+ * killed the fresh session (Android's start() even resolves early on a
+ * still-running session): 'running' over a camera delivering nothing, the
+ * reading blanked to "– –" for good. Every start now waits for the previous
+ * run's close. Never rejects.
+ */
+let priorClose: Promise<void> = Promise.resolve();
+
 export type OpticalState =
   | 'absent' // native module not in this build → needs the new dev build
   | 'idle'
@@ -136,14 +148,17 @@ export function useOpticalCounter(active: boolean): { state: OpticalState; readi
     let cancelled = false;
     reset();
     setState('starting');
-    Optical.start()
-      .then(() => {
+    const run = priorClose
+      .then(async () => {
+        if (cancelled) return; // superseded before it ever opened the camera
+        await Optical.start();
         if (cancelled) {
           // Left the tool while the camera was still opening: the cleanup's
           // Optical.stop() was issued against a session that did not exist yet,
           // so the session start() has now opened has no owner and nothing will
-          // ever close it. Close it here (perf audit 2026-09-11).
-          void Optical.stop();
+          // ever close it. Close it here (perf audit 2026-09-11) — awaited, so
+          // the next run's start() waits for it (see priorClose).
+          await Optical.stop();
           return;
         }
         setState('running');
@@ -200,6 +215,12 @@ export function useOpticalCounter(active: boolean): { state: OpticalState; readi
       cancelled = true;
       if (poll) clearInterval(poll);
       void Optical.stop();
+      // The next run starts only after this one's start has settled and any
+      // late close has landed (and this stop, re-issued in order after it).
+      priorClose = run.then(() => Optical.stop()).then(
+        () => undefined,
+        () => undefined,
+      );
     };
   }, [live, reset]);
 

@@ -66,6 +66,12 @@ export function AwardProgressScreen({ navigation, route }: Props) {
   const [certMessage, setCertMessage] = useState<string | null>(null);
   const [noSession, setNoSession] = useState(false);
 
+  // KEEP WHAT IS ON SCREEN (night pass 2 2026-10-01). This reloads on every
+  // focus — e.g. back from the Final Exam — and a dropped read there replaced a
+  // loaded checklist (or the EARNED box) with "Could not load". A failure only
+  // decides what an EMPTY screen shows; same rule as the Trophy Gallery. (No
+  // account any more still clears it — that record is not this viewer's.)
+  const haveProgress = useRef(false);
   const load = useCallback(async () => {
     setFailed(false);
     const p = await fetchAwardProgress(awardType, awardId);
@@ -75,8 +81,13 @@ export function AwardProgressScreen({ navigation, route }: Props) {
       const { data } = await safeSession(supabase.auth.getSession(), 'awards/progress');
       // A guest holding the glossary's temporary device key still has no
       // account — so they get the "no account" message, not "your connection".
-      setNoSession(!isRealAccount(data?.session));
+      const signedOut = !isRealAccount(data?.session);
+      if (!signedOut && haveProgress.current) return; // a dropped reload: keep it
+      haveProgress.current = false;
+      setNoSession(signedOut);
       setFailed(true);
+    } else {
+      haveProgress.current = true;
     }
     setProgress(p);
   }, [awardType, awardId]);

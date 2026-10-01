@@ -144,7 +144,9 @@ describe('guest rules and persistence', () => {
   const host = strip(read(`${DIR}/MasteringLabScreen.tsx`));
   const store = strip(read(`${DIR}/masteringProgress.ts`));
   it('the save-block flag is set from useLabEndGuest every render; the first load waits for resolved', () => {
-    assert.match(host, /setMasteringSaveBlocked\(useLabEndGuest\(\)\)/);
+    // Night pass 2 (2026-10-01): also blocked until the tier resolves.
+    assert.match(host, /const guest = useLabEndGuest\(\);/);
+    assert.match(host, /setMasteringSaveBlocked\(guest \|\| !resolved\)/);
     assert.match(host, /const \{ resolved \} = useEntitlement\(\);/);
     assert.match(host, /if \(!resolved \|\| loaded\) return;/);
   });

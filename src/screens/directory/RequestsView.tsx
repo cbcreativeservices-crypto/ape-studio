@@ -535,11 +535,21 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
 
   // [75] (2026-09-07): a failed message fetch used to render as an empty
   // conversation; surface it instead (the reply box still works).
+  /**
+   * Only the LATEST read of the open conversation may land (night pass 2,
+   * 2026-10-01). The fence above is per conversation, and two reads of the
+   * SAME one overlap whenever SEND is tapped before the opening read answers
+   * — SEND is live from the first frame. On a slow connection that opening
+   * read landed last: the message just sent vanished from the list, and its
+   * stale allowance re-enabled SEND under "Wait for a reply" / a spent cap.
+   */
+  const loadSeq = useRef(0);
   const load = useCallback(async () => {
     if (!thread) return;
     const id = thread.id;
+    const seq = ++loadSeq.current;
     const r = await fetchThreadMessages(id);
-    if (openId.current !== id) return;
+    if (openId.current !== id || seq !== loadSeq.current) return;
     if (!r.ok) {
       setErr(r.error);
       return;
@@ -549,7 +559,7 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
     // Allowance rides along with the messages so the count is right after
     // every send, and a failure leaves it null (= unknown = allowed).
     const a = await fetchContactAllowance(id);
-    if (openId.current === id) setAllow(a);
+    if (openId.current === id && seq === loadSeq.current) setAllow(a);
   }, [thread]);
 
   // Clear the previous conversation BEFORE fetching the next one (network audit

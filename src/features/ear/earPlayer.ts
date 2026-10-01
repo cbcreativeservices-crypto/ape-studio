@@ -142,15 +142,23 @@ export class EarClipPlayer {
     // toBase64 keep the JS thread free between clips. Same files, same order.
     if (this.disposed) return;
     const uris: string[] = [];
-    for (const b of bufs) {
-      const uri = await bufToWavFile(b);
-      uris.push(uri);
-      // Torn down mid-load: delete what we have already written and stop before
-      // any player is created. Nothing else holds these paths.
-      if (this.disposed || gen !== this.loadGen) {
-        await Promise.all(uris.map((u) => freeWavUri(u)));
-        return;
+    try {
+      for (const b of bufs) {
+        const uri = await bufToWavFile(b);
+        uris.push(uri);
+        // Torn down mid-load: delete what we have already written and stop before
+        // any player is created. Nothing else holds these paths.
+        if (this.disposed || gen !== this.loadGen) {
+          await Promise.all(uris.map((u) => freeWavUri(u)));
+          return;
+        }
       }
+    } catch (e) {
+      // A write failing partway (disk full, cache cleared) used to leave the
+      // clips already written orphaned: `files` was never set to them, so no
+      // later unloadFiles() could delete them (night pass 2, 2026-10-01).
+      await Promise.all(uris.map((u) => freeWavUri(u)));
+      throw e;
     }
     this.files = uris;
     uris.forEach((uri, i) => {

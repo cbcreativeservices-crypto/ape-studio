@@ -11,12 +11,13 @@
  * focus, has a labelled close, and respects the overlay-suppression stores so it
  * never fights the dev kill-switch or Low-Light mode.
  */
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../theme/tokens';
 import { Modal } from '../../components/DimModal';
+import { afterDialogCloses } from '../../lib/confirm';
 
 export type HelpSection = { heading?: string; body: string };
 export type HelpLink = { label: string; onPress: () => void };
@@ -42,7 +43,12 @@ export function ScreenHelpSheet({
   onClose: () => void;
 }) {
   const insets = useSafeAreaInsets();
-  if (!visible) return null;
+  /** A link was tapped this open — see the link row. Re-armed on every open. */
+  const jumping = useRef(false);
+  if (!visible) {
+    jumping.current = false;
+    return null;
+  }
   return (
     <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal transparent animationType="fade" visible statusBarTranslucent onRequestClose={onClose}>
       <View style={styles.backdrop}>
@@ -69,8 +75,20 @@ export function ScreenHelpSheet({
                   <Pressable
                     key={i}
                     onPress={() => {
+                      // ⛔ CLOSE FIRST, JUMP AFTER THE SHEET HAS GONE (night
+                      // pass 2, 2026-10-01). This ran `l.onPress()` in the
+                      // same tick as `onClose()`, while this sheet's own Modal
+                      // was still animating away. A jump to a
+                      // `presentation: 'modal'` screen (Paywall, Settings,
+                      // Help…) is then refused by iOS and the tap does nothing
+                      // — the Modal-over-Modal trap afterDialogCloses exists
+                      // for. Every link waits it out, so no future link can
+                      // fall into it. One jump per open: a double tap landed
+                      // two before the sheet unmounted.
+                      if (jumping.current) return;
+                      jumping.current = true;
                       onClose();
-                      l.onPress();
+                      afterDialogCloses(l.onPress)();
                     }}
                     accessibilityRole="button"
                     accessibilityLabel={l.label}

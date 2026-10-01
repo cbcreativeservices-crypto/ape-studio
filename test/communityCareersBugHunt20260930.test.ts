@@ -48,8 +48,9 @@ describe('community directory', () => {
 
   test('C1: a thread load only lands while that thread is still open', () => {
     const load = between(requests, 'const load = useCallback(async () => {\n    if (!thread) return;', '}, [thread]);');
-    assert.match(load, /openId\.current !== id\) return/);
-    assert.match(load, /if \(openId\.current === id\) setAllow/);
+    // Night pass 2 (2026-10-01) adds a latest-read fence beside the open check.
+    assert.match(load, /openId\.current !== id( \|\| seq !== loadSeq\.current)?\) return/);
+    assert.match(load, /if \(openId\.current === id( && seq === loadSeq\.current)?\) setAllow/);
   });
 
   test('C2: an accepted outgoing conversation can be blocked and reported', () => {

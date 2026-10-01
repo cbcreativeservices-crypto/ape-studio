@@ -43,12 +43,14 @@ import {
   passwordIssue,
   requestPasswordReset,
   signIn,
+  signOutThisDevice,
   updatePassword,
   verifyRecoveryOtp,
 } from '../../features/auth/api';
 import { supabase } from '../../lib/supabase';
 import { consumeIntentionalSignOut, markIntentionalSignOut } from '../../features/auth/intentionalSignOut';
 import { safeSession } from '../../lib/getSessionSafe';
+import { withDeadline } from '../../lib/boundedCall';
 import { isRealAccount } from '../../features/commercial/realAccount';
 import { COPY } from '../../lib/copy';
 import { registerCommercialUser } from '../../features/commercial/commercialAuth';
@@ -213,7 +215,12 @@ export function AuthScreen({ navigation }: Props) {
             // scope 'local' (2026-09-30 day pass): the default is GLOBAL, which
             // revoked the OTHER device's session too — the very device the
             // person just chose to keep signed in.
-            void supabase.auth.signOut({ scope: 'local' }).catch(() => {}).finally(end);
+            // BOUNDED, AND SURE (night bug pass 2, 2026-10-01): signOutThisDevice
+            // is that local sign-out with a time limit and a forced local
+            // removal. A bare signOut() that stalled held the whole form on a
+            // spinner forever, and one that failed offline KEPT the session —
+            // Cancel left the person signed in behind the sign-in screen.
+            void signOutThisDevice().finally(end);
             // BUSY UNTIL THAT SIGN-OUT LANDS (bug pass 3, 2026-09-30). LOGIN
             // tapped again straight after Cancel signed in while this was still
             // in flight, and its late removal then deleted the NEW session:
@@ -250,9 +257,19 @@ export function AuthScreen({ navigation }: Props) {
     markIntentionalSignOut();
     // scope 'local' (bug pass 2, 2026-09-30): leaving THIS device for Guest
     // Mode must not revoke the account's other sessions (the website).
-    const { error: outError } = await supabase.auth
-      .signOut({ scope: 'local' })
-      .catch((e: unknown) => ({ error: e as Error }));
+    // BOUNDED (night bug pass 2, 2026-10-01): a signOut that never answered
+    // held Guest Mode — the app's primary no-account entry — on a spinner with
+    // every button hidden. A stall is refused like an offline failure, but
+    // WITHOUT the session check below: the stalled signOut still holds
+    // supabase-js's session lock, so getSession() would queue behind it, time
+    // out as "no session" and let Guest Mode in over a live account.
+    const { error: outError } = await withDeadline(() => supabase.auth.signOut({ scope: 'local' }), 'signOut', 10000).catch(
+      (e: unknown) => ({ error: e as Error }),
+    );
+    if (outError && /signOut timeout/.test(outError.message ?? '')) {
+      setError('Couldn’t reach the Academy — check your connection and try again.');
+      return;
+    }
     /**
      * ⛔ OFFLINE, signOut() KEEPS THE SESSION (bug pass 2, 2026-09-30). The old
      * comment here said "local session is still cleared" — supabase-js returns
@@ -375,7 +392,11 @@ export function AuthScreen({ navigation }: Props) {
           // web the account was created and the user was then stranded on the
           // sign-in screen with no way forward.
           notify('Account created', `${redeem.message}\n\nYou can add a code later in Settings.`, () => {
-            void claimAndProceed(toHome);
+            // Busy through the claim (night bug pass 2, 2026-10-01): the form
+            // was live again here for up to the claim's 13 s, and a Guest Mode
+            // or LOGIN tapped in that window ran beside it.
+            hold();
+            void claimAndProceed(toHome).finally(end);
           });
           return;
         }
@@ -502,7 +523,12 @@ export function AuthScreen({ navigation }: Props) {
       if (verifiedFor.current !== addr) {
         const verifyErr = await verifyRecoveryOtp(email.trim(), resetCode);
         if (verifyErr) {
-          setError('That code is incorrect or expired. Request a new one and try again.');
+          // Offline / stalled is not a wrong code (night bug pass 2,
+          // 2026-10-01): blaming the code sent the person to request a new
+          // one when only the connection had failed.
+          setError(
+            /offline/i.test(verifyErr) ? verifyErr : 'That code is incorrect or expired. Request a new one and try again.',
+          );
           return;
         }
         verifiedFor.current = addr;
@@ -530,7 +556,8 @@ export function AuthScreen({ navigation }: Props) {
     // password set and no single-device claim. Cancel means not signed in.
     if (verifiedFor.current !== null) {
       markIntentionalSignOut();
-      void supabase.auth.signOut({ scope: 'local' }).catch(() => {}).finally(end);
+      // Bounded + forced local (night bug pass 2) — see the takeover Cancel.
+      void signOutThisDevice().finally(end);
       // Busy until it lands (bug pass 3): a LOGIN tapped straight after Cancel
       // had its fresh session deleted by this sign-out finishing late.
       hold();
@@ -562,6 +589,14 @@ export function AuthScreen({ navigation }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode]);
 
+  // ANDROID BACK while a request is in flight = wait (night bug pass 2) — the
+  // twin of hiding RETURN above.
+  useEffect(() => {
+    if (!busy) return;
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => true);
+    return () => sub.remove();
+  }, [busy]);
+
   return (
     <View style={styles.root}>
       {/* Top-right RETURN — for someone who arrived here on purpose (e.g. a guest
@@ -572,7 +607,11 @@ export function AuthScreen({ navigation }: Props) {
       {/* [27] (2026-09-07): suppressed during password recovery — a code has
           already been emailed and only Cancel is meant to leave that flow;
           RETURN silently abandoned the reset with no confirmation. */}
-      {navigation.canGoBack() && mode !== 'recovery' ? (
+      {/* Hidden while a request is in flight too (night bug pass 2,
+          2026-10-01): RETURN mid-LOGIN left the screen and the sign-in landed
+          behind it with no device claim — the single-device guard then signed
+          the person straight back out as "displaced". */}
+      {navigation.canGoBack() && mode !== 'recovery' && !busy ? (
         <Pressable
           style={[styles.returnBtn, { top: insets.top + 8 }]}
           onPress={() => navigation.goBack()}

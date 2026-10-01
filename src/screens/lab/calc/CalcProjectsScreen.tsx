@@ -172,6 +172,14 @@ export function CalcProjectsScreen() {
       notify('Name the project', 'Give the project a name before saving.');
       return;
     }
+    // Not before the tier is known (night bug pass 2, 2026-10-01): until the
+    // entitlement read lands `limits` is the academy row (unlimited), so a
+    // free account saved past its 3 and a guest (0) saved a project at all.
+    // `resolved` always flips — the provider bounds its first attempt.
+    if (editing?.id == null && !resolved) {
+      notify('One moment', 'Still checking your account. Tap SAVE again in a moment.');
+      return;
+    }
     // The limit, re-checked against the STORED list (bug pass 2026-10-01):
     // `guardCreate` reads the on-screen list, which is still empty if ＋ NEW is
     // tapped before the first load lands — so a capped account could add one

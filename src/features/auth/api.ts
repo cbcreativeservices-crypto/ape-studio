@@ -25,6 +25,41 @@ import { softDeadline, withDeadline } from '../../lib/boundedCall';
 export const AUTH_CALL_MS = 30000;
 const orTimeoutError = (e: unknown) => ({ data: null, error: e as Error });
 
+/**
+ * ⛔ A LATE SUCCESS IS NOT A SIGN-IN (night bug pass 2, 2026-10-01).
+ *
+ * The deadline above stops WAITING; it cannot cancel the request. A sign-in
+ * that answers after it (a socket that stalls past 30 s still delivers — iOS
+ * gives a request 60) saves the session and emits SIGNED_IN anyway, while the
+ * form is showing "you appear to be offline". The person was then signed in
+ * behind the sign-in screen with no single-device claim: RETURN walked them
+ * into the account, a Guest Mode tapped before it landed was overtaken by it,
+ * and the next launch went straight in. So a call that has been given up on
+ * and later brings a session signs this device back out — unless a NEWER
+ * attempt has started since, whose outcome is the one the person is waiting on.
+ */
+let signInAttempt = 0;
+async function boundedSignIn<T extends { data: { session?: unknown } | null }>(
+  run: () => Promise<T>,
+  label: string,
+): Promise<T | { data: null; error: Error }> {
+  const mine = ++signInAttempt;
+  const call = run();
+  try {
+    return await withDeadline(() => call, label, AUTH_CALL_MS);
+  } catch (e) {
+    void call.then(
+      (late) => {
+        if (!late?.data?.session || mine !== signInAttempt) return;
+        markIntentionalSignOut();
+        void signOutThisDevice();
+      },
+      () => {},
+    );
+    return orTimeoutError(e);
+  }
+}
+
 // The pure helpers live in authErrorCopy.ts so they can be unit-tested without
 // standing up the Supabase client. Re-exported here so every existing call site
 // (AuthScreen imports EMAIL_RE / passwordIssue from this module) is unchanged.
@@ -115,11 +150,10 @@ export async function ensureSession(email: string, password: string): Promise<st
     }
   }
 
-  const { data, error: signUpError } = await withDeadline(
+  const { data, error: signUpError } = await boundedSignIn(
     () => supabase.auth.signUp({ email, password }),
     'signUp',
-    AUTH_CALL_MS,
-  ).catch(orTimeoutError);
+  );
   if (!signUpError) {
     if (data?.session) return null;
     console.warn('[auth] signUp returned no session — email confirmation appears ENABLED (model-A violation).');
@@ -140,11 +174,10 @@ export async function ensureSession(email: string, password: string): Promise<st
   if (!/already|registered|exists|taken/i.test(signUpError.message)) {
     return friendlyAuthError(signUpError);
   }
-  const signIn = await withDeadline(
+  const signIn = await boundedSignIn(
     () => supabase.auth.signInWithPassword({ email, password }),
     'signIn',
-    AUTH_CALL_MS,
-  ).catch(orTimeoutError);
+  );
   if (!signIn.error) return null;
   // Surface the SIGN-IN failure (the operative one — e.g. wrong password), mapped
   // to offline copy when it's a network error, rather than the stale signUp error.
@@ -188,11 +221,10 @@ export async function signOutThisDevice(): Promise<void> {
 }
 
 export async function signIn(email: string, password: string): Promise<string | null> {
-  const { error } = await withDeadline(
+  const { error } = await boundedSignIn(
     () => supabase.auth.signInWithPassword({ email, password }),
     'signIn',
-    AUTH_CALL_MS,
-  ).catch(orTimeoutError);
+  );
   return friendlyAuthError(error);
 }
 
@@ -226,11 +258,10 @@ export const resetPassword = requestPasswordReset;
 
 /** Verify the 6-digit recovery code → recovery session. Returns error or null. */
 export async function verifyRecoveryOtp(email: string, token: string): Promise<string | null> {
-  const { error } = await withDeadline(
+  const { error } = await boundedSignIn(
     () => supabase.auth.verifyOtp({ email, token: token.trim(), type: 'recovery' }),
     'verifyOtp',
-    AUTH_CALL_MS,
-  ).catch(orTimeoutError);
+  );
   return friendlyAuthError(error);
 }
 
@@ -241,5 +272,13 @@ export async function updatePassword(newPassword: string): Promise<string | null
     'updateUser',
     AUTH_CALL_MS,
   ).catch(orTimeoutError);
+  // ALREADY THAT PASSWORD = DONE (night bug pass 2, 2026-10-01). An update that
+  // timed out can still land; the retry then sent the same password and the
+  // server's "should be different from the old password" fell through to the
+  // generic failure — a SET NEW PASSWORD that could never succeed, for a
+  // password that was already set. The recovery code proved the address, and
+  // the account's password is exactly the one asked for.
+  const code = (error as { code?: string } | null)?.code;
+  if (code === 'same_password' || /different from the old password/i.test(error?.message ?? '')) return null;
   return friendlyAuthError(error);
 }

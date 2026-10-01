@@ -161,6 +161,8 @@ async function migrateLegacyKey(): Promise<SavedMeasurement[]> {
  *  into them (toddler pass 3 2026-09-30 — the generation fence the other
  *  per-account stores gained today). */
 let generation = 0;
+/** Account wipes (clearStoredMeasurements) still clearing the table. */
+let wipesRunning = 0;
 
 async function hydrate(): Promise<void> {
   if (hydrated) return;
@@ -246,6 +248,7 @@ export function saveMeasurement(m: SavedMeasurement): Promise<boolean> {
   // let it continue afterwards and write the PREVIOUS account's record into
   // the freshly wiped store — the next account's library then opened on it.
   const gen = generation;
+  if (wipesRunning > 0) return Promise.resolve(false); // see clearStoredMeasurements
   return hydrate().then(async () => {
     if (gen !== generation) return false;
     const next = [...list, m];
@@ -310,10 +313,19 @@ export function updateMeasurement(id: string, patch: Partial<Pick<SavedMeasureme
  * rather than fire-and-forget: a wipe that has not finished is not a wipe.
  */
 export async function clearStoredMeasurements(): Promise<void> {
+  // Fence FIRST (night pass 2 2026-10-01). The pass-1 save fence only bumped
+  // in resetLocal(), AFTER the awaited table clear — so on a warm library a
+  // SAVE tapped while that clear was running passed its check, and its row
+  // could be written after the DELETE: the next account opened on it. A save
+  // ISSUED during the clear belongs to the departing account too (wipesRunning).
+  generation++;
+  wipesRunning++;
   try {
     await clearAllRows();
   } catch (e) {
     console.warn('[measurements] wipe FAILED — stored measurements may survive the switch:', e);
+  } finally {
+    wipesRunning--;
   }
   resetLocal();
 }

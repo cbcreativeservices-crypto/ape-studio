@@ -168,6 +168,28 @@ function isOnboardingFlag(k: string): boolean {
  * Best-effort: a failed removal never throws.
  */
 export async function clearLocalAccountData(opts?: { total?: boolean }): Promise<void> {
+  await sweepApeKeys(opts);
+  // The saved measurement library is NOT an `ape:*` key any more (2026-09-11 —
+  // it moved to SQLite when spectrogram grids filled AsyncStorage's shared 6 MB
+  // Android database). The sweep above cannot see a table, so it is wiped by
+  // name; miss this and the next account signing in on this device inherits the
+  // previous one's measurements.
+  await clearStoredMeasurements();
+  /**
+   * ⛔ SWEEP AGAIN, LAST (night bug pass 2, 2026-10-01). Until the caller runs
+   * resetAllLocalStores(), every store still holds the DEPARTING user in
+   * memory, and any write it makes in the meantime (an exposure-dose flush, a
+   * lab completion, a deck reorder) lands AFTER the sweep above — AsyncStorage
+   * runs operations in order — or creates a key the sweep never listed. That
+   * key then survived the wipe and the next account hydrated it. The window was
+   * the whole sweep plus the SQLite clear; a second pass right before handing
+   * back shrinks it to one storage round trip. Nothing legitimate writes for
+   * the NEXT person before the reset, so whatever appeared here is stale.
+   */
+  await sweepApeKeys(opts);
+}
+
+async function sweepApeKeys(opts?: { total?: boolean }): Promise<void> {
   try {
     const keys = await AsyncStorage.getAllKeys();
     // `total` = a NO-ACCOUNT GUEST entry (owner ruling 2026-09-01): "a guest is
@@ -214,12 +236,6 @@ export async function clearLocalAccountData(opts?: { total?: boolean }): Promise
   } catch {
     // best-effort — a storage failure must not block sign-out / account switch
   }
-  // The saved measurement library is NOT an `ape:*` key any more (2026-09-11 —
-  // it moved to SQLite when spectrogram grids filled AsyncStorage's shared 6 MB
-  // Android database). The sweep above cannot see a table, so it is wiped by
-  // name; miss this and the next account signing in on this device inherits the
-  // previous one's measurements.
-  await clearStoredMeasurements();
 }
 
 /**

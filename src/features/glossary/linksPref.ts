@@ -7,7 +7,7 @@
  * time ever (no stored value) links are ON; after that the user's last choice
  * wins. Mirrors features/tools/colorModePref.
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const KEY = 'ape:glossary:showLinks';
@@ -15,12 +15,15 @@ const KEY = 'ape:glossary:showLinks';
 /** [linksOn, setLinksOn] — persisted; defaults ON until the user changes it. */
 export function useGlossaryLinksPref(): [boolean, (v: boolean) => void] {
   const [on, setOn] = useState(true); // first-ever = links ON (no stored value yet)
+  // A tap that lands before the stored value is read wins (night pass 2,
+  // 2026-10-01): the late read used to flip the toggle straight back.
+  const touchedRef = useRef(false);
   useEffect(() => {
     let alive = true;
     void (async () => {
       try {
         const raw = await AsyncStorage.getItem(KEY);
-        if (alive && raw != null) setOn(raw === '1');
+        if (alive && raw != null && !touchedRef.current) setOn(raw === '1');
       } catch {
         // Unreadable storage → keep the default. The setter below already
         // guards; without this the read surfaced as an unhandled rejection at
@@ -32,6 +35,7 @@ export function useGlossaryLinksPref(): [boolean, (v: boolean) => void] {
     };
   }, []);
   const set = useCallback((v: boolean) => {
+    touchedRef.current = true;
     setOn(v);
     void AsyncStorage.setItem(KEY, v ? '1' : '0').catch(() => {});
   }, []);

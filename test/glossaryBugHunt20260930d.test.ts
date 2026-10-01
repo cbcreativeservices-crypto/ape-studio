@@ -28,7 +28,7 @@ test('the background save checks the completeness marker, not just a row count',
 test('parked rows are cleared on a tier change and never carry another src\'s text', () => {
   const native = read('src/features/glossary/offlineCorpus.native.ts');
   const align = native.slice(native.indexOf('export async function alignDefinitionTier'));
-  assert.match(align.slice(0, 900), /SET definition = NULL WHERE src = \? OR src = \?', \[src, `\$\{src\}#stale`\]/);
+  assert.match(align.slice(0, 1200), /SET definition = NULL WHERE src = \? OR src = \?', \[src, `\$\{src\}#stale`\]/);
   // The parked name used by saveTerms must match.
   assert.match(native, /const parked = `\$\{src\}#stale`;/);
   assert.match(

@@ -14,6 +14,9 @@ export type RoomLabCtx = {
   /** A signed-out guest or a members-only preview: designs are not saved,
    *  and the lab says so plainly. */
   guest: boolean;
+  /** The entitlement tier is known. Before it is, `guest` reads false and a
+   *  save stays in memory — say neither "saved" nor "not signed in". */
+  resolved: boolean;
   /** The library on this device (empty for a guest). */
   saved: RoomDesign[];
   saveCurrent: (name?: string) => Promise<boolean>;

@@ -114,9 +114,22 @@ export function newProject(lab: LabKind, pathway: PathwayId, name: string): Prod
 
 // ── list persistence (patternStore's shape) ──────────────────────────────────
 
+/** Storage itself could not be read (night pass 2, 2026-10-01). Distinct from
+ *  a damaged file: a read failure says nothing about what is stored, so it is
+ *  never quarantined and never written over. It used to fall into the damaged
+ *  branch: a transient failure could move every project aside under
+ *  `:damaged` and remove the key, and an upsert after a failed read wrote a
+ *  one-project list over the whole collection. */
+class StorageReadError extends Error {}
+
 async function loadList(kv: KeyValueStore, key: string): Promise<ProductionProject[]> {
+  let raw: string | null;
   try {
-    const raw = await kv.getItem(key);
+    raw = await kv.getItem(key);
+  } catch {
+    throw new StorageReadError('read failed');
+  }
+  try {
     if (raw == null) return [];
     const parsed: unknown = JSON.parse(raw);
     if (!Array.isArray(parsed)) throw new Error('not an array');
@@ -134,7 +147,6 @@ async function loadList(kv: KeyValueStore, key: string): Promise<ProductionProje
     return good;
   } catch {
     try {
-      const raw = await kv.getItem(key);
       if (raw != null) await kv.setItem(`${key}:damaged`, raw);
       await kv.removeItem(key);
     } catch {}
@@ -206,7 +218,8 @@ export function createProjectStore(kv: KeyValueStore): ProjectStore {
     fn: (p: ProductionProject) => ProductionProject,
   ): Promise<ProductionProject | null> {
     return serialize(lab, async () => {
-      const all = await list(lab);
+      const all = await list(lab).catch(() => null);
+      if (!all) return null; // unreadable — never write over what is stored
       const i = all.findIndex((p) => p.id === id);
       if (i < 0) return null;
       const next = { ...fn(all[i]), updatedAt: Date.now() };
@@ -221,15 +234,17 @@ export function createProjectStore(kv: KeyValueStore): ProjectStore {
     // list while keystroke writes were still queued held a stale copy, and a
     // rename (`upsert({...project, name})`) then wrote that copy back over the
     // answers. The private `list` is what the queued jobs use, so no deadlock.
-    load: (lab) => serialize(lab, () => list(lab)),
+    // A failed READ still reads as empty (as before); only the writers refuse.
+    load: (lab) => serialize(lab, () => list(lab).catch(() => [])),
     get(lab, id) {
-      return serialize(lab, async () => (await list(lab)).find((p) => p.id === id) ?? null);
+      return serialize(lab, async () => (await list(lab).catch(() => [])).find((p) => p.id === id) ?? null);
     },
     upsert(p) {
       // Same queue as `mutate`: an upsert racing a keystroke would drop whichever
       // read the older snapshot.
       return serialize(p.lab, async () => {
-        const all = await list(p.lab);
+        const all = await list(p.lab).catch(() => null);
+        if (!all) return false; // unreadable — never write over what is stored
         const i = all.findIndex((x) => x.id === p.id);
         const row = { ...p, updatedAt: Date.now() };
         if (i >= 0) all[i] = row;
@@ -243,13 +258,16 @@ export function createProjectStore(kv: KeyValueStore): ProjectStore {
     // concrete hazard on the activity screen's RESTART, which deletes and
     // recreates back to back.
     remove(lab, id) {
-      return serialize(lab, async () => write(lab, (await list(lab)).filter((p) => p.id !== id)));
+      return serialize(lab, async () => {
+        const all = await list(lab).catch(() => null);
+        return all ? write(lab, all.filter((p) => p.id !== id)) : false;
+      });
     },
     duplicate(lab, id) {
       return serialize(lab, async () => {
-      const all = await list(lab);
-      const src = all.find((p) => p.id === id);
-      if (!src) return null;
+      const all = await list(lab).catch(() => null);
+      const src = all?.find((p) => p.id === id);
+      if (!all || !src) return null;
       const now = Date.now();
       const copy: ProductionProject = {
         ...src,
