@@ -232,6 +232,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-01 00:50 · ccode · 4a6666f9
+changed: Settings: optional mute on leaving the app; Cable Install end screen tells guests the truth
+affects other side: nothing (client only)
+needs: nothing
+
+
 ### 2026-10-01 00:18 · ccode · d3edb216
 changed: Every multi-module lab on the shared navigation strip
 affects other side: nothing (client only)
