@@ -250,6 +250,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-01 16:48 · ccode · 31ec5de5
+changed: Mastering + Room Design: standards pass (9 pt on short phones, tap-to-toggle, stop on step change, full screen on read figures, visible controls, end-screen jumps); rack full screen can open at FIT (Room plan)
+affects other side: nothing (client-only lab fixes)
+needs: nothing
+
+
 ### 2026-10-01 16:07 · ccode · a1005e92
 changed: Drum Tuning Lab: new 7-chapter lab (Fable build) — physical membrane synth, rack, full screen, LabNavBar, end screen
 affects other side: nothing (client-only new lab; no DB rows, no catalog seed)
