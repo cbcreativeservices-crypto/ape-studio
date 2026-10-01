@@ -214,6 +214,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-30 22:48 · ccode · 98ac8547
+changed: TestFlight build 32 feedback: 14 tester reports fixed
+affects other side: nothing (client only)
+needs: nothing
+
+
 ### 2026-09-30 10:18 · ccode · 9f392572
 changed: Bug pass 3 of 3 (2026-09-30 day): 69 new fixes + 10 corrections to earlier-pass fixes (79 total; the commit subject's split is wrong)
 affects other side: nothing (client only; validate-purchase / redeem_access_code calls now time out client-side at 30 s / bounded — server unchanged)
