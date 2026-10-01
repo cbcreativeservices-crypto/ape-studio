@@ -2,60 +2,82 @@
  * Chapter 6 — The Circle Does Not Close (spec Stage 3): twelve fifths vs
  * seven octaves, the derivation one line at a time, a spiral that visibly
  * misses, and an A/B between expected C and actual B♯ in one register.
+ *
+ * ON THE RACK (2026-09-30): the fifth spiral is the stage (components/
+ * stageFigures); the expected and actual frequencies and the gap print on
+ * the bezel; HEAR is a tray of the A / B / A→B / together clips; the fifth
+ * path, the two-paths card and the derivation read in the well.
  */
+import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Svg, { Circle, Line, Path, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
 import { buildPythagoreanFifthChain, frac, fracLabel, fracValue, PYTHAGOREAN_COMMA, frequencyFromRatio } from '../../../../features/tuning/tuningMath';
-import { renderNotes } from '../../../../features/tuning/tuningAudio';
+import { concatWithGap, renderNotes } from '../../../../features/tuning/tuningAudio';
 import type { ChapterProps } from '../labCtx';
-import { AudioComparisonControls, Body, Card, EquationStage, Eyebrow, Lead, MathLine, ROLE } from '../components/primitives';
+import { Body, Card, EquationStage, Eyebrow, Lead, MathLine, usePreloadClips } from '../components/primitives';
 import { FifthPath } from '../components/fifthPath';
 import { UnderstandingCheck } from '../components/check';
+import { SPIRAL_H, SPIRAL_W, Spiral } from '../components/stageFigures';
+import { StageFit } from '../../rack/StageFit';
+import { BADGE_MODEL, TuningRackLayout, playTray, soundCell, stopKey, usePlayerStatus } from '../rackLayout';
 
 const CHAIN = buildPythagoreanFifthChain(frac(1, 1), 12);
-
-function Spiral() {
-  // Geometry: the outermost point (B♯, index 12) must stay INSIDE the 240-high
-  // viewBox — with r0 = 78 and cy = 120 it sat at y ≈ 3.6 and its 6-px dot was
-  // clipped at the top edge.
-  const cx = 170, cy = 128, r0 = 70;
-  const pts = CHAIN.map((s) => {
-    const ang = (s.index / 12) * 2 * Math.PI - Math.PI / 2;
-    // A spiral: the radius grows a little each fifth so the path never overlays itself;
-    // the final point lands at the same angle as C but visibly outside it.
-    const r = r0 + s.index * 3.2;
-    return { x: cx + r * Math.cos(ang), y: cy + r * Math.sin(ang), s };
-  });
-  const d = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
-  const first = pts[0], last = pts[12];
-  return (
-    <View accessible accessibilityRole="image" accessibilityLabel={`Fifth spiral: twelve fifths return to C's direction but land outside it — B sharp sits ${PYTHAGOREAN_COMMA.cents.toFixed(2)} cents above C.`}>
-      <Svg width="100%" height={240} viewBox="0 0 340 240">
-        <Path d={d} fill="none" stroke={colors.textSub} strokeWidth={1.4} />
-        {pts.map((p) => (
-          <Svg key={p.s.index}>
-            <Circle cx={p.x} cy={p.y} r={p.s.index === 0 || p.s.index === 12 ? 6 : 3.5} fill={p.s.index === 12 ? ROLE.error : p.s.index === 0 ? ROLE.exact : colors.textSecondary} />
-            <SvgText x={p.x + (p.x > cx ? 9 : -9)} y={p.y + 3} fontSize={9} fill={p.s.index === 12 ? ROLE.error : colors.textSecondary} textAnchor={p.x > cx ? 'start' : 'end'} fontFamily={fonts.oswaldMedium}>{p.s.spelling}</SvgText>
-          </Svg>
-        ))}
-        {/* the measurement bracket between expected and actual */}
-        <Line x1={first.x} y1={first.y - 8} x2={last.x} y2={last.y + 8} stroke={ROLE.error} strokeWidth={1.5} strokeDasharray="3,2" />
-        <SvgText x={cx} y={cy - 4} fontSize={10} fill={ROLE.error} textAnchor="middle" fontFamily={fonts.oswaldMedium}>gap: {PYTHAGOREAN_COMMA.cents.toFixed(2)} ¢</SvgText>
-        <SvgText x={cx} y={cy + 10} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium}>EXPECTED C · ACTUAL B♯</SvgText>
-        <SvgText x={cx} y={cy + 24} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium}>PYTHAGOREAN COMMA</SvgText>
-      </Svg>
-    </View>
-  );
-}
 
 export function Ch6Comma({ ctx }: ChapterProps) {
   const bSharp = fracValue(CHAIN[12].normalized); // 531441/524288 — already folded into C's octave
   const expectedHz = ctx.rootHz;
   const actualHz = frequencyFromRatio(ctx.rootHz, bSharp);
+  const [last, setLast] = useState<string | null>(null);
+  const status = usePlayerStatus(ctx.player);
+  const a = () => renderNotes([expectedHz], 1.4, 'rich');
+  const b = () => renderNotes([actualHz], 1.4, 'rich');
+  const together = () => renderNotes([expectedHz, actualHz], 2.2, 'rich');
+  const ab = () => concatWithGap(a(), b());
+  usePreloadClips(ctx.player, () => [a, b, together, ab], String(ctx.rootHz));
 
   return (
-    <View style={{ gap: 12 }}>
+    <TuningRackLayout
+      ctx={ctx}
+      rack={{
+        size: 'L',
+        initialParam: 'play',
+        // The spiral's GEOMETRY is schematic — equal angles per fifth, a
+        // radius that grows so the path never overlays itself; only the gap
+        // it labels is the exact 531441/524288 (review 2026-09-30). The
+        // "exact ratios" badge belongs to the rails, not to this drawing.
+        badge: BADGE_MODEL,
+        bezel: [
+          { k: 'EXPECTED C', v: `${expectedHz.toFixed(2)} Hz`, tint: colors.green, flex: 1.2 },
+          { k: 'ACTUAL B♯', v: `${actualHz.toFixed(2)} Hz`, tint: colors.red, flex: 1.2 },
+          { k: 'GAP', v: `${PYTHAGOREAN_COMMA.cents.toFixed(2)} ¢`, tint: colors.red },
+          soundCell(status),
+        ],
+        stage: (w, h) => (
+          <StageFit w={w} h={h} aspect={SPIRAL_W / SPIRAL_H}>
+            {/* The pick on HEAR rings the note(s) sounding — the key changes the picture. */}
+            <Spiral highlight={!status.playing && !status.rendering ? null : last === 'a' ? 'C' : last === 'b' ? 'B♯' : last ? 'both' : null} />
+          </StageFit>
+        ),
+        params: [
+          playTray({
+            player: ctx.player,
+            id: 'play',
+            label: 'HEAR',
+            last,
+            setLast,
+            clips: [
+              { id: 'a', label: 'A · EXPECTED C', make: a, name: 'expected C', blurb: `C at 0 ¢ — ${expectedHz.toFixed(2)} Hz, where twelve fifths were expected to return.` },
+              { id: 'b', label: 'B · ACTUAL B♯', make: b, name: 'actual B♯', blurb: `B♯ at +${PYTHAGOREAN_COMMA.cents.toFixed(2)} ¢ — ${actualHz.toFixed(2)} Hz, where they actually land.` },
+              { id: 'ab', label: 'A → B', make: ab, name: 'expected C then actual B♯', blurb: 'The two in turn, same register.' },
+              { id: 'tog', label: 'TOGETHER', make: together, name: 'expected C + actual B♯', blurb: `Both at once — ${(actualHz - expectedHz).toFixed(2)} Hz apart, so they beat.` },
+            ],
+            short: (c) => c.label.split(' ')[0],
+          }),
+          stopKey(ctx.player),
+        ],
+      }}
+      caption={`Twelve fifths on the spiral return to C's direction but land outside it. HEAR the expected C against the actual B♯ — both in C4's register, ${expectedHz.toFixed(2)} vs ${actualHz.toFixed(2)} Hz.`}
+    >
       <Lead>Twelve pure fifths almost return to the starting pitch class after seven octaves — but they miss by about {PYTHAGOREAN_COMMA.cents.toFixed(2)} cents.</Lead>
       <FifthPath steps={CHAIN} revealed={12} dimNotes />
       <Card>
@@ -87,7 +109,6 @@ export function Ch6Comma({ ctx }: ChapterProps) {
         ]}
       />
 
-      <Spiral />
       <Body>Expected return: C at 0 ¢. Actual return: B♯ at +{PYTHAGOREAN_COMMA.cents.toFixed(2)} ¢. After seven octave reductions the expected normalized result is 1/1; the actual result is {fracLabel(CHAIN[12].normalized)}.</Body>
 
       {ctx.mathView ? (
@@ -101,15 +122,7 @@ export function Ch6Comma({ ctx }: ChapterProps) {
       ) : null}
 
       <Eyebrow>HEAR THE GAP</Eyebrow>
-      <AudioComparisonControls
-        player={ctx.player}
-        a={() => renderNotes([expectedHz], 1.4, 'rich')}
-        b={() => renderNotes([actualHz], 1.4, 'rich')}
-        together={() => renderNotes([expectedHz, actualHz], 2.2, 'rich')}
-        labelA="expected C"
-        labelB="actual B♯"
-        note={`both in C4's register — octave equivalence is being used · ${expectedHz.toFixed(2)} vs ${actualHz.toFixed(2)} Hz`}
-      />
+      <Body>The HEAR key plays the expected C and the actual B♯ — both in C4's register, so octave equivalence is being used · {expectedHz.toFixed(2)} vs {actualHz.toFixed(2)} Hz.</Body>
 
       {/* NEW COPY — per-distractor feedback; options trimmed to similar length. */}
       <UnderstandingCheck
@@ -126,7 +139,7 @@ export function Ch6Comma({ ctx }: ChapterProps) {
         onCorrect={ctx.markDone}
       />
       <Body>The discrepancy cannot be removed while every fifth remains exactly 3:2. A tuning system must decide what to preserve and where to place the mismatch.</Body>
-    </View>
+    </TuningRackLayout>
   );
 }
 

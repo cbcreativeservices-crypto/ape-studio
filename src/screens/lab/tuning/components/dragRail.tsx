@@ -18,8 +18,34 @@ const DRAG_SNAP = 9;
  *  but a step AWAY (1.0 ¢ off) is not pulled back. */
 const STEP_SNAP = 1;
 
+/** Snap a cents value to the nearest landmark inside `window` ¢ — the same
+ *  rule the drag and the step keys use, exported so a dock fader driving the
+ *  rail (the rack chapters, 2026-09-30) lands on 701.955 the way a finger does. */
+export const snapToLandmark = (raw: number, window = STEP_SNAP): number => {
+  const c = Math.max(0, Math.min(1200, raw));
+  for (const l of LANDMARKS) if (Math.abs(l.value.cents - c) < window) return l.value.cents;
+  return c;
+};
+
+/** Show Me's slide to a target, shared by the rail's own key and a dock key:
+ *  animates `onChange` along the way, then settles (instant under reduced motion). */
+export function slideTo(anim: Animated.Value, from: number, target: number, reduceMotion: boolean | undefined, onChange: (c: number) => void, onSettle?: (c: number) => void): void {
+  if (reduceMotion) {
+    onChange(target);
+    onSettle?.(target);
+    return;
+  }
+  anim.setValue(from);
+  const id = anim.addListener(({ value }) => onChange(value));
+  Animated.timing(anim, { toValue: target, duration: 900, easing: Easing.inOut(Easing.cubic), useNativeDriver: false }).start(() => {
+    anim.removeListener(id);
+    onChange(target);
+    onSettle?.(target);
+  });
+}
+
 export function DragRail({
-  cents, onChange, fixedMarkers = [], label, snap = true, hideLabel, showMeTarget, reduceMotion, onSettle,
+  cents, onChange, fixedMarkers = [], label, snap = true, hideLabel, showMeTarget, reduceMotion, onSettle, bare, fit, brackets,
 }: {
   cents: number;
   onChange: (c: number) => void;
@@ -32,6 +58,12 @@ export function DragRail({
   showMeTarget?: number;
   reduceMotion?: boolean;
   onSettle?: (c: number) => void;
+  /** BARE (rack stage, 2026-09-30): the draggable rail only — no step keys,
+   *  no hint. The dock's fader and keys drive it instead. */
+  bare?: boolean;
+  /** Fill the box at the rail's shape (see CentsRail.fit). */
+  fit?: boolean;
+  brackets?: { fromCents: number; toCents: number; label: string; role?: RailMarker['role'] }[];
 }) {
   const wRef = useRef(1);
   const anim = useRef(new Animated.Value(cents)).current;
@@ -82,18 +114,7 @@ export function DragRail({
 
   const showMe = () => {
     if (showMeTarget == null) return;
-    if (reduceMotion) {
-      onChange(showMeTarget);
-      onSettle?.(showMeTarget);
-      return;
-    }
-    anim.setValue(cents);
-    const id = anim.addListener(({ value }) => onChange(value));
-    Animated.timing(anim, { toValue: showMeTarget, duration: 900, easing: Easing.inOut(Easing.cubic), useNativeDriver: false }).start(() => {
-      anim.removeListener(id);
-      onChange(showMeTarget);
-      onSettle?.(showMeTarget);
-    });
+    slideTo(anim, cents, showMeTarget, reduceMotion, onChange, onSettle);
   };
 
   useEffect(() => () => anim.removeAllListeners(), [anim]);
@@ -104,7 +125,7 @@ export function DragRail({
   ];
 
   return (
-    <View style={{ gap: 6 }}>
+    <View style={bare ? { width: '100%' } : { gap: 6 }}>
       <View
         {...pan.panHandlers}
         onLayout={(e: LayoutChangeEvent) => { wRef.current = Math.max(1, e.nativeEvent.layout.width); }}
@@ -121,8 +142,10 @@ export function DragRail({
         accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
         onAccessibilityAction={(e) => step(e.nativeEvent.actionName === 'increment' ? 10 : -10)}
       >
-        <CentsRail markers={markers} reduceMotion={reduceMotion || dragging} height={110} />
+        <CentsRail markers={markers} reduceMotion={reduceMotion || dragging} height={110} fit={fit} brackets={brackets} />
       </View>
+      {bare ? null : (
+      <>
       <Row>
         <Btn label="−10 ¢" onPress={() => step(-10)} a11y="Lower by ten cents" />
         <Btn label="−1 ¢" onPress={() => step(-1)} a11y="Lower by one cent" />
@@ -131,6 +154,8 @@ export function DragRail({
         {showMeTarget != null ? <Btn label="SHOW ME" onPress={showMe} a11y="Show me: move the marker to the answer" /> : null}
       </Row>
       <Text style={styles.hint}>Drag the marker, or use the step buttons. Nearby landmarks snap gently.</Text>
+      </>
+      )}
     </View>
   );
 }

@@ -199,8 +199,11 @@ export const centsOfXFrac = (xFrac: number): number => {
   return Math.max(0, Math.min(1200, c));
 };
 
+/** The rail's viewBox width — a stage declares `aspect = RAIL_W / height`. */
+export const CENTS_RAIL_W = RAIL_W;
+
 export function CentsRail({
-  markers, divisions = true, brackets, height = 96, onPressMarker, selectedId, reduceMotion,
+  markers, divisions = true, brackets, height = 96, onPressMarker, selectedId, reduceMotion, fit,
 }: {
   markers: RailMarker[];
   divisions?: boolean;
@@ -210,16 +213,23 @@ export function CentsRail({
   onPressMarker?: (id: string) => void;
   selectedId?: string | null;
   reduceMotion?: boolean;
+  /** FIT mode (rack stage / full screen, 2026-09-30): the SVG keeps its
+   *  viewBox's shape and fills whatever width its box gives it, so the
+   *  drawing — text included — scales with the glass and with every zoom
+   *  step. `height` is then the viewBox height only. */
+  fit?: boolean;
 }) {
-  const axisY = height - 30;
-  // With a lower lane in use, the endpoint labels tuck under the axis so the
-  // lane-1 marker labels (further down) never collide with them.
+  // With a lower lane in use the axis rises and the endpoint labels take the
+  // bottom row, UNDER the lane-1 labels (review 2026-09-30): tucked at
+  // axisY + 11 they sat level with the lane-1 triangles, and "2:1 · 1200 ¢"
+  // ran straight through the Just B at 1088 ¢ in chapter 8.
   const hasLane1 = markers.some((m) => m.lane === 1);
-  const endY = hasLane1 ? axisY + 11 : height - 8;
+  const axisY = hasLane1 ? height - 44 : height - 30;
+  const endY = hasLane1 ? height - 5 : height - 8;
   const summary = `Cents rail from 0 to 1200. ${markers.map((m) => `${m.label} at ${m.cents.toFixed(2)} cents`).join('; ')}.`;
   return (
     <View accessible accessibilityLabel={summary} accessibilityRole="image" style={{ width: '100%' }}>
-      <Svg width="100%" height={height} viewBox={`0 0 ${RAIL_W} ${height}`} preserveAspectRatio="none">
+      <Svg width="100%" height={fit ? undefined : height} style={fit ? { aspectRatio: RAIL_W / height } : undefined} viewBox={`0 0 ${RAIL_W} ${height}`} preserveAspectRatio={fit ? 'xMidYMid meet' : 'none'}>
         <Rect x={0} y={0} width={RAIL_W} height={height} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
         {divisions
           ? Array.from({ length: 13 }, (_, k) => (
@@ -327,8 +337,12 @@ export function EquationStage({ steps, title, reduceMotion, autoAdvance }: { ste
 
 /* ── DeviationMeter (labeled zero, signed cents) ────────────────────────── */
 
-export function DeviationMeter({ cents, rangeCents = 30, label }: { cents: number; rangeCents?: number; label?: string }) {
-  const w = 300, h = 40;
+/** The meter's viewBox — a figure host declares `aspect = METER_W / METER_H`. */
+export const METER_W = 300;
+export const METER_H = 40;
+
+export function DeviationMeter({ cents, rangeCents = 30, label, fit }: { cents: number; rangeCents?: number; label?: string; /** Fill the box at the viewBox's shape (rack stage / ExpandableFigure). */ fit?: boolean }) {
+  const w = METER_W, h = METER_H;
   const x = 150 + (Math.max(-rangeCents, Math.min(rangeCents, cents)) / rangeCents) * 140;
   const exact = Math.abs(cents) < 0.05;
   // exact → green, within 8 ¢ → gold, beyond → orange. Never red: a wide
@@ -338,7 +352,7 @@ export function DeviationMeter({ cents, rangeCents = 30, label }: { cents: numbe
   return (
     <View accessible accessibilityLabel={`${label ?? 'Deviation'}: ${exact ? 'exact' : `${cents > 0 ? '+' : ''}${cents.toFixed(2)} cents, ${state}`}`} style={{ gap: 3 }}>
       {label ? <Eyebrow>{label}</Eyebrow> : null}
-      <Svg width="100%" height={h} viewBox={`0 0 ${w} ${h}`}>
+      <Svg width="100%" height={fit ? undefined : h} style={fit ? { aspectRatio: w / h } : undefined} viewBox={`0 0 ${w} ${h}`}>
         <Rect x={0} y={0} width={w} height={h} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
         <Line x1={10} y1={h / 2} x2={w - 10} y2={h / 2} stroke="rgba(255,255,255,0.15)" />
         <Line x1={150} y1={6} x2={150} y2={h - 6} stroke={colors.textSub} strokeWidth={1.5} />

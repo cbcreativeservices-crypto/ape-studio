@@ -3,15 +3,27 @@
  * manipulation-based challenges, the retained ideas, review and retry.
  * Completion follows the app's policy: finishing the challenges completes
  * the chapter; perfect performance is not required.
+ *
+ * ON THE RACK (2026-09-30): FIGURE flips the glass between the three
+ * challenges that have a display — the octave elevator (1 · fold 9/4), the
+ * harmonic ladders (4 · align the third) and the rail of three E's (6 · hear
+ * E move) — and the dock keys change with it: ×2 / ÷2 / RESET, the THIRD
+ * fader + SHOW ME, the PLAY tray. Challenges 2, 3 and 5 are questions and
+ * read in the well with everything else.
  */
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
-import { frac, fracLabel, fracValue, centsToRatio, JUST_MAJOR_THIRD, PYTHAGOREAN_COMMA, frequencyFromRatio, TUNING_SYSTEMS } from '../../../../features/tuning/tuningMath';
+import { frac, fracLabel, fracValue, centsToRatio, JUST_MAJOR_THIRD, PYTHAGOREAN_COMMA, frequencyFromRatio, TUNING_SYSTEMS, type Frac } from '../../../../features/tuning/tuningMath';
 import { renderNotes } from '../../../../features/tuning/tuningAudio';
 import type { ChapterProps } from '../labCtx';
-import { Body, Btn, Card, DeviationMeter, Eyebrow, Lead, MathLine, Prompt, Row, useMarkWhen, useStableShuffle } from '../components/primitives';
+import { Body, Btn, Card, CentsRail, CENTS_RAIL_W, DeviationMeter, Eyebrow, Lead, MathLine, Prompt, Row, useMarkWhen, useStableShuffle, type RailMarker } from '../components/primitives';
+import { OctaveElevator } from '../components/octaveElevator';
+import { HarmonicComparison, LADDER_H, LADDER_W } from '../components/harmonicLadder';
 import { UnderstandingCheck } from '../components/check';
+import { StageFit } from '../../rack/StageFit';
+import type { BezelItem, DockParam } from '../../rack/rackTypes';
+import { TuningRackLayout, flipFader, lanePos, laneVal, playTray, snapNear, soundCell, stopKey, usePlayerStatus } from '../rackLayout';
 
 const RULES: { rule: string; answer: string }[] = [
   { rule: 'Repeated 3/2 fifths', answer: 'Pythagorean' },
@@ -20,18 +32,34 @@ const RULES: { rule: string; answer: string }[] = [
   { rule: 'Twelve identical steps', answer: 'Equal temperament' },
 ];
 const SYSTEMS = ['Pythagorean', 'Just', 'Quarter-comma meantone', 'Equal temperament'];
+type Figure = 'fold' | 'third' | 'emoves';
+const FIGURES: { id: Figure; name: string; short: string; blurb: string }[] = [
+  // Key-width shorts (review 2026-09-30): "1 · FOLD" cropped to "1 · FO…" in a
+  // five-key dock; the number reads on the lane and in the tray.
+  { id: 'fold', name: '1 · Normalize 9/4', short: 'FOLD', blurb: 'The octave elevator. Fold 9/4 into one octave with ×2 / ÷2.' },
+  { id: 'third', name: '4 · Align the third', short: 'THIRD', blurb: 'The harmonic ladders. Ride THIRD until 4 × ratio = 5.' },
+  { id: 'emoves', name: '6 · Hear E move', short: 'E MOVES', blurb: 'Three E’s over a fixed C on the rail. PLAY each one.' },
+];
+const E_SYSTEMS = [['Just', TUNING_SYSTEMS.just], ['Equal', TUNING_SYSTEMS.equal], ['Pythagorean', TUNING_SYSTEMS.pythagorean]] as const;
+const MIN = 370, MAX = 430;
+const RAIL_H = 110;
 
 export function Ch13Apply({ ctx }: ChapterProps) {
   const [done, setDone] = useState<boolean[]>([false, false, false, false, false, false]);
   const mark = (i: number) => setDone((d) => (d[i] ? d : d.map((v, k) => (k === i ? true : v))));
   const all = done.every(Boolean);
+  const [figure, setFigure] = useState<Figure>('fold');
+  const [last, setLast] = useState<string | null>(null);
+  const status = usePlayerStatus(ctx.player);
 
   // 1 — normalize 9/4
-  const [c1, setC1] = useState(frac(9, 4));
-  const [c1Hist, setC1Hist] = useState<string[]>([]);
+  const [c1, setC1] = useState<Frac>(frac(9, 4));
+  const [c1Hist, setC1Hist] = useState<{ op: '×2' | '÷2'; before: Frac; after: Frac }[]>([]);
+  const c1In = fracValue(c1) >= 1 && fracValue(c1) < 2;
   const c1Apply = (op: '×2' | '÷2') => {
+    if (done[0]) return;
     const after = op === '÷2' ? frac(c1.n, c1.d * 2) : frac(c1.n * 2, c1.d);
-    setC1Hist([...c1Hist, `${fracLabel(c1)} ${op} = ${fracLabel(after)}`]);
+    setC1Hist([...c1Hist, { op, before: c1, after }]);
     setC1(after);
     if (fracValue(after) >= 1 && fracValue(after) < 2) mark(0);
   };
@@ -47,9 +75,15 @@ export function Ch13Apply({ ctx }: ChapterProps) {
   // 4 — align the third
   const [thirdCents, setThirdCents] = useState(400);
   const thirdErr = thirdCents - JUST_MAJOR_THIRD.cents;
+  const thirdRatio = centsToRatio(thirdCents);
 
   // 6 — hear E move
   const root = ctx.rootHz;
+  const eOf = (s: typeof TUNING_SYSTEMS.just) => s.notes[2];
+  const eMarkers: RailMarker[] = [
+    { id: 'root', cents: 0, label: 'C · fixed', role: 'neutral' },
+    ...E_SYSTEMS.map(([l, s], i) => ({ id: `e${l}`, cents: eOf(s).value.cents, label: `${l} E`, role: last === `e${l}` ? ('active' as const) : ('neutral' as const), emphasis: last === `e${l}`, row: i % 2 })),
+  ];
 
   // Completion flags are set from effects, never during render (a parent
   // update from a child's render is a React warning).
@@ -57,21 +91,98 @@ export function Ch13Apply({ ctx }: ChapterProps) {
   useMarkWhen(Math.abs(thirdErr) < 0.05, () => mark(3));
   useMarkWhen(all, ctx.markDone);
 
+  const doneCell: BezelItem = { k: 'DONE', v: `${done.filter(Boolean).length}/6`, tint: all ? colors.green : colors.cyanBright, flex: 0.8 };
+  const bezel: BezelItem[] =
+    figure === 'fold' ? [
+      { k: 'RATIO', v: fracLabel(c1), tint: c1In ? colors.green : colors.gold },
+      { k: 'VALUE', v: fracValue(c1).toFixed(4) },
+      { k: 'REGION', v: fracValue(c1) < 1 ? 'BELOW' : c1In ? 'INSIDE' : 'ABOVE', tint: c1In ? colors.green : undefined },
+      doneCell,
+    ]
+    : figure === 'third' ? [
+      { k: 'THIRD', v: `${thirdCents.toFixed(2)} ¢`, tint: done[3] ? colors.green : colors.cyanBright },
+      { k: '4 × RATIO', v: (4 * thirdRatio).toFixed(4), tint: Math.abs(thirdErr) < 0.05 ? colors.green : undefined },
+      { k: 'FROM 5/4', v: Math.abs(thirdErr) < 0.05 ? '0 ¢' : `${thirdErr > 0 ? '+' : ''}${thirdErr.toFixed(2)} ¢`, tint: Math.abs(thirdErr) < 0.05 ? colors.green : Math.abs(thirdErr) < 8 ? colors.gold : colors.orange },
+      doneCell,
+    ]
+    : [
+      ...E_SYSTEMS.map(([l, s]) => ({ k: `${l.toUpperCase()} E`, v: `${eOf(s).value.cents.toFixed(2)} ¢`, tint: last === `e${l}` ? colors.cyanBright : undefined })),
+      soundCell(status, 0.9),
+    ];
+
+  const stage =
+    figure === 'fold' ? (w: number, h: number) => <OctaveElevator value={c1} history={c1Hist} reduceMotion={ctx.reduceMotion} box={{ w, h }} />
+    : figure === 'third' ? (w: number, h: number) => (
+        <StageFit w={w} h={h} aspect={LADDER_W / LADDER_H}>
+          <HarmonicComparison fit readout={false} rootHz={root} upperHz={frequencyFromRatio(root, thirdRatio)} rootHarmonic={5} upperHarmonic={4} rootLabel="root C" upperLabel="your third" />
+        </StageFit>
+      )
+    : (w: number, h: number) => (
+        <StageFit w={w} h={h} aspect={CENTS_RAIL_W / RAIL_H}>
+          <CentsRail markers={eMarkers} reduceMotion={ctx.reduceMotion} height={RAIL_H} fit />
+        </StageFit>
+      );
+
+  const params: DockParam[] = [
+    flipFader({ id: 'figure', label: 'FIGURE', title: 'THE CHALLENGES WITH A DISPLAY', items: FIGURES, selectedId: figure, onSelect: (id) => setFigure(id as Figure), name: (f) => f.name, short: (f) => f.short, blurb: (f) => f.blurb }),
+    ...(figure === 'fold'
+      ? ([
+          { kind: 'action', id: 'x2', label: '×2', onPress: () => c1Apply('×2') },
+          { kind: 'action', id: 'd2', label: '÷2', onPress: () => c1Apply('÷2') },
+          { kind: 'action', id: 'reset', label: 'RESET', onPress: () => { setC1(frac(9, 4)); setC1Hist([]); } },
+        ] as DockParam[])
+      : []),
+    ...(figure === 'third'
+      ? ([
+          {
+            kind: 'fader',
+            id: 'third',
+            label: 'THIRD',
+            value: lanePos(thirdCents, MIN, MAX),
+            // 0.1 ¢ steps + a quarter-cent snap onto 5/4 (review 2026-09-30;
+            // chapter 4's rule) — 600 steps on a ~320 px lane left the 0.05 ¢
+            // window narrower than one pixel.
+            onChange: (p) => setThirdCents(snapNear(laneVal(p, MIN, MAX, 0.1), JUST_MAJOR_THIRD.cents)),
+            format: (p) => `${snapNear(laneVal(p, MIN, MAX, 0.1), JUST_MAJOR_THIRD.cents).toFixed(2)} ¢`,
+            formatShort: (p) => `${snapNear(laneVal(p, MIN, MAX, 0.1), JUST_MAJOR_THIRD.cents).toFixed(1)}¢`,
+            home: lanePos(400, MIN, MAX),
+          },
+          { kind: 'action', id: 'showme', label: 'SHOW ME', onPress: () => setThirdCents(JUST_MAJOR_THIRD.cents) },
+        ] as DockParam[])
+      : []),
+    ...(figure === 'emoves'
+      ? [
+          playTray({
+            player: ctx.player,
+            last,
+            setLast,
+            clips: E_SYSTEMS.map(([l, s]) => ({ id: `e${l}`, label: `${l} E · ${eOf(s).value.cents.toFixed(2)} ¢`, make: () => renderNotes([root, frequencyFromRatio(root, eOf(s).value.numericRatio)], 1.4, 'rich'), name: `${l} E`, blurb: `C stays at ${root.toFixed(2)} Hz; this E is ${frequencyFromRatio(root, eOf(s).value.numericRatio).toFixed(2)} Hz — ratio ${eOf(s).value.exactLabel}.` })),
+            short: (c) => c.label.split(' ')[0],
+          }),
+        ]
+      : []),
+    // ■ STOP on every figure (review 2026-09-30): an E clip kept sounding
+    // after a ride to FOLD or THIRD, whose docks had no stop — and in full
+    // screen the footer's ■ STOP is off screen.
+    stopKey(ctx.player),
+  ];
+
+  const caption: Record<Figure, string> = {
+    fold: 'Challenge 1 on the glass: press ×2 or ÷2 until 9/4 sits in the comparison octave. Ride FIGURE for challenges 4 and 6; the rest read below.',
+    third: 'Challenge 4 on the glass: ride THIRD until the third’s 4th harmonic meets the root’s 5th — 4 × ratio = 5. Double-tap the lane for 400 ¢.',
+    emoves: 'Challenge 6 on the glass: PLAY each E over the same fixed C, then answer what moved.',
+  };
+
   return (
-    <View style={{ gap: 12 }}>
+    <TuningRackLayout ctx={ctx} rack={{ size: 'M', initialParam: 'figure', hideDragTag: true, bezel, stage, params }} caption={caption[figure]}>
       <Lead>Six short challenges. Each one is something you did earlier — now do it on purpose.</Lead>
       <Text style={styles.progress}>{done.filter(Boolean).length} of 6 complete</Text>
 
       <Eyebrow>1 · NORMALIZE</Eyebrow>
-      <Prompt>Fold 9/4 into one octave.</Prompt>
+      <Prompt>Fold 9/4 into one octave — FIGURE 1 · FOLD, then ×2 / ÷2.</Prompt>
       <Card tone={done[0] ? 'ok' : 'plain'}>
         <MathLine>current: {fracLabel(c1)}{done[0] ? ' ✓ inside 1 ≤ r < 2' : ''}</MathLine>
-        {c1Hist.map((h) => <Text key={h} style={styles.hist}>{h}</Text>)}
-        <Row>
-          <Btn label="×2" onPress={() => c1Apply('×2')} disabled={done[0]} />
-          <Btn label="÷2" onPress={() => c1Apply('÷2')} disabled={done[0]} />
-          <Btn label="RESET" onPress={() => { setC1(frac(9, 4)); setC1Hist([]); }} />
-        </Row>
+        {c1Hist.map((h, i) => <Text key={i} style={styles.hist}>{fracLabel(h.before)} {h.op} = {fracLabel(h.after)}</Text>)}
       </Card>
 
       <Eyebrow>2 · MATCH THE RULE</Eyebrow>
@@ -105,17 +216,10 @@ export function Ch13Apply({ ctx }: ChapterProps) {
       />
 
       <Eyebrow>4 · ALIGN THE THIRD</Eyebrow>
-      <Prompt>Adjust the major third until 4 × third ratio = 5.</Prompt>
+      <Prompt>Adjust the major third until 4 × third ratio = 5 — FIGURE 4 · THIRD, then ride THIRD.</Prompt>
       <Card tone={done[3] ? 'ok' : 'plain'}>
-        <MathLine>third = {thirdCents.toFixed(2)} ¢ → ratio {centsToRatio(thirdCents).toFixed(6)} → 4 × ratio = {(4 * centsToRatio(thirdCents)).toFixed(4)}</MathLine>
+        <MathLine>third = {thirdCents.toFixed(2)} ¢ → ratio {thirdRatio.toFixed(6)} → 4 × ratio = {(4 * thirdRatio).toFixed(4)}</MathLine>
         <DeviationMeter cents={thirdErr} rangeCents={25} label="cents from 5/4" />
-        <Row>
-          <Btn label="−1 ¢" onPress={() => setThirdCents(+(thirdCents - 1).toFixed(2))} a11y="Narrow by one cent" />
-          <Btn label="−0.1 ¢" onPress={() => setThirdCents(+(thirdCents - 0.1).toFixed(2))} a11y="Narrow by a tenth of a cent" />
-          <Btn label="+0.1 ¢" onPress={() => setThirdCents(+(thirdCents + 0.1).toFixed(2))} a11y="Widen by a tenth of a cent" />
-          <Btn label="+1 ¢" onPress={() => setThirdCents(+(thirdCents + 1).toFixed(2))} a11y="Widen by one cent" />
-          <Btn label="SHOW ME" onPress={() => setThirdCents(+JUST_MAJOR_THIRD.cents.toFixed(2))} a11y="Show me: set the third to 5/4" />
-        </Row>
         {done[3] ? <Text style={styles.ok}>✓ 5/4 — the fourth harmonic of the third meets the fifth harmonic of the root.</Text> : null}
       </Card>
 
@@ -135,14 +239,7 @@ export function Ch13Apply({ ctx }: ChapterProps) {
       />
 
       <Eyebrow>6 · INTERPRET NOTE MOVEMENT</Eyebrow>
-      <Prompt>Keep C fixed and hear E at three sizes, then explain what moved.</Prompt>
-      <Row>
-        {[['Just', TUNING_SYSTEMS.just], ['Equal', TUNING_SYSTEMS.equal], ['Pythagorean', TUNING_SYSTEMS.pythagorean]].map(([l, s]) => {
-          const e = (s as typeof TUNING_SYSTEMS.just).notes[2];
-          return <Btn key={l as string} label={`▶ E ${e.value.cents.toFixed(2)} ¢`} onPress={() => void ctx.player.renderAndPlay(() => renderNotes([root, frequencyFromRatio(root, e.value.numericRatio)], 1.4, 'rich'), `${l} E`)} a11y={`Play C with ${l} E`} />;
-        })}
-        <Btn label="■" tone="danger" onPress={() => ctx.player.stop()} a11y="Stop audio" />
-      </Row>
+      <Prompt>Keep C fixed and hear E at three sizes — FIGURE 6 · E MOVES, then PLAY — then explain what moved.</Prompt>
       {/* NEW COPY — options rebalanced (the correct one was ~4× the length of
           the others) + per-distractor feedback. */}
       <UnderstandingCheck
@@ -171,10 +268,10 @@ export function Ch13Apply({ ctx }: ChapterProps) {
             'Twelve-tone equal temperament uses twelve equal multiplicative steps.',
           ].map((t, i) => <Text key={i} style={styles.keep}>{i + 1}. {t}</Text>)}
           <Body>Lab complete. Use the chapter list at the top to review any chapter, or RETRY to run the challenges again.</Body>
-          <Btn label="RETRY THE CHALLENGES" onPress={() => { setDone([false, false, false, false, false, false]); setC1(frac(9, 4)); setC1Hist([]); setPicks({}); setThirdCents(400); }} />
+          <Btn label="RETRY THE CHALLENGES" onPress={() => { setDone([false, false, false, false, false, false]); setC1(frac(9, 4)); setC1Hist([]); setPicks({}); setThirdCents(400); setFigure('fold'); }} />
         </Card>
       ) : null}
-    </View>
+    </TuningRackLayout>
   );
 }
 

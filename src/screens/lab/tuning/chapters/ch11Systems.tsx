@@ -3,23 +3,42 @@
  * Same C root for every system, a fixed keyboard whose MARKERS move,
  * readouts derived from the ratio, harmonic preview, A/B audio, the E-moves
  * demonstration, and a deviation chart with an accessible alternative.
+ *
+ * ON THE RACK (2026-09-30): the deviation chart is the stage (tap a bar or
+ * ride NOTE to inspect a degree); SYSTEM flips the four systems; REF sets
+ * the reference pitch for the whole lab; A / B is one working tray — the
+ * example, system B, the A / B / A→B keys and the three E's over a fixed C —
+ * so the comparison is made without leaving the glass. The fixed keyboard
+ * sits at the top of the well; the harmonic ladders below it have their own
+ * FULL SCREEN.
  */
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Svg, { Line, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
 import {
-  TUNING_SYSTEMS, type TuningSystemId, type TuningSystem, C4_ET, deviationFromEqualCents, frequencyFromRatio,
+  TUNING_SYSTEMS, type TuningSystemId, C4_ET, deviationFromEqualCents, frequencyFromRatio,
 } from '../../../../features/tuning/tuningMath';
-import { renderNotes, renderSequence } from '../../../../features/tuning/tuningAudio';
+import { concatWithGap, renderNotes, renderSequence } from '../../../../features/tuning/tuningAudio';
 import type { ChapterProps } from '../labCtx';
-import { AudioComparisonControls, Body, Btn, Card, Eyebrow, Lead, MathLine, Prompt, ROLE, Row } from '../components/primitives';
+import { Body, Btn, Card, Eyebrow, Lead, MathLine, Prompt, Row, usePreloadClips } from '../components/primitives';
 import { TuningKeyboard } from '../components/tuningKeyboard';
-import { HarmonicComparison } from '../components/harmonicLadder';
+import { HarmonicComparison, LADDER_H, LADDER_W } from '../components/harmonicLadder';
+import { CHART_H, CHART_W, DeviationChart } from '../components/stageFigures';
 import { UnderstandingCheck } from '../components/check';
+import { StageFit } from '../../rack/StageFit';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
+import type { DockParam } from '../../rack/rackTypes';
+import { TuningRackLayout, flipFader, soundCell, stopKey, usePlayerStatus } from '../rackLayout';
 
 const IDS: TuningSystemId[] = ['pythagorean', 'just', 'meantone', 'equal'];
-const ROOTS = [{ label: 'A4 = 440 (C4 = 261.63)', hz: C4_ET }, { label: 'A4 = 442', hz: 442 * Math.pow(2, -9 / 12) }, { label: 'A4 = 432', hz: 432 * Math.pow(2, -9 / 12) }];
+/** Dock-key width names — at most 5 characters, so "B·Equal" on the A / B key
+ *  still fits a five-key dock on a 375 phone (~7 mono characters; "vs Equal"
+ *  and "Meantone" cropped, review 2026-09-30). The lane, tray and bezel carry
+ *  the full name. */
+const KEY_NAME: Record<TuningSystemId, string> = { pythagorean: 'Pyth.', just: 'Just', meantone: 'Mean.', equal: 'Equal' };
+const ROOTS = [{ id: '440', label: 'A4 = 440 (C4 = 261.63)', short: 'A = 440', hz: C4_ET }, { id: '442', label: 'A4 = 442', short: 'A = 442', hz: 442 * Math.pow(2, -9 / 12) }, { id: '432', label: 'A4 = 432', short: 'A = 432', hz: 432 * Math.pow(2, -9 / 12) }];
+type Example = 'third' | 'fifth' | 'triad' | 'scale' | 'melody';
+const EXAMPLES: [Example, string][] = [['third', 'C–E third'], ['fifth', 'C–G fifth'], ['triad', 'C–E–G triad'], ['scale', 'C-major scale'], ['melody', 'short melody']];
 
 /** Harmonics searched for a near-coincidence, and how near counts. Up to 9
  *  lets D 9/8 find its exact pair (D·8 = C·9); 2 % keeps the Pythagorean
@@ -43,7 +62,8 @@ export function Ch11Systems({ ctx }: ChapterProps) {
   const [sysId, setSysId] = useState<TuningSystemId>('just');
   const [bId, setBId] = useState<TuningSystemId>('equal');
   const [sel, setSel] = useState(2); // E
-  const [example, setExample] = useState<'third' | 'fifth' | 'triad' | 'scale' | 'melody'>('third');
+  const [example, setExample] = useState<Example>('third');
+  const status = usePlayerStatus(ctx.player);
   const sys = TUNING_SYSTEMS[sysId];
   const other = TUNING_SYSTEMS[bId];
   const note = sys.notes[sel];
@@ -51,6 +71,7 @@ export function Ch11Systems({ ctx }: ChapterProps) {
   const hz = (r: number) => frequencyFromRatio(root, r);
   const dev = deviationFromEqualCents(note);
   const pair = useMemo(() => bestPair(note.value.numericRatio), [note]);
+  const refId = ROOTS.find((r) => Math.abs(root - r.hz) < 0.01)?.id ?? null;
 
   const freqsOf = (s: typeof sys, degrees: number[]) => degrees.map((d) => hz(s.notes[d].value.numericRatio));
   const render = (s: typeof sys) => {
@@ -62,24 +83,97 @@ export function Ch11Systems({ ctx }: ChapterProps) {
       case 'melody': return renderSequence(freqsOf(s, [0, 2, 4, 5, 4, 2, 0]), 0.3, 'rich');
     }
   };
+  const exampleName = EXAMPLES.find(([k]) => k === example)?.[1] ?? example;
+  const play = (make: () => ReturnType<typeof renderNotes>, name: string) => void ctx.player.renderAndPlay(make, name);
+  usePreloadClips(ctx.player, () => [() => render(sys), () => render(other), () => concatWithGap(render(sys), render(other))], `${sysId}|${bId}|${example}|${root}`);
+
+  const params: DockParam[] = [
+    flipFader({ id: 'system', label: 'SYSTEM', title: 'SYSTEM A · ON THE CHART', items: IDS.map((id) => ({ id })), selectedId: sysId, onSelect: (id) => setSysId(id as TuningSystemId), name: (s) => TUNING_SYSTEMS[s.id as TuningSystemId].name, short: (s) => KEY_NAME[s.id as TuningSystemId], blurb: (s) => TUNING_SYSTEMS[s.id as TuningSystemId].rule }),
+    flipFader({ id: 'note', label: 'NOTE', title: 'INSPECT A DEGREE', items: sys.notes.map((n, i) => ({ id: String(i), n })), selectedId: String(sel), onSelect: (id) => setSel(Number(id)), name: (d) => `${d.n.spelling}${d.n.degree === 8 ? ' (octave)' : ''} · ${d.n.value.exactLabel}`, short: (d) => d.n.spelling, blurb: (d) => d.n.value.constructionSource }),
+    {
+      kind: 'options',
+      id: 'ref',
+      label: 'REF',
+      valueLabel: refId ?? `${root.toFixed(1)}`,
+      options: ROOTS.map((r) => ({ id: r.id, label: r.label, blurb: `C4 = ${r.hz.toFixed(2)} Hz. The reference pitch applies to the whole lab; every ratio is applied to this C.` })),
+      selectedId: refId,
+      onSelect: (id) => {
+        const r = ROOTS.find((x) => x.id === id);
+        if (r) ctx.setRootHz(r.hz);
+      },
+      sticky: true,
+    },
+    {
+      kind: 'group',
+      id: 'ab',
+      label: 'A / B',
+      valueLabel: `B·${KEY_NAME[bId]}`,
+      render: () => (
+        <View style={styles.tray}>
+          <Eyebrow>EXAMPLE</Eyebrow>
+          <Row>
+            {EXAMPLES.map(([k, l]) => (
+              <Btn key={k} label={l} tone={example === k ? 'primary' : 'plain'} selected={example === k} onPress={() => setExample(k)} a11y={`Example: ${l}`} />
+            ))}
+          </Row>
+          <Eyebrow>SYSTEM B</Eyebrow>
+          <Row>
+            {IDS.map((id) => <Btn key={id} label={TUNING_SYSTEMS[id].shortName} tone={bId === id ? 'primary' : 'plain'} selected={bId === id} onPress={() => setBId(id)} a11y={`System B: ${TUNING_SYSTEMS[id].shortName}`} />)}
+          </Row>
+          <Eyebrow>PLAY · {sys.shortName.toUpperCase()} (A) VS {other.shortName.toUpperCase()} (B) · {exampleName.toUpperCase()}</Eyebrow>
+          <Row>
+            <Btn label={`▶ A · ${sys.shortName}`} onPress={() => play(() => render(sys), `${sys.shortName} · ${exampleName}`)} a11y={`Play A, ${sys.shortName}`} />
+            <Btn label={`▶ B · ${other.shortName}`} onPress={() => play(() => render(other), `${other.shortName} · ${exampleName}`)} a11y={`Play B, ${other.shortName}`} />
+            <Btn label="A → B" onPress={() => play(() => concatWithGap(render(sys), render(other)), `${sys.shortName} then ${other.shortName} · ${exampleName}`)} a11y="Play A then B" />
+            <Btn label="■ STOP" tone="danger" onPress={() => ctx.player.stop()} a11y="Stop audio" />
+          </Row>
+          <Eyebrow>HEAR THE SAME NOTE MOVE · E OVER A FIXED C</Eyebrow>
+          <Row>
+            {(['just', 'equal', 'pythagorean'] as TuningSystemId[]).map((id) => {
+              const e = TUNING_SYSTEMS[id].notes[2];
+              return <Btn key={id} label={`▶ ${TUNING_SYSTEMS[id].shortName} E · ${e.value.cents.toFixed(2)} ¢`} onPress={() => play(() => renderNotes([root, hz(e.value.numericRatio)], 1.4, 'rich'), `C and ${TUNING_SYSTEMS[id].shortName} E`)} />;
+            })}
+          </Row>
+        </View>
+      ),
+    },
+    stopKey(ctx.player),
+  ];
 
   return (
-    <View style={{ gap: 12 }}>
+    <TuningRackLayout
+      ctx={ctx}
+      rack={{
+        size: 'M',
+        initialParam: 'system',
+        hideDragTag: true,
+        bezel: [
+          // The spelling rides on the KEY line (review 2026-09-30): meantone's
+          // "B 5^(5/4)/4" is 11 mono characters in a ~83 px cell — it cropped
+          // to an ellipsis on a 390 phone, and a readout never drops its number.
+          { k: `NOTE ${note.spelling}`, v: note.value.exactLabel, tint: colors.cyanBright, flex: 1.15 },
+          { k: 'Hz', v: `${hz(note.value.numericRatio).toFixed(2)} Hz`, flex: 1.1 },
+          { k: 'VS EQUAL', v: Math.abs(dev) < 0.05 ? '0 ¢' : `${dev > 0 ? '+' : ''}${dev.toFixed(2)} ¢`, tint: Math.abs(dev) < 0.05 ? colors.green : Math.abs(dev) < 10 ? colors.gold : colors.orange },
+          soundCell(status),
+        ],
+        stage: (w, h) => (
+          <StageFit w={w} h={h} aspect={CHART_W / CHART_H}>
+            <DeviationChart system={sys} selected={sel} onSelect={setSel} />
+          </StageFit>
+        ),
+        params,
+      }}
+      caption="Ride SYSTEM through the four systems and watch every bar move; tap a bar, or ride NOTE, to inspect one degree. A / B opens the comparison: pick the example and system B, then play."
+      wellTop={
+        <Card>
+          <Eyebrow>{sys.name.toUpperCase()} · C FIXED AT {root.toFixed(2)} Hz</Eyebrow>
+          <TuningKeyboard system={sys} selected={sel} onSelect={setSel} rootHz={root} />
+          {/* NEW COPY — the old legend promised ● and ▲ glyphs the keys never drew. */}
+          <Text style={styles.legend}>Keys never move. Each bar is that note’s signed distance from equal temperament — green exact · gold within 10 ¢ · orange beyond. Tap a key to inspect it.</Text>
+        </Card>
+      }
+    >
       <Lead>Every system on the same C, the same keys, the same sounds — only the ratios change.</Lead>
-      <Eyebrow>SYSTEM A</Eyebrow>
-      <Row>
-        {IDS.map((id) => <Btn key={id} label={TUNING_SYSTEMS[id].shortName} tone={sysId === id ? 'primary' : 'plain'} selected={sysId === id} onPress={() => setSysId(id)} a11y={`System A: ${TUNING_SYSTEMS[id].shortName}`} />)}
-      </Row>
-      <Eyebrow>REFERENCE PITCH · APPLIES TO THE WHOLE LAB</Eyebrow>
-      <Row>
-        {ROOTS.map((r) => <Btn key={r.label} label={r.label} tone={Math.abs(root - r.hz) < 0.01 ? 'primary' : 'plain'} selected={Math.abs(root - r.hz) < 0.01} onPress={() => ctx.setRootHz(r.hz)} a11y={`Set reference ${r.label}`} />)}
-      </Row>
-      <Card>
-        <Eyebrow>{sys.name.toUpperCase()} · C FIXED AT {root.toFixed(2)} Hz</Eyebrow>
-        <TuningKeyboard system={sys} selected={sel} onSelect={setSel} rootHz={root} />
-        {/* NEW COPY — the old legend promised ● and ▲ glyphs the keys never drew. */}
-        <Text style={styles.legend}>Keys never move. Each bar is that note’s signed distance from equal temperament — green exact · gold within 10 ¢ · orange beyond. Tap a key to inspect it.</Text>
-      </Card>
       <Card tone="math">
         <Eyebrow>{note.spelling}{sel === 7 ? ' (OCTAVE)' : ''} · {sys.shortName}</Eyebrow>
         <MathLine>ratio {note.value.exactLabel}{ctx.mathView ? ` ≈ ${note.value.decimalLabel}` : ''}</MathLine>
@@ -89,7 +183,16 @@ export function Ch11Systems({ ctx }: ChapterProps) {
       </Card>
       {sel > 0 && sel < 7 ? (
         pair ? (
-          <HarmonicComparison rootHz={root} upperHz={hz(note.value.numericRatio)} rootHarmonic={pair.rootH} upperHarmonic={pair.noteH} rootLabel="root C" upperLabel={`${note.spelling} ${note.value.exactLabel}`} />
+          <>
+            <ExpandableFigure
+              title={`HARMONIC LADDERS · C–${note.spelling}`}
+              aspect={LADDER_W / LADDER_H}
+              render={() => <HarmonicComparison fit readout={false} rootHz={root} upperHz={hz(note.value.numericRatio)} rootHarmonic={pair.rootH} upperHarmonic={pair.noteH} rootLabel="root C" upperLabel={`${note.spelling} ${note.value.exactLabel}`} />}
+            />
+            <Text style={styles.legend}>
+              root C harmonic {pair.rootH}: {(root * pair.rootH).toFixed(2)} Hz · {note.spelling} harmonic {pair.noteH}: {(hz(note.value.numericRatio) * pair.noteH).toFixed(2)} Hz · {Math.abs(root * pair.rootH - hz(note.value.numericRatio) * pair.noteH) < 0.005 ? 'same frequency — 0 Hz' : `difference ${(hz(note.value.numericRatio) * pair.noteH - root * pair.rootH).toFixed(2)} Hz`}
+            </Text>
+          </>
         ) : (
           // NEW COPY — honest empty state instead of a meaningless bracket.
           <Body>No pair of harmonics up to {MAX_H} comes within 2 % for {note.spelling} {note.value.exactLabel}, so no ladder is drawn — the nearest low-harmonic alignment for this ratio lies above the display.</Body>
@@ -97,29 +200,10 @@ export function Ch11Systems({ ctx }: ChapterProps) {
       ) : null}
 
       <Prompt>A/B the same example in two systems. Root, register, timbre, duration, articulation, gain, voicing and tempo are held constant.</Prompt>
-      <Row>
-        {([['third', 'C–E third'], ['fifth', 'C–G fifth'], ['triad', 'C–E–G triad'], ['scale', 'C-major scale'], ['melody', 'short melody']] as const).map(([k, l]) => (
-          <Btn key={k} label={l} tone={example === k ? 'primary' : 'plain'} selected={example === k} onPress={() => setExample(k)} a11y={`Example: ${l}`} />
-        ))}
-      </Row>
-      <Eyebrow>SYSTEM B</Eyebrow>
-      <Row>
-        {IDS.map((id) => <Btn key={id} label={TUNING_SYSTEMS[id].shortName} tone={bId === id ? 'primary' : 'plain'} selected={bId === id} onPress={() => setBId(id)} a11y={`System B: ${TUNING_SYSTEMS[id].shortName}`} />)}
-      </Row>
-      <AudioComparisonControls player={ctx.player} a={() => render(sys)} b={() => render(other)} labelA={`${sys.shortName} · ${example}`} labelB={`${other.shortName} · ${example}`} />
-
-      <Eyebrow>HEAR THE SAME NOTE MOVE · E OVER A FIXED C</Eyebrow>
-      <Row>
-        {(['just', 'equal', 'pythagorean'] as TuningSystemId[]).map((id) => {
-          const e = TUNING_SYSTEMS[id].notes[2];
-          return <Btn key={id} label={`▶ ${TUNING_SYSTEMS[id].shortName} E · ${e.value.cents.toFixed(2)} ¢`} onPress={() => void ctx.player.renderAndPlay(() => renderNotes([root, hz(e.value.numericRatio)], 1.4, 'rich'), `C and ${TUNING_SYSTEMS[id].shortName} E`)} />;
-        })}
-        <Btn label="■" tone="danger" onPress={() => ctx.player.stop()} a11y="Stop audio" />
-      </Row>
-      <Body>Same written scale degree, different assigned frequency.</Body>
+      <Body>The A / B key holds the comparison: the example ({exampleName}), system B ({other.shortName}), the A / B / A → B keys — and the same E over a fixed C in three systems. Same written scale degree, different assigned frequency.</Body>
 
       <Eyebrow>DEVIATION FROM EQUAL TEMPERAMENT · {sys.shortName.toUpperCase()}</Eyebrow>
-      <DeviationChart system={sys} selected={sel} onSelect={setSel} />
+      <Body>The chart on the glass: each bar is that note's signed distance from equal temperament in cents. Ride SYSTEM and watch the bars move.</Body>
       {ctx.mathView ? (
         <Card tone="math">
           <Eyebrow>ALL EIGHT · COMPUTED FROM ratio × {root.toFixed(6)} Hz</Eyebrow>
@@ -143,41 +227,11 @@ export function Ch11Systems({ ctx }: ChapterProps) {
         onCorrect={ctx.markDone}
       />
       {!ctx.isDone ? <Btn label="I’VE COMPARED THEM ›" tone="primary" onPress={ctx.markDone} /> : null}
-    </View>
-  );
-}
-
-function DeviationChart({ system, selected, onSelect }: { system: TuningSystem; selected: number; onSelect: (i: number) => void }) {
-  const W = 340, H = 150, zeroY = 66, scale = 2.2; // px per cent
-  const notes = system.notes;
-  const summary = `Deviation from equal temperament: ${notes.map((n) => `${n.spelling} ${deviationFromEqualCents(n) >= 0 ? '+' : ''}${deviationFromEqualCents(n).toFixed(2)} cents`).join(', ')}.`;
-  return (
-    <View accessible accessibilityLabel={summary}>
-      <Svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
-        <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
-        <Line x1={10} y1={zeroY} x2={W - 10} y2={zeroY} stroke={colors.textSub} strokeWidth={1.2} />
-        <SvgText x={12} y={zeroY - 4} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium}>0 ¢ = EQUAL TEMPERAMENT</SvgText>
-        <SvgText x={12} y={14} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium}>+ HIGHER</SvgText>
-        <SvgText x={12} y={zeroY + 13} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium}>− LOWER</SvgText>
-        {notes.map((n, i) => {
-          const dev = deviationFromEqualCents(n);
-          const x = 40 + i * 38;
-          const h = Math.min(50, Math.abs(dev) * scale);
-          // Descriptive distance: green exact, gold within 10 ¢, orange beyond. Never red.
-          const role = Math.abs(dev) < 0.05 ? 'exact' : Math.abs(dev) < 10 ? 'near' : 'far';
-          return (
-            <Svg key={i} onPress={() => onSelect(i)}>
-              <Rect x={x - 9} y={dev >= 0 ? zeroY - h : zeroY} width={18} height={Math.max(2, h)} fill={ROLE[role]} opacity={i === selected ? 1 : 0.6} stroke={i === selected ? ROLE.active : 'none'} />
-              <SvgText x={x} y={H - 8} fontSize={9.5} fill={i === selected ? ROLE.active : colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{n.spelling}</SvgText>
-              <SvgText x={x} y={dev >= 0 ? zeroY - h - 4 : zeroY + h + 11} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{Math.abs(dev) < 0.05 ? '0' : `${dev > 0 ? '+' : ''}${dev.toFixed(1)}`}</SvgText>
-            </Svg>
-          );
-        })}
-      </Svg>
-    </View>
+    </TuningRackLayout>
   );
 }
 
 const styles = StyleSheet.create({
   legend: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
+  tray: { gap: 8 },
 });

@@ -16,6 +16,9 @@ export type LabCtx = {
   /** Called by a chapter when its primary interaction is complete. */
   markDone: () => void;
   isDone: boolean;
+  /** The chapter's one-line objective — a rack chapter prints it at the top
+   *  of its own scroll well (the shell has no scroll of its own there). */
+  objective?: string;
 };
 
 export type ChapterProps = { ctx: LabCtx };
@@ -26,5 +29,9 @@ export type ChapterDef = {
   short: string;
   /** One-line learning objective the shell states before the chapter body. */
   objective?: string;
+  /** The chapter renders a TuningRackLayout (rack/RackUnit): the shell gives
+   *  it the full height and no scroll view of its own. Reading chapters leave
+   *  it unset and keep the document layout. */
+  rack?: boolean;
   Component: (props: ChapterProps) => JSX.Element;
 };

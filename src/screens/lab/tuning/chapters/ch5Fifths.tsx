@@ -2,25 +2,35 @@
  * Chapter 5 — Build With Pure Fifths (spec Stage 3): one rule, ×3/2, applied
  * twelve times; every unreduced product and every ÷2 shown before the
  * normalized note lands on the rail. Fifth order vs pitch order toggle.
+ *
+ * ON THE RACK (2026-09-30): the cents rail is the stage. FIFTHS on the lane
+ * is the number of fifths placed (ride it back for UNDO / REPLAY, forward to
+ * AUTO-COMPLETE); ADD FIFTH builds the next one with its product and every
+ * ÷2 shown; BY PITCH re-orders the fifth path, which sits at the top of the
+ * well right under the glass; ▶ plays C with the newest note.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { buildPythagoreanFifthChain, frac, fracLabel, frequencyFromRatio, fracValue } from '../../../../features/tuning/tuningMath';
 import { renderNotes } from '../../../../features/tuning/tuningAudio';
 import type { ChapterProps } from '../labCtx';
-import { Body, Btn, Card, CentsRail, Eyebrow, Lead, MathLine, Prompt, Row, type RailMarker } from '../components/primitives';
+import { Body, Card, CentsRail, CENTS_RAIL_W, Eyebrow, Lead, MathLine, Prompt, type RailMarker } from '../components/primitives';
 import { FifthPath } from '../components/fifthPath';
 import { UnderstandingCheck } from '../components/check';
+import { StageFit } from '../../rack/StageFit';
+import type { DockParam } from '../../rack/rackTypes';
+import { TuningRackLayout, playKey, soundCell, stopKey, usePlayerStatus } from '../rackLayout';
 
 const CHAIN = buildPythagoreanFifthChain(frac(1, 1), 12);
+const RAIL_H = 110;
 
 export function Ch5Fifths({ ctx }: ChapterProps) {
   const [revealed, setRevealed] = useState(0); // steps fully placed (0 = only C)
   const [phase, setPhase] = useState(0); // within the step being built: 0 idle, 1 product shown, 2.. reductions shown, final placed
-  const [manual, setManual] = useState(0);
   const [order, setOrder] = useState<'fifth' | 'pitch'>('fifth');
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const status = usePlayerStatus(ctx.player);
   const building = phase > 0;
   const next = CHAIN[revealed + 1];
 
@@ -32,9 +42,8 @@ export function Ch5Fifths({ ctx }: ChapterProps) {
   };
 
   /** Animate one fifth: product → each ÷2 → placed. Reduced motion: instant. */
-  const addFifth = (countManual = true) => {
+  const addFifth = () => {
     if (!next || building) return;
-    if (countManual) setManual((m) => m + 1);
     const finish = () => {
       setRevealed(revealed + 1);
       setPhase(0);
@@ -50,54 +59,96 @@ export function Ch5Fifths({ ctx }: ChapterProps) {
     timers.current.push(setTimeout(finish, stepMs * (next.reductions.length + 1)));
   };
 
-  const undo = () => {
+  /** The lane: jump straight to n fifths placed (undo, replay, auto-complete). */
+  const setCount = (n: number) => {
+    if (n === revealed) return;
     clearTimers();
     setPhase(0);
-    setRevealed(Math.max(0, revealed - 1));
-  };
-  const replay = () => {
-    clearTimers();
-    setPhase(0);
-    setRevealed(0);
-  };
-  const autoComplete = () => {
-    clearTimers();
-    setPhase(0);
-    setRevealed(12);
-    ctx.markDone();
+    setRevealed(n);
+    if (n === 12) ctx.markDone();
   };
 
+  // BY PITCH changes the GLASS too (review 2026-09-30): in generation order
+  // every marker carries its step number ("3·A"), so the rail itself shows
+  // that pitch order is not the order the notes were made in; BY PITCH drops
+  // the numbers and leaves the names in rail order. Before, the key only
+  // re-sorted the path in the well — invisible in full screen.
   const markers: RailMarker[] = useMemo(
     () =>
       CHAIN.slice(0, revealed + 1).map((s) => ({
         id: `s${s.index}`,
         cents: s.cents,
-        label: s.spelling,
+        label: order === 'fifth' && s.index > 0 ? `${s.index}·${s.spelling}` : s.spelling,
         role: s.index === 12 ? ('error' as const) : s.index === revealed && revealed > 0 ? ('operation' as const) : ('neutral' as const),
         emphasis: s.index === revealed,
-        row: s.index === 12 ? 1 : s.index % 2,
+        // Numbered, "12·B♯" at 23 ¢ ran into "7·C♯" at 114 ¢ on the same row:
+        // B♯ takes the row above while the numbers are on.
+        row: s.index === 12 ? (order === 'fifth' ? 2 : 1) : s.index % 2,
       })),
-    [revealed],
+    [revealed, order],
   );
 
-  const playNewest = () => {
-    const s = CHAIN[revealed];
-    void ctx.player.renderAndPlay(() => renderNotes([ctx.rootHz, frequencyFromRatio(ctx.rootHz, fracValue(s.normalized))], 1.4, 'rich'), `C and ${s.spelling}`);
-  };
+  const newest = CHAIN[revealed];
+  const params: DockParam[] = [
+    {
+      kind: 'fader',
+      id: 'fifths',
+      label: 'FIFTHS',
+      value: revealed / 12,
+      onChange: (p) => setCount(Math.round(p * 12)),
+      // The exact fraction reads on the LANE (review 2026-09-30): on the
+      // bezel "B♯ 531441/524288" was cropped to an ellipsis — a readout may
+      // drop its label, never its number. The lane has the width.
+      format: (p) => {
+        const n = Math.round(p * 12);
+        return `${n} of 12 · ${CHAIN[n].spelling} ${fracLabel(CHAIN[n].normalized)}`;
+      },
+      formatShort: (p) => `${Math.round(p * 12)}/12`,
+      home: 0,
+    },
+    { kind: 'action', id: 'add', label: 'ADD FIFTH', onPress: addFifth, tint: next && !building ? colors.green : undefined },
+    { kind: 'toggle', id: 'order', label: 'BY PITCH', value: order === 'pitch', onToggle: () => setOrder((o) => (o === 'fifth' ? 'pitch' : 'fifth')) },
+    ...(revealed > 0
+      ? [playKey(ctx.player, 'play', `▶ C+${newest.spelling}`, () => renderNotes([ctx.rootHz, frequencyFromRatio(ctx.rootHz, fracValue(newest.normalized))], 1.4, 'rich'), `C and ${newest.spelling}`)]
+      : []),
+    stopKey(ctx.player),
+  ];
 
   return (
-    <View style={{ gap: 12 }}>
+    <TuningRackLayout
+      ctx={ctx}
+      rack={{
+        size: 'S',
+        initialParam: 'fifths',
+        hideDragTag: true,
+        bezel: [
+          { k: 'STEP', v: `${revealed}/12`, tint: revealed >= 12 ? colors.red : undefined, flex: 0.8 },
+          // The spelling only: the fraction (up to 13 characters) rides on
+          // the lane readout and the step card, where it cannot be cropped.
+          { k: 'NEWEST', v: newest.spelling, tint: revealed === 12 ? colors.red : colors.gold, flex: 0.9 },
+          { k: 'CENTS', v: `${newest.cents.toFixed(2)} ¢`, flex: 1.2 },
+          soundCell(status),
+        ],
+        stage: (w, h) => (
+          <StageFit w={w} h={h} aspect={CENTS_RAIL_W / RAIL_H}>
+            <CentsRail markers={markers} reduceMotion={ctx.reduceMotion} height={RAIL_H} fit />
+          </StageFit>
+        ),
+        params,
+      }}
+      caption="Press ADD FIFTH twelve times — each product, every ÷2 and the landing spot are shown. Ride FIFTHS back to undo or replay, forward to finish. BY PITCH drops the step numbers from the rail and re-sorts the path below."
+      wellTop={
+        <>
+          <FifthPath steps={CHAIN} revealed={revealed} order={order} />
+          <Body>{order === 'fifth' ? 'Generation order: each note is the previous note × 3/2, folded.' : 'We generated the notes in fifths. The pitch rail rearranges them from low to high within one octave.'}</Body>
+        </>
+      }
+    >
       <Lead>Build using one rule.</Lead>
       <Card>
         <Eyebrow>ACTIVE RULE</Eyebrow>
         <Text style={styles.rule}>× 3/2 — then fold into the octave</Text>
       </Card>
-      <Row>
-        <Btn label="ADD PURE FIFTH" tone="primary" onPress={() => addFifth(true)} disabled={!next || building} a11y="Add another pure fifth" />
-        <Btn label="UNDO" onPress={undo} disabled={revealed === 0 || building} />
-        <Btn label="REPLAY BUILD" onPress={replay} disabled={revealed === 0} />
-        {manual >= 3 && next ? <Btn label="AUTO-COMPLETE" onPress={autoComplete} disabled={building} /> : null}
-      </Row>
 
       {/* the step being built, one operation at a time — and, once it lands,
           the last completed step stays visible (operation + result). */}
@@ -114,7 +165,7 @@ export function Ch5Fifths({ ctx }: ChapterProps) {
         ) : revealed === 0 ? (
           <>
             <Eyebrow>STEP 1 OF 12 · READY</Eyebrow>
-            <Body>Press ADD PURE FIFTH. You will see the product, every ÷2 it needs, and where the result lands.</Body>
+            <Body>Press ADD FIFTH. You will see the product, every ÷2 it needs, and where the result lands.</Body>
           </>
         ) : (
           <>
@@ -127,20 +178,6 @@ export function Ch5Fifths({ ctx }: ChapterProps) {
           </>
         )}
       </Card>
-
-      <Row>
-        <Btn label="FIFTH ORDER" tone={order === 'fifth' ? 'primary' : 'plain'} selected={order === 'fifth'} onPress={() => setOrder('fifth')} a11y="Show the notes in generation order" />
-        <Btn label="PITCH ORDER" tone={order === 'pitch' ? 'primary' : 'plain'} selected={order === 'pitch'} onPress={() => setOrder('pitch')} a11y="Show the notes in pitch order" />
-      </Row>
-      <FifthPath steps={CHAIN} revealed={revealed} order={order} />
-      <Body>{order === 'fifth' ? 'Generation order: each note is the previous note × 3/2, folded.' : 'We generated the notes in fifths. The pitch rail rearranges them from low to high within one octave.'}</Body>
-      <CentsRail markers={markers} reduceMotion={ctx.reduceMotion} height={110} />
-      {revealed > 0 ? (
-        <Row>
-          <Btn label={`▶ C + ${CHAIN[revealed].spelling}`} onPress={playNewest} a11y={`Play C with ${CHAIN[revealed].spelling}`} />
-          <Btn label="■" tone="danger" onPress={() => ctx.player.stop()} a11y="Stop audio" />
-        </Row>
-      ) : null}
 
       {revealed >= 12 ? (
         <Card tone="warn">
@@ -166,7 +203,7 @@ export function Ch5Fifths({ ctx }: ChapterProps) {
           ]}
         />
       ) : null}
-    </View>
+    </TuningRackLayout>
   );
 }
 

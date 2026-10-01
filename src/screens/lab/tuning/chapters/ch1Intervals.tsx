@@ -3,20 +3,35 @@
  * Drag the upper note from unison to the octave; ratio, cents and interval
  * name update from the same value; the octave demonstration compares two
  * registers to show the hertz difference changes while the ratio does not.
+ *
+ * ON THE RACK (2026-09-30): the draggable rail is the stage (it still drags),
+ * the UPPER fader on the lane is the teaching parameter, PLAY is a tray of
+ * the chapter's clips, SHOW ME slides the marker to the octave; ratio, cents
+ * and the interval name print on the bezel.
  */
-import { useMemo, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useMemo, useRef, useState } from 'react';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { centsToRatio, frequencyFromRatio, nearestLandmark, ratioToCents } from '../../../../features/tuning/tuningMath';
 import { renderNotes } from '../../../../features/tuning/tuningAudio';
 import type { ChapterProps } from '../labCtx';
-import { Body, Btn, Card, Eyebrow, Lead, MathLine, Prompt, Row, dec, usePreloadClips } from '../components/primitives';
-import { DragRail } from '../components/dragRail';
+import { Body, Card, CENTS_RAIL_W, Eyebrow, Lead, MathLine, Row, dec, usePreloadClips } from '../components/primitives';
+import { DragRail, slideTo, snapToLandmark } from '../components/dragRail';
 import { UnderstandingCheck } from '../components/check';
+import { StageFit } from '../../rack/StageFit';
+import type { DockParam } from '../../rack/rackTypes';
+import { TuningRackLayout, playTray, soundCell, stopKey, usePlayerStatus } from '../rackLayout';
+
+const RAIL_H = 110;
+/** Bezel-width names for the landmarks (the full name reads in the well). */
+const SHORT: Record<string, string> = { Unison: 'unison', 'Just minor third': 'minor 3rd', 'Just major third': 'major 3rd', 'Pure perfect fourth': 'fourth', 'Pure perfect fifth': 'fifth', Octave: 'octave' };
 
 export function Ch1Intervals({ ctx }: ChapterProps) {
   const [cents, setCents] = useState(0);
   const [reachedOctave, setReachedOctave] = useState(false);
+  const [last, setLast] = useState<string | null>(null);
+  const anim = useRef(new Animated.Value(0)).current;
+  const status = usePlayerStatus(ctx.player);
   const ratio = centsToRatio(cents);
   const upperHz = frequencyFromRatio(ctx.rootHz, ratio);
   const landmark = nearestLandmark(cents, 6);
@@ -27,11 +42,12 @@ export function Ch1Intervals({ ctx }: ChapterProps) {
   const onSettle = (c: number) => {
     if (c >= 1199.5) setReachedOctave(true);
   };
+  const setFromLane = (c: number) => {
+    setCents(c);
+    onSettle(c);
+  };
 
   const timbre = 'rich' as const;
-  const playRoot = () => void ctx.player.renderAndPlay(() => renderNotes([ctx.rootHz], 1.2, timbre), 'root');
-  const playUpper = () => void ctx.player.renderAndPlay(() => renderNotes([upperHz], 1.2, timbre), 'upper note');
-  const playBoth = () => void ctx.player.renderAndPlay(() => renderNotes([ctx.rootHz, upperHz], 1.6, timbre), 'both notes');
   // Saved + pre-rendered clips (owner 2026-09-29): the fixed buttons' clips render in the background.
   // (The slider's upper note is not pre-rendered: it changes every frame of a drag.)
   usePreloadClips(ctx.player, () => [() => renderNotes([ctx.rootHz], 1.2, timbre), () => renderNotes([rootLow, ctx.rootHz], 1.4, timbre), () => renderNotes([ctx.rootHz, ctx.rootHz * 2], 1.4, timbre)], String(ctx.rootHz));
@@ -44,29 +60,70 @@ export function Ch1Intervals({ ctx }: ChapterProps) {
     [ctx.rootHz, rootLow],
   );
 
+  const params: DockParam[] = [
+    {
+      kind: 'fader',
+      id: 'upper',
+      label: 'UPPER',
+      value: cents / 1200,
+      // The lane snaps the way a finger on the rail does (9 ¢ window), so the
+      // landmarks are reachable by thumb.
+      onChange: (p) => setFromLane(snapToLandmark(p * 1200, 9)),
+      format: (p) => `${(p * 1200).toFixed(2)} ¢`,
+      formatShort: (p) => `${Math.round(p * 1200)} ¢`,
+    },
+    playTray({
+      player: ctx.player,
+      last,
+      setLast,
+      clips: [
+        { id: 'root', label: 'ROOT', make: () => renderNotes([ctx.rootHz], 1.2, timbre), name: 'root' },
+        { id: 'upper', label: 'UPPER NOTE', make: () => renderNotes([upperHz], 1.2, timbre), name: 'upper note' },
+        { id: 'both', label: 'TOGETHER', make: () => renderNotes([ctx.rootHz, upperHz], 1.6, timbre), name: 'both notes' },
+        ...(reachedOctave
+          ? [
+              { id: 'c3c4', label: 'C3–C4', make: () => renderNotes([rootLow, ctx.rootHz], 1.4, timbre), name: 'C3 and C4' },
+              { id: 'c4c5', label: 'C4–C5', make: () => renderNotes([ctx.rootHz, ctx.rootHz * 2], 1.4, timbre), name: 'C4 and C5' },
+            ]
+          : []),
+      ],
+    }),
+    { kind: 'action', id: 'showme', label: 'SHOW ME', onPress: () => slideTo(anim, cents, 1200, ctx.reduceMotion, setCents, onSettle) },
+    stopKey(ctx.player),
+  ];
+
   return (
-    <View style={{ gap: 12 }}>
+    <TuningRackLayout
+      ctx={ctx}
+      rack={{
+        size: 'S',
+        initialParam: 'upper',
+        hideDragTag: true,
+        bezel: [
+          { k: 'RATIO', v: shownRatio, tint: colors.cyanBright },
+          { k: 'CENTS', v: `${cents.toFixed(2)} ¢` },
+          { k: 'INTERVAL', v: SHORT[name] ?? 'between', flex: 1.1 },
+          soundCell(status),
+        ],
+        stage: (w, h) => (
+          <StageFit w={w} h={h} aspect={CENTS_RAIL_W / RAIL_H}>
+            {/* The root marker lights while a clip that contains it sounds
+                (review 2026-09-30) — a PLAY pick changes the picture, not
+                only the SOUND cell. */}
+            <DragRail bare fit cents={cents} onChange={setCents} label="Upper note" reduceMotion={ctx.reduceMotion} onSettle={onSettle} fixedMarkers={[{ id: 'root', cents: 0, label: 'root', role: status.playing && (last === 'root' || last === 'both' || last === 'c4c5') ? 'exact' : 'neutral', emphasis: status.playing && (last === 'root' || last === 'both' || last === 'c4c5') }]} />
+          </StageFit>
+        ),
+        params,
+      }}
+      caption="Ride UPPER, or drag the marker on the rail, from unison (1:1) all the way to the octave (2:1). Ratio, cents and the interval name follow on the bezel."
+    >
       <Lead>An interval is a relationship between two frequencies — not a fixed difference in hertz.</Lead>
       <Row>
         <Card><Eyebrow>ROOT</Eyebrow><Text style={styles.big}>C4</Text><Text style={styles.sub}>{ctx.rootHz.toFixed(2)} Hz</Text></Card>
         <Card><Eyebrow>UPPER NOTE</Eyebrow><Text style={[styles.big, { color: colors.cyanBright }]}>{name}</Text><Text style={styles.sub}>{upperHz.toFixed(2)} Hz</Text></Card>
       </Row>
-      <Row>
-        <Btn label="▶ ROOT" onPress={playRoot} a11y="Play root" />
-        <Btn label="▶ UPPER" onPress={playUpper} a11y="Play upper note" />
-        <Btn label="▶ TOGETHER" onPress={playBoth} a11y="Play both notes together" />
-        <Btn label="■ STOP" tone="danger" onPress={() => ctx.player.stop()} a11y="Stop audio" />
-      </Row>
-
-      <Prompt>Drag the upper note from unison (1:1) all the way to the octave (2:1).</Prompt>
-      <DragRail cents={cents} onChange={setCents} label="Upper note" reduceMotion={ctx.reduceMotion} onSettle={onSettle} showMeTarget={1200} fixedMarkers={[{ id: 'root', cents: 0, label: 'root', role: 'neutral' }]} />
 
       <Card>
-        <View style={styles.readRow}>
-          <Read label="RATIO" value={shownRatio} />
-          <Read label="CENTS" value={cents.toFixed(2)} />
-          <Read label="INTERVAL" value={name} />
-        </View>
         <Body>
           {cents >= 1199.5
             ? `Upper frequency = 2 × root frequency: ${upperHz.toFixed(2)} = 2 × ${ctx.rootHz.toFixed(2)}. Ratio 2:1, 1200 cents — an octave.`
@@ -81,11 +138,7 @@ export function Ch1Intervals({ ctx }: ChapterProps) {
           <Eyebrow>TWO OCTAVES, TWO REGISTERS</Eyebrow>
           <Text style={styles.line}>C3 → C4: {rootLow.toFixed(2)} → {ctx.rootHz.toFixed(2)} Hz · ratio 2:1 · 1200 ¢ · difference {octaveInfo.lowDiff.toFixed(2)} Hz</Text>
           <Text style={styles.line}>C4 → C5: {ctx.rootHz.toFixed(2)} → {(ctx.rootHz * 2).toFixed(2)} Hz · ratio 2:1 · 1200 ¢ · difference {octaveInfo.highDiff.toFixed(2)} Hz</Text>
-          <Body>The hertz difference changes with register, but the interval ratio remains 2:1.</Body>
-          <Row>
-            <Btn label="▶ C3–C4" onPress={() => void ctx.player.renderAndPlay(() => renderNotes([rootLow, ctx.rootHz], 1.4, timbre), 'C3 and C4')} />
-            <Btn label="▶ C4–C5" onPress={() => void ctx.player.renderAndPlay(() => renderNotes([ctx.rootHz, ctx.rootHz * 2], 1.4, timbre), 'C4 and C5')} />
-          </Row>
+          <Body>The hertz difference changes with register, but the interval ratio remains 2:1. Hear both from the PLAY key: C3–C4, then C4–C5.</Body>
         </Card>
       ) : null}
 
@@ -115,23 +168,12 @@ export function Ch1Intervals({ ctx }: ChapterProps) {
         ]}
         onCorrect={ctx.markDone}
       />
-    </View>
-  );
-}
-
-function Read({ label, value }: { label: string; value: string }) {
-  return (
-    <View style={{ flex: 1, minWidth: 80 }}>
-      <Eyebrow>{label}</Eyebrow>
-      <Text style={styles.readValue}>{value}</Text>
-    </View>
+    </TuningRackLayout>
   );
 }
 
 const styles = StyleSheet.create({
   big: { color: colors.textPrimary, fontFamily: fonts.oswaldSemiBold, fontSize: 20 },
   sub: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12 },
-  readRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  readValue: { color: colors.textPrimary, fontFamily: fonts.oswaldMedium, fontSize: 17 },
   line: { color: colors.textSecondary, fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17 },
 });

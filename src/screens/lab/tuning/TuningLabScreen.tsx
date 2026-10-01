@@ -173,8 +173,15 @@ export function TuningLabScreen() {
   const builtNext = CHAPTERS.find((c) => c.index > chapter);
   const builtPrev = [...CHAPTERS].reverse().find((c) => c.index < chapter);
 
-  const ctx: LabCtx = { rootHz, setRootHz, mathView, reduceMotion, player, markDone, isDone };
+  const ctx: LabCtx = { rootHz, setRootHz, mathView, reduceMotion, player, markDone, isDone, objective: def.objective };
   const Chapter = def.Component;
+  // RACK CHAPTERS (owner, TestFlight build 32, 2026-09-30: "poor arrangement
+  // of controls above displays … do a proper rack system"): a chapter that
+  // declares `rack` gets the FULL HEIGHT and no ScrollView of its own — its
+  // TuningRackLayout pins the display and the dock and owns the scroll well
+  // between them (the Sound Systems paged host's idiom). The reading chapter
+  // keeps the document layout below.
+  const rack = !!def.rack;
 
   /**
    * THE LAST CHAPTER ENDS ON THE WHAT'S-LEFT SCREEN (owner 2026-09-29: "every
@@ -217,7 +224,9 @@ export function TuningLabScreen() {
         <Text style={styles.dotsText}>{progress?.completed.length ?? 0}/{CHAPTER_COUNT} done {listOpen ? '▴' : '▾'}</Text>
       </Pressable>
       {listOpen ? (
-        <View style={styles.list}>
+        // On a rack chapter the list is its own scroller (the rack takes the
+        // rest of the height), capped so the stage stays in view beneath it.
+        <ScrollView style={styles.listScroll} contentContainerStyle={styles.list}>
           {CHAPTER_TITLES.map((t, i) => {
             const built = CHAPTERS.some((c) => c.index === i);
             return (
@@ -231,7 +240,7 @@ export function TuningLabScreen() {
           <Pressable onPress={confirmReset} style={styles.listRow} accessibilityRole="button" accessibilityLabel="Start a fresh practice run from the first chapter">
             <Text style={[styles.listText, { color: colors.textMuted }]}>START OVER (PRACTICE)</Text>
           </Pressable>
-        </View>
+        </ScrollView>
       ) : null}
 
       {ending ? (
@@ -245,6 +254,12 @@ export function TuningLabScreen() {
           onPracticeAgain={() => goTo(CHAPTERS[0].index)}
           onDone={() => navigation.goBack()}
         />
+      ) : rack ? (
+        // The rack takes the rest of the height; the chapter's own well scrolls.
+        // Keyed on the chapter so a revisit starts the chapter's state fresh.
+        <View style={styles.rackFill}>
+          <Chapter key={chapter} ctx={ctx} />
+        </View>
       ) : (
       <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, readingColumn, { paddingBottom: insets.bottom + 24 }]}>
         {/* This lab PLAYS synthesized tones — it never uses the microphone
@@ -267,9 +282,14 @@ export function TuningLabScreen() {
         <Text style={styles.sound} accessibilityLiveRegion="polite">
           {status.rendering ? `Rendering: ${status.rendering}…` : status.playing ? `♪ ${status.label}` : 'Sound: stopped'}
         </Text>
+        {/* On a rack chapter ■ STOP is a DOCK key (reachable in full screen,
+            where this footer is not); the footer copy would be a duplicate
+            an inch away. The reading chapter and the end screen keep it. */}
+        {rack && !ending ? null : (
         <Pressable onPress={() => player.stop()} style={styles.stopBtn} accessibilityRole="button" accessibilityLabel="Stop all audio">
           <Text style={styles.stopText}>■ STOP</Text>
         </Pressable>
+        )}
         <Pressable onPress={() => builtPrev && goTo(builtPrev.index)} disabled={!builtPrev} style={[styles.navBtn, !builtPrev && { opacity: 0.35 }]} accessibilityRole="button" accessibilityLabel="Back one chapter">
           <Text style={styles.navText}>‹ BACK</Text>
         </Pressable>
@@ -304,10 +324,12 @@ const styles = StyleSheet.create({
   dotDone: { backgroundColor: colors.green },
   dotNow: { backgroundColor: colors.cyanBright },
   dotsText: { marginLeft: 6, color: colors.textMuted, fontFamily: fonts.barlowMedium, fontSize: 11 },
+  listScroll: { maxHeight: 260, flexGrow: 0 },
   list: { marginHorizontal: 16, borderRadius: 12, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#101013', paddingVertical: 4 },
   listRow: { minHeight: 44, justifyContent: 'center', paddingHorizontal: 12 },
   listText: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 13 },
   scroll: { paddingHorizontal: 16, paddingTop: 6, gap: 10 },
+  rackFill: { flex: 1 },
   accuracyNote: { marginBottom: 10, alignSelf: 'flex-start' },
   objective: { borderLeftWidth: 2, borderLeftColor: colors.amberLabel, paddingLeft: 10, paddingVertical: 2, gap: 2 },
   objectiveKicker: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1.5 },

@@ -2,17 +2,25 @@
  * Chapter 0 — Welcome and Listening Setup (spec Stage 2). The central
  * question, a bare pitch rail, and an optional Hear the Question sequence.
  * Nothing plays until the learner asks.
+ *
+ * ON THE RACK (2026-09-30): the rail is the stage; HEAR IT and ■ STOP are
+ * dock keys; the question, the volume note and BEGIN LAB read in the well.
  */
 import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { concatWithGap, renderNotes } from '../../../../features/tuning/tuningAudio';
 import type { ChapterProps } from '../labCtx';
-import { Body, Btn, Card, CentsRail, Lead, Row, usePreloadClips, type RailMarker } from '../components/primitives';
+import { Body, Btn, Card, CentsRail, CENTS_RAIL_W, Lead, Row, usePreloadClips, type RailMarker } from '../components/primitives';
+import { StageFit } from '../../rack/StageFit';
+import { TuningRackLayout, soundCell, stopKey, usePlayerStatus } from '../rackLayout';
+
+const RAIL_H = 96;
 
 export function Ch0Welcome({ ctx }: ChapterProps) {
   const [stage, setStage] = useState<0 | 1 | 2 | 3>(0);
   const [scope, setScope] = useState(false);
+  const status = usePlayerStatus(ctx.player);
   // The two-note sequence is paced with timers. They MUST be cleared when the
   // learner stops or leaves: an orphaned timer used to start the octave clip
   // after the shell had already stopped the lab's audio on chapter change.
@@ -54,26 +62,44 @@ export function Ch0Welcome({ ctx }: ChapterProps) {
   };
 
   return (
-    <View style={{ gap: 12 }}>
+    <TuningRackLayout
+      ctx={ctx}
+      rack={{
+        size: 'S',
+        initialParam: 'hear',
+        bezel: [
+          { k: 'ROOT', v: `${ctx.rootHz.toFixed(2)} Hz`, tint: stage >= 1 ? colors.cyanBright : undefined, flex: 1.2 },
+          { k: 'OCTAVE', v: `${(ctx.rootHz * 2).toFixed(2)} Hz`, tint: stage >= 2 ? colors.blue : undefined, flex: 1.2 },
+          soundCell(status),
+        ],
+        stage: (w, h) => (
+          <StageFit w={w} h={h} aspect={CENTS_RAIL_W / RAIL_H}>
+            <CentsRail markers={markers} divisions={false} reduceMotion={ctx.reduceMotion} height={RAIL_H} fit />
+          </StageFit>
+        ),
+        params: [
+          { kind: 'action', id: 'hear', label: 'HEAR IT', onPress: hearRoot },
+          { kind: 'action', id: 'stop', label: '■ STOP', onPress: stop, tint: colors.red },
+        ],
+      }}
+      caption="Press HEAR IT: the root sounds, then its octave, and the rail lights each one. Keep the volume low first."
+    >
       <Lead>An octave is simple: double the frequency. The difficult question is where to place every note between.</Lead>
       <Body>Different tuning systems answer that question in different ways. Each preserves some relationships and compromises others.</Body>
-      <CentsRail markers={markers} divisions={false} reduceMotion={ctx.reduceMotion} />
       {stage >= 3 ? <Text style={styles.question} accessibilityRole="header">Where should the other notes go?</Text> : null}
-      <Row>
-        <Btn label="HEAR THE QUESTION" onPress={hearRoot} a11y="Hear the question: root, then octave" />
-        <Btn label="■ STOP" tone="danger" onPress={stop} a11y="Stop audio" />
-        <Btn label={scope ? 'HIDE SCOPE' : 'SCOPE ⓘ'} onPress={() => setScope(!scope)} a11y={scope ? 'Hide the scope note' : 'Show what this lab does and does not cover'} />
-      </Row>
       <Card>
         <Body>🔈 Keep the volume low before you press play. Headphones are recommended, not required — every relationship in this lab is also shown visually and numerically.</Body>
       </Card>
+      <Row>
+        <Btn label={scope ? 'HIDE SCOPE' : 'SCOPE ⓘ'} onPress={() => setScope(!scope)} a11y={scope ? 'Hide the scope note' : 'Show what this lab does and does not cover'} />
+      </Row>
       {scope ? (
         <Card>
           <Body>This lab examines several influential Western tuning approaches. It is not a complete history of tuning and does not represent every musical culture or pitch system.</Body>
         </Card>
       ) : null}
       {!ctx.isDone ? <Btn label="BEGIN LAB ›" tone="primary" onPress={ctx.markDone} /> : null}
-    </View>
+    </TuningRackLayout>
   );
 }
 
