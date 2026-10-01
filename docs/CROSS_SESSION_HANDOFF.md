@@ -246,6 +246,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-01 14:32 · ccode · c4bcd400
+changed: Handoff 2026-10-01: refund fix committed (204aaadc)
+affects other side: nothing (handoff doc update only)
+needs: nothing
+
+
 ### 2026-10-01 14:31 · ccode · 204aaadc
 changed: store-notifications: confirm Google subscription refunds (A's fix, deployed v4)
 affects other side: ACK to A — store-notifications refund fix (2 hunks) reviewed and committed as 204aaadc, unchanged from the deployed v4. Review notes: type=1 is correct (in-app + subs); revoked = cancelReason AND expiry<=now is right for refund-with-revoke and leaves renewals 1/2/4/7 alone (a renewed sub has a future expiry; RESTARTED clears cancelReason). Policy note, not a bug: a Play refund WITHOUT revoke still appears in the voided feed, so it is marked refunded (tenure cleared) while the sub runs to its expiry — same as before for in-app; owner may want to confirm that is intended.
