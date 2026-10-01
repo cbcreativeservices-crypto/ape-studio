@@ -34,6 +34,11 @@ import { SeeItView } from './SeeItView';
 import { useIsTablet } from '../../../theme/useIsTablet';
 import { cardColumn } from '../../../theme/readingColumn';
 import { AccuracyNote } from '../../../components/AccuracyNote';
+import { useLabClipBuffer } from '../../../features/lab/useLabClipBuffer';
+import {
+  EAR_SOURCES, earSourceById, programFromClip, resolveEarSource, type EarSourceId,
+} from '../../../features/ear/earPrograms';
+import type { EarProgram } from '../../../features/ear/earTypes';
 
 const FATIGUE_MS = 15 * 60 * 1000;
 const TOP_LEVEL_REPLAYS = 2;
@@ -166,6 +171,45 @@ export function EarModuleScreen() {
   const [roundAnswered, setRoundAnswered] = useState(0);
   const [roundScore, setRoundScore] = useState(0);
 
+  // PROGRAM SOURCE (2026-10-01, modules with `realSources`): the synth stays
+  // the default and the fallback; a recorded source is fetched only once the
+  // learner picks it, and is used from the next trial on once it is ready.
+  const [sourceId, setSourceId] = useState<EarSourceId>('synth');
+  const source = earSourceById(sourceId);
+  const clip = useLabClipBuffer(
+    mod?.realSources ? source.labKey ?? null : null,
+    mod?.realSources ? source.assetKey ?? null : null,
+  );
+  const program = useMemo<EarProgram | null>(
+    () => (clip.status === 'ready' && clip.buffer ? programFromClip(source.name, clip.buffer) : null),
+    [clip.status, clip.buffer, source.name],
+  );
+  const resolvedSource = resolveEarSource(source, clip, program);
+  /** Read by makeFresh, so a pre-render always uses the CURRENT choice. */
+  const programRef = useRef<EarProgram | undefined>(undefined);
+  programRef.current = resolvedSource.program;
+  /** Which recording each trial was DRAWN with (undefined = synth) — a trial
+   *  can fall back to pink noise inside the module, so trial.source alone
+   *  cannot say whether the learner's pick has reached the drill yet. */
+  const drawnWith = useRef(new WeakMap<EarTrial, string | undefined>()).current;
+  // The program a pre-render was drawn with changed (picked, loaded, failed):
+  // drop the pre-render so NEXT TRIAL draws from the current source.
+  useEffect(() => {
+    prerenderToken.current++;
+    nextTrialRef.current = null;
+  }, [resolvedSource.program]);
+  const pickSource = useCallback(
+    (id: EarSourceId) => {
+      // Tapping the chosen source after a failure is the retry.
+      if (id === sourceId) {
+        if (clip.status === 'error') clip.retry();
+        return;
+      }
+      setSourceId(id);
+    },
+    [sourceId, clip],
+  );
+
   const nextSeed = () => (seedRef.current = (seedRef.current * 1664525 + 1013904223) >>> 0);
 
   /** A trial that does not repeat the previous one's parameters.
@@ -181,14 +225,16 @@ export function EarModuleScreen() {
   const makeFresh = useCallback(
     async (lvl: number, subOk: boolean): Promise<EarTrial | null> => {
       if (!mod) return null;
-      let t = mod.makeTrial(lvl, nextSeed(), { subBassOk: subOk });
+      const program = programRef.current;
+      let t = mod.makeTrial(lvl, nextSeed(), { subBassOk: subOk, program });
       for (let i = 0; i < NO_REPEAT_TRIES && trialKey(t) === lastKeyRef.current; i++) {
         await new Promise<void>((r) => setTimeout(r, 0));
-        t = mod.makeTrial(lvl, nextSeed(), { subBassOk: subOk });
+        t = mod.makeTrial(lvl, nextSeed(), { subBassOk: subOk, program });
       }
+      drawnWith.set(t, program?.name);
       return t;
     },
-    [mod],
+    [mod, drawnWith],
   );
 
   const beginTrial = useCallback(
@@ -514,6 +560,36 @@ export function EarModuleScreen() {
                 <Text style={styles.subBassText} importantForAccessibility="no">My playback can't reproduce sub-bass (skip ≤80 Hz trials)</Text>
               </Pressable>
             ) : null}
+            {mod.realSources ? (
+              <View style={styles.srcBlock}>
+                <View style={styles.srcRow} accessibilityRole="radiogroup" accessibilityLabel="Program source">
+                  <Text style={styles.srcEyebrow} importantForAccessibility="no">SOURCE</Text>
+                  {EAR_SOURCES.map((s) => {
+                    const on = s.id === sourceId;
+                    return (
+                      <Pressable
+                        key={s.id}
+                        onPress={() => pickSource(s.id)}
+                        style={[styles.srcChip, on && styles.srcChipOn]}
+                        accessibilityRole="radio"
+                        accessibilityState={{ checked: on }}
+                        // RNW 0.21 drops accessibilityState; aria-checked reaches the DOM.
+                        aria-checked={on}
+                        accessibilityLabel={s.id === 'synth' ? 'Synthesized source' : `Recorded ${s.name}`}
+                      >
+                        <Text style={[styles.srcText, on && styles.srcTextOn]}>{s.label}</Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+                {resolvedSource.note ? (
+                  <Text style={styles.srcNote}>{resolvedSource.note}</Text>
+                ) : sourceId !== 'synth' && trial && phase !== 'rendering' && drawnWith.get(trial) !== source.name ? (
+                  // NEW COPY
+                  <Text style={styles.srcNote}>The recorded {source.name} starts with the next trial.</Text>
+                ) : null}
+              </View>
+            ) : null}
             {fatigued ? (
               <Text style={styles.fatigue} accessibilityRole="alert">
                 15 minutes in — ears fatigue fast on critical listening. A 5-minute break makes the next round sharper.
@@ -651,6 +727,17 @@ const styles = StyleSheet.create({
   },
   subBassBoxOn: { borderColor: colors.green },
   subBassText: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12.5, flex: 1 },
+  srcBlock: { gap: 4 },
+  srcRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
+  srcEyebrow: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.5, marginRight: 2 },
+  srcChip: {
+    minHeight: 36, minWidth: 64, borderRadius: 10, borderWidth: 1, borderColor: colors.hairline,
+    alignItems: 'center', justifyContent: 'center', backgroundColor: '#131315', paddingHorizontal: 12,
+  },
+  srcChipOn: { borderColor: colors.green, backgroundColor: '#0f2416' },
+  srcText: { color: colors.textSecondary, fontFamily: fonts.barlowMedium, fontSize: 13.5 },
+  srcTextOn: { color: colors.green },
+  srcNote: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
   fatigue: { color: colors.gold, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17 },
   rendering: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 14, paddingVertical: 30, textAlign: 'center' },
   roundLine: { color: colors.textMuted, fontFamily: fonts.barlowCondensedMedium, fontSize: 12, letterSpacing: 0.5, marginTop: 2 },

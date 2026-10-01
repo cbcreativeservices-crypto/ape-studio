@@ -8,9 +8,10 @@
  */
 import {
   sine, classicWave, harmonicComplex, whiteNoise, pinkNoise, brownNoise,
-  peakEq, lowShelf, highShelf, applyBiquad, bandDb, type Biquad, type Mono,
+  peakEq, lowShelf, highShelf, applyBiquad, bandDb, SR, type Biquad, type Mono,
 } from '../earDsp';
-import type { EarModule, EarTrial } from '../earTypes';
+import type { EarModule, EarProgram, EarTrial } from '../earTypes';
+import { loopSlice } from '../../audio/resample';
 import {
   rngFor, pickInt, choice, shuffled, ISO_THIRDS, ISO_OCTAVES, ISO_HALVES,
   hzLabel, present, presentTone, lfMakeupDb, type Rng,
@@ -129,12 +130,28 @@ export const M1_FREQUENCY: EarModule = {
 
 // ————————————————————————————— M2 · EQ ————————————————————————————————————
 
-/** Program-material surrogate (spec: V2 = real stems, marked). */
-function eqSource(rng: Rng, seconds = 1.6): Mono {
+/** Program-material surrogate (spec: V2 = real stems, marked). With a real
+ *  `program` (earPrograms — a decoded recording, mono 48 kHz) the source is a
+ *  slice of it instead, starting within its first half-second so the chord's
+ *  body is in the clip; a clip shorter than the trial loops. Without one the
+ *  draw is exactly the original surrogate (same RNG use, same trials). */
+function eqSource(rng: Rng, seconds = 1.6, program?: EarProgram): Mono {
+  if (program) {
+    const want = Math.round(seconds * SR);
+    const n = program.mono.length;
+    const start = n > want ? Math.floor(rng() * Math.min(0.5 * SR, n - want)) : 0;
+    return loopSlice([program.mono], start, want, Math.round(0.02 * SR))[0];
+  }
   return rng() < 0.5
     ? pinkNoise(seconds, rng)
     : harmonicComplex(110 * Math.pow(2, rng()), seconds, 1);
 }
+
+/** Honest line when a recording was asked for but this move could not be
+ *  heard in it, so the self-verify fell back to pink noise. */
+// NEW COPY
+const programFallbackNote = (p: EarProgram) =>
+  ` (The ${p.name} has too little energy for this move, so this trial used pink noise.)`;
 
 type EqMove = { filter: Biquad; freq: number; gain: number; shape: 'peak' | 'shelf' | 'narrow' };
 
@@ -176,8 +193,10 @@ export const M2_EQ: EarModule = {
   listenFor: 'Play A, then B, then A again. Ask what B has MORE of (boost) or LESS of (cut) — never which is louder; they are level-matched.',
   levels: 4,
   levelNames: ['±12 dB wide boosts', '±9 dB boost + cut', '±6 dB, shelves + narrow', '±3 dB, all filter types — size trials use 3–12 dB'],
-  makeTrial: (level, seed) => {
+  realSources: true,
+  makeTrial: (level, seed, opts) => {
     const rng = rngFor(seed);
+    const program = opts?.program;
     // Question first, because the AMOUNT question needs a magnitude drawn
     // from the unlocked set (L2: 12 or 9 · L3: 12/9/6 · L4: all four). At L1
     // only 12 dB exists, so L1 asks frequency or direction only.
@@ -187,7 +206,8 @@ export const M2_EQ: EarModule = {
     // where the source has no energy, making the "change" inaudible. So the
     // factory MEASURES its own render and re-rolls until the stated move is
     // genuinely in the sound (≥60% of the stated dB at the centre, right sign).
-    let src = eqSource(rng);
+    let src = eqSource(rng, 1.6, program);
+    let fellBack = false;
     let move = eqMove(level, rng, rollMag());
     let dry = present(src);
     let wet = present(applyBiquad(src, move.filter));
@@ -196,13 +216,17 @@ export const M2_EQ: EarModule = {
       const delta = bandDb(wet, c, 0.33) - bandDb(dry, c, 0.33);
       if (Math.sign(delta) === Math.sign(move.gain) && Math.abs(delta) >= Math.abs(move.gain) * 0.6) break;
       // Last resort is pink noise — continuous spectrum, always verifies.
-      src = attempt >= 4 ? pinkNoise(1.6, rng) : eqSource(rng);
+      fellBack = attempt >= 4;
+      src = fellBack ? pinkNoise(1.6, rng) : eqSource(rng, 1.6, program);
       move = eqMove(level, rng, rollMag());
       dry = present(src);
       wet = present(applyBiquad(src, move.filter));
     }
-    const reveal = `${move.gain > 0 ? '+' : ''}${move.gain} dB ${shapeName(move)} at ${hzLabel(move.freq)} — loudness re-matched so only tone changed.`;
+    const reveal =
+      `${move.gain > 0 ? '+' : ''}${move.gain} dB ${shapeName(move)} at ${hzLabel(move.freq)} — loudness re-matched so only tone changed.` +
+      (program && fellBack ? programFallbackNote(program) : '');
     const base = {
+      ...(program && !fellBack ? { source: program.name } : {}),
       clips: [
         { label: 'A', buf: dry },
         { label: 'B', buf: wet },
@@ -274,9 +298,11 @@ export const M3_BAND: EarModule = {
   levels: 4,
   levelNames: ['±12 dB, 4 coarse bands', '±9 dB, all 8 bands', '±6 dB, all 8', '±4 dB, exact only'],
   hasSubBassTrials: true,
+  realSources: true,
   makeTrial: (level, seed, opts) => {
     const rng = rngFor(seed);
     const subBassOk = opts?.subBassOk !== false;
+    const program = opts?.program;
     const deck = (level <= 1 ? BANDS.filter((b) => b.coarse) : BANDS).filter(
       (b) => subBassOk || b.lo >= 60,
     );
@@ -291,7 +317,8 @@ export const M3_BAND: EarModule = {
     // complex guts the signal and the re-match lifts every OTHER band more
     // than the target drops (caught by verify-ear-modules). Re-roll the
     // source; pink noise (energy in every octave) always passes.
-    let src = eqSource(rng);
+    let src = eqSource(rng, 1.6, program);
+    let fellBack = false;
     let dry = present(src);
     let wet = present(applyBiquad(src, peakEq(Math.min(band.c, 16000), gain, q)));
     for (let attempt = 0; attempt < 5; attempt++) {
@@ -301,7 +328,8 @@ export const M3_BAND: EarModule = {
       });
       const biggest = deltas.indexOf(Math.max(...deltas));
       if (biggest === idx && deltas[idx] >= gainMag * 0.3) break;
-      src = attempt >= 2 ? pinkNoise(1.6, rng) : eqSource(rng);
+      fellBack = attempt >= 2;
+      src = fellBack ? pinkNoise(1.6, rng) : eqSource(rng, 1.6, program);
       dry = present(src);
       wet = present(applyBiquad(src, peakEq(Math.min(band.c, 16000), gain, q)));
     }
@@ -318,7 +346,10 @@ export const M3_BAND: EarModule = {
           ? [idx - 1, idx + 1].filter((i) => i >= 0 && i < deck.length)
           : undefined,
       ordered: { low: 'too low', high: 'too high' }, // NEW COPY
-      reveal: `${gain > 0 ? '+' : ''}${gain} dB in ${band.label} (${hzLabel(band.lo)}–${hzLabel(band.hi)}), centred near ${hzLabel(Math.min(band.c, 16000))}.`,
+      reveal:
+        `${gain > 0 ? '+' : ''}${gain} dB in ${band.label} (${hzLabel(band.lo)}–${hzLabel(band.hi)}), centred near ${hzLabel(Math.min(band.c, 16000))}.` +
+        (program && fellBack ? programFallbackNote(program) : ''),
+      ...(program && !fellBack ? { source: program.name } : {}),
       seeIt: {
         kind: 'spectrum',
         clips: [0, 1],

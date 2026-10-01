@@ -70,7 +70,14 @@ export type EarTrial = {
   /** Feedback truth line, e.g. "+6 dB peak at 250 Hz (wide, Q 1.4)". */
   reveal: string;
   seeIt: SeeIt;
+  /** Set when the trial was drawn from a REAL recording (earPrograms) — its
+   *  name, e.g. "piano chord". Absent = the synthesized source. */
+  source?: string;
 };
+
+/** A real recording offered as program material (earPrograms.ts): mono,
+ *  48 kHz, decoded from a lab-audio asset. */
+export type EarProgram = { name: string; mono: Float32Array };
 
 export type EarModuleId =
   | 'frequency'
@@ -108,7 +115,10 @@ export type EarModule = {
   /** Pure trial factory. `seed` keys the PRNG — same seed, same trial.
    *  opts.subBassOk=false (spec §4 opt-out) excludes ≤80 Hz trials so a
    *  learner is never punished for their transducer. */
-  makeTrial: (level: number, seed: number, opts?: { subBassOk?: boolean }) => EarTrial;
+  makeTrial: (level: number, seed: number, opts?: { subBassOk?: boolean; program?: EarProgram }) => EarTrial;
+  /** True for modules that can draw from a real recording (opts.program) —
+   *  the shell then offers the source chips (Synth / Piano / Guitar). */
+  realSources?: boolean;
   /** True for modules that have ≤80 Hz trials — the shell then offers the
    *  "my playback can't do sub-bass" toggle. */
   hasSubBassTrials?: boolean;
