@@ -50,6 +50,32 @@ db.execSync(`CREATE INDEX IF NOT EXISTS glossary_corpus_term ON glossary_corpus 
 const completeKey = (src: string) => `terms_complete:${src}`;
 
 /**
+ * ⛔ ONE WRITER AT A TIME (bug hunt 2026-10-01, pass 1).
+ *
+ * saveTerms parks every row under `${src}#stale` and moves them back batch by
+ * batch, yielding between batches. Three callers can run it: the screen's
+ * first download, the screen's revalidate (whenever the term COUNT moved) and
+ * the member's background save. When the count moved, a member who opened the
+ * Glossary inside the 8 s settle had BOTH running: the first to finish dropped
+ * every row the other had parked and not yet revived — those definitions were
+ * gone and re-downloaded. And while rows sat parked, idsMissingDefinitions
+ * answered "nothing missing", so SAVE ALL and the background save each
+ * declared the glossary complete and stopped; definitions saved in that window
+ * matched no row (`src = ?`) and were silently lost.
+ *
+ * So every write — and the missing-ids read the save loops steer by — queues
+ * behind the one before it, in call order. Plain reads (loadTerms,
+ * loadDefinitions, corpusStats) do not wait: a partial store already reads as
+ * empty through the completeness marker.
+ */
+let writeChain: Promise<unknown> = Promise.resolve();
+function serial<T>(run: () => Promise<T>): Promise<T> {
+  const p = writeChain.then(run, run);
+  writeChain = p.catch(() => {});
+  return p;
+}
+
+/**
  * ⛔ AN INCOMPLETE CORPUS MUST READ AS NO CORPUS.
  *
  * saveTerms deliberately writes in batches WITHOUT one enclosing transaction,
@@ -100,6 +126,10 @@ const ROWS_PER_INSERT = 200;
  * between batches keeps the thread answering touches throughout.
  */
 export async function saveTerms(src: string, rows: OfflineTerm[]): Promise<void> {
+  return serial(() => saveTermsNow(src, rows));
+}
+
+async function saveTermsNow(src: string, rows: OfflineTerm[]): Promise<void> {
   // Clear the completeness marker FIRST. Between here and the last batch the
   // corpus is partial, and anything that reads it in that window must see
   // "nothing stored" rather than a truncated glossary.
@@ -180,7 +210,7 @@ export async function saveDefinitions(
 ): Promise<void> {
   const keep = rows.filter((r) => !!r.definition);
   if (!keep.length) return;
-  await db.withTransactionAsync(async () => {
+  await serial(() => db.withTransactionAsync(async () => {
     const stmt = await db.prepareAsync(
       'UPDATE glossary_corpus SET definition = ? WHERE id = ? AND src = ?',
     );
@@ -189,7 +219,7 @@ export async function saveDefinitions(
     } finally {
       await stmt.finalizeAsync();
     }
-  });
+  }));
 }
 
 /**
@@ -211,6 +241,11 @@ export async function saveDefinitions(
 const tierKey = (src: string) => `defs_tier:${src}`;
 
 export async function alignDefinitionTier(src: string, tier: 'member' | 'free'): Promise<void> {
+  if ((await getMeta(tierKey(src))) === tier) return; // unqueued fast path
+  await serial(() => alignNow(src, tier)); // in order with the writes
+}
+
+async function alignNow(src: string, tier: 'member' | 'free'): Promise<void> {
   if ((await getMeta(tierKey(src))) === tier) return;
   // The PARKED rows too (pass 3): a term save killed midway leaves rows under
   // `${src}#stale`, and the next save revives them WITH their definitions —
@@ -231,12 +266,15 @@ export async function corpusStats(src: string): Promise<{ terms: number; definit
 }
 
 /** Ids with no definition stored yet, oldest-first by term for stable paging. */
-export async function idsMissingDefinitions(src: string, limit: number): Promise<string[]> {
-  const rows = (await db.getAllAsync<{ id: string }>(
-    'SELECT id FROM glossary_corpus WHERE src = ? AND definition IS NULL ORDER BY term LIMIT ?',
-    [src, limit],
-  )) as { id: string }[];
-  return rows.map((r) => r.id);
+export function idsMissingDefinitions(src: string, limit: number): Promise<string[]> {
+  // Queued: mid-saveTerms the rows are parked and this would answer "none".
+  return serial(async () => {
+    const rows = (await db.getAllAsync<{ id: string }>(
+      'SELECT id FROM glossary_corpus WHERE src = ? AND definition IS NULL ORDER BY term LIMIT ?',
+      [src, limit],
+    )) as { id: string }[];
+    return rows.map((r) => r.id);
+  });
 }
 
 export async function getMeta(k: string): Promise<string | null> {
@@ -250,8 +288,10 @@ export async function setMeta(k: string, v: string): Promise<void> {
 
 /** Wipe the offline copy — used when the reader asks for the space back. */
 export async function clearCorpus(): Promise<void> {
-  await db.runAsync('DELETE FROM glossary_corpus');
-  await db.runAsync('DELETE FROM glossary_meta');
+  return serial(async () => {
+    await db.runAsync('DELETE FROM glossary_corpus');
+    await db.runAsync('DELETE FROM glossary_meta');
+  });
 }
 
 export const OFFLINE_AVAILABLE = true;

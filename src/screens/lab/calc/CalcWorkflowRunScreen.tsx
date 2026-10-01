@@ -110,6 +110,8 @@ export function CalcWorkflowRunScreen() {
   }, []);
   const runRef = useRef<WorkflowRun | null>(null);
   runRef.current = run;
+  /** The draft the user said "Start over" to — deleted once the new run saves. */
+  const abandonedDraftRef = useRef<string | null>(null);
   // The share-card view captured for SHARE AS IMAGE (buttons live outside it).
   const shareRef = useRef<View | null>(null);
 
@@ -165,8 +167,12 @@ export function CalcWorkflowRunScreen() {
           {
             cancelText: 'Start over',
             onCancel: () => {
-              // The abandoned draft goes, or it is offered again next time.
-              void workflowStore.deleteRun(draft.id);
+              // The abandoned draft goes, or it is offered again next time —
+              // but only once the NEW run is saved with something in it (bug
+              // pass 2026-10-01). onCancel also fires on a scrim tap and on
+              // Android BACK, so deleting here destroyed a saved draft when
+              // the user only meant to dismiss the question or leave.
+              abandonedDraftRef.current = draft.id;
               setRun(blank());
             },
           },
@@ -189,7 +195,15 @@ export function CalcWorkflowRunScreen() {
     // Nothing entered yet: saving the blank run made every later open of this
     // workflow ask "Resume previous progress?" about a run that has no progress.
     if (r.stepIndex === 0 && !r.completedAt && r.steps.every((st) => Object.keys(st.inputs).length === 0)) return true;
-    return workflowStore.saveRun(r);
+    const ok = await workflowStore.saveRun(r);
+    // "Start over" was chosen: the old draft is retired now that the new run
+    // has real progress saved in its place (see the resume prompt).
+    const old = abandonedDraftRef.current;
+    if (ok && old && old !== r.id) {
+      abandonedDraftRef.current = null;
+      void workflowStore.deleteRun(old);
+    }
+    return ok;
   }, [limits.canResume]);
   useEffect(() => {
     const unsub = navigation.addListener('beforeRemove', () => {

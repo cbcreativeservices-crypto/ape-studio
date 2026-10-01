@@ -15,8 +15,9 @@
  * overlay (never a native Modal — the 2026-08-19 iOS lesson); Android back
  * closes the tray first (BackHandler, registered only while open).
  */
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { BackHandler, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { NavigationContext } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 import { colors, fonts } from '../../../theme/tokens';
 import { hapticsEnabled } from '../../../features/settings/store';
@@ -101,14 +102,24 @@ export function DockTray({
   active?: boolean;
 }) {
   const open = param != null;
+  // Latest onClose by ref: the host passes a fresh closure every render, and
+  // re-registering on each one kept moving this listener to the top of the
+  // BACK stack (over an open CONTENTS list registered after it).
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+  // Only while the lab is the FOCUSED screen (bug pass 2026-10-01): an open
+  // tray ate Android BACK meant for Help (?) or a paywall pushed on top — a
+  // native-stack screen, not a Modal — closing the hidden tray instead.
+  const navCtx = useContext(NavigationContext);
   useEffect(() => {
     if (!open || !active) return;
     const sub = BackHandler.addEventListener('hardwareBackPress', () => {
-      onClose();
+      if (navCtx && !navCtx.isFocused()) return false;
+      onCloseRef.current();
       return true;
     });
     return () => sub.remove();
-  }, [open, active, onClose]);
+  }, [open, active, navCtx]);
 
   // "more ↓" cue (owner 2026-09-27, SE pass): on a 667 pt phone a two-row
   // tray (ENV: attack + release) is taller than the room above the live dock,

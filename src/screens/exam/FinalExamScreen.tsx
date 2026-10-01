@@ -321,7 +321,15 @@ export function FinalExamScreen({ navigation, route }: Props) {
           // had just finished the capstone that issues their credential was
           // shown `attempt_not_open`. The start path six lines away has had a
           // vocabulary since it was written; this one never got one.
-          notify('Submit failed', EXAM_SUBMIT_ERROR_COPY[parseSubmitError((e as Error).message ?? '')], () => navigation.goBack());
+          // STALE ONCE THE SCREEN IS GONE (bug pass 1, 2026-10-01) — ported
+          // from the quiz twin (2026-09-30). The latch is released above, so
+          // the 0:00 force-submit or a second app switch can land while this
+          // dialog is open and succeed, REPLACING this screen with the result.
+          // OK then dispatched goBack from a route that no longer exists; it
+          // bubbles up and pops the result / award the learner is reading.
+          notify('Submit failed', EXAM_SUBMIT_ERROR_COPY[parseSubmitError((e as Error).message ?? '')], () => {
+            if (mountedRef.current) navigation.goBack();
+          });
         }
       } finally {
         // [32] (2026-09-07): the success path replace()s (unmounts) this screen,

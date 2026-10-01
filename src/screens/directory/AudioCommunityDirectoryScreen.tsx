@@ -8,7 +8,7 @@
  * necessary. It does not: this is reached from Profile, and from the old
  * Pro Registry routes, which still resolve here.
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -130,6 +130,16 @@ function MemberSheet({
   /** BLOCK was tapped and is waiting for its confirmation. */
   const [confirmBlock, setConfirmBlock] = useState(false);
   const [blocking, runBlock] = useSending();
+  /**
+   * Which member is open NOW (bug hunt 2026-10-01). SEND REQUEST, SEND REPORT
+   * and BLOCK answer after a round trip, and closing the sheet while one is out
+   * resets `sent` / `reported` / `err` — then the late answer set them again.
+   * Opening the NEXT member showed "Request sent" (and hid their SEND A
+   * CONTACT REQUEST button), a report banner or the first member's error; a
+   * late BLOCK closed the second member's sheet. Each answer checks this.
+   */
+  const liveToken = useRef(token);
+  liveToken.current = token;
 
   // Load in an effect, never during render: calling a setter while rendering is
   // how you get an endless fetch loop the moment the fetch resolves.
@@ -292,9 +302,10 @@ function MemberSheet({
                     onPress={() =>
                       runBlock(() =>
                         blockMember(token, true).then((r) => {
+                          if (r.ok) onBlocked?.(token);
+                          if (liveToken.current !== token) return;
                           setConfirmBlock(false);
                           if (!r.ok) return setErr(r.error);
-                          onBlocked?.(token);
                           onClose();
                         }),
                       )
@@ -333,6 +344,7 @@ function MemberSheet({
                 openTo={p.openTo}
                 onSend={(purpose, message) =>
                   sendContactRequest(token, purpose, message).then((r) => {
+                    if (liveToken.current !== token) return r.ok;
                     setContactOpen(false);
                     if (!r.ok) {
                       setErr(r.error);
@@ -349,6 +361,7 @@ function MemberSheet({
                 onClose={() => setReportOpen(false)}
                 onSend={(reason, detail) =>
                   reportMember({ token, reason, detail }).then((r) => {
+                    if (liveToken.current !== token) return;
                     setReportOpen(false);
                     if (!r.ok) return setErr(r.error);
                     // A report that vanishes silently reads as one that was

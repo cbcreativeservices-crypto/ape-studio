@@ -161,7 +161,8 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   // signed-in learner must not be treated as a guest before the tier is known.
   const { entitlement, resolved } = useEntitlement();
   const guestRef = useRef(false);
-  guestRef.current = resolved && entitlement === 'anonymous';
+  const isGuest = resolved && entitlement === 'anonymous';
+  guestRef.current = isGuest;
   // A copy restored AS A GUEST is the empty guest copy. If the tier later turns
   // out signed-in (a failed first read reads 'anonymous'), saving it would
   // write that empty copy over real progress — credit is never removed. So a
@@ -236,8 +237,13 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
     return () => { alive = false; };
     // pages.length only feeds the check-page rule above; it moves with
     // pagesWithCheck.length.
+    // `isGuest` (bug pass 2026-10-01): the tier can change after the first
+    // load — a signed-in learner whose boot read failed resolves 'anonymous'
+    // and later reads their real tier; a member can sign out mid-lab. Without
+    // re-loading, the first stayed on the empty guest copy for the whole visit
+    // and the second kept saving the old account's place as a guest.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [labId, pagesWithCheck.length, resolved]);
+  }, [labId, pagesWithCheck.length, resolved, isGuest]);
 
   const persist = useCallback((patch: Partial<PagedProgress>) => {
     const base = progressRef.current;
@@ -280,12 +286,22 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
      */
     if (fresh && page < pages.length) onPageDone?.(page);
   }, [page, persist, pagesWithCheck.length, pages.length, onPageDone]);
-  const doReset = () => void resetPagedProgress(labId).then(() => {
-    const fresh: PagedProgress = { completed: [], lastPage: 0, done: false };
-    progressRef.current = fresh;
-    setProgress(fresh);
-    setPage(0);
-  });
+  // Bug pass 2026-10-01: (1) a guest's reset is in memory only — the stored
+  // copy is device-wide, so removing it as a guest erased the previous
+  // account's place (a guest copy is never written, and a removal is a write);
+  // (2) START OVER from CONTENTS on the what's-left screen left `ending` on,
+  // so the learner stayed on the end screen at "page 1".
+  const doReset = () => {
+    const skipStore = guestRef.current || loadedAsGuestRef.current;
+    void (skipStore ? Promise.resolve() : resetPagedProgress(labId)).then(() => {
+      const fresh: PagedProgress = { completed: [], lastPage: 0, done: false };
+      progressRef.current = fresh;
+      setProgress(fresh);
+      setEnding(false);
+      setPage(0);
+      scrollRef.current?.scrollTo({ y: 0, animated: false });
+    });
+  };
   // A PRACTICE reset: the page marks kept on this device for this lab are
   // cleared and the lab starts from page 1. Credit already banked to the
   // account (Patchbay / Connector Select pages, a passed check) is never

@@ -223,9 +223,16 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
       onPanResponderGrant: () => {
         dragAccum.current = 0;
       },
-      onPanResponderMove: (_e, g) => {
+      onPanResponderMove: (e) => {
         if (liftedRef.current !== gs) return;
-        const step = Math.trunc((g.dy - dragAccum.current) / ROW_H);
+        // ⛔ Finger travel from the TOUCH START, not g.dy (night pass
+        // 2026-10-01 — the twin of the Enrollments drag fix of 2026-09-29).
+        // rowPan builds a NEW PanResponder every render and every committed
+        // swap re-renders, so the next move arrived on a fresh, never-granted
+        // gestureState and g.dy no longer meant "distance dragged": the row
+        // jumped or swapped back. pageY − touchStart survives re-renders.
+        const dy = e.nativeEvent.pageY - touchStart.current.y;
+        const step = Math.trunc((dy - dragAccum.current) / ROW_H);
         if (step !== 0) {
           // CLAMP to the swaps actually available (night audit 2026-09-13):
           // moveInOrder no-ops at the list ends, but dragAccum used to advance
@@ -248,7 +255,7 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
             dragAccum.current += applied * ROW_H;
           }
         }
-        dragY.setValue(g.dy - dragAccum.current);
+        dragY.setValue(dy - dragAccum.current);
       },
       onPanResponderRelease: endLift,
       onPanResponderTerminate: endLift,

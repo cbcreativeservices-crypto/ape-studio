@@ -83,6 +83,11 @@ export function CymaticsModuleScreen() {
   // the module: what is still to do (jump links), PRACTISE AGAIN from module 1
   // (clears nothing), DONE back to the lab home.
   const [ending, setEnding] = useState(false);
+  // A drag's scroll lock is released by its own release/terminate — which
+  // never arrives when the module unmounts mid-drag (a second finger on
+  // NEXT / FINISH). Free it on every module or end-screen change, or the
+  // next reading page cannot scroll (bug pass 2026-10-01).
+  useEffect(() => setScrollLocked(false), [meta.id, ending]);
   const goToModule = (i: number) => {
     if (i < 0 || i > last) return;
     setEnding(false);

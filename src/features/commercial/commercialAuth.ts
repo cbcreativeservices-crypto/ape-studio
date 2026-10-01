@@ -9,8 +9,9 @@
  * have a class code use the existing two-step verify/claim flow.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ensureSession } from '../auth/api';
+import { AUTH_CALL_MS, ensureSession } from '../auth/api';
 import { supabase } from '../../lib/supabase';
+import { withDeadline } from '../../lib/boundedCall';
 
 // Device-local glossary state (anonymous favorites/history) — migrated on signup.
 const FAVS_KEY = 'ape:glossaryFavs';
@@ -50,10 +51,18 @@ export async function registerCommercialUser(email: string, password: string): P
   // 2. Registration RPC — creates the users row + seeds free topics.
   const nickname = email.trim().split('@')[0] || 'Student';
   const migration = await collectFavoritesMigration();
-  const { data, error } = await supabase.rpc('register_commercial_user', {
-    p_nickname: nickname,
-    p_favorites: migration.favorites,
-  });
+  // BOUNDED (night bug pass 1, 2026-10-01) — a stall REJECTS, and the Auth
+  // screen's catch says "check your connection". The auth account already
+  // exists by now, so the retry resumes it (ensureSession: same email → keep).
+  const { data, error } = await withDeadline(
+    async () =>
+      await supabase.rpc('register_commercial_user', {
+        p_nickname: nickname,
+        p_favorites: migration.favorites,
+      }),
+    'register_commercial_user',
+    AUTH_CALL_MS,
+  );
   if (error) {
     console.warn('[commercial] register_commercial_user failed:', error.message);
     return { success: false, error: 'Could not complete registration. Please try again.' };

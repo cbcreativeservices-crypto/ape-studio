@@ -284,7 +284,16 @@ function ShapeTray({
       <View style={styles.numRow}>
         <NumField label="LENGTH" value={fromMetres(b.length, units)} unit={u} onCommit={(v) => setDims(b.width, clampLen(toMetres(v, units)))} />
         <NumField label="WIDTH" value={fromMetres(b.width, units)} unit={u} onCommit={(v) => setDims(clampLen(toMetres(v, units)), b.length)} />
-        <NumField label="CEILING" value={fromMetres(room.height, units)} unit={u} onCommit={(v) => setRoom((r) => ({ ...r, height: Math.max(H_MIN, Math.min(H_MAX, toMetres(v, units))) }))} />
+        <NumField label="CEILING" value={fromMetres(room.height, units)} unit={u} onCommit={(v) =>
+            setRoom((r) => {
+              // Typed like the CEILING lane: the low point stays under the
+              // high point (a typed 2.0 m over a 2.2 m low point inverted a
+              // sloped ceiling — bug pass 2026-10-01).
+              const height = Math.max(H_MIN, Math.min(H_MAX, toMetres(v, units)));
+              return { ...r, height, heightLow: Math.min(r.heightLow, height - 0.1) };
+            })
+          }
+        />
       </View>
       <TrayHeading>WALL SHAPE</TrayHeading>
       <Chips items={SHAPES} value={room.shape} onPick={pickShape} />

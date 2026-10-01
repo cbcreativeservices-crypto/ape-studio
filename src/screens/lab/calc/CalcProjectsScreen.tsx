@@ -108,8 +108,8 @@ export function CalcProjectsScreen() {
   }, []);
   useEffect(reload, [reload]);
 
-  const guardCreate = (): boolean => {
-    if (limits.savedProjects == null || projects.length < limits.savedProjects) return true;
+  const guardCreate = (count: number = projects.length): boolean => {
+    if (limits.savedProjects == null || count < limits.savedProjects) return true;
     // confirmDialog / notify, not Alert.alert: RN-web's Alert is a no-op, so
     // these prompts were silent taps on the web preview (B-018/B-062).
     if (limits.savedProjects === 0) {
@@ -171,6 +171,18 @@ export function CalcProjectsScreen() {
     if (!trimmed) {
       notify('Name the project', 'Give the project a name before saving.');
       return;
+    }
+    // The limit, re-checked against the STORED list (bug pass 2026-10-01):
+    // `guardCreate` reads the on-screen list, which is still empty if ＋ NEW is
+    // tapped before the first load lands — so a capped account could add one
+    // past its limit.
+    if (editing?.id == null && limits.savedProjects != null) {
+      const stored = await workflowStore.listProjects();
+      if (stored.length >= limits.savedProjects) {
+        setProjects(stored);
+        guardCreate(stored.length);
+        return;
+      }
     }
     const out: Project['values'] = [];
     // ⚠️ The skips below used to be silent — the comment said "honestly" but
@@ -349,7 +361,9 @@ export function CalcProjectsScreen() {
                     ) : null}
                     <Pressable
                       style={styles.removeBtn}
-                      onPress={() => setValues((vs) => vs.filter((_, k) => k !== i))}
+                      // By the row itself, not its index (bug pass 2026-10-01):
+                      // a double tap on ✕ removed this row AND the one below.
+                      onPress={() => setValues((vs) => vs.filter((x) => x !== v))}
                       hitSlop={8}
                       accessibilityRole="button"
                       accessibilityLabel={`Remove value ${i + 1}`}

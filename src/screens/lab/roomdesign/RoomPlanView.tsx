@@ -16,7 +16,7 @@
  * panels have thickness. Level and pressure are coloured on the amplitude
  * standard (features/tools/levelColor.ts): quiet blue → loud red.
  */
-import { useContext, useEffect, useMemo, useRef, type ReactNode } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { PanResponder, View } from 'react-native';
 import Svg, { Circle, G, Line, Path, Polygon, Polyline, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
@@ -114,7 +114,17 @@ export function RoomPlanView({
   const room = design.room;
   const lay = design.layouts[design.active] ?? design.layouts[0];
   const b = useMemo(() => bounds(room), [room]);
-  const T = useMemo(() => planTransform(b, gw, gh), [b, gw, gh]);
+  const liveT = useMemo(() => planTransform(b, gw, gh), [b, gw, gh]);
+  // The transform is HELD while a handle is dragged (bug pass 2026-10-01):
+  // dragging a corner outward grows the bounding box, which re-fit the plan
+  // (smaller k, shifted origin) on every move — the same finger point then
+  // mapped further out, the room grew again, and the corner ran away to the
+  // ROOM_MAX_M clamp. Held, the finger and the corner stay together; the plan
+  // settles once on release (the aspect rule below). A box-size change
+  // (rotation / full screen) drops the hold.
+  const frozenT = useRef<PlanTransform | null>(null);
+  const T = frozenT.current && frozenT.current.gw === gw && frozenT.current.gh === gh ? frozenT.current : liveT;
+  const [, settle] = useState(0);
   const units = room.units;
   const v = room.vertices;
   const fs = 9.5; // glass points — the floor; grows with the zoom
@@ -165,6 +175,14 @@ export function RoomPlanView({
   const ref = useRef({ handles, T, s, onSelect, onDrag, onDragEnd });
   ref.current = { handles, T, s, onSelect, onDrag, onDragEnd };
   const drag = useRef<{ id: string; gx: number; gy: number } | null>(null);
+  const endDrag = () => {
+    const d = drag.current;
+    drag.current = null;
+    dragging.current = false;
+    frozenT.current = null;
+    settle((n) => n + 1); // re-fit the plan (and the aspect) once, now
+    return d;
+  };
   const pan = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: (e) => {
@@ -174,6 +192,7 @@ export function RoomPlanView({
         if (!hit) return false;
         drag.current = { id: hit.id, gx: g.x, gy: g.y };
         dragging.current = true;
+        frozenT.current = st.T;
         st.onSelect?.(hit.id);
         return true;
       },
@@ -188,14 +207,12 @@ export function RoomPlanView({
         st.onDrag?.(d.id, st.T.toM({ x: gx, y: gy }));
       },
       onPanResponderRelease: () => {
-        const d = drag.current;
-        drag.current = null;
-        dragging.current = false;
+        const d = endDrag();
         if (d) ref.current.onDragEnd?.(d.id);
       },
       onPanResponderTerminate: () => {
-        drag.current = null;
-        dragging.current = false;
+        const d = endDrag();
+        if (d) ref.current.onDragEnd?.(d.id);
       },
       onPanResponderTerminationRequest: () => false,
     }),

@@ -62,6 +62,20 @@ export function PaywallScreen({ navigation }: Props) {
    * under it. A ref is synchronous, so the second tap is dropped.
    */
   const inFlight = useRef(false);
+  /**
+   * Still on screen? (night bug pass 1, 2026-10-01.) A restore can take a
+   * while, and ✕ / swipe-down stays live under its spinner. Its "Purchases
+   * restored" notice then came up AFTER the paywall had gone, and dismissing it
+   * ran `navigation.goBack()` for a screen no longer in the stack — popping
+   * whatever the person had returned to (Settings, a lab) instead.
+   */
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     let alive = true;
@@ -281,7 +295,9 @@ export function PaywallScreen({ navigation }: Props) {
                 ? 'Your Academy access has been restored.'
                 : // Ratified by the owner 2026-09-14
                   'Your previous purchase was verified and your membership is recorded. We couldn’t refresh your access on this device yet — it will unlock shortly, or restart the app.',
-              () => navigation.goBack(),
+              () => {
+                if (mounted.current) navigation.goBack();
+              },
             );
             return;
           case 'none':

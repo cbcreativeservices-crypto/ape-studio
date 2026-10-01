@@ -10,6 +10,7 @@
  */
 import { supabase } from '../../lib/supabase';
 import { getDeviceId } from './deviceIdentity';
+import { withDeadline } from '../../lib/boundedCall';
 
 export type ClaimResult = { ok: boolean; tookOver: boolean };
 
@@ -17,7 +18,16 @@ export type ClaimResult = { ok: boolean; tookOver: boolean };
 export async function claimThisDevice(): Promise<ClaimResult> {
   try {
     const deviceId = await getDeviceId();
-    const { data, error } = await supabase.rpc('claim_device', { p_device_id: deviceId });
+    // BOUNDED (night bug pass 1, 2026-10-01) — the twin of getActiveDeviceId
+    // below. claimAndProceed AWAITS this after a successful sign-in, so a
+    // stalled RPC left the person on the login spinner, signed in, forever
+    // (and the takeover prompt's Continue spinning the same way). A stall now
+    // lands in the catch and fails open like every other failure here.
+    const { data, error } = await withDeadline(
+      async () => await supabase.rpc('claim_device', { p_device_id: deviceId }),
+      'claim_device',
+      8000,
+    );
     if (error) {
       console.warn('[single-device] claim_device failed (feature may be un-migrated):', error.message);
       return { ok: false, tookOver: false };

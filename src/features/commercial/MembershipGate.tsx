@@ -170,8 +170,14 @@ export function MembershipGateHost() {
               closeMembershipGate();
               // Hosted inside another Modal: the Paywall cannot present over it
               // yet — ask for it once that Modal has closed (see paywallPending).
-              if (hostedMode) setPaywallPending({ host: hostId, at: Date.now() });
-              else if (navigationRef.isReady()) navigationRef.navigate('Paywall');
+              // ⛔ OUR OWN Modal too (night bug pass 1, 2026-10-01). The
+              // un-hosted card is a DimModal that this very tap is unmounting,
+              // and navigating to the `presentation: 'modal'` Paywall in the
+              // same tick is the Modal-over-Modal refusal every other hand-off
+              // waits out (afterDialogCloses / HOST_DISMISS_MS): iOS presented
+              // nothing and GET MEMBERSHIP read as dead. The pending request
+              // waits rootModalHoldMs(), which this unmount has just armed.
+              setPaywallPending({ host: hostId, at: Date.now() });
             }}
             accessibilityRole="button"
             accessibilityLabel="Get Academy membership"

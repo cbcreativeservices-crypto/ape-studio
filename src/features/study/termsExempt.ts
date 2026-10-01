@@ -52,16 +52,24 @@ function emit() {
   });
 }
 
+// Bumped by resetLocal (bug pass 1, 2026-10-01) — the generation fence every
+// other hydrating store has: a read in flight across an account wipe must not
+// refill the set, or mark it hydrated, after the reset.
+let generation = 0;
+
 function hydrate(): Promise<void> {
   if (hydrated) return Promise.resolve();
   if (hydrating) return hydrating;
+  const gen = generation;
   hydrating = (async () => {
     try {
       const raw = await AsyncStorage.getItem(KEY);
+      if (gen !== generation) return;
       if (raw) for (const id of JSON.parse(raw) as string[]) exempt.add(id);
     } catch {
       /* best-effort — a fresh empty set is safe */
     }
+    if (gen !== generation) return;
     hydrated = true;
     emit();
   })();
@@ -98,6 +106,7 @@ export async function markTermsExempt(achievementId: string): Promise<void> {
  * `hydrated` so live hooks re-render empty and the next read re-hydrates.
  */
 export function resetLocal(): void {
+  generation++;
   exempt.clear();
   hydrated = false;
   hydrating = null;

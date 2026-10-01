@@ -118,7 +118,10 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
     if (!next) return;
     const t = treatmentAtReflection(next, room);
     if (!t) return;
-    setItems((ts) => [...ts, t]);
+    // Judged against the LATEST list, not this render's: a double tap used to
+    // stack two identical panels on the same reflection point (bug pass
+    // 2026-10-01).
+    setItems((ts) => (ts.some((x) => sameSpot(x, t)) ? ts : [...ts, t]));
     setSelId(t.id);
     flashItem(t.id);
   };
@@ -126,7 +129,13 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
     const have = new Set(design.treatment.filter((t) => t.kind === 'basstrap').map((t) => t.wall));
     const fresh = room.vertices.map((_, i) => i).filter((i) => !have.has(i)).slice(0, 4).map((i) => basstrapAt(room, i));
     if (fresh.length === 0) return;
-    setItems((ts) => [...ts, ...fresh]);
+    // A double tap read the same stale corner set twice and put two traps in
+    // every corner — re-check against the latest list (bug pass 2026-10-01).
+    setItems((ts) => {
+      const taken = new Set(ts.filter((t) => t.kind === 'basstrap').map((t) => t.wall));
+      const add = fresh.filter((t) => !taken.has(t.wall));
+      return add.length ? [...ts, ...add] : ts;
+    });
     setSelId(fresh[0].id);
     flashItem(fresh[0].id);
   };
@@ -152,7 +161,9 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
       t = { id: newId('tr'), kind, wall: rear, pos: 0.5, width: 1.2, height: 1.2, thickness: 0.15, z: 1.2, enabled: true };
     } else if (kind === 'gobo') t = { id: newId('tr'), kind, x: L.x - 0.6, y: lis.y - 0.3, width: 1.2, height: 0.4, thickness: 0.1, z: 1.0, enabled: true };
     else t = { id: newId('tr'), kind: 'absorber', wall: 0, pos: 0.5, width: 0.6, height: 1.2, thickness: 0.1, z: 1.2, enabled: true };
-    setItems((ts) => [...ts, t]);
+    // A double tap made two items in the same place (bug pass 2026-10-01);
+    // a second one goes in once the first has been dragged away.
+    setItems((ts) => (ts.some((x) => sameSpot(x, t)) ? ts : [...ts, t]));
     setSelId(t.id);
     flashItem(t.id);
   };
@@ -222,7 +233,12 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
       id: 'ab',
       label: sel ? (sel.enabled ? 'ITEM ON' : 'ITEM OFF') : 'ADD FIRST',
       value: !!sel?.enabled,
-      onToggle: () => patchSel({ enabled: !sel?.enabled }),
+      // Flip the LATEST state: a fast double tap read the same render twice
+      // and landed one toggle instead of two (bug pass 2026-10-01).
+      onToggle: () => {
+        if (!sel) return;
+        setItems((ts) => ts.map((t) => (t.id === sel.id ? { ...t, enabled: !t.enabled } : t)));
+      },
     },
     {
       kind: 'group',
@@ -301,6 +317,14 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
       <Caption>{`ESTIMATED throughout: broadband teaching coefficients, and a Sabine/Eyring decay that assumes a diffuse field a small room does not have below its Schroeder frequency (≈ ${Number.isFinite(analysis.schroeder) ? Math.round(analysis.schroeder) : '—'} Hz here) — the 125 Hz figure is indicative only. Sabine also ignores air absorption, which matters above a few kHz in a large room. Measure the real room before and after.`}</Caption>
     </RoomRackLayout>
   );
+}
+
+/** Two items in the same place (same kind, same wall spot or same floor /
+ *  ceiling point) — the duplicate a double tap on ABSORB NEXT made. */
+export function sameSpot(a: Treatment, b: Treatment): boolean {
+  if (a.kind !== b.kind) return false;
+  if (a.wall != null || b.wall != null) return a.wall === b.wall && Math.abs((a.pos ?? 0) - (b.pos ?? 0)) < 0.02;
+  return Math.abs((a.x ?? 0) - (b.x ?? 0)) < 0.05 && Math.abs((a.y ?? 0) - (b.y ?? 0)) < 0.05;
 }
 
 export function treatmentSummary(d: RoomDesign): string {

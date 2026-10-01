@@ -108,9 +108,12 @@ export function StageFullScreen({
   // The zoom step by KEY ('1' | '1.5' | '2' | '3' | 'fit'): FIT's factor
   // follows the body, so a rotation keeps the learner on FIT, re-fitted.
   const [stepKey, setStepKey] = useState('1');
-  // Every opening starts at the whole drawing.
+  // Every opening starts at the whole drawing. Reset on CLOSE as well (bug
+  // pass 2026-10-01): reset only on open, the first frame of the next opening
+  // still drew the old 3× / FIT step (and mounted its scrollers) before
+  // snapping back to 1×.
   useEffect(() => {
-    if (visible) setStepKey('1');
+    setStepKey('1');
   }, [visible]);
   // The hint line rolls DOWN out of the way on a tap and back up from a
   // small ? chip (owner 2026-09-26: "make the 'pick a zoom step…' message
@@ -133,6 +136,12 @@ export function StageFullScreen({
   // The dock folds to a handle on a tap (sideways the body is what it gives
   // back). An open tray always has its dock up — the lane rides above it.
   const [dockFolded, setDockFolded] = useState(dockFoldedCache);
+  // The view stays mounted while closed, so a frame mounted BEFORE the
+  // learner folded another display's dock still held the old value: re-read
+  // the session cache on every opening (bug pass 2026-10-01).
+  useEffect(() => {
+    if (visible) setDockFolded(dockFoldedCache);
+  }, [visible]);
   const toggleDock = () => {
     setDockFolded((f) => {
       dockFoldedCache = !f;

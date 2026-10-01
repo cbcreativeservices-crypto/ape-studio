@@ -9,7 +9,7 @@
  * The ticked checks and QC lines are handed to the host (onProjectState) so
  * they persist under the guest rule and survive a remount.
  */
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Text } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { faderParam, optionsParam } from '../MasteringRack';
@@ -42,21 +42,30 @@ export function Mod8Project({ onAnswered, onQcComplete, savedChecks, savedQc, on
   );
   const laid = useMemo(() => layoutSequence(tracks, gap, crossfade), [tracks, gap, crossfade]);
   const step = maxLoudnessStep(tracks);
-  const toggleCheck = (id: string) => setChecks((c) => {
-    const n = new Set(c);
+  // The latest lists live in refs and the host is told OUTSIDE the state
+  // updaters: an updater can be re-run by React (and a queued one runs during
+  // this component's render), so the host setState + store write inside it
+  // fired during render / twice, and a fast double-tap reported a stale list
+  // (bug pass 2026-10-01).
+  const checksRef = useRef(checks);
+  const qcRef = useRef(qc);
+  const toggleCheck = (id: string) => {
+    const n = new Set(checksRef.current);
     if (n.has(id)) n.delete(id);
     else n.add(id);
-    onProjectState?.([...n], [...qc]);
-    return n;
-  });
-  const toggleQc = (id: string) => setQc((c) => {
-    const n = new Set(c);
+    checksRef.current = n;
+    setChecks(n);
+    onProjectState?.([...n], [...qcRef.current]);
+  };
+  const toggleQc = (id: string) => {
+    const n = new Set(qcRef.current);
     if (n.has(id)) n.delete(id);
     else n.add(id);
+    qcRef.current = n;
+    setQc(n);
     onQcComplete(n.size === PROJECT_QC.length);
-    onProjectState?.([...checks], [...n]);
-    return n;
-  });
+    onProjectState?.([...checksRef.current], [...n]);
+  };
   const checkScore = PROJECT_CHECKS.filter((c) => checks.has(c.id) === c.needed).length;
 
   return (

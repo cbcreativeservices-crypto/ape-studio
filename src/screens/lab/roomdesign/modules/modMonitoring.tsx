@@ -84,7 +84,7 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
   const b = analysis.bounds;
   const [view, setView] = useState<'plan' | 'side'>('plan');
   const [selected, setSelected] = useState<string | null>('listener');
-  const [heightTarget, setHeightTarget] = useState<HeightTarget>('tweeter');
+  const [heightPick, setHeightTarget] = useState<HeightTarget>('tweeter');
   const st = analysis.stereo;
   const conflicts = placementConflicts(design, analysis);
   const multi = design.monitoring.config === 'multichannel';
@@ -95,6 +95,10 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
   const R = lay.speakers.find((s) => s.role === 'R');
   const SUB = lay.speakers.find((s) => s.role === 'SUB');
   const subGain = SUB ? subBoundaries(room, SUB) : null;
+  // SETUP → STEREO removes the sub while HEIGHT may still be on it: the lane
+  // then wrote to nothing and the chooser had no matching row (bug pass
+  // 2026-10-01). Without a sub the lane falls back to the tweeters.
+  const heightTarget: HeightTarget = heightPick === 'sub' && !SUB ? 'tweeter' : heightPick;
   const spread = L && R ? Math.hypot(R.x - L.x, R.y - L.y) : 1.6;
   const front = L && R ? (L.y + R.y) / 2 - b.minY : 1;
   const listenY = lay.listener.y - b.minY;

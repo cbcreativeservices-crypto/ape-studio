@@ -9,6 +9,7 @@
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
+import { confirmDialog } from '../../../../lib/confirm';
 import { LabNextButton } from '../../kit/LabNavBar';
 import { Body, Caption, Card, KV, NumField, SectionTitle, SuggestionRow, TierTag, TrayButton } from '../bits';
 import type { RoomLabCtx } from '../labCtx';
@@ -181,7 +182,9 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
                 <View style={styles.btnRow}>
                   <TrayButton label={compareId === d.id ? 'COMPARING' : 'COMPARE AS "BEFORE"'} tint={compareId === d.id ? 'amber' : 'dim'} onPress={() => setCompareId(compareId === d.id ? null : d.id)} disabled={d.id === design.id} />
                   <TrayButton label="LOAD" tint="dim" onPress={() => loadSaved(d.id)} />
-                  <TrayButton label="DELETE" tint="dim" onPress={() => deleteSaved(d.id)} />
+                  {/* One stray tap used to erase a saved design for good (bug pass
+                      2026-10-01) — the delete asks first, like NEW ROOM. */}
+                  <TrayButton label="DELETE" tint="dim" onPress={() => confirmDialog('Delete saved design?', `"${d.name}" is removed from this device. The design on screen is not touched.`, 'DELETE', () => deleteSaved(d.id), { destructive: true })} />
                 </View>
               </View>
             ))}

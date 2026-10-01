@@ -1385,7 +1385,11 @@ export function SplMeterScreen({ navigation }: Props) {
     }
     // Read the FRESHEST frame directly at save time (no polled React state now).
     const m = state === 'running' ? ApeDsp.getMeterFrame() : null;
-    if (!m) return;
+    // frameIsLive, not `!m` (night pass 2026-10-01): the frame is never null on
+    // an engine build, so a capture that had just died — inside the staleness
+    // window, before the button greys — saved its frozen Leq/peak as a log.
+    // Same verdict every other tool's SAVE uses.
+    if (!frameIsLive(m)) return;
     const saveFlags = [...meterWarningFlags(m), ...healthWarningFlags(ApeDsp.getInfo())];
     // Without a field calibration the record is explicitly uncalibrated
     // (spec §9 required warning). With one (ruling R1), the record carries

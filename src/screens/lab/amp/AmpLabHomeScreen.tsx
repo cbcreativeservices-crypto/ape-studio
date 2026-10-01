@@ -14,7 +14,7 @@ import { confirmDialog } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { AMP_MODULES } from '../../../features/amp/ampContent';
-import { loadAmpProgress, resetAmpProgress, setAmpSaveBlocked, type AmpProgressState } from '../../../features/amp/ampProgress';
+import { resetAmpProgress, setAmpSaveBlocked, updateAmpProgress, type AmpProgressState } from '../../../features/amp/ampProgress';
 import { useLabEndGuest } from '../kit/LabEndScreen';
 import { LabHeader } from '../kit/LabNavBar';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
@@ -39,7 +39,9 @@ export function AmpLabHomeScreen() {
   const reload = useCallback(() => {
     if (!resolved) return;
     let alive = true;
-    void loadAmpProgress().then((s) => {
+    // Queued behind every pending write (bug pass 2026-10-01): a module's
+    // MARK COMPLETE still saving when ‹ came back here read as not done.
+    void updateAmpProgress(() => {}).then((s) => {
       if (alive) setProgress(s);
     });
     return () => {

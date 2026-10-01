@@ -20,7 +20,7 @@
  * state and any older deep link may still carry it; arriving here with it now
  * behaves exactly like the gallery, which is the safe reading.
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
@@ -43,8 +43,16 @@ export function TrophyScreen({ navigation, route }: Props) {
   const { topicName, achievementId } = route.params;
   const [iconUrl, setIconUrl] = useState<string | null>(null);
 
+  /** ONE EXIT PER SCREEN (bug pass 1, 2026-10-01) — the same latch as
+   *  Celebration / Results. A double tap on Back ran goBack() twice: the
+   *  second came from a route already popped and bubbled up as an unhandled
+   *  GO_BACK. A ref, because the second tap lands before any re-render. */
+  const leavingRef = useRef(false);
+
   /** Always back to whatever opened this trophy. */
   const exit = () => {
+    if (leavingRef.current) return;
+    leavingRef.current = true;
     if (navigation.canGoBack()) {
       navigation.goBack();
       return;

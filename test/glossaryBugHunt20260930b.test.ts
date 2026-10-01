@@ -61,7 +61,7 @@ test('native saveTerms upserts and parks, never wipes every definition', () => {
 test('a teaser batch only fills blanks and re-checks the tier after the disk read', () => {
   assert.match(screen, /if \(e && r\.definition && e\.definition === ''\)/);
   const ensure = screen.slice(screen.indexOf('const fromDisk ='));
-  assert.match(ensure.slice(0, 500), /if \(defTierRef\.current !== tier\)/);
+  assert.match(ensure.slice(0, 500), /if \(defTierRef\.current !== tier( \|\| gen !== readerGenRef\.current)?\)/);
 });
 
 test('a tier change drops cached detail bodies and the charged set', () => {

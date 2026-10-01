@@ -127,7 +127,10 @@ test('calculator: stage body capped; runner converts project units, refuses stal
   const run = read('screens/lab/calc/CalcWorkflowRunScreen.tsx');
   assert.match(run, /existing\.source\.kind === 'project' \|\| existing\.source\.kind === 'fixed'/);
   assert.match(run, /!\(Date\.parse\(draft\.startedAt\) < Date\.parse\(valid\.updatedAt\)\)/);
-  assert.match(run, /void workflowStore\.deleteRun\(draft\.id\);/);
+  // Re-cut 2026-10-01: the abandoned draft is deleted once the NEW run saves
+  // (a scrim tap / Android BACK on the prompt also runs onCancel).
+  assert.match(run, /abandonedDraftRef\.current = draft\.id;/);
+  assert.match(run, /void workflowStore\.deleteRun\(old\);/);
   assert.match(run, /r\.steps\.every\(\(st\) => Object\.keys\(st\.inputs\)\.length === 0\)\) return true;/);
   assert.match(run, /o\.quantity === f\.quantity && Number\.isFinite\(o\.value\)\) \{/);
   assert.match(read('screens/lab/calc/calcReport.ts'), /const key = `\$\{i\.label\.toLowerCase\(\)\}\|\$\{i\.value\}\|\$\{i\.unit \?\? ''\}`;/);

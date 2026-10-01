@@ -15,7 +15,7 @@
  * entitlement, completion and lockout server-side, so a stale screen can never
  * grant an exam it shouldn't.
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { supabase } from '../../lib/supabase';
 import { safeSession } from '../../lib/getSessionSafe';
@@ -81,7 +81,12 @@ export function AwardProgressScreen({ navigation, route }: Props) {
     setProgress(p);
   }, [awardType, awardId]);
 
+  // `disabled={exporting}` lands a render late: a double tap fired two
+  // exports, i.e. two PDF renders and two share sheets (night pass 2026-10-01).
+  const exportingRef = useRef(false);
   const onExportCertificate = useCallback(async () => {
+    if (exportingRef.current) return;
+    exportingRef.current = true;
     const cred = progress?.credential ?? null;
     setCertMessage(null);
     setExporting(true);
@@ -90,6 +95,7 @@ export function AwardProgressScreen({ navigation, route }: Props) {
       awardType,
       earnedAt: cred?.issuedAt ?? cred?.earnedAt ?? null,
     });
+    exportingRef.current = false;
     setExporting(false);
     if (res.ok) return;
     setCertMessage(

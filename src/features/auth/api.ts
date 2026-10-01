@@ -10,7 +10,20 @@ import { supabase } from '../../lib/supabase';
 import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../commercial/realAccount';
 import { markIntentionalSignOut } from './intentionalSignOut';
-import { softDeadline } from '../../lib/boundedCall';
+import { softDeadline, withDeadline } from '../../lib/boundedCall';
+
+/**
+ * Every auth WRITE is bounded too (night bug pass 1, 2026-10-01). The reads
+ * were bounded on 2026-09-21; signIn / signUp / the recovery calls were not,
+ * and supabase-js has no fetch timeout. A socket that stops answering —
+ * the stall this app has seen — left LOGIN / CREATE ACCOUNT / SET NEW
+ * PASSWORD on a spinner with every button hidden and, on the app's own entry
+ * screen, no RETURN either: force-quit was the only way out. A stall now
+ * resolves as an error whose message says "timeout", which friendlyAuthError
+ * already maps to the offline line, and the form comes back for a retry.
+ */
+export const AUTH_CALL_MS = 30000;
+const orTimeoutError = (e: unknown) => ({ data: null, error: e as Error });
 
 // The pure helpers live in authErrorCopy.ts so they can be unit-tested without
 // standing up the Supabase client. Re-exported here so every existing call site
@@ -102,9 +115,13 @@ export async function ensureSession(email: string, password: string): Promise<st
     }
   }
 
-  const { data, error: signUpError } = await supabase.auth.signUp({ email, password });
+  const { data, error: signUpError } = await withDeadline(
+    () => supabase.auth.signUp({ email, password }),
+    'signUp',
+    AUTH_CALL_MS,
+  ).catch(orTimeoutError);
   if (!signUpError) {
-    if (data.session) return null;
+    if (data?.session) return null;
     console.warn('[auth] signUp returned no session — email confirmation appears ENABLED (model-A violation).');
     return 'Your account was created, but sign-in needs email confirmation first. Check your inbox, then sign in — or contact support if nothing arrives.';
   }
@@ -123,7 +140,11 @@ export async function ensureSession(email: string, password: string): Promise<st
   if (!/already|registered|exists|taken/i.test(signUpError.message)) {
     return friendlyAuthError(signUpError);
   }
-  const signIn = await supabase.auth.signInWithPassword({ email, password });
+  const signIn = await withDeadline(
+    () => supabase.auth.signInWithPassword({ email, password }),
+    'signIn',
+    AUTH_CALL_MS,
+  ).catch(orTimeoutError);
   if (!signIn.error) return null;
   // Surface the SIGN-IN failure (the operative one — e.g. wrong password), mapped
   // to offline copy when it's a network error, rather than the stale signUp error.
@@ -167,7 +188,11 @@ export async function signOutThisDevice(): Promise<void> {
 }
 
 export async function signIn(email: string, password: string): Promise<string | null> {
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { error } = await withDeadline(
+    () => supabase.auth.signInWithPassword({ email, password }),
+    'signIn',
+    AUTH_CALL_MS,
+  ).catch(orTimeoutError);
   return friendlyAuthError(error);
 }
 
@@ -188,7 +213,11 @@ export async function signIn(email: string, password: string): Promise<string | 
  * whose link is inert here. Auth config, not DB schema — outside the freeze.
  */
 export async function requestPasswordReset(email: string): Promise<string | null> {
-  const { error } = await supabase.auth.resetPasswordForEmail(email);
+  const { error } = await withDeadline(
+    () => supabase.auth.resetPasswordForEmail(email),
+    'resetPasswordForEmail',
+    AUTH_CALL_MS,
+  ).catch(orTimeoutError);
   return friendlyAuthError(error);
 }
 
@@ -197,12 +226,20 @@ export const resetPassword = requestPasswordReset;
 
 /** Verify the 6-digit recovery code → recovery session. Returns error or null. */
 export async function verifyRecoveryOtp(email: string, token: string): Promise<string | null> {
-  const { error } = await supabase.auth.verifyOtp({ email, token: token.trim(), type: 'recovery' });
+  const { error } = await withDeadline(
+    () => supabase.auth.verifyOtp({ email, token: token.trim(), type: 'recovery' }),
+    'verifyOtp',
+    AUTH_CALL_MS,
+  ).catch(orTimeoutError);
   return friendlyAuthError(error);
 }
 
 /** Set a new password on the active (recovery) session. Returns error or null. */
 export async function updatePassword(newPassword: string): Promise<string | null> {
-  const { error } = await supabase.auth.updateUser({ password: newPassword });
+  const { error } = await withDeadline(
+    () => supabase.auth.updateUser({ password: newPassword }),
+    'updateUser',
+    AUTH_CALL_MS,
+  ).catch(orTimeoutError);
   return friendlyAuthError(error);
 }

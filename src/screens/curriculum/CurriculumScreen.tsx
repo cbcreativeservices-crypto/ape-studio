@@ -37,7 +37,7 @@ import { topicImagePath } from '../../data/topicImages';
 import { TopicDetailModal, type TopicDetail } from './TopicDetailModal';
 import { InsideStats, fmt, lighten, SILVER, type InsideStat } from './InsideStats';
 // (fmt is still used by the Career Finder blurb and the subject term totals.)
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { CAREER_COUNT, familyFieldOf } from '../../features/careerfinder/careerIndex';
 import { QUESTIONS, QUESTION_COUNT } from '../../features/careerfinder/questions';
 import { FAMILY_COUNT } from '../../features/careerfinder/families';
@@ -110,14 +110,20 @@ function TopicRow({ gs, name, onView }: { gs: number; name: string; onView: () =
 export function CurriculumView({
   showBrand = true,
   onOpenCategory,
+  onScreen = true,
 }: {
   showBrand?: boolean;
+  /** False while a pager host shows another page — the hub's endless motion
+   *  stops (see InsideStats `live`). */
+  onScreen?: boolean;
   /** Tapping the Certificates / Programs stat tiles jumps the Awards pager to
    *  that page (user request 2026-07-22). */
   onOpenCategory?: (key: 'specialization' | 'program') => void;
 }) {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
+  // A screen pushed over this one (AwardProgress, Final Exam…) leaves it mounted.
+  const isFocused = useIsFocused();
   const [open, setOpen] = useState<number | null>(null);
   // The Career Finder entry is a button beside SUBJECTS (owner 2026-09-04):
   // tapping it opens the green container as a popup.
@@ -402,6 +408,7 @@ export function CurriculumView({
       <InsideStats
         hero={{ id: 'terms', value: academy.terms ?? stats.totalTerms }}
         satellites={insideGrid}
+        live={onScreen && isFocused}
       />
 
       {/* Audio Career Finder — its own thin full-width row below the hero

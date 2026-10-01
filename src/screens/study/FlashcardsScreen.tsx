@@ -419,6 +419,8 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   // Tap a highlighted glossary term inside a definition → its own full-screen
   // definition; closing returns to the exact card position (Booth 2026-07-18).
   const [linkedTerm, setLinkedTerm] = useState<GlossaryItem | null>(null);
+  /** Request token for openTermFromList — see there. */
+  const openTermReqRef = useRef(0);
   // Term images (Booth 2026-07-16): glossary_media url per item; ids whose
   // image failed to load (e.g. art not uploaded yet) fall back to text-only.
   const [mediaByItem, setMediaByItem] = useState<Record<string, string>>({});
@@ -821,7 +823,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
         // calculator split outside the glossary (owner 2026-08-17: the dual-role
         // split belongs to the glossary screen alone).
         parts.push(
-          <Text key={`lnk-${k++}`} style={styles.termLink} onPress={() => setLinkedTerm(item)}>
+          <Text key={`lnk-${k++}`} style={styles.termLink} onPress={() => { openTermReqRef.current++; setLinkedTerm(item); }}>
             {m[0]}
           </Text>,
         );
@@ -1037,8 +1039,12 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   // 2026-07-18) — both view types lock to the open-study mode.
   // Tap a term in a list popup → open its full definition right there (user
   // request 2026-07-18). Uses the loaded deck when possible, else fetches it.
+  // Newest tap wins (bug pass 1, 2026-10-01): a slow fetch for term A could
+  // land after the learner had tapped term B (or a deck term, which opens at
+  // once) and replace B's definition with A's.
   const openTermFromList = useCallback(
     async (id: string) => {
+      const req = ++openTermReqRef.current;
       setTermList(null);
       const local = (items ?? []).find((it) => it.id === id);
       if (local) {
@@ -1047,13 +1053,19 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       }
       try {
         const [it] = await fetchGlossaryItemsByIds([id]);
-        if (it) setLinkedTerm(it);
+        if (it && req === openTermReqRef.current) setLinkedTerm(it);
       } catch {
         /* offline / fetch error → no-op */
       }
     },
     [items],
   );
+  /** Closing the viewer also cancels a fetch still in flight, so it cannot
+   *  reopen the viewer the learner just closed. */
+  const closeLinkedTerm = useCallback(() => {
+    openTermReqRef.current++;
+    setLinkedTerm(null);
+  }, []);
 
   const studyMode = reviewMode || soloReveal;
   const stateRef = useRef({ reveal, goCard, stepLevel, level, linkedOpen: false, reviewMode: false });
@@ -1296,12 +1308,12 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     useCallback(() => {
       if (fullscreen || (!linkedTerm && !filtersOpen)) return undefined;
       const sub = BackHandler.addEventListener('hardwareBackPress', () => {
-        if (linkedTerm) setLinkedTerm(null);
+        if (linkedTerm) closeLinkedTerm();
         else setFiltersOpen(false);
         return true;
       });
       return () => sub.remove();
-    }, [fullscreen, linkedTerm, filtersOpen]),
+    }, [fullscreen, linkedTerm, filtersOpen, closeLinkedTerm]),
   );
 
   if (error) {
@@ -1865,7 +1877,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             <LinkedTermOverlay
               item={linkedTerm}
               topInset={insets.top}
-              onClose={() => setLinkedTerm(null)}
+              onClose={closeLinkedTerm}
             />
           ) : null}
 
@@ -1953,7 +1965,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
         <LinkedTermOverlay
           item={linkedTerm}
           topInset={insets.top}
-          onClose={() => setLinkedTerm(null)}
+          onClose={closeLinkedTerm}
         />
       ) : null}
 

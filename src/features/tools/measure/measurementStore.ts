@@ -241,7 +241,13 @@ export function setMeasurementFailureReporter(fn: (title: string, body: string) 
 }
 
 export function saveMeasurement(m: SavedMeasurement): Promise<boolean> {
+  // The account this measurement was taken under (night pass 2026-10-01). A
+  // save waits on hydrate(); an account wipe landing in that window used to
+  // let it continue afterwards and write the PREVIOUS account's record into
+  // the freshly wiped store — the next account's library then opened on it.
+  const gen = generation;
   return hydrate().then(async () => {
+    if (gen !== generation) return false;
     const next = [...list, m];
     // Enforce the cap oldest-first (by created_at).
     let dropped: SavedMeasurement[] = [];

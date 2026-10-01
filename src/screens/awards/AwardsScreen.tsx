@@ -914,6 +914,8 @@ export function AwardsScreen({ navigation, route }: Props) {
         scrollEnabled={!swipeLocked}
         showsHorizontalScrollIndicator={false}
         keyExtractor={(c) => c}
+        // The Explore page's motion follows which page is showing (onScreen).
+        extraData={currentKey}
         // BLANK "EXPLORE THE ACADEMY" (owner 2026-09-29, found in the tablet
         // pass, phones too): with initialScrollIndex the list starts its render
         // window AT that page and leaves a blank spacer for the pages before
@@ -955,6 +957,7 @@ export function AwardsScreen({ navigation, route }: Props) {
               <CurriculumView
                 showBrand={false}
                 onOpenCategory={goToPage}
+                onScreen={currentKey === 'curriculum'}
               />
             </View>
           ) : item === 'directory' ? (

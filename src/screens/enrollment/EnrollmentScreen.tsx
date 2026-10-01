@@ -773,9 +773,14 @@ export function EnrollmentView({
   // Every incomplete required core course is force-loaded into the Dashboard deck
   // and stays active until completed (user request 2026-07-24) — a student must
   // finish them, so they can't be deactivated or removed while incomplete.
+  // ⛔ ONLY ON A KNOWN %, never on "not loaded yet" (night pass 2026-10-01).
+  // `prog` starts as an EMPTY map until the progress read lands (and stays
+  // empty offline), and a missing entry read as 0% — so every open of this
+  // screen re-loaded a COMPLETED core the learner had deliberately unloaded,
+  // and nothing ever unloaded it again once the real 100% arrived.
   useEffect(() => {
     const toActivate = COREQ_TOPIC_GS.filter(
-      (gs) => enrolledGs.has(gs) && (prog.get(gs)?.pct ?? 0) < 100 && !activeGs.has(gs),
+      (gs) => enrolledGs.has(gs) && prog.has(gs) && (prog.get(gs)?.pct ?? 0) < 100 && !activeGs.has(gs),
     );
     if (toActivate.length) setActiveMany(toActivate, true);
   }, [enrolledGs, prog, activeGs]);
@@ -791,6 +796,9 @@ export function EnrollmentView({
   const hasCredential = bundles.some((b) => b.kind === 'cert' || b.kind === 'program');
   useEffect(() => {
     for (const gs of COREQ_TOPIC_GS) {
+      // Unknown % (progress not loaded / offline) decides nothing — it used to
+      // read as 0% and re-pin a COMPLETED core onto Home (night pass 2026-10-01).
+      if (hasCredential && !prog.has(gs)) continue;
       const done = (prog.get(gs)?.pct ?? 0) >= 100;
       if (hasCredential && !done) ensureHome(gs);
       else removeHome(gs);

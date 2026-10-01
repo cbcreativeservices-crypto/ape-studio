@@ -66,7 +66,8 @@ describe('R3 — PagedLab restores only once the tier is known', () => {
     const s = code('src/screens/lab/kit/PagedLab.tsx');
     const load = s.slice(s.indexOf('if (!resolved) return;'), s.indexOf('const persist = useCallback'));
     assert.ok(load.includes('loadPagedProgress(labId)'));
-    assert.match(load, /\}, \[labId, pagesWithCheck\.length, resolved\]\);/);
+    // + isGuest (2026-10-01): a tier change after the first load reloads.
+    assert.match(load, /\}, \[labId, pagesWithCheck\.length, resolved, isGuest\]\);/);
     assert.doesNotMatch(load, /navigatedRef\.current = false;/);
     assert.match(
       s,

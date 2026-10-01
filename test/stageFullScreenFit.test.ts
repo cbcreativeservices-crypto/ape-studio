@@ -147,7 +147,8 @@ describe('StageFullScreen wires the rules in', () => {
   });
 
   test('every opening is still 1×', () => {
-    assert.match(src, /if \(visible\) setStepKey\('1'\)/);
+    // Reset on every visibility change (open AND close, 2026-10-01).
+    assert.match(src, /useEffect\(\(\) => \{\s*setStepKey\('1'\);\s*\}, \[visible\]\);/);
   });
 
   test('a FIT key is a radio step with its own label', () => {

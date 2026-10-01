@@ -14,7 +14,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState, InteractionManager, PermissionsAndroid, Platform } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import {
   ApeDsp,
   type BandsFrame,
@@ -355,8 +355,21 @@ export function useToolAutoStart(state: EngineState, start: () => void, stop?: (
     }
   }, [state]);
 
+  /**
+   * ⛔ NEVER AUTO-START BEHIND ANOTHER SCREEN (night pass 2026-10-01).
+   *
+   * A push that lands while the FIRST start is still opening (the 5–10 s cold
+   * Android open) blurs the screen: the blur teardown drops the state to
+   * 'idle', and because that start never ran, the re-arm above unlatched the
+   * one-shot — so this effect scheduled start() straight away and opened the
+   * mic behind the pushed screen, where no blur cleanup would ever close it
+   * (spec §18: the mic must not stay hot behind another screen). Held until
+   * focus returns; the focus effect above then re-runs it.
+   */
+  const focused = useIsFocused();
   useEffect(() => {
     if (done.current) return;
+    if (!focused) return undefined;
     if (state === 'idle') {
       // Perf (rev 22): start AFTER the push transition finishes, not during it.
       // The landing card is already on screen, so this costs no perceived delay;
@@ -387,7 +400,7 @@ export function useToolAutoStart(state: EngineState, start: () => void, stop?: (
       };
     }
     return undefined;
-  }, [state, start, resumeTick]);
+  }, [state, start, resumeTick, focused]);
 
   // Background release + foreground resume (rev 24), gated on the user setting
   // "Release microphone in the background". TOOLS only — the hub owns its own

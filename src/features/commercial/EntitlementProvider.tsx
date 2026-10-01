@@ -17,7 +17,7 @@ import { loadLastTier, saveLastTier } from './lastTierCache';
 import { devBypass } from '../../config/devMode';
 import { DEV_COMMERCIAL_FLAG_KEY, DEV_ENTITLEMENT_KEY, FLAG_DEFAULTS } from '../../config/flags';
 import { supabase } from '../../lib/supabase';
-import { safeSession } from '../../lib/getSessionSafe';
+import { safeSession, SESSION_TIMEOUT_MS } from '../../lib/getSessionSafe';
 import { withDeadline } from '../../lib/boundedCall';
 import { classifyExpiry, verdictKeepsAccess } from './entitlementExpiry';
 import { setMemberStanding } from './memberStanding';
@@ -410,8 +410,21 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
     // paint on `resolved` and shows a bare spinner with no text, no Retry and
     // no timeout. A reject was handled; a stall was not, and a stall is the
     // failure this app has actually seen twice.
+    const bootAskedAt = Date.now();
     void safeSession(supabase.auth.getSession(), 'EntitlementProvider/boot')
       .then(async ({ data }) => {
+        // ⛔ A STALL IS NOT A GUEST (night bug pass 1, 2026-10-01). safeSession
+        // answers a getSession() that outlives its bound as "signed out" — and
+        // at a cold start getSession waits on supabase-js's own initialise,
+        // which REFRESHES an expired token over the network: the ordinary
+        // morning launch on a slow connection. Read as a guest, a member's
+        // device ran the guest wipe of the local study mirror and was settled
+        // as a KNOWN 'anonymous' — memberStanding swept their booked reminders
+        // — until INITIAL_SESSION corrected it. supabase-js always delivers
+        // INITIAL_SESSION once initialise finishes, with the real answer, so a
+        // stalled boot read decides nothing and leaves it to that event.
+        // (`resolved` still flips in the .finally below.)
+        if (!data.session && Date.now() - bootAskedAt >= SESSION_TIMEOUT_MS) return;
         clearLocalOnUserChange(identityOf(data.session));
         // ── START FROM WHAT THE SERVER LAST CONFIRMED (2026-09-18) ───────────
         //
@@ -556,6 +569,17 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
       };
       // Same test as the effect above — an ANONYMOUS session is still a guest.
       if (!isRealAccount(sess.session)) {
+        // ⛔ …UNLESS THE PROVIDER KNOWS SOMEBODY IS SIGNED IN (night bug pass 1,
+        // 2026-10-01). safeSession reads a stalled getSession() as "no
+        // session", and getSession waits behind any token refresh in flight —
+        // which is exactly what returning from the store sheet starts (the
+        // app foregrounds, auto-refresh resumes). On a slow connection a
+        // PAYING member was set to 'anonymous' straight after paying: every
+        // paid route locked, Settings "GUEST — NO ACCOUNT", their reminders
+        // swept. A real sign-out reaches lastUid through the SIGNED_OUT event
+        // first, so a non-null lastUid here means the read failed, not the
+        // account: report the failure and keep the tier.
+        if (lastUid.current !== null) return false;
         setEntitlementState('anonymous');
         return 'anonymous';
       }

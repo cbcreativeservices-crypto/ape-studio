@@ -96,6 +96,16 @@ const KEEP: ReadonlySet<string> = new Set<string>([
   // count and a week-start.
   'ape:glossaryUsageLocal',
   /**
+   * THE OFFLINE CALCULATOR METER, under the same ruling (night bug pass 1,
+   * 2026-10-01). `features/lab/calcUsage.ts` falls back to this device-local
+   * rolling week whenever the server cannot answer — it exists precisely so
+   * aeroplane mode is not unlimited calculations. Swept by the `ape:*` rule,
+   * sign out → sign back in (or Guest Mode) → go offline handed a free account
+   * five fresh offline calculations, as often as it liked. It holds a count
+   * and a week-start, nothing about who or what — a rate limit, not user memory.
+   */
+  'ape:calc:usageLocal',
+  /**
    * A DISPLAY PREFERENCE, NOT USER DATA (2026-09-22).
    *
    * The Profile screen's opt-in for whole-academy progress totals. It records

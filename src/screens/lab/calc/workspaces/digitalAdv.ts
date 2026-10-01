@@ -274,24 +274,32 @@ const TIMECODE: Workspace = {
       key: 'toFrames',
       name: 'Timecode → frames',
       inputs: ['hours', 'mins', 'secs', 'fps'],
-      formula: 'frames = (h·3600 + m·60 + s) · fps',
+      // Non-drop TIMECODE counts whole frames per timecode second — 30 labels a
+      // second at 29.97 (bug pass 2026-10-01): multiplying by 29.97 returned
+      // 8991 frames for 00:05:00, which the Frames → timecode table (built on
+      // the same whole-frame rate) shows as 9000. Identical for 24/25/30.
+      formula: 'frames = (h·3600 + m·60 + s) · round(fps)',
       plainFormula:
-        'The total frames equal the hours times 3600, plus the minutes times 60, plus the seconds, all times the frame rate.',
+        'The total frames equal the hours times 3600, plus the minutes times 60, plus the seconds, all times the whole-number frame rate.',
       explain:
-        'The reverse: turns an HH:MM:SS timecode into a total frame count. It converts the clock time to seconds, then multiplies by the frame rate. Used to locate an exact frame or line up audio to a picture edit.',
+        'The reverse: turns an HH:MM:SS timecode into a total frame count. It converts the timecode to seconds, then multiplies by the whole-number frame rate — non-drop 29.97 timecode still counts 30 frame labels per timecode second, so it runs slightly behind the wall clock. Used to locate an exact frame or line up audio to a picture edit.',
       keySymbols: ['·'],
       compute: (v) => {
         const totS = n(v.hours) * 3600 + n(v.mins) * 60 + n(v.secs);
+        const frames = Math.round(totS * Math.round(n(v.fps)));
         return [
-          { label: 'TOTAL FRAMES', value: Math.round(totS * n(v.fps)), quantity: 'number' },
-          { label: 'TOTAL TIME', value: totS, quantity: 'time', unit: 's' },
+          { label: 'TOTAL FRAMES', value: frames, quantity: 'number' },
+          { label: 'REAL ELAPSED TIME', value: frames / n(v.fps), quantity: 'time', unit: 's' },
         ];
       },
       steps: (v) => {
         const totS = n(v.hours) * 3600 + n(v.mins) * 60 + n(v.secs);
+        const fpsInt = Math.round(n(v.fps));
+        const frames = Math.round(totS * fpsInt);
         return [
-          `Seconds = ${fmt(n(v.hours))}·3600 + ${fmt(n(v.mins))}·60 + ${fmt(n(v.secs))} = ${fmt(totS)} s.`,
-          `Frames = ${fmt(totS)} × ${fmt(n(v.fps))} = ${fmt(Math.round(totS * n(v.fps)))}.`,
+          `Timecode seconds = ${fmt(n(v.hours))}·3600 + ${fmt(n(v.mins))}·60 + ${fmt(n(v.secs))} = ${fmt(totS)} s.`,
+          `Frames = ${fmt(totS)} × ${fmt(fpsInt)} (whole frames per timecode second) = ${fmt(frames, 9)}.`,
+          `At ${fmt(n(v.fps))} fps those frames take ${fmt(frames)} ÷ ${fmt(n(v.fps))} = ${fmt(frames / n(v.fps))} s of real time.`,
         ];
       },
     },

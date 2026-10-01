@@ -304,8 +304,11 @@ export function EarModuleScreen() {
       } finally {
         playReqRef.current = false;
       }
-      // The gate is an await — the learner can leave while it is open.
-      if (!okOut || !aliveRef.current) return;
+      // The gate is an await — the learner can leave while it is open, or tap
+      // NEXT TRIAL: a play landing while beginTrial is swapping the clips
+      // started the PLAYING player that replace() then resumed into the next
+      // trial's clip, unasked (bug pass 2026-10-01).
+      if (!okOut || !aliveRef.current || busyRef.current) return;
       player()?.play(i);
       playingNowRef.current = i;
       setPlaying(i);

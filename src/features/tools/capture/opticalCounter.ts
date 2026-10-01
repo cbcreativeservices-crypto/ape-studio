@@ -10,6 +10,7 @@
  * flashing indicators / strobes / marked rotating machinery — never audio-rate.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { AppState } from 'react-native';
 import * as Optical from '../../../../modules/ape-optical';
 
 const WINDOW_S = 3.5; // rolling analysis window
@@ -107,8 +108,26 @@ export function useOpticalCounter(active: boolean): { state: OpticalState; readi
     setReading(null);
   }, []);
 
+  /**
+   * THE CAMERA CLOSES BEHIND THE HOME BUTTON (night pass 2026-10-01). Nothing
+   * here watched the app state, so Light Pulse kept the camera session open in
+   * the background (the OS camera indicator lit on Android until the system
+   * cut it) — and once the OS DID take the camera, coming back found a dead
+   * session: the stale guard blanked the reading to "– –" for good under a
+   * 'running' state, with only STOP → START to recover. Background closes the
+   * session; return opens a fresh one. 'inactive' (iOS permission alert,
+   * app-switcher peek) is not backgrounding — iOS's own camera prompt shows
+   * from inside Optical.start(), and tearing down there would cancel it.
+   */
+  const [foreground, setForeground] = useState(AppState.currentState !== 'background');
   useEffect(() => {
-    if (!active) return;
+    const sub = AppState.addEventListener('change', (s) => setForeground(s !== 'background'));
+    return () => sub.remove();
+  }, []);
+  const live = active && foreground;
+
+  useEffect(() => {
+    if (!live) return;
     if (!Optical.isAvailable()) {
       setState('absent');
       return;
@@ -182,7 +201,7 @@ export function useOpticalCounter(active: boolean): { state: OpticalState; readi
       if (poll) clearInterval(poll);
       void Optical.stop();
     };
-  }, [active, reset]);
+  }, [live, reset]);
 
   return { state, reading, lastError };
 }

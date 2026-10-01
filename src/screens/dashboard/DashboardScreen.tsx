@@ -798,6 +798,11 @@ export function DashboardScreen() {
         // read) leaves the credential un-celebrated, so the next visit finds it
         // again — which is the whole point.
         if (!alive || !c || areOverlaysSuppressed()) return;
+        // Not under one of this screen's own popups (bug pass 1, 2026-10-01):
+        // they are Modals, so the pushed Celebration landed BENEATH the open
+        // sheet — e.g. the study-access sheet STUDY NOW raises on arrival.
+        // Same lossless wait as above: the next focus finds it again.
+        if (popupOpenRef.current) return;
         c.confirmShown();
         (navigation as any).navigate('Celebration', { id: c.event.id, values: c.values });
       });
@@ -1203,7 +1208,14 @@ export function DashboardScreen() {
         !areOverlaysSuppressed() &&
         studyMethodLocked({ resolved: tierKnown, entitlement, displayedGs: topics[i].global_sequence, freeGs: FREE_ENROLL_GS })
       ) {
-        afterPopupCloses(() => setUpgradeOpen(true));
+        // …and only if the Dashboard is still the screen in front when the
+        // wait ends (bug pass 1, 2026-10-01). The credential celebration is
+        // pushed from this screen's focus, and a tap inside the wait can push a
+        // study method: the sheet is a Modal, so it opened OVER whatever had
+        // come forward. The method tap answers with the same sheet anyway.
+        afterPopupCloses(() => {
+          if (navigation.isFocused()) setUpgradeOpen(true);
+        });
       }
       return;
     }

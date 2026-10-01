@@ -80,6 +80,8 @@ const hydrated = new Set<PaceMethodKey>();
 const wrote = new Set<PaceMethodKey>();
 
 const storageKey = (m: PaceMethodKey) => `ape:pace:${m}`;
+/** Bumped by resetLocal — see hydrate. */
+let generation = 0;
 
 function getSettings(m: PaceMethodKey): PaceSettings {
   return cache.get(m) ?? DEFAULTS;
@@ -100,9 +102,13 @@ function writeSettings(m: PaceMethodKey, next: PaceSettings): void {
 async function hydrate(m: PaceMethodKey): Promise<void> {
   if (hydrated.has(m)) return;
   hydrated.add(m);
+  const gen = generation;
   try {
     const raw = await AsyncStorage.getItem(storageKey(m));
     if (wrote.has(m) || !raw) return; // a write landed during load — don't clobber
+    // An account wipe landed during load (bug pass 1, 2026-10-01): resetLocal
+    // clears `wrote`, so without this the previous user's settings came back.
+    if (gen !== generation) return;
     const parsed = JSON.parse(raw) as Partial<PaceSettings>;
     const preset: PacePreset =
       typeof parsed.preset === 'string' && parsed.preset in SEC_PER_Q
@@ -299,6 +305,7 @@ export function useAutoTrack(method: PaceMethodKey): boolean {
  * subscribers.
  */
 export function resetLocal(): void {
+  generation++;
   const methods = new Set<PaceMethodKey>([
     ...cache.keys(),
     ...runningCache.keys(),

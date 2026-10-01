@@ -70,10 +70,14 @@ export function AmpModuleScreen() {
     }).then((s) => {
       if (!alive) return;
       const m = s.modules[mod.id] ?? emptyAmpModule();
-      setDone(m.done);
-      setDoneIds(new Set(AMP_MODULES.filter((x) => s.modules[x.id]?.done).map((x) => x.id)));
-      setChecksAnswered(m.checks);
-      setFinalSubmitted(!!s.final);
+      // MERGED, never replaced (bug pass 2026-10-01): this read resolves with
+      // the state from BEFORE any check answered or MARK COMPLETE tapped while
+      // it was queued, and used to wipe those off the screen (the button
+      // came back on a module just banked).
+      setDone((d) => d || m.done);
+      setDoneIds((prev) => new Set([...prev, ...AMP_MODULES.filter((x) => s.modules[x.id]?.done).map((x) => x.id)]));
+      setChecksAnswered((prev) => ({ ...m.checks, ...prev }));
+      setFinalSubmitted((f) => f || !!s.final);
     });
     return () => {
       alive = false;

@@ -399,7 +399,15 @@ export function setActiveMany(gsList: number[], active: boolean): void {
  *  stored list first — adding to an un-hydrated `list` would persist a
  *  one-topic list over the learner's real enrollment. */
 export async function ensureStudyTopic(gs: number): Promise<void> {
+  // …and the SAME identity's list (bug pass 1, 2026-10-01). An account wipe
+  // (resetLocal) while this awaits makes the old hydrate return WITHOUT
+  // hydrating; `list` is then the reset's empty array, so the add below wrote
+  // a one-topic list over the next account's stored enrollment (and pushed it
+  // to their server master list). The armed focus re-asks on the next deck
+  // change, so dropping this request loses nothing.
+  const gen = generation;
   await hydrate();
+  if (gen !== generation || !hydrated) return;
   const action = studyFocusAction(list, gs);
   if (action === 'enroll') addTopics([gs]);
   else if (action === 'activate') setActiveMany([gs], true);

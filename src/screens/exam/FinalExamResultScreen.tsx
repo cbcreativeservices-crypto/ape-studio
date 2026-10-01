@@ -18,7 +18,7 @@
  * `undefined`, or coercing it to a zero they did not earn, on the last screen of
  * the hardest thing in the product.
  */
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { noteHighValueEvent } from '../../features/review/reviewPrompt';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -103,6 +103,20 @@ export function FinalExamResultScreen({ navigation, route }: Props) {
     if (result.credential_awarded) void noteHighValueEvent('certificate_earned');
   }, [result.credential_awarded]);
 
+  /**
+   * ONE EXIT PER SCREEN (bug pass 1, 2026-10-01) — the same latch as
+   * ResultsScreen / CelebrationScreen. A double tap on Retake ran replace()
+   * twice (two FinalExam screens, each starting an attempt), and a double tap
+   * on Done ran goBack() twice. A ref, because the second tap lands before any
+   * re-render.
+   */
+  const leavingRef = useRef(false);
+  const leaveOnce = (go: () => void) => () => {
+    if (leavingRef.current) return;
+    leavingRef.current = true;
+    go();
+  };
+
   const toneColor =
     copy.tone === 'good' ? colors.green : copy.tone === 'bad' ? colors.red : colors.amber;
 
@@ -149,7 +163,7 @@ export function FinalExamResultScreen({ navigation, route }: Props) {
             <StudioButton
               label="Retake Final Exam"
               variant="success"
-              onPress={() => (navigation as any).replace('FinalExam', { awardType, awardId, awardName })}
+              onPress={leaveOnce(() => (navigation as any).replace('FinalExam', { awardType, awardId, awardName }))}
             />
           )}
           {result.outcome === 'pass' && (
@@ -162,10 +176,10 @@ export function FinalExamResultScreen({ navigation, route }: Props) {
                  non-focused route with no `pop` APPENDS a second tab shell on
                  top of this screen, so Back lands the learner in a duplicate
                  app rather than where they came from. */
-              onPress={() => (navigation as any).popTo('Main', { screen: 'Profile' })}
+              onPress={leaveOnce(() => (navigation as any).popTo('Main', { screen: 'Profile' }))}
             />
           )}
-          <StudioButton label="Done" variant="secondary" onPress={() => navigation.goBack()} />
+          <StudioButton label="Done" variant="secondary" onPress={leaveOnce(() => navigation.goBack())} />
         </View>
       </ScrollView>
     </View>

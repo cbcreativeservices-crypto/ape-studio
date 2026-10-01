@@ -220,10 +220,20 @@ function Node({ stat, x, y, w }: { stat: InsideStat; x: number; y: number; w: nu
 export function InsideStats({
   hero,
   satellites,
+  live = true,
 }: {
   hero: { id: string; value: number | null; a11yLabel?: string };
   /** Eight metrics in clock order: 12, 1:30, 3, 4:30, 6, 7:30, 9, 10:30. */
   satellites: InsideStat[];
+  /**
+   * Is this diagram actually on screen? (night pass 2026-10-01) The Awards
+   * pager keeps all five pages mounted, and a pushed screen keeps Awards
+   * mounted beneath it — so the 206 ms crackle interval and the two endless
+   * breathes ran (a re-render every tick) on the Enrollments page, under
+   * AwardProgress / the Final Exam, for as long as the stack held Awards.
+   * false = hold the last frame, run nothing.
+   */
+  live?: boolean;
 }) {
   const { width: winW } = useWindowDimensions();
   // The container is SQUARE (owner 2026-09-15) so the square background image
@@ -283,9 +293,10 @@ export function InsideStats({
       gold.value = 1; // the static level, as when it mounts without motion
       return;
     }
+    if (!live) return; // off screen: the cleanup below already stopped it
     gold.value = withRepeat(withTiming(1, { duration: 1600, easing: Easing.inOut(Easing.ease) }), -1, true);
     return () => cancelAnimation(gold);
-  }, [anim, gold]);
+  }, [anim, gold, live]);
   // Glow layer opacity lowered 57% (owner 2026-09-15): the breathe range is
   // multiplied by 0.43 so the halo is softer.
   const goldGlow = useAnimatedStyle(() => ({ opacity: (0.74 + gold.value * 0.26) * 0.43 }));
@@ -295,13 +306,13 @@ export function InsideStats({
   // moving lightning (NOT dashes, NOT occasional strikes). Kept dim on purpose.
   const [paths, setPaths] = useState<string[]>(() => ring.map(() => ''));
   useEffect(() => {
-    if (!anim) return;
+    if (!anim || !live) return;
     glow.value = withRepeat(withTiming(1, { duration: 5300, easing: Easing.linear }), -1, false);
     const recrackle = () => setPaths(ring.map((n) => boltPath(n.x, n.y, linkPt.x, linkPt.y)));
     recrackle();
     const id = setInterval(recrackle, 206); // slowed 37% (owner 2026-09-15) → ~5 fps, a calmer crackle
     return () => { cancelAnimation(glow); clearInterval(id); };
-  }, [anim, glow, ring, linkPt.x, linkPt.y]);
+  }, [anim, live, glow, ring, linkPt.x, linkPt.y]);
 
   // Lower, irregular glow: two mixed sines → opacity ~[0.4, 0.8].
   const glowProps = useAnimatedProps(() => {

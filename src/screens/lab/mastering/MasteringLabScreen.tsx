@@ -124,9 +124,15 @@ export function MasteringLabScreen() {
 
   const onAnswered = useCallback(
     (scenarioId: string, correct: boolean) => {
-      setAnswers((prev) => ({ ...prev, [scenarioId]: correct }));
+      // FIRST ANSWER WINS (the deck's stated rule). The PRACTICE step is
+      // unmounted when the learner pages to another step, so coming back
+      // remounts every card unanswered and a second pick reported again —
+      // it used to overwrite the recorded first answer (bug pass 2026-10-01).
+      // A practice reset clears `answers`, so a fresh run records anew.
+      setAnswers((prev) => (scenarioId in prev ? prev : { ...prev, [scenarioId]: correct }));
       void updateMasteringProgress((s) => {
         const m = s.modules[modId] ?? emptyMasteringModule();
+        if (scenarioId in m.answers) return;
         s.modules[modId] = { ...m, answers: { ...m.answers, [scenarioId]: correct } };
       });
     },
@@ -174,7 +180,11 @@ export function MasteringLabScreen() {
   const onSteps = useCallback((t: string[]) => {
     setStepTitles((prev) => (prev.length === t.length && prev.every((x, i) => x === t[i]) ? prev : t));
   }, []);
-  const stepCount = stepTitles.length;
+  // The STATIC count (pinned by test/masteringLabStructure.test.ts), not the
+  // reported titles: on a module change the titles are the OLD module's for
+  // one render, so PREV rolling onto a longer module's last step clamped to
+  // the old count and mounted the wrong step for a frame (bug pass 2026-10-01).
+  const stepCount = MASTERING_STEP_COUNTS[mod.id] ?? stepTitles.length;
   const stepIdx = Math.min(step, Math.max(0, stepCount - 1));
 
   const go = useCallback(

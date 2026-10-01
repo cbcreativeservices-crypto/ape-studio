@@ -226,7 +226,16 @@ export async function initPurchases(h: PurchaseHandlers): Promise<boolean> {
           const result = await validateWithServer(purchase);
           if (result.ok) {
             try {
-              await iap.finishTransaction({ purchase, isConsumable: false });
+              // BOUNDED (night bug pass 1, 2026-10-01): the server has already
+              // verified and written the entitlement, and the buyer's CONTINUE
+              // is a spinner until onSuccess below — a store call that never
+              // answers must not hold that hostage. An unfinished transaction
+              // is re-delivered by the store and finished then.
+              await withDeadline(
+                () => iap.finishTransaction({ purchase, isConsumable: false }),
+                'finishTransaction',
+                15000,
+              );
             } catch (e) {
               console.warn('[iap] finishTransaction failed:', (e as Error).message);
             }
@@ -353,7 +362,15 @@ export async function restorePurchases(): Promise<RestoreResult> {
   const iap = getIap();
   if (!iap) return 'unavailable';
   try {
-    const purchases = (await iap.getAvailablePurchases()) as IapPurchase[];
+    // BOUNDED (night bug pass 1, 2026-10-01). Restore is the Apple-required
+    // control and its spinner hides the link: a store query that never answers
+    // left the person with no result and no way to try again. A stall is the
+    // 'error' it is — "couldn't reach the store, try again" — never 'none'.
+    const purchases = (await withDeadline(
+      () => iap.getAvailablePurchases(),
+      'getAvailablePurchases',
+      30000,
+    )) as IapPurchase[];
     let restored = false;
     // An academy purchase WAS found but validation failed (offline, edge
     // function down) — that is an error to retry, never "nothing to restore".
@@ -369,7 +386,7 @@ export async function restorePurchases(): Promise<RestoreResult> {
       if (v.ok) {
         restored = true;
         try {
-          await iap.finishTransaction({ purchase: p, isConsumable: false });
+          await withDeadline(() => iap.finishTransaction({ purchase: p, isConsumable: false }), 'finishTransaction', 15000);
         } catch {
           /* ignore finalize error on restore */
         }

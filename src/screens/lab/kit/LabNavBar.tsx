@@ -33,7 +33,7 @@
  */
 import { createContext, useContext, useEffect, useRef, type ReactNode, type Ref } from 'react';
 import { BackHandler, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions, type GestureResponderEvent } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { NavigationContext, useNavigation } from '@react-navigation/native';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { colors, fonts } from '../../../theme/tokens';
 import { READING_MAX_W } from '../../../theme/readingColumn';
@@ -110,14 +110,20 @@ export function LabNavBar({ nav }: { nav: LabNav }) {
   const { height: winH } = useWindowDimensions();
 
   // Android BACK closes CONTENTS while it is open (registered only then).
+  // …and only while this lab is the FOCUSED screen (bug pass 2026-10-01): with
+  // CONTENTS left open, ? (Help) or a paywall pushed on top — a native-stack
+  // screen, not a Modal — got its BACK eaten here: the hidden list closed and
+  // the screen on top stayed.
+  const navCtx = useContext(NavigationContext);
   useEffect(() => {
     if (!contentsOpen) return;
     const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (navCtx && !navCtx.isFocused()) return false;
       setContentsOpen(false);
       return true;
     });
     return () => sub.remove();
-  }, [contentsOpen, setContentsOpen]);
+  }, [contentsOpen, setContentsOpen, navCtx]);
 
   // CONTENTS is capped so the rack stage stays visible under it.
   const listMax = Math.max(44 * 3, Math.min(Math.round(winH * 0.42), 320));

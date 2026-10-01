@@ -84,6 +84,10 @@ export async function prefetchGlossary(table: CorpusTable = 'glossary_browse_v')
     // Members only run this, so any teasers a free reader left behind go first
     // — otherwise they count as "saved" and are never replaced.
     await alignDefinitionTier(table, 'member');
+    // A cancel during that (sign-out, the switch going off — the align now
+    // waits its turn behind any term save) must not go on to page the whole
+    // term list (pass 1, 2026-10-01).
+    if (cancelled()) return;
 
     // The term list first — it is what makes the glossary OPEN offline at all.
     // ⛔ "Some terms" is not "the term list" (bug hunt 2026-09-30, pass 3). A

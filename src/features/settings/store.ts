@@ -197,9 +197,27 @@ export function micReleaseOnBackgroundEnabled(): boolean {
   return micReleaseOnBg;
 }
 
+/**
+ * GENERATION FENCE (night bug pass 1, 2026-10-01). Loads run on every
+ * foreground (App.tsx), on every tier change (EntitlementProvider) and on
+ * opening Settings; a load's AsyncStorage read is queued BEHIND nothing it
+ * cares about, so a save or an account reset that happens while it is in
+ * flight is overtaken: the load's continuation then re-applied the blob it read
+ * BEFORE them to the synchronous mirrors. "Mute audio when I leave the app"
+ * switched off a moment after returning to the app read ON again at the next
+ * background (until the next foreground), and an account switch could re-apply
+ * the PREVIOUS account's settings over the reset. A load that has been
+ * overtaken now applies nothing and answers with what superseded it.
+ */
+let settingsGen = 0;
+/** What the latest save wrote (null after a reset = the defaults). */
+let lastWritten: LocalSettings | null = null;
+
 export async function loadLocalSettings(): Promise<LocalSettings> {
+  const gen = settingsGen;
   try {
     const raw = await AsyncStorage.getItem(KEY);
+    if (gen !== settingsGen) return lastWritten ?? DEFAULT_LOCAL_SETTINGS;
     const merged = raw ? { ...DEFAULT_LOCAL_SETTINGS, ...JSON.parse(raw) } : DEFAULT_LOCAL_SETTINGS;
     hapticsOn = merged.haptics;
     micReleaseOnBg = merged.micReleaseOnBackground;
@@ -212,6 +230,8 @@ export async function loadLocalSettings(): Promise<LocalSettings> {
 }
 
 export async function saveLocalSettings(s: LocalSettings): Promise<void> {
+  settingsGen += 1;
+  lastWritten = s;
   hapticsOn = s.haptics;
   micReleaseOnBg = s.micReleaseOnBackground;
   setMuteOnLeave(s.muteAudioOnLeave);
@@ -227,6 +247,8 @@ export async function saveLocalSettings(s: LocalSettings): Promise<void> {
  *  previous user's haptics / mic-release setting until Settings is re-opened.
  *  The persisted `ape:settings` key is removed by the `ape:*` sweep. */
 export function resetLocal(): void {
+  settingsGen += 1;
+  lastWritten = null;
   hapticsOn = DEFAULT_LOCAL_SETTINGS.haptics;
   micReleaseOnBg = DEFAULT_LOCAL_SETTINGS.micReleaseOnBackground;
   setMuteOnLeave(DEFAULT_LOCAL_SETTINGS.muteAudioOnLeave);

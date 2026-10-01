@@ -41,7 +41,7 @@ test('dictation stands down if the button unmounted during the permission prompt
   const dict = read('src/screens/glossary/GlossaryDictation.tsx');
   const toggle = dict.slice(dict.indexOf('const toggle = useCallback('));
   const perm = toggle.indexOf('await ExpoSpeechRecognitionModule.requestPermissionsAsync()');
-  const guard = toggle.indexOf('if (!mountedRef.current) {');
+  const guard = toggle.indexOf('if (!mountedRef.current');
   const start = toggle.indexOf('ExpoSpeechRecognitionModule.start(');
   assert.ok(perm > 0 && guard > perm && guard < start, 'no unmount guard between the permission answer and start()');
   assert.match(dict, /useEffect\(\(\) => \{\s*mountedRef\.current = true;\s*return \(\) => \{\s*mountedRef\.current = false;/);

@@ -40,7 +40,8 @@ test('LP8 full screen: Android back closes an open tray before leaving', () => {
 test('LP6 hidden rack: its open tray gives up Android back', () => {
   const t = read('src/screens/lab/rack/DockTray.tsx');
   assert.match(t, /if \(!open \|\| !active\) return;/);
-  assert.match(t, /\}, \[open, active, onClose\]\);/);
+  // onClose rides a ref since 2026-10-01 (navShellBugPass20261001.test.ts).
+  assert.match(t, /\}, \[open, active, navCtx\]\);/);
   const r = read('src/screens/lab/rack/RackUnit.tsx');
   assert.match(r, /maxHeight=\{rootH > 0 \? trayRoom : undefined\} active=\{active\} \/>/);
   const shell = read('src/screens/lab/LabShell.tsx');

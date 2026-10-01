@@ -27,7 +27,7 @@ import { useFrameCallback, useSharedValue, type SharedValue } from 'react-native
 import type { Stereo } from '../../../features/ear/earDsp.ts';
 import { EarClipPlayer } from '../../../features/ear/earPlayer';
 import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
-import { isAudioOutputEnabled } from '../../../features/audio/audioOutputStore';
+import { getSoundStopEpoch, isAudioOutputEnabled } from '../../../features/audio/audioOutputStore';
 import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../../features/audio/useStopOnBlur';
 import { LOOP_S, renderMix } from '../mixing/audio/mixAudio.ts';
@@ -98,6 +98,16 @@ export function useMasterPlayback(variants: readonly MasterVariant[], matched: b
   const aliveRef = useRef(true);
   const renderingSigRef = useRef<string | null>(null);
   const renderSeqRef = useRef(0);
+  /** The settle-then-replay timer (below). STOP, a ▶ press, a mute and a
+   *  leave all cancel it: during its 350 ms window nothing is active or
+   *  pending, so the silenced/close paths would otherwise miss it and the
+   *  old version would start anyway — or override the version just pressed
+   *  (bug pass 2026-10-01). */
+  const replayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cancelReplay = useCallback(() => {
+    if (replayTimerRef.current != null) clearTimeout(replayTimerRef.current);
+    replayTimerRef.current = null;
+  }, []);
   const signature = useMemo(() => JSON.stringify({ variants, matched }), [variants, matched]);
 
   // The stage playhead: a SharedValue advanced per frame while a clip sounds.
@@ -158,13 +168,21 @@ export function useMasterPlayback(variants: readonly MasterVariant[], matched: b
     renderSeqRef.current++;
     renderingSigRef.current = null;
     if (!again) return;
+    const armedEpoch = getSoundStopEpoch();
     const t = setTimeout(() => {
+      replayTimerRef.current = null;
       if (!aliveRef.current || !focusedRef.current || !isAudioOutputEnabled()) return;
+      // Every sound was stopped meanwhile (left the app, another lab): stay quiet.
+      if (getSoundStopEpoch() !== armedEpoch) return;
       pendingRef.current = again;
       setPending(again);
       void renderAllRef.current();
     }, 350);
-    return () => clearTimeout(t);
+    replayTimerRef.current = t;
+    return () => {
+      clearTimeout(t);
+      if (replayTimerRef.current === t) replayTimerRef.current = null;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- `matched` is part of `signature`
   }, [signature]);
 
@@ -246,6 +264,7 @@ export function useMasterPlayback(variants: readonly MasterVariant[], matched: b
 
   const play = useCallback(
     (id: string) => {
+      cancelReplay();
       void (async () => {
         if (!(await requestAudioOutput())) return;
         if (!aliveRef.current || !focusedRef.current) return;
@@ -258,11 +277,17 @@ export function useMasterPlayback(variants: readonly MasterVariant[], matched: b
         const i = idsRef.current.indexOf(id);
         if (i < 0 || !playerRef.current) return;
         playerRef.current.play(i);
+        // ▶ again on the version already sounding restarts the clip from 0,
+        // but `active` does not change, so the effect above never re-zeroed
+        // the playhead — it ran on out of step with the audio (bug pass
+        // 2026-10-01). Re-arm it on every press.
+        startedAt.value = 0;
+        progress.value = 0;
         setActive(id);
         setHeard((h) => (h.includes(id) ? h : [...h, id]));
       })();
     },
-    [requestAudioOutput],
+    [requestAudioOutput, cancelReplay, startedAt, progress],
   );
 
   const stop = useCallback(() => {
@@ -271,12 +296,15 @@ export function useMasterPlayback(variants: readonly MasterVariant[], matched: b
   }, []);
 
   const stopAll = useCallback(() => {
+    cancelReplay();
     pendingRef.current = null;
     setPending(null);
     stop();
-  }, [stop]);
+  }, [stop, cancelReplay]);
   useStopWhenSilenced(active != null || pending != null, stopAll);
   useStopOnClose(stopAll);
 
-  return { status, play, stop, active, pending, measured, heard, progress };
+  // ■ STOP is stopAll: a STOP pressed while a version is still rendering
+  // must cancel that queued play too, not let it start a moment later.
+  return { status, play, stop: stopAll, active, pending, measured, heard, progress };
 }

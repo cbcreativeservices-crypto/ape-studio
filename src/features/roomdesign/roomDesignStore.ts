@@ -109,7 +109,12 @@ export function getRoomDesigns(): RoomDesign[] {
  *  be there after a relaunch; false for a guest / preview (kept in memory). */
 export function saveRoomDesign(design: RoomDesign): Promise<boolean> {
   if (getLabPreview().active) return Promise.resolve(false);
+  // Fenced like the hydrate (bug pass 2026-10-01): a save tapped just before
+  // an account switch waited on the hydrate, then landed AFTER the wipe and
+  // wrote the previous account's design into the next account's empty key.
+  const gen = generation;
   return hydrate().then(() => {
+    if (gen !== generation) return false;
     const stamped = { ...design, updatedAt: Date.now() };
     const next = [...list.filter((d) => d.id !== stamped.id), stamped];
     next.sort((a, b) => a.updatedAt - b.updatedAt);
@@ -122,7 +127,9 @@ export function saveRoomDesign(design: RoomDesign): Promise<boolean> {
 }
 
 export function deleteRoomDesign(id: string): void {
+  const gen = generation;
   void hydrate().then(() => {
+    if (gen !== generation) return; // wiped meanwhile — nothing of this account to delete
     if (!list.some((d) => d.id === id)) return;
     list = list.filter((d) => d.id !== id);
     persist();

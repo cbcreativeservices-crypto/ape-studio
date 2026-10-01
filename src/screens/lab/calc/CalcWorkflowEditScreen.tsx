@@ -113,7 +113,9 @@ export function CalcWorkflowEditScreen() {
       return next;
     });
   };
-  const removeStep = (i: number) => mutate((s) => s.filter((_, k) => k !== i));
+  // By the step itself, not its index (bug pass 2026-10-01): two taps on ✕
+  // in one frame both carried index i, so the second removed the NEXT step too.
+  const removeStep = (step: WorkflowStep) => mutate((s) => s.filter((x) => x !== step));
   const setNote = (i: number, note: string) =>
     mutate((s) => s.map((st, k) => (k === i ? { ...st, note: note || undefined } : st)));
 
@@ -232,7 +234,7 @@ export function CalcWorkflowEditScreen() {
                   <View style={styles.stepBtns}>
                     <StepBtn label="▲" a11y={`Move step ${i + 1} up`} disabled={i === 0} onPress={() => move(i, -1)} />
                     <StepBtn label="▼" a11y={`Move step ${i + 1} down`} disabled={i === steps.length - 1} onPress={() => move(i, 1)} />
-                    <StepBtn label="✕" a11y={`Remove step ${i + 1}`} onPress={() => removeStep(i)} danger />
+                    <StepBtn label="✕" a11y={`Remove step ${i + 1}`} onPress={() => removeStep(s)} danger />
                   </View>
                 </View>
                 <TextInput

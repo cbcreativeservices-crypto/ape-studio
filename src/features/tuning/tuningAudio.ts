@@ -170,6 +170,9 @@ export class TuningPlayer {
       await new Promise<void>((r) => setTimeout(r, 0));
       if (my !== this.token) return; // STOP, or a chapter change, superseded us
       await this.play(make(), label);
+    } catch {
+      // A failed clip load (e.g. a file write) must not become an unhandled
+      // rejection: callers fire this with `void`. Nothing sounds; status clears.
     } finally {
       this.busy = false;
       if (this.status.rendering === label) this.set({ ...this.status, rendering: null });

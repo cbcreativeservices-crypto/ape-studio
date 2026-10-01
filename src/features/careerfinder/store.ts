@@ -212,4 +212,10 @@ export function resetLocal(): void {
   hydrating = null;
   wrote = false;
   emit();
+  // Mounted hooks only hydrate on SUBSCRIBE (bug hunt 2026-10-01). A Finder
+  // screen still in the stack across a sign-out sat at hydrated=false for
+  // good — the hub drew no START / CONTINUE button at all, and the quiz never
+  // seeded — until it was remounted. Re-hydrate for them, as enrollmentStore
+  // does; storage was already wiped, so this lands an empty record.
+  if (listeners.size > 0) void hydrateCareerFinder();
 }

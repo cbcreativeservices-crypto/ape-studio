@@ -1545,6 +1545,16 @@ ${COPY.glossaryFreeAllowance}`,
   // ever added, so a render landing mid-write cannot drop one.
   const detailsRef = useRef<Record<string, EntryDetail>>({});
   detailsRef.current = { ...detailsRef.current, ...details };
+  /**
+   * ⛔ WHICH READER A READ BELONGS TO (bug hunt 2026-10-01, pass 1). Bumped by
+   * the reader-change effect below when it blanks the last reader's text. A
+   * metered read or a detail read still in flight across a sign-out / account
+   * switch used to land AFTER that blank and put the previous reader's text
+   * back: a free reader's paid full definition (or a member's unmasked Common
+   * Mistakes) shown — and cached as "already read, free" — for the next
+   * person on the phone. Every async read checks this before it writes.
+   */
+  const readerGenRef = useRef(0);
   const putDetail = useCallback((id: string, d: EntryDetail) => {
     detailsRef.current = { ...detailsRef.current, [id]: d };
     setDetails((prev) => ({ ...prev, [id]: d }));
@@ -1640,7 +1650,10 @@ ${COPY.glossaryFreeAllowance}`,
    */
   const readViaGateway = useCallback(
     async (id: string): Promise<boolean> => {
+      const gen = readerGenRef.current;
       const r = await fetchDefinitionViaGateway(id);
+      // The reader changed while this was out: it was the last reader's read.
+      if (gen !== readerGenRef.current) return false;
       if (r.state === 'ok') {
         const { used, lim, window_start, ...detail } = r.row;
         putDetail(id, detail as unknown as EntryDetail);
@@ -1688,8 +1701,10 @@ ${COPY.glossaryFreeAllowance}`,
       if (detailsRef.current[id]) return Promise.resolve(true); // already read this session — free
       const pending = gatewayInFlightRef.current.get(id);
       if (pending) return pending;
-      const p = readViaGateway(id).finally(() => {
-        gatewayInFlightRef.current.delete(id);
+      const p: Promise<boolean> = readViaGateway(id).finally(() => {
+        // Only its own entry: the map is replaced on a reader change, and a
+        // new reader's read of the same term must not be dropped from it.
+        if (gatewayInFlightRef.current.get(id) === p) gatewayInFlightRef.current.delete(id);
       });
       gatewayInFlightRef.current.set(id, p);
       return p;
@@ -1701,6 +1716,7 @@ ${COPY.glossaryFreeAllowance}`,
   const fetchDetails = useCallback(
     async (id: string) => {
       if (detailsRef.current[id]) return;
+      const gen = readerGenRef.current;
       /**
        * ⛔ `glossary_study_v`, NOT `glossary` / `glossary_full_v`.
        *
@@ -1731,6 +1747,7 @@ ${COPY.glossaryFreeAllowance}`,
         .eq('glossary_id', id)
         .limit(1)
         .maybeSingle();
+      if (gen !== readerGenRef.current) return; // the last reader's detail
       // [72]: mark the failure so the row can offer a retry instead of "Loading…".
       if (!data) {
         setDetailErrs((prev) => ({ ...prev, [id]: true }));
@@ -2198,6 +2215,7 @@ ${COPY.glossaryFreeAllowance}`,
     if (resolved && !isMember) return;
     savingRef.current = true;
     cancelSaveRef.current = false;
+    const gen = readerGenRef.current;
     // The screen takes over from the background save (pass 2): both walk
     // idsMissingDefinitions from the same first page, so running side by side
     // downloaded every page twice on the metered link this warns about.
@@ -2214,6 +2232,11 @@ ${COPY.glossaryFreeAllowance}`,
         const ids = await idsMissingDefinitions(table, 400);
         if (!ids.length) break;
         const rows = await fetchDefinitionsFor(table, ids);
+        // A page that lands after a READER CHANGE is not stored (pass 1,
+        // 2026-10-01): after a switch to a free reader it landed behind their
+        // tier clear and filed a member's full text as the free reader's
+        // offline copy. (After STOP it is still kept — it was paid for.)
+        if (gen !== readerGenRef.current) break;
         await saveStoredDefinitions(table, rows);
         // Stop if a whole page came back with nothing storable — otherwise the
         // same ids return next pass and this never ends.
@@ -2277,6 +2300,7 @@ ${COPY.glossaryFreeAllowance}`,
       // teaser, and both are stored under the same table. The defTier effect
       // repaints the rows (and so re-queues them) once entitlement resolves.
       const tier = defTierRef.current;
+      const gen = readerGenRef.current; // …and whose (pass 1, 2026-10-01)
       if (!tier) return;
       const want = ids.filter((id) => {
         if (requestedDefsRef.current.has(id)) return false;
@@ -2322,7 +2346,7 @@ ${COPY.glossaryFreeAllowance}`,
           // Same guard as the network step below: the reader can change while
           // the disk is read, and a stale tier's text must not fill the blanks
           // the tier change just made.
-          if (defTierRef.current !== tier) {
+          if (defTierRef.current !== tier || gen !== readerGenRef.current) {
             for (const id of want) requestedDefsRef.current.delete(id);
             return;
           }
@@ -2334,7 +2358,7 @@ ${COPY.glossaryFreeAllowance}`,
           const rows = await fetchDefinitionsFor(table, missing);
           // The reader changed mid-fetch (signed out / joined): this text is
           // the previous tier's — drop it and let the rows ask again.
-          if (defTierRef.current !== tier) {
+          if (defTierRef.current !== tier || gen !== readerGenRef.current) {
             for (const id of want) requestedDefsRef.current.delete(id);
             return;
           }
@@ -2381,6 +2405,12 @@ ${COPY.glossaryFreeAllowance}`,
       detailsRef.current = {};
       setDetails({});
       consumedRef.current = new Set();
+      // Reads still out for the last reader must not land after this blank
+      // (see readerGenRef), and a new reader's tap must not share one.
+      readerGenRef.current += 1;
+      gatewayInFlightRef.current = new Map();
+      // SAVE ALL is the last reader's download, under their tier: stop it.
+      cancelSaveRef.current = true;
       const open = new Set([...expandedIdsRef.current, ...popupTrail.map((p) => p.id)]);
       for (const id of open) void fetchDetails(id);
       if (open.size) ensureDefsRef.current([...open]);
@@ -2417,6 +2447,7 @@ ${COPY.glossaryFreeAllowance}`,
   const getDetail = useCallback(async (id: string): Promise<EntryDetail | null> => {
     const cached = detailsRef.current[id];
     if (cached) return cached;
+    const gen = readerGenRef.current;
     if (serverMetersRef.current) {
       await openViaGatewayRef.current(id);
       const filled = detailsRef.current[id];
@@ -2447,7 +2478,7 @@ ${COPY.glossaryFreeAllowance}`,
       .eq('glossary_id', id)
       .limit(1)
       .maybeSingle();
-    if (!data) return null;
+    if (!data || gen !== readerGenRef.current) return null;
     const detail = data as unknown as EntryDetail;
     putDetail(id, detail);
     return detail;

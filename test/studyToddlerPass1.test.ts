@@ -131,7 +131,9 @@ test('Dashboard: the credential celebration never auto-opens in Low-Light', () =
 test('Flashcards: Android BACK closes the FILTERS popup / linked term before leaving', () => {
   const src = read('screens', 'study', 'FlashcardsScreen.tsx');
   assert.match(src, /BackHandler\.addEventListener\('hardwareBackPress'/);
-  assert.match(src, /if \(linkedTerm\) setLinkedTerm\(null\);\s*else setFiltersOpen\(false\);\s*return true;/);
+  // closeLinkedTerm (night pass 1, 2026-10-01) = setLinkedTerm(null) + cancel
+  // any in-flight list fetch so it cannot reopen the viewer.
+  assert.match(src, /if \(linkedTerm\) closeLinkedTerm\(\);\s*else setFiltersOpen\(false\);\s*return true;/);
   // A hook — it must sit above the early returns.
   assert.ok(src.indexOf("BackHandler.addEventListener('hardwareBackPress'") < src.indexOf('if (error) {'));
 });

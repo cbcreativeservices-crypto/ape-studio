@@ -128,22 +128,40 @@ export function CalcWorkspaceScreen() {
   // (`capped` needs no guard: 'anonymous' is neither 'free' nor 'lapsed', so it
   // is already false pre-resolve.)
   const mustSignIn = commercialMode && resolved && entitlement === 'anonymous' && !onboardingSampling;
+  // ⛔ HOLD THE ANSWER UNTIL THE TIER IS KNOWN (bug pass 2026-10-01). `capped`
+  // is false before the entitlement read lands (the provider boots at
+  // 'anonymous'), so a FREE account on a slow connection read every answer it
+  // typed — uncounted — until the read arrived. `resolved` always flips (the
+  // provider bounds its first attempt), so this never hangs.
+  const tierPending = commercialMode && !resolved && !onboardingSampling;
   const [usage, setUsage] = useState<CalcUsage | null>(null);
-  const [consumedSig, setConsumedSig] = useState<string | null>(null);
+  // EVERY input set already paid for on this screen, not just the last one
+  // (bug pass 2026-10-01): with one remembered signature, A → B → back to A
+  // spent a second weekly credit to re-reveal an answer already shown.
+  const [consumedSigs, setConsumedSigs] = useState<ReadonlySet<string>>(() => new Set());
   const [consuming, setConsuming] = useState(false);
   // Synchronous guard (QA night 2026-09-01): two same-tick taps both passed
   // the async state check and spent two weekly credits.
   const consumingRef = useRef(false);
-  // Signature of the current calculation: function + entered values + input units.
-  // Editing any input re-arms the CALCULATE button; re-tapping the SAME inputs
-  // shows the already-revealed answer without spending another credit.
-  const inputSig = useMemo(() => JSON.stringify({ f: fn?.key ?? '', raw, unitIdx }), [fn, raw, unitIdx]);
+  // Set once a CALCULATE has answered, so a slower boot-time status read can't
+  // land afterwards and roll the "# / N" counter back to the older count.
+  const usageFromConsumeRef = useRef(false);
+  // Signature of the current calculation: function + THIS function's entered
+  // values + input units. Editing any of its inputs re-arms the CALCULATE
+  // button; the SAME inputs show the already-revealed answer for free.
+  // Scoped to the function's own fields (bug pass 2026-10-01): the whole `raw`
+  // map used to be signed, so typing into ANOTHER function's field and coming
+  // back re-locked an unchanged answer and charged for it again.
+  const inputSig = useMemo(
+    () => JSON.stringify({ f: fn?.key ?? '', v: fields.map((fd) => [fd.key, raw[fd.key] ?? '', unitIdx[fd.key] ?? defaultUnitIdx(fd)]) }),
+    [fn, fields, raw, unitIdx],
+  );
   // Load the current week's usage once for the "# / N" counter.
   useEffect(() => {
     if (!capped) return;
     let alive = true;
     getCalcStatus().then((u) => {
-      if (alive) setUsage(u);
+      if (alive && !usageFromConsumeRef.current) setUsage(u);
     });
     return () => {
       alive = false;
@@ -160,7 +178,7 @@ export function CalcWorkspaceScreen() {
 
   // For capped users the answer is shown only after CALCULATE consumed a credit
   // for THIS exact input set; uncapped users always see the live answer.
-  const resultUnlocked = !capped || consumedSig === inputSig;
+  const resultUnlocked = !capped || consumedSigs.has(inputSig);
   const counterText =
     // SHOWN EVEN WHEN THE SERVER IS UNREACHABLE (2026-09-18). The counter used
     // to disappear on `unavailable`, which is precisely what made the offline
@@ -170,7 +188,7 @@ export function CalcWorkspaceScreen() {
     capped && usage ? `${usage.used} / ${usage.limit} free calculations this week` : null;
 
   const runCappedCalc = async () => {
-    if (!values || consuming || consumingRef.current || consumedSig === inputSig) return;
+    if (!values || consuming || consumingRef.current || consumedSigs.has(inputSig)) return;
     consumingRef.current = true;
     setConsuming(true);
     // ⛔ try/finally, not a bare sequence (2026-09-23 hunt). consumeCalc is now
@@ -186,6 +204,7 @@ export function CalcWorkspaceScreen() {
       consumingRef.current = false;
       setConsuming(false);
     }
+    usageFromConsumeRef.current = true;
     setUsage(u);
     // ⚠️ NO LONGER SHORT-CIRCUITS ON `unavailable` (2026-09-18).
     //
@@ -210,7 +229,7 @@ export function CalcWorkspaceScreen() {
       );
       return; // do NOT reveal
     }
-    setConsumedSig(inputSig); // reveal this result
+    setConsumedSigs((s) => new Set(s).add(inputSig)); // reveal this result
     // Halfway nudge scales with the allowance (owner set it to 5 on
     // 2026-09-01): a hardcoded "5" would have collided with the last-one
     // dialog. Fires strictly BEFORE the last credit.
@@ -322,6 +341,8 @@ export function CalcWorkspaceScreen() {
                   ? `⚠ ${negativeField} can’t be negative — enter a positive value.`
                   : '⚠ These values don’t produce a valid result — check for zeros or reversed inputs.'}
               </Text>
+            ) : tierPending ? (
+              <Text style={styles.resultPlaceholder}>Checking your account…</Text>
             ) : capped && !resultUnlocked ? (
               <View style={{ gap: 8 }}>
                 <Pressable

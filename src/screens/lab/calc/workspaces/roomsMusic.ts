@@ -79,7 +79,7 @@ const WS_BPM: Workspace = {
     'repeats fill in the syncopation for you.',
   mistakes: [
     'Setting delays in round numbers (250, 300, 400 ms) instead of tempo divisions — close-but-off repeats smear the groove instead of reinforcing it.',
-    'Forgetting dotted vs triplet: a dotted 8th (×1.5) and a triplet quarter (×2/3 of a half) feel completely different against the same straight 8ths.',
+    'Forgetting dotted vs triplet: a dotted 8th (×1.5) and a triplet quarter (×2/3 of a quarter — three in the space of a half) feel completely different against the same straight 8ths.',
     'Assuming the tap tempo captured the grid exactly — a few taps can land 1–2 BPM off; check against the session tempo or a longer measured interval.',
   ],
   glossary: ['BPM (Beats Per Minute)'],

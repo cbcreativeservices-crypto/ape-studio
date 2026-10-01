@@ -393,10 +393,18 @@ export function SpectrogramScreen({ navigation }: Props) {
     // out for a frame during 'starting'; cleared once running (above).
     // Fresh run = fresh timeline: stale columns from a previous run would lie
     // about time continuity across the stop gap.
-    setHistory([]);
-    colIdRef.current = 0;
-    frozenRef.current = false;
-    setFrozen(false);
+    //
+    // …EXCEPT a picture the user FROZE (night pass 2026-10-01 — the Waveform's
+    // 2026-09-30 rule). onStart is also the auto-resume: back from VIEW SAVED
+    // MEASUREMENTS, back to the app after Home released the mic. It used to
+    // wipe the frozen waterfall and unfreeze it, so the capture the user had
+    // stopped to study vanished under them. A frozen grid has no gap in it (the
+    // poll adds nothing while frozen), and unfreezing still starts a fresh
+    // timeline (toggleFreeze), so keeping it is honest.
+    if (!frozenRef.current) {
+      setHistory([]);
+      colIdRef.current = 0;
+    }
     void start();
   }, [start]);
 

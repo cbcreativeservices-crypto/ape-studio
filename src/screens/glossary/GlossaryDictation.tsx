@@ -11,6 +11,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import Svg, { Path, Rect } from 'react-native-svg';
 import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from 'expo-speech-recognition';
 import { colors } from '../../theme/tokens';
@@ -76,6 +77,28 @@ export function GlossaryDictation({ onText }: { onText: (t: string) => void }) {
     };
   }, []);
 
+  /**
+   * ⛔ LEAVING WITHOUT UNMOUNTING (bug hunt 2026-10-01, pass 1). The unmount
+   * release above never runs when the Glossary is only COVERED — Σ to the
+   * Calculator Lab, a lab action, the Paywall, a tab switch — so the mic stayed
+   * open behind the new screen until the platform's silence timeout, with the
+   * recording indicator lit, and whatever it heard was typed into a search box
+   * nobody could see. Blur stops it, and a permission answer that arrives
+   * after the screen was covered does not start it.
+   */
+  const isFocused = useIsFocused();
+  const focusedRef = useRef(isFocused);
+  focusedRef.current = isFocused;
+  useEffect(() => {
+    if (isFocused) return;
+    startingRef.current = false;
+    try {
+      ExpoSpeechRecognitionModule.stop();
+    } catch {
+      // not running / module absent — nothing to release
+    }
+  }, [isFocused]);
+
   const toggle = useCallback(async () => {
     if (dictating) {
       ExpoSpeechRecognitionModule.stop();
@@ -85,7 +108,7 @@ export function GlossaryDictation({ onText }: { onText: (t: string) => void }) {
     startingRef.current = true;
     try {
       const perm = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
-      if (!mountedRef.current) {
+      if (!mountedRef.current || !focusedRef.current) {
         startingRef.current = false;
         return;
       }

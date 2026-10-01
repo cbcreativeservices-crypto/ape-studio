@@ -80,6 +80,8 @@ export function TuningLabScreen() {
   // tier read failed reads 'anonymous' until a retry lands, and the empty
   // copy then overwrote their completed chapters — credit removed.
   const loadedAsGuestRef = useRef(false);
+  /** The BASIC/MATH pick made before the stored progress landed. */
+  const mathPickedRef = useRef<boolean | null>(null);
   const [chapter, setChapter] = useState(0);
   const [rootHz, setRootHz] = useState(C4_ET);
   const [mathView, setMathView] = useState(false);
@@ -110,7 +112,10 @@ export function TuningLabScreen() {
     void loadTuningProgress().then((stored) => {
       if (!alive) return;
       loadedAsGuestRef.current = guestRef.current;
-      const p: TuningProgress = guestRef.current ? { completed: [], lastChapter: 0, done: false, mathView: false } : stored;
+      let p: TuningProgress = guestRef.current ? { completed: [], lastChapter: 0, done: false, mathView: false } : stored;
+      // BASIC/MATH tapped before the load landed is kept (bug pass
+      // 2026-10-01): the stored flag used to yank the toggle straight back.
+      if (mathPickedRef.current != null) p = { ...p, mathView: mathPickedRef.current };
       progressRef.current = p;
       setProgress(p);
       setMathView(p.mathView);
@@ -153,6 +158,7 @@ export function TuningLabScreen() {
 
   const toggleMath = () => {
     const next = !mathView;
+    mathPickedRef.current = next;
     setMathView(next);
     persist({ mathView: next });
   };

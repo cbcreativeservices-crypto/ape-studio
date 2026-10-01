@@ -123,9 +123,19 @@ async function acquireInner(cfg: EngineConfig, forceRestart = false): Promise<vo
       setMicActive(true);
       return;
     }
-    // Flagged open but capture is dead — fall through to a real restart.
+    // Flagged open but capture is dead — a real restart. The stop is AWAITED
+    // (night pass 2026-10-01), like the forceRestart and orphan paths: fired
+    // and forgotten, it raced the start() issued on the next line, and landing
+    // second it killed the fresh stream we then flagged 'open' — the exact
+    // RUNNING-over-a-dead-mic the orphan handling exists to prevent. Then
+    // re-check from the top: another acquire may have started one meanwhile.
     streamState = 'stopped';
-    void ApeDsp.stop();
+    try {
+      await ApeDsp.stop();
+    } catch {
+      /* already dead — start afresh regardless */
+    }
+    return acquireInner(cfg);
   }
   if (streamState === 'starting') return startInFlight ?? Promise.resolve();
   if (startInFlight) {
