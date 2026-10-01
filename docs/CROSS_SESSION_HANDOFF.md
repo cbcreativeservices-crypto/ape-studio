@@ -232,6 +232,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-01 04:17 · ccode · d94af192
+changed: New labs: Mastering (final mix to release) and Room Design & Monitoring
+affects other side: nothing (client only; two new member labs in the catalog)
+needs: nothing
+
+
 ### 2026-10-01 01:09 · ccode · 88e1456e
 changed: FX labs: keep reporting the current glass shape in full screen
 affects other side: nothing (client only)
