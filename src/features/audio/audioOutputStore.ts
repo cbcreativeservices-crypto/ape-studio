@@ -15,12 +15,18 @@
  * stays a pure state cell that guards can read synchronously.
  */
 import { useSyncExternalStore } from 'react';
-import { stopAllFilePlayers } from './filePlayers';
+import { anyFilePlayerPlaying, stopAllFilePlayers } from './filePlayers';
 
 /** Idle auto-mute window (owner 2026-07-30): DON'T auto-mute unless the app has
  *  been left UNTOUCHED for 20 minutes. The timer re-arms on any real user touch
  *  (via touchAudioActivity from the root touch-capture) as well as on audio
- *  activity, so it only fires after 20 min of no interaction at all. */
+ *  activity, so it only fires after 20 min of no interaction at all.
+ *
+ *  Sound that is PLAYING when the timer runs out is use too (owner 2026-09-30:
+ *  "if they're continuing to use it, it's muting too soon"): the timer re-arms
+ *  instead of muting while a native voice or a file player is sounding — see
+ *  onIdleTimeout. Screen changes never touch this gate; a screen may stop its
+ *  OWN sound when it closes (useStopOnClose), but the gate stays on. */
 export const IDLE_MS = 1200000;
 
 let enabled = false;
@@ -55,13 +61,43 @@ function clearIdleTimer(): void {
   }
 }
 
+/** Is a NATIVE voice sounding right now? Registered by the app-root gate (which
+ *  can reach the native module); this file stays framework-free. */
+let nativeSoundingProbe: (() => boolean) | null = null;
+
+/** Register the native "is a voice running" check (AudioOutputGate, at mount). */
+export function setOutputSoundingProbe(probe: (() => boolean) | null): void {
+  nativeSoundingProbe = probe;
+}
+
+/** True while any output is actually sounding (file player or native voice). */
+export function isOutputSounding(): boolean {
+  if (anyFilePlayerPlaying()) return true;
+  try {
+    return nativeSoundingProbe?.() === true;
+  } catch {
+    return false; // a probe that cannot answer never keeps the gate open
+  }
+}
+
+/** The idle window ran out. Sounding output is the learner USING audio, so it
+ *  counts as activity and the window starts again; only true silence mutes. */
+function onIdleTimeout(): void {
+  idleTimer = null;
+  if (!enabled) return;
+  if (isOutputSounding()) {
+    lastActivity = Date.now();
+    armIdleTimer();
+    return;
+  }
+  disableAudioOutput();
+}
+
 /** (Re)arm the idle auto-mute — a NO-OP while the user has bypassed it. */
 function armIdleTimer(): void {
   clearIdleTimer();
   if (idleBypass) return; // bypass ticked → never auto-mute on idle
-  idleTimer = setTimeout(() => {
-    disableAudioOutput();
-  }, IDLE_MS);
+  idleTimer = setTimeout(onIdleTimeout, IDLE_MS);
 }
 
 /** Set/clear the session idle-bypass (from the enable-audio popup checkbox).

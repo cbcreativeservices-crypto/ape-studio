@@ -30,9 +30,9 @@ export function MeterLabHomeScreen() {
   const clearedUnits = useLabClearedUnits('af_visual_analysis');
   /**
    * WHAT'S LEFT (owner 2026-09-29: "every lab ends with a 'what's left'
-   * screen"). This lab's modules have no PREV/NEXT — every one opens from
-   * here and returns here — so this home is where the lab ends. A SEE WHAT'S
-   * LEFT link under the modules swaps LabEndScreen in for the list: modules
+   * screen"). The module host now has PREV / NEXT and a FINISH on Module 11
+   * that opens the same end screen (owner, build 32); this home keeps its own
+   * SEE WHAT'S LEFT link too, which swaps LabEndScreen in for the list: modules
    * not yet credited, a jump to each, PRACTISE AGAIN from Module 1 (clears
    * nothing) and DONE.
    */

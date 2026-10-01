@@ -554,6 +554,10 @@ export function ProfileScreen() {
   const missing = gaps.filter((g) => !g.done);
   const profileComplete = missing.length === 0;
   const registryActive = pub.showInRegistry && profileComplete;
+  /** A confirmed guest: publishing needs an account (see onRegistryToggle).
+   *  `tierKnown` first, as the guest note in PUBLIC PROFILE does, so a member
+   *  whose tier is still loading is never told they are a guest. */
+  const registryGuest = tierKnown && entitlement === 'anonymous';
 
   // Field refs + a remount key: the gap checklist's "ADD >" has to OPEN the
   // section holding the field and put the cursor in it. Section owns its own
@@ -590,8 +594,16 @@ export function ProfileScreen() {
     setFullIdOpen(false);
     setBrightId(false);
   }, []);
+  /** Remount key for MY USER NAME, twin of `ppSeq` (TestFlight build 32: "I was
+   *  unable to add my username"). The user name moved OUT of PUBLIC PROFILE on
+   *  2026-09-17 but its "ADD ›" kept opening PUBLIC PROFILE — the section that
+   *  does not hold it — while MY USER NAME stayed collapsed, so its input was
+   *  never mounted, `nameRef` was null and the focus did nothing. The listing
+   *  switch stays dimmed until a user name exists, so both reports were one bug. */
+  const [nameSeq, setNameSeq] = useState(0);
   const focusField = useCallback((key: 'name' | 'registryName' | 'email') => {
-    setPpSeq((n) => n + 1);
+    if (key === 'name') setNameSeq((n) => n + 1);
+    else setPpSeq((n) => n + 1);
     setTimeout(() => {
       const r = key === 'name' ? nameRef : key === 'registryName' ? registryNameRef : emailRef;
       r.current?.focus();
@@ -607,6 +619,20 @@ export function ProfileScreen() {
    */
   const onRegistryToggle = useCallback(
     (v: boolean) => {
+      // GUESTS CANNOT BE LISTED — SAY SO (TestFlight build 32, owner on the
+      // Pixel). Publishing is a server write that needs an account, so for a
+      // guest the chain below ran 18+ → Publish → a refused RPC → the switch
+      // snapped back with "check your connection": a refusal dressed as an
+      // outage. Answer the real reason up front, and offer the way through.
+      if (v && registryGuest) {
+        askYesNo(
+          'Listing needs an account',
+          'Guests can’t be listed in the Professional Registry. Create an account to publish your profile.',
+          'Create an account',
+          () => (navigation as any).navigate('Auth'),
+        );
+        return;
+      }
       const apply = (adult?: boolean) => {
         setPubKey('showInRegistry', v);
         void setRegistryVisible(v, { ...pub, showInRegistry: v }, { adult }).then((ok) => {
@@ -644,7 +670,7 @@ export function ProfileScreen() {
         () => consent(true),
       );
     },
-    [setPubKey, pub],
+    [setPubKey, pub, registryGuest, navigation],
   );
 
   // This product ships COMMERCIAL-only: the institutional / "MIRAMAR COLLEGE" Profile
@@ -1162,7 +1188,12 @@ export function ProfileScreen() {
           {/* MY USER NAME lives OUTSIDE the public profile (owner 2026-09-17):
               it is never published and never shown to another member, so
               sitting under a heading that says PUBLIC was misleading. */}
-          <Section title="MY USER NAME" summary={pub.name.trim() ? 'set' : 'not set'}>
+          <Section
+            key={`user-name-${nameSeq}-${hydrated}`}
+            title="MY USER NAME"
+            summary={pub.name.trim() ? 'set' : 'not set'}
+            defaultOpen={nameSeq > 0 || (hydrated && !pub.name.trim())}
+          >
             <Text style={styles.fieldLabel}>Your user name</Text>
             <TextInput
               ref={nameRef}
@@ -1338,6 +1369,11 @@ export function ProfileScreen() {
                 We couldn't check this with the server just now, so the switch above is
                 showing what this phone last saved. Reopen this screen when you're back
                 online to confirm it.
+              </Text>
+            ) : null}
+            {registryGuest ? (
+              <Text style={styles.fieldError}>
+                Listing needs an account. Guests can’t be listed in the Professional Registry.
               </Text>
             ) : null}
             <Text style={styles.rowHint}>

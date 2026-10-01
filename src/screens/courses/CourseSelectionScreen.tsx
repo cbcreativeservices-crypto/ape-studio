@@ -45,7 +45,7 @@ import { supabase } from '../../lib/supabase';
 import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../../features/commercial/realAccount';
 import { SUPABASE_URL } from '../../lib/env';
-import { colors, fonts } from '../../theme/tokens';
+import { BRAND_MAX_FONT_SCALE, colors, fonts } from '../../theme/tokens';
 import { dotRowFit, cardDimsFor, isCompactHeader, type CardDims } from './cardDims';
 import { setLastCourse } from '../../features/dashboard/api';
 import { confirmDialog, notify } from '../../lib/confirm';
@@ -179,6 +179,10 @@ const CARD_W = Math.min(Math.round(BASE_W * 0.7 * 0.93), CARD_MAX_W);
 const SCREEN_LONG = Math.max(SCREEN.width, SCREEN.height);
 const CARD_H = Math.max(260, Math.min(409, SCREEN_LONG - 394)); // was a flat 409
 const CARD_GAP = 14;
+/** Larger Text cap for the whole Home deck — header, chip row, captions, card
+ *  titles and keys (build 32 tester; why in BRAND_MAX_FONT_SCALE, tokens.ts).
+ *  The deck is fixed-height: past this the chrome pushes the card off its row. */
+const HOME_MAX = BRAND_MAX_FONT_SCALE;
 
 /**
  * TABLETS GET A BIGGER CARD (owner iPad report 2026-09-26: "fix the size issue
@@ -637,7 +641,7 @@ function Eyebrow({ text, color, w }: { text: string; color: string; w: number })
   const avail = w - 8;
   const ls = Math.max(0.3, Math.min(2.2, (avail - n * 6.1) / Math.max(1, n - 1)));
   return (
-    <Text style={[styles.cardAboveText, { color, letterSpacing: ls }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>
+    <Text style={[styles.cardAboveText, { color, letterSpacing: ls }]} maxFontSizeMultiplier={HOME_MAX} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>
       {text}
     </Text>
   );
@@ -710,10 +714,10 @@ function CourseCardView({
           accessibilityRole="button"
           accessibilityLabel={`Plus ${item.count} other certificates — view certificates`}
         >
-          <Text style={styles.moreCount}>+{item.count}</Text>
-          <Text style={styles.moreLabel}>OTHER SPECIALIZATION CERTIFICATES AVAILABLE</Text>
+          <Text style={styles.moreCount} maxFontSizeMultiplier={HOME_MAX}>+{item.count}</Text>
+          <Text style={styles.moreLabel} maxFontSizeMultiplier={HOME_MAX}>OTHER SPECIALIZATION CERTIFICATES AVAILABLE</Text>
           <View style={{ height: 14 }} />
-          <Text style={styles.moreCta}>VIEW CERTIFICATES ›</Text>
+          <Text style={styles.moreCta} maxFontSizeMultiplier={HOME_MAX}>VIEW CERTIFICATES ›</Text>
         </Pressable>
       </View>
     );
@@ -741,11 +745,11 @@ function CourseCardView({
         />
         <View style={styles.lockTint} />
         <View>
-          <Text style={styles.cardTitle}>{item.name}</Text>
+          <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>{item.name}</Text>
         </View>
         <View style={{ alignItems: 'center' }}>
           <View style={{ width: cd.btnW }}>
-            <GlassButton
+            <GlassButton maxFontSizeMultiplier={HOME_MAX}
               label={isMember ? 'COMING SOON' : '🔒 ACADEMY MODE'}
               tint="steel"
               height={50}
@@ -807,11 +811,11 @@ function CourseCardView({
               style={StyleSheet.absoluteFill}
             />
             <View>
-              <Text style={styles.cardTitle}>{item.name}</Text>
-              {item.subject ? <Text style={styles.homeTopicSubject}>{item.subject}</Text> : null}
+              <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>{item.name}</Text>
+              {item.subject ? <Text style={styles.homeTopicSubject} maxFontSizeMultiplier={HOME_MAX}>{item.subject}</Text> : null}
             </View>
             <View style={{ alignItems: 'center' }}>
-              <Text style={styles.homeTopicCta}>STUDY ›</Text>
+              <Text style={styles.homeTopicCta} maxFontSizeMultiplier={HOME_MAX}>STUDY ›</Text>
             </View>
           </CardArt>
         </Pressable>
@@ -840,10 +844,10 @@ function CourseCardView({
           accessibilityLabel={`Open ${item.name}`}
         >
           <BookIcon color={tint} filled size={54} />
-          <Text style={styles.homeTopicName}>{item.name}</Text>
-          <Text style={styles.homeTopicSubject}>{item.topics.length} topics</Text>
+          <Text style={styles.homeTopicName} maxFontSizeMultiplier={HOME_MAX}>{item.name}</Text>
+          <Text style={styles.homeTopicSubject} maxFontSizeMultiplier={HOME_MAX}>{item.topics.length} topics</Text>
           <View style={{ height: 12 }} />
-          <Text style={[styles.homeTopicCta, { color: tint }]}>LOAD & STUDY ›</Text>
+          <Text style={[styles.homeTopicCta, { color: tint }]} maxFontSizeMultiplier={HOME_MAX}>LOAD & STUDY ›</Text>
         </Pressable>
       </View>
     );
@@ -890,12 +894,12 @@ function CourseCardView({
             style={StyleSheet.absoluteFill}
           />
           <View>
-            <Text style={styles.cardTitle}>Audio Fundamentals & Advanced Training Labs</Text>
+            <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>Audio Fundamentals & Advanced Training Labs</Text>
           </View>
           <View style={{ alignItems: 'center' }}>
             <View style={{ width: cd.btnW }}>
               {/* Plural (owner 2026-09-17): the card opens a shelf of labs. */}
-              <GlassButton label="OPEN LABS" tint="green" height={50} onPress={onOpenLab} />
+              <GlassButton maxFontSizeMultiplier={HOME_MAX} label="OPEN LABS" tint="green" height={50} onPress={onOpenLab} />
             </View>
           </View>
         </CardArt>
@@ -916,11 +920,11 @@ function CourseCardView({
         />
         <View>
           {/* Owner 2026-09-29: the subtitle on its own line. */}
-          <Text style={styles.cardTitle}>{'Start Here:\nYour First Steps in Audio'}</Text>
+          <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>{'Start Here:\nYour First Steps in Audio'}</Text>
         </View>
         <View style={{ alignItems: 'center' }}>
           <View style={{ width: cd.btnW }}>
-            <GlassButton label="START HERE" tint="green" height={50} onPress={onOpenStartHere} />
+            <GlassButton maxFontSizeMultiplier={HOME_MAX} label="START HERE" tint="green" height={50} onPress={onOpenStartHere} />
           </View>
         </View>
       </>
@@ -964,11 +968,11 @@ function CourseCardView({
           style={StyleSheet.absoluteFill}
         />
         <View>
-          <Text style={styles.cardTitle}>{displayCardTitle(item)}</Text>
+          <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>{displayCardTitle(item)}</Text>
         </View>
         <View style={{ alignItems: 'center' }}>
           <View style={{ width: cd.btnW }}>
-            <GlassButton
+            <GlassButton maxFontSizeMultiplier={HOME_MAX}
               label={calc ? 'OPEN CALCULATORS' : 'OPEN CAREER FINDER'}
               tint={calc ? 'purple' : 'green'}
               height={50}
@@ -1020,11 +1024,11 @@ function CourseCardView({
               style={StyleSheet.absoluteFill}
             />
             <View>
-              <Text style={styles.cardTitle}>{item.name}</Text>
+              <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>{item.name}</Text>
             </View>
             <View style={{ alignItems: 'center' }}>
               <View style={{ width: cd.btnW }}>
-                <GlassButton label="EXPLORE ›" tint="gold" height={50} fontSize={13} onPress={openArea} />
+                <GlassButton maxFontSizeMultiplier={HOME_MAX} label="EXPLORE ›" tint="gold" height={50} fontSize={13} onPress={openArea} />
               </View>
             </View>
           </CardArt>
@@ -1135,17 +1139,17 @@ function CourseCardView({
           the image + its 15% dim, below the text/button (Booth 2026-07-09c). */}
       {locked && <View style={styles.lockTint} />}
       <View>
-        <Text style={styles.cardTitle}>{title}</Text>
+        <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>{title}</Text>
         {/* Tools tutorial line lives INSIDE the card, below the title (Booth
             2026-07-15) — blue, over the art. */}
         {isTools && !isMember ? (
-          <Text style={styles.cardToolsSub}>Learn how to use them with tutorials in Academy Mode</Text>
+          <Text style={styles.cardToolsSub} maxFontSizeMultiplier={HOME_MAX}>Learn how to use them with tutorials in Academy Mode</Text>
         ) : null}
         {/* COURSE cards show their topic count below the title, in blue
             (Booth 2026-07-15). */}
         {(() => {
           const n = course ? course.achievement_count : null;
-          return n ? <Text style={styles.cardTopicCount}>{n} TOPICS</Text> : null;
+          return n ? <Text style={styles.cardTopicCount} maxFontSizeMultiplier={HOME_MAX}>{n} TOPICS</Text> : null;
         })()}
       </View>
       <View>
@@ -1160,17 +1164,17 @@ function CourseCardView({
             // eyebrow above already says FREE TOPIC, so the button should say
             // what it DOES rather than repeat the price.
             <View style={{ width: cd.btnW }}>
-              <GlassButton label="STUDY NOW" tint="green" height={50} onPress={() => onOpenPublic(free.courseOrder, true, free.gs)} />
+              <GlassButton maxFontSizeMultiplier={HOME_MAX} label="STUDY NOW" tint="green" height={50} onPress={() => onOpenPublic(free.courseOrder, true, free.gs)} />
             </View>
           ) : isTools ? (
             // Audio Tools is ALWAYS FREE to open (Booth 2026-07-11 #4); the
             // per-tutorial locks live INSIDE the hub, not on this card.
             <View style={{ width: cd.btnW }}>
-              <GlassButton label="OPEN TOOLS" tint="green" height={50} onPress={onOpenTools} />
+              <GlassButton maxFontSizeMultiplier={HOME_MAX} label="OPEN TOOLS" tint="green" height={50} onPress={onOpenTools} />
             </View>
           ) : isGlossary ? (
             <View style={{ width: cd.btnW }}>
-              <GlassButton label="OPEN GLOSSARY" tint="blue" height={50} onPress={onOpenGlossary} />
+              <GlassButton maxFontSizeMultiplier={HOME_MAX} label="OPEN GLOSSARY" tint="blue" height={50} onPress={onOpenGlossary} />
             </View>
           ) : coming ? (
             // Audio-field topic card — membership-locked for non-members (owner
@@ -1178,7 +1182,7 @@ function CourseCardView({
             // (QA night 2026-08-31 — mirrors the program-stub ruling above):
             // they see COMING SOON instead of the paywall path.
             <View style={{ width: cd.btnW }}>
-              <GlassButton
+              <GlassButton maxFontSizeMultiplier={HOME_MAX}
                 label={isMember ? 'COMING SOON' : '🔒 ACADEMY MODE'}
                 tint="steel"
                 height={50}
@@ -1195,7 +1199,7 @@ function CourseCardView({
             <SwitchButton label="🔒 Locked" variant="locked" width={cd.btnW} height={50} disabled />
           ) : (
             <View style={{ width: cd.btnW }}>
-              <GlassButton
+              <GlassButton maxFontSizeMultiplier={HOME_MAX}
                 label={completed ? 'REVIEW' : 'CONTINUE'}
                 tint={completed ? 'green' : 'gold'}
                 height={50}
@@ -1784,7 +1788,7 @@ export function CourseSelectionScreen() {
         accessibilityRole="button"
         accessibilityLabel="About Pro Audio Training Academy"
       >
-        <AttractText active={attract.about} glow style={styles.aboutBtnText}>
+        <AttractText active={attract.about} glow style={styles.aboutBtnText} maxFontSizeMultiplier={HOME_MAX}>
           About
         </AttractText>
       </Pressable>
@@ -1802,7 +1806,7 @@ export function CourseSelectionScreen() {
           accessibilityRole="button"
           accessibilityLabel="Membership"
         >
-          <Text style={styles.aboutBtnText}>Membership</Text>
+          <Text style={styles.aboutBtnText} maxFontSizeMultiplier={HOME_MAX}>Membership</Text>
         </Pressable>
       ) : null}
 
@@ -1839,11 +1843,13 @@ export function CourseSelectionScreen() {
           }}
           delayLongPress={600}
         >
-          <Text style={styles.heroWordmark}>
+          {/* One line at any text size: wrapping added a ~43-pt second line
+              that pushed the fixed-height card off its row. */}
+          <Text style={styles.heroWordmark} maxFontSizeMultiplier={HOME_MAX} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
             Pro Audio <Text style={styles.heroAccent}>Training Academy</Text>
           </Text>
         </Pressable>
-        {compactHeader ? null : <Text style={styles.heroEyebrow}>PROFESSIONAL AUDIO GLOSSARY</Text>}
+        {compactHeader ? null : <Text style={styles.heroEyebrow} maxFontSizeMultiplier={HOME_MAX} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>PROFESSIONAL AUDIO GLOSSARY</Text>}
       </View>
 
       {/* Two links above the course carousel (user request 2026-07-17): the
@@ -1867,6 +1873,7 @@ export function CourseSelectionScreen() {
             <AttractRing active={attract.explore} />
             <Text
               style={[styles.awardBtnText, attract.explore && styles.awardBtnTextAttract]}
+              maxFontSizeMultiplier={HOME_MAX}
               numberOfLines={1}
               adjustsFontSizeToFit
               minimumFontScale={0.6}
@@ -1880,7 +1887,7 @@ export function CourseSelectionScreen() {
             accessibilityRole="button"
             accessibilityLabel="Specialization certificates"
           >
-            <Text style={styles.awardBtnText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
+            <Text style={styles.awardBtnText} maxFontSizeMultiplier={HOME_MAX} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
               Certificates
             </Text>
           </Pressable>
@@ -1890,7 +1897,7 @@ export function CourseSelectionScreen() {
             accessibilityRole="button"
             accessibilityLabel="Certificate programs"
           >
-            <Text style={styles.awardBtnText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
+            <Text style={styles.awardBtnText} maxFontSizeMultiplier={HOME_MAX} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
               Programs
             </Text>
           </Pressable>
@@ -1900,7 +1907,7 @@ export function CourseSelectionScreen() {
             accessibilityRole="button"
             accessibilityLabel="Pro Registry — get discovered"
           >
-            <Text style={styles.awardBtnText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
+            <Text style={styles.awardBtnText} maxFontSizeMultiplier={HOME_MAX} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
               Pro Registry
             </Text>
           </Pressable>
@@ -1923,6 +1930,7 @@ export function CourseSelectionScreen() {
                 styles.awardBtnText,
                 (entitlement === 'academy' || attract.enrollments || attract.enrolledOnce) && styles.enrollBtnTextOn,
               ]}
+              maxFontSizeMultiplier={HOME_MAX}
               numberOfLines={1}
               adjustsFontSizeToFit
               minimumFontScale={0.6}
@@ -1934,7 +1942,7 @@ export function CourseSelectionScreen() {
       </View>
 
       {compactHeader ? null : (
-        <Text style={styles.academyTitle} accessibilityLiveRegion="polite">
+        <Text style={styles.academyTitle} accessibilityLiveRegion="polite" maxFontSizeMultiplier={HOME_MAX} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
           {deckHeadline(displayDeck?.[activeIdx]?.kind)}
         </Text>
       )}

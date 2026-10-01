@@ -108,7 +108,7 @@ export function AccuracyNote({
   return (
     <>
       <Pressable
-        style={[styles.chip, style]}
+        style={[styles.chip, isCalc && styles.chipCalc, style]}
         onPress={() => {
           labProbe('i pressed'); // TEMP probe
           // Bug hunt 2026-09-29: if iOS refused to present the sheet (another
@@ -187,18 +187,26 @@ export function AccuracyNote({
 }
 
 const styles = StyleSheet.create({
+  // VISIBLE ON PURPOSE (TestFlight tester, build 32: "The info symbol blends in
+  // with the page so it makes it hard to find" — and, once found, "The info
+  // pages are so useful"). The chip was a near-black box (#131316) with a
+  // #2c2c2c hairline on a near-black header, so only a thin ⓘ showed. It now
+  // wears the header's own gold: an amber outline and a warm, lighter fill,
+  // with the glyph in the heavier cut. Size, padding and hit area unchanged.
+  // Static colours only, so Low-Light's wash dims it like everything else.
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
     borderRadius: 7,
     borderWidth: 1,
-    borderColor: colors.hairline,
-    backgroundColor: '#131316',
+    borderColor: 'rgba(255,198,77,.75)',
+    backgroundColor: '#2a2210',
     paddingVertical: 5,
     paddingHorizontal: 8,
   },
-  chipGlyph: { fontFamily: fonts.barlowMedium, fontSize: 13, color: colors.amber, marginTop: -1 },
+  chipCalc: { borderColor: 'rgba(55,224,95,.7)', backgroundColor: '#11241a' },
+  chipGlyph: { fontFamily: fonts.barlowSemiBold, fontSize: 13, color: colors.amber, marginTop: -1 },
   chipGlyphCalc: { fontFamily: fonts.oswaldSemiBold, color: colors.green },
   chipLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1, color: colors.textSub },
 

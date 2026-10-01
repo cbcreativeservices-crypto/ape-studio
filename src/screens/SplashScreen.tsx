@@ -10,7 +10,7 @@ import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
 import type { PartialRoute, Route } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { BrandLogo } from '../components/BrandLogo';
-import { colors, fonts } from '../theme/tokens';
+import { BRAND_MAX_FONT_SCALE, colors, fonts } from '../theme/tokens';
 import { supabase } from '../lib/supabase';
 import type { RootStackParamList } from '../navigation/types';
 import { clearPendingLink } from '../navigation/pendingLink';
@@ -123,9 +123,17 @@ export function SplashScreen({ navigation }: Props) {
       </Animated.View>
 
       <Animated.View style={[styles.textBlock, { opacity: textOpacity }]}>
-        <Text style={styles.proAudio}>PRO AUDIO</Text>
-        <Text style={styles.trainingAcademy}>TRAINING ACADEMY</Text>
-        <Text style={styles.glossary}>PROFESSIONAL AUDIO GLOSSARY</Text>
+        {/* Larger Text (build 32 tester): capped at the largest standard size
+            and kept to one line, so the wordmark never breaks mid-word. */}
+        <Text style={styles.proAudio} maxFontSizeMultiplier={BRAND_MAX_FONT_SCALE} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
+          PRO AUDIO
+        </Text>
+        <Text style={styles.trainingAcademy} maxFontSizeMultiplier={BRAND_MAX_FONT_SCALE} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
+          TRAINING ACADEMY
+        </Text>
+        <Text style={styles.glossary} maxFontSizeMultiplier={BRAND_MAX_FONT_SCALE} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
+          PROFESSIONAL AUDIO GLOSSARY
+        </Text>
       </Animated.View>
     </View>
   );
@@ -139,7 +147,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 18,
   },
-  textBlock: { alignItems: 'center' },
+  textBlock: { alignItems: 'center', maxWidth: '100%', paddingHorizontal: 16 },
   // Silver gradient wordmark approximated with a light silver (RN text has no
   // background-clip gradient without MaskedView; revisit if pixel-matched needed).
   proAudio: {

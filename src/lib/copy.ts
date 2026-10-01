@@ -101,7 +101,8 @@ export const COPY = {
    * sells, and "free to do AND always included" said the same thing twice
    * about the same act.
    *
-   * Split: the first line is about the ACT of choosing (it costs nothing), the
+   * Split: the first line is about the ACT of choosing (part of the membership
+   * — see the ⛔ note below; it once said "costs nothing"), the
    * second is about what the MEMBERSHIP covers (everything, with no per-item
    * charge). Neither one claims the membership itself is free.
    *
@@ -109,7 +110,17 @@ export const COPY = {
    * it lives here now — the same sentence in five places is five chances to
    * drift.
    */
-  enrollFreeLine: 'Enrolling costs nothing — pick as many topics and certificates as you like.',
+  /*
+   * ⛔ ENROLLMENT IS NOT FREE (owner, TestFlight build 32, 2026-09-30:
+   * "Enrollment is not free. That statement is confusing."). This line used to
+   * read "Enrolling costs nothing — …". Studying certificates (and every topic
+   * except the two free ones, Pro Audio Safety and DAW Fundamentals) needs a
+   * membership, so the line now says enrolling is part of the membership. The
+   * key keeps its old name only so the five call sites need no edit; never put
+   * "free" / "costs nothing" back in it. Guarded by
+   * test/testflight32CredentialScenarioCopy.test.ts.
+   */
+  enrollFreeLine: 'Enrolling is part of the membership — pick as many topics and certificates as you like.',
   membershipCoversLine: 'One membership covers them all. Choosing more never costs more.',
   // Introductory lifetime offer (Booth 2026-07-15).
   lifetimePrice: '$99.99',

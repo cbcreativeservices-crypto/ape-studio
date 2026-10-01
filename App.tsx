@@ -55,6 +55,7 @@ import { CareerFinderAboutScreen } from './src/screens/careerfinder/CareerFinder
 import { SoundSystemsLabScreen } from './src/screens/lab/soundsystems/SoundSystemsLabScreen';
 import { StartHereScreen } from './src/screens/startHere/StartHereScreen';
 import { StartHereTermsScreen } from './src/screens/startHere/StartHereTermsScreen';
+import { PlateStudioScreen } from './src/screens/lab/cymatics/PlateStudioScreen';
 // `#labpreview/<Screen>/<id>` (2026-09-25 legibility pass): any lab screen in
 // the browser harness by name, so a display can be measured without walking
 // Home → OPEN LABS (the app root sometimes rendered blank in the preview).
@@ -108,6 +109,9 @@ const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   // Start Here (2026-09-29): the free beginner experience + its words.
   StartHere: StartHereScreen as ComponentType,
   StartHereTerms: StartHereTermsScreen as ComponentType,
+  // Cymatics Chladni plate (TestFlight build 32 fix pass): the dock and the
+  // bezel can be measured here; the plate itself needs Skia (native only).
+  CymaticsPlateStudio: PlateStudioScreen as ComponentType,
 };
 /** `#labpreview/<Screen>/<id>` → a ToolPreview of that lab, every other lab
  *  screen registered as a sibling so in-lab navigation (a home → a module)

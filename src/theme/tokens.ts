@@ -64,6 +64,27 @@ export const colors = {
 } as const;
 
 /**
+ * FIXED-GEOMETRY BRAND SURFACES FOLLOW THE OS TEXT SIZE UP TO A POINT (tester
+ * report, build 32, iPhone 13 Pro with Larger Text on: "Opening screen with
+ * big text on is difficult to read. Scaling issues.").
+ *
+ * The Splash and the Home deck are not reading surfaces: Home is a fixed-height
+ * deck (a ~394-pt chrome budget above and below a fixed-size card — see
+ * `CARD_H` in CourseSelectionScreen) and the Splash is a wordmark. At the
+ * accessibility sizes (fontScale 1.65–3.12) the chip labels truncated, the
+ * corner About/Membership keys ran into the logo, the card titles broke words
+ * mid-letter against the card edge, and the grown chrome pushed the card past
+ * its row so its title and button were sliced off.
+ *
+ * So these surfaces honour the OS size fully up to 1.35 — iOS's largest
+ * STANDARD size (xxxLarge, 23 pt body / 17) — and hold there at the
+ * accessibility sizes. Everything people actually read (study, glossary, help,
+ * labs) keeps scaling without a cap; nothing is ever drawn smaller than the
+ * design size by this.
+ */
+export const BRAND_MAX_FONT_SCALE = 1.35;
+
+/**
  * Font family names as exported by the @expo-google-fonts/* packages and
  * registered via useFonts() in App.tsx. Reference these — never a raw string —
  * so a rename is caught by the type checker.

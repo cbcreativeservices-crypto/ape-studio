@@ -101,11 +101,14 @@ export function AttractText({
   active,
   style,
   glow,
+  maxFontSizeMultiplier,
   children,
 }: {
   active: boolean;
   style?: StyleProp<TextStyle>;
   glow?: boolean;
+  /** Passed to the Text (Home caps its corner keys at large OS text sizes). */
+  maxFontSizeMultiplier?: number;
   children: ReactNode;
 }) {
   // Low-Light gate, same as AttractRing above (bug hunt 2026-09-30): the ring
@@ -116,7 +119,7 @@ export function AttractText({
   const t = useBreathe(active, motion, 1);
   const aStyle = useAnimatedStyle(() => ({ opacity: 0.6 + t.value * 0.4 }));
   return (
-    <Animated.Text style={[style, active && glow ? styles.textGlow : null, aStyle]}>
+    <Animated.Text maxFontSizeMultiplier={maxFontSizeMultiplier} style={[style, active && glow ? styles.textGlow : null, aStyle]}>
       {children}
     </Animated.Text>
   );

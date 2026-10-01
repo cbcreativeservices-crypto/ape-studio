@@ -47,12 +47,12 @@ import { useDriveTone } from './useDriveTone';
 import { RES_TINT } from '../../../features/cymatics/resTint';
 import { START_LEVEL_01 } from '../../../features/audio/startLevel';
 import { goToCymatics, useStudioKey } from './goToCymatics';
+import { makeFreqFader } from '../../../features/cymatics/freqFader';
+import { BEZEL_RES_WORD, PLATE_BEZEL_FLEX, bezelModeLabel } from '../../../features/cymatics/plateBezel';
 
 const F_MIN = 30;
 const F_MAX = 3000;
 const GRID_N = 56;
-const hzFromPos = (v: number) => F_MIN * Math.pow(F_MAX / F_MIN, Math.max(0, Math.min(1, v)));
-const posFromHz = (hz: number) => Math.log(Math.max(F_MIN, Math.min(F_MAX, hz)) / F_MIN) / Math.log(F_MAX / F_MIN);
 
 // Analytic shapes first, then the eight solved MODAL-LIBRARY shapes (spec
 // 1.3; Computer B 2026-09-16) - no longer planned rows.
@@ -151,6 +151,7 @@ function PlateStudio() {
   const Q = useMemo(() => effectiveQ(spec.material, spec.damping), [spec.material, spec.damping]);
   const ratio = MULTI.find((m) => m.id === multi)?.ratio ?? null;
   const freqB = ratio ? freq * ratio : null;
+  const fader = useMemo(() => makeFreqFader(F_MIN, F_MAX, modes, Q), [modes, Q]);
   const res = useMemo(() => readResonance(freq, modes, Q), [freq, modes, Q]);
   const resB = useMemo(() => (freqB ? readResonance(freqB, modes, Q) : null), [freqB, modes, Q]);
   const grid = useMemo(() => {
@@ -290,10 +291,14 @@ function PlateStudio() {
       kind: 'fader',
       id: 'freq',
       label: 'FREQ',
-      value: posFromHz(freq),
+      // Warped around each mode (freqFader.ts, TestFlight build 32): on a plain
+      // log fader one point of travel (~1.5 %) stepped over every 0.2 %-wide
+      // resonance, so the pattern never changed while the slider moved. Not
+      // rounded to 0.1 Hz: inside a mode's zone that is half the bandwidth.
+      value: fader.posOf(freq),
       onChange: (v) => {
         setSweeping(false);
-        setFreq(Math.round(hzFromPos(v) * 10) / 10);
+        setFreq(fader.hzAt(v));
       },
       format: () => `${formatHz(freq)} · ${note.label} ${note.centsLabel}`,
       formatShort: () => (freq >= 1000 ? `${(freq / 1000).toFixed(1)}k` : `${Math.round(freq)}Hz`),
@@ -524,12 +529,14 @@ function PlateStudio() {
     },
   ];
 
+  // Compact words + weighted cells (plateBezel.ts, TestFlight build 32): the
+  // full mode labels and APPROACHING were cut to an ellipsis on a 390 phone.
   const bezel = [
-    { k: 'DRIVE', v: formatHz(freq), helpKey: 'frequency' },
-    { k: 'RESPONSE', v: `${Math.round(strength * 100)} %`, tint: levelColor(strength), helpKey: 'resonance' },
-    { k: 'MODE', v: res.dominant && res.state !== 'below' && res.state !== 'between' ? res.dominant.label : '—', helpKey: 'modes' },
+    { k: 'DRIVE', v: formatHz(freq), helpKey: 'frequency', flex: PLATE_BEZEL_FLEX.drive },
+    { k: 'RESPONSE', v: `${Math.round(strength * 100)}%`, tint: levelColor(strength), helpKey: 'resonance', flex: PLATE_BEZEL_FLEX.response },
+    { k: 'MODE', v: res.dominant && res.state !== 'below' && res.state !== 'between' ? bezelModeLabel(res.dominant.label) : '—', helpKey: 'modes', flex: PLATE_BEZEL_FLEX.mode },
     // Tap the RES cell to land on the nearest mode (the bezel-cell verb; no control in the scroller).
-    { k: 'RES', v: res.state.toUpperCase(), tint: RES_TINT[res.state], helpKey: 'resonance', flex: 1.2, onPress: res.state !== 'at' && res.next ? () => land(res.next!.hz) : undefined },
+    { k: 'RES', v: BEZEL_RES_WORD[res.state], tint: RES_TINT[res.state], helpKey: 'resonance', flex: PLATE_BEZEL_FLEX.res, onPress: res.state !== 'at' && res.next ? () => land(res.next!.hz) : undefined },
   ];
 
   const togglePlay = () => (tone.running ? tone.stop() : void tone.start());
@@ -583,6 +590,10 @@ function PlateStudio() {
             onGuide: () => openLesson('display'),
             bezel,
             hideDragTag: true,
+            // FULL SCREEN as a working surface (house rule D35; TestFlight
+            // build 32 pass): the rack draws this same render at the whole
+            // phone with the bezel on top and the dock + FREQ lane docked.
+            fullScreen: true,
             render: (w, h) =>
               viz ? (
                 <viz.PlateView

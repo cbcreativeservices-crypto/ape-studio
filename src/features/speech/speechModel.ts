@@ -258,13 +258,77 @@ export const DISTANCE_PRESETS = [1, 6, 12] as const;
 
 /* ── 9. voices ─────────────────────────────────────────────────────────── */
 
-export type VoiceRange = { id: string; name: string; f0LoHz: number; f0HiHz: number; f0TypicalHz: number; note: string };
+/** `fmLoHz`–`fmHiHz`: where the first three formants live for that voice —
+ *  the lowest F1 to the highest F3 of the Peterson & Barney (1952) vowel
+ *  means (both from /i/; the male pair matches VOWELS above). */
+export type VoiceRange = { id: string; name: string; f0LoHz: number; f0HiHz: number; f0TypicalHz: number; fmLoHz: number; fmHiHz: number; note: string };
 
 export const VOICE_RANGES: VoiceRange[] = [
-  { id: 'male', name: 'Typical adult male', f0LoHz: 85, f0HiHz: 155, f0TypicalHz: 120, note: 'Longer folds vibrate more slowly; a longer vocal tract puts the formants lower too.' },
-  { id: 'female', name: 'Typical adult female', f0LoHz: 165, f0HiHz: 255, f0TypicalHz: 210, note: 'Shorter folds, higher pitch; formants sit roughly 15–20% higher.' },
-  { id: 'child', name: 'Typical child', f0LoHz: 250, f0HiHz: 400, f0TypicalHz: 300, note: 'Small folds and a short tract — everything higher again.' },
+  { id: 'male', name: 'Typical adult male', f0LoHz: 85, f0HiHz: 155, f0TypicalHz: 120, fmLoHz: 270, fmHiHz: 3010, note: 'Longer folds vibrate more slowly; a longer vocal tract puts the formants lower too.' },
+  { id: 'female', name: 'Typical adult female', f0LoHz: 165, f0HiHz: 255, f0TypicalHz: 210, fmLoHz: 310, fmHiHz: 3310, note: 'Shorter folds, higher pitch; formants sit roughly 15–20% higher.' },
+  { id: 'child', name: 'Typical child', f0LoHz: 250, f0HiHz: 400, f0TypicalHz: 300, fmLoHz: 370, fmHiHz: 3730, note: 'Small folds and a short tract — everything higher again.' },
 ];
+
+/* Voices chart layout (TestFlight build 32: the old chart stopped at 520 Hz —
+ * pitch only, no formants — and its tick labels ran into each other). Pure so
+ * test/ can check the axis and the label boxes with the same math the SVG uses. */
+
+/** Conservative width of one Barlow Medium glyph, in em (digits ≈ 0.5). */
+export const VOICE_CHART_CHAR_EM = 0.56;
+export const VOICE_CHART = { W: 340, loHz: 60, hiHz: 4000, pad: 10, fontSize: 9, headerH: 22, rowH: 40, footH: 22 } as const;
+export const VOICE_CHART_TICKS = [100, 200, 500, 1000, 2000, 4000] as const;
+
+export function voiceChartX(f: number): number {
+  const { W, loHz, hiHz, pad } = VOICE_CHART;
+  return pad + ((Math.log(f) - Math.log(loHz)) / (Math.log(hiHz) - Math.log(loHz))) * (W - 2 * pad);
+}
+
+export function voiceChartHz(f: number): string {
+  return f >= 1000 ? `${+(f / 1000).toFixed(1)} kHz` : `${f} Hz`;
+}
+
+/** Estimated rendered width of `s` at the chart's font size (viewBox units). */
+export function voiceChartTextW(s: string): number {
+  return s.length * VOICE_CHART.fontSize * VOICE_CHART_CHAR_EM;
+}
+
+export type VoiceChartLabel = { text: string; x: number; y: number; anchor: 'start' | 'middle' | 'end' };
+
+/** Every text item of the chart, positioned. Rows: name (left) and the
+ *  numbers (right) on one line, the pitch bar under it, the formant bar under
+ *  that. Ticks along the bottom, the last one hanging left from the edge. */
+export function voiceChartLayout(ranges: VoiceRange[] = VOICE_RANGES) {
+  const { W, pad, headerH, rowH, footH } = VOICE_CHART;
+  const H = headerH + ranges.length * rowH + footH;
+  const header: VoiceChartLabel[] = [
+    { text: 'speaking pitch', x: pad + 16, y: 14, anchor: 'start' },
+    { text: 'formants F1–F3', x: pad + 120, y: 14, anchor: 'start' },
+    { text: 'typical, not fixed', x: W - pad, y: 14, anchor: 'end' },
+  ];
+  const rows = ranges.map((r, i) => {
+    const top = headerH + i * rowH;
+    return {
+      top,
+      name: { text: r.name, x: pad, y: top + 10, anchor: 'start' } as VoiceChartLabel,
+      nums: { text: `pitch ~${r.f0TypicalHz} Hz · formants ${voiceChartHz(r.fmLoHz)}–${voiceChartHz(r.fmHiHz)}`, x: W - pad, y: top + 10, anchor: 'end' } as VoiceChartLabel,
+      pitchY: top + 14, pitchH: 12,
+      formantY: top + 29, formantH: 5,
+    };
+  });
+  const ticks = VOICE_CHART_TICKS.map((t) => {
+    const x = voiceChartX(t);
+    const text = voiceChartHz(t);
+    const edge = x + voiceChartTextW(text) / 2 > W - 4;
+    return { hz: t, gx: x, label: { text, x: edge ? W - 4 : x, y: H - 7, anchor: edge ? 'end' : 'middle' } as VoiceChartLabel };
+  });
+  return { W, H, header, rows, ticks, gridTop: headerH, gridBottom: headerH + ranges.length * rowH + 2 };
+}
+
+/** [left, right] extent of a positioned label (viewBox units). */
+export function voiceLabelSpan(l: VoiceChartLabel): [number, number] {
+  const w = voiceChartTextW(l.text);
+  return l.anchor === 'start' ? [l.x, l.x + w] : l.anchor === 'end' ? [l.x - w, l.x] : [l.x - w / 2, l.x + w / 2];
+}
 
 /* ── 10. problem simulator ─────────────────────────────────────────────── */
 

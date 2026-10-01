@@ -17,7 +17,13 @@
  *       • foreground-after-idle — AppState 'active' & (now − lastActivity) >
  *         IDLE_MS → disableAudioOutput().
  *     (Relaunch re-mute is automatic — the store is session-only — and the
- *     10-min while-open idle timer lives in the store itself.)
+ *     20-min while-open idle timer lives in the store itself.)
+ *
+ *  Changing SCREENS never touches the gate (owner 2026-09-30). A screen stops
+ *  its own sound on close (useStopOnClose / useStopOnBlur) and the gate stays
+ *  on; the only re-locks are the ones listed here, plus leaving the app
+ *  (background → panicMuteAudio), shake, the AUDIO OUTPUT row tap and a lost
+ *  headphone route.
  *
  * Popups use the app's Modal backdrop+card idiom (see PrePaywallPrompt).
  *
@@ -59,11 +65,14 @@ import {
   IDLE_MS,
   isAudioOutputEnabled,
   isIdleBypass,
+  isOutputSounding,
   noteAudioActivity,
   setIdleBypass,
+  setOutputSoundingProbe,
 } from './audioOutputStore';
 import { panicMuteAudio } from './panicMute';
-import { onOutputLost } from '../../../modules/ape-dsp';
+import { authEventReMute } from './authReMute';
+import { ApeDsp, onOutputLost } from '../../../modules/ape-dsp';
 
 type GateApi = { requestAudioOutput: () => Promise<boolean> };
 
@@ -225,15 +234,38 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
   // loudspeaker. Builds without the event never fire it.
   useEffect(() => onOutputLost(() => panicMuteAudio()), []);
 
+  // A native voice that is SOUNDING is the learner using audio: the idle
+  // auto-mute re-arms instead of firing while one runs (owner 2026-09-30,
+  // "if they're continuing to use it, it's muting too soon"). File players are
+  // checked by the store itself.
+  useEffect(() => {
+    setOutputSoundingProbe(() => {
+      if (!ApeDsp.isAvailable()) return false;
+      return (
+        ApeDsp.genStatus()?.running === true ||
+        ApeDsp.binStatus()?.running === true ||
+        ApeDsp.modStatus()?.running === true
+      );
+    });
+    return () => setOutputSoundingProbe(null);
+  }, []);
+
   // AUTO-RE-MUTE (login + foreground-after-idle). Registered once at root.
   useEffect(() => {
+    // The real account the gate last saw signed in (see authReMute.ts).
+    let knownUser: string | null = null;
     const { data: authSub } = supabase.auth.onAuthStateChange((event, session) => {
       // Only a real sign-in re-mutes. Opening the glossary mints an ANONYMOUS
       // session, which arrives here as SIGNED_IN — silencing the app mid-lab
       // for a reason the user could never connect to what they just did.
       // PASSWORD_RECOVERY is how auth-js announces the in-app password-reset
       // sign-in (bug pass 2026-09-30) — the same new-session mute applies.
-      if ((event === 'SIGNED_IN' || event === 'PASSWORD_RECOVERY') && isRealAccount(session)) disableAudioOutput();
+      // …and only a NEW sign-in (owner 2026-09-30): supabase-js re-announces
+      // the SAME account as SIGNED_IN on session restore and, on the web, on
+      // every tab refocus — each of which used to re-lock the gate.
+      const verdict = authEventReMute(event, session, knownUser);
+      knownUser = verdict.known;
+      if (verdict.mute && isRealAccount(session)) disableAudioOutput();
     });
     const appSub = AppState.addEventListener('change', (state) => {
       // ── LEAVING THE APP SILENCES IT (2026-09-17, bug-hunt pass 2) ──────────
@@ -275,6 +307,7 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
         state === 'active' &&
         isAudioOutputEnabled() &&
         !isIdleBypass() &&
+        !isOutputSounding() &&
         Date.now() - getLastAudioActivity() > IDLE_MS
       ) {
         disableAudioOutput();

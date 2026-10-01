@@ -88,6 +88,8 @@ type PageKey = (typeof PAGE_ORDER)[number];
 // the horizontal swipe locks so they can't slide back to the Pro Registry
 // (directory) page — they exit only via the top Home button (or a tab tap).
 const ENROLLMENT_IDX = PAGE_ORDER.indexOf('enrollment');
+/** How long after a tab jump the pager is checked for having landed (goToIndex). */
+const LANDING_CHECK_MS = 180;
 
 // Tab / nav-button labels (user request 2026-07-22) — also used by the Course
 // Select top buttons.
@@ -480,18 +482,53 @@ export function AwardsScreen({ navigation, route }: Props) {
    * is why the page passes this down (as `CurriculumView` already did) instead
    * of letting children route to themselves.
    */
-  const goToPage = useCallback((key: PageKey) => {
-    const i = PAGE_ORDER.indexOf(key);
-    if (i < 0) return;
+  /**
+   * ⛔ THE TAB MUST NOT LIGHT UP A PAGE THE PAGER NEVER REACHED (TestFlight
+   * build 32, owner on the Pixel: "Enrollments green and active, but the screen
+   * never changed — still looking at Pro Registry").
+   *
+   * The tab row lights from `idx`, which a tap sets at once; the page only
+   * changes if the native scroll lands. The tap path fired that scroll
+   * SYNCHRONOUSLY, in the same tick as the state change that re-lays the screen
+   * out (the header swaps headline and gains the help key on Enrollments, and
+   * `scrollEnabled` flips off there) — so on Android the scroll could be
+   * applied before that re-layout and lost to it, and nothing ever reported a
+   * scroll back to correct the highlight. Every jump now goes through here:
+   * scroll AFTER the commit (rAF), then check where the pager actually is and
+   * scroll once more if it is not on the page the tab claims.
+   */
+  const pageWRef = useRef(screenW);
+  pageWRef.current = screenW;
+  /** Last horizontal offset the pager reported (onScroll / momentum end). */
+  const offsetXRef = useRef(startIdx * screenW);
+  /** The page the latest jump asked for, so a stale check never fights a newer one. */
+  const wantedRef = useRef<number | null>(null);
+  const landTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (landTimer.current) clearTimeout(landTimer.current); }, []);
+  const goToIndex = useCallback((i: number) => {
+    if (i < 0 || i >= PAGE_ORDER.length) return;
     setIdx(i);
     // Landing on Enrollments locks the swipe (exit via Home) — same rule the
     // picker flow applies, kept here so every jump agrees.
     // Leaving it unlocks again (bug hunt 2026-09-29) — this used to only ever
     // lock, so a jump OUT of Enrollments left every other page unswipeable.
     setSwipeLocked(i === ENROLLMENT_IDX);
+    wantedRef.current = i;
     // Instant jump so it does not flash through the pages in between.
-    requestAnimationFrame(() => listRef.current?.scrollToIndex({ index: i, animated: false }));
+    const jump = () => listRef.current?.scrollToIndex({ index: i, animated: false });
+    requestAnimationFrame(jump);
+    if (landTimer.current) clearTimeout(landTimer.current);
+    landTimer.current = setTimeout(() => {
+      landTimer.current = null;
+      if (wantedRef.current !== i) return;
+      const at = Math.round(offsetXRef.current / Math.max(1, pageWRef.current));
+      // Not there: ask again. Idempotent when it already is (a non-animated
+      // scroll to the current offset moves nothing), so a dropped scroll
+      // event can only cost a no-op, never a wrong page.
+      if (at !== i) jump();
+    }, LANDING_CHECK_MS);
   }, []);
+  const goToPage = useCallback((key: PageKey) => goToIndex(PAGE_ORDER.indexOf(key)), [goToIndex]);
 
   // A paged list keeps its scroll offset in PIXELS, so when the window width
   // changes under it (rotation, iPad Split View) the content re-lays out at the
@@ -702,11 +739,9 @@ export function AwardsScreen({ navigation, route }: Props) {
       }
       setDetail(null); // close the credential popup
       setPicker(null); // close the cert/program picker modal
-      const ei = ENROLLMENT_IDX;
-      setIdx(ei);
-      setSwipeLocked(true); // landing on Enrollments locks the swipe (exit via Home)
-      // Instant jump so it doesn't flash through the Directory page en route.
-      requestAnimationFrame(() => listRef.current?.scrollToIndex({ index: ei, animated: false }));
+      // Landing on Enrollments locks the swipe (exit via Home); instant jump so
+      // it doesn't flash through the Directory page en route — both in goToIndex.
+      goToIndex(ENROLLMENT_IDX);
       // `resolved` matters here: EntitlementProvider defaults to 'anonymous',
       // and this screen has no top-level resolved guard, so it is interactive
       // the instant it mounts. Without this check a paying member who picks a
@@ -716,7 +751,7 @@ export function AwardsScreen({ navigation, route }: Props) {
       // it once the tier resolves.)
       if (resolved && entitlement === 'anonymous') setPayPrompt({ label });
     },
-    [entitlement, resolved],
+    [entitlement, resolved, goToIndex],
   );
 
   // Popup actions (2026-09-15) — the SAME calls the inline card buttons made.
@@ -843,14 +878,11 @@ export function AwardsScreen({ navigation, route }: Props) {
           return (
             <Pressable
               key={c}
-              onPress={() => {
-                setIdx(i);
-                setSwipeLocked(i === ENROLLMENT_IDX);
-                // Jump straight to the tapped page (animated:false) — an animated
-                // scroll slides THROUGH the in-between pages and onViewable flips
-                // the title/tab highlight through each, which read as a flash.
-                listRef.current?.scrollToIndex({ index: i, animated: false });
-              }}
+              // Jump straight to the tapped page (animated:false) — an animated
+              // scroll slides THROUGH the in-between pages and onViewable flips
+              // the title/tab highlight through each, which read as a flash.
+              // Through goToIndex, never an inline scroll: see its note.
+              onPress={() => goToIndex(i)}
               style={[styles.tabBtn, active && { borderColor: tint, backgroundColor: '#1a1a1a' }]}
               accessibilityRole="tab"
               accessibilityState={{ selected: active }}
@@ -903,7 +935,16 @@ export function AwardsScreen({ navigation, route }: Props) {
         getItemLayout={(_d, i) => ({ length: screenW, offset: screenW * i, index: i })}
         onViewableItemsChanged={onViewable}
         viewabilityConfig={{ itemVisiblePercentThreshold: 60 }}
+        // Where the pager really is — goToIndex's landing check reads this.
+        onScroll={(e) => {
+          offsetXRef.current = e.nativeEvent.contentOffset.x;
+        }}
+        // A finger on the pager outranks a pending landing check.
+        onScrollBeginDrag={() => {
+          wantedRef.current = null;
+        }}
         onMomentumScrollEnd={(e) => {
+          offsetXRef.current = e.nativeEvent.contentOffset.x;
           const i = Math.round(e.nativeEvent.contentOffset.x / screenW);
           setIdx(i);
           setSwipeLocked(i === ENROLLMENT_IDX);
@@ -913,14 +954,7 @@ export function AwardsScreen({ navigation, route }: Props) {
             <View style={{ width: screenW }}>
               <CurriculumView
                 showBrand={false}
-                onOpenCategory={(key) => {
-                  const i = PAGE_ORDER.indexOf(key);
-                  if (i >= 0) {
-                    setIdx(i);
-                    // Instant jump (no flash through intermediate pages).
-                    listRef.current?.scrollToIndex({ index: i, animated: false });
-                  }
-                }}
+                onOpenCategory={goToPage}
               />
             </View>
           ) : item === 'directory' ? (

@@ -18,7 +18,7 @@ test('Home card eyebrows: plain labels for members', () => {
   assert.match(s, /isMember \? 'MEASUREMENT TOOLS' : 'INCLUDED FOR EVERYONE'/);
   assert.match(s, /isMember \? 'REFERENCE' : 'INCLUDED FOR EVERYONE'/);
   assert.match(s, /isMember \? 'TOPIC' : 'FREE TOPIC'/);
-  assert.match(s, /isTools && !isMember \? \(\s*<Text style=\{styles\.cardToolsSub\}>/);
+  assert.match(s, /isTools && !isMember \? \(\s*<Text style=\{styles\.cardToolsSub\}[^>]*>/);
 });
 
 test('every other surface branches its free / membership copy on membership', () => {

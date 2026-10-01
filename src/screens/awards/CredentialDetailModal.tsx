@@ -25,13 +25,24 @@
  * Presentation + wiring only: the enroll / progress handlers are passed in by
  * AwardsScreen and are the SAME functions the inline cards used to call.
  *
- * SWIPE (2026-09-15): swipe left / right steps to the next / previous
+ * SWIPE (2026-09-15 — RETIRED 2026-09-30, see NO SIDEWAYS SWIPE below): swipe left / right steps to the next / previous
  * credential in the A–Z list currently shown (`nav`, owned by AwardsScreen)
  * without closing. The card SHELL (frame + ENROLL / VIEW PROGRESS / CLOSE)
  * stays put; only the item CONTENT slides and crossfades, and the art
  * crossfades through `ArtCrossfade` (the previous picture stays until the next
  * has loaded) — which is what removed the flash on stepping. Core PanResponder
  * → reanimated; see components/detailSwipe.tsx.
+ *
+ * NO SIDEWAYS SWIPE (TestFlight build 32, owner 2026-09-30, on "Analog
+ * Electronics for Audio"): "Scrolling left and right either jumps screens or
+ * creates an unwanted movement of the image." Both were the swipe pager above:
+ * a native horizontal ScrollView tracks the finger, so any sideways drift while
+ * reading dragged the art sideways, and a slightly longer drift stepped to a
+ * different credential. The pager is no longer used here — the popup shows ONE
+ * credential and scrolls vertically only; sideways drags do nothing. To see
+ * another credential, close and tap its row. (prev / next / onStep are still
+ * accepted by the type so callers compile, and ignored.) Guarded by
+ * test/testflight32CredentialScenarioCopy.test.ts.
  *
  * SCROLL BUDGET (2026-09-15, twin of TopicDetailModal's fix): the ScrollView
  * gets its OWN explicit bound — the measured card budget minus the measured
@@ -42,7 +53,6 @@ import { useRef, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { Modal } from '../../components/DimModal';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
-import { DetailPager } from '../../components/detailSwipe';
 import { CardArt } from '../../components/CardArt';
 import { colors, fonts } from '../../theme/tokens';
 import { credentialCopy } from '../../data/credentialCopy';
@@ -96,9 +106,6 @@ export function CredentialDetailModal({
   overlay,
   onClose,
   isEnrolled,
-  prev,
-  next,
-  onStep,
 }: {
   credential: CredentialDetail | null;
   /** Amber for certificates, purple for programs. */
@@ -124,8 +131,9 @@ export function CredentialDetailModal({
   onClose: () => void;
   /** Whether this credential is already enrolled (parent-owned, reactive). */
   isEnrolled?: (c: CredentialDetail) => boolean;
-  /** Neighbours in the A–Z list for the swipe pager (parent-owned); null at a
-   *  list end. Omit prev+next+onStep for a popup with nothing to swipe to. */
+  /** IGNORED since TestFlight build 32 (owner report 2026-09-30) — the
+   *  horizontal swipe pager is gone from this popup; see "NO SIDEWAYS SWIPE"
+   *  in the header. Kept in the type so the callers still compile. */
   prev?: CredentialDetail | null;
   next?: CredentialDetail | null;
   onStep?: (dir: 1 | -1) => void;
@@ -312,18 +320,8 @@ export function CredentialDetailModal({
         <View style={[styles.card, { maxHeight: budget }]} accessibilityViewIsModal>
           {credential ? (
             <>
-              {onStep ? (
-                <DetailPager
-                  width={pageW}
-                  prev={prev ?? null}
-                  current={credential}
-                  next={next ?? null}
-                  onStep={onStep}
-                  renderPage={renderPage}
-                />
-              ) : (
-                renderPage(credential)
-              )}
+              {/* NO SIDEWAYS SWIPE — one credential, vertical scroll only. */}
+              {renderPage(credential)}
 
               {/* Fixed, ACTIONABLE footer — outside the scroll. Measured so the
                   scroll budget above is exact. */}

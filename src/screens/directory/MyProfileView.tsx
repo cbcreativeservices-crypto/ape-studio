@@ -874,7 +874,8 @@ function SpecialtyPicker({
             accessibilityLabel="Search specialties"
           />
           <CountHint used={chosen.length} cap={LIMITS.specialties} noun="specialties" />
-          <ScrollView keyboardShouldPersistTaps="handled" style={{ flex: 1 }}>
+          {/* flexShrink, not flex: 1 — same zero-height trap as PreviewSheet. */}
+          <ScrollView keyboardShouldPersistTaps="handled" style={{ flexShrink: 1 }}>
             {groups.length === 0 ? (
               <Helper>Nothing matches “{q}”. Try a shorter word.</Helper>
             ) : (
@@ -932,7 +933,14 @@ function PreviewSheet({
               <Text style={st.sheetClose}>✕</Text>
             </Pressable>
           </View>
-          <ScrollView style={{ flex: 1 }}>
+          {/* ⛔ flexShrink, NEVER flex: 1 (TestFlight build 32, iPhone 13 Pro:
+              "will not allow preview of public profile"). The sheet has only a
+              maxHeight, so its height comes from its content; a `flex: 1` body
+              has a flex-basis of 0, contributes nothing to that, and is laid out
+              ZERO tall — the preview opened as a title and a CLOSE button with
+              the profile itself invisible between them. The member sheet in
+              AudioCommunityDirectoryScreen uses this same shrink-only body. */}
+          <ScrollView style={{ flexShrink: 1 }}>
             <Text style={st.pvName}>{p.displayName || 'Your display name'}</Text>
             {p.primaryArea ? <Text style={st.pvArea}>{label('areas', p.primaryArea)}</Text> : null}
             {p.about ? <Text style={st.pvAbout}>{p.about}</Text> : null}

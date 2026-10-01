@@ -1064,7 +1064,11 @@ function CaseHero({
   focused: boolean;
   kase: DetectiveCase;
 }) {
-  const phase = vm.usePhaseClock(focused, kase.visHz);
+  // The waterfall's REAL-TIME rate comes from its own scene window
+  // (waterfallRealtimeHz), not the frozen 0.1333 written for the old fixed
+  // 3 s window — RING_OPTS now spans 6 s, so the decay ran at 2× and crossed
+  // each second marker in half a real second (build 32 fix).
+  const phase = vm.usePhaseClock(focused, kase.kind === 'ring' ? vs.waterfallRealtimeHz(RING_OPTS) : kase.visHz);
   if (kase.kind === 'dc')
     return <vm.WaveformView width={width} height={height} signal="sine" gain={0.55} dcOffset={0.35} showClip phase={phase} />;
   if (kase.kind === 'over') return <vm.PeakMeterView width={width} height={height} signal="music" gain={2.2} phase={phase} />;
@@ -1146,7 +1150,9 @@ export function DetectiveModule(p: MeterModuleProps) {
         bezel,
         render: (w, h) =>
           vm && vs ? (
-            <CaseHero vm={vm} vs={vs} width={w} height={h} focused={p.focused} kase={kase} />
+            // Keyed by case (build 32): one shared clock ran on across cases, so
+            // the waterfall case opened already built and never played its decay.
+            <CaseHero key={idx} vm={vm} vs={vs} width={w} height={h} focused={p.focused} kase={kase} />
           ) : (
             <VizUnavailableCard />
           ),

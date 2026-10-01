@@ -40,6 +40,11 @@ import { setLastStudyLocation } from '../../features/study/lastStudyLocation';
 import { markScenariosExempt } from '../../features/study/scenarioExempt';
 import { emitStudyProgress } from '../../features/study/sync';
 import { saveLocalMethodStates } from '../../features/study/localProgress';
+import {
+  SCENARIO_ANSWERED_KEY,
+  SCENARIO_TOTAL_KEY,
+  scenarioAnsweredCounts,
+} from '../../features/dashboard/topicPct';
 import { SuggestCorrectionButton } from '../../features/study/SuggestCorrectionButton';
 import type { ItemStates } from '../../features/study/api';
 import { incBrainOutput, resetBrainOutput, setRunning, usePaceSettings, useRunning } from '../../features/study/paceStore';
@@ -95,6 +100,22 @@ export function ScenariosScreen({ route }: Props) {
   // dev fast-complete flow (owner 2026-08-13). Production % still reads the
   // server round-based completion_pct — this mirror is inert there.
   const scenarioStatesRef = useRef<ItemStates>({});
+  /** Latest homework for mirrorAnswered (a ref so judge's deps don't churn). */
+  const hwRef = useRef<ScenarioHomework | null>(null);
+  /**
+   * MID-ROUND PROGRESS (TestFlight build 32, Frank): the server scenarios % only
+   * moves when a whole round is completed, so the Dashboard / topic card /
+   * Enrollments read 0% while a learner was nearly through round 1. Stamp the
+   * answered and total counts (all rounds) into the local mirror; topicPct's
+   * methodDisplayPct shows the larger of that share (capped at 99, display
+   * only) and the server step. See SCENARIO_ANSWERED_KEY in topicPct.ts.
+   */
+  const mirrorAnswered = useCallback(() => {
+    const { answered, total } = scenarioAnsweredCounts(hwRef.current?.rounds ?? [], answersRef.current);
+    scenarioStatesRef.current[SCENARIO_ANSWERED_KEY] = { attempts: answered };
+    scenarioStatesRef.current[SCENARIO_TOTAL_KEY] = { attempts: total };
+  }, []);
+  hwRef.current = hw;
   const initedRef = useRef(false);
   // Synchronous per-item guard (QA night 2026-08-31): same-tick multi-taps
   // saw batched state and could judge one question twice. Declared here (with
@@ -288,12 +309,16 @@ export function ScenariosScreen({ route }: Props) {
       return;
     }
     answersRef.current = { ...hw.answers };
+    // Answers already on the server (resume / another device) count too.
+    hwRef.current = hw;
+    mirrorAnswered();
+    void saveLocalMethodStates(achievementId, 'scenarios', scenarioStatesRef.current);
     if (hw.roundsCompleted >= SCENARIO_ROUNDS) {
       setView('done');
       return;
     }
     enterRound(hw.rounds[hw.currentRound - 1] ?? [], Math.min(SCENARIO_ROUNDS, hw.currentRound));
-  }, [loaded, hw, enterRound]);
+  }, [loaded, hw, enterRound, mirrorAnswered, achievementId]);
 
   const item = view === 'play' ? roundQuestions[idx] : null;
 
@@ -336,6 +361,7 @@ export function ScenariosScreen({ route }: Props) {
         attempts: (scenarioStatesRef.current[item.id]?.attempts ?? 0) + 1,
         correct: correct ? 1 : (scenarioStatesRef.current[item.id]?.correct ?? 0),
       };
+      mirrorAnswered();
       void saveLocalMethodStates(achievementId, 'scenarios', scenarioStatesRef.current);
       registerTrialAnswer('scenarios', correct, achievementId); // time trial: only correct advances pace
       if (correct) incBrainOutput('scenarios');
@@ -369,7 +395,7 @@ export function ScenariosScreen({ route }: Props) {
       // explanation stays until the learner taps NEXT — for everyone now, not
       // only screen-reader users (W18 above).
     },
-    [item, activeRound, achievementId, advance],
+    [item, activeRound, achievementId, advance, mirrorAnswered],
   );
 
   const answerSingle = useCallback(

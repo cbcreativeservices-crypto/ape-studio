@@ -235,10 +235,9 @@ export function PageVoices({ ctx }: { ctx: PageCtx }) {
     <View style={{ gap: 12 }}>
       <Lead>Pitch comes from fold length and mass; formant height comes from vocal-tract length. Both vary from person to person far more than the labels suggest.</Lead>
       <RangeBars
-        loHz={60}
-        hiHz={520}
-        ranges={VOICE_RANGES.map((r, i) => ({ name: r.name, lo: r.f0LoHz, hi: r.f0HiHz, typical: r.f0TypicalHz, color: cols[i] }))}
-        a11y={`Typical speaking pitch ranges: ${VOICE_RANGES.map((r) => `${r.name} ${r.f0LoHz} to ${r.f0HiHz} hertz, typical about ${r.f0TypicalHz}`).join('; ')}. Typical, overlapping in real people, not fixed.`}
+        ranges={VOICE_RANGES}
+        colors={cols}
+        a11y={`Typical speaking pitch and formant ranges, 60 hertz to 4 kilohertz: ${VOICE_RANGES.map((r) => `${r.name}, pitch ${r.f0LoHz} to ${r.f0HiHz} hertz, typical about ${r.f0TypicalHz}; formants F1 to F3 from ${r.fmLoHz} to ${r.fmHiHz} hertz`).join('. ')}. Typical, overlapping in real people, not fixed.`}
       />
       <Notice>The bands nearly touch and real voices spill past their edges — the gaps between them are an artefact of averaging, not a rule.</Notice>
       <Card tone="warn">

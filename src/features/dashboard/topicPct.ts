@@ -32,6 +32,48 @@ export type MethodPctRow =
     }
   | undefined;
 
+/**
+ * ── SCENARIOS MID-ROUND PROGRESS (TestFlight build 32, Frank on iPhone SE) ──
+ *
+ * "Scenario shows zero progress, but I'm almost through round one." The server
+ * `completion_pct` for scenarios only moves when a ROUND is completed
+ * (complete_scenario_round → 33 / 67 / 100), so a learner partway through
+ * round 1 read 0% on the Dashboard rack, the topic card and Enrollments.
+ *
+ * The Scenarios screen now mirrors its answered count into the device-local
+ * method mirror (features/study/localProgress) under two sentinel keys, and
+ * the display % is the larger of the server step and answered ÷ total across
+ * all three rounds — so finishing round 1 lands on the same 33% the server
+ * reports. The local share is CAPPED AT 99: it is display only and can never
+ * make scenarios read complete, so the quiz gate (methodPct >= 100) still waits
+ * for the server. No server data is changed.
+ */
+export const SCENARIO_ANSWERED_KEY = '_answered';
+export const SCENARIO_TOTAL_KEY = '_total';
+
+/** Answered vs total scenario items across ALL rounds (what the screen mirrors). */
+export function scenarioAnsweredCounts(
+  rounds: readonly (readonly { id: string }[])[],
+  answers: Record<string, unknown>,
+): { answered: number; total: number } {
+  let answered = 0;
+  let total = 0;
+  for (const round of rounds) {
+    total += round.length;
+    for (const q of round) if (answers[q.id]) answered++;
+  }
+  return { answered, total };
+}
+
+/** answered ÷ total (0..100, floored) from the scenarios local mirror; 0 when absent. */
+export function scenarioAnsweredPct(itemStates: unknown): number {
+  const s = (itemStates ?? {}) as Record<string, { attempts?: number } | undefined>;
+  const answered = Number(s[SCENARIO_ANSWERED_KEY]?.attempts) || 0;
+  const total = Number(s[SCENARIO_TOTAL_KEY]?.attempts) || 0;
+  if (total <= 0 || answered <= 0) return 0;
+  return Math.floor((Math.min(answered, total) / total) * 100);
+}
+
 export function methodDisplayPct(
   row: MethodPctRow,
   itemCount: number,
@@ -39,8 +81,11 @@ export function methodDisplayPct(
   requiredPasses: number,
 ): number {
   if (key === 'scenarios') {
-    // Round-based server completion (record_scenario_answer / round RPCs).
-    return Math.round(row?.completion_pct ?? 0);
+    // Round-based server completion (record_scenario_answer / round RPCs),
+    // lifted by in-round answered progress (display only, capped at 99).
+    const server = Math.round(row?.completion_pct ?? 0);
+    if (server >= 100) return server;
+    return Math.max(server, Math.min(99, scenarioAnsweredPct(row?.item_states)));
   }
   // flashcards / fill-in-blank / matching: full-set completion via studyDisplayPct.
   return studyDisplayPct(

@@ -49,6 +49,7 @@ import {
   type ReverbKey,
   waterfallRt,
   waterfallRidge,
+  waterfallDecayUnchanged,
   RIDGE_CALLOUT_RATIO,
   EQ_FILTERS,
   EQ_FILTER_BY_KEY,
@@ -658,7 +659,26 @@ export function WaterfallModule(p: MeterModuleProps) {
     }),
     [opts],
   );
-  const ringing = rt.ratio >= 1.6;
+  // The SAME callout threshold the plot uses for its "RINGS <f>" mark (build 32
+  // fix). This was a private 1.6, so a ratio between 1.5 and 1.6 — LIVING ROOM
+  // at its default damping, 1.55× — drew RINGS 109 on the plot while the bezel
+  // said RIDGE none and the caption said no resonance stands out.
+  const ringing = rt.ratio >= RIDGE_CALLOUT_RATIO;
+  // MASKED CONTROLS (build 32: "does not respond to many user adjustment
+  // changes"). In some scenes a control is physically hidden — the slower decay
+  // always wins — so the surface does not move. Say so, rather than let the key
+  // look dead. Decay only: an EQ or Q RING level change still shows at t = 0.
+  const reverbHidden = useMemo(() => {
+    const out: Partial<Record<ReverbKey, boolean>> = {};
+    for (const k of REVERB_KEYS) {
+      if (k !== 'none') out[k] = waterfallDecayUnchanged({ ...opts, reverb: 'none' }, { ...opts, reverb: k });
+    }
+    return out;
+  }, [opts]);
+  const qRingHidden = useMemo(
+    () => waterfallDecayUnchanged({ ...opts, qRing: false }, { ...opts, qRing: true }),
+    [opts],
+  );
 
   const params: DockParam[] = [
     {
@@ -686,6 +706,11 @@ export function WaterfallModule(p: MeterModuleProps) {
         setEqGains((g) => ({ ...g, [eqFilter]: Math.round(-12 + v * 24) })),
       format: () => `${fmtGain(eqGain)} dB · ${EQ_FILTER_BY_KEY[eqFilter].label}${othersOn ? `  (+${othersOn} more)` : ''}`,
       formatShort: () => `${fmtGain(eqGain)} dB`,
+      // Purple when the lane's band sits ON the ringing frequency (owner
+      // 2026-08-28: "color the eq slider purple if it is going to represent
+      // the Rings 250"). eqOnRinging was computed from that day on but never
+      // reached the lane — build 32 fix.
+      tint: eqOnRinging ? colors.ringing : undefined,
       chooser: {
         title: 'EQ BAND',
         selectedId: eqFilter,
@@ -721,7 +746,13 @@ export function WaterfallModule(p: MeterModuleProps) {
       id: 'reverb',
       label: 'REVERB',
       valueLabel: REVERB_LABELS[reverb].toUpperCase(),
-      options: REVERB_KEYS.map((k) => ({ id: k, label: REVERB_LABELS[k].toUpperCase(), blurb: REVERB_BLURBS[k] })),
+      options: REVERB_KEYS.map((k) => ({
+        id: k,
+        label: REVERB_LABELS[k].toUpperCase(),
+        blurb: reverbHidden[k]
+          ? `${REVERB_BLURBS[k]} HIDDEN HERE: this room already decays slower than this reverb, and the slower decay wins — so the mountains do not change. Pick STUDIO and raise DAMPING to see it.`
+          : REVERB_BLURBS[k],
+      })),
       selectedId: reverb,
       onSelect: (id) => setReverb(id as ReverbKey),
       sticky: true,
@@ -823,6 +854,21 @@ export function WaterfallModule(p: MeterModuleProps) {
             ? `${fmtHz(rt.f)} decays ${rt.ratio.toFixed(1)}× slower than its neighbors — that narrow ridge is RINGING. (A broad bass rise is normal room physics; a ridge is a resonance.)`
             : 'No narrow resonance stands out of the decay. Pick CLASSROOM or flip Q RING to plant one — or dry the room out: a live room can MASK a ring that decays faster than the room does.'}
         </Text>
+        {(reverb !== 'none' && reverbHidden[reverb]) || (qRing && qRingHidden) ? (
+          <Text style={dstyles.caption}>
+            {[
+              reverb !== 'none' && reverbHidden[reverb]
+                ? `${REVERB_LABELS[reverb].toUpperCase()} reverb is HIDDEN in this scene: the room already decays slower, and the slower decay always wins.`
+                : null,
+              qRing && qRingHidden
+                ? 'Q RING’s ring is HIDDEN in this scene: the room rings longer than the filter, so only its +7 dB level bump at 1.2 kHz shows.'
+                : null,
+            ]
+              .filter(Boolean)
+              .join(' ')}{' '}
+            Pick STUDIO and raise DAMPING to see it.
+          </Text>
+        ) : null}
 
         <CollapsibleSection title="FIELD GUIDE — WHAT TO TRY">
           {FIELD_GUIDE.map((s) => (

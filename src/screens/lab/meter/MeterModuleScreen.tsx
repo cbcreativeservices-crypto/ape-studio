@@ -2,7 +2,7 @@
  * MeterModuleScreen — hosts one Visual Audio Analysis module. Shared header,
  * scroll, and the 'meter' guided lesson wired into every ⓘ/long-press help.
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useIsFocused, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
@@ -11,7 +11,8 @@ import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
-import { markLabUnit } from '../../../features/lab/labCompletion';
+import { markLabUnit, useLabClearedUnits } from '../../../features/lab/labCompletion';
+import { LabEndScreen } from '../kit/LabEndScreen';
 import { ScrollLockProvider } from '../LabShell';
 import { METER_MODULES, type MeterModuleId } from './modules/registry';
 import { WaveformModule, PeakModule, VuModule, LoudnessModule } from './modules/modMeterA';
@@ -85,6 +86,43 @@ export function MeterModuleScreen() {
     setLessonKey(k);
     setLessonOpen(true);
   };
+  // PREV / NEXT between modules (owner, build 32: "you have to come back to
+  // this menu every single time"). Same top-nav idiom as the Digital / EQ /
+  // Gain / Wave / Cymatics module hosts: swaps the module in place with
+  // setParams (no stacked screens, so ‹ still returns to the lab menu).
+  const idx = METER_MODULES.findIndex((m) => m.id === meta.id);
+  const last = METER_MODULES.length - 1;
+  // Double-tap lock (the 2026-09-30 sibling-host fix): the second tap of a
+  // double-tap on NEXT at the second-last module would land on FINISH.
+  const nextTapAt = useRef(0);
+  const onNext = () => {
+    if (Date.now() - nextTapAt.current < 400) return;
+    nextTapAt.current = Date.now();
+    if (idx >= last) setEnding(true);
+    else goToModule(idx + 1);
+  };
+  const goToModule = (i: number) => {
+    if (i < 0 || i > last) return;
+    setEnding(false);
+    (navigation as { setParams: (p: { id: MeterModuleId }) => void }).setParams({ id: METER_MODULES[i].id });
+  };
+  // THE LAST MODULE ENDS ON THE WHAT'S-LEFT SCREEN (owner 2026-09-29). FINISH
+  // swaps LabEndScreen in for the module: modules not yet credited (jump
+  // links), PRACTISE AGAIN from module 1 (clears nothing), DONE to the menu.
+  const [ending, setEnding] = useState(false);
+  const banked = useLabClearedUnits('af_visual_analysis');
+  const endScreen = ending ? (
+    <LabEndScreen
+      labTitle="Visual Audio Analysis Lab"
+      units={METER_MODULES.map((m) => ({ id: m.id, label: m.title }))}
+      cleared={banked}
+      mode="credit"
+      onJump={(id) => goToModule(METER_MODULES.findIndex((m) => m.id === id))}
+      onPracticeAgain={() => goToModule(0)}
+      onDone={() => navigation.goBack()}
+      bottomInset
+    />
+  ) : null;
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -98,6 +136,23 @@ export function MeterModuleScreen() {
         </View>
         <AccuracyNote compact detail="These displays are driven by built-in teaching signals, not your microphone — read them to learn what each meter shows. For accurate levels use a calibrated SPL meter or measurement mic." />
       </View>
+      {/* Top module navigation (Digital / Foundations aesthetic). */}
+      <View style={styles.topNav}>
+        <Pressable onPress={() => goToModule(0)} disabled={idx <= 0} hitSlop={8} accessibilityRole="button" accessibilityLabel="First module">
+          <Text style={[styles.navBtn, idx <= 0 && styles.navBtnDisabled]}>⏮ START</Text>
+        </Pressable>
+        {/* From WHAT'S LEFT, PREV returns to the last module. */}
+        <Pressable onPress={() => (ending ? setEnding(false) : goToModule(idx - 1))} disabled={idx <= 0} hitSlop={8} accessibilityRole="button" accessibilityLabel="Previous module">
+          <Text style={[styles.navBtn, idx <= 0 && styles.navBtnDisabled]}>‹ PREV</Text>
+        </Pressable>
+        <View style={{ flex: 1 }} />
+        <Text style={styles.navPos}>{ending ? "WHAT'S LEFT" : `MODULE ${idx + 1} / ${METER_MODULES.length}`}</Text>
+        <View style={{ flex: 1 }} />
+        <Pressable onPress={onNext} hitSlop={8} accessibilityRole="button" accessibilityLabel={idx >= last ? "Finish the lab and see what's left" : 'Next module'}>
+          <Text style={styles.navBtn}>{idx >= last ? 'FINISH ›' : 'NEXT ›'}</Text>
+        </Pressable>
+      </View>
+      {endScreen ?? (
       <ScrollLockProvider value={setScrollLocked}>
       {RACK_MODULES.has(meta.id) ? (
         // Rack module: full height — the module's RackUnit pins stage + dock
@@ -122,6 +177,7 @@ export function MeterModuleScreen() {
       </ScrollView>
       )}
       </ScrollLockProvider>
+      )}
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('meter')} controlKey={lessonKey} onClose={() => setLessonOpen(false)} />
     </View>
   );
@@ -133,6 +189,10 @@ const styles = StyleSheet.create({
   back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.2, color: colors.textPrimary },
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
+  topNav: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 16, paddingBottom: 6 },
+  navBtn: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1, color: colors.amber },
+  navBtnDisabled: { color: '#45454d' },
+  navPos: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, color: colors.textSub },
   scroll: { padding: 16, paddingBottom: 30, gap: 12 },
   rackFill: { flex: 1 },
   // Bottom guided-lesson row — mirrors LabShell v2's lessonRow styling.

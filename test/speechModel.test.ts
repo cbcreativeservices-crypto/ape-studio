@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   ANATOMY, ANATOMY_MIN_SPACING, PRODUCTION, VOICED_PAIRS, VOWELS, vowelSpectrum, CONSONANTS, plosiveTrace, distanceEffect, proximityBoostDb,
-  VOICE_RANGES, PROBLEMS, voiceSpectrum, problemSpectrum, problemTrace, bandMean, SPEECH_CHECKS, shuffleCheck,
+  VOICE_RANGES, VOICE_CHART, voiceChartLayout, voiceLabelSpan, PROBLEMS, voiceSpectrum, problemSpectrum, problemTrace, bandMean, SPEECH_CHECKS, shuffleCheck,
 } from '../src/features/speech/speechModel.ts';
 
 test('anatomy: 11 tappable structures with unique ids, chip labels and leader anchors inside the drawing', () => {
@@ -163,4 +163,46 @@ test('problemTrace: clicks add sharp spikes, plosive adds a hump, breath replace
   assert.ok(diffs >= 4 && diffs <= 16, `clicks touch ${diffs} samples`);
   const plo = problemTrace('plosives');
   assert.ok(Math.max(...Array.from(plo)) > 0.9 && Math.max(...Array.from(clean)) < 0.5);
+});
+
+// TestFlight build 32 (owner, iPhone 15 Pro Max): "the chart does not go above
+// 500 Hz and the text is garbled and on top of each other".
+test('voices chart: the axis reaches every formant the page teaches (several kHz), not just pitch', () => {
+  assert.ok(VOICE_CHART.hiHz >= 3730, `axis stops at ${VOICE_CHART.hiHz} Hz`);
+  assert.ok(VOICE_CHART.loHz <= 85);
+  for (const r of VOICE_RANGES) {
+    assert.ok(r.fmLoHz > r.f0HiHz * 0.9 && r.fmHiHz > 2500, `${r.id} formant span`);
+    assert.ok(r.fmLoHz >= VOICE_CHART.loHz && r.fmHiHz <= VOICE_CHART.hiHz && r.f0LoHz >= VOICE_CHART.loHz);
+  }
+  const [m, f, c] = VOICE_RANGES;
+  assert.ok(m.fmHiHz < f.fmHiHz && f.fmHiHz < c.fmHiHz, 'shorter tract, higher formants');
+});
+
+test('voices chart: no two labels collide, none leaves the panel, none renders under 9 pt at 390 wide', () => {
+  const L = voiceChartLayout();
+  const items = [...L.header, ...L.rows.flatMap((r) => [r.name, r.nums]), ...L.ticks.map((t) => t.label)];
+  const fs = VOICE_CHART.fontSize;
+  for (const a of items) {
+    const [l, r] = voiceLabelSpan(a);
+    assert.ok(l >= 2 && r <= L.W - 2, `"${a.text}" spans ${l.toFixed(0)}–${r.toFixed(0)} of ${L.W}`);
+    assert.ok(a.y - fs >= 0 && a.y <= L.H, `"${a.text}" inside vertically`);
+  }
+  for (let i = 0; i < items.length; i++) {
+    for (let j = i + 1; j < items.length; j++) {
+      const a = items[i], b = items[j];
+      if (Math.abs(a.y - b.y) >= fs + 2) continue; // different text lines
+      const [al, ar] = voiceLabelSpan(a), [bl, br] = voiceLabelSpan(b);
+      assert.ok(ar + 4 <= bl || br + 4 <= al, `"${a.text}" overlaps "${b.text}"`);
+    }
+  }
+  // text lines never sit on the bars of their row or the next
+  for (const r of L.rows) {
+    assert.ok(r.name.y <= r.pitchY - 2, 'row label above its pitch bar');
+    assert.ok(r.formantY + r.formantH <= r.top + VOICE_CHART.rowH, 'bars end inside the row');
+  }
+  assert.ok(L.ticks.every((t) => t.label.y - fs >= L.gridBottom - 2), 'tick labels under the last row');
+  // 9 pt floor: the figure fills the 358-pt content column at 390 wide (measured 2026-09-30 in the
+  // web preview: svg 358 × 173, labels 9.48 pt); full screen only scales it up.
+  const inlineW = 390 - 2 * 16;
+  assert.ok(fs * (inlineW / L.W) >= 9, `${(fs * inlineW / L.W).toFixed(2)} pt`);
 });

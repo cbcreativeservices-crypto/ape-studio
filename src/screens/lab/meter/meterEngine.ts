@@ -770,6 +770,32 @@ export function waterfallRidge(opts: WaterfallOpts): { f: number; ratio: number 
 /** A ridge is only worth pointing at when it genuinely stands apart. */
 export const RIDGE_CALLOUT_RATIO = 1.5;
 
+/**
+ * Does switching from scene `a` to scene `b` leave the DECAY untouched?
+ *
+ * TestFlight build 32 (owner: "the waterfall does not respond to many user
+ * adjustment changes"). Some controls are physically MASKED in some scenes —
+ * a 0.5 s ROOM reverb runs in parallel with a 2 s classroom and the slower
+ * decay wins, so the surface does not move by a single pixel; Q RING's 2.8 s
+ * filter ring vanishes inside a 6 s cathedral. The physics is right; a control
+ * that silently changes nothing is not. This is the ONE test the module uses
+ * to SAY so instead of leaving the learner to think the key is dead.
+ *
+ * True when RT60 moves by less than `tol` (relative) at every frequency on the
+ * same 40 Hz–12 kHz grid the ridge detector uses.
+ */
+export function waterfallDecayUnchanged(a: WaterfallOpts, b: WaterfallOpts, tol = 0.03): boolean {
+  const N = 120;
+  const lgLo = Math.log10(40);
+  const lgHi = Math.log10(12000);
+  for (let i = 0; i < N; i++) {
+    const f = Math.pow(10, lgLo + ((lgHi - lgLo) * i) / (N - 1));
+    const ra = waterfallRt(a, f);
+    if (Math.abs(waterfallRt(b, f) - ra) / ra >= tol) return false;
+  }
+  return true;
+}
+
 /** Frequencies sampled when sizing the plot's time window. 110 and 1200 are
  *  in the list because the living-room mode and the Q RING filter peak there —
  *  a probe grid that misses the slowest ridge sizes the window too small. */

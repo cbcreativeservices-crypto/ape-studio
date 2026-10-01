@@ -27,7 +27,7 @@ import { Text, View } from 'react-native';
 import Svg, { Circle, Defs, Ellipse, G, Line, LinearGradient, Path, Polyline, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
 import { LOUDNESS_STOPS, MIDLINE_BLUE, WAVE_LEVEL_STOPS, levelColor } from '../../../features/tools/levelColor';
-import { ANATOMY, formantEnvelope, harmonicAmplitudes, type Vowel } from '../../../features/speech/speechModel';
+import { ANATOMY, VOICE_CHART, formantEnvelope, harmonicAmplitudes, voiceChartLayout, voiceChartX, type VoiceChartLabel, type VoiceRange, type Vowel } from '../../../features/speech/speechModel';
 import { ExpandableFigure } from '../kit/ExpandableFigure';
 
 const F = fonts.barlowMedium;
@@ -383,35 +383,48 @@ export function TraceChart({ samples, height = 120, title, a11y, controls }: { s
 
 /* ── log-frequency range bars (voices) ─────────────────────────────────── */
 
-export function RangeBars({ ranges, loHz, hiHz, a11y }: { ranges: { name: string; lo: number; hi: number; typical: number; color: string }[]; loHz: number; hiHz: number; a11y: string }) {
-  const W = 340, rowH = 34, H = 32 + ranges.length * rowH;
-  const x = (f: number) => 10 + ((Math.log(f) - Math.log(loHz)) / (Math.log(hiHz) - Math.log(loHz))) * (W - 20);
-  const ticks = [60, 100, 150, 200, 300, 400, 500].filter((t) => t >= loHz && t <= hiHz);
+/** Speaking pitch (thick bar + typical tick) and the F1–F3 formant region
+ *  (thin bar) per voice on one 60 Hz – 4 kHz log axis. Every label sits on
+ *  its own line or in its own column — positions come from voiceChartLayout,
+ *  which test/speechModel.test.ts checks for collisions. */
+export function RangeBars({ ranges, colors: cols, a11y }: { ranges: VoiceRange[]; colors: string[]; a11y: string }) {
+  const L = voiceChartLayout(ranges);
+  const { W, H } = L;
+  const x = voiceChartX;
+  const fs = VOICE_CHART.fontSize;
+  const label = (l: VoiceChartLabel, fill: string, key?: string) => (
+    <SvgText key={key} x={l.x} y={l.y} fontSize={fs} fill={fill} textAnchor={l.anchor} fontFamily={F}>{l.text}</SvgText>
+  );
   return (
     <ExpandableFigure aspect={W / H} title="VOICES" render={(w, h) => (
     <View accessible accessibilityLabel={a11y} style={{ width: w, height: h }}>
       <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
         <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
-        {ticks.map((t) => (
-          <G key={t}>
-            <Line x1={x(t)} y1={8} x2={x(t)} y2={H - 18} stroke="rgba(255,255,255,0.07)" />
-            {/* the last tick label hangs left from the panel edge so it never runs off */}
-            <SvgText x={x(t) > W - 18 ? W - 4 : x(t)} y={H - 6} fontSize={9} fill={colors.textMuted} textAnchor={x(t) > W - 18 ? 'end' : 'middle'} fontFamily={F}>{t} Hz</SvgText>
+        {L.ticks.map((t) => (
+          <G key={t.hz}>
+            <Line x1={t.gx} y1={L.gridTop} x2={t.gx} y2={L.gridBottom} stroke="rgba(255,255,255,0.07)" />
+            {label(t.label, colors.textMuted)}
           </G>
         ))}
+        {/* legend: the two bar shapes, then the caveat */}
+        <Rect x={10} y={7} width={12} height={8} rx={4} fill={colors.textMuted} opacity={0.5} />
+        {label(L.header[0], colors.textMuted)}
+        <Rect x={114} y={9} width={12} height={4} rx={2} fill={colors.textMuted} opacity={0.35} />
+        {label(L.header[1], colors.textMuted)}
+        {label(L.header[2], colors.textMuted)}
         {ranges.map((r, i) => {
-          const y = 12 + i * rowH;
-          // labels for bars in the right half hang leftward from the bar's end so they never run off the panel
-          const right = x(r.lo) > W * 0.4;
+          const row = L.rows[i];
+          const c = cols[i % cols.length];
           return (
-            <G key={r.name}>
-              <Rect x={x(r.lo)} y={y} width={x(r.hi) - x(r.lo)} height={14} rx={7} fill={r.color} opacity={0.35} />
-              <Line x1={x(r.typical)} y1={y - 2} x2={x(r.typical)} y2={y + 16} stroke={r.color} strokeWidth={2} />
-              <SvgText x={right ? x(r.hi) : x(r.lo) + 4} y={y + 26} fontSize={9} fill={r.color} textAnchor={right ? 'end' : 'start'} fontFamily={F}>{r.name} · {r.lo}–{r.hi} Hz · typical ~{r.typical}</SvgText>
+            <G key={r.id}>
+              {label(row.name, c)}
+              {label(row.nums, c)}
+              <Rect x={x(r.f0LoHz)} y={row.pitchY} width={x(r.f0HiHz) - x(r.f0LoHz)} height={row.pitchH} rx={6} fill={c} opacity={0.4} />
+              <Line x1={x(r.f0TypicalHz)} y1={row.pitchY - 2} x2={x(r.f0TypicalHz)} y2={row.pitchY + row.pitchH + 2} stroke={c} strokeWidth={2} />
+              <Rect x={x(r.fmLoHz)} y={row.formantY} width={x(r.fmHiHz) - x(r.fmLoHz)} height={row.formantH} rx={2.5} fill={c} opacity={0.3} />
             </G>
           );
         })}
-        <SvgText x={W - 8} y={12} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={F}>speaking pitch · typical, not fixed</SvgText>
       </Svg>
     </View>
     )} />

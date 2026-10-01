@@ -73,6 +73,7 @@ export function GlassButton({
   height = 56,
   tint = 'gold',
   fontSize = 16,
+  maxFontSizeMultiplier,
 }: {
   label: string;
   onPress?: () => void;
@@ -80,6 +81,9 @@ export function GlassButton({
   height?: number;
   tint?: GlassTint;
   fontSize?: number;
+  /** Cap on OS text scaling for keys on a fixed-size surface (the Home deck's
+   *  cards). Unset everywhere else, so the label follows the OS size fully. */
+  maxFontSizeMultiplier?: number;
 }) {
   const [pressed, setPressed] = useState(false);
   const travel = useRef(new Animated.Value(0)).current;
@@ -135,6 +139,7 @@ export function GlassButton({
           <View style={styles.topEdge} />
           {/* BACKLIT label — LED shining up from beneath the glass */}
           <Text
+            maxFontSizeMultiplier={maxFontSizeMultiplier}
             style={[
               styles.label,
               {
@@ -210,6 +215,8 @@ const styles = StyleSheet.create({
   label: {
     fontFamily: fonts.oswaldSemiBold,
     letterSpacing: 1.2,
+    // A legend that wraps at a large OS text size stays centred on the key.
+    textAlign: 'center',
     textShadowOffset: { width: 0, height: 0 },
   },
 });

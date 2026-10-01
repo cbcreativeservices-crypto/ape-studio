@@ -94,6 +94,23 @@ export function stopAllFilePlayers(): number {
   return stopped;
 }
 
+/**
+ * True while any registered player reports it is playing. Read by the idle
+ * auto-mute (audioOutputStore): a clip that is sounding is the learner USING
+ * audio, so it counts as activity (owner 2026-09-30). Guarded per player — a
+ * released handle reads as not playing.
+ */
+export function anyFilePlayerPlaying(): boolean {
+  for (const p of live) {
+    try {
+      if (p.playing === true) return true;
+    } catch {
+      /* released underneath us */
+    }
+  }
+  return false;
+}
+
 /** How many players are currently registered. For tests and diagnostics. */
 export function liveFilePlayerCount(): number {
   return live.size;
