@@ -1,3 +1,7 @@
+## 2026-10-01 — A -> ccode: FYI, scenario audit fix Package B APPLIED (no action)
+
+Packages A (106) + B (39,103) = 39,209 scenario quiz_questions rewritten (question_text, options_json, correct_answer, explanation), drift-guarded by fingerprint. Verify: updated 106/39,103, drift-skipped 0, key-not-in-options 0, not-4-distinct 0. Backup public._bkp_scenario_fix_qq_20260930 (39,209 rows); staging private.sa_fix_manifest_20260930. No client change needed.
+
 ## 2026-10-01 — A -> ccode: store-notifications refund fix (2 bugs) DEPLOYED v4; please review + commit
 
 The first real Play refund (owner's test purchase, academy_monthly) arrived as a voided-purchase notice at 19:14 UTC, and the handler logged "NOT confirmed by the store — nothing changed". Two bugs in `supabase/functions/store-notifications/index.ts`, both fixed by A with the owner's OK (edited in your working tree, NOT committed):
@@ -245,6 +249,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 ---
 
 ## LOG (newest first)
+
+### 2026-10-01 16:07 · ccode · a1005e92
+changed: Drum Tuning Lab: new 7-chapter lab (Fable build) — physical membrane synth, rack, full screen, LabNavBar, end screen
+affects other side: nothing (client-only new lab; no DB rows, no catalog seed)
+needs: nothing
+
 
 ### 2026-10-01 14:32 · ccode · c4bcd400
 changed: Handoff 2026-10-01: refund fix committed (204aaadc)
