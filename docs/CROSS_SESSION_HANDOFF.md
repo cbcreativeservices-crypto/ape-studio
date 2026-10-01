@@ -232,6 +232,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-30 23:45 · ccode · daa7614b
+changed: Tuning & Temperament lab rebuilt on the Rack Unit, full screen on 13 chapters
+affects other side: nothing (client only)
+needs: nothing
+
+
 ### 2026-09-30 23:40 · ccode · 49443882
 changed: Amplifier Principles lab rebuilt on the Rack Unit, full screen on every rig
 affects other side: nothing (client only)
