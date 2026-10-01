@@ -35,12 +35,16 @@ export type RoomRack = {
 export function RoomRackLayout({
   rack,
   caption,
+  captionFirst = false,
   wellTop,
   notesTitle = 'LAB NOTES',
   children,
 }: {
   rack: RoomRack;
   caption: string;
+  /** Put the first-move caption ABOVE the status lines (Monitoring: "drag
+   *  the speakers…" before the readouts — cognitive review 23). */
+  captionFirst?: boolean;
   wellTop?: ReactNode;
   notesTitle?: string;
   children: ReactNode;
@@ -59,8 +63,9 @@ export function RoomRackLayout({
       initialParam={rack.initialParam}
     >
       <View style={styles.panel}>
+        {captionFirst ? <Text style={styles.caption}>{caption}</Text> : null}
         {wellTop ? <View style={styles.wellTop}>{wellTop}</View> : null}
-        <Text style={styles.caption}>{caption}</Text>
+        {captionFirst ? null : <Text style={styles.caption}>{caption}</Text>}
         <CollapsibleSection title={notesTitle}>
           <View style={styles.notes}>{children}</View>
         </CollapsibleSection>

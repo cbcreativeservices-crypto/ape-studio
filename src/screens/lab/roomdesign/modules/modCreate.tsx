@@ -4,9 +4,10 @@
  * SHAPE and SURFACE trays, drag the corners and the furniture on the glass or
  * type the numbers in the tray. Every number here is CALCULATED.
  */
-import { useMemo, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
+import { confirmDialog } from '../../../../lib/confirm';
 import { lanePos, laneVal } from '../../soundsystems/rackLayout';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
 import { BADGE, type RoomLabCtx } from '../labCtx';
@@ -17,13 +18,17 @@ import { Body, Caption, Chips, NumField, TrayButton, TrayHeading } from '../bits
 import {
   bounds,
   CEILING_OPTIONS,
-  defaultLayout,
+  defaultDesign,
   FLOOR_OPTIONS,
   fmtLen,
+  freeOpeningSlot,
   fromMetres,
+  keepDesignInside,
   newId,
   polygonArea,
-  resizeRoom,
+  polygonIsValidRoom,
+  resizeDesign,
+  ROOM_MAX_M,
   roomVolume,
   shapeVertices,
   SURFACES,
@@ -32,6 +37,7 @@ import {
   type CeilingType,
   type Pt,
   type Room,
+  type RoomDesign,
   type SurfaceKey,
   type Units,
   type WallShape,
@@ -56,9 +62,11 @@ const UNITS: { id: Units; label: string }[] = [
 
 // Lane ranges, metres.
 const LEN_MIN = 2;
-const LEN_MAX = 15;
+const LEN_MAX = ROOM_MAX_M;
 const H_MIN = 2;
 const H_MAX = 6;
+const SHAPE_SHORT: Record<WallShape, string> = { rect: 'RECT', angled: 'ANGLD', irregular: 'IRREG', curved: 'CURVD' };
+const FLASH_MS = 1000;
 
 export function CreateModule({ ctx }: { ctx: RoomLabCtx }) {
   const { design, update, analysis, units } = ctx;
@@ -66,15 +74,30 @@ export function CreateModule({ ctx }: { ctx: RoomLabCtx }) {
   const b = analysis.bounds;
   const [view, setView] = useState<'plan' | 'side'>('plan');
   const [selected, setSelected] = useState<string | null>(null);
+  // A just-added opening flashes for a second so the learner sees where it
+  // landed (user-initiated: it answers their own tap).
+  const [flash, setFlash] = useState<string | null>(null);
+  const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (flashTimer.current) clearTimeout(flashTimer.current);
+  }, []);
+  const flashId = (id: string) => {
+    setFlash(id);
+    if (flashTimer.current) clearTimeout(flashTimer.current);
+    flashTimer.current = setTimeout(() => setFlash(null), FLASH_MS);
+  };
 
-  const setRoom = (fn: (r: Room) => Room) => update((d) => ({ ...d, room: fn(d.room) }));
-  const setDims = (width: number, length: number) =>
-    update((d) => {
-      const room2 = resizeRoom(d.room, width, length);
-      // Keep every layout inside the resized plan.
-      const layouts = d.layouts.map((l) => keepInside(l, room2));
-      return { ...d, room: room2, layouts };
-    });
+  // Room edits that can move a wall re-validate every layout (cognitive
+  // review 1): speakers, listener and free-standing treatment are pushed back
+  // inside the polygon.
+  const setRoom = (fn: (r: Room) => Room) => update((d) => keepDesignInside({ ...d, room: fn(d.room) }));
+  const setDims = (width: number, length: number) => update((d) => resizeDesign(d, width, length));
+  const onCeiling = (ceiling: CeilingType) => {
+    setRoom((r) => ({ ...r, ceiling }));
+    // A ceiling shape is invisible on the plan: show the side view for it
+    // (cognitive review 8).
+    if (ceiling !== 'flat' && view === 'plan') setView('side');
+  };
 
   const unitLabel = units === 'metric' ? 'm' : 'ft';
   const fmtU = (m: number) => fmtLen(m, units);
@@ -90,7 +113,11 @@ export function CreateModule({ ctx }: { ctx: RoomLabCtx }) {
     if (id.startsWith('v')) {
       const i = Number(id.slice(1));
       setRoom((r) => {
-        const vertices = r.vertices.map((q, j) => (j === i ? { x: Math.max(0, p.x), y: Math.max(0, p.y) } : q));
+        // Corners live in 0 … ROOM_MAX_M; a drag that would cross the walls
+        // (a bow-tie) or shrink the plan under 1 m² is refused (safety review 5).
+        const q = { x: Math.max(0, Math.min(ROOM_MAX_M, p.x)), y: Math.max(0, Math.min(ROOM_MAX_M, p.y)) };
+        const vertices = r.vertices.map((v, j) => (j === i ? q : v));
+        if (!polygonIsValidRoom(vertices)) return r;
         // A corner moved by hand: the plan is whatever it is now.
         const shape: WallShape = r.shape === 'rect' && !isStillRect(vertices) ? 'irregular' : r.shape;
         return { ...r, vertices, shape };
@@ -137,13 +164,13 @@ export function CreateModule({ ctx }: { ctx: RoomLabCtx }) {
       kind: 'group',
       id: 'shape',
       label: 'SHAPE',
-      valueLabel: room.shape.toUpperCase().slice(0, 5),
-      render: () => <ShapeTray room={room} units={units} setRoom={setRoom} setDims={setDims} b={b} />,
+      valueLabel: SHAPE_SHORT[room.shape],
+      render: () => <ShapeTray room={room} units={units} setRoom={setRoom} setDims={setDims} b={b} onCeiling={onCeiling} onAddedOpening={flashId} update={update} />,
     },
     {
       kind: 'group',
       id: 'surface',
-      label: 'SURFACE',
+      label: 'FINISH',
       valueLabel: SURFACES[room.floor].short,
       render: () => <SurfaceTray room={room} setRoom={setRoom} />,
     },
@@ -151,7 +178,7 @@ export function CreateModule({ ctx }: { ctx: RoomLabCtx }) {
 
   const stage = (w: number, h: number) =>
     view === 'plan' ? (
-      <RoomPlanView w={w} h={h} design={design} analysis={analysis} layers={{ dims: true, treatment: false }} edit="room" selected={selected} onSelect={setSelected} onDrag={onDrag} />
+      <RoomPlanView w={w} h={h} design={design} analysis={analysis} layers={{ dims: true, treatment: false }} edit="room" selected={selected} onSelect={setSelected} onDrag={onDrag} highlight={flash} />
     ) : (
       <RoomSideView w={w} h={h} design={design} analysis={analysis} showReflections={false} />
     );
@@ -161,7 +188,7 @@ export function CreateModule({ ctx }: { ctx: RoomLabCtx }) {
   return (
     <RoomRackLayout
       rack={{ stage, badge: BADGE.create, bezel, params, initialParam: 'length', hideDragTag: true }}
-      caption="Drag a corner to reshape the room, or ride LENGTH / WIDTH / CEILING. SHAPE opens the plan presets, the ceiling, doors and windows, furniture and typed dimensions; SURFACE sets the floor, walls and ceiling material. Tap VIEW on the readouts for the side view."
+      caption="Drag a corner to reshape the room, or ride LENGTH / WIDTH / CEILING. SHAPE opens the plan presets, the ceiling, doors and windows, furniture, typed dimensions and a fresh default room; FINISH sets the floor, walls and ceiling material. Tap VIEW on the readouts for the side view."
       wellTop={
         <View style={styles.summary}>
           <Text style={styles.summaryLine}>
@@ -170,12 +197,12 @@ export function CreateModule({ ctx }: { ctx: RoomLabCtx }) {
           <Text style={styles.summaryLine}>
             {`Floor ${SURFACES[room.floor].label} · walls ${SURFACES[room.walls].label} · ceiling ${SURFACES[room.ceilingMat].label} · ${room.openings.length} opening${room.openings.length === 1 ? '' : 's'} · ${room.features.length} object${room.features.length === 1 ? '' : 's'}`}
           </Text>
-          {notRect ? <Text style={styles.warn}>Not a rectangle: the mode estimates later use the bounding box and are LESS reliable.</Text> : null}
+          {notRect ? <Text style={styles.warn}>{room.ceiling !== 'flat' && room.shape === 'rect' ? `A ${room.ceiling} ceiling: the mode estimates later use the mean ceiling height and are LESS reliable.` : 'Not a rectangle: the mode estimates later use the bounding box and are LESS reliable.'}</Text> : null}
         </View>
       }
     >
       <Body>
-        Build the room you actually have. Start from the quick rectangle and set its length, width and ceiling, or choose an angled, irregular or curved plan and drag the corners to match. Doors, windows and large objects matter: a window is a hard, slightly bass-leaky surface; an open doorway absorbs everything that reaches it; a desk is a reflecting shelf under the speakers.
+        Build the room you actually have. Start from the quick rectangle and set its length, width and ceiling, or choose an angled, irregular or curved plan and drag the corners to match. Doors, windows and large objects matter: a window is a hard, slightly bass-leaky surface; an open doorway absorbs everything that reaches it; a desk is a reflecting shelf under the speakers — the model draws that bounce.
       </Body>
       <Body>
         The numbers on the bezel — area, volume, the length : width : height ratio — are plain arithmetic from your entries. Ratios near 1 : 1 : 1 or 2 : 1 stack room modes on the same frequencies; the famous "good ratios" (for example 1 : 1.4 : 1.9) spread them out. You cannot usually move walls, but knowing the ratio tells you what to expect in the bass.
@@ -192,16 +219,6 @@ function isStillRect(v: Pt[]): boolean {
   return xs.size === 2 && ys.size === 2;
 }
 
-function keepInside(l: ReturnType<typeof defaultLayout>, room: Room): ReturnType<typeof defaultLayout> {
-  const b = bounds(room);
-  const clamp = (p: { x: number; y: number }) => ({ x: Math.max(b.minX + 0.2, Math.min(b.maxX - 0.2, p.x)), y: Math.max(b.minY + 0.2, Math.min(b.maxY - 0.2, p.y)) });
-  return {
-    ...l,
-    speakers: l.speakers.map((s) => ({ ...s, ...clamp(s), z: Math.min(s.z, room.height - 0.1) })),
-    listener: { ...l.listener, ...clamp(l.listener), earZ: Math.min(l.listener.earZ, room.height - 0.1) },
-  };
-}
-
 function ratioText(L: number, W: number, H: number): string {
   if (!(H > 0)) return '—';
   // Compact on purpose: a bezel cell on a 390 phone has ~9 mono characters,
@@ -213,20 +230,45 @@ function ratioText(L: number, W: number, H: number): string {
 
 /* ───────────────────────────────── trays ───────────────────────────────── */
 
-function ShapeTray({ room, units, setRoom, setDims, b }: { room: Room; units: Units; setRoom: (fn: (r: Room) => Room) => void; setDims: (w: number, l: number) => void; b: ReturnType<typeof bounds> }) {
+function ShapeTray({
+  room,
+  units,
+  setRoom,
+  setDims,
+  b,
+  onCeiling,
+  onAddedOpening,
+  update,
+}: {
+  room: Room;
+  units: Units;
+  setRoom: (fn: (r: Room) => Room) => void;
+  setDims: (w: number, l: number) => void;
+  b: ReturnType<typeof bounds>;
+  onCeiling: (c: CeilingType) => void;
+  onAddedOpening: (id: string) => void;
+  update: (fn: (d: RoomDesign) => RoomDesign) => void;
+}) {
   const u = units === 'metric' ? 'm' : 'ft';
   const pickShape = (shape: WallShape) =>
     setRoom((r) => {
       const bb = bounds(r);
       return { ...r, shape, vertices: shapeVertices(shape, bb.width, bb.length), curvedWall: shape === 'curved' ? 2 : undefined };
     });
-  const addOpening = (kind: 'door' | 'window' | 'opening') =>
+  const addOpening = (kind: 'door' | 'window' | 'opening') => {
+    const id = newId('op');
     setRoom((r) => {
       const n = r.vertices.length;
-      const wall = kind === 'window' ? 1 % n : (n - 2 + n) % n;
+      const preferred = kind === 'window' ? 1 % n : (n - 2 + n) % n;
       const spec = kind === 'door' ? { width: 0.9, height: 2.05, sill: 0 } : kind === 'window' ? { width: 1.2, height: 1.1, sill: 0.95 } : { width: 1.6, height: 2.1, sill: 0 };
-      return { ...r, openings: [...r.openings, { id: newId('op'), kind, wall, pos: 0.3 + 0.4 * ((r.openings.length * 7) % 5) / 5, ...spec }] };
+      // The first free slot: never on top of an opening already there.
+      const slot = freeOpeningSlot(r, preferred, spec.width);
+      return { ...r, openings: [...r.openings, { id, kind, wall: slot.wall, pos: slot.pos, ...spec }] };
     });
+    onAddedOpening(`op_${id}`);
+  };
+  const newRoom = () =>
+    confirmDialog('New room?', `Replace this design with the default ${fmtLen(4, units)} × ${fmtLen(5, units)} room. Saved designs are not touched; nothing you have earned changes.`, 'NEW ROOM', () => update((d) => ({ ...defaultDesign(d.room.units), name: d.name })));
   const addFeature = (kind: 'desk' | 'sofa' | 'bookshelf' | 'rack') =>
     setRoom((r) => {
       const bb = bounds(r);
@@ -246,9 +288,11 @@ function ShapeTray({ room, units, setRoom, setDims, b }: { room: Room; units: Un
       </View>
       <TrayHeading>WALL SHAPE</TrayHeading>
       <Chips items={SHAPES} value={room.shape} onPick={pickShape} />
-      <Caption>Angled splays the front wall; irregular adds an alcove; curved bows the rear wall. Drag any corner afterwards to match your room.</Caption>
+      <Caption>Angled splays the front wall; irregular adds an alcove; curved bows the rear wall. Drag any corner afterwards to match your room — a corner cannot cross another wall or shrink the plan under 1 m².</Caption>
+      <TrayButton label={`NEW ROOM (DEFAULT ${fmtLen(4, units)} × ${fmtLen(5, units)})`} tint="dim" onPress={newRoom} />
       <TrayHeading>CEILING</TrayHeading>
-      <Chips items={CEILINGS} value={room.ceiling} onPick={(id) => setRoom((r) => ({ ...r, ceiling: id }))} />
+      <Chips items={CEILINGS} value={room.ceiling} onPick={onCeiling} />
+      {room.ceiling !== 'flat' ? <Caption>The ceiling shape shows in the SIDE view (VIEW on the readouts); the plan cannot draw it.</Caption> : null}
       {room.ceiling !== 'flat' ? (
         <NumField label={room.ceiling === 'mixed' ? 'LOW SECTION HEIGHT' : 'LOW POINT'} value={fromMetres(room.heightLow, units)} unit={u} onCommit={(v) => setRoom((r) => ({ ...r, heightLow: Math.max(1.8, Math.min(r.height - 0.1, toMetres(v, units))) }))} />
       ) : null}
@@ -260,7 +304,7 @@ function ShapeTray({ room, units, setRoom, setDims, b }: { room: Room; units: Un
       </View>
       {room.openings.map((o) => (
         <View key={o.id} style={styles.itemRow}>
-          <Text style={styles.itemText}>{`${o.kind.toUpperCase()} · wall ${o.wall + 1} · ${fmtLen(o.width, units)} × ${fmtLen(o.height, units)}`}</Text>
+          <Text style={styles.itemText}>{`${o.kind.toUpperCase()} · W${o.wall + 1} on the plan · ${fmtLen(o.width, units)} × ${fmtLen(o.height, units)}`}</Text>
           <View style={styles.btnRow}>
             <TrayButton label="WALL ›" tint="dim" onPress={() => setRoom((r) => ({ ...r, openings: r.openings.map((x) => (x.id === o.id ? { ...x, wall: (x.wall + 1) % r.vertices.length } : x)) }))} />
             <TrayButton label="SLIDE" tint="dim" onPress={() => setRoom((r) => ({ ...r, openings: r.openings.map((x) => (x.id === o.id ? { ...x, pos: x.pos >= 0.75 ? 0.2 : x.pos + 0.15 } : x)) }))} />
@@ -281,7 +325,7 @@ function ShapeTray({ room, units, setRoom, setDims, b }: { room: Room; units: Un
           <TrayButton label="REMOVE" tint="dim" onPress={() => setRoom((r) => ({ ...r, features: r.features.filter((x) => x.id !== f.id) }))} />
         </View>
       ))}
-      <Caption>Objects are drawn on the plan and counted as blocking nothing in the model: the reflection paths treat them as transparent. Their effect on the sound is real but not modelled here — one more reason to measure.</Caption>
+      <Caption>The desk is modelled: its top bounces the sound to the ears (the strongest early reflection in most nearfield setups), and the model draws that path. Every other object is drawn with a dotted outline and blocks nothing in the model — the reflection paths treat it as transparent. Its effect on the sound is real but not modelled here — one more reason to measure.</Caption>
     </View>
   );
 }

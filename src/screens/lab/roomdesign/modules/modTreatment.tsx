@@ -5,7 +5,7 @@
  * and thickness, switch each item off and on (A/B), and see which modelled
  * paths now meet treatment. Everything here is ESTIMATED.
  */
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { lanePos, laneVal } from '../../soundsystems/rackLayout';
@@ -17,14 +17,18 @@ import { Body, Caption, TrayButton, TrayHeading } from '../bits';
 import {
   analyze,
   basstrapAt,
+  depthLimitHz,
   distToEdge,
+  fmtHz,
   fmtLen,
   newId,
+  reflectionSurfaceName,
   rt60Bands,
   treatmentAlpha,
   treatmentAtReflection,
   TREATMENT_INFO,
   type Pt,
+  type Reflection,
   type RoomDesign,
   type Treatment,
 } from '../roomModel';
@@ -33,12 +37,31 @@ const THICK_MIN = 0.025;
 const THICK_MAX = 0.4;
 const SIZE_MIN = 0.4;
 const SIZE_MAX = 2.4;
+const FLASH_MS = 1000;
+
+/** The reflection ABSORB NEXT would treat: the earliest untreated path the
+ *  kit can reach (never the desk bounce), inside 20 ms first. */
+export function nextReflectionToTreat(reflections: Reflection[]): Reflection | undefined {
+  const treatable = reflections.filter((r) => !r.treatedBy && r.surface.kind !== 'desk');
+  return treatable.find((r) => r.delayMs < 20) ?? treatable[0];
+}
 
 export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
   const { design, update, analysis, units } = ctx;
   const room = design.room;
   const [selId, setSelId] = useState<string | null>(design.treatment[0]?.id ?? null);
   const sel = design.treatment.find((t) => t.id === selId) ?? design.treatment[0] ?? null;
+  // A just-added item wears a ring for a second (answers the learner's tap).
+  const [flash, setFlash] = useState<string | null>(null);
+  const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (flashTimer.current) clearTimeout(flashTimer.current);
+  }, []);
+  const flashItem = (id: string) => {
+    setFlash(`tr_${id}`);
+    if (flashTimer.current) clearTimeout(flashTimer.current);
+    flashTimer.current = setTimeout(() => setFlash(null), FLASH_MS);
+  };
 
   const setItems = (fn: (ts: Treatment[]) => Treatment[]) => update((d) => ({ ...d, treatment: fn(d.treatment) }));
   const patchSel = (patch: Partial<Treatment>) => {
@@ -83,12 +106,21 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
     );
   };
 
+  const next = nextReflectionToTreat(analysis.reflections);
+  const nextLabel = next
+    ? next.surface.kind === 'wall'
+      ? `ABSORB NEXT: ${next.speaker} → WALL ${next.surface.edge + 1} (+${next.delayMs.toFixed(1)} ms)`
+      : next.surface.kind === 'ceiling'
+        ? `ABSORB NEXT: CEILING CLOUD (+${next.delayMs.toFixed(1)} ms)`
+        : `ABSORB NEXT: FLOOR RUG (+${next.delayMs.toFixed(1)} ms)`
+    : 'ABSORB NEXT: EVERY PATH MEETS TREATMENT';
   const addAtNextReflection = () => {
-    const next = analysis.reflections.find((r) => !r.treatedBy && r.delayMs < 20) ?? analysis.reflections.find((r) => !r.treatedBy);
     if (!next) return;
     const t = treatmentAtReflection(next, room);
+    if (!t) return;
     setItems((ts) => [...ts, t]);
     setSelId(t.id);
+    flashItem(t.id);
   };
   const addTraps = () => {
     const have = new Set(design.treatment.filter((t) => t.kind === 'basstrap').map((t) => t.wall));
@@ -96,6 +128,7 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
     if (fresh.length === 0) return;
     setItems((ts) => [...ts, ...fresh]);
     setSelId(fresh[0].id);
+    flashItem(fresh[0].id);
   };
   const addKind = (kind: Treatment['kind']) => {
     const lay = design.layouts[design.active] ?? design.layouts[0];
@@ -121,14 +154,17 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
     else t = { id: newId('tr'), kind: 'absorber', wall: 0, pos: 0.5, width: 0.6, height: 1.2, thickness: 0.1, z: 1.2, enabled: true };
     setItems((ts) => [...ts, t]);
     setSelId(t.id);
+    flashItem(t.id);
   };
 
   const bezel: BezelItem[] = [
-    { k: 'TREATED', v: `${treated} / ${total} paths`, tint: treated === total && total > 0 ? colors.green : undefined, flex: 1.2 },
+    { k: 'TREATED', v: `${treated}/${total}`, tint: treated === total && total > 0 ? colors.green : undefined },
     { k: 'RT60 500', v: Number.isFinite(mid(now)) ? `${mid(now).toFixed(2)} s` : '—' },
-    { k: 'RT60 125', v: Number.isFinite(low(now)) ? `${low(now).toFixed(2)} s` : '—' },
+    // "≈": indicative only — 125 Hz sits under the Schroeder frequency (audio review 13).
+    { k: 'RT60 125 ≈', v: Number.isFinite(low(now)) ? `${low(now).toFixed(2)} s` : '—' },
     { k: 'VS NONE', v: Number.isFinite(mid(now)) && Number.isFinite(mid(bare)) ? `${(mid(now) - mid(bare) >= 0 ? '+' : '')}${(mid(now) - mid(bare)).toFixed(2)} s` : '—' },
   ];
+  const fmtS = (x: number) => (Number.isFinite(x) ? `${x.toFixed(2)} s` : '—');
 
   const params: DockParam[] = [
     {
@@ -139,7 +175,13 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
       onChange: (v) => patchSel({ thickness: laneVal(v, THICK_MIN, THICK_MAX, 0.005) }),
       format: (v) => {
         const th = laneVal(v, THICK_MIN, THICK_MAX, 0.005);
-        return sel ? `${TREATMENT_INFO[sel.kind].short} ${fmtLen(th, units, { small: true })} · α125 ${treatmentAlpha({ kind: sel.kind, thickness: th }, 0).toFixed(2)}` : 'pick an item';
+        if (!sel) return 'ADD an item first';
+        // A diffuser scatters; its depth sets how low it works (audio review 14).
+        // One lane line: keep it under ~40 characters so it clears the lane's label.
+        const down = `≈${Math.round(depthLimitHz(th, analysis.c))} Hz`;
+        if (sel.kind === 'diffuser') return `${TREATMENT_INFO[sel.kind].short} ${fmtLen(th, units, { small: true })} deep · scatters to ${down}`;
+        if (sel.kind === 'rug') return `${TREATMENT_INFO[sel.kind].short} ${fmtLen(th, units, { small: true })} · α125 ${treatmentAlpha({ kind: sel.kind, thickness: th }, 0).toFixed(2)}`;
+        return `${TREATMENT_INFO[sel.kind].short} ${fmtLen(th, units, { small: true })} · α125 ${treatmentAlpha({ kind: sel.kind, thickness: th }, 0).toFixed(2)} · to ${down}`;
       },
       formatShort: (v) => fmtLen(laneVal(v, THICK_MIN, THICK_MAX, 0.005), units, { small: true }),
     },
@@ -152,7 +194,7 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
         const w = laneVal(v, SIZE_MIN, SIZE_MAX, 0.05);
         patchSel(sel && (sel.kind === 'cloud' || sel.kind === 'rug') ? { width: w, height: w } : { width: w });
       },
-      format: (v) => (sel ? `${TREATMENT_INFO[sel.kind].short} ${fmtLen(laneVal(v, SIZE_MIN, SIZE_MAX, 0.05), units)} wide` : 'pick an item'),
+      format: (v) => (sel ? `${TREATMENT_INFO[sel.kind].short} ${fmtLen(laneVal(v, SIZE_MIN, SIZE_MAX, 0.05), units)} wide` : 'ADD an item first'),
       formatShort: (v) => fmtLen(laneVal(v, SIZE_MIN, SIZE_MAX, 0.05), units),
     },
     {
@@ -164,21 +206,21 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
         <View style={{ gap: 8 }}>
           <TrayHeading>ADD TREATMENT</TrayHeading>
           <View style={styles.btnRow}>
-            <TrayButton label="ABSORBER AT NEXT REFLECTION POINT" tint="green" onPress={addAtNextReflection} disabled={!analysis.reflections.some((r) => !r.treatedBy)} />
+            <TrayButton label={nextLabel} tint="green" onPress={addAtNextReflection} disabled={!next} />
             <TrayButton label="BASS TRAPS IN THE CORNERS" onPress={addTraps} />
             <TrayButton label="CEILING CLOUD" onPress={() => addKind('cloud')} />
             <TrayButton label="RUG" onPress={() => addKind('rug')} />
             <TrayButton label="DIFFUSER (REAR WALL)" onPress={() => addKind('diffuser')} />
             <TrayButton label="FREESTANDING PANEL" onPress={() => addKind('gobo')} />
           </View>
-          <Caption>The recommended spots follow your speaker and listening positions: the model puts the first reflection points where they are, and the absorber lands there. Drag any item afterwards.</Caption>
+          <Caption>{`The recommended spots follow your speaker and listening positions: the model puts the first reflection points where they are, and the absorber lands there. ABSORB NEXT names its target${next ? ` — now ${next.speaker} → ${reflectionSurfaceName(next)}` : ''}. The desk bounce is not in the list: nothing in the kit treats a desk top. Drag any item afterwards.`}</Caption>
         </View>
       ),
     },
     {
       kind: 'toggle',
       id: 'ab',
-      label: sel ? (sel.enabled ? 'ITEM ON' : 'ITEM OFF') : 'A / B',
+      label: sel ? (sel.enabled ? 'ITEM ON' : 'ITEM OFF') : 'ADD FIRST',
       value: !!sel?.enabled,
       onToggle: () => patchSel({ enabled: !sel?.enabled }),
     },
@@ -195,7 +237,7 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
             const c = treatmentCentre(t, room);
             const on = sel?.id === t.id;
             return (
-              <View key={t.id} style={[styles.itemRow, on && styles.itemRowOn]}>
+              <View key={t.id} style={[styles.itemRow, on && styles.itemRowOn, flash === `tr_${t.id}` && styles.itemRowNew]}>
                 <Text style={[styles.itemText, !t.enabled && styles.itemOff]}>
                   {`${TREATMENT_INFO[t.kind].label} · ${fmtLen(t.width, units)} × ${fmtLen(t.height, units)} · ${fmtLen(t.thickness, units, { small: true })} thick${c ? ` · at ${fmtLen(c.x - analysis.bounds.minX, units)}, ${fmtLen(c.y - analysis.bounds.minY, units)}` : ''}${t.enabled ? '' : ' · OFF'}`}
                 </Text>
@@ -219,7 +261,7 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
   ];
 
   const stage = (w: number, h: number) => (
-    <RoomPlanView w={w} h={h} design={design} analysis={analysis} layers={{ reflections: true, treatment: true, dims: false }} edit="treatment" selected={sel ? `tr_${sel.id}` : null} onSelect={(id) => setSelId(id.replace(/^tr_/, ''))} onDrag={onDrag} />
+    <RoomPlanView w={w} h={h} design={design} analysis={analysis} layers={{ reflections: true, treatment: true, dims: false }} edit="treatment" selected={sel ? `tr_${sel.id}` : null} onSelect={(id) => setSelId(id.replace(/^tr_/, ''))} onDrag={onDrag} highlight={flash} />
   );
 
   const withoutSel = sel ? analyze({ ...design, treatment: design.treatment.map((t) => (t.id === sel.id ? { ...t, enabled: false } : t)) }) : null;
@@ -227,21 +269,25 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
 
   return (
     <RoomRackLayout
+      // The lane must bind a fader (the rack's contract), so the landing keeps
+      // THICK bound and says "ADD an item first" until there is an item.
       rack={{ stage, badge: BADGE.treatment, bezel, params, initialParam: 'thick', hideDragTag: true }}
-      caption="ADD places an absorber at the next untreated reflection point the model found, bass traps in the corners, a cloud, a rug, a diffuser or a gobo. Drag items on the plan; THICK and SIZE shape the selected one; ITEM ON/OFF compares with and without it. A ✓ on a path means it meets treatment."
+      caption="ADD places an absorber at the next untreated reflection point the model found (the key names it), bass traps in the corners, a cloud, a rug, a diffuser or a gobo. Drag items on the plan; THICK and SIZE shape the selected one; ITEM ON/OFF compares with and without it. A ✓ on a path means it meets treatment. Keep panels clear of sockets, lights and heaters."
       wellTop={
         sel ? (
           <View style={{ gap: 4 }}>
             <Text style={styles.line}>{`${TREATMENT_INFO[sel.kind].label}: ${TREATMENT_INFO[sel.kind].blurb}`}</Text>
             {withSel && withoutSel ? (
               <Text style={styles.line}>
-                {`With it ${withSel.reflections.filter((r) => r.treatedBy).length} of ${withSel.reflections.length} paths meet treatment, mid RT60 ≈ ${mid(withSel.rt60).toFixed(2)} s; without it ${withoutSel.reflections.filter((r) => r.treatedBy).length}, ≈ ${mid(withoutSel.rt60).toFixed(2)} s. α at 125 Hz ${treatmentAlpha(sel, 0).toFixed(2)}, at 500 Hz ${treatmentAlpha(sel, 2).toFixed(2)}, at 2 kHz ${treatmentAlpha(sel, 4).toFixed(2)}.`}
+                {sel.kind === 'diffuser'
+                  ? `With it ${withSel.reflections.filter((r) => r.treatedBy).length} of ${withSel.reflections.length} paths meet treatment; without it ${withoutSel.reflections.filter((r) => r.treatedBy).length}. ${fmtLen(sel.thickness, units, { small: true })} deep: diffuses down to ≈ ${fmtHz(depthLimitHz(sel.thickness, analysis.c))} — scattered, not absorbed, so the RT60 barely moves (mid ≈ ${fmtS(mid(withSel.rt60))}).`
+                  : `With it ${withSel.reflections.filter((r) => r.treatedBy).length} of ${withSel.reflections.length} paths meet treatment, mid RT60 ≈ ${fmtS(mid(withSel.rt60))}; without it ${withoutSel.reflections.filter((r) => r.treatedBy).length}, ≈ ${fmtS(mid(withoutSel.rt60))}. α at 125 Hz ${treatmentAlpha(sel, 0).toFixed(2)}, at 500 Hz ${treatmentAlpha(sel, 2).toFixed(2)}, at 2 kHz ${treatmentAlpha(sel, 4).toFixed(2)}${sel.kind === 'rug' ? '' : ` · works down to ≈ ${fmtHz(depthLimitHz(sel.thickness, analysis.c))}`}.`}
               </Text>
             ) : null}
             <Text style={styles.safety}>{`Safety: ${TREATMENT_INFO[sel.kind].safety}`}</Text>
           </View>
         ) : (
-          <Text style={styles.line}>No treatment yet. Open ADD, or tap an item on the plan once there is one.</Text>
+          <Text style={styles.line}>No treatment yet. ADD an item first — THICK and SIZE shape the selected item, and ITEM ON/OFF compares with and without it.</Text>
         )
       }
     >
@@ -251,8 +297,8 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
       <Body>
         Compare, don't cover: a room with every wall absorbed is fatiguing and makes mixes sound dry everywhere else. Switch each item off and on, read the RT60 estimate and the treated-path count, and keep what changes something. The rear wall is often better scattered (a diffuser) than killed, if there is room for one.
       </Body>
-      <Caption>Mount heavy items — bass traps, clouds, wood diffusers — into structure with rated hardware and a safety cable overhead; use fire-rated materials; never block an exit, a heater or a ventilation grille. If in doubt about a fixing, ask someone qualified.</Caption>
-      <Caption>{`ESTIMATED throughout: broadband teaching coefficients, and a Sabine/Eyring decay that assumes a diffuse field a small room does not have below its Schroeder frequency (≈ ${Number.isFinite(analysis.schroeder) ? Math.round(analysis.schroeder) : '—'} Hz here). Measure the real room before and after.`}</Caption>
+      <Caption>Mount heavy items — bass traps, clouds, wood diffusers — into structure with rated hardware and a safety cable overhead; use fire-rated materials; never block an exit, a heater or a ventilation grille; keep panels clear of sockets, lights and heaters, and never hang a cloud under or over a smoke detector, sprinkler head or light fitting. If in doubt about a fixing, ask someone qualified.</Caption>
+      <Caption>{`ESTIMATED throughout: broadband teaching coefficients, and a Sabine/Eyring decay that assumes a diffuse field a small room does not have below its Schroeder frequency (≈ ${Number.isFinite(analysis.schroeder) ? Math.round(analysis.schroeder) : '—'} Hz here) — the 125 Hz figure is indicative only. Sabine also ignores air absorption, which matters above a few kHz in a large room. Measure the real room before and after.`}</Caption>
     </RoomRackLayout>
   );
 }
@@ -271,6 +317,7 @@ const styles = StyleSheet.create({
   btnRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   itemRow: { gap: 6, borderTopWidth: 1, borderTopColor: '#1f1f24', paddingTop: 6 },
   itemRowOn: { borderLeftWidth: 2, borderLeftColor: colors.amber, paddingLeft: 8 },
+  itemRowNew: { backgroundColor: '#1d1709', borderRadius: 6 },
   itemText: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSecondary },
   itemOff: { color: colors.textSub },
 });

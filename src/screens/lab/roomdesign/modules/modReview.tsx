@@ -12,6 +12,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { LabNextButton } from '../../kit/LabNavBar';
 import { Body, Caption, Card, KV, NumField, SectionTitle, SuggestionRow, TierTag, TrayButton } from '../bits';
 import type { RoomLabCtx } from '../labCtx';
+import { RoomPlanView } from '../RoomPlanView';
 import {
   analyze,
   compareMeasured,
@@ -19,12 +20,21 @@ import {
   fmtDelta,
   fmtHz,
   fmtLen,
+  MEASURED_RANGE,
   placementConflicts,
+  planIsRectangular,
+  reflectionSurfaceName,
+  rtImbalance,
+  SBIR_MAX_HZ,
   SURFACES,
   SYM_TOL,
   type RoomDesign,
 } from '../roomModel';
 import { treatmentSummary } from './modTreatment';
+
+/** The read-only picture over the behaviour card: reflections and treatment,
+ *  no handles (cognitive review 16). */
+const MINI_PLAN_H = 180;
 
 export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
   const { design, update, analysis: a, units, guest, saved, saveCurrent, loadSaved, deleteSaved } = ctx;
@@ -36,6 +46,9 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
   const measured = compareMeasured(design, a);
   const [savedMsg, setSavedMsg] = useState<string | null>(null);
   const [compareId, setCompareId] = useState<string | null>(null);
+  const [planW, setPlanW] = useState(0);
+  const planRect = planIsRectangular(room);
+  const firstCheck = a.suggestions.findIndex((s) => s.level === 'check');
   const before = saved.find((d) => d.id === compareId) ?? null;
   const beforeAfter = before ? compareDesigns(before, design) : null;
   const fmtU = (m: number) => fmtLen(m, units);
@@ -84,27 +97,37 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
 
       <Card>
         <SectionTitle title="LIKELY ACOUSTIC BEHAVIOUR" tier="ESTIMATED" />
-        <Text style={styles.sub}>{a.rectangular ? 'ROOM MODES — IDEALIZED, CALCULATED FOR THIS RECTANGLE' : 'ROOM MODES — BOUNDING BOX ESTIMATE (NOT A RECTANGLE: LESS RELIABLE)'}</Text>
-        <Caption>{`c = ${a.c.toFixed(1)} m/s at ${room.tempC} °C · dimensions used ${fmtU(a.modalDims.L)} × ${fmtU(a.modalDims.W)} × ${fmtU(a.modalDims.H)}${a.rectangular ? '' : ' (bounding box, mean ceiling height)'}.`}</Caption>
+        <View style={styles.miniPlan} onLayout={(e) => setPlanW(Math.round(e.nativeEvent.layout.width))}>
+          {planW > 40 ? <RoomPlanView w={planW} h={MINI_PLAN_H} design={design} analysis={a} layers={{ reflections: true, treatment: true, triangle: true, dims: false }} edit="none" /> : null}
+        </View>
+        <Caption>The plan as the behaviour below reads it: reflection paths coloured by level, treatment, the triangle. Edit it in the earlier modules.</Caption>
+        <Caption>{a.rectangular ? 'The mode frequencies are CALCULATED (idealized, for this rectangular box); everything else on this card is ESTIMATED.' : 'Everything on this card is ESTIMATED — the mode frequencies included, because the room is not a rectangular box.'}</Caption>
+        <Text style={styles.sub}>{a.rectangular ? 'ROOM MODES — IDEALIZED, CALCULATED FOR THIS RECTANGLE' : planRect ? `ROOM MODES — MEAN-HEIGHT ESTIMATE (${room.ceiling.toUpperCase()} CEILING: LESS RELIABLE)` : 'ROOM MODES — BOUNDING BOX ESTIMATE (NOT A RECTANGLE: LESS RELIABLE)'}</Text>
+        <Caption>{`c = ${a.c.toFixed(1)} m/s at ${room.tempC} °C · dimensions used ${fmtU(a.modalDims.L)} × ${fmtU(a.modalDims.W)} × ${fmtU(a.modalDims.H)}${a.rectangular ? '' : planRect ? ' (mean ceiling height)' : ' (bounding box, mean ceiling height)'}.`}</Caption>
         {a.modes.slice(0, 12).map((m, i) => (
           <KV key={i} k={`${m.kind} (${m.nx},${m.ny},${m.nz})`} v={fmtHz(m.f)} tint={a.rectangular ? colors.cyanBright : colors.amber} />
         ))}
-        {a.coincident.length > 0 ? <Caption>{`Near-coincident: ${a.coincident.slice(0, 3).map(([x, y]) => `${fmtHz(x.f)} & ${fmtHz(y.f)}`).join(' · ')} — expect a stronger buildup there.`}</Caption> : null}
+        {a.coincident.length > 0 ? <Caption>{`Near-coincident (one axial, both ≤ 150 Hz, within 5 %): ${a.coincident.slice(0, 3).map(([x, y]) => `${fmtHz(x.f)} & ${fmtHz(y.f)}`).join(' · ')} — expect a stronger buildup there.`}</Caption> : null}
         <Text style={styles.sub}>WHERE THE MODEL PREDICTS STRONGER OR WEAKER PRESSURE AT THE SEAT</Text>
-        {a.listenerZones.map((z, i) => (
-          <KV key={i} k={`${z.mode.axis}-axis ${fmtHz(z.mode.f)}`} v={`${Math.round(z.pressure * 100)} % — ${z.zone === 'peak' ? 'pressure peak' : z.zone === 'null' ? 'null' : 'between'}`} tint={z.zone === 'peak' ? '#ff5a48' : z.zone === 'null' ? '#2f74ff' : colors.green} />
-        ))}
+        {a.listenerZones.map((z, i) => {
+          const centred = !st || Math.abs(st.axisOffset) < 0.1;
+          const note = z.mode.axis === 'W' && z.zone === 'null' && centred ? ' · centre line: expected, keep it' : z.mode.axis === 'H' && z.zone === 'null' ? ' · ⓘ normal at seated ear height' : z.mode.axis === 'L' && z.zone !== 'between' ? ' · move fore/aft to test' : '';
+          const tint = z.mode.axis !== 'L' && z.zone === 'null' ? colors.textSub : z.zone === 'peak' ? '#ff5a48' : z.zone === 'null' ? '#2f74ff' : colors.green;
+          return <KV key={i} k={`${z.mode.axis}-axis ${fmtHz(z.mode.f)}`} v={`${Math.round(z.pressure * 100)} % — ${z.zone === 'peak' ? 'pressure peak' : z.zone === 'null' ? 'null' : 'between'}${note}`} tint={tint} />;
+        })}
+        <Caption>Mode shape only — not how strongly the speakers excite each mode. A centred pair barely drives the odd width modes; the length axis is the one worth moving along.</Caption>
         <Text style={styles.sub}>LIKELY EARLY REFLECTIONS (FIRST ORDER, IMAGE-SOURCE)</Text>
         {a.reflections.slice(0, 8).map((r, i) => (
-          <KV key={i} k={`${r.speaker} → ${r.surface.kind === 'wall' ? `wall ${r.surface.edge + 1}` : r.surface.kind}${r.treatedBy ? ' ✓ treated' : ''}`} v={`+${r.delayMs.toFixed(1)} ms · ${r.levelDb.toFixed(0)} dB`} tint={r.treatedBy ? colors.green : undefined} />
+          <KV key={i} k={`${r.speaker} → ${reflectionSurfaceName(r)}${r.treatedBy ? ' ✓ treated' : ''}`} v={`+${r.delayMs.toFixed(1)} ms · ${r.levelDb.toFixed(0)} dB`} tint={r.treatedBy ? colors.green : undefined} />
         ))}
+        <Caption>Levels: distance, surface absorption and a simple directivity curve at the departure angle — toe-in moves them.</Caption>
         <Text style={styles.sub}>SURFACE AND TREATMENT ASSUMPTIONS</Text>
         <KV k="Treatment" v={treatmentSummary(design)} />
-        <KV k="RT60 125 Hz · Sabine" v={rtText(125)} />
+        <KV k="RT60 125 Hz · Sabine (indicative)" v={rtText(125)} />
         <KV k="RT60 500 Hz · Sabine" v={rtText(500)} />
         <KV k="RT60 2 kHz · Sabine" v={rtText(2000)} />
         <KV k="Schroeder frequency" v={Number.isFinite(a.schroeder) ? `≈ ${Math.round(a.schroeder)} Hz` : '—'} />
-        <Caption>Teaching-table absorption, not product data; Sabine and Eyring assume a diffuse field this room does not have below its Schroeder frequency. Boundary notches (ESTIMATED): {a.sbir.slice(0, 4).map((s) => `${s.speaker}/${s.surface} ~${fmtHz(s.notchHz)}`).join(' · ')}.</Caption>
+        <Caption>{`Teaching-table absorption, not product data; Sabine and Eyring assume a diffuse field this room does not have below its Schroeder frequency, and Sabine ignores air absorption. First cancellations at the seat (ESTIMATED, woofer band, below ~${SBIR_MAX_HZ} Hz, distances to the woofer): ${a.sbir.length ? a.sbir.slice(0, 4).map((s) => `${s.speaker}/${s.surface} ~${fmtHz(s.notchHz)}`).join(' · ') : 'none below the cap'}.`}</Caption>
         <Text style={styles.sub}>WHAT THIS MAY MEAN FOR THE WORK</Text>
         <Caption>
           {bassJudgement(a)} {imagingJudgement(a)} {translationJudgement(a)}
@@ -113,14 +136,15 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
 
       <Card>
         <SectionTitle title="SUGGESTED NEXT STEPS" />
+        <Caption>! look at this first · ▸ worth testing · ✓ as it should be · ⓘ normal, not a reason to move anything.</Caption>
         {a.suggestions.map((s, i) => (
-          <SuggestionRow key={i} s={s} />
+          <SuggestionRow key={i} s={s} tag={i === firstCheck ? 'TRY FIRST' : undefined} />
         ))}
       </Card>
 
       <Card>
         <SectionTitle title="MEASURE VERSUS ESTIMATE" tier="MEASURED" />
-        <Caption>If you have measured the room — a decay time from a clap or sweep, or a resonance you found with a tone — enter it here and the lab compares it with the model. Leave blank if you have not.</Caption>
+        <Caption>{`If you have measured the room — a decay time from a clap or sweep, or a resonance you found with a tone — enter it here and the lab compares it with the model. Leave blank if you have not. The model covers RT60 ${MEASURED_RANGE.rt60Mid.min}–${MEASURED_RANGE.rt60Mid.max} s and resonances ${MEASURED_RANGE.modeHz.min}–${MEASURED_RANGE.modeHz.max} Hz.`}</Caption>
         <View style={styles.numRow}>
           <NumField label="MEASURED RT60 (MID)" value={design.measured.rt60Mid ?? null} unit="s" placeholder="0.45" onCommit={(v) => update((d) => ({ ...d, measured: { ...d.measured, rt60Mid: v } }))} />
           <NumField label="RESONANCE FOUND" value={design.measured.modeHz ?? null} unit="Hz" placeholder="48" onCommit={(v) => update((d) => ({ ...d, measured: { ...d.measured, modeHz: v } }))} />
@@ -176,7 +200,7 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
             <Text style={styles.sub}>POSITIONS KEPT IN THIS DESIGN</Text>
             {design.layouts.slice(1).map((l, i) => (
               <View key={l.name} style={{ gap: 2 }}>
-                <Caption>{`"${design.layouts[0].name}" → "${l.name}":`}</Caption>
+                <Caption>{`${design.layouts[0].name.toUpperCase()} → ${l.name.toUpperCase()}:`}</Caption>
                 {diffLayouts(design, 0, i + 1).map((d, j) => (
                   <Caption key={j}>{`   • ${d.text}`}</Caption>
                 ))}
@@ -220,12 +244,13 @@ export function compareDesigns(before: RoomDesign, after: RoomDesign): string[] 
   return out;
 }
 
+/** Only the LENGTH axis judges the bass (audio review 7, safety review 1):
+ *  the centre-line width null and the seated-height null are inherent. */
 function bassJudgement(a: ReturnType<typeof analyze>): string {
-  const peaks = a.listenerZones.filter((z) => z.zone === 'peak').length;
-  const nulls = a.listenerZones.filter((z) => z.zone === 'null').length;
-  if (peaks > 0 && nulls === 0) return `Bass judgement: the seat sits on ${peaks} modal peak${peaks > 1 ? 's' : ''} — bass is likely to sound heavier there than the mix really is, so low-end decisions may come out thin elsewhere.`;
-  if (nulls > 0) return `Bass judgement: the seat sits in ${nulls} modal null${nulls > 1 ? 's' : ''} — some bass frequencies nearly vanish there, and the temptation is to boost what the room is hiding.`;
-  return 'Bass judgement: the seat avoids the strongest peaks and nulls of the lowest modes; the remaining unevenness is the higher modes and the speakers’ boundary notches.';
+  const L = a.listenerZones.find((z) => z.mode.axis === 'L');
+  if (L?.zone === 'peak') return `Bass judgement: the seat sits on the pressure peak of the first length mode (${fmtHz(L.mode.f)}) — bass there is likely to sound heavier than the mix really is, so low-end decisions may come out thin elsewhere. Moving fore/aft changes it.`;
+  if (L?.zone === 'null') return `Bass judgement: the seat sits in the null of the first length mode (${fmtHz(L.mode.f)}) — that frequency nearly vanishes there, and the temptation is to boost what the room is hiding. Moving fore/aft changes it; the width and height nulls at a centred, seated position are normal.`;
+  return 'Bass judgement: the seat avoids the peak and null of the first length mode; the remaining unevenness is the higher modes and the speakers’ boundary cancellations. The width and height nulls at a centred, seated position are normal.';
 }
 
 function imagingJudgement(a: ReturnType<typeof analyze>): string {
@@ -238,14 +263,17 @@ function imagingJudgement(a: ReturnType<typeof analyze>): string {
 
 function translationJudgement(a: ReturnType<typeof analyze>): string {
   if (!Number.isFinite(a.rt60Mid)) return '';
+  const imb = rtImbalance(a.rt60);
+  if (imb && imb.ratio > 1.5 && a.rt60Mid <= 0.4) return `Mix translation: the mids and highs are damped but the bass still rings about ${imb.ratio.toFixed(1)}× longer (125 Hz ${imb.low.toFixed(2)} s vs 2 kHz ${imb.high.toFixed(2)} s) — a room that sounds dead yet boomy, where low-end decisions drift. Depth (corner traps, thicker panels) evens it, not more thin panels.`;
   if (a.rt60Mid > 0.5) return 'Mix translation: a lively decay like this adds the room to everything you hear, so reverb and balance decisions tend to be too dry when played elsewhere.';
   if (a.rt60Mid < 0.15) return 'Mix translation: a very dead room makes mixes feel dry here and wet everywhere else; keep some life in the room.';
-  return 'Mix translation: the decay estimate is in the range small mix rooms aim for; what remains is the bass and the early reflections above.';
+  return 'Mix translation: the decay estimate is in the range small mix rooms aim for, and the bass and treble decays are in step; what remains is the bass and the early reflections above.';
 }
 
 const styles = StyleSheet.create({
   doc: { gap: 12 },
   sub: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.3, color: colors.textSub, marginTop: 6 },
+  miniPlan: { width: '100%', height: MINI_PLAN_H, borderRadius: 8, overflow: 'hidden', backgroundColor: '#0b0c0f', borderWidth: 1, borderColor: '#1f1f24' },
   numRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   savedRow: { gap: 6, borderTopWidth: 1, borderTopColor: '#1f1f24', paddingTop: 6 },
   savedName: { fontFamily: fonts.barlowMedium, fontSize: 13, color: colors.textSecondary },

@@ -15,11 +15,13 @@ import type { BezelItem, DockParam } from '../../rack/rackTypes';
 import { BADGE, type RoomLabCtx } from '../labCtx';
 import { RoomRackLayout } from '../rackLayout';
 import { PLAN_LEGEND, RoomPlanView, type PlanLayers, type Trace } from '../RoomPlanView';
-import { Body, Caption, TrayButton, TrayHeading } from '../bits';
-import { clampInside, diffLayouts, fmtHz, fmtLen, modePressure, type Layout, type Pt, type RoomDesign } from '../roomModel';
+import { Body, Caption, SAFETY_LEVEL_POINTER, TrayButton, TrayHeading } from '../bits';
+import { clampInside, diffLayouts, fmtHz, fmtLen, modePressure, reflectionSurfaceName, START_LAYOUT, type Layout, type Pt, type RoomDesign } from '../roomModel';
 
-const OPTION_NAMES = ['Current', 'Option A', 'Option B'] as const;
+/** The slots: START is where the positions began; A and B are kept beside it. */
+const OPTION_NAMES = ['Option A', 'Option B', START_LAYOUT] as const;
 const TRACE_MS = 1700;
+const shortName = (name: string) => (name === START_LAYOUT ? 'START' : name.replace('Option ', '').toUpperCase());
 
 /** Copy the active layout into the named slot (creating it), and switch to it. */
 export function saveLayoutAs(d: RoomDesign, name: string): RoomDesign {
@@ -36,7 +38,9 @@ export function ExploreModule({ ctx }: { ctx: RoomLabCtx }) {
   const lay = design.layouts[design.active] ?? design.layouts[0];
   const [selected, setSelected] = useState<string | null>('listener');
   const [modeIdx, setModeIdx] = useState(0);
-  const [layers, setLayers] = useState<PlanLayers>({ triangle: true, boundaries: false, reflections: true, modes: true, dims: false, treatment: true });
+  // First entry: the mode map and the triangle only; the reflection paths
+  // come on with TRACE or LAYERS (cognitive review 19).
+  const [layers, setLayers] = useState<PlanLayers>({ triangle: true, boundaries: false, reflections: false, modes: true, dims: false, treatment: true });
   const [trace, setTrace] = useState<Trace>(null);
   const traceRaf = useRef<number | null>(null);
   const traceIdx = useRef(-1);
@@ -64,6 +68,7 @@ export function ExploreModule({ ctx }: { ctx: RoomLabCtx }) {
   // nothing auto-appears). Cycles through the paths on each press.
   const runTrace = () => {
     if (analysis.reflections.length === 0) return;
+    setLayers((s) => (s.reflections ? s : { ...s, reflections: true }));
     traceIdx.current = (traceIdx.current + 1) % analysis.reflections.length;
     const index = traceIdx.current;
     if (traceRaf.current != null) cancelAnimationFrame(traceRaf.current);
@@ -85,7 +90,7 @@ export function ExploreModule({ ctx }: { ctx: RoomLabCtx }) {
   const bezel: BezelItem[] = [
     { k: 'MODE', v: mode ? fmtHz(mode.f) : '—', flex: 1.1 },
     { k: 'AT EARS', v: `${Math.round(pAtEars * 100)} %`, tint: fieldLevelColor(pAtEars) },
-    { k: 'EARLY', v: `${early.length} < 15 ms` , flex: 1.1 },
+    { k: 'EARLY <15ms', v: `${early.length}`, flex: 1.1 },
     { k: '1ST', v: first ? `+${first.delayMs.toFixed(1)} ms` : '—' },
   ];
 
@@ -96,11 +101,11 @@ export function ExploreModule({ ctx }: { ctx: RoomLabCtx }) {
       items: design.layouts.map((l, i) => ({ id: String(i), name: l.name })),
       selectedId: String(design.active),
       onSelect: (id) => update((d) => ({ ...d, active: Number(id) })),
-      name: (t) => t.name,
-      short: (t) => t.name.replace('Option ', 'OPT ').toUpperCase(),
-      title: 'SAVED POSITIONS',
+      name: (t) => t.name.toUpperCase(),
+      short: (t) => shortName(t.name),
+      title: 'KEPT POSITIONS',
       sticky: true,
-      blurb: () => 'Flip between saved positions while the plan and the readouts follow. SAVE copies the current positions into a slot.',
+      blurb: () => 'Flip between kept positions while the plan and the readouts follow. START is where the positions began; SAVE copies what is on the plan into OPTION A, OPTION B or back into START.',
     }),
     {
       kind: 'fader',
@@ -114,7 +119,7 @@ export function ExploreModule({ ctx }: { ctx: RoomLabCtx }) {
       },
       formatShort: (v) => {
         const m = modes[Math.round(v * Math.max(0, modes.length - 1))];
-        return m ? fmtHz(m.f) : '—';
+        return m ? `${Math.round(m.f)}Hz` : '—';
       },
       chooser: {
         title: 'ROOM MODE TO MAP',
@@ -145,7 +150,7 @@ export function ExploreModule({ ctx }: { ctx: RoomLabCtx }) {
               <TrayButton key={k} label={`${layers[k] ? '● ' : '○ '}${label}`} tint={layers[k] ? 'amber' : 'dim'} onPress={() => setLayers((s) => ({ ...s, [k]: !s[k] }))} />
             ))}
           </View>
-          <Caption>Mode pressure is the one selected mode, at ear height, on the amplitude colour standard: red = a pressure maximum, blue = a null.</Caption>
+          <Caption>Mode pressure is the one selected mode, at ear height, on the amplitude colour standard: red = a pressure maximum, blue = a null. The map shows the mode's SHAPE, not how strongly the speakers excite it. In multichannel the plan draws the L and R paths; tap a surround to see its own.</Caption>
         </View>
       ),
     },
@@ -154,7 +159,7 @@ export function ExploreModule({ ctx }: { ctx: RoomLabCtx }) {
       kind: 'group',
       id: 'save',
       label: 'SAVE',
-      valueLabel: lay.name.replace('Option ', 'OPT ').toUpperCase().slice(0, 7),
+      valueLabel: shortName(lay.name),
       render: () => <SaveTray ctx={ctx} />,
     },
   ];
@@ -168,22 +173,22 @@ export function ExploreModule({ ctx }: { ctx: RoomLabCtx }) {
   return (
     <RoomRackLayout
       rack={{ stage, badge: analysis.rectangular ? BADGE.exploreRect : BADGE.exploreApprox, bezel, params, initialParam: 'mode', hideDragTag: true }}
-      caption="Drag the listener through the pressure field and watch AT EARS change; drag a speaker and the reflection paths follow. MODE picks which room mode is mapped; TRACE animates the next reflection from speaker to surface to ear; SAVE keeps a position as Option A or B."
+      caption="Drag the listener through the pressure field and watch AT EARS change; drag a speaker and the reflection paths follow. MODE picks which room mode is mapped; TRACE shows the reflection paths and animates the next one from speaker to surface to ear; SAVE keeps a position as OPTION A or B beside START."
       wellTop={
         <View style={{ gap: 6 }}>
           {mode ? (
             <Text style={styles.line}>
-              {`${mode.kind} mode (${mode.nx},${mode.ny},${mode.nz}) at ${fmtHz(mode.f)}: the listener sits at ${Math.round(pAtEars * 100)} % of its maximum pressure — ${pAtEars > 0.8 ? 'a peak; that frequency will be heavy here' : pAtEars < 0.2 ? 'a null; that frequency nearly disappears here' : 'between peak and null'}.`}
+              {`${mode.kind} mode (${mode.nx},${mode.ny},${mode.nz}) at ${fmtHz(mode.f)}: the listener sits at ${Math.round(pAtEars * 100)} % of its maximum pressure — ${pAtEars > 0.8 ? 'a peak; that frequency will be heavy here' : pAtEars < 0.2 ? 'a null; that frequency nearly disappears here' : 'between peak and null'}. The map shows the mode's shape, not how strongly the speakers excite it.`}
             </Text>
           ) : null}
           {traced ? (
             <Text style={styles.line}>
-              {`Traced: ${traced.speaker} → ${surfaceName(traced)} → ears. Path ${fmtLen(traced.pathLen, units)} vs direct ${fmtLen(traced.directLen, units)}: arrives +${traced.delayMs.toFixed(1)} ms, about ${traced.levelDb.toFixed(0)} dB below the direct sound${traced.treatedBy ? ', through treatment' : ''} (ESTIMATED).`}
+              {`Traced: ${traced.speaker} → ${reflectionSurfaceName(traced)} → ears. Path ${fmtLen(traced.pathLen, units)} vs direct ${fmtLen(traced.directLen, units)}: arrives +${traced.delayMs.toFixed(1)} ms, about ${Math.abs(traced.levelDb).toFixed(0)} dB below the direct sound (${traced.offAxisDeg.toFixed(0)}° off the speaker's aim${traced.treatedBy ? ', through treatment' : ''}) — ESTIMATED.`}
             </Text>
           ) : null}
           {diff.length > 0 ? (
             <View style={styles.diff}>
-              <Text style={styles.diffHead}>{`"${design.layouts[0].name}" → "${lay.name}" — WHAT CHANGED`}</Text>
+              <Text style={styles.diffHead}>{`${shortName(design.layouts[0].name)} → ${lay.name.toUpperCase()} · WHAT CHANGED`}</Text>
               {diff.map((l, i) => (
                 <Text key={i} style={styles.diffLine}>
                   {`• ${l.text}  `}
@@ -199,8 +204,10 @@ export function ExploreModule({ ctx }: { ctx: RoomLabCtx }) {
         Below a few hundred hertz the room is the biggest equalizer in the chain. Every pair of parallel surfaces holds standing waves — room modes — at f = n·c/2L, with pressure maxima at the walls and corners and nulls at the quarter and half points, depending on the order. The map shows one mode at a time; the real bass response at your seat is all of them at once, driven by where the speakers are.
       </Body>
       <Body>
-        Early reflections are drawn by the image-source method: mirror the speaker in each wall, the floor and the ceiling, and the straight line from the image to your ear crosses the surface at the reflection point. The path-length difference is the arrival delay — 1 ms for every 34 cm. Reflections inside about 15 ms blur the stereo image and comb the tone; those are the ones treatment goes after.
+        Early reflections are drawn by the image-source method: mirror the speaker in each wall, the floor, the ceiling and the desk top, and the straight line from the image to your ear crosses the surface at the reflection point. The path-length difference is the arrival delay — 1 ms for every 34 cm. Reflections inside about 15 ms blur the stereo image and comb the tone; those are the ones treatment goes after. In a plan with an alcove, a path that would pass through another wall is dropped.
       </Body>
+      <Caption>Levels are a mid-band estimate from distance, surface absorption and a simple directivity curve (0 dB to 30° off the speaker's aim, −6 dB at 90°, −15 dB straight behind), so toe-in moves them; a speaker's measured data would replace the curve.</Caption>
+      <Caption>{SAFETY_LEVEL_POINTER}</Caption>
       <View style={{ gap: 3 }}>
         {PLAN_LEGEND.map((r) => (
           <View key={r.t} style={styles.legendRow}>
@@ -222,22 +229,18 @@ function modeBlurb(kind: 'axial' | 'tangential' | 'oblique'): string {
       : 'All three pairs at once — weaker still, but they fill in the gaps.';
 }
 
-function surfaceName(r: { surface: { kind: string; edge?: number } }): string {
-  return r.surface.kind === 'wall' ? `wall ${(r.surface.edge ?? 0) + 1}` : r.surface.kind;
-}
-
 function SaveTray({ ctx }: { ctx: RoomLabCtx }) {
   const { design, update, guest, saveCurrent } = ctx;
   const [saved, setSaved] = useState<string | null>(null);
   return (
     <View style={{ gap: 10 }}>
-      <TrayHeading>KEEP THESE POSITIONS AS</TrayHeading>
+      <TrayHeading>KEEP THESE POSITIONS AS: OPTION A / OPTION B / START</TrayHeading>
       <View style={styles.btnRow}>
         {OPTION_NAMES.map((n) => (
           <TrayButton key={n} label={n.toUpperCase()} onPress={() => update((d) => saveLayoutAs(d, n))} />
         ))}
       </View>
-      <Caption>{`Flip between them with the LAYOUT key. ${design.layouts.length} position${design.layouts.length === 1 ? '' : 's'} kept in this design.`}</Caption>
+      <Caption>{`START is the baseline the diff reads from; OPTION A and B are the alternatives. Flip between them with the LAYOUT key. ${design.layouts.length} position${design.layouts.length === 1 ? '' : 's'} kept in this design.`}</Caption>
       <TrayHeading>SAVE THE WHOLE DESIGN</TrayHeading>
       <TrayButton
         label={guest ? 'SAVE (NOT KEPT — NOT SIGNED IN)' : 'SAVE DESIGN TO THIS DEVICE'}

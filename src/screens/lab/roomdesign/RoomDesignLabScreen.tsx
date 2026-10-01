@@ -38,7 +38,7 @@ import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, useLabNav } from '../kit/LabNavBar';
 import type { RoomLabCtx } from './labCtx';
 import { ROOM_LAB_ID, ROOM_MODULES, type RoomModuleId } from './registry';
-import { analyze, defaultDesign, type RoomDesign } from './roomModel';
+import { analyze, defaultDesign, START_LAYOUT, type RoomDesign } from './roomModel';
 import { IntroModule } from './modules/modIntro';
 import { CreateModule } from './modules/modCreate';
 import { MonitoringModule } from './modules/modMonitoring';
@@ -91,7 +91,9 @@ export function RoomDesignLabScreen() {
       },
       loadSaved: (id: string) => {
         const d = saved.find((x) => x.id === id);
-        if (d) setDesign({ ...d, active: Math.min(d.active, d.layouts.length - 1) });
+        // A design saved before the baseline slot was renamed carries
+        // "Current"; it is the START slot now.
+        if (d) setDesign({ ...d, layouts: d.layouts.map((l, i) => (i === 0 && l.name === 'Current' ? { ...l, name: START_LAYOUT } : l)), active: Math.min(d.active, d.layouts.length - 1) });
       },
       deleteSaved: (id: string) => deleteRoomDesign(id),
     }),

@@ -90,6 +90,7 @@ export function RoomPlanView({
   onDrag,
   onDragEnd,
   trace = null,
+  highlight = null,
 }: {
   w: number;
   h: number;
@@ -104,6 +105,8 @@ export function RoomPlanView({
   onDrag?: (id: string, p: Pt) => void;
   onDragEnd?: (id: string) => void;
   trace?: Trace;
+  /** A just-added item (`tr_<id>` / `op_<id>`) wears a ring for a moment. */
+  highlight?: string | null;
 }) {
   const s = useStageTextScale();
   const gw = w / s;
@@ -225,6 +228,14 @@ export function RoomPlanView({
   const Lsp = spk('L');
   const Rsp = spk('R');
   const lisPx = T.toPx(lay.listener);
+  // Multichannel: 26 paths over a heat map is a wall of lines. Draw the L
+  // and R paths, plus the selected speaker's own (cognitive review 19).
+  const multi = lay.speakers.filter((s) => s.role !== 'SUB').length > 2;
+  const shownReflections = multi ? analysis.reflections.filter((r) => r.speaker === 'L' || r.speaker === 'R' || r.speaker === selected) : analysis.reflections;
+  // Role letters go INSIDE the cabinet in multichannel, and are hidden when
+  // the cabinet is almost touching the front wall (cognitive review 10).
+  const frontEdgeDist = (p: Pt) => distToEdge(p, v, 0).dist;
+  const labelMode = (sp: Speaker): 'inside' | 'above' | 'none' => (multi ? 'inside' : frontEdgeDist(sp) * T.k < 22 ? 'none' : 'above');
 
   return (
     <View style={{ width: w, height: h }} {...(edit === 'none' ? {} : pan.panHandlers)} accessible accessibilityLabel={`Room plan, ${fmtLen(b.width, units)} by ${fmtLen(b.length, units)}`}>
@@ -254,17 +265,27 @@ export function RoomPlanView({
         <Path d={outlinePath} fill="none" stroke={WALL} strokeWidth={3} strokeLinejoin="round" />
         {/* Openings: doors swing into the room, windows glaze the wall */}
         {room.openings.map((o) => (
-          <OpeningGlyph key={o.id} o={o} v={v} T={T} centroid={centroid} />
+          <OpeningGlyph key={o.id} o={o} v={v} T={T} centroid={centroid} fs={fs} flash={highlight === `op_${o.id}`} />
         ))}
 
         {/* Wall treatment */}
         {layers.treatment !== false
           ? design.treatment.filter((t) => t.kind !== 'rug').map((t) => <TreatmentGlyph key={t.id} t={t} T={T} room={room} centroid={centroid} fs={fs} selected={selected === `tr_${t.id}`} />)
           : null}
+        {/* The ring on a just-added treatment item */}
+        {highlight && highlight.startsWith('tr_')
+          ? (() => {
+              const t = design.treatment.find((x) => `tr_${x.id}` === highlight);
+              const c = t ? treatmentCentre(t, room) : null;
+              if (!c) return null;
+              const q = T.toPx(c);
+              return <Circle cx={q.x} cy={q.y} r={Math.max(14, ((t?.width ?? 0.6) * T.k) / 2 + 8)} fill="none" stroke={GREEN} strokeWidth={2} opacity={0.9} />;
+            })()
+          : null}
 
         {/* Reflection paths */}
         {layers.reflections
-          ? analysis.reflections.map((r, i) => <ReflectionPath key={i} r={r} T={T} lay={lay} fs={fs} />)
+          ? shownReflections.map((r, i) => <ReflectionPath key={i} r={r} T={T} lay={lay} fs={fs} />)
           : null}
 
         {/* Boundary distance lines */}
@@ -312,7 +333,7 @@ export function RoomPlanView({
           sp.role === 'SUB' ? (
             <SubTop key={sp.role} sp={sp} T={T} fs={fs} selected={selected === sp.role} />
           ) : (
-            <SpeakerTop key={sp.role} sp={sp} T={T} fs={fs} selected={selected === sp.role} />
+            <SpeakerTop key={sp.role} sp={sp} T={T} fs={fs} selected={selected === sp.role} label={labelMode(sp)} />
           ),
         )}
 
@@ -325,10 +346,19 @@ export function RoomPlanView({
         {/* Dimensions */}
         {layers.dims !== false ? <DimensionLabels b={b} T={T} units={units} fs={fs} rectangular={analysis.rectangular} /> : null}
 
-        {/* Mode caption */}
-        {heat ? (
+        {/* Mode caption — two lines on a narrow glass so nothing is cropped */}
+        {heat && gw < 300 ? (
+          <G>
+            <SvgText x={6} y={gh - fs - 8} fill={colors.textSub} fontSize={fs} fontFamily={fonts.oswaldSemiBold}>
+              {`MODE (${heat.mode.nx},${heat.mode.ny},${heat.mode.nz}) ${heat.mode.f.toFixed(1)} Hz · ${heat.mode.kind.toUpperCase()}`}
+            </SvgText>
+            <SvgText x={6} y={gh - 6} fill={colors.textSub} fontSize={fs} fontFamily={fonts.oswaldSemiBold}>
+              PRESSURE AT EAR HEIGHT · SHAPE, NOT EXCITATION
+            </SvgText>
+          </G>
+        ) : heat ? (
           <SvgText x={6} y={gh - 6} fill={colors.textSub} fontSize={fs} fontFamily={fonts.oswaldSemiBold}>
-            {`MODE (${heat.mode.nx},${heat.mode.ny},${heat.mode.nz}) ${heat.mode.f.toFixed(1)} Hz · ${heat.mode.kind.toUpperCase()} · PRESSURE AT EAR HEIGHT`}
+            {`MODE (${heat.mode.nx},${heat.mode.ny},${heat.mode.nz}) ${heat.mode.f.toFixed(1)} Hz · ${heat.mode.kind.toUpperCase()} · PRESSURE AT EAR HEIGHT · SHAPE, NOT EXCITATION`}
           </SvgText>
         ) : null}
       </Svg>
@@ -407,7 +437,7 @@ export function treatmentCentre(t: Treatment, room: RoomDesign['room']): Pt | nu
 
 /* ───────────────────────────────── glyphs ───────────────────────────────── */
 
-function SpeakerTop({ sp, T, fs, selected }: { sp: Speaker; T: PlanTransform; fs: number; selected: boolean }) {
+function SpeakerTop({ sp, T, fs, selected, label = 'above' }: { sp: Speaker; T: PlanTransform; fs: number; selected: boolean; label?: 'inside' | 'above' | 'none' }) {
   const q = T.toPx(sp);
   // A nearfield monitor is ~20 cm wide and ~25 cm deep; never under MIN_GLYPH.
   const wdt = Math.max(MIN_GLYPH, 0.2 * T.k);
@@ -426,9 +456,15 @@ function SpeakerTop({ sp, T, fs, selected }: { sp: Speaker; T: PlanTransform; fs
       <Circle cx={0} cy={dep * 0.3} r={Math.max(2, wdt * 0.16)} fill="#101116" stroke={SPK_HI} strokeWidth={0.8} />
       {/* The coverage hint: a pale wedge out of the baffle */}
       <Path d={`M0,${dep * 0.45} L${-wdt * 0.9},${dep * 0.45 + wdt * 1.1} A${wdt * 1.45},${wdt * 1.45} 0 0 0 ${wdt * 0.9},${dep * 0.45 + wdt * 1.1} Z`} fill="rgba(127,212,255,0.06)" stroke="rgba(127,212,255,0.25)" strokeWidth={0.8} />
-      <SvgText x={0} y={-dep * 0.55 - 4} fill={selected ? AMBER : colors.textSecondary} fontSize={fs + 1} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" transform={`rotate(${-rot})`}>
-        {sp.role}
-      </SvgText>
+      {label === 'above' ? (
+        <SvgText x={0} y={-dep * 0.55 - 4} fill={selected ? AMBER : colors.textSecondary} fontSize={fs + 1} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" transform={`rotate(${-rot})`}>
+          {sp.role}
+        </SvgText>
+      ) : label === 'inside' ? (
+        <SvgText x={0} y={-dep * 0.1} fill={selected ? AMBER : '#c9ccd4'} fontSize={Math.max(9, Math.min(fs + 1, wdt * 0.5))} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" transform={`rotate(${-rot})`}>
+          {sp.role}
+        </SvgText>
+      ) : null}
     </G>
   );
 }
@@ -473,7 +509,7 @@ function ListenerTop({ p, size, selected }: { p: Pt; size: number; selected: boo
   );
 }
 
-function OpeningGlyph({ o, v, T, centroid }: { o: RoomDesign['room']['openings'][number]; v: Pt[]; T: PlanTransform; centroid: Pt }) {
+function OpeningGlyph({ o, v, T, centroid, fs, flash }: { o: RoomDesign['room']['openings'][number]; v: Pt[]; T: PlanTransform; centroid: Pt; fs: number; flash?: boolean }) {
   const a = v[o.wall % v.length];
   const bq = v[(o.wall + 1) % v.length];
   const len = Math.hypot(bq.x - a.x, bq.y - a.y) || 1;
@@ -484,6 +520,16 @@ function OpeningGlyph({ o, v, T, centroid }: { o: RoomDesign['room']['openings']
   const half = o.width / 2;
   const p1 = T.toPx({ x: c.x - ux * half, y: c.y - uy * half });
   const p2 = T.toPx({ x: c.x + ux * half, y: c.y + uy * half });
+  const cPx = T.toPx(c);
+  // The wall number, just inside the wall at the opening's centre, so the
+  // tray's "W2" and the plan agree (cognitive review 9).
+  const tagPos = T.toPx({ x: c.x + n.x * 0.22, y: c.y + n.y * 0.22 });
+  const tag = (
+    <SvgText x={tagPos.x} y={tagPos.y + fs * 0.35} fill={flash ? AMBER : '#8d919c'} fontSize={fs} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">
+      {`W${(o.wall % v.length) + 1}`}
+    </SvgText>
+  );
+  const ring = flash ? <Circle cx={cPx.x} cy={cPx.y} r={Math.max(14, (o.width * T.k) / 2 + 6)} fill="none" stroke={AMBER} strokeWidth={2} /> : null;
   if (o.kind === 'window') {
     const off = { x: n.x * 0.06, y: n.y * 0.06 };
     const q1 = T.toPx({ x: c.x - ux * half + off.x, y: c.y - uy * half + off.y });
@@ -492,11 +538,19 @@ function OpeningGlyph({ o, v, T, centroid }: { o: RoomDesign['room']['openings']
       <G>
         <Line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#9fd8ff" strokeWidth={3} opacity={0.85} />
         <Line x1={q1.x} y1={q1.y} x2={q2.x} y2={q2.y} stroke="#9fd8ff" strokeWidth={1} opacity={0.6} />
+        {tag}
+        {ring}
       </G>
     );
   }
   if (o.kind === 'opening') {
-    return <Line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#0c0c0f" strokeWidth={4} />;
+    return (
+      <G>
+        <Line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#0c0c0f" strokeWidth={4} />
+        {tag}
+        {ring}
+      </G>
+    );
   }
   // A door: the wall opens, the leaf stands into the room, the swing arcs.
   const leafEnd = T.toPx({ x: c.x - ux * half + n.x * o.width, y: c.y - uy * half + n.y * o.width });
@@ -506,6 +560,8 @@ function OpeningGlyph({ o, v, T, centroid }: { o: RoomDesign['room']['openings']
       <Line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#0c0c0f" strokeWidth={4} />
       <Line x1={p1.x} y1={p1.y} x2={leafEnd.x} y2={leafEnd.y} stroke="#b08a56" strokeWidth={2.2} strokeLinecap="round" />
       <Path d={`M${leafEnd.x},${leafEnd.y} A${rPx},${rPx} 0 0 ${arcSweep(ux, uy, n)} ${p2.x},${p2.y}`} fill="none" stroke="#b08a56" strokeWidth={0.9} strokeDasharray="2 2" />
+      {tag}
+      {ring}
     </G>
   );
 }
@@ -521,9 +577,12 @@ function FeatureGlyph({ f, T, fs, selected, draggable }: { f: RoomDesign['room']
   const D = f.d * T.k;
   const stroke = selected ? AMBER : draggable ? '#6b6d76' : '#4a4c55';
   const label = f.kind.toUpperCase();
+  // The desk is modelled (its top bounces); everything else is drawn dotted
+  // — "not modelled" — so the picture matches the words (cognitive review 24).
+  const modelled = f.kind === 'desk';
   return (
     <G>
-      <Rect x={q.x} y={q.y} width={W} height={D} rx={f.kind === 'sofa' ? 4 : 2} fill="#1d1e24" stroke={stroke} strokeWidth={1.1} />
+      <Rect x={q.x} y={q.y} width={W} height={D} rx={f.kind === 'sofa' ? 4 : 2} fill="#1d1e24" stroke={stroke} strokeWidth={1.1} strokeDasharray={modelled ? undefined : '3 3'} />
       {f.kind === 'desk' ? (
         <G>
           {/* two displays on the desk */}
@@ -668,7 +727,7 @@ function ReflectionPath({ r, T, lay, fs }: { r: Reflection; T: PlanTransform; la
       <Polyline points={`${a.x},${a.y} ${p.x},${p.y} ${l.x},${l.y}`} fill="none" stroke={col} strokeWidth={vertical ? 1 : 1.4} strokeDasharray={vertical ? '2 3' : treated ? '1 2' : undefined} />
       {vertical ? (
         <SvgText x={p.x} y={p.y - 4} fill={col} fontSize={fs} fontFamily={fonts.mono} textAnchor="middle">
-          {r.surface.kind === 'ceiling' ? '▲' : '▼'}
+          {r.surface.kind === 'ceiling' ? '▲' : r.surface.kind === 'desk' ? '◆' : '▼'}
         </SvgText>
       ) : (
         <Circle cx={p.x} cy={p.y} r={3.2} fill={treated ? '#2a2a30' : col} stroke={col} strokeWidth={1} />
@@ -709,13 +768,24 @@ function BoundaryLines({ design, analysis, T, fs }: { design: RoomDesign; analys
   const v = room.vertices;
   const units = room.units;
   const lines: ReactNode[] = [];
+  // The label sits at the WALL end of the leader, just outside the outline,
+  // so it never lands on the speaker's letter or cabinet (cognitive review 10).
   const dim = (from: Pt, to: Pt, text: string, key: string, col = '#9aa0ad') => {
     const a = T.toPx(from);
     const bq = T.toPx(to);
+    const dx = bq.x - a.x;
+    const dy = bq.y - a.y;
+    const len = Math.hypot(dx, dy) || 1;
+    const ux = dx / len;
+    const uy = dy / len;
+    // Past the wall by ~1.2 line heights along the leader's direction.
+    const tx = bq.x + ux * (fs * 1.2);
+    const ty = bq.y + uy * (fs * 1.2) + fs * 0.35;
+    const anchor = Math.abs(ux) > 0.5 ? (ux > 0 ? 'start' : 'end') : 'middle';
     lines.push(
       <G key={key}>
         <Line x1={a.x} y1={a.y} x2={bq.x} y2={bq.y} stroke={col} strokeWidth={0.9} strokeDasharray="3 2" />
-        <SvgText x={(a.x + bq.x) / 2} y={(a.y + bq.y) / 2 - 3} fill={col} fontSize={fs} fontFamily={fonts.mono} textAnchor="middle">
+        <SvgText x={tx} y={ty} fill={col} fontSize={fs} fontFamily={fonts.mono} textAnchor={anchor}>
           {text}
         </SvgText>
       </G>,

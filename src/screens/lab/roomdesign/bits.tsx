@@ -46,14 +46,17 @@ export function Card({ children }: { children: ReactNode }) {
   return <View style={styles.card}>{children}</View>;
 }
 
-/** A suggestion / observation row: tier tag, level glyph, text. */
-export function SuggestionRow({ s }: { s: Suggestion }) {
-  const glyph = s.level === 'ok' ? '✓' : s.level === 'try' ? '▸' : '!';
-  const col = s.level === 'ok' ? colors.green : s.level === 'try' ? colors.amber : '#ff8a5c';
+/** A suggestion / observation row: tier tag, level glyph, text. `!` look at
+ *  this · `▸` worth testing · `✓` as it should be · `ⓘ` normal, informational.
+ *  `tag` prints a small label over the text ("TRY FIRST"). */
+export function SuggestionRow({ s, tag }: { s: Suggestion; tag?: string }) {
+  const glyph = s.level === 'ok' ? '✓' : s.level === 'try' ? '▸' : s.level === 'info' ? 'ⓘ' : '!';
+  const col = s.level === 'ok' ? colors.green : s.level === 'try' ? colors.amber : s.level === 'info' ? colors.textSub : '#ff8a5c';
   return (
     <View style={styles.sugRow}>
       <Text style={[styles.sugGlyph, { color: col }]}>{glyph}</Text>
       <View style={{ flex: 1, gap: 3 }}>
+        {tag ? <Text style={styles.sugTag}>{tag}</Text> : null}
         <Text style={styles.sugText}>{s.text}</Text>
         <Text style={[styles.sugTier, { color: TIER_COLOR[s.tier] }]}>{s.tier}</Text>
       </View>
@@ -130,7 +133,7 @@ export function Chips<T extends string>({ items, value, onPick }: { items: reado
       {items.map((it) => {
         const on = value === it.id;
         return (
-          <Pressable key={it.id} onPress={() => onPick(it.id)} style={[styles.chip, on && styles.chipOn]} accessibilityRole="button" accessibilityState={{ selected: on }} accessibilityLabel={it.label}>
+          <Pressable key={it.id} onPress={() => onPick(it.id)} hitSlop={8} style={[styles.chip, on && styles.chipOn]} accessibilityRole="button" accessibilityState={{ selected: on }} accessibilityLabel={it.label}>
             <Text style={[styles.chipText, on && styles.chipTextOn]}>{it.label}</Text>
           </Pressable>
         );
@@ -147,14 +150,18 @@ export function TrayHeading({ children }: { children: ReactNode }) {
 export function TrayButton({ label, onPress, tint = 'amber', disabled }: { label: string; onPress: () => void; tint?: 'amber' | 'green' | 'dim'; disabled?: boolean }) {
   const col = tint === 'green' ? colors.green : tint === 'dim' ? colors.textSub : colors.amber;
   return (
-    <Pressable onPress={onPress} disabled={disabled} style={[styles.trayBtn, { borderColor: col }, disabled && { opacity: 0.4 }]} accessibilityRole="button" accessibilityLabel={label}>
+    <Pressable onPress={onPress} disabled={disabled} hitSlop={8} style={[styles.trayBtn, { borderColor: col }, disabled && { opacity: 0.4 }]} accessibilityRole="button" accessibilityLabel={label}>
       <Text style={[styles.trayBtnText, { color: col }]}>{label}</Text>
     </Pressable>
   );
 }
 
+/** The hearing rule (safety review 6 merged with audio review 16). */
 export const SAFETY_LEVEL_NOTE =
-  'Set your monitoring level with an SPL meter, not by feel: around 75–85 dB C-weighted at the listening position is the usual range for long sessions, and loud bass passages push higher. Hearing damage is cumulative and permanent — turn down before you chase bass by turning up.';
+  'Set your monitoring level with an SPL meter, not by feel. Calibrate one speaker at a time with pink noise: about 79–85 dB SPL (C-weighted, slow) per speaker at the listening position, the lower end for a small room — and work at about 75–80 dB C-weighted for long sessions in a small room, with 85 only briefly. 85 dB(A) for eight hours is the occupational limit and every +3 dB halves the safe time, so mix lower than that and take a 10–15-minute quiet break every hour. Hearing damage is cumulative and permanent — turn down before you chase bass by turning up.';
+
+/** The one-line pointer for modules that do not carry the whole note. */
+export const SAFETY_LEVEL_POINTER = 'Hearing first: calibrate with an SPL meter (about 75–80 dB C for long sessions in a small room, 85 only briefly) and take a quiet break every hour — the full note is in MONITORING SETUP.';
 
 const styles = StyleSheet.create({
   tag: { flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', borderWidth: 1, borderRadius: 6, paddingHorizontal: 7, paddingVertical: 3, flexWrap: 'wrap' },
@@ -169,6 +176,7 @@ const styles = StyleSheet.create({
   sugGlyph: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, width: 14, textAlign: 'center', lineHeight: 20 },
   sugText: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
   sugTier: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2 },
+  sugTag: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.3, color: '#ff8a5c' },
   kv: { flexDirection: 'row', justifyContent: 'space-between', gap: 10, paddingVertical: 2 },
   kvK: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textSub, flexShrink: 1 },
   kvV: { fontFamily: fonts.mono, fontSize: 13, color: colors.amber, textAlign: 'right' },
@@ -183,6 +191,6 @@ const styles = StyleSheet.create({
   chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8, color: colors.textSubAlt },
   chipTextOn: { color: colors.amber },
   trayHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.4, color: colors.textSub, marginTop: 4 },
-  trayBtn: { borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, minHeight: 40, justifyContent: 'center', alignItems: 'center', backgroundColor: '#101114' },
+  trayBtn: { borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, minHeight: 44, justifyContent: 'center', alignItems: 'center', backgroundColor: '#101114' },
   trayBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1 },
 });

@@ -142,10 +142,10 @@ export function RoomSideView({
         <Line x1={floorR.x} y1={floorR.y} x2={rearTop.x} y2={rearTop.y} stroke={WALL} strokeWidth={3} />
         <Polyline points={ceilingPts} fill="none" stroke={WALL} strokeWidth={3} strokeLinejoin="round" />
 
-        {/* Furniture (the desk) */}
+        {/* Furniture: the desk (modelled) solid, the rest dotted */}
         {room.features.map((f) => {
           const q = toSide({ y: f.y - f.d / 2, z: f.h });
-          return <Rect key={f.id} x={q.x} y={q.y} width={f.d * T.k} height={f.h * T.k} fill="#1d1e24" stroke="#4a4c55" strokeWidth={1} />;
+          return <Rect key={f.id} x={q.x} y={q.y} width={f.d * T.k} height={f.h * T.k} fill="#1d1e24" stroke="#4a4c55" strokeWidth={1} strokeDasharray={f.kind === 'desk' ? undefined : '3 3'} />;
         })}
 
         {/* Treatment seen from the side: cloud under the ceiling, rug on the floor, front-wall panels */}
@@ -189,7 +189,7 @@ export function RoomSideView({
                     <Polyline points={`${a.x},${a.y} ${p.x},${p.y} ${lisPx.x},${lisPx.y}`} fill="none" stroke={col} strokeWidth={1.3} strokeDasharray={r.treatedBy ? '1 2' : undefined} />
                     <Circle cx={p.x} cy={p.y} r={3} fill={r.treatedBy ? '#2a2a30' : col} stroke={col} strokeWidth={1} />
                     <SvgText x={p.x + 5} y={p.y + (r.surface.kind === 'ceiling' ? fs + 2 : -4)} fill={col} fontSize={fs} fontFamily={fonts.mono}>
-                      {`+${r.delayMs.toFixed(1)} ms`}
+                      {`${r.surface.kind === 'desk' ? 'desk ' : ''}+${r.delayMs.toFixed(1)} ms`}
                     </SvgText>
                   </G>
                 );
@@ -233,9 +233,11 @@ export function RoomSideView({
         {/* The listener, in profile: bald head, ear at ear height, seated */}
         <ListenerSide p={lisPx} size={Math.max(16, 0.24 * T.k)} selected={selected === 'listener'} floorY={toSide({ y: 0, z: 0 }).y} />
 
-        {/* Heights */}
-        <SvgText x={frontTop.x + 4} y={frontTop.y + fs + 2} fill={colors.textSub} fontSize={fs} fontFamily={fonts.mono}>
-          {`${fmtLen(ceilingHeightAt(room, b.minY), units)} ${room.ceiling !== 'flat' ? `→ ${fmtLen(ceilingHeightAt(room, b.maxY), units)}` : ''}`}
+        {/* Heights — the ceiling label at the REAR corner (clear of "L/R" at
+            the front), the two height labels on separate baselines (cognitive
+            review 11) */}
+        <SvgText x={rearTop.x - 4} y={Math.min(frontTop.y, rearTop.y) + fs + 2} fill={colors.textSub} fontSize={fs} fontFamily={fonts.mono} textAnchor="end">
+          {`ceiling ${fmtLen(ceilingHeightAt(room, b.minY), units)}${room.ceiling !== 'flat' ? ` → ${fmtLen(ceilingHeightAt(room, b.maxY), units)}` : ''}`}
         </SvgText>
         <SvgText x={frontTop.x + 4} y={floorL.y - 4} fill="#6d6f78" fontSize={fs} fontFamily={fonts.oswaldSemiBold}>
           FRONT
@@ -244,7 +246,7 @@ export function RoomSideView({
           {`ears ${fmtLen(lis.earZ, units)}`}
         </SvgText>
         {Lsp ? (
-          <SvgText x={toSide(Lsp).x} y={floorL.y + fs + 3} fill={colors.amber} fontSize={fs} fontFamily={fonts.mono} textAnchor="middle">
+          <SvgText x={toSide(Lsp).x} y={floorL.y + 2 * fs + 6} fill={colors.amber} fontSize={fs} fontFamily={fonts.mono} textAnchor="middle">
             {`tweeter ${fmtLen(Lsp.z, units)}`}
           </SvgText>
         ) : null}
