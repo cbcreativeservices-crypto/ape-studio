@@ -141,10 +141,13 @@ test('GlassShape — records the glass size, reports its shape (or a fixed heigh
   assert.match(src, /useContext\(StageInFullScreen\)/);
   assert.match(src, /useContext\(StageAspectReport\)/);
   // The tallest glass is the design height; sideways the rack squeezes the
-  // glass to a strip, so the shape is the CURRENT glass width (w ÷ scale)
-  // over that height — never the strip.
+  // glass to a strip, so the shape is the CURRENT glass width over that
+  // height — never the strip. The frame now says the glass width outright
+  // (StageGlassWidth, 2026-10-01: the text scale is floored at 1, so w ÷ scale
+  // is no longer the glass width where the drawing is narrower than it);
+  // w ÷ scale stays as the fallback for a host that does not.
   assert.match(src, /if \(!cur \|\| h >= cur\.h\) glass\.current = \{ w, h \};/);
-  assert.match(src, /const glassWNow = w \/ ts;/);
+  assert.match(src, /const glassWNow = glassWTold > 0 \? glassWTold : w \/ ts;/);
   assert.match(src, /report\?\.aspect\(glassWNow \/ \(fixedH \?\? Math\.max\(MIN_GLASS_H, g\.h\)\), 0\)/);
   assert.match(src, /const MIN_GLASS_H = 158;/);
   // It lives beside the labs: rack/ and kit/ are not edited by this build.

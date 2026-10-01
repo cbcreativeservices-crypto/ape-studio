@@ -124,7 +124,11 @@ describe('FX labs — full screen', () => {
     const fs = read('screens/lab/rack/StageFullScreen.tsx');
     assert.match(fs, /<StageTextScale\.Provider value=\{textScale\}>/);
     assert.match(fs, /<StageInFullScreen\.Provider value>/);
-    assert.match(fs, /const textScale = glassW && glassW > 0 \? w \/ glassW : 1/, 'ts = rendered ÷ glass width');
+    // ts = rendered ÷ glass width, floored at 1 (2026-10-01: a short sideways
+    // body must not shrink the labels under their glass size).
+    assert.match(fs, /const textScale = textScaleFor\(w, glassW \?\? 0\)/, 'ts = rendered ÷ glass width (floored at 1)');
+    const math = read('screens/lab/rack/stageFitMath.ts');
+    assert.match(math, /return glassW > 0 \? Math\.max\(1, w \/ glassW\) : 1;/);
   });
 });
 
@@ -159,4 +163,12 @@ describe('FX labs — full-screen geometry at 390×844', () => {
     assert.ok(one.h <= 150 && one.w <= 828, 'fits a short body');
     assert.ok(one.ts > 0.9 && one.ts <= 1.02, `≈ glass size at 1× (${one.ts})`);
   });
+});
+
+// 2026-10-01: the glass shape is recorded only while upright, so a sideways
+// full screen is not the squeezed sideways glass strip.
+test('FX stage records its shape only while the phone is upright', () => {
+  const s = readFileSync('src/screens/lab/FxLabScreen.tsx', 'utf8');
+  assert.match(s, /const upright = win\.height >= win\.width;/);
+  assert.match(s, /if \(!inFull && upright && w > 0 && h > 0\) onShape\(w \/ h\);/);
 });

@@ -47,7 +47,7 @@
  * stop disables the whole chain (fxReset) so no lab leaks effects into another.
  */
 import { useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
@@ -303,9 +303,15 @@ function FxStage({
   const inFull = useContext(StageInFullScreen);
   const report = useContext(StageAspectReport);
   const hasAnim = anim != null;
+  // Record the glass shape only while the phone is UPRIGHT. Sideways the rack
+  // squeezes the glass to a ~100-pt strip (aspect ~8), and full screen would
+  // then open sideways as that same thin strip; the upright shape gives a
+  // proper sideways picture (owner 2026-10-01: "use the space better").
+  const win = useWindowDimensions();
+  const upright = win.height >= win.width;
   useEffect(() => {
-    if (!inFull && w > 0 && h > 0) onShape(w / h);
-  }, [inFull, w, h, onShape]);
+    if (!inFull && upright && w > 0 && h > 0) onShape(w / h);
+  }, [inFull, upright, w, h, onShape]);
   useEffect(() => {
     if (!report) return;
     if (!hasAnim) {

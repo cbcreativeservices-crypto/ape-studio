@@ -33,6 +33,16 @@ export const StageTextScale = createContext(1);
 export const useStageTextScale = (): number => useContext(StageTextScale);
 
 /**
+ * StageGlassWidth — the width the stage has on the glass right now, as the
+ * full-screen view was told it (`glassW`); 0 where unknown (on the glass).
+ * StageTextScale is floored at 1 (2026-10-01: labels never under their glass
+ * size), so `w ÷ textScale` no longer recovers the glass width where the
+ * full-screen drawing is narrower than the glass — a rule that needs the
+ * real glass width (GlassShape) reads it here instead.
+ */
+export const StageGlassWidth = createContext(0);
+
+/**
  * StageInFullScreen — true inside the FULL SCREEN view, false on the glass.
  * TitledStage reads it (owner 2026-09-29): the item's name prints above the
  * drawing in full screen always, but on the glass only where it costs the

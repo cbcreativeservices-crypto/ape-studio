@@ -28,7 +28,7 @@
  * not the frame's (StageFit covers width-driven SVG instruments).
  */
 import { useContext, useEffect, useRef, type MutableRefObject, type ReactNode } from 'react';
-import { StageAspectReport, StageInFullScreen, useStageTextScale } from './rack/stageAspect';
+import { StageAspectReport, StageGlassWidth, StageInFullScreen, useStageTextScale } from './rack/stageAspect';
 
 export type GlassSize = { w: number; h: number };
 
@@ -58,6 +58,9 @@ export function GlassShape({
   const full = useContext(StageInFullScreen);
   const report = useContext(StageAspectReport);
   const ts = useStageTextScale();
+  // The CURRENT glass width: the frame says it outright (2026-10-01); the
+  // old `w ÷ ts` is kept for a host that does not, and is exact there.
+  const glassWTold = useContext(StageGlassWidth);
   useEffect(() => {
     if (!full) {
       // Keep the tallest glass seen: a sideways pass squeezes it, and the
@@ -68,8 +71,8 @@ export function GlassShape({
     }
     const g = glass.current;
     if (!g) return;
-    const glassWNow = w / ts;
+    const glassWNow = glassWTold > 0 ? glassWTold : w / ts;
     report?.aspect(glassWNow / (fixedH ?? Math.max(MIN_GLASS_H, g.h)), 0);
-  }, [full, report, glass, w, h, ts, fixedH]);
+  }, [full, report, glass, w, h, ts, fixedH, glassWTold]);
   return <>{children}</>;
 }
