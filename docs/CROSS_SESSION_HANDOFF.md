@@ -232,6 +232,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-01 05:24 · ccode · 9bb9f01b
+changed: Mastering lab: fixes from the audio, safety and learning reviews
+affects other side: nothing (client only)
+needs: nothing
+
+
 ### 2026-10-01 05:02 · ccode · 862ea40b
 changed: Room Design lab: fixes from the audio, safety and learning reviews
 affects other side: nothing (client only)
