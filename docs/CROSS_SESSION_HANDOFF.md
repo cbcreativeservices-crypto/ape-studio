@@ -232,6 +232,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-30 23:40 · ccode · 49443882
+changed: Amplifier Principles lab rebuilt on the Rack Unit, full screen on every rig
+affects other side: nothing (client only)
+needs: nothing
+
+
 ### 2026-09-30 23:19 · ccode · 094063cc
 changed: Full screen across the labs + Explore STUDY NOW landing on Pro Audio Safety
 affects other side: nothing (client only)
