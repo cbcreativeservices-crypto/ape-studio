@@ -232,6 +232,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-01 01:09 · ccode · 88e1456e
+changed: FX labs: keep reporting the current glass shape in full screen
+affects other side: nothing (client only)
+needs: nothing
+
+
 ### 2026-10-01 01:03 · ccode · 34d6f7f3
 changed: Full screen uses the space better in every lab
 affects other side: nothing (client only)
