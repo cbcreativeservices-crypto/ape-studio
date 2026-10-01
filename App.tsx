@@ -97,8 +97,14 @@ import { EqLabScreen } from './src/screens/lab/fxLabConfigs';
 // labs by name, so the shared strip can be walked in the browser harness.
 import { CableLabScreen } from './src/screens/lab/cable/CableLabScreen';
 import { MicSelectLabScreen } from './src/screens/lab/micselect/MicSelectLabScreen';
+// Mastering Lab (2026-10-01): `#labpreview/MasteringLab` walks all eight modules.
+import { MasteringLabScreen } from './src/screens/lab/mastering/MasteringLabScreen';
+// Room Design & Monitoring Lab (2026-10-01): SVG plan + side views, so the
+// whole lab measures in the browser harness (`#labpreview/RoomDesignLab`).
+import { RoomDesignLabScreen } from './src/screens/lab/roomdesign/RoomDesignLabScreen';
 
 const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
+  RoomDesignLab: RoomDesignLabScreen as ComponentType,
   DeEsserLab: DeEsserLabScreen as ComponentType,
   SpeechLab: SpeechLabScreen as ComponentType,
   // Full-screen pass group 6 (2026-09-30): the patchbay, the connectors
@@ -169,6 +175,7 @@ const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   // only); the rack chrome and the Gain chain columns measure here.
   DigitalModule: DigitalModuleScreen as ComponentType,
   GainModule: GainModuleScreen as ComponentType,
+  MasteringLab: MasteringLabScreen as ComponentType,
 };
 /** `#labpreview/<Screen>/<id>` → a ToolPreview of that lab, every other lab
  *  screen registered as a sibling so in-lab navigation (a home → a module)

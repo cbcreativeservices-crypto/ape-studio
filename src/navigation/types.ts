@@ -347,6 +347,9 @@ export type RootStackParamList = {
    *  The hub plus five mode screens, each its own PagedLab. Member-only via
    *  the catalog leaf; the five children via MEMBER_ONLY_EXTRA_ROUTES. */
   SoundSystemsLab: undefined;
+  /** Room Design & Monitoring Lab (owner spec 2026-10-01) — the room planner
+   *  built on the Wave lab's room work. Member-only via the catalog leaf. */
+  RoomDesignLab: undefined;
   SoundSystemsLearn: undefined;
   SoundSystemsBuild: undefined;
   SoundSystemsRoute: undefined;
@@ -354,6 +357,10 @@ export type RootStackParamList = {
   SoundSystemsTroubleshoot: undefined;
   BeginningMixingLab: undefined;
   AdvancedMixingLab: undefined;
+  /** Mastering Lab: From Final Mix to Release (owner build order 2026-10-01)
+   *  — one screen, eight modules in sub-step mode; member-only via the
+   *  catalog leaf (Mixing category, training section). */
+  MasteringLab: undefined;
   /** Speech & Voice Lab (owner brief 2026-09-02) — visual, paged. */
   SpeechLab: undefined;
   /** Smart Processors family hub (owner brief 2026-09-02) and its V1 member. */

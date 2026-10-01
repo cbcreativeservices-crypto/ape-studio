@@ -1381,8 +1381,15 @@ export function LoudnessView(p: {
   height?: number;
   signal: SignalKey;
   phase: SharedValue<number>;
+  /** ADDITIVE (Mastering Lab, 2026-10-01): the reference line on the bars and
+   *  the history strip. Default −14 keeps the Visual Audio Analysis lab exactly
+   *  as before; `null` draws NO target line and no TARGET label — the
+   *  mastering lab's rule is that the right loudness depends on content and
+   *  destination, so its meter must not print one number as the target. */
+  targetLufs?: number | null;
 }) {
   const w = p.width;
+  const targetLufs = p.targetLufs === undefined ? -14 : p.targetLufs;
   // Taller face + bigger fonts (owner 2026-08-05: the display was too small to
   // read). The integrated LUFS numeral is the headline, enlarged up top.
   const h = p.height ?? 300;
@@ -1424,8 +1431,10 @@ export function LoudnessView(p: {
       ticks.lineTo(mX - 3 * ts, yL(v));
     }
     const target = Skia.Path.Make();
-    target.moveTo(mX - 6 * ts, yL(-14));
-    target.lineTo(sX + barW + 6 * ts, yL(-14));
+    if (targetLufs != null) {
+      target.moveTo(mX - 6 * ts, yL(targetLufs));
+      target.lineTo(sX + barW + 6 * ts, yL(targetLufs));
+    }
     // History frame + grid + the precomputed short-term polyline.
     const hFrame = Skia.Path.Make();
     hFrame.addRect(Skia.XYWHRect(histX, histTop, histW, histBot - histTop));
@@ -1435,8 +1444,10 @@ export function LoudnessView(p: {
       hGrid.lineTo(histX + histW, yH(v));
     }
     const hTarget = Skia.Path.Make();
-    hTarget.moveTo(histX, yH(-14));
-    hTarget.lineTo(histX + histW, yH(-14));
+    if (targetLufs != null) {
+      hTarget.moveTo(histX, yH(targetLufs));
+      hTarget.lineTo(histX + histW, yH(targetLufs));
+    }
     const poly = Skia.Path.Make();
     const fill = Skia.Path.Make();
     poly.moveTo(hx(0), yH(sim.short[0]));
@@ -1465,7 +1476,7 @@ export function LoudnessView(p: {
     iTick.moveTo(xLufs(sim.integratedLufs), lraY - 8 * ts);
     iTick.lineTo(xLufs(sim.integratedLufs), lraY + 8 * ts);
     return { panel, wells, ticks, target, hFrame, hGrid, hTarget, poly, fill, lraTrack, lraBar, iTick, lraY };
-  }, [w, h, sim, ts]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [w, h, sim, ts, targetLufs]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const mom = sim.momentary;
   const sho = sim.short;
@@ -1579,9 +1590,11 @@ export function LoudnessView(p: {
       <Lbl x={sX + barW / 2 - 12} y={barBot + 8 * ts} w={24} size={11} color="#9aa0ac">
         S
       </Lbl>
-      <Lbl x={mX - 6 * ts} y={yL(-14) - 13 * ts} w={90} align="left" size={9} color={AMBER}>
-        TARGET −14
-      </Lbl>
+      {targetLufs != null ? (
+        <Lbl x={mX - 6 * ts} y={yL(targetLufs) - 13 * ts} w={90} align="left" size={9} color={AMBER}>
+          {`TARGET ${targetLufs < 0 ? '−' + Math.abs(targetLufs) : targetLufs}`}
+        </Lbl>
+      ) : null}
       {/* Integrated LUFS — the headline number, enlarged up top. */}
       <Lbl x={cMid - 95} y={24 * ts} w={190} size={48} color={AMBER}>
         {sim.integratedLufs.toFixed(1)}

@@ -140,6 +140,11 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     labs: [
       { name: 'Wave Physics Laboratory', blurb: 'Reflection, absorption, interference, coverage, standing waves, arrays — room behaviour.', route: 'WaveLab', key: 'af_wave_physics' },
       { name: 'Speaker Placement & Coverage', blurb: 'Dispersion, aim, height and tilt — who stands in the beam, drawn as a live coverage map.', route: 'SpeakerLab', key: 'af_speaker_coverage', member: true },
+      // Room Design & Monitoring Lab (owner spec 2026-10-01): the planning
+      // tool that expands the Wave lab's room work — model your room, place
+      // the monitors and the listening position, explore, treat, review.
+      // Member-only like its neighbour (no credit key: progress, not credit).
+      { name: 'Room Design & Monitoring', blurb: 'Model your own room, place the speakers and the listening position, see likely modes and reflections, add treatment, save and compare — every number labelled calculated, estimated or measured.', route: 'RoomDesignLab', member: true },
     ],
   },
   {
@@ -202,6 +207,10 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       // Both labs LIVE (overnight build 2026-09-11; owner ratification pending).
       { name: 'Beginning Mixing', blurb: 'A repeatable process from session prep to a clear, balanced stereo mix — faders first, plugins later.', route: 'BeginningMixingLab', member: true },
       { name: 'Advanced Mixing', blurb: 'Complex routing, parallel paths, phase, translation, stems and professional delivery — repair and ship real mixes.', route: 'AdvancedMixingLab', member: true },
+      // Mastering Lab (owner build order 2026-10-01): the stage after the
+      // mix — what mastering can and cannot change, the room, the tools, the
+      // workflow, loudness at matched level, delivery, a fictional EP.
+      { name: 'Mastering Lab: From Final Mix to Release', blurb: 'The final listening, decision-making and delivery stage — what a master can and cannot change, the room, the tools, loudness at matched level, and delivering to the destination’s current spec.', route: 'MasteringLab', member: true },
     ],
   },
   // Production Workflow (owner GO 2026-09-17). The two flagship labs: what

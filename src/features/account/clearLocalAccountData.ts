@@ -50,6 +50,7 @@ import { resetMixingCommitments } from '../../screens/lab/mixing/kit';
 import { resetCelebrationsSeen } from '../celebration/celebrationSeen';
 import { resetGenCapSession } from '../tools/genCapSession';
 import { resetLocal as resetSoundSystemsProgress } from '../soundsystems/progress';
+import { resetLocal as resetRoomDesigns } from '../roomdesign/roomDesignStore';
 
 /**
  * Keys that MUST survive an account wipe: device-hardware calibration (per
@@ -304,4 +305,7 @@ export function resetAllLocalStores(): void {
   // Sound Systems Lab: solved faults, passed capstones, routing/operating
   // exercises — the departing learner's record, not the next one's.
   resetSoundSystemsProgress();
+  // Room Design & Monitoring Lab: the saved room designs are the departing
+  // user's rooms. Fenced, so an in-flight read cannot restore them.
+  resetRoomDesigns();
 }

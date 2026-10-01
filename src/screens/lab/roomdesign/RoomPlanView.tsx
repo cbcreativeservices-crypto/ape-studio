@@ -1,0 +1,782 @@
+/**
+ * RoomPlanView — the TOP-DOWN plan of the room: the main editing view of the
+ * Room Design & Monitoring Lab (owner spec 2026-10-01). SVG, so it draws on
+ * every platform (Skia is blank on the web preview) and its text scales with
+ * the viewBox in FULL SCREEN.
+ *
+ * Everything is laid out in GLASS UNITS (box ÷ StageTextScale) and painted
+ * through one viewBox, so at every zoom step the plan is the glass plan,
+ * larger — walls, speakers, the listener's head, panels, paths, labels. A
+ * touch is divided by the same scale before it is mapped to metres
+ * (planGeom.ts), so a drag lands under the finger at 1× and 2× alike.
+ *
+ * Real objects, never stand-ins (house visual standard): a monitor seen from
+ * above is a cabinet with a woofer; the listener is the line-art bald head
+ * (head-icon spec) seen from above with its ears; doors swing, windows glaze,
+ * panels have thickness. Level and pressure are coloured on the amplitude
+ * standard (features/tools/levelColor.ts): quiet blue → loud red.
+ */
+import { useContext, useEffect, useMemo, useRef, type ReactNode } from 'react';
+import { PanResponder, View } from 'react-native';
+import Svg, { Circle, G, Line, Path, Polygon, Polyline, Rect, Text as SvgText } from 'react-native-svg';
+import { colors, fonts } from '../../../theme/tokens';
+import { fieldLevelColor, levelColorForDb } from '../../../features/tools/levelColor';
+import { StageAspectReport, useStageTextScale } from '../rack/stageAspect';
+import { pickHandle, planTransform, touchToGlass, type PlanTransform } from './planGeom';
+import {
+  bounds,
+  distToEdge,
+  edgePoint,
+  fmtLen,
+  modePressure,
+  pointInPolygon,
+  type Analysis,
+  type Pt,
+  type Reflection,
+  type RoomDesign,
+  type Speaker,
+  type Treatment,
+} from './roomModel';
+
+export type PlanLayers = {
+  triangle?: boolean;
+  boundaries?: boolean;
+  reflections?: boolean;
+  modes?: boolean;
+  treatment?: boolean;
+  dims?: boolean;
+};
+
+export type PlanEditMode = 'room' | 'monitoring' | 'treatment' | 'none';
+
+export type PlanHandle = { id: string; px: number; py: number; r?: number };
+
+/** A reflection path being traced: the index into analysis.reflections and
+ *  the fraction of the path the pulse has travelled. */
+export type Trace = { index: number; progress: number } | null;
+
+const WALL = '#8d919c';
+const WALL_SOFT = '#3b3e47';
+const FLOOR_TINT: Record<string, string> = {
+  carpet: '#1a1714',
+  hardwood: '#241a10',
+  concrete: '#17181a',
+  tile: '#161a1c',
+};
+const HEAD_LINE = '#d9dbe0';
+const HEAD_PLATE = '#15161a';
+const SPK_HI = '#5b5f6a';
+const SPK_LO = '#26282e';
+const AMBER = colors.amber;
+const CYAN = colors.cyanBright;
+const GREEN = colors.green;
+const TREAT = '#c9a24a';
+const TREAT_OFF = '#4a4336';
+
+/** Minimum glyph size in glass units — a 20 cm monitor on a 30-pt/m plan
+ *  would be 6 pt; a glyph must stay readable on the glass. */
+const MIN_GLYPH = 15;
+
+export function RoomPlanView({
+  w,
+  h,
+  design,
+  analysis,
+  layers,
+  modeIndex = 0,
+  edit = 'none',
+  selected,
+  onSelect,
+  onDrag,
+  onDragEnd,
+  trace = null,
+}: {
+  w: number;
+  h: number;
+  design: RoomDesign;
+  analysis: Analysis;
+  layers: PlanLayers;
+  modeIndex?: number;
+  edit?: PlanEditMode;
+  selected?: string | null;
+  onSelect?: (id: string) => void;
+  /** A handle moved to a point in METRES. */
+  onDrag?: (id: string, p: Pt) => void;
+  onDragEnd?: (id: string) => void;
+  trace?: Trace;
+}) {
+  const s = useStageTextScale();
+  const gw = w / s;
+  const gh = h / s;
+  const room = design.room;
+  const lay = design.layouts[design.active] ?? design.layouts[0];
+  const b = useMemo(() => bounds(room), [room]);
+  const T = useMemo(() => planTransform(b, gw, gh), [b, gw, gh]);
+  const units = room.units;
+  const v = room.vertices;
+  const fs = 9.5; // glass points — the floor; grows with the zoom
+
+  // FULL SCREEN draws the plan in its OWN shape (the StageFit rule): 1× is
+  // the whole plan uncropped and FIT fills the body's other side. The shape
+  // is held while a corner is being dragged so the box never resizes under
+  // the finger; it settles once on release.
+  const report = useContext(StageAspectReport);
+  const dragging = useRef(false);
+  const aspectRef = useRef((b.width + 0.7) / (b.length + 0.7));
+  if (!dragging.current) aspectRef.current = (b.width + 0.7) / (b.length + 0.7);
+  const aspect = Math.round(aspectRef.current * 100) / 100;
+  useEffect(() => {
+    report?.aspect(aspect, 0);
+  }, [report, aspect]);
+
+  // ── drag handles ──────────────────────────────────────────────────────────
+  const handles: PlanHandle[] = useMemo(() => {
+    const out: PlanHandle[] = [];
+    if (edit === 'room') {
+      v.forEach((p, i) => {
+        const q = T.toPx(p);
+        out.push({ id: `v${i}`, px: q.x, py: q.y, r: 20 });
+      });
+      for (const f of room.features) {
+        const q = T.toPx(f);
+        out.push({ id: `f_${f.id}`, px: q.x, py: q.y, r: Math.max(16, (Math.min(f.w, f.d) * T.k) / 2) });
+      }
+    } else if (edit === 'monitoring') {
+      for (const sp of lay.speakers) {
+        const q = T.toPx(sp);
+        out.push({ id: sp.role, px: q.x, py: q.y, r: 22 });
+      }
+      const q = T.toPx(lay.listener);
+      out.push({ id: 'listener', px: q.x, py: q.y, r: 22 });
+    } else if (edit === 'treatment') {
+      for (const t of design.treatment) {
+        const c = treatmentCentre(t, room);
+        if (!c) continue;
+        const q = T.toPx(c);
+        out.push({ id: `tr_${t.id}`, px: q.x, py: q.y, r: 22 });
+      }
+    }
+    return out;
+  }, [edit, v, room, lay, design.treatment, T]);
+
+  const ref = useRef({ handles, T, s, onSelect, onDrag, onDragEnd });
+  ref.current = { handles, T, s, onSelect, onDrag, onDragEnd };
+  const drag = useRef<{ id: string; gx: number; gy: number } | null>(null);
+  const pan = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: (e) => {
+        const st = ref.current;
+        const g = touchToGlass(e.nativeEvent.locationX, e.nativeEvent.locationY, st.s);
+        const hit = pickHandle(st.handles, g.x, g.y);
+        if (!hit) return false;
+        drag.current = { id: hit.id, gx: g.x, gy: g.y };
+        dragging.current = true;
+        st.onSelect?.(hit.id);
+        return true;
+      },
+      onPanResponderMove: (_e, gs) => {
+        const st = ref.current;
+        const d = drag.current;
+        if (!d) return;
+        // Anchored delta: base + gesture ÷ scale reproduces the finger in
+        // glass units without re-basing (the Binaural stage's rule).
+        const gx = d.gx + gs.dx / st.s;
+        const gy = d.gy + gs.dy / st.s;
+        st.onDrag?.(d.id, st.T.toM({ x: gx, y: gy }));
+      },
+      onPanResponderRelease: () => {
+        const d = drag.current;
+        drag.current = null;
+        dragging.current = false;
+        if (d) ref.current.onDragEnd?.(d.id);
+      },
+      onPanResponderTerminate: () => {
+        drag.current = null;
+        dragging.current = false;
+      },
+      onPanResponderTerminationRequest: () => false,
+    }),
+  ).current;
+
+  // ── the plan outline ──────────────────────────────────────────────────────
+  const outlinePath = useMemo(() => roomOutlinePath(v, room.curvedWall, T), [v, room.curvedWall, T]);
+  const centroid = useMemo(() => polyCentroid(v), [v]);
+
+  // ── modal heat map at ear height (one mode) ───────────────────────────────
+  const heat = useMemo(() => {
+    if (!layers.modes) return null;
+    const mode = analysis.modes[Math.max(0, Math.min(analysis.modes.length - 1, modeIndex))];
+    if (!mode) return null;
+    const { L, W, H } = analysis.modalDims;
+    const cell = Math.max(0.12, Math.min(0.35, Math.max(b.width, b.length) / 22));
+    const cells: { x: number; y: number; c: string }[] = [];
+    for (let y = b.minY + cell / 2; y < b.maxY; y += cell) {
+      for (let x = b.minX + cell / 2; x < b.maxX; x += cell) {
+        if (!pointInPolygon({ x, y }, v)) continue;
+        const p = modePressure(L, W, H, mode, y - b.minY, x - b.minX, lay.listener.earZ);
+        cells.push({ x, y, c: fieldLevelColor(p) });
+      }
+    }
+    return { mode, cell, cells };
+  }, [layers.modes, analysis.modes, analysis.modalDims, modeIndex, b, v, lay.listener.earZ]);
+
+  const floorTint = FLOOR_TINT[room.floor] ?? '#17181a';
+  const spk = (role: string) => lay.speakers.find((x) => x.role === role);
+  const Lsp = spk('L');
+  const Rsp = spk('R');
+  const lisPx = T.toPx(lay.listener);
+
+  return (
+    <View style={{ width: w, height: h }} {...(edit === 'none' ? {} : pan.panHandlers)} accessible accessibilityLabel={`Room plan, ${fmtLen(b.width, units)} by ${fmtLen(b.length, units)}`}>
+      <Svg width={w} height={h} viewBox={`0 0 ${gw} ${gh}`}>
+        {/* Floor */}
+        <Path d={outlinePath} fill={floorTint} stroke="none" />
+
+        {/* Modal pressure field — the amplitude colour standard: blue quiet → red loud */}
+        {heat
+          ? heat.cells.map((c, i) => {
+              const q = T.toPx({ x: c.x - heat.cell / 2, y: c.y - heat.cell / 2 });
+              return <Rect key={i} x={q.x} y={q.y} width={heat.cell * T.k + 0.3} height={heat.cell * T.k + 0.3} fill={c.c} opacity={0.55} />;
+            })
+          : null}
+
+        {/* Rug (under everything else that stands in the room) */}
+        {layers.treatment !== false
+          ? design.treatment.filter((t) => t.kind === 'rug').map((t) => <RugGlyph key={t.id} t={t} T={T} selected={selected === `tr_${t.id}`} />)
+          : null}
+
+        {/* Furniture */}
+        {room.features.map((f) => (
+          <FeatureGlyph key={f.id} f={f} T={T} fs={fs} selected={selected === `f_${f.id}`} draggable={edit === 'room'} />
+        ))}
+
+        {/* Walls */}
+        <Path d={outlinePath} fill="none" stroke={WALL} strokeWidth={3} strokeLinejoin="round" />
+        {/* Openings: doors swing into the room, windows glaze the wall */}
+        {room.openings.map((o) => (
+          <OpeningGlyph key={o.id} o={o} v={v} T={T} centroid={centroid} />
+        ))}
+
+        {/* Wall treatment */}
+        {layers.treatment !== false
+          ? design.treatment.filter((t) => t.kind !== 'rug').map((t) => <TreatmentGlyph key={t.id} t={t} T={T} room={room} centroid={centroid} fs={fs} selected={selected === `tr_${t.id}`} />)
+          : null}
+
+        {/* Reflection paths */}
+        {layers.reflections
+          ? analysis.reflections.map((r, i) => <ReflectionPath key={i} r={r} T={T} lay={lay} fs={fs} />)
+          : null}
+
+        {/* Boundary distance lines */}
+        {layers.boundaries && analysis.stereo ? <BoundaryLines design={design} analysis={analysis} T={T} fs={fs} /> : null}
+
+        {/* Stereo triangle */}
+        {layers.triangle && Lsp && Rsp ? (
+          <G>
+            <Polyline
+              points={`${T.toPx(Lsp).x},${T.toPx(Lsp).y} ${lisPx.x},${lisPx.y} ${T.toPx(Rsp).x},${T.toPx(Rsp).y} ${T.toPx(Lsp).x},${T.toPx(Lsp).y}`}
+              fill="rgba(127,212,255,0.05)"
+              stroke={CYAN}
+              strokeWidth={1}
+              strokeDasharray="4 3"
+              opacity={0.8}
+            />
+            {analysis.stereo ? (
+              <SvgText x={lisPx.x} y={lisPx.y + 24} fill={CYAN} fontSize={fs + 1} fontFamily={fonts.mono} textAnchor="middle">
+                {`${analysis.stereo.angleDeg.toFixed(0)}°`}
+              </SvgText>
+            ) : null}
+          </G>
+        ) : null}
+
+        {/* Centre line of the plan */}
+        {layers.triangle ? (
+          <Line x1={T.toPx({ x: (b.minX + b.maxX) / 2, y: b.minY }).x} y1={T.toPx({ x: 0, y: b.minY }).y} x2={T.toPx({ x: (b.minX + b.maxX) / 2, y: b.maxY }).x} y2={T.toPx({ x: 0, y: b.maxY }).y} stroke={WALL_SOFT} strokeWidth={1} strokeDasharray="2 4" />
+        ) : null}
+
+        {/* Vertex handles (room editing) */}
+        {edit === 'room'
+          ? v.map((p, i) => {
+              const q = T.toPx(p);
+              const on = selected === `v${i}`;
+              return (
+                <G key={i}>
+                  <Circle cx={q.x} cy={q.y} r={on ? 7 : 5.5} fill={on ? AMBER : '#1a1b20'} stroke={AMBER} strokeWidth={1.4} />
+                </G>
+              );
+            })
+          : null}
+
+        {/* Speakers */}
+        {lay.speakers.map((sp) =>
+          sp.role === 'SUB' ? (
+            <SubTop key={sp.role} sp={sp} T={T} fs={fs} selected={selected === sp.role} />
+          ) : (
+            <SpeakerTop key={sp.role} sp={sp} T={T} fs={fs} selected={selected === sp.role} />
+          ),
+        )}
+
+        {/* The listener */}
+        <ListenerTop p={lisPx} size={Math.max(MIN_GLYPH, 0.22 * T.k)} selected={selected === 'listener'} />
+
+        {/* Trace pulse */}
+        {trace && layers.reflections ? <TracePulse r={analysis.reflections[trace.index]} progress={trace.progress} T={T} lay={lay} /> : null}
+
+        {/* Dimensions */}
+        {layers.dims !== false ? <DimensionLabels b={b} T={T} units={units} fs={fs} rectangular={analysis.rectangular} /> : null}
+
+        {/* Mode caption */}
+        {heat ? (
+          <SvgText x={6} y={gh - 6} fill={colors.textSub} fontSize={fs} fontFamily={fonts.oswaldSemiBold}>
+            {`MODE (${heat.mode.nx},${heat.mode.ny},${heat.mode.nz}) ${heat.mode.f.toFixed(1)} Hz · ${heat.mode.kind.toUpperCase()} · PRESSURE AT EAR HEIGHT`}
+          </SvgText>
+        ) : null}
+      </Svg>
+    </View>
+  );
+}
+
+/* ───────────────────────────────── helpers ──────────────────────────────── */
+
+function polyCentroid(v: Pt[]): Pt {
+  let x = 0;
+  let y = 0;
+  for (const p of v) {
+    x += p.x;
+    y += p.y;
+  }
+  return { x: x / Math.max(1, v.length), y: y / Math.max(1, v.length) };
+}
+
+/** Inward unit normal of edge i (toward the centroid). */
+export function inwardNormal(v: Pt[], i: number, centroid: Pt): Pt {
+  const a = v[i];
+  const b = v[(i + 1) % v.length];
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const len = Math.hypot(dx, dy) || 1;
+  let nx = -dy / len;
+  let ny = dx / len;
+  const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+  if (nx * (centroid.x - mid.x) + ny * (centroid.y - mid.y) < 0) {
+    nx = -nx;
+    ny = -ny;
+  }
+  return { x: nx, y: ny };
+}
+
+/** The outline path in glass units; a curved wall is drawn as a quadratic
+ *  bulge outward (the model treats it as its chord — disclosed). */
+function roomOutlinePath(v: Pt[], curved: number | undefined, T: PlanTransform): string {
+  if (v.length === 0) return '';
+  const c = polyCentroid(v);
+  let d = '';
+  for (let i = 0; i < v.length; i++) {
+    const a = T.toPx(v[i]);
+    const next = v[(i + 1) % v.length];
+    const bq = T.toPx(next);
+    if (i === 0) d += `M${a.x.toFixed(2)},${a.y.toFixed(2)} `;
+    if (curved === i) {
+      const n = inwardNormal(v, i, c);
+      const len = Math.hypot(next.x - v[i].x, next.y - v[i].y);
+      const bulge = Math.min(1.2, len * 0.22);
+      const mid = { x: (v[i].x + next.x) / 2 - n.x * bulge * 2, y: (v[i].y + next.y) / 2 - n.y * bulge * 2 };
+      const m = T.toPx(mid);
+      d += `Q${m.x.toFixed(2)},${m.y.toFixed(2)} ${bq.x.toFixed(2)},${bq.y.toFixed(2)} `;
+    } else {
+      d += `L${bq.x.toFixed(2)},${bq.y.toFixed(2)} `;
+    }
+  }
+  return d + 'Z';
+}
+
+/** The plan position of a treatment item (wall items from their edge). */
+export function treatmentCentre(t: Treatment, room: RoomDesign['room']): Pt | null {
+  const v = room.vertices;
+  if (t.kind === 'absorber' || t.kind === 'diffuser') {
+    if (t.wall == null || t.pos == null) return null;
+    return edgePoint(v, t.wall, t.pos);
+  }
+  if (t.kind === 'basstrap') {
+    if (t.wall == null) return null;
+    return v[t.wall % v.length];
+  }
+  if (t.x == null || t.y == null) return null;
+  return { x: t.x, y: t.y };
+}
+
+/* ───────────────────────────────── glyphs ───────────────────────────────── */
+
+function SpeakerTop({ sp, T, fs, selected }: { sp: Speaker; T: PlanTransform; fs: number; selected: boolean }) {
+  const q = T.toPx(sp);
+  // A nearfield monitor is ~20 cm wide and ~25 cm deep; never under MIN_GLYPH.
+  const wdt = Math.max(MIN_GLYPH, 0.2 * T.k);
+  const dep = wdt * 1.25;
+  const toe = sp.toeDeg;
+  const rot = sp.role === 'L' ? -toe : sp.role === 'R' ? toe : sp.role === 'LS' ? 180 + toe : sp.role === 'RS' ? 180 - toe : 0;
+  const bw = wdt / 2;
+  const fw = wdt * 0.58;
+  return (
+    <G transform={`translate(${q.x},${q.y}) rotate(${rot})`}>
+      {selected ? <Circle cx={0} cy={0} r={Math.max(bw, 11) + 6} fill="none" stroke={AMBER} strokeWidth={1.2} strokeDasharray="3 3" /> : null}
+      {/* Cabinet seen from above: the baffle (wide, toward +y) and the rear */}
+      <Polygon points={`${-bw},${-dep * 0.55} ${bw},${-dep * 0.55} ${fw},${dep * 0.45} ${-fw},${dep * 0.45}`} fill={SPK_LO} stroke={selected ? AMBER : SPK_HI} strokeWidth={1.2} strokeLinejoin="round" />
+      {/* The woofer and tweeter, seen edge-on as the baffle line */}
+      <Line x1={-fw * 0.8} y1={dep * 0.45} x2={fw * 0.8} y2={dep * 0.45} stroke="#0e0f12" strokeWidth={2.2} />
+      <Circle cx={0} cy={dep * 0.3} r={Math.max(2, wdt * 0.16)} fill="#101116" stroke={SPK_HI} strokeWidth={0.8} />
+      {/* The coverage hint: a pale wedge out of the baffle */}
+      <Path d={`M0,${dep * 0.45} L${-wdt * 0.9},${dep * 0.45 + wdt * 1.1} A${wdt * 1.45},${wdt * 1.45} 0 0 0 ${wdt * 0.9},${dep * 0.45 + wdt * 1.1} Z`} fill="rgba(127,212,255,0.06)" stroke="rgba(127,212,255,0.25)" strokeWidth={0.8} />
+      <SvgText x={0} y={-dep * 0.55 - 4} fill={selected ? AMBER : colors.textSecondary} fontSize={fs + 1} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" transform={`rotate(${-rot})`}>
+        {sp.role}
+      </SvgText>
+    </G>
+  );
+}
+
+function SubTop({ sp, T, fs, selected }: { sp: Speaker; T: PlanTransform; fs: number; selected: boolean }) {
+  const q = T.toPx(sp);
+  const sz = Math.max(MIN_GLYPH + 3, 0.4 * T.k);
+  return (
+    <G transform={`translate(${q.x},${q.y})`}>
+      {[1.5, 2.1].map((m) => (
+        <Circle key={m} cx={0} cy={0} r={(sz / 2) * m} fill="none" stroke={CYAN} strokeWidth={0.8} opacity={0.18} />
+      ))}
+      {selected ? <Circle cx={0} cy={0} r={sz / 2 + 6} fill="none" stroke={AMBER} strokeWidth={1.2} strokeDasharray="3 3" /> : null}
+      <Rect x={-sz / 2} y={-sz / 2} width={sz} height={sz} rx={2} fill={SPK_LO} stroke={selected ? AMBER : SPK_HI} strokeWidth={1.2} />
+      <Circle cx={-sz * 0.22} cy={sz * 0.38} r={sz * 0.09} fill="#0e0f12" />
+      <Circle cx={sz * 0.22} cy={sz * 0.38} r={sz * 0.09} fill="#0e0f12" />
+      <Circle cx={0} cy={-sz * 0.05} r={sz * 0.26} fill="#101116" stroke={SPK_HI} strokeWidth={0.8} />
+      <SvgText x={0} y={-sz / 2 - 4} fill={selected ? AMBER : colors.textSecondary} fontSize={fs + 1} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">
+        SUB
+      </SvgText>
+    </G>
+  );
+}
+
+/** The listener from above — head-icon spec: a light uniform stroke, no
+ *  fill but the readability plate. Nose toward the speakers (−y). */
+function ListenerTop({ p, size, selected }: { p: Pt; size: number; selected: boolean }) {
+  const r = size / 2;
+  return (
+    <G transform={`translate(${p.x},${p.y})`}>
+      {selected ? <Circle cx={0} cy={0} r={r + 8} fill="none" stroke={GREEN} strokeWidth={1.2} strokeDasharray="3 3" /> : null}
+      {/* shoulders */}
+      <Path d={`M${-r * 1.7},${r * 1.1} Q${-r * 1.6},${r * 0.1} ${-r * 0.7},${r * 0.35} M${r * 1.7},${r * 1.1} Q${r * 1.6},${r * 0.1} ${r * 0.7},${r * 0.35}`} fill="none" stroke={HEAD_LINE} strokeWidth={1.3} strokeLinecap="round" opacity={0.8} />
+      {/* head */}
+      <Circle cx={0} cy={0} r={r} fill={HEAD_PLATE} stroke={HEAD_LINE} strokeWidth={1.4} />
+      {/* ears */}
+      <Path d={`M${-r},${-r * 0.2} q${-r * 0.35},${r * 0.2} 0,${r * 0.5} M${r},${-r * 0.2} q${r * 0.35},${r * 0.2} 0,${r * 0.5}`} fill="none" stroke={HEAD_LINE} strokeWidth={1.3} strokeLinecap="round" />
+      {/* nose: the way they face */}
+      <Path d={`M${-r * 0.18},${-r} l${r * 0.18},${-r * 0.3} l${r * 0.18},${r * 0.3}`} fill="none" stroke={HEAD_LINE} strokeWidth={1.3} strokeLinecap="round" strokeLinejoin="round" />
+      <Circle cx={0} cy={0} r={r} fill="none" stroke={GREEN} strokeWidth={1.2} opacity={0.35} />
+    </G>
+  );
+}
+
+function OpeningGlyph({ o, v, T, centroid }: { o: RoomDesign['room']['openings'][number]; v: Pt[]; T: PlanTransform; centroid: Pt }) {
+  const a = v[o.wall % v.length];
+  const bq = v[(o.wall + 1) % v.length];
+  const len = Math.hypot(bq.x - a.x, bq.y - a.y) || 1;
+  const ux = (bq.x - a.x) / len;
+  const uy = (bq.y - a.y) / len;
+  const n = inwardNormal(v, o.wall % v.length, centroid);
+  const c = edgePoint(v, o.wall % v.length, o.pos);
+  const half = o.width / 2;
+  const p1 = T.toPx({ x: c.x - ux * half, y: c.y - uy * half });
+  const p2 = T.toPx({ x: c.x + ux * half, y: c.y + uy * half });
+  if (o.kind === 'window') {
+    const off = { x: n.x * 0.06, y: n.y * 0.06 };
+    const q1 = T.toPx({ x: c.x - ux * half + off.x, y: c.y - uy * half + off.y });
+    const q2 = T.toPx({ x: c.x + ux * half + off.x, y: c.y + uy * half + off.y });
+    return (
+      <G>
+        <Line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#9fd8ff" strokeWidth={3} opacity={0.85} />
+        <Line x1={q1.x} y1={q1.y} x2={q2.x} y2={q2.y} stroke="#9fd8ff" strokeWidth={1} opacity={0.6} />
+      </G>
+    );
+  }
+  if (o.kind === 'opening') {
+    return <Line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#0c0c0f" strokeWidth={4} />;
+  }
+  // A door: the wall opens, the leaf stands into the room, the swing arcs.
+  const leafEnd = T.toPx({ x: c.x - ux * half + n.x * o.width, y: c.y - uy * half + n.y * o.width });
+  const rPx = o.width * T.k;
+  return (
+    <G>
+      <Line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#0c0c0f" strokeWidth={4} />
+      <Line x1={p1.x} y1={p1.y} x2={leafEnd.x} y2={leafEnd.y} stroke="#b08a56" strokeWidth={2.2} strokeLinecap="round" />
+      <Path d={`M${leafEnd.x},${leafEnd.y} A${rPx},${rPx} 0 0 ${arcSweep(ux, uy, n)} ${p2.x},${p2.y}`} fill="none" stroke="#b08a56" strokeWidth={0.9} strokeDasharray="2 2" />
+    </G>
+  );
+}
+
+function arcSweep(ux: number, uy: number, n: Pt): 0 | 1 {
+  // The cross product's sign decides which way the quarter-circle turns.
+  return ux * n.y - uy * n.x > 0 ? 1 : 0;
+}
+
+function FeatureGlyph({ f, T, fs, selected, draggable }: { f: RoomDesign['room']['features'][number]; T: PlanTransform; fs: number; selected: boolean; draggable: boolean }) {
+  const q = T.toPx({ x: f.x - f.w / 2, y: f.y - f.d / 2 });
+  const W = f.w * T.k;
+  const D = f.d * T.k;
+  const stroke = selected ? AMBER : draggable ? '#6b6d76' : '#4a4c55';
+  const label = f.kind.toUpperCase();
+  return (
+    <G>
+      <Rect x={q.x} y={q.y} width={W} height={D} rx={f.kind === 'sofa' ? 4 : 2} fill="#1d1e24" stroke={stroke} strokeWidth={1.1} />
+      {f.kind === 'desk' ? (
+        <G>
+          {/* two displays on the desk */}
+          <Rect x={q.x + W * 0.28} y={q.y + D * 0.12} width={W * 0.18} height={D * 0.14} fill="#2b2d35" stroke={stroke} strokeWidth={0.7} />
+          <Rect x={q.x + W * 0.54} y={q.y + D * 0.12} width={W * 0.18} height={D * 0.14} fill="#2b2d35" stroke={stroke} strokeWidth={0.7} />
+        </G>
+      ) : f.kind === 'bookshelf' ? (
+        [0.33, 0.66].map((t) => <Line key={t} x1={q.x + W * t} y1={q.y} x2={q.x + W * t} y2={q.y + D} stroke={stroke} strokeWidth={0.7} />)
+      ) : f.kind === 'sofa' ? (
+        <Line x1={q.x} y1={q.y + D * 0.3} x2={q.x + W} y2={q.y + D * 0.3} stroke={stroke} strokeWidth={0.8} />
+      ) : (
+        [0.25, 0.5, 0.75].map((t) => <Line key={t} x1={q.x} y1={q.y + D * t} x2={q.x + W} y2={q.y + D * t} stroke={stroke} strokeWidth={0.7} />)
+      )}
+      {W > 30 ? (
+        <SvgText x={q.x + W / 2} y={q.y + D / 2 + fs * 0.35} fill="#7d8089" fontSize={fs} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">
+          {label}
+        </SvgText>
+      ) : null}
+    </G>
+  );
+}
+
+function RugGlyph({ t, T, selected }: { t: Treatment; T: PlanTransform; selected: boolean }) {
+  if (t.x == null || t.y == null) return null;
+  const q = T.toPx({ x: t.x - t.width / 2, y: t.y - t.height / 2 });
+  const W = t.width * T.k;
+  const H = t.height * T.k;
+  const col = t.enabled ? TREAT : TREAT_OFF;
+  const lines: ReactNode[] = [];
+  for (let d = 6; d < W + H; d += 7) {
+    const x1 = q.x + Math.min(d, W);
+    const y1 = q.y + Math.max(0, d - W);
+    const x2 = q.x + Math.max(0, d - H);
+    const y2 = q.y + Math.min(d, H);
+    lines.push(<Line key={d} x1={x1} y1={y1} x2={x2} y2={y2} stroke={col} strokeWidth={0.6} opacity={0.5} />);
+  }
+  return (
+    <G>
+      <Rect x={q.x} y={q.y} width={W} height={H} rx={1.5} fill="rgba(201,162,74,0.08)" stroke={selected ? AMBER : col} strokeWidth={selected ? 1.6 : 1} />
+      {lines}
+    </G>
+  );
+}
+
+function TreatmentGlyph({ t, T, room, centroid, fs, selected }: { t: Treatment; T: PlanTransform; room: RoomDesign['room']; centroid: Pt; fs: number; selected: boolean }) {
+  const v = room.vertices;
+  const col = t.enabled ? TREAT : TREAT_OFF;
+  const stroke = selected ? AMBER : col;
+  if (t.kind === 'absorber' || t.kind === 'diffuser') {
+    if (t.wall == null || t.pos == null) return null;
+    const c = edgePoint(v, t.wall, t.pos);
+    const a = v[t.wall];
+    const bq = v[(t.wall + 1) % v.length];
+    const len = Math.hypot(bq.x - a.x, bq.y - a.y) || 1;
+    const ux = (bq.x - a.x) / len;
+    const uy = (bq.y - a.y) / len;
+    const n = inwardNormal(v, t.wall, centroid);
+    const half = t.width / 2;
+    const th = Math.max(0.04, t.thickness);
+    const p = [
+      { x: c.x - ux * half, y: c.y - uy * half },
+      { x: c.x + ux * half, y: c.y + uy * half },
+      { x: c.x + ux * half + n.x * th, y: c.y + uy * half + n.y * th },
+      { x: c.x - ux * half + n.x * th, y: c.y - uy * half + n.y * th },
+    ].map((q) => T.toPx(q));
+    const pts = p.map((q) => `${q.x},${q.y}`).join(' ');
+    const teeth: ReactNode[] = [];
+    if (t.kind === 'diffuser') {
+      const nTeeth = Math.max(3, Math.round(t.width / 0.1));
+      for (let i = 1; i < nTeeth; i++) {
+        const f = -half + (t.width * i) / nTeeth;
+        const depth = th * ((i * i) % 5) / 4;
+        const q1 = T.toPx({ x: c.x + ux * f, y: c.y + uy * f });
+        const q2 = T.toPx({ x: c.x + ux * f + n.x * depth, y: c.y + uy * f + n.y * depth });
+        teeth.push(<Line key={i} x1={q1.x} y1={q1.y} x2={q2.x} y2={q2.y} stroke={stroke} strokeWidth={0.8} />);
+      }
+    }
+    return (
+      <G>
+        <Polygon points={pts} fill={t.kind === 'absorber' ? 'rgba(201,162,74,0.35)' : 'rgba(201,162,74,0.12)'} stroke={stroke} strokeWidth={selected ? 1.6 : 1} strokeLinejoin="round" />
+        {teeth}
+        {!t.enabled ? <Line x1={p[0].x} y1={p[0].y} x2={p[2].x} y2={p[2].y} stroke="#6a6a72" strokeWidth={1} /> : null}
+      </G>
+    );
+  }
+  if (t.kind === 'basstrap') {
+    if (t.wall == null) return null;
+    const i = t.wall % v.length;
+    const corner = v[i];
+    const prev = v[(i - 1 + v.length) % v.length];
+    const next = v[(i + 1) % v.length];
+    const along = (from: Pt, to: Pt, d: number) => {
+      const len = Math.hypot(to.x - from.x, to.y - from.y) || 1;
+      return { x: from.x + ((to.x - from.x) / len) * d, y: from.y + ((to.y - from.y) / len) * d };
+    };
+    const w = Math.max(0.3, t.thickness * 1.6);
+    const p1 = T.toPx(along(corner, prev, w));
+    const p2 = T.toPx(along(corner, next, w));
+    const cq = T.toPx(corner);
+    return (
+      <G>
+        <Polygon points={`${cq.x},${cq.y} ${p1.x},${p1.y} ${p2.x},${p2.y}`} fill="rgba(201,162,74,0.4)" stroke={stroke} strokeWidth={selected ? 1.6 : 1} strokeLinejoin="round" />
+        {!t.enabled ? <Line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#6a6a72" strokeWidth={1} /> : null}
+      </G>
+    );
+  }
+  if (t.x == null || t.y == null) return null;
+  const q = T.toPx({ x: t.x - t.width / 2, y: t.y - t.height / 2 });
+  const W = t.width * T.k;
+  const H = t.height * T.k;
+  if (t.kind === 'cloud') {
+    return (
+      <G>
+        <Rect x={q.x} y={q.y} width={W} height={H} rx={2} fill="rgba(201,162,74,0.12)" stroke={stroke} strokeWidth={selected ? 1.6 : 1} strokeDasharray="5 3" />
+        <SvgText x={q.x + W / 2} y={q.y + H / 2 + fs * 0.35} fill={col} fontSize={fs} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">
+          CLOUD
+        </SvgText>
+      </G>
+    );
+  }
+  // gobo — a panel on a stand: the panel plus its feet
+  return (
+    <G>
+      <Rect x={q.x} y={q.y + H * 0.35} width={W} height={Math.max(3, H * 0.3)} fill="rgba(201,162,74,0.35)" stroke={stroke} strokeWidth={selected ? 1.6 : 1} />
+      <Line x1={q.x + W * 0.15} y1={q.y} x2={q.x + W * 0.15} y2={q.y + H} stroke={stroke} strokeWidth={1} />
+      <Line x1={q.x + W * 0.85} y1={q.y} x2={q.x + W * 0.85} y2={q.y + H} stroke={stroke} strokeWidth={1} />
+    </G>
+  );
+}
+
+function ReflectionPath({ r, T, lay, fs }: { r: Reflection; T: PlanTransform; lay: RoomDesign['layouts'][number]; fs: number }) {
+  const sp = lay.speakers.find((s) => s.role === r.speaker);
+  if (!sp) return null;
+  const a = T.toPx(sp);
+  const p = T.toPx(r.point);
+  const l = T.toPx(lay.listener);
+  const col = levelColorForDb(r.levelDb, -24, 0);
+  const treated = !!r.treatedBy;
+  const vertical = r.surface.kind !== 'wall';
+  return (
+    <G opacity={treated ? 0.45 : 0.9}>
+      <Polyline points={`${a.x},${a.y} ${p.x},${p.y} ${l.x},${l.y}`} fill="none" stroke={col} strokeWidth={vertical ? 1 : 1.4} strokeDasharray={vertical ? '2 3' : treated ? '1 2' : undefined} />
+      {vertical ? (
+        <SvgText x={p.x} y={p.y - 4} fill={col} fontSize={fs} fontFamily={fonts.mono} textAnchor="middle">
+          {r.surface.kind === 'ceiling' ? '▲' : '▼'}
+        </SvgText>
+      ) : (
+        <Circle cx={p.x} cy={p.y} r={3.2} fill={treated ? '#2a2a30' : col} stroke={col} strokeWidth={1} />
+      )}
+      {treated ? (
+        <SvgText x={p.x + 5} y={p.y + fs * 0.4} fill={GREEN} fontSize={fs} fontFamily={fonts.mono}>
+          ✓
+        </SvgText>
+      ) : null}
+    </G>
+  );
+}
+
+function TracePulse({ r, progress, T, lay }: { r: Reflection | undefined; progress: number; T: PlanTransform; lay: RoomDesign['layouts'][number] }) {
+  if (!r) return null;
+  const sp = lay.speakers.find((s) => s.role === r.speaker);
+  if (!sp) return null;
+  const a = T.toPx(sp);
+  const p = T.toPx(r.point);
+  const l = T.toPx(lay.listener);
+  const d1 = Math.hypot(p.x - a.x, p.y - a.y);
+  const d2 = Math.hypot(l.x - p.x, l.y - p.y);
+  const total = d1 + d2 || 1;
+  const t = Math.max(0, Math.min(1, progress)) * total;
+  const q = t <= d1 ? { x: a.x + ((p.x - a.x) * t) / (d1 || 1), y: a.y + ((p.y - a.y) * t) / (d1 || 1) } : { x: p.x + ((l.x - p.x) * (t - d1)) / (d2 || 1), y: p.y + ((l.y - p.y) * (t - d1)) / (d2 || 1) };
+  const col = levelColorForDb(r.levelDb, -24, 0);
+  return (
+    <G>
+      <Circle cx={q.x} cy={q.y} r={7} fill={col} opacity={0.25} />
+      <Circle cx={q.x} cy={q.y} r={3.5} fill={col} />
+    </G>
+  );
+}
+
+function BoundaryLines({ design, analysis, T, fs }: { design: RoomDesign; analysis: Analysis; T: PlanTransform; fs: number }) {
+  const room = design.room;
+  const lay = design.layouts[design.active] ?? design.layouts[0];
+  const v = room.vertices;
+  const units = room.units;
+  const lines: ReactNode[] = [];
+  const dim = (from: Pt, to: Pt, text: string, key: string, col = '#9aa0ad') => {
+    const a = T.toPx(from);
+    const bq = T.toPx(to);
+    lines.push(
+      <G key={key}>
+        <Line x1={a.x} y1={a.y} x2={bq.x} y2={bq.y} stroke={col} strokeWidth={0.9} strokeDasharray="3 2" />
+        <SvgText x={(a.x + bq.x) / 2} y={(a.y + bq.y) / 2 - 3} fill={col} fontSize={fs} fontFamily={fonts.mono} textAnchor="middle">
+          {text}
+        </SvgText>
+      </G>,
+    );
+  };
+  for (const sp of lay.speakers) {
+    if (sp.role === 'SUB') continue;
+    // front wall (edge 0) and the nearest side wall
+    const f = distToEdge(sp, v, 0);
+    if (f.t >= 0 && f.t <= 1) dim(sp, f.foot, fmtLen(f.dist, units, { small: true }), `${sp.role}-front`);
+    let best: { dist: number; foot: Pt } | null = null;
+    for (let i = 1; i < v.length; i++) {
+      const a = v[i];
+      const q = v[(i + 1) % v.length];
+      if (Math.abs(q.y - a.y) < Math.abs(q.x - a.x)) continue;
+      const e = distToEdge(sp, v, i);
+      if (e.t >= 0 && e.t <= 1 && (!best || e.dist < best.dist)) best = e;
+    }
+    if (best) dim(sp, best.foot, fmtLen(best.dist, units, { small: true }), `${sp.role}-side`);
+  }
+  // listener to the rear wall
+  const s = analysis.stereo;
+  if (s) {
+    const rear = { x: lay.listener.x, y: lay.listener.y + s.listenerRear };
+    dim(lay.listener, rear, fmtLen(s.listenerRear, units, { small: true }), 'lis-rear', GREEN);
+  }
+  return <G>{lines}</G>;
+}
+
+function DimensionLabels({ b, T, units, fs, rectangular }: { b: ReturnType<typeof bounds>; T: PlanTransform; units: RoomDesign['room']['units']; fs: number; rectangular: boolean }) {
+  const tl = T.toPx({ x: b.minX, y: b.minY });
+  const tr = T.toPx({ x: b.maxX, y: b.minY });
+  const bl = T.toPx({ x: b.minX, y: b.maxY });
+  const yTop = tl.y - 9;
+  const xLeft = tl.x - 9;
+  const tag = rectangular ? '' : ' (bounding box)';
+  return (
+    <G>
+      <Line x1={tl.x} y1={yTop} x2={tr.x} y2={yTop} stroke={WALL_SOFT} strokeWidth={0.8} />
+      <SvgText x={(tl.x + tr.x) / 2} y={yTop - 2} fill={colors.textSub} fontSize={fs} fontFamily={fonts.mono} textAnchor="middle">
+        {`${fmtLen(b.width, units)}${tag}`}
+      </SvgText>
+      <Line x1={xLeft} y1={tl.y} x2={xLeft} y2={bl.y} stroke={WALL_SOFT} strokeWidth={0.8} />
+      <SvgText x={xLeft - 2} y={(tl.y + bl.y) / 2} fill={colors.textSub} fontSize={fs} fontFamily={fonts.mono} textAnchor="middle" transform={`rotate(-90 ${xLeft - 2} ${(tl.y + bl.y) / 2})`}>
+        {fmtLen(b.length, units)}
+      </SvgText>
+      <SvgText x={tl.x + 3} y={tl.y + fs + 2} fill="#6d6f78" fontSize={fs} fontFamily={fonts.oswaldSemiBold}>
+        FRONT
+      </SvgText>
+    </G>
+  );
+}
+
+/** Legend rows for the well — sampled from the same colour functions the
+ *  plan paints with, so they can never drift. */
+export const PLAN_LEGEND = [
+  { c: fieldLevelColor(1), t: 'RED — modal pressure maximum (bass piles up here)' },
+  { c: fieldLevelColor(0.5), t: 'YELLOW / GREEN — between peak and null' },
+  { c: fieldLevelColor(0), t: 'BLUE — a null: that frequency nearly vanishes' },
+  { c: levelColorForDb(-3, -24, 0), t: 'Reflection path, strong (close to the direct sound)' },
+  { c: levelColorForDb(-18, -24, 0), t: 'Reflection path, weak (far, or absorbed)' },
+  { c: TREAT, t: 'Treatment · ✓ = a modelled path meets it' },
+  { c: '#9fd8ff', t: 'Window' },
+] as const;

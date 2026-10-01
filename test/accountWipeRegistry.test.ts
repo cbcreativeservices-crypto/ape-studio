@@ -68,6 +68,8 @@ const EXEMPT: Record<string, string> = {
   'features/cymatics/patternStore.ts': 'same: a store instance, not a cache of rows',
   'features/amp/ampProgress.ts':
     'holds a write-queue promise and the guest save-block FLAG (bug hunt 2026-09-30 pass 2) — the flag is re-set from the live entitlement on every render of the lab’s screens; no user data',
+  'screens/lab/mastering/masteringProgress.ts':
+    'the ampProgress pattern (2026-10-01): holds a write-queue promise and the guest save-block FLAG, re-set from the live entitlement on every render of the lab screen — no user data; every read goes to storage (ape:mastering:v1 is inside the ape:* wipe)',
   'features/ear/earProgress.ts':
     'holds only the guest save-block FLAG (bug hunt 2026-09-30 pass 2), re-set from the live entitlement on every render of the lab’s screens — no user data; every read goes to storage',
   'screens/lab/calc/workflowStore.ts':

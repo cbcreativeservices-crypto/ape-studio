@@ -111,6 +111,7 @@ import { EnvelopeLabScreen } from '../screens/lab/envelope/EnvelopeLabScreen';
 import { PatchbayLabScreen } from '../screens/lab/patchbay/PatchbayLabScreen';
 import { ConnectorSelectLabScreen } from '../screens/lab/connectorselect/ConnectorSelectLabScreen';
 import { SoundSystemsLabScreen } from '../screens/lab/soundsystems/SoundSystemsLabScreen';
+import { RoomDesignLabScreen } from '../screens/lab/roomdesign/RoomDesignLabScreen';
 import { StartHereScreen } from '../screens/startHere/StartHereScreen';
 import { StartHereTermsScreen } from '../screens/startHere/StartHereTermsScreen';
 import {
@@ -122,6 +123,8 @@ import {
 } from '../screens/lab/soundsystems/modeScreens';
 import { BeginningMixingLabScreen } from '../screens/lab/mixing/BeginningMixingLabScreen';
 import { AdvancedMixingLabScreen } from '../screens/lab/mixing/AdvancedMixingLabScreen';
+// Mastering Lab: From Final Mix to Release (owner build order 2026-10-01).
+import { MasteringLabScreen } from '../screens/lab/mastering/MasteringLabScreen';
 import { SpeechLabScreen } from '../screens/lab/speech/SpeechLabScreen';
 import { SmartProcessorsLabScreen } from '../screens/lab/deesser/SmartProcessorsLabScreen';
 import { DeEsserLabScreen } from '../screens/lab/deesser/DeEsserLabScreen';
@@ -302,6 +305,9 @@ const MemberGated = {
   AutotuneLab: withMembershipPreview(Gated.AutotuneLab),
   BassLab: withMembershipPreview(Gated.BassLab),
   BeginningMixingLab: withMembershipPreview(BeginningMixingLabScreen),
+  // Mastering Lab (2026-10-01): members-only via its catalog leaf in the
+  // Mixing category; one route, so the predicate sees it directly.
+  MasteringLab: withMembershipPreview(MasteringLabScreen),
   BinauralLab: withMembershipPreview(Gated.BinauralLab),
   CableLab: withMembershipPreview(Gated.CableLab),
   ChorusLab: withMembershipPreview(Gated.ChorusLab),
@@ -309,6 +315,9 @@ const MemberGated = {
   // Sound Systems Lab (2026-09-25): the hub is the catalog row; its five mode
   // screens are children the catalog cannot see (MEMBER_ONLY_EXTRA_ROUTES).
   SoundSystemsLab: withMembershipPreview(SoundSystemsLabScreen),
+  // Room Design & Monitoring Lab (2026-10-01): members-only via its Acoustics
+  // catalog leaf (`member: true`, the Speaker Placement precedent).
+  RoomDesignLab: withMembershipPreview(RoomDesignLabScreen),
   SoundSystemsLearn: withMembershipPreview(SoundSystemsLearnScreen),
   SoundSystemsBuild: withMembershipPreview(SoundSystemsBuildScreen),
   SoundSystemsRoute: withMembershipPreview(SoundSystemsRouteScreen),
@@ -564,6 +573,7 @@ export function RootNavigator() {
       <Stack.Screen name="PatchbayLab" component={MemberGated.PatchbayLab} />
       <Stack.Screen name="ConnectorSelectLab" component={MemberGated.ConnectorSelectLab} />
       <Stack.Screen name="SoundSystemsLab" component={MemberGated.SoundSystemsLab} />
+      <Stack.Screen name="RoomDesignLab" component={MemberGated.RoomDesignLab} />
       <Stack.Screen name="SoundSystemsLearn" component={MemberGated.SoundSystemsLearn} />
       <Stack.Screen name="SoundSystemsBuild" component={MemberGated.SoundSystemsBuild} />
       <Stack.Screen name="SoundSystemsRoute" component={MemberGated.SoundSystemsRoute} />
@@ -571,6 +581,7 @@ export function RootNavigator() {
       <Stack.Screen name="SoundSystemsTroubleshoot" component={MemberGated.SoundSystemsTroubleshoot} />
       <Stack.Screen name="BeginningMixingLab" component={MemberGated.BeginningMixingLab} />
       <Stack.Screen name="AdvancedMixingLab" component={MemberGated.AdvancedMixingLab} />
+      <Stack.Screen name="MasteringLab" component={MemberGated.MasteringLab} />
       <Stack.Screen name="SpeechLab" component={MemberGated.SpeechLab} />
       <Stack.Screen name="SmartProcessorsLab" component={MemberGated.SmartProcessorsLab} />
       <Stack.Screen name="DeEsserLab" component={MemberGated.DeEsserLab} />
