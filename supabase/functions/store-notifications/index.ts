@@ -193,11 +193,24 @@ async function googleTruth(
     expiryTimeMillis?: string;
     purchaseState?: number;
     userCancellationTimeMillis?: string;
+    cancelReason?: number;
   };
   if (kind === 'subs') {
     const expiresAtMs = body.expiryTimeMillis ? Number(body.expiryTimeMillis) : null;
-    // purchaseState 1 = cancelled/refunded on the subscriptions resource.
-    return { revoked: body.purchaseState === 1, expiresAtMs };
+    // Fixed 2026-10-01. The subscriptions resource has NO purchaseState (that
+    // field exists only on the products resource), so the old test
+    // `purchaseState === 1` could never be true for a subscription and no
+    // subscription refund could ever be confirmed here.
+    //
+    // A refund-with-revoke cancels the subscription AND ends it at once: Google
+    // sets cancelReason and moves expiryTimeMillis to the moment of revocation.
+    // "Cancelled and already ended" is that state. An ordinary cancellation
+    // keeps its future expiry, so it is NOT treated as revoked and the member
+    // keeps access to the end of the paid period. Callers only act on `revoked`
+    // after Google has sent a voided-purchase or SUBSCRIPTION_REVOKED notice.
+    const cancelled = body.cancelReason !== undefined && body.cancelReason !== null;
+    const ended = expiresAtMs !== null && expiresAtMs <= Date.now();
+    return { revoked: cancelled && ended, expiresAtMs };
   }
   // in-app (lifetime): 0 purchased, 1 cancelled, 2 pending.
   return { revoked: body.purchaseState === 1, expiresAtMs: null };
@@ -239,7 +252,11 @@ async function googleWasVoided(purchaseToken: string): Promise<boolean | null> {
   // are being notified about right now. Bounded so a long feed cannot hang the
   // request forever; five pages is 5,000 refunds.
   for (let page = 0; page < 5; page++) {
-    const url = `${base}?maxResults=1000${pageToken ? `&token=${encodeURIComponent(pageToken)}` : ''}`;
+    // type=1 is REQUIRED: the feed defaults to type=0, which lists in-app
+    // (lifetime) refunds ONLY, so a refunded subscription was never found here.
+    // type=1 lists in-app purchases AND subscriptions. (Fixed 2026-10-01 after
+    // the first real Play refund was not applied.)
+    const url = `${base}?maxResults=1000&type=1${pageToken ? `&token=${encodeURIComponent(pageToken)}` : ''}`;
     const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
     // An error is NOT an answer. Returning null (rather than false) keeps the
     // caller in its "could not verify, change nothing" branch.
