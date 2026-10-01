@@ -99,6 +99,8 @@ import { CableLabScreen } from './src/screens/lab/cable/CableLabScreen';
 import { MicSelectLabScreen } from './src/screens/lab/micselect/MicSelectLabScreen';
 // Mastering Lab (2026-10-01): `#labpreview/MasteringLab` walks all eight modules.
 import { MasteringLabScreen } from './src/screens/lab/mastering/MasteringLabScreen';
+// Drum Tuning Lab (2026-10-01): `#labpreview/DrumTuningLab` walks all seven chapters.
+import { DrumTuningLabScreen } from './src/screens/lab/drumtuning/DrumTuningLabScreen';
 // Room Design & Monitoring Lab (2026-10-01): SVG plan + side views, so the
 // whole lab measures in the browser harness (`#labpreview/RoomDesignLab`).
 import { RoomDesignLabScreen } from './src/screens/lab/roomdesign/RoomDesignLabScreen';
@@ -176,6 +178,7 @@ const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   DigitalModule: DigitalModuleScreen as ComponentType,
   GainModule: GainModuleScreen as ComponentType,
   MasteringLab: MasteringLabScreen as ComponentType,
+  DrumTuningLab: DrumTuningLabScreen as ComponentType,
 };
 /** `#labpreview/<Screen>/<id>` → a ToolPreview of that lab, every other lab
  *  screen registered as a sibling so in-lab navigation (a home → a module)

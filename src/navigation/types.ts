@@ -361,6 +361,10 @@ export type RootStackParamList = {
    *  — one screen, eight modules in sub-step mode; member-only via the
    *  catalog leaf (Mixing category, training section). */
   MasteringLab: undefined;
+  /** Drum Tuning Lab (owner spec 2026-10-01) — one screen, seven chapters
+   *  in sub-step mode; member-only via the catalog leaf (Instruments &
+   *  Recording, training section). */
+  DrumTuningLab: undefined;
   /** Speech & Voice Lab (owner brief 2026-09-02) — visual, paged. */
   SpeechLab: undefined;
   /** Smart Processors family hub (owner brief 2026-09-02) and its V1 member. */

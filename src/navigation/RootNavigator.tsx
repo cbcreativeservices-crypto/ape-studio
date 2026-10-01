@@ -125,6 +125,8 @@ import { BeginningMixingLabScreen } from '../screens/lab/mixing/BeginningMixingL
 import { AdvancedMixingLabScreen } from '../screens/lab/mixing/AdvancedMixingLabScreen';
 // Mastering Lab: From Final Mix to Release (owner build order 2026-10-01).
 import { MasteringLabScreen } from '../screens/lab/mastering/MasteringLabScreen';
+// Drum Tuning Lab (owner spec 2026-10-01).
+import { DrumTuningLabScreen } from '../screens/lab/drumtuning/DrumTuningLabScreen';
 import { SpeechLabScreen } from '../screens/lab/speech/SpeechLabScreen';
 import { SmartProcessorsLabScreen } from '../screens/lab/deesser/SmartProcessorsLabScreen';
 import { DeEsserLabScreen } from '../screens/lab/deesser/DeEsserLabScreen';
@@ -308,6 +310,9 @@ const MemberGated = {
   // Mastering Lab (2026-10-01): members-only via its catalog leaf in the
   // Mixing category; one route, so the predicate sees it directly.
   MasteringLab: withMembershipPreview(MasteringLabScreen),
+  // Drum Tuning Lab (2026-10-01): members-only via its catalog leaf in the
+  // Instruments & Recording category; one route.
+  DrumTuningLab: withMembershipPreview(DrumTuningLabScreen),
   BinauralLab: withMembershipPreview(Gated.BinauralLab),
   CableLab: withMembershipPreview(Gated.CableLab),
   ChorusLab: withMembershipPreview(Gated.ChorusLab),
@@ -582,6 +587,7 @@ export function RootNavigator() {
       <Stack.Screen name="BeginningMixingLab" component={MemberGated.BeginningMixingLab} />
       <Stack.Screen name="AdvancedMixingLab" component={MemberGated.AdvancedMixingLab} />
       <Stack.Screen name="MasteringLab" component={MemberGated.MasteringLab} />
+      <Stack.Screen name="DrumTuningLab" component={MemberGated.DrumTuningLab} />
       <Stack.Screen name="SpeechLab" component={MemberGated.SpeechLab} />
       <Stack.Screen name="SmartProcessorsLab" component={MemberGated.SmartProcessorsLab} />
       <Stack.Screen name="DeEsserLab" component={MemberGated.DeEsserLab} />
