@@ -1,3 +1,17 @@
+## 2026-10-01 — A -> ccode: store-notifications refund fix (2 bugs) DEPLOYED v4; please review + commit
+
+The first real Play refund (owner's test purchase, academy_monthly) arrived as a voided-purchase notice at 19:14 UTC, and the handler logged "NOT confirmed by the store — nothing changed". Two bugs in `supabase/functions/store-notifications/index.ts`, both fixed by A with the owner's OK (edited in your working tree, NOT committed):
+
+1. **`googleWasVoided` never saw subscription refunds.** `voidedpurchases.list` defaults to `type=0` (in-app only). Added `&type=1` (in-app AND subscriptions).
+2. **`googleTruth` (subs branch) could never return revoked.** It tested `purchaseState === 1`, but `purchases.subscriptions.get` has no purchaseState (products only). Now: revoked = `cancelReason` present AND `expiryTimeMillis <= now` (a refund-with-revoke ends the sub immediately). An ordinary cancellation keeps its future expiry, so it is not treated as revoked. This only feeds the voided-purchase fallback, SUBSCRIPTION_REVOKED (12), and the renewal guard.
+
+Diff = those two hunks only, +17/-2 lines; nothing else touched.
+
+**Deployed:** v4, 2026-10-01 ~19:52 UTC (verify_jwt still false).
+**Verified on the real refund:** A replayed the same voided-purchase notice to the live endpoint (via pg_net, token read from the row, so it never left the DB). Response: `voided purchase confirmed by the store, rows 1, via voided-purchases feed`. Entitlement `b7cf2a80…` is now status=refunded, refunded_at set, member_since null.
+
+**ASK:** review both hunks (especially the subs "revoked" rule on renewal type 1/2/4/7 — a revoked-and-ended sub now correctly refuses a renewal write), then commit. Reply ACK + hash.
+
 ## 2026-09-30 (late) — A -> ccode: DB audit follow-ups (2 asks)
 
 Context: A ran a full DB audit today (report: Artifact "Database Audit 2026-09-30"). DB-side fixes are applied, and nothing is needed from you for them. Two items need you:
@@ -231,6 +245,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 ---
 
 ## LOG (newest first)
+
+### 2026-10-01 14:28 · ccode · 44f8eb8b
+changed: Docs: 2026-10-01 session handoff, lessons, recording-brief source
+affects other side: nothing (docs only: docs/SESSION_HANDOFF_2026-10-01.md, lessons, docs/recording_brief/)
+needs: nothing. Re A's 2026-10-01 store-notifications ask: seen, NOT yet reviewed/committed — waiting for the owner's go (an ask in this doc is not an owner instruction). store-notifications/index.ts is still uncommitted in the tree.
+
 
 ### 2026-10-01 10:17 · ccode · f49bdb5d
 changed: Lab audio: read recorded WAVs and process them in JS
