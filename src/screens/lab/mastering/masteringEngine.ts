@@ -449,3 +449,38 @@ export const CD_PLAY_MINUTES = 74;
 export function wavBytes(seconds: number, sampleRateHz: number, bitDepth: number, channels: number): number {
   return Math.round(seconds * sampleRateHz * (bitDepth / 8) * channels);
 }
+
+/* ───────────────────────── the 9 pt floor on a short phone ─────────────── */
+
+/** The rack's glass heights (rack/rackTypes STAGE_HEIGHTS) and its short-
+ *  viewport rule, mirrored here so the legibility maths is node-testable:
+ *  under 700 pt tall an L glass becomes M and an M glass becomes S. */
+export const GLASS_HEIGHTS = { S: 160, M: 200, L: 250 } as const;
+export function glassHeightFor(size: 'S' | 'M' | 'L', winH: number): number {
+  const eff = winH < 700 ? (size === 'L' ? 'M' : 'S') : size;
+  return GLASS_HEIGHTS[eff];
+}
+
+/** The width a 360-unit drawing of `aspect` (w ÷ h) is drawn at inside a
+ *  glass of (winW × glassH): the rack's frame (10 + 1 each side), the
+ *  StageFit pad (6), then the widest box of the drawing's shape that fits. */
+export function drawnWidth(aspect: number, winW: number, glassH: number, pad = 6): number {
+  const w = winW - 22;
+  const h = glassH - 2;
+  return Math.max(40, Math.min(Math.max(40, w - pad * 2), Math.max(40, h - pad * 2) * aspect));
+}
+
+/**
+ * A height-limited drawing on a SHORT phone (iPhone SE: 375 × 667 — the
+ * glass drops a size) can be fitted under 1 : 1, and a design-unit label of
+ * `minUnits` then renders under the 9 pt floor (owner 2026-09-25: "9 pt
+ * minimum"). The boost is the factor the drawing's fonts (and their wrap
+ * widths) must grow by so the smallest label is exactly 9 pt — 1 wherever the
+ * drawing is at or above 1 : 1 (a tall phone, FULL SCREEN), so nothing
+ * changes there.
+ */
+export function fitFontBoost(width: number, designW: number, minUnits: number, floorPt = 9): number {
+  const k = width / designW;
+  if (!(k > 0) || k >= 1) return 1;
+  return Math.max(1, floorPt / (minUnits * k));
+}

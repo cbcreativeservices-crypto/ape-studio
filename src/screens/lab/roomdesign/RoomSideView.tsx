@@ -15,7 +15,7 @@ import { levelColorForDb } from '../../../features/tools/levelColor';
 import { StageAspectReport, useStageTextScale } from '../rack/stageAspect';
 import { pickHandle, sideTransform, touchToGlass, type PlanTransform } from './planGeom';
 import { bounds, ceilingHeightAt, fmtLen, type Analysis, type Pt, type RoomDesign } from './roomModel';
-import type { PlanHandle } from './RoomPlanView';
+import { SURFACE_TINT, type PlanHandle } from './RoomPlanView';
 
 const WALL = '#8d919c';
 const HEAD_LINE = '#d9dbe0';
@@ -131,16 +131,21 @@ export function RoomSideView({
   const lis = lay.listener;
   const lisPx = toSide({ y: lis.y, z: lis.earZ });
   const Lsp = lay.speakers.find((x) => x.role === 'L');
+  // The FINISH tray's materials change the section too: walls and ceiling
+  // in their material's tint, the floor in the plan's floor tint.
+  const wallTint = SURFACE_TINT[room.walls] ?? WALL;
+  const ceilTint = SURFACE_TINT[room.ceilingMat] ?? WALL;
+  const floorTint = room.floor === 'carpet' ? '#7a6a58' : room.floor === 'hardwood' ? '#a8835a' : room.floor === 'tile' ? '#8e9a9c' : WALL;
 
   return (
     <View style={{ width: w, height: h }} {...(edit ? pan.panHandlers : {})} accessible accessibilityLabel={`Side view, ceiling ${fmtLen(room.height, units)}`}>
       <Svg width={w} height={h} viewBox={`0 0 ${gw} ${gh}`}>
         {/* Room section */}
         <Path d={`M${floorL.x},${floorL.y} L${floorR.x},${floorR.y} L${rearTop.x},${rearTop.y} ${ceilingPts.split(' ').reverse().map((p) => `L${p}`).join(' ')} Z`} fill="#131417" stroke="none" />
-        <Line x1={floorL.x} y1={floorL.y} x2={floorR.x} y2={floorR.y} stroke={WALL} strokeWidth={3} />
-        <Line x1={floorL.x} y1={floorL.y} x2={frontTop.x} y2={frontTop.y} stroke={WALL} strokeWidth={3} />
-        <Line x1={floorR.x} y1={floorR.y} x2={rearTop.x} y2={rearTop.y} stroke={WALL} strokeWidth={3} />
-        <Polyline points={ceilingPts} fill="none" stroke={WALL} strokeWidth={3} strokeLinejoin="round" />
+        <Line x1={floorL.x} y1={floorL.y} x2={floorR.x} y2={floorR.y} stroke={floorTint} strokeWidth={3} />
+        <Line x1={floorL.x} y1={floorL.y} x2={frontTop.x} y2={frontTop.y} stroke={wallTint} strokeWidth={3} />
+        <Line x1={floorR.x} y1={floorR.y} x2={rearTop.x} y2={rearTop.y} stroke={wallTint} strokeWidth={3} />
+        <Polyline points={ceilingPts} fill="none" stroke={ceilTint} strokeWidth={3} strokeLinejoin="round" />
 
         {/* Furniture: the desk (modelled) solid, the rest dotted */}
         {room.features.map((f) => {

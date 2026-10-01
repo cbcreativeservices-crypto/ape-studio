@@ -10,9 +10,10 @@ import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { confirmDialog } from '../../../../lib/confirm';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { LabNextButton } from '../../kit/LabNavBar';
 import { Body, Caption, Card, KV, NumField, SectionTitle, SuggestionRow, TierTag, TrayButton } from '../bits';
-import type { RoomLabCtx } from '../labCtx';
+import { BADGE, type RoomLabCtx } from '../labCtx';
 import { RoomPlanView } from '../RoomPlanView';
 import {
   analyze,
@@ -34,9 +35,10 @@ import {
 import { treatmentSummary } from './modTreatment';
 
 /** The read-only picture over the behaviour card: reflections and treatment,
- *  no handles (cognitive review 16). */
-const MINI_PLAN_H = 180;
-
+ *  no handles (cognitive review 16). Drawn through the shared ExpandableFigure
+ *  (house rule: FULL SCREEN on every display, inline figures included) at the
+ *  plan's own shape — the plan lays out in glass units, so every line and
+ *  label zooms with the step and the explore badge rides along. */
 export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
   const { design, update, analysis: a, units, guest, preview, saved, saveCurrent, loadSaved, deleteSaved } = ctx;
   const room = design.room;
@@ -47,8 +49,10 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
   const measured = compareMeasured(design, a);
   const [savedMsg, setSavedMsg] = useState<string | null>(null);
   const [compareId, setCompareId] = useState<string | null>(null);
-  const [planW, setPlanW] = useState(0);
   const planRect = planIsRectangular(room);
+  // The mini plan's shape: the room's bounding box plus the plan's margin,
+  // capped so a long narrow room still gets a usable height inline.
+  const miniAspect = Math.max(1.4, Math.min(2.6, (b.width + 0.7) / (b.length + 0.7)));
   const firstCheck = a.suggestions.findIndex((s) => s.level === 'check');
   const before = saved.find((d) => d.id === compareId) ?? null;
   const beforeAfter = before ? compareDesigns(before, design) : null;
@@ -98,9 +102,16 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
 
       <Card>
         <SectionTitle title="LIKELY ACOUSTIC BEHAVIOUR" tier="ESTIMATED" />
-        <View style={styles.miniPlan} onLayout={(e) => setPlanW(Math.round(e.nativeEvent.layout.width))}>
-          {planW > 40 ? <RoomPlanView w={planW} h={MINI_PLAN_H} design={design} analysis={a} layers={{ reflections: true, treatment: true, triangle: true, dims: false }} edit="none" /> : null}
-        </View>
+        <ExpandableFigure
+          aspect={miniAspect}
+          title="THE PLAN AS REVIEWED"
+          badge={a.rectangular ? BADGE.exploreRect : BADGE.exploreApprox}
+          render={(w, h) => (
+            <View style={[styles.miniPlan, { width: w, height: h }]}>
+              <RoomPlanView w={w} h={h} design={design} analysis={a} layers={{ reflections: true, treatment: true, triangle: true, dims: false }} edit="none" />
+            </View>
+          )}
+        />
         <Caption>The plan as the behaviour below reads it: reflection paths coloured by level, treatment, the triangle. Edit it in the earlier modules.</Caption>
         <Caption>{a.rectangular ? 'The mode frequencies are CALCULATED (idealized, for this rectangular box); everything else on this card is ESTIMATED.' : 'Everything on this card is ESTIMATED — the mode frequencies included, because the room is not a rectangular box.'}</Caption>
         <Text style={styles.sub}>{a.rectangular ? 'ROOM MODES — IDEALIZED, CALCULATED FOR THIS RECTANGLE' : planRect ? `ROOM MODES — MEAN-HEIGHT ESTIMATE (${room.ceiling.toUpperCase()} CEILING: LESS RELIABLE)` : 'ROOM MODES — BOUNDING BOX ESTIMATE (NOT A RECTANGLE: LESS RELIABLE)'}</Text>
@@ -280,7 +291,7 @@ function translationJudgement(a: ReturnType<typeof analyze>): string {
 const styles = StyleSheet.create({
   doc: { gap: 12 },
   sub: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.3, color: colors.textSub, marginTop: 6 },
-  miniPlan: { width: '100%', height: MINI_PLAN_H, borderRadius: 8, overflow: 'hidden', backgroundColor: '#0b0c0f', borderWidth: 1, borderColor: '#1f1f24' },
+  miniPlan: { borderRadius: 8, overflow: 'hidden', backgroundColor: '#0b0c0f', borderWidth: 1, borderColor: '#1f1f24' },
   numRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   savedRow: { gap: 6, borderTopWidth: 1, borderTopColor: '#1f1f24', paddingTop: 6 },
   savedName: { fontFamily: fonts.barlowMedium, fontSize: 13, color: colors.textSecondary },

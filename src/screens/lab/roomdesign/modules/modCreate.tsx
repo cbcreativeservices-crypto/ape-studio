@@ -152,11 +152,17 @@ export function CreateModule({ ctx }: { ctx: RoomLabCtx }) {
       id: 'height',
       label: 'CEILING',
       value: lanePos(room.height, H_MIN, H_MAX),
-      onChange: (v) =>
+      onChange: (v) => {
+        // A ceiling height is invisible on the plan (only VOLUME and L:W:H
+        // would move): riding CEILING shows the side view, where the ceiling
+        // line follows the finger — every lane changes the picture. The same
+        // rule the ceiling SHAPE already follows (onCeiling).
+        if (view === 'plan') setView('side');
         setRoom((r) => {
           const height = laneVal(v, H_MIN, H_MAX, 0.05);
           return { ...r, height, heightLow: Math.min(r.heightLow, height - 0.1) };
-        }),
+        });
+      },
       format: (v) => `${fmtU(laneVal(v, H_MIN, H_MAX, 0.05))}${room.ceiling === 'flat' ? '' : ' (high point)'}`,
       formatShort: (v) => fmtLen(laneVal(v, H_MIN, H_MAX, 0.05), units),
     },
@@ -188,7 +194,7 @@ export function CreateModule({ ctx }: { ctx: RoomLabCtx }) {
   return (
     <RoomRackLayout
       rack={{ stage, badge: BADGE.create, bezel, params, initialParam: 'length', hideDragTag: true }}
-      caption="Drag a corner to reshape the room, or ride LENGTH / WIDTH / CEILING. SHAPE opens the plan presets, the ceiling, doors and windows, furniture, typed dimensions and a fresh default room; FINISH sets the floor, walls and ceiling material. Tap VIEW on the readouts for the side view."
+      caption="Drag a corner to reshape the room, or ride LENGTH / WIDTH / CEILING (CEILING opens the side view, where the height shows). SHAPE opens the plan presets, the ceiling, doors and windows, furniture, typed dimensions and a fresh default room; FINISH sets the floor, walls and ceiling material — the walls and floor take the material's colour. Tap VIEW on the readouts to switch between plan and side view."
       wellTop={
         <View style={styles.summary}>
           <Text style={styles.summaryLine}>

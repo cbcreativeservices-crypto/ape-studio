@@ -8,16 +8,17 @@
  * Amplitude anywhere here is coloured by features/tools/levelColor — the
  * one app-wide ramp (waveform columns, loudness blocks, level bars).
  */
-import { useMemo, useState, type ReactNode } from 'react';
-import { View } from 'react-native';
+import { useMemo, type ReactNode } from 'react';
+import { Pressable, View } from 'react-native';
 import Animated, { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 import Svg, { Circle, G, Line, Path, Polygon, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
 import { MIDLINE_BLUE, levelColor, levelColorForDb, splColorForDba } from '../../../features/tools/levelColor';
 import { eqResponseDb, type EqBandSpec } from '../../../features/lab/fxViz';
 import { GearInSvg, type GlyphKind } from '../soundsystems/art/gearArt';
+import { ExpandableFigure } from '../kit/ExpandableFigure';
 import { PEAK_RED } from './kit';
-import { XF_OVERLAP_SEC, linToDb, perceivedBalanceShift, type Overview, type PathDevice, type PathGrade, type SeqBlock } from './masteringEngine';
+import { XF_OVERLAP_SEC, fitFontBoost, linToDb, perceivedBalanceShift, type Overview, type PathDevice, type PathGrade, type SeqBlock } from './masteringEngine';
 import { CONTROL_ITEMS, type ControlItem } from './masteringContent';
 
 export const W = 360;
@@ -25,7 +26,17 @@ export const W = 360;
 export const FONT = 11;
 const F2 = 12.5;
 /** Secondary labels: still ≥ 9 pt at the narrowest phone glass (0.88 × 10.5). */
-const FONT_S = 10.5;
+export const FONT_S = 10.5;
+
+/**
+ * The 9 pt floor on a SHORT phone. The four drawings that are taller than
+ * about 360 / 2 (the tool shelf, the translation plot, the delivery sheet and
+ * the sequence) are height-limited once the rack drops the glass a size
+ * (iPhone SE, 667 pt tall): FONT_S then lands at 7.8–8.5 pt. Those stages
+ * scale their fonts — and the character budget they wrap to — by this boost
+ * (1 everywhere else; see masteringEngine.fitFontBoost, node-tested).
+ */
+const boostFor = (width: number) => fitFontBoost(width, W, FONT_S);
 
 const ink = {
   box: '#151518',
@@ -102,7 +113,7 @@ export const WAVE_ASPECT = 360 / 200;
  * gain-reduction trace above, the ceiling marked, the playhead riding the
  * sounding clip (a SharedValue — never React state per frame).
  */
-export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb, label, matchDb, progress, playing }: {
+export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb, label, matchDb, progress, playing, onTap }: {
   width: number;
   height: number;
   ov: Overview | null;
@@ -113,6 +124,10 @@ export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb,
   matchDb?: number;
   progress: SharedValue<number>;
   playing: boolean;
+  /** TAP-TO-TOGGLE (house rule, the tools' displays): a tap on the glass
+   *  plays the shown version or stops it — in FULL SCREEN too, where the
+   *  same render is drawn. The dock keys stay the named transport. */
+  onTap?: () => void;
 }) {
   const H = 200;
   const grTop = 14;
@@ -133,7 +148,13 @@ export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb,
     opacity: playing ? 1 : 0,
   }));
   return (
-    <View style={{ width, height }}>
+    <Pressable
+      style={{ width, height }}
+      onPress={onTap}
+      disabled={!onTap}
+      accessibilityRole={onTap ? 'button' : undefined}
+      accessibilityLabel={onTap ? (playing ? `Stop ${label}` : `Play ${label}`) : undefined}
+    >
       <Svg width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
         {/* gain-reduction strip */}
         <SvgText x={x0} y={grTop + 8} fontSize={FONT} fill={ink.dim} fontFamily={fonts.oswaldMedium}>GAIN REDUCTION</SvgText>
@@ -190,7 +211,7 @@ export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb,
         ) : null}
       </Svg>
       <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: 0, top: top * s, width: Math.max(1, 1.2 * s), height: (bot - top) * s, backgroundColor: colors.textPrimary }, headStyle]} />
-    </View>
+    </Pressable>
   );
 }
 
@@ -346,7 +367,17 @@ export const PATH_ASPECT_H = 164;
 /** The three-state verdict (cognitive review 2026-10-01, finding 5):
  *  COMPLETE (green) · WORKS · MINIMAL (amber) · CHECK THE CHAIN (amber) ·
  *  EMPTY. The one-line reason comes from the engine and wraps to two. */
-export function MonitorPathStage({ width, height, chain, grade, reason }: { width: number; height: number; chain: readonly PathDevice[]; grade: PathGrade; reason: string }) {
+export function MonitorPathStage({ width, height, chain, grade, reason, next }: {
+  width: number;
+  height: number;
+  chain: readonly PathDevice[];
+  grade: PathGrade;
+  reason: string;
+  /** The device the DEVICE key has chosen but not yet connected: drawn as a
+   *  ghost in the next free slot, so choosing changes the picture before
+   *  + CONNECT does (every dock control changes the display). */
+  next?: PathDevice;
+}) {
   const slots = 5;
   const sw = (W - 12) / slots;
   const cy = 60;
@@ -354,17 +385,27 @@ export function MonitorPathStage({ width, height, chain, grade, reason }: { widt
   const fill = grade === 'complete' ? '#0f1d14' : grade === 'empty' ? '#121215' : '#17130d';
   const headline = grade === 'complete' ? 'PATH COMPLETE' : grade === 'minimal' ? 'WORKS · MINIMAL' : grade === 'fail' ? 'CHECK THE CHAIN' : 'EMPTY CHAIN';
   const lines = wrapWords(reason, 60).slice(0, 2);
+  const ghostAt = next && !chain.includes(next) && chain.length < slots ? chain.length : -1;
   return (
     <Svg width={width} height={height} viewBox={`0 0 ${W} ${PATH_ASPECT_H}`}>
       <SvgText x={6} y={14} fontSize={FONT} fill={ink.dim} fontFamily={fonts.oswaldMedium}>PLAYBACK → CONVERSION → LEVEL → AMPLIFICATION → AIR</SvgText>
       {Array.from({ length: slots }, (_, i) => {
         const d = chain[i];
         const cx = 6 + i * sw + sw / 2;
+        const ghost = i === ghostAt ? next : undefined;
         return (
           <G key={i}>
-            <Rect x={6 + i * sw + 3} y={28} width={sw - 6} height={70} rx={6} fill={d ? ink.box : '#0d0d10'} stroke={d ? tone : ink.stroke} strokeWidth={d ? 1.3 : 0.8} strokeDasharray={d ? undefined : '3,3'} />
-            {d ? <GearInSvg kind={GLYPH_FOR[d]} id={`mp-${i}-${d}`} x={cx} y={cy} size={46} /> : <SvgText x={cx} y={cy + 4} fontSize={FONT} fill={ink.dim} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{`SLOT ${i + 1}`}</SvgText>}
-            <SvgText x={cx} y={92} fontSize={FONT_S} fill={d ? ink.text : ink.dim} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{d ? SHORT_FOR[d] : '—'}</SvgText>
+            <Rect x={6 + i * sw + 3} y={28} width={sw - 6} height={70} rx={6} fill={d ? ink.box : '#0d0d10'} stroke={d ? tone : ghost ? ink.amber : ink.stroke} strokeWidth={d ? 1.3 : 0.8} strokeDasharray={d ? undefined : '3,3'} />
+            {d ? (
+              <GearInSvg kind={GLYPH_FOR[d]} id={`mp-${i}-${d}`} x={cx} y={cy} size={46} />
+            ) : ghost ? (
+              <G opacity={0.4}>
+                <GearInSvg kind={GLYPH_FOR[ghost]} id={`mp-ghost-${ghost}`} x={cx} y={cy} size={46} />
+              </G>
+            ) : (
+              <SvgText x={cx} y={cy + 4} fontSize={FONT} fill={ink.dim} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{`SLOT ${i + 1}`}</SvgText>
+            )}
+            <SvgText x={cx} y={92} fontSize={FONT_S} fill={d ? ink.text : ghost ? ink.amber : ink.dim} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{d ? SHORT_FOR[d] : ghost ? `${SHORT_FOR[ghost]}?` : '—'}</SvgText>
             {d && chain[i + 1] ? <Path d={`M${6 + (i + 1) * sw - 3} ${cy} l6 0 m-3 -3 l3 3 l-3 3`} stroke={ink.green} strokeWidth={1.3} fill="none" /> : null}
           </G>
         );
@@ -404,6 +445,10 @@ export function ToolStage({ width, height, view, amount, ov }: { width: number; 
   const top = 18;
   const bot = 150;
   const midY = (top + bot) / 2;
+  // The 9 pt floor on a short phone (see boostFor): 1 at or above 1 : 1.
+  const bst = boostFor(width);
+  const fs = FONT * bst;
+  const fsS = FONT_S * bst;
   const curve = useMemo(() => {
     if (view !== 'eq' && view !== 'analog') return '';
     const bands: EqBandSpec[] = view === 'eq'
@@ -421,7 +466,7 @@ export function ToolStage({ width, height, view, amount, ov }: { width: number; 
   const frame = (title: string) => (
     <>
       <Rect x={x0} y={top} width={x1 - x0} height={bot - top} fill="#0b0b0e" stroke={ink.stroke} strokeWidth={0.6} />
-      <SvgText x={x0 + 4} y={top + 12} fontSize={FONT} fill={ink.text} fontFamily={fonts.oswaldMedium}>{title}</SvgText>
+      <SvgText x={x0 + 4} y={top + 12} fontSize={fs} fill={ink.text} fontFamily={fonts.oswaldMedium}>{title}</SvgText>
     </>
   );
 
@@ -432,18 +477,18 @@ export function ToolStage({ width, height, view, amount, ov }: { width: number; 
         {[-12, -6, 0, 6, 12].map((db) => (
           <G key={db}>
             <Line x1={x0} y1={midY - (db / 12) * ((bot - top) / 2)} x2={x1} y2={midY - (db / 12) * ((bot - top) / 2)} stroke={db === 0 ? MIDLINE_BLUE : '#1f1f24'} strokeWidth={db === 0 ? 1 : 0.6} />
-            <SvgText x={x0 - 3} y={midY - (db / 12) * ((bot - top) / 2) + 3.5} fontSize={FONT_S} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>{db > 0 ? `+${db}` : db}</SvgText>
+            <SvgText x={x0 - 3} y={midY - (db / 12) * ((bot - top) / 2) + 3.5} fontSize={fsS} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>{db > 0 ? `+${db}` : db}</SvgText>
           </G>
         ))}
         {[100, 1000, 10000].map((f) => (
           <G key={f}>
             <Line x1={fx(f, x0, x1)} y1={top} x2={fx(f, x0, x1)} y2={bot} stroke="#1f1f24" strokeWidth={0.6} />
-            <SvgText x={fx(f, x0, x1)} y={bot + 12} fontSize={FONT_S} fill={ink.dim} textAnchor="middle" fontFamily={fonts.mono}>{f >= 1000 ? `${f / 1000}k` : f}</SvgText>
+            <SvgText x={fx(f, x0, x1)} y={bot + 12} fontSize={fsS} fill={ink.dim} textAnchor="middle" fontFamily={fonts.mono}>{f >= 1000 ? `${f / 1000}k` : f}</SvgText>
           </G>
         ))}
         <Path d={curve} stroke={view === 'eq' ? ink.amber : colors.orange} strokeWidth={2} fill="none" />
-        <SvgText x={x1 - 4} y={bot - 6} fontSize={FONT} fill={ink.amber} textAnchor="end" fontFamily={fonts.barlowMedium}>{`${view === 'eq' ? 'tilt' : 'colour'} ±${Math.abs(amount * 3).toFixed(1)} dB at the ends · ${amount > 0 ? 'brighter' : amount < 0 ? 'warmer' : 'flat'}`}</SvgText>
-        <SvgText x={x0} y={H - 4} fontSize={FONT} fill={ink.dim} fontFamily={fonts.barlowRegular}>{view === 'eq' ? 'one move on every element — compare at matched level' : 'neither analog nor digital is "better" — different tools'}</SvgText>
+        <SvgText x={x1 - 4} y={bot - 6} fontSize={fs} fill={ink.amber} textAnchor="end" fontFamily={fonts.barlowMedium}>{`${view === 'eq' ? 'tilt' : 'colour'} ±${Math.abs(amount * 3).toFixed(1)} dB at the ends · ${amount > 0 ? 'brighter' : amount < 0 ? 'warmer' : 'flat'}`}</SvgText>
+        <SvgText x={x0} y={H - 4} fontSize={fs} fill={ink.dim} fontFamily={fonts.barlowRegular}>{view === 'eq' ? 'one move on every element — compare at matched level' : 'neither analog nor digital is "better" — different tools'}</SvgText>
       </Svg>
     );
   }
@@ -465,20 +510,20 @@ export function ToolStage({ width, height, view, amount, ov }: { width: number; 
           return (
             <G key={db}>
               <Line x1={xi} y1={bot} x2={xi} y2={bot - 4} stroke={ink.dim} strokeWidth={0.8} />
-              <SvgText x={xi} y={bot + 12} fontSize={FONT_S} fill={ink.dim} textAnchor="middle" fontFamily={fonts.mono}>{db}</SvgText>
+              <SvgText x={xi} y={bot + 12} fontSize={fsS} fill={ink.dim} textAnchor="middle" fontFamily={fonts.mono}>{db}</SvgText>
               <Line x1={x0} y1={yo} x2={x0 + 4} y2={yo} stroke={ink.dim} strokeWidth={0.8} />
-              <SvgText x={x0 - 3} y={yo + 3.5} fontSize={FONT_S} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>{db}</SvgText>
+              <SvgText x={x0 - 3} y={yo + 3.5} fontSize={fsS} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>{db}</SvgText>
             </G>
           );
         })}
         <Line x1={x0} y1={bot} x2={x1} y2={top} stroke="#1f1f24" strokeWidth={0.8} strokeDasharray="3,3" />
         <Path d={pts.join(' ')} stroke={levelColor(Math.min(1, amount))} strokeWidth={2} fill="none" />
         <Line x1={x0 + ((thr + 60) / 60) * (x1 - x0)} y1={top} x2={x0 + ((thr + 60) / 60) * (x1 - x0)} y2={bot} stroke={ink.amber} strokeWidth={0.8} strokeDasharray="2,2" />
-        <SvgText x={x0 + ((thr + 60) / 60) * (x1 - x0) - 3} y={top + 26} fontSize={FONT_S} fill={ink.amber} textAnchor="end" fontFamily={fonts.mono}>thr {thr} dB</SvgText>
-        <SvgText x={x1 - 4} y={bot - 6} fontSize={FONT} fill={ink.amber} textAnchor="end" fontFamily={fonts.barlowMedium}>{`ratio ${ratio.toFixed(1)} : 1`}</SvgText>
-        <SvgText x={x1 - 4} y={bot + 12} fontSize={FONT_S} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>in dB →</SvgText>
-        <SvgText x={x0 + 6} y={top + 26} fontSize={FONT_S} fill={ink.dim} fontFamily={fonts.mono}>↑ out dB</SvgText>
-        <SvgText x={x0} y={H - 4} fontSize={FONT} fill={ink.dim} fontFamily={fonts.barlowRegular}>static curve — attack, release and knee not shown · past the threshold, peaks down</SvgText>
+        <SvgText x={x0 + ((thr + 60) / 60) * (x1 - x0) - 3} y={top + 26} fontSize={fsS} fill={ink.amber} textAnchor="end" fontFamily={fonts.mono}>thr {thr} dB</SvgText>
+        <SvgText x={x1 - 4} y={bot - 6} fontSize={fs} fill={ink.amber} textAnchor="end" fontFamily={fonts.barlowMedium}>{`ratio ${ratio.toFixed(1)} : 1`}</SvgText>
+        <SvgText x={x1 - 4} y={bot + 12} fontSize={fsS} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>in dB →</SvgText>
+        <SvgText x={x0 + 6} y={top + 26} fontSize={fsS} fill={ink.dim} fontFamily={fonts.mono}>↑ out dB</SvgText>
+        <SvgText x={x0} y={H - 4} fontSize={fs} fill={ink.dim} fontFamily={fonts.barlowRegular}>static curve — attack, release and knee not shown · past the threshold, peaks down</SvgText>
       </Svg>
     );
   }
@@ -498,16 +543,16 @@ export function ToolStage({ width, height, view, amount, ov }: { width: number; 
         <G transform={`rotate(45 ${cx} ${cy})`}>
           <Path d={`M${cx - rx} ${cy} a${rx} ${ry} 0 1 0 ${rx * 2} 0 a${rx} ${ry} 0 1 0 ${-rx * 2} 0`} fill={levelColor(0.45)} opacity={0.22} stroke={levelColor(0.5)} strokeWidth={1.4} />
         </G>
-        <SvgText x={cx} y={top + 26} fontSize={FONT_S} fill={ink.dim} textAnchor="middle" fontFamily={fonts.mono}>M</SvgText>
-        <SvgText x={cx - r - 2} y={cy + 3} fontSize={FONT_S} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>L</SvgText>
-        <SvgText x={cx + r + 2} y={cy + 3} fontSize={FONT_S} fill={ink.dim} fontFamily={fonts.mono}>R</SvgText>
+        <SvgText x={cx} y={top + 26} fontSize={fsS} fill={ink.dim} textAnchor="middle" fontFamily={fonts.mono}>M</SvgText>
+        <SvgText x={cx - r - 2} y={cy + 3} fontSize={fsS} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>L</SvgText>
+        <SvgText x={cx + r + 2} y={cy + 3} fontSize={fsS} fill={ink.dim} fontFamily={fonts.mono}>R</SvgText>
         {/* correlation bar */}
         <Rect x={x0 + 6} y={bot - 22} width={100} height={10} rx={2} fill="#0d0d10" stroke={ink.stroke} strokeWidth={0.6} />
         <Rect x={x0 + 6 + 50} y={bot - 22} width={corr * 50} height={10} fill={corr < 0 ? PEAK_RED : levelColor(0.5)} />
-        <SvgText x={x0 + 6} y={bot - 26} fontSize={FONT_S} fill={ink.dim} fontFamily={fonts.mono}>−1</SvgText>
-        <SvgText x={x0 + 106} y={bot - 26} fontSize={FONT_S} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>+1</SvgText>
-        <SvgText x={x1 - 4} y={bot - 6} fontSize={FONT} fill={ink.amber} textAnchor="end" fontFamily={fonts.barlowMedium}>{`width ×${wmult.toFixed(2)} · correlation ${corr.toFixed(2)}`}</SvgText>
-        <SvgText x={x0} y={H - 4} fontSize={FONT} fill={corr < 0.3 ? PEAK_RED : ink.dim} fontFamily={fonts.barlowRegular}>{corr < 0.3 ? 'wide here, hollow in mono — the fold cancels the sides' : 'model: side level half the mid — check the real fold'}</SvgText>
+        <SvgText x={x0 + 6} y={bot - 26} fontSize={fsS} fill={ink.dim} fontFamily={fonts.mono}>−1</SvgText>
+        <SvgText x={x0 + 106} y={bot - 26} fontSize={fsS} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>+1</SvgText>
+        <SvgText x={x1 - 4} y={bot - 6} fontSize={fs} fill={ink.amber} textAnchor="end" fontFamily={fonts.barlowMedium}>{`width ×${wmult.toFixed(2)} · correlation ${corr.toFixed(2)}`}</SvgText>
+        <SvgText x={x0} y={H - 4} fontSize={fs} fill={corr < 0.3 ? PEAK_RED : ink.dim} fontFamily={fonts.barlowRegular}>{corr < 0.3 ? 'wide here, hollow in mono — the fold cancels the sides' : 'model: side level half the mid — check the real fold'}</SvgText>
       </Svg>
     );
   }
@@ -521,8 +566,8 @@ export function ToolStage({ width, height, view, amount, ov }: { width: number; 
         <G key={lbl}>
           <Rect x={x} y={top + 30} width={34} height={bot - top - 42} fill="#0d0d10" stroke={ink.stroke} strokeWidth={0.6} />
           <Rect x={x + 1} y={bot - 12 - h} width={32} height={h} fill={tint} />
-          <SvgText x={x + 17} y={bot - 1} fontSize={FONT_S} fill={ink.dim} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{lbl}</SvgText>
-          <SvgText x={x + 17} y={top + 26} fontSize={FONT_S} fill={tint} textAnchor="middle" fontFamily={fonts.mono}>{db.toFixed(1)}</SvgText>
+          <SvgText x={x + 17} y={bot - 1} fontSize={fsS} fill={ink.dim} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{lbl}</SvgText>
+          <SvgText x={x + 17} y={top + 26} fontSize={fsS} fill={tint} textAnchor="middle" fontFamily={fonts.mono}>{db.toFixed(1)}</SvgText>
         </G>
       );
     };
@@ -538,10 +583,10 @@ export function ToolStage({ width, height, view, amount, ov }: { width: number; 
           const cw2 = 118 / n;
           const h = (bot - top - 42) * ov.level[c];
           return <Rect key={c} x={x0 + 181 + c * cw2} y={bot - 12 - h} width={Math.max(0.6, cw2)} height={h} fill={levelColor(ov.level[c])} opacity={0.9} />;
-        }) : <SvgText x={x0 + 240} y={midY} fontSize={FONT_S} fill={ink.dim} textAnchor="middle" fontFamily={fonts.mono}>spectrum / history</SvgText>}
-        <SvgText x={x0 + 240} y={bot - 1} fontSize={FONT_S} fill={ink.dim} textAnchor="middle" fontFamily={fonts.oswaldMedium}>PROGRAMME LEVEL HISTORY</SvgText>
-        <SvgText x={x0} y={H - 16} fontSize={FONT} fill={ink.dim} fontFamily={fonts.barlowRegular}>TP MODEL = peak +0.6 · typically 0.3–1 dB over on dense material</SvgText>
-        <SvgText x={x0} y={H - 4} fontSize={FONT} fill={ink.dim} fontFamily={fonts.barlowRegular}>louder moves every meter — numbers verify, never decide</SvgText>
+        }) : <SvgText x={x0 + 240} y={midY} fontSize={fsS} fill={ink.dim} textAnchor="middle" fontFamily={fonts.mono}>spectrum / history</SvgText>}
+        <SvgText x={x0 + 240} y={bot - 1} fontSize={fsS} fill={ink.dim} textAnchor="middle" fontFamily={fonts.oswaldMedium}>PROGRAMME LEVEL HISTORY</SvgText>
+        <SvgText x={x0} y={H - 16} fontSize={fs} fill={ink.dim} fontFamily={fonts.barlowRegular}>TP MODEL = peak +0.6 · typically 0.3–1 dB over on dense material</SvgText>
+        <SvgText x={x0} y={H - 4} fontSize={fs} fill={ink.dim} fontFamily={fonts.barlowRegular}>louder moves every meter — numbers verify, never decide</SvgText>
       </Svg>
     );
   }
@@ -553,11 +598,11 @@ export function ToolStage({ width, height, view, amount, ov }: { width: number; 
         {chain.map((d, i) => (
           <G key={d}>
             <GearInSvg kind={GLYPH_FOR[d]} id={`ts-${d}`} x={x0 + 40 + i * 76} y={midY - 4} size={50} />
-            <SvgText x={x0 + 40 + i * 76} y={midY + 30} fontSize={FONT_S} fill={ink.text} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{SHORT_FOR[d]}</SvgText>
+            <SvgText x={x0 + 40 + i * 76} y={midY + 30} fontSize={fsS} fill={ink.text} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{SHORT_FOR[d]}</SvgText>
             {i < chain.length - 1 ? <Path d={`M${x0 + 68 + i * 76} ${midY - 4} l12 0 m-4 -3 l4 3 l-4 3`} stroke={ink.green} strokeWidth={1.3} fill="none" /> : null}
           </G>
         ))}
-        <SvgText x={x0} y={H - 4} fontSize={FONT} fill={ink.dim} fontFamily={fonts.barlowRegular}>{`listening level ${Math.round(70 + amount * 20)} dB SPL (C) — keep it moderate and repeatable`}</SvgText>
+        <SvgText x={x0} y={H - 4} fontSize={fs} fill={ink.dim} fontFamily={fonts.barlowRegular}>{`listening level ${Math.round(70 + amount * 20)} dB SPL (C) — keep it moderate and repeatable`}</SvgText>
       </Svg>
     );
   }
@@ -574,11 +619,11 @@ export function ToolStage({ width, height, view, amount, ov }: { width: number; 
         const yT = midY - hi * fadeG * (bot - top - 40) / 2;
         const yB = midY - ov.lo[c] * fadeG * (bot - top - 40) / 2;
         return <Rect key={c} x={x0 + 4 + c * cw2} y={yT} width={Math.max(0.6, cw2)} height={Math.max(0.6, yB - yT)} fill={levelColor(ov.level[c] * fadeG)} />;
-      }) : <SvgText x={(x0 + x1) / 2} y={midY} fontSize={FONT_S} fill={ink.dim} textAnchor="middle" fontFamily={fonts.mono}>the programme draws here after the first render</SvgText>}
+      }) : <SvgText x={(x0 + x1) / 2} y={midY} fontSize={fsS} fill={ink.dim} textAnchor="middle" fontFamily={fonts.mono}>the programme draws here after the first render</SvgText>}
       <Line x1={x0 + 4} y1={midY} x2={x1 - 4} y2={midY} stroke={MIDLINE_BLUE} strokeWidth={0.8} />
       {fadeSec > 0 ? <Line x1={x1 - 4 - (fadeSec / 10) * (x1 - x0 - 8)} y1={top + 20} x2={x1 - 4} y2={midY} stroke={ink.amber} strokeWidth={1} strokeDasharray="3,2" /> : null}
-      <SvgText x={x1 - 4} y={bot - 6} fontSize={FONT} fill={ink.amber} textAnchor="end" fontFamily={fonts.barlowMedium}>{`fade-out ${fadeSec.toFixed(1)} s`}</SvgText>
-      <SvgText x={x0} y={H - 4} fontSize={FONT} fill={ink.dim} fontFamily={fonts.barlowRegular}>editing the stereo programme: fades, gaps, tops and tails</SvgText>
+      <SvgText x={x1 - 4} y={bot - 6} fontSize={fs} fill={ink.amber} textAnchor="end" fontFamily={fonts.barlowMedium}>{`fade-out ${fadeSec.toFixed(1)} s`}</SvgText>
+      <SvgText x={x0} y={H - 4} fontSize={fs} fill={ink.dim} fontFamily={fonts.barlowRegular}>editing the stereo programme: fades, gaps, tops and tails</SvgText>
     </Svg>
   );
 }
@@ -668,7 +713,14 @@ export function TranslationStage({ width, height, system, programmeDb }: { width
   const top = 18;
   const bot = 150;
   const isRef = system.bands.length === 0 && !system.mono;
-  const noteLines = wrapWords(system.note, 62).slice(0, 2);
+  // The 9 pt floor on a short phone (see boostFor): 1 at or above 1 : 1.
+  const bst = boostFor(width);
+  const fs = FONT * bst;
+  const fsS = FONT_S * bst;
+  // Boosted fonts take more width: wrap to fewer characters and space the
+  // stacked lines by the boosted line height.
+  const noteLines = wrapWords(system.note, Math.floor(62 / bst)).slice(0, 2);
+  const lh = 13 * bst;
   const yOf = (db: number) => bot - ((Math.max(-48, Math.min(6, db)) + 48) / 54) * (bot - top);
   const ref = programmeDb.map((p, i) => `${i === 0 ? 'M' : 'L'}${fx(p.f, x0, x1).toFixed(1)} ${yOf(p.db).toFixed(1)}`).join(' ');
   const heard = programmeDb.map((p, i) => `${i === 0 ? 'M' : 'L'}${fx(p.f, x0, x1).toFixed(1)} ${yOf(p.db + eqResponseDb(system.bands, p.f)).toFixed(1)}`).join(' ');
@@ -678,23 +730,23 @@ export function TranslationStage({ width, height, system, programmeDb }: { width
       {[0, -12, -24, -36].map((db) => (
         <G key={db}>
           <Line x1={x0} y1={yOf(db)} x2={x1} y2={yOf(db)} stroke="#1f1f24" strokeWidth={0.6} />
-          <SvgText x={x0 - 3} y={yOf(db) + 3.5} fontSize={FONT_S} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>{db}</SvgText>
+          <SvgText x={x0 - 3} y={yOf(db) + 3.5} fontSize={fsS} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>{db}</SvgText>
         </G>
       ))}
       {[100, 1000, 10000].map((f) => (
         <G key={f}>
           <Line x1={fx(f, x0, x1)} y1={top} x2={fx(f, x0, x1)} y2={bot} stroke="#1f1f24" strokeWidth={0.6} />
-          <SvgText x={fx(f, x0, x1)} y={bot + 12} fontSize={FONT_S} fill={ink.dim} textAnchor="middle" fontFamily={fonts.mono}>{f >= 1000 ? `${f / 1000}k` : f}</SvgText>
+          <SvgText x={fx(f, x0, x1)} y={bot + 12} fontSize={fsS} fill={ink.dim} textAnchor="middle" fontFamily={fonts.mono}>{f >= 1000 ? `${f / 1000}k` : f}</SvgText>
         </G>
       ))}
       {programmeDb.length && !isRef ? <Path d={ref} stroke={ink.dim} strokeWidth={1.2} fill="none" strokeDasharray="3,2" /> : null}
       {programmeDb.length ? <Path d={heard} stroke={system.mono ? colors.orange : ink.amber} strokeWidth={2} fill="none" /> : null}
-      <SvgText x={x0 + 4} y={top + 12} fontSize={FONT} fill={ink.text} fontFamily={fonts.oswaldMedium}>PROGRAMME SPECTRUM · as heard on</SvgText>
-      <SvgText x={x0 + 4} y={top + 25} fontSize={FONT} fill={system.mono ? colors.orange : ink.amber} fontFamily={fonts.oswaldMedium}>{system.name.toUpperCase()}</SvgText>
-      {!isRef ? <SvgText x={x1 - 4} y={top + 12} fontSize={FONT_S} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>dashed = as mastered</SvgText> : <SvgText x={x1 - 4} y={top + 12} fontSize={FONT_S} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>the reference</SvgText>}
-      {system.mono ? <SvgText x={x1 - 4} y={top + 25} fontSize={FONT_S} fill={colors.orange} textAnchor="end" fontFamily={fonts.mono}>MONO FOLD</SvgText> : null}
+      <SvgText x={x0 + 4} y={top + 12} fontSize={fs} fill={ink.text} fontFamily={fonts.oswaldMedium}>PROGRAMME SPECTRUM · as heard on</SvgText>
+      <SvgText x={x0 + 4} y={top + 12 + lh} fontSize={fs} fill={system.mono ? colors.orange : ink.amber} fontFamily={fonts.oswaldMedium}>{system.name.toUpperCase()}</SvgText>
+      {!isRef ? <SvgText x={x1 - 4} y={top + 12} fontSize={fsS} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>dashed = as mastered</SvgText> : <SvgText x={x1 - 4} y={top + 12} fontSize={fsS} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>the reference</SvgText>}
+      {system.mono ? <SvgText x={x1 - 4} y={top + 12 + lh} fontSize={fsS} fill={colors.orange} textAnchor="end" fontFamily={fonts.mono}>MONO FOLD</SvgText> : null}
       {noteLines.map((l, i) => (
-        <SvgText key={i} x={x0} y={H - 17 + i * 13} fontSize={FONT} fill={ink.dim} fontFamily={fonts.barlowRegular}>{l}</SvgText>
+        <SvgText key={i} x={x0} y={H - 4 - (noteLines.length - 1 - i) * lh} fontSize={fs} fill={ink.dim} fontFamily={fonts.barlowRegular}>{l}</SvgText>
       ))}
     </Svg>
   );
@@ -711,31 +763,47 @@ export function DeliverySheetStage({ width, height, title, brief, items, confirm
   const H = SHEET_H;
   const done = items.filter((_, i) => confirmed.has(i)).length;
   const complete = done === items.length;
-  const wrapped = items.map((it) => wrapWords(it, 56).slice(0, 2));
-  const pitch = items.length > 5 ? 25 : 28;
+  // The 9 pt floor on a short phone (see boostFor): 1 at or above 1 : 1.
+  const bst = boostFor(width);
+  const fs = FONT * bst;
+  const fsS = FONT_S * bst;
+  const f2 = F2 * bst;
+  // Boosted (a short phone): the brief drops to one line, the item pitch and
+  // the two-line spacing grow with the fonts, and the footer line goes — the
+  // header count and the green frame already carry the state, and the well
+  // keeps the instruction. Nothing is cropped; every item still wraps to two.
+  const boosted = bst > 1.1;
+  const briefLines = wrapWords(brief, Math.floor(70 / bst)).slice(0, boosted ? 1 : 2);
+  const itemsTop = 46 + briefLines.length * 13 * bst + 8; // 80 on a tall phone
+  const wrapped = items.map((it) => wrapWords(it, Math.floor(56 / bst)).slice(0, 2));
+  const pitch = (items.length > 5 ? 25 : 28) * bst;
   return (
     <Svg width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
       <Rect x={8} y={6} width={W - 16} height={H - 12} rx={6} fill="#141416" stroke={complete ? ink.green : ink.stroke} strokeWidth={1.2} />
       <Rect x={8} y={6} width={W - 16} height={26} rx={6} fill={complete ? '#0f1d14' : '#1a1812'} />
-      <SvgText x={16} y={23} fontSize={F2} fill={complete ? ink.green : ink.amber} fontFamily={fonts.oswaldMedium}>{`DELIVERY CHECKLIST · ${title.toUpperCase().split(' /')[0]}`}</SvgText>
-      <SvgText x={W - 16} y={23} fontSize={FONT} fill={complete ? ink.green : ink.dim} textAnchor="end" fontFamily={fonts.mono}>{`${done} / ${items.length}`}</SvgText>
-      {wrapWords(brief, 70).slice(0, 2).map((line, i) => (
-        <SvgText key={i} x={16} y={46 + i * 13} fontSize={FONT_S} fill={ink.dim} fontFamily={fonts.barlowRegular}>{line}</SvgText>
+      {/* The destination's first word: the full name is on the bezel's tray
+          and in the well; the sheet keeps room for the count at the right. */}
+      <SvgText x={16} y={23} fontSize={f2} fill={complete ? ink.green : ink.amber} fontFamily={fonts.oswaldMedium}>{`DELIVERY CHECKLIST · ${title.toUpperCase().split(' ')[0]}`}</SvgText>
+      <SvgText x={W - 16} y={23} fontSize={fs} fill={complete ? ink.green : ink.dim} textAnchor="end" fontFamily={fonts.mono}>{`${done} / ${items.length}`}</SvgText>
+      {briefLines.map((line, i) => (
+        <SvgText key={i} x={16} y={46 + i * 13 * bst} fontSize={fsS} fill={ink.dim} fontFamily={fonts.barlowRegular}>{line}</SvgText>
       ))}
       {wrapped.map((lines, i) => {
         const on = confirmed.has(i);
-        const y = 80 + i * pitch;
+        const y = itemsTop + i * pitch;
         return (
           <G key={i}>
             <Rect x={16} y={y - 9} width={11} height={11} rx={2} fill={on ? ink.green : 'none'} stroke={on ? ink.green : ink.dim} strokeWidth={1} />
             {on ? <Path d={`M18.5 ${y - 3.5} l3 3 l5 -6`} stroke="#000" strokeWidth={1.6} fill="none" /> : null}
             {lines.map((l, k) => (
-              <SvgText key={k} x={33} y={y + k * 12} fontSize={lines.length > 1 ? FONT_S : FONT} fill={on ? ink.text : ink.dim} fontFamily={fonts.barlowRegular}>{l}</SvgText>
+              <SvgText key={k} x={33} y={y + k * 12 * bst} fontSize={lines.length > 1 ? fsS : fs} fill={on ? ink.text : ink.dim} fontFamily={fonts.barlowRegular}>{l}</SvgText>
             ))}
           </G>
         );
       })}
-      <SvgText x={16} y={H - 10} fontSize={FONT} fill={complete ? ink.green : ink.amber} fontFamily={fonts.oswaldMedium}>{complete ? 'CONFIRMED — READY TO EXPORT TO THIS SPEC' : 'CONFIRM EVERY LINE BEFORE EXPORTING'}</SvgText>
+      {boosted ? null : (
+        <SvgText x={16} y={H - 10} fontSize={fs} fill={complete ? ink.green : ink.amber} fontFamily={fonts.oswaldMedium}>{complete ? 'CONFIRMED — READY TO EXPORT TO THIS SPEC' : 'CONFIRM EVERY LINE BEFORE EXPORTING'}</SvgText>
+      )}
     </Svg>
   );
 }
@@ -762,6 +830,10 @@ export function SequenceStage({ width, height, blocks, totalSec, maxStepLu, cros
   const bot = 84;
   const xs = (t: number) => x0 + (t / Math.max(1, totalSec)) * (x1 - x0);
   const lufsLevel = (l: number) => Math.max(0, Math.min(1, (l + 30) / 24)); // −30…−6 LUFS on the ramp
+  // The 9 pt floor on a short phone (see boostFor): 1 at or above 1 : 1.
+  const bst = boostFor(width);
+  const fs = FONT * bst;
+  const fsS = FONT_S * bst;
   // The zoom strip.
   const zTop = 138;
   const zBot = 194;
@@ -771,8 +843,8 @@ export function SequenceStage({ width, height, blocks, totalSec, maxStepLu, cros
   const pw = panels ? (x1 - x0 - pGap * (panels - 1)) / panels : 0;
   return (
     <Svg width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
-      <SvgText x={x0} y={16} fontSize={FONT} fill={ink.dim} fontFamily={fonts.oswaldMedium}>RUNNING ORDER · length × loudness</SvgText>
-      <SvgText x={x1} y={16} fontSize={FONT} fill={maxStepLu > 6 ? ink.amber : ink.text} textAnchor="end" fontFamily={fonts.mono}>{`largest step ${maxStepLu.toFixed(1)} LU`}</SvgText>
+      <SvgText x={x0} y={16} fontSize={fs} fill={ink.dim} fontFamily={fonts.oswaldMedium}>RUNNING ORDER · length × loudness</SvgText>
+      <SvgText x={x1} y={16} fontSize={fs} fill={maxStepLu > 6 ? ink.amber : ink.text} textAnchor="end" fontFamily={fonts.mono}>{`largest step ${maxStepLu.toFixed(1)} LU`}</SvgText>
       <Line x1={x0} y1={bot + 2} x2={x1} y2={bot + 2} stroke={ink.stroke} strokeWidth={0.8} />
       {blocks.map((b, i) => {
         const bx0 = xs(b.startSec);
@@ -785,14 +857,14 @@ export function SequenceStage({ width, height, blocks, totalSec, maxStepLu, cros
             <Rect x={bx0} y={bot - h} width={Math.max(2, bx1 - bx0 - fadeW)} height={h} fill={tint} opacity={0.75} />
             {fadeW > 0 ? <Polygon points={`${bx1 - fadeW},${bot - h} ${bx1},${bot} ${bx1 - fadeW},${bot}`} fill={tint} opacity={0.75} /> : null}
             {crossfade && i < n - 1 ? <Rect x={bx1 - 3} y={bot - 12} width={6} height={12} fill={ink.cyan} opacity={0.8} /> : null}
-            <SvgText x={(bx0 + bx1) / 2} y={bot - h - 4} fontSize={FONT_S} fill={tint} textAnchor="middle" fontFamily={fonts.mono}>{`${b.lufs.toFixed(1)}`}</SvgText>
-            <SvgText x={(bx0 + bx1) / 2} y={bot + 14} fontSize={FONT_S} fill={ink.text} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{b.title.toUpperCase().slice(0, 14)}</SvgText>
+            <SvgText x={(bx0 + bx1) / 2} y={bot - h - 4} fontSize={fsS} fill={tint} textAnchor="middle" fontFamily={fonts.mono}>{`${b.lufs.toFixed(1)}`}</SvgText>
+            <SvgText x={(bx0 + bx1) / 2} y={bot + 14} fontSize={fsS} fill={ink.text} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{b.title.toUpperCase().slice(0, 14)}</SvgText>
           </G>
         );
       })}
-      <SvgText x={x0} y={bot + 27} fontSize={FONT} fill={ink.dim} fontFamily={fonts.barlowRegular}>{`total ${Math.floor(totalSec / 60)}:${String(Math.round(totalSec % 60)).padStart(2, '0')} · LUFS estimates · ${crossfade ? `crossfades on (${XF_OVERLAP_SEC} s overlap, gap 0)` : `${gapSec.toFixed(1)} s gaps between tracks`}`}</SvgText>
+      <SvgText x={x0} y={bot + 14 + 13 * bst} fontSize={fs} fill={ink.dim} fontFamily={fonts.barlowRegular}>{`total ${Math.floor(totalSec / 60)}:${String(Math.round(totalSec % 60)).padStart(2, '0')} · LUFS estimates · ${crossfade ? `crossfades on (${XF_OVERLAP_SEC} s overlap, gap 0)` : `${gapSec.toFixed(1)} s gaps between tracks`}`}</SvgText>
       {/* ── the transitions, zoomed ─────────────────────────────────────── */}
-      <SvgText x={x0} y={zTop - 7} fontSize={FONT} fill={ink.dim} fontFamily={fonts.oswaldMedium}>{`TRANSITIONS · ±${SEQ_ZOOM_SEC} s around each boundary`}</SvgText>
+      <SvgText x={x0} y={zTop - 7} fontSize={fs} fill={ink.dim} fontFamily={fonts.oswaldMedium}>{`TRANSITIONS · ±${SEQ_ZOOM_SEC} s around each boundary`}</SvgText>
       {blocks.slice(0, -1).map((a, i) => {
         const b = blocks[i + 1];
         const px0 = x0 + i * (pw + pGap);
@@ -824,16 +896,16 @@ export function SequenceStage({ width, height, blocks, totalSec, maxStepLu, cros
                 <Line x1={bStart} y1={zTop + 10} x2={bStart} y2={zTop + 18} stroke={ink.amber} strokeWidth={1} />
               </G>
             ) : null}
-            <SvgText x={(aEnd + bStart) / 2} y={zTop + 10} fontSize={FONT_S} fill={crossfade ? ink.cyan : gap > 0 ? ink.amber : ink.dim} textAnchor="middle" fontFamily={fonts.mono}>
+            <SvgText x={(aEnd + bStart) / 2} y={zTop + 10} fontSize={fsS} fill={crossfade ? ink.cyan : gap > 0 ? ink.amber : ink.dim} textAnchor="middle" fontFamily={fonts.mono}>
               {crossfade ? `XF ${XF_OVERLAP_SEC} s` : gap > 0 ? `gap ${gap.toFixed(1)} s` : 'butt — no gap'}
             </SvgText>
-            <SvgText x={px0 + 3} y={zBot + 12} fontSize={FONT_S} fill={ta} fontFamily={fonts.oswaldMedium}>{a.title.toUpperCase().slice(0, 9)}</SvgText>
-            <SvgText x={px1 - 3} y={zBot + 12} fontSize={FONT_S} fill={tb} textAnchor="end" fontFamily={fonts.oswaldMedium}>{b.title.toUpperCase().slice(0, 9)}</SvgText>
-            <SvgText x={(px0 + fadeStart) / 2 + (fadeStart - px0 < 30 ? 0 : 0)} y={zBot + 24} fontSize={FONT_S} fill={ink.dim} textAnchor="start" fontFamily={fonts.mono}>{`fade ${a.fadeOutSec} s`}</SvgText>
+            <SvgText x={px0 + 3} y={zBot + 12 * bst} fontSize={fsS} fill={ta} fontFamily={fonts.oswaldMedium}>{a.title.toUpperCase().slice(0, 9)}</SvgText>
+            <SvgText x={px1 - 3} y={zBot + 12 * bst} fontSize={fsS} fill={tb} textAnchor="end" fontFamily={fonts.oswaldMedium}>{b.title.toUpperCase().slice(0, 9)}</SvgText>
+            <SvgText x={(px0 + fadeStart) / 2 + (fadeStart - px0 < 30 ? 0 : 0)} y={zBot + 24 * bst} fontSize={fsS} fill={ink.dim} textAnchor="start" fontFamily={fonts.mono}>{`fade ${a.fadeOutSec} s`}</SvgText>
           </G>
         );
       })}
-      <SvgText x={x0} y={H - 5} fontSize={FONT} fill={ink.dim} fontFamily={fonts.barlowRegular}>wedge = fade · dashed = gap · blue = crossfade · steps over 6 LU flagged</SvgText>
+      <SvgText x={x0} y={H - 5} fontSize={fs} fill={ink.dim} fontFamily={fonts.barlowRegular}>wedge = fade · dashed = gap · blue = crossfade · steps over 6 LU flagged</SvgText>
       <Circle cx={x1 - 4} cy={H - 9} r={2} fill={ink.green} />
     </Svg>
   );
@@ -841,14 +913,14 @@ export function SequenceStage({ width, height, blocks, totalSec, maxStepLu, cros
 
 /* ── read-page figures (visual-first, cognitive review finding 17) ───────── */
 
-/** A width-fitted figure inside a read page: measures its own width. */
-export function ReadFigure({ aspect, render }: { aspect: number; render: (w: number, h: number) => ReactNode }) {
-  const [w, setW] = useState(0);
-  return (
-    <View onLayout={(e) => setW(Math.round(e.nativeEvent.layout.width))} style={{ width: '100%' }}>
-      {w > 0 ? render(w, w / aspect) : null}
-    </View>
-  );
+/**
+ * A width-fitted figure inside a read page — on the shared ExpandableFigure
+ * (house rule: FULL SCREEN on every display, inline figures included), so the
+ * drawing opens at the whole phone with zoom, its honesty badge riding along.
+ * SVG in design units: everything in it zooms with the step.
+ */
+export function ReadFigure({ aspect, render, title, badge = 'ILLUSTRATION · a model, not a measurement' }: { aspect: number; render: (w: number, h: number) => ReactNode; title?: string; badge?: string }) {
+  return <ExpandableFigure aspect={aspect} render={render} title={title} badge={badge} />;
 }
 
 export const ROOM_FIG_ASPECT = 360 / 200;

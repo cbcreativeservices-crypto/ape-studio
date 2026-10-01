@@ -19,6 +19,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, it } from 'node:test';
+import { drawnWidth, fitFontBoost, glassHeightFor } from '../src/screens/lab/mastering/masteringEngine.ts';
 
 const read = (p: string) => readFileSync(join(process.cwd(), p), 'utf8');
 const strip = (s: string) => s.replace(/\r\n/g, '\n').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '').replace(/\{\/\*[\s\S]*?\*\/\}/g, '');
@@ -277,5 +278,108 @@ describe('audio honours the gate', () => {
     const host = strip(read(`${DIR}/MasteringLabScreen.tsx`));
     assert.match(host, /retainSessionStems\(\)/);
     assert.match(host, /releaseProgramme\(\)/);
+  });
+});
+
+/* ── standards conformance pass (2026-10-01) ─────────────────────────────── */
+
+describe('legibility: every stage label is ≥ 9 pt on a 390, a 375 and a short 375 × 667 phone (measured, not estimated)', () => {
+  const st = strip(read(`${DIR}/stages.tsx`));
+  /** The drawings that boost their fonts when the glass fits them under 1 : 1. */
+  const BOOSTED = new Set(['TOOL', 'TRANSLATION', 'SHEET', 'SEQ']);
+  const aspects: Record<string, number> = {};
+  for (const m of st.matchAll(/export const (\w+)_ASPECT = 360 \/ (\w+);/g)) {
+    const den = /^\d+$/.test(m[2]) ? Number(m[2]) : Number(st.match(new RegExp(`export const ${m[2]} = (\\d+);`))?.[1]);
+    assert.ok(den > 0, `${m[1]}_ASPECT has no height`);
+    aspects[m[1]] = 360 / den;
+  }
+  const uses: { file: string; name: string; size: 'S' | 'M' | 'L' }[] = [];
+  for (const f of MODULES) {
+    const s = strip(read(`${DIR}/modules/${f}`));
+    for (const m of s.matchAll(/aspect: (\w+)_ASPECT,\s*(?:size: '([SML])',)?/g)) uses.push({ file: f, name: m[1], size: (m[2] as 'S' | 'M' | 'L' | undefined) ?? 'M' });
+  }
+  it('finds every rack drawing that is a 360-unit SVG', () => {
+    assert.ok(uses.length >= 12, `only ${uses.length} stage uses found`);
+    for (const u of uses) assert.ok(aspects[u.name], `${u.file}: ${u.name}_ASPECT not exported`);
+  });
+  for (const [winW, winH] of [[390, 844], [375, 812], [375, 667]] as const) {
+    it(`at ${winW} × ${winH} the smallest label (FONT_S = 10.5 units) renders at ≥ 9 pt on every stage`, () => {
+      for (const u of uses) {
+        const gh = glassHeightFor(u.size, winH);
+        const w = drawnWidth(aspects[u.name], winW, gh);
+        const k = w / 360;
+        const boost = BOOSTED.has(u.name) ? fitFontBoost(w, 360, 10.5) : 1;
+        const pt = 10.5 * k * boost;
+        assert.ok(pt >= 8.99, `${u.file} ${u.name} (size ${u.size}): fit ${k.toFixed(3)} × boost ${boost.toFixed(3)} → ${pt.toFixed(2)} pt`);
+      }
+    });
+  }
+  it('the boosted stages scale every font and their wrap budgets by the boost', () => {
+    for (const name of ['ToolStage', 'TranslationStage', 'DeliverySheetStage', 'SequenceStage']) {
+      const a = st.indexOf(`export function ${name}`);
+      const b = st.indexOf('\nexport', a + 10);
+      const fn = st.slice(a, b);
+      assert.match(fn, /const bst = boostFor\(width\);/, name);
+      assert.doesNotMatch(fn, /fontSize=\{(FONT|FONT_S|F2)\}/, `${name}: a literal design-unit font survives the boost`);
+      if (/wrapWords\(/.test(fn)) assert.match(fn, /wrapWords\([^)]*\/ bst\)/, `${name}: a wrap budget does not shrink with the boost`);
+    }
+    assert.match(st, /fitFontBoost\(width, W, FONT_S\)/);
+    assert.equal(fitFontBoost(360, 360, 10.5), 1, 'no boost at 1 : 1');
+    assert.equal(fitFontBoost(720, 360, 10.5), 1, 'no boost in full screen');
+    assert.ok(Math.abs(fitFontBoost(268, 360, 10.5) * 10.5 * (268 / 360) - 9) < 1e-9, 'the boost lands exactly on 9 pt');
+  });
+});
+
+describe('the display is a working surface (owner standards 2026-10-01)', () => {
+  it('tapping a LISTEN display toggles play / stop (tap-to-toggle), on the glass and in full screen alike', () => {
+    assert.match(strip(read(`${DIR}/stages.tsx`)), /<Pressable\s+style=\{\{ width, height \}\}\s+onPress=\{onTap\}/);
+    for (const f of ['mod1What.tsx', 'mod5Workflow.tsx', 'mod6Loudness.tsx']) {
+      assert.match(strip(read(`${DIR}/modules/${f}`)), /<WaveOverviewStage[^\n]*onTap=\{\(\) => \(pb\.active \? pb\.stop\(\) : pb\.play\(shown\)\)\}/, f);
+    }
+  });
+  it('leaving a display stops its sound: a step change stops the module playback', () => {
+    const hook = strip(read(`${DIR}/useMasterPlayback.ts`));
+    assert.match(hook, /const host = useContext\(StepHostContext\);/);
+    assert.match(hook, /if \(stepSeen\.current === hostStep\) return;\s*stepSeen\.current = hostStep;\s*stopAll\(\);/);
+  });
+  it('every dock control changes the picture: choosing a DEVICE ghosts it into the next free slot', () => {
+    assert.match(strip(read(`${DIR}/stages.tsx`)), /const ghostAt = next && !chain\.includes\(next\) && chain\.length < slots \? chain\.length : -1;/);
+    assert.match(strip(read(`${DIR}/modules/mod3Room.tsx`)), /<MonitorPathStage[^\n]*next=\{placed \? undefined : next\}/);
+  });
+  it('inline read-page figures open FULL SCREEN through the shared ExpandableFigure, badge riding along', () => {
+    const stages = strip(read(`${DIR}/stages.tsx`));
+    assert.match(stages, /from '\.\.\/kit\/ExpandableFigure'/);
+    assert.match(stages, /return <ExpandableFigure aspect=\{aspect\} render=\{render\} title=\{title\} badge=\{badge\} \/>;/);
+    assert.match(strip(read(`${DIR}/modules/mod3Room.tsx`)), /<ReadFigure aspect=\{ROOM_FIG_ASPECT\} title="A TREATED ROOM" badge="ILLUSTRATION/);
+    assert.match(strip(read(`${DIR}/modules/mod7Release.tsx`)), /<ReadFigure aspect=\{DEST_ART_ASPECT\} title=\{d\.name\.toUpperCase\(\)\} badge="ILLUSTRATION/);
+  });
+  it('a cropped readout drops its label, never its number: no bezel WORD is long enough to ellipsize at 375 wide', () => {
+    assert.match(strip(read(`${DIR}/modules/mod1What.tsx`)), /stage === 3 \? 'STEREO' : 'FILES'/);
+    assert.match(strip(read(`${DIR}/modules/mod2Roles.tsx`)), /CONTROL_OWNER_LABEL\[item\.owner\]\.toUpperCase\(\)\.split\(' '\)\[0\]/);
+    assert.match(strip(read(`${DIR}/modules/mod3Room.tsx`)), /advice\.tone === 'sensible' \? 'GOOD' : advice\.tone === 'low' \? 'QUIET'/);
+    assert.match(strip(read(`${DIR}/modules/mod7Release.tsx`)), /v: dest\.name\.toUpperCase\(\)\.split\(' '\)\[0\], flex: 2/);
+    assert.match(strip(read(`${DIR}/stages.tsx`)), /DELIVERY CHECKLIST · \$\{title\.toUpperCase\(\)\.split\(' '\)\[0\]\}/);
+  });
+});
+
+describe('the end screen jumps straight to what is outstanding', () => {
+  it('a what-is-left row opens the module credit step (its PRACTICE deck; Module 8 QC once the decisions are in), a credited row the module start', () => {
+    const host = strip(read(`${DIR}/MasteringLabScreen.tsx`));
+    assert.match(host, /onJump=\{\(id\) => openModule\(id as MasteringModuleId, jumpStep\(id as MasteringModuleId\)\)\}/);
+    assert.match(host, /if \(cleared\.has\(id\)\) return 0;/);
+    assert.match(host, /decisions\.every\(\(s\) => s\.id in answered\) \? MASTERING_PROJECT_QC_STEP : MASTERING_CREDIT_STEP\.project/);
+    const idx = read(`${DIR}/modules/index.ts`);
+    const table = idx.match(/MASTERING_CREDIT_STEP[^=]*= \{([^}]*)\}/)![1];
+    const credit = Object.fromEntries([...table.matchAll(/(\w+): (\d+)/g)].map((m) => [m[1], Number(m[2])]));
+    const qcStep = Number(idx.match(/MASTERING_PROJECT_QC_STEP = (\d+);/)![1]);
+    const fileFor: Record<string, string> = { what: 'mod1What.tsx', roles: 'mod2Roles.tsx', room: 'mod3Room.tsx', tools: 'mod4Tools.tsx', workflow: 'mod5Workflow.tsx', loudness: 'mod6Loudness.tsx', release: 'mod7Release.tsx', project: 'mod8Project.tsx' };
+    for (const [id, f] of Object.entries(fileFor)) {
+      const src = strip(read(`${DIR}/modules/${f}`));
+      const steps = [...src.matchAll(/key: '(\w+)', title: '[^']*', kind: '(LEARN|LISTEN|EXPLORE|PRACTICE|REVIEW)', layout: '(rack|read)'/g)].map((m) => ({ key: m[1], kind: m[2] }));
+      const s = steps[credit[id]];
+      assert.ok(s && s.kind === 'PRACTICE', `${id}: credit step ${credit[id]} is ${s?.kind ?? 'missing'}, not PRACTICE`);
+      assert.ok(/ScenarioDeck/.test(src), `${id}: the credit step carries a ScenarioDeck`);
+      if (id === 'project') assert.equal(steps[qcStep]?.key, 'qc', 'the QC step index points at the QC checklist');
+    }
   });
 });

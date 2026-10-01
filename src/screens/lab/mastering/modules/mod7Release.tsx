@@ -41,7 +41,7 @@ export function Mod7Release({ onAnswered }: ModuleProps) {
               {DESTINATIONS.map((d) => (
                 <Card key={d.id}>
                   <Point title={d.name}>{d.brief}</Point>
-                  <ReadFigure aspect={DEST_ART_ASPECT} render={(w, h) => <DestinationArt width={w} height={h} kind={d.id as DestinationArtKind} />} />
+                  <ReadFigure aspect={DEST_ART_ASPECT} title={d.name.toUpperCase()} badge="ILLUSTRATION · the delivery object, a sample brief" render={(w, h) => <DestinationArt width={w} height={h} kind={d.id as DestinationArtKind} />} />
                 </Card>
               ))}
               <Card tone="accent">
@@ -58,7 +58,10 @@ export function Mod7Release({ onAnswered }: ModuleProps) {
             size: 'L',
             badge: 'DELIVERY SHEET · sample brief, fictional client',
             bezel: [
-              { k: 'DESTINATION', v: dest.name.toUpperCase().split(' /')[0], flex: 2 },
+              // The first word ("BROADCAST", "STREAMING"): the full name ran to
+              // 37 characters and cropped to an ellipsis; the tray and the
+              // well carry it in full.
+              { k: 'DESTINATION', v: dest.name.toUpperCase().split(' ')[0], flex: 2 },
               { k: 'CONFIRMED', v: `${done.size} / ${dest.confirm.length}`, tint: done.size === dest.confirm.length ? colors.green : colors.amber },
             ],
             params: [

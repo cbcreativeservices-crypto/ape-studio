@@ -20,8 +20,9 @@
  * sound lab comes to the front (labOutputOwner). A queued play never starts
  * under another screen or a closed gate.
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo } from 'react-native';
+import { StepHostContext } from './steps';
 import { useFocusEffect } from '@react-navigation/native';
 import { useFrameCallback, useSharedValue, type SharedValue } from 'react-native-reanimated';
 import type { Stereo } from '../../../features/ear/earDsp.ts';
@@ -324,6 +325,19 @@ export function useMasterPlayback(variants: readonly MasterVariant[], matched: b
   }, [stop, cancelReplay]);
   useStopWhenSilenced(active != null || pending != null, stopAll);
   useStopOnClose(stopAll);
+  // LEAVING THE DISPLAY STOPS THE SOUND (the Tuning lab's chapter rule): the
+  // module stays mounted across its steps, so paging from the LISTEN step to
+  // the reading or the PRACTICE deck used to leave a version playing with no
+  // ■ STOP on screen. The renders and the measured card survive; only the
+  // sound stops. No-op on the first mount (nothing is sounding yet).
+  const host = useContext(StepHostContext);
+  const hostStep = host?.step;
+  const stepSeen = useRef(hostStep);
+  useEffect(() => {
+    if (stepSeen.current === hostStep) return;
+    stepSeen.current = hostStep;
+    stopAll();
+  }, [hostStep, stopAll]);
 
   // ■ STOP is stopAll: a STOP pressed while a version is still rendering
   // must cancel that queued play too, not let it start a moment later.

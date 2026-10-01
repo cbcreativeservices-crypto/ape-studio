@@ -41,7 +41,7 @@ import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '
 import { retainSessionStems } from '../mixing/audio/mixAudio';
 import { MASTERING_MODULES, PROJECT_QC, masteringModuleById, scenariosForModule, type MasteringModuleId } from './masteringContent';
 import { emptyMasteringModule, resetMasteringPractice, setMasteringSaveBlocked, updateMasteringProgress, type MasteringProgressState } from './masteringProgress';
-import { MASTERING_MODULE_COMPONENTS, MASTERING_STEP_COUNTS } from './modules';
+import { MASTERING_CREDIT_STEP, MASTERING_MODULE_COMPONENTS, MASTERING_PROJECT_QC_STEP, MASTERING_STEP_COUNTS } from './modules';
 import { StepHostContext, type StepHost } from './steps';
 import { TakeawayCard } from './kit';
 import { releaseProgramme } from './useMasterPlayback';
@@ -317,13 +317,25 @@ export function MasteringLabScreen() {
     // module still to do after they had worked through all eight (night
     // pass 2, 2026-10-01).
     const cleared = new Set<string>([...doneIds, ...MASTERING_MODULES.filter((x) => endState.modules[x.id]?.done).map((x) => x.id)]);
+    // A what's-left row opens the step that EARNS the credit (the PRACTICE
+    // deck; Module 8's QC checklist once its four decisions are in), not the
+    // module's first step — a credited row opens the module from the top.
+    const jumpStep = (id: MasteringModuleId): number => {
+      if (cleared.has(id)) return 0;
+      if (id === 'project') {
+        const answered = endState.modules.project?.answers ?? {};
+        const decisions = scenariosForModule('project');
+        return decisions.every((s) => s.id in answered) ? MASTERING_PROJECT_QC_STEP : MASTERING_CREDIT_STEP.project;
+      }
+      return MASTERING_CREDIT_STEP[id];
+    };
     end = (
       <LabEndScreen
         labTitle={`${MASTERING_LAB_TITLE}: ${SUBTITLE}`}
         units={MASTERING_MODULES.map((x) => ({ id: x.id, label: x.title, detail: x.id === 'project' ? 'Four track decisions + the QC checklist' : `${scenariosForModule(x.id).length} decisions on the PRACTICE step` }))}
         cleared={cleared}
         mode="progress"
-        onJump={(id) => openModule(id as MasteringModuleId, 0)}
+        onJump={(id) => openModule(id as MasteringModuleId, jumpStep(id as MasteringModuleId))}
         onPracticeAgain={() => openModule('what', 0)}
         onDone={() => navigation.goBack()}
         bottomInset

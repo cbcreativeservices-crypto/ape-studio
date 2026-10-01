@@ -58,6 +58,8 @@ export function RoomRackLayout({
         bezel: rack.bezel,
         hideDragTag: rack.hideDragTag,
         fullScreen: rack.fullScreen ?? true,
+        // A room plan reads best filling the screen sideways.
+        fullScreenStep: 'fit',
       }}
       params={rack.params}
       initialParam={rack.initialParam}

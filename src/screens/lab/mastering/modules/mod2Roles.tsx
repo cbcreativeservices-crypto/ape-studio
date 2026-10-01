@@ -45,7 +45,10 @@ export function Mod2Roles({ onAnswered }: ModuleProps) {
             badge: MODEL_BADGE,
             bezel: [
               { k: 'REQUEST', v: item.label, flex: 2.2 },
-              { k: 'ADDRESSED BY', v: CONTROL_OWNER_LABEL[item.owner].toUpperCase().split(' —')[0], flex: 1.6 },
+              // One word: "MASTERING ENGINEER" (18 characters) would crop to
+              // an ellipsis at 375 wide; the drawing's verdict strip says it
+              // in full.
+              { k: 'ADDRESSED BY', v: CONTROL_OWNER_LABEL[item.owner].toUpperCase().split(' ')[0], flex: 1.6 },
             ],
             params: [
               flipFader({ id: 'item', label: 'REQUEST', items: CONTROL_ITEMS, selectedId: itemId, onSelect: setItemId, name: (c) => c.label, short: (c) => c.short, blurb: (c) => c.why, title: 'A CLIENT REQUEST', sticky: true }),

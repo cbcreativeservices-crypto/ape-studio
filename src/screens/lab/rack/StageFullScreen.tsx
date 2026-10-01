@@ -68,6 +68,7 @@ export function StageFullScreen({
   overlay,
   readouts,
   overlayLift = 0,
+  openStep = '1',
   onBack,
 }: {
   visible: boolean;
@@ -98,6 +99,9 @@ export function StageFullScreen({
    *  card's height): the dock slides up above the tray so it stays usable
    *  during a choice, and drops back when the tray closes. 0 = at rest. */
   overlayLift?: number;
+  /** The zoom step an opening lands on: '1' (default, the whole drawing) or
+   *  'fit'. Falls back to '1' when FIT is not offered (shownKey). */
+  openStep?: '1' | 'fit';
 }) {
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -113,8 +117,8 @@ export function StageFullScreen({
   // still drew the old 3× / FIT step (and mounted its scrollers) before
   // snapping back to 1×.
   useEffect(() => {
-    setStepKey('1');
-  }, [visible]);
+    setStepKey(openStep);
+  }, [visible, openStep]);
   // The hint line rolls DOWN out of the way on a tap and back up from a
   // small ? chip (owner 2026-09-26: "make the 'pick a zoom step…' message
   // collapsable — animate it like a roll up/down message"). Height and

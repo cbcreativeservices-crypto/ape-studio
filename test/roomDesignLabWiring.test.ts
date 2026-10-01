@@ -251,3 +251,43 @@ describe('colour, honesty and words', () => {
     assert.doesNotMatch(all, /upgrade|unlock|free trial/i);
   });
 });
+
+/* ── standards conformance pass (2026-10-01) ─────────────────────────────── */
+
+describe('the display is a working surface (owner standards 2026-10-01)', () => {
+  it('the REVIEW mini plan opens FULL SCREEN through the shared ExpandableFigure, the explore badge riding along', () => {
+    const review = strip(read(`${LAB}modules/modReview.tsx`));
+    assert.match(review, /from '\.\.\/\.\.\/kit\/ExpandableFigure'/);
+    assert.match(review, /<ExpandableFigure\s+aspect=\{miniAspect\}\s+title="THE PLAN AS REVIEWED"\s+badge=\{a\.rectangular \? BADGE\.exploreRect : BADGE\.exploreApprox\}/);
+    assert.doesNotMatch(review, /onLayout=\{\(e\) => setPlanW/, 'the plan no longer measures itself outside full screen');
+  });
+  it('every lane changes the picture: CEILING (Create) and HEIGHT (Monitoring) open the side view, where a height shows', () => {
+    const create = strip(read(`${LAB}modules/modCreate.tsx`));
+    const ceiling = create.slice(create.indexOf("id: 'height'"), create.indexOf("kind: 'group'"));
+    assert.match(ceiling, /if \(view === 'plan'\) setView\('side'\);/, 'CEILING');
+    const mon = strip(read(`${LAB}modules/modMonitoring.tsx`));
+    const height = mon.slice(mon.indexOf("id: 'height'"), mon.indexOf("id: 'setup'"));
+    assert.match(height, /if \(view === 'plan'\) setView\('side'\);/, 'HEIGHT');
+  });
+  it('every tray pick changes the picture: wall / ceiling / floor materials tint the drawing; the listening-distance class prints under the angle', () => {
+    const plan = strip(read(`${LAB}RoomPlanView.tsx`));
+    assert.match(plan, /export const SURFACE_TINT: Record<string, string>/);
+    assert.match(plan, /\n  drywall: WALL,/);
+    for (const k of ['concrete', 'glass', 'wood', 'curtain', 'acoustictile']) assert.match(plan, new RegExp(`\\b${k}: '#[0-9a-f]{6}'`), `SURFACE_TINT.${k}`);
+    assert.match(plan, /stroke=\{SURFACE_TINT\[room\.walls\] \?\? WALL\} strokeWidth=\{3\}/);
+    assert.match(plan, /export const FIELD_RANGE_M/);
+    assert.match(plan, /\$\{design\.monitoring\.field\.toUpperCase\(\)\} · \$\{fmtLen\(d, units\)\}/);
+    const side = strip(read(`${LAB}RoomSideView.tsx`));
+    assert.match(side, /import \{ SURFACE_TINT, type PlanHandle \} from '\.\/RoomPlanView';/);
+    assert.match(side, /stroke=\{ceilTint\} strokeWidth=\{3\}/);
+    assert.match(side, /stroke=\{wallTint\} strokeWidth=\{3\}/);
+    assert.match(side, /stroke=\{floorTint\} strokeWidth=\{3\}/);
+  });
+  it('the plan labels are ≥ 9 pt on the glass at any phone width: glass units at fs 9.5, never under', () => {
+    for (const f of ['RoomPlanView', 'RoomSideView']) {
+      const s = strip(read(`${LAB}${f}.tsx`));
+      assert.match(s, /const fs = 9\.5;/, f);
+      assert.doesNotMatch(s, /fontSize=\{fs - /, `${f}: a label under the floor`);
+    }
+  });
+});

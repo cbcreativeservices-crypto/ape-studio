@@ -61,7 +61,7 @@ export function Mod3Room({ onAnswered }: ModuleProps) {
           body: (
             <>
               <Body>The room comes before the gear list. A mastering judgement is a judgement about what reached the ears, and the room is the last stage of that chain.</Body>
-              <ReadFigure aspect={ROOM_FIG_ASPECT} render={(w, h) => <RoomDiagram width={w} height={h} />} />
+              <ReadFigure aspect={ROOM_FIG_ASPECT} title="A TREATED ROOM" badge="ILLUSTRATION · one treated room from above, not a measurement" render={(w, h) => <RoomDiagram width={w} height={h} />} />
               <SectionTitle>ROOM DESIGN AND ACOUSTIC CONTROL</SectionTitle>
               <Card>
                 <Point title="Room noise">Fans, traffic, HVAC: a low noise floor is what lets quiet detail, fades and tails be heard at a moderate level.</Point>
@@ -90,7 +90,8 @@ export function Mod3Room({ onAnswered }: ModuleProps) {
               { k: 'BASS', v: `${shift.bassDb > 0 ? '+' : ''}${shift.bassDb.toFixed(1)} dB`, flex: 1.1 },
               { k: 'TREBLE', v: `${shift.trebleDb > 0 ? '+' : ''}${shift.trebleDb.toFixed(1)} dB`, flex: 1.1 },
               { k: 'PER DAY', v: dailyLimitLabel(level), tint: toneTint, flex: 1.1 },
-              { k: 'READING', v: advice.tone.toUpperCase(), tint: toneTint, flex: 1.3 },
+              // ≤ 6 characters: "SENSIBLE" cropped to an ellipsis at 375 wide.
+              { k: 'READING', v: advice.tone === 'sensible' ? 'GOOD' : advice.tone === 'low' ? 'QUIET' : advice.tone.toUpperCase(), tint: toneTint, flex: 1.3 },
             ],
             params: [
               faderParam({ id: 'level', label: 'MONITOR', value: level, min: 55, max: 100, step: 1, format: (v) => `${Math.round(v)} dB SPL (C, slow)`, formatShort: (v) => `${Math.round(v)} dB`, onChange: setLevel, home: 83, tint: splColorForDba(level) }),
@@ -117,7 +118,7 @@ export function Mod3Room({ onAnswered }: ModuleProps) {
         {
           key: 'path', title: 'Build a monitoring path', kind: 'EXPLORE', layout: 'rack',
           rack: {
-            render: (w, h) => <MonitorPathStage width={w} height={h} chain={chain} grade={verdict.grade} reason={verdict.reason} />,
+            render: (w, h) => <MonitorPathStage width={w} height={h} chain={chain} grade={verdict.grade} reason={verdict.reason} next={placed ? undefined : next} />,
             aspect: PATH_ASPECT,
             badge: 'DIAGRAM · real systems vary',
             bezel: [
@@ -140,7 +141,7 @@ export function Mod3Room({ onAnswered }: ModuleProps) {
           },
           well: (
             <>
-              <Body>Choose a DEVICE, then + CONNECT it to the next free slot (the selection moves on to the next unplaced device by itself). Build the complete monitoring path: playback software → conversion → monitor control → power amplifier (if the loudspeakers need one) → loudspeakers. The display grades the order and the pairing: COMPLETE, WORKS · MINIMAL, or CHECK THE CHAIN.</Body>
+              <Body>Choose a DEVICE — it appears faintly in the next free slot — then + CONNECT it (the selection moves on to the next unplaced device by itself). Build the complete monitoring path: playback software → conversion → monitor control → power amplifier (if the loudspeakers need one) → loudspeakers. The display grades the order and the pairing: COMPLETE, WORKS · MINIMAL, or CHECK THE CHAIN.</Body>
               <Card tone={verdict.grade === 'complete' ? 'accent' : 'plain'}>
                 {verdict.notes.length ? verdict.notes.map((n) => <Body key={n}>• {n}</Body>) : <Body>Every stage in order. Try the other loudspeaker type: a passive pair needs the amplifier, an active pair makes it a mistake.</Body>}
               </Card>

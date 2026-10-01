@@ -49,7 +49,10 @@ export function Mod1What({ onAnswered }: ModuleProps) {
             bezel: [
               { k: 'STAGE', v: `${stage + 1} / ${PIPELINE.length}` },
               { k: 'NAME', v: PIPELINE[stage], flex: 2 },
-              { k: 'WORKS ON', v: stage <= 2 ? 'TRACKS' : stage === 3 ? 'STEREO FILE' : 'FILES', flex: 1.4 },
+              // One word each: at 375 wide the cell holds ~11 characters, and a
+              // value that would crop is never ellipsized (the drawing names
+              // "ONE stereo file" in full).
+              { k: 'WORKS ON', v: stage <= 2 ? 'TRACKS' : stage === 3 ? 'STEREO' : 'FILES', flex: 1.4 },
             ],
             params: [
               faderParam({ id: 'stage', label: 'STAGE', value: stage, min: 0, max: PIPELINE.length - 1, step: 1, format: (v) => PIPELINE[Math.round(v)], formatShort: (v) => PIPELINE_SHORT[Math.round(v)], onChange: (v) => setStage(Math.round(v)), home: 3 }),
@@ -91,7 +94,7 @@ export function Mod1What({ onAnswered }: ModuleProps) {
           key: 'listen', title: 'Louder is not better', kind: 'LISTEN', layout: 'rack',
           rack: {
             render: (w, h) => (
-              <WaveOverviewStage width={w} height={h} ov={m?.overview ?? null} grDb={m?.grDb} maxGrDb={m?.maxGrDb} ceilingDb={shown === 'loud' ? CEILING : null} label={variants.find((v) => v.id === shown)?.label ?? ''} matchDb={m?.matchDb} progress={pb.progress} playing={pb.active != null} />
+              <WaveOverviewStage width={w} height={h} ov={m?.overview ?? null} grDb={m?.grDb} maxGrDb={m?.maxGrDb} ceilingDb={shown === 'loud' ? CEILING : null} label={variants.find((v) => v.id === shown)?.label ?? ''} matchDb={m?.matchDb} progress={pb.progress} playing={pb.active != null} onTap={() => (pb.active ? pb.stop() : pb.play(shown))} />
             ),
             aspect: WAVE_ASPECT,
             size: 'L',

@@ -186,7 +186,12 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
       id: 'height',
       label: 'HEIGHT',
       value: lanePos(heightVal, 0.1, H_MAX),
-      onChange: (v) => setHeight(laneVal(v, 0.1, H_MAX, 0.01)),
+      onChange: (v) => {
+        // A height is invisible on the plan: riding HEIGHT shows the side
+        // view, where the tweeters (or the ears) follow the finger.
+        if (view === 'plan') setView('side');
+        setHeight(laneVal(v, 0.1, H_MAX, 0.01));
+      },
       format: (v) => `${heightTarget === 'ears' ? 'ears' : heightTarget === 'sub' ? 'sub driver' : 'tweeters'} ${fmtLen(laneVal(v, 0.1, H_MAX, 0.01), units)}`,
       formatShort: (v) => fmtLen(laneVal(v, 0.1, H_MAX, 0.01), units),
       chooser: {
@@ -225,7 +230,7 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
   return (
     <RoomRackLayout
       rack={{ stage, badge: BADGE.monitoring, bezel, params, initialParam: 'spread', hideDragTag: true }}
-      caption="Drag the speakers and the listener on the plan (tap VIEW for heights in the side view), or ride SPREAD, FRONT, LISTENER and HEIGHT. SETUP picks stereo, stereo + sub or multichannel, nearfield or midfield, and toe-in."
+      caption="Drag the speakers and the listener on the plan (tap VIEW for heights in the side view), or ride SPREAD, FRONT, LISTENER and HEIGHT (HEIGHT opens the side view). SETUP picks stereo, stereo + sub or multichannel, nearfield or midfield (printed under the listening angle, amber when the speakers sit outside that distance), and toe-in."
       captionFirst
       wellTop={
         <View style={{ gap: 6 }}>

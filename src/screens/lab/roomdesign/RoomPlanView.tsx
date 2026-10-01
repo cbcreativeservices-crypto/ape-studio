@@ -57,6 +57,24 @@ export type Trace = { index: number; progress: number } | null;
 
 const WALL = '#8d919c';
 const WALL_SOFT = '#3b3e47';
+/** Wall and ceiling strokes by material, so the FINISH tray's WALLS and
+ *  CEILING picks change the picture, not only the α figures (every control
+ *  makes a visible change). Plasterboard grey is the plan's default wall. */
+export const SURFACE_TINT: Record<string, string> = {
+  drywall: WALL,
+  concrete: '#6b6f78',
+  glass: '#7fc4e8',
+  wood: '#a8835a',
+  curtain: '#9a6f8f',
+  acoustictile: '#8e9a90',
+};
+/** Where the lab says each listening-distance class is heard from (metres):
+ *  nearfield about 1–1.5 m, midfield about 2–4 m (modMonitoring's prose). */
+export const FIELD_RANGE_M: Record<string, [number, number] | null> = {
+  nearfield: [0.8, 1.8],
+  midfield: [1.8, 4.2],
+  other: null,
+};
 const FLOOR_TINT: Record<string, string> = {
   carpet: '#1a1714',
   hardwood: '#241a10',
@@ -284,8 +302,8 @@ export function RoomPlanView({
           <FeatureGlyph key={f.id} f={f} T={T} fs={fs} selected={selected === `f_${f.id}`} draggable={edit === 'room'} />
         ))}
 
-        {/* Walls */}
-        <Path d={outlinePath} fill="none" stroke={WALL} strokeWidth={3} strokeLinejoin="round" />
+        {/* Walls — stroked in the wall material's tint */}
+        <Path d={outlinePath} fill="none" stroke={SURFACE_TINT[room.walls] ?? WALL} strokeWidth={3} strokeLinejoin="round" />
         {/* Openings: doors swing into the room, windows glaze the wall */}
         {room.openings.map((o) => (
           <OpeningGlyph key={o.id} o={o} v={v} T={T} centroid={centroid} fs={fs} flash={highlight === `op_${o.id}`} />
@@ -330,6 +348,21 @@ export function RoomPlanView({
                 {`${analysis.stereo.angleDeg.toFixed(0)}°`}
               </SvgText>
             ) : null}
+            {/* The listening-distance class under the angle: the SETUP tray's
+                NEARFIELD / MIDFIELD pick is drawn, amber when the speakers sit
+                outside the distance that class is heard from. */}
+            {analysis.stereo && design.monitoring.field !== 'other'
+              ? (() => {
+                  const d = (analysis.stereo.distL + analysis.stereo.distR) / 2;
+                  const range = FIELD_RANGE_M[design.monitoring.field];
+                  const fits = !range || (d >= range[0] && d <= range[1]);
+                  return (
+                    <SvgText x={lisPx.x} y={lisPx.y + 24 + fs + 3} fill={fits ? CYAN : AMBER} fontSize={fs} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">
+                      {`${design.monitoring.field.toUpperCase()} · ${fmtLen(d, units)}${fits ? '' : ' ?'}`}
+                    </SvgText>
+                  );
+                })()
+              : null}
           </G>
         ) : null}
 
