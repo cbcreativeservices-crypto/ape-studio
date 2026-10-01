@@ -1,19 +1,24 @@
 /**
  * Module 3 — Bias, Conduction, and Push-Pull (spec Part 2 §4): operating
  * point, conduction angle, device handoff, and the crossover-notch task.
+ *
+ * RACK (2026-09-30): THREE rack steps in the spec's order — BIAS (the
+ * single-device rig, BIAS on the lane), CONDUCTION ANGLE (the angle on the
+ * lane, snapped to 360 / 270 / 180 / 90), PUSH-PULL (the handoff rig, the
+ * output-stage BIAS on the lane, the zero-crossing zoom in the well).
  */
 import { useMemo, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import Svg, { Line, Polyline, Rect } from 'react-native-svg';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { colors, fonts } from '../../../../theme/tokens';
 import {
   simulateSingleDeviceBias, conductionCurrent, simulateLinearClass, sineCycle, WAVE_N,
 } from '../../../../features/amp/ampModel';
-import { AmpRig } from '../AmpRig';
-import { AMP_COLORS, Body, Card, ControlSlider, FigureDock, HonestyBadge, LearnMore, SectionTitle, SegRow } from '../kit';
-
-const ANGLES = [360, 270, 180, 90] as const;
+import { rigStatusBezel, type RigPicture } from '../AmpRig';
+import { faderParam } from '../AmpRack';
+import { AmpModuleSteps } from '../steps';
+import { AMP_COLORS, Body, Card, ControlSlider, FigureDock, HonestyBadge, LearnMore, SectionTitle } from '../kit';
 
 /** The zoom's drawing units — its ExpandableFigure aspect is ZOOM_W / ZOOM_H. */
 export const ZOOM_W = 340;
@@ -44,7 +49,7 @@ export function CrossoverZoom({ out, width, height }: { out: Float32Array; width
 
 export function Mod3Bias() {
   const [bias, setBias] = useState(0.5);
-  const [angle, setAngle] = useState<(typeof ANGLES)[number]>(360);
+  const [angle, setAngle] = useState(360);
   const [ppBias, setPpBias] = useState(0.1);
 
   const single = useMemo(() => simulateSingleDeviceBias(1, bias), [bias]);
@@ -59,17 +64,7 @@ export function Mod3Bias() {
   const taskSolved = !pp.crossoverNotch && pp.idleCurrent <= 0.08;
   const tooHot = pp.idleCurrent > 0.08;
 
-  // Each rig's control, drawn on the page and again in its full-screen dock.
-  const biasSlider = <ControlSlider label="Bias (quiescent current)" value={bias} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setBias} />;
-  const angleSeg = (
-    <SegRow<(typeof ANGLES)[number]>
-      options={ANGLES.map((a) => ({ key: a, label: `${a}°` }))}
-      value={angle}
-      onChange={setAngle}
-    />
-  );
-  // The live region tags: on the page under each rig and at the top of the
-  // full-screen dock (parity pass 2026-09-26) — one element, one state.
+  // The live region tags: under the display on the page (in the well).
   const singleRead = (
     <Text style={[styles.regionTag, { color: single.region === 'linear' ? colors.green : colors.gold }]}>
       {single.region === 'cutoff' ? 'TOO LITTLE BIAS' : single.region === 'saturation' ? 'EXCESSIVE BIAS' : 'APPROPRIATE LINEAR BIAS'}
@@ -85,113 +80,171 @@ export function Mod3Bias() {
       {` · idle ${Math.round(pp.idleCurrent * 100)}%`}
     </Text>
   );
+  // The zoom figure's control for ITS full-screen dock — the same bias the
+  // lane sets; docked under the zoom there, never drawn on the page.
   const ppBiasSlider = <ControlSlider label="Output-stage bias (overlap)" value={ppBias} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setPpBias} />;
 
+  const singlePic: RigPicture = {
+    input: smallAudio,
+    devices: singleDevices,
+    // One device, 0..1 of full conduction: full scale ≈ 1 so the operating
+    // point, its swing and the clip at cutoff / saturation can be SEEN
+    // (at the 2.1 default the trace sat near-flat in the top half).
+    deviceYMax: 1.05,
+    output: single.out,
+    supplyFlow: Math.min(1, single.idleCurrent * 0.9 + 0.1),
+    heat: single.heat,
+    deviceTitle: 'DEVICE CURRENT (gold) — 0 to full conduction only',
+    a11ySummary: `Bias ${Math.round(bias * 100)} percent: ${single.region} region. Output is ${single.distorted ? 'distorted — part of the swing is lost' : 'clean'}. Relative idle heat ${Math.round(single.heat * 100)} percent.`,
+  };
+  const condPic: RigPicture = {
+    input: audio,
+    devices: condDevices,
+    supplyFlow: angle / 360,
+    heat: 0.15 + (angle / 360) * 0.5,
+    deviceTitle: `DEVICE CURRENT — conducts for ${angle}° of the cycle`,
+    a11ySummary: `Conduction angle ${angle} degrees: the device passes current for ${angle} degrees of each 360 degree cycle.`,
+  };
+  const ppPic: RigPicture = {
+    input: audio,
+    devices: { iPos: pp.iPos, iNeg: pp.iNeg },
+    output: pp.out,
+    supplyFlow: 0.5 + pp.idleCurrent * 3,
+    heat: pp.heat,
+    a11ySummary: `Push-pull bias ${Math.round(ppBias * 100)} percent. ${pp.crossoverNotch ? 'A crossover notch is visible at zero crossing.' : 'The handoff is clean.'} Idle current ${Math.round(pp.idleCurrent * 100)} percent relative; heat ${Math.round(pp.heat * 100)} percent relative.`,
+  };
+
   return (
-    <View style={{ gap: 12 }}>
-      <Body>
-        Before the classes make sense you need three ideas: where a device is <Text style={{ color: colors.gold }}>biased</Text> to
-        sit, how much of the cycle it <Text style={{ color: colors.gold }}>conducts</Text>, and what happens when two devices{' '}
-        <Text style={{ color: colors.gold }}>hand off</Text> the waveform to each other.
-      </Body>
+    <AmpModuleSteps
+      steps={[
+        {
+          key: 'bias',
+          title: 'Bias',
+          kind: 'rack',
+          rack: {
+            rig: singlePic,
+            bezel: [
+              { k: 'REGION', v: single.region === 'cutoff' ? 'CUTOFF' : single.region === 'saturation' ? 'SATUR.' : 'LINEAR', tint: single.region === 'linear' ? colors.green : colors.gold },
+              { k: 'IDLE', v: `${Math.round(single.idleCurrent * 100)}%`, tint: AMP_COLORS.pos },
+              ...rigStatusBezel(singlePic, ['supply', 'heat']),
+            ],
+            params: [faderParam({ id: 'bias', label: 'BIAS', value: bias, min: 0, max: 1, step: 0.01, format: (v) => `${Math.round(v * 100)}%`, onChange: setBias })],
+            initialParam: 'bias',
+          },
+          well: (
+            <>
+              <Body>
+                Before the classes make sense you need three ideas: where a device is <Text style={{ color: colors.gold }}>biased</Text> to
+                sit, how much of the cycle it <Text style={{ color: colors.gold }}>conducts</Text>, and what happens when two devices{' '}
+                <Text style={{ color: colors.gold }}>hand off</Text> the waveform to each other.
+              </Body>
 
-      <SectionTitle>1 · BIAS — THE OPERATING POINT</SectionTitle>
-      {biasSlider}
-      <AmpRig
-        controls={biasSlider}
-        readout={singleRead}
-        input={smallAudio}
-        devices={singleDevices}
-        output={single.out}
-        supplyFlow={Math.min(1, single.idleCurrent * 0.9 + 0.1)}
-        heat={single.heat}
-        deviceTitle="DEVICE CURRENT (gold) — 0 to full conduction only"
-        a11ySummary={`Bias ${Math.round(bias * 100)} percent: ${single.region} region. Output is ${single.distorted ? 'distorted — part of the swing is lost' : 'clean'}. Relative idle heat ${Math.round(single.heat * 100)} percent.`}
-      />
-      <Card tone="accent">
-        {singleRead}
-        <Body>
-          {single.region === 'cutoff'
-            ? 'The operating point sits near cutoff: the negative half of the swing drives the device below zero current and simply vanishes. Idle current and heat are low — but the waveform is missing a piece.'
-            : single.region === 'saturation'
-              ? 'The operating point sits near full conduction: the positive half runs out of room and flattens. Idle current and heat are high even before any signal.'
-              : 'The device idles in the middle of its range, so the whole swing fits. Idle current and heat are moderate — this is the trade Class A makes on purpose.'}
-        </Body>
-        <Text style={styles.note}>No single bias value suits every amplifier — the right point depends on the device, the circuit, and the class of operation.</Text>
-      </Card>
+              <SectionTitle>1 · BIAS — THE OPERATING POINT</SectionTitle>
+              <Card tone="accent">
+                {singleRead}
+                <Body>
+                  {single.region === 'cutoff'
+                    ? 'The operating point sits near cutoff: the negative half of the swing drives the device below zero current and simply vanishes. Idle current and heat are low — but the waveform is missing a piece.'
+                    : single.region === 'saturation'
+                      ? 'The operating point sits near full conduction: the positive half runs out of room and flattens. Idle current and heat are high even before any signal.'
+                      : 'The device idles in the middle of its range, so the whole swing fits. Idle current and heat are moderate — this is the trade Class A makes on purpose.'}
+                </Body>
+                <Text style={styles.note}>No single bias value suits every amplifier — the right point depends on the device, the circuit, and the class of operation.</Text>
+              </Card>
+            </>
+          ),
+        },
+        {
+          key: 'angle',
+          title: 'Conduction angle',
+          kind: 'rack',
+          rack: {
+            rig: condPic,
+            bezel: [
+              { k: 'ANGLE', v: `${angle}°`, tint: AMP_COLORS.pos },
+              { k: 'CLASS', v: angle === 360 ? 'A' : angle === 180 ? 'B' : angle === 270 ? 'AB' : 'C', tint: colors.textSecondary },
+              ...rigStatusBezel(condPic, ['supply', 'heat']),
+            ],
+            // Snapped to the four taught angles, so the explanation below
+            // always describes the picture on the glass.
+            params: [faderParam({ id: 'angle', label: 'ANGLE', value: angle, min: 90, max: 360, step: 90, format: (v) => `${v}°`, onChange: setAngle })],
+            initialParam: 'angle',
+          },
+          well: (
+            <>
+              <SectionTitle>2 · CONDUCTION ANGLE</SectionTitle>
+              <Body>One full sine cycle is 360°. How much of it does the device actually pass current?</Body>
+              <Card>
+                <Body>
+                  {angle === 360
+                    ? '360° — the device never switches off. Full-cycle conduction is the Class A arrangement: simplest handoff (there is none) and the most idle dissipation.'
+                    : angle === 180
+                      ? '180° — the device carries only the positive half. On its own that is half a waveform; paired with a second device for the negative half you have Class B push-pull.'
+                      : angle === 270
+                        ? 'Between 180° and 360° — the device conducts past the zero crossing into the other half. Two devices like this OVERLAP: the Class AB arrangement.'
+                        : 'Under 180° — short pulses near the peak only. On its own this cannot reproduce audio; Class C relies on a tuned circuit to ring between pulses.'}
+                </Body>
+                <Text style={styles.note}>Class D is not described by conduction angle — it switches; Module 5 covers it on its own terms.</Text>
+              </Card>
+            </>
+          ),
+        },
+        {
+          key: 'pushpull',
+          title: 'Push-pull',
+          kind: 'rack',
+          rack: {
+            rig: ppPic,
+            bezel: [
+              // OVERBIAS, not HOT: the handoff IS clean there — the stage is
+              // over-biased, and the HEAT cell beside it already says hot.
+              { k: 'HANDOFF', v: taskSolved ? 'CLEAN' : tooHot ? 'OVERBIAS' : 'NOTCH', tint: taskSolved ? colors.green : tooHot ? colors.gold : colors.red },
+              { k: 'IDLE', v: `${Math.round(pp.idleCurrent * 100)}%`, tint: tooHot ? colors.gold : AMP_COLORS.pos },
+              ...rigStatusBezel(ppPic, ['supply', 'heat']),
+            ],
+            params: [faderParam({ id: 'ppbias', label: 'BIAS', value: ppBias, min: 0, max: 1, step: 0.01, format: (v) => `${Math.round(v * 100)}%`, onChange: setPpBias })],
+            initialParam: 'ppbias',
+          },
+          well: (
+            <>
+              <SectionTitle>3 · PUSH-PULL AND THE HANDOFF</SectionTitle>
+              <Body>
+                Two complementary devices share the work: one drives the <Text style={{ color: AMP_COLORS.pos }}>positive</Text> direction,
+                the other the <Text style={{ color: AMP_COLORS.neg }}>negative</Text>. Their currents combine across the load. Watch the
+                crossing — where one stops and the other starts is where trouble lives.
+              </Body>
+              <Text style={styles.task}>YOUR TASK: raise the bias until the notch is gone — but stop before the excessive-heat region (idle current ≤ 8% relative).</Text>
+              <Card>
+                <HonestyBadge label="Zero-crossing zoom · ×3.2 vertical magnification" />
+                <ExpandableFigure
+                  aspect={ZOOM_W / ZOOM_H}
+                  title="ZERO CROSS"
+                  badge="Zero-crossing zoom · ×3.2 vertical magnification"
+                  controls={<FigureDock>{ppRead}{ppBiasSlider}</FigureDock>}
+                  render={(w, h) => <CrossoverZoom width={w} height={h} out={pp.out} />}
+                />
+                {ppRead}
+                <Body>
+                  {taskSolved
+                    ? `Just enough overlap: both devices conduct around zero, the notch is gone, and idle current stays at ${Math.round(pp.idleCurrent * 100)}% relative. This is the Class AB sweet spot.`
+                    : tooHot
+                      ? `The notch is gone, but idle current is ${Math.round(pp.idleCurrent * 100)}% relative — extra overlap now buys nothing except heat. Back the bias down until it just clears.`
+                      : 'Insufficient bias: each device waits for the signal to climb past its threshold, so the region around zero belongs to nobody. That gap is crossover distortion — audible at LOW levels, where it is a large fraction of the signal.'}
+                </Body>
+              </Card>
 
-      <SectionTitle>2 · CONDUCTION ANGLE</SectionTitle>
-      <Body>One full sine cycle is 360°. How much of it does the device actually pass current?</Body>
-      {angleSeg}
-      <AmpRig
-        controls={angleSeg}
-        input={audio}
-        devices={condDevices}
-        supplyFlow={angle / 360}
-        heat={0.15 + (angle / 360) * 0.5}
-        deviceTitle={`DEVICE CURRENT — conducts for ${angle}° of the cycle`}
-        a11ySummary={`Conduction angle ${angle} degrees: the device passes current for ${angle} degrees of each 360 degree cycle.`}
-      />
-      <Card>
-        <Body>
-          {angle === 360
-            ? '360° — the device never switches off. Full-cycle conduction is the Class A arrangement: simplest handoff (there is none) and the most idle dissipation.'
-            : angle === 180
-              ? '180° — the device carries only the positive half. On its own that is half a waveform; paired with a second device for the negative half you have Class B push-pull.'
-              : angle === 270
-                ? 'Between 180° and 360° — the device conducts past the zero crossing into the other half. Two devices like this OVERLAP: the Class AB arrangement.'
-                : 'Under 180° — short pulses near the peak only. On its own this cannot reproduce audio; Class C relies on a tuned circuit to ring between pulses.'}
-        </Body>
-        <Text style={styles.note}>Class D is not described by conduction angle — it switches; Module 5 covers it on its own terms.</Text>
-      </Card>
-
-      <SectionTitle>3 · PUSH-PULL AND THE HANDOFF</SectionTitle>
-      <Body>
-        Two complementary devices share the work: one drives the <Text style={{ color: AMP_COLORS.pos }}>positive</Text> direction,
-        the other the <Text style={{ color: AMP_COLORS.neg }}>negative</Text>. Their currents combine across the load. Watch the
-        crossing — where one stops and the other starts is where trouble lives.
-      </Body>
-      {/* The task sits BEFORE the control it is done with — it used to be the
-          last line of the result card, under the display it described. */}
-      <Text style={styles.task}>YOUR TASK: raise the bias until the notch is gone — but stop before the excessive-heat region (idle current ≤ 8% relative).</Text>
-      {ppBiasSlider}
-      <AmpRig
-        controls={ppBiasSlider}
-        readout={ppRead}
-        input={audio}
-        devices={{ iPos: pp.iPos, iNeg: pp.iNeg }}
-        output={pp.out}
-        supplyFlow={0.5 + pp.idleCurrent * 3}
-        heat={pp.heat}
-        a11ySummary={`Push-pull bias ${Math.round(ppBias * 100)} percent. ${pp.crossoverNotch ? 'A crossover notch is visible at zero crossing.' : 'The handoff is clean.'} Idle current ${Math.round(pp.idleCurrent * 100)} percent relative; heat ${Math.round(pp.heat * 100)} percent relative.`}
-      />
-      <Card>
-        <HonestyBadge label="Zero-crossing zoom · ×3.2 vertical magnification" />
-        <ExpandableFigure
-          aspect={ZOOM_W / ZOOM_H}
-          title="ZERO CROSS"
-          badge="Zero-crossing zoom · ×3.2 vertical magnification"
-          controls={<FigureDock>{ppRead}{ppBiasSlider}</FigureDock>}
-          render={(w, h) => <CrossoverZoom width={w} height={h} out={pp.out} />}
-        />
-        {ppRead}
-        <Body>
-          {taskSolved
-            ? `Just enough overlap: both devices conduct around zero, the notch is gone, and idle current stays at ${Math.round(pp.idleCurrent * 100)}% relative. This is the Class AB sweet spot.`
-            : tooHot
-              ? `The notch is gone, but idle current is ${Math.round(pp.idleCurrent * 100)}% relative — extra overlap now buys nothing except heat. Back the bias down until it just clears.`
-              : 'Insufficient bias: each device waits for the signal to climb past its threshold, so the region around zero belongs to nobody. That gap is crossover distortion — audible at LOW levels, where it is a large fraction of the signal.'}
-        </Body>
-      </Card>
-
-      <LearnMore>
-        <Body>
-          Crossover distortion is sneakier than clipping: clipping grows with level, the notch is a fixed-size wound
-          that matters most when the music is quiet. Thermal drift moves the bias point, which is why real output
-          stages use bias-tracking components mounted on the heatsink.
-        </Body>
-      </LearnMore>
-    </View>
+              <LearnMore>
+                <Body>
+                  Crossover distortion is sneakier than clipping: clipping grows with level, the notch is a fixed-size wound
+                  that matters most when the music is quiet. Thermal drift moves the bias point, which is why real output
+                  stages use bias-tracking components mounted on the heatsink.
+                </Body>
+              </LearnMore>
+            </>
+          ),
+        },
+      ]}
+    />
   );
 }
 

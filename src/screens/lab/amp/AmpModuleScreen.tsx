@@ -4,7 +4,7 @@
  * takeaway → complete & continue. Progress (visited/done/checks) persists to
  * ape:amp:v1 through the serialized updater; nothing per-frame is ever stored.
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
@@ -16,6 +16,7 @@ import { AMP_MODULES, ampModuleById, checksForModule } from '../../../features/a
 import { emptyAmpModule, setAmpSaveBlocked, updateAmpProgress, type AmpProgressState } from '../../../features/amp/ampProgress';
 import { AMP_MODULE_COMPONENTS, BUILT_MODULE_IDS } from './modules';
 import { CheckCard, SectionTitle, TakeawayCard } from './kit';
+import { AmpStepHostContext, type AmpStepHost } from './steps';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { LabEndLink, LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
@@ -148,45 +149,44 @@ export function AmpModuleScreen() {
     );
   }
 
-  return (
-    <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back to the lab home">
-          <Text style={styles.back}>‹</Text>
-        </Pressable>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.title}>{mod.title.toUpperCase()}</Text>
-          <Text style={styles.subtitle}>Module {mod.num} of {AMP_MODULES.length}{done ? ' · completed' : ''}</Text>
-        </View>
-        {/* The lab HOME carries the note; a module opened from a deep link or
-            resumed from the dashboard never passes through it. Same placement
-            as EqModuleScreen / GainModuleScreen / WaveModuleScreen. */}
-        <AccuracyNote compact detail="This lab MODELS amplifier behaviour on your phone — the numbers and curves are teaching tools, not bench measurements, and any level it plays goes through an UNCALIBRATED output. For real amplifier work use proper test gear." />
-      </View>
-      <ScrollView contentContainerStyle={[styles.scroll, readingColumn, { paddingBottom: insets.bottom + 28 }]}>
-        <View style={styles.objective}>
-          <Text style={styles.objectiveLabel}>OBJECTIVE</Text>
-          <Text style={styles.objectiveText}>{mod.objective}</Text>
-        </View>
+  /**
+   * RACK REBUILD (owner, TestFlight build 32, 2026-09-30): a module is a run
+   * of STEPS (steps.tsx). A rack step pins its rig on the glass with its
+   * controls in the dock below; a read step scrolls as a document. The
+   * module component stays mounted across steps, the strip under the header
+   * moves between them, the objective heads the first step and the checks +
+   * takeaway + CONTINUE close the last.
+   */
+  const [step, setStepRaw] = useState(0);
+  const [stepTitles, setStepTitles] = useState<string[]>([]);
+  const onSteps = useCallback((t: string[]) => {
+    setStepTitles((prev) => (prev.length === t.length && prev.every((x, i) => x === t[i]) ? prev : t));
+  }, []);
+  const setStep = useCallback((i: number) => setStepRaw(i), []);
+  useEffect(() => setStepRaw(0), [mod.id]);
+  const stepCount = stepTitles.length;
+  const stepIdx = Math.min(step, Math.max(0, stepCount - 1));
 
-        {Component ? (
-          <Component onFinalSubmitted={onFinalSubmitted} />
-        ) : (
-          <Text style={styles.missing}>This module is not available.</Text>
-        )}
+  const head = (
+    <View style={styles.objective}>
+      <Text style={styles.objectiveLabel}>OBJECTIVE</Text>
+      <Text style={styles.objectiveText}>{mod.objective}</Text>
+    </View>
+  );
+  const tail = (
+    <>
+      {checks.length ? (
+        <>
+          <SectionTitle>CHECK YOURSELF · {answeredCount} OF {checks.length}</SectionTitle>
+          {checks.map((c) => (
+            <CheckCard key={c.id} check={c} onAnswered={(ok) => onCheck(c.id, ok)} />
+          ))}
+        </>
+      ) : null}
 
-        {checks.length ? (
-          <>
-            <SectionTitle>CHECK YOURSELF · {answeredCount} OF {checks.length}</SectionTitle>
-            {checks.map((c) => (
-              <CheckCard key={c.id} check={c} onAnswered={(ok) => onCheck(c.id, ok)} />
-            ))}
-          </>
-        ) : null}
+      <TakeawayCard>{mod.takeaway}</TakeawayCard>
 
-        <TakeawayCard>{mod.takeaway}</TakeawayCard>
-
-        <Pressable
+      <Pressable
           style={[styles.completeBtn, !allChecksAnswered && styles.completeBtnDim]}
           onPress={complete}
           disabled={!allChecksAnswered}
@@ -221,7 +221,57 @@ export function AmpModuleScreen() {
         {!next ? (
           <LabEndLink onPress={showEnd} />
         ) : null}
-      </ScrollView>
+    </>
+  );
+  // A READ step's document scroller (reading column on a tablet; the rack
+  // steps own their scroll well).
+  const readWrap = (body: ReactNode) => (
+    <ScrollView contentContainerStyle={[styles.scroll, readingColumn, { paddingBottom: insets.bottom + 28 }]}>{body}</ScrollView>
+  );
+  // Rebuilt per render on purpose: head/tail carry this render's checks. The
+  // only effect keyed on it (the module's step report) depends on the stable
+  // `onSteps` alone.
+  const host: AmpStepHost = { step: stepIdx, setStep, onSteps, head, tail, readWrap };
+
+  return (
+    <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+      <View style={styles.header}>
+        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back to the lab home">
+          <Text style={styles.back}>‹</Text>
+        </Pressable>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.title}>{mod.title.toUpperCase()}</Text>
+          <Text style={styles.subtitle}>Module {mod.num} of {AMP_MODULES.length}{done ? ' · completed' : ''}</Text>
+        </View>
+        {/* The lab HOME carries the note; a module opened from a deep link or
+            resumed from the dashboard never passes through it. Same placement
+            as EqModuleScreen / GainModuleScreen / WaveModuleScreen. */}
+        <AccuracyNote compact detail="This lab MODELS amplifier behaviour on your phone — the numbers and curves are teaching tools, not bench measurements, and any level it plays goes through an UNCALIBRATED output. For real amplifier work use proper test gear." />
+      </View>
+      {/* The step strip — only when the module has more than one. Steps are
+          free to move between (labs never block navigation). */}
+      {stepCount > 1 ? (
+        <View style={styles.stepNav}>
+          <Pressable onPress={() => setStep(Math.max(0, stepIdx - 1))} disabled={stepIdx <= 0} hitSlop={8} accessibilityRole="button" accessibilityState={{ disabled: stepIdx <= 0 }} accessibilityLabel="Previous step">
+            <Text style={[styles.stepBtn, stepIdx <= 0 && styles.stepBtnDim]}>‹ PREV</Text>
+          </Pressable>
+          <Text style={styles.stepPos} numberOfLines={1}>
+            STEP {stepIdx + 1} OF {stepCount} · {stepTitles[stepIdx]?.toUpperCase()}
+          </Text>
+          <Pressable onPress={() => setStep(Math.min(stepCount - 1, stepIdx + 1))} disabled={stepIdx >= stepCount - 1} hitSlop={8} accessibilityRole="button" accessibilityState={{ disabled: stepIdx >= stepCount - 1 }} accessibilityLabel="Next step">
+            <Text style={[styles.stepBtn, stepIdx >= stepCount - 1 && styles.stepBtnDim]}>NEXT ›</Text>
+          </Pressable>
+        </View>
+      ) : null}
+      <View style={styles.body}>
+        {Component ? (
+          <AmpStepHostContext.Provider value={host}>
+            <Component onFinalSubmitted={onFinalSubmitted} />
+          </AmpStepHostContext.Provider>
+        ) : (
+          readWrap(<Text style={styles.missing}>This module is not available.</Text>)
+        )}
+      </View>
     </View>
   );
 }
@@ -232,6 +282,11 @@ const styles = StyleSheet.create({
   back: { color: colors.textPrimary, fontSize: 30, lineHeight: 32, paddingHorizontal: 4 },
   title: { color: colors.textPrimary, fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1 },
   subtitle: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12.5 },
+  body: { flex: 1 },
+  stepNav: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 16, paddingBottom: 6 },
+  stepBtn: { color: colors.amber, fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1, paddingVertical: 6 },
+  stepBtnDim: { color: '#45454d' },
+  stepPos: { flex: 1, textAlign: 'center', color: colors.textSub, fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1 },
   scroll: { paddingHorizontal: 16, gap: 10 },
   objective: { borderLeftWidth: 2, borderLeftColor: colors.amberLabel, paddingLeft: 10, gap: 2 },
   objectiveLabel: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 2 },

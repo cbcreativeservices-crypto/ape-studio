@@ -3,6 +3,12 @@
  * diagnosis, application selection, myth review, the final system challenge
  * scored across six dimensions, the final assessment drawn from the scored
  * pool, and the completion summary with links back into the modules.
+ *
+ * RACK (2026-09-30): FOUR steps. DIAGNOSIS pins each picture on the glass
+ * (the readings are the well); CHOOSE & MYTHS reads; SYSTEM CHALLENGE pins
+ * the challenge rig with SOURCE / MIXER / AMP IN as faders and the setup
+ * choices in a SETUP tray; FINAL & SUMMARY reads. The module stays mounted
+ * across the steps, so scores and answers survive moving between them.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -12,7 +18,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import type { RootStackParamList } from '../../../../navigation/types';
 import {
   sineCycle, amplify, simulateLinearClass, simulateClassD, evaluateRig, evaluateGainStructure, WAVE_N,
-  shuffledIndices, hashSeed,
+  shuffledIndices, hashSeed, type FaultId,
 } from '../../../../features/amp/ampModel';
 import {
   AMP_CHECKS, AMP_MODULES, MISCONCEPTIONS, WAVE_KINDS, APP_SCENARIOS, APP_CHOICES, MYTH_REVIEW_IDS,
@@ -20,8 +26,11 @@ import {
 } from '../../../../features/amp/ampContent';
 import { loadAmpProgress, updateAmpProgress, type AmpProgressState } from '../../../../features/amp/ampProgress';
 import { useEntitlement } from '../../../../features/commercial/EntitlementProvider';
-import { AmpRig, type RigTrace } from '../AmpRig';
-import { Body, Card, ControlGrid, ControlSlider, FaultBanner, HonestyBadge, SectionTitle, SegRow } from '../kit';
+import { rigStatusBezel, type RigPicture, type RigTrace } from '../AmpRig';
+import { faderParam } from '../AmpRack';
+import { AmpModuleSteps } from '../steps';
+import { levelColor } from '../../../../features/tools/levelColor';
+import { AMP_COLORS, Body, Card, FaultBanner, HonestyBadge, SectionTitle, SegRow } from '../kit';
 import type { AmpModuleProps } from './index';
 
 /** Mirrors the Scenarios screen's feedback tiers — the app has no global pass rule. */
@@ -46,6 +55,16 @@ function waveFor(kind: WaveKind): { out: Float32Array; clipAt?: number; nominalR
     case 'protect': return { out: new Float32Array(WAVE_N), clipAt: 1 };
   }
 }
+
+/** The fault word at bezel width (a cropped readout is a wrong readout). */
+const FAULT_SHORT: Record<FaultId, string> = {
+  short: 'SHORT', 'bad-bridge': 'BRIDGE', 'load-below-min': 'LOAD', overcurrent: 'OVER-I', 'dc-protect': 'DC',
+  'thermal-shutdown': 'TH-SHUT', 'thermal-limiting': 'TH-LIM', 'output-clipping': 'CLIP', 'upstream-clipping': 'UP-CLIP', 'poor-gain-structure': 'GAIN',
+};
+// ≤ 7 characters: the challenge bezel holds FIVE cells, and on a 390-wide
+// phone a five-cell window fits 7 mono characters (BezelReadouts: 368 / 5 −
+// 16 pad ÷ 8.1 px per char). THERM-LIM (9) was being ellipsized — the one
+// thing a bezel readout promises never happens (review 2026-09-30).
 
 const DIAG_ORDER: WaveKind[] = ['voltage-clip', 'classd-raw', 'crossover', 'protect', 'current-limit', 'clean', 'sag', 'classd-filtered'];
 const DIAG_PASS = 6;
@@ -171,10 +190,22 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
     const passed = (Object.keys(dims) as Dim[]).filter((d) => dims[d].ok).length;
     return { rig, gs, outLevel, dims, passed, railLimit };
   }, [chSource, chMixer, chAmp, chMode, chSupply, chLoad, chVent]);
-  const chInput = useMemo(() => sineCycle(Math.min(1, challenge.gs.levels.source)), [challenge.gs.levels.source]);
+  // THE WAVEFORM FOLLOWS THE CHAIN (review 2026-09-30). The picture used to be
+  // a clean sine driven to `levels.amp` whatever clipped upstream — so with
+  // FAULT reading UP-CLIP the glass showed a clean output below the rails,
+  // the opposite of Module 7's lesson ("the CLIP light stays dark while the
+  // sound is harsh"). Now each stage flat-tops at its own ceiling and the
+  // next stage amplifies THAT: a hot source arrives at the amplifier already
+  // squared off, and the output carries those flat tops BELOW the rail lines.
+  // Peaks agree with evaluateGainStructure exactly: the amp's input peaks at
+  // min(levels.mixer, 1) and the output at min(levels.amp, 1) × rail.
+  const chInput = useMemo(
+    () => amplify(amplify(sineCycle(1), challenge.gs.levels.source, 1), chMixer * 1.6, 1),
+    [challenge.gs.levels.source, chMixer],
+  );
   const chOutput = useMemo(
-    () => amplify(sineCycle(1), Math.min(challenge.gs.levels.amp, 1.4) * challenge.railLimit, challenge.railLimit),
-    [challenge.gs.levels.amp, challenge.railLimit],
+    () => amplify(chInput, chAmp * 1.6, challenge.railLimit),
+    [chInput, chAmp, challenge.railLimit],
   );
 
   /* final assessment */
@@ -236,291 +267,351 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
 
   const finalDone = Object.keys(finalAnswers).length;
 
-  // The challenge rig's controls, drawn on the page (one column) and again
-  // in the rig's full-screen dock (two abreast, so the enlarged drawing keeps
-  // its room) — one state. Every one of them changes the picture.
-  const chControls = [
-    <ControlSlider key="src" level label="Source level" value={chSource} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={(v) => { setChSource(v); setChSubmitted(false); }} />,
-    <ControlSlider key="mix" level label="Mixer output" value={chMixer} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={(v) => { setChMixer(v); setChSubmitted(false); }} />,
-    <ControlSlider key="amp" level label="Amplifier input setting" value={chAmp} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={(v) => { setChAmp(v); setChSubmitted(false); }} />,
-    <SegRow<'stereo' | 'bridge'> key="mode" label="Operating mode" options={[{ key: 'stereo', label: 'Stereo' }, { key: 'bridge', label: 'Bridge' }]} value={chMode} onChange={(v) => { setChMode(v); setChSubmitted(false); }} />,
-    <SegRow<'healthy' | 'sagging'> key="supply" label="Supply condition" options={[{ key: 'healthy', label: 'Healthy' }, { key: 'sagging', label: 'Sagging (weak mains)' }]} value={chSupply} onChange={(v) => { setChSupply(v); setChSubmitted(false); }} />,
-    <SegRow<8 | 4 | 2> key="load" label="Speaker load (nominal)" options={[{ key: 8, label: '8 Ω' }, { key: 4, label: '4 Ω' }, { key: 2, label: '2 Ω' }]} value={chLoad} onChange={(v) => { setChLoad(v); setChSubmitted(false); }} />,
-    <SegRow<'clear' | 'blocked'> key="vent" label="Ventilation" options={[{ key: 'clear', label: 'Clear' }, { key: 'blocked', label: 'Blocked' }]} value={chVent} onChange={(v) => { setChVent(v); setChSubmitted(false); }} />,
-  ];
+  // The challenge rig's setup choices — a GROUP tray on the dock (mode,
+  // supply, load, ventilation are four selectors; the strip holds five keys).
+  // Every one of them changes the picture, the fault word or the heat.
+  const unsubmit = () => setChSubmitted(false);
+  const chSetup = () => (
+    <View style={{ gap: 10 }}>
+      <SegRow<'stereo' | 'bridge'> label="Operating mode" options={[{ key: 'stereo', label: 'Stereo' }, { key: 'bridge', label: 'Bridge' }]} value={chMode} onChange={(v) => { setChMode(v); unsubmit(); }} />
+      <SegRow<'healthy' | 'sagging'> label="Supply condition" options={[{ key: 'healthy', label: 'Healthy' }, { key: 'sagging', label: 'Sagging (weak mains)' }]} value={chSupply} onChange={(v) => { setChSupply(v); unsubmit(); }} />
+      <SegRow<8 | 4 | 2> label="Speaker load (nominal)" options={[{ key: 8, label: '8 Ω' }, { key: 4, label: '4 Ω' }, { key: 2, label: '2 Ω' }]} value={chLoad} onChange={(v) => { setChLoad(v); unsubmit(); }} />
+      <SegRow<'clear' | 'blocked'> label="Ventilation" options={[{ key: 'clear', label: 'Clear' }, { key: 'blocked', label: 'Blocked' }]} value={chVent} onChange={(v) => { setChVent(v); unsubmit(); }} />
+    </View>
+  );
+  const pct = (v: number) => `${Math.round(v * 100)}%`;
+  const faultWord = challenge.rig.primary ? FAULT_SHORT[challenge.rig.primary] : 'NONE';
+
+  const diagPic: RigPicture = {
+    input: diagInput,
+    output: diagWave.out,
+    clipAt: diagWave.clipAt,
+    nominalRailAt: diagWave.nominalRailAt,
+    extraOut: diagPick ? diagWave.extra : undefined,
+    outputTitle: 'OUTPUT — what is this amplifier doing?',
+    supplyFlow: 0,
+    heat: 0,
+    a11ySummary: 'Diagnosis waveform. Identify the condition from the output shape relative to the rail lines.',
+  };
+  const chPic: RigPicture = {
+    input: chInput,
+    output: chOutput,
+    clipAt: challenge.railLimit,
+    nominalRailAt: chSupply === 'sagging' ? 1 : undefined,
+    supplyFlow: challenge.rig.currentDemand,
+    heat: challenge.rig.thermal,
+    speaker: true,
+    faulted: challenge.rig.primary != null,
+    a11ySummary: `System challenge. Output ${Math.round(challenge.outLevel * 100)} percent of full. ${challenge.rig.primary ? `Fault: ${challenge.rig.primary}.` : 'No fault.'} Relative heat ${Math.round(challenge.rig.thermal * 100)} percent.`,
+  };
 
   return (
-    <View style={{ gap: 12 }}>
-      <Body>Everything so far was practice. Now use it: read waveforms, choose amplifiers, kill myths, configure a system, and pass the check.</Body>
-
-      {/* ── 1 waveform diagnosis ── */}
-      <SectionTitle>1 · WAVEFORM DIAGNOSIS ({diagIdx + 1} of {DIAG_ORDER.length})</SectionTitle>
-      <Body>Read the output against the rail lines. One picture may have two correct readings — the evidence will say so.</Body>
-      <AmpRig
-        input={diagInput}
-        output={diagWave.out}
-        clipAt={diagWave.clipAt}
-        nominalRailAt={diagWave.nominalRailAt}
-        extraOut={diagPick ? diagWave.extra : undefined}
-        outputTitle="OUTPUT — what is this amplifier doing?"
-        title="DIAGNOSIS"
-        supplyFlow={0}
-        heat={0}
-        hideStatus
-        a11ySummary="Diagnosis waveform. Identify the condition from the output shape relative to the rail lines."
-      />
-      <View style={{ gap: 6 }}>
-        {WAVE_KINDS.map((k) => {
-          const isAnswer = diagPick != null && (k.key === diagKind || (diagRight && k.key === diagPick));
-          const isWrong = diagPick === k.key && !diagRight;
-          return (
-            <Pressable
-              key={k.key}
-              disabled={diagPick != null}
-              onPress={() => {
-                // One scored pick per waveform (bug hunt 2026-09-30 day): a
-                // same-frame double tap lands before `disabled` re-renders and
-                // counted the waveform twice ("5 of 4").
-                if (diagScoredRef.current === diagIdx) return;
-                diagScoredRef.current = diagIdx;
-                setDiagPick(k.key);
-                setDiagScore((s) => ({ right: s.right + (diagAccepted.includes(k.key) ? 1 : 0), total: s.total + 1 }));
-              }}
-              style={[styles.opt, isAnswer && styles.optRight, isWrong && styles.optWrong]}
-              accessibilityRole="button"
-              accessibilityState={{ disabled: diagPick != null }}
-              aria-disabled={diagPick != null}
-              accessibilityLabel={k.label}
-            >
-              <Text style={[styles.optText, isAnswer && { color: colors.green }, isWrong && { color: colors.red }]}>{k.label}</Text>
-            </Pressable>
-          );
-        })}
-      </View>
-      {diagPick ? (
-        <Card tone="accent">
-          <Text style={[styles.verdict, { color: diagRight ? colors.green : colors.gold }]}>
-            {diagPick === diagKind
-              ? '✓ CORRECT'
-              : diagRight
-                ? `✓ ALSO CORRECT — ${waveKind(diagPick).label.toUpperCase()} AND ${waveKind(diagKind).label.toUpperCase()} ARE THE SAME PICTURE HERE`
-                : `NOT QUITE — THIS IS ${waveKind(diagKind).label.toUpperCase()}`}
-          </Text>
-          <Body>Evidence: {waveKind(diagKind).evidence}</Body>
-          {diagIdx < DIAG_ORDER.length - 1 ? (
-            <Pressable style={styles.nextBtn} onPress={() => { setDiagIdx(diagIdx + 1); setDiagPick(null); }} accessibilityRole="button" accessibilityLabel="Next waveform">
-              <Text style={styles.nextText}>NEXT WAVEFORM ›</Text>
-            </Pressable>
-          ) : (
+    <AmpModuleSteps
+      steps={[
+        {
+          key: 'diagnose',
+          title: 'Diagnosis',
+          kind: 'rack',
+          rack: {
+            rig: diagPic,
+            badge: 'Read the output against the rail lines — conceptual pictures',
+            // No supply / heat cells here: for a diagnosis they would be
+            // decoys, not information.
+            bezel: [
+              { k: 'PICTURE', v: `${diagIdx + 1} / ${DIAG_ORDER.length}`, tint: colors.textSecondary },
+              { k: 'SCORE', v: `${diagScore.right} / ${diagScore.total}`, tint: diagScore.total && diagScore.right === diagScore.total ? colors.green : AMP_COLORS.supply },
+              { k: 'READING', v: diagPick ? (diagRight ? 'RIGHT' : 'WRONG') : '—', tint: diagPick ? (diagRight ? colors.green : colors.red) : colors.textSub },
+            ],
+            params: [],
+            initialParam: '',
+          },
+          well: (
             <>
-              <Text style={styles.score}>Diagnosis round: {diagScore.right} of {diagScore.total} — {diagScore.right >= DIAG_PASS ? 'you can read an amplifier.' : 'revisit Modules 3, 5 and 6 for the ones that fooled you.'}</Text>
-              <Pressable style={styles.nextBtn} onPress={() => { diagScoredRef.current = -1; setDiagIdx(0); setDiagPick(null); setDiagScore({ right: 0, total: 0 }); }} accessibilityRole="button" accessibilityLabel="Repeat the diagnosis round">
-                <Text style={styles.nextText}>REPEAT THE ROUND ›</Text>
-              </Pressable>
-            </>
-          )}
-        </Card>
-      ) : null}
+              <Body>Everything so far was practice. Now use it: read waveforms, choose amplifiers, kill myths, configure a system, and pass the check.</Body>
 
-      {/* ── 2 application selection ── */}
-      <SectionTitle>2 · CHOOSE AN AMPLIFIER ({appIdx + 1} of {APP_SCENARIOS.length})</SectionTitle>
-      <Card>
-        <Text style={styles.appTitle}>{app.title}</Text>
-        <Body>{app.brief}</Body>
-      </Card>
-      <SegRow<AppClassChoice>
-        options={APP_CHOICES.map((c) => ({ key: c.key, label: c.label }))}
-        value={appPick ?? ('' as AppClassChoice)}
-        onChange={(v) => setAppPick(v)}
-      />
-      {appPick ? (
-        <Card tone="accent">
-          <Text style={[styles.verdict, { color: app.accepted.includes(appPick) ? colors.green : colors.gold }]}>
-            {app.accepted.includes(appPick) ? '✓ DEFENSIBLE CHOICE' : 'HARD TO DEFEND HERE'}
-          </Text>
-          <Body>{app.accepted.includes(appPick) ? app.reasoning[appPick] : app.rejected[appPick]}</Body>
-          {app.accepted.length > 1 ? (
-            <Text style={styles.note}>Also defensible: {app.accepted.filter((a) => a !== appPick).map((a) => APP_CHOICES.find((c) => c.key === a)!.label).join(', ') || '—'}.</Text>
-          ) : null}
-          {appIdx < APP_SCENARIOS.length - 1 ? (
-            <Pressable style={styles.nextBtn} onPress={() => { setAppIdx(appIdx + 1); setAppPick(null); }} accessibilityRole="button" accessibilityLabel="Next scenario">
-              <Text style={styles.nextText}>NEXT SCENARIO ›</Text>
-            </Pressable>
-          ) : (
-            <Text style={styles.score}>Selection round complete. Notice how often more than one class was defensible — the brief decides, not the letter.</Text>
-          )}
-        </Card>
-      ) : null}
-
-      {/* ── 3 myth review ── */}
-      <SectionTitle>3 · MYTH REVIEW ({mythIdx + 1} of {MYTH_REVIEW_IDS.length})</SectionTitle>
-      <Card>
-        <Text style={styles.mythStatement}>“{myth.statement}”</Text>
-      </Card>
-      <SegRow<'true' | 'false' | 'depends'>
-        options={[
-          { key: 'true', label: 'True' },
-          { key: 'false', label: 'False' },
-          { key: 'depends', label: 'It depends' },
-        ]}
-        value={mythPick ?? ('' as 'true')}
-        onChange={setMythPick}
-      />
-      {mythPick ? (
-        <Card tone="accent">
-          <Text style={[styles.verdict, { color: mythPick === myth.verdict ? colors.green : colors.gold }]}>
-            {mythPick === myth.verdict ? '✓ RIGHT' : `THE ANSWER IS: ${myth.verdict === 'false' ? 'FALSE' : 'IT DEPENDS'}`}
-          </Text>
-          <Body>{myth.correction} {myth.detail}</Body>
-          {mythIdx < MYTH_REVIEW_IDS.length - 1 ? (
-            <Pressable style={styles.nextBtn} onPress={() => { setMythIdx(mythIdx + 1); setMythPick(null); }} accessibilityRole="button" accessibilityLabel="Next statement">
-              <Text style={styles.nextText}>NEXT STATEMENT ›</Text>
-            </Pressable>
-          ) : null}
-        </Card>
-      ) : null}
-
-      {/* ── 4 final system challenge ── */}
-      <SectionTitle>4 · FINAL SYSTEM CHALLENGE</SectionTitle>
-      <Body>
-        This rig arrives misconfigured. Bring it to a clean output between 50% and 85% of full, within load limits, with
-        no thermal or protection faults and correct connections. The amplifier is rated 4 Ω per channel in stereo and
-        8 Ω bridged. Score it as often as you like — every failing dimension tells you what to change.
-      </Body>
-      {chControls}
-      <AmpRig
-        title="CHALLENGE"
-        controls={<ControlGrid>{chControls}</ControlGrid>}
-        readout={
-          <Text style={[styles.verdict, { color: challenge.rig.primary ? colors.red : colors.green }]} numberOfLines={2}>
-            {`OUTPUT ${Math.round(challenge.outLevel * 100)}% OF FULL · ${challenge.rig.primary ? `FAULT: ${String(challenge.rig.primary).replace(/-/g, ' ').toUpperCase()}` : 'NO FAULT'}${chSubmitted ? ` · ${challenge.passed} OF 6 PASS` : ''}`}
-          </Text>
-        }
-        input={chInput}
-        output={chOutput}
-        clipAt={challenge.railLimit}
-        nominalRailAt={chSupply === 'sagging' ? 1 : undefined}
-        supplyFlow={challenge.rig.currentDemand}
-        heat={challenge.rig.thermal}
-        speaker
-        faulted={challenge.rig.primary != null}
-        a11ySummary={`System challenge. Output ${Math.round(challenge.outLevel * 100)} percent of full. ${challenge.rig.primary ? `Fault: ${challenge.rig.primary}.` : 'No fault.'} Relative heat ${Math.round(challenge.rig.thermal * 100)} percent.`}
-      />
-      <FaultBanner primary={challenge.rig.primary} secondary={challenge.rig.secondary} />
-      <Pressable style={styles.checkBtn} onPress={() => setChSubmitted(true)} accessibilityRole="button" accessibilityLabel="Score my configuration">
-        <Text style={styles.checkBtnText}>SCORE THIS CONFIGURATION</Text>
-      </Pressable>
-      {chSubmitted ? (
-        <Card tone="accent">
-          <Text style={[styles.verdict, { color: challenge.passed === 6 ? colors.green : colors.gold }]}>
-            {challenge.passed} OF 6 DIMENSIONS PASS{challenge.passed === 6 ? ' — SYSTEM READY' : ''}
-          </Text>
-          {(Object.keys(challenge.dims) as Dim[]).map((d) => (
-            <View key={d} style={styles.dimRow}>
-              <Text style={[styles.dimMark, { color: challenge.dims[d].ok ? colors.green : colors.red }]}>{challenge.dims[d].ok ? '✓' : '✗'}</Text>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.dimLabel}>{DIM_LABEL[d]}</Text>
-                <Text style={styles.dimWhy}>{challenge.dims[d].why}</Text>
+              {/* ── 1 waveform diagnosis ── */}
+              <SectionTitle>1 · WAVEFORM DIAGNOSIS ({diagIdx + 1} of {DIAG_ORDER.length})</SectionTitle>
+              <Body>Read the output against the rail lines. One picture may have two correct readings — the evidence will say so.</Body>
+              <View style={{ gap: 6 }}>
+                {WAVE_KINDS.map((k) => {
+                  const isAnswer = diagPick != null && (k.key === diagKind || (diagRight && k.key === diagPick));
+                  const isWrong = diagPick === k.key && !diagRight;
+                  return (
+                    <Pressable
+                      key={k.key}
+                      disabled={diagPick != null}
+                      onPress={() => {
+                        // One scored pick per waveform (bug hunt 2026-09-30 day): a
+                        // same-frame double tap lands before `disabled` re-renders and
+                        // counted the waveform twice ("5 of 4").
+                        if (diagScoredRef.current === diagIdx) return;
+                        diagScoredRef.current = diagIdx;
+                        setDiagPick(k.key);
+                        setDiagScore((s) => ({ right: s.right + (diagAccepted.includes(k.key) ? 1 : 0), total: s.total + 1 }));
+                      }}
+                      style={[styles.opt, isAnswer && styles.optRight, isWrong && styles.optWrong]}
+                      accessibilityRole="button"
+                      accessibilityState={{ disabled: diagPick != null }}
+                      aria-disabled={diagPick != null}
+                      accessibilityLabel={k.label}
+                    >
+                      <Text style={[styles.optText, isAnswer && { color: colors.green }, isWrong && { color: colors.red }]}>{k.label}</Text>
+                    </Pressable>
+                  );
+                })}
               </View>
-            </View>
-          ))}
-        </Card>
-      ) : null}
+              {diagPick ? (
+                <Card tone="accent">
+                  <Text style={[styles.verdict, { color: diagRight ? colors.green : colors.gold }]}>
+                    {diagPick === diagKind
+                      ? '✓ CORRECT'
+                      : diagRight
+                        ? `✓ ALSO CORRECT — ${waveKind(diagPick).label.toUpperCase()} AND ${waveKind(diagKind).label.toUpperCase()} ARE THE SAME PICTURE HERE`
+                        : `NOT QUITE — THIS IS ${waveKind(diagKind).label.toUpperCase()}`}
+                  </Text>
+                  <Body>Evidence: {waveKind(diagKind).evidence}</Body>
+                  {diagIdx < DIAG_ORDER.length - 1 ? (
+                    <Pressable style={styles.nextBtn} onPress={() => { setDiagIdx(diagIdx + 1); setDiagPick(null); }} accessibilityRole="button" accessibilityLabel="Next waveform">
+                      <Text style={styles.nextText}>NEXT WAVEFORM ›</Text>
+                    </Pressable>
+                  ) : (
+                    <>
+                      <Text style={styles.score}>Diagnosis round: {diagScore.right} of {diagScore.total} — {diagScore.right >= DIAG_PASS ? 'you can read an amplifier.' : 'revisit Modules 3, 5 and 6 for the ones that fooled you.'}</Text>
+                      <Pressable style={styles.nextBtn} onPress={() => { diagScoredRef.current = -1; setDiagIdx(0); setDiagPick(null); setDiagScore({ right: 0, total: 0 }); }} accessibilityRole="button" accessibilityLabel="Repeat the diagnosis round">
+                        <Text style={styles.nextText}>REPEAT THE ROUND ›</Text>
+                      </Pressable>
+                    </>
+                  )}
+                </Card>
+              ) : null}
+            </>
+          ),
+        },
+        {
+          key: 'choose',
+          title: 'Choose & myths',
+          kind: 'read',
+          body: (
+            <>
+              {/* ── 2 application selection ── */}
+              <SectionTitle>2 · CHOOSE AN AMPLIFIER ({appIdx + 1} of {APP_SCENARIOS.length})</SectionTitle>
+              <Card>
+                <Text style={styles.appTitle}>{app.title}</Text>
+                <Body>{app.brief}</Body>
+              </Card>
+              <SegRow<AppClassChoice>
+                options={APP_CHOICES.map((c) => ({ key: c.key, label: c.label }))}
+                value={appPick ?? ('' as AppClassChoice)}
+                onChange={(v) => setAppPick(v)}
+              />
+              {appPick ? (
+                <Card tone="accent">
+                  <Text style={[styles.verdict, { color: app.accepted.includes(appPick) ? colors.green : colors.gold }]}>
+                    {app.accepted.includes(appPick) ? '✓ DEFENSIBLE CHOICE' : 'HARD TO DEFEND HERE'}
+                  </Text>
+                  <Body>{app.accepted.includes(appPick) ? app.reasoning[appPick] : app.rejected[appPick]}</Body>
+                  {app.accepted.length > 1 ? (
+                    <Text style={styles.note}>Also defensible: {app.accepted.filter((a) => a !== appPick).map((a) => APP_CHOICES.find((c) => c.key === a)!.label).join(', ') || '—'}.</Text>
+                  ) : null}
+                  {appIdx < APP_SCENARIOS.length - 1 ? (
+                    <Pressable style={styles.nextBtn} onPress={() => { setAppIdx(appIdx + 1); setAppPick(null); }} accessibilityRole="button" accessibilityLabel="Next scenario">
+                      <Text style={styles.nextText}>NEXT SCENARIO ›</Text>
+                    </Pressable>
+                  ) : (
+                    <Text style={styles.score}>Selection round complete. Notice how often more than one class was defensible — the brief decides, not the letter.</Text>
+                  )}
+                </Card>
+              ) : null}
 
-      {/* ── 5 final assessment ── */}
-      <SectionTitle>5 · FINAL ASSESSMENT ({FINAL_ITEMS} ITEMS)</SectionTitle>
-      <HonestyBadge label="Drawn from a larger pool — a retake draws a different set" />
-      {finalItems.map((c, i) => {
-        const picked = finalAnswers[c.id];
-        return (
-          <Card key={c.id} tone="accent">
-            <Text style={styles.qNum}>{i + 1}.</Text>
-            <Text style={styles.q}>{c.q}</Text>
-            <View style={{ gap: 6 }}>
-              {(finalOrder[c.id] ?? c.options.map((_, oi) => oi)).map((oi) => {
-                const o = c.options[oi];
-                const isRight = finalSubmitted && oi === c.correct;
-                const isWrongPick = finalSubmitted && picked === oi && oi !== c.correct;
+              {/* ── 3 myth review ── */}
+              <SectionTitle>3 · MYTH REVIEW ({mythIdx + 1} of {MYTH_REVIEW_IDS.length})</SectionTitle>
+              <Card>
+                <Text style={styles.mythStatement}>“{myth.statement}”</Text>
+              </Card>
+              <SegRow<'true' | 'false' | 'depends'>
+                options={[
+                  { key: 'true', label: 'True' },
+                  { key: 'false', label: 'False' },
+                  { key: 'depends', label: 'It depends' },
+                ]}
+                value={mythPick ?? ('' as 'true')}
+                onChange={setMythPick}
+              />
+              {mythPick ? (
+                <Card tone="accent">
+                  <Text style={[styles.verdict, { color: mythPick === myth.verdict ? colors.green : colors.gold }]}>
+                    {mythPick === myth.verdict ? '✓ RIGHT' : `THE ANSWER IS: ${myth.verdict === 'false' ? 'FALSE' : 'IT DEPENDS'}`}
+                  </Text>
+                  <Body>{myth.correction} {myth.detail}</Body>
+                  {mythIdx < MYTH_REVIEW_IDS.length - 1 ? (
+                    <Pressable style={styles.nextBtn} onPress={() => { setMythIdx(mythIdx + 1); setMythPick(null); }} accessibilityRole="button" accessibilityLabel="Next statement">
+                      <Text style={styles.nextText}>NEXT STATEMENT ›</Text>
+                    </Pressable>
+                  ) : null}
+                </Card>
+              ) : null}
+            </>
+          ),
+        },
+        {
+          key: 'challenge',
+          title: 'System challenge',
+          kind: 'rack',
+          rack: {
+            rig: chPic,
+            bezel: [
+              { k: 'OUTPUT', v: pct(challenge.outLevel), tint: levelColor(challenge.outLevel) },
+              { k: 'FAULT', v: faultWord, tint: challenge.rig.primary ? colors.red : colors.green },
+              ...rigStatusBezel(chPic, ['heat', 'load']),
+              { k: 'SCORE', v: chSubmitted ? `${challenge.passed} / 6` : '—', tint: chSubmitted ? (challenge.passed === 6 ? colors.green : colors.gold) : colors.textSub },
+            ],
+            params: [
+              faderParam({ id: 'src', label: 'SOURCE', value: chSource, min: 0, max: 1, step: 0.01, format: pct, onChange: (v) => { setChSource(v); unsubmit(); }, level: true }),
+              faderParam({ id: 'mix', label: 'MIXER', value: chMixer, min: 0, max: 1, step: 0.01, format: pct, onChange: (v) => { setChMixer(v); unsubmit(); }, level: true }),
+              faderParam({ id: 'amp', label: 'AMP IN', value: chAmp, min: 0, max: 1, step: 0.01, format: pct, onChange: (v) => { setChAmp(v); unsubmit(); }, level: true }),
+              { kind: 'group', id: 'setup', label: 'SETUP', valueLabel: `${chMode === 'bridge' ? 'BR' : 'ST'}·${chLoad}Ω`, render: chSetup },
+            ],
+            initialParam: 'src',
+            // Three faders + the setup tray + RUN: five keys.
+            transport: 'run',
+          },
+          well: (
+            <>
+              {/* ── 4 final system challenge ── */}
+              <SectionTitle>4 · FINAL SYSTEM CHALLENGE</SectionTitle>
+              <Body>
+                This rig arrives misconfigured. Bring it to a clean output between 50% and 85% of full, within load limits, with
+                no thermal or protection faults and correct connections. The amplifier is rated 4 Ω per channel in stereo and
+                8 Ω bridged. Score it as often as you like — every failing dimension tells you what to change.
+              </Body>
+              <Text style={styles.note}>SOURCE, MIXER and AMP IN are the faders below the display; mode, supply, load and ventilation are under SETUP.</Text>
+              <FaultBanner primary={challenge.rig.primary} secondary={challenge.rig.secondary} />
+              <Pressable style={styles.checkBtn} onPress={() => setChSubmitted(true)} accessibilityRole="button" accessibilityLabel="Score my configuration">
+                <Text style={styles.checkBtnText}>SCORE THIS CONFIGURATION</Text>
+              </Pressable>
+              {chSubmitted ? (
+                <Card tone="accent">
+                  <Text style={[styles.verdict, { color: challenge.passed === 6 ? colors.green : colors.gold }]}>
+                    {challenge.passed} OF 6 DIMENSIONS PASS{challenge.passed === 6 ? ' — SYSTEM READY' : ''}
+                  </Text>
+                  {(Object.keys(challenge.dims) as Dim[]).map((d) => (
+                    <View key={d} style={styles.dimRow}>
+                      <Text style={[styles.dimMark, { color: challenge.dims[d].ok ? colors.green : colors.red }]}>{challenge.dims[d].ok ? '✓' : '✗'}</Text>
+                      <View style={{ flex: 1 }}>
+                        <Text style={styles.dimLabel}>{DIM_LABEL[d]}</Text>
+                        <Text style={styles.dimWhy}>{challenge.dims[d].why}</Text>
+                      </View>
+                    </View>
+                  ))}
+                </Card>
+              ) : null}
+            </>
+          ),
+        },
+        {
+          key: 'final',
+          title: 'Final & summary',
+          kind: 'read',
+          body: (
+            <>
+              {/* ── 5 final assessment ── */}
+              <SectionTitle>5 · FINAL ASSESSMENT ({FINAL_ITEMS} ITEMS)</SectionTitle>
+              <HonestyBadge label="Drawn from a larger pool — a retake draws a different set" />
+              {finalItems.map((c, i) => {
+                const picked = finalAnswers[c.id];
                 return (
-                  <Pressable
-                    key={oi}
-                    disabled={finalSubmitted}
-                    onPress={() => setFinalAnswers((prev) => ({ ...prev, [c.id]: oi }))}
-                    style={[styles.opt, picked === oi && !finalSubmitted && styles.optPicked, isRight && styles.optRight, isWrongPick && styles.optWrong]}
-                    accessibilityRole="button"
-                    accessibilityState={{ selected: picked === oi, disabled: finalSubmitted }}
-                    aria-pressed={picked === oi}
-                    aria-disabled={finalSubmitted}
-                    accessibilityLabel={o}
-                  >
-                    <Text style={[styles.optText, isRight && { color: colors.green }, isWrongPick && { color: colors.red }]}>{o}</Text>
-                  </Pressable>
+                  <Card key={c.id} tone="accent">
+                    <Text style={styles.qNum}>{i + 1}.</Text>
+                    <Text style={styles.q}>{c.q}</Text>
+                    <View style={{ gap: 6 }}>
+                      {(finalOrder[c.id] ?? c.options.map((_, oi) => oi)).map((oi) => {
+                        const o = c.options[oi];
+                        const isRight = finalSubmitted && oi === c.correct;
+                        const isWrongPick = finalSubmitted && picked === oi && oi !== c.correct;
+                        return (
+                          <Pressable
+                            key={oi}
+                            disabled={finalSubmitted}
+                            onPress={() => setFinalAnswers((prev) => ({ ...prev, [c.id]: oi }))}
+                            style={[styles.opt, picked === oi && !finalSubmitted && styles.optPicked, isRight && styles.optRight, isWrongPick && styles.optWrong]}
+                            accessibilityRole="button"
+                            accessibilityState={{ selected: picked === oi, disabled: finalSubmitted }}
+                            aria-pressed={picked === oi}
+                            aria-disabled={finalSubmitted}
+                            accessibilityLabel={o}
+                          >
+                            <Text style={[styles.optText, isRight && { color: colors.green }, isWrongPick && { color: colors.red }]}>{o}</Text>
+                          </Pressable>
+                        );
+                      })}
+                    </View>
+                    {finalSubmitted ? <Text style={[styles.explain, { color: picked === c.correct ? colors.green : colors.gold }]}>{c.explain}</Text> : null}
+                  </Card>
                 );
               })}
-            </View>
-            {finalSubmitted ? <Text style={[styles.explain, { color: picked === c.correct ? colors.green : colors.gold }]}>{c.explain}</Text> : null}
-          </Card>
-        );
-      })}
-      {!finalSubmitted ? (
-        <>
-          <Pressable
-            style={[styles.checkBtn, finalDone < finalItems.length && { opacity: 0.45 }]}
-            disabled={finalDone < finalItems.length}
-            onPress={submitFinal}
-            accessibilityRole="button"
-            accessibilityState={{ disabled: finalDone < finalItems.length }}
-            aria-disabled={finalDone < finalItems.length}
-            accessibilityLabel={finalDone < finalItems.length ? 'Answer every item to submit' : 'Submit the final assessment'}
-          >
-            <Text style={styles.checkBtnText}>SUBMIT FINAL</Text>
-          </Pressable>
-          {finalDone < finalItems.length ? (
-            <Text style={styles.note}>Answer all {finalItems.length} items to submit ({finalDone} done).</Text>
-          ) : null}
-        </>
-      ) : (
-        <Card>
-          <Text style={[styles.bigScore, { color: finalPct >= FINAL_STRONG_PCT ? colors.green : colors.gold }]}>{finalPct}%</Text>
-          <Body>
-            {finalPct >= 90 ? 'Outstanding work.' : finalPct >= FINAL_STRONG_PCT ? 'Strong round.' : finalPct >= 50 ? 'Good progress.' : 'You’re building the picture.'}{' '}
-            {finalRight} of {finalItems.length} correct.
-          </Body>
-          <Pressable style={styles.nextBtn} onPress={retakeFinal} accessibilityRole="button" accessibilityLabel="Retake with a different set">
-            <Text style={styles.nextText}>REPEAT WITH A NEW SET ›</Text>
-          </Pressable>
-        </Card>
-      )}
+              {!finalSubmitted ? (
+                <>
+                  <Pressable
+                    style={[styles.checkBtn, finalDone < finalItems.length && { opacity: 0.45 }]}
+                    disabled={finalDone < finalItems.length}
+                    onPress={submitFinal}
+                    accessibilityRole="button"
+                    accessibilityState={{ disabled: finalDone < finalItems.length }}
+                    aria-disabled={finalDone < finalItems.length}
+                    accessibilityLabel={finalDone < finalItems.length ? 'Answer every item to submit' : 'Submit the final assessment'}
+                  >
+                    <Text style={styles.checkBtnText}>SUBMIT FINAL</Text>
+                  </Pressable>
+                  {finalDone < finalItems.length ? (
+                    <Text style={styles.note}>Answer all {finalItems.length} items to submit ({finalDone} done).</Text>
+                  ) : null}
+                </>
+              ) : (
+                <Card>
+                  <Text style={[styles.bigScore, { color: finalPct >= FINAL_STRONG_PCT ? colors.green : colors.gold }]}>{finalPct}%</Text>
+                  <Body>
+                    {finalPct >= 90 ? 'Outstanding work.' : finalPct >= FINAL_STRONG_PCT ? 'Strong round.' : finalPct >= 50 ? 'Good progress.' : 'You’re building the picture.'}{' '}
+                    {finalRight} of {finalItems.length} correct.
+                  </Body>
+                  <Pressable style={styles.nextBtn} onPress={retakeFinal} accessibilityRole="button" accessibilityLabel="Retake with a different set">
+                    <Text style={styles.nextText}>REPEAT WITH A NEW SET ›</Text>
+                  </Pressable>
+                </Card>
+              )}
 
-      {/* ── 6 completion summary ── */}
-      <SectionTitle>6 · COMPLETION SUMMARY</SectionTitle>
-      <Card>
-        <Text style={styles.sumLabel}>MODULES</Text>
-        {summary.mods.map((m) => (
-          <Pressable key={m.id} onPress={() => openModule(m.id)} style={styles.sumRow} accessibilityRole="button" accessibilityLabel={`Open module ${m.num}, ${m.title}`}>
-            <Text style={[styles.sumMark, { color: m.done ? colors.green : colors.textMuted }]}>{m.done ? '✓' : '○'}</Text>
-            <Text style={styles.sumText}>{m.num}. {m.title}</Text>
-            <Text style={styles.sumLink}>open ›</Text>
-          </Pressable>
-        ))}
-        <Text style={styles.sumLabel}>CONCEPTS MASTERED · {summary.mastered.length}</Text>
-        {summary.mastered.slice(0, 6).map((q) => (
-          <Text key={q} style={styles.sumSmall}>✓ {q}</Text>
-        ))}
-        {summary.mastered.length > 6 ? <Text style={styles.sumSmall}>…and {summary.mastered.length - 6} more</Text> : null}
-        <Text style={styles.sumLabel}>NEEDS REVIEW · {summary.review.length}</Text>
-        {summary.review.length === 0 ? <Text style={styles.sumSmall}>Nothing flagged — every module check you answered was right on the first pick{finalSubmitted ? ', and the final was clean' : ''}.</Text> : null}
-        {summary.review.map((r) => (
-          <Pressable key={r.q} onPress={() => openModule(r.moduleId)} style={styles.sumRow} accessibilityRole="button" accessibilityLabel={`Review in module: ${r.q}`}>
-            <Text style={[styles.sumSmall, { color: colors.gold, flex: 1 }]}>↺ {r.q}</Text>
-          </Pressable>
-        ))}
-        <Text style={styles.sumLabel}>FINAL</Text>
-        <Text style={styles.sumText}>
-          {progress?.final ? `Latest ${Math.round(progress.final.scorePct)}% · best ${Math.round((progress.bestFinal ?? progress.final).scorePct)}%` : 'Not submitted yet'}
-        </Text>
-      </Card>
-    </View>
+              {/* ── 6 completion summary ── */}
+              <SectionTitle>6 · COMPLETION SUMMARY</SectionTitle>
+              <Card>
+                <Text style={styles.sumLabel}>MODULES</Text>
+                {summary.mods.map((m) => (
+                  <Pressable key={m.id} onPress={() => openModule(m.id)} style={styles.sumRow} accessibilityRole="button" accessibilityLabel={`Open module ${m.num}, ${m.title}`}>
+                    <Text style={[styles.sumMark, { color: m.done ? colors.green : colors.textMuted }]}>{m.done ? '✓' : '○'}</Text>
+                    <Text style={styles.sumText}>{m.num}. {m.title}</Text>
+                    <Text style={styles.sumLink}>open ›</Text>
+                  </Pressable>
+                ))}
+                <Text style={styles.sumLabel}>CONCEPTS MASTERED · {summary.mastered.length}</Text>
+                {summary.mastered.slice(0, 6).map((q) => (
+                  <Text key={q} style={styles.sumSmall}>✓ {q}</Text>
+                ))}
+                {summary.mastered.length > 6 ? <Text style={styles.sumSmall}>…and {summary.mastered.length - 6} more</Text> : null}
+                <Text style={styles.sumLabel}>NEEDS REVIEW · {summary.review.length}</Text>
+                {summary.review.length === 0 ? <Text style={styles.sumSmall}>Nothing flagged — every module check you answered was right on the first pick{finalSubmitted ? ', and the final was clean' : ''}.</Text> : null}
+                {summary.review.map((r) => (
+                  <Pressable key={r.q} onPress={() => openModule(r.moduleId)} style={styles.sumRow} accessibilityRole="button" accessibilityLabel={`Review in module: ${r.q}`}>
+                    <Text style={[styles.sumSmall, { color: colors.gold, flex: 1 }]}>↺ {r.q}</Text>
+                  </Pressable>
+                ))}
+                <Text style={styles.sumLabel}>FINAL</Text>
+                <Text style={styles.sumText}>
+                  {progress?.final ? `Latest ${Math.round(progress.final.scorePct)}% · best ${Math.round((progress.bestFinal ?? progress.final).scorePct)}%` : 'Not submitted yet'}
+                </Text>
+              </Card>
+            </>
+          ),
+        },
+      ]}
+    />
   );
 }
 

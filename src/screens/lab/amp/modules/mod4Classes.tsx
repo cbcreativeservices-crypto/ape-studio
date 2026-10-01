@@ -1,6 +1,12 @@
 /**
  * Module 4 — Amplifier Class Explorer (spec Part 2 §5): A, B, AB and C on the
  * same input, load and layout. No "best" — trade-offs, labeled honestly.
+ *
+ * RACK (2026-09-30): ONE rack step. The rig is pinned on the glass; CLASS is
+ * a sticky tray (A/B while the glass reacts), LEVEL rides the lane, and the
+ * explored class's own control sits beside them (SIGNAL key, AB BIAS, TUNE).
+ * The per-class numbers print on the bezel; the facts, the zoom and the
+ * misconceptions are the reading in the well.
  */
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -9,9 +15,12 @@ import {
   simulateLinearClass, simulateClassC, sineCycle, type AmpClass,
 } from '../../../../features/amp/ampModel';
 import { MISCONCEPTIONS } from '../../../../features/amp/ampContent';
-import { AmpRig } from '../AmpRig';
+import { rigStatusBezel, type RigPicture } from '../AmpRig';
+import { faderParam, optionsParam } from '../AmpRack';
+import { AmpModuleSteps } from '../steps';
+import type { DockParam } from '../../rack/rackTypes';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
-import { AMP_COLORS, Body, Card, ControlSlider, FigureDock, HonestyBadge, LearnMore, MisconceptionCard, SectionTitle, SegRow } from '../kit';
+import { AMP_COLORS, Body, Card, ControlSlider, FigureDock, HonestyBadge, LearnMore, MisconceptionCard, SectionTitle } from '../kit';
 import { CrossoverZoom, ZOOM_H, ZOOM_W } from './mod3Bias';
 
 type Explorable = 'A' | 'B' | 'AB' | 'C';
@@ -153,175 +162,171 @@ export function Mod4Classes() {
   const input = useMemo(() => sineCycle(effDrive), [effDrive]);
 
   const sim = lin ?? c!;
-  const facts = CLASS_FACTS[cls];
 
-  // The rig's controls, drawn on the page and again in its full-screen dock
-  // (one state): the class selector, the level, and the class's own control.
-  const classSeg = (
-    <SegRow<Explorable>
-      options={[
-        { key: 'A', label: 'Class A' },
-        { key: 'B', label: 'Class B' },
-        { key: 'AB', label: 'Class AB' },
-        { key: 'C', label: 'Class C' },
-      ]}
-      value={cls}
-      onChange={setCls}
-    />
-  );
-  const driveSlider = <ControlSlider level label="Input level" value={drive} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setDrive} />;
+  // The zoom figure's control for ITS full-screen dock (the same bias the
+  // lane sets) — docked under the zoom there, never drawn on the page.
   const abBiasSlider = <ControlSlider label="Output-stage bias — 0% is the Class B condition" value={abBias} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setAbBias} />;
-  const classControl =
-    cls === 'A' ? (
-      <SegRow<'on' | 'off'>
-        label="Audio signal (amplifier stays powered)"
-        options={[
-          { key: 'on', label: 'Signal on' },
-          { key: 'off', label: 'Signal off' },
-        ]}
-        value={signalOn ? 'on' : 'off'}
-        onChange={(v) => setSignalOn(v === 'on')}
-      />
-    ) : cls === 'AB' ? (
-      abBiasSlider
-    ) : cls === 'C' ? (
-      <ControlSlider
-        label="Tuned circuit frequency ÷ signal frequency"
-        value={detune}
-        min={0.5}
-        max={2}
-        step={0.01}
-        format={(v) => `${v.toFixed(2)}× ${Math.abs(v - 1) < 0.03 ? '· TUNED' : '· mistuned'}`}
-        onChange={setDetune}
-      />
-    ) : null;
+  // The class's own control, on the dock beside CLASS and LEVEL: the Class A
+  // signal switch, the Class AB bias, the Class C tuning.
+  const classParam: DockParam | null =
+    cls === 'A'
+      ? { kind: 'toggle', id: 'signal', label: 'SIGNAL', value: signalOn, onToggle: () => setSignalOn(!signalOn) }
+      : cls === 'AB'
+        ? faderParam({ id: 'abbias', label: 'AB BIAS', value: abBias, min: 0, max: 1, step: 0.01, format: (v) => `${Math.round(v * 100)}% bias`, formatShort: (v) => `${Math.round(v * 100)}%`, onChange: setAbBias })
+        : cls === 'C'
+          ? faderParam({
+              id: 'tune',
+              label: 'TUNE',
+              value: detune,
+              min: 0.5,
+              max: 2,
+              step: 0.01,
+              home: 1,
+              format: (v) => `${v.toFixed(2)}× ${Math.abs(v - 1) < 0.03 ? '· TUNED' : '· mistuned'}`,
+              formatShort: (v) => `${v.toFixed(2)}×`,
+              onChange: setDetune,
+            })
+          : null;
 
-  // The per-class numbers on one line — at the top of the rig's full-screen
-  // dock (parity pass 2026-09-26); the stat cells below stay on the page.
-  const distortionWord = lin?.crossoverNotch ? 'NOTCH' : cls === 'C' && c?.conductionDeg === 0 ? 'NO OUTPUT' : cls === 'C' && (c?.resonanceGain ?? 1) < 0.9 ? 'MISTUNED' : 'CLEAN';
-  const statsRead = (
-    <Text style={styles.statsLine} numberOfLines={2}>
-      {`CLASS ${cls} · CONDUCTION ${Math.round(sim.conductionDeg)}° · IDLE ${Math.round(sim.idleCurrent * 100)}% · EFFICIENCY ${Math.round(sim.efficiencyPct)}% · ${distortionWord}`}
-    </Text>
-  );
+  const distortionWord = lin?.crossoverNotch ? 'NOTCH' : cls === 'C' && c?.conductionDeg === 0 ? 'NO OUT' : cls === 'C' && (c?.resonanceGain ?? 1) < 0.9 ? 'DETUNED' : 'CLEAN';
+  const distortionWarn = !!lin?.crossoverNotch || (cls === 'C' && ((c?.resonanceGain ?? 1) < 0.9 || c?.conductionDeg === 0));
   const zoomRead = (
     <Text style={styles.zoomNote}>
       {lin?.crossoverNotch ? 'The flat step at the crossing is the region where neither device conducts.' : 'Smooth through zero — the devices overlap.'}
     </Text>
   );
 
+  const pic: RigPicture = {
+    input,
+    devices: { iPos: sim.iPos, iNeg: sim.iNeg },
+    output: sim.out,
+    extraOut: c ? [{ data: c.recovered, color: AMP_COLORS.recovered, dash: '4,3', width: 1.8, label: 'after the tuned circuit (recovered)' }] : undefined,
+    outputTitle: c ? 'RAW DEVICE OUTPUT (pulses) · dashed = after the tuned circuit' : undefined,
+    supplyFlow: Math.min(1, (sim.idleCurrent + (lin ? effDrive : effDrive * (c?.resonanceGain ?? 1))) * 0.8),
+    heat: sim.heat,
+    efficiencyPct: sim.efficiencyPct,
+    speaker: cls !== 'C',
+    a11ySummary:
+      cls === 'C'
+        ? c!.conductionDeg === 0
+          ? 'Class C: input is below the conduction threshold — the device never turns on, there are no pulses, and the tuned circuit produces nothing.'
+          : `Class C: device conducts ${Math.round(c!.conductionDeg)} degrees in pulses. Tuned circuit ${Math.abs(detune - 1) < 0.03 ? 'is tuned — a sine is recovered' : `is mistuned to ${detune.toFixed(2)} times the signal — recovered output falls to ${Math.round((c!.resonanceGain) * 100)} percent`}.`
+        : `Class ${cls}: each conducting device passes current for about ${Math.round(sim.conductionDeg)} degrees. ${lin!.crossoverNotch ? 'A crossover notch is present at zero crossing.' : 'Output is clean.'} Relative idle current ${Math.round(sim.idleCurrent * 100)} percent, relative heat ${Math.round(sim.heat * 100)} percent, illustrative efficiency ${Math.round(sim.efficiencyPct)} percent.`,
+  };
+
   return (
-    <View style={{ gap: 12 }}>
-      <Body>
-        Same input, same load, same layout. Switch classes and watch only the things that actually change:
-        which device conducts when, what happens at zero crossing, what it costs at idle, and where the heat goes.
-      </Body>
+    <AmpModuleSteps
+      steps={[
+        {
+          key: 'explorer',
+          title: 'Class explorer',
+          kind: 'rack',
+          rack: {
+            rig: pic,
+            bezel: [
+              { k: 'CONDUCT.', v: `${Math.round(sim.conductionDeg)}°`, tint: AMP_COLORS.pos },
+              { k: 'IDLE', v: `${Math.round(sim.idleCurrent * 100)}%`, tint: AMP_COLORS.supply },
+              ...rigStatusBezel(pic, ['eff', 'heat']),
+              { k: 'DISTORT.', v: distortionWord, tint: distortionWarn ? colors.red : colors.green },
+            ],
+            params: [
+              optionsParam<Explorable>({
+                id: 'cls',
+                label: 'CLASS',
+                value: cls,
+                options: (['A', 'B', 'AB', 'C'] as Explorable[]).map((k) => ({ key: k, label: `Class ${k}`, short: k, blurb: CLASS_FACTS[k].principle })),
+                onChange: setCls,
+              }),
+              faderParam({ id: 'drive', label: 'LEVEL', value: drive, min: 0, max: 1, step: 0.01, format: (v) => `${Math.round(v * 100)}%`, onChange: setDrive, level: true }),
+              ...(classParam ? [classParam] : []),
+            ],
+            initialParam: 'drive',
+          },
+          well: (
+            <>
+              <Body>
+                Same input, same load, same layout. Switch classes and watch only the things that actually change:
+                which device conducts when, what happens at zero crossing, what it costs at idle, and where the heat goes.
+              </Body>
 
-      {classSeg}
-      {driveSlider}
-      {classControl}
+              {/* per-class live readout */}
+              <Card tone="accent">
+                <View style={styles.statRow}>
+                  <Stat label="CONDUCTION" value={`${Math.round(sim.conductionDeg)}°`} />
+                  <Stat label="IDLE CURRENT" value={`${Math.round(sim.idleCurrent * 100)}%`} sub="relative" />
+                  <Stat label="EFFICIENCY" value={`${Math.round(sim.efficiencyPct)}%`} sub="illustrative, at this level" />
+                  <Stat label="DISTORTION" value={lin?.crossoverNotch ? 'NOTCH' : cls === 'C' && c?.conductionDeg === 0 ? 'NO OUTPUT' : cls === 'C' && (c?.resonanceGain ?? 1) < 0.9 ? 'MISTUNED' : 'CLEAN'} warn={distortionWarn} />
+                </View>
+                <Body>
+                  {cls === 'A' && !signalOn
+                    ? 'Signal off, amplifier on: the device still sits at its operating point, so idle current — and heat — carry on exactly as before. That standing dissipation is the price of full-cycle conduction.'
+                    : cls === 'A'
+                      ? 'Full-cycle conduction: no handoff, so no crossover notch is inherent to the concept. The device is always partly on, which is why efficiency stays low and heat stays high.'
+                      : cls === 'B'
+                        ? 'Each device conducts about half the cycle and hands off at zero. Idle current is near zero and efficiency is much better — but look at the handoff below.'
+                        : cls === 'AB'
+                          ? abBias < 0.05
+                            ? 'At 0% bias this IS Class B: the notch is there. Raise the bias and watch both devices start conducting past zero.'
+                            : lin?.crossoverNotch
+                              ? 'The overlap is growing but has not yet closed the gap — keep going.'
+                              : 'Both devices now conduct around zero crossing (more than 180° each). The notch is gone; idle current and heat rose to pay for it.'
+                          : c?.conductionDeg === 0
+                            ? // NEW COPY — the model no longer conjures a recovered sine from a device that never conducted.
+                              'Below the conduction threshold: the device never turns on, so there are no current pulses and the tuned circuit has nothing to ring from. Raise the input — Class C only wakes up for a signal big enough to push it past its bias.'
+                            : (c?.resonanceGain ?? 1) > 0.9
+                              ? 'Tuned: the short current pulses kick a resonant circuit that rings a clean sine at the tuned frequency. The device itself never produces that sine — the tank does. Notice the recovered level does not track the input level: Class C is built for a constant carrier, not for music that rises and falls.'
+                              : 'Mistuned: the tank no longer rings with the pulses and the recovered output collapses. There is no broadband version of this trick, which is why Class C is an RF amplifier, not an audio one.'}
+                </Body>
+              </Card>
 
-      <AmpRig
-        controls={
-          <>
-            {classSeg}
-            {driveSlider}
-            {classControl}
-          </>
-        }
-        readout={statsRead}
-        input={input}
-        devices={{ iPos: sim.iPos, iNeg: sim.iNeg }}
-        output={sim.out}
-        extraOut={c ? [{ data: c.recovered, color: AMP_COLORS.recovered, dash: '4,3', width: 1.8, label: 'after the tuned circuit (recovered)' }] : undefined}
-        outputTitle={c ? 'RAW DEVICE OUTPUT (pulses) · dashed = after the tuned circuit' : undefined}
-        supplyFlow={Math.min(1, (sim.idleCurrent + (lin ? effDrive : effDrive * (c?.resonanceGain ?? 1))) * 0.8)}
-        heat={sim.heat}
-        efficiencyPct={sim.efficiencyPct}
-        speaker={cls !== 'C'}
-        a11ySummary={
-          cls === 'C'
-            ? c!.conductionDeg === 0
-              ? 'Class C: input is below the conduction threshold — the device never turns on, there are no pulses, and the tuned circuit produces nothing.'
-              : `Class C: device conducts ${Math.round(c!.conductionDeg)} degrees in pulses. Tuned circuit ${Math.abs(detune - 1) < 0.03 ? 'is tuned — a sine is recovered' : `is mistuned to ${detune.toFixed(2)} times the signal — recovered output falls to ${Math.round((c!.resonanceGain) * 100)} percent`}.`
-            : `Class ${cls}: each conducting device passes current for about ${Math.round(sim.conductionDeg)} degrees. ${lin!.crossoverNotch ? 'A crossover notch is present at zero crossing.' : 'Output is clean.'} Relative idle current ${Math.round(sim.idleCurrent * 100)} percent, relative heat ${Math.round(sim.heat * 100)} percent, illustrative efficiency ${Math.round(sim.efficiencyPct)} percent.`
-        }
-      />
+              {cls === 'B' || cls === 'AB' ? (
+                <Card>
+                  <HonestyBadge label="Zero-crossing zoom · ×3.2 vertical magnification" />
+                  <ExpandableFigure
+                    aspect={ZOOM_W / ZOOM_H}
+                    title="ZERO CROSS"
+                    badge="Zero-crossing zoom · ×3.2 vertical magnification"
+                    controls={<FigureDock>{zoomRead}{cls === 'AB' ? abBiasSlider : null}</FigureDock>}
+                    render={(w, h) => <CrossoverZoom width={w} height={h} out={sim.out} />}
+                  />
+                  {zoomRead}
+                </Card>
+              ) : null}
 
-      {/* per-class live readout */}
-      <Card tone="accent">
-        <View style={styles.statRow}>
-          <Stat label="CONDUCTION" value={`${Math.round(sim.conductionDeg)}°`} />
-          <Stat label="IDLE CURRENT" value={`${Math.round(sim.idleCurrent * 100)}%`} sub="relative" />
-          <Stat label="EFFICIENCY" value={`${Math.round(sim.efficiencyPct)}%`} sub="illustrative, at this level" />
-          <Stat label="DISTORTION" value={lin?.crossoverNotch ? 'NOTCH' : cls === 'C' && c?.conductionDeg === 0 ? 'NO OUTPUT' : cls === 'C' && (c?.resonanceGain ?? 1) < 0.9 ? 'MISTUNED' : 'CLEAN'} warn={!!lin?.crossoverNotch || (cls === 'C' && ((c?.resonanceGain ?? 1) < 0.9 || c?.conductionDeg === 0))} />
-        </View>
-        <Body>
-          {cls === 'A' && !signalOn
-            ? 'Signal off, amplifier on: the device still sits at its operating point, so idle current — and heat — carry on exactly as before. That standing dissipation is the price of full-cycle conduction.'
-            : cls === 'A'
-              ? 'Full-cycle conduction: no handoff, so no crossover notch is inherent to the concept. The device is always partly on, which is why efficiency stays low and heat stays high.'
-              : cls === 'B'
-                ? 'Each device conducts about half the cycle and hands off at zero. Idle current is near zero and efficiency is much better — but look at the handoff below.'
-                : cls === 'AB'
-                  ? abBias < 0.05
-                    ? 'At 0% bias this IS Class B: the notch is there. Raise the bias and watch both devices start conducting past zero.'
-                    : lin?.crossoverNotch
-                      ? 'The overlap is growing but has not yet closed the gap — keep going.'
-                      : 'Both devices now conduct around zero crossing (more than 180° each). The notch is gone; idle current and heat rose to pay for it.'
-                  : c?.conductionDeg === 0
-                    ? // NEW COPY — the model no longer conjures a recovered sine from a device that never conducted.
-                      'Below the conduction threshold: the device never turns on, so there are no current pulses and the tuned circuit has nothing to ring from. Raise the input — Class C only wakes up for a signal big enough to push it past its bias.'
-                    : (c?.resonanceGain ?? 1) > 0.9
-                      ? 'Tuned: the short current pulses kick a resonant circuit that rings a clean sine at the tuned frequency. The device itself never produces that sine — the tank does. Notice the recovered level does not track the input level: Class C is built for a constant carrier, not for music that rises and falls.'
-                      : 'Mistuned: the tank no longer rings with the pulses and the recovered output collapses. There is no broadband version of this trick, which is why Class C is an RF amplifier, not an audio one.'}
-        </Body>
-      </Card>
+              {cls === 'A' ? <MisconceptionCard m={MISCONCEPTIONS.find((m) => m.id === 'a-sounds-best')!} /> : null}
+              {cls === 'AB' ? <MisconceptionCard m={MISCONCEPTIONS.find((m) => m.id === 'ab-is-half')!} /> : null}
+              {cls === 'C' ? (
+                <Card>
+                  <Text style={styles.zoomNote}>
+                    Never shown driving a loudspeaker with music on purpose: Class C output only exists at the tuned frequency. Its
+                    home is a transmitter feeding an antenna through a resonant network.
+                  </Text>
+                </Card>
+              ) : null}
 
-      {cls === 'B' || cls === 'AB' ? (
-        <Card>
-          <HonestyBadge label="Zero-crossing zoom · ×3.2 vertical magnification" />
-          <ExpandableFigure
-            aspect={ZOOM_W / ZOOM_H}
-            title="ZERO CROSS"
-            badge="Zero-crossing zoom · ×3.2 vertical magnification"
-            controls={<FigureDock>{zoomRead}{cls === 'AB' ? abBiasSlider : null}</FigureDock>}
-            render={(w, h) => <CrossoverZoom width={w} height={h} out={sim.out} />}
-          />
-          {zoomRead}
-        </Card>
-      ) : null}
+              <SectionTitle>SIDE BY SIDE</SectionTitle>
+              <HonestyBadge label="Efficiency figures are theoretical maxima or typical ranges — never guaranteed operating values" />
+              <Text style={styles.zoomNote}>Three headline rows per class; tap a card for all eight. The class you are exploring opens first.</Text>
+              {(['A', 'B', 'AB', 'C', 'D'] as AmpClass[]).map((k) => (
+                <ClassFactsCard key={k} cls={k} expanded={openCard === k} onToggle={() => setOpenFacts(openCard === k ? 'none' : k)} />
+              ))}
+              <Text style={styles.zoomNote}>
+                Class D gets Module 5 to itself — it is a switching arrangement and does not fit the conduction-angle story.
+              </Text>
 
-      {cls === 'A' ? <MisconceptionCard m={MISCONCEPTIONS.find((m) => m.id === 'a-sounds-best')!} /> : null}
-      {cls === 'AB' ? <MisconceptionCard m={MISCONCEPTIONS.find((m) => m.id === 'ab-is-half')!} /> : null}
-      {cls === 'C' ? (
-        <Card>
-          <Text style={styles.zoomNote}>
-            Never shown driving a loudspeaker with music on purpose: Class C output only exists at the tuned frequency. Its
-            home is a transmitter feeding an antenna through a resonant network.
-          </Text>
-        </Card>
-      ) : null}
-
-      <SectionTitle>SIDE BY SIDE</SectionTitle>
-      <HonestyBadge label="Efficiency figures are theoretical maxima or typical ranges — never guaranteed operating values" />
-      <Text style={styles.zoomNote}>Three headline rows per class; tap a card for all eight. The class you are exploring opens first.</Text>
-      {(['A', 'B', 'AB', 'C', 'D'] as AmpClass[]).map((k) => (
-        <ClassFactsCard key={k} cls={k} expanded={openCard === k} onToggle={() => setOpenFacts(openCard === k ? 'none' : k)} />
-      ))}
-      <Text style={styles.zoomNote}>
-        Class D gets Module 5 to itself — it is a switching arrangement and does not fit the conduction-angle story.
-      </Text>
-
-      <LearnMore title="CLASS G AND CLASS H — THE ADVANCED EXTENSION">
-        <Body>
-          Both are Class AB output stages with smarter power supplies. Class G switches between two or more rail
-          voltages so quiet passages run from low rails (less dissipation) and peaks from high rails. Class H
-          modulates the rail voltage continuously to track the signal. Neither changes the output stage’s conduction —
-          they attack the wasted voltage across the devices.
-        </Body>
-      </LearnMore>
-    </View>
+              <LearnMore title="CLASS G AND CLASS H — THE ADVANCED EXTENSION">
+                <Body>
+                  Both are Class AB output stages with smarter power supplies. Class G switches between two or more rail
+                  voltages so quiet passages run from low rails (less dissipation) and peaks from high rails. Class H
+                  modulates the rail voltage continuously to track the signal. Neither changes the output stage’s conduction —
+                  they attack the wasted voltage across the devices.
+                </Body>
+              </LearnMore>
+            </>
+          ),
+        },
+      ]}
+    />
   );
 }
 
@@ -349,5 +354,4 @@ const styles = StyleSheet.create({
   statValue: { color: colors.textPrimary, fontFamily: fonts.oswaldSemiBold, fontSize: 18 },
   statSub: { color: colors.textMutedDeep, fontFamily: fonts.barlowRegular, fontSize: 10.5 },
   zoomNote: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17 },
-  statsLine: { color: colors.textSecondary, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1 },
 });

@@ -3,11 +3,16 @@
  * safety notice, gain structure, speaker-load builder, power and current,
  * bridged operation, watts vs loudness, clipping risk, the rack inspection,
  * and the specification decoder.
+ *
+ * RACK (2026-09-30): TWO steps. GAIN CHAIN pins the chain on the glass with
+ * the three stage levels as faders (SOURCE on the lane) and the verdict on
+ * the bezel. REAL-WORLD PRACTICE is a document step: the load builder, power
+ * and current, bridging, watts vs loudness, clipping risk, the rack
+ * inspection and the spec decoder are calculators and cards — reading.
  */
 import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { G, Line, Rect, Text as SvgText } from 'react-native-svg';
-import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { colors, fonts } from '../../../../theme/tokens';
 import {
   evaluateGainStructure, seriesImpedance, parallelImpedance, sineVrms, ohmsCurrent, resistivePower,
@@ -17,10 +22,13 @@ import {
   MISCONCEPTIONS, SAFETY_POINTS, RACK_SCENARIOS, RACK_FINDINGS, SPEC_SHEETS, SPEC_CONDITIONS,
   type RackFinding, type SpecCondition,
 } from '../../../../features/amp/ampContent';
-import { AMP_COLORS, Body, BoxLabel, Card, ControlSlider, DIAGRAM_FONT, FigureDock, FormulaCard, HonestyBadge, LearnMore, MisconceptionCard, SectionTitle, SegRow } from '../kit';
+import { levelColor } from '../../../../features/tools/levelColor';
+import { faderParam } from '../AmpRack';
+import { AmpModuleSteps } from '../steps';
+import { AMP_COLORS, Body, BoxLabel, Card, ControlSlider, DIAGRAM_FONT, FormulaCard, LearnMore, MisconceptionCard, SectionTitle, SegRow } from '../kit';
 
 /** Drawing units (legibility pass 2026-09-25: labels ≥ DIAGRAM_FONT, the SVG
- *  drawn at the width ExpandableFigure hands it, height = w / aspect). */
+ *  drawn at the width the glass hands it, height = w / aspect). */
 const CHAIN_W = 360;
 const CHAIN_H = 84;
 
@@ -120,10 +128,7 @@ export function Mod7RealWorld() {
       ? picked.length === 0 ? 'complete-right' : 'complete-wrong'
       : specCorrect ? 'right' : 'wrong';
 
-  // The gain-chain sliders, drawn on the page and again in the figure's
-  // full-screen dock — one state.
-  // The verdict: under the chain on the page and at the top of its
-  // full-screen dock (parity pass 2026-09-26) — one element, one state.
+  // The verdict: under the chain on the page (in the well) — one element, one state.
   const gainRead = (
     <Text style={[styles.verdict, { color: gs.firstClip ? colors.red : gs.starved ? colors.gold : colors.green }]}>
       {gs.firstClip
@@ -133,317 +138,341 @@ export function Mod7RealWorld() {
           : 'HEALTHY GAIN STRUCTURE'}
     </Text>
   );
-  const srcSlider = <ControlSlider level label="Source output" value={src} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setSrc} />;
-  const mixSlider = <ControlSlider level label="Mixer / processor output" value={mix} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setMix} />;
-  const ampInSlider = <ControlSlider level label="Amplifier input control" value={ampIn} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setAmpIn} />;
+  const pct = (v: number) => `${Math.round(v * 100)}%`;
+  const verdictShort = gs.firstClip ? `CLIP:${gs.firstClip === 'source' ? 'SRC' : gs.firstClip === 'mixer' ? 'MIX' : 'AMP'}` : gs.starved ? 'STARVED' : 'HEALTHY';
 
   return (
-    <View style={{ gap: 12 }}>
-      <Card>
-        <Text style={styles.safetyTitle}>⚠ SAFETY — READ BEFORE OPERATING REAL EQUIPMENT</Text>
-        {SAFETY_POINTS.map((s) => (
-          <Text key={s} style={styles.safetyLine}>• {s}</Text>
-        ))}
-      </Card>
+    <AmpModuleSteps
+      steps={[
+        {
+          key: 'gain',
+          title: 'Gain chain',
+          kind: 'rack',
+          rack: {
+            stage: { aspect: CHAIN_W / CHAIN_H, render: (w, h) => <GainChain width={w} height={h} levels={gs.levels} firstClip={gs.firstClip} starved={gs.starved} /> },
+            size: 'S',
+            badge: 'Relative levels — 100% = that stage’s clip point',
+            bezel: [
+              { k: 'VERDICT', v: verdictShort, tint: gs.firstClip ? colors.red : gs.starved ? colors.gold : colors.green },
+              { k: 'SOURCE', v: pct(src), tint: levelColor(src) },
+              { k: 'MIXER', v: pct(mix), tint: levelColor(mix) },
+              { k: 'AMP IN', v: pct(ampIn), tint: levelColor(ampIn) },
+            ],
+            params: [
+              faderParam({ id: 'src', label: 'SOURCE', value: src, min: 0, max: 1, step: 0.01, format: pct, onChange: setSrc, level: true }),
+              faderParam({ id: 'mix', label: 'MIXER', value: mix, min: 0, max: 1, step: 0.01, format: pct, onChange: setMix, level: true }),
+              faderParam({ id: 'amp', label: 'AMP IN', value: ampIn, min: 0, max: 1, step: 0.01, format: pct, onChange: setAmpIn, level: true }),
+            ],
+            initialParam: 'src',
+          },
+          well: (
+            <>
+              <Card>
+                <Text style={styles.safetyTitle}>⚠ SAFETY — READ BEFORE OPERATING REAL EQUIPMENT</Text>
+                {SAFETY_POINTS.map((s) => (
+                  <Text key={s} style={styles.safetyLine}>• {s}</Text>
+                ))}
+              </Card>
 
-      {/* ── gain structure ── */}
-      <SectionTitle>1 · GAIN STRUCTURE — WHO CLIPS FIRST?</SectionTitle>
-      <Body>
-        Every stage has its own ceiling. Distortion happens at the FIRST stage that hits it, and nothing downstream can
-        undo it. The amplifier’s front-panel control sets input sensitivity (attenuation) — it does not change how many
-        watts the amplifier has.
-      </Body>
-      <Card>
-        <HonestyBadge label="Relative levels — 100% = that stage’s clip point" />
-        <ExpandableFigure
-          aspect={CHAIN_W / CHAIN_H}
-          title="GAIN CHAIN"
-          badge="Relative levels — 100% = that stage’s clip point"
-          controls={<FigureDock>{gainRead}{srcSlider}{mixSlider}{ampInSlider}</FigureDock>}
-          render={(w, h) => <GainChain width={w} height={h} levels={gs.levels} firstClip={gs.firstClip} starved={gs.starved} />}
-        />
-        {gainRead}
-        <Body>
-          {gs.firstClip === 'source'
-            ? 'The source is already flat-topped. Turning the mixer or amplifier down makes it quieter distortion — fix it at the source.'
-            : gs.firstClip === 'mixer'
-              ? 'The mixer clips before the amplifier sees anything. The amplifier’s CLIP light stays dark while the sound is harsh — the classic upstream-clipping trap.'
-              : gs.firstClip === 'amp'
-                ? 'Upstream is clean; the amplifier is being asked to swing past its rails. Reduce the amplifier input setting or the level feeding it.'
-                : gs.starved
-                  ? 'A stage is sending almost nothing, so the next stage must add gain — and adds noise with it. Bring every stage to a healthy nominal level.'
-                  : 'Each stage sits comfortably below its ceiling with headroom for peaks.'}
-        </Body>
-      </Card>
-      {srcSlider}
-      {mixSlider}
-      {ampInSlider}
-      <MisconceptionCard m={misc('gain-sets-watts')} />
+              {/* ── gain structure ── */}
+              <SectionTitle>1 · GAIN STRUCTURE — WHO CLIPS FIRST?</SectionTitle>
+              <Body>
+                Every stage has its own ceiling. Distortion happens at the FIRST stage that hits it, and nothing downstream can
+                undo it. The amplifier’s front-panel control sets input sensitivity (attenuation) — it does not change how many
+                watts the amplifier has.
+              </Body>
+              <Card>
+                {gainRead}
+                <Body>
+                  {gs.firstClip === 'source'
+                    ? 'The source is already flat-topped. Turning the mixer or amplifier down makes it quieter distortion — fix it at the source.'
+                    : gs.firstClip === 'mixer'
+                      ? 'The mixer clips before the amplifier sees anything. The amplifier’s CLIP light stays dark while the sound is harsh — the classic upstream-clipping trap.'
+                      : gs.firstClip === 'amp'
+                        ? 'Upstream is clean; the amplifier is being asked to swing past its rails. Reduce the amplifier input setting or the level feeding it.'
+                        : gs.starved
+                          ? 'A stage is sending almost nothing, so the next stage must add gain — and adds noise with it. Bring every stage to a healthy nominal level.'
+                          : 'Each stage sits comfortably below its ceiling with headroom for peaks.'}
+                </Body>
+              </Card>
+              <MisconceptionCard m={misc('gain-sets-watts')} />
+            </>
+          ),
+        },
+        {
+          key: 'practice',
+          title: 'Real-world practice',
+          kind: 'read',
+          body: (
+            <>
+              {/* ── load builder ── */}
+              <SectionTitle>2 · SPEAKER-LOAD BUILDER</SectionTitle>
+              <SegRow<'parallel' | 'series'>
+                options={[
+                  { key: 'parallel', label: 'Parallel' },
+                  { key: 'series', label: 'Series' },
+                ]}
+                value={topology}
+                onChange={setTopology}
+              />
+              <Body>Add cabinets and watch the total. The amplifier here is rated {MIN_STEREO_Z} Ω per channel — find the point where one more cabinet takes you below it.</Body>
+              <View style={styles.chipRow}>
+                {[16, 8, 4].map((z) => (
+                  <Pressable
+                    key={z}
+                    style={[styles.addChip, atCap && styles.addChipOff]}
+                    disabled={atCap}
+                    onPress={() => setSpeakers([...speakers, z])}
+                    accessibilityRole="button"
+                    accessibilityState={{ disabled: atCap }}
+                    aria-disabled={atCap}
+                    accessibilityLabel={atCap ? `Add a ${z} ohm speaker — rack full at ${MAX_SPEAKERS}, clear first` : `Add a ${z} ohm speaker`}
+                  >
+                    <Text style={[styles.addChipText, atCap && { color: colors.textMuted }]}>+ {z} Ω</Text>
+                  </Pressable>
+                ))}
+                <Pressable style={styles.addChip} onPress={() => setSpeakers([])} accessibilityRole="button" accessibilityLabel="Clear all speakers">
+                  <Text style={styles.addChipText}>CLEAR</Text>
+                </Pressable>
+              </View>
+              {atCap ? <Text style={styles.note}>{MAX_SPEAKERS} cabinets per channel is the limit of this builder — CLEAR to start again.</Text> : null}
+              <Card tone="accent">
+                <Text style={styles.loadList}>
+                  {speakers.length ? speakers.map((z) => `${z} Ω`).join(topology === 'parallel' ? '  ∥  ' : '  +  ') : 'No speakers connected'}
+                </Text>
+                <Text style={[styles.loadTotal, belowMin && { color: colors.red }]}>
+                  {zTotal != null ? `Ztotal ≈ ${zTotal.toFixed(2)} Ω (nominal)` : '—'}
+                </Text>
+                <Text style={styles.note}>
+                  {topology === 'parallel' ? '1/Ztotal = 1/Z1 + 1/Z2 + …' : 'Ztotal = Z1 + Z2 + …'} · Nominal calculation: real loudspeaker impedance varies with frequency.
+                </Text>
+                {belowMin ? (
+                  <Text style={styles.warn}>⚠ Below the amplifier’s {MIN_STEREO_Z} Ω per-channel minimum. Expect protection, limiting, or heat at level.</Text>
+                ) : zTotal != null ? (
+                  <Text style={styles.ok}>✓ Within the {MIN_STEREO_Z} Ω per-channel minimum.</Text>
+                ) : null}
+              </Card>
+              <MisconceptionCard m={misc('always-8-ohms')} />
+              <MisconceptionCard m={misc('lower-z-better')} />
 
-      {/* ── load builder ── */}
-      <SectionTitle>2 · SPEAKER-LOAD BUILDER</SectionTitle>
-      <SegRow<'parallel' | 'series'>
-        options={[
-          { key: 'parallel', label: 'Parallel' },
-          { key: 'series', label: 'Series' },
-        ]}
-        value={topology}
-        onChange={setTopology}
-      />
-      <Body>Add cabinets and watch the total. The amplifier here is rated {MIN_STEREO_Z} Ω per channel — find the point where one more cabinet takes you below it.</Body>
-      <View style={styles.chipRow}>
-        {[16, 8, 4].map((z) => (
-          <Pressable
-            key={z}
-            style={[styles.addChip, atCap && styles.addChipOff]}
-            disabled={atCap}
-            onPress={() => setSpeakers([...speakers, z])}
-            accessibilityRole="button"
-            accessibilityState={{ disabled: atCap }}
-            aria-disabled={atCap}
-            accessibilityLabel={atCap ? `Add a ${z} ohm speaker — rack full at ${MAX_SPEAKERS}, clear first` : `Add a ${z} ohm speaker`}
-          >
-            <Text style={[styles.addChipText, atCap && { color: colors.textMuted }]}>+ {z} Ω</Text>
-          </Pressable>
-        ))}
-        <Pressable style={styles.addChip} onPress={() => setSpeakers([])} accessibilityRole="button" accessibilityLabel="Clear all speakers">
-          <Text style={styles.addChipText}>CLEAR</Text>
-        </Pressable>
-      </View>
-      {atCap ? <Text style={styles.note}>{MAX_SPEAKERS} cabinets per channel is the limit of this builder — CLEAR to start again.</Text> : null}
-      <Card tone="accent">
-        <Text style={styles.loadList}>
-          {speakers.length ? speakers.map((z) => `${z} Ω`).join(topology === 'parallel' ? '  ∥  ' : '  +  ') : 'No speakers connected'}
-        </Text>
-        <Text style={[styles.loadTotal, belowMin && { color: colors.red }]}>
-          {zTotal != null ? `Ztotal ≈ ${zTotal.toFixed(2)} Ω (nominal)` : '—'}
-        </Text>
-        <Text style={styles.note}>
-          {topology === 'parallel' ? '1/Ztotal = 1/Z1 + 1/Z2 + …' : 'Ztotal = Z1 + Z2 + …'} · Nominal calculation: real loudspeaker impedance varies with frequency.
-        </Text>
-        {belowMin ? (
-          <Text style={styles.warn}>⚠ Below the amplifier’s {MIN_STEREO_Z} Ω per-channel minimum. Expect protection, limiting, or heat at level.</Text>
-        ) : zTotal != null ? (
-          <Text style={styles.ok}>✓ Within the {MIN_STEREO_Z} Ω per-channel minimum.</Text>
-        ) : null}
-      </Card>
-      <MisconceptionCard m={misc('always-8-ohms')} />
-      <MisconceptionCard m={misc('lower-z-better')} />
+              {/* ── power & current ── */}
+              <SectionTitle>3 · POWER AND CURRENT</SectionTitle>
+              <SegRow<8 | 4 | 2>
+                label={`Load at ${V_RMS_EXAMPLE} Vrms output (resistive teaching example)`}
+                options={[
+                  { key: 8, label: '8 Ω' },
+                  { key: 4, label: '4 Ω' },
+                  { key: 2, label: '2 Ω' },
+                ]}
+                value={loadZ}
+                onChange={setLoadZ}
+              />
+              <FormulaCard
+                title={`${V_RMS_EXAMPLE} Vrms into ${loadZ} Ω`}
+                lines={[
+                  `I = V / R = ${V_RMS_EXAMPLE} / ${loadZ} = ${iEx.toFixed(2)} A`,
+                  `P = V² / R = ${V_RMS_EXAMPLE}² / ${loadZ} = ${pEx.toFixed(0)} W`,
+                  `P = I² R = ${iEx.toFixed(2)}² × ${loadZ} = ${(iEx * iEx * loadZ).toFixed(0)} W`,
+                ]}
+                note="Halve the impedance and the current doubles for the same voltage — which is why lower loads run amplifiers hotter and why minimum-load ratings exist. A real loudspeaker is reactive and frequency-dependent; treat these as the resistive teaching case."
+              />
 
-      {/* ── power & current ── */}
-      <SectionTitle>3 · POWER AND CURRENT</SectionTitle>
-      <SegRow<8 | 4 | 2>
-        label={`Load at ${V_RMS_EXAMPLE} Vrms output (resistive teaching example)`}
-        options={[
-          { key: 8, label: '8 Ω' },
-          { key: 4, label: '4 Ω' },
-          { key: 2, label: '2 Ω' },
-        ]}
-        value={loadZ}
-        onChange={setLoadZ}
-      />
-      <FormulaCard
-        title={`${V_RMS_EXAMPLE} Vrms into ${loadZ} Ω`}
-        lines={[
-          `I = V / R = ${V_RMS_EXAMPLE} / ${loadZ} = ${iEx.toFixed(2)} A`,
-          `P = V² / R = ${V_RMS_EXAMPLE}² / ${loadZ} = ${pEx.toFixed(0)} W`,
-          `P = I² R = ${iEx.toFixed(2)}² × ${loadZ} = ${(iEx * iEx * loadZ).toFixed(0)} W`,
-        ]}
-        note="Halve the impedance and the current doubles for the same voltage — which is why lower loads run amplifiers hotter and why minimum-load ratings exist. A real loudspeaker is reactive and frequency-dependent; treat these as the resistive teaching case."
-      />
+              {/* ── bridged ── */}
+              <SectionTitle>4 · BRIDGED OPERATION</SectionTitle>
+              <SegRow<'stereo' | 'bridge'>
+                options={[
+                  { key: 'stereo', label: 'Stereo' },
+                  { key: 'bridge', label: 'Bridge mode' },
+                ]}
+                value={bridged ? 'bridge' : 'stereo'}
+                onChange={(v) => setBridged(v === 'bridge')}
+              />
+              {bridged ? (
+                <SegRow<8 | 4>
+                  label="Bridged load"
+                  options={[
+                    { key: 8, label: '8 Ω' },
+                    { key: 4, label: '4 Ω' },
+                  ]}
+                  value={bridgeZ}
+                  onChange={setBridgeZ}
+                />
+              ) : null}
+              <Card tone="accent">
+                {bridged ? (
+                  <>
+                    <Text style={styles.loadTotal}>Vload = VchA − VchB = 20 − (−20) = {br.vLoad} V peak</Text>
+                    <Text style={[styles.loadTotal, br.effectivePerChannelZ < MIN_STEREO_Z && { color: colors.red }]}>
+                      Each channel sees ≈ {bridgeZ} Ω ÷ 2 = {br.effectivePerChannelZ} Ω
+                    </Text>
+                    {bridgeZ < MIN_BRIDGED_Z ? (
+                      <Text style={styles.warn}>⚠ {bridgeZ} Ω bridged is below the {MIN_BRIDGED_Z} Ω bridged minimum — each channel is effectively driving {br.effectivePerChannelZ} Ω.</Text>
+                    ) : (
+                      <Text style={styles.ok}>✓ {bridgeZ} Ω meets the {MIN_BRIDGED_Z} Ω bridged minimum.</Text>
+                    )}
+                    <Body>
+                      The two channels drive opposite ends of the load with opposite-polarity signals, so the load sees the
+                      DIFFERENCE — up to twice one channel’s voltage. The price: each channel works into what looks like half the
+                      load. Bridging must be explicitly supported, wired exactly as documented, and output negatives must never be
+                      assumed common.
+                    </Body>
+                  </>
+                ) : (
+                  <Body>Two independent channels, each driving its own load against its own negative terminal. Switch to bridge mode to see what changes — and what it costs.</Body>
+                )}
+              </Card>
+              <MisconceptionCard m={misc('common-ground')} />
+              <MisconceptionCard m={misc('bridge-4x')} />
 
-      {/* ── bridged ── */}
-      <SectionTitle>4 · BRIDGED OPERATION</SectionTitle>
-      <SegRow<'stereo' | 'bridge'>
-        options={[
-          { key: 'stereo', label: 'Stereo' },
-          { key: 'bridge', label: 'Bridge mode' },
-        ]}
-        value={bridged ? 'bridge' : 'stereo'}
-        onChange={(v) => setBridged(v === 'bridge')}
-      />
-      {bridged ? (
-        <SegRow<8 | 4>
-          label="Bridged load"
-          options={[
-            { key: 8, label: '8 Ω' },
-            { key: 4, label: '4 Ω' },
-          ]}
-          value={bridgeZ}
-          onChange={setBridgeZ}
-        />
-      ) : null}
-      <Card tone="accent">
-        {bridged ? (
-          <>
-            <Text style={styles.loadTotal}>Vload = VchA − VchB = 20 − (−20) = {br.vLoad} V peak</Text>
-            <Text style={[styles.loadTotal, br.effectivePerChannelZ < MIN_STEREO_Z && { color: colors.red }]}>
-              Each channel sees ≈ {bridgeZ} Ω ÷ 2 = {br.effectivePerChannelZ} Ω
-            </Text>
-            {bridgeZ < MIN_BRIDGED_Z ? (
-              <Text style={styles.warn}>⚠ {bridgeZ} Ω bridged is below the {MIN_BRIDGED_Z} Ω bridged minimum — each channel is effectively driving {br.effectivePerChannelZ} Ω.</Text>
-            ) : (
-              <Text style={styles.ok}>✓ {bridgeZ} Ω meets the {MIN_BRIDGED_Z} Ω bridged minimum.</Text>
-            )}
-            <Body>
-              The two channels drive opposite ends of the load with opposite-polarity signals, so the load sees the
-              DIFFERENCE — up to twice one channel’s voltage. The price: each channel works into what looks like half the
-              load. Bridging must be explicitly supported, wired exactly as documented, and output negatives must never be
-              assumed common.
-            </Body>
-          </>
-        ) : (
-          <Body>Two independent channels, each driving its own load against its own negative terminal. Switch to bridge mode to see what changes — and what it costs.</Body>
-        )}
-      </Card>
-      <MisconceptionCard m={misc('common-ground')} />
-      <MisconceptionCard m={misc('bridge-4x')} />
+              {/* ── watts vs loudness ── */}
+              <SectionTitle>5 · WATTS AND LOUDNESS</SectionTitle>
+              <ControlSlider label="Power ratio P2 ÷ P1" value={ratio} min={0.25} max={10} step={0.25} format={(v) => `${v.toFixed(2)}×`} onChange={setRatio} />
+              <FormulaCard
+                title="Level change = 10 · log10(P2 / P1)"
+                lines={[`${ratio.toFixed(2)}× the power = ${deltaDb >= 0 ? '+' : ''}${deltaDb.toFixed(2)} dB`, '2× power ≈ +3.01 dB · 10× power = +10 dB · 0.5× power ≈ −3.01 dB']}
+                note="+3 dB is clearly audible — it is not “twice as loud.” Roughly +10 dB — ten times the power — is what most listeners call twice as loud. Acoustic output also depends on loudspeaker sensitivity, distance, frequency content, directivity, the room, limiting, and power compression."
+              />
+              <MisconceptionCard m={misc('watts-loudness')} />
 
-      {/* ── watts vs loudness ── */}
-      <SectionTitle>5 · WATTS AND LOUDNESS</SectionTitle>
-      <ControlSlider label="Power ratio P2 ÷ P1" value={ratio} min={0.25} max={10} step={0.25} format={(v) => `${v.toFixed(2)}×`} onChange={setRatio} />
-      <FormulaCard
-        title="Level change = 10 · log10(P2 / P1)"
-        lines={[`${ratio.toFixed(2)}× the power = ${deltaDb >= 0 ? '+' : ''}${deltaDb.toFixed(2)} dB`, '2× power ≈ +3.01 dB · 10× power = +10 dB · 0.5× power ≈ −3.01 dB']}
-        note="+3 dB is clearly audible — it is not “twice as loud.” Acoustic output also depends on loudspeaker sensitivity, distance, frequency content, directivity, the room, limiting, and power compression."
-      />
-      <MisconceptionCard m={misc('watts-loudness')} />
+              {/* ── clipping risk ── */}
+              <SectionTitle>6 · CLIPPING AND LOUDSPEAKER RISK</SectionTitle>
+              <Body>
+                A clipped waveform spends more time near maximum level, so its average power rises, and the flattened peaks add
+                harmonic energy up the band. That is the mechanism — not “clipping turns audio into DC.” An underpowered
+                amplifier does not damage a loudspeaker merely because its rating is lower; risk depends on the actual signal,
+                how hard and how long it clips, its frequency content, the driver’s limits, and any limiting or protection.
+              </Body>
+              <MisconceptionCard m={misc('small-amp-safe')} />
+              <MisconceptionCard m={misc('watt-match')} />
 
-      {/* ── clipping risk ── */}
-      <SectionTitle>6 · CLIPPING AND LOUDSPEAKER RISK</SectionTitle>
-      <Body>
-        A clipped waveform spends more time near maximum level, so its average power rises, and the flattened peaks add
-        harmonic energy up the band. That is the mechanism — not “clipping turns audio into DC.” An underpowered
-        amplifier does not damage a loudspeaker merely because its rating is lower; risk depends on the actual signal,
-        how hard and how long it clips, its frequency content, the driver’s limits, and any limiting or protection.
-      </Body>
-      <MisconceptionCard m={misc('small-amp-safe')} />
-      <MisconceptionCard m={misc('watt-match')} />
+              {/* ── rack inspection ── */}
+              <SectionTitle>7 · OPERATING-PRACTICE INSPECTION</SectionTitle>
+              <Body>Inspect each virtual rack. Some have a fault; some are simply fine.</Body>
+              <SegRow<number>
+                options={RACK_SCENARIOS.map((s, i) => ({ key: i, label: s.title }))}
+                value={rackIdx}
+                onChange={(i) => {
+                  setRackIdx(i);
+                  setRackPick(null);
+                }}
+              />
+              <Card>
+                {scenario.readout.map((r) => (
+                  <View key={r.label} style={styles.readRow}>
+                    <Text style={styles.readLabel}>{r.label}</Text>
+                    <Text style={styles.readValue}>{r.value}</Text>
+                  </View>
+                ))}
+              </Card>
+              <View style={{ gap: 6 }}>
+                {RACK_FINDINGS.map((f) => {
+                  const isAnswer = rackPick != null && f.key === scenario.answer;
+                  const isWrongPick = rackPick === f.key && f.key !== scenario.answer;
+                  return (
+                    <Pressable
+                      key={f.key}
+                      onPress={() => setRackPick(f.key)}
+                      style={[styles.findingBtn, isAnswer && styles.findingRight, isWrongPick && styles.findingWrong]}
+                      accessibilityRole="button"
+                      accessibilityLabel={f.label}
+                    >
+                      <Text style={[styles.findingText, isAnswer && { color: colors.green }, isWrongPick && { color: colors.red }]}>{f.label}</Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+              {rackPick ? (
+                <Card tone="accent">
+                  <Text style={[styles.verdict, { color: rackPick === scenario.answer ? colors.green : colors.gold }]}>
+                    {rackPick === scenario.answer ? '✓ CORRECT' : 'NOT THIS ONE — HERE IS THE EVIDENCE'}
+                  </Text>
+                  <Body>{scenario.explain}</Body>
+                </Card>
+              ) : null}
+              <MisconceptionCard m={misc('reset-protect')} />
 
-      {/* ── rack inspection ── */}
-      <SectionTitle>7 · OPERATING-PRACTICE INSPECTION</SectionTitle>
-      <Body>Inspect each virtual rack. Some have a fault; some are simply fine.</Body>
-      <SegRow<number>
-        options={RACK_SCENARIOS.map((s, i) => ({ key: i, label: s.title }))}
-        value={rackIdx}
-        onChange={(i) => {
-          setRackIdx(i);
-          setRackPick(null);
-        }}
-      />
-      <Card>
-        {scenario.readout.map((r) => (
-          <View key={r.label} style={styles.readRow}>
-            <Text style={styles.readLabel}>{r.label}</Text>
-            <Text style={styles.readValue}>{r.value}</Text>
-          </View>
-        ))}
-      </Card>
-      <View style={{ gap: 6 }}>
-        {RACK_FINDINGS.map((f) => {
-          const isAnswer = rackPick != null && f.key === scenario.answer;
-          const isWrongPick = rackPick === f.key && f.key !== scenario.answer;
-          return (
-            <Pressable
-              key={f.key}
-              onPress={() => setRackPick(f.key)}
-              style={[styles.findingBtn, isAnswer && styles.findingRight, isWrongPick && styles.findingWrong]}
-              accessibilityRole="button"
-              accessibilityLabel={f.label}
-            >
-              <Text style={[styles.findingText, isAnswer && { color: colors.green }, isWrongPick && { color: colors.red }]}>{f.label}</Text>
-            </Pressable>
-          );
-        })}
-      </View>
-      {rackPick ? (
-        <Card tone="accent">
-          <Text style={[styles.verdict, { color: rackPick === scenario.answer ? colors.green : colors.gold }]}>
-            {rackPick === scenario.answer ? '✓ CORRECT' : 'NOT THIS ONE — HERE IS THE EVIDENCE'}
-          </Text>
-          <Body>{scenario.explain}</Body>
-        </Card>
-      ) : null}
-      <MisconceptionCard m={misc('reset-protect')} />
-
-      {/* ── spec decoder ── */}
-      <SectionTitle>8 · SPECIFICATION DECODER</SectionTitle>
-      <Body>A power rating is only as good as its test conditions. Which conditions is each sheet missing?</Body>
-      <SegRow<number>
-        options={SPEC_SHEETS.map((_, i) => ({ key: i, label: `Sheet ${i + 1}` }))}
-        value={sheetIdx}
-        onChange={(i) => {
-          setSheetIdx(i);
-          setPicked([]);
-          setChecked(false);
-        }}
-      />
-      <Card>
-        {sheet.lines.map((l) => (
-          <Text key={l} style={styles.specLine}>{l}</Text>
-        ))}
-      </Card>
-      <View style={{ gap: 6 }}>
-        {SPEC_CONDITIONS.map((c) => {
-          const on = picked.includes(c.key);
-          const shouldBe = checked && sheet.missing.includes(c.key);
-          return (
-            <Pressable
-              key={c.key}
-              onPress={() => {
-                setChecked(false);
-                setPicked(on ? picked.filter((k) => k !== c.key) : [...picked, c.key]);
-              }}
-              style={[styles.findingBtn, on && styles.findingOn, checked && shouldBe && styles.findingRight, checked && on && !shouldBe && styles.findingWrong]}
-              accessibilityRole="checkbox"
-              accessibilityState={{ checked: on }}
-              aria-checked={on}
-              accessibilityLabel={`Missing: ${c.label}`}
-            >
-              <Text style={styles.findingText}>{on ? '☑' : '☐'}  {c.label}</Text>
-              {checked ? <Text style={styles.why}>{c.why}</Text> : null}
-            </Pressable>
-          );
-        })}
-      </View>
-      <Pressable style={styles.checkBtn} onPress={() => setChecked(true)} accessibilityRole="button" accessibilityLabel="Check my answer">
-        <Text style={styles.checkBtnText}>CHECK</Text>
-      </Pressable>
-      {specVerdict ? (
-        <Card tone="accent">
-          <Text style={[styles.verdict, { color: specVerdict === 'right' || specVerdict === 'complete-right' ? colors.green : colors.gold }]}>
-            {specVerdict === 'right'
-              ? '✓ YOU FOUND EVERY GAP'
-              : specVerdict === 'complete-right'
-                ? '✓ CORRECT — NOTHING IS MISSING'
-                : specVerdict === 'complete-wrong'
-                  ? 'NOTHING IS MISSING HERE — EVERY CONDITION IS STATED'
-                  : 'NOT QUITE — COMPARE THE MARKED CONDITIONS'}
-          </Text>
-          <Body>{sheet.verdict}</Body>
-        </Card>
-      ) : null}
-      <LearnMore title="READING THE REST OF THE SHEET">
-        <Body>
-          THD+N compares unwanted harmonic and noise energy with the wanted signal under stated conditions — one number
-          does not predict perceived quality, and this lab does not compute a fake one.
-        </Body>
-        <Body>
-          Signal-to-noise ratio means something only with its reference level, bandwidth, weighting, and conditions
-          attached.
-        </Body>
-        <FormulaCard
-          title="Damping factor (simplified)"
-          lines={['DF = Zload / Zout(amp)']}
-          note="Varies with frequency; speaker-cable resistance sits in series with the amplifier’s output impedance, so the practical figure is a system property. Not a universal sound-quality score."
-        />
-        <Body>
-          Gain is the ratio between output and input. Input sensitivity is the input level required to reach a specified
-          output. Related, not interchangeable.
-        </Body>
-      </LearnMore>
-      <MisconceptionCard m={misc('peak-continuous')} />
-    </View>
+              {/* ── spec decoder ── */}
+              <SectionTitle>8 · SPECIFICATION DECODER</SectionTitle>
+              <Body>A power rating is only as good as its test conditions. Which conditions is each sheet missing?</Body>
+              <SegRow<number>
+                options={SPEC_SHEETS.map((_, i) => ({ key: i, label: `Sheet ${i + 1}` }))}
+                value={sheetIdx}
+                onChange={(i) => {
+                  setSheetIdx(i);
+                  setPicked([]);
+                  setChecked(false);
+                }}
+              />
+              <Card>
+                {sheet.lines.map((l) => (
+                  <Text key={l} style={styles.specLine}>{l}</Text>
+                ))}
+              </Card>
+              <View style={{ gap: 6 }}>
+                {SPEC_CONDITIONS.map((c) => {
+                  const on = picked.includes(c.key);
+                  const shouldBe = checked && sheet.missing.includes(c.key);
+                  return (
+                    <Pressable
+                      key={c.key}
+                      onPress={() => {
+                        setChecked(false);
+                        setPicked(on ? picked.filter((k) => k !== c.key) : [...picked, c.key]);
+                      }}
+                      style={[styles.findingBtn, on && styles.findingOn, checked && shouldBe && styles.findingRight, checked && on && !shouldBe && styles.findingWrong]}
+                      accessibilityRole="checkbox"
+                      accessibilityState={{ checked: on }}
+                      aria-checked={on}
+                      accessibilityLabel={`Missing: ${c.label}`}
+                    >
+                      <Text style={styles.findingText}>{on ? '☑' : '☐'}  {c.label}</Text>
+                      {checked ? <Text style={styles.why}>{c.why}</Text> : null}
+                    </Pressable>
+                  );
+                })}
+              </View>
+              <Pressable style={styles.checkBtn} onPress={() => setChecked(true)} accessibilityRole="button" accessibilityLabel="Check my answer">
+                <Text style={styles.checkBtnText}>CHECK</Text>
+              </Pressable>
+              {specVerdict ? (
+                <Card tone="accent">
+                  <Text style={[styles.verdict, { color: specVerdict === 'right' || specVerdict === 'complete-right' ? colors.green : colors.gold }]}>
+                    {specVerdict === 'right'
+                      ? '✓ YOU FOUND EVERY GAP'
+                      : specVerdict === 'complete-right'
+                        ? '✓ CORRECT — NOTHING IS MISSING'
+                        : specVerdict === 'complete-wrong'
+                          ? 'NOTHING IS MISSING HERE — EVERY CONDITION IS STATED'
+                          : 'NOT QUITE — COMPARE THE MARKED CONDITIONS'}
+                  </Text>
+                  <Body>{sheet.verdict}</Body>
+                </Card>
+              ) : null}
+              <LearnMore title="READING THE REST OF THE SHEET">
+                <Body>
+                  THD+N compares unwanted harmonic and noise energy with the wanted signal under stated conditions — one number
+                  does not predict perceived quality, and this lab does not compute a fake one.
+                </Body>
+                <Body>
+                  Signal-to-noise ratio means something only with its reference level, bandwidth, weighting, and conditions
+                  attached.
+                </Body>
+                <FormulaCard
+                  title="Damping factor (simplified)"
+                  lines={['DF = Zload / Zout(amp)']}
+                  note="Varies with frequency; speaker-cable resistance sits in series with the amplifier’s output impedance, so the practical figure is a system property. Not a universal sound-quality score."
+                />
+                <Body>
+                  Gain is the ratio between output and input. Input sensitivity is the input level required to reach a specified
+                  output. Related, not interchangeable.
+                </Body>
+              </LearnMore>
+              <MisconceptionCard m={misc('peak-continuous')} />
+            </>
+          ),
+        },
+      ]}
+    />
   );
 }
 

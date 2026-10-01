@@ -1,17 +1,21 @@
 /**
  * AmpRig — the lab's central synchronized visualization (build spec Part 2 §1):
- * input waveform · device currents · output waveform · supply energy flow ·
- * load/speaker · relative heat · illustrative efficiency · fault state.
+ * input waveform · device currents · output waveform, drawn as ONE stack with
+ * a shared playhead so cause and effect stay visibly synchronized.
  *
- * One playhead sweeps all waveform panels together, so cause and effect stay
- * visibly synchronized. Everything animated is driven by ONE Animated loop
- * (native driver, transforms only) — waveform paths are computed once per
- * parameter change, never per frame.
+ * RACK REBUILD (owner, TestFlight build 32, 2026-09-30): "We've got displays
+ * below controls, which means your fingers block what you see." The stack is
+ * now a STAGE drawing only — it sits on the Rack Unit's glass (AmpRack.tsx),
+ * its status numbers (supply, heat, efficiency, load) print on the BEZEL and
+ * its transport (RUN / SLOW / STEP) is a dock key. Nothing here renders a
+ * control; nothing here renders under a control.
  *
- * Reduced motion (settings toggle OR OS): the loop is replaced by a STEP
- * control that moves the playhead a quarter cycle at a time.
+ * Everything animated is driven by ONE Animated loop (native driver,
+ * transforms only) — waveform paths are computed once per parameter change,
+ * never per frame. Reduced motion (settings toggle OR OS): the loop is
+ * replaced by a STEP key that moves the playhead a quarter cycle at a time.
  *
- * The rig is a CONCEPTUAL teaching display and says so on its face. The input
+ * The rig is a CONCEPTUAL teaching display and says so on its badge. The input
  * and output traces carry the app-wide AMPLITUDE COLOUR STANDARD (owner
  * 2026-09-05, `features/tools/levelColor`): MIDI-0 blue at the mid line,
  * climbing green → yellow → orange → red at ±full scale — and full scale on the
@@ -20,15 +24,15 @@
  * LABEL colours for "input"/"output" (legends, diagram arrows), not trace paint.
  */
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
-import Svg, { Defs, Line, LinearGradient, Path, Polyline, Rect, Stop } from 'react-native-svg';
+import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
+import Svg, { Defs, Line, LinearGradient, Polyline, Rect, Stop } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
 import { WAVE_LEVEL_STOPS, levelColor } from '../../../features/tools/levelColor';
 import { animationsAllowed } from '../../../features/settings/a11y';
 import { cycleRms } from '../../../features/amp/ampModel';
-import { ExpandableFigure } from '../kit/ExpandableFigure';
 import { useStageTextScale } from '../rack/stageAspect';
-import { AMP_COLORS, FigureDock } from './kit';
+import type { BezelItem } from '../rack/rackTypes';
+import { AMP_COLORS } from './kit';
 
 const W = 340;
 const PANEL_H = 58;
@@ -40,6 +44,8 @@ const TITLE_LINE = 14;
 const TITLE_GAP = 2;
 const PANEL_GAP = 6;
 const stackHeight = (n: number) => n * (TITLE_LINE + TITLE_GAP + PANEL_H) + (n - 1) * PANEL_GAP;
+
+export const CONCEPT_NOTE = 'Conceptual visualization — not a component-level circuit simulation.';
 
 /** y for a signal value on a panel of height h (same mapping everywhere). */
 const yFor = (v: number, h: number, yMax = Y_MAX) => h / 2 - (v / yMax) * (h / 2 - 4);
@@ -73,12 +79,12 @@ function clippedSegments(data: Float32Array, limit: number, h: number, yMax = Y_
 }
 
 /**
- * One panel of the stack, drawn at the width the figure was given: the SVG's
+ * One panel of the stack, drawn at the width the stage was given: the SVG's
  * pixel height follows the width (svgH ≈ w × PANEL_H / W), so the
  * `preserveAspectRatio="none"` box keeps the viewBox's own ratio and nothing
  * stretches sideways in FULL SCREEN (the SVG trap, legibility pass
  * 2026-09-25). The title is React Native text over the drawing — it grows
- * with the zoom through `scale` (the Skia/overlay trap), 1 on the page.
+ * with the zoom through `scale` (the Skia/overlay trap), 1 on the glass.
  */
 function WavePanel({
   title, children, w, svgH, scale,
@@ -127,10 +133,20 @@ function RailPair({ at, stroke, dash, width = 1 }: { at: number; stroke: string;
 
 export type RigTrace = { data: Float32Array; color: string; dash?: string; width?: number; label: string };
 
-export type AmpRigProps = {
+/** The PICTURE the stack draws — the model's output for this page. */
+export type RigPicture = {
   input?: Float32Array;
-  /** Positive/negative device currents (gold solid / purple dashed). */
+  /** Positive/negative device currents (gold solid / purple dashed). An
+   *  all-zero iNeg is a SINGLE-device picture (Module 3's bias rig, Class A,
+   *  Class C): its trace is not drawn and the default title names one
+   *  device — a dashed line at zero was a decoy "second device" (review
+   *  2026-09-30). */
   devices?: { iPos: Float32Array; iNeg: Float32Array };
+  /** Full scale of the device panel in current units (default 2.1 — Class A
+   *  reaches 2.0). A single device that runs 0..1 sets ≈1.05 so its swing and
+   *  its clipping at the floor/ceiling are visible instead of a near-flat
+   *  line in the top half of the panel. */
+  deviceYMax?: number;
   output?: Float32Array;
   /** Output rail level (same units as output); at/above it draws warning red. */
   clipAt?: number;
@@ -146,35 +162,86 @@ export type AmpRigProps = {
   supplyFlow: number;
   /** 0..1 — relative heat (normalized teaching value). */
   heat: number;
-  /** % — labeled illustrative; null hides the bar. */
+  /** % — labeled illustrative; null hides the readout. */
   efficiencyPct?: number | null;
   speaker?: boolean;
   faulted?: boolean;
-  /** Hide the supply / heat / efficiency / load row — for diagnosis pictures
-   *  where those meters would be decoys, not information. */
-  hideStatus?: boolean;
   /** One-sentence accessible summary of the current state. */
   a11ySummary: string;
   deviceTitle?: string;
   outputTitle?: string;
-  /** The module's controls that change THIS picture (its level/bias sliders,
-   *  a class or view selector). Rendered by the page as usual AND docked
-   *  under the waveforms in FULL SCREEN, beside the rig's own transport, so
-   *  the learner can adjust while enlarged (owner 2026-09-25). Pass the same
-   *  elements — state lives in the module. */
-  controls?: ReactNode;
-  /** Full-screen bar title (≤ 10 characters). */
-  title?: string;
-  /** The module's live readout for THIS picture (a region tag, a verdict,
-   *  the class stats) — THE SAME element the page shows, placed at the TOP
-   *  of the full-screen dock so the numbers are read while enlarged (parity
-   *  pass 2026-09-26). The rig adds its own status line under it. */
-  readout?: ReactNode;
 };
 
-const CONCEPT_NOTE = 'Conceptual visualization — not a component-level circuit simulation.';
+/** Panels this picture draws (1–3). */
+export const rigPanelCount = (p: RigPicture) => Math.max(1, (p.input ? 1 : 0) + (p.devices ? 1 : 0) + (p.output ? 1 : 0));
 
-export function AmpRig(p: AmpRigProps) {
+/** width ÷ height of the stack in drawing units — the FULL SCREEN canvas is
+ *  exactly this shape at every zoom (StageFit reports it). */
+export const rigAspect = (p: RigPicture) => W / stackHeight(rigPanelCount(p));
+
+/** The legend lines the page prints under the stage (rail limit, overlays). */
+export function rigLegend(p: RigPicture): { text: string; color: string }[] {
+  const out: { text: string; color: string }[] = [];
+  if (p.clipAt != null && p.output) out.push({ text: '┄ rail limit', color: colors.red });
+  if (showNominalRail(p)) out.push({ text: '┄ nominal rail (idle)', color: colors.textSub });
+  for (const t of [...(p.extraIn ?? []), ...(p.extraOut ?? [])]) out.push({ text: `${t.dash ? '┄' : '▬'} ${t.label}`, color: t.color });
+  return out;
+}
+
+/** A second (negative-side) device exists only if its current is ever non-zero. */
+export function hasNegDevice(d: { iNeg: Float32Array }): boolean {
+  for (let i = 0; i < d.iNeg.length; i++) if (d.iNeg[i] !== 0) return true;
+  return false;
+}
+
+const showNominalRail = (p: RigPicture) => p.clipAt != null && p.nominalRailAt != null && p.nominalRailAt > p.clipAt + 0.01;
+
+/* ── the status readouts (bezel cells, not a row under the display) ─────── */
+
+// Heat is NOT amplitude: blue (cool) → green → yellow → red (dangerously
+// hot) is the kit's fault language, and the word beside it says the same.
+export const heatWord = (heat: number) => (heat < 0.35 ? 'cool' : heat < 0.6 ? 'warm' : heat < 0.8 ? 'hot' : 'DANGER');
+export const heatTint = (heat: number) => (heat < 0.35 ? '#3f6fae' : heat < 0.6 ? '#3fae52' : heat < 0.8 ? '#e8c341' : '#ff5f4e');
+
+/** Loudspeaker drive, 0..1 of full, from the output cycle. */
+export const rigLoadLevel = (p: RigPicture) => (p.output ? Math.min(1, cycleRms(p.output) * Math.SQRT2) : 0);
+
+/**
+ * The rig's status cells for the BEZEL: SUPPLY · HEAT · EFFICIENCY · LOAD, in
+ * the words the old status row used. A page composes these with its own
+ * readouts (≤5 cells on a 375-wide phone; BezelReadouts drops a cropped
+ * cell's label, never its number).
+ */
+export function rigStatusBezel(p: RigPicture, pick: ('supply' | 'heat' | 'eff' | 'load')[] = ['supply', 'heat', 'eff', 'load']): BezelItem[] {
+  const items: BezelItem[] = [];
+  for (const k of pick) {
+    if (k === 'supply') items.push({ k: 'SUPPLY', v: `${Math.round(p.supplyFlow * 100)}%`, tint: AMP_COLORS.supply });
+    else if (k === 'heat') items.push({ k: 'HEAT', v: heatWord(p.heat), tint: heatTint(p.heat) });
+    else if (k === 'eff' && p.efficiencyPct != null) items.push({ k: 'EFFIC.', v: `${Math.round(p.efficiencyPct)}%`, tint: colors.green });
+    else if (k === 'load' && p.speaker) {
+      const l = rigLoadLevel(p);
+      items.push({ k: 'LOAD', v: `${Math.round(l * 100)}%`, tint: levelColor(l) });
+    }
+  }
+  return items;
+}
+
+/* ── the shared playhead ────────────────────────────────────────────────── */
+
+export type RigPlayhead = {
+  motion: boolean;
+  running: boolean;
+  slow: boolean;
+  stepPhase: number;
+  phase: Animated.Value;
+  setRunning: (v: boolean) => void;
+  setSlow: (v: boolean) => void;
+  step: () => void;
+};
+
+/** One Animated loop for the page's stack (native driver, transforms only).
+ *  Reduced motion: no loop; `step` moves the playhead a quarter cycle. */
+export function useRigPlayhead(): RigPlayhead {
   const motion = animationsAllowed();
   const [running, setRunning] = useState(true);
   const [slow, setSlow] = useState(false);
@@ -196,148 +263,42 @@ export function AmpRig(p: AmpRigProps) {
     return () => loop.stop();
   }, [motion, running, slow, phase]);
 
-  const outLevel = p.output ? cycleRms(p.output) : 0;
-  // Gradient ids must be unique per rig — several rigs can share one screen
-  // (and on web every SVG shares one document), and their rails can differ.
-  const gid = useRef(`amprig${Math.floor(Math.random() * 1e9).toString(36)}`).current;
-  const nPanels = (p.input ? 1 : 0) + (p.devices ? 1 : 0) + (p.output ? 1 : 0);
-  const aspect = W / stackHeight(Math.max(1, nPanels));
-
-  // Heat is NOT amplitude: blue (cool) → green → yellow → red (dangerously
-  // hot) is the kit's fault language, and the word beside it says the same.
-  const heatWord = p.heat < 0.35 ? 'cool' : p.heat < 0.6 ? 'warm' : p.heat < 0.8 ? 'hot' : 'DANGER';
-  const heatColor =
-    p.heat < 0.35 ? '#3f6fae' : p.heat < 0.6 ? '#3fae52' : p.heat < 0.8 ? '#e8c341' : '#ff5f4e';
-
-  const showNominal = p.clipAt != null && p.nominalRailAt != null && p.nominalRailAt > p.clipAt + 0.01;
-  const legendTraces = [...(p.extraIn ?? []), ...(p.extraOut ?? [])];
-
-  // The status row's numbers, one line, for the top of the full-screen dock
-  // (the row itself stays on the page): same words as the cells below.
-  const statusLine = !p.hideStatus ? (
-    <Text style={styles.dockStatus} numberOfLines={2}>
-      {`SUPPLY ${Math.round(p.supplyFlow * 100)}% · HEAT ${heatWord}${p.efficiencyPct != null ? ` · EFFICIENCY ${Math.round(p.efficiencyPct)}%` : ''}${p.speaker ? ` · LOAD ${Math.round(Math.min(1, outLevel * Math.SQRT2) * 100)}%` : ''} · relative`}
-    </Text>
-  ) : null;
-
-  // The transport is drawn twice — on the page and in the full-screen dock —
-  // from the same state.
-  const transport = (
-    <View style={styles.transportRow}>
-      {motion ? (
-        <>
-          <Pressable style={styles.tBtn} hitSlop={{ top: 6, bottom: 6 }} onPress={() => setRunning(!running)} accessibilityRole="button" accessibilityLabel={running ? 'Pause animation' : 'Play animation'}>
-            <Text style={styles.tBtnText}>{running ? '⏸ PAUSE' : '▶ PLAY'}</Text>
-          </Pressable>
-          <Pressable style={[styles.tBtn, slow && styles.tBtnOn]} hitSlop={{ top: 6, bottom: 6 }} onPress={() => setSlow(!slow)} accessibilityRole="button" accessibilityState={{ selected: slow }} aria-pressed={slow} accessibilityLabel="Slow motion">
-            <Text style={[styles.tBtnText, slow && { color: colors.green }]}>SLOW</Text>
-          </Pressable>
-        </>
-      ) : (
-        <Pressable style={styles.tBtn} hitSlop={{ top: 6, bottom: 6 }} onPress={() => setStepPhase((s) => (s + 2) % 9)} accessibilityRole="button" accessibilityLabel="Step through the cycle">
-          <Text style={styles.tBtnText}>STEP ¼ CYCLE</Text>
-        </Pressable>
-      )}
-      {p.faulted ? <Text style={styles.faultTag} accessibilityRole="text">⚠ FAULT</Text> : null}
-    </View>
-  );
-
-  return (
-    <View style={styles.rig}>
-      {/* The waveform stack is ONE accessible graphic with the summary as its
-          label — a screen reader hears the state once, not three panels of
-          silent SVG plus a duplicate note. It is drawn through
-          ExpandableFigure: the same stack, same state, at the page width and
-          again at the FULL SCREEN size, the transport and the module's
-          controls docked under it there. */}
-      <ExpandableFigure
-        aspect={aspect}
-        title={p.title ?? 'AMP RIG'}
-        badge={CONCEPT_NOTE}
-        controls={
-          <FigureDock>
-            {p.readout}
-            {statusLine}
-            {p.controls}
-            {transport}
-          </FigureDock>
-        }
-        render={(w, h) => (
-          <WaveStack w={w} h={h} p={p} gid={gid} motion={motion} phase={phase} stepPhase={stepPhase} showNominal={showNominal} />
-        )}
-      />
-
-      {legendTraces.length || showNominal || (p.clipAt != null && p.output) ? (
-        <View style={styles.legendRow}>
-          {p.clipAt != null && p.output ? <Text style={[styles.legend, { color: colors.red }]}>┄ rail limit</Text> : null}
-          {showNominal ? <Text style={[styles.legend, { color: colors.textSub }]}>┄ nominal rail (idle)</Text> : null}
-          {legendTraces.map((t) => (
-            <Text key={t.label} style={[styles.legend, { color: t.color }]}>{t.dash ? '┄' : '▬'} {t.label}</Text>
-          ))}
-        </View>
-      ) : null}
-
-      {/* status row: supply energy · heat · efficiency · speaker */}
-      {!p.hideStatus ? (
-        <View style={styles.statusRow}>
-          <View style={styles.statusCell}>
-            <Text style={styles.statusLabel}>SUPPLY ENERGY</Text>
-            <EnergyFlow flow={p.supplyFlow} motion={motion && running} />
-            <Text style={styles.statusSub}>relative draw</Text>
-          </View>
-          <View style={styles.statusCell} accessible accessibilityLabel={`Relative heat ${Math.round(p.heat * 100)} percent, ${heatWord}. Normalized teaching value, not a temperature.`}>
-            <Text style={styles.statusLabel}>HEAT</Text>
-            <View style={styles.barTrack}>
-              <View style={[styles.barFill, { width: `${Math.round(p.heat * 100)}%`, backgroundColor: heatColor }]} />
-            </View>
-            <Text style={styles.statusSub}>{heatWord} · relative</Text>
-          </View>
-          {p.efficiencyPct != null ? (
-            <View style={styles.statusCell} accessible accessibilityLabel={`Illustrative efficiency ${Math.round(p.efficiencyPct)} percent at this level.`}>
-              <Text style={styles.statusLabel}>EFFICIENCY</Text>
-              <View style={styles.barTrack}>
-                <View style={[styles.barFill, { width: `${Math.round(Math.min(100, Math.max(0, p.efficiencyPct)))}%`, backgroundColor: colors.green }]} />
-              </View>
-              <Text style={styles.statusSub}>{Math.round(p.efficiencyPct)}% · illustrative</Text>
-            </View>
-          ) : null}
-          {p.speaker ? <SpeakerGlyph level={outLevel} motion={motion && running} /> : null}
-        </View>
-      ) : null}
-
-      {/* transport */}
-      {transport}
-
-      <Text style={styles.conceptNote}>{CONCEPT_NOTE}</Text>
-    </View>
+  return useMemo(
+    () => ({ motion, running, slow, stepPhase, phase, setRunning, setSlow, step: () => setStepPhase((s) => (s + 2) % 9) }),
+    [motion, running, slow, stepPhase, phase],
   );
 }
 
+/* ── the stack ──────────────────────────────────────────────────────────── */
+
 /**
  * The waveform panels at (w, h): the panels share the height the title lines
- * leave over, so the stack fills the figure box exactly and each panel is
+ * leave over, so the stack fills the box exactly and each panel is
  * w × PANEL_H / W — the viewBox's own shape. One playhead sweeps them all.
+ * Drawn on the glass and again in FULL SCREEN at the zoomed size — the panel
+ * titles grow with it (useStageTextScale), the SVG scales with its viewBox.
  */
-function WaveStack({
-  w, h, p, gid, motion, phase, stepPhase, showNominal,
+export function WaveStack({
+  w, h, p, play,
 }: {
   w: number;
   h: number;
-  p: AmpRigProps;
-  gid: string;
-  motion: boolean;
-  phase: Animated.Value;
-  stepPhase: number;
-  showNominal: boolean;
+  p: RigPicture;
+  play: RigPlayhead;
 }) {
   const scale = useStageTextScale();
-  const n = Math.max(1, (p.input ? 1 : 0) + (p.devices ? 1 : 0) + (p.output ? 1 : 0));
+  // Gradient ids must be unique per stack — several stacks can share one
+  // document (web), and their rails can differ.
+  const gid = useRef(`amprig${Math.floor(Math.random() * 1e9).toString(36)}`).current;
+  const n = rigPanelCount(p);
   const titleLine = TITLE_LINE * scale;
   const svgH = Math.max(16, Math.floor((h - n * (titleLine + TITLE_GAP) - (n - 1) * PANEL_GAP) / n));
+  const { motion, phase, stepPhase } = play;
   const playX = useMemo(
     () => (motion ? phase.interpolate({ inputRange: [0, 1], outputRange: [0, w] }) : new Animated.Value((stepPhase / 8) * w)),
     [motion, phase, w, stepPhase],
   );
+  const showNominal = showNominalRail(p);
   return (
     <View style={{ width: w, height: h, gap: PANEL_GAP }} accessible accessibilityRole="image" accessibilityLabel={p.a11ySummary}>
       {p.input ? (
@@ -350,14 +311,16 @@ function WaveStack({
         </WavePanel>
       ) : null}
       {p.devices ? (
-        <WavePanel title={p.deviceTitle ?? 'DEVICE CURRENTS (+ gold solid · − purple dashed)'} w={w} svgH={svgH} scale={scale}>
+        <WavePanel title={p.deviceTitle ?? (hasNegDevice(p.devices) ? 'DEVICE CURRENTS (+ gold solid · − purple dashed)' : 'DEVICE CURRENT (gold)')} w={w} svgH={svgH} scale={scale}>
           {/* yMax 2.1, not 1.6. Class A is `iq(1.0) + sine(drive)`, so device
               current reaches 2.0 at full drive — a 1.6 ceiling flat-topped
               the trace and drew the universal picture of SATURATION directly
               under copy explaining full-cycle conduction, which is the one
               thing class A does not do. */}
-          <Polyline points={tracePoints(p.devices.iPos, PANEL_H, 2.1)} fill="none" stroke={AMP_COLORS.pos} strokeWidth={1.6} />
-          <Polyline points={tracePoints(p.devices.iNeg, PANEL_H, 2.1)} fill="none" stroke={AMP_COLORS.neg} strokeWidth={1.6} strokeDasharray="5,3" />
+          <Polyline points={tracePoints(p.devices.iPos, PANEL_H, p.deviceYMax ?? 2.1)} fill="none" stroke={AMP_COLORS.pos} strokeWidth={1.6} />
+          {hasNegDevice(p.devices) ? (
+            <Polyline points={tracePoints(p.devices.iNeg, PANEL_H, p.deviceYMax ?? 2.1)} fill="none" stroke={AMP_COLORS.neg} strokeWidth={1.6} strokeDasharray="5,3" />
+          ) : null}
         </WavePanel>
       ) : null}
       {p.output ? (
@@ -385,87 +348,8 @@ function WaveStack({
   );
 }
 
-function EnergyFlow({ flow, motion }: { flow: number; motion: boolean }) {
-  const t = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    if (!motion || flow <= 0.02) return;
-    t.setValue(0);
-    const loop = Animated.loop(
-      Animated.timing(t, {
-        toValue: 1,
-        duration: Math.max(350, 2000 - flow * 1600),
-        easing: Easing.linear,
-        useNativeDriver: true,
-      }),
-    );
-    loop.start();
-    return () => loop.stop();
-  }, [motion, flow, t]);
-  const tx = t.interpolate({ inputRange: [0, 1], outputRange: [0, 14] });
-  return (
-    <View style={styles.energyTrack} accessible accessibilityLabel={`Supply energy draw ${Math.round(flow * 100)} percent, relative`}>
-      <Animated.Text
-        style={[styles.energyArrows, { opacity: 0.25 + flow * 0.75, transform: [{ translateX: motion && flow > 0.02 ? tx : 0 }] }]}
-        numberOfLines={1}
-      >
-        {'▸ ▸ ▸ ▸ ▸ ▸ ▸ ▸ ▸ ▸'}
-      </Animated.Text>
-    </View>
-  );
-}
-
-function SpeakerGlyph({ level, motion }: { level: number; motion: boolean }) {
-  const s = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    if (!motion || level < 0.02) return;
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(s, { toValue: 1, duration: 160, useNativeDriver: true }),
-        Animated.timing(s, { toValue: 0, duration: 160, useNativeDriver: true }),
-      ]),
-    );
-    loop.start();
-    return () => loop.stop();
-  }, [motion, level, s]);
-  const scale = s.interpolate({ inputRange: [0, 1], outputRange: [1, 1 + Math.min(0.2, level * 0.35)] });
-  return (
-    <View style={styles.statusCell} accessible accessibilityLabel={`Loudspeaker output level ${Math.round(Math.min(1, level * Math.SQRT2) * 100)} percent of full, relative`}>
-      <Text style={styles.statusLabel}>LOAD</Text>
-      <Animated.View style={{ transform: [{ scale }], alignSelf: 'center' }}>
-        <Svg width={34} height={30} viewBox="0 0 34 30">
-          <Path d="M4 11 h8 l9 -8 v24 l-9 -8 h-8 z" fill="#26262b" stroke={colors.textMuted} strokeWidth={1.2} />
-          {/* cone-motion arc takes the LEVEL's colour (amplitude standard) */}
-          <Path d="M25 9 a9 9 0 0 1 0 12" fill="none" stroke={levelColor(Math.min(1, level * Math.SQRT2))} strokeWidth={1.8} opacity={0.35 + Math.min(0.65, level)} />
-        </Svg>
-      </Animated.View>
-      <Text style={styles.statusSub}>cone motion · relative</Text>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
-  rig: { gap: 8, borderRadius: 14, borderWidth: 1, borderColor: colors.steelBorder, backgroundColor: '#0e0e10', padding: 10 },
   panel: { gap: TITLE_GAP },
   panelTitle: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: TITLE_FONT, letterSpacing: 1.2 },
   playhead: { position: 'absolute', bottom: 0, left: 0, width: 1.5, backgroundColor: 'rgba(255,255,255,0.35)' },
-  legendRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  legend: { fontFamily: fonts.barlowMedium, fontSize: 11 },
-  statusRow: { flexDirection: 'row', gap: 10, flexWrap: 'wrap' },
-  statusCell: { flex: 1, minWidth: 72, gap: 3 },
-  statusLabel: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 1.2 },
-  statusSub: { color: colors.textMutedDeep, fontFamily: fonts.barlowRegular, fontSize: 10.5 },
-  barTrack: { height: 10, borderRadius: 5, backgroundColor: '#0a0a0c', borderWidth: 1, borderColor: colors.hairline, overflow: 'hidden' },
-  barFill: { height: '100%' },
-  energyTrack: { height: 16, overflow: 'hidden', borderRadius: 4 },
-  energyArrows: { color: AMP_COLORS.supply, fontSize: 11, letterSpacing: 1 },
-  transportRow: { flexDirection: 'row', gap: 8, alignItems: 'center' },
-  tBtn: {
-    minHeight: 34, paddingHorizontal: 12, borderRadius: 8, borderWidth: 1, borderColor: colors.hairline,
-    alignItems: 'center', justifyContent: 'center', backgroundColor: '#131315',
-  },
-  tBtnOn: { borderColor: colors.green },
-  tBtnText: { color: colors.textSecondary, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1 },
-  faultTag: { color: colors.red, fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, marginLeft: 'auto' },
-  dockStatus: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1 },
-  conceptNote: { color: colors.textMutedDeep, fontFamily: fonts.barlowRegular, fontSize: 11 },
 });

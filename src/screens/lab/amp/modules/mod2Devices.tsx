@@ -1,20 +1,28 @@
 /**
  * Module 2 — Transistors, Tubes, and Transformers (spec Part 2 §3).
  * The active device CONTROLS supply power; the transformer TRANSFORMS it.
+ *
+ * RACK (2026-09-30): TWO rack steps, one per live diagram. THE DEVICE pins
+ * the control model on the glass (CONTROL on the lane, DEVICE as a tray);
+ * THE TRANSFORMER pins the windings (Np / Ns on the lane). Each step's
+ * numbers print on the bezel; the formulas, applications and the
+ * misconception are the reading in the well.
  */
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
-import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { colors, fonts } from '../../../../theme/tokens';
 import { transformer, transformerIdealPowerOk } from '../../../../features/amp/ampModel';
 import { MISCONCEPTIONS } from '../../../../features/amp/ampContent';
+import { levelColor } from '../../../../features/tools/levelColor';
+import { faderParam, optionsParam } from '../AmpRack';
+import { AmpModuleSteps } from '../steps';
 import {
-  AMP_COLORS, Body, Card, ControlSlider, DIAGRAM_FONT, FigureDock, FormulaCard, HonestyBadge, LearnMore, MisconceptionCard, SectionTitle, SegRow,
+  AMP_COLORS, Body, Card, DIAGRAM_FONT, FormulaCard, LearnMore, MisconceptionCard, SectionTitle,
 } from '../kit';
 
 /** Drawing units (legibility pass 2026-09-25: labels ≥ DIAGRAM_FONT, the SVG
- *  drawn at the width ExpandableFigure hands it, height = w / aspect). */
+ *  drawn at the width the glass hands it, height = w / aspect). */
 const DEV_W = 360;
 const DEV_H = 150;
 const XF_W = 360;
@@ -29,15 +37,20 @@ const DEVICE_TERMS: Record<Device, { control: string; in: string; out: string; n
   tube: { control: 'CONTROL GRID', in: 'PLATE (high-voltage supply)', out: 'CATHODE', note: 'Vacuum tube: control-grid voltage governs plate current from a high-voltage supply. Same control idea as a transistor, very different circuit requirements.' },
 };
 
-function regionFor(control: number): { label: string; sub: string } {
-  if (control < 0.15) return { label: 'OFF', sub: 'No conduction — control signal below the point where current starts.' };
-  if (control > 0.85) return { label: 'FULLY DRIVEN', sub: 'The device cannot pass more current — more control signal changes nothing.' };
-  return { label: 'CONTROLLED CONDUCTION', sub: 'The useful region: output current follows the control signal.' };
+const DEVICE_LABEL: Record<Device, string> = { generic: 'Generic', bjt: 'BJT', mosfet: 'MOSFET', tube: 'Tube' };
+
+function regionFor(control: number): { label: string; short: string; sub: string } {
+  if (control < 0.15) return { label: 'OFF', short: 'OFF', sub: 'No conduction — control signal below the point where current starts.' };
+  if (control > 0.85) return { label: 'FULLY DRIVEN', short: 'FULL', sub: 'The device cannot pass more current — more control signal changes nothing.' };
+  return { label: 'CONTROLLED CONDUCTION', short: 'CONTROL', sub: 'The useful region: output current follows the control signal.' };
 }
+
+/** Controlled current, 0..1 of full, for the control signal. */
+const currentFor = (control: number) => (control < 0.15 ? 0 : Math.min(1, (control - 0.15) / 0.7));
 
 function DeviceDiagram({ device, control, width, height }: { device: Device; control: number; width: number; height: number }) {
   const t = DEVICE_TERMS[device];
-  const i = control < 0.15 ? 0 : Math.min(1, (control - 0.15) / 0.7);
+  const i = currentFor(control);
   // The device box is wide (160) so its terminal names fit at a legible size.
   const dx = 100, dw = 160, dy = 32, dh = 74;
   return (
@@ -106,123 +119,132 @@ export function Mod2Devices() {
   const powerOk = transformerIdealPowerOk(VP, IP, np, ns);
   const region = regionFor(control);
   const terms = DEVICE_TERMS[device];
-
-  // Each figure's controls, drawn on the page and again in its full-screen
-  // dock — one state.
-  const deviceSeg = (
-    <SegRow<Device>
-      options={[
-        { key: 'generic', label: 'Generic' },
-        { key: 'bjt', label: 'BJT' },
-        { key: 'mosfet', label: 'MOSFET' },
-        { key: 'tube', label: 'Tube' },
-      ]}
-      value={device}
-      onChange={setDevice}
-    />
-  );
-  const controlSlider = (
-    <ControlSlider level label="Control signal" value={control} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setControl} />
-  );
-  // The live readouts: on the page under each drawing and at the top of its
-  // full-screen dock (parity pass 2026-09-26) — one element, one state.
-  const regionRead = <Text style={styles.region}>{region.label}</Text>;
-  const xfRead = xf ? (
-    <Text style={styles.badge}>
-      {xf.kind === 'step-up' ? 'STEP-UP' : xf.kind === 'step-down' ? 'STEP-DOWN' : '1:1 ISOLATION'} · ratio {xf.voltageRatio.toFixed(2)}:1 · Vs {xf.vs.toFixed(1)} V · Is {xf.isFromIp(IP).toFixed(2)} A
-    </Text>
-  ) : null;
-  const npSlider = <ControlSlider label="Primary turns Np" value={np} min={100} max={1000} step={50} format={(v) => `${v}`} onChange={setNp} />;
-  const nsSlider = <ControlSlider label="Secondary turns Ns" value={ns} min={100} max={1000} step={50} format={(v) => `${v}`} onChange={setNs} />;
+  const kindWord = xf ? (xf.kind === 'step-up' ? 'STEP-UP' : xf.kind === 'step-down' ? 'STEP-DOWN' : '1:1 ISOLATION') : '—';
 
   return (
-    <View style={{ gap: 12 }}>
-      <Body>
-        Two very different parts get confused constantly. One <Text style={{ color: AMP_COLORS.output }}>controls</Text> a
-        flow of supply energy; the other <Text style={{ color: AMP_COLORS.supply }}>transforms</Text> voltage and current
-        relationships without adding a single watt.
-      </Body>
+    <AmpModuleSteps
+      steps={[
+        {
+          key: 'device',
+          title: 'The device',
+          kind: 'rack',
+          rack: {
+            stage: { aspect: DEV_W / DEV_H, render: (w, h) => <DeviceDiagram width={w} height={h} device={device} control={control} /> },
+            badge: 'Conceptual — three-part control model',
+            bezel: [
+              { k: 'REGION', v: region.short, tint: control < 0.15 ? colors.textSub : control > 0.85 ? colors.gold : colors.green },
+              { k: 'CURRENT', v: `${Math.round(currentFor(control) * 100)}%`, tint: levelColor(currentFor(control)) },
+              { k: 'DEVICE', v: DEVICE_LABEL[device].toUpperCase(), tint: colors.textSecondary },
+            ],
+            params: [
+              faderParam({ id: 'control', label: 'CONTROL', value: control, min: 0, max: 1, step: 0.01, format: (v) => `${Math.round(v * 100)}%`, onChange: setControl, level: true }),
+              optionsParam<Device>({
+                id: 'device',
+                label: 'DEVICE',
+                value: device,
+                options: (['generic', 'bjt', 'mosfet', 'tube'] as Device[]).map((d) => ({ key: d, label: DEVICE_LABEL[d], blurb: DEVICE_TERMS[d].note })),
+                onChange: setDevice,
+              }),
+            ],
+            initialParam: 'control',
+          },
+          well: (
+            <>
+              <Body>
+                Two very different parts get confused constantly. One <Text style={{ color: AMP_COLORS.output }}>controls</Text> a
+                flow of supply energy; the other <Text style={{ color: AMP_COLORS.supply }}>transforms</Text> voltage and current
+                relationships without adding a single watt.
+              </Body>
 
-      <SectionTitle>THE ACTIVE DEVICE</SectionTitle>
-      {deviceSeg}
-      <Card>
-        <HonestyBadge label="Conceptual — three-part control model" />
-        <ExpandableFigure
-          aspect={DEV_W / DEV_H}
-          title="DEVICE"
-          badge="Conceptual — three-part control model"
-          controls={<FigureDock>{regionRead}{deviceSeg}{controlSlider}</FigureDock>}
-          render={(w, h) => <DeviceDiagram width={w} height={h} device={device} control={control} />}
-        />
-        {regionRead}
-        <Body>{region.sub}</Body>
-      </Card>
-      {controlSlider}
-      <Body>{terms.note}</Body>
-      <LearnMore title="BJT VS MOSFET VS TUBE — THE FINE PRINT">
-        <Body>
-          The beginner regions above — Off, Controlled conduction, Fully driven — are deliberately generic. BJT
-          texts say cutoff / active / saturation; MOSFET texts say cutoff / saturation (meaning the CONTROLLED
-          region!) / triode. The words collide, so this lab keeps to behavior. Tubes add a high-voltage supply and a
-          heated cathode, and usually an output transformer to match the loudspeaker.
-        </Body>
-      </LearnMore>
+              <SectionTitle>THE ACTIVE DEVICE</SectionTitle>
+              <Card>
+                <Text style={styles.region}>{region.label}</Text>
+                <Body>{region.sub}</Body>
+              </Card>
+              <Body>{terms.note}</Body>
+              <LearnMore title="BJT VS MOSFET VS TUBE — THE FINE PRINT">
+                <Body>
+                  The beginner regions above — Off, Controlled conduction, Fully driven — are deliberately generic. BJT
+                  texts say cutoff / active / saturation; MOSFET texts say cutoff / saturation (meaning the CONTROLLED
+                  region!) / triode. The words collide, so this lab keeps to behavior. Tubes add a high-voltage supply and a
+                  heated cathode, and usually an output transformer to match the loudspeaker.
+                </Body>
+              </LearnMore>
+            </>
+          ),
+        },
+        {
+          key: 'xfmr',
+          title: 'The transformer',
+          kind: 'rack',
+          rack: {
+            stage: { aspect: XF_W / XF_H, render: (w, h) => <TransformerDiagram width={w} height={h} np={np} ns={ns} /> },
+            badge: 'Ideal relationships — real transformers have losses',
+            bezel: xf
+              ? [
+                  { k: 'KIND', v: kindWord, tint: colors.gold },
+                  { k: 'RATIO', v: `${xf.voltageRatio.toFixed(2)}:1` },
+                  { k: 'Vs', v: `${xf.vs.toFixed(1)} V`, tint: AMP_COLORS.output },
+                  { k: 'Is', v: `${xf.isFromIp(IP).toFixed(2)} A`, tint: AMP_COLORS.output },
+                ]
+              : [],
+            params: [
+              faderParam({ id: 'np', label: 'Np', value: np, min: 100, max: 1000, step: 50, format: (v) => `${v} turns`, formatShort: (v) => `${v}`, onChange: setNp, tint: AMP_COLORS.input }),
+              faderParam({ id: 'ns', label: 'Ns', value: ns, min: 100, max: 1000, step: 50, format: (v) => `${v} turns`, formatShort: (v) => `${v}`, onChange: setNs, tint: AMP_COLORS.output }),
+            ],
+            initialParam: 'ns',
+          },
+          well: (
+            <>
+              <SectionTitle>THE TRANSFORMER</SectionTitle>
+              {xf ? (
+                <Card>
+                  <View style={{ gap: 4 }}>
+                    <Text style={styles.badge}>
+                      {kindWord} · ratio {xf.voltageRatio.toFixed(2)}:1
+                    </Text>
+                    <Text style={styles.readout}>Vp {VP} V  →  Vs {xf.vs.toFixed(1)} V</Text>
+                    <Text style={styles.readout}>Ip {IP.toFixed(2)} A  →  Is {xf.isFromIp(IP).toFixed(2)} A (ideal)</Text>
+                    <Text style={styles.readout}>
+                      Pin {(VP * IP).toFixed(0)} W  ·  Pout {(xf.vs * xf.isFromIp(IP)).toFixed(0)} W  {powerOk ? '✓ never exceeds input' : ''}
+                    </Text>
+                  </View>
+                </Card>
+              ) : null}
+              <FormulaCard
+                title="Ideal transformer"
+                lines={['Vp / Vs = Np / Ns', 'Ip × Vp = Is × Vs   (ideal — no net power gain)']}
+                note="Step the voltage up and the available current steps down by the same ratio. Losses in real cores and windings only make the output smaller."
+              />
+              <LearnMore title="IMPEDANCE TRANSFORMATION">
+                <FormulaCard
+                  title="Reflected impedance"
+                  lines={['Zp / Zs = (Np / Ns)²', xf ? `8 Ω on the secondary looks like ${xf.zReflected?.toFixed(0)} Ω to the primary` : '']}
+                  note="Because voltage scales by the ratio and current by its inverse, impedance scales by the ratio SQUARED. This is how a tube output transformer lets a high-voltage, low-current stage drive an 8 Ω loudspeaker."
+                />
+              </LearnMore>
 
-      <SectionTitle>THE TRANSFORMER</SectionTitle>
-      <Card>
-        <HonestyBadge label="Ideal relationships — real transformers have losses" />
-        <ExpandableFigure
-          aspect={XF_W / XF_H}
-          title="TRANSFORMER"
-          badge="Ideal relationships — real transformers have losses"
-          controls={<FigureDock>{xfRead}{npSlider}{nsSlider}</FigureDock>}
-          render={(w, h) => <TransformerDiagram width={w} height={h} np={np} ns={ns} />}
-        />
-        {xf ? (
-          <View style={{ gap: 4 }}>
-            <Text style={styles.badge}>
-              {xf.kind === 'step-up' ? 'STEP-UP' : xf.kind === 'step-down' ? 'STEP-DOWN' : '1:1 ISOLATION'} · ratio {xf.voltageRatio.toFixed(2)}:1
-            </Text>
-            <Text style={styles.readout}>Vp {VP} V  →  Vs {xf.vs.toFixed(1)} V</Text>
-            <Text style={styles.readout}>Ip {IP.toFixed(2)} A  →  Is {xf.isFromIp(IP).toFixed(2)} A (ideal)</Text>
-            <Text style={styles.readout}>
-              Pin {(VP * IP).toFixed(0)} W  ·  Pout {(xf.vs * xf.isFromIp(IP)).toFixed(0)} W  {powerOk ? '✓ never exceeds input' : ''}
-            </Text>
-          </View>
-        ) : null}
-      </Card>
-      {npSlider}
-      {nsSlider}
-      <FormulaCard
-        title="Ideal transformer"
-        lines={['Vp / Vs = Np / Ns', 'Ip × Vp = Is × Vs   (ideal — no net power gain)']}
-        note="Step the voltage up and the available current steps down by the same ratio. Losses in real cores and windings only make the output smaller."
-      />
-      <LearnMore title="IMPEDANCE TRANSFORMATION">
-        <FormulaCard
-          title="Reflected impedance"
-          lines={['Zp / Zs = (Np / Ns)²', xf ? `8 Ω on the secondary looks like ${xf.zReflected?.toFixed(0)} Ω to the primary` : '']}
-          note="Because voltage scales by the ratio and current by its inverse, impedance scales by the ratio SQUARED. This is how a tube output transformer lets a high-voltage, low-current stage drive an 8 Ω loudspeaker."
-        />
-      </LearnMore>
+              <SectionTitle>WHERE TRANSFORMERS EARN THEIR KEEP</SectionTitle>
+              <Card>
+                {[
+                  ['Traditional power supply', 'mains down to the rail voltage the amplifier needs, with isolation'],
+                  ['Switch-mode supply', 'a small high-frequency transformer — same physics, far less iron'],
+                  ['Tube-amplifier output', 'matches the tube stage’s high impedance to the loudspeaker'],
+                  ['70 V / 100 V distributed audio', 'high-voltage line for long runs; each speaker taps down its share'],
+                  ['Audio isolation', 'breaks ground loops and blocks DC between equipment'],
+                ].map(([t, d]) => (
+                  <Text key={t} style={styles.appLine}>
+                    <Text style={{ color: colors.textPrimary, fontFamily: fonts.barlowMedium }}>{t}</Text> — {d}
+                  </Text>
+                ))}
+              </Card>
 
-      <SectionTitle>WHERE TRANSFORMERS EARN THEIR KEEP</SectionTitle>
-      <Card>
-        {[
-          ['Traditional power supply', 'mains down to the rail voltage the amplifier needs, with isolation'],
-          ['Switch-mode supply', 'a small high-frequency transformer — same physics, far less iron'],
-          ['Tube-amplifier output', 'matches the tube stage’s high impedance to the loudspeaker'],
-          ['70 V / 100 V distributed audio', 'high-voltage line for long runs; each speaker taps down its share'],
-          ['Audio isolation', 'breaks ground loops and blocks DC between equipment'],
-        ].map(([t, d]) => (
-          <Text key={t} style={styles.appLine}>
-            <Text style={{ color: colors.textPrimary, fontFamily: fonts.barlowMedium }}>{t}</Text> — {d}
-          </Text>
-        ))}
-      </Card>
-
-      <MisconceptionCard m={MISCONCEPTIONS.find((m) => m.id === 'transformer-power')!} />
-    </View>
+              <MisconceptionCard m={MISCONCEPTIONS.find((m) => m.id === 'transformer-power')!} />
+            </>
+          ),
+        },
+      ]}
+    />
   );
 }
 

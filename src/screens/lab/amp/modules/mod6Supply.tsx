@@ -4,6 +4,13 @@
  * clipping, current limiting, supply sag and overcurrent protection are
  * computed separately (ampModel.simulateRailLimits — unit-tested) and drawn
  * distinctly.
+ *
+ * RACK (2026-09-30): ONE rack step. The rail-limit rig is pinned on the
+ * glass; LEVEL rides the lane, RAIL is a second fader, LOAD and SUPPLY are
+ * sticky trays (every one of them moves the rails, the ceiling or the sag on
+ * the glass). The state word and the four numbers print on the bezel; the
+ * supply-chain diagram (it follows the SUPPLY choice), the readout card, the
+ * formulas and the safety list are the reading in the well.
  */
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -12,8 +19,10 @@ import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { colors, fonts } from '../../../../theme/tokens';
 import { simulateRailLimits, RAIL_V_FULL, RAIL_I_LIMIT, RAIL_I_PROTECT } from '../../../../features/amp/ampModel';
 import { MISCONCEPTIONS, SAFETY_POINTS } from '../../../../features/amp/ampContent';
-import { AmpRig } from '../AmpRig';
-import { AMP_COLORS, Body, BoxLabel, Card, ControlSlider, FaultBanner, FigureDock, FormulaCard, HonestyBadge, LearnMore, MisconceptionCard, SectionTitle, SegRow } from '../kit';
+import type { RigPicture } from '../AmpRig';
+import { faderParam, optionsParam } from '../AmpRack';
+import { AmpModuleSteps } from '../steps';
+import { AMP_COLORS, Body, BoxLabel, Card, FaultBanner, FigureDock, FormulaCard, HonestyBadge, LearnMore, MisconceptionCard, SectionTitle, SegRow } from '../kit';
 
 /** Drawing units (legibility pass 2026-09-25: labels ≥ DIAGRAM_FONT, the SVG
  *  drawn at the width ExpandableFigure hands it, height = w / aspect). */
@@ -54,6 +63,14 @@ const STATE_LABEL = {
   protect: 'PROTECT — OVERCURRENT (output muted)',
 } as const;
 
+/** The state word at bezel width (a cropped readout is a wrong readout). */
+const STATE_SHORT = {
+  clean: 'CLEAN',
+  'current-limit': 'I-LIMIT',
+  'voltage-clip': 'V-CLIP',
+  protect: 'PROTECT',
+} as const;
+
 export function Mod6Supply() {
   const [supply, setSupply] = useState<'linear' | 'smps'>('linear');
   const [drive, setDrive] = useState(0.5);
@@ -66,8 +83,8 @@ export function Mod6Supply() {
   const sagged = sim.sagV > 0.5;
   const ceiling = useMemo(() => new Float32Array(sim.out.length).fill(sim.iLimitNorm), [sim.out.length, sim.iLimitNorm]);
 
-  // The controls, drawn on the page and again in each figure's full-screen
-  // dock — one state.
+  // The chain figure's control for ITS full-screen dock — the same supply
+  // choice the dock tray makes; docked under the figure there.
   const supplySeg = (
     <SegRow<'linear' | 'smps'>
       options={[
@@ -78,132 +95,155 @@ export function Mod6Supply() {
       onChange={setSupply}
     />
   );
-  // The state word + the four numbers: on the page and at the top of the
-  // rig's full-screen dock (parity pass 2026-09-26) — one element, one state.
+  // The state word + the four numbers, on the page under the display.
   const stateRead = (
     <Text style={[styles.state, { color: stateColor }]} numberOfLines={2}>
       {`${state} · rails ±${sim.railEff.toFixed(0)} V · ${sim.vrms.toFixed(1)} Vrms · ${sim.irms.toFixed(1)} A · ${sim.p.toFixed(0)} W`}
     </Text>
   );
-  const driveSlider = <ControlSlider level label="Input level" value={drive} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setDrive} />;
-  const railSlider = <ControlSlider label="Available rail voltage" value={rail} min={0.3} max={1} step={0.01} format={(v) => `±${Math.round(v * RAIL_V_FULL)} V`} onChange={setRail} />;
-  const loadSeg = (
-    <SegRow<8 | 4 | 2>
-      label="Modeled load (resistive teaching example)"
-      options={[
-        { key: 8, label: '8 Ω' },
-        { key: 4, label: '4 Ω' },
-        { key: 2, label: '2 Ω' },
-      ]}
-      value={loadZ}
-      onChange={setLoadZ}
-    />
-  );
+
+  const pic: RigPicture = {
+    input: sim.input,
+    output: sim.out,
+    clipAt: sim.clipAtNorm,
+    nominalRailAt: sagged ? sim.nominalNorm : undefined,
+    extraOut:
+      sim.state === 'current-limit'
+        ? [{ data: ceiling, color: colors.gold, dash: '2,3', width: 1, label: 'current-limit ceiling (below the rails)' }]
+        : undefined,
+    supplyFlow: sim.supplyFlow,
+    heat: sim.heat,
+    speaker: true,
+    faulted: sim.primary != null,
+    a11ySummary: `Rails ±${Math.round(sim.railNominal)} volts nominal${sagged ? `, sagging to ±${Math.round(sim.railEff)} under load` : ''}. State: ${state}. ${sim.state === 'protect' ? `Output muted; the load demanded ${sim.iDemand.toFixed(1)} amps rms into ${loadZ} ohms.` : `Output ${sim.vrms.toFixed(1)} volts rms, ${sim.irms.toFixed(1)} amps rms into ${loadZ} ohms, ${sim.p.toFixed(0)} watts.`}`,
+  };
 
   return (
-    <View style={{ gap: 12 }}>
-      <Body>
-        An amplifier’s output can never exceed what its supply rails hold — and the rails are not a constant. Sustained
-        current sags them, the output stage caps current, and protection steps in past that. Each limit looks different.
-      </Body>
+    <AmpModuleSteps
+      steps={[
+        {
+          key: 'rails',
+          title: 'The rails',
+          kind: 'rack',
+          rack: {
+            rig: pic,
+            bezel: [
+              { k: 'STATE', v: STATE_SHORT[sim.state], tint: stateColor },
+              { k: 'RAILS', v: `±${sim.railEff.toFixed(0)} V`, tint: sagged ? colors.gold : AMP_COLORS.supply },
+              { k: 'OUTPUT', v: `${sim.vrms.toFixed(1)} V`, tint: AMP_COLORS.output },
+              { k: 'CURRENT', v: `${sim.irms.toFixed(1)} A`, tint: sim.state === 'protect' ? colors.red : sim.irms >= RAIL_I_LIMIT - 1e-6 ? colors.gold : AMP_COLORS.output },
+              { k: 'POWER', v: `${sim.p.toFixed(0)} W`, tint: colors.textSecondary },
+            ],
+            params: [
+              faderParam({ id: 'drive', label: 'LEVEL', value: drive, min: 0, max: 1, step: 0.01, format: (v) => `${Math.round(v * 100)}%`, onChange: setDrive, level: true }),
+              faderParam({ id: 'rail', label: 'RAIL', value: rail, min: 0.3, max: 1, step: 0.01, format: (v) => `±${Math.round(v * RAIL_V_FULL)} V`, onChange: setRail, tint: AMP_COLORS.supply }),
+              optionsParam<8 | 4 | 2>({
+                id: 'load',
+                label: 'LOAD',
+                value: loadZ,
+                options: [
+                  { key: 8, label: '8 Ω', blurb: 'The amplifier’s comfortable load: the voltage limit arrives first.' },
+                  { key: 4, label: '4 Ω', blurb: 'Twice the current for the same voltage — the current limit moves closer.' },
+                  { key: 2, label: '2 Ω', blurb: 'Four times the current: current limiting, then protection, arrive before the rails do.' },
+                ],
+                onChange: setLoadZ,
+              }),
+              optionsParam<'linear' | 'smps'>({
+                id: 'supply',
+                label: 'SUPPLY',
+                value: supply,
+                options: [
+                  { key: 'linear', label: 'Linear supply', short: 'LINEAR', blurb: 'Transformer, rectifier, reservoir: the reservoir droops under sustained load, so the rails sag.' },
+                  { key: 'smps', label: 'Switch-mode supply', short: 'SMPS', blurb: 'Regulated rails hold up better under load — less sag, so clipping begins where the nominal figure says.' },
+                ],
+                onChange: setSupply,
+              }),
+            ],
+            initialParam: 'drive',
+            // Four keys plus RUN: SLOW would make six, so the transport is
+            // the single RUN key here.
+            transport: 'run',
+          },
+          well: (
+            <>
+              <Body>
+                An amplifier’s output can never exceed what its supply rails hold — and the rails are not a constant. Sustained
+                current sags them, the output stage caps current, and protection steps in past that. Each limit looks different.
+              </Body>
 
-      <SectionTitle>TWO WAYS TO MAKE RAILS</SectionTitle>
-      {supplySeg}
-      <Card>
-        <HonestyBadge label="Conceptual chain" />
-        <ExpandableFigure
-          aspect={CHAIN_W / CHAIN_H}
-          title="SUPPLY"
-          badge="Conceptual chain"
-          controls={<FigureDock>{supplySeg}</FigureDock>}
-          render={(w, h) => <ChainDiagram width={w} height={h} kind={supply} />}
-        />
-        <Body>
-          {supply === 'linear'
-            ? 'Mains → transformer steps it to the rail voltage → rectifier → reservoir capacitors smooth it into DC rails. Heavy, simple, and the reservoir droops under sustained load — the sag you will see below.'
-            : 'Mains is rectified first, chopped at high frequency, passed through a small transformer where one is used, then rectified and regulated. Lighter, and regulation holds the rails up better under load. Neither type is automatically superior — each has a place.'}
-        </Body>
-      </Card>
+              <SectionTitle>TWO WAYS TO MAKE RAILS</SectionTitle>
+              <Card>
+                <HonestyBadge label="Conceptual chain" />
+                <ExpandableFigure
+                  aspect={CHAIN_W / CHAIN_H}
+                  title="SUPPLY"
+                  badge="Conceptual chain"
+                  controls={<FigureDock>{supplySeg}</FigureDock>}
+                  render={(w, h) => <ChainDiagram width={w} height={h} kind={supply} />}
+                />
+                <Body>
+                  {supply === 'linear'
+                    ? 'Mains → transformer steps it to the rail voltage → rectifier → reservoir capacitors smooth it into DC rails. Heavy, simple, and the reservoir droops under sustained load — the sag you will see on the display.'
+                    : 'Mains is rectified first, chopped at high frequency, passed through a small transformer where one is used, then rectified and regulated. Lighter, and regulation holds the rails up better under load. Neither type is automatically superior — each has a place.'}
+                </Body>
+              </Card>
 
-      <SectionTitle>THE RAILS SET THE LIMIT</SectionTitle>
-      <Body>Try it in this order: raise the input at 8 Ω until the peaks flatten; switch to 2 Ω and find the limit that arrives first; then push on until protection mutes the output.</Body>
-      {driveSlider}
-      {railSlider}
-      {loadSeg}
-      <AmpRig
-        controls={
-          <>
-            {driveSlider}
-            {railSlider}
-            {loadSeg}
-          </>
-        }
-        readout={stateRead}
-        input={sim.input}
-        output={sim.out}
-        clipAt={sim.clipAtNorm}
-        nominalRailAt={sagged ? sim.nominalNorm : undefined}
-        extraOut={
-          sim.state === 'current-limit'
-            ? [{ data: ceiling, color: colors.gold, dash: '2,3', width: 1, label: 'current-limit ceiling (below the rails)' }]
-            : undefined
-        }
-        supplyFlow={sim.supplyFlow}
-        heat={sim.heat}
-        speaker
-        faulted={sim.primary != null}
-        a11ySummary={`Rails ±${Math.round(sim.railNominal)} volts nominal${sagged ? `, sagging to ±${Math.round(sim.railEff)} under load` : ''}. State: ${state}. ${sim.state === 'protect' ? `Output muted; the load demanded ${sim.iDemand.toFixed(1)} amps rms into ${loadZ} ohms.` : `Output ${sim.vrms.toFixed(1)} volts rms, ${sim.irms.toFixed(1)} amps rms into ${loadZ} ohms, ${sim.p.toFixed(0)} watts.`}`}
-      />
-      <Card tone="accent">
-        {stateRead}
-        <View style={styles.readoutRow}>
-          <Readout label="RAILS" value={`±${sim.railNominal.toFixed(0)} V`} sub={sagged ? `sag −${sim.sagV.toFixed(1)} V → ±${sim.railEff.toFixed(0)} V` : 'no sag'} />
-          <Readout label="OUTPUT" value={`${sim.vrms.toFixed(1)} Vrms`} sub={sim.state === 'protect' ? 'muted' : undefined} />
-          <Readout
-            label="CURRENT"
-            value={`${sim.irms.toFixed(1)} A`}
-            sub={sim.state === 'protect' ? `demand ${sim.iDemand.toFixed(1)} A` : sim.state === 'current-limit' ? `limit ${RAIL_I_LIMIT} A` : undefined}
-            tone={sim.state === 'protect' ? 'fault' : sim.irms >= RAIL_I_LIMIT - 1e-6 ? 'warn' : undefined}
-          />
-          <Readout label="POWER" value={`${sim.p.toFixed(0)} W`} sub="resistive example" />
-        </View>
-        <Body>
-          {sim.state === 'clean'
-            ? 'The requested swing fits inside the rails and the current stays within the output stage’s comfort. Lower the load or raise the drive and watch which limit arrives first.'
-            : sim.state === 'voltage-clip'
-              ? `The output wants to swing further than ±${sim.railEff.toFixed(0)} V. The peaks flatten exactly at the rail — that flat top IS the supply.${sagged ? ' The faint outer lines are the idle rails: they sagged under load, so clipping began earlier than the nominal figure suggests.' : ''}`
-              : sim.state === 'current-limit'
-                ? `Into ${loadZ} Ω the output stage hits its ${RAIL_I_LIMIT} A current limit BEFORE the voltage reaches the rails. The peaks flatten below the rail line — a different limit with a different cause. Voltage was available; current was not.`
-                : `The load asked for ${sim.iDemand.toFixed(1)} A — past the ${RAIL_I_PROTECT} A protection threshold — so the amplifier muted its output: a flat line with the input still present. This is what a too-low load does at high level. Reduce the level or raise the load impedance, then let protection reset.`}
-        </Body>
-      </Card>
-      <FaultBanner primary={sim.primary} />
+              <SectionTitle>THE RAILS SET THE LIMIT</SectionTitle>
+              <Body>Try it in this order: raise the input at 8 Ω until the peaks flatten; switch to 2 Ω and find the limit that arrives first; then push on until protection mutes the output.</Body>
+              <Card tone="accent">
+                {stateRead}
+                <View style={styles.readoutRow}>
+                  <Readout label="RAILS" value={`±${sim.railNominal.toFixed(0)} V`} sub={sagged ? `sag −${sim.sagV.toFixed(1)} V → ±${sim.railEff.toFixed(0)} V` : 'no sag'} />
+                  <Readout label="OUTPUT" value={`${sim.vrms.toFixed(1)} Vrms`} sub={sim.state === 'protect' ? 'muted' : undefined} />
+                  <Readout
+                    label="CURRENT"
+                    value={`${sim.irms.toFixed(1)} A`}
+                    sub={sim.state === 'protect' ? `demand ${sim.iDemand.toFixed(1)} A` : sim.state === 'current-limit' ? `limit ${RAIL_I_LIMIT} A` : undefined}
+                    tone={sim.state === 'protect' ? 'fault' : sim.irms >= RAIL_I_LIMIT - 1e-6 ? 'warn' : undefined}
+                  />
+                  <Readout label="POWER" value={`${sim.p.toFixed(0)} W`} sub="resistive example" />
+                </View>
+                <Body>
+                  {sim.state === 'clean'
+                    ? 'The requested swing fits inside the rails and the current stays within the output stage’s comfort. Lower the load or raise the drive and watch which limit arrives first.'
+                    : sim.state === 'voltage-clip'
+                      ? `The output wants to swing further than ±${sim.railEff.toFixed(0)} V. The peaks flatten exactly at the rail — that flat top IS the supply.${sagged ? ' The faint outer lines are the idle rails: they sagged under load, so clipping began earlier than the nominal figure suggests.' : ''}`
+                      : sim.state === 'current-limit'
+                        ? `Into ${loadZ} Ω the output stage hits its ${RAIL_I_LIMIT} A current limit BEFORE the voltage reaches the rails. The peaks flatten below the rail line — a different limit with a different cause. Voltage was available; current was not.`
+                        : `The load asked for ${sim.iDemand.toFixed(1)} A — past the ${RAIL_I_PROTECT} A protection threshold — so the amplifier muted its output: a flat line with the input still present. This is what a too-low load does at high level. Reduce the level or raise the load impedance, then let protection reset.`}
+                </Body>
+              </Card>
+              <FaultBanner primary={sim.primary} />
 
-      <FormulaCard
-        title="What the rails and load decide"
-        lines={['Vrms = Vpeak / √2', 'I = V / R', 'P = Vrms² / R']}
-        note={`Labeled resistive example. Lower impedance → more current for the same voltage: ${loadZ} Ω at ${sim.vrms.toFixed(1)} Vrms draws ${sim.irms.toFixed(1)} A. A real loudspeaker’s impedance varies with frequency, so its current demand does too.`}
-      />
+              <FormulaCard
+                title="What the rails and load decide"
+                lines={['Vrms = Vpeak / √2', 'I = V / R', 'P = Vrms² / R']}
+                note={`Labeled resistive example. Lower impedance → more current for the same voltage: ${loadZ} Ω at ${sim.vrms.toFixed(1)} Vrms draws ${sim.irms.toFixed(1)} A. A real loudspeaker’s impedance varies with frequency, so its current demand does too.`}
+              />
 
-      <LearnMore title="WHY THE LIMITS LOOK DIFFERENT">
-        <Body>
-          Voltage clipping flattens peaks at the rail line and gets worse as the rails sag. Current limiting flattens
-          peaks BELOW the rails — the supply had voltage to give, the output stage would not pass the current.
-          Overcurrent protection does not reshape the wave at all: it opens the output. Thermal limiting (Module 7)
-          reduces level over time. Reading which one you are seeing tells you what to fix.
-        </Body>
-      </LearnMore>
+              <LearnMore title="WHY THE LIMITS LOOK DIFFERENT">
+                <Body>
+                  Voltage clipping flattens peaks at the rail line and gets worse as the rails sag. Current limiting flattens
+                  peaks BELOW the rails — the supply had voltage to give, the output stage would not pass the current.
+                  Overcurrent protection does not reshape the wave at all: it opens the output. Thermal limiting (Module 7)
+                  reduces level over time. Reading which one you are seeing tells you what to fix.
+                </Body>
+              </LearnMore>
 
-      <MisconceptionCard m={MISCONCEPTIONS.find((m) => m.id === 'clip-harmless')!} />
+              <MisconceptionCard m={MISCONCEPTIONS.find((m) => m.id === 'clip-harmless')!} />
 
-      <Card>
-        <Text style={styles.safetyTitle}>⚠ BEFORE THE REAL-WORLD MODULE</Text>
-        {SAFETY_POINTS.slice(0, 4).map((s) => (
-          <Text key={s} style={styles.safetyLine}>• {s}</Text>
-        ))}
-        <Text style={styles.safetyNote}>The full safety list opens Module 7.</Text>
-      </Card>
-    </View>
+              <Card>
+                <Text style={styles.safetyTitle}>⚠ BEFORE THE REAL-WORLD MODULE</Text>
+                {SAFETY_POINTS.slice(0, 4).map((s) => (
+                  <Text key={s} style={styles.safetyLine}>• {s}</Text>
+                ))}
+                <Text style={styles.safetyNote}>The full safety list opens Module 7.</Text>
+              </Card>
+            </>
+          ),
+        },
+      ]}
+    />
   );
 }
 
