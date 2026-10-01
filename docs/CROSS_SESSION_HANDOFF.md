@@ -232,6 +232,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-01 00:18 · ccode · d3edb216
+changed: Every multi-module lab on the shared navigation strip
+affects other side: nothing (client only)
+needs: nothing
+
+
 ### 2026-09-30 23:54 · ccode · 379b6734
 changed: Lab navigation standard: shared strip, contents list, next button, header
 affects other side: nothing (client only)
