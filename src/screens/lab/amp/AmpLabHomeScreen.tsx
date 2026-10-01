@@ -4,7 +4,6 @@
  * reset that touches only this lab's progress (spec Part 3 §11).
  */
 import { useCallback, useState } from 'react';
-import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,6 +16,7 @@ import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { AMP_MODULES } from '../../../features/amp/ampContent';
 import { loadAmpProgress, resetAmpProgress, setAmpSaveBlocked, type AmpProgressState } from '../../../features/amp/ampProgress';
 import { useLabEndGuest } from '../kit/LabEndScreen';
+import { LabHeader } from '../kit/LabNavBar';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { BUILT_MODULE_IDS } from './modules';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
@@ -71,20 +71,12 @@ export function AmpLabHomeScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
-        </Pressable>
-        <View style={{ flexShrink: 1, flexGrow: 1 }}>
-          <Text style={styles.title}>AMPLIFIER PRINCIPLES LAB</Text>
-          <Text style={styles.subtitle}>From transistors and transformers to amplifier classes</Text>
-          {/* Standing rule: every lab steers the user to a dedicated CALIBRATED
-              instrument for real measurement — this app teaches, and the phone's
-              mic and audio path are uncalibrated. Added 2026-09-17 after a
-              bug-hunt pass found this lab had no note at all. */}
-          <AccuracyNote style={styles.accuracyNote} />
-        </View>
-      </View>
+      {/* The shared lab header (kit/LabNavBar, 2026-09-30): ‹ leaves the lab.
+          Standing rule: every lab steers the user to a dedicated CALIBRATED
+          instrument for real measurement — this app teaches, and the phone's
+          mic and audio path are uncalibrated. Added 2026-09-17 after a
+          bug-hunt pass found this lab had no note at all. */}
+      <LabHeader title="AMPLIFIER PRINCIPLES LAB" subtitle="From transistors and transformers to amplifier classes" right={<AccuracyNote compact />} />
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: insets.bottom + 24 }]}>
         <Text style={styles.body}>
           One question runs through every module: what is the amplifier doing, what load does it see, and
@@ -147,11 +139,7 @@ export function AmpLabHomeScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingBottom: 8 },
-  back: { color: colors.textPrimary, fontSize: 30, lineHeight: 32, paddingHorizontal: 4 },
-  title: { color: colors.textPrimary, fontFamily: fonts.oswaldSemiBold, fontSize: 18, letterSpacing: 1.2 },
-  subtitle: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12.5 },
-  accuracyNote: { marginTop: 8, alignSelf: 'flex-start' },
+  // header / back / title / subtitle now live in kit/LabNavBar's LabHeader.
   scroll: { paddingHorizontal: 16, gap: 10 },
   body: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19 },
   progressRow: { flexDirection: 'row', justifyContent: 'space-between' },

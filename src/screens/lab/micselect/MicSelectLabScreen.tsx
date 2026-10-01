@@ -6,16 +6,16 @@
  * and not a technique lab (that material lives in the other mic labs).
  *
  * Shape: 9 short lessons + the Choose-the-Microphone challenge + an optional
- * Build-Your-Mic-Locker exercise, as a stepped progression (Foundations
- * idiom: top nav + dots, BACK/NEXT, tap-to-jump, freely open, nothing
- * graded server-side). No audio, no engine — works on every build.
+ * Build-Your-Mic-Locker exercise, as a stepped progression on the SHARED
+ * lab navigation (kit/LabNavBar, owner 2026-09-30: one strip, CONTENTS from
+ * the readout, FINISH › opens the what's-left end screen; freely open,
+ * nothing graded server-side). No audio, no engine — works on every build.
  *
  * Step position persists device-locally (ape:micSelStep); no-account
  * (anonymous) users always start at step 1 and never resume (owner
  * 2026-08-12 guest rule — same as Foundations).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
@@ -25,6 +25,7 @@ import { GlassButton } from '../../../components/GlassButton';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { markLabVisit, useLabVisits } from '../../../features/lab/labVisits';
 import { LabEndScreen } from '../kit/LabEndScreen';
+import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { colors, fonts } from '../../../theme/tokens';
 import { CheckQuestion } from '../foundations/bits';
 import { MicPhotoLightbox, MicVisual } from './micArt';
@@ -997,12 +998,10 @@ export function MicSelectLabScreen() {
     }).catch(() => {});
   }, [resolved]);
 
-  // Bug hunt 2026-09-29: a double tap on NEXT at the second-to-last lesson
-  // landed its second tap on DONE ✓ and left the lab. DONE ignores taps
-  // within 400 ms of a lesson change (same guard as Foundations).
-  const lastNavAtRef = useRef(0);
+  // Double taps (bug hunt 2026-09-29: a doubled NEXT on the second-to-last
+  // lesson used to land on DONE ✓ and leave the lab) are the kit's job now:
+  // useLabNav holds the one 400 ms tap lock for START / PREV / NEXT / FINISH.
   const goTo = useCallback((n: number) => {
-    lastNavAtRef.current = Date.now();
     navigatedRef.current = true;
     setEnding(false);
     setStep(n);
@@ -1015,11 +1014,13 @@ export function MicSelectLabScreen() {
    * lab ends with a 'what's left' screen"; always allow review and redo).
    * DONE ✓ used to just go back. This lab banks no credit, so it now remembers
    * which lessons were OPENED (labVisits — progress, never credit; guests keep
-   * it for this session only, the lab's own guest rule) and DONE opens
+   * it for this session only, the lab's own guest rule) and FINISH › opens
    * LabEndScreen: lessons not yet opened, a jump to each, PRACTISE AGAIN from
    * Lesson 1 (clears nothing) and DONE.
    */
   const [ending, setEnding] = useState(false);
+  const finish = useCallback(() => setEnding(true), []);
+  const unEnd = useCallback(() => setEnding(false), []);
   const visited = useLabVisits('micselect');
   useEffect(() => {
     // Wait for the tier (bug hunt 2026-09-30 pass 2 — the Tube lab's fix): the
@@ -1032,51 +1033,31 @@ export function MicSelectLabScreen() {
 
   const s = STEPS[step];
 
+  // The shared strip (kit/LabNavBar): the lessons as MODULES, ✓ for the ones
+  // already opened (labVisits — progress, never credit).
+  const navUnits = useMemo(() => STEPS.map((st) => ({ id: st.key, title: st.title, done: visited.has(st.key) })), [visited]);
+  const nav = useLabNav({
+    units: navUnits,
+    index: step,
+    ending,
+    go: goTo,
+    finish,
+    unEnd,
+    reset: { label: 'START OVER (PRACTICE)', run: () => goTo(0) },
+  });
+
   return (
     <MicPhotoLightbox>
+    <LabNavProvider value={nav}>
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
-        </Pressable>
-        <View style={{ flexShrink: 1, flexGrow: 1 }}>
-          <Text style={styles.title}>MICROPHONE SELECTION LAB</Text>
-          <Text style={styles.subtitle}>Types, Characteristics & Applications</Text>
-        </View>
-        {/* This lab builds its own stepped shell rather than LabShell, so the
-            standing note has to be placed by hand. */}
-        <AccuracyNote compact detail="The patterns, curves and comparisons here are TEACHING MODELS of how microphone types behave — they are not measurements of any specific microphone. Every real mic differs from its own published chart; trust the manufacturer's data and your own ears in the room." />
-      </View>
-      <Text style={styles.coreQ}>What microphone should I choose for this job — and why?</Text>
-
-      <View style={styles.topNav}>
-        <Pressable onPress={() => goTo(0)} disabled={step === 0} hitSlop={8} accessibilityRole="button" accessibilityLabel="First lesson">
-          <Text style={[styles.navBtn, step === 0 && styles.navBtnDisabled]}>⏮ START</Text>
-        </Pressable>
-        <Pressable onPress={() => goTo(Math.max(0, step - 1))} disabled={step === 0} hitSlop={8} accessibilityRole="button" accessibilityLabel="Previous lesson">
-          <Text style={[styles.navBtn, step === 0 && styles.navBtnDisabled]}>‹ PREV</Text>
-        </Pressable>
-        <View style={{ flex: 1 }} />
-        <Text style={styles.navPos}>{ending ? 'WHAT’S LEFT' : `STEP ${step + 1} / ${STEPS.length}`}</Text>
-        <View style={{ flex: 1 }} />
-        <Pressable
-          // Same 400 ms lock as the bottom DONE (bug hunt 2026-09-30): a double
-          // NEXT on the second-to-last lesson skipped the last one into FINISH.
-          onPress={() => (step === STEPS.length - 1 ? (Date.now() - lastNavAtRef.current < 400 ? undefined : setEnding(true)) : goTo(Math.min(STEPS.length - 1, step + 1)))}
-          hitSlop={8}
-          accessibilityRole="button"
-          accessibilityLabel={step === STEPS.length - 1 ? "Finish the lab and see what's left" : 'Next lesson'}
-        >
-          <Text style={styles.navBtn}>{step === STEPS.length - 1 ? 'FINISH ›' : 'NEXT ›'}</Text>
-        </Pressable>
-      </View>
-      <View style={styles.dotsRow}>
-        {STEPS.map((st, i) => (
-          <Pressable key={st.key} onPress={() => goTo(i)} hitSlop={8} accessibilityRole="button" accessibilityLabel={`Go to ${st.title}`}>
-            <View style={[styles.dot, i === step && styles.dotActive, i < step && styles.dotDone]} />
-          </Pressable>
-        ))}
-      </View>
+      {/* This lab builds its own stepped shell rather than LabShell, so the
+          standing note has to be placed by hand. */}
+      <LabHeader
+        title="MICROPHONE SELECTION LAB"
+        subtitle="Types, Characteristics & Applications"
+        right={<AccuracyNote compact detail="The patterns, curves and comparisons here are TEACHING MODELS of how microphone types behave — they are not measurements of any specific microphone. Every real mic differs from its own published chart; trust the manufacturer's data and your own ears in the room." />}
+      />
+      <LabNavBar nav={nav} />
 
       {ending ? (
         <LabEndScreen
@@ -1092,25 +1073,16 @@ export function MicSelectLabScreen() {
         />
       ) : (
       <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, cardColumn]}>
+        <Text style={styles.coreQ}>What microphone should I choose for this job — and why?</Text>
         <Text style={styles.tag}>{`${s.tag} · ${step + 1} OF ${STEPS.length}`}</Text>
         <Text style={styles.stepTitle}>{s.title}</Text>
         <Text style={styles.body}>{s.intro}</Text>
         <s.Body key={s.key} />
-        <View style={styles.navRow}>
-          <View style={{ flex: 1 }}>
-            <GlassButton label="‹ BACK" tint="gold" disabled={step === 0} onPress={() => goTo(Math.max(0, step - 1))} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <GlassButton
-              label={step === STEPS.length - 1 ? 'DONE ✓' : 'NEXT ›'}
-              tint="green"
-              onPress={() => (step === STEPS.length - 1 ? (Date.now() - lastNavAtRef.current < 400 ? undefined : setEnding(true)) : goTo(Math.min(STEPS.length - 1, step + 1)))}
-            />
-          </View>
-        </View>
+        <LabNextButton nav={nav} />
       </ScrollView>
       )}
     </View>
+    </LabNavProvider>
     </MicPhotoLightbox>
   );
 }
@@ -1119,28 +1091,14 @@ export function MicSelectLabScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 2 },
-  back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
-  title: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.2, color: colors.textPrimary },
-  subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
   coreQ: {
     fontFamily: fonts.barlowMedium,
     fontSize: 13,
     fontStyle: 'italic',
     color: colors.amberLabel,
-    paddingHorizontal: 16,
-    paddingBottom: 6,
   },
-  topNav: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 2 },
-  navBtn: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.amber, paddingHorizontal: 6 },
-  navBtnDisabled: { color: '#45454d' },
-  navPos: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: colors.textSub },
-  dotsRow: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 6 },
-  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#2c2c33' },
-  dotActive: { backgroundColor: colors.amber },
-  dotDone: { backgroundColor: 'rgba(255,198,77,.45)' },
 
-  scroll: { padding: 16, paddingTop: 8, paddingBottom: 30, gap: 10 },
+  scroll: { padding: 16, paddingTop: 10, paddingBottom: 30, gap: 10 },
   tag: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.6, color: colors.amberLabel },
   stepTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, letterSpacing: 1, color: colors.textPrimary },
   stepGap: { gap: 10 },

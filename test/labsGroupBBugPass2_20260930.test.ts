@@ -60,10 +60,15 @@ test('Sound Systems hub never tells a guest that their work is saved', () => {
 
 // ── double taps: a second tap never leaves the lab or pops a second screen ──
 
-test('Cable lab: NEXT → DONE ✓ double tap stays on lesson 12; DONE leaves once', () => {
+test('Cable lab: a doubled NEXT stays on lesson 12 (the kit lock); only the header ‹ leaves', () => {
+  // WP5 (2026-10-01): the shared strip's one 400 ms tap lock replaces the
+  // local guard, lesson 12 is the end state (NEXT's slot empty), and the
+  // host no longer calls goBack() itself — LabHeader's ‹ leaves, once.
   const s = read('src/screens/lab/cable/CableLabScreen.tsx');
-  assert.match(s, /if \(Date\.now\(\) - lastNavAtRef\.current < 400 \|\| leavingRef\.current\) return;\n\s*leavingRef\.current = true;\n\s*navigation\.goBack\(\);/);
-  assert.match(s, /lastNavAtRef\.current = Date\.now\(\);\n\s*goTo\(Math\.min\(last, step \+ 1\)\);/);
+  assert.match(s, /from '\.\.\/kit\/LabNavBar'/);
+  assert.match(s, /useLabNav\(\{/);
+  assert.match(s, /const ending = step === last;/);
+  assert.doesNotMatch(s, /lastNavAtRef|leavingRef|navigation\.goBack|useNavigation/);
 });
 
 test('Cable Install: a doubled RETURN TO TRAINING leaves once', () => {
@@ -71,10 +76,17 @@ test('Cable Install: a doubled RETURN TO TRAINING leaves once', () => {
   assert.match(s, /onReturn=\{\(\) => \{\n\s*if \(leavingRef\.current\) return;\n\s*leavingRef\.current = true;\n\s*navigation\.goBack\(\);/);
 });
 
-test('Sound Systems mode: CONTINUE → FINISH double tap stays; FINISH leaves once', () => {
+test('Sound Systems mode: NEXT → FINISH double tap stays; FINISH opens the end screen; DONE leaves once', () => {
+  // 2026-09-30: the shared strip (kit/LabNavBar). The hook's one 400 ms tap
+  // lock covers NEXT / FINISH, so the host keeps no lock of its own; FINISH
+  // opens LabEndScreen in place (never goBack), and the end screen's DONE
+  // leaves once through its own 700 ms window.
   const s = read('src/screens/lab/soundsystems/SsPagedLab.tsx');
-  assert.match(s, /if \(last && \(Date\.now\(\) - lastNavAtRef\.current < 400 \|\| leavingRef\.current\)\) return;/);
-  assert.match(s, /leavingRef\.current = true;\n\s*navigation\.goBack\(\);/);
+  assert.match(s, /from '\.\.\/kit\/LabNavBar'/);
+  assert.doesNotMatch(s, /lastNavAtRef|leavingRef/);
+  assert.match(s, /const finish = useCallback\(\(\) => setEnding\(true\), \[\]\);/);
+  assert.match(s, /onDone=\{\(\) => navigation\.goBack\(\)\}/);
+  assert.equal((s.match(/navigation\.goBack\(\)/g) ?? []).length, 1);
 });
 
 // ── display and audio agree: a control moved during the native start ───────

@@ -53,16 +53,27 @@ describe('cable install — InspectScene', () => {
 describe('cable install — screen', () => {
   const s = src(resolve(CI, 'CableInstallLabScreen.tsx'));
   it('REPEAT LAB starts a fresh run without wiping banked credit, and resets myths', () => {
-    const repeat = s.slice(s.indexOf('onRepeat={'), s.indexOf('onReturn={'));
+    // One `repeatLab` serves the completion stage's REPEAT LAB and the shared
+    // strip's CONTENTS reset (lab navigation migration WP5, 2026-10-01).
+    const repeat = s.slice(s.indexOf('const repeatLab = useCallback'), s.indexOf('}, [goTo]);', s.indexOf('const repeatLab = useCallback')));
+    assert.ok(repeat.length > 0, 'repeatLab is defined');
     assert.doesNotMatch(repeat, /completedUnitsRef\.current = new Set/);
     assert.match(repeat, /runUnitsRef\.current = new Set\(\)/);
     assert.match(repeat, /setShownMyths\(\[\]\)/);
     assert.match(repeat, /goTo\(1, \{\}, \[\]\)/);
+    assert.match(s, /onRepeat=\{repeatLab\}/);
+    assert.match(s, /reset: \{ label: 'REPEAT LAB \(PRACTICE\)', run: repeatLab \}/);
   });
-  it('dots and what-is-left read THIS run; the copy knows banked credit', () => {
+  it('the shared strip is the navigation: CONTENTS ✓ and what-is-left read THIS run; the copy knows banked credit', () => {
+    assert.match(s, /from '\.\.\/kit\/LabNavBar'/);
+    assert.match(s, /<LabNavBar nav=\{nav\} \/>/);
+    assert.match(s, /intro: true/);
+    assert.match(s, /beforeAdvance,/);
+    assert.match(s, /return 'consumed';/, 'the myth interstitial consumes NEXT');
     assert.match(s, /const done = runUnitsRef\.current\.has\(m\.unit\)/);
     assert.match(s, /banked: completedUnitsRef\.current\.has\(m\.unit\)/);
     assert.match(s, /already banked/);
+    assert.doesNotMatch(s, /SKIP AHEAD|FINISH ✓|rackFooter|<ProgressDot/);
   });
   it('REVIEW RESULTS is not offered when no dimension is below 80', () => {
     assert.match(s, /canReview=\{weakestDim\(dims\) != null\}/);
@@ -111,9 +122,14 @@ describe('cable install — same-frame double taps', () => {
 
 describe('cable fundamentals', () => {
   const shell = src(resolve(CL, 'CableLabScreen.tsx'));
-  it('dots come from cleared units, not the step index', () => {
+  it('CONTENTS done flags come from cleared units, not the step index; lesson 12 is the end state', () => {
     assert.doesNotMatch(shell, /i < step/);
     assert.match(shell, /LESSON_UNITS\[st\.id\]/);
+    assert.match(shell, /from '\.\.\/kit\/LabNavBar'/);
+    assert.match(shell, /<LabNavBar nav=\{nav\} \/>/);
+    assert.match(shell, /<LabNextButton nav=\{nav\} \/>/);
+    assert.match(shell, /const ending = step === last;/);
+    assert.doesNotMatch(shell, /DONE ✓|lastNavAtRef|leavingRef|navigation\.goBack/);
   });
   it('the shell holds bench / challenge progress across lesson changes', () => {
     assert.match(shell, /<CableShellStateCtx\.Provider value=\{lessonState\}>/);

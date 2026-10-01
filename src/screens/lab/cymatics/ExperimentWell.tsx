@@ -230,7 +230,9 @@ export function ExperimentWell({ experiment }: { experiment: Experiment }) {
           )}
         </>
       ) : null}
-      {/* The series, in the instrument: run all seventeen without going back. */}
+      {/* The series, in the instrument: run all seventeen without going back.
+          Named EXPERIMENT, not PREV / NEXT: those two words mean LAB navigation
+          only (kit/LabNavBar, owner 2026-09-30). */}
       <View style={styles.navRow}>
         <Pressable
           style={[styles.navBtn, !prev && styles.navBtnOff]}
@@ -239,7 +241,7 @@ export function ExperimentWell({ experiment }: { experiment: Experiment }) {
           accessibilityRole="button"
           accessibilityLabel={prev ? `Previous experiment: ${prev.title}, on the ${where(prev)}` : 'No previous experiment'}
         >
-          <Text style={[styles.navText, !prev && styles.navTextOff]}>‹ PREV</Text>
+          <Text style={[styles.navText, !prev && styles.navTextOff]}>‹ EXPERIMENT</Text>
         </Pressable>
         <Pressable style={styles.navBtn} onPress={() => goToCymatics(navigation, 'CymaticsModule', { id: 'experiments' })} accessibilityRole="button" accessibilityLabel="Back to the list of all experiments">
           <Text style={styles.navText}>ALL 17</Text>
@@ -252,7 +254,7 @@ export function ExperimentWell({ experiment }: { experiment: Experiment }) {
           accessibilityLabel={next ? `Next experiment: ${next.title}, on the ${where(next)}` : 'No next experiment'}
         >
           <Text style={[styles.navText, styles.navNextText, !next && styles.navTextOff]}>
-            {next ? (next.studio === experiment.studio ? 'NEXT ›' : `NEXT · ${where(next).toUpperCase()} ›`) : 'NEXT ›'}
+            {next ? (next.studio === experiment.studio ? 'EXPERIMENT ›' : `EXPERIMENT · ${where(next).toUpperCase()} ›`) : 'EXPERIMENT ›'}
           </Text>
         </Pressable>
       </View>

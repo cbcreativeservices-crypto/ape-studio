@@ -8,11 +8,15 @@
  * stage (the polar drag surface and the hand-grip drag no longer share a
  * scroller with anything, so the old InteractionZone scroll-lock workaround is
  * retired for staged canvases); live numbers read on the bezel; chips became
- * sticky option trays and sliders became dock faders. The section chip-row,
- * prose, checks and the mistakes carousel live in the scroll well. CAPSULE and
- * MISTAKES have zero operable controls — pure reading — so they render as a
- * plain scroll (the law holds trivially; the tall portrait cutaway reads
- * in-flow, where it fits).
+ * sticky option trays and sliders became dock faders. The prose, checks and
+ * the mistakes carousel live in the scroll well. CAPSULE and MISTAKES have
+ * zero operable controls — pure reading — so they render as a plain scroll
+ * (the law holds trivially; the tall portrait cutaway reads in-flow, where it
+ * fits). The ten sections are MODULES on the SHARED LAB NAVIGATION strip
+ * (kit/LabNavBar, owner 2026-09-30): ⏮ / ‹ PREV / MODULE n / 10 ▾ / NEXT ›,
+ * FINISH › on MISTAKES, CONTENTS from the readout; the rack appends
+ * "NEXT: <section> ›" to each well and the two reading pages draw it
+ * themselves at the end of their scroll.
  *
  * VISUAL-FIRST LAUNCH (owner decision): every concept is taught through
  * manipulable drawings — no audio playback; the screen states plainly that
@@ -26,7 +30,6 @@
  * guide.
  */
 import { useContext, useEffect, useRef, useState, type MutableRefObject, type ReactNode } from 'react';
-import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -39,7 +42,8 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { LabChip, CollapsibleSection } from '../LabShell';
 import { markLabUnit, registerLabUnits, useLabClearedUnits } from '../../../features/lab/labCompletion';
-import { LabEndLink, LabEndScreen } from '../kit/LabEndScreen';
+import { LabEndScreen } from '../kit/LabEndScreen';
+import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { MIC_PRINCIPLES_LAB_KEY, MIC_PRINCIPLES_UNITS } from './units';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../features/lab/guidedLessons';
 import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../foundations/bits';
@@ -353,10 +357,11 @@ type SectionProps = {
   viz: MsVizModule | null;
   focused: boolean;
   help: (k?: string) => void;
-  /** Shared well header: honest no-Skia card + section chip-row + title +
-   *  blurb. First thing in every section's scroll region. */
+  /** Shared well header: honest no-Skia card + title + blurb. First thing in
+   *  every section's scroll region. */
   wellTop: ReactNode;
-  /** Shared well footer: the guided-lesson entry row. */
+  /** Shared well footer: the guided-lesson entry row (+ the in-flow NEXT on
+   *  the two reading pages; a rack appends its own). */
   wellBottom: ReactNode;
 };
 
@@ -1517,8 +1522,10 @@ function SpotTheMistake({ viz }: { viz: MsVizModule }) {
 
 // ── The sectioned shell ─────────────────────────────────────────────────────
 
-const SECTIONS: { key: string; label: string; title: string; blurb: string; Comp: (p: SectionProps) => React.JSX.Element }[] = [
-  { key: 'capsule', label: 'CAPSULE', title: 'INSIDE THE CAPSULE', blurb: 'Before the patterns: how a dynamic mic turns sound into voltage — a coil moving in a magnetic gap.', Comp: CapsuleSection },
+// `reading`: a plain-scroll page (no RackUnit), so the host's wellBottom draws
+// the in-flow NEXT / FINISH that a rack would append itself.
+const SECTIONS: { key: string; label: string; title: string; blurb: string; Comp: (p: SectionProps) => React.JSX.Element; reading?: boolean }[] = [
+  { key: 'capsule', label: 'CAPSULE', title: 'INSIDE THE CAPSULE', blurb: 'Before the patterns: how a dynamic mic turns sound into voltage — a coil moving in a magnetic gap.', Comp: CapsuleSection, reading: true },
   { key: 'polar', label: 'POLAR', title: 'PICKUP PATTERNS', blurb: 'A microphone doesn’t hear equally in every direction — the pattern is its map of sensitivity.', Comp: PolarSection },
   { key: 'distance', label: 'DISTANCE', title: 'DISTANCE & THE ROOM', blurb: 'Move in and the direct sound wins; back off and the room takes over.', Comp: DistanceSection },
   { key: 'proximity', label: 'PROXIMITY', title: 'PROXIMITY EFFECT', blurb: 'Directional mics get bassier as you move in — a tool AND a trap.', Comp: ProximitySection },
@@ -1531,7 +1538,7 @@ const SECTIONS: { key: string; label: string; title: string; blurb: string; Comp
   { key: 'pop', label: 'PLOSIVES', title: 'PLOSIVES & WIND', blurb: '“P” and “B” fire moving air at the diaphragm. Barriers stop the wind, not the voice.', Comp: PopSection },
   { key: 'shock', label: 'HANDLING', title: 'HANDLING NOISE & ISOLATION', blurb: 'Vibration travels through solids into the capsule — decouple it.', Comp: ShockSection },
   { key: 'hand', label: 'HAND GRIP', title: 'HOW YOUR HAND CHANGES THE MIC', blurb: 'Everyone has seen a singer cup the mic. Here is exactly what that does.', Comp: HandSection },
-  { key: 'mistakes', label: 'MISTAKES', title: 'COMMON HANDHELD MISTAKES', blurb: 'A field guide — what to do, and the six habits to unlearn.', Comp: MistakesSection },
+  { key: 'mistakes', label: 'MISTAKES', title: 'COMMON HANDHELD MISTAKES', blurb: 'A field guide — what to do, and the six habits to unlearn.', Comp: MistakesSection, reading: true },
 ];
 
 if (__DEV__ && SECTIONS.map((x) => x.key).join(',') !== MIC_PRINCIPLES_UNITS.join(',')) {
@@ -1572,11 +1579,11 @@ export function MicPrinciplesLabScreen() {
 
   /**
    * THE LAB ENDS ON THE WHAT'S-LEFT SCREEN (owner 2026-09-29: "every lab ends
-   * with a 'what's left' screen"; keep credit, always allow a redo). The chips
-   * had no end at all. A last WHAT'S LEFT chip — and a FINISH link at the foot
-   * of MISTAKES — swap LabEndScreen in for the section: sections not yet
-   * credited, a jump to each, PRACTISE AGAIN from CAPSULE (clears nothing) and
-   * DONE.
+   * with a 'what's left' screen"; keep credit, always allow a redo). FINISH ›
+   * on the strip (MISTAKES), the WHAT'S LEFT row in CONTENTS and the in-flow
+   * FINISH at the foot of MISTAKES swap LabEndScreen in for the section:
+   * sections not yet credited, a jump to each, PRACTISE AGAIN from CAPSULE
+   * (clears nothing) and DONE.
    */
   const [ending, setEnding] = useState(false);
   const banked = useLabClearedUnits(MIC_PRINCIPLES_LAB_KEY);
@@ -1586,22 +1593,29 @@ export function MicPrinciplesLabScreen() {
   };
 
   const s = SECTIONS[sectionIdx];
-  // Shared well header/footer every section places in its scroll region: the
-  // topic nav is READING/navigation, so it lives in the well by design.
+
+  // THE SHARED LAB NAVIGATION (kit/LabNavBar, owner 2026-09-30): the ten
+  // sections are the strip's MODULES; the credited ones read ✓ in CONTENTS.
+  const nav = useLabNav({
+    units: SECTIONS.map((sec) => ({ id: sec.key, title: sec.title, done: banked.has(sec.key) })),
+    index: sectionIdx,
+    ending,
+    go: openSection,
+    finish: () => setEnding(true),
+    unEnd: () => setEnding(false),
+  });
+
+  // Shared well header/footer every section places in its scroll region.
   const wellTop = (
     <View style={{ gap: 12 }}>
       {!skiaAvailable ? <VizUnavailableCard /> : null}
-      <View style={styles.chipRow}>
-        {SECTIONS.map((sec, i) => (
-          <LabChip key={sec.key} label={sec.label} selected={sectionIdx === i} onPress={() => openSection(i)} />
-        ))}
-        <LabChip label="WHAT’S LEFT" selected={false} onPress={() => setEnding(true)} />
-      </View>
       <Text style={styles.sectionTitle}>{s.title}</Text>
       <Text style={styles.body}>{s.blurb}</Text>
     </View>
   );
   // Guided-lesson entry lives at the BOTTOM (owner 2026-07-29, LabShell v2).
+  // A reading page (no rack) draws the in-flow NEXT / FINISH after it; a
+  // rack section gets the same button from RackUnit under the provider.
   const wellBottom = (
     <>
       <Pressable
@@ -1612,23 +1626,16 @@ export function MicPrinciplesLabScreen() {
       >
         <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
       </Pressable>
-      {sectionIdx === SECTIONS.length - 1 ? <LabEndLink onPress={() => setEnding(true)} /> : null}
+      {s.reading ? <LabNextButton nav={nav} /> : null}
     </>
   );
 
   return (
+    <LabNavProvider value={nav}>
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
-        </Pressable>
-        <View style={{ flexShrink: 1, flexGrow: 1 }}>
-          <Text style={styles.title}>MICROPHONE PRINCIPLES</Text>
-          <Text style={styles.subtitle}>How microphones capture sound</Text>
-        </View>
-        <AccuracyNote compact />
-      </View>
-      {/* The RackUnit (or reading scroll) owns everything below the header —
+      <LabHeader title="MICROPHONE PRINCIPLES" subtitle="How microphones capture sound" right={<AccuracyNote compact />} />
+      <LabNavBar nav={nav} />
+      {/* The RackUnit (or reading scroll) owns everything below the strip —
           it needs the full flex:1 vertical space. Keyed remount per section:
           each section declares its own rack, exactly as it owned its own
           panel before. */}
@@ -1656,15 +1663,13 @@ export function MicPrinciplesLabScreen() {
         onClose={() => setLessonOpen(false)}
       />
     </View>
+    </LabNavProvider>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 8 },
-  back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
-  title: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1.4, color: colors.textPrimary },
-  subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
+  // The header (‹, title, subtitle) and the strip are kit/LabNavBar's.
   // Plain-scroll sections (CAPSULE · MISTAKES — reading only) keep the old
   // page rhythm; rack wells carry their own padding.
   // Tablet (owner 2026-09-29): the section pages sit in the centred card

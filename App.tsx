@@ -93,6 +93,10 @@ import { HarmonographLabScreen } from './src/screens/lab/HarmonographLabScreen';
 import { EnvelopeLabScreen } from './src/screens/lab/envelope/EnvelopeLabScreen';
 import { BassLabScreen } from './src/screens/lab/BassLabScreen';
 import { EqLabScreen } from './src/screens/lab/fxLabConfigs';
+// Lab navigation migration WP5 (2026-10-01): the two stepped cable / mic
+// labs by name, so the shared strip can be walked in the browser harness.
+import { CableLabScreen } from './src/screens/lab/cable/CableLabScreen';
+import { MicSelectLabScreen } from './src/screens/lab/micselect/MicSelectLabScreen';
 
 const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   DeEsserLab: DeEsserLabScreen as ComponentType,
@@ -128,6 +132,8 @@ const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   SpeakerCoverage: SpeakerCoverageLabScreen as ComponentType,
   VacuumTube: VacuumTubeLabScreen as ComponentType,
   CableInstallLab: CableInstallLabScreen as ComponentType,
+  CableLab: CableLabScreen as ComponentType,
+  MicSelect: MicSelectLabScreen as ComponentType,
   SoundSystemsLab: SoundSystemsLabScreen as ComponentType,
   CenterLockTuner: CenterLockTuner as ComponentType,
   AuthScreen: AuthScreen as ComponentType,

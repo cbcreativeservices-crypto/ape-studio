@@ -18,19 +18,28 @@ import { readFileSync } from 'node:fs';
 
 const SRC = readFileSync('src/screens/lab/kit/PagedLab.tsx', 'utf8');
 
-test('the dots and the page list iterate pagesWithCheck, not pages', () => {
-  // The header counter says "n OF pagesWithCheck.length". If the dots and the
-  // list iterate the original array instead, the appended check has no dot and
-  // no row: unreachable except by pressing CONTINUE off the page before it,
-  // while the header claims it is there.
-  const badDots = /\{pages\.map\(\(_, i\) =>/.test(SRC);
-  assert.equal(badDots, false, 'the dot row iterates `pages` — it must iterate `pagesWithCheck`');
+test('the navigation units (CONTENTS) and the end screen iterate pagesWithCheck, not pages', () => {
+  // The strip's readout says "n / pagesWithCheck.length". If the CONTENTS
+  // units or the what's-left rows iterate the original array instead, the
+  // appended check has no row: unreachable except by pressing NEXT off the
+  // page before it, while the readout claims it is there.
+  const badUnits = /const (navUnits|endUnits)[^=]*= pages\.map\(/.test(SRC);
+  assert.equal(badUnits, false, 'the units iterate `pages` — they must iterate `pagesWithCheck`');
 
-  const badList = /\{pages\.map\(\(p, i\) => \{/.test(SRC);
-  assert.equal(badList, false, 'the page list iterates `pages` — it must iterate `pagesWithCheck`');
+  assert.match(SRC, /const navUnits: LabNavUnit\[\] = pagesWithCheck\.map\(\(p, i\) =>/, 'CONTENTS must iterate pagesWithCheck');
+  assert.match(SRC, /const endUnits: LabEndUnit\[\] = pagesWithCheck\.map\(\(p, i\) =>/, 'the end screen must iterate pagesWithCheck');
+  // …and the check row is typed as the CHECK row in both.
+  assert.match(SRC, /kind: check && i === pages\.length \? 'check' : 'unit'/);
+});
 
-  assert.ok(SRC.includes('pagesWithCheck.map((_, i)'), 'the dot row must iterate pagesWithCheck');
-  assert.ok(SRC.includes('pagesWithCheck.map((p, i)'), 'the page list must iterate pagesWithCheck');
+test('the shell navigates through the shared strip only (kit/LabNavBar)', () => {
+  assert.match(SRC, /import \{ LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav, type LabNavUnit \} from '\.\/LabNavBar';/);
+  assert.match(SRC, /<LabHeader /);
+  assert.match(SRC, /<LabNavBar nav=\{nav\} \/>/);
+  assert.match(SRC, /<LabNextButton nav=\{nav\} \/>/, 'the in-flow NEXT sits at the end of the reading');
+  for (const word of ['‹ BACK', 'CONTINUE ›', 'COMPLETE ✓', 'SKIP AHEAD', 'styles.footer', 'styles.dots', 'listOpen']) {
+    assert.equal(SRC.includes(word), false, `PagedLab still carries "${word}"`);
+  }
 });
 
 test('the check page does not fire onPageDone', () => {

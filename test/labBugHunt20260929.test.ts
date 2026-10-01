@@ -37,12 +37,18 @@ test('mixing: MiniConsole merges with a functional updater (two faders in one fr
   assert.match(s, /onChange\(\(prev\) => \(\{ \.\.\.prev, \[id\]: \{ \.\.\.FLAT, \.\.\.\(prev\[id\] \?\? \{\}\), \.\.\.next \} \}\)\);/);
 });
 
-test('Foundations: tone.set is never gated on tone.playing, and NEXT/DONE share a nav lock', () => {
+test('Foundations: tone.set is never gated on tone.playing, and NEXT/FINISH share ONE nav lock', () => {
   const s = read('src/screens/lab/foundations/FoundationsCourseScreen.tsx');
   assert.doesNotMatch(s, /if \(tone\.playing\) tone\.set\(/);
-  assert.match(s, /const navLocked = \(\) => Date\.now\(\) - lastNavAtRef\.current < 400;/);
-  // DONE now opens the what's-left screen (owner 2026-09-29) — still behind the lock.
-  assert.match(s, /if \(navLocked\(\)\) return;\s*\n\s*if \(step === STEPS\.length - 1\) finish\(\);/);
+  // Shared strip (2026-09-30): NEXT and FINISH are the same button of
+  // useLabNav, behind its one 400 ms tap lock (createTapLock) — a double tap
+  // at module 13 cannot run FINISH on the second tap. The screen keeps no
+  // lock of its own for the strip; goTo keeps its stamp for the end screen's
+  // own jump links. FINISH opens the what's-left screen (owner 2026-09-29).
+  assert.match(s, /useLabNav\(\{[^}]*finish, unEnd \}\)/);
+  assert.doesNotMatch(s, /navLocked/);
+  assert.match(s, /if \(Date\.now\(\) - lastNavAtRef\.current < 400\) return;\s*\n\s*lastNavAtRef\.current = Date\.now\(\);/);
+  assert.match(s, /tone\.stop\(\);\s*\n\s*setEnding\(true\);/);
 });
 
 test('tube card: one-finger drag tests the LIVE scale and a pinch hands over to pan', () => {

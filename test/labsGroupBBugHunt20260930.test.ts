@@ -104,8 +104,14 @@ test('amp: RESET is a practice reset (done + best final kept); unanswered checks
   assert.match(reset, /done: !!s\.modules\[id\]\?\.done/);
   assert.doesNotMatch(reset, /bestFinal = undefined/);
   const m = read('src/screens/lab/amp/AmpModuleScreen.tsx');
-  assert.match(m, /!allChecksAnswered && next \?/);
-  assert.match(m, /SKIP AHEAD ›/);
+  // Shared lab navigation (2026-09-30): SKIP AHEAD is gone — the strip's NEXT
+  // past the last step moves on with checks still open, and banks the module
+  // first when they are all answered. The credit button is disabled until
+  // then; the way forward never is.
+  assert.match(m, /<LabNavBar nav=\{nav\} \/>/);
+  assert.match(m, /if \(allChecksAnswered && !done\) bank\(\);/);
+  assert.match(m, /disabled=\{!allChecksAnswered\}/);
+  assert.doesNotMatch(m, /SKIP AHEAD/);
   const m8 = read('src/screens/lab/amp/modules/mod8Apply.tsx');
   assert.doesNotMatch(m8, /navigation\.navigate\('AmpModule'/);
   assert.match(m8, /navigation\.push\('AmpModule', \{ id \}\);/);
@@ -136,8 +142,13 @@ test('cable labs: practice again after the final challenge and bench; Install lo
 test('same-frame double taps: patchbay design rows latch synchronously; connector final keeps the first answer; mic select FINISH locked', () => {
   assert.match(read('src/screens/lab/patchbay/pagesD.tsx'), /!settledRef\.current\) \{\n\s*settledRef\.current = true;/);
   assert.match(read('src/screens/lab/connectorselect/pagesD.tsx'), /prev\.has\(q\.id\) \? prev : new Map\(prev\)\.set\(q\.id, orig\)/);
+  // Mic select's NEXT / FINISH go through the kit's ONE 400 ms tap lock
+  // (useLabNav, WP5 2026-10-01): no local lock, no second NEXT to double.
   const mic = read('src/screens/lab/micselect/MicSelectLabScreen.tsx');
-  assert.equal((mic.match(/Date\.now\(\) - lastNavAtRef\.current < 400 \? undefined : setEnding\(true\)/g) ?? []).length, 2);
+  assert.match(mic, /from '\.\.\/kit\/LabNavBar'/);
+  assert.match(mic, /useLabNav\(\{/);
+  assert.doesNotMatch(mic, /lastNavAtRef/);
+  assert.equal((mic.match(/<LabNextButton nav=\{nav\} \/>/g) ?? []).length, 1);
 });
 
 // ── sound after stop ────────────────────────────────────────────────────────

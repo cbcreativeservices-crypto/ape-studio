@@ -65,17 +65,33 @@ describe('the module host runs steps, not one long page', () => {
     assert.match(s, /styles\.scroll, readingColumn/);
     assert.doesNotMatch(s, /<AmpRig\b/);
   });
-  test('module navigation survives: complete / skip ahead / what’s left', () => {
-    assert.match(s, /MARK COMPLETE & CONTINUE ›/);
-    assert.match(s, /SKIP AHEAD ›/);
-    assert.match(s, /<LabEndLink onPress=\{showEnd\} \/>/);
-    assert.match(s, /STEP \{stepIdx \+ 1\} OF \{stepCount\}/);
+  test('module navigation is the shared strip in sub-step mode: credit banks on NEXT, nothing blocks, FINISH ends on what’s left', () => {
+    // The shared lab navigation (owner 2026-09-30) replaced the local step
+    // strip, SKIP AHEAD and "MARK COMPLETE & CONTINUE" (CONTINUE is retired).
+    assert.match(s, /<LabNavBar nav=\{nav\} \/>/);
+    assert.match(s, /<LabNavProvider value=\{nav\}>/);
+    assert.match(s, /sub: \{ index: stepIdx, count: stepCount, titles: stepTitles, go: setStep \}|\{ index: stepIdx, count: stepCount, titles: stepTitles, go: setStep \}/, 'PREV / NEXT walk the module’s steps');
+    // The credit action stays in the tail and goes through the strip's NEXT.
+    assert.match(s, /MARK COMPLETE ›/);
+    assert.match(s, /onPress=\{nav\.next\}/);
+    // NEXT past the last step banks the module first when every check is in —
+    // never a wall: with checks open it simply moves on (the old SKIP AHEAD).
+    assert.match(s, /const beforeAdvance = useCallback\(\(\) => \{\s*\n\s*if \(allChecksAnswered && !done\) bank\(\);/);
+    assert.doesNotMatch(s, /SKIP AHEAD/);
+    // FINISH › opens the what's-left screen in place; a module move is replace.
+    assert.match(s, /finish: showEnd/);
+    assert.match(s, /navigation\.replace\('AmpModule', \{ id: target\.id \}\);/);
   });
-  test('steps.tsx renders a rack step inside AmpRack and a read step through the host scroller', () => {
+  test('steps.tsx renders a rack step inside AmpRack and a read step through the host scroller; the way forward is LabNextButton', () => {
     const st = strip(read(`${AMP}/steps.tsx`));
     assert.match(st, /<AmpRack key=\{s\.key\} spec=\{s\.rack\}>/);
     assert.match(st, /host\.readWrap\(body\)/);
-    assert.match(st, /NEXT STEP · /, 'every step but the last ends with the way forward');
+    // steps.tsx draws no NEXT STEP button of its own: a RackUnit well appends
+    // LabNextButton under the provider, and the host's readWrap appends it to
+    // a read step.
+    assert.doesNotMatch(st, /NEXT STEP/);
+    assert.doesNotMatch(st, /<Pressable/);
+    assert.match(s, /\{body\}\s*\n\s*<LabNextButton \/>\s*\n\s*<\/ScrollView>/, 'a read step ends with the shared NEXT / FINISH');
   });
 });
 

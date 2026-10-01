@@ -26,8 +26,9 @@
  *
  * The host (TuningLabScreen) gives a rack chapter the full height and no
  * ScrollView of its own; the reading chapter (12) keeps the document layout.
- * The host's footer (sound line, ■ STOP, BACK / CONTINUE) sits under the rack
- * and pads the safe area, so the rack takes `bottomInset={0}`.
+ * Navigation is the shared strip ABOVE the rack (kit/LabNavBar, 2026-09-30)
+ * and the rack's own in-flow NEXT at the end of the well; nothing sits under
+ * the rack, so the dock pads the safe area itself (the RackUnit default).
  */
 import { useEffect, useState, type ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -117,8 +118,6 @@ export function TuningRackLayout({
       }}
       params={rack.params}
       initialParam={rack.initialParam}
-      // The host mounts its own footer under the rack and pads the safe area there.
-      bottomInset={0}
     >
       <View style={styles.panel}>
         <AccuracyNote style={styles.accuracy} detail={TUNING_ACCURACY_DETAIL} />

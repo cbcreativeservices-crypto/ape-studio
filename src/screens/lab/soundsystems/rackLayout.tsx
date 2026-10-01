@@ -98,9 +98,9 @@ export function SoundSystemsRackLayout({
       }}
       params={rack.params}
       initialParam={rack.initialParam}
-      // The paged host mounts its own BACK / CONTINUE footer under the rack and
-      // pads the safe area there.
-      bottomInset={0}
+      // Nothing sits under the rack any more (the shared lab navigation,
+      // 2026-09-30, pins nothing at the bottom), so the dock takes RackUnit's
+      // safe-area default and clears the home indicator itself.
     >
       <View style={styles.panel}>
         {wellTop ? <View style={styles.wellTop}>{wellTop}</View> : null}

@@ -14,12 +14,15 @@
  *   1. every chapter with a display declares `rack: true` and renders the
  *      TuningRackLayout (the one wrapper that mounts RackUnit) — the reading
  *      chapter (12) stays a document;
- *   2. the wrapper turns FULL SCREEN on and passes the host's footer inset;
+ *   2. the wrapper turns FULL SCREEN on and lets the rack pad the safe area
+ *      itself (nothing sits under the rack since the shared strip, 2026-09-30);
  *   3. the controls are in the DOCK, not the well: no chapter keeps its own
  *      slider track, ±¢ step keys, play rows or A/B button strip in the
  *      scroll — those are DockParams now;
  *   4. the shell gives a rack chapter the full height with no ScrollView of
- *      its own, and keeps BACK / CONTINUE / FINISH, ■ STOP and the guest rule.
+ *      its own, navigates through the SHARED strip (kit/LabNavBar: ⏮ / ‹ PREV
+ *      / MODULE n / 14 ▾ / NEXT › → FINISH ›), and keeps ■ STOP on the
+ *      reading chapter and the end screen, the end screen and the guest rule.
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
@@ -75,8 +78,11 @@ describe('the wrapper is the Rack Unit with full screen on', () => {
     assert.match(layout, /fullScreen: true/, 'the rack no longer owns full screen for the tuning stages');
   });
 
-  test('the host footer owns the safe area, so the rack takes bottomInset 0', () => {
-    assert.match(layout, /bottomInset=\{0\}/);
+  test('nothing sits under the rack any more, so it pads the safe area itself (no bottomInset 0)', () => {
+    // The old footer (sound line, ■ STOP, BACK / CONTINUE) is gone — the
+    // strip is above the rack and the rack's own NEXT ends the well — so a
+    // bottomInset of 0 would run the dock into the home indicator.
+    assert.doesNotMatch(layout, /bottomInset=/);
   });
 
   test('the badge defaults to an honesty badge and the well carries the accuracy note', () => {
@@ -128,8 +134,31 @@ describe('the shell hosts a rack chapter at full height', () => {
     assert.match(layout, /ctx\.objective/);
   });
 
-  test('BACK / CONTINUE / FINISH, ■ STOP, the end screen and the guest rule survive', () => {
-    assert.match(shell, /'CONTINUE ›' : 'FINISH ›'/);
+  test('the shell navigates through the shared strip (kit/LabNavBar), 1-based, with FINISH on the last chapter', () => {
+    assert.match(shell, /import \{ LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav \} from '\.\.\/kit\/LabNavBar'/);
+    assert.match(shell, /<LabHeader\b/);
+    assert.match(shell, /<LabNavBar nav=\{nav\} \/>/);
+    assert.match(shell, /<LabNavProvider value=\{nav\}>/, 'the rack chapters get the in-flow NEXT from the provider');
+    // One unit per chapter, in registry order, keyed by the 0-based index the
+    // strip prints 1-based; `done` is this device's completed list.
+    assert.match(shell, /CHAPTERS\.map\(\(c\) => \(\{ id: String\(c\.index\), title: c\.title, done: !!progress\?\.completed\.includes\(c\.index\) \}\)\)/);
+    assert.match(shell, /index: CHAPTERS\.findIndex\(\(c\) => c\.index === chapter\)/);
+    // NEXT / CONTENTS go through goTo (stop + save); FINISH stops and opens the end screen.
+    assert.match(shell, /const navGo = useCallback\(\(i: number\) => goTo\(CHAPTERS\[i\]\?\.index \?\? 0\), \[goTo\]\);/);
+    assert.match(shell, /const finish = useCallback\(\(\) => \{\n\s*player\.stop\(\);\n\s*setEnding\(true\);/);
+    // The practice reset rides CONTENTS; the retired words and the local list are gone.
+    assert.match(shell, /reset: \{ label: 'START OVER \(PRACTICE\)', run: confirmReset \}/);
+    for (const word of ['CONTINUE', 'listOpen', 'CHAPTER_TITLES', 'styles.dots', 'builtNext', 'builtPrev']) {
+      assert.ok(!shell.includes(word), `the shell still carries "${word}"`);
+    }
+    // The reading chapter (no rack) draws the in-flow NEXT at the end of its scroll.
+    assert.match(shell, /<Chapter ctx=\{ctx\} \/>\n\s*(\{\}\n\s*)?<LabNextButton \/>/);
+    // BASIC / MATH stays in the header.
+    assert.match(shell, /right=\{[\s\S]*?accessibilityLabel="See the math"/);
+  });
+
+  test('■ STOP and the sound line stay on the reading chapter and the end screen only; the end screen and the guest rule survive', () => {
+    assert.match(shell, /\{rack && !ending \? null : \(\n\s*<View style=\{\[styles\.footer/);
     assert.match(shell, /■ STOP/);
     assert.match(shell, /<LabEndScreen/);
     assert.match(shell, /loadedAsGuestRef/);

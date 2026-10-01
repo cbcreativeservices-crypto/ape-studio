@@ -6,17 +6,17 @@
  * No GuidedLessonSheet yet — the 'eq' lesson belongs to the audible Equalizer
  * effect lab; this lab gets its own entry when the content registry grows one.
  */
-import { useEffect, useRef, useState } from 'react';
-import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { useIsFocused, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fonts } from '../../../theme/tokens';
+import { colors } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { ScrollLockProvider } from '../LabShell';
 import { markLabVisit, useLabVisits } from '../../../features/lab/labVisits';
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
+import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { GlossaryLinkProvider } from '../../../features/glossary/glossaryLink';
 import { EQ_MODULES, type EqModuleComponentProps, type EqModuleId } from './modules/registry';
 import { SeeingFrequencyModule } from './modules/SeeingFrequency';
@@ -88,29 +88,22 @@ export function EqModuleScreen() {
   // Modules lock the ScrollView during horizontal drags (DragSlider grabs the
   // lock from context — owner 2026-07-30 drag-vs-scroll rule).
   const [scrollLocked, setScrollLocked] = useState(false);
+  // Module navigation is the SHARED strip (kit/LabNavBar, owner 2026-09-30).
+  // The hook owns the 400 ms double-tap lock (bug hunt 2026-09-30: a double-tap
+  // on NEXT at the second-last module used to skip the last one) and calls the
+  // host's go / finish / unEnd; the host keeps the in-place param swap.
   const idx = EQ_MODULES.findIndex((m) => m.id === meta.id);
   const last = EQ_MODULES.length - 1;
-  // Double-tap lock (bug hunt 2026-09-30): the second tap of a double-tap on
-  // NEXT at the second-last module landed after the re-render, where NEXT is
-  // already FINISH, and skipped the last module. Taps within 400 ms are ignored.
-  const nextTapAt = useRef(0);
-  const onNext = () => {
-    if (Date.now() - nextTapAt.current < 400) return;
-    nextTapAt.current = Date.now();
-    if (idx >= last) setEnding(true);
-    else goToModule(idx + 1);
-  };
+  // THE LAST MODULE ENDS ON THE WHAT'S-LEFT SCREEN (owner 2026-09-29: "every
+  // lab ends with a 'what's left' screen"). FINISH swaps LabEndScreen in for
+  // the module: what is still to do (jump links), PRACTISE AGAIN from module 1
+  // (clears nothing), DONE back to the lab home.
+  const [ending, setEnding] = useState(false);
   const goToModule = (i: number) => {
     if (i < 0 || i > last) return;
     setEnding(false);
     (navigation as { setParams: (p: { id: EqModuleId }) => void }).setParams({ id: EQ_MODULES[i].id });
   };
-  // THE LAST MODULE ENDS ON THE WHAT'S-LEFT SCREEN (owner 2026-09-29: "every
-  // lab ends with a 'what's left' screen"). NEXT used to grey out on the last
-  // module — a dead end. It is now FINISH, which swaps LabEndScreen in for the
-  // module: what is still to do (jump links), PRACTISE AGAIN from module 1
-  // (clears nothing), DONE back to the lab home.
-  const [ending, setEnding] = useState(false);
   // This lab banks no credit and kept no record, so it remembers which
   // modules were OPENED (labVisits — progress, never credit). Guests: this
   // session only (house guest rule, owner 2026-08-12).
@@ -119,6 +112,15 @@ export function EqModuleScreen() {
   useEffect(() => {
     if (focused) markLabVisit('eq', meta.id, { persist: !guest });
   }, [focused, meta.id, guest]);
+  const nav = useLabNav({
+    units: EQ_MODULES.map((m) => ({ id: m.id, title: m.title, done: visited.has(m.id) })),
+    index: idx,
+    ending,
+    go: goToModule,
+    finish: () => setEnding(true),
+    unEnd: () => setEnding(false),
+    reset: { label: 'START OVER (PRACTICE)', run: () => goToModule(0) },
+  });
   const endScreen = ending ? (
     <LabEndScreen
       labTitle="EQ Lab"
@@ -133,33 +135,16 @@ export function EqModuleScreen() {
   ) : null;
 
   return (
+    <LabNavProvider value={nav}>
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
-        </Pressable>
-        <View style={{ flexShrink: 1, flexGrow: 1 }}>
-          <Text style={styles.title}>{meta.title.toUpperCase()}</Text>
-          <Text style={styles.subtitle}>EQ Lab</Text>
-        </View>
-        <AccuracyNote compact detail="This lab can use your phone’s UNCALIBRATED microphone — read the analysis as relative, for learning. For accurate levels use a calibrated SPL meter or measurement mic." />
-      </View>
+      {/* The shared header: ‹ LEAVES THE LAB (kit/LabNavBar). */}
+      <LabHeader
+        title={meta.title.toUpperCase()}
+        subtitle="EQ Lab"
+        right={<AccuracyNote compact detail="This lab can use your phone’s UNCALIBRATED microphone — read the analysis as relative, for learning. For accurate levels use a calibrated SPL meter or measurement mic." />}
+      />
       {/* Module nav appears once there's more than one live module. */}
-      {EQ_MODULES.length > 1 && (
-        <View style={styles.topNav}>
-          {/* From WHAT'S LEFT, PREV returns to the last module — goToModule(idx - 1)
-              skipped it (bug pass 2026-09-30). */}
-          <Pressable onPress={() => (ending ? setEnding(false) : goToModule(idx - 1))} disabled={idx <= 0} hitSlop={8} accessibilityRole="button" accessibilityLabel="Previous module">
-            <Text style={[styles.navBtn, idx <= 0 && styles.navBtnDisabled]}>‹ PREV</Text>
-          </Pressable>
-          <View style={{ flex: 1 }} />
-          <Text style={styles.navPos}>{ending ? "WHAT'S LEFT" : `MODULE ${idx + 1} / ${EQ_MODULES.length}`}</Text>
-          <View style={{ flex: 1 }} />
-          <Pressable onPress={onNext} hitSlop={8} accessibilityRole="button" accessibilityLabel={idx >= last ? "Finish the lab and see what's left" : 'Next module'}>
-            <Text style={styles.navBtn}>{idx >= last ? 'FINISH ›' : 'NEXT ›'}</Text>
-          </Pressable>
-        </View>
-      )}
+      {EQ_MODULES.length > 1 && <LabNavBar nav={nav} />}
       <GlossaryLinkProvider>
         {endScreen ?? (
           <ScrollLockProvider value={setScrollLocked}>
@@ -178,25 +163,20 @@ export function EqModuleScreen() {
                 <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
                   {width > 0 ? <Comp width={width} focused={focused} /> : null}
                 </View>
+                {/* The in-flow NEXT at the end of the reading (a rack well gets it from RackUnit). */}
+                <LabNextButton />
               </ScrollView>
             )}
           </ScrollLockProvider>
         )}
       </GlossaryLinkProvider>
     </View>
+    </LabNavProvider>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 8 },
-  back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
-  title: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.2, color: colors.textPrimary },
-  subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
-  topNav: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 16, paddingBottom: 6 },
-  navBtn: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1, color: colors.amber },
-  navBtnDisabled: { color: '#45454d' },
-  navPos: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, color: colors.textSub },
   scroll: { padding: 16, paddingBottom: 30, gap: 12 },
   rackFill: { flex: 1 },
 });

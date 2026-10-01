@@ -1125,10 +1125,11 @@ export function DetectiveModule(p: MeterModuleProps) {
 
   // The evidence PINS on the stage (rack law): the unlabeled display stays
   // visible while every question below is read and answered. Case nav = dock
-  // action keys; round/score live on the bezel.
+  // action keys; round/score live on the bezel. Named CASE, not PREV / NEXT:
+  // those two words mean LAB navigation only (kit/LabNavBar, owner 2026-09-30).
   const params: DockParam[] = [
-    { kind: 'action', id: 'prev', label: '‹ PREV', onPress: () => goCase(idx - 1) },
-    { kind: 'action', id: 'next', label: 'NEXT ›', onPress: () => goCase(idx + 1) },
+    { kind: 'action', id: 'prev', label: '‹ CASE', onPress: () => goCase(idx - 1) },
+    { kind: 'action', id: 'next', label: 'CASE ›', onPress: () => goCase(idx + 1) },
   ];
 
   const bezel: BezelItem[] = [

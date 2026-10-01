@@ -5,8 +5,8 @@
  * areas as dimmed rows (no promises, no dates).
  */
 import { useMemo, useRef, useState } from 'react';
-import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { LabHeader } from '../kit/LabNavBar';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -97,16 +97,12 @@ export function CymaticsHomeScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
-        </Pressable>
-        <View style={{ flexShrink: 1, flexGrow: 1 }}>
-          <Text style={styles.title}>CYMATICS LAB: SOUND MADE VISIBLE</Text>
-          <Text style={styles.subtitle}>Chladni plates, liquids, membranes, resonance, frequency and harmonic relationships.</Text>
-        </View>
-        <AccuracyNote compact />
-      </View>
+      {/* The shared lab header (kit/LabNavBar): ‹ LEAVES THE LAB, the same in every lab. */}
+      <LabHeader
+        title="CYMATICS LAB: SOUND MADE VISIBLE"
+        subtitle="Chladni plates, liquids, membranes, resonance, frequency and harmonic relationships."
+        right={<AccuracyNote compact />}
+      />
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
         <View style={styles.hero} onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width))}>
           {width > 0 ? <HeroPlate width={width} /> : null}
@@ -178,10 +174,6 @@ export function CymaticsHomeScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 8 },
-  back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
-  title: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.2, color: colors.textPrimary },
-  subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
   scroll: { padding: 16, paddingTop: 8, paddingBottom: 32, gap: 12 },
   hero: { borderRadius: 12, overflow: 'hidden', borderWidth: 1, borderColor: '#2a2a32', backgroundColor: '#0b0b10' },
   startHere: {

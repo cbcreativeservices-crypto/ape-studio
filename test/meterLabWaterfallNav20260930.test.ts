@@ -20,9 +20,12 @@ import {
   RIDGE_CALLOUT_RATIO,
   type WaterfallOpts,
 } from '../src/screens/lab/meter/meterEngine.ts';
+import { navView } from '../src/screens/lab/kit/labNav.ts';
+import { METER_MODULES } from '../src/screens/lab/meter/modules/registry.ts';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const src = (p: string) => readFileSync(resolve(ROOT, p), 'utf8');
+const METER_COUNT = METER_MODULES.length;
 
 const scene = (over: Partial<WaterfallOpts> = {}): WaterfallOpts => ({
   room: 'classroom', damping01: 0.15, eqGains: {}, eqFilter: 'bell220q6', qRing: false, reverb: 'none', ...over,
@@ -94,21 +97,32 @@ describe('waterfall module wiring', () => {
 
 describe('Visual Audio Analysis Lab — PREV / NEXT between modules', () => {
   const s = src('src/screens/lab/meter/MeterModuleScreen.tsx');
-  it('has the shared module-host top nav (START / PREV / position / NEXT)', () => {
-    assert.match(s, /⏮ START/);
-    assert.match(s, /‹ PREV/);
-    assert.match(s, /MODULE \$\{idx \+ 1\} \/ \$\{METER_MODULES\.length\}/);
-    assert.match(s, /'NEXT ›'/);
+  it('uses the SHARED strip (kit/LabNavBar): ⏮ / ‹ PREV / MODULE n / N ▾ / NEXT ›', () => {
+    assert.match(s, /from '\.\.\/kit\/LabNavBar'/);
+    assert.match(s, /<LabNavBar nav=\{nav\} \/>/);
+    assert.match(s, /<LabHeader\b/);
+    // The strip's own words, from the pure layer: 11 modules read MODULE 1 / 11.
+    const v = navView(0, METER_COUNT, false);
+    assert.equal(v.noun, 'MODULE');
+    assert.equal(v.pos, `1 / ${METER_COUNT}`);
+    assert.equal(v.nextLabel, 'NEXT ›');
+    assert.equal(v.prevOn, false);
+    assert.equal(navView(1, METER_COUNT, false).prevOn, true);
   });
-  it('swaps the module in place (setParams) so ‹ still returns to the lab menu', () => {
+  it('swaps the module in place (setParams) so ‹ (LEAVE THE LAB) still returns to the lab menu', () => {
     assert.match(s, /setParams\(\{ id: METER_MODULES\[i\]\.id \}\)/);
-    assert.match(s, /onPress=\{\(\) => navigation\.goBack\(\)\}/);
+    assert.match(s, /go: goToModule,/);
+    assert.doesNotMatch(s, /accessibilityLabel="Back"/, 'the ‹ is LabHeader\'s "Leave the lab"');
   });
-  it('the last NEXT is FINISH and opens the what\'s-left screen — never disabled, behind the double-tap lock', () => {
-    assert.match(s, /if \(idx >= last\) setEnding\(true\);\s*else goToModule\(idx \+ 1\);/);
-    assert.match(s, /'FINISH ›'/);
+  it('the last NEXT is FINISH and opens the what\'s-left screen — never disabled, behind the shared tap lock', () => {
+    assert.equal(navView(METER_COUNT - 1, METER_COUNT, false).nextLabel, 'FINISH ›');
+    assert.match(s, /finish: \(\) => setEnding\(true\),/);
+    assert.match(s, /unEnd: \(\) => setEnding\(false\),/);
     assert.doesNotMatch(s, /disabled=\{idx >= last\}/);
-    assert.match(s, /Date\.now\(\) - nextTapAt\.current < 400/);
+    // The lock lives in the hook (useLabNav → createTapLock), not in the host.
+    assert.doesNotMatch(s, /nextTapAt|'FINISH ›'|'NEXT ›'/);
+    const useNav = src('src/screens/lab/kit/useLabNav.ts');
+    assert.match(useNav, /createTapLock\(400\)/);
   });
   it('the end screen keeps credit: practise again clears nothing, DONE goes back', () => {
     const at = s.indexOf('<LabEndScreen');

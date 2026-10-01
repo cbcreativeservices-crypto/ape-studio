@@ -16,6 +16,7 @@ import { dirname, resolve } from 'node:path';
 import { describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { endLead, endTitle, whatsLeft, type LabEndUnit } from '../src/screens/lab/kit/labEnd.ts';
+import { navView } from '../src/screens/lab/kit/labNav.ts';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 /** Source with comments stripped and line endings normalised. */
@@ -127,19 +128,38 @@ describe('every listed lab wires the shared end screen', () => {
     });
   }
 
-  it('the module hosts turn the dead last NEXT into FINISH (never disabled)', () => {
+  it('the module hosts turn the dead last NEXT into FINISH (never disabled) — through the shared strip', () => {
+    // Behaviour: the strip's last-module label is FINISH, live, and the end
+    // screen keeps PREV live (back to the last module) with NEXT's slot empty.
+    const lastView = navView(7, 8, false);
+    assert.equal(lastView.nextLabel, 'FINISH ›');
+    assert.equal(navView(0, 1, false).nextLabel, 'FINISH ›');
+    const endView = navView(7, 8, true);
+    assert.equal(endView.nextLabel, null);
+    assert.equal(endView.prevOn, true);
+    assert.equal(endView.pos, "WHAT'S LEFT");
+    // Wiring (WP1, 2026-09-30): each host uses LabNavBar + useLabNav, hands the
+    // hook its own finish / unEnd, and keeps no local strip, FINISH or lock.
     for (const p of ['wave/WaveModuleScreen', 'digital/DigitalModuleScreen', 'gain/GainModuleScreen', 'eq/EqModuleScreen', 'cymatics/CymaticsModuleScreen']) {
       const s = src(`src/screens/lab/${p}.tsx`);
+      assert.match(s, /from '\.\.\/kit\/LabNavBar'/, `${p} uses LabNavBar`);
+      assert.match(s, /<LabNavBar nav=\{nav\} \/>/, `${p} draws the shared strip`);
+      assert.match(s, /finish: \(\) => setEnding\(true\),/, `${p} FINISH opens the end screen in place`);
+      assert.match(s, /unEnd: \(\) => setEnding\(false\),/, `${p} PREV from WHAT'S LEFT returns to the last module`);
       assert.doesNotMatch(s, /disabled=\{idx >= last\}/, p);
-      // (2026-09-30: behind a 400 ms double-tap lock, in onNext.)
-      assert.match(s, /if \(idx >= last\) setEnding\(true\);\s*else goToModule\(idx \+ 1\);/, p);
-      assert.match(s, /'FINISH ›'/, p);
+      assert.doesNotMatch(s, /'FINISH ›'|'NEXT ›'|nextTapAt/, `${p} keeps no local strip`);
     }
   });
   it('PagedLab FINISH opens the end screen and is never held', () => {
+    // 2026-09-30: through the shared strip (kit/LabNavBar). NEXT / FINISH go
+    // through useLabNav, whose FINISH calls the host's `finish` — never a
+    // disabled button, never a `finishBlocked`.
     const s = src('src/screens/lab/kit/PagedLab.tsx');
     assert.doesNotMatch(s, /finishBlocked/);
-    assert.match(s, /if \(!last\) goTo\(page \+ 1\);\s*\n\s*else \{\s*\n\s*setEnding\(true\);/);
+    assert.match(s, /from '\.\/LabNavBar'/);
+    assert.match(s, /const finish = useCallback\(\(\) => setEnding\(true\), \[\]\);/);
+    assert.match(s, /useLabNav\(\{[\s\S]*?go: goTo,[\s\S]*?finish,[\s\S]*?\}\)/);
+    assert.doesNotMatch(s, /disabled=/);
   });
   it('Patchbay and Connector Select pass their credit key so banked pages read CREDITED', () => {
     assert.match(src('src/screens/lab/patchbay/PatchbayLabScreen.tsx'), /creditLabKey=\{PATCHBAY_LAB_KEY\}/);
@@ -148,14 +168,28 @@ describe('every listed lab wires the shared end screen', () => {
   it('Mic Selection and Foundations DONE no longer just go back', () => {
     const mic = src('src/screens/lab/micselect/MicSelectLabScreen.tsx');
     assert.doesNotMatch(mic, /step === STEPS\.length - 1 \? \(Date\.now\(\) - lastNavAtRef\.current < 400 \? undefined : navigation\.goBack\(\)\)/);
-    assert.match(mic, /< 400 \? undefined : setEnding\(true\)/);
+    // The shared strip's FINISH › opens the end screen in place (WP5, 2026-10-01).
+    assert.match(mic, /from '\.\.\/kit\/LabNavBar'/);
+    assert.match(mic, /const finish = useCallback\(\(\) => setEnding\(true\), \[\]\);/);
+    assert.match(mic, /useLabNav\(\{[\s\S]*?finish,[\s\S]*?\}\)/);
+    assert.doesNotMatch(mic, /DONE ✓/);
     const fnd = src('src/screens/lab/foundations/FoundationsCourseScreen.tsx');
     assert.doesNotMatch(fnd, /if \(step === STEPS\.length - 1\) navigation\.goBack\(\);/);
+    // Shared strip (2026-09-30): FINISH › on Module 14 runs `finish`, which
+    // stops the tone and swaps the end screen in; PREV from it returns.
+    assert.match(fnd, /const finish = useCallback\(\(\) => \{\s*\n\s*tone\.stop\(\);\s*\n\s*setEnding\(true\);/);
+    assert.match(fnd, /useLabNav\(\{ units: navUnits, index: step, ending, go: goTo, finish, unEnd \}\)/);
+    assert.match(fnd, /<LabNavBar nav=\{nav\} \/>/);
   });
-  it('Amp: completing the last module shows the end screen, and it is reachable before the final', () => {
+  it('Amp: FINISH on the last module shows the end screen in place, reachable before the final (CONTENTS → WHAT’S LEFT)', () => {
     const s = src('src/screens/lab/amp/AmpModuleScreen.tsx');
-    assert.match(s, /if \(next\) navigation\.replace\('AmpModule', \{ id: next\.id \}\);\s*\n\s*else showEnd\(\);/);
-    assert.match(s, /\{!next \? \(\s*\n\s*<LabEndLink onPress=\{showEnd\} \/>/);
+    // The strip's FINISH › (and the CONTENTS footer) call showEnd; the end
+    // screen renders under the same header + strip, PREV leaves it.
+    assert.match(s, /finish: showEnd/);
+    assert.match(s, /const unEnd = useCallback\(\(\) => setEndState\(null\), \[\]\);/);
+    assert.match(s, /ending: !!endState/);
+    assert.match(s, /<LabEndScreen\s*\n\s*labTitle=\{LAB_TITLE\}/);
+    assert.match(s, /onPracticeAgain=\{\(\) => navigation\.replace\('AmpModule', \{ id: built\[0\]\?\.id \?\? mod\.id \}\)\}/);
   });
 });
 

@@ -6,7 +6,11 @@
  * map PINS on the stage — reading may scroll; operating may not. TOP VIEW and
  * SIDE VIEW render the RackUnit frame (canvas on the glass, live readouts on
  * the bezel, sliders on the dock lane, collections in trays); READING IT is
- * pure prose and keeps a plain ScrollView. The old InteractionZone scroll-lock
+ * pure prose and keeps a plain ScrollView. The three sections are MODULES on
+ * the SHARED LAB NAVIGATION strip (kit/LabNavBar, owner 2026-09-30): ⏮ /
+ * ‹ PREV / MODULE n / 3 ▾ / NEXT ›, FINISH › on READING IT, CONTENTS from the
+ * readout; the rack appends "NEXT: <section> ›" to each well and READING IT
+ * draws the in-flow FINISH itself. The old InteractionZone scroll-lock
  * workaround (owner 2026-07-29 drag-vs-scroll fix) is RETIRED here: the staged
  * canvas lives outside any ScrollView, so there is no scroll to fight.
  *
@@ -16,7 +20,6 @@
  * demonstrations are marked as coming in a future release.
  */
 import { useEffect, useState } from 'react';
-import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -27,7 +30,8 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { LabChip, CollapsibleSection } from '../LabShell';
 import { markLabUnit, registerLabUnits, useLabClearedUnits } from '../../../features/lab/labCompletion';
-import { LabEndLink, LabEndScreen } from '../kit/LabEndScreen';
+import { LabEndScreen } from '../kit/LabEndScreen';
+import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { SPEAKER_COVERAGE_LAB_KEY, SPEAKER_COVERAGE_UNITS } from './units';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../features/lab/guidedLessons';
 import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../foundations/bits';
@@ -573,11 +577,11 @@ export function SpeakerCoverageLabScreen() {
 
   /**
    * THE LAB ENDS ON THE WHAT'S-LEFT SCREEN (owner 2026-09-29: "every lab ends
-   * with a 'what's left' screen"; keep credit, always allow a redo). The tabs
-   * had no end at all. A last WHAT'S LEFT tab — and a FINISH link at the foot
-   * of the last section — swap LabEndScreen in for the section: sections not
-   * yet credited, a jump to each, PRACTISE AGAIN from the first (clears
-   * nothing) and DONE.
+   * with a 'what's left' screen"; keep credit, always allow a redo). FINISH ›
+   * on the strip (READING IT), the WHAT'S LEFT row in CONTENTS and the in-flow
+   * FINISH at the foot of the last section swap LabEndScreen in for the
+   * section: sections not yet credited, a jump to each, PRACTISE AGAIN from
+   * the first (clears nothing) and DONE.
    */
   const [ending, setEnding] = useState(false);
   const banked = useLabClearedUnits(SPEAKER_COVERAGE_LAB_KEY);
@@ -589,25 +593,22 @@ export function SpeakerCoverageLabScreen() {
   const s = SECTIONS[sectionIdx];
   const rack = sectionIdx === 0 ? { stage: topStage, params: topParams } : sectionIdx === 1 ? { stage: sideStage, params: sideParams } : null;
 
+  // THE SHARED LAB NAVIGATION (kit/LabNavBar, owner 2026-09-30): the three
+  // sections are the strip's MODULES; the credited ones read ✓ in CONTENTS.
+  const nav = useLabNav({
+    units: SECTIONS.map((sec) => ({ id: sec.key, title: sec.title, done: banked.has(sec.key) })),
+    index: sectionIdx,
+    ending,
+    go: openSection,
+    finish: () => setEnding(true),
+    unEnd: () => setEnding(false),
+  });
+
   return (
+    <LabNavProvider value={nav}>
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
-        </Pressable>
-        <View style={{ flexShrink: 1, flexGrow: 1 }}>
-          <Text style={styles.title}>SPEAKER PLACEMENT & COVERAGE</Text>
-          <Text style={styles.subtitle}>How loudspeakers distribute sound</Text>
-        </View>
-        <AccuracyNote compact />
-      </View>
-      {/* Section tabs stay PINNED with the header (the rack's mode-tab row). */}
-      <View style={styles.tabRow}>
-        {SECTIONS.map((sec, i) => (
-          <LabChip key={sec.key} label={sec.label} selected={!ending && sectionIdx === i} onPress={() => openSection(i)} />
-        ))}
-        <LabChip label="WHAT’S LEFT" selected={ending} onPress={() => setEnding(true)} />
-      </View>
+      <LabHeader title="SPEAKER PLACEMENT & COVERAGE" subtitle="How loudspeakers distribute sound" right={<AccuracyNote compact />} />
+      <LabNavBar nav={nav} />
       {ending ? (
         <LabEndScreen
           labTitle="Speaker Placement & Coverage"
@@ -684,7 +685,8 @@ export function SpeakerCoverageLabScreen() {
           <ConceptsSection help={help} />
           <LessonRow onPress={() => help(undefined)} />
           <FutureAudioNote />
-          {sectionIdx === SECTIONS.length - 1 ? <LabEndLink onPress={() => setEnding(true)} /> : null}
+          {/* No rack here, so the reading page draws the in-flow NEXT / FINISH itself. */}
+          <LabNextButton />
         </ScrollView>
       )}
       <GuidedLessonSheet
@@ -694,16 +696,13 @@ export function SpeakerCoverageLabScreen() {
         onClose={() => setLessonOpen(false)}
       />
     </View>
+    </LabNavProvider>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 8 },
-  back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
-  title: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.2, color: colors.textPrimary },
-  subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
-  tabRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingHorizontal: 14, paddingBottom: 4 },
+  // The header (‹, title, subtitle) and the strip are kit/LabNavBar's.
   // Tablet (owner 2026-09-29): the section pages sit in the centred card
   // column - the capsule cutaway drew ~990 pt square, labels at 26 pt, the
   // text pushed off the first screen. Figures size off the measured width.

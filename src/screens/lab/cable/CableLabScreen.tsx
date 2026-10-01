@@ -4,8 +4,11 @@
  *
  * A FREE Audio Fundamentals lab: 9 lessons + virtual cable tester + final
  * system challenge + gated final knowledge check, as a stepped progression
- * (MicSelect idiom: top nav + dots, BACK/NEXT, tap-to-jump, freely open —
- * COMPLETION is what's gated, via af_cables units in labCompletion).
+ * on the SHARED lab navigation (kit/LabNavBar, owner 2026-09-30): one strip,
+ * CONTENTS from the readout, freely open — COMPLETION is what's gated, via
+ * af_cables units in labCompletion. Lesson 12 is this lab's own what's-left
+ * screen, so it is the END STATE: the readout reads WHAT'S LEFT and NEXT's
+ * slot is empty there.
  *
  * SAFETY-CRITICAL CONTENT AREA (owner mandate 2026-08-15): connector facts
  * render only from the verified data registry (cable/data/*) — see
@@ -16,17 +19,15 @@
  * Only the ACTIVE lesson's body mounts (perf rule — the connector art never
  * all coexists in the tree).
  */
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { GlassButton } from '../../../components/GlassButton';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { registerLabUnits, useLabClearedUnits, useLabCompletion } from '../../../features/lab/labCompletion';
 import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
+import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { CABLE_LESSONS, CABLE_UNITS, CORE_QUESTION, LESSON_UNITS } from './data/lessons';
 import { CableShellStateCtx, CableStepNavCtx } from './lessons/bits';
 import { LESSON_BODIES } from './lessons';
@@ -38,7 +39,6 @@ const STEP_KEY = 'ape:cableStep';
 
 export function CableLabScreen() {
   const insets = useSafeAreaInsets();
-  const navigation = useNavigation();
   const [step, setStep] = useState(0);
   const scrollRef = useRef<ScrollView>(null);
 
@@ -52,13 +52,6 @@ export function CableLabScreen() {
   // Lesson state that must outlive the one mounted lesson (bench / challenge
   // progress — bug hunt 2026-09-29). One object for the screen's lifetime.
   const [lessonState] = useState<Record<string, unknown>>(() => ({}));
-  // Lessons actually opened (bug hunt 2026-09-29): the dots used `i < step`,
-  // so jumping to lesson 11 painted 1–10 done and announced them "visited".
-  const [visited, setVisited] = useState<ReadonlySet<number>>(() => new Set([0]));
-  const markVisited = useCallback(
-    (n: number) => setVisited((v) => (v.has(n) ? v : new Set(v).add(n))),
-    [],
-  );
 
   // Guest rule (owner 2026-08-12): anonymous users neither restore nor persist
   // their place — every open starts at the first lesson.
@@ -71,8 +64,6 @@ export function CableLabScreen() {
   const noAccountRef = useRef(resolved && entitlement === 'anonymous');
   noAccountRef.current = resolved && entitlement === 'anonymous';
   const navigatedRef = useRef(false);
-  const lastNavAtRef = useRef(0);
-  const leavingRef = useRef(false);
 
   // ⛔ WAIT FOR `resolved` (bug pass 3, 2026-09-30; the kit/PagedLab fix):
   // a read that landed before the tier was known saw noAccountRef false, so a
@@ -83,10 +74,7 @@ export function CableLabScreen() {
     void AsyncStorage.getItem(STEP_KEY).then((v) => {
       if (navigatedRef.current || noAccountRef.current) return;
       const n = v == null ? NaN : Number(v);
-      if (Number.isInteger(n) && n > 0 && n < CABLE_LESSONS.length) {
-        setStep(n);
-        markVisited(n);
-      }
+      if (Number.isInteger(n) && n > 0 && n < CABLE_LESSONS.length) setStep(n);
     }).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resolved]);
@@ -94,14 +82,37 @@ export function CableLabScreen() {
   const goTo = useCallback((n: number) => {
     navigatedRef.current = true;
     setStep(n);
-    markVisited(n);
     scrollRef.current?.scrollTo({ y: 0, animated: false });
     if (!noAccountRef.current) void AsyncStorage.setItem(STEP_KEY, String(n)).catch(() => {});
-  }, [markVisited]);
+  }, []);
 
   const s = CABLE_LESSONS[step];
   const Body = LESSON_BODIES[s.id];
   const last = CABLE_LESSONS.length - 1;
+
+  // The shared strip (kit/LabNavBar). Units = lessons 1–11; lesson 12 (the
+  // lab's own what's-left) is the end state. Done = that lesson's units are
+  // cleared (LESSON_UNITS) — never "paged past" (bug hunt 2026-09-29).
+  const ending = step === last;
+  const navUnits = useMemo(
+    () =>
+      CABLE_LESSONS.slice(0, last).map((st) => {
+        const units = LESSON_UNITS[st.id];
+        return { id: st.id, title: st.title, done: units.length > 0 && units.every((u) => clearedUnits.has(u)) };
+      }),
+    [clearedUnits, last],
+  );
+  const finish = useCallback(() => goTo(last), [goTo, last]);
+  const unEnd = useCallback(() => goTo(last - 1), [goTo, last]);
+  const nav = useLabNav({
+    units: navUnits,
+    index: ending ? last - 1 : step,
+    ending,
+    go: goTo,
+    finish,
+    unEnd,
+    reset: { label: 'START OVER (PRACTICE)', run: () => goTo(0) },
+  });
 
   /** Lesson-id step jump for lesson bodies (Lesson 12 actions, §5.12). */
   const goToLesson = useCallback(
@@ -113,137 +124,53 @@ export function CableLabScreen() {
   );
 
   return (
-    <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
-        </Pressable>
-        <View style={{ flexShrink: 1, flexGrow: 1 }}>
-          <Text style={styles.title}>CABLE & CONNECTOR FUNDAMENTALS</Text>
-          <Text style={styles.subtitle}>Identify it. Understand it. Connect it safely.</Text>
-          {/* Standing rule: every lab steers the user to a dedicated CALIBRATED
-              instrument for real measurement — this app teaches, and the phone's
-              mic and audio path are uncalibrated. Added 2026-09-17 after a
-              bug-hunt pass found this lab had no note at all. */}
-          <AccuracyNote style={styles.accuracyNote} />
-        </View>
-      </View>
-      <Text style={styles.coreQ}>{CORE_QUESTION}</Text>
+    <LabNavProvider value={nav}>
+      <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+        {/* Standing rule: every lab steers the user to a dedicated CALIBRATED
+            instrument for real measurement — this app teaches, and the phone's
+            mic and audio path are uncalibrated. Added 2026-09-17 after a
+            bug-hunt pass found this lab had no note at all. */}
+        <LabHeader title="CABLE & CONNECTOR FUNDAMENTALS" subtitle="Identify it. Understand it. Connect it safely." right={<AccuracyNote compact />} />
+        <LabNavBar nav={nav} />
 
-      <View style={styles.topNav}>
-        <Pressable onPress={() => goTo(0)} disabled={step === 0} hitSlop={{ top: 14, bottom: 14, left: 8, right: 8 }} accessibilityRole="button" accessibilityLabel="First lesson">
-          <Text style={[styles.navBtn, step === 0 && styles.navBtnDisabled]}>⏮ START</Text>
-        </Pressable>
-        <Pressable onPress={() => goTo(Math.max(0, step - 1))} disabled={step === 0} hitSlop={{ top: 14, bottom: 14, left: 8, right: 8 }} accessibilityRole="button" accessibilityLabel="Previous lesson">
-          <Text style={[styles.navBtn, step === 0 && styles.navBtnDisabled]}>‹ PREV</Text>
-        </Pressable>
-        <View style={{ flex: 1 }} />
-        <Text style={styles.navPos}>{`STEP ${step + 1} / ${CABLE_LESSONS.length}`}</Text>
-        <View style={{ flex: 1 }} />
-        <Pressable
-          onPress={() => goTo(Math.min(last, step + 1))}
-          disabled={step === last}
-          hitSlop={{ top: 14, bottom: 14, left: 8, right: 8 }}
-          accessibilityRole="button"
-          accessibilityLabel="Next lesson"
-        >
-          <Text style={[styles.navBtn, step === last && styles.navBtnDisabled]}>NEXT ›</Text>
-        </Pressable>
-      </View>
-      <View style={styles.dotsRow}>
-        {CABLE_LESSONS.map((st, i) => {
-          // Done = this step's units are cleared (LESSON_UNITS), not "paged past".
-          const units = LESSON_UNITS[st.id];
-          const done = units.length > 0 && units.every((u) => clearedUnits.has(u));
-          return (
-            <Pressable
-              key={st.id}
-              onPress={() => goTo(i)}
-              hitSlop={{ top: 18, bottom: 18, left: 9, right: 9 }}
-              accessibilityRole="button"
-              accessibilityState={{ selected: i === step }}
-              aria-pressed={i === step}
-              accessibilityLabel={`Go to ${st.title}${i === step ? ', current lesson' : ''}${done ? ', cleared' : visited.has(i) && i !== step ? ', visited' : ''}`}
-            >
-              <View style={[styles.dot, i === step && styles.dotActive, i !== step && done && styles.dotDone]} />
-            </Pressable>
-          );
-        })}
-        {total > 0 ? (
-          <Text
-            style={styles.progressText}
-            accessibilityLabel={`${cleared} of ${total} lab units cleared`}
-          >{`${cleared}/${total} UNITS`}</Text>
-        ) : null}
-      </View>
-
-      <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, cardColumn]}>
-        <Text style={styles.tag}>{`${s.tag} · ${step + 1} OF ${CABLE_LESSONS.length}`}</Text>
-        <Text style={styles.stepTitle}>{s.title}</Text>
-        <Text style={styles.body}>{s.intro}</Text>
-        <CableStepNavCtx.Provider value={goToLesson}>
-          <CableShellStateCtx.Provider value={lessonState}>
-            <Body key={s.id} />
-          </CableShellStateCtx.Provider>
-        </CableStepNavCtx.Provider>
-        <View style={styles.navRow}>
-          <View style={{ flex: 1 }}>
-            <GlassButton label="‹ BACK" tint="gold" disabled={step === 0} onPress={() => goTo(Math.max(0, step - 1))} />
+        <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, cardColumn]}>
+          <Text style={styles.coreQ}>{CORE_QUESTION}</Text>
+          <View style={styles.tagRow}>
+            <Text style={styles.tag}>{`${s.tag} · ${step + 1} OF ${CABLE_LESSONS.length}`}</Text>
+            {total > 0 ? (
+              <Text style={styles.progressText} accessibilityLabel={`${cleared} of ${total} lab units cleared`}>{`${cleared}/${total} UNITS`}</Text>
+            ) : null}
           </View>
-          <View style={{ flex: 1 }}>
-            <GlassButton
-              label={step === last ? 'DONE ✓' : 'NEXT ›'}
-              tint="green"
-              onPress={() => {
-                // Double tap (bug hunt 2026-09-30 pass 2, MicSelect's 400 ms
-                // guard): the second NEXT on lesson 11 landed on DONE ✓ and
-                // left the lab before the what's-left of lesson 12 was seen;
-                // a doubled DONE ran goBack() twice and popped a second screen.
-                if (step !== last) {
-                  lastNavAtRef.current = Date.now();
-                  goTo(Math.min(last, step + 1));
-                  return;
-                }
-                if (Date.now() - lastNavAtRef.current < 400 || leavingRef.current) return;
-                leavingRef.current = true;
-                navigation.goBack();
-              }}
-            />
-          </View>
-        </View>
-      </ScrollView>
-    </View>
+          <Text style={styles.stepTitle}>{s.title}</Text>
+          <Text style={styles.body}>{s.intro}</Text>
+          <CableStepNavCtx.Provider value={goToLesson}>
+            <CableShellStateCtx.Provider value={lessonState}>
+              <Body key={s.id} />
+            </CableShellStateCtx.Provider>
+          </CableStepNavCtx.Provider>
+          {/* The in-flow NEXT / FINISH; draws nothing on lesson 12 (the end
+              state — its own what's-left list and jump links take over, and
+              the header ‹ leaves the lab). */}
+          <LabNextButton nav={nav} />
+        </ScrollView>
+      </View>
+    </LabNavProvider>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 2 },
-  back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
-  title: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.2, color: colors.textPrimary },
-  subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
-  accuracyNote: { marginTop: 8, alignSelf: 'flex-start' },
   coreQ: {
     fontFamily: fonts.barlowMedium,
     fontSize: 13,
     fontStyle: 'italic',
     color: colors.amberLabel,
-    paddingHorizontal: 16,
-    paddingBottom: 6,
   },
-  topNav: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 2 },
-  navBtn: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.amber, paddingHorizontal: 6 },
-  navBtnDisabled: { color: '#45454d' },
-  navPos: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: colors.textSub },
-  dotsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 6 },
-  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#2c2c33' },
-  dotActive: { backgroundColor: colors.amber },
-  dotDone: { backgroundColor: 'rgba(255,198,77,.45)' },
-  progressText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1, color: colors.textSub, marginLeft: 'auto' },
+  tagRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
+  progressText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1, color: colors.textSub },
 
-  scroll: { padding: 16, paddingTop: 8, paddingBottom: 30, gap: 10 },
+  scroll: { padding: 16, paddingTop: 10, paddingBottom: 30, gap: 10 },
   tag: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.6, color: colors.amberLabel },
   stepTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, letterSpacing: 1, color: colors.textPrimary },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
-  navRow: { flexDirection: 'row', gap: 10, marginTop: 8 },
 });

@@ -16,10 +16,17 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
+import { navView } from '../src/screens/lab/kit/labNav.ts';
 
 const read = (p: string) => readFileSync(p, 'utf8');
 
 test("PREV on WHAT'S LEFT returns to the last module in every module host", () => {
+  // Behaviour (the shared strip, WP1 2026-09-30): on the end screen PREV is
+  // live and reads "back to the last module"; the hook routes it to the
+  // host's unEnd, never to go(idx - 1).
+  const end = navView(4, 5, true);
+  assert.equal(end.prevOn, true);
+  assert.equal(end.a11y.prev, 'Back to the last module');
   for (const p of [
     'src/screens/lab/digital/DigitalModuleScreen.tsx',
     'src/screens/lab/wave/WaveModuleScreen.tsx',
@@ -28,11 +35,16 @@ test("PREV on WHAT'S LEFT returns to the last module in every module host", () =
     'src/screens/lab/cymatics/CymaticsModuleScreen.tsx',
   ]) {
     const src = read(p);
-    assert.match(src, /onPress=\{\(\) => \(ending \? setEnding\(false\) : goToModule\(idx - 1\)\)\}/, p);
+    assert.match(src, /from '\.\.\/kit\/LabNavBar'/, `${p} uses LabNavBar`);
+    assert.match(src, /unEnd: \(\) => setEnding\(false\),/, p);
     assert.doesNotMatch(src, /onPress=\{\(\) => goToModule\(idx - 1\)\}/, p);
   }
+  // Foundations is on the shared strip (2026-09-30): useLabNav's PREV calls
+  // `unEnd` on the end screen (back to Module 14) and `go(step - 1)` otherwise.
   const fos = read('src/screens/lab/foundations/FoundationsCourseScreen.tsx');
-  assert.match(fos, /onPress=\{\(\) => \(ending \? setEnding\(false\) : goTo\(Math\.max\(0, step - 1\)\)\)\}/);
+  assert.match(fos, /const unEnd = useCallback\(\(\) => setEnding\(false\), \[\]\);/);
+  assert.match(fos, /useLabNav\(\{[^}]*ending, go: goTo, finish, unEnd \}\)/);
+  assert.match(fos, /<LabNavBar nav=\{nav\} \/>/);
 });
 
 test('the lab menu opens one lab per tap, locked before a preview is armed', () => {

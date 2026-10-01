@@ -5,8 +5,7 @@
  * All strings NEW COPY — owner review.
  */
 import { useCallback, useState } from 'react';
-import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -19,6 +18,7 @@ import {
   loadEarProgress, recentAccuracy, setEarSaveBlocked, type EarProgressState,
 } from '../../../features/ear/earProgress';
 import { useLabEndGuest } from '../kit/LabEndScreen';
+import { LabHeader } from '../kit/LabNavBar';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
@@ -52,16 +52,13 @@ export function EarTrainingLabScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
-        </Pressable>
-        <View style={{ flexShrink: 1, flexGrow: 1 }}>
-          <Text style={styles.title}>EAR TRAINING LAB</Text>
-          <Text style={styles.subtitle}>Hear a change · then see it measured</Text>
-        </View>
-        <AccuracyNote compact detail="Every drill here plays through your phone’s UNCALIBRATED output — and through whatever headphones or speakers you are on, which colour it further. Train the SKILL of hearing a change here; judge absolute tonality on monitoring you trust." />
-      </View>
+      {/* The shared lab header (kit/LabNavBar, 2026-09-30): ‹ leaves the lab.
+          The hub IS the menu — no strip here. */}
+      <LabHeader
+        title="EAR TRAINING LAB"
+        subtitle="Hear a change · then see it measured"
+        right={<AccuracyNote compact detail="Every drill here plays through your phone’s UNCALIBRATED output — and through whatever headphones or speakers you are on, which colour it further. Train the SKILL of hearing a change here; judge absolute tonality on monitoring you trust." />}
+      />
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: insets.bottom + 24 }]}>
         <Text style={styles.body}>
           Every drill here renders real signals, plays them, and then shows you the same buffers
@@ -104,10 +101,7 @@ export function EarTrainingLabScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingBottom: 8 },
-  back: { color: colors.textPrimary, fontSize: 30, lineHeight: 32, paddingHorizontal: 4 },
-  title: { color: colors.textPrimary, fontFamily: fonts.oswaldSemiBold, fontSize: 18, letterSpacing: 1.2 },
-  subtitle: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12.5 },
+  // header / back / title / subtitle now live in kit/LabNavBar's LabHeader.
   scroll: { paddingHorizontal: 16, gap: 10 },
   body: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19 },
   noteLine: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12.5 },

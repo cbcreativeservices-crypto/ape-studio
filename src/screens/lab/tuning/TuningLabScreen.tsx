@@ -1,12 +1,15 @@
 /**
- * TuningLabScreen — the paced chapter shell (spec Stage 1 §5–6): chapter
- * title/number/count, progress, Back/Continue, Basic View / See the Math,
- * sound status + Stop, a chapter list for review. One TuningPlayer for the
- * whole lab, disposed on unmount; switching Basic/Math never remounts the
- * chapter (the chapter component is the same element, only ctx changes).
+ * TuningLabScreen — the paced chapter shell (spec Stage 1 §5–6): the SHARED
+ * LAB NAVIGATION strip (kit/LabNavBar, owner 2026-09-30 — ⏮ / ‹ PREV /
+ * MODULE n / 14 ▾ / NEXT ›, FINISH › on the last chapter, CONTENTS from the
+ * readout), Basic View / See the Math in the header, sound status + Stop on
+ * the reading chapter and the end screen (rack chapters carry ■ STOP in the
+ * dock). One TuningPlayer for the whole lab, disposed on unmount; switching
+ * Basic/Math never remounts the chapter (the chapter component is the same
+ * element, only ctx changes). The strip calls a chapter a MODULE; the
+ * chapter eyebrows inside the content keep their word.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { AccessibilityInfo, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -19,10 +22,11 @@ import { animationsAllowed } from '../../../features/settings/a11y';
 import { C4_ET } from '../../../features/tuning/tuningMath';
 import { TuningPlayer, type PlayerStatus } from '../../../features/tuning/tuningAudio';
 import { loadTuningProgress, saveTuningProgress, type TuningProgress } from '../../../features/tuning/tuningProgress';
-import { CHAPTERS, CHAPTER_COUNT, CHAPTER_TITLES } from './chapters';
+import { CHAPTERS, CHAPTER_COUNT } from './chapters';
 import type { LabCtx } from './labCtx';
 import { confirmDialog } from '../../../lib/confirm';
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
+import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 // Tablet (owner 2026-09-29): a reading surface - capped at the reading column
 // and centred instead of running 990 pt wide. No-op on a phone.
@@ -79,7 +83,6 @@ export function TuningLabScreen() {
   const [chapter, setChapter] = useState(0);
   const [rootHz, setRootHz] = useState(C4_ET);
   const [mathView, setMathView] = useState(false);
-  const [listOpen, setListOpen] = useState(false);
   // The what's-left end screen (owner 2026-09-29), shown in place of the chapter.
   const [ending, setEnding] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
@@ -134,7 +137,6 @@ export function TuningLabScreen() {
       navigatedRef.current = true;
       setEnding(false);
       setChapter(idx);
-      setListOpen(false);
       scrollRef.current?.scrollTo({ y: 0, animated: !reduceMotion });
       persist({ lastChapter: idx });
     },
@@ -170,8 +172,6 @@ export function TuningLabScreen() {
 
   const def = CHAPTERS.find((c) => c.index === chapter) ?? CHAPTERS[0];
   const isDone = !!progress?.completed.includes(chapter);
-  const builtNext = CHAPTERS.find((c) => c.index > chapter);
-  const builtPrev = [...CHAPTERS].reverse().find((c) => c.index < chapter);
 
   const ctx: LabCtx = { rootHz, setRootHz, mathView, reduceMotion, player, markDone, isDone, objective: def.objective };
   const Chapter = def.Component;
@@ -186,62 +186,51 @@ export function TuningLabScreen() {
   /**
    * THE LAST CHAPTER ENDS ON THE WHAT'S-LEFT SCREEN (owner 2026-09-29: "every
    * lab ends with a 'what's left' screen"; always allow review and redo).
-   * CONTINUE used to grey out on the last chapter — a dead end. It is now
-   * FINISH, which swaps LabEndScreen in for the chapter: the chapters not yet
-   * done (this lab's own device progress — no credit), a jump to each,
-   * PRACTISE AGAIN from the first chapter (clears nothing) and DONE.
+   * FINISH › on the strip swaps LabEndScreen in for the chapter: the chapters
+   * not yet done (this lab's own device progress — no credit), a jump to
+   * each, PRACTISE AGAIN from the first chapter (clears nothing) and DONE.
    */
-  const finish = () => {
+  const finish = useCallback(() => {
     player.stop();
-    setListOpen(false);
     setEnding(true);
-  };
+  }, [player]);
+  const unEnd = useCallback(() => setEnding(false), []);
   const endCleared = new Set((progress?.completed ?? []).map(String));
 
-  return (
-    <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
-      <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} style={styles.backBtn} accessibilityRole="button" accessibilityLabel="Leave the lab">
-          <Text style={styles.back}>‹</Text>
-        </Pressable>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.kicker}>TUNING & TEMPERAMENT LAB · CHAPTER {chapter + 1} OF {CHAPTER_COUNT}</Text>
-          <Text style={styles.title} numberOfLines={2}>{def.title}</Text>
-        </View>
-        {/* Two-segment toggle: both states are visible, so the learner can see
-            what tapping will do (the old single label only named the current state). */}
-        <Pressable onPress={toggleMath} style={styles.mathBtn} accessibilityRole="switch" accessibilityState={{ checked: mathView }} aria-checked={mathView} accessibilityLabel="See the math" accessibilityHint="Shows or hides the derivations under each display">
-          <View style={[styles.seg, !mathView && styles.segOn]}><Text style={[styles.mathBtnText, !mathView && styles.segOnText]}>BASIC</Text></View>
-          <View style={[styles.seg, mathView && styles.segOnMath]}><Text style={[styles.mathBtnText, mathView && { color: colors.cyanBright }]}>MATH</Text></View>
-        </Pressable>
-      </View>
+  // THE SHARED LAB NAVIGATION (kit/LabNavBar, owner 2026-09-30). The strip is
+  // 1-based (MODULE 3 / 14); `chapter` stays the 0-based registry index. The
+  // hook persists nothing — `goTo` keeps the stop-on-leave and the save.
+  const units = useMemo(
+    () => CHAPTERS.map((c) => ({ id: String(c.index), title: c.title, done: !!progress?.completed.includes(c.index) })),
+    [progress],
+  );
+  const navGo = useCallback((i: number) => goTo(CHAPTERS[i]?.index ?? 0), [goTo]);
+  const nav = useLabNav({
+    units,
+    index: CHAPTERS.findIndex((c) => c.index === chapter),
+    ending,
+    go: navGo,
+    finish,
+    unEnd,
+    reset: { label: 'START OVER (PRACTICE)', run: confirmReset },
+  });
 
-      {/* progress dots */}
-      <Pressable onPress={() => setListOpen(!listOpen)} style={styles.dots} accessibilityRole="button" accessibilityState={{ expanded: listOpen }} aria-expanded={listOpen} accessibilityLabel={`Chapter list. ${progress?.completed.length ?? 0} of ${CHAPTER_COUNT} complete`}>
-        {CHAPTER_TITLES.map((_, i) => (
-          <View key={i} style={[styles.dot, progress?.completed.includes(i) && styles.dotDone, i === chapter && styles.dotNow]} />
-        ))}
-        <Text style={styles.dotsText}>{progress?.completed.length ?? 0}/{CHAPTER_COUNT} done {listOpen ? '▴' : '▾'}</Text>
-      </Pressable>
-      {listOpen ? (
-        // On a rack chapter the list is its own scroller (the rack takes the
-        // rest of the height), capped so the stage stays in view beneath it.
-        <ScrollView style={styles.listScroll} contentContainerStyle={styles.list}>
-          {CHAPTER_TITLES.map((t, i) => {
-            const built = CHAPTERS.some((c) => c.index === i);
-            return (
-              <Pressable key={i} disabled={!built} onPress={() => goTo(i)} style={styles.listRow} accessibilityRole="button" accessibilityLabel={`Chapter ${i}, ${t}${progress?.completed.includes(i) ? ', complete' : ''}${built ? '' : ', not available'}`}>
-                <Text style={[styles.listText, !built && { color: colors.textMutedDeep }, i === chapter && { color: colors.cyanBright }]}>
-                  {progress?.completed.includes(i) ? '✓' : '○'} {i}. {t}
-                </Text>
-              </Pressable>
-            );
-          })}
-          <Pressable onPress={confirmReset} style={styles.listRow} accessibilityRole="button" accessibilityLabel="Start a fresh practice run from the first chapter">
-            <Text style={[styles.listText, { color: colors.textMuted }]}>START OVER (PRACTICE)</Text>
+  return (
+    <LabNavProvider value={nav}>
+    <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
+      <LabHeader
+        title="TUNING & TEMPERAMENT LAB"
+        subtitle={ending ? "What's left" : def.title}
+        right={
+          /* Two-segment toggle: both states are visible, so the learner can see
+             what tapping will do (the old single label only named the current state). */
+          <Pressable onPress={toggleMath} style={styles.mathBtn} accessibilityRole="switch" accessibilityState={{ checked: mathView }} aria-checked={mathView} accessibilityLabel="See the math" accessibilityHint="Shows or hides the derivations under each display">
+            <View style={[styles.seg, !mathView && styles.segOn]}><Text style={[styles.mathBtnText, !mathView && styles.segOnText]}>BASIC</Text></View>
+            <View style={[styles.seg, mathView && styles.segOnMath]}><Text style={[styles.mathBtnText, mathView && { color: colors.cyanBright }]}>MATH</Text></View>
           </Pressable>
-        </ScrollView>
-      ) : null}
+        }
+      />
+      <LabNavBar nav={nav} />
 
       {ending ? (
         <LabEndScreen
@@ -255,13 +244,14 @@ export function TuningLabScreen() {
           onDone={() => navigation.goBack()}
         />
       ) : rack ? (
-        // The rack takes the rest of the height; the chapter's own well scrolls.
+        // The rack takes the rest of the height; the chapter's own well scrolls
+        // and ends on the rack's own "NEXT: <chapter> ›" (LabNavProvider).
         // Keyed on the chapter so a revisit starts the chapter's state fresh.
         <View style={styles.rackFill}>
           <Chapter key={chapter} ctx={ctx} />
         </View>
       ) : (
-      <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, readingColumn, { paddingBottom: insets.bottom + 24 }]}>
+      <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, readingColumn, { paddingBottom: 24 }]}>
         {/* This lab PLAYS synthesized tones — it never uses the microphone
             (the note said it did until 2026-09-30, factually wrong). What the
             learner hears passes through an uncalibrated output and speaker or
@@ -274,60 +264,39 @@ export function TuningLabScreen() {
           </View>
         ) : null}
         <Chapter ctx={ctx} />
+        {/* The reading chapter has no rack, so it draws the in-flow NEXT itself. */}
+        <LabNextButton />
       </ScrollView>
       )}
 
-      {/* sound status + navigation */}
-      <View style={[styles.footer, { paddingBottom: insets.bottom + 8 }]}>
-        <Text style={styles.sound} accessibilityLiveRegion="polite">
-          {status.rendering ? `Rendering: ${status.rendering}…` : status.playing ? `♪ ${status.label}` : 'Sound: stopped'}
-        </Text>
-        {/* On a rack chapter ■ STOP is a DOCK key (reachable in full screen,
-            where this footer is not); the footer copy would be a duplicate
-            an inch away. The reading chapter and the end screen keep it. */}
-        {rack && !ending ? null : (
-        <Pressable onPress={() => player.stop()} style={styles.stopBtn} accessibilityRole="button" accessibilityLabel="Stop all audio">
-          <Text style={styles.stopText}>■ STOP</Text>
-        </Pressable>
-        )}
-        <Pressable onPress={() => builtPrev && goTo(builtPrev.index)} disabled={!builtPrev} style={[styles.navBtn, !builtPrev && { opacity: 0.35 }]} accessibilityRole="button" accessibilityLabel="Back one chapter">
-          <Text style={styles.navText}>‹ BACK</Text>
-        </Pressable>
-        <Pressable
-          onPress={() => (builtNext ? goTo(builtNext.index) : finish())}
-          style={[styles.navBtn, styles.navNext]}
-          accessibilityRole="button"
-          accessibilityLabel={builtNext ? `Continue to chapter ${builtNext.index}` : "Finish the lab and see what's left"}
-        >
-          <Text style={[styles.navText, { color: colors.green }]}>{builtNext ? 'CONTINUE ›' : 'FINISH ›'}</Text>
-        </Pressable>
-      </View>
+      {/* Sound status + ■ STOP — on the reading chapter and the end screen
+          only. On a rack chapter ■ STOP is a DOCK key (reachable in full
+          screen, where this footer is not) and the rack pads the safe area
+          itself; a footer copy would be a duplicate an inch away. */}
+      {rack && !ending ? null : (
+        <View style={[styles.footer, { paddingBottom: insets.bottom + 8 }]}>
+          <Text style={styles.sound} accessibilityLiveRegion="polite">
+            {status.rendering ? `Rendering: ${status.rendering}…` : status.playing ? `♪ ${status.label}` : 'Sound: stopped'}
+          </Text>
+          <Pressable onPress={() => player.stop()} style={styles.stopBtn} accessibilityRole="button" accessibilityLabel="Stop all audio">
+            <Text style={styles.stopText}>■ STOP</Text>
+          </Pressable>
+        </View>
+      )}
     </View>
+    </LabNavProvider>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 6 },
-  backBtn: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
-  back: { color: colors.textPrimary, fontSize: 30, lineHeight: 32 },
-  kicker: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1.5 },
-  title: { color: colors.textPrimary, fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.5 },
+  // The header (‹, title, subtitle) and the strip are kit/LabNavBar's.
   mathBtn: { minHeight: 44, flexDirection: 'row', alignItems: 'center', padding: 3, gap: 2, borderRadius: 10, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#0e0e10' },
   seg: { minHeight: 36, paddingHorizontal: 9, borderRadius: 8, justifyContent: 'center' },
   segOn: { backgroundColor: '#1d1d21' },
   segOnMath: { backgroundColor: '#0f1a22', borderWidth: 1, borderColor: colors.cyanBright },
   segOnText: { color: colors.textPrimary },
   mathBtnText: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 1.2 },
-  dots: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 16, minHeight: 44 },
-  dot: { width: 12, height: 6, borderRadius: 3, backgroundColor: '#26262b' },
-  dotDone: { backgroundColor: colors.green },
-  dotNow: { backgroundColor: colors.cyanBright },
-  dotsText: { marginLeft: 6, color: colors.textMuted, fontFamily: fonts.barlowMedium, fontSize: 11 },
-  listScroll: { maxHeight: 260, flexGrow: 0 },
-  list: { marginHorizontal: 16, borderRadius: 12, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#101013', paddingVertical: 4 },
-  listRow: { minHeight: 44, justifyContent: 'center', paddingHorizontal: 12 },
-  listText: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 13 },
   scroll: { paddingHorizontal: 16, paddingTop: 6, gap: 10 },
   rackFill: { flex: 1 },
   accuracyNote: { marginBottom: 10, alignSelf: 'flex-start' },
@@ -338,7 +307,4 @@ const styles = StyleSheet.create({
   sound: { flex: 1, color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12 },
   stopBtn: { minHeight: 44, paddingHorizontal: 10, borderRadius: 10, borderWidth: 1, borderColor: '#4a2020', justifyContent: 'center', backgroundColor: '#1a0f10' },
   stopText: { color: colors.red, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1 },
-  navBtn: { minHeight: 44, paddingHorizontal: 12, borderRadius: 10, borderWidth: 1, borderColor: colors.hairline, justifyContent: 'center', backgroundColor: '#131315' },
-  navNext: { borderColor: colors.green, backgroundColor: '#173021' },
-  navText: { color: colors.textSecondary, fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2 },
 });

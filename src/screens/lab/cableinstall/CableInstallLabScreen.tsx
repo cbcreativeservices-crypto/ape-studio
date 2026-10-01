@@ -1,10 +1,12 @@
 /**
  * CableInstallLabScreen — "Cable Dressing & Installation" (owner brief
  * 2026-08-24): a professional installation-decision lab. 13 stages on the
- * stepped-lab shell (CableLab/MicSelect template — hand-rolled header, top
- * nav, dots, single ScrollView, ONLY the active stage mounts), with
- * Rule-or-Myth interstitials between stages, a mastery profile, and the
- * field-check reward on completion.
+ * SHARED lab navigation (kit/LabNavBar, owner 2026-09-30: one strip on every
+ * step — INTRO, MODULE n / 13, WHAT'S LEFT — CONTENTS from the readout, the
+ * myth interstitial intercepting NEXT through `beforeAdvance`; a single
+ * ScrollView, ONLY the active stage mounts), with Rule-or-Myth interstitials
+ * between stages, a mastery profile, and the field-check reward on
+ * completion. The completion stage is the lab's own what's-left end state.
  *
  * The loop every stage serves: PLAN → ROUTE → SUPPORT → DRESS → PROTECT →
  * TERMINATE → LABEL → INSPECT.
@@ -16,7 +18,6 @@
  * users neither restore nor persist (house guest rule).
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
@@ -26,12 +27,12 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { markLabUnit, registerLabUnits, useLabCompletion } from '../../../features/lab/labCompletion';
 import { colors, fonts } from '../../../theme/tokens';
+import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { RuleOrMythCard, SourceSheet } from './bits';
 import { IntroSceneArt } from './introSceneArt';
 import {
   Animated,
   Appear,
-  CI_EASE,
   CI_MOTION,
   CI_SPRING_UI,
   Stagger,
@@ -41,9 +42,7 @@ import {
   useCountUp,
   useSharedValue,
   withDelay,
-  withSequence,
   withSpring,
-  withTiming,
 } from './motion';
 import { CI_MYTHS } from './data/scenarios';
 import { CI_DIMS, CI_DIM_META, masteryBlocks, mergeDims, overallScore, weakestDim, type CiDimScores } from './engine/score';
@@ -215,7 +214,7 @@ export function CableInstallLabScreen() {
 
   // Computed every render (13 Set lookups) rather than memoised: a memo keyed
   // on [cleared, step] kept the pre-hydration value 1 after the mirror was
-  // seeded, so canEnter() locked every stage ≥ 2 on resume (B-153).
+  // seeded, so the resume landing locked every stage ≥ 2 (B-153).
   let firstIncomplete = COMPLETE_STEP;
   for (let i = 0; i < CI_MODULES.length; i++) {
     if (!runUnitsRef.current.has(CI_MODULES[i].unit)) {
@@ -227,20 +226,14 @@ export function CableInstallLabScreen() {
   /**
    * ⛔ EVERY STAGE IS ALWAYS REACHABLE (owner 2026-09-20, standing rule for
    * ALL labs): "always allow user to scroll through pages without requiring
-   * them to finish every detail."
-   *
-   * This used to return `n <= firstIncomplete`, so one unreviewed card - six
-   * consequence tiles in Stage 1, in the case that prompted this - disabled
-   * NEXT and stranded the learner with no visible way forward. The owner hit
-   * it and could not tell what the app wanted. A lab is a place to look
-   * around, and blocking the exit teaches nothing.
+   * them to finish every detail." The strip's NEXT › and every CONTENTS row
+   * are always live; nothing here gates a stage on the one before it.
    *
    * ⚠️ CREDIT IS STILL EARNED, NOT GIVEN. `completedUnits` is untouched; the
-   * completion stage now lists what is outstanding and links to it. Freedom
-   * to move is not the same as freedom from the work, and conflating the two
-   * is how you end up either nagging or lying.
+   * completion stage lists what is outstanding and links to it. Freedom to
+   * move is not the same as freedom from the work, and conflating the two is
+   * how you end up either nagging or lying.
    */
-  const canEnter = useCallback((_n: number) => true, []);
 
   const moduleIdx = step - 1; // 0-based into CI_MODULES when 1..13
   const mod = moduleIdx >= 0 && moduleIdx < CI_MODULES.length ? CI_MODULES[moduleIdx] : null;
@@ -273,35 +266,67 @@ export function CableInstallLabScreen() {
 
   const openSources = useCallback((ids: string[]) => setSourceIds(ids), []);
 
-  const next = () => {
-    // A myth interstitial is showing: NEXT › means the same as the card's own
-    // continue. Without this guard every tap swapped in the next un-shown myth
-    // (recording it as shown, never to appear again) instead of advancing (B-064).
-    if (pendingMyth) {
-      goTo(step + 1);
-      return;
-    }
-    if (step === INTRO_STEP) {
-      goTo(1);
-      return;
-    }
-    if (mod && runUnitsRef.current.has(mod.unit)) {
-      // Myth interstitial between stages (spec §25) — one per boundary,
-      // never repeated across the lab.
-      const myth = CI_MYTHS.find((m) => !shownMyths.includes(m.id));
-      if (myth && step < CI_MODULES.length) {
-        setPendingMyth(myth.id);
-        const myths = [...shownMyths, myth.id];
-        setShownMyths(myths);
-        persist(step, dims, myths);
-        scrollRef.current?.scrollTo({ y: 0, animated: false });
-        return;
+  /**
+   * NEXT › / FINISH › from the shared strip (and the in-flow button) land
+   * here first. 'consumed' = the myth interstitial took the tap: between two
+   * stages (spec §25), once a stage's unit is done, one un-shown myth renders
+   * INSTEAD of the next stage — one per boundary, never repeated across the
+   * lab. While a myth is showing, NEXT › means the same as the card's own
+   * continue (B-064: every tap used to swap in the next un-shown myth,
+   * recording it as shown, instead of advancing), so it is NOT consumed and
+   * the hook moves on to the stage the myth was holding.
+   */
+  const beforeAdvance = useCallback(
+    (from: number) => {
+      if (pendingMyth || from < 0) return;
+      if (mod && runUnitsRef.current.has(mod.unit)) {
+        const myth = CI_MYTHS.find((m) => !shownMyths.includes(m.id));
+        if (myth && step < CI_MODULES.length) {
+          setPendingMyth(myth.id);
+          const myths = [...shownMyths, myth.id];
+          setShownMyths(myths);
+          persist(step, dims, myths);
+          scrollRef.current?.scrollTo({ y: 0, animated: false });
+          return 'consumed';
+        }
       }
-    }
-    goTo(Math.min(COMPLETE_STEP, step + 1));
-  };
+    },
+    [pendingMyth, mod, shownMyths, step, dims, persist],
+  );
 
-  const prev = () => goTo(Math.max(INTRO_STEP, step - 1));
+  /** REPEAT LAB (completion stage) and the CONTENTS reset: a fresh RUN, not a
+   *  wipe of banked credit (see runUnitsRef). */
+  const repeatLab = useCallback(() => {
+    repeatedRef.current = true;
+    runUnitsRef.current = new Set();
+    setDims({});
+    setShownMyths([]);
+    goTo(1, {}, []);
+  }, [goTo]);
+
+  // The shared strip (kit/LabNavBar): step 0 is the INTRO (index -1), the
+  // stages are MODULE 1–13, the completion stage is the end state (WHAT'S
+  // LEFT, NEXT's slot empty). CONTENTS ✓ reads THIS RUN (runUnitsRef), as the
+  // what's-left list does; `forceTick` re-renders it when a unit lands.
+  const navUnits = CI_MODULES.map((m) => {
+    const done = runUnitsRef.current.has(m.unit);
+    return { id: m.id, title: m.title, done };
+  });
+  const ending = step === COMPLETE_STEP;
+  const navGo = useCallback((i: number) => goTo(i + 1), [goTo]);
+  const finish = useCallback(() => goTo(COMPLETE_STEP), [goTo]);
+  const unEnd = useCallback(() => goTo(CI_MODULES.length), [goTo]);
+  const nav = useLabNav({
+    units: navUnits,
+    index: ending ? CI_MODULES.length - 1 : step - 1,
+    ending,
+    intro: true,
+    go: navGo,
+    beforeAdvance,
+    finish,
+    unEnd,
+    reset: { label: 'REPEAT LAB (PRACTICE)', run: repeatLab },
+  });
 
   const modDone = mod ? runUnitsRef.current.has(mod.unit) : false;
   /** The per-unit set a scene resumes from. During a Repeat run the scenes
@@ -310,124 +335,29 @@ export function CableInstallLabScreen() {
   const Body = mod ? MODULE_BODIES[mod.id] : null;
   const myth = pendingMyth ? CI_MYTHS.find((m) => m.id === pendingMyth) : null;
   /** A rack-layout stage (display pinned, well scrolls, dock at the bottom):
-   *  it gets the full height and no ScrollView of ours; the BACK / NEXT row
-   *  becomes a fixed footer under it. */
+   *  it gets the full height and no ScrollView of ours; its well appends the
+   *  in-flow NEXT itself (RackUnit under LabNavProvider). */
   const rackStage = !!(mod && Body && mod.rack && !myth);
 
-  const navButtons = (
-    <>
-      {/* flex wrappers (design pass 2026-08-31): the buttons rendered
-          content-width — BACK was a ~40pt-wide chiclet. */}
-      <View style={{ flex: 1 }}>
-        <GlassButton label="‹ BACK" tint="teal" height={44} fontSize={13} onPress={prev} />
-      </View>
-      <View style={{ flex: 2 }}>
-        <GlassButton
-          /* Never 'COMPLETE THE STAGE' as a dead end: the control always
-             moves you on, and the completion stage is what tells you what is
-             still outstanding. 'SKIP AHEAD' is honest about what you are
-             doing rather than pretending the stage is finished. */
-          label={step === CI_MODULES.length ? 'FINISH ✓' : modDone ? 'NEXT ›' : 'SKIP AHEAD ›'}
-          tint={modDone ? 'green' : 'gold'}
-          height={44}
-          fontSize={13}
-          /* ⛔ ALWAYS LIVE (owner 2026-09-21 bug pass). The comment above
-             has said "the control always moves you on" since the gate was
-             taken out of `canEnter`, but this button was missed: it was
-             `onPress={modDone ? next : undefined}` with `disabled`, so
-             GlassButton dimmed it to 0.45 and swallowed the press. The
-             loudest control on the screen announced SKIP AHEAD and then
-             did nothing — the exact shape of the complaint that produced
-             the standing rule. Progress is banked per unit, so leaving
-             early costs the stage's credit and nothing else, and the
-             completion stage is what lists what is still outstanding. */
-          onPress={next}
-        />
-      </View>
-    </>
-  );
-
   return (
+    <LabNavProvider value={nav}>
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
-        </Pressable>
-        <View style={{ flexShrink: 1, flexGrow: 1 }}>
-          <Text style={styles.title}>{CI_TITLE.toUpperCase()}</Text>
-          <Text style={styles.subtitle}>{CI_SUBTITLE}</Text>
-        </View>
-        <AccuracyNote compact />
-      </View>
-
-      {step > INTRO_STEP && step < COMPLETE_STEP ? (
-        <>
-          <View style={styles.topNav}>
-            <Pressable onPress={() => goTo(INTRO_STEP)} hitSlop={8} accessibilityRole="button" accessibilityLabel="Lab start">
-              <Text style={styles.navBtn}>⏮ START</Text>
-            </Pressable>
-            <Pressable onPress={prev} hitSlop={8} accessibilityRole="button" accessibilityLabel="Previous stage">
-              <Text style={styles.navBtn}>‹ PREV</Text>
-            </Pressable>
-            <View style={{ flex: 1 }} />
-            <Text style={styles.navPos}>
-              STAGE {step} / {CI_MODULES.length}
-            </Text>
-            <View style={{ flex: 1 }} />
-            <Pressable onPress={next} hitSlop={8} accessibilityRole="button" accessibilityLabel="Next stage">
-              <Text style={styles.navBtn}>NEXT ›</Text>
-            </Pressable>
-          </View>
-          {/* NO `accessible` HERE, deliberately (2026-09-18, pass 5 · W8): this row's
-              children are the twelve unit-navigation buttons. Collapsing it into a
-              single a11y element would read the summary and make every unit
-              unreachable — the opposite of the fix. The label stays; the buttons
-              stay focusable. */}
-          <View style={styles.dotsRow} accessibilityLabel={`${cleared} of ${total} units complete`}>
-            {CI_MODULES.map((m, i) => {
-              const n = i + 1;
-              const done = runUnitsRef.current.has(m.unit);
-              const active = n === step;
-              const enterable = canEnter(n);
-              return (
-                <Pressable
-                  key={m.id}
-                  onPress={() => enterable && goTo(n)}
-                  disabled={!enterable}
-                  hitSlop={6}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected: active, disabled: !enterable }}
-                  aria-pressed={active}
-                  aria-disabled={!enterable}
-                  accessibilityLabel={`${m.title}${done ? ', complete' : enterable ? '' : ', locked'}`}
-                >
-                  <ProgressDot done={done} active={active} enterable={enterable} />
-                </Pressable>
-              );
-            })}
-            <Text style={styles.dotsCount}>
-              {cleared}/{total} units
-            </Text>
-          </View>
-        </>
-      ) : null}
+      <LabHeader title={CI_TITLE.toUpperCase()} subtitle={CI_SUBTITLE} right={<AccuracyNote compact />} />
+      <LabNavBar nav={nav} />
 
       {rackStage && mod && Body ? (
-        <>
-          <View style={styles.rackFill}>
-            <Body
-              key={mod.id}
-              width={width}
-              completed={modDone}
-              onComplete={onModuleComplete}
-              onDims={onModuleDims}
-              openSources={openSources}
-              clearedUnits={sceneClearedUnits}
-              head={{ tag: mod.tag, title: mod.title, intro: mod.intro }}
-            />
-          </View>
-          <View style={[styles.rackFooter, { paddingBottom: insets.bottom + 8 }]}>{navButtons}</View>
-        </>
+        <View style={styles.rackFill}>
+          <Body
+            key={mod.id}
+            width={width}
+            completed={modDone}
+            onComplete={onModuleComplete}
+            onDims={onModuleDims}
+            openSources={openSources}
+            clearedUnits={sceneClearedUnits}
+            head={{ tag: mod.tag, title: mod.title, intro: mod.intro }}
+          />
+        </View>
       ) : (
       // Drag-vs-scroll lock (bug hunt 2026-09-30): the Mech / Label / EMI
       // DragSliders lock through ScrollLockCtx, and this host provided none, so
@@ -448,7 +378,7 @@ export function CableInstallLabScreen() {
               // A finished run's START LAB starts at stage 1, not the last
               // stage (bug hunt 2026-09-30).
               onStart={() => goTo(firstIncomplete <= CI_MODULES.length ? firstIncomplete : 1)}
-              resumeLabel={firstIncomplete > 1 && firstIncomplete <= CI_MODULES.length ? `CONTINUE — STAGE ${firstIncomplete}` : null}
+              resumeLabel={firstIncomplete > 1 && firstIncomplete <= CI_MODULES.length ? `RESUME — MODULE ${firstIncomplete}` : null}
               progressLine={`${cleared} of ${total} units complete`}
               onSources={() => setSourceIds(['nec', 'osha', 'bldg_fire', 'ada', 'tia568', 'tia569', 'tia606', 'tia607', 'bicsi_n1', 'bicsi_itsimm', 'bicsi_tdmm', 'avixa_f502_01', 'avixa_f502_02', 'avixa_f501_01', 'avixa_verify', 'aes48', 'iso14763', 'en50174', 'nema_tray', 'mfr_cable', 'mfr_support', 'firestop_listed', 'ufgs'])}
             />
@@ -475,14 +405,7 @@ export function CableInstallLabScreen() {
                   const idx = CI_MODULES.findIndex((m) => m.id === target);
                   goTo(idx + 1);
                 }}
-                onRepeat={() => {
-                  // A fresh RUN, not a wipe of banked credit (see runUnitsRef).
-                  repeatedRef.current = true;
-                  runUnitsRef.current = new Set();
-                  setDims({});
-                  setShownMyths([]);
-                  goTo(1, {}, []);
-                }}
+                onRepeat={repeatLab}
                 // One exit (bug hunt 2026-09-30 pass 2): a doubled RETURN ran
                 // goBack() twice and popped the screen under the lab too.
                 onReturn={() => {
@@ -504,13 +427,17 @@ export function CableInstallLabScreen() {
           ) : null}
         </View>
 
-        {step > INTRO_STEP && step < COMPLETE_STEP && !myth ? <View style={styles.bottomNav}>{navButtons}</View> : null}
+        {/* The in-flow NEXT / FINISH at the end of a stage. The intro has its
+            own START LAB, the myth card its own continue, and the completion
+            stage is the end state (LabNextButton draws nothing there). */}
+        {step > INTRO_STEP && step < COMPLETE_STEP && !myth ? <LabNextButton nav={nav} /> : null}
         </ScrollLockProvider>
       </ScrollView>
       )}
 
       <SourceSheet sourceIds={sourceIds} onClose={() => setSourceIds(null)} />
     </View>
+    </LabNavProvider>
   );
 }
 
@@ -561,37 +488,6 @@ function IntroStage({
         <Text style={styles.sourcesLink}>SOURCES / STANDARDS ›</Text>
       </Pressable>
     </View>
-  );
-}
-
-/** A progress dot: springs to green with a small pop the moment its stage is
- *  completed, and settles a touch larger while it is the active stage. */
-function ProgressDot({ done, active, enterable }: { done: boolean; active: boolean; enterable: boolean }) {
-  const m = useCiMotion();
-  const pop = useSharedValue(1);
-  const ring = useSharedValue(active ? 1.18 : 1);
-  const wasDone = useRef(done);
-  useEffect(() => {
-    if (done && !wasDone.current && !m.reduce) {
-      cancelAnimation(pop);
-      pop.value = withSequence(withTiming(1.5, { duration: 130, easing: CI_EASE.out }), withSpring(1, CI_SPRING_UI));
-    }
-    wasDone.current = done;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [done, m.reduce]);
-  useEffect(() => {
-    if (m.reduce) {
-      ring.value = active ? 1.18 : 1;
-      return;
-    }
-    ring.value = withSpring(active ? 1.18 : 1, CI_SPRING_UI);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active, m.reduce]);
-  const s = useAnimatedStyle(() => ({ transform: [{ scale: pop.value * ring.value }] }));
-  return (
-    <Animated.View
-      style={[styles.dot, done && styles.dotDone, active && styles.dotActive, !enterable && styles.dotLocked, s]}
-    />
   );
 }
 
@@ -774,7 +670,7 @@ function FieldCheckStage({ onBack }: { onBack: () => void }) {
           ))}
         </Stagger>
       ))}
-      <GlassButton label="‹ BACK TO RESULTS" tint="teal" height={44} fontSize={12.5} onPress={onBack} />
+      <GlassButton label="‹ RETURN TO RESULTS" tint="teal" height={44} fontSize={12.5} onPress={onBack} />
     </View>
   );
 }
@@ -783,37 +679,12 @@ const styles = StyleSheet.create({
   // Top padding follows the safe area (bug hunt 2026-09-30): a fixed 54 put
   // the back chevron under a Dynamic Island (inset 59-62).
   root: { flex: 1, backgroundColor: colors.screenBg },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 8 },
-  back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
-  title: { fontFamily: fonts.oswaldSemiBold, fontSize: 15.5, letterSpacing: 1.1, color: colors.textPrimary },
-  subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12, color: colors.textSub, marginTop: 1 },
-  topNav: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 16, paddingBottom: 4 },
-  navBtn: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1, color: colors.amber },
-  navBtnDisabled: { color: '#45454d' },
-  navPos: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, color: colors.textSub },
-  dotsRow: { flexDirection: 'row', alignItems: 'center', gap: 7, paddingHorizontal: 16, paddingBottom: 6 },
-  dot: { width: 9, height: 9, borderRadius: 5, backgroundColor: '#2c2c33' },
-  dotDone: { backgroundColor: colors.green },
-  dotActive: { borderWidth: 1.5, borderColor: colors.amber },
-  dotLocked: { opacity: 0.45 },
-  dotsCount: { marginLeft: 6, fontFamily: fonts.mono, fontSize: 11, color: colors.textSub },
   scroll: { padding: 16, paddingBottom: 40, gap: 14 },
   stageTag: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 2, color: colors.amberLabel },
   stageTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 19, letterSpacing: 0.5, color: colors.textPrimary },
   stageIntro: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
-  bottomNav: { flexDirection: 'row', gap: 10, marginTop: 16 },
-  /** Rack-layout stage: the RackUnit takes the height between the stage nav
-   *  and the fixed BACK / NEXT footer. */
+  /** Rack-layout stage: the RackUnit takes the whole height under the strip. */
   rackFill: { flex: 1 },
-  rackFooter: {
-    flexDirection: 'row',
-    gap: 10,
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: '#1f1f25',
-    backgroundColor: colors.screenBg,
-  },
   introLead: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20.5, color: colors.textSecondary },
   governNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textSub, fontStyle: 'italic' },
   progressLine: { fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 0.6, color: colors.amberLabel },

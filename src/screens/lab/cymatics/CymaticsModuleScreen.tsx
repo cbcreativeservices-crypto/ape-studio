@@ -1,7 +1,8 @@
 /**
  * CymaticsModuleScreen — routes one Cymatics Lab module id to its component
- * (Digital Lab host idiom): header (back + title), prev/next module nav,
- * scroll well, and the shared GuidedLessonSheet on the 'cymatics' lesson.
+ * (Digital Lab host idiom): the shared lab header + navigation strip
+ * (kit/LabNavBar), scroll well, and the shared GuidedLessonSheet on the
+ * 'cymatics' lesson.
  *
  * RACK MODULES (APE_LAB_UX_PROPOSAL 2026-08-23; the Wave host precedent): an
  * interactive module in RACK_MODULES renders the Rack Unit itself
@@ -10,8 +11,7 @@
  * height, no ScrollView, and no bottom lesson row. Prose-only modules keep
  * the document layout — the spec never converts them.
  */
-import { useEffect, useRef, useState } from 'react';
-import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
+import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useIsFocused, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -22,6 +22,7 @@ import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLes
 import { ScrollLockProvider } from '../LabShell';
 import { markLabVisit, useLabVisits } from '../../../features/lab/labVisits';
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
+import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { CYMATICS_MODULES, type CymaticsModuleId } from './modules/registry';
 import { IntroModule } from './modules/modIntro';
 import { NodesModule } from './modules/modNodes';
@@ -71,29 +72,22 @@ export function CymaticsModuleScreen() {
     setLessonKey(k);
     setLessonOpen(true);
   };
+  // Module navigation is the SHARED strip (kit/LabNavBar, owner 2026-09-30).
+  // The hook owns the 400 ms double-tap lock (bug hunt 2026-09-30: a double-tap
+  // on NEXT at the second-last module used to skip the last one) and calls the
+  // host's go / finish / unEnd; the host keeps the in-place param swap.
   const idx = CYMATICS_MODULES.findIndex((m) => m.id === meta.id);
   const last = CYMATICS_MODULES.length - 1;
-  // Double-tap lock (bug hunt 2026-09-30): the second tap of a double-tap on
-  // NEXT at the second-last module landed after the re-render, where NEXT is
-  // already FINISH, and skipped the last module. Taps within 400 ms are ignored.
-  const nextTapAt = useRef(0);
-  const onNext = () => {
-    if (Date.now() - nextTapAt.current < 400) return;
-    nextTapAt.current = Date.now();
-    if (idx >= last) setEnding(true);
-    else goToModule(idx + 1);
-  };
+  // THE LAST MODULE ENDS ON THE WHAT'S-LEFT SCREEN (owner 2026-09-29: "every
+  // lab ends with a 'what's left' screen"). FINISH swaps LabEndScreen in for
+  // the module: what is still to do (jump links), PRACTISE AGAIN from module 1
+  // (clears nothing), DONE back to the lab home.
+  const [ending, setEnding] = useState(false);
   const goToModule = (i: number) => {
     if (i < 0 || i > last) return;
     setEnding(false);
     (navigation as { setParams: (p: { id: CymaticsModuleId }) => void }).setParams({ id: CYMATICS_MODULES[i].id });
   };
-  // THE LAST MODULE ENDS ON THE WHAT'S-LEFT SCREEN (owner 2026-09-29: "every
-  // lab ends with a 'what's left' screen"). NEXT used to grey out on the last
-  // module — a dead end. It is now FINISH, which swaps LabEndScreen in for the
-  // module: what is still to do (jump links), PRACTISE AGAIN from module 1
-  // (clears nothing), DONE back to the lab home.
-  const [ending, setEnding] = useState(false);
   // This lab banks no credit and kept no record, so it remembers which
   // modules were OPENED (labVisits — progress, never credit). Guests: this
   // session only (house guest rule, owner 2026-08-12).
@@ -102,6 +96,15 @@ export function CymaticsModuleScreen() {
   useEffect(() => {
     if (focused) markLabVisit('cymatics', meta.id, { persist: !guest });
   }, [focused, meta.id, guest]);
+  const nav = useLabNav({
+    units: CYMATICS_MODULES.map((m) => ({ id: m.id, title: m.title, done: visited.has(m.id) })),
+    index: idx,
+    ending,
+    go: goToModule,
+    finish: () => setEnding(true),
+    unEnd: () => setEnding(false),
+    reset: { label: 'START OVER (PRACTICE)', run: () => goToModule(0) },
+  });
   const endScreen = ending ? (
     <LabEndScreen
       labTitle="Cymatics Lab: Sound Made Visible"
@@ -116,30 +119,11 @@ export function CymaticsModuleScreen() {
   ) : null;
 
   return (
+    <LabNavProvider value={nav}>
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
-        </Pressable>
-        <View style={{ flexShrink: 1, flexGrow: 1 }}>
-          <Text style={styles.title}>{meta.title.toUpperCase()}</Text>
-          <Text style={styles.subtitle}>Cymatics Lab: Sound Made Visible</Text>
-        </View>
-        <AccuracyNote compact />
-      </View>
-      <View style={styles.topNav}>
-        {/* From WHAT'S LEFT, PREV returns to the last module — goToModule(idx - 1)
-            skipped it (bug pass 2026-09-30). */}
-        <Pressable onPress={() => (ending ? setEnding(false) : goToModule(idx - 1))} disabled={idx <= 0} hitSlop={8} accessibilityRole="button" accessibilityLabel="Previous module">
-          <Text style={[styles.navBtn, idx <= 0 && styles.navBtnDisabled]}>‹ PREV</Text>
-        </Pressable>
-        <View style={{ flex: 1 }} />
-        <Text style={styles.navPos}>{ending ? "WHAT'S LEFT" : `MODULE ${idx + 1} / ${CYMATICS_MODULES.length}`}</Text>
-        <View style={{ flex: 1 }} />
-        <Pressable onPress={onNext} hitSlop={8} accessibilityRole="button" accessibilityLabel={idx >= last ? "Finish the lab and see what's left" : 'Next module'}>
-          <Text style={styles.navBtn}>{idx >= last ? 'FINISH ›' : 'NEXT ›'}</Text>
-        </Pressable>
-      </View>
+      {/* The shared header: ‹ LEAVES THE LAB (kit/LabNavBar). */}
+      <LabHeader title={meta.title.toUpperCase()} subtitle="Cymatics Lab: Sound Made Visible" right={<AccuracyNote compact />} />
+      <LabNavBar nav={nav} />
       {endScreen ?? (
         <ScrollLockProvider value={setScrollLocked}>
           {RACK_MODULES.has(meta.id) ? (
@@ -156,25 +140,20 @@ export function CymaticsModuleScreen() {
               <Pressable style={styles.lessonRow} onPress={() => help()} accessibilityRole="button" accessibilityLabel="Open the guided lesson">
                 <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
               </Pressable>
+              {/* The in-flow NEXT at the end of the reading (a rack well gets it from RackUnit). */}
+              <LabNextButton />
             </ScrollView>
           )}
         </ScrollLockProvider>
       )}
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('cymatics')} controlKey={lessonKey} onClose={() => setLessonOpen(false)} />
     </View>
+    </LabNavProvider>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 8 },
-  back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
-  title: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.2, color: colors.textPrimary },
-  subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
-  topNav: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingBottom: 6 },
-  navBtn: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.amber },
-  navBtnDisabled: { opacity: 0.3 },
-  navPos: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.textSub },
   scroll: { padding: 16, paddingTop: 6, paddingBottom: 32, gap: 12 },
   rackFill: { flex: 1 },
   lessonRow: { marginTop: 10, borderRadius: 10, borderWidth: 1, borderColor: '#232329', paddingVertical: 12, paddingHorizontal: 14 },

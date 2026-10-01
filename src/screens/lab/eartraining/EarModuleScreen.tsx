@@ -11,9 +11,8 @@
  * buffers are freed on exit. All strings NEW COPY — owner review.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
@@ -29,6 +28,7 @@ import {
   type EarProgressState,
 } from '../../../features/ear/earProgress';
 import { useLabEndGuest } from '../kit/LabEndScreen';
+import { LabHeader } from '../kit/LabNavBar';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { SeeItView } from './SeeItView';
 import { useIsTablet } from '../../../theme/useIsTablet';
@@ -91,7 +91,6 @@ export function EarModuleScreen() {
   // Tablet pass (owner 2026-09-29): the drill sits in the 760 card column and
   // its answer grid keeps fixed cells instead of stretching to the edges.
   const isTablet = useIsTablet();
-  const navigation = useNavigation();
   const route = useRoute<RouteProp<RootStackParamList, 'EarModule'>>();
   const mod = earModuleById(route.params.id);
   const { requestAudioOutput } = useAudioOutputGate();
@@ -447,31 +446,32 @@ export function EarModuleScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
-        </Pressable>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.title}>{mod.title.toUpperCase()}</Text>
-          <Text style={styles.subtitle} accessibilityLabel={`Level ${level} of ${mod.levels}, ${mod.levelNames[level - 1] ?? ''}`}>
-            Level {level}/{mod.levels} · {mod.levelNames[level - 1] ?? ''}
-          </Text>
-        </View>
-        {/* ⛔ THE NOTE MATTERS MOST HERE. This is the screen that actually
-            SOUNDS the signals, through the phone's uncalibrated path and the
-            user's own headphones. */}
-        <AccuracyNote compact detail="These drills play through your phone’s UNCALIBRATED output and your own headphones or speakers, both of which colour what you hear. The skill — noticing a change and naming it — transfers anywhere; the absolute tonality you hear here does not." />
-        <View
-          style={styles.statPill}
-          accessible
-          accessibilityLabel={accuracy != null ? `Accuracy ${Math.round(accuracy * 100)} percent over the last 20 trials` : 'No trials yet'}
-        >
-          <Text style={styles.statText}>
-            {accuracy != null ? `${Math.round(accuracy * 100)}%` : '—'}
-          </Text>
-          <Text style={styles.statSub}>last 20</Text>
-        </View>
-      </View>
+      {/* The shared lab header (kit/LabNavBar, 2026-09-30): ‹ leaves the
+          module back to the hub, which IS the menu — so no strip here, and
+          NEXT › below means a lab move only; the drill's own button reads
+          NEXT TRIAL › / NEXT ROUND ›.
+          ⛔ THE NOTE MATTERS MOST HERE. This is the screen that actually
+          SOUNDS the signals, through the phone's uncalibrated path and the
+          user's own headphones. */}
+      <LabHeader
+        title={mod.title.toUpperCase()}
+        subtitle={`Level ${level}/${mod.levels} · ${mod.levelNames[level - 1] ?? ''}`}
+        right={
+          <>
+            <AccuracyNote compact detail="These drills play through your phone’s UNCALIBRATED output and your own headphones or speakers, both of which colour what you hear. The skill — noticing a change and naming it — transfers anywhere; the absolute tonality you hear here does not." />
+            <View
+              style={styles.statPill}
+              accessible
+              accessibilityLabel={accuracy != null ? `Accuracy ${Math.round(accuracy * 100)} percent over the last 20 trials` : 'No trials yet'}
+            >
+              <Text style={styles.statText}>
+                {accuracy != null ? `${Math.round(accuracy * 100)}%` : '—'}
+              </Text>
+              <Text style={styles.statSub}>last 20</Text>
+            </View>
+          </>
+        }
+      />
 
       <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: insets.bottom + 24 }]}>
         {needsAck ? (
@@ -609,7 +609,7 @@ export function EarModuleScreen() {
                       accessibilityRole="button"
                       accessibilityLabel={roundDone ? 'Start the next round' : 'Next trial'}
                     >
-                      <Text style={styles.nextText}>{roundDone ? 'NEXT ROUND ›' : 'NEXT ›'}</Text>
+                      <Text style={styles.nextText}>{roundDone ? 'NEXT ROUND ›' : 'NEXT TRIAL ›'}</Text>
                     </Pressable>
                   </View>
                 ) : null}
@@ -624,10 +624,9 @@ export function EarModuleScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingBottom: 8 },
-  back: { color: colors.textPrimary, fontSize: 30, lineHeight: 32, paddingHorizontal: 4 },
+  // header / back / subtitle now live in kit/LabNavBar's LabHeader; `title`
+  // stays for the "Module not found" fallback.
   title: { color: colors.textPrimary, fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1 },
-  subtitle: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12.5 },
   statPill: {
     alignItems: 'center', borderWidth: 1, borderColor: colors.hairline, borderRadius: 10,
     paddingHorizontal: 10, paddingVertical: 4, backgroundColor: '#121214',

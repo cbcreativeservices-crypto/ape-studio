@@ -1,11 +1,21 @@
 /**
  * AmpModuleScreen — the generic module shell (spec Part 2 preamble): objective
  * → the module's own explanation + interactions → knowledge checks →
- * takeaway → complete & continue. Progress (visited/done/checks) persists to
+ * takeaway → MARK COMPLETE. Progress (visited/done/checks) persists to
  * ape:amp:v1 through the serialized updater; nothing per-frame is ever stored.
+ *
+ * NAVIGATION is the shared lab strip (kit/LabNavBar, owner 2026-09-30) in
+ * sub-step mode: ‹ PREV / NEXT › walk a module's steps and roll over to the
+ * previous / next module at the boundaries (a module move is a
+ * navigation.replace, as before); the readout "MODULE 3 · STEP 2 / 4 ▾" opens
+ * CONTENTS (the module list); FINISH › on the last module opens the what's-
+ * left screen. NEXT past the last step BANKS the module first when every
+ * check is answered (credit is never lost to the way forward), and the old
+ * skip-ahead link is simply NEXT with checks still open. The in-flow
+ * "NEXT: <step> ›" at the end of every well is LabNextButton (automatic in a
+ * RackUnit well, appended to a read step's document here).
  */
-import { useCallback, useEffect, useState, type ReactNode } from 'react';
-import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -18,11 +28,14 @@ import { AMP_MODULE_COMPONENTS, BUILT_MODULE_IDS } from './modules';
 import { CheckCard, SectionTitle, TakeawayCard } from './kit';
 import { AmpStepHostContext, type AmpStepHost } from './steps';
 import { AccuracyNote } from '../../../components/AccuracyNote';
-import { LabEndLink, LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
+import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
+import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 // Tablet (owner 2026-09-29): a reading surface - capped at the reading column
 // and centred instead of running 990 pt wide. No-op on a phone.
 import { readingColumn } from '../../../theme/readingColumn';
+
+const LAB_TITLE = 'Amplifier Principles Lab';
 
 export function AmpModuleScreen() {
   const insets = useSafeAreaInsets();
@@ -35,6 +48,8 @@ export function AmpModuleScreen() {
   setAmpSaveBlocked(useLabEndGuest());
   const [checksAnswered, setChecksAnswered] = useState<Record<string, boolean>>({});
   const [done, setDone] = useState(false);
+  /** Every module already marked done — the ✓ marks in CONTENTS. */
+  const [doneIds, setDoneIds] = useState<ReadonlySet<string>>(() => new Set());
   const [finalSubmitted, setFinalSubmitted] = useState(false);
   // Module 8's own checks ARE its assessment (they sit in the scored final
   // pool); repeating them as "check yourself" on the same screen showed the
@@ -56,6 +71,7 @@ export function AmpModuleScreen() {
       if (!alive) return;
       const m = s.modules[mod.id] ?? emptyAmpModule();
       setDone(m.done);
+      setDoneIds(new Set(AMP_MODULES.filter((x) => s.modules[x.id]?.done).map((x) => x.id)));
       setChecksAnswered(m.checks);
       setFinalSubmitted(!!s.final);
     });
@@ -86,68 +102,31 @@ export function AmpModuleScreen() {
   /**
    * THE LAST MODULE ENDS ON THE WHAT'S-LEFT SCREEN (owner 2026-09-29: "every
    * lab ends with a 'what's left' screen"; keep credit, always allow a redo).
-   * Completing Module 8 used to just go back. It now shows LabEndScreen with
-   * the progress read back from ape:amp:v1 — the modules not yet marked
-   * complete and the final assessment (best result — a later retake never
-   * un-passes it). PRACTISE AGAIN reopens Module 1 and clears nothing.
+   * FINISH › (and CONTENTS → WHAT'S LEFT) shows LabEndScreen in place with the
+   * progress read back from ape:amp:v1 — the modules not yet marked complete
+   * and the final assessment (best result — a later retake never un-passes
+   * it). PRACTISE AGAIN reopens Module 1 and clears nothing.
    */
   const [endState, setEndState] = useState<AmpProgressState | null>(null);
   const showEnd = useCallback(() => {
     // A no-op mutate: reads the progress queued behind every earlier write.
     void updateAmpProgress(() => {}).then(setEndState);
   }, []);
-  const idx = AMP_MODULES.findIndex((x) => x.id === mod.id);
-  const next = AMP_MODULES.slice(idx + 1).find((x) => BUILT_MODULE_IDS.includes(x.id));
+  const built = useMemo(() => AMP_MODULES.filter((x) => BUILT_MODULE_IDS.includes(x.id)), []);
+  const idx = Math.max(0, built.findIndex((x) => x.id === mod.id));
 
-  const complete = useCallback(() => {
+  /** THE CREDIT ACTION: mark this module done. Never navigates — the strip
+   *  (or MARK COMPLETE ›, which goes through the strip's NEXT) moves on.
+   *  Queued behind every earlier write (checks, Module 8's final) — nothing
+   *  is clobbered whichever order the learner did things in. */
+  const bank = useCallback(() => {
     setDone(true);
-    // Queued behind every earlier write (checks, Module 8's final) — nothing
-    // is clobbered whichever order the learner did things in.
+    setDoneIds((prev) => (prev.has(mod.id) ? prev : new Set([...prev, mod.id])));
     void updateAmpProgress((s) => {
       const m = s.modules[mod.id] ?? emptyAmpModule();
       s.modules[mod.id] = { ...m, done: true };
     });
-    if (next) navigation.replace('AmpModule', { id: next.id });
-    else showEnd();
-  }, [mod.id, navigation, next, showEnd]);
-
-  if (endState) {
-    const built = AMP_MODULES.filter((x) => BUILT_MODULE_IDS.includes(x.id));
-    const final = endState.bestFinal ?? endState.final;
-    const cleared = new Set<string>(built.filter((x) => endState.modules[x.id]?.done).map((x) => x.id));
-    if (endState.bestFinal?.passed || endState.final?.passed) cleared.add('final');
-    return (
-      <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-        <View style={styles.header}>
-          <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back to the lab home">
-            <Text style={styles.back}>‹</Text>
-          </Pressable>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.title}>AMPLIFIER PRINCIPLES LAB</Text>
-            <Text style={styles.subtitle}>What’s left</Text>
-          </View>
-        </View>
-        <LabEndScreen
-          labTitle="Amplifier Principles Lab"
-          units={[
-            ...built.map((x) => ({ id: x.id, label: x.title })),
-            {
-              id: 'final',
-              label: 'Final assessment',
-              kind: 'check' as const,
-              detail: final ? `Best so far: ${Math.round(final.scorePct)}%${final.passed ? ' — passed' : ''}` : 'In Module 8 — not yet submitted',
-            },
-          ]}
-          cleared={cleared}
-          mode="progress"
-          onJump={(id) => navigation.replace('AmpModule', { id: id === 'final' ? 'apply' : (id as typeof mod.id) })}
-          onPracticeAgain={() => navigation.replace('AmpModule', { id: built[0]?.id ?? mod.id })}
-          onDone={() => navigation.goBack()}
-          bottomInset
-        />
-      </View>
-    );
-  }
+  }, [mod.id]);
 
   /**
    * RACK REBUILD (owner, TestFlight build 32, 2026-09-30): a module is a run
@@ -155,7 +134,7 @@ export function AmpModuleScreen() {
    * controls in the dock below; a read step scrolls as a document. The
    * module component stays mounted across steps, the strip under the header
    * moves between them, the objective heads the first step and the checks +
-   * takeaway + CONTINUE close the last.
+   * takeaway + MARK COMPLETE close the last.
    */
   const [step, setStepRaw] = useState(0);
   const [stepTitles, setStepTitles] = useState<string[]>([]);
@@ -166,6 +145,44 @@ export function AmpModuleScreen() {
   useEffect(() => setStepRaw(0), [mod.id]);
   const stepCount = stepTitles.length;
   const stepIdx = Math.min(step, Math.max(0, stepCount - 1));
+
+  // The shared strip. A module move is a navigation.replace (as before), so
+  // the new module mounts fresh at its first step with its own tap lock.
+  const go = useCallback(
+    (i: number) => {
+      setEndState(null);
+      const target = built[Math.max(0, Math.min(built.length - 1, i))];
+      if (!target) return;
+      if (target.id === mod.id) {
+        setStepRaw(0);
+        return;
+      }
+      navigation.replace('AmpModule', { id: target.id });
+    },
+    [built, mod.id, navigation],
+  );
+  const unEnd = useCallback(() => setEndState(null), []);
+  // NEXT past the last step / FINISH: bank the module first when its checks
+  // are all in — the way forward never costs credit. With checks still open
+  // it simply moves on (the old skip-ahead link; labs never block navigation).
+  const beforeAdvance = useCallback(() => {
+    if (allChecksAnswered && !done) bank();
+  }, [allChecksAnswered, done, bank]);
+  const sub = useMemo(
+    () => (stepCount > 1 ? { index: stepIdx, count: stepCount, titles: stepTitles, go: setStep } : undefined),
+    [stepCount, stepIdx, stepTitles, setStep],
+  );
+  const units = useMemo(() => built.map((x) => ({ id: x.id, title: x.title, done: doneIds.has(x.id) })), [built, doneIds]);
+  const nav = useLabNav({
+    units,
+    index: idx,
+    ending: !!endState,
+    go,
+    beforeAdvance,
+    finish: showEnd,
+    unEnd,
+    sub,
+  });
 
   const head = (
     <View style={styles.objective}>
@@ -186,107 +203,110 @@ export function AmpModuleScreen() {
 
       <TakeawayCard>{mod.takeaway}</TakeawayCard>
 
-      <Pressable
+      {/* The credit action (was "MARK COMPLETE & CONTINUE ›" — the word
+          CONTINUE is retired from navigation, 2026-09-30). It banks the module
+          and moves on through the strip's own NEXT, so it is one tap lock and
+          one path with the strip. Hidden once the module is banked — the
+          header says "completed" and NEXT / FINISH below carry on. */}
+      {!done ? (
+        <Pressable
           style={[styles.completeBtn, !allChecksAnswered && styles.completeBtnDim]}
-          onPress={complete}
+          onPress={nav.next}
           disabled={!allChecksAnswered}
           accessibilityRole="button"
           accessibilityState={{ disabled: !allChecksAnswered }}
           aria-disabled={!allChecksAnswered}
-          accessibilityLabel={allChecksAnswered ? 'Mark module complete and continue' : needsFinal ? 'Submit the final assessment above to complete the lab' : 'Answer every check above to continue'}
+          accessibilityLabel={allChecksAnswered ? 'Mark module complete and move on' : needsFinal ? 'Submit the final assessment above to complete the lab' : 'Answer every check above to mark this module complete'}
         >
-          <Text style={styles.completeText}>{done ? 'CONTINUE ›' : 'MARK COMPLETE & CONTINUE ›'}</Text>
+          <Text style={styles.completeText}>MARK COMPLETE ›</Text>
         </Pressable>
-        {!allChecksAnswered ? (
-          <Text style={styles.requirement}>
-            {needsFinal
-              ? 'Submit the final assessment above to complete the lab.'
-              : `Answer the ${checks.length} check${checks.length > 1 ? 's' : ''} above to mark this module complete — a wrong pick is fine, the explanation is the point. You can skip ahead and come back.`}
-          </Text>
-        ) : null}
-        {/* Labs never block navigation (owner 2026-09-20; bug hunt 2026-09-30):
-            an unanswered check costs credit, never the way forward. */}
-        {!allChecksAnswered && next ? (
-          <Pressable
-            onPress={() => navigation.replace('AmpModule', { id: next.id })}
-            hitSlop={8}
-            accessibilityRole="button"
-            accessibilityLabel={`Skip ahead to ${next.title} without marking this module complete`}
-          >
-            <Text style={styles.skip}>SKIP AHEAD ›</Text>
-          </Pressable>
-        ) : null}
-        {/* Labs never block navigation (owner 2026-09-29): on the last module
-            the what's-left screen is reachable before the final is in. */}
-        {!next ? (
-          <LabEndLink onPress={showEnd} />
-        ) : null}
+      ) : null}
+      {!allChecksAnswered ? (
+        <Text style={styles.requirement}>
+          {needsFinal
+            ? 'Submit the final assessment above to complete the lab.'
+            : `Answer the ${checks.length} check${checks.length > 1 ? 's' : ''} above to mark this module complete — a wrong pick is fine, the explanation is the point. NEXT below still moves on; you can come back.`}
+        </Text>
+      ) : null}
+      {/* Labs never block navigation (owner 2026-09-20/29; bug hunt 2026-09-30):
+          an unanswered check costs credit, never the way forward — NEXT /
+          FINISH (LabNextButton) follows at the end of every well. */}
     </>
   );
   // A READ step's document scroller (reading column on a tablet; the rack
-  // steps own their scroll well).
+  // steps own their scroll well and get LabNextButton from RackUnit). A read
+  // step ends with the same in-flow NEXT / FINISH.
   const readWrap = (body: ReactNode) => (
-    <ScrollView contentContainerStyle={[styles.scroll, readingColumn, { paddingBottom: insets.bottom + 28 }]}>{body}</ScrollView>
+    <ScrollView contentContainerStyle={[styles.scroll, readingColumn, { paddingBottom: insets.bottom + 28 }]}>
+      {body}
+      <LabNextButton />
+    </ScrollView>
   );
   // Rebuilt per render on purpose: head/tail carry this render's checks. The
   // only effect keyed on it (the module's step report) depends on the stable
   // `onSteps` alone.
   const host: AmpStepHost = { step: stepIdx, setStep, onSteps, head, tail, readWrap };
 
+  let end: ReactNode = null;
+  if (endState) {
+    const final = endState.bestFinal ?? endState.final;
+    const cleared = new Set<string>(built.filter((x) => endState.modules[x.id]?.done).map((x) => x.id));
+    if (endState.bestFinal?.passed || endState.final?.passed) cleared.add('final');
+    end = (
+      <LabEndScreen
+        labTitle={LAB_TITLE}
+        units={[
+          ...built.map((x) => ({ id: x.id, label: x.title })),
+          {
+            id: 'final',
+            label: 'Final assessment',
+            kind: 'check' as const,
+            detail: final ? `Best so far: ${Math.round(final.scorePct)}%${final.passed ? ' — passed' : ''}` : 'In Module 8 — not yet submitted',
+          },
+        ]}
+        cleared={cleared}
+        mode="progress"
+        onJump={(id) => navigation.replace('AmpModule', { id: id === 'final' ? 'apply' : (id as typeof mod.id) })}
+        onPracticeAgain={() => navigation.replace('AmpModule', { id: built[0]?.id ?? mod.id })}
+        onDone={() => navigation.goBack()}
+        bottomInset
+      />
+    );
+  }
+
   return (
-    <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back to the lab home">
-          <Text style={styles.back}>‹</Text>
-        </Pressable>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.title}>{mod.title.toUpperCase()}</Text>
-          <Text style={styles.subtitle}>Module {mod.num} of {AMP_MODULES.length}{done ? ' · completed' : ''}</Text>
-        </View>
-        {/* The lab HOME carries the note; a module opened from a deep link or
-            resumed from the dashboard never passes through it. Same placement
-            as EqModuleScreen / GainModuleScreen / WaveModuleScreen. */}
-        <AccuracyNote compact detail="This lab MODELS amplifier behaviour on your phone — the numbers and curves are teaching tools, not bench measurements, and any level it plays goes through an UNCALIBRATED output. For real amplifier work use proper test gear." />
-      </View>
-      {/* The step strip — only when the module has more than one. Steps are
-          free to move between (labs never block navigation). */}
-      {stepCount > 1 ? (
-        <View style={styles.stepNav}>
-          <Pressable onPress={() => setStep(Math.max(0, stepIdx - 1))} disabled={stepIdx <= 0} hitSlop={8} accessibilityRole="button" accessibilityState={{ disabled: stepIdx <= 0 }} accessibilityLabel="Previous step">
-            <Text style={[styles.stepBtn, stepIdx <= 0 && styles.stepBtnDim]}>‹ PREV</Text>
-          </Pressable>
-          <Text style={styles.stepPos} numberOfLines={1}>
-            STEP {stepIdx + 1} OF {stepCount} · {stepTitles[stepIdx]?.toUpperCase()}
-          </Text>
-          <Pressable onPress={() => setStep(Math.min(stepCount - 1, stepIdx + 1))} disabled={stepIdx >= stepCount - 1} hitSlop={8} accessibilityRole="button" accessibilityState={{ disabled: stepIdx >= stepCount - 1 }} accessibilityLabel="Next step">
-            <Text style={[styles.stepBtn, stepIdx >= stepCount - 1 && styles.stepBtnDim]}>NEXT ›</Text>
-          </Pressable>
-        </View>
-      ) : null}
-      <View style={styles.body}>
-        {Component ? (
-          <AmpStepHostContext.Provider value={host}>
-            <Component onFinalSubmitted={onFinalSubmitted} />
-          </AmpStepHostContext.Provider>
-        ) : (
-          readWrap(<Text style={styles.missing}>This module is not available.</Text>)
+    <LabNavProvider value={nav}>
+      <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+        {/* The shared header: ‹ leaves the lab. The lab HOME carries the
+            accuracy note too; a module opened from a deep link or resumed from
+            the dashboard never passes through it. */}
+        <LabHeader
+          title={endState ? LAB_TITLE.toUpperCase() : mod.title.toUpperCase()}
+          subtitle={endState ? 'What’s left' : `Module ${mod.num} of ${AMP_MODULES.length}${done ? ' · completed' : ''}`}
+          right={
+            <AccuracyNote compact detail="This lab MODELS amplifier behaviour on your phone — the numbers and curves are teaching tools, not bench measurements, and any level it plays goes through an UNCALIBRATED output. For real amplifier work use proper test gear." />
+          }
+        />
+        <LabNavBar nav={nav} />
+        {end ?? (
+          <View style={styles.body}>
+            {Component ? (
+              <AmpStepHostContext.Provider value={host}>
+                <Component onFinalSubmitted={onFinalSubmitted} />
+              </AmpStepHostContext.Provider>
+            ) : (
+              readWrap(<Text style={styles.missing}>This module is not available.</Text>)
+            )}
+          </View>
         )}
       </View>
-    </View>
+    </LabNavProvider>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingBottom: 8 },
-  back: { color: colors.textPrimary, fontSize: 30, lineHeight: 32, paddingHorizontal: 4 },
-  title: { color: colors.textPrimary, fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1 },
-  subtitle: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12.5 },
   body: { flex: 1 },
-  stepNav: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 16, paddingBottom: 6 },
-  stepBtn: { color: colors.amber, fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1, paddingVertical: 6 },
-  stepBtnDim: { color: '#45454d' },
-  stepPos: { flex: 1, textAlign: 'center', color: colors.textSub, fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1 },
   scroll: { paddingHorizontal: 16, gap: 10 },
   objective: { borderLeftWidth: 2, borderLeftColor: colors.amberLabel, paddingLeft: 10, gap: 2 },
   objectiveLabel: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 2 },
@@ -299,5 +319,4 @@ const styles = StyleSheet.create({
   completeBtnDim: { opacity: 0.45 },
   completeText: { color: colors.green, fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1.5 },
   requirement: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, textAlign: 'center' },
-  skip: { color: colors.textSub, fontFamily: fonts.oswaldMedium, fontSize: 13, letterSpacing: 1.5, textAlign: 'center', paddingVertical: 10 },
 });

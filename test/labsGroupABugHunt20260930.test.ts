@@ -5,6 +5,7 @@
 import { strict as assert } from 'node:assert';
 import { readFileSync } from 'node:fs';
 import { it } from 'node:test';
+import { createTapLock } from '../src/screens/lab/kit/labNav.ts';
 
 const read = (p: string) => readFileSync(p, 'utf8');
 
@@ -21,14 +22,33 @@ it('Start Here: START OVER stops the tone (it lands on a page with no PLAY)', ()
   assert.match(src, /const doReset = \(\) => \{\s*(\/\/[^\n]*\n\s*)*tone\.stop\(\);/);
 });
 
-it('Foundations: the top NEXT/FINISH honours the nav lock', () => {
+it('Foundations: the top NEXT/FINISH honours ONE nav lock (the shared strip’s)', () => {
+  // The top row is kit/LabNavBar (2026-09-30); its NEXT / FINISH go through
+  // useLabNav, whose single createTapLock(400) covers every strip tap. No
+  // second, local NEXT remains to escape it.
   const src = read('src/screens/lab/foundations/FoundationsCourseScreen.tsx');
-  const top = src.slice(src.indexOf('accessibilityLabel="Previous module"'));
-  const handler = top.slice(0, top.indexOf("'Next module'"));
-  assert.match(handler, /if \(navLocked\(\)\) return;/);
+  assert.match(src, /<LabNavBar nav=\{nav\} \/>/);
+  assert.doesNotMatch(src, /accessibilityLabel="Previous module"/);
+  assert.doesNotMatch(src, /'FINISH ›'/);
+  const hook = read('src/screens/lab/kit/useLabNav.ts');
+  assert.match(hook, /const lock = useRef\(createTapLock\(400\)\)\.current;/);
+  assert.match(hook, /const next = useCallback\(\(\) => \{\s*\n\s*if \(lock\(\)\) return;/);
 });
 
 it('module hosts: a double-tap on NEXT cannot skip the last module', () => {
+  // Behaviour: the shared strip's one tap lock (kit/labNav createTapLock)
+  // swallows the second tap of a double-tap inside 400 ms — so the second
+  // tap, which would land after the re-render where NEXT is already FINISH,
+  // never fires.
+  let t = 1_000;
+  const locked = createTapLock(400, () => t);
+  assert.equal(locked(), false, 'first tap moves');
+  t += 120;
+  assert.equal(locked(), true, 'the double-tap\'s second tap is ignored');
+  t += 400;
+  assert.equal(locked(), false, 'a real next tap moves');
+  // Wiring (WP1, 2026-09-30): the hosts route NEXT through useLabNav and keep
+  // no private lock or handler of their own.
   for (const f of [
     'src/screens/lab/wave/WaveModuleScreen.tsx',
     'src/screens/lab/eq/EqModuleScreen.tsx',
@@ -37,8 +57,9 @@ it('module hosts: a double-tap on NEXT cannot skip the last module', () => {
     'src/screens/lab/cymatics/CymaticsModuleScreen.tsx',
   ]) {
     const src = read(f);
-    assert.match(src, /if \(Date\.now\(\) - nextTapAt\.current < 400\) return;/, f);
-    assert.match(src, /onPress=\{onNext\}/, f);
+    assert.match(src, /from '\.\.\/kit\/LabNavBar'/, `${f} uses LabNavBar`);
+    assert.match(src, /const nav = useLabNav\(\{/, f);
+    assert.doesNotMatch(src, /nextTapAt|onPress=\{onNext\}/, f);
     assert.doesNotMatch(src, /onPress=\{\(\) => \(idx >= last \? setEnding\(true\)/, f);
   }
 });

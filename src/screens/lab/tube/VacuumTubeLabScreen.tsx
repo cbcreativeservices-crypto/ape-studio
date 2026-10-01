@@ -6,11 +6,13 @@
  * each concept section is one RackUnit — the animated drawing PINS on the
  * stage glass (reading may scroll; operating may not), the old MeterBars
  * become live bezel cells, and the DragSliders ride the dock lane. The
- * section chips stay PINNED under the header as a horizontal course-nav row
- * (they are navigation, not a parameter); the ELECTRON VIEW toggle is a dock
- * key on the sections that use it; the Tube Reference library is a dock
- * ACTION key (it navigates — it never pretended to be a stage section again).
- * Per-section RackUnits are key-remounted so each section owns its state.
+ * sections are MODULES on the SHARED LAB NAVIGATION strip (kit/LabNavBar,
+ * owner 2026-09-30: ⏮ / ‹ PREV / MODULE n / 9 ▾ / NEXT ›, FINISH › on VS,
+ * CONTENTS from the readout); the rack appends "NEXT: <section> ›" to every
+ * well. The ELECTRON VIEW toggle is a dock key on the sections that use it;
+ * the Tube Reference library is a dock ACTION key (it navigates — it never
+ * pretended to be a stage section again). Per-section RackUnits are
+ * key-remounted so each section owns its state.
  *
  * VISUAL-FIRST LAUNCH: an interactive-animation lab — no audio playback;
  * stated on-screen. Every drawing is an ILLUSTRATIVE MODEL (schematic
@@ -23,17 +25,16 @@
  * to what happens inside it.
  */
 import { useEffect, useState, type MutableRefObject, type ReactNode } from 'react';
-import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
-import { LabChip } from '../LabShell';
 import { markLabVisit, useLabVisits } from '../../../features/lab/labVisits';
-import { LabEndLink, LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
+import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
+import { LabHeader, LabNavBar, LabNavProvider, useLabNav } from '../kit/LabNavBar';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../foundations/bits';
 import { RackUnit } from '../rack/RackUnit';
@@ -106,9 +107,6 @@ type SectionProps = {
   openReference: () => void;
   title: string;
   blurb: string;
-  /** Set on the LAST section only: the FINISH link to the what's-left screen
-   *  (owner 2026-09-29). */
-  onFinish?: () => void;
 };
 
 /** The shared dock tail: ⚡ ELECTRON VIEW toggle (sections that use it) + the
@@ -154,8 +152,9 @@ function stageGlass(
 }
 
 /** Common well tail: title + blurb up top, guided-lesson entry + the no-audio
- *  notice at the bottom (owner 2026-08-19: notices at the bottom). */
-function SectionWell({ title, blurb, help, onFinish, children }: { title: string; blurb: string; help: (k?: string) => void; onFinish?: () => void; children?: ReactNode }) {
+ *  notice at the bottom (owner 2026-08-19: notices at the bottom). The rack
+ *  appends the shared "NEXT: <section> ›" / FINISH under this (LabNavProvider). */
+function SectionWell({ title, blurb, help, children }: { title: string; blurb: string; help: (k?: string) => void; children?: ReactNode }) {
   return (
     <>
       <Text style={styles.sectionTitle}>{title}</Text>
@@ -171,7 +170,6 @@ function SectionWell({ title, blurb, help, onFinish, children }: { title: string
         <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
       </Pressable>
       <Text style={styles.futureNote}>🔈 This lab teaches visually — no audio playback.</Text>
-      {onFinish ? <LabEndLink onPress={onFinish} /> : null}
     </>
   );
 }
@@ -294,7 +292,7 @@ function InsideSection(p: SectionProps) {
         )),
       }}
     >
-      <SectionWell title={p.title} blurb={p.blurb} help={p.help} onFinish={p.onFinish}>
+      <SectionWell title={p.title} blurb={p.blurb} help={p.help}>
         {physics ? <Text style={styles.readout}>{physics}</Text> : null}
         <Text style={styles.caption}>
           {sel
@@ -352,7 +350,7 @@ function FlowSection(p: SectionProps) {
         render: stageGlass(p.viz, glass, (viz, w, h) => <FlowViz viz={viz} width={w} height={h} heat={heat} running={p.focused} />),
       }}
     >
-      <SectionWell title={p.title} blurb={p.blurb} help={p.help} onFinish={p.onFinish}>
+      <SectionWell title={p.title} blurb={p.blurb} help={p.help}>
         <Text style={styles.readout}>{stage.text}</Text>
         <Text style={styles.caption}>
           This is why the vacuum matters: electrons can only fly freely because there is NOTHING in
@@ -420,7 +418,7 @@ function GridSection(p: SectionProps) {
         )),
       }}
     >
-      <SectionWell title={p.title} blurb={p.blurb} help={p.help} onFinish={p.onFinish}>
+      <SectionWell title={p.title} blurb={p.blurb} help={p.help}>
         <Text style={styles.caption}>
           A very small voltage change at the grid controls a much larger current through the tube.
           That sentence is the entire reason vacuum tubes changed the world — read it again while
@@ -458,7 +456,7 @@ function AmplifySection(p: SectionProps) {
         render: stageGlass(p.viz, glass, (viz, w, h) => <AmplifyViz viz={viz} width={w} height={h} running={p.focused} />),
       }}
     >
-      <SectionWell title={p.title} blurb={p.blurb} help={p.help} onFinish={p.onFinish}>
+      <SectionWell title={p.title} blurb={p.blurb} help={p.help}>
         <Text style={styles.caption}>
           Follow the color code: the small BLUE wave rides the blue wire INTO THE GRID — watch the
           grid dots swell in time with it. Inside the glass, the much larger electron stream
@@ -522,7 +520,7 @@ function HighVoltSection(p: SectionProps) {
         render: stageGlass(p.viz, glass, (viz, w, h) => <HvViz viz={viz} width={w} height={h} highB={highB} running={p.focused} />),
       }}
     >
-      <SectionWell title={p.title} blurb={p.blurb} help={p.help} onFinish={p.onFinish}>
+      <SectionWell title={p.title} blurb={p.blurb} help={p.help}>
         <Text style={styles.caption}>
           {highB
             ? 'A high-voltage plate pulls HARD: a dense, fast electron stream with room to swing. This is why tube circuits run at hundreds of volts — the “B+” supply.'
@@ -640,7 +638,7 @@ function TypesSection(p: SectionProps) {
         )),
       }}
     >
-      <SectionWell title={p.title} blurb={p.blurb} help={p.help} onFinish={p.onFinish}>
+      <SectionWell title={p.title} blurb={p.blurb} help={p.help}>
         <Text style={[styles.readout, { color: ink }]}>ADDS: {t.adds}</Text>
         <Text style={styles.caption}>{t.strength}</Text>
         <Text style={styles.caption}>{t.weakness}</Text>
@@ -702,7 +700,7 @@ function BiasSection(p: SectionProps) {
         render: stageGlass(p.viz, glass, (viz, w, h) => <BiasViz viz={viz} width={w} height={h} bias={b} running={p.focused} />),
       }}
     >
-      <SectionWell title={p.title} blurb={p.blurb} help={p.help} onFinish={p.onFinish}>
+      <SectionWell title={p.title} blurb={p.blurb} help={p.help}>
         <Text style={[styles.readout, bad ? styles.readoutBad : null]}>{zone}</Text>
         <Text style={styles.caption}>
           Bias is the idle point — where the tube rests with no signal. Set it mid-curve and the
@@ -760,7 +758,7 @@ function SaturationSection(p: SectionProps) {
         render: stageGlass(p.viz, glass, (viz, w, h) => <SatViz viz={viz} width={w} height={h} drive={drive} running={p.focused} />),
       }}
     >
-      <SectionWell title={p.title} blurb={p.blurb} help={p.help} onFinish={p.onFinish}>
+      <SectionWell title={p.title} blurb={p.blurb} help={p.help}>
         <Text style={styles.caption}>
           WHY it rounds: the valve can only open so far. Near full swing there are no more electrons
           to give (and at the other extreme the stream pinches off), so each extra dB of input buys
@@ -803,7 +801,7 @@ function VersusSection(p: SectionProps) {
         render: stageGlass(p.viz, glass, (viz, w, h) => <VersusViz viz={viz} width={w} height={h} running={p.focused} />),
       }}
     >
-      <SectionWell title={p.title} blurb={p.blurb} help={p.help} onFinish={p.onFinish}>
+      <SectionWell title={p.title} blurb={p.blurb} help={p.help}>
         <View style={styles.vsRow}>
           <View style={{ flex: 1, gap: 2 }}>
             <Text style={styles.vsHead}>TUBE</Text>
@@ -861,13 +859,13 @@ export function VacuumTubeLabScreen() {
 
   /**
    * THE LAB ENDS ON THE WHAT'S-LEFT SCREEN (owner 2026-09-29: "every lab ends
-   * with a 'what's left' screen"; always allow review and redo). The chips had
-   * no end at all. This lab banks no credit and kept no record, so it now
-   * remembers which sections were OPENED (labVisits — progress, never credit;
-   * a guest's last only this session). A last WHAT'S LEFT chip, and a FINISH
-   * link at the foot of VS, swap LabEndScreen in for the rack: sections not
-   * yet opened, a jump to each, PRACTISE AGAIN from INSIDE (clears nothing)
-   * and DONE.
+   * with a 'what's left' screen"; always allow review and redo). This lab
+   * banks no credit and kept no record, so it remembers which sections were
+   * OPENED (labVisits — progress, never credit; a guest's last only this
+   * session). FINISH › on the strip (VS), the WHAT'S LEFT row in CONTENTS and
+   * the rack's own FINISH at the foot of VS swap LabEndScreen in for the
+   * rack: sections not yet opened, a jump to each, PRACTISE AGAIN from INSIDE
+   * (clears nothing) and DONE.
    */
   const [ending, setEnding] = useState(false);
   const guest = useLabEndGuest();
@@ -895,32 +893,32 @@ export function VacuumTubeLabScreen() {
     openReference: () => navigation.navigate('TubeReference'),
     title: s.title,
     blurb: s.blurb,
-    onFinish: sectionIdx === SECTIONS.length - 1 ? () => setEnding(true) : undefined,
   };
 
+  // THE SHARED LAB NAVIGATION (kit/LabNavBar, owner 2026-09-30): the nine
+  // sections are the strip's MODULES; the opened ones read ✓ in CONTENTS.
+  const nav = useLabNav({
+    units: SECTIONS.map((sec) => ({ id: sec.key, title: sec.title, done: visited.has(sec.key) })),
+    index: sectionIdx,
+    ending,
+    go: openSection,
+    finish: () => setEnding(true),
+    unEnd: () => setEnding(false),
+  });
+
   return (
+    <LabNavProvider value={nav}>
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
-        </Pressable>
-        <View style={{ flexShrink: 1, flexGrow: 1 }}>
-          <Text style={styles.title}>VACUUM TUBE FUNDAMENTALS</Text>
-          <Text style={styles.subtitle}>Amplification by controlling electron flow</Text>
-        </View>
-        {/* Same detail string as the Tube Reference screens — this is the
-            lab that teaches the procedure, so it needs it more, not less. */}
-        <AccuracyNote compact detail="This lab is a STUDY MODEL, not a datasheet. Plate voltages, dissipation limits and substitutions vary by manufacturer and by production run, and tube circuits carry lethal voltages that persist in the filter capacitors after power-down. Work from the manufacturer's own datasheet, and have service, measurement and biasing done by a qualified technician." />
-      </View>
-      {/* Course-nav chip row — PINNED under the header (my call in the rack
-          conversion: the 10-topic march is navigation, not a parameter, so it
-          reads as the shell's mode tabs, one horizontal row). */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.navScroll} contentContainerStyle={styles.navRow}>
-        {SECTIONS.map((sec, i) => (
-          <LabChip key={sec.key} label={sec.label} selected={!ending && sectionIdx === i} onPress={() => openSection(i)} />
-        ))}
-        <LabChip label="WHAT’S LEFT" selected={ending} onPress={() => setEnding(true)} />
-      </ScrollView>
+      <LabHeader
+        title="VACUUM TUBE FUNDAMENTALS"
+        subtitle="Amplification by controlling electron flow"
+        right={
+          /* Same detail string as the Tube Reference screens — this is the
+             lab that teaches the procedure, so it needs it more, not less. */
+          <AccuracyNote compact detail="This lab is a STUDY MODEL, not a datasheet. Plate voltages, dissipation limits and substitutions vary by manufacturer and by production run, and tube circuits carry lethal voltages that persist in the filter capacitors after power-down. Work from the manufacturer's own datasheet, and have service, measurement and biasing done by a qualified technician." />
+        }
+      />
+      <LabNavBar nav={nav} />
       {/* One RackUnit per section, key-remounted so each section owns its
           state; the frame needs the full remaining height (flex:1). */}
       <View style={styles.rackArea}>
@@ -947,17 +945,13 @@ export function VacuumTubeLabScreen() {
         onClose={() => setLessonOpen(false)}
       />
     </View>
+    </LabNavProvider>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 8 },
-  back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
-  title: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.2, color: colors.textPrimary },
-  subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
-  navScroll: { flexGrow: 0 },
-  navRow: { paddingHorizontal: 14, paddingBottom: 4, gap: 8, flexDirection: 'row' },
+  // The header (‹, title, subtitle) and the strip are kit/LabNavBar's.
   rackArea: { flex: 1 },
   sectionTitle: { fontFamily: fonts.oswaldMedium, fontSize: 20, letterSpacing: 0.6, color: colors.textPrimary },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },

@@ -4,8 +4,8 @@
  * concept the other modules isolate (owner 2026-08-01).
  */
 import { useState } from 'react';
-import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { useLabClearedUnits } from '../../../features/lab/labCompletion';
+import { LabHeader } from '../kit/LabNavBar';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -32,16 +32,8 @@ export function WaveLabHomeScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
-        </Pressable>
-        <View style={{ flexShrink: 1, flexGrow: 1 }}>
-          <Text style={styles.title}>WAVE PHYSICS LABORATORY</Text>
-          <Text style={styles.subtitle}>One room engine · fifteen experiments</Text>
-        </View>
-        <AccuracyNote compact />
-      </View>
+      {/* The shared lab header (kit/LabNavBar): ‹ LEAVES THE LAB, the same in every lab. */}
+      <LabHeader title="WAVE PHYSICS LABORATORY" subtitle="One room engine · fifteen experiments" right={<AccuracyNote compact />} />
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
         {/* Guided Lessons at the very top, before the module list (owner 2026-08-05). */}
         <Pressable
@@ -92,10 +84,6 @@ export function WaveLabHomeScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 8 },
-  back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
-  title: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.2, color: colors.textPrimary },
-  subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
   scroll: { padding: 16, paddingBottom: 34, gap: 10 },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },

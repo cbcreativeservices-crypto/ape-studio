@@ -39,7 +39,6 @@
  * PLAY keys gate out.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect, useIsFocused, useNavigation } from '@react-navigation/native';
@@ -61,6 +60,7 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { markLabUnit, registerLabUnits, useLabClearedUnits } from '../../../features/lab/labCompletion';
 import { LabEndScreen } from '../kit/LabEndScreen';
+import { LabHeader, LabNavBar, LabNavProvider, useLabNav } from '../kit/LabNavBar';
 import { FOUNDATIONS_LAB_KEY, FOUNDATIONS_STEP_COUNT, FOUNDATIONS_UNITS } from './units';
 import { RackUnit } from '../rack/RackUnit';
 import type { BezelItem, DockParam } from '../rack/rackTypes';
@@ -2129,11 +2129,11 @@ export function FoundationsCourseScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resolved]);
   /** Nav lock (bug hunt 2026-09-29): a double-tap on NEXT at module 13/14 ran
-   *  the second tap after the re-render, where the button is already DONE ✓ —
-   *  and left the lab. Taps within 400 ms of a step change are ignored, by
-   *  NEXT/BACK and by DONE alike. */
+   *  the second tap after the re-render, where the button was already FINISH —
+   *  and left the module. The strip's own 400 ms tap lock (useLabNav) covers
+   *  START / PREV / NEXT / FINISH / CONTENTS; this stamp keeps goTo itself
+   *  safe for the end screen's jump links and PRACTISE AGAIN. */
   const lastNavAtRef = useRef(0);
-  const navLocked = () => Date.now() - lastNavAtRef.current < 400;
   const goTo = useCallback(
     (n: number) => {
       if (Date.now() - lastNavAtRef.current < 400) return;
@@ -2169,10 +2169,19 @@ export function FoundationsCourseScreen() {
    */
   const [ending, setEnding] = useState(false);
   const banked = useLabClearedUnits(FOUNDATIONS_LAB_KEY);
-  const finish = () => {
+  const finish = useCallback(() => {
     tone.stop();
     setEnding(true);
-  };
+  }, [tone]);
+  const unEnd = useCallback(() => setEnding(false), []);
+  // The shared lab strip (kit/LabNavBar, owner 2026-09-30): [⏮] [‹ PREV]
+  // MODULE n / 14 ▾ [NEXT ›]. Stop-on-leave stays in goTo / finish; the hook
+  // only decides which to call. PREV from WHAT'S LEFT returns to Module 14.
+  const navUnits = useMemo(
+    () => STEPS.map((st, i) => ({ id: String(i), title: st.title, done: banked.has(String(i)) })),
+    [banked],
+  );
+  const nav = useLabNav({ units: navUnits, index: step, ending, go: goTo, finish, unEnd });
 
   const s = STEPS[step];
   const openPlayground = useCallback(() => {
@@ -2225,8 +2234,11 @@ export function FoundationsCourseScreen() {
       ) : null}
     </>
   );
-  // …and the check + BACK/NEXT below them (PREV = gold, NEXT = green, matching
-  // the study-method screens — owner 2026-08-05).
+  // …and the checks below them. The way forward at the end of the well is the
+  // shared LabNextButton ("NEXT: <module> ›" / FINISH), which every RackUnit
+  // appends after its children under the LabNavProvider — right after OPEN
+  // THE PLAYGROUND on Module 14. The old bottom BACK / NEXT pair is gone
+  // (owner 2026-09-30: one navigation, the strip).
   const wellBottom = (
     <>
       {s.check && !spoilerGated ? <CheckQuestion key={s.key} spec={s.check} /> : null}
@@ -2237,110 +2249,34 @@ export function FoundationsCourseScreen() {
           M14's body, ABOVE the three course checks. That put "go somewhere else"
           in front of the retrieval the module ends on, so the last thing asked of
           a learner sat behind an exit. It now renders after the checks and
-          immediately before BACK / DONE, which is the end of the module. */}
+          immediately before the well's NEXT / FINISH, which is the end of the
+          module. */}
       {step === STEPS.length - 1 ? (
         <GlassButton label="OPEN THE PLAYGROUND" tint="green" height={52} fontSize={14} onPress={openPlayground} />
       ) : null}
-      <View style={styles.navRow}>
-        <View style={{ flex: 1 }}>
-          <GlassButton
-            label="‹ BACK"
-            tint="gold"
-            disabled={step === 0}
-            onPress={() => goTo(Math.max(0, step - 1))}
-          />
-        </View>
-        <View style={{ flex: 1 }}>
-          <GlassButton
-            label={step === STEPS.length - 1 ? 'DONE ✓' : 'NEXT ›'}
-            tint="green"
-            onPress={() => {
-              if (navLocked()) return;
-              if (step === STEPS.length - 1) finish();
-              else goTo(Math.min(STEPS.length - 1, step + 1));
-            }}
-          />
-        </View>
-      </View>
     </>
   );
 
   return (
+    <LabNavProvider value={nav}>
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
-        </Pressable>
-        <View style={{ flexShrink: 1, flexGrow: 1 }}>
-          <Text style={styles.title}>FOUNDATIONS OF SOUND</Text>
-          <Text style={styles.subtitle}>Understanding What You’re Hearing</Text>
-        </View>
-        <AccuracyNote compact />
-      </View>
+      {/* The shared lab header (kit/LabNavBar, 2026-09-30): ‹ leaves the lab. */}
+      <LabHeader title="FOUNDATIONS OF SOUND" subtitle="Understanding What You’re Hearing" right={<AccuracyNote compact />} />
 
-      {/* Top navigation (owner 2026-08-05): jump straight to the beginning, or
-          step, without scrolling to the bottom BACK/NEXT buttons. */}
-      {/* Touch targets match the Cable lab, which already met the 44 pt
-          standard: the module steppers were 19 px of text with hitSlop 8 — a
-          35 pt target — while Cable had long since used 14 top/bottom for 45.
-          The dots are 7 px and cannot be 44 pt WIDE (fourteen of them will not
-          fit a phone), so they gain height only; jumping modules is better
-          served by PREV/NEXT. */}
-      <View style={styles.topNav}>
-        <Pressable
-          onPress={() => goTo(0)}
-          disabled={step === 0}
-          hitSlop={{ top: 14, bottom: 14, left: 10, right: 10 }}
-          accessibilityRole="button"
-          accessibilityLabel="Go to the first module"
-        >
-          <Text style={[styles.navBtn, step === 0 && styles.navBtnDisabled]}>⏮ START</Text>
-        </Pressable>
-        <Pressable
-          // From WHAT'S LEFT, PREV returns to Module 14 — goTo(step - 1)
-          // skipped it (bug pass 2026-09-30).
-          onPress={() => (ending ? setEnding(false) : goTo(Math.max(0, step - 1)))}
-          disabled={step === 0}
-          hitSlop={{ top: 14, bottom: 14, left: 10, right: 10 }}
-          accessibilityRole="button"
-          accessibilityLabel="Previous module"
-        >
-          <Text style={[styles.navBtn, step === 0 && styles.navBtnDisabled]}>‹ PREV</Text>
-        </Pressable>
-        {/* Owner 2026-09-13, on the Pixel: "move module #/# to the right and
-            center with space between the prev and next text buttons."
-            It measured ALREADY centred between PREV and NEXT — 215 px left,
-            216 px right — because the two flex spacers here split the leftover
-            room evenly. What it was not was evenly spaced ACROSS the row: START
-            and PREV sat 40 px apart on the left while the other gaps were 215.
-            `space-between` on topNav spreads all four controls on equal gaps,
-            which moves the label right (centre 630 -> ~703) and gives it the
-            deliberate space either side. Same header renders all 14 modules, so
-            this is "all foundations of sound screens" by construction. */}
-        <Pressable
-          onPress={() => {
-            // The same nav lock as the bottom NEXT/DONE: a double-tap here at
-            // module 13 otherwise ran FINISH on the second tap and skipped
-            // module 14 (bug hunt 2026-09-30).
-            if (navLocked()) return;
-            if (step === STEPS.length - 1) finish();
-            else goTo(Math.min(STEPS.length - 1, step + 1));
-          }}
-          hitSlop={{ top: 14, bottom: 14, left: 10, right: 10 }}
-          accessibilityRole="button"
-          accessibilityLabel={step === STEPS.length - 1 ? "Finish the lab and see what's left" : 'Next module'}
-        >
-          <Text style={styles.navBtn}>{step === STEPS.length - 1 ? 'FINISH ›' : 'NEXT ›'}</Text>
-        </Pressable>
-        {/* Owner 2026-09-13: "the module #/# readout trade places with NEXT>".
-            Puts the three VERBS together — START, PREV, NEXT all move you — and
-            leaves the readout alone at the end as the one thing that is not a
-            control. It also lands the row's only non-button furthest from the
-            thumb, which is where a readout belongs. */}
-        <Text style={styles.navPos}>
-          {ending ? 'WHAT’S LEFT' : `MODULE ${step + 1} / ${STEPS.length}`}
-        </Text>
-      </View>
+      {/* The shared strip (owner-approved 2026-09-30):
+              [⏮] [‹ PREV]   MODULE n / 14 ▾   [NEXT ›]
+          It replaces this screen's own START / PREV / NEXT row. Two earlier
+          rulings are superseded by it, on purpose:
+            • 2026-08-05 (the top row itself, so nobody scrolls to a bottom
+              BACK/NEXT) — the strip IS that row, in every lab;
+            • 2026-09-13 ("the module #/# readout trade places with NEXT ›",
+              the readout last, furthest from the thumb) — the owner approved
+              NEXT › at the far right on 2026-09-30, with the readout in the
+              middle as the CONTENTS button. The 44 pt targets (Cable lab
+              parity, 2026-08-05) are the strip's own.
+          Tap lock: one 400 ms lock in the hook — a double tap on NEXT at
+          module 13 can no longer run FINISH on the second tap. */}
+      <LabNavBar nav={nav} />
 
       {/* NOTHING BETWEEN THE NAV ROW AND THE RACK — owner 2026-09-13, in two
           parts: "remove playground button at top right of all lab foundations of
@@ -2393,22 +2329,14 @@ export function FoundationsCourseScreen() {
         onClose={() => setLessonOpen(false)}
       />
     </View>
+    </LabNavProvider>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 8 },
-  back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
-  title: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1.4, color: colors.textPrimary },
-  subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
-
-  // Top navigation bar (jump-to-start / prev / next).
-  topNav: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 14, paddingHorizontal: 16, paddingBottom: 6 },
-  navBtn: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1, color: colors.amber },
-  navBtnDisabled: { color: '#45454d' },
-  navPos: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, color: colors.textSub },
-
+  // header / back / title / subtitle and the top navigation row now live in
+  // kit/LabNavBar (LabHeader + LabNavBar).
 
   // The Rack Unit needs the remaining vertical space (flex:1) — it owns the
   // stage, the scroll well and the dock inside it.
@@ -2458,7 +2386,6 @@ const styles = StyleSheet.create({
   comingHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.textSecondary },
   comingRow: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 19, color: colors.textSub },
 
-  navRow: { flexDirection: 'row', gap: 10, marginTop: 4 },
 
   // Display-explanation captions are WHITE like the body text (owner
   // 2026-08-05), not gray.
