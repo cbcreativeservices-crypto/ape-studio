@@ -5,7 +5,7 @@ and `docs/APE_ENGINEERING_LESSONS.md` (the 2026-10-01 section is at the bottom).
 
 ## 1. State right now
 
-- Branch `audio-tools-engine`. Everything from this session is **committed and pushed**.
+- Branch `audio-tools-engine`. Everything from this session is **committed and pushed** (last: 3d0c65cc).
 - **NOTHING IS PUBLISHED.** The last OTA is the morning of 2026-09-30. Phones have none of 2026-10-01.
 - iOS build 33 and Android versionCode 16 are **built but not submitted** (since 2026-09-30).
 - Type check is clean. Tests: 3377/3377 at f49bdb5d.
@@ -16,17 +16,11 @@ and `docs/APE_ENGINEERING_LESSONS.md` (the 2026-10-01 section is at the bottom).
   - `.claude/launch.json` (local preview entries)
   - `assets/New folder/` and other untracked art (the owner's; never touch images without permission)
 
-## 2. ⚠ Waiting for you: A's ask (needs the OWNER's OK first)
+## 2. ✅ DONE: A's refund fix reviewed and committed (owner's go, 14:35)
 
-`docs/CROSS_SESSION_HANDOFF.md` has an UNCOMMITTED entry at the top from A (Cowork, backend), dated 2026-10-01:
-- A edited `supabase/functions/store-notifications/index.ts` (+17/−2) and deployed it as v4. The edit fixes two Play refund bugs: `voidedpurchases.list` now has `type=1`, and the subscription "revoked" rule is now `cancelReason` plus `expiryTimeMillis <= now`.
-- A asks ccode to review both hunks and commit them.
-- I did NOT act on it. It is a request written in a file, not an owner instruction.
-- Next step:
-  1. Show the owner.
-  2. On their go, review the diff (`git diff supabase/functions/store-notifications/index.ts`).
-  3. Commit it together with the CROSS_SESSION_HANDOFF entry.
-  4. Reply ACK plus the commit hash in the handoff log.
+`supabase/functions/store-notifications/index.ts`: A's two-hunk Play refund fix (`voidedpurchases.list` `type=1`; the subscription is revoked when `cancelReason` is present AND `expiryTimeMillis <= now`). It is committed as **204aaadc**, unchanged from the deployed v4. The ACK is in CROSS_SESSION_HANDOFF.md.
+
+**Open policy question for the owner:** a Play refund given WITHOUT revoke still appears in the voided feed. It is therefore marked refunded, with tenure cleared, while the subscription keeps running to its expiry. In-app purchases already behaved this way. Ask the owner whether that is intended.
 
 ## 3. What this session shipped (2026-09-30 night → 2026-10-01)
 
