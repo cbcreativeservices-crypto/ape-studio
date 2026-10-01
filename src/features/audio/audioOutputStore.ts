@@ -178,6 +178,24 @@ export function touchAudioActivity(now: number = Date.now()): void {
   armIdleTimer();
 }
 
+/**
+ * "Every sound was just stopped, but the gate stays ON" (owner 2026-10-01,
+ * the "Mute audio when I leave the app" setting, OFF). Leaving the app with
+ * that setting off must still silence everything, and each lab's transport
+ * must unwind exactly as it does for a mute — so the stop is announced on the
+ * same listener set. `useStopWhenSilenced` / `useStopOnAudioMute` act on a
+ * change of this counter as they do on the gate's falling edge. It never
+ * touches `enabled`, so nothing that reads the gate sees a change.
+ */
+let soundStopEpoch = 0;
+export function getSoundStopEpoch(): number {
+  return soundStopEpoch;
+}
+export function signalSoundStopped(): void {
+  soundStopEpoch += 1;
+  emit();
+}
+
 /** Plain (non-hook) subscription to store changes — used by the exposure
  *  monitor to arm/disarm its poller with the output gate (owner 2026-08-12). */
 export function subscribeAudioOutput(cb: () => void): () => void {

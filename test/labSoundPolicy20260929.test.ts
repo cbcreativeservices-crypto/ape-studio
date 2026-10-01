@@ -180,7 +180,13 @@ test('safety paths are untouched: background + shake still silence every voice a
   const gate = read('src/features/audio/AudioOutputGate.tsx');
   // Unconditional since 2026-09-30: a generator live while the gate already
   // reads muted is silenced too.
-  assert.match(gate, /if \(state === 'background'\) \{[\s\S]{0,300}?\n\s+panicMuteAudio\(\);\n\s+return;/);
+  // 2026-10-01: routed through Settings › "Mute audio when I leave the app" —
+  // ON → panicMuteAudio, OFF → stopAllSound (same silencing pass, gate stays
+  // on). Both stop every voice; see test/muteAudioOnLeave20261001.test.ts.
+  assert.match(
+    gate,
+    /if \(state === 'background'\) \{[\s\S]{0,900}?\n\s+onLeaveApp\(muteOnLeaveEnabled\(\), \{ panicMute: panicMuteAudio, stopAllSound \}\);\n\s+return;/,
+  );
   const panic = read('src/features/audio/panicMute.ts');
   assert.match(panic, /stopAllFilePlayers\(\);/);
 });

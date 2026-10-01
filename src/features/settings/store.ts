@@ -18,6 +18,7 @@ import { supabase } from '../../lib/supabase';
 import { hasSafeSession } from '../../lib/getSessionSafe';
 import { requestLocalNotifSync } from '../notifications/localSchedule';
 import { applyA11yFromSettings, resetA11y } from './a11y';
+import { MUTE_ON_LEAVE_DEFAULT, setMuteOnLeave } from '../audio/leaveAppMute';
 
 export type LocalSettings = {
   reduceAnimations: boolean;
@@ -27,6 +28,11 @@ export type LocalSettings = {
   // immediately and re-acquires (a moment to re-warm) when you return. OFF =
   // keep the warm session alive in the background for an instant resume.
   micReleaseOnBackground: boolean;
+  // "Mute audio when I leave the app" (owner 2026-10-01). ON (default, the
+  // 2026-09-17 behaviour) = backgrounding stops every sound AND locks the audio
+  // output gate. OFF = backgrounding still stops every sound but leaves output
+  // on for the return. Mirrored synchronously into features/audio/leaveAppMute.
+  muteAudioOnLeave: boolean;
   // COMMERCIAL notification set (user request 2026-07-18). Device-local intent
   // flags — notification_preferences (server) is FROZEN and has no columns for
   // these, so they live in AsyncStorage. Scheduling is LOCAL (expo-notifications,
@@ -57,6 +63,7 @@ export const DEFAULT_LOCAL_SETTINGS: LocalSettings = {
   reduceAnimations: false,
   haptics: true,
   micReleaseOnBackground: true,
+  muteAudioOnLeave: MUTE_ON_LEAVE_DEFAULT,
   notifyDailyStudy: false,
   notifyContinue: false,
   continueDays: 3,
@@ -196,6 +203,7 @@ export async function loadLocalSettings(): Promise<LocalSettings> {
     const merged = raw ? { ...DEFAULT_LOCAL_SETTINGS, ...JSON.parse(raw) } : DEFAULT_LOCAL_SETTINGS;
     hapticsOn = merged.haptics;
     micReleaseOnBg = merged.micReleaseOnBackground;
+    setMuteOnLeave(merged.muteAudioOnLeave);
     applyA11yFromSettings(merged); // font size / contrast / colour / motion
     return merged;
   } catch {
@@ -206,6 +214,7 @@ export async function loadLocalSettings(): Promise<LocalSettings> {
 export async function saveLocalSettings(s: LocalSettings): Promise<void> {
   hapticsOn = s.haptics;
   micReleaseOnBg = s.micReleaseOnBackground;
+  setMuteOnLeave(s.muteAudioOnLeave);
   applyA11yFromSettings(s); // live — the UI restyles as the chip is tapped
   await AsyncStorage.setItem(KEY, JSON.stringify(s));
   // Reschedule the local reminders whenever their settings change (debounced
@@ -220,6 +229,7 @@ export async function saveLocalSettings(s: LocalSettings): Promise<void> {
 export function resetLocal(): void {
   hapticsOn = DEFAULT_LOCAL_SETTINGS.haptics;
   micReleaseOnBg = DEFAULT_LOCAL_SETTINGS.micReleaseOnBackground;
+  setMuteOnLeave(DEFAULT_LOCAL_SETTINGS.muteAudioOnLeave);
   resetA11y();
 }
 

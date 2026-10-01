@@ -22,6 +22,7 @@ import Constants from 'expo-constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Toggle } from '../../components/Toggle';
+import { MUTE_ON_LEAVE_HINT, MUTE_ON_LEAVE_LABEL } from '../../features/audio/leaveAppMute';
 import { autoOfflineEnabled, setAutoOffline } from '../../features/glossary/autoOfflinePref';
 import { cancelGlossaryPrefetch, prefetchGlossary } from '../../features/glossary/offlinePrefetch';
 import { TextField } from '../../components/TextField';
@@ -815,6 +816,25 @@ ${LOCAL_LOSS}`
                 // download ~5 MB of 120-character teasers.
                 else if (isMember) void prefetchGlossary();
               }}
+            />
+          </View>
+        </SettingsSection>
+
+        {/* SOUND (owner 2026-10-01: "Leaving the app mutes audio — make it
+            optional in Settings"). Either way every sound stops when the app
+            goes to the background; this only decides whether audio output is
+            still on when the learner comes back. Copy lives in leaveAppMute.ts
+            so the enable popup and this row cannot drift apart. */}
+        <SettingsSection title="SOUND">
+          <View style={styles.row}>
+            <View style={{ flex: 1, paddingRight: 10 }}>
+              <Text style={styles.rowLabel}>{MUTE_ON_LEAVE_LABEL}</Text>
+              <Text style={styles.rowHint}>{MUTE_ON_LEAVE_HINT}</Text>
+            </View>
+            <Toggle
+              on={local.muteAudioOnLeave}
+              label={MUTE_ON_LEAVE_LABEL}
+              onChange={(v) => setLocalKey('muteAudioOnLeave', v)}
             />
           </View>
         </SettingsSection>

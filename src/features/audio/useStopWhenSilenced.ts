@@ -28,9 +28,13 @@
  * screen-specific teardown unwind exactly as they do for a real Stop tap. It
  * is called only on a true→false transition of the gate while the screen
  * says it is running, so a screen that is already stopped is never disturbed.
+ *
+ * It ALSO fires on `stopAllSound()` (owner 2026-10-01): with "Mute audio when
+ * I leave the app" OFF, leaving the app stops every voice but leaves the gate
+ * on, so there is no falling edge — the store's sound-stop counter is the cue.
  */
 import { useEffect, useRef } from 'react';
-import { isAudioOutputEnabled, subscribeAudioOutput } from './audioOutputStore';
+import { getSoundStopEpoch, isAudioOutputEnabled, subscribeAudioOutput } from './audioOutputStore';
 
 export function useStopWhenSilenced(running: boolean, stop: () => void): void {
   const runningRef = useRef(running);
@@ -41,13 +45,17 @@ export function useStopWhenSilenced(running: boolean, stop: () => void): void {
   // launch and false again after every mute, and re-firing `stop` on each
   // unrelated notification would fight a screen that is mid-start.
   const wasEnabled = useRef(isAudioOutputEnabled());
+  const lastStopEpoch = useRef(getSoundStopEpoch());
 
   useEffect(() => {
     const unsubscribe = subscribeAudioOutput(() => {
       const now = isAudioOutputEnabled();
       const fell = wasEnabled.current && !now;
       wasEnabled.current = now;
-      if (fell && runningRef.current) stopRef.current();
+      const epoch = getSoundStopEpoch();
+      const stoppedAll = epoch !== lastStopEpoch.current;
+      lastStopEpoch.current = epoch;
+      if ((fell || stoppedAll) && runningRef.current) stopRef.current();
     });
     return unsubscribe;
   }, []);

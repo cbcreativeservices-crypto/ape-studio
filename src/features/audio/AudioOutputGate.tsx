@@ -22,7 +22,9 @@
  *  Changing SCREENS never touches the gate (owner 2026-09-30). A screen stops
  *  its own sound on close (useStopOnClose / useStopOnBlur) and the gate stays
  *  on; the only re-locks are the ones listed here, plus leaving the app
- *  (background → panicMuteAudio), shake, the AUDIO OUTPUT row tap and a lost
+ *  (background → panicMuteAudio, unless Settings › "Mute audio when I leave
+ *  the app" is OFF — then stopAllSound, which stops sound but keeps the gate
+ *  on), shake, the AUDIO OUTPUT row tap and a lost
  *  headphone route.
  *
  * Popups use the app's Modal backdrop+card idiom (see PrePaywallPrompt).
@@ -70,7 +72,8 @@ import {
   setIdleBypass,
   setOutputSoundingProbe,
 } from './audioOutputStore';
-import { panicMuteAudio } from './panicMute';
+import { panicMuteAudio, stopAllSound } from './panicMute';
+import { enableAudioBody, muteOnLeaveEnabled, onLeaveApp } from './leaveAppMute';
 import { authEventReMute } from './authReMute';
 import { ApeDsp, onOutputLost } from '../../../modules/ape-dsp';
 
@@ -300,7 +303,13 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
         // Unconditional (bug pass 2026-09-30): a native generator still live
         // while the gate already reads muted must stop too. Muting an already
         // muted gate changes nothing else.
-        panicMuteAudio();
+        //
+        // "Mute audio when I leave the app" (Settings, owner 2026-10-01):
+        // ON (default) → panicMuteAudio() as above. OFF → stopAllSound(): the
+        // SAME silencing pass, minus the gate lock. Either way nothing is
+        // left playing behind the user — the setting only decides whether
+        // output is still on when they come back.
+        onLeaveApp(muteOnLeaveEnabled(), { panicMute: panicMuteAudio, stopAllSound });
         return;
       }
       if (
@@ -444,11 +453,10 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
             tone playing indefinitely after the user pressed Home. The
             sentence had become a promise the app no longer keeps, on the
             dialog where the user decides to allow sound at all. */}
-        <Text style={styles.body}>
-          Hold the button for 5 seconds to allow sound. It stays on while you're using the app,
-          mutes itself after 20 minutes untouched, and mutes when you leave the app — so nothing
-          is left playing behind you.
-        </Text>
+        {/* 2026-10-01: the leave-the-app clause follows the "Mute audio when
+            I leave the app" setting, so it is never a promise the app breaks
+            (enableAudioBody in leaveAppMute.ts holds both wordings). */}
+        <Text style={styles.body}>{enableAudioBody(muteOnLeaveEnabled())}</Text>
         <HoldToActivate
           label="HOLD 5s TO ENABLE AUDIO OUTPUT"
           onComplete={() => {

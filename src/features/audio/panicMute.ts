@@ -14,10 +14,34 @@
  */
 import * as Speech from 'expo-speech';
 import { ApeDsp } from '../../../modules/ape-dsp';
-import { disableAudioOutput } from './audioOutputStore';
+import { disableAudioOutput, signalSoundStopped } from './audioOutputStore';
 import { stopAllFilePlayers } from './filePlayers';
 
 export function panicMuteAudio(): void {
+  try {
+    silenceEverything();
+  } finally {
+    disableAudioOutput(); // the gate locks even if a stop above threw
+  }
+}
+
+/**
+ * stopAllSound — the same silencing pass as panicMuteAudio, WITHOUT locking
+ * the output gate (owner 2026-10-01: leaving the app with "Mute audio when I
+ * leave the app" switched OFF). Every voice, file player and utterance stops;
+ * audio output stays on. Screens unwind their transports through the store's
+ * sound-stop signal (useStopWhenSilenced / useStopOnAudioMute), because no
+ * gate edge will tell them.
+ */
+export function stopAllSound(): void {
+  try {
+    silenceEverything();
+  } finally {
+    signalSoundStopped(); // transports unwind even if a stop above threw
+  }
+}
+
+function silenceEverything(): void {
   // FILE PLAYBACK FIRST (2026-09-17). Until this line existed, shaking the
   // phone stopped every native voice and left an ear-training clip, a tuning
   // reference or a mix stem playing to its end - the one thing most likely to
@@ -51,5 +75,4 @@ export function panicMuteAudio(): void {
   } catch {
     /* nothing speaking */
   }
-  disableAudioOutput();
 }

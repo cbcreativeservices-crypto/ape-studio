@@ -72,7 +72,9 @@ describe('cable install — screen', () => {
     assert.match(s, /return 'consumed';/, 'the myth interstitial consumes NEXT');
     assert.match(s, /const done = runUnitsRef\.current\.has\(m\.unit\)/);
     assert.match(s, /banked: completedUnitsRef\.current\.has\(m\.unit\)/);
-    assert.match(s, /already banked/);
+    // The completion copy moved to completeCopy.ts (2026-10-01 save-honesty fix).
+    assert.match(s, /ciLeftLead\(saveState,/);
+    assert.match(src(resolve(CI, 'completeCopy.ts')), /already banked/);
     assert.doesNotMatch(s, /SKIP AHEAD|FINISH ✓|rackFooter|<ProgressDot/);
   });
   it('REVIEW RESULTS is not offered when no dimension is below 80', () => {

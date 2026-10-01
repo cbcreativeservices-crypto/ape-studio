@@ -30,8 +30,8 @@
  *    making noise on its own when it comes back from the background, which is
  *    precisely what the panic mute is for.
  */
-import { useEffect } from 'react';
-import { useAudioOutputEnabled } from './audioOutputStore';
+import { useEffect, useRef } from 'react';
+import { getSoundStopEpoch, subscribeAudioOutput, useAudioOutputEnabled } from './audioOutputStore';
 
 export function useStopOnAudioMute(setRunning: (v: false) => void): void {
   const outputOn = useAudioOutputEnabled();
@@ -40,4 +40,20 @@ export function useStopOnAudioMute(setRunning: (v: false) => void): void {
     // `setRunning` is a useState setter or a stable callback in every current
     // caller; listing it keeps the lint rule honest without re-running.
   }, [outputOn, setRunning]);
+
+  // stopAllSound() with the gate left ON (owner 2026-10-01: leaving the app
+  // with "Mute audio when I leave the app" OFF) — no falling edge to see, so
+  // follow the store's sound-stop counter instead.
+  const setRef = useRef(setRunning);
+  setRef.current = setRunning;
+  useEffect(() => {
+    let last = getSoundStopEpoch();
+    return subscribeAudioOutput(() => {
+      const epoch = getSoundStopEpoch();
+      if (epoch !== last) {
+        last = epoch;
+        setRef.current(false);
+      }
+    });
+  }, []);
 }

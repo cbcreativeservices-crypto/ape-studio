@@ -28,6 +28,8 @@ import { useEntitlement } from '../../../features/commercial/EntitlementProvider
 import { markLabUnit, registerLabUnits, useLabCompletion } from '../../../features/lab/labCompletion';
 import { colors, fonts } from '../../../theme/tokens';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
+import { useLabEndGuest } from '../kit/LabEndScreen';
+import { ciLeftLead, ciSaveNotice, ciSaveState, type CiSaveState } from './completeCopy';
 import { RuleOrMythCard, SourceSheet } from './bits';
 import { IntroSceneArt } from './introSceneArt';
 import {
@@ -79,7 +81,11 @@ const COMPLETE_STEP = CI_MODULES.length + 1;
 export function CableInstallLabScreen() {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
-  const { entitlement, resolved } = useEntitlement();
+  const { entitlement, resolved, isMember } = useEntitlement();
+  // The completion screen's save wording (owner 2026-10-01): the shared lab
+  // rule (useLabEndGuest) + this lab's own guest reading below. Members are
+  // always 'saved' and never see an offer.
+  const endGuest = useLabEndGuest();
   // `resolved` REQUIRED (entitlement roll-out 2026-09-11): the provider boots
   // at 'anonymous', and the restore effect below runs on MOUNT — so without it
   // a signed-in user reopening this lab was treated as a guest and dumped back
@@ -406,6 +412,13 @@ export function CableInstallLabScreen() {
                   goTo(idx + 1);
                 }}
                 onRepeat={repeatLab}
+                saveState={ciSaveState({ endGuest, noAccount: noAccountRef.current, isMember })}
+                // In-flow buttons, not a popup — so a straight navigate (no
+                // afterDialogCloses wait). Paywall is a modal over the lab:
+                // the lab stays underneath and is never blocked. Paywall
+                // itself sends a guest to Auth to create the account first.
+                onJoin={() => (navigation as unknown as { navigate: (r: 'Paywall') => void }).navigate('Paywall')}
+                onSignIn={() => (navigation as unknown as { navigate: (r: 'Auth') => void }).navigate('Auth')}
                 // One exit (bug hunt 2026-09-30 pass 2): a doubled RETURN ran
                 // goBack() twice and popped the screen under the lab too.
                 onReturn={() => {
@@ -576,6 +589,9 @@ function CompleteStage({
   onReview,
   onRepeat,
   onReturn,
+  saveState,
+  onJoin,
+  onSignIn,
 }: {
   dims: CiDimScores;
   /** Stages not yet completed THIS RUN. Empty = the run is finished.
@@ -588,6 +604,12 @@ function CompleteStage({
   onReview: () => void;
   onRepeat: () => void;
   onReturn: () => void;
+  /** Whether this run is really saved (completeCopy.ts). */
+  saveState: CiSaveState;
+  /** Open membership (Paywall). */
+  onJoin: () => void;
+  /** Guest only: an existing member signs in (Auth). */
+  onSignIn: () => void;
 }) {
   /**
    * Now that every stage is reachable at any time (owner 2026-09-20), a
@@ -601,6 +623,9 @@ function CompleteStage({
   // before this lab counts toward your credit" was false for them.
   const unbanked = outstanding.filter((m) => !m.banked).length;
   const replayOnly = outstanding.length - unbanked;
+  // Nothing is kept for a guest or a preview — never tell them it is.
+  const saved = saveState === 'saved';
+  const notice = ciSaveNotice(saveState);
   return (
     <View style={{ gap: 14 }}>
       <Text style={styles.completeTitle}>
@@ -614,9 +639,7 @@ function CompleteStage({
       ) : (
         <>
           <Text style={styles.introLead}>
-            {unbanked > 0
-              ? `${unbanked} of ${CI_MODULES.length} stage${unbanked === 1 ? '' : 's'} still to finish before this lab counts toward your credit. Everything you have done so far is saved — pick up wherever you like.${replayOnly > 0 ? ` ${replayOnly} more not replayed this run — already credited.` : ''}`
-              : `${replayOnly} of ${CI_MODULES.length} stage${replayOnly === 1 ? '' : 's'} not replayed this run. Your credit for every stage is already banked — replay them or leave them; nothing is lost.`}
+            {ciLeftLead(saveState, { unbanked, replayOnly, total: CI_MODULES.length })}
           </Text>
           <View style={styles.leftList}>
             {outstanding.map((m) => (
@@ -625,19 +648,31 @@ function CompleteStage({
                 onPress={() => onGoToStage(m.step)}
                 style={styles.leftRow}
                 accessibilityRole="button"
-                accessibilityLabel={`Go to stage ${m.step}, ${m.title}${m.banked ? ', already credited' : ''}`}
+                accessibilityLabel={`Go to stage ${m.step}, ${m.title}${saved && m.banked ? ', already credited' : ''}`}
               >
                 <Text style={styles.leftStep}>STAGE {m.step}</Text>
                 <Text style={styles.leftTitle} numberOfLines={1}>
                   {m.title}
                 </Text>
-                {m.banked ? <Text style={styles.leftBanked}>CREDITED</Text> : null}
+                {saved && m.banked ? <Text style={styles.leftBanked}>CREDITED</Text> : null}
                 <Text style={styles.leftGo}>›</Text>
               </Pressable>
             ))}
           </View>
         </>
       )}
+      {notice ? (
+        <View style={styles.saveNotice} accessibilityRole="summary">
+          <Text style={styles.saveNoticeTitle} accessibilityRole="header">
+            {notice.title}
+          </Text>
+          <Text style={styles.saveNoticeBody}>{notice.body}</Text>
+          <GlassButton label={notice.join} tint="gold" height={46} fontSize={13} onPress={onJoin} />
+          {notice.signIn ? (
+            <GlassButton label={notice.signIn} tint="teal" height={44} fontSize={12} onPress={onSignIn} />
+          ) : null}
+        </View>
+      ) : null}
       <MasteryProfile dims={dims} />
       <Appear delay={CI_MOTION.base} style={{ gap: 8 }}>
         <GlassButton label="VIEW FIELD CHECK" tint="green" height={46} fontSize={13} onPress={onFieldCheck} />
@@ -698,6 +733,9 @@ const styles = StyleSheet.create({
   leftBanked: { fontFamily: fonts.mono, fontSize: 10, letterSpacing: 1, color: colors.green },
   leftGo: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, color: colors.amber },
   completeTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1, color: colors.green },
+  saveNotice: { gap: 10, borderRadius: 12, borderWidth: 1, borderColor: colors.amber, backgroundColor: '#1a1610', padding: 14 },
+  saveNoticeTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.2, color: colors.amber },
+  saveNoticeBody: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19.5, color: colors.textSecondary },
   profileCard: { gap: 10, borderRadius: 12, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 14 },
   profileHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.amber },
   reviewLine: { fontFamily: fonts.barlowMedium, fontSize: 12.5, color: colors.amberLabel },

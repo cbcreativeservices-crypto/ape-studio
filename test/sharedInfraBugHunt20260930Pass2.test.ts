@@ -98,7 +98,11 @@ describe('Q5 — speech stop and the safety mute', () => {
       assert.match(src, new RegExp(`quiet\\(\\(\\) => ApeDsp\\.${f}\\(\\)\\);`));
     }
     assert.doesNotMatch(src, /^\s*ApeDsp\.fxReset\(\);/m);
-    assert.ok(src.lastIndexOf('disableAudioOutput();') > src.lastIndexOf('quiet(() => ApeDsp.fxReset());'));
+    // 2026-10-01: the silencing pass moved into silenceEverything() (shared
+    // with stopAllSound); panicMuteAudio locks the gate in a `finally`, so a
+    // throw anywhere in the pass still cannot skip disableAudioOutput().
+    assert.match(src, /export function panicMuteAudio\(\): void \{\s*try \{\s*silenceEverything\(\);\s*\} finally \{\s*disableAudioOutput\(\);/);
+    assert.ok(src.indexOf('function silenceEverything') < src.lastIndexOf('quiet(() => ApeDsp.fxReset());'));
   });
 });
 
