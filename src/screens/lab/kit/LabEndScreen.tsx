@@ -37,6 +37,7 @@ import { GlassButton } from '../../../components/GlassButton';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { useLabPreview } from '../../../features/lab/labPreviewStore';
 import { endLead, endTitle, whatsLeft, type LabEndRow, type LabEndUnit } from './labEnd';
+import { LabNextButton } from './LabNavBar';
 
 export type { LabEndUnit } from './labEnd';
 
@@ -197,27 +198,12 @@ export function LabEndScreen({
  * FINISH link at the bottom of the last section (owner 2026-09-29).
  */
 export function LabEndLink({ onPress, label = 'FINISH · SEE WHAT’S LEFT ›' }: { onPress: () => void; label?: string }) {
-  return (
-    <Pressable onPress={onPress} style={styles.link} accessibilityRole="button" accessibilityLabel="Finish the lab and see what's left">
-      <Text style={styles.linkText}>{label}</Text>
-    </Pressable>
-  );
+  // The shared in-flow NEXT / FINISH (kit/LabNavBar, 2026-09-30) — same look,
+  // same 48 pt, same a11y label; this export stays for its current callers.
+  return <LabNextButton onPress={onPress} label={label} />;
 }
 
 const styles = StyleSheet.create({
-  link: {
-    alignSelf: 'stretch',
-    minHeight: 48,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: colors.green,
-    backgroundColor: '#173021',
-    paddingHorizontal: 14,
-    marginTop: 6,
-  },
-  linkText: { color: colors.green, fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.3 },
   scroll: { padding: 16, paddingTop: 12, paddingBottom: 30, gap: 12 },
   kicker: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.6 },
   title: { color: colors.amber, fontFamily: fonts.oswaldSemiBold, fontSize: 24, letterSpacing: 1.6 },

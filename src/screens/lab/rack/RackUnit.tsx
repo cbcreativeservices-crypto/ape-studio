@@ -37,6 +37,7 @@ import { StageFullScreen } from './StageFullScreen';
 import { StageAspectReport, type StageReport } from './stageAspect';
 import { READING_MAX_W, readingColumn } from '../../../theme/readingColumn';
 import { isTabletWindow } from '../../../theme/tablet';
+import { LabNextButton, useLabNavContext } from '../kit/LabNavBar';
 
 /** Tablet glass height as a share of the window height, per declared size
  *  (owner 2026-09-29, tablet pass). 1366-tall portrait iPad: M 464 · L 546;
@@ -128,6 +129,7 @@ export function RackUnit({
    *  (LabShell parity for legacy in-well drag widgets). */
   children: ReactNode | ((api: RackUnitApi) => ReactNode);
 }) {
+  const labNav = useLabNavContext();
   const faders = useMemo(() => params.filter((p) => p.kind === 'fader'), [params]);
   const validInitial = faders.some((f) => f.id === initialParam);
   const [boundId, setBoundId] = useState(validInitial ? initialParam : (faders[0]?.id ?? ''));
@@ -549,6 +551,10 @@ export function RackUnit({
             scrollEnabled={!wellLocked}
           >
             {typeof children === 'function' ? children({ setScrollLocked: setWellLocked, scrollWellTo }) : children}
+            {/* Shared lab navigation (2026-09-30): a host that provides a
+                LabNav gets the in-flow "NEXT: <title> ›" / FINISH at the end
+                of its well. Draws nothing when there is no provider. */}
+            {labNav ? <LabNextButton nav={labNav} /> : null}
           </ScrollView>
         </ScrollLockProvider>
       </View>

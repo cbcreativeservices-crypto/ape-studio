@@ -17,7 +17,6 @@
  * lifecycle (the compact header PLAY is supplied BY the lab via headerAction).
  */
 import { useContext, useEffect, useRef, useState, type ReactNode } from 'react';
-import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { labProbe, useLabProbeLines } from '../../features/lab/labProbe';
 import { Animated, Easing, LayoutAnimation, Platform, Pressable, ScrollView, StyleSheet, Text, UIManager, View, type GestureResponderEvent } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -33,6 +32,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { ScrollLockCtx, ScrollLockProvider, useScrollLock } from './scrollLock';
 import { RackUnit } from './rack/RackUnit';
 import { readingColumn } from '../../theme/readingColumn';
+import { LabHeader } from './kit/LabNavBar';
 import type { DockParam, RackStage } from './rack/rackTypes';
 import { LabUnderstandingCheck } from '../../components/LabUnderstandingCheck';
 import { UNDERSTANDING_UNIT, hasUnderstandingCheck, understandingFor } from '../../features/lab/understanding';
@@ -572,40 +572,39 @@ export function LabShell({
         return false;
       }}
     >
-      <View style={styles.header} ref={headerRef} onTouchStart={probeOn ? () => stamp('H') : undefined}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
-        </Pressable>
-        <Pressable
-          style={{ flexShrink: 1, flexGrow: 1 }}
-          onPress={titleTap}
-          accessible={false}
-          onTouchStart={probeOn ? () => stamp('T') : undefined}
-        >
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.subtitle}>{subtitle}</Text>
-        </Pressable>
-        {/* Consistent per-screen help (Pillar C) — lands in the hub with lab
-            answers surfaced. */}
-        <View
-          style={styles.headerRight}
-          ref={rightRef}
-          onTouchStart={
-            probeOn
-              ? () => {
-                  stamp('B');
-                  setProbe((p) => ({ ...p, down: p.down + 1 }));
-                }
-              : undefined
-          }
-          onTouchEnd={probeOn ? () => setProbe((p) => ({ ...p, up: p.up + 1 })) : undefined}
-        >
-          <HelpKey search="lab" />
-          {/* Accuracy/calibration note — global honesty affordance (owner 2026-08-09). */}
-          <AccuracyNote compact />
-          {headerAction ? <View style={styles.headerAction} ref={actionRef}>{headerAction}</View> : null}
-        </View>
-      </View>
+      {/* The shared lab header (kit/LabNavBar, 2026-09-30): the same ‹ in
+          every lab — LEAVE THE LAB, BACK_HIT_SLOP, double-tap latched. The
+          probe hooks (title triple-tap, touch stamps, frame refs) ride its
+          passthrough props until the TEMP probe is dropped. */}
+      <LabHeader
+        title={title}
+        subtitle={subtitle}
+        headerRef={headerRef}
+        onTouchStart={probeOn ? () => stamp('H') : undefined}
+        onTitlePress={titleTap}
+        right={
+          // Consistent per-screen help (Pillar C) — lands in the hub with lab
+          // answers surfaced.
+          <View
+            style={styles.headerRight}
+            ref={rightRef}
+            onTouchStart={
+              probeOn
+                ? () => {
+                    stamp('B');
+                    setProbe((p) => ({ ...p, down: p.down + 1 }));
+                  }
+                : undefined
+            }
+            onTouchEnd={probeOn ? () => setProbe((p) => ({ ...p, up: p.up + 1 })) : undefined}
+          >
+            <HelpKey search="lab" />
+            {/* Accuracy/calibration note — global honesty affordance (owner 2026-08-09). */}
+            <AccuracyNote compact />
+            {headerAction ? <View style={styles.headerAction} ref={actionRef}>{headerAction}</View> : null}
+          </View>
+        }
+      />
       {probeOn ? (
         <Text style={styles.probe} accessible={false}>
           PROBE · last touch {probe.last} · top-right down {probe.down} / up {probe.up} · hit {probe.hits}
@@ -797,10 +796,7 @@ export function SpeakerOutputToggle({
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 8 },
-  back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
-  title: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1.4, color: colors.textPrimary },
-  subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
+  // header / back / title / subtitle now live in kit/LabNavBar's LabHeader.
   headerAction: { marginLeft: 8 },
   headerRight: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   probe: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: '#7fe07f', paddingHorizontal: 16, paddingBottom: 4 },
