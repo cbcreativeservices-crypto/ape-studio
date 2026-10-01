@@ -165,10 +165,11 @@ describe('FX labs — full-screen geometry at 390×844', () => {
   });
 });
 
-// 2026-10-01: the glass shape is recorded only while upright, so a sideways
-// full screen is not the squeezed sideways glass strip.
-test('FX stage records its shape only while the phone is upright', () => {
+// 2026-10-01: the FX stage reports its CURRENT glass shape (a fixed-height
+// strip). Reporting the upright shape sideways left empty bands above and
+// below the drawing, so that was reverted; FIT fills the height instead.
+test('FX stage reports its current glass shape', () => {
   const s = readFileSync('src/screens/lab/FxLabScreen.tsx', 'utf8');
-  assert.match(s, /const upright = win\.height >= win\.width;/);
-  assert.match(s, /if \(!inFull && upright && w > 0 && h > 0\) onShape\(w \/ h\);/);
+  assert.match(s, /if \(!inFull && w > 0 && h > 0\) onShape\(w \/ h\);/);
+  assert.doesNotMatch(s, /const upright = /);
 });
