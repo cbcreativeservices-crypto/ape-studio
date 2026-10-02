@@ -283,6 +283,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-02 14:13 · ccode · 8eec742b
+changed: Evening final round (owner D48: consistency + learning outcomes): tier-known upsell gate, Career screens on shared tier, careerfinder damaged-record + honest saved label, commitment intro hold, onboarding keys survive wipe, honest redeem wording, tool SAVE waits for tier; Drum read-retry + open fence (Mastering parity), exact OSHA PEL/action-level dose, safeGoBack-only back, featured chip, glossary share full definition, Requests err clear, Gallery edit unreadable notice
+affects other side: client only. Calc: OSHA dose now shows PEL (>=90 dBA) and action-level (>=80 dBA) doses separately.
+needs: nothing
+
+
 ### 2026-10-02 14:01 · ccode · 8f6f01fe
 changed: Evening hunt 3 (final): 10 new fixes + 1 correction (Glossary 0, Home 0, Labs A 0, Shared 1+1, Community 1, Study 1, Account 1, Calc 1, Tools 3, Labs B 2). Trend 30 -> 22 -> 10
 affects other side: client only
