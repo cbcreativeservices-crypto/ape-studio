@@ -250,6 +250,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-01 17:43 · ccode · c402d9d2
+changed: Drum Tuning Lab: design pass + standards audit — 9 pt on short phones (text boost), 5-key docks, numbered lug casings + hardware polish, key arrow never leaks the hidden offset, stop on step change, full-screen controls on the inspect figure
+affects other side: nothing (client-only lab work)
+needs: nothing
+
+
 ### 2026-10-01 17:10 · ccode · b41eea0d
 changed: Drum Tuning Lab: apply audio-expert (24) + cognitive (30) reviews — audible strike level, stroke-driven snare wires, honest head-relationship copy, caution card, listen-first Tune the head, listen→where→fix diagnosis, 9 pt, landing lines, visible tap/strike, ungameable credit, recall on review
 affects other side: nothing (client-only lab work)
