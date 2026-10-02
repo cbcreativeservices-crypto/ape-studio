@@ -137,19 +137,28 @@ export function ExperimentWell({ experiment }: { experiment: Experiment }) {
   /** Has the learner committed to a prediction? See the PREDICT card below. */
   const [committed, setCommitted] = useState(false);
   const [open, setOpen] = useState(true);
-  const toggle = (i: number) =>
+  /** The experiment whose stored ticks have LANDED (full-app run 2,
+   *  2026-10-01): a tick tapped before the read landed wrote `[i]` over the
+   *  experiment's stored ticks, and the load then showed the old list while
+   *  the device kept only the one tick. Ticks wait for the read. */
+  const [loadedId, setLoadedId] = useState<string | null>(null);
+  const toggle = (i: number) => {
+    if (loadedId !== experiment.id) return;
     setDone((d) => {
       const next = d.includes(i) ? d.filter((k) => k !== i) : [...d, i];
       void saveTicks(experiment.id, next);
       holdSessionWork<HeldTicks>(CARRY_KEY, (prev) => withHeldTick(prev, experiment.id, i, !d.includes(i)), { guestOnly: true });
       return next;
     });
+  };
 
   // Load this experiment's ticks whenever the well switches experiment.
   useEffect(() => {
     let alive = true;
     void loadTicks(experiment.id).then((t) => {
-      if (alive) setDone(t);
+      if (!alive) return;
+      setDone(t);
+      setLoadedId(experiment.id);
     });
     return () => {
       alive = false;

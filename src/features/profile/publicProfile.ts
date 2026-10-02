@@ -90,7 +90,9 @@ export async function loadPublicProfile(): Promise<PublicProfile> {
   // printed certificate and the public QR verifier must resolve to the same
   // name, and it has to survive a reinstall. The server copy wins when present;
   // a guest or an offline read falls back to the device value.
-  const remote = await fetchMyRegistryName();
+  // A failed read throws (2026-10-01); here it falls back to the device value,
+  // exactly as before.
+  const remote = await fetchMyRegistryName().catch(() => null);
   noteSyncedRegistryName(remote);
   if (remote) local = { ...local, registryName: remote };
   // The LISTING is server-truth, not a device preference: the public page's

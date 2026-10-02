@@ -91,6 +91,24 @@ async function readList<T>(key: CollectionKey, validate: (x: unknown) => x is T)
   }
 }
 
+/** Favourites / recents: a list of ids. `null` when the READ failed (full-app
+ *  run 2, 2026-10-01) — writers refuse rather than overwrite it. A blob that
+ *  was read but is not a JSON array still counts as empty, as before. */
+async function readIds(key: CollectionKey): Promise<string[] | null> {
+  let raw: string | null;
+  try {
+    raw = await AsyncStorage.getItem(key);
+  } catch {
+    return null;
+  }
+  try {
+    const v: unknown = raw == null ? [] : JSON.parse(raw);
+    return Array.isArray(v) ? v.filter((s): s is string => typeof s === 'string') : [];
+  } catch {
+    return [];
+  }
+}
+
 async function saveList<T>(key: CollectionKey, list: T[], gen: number): Promise<boolean> {
   // Wiped since this write was asked for — nothing of that account is written.
   if (gen !== generation) return false;
@@ -185,8 +203,8 @@ export const workflowStore = {
       if (i < 0 || j < 0 || j >= list.length) return list;
       const next = [...list];
       [next[i], next[j]] = [next[j], next[i]];
-      await saveList(KEYS.workflows, next, gen);
-      return next;
+      // A failed write returns the stored order, not a swap that was never saved.
+      return (await saveList(KEYS.workflows, next, gen)) ? next : list;
     });
   },
 
@@ -202,36 +220,25 @@ export const workflowStore = {
   saveResult: (r: SavedRunSummary, gen = generation) => upsert(KEYS.results, isResult, r, false, gen),
   deleteResult: (id: string, gen = generation) => removeById(KEYS.results, isResult, id, gen),
 
-  async getFavorites(): Promise<string[]> {
-    try {
-      const raw = await AsyncStorage.getItem(KEYS.favorites);
-      const v: unknown = raw == null ? [] : JSON.parse(raw);
-      return Array.isArray(v) ? v.filter((s): s is string => typeof s === 'string') : [];
-    } catch {
-      return [];
-    }
-  },
-  toggleFavorite(id: string, gen = generation): Promise<string[]> {
+  getFavorites: async (): Promise<string[]> => (await readIds(KEYS.favorites)) ?? [],
+  /** `null` when the stored favourites could not be READ (full-app run 2,
+   *  2026-10-01): toggling then wrote `[id]` over every other favourite. Now
+   *  nothing is written and the screen keeps what it shows. A failed write
+   *  returns the unchanged list, never the toggle that was not stored. */
+  toggleFavorite(id: string, gen = generation): Promise<string[] | null> {
     return serialWrite(async () => {
-      const cur = await workflowStore.getFavorites();
+      const cur = await readIds(KEYS.favorites);
+      if (cur === null) return null;
       const next = cur.includes(id) ? cur.filter((s) => s !== id) : [id, ...cur];
-      await saveList(KEYS.favorites, next, gen);
-      return next;
+      return (await saveList(KEYS.favorites, next, gen)) ? next : cur;
     });
   },
 
-  async getRecents(): Promise<string[]> {
-    try {
-      const raw = await AsyncStorage.getItem(KEYS.recents);
-      const v: unknown = raw == null ? [] : JSON.parse(raw);
-      return Array.isArray(v) ? v.filter((s): s is string => typeof s === 'string') : [];
-    } catch {
-      return [];
-    }
-  },
+  getRecents: async (): Promise<string[]> => (await readIds(KEYS.recents)) ?? [],
   touchRecent(id: string, gen = generation): Promise<void> {
     return serialWrite(async () => {
-      const cur = await workflowStore.getRecents();
+      const cur = await readIds(KEYS.recents);
+      if (cur === null) return; // unreadable: never overwrite the recents with one id
       await saveList(KEYS.recents, [id, ...cur.filter((s) => s !== id)].slice(0, 8), gen);
     });
   },

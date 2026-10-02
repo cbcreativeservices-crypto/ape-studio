@@ -323,6 +323,26 @@ function commit(next: EnrollTopic[]) {
   emit();
 }
 
+/**
+ * NO EDIT BEFORE THE STORED LIST HAS LANDED (full-app run 2, 2026-10-01).
+ *
+ * Every mutator below computes `next` from `list` and `commit` PERSISTS it —
+ * and pushes it to the server master list. Before `hydrate` lands, `list` is
+ * the empty placeholder: an ENROLL tap on Awards or Explore (neither mounts
+ * `useEnrollment`), or any tap in the moments after an account switch, wrote a
+ * one-topic list over the learner's stored enrollment and synced it upstream,
+ * where it gates study and quizzes. Returns true when the call was deferred;
+ * the caller re-runs once the list is real (same identity only).
+ */
+function deferUntilHydrated(run: () => void): boolean {
+  if (hydrated) return false;
+  const gen = generation;
+  void hydrate().then(() => {
+    if (gen === generation && hydrated) run();
+  });
+  return true;
+}
+
 export function getEnrollment(): EnrollTopic[] {
   void hydrate();
   return list;
@@ -335,6 +355,7 @@ export function isEnrolled(gs: number): boolean {
 /** Add topics (gs) not already present, appended in order, active + unfavorited.
  *  Returns how many were newly added. */
 export function addTopics(gsList: number[]): number {
+  if (deferUntilHydrated(() => addTopics(gsList))) return 0;
   const have = new Set(list.map((e) => e.gs));
   const seen = new Set<number>();
   const additions: EnrollTopic[] = [];
@@ -354,6 +375,7 @@ export function addTopics(gsList: number[]): number {
  *  setActiveMany(all, false) pair unloaded shared topics the user had loaded
  *  for another credential. Returns how many were newly added. */
 export function addTopicsUnloaded(gsList: number[]): number {
+  if (deferUntilHydrated(() => addTopicsUnloaded(gsList))) return 0;
   const fresh = freshGs(list.map((e) => e.gs), gsList);
   if (fresh.length === 0) return 0;
   commit([...list, ...fresh.map((gs) => ({ gs, favorite: false, active: false }))]);
@@ -365,6 +387,7 @@ export function addTopic(gs: number): void {
 }
 
 export function removeTopic(gs: number): void {
+  if (deferUntilHydrated(() => removeTopic(gs))) return;
   if (!list.some((e) => e.gs === gs)) return;
   commit(list.filter((e) => e.gs !== gs));
 }
@@ -376,6 +399,7 @@ export function removeTopic(gs: number): void {
  *  would be "curriculum still loading", not "everything is invalid"). */
 export function pruneInvalidGs(valid: Set<number>): number {
   if (valid.size === 0) return 0;
+  if (deferUntilHydrated(() => pruneInvalidGs(valid))) return 0;
   const next = list.filter((e) => valid.has(e.gs));
   const removed = list.length - next.length;
   if (removed > 0) commit(next);
@@ -384,20 +408,24 @@ export function pruneInvalidGs(valid: Set<number>): number {
 
 /** Toggle membership — add if absent, remove if present (add-menu tap). */
 export function toggleTopic(gs: number): void {
+  if (deferUntilHydrated(() => toggleTopic(gs))) return;
   if (list.some((e) => e.gs === gs)) removeTopic(gs);
   else addTopic(gs);
 }
 
 export function toggleFavorite(gs: number): void {
+  if (deferUntilHydrated(() => toggleFavorite(gs))) return;
   commit(list.map((e) => (e.gs === gs ? { ...e, favorite: !e.favorite } : e)));
 }
 
 export function toggleActive(gs: number): void {
+  if (deferUntilHydrated(() => toggleActive(gs))) return;
   commit(list.map((e) => (e.gs === gs ? { ...e, active: !e.active } : e)));
 }
 
 /** Bulk-set active on many topics (bundle LOAD/UNLOAD, user request 2026-07-22). */
 export function setActiveMany(gsList: number[], active: boolean): void {
+  if (deferUntilHydrated(() => setActiveMany(gsList, active))) return;
   const set = new Set(gsList);
   let changed = false;
   const next = list.map((e) => {
@@ -433,6 +461,7 @@ export async function ensureStudyTopic(gs: number): Promise<void> {
  *  User PROGRESS is stored separately and is NOT touched — cleared topics can be
  *  re-added from the browse/add lists (user request 2026-07-25). */
 export function resetEnrollment(): void {
+  if (deferUntilHydrated(resetEnrollment)) return;
   commit(FREE_ENROLL_GS.map((gs) => ({ gs, favorite: false, active: true })));
 }
 
@@ -465,6 +494,7 @@ export function resetLocal(): void {
 
 /** Move an entry up (-1) or down (+1) in the user's order. */
 export function moveTopic(gs: number, dir: -1 | 1): void {
+  if (deferUntilHydrated(() => moveTopic(gs, dir))) return;
   const i = list.findIndex((e) => e.gs === gs);
   const j = i + dir;
   if (i < 0 || j < 0 || j >= list.length) return;

@@ -43,15 +43,23 @@ export function ProductionStageScreen() {
    * A production-stage deep link opened on any other phone landed exactly
    * there. Nothing threw, so no boundary caught it.
    */
-  const [loadState, setLoadState] = useState<'loading' | 'ready' | 'missing'>('loading');
+  // 'unreadable' (full run 2, 2026-10-01): storage could not be READ. get()
+  // resolved null for that too, so a read failure told the learner the
+  // project was not on this phone and to start a new one.
+  const [loadState, setLoadState] = useState<'loading' | 'ready' | 'missing' | 'unreadable'>('loading');
 
   useEffect(() => {
     let alive = true;
     setLoadState('loading');
     void projectStore()
-      .get(lab, projectId)
-      .then((p) => {
+      .tryLoad(lab)
+      .then((all) => {
         if (!alive) return;
+        if (!all) {
+          setLoadState('unreadable');
+          return;
+        }
+        const p = all.find((x) => x.id === projectId) ?? null;
         setProject(p);
         setLoadState(p ? 'ready' : 'missing');
       })
@@ -200,6 +208,8 @@ export function ProductionStageScreen() {
           <Text style={styles.emptyText}>
             {project
               ? 'This stage is not authored yet.'
+              : loadState === 'unreadable'
+                ? 'This project could not be read on this device just now. Go back and open it again.'
               : loadState === 'missing'
                 ? 'This project is not on this device. Production projects are saved on the phone that created them — open it there, or start a new one from the lab home.'
                 : 'Opening the project…'}

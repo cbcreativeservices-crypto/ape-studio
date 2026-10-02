@@ -36,6 +36,7 @@ import { readingColumn } from '../../../theme/readingColumn';
 import { GlassButton } from '../../../components/GlassButton';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { useLabPreview } from '../../../features/lab/labPreviewStore';
+import { sessionCarryOpen } from '../../../features/lab/sessionCarry';
 import { endLead, endTitle, whatsLeft, type LabEndRow, type LabEndUnit } from './labEnd';
 import { LabNextButton, claimLabLeave } from './LabNavBar';
 
@@ -150,7 +151,7 @@ export function LabEndScreen({
       <Text style={[styles.title, w.complete && { color: colors.green }]} accessibilityRole="header">
         {title}
       </Text>
-      <Text style={styles.lead}>{endLead(w, { mode, noun, guest: isGuest, preview: inPreview })}</Text>
+      <Text style={styles.lead}>{endLead(w, { mode, noun, guest: isGuest, preview: inPreview, carry: sessionCarryOpen() })}</Text>
       {extra}
 
       {w.left.length > 0 ? (

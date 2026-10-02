@@ -73,13 +73,27 @@ export function getSplCalibration(): SplCalibration | null {
 }
 
 /** Set (or clear with null) the field-calibration offset. Hydrate-first so a
- *  cold-path write can't race the load (same discipline as measurementStore). */
-export function setSplCalibration(offsetDb: number | null): void {
-  void hydrate().then(() => {
+ *  cold-path write can't race the load (same discipline as measurementStore).
+ *
+ *  RESOLVES FALSE IF THE WRITE DID NOT REACH DISK (full run 2, 2026-10-02).
+ *  The write's failure used to be swallowed (`.catch(() => {})`): a full
+ *  AsyncStorage database (the documented Android SQLITE_FULL) left the meter
+ *  reading "field-calibrated" for this session and uncalibrated on the next
+ *  launch, with nothing said — the same silent loss saveMeasurement() stopped
+ *  hiding on 2026-09-17. The in-memory value still applies for this session;
+ *  the caller tells the user it will not survive a restart. Never rejects. */
+export function setSplCalibration(offsetDb: number | null): Promise<boolean> {
+  return hydrate().then(async () => {
     cal = offsetDb == null ? null : { offsetDb, setAt: new Date().toISOString() };
-    if (cal == null) void AsyncStorage.removeItem(KEY).catch(() => {});
-    else void AsyncStorage.setItem(KEY, JSON.stringify(cal)).catch(() => {});
     emit();
+    try {
+      if (cal == null) await AsyncStorage.removeItem(KEY);
+      else await AsyncStorage.setItem(KEY, JSON.stringify(cal));
+      return true;
+    } catch (e) {
+      console.warn('[calibration] write FAILED — the calibration on screen is not persisted:', e);
+      return false;
+    }
   });
 }
 

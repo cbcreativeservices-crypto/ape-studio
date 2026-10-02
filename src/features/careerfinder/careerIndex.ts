@@ -122,11 +122,17 @@ export function preparationLevel(prep: string): 0 | 1 | 2 {
 }
 
 /** The family's most accessible titles: lowest preparation level first, the
- *  workbook's order (established roles first) within a level. */
+ *  workbook's order (established roles first) within a level.
+ *
+ *  ⛔ Not a title that needs a PE licence or a graduate degree (full-app run 2,
+ *  2026-10-01). `preparationLevel` reads "Master's …" as 0 and ignores `pe`,
+ *  so "the least formal preparation to get started" listed Acoustical
+ *  Consultant (PE), Audio Archivist (master's) and Music Librarian (MLS/MLIS)
+ *  as entry points, collapsed, with no disclosure on the row. */
 export function entryPoints(familyId: string, n = 3): Career[] {
   return careersInFamily(familyId)
     .map((c, i) => ({ c, i, level: preparationLevel(c.preparation) }))
-    .filter((x) => !x.c.regulated)
+    .filter((x) => !x.c.regulated && !furtherEducation(x.c))
     .sort((a, b) => a.level - b.level || a.i - b.i)
     .slice(0, n)
     .map((x) => x.c);

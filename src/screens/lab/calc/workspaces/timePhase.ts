@@ -9,6 +9,14 @@ import { fmt, fmtInt, speedOfSoundAir } from '../calcUnits';
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 /** An angle folded into [0, 360) — −90 → 270, 450 → 90 (NaN stays NaN). */
 const wrap360 = (deg: number) => ((deg % 360) + 360) % 360;
+/** A product that is a whole number up to float noise IS that whole number
+ *  (full-app run 2, 2026-10-01): 9 ms × 48 kHz = 431.99999999999994, so
+ *  ROUNDED DOWN read 431 samples for an exact 432; 11 ms at 1 kHz read
+ *  "10 full cycles + 360°" for exactly 11 cycles. Same 1e-9 rule as wholeCount. */
+const denoise = (x: number) => {
+  const r = Math.round(x);
+  return Math.abs(x - r) <= 1e-9 * Math.max(1, Math.abs(x)) ? r : x;
+};
 
 /* ------------------------------------------------------------------ */
 /* 1 · Distance · Delay · Samples                                      */
@@ -194,7 +202,7 @@ const WS_DISTDELAY: Workspace = {
         'The reverse: how many samples a delay time is. A sample-only DSP must pick a whole number, leaving a tiny residual — usually negligible, but it is why fractional-delay processing exists for precise alignment.',
       keySymbols: ['·'],
       compute: (v) => {
-        const N = n(v.delay) * n(v.sr);
+        const N = denoise(n(v.delay) * n(v.sr));
         return [
           { label: 'EXACT SAMPLES', value: N, quantity: 'samples' },
           { label: 'NEAREST WHOLE SAMPLE', text: `${fmtInt(N)} samples (error ${fmt(((Math.round(N) - N) / n(v.sr)) * 1e6)} µs)` },
@@ -204,14 +212,14 @@ const WS_DISTDELAY: Workspace = {
       steps: (v) => {
         const t = n(v.delay);
         const sr = n(v.sr);
-        const N = t * sr;
+        const N = denoise(t * sr);
         return [
           `N = ${fmt(t * 1000)} ms × ${fmt(sr)} Hz = ${fmt(N)} samples.`,
           `A sample-only DSP must pick a whole number: nearest is ${fmtInt(N)}, leaving ${fmt(Math.abs(Math.round(N) - N) / sr * 1e6)} µs of residual — usually negligible, but it is why fractional-delay processing exists.`,
         ];
       },
       table: (v) => {
-        const N = n(v.delay) * n(v.sr);
+        const N = denoise(n(v.delay) * n(v.sr));
         const sr = n(v.sr);
         const row = (name: string, k: number) => [
           name,
@@ -314,7 +322,7 @@ const WS_PHASE: Workspace = {
         'Phase is time offset expressed per cycle, so the same delay is a different number of degrees at every frequency. This gives the phase at a chosen frequency, plus how many whole cycles late the signal is — the reason two arrivals add at one frequency and cancel at another.',
       keySymbols: ['φ', '·', 'f', 'Δ'],
       compute: (v) => {
-        const total = 360 * n(v.f) * n(v.dt);
+        const total = 360 * denoise(n(v.f) * n(v.dt));
         const cycles = Math.floor(total / 360);
         return [
           { label: 'PHASE (WRAPPED 0–360°)', value: ((total % 360) + 360) % 360, quantity: 'angle' },
@@ -325,7 +333,7 @@ const WS_PHASE: Workspace = {
       steps: (v) => {
         const f = n(v.f);
         const dt = n(v.dt);
-        const total = 360 * f * dt;
+        const total = 360 * denoise(f * dt);
         return [
           `One cycle at ${fmt(f)} Hz lasts ${fmt(1000 / f)} ms; ${fmt(dt * 1000)} ms is ${fmt(f * dt)} of those cycles.`,
           `φ = 360° × ${fmt(f)} × ${fmt(dt)} s = ${fmt(total)}° total = ${fmtInt(Math.floor(total / 360))} full cycle(s) plus ${fmt(((total % 360) + 360) % 360)}°.`,

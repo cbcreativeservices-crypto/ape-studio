@@ -38,6 +38,7 @@ import { readingColumn } from '../../../theme/readingColumn';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { confirmDialog } from '../../../lib/confirm';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
+import { useLabPreview } from '../../../features/lab/labPreviewStore';
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { DRUM_CHAPTERS, drumChapterById, scenariosForChapter, type DrumChapterId, type TuningNote } from './drumContent';
@@ -60,10 +61,16 @@ export function DrumTuningLabScreen() {
   // HOUSE GUEST RULE: neither restore nor save for a guest / a preview;
   // blocked until the tier is `resolved` (the Mastering rule).
   const guest = useLabEndGuest();
-  const { resolved, entitlement } = useEntitlement();
+  const { resolved } = useEntitlement();
   const blocked = guest || !resolved;
   setDrumSaveBlocked(blocked);
-  const preview = resolved && guest && entitlement !== 'anonymous';
+  // The PREVIEW the lab is in, read from the preview store (full-app run 2,
+  // 2026-10-01). This lab is members-only, so a signed-out guest is ALWAYS in
+  // a preview (withMembershipPreview arms it) and the ledger holds nothing
+  // for them — `entitlement !== 'anonymous'` called that guest "not a
+  // preview" and promised "sign in before you close the app" would keep work
+  // that is never carried.
+  const preview = useLabPreview().active;
 
   const [modId, setModId] = useState<DrumChapterId>('sound');
   const [step, setStepRaw] = useState(0);

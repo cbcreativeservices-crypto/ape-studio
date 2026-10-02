@@ -51,3 +51,29 @@ export function classifyExpiry(expiresAt: unknown, now: number = Date.now()): Ex
 export function verdictKeepsAccess(verdict: ExpiryVerdict): boolean {
   return verdict !== 'expired';
 }
+
+/**
+ * When does the access these rows grant END? (full run 2, 2026-10-01.)
+ *
+ * The epoch ms at which the last ACTIVE row with a real future expiry passes,
+ * or null when access does not end on a known date: no granting row at all, or
+ * any active row with no end date / an unreadable one (those keep access with
+ * no end, see above). The provider re-reads at this moment, so a cancelled
+ * member whose paid cycle ends while the app is in the foreground loses the
+ * tier then, not at the next return from the background.
+ */
+export function accessEndsAt(
+  rows: { status?: string; expires_at?: unknown }[],
+  now: number = Date.now(),
+): number | null {
+  let end: number | null = null;
+  for (const r of rows) {
+    if (r.status !== 'active') continue;
+    const verdict = classifyExpiry(r.expires_at, now);
+    if (verdict === 'expired') continue;
+    if (verdict !== 'current') return null;
+    const ms = Date.parse(r.expires_at as string);
+    if (end === null || ms > end) end = ms;
+  }
+  return end;
+}

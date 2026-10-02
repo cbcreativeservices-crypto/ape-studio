@@ -24,7 +24,8 @@
  * `.from('users')…single()` anywhere in the app.
  */
 import { supabase } from '../../lib/supabase';
-import { safeUser } from '../../lib/getSessionSafe';
+import { safeUser, SESSION_TIMEOUT_MS } from '../../lib/getSessionSafe';
+import { withDeadline } from '../../lib/boundedCall';
 
 /** The auth uid, or null when the session has not hydrated yet. */
 async function authUid(): Promise<string | null> {
@@ -56,6 +57,24 @@ export async function myUserRow<T = Record<string, unknown>>(columns: string): P
   } catch {
     return null;
   }
+}
+
+/**
+ * `myUserRow` for a read whose FAILURE must not pass for "nothing there"
+ * (full run 2, 2026-10-01). Resolves null only when there is genuinely no
+ * session or no row; a failed or stalled read THROWS. The printed certificate
+ * used the forgiving read and turned a network blip into "Academy Member".
+ */
+export async function myUserRowOrThrow<T = Record<string, unknown>>(columns: string): Promise<T | null> {
+  const { data: s } = await withDeadline(() => supabase.auth.getSession(), 'users row session', SESSION_TIMEOUT_MS);
+  const uid = s.session?.user?.id ?? null;
+  if (!uid) return null;
+  const { data, error } = await withDeadline(
+    async () => await supabase.from('users').select(columns).eq('auth_id', uid).maybeSingle(),
+    'users row read',
+  );
+  if (error) throw new Error(error.message || 'users row read failed');
+  return (data as T) ?? null;
 }
 
 /** The caller's `public.users.id` — the surrogate key almost every progress

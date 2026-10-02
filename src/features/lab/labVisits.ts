@@ -45,6 +45,8 @@ function blobOf(): Record<string, string[]> {
 }
 
 function persist() {
+  // Never over a copy that could not be read (full run 2, 2026-10-01).
+  if (!hydrated) return;
   void AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(blobOf())).catch(() => {});
 }
 
@@ -52,8 +54,17 @@ function hydrate(): Promise<void> {
   if (hydrated) return Promise.resolve();
   if (!hydrating) {
     hydrating = (async () => {
+      let raw: string | null;
       try {
-        const raw = await AsyncStorage.getItem(STORAGE_KEY);
+        raw = await AsyncStorage.getItem(STORAGE_KEY);
+      } catch {
+        // The READ failed (not "nothing visited"): stay unhydrated so
+        // persist() cannot write this session's visits over the stored ones;
+        // the next call reads again and merges (full run 2, 2026-10-01).
+        hydrating = null;
+        return;
+      }
+      try {
         if (raw != null) {
           const blob = JSON.parse(raw) as Record<string, unknown>;
           for (const [k, arr] of Object.entries(blob)) {

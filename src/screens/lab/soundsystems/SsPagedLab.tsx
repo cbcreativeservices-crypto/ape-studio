@@ -35,7 +35,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { readingColumn } from '../../../theme/readingColumn';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { animationsAllowed } from '../../../features/settings/a11y';
-import { holdPagedProgress, loadPagedProgress, savePagedProgress, type PagedProgress } from '../../../features/lab/pagedProgress';
+import { heldPaged, holdPagedProgress, loadPagedProgress, savePagedProgress, withHeldPages, type PagedProgress } from '../../../features/lab/pagedProgress';
 import { confirmDialog } from '../../../lib/confirm';
 import { LabUnderstandingCheck } from '../../../components/LabUnderstandingCheck';
 import { UNDERSTANDING_UNIT, understandingFor } from '../../../features/lab/understanding';
@@ -119,7 +119,8 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
   // is required — the provider boots at 'anonymous'.
   const { entitlement, resolved } = useEntitlement();
   const noSaveRef = useRef(false);
-  noSaveRef.current = getLabPreview().active || (resolved && entitlement === 'anonymous');
+  const isGuest = resolved && entitlement === 'anonymous';
+  noSaveRef.current = getLabPreview().active || isGuest;
   setSoundSystemsSaveBlocked(noSaveRef.current);
   // Before the saved progress loads (bug hunt 2026-09-29): a page that marks
   // itself on mount (the bench intro) is queued, not dropped, and a learner
@@ -175,7 +176,11 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
     void loadPagedProgress(labId).then((p) => {
       if (!alive) return;
       loadedNoSaveRef.current = noSaveRef.current;
-      const loaded = noSaveRef.current ? { completed: [], lastPage: 0, done: false } : p;
+      // A re-load after a guest → signed-in change keeps the pages finished
+      // as a guest on screen (the ledger may not have written them yet). The
+      // ledger holds nothing across a sign-out, so this is only ever the
+      // same person's work (kit/PagedLab's 2026-10-01 rule).
+      const loaded = noSaveRef.current ? { completed: [], lastPage: 0, done: false } : withHeldPages(p, heldPaged(labId));
       progressRef.current = loaded;
       setProgress(loaded);
       if (navigatedRef.current) persist({ lastPage: pageRef.current });
@@ -185,8 +190,14 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
       queued.forEach(markPageDone);
     });
     return () => { alive = false; };
+    // `isGuest` (full run 2, 2026-10-01; kit/PagedLab's bug pass 2026-10-01
+    // fix): the tier can change after the first load. A signed-in learner
+    // whose boot tier read failed resolves 'anonymous' and later reads their
+    // real tier; without a re-load the visit stayed on the empty guest copy —
+    // every finished page shown undone, the end screen listing them all as
+    // left, and the place reset to page 1.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [labId, pagesWithCheck.length, resolved]);
+  }, [labId, pagesWithCheck.length, resolved, isGuest]);
 
   const goTo = useCallback((i: number) => {
     const idx = Math.max(0, Math.min(pagesWithCheck.length - 1, Math.round(i)));

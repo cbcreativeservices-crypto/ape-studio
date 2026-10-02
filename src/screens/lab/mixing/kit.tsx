@@ -49,12 +49,17 @@ let focalCurrent: string | null = null;
 /** Chosen in THIS app run (never read from storage) — what a guest sees. */
 let focalSession: string | null = null;
 const focalListeners = new Set<() => void>();
+/** Set by a choice or an account wipe (full run 2, 2026-10-01): the
+ *  import-time read below then lost the race and must not land. It wrote a
+ *  previous account's stored choice back over resetMixingCommitments(), or
+ *  an older stored choice over one just made. */
+let focalTouched = false;
 // A MODULE-LEVEL read: it runs at import time, so a rejection here has no
 // component to surface in and becomes a bare unhandled rejection at startup.
 // Failing it just leaves the default.
 void AsyncStorage.getItem(FOCAL_KEY)
   .then((v) => {
-    if (v != null) {
+    if (v != null && !focalTouched) {
       focalCurrent = v;
       focalListeners.forEach((l) => l());
     }
@@ -74,6 +79,8 @@ void AsyncStorage.getItem(FOCAL_KEY)
  * own (2026-09-17, caught by the registry test rather than by eye).
  */
 export function resetMixingCommitments(): void {
+  focalTouched = true;
+  prioritiesTouched = true;
   focalCurrent = null;
   prioritiesCurrent = [];
   focalSession = null;
@@ -98,6 +105,7 @@ export function useFocalChoice(): [string | null, (id: string) => void] {
     };
   }, []);
   const set = useCallback((id: string) => {
+    focalTouched = true;
     focalCurrent = id;
     focalSession = id;
     focalListeners.forEach((l) => l());
@@ -118,9 +126,11 @@ let prioritiesCurrent: string[] = [];
 /** Committed in THIS app run (never read from storage) — what a guest sees. */
 let prioritiesSession: string[] | null = null;
 const prioritiesListeners = new Set<() => void>();
+/** As focalTouched: a commit or a wipe wins over the import-time read. */
+let prioritiesTouched = false;
 void AsyncStorage.getItem(PRIORITIES_KEY)
   .then((v) => {
-    if (v) {
+    if (v && !prioritiesTouched) {
       try {
         prioritiesCurrent = JSON.parse(v) as string[];
         prioritiesListeners.forEach((l) => l());
@@ -154,6 +164,7 @@ export function useMixPriorities(): [readonly string[], (id: string) => void] {
       : base.length >= 3
         ? base
         : [...base, id];
+    prioritiesTouched = true;
     prioritiesCurrent = next;
     prioritiesSession = next;
     prioritiesListeners.forEach((l) => l());

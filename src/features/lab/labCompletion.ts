@@ -136,6 +136,10 @@ function emit() {
 type PersistShape = { units?: Record<string, string[]>; sent?: string[]; af?: boolean };
 
 function persist() {
+  // ⛔ NEVER OVER A COPY THAT COULD NOT BE READ (full run 2, 2026-10-01): a
+  // failed device read used to leave this store "hydrated" and empty, and the
+  // next unit's write replaced every unit banked before it.
+  if (!hydrated) return;
   const units: Record<string, string[]> = {};
   for (const [k, set] of Object.entries(cleared)) if (set.size) units[k] = [...set];
   const blob: PersistShape = { units, sent: [...sent], af: afComplete };
@@ -146,17 +150,29 @@ function hydrate(): Promise<void> {
   if (hydrated) return Promise.resolve();
   if (!hydrating) {
     hydrating = (async () => {
+      let raw: string | null;
       try {
-        const raw = await AsyncStorage.getItem(STORAGE_KEY);
+        raw = await AsyncStorage.getItem(STORAGE_KEY);
+      } catch {
+        // The READ failed (not "nothing stored"): stay unhydrated — persist()
+        // writes nothing — and read again on the next call (full run 2,
+        // 2026-10-01). Units recorded meanwhile live in memory and are merged
+        // with what the next read finds.
+        hydrating = null;
+        emit();
+        return;
+      }
+      try {
         if (raw != null) {
           const blob = JSON.parse(raw) as PersistShape;
-          cleared = {};
-          for (const [k, arr] of Object.entries(blob.units ?? {})) cleared[k] = new Set(arr);
-          sent = new Set(blob.sent ?? []);
-          afComplete = blob.af ?? false;
+          // Merged, never replaced: memory is empty on a first read, and on a
+          // read retried after a failure it holds this session's units.
+          for (const [k, arr] of Object.entries(blob.units ?? {})) cleared[k] = new Set([...arr, ...(cleared[k] ?? [])]);
+          sent = new Set([...(blob.sent ?? []), ...sent]);
+          afComplete = afComplete || (blob.af ?? false);
         }
       } catch {
-        // corrupt/absent → keep defaults (nothing cleared)
+        // corrupt → keep defaults (nothing cleared)
       }
       hydrated = true;
       emit();

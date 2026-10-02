@@ -36,8 +36,12 @@ import {
   type DefinitionResult,
 } from './glossaryGateway';
 import { popupCard } from '../../theme/readingColumn';
+import { softDeadline } from '../../lib/boundedCall';
 
 type Row = { id: string; term: string; definition: string | null; plain_english: string | null };
+
+/** A one-row read a tap is waiting on — same budget as the metered read. */
+const LOOKUP_DEADLINE_MS = 8000;
 
 /**
  * ⛔ ONE LOOKUP PER TERM PER SESSION (bug hunt 2026-09-30).
@@ -157,11 +161,24 @@ export function GlossaryTermPopup({
       // 'Sound Pressure Level'), so a `=` would miss.
       const probe = await probeGateway();
       if (cancelled) return;
-      const { data, error } = await supabase
-        .from(corpusTable(probe))
-        .select('id, term, definition, plain_english')
-        .ilike('term', termName)
-        .limit(1);
+      // ⛔ BOUNDED (full-app run 2, 2026-10-01). The probe and the metered read
+      // are bounded; this lookup was not, and a stalled one left the spinner
+      // up for good — no error, no retry, only DONE. A stall is the
+      // connection failure the error line already describes.
+      const { data, error } = await softDeadline<{ data: Row[] | null; error: { code?: string; message: string } | null }>(
+        // `async () =>`: the Supabase builder is a thenable, not a Promise.
+        async () => {
+          const r = await supabase
+            .from(corpusTable(probe))
+            .select('id, term, definition, plain_english')
+            .ilike('term', termName)
+            .limit(1);
+          return { data: r.data as Row[] | null, error: r.error };
+        },
+        { data: null, error: { message: 'glossary term lookup timeout' } },
+        'glossary term popup lookup',
+        LOOKUP_DEADLINE_MS,
+      );
       if (cancelled) return;
       const hit = (data && data[0]) as Row | undefined;
       if (!hit) {

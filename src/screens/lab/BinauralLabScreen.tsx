@@ -35,7 +35,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Circle, Line, Text as SvgText } from 'react-native-svg';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, BIN_SRC } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
-import { isAudioOutputEnabled, noteAudioActivity } from '../../features/audio/audioOutputStore';
+import { getSoundStopEpoch, isAudioOutputEnabled, noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { CheckQuestion } from './foundations/bits';
 import { EngineGate } from '../tools/EngineGate';
@@ -141,6 +141,10 @@ export function BinauralLabScreen() {
     setGenError('');
     pushAll(sources);
     try {
+      // Every sound stopped while the native start was in flight (leaving the
+      // app with "Mute audio when I leave the app" OFF stops voices but leaves
+      // the gate ON — full-app run 2, 2026-10-01): this start must not sound on.
+      const stopEpoch = getSoundStopEpoch();
       const st = await ApeDsp.binStart();
       // A mute that landed while the native start was in flight wins — never
       // leave a tone sounding into a closed gate (owner 2026-09-29).
@@ -150,6 +154,11 @@ export function BinauralLabScreen() {
       }
       if (gen !== genRef.current) {
         if (!wantRef.current) void ApeDsp.binStop(); // we left while the native start was in flight
+        return;
+      }
+      // Every sound was stopped while the native start ran: stay quiet.
+      if (getSoundStopEpoch() !== stopEpoch) {
+        void ApeDsp.binStop();
         return;
       }
       setRunning(true);

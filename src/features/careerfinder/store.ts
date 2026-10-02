@@ -97,14 +97,43 @@ function clean(raw: unknown): FinderRecord {
 
 function emit() { for (const l of listeners) l(); }
 
+/** The last read of storage itself THREW (full-app run 2, 2026-10-01). The
+ *  empty record shown then must never be written over the one on disk —
+ *  one tap (an answer, a ★) used to replace every saved answer, result and
+ *  saved family. This session's changes stay in memory; a reset retries. */
+let readFailed = false;
+
 function persist(next: FinderRecord) {
   state = next;
   wrote = true;
   emit();
+  if (readFailed) return;
   void AsyncStorage.setItem(KEY, JSON.stringify(next)).catch(() => {});
 }
 
-/** Load once. A write that lands before the read finishes wins. */
+/**
+ * Run an action on the HYDRATED record (full-app run 2, 2026-10-01).
+ *
+ * Every action spreads `state` into the record it writes. Before the read
+ * lands `state` is EMPTY, so a ★ on a family page, a feedback blur or a
+ * results tap made in that window wrote a near-empty record over the stored
+ * one — and the hydrate then saw `wrote` and kept the near-empty copy, so the
+ * answers, results and saved families were gone for good. Now the action
+ * waits for the read and applies on top of it (enrollmentStore's pattern);
+ * an account switch meanwhile drops it.
+ */
+function act(fn: () => void): void {
+  if (hydrated) {
+    fn();
+    return;
+  }
+  const g = generation;
+  void hydrateCareerFinder().then(() => {
+    if (g === generation && hydrated) fn();
+  });
+}
+
+/** Load once. Actions wait for it (see `act`). */
 export function hydrateCareerFinder(): Promise<void> {
   if (hydrated) return Promise.resolve();
   if (hydrating) return hydrating;
@@ -115,9 +144,16 @@ export function hydrateCareerFinder(): Promise<void> {
   // memory for the next person — and marked the store hydrated with them.
   const g = generation;
   hydrating = AsyncStorage.getItem(KEY)
-    .then((raw) => {
-      if (g === generation && !wrote && raw) state = clean(JSON.parse(raw));
-    })
+    .then(
+      (raw) => {
+        if (g === generation) readFailed = false;
+        // Damaged JSON → EMPTY; the next write repairs it.
+        if (g === generation && !wrote && raw) state = clean(JSON.parse(raw));
+      },
+      () => {
+        if (g === generation) readFailed = true; // unreadable, not empty — see `readFailed`
+      },
+    )
     .catch(() => {})
     .then(() => {
       if (g !== generation) return;
@@ -149,13 +185,15 @@ export function useCareerFinderHydrated(): boolean {
 
 /** Save one answer immediately (brief: "Save every answer immediately"). */
 export function answerQuestion(id: QuestionId, value: Response): void {
-  persist({ ...state, responses: { ...state.responses, [id]: value } });
+  act(() => persist({ ...state, responses: { ...state.responses, [id]: value } }));
 }
 
 export function setQuestionIndex(index: number): void {
   const i = Math.max(0, Math.min(QUESTION_COUNT - 1, Math.round(index)));
-  if (i === state.index) return;
-  persist({ ...state, index: i });
+  act(() => {
+    if (i === state.index) return;
+    persist({ ...state, index: i });
+  });
 }
 
 /** First unanswered question, or the last one when all are answered. */
@@ -169,6 +207,9 @@ export const allAnswered = (r: FinderRecord = state): boolean => answeredCount(r
 
 /** Freeze the result. Re-running after changing answers re-freezes. */
 export function completeCareerFinder(): void {
+  act(completeNow);
+}
+function completeNow(): void {
   const result = computeResult(state.responses, familyFieldOf);
   const dimensionScores: Partial<Record<DimensionCode, number>> = {};
   for (const d of Object.values(result.dims)) dimensionScores[d.code] = Math.round(d.score * 1000) / 1000;
@@ -183,25 +224,31 @@ export function completeCareerFinder(): void {
 
 /** Back to the questions with answers kept (change previous answers). */
 export function reopenCareerFinder(): void {
-  if (!state.completed) return;
-  persist({ ...state, completed: false });
+  act(() => {
+    if (!state.completed) return;
+    persist({ ...state, completed: false });
+  });
 }
 
 /** Wipe answers + results — and the Beta feedback, which described THOSE results
  *  (a retake was opening with "✓ YES" + the old note pre-filled — Bug+Hater night
  *  B1-03). Saved families are kept unless `everything`. */
 export function resetCareerFinder(everything = false): void {
-  const fresh = EMPTY();
-  persist(everything ? fresh : { ...fresh, saved: state.saved });
+  act(() => {
+    const fresh = EMPTY();
+    persist(everything ? fresh : { ...fresh, saved: state.saved });
+  });
 }
 
 export function toggleSavedFamily(id: string): void {
-  const saved = state.saved.includes(id) ? state.saved.filter((s) => s !== id) : [...state.saved, id];
-  persist({ ...state, saved });
+  act(() => {
+    const saved = state.saved.includes(id) ? state.saved.filter((s) => s !== id) : [...state.saved, id];
+    persist({ ...state, saved });
+  });
 }
 
 export function setCareerFinderFeedback(answer: FeedbackAnswer, note = ''): void {
-  persist({ ...state, feedback: { answer, note, at: new Date().toISOString() } });
+  act(() => persist({ ...state, feedback: { answer, note, at: new Date().toISOString() } }));
 }
 
 /** In-memory reset for an account switch (clearLocalAccountData registry). */
@@ -211,6 +258,7 @@ export function resetLocal(): void {
   hydrated = false;
   hydrating = null;
   wrote = false;
+  readFailed = false;
   emit();
   // Mounted hooks only hydrate on SUBSCRIBE (bug hunt 2026-10-01). A Finder
   // screen still in the stack across a sign-out sat at hydrated=false for

@@ -30,6 +30,8 @@
  */
 import { useSyncExternalStore } from 'react';
 import { supabase } from '../../lib/supabase';
+import { safeSession } from '../../lib/getSessionSafe';
+import { isRealAccount } from '../commercial/realAccount';
 import { SEC_PER_Q, type PaceMethodKey, type PaceStatus } from './paceStore';
 import { emitStudyProgress } from './sync';
 
@@ -57,7 +59,7 @@ export type TimeTrialResult = {
    * landed — offline past the last retry, or with no account to credit, the
    * claim was simply false. 'saving' until the credit settles. Unset on a fail.
    */
-  credit?: 'saving' | 'saved' | 'failed';
+  credit?: 'saving' | 'saved' | 'failed' | 'no_account';
 };
 
 /** The live snapshot the HUD renders from. */
@@ -228,7 +230,7 @@ function finalize(m: PaceMethodKey): void {
 
 /** Settle the credit flag on THIS result only — a restarted or dismissed
  *  trial has a different (or no) result and is left alone. */
-function markCredit(m: PaceMethodKey, result: TimeTrialResult, credit: 'saved' | 'failed'): void {
+function markCredit(m: PaceMethodKey, result: TimeTrialResult, credit: 'saved' | 'failed' | 'no_account'): void {
   const st = states.get(m);
   if (!st || st.result !== result) return;
   states.set(m, { ...st, result: { ...result, credit } });
@@ -259,6 +261,22 @@ const creditRetries = new Set<ReturnType<typeof setTimeout>>();
  */
 let creditGeneration = 0;
 
+/**
+ * A GUEST HAS NO ACCOUNT TO CREDIT (full-app run 2, 2026-10-01). The credit
+ * call can only fail for them, so the panel read "Saving the pass to your
+ * account…" through all five retries (about eight minutes) and then told them
+ * to check their connection. Asked once, up front; null = could not tell, and
+ * the credit is attempted as before.
+ */
+async function hasAccount(): Promise<boolean | null> {
+  try {
+    const { data } = await safeSession(supabase.auth.getSession(), 'timeTrial');
+    return isRealAccount(data.session);
+  } catch {
+    return null;
+  }
+}
+
 function creditWithRetry(
   m: PaceMethodKey,
   topicId: string,
@@ -267,6 +285,25 @@ function creditWithRetry(
   result: TimeTrialResult,
 ): void {
   const gen = creditGeneration;
+  if (attempt === 0) {
+    void hasAccount().then((account) => {
+      if (gen !== creditGeneration) return;
+      if (account === false) markCredit(m, result, 'no_account');
+      else sendCredit(m, topicId, correctCount, attempt, result, gen);
+    });
+    return;
+  }
+  sendCredit(m, topicId, correctCount, attempt, result, gen);
+}
+
+function sendCredit(
+  m: PaceMethodKey,
+  topicId: string,
+  correctCount: number,
+  attempt: number,
+  result: TimeTrialResult,
+  gen: number,
+): void {
   void recordTimeTrialPass({ topicId, method: m, correctCount, seconds: TIME_TRIAL_SECONDS }).then((ok) => {
     if (gen !== creditGeneration) return;
     if (ok) {

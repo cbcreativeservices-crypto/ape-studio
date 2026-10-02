@@ -105,10 +105,13 @@ export function useLabNav(o: LabNavOptions): LabNav {
   const start = useCallback(() => {
     if (lock()) return;
     setContentsOpen(false);
-    if (!ending && index <= 0 && (!sub || sub.index <= 0)) return;
+    // ⏮ does exactly what it is drawn as (full run 2, 2026-10-01): in
+    // sub-step mode on module 1, step 2+, it is drawn DIMMED (navView:
+    // startOn = i > 0) but the tap still ran go(0).
+    if (!view.startOn) return;
     leaveEnd();
     go(0);
-  }, [lock, ending, index, sub, leaveEnd, go]);
+  }, [lock, view.startOn, leaveEnd, go]);
 
   const prev = useCallback(() => {
     if (lock()) return;

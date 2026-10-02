@@ -34,6 +34,7 @@ import { useCallback, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchMyCredentials } from '../credentials/api';
 import { credentialCelebration } from './celebrationQueue';
+import { celebrationGeneration } from './celebrationSeen';
 import type { CelebrationEvent } from './types';
 
 /** The credential ids this device has already celebrated (or seeded). */
@@ -100,13 +101,24 @@ export function useCredentialCelebration(): { check: () => Promise<CredentialCel
   const check = useCallback(async (): Promise<CredentialCelebration | null> => {
     if (running.current) return null;
     running.current = true;
+    // ⛔ ACCOUNT-SWITCH FENCE (full-app run 2, 2026-10-01). The sign-out sweep
+    // wipes KNOWN_KEY, so a check whose read straddled it found "first run"
+    // and seeded the DEPARTING user's credential ids under the next account
+    // (or `confirmShown` re-wrote them). The ids are catalog ids, so the next
+    // member then earned the same certificate in silence, and their own
+    // existing ones were congratulated as new. Nothing is written once
+    // `resetAllLocalStores` (→ resetCelebrationsSeen) has run.
+    const g = celebrationGeneration();
+    const sameAccount = () => g === celebrationGeneration();
     try {
       const rows = await fetchMyCredentials();
+      if (!sameAccount()) return null;
       const ids = rows.map((r) => r.id);
       const certificates = rows.filter((r) => r.type === 'certificate').length;
       const programs = rows.filter((r) => r.type === 'program').length;
 
       const known = await readKnown();
+      if (!sameAccount()) return null;
       if (!known) {
         // First run on this device — record what is already held, say nothing.
         await writeKnown({ ids, certificates, programs });
@@ -141,7 +153,7 @@ export function useCredentialCelebration(): { check: () => Promise<CredentialCel
         // presented rather than when it is dismissed, so a dismissal or an app
         // kill mid-celebration still cannot bring it back every launch.
         confirmShown: () => {
-          void writeKnown({ ids, certificates, programs });
+          if (sameAccount()) void writeKnown({ ids, certificates, programs });
         },
       };
     } catch {

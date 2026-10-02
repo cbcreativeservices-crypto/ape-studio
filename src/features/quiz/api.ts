@@ -22,6 +22,7 @@ import { supabase } from '../../lib/supabase';
 import { withDeadline } from '../../lib/boundedCall';
 import { hasSafeSession } from '../../lib/getSessionSafe';
 import { trackEvent } from '../telemetry/telemetry';
+import { clearAttemptDraft } from '../assess/attemptDraft';
 import {
   deleteQueuedSubmission,
   getQueuedSubmissions,
@@ -364,6 +365,9 @@ async function replayQuizSubmissionsOnce(): Promise<
       });
       deleteQueuedSubmission(r.attempt_id);
       await clearQuizIntent(r.achievement_id);
+      // The answer draft goes with it, exactly as on the online submit
+      // (full-app run 2, 2026-10-01) — see finalExam/api's replay.
+      await clearAttemptDraft(r.attempt_id);
       results.push({ achievementId: r.achievement_id, result });
     } catch (e) {
       const msg = (e as Error)?.message ?? '';
@@ -410,6 +414,7 @@ async function replayQuizSubmissionsOnce(): Promise<
       }
       console.warn('[quiz] dropping permanently rejected queued submission:', msg);
       deleteQueuedSubmission(r.attempt_id);
+      await clearAttemptDraft(r.attempt_id);
     }
   }
   return results;

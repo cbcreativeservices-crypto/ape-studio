@@ -267,13 +267,18 @@ export function StartHereScreen() {
     // START OVER lands on the welcome page, which has no PLAY to stop a tone
     // started on a lab page — so it stops here, like every other page change.
     tone.stop();
-    return void resetPagedProgress(START_HERE_ID).then(() => {
-      const fresh: PagedProgress = { completed: [], lastPage: 0, done: false };
-      progressRef.current = fresh;
-      setProgress(fresh);
-      setPage(0);
-      setListOpen(false);
-    });
+    // Cleared on screen FIRST, then in storage (full run 2, 2026-10-01). Waiting
+    // for the removal left the old ticks in progressRef for a moment, so a
+    // CONTINUE (or a page row) tapped inside it saved them all again AFTER the
+    // removal: the screen showed a fresh start and the next open restored
+    // every tick. Now a tap that lands meanwhile saves from the fresh copy,
+    // and AsyncStorage runs that save after the removal.
+    const fresh: PagedProgress = { completed: [], lastPage: 0, done: false };
+    progressRef.current = fresh;
+    setProgress(fresh);
+    setPage(0);
+    setListOpen(false);
+    void resetPagedProgress(START_HERE_ID);
   };
   const confirmReset = () => {
     const message = 'Clears your place and the ticks in Start Here only.';

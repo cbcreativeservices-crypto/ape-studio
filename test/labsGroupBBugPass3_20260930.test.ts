@@ -55,7 +55,9 @@ test('Tuning, Sound Systems, Cable, Cable Install, Mic Selection restores wait f
 
   const ss = read('src/screens/lab/soundsystems/SsPagedLab.tsx');
   assert.match(ss, /if \(!resolved\) return;\n\s*let alive = true;\n\s*void loadPagedProgress\(labId\)/);
-  assert.match(ss, /\}, \[labId, pagesWithCheck\.length, resolved\]\);/);
+  // Full run 2 (2026-10-01): the restore also re-runs when the guest state
+  // changes, as kit/PagedLab's does (test/labsAFullRun2_20261001.test.ts).
+  assert.match(ss, /\}, \[labId, pagesWithCheck\.length, resolved(, isGuest)?\]\);/);
 
   const cable = read('src/screens/lab/cable/CableLabScreen.tsx');
   assert.match(cable, /if \(!resolved\) return;\n\s*void AsyncStorage\.getItem\(STEP_KEY\)/);

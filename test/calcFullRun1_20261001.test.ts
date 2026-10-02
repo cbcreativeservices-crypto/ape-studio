@@ -86,14 +86,17 @@ test('Z1 — the "below a 4 Ω rating" warning fires below 4 Ω, not below 3', (
   assert.ok(!labels(sp.compute({ z4: [8, 8, 8, 8] })).includes('AMPLIFIER LOAD WARNING'));
 });
 
-test('G1 — an odd gauge is costed as the THINNER listed wire', () => {
+// Superseded in run 2 (calcFullRun2_20261001): an odd gauge is no longer
+// snapped to the thinner neighbour — it is costed as itself, which is never
+// less conservative than the thicker neighbour run 1 guarded against.
+test('G1 — an odd gauge is never costed as the THICKER listed wire', () => {
   const { fn } = fnOf('cable', 'loss');
   const out = fn.compute({ len: 30, awg: 17, z: 8, pamp: 500 });
-  assert.ok(labels(out).includes('LOOP RESISTANCE (18 AWG)'), labels(out).join(' | '));
+  assert.ok(!labels(out).includes('LOOP RESISTANCE (16 AWG)'), labels(out).join(' | '));
   const exact = fn.compute({ len: 30, awg: 16, z: 8, pamp: 500 });
   assert.ok(labels(exact).includes('LOOP RESISTANCE (16 AWG)'));
   const maxlen = fnOf('cable', 'maxlen').fn.compute({ awg: 13, z: 8, maxloss: 0.5 });
-  assert.ok(labels(maxlen).includes('MAX ONE-WAY LENGTH (14 AWG)'));
+  assert.ok(!labels(maxlen).includes('MAX ONE-WAY LENGTH (12 AWG)'));
 });
 
 const proj = (id: string) => ({ id, name: `P ${id}`, values: [], createdAt: 'x', updatedAt: 'x' });

@@ -160,7 +160,10 @@ export function GalleryScreen() {
       .then(async () => {
         const row = await patternStore().getPattern(id);
         const next = row ? change(row) : null;
-        if (next) await upsert(next);
+        // A write the device refused is said, never silent (full-app run 2,
+        // 2026-10-01): the name and notes fields are uncontrolled, so they
+        // kept the typed text as if it were saved, and it was gone next visit.
+        if (next && !(await upsert(next))) notify('Not saved', `The change to “${row?.name ?? 'this pattern'}” could not be saved on this device. Try again.`);
       })
       .catch(() => undefined);
   };

@@ -49,7 +49,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
-import { isAudioOutputEnabled, noteAudioActivity } from '../../features/audio/audioOutputStore';
+import { getSoundStopEpoch, isAudioOutputEnabled, noteAudioActivity } from '../../features/audio/audioOutputStore';
 import {
   guardToneLevelForEngine,
   guardAdditiveForEngine,
@@ -177,6 +177,10 @@ export function OscillatorLabScreen() {
     setGenError('');
     ApeDsp.genSet(paramsFor(wave, f0));
     try {
+      // Every sound stopped while the native start was in flight (leaving the
+      // app with "Mute audio when I leave the app" OFF stops voices but leaves
+      // the gate ON — full-app run 2, 2026-10-01): this start must not sound on.
+      const stopEpoch = getSoundStopEpoch();
       await ApeDsp.genStart();
       // A mute that landed while the native start was in flight wins — never
       // leave a tone sounding into a closed gate (owner 2026-09-29).
@@ -186,6 +190,11 @@ export function OscillatorLabScreen() {
       }
       if (gen !== genRef.current) {
         if (!wantRef.current) void ApeDsp.genStop(); // stopped meanwhile
+        return;
+      }
+      // Every sound was stopped while the native start ran: stay quiet.
+      if (getSoundStopEpoch() !== stopEpoch) {
+        void ApeDsp.genStop();
         return;
       }
       // A wave/pitch picked while the start was in flight skipped its live

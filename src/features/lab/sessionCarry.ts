@@ -112,6 +112,17 @@ export function peekSessionWork<T>(key: string): T | undefined {
   return held.get(key) as T | undefined;
 }
 
+/**
+ * Would work done NOW be carried to an account signed into later in this
+ * session? (full run 2, 2026-10-01). False after a sign-out — until a Guest
+ * Mode start opens a fresh guest session — and during a members-only preview:
+ * `holdSessionWork` refuses both, so the end screen must not promise
+ * "sign in before you close the app to keep it".
+ */
+export function sessionCarryOpen(): boolean {
+  return owner !== null && !getLabPreview().active;
+}
+
 /** Changes whenever held work is dropped (see `epoch`). */
 export function sessionCarryEpoch(): number {
   return epoch;

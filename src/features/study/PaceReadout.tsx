@@ -503,7 +503,9 @@ function TrialHud({
               2026-10-01): it was printed whether or not credit_time_trial
               ever landed. */}
           {passed
-            ? trial.result.credit === 'failed'
+            ? trial.result.credit === 'no_account'
+              ? `You held quiz pace — ${trial.result.correctCount} correct in 15:00. Passes are saved to an account, so this one was not recorded — sign in before your next run to have it count toward the quiz.`
+              : trial.result.credit === 'failed'
               ? `You held quiz pace — ${trial.result.correctCount} correct in 15:00 — but the pass could not be saved to your account, so this study method is not cleared yet. Check your connection and run it again.`
               : trial.result.credit === 'saving'
                 ? `You held quiz pace — ${trial.result.correctCount} correct in 15:00. Saving the pass to your account…`

@@ -27,6 +27,7 @@ import * as Crypto from 'expo-crypto';
 import { supabase } from '../../lib/supabase';
 import { safeUser } from '../../lib/getSessionSafe';
 import { trackEvent } from '../telemetry/telemetry';
+import { clearAttemptDraft } from '../assess/attemptDraft';
 
 export type AwardType = 'certificate' | 'program';
 
@@ -450,16 +451,14 @@ async function currentUserId(): Promise<string | null> {
  * be recoverable is deleted by a parse error. The highest-stakes collection in
  * the app was the one collection not doing it.
  */
-async function readQueue(): Promise<QueuedExam[]> {
+async function readQueue(): Promise<QueuedExam[] | null> {
   let raw: string | null = null;
   try {
     raw = await AsyncStorage.getItem(QUEUE_KEY);
   } catch {
-    // Storage unreadable. Returning [] is right — but do NOT let the caller
-    // write an empty queue over data it could not read, which is what
-    // `queueReadable` below prevents.
-    queueReadable = false;
-    return [];
+    // Storage unreadable. Answer null — "we do not know" — so the caller never
+    // writes a queue over data it could not read.
+    return null;
   }
   if (!raw) return [];
   try {
@@ -473,14 +472,22 @@ async function readQueue(): Promise<QueuedExam[]> {
       console.warn('[final-exam] queue was unreadable; parked at :damaged rather than deleted');
     } catch {
       // Could not park it — then do not let it be overwritten either.
-      queueReadable = false;
+      return null;
     }
     return [];
   }
 }
 
-/** False once a read failed, so nothing overwrites a queue we could not see. */
-let queueReadable = true;
+/**
+ * ⛔ THE REFUSAL IS PER READ, NOT FOR THE REST OF THE SESSION (full-app run 2,
+ * 2026-10-01). A module flag `queueReadable` was set false by ONE failed read
+ * and never set true again, so a single transient storage hiccup refused every
+ * later queue write until the app was killed: each offline submit told the
+ * learner their exam could not be saved, and each replay re-submitted rows it
+ * could never remove, announcing the same "offline exam submitted" on every
+ * Dashboard load. Now `readQueue` answers null for "could not read", and only
+ * the write that follows THAT read is refused.
+ */
 
 /**
  * Persist the queue. Returns whether it actually landed.
@@ -490,13 +497,6 @@ let queueReadable = true;
  * the learner would never find out. A caller that cannot tell cannot warn.
  */
 async function writeQueue(rows: QueuedExam[]): Promise<boolean> {
-  if (!queueReadable) {
-    // We could not read the existing queue, so writing would clobber whatever
-    // is there. Refusing is the safe direction: a duplicate replay is harmless
-    // (the server returns the frozen result_payload), a lost exam is not.
-    console.warn('[final-exam] refusing to overwrite a queue that could not be read');
-    return false;
-  }
   try {
     await AsyncStorage.setItem(QUEUE_KEY, JSON.stringify(rows));
     return true;
@@ -532,6 +532,13 @@ function withQueueLock<T>(job: () => Promise<T>): Promise<T> {
 export function enqueueExamSubmission(row: QueuedExam): Promise<boolean> {
   return withQueueLock(async () => {
     const rows = await readQueue();
+    // We could not read the existing queue, so writing would clobber whatever
+    // is there. Refusing is the safe direction: a duplicate replay is harmless
+    // (the server returns the frozen result_payload), a lost exam is not.
+    if (rows == null) {
+      console.warn('[final-exam] refusing to overwrite a queue that could not be read');
+      return false;
+    }
     const next = rows.filter((r) => r.attemptId !== row.attemptId);
     next.push({ ...row, userId: row.userId ?? (await currentUserId()) });
     // The boolean is the point: the caller must not tell the learner their exam
@@ -578,7 +585,7 @@ export function replayExamSubmissions(): Promise<{ awardId: string; result: Exam
 
 async function replayExamSubmissionsLocked(): Promise<{ awardId: string; result: ExamResult }[]> {
   const rows = await readQueue();
-  if (rows.length === 0) return [];
+  if (!rows || rows.length === 0) return [];
   const done: { awardId: string; result: ExamResult }[] = [];
   const remaining: QueuedExam[] = [];
   let offline = false;
@@ -607,6 +614,11 @@ async function replayExamSubmissionsLocked(): Promise<{ awardId: string; result:
         focusLossDuration: r.focusLossDuration,
       });
       await clearExamIntent(r.awardType, r.awardId);
+      // The answer draft goes with it, exactly as on the online submit
+      // (full-app run 2, 2026-10-01): a replayed exam left its
+      // `ape:attemptDraft:<id>` behind for good — and the account wipe keeps
+      // those keys on purpose, so the answers outlived every sign-out.
+      await clearAttemptDraft(r.attemptId);
       done.push({ awardId: r.awardId, result });
     } catch (e) {
       const msg = (e as Error)?.message ?? '';
@@ -654,6 +666,7 @@ async function replayExamSubmissionsLocked(): Promise<{ awardId: string; result:
         remaining.push(r);
       } else if (permanent) {
         console.warn('[final-exam] dropping permanently rejected submission:', msg);
+        await clearAttemptDraft(r.attemptId);
       } else {
         console.warn('[final-exam] keeping queued submission after an unrecognised error:', msg);
         remaining.push(r);
@@ -664,6 +677,7 @@ async function replayExamSubmissionsLocked(): Promise<{ awardId: string; result:
   // those rows are not in `rows` and must not be lost to this write.
   await withQueueLock(async () => {
     const latest = await readQueue();
+    if (latest == null) return false; // unreadable now — never clobber it
     const attempted = new Set(rows.map((r) => r.attemptId));
     const arrivedMeanwhile = latest.filter((r) => !attempted.has(r.attemptId));
     return writeQueue([...remaining, ...arrivedMeanwhile]);

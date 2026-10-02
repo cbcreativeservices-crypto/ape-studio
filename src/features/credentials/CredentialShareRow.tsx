@@ -48,15 +48,29 @@ export function CredentialShareRow({
   const [busy, setBusy] = useState<null | 'copy' | 'link' | 'qr'>(null);
   /** Re-runs the reads below — SHARE QR asks for it when the token is missing. */
   const [loadNonce, setLoadNonce] = useState(0);
+  /** The holder-name read FAILED (as opposed to "no name set"). */
+  const [nameFailed, setNameFailed] = useState(false);
 
   useEffect(() => {
     let alive = true;
     // All three reads are best-effort: the row still renders, and each action
     // reports honestly if the token never arrived.
-    void Promise.all([fetchMyRegistryName(), fetchMyQrToken(), myRegistryLink()]).then(
-      ([name, tok, link]) => {
+    // fetchMyRegistryName THROWS on a failed read (2026-10-01). The failure is
+    // REMEMBERED, not flattened to "no name" (full-app run 2): the placeholder
+    // 'Academy Member' is right only for a member who has not set a name, and
+    // SHARE QR below refuses to photograph a card that guessed.
+    void Promise.all([
+      fetchMyRegistryName().then(
+        (n) => ({ failed: false, name: n }),
+        () => ({ failed: true, name: null as string | null }),
+      ),
+      fetchMyQrToken(),
+      myRegistryLink(),
+    ]).then(
+      ([nameRead, tok, link]) => {
         if (!alive) return;
-        if (name) setHolderName(name);
+        setNameFailed(nameRead.failed);
+        if (nameRead.name) setHolderName(nameRead.name);
         setToken(tok);
         setUrl(link);
       },
@@ -95,6 +109,13 @@ export function CredentialShareRow({
       onMessage(shareOutcomeMessage({ ok: false, reason: 'no_token' }, 'QR'));
       return;
     }
+    // …and no card carrying a stand-in name because the name read FAILED
+    // (full-app run 2): read again, and say so honestly.
+    if (nameFailed) {
+      setLoadNonce((n) => n + 1);
+      onMessage(shareOutcomeMessage({ ok: false, reason: 'failed' }, 'QR'));
+      return;
+    }
     setBusy('qr');
     const ok = await captureAndShare(
       cardRef.current,
@@ -106,7 +127,7 @@ export function CredentialShareRow({
     // cancelled", so this cannot distinguish them — it says the one thing that
     // is true either way rather than guessing.
     onMessage(ok ? null : 'Could not share the QR image. You can copy the link instead.');
-  }, [token, url, onMessage]);
+  }, [token, nameFailed, url, onMessage]);
 
   const imageAvailable = canShareImage();
 

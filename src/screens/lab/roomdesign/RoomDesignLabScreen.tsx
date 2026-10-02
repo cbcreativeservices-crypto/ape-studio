@@ -33,6 +33,7 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { markLabVisit, useLabVisits } from '../../../features/lab/labVisits';
+import { useLabPreview } from '../../../features/lab/labPreviewStore';
 import { deleteRoomDesign, holdRoomDesignForSession, isRoomDesignStoreUnreadable, MAX_SAVED_DESIGNS, saveRoomDesign, setRoomDesignSaveBlocked, useRoomDesigns } from '../../../features/roomdesign/roomDesignStore';
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, useLabNav } from '../kit/LabNavBar';
@@ -53,10 +54,15 @@ export function RoomDesignLabScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [idx, setIdx] = useState(0);
   const [ending, setEnding] = useState(false);
-  const { resolved, entitlement } = useEntitlement();
+  const { resolved } = useEntitlement();
   const guest = useLabEndGuest();
-  // A guest who IS signed in is a members-only preview, not a signed-out guest.
-  const preview = resolved && guest && entitlement !== 'anonymous';
+  // The PREVIEW the lab is in, read from the preview store (full-app run 2,
+  // 2026-10-01). This lab is members-only, so a signed-out guest is ALWAYS in
+  // a preview too (withMembershipPreview arms it) and the ledger holds
+  // nothing for them — `entitlement !== 'anonymous'` called that guest "not a
+  // preview" and promised "sign in before you close the app" would keep
+  // designs that are never carried.
+  const preview = useLabPreview().active;
   const visited = useLabVisits(ROOM_LAB_ID);
   // Repaired on the way in (toddler pass 2026-10-01): a damaged or
   // version-skewed record crashed analyze() on COMPARE or LOAD.

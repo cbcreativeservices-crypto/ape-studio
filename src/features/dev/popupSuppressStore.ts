@@ -18,6 +18,9 @@ const STORAGE_KEY = 'ape:devSuppressPopups';
 let suppressed = false;
 let hydrated = false;
 let hydrating: Promise<void> | null = null;
+/** Bumped by every reset. A hydrate whose read began before the reset must not
+ *  land after it (full run 2, 2026-10-01). */
+let gen = 0;
 const listeners = new Set<() => void>();
 
 function emit() {
@@ -27,13 +30,18 @@ function emit() {
 function hydrate(): Promise<void> {
   if (hydrated) return Promise.resolve();
   if (!hydrating) {
+    const mine = gen;
     hydrating = (async () => {
+      let raw: string | null = null;
       try {
-        const raw = await AsyncStorage.getItem(STORAGE_KEY);
-        if (raw != null) suppressed = raw === '1';
+        raw = await AsyncStorage.getItem(STORAGE_KEY);
       } catch {
         // corrupt/absent → keep default (false)
       }
+      // A reset landed while this read was in flight: the reset owns the state
+      // now, and its own fresh hydrate answers instead.
+      if (mine !== gen) return;
+      if (raw != null) suppressed = raw === '1';
       hydrated = true;
       emit();
     })();
@@ -55,9 +63,14 @@ void hydrate();
  * cleared) storage on the next read, which is the correct default of OFF.
  */
 export function resetPopupSuppression(): void {
+  gen += 1;
   suppressed = false;
   hydrated = false;
   hydrating = null;
+  // Mounted useOverlaysSuppressed hooks hold a snapshot; without this they kept
+  // the departing account's value until something else happened to emit.
+  emit();
+  void hydrate();
 }
 
 export function arePopupsSuppressed(): boolean {

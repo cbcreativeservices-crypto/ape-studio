@@ -28,7 +28,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, FX, FX_PARAM, EQ_BAND_TYPES, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
-import { isAudioOutputEnabled, noteAudioActivity } from '../../features/audio/audioOutputStore';
+import { getSoundStopEpoch, isAudioOutputEnabled, noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { GuidedLessonSheet, getLabLesson, SOURCE_LESSON, type LessonContent } from '../../features/lab/guidedLessons';
 import { GrMeter } from '../../features/lab/fxViz';
 import { LabReviewButton } from '../../features/lab/LabReviewButton';
@@ -259,6 +259,10 @@ export function SignalChainLabScreen() {
     ApeDsp.genSet({ levelDb: GEN_LEVEL_DB, ...SOURCES[sourceIdx].gen });
     pushChain(enabled);
     try {
+      // Every sound stopped while the native start was in flight (leaving the
+      // app with "Mute audio when I leave the app" OFF stops voices but leaves
+      // the gate ON — full-app run 2, 2026-10-01): this start must not sound on.
+      const stopEpoch = getSoundStopEpoch();
       await ApeDsp.genStart();
       // A mute that landed while the native start was in flight wins — never
       // leave a tone sounding into a closed gate (owner 2026-09-29).
@@ -272,6 +276,12 @@ export function SignalChainLabScreen() {
           void ApeDsp.genStop(); // stopped meanwhile
           ApeDsp.fxReset();
         }
+        return;
+      }
+      // Every sound was stopped while the native start ran: stay quiet.
+      if (getSoundStopEpoch() !== stopEpoch) {
+        void ApeDsp.genStop();
+        ApeDsp.fxReset();
         return;
       }
       // Pills/source tapped while the start was in flight skipped their live

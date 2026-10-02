@@ -75,6 +75,20 @@ async function hydrate(): Promise<void> {
   return hydrating;
 }
 
+/** NO EDIT BEFORE THE STORED LIST HAS LANDED (full-app run 2, 2026-10-01) —
+ *  the enrollmentStore twin. Before `hydrate` lands, `list` is the empty
+ *  placeholder: an ENROLL tap then persisted a one-bundle list over the stored
+ *  bundles, and the hydrate landing afterwards dropped the new one from
+ *  memory. Deferred calls re-run once the list is real (same identity only). */
+function deferUntilHydrated(run: () => void): boolean {
+  if (hydrated) return false;
+  const gen = generation;
+  void hydrate().then(() => {
+    if (gen === generation && hydrated) run();
+  });
+  return true;
+}
+
 export function getBundles(): EnrolledBundle[] {
   void hydrate();
   return list;
@@ -86,12 +100,14 @@ export function isBundleEnrolled(key: string): boolean {
 /** Add a cert/program bundle. NOT loaded by default (user request 2026-07-22:
  *  topics only join the Dashboard when the user explicitly taps LOAD). */
 export function addBundle(kind: BundleKind, name: string, topics: number[]): void {
+  if (deferUntilHydrated(() => addBundle(kind, name, topics))) return;
   const key = bundleKey(kind, name);
   if (list.some((b) => b.key === key)) return;
   commit([...list, { key, kind, name, topics, loaded: false }]);
 }
 
 export function removeBundle(key: string): void {
+  if (deferUntilHydrated(() => removeBundle(key))) return;
   if (!list.some((b) => b.key === key)) return;
   commit(list.filter((b) => b.key !== key));
 }
@@ -99,6 +115,7 @@ export function removeBundle(key: string): void {
 /** Reorder: shift a stored bundle one step up (dir −1) or down (dir +1) in the
  *  list — the drag-to-sort primitive, mirroring enrollmentStore.moveTopic. */
 export function moveBundle(key: string, dir: -1 | 1): void {
+  if (deferUntilHydrated(() => moveBundle(key, dir))) return;
   const i = list.findIndex((b) => b.key === key);
   if (i < 0) return;
   const j = i + dir;
@@ -110,6 +127,7 @@ export function moveBundle(key: string, dir: -1 | 1): void {
 
 /** LOAD (true) / UNLOAD (false) — toggles the bundle's topics on the Dashboard. */
 export function setBundleLoaded(key: string, loaded: boolean): void {
+  if (deferUntilHydrated(() => setBundleLoaded(key, loaded))) return;
   commit(list.map((b) => (b.key === key ? { ...b, loaded } : b)));
 }
 

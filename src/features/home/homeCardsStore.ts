@@ -25,6 +25,11 @@ let generation = 0;
 // effect on first mount). They are replayed on top of the loaded list instead
 // of saving a partial list over it (bug pass 2 2026-09-30).
 let pending: (() => void)[] = [];
+// The saved lists could not be READ (full run 2, 2026-10-01). The empty
+// fallback must never be saved over them: Enrollments' core-slot effect writes
+// on mount, so one failed read replaced a member's curated Home with only the
+// core cards — no tap needed. Saves stay off until a read succeeds.
+let readFailed = false;
 const listeners = new Set<() => void>();
 
 /** True (and the op queued) when the saved list has not loaded yet. */
@@ -39,12 +44,15 @@ function emit() {
   listeners.forEach((l) => l());
 }
 function persist() {
+  if (readFailed) return;
   void AsyncStorage.setItem(KEY, JSON.stringify(list)).catch(() => {});
 }
 function persistBundles() {
+  if (readFailed) return;
   void AsyncStorage.setItem(BKEY, JSON.stringify(bundleList)).catch(() => {});
 }
 function persistDefault() {
+  if (readFailed) return;
   void AsyncStorage.setItem(DKEY, defaultGs == null ? '' : String(defaultGs)).catch(() => {});
 }
 
@@ -61,18 +69,22 @@ async function hydrate(): Promise<void> {
       let nextList: number[] = [];
       let nextBundles: string[] = [];
       let nextDefault: number | null = null;
+      let raws: (string | null)[] | null = null;
       try {
-        const raw = await AsyncStorage.getItem(KEY);
+        raws = [await AsyncStorage.getItem(KEY), await AsyncStorage.getItem(BKEY), await AsyncStorage.getItem(DKEY)];
+      } catch {
+        // unreadable — start empty, and never save that empty copy (readFailed)
+      }
+      try {
+        const [raw, rawB, rawD] = raws ?? [null, null, null];
         if (raw) {
           const p = JSON.parse(raw);
           if (Array.isArray(p)) nextList = [...new Set(p.filter((g) => typeof g === 'number'))].slice(0, HOME_MAX);
         }
-        const rawB = await AsyncStorage.getItem(BKEY);
         if (rawB) {
           const pb = JSON.parse(rawB);
           if (Array.isArray(pb)) nextBundles = [...new Set(pb.filter((k) => typeof k === 'string'))];
         }
-        const rawD = await AsyncStorage.getItem(DKEY);
         const dg = rawD ? parseInt(rawD, 10) : NaN;
         nextDefault = Number.isFinite(dg) && nextList.includes(dg) ? dg : null;
       } catch {
@@ -81,6 +93,7 @@ async function hydrate(): Promise<void> {
       // resetLocal ran while this read was in flight — the old account's list
       // must not come back.
       if (gen !== generation) return;
+      readFailed = raws === null;
       list = nextList;
       bundleList = nextBundles;
       defaultGs = nextDefault;
@@ -120,7 +133,11 @@ export function isOnHome(gs: number): boolean {
 /** Toggle a single topic on/off Home (per-card book toggle, user request
  *  2026-07-22). Returns 'full' without adding when already at HOME_MAX. */
 export function toggleHome(gs: number): 'added' | 'removed' | 'full' {
-  if (deferUntilHydrated(() => void toggleHome(gs))) return 'added';
+  // Before the saved list loads every card READS "not on Home" (the list is
+  // still empty), so a tap then means ADD, and that is what is replayed (full
+  // run 2, 2026-10-01). Replaying a TOGGLE removed a card that was already on
+  // Home — the opposite of the tap — and a double tap cancelled itself out.
+  if (deferUntilHydrated(() => void (list.includes(gs) || toggleHome(gs)))) return 'added';
   if (list.includes(gs)) {
     list = list.filter((g) => g !== gs);
     if (defaultGs === gs) {
@@ -174,7 +191,8 @@ export function isBundleOnHome(key: string): boolean {
 
 /** Toggle a cert/program bundle card on/off Home (counts toward HOME_MAX). */
 export function toggleHomeBundle(key: string): 'added' | 'removed' | 'full' {
-  if (deferUntilHydrated(() => void toggleHomeBundle(key))) return 'added';
+  // Replayed as ADD, never a toggle — see toggleHome.
+  if (deferUntilHydrated(() => void (bundleList.includes(key) || toggleHomeBundle(key)))) return 'added';
   if (bundleList.includes(key)) {
     bundleList = bundleList.filter((k) => k !== key);
     persistBundles();

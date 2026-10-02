@@ -19,7 +19,7 @@ import { DEV_COMMERCIAL_FLAG_KEY, DEV_ENTITLEMENT_KEY, FLAG_DEFAULTS } from '../
 import { supabase } from '../../lib/supabase';
 import { safeSession, SESSION_TIMEOUT_MS } from '../../lib/getSessionSafe';
 import { withDeadline } from '../../lib/boundedCall';
-import { classifyExpiry, verdictKeepsAccess } from './entitlementExpiry';
+import { accessEndsAt, classifyExpiry, verdictKeepsAccess } from './entitlementExpiry';
 import { setMemberStanding } from './memberStanding';
 import { requestLocalNotifSync } from '../notifications/localSchedule';
 import { loadLocalSettings } from '../settings/store';
@@ -294,6 +294,27 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
     // later by a retry belonging to the signed-OUT user's read).
     let generation = 0;
     /**
+     * RE-READ WHEN THE PAID CYCLE ENDS (full run 2, 2026-10-01). A cancelled
+     * member keeps access until `expires_at`; nothing re-read the tier at that
+     * moment, so one who stayed in the app across it (the foreground re-read
+     * below only fires on a return from the background) kept every paid route.
+     * Armed from each applied server answer; a renewal the server has written
+     * by then simply reads 'academy' again and re-arms for the new date.
+     * Clamped: a setTimeout past 2^31-1 ms fires at once on some engines.
+     */
+    let expiryTimer: ReturnType<typeof setTimeout> | null = null;
+    const armExpiryRecheck = (endsAt: number | null) => {
+      if (expiryTimer) clearTimeout(expiryTimer);
+      expiryTimer = null;
+      if (endsAt === null || !alive) return;
+      const delay = Math.min(Math.max(endsAt - Date.now(), 0) + 1000, 2147483647);
+      expiryTimer = setTimeout(() => {
+        expiryTimer = null;
+        if (!alive || devOverrode.current || lastUid.current === null) return;
+        void deriveWithRetry(true);
+      }, delay);
+    };
+    /**
      * @returns true when a DEFINITIVE tier was obtained (or the read was moot).
      *
      * `gen` is the auth generation this call belongs to. It is NOT optional in
@@ -312,9 +333,23 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
       const current = () =>
         alive && generation === gen && !devOverrode.current && refreshApplied.current === refreshSeen;
       if (!hasSession) {
-        if (current()) setEntitlementState('anonymous');
+        if (current()) {
+          setEntitlementState('anonymous');
+          armExpiryRecheck(null);
+        }
         return true;
       }
+      // ⛔ AN ANONYMOUS READ IS NOT THE ACCOUNT'S ANSWER (full run 2,
+      // 2026-10-01). supabase-js sends a query with the ANON key whenever
+      // getSession() comes back empty — which it does when the token has
+      // expired and its refresh fails without signing anybody out (a
+      // transient auth error). RLS then answers with NO rows and no error,
+      // which reads as 'free': a member flashed to free and cached that way.
+      // Every return from a long background has an expired token, and the
+      // foreground re-read below goes straight into that refresh. No live
+      // session now = a failed read: keep the tier, retry.
+      const { data: live } = await safeSession(supabase.auth.getSession(), 'entitlement/derive');
+      if (!isRealAccount(live.session)) return false;
       const { data, error } = await readAcademyRows();
       if (error) {
         // supabase-js RESOLVES with { error }; a transient RLS/network failure
@@ -323,13 +358,15 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
         console.warn('[entitlement] read failed, keeping current tier:', error.message);
         return false;
       }
-      const tier = academyTierFromRows((data ?? []) as EntRow[]);
+      const rows = (data ?? []) as EntRow[];
+      const tier = academyTierFromRows(rows);
       // Re-checked AFTER the await: the session may have changed while this
       // read was in flight, and applying its answer would be applying the
       // previous user's standing to the current one.
       if (current()) {
         serverTierApplied.current = true;
         setEntitlementState(tier);
+        armExpiryRecheck(tier === 'academy' ? accessEndsAt(rows) : null);
         // REMEMBER IT, so a later boot with no network does not start this
         // member at 'anonymous' and lock them out of everything they paid for.
         // Only ever written from a read the server actually answered.
@@ -551,6 +588,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
     });
     return () => {
       alive = false;
+      if (expiryTimer) clearTimeout(expiryTimer);
       sub.subscription.unsubscribe();
       appSub.remove();
     };

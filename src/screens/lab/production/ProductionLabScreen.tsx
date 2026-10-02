@@ -54,11 +54,21 @@ export function ProductionLabScreen() {
   const def = labDef(lab);
   const [projects, setProjects] = useState<ProductionProject[] | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
+  /** The saved projects could not be READ (full run 2, 2026-10-01): never
+   *  shown as "no projects" — that offered START A PROJECT over a list that
+   *  is still stored, and the refused create blamed free space. */
+  const [readFailed, setReadFailed] = useState(false);
   /** The blocker the user is choosing to accept rather than fix. */
   const [accepting, setAccepting] = useState<Finding | null>(null);
 
   const reload = useCallback(async () => {
-    const list = await projectStore().load(lab);
+    const list = await projectStore().tryLoad(lab);
+    // Unreadable: keep what is on screen (nothing, on a first read) and say so.
+    if (!list) {
+      setReadFailed(true);
+      return;
+    }
+    setReadFailed(false);
     // ── EXERCISES ARE NOT THE USER'S PLAN (2026-09-18, design review #5c) ────
     //
     // `ProductionActivityScreen` upserts the seeded exercise into the same
@@ -153,6 +163,13 @@ export function ProductionLabScreen() {
       if (startingRef.current) return;
       startingRef.current = true;
       try {
+        // A storage READ that fails refuses the create below too — that is
+        // not a full device, so it is not reported as one.
+        if (!(await projectStore().tryLoad(lab))) {
+          setReadFailed(true);
+          notify('Could not create the project', 'Your saved projects could not be read on this device just now, so nothing was created. Try again.');
+          return;
+        }
         const p = newProject(lab, pathway, `${PATHWAY_LABEL[pathway]} ${def.newProjectNoun}`);
         // A new project that did not reach storage looks identical to one that
         // did, right up until the learner closes the app (2026-09-17).
@@ -248,7 +265,13 @@ export function ProductionLabScreen() {
       >
         <Text style={styles.blurb}>{def.blurb}</Text>
 
-        {projects === null ? null : projects.length === 0 || !project ? (
+        {projects === null ? (
+          readFailed ? (
+            <Text style={styles.sectionIntro}>
+              Your saved projects could not be read on this device just now. Leave the lab and open it again.
+            </Text>
+          ) : null
+        ) : projects.length === 0 || !project ? (
           <View style={styles.startBlock}>
             <Text style={styles.sectionTitle}>START A PROJECT</Text>
             <Text style={styles.sectionIntro}>

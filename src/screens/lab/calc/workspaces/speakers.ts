@@ -94,6 +94,9 @@ const WS_SPEAKERPOWER: Workspace = {
       key: 'headroom',
       name: 'HEADROOM',
       quantity: 'db',
+      // A reserve cannot be negative (full-app run 2, 2026-10-01): −6 dB cut the
+      // REQUIRED POWER to a quarter — an amp sized from it clips on every peak.
+      nonNegative: true,
       placeholder: '6',
       help: 'Extra dB kept in reserve for peaks — subtracted from prediction, added to demand.',
     },
@@ -431,9 +434,9 @@ const WS_IMPEDANCE: Workspace = {
 /* ------------------------------------------------------------------ */
 
 /**
- * Copper resistance per meter of a SINGLE conductor, by AWG (Ω/m at ~20 °C).
- * Only these gauges are supported; entered gauges are rounded to the nearest
- * listed one in compute (no interpolation — real cable comes in these sizes).
+ * Copper resistance per meter of a SINGLE conductor, by AWG (Ω/m at ~20 °C),
+ * for the common speaker gauges. Any other whole gauge 0–40 is computed from
+ * the standard AWG wire area — see ohmPerM.
  */
 const AWG_OHM_PER_M: Record<number, number> = {
   10: 0.00328,
@@ -444,12 +447,27 @@ const AWG_OHM_PER_M: Record<number, number> = {
 };
 const AWG_LIST = [10, 12, 14, 16, 18];
 
-// A TIE goes to the THINNER gauge (full-app run 1, 2026-10-01). Every odd gauge
-// sits exactly between two listed ones, and `<` kept the thicker — so 17 AWG
-// was costed as 16 AWG: less loss, fewer watts heating the cable, a longer
-// "max length" than the real wire allows. Thinner is the conservative side.
-const nearestAwg = (g: number): number =>
-  AWG_LIST.reduce((best, a) => (Math.abs(a - g) <= Math.abs(best - g) ? a : best), 10);
+// Every whole gauge is costed AS ITSELF (full-app run 2, 2026-10-01). It used
+// to snap to 10/12/14/16/18, so 20, 22 or 24 AWG was costed as 18 AWG — 24 AWG
+// has 4× the resistance: the loss and the watts heating the wire read about a
+// quarter of the truth, and MAX LENGTH about 4× too long. (Run 1 had already
+// sent odd gauges to the thinner neighbour; now 17 AWG is simply 17 AWG.)
+// A fractional entry goes to the nearest whole gauge, a TIE to the THINNER
+// wire (the conservative side). Outside 0–40 it throws → "check your inputs".
+const nearestAwg = (g: number): number => {
+  const w = Math.floor(g + 0.5);
+  if (!(w >= 0 && w <= 40)) throw new Error('gauge must be 0–40 AWG');
+  return w;
+};
+/** Ω/m of one copper conductor: the table for the listed gauges, otherwise
+ *  ρ ÷ area from the AWG definition d = 0.127 mm × 92^((36 − n)/39), with
+ *  ρ = 1.724e-8 Ω·m at 20 °C (the same physics as Voltage Drop), to 4 figures. */
+const ohmPerM = (g: number): number => {
+  const listed = AWG_OHM_PER_M[g];
+  if (listed !== undefined) return listed;
+  const dM = (0.127 * Math.pow(92, (36 - g) / 39)) / 1000;
+  return Number((1.724e-8 / ((Math.PI * dM * dM) / 4)).toPrecision(4));
+};
 
 const WS_CABLE: Workspace = {
   id: 'cable',
@@ -477,8 +495,8 @@ const WS_CABLE: Workspace = {
   ],
   warnings:
     'Copper values are for a single conductor at ~20 °C; resistance rises ~0.4%/°C. Connector ' +
-    'and terminal resistance is not modeled. Entered gauges are rounded to the nearest listed ' +
-    'size (10, 12, 14, 16, 18 AWG) — real cable comes in these sizes, so no interpolation.',
+    'and terminal resistance is not modeled. Any whole gauge 0–40 AWG is costed from its ' +
+    'standard copper area; a fractional entry is rounded to the nearest whole gauge.',
   glossary: ['Damping Factor', 'Impedance', 'Resistance', 'AWG'],
   fields: [
     {
@@ -493,8 +511,8 @@ const WS_CABLE: Workspace = {
       name: 'WIRE GAUGE',
       quantity: 'number',
       placeholder: '16',
-      help: '10–18 AWG typical. Smaller number = thicker wire. Rounded to the nearest listed gauge.',
-      warn: { test: (x) => x < 10 || x > 18, msg: 'Only 10–18 AWG is tabulated — the entry will be rounded into that range.' },
+      help: '10–18 AWG typical. Smaller number = thicker wire. A fraction is rounded to the nearest whole gauge.',
+      warn: { test: (x) => !(x >= -0.5 && x < 40.5), msg: 'Enter a wire gauge from 0 to 40 AWG.' },
     },
     {
       key: 'z',
@@ -532,7 +550,7 @@ const WS_CABLE: Workspace = {
       compute: (v) => {
         const L = n(v.len);
         const g = nearestAwg(n(v.awg));
-        const rpm = AWG_OHM_PER_M[g] ?? NaN;
+        const rpm = ohmPerM(g);
         const z = n(v.z);
         const p = n(v.pamp);
         const rloop = 2 * L * rpm;
@@ -554,12 +572,12 @@ const WS_CABLE: Workspace = {
         const L = n(v.len);
         const gIn = n(v.awg);
         const g = nearestAwg(gIn);
-        const rpm = AWG_OHM_PER_M[g] ?? NaN;
+        const rpm = ohmPerM(g);
         const z = n(v.z);
         const rloop = 2 * L * rpm;
         const frac = z / (z + rloop);
         const s: string[] = [];
-        if (g !== Math.round(gIn)) s.push(`Gauge rounded to the nearest listed size: ${fmt(gIn)} → ${g} AWG.`);
+        if (g !== gIn) s.push(`Gauge rounded to the nearest whole gauge: ${fmt(gIn)} → ${g} AWG.`);
         s.push(
           `Current travels out AND back: Rloop = 2 × ${fmt(L)} m × ${rpm} Ω/m = ${fmt(rloop)} Ω.`,
           `The speaker gets Z/(Z+Rloop) = ${fmt(z)}/${fmt(z + rloop)} = ${fmt(frac)} of the voltage → 20·log10(${fmt(frac)}) = ${fmt(20 * Math.log10(frac))} dB.`,
@@ -581,7 +599,7 @@ const WS_CABLE: Workspace = {
       note: 'The level-loss formula solved backwards for length.',
       compute: (v) => {
         const g = nearestAwg(n(v.awg));
-        const rpm = AWG_OHM_PER_M[g] ?? NaN;
+        const rpm = ohmPerM(g);
         const z = n(v.z);
         const dB = Math.abs(n(v.maxloss));
         const rloopMax = z * (Math.pow(10, dB / 20) - 1);
@@ -593,7 +611,7 @@ const WS_CABLE: Workspace = {
       },
       steps: (v) => {
         const g = nearestAwg(n(v.awg));
-        const rpm = AWG_OHM_PER_M[g] ?? NaN;
+        const rpm = ohmPerM(g);
         const z = n(v.z);
         const dB = Math.abs(n(v.maxloss));
         const rloopMax = z * (Math.pow(10, dB / 20) - 1);

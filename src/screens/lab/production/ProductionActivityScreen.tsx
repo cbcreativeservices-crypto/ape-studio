@@ -13,7 +13,7 @@
  * one that is left. Showing WHICH one is outstanding is the difference between
  * teaching and marking.
  */
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -37,6 +37,8 @@ export function ProductionActivityScreen() {
   const { lab, activityId, pathway } = useRoute<R>().params;
 
   const [project, setProject] = useState<ProductionProject | null>(null);
+  const projectRef = useRef(project);
+  projectRef.current = project;
   const [debriefOpen, setDebriefOpen] = useState(false);
 
   const stage = useMemo(
@@ -52,7 +54,17 @@ export function ProductionActivityScreen() {
    */
   const load = useCallback(async () => {
     if (!activity) return;
-    const existing = (await projectStore().load(lab)).find((p) => p.scenarioId === activityId);
+    // A storage READ that fails (full run 2, 2026-10-01) is not "no exercise
+    // yet": seeding then was refused and blamed free space. An attempt on
+    // screen stays; otherwise say what actually happened.
+    const all = await projectStore().tryLoad(lab);
+    if (!all) {
+      if (!projectRef.current) {
+        notify('Could not open the exercise', 'Your saved work could not be read on this device just now. Nothing was changed — open the exercise again.');
+      }
+      return;
+    }
+    const existing = all.find((p) => p.scenarioId === activityId);
     if (existing) {
       setProject(existing);
       return;

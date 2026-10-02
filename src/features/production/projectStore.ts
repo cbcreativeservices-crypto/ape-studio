@@ -165,6 +165,11 @@ async function saveList(kv: KeyValueStore, key: string, list: ProductionProject[
 
 export type ProjectStore = {
   load(lab: LabKind): Promise<ProductionProject[]>;
+  /** As `load`, but null when storage could not be READ (full run 2,
+   *  2026-10-01) — `load` reads that as an empty list, and the lab home then
+   *  showed a learner with saved projects "START A PROJECT", whose create
+   *  was refused with a "free up some space" message for a storage READ. */
+  tryLoad(lab: LabKind): Promise<ProductionProject[] | null>;
   get(lab: LabKind, id: string): Promise<ProductionProject | null>;
   upsert(p: ProductionProject): Promise<boolean>;
   remove(lab: LabKind, id: string): Promise<boolean>;
@@ -236,6 +241,7 @@ export function createProjectStore(kv: KeyValueStore): ProjectStore {
     // answers. The private `list` is what the queued jobs use, so no deadlock.
     // A failed READ still reads as empty (as before); only the writers refuse.
     load: (lab) => serialize(lab, () => list(lab).catch(() => [])),
+    tryLoad: (lab) => serialize(lab, () => list(lab).catch(() => null)),
     get(lab, id) {
       return serialize(lab, async () => (await list(lab).catch(() => [])).find((p) => p.id === id) ?? null);
     },

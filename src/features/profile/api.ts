@@ -13,7 +13,7 @@ import { isRealAccount } from '../commercial/realAccount';
 import { albumTierFor, type AlbumTierName } from '../../theme/tokens';
 import { V3_CURRICULUM_VERSION_ID } from '../../data/v3Curriculum';
 import { classifyProfileRead, type ProfileRead } from './profileRead';
-import { myUserId, myUserRow } from '../account/myUserRow';
+import { myUserId, myUserRowOrThrow } from '../account/myUserRow';
 export type { ProfileRead } from './profileRead';
 
 export const ALBUM_DENOMINATOR = 50; // locked (D-5) — legacy album scale; NOT the
@@ -206,6 +206,18 @@ export async function fetchMyQrToken(): Promise<string | null> {
   }
 }
 
+/** The member's QR token for a PRINTED certificate (full-app run 2,
+ *  2026-10-02): like fetchMyQrToken, but a read that FAILED throws instead of
+ *  answering null — a certificate exported during a network blip used to print
+ *  with no verification QR at all. null still means genuinely no token. */
+export async function fetchMyQrTokenOrThrow(): Promise<string | null> {
+  if (!(await hasSafeSession(supabase.auth.getSession(), 'fetchMyQrTokenOrThrow'))) return null;
+  const { data, error } = await supabase.rpc('my_identity').single();
+  if (error) throw new Error(`qr token read failed: ${error.message}`);
+  if (!data) return null;
+  return (data as { qr_token?: string | null }).qr_token ?? null;
+}
+
 /** The user-chosen display name for the public Pro Registry and for printed
  *  credentials — the Profile field "Name used in registry". Server-backed as of
  *  2026-08-29 so the printed certificate and the QR verification page resolve to
@@ -215,17 +227,16 @@ export async function fetchMyQrToken(): Promise<string | null> {
  *  users.registry_name only, and `own_users_update` (auth_id = auth.uid())
  *  restricts it to the caller's own row.
  *
- *  Both helpers swallow errors and return null/false: a signed-out guest has no
- *  row, and the caller falls back to the device-local copy rather than failing. */
+ *  null means GENUINELY no name (signed out, no row, or a blank field). A read
+ *  that FAILED or stalled THROWS (full run 2, 2026-10-01): it used to return
+ *  null too, and a certificate printed on a network blip said "Academy Member"
+ *  instead of the holder's name. Callers that only want a best-effort value
+ *  add `.catch(() => null)`. */
 export async function fetchMyRegistryName(): Promise<string | null> {
-  try {
-    const data = await myUserRow<{ registry_name: string | null }>('registry_name');
-    if (!data) return null;
-    const v = (data as { registry_name?: string | null }).registry_name;
-    return v && v.trim() ? v : null;
-  } catch {
-    return null;
-  }
+  const data = await myUserRowOrThrow<{ registry_name: string | null }>('registry_name');
+  if (!data) return null;
+  const v = (data as { registry_name?: string | null }).registry_name;
+  return v && v.trim() ? v : null;
 }
 
 /**

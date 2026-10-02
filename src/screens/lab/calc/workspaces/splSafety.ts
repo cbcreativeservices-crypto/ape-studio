@@ -675,7 +675,9 @@ const WS_MIC_GAIN: Workspace = {
     { key: 'sens', name: 'MIC SENSITIVITY (mV/Pa)', quantity: 'number', nonNegative: true, placeholder: '2', help: 'Millivolts out per pascal (94 dB SPL). Dynamics ≈ 1–3 mV/Pa; condensers ≈ 8–40 mV/Pa. If your spec sheet gives dBV/Pa instead, convert it first in Mic Sensitivity & Output.', warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
     { key: 'spl', name: 'SOURCE SPL AT THE MIC', quantity: 'spl', placeholder: '94', help: 'The sound pressure level arriving at the capsule.' },
     { key: 'target', name: 'TARGET LEVEL', quantity: 'db', placeholder: '4', help: 'The output level you want after the preamp, in dBu (+4 dBu = pro line level).' },
-    { key: 'headroom', name: 'HEADROOM', quantity: 'db', placeholder: '12', help: 'Safety margin left below the target for peaks — subtracted from the required gain.' },
+    // nonNegative (full-app run 2, 2026-10-01): a −12 dB "headroom" ADDED 12 dB
+    // to the recommended gain — peaks then clipped 12 dB past the target.
+    { key: 'headroom', name: 'HEADROOM', quantity: 'db', nonNegative: true, placeholder: '12', help: 'Safety margin left below the target for peaks — subtracted from the required gain.' },
     { key: 'maxIn', name: 'PREAMP MAX INPUT', quantity: 'db', placeholder: '10', help: 'The preamp input clip point in dBu (from its spec sheet).' },
   ],
   functions: [
@@ -809,7 +811,10 @@ const WS_LIMITER: Workspace = {
   fields: [
     { key: 'pwr', name: 'SPEAKER CONTINUOUS RATING', quantity: 'power', placeholder: '500', help: 'The CONTINUOUS (RMS/AES-style) power rating — not program, not peak.', warn: { test: (x) => x <= 0, msg: 'Power rating must be greater than zero.' } },
     { key: 'z', name: 'NOMINAL IMPEDANCE', quantity: 'impedance', placeholder: '8', help: 'The speaker’s nominal impedance; real impedance varies with frequency.', warn: { test: (x) => x <= 0, msg: 'Impedance must be greater than zero.' } },
-    { key: 'ampGain', name: 'AMPLIFIER VOLTAGE GAIN', quantity: 'db', placeholder: '32', help: 'The amp’s voltage gain in dB (spec sheet; 26–44 dB typical).' },
+    // nonNegative (full-app run 2, 2026-10-01): the gain is SUBTRACTED, so a
+    // typed −32 set the threshold 64 dB ABOVE the safe one. No power amp has
+    // negative voltage gain.
+    { key: 'ampGain', name: 'AMPLIFIER VOLTAGE GAIN', quantity: 'db', nonNegative: true, placeholder: '32', help: 'The amp’s voltage gain in dB (spec sheet; 26–44 dB typical).' },
     // nonNegative (full-app run 1, 2026-10-01): the margin is SUBTRACTED, so a
     // typed −3 ("3 dB below") set the threshold 3 dB ABOVE the rating and the
     // result read "keeps continuous voltage -3 dB below the rating".

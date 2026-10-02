@@ -22,6 +22,17 @@ const KEY = 'ape:celebrationsSeen:v1';
 
 let seen: Set<string> | null = null;
 let loading: Promise<Set<string>> | null = null;
+/**
+ * Bumped by `resetCelebrationsSeen` on every account change (full-app run 2,
+ * 2026-10-01). A load still out when the reset ran landed AFTER it and put
+ * the departing user's set back in memory — so the next member's first
+ * certificate or finished deck was "already celebrated", and the next
+ * `markSeen` re-persisted that stranger's history under the new account.
+ * `useCredentialCelebration` reads it too, to drop a check that straddles
+ * the switch.
+ */
+let generation = 0;
+export const celebrationGeneration = (): number => generation;
 
 function keyFor(scope: string, id: CelebrationId): string {
   return `${scope}:${id}`;
@@ -38,6 +49,7 @@ function keyFor(scope: string, id: CelebrationId): string {
 export function loadCelebrationsSeen(): Promise<Set<string>> {
   if (seen) return Promise.resolve(seen);
   if (!loading) {
+    const g = generation;
     loading = AsyncStorage.getItem(KEY)
       .then((raw) => {
         const parsed = raw ? (JSON.parse(raw) as unknown) : [];
@@ -45,7 +57,7 @@ export function loadCelebrationsSeen(): Promise<Set<string>> {
       })
       .catch(() => new Set<string>())
       .then((s) => {
-        seen = s;
+        if (g === generation) seen = s; // an account change meanwhile: not this user's set
         return s;
       });
   }
@@ -106,6 +118,7 @@ export function markSeen(scope: string, id: CelebrationId): void {
  * because somebody else had already had it on this phone.
  */
 export function resetCelebrationsSeen(): void {
+  generation += 1;
   seen = null;
   loading = null;
 }

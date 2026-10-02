@@ -14,7 +14,7 @@
  * before the module shipped.
  */
 import { optionalModule } from '../tools/capture/optionalModule';
-import { fetchMyQrToken, fetchMyRegistryName } from '../profile/api';
+import { fetchMyQrTokenOrThrow, fetchMyRegistryName } from '../profile/api';
 import { registryUrl } from '../profile/registry';
 import { buildCertificateHtml } from './certificateHtml';
 
@@ -62,7 +62,11 @@ export type CertificateRequest = {
  * The holder name comes from the SERVER copy of registry_name (the Profile
  * field "Name used in registry"), which is also what public_verify_by_token
  * returns — so the printed document and the page its QR resolves to always
- * agree. Falls back to the honest 'Academy Member' rather than inventing one.
+ * agree. Falls back to the honest 'Academy Member' rather than inventing one —
+ * but ONLY when the member has no name set. A name read that FAILED rejects
+ * (profile/api, 2026-10-01) and lands in the catch below as `failed`: printing
+ * "Academy Member" on a network blip handed the member a certificate without
+ * their name (full-app run 2). Never add a `.catch(() => null)` to that read.
  */
 export async function exportCertificate(req: CertificateRequest): Promise<CertificateResult> {
   const print = printLib();
@@ -70,7 +74,7 @@ export async function exportCertificate(req: CertificateRequest): Promise<Certif
   if (!print || !share) return { ok: false, reason: 'needs_build' };
 
   try {
-    const [holderName, qrToken] = await Promise.all([fetchMyRegistryName(), fetchMyQrToken()]);
+    const [holderName, qrToken] = await Promise.all([fetchMyRegistryName(), fetchMyQrTokenOrThrow()]);
 
     const html = buildCertificateHtml({
       holderName: holderName ?? 'Academy Member',

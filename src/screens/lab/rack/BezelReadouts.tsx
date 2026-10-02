@@ -46,6 +46,8 @@ export function BezelReadouts({
 const V_FS = 13.5;
 const V_CH = V_FS * 0.6;
 const CELL_PAD = 16;
+/** The smallest a value may be drawn (owner: lab display text ≥ 9 pt). */
+const V_MIN_FS = 9;
 
 /** Split "−15.9 LUFS" / "-15.9LUFS" / "2.8LU" into its number and its unit,
  *  so a cropped value can stack them instead of losing its tail. */
@@ -77,6 +79,14 @@ function Cell({ it, first, onHelp }: { it: BezelItem; first: boolean; onHelp?: (
   const cropped = !fits(it.v);
   const parts = cropped ? splitUnit(it.v) : null;
   const stacked = cropped && parts != null && !fits(it.v) ;
+  // A NUMBER STILL TOO WIDE (full run 2, 2026-10-01): a bare number with no
+  // unit to stack (or the number line of a stack) that is wider than the
+  // cell was cut to an ellipsis by numberOfLines — and the cropped path even
+  // appended " ›" to it. It is drawn smaller instead, never under 9 pt; the
+  // tap caret is dropped with the key line (the lifted cell still reads as
+  // tappable).
+  const numFs = (s: string): { fontSize: number } | null =>
+    fits(s) ? null : { fontSize: Math.max(V_MIN_FS, Math.floor((V_FS * avail * 10) / (s.length * V_CH * (fontScale || 1))) / 10) };
   return (
     <Pressable
       style={[styles.cell, { flex: it.flex ?? 1 }, first && styles.cellFirst, it.onPress && styles.cellTappable]}
@@ -107,18 +117,16 @@ function Cell({ it, first, onHelp }: { it: BezelItem; first: boolean; onHelp?: (
       )}
       {stacked && parts ? (
         <>
-          <Text style={[styles.v, it.tint ? { color: it.tint } : null]} numberOfLines={1}>
+          <Text style={[styles.v, it.tint ? { color: it.tint } : null, numFs(parts[0])]} numberOfLines={1}>
             {parts[0]}
-            {it.onPress ? <Text style={styles.tapMark}> ›</Text> : null}
           </Text>
           <Text style={[styles.v, styles.unit, it.tint ? { color: it.tint } : null]} numberOfLines={1}>
             {parts[1]}
           </Text>
         </>
       ) : (
-        <Text style={[styles.v, it.tint ? { color: it.tint } : null]} numberOfLines={1}>
+        <Text style={[styles.v, it.tint ? { color: it.tint } : null, numFs(it.v)]} numberOfLines={1}>
           {it.v}
-          {cropped && it.onPress ? <Text style={styles.tapMark}> ›</Text> : null}
         </Text>
       )}
     </Pressable>

@@ -60,6 +60,7 @@ import { resolveLedFill, useLedAvgColorPref, useLedColorPref } from '../../featu
 import { frameIsLive, healthWarningFlags, meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { useRafFrameLoop } from '../../features/tools/engine/useRafFrameLoop';
 import { clampCalOffset, setSplCalibration, useSplCalibration } from '../../features/tools/measure/calibrationStore';
+import { afterDialogCloses, notify } from '../../lib/confirm';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { useSaveLatch } from '../../features/tools/measure/saveLatch';
 import { evaluateQuality } from '../../features/tools/measure/quality';
@@ -766,11 +767,36 @@ export function SplMeterScreen({ navigation }: Props) {
   // mic catalog (owner 2026-08-21). non-null = the prompt is open for that offset.
   const [contribOffset, setContribOffset] = useState<number | null>(null);
   const commitCalibration = useCallback((o: number) => {
-    setSplCalibration(o);
     setCalibrating(false);
     // NOT NOW sticks (owner 2026-09-30): only ask someone who hasn't declined.
-    void crowdsourceDeclined().then((declined) => {
-      if (!declined) setContribOffset(o);
+    const offerContribution = () => {
+      void crowdsourceDeclined().then((declined) => {
+        if (!declined) setContribOffset(o);
+      });
+    };
+    // A write that did not reach disk is SAID (full run 2, 2026-10-02): it
+    // used to be swallowed, so the meter read "field-calibrated" until the next
+    // launch and then silently uncalibrated. The contribution offer waits for
+    // the notice to close (never a dialog over a dialog).
+    void setSplCalibration(o).then((stored) => {
+      if (stored) {
+        offerContribution();
+        return;
+      }
+      notify(
+        'Calibration not saved',
+        'This device could not write the calibration to storage — it applies for now, but the meter will read uncalibrated when you close the app. Free up some space and calibrate again.',
+        afterDialogCloses(offerContribution),
+      );
+    });
+  }, []);
+  const clearCalibration = useCallback(() => {
+    void setSplCalibration(null).then((stored) => {
+      if (stored) return;
+      notify(
+        'Calibration not cleared',
+        'This device could not update storage — the meter reads uncalibrated for now, but the old calibration will come back when you reopen the app. Free up some space and clear it again.',
+      );
     });
   }, []);
   // Community starting point for this phone model (null until the catalog has
@@ -1665,7 +1691,7 @@ export function SplMeterScreen({ navigation }: Props) {
                   {offset != null && (
                     <Pressable
                       style={styles.ctrlBtn}
-                      onPress={() => setSplCalibration(null)}
+                      onPress={clearCalibration}
                       accessibilityRole="button"
                       accessibilityLabel="Clear calibration"
                     >
@@ -2018,7 +2044,7 @@ export function SplMeterScreen({ navigation }: Props) {
                       {offset != null && (
                         <Pressable
                           style={styles.ctrlBtn}
-                          onPress={() => setSplCalibration(null)}
+                          onPress={clearCalibration}
                           accessibilityRole="button"
                           accessibilityLabel="Clear calibration"
                         >

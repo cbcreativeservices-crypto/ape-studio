@@ -32,7 +32,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
-import { isAudioOutputEnabled, noteAudioActivity } from '../../features/audio/audioOutputStore';
+import { getSoundStopEpoch, isAudioOutputEnabled, noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { CheckQuestion } from './foundations/bits';
 import { EngineGate } from '../tools/EngineGate';
@@ -182,6 +182,10 @@ export function AutotuneLabScreen() {
         ? { mode: GEN_MODES.additive, additive: voicePayload(startHz(0)), levelDb: GEN_LEVEL_DB }
         : { mode: GEN_MODES.sine, frequency: startHz(0), levelDb: GEN_LEVEL_DB },
     );
+    // Every sound stopped while the native start was in flight (leaving the
+    // app with "Mute audio when I leave the app" OFF stops voices but leaves
+    // the gate ON — full-app run 2, 2026-10-01): this start must not sound on.
+    const stopEpoch = getSoundStopEpoch();
     try {
       await ApeDsp.genStart();
     } catch (e) {
@@ -196,6 +200,11 @@ export function AutotuneLabScreen() {
     }
     if (gen !== genRef.current) {
       if (!wantRef.current) void ApeDsp.genStop(); // stopped/hushed meanwhile
+      return;
+    }
+    // Every sound was stopped while the native start ran: stay quiet.
+    if (getSoundStopEpoch() !== stopEpoch) {
+      void ApeDsp.genStop();
       return;
     }
     setPlaying(true);

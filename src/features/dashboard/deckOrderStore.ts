@@ -30,15 +30,31 @@ function emit() {
 // load, which is exactly when the boot-time identity check may wipe it — a read
 // already in flight must not land the previous user's deck back in memory.
 let generation = 0;
+/** The last read of the saved deck FAILED — see hydrate(). */
+let readFailed = false;
 
 function hydrate(): Promise<void> {
   if (hydrated) return Promise.resolve();
   if (!hydrating) {
     const gen = generation;
     hydrating = (async () => {
+      let raw: string | null;
       try {
-        const raw = await AsyncStorage.getItem(KEY);
+        raw = await AsyncStorage.getItem(KEY);
+      } catch {
+        // UNREADABLE is not "no deck yet" (full run 2, 2026-10-01): showing the
+        // default is fine, but the next reorder / ✕ / mode tap SAVED that
+        // default over the learner's custom order. Saves stay off until a read
+        // succeeds.
         if (gen !== generation) return;
+        readFailed = true;
+        hydrated = true;
+        emit();
+        return;
+      }
+      try {
+        if (gen !== generation) return;
+        readFailed = false;
         if (raw) {
           const p = JSON.parse(raw) as Partial<DeckPrefs>;
           const strs = (v: unknown): string[] =>
@@ -59,7 +75,7 @@ void hydrate();
 
 function commit(next: DeckPrefs) {
   prefs = next;
-  void AsyncStorage.setItem(KEY, JSON.stringify(prefs)).catch(() => {});
+  if (!readFailed) void AsyncStorage.setItem(KEY, JSON.stringify(prefs)).catch(() => {});
   emit();
 }
 
@@ -132,6 +148,7 @@ export function orderDeckIds(all: { id: string; name: string }[], p: DeckPrefs, 
  *  briefly see the previous user's deck order until relaunch. */
 export function resetLocal(): void {
   generation++;
+  readFailed = false;
   prefs = { ...DEFAULT };
   hydrated = false;
   hydrating = null;

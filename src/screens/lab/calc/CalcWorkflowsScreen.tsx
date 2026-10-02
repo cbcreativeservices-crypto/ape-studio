@@ -170,7 +170,9 @@ export function CalcWorkflowsScreen() {
   };
 
   const toggleFav = (id: string) => {
-    void workflowStore.toggleFavorite(id).then(setFavorites);
+    void workflowStore.toggleFavorite(id).then((list) => {
+      if (list) setFavorites(list);
+    });
   };
 
   const Row = ({ w, template, index, count }: { w: Workflow; template: boolean; index?: number; count?: number }) => (

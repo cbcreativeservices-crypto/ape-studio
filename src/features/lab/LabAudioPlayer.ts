@@ -22,7 +22,7 @@
  * demo-signal / critical-listening one-at-a-time case.
  */
 import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-audio';
-import { isAudioOutputEnabled } from '../audio/audioOutputStore';
+import { getSoundStopEpoch, isAudioOutputEnabled } from '../audio/audioOutputStore';
 import { unregisterFilePlayer } from '../audio/filePlayers';
 import { applyCeiling } from '../audio/outputCeiling';
 import { fetchLabAudio, type LabAudioReason } from './labAudio';
@@ -253,6 +253,11 @@ export class LabAudioPlayer {
   async play(labKey: string, assetKey: string): Promise<LabAudioReason | 'blocked'> {
     if (this.disposed) return 'network';
     const token = ++this.playToken;
+    // Leaving the app with "Mute audio when I leave the app" OFF stops every
+    // sound but leaves the gate ON (signalSoundStopped) — so the gate check
+    // below cannot see it. A clip whose fetch was still running when the
+    // learner left must not start behind them (full run 2, 2026-10-01).
+    const stopEpoch = getSoundStopEpoch();
     const pooled = this.pool.has(keyOf(labKey, assetKey));
     await this.settleMode();
     if (this.disposed || token !== this.playToken) return 'network';
@@ -268,6 +273,7 @@ export class LabAudioPlayer {
     // above. Shake-to-mute, the idle lock or backgrounding can land during
     // them, so ask again at the last moment; off means nothing plays.
     if (!isAudioOutputEnabled()) return 'blocked';
+    if (getSoundStopEpoch() !== stopEpoch) return 'blocked';
 
     try {
       if (this.current && this.current !== got) this.current.player.pause();

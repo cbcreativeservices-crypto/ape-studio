@@ -94,6 +94,7 @@ import { isHazardTerm } from '../../lib/hazard';
 import { CautionBadge } from '../../components/CautionBadge';
 import { supabase } from '../../lib/supabase';
 import { safeSession } from '../../lib/getSessionSafe';
+import { softDeadline } from '../../lib/boundedCall';
 import { V3_CURRICULUM_VERSION_ID } from '../../data/v3Curriculum';
 import { isCalcBackedTerm, calcLinkForTerm } from '../lab/calc/calcGlossaryLinks';
 import { SUPABASE_URL } from '../../lib/env';
@@ -266,6 +267,37 @@ function warnUsage(used: number, limit: number): void {
       `That was your last free glossary lookup this week (${limit} of ${limit}). It resets one week after your first one. Academy membership makes the glossary unlimited.`,
     );
   }
+}
+
+/**
+ * One term's detail body from `glossary_study_v` (see fetchDetails for why that
+ * relation), or null when it is absent, failed, or STALLED. Bounded (full-app
+ * run 2, 2026-10-01): a tap is waiting on it, and a request that never answers
+ * must still end in the "tap to retry" state rather than "Loading…" forever.
+ */
+const DETAIL_DEADLINE_MS = 10000;
+/** The topic-list read the corpus load waits behind (one small query). */
+const TOPICS_DEADLINE_MS = 10000;
+async function readStudyDetail(id: string): Promise<Record<string, unknown> | null> {
+  const { data } = await softDeadline<{ data: Record<string, unknown> | null }>(
+    // `async () =>`: the Supabase builder is a thenable, not a Promise.
+    async () => ({
+      data: (
+        await supabase
+          .from('glossary_study_v')
+          .select(
+            'plain_english, purpose_function, practical_application, scenario_contexts, related_terms, category, common_mistakes',
+          )
+          .eq('glossary_id', id)
+          .limit(1)
+          .maybeSingle()
+      ).data as Record<string, unknown> | null,
+    }),
+    { data: null },
+    'glossary_study_v detail',
+    DETAIL_DEADLINE_MS,
+  );
+  return data;
 }
 
 /** Memoize a loader's Promise for the session; drop the cache if it rejects. */
@@ -1745,14 +1777,11 @@ ${COPY.glossaryFreeAllowance}`,
        * of 26,831 terms have more than one row. Hence limit(1).maybeSingle()
        * rather than single(), which would throw for those.
        */
-      const { data } = await supabase
-        .from('glossary_study_v')
-        .select(
-          'plain_english, purpose_function, practical_application, scenario_contexts, related_terms, category, common_mistakes',
-        )
-        .eq('glossary_id', id)
-        .limit(1)
-        .maybeSingle();
+      // ⛔ BOUNDED (full-app run 2, 2026-10-01). [72] below only reaches the
+      // retry for a read that ANSWERS; a stalled one never did, so the
+      // expanded row / popup sat on "Loading…" for good with no retry. A stall
+      // now reads as the failure it is.
+      const data = await readStudyDetail(id);
       if (gen !== readerGenRef.current) return; // the last reader's detail
       // [72]: mark the failure so the row can offer a retry instead of "Loading…".
       if (!data) {
@@ -2003,16 +2032,30 @@ ${COPY.glossaryFreeAllowance}`,
           // v1 college catalog on every Glossary mount to feed a filter chip that
           // was removed in July, and a term-chooser label that was wrong for
           // 23,187 of the 26,847 entries.
+          // ⛔ BOUNDED (full-app run 2, 2026-10-01). The corpus load below waits
+          // on this, so a STALLED topic read (not a failed one) held the whole
+          // Glossary on its loading card — the device copy included, which is
+          // the cruise-ship case it exists for. A stall now just leaves the
+          // topic chip empty for this visit, as a failed read already did.
           const [{ data: topicRows }] = await Promise.all([
             // TOPIC filter = the LIVE v3 curriculum only (owner 2026-08-06). The
             // old query pulled ALL achievements (v2 + v3 + draft), so the list was
             // a mix and many rows resolved to the wrong/empty curriculum.
-            supabase
-              .from('achievements')
-              .select('id, name, global_sequence')
-              .eq('curriculum_version_id', V3_CURRICULUM_VERSION_ID)
-              .eq('is_active', true)
-              .order('global_sequence'),
+            softDeadline<{ data: unknown[] | null }>(
+              async () => ({
+                data: (
+                  await supabase
+                    .from('achievements')
+                    .select('id, name, global_sequence')
+                    .eq('curriculum_version_id', V3_CURRICULUM_VERSION_ID)
+                    .eq('is_active', true)
+                    .order('global_sequence')
+                ).data,
+              }),
+              { data: null },
+              'glossary topic list',
+              TOPICS_DEADLINE_MS,
+            ),
           ]);
           if (!alive) return;
           setTopics(
@@ -2482,14 +2525,9 @@ ${COPY.glossaryFreeAllowance}`,
      * free/member mask internally, so this fallback works again without
      * spending a lookup and without widening what a free user can see.
      */
-    const { data } = await supabase
-      .from('glossary_study_v')
-      .select(
-        'plain_english, purpose_function, practical_application, scenario_contexts, related_terms, category, common_mistakes',
-      )
-      .eq('glossary_id', id)
-      .limit(1)
-      .maybeSingle();
+    // Bounded like fetchDetails: the share hub waits on this before it opens,
+    // so a stalled read made SHARE do nothing at all (full-app run 2).
+    const data = await readStudyDetail(id);
     if (!data || gen !== readerGenRef.current) return null;
     const detail = data as unknown as EntryDetail;
     putDetail(id, detail);

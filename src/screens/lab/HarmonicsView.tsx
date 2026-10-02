@@ -117,7 +117,7 @@ import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import Svg, { Defs, Line, LinearGradient, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES, type EngineConfig, type GenParams, type WaveBucket } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
-import { isAudioOutputEnabled, isFeedbackAllowed, noteAudioActivity, useFeedbackAllowed } from '../../features/audio/audioOutputStore';
+import { getSoundStopEpoch, isAudioOutputEnabled, isFeedbackAllowed, noteAudioActivity, useFeedbackAllowed } from '../../features/audio/audioOutputStore';
 import { FeedbackAllowRow } from '../../features/audio/FeedbackAllowRow';
 import { guardToneLevelForEngine, LOW_FREQ_ADVISORY } from '../../features/audio/speakerSafety';
 import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
@@ -1280,6 +1280,10 @@ export function HarmonicsView({
         ...params,
       });
       try {
+        // Every sound stopped while the native start was in flight (leaving the
+        // app with "Mute audio when I leave the app" OFF stops voices but leaves
+        // the gate ON — full-app run 2, 2026-10-01): this start must not sound on.
+        const stopEpoch = getSoundStopEpoch();
         await ApeDsp.genStart();
         if (gen !== toneGenRef.current) {
           // A STOP path tore this down while starting (only stop paths can
@@ -1290,6 +1294,11 @@ export function HarmonicsView({
         // A mute that landed while the native start was in flight wins — never
         // leave a tone sounding into a closed gate (owner 2026-09-29).
         if (!isAudioOutputEnabled()) {
+          void ApeDsp.genStop();
+          return false;
+        }
+        // Every sound was stopped while the native start ran: stay quiet.
+        if (getSoundStopEpoch() !== stopEpoch) {
           void ApeDsp.genStop();
           return false;
         }

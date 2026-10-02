@@ -66,6 +66,7 @@ describe('Time Trial: a pass is not reported as cleared until the server has it'
       let release!: () => void;
       setRpc(() => new Promise((r) => (release = () => r({ data: null, error: null }))));
       runToPass('flashcards');
+      await flush(); // run 2: the account check comes first
       assert.equal(credit('flashcards'), 'saving', 'before the credit lands the pass must not read as saved');
       release();
       await flush();

@@ -215,7 +215,10 @@ export function PaywallScreen({ navigation }: Props) {
         'Create an account first',
         // ⚠️ "your progress comes with you" was false — see the note on the
         // Dashboard guest notice; signing in resets the local stores.
-        'Membership is attached to your account, so you need one before you can buy. Creating it takes a moment; work done without an account stays on this device and does not transfer.',
+        // Corrected 2026-10-01 (owner ruling): lab work from THIS session is
+        // written to the account signed into in the same session
+        // (features/lab/sessionCarry); study progress still is not.
+        'Membership is attached to your account, so you need one before you can buy. Creating it takes a moment; lab work from this session comes with you, but study progress done without an account does not transfer.',
         'Create account',
         () => (navigation as any).navigate('Auth'),
         { cancelText: 'Not now' },

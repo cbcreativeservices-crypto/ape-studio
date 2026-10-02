@@ -32,6 +32,7 @@ import { GearGlyph, type GlyphKind } from './art/gearArt';
 import { clearPageMemory } from './pageMemory';
 import { useLabEndGuest } from '../kit/LabEndScreen';
 import { useLabPreview } from '../../../features/lab/labPreviewStore';
+import { sessionCarryOpen } from '../../../features/lab/sessionCarry';
 
 const MODE_GLYPH: Record<SsModeId, GlyphKind> = {
   learn: 'console',
@@ -169,7 +170,7 @@ export function SoundSystemsLabScreen() {
                 {guest
                   ? inPreview
                     ? 'This is a members-only preview, so nothing here is saved or credited. Move through the lab in any order — this list is what still counts toward credit.'
-                    : 'You are not signed in, so nothing here is saved yet — sign in before you close the app to keep your progress. Move through the lab in any order — this list is what still counts toward credit.'
+                    : sessionCarryOpen() ? 'You are not signed in, so nothing here is saved yet — sign in before you close the app to keep your progress. Move through the lab in any order — this list is what still counts toward credit.' : 'You are not signed in, so nothing here is saved. Move through the lab in any order — this list is what still counts toward credit.'
                   : 'Everything you have done is saved. Move through the lab in any order — this list is what still counts toward credit, and each row opens where you left off.'}
               </Text>
               {outstanding.map((r) => (

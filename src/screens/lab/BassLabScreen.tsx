@@ -39,7 +39,7 @@ import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import Svg, { Circle, Defs, LinearGradient, Line, Path, RadialGradient, Rect, Stop } from 'react-native-svg';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
-import { isAudioOutputEnabled, noteAudioActivity, useAudioOutputEnabled } from '../../features/audio/audioOutputStore';
+import { getSoundStopEpoch, isAudioOutputEnabled, noteAudioActivity, useAudioOutputEnabled } from '../../features/audio/audioOutputStore';
 import { guardAdditiveForEngine, speakerGuardDb, SPEAKER_HPF_HZ } from '../../features/audio/speakerSafety';
 import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { CheckQuestion } from './foundations/bits';
@@ -252,6 +252,10 @@ export function BassLabScreen() {
     if (!ok || gen !== genRef.current) return;
     setSource('model');
     ApeDsp.genSet(genParams());
+    // Every sound stopped while the native start was in flight (leaving the
+    // app with "Mute audio when I leave the app" OFF stops voices but leaves
+    // the gate ON — full-app run 2, 2026-10-01): this start must not sound on.
+    const stopEpoch = getSoundStopEpoch();
     modelGenRef.current = gen;
     try {
       await ApeDsp.genStart();
@@ -268,6 +272,11 @@ export function BassLabScreen() {
         // tone, leaving ■ lit over silence. A ■, a close or a recording that
         // took over still stop it — none of them start the generator.
         if (modelGenRef.current === gen) void ApeDsp.genStop();
+        return;
+      }
+      // Every sound was stopped while the native start ran: stay quiet.
+      if (getSoundStopEpoch() !== stopEpoch) {
+        void ApeDsp.genStop();
         return;
       }
       // Same for the model: a selection changed during the native start is

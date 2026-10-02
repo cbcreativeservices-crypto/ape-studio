@@ -42,15 +42,37 @@ function parsePaged(raw: string | null): PagedProgress {
   }
 }
 
+/** Labs whose last load FAILED to read (full run 2, 2026-10-01): the screen
+ *  was handed an empty copy, and saving it would have written over the
+ *  learner's stored pages. */
+const unreadable = new Set<string>();
+
 export async function loadPagedProgress(labId: string): Promise<PagedProgress> {
+  let raw: string | null;
   try {
-    return parsePaged(await AsyncStorage.getItem(key(labId)));
+    raw = await AsyncStorage.getItem(key(labId));
   } catch {
+    unreadable.add(labId);
     return EMPTY();
   }
+  unreadable.delete(labId);
+  return parsePaged(raw);
 }
 
 export async function savePagedProgress(labId: string, p: PagedProgress): Promise<void> {
+  if (unreadable.has(labId)) {
+    // Read again first; still unreadable → write nothing. Read → what is
+    // stored joins (pages are a union, `done` never clears).
+    let raw: string | null;
+    try {
+      raw = await AsyncStorage.getItem(key(labId));
+    } catch {
+      return;
+    }
+    unreadable.delete(labId);
+    const stored = parsePaged(raw);
+    p = { completed: [...new Set([...stored.completed, ...p.completed])].sort((a, b) => a - b), lastPage: p.lastPage, done: stored.done || p.done };
+  }
   try {
     await AsyncStorage.setItem(key(labId), JSON.stringify(withHeldPages(p, heldPaged(labId))));
   } catch {}

@@ -81,9 +81,12 @@ export function endTitle(w: WhatsLeft): "LAB COMPLETE" | "WHAT'S LEFT" {
  */
 export function endLead(
   w: WhatsLeft,
-  opts: { mode: 'credit' | 'progress'; noun: string; guest?: boolean; preview?: boolean },
+  opts: { mode: 'credit' | 'progress'; noun: string; guest?: boolean; preview?: boolean; carry?: boolean },
 ): string {
-  const { mode, noun, guest, preview } = opts;
+  // `carry` (full run 2, 2026-10-01): false when signing in now would carry
+  // nothing (after a sign-out, before Guest Mode starts a fresh guest
+  // session — sessionCarryOpen). The guest is then told the plain truth.
+  const { mode, noun, guest, preview, carry = true } = opts;
   const plural = (n: number) => `${n} ${noun}${n === 1 ? '' : 's'}`;
   // A check row (final exam / understanding check) is not a module or page —
   // count it separately so "8 modules + the check" never reads "9 modules of 9".
@@ -97,6 +100,11 @@ export function endLead(
     return w.complete
       ? `You have been through every ${noun}. This is a members-only preview, so none of this is saved or credited.`
       : `${onlyCheck ? 'Only the check is left' : `${what} still to go`}. This is a members-only preview, so nothing here is saved or credited.`;
+  }
+  if (guest && !carry) {
+    return w.complete
+      ? `You have been through every ${noun}. You are not signed in, so nothing here is saved.`
+      : `${onlyCheck ? 'Only the check is left' : `${what} still to go`}. You are not signed in, so nothing here is saved.`;
   }
   if (guest) {
     return w.complete

@@ -27,7 +27,9 @@ test('mixing playback: a failed render returns to idle instead of sticking on RE
 
 test('room design: a signed-in PREVIEW is never told "you are not signed in"', () => {
   const host = read('src/screens/lab/roomdesign/RoomDesignLabScreen.tsx');
-  assert.match(host, /const preview = resolved && guest && entitlement !== 'anonymous';/);
+  // Full-app run 2: read from the preview store (a signed-in preview AND a
+  // signed-out guest are both in a preview in this members-only lab).
+  assert.match(host, /const preview = useLabPreview\(\)\.active;/);
   for (const f of ['modIntro', 'modExplore', 'modReview']) {
     const s = read(`src/screens/lab/roomdesign/modules/${f}.tsx`);
     assert.match(s, /preview/, `${f} branches on preview`);
