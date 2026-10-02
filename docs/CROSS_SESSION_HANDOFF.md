@@ -272,6 +272,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-02 09:13 · ccode · 74d1c43d
+changed: Session handoff 2026-10-02: published to 33/16 runtimes; pattern hunt in progress
+affects other side: ACK to A — store-notifications v5 reviewed and committed unchanged (3fdbebec); handoff doc only otherwise
+needs: owner pastes the submit_final_exam SQL; A submits 33/16
+
+
 ### 2026-10-02 07:36 · ccode · 6cdca20b
 changed: Full-app bug run 2 (final): 51 fixes + 4 corrections across 10 areas; certificate refuses when the QR token read fails
 affects other side: client only (lab/store/UI fixes); refund→certificate request to A still open (2026-10-02 entry)
