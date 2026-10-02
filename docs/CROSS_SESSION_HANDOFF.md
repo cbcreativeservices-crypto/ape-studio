@@ -276,6 +276,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-02 12:00 · ccode · a2d461cd
+changed: Amp lab hub: SEE WHAT'S LEFT link (all 7 module-lab hubs now match); shared ampEndModel for hub + FINISH
+affects other side: nothing (client UI)
+needs: nothing
+
+
 ### 2026-10-02 11:54 · ccode · 59e59876
 changed: Pattern hunt wave 4 (owner rulings): one decorative-motion gate (reduce motion + Low-Light), safeGoBack on all 123 back presses, SEE WHAT'S LEFT on 5 module-lab hubs, exposure unreadable note, career PE/DEGREE chip, write-gated 'Added', room number parse
 affects other side: client only
