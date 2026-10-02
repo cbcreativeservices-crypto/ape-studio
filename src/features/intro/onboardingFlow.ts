@@ -42,6 +42,8 @@ let complete = false;
 let visited: OnboardingChoice[] = [];
 let hydrated = false;
 let hydrating: Promise<void> | null = null;
+/** The last read THREW (see hydrate). Nothing is written until a read lands. */
+let readFailed = false;
 const listeners = new Set<() => void>();
 
 function emit() {
@@ -52,17 +54,43 @@ function hydrate(): Promise<void> {
   if (hydrated) return Promise.resolve();
   if (!hydrating) {
     hydrating = (async () => {
+      let rows: readonly (readonly [string, string | null])[];
       try {
-        const [c, v] = await AsyncStorage.multiGet([COMPLETE_KEY, VISITED_KEY]);
-        if (c[1] != null) complete = c[1] === '1';
-        if (v[1] != null) {
-          const parsed = JSON.parse(v[1]);
-          if (Array.isArray(parsed)) visited = parsed.filter(isChoice);
-        }
+        rows = await AsyncStorage.multiGet([COMPLETE_KEY, VISITED_KEY]);
       } catch {
-        // corrupt/absent → keep defaults
+        // READ failed (G1 tightening, 2026-10-02): UNREADABLE, not "fresh".
+        // It used to fall through to hydrated with `complete = false`, so a
+        // storage hiccup replayed the whole first-run sampler to someone who
+        // had finished it, and the next Explored mark wrote a one-item list
+        // over the stored one. Now: stay unhydrated (the coordinator renders
+        // nothing until `hydrated`), write nothing, read again next time.
+        readFailed = true;
+        hydrating = null;
+        emit();
+        return;
+      }
+      readFailed = false;
+      const [c, v] = rows;
+      // A finish recorded before the read landed stays finished.
+      if (c[1] === '1') complete = true;
+      let stored: OnboardingChoice[] = [];
+      if (v[1] != null) {
+        try {
+          const parsed = JSON.parse(v[1]);
+          if (Array.isArray(parsed)) stored = parsed.filter(isChoice);
+        } catch {
+          // damaged: start from the empty list (nothing usable to keep)
+        }
+      }
+      // Choices marked before the read landed are laid ON TOP of the stored
+      // list, never written over it.
+      const merged = [...new Set([...stored, ...visited])];
+      visited = merged;
+      if (merged.length !== stored.length) {
+        void AsyncStorage.setItem(VISITED_KEY, JSON.stringify(merged)).catch(() => {});
       }
       hydrated = true;
+      hydrating = null;
       emit();
     })();
   }
@@ -100,6 +128,13 @@ export function getVisitedChoices(): OnboardingChoice[] {
 export function markChoiceVisited(choice: OnboardingChoice): void {
   if (visited.includes(choice)) return;
   visited = [...visited, choice];
+  if (!hydrated || readFailed) {
+    // The stored list is not known yet: keep the mark in memory; hydrate()
+    // lays it on top of the stored list and writes the union.
+    emit();
+    void hydrate();
+    return;
+  }
   void AsyncStorage.setItem(VISITED_KEY, JSON.stringify(visited)).catch(() => {});
   emit();
 }

@@ -77,7 +77,12 @@ test('Home: a FAILED read is never saved over the stored list (core-slot effect 
   home.ensureHome(3060); // Enrollments' automatic core-slot write
   home.removeHome(11);
   await settle();
-  assert.deepEqual(JSON.parse(store.get('ape:homeCards') ?? '[]'), [11, 22, 44]);
+  // On the shared safe store (G1 tightening, 2026-10-02) the next action
+  // reads AGAIN and applies the taps ON TOP of the stored list: 22 and 44
+  // survive (never the empty fallback saved over them), and the two taps
+  // land. The hand-rolled store kept [11, 22, 44] only because it never
+  // wrote again in that launch — every later save was silently dropped.
+  assert.deepEqual(JSON.parse(store.get('ape:homeCards') ?? '[]'), [22, 44, 3060]);
 });
 
 test('Deck order: a FAILED read is never saved over the custom order by the next tap', async () => {
