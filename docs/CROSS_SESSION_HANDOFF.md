@@ -250,6 +250,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-01 22:53 · ccode · 661c5d3f
+changed: Guest session carry (owner 2026-10-01): lab work done as a guest is written to the account signed into in the same session — never to a different identity, never from a preview, never across a relaunch; drum-tuning recording add-on source
+affects other side: nothing (client-only; lab stores + catalog)
+needs: nothing
+
+
+### 2026-10-01 22:20 · ccode · 3dd9aafb
+changed: Drum Tuning Lab moves to Pitch & Tuning (owner 2026-10-01)
+affects other side: nothing (client-only; lab stores + catalog)
+needs: nothing
+
+
 ### 2026-10-01 18:39 · ccode · 03b10d16
 changed: Toddler pass 3 (final) on the three new labs: Drum 2 (+1 correction), Mastering 5 (+3), Room 4 (+1) + delete/unreadable messages; room store: failed delete keeps the row, unreadable store told apart from empty
 affects other side: nothing (client-only lab fixes)
