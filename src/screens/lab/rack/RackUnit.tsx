@@ -597,7 +597,6 @@ export function RackUnit({
           overlay={trayNodeFull}
           overlayLift={trayParam ? fullTrayH + 6 : 0}
           readouts={stage.bezel?.length ? <BezelReadouts items={stage.bezel} onHelp={help} /> : undefined}
-          openStep={stage.fullScreenStep}
         />
       ) : null}
     </View>

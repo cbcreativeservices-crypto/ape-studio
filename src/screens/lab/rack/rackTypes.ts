@@ -57,9 +57,6 @@ export type RackStage = {
    *  that do not set it look exactly as before. `onEnlarge` still works for
    *  a host that wants its own modal. */
   fullScreen?: boolean;
-  /** The zoom step FULL SCREEN opens on ('1' default, or 'fit' — a plan
-   *  sideways, owner 2026-10-01). Falls back to '1' when FIT gains nothing. */
-  fullScreenStep?: '1' | 'fit';
 };
 
 /** One option inside an options tray. LabChip semantics preserved
