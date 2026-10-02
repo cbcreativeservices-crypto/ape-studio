@@ -188,3 +188,20 @@ export function deleteTuningNote(id: string): Promise<DrumProgressState & { save
     s.notes = s.notes.filter((n) => n.id !== id);
   }).then((r) => ({ ...r.state, saved: r.saved, blocked: r.blocked }));
 }
+
+/** SIGN-IN RE-READ (toddler pass 3): write each session note the store does
+ *  not hold yet. `notes` = what the device HOLDS afterwards; `failed` = the
+ *  notes a write refused. The returned copy of a refused write still carries
+ *  the note (it was added in memory), and a failed READ returns an empty
+ *  list — so neither is ever taken as the stored list. */
+export async function keepSessionNotes(stored: readonly TuningNote[], session: readonly TuningNote[]): Promise<{ notes: TuningNote[]; failed: TuningNote[] }> {
+  let notes = [...stored];
+  const failed: TuningNote[] = [];
+  for (const n of session) {
+    if (notes.some((x) => x.id === n.id)) continue;
+    const r = await saveTuningNote(n);
+    if (r.saved) notes = r.notes;
+    else failed.push(n);
+  }
+  return { notes, failed };
+}

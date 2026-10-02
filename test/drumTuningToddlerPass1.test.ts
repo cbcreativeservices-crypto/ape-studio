@@ -124,7 +124,7 @@ describe('drum toddler pass 1 — the store', () => {
     for (let i = 0; i <= progress.MAX_TUNING_NOTES; i++) mem = progress.withNote(mem, note(`g${i}`, i));
     assert.equal(mem.length, progress.MAX_TUNING_NOTES);
     const host = strip(read(`${DIR}/DrumTuningLabScreen.tsx`));
-    assert.match(host, /if \(s\.saved\) \{\s*setNotes\(s\.notes\);\s*return 'saved';/);
+    assert.match(host, /if \(s\.saved\) \{\s*setNotes\((?:listed\()?s\.notes\)?\);\s*return 'saved';/);
     assert.match(host, /if \(s\.blocked\) \{\s*setNotes\(\(prev\) => withNote\(prev, note\)\);\s*return 'session';/);
     assert.doesNotMatch(host, /prev\.filter\(\(p\) => !s\.notes\.some/, 'no merge that resurrects a dropped note');
   });
@@ -148,7 +148,8 @@ describe('drum toddler pass 1 — the screen and the chapters', () => {
     const host = strip(read(`${DIR}/DrumTuningLabScreen.tsx`));
     assert.match(host, /\}, \[resolved, loaded, blocked\]\);/);
     assert.match(host, /setDoneIds\(\(prev\) => new Set\(\[\.\.\.\(reread \? prev : \[\]\)/);
-    assert.match(host, /for \(const n of notesRef\.current\) if \(!stored\.notes\.some\(\(x\) => x\.id === n\.id\)\) stored = await saveTuningNote\(n\);/);
+    // Pass 3 correction: the re-save goes through keepSessionNotes (a refused write is never listed as stored).
+    assert.match(host, /const kept = await keepSessionNotes\(s\.notes, notesRef\.current\);/);
   });
 
   it('a guest\'s session notes survive a chapter change (the blocked store reads back empty)', () => {

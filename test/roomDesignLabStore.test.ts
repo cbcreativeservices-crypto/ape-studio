@@ -202,3 +202,44 @@ describe('saved room designs — read/write failures never lose or fake designs 
     assert.deepEqual(store.getRoomDesigns().map((x) => x.name), ['keep me']);
   });
 });
+
+describe('saved room designs — delete and unreadable store (toddler pass 3, 2026-10-01)', () => {
+  const failWrites = (on: boolean) => (globalThis as { __apeRoomFailWrites?: (on: boolean) => void }).__apeRoomFailWrites!(on);
+  const failReads = (on: boolean) => (globalThis as { __apeRoomFailReads?: (on: boolean) => void }).__apeRoomFailReads!(on);
+  it('a delete whose write fails keeps the row (it is still on the device)', async () => {
+    await fresh();
+    const d = { ...defaultDesign('metric'), name: 'keep' };
+    await store.saveRoomDesign(d);
+    failWrites(true);
+    let ok: boolean;
+    try {
+      ok = await store.deleteRoomDesign(d.id);
+    } finally {
+      failWrites(false);
+    }
+    assert.equal(ok, false);
+    assert.deepEqual(store.getRoomDesigns().map((x) => x.name), ['keep']);
+  });
+  it('a guest can still delete a session design', async () => {
+    await fresh();
+    store.setRoomDesignSaveBlocked(true);
+    const d = { ...defaultDesign('metric'), name: 'session' };
+    await store.saveRoomDesign(d);
+    assert.equal(await store.deleteRoomDesign(d.id), true);
+    assert.deepEqual(store.getRoomDesigns(), []);
+  });
+  it('an unreadable store is reported as unreadable, not empty', async () => {
+    await fresh();
+    failReads(true);
+    try {
+      store.getRoomDesigns();
+      await tick();
+      await tick();
+      assert.equal(store.isRoomDesignStoreUnreadable(), true);
+    } finally {
+      failReads(false);
+    }
+    store.resetLocal();
+    assert.equal(store.isRoomDesignStoreUnreadable(), false);
+  });
+});

@@ -36,6 +36,10 @@ let hydrated = false;
 let hydrating: Promise<void> | null = null;
 let generation = 0;
 let saveBlocked = false;
+/** The last read THREW (unreadable, not damaged). Told apart from an empty
+ *  store so the lab never says "no saved designs" over designs it could not
+ *  read, and renders stop re-reading (toddler pass 3, 2026-10-01). */
+let readFailed = false;
 const listeners = new Set<() => void>();
 
 function emit() {
@@ -73,7 +77,11 @@ function hydrate(): Promise<void> {
         // The device could not be READ (not a damaged blob): stay
         // un-hydrated so no save writes a short list over the designs on
         // disk; the next call reads again.
-        if (gen === generation) hydrating = null;
+        if (gen === generation) {
+          hydrating = null;
+          readFailed = true;
+          emit();
+        }
         return;
       }
       try {
@@ -84,6 +92,7 @@ function hydrate(): Promise<void> {
       if (gen !== generation) return; // wiped mid-read — the next hydrate reads the cleared store
       list = next;
       hydrated = true;
+      readFailed = false;
       emit();
     })();
   }
@@ -116,7 +125,9 @@ export function isRoomDesignSaveBlocked(): boolean {
 
 /** Newest-updated first. */
 export function getRoomDesigns(): RoomDesign[] {
-  void hydrate();
+  // After a failed read only an action (save / delete) or a fresh mount
+  // retries — a render must not, or the emit above would loop.
+  if (!readFailed) void hydrate();
   return [...list].sort((a, b) => b.updatedAt - a.updatedAt);
 }
 
@@ -150,14 +161,30 @@ export function saveRoomDesign(design: RoomDesign): Promise<boolean> {
   });
 }
 
-export function deleteRoomDesign(id: string): void {
+/** True while the saved designs could not be read from the device. */
+export function isRoomDesignStoreUnreadable(): boolean {
+  return readFailed;
+}
+
+/** Resolves true when the design is gone from the device too. A failed write
+ *  puts the row back (toddler pass 3: it vanished, then returned on relaunch). */
+export function deleteRoomDesign(id: string): Promise<boolean> {
   const gen = generation;
-  void hydrate().then(() => {
-    if (gen !== generation || !hydrated) return; // wiped meanwhile, or unreadable
-    if (!list.some((d) => d.id === id)) return;
-    list = list.filter((d) => d.id !== id);
-    void persist();
+  return hydrate().then(() => {
+    if (gen !== generation || !hydrated) return false; // wiped meanwhile, or unreadable
+    if (!list.some((d) => d.id === id)) return true;
+    const prev = list;
+    const next = list.filter((d) => d.id !== id);
+    list = next;
     emit();
+    if (saveBlocked) return true; // a guest's session copy: nothing on disk to remove
+    return persist().then((ok) => {
+      if (!ok && list === next) {
+        list = prev;
+        emit();
+      }
+      return ok;
+    });
   });
 }
 
@@ -168,6 +195,7 @@ export function resetLocal(): void {
   list = [];
   hydrated = false;
   hydrating = null;
+  readFailed = false;
   emit();
 }
 
@@ -177,6 +205,7 @@ export function useRoomDesigns(): RoomDesign[] {
   useEffect(() => {
     const l = () => setTick((t) => t + 1);
     listeners.add(l);
+    readFailed = false; // a fresh mount retries an unreadable store once
     void hydrate();
     return () => {
       listeners.delete(l);

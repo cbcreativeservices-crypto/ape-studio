@@ -88,9 +88,14 @@ export function Ch3Method({ onInteractive }: ChapterProps) {
 
   const hearCents = lugCents(hearHead);
   const hearHighest = hearCents.indexOf(Math.max(...hearCents));
+  // A lug counts as tapped when its tap SOUNDED (toddler pass 3): counted on
+  // the press, a gate refused (output off, the prompt dismissed) still ticked
+  // "tapped 8 of 8" and opened ◉ REVEAL MAP to a learner who heard nothing.
   const hearTapNow = () => {
-    setTapped((s) => (s.has(hearLug) ? s : new Set([...s, hearLug])));
-    hearTap.play();
+    const at = hearLug;
+    void hearTap.play().then((ok) => {
+      if (ok) setTapped((s) => (s.has(at) ? s : new Set([...s, at])));
+    });
   };
   const revealMap = () => {
     if (tapped.size < SPEC.lugs) {

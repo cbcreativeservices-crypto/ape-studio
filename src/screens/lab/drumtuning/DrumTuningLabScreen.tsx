@@ -41,7 +41,7 @@ import { useEntitlement } from '../../../features/commercial/EntitlementProvider
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { DRUM_CHAPTERS, drumChapterById, scenariosForChapter, type DrumChapterId, type TuningNote } from './drumContent';
-import { deleteTuningNote, drumResumePoint, emptyDrumChapter, resetDrumPractice, saveTuningNote, setDrumSaveBlocked, updateDrumProgress, withNote, type DrumProgressState } from './drumProgress';
+import { deleteTuningNote, drumResumePoint, emptyDrumChapter, keepSessionNotes, resetDrumPractice, saveTuningNote, setDrumSaveBlocked, updateDrumProgress, withNote, type DrumProgressState } from './drumProgress';
 import { DRUM_CHAPTER_COMPONENTS, DRUM_NEEDS_INTERACTIVE, DRUM_STEP_COUNTS } from './modules';
 import { StepHostContext, type StepHost } from './steps';
 import type { NoteDeleteResult, NoteSaveResult } from './modules/shared';
@@ -93,6 +93,14 @@ export function DrumTuningLabScreen() {
   const loadedBlockedRef = useRef(false);
   const notesRef = useRef(notes);
   notesRef.current = notes;
+  /** Session notes the sign-in re-read could NOT write to the device
+   *  (toddler pass 3). They stay listed — the learner's work is not dropped —
+   *  but marked NOT SAVED, never under "SAVED ON THIS DEVICE" as if stored. */
+  const [unsaved, setUnsaved] = useState<readonly TuningNote[]>([]);
+  const unsavedRef = useRef(unsaved);
+  unsavedRef.current = unsaved;
+  /** The store's list plus the notes it could not take. */
+  const listed = useCallback((stored: readonly TuningNote[]): TuningNote[] => [...stored, ...unsavedRef.current.filter((u) => !stored.some((x) => x.id === u.id))], []);
 
   // ⛔ WAIT FOR `resolved` before the first read. And READ AGAIN when the
   // store unblocks (toddler pass 1): a member whose tier settled after
@@ -114,9 +122,16 @@ export function DrumTuningLabScreen() {
       if (reread) {
         const here = s.modules[modIdRef.current]?.answers ?? {};
         setAnswers((prev) => ({ ...here, ...prev }));
-        let stored = s;
-        for (const n of notesRef.current) if (!stored.notes.some((x) => x.id === n.id)) stored = await saveTuningNote(n);
-        if (alive) setNotes(stored.notes);
+        // Each session note is written over the stored list; one the write
+        // REFUSED (toddler pass 3) used to come back inside the returned list
+        // anyway and showed under "SAVED ON THIS DEVICE" — gone next visit.
+        // A failed READ also returned an empty list per note, so only the
+        // last session note stayed on screen.
+        const kept = await keepSessionNotes(s.notes, notesRef.current);
+        if (!alive) return;
+        unsavedRef.current = kept.failed;
+        setUnsaved(kept.failed);
+        setNotes(listed(kept.notes));
         return;
       }
       setNotes(s.notes);
@@ -188,7 +203,7 @@ export function DrumTuningLabScreen() {
     // session only, capped the same way.
     const s = await saveTuningNote(note);
     if (s.saved) {
-      setNotes(s.notes);
+      setNotes(listed(s.notes));
       return 'saved';
     }
     if (s.blocked) {
@@ -196,16 +211,24 @@ export function DrumTuningLabScreen() {
       return 'session';
     }
     return 'failed';
-  }, []);
+  }, [listed]);
   const onDeleteNote = useCallback(async (id: string): Promise<NoteDeleteResult> => {
     // The row goes when the store says it went (toddler pass 2): the old
     // optimistic filter + `void deleteTuningNote` hid a failed write — the
     // row vanished, the note stayed on the device and was back next visit.
     // The store's list is also the LAST word over a save still in flight
     // (the queue runs in order), so a deleted row can never be put back by it.
+    // A note the device never took is only on this screen: it just goes.
+    if (unsavedRef.current.some((n) => n.id === id)) {
+      const rest = unsavedRef.current.filter((n) => n.id !== id);
+      unsavedRef.current = rest;
+      setUnsaved(rest);
+      setNotes((prev) => prev.filter((n) => n.id !== id));
+      return 'session';
+    }
     const s = await deleteTuningNote(id);
     if (s.saved) {
-      setNotes(s.notes);
+      setNotes(listed(s.notes));
       return 'deleted';
     }
     if (s.blocked) {
@@ -213,7 +236,8 @@ export function DrumTuningLabScreen() {
       return 'session';
     }
     return 'failed';
-  }, []);
+  }, [listed]);
+  const unsavedIds = useMemo(() => new Set(unsaved.map((n) => n.id)), [unsaved]);
 
   const scenarios = scenariosForChapter(mod.id);
   const answeredCount = scenarios.filter((s) => s.id in answers).length;
@@ -384,7 +408,7 @@ export function DrumTuningLabScreen() {
             `hidden` flag stops its sound and its animation. */}
         <View style={end ? styles.gone : styles.body} accessibilityElementsHidden={!!end} importantForAccessibility={end ? 'no-hide-descendants' : 'auto'}>
           <StepHostContext.Provider value={host}>
-            <Component key={`${mod.id}:${runId}`} onAnswered={onAnswered} onInteractive={onInteractive} answers={answers} notes={notes} onSaveNote={onSaveNote} onDeleteNote={onDeleteNote} guest={resolved && guest} preview={preview} />
+            <Component key={`${mod.id}:${runId}`} onAnswered={onAnswered} onInteractive={onInteractive} answers={answers} notes={notes} unsavedIds={unsavedIds} onSaveNote={onSaveNote} onDeleteNote={onDeleteNote} guest={resolved && guest} preview={preview} />
           </StepHostContext.Provider>
         </View>
       </View>

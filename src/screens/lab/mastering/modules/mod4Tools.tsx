@@ -11,7 +11,7 @@ import { Body, Card, KeyTerms, Point, ScenarioDeck, SectionTitle } from '../kit'
 import { KEY_TERMS, TOOL_GROUPS, TOOL_SCENARIOS } from '../masteringContent';
 import { overview, type Overview } from '../masteringEngine';
 import { TOOL_ASPECT, ToolStage, dynamicsLawDb, widthCorrelation, type ToolView } from '../stages';
-import { programme, programmeIfRendered } from '../useMasterPlayback';
+import { programme, programmeIfRendered, useDrawProgramme } from '../useMasterPlayback';
 import { MODEL_BADGE, type ModuleProps } from './shared';
 
 /** ONE short-name table for the key, the bezel and the tray (cognitive
@@ -56,7 +56,7 @@ export function Mod4Tools({ onAnswered }: ModuleProps) {
     const p = programmeIfRendered();
     return p ? overview(p, 120) : null;
   });
-  const drawMix = () => setOv(overview(programme(), 120));
+  const draw = useDrawProgramme(() => setOv(overview(programme(), 120)));
   const group = TOOL_GROUPS.find((g) => g.id === view) ?? TOOL_GROUPS[2];
   // Bipolar amounts for the EQ views; 0..1 for the rest.
   const bipolar = view === 'eq' || view === 'analog';
@@ -94,7 +94,7 @@ export function Mod4Tools({ onAnswered }: ModuleProps) {
             params: [
               faderParam({ id: 'amount', label: AMOUNT_LABEL[view], value: amount, min: bipolar ? -1 : 0, max: 1, step: 0.01, format: (v) => amountText(view, v), onChange: setAmount, home: bipolar ? 0 : undefined }),
               flipFader({ id: 'tool', label: 'TOOL', items: TOOL_GROUPS, selectedId: view, onSelect: (id) => { setView(id as ToolView); setAmount(0.5); }, name: (g) => g.title, short: (g) => TOOL_SHORT[g.id as ToolView] ?? g.title.split(' ')[0].toUpperCase(), blurb: (g) => g.decision, title: 'TOOL GROUP', sticky: true }),
-              ...(needsProgramme ? [{ kind: 'action' as const, id: 'draw', label: '▶ DRAW MIX', onPress: drawMix }] : []),
+              ...(needsProgramme ? [{ kind: 'action' as const, id: 'draw', label: draw.drawing ? '… DRAWING' : '▶ DRAW MIX', onPress: draw.draw }] : []),
             ],
             initialParam: 'amount',
           },

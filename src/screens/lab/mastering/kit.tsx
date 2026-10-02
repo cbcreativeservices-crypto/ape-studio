@@ -9,7 +9,7 @@
  * true-peak readout that is OVER its ceiling reads PEAK_RED. Nothing here
  * invents a second level language.
  */
-import { createContext, useContext, useMemo, useRef, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { levelColorForDb } from '../../../features/tools/levelColor';
@@ -254,6 +254,16 @@ export function ScenarioDeck({ scenarios, onAnswered, keepOrder, compact, intro 
 }) {
   const recorded = useContext(RecordedAnswersContext);
   const [cur, setCur] = useState(() => Math.max(0, scenarios.findIndex((s) => !(s.id in recorded))));
+  // The host's record can arrive AFTER the deck mounts (toddler pass 3): a
+  // what's-left row lands straight on this step while the module's stored
+  // answers are still being read, so the deck opened on card 1 — already
+  // answered — instead of the first open one. Until the learner touches the
+  // deck (a pick or a card key), follow the record to the first open card.
+  const touchedRef = useRef(false);
+  const firstOpen = scenarios.findIndex((s) => !(s.id in recorded));
+  useEffect(() => {
+    if (!touchedRef.current && firstOpen >= 0) setCur(firstOpen);
+  }, [firstOpen]);
   const n = scenarios.length;
   const i = Math.min(cur, Math.max(0, n - 1));
   return (
@@ -265,12 +275,12 @@ export function ScenarioDeck({ scenarios, onAnswered, keepOrder, compact, intro 
       </View>
       {scenarios.map((s, k) => (
         <View key={s.id} style={k === i ? null : styles.hidden} accessibilityElementsHidden={k !== i} importantForAccessibility={k === i ? 'auto' : 'no-hide-descendants'}>
-          <ScenarioCard s={s} keepOrder={keepOrder} compact={compact} recorded={recorded[s.id]} onAnswered={(ok) => onAnswered(s.id, ok)} />
+          <ScenarioCard s={s} keepOrder={keepOrder} compact={compact} recorded={recorded[s.id]} onAnswered={(ok) => { touchedRef.current = true; onAnswered(s.id, ok); }} />
         </View>
       ))}
       <View style={styles.deckKeys}>
-        <KeyButton label="‹ PREV CARD" onPress={() => setCur((c) => Math.max(0, c - 1))} disabled={i === 0} />
-        <KeyButton label="NEXT CARD ›" onPress={() => setCur((c) => Math.min(n - 1, c + 1))} disabled={i >= n - 1} tint={colors.green} />
+        <KeyButton label="‹ PREV CARD" onPress={() => { touchedRef.current = true; setCur((c) => Math.max(0, c - 1)); }} disabled={i === 0} />
+        <KeyButton label="NEXT CARD ›" onPress={() => { touchedRef.current = true; setCur((c) => Math.min(n - 1, c + 1)); }} disabled={i >= n - 1} tint={colors.green} />
       </View>
     </View>
   );

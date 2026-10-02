@@ -95,7 +95,7 @@ describe('rack + full screen', () => {
       assert.match(s, /<RoomRackLayout/);
       assert.match(s, /badge: /);
       assert.match(s, /bezel/);
-      assert.match(s, /initialParam: '/);
+      assert.match(s, /initialParam: (?:'|rugSel \? ')/); // TREATMENT binds SIZE for a rug (toddler pass 3)
       assert.doesNotMatch(s, /fullScreen:\s*false/);
     });
   }

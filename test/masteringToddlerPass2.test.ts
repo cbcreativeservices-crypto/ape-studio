@@ -80,7 +80,8 @@ describe('the store unblocking (a failed tier read landing, a guest signing in) 
   it('the load effect runs again when `blocked` lifts after a blocked load, and merges', () => {
     const h = host();
     assert.match(h, /const reread = loaded && loadedBlockedRef\.current && !blocked;\s*if \(loaded && !reread\) return;/);
-    assert.match(h, /\}, \[resolved, loaded, blocked\]\);/);
+    // Pass 3: a failed read is retried (readRetry), see masteringToddlerPass3.
+    assert.match(h, /\}, \[resolved, loaded, blocked, readRetry\]\);/);
     assert.match(h, /setDoneIds\(\(prev\) => new Set\(\[\.\.\.prev, \.\.\.stored\]\)\);/);
     // Module 8 remounts on every landed load to read the lists it produced.
     assert.match(h, /<Fragment key=\{mod\.id === 'project' \? `reload:\$\{loadGen\}` : 'steady'\}>\s*<Component /);
@@ -94,7 +95,8 @@ describe("openModule's read never overwrites newer state", () => {
     const open = h.slice(h.indexOf('const openModule = useCallback'), h.indexOf('const onAnswered = useCallback'));
     assert.match(open, /const seq = \+\+openSeqRef\.current;\s*const projectRev = projectRevRef\.current;/);
     assert.match(open, /if \(seq !== openSeqRef\.current\) return;/);
-    assert.match(open, /if \(projectRev !== projectRevRef\.current\) return;\s*const p = s\.modules\.project;\s*setProject/);
+    // Pass 3 adds the not-from-the-store guard between the two.
+    assert.match(open, /if \(projectRev !== projectRevRef\.current\) return;\s*if \(!masteringReadFromStore\(s\)\) return;\s*const p = s\.modules\.project;\s*setProject/);
     const ps = h.slice(h.indexOf('const onProjectState = useCallback'));
     assert.match(ps, /^const onProjectState = useCallback\(\(checks: string\[\], qc: string\[\]\) => \{\s*projectRevRef\.current\+\+;/);
   });

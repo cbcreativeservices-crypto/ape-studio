@@ -125,7 +125,7 @@ describe('drum toddler pass 2 — the store', () => {
 
   it('the host shows the row gone only when the store says so, and says when a delete failed', () => {
     const host = strip(read(`${DIR}/DrumTuningLabScreen.tsx`));
-    assert.match(host, /const s = await deleteTuningNote\(id\);\s*if \(s\.saved\) \{\s*setNotes\(s\.notes\);\s*return 'deleted';\s*\}\s*if \(s\.blocked\) \{\s*setNotes\(\(prev\) => prev\.filter\(\(n\) => n\.id !== id\)\);\s*return 'session';\s*\}\s*return 'failed';/);
+    assert.match(host, /const s = await deleteTuningNote\(id\);\s*if \(s\.saved\) \{\s*setNotes\((?:listed\()?s\.notes\)?\);\s*return 'deleted';\s*\}\s*if \(s\.blocked\) \{\s*setNotes\(\(prev\) => prev\.filter\(\(n\) => n\.id !== id\)\);\s*return 'session';\s*\}\s*return 'failed';/);
     assert.doesNotMatch(host, /void deleteTuningNote\(id\)/, 'never fire-and-forget');
     const ch6 = strip(read(`${DIR}/modules/ch6Kit.tsx`));
     assert.match(ch6, /void onDeleteNote\(n\.id\)\.then\(\(r\) => \{\s*if \(r === 'failed'\) setSavedFlash\(\{ text: `Could not delete/);
@@ -173,7 +173,7 @@ describe('drum toddler pass 2 — one sound at a time', () => {
     assert.match(ch3, /onPress: tuneSolo\.tap \}[\s\S]*?onPress: tuneSolo\.strike \}[\s\S]*?onTap: tuneSolo\.toggle,/);
     const ch7 = strip(read(`${DIR}/modules/ch7Trouble.tsx`));
     assert.match(ch7, /const solo = soloPair\(pb, tap\);/);
-    assert.match(ch7, /solo\.tap\(\);\s*\};/);
+    assert.match(ch7, /void solo\.tap\(\)\.then\(/, 'pass 3: the tap still goes through soloPair, counted when it sounded');
     assert.match(ch7, /onPress: strikeNow \}/);
     assert.match(ch7, /onTap: solo\.toggle,/);
   });
@@ -181,7 +181,7 @@ describe('drum toddler pass 2 — one sound at a time', () => {
   it('useDrumPlayback: only the newest press owns `pending`; ■ cancels a press at any stage', () => {
     const hook = strip(read(`${DIR}/useDrumPlayback.ts`));
     assert.match(hook, /const t = \+\+playTokRef\.current;\s*const current = \(\) => aliveRef\.current && t === playTokRef\.current;/);
-    assert.match(hook, /const ok = await load\(\);\s*if \(!current\(\)\) return;\s*setPending\(false\);/, 'a superseded press never clears pending');
+    assert.match(hook, /const ok = await load\(\);\s*if \(!current\(\)\) return(?: false)?;\s*setPending\(false\);/, 'a superseded press never clears pending');
     assert.match(hook, /const stop = useCallback\(\(\) => \{\s*seqRef\.current\+\+;\s*playTokRef\.current\+\+;/);
   });
 });
@@ -225,7 +225,7 @@ describe('drum toddler pass 2 — chapter corrections', () => {
 
   it('Ch6: the cap names the note it drops; names and notes are length-limited', () => {
     const ch6 = strip(read(`${DIR}/modules/ch6Kit.tsx`));
-    assert.match(ch6, /const dropped = notes\.length >= MAX_TUNING_NOTES \?/);
+    assert.match(ch6, /const dropped = kept\.length >= MAX_TUNING_NOTES \?/, 'pass 3: the cap counts only notes the device holds');
     assert.match(ch6, /\{ text: `Saved "\$\{n\.name\}" on this device\.\$\{capLine\}`, ok: true \}/);
     assert.match(ch6, /maxLength=\{NAME_MAX\}/);
     assert.match(ch6, /maxLength=\{NOTE_MAX\}/);

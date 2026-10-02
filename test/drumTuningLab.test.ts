@@ -525,7 +525,7 @@ describe('audio honours the gate', () => {
   it('nothing sounds before requestAudioOutput; silence and close unwind the transport; nothing replays by itself', () => {
     // The gate is awaited before anything else; a denied gate returns before
     // any load or play (toddler pass 2 reworded it to clear `pending`).
-    assert.match(hook, /const granted = await requestAudioOutput\(\);\s*if \(!current\(\)\) return;\s*if \(!granted \|\| !focusedRef\.current\) \{\s*setPending\(false\);\s*return;\s*\}/);
+    assert.match(hook, /const granted = await requestAudioOutput\(\);\s*if \(!current\(\)\) return(?: false)?;\s*if \(!granted \|\| !focusedRef\.current\) \{\s*setPending\(false\);\s*return(?: false)?;\s*\}/);
     assert.match(hook, /useStopWhenSilenced\(playing \|\| pending, stop\)/);
     assert.match(hook, /useStopOnClose\(stop\)/);
     assert.match(hook, /isAudioOutputEnabled\(\)/);

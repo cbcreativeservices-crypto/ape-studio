@@ -46,8 +46,9 @@ export type DrumPlayback = {
    *  for a judgement that must not read the picture's debounced, possibly
    *  stale render. */
   measure: () => DrumRendered;
-  /** Play the current key (rendering first if the picture is stale). */
-  play: () => void;
+  /** Play the current key (rendering first if the picture is stale).
+   *  Resolves true only when the clip actually started sounding. */
+  play: () => Promise<boolean>;
   stop: () => void;
   playing: boolean;
   pending: boolean;
@@ -192,17 +193,21 @@ export function useDrumPlayback(key: string, make: () => RenderResult, draw = tr
     return true;
   }, [renderNow]);
 
-  const play = useCallback(() => {
+  const play = useCallback((): Promise<boolean> => {
     const t = ++playTokRef.current;
     const current = () => aliveRef.current && t === playTokRef.current;
-    void (async () => {
+    // Resolves TRUE only when the clip actually started (toddler pass 3): a
+    // page that counts a press as evidence ("lug tapped") counts it on this,
+    // never on the press — a gate refused, a ■, a fader moved mid-render or a
+    // failed load all resolve false.
+    return (async () => {
       const granted = await requestAudioOutput();
-      if (!current()) return;
+      if (!current()) return false;
       // A denied gate / a lab no longer in front: this press owns `pending`
       // now (an older press may have left it on), so it clears it.
       if (!granted || !focusedRef.current) {
         setPending(false);
-        return;
+        return false;
       }
       setPending(true);
       const ok = await load();
@@ -210,9 +215,9 @@ export function useDrumPlayback(key: string, make: () => RenderResult, draw = tr
       // used to clear `pending` here while the second press was still
       // rendering — the status flickered to "stopped" and the silence guard
       // saw nothing in flight. The newer press (or a ■) owns it.
-      if (!current()) return;
+      if (!current()) return false;
       setPending(false);
-      if (!ok || !focusedRef.current || !isAudioOutputEnabled() || !playerRef.current) return;
+      if (!ok || !focusedRef.current || !isAudioOutputEnabled() || !playerRef.current) return false;
       const r = renderedRef.current;
       clipSeconds.value = r ? r.result.seconds : 1;
       playerRef.current.play(0);
@@ -220,7 +225,8 @@ export function useDrumPlayback(key: string, make: () => RenderResult, draw = tr
       startedAt.value = 0;
       progress.value = 0;
       setPlaying(true);
-    })();
+      return true;
+    })().catch(() => false);
   }, [requestAudioOutput, load, clipSeconds, startedAt, progress]);
 
   const stop = useCallback(() => {

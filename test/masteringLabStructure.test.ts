@@ -153,8 +153,9 @@ describe('guest rules and persistence', () => {
     assert.match(host, /if \(!resolved\) return;\s*const reread = loaded && loadedBlockedRef\.current && !blocked;\s*if \(loaded && !reread\) return;/);
   });
   it('a blocked store neither reads nor writes; a practice reset keeps done', () => {
-    assert.match(store, /if \(saveBlocked\) return \{ modules: \{\} \};/);
-    assert.match(store, /if \(saveBlocked\) return;/);
+    // Toddler pass 3: the blocked read is a marked stand-in, never written.
+    assert.match(store, /if \(saveBlocked\) \{\s*const b: MasteringProgressState = \{ modules: \{\} \};\s*blockedRead\.add\(b\);\s*return b;/);
+    assert.match(store, /if \(saveBlocked \|\| blockedRead\.has\(s\)\) return;/);
     assert.match(store, /done: !!s\.modules\[id\]\?\.done/);
     assert.match(store, /const KEY = 'ape:mastering:v1';/, 'inside the ape:* account wipe');
   });
@@ -257,7 +258,7 @@ describe('safety rules (safety review 2026-10-01)', () => {
   it('the EXPLORE views that need the programme offer DRAW MIX without the audio gate', () => {
     for (const f of ['mod4Tools.tsx', 'mod6Loudness.tsx']) {
       const s = strip(read(`${DIR}/modules/${f}`));
-      assert.match(s, /label: '▶ DRAW MIX'/, f);
+      assert.match(s, /label: draw\.drawing \? '… DRAWING' : '▶ DRAW MIX'/, f);
       assert.doesNotMatch(s, /requestAudioOutput/, `${f}: drawing never asks the gate`);
     }
   });

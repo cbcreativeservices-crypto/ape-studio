@@ -264,9 +264,10 @@ function modeBlurb(kind: 'axial' | 'tangential' | 'oblique'): string {
 }
 
 function SaveTray({ ctx }: { ctx: RoomLabCtx }) {
-  const { design, update, guest, preview, resolved, evicts, saveCurrent } = ctx;
+  const { design, update, guest, preview, resolved, saved, evicts, saveCurrent } = ctx;
   const [msg, setMsg] = useState<{ text: string; ok: boolean; at: RoomDesign } | null>(null);
-  const line = saveLine(msg, design);
+  // A "Saved" line ends when that save is deleted (toddler pass 3).
+  const line = saveLine(msg, design, saved.some((d) => d.id === design.id));
   return (
     <View style={{ gap: 10 }}>
       <TrayHeading>KEEP THESE POSITIONS AS: OPTION A / OPTION B / START</TrayHeading>
@@ -291,14 +292,15 @@ function SaveTray({ ctx }: { ctx: RoomLabCtx }) {
           // A member whose device write failed is told THAT, not "you are
           // not signed in" (toddler pass 2): the tier as it was at the tap.
           const asGuest = guest;
-          const at = design;
           const gone = evicts?.name ?? null;
-          void saveCurrent().then((ok) =>
+          // `at` is the design as filed (a clashing name is numbered on —
+          // toddler pass 3), which is the one on screen after the save.
+          void saveCurrent().then(({ ok, at }) =>
             setMsg({
               ok,
               at,
               text: ok
-                ? `Saved on this device.${gone ? ` The library keeps ${MAX_SAVED_DESIGNS}: the oldest, "${gone}", was removed to make room.` : ''}`
+                ? `Saved "${at.name}" on this device.${gone ? ` The library keeps ${MAX_SAVED_DESIGNS}: the oldest, "${gone}", was removed to make room.` : ''}`
                 : !known
                   ? 'Not saved yet — still checking your account. Tap SAVE again in a moment.'
                   : asPreview

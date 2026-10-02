@@ -178,8 +178,12 @@ const styles = StyleSheet.create({
   sugTier: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2 },
   sugTag: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.3, color: '#ff8a5c' },
   kv: { flexDirection: 'row', justifyContent: 'space-between', gap: 10, paddingVertical: 2 },
-  kvK: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textSub, flexShrink: 1 },
-  kvV: { fontFamily: fonts.mono, fontSize: 13, color: colors.amber, textAlign: 'right' },
+  // The label keeps up to half the row and the value wraps in the rest
+  // (toddler pass 3): a Text has no flex-shrink in Yoga, so a long value —
+  // a three-kind treatment list, a monitor model, Larger Text — was measured
+  // at the full card width and squeezed the label to a zero-width column.
+  kvK: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textSub, flexShrink: 0, maxWidth: '50%' },
+  kvV: { fontFamily: fonts.mono, fontSize: 13, color: colors.amber, textAlign: 'right', flexShrink: 1 },
   numField: { gap: 3 },
   numLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.textSub },
   numRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },

@@ -20,7 +20,7 @@ import { ModuleSteps } from '../steps';
 import { Body, Card, KeyTerms, PlaybackStatus, Point, ScenarioDeck, SectionTitle, levelTint, lufsTint, matchBezel, measureBezel, unmatchedWarning } from '../kit';
 import { KEY_TERMS, LOUDNESS_SCENARIOS } from '../masteringContent';
 import { PLAYBACK_SYSTEMS, TRANSLATION_ASPECT, TranslationStage, WAVE_ASPECT, WaveOverviewStage } from '../stages';
-import { programme, programmeIfRendered, useMasterPlayback, type MasterVariant } from '../useMasterPlayback';
+import { programmeIfRendered, useDrawProgramme, useMasterPlayback, type MasterVariant } from '../useMasterPlayback';
 import { MODEL_BADGE, RENDER_BADGE, type ModuleProps } from './shared';
 
 const CEILING = -1.0;
@@ -120,10 +120,7 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
     return out.map((o) => ({ f: o.f, db: o.db - ref - 3 }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pb.status, drawn]);
-  const drawMix = () => {
-    programme();
-    setDrawn((d) => d + 1);
-  };
+  const draw = useDrawProgramme(() => setDrawn((d) => d + 1));
 
   return (
     <ModuleSteps
@@ -233,7 +230,7 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
             ],
             params: [
               flipFader({ id: 'sys', label: 'SYSTEM', items: PLAYBACK_SYSTEMS, selectedId: systemId, onSelect: setSystemId, name: (s) => s.name, short: (s) => s.name.split(' ')[0].toUpperCase(), blurb: (s) => s.note, title: 'PLAYBACK SYSTEM', sticky: true }),
-              ...(!spectrum.length ? [{ kind: 'action' as const, id: 'draw', label: '▶ DRAW MIX', onPress: drawMix }] : []),
+              ...(!spectrum.length ? [{ kind: 'action' as const, id: 'draw', label: draw.drawing ? '… DRAWING' : '▶ DRAW MIX', onPress: draw.draw }] : []),
             ],
             initialParam: 'sys',
             hideDragTag: true,

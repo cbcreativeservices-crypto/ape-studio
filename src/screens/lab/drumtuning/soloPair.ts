@@ -11,18 +11,21 @@
  */
 import type { DrumPlayback } from './useDrumPlayback';
 
-type Transport = Pick<DrumPlayback, 'play' | 'stop' | 'playing' | 'pending'>;
+type Transport = Pick<DrumPlayback, 'stop' | 'playing' | 'pending'> & { play: () => Promise<boolean> | void };
 
-export function soloPair(strike: Transport, tap: Transport): { strike: () => void; tap: () => void; toggle: () => void } {
+/** `strike` / `tap` resolve true only when that sound actually started
+ *  (toddler pass 3 — a lug is "tapped" when it was HEARD, never on a press
+ *  the audio gate refused). */
+export function soloPair(strike: Transport, tap: Transport): { strike: () => Promise<boolean>; tap: () => Promise<boolean>; toggle: () => void } {
   const busy = (p: Transport) => p.playing || p.pending;
   return {
     strike: () => {
       tap.stop();
-      strike.play();
+      return Promise.resolve(strike.play()).then((ok) => ok === true);
     },
     tap: () => {
       strike.stop();
-      tap.play();
+      return Promise.resolve(tap.play()).then((ok) => ok === true);
     },
     toggle: () => {
       if (busy(strike) || busy(tap)) {

@@ -40,7 +40,7 @@ import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { retainSessionStems } from '../mixing/audio/mixAudio';
 import { MASTERING_MODULES, PROJECT_QC, masteringModuleById, scenariosForModule, type MasteringModuleId } from './masteringContent';
-import { carryPreLoad, emptyMasteringModule, resetMasteringPractice, setMasteringSaveBlocked, updateMasteringProgress, type MasteringPreLoad, type MasteringProgressState } from './masteringProgress';
+import { carryPreLoad, emptyMasteringModule, masteringReadFailed, masteringReadFromStore, resetMasteringPractice, setMasteringSaveBlocked, updateMasteringProgress, type MasteringPreLoad, type MasteringProgressState } from './masteringProgress';
 import { MASTERING_CREDIT_STEP, MASTERING_MODULE_COMPONENTS, MASTERING_PROJECT_QC_STEP, MASTERING_STEP_COUNTS } from './modules';
 import { StepHostContext, type StepHost } from './steps';
 import { RecordedAnswersContext, TakeawayCard } from './kit';
@@ -106,6 +106,21 @@ export function MasteringLabScreen() {
   /** Bumped by every load that lands: Module 8 remounts on it (its key) to
    *  read the lists the load produced. */
   const [loadGen, setLoadGen] = useState(0);
+  /** A load whose READ FAILED (storage threw) is retried instead of landing
+   *  (toddler pass 3): it landed an empty copy, so the whole visit showed no
+   *  credit, no answers and no ticks — and the pre-load work it carried was
+   *  never written (the store refuses to save a failed read). Bumped by the
+   *  retry timer; a few tries, then the empty copy lands as before. */
+  const [readRetry, setReadRetry] = useState(0);
+  const readRetriesRef = useRef(0);
+  const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (retryTimerRef.current != null) clearTimeout(retryTimerRef.current);
+      retryTimerRef.current = null;
+    },
+    [],
+  );
 
   // ⛔ WAIT FOR `resolved` before the first read (the kit/PagedLab fix): the
   // save-block flag reads false until the tier is known. And READ AGAIN when
@@ -139,6 +154,20 @@ export function MasteringLabScreen() {
       if (pre) carryPreLoad(s, pre);
     }).then((s) => {
       if (!alive) return;
+      // A FAILED read is not the learner's progress: try again shortly rather
+      // than land an empty copy for the whole visit. Nothing is marked done
+      // (not `loaded`, not the blocked flag), so the retry runs this same
+      // load — the pre-load work is still held and is carried then.
+      if (!wasBlocked && masteringReadFailed(s) && readRetriesRef.current < 3) {
+        readRetriesRef.current++;
+        if (retryTimerRef.current != null) clearTimeout(retryTimerRef.current);
+        retryTimerRef.current = setTimeout(() => {
+          retryTimerRef.current = null;
+          setReadRetry((r) => r + 1);
+        }, 1200);
+        return;
+      }
+      readRetriesRef.current = 0;
       loadedBlockedRef.current = wasBlocked;
       const stored = MASTERING_MODULES.filter((x) => s.modules[x.id]?.done).map((x) => x.id);
       if (reread) {
@@ -175,13 +204,20 @@ export function MasteringLabScreen() {
       const qc = [...new Set([...(p?.qc ?? []), ...pre.qc])];
       setProject({ checks, qc });
       setQcComplete(qc.length >= PROJECT_QC.length);
+      // Ticks made while THIS read was in flight were not in the carry (it
+      // was taken when the read was queued) and are not written by their own
+      // tick (held until the load): write the merged lists, or leaving now
+      // lost them (toddler pass 3). A union, so it is safe to repeat.
+      if (!wasBlocked && (pre.checks.length || pre.qc.length)) {
+        void updateMasteringProgress((st) => carryPreLoad(st, { answers: {}, checks, qc }));
+      }
       setLoadGen((g) => g + 1);
       setLoaded(true);
     });
     return () => {
       alive = false;
     };
-  }, [resolved, loaded, blocked]);
+  }, [resolved, loaded, blocked, readRetry]);
 
   // Module answers follow the module; the resume point is written on move.
   /** Bumped by every module open: only the LATEST open's read may land. */
@@ -221,6 +257,12 @@ export function MasteringLabScreen() {
       // so answering the track decisions afterwards never banked the module
       // while every line showed ticked (toddler pass 2).
       if (projectRev !== projectRevRef.current) return;
+      // Not from the store (a FAILED read, or a guest's blocked one): an
+      // empty stand-in. Applied, it wiped Module 8's ticks on screen and set
+      // qcComplete false under a fully ticked list — credit then never landed
+      // — and after a failed read the next tick wrote the short list over the
+      // stored one (toddler pass 3). Keep what is on screen.
+      if (!masteringReadFromStore(s)) return;
       const p = s.modules.project;
       setProject({ checks: p?.checks ?? [], qc: p?.qc ?? [] });
       setQcComplete((p?.qc?.length ?? 0) >= PROJECT_QC.length);
@@ -355,6 +397,12 @@ export function MasteringLabScreen() {
       // set wiped this session's banked modules on a practice reset (night
       // pass 2, 2026-10-01).
       setDoneIds((prev) => new Set([...prev, ...MASTERING_MODULES.filter((x) => s.modules[x.id]?.done).map((x) => x.id)]));
+      // The practice run starts with Module 8's lists empty too — said here,
+      // not left to openModule's read (it keeps the screen's lists when the
+      // read is not from the store: a guest's blocked one).
+      projectRevRef.current++;
+      setProject({ checks: [], qc: [] });
+      setQcComplete(false);
       openModule('what', 0);
     });
   const confirmReset = () => {

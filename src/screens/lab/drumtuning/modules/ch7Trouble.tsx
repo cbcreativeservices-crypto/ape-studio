@@ -145,12 +145,19 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
     }
     solo.strike();
   };
+  // A lug counts as tapped when its tap SOUNDED (toddler pass 3): counted on
+  // the press, a refused audio gate still met "tap N lugs" and unlocked
+  // WHERE? on evidence the learner never heard.
   const tapNow = () => {
-    setSims((all) => {
-      const s = all[caseId];
-      return s.tapped.includes(lug) ? all : { ...all, [caseId]: { ...s, tapped: [...s.tapped, lug] } };
+    const id = caseId;
+    const at = lug;
+    void solo.tap().then((ok) => {
+      if (!ok) return;
+      setSims((all) => {
+        const s = all[id];
+        return s.tapped.includes(at) ? all : { ...all, [id]: { ...s, tapped: [...s.tapped, at] } };
+      });
     });
-    solo.tap();
   };
 
   useEffect(() => {

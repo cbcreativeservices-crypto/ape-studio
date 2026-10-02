@@ -48,6 +48,23 @@ export function setMasteringSaveBlocked(blocked: boolean): void {
  *  getItem failure used to overwrite every banked module with an empty copy
  *  (toddler pass 1, 2026-10-01). */
 const unreadable = new WeakSet<MasteringProgressState>();
+/** States read while the store was BLOCKED (a guest, a preview, the tier not
+ *  known yet): an empty stand-in, never the learner's progress. Checked again
+ *  at save time (toddler pass 3): the flag is re-read at the write, so a store
+ *  that unblocked between a blocked read and its write (the tier landing, a
+ *  sign-in) wrote the empty stand-in over every banked module. */
+const blockedRead = new WeakSet<MasteringProgressState>();
+
+/** The read behind this state FAILED (storage threw): it is an empty
+ *  fallback, not the learner's progress. */
+export function masteringReadFailed(s: MasteringProgressState): boolean {
+  return unreadable.has(s);
+}
+/** This state came from the store (not a blocked stand-in, not a failed
+ *  read): safe to show as the learner's saved progress. */
+export function masteringReadFromStore(s: MasteringProgressState): boolean {
+  return !unreadable.has(s) && !blockedRead.has(s);
+}
 
 /** One module entry, repaired: a damaged or older entry without an
  *  `answers` map made the next answer's `id in m.answers` throw, and the
@@ -63,7 +80,11 @@ function cleanModule(m: unknown): MasteringModuleProgress | undefined {
 }
 
 export async function loadMasteringProgress(): Promise<MasteringProgressState> {
-  if (saveBlocked) return { modules: {} };
+  if (saveBlocked) {
+    const b: MasteringProgressState = { modules: {} };
+    blockedRead.add(b);
+    return b;
+  }
   let raw: string | null;
   try {
     raw = await AsyncStorage.getItem(KEY);
@@ -87,7 +108,7 @@ export async function loadMasteringProgress(): Promise<MasteringProgressState> {
 }
 
 async function save(s: MasteringProgressState): Promise<void> {
-  if (saveBlocked) return;
+  if (saveBlocked || blockedRead.has(s)) return;
   if (unreadable.has(s)) return; // never write an unreadable read's empty copy back
   try {
     await AsyncStorage.setItem(KEY, JSON.stringify(s));

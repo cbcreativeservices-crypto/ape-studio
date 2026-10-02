@@ -14,7 +14,7 @@ import { MAX_SAVED_DESIGNS } from '../../../../features/roomdesign/roomDesignSto
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { LabNextButton } from '../../kit/LabNavBar';
 import { Body, Caption, Card, KV, NumField, SectionTitle, SuggestionRow, TierTag, TrayButton } from '../bits';
-import { BADGE, SAVE_FAILED, SAVE_NOT_YET, saveLine, type RoomLabCtx } from '../labCtx';
+import { BADGE, DELETE_FAILED, SAVE_FAILED, SAVE_NOT_YET, saveLine, STORE_UNREADABLE, type RoomLabCtx } from '../labCtx';
 import { RoomPlanView } from '../RoomPlanView';
 import {
   analyze,
@@ -42,7 +42,7 @@ import { treatmentSummary } from './modTreatment';
  *  plan's own shape — the plan lays out in glass units, so every line and
  *  label zooms with the step and the explore badge rides along. */
 export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
-  const { design, update, analysis: a, units, guest, preview, resolved, saved, evicts, saveCurrent, loadSaved, deleteSaved } = ctx;
+  const { design, update, analysis: a, units, guest, preview, resolved, saved, evicts, saveCurrent, loadSaved, deleteSaved: removeFromStore, unreadable } = ctx;
   const room = design.room;
   const lay = design.layouts[design.active] ?? design.layouts[0];
   const b = a.bounds;
@@ -50,8 +50,16 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
   const conflicts = placementConflicts(design, a);
   const measured = compareMeasured(design, a);
   const [savedMsg, setSavedMsg] = useState<{ text: string; ok: boolean; at: RoomDesign } | null>(null);
-  const savedLine = saveLine(savedMsg, design);
+  // …and ends when that save is DELETED (toddler pass 3: SAVE, then DELETE on
+  // the "(this one)" row, still read "Saved … on this device.").
+  const savedLine = saveLine(savedMsg, design, saved.some((d) => d.id === design.id));
   const [compareId, setCompareId] = useState<string | null>(null);
+  // A DELETE the device refused puts the row back; say so, never silence.
+  const [deleteMsg, setDeleteMsg] = useState<string | null>(null);
+  const deleteSaved = (id: string) => {
+    setDeleteMsg(null);
+    void removeFromStore(id).then((ok) => setDeleteMsg(ok ? null : DELETE_FAILED));
+  };
   const planRect = planIsRectangular(room);
   // The mini plan's shape: the room's bounding box plus the plan's margin,
   // capped so a long narrow room still gets a usable height inline.
@@ -192,9 +200,10 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
                 // A failed device write was a bare "Not saved." (toddler
                 // pass 2). Guests never see this button.
                 const known = resolved;
-                const at = design;
                 const gone = evicts?.name ?? null;
-                void saveCurrent().then((ok) =>
+                // `at` is the design as filed: a clashing name comes back
+                // numbered ("My room 2", toddler pass 3).
+                void saveCurrent().then(({ ok, at }) =>
                   setSavedMsg({
                     ok,
                     at,
@@ -204,7 +213,8 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
               }}
             />
             {savedLine ? <Caption>{savedLine}</Caption> : null}
-            {saved.length === 0 ? <Caption>No saved designs on this device yet.</Caption> : null}
+            {deleteMsg ? <Caption>{deleteMsg}</Caption> : null}
+            {saved.length === 0 ? <Caption>{unreadable ? STORE_UNREADABLE : 'No saved designs on this device yet.'}</Caption> : null}
             {saved.map((d) => {
               // The plan's width × length (toddler pass 2026-10-01): the far
               // corner's x / y read a room whose left or front wall had been

@@ -33,12 +33,12 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { markLabVisit, useLabVisits } from '../../../features/lab/labVisits';
-import { deleteRoomDesign, MAX_SAVED_DESIGNS, saveRoomDesign, setRoomDesignSaveBlocked, useRoomDesigns } from '../../../features/roomdesign/roomDesignStore';
+import { deleteRoomDesign, isRoomDesignStoreUnreadable, MAX_SAVED_DESIGNS, saveRoomDesign, setRoomDesignSaveBlocked, useRoomDesigns } from '../../../features/roomdesign/roomDesignStore';
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, useLabNav } from '../kit/LabNavBar';
 import type { RoomLabCtx } from './labCtx';
 import { ROOM_LAB_ID, ROOM_MODULES, type RoomModuleId } from './registry';
-import { analyze, defaultDesign, evictedBySave, repairDesign, START_LAYOUT, type RoomDesign } from './roomModel';
+import { analyze, defaultDesign, evictedBySave, repairDesign, START_LAYOUT, uniqueDesignName, type RoomDesign } from './roomModel';
 import { IntroModule } from './modules/modIntro';
 import { CreateModule } from './modules/modCreate';
 import { MonitoringModule } from './modules/modMonitoring';
@@ -67,6 +67,8 @@ export function RoomDesignLabScreen() {
   const rawRef = useRef(fresh);
   if (rawRef.current.length !== fresh.length || fresh.some((d, i) => d !== rawRef.current[i])) rawRef.current = fresh;
   const rawSaved = rawRef.current;
+  // The store emits when a read fails, so the hook above re-renders on it.
+  const unreadable = isRoomDesignStoreUnreadable();
   const saved = useMemo(() => rawSaved.map(repairDesign).filter((x): x is RoomDesign => x != null), [rawSaved]);
 
   // The ONE design being edited, shared by every module.
@@ -107,10 +109,14 @@ export function RoomDesignLabScreen() {
         // tier resolved as a member it sat under SAVED DESIGNS with LOAD and
         // DELETE as if it were on the device, and was gone after a relaunch.
         // The design on screen is the session copy either way.
-        if (!resolved || guest) return Promise.resolve(false);
-        const d = name ? { ...design, name } : design;
-        if (name) setDesign(d);
-        return saveRoomDesign(d);
+        if (!resolved || guest) return Promise.resolve({ ok: false, at: design });
+        // A name another saved design already uses is numbered on — "My
+        // room 2" (toddler pass 3: every row of the library read "My room").
+        // Judged on the store's own list, like the eviction.
+        const filed = uniqueDesignName(name ?? design.name, rawSaved, design.id);
+        const d = filed !== design.name ? { ...design, name: filed } : design;
+        if (d !== design) setDesign(d);
+        return saveRoomDesign(d).then((ok) => ({ ok, at: d }));
       },
       loadSaved: (id: string) => {
         const d = saved.find((x) => x.id === id);
@@ -119,8 +125,9 @@ export function RoomDesignLabScreen() {
         if (d) setDesign({ ...d, layouts: d.layouts.map((l, i) => (i === 0 && l.name === 'Current' ? { ...l, name: START_LAYOUT } : l)), active: Math.min(d.active, d.layouts.length - 1) });
       },
       deleteSaved: (id: string) => deleteRoomDesign(id),
+      unreadable,
     }),
-    [design, update, analysis, guest, preview, resolved, saved, evicts],
+    [design, update, analysis, guest, preview, resolved, saved, rawSaved, evicts, unreadable],
   );
 
   const go = useCallback((i: number) => {

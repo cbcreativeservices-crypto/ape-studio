@@ -115,8 +115,9 @@ describe('a "Saved" line never outlives the design it was about', () => {
     assert.equal(saveLine(null, a), null);
   });
   it('EXPLORE and REVIEW render the kept line through saveLine', () => {
-    assert.match(strip(read(`${LAB}modules/modExplore.tsx`)), /const line = saveLine\(msg, design\);/);
-    assert.match(strip(read(`${LAB}modules/modReview.tsx`)), /const savedLine = saveLine\(savedMsg, design\);/);
+    // (pass 3 adds a third argument: whether the library still holds it)
+    assert.match(strip(read(`${LAB}modules/modExplore.tsx`)), /const line = saveLine\(msg, design[,)]/);
+    assert.match(strip(read(`${LAB}modules/modReview.tsx`)), /const savedLine = saveLine\(savedMsg, design[,)]/);
   });
 });
 

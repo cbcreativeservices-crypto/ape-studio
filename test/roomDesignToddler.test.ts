@@ -186,8 +186,9 @@ describe('saving is honest before the tier is known and for a guest', () => {
   it('saveCurrent never touches the store while blocked: a pre-resolve or guest save sat in the in-memory list and then showed under SAVED DESIGNS as if it were on the device', () => {
     const host = strip(read(`${LAB}RoomDesignLabScreen.tsx`));
     const save = host.slice(host.indexOf('saveCurrent:'), host.indexOf('loadSaved:'));
-    assert.match(save, /if \(!resolved \|\| guest\) return Promise\.resolve\(false\);/);
-    assert.ok(save.indexOf('return Promise.resolve(false)') < save.indexOf('saveRoomDesign('), 'the gate comes before the store');
+    // (pass 3: saveCurrent resolves { ok, at } — the gate's answer is ok: false)
+    assert.match(save, /if \(!resolved \|\| guest\) return Promise\.resolve\(\{ ok: false, at: design \}\);/);
+    assert.ok(save.indexOf('return Promise.resolve({ ok: false') < save.indexOf('saveRoomDesign('), 'the gate comes before the store');
   });
 });
 

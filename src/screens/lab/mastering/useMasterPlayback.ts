@@ -92,6 +92,51 @@ export function releaseProgramme(): void {
   programmeCache = null;
 }
 
+/**
+ * ▶ DRAW MIX (Modules 4 and 6): render the programme for a picture — no
+ * sound, no gate. The render is ~10 s of synchronous JS, and it ran INSIDE
+ * the press (toddler pass 3): the key gave no sign it was taken, and a second
+ * tap queued behind the stall and ran the drawing again. Now the press only
+ * marks the key DRAWING (one frame to paint it), the render runs on a timer,
+ * a press while one is under way does nothing, and leaving the lab cancels a
+ * render that has not started (it would re-fill the cache the lab just
+ * released on close).
+ */
+export function useDrawProgramme(onDrawn: () => void): { drawing: boolean; draw: () => void } {
+  const [drawing, setDrawing] = useState(false);
+  const busyRef = useRef(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onDrawnRef = useRef(onDrawn);
+  onDrawnRef.current = onDrawn;
+  useEffect(
+    () => () => {
+      if (timerRef.current != null) clearTimeout(timerRef.current);
+      timerRef.current = null;
+    },
+    [],
+  );
+  // Free again only once the screen has caught up with the drawing (the key
+  // is gone by then): a tap queued during the stall lands on a busy flag.
+  useEffect(() => {
+    if (!drawing) busyRef.current = false;
+  }, [drawing]);
+  const draw = useCallback(() => {
+    if (busyRef.current) return;
+    busyRef.current = true;
+    setDrawing(true);
+    timerRef.current = setTimeout(() => {
+      timerRef.current = null;
+      try {
+        programme();
+        onDrawnRef.current();
+      } finally {
+        setDrawing(false);
+      }
+    }, 30);
+  }, []);
+  return { drawing, draw };
+}
+
 export function useMasterPlayback(variants: readonly MasterVariant[], matched: boolean): MasterPlayback {
   const { requestAudioOutput } = useAudioOutputGate();
   const [status, setStatus] = useState<MasterPlayback['status']>('idle');

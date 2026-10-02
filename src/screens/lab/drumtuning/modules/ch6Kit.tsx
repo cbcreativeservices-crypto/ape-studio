@@ -43,7 +43,7 @@ function renderBoth(rack: StrikeParams, floor: StrikeParams): RenderResult {
   return { mono: out, partials: [...a.partials, ...b.partials], seconds: n / 48000, pitchTraces: [] };
 }
 
-export function Ch6Kit({ onInteractive, notes, onSaveNote, onDeleteNote, guest, preview }: ChapterProps) {
+export function Ch6Kit({ onInteractive, notes, unsavedIds, onSaveNote, onDeleteNote, guest, preview }: ChapterProps) {
   // Starts UPSIDE DOWN on purpose (floor above rack): both faders have to be
   // reasoned about, and the three verdicts are all met on the way.
   const [rackHz, setRackHz] = useState(140);
@@ -119,7 +119,8 @@ export function Ch6Kit({ onInteractive, notes, onSaveNote, onDeleteNote, guest, 
     if (note.trim()) n.drums[0].note = note.trim();
     // THE CAP SAYS WHAT IT DROPS (toddler pass 2): the 25th note silently
     // deleted the oldest one from the device under a plain "Saved".
-    const dropped = notes.length >= MAX_TUNING_NOTES ? [...notes].sort((a, b) => a.savedAt - b.savedAt)[0] : null;
+    const kept = notes.filter((x) => guest || !unsavedIds?.has(x.id));
+    const dropped = kept.length >= MAX_TUNING_NOTES ? [...kept].sort((a, b) => a.savedAt - b.savedAt)[0] : null;
     const capLine = dropped ? ` The list keeps the newest ${MAX_TUNING_NOTES}, so the oldest — "${dropped.name}" — was removed.` : '';
     saving.current = true;
     // The flash reports what the store DID, after the write — never "saved"
@@ -151,6 +152,8 @@ export function Ch6Kit({ onInteractive, notes, onSaveNote, onDeleteNote, guest, 
       });
     }, { destructive: true });
   const sorted = [...notes].sort((a, b) => b.savedAt - a.savedAt);
+  const isUnsaved = (n: TuningNote) => !guest && !!unsavedIds?.has(n.id);
+  const unsavedCount = sorted.filter(isUnsaved).length;
 
   return (
     <ChapterSteps
@@ -230,11 +233,13 @@ export function Ch6Kit({ onInteractive, notes, onSaveNote, onDeleteNote, guest, 
               </Card>
               {sorted.length ? (
                 <View style={{ gap: 6 }}>
-                  <SectionTitle>{guest ? 'THIS SESSION ONLY — NOT SAVED' : 'SAVED ON THIS DEVICE'} · {sorted.length}</SectionTitle>
+                  <SectionTitle>{guest ? 'THIS SESSION ONLY — NOT SAVED' : 'SAVED ON THIS DEVICE'} · {sorted.length - unsavedCount}</SectionTitle>
+                  {unsavedCount ? <Feedback tone="warn">{`${unsavedCount} note${unsavedCount === 1 ? '' : 's'} from before you signed in could not be saved on this device and will be gone when you leave. LOAD one and SAVE THIS SETUP to try again.`}</Feedback> : null}
                   {sorted.map((n) => (
                     <View key={n.id} style={styles.noteRow}>
                       <View style={{ flex: 1, gap: 2 }}>
                         <Text style={styles.noteName}>{n.name}</Text>
+                        {isUnsaved(n) ? <Text style={[styles.noteDetail, { color: colors.red }]}>NOT SAVED — this session only</Text> : null}
                         <Text style={styles.noteDetail}>{n.drums.map((d) => `${d.drum.split(' ').slice(0, 2).join(' ')} ${Math.round(d.batterHz)} Hz`).join(' · ')}{n.drums[0]?.note ? ` — ${n.drums[0].note}` : ''}</Text>
                       </View>
                       <Pressable onPress={() => load(n)} style={styles.small} accessibilityRole="button" accessibilityLabel={`Load ${n.name}`}><Text style={styles.smallText}>LOAD</Text></Pressable>

@@ -422,6 +422,21 @@ export function evictedBySave(saved: readonly RoomDesign[], design: Pick<RoomDes
   return saved.reduce((o, d) => (d.updatedAt < o.updatedAt ? d : o), saved[0]);
 }
 
+/** The name a SAVE files a design under (toddler pass 3, 2026-10-01): every
+ *  design starts as "My room" and NEW ROOM keeps the name, so the library
+ *  filled with identical "My room" rows and COMPARE read "My room" (BEFORE)
+ *  against "My room". A name another saved design already uses is numbered
+ *  on — "My room 2", "My room 3"; the design's own record never clashes. */
+export function uniqueDesignName(name: string, saved: readonly Pick<RoomDesign, 'id' | 'name'>[], id: string): string {
+  const taken = new Set(saved.filter((d) => d.id !== id).map((d) => d.name));
+  if (!taken.has(name)) return name;
+  const base = name.replace(/\s+\d+$/, '') || 'My room';
+  for (let n = 2; ; n++) {
+    const next = `${base} ${n}`;
+    if (!taken.has(next)) return next;
+  }
+}
+
 /* ─────────────────────────────── geometry ───────────────────────────────── */
 
 export type Bounds = { minX: number; minY: number; maxX: number; maxY: number; width: number; length: number };
@@ -575,7 +590,13 @@ export function resizeDesign(d: RoomDesign, width: number, length: number): Room
   const sc = (p: Pt): Pt => ({ x: ox + (p.x - b.minX) * sx, y: oy + (p.y - b.minY) * sy });
   const scaled = resizeRoom(d.room, width, length);
   const shift = (p: Pt): Pt => ({ x: p.x - b.minX + ox, y: p.y - b.minY + oy });
-  const room = ox === b.minX && oy === b.minY ? scaled : { ...scaled, vertices: scaled.vertices.map(shift), features: scaled.features.map((f) => ({ ...f, ...shift(f) })) };
+  const placed = ox === b.minX && oy === b.minY ? scaled : { ...scaled, vertices: scaled.vertices.map(shift), features: scaled.features.map((f) => ({ ...f, ...shift(f) })) };
+  // ON the limit, not a hair past it (toddler pass 3): (15 / w) × w is
+  // 15.000000000000002 for some widths (3.6, 7.1, 7.3, 13.3 m …) and every
+  // range check is a strict ≤ 15 — corner drags were refused and a SAVE
+  // vanished from SAVED DESIGNS while the lab said "Saved".
+  const inRange = (p: Pt): Pt => ({ x: Math.max(0, Math.min(ROOM_MAX_M, p.x)), y: Math.max(0, Math.min(ROOM_MAX_M, p.y)) });
+  const room = { ...placed, vertices: placed.vertices.map(inRange) };
   const layouts = d.layouts.map((l) => ({
     ...l,
     speakers: l.speakers.map((s) => ({ ...s, ...sc(s) })),

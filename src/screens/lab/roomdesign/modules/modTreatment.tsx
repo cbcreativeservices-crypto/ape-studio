@@ -168,25 +168,30 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
   ];
   const fmtS = (x: number) => (Number.isFinite(x) ? `${x.toFixed(2)} s` : '—');
 
-  const params: DockParam[] = [
-    {
-      kind: 'fader',
-      id: 'thick',
-      label: 'THICK',
-      value: lanePos(sel?.thickness ?? 0.1, THICK_MIN, THICK_MAX),
-      onChange: (v) => patchSel({ thickness: laneVal(v, THICK_MIN, THICK_MAX, 0.005) }),
-      format: (v) => {
-        const th = laneVal(v, THICK_MIN, THICK_MAX, 0.005);
-        if (!sel) return 'ADD an item first';
-        // A diffuser scatters; its depth sets how low it works (audio review 14).
-        // One lane line: keep it under ~40 characters so it clears the lane's label.
-        const down = `≈${Math.round(depthLimitHz(th, analysis.c))} Hz`;
-        if (sel.kind === 'diffuser') return `${TREATMENT_INFO[sel.kind].short} ${fmtLen(th, units, { small: true })} deep · scatters to ${down}`;
-        if (sel.kind === 'rug') return `${TREATMENT_INFO[sel.kind].short} ${fmtLen(th, units, { small: true })} · α125 ${treatmentAlpha({ kind: sel.kind, thickness: th }, 0).toFixed(2)}`;
-        return `${TREATMENT_INFO[sel.kind].short} ${fmtLen(th, units, { small: true })} · α125 ${treatmentAlpha({ kind: sel.kind, thickness: th }, 0).toFixed(2)} · to ${down}`;
-      },
-      formatShort: (v) => fmtLen(laneVal(v, THICK_MIN, THICK_MAX, 0.005), units, { small: true }),
+  // A rug is modelled at ONE thickness (with underlay: RUG_ALPHA), so THICK on
+  // a rug moved the number in the lane and nothing else — not α, not the
+  // RT60, not the picture (toddler pass 3). A selected rug has SIZE only.
+  const rugSel = sel?.kind === 'rug';
+  const thickParam: DockParam = {
+    kind: 'fader',
+    id: 'thick',
+    label: 'THICK',
+    value: lanePos(sel?.thickness ?? 0.1, THICK_MIN, THICK_MAX),
+    onChange: (v) => patchSel({ thickness: laneVal(v, THICK_MIN, THICK_MAX, 0.005) }),
+    format: (v) => {
+      const th = laneVal(v, THICK_MIN, THICK_MAX, 0.005);
+      if (!sel) return 'ADD an item first';
+      // A diffuser scatters; its depth sets how low it works (audio review 14).
+      // One lane line: keep it under ~40 characters so it clears the lane's label.
+      const down = `≈${Math.round(depthLimitHz(th, analysis.c))} Hz`;
+      if (sel.kind === 'diffuser') return `${TREATMENT_INFO[sel.kind].short} ${fmtLen(th, units, { small: true })} deep · scatters to ${down}`;
+      return `${TREATMENT_INFO[sel.kind].short} ${fmtLen(th, units, { small: true })} · α125 ${treatmentAlpha({ kind: sel.kind, thickness: th }, 0).toFixed(2)} · to ${down}`;
     },
+    formatShort: (v) => fmtLen(laneVal(v, THICK_MIN, THICK_MAX, 0.005), units, { small: true }),
+  };
+
+  const params: DockParam[] = [
+    ...(rugSel ? [] : [thickParam]),
     {
       kind: 'fader',
       id: 'size',
@@ -280,7 +285,7 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
     <RoomRackLayout
       // The lane must bind a fader (the rack's contract), so the landing keeps
       // THICK bound and says "ADD an item first" until there is an item.
-      rack={{ stage, badge: BADGE.treatment, bezel, params, initialParam: 'thick', hideDragTag: true }}
+      rack={{ stage, badge: BADGE.treatment, bezel, params, initialParam: rugSel ? 'size' : 'thick', hideDragTag: true }}
       caption="ADD places an absorber at the next untreated reflection point the model found (the key names it), bass traps in the corners, a cloud, a rug, a diffuser or a gobo. Drag items on the plan; THICK and SIZE shape the selected one; ITEM ON/OFF compares with and without it. A ✓ on a path means it meets treatment. Keep panels clear of sockets, lights and heaters."
       wellTop={
         sel ? (
@@ -290,7 +295,7 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
               <Text style={styles.line}>
                 {sel.kind === 'diffuser'
                   ? `With it ${withSel.reflections.filter((r) => r.treatedBy).length} of ${withSel.reflections.length} paths meet treatment; without it ${withoutSel.reflections.filter((r) => r.treatedBy).length}. ${fmtLen(sel.thickness, units, { small: true })} deep: diffuses down to ≈ ${fmtHz(depthLimitHz(sel.thickness, analysis.c))} — scattered, not absorbed, so the RT60 barely moves (mid ≈ ${fmtS(mid(withSel.rt60))}).`
-                  : `With it ${withSel.reflections.filter((r) => r.treatedBy).length} of ${withSel.reflections.length} paths meet treatment, mid RT60 ≈ ${fmtS(mid(withSel.rt60))}; without it ${withoutSel.reflections.filter((r) => r.treatedBy).length}, ≈ ${fmtS(mid(withoutSel.rt60))}. α at 125 Hz ${treatmentAlpha(sel, 0).toFixed(2)}, at 500 Hz ${treatmentAlpha(sel, 2).toFixed(2)}, at 2 kHz ${treatmentAlpha(sel, 4).toFixed(2)}${sel.kind === 'rug' ? '' : ` · works down to ≈ ${fmtHz(depthLimitHz(sel.thickness, analysis.c))}`}.`}
+                  : `With it ${withSel.reflections.filter((r) => r.treatedBy).length} of ${withSel.reflections.length} paths meet treatment, mid RT60 ≈ ${fmtS(mid(withSel.rt60))}; without it ${withoutSel.reflections.filter((r) => r.treatedBy).length}, ≈ ${fmtS(mid(withoutSel.rt60))}. α at 125 Hz ${treatmentAlpha(sel, 0).toFixed(2)}, at 500 Hz ${treatmentAlpha(sel, 2).toFixed(2)}, at 2 kHz ${treatmentAlpha(sel, 4).toFixed(2)}${sel.kind === 'rug' ? '. A rug is modelled at one thickness (pile with underlay), so it has SIZE but no THICK' : ` · works down to ≈ ${fmtHz(depthLimitHz(sel.thickness, analysis.c))}`}.`}
               </Text>
             ) : null}
             <Text style={styles.safety}>{`Safety: ${TREATMENT_INFO[sel.kind].safety}`}</Text>

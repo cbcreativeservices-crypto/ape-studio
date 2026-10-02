@@ -27,6 +27,9 @@ export type ChapterProps = {
   onInteractive: () => void;
   /** Chapter 6 only: the tuning notes (host-owned, guest rule applied). */
   notes: readonly TuningNote[];
+  /** Notes in `notes` the device could NOT store (toddler pass 3 — a
+   *  sign-in re-save that failed): listed, marked NOT SAVED. */
+  unsavedIds?: ReadonlySet<string>;
   onSaveNote: (note: TuningNote) => Promise<NoteSaveResult>;
   onDeleteNote: (id: string) => Promise<NoteDeleteResult>;
   /** A signed-out guest or a members-only preview: nothing is saved. */
