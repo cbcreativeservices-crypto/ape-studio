@@ -9,14 +9,24 @@
  * drum key, a coated head, snare wires on a strainer, a kick with a pedal,
  * beater and port. Vector only; no image files.
  *
- * The TENSION MAP around the lugs is coloured on the app-wide amplitude
- * ramp (features/tools/levelColor): blue = lower than the mean, red =
- * higher. The map is the evenness picture every rod turn changes.
+ * The TENSION MAP around the lugs is coloured on the app-wide EVEN field
+ * ramp (features/tools/levelColor FIELD_STOPS, the one 2-D fields use), so
+ * 25 ¢ low and 25 ¢ high are equally visible steps: blue = lower than the
+ * mean, yellow = even, red = higher. The meter ramp's wide green plateau
+ * would hide a low lug. The map is the evenness picture every rod turn
+ * changes.
+ *
+ * IN SYNC WITH THE SOUND (owner): ▶ TAP ripples at the tap point and lights
+ * that lug while the tap sounds; ▶ STRIKE brightens the head's centre and
+ * fades it with the hit's MEASURED envelope. Both ride the playback
+ * SharedValue per frame — never React state per frame.
  */
 import type { ReactNode } from 'react';
+import { View } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, type SharedValue } from 'react-native-reanimated';
 import Svg, { Circle, Defs, Ellipse, G, Line, LinearGradient, Path, Polygon, RadialGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
-import { levelColor } from '../../../features/tools/levelColor';
+import { fieldLevelColor, levelColor } from '../../../features/tools/levelColor';
 import { DRUMS, lugAngle, lugCents, type DrumKind, type HeadState } from './drumEngine';
 
 export { STAR_ORDER } from './drumEngine';
@@ -26,6 +36,24 @@ export const W = 360;
 export const FONT = 11;
 export const F2 = 12.5;
 export const FONT_S = 10.5;
+
+/** The meter ramp stays for LEVEL (the wave columns); exported here so the
+ *  stage files share one import. */
+export { levelColor };
+
+/** What a playing stage needs to move with the sound: the clip position
+ *  (0..1, a SharedValue advanced per frame) and the measured RMS envelope
+ *  of the buffer in dB (10 ms blocks), so brightness follows loudness. */
+export type SoundSync = { progress: SharedValue<number>; playing: boolean; envDb?: number[] | null };
+
+/** Linear amplitude of the envelope at clip position p (0..1); 0 when the
+ *  clip is not sounding. Worklet-safe arithmetic only. */
+function envAmpAt(env: number[], p: number): number {
+  'worklet';
+  if (!env.length) return 0;
+  const i = Math.min(env.length - 1, Math.max(0, Math.floor(p * env.length)));
+  return Math.pow(10, env[i] / 20);
+}
 
 export const ink = {
   bg: '#0b0b0e',
@@ -47,8 +75,14 @@ export const ink = {
   red: colors.red,
 };
 
-/** The map tint for a lug's deviation (cents): −60 → blue, 0 → mid, +60 → red. */
-export const mapTint = (cents: number): string => levelColor(Math.max(0, Math.min(1, 0.5 + cents / 120)));
+/** The map tint for a lug's deviation (cents) on the EVEN field ramp:
+ *  −60 → blue, 0 → yellow (even), +60 → red; equal cents = equal colour
+ *  steps either side, so a low lug is as visible as a high one. */
+export const MAP_RANGE_CENTS = 60;
+export const mapTint = (cents: number): string => fieldLevelColor(Math.max(0, Math.min(1, 0.5 + cents / (2 * MAP_RANGE_CENTS))));
+/** A wedge with no information yet (the map hidden until the learner has
+ *  listened): neutral grey. */
+export const MAP_HIDDEN = '#3a3a40';
 
 /* ── shared top-view primitives ──────────────────────────────────────────── */
 
@@ -63,17 +97,20 @@ function arcPath(cx: number, cy: number, r0: number, r1: number, a0: number, a1:
   return `M${p0.x.toFixed(1)} ${p0.y.toFixed(1)} A${r1} ${r1} 0 ${large} 1 ${p1.x.toFixed(1)} ${p1.y.toFixed(1)} L${p2.x.toFixed(1)} ${p2.y.toFixed(1)} A${r0} ${r0} 0 ${large} 0 ${p3.x.toFixed(1)} ${p3.y.toFixed(1)} Z`;
 }
 
-/** Hoop, lug casings, rods and rod heads for N lugs around (cx, cy, R). */
-function Hardware({ cx, cy, R, lugs, selected, loose, dimRods }: { cx: number; cy: number; R: number; lugs: number; selected?: number | null; loose?: number | null; dimRods?: boolean }) {
+/** Hoop, lug casings, rods and rod heads for N lugs around (cx, cy, R).
+ *  `lift` raises the hoop and rod heads off the shell (the SEAT step's
+ *  exploded view: the head and hoop float above the edge, rods started by
+ *  hand, nothing pulled down yet). */
+function Hardware({ cx, cy, R, lugs, selected, loose, dimRods, lift = 0 }: { cx: number; cy: number; R: number; lugs: number; selected?: number | null; loose?: number | null; dimRods?: boolean; lift?: number }) {
   const items: ReactNode[] = [];
   for (let i = 0; i < lugs; i++) {
     const a = lugAngle(i, lugs);
     const deg = (a * 180) / Math.PI + 90;
     const isLoose = loose === i;
     const c = polar(cx, cy, R + 27 + (isLoose ? 4 : 0), a);
-    const rodIn = polar(cx, cy, R + 7, a);
+    const rodIn = polar(cx, cy, R + 7 + lift, a);
     const rodOut = polar(cx, cy, R + 19 + (isLoose ? 4 : 0), a);
-    const head = polar(cx, cy, R + 7, a);
+    const head = polar(cx, cy, R + 7 + lift, a);
     const sel = selected === i;
     items.push(
       <G key={i}>
@@ -112,9 +149,9 @@ function Hardware({ cx, cy, R, lugs, selected, loose, dimRods }: { cx: number; c
         </RadialGradient>
       </Defs>
       {/* hoop: a triple-flanged ring */}
-      <Circle cx={cx} cy={cy} r={R + 10} fill="none" stroke={ink.metal} strokeWidth={7} />
-      <Circle cx={cx} cy={cy} r={R + 13} fill="none" stroke={ink.metalLight} strokeWidth={1} />
-      <Circle cx={cx} cy={cy} r={R + 7} fill="none" stroke={ink.metalDark} strokeWidth={1} />
+      <Circle cx={cx} cy={cy} r={R + 10 + lift} fill="none" stroke={ink.metal} strokeWidth={7} />
+      <Circle cx={cx} cy={cy} r={R + 13 + lift} fill="none" stroke={ink.metalLight} strokeWidth={1} />
+      <Circle cx={cx} cy={cy} r={R + 7 + lift} fill="none" stroke={ink.metalDark} strokeWidth={1} />
       {items}
     </G>
   );
@@ -142,19 +179,28 @@ export type DrumFaults = { worn?: boolean; loose?: number | null; debris?: numbe
 export const TOP_H = 250;
 export const TOP_ASPECT = W / TOP_H;
 
+/** Where the learner is LOOKING on the inspection page: a dashed amber ring
+ *  follows INSPECT, and a fault is drawn only once its spot has been looked
+ *  at (the chapter decides what `faults` to pass). */
+export type LookAt = 'head' | 'edge' | 'map' | number | null;
+
 /**
  * The drum from above: hoop, lugs, rods, head — with the tension map
  * around the lugs, a drum key on the selected rod, the tap point, and the
- * optional inspection faults.
+ * optional inspection faults. `tapSync` ripples the tap point and lights the
+ * lug while a tap sounds; `strikeSync` brightens the head's centre and fades
+ * it with the measured envelope while a strike sounds.
  */
-export function DrumTopStage({ width, height, drum, head, which = 'batter', selected = null, showMap = true, tap = null, tapAll = false, faults, title, order, orderStep, hitCentre }: {
+export function DrumTopStage({ width, height, drum, head, which = 'batter', selected = null, showMap = true, tap = null, tapAll = false, faults, title, order, orderStep, hitCentre, tapSync, strikeSync, look = null, scaleBySize = false, exploded = false, legend }: {
   width: number;
   height: number;
   drum: DrumKind;
   head: HeadState;
   which?: 'batter' | 'reso';
   selected?: number | null;
-  showMap?: boolean;
+  /** true = the colour map; false = no wedges; 'hidden' = grey wedges (the
+   *  map exists but is not revealed yet — the learner has to listen first). */
+  showMap?: boolean | 'hidden';
   /** Lug index to mark with the stick tip (an inch in from the rim). */
   tap?: number | null;
   tapAll?: boolean;
@@ -165,22 +211,63 @@ export function DrumTopStage({ width, height, drum, head, which = 'batter', sele
   orderStep?: number;
   /** A stick hit near the centre (the PLAY step). */
   hitCentre?: boolean;
+  tapSync?: SoundSync;
+  strikeSync?: SoundSync;
+  look?: LookAt;
+  /** Draw the drum at a radius that follows its diameter (the IDENTIFY page,
+   *  whose lesson is size). */
+  scaleBySize?: boolean;
+  /** The SEAT step: the hoop and rod heads lifted off the shell. */
+  exploded?: boolean;
+  /** Legend text under the map (defaults to the cents scale). */
+  legend?: string;
 }) {
   const spec = DRUMS[drum];
   const lugs = spec.lugs;
   const cx = 180;
   const cy = 125;
-  const R = 84;
+  const R = scaleBySize ? Math.round(69 * Math.sqrt(spec.diameterIn / 16)) : 84;
+  const lift = exploded ? 9 : 0;
   const cents = lugCents(head);
   const halfA = (Math.PI / lugs) * 0.72;
   const steps = order && orderStep != null ? order.slice(0, Math.max(0, Math.min(order.length, orderStep + 1))) : [];
+  const s = width / W;
+  // Sound sync: a shared zero stands in when a page has no sound on this
+  // stage, so the hooks run unconditionally.
+  const zero = useSharedValue(0);
+  const tp = tapSync?.progress ?? zero;
+  const tapOn = !!tapSync?.playing;
+  const sp = strikeSync?.progress ?? zero;
+  const strikeOn = !!strikeSync?.playing;
+  const env = strikeSync?.envDb ?? [];
+  const tapLug = tap != null ? tap : selected;
+  const tapPt = tapLug != null ? polar(cx, cy, R - 11, lugAngle(tapLug, lugs)) : null;
+  const ringStyle = useAnimatedStyle(() => {
+    const p = tp.value;
+    const r = (9 + 26 * p) * s;
+    return {
+      opacity: tapOn ? Math.max(0, 1 - p) * 0.95 : 0,
+      width: 2 * r,
+      height: 2 * r,
+      borderRadius: r,
+      left: (tapPt?.x ?? 0) * s - r,
+      top: (tapPt?.y ?? 0) * s - r,
+    };
+  });
+  const glowStyle = useAnimatedStyle(() => ({
+    opacity: strikeOn ? envAmpAt(env, sp.value) * 0.55 : 0,
+  }));
+  const glowR = R * 0.62 * s;
+  const lookPt = typeof look === 'number' ? polar(cx, cy, R + 27, lugAngle(look, lugs)) : null;
   return (
+    <View style={{ width, height }}>
     <Svg width={width} height={height} viewBox={`0 0 ${W} ${TOP_H}`}>
       <Rect x={0} y={0} width={W} height={TOP_H} fill={ink.bg} />
-      <Hardware cx={cx} cy={cy} R={R} lugs={lugs} selected={selected} loose={faults?.loose ?? null} />
+      <Hardware cx={cx} cy={cy} R={R} lugs={lugs} selected={selected} loose={faults?.loose ?? null} lift={lift} />
       {/* the head on its bearing edge */}
       <Circle cx={cx} cy={cy} r={R + 3} fill={ink.shellDark} />
-      <Circle cx={cx} cy={cy} r={R} fill={which === 'batter' ? 'url(#headGrad)' : 'url(#resoGrad)'} stroke="#b8b09a" strokeWidth={0.8} />
+      <Circle cx={cx} cy={cy} r={R + (exploded ? 4 : 0)} fill={which === 'batter' ? 'url(#headGrad)' : 'url(#resoGrad)'} stroke="#b8b09a" strokeWidth={0.8} opacity={exploded ? 0.92 : 1} />
+      {exploded ? <Circle cx={cx} cy={cy} r={R + 3} fill="none" stroke={ink.amber} strokeWidth={1} strokeDasharray="4,3" /> : null}
       {/* collar / coating rings */}
       <Circle cx={cx} cy={cy} r={R - 4} fill="none" stroke="rgba(0,0,0,.08)" strokeWidth={1} />
       <Circle cx={cx} cy={cy} r={R * 0.45} fill="none" stroke="rgba(0,0,0,.05)" strokeWidth={6} />
@@ -204,7 +291,8 @@ export function DrumTopStage({ width, height, drum, head, which = 'batter', sele
       {showMap
         ? cents.map((c, i) => {
             const a = lugAngle(i, lugs);
-            return <Path key={i} d={arcPath(cx, cy, R - 17, R - 4, a - halfA, a + halfA)} fill={mapTint(c)} opacity={0.82} />;
+            const lit = tapOn && tapLug === i;
+            return <Path key={i} d={arcPath(cx, cy, R - 17, R - 4, a - halfA, a + halfA)} fill={showMap === 'hidden' ? MAP_HIDDEN : mapTint(c)} opacity={lit ? 1 : 0.82} stroke={lit ? colors.textPrimary : 'none'} strokeWidth={lit ? 1.2 : 0} />;
           })
         : null}
       {/* lug numbers */}
@@ -250,24 +338,38 @@ export function DrumTopStage({ width, height, drum, head, which = 'batter', sele
           <Line x1={cx + 20} y1={cy - 16} x2={cx + 70} y2={cy - 66} stroke="#c9a06a" strokeWidth={4} strokeLinecap="round" />
         </G>
       ) : null}
-      {selected != null ? <DrumKey cx={cx} cy={cy} R={R} lugs={lugs} i={selected} turns={head.turns[selected] ?? 0} /> : null}
+      {selected != null && !exploded ? <DrumKey cx={cx} cy={cy} R={R} lugs={lugs} i={selected} turns={head.turns[selected] ?? 0} /> : null}
+      {/* LOOKING HERE: the inspection ring */}
+      {look === 'head' ? <Circle cx={cx} cy={cy} r={R * 0.55} fill="none" stroke={ink.amber} strokeWidth={1.4} strokeDasharray="5,3" /> : null}
+      {look === 'edge' ? <Circle cx={cx} cy={cy} r={R + 1} fill="none" stroke={ink.amber} strokeWidth={1.6} strokeDasharray="5,3" /> : null}
+      {look === 'map' ? <Circle cx={cx} cy={cy} r={R - 10} fill="none" stroke={ink.amber} strokeWidth={1.4} strokeDasharray="5,3" /> : null}
+      {lookPt ? <Circle cx={lookPt.x} cy={lookPt.y} r={16} fill="none" stroke={ink.amber} strokeWidth={1.6} strokeDasharray="5,3" /> : null}
       {/* legend */}
       <SvgText x={6} y={14} fontSize={FONT} fill={ink.amber} fontFamily={fonts.oswaldMedium}>{(title ?? `${spec.name} · ${which === 'batter' ? 'BATTER' : 'RESONANT'} HEAD`).toUpperCase()}</SvgText>
-      {showMap ? (
+      {showMap === true ? (
         <G>
-          <Rect x={6} y={TOP_H - 20} width={60} height={6} fill="url(#mapLegend)" />
+          <Rect x={6} y={TOP_H - 20} width={66} height={6} fill="url(#mapLegend)" />
           <Defs>
             <LinearGradient id="mapLegend" x1="0" y1="0" x2="1" y2="0">
-              <Stop offset="0" stopColor={mapTint(-60)} />
+              <Stop offset="0" stopColor={mapTint(-MAP_RANGE_CENTS)} />
+              <Stop offset="0.25" stopColor={mapTint(-MAP_RANGE_CENTS / 2)} />
               <Stop offset="0.5" stopColor={mapTint(0)} />
-              <Stop offset="1" stopColor={mapTint(60)} />
+              <Stop offset="0.75" stopColor={mapTint(MAP_RANGE_CENTS / 2)} />
+              <Stop offset="1" stopColor={mapTint(MAP_RANGE_CENTS)} />
             </LinearGradient>
           </Defs>
-          <SvgText x={6} y={TOP_H - 4} fontSize={FONT_S} fill={ink.dim} fontFamily={fonts.barlowMedium}>low · even · high (map, cents)</SvgText>
+          <SvgText x={6} y={TOP_H - 4} fontSize={FONT_S} fill={ink.dim} fontFamily={fonts.barlowMedium}>{legend ?? `−${MAP_RANGE_CENTS} ¢ low · even · +${MAP_RANGE_CENTS} ¢ high`}</SvgText>
         </G>
+      ) : showMap === 'hidden' ? (
+        <SvgText x={6} y={TOP_H - 4} fontSize={FONT_S} fill={ink.dim} fontFamily={fonts.barlowMedium}>{legend ?? 'map hidden — listen first'}</SvgText>
       ) : null}
       {tap != null || tapAll ? <SvgText x={W - 6} y={TOP_H - 4} fontSize={FONT_S} fill={ink.dim} textAnchor="end" fontFamily={fonts.barlowMedium}>● tap point, 1" in from the rim</SvgText> : null}
     </Svg>
+    {/* the strike: the head's centre brightens and fades with the measured envelope */}
+    <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: cx * s - glowR, top: cy * s - glowR, width: 2 * glowR, height: 2 * glowR, borderRadius: glowR, backgroundColor: '#fff8e6' }, glowStyle]} />
+    {/* the tap: a ring spreads from the tap point and fades with the tap */}
+    {tapPt ? <Animated.View pointerEvents="none" style={[{ position: 'absolute', borderWidth: Math.max(1, 2 * s), borderColor: ink.amber }, ringStyle]} /> : null}
+    </View>
   );
 }
 
@@ -478,10 +580,42 @@ export function EdgeStage({ width, height, profile }: { width: number; height: n
 export const SNARE_H = 200;
 export const SNARE_ASPECT = W / SNARE_H;
 
+/** A small two-tick pitch ladder beside a shell: where the batter and the
+ *  other head sit, so the BATTER and SNARE SIDE / front-head faders move
+ *  something on the glass. Log scale over [lo, hi] Hz. */
+function PitchLadder({ x, top, bot, lo, hi, ticks }: { x: number; top: number; bot: number; lo: number; hi: number; ticks: { hz: number; label: string; color: string }[] }) {
+  const yOf = (hz: number) => bot - (Math.log2(Math.max(lo, Math.min(hi, hz)) / lo) / Math.log2(hi / lo)) * (bot - top);
+  return (
+    <G>
+      <Line x1={x} y1={top} x2={x} y2={bot} stroke={ink.stroke} strokeWidth={1} />
+      <SvgText x={x} y={top - 5} fontSize={FONT_S} fill={ink.dim} textAnchor="middle" fontFamily={fonts.barlowMedium}>pitch</SvgText>
+      {ticks.map((t) => (
+        <G key={t.label}>
+          <Line x1={x - 6} y1={yOf(t.hz)} x2={x + 6} y2={yOf(t.hz)} stroke={t.color} strokeWidth={2} />
+          <SvgText x={x + 9} y={yOf(t.hz) + 4} fontSize={FONT_S} fill={t.color} fontFamily={fonts.mono}>{t.label}</SvgText>
+        </G>
+      ))}
+    </G>
+  );
+}
+
+/** The head's edge-on glow while the drum sounds: a soft bar over the head
+ *  line whose opacity follows the measured envelope. */
+function HeadGlow({ x, y, w, h, sync, s }: { x: number; y: number; w: number; h: number; sync?: SoundSync; s: number }) {
+  const zero = useSharedValue(0);
+  const p = sync?.progress ?? zero;
+  const on = !!sync?.playing;
+  const env = sync?.envDb ?? [];
+  const style = useAnimatedStyle(() => ({ opacity: on ? envAmpAt(env, p.value) * 0.7 : 0 }));
+  return <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: x * s, top: y * s, width: w * s, height: h * s, borderRadius: 3 * s, backgroundColor: '#fff3c4' }, style]} />;
+}
+
 /** The snare from the side: shell, both hoops, rods and lugs, the snare
  *  wires under the bottom head on their strainer and butt plate. The lever
- *  and the wire-to-head gap follow the strainer setting. */
-export function SnareStage({ width, height, strainer, snareSideCents, playing }: { width: number; height: number; strainer: number; snareSideCents: number; playing?: boolean }) {
+ *  and the wire-to-head gap follow the strainer setting; the stick's angle
+ *  follows the STROKE; the ladder shows where the batter and the snare-side
+ *  head sit; the batter glows with the hit. */
+export function SnareStage({ width, height, strainer, snareSideCents, playing, batterHz, strike = 0.7, sync }: { width: number; height: number; strainer: number; snareSideCents: number; playing?: boolean; batterHz?: number; strike?: number; sync?: SoundSync }) {
   const x0 = 60;
   const x1 = 300;
   const yT = 44;
@@ -489,7 +623,11 @@ export function SnareStage({ width, height, strainer, snareSideCents, playing }:
   const s = Math.max(0, Math.min(1, strainer));
   const gap = 10 - 8 * s; // wires float at 0, pressed in at 1
   const lever = -60 + 70 * s; // throw-off lever angle
+  const sc = width / W;
+  const stickA = -12 - 48 * Math.max(0, Math.min(1, strike)); // a ghost note barely lifts the stick; a rimshot comes from high up
+  const snareHz = batterHz != null ? batterHz * Math.pow(2, snareSideCents / 1200) : null;
   return (
+    <View style={{ width, height }}>
     <Svg width={width} height={height} viewBox={`0 0 ${W} ${SNARE_H}`}>
       <Rect x={0} y={0} width={W} height={SNARE_H} fill={ink.bg} />
       <Defs>
@@ -504,6 +642,13 @@ export function SnareStage({ width, height, strainer, snareSideCents, playing }:
       {/* heads */}
       <Rect x={x0 - 6} y={yT - 3} width={x1 - x0 + 12} height={3} fill={ink.head} />
       <Rect x={x0 - 6} y={yB} width={x1 - x0 + 12} height={2.4} fill={ink.headReso} />
+      {/* the stick: its height above the head follows the STROKE */}
+      <G transform={`translate(${(x0 + x1) / 2 + 30},${yT - 6}) rotate(${stickA})`}>
+        <Line x1={0} y1={0} x2={78} y2={0} stroke="#c9a06a" strokeWidth={4} strokeLinecap="round" />
+        <Circle cx={-2} cy={0} r={4} fill="#e9dcc0" />
+      </G>
+      {/* the pitch ladder */}
+      {batterHz != null && snareHz != null ? <PitchLadder x={W - 22} top={yT + 6} bot={yB + 40} lo={120} hi={700} ticks={[{ hz: batterHz, label: 'B', color: ink.cyan }, { hz: snareHz, label: 'S', color: ink.green }]} /> : null}
       {/* hoops, rods, lugs */}
       {[x0 + 20, x0 + 80, x0 + 140, x0 + 200].map((x) => (
         <G key={x}>
@@ -527,14 +672,16 @@ export function SnareStage({ width, height, strainer, snareSideCents, playing }:
       <Rect x={x1 - 20} y={yB + 2} width={22} height={22} rx={3} fill={ink.metal} stroke={ink.metalDark} strokeWidth={0.7} />
       {/* labels */}
       <SvgText x={x0 - 10} y={yT - 8} fontSize={FONT} fill={ink.text} textAnchor="end" fontFamily={fonts.barlowMedium}>batter</SvgText>
-      <SvgText x={x1 + 10} y={yB + 2} fontSize={FONT} fill={ink.text} fontFamily={fonts.barlowMedium}>snare-side head</SvgText>
-      <SvgText x={x1 + 10} y={yB + 26 + gap} fontSize={FONT} fill={ink.metalLight} fontFamily={fonts.barlowMedium}>wires</SvgText>
+      <SvgText x={x1 - 24} y={yB + 50} fontSize={FONT} fill={ink.text} textAnchor="end" fontFamily={fonts.barlowMedium}>snare-side head</SvgText>
+      <SvgText x={x0 + 100} y={yB + 26 + gap} fontSize={FONT} fill={ink.metalLight} fontFamily={fonts.barlowMedium}>wires</SvgText>
       <SvgText x={x0 + 30} y={yB + 48} fontSize={FONT} fill={ink.amber} fontFamily={fonts.barlowMedium}>strainer · {s < 0.1 ? 'OFF' : s < 0.4 ? 'loose' : s < 0.7 ? 'medium' : 'tight (choke)'}</SvgText>
       <SvgText x={x1 - 8} y={yB + 36} fontSize={FONT} fill={ink.text} textAnchor="end" fontFamily={fonts.barlowMedium}>butt plate</SvgText>
       <SvgText x={6} y={14} fontSize={FONT} fill={ink.amber} fontFamily={fonts.oswaldMedium}>14" SNARE · SIDE VIEW</SvgText>
-      <SvgText x={W - 6} y={14} fontSize={FONT} fill={ink.cyan} textAnchor="end" fontFamily={fonts.mono}>snare side {snareSideCents >= 0 ? '+' : ''}{snareSideCents.toFixed(0)} ¢ vs batter</SvgText>
-      <SvgText x={W / 2} y={SNARE_H - 6} fontSize={FONT_S} fill={ink.dim} textAnchor="middle" fontFamily={fonts.barlowMedium}>the wires answer to the snare-side head; the strainer sets how easily</SvgText>
+      <SvgText x={W - 6} y={14} fontSize={FONT} fill={ink.cyan} textAnchor="end" fontFamily={fonts.mono}>S {snareSideCents >= 0 ? '+' : ''}{snareSideCents.toFixed(0)} ¢ vs B</SvgText>
+      <SvgText x={W / 2 - 20} y={SNARE_H - 6} fontSize={FONT_S} fill={ink.dim} textAnchor="middle" fontFamily={fonts.barlowMedium}>wires follow the snare-side head · stick height = stroke</SvgText>
     </Svg>
+    <HeadGlow x={x0 - 6} y={yT - 5} w={x1 - x0 + 12} h={7} sync={sync} s={sc} />
+    </View>
   );
 }
 
@@ -543,7 +690,11 @@ export function SnareStage({ width, height, strainer, snareSideCents, playing }:
 export const KICK_H = 200;
 export const KICK_ASPECT = W / KICK_H;
 
-export function KickStage({ width, height, front, damping, strike }: { width: number; height: number; front: 'open' | 'ported' | 'removed'; damping: number; strike: number }) {
+/** The bass drum from the side. The beater's resting angle follows BEATER;
+ *  on ▶ STRIKE it swings into the batter in the first 60 ms of the clip and
+ *  the batter glows with the measured envelope; the ladder tick shows where
+ *  BATTER sits. */
+export function KickStage({ width, height, front, damping, strike, batterHz, sync }: { width: number; height: number; front: 'open' | 'ported' | 'removed'; damping: number; strike: number; batterHz?: number; sync?: SoundSync }) {
   const x0 = 70; // front head (audience side)
   const x1 = 250; // batter side
   const yT = 28;
@@ -551,7 +702,24 @@ export function KickStage({ width, height, front, damping, strike }: { width: nu
   const d = Math.max(0, Math.min(1, damping));
   const pillowW = 30 + 70 * d;
   const beaterA = -20 - 30 * strike;
+  const sc = width / W;
+  const zero = useSharedValue(0);
+  const p = sync?.progress ?? zero;
+  const on = !!sync?.playing;
+  // The swing: the beater travels to the head over the attack and comes back.
+  const swingStyle = useAnimatedStyle(() => {
+    const t = p.value;
+    const k = on && t < 0.06 ? 1 - t / 0.06 : 0;
+    return { transform: [{ translateX: -k * 22 * sc }, { translateY: k * 6 * sc }] };
+  });
+  const beater = (
+    <G transform={`translate(${x1 + 30},${yB - 70}) rotate(${beaterA})`}>
+      <Line x1={0} y1={0} x2={0} y2={-56 + 10} stroke={ink.metalLight} strokeWidth={2.4} />
+      <Circle cx={0} cy={-56 + 6} r={9} fill="#8a7a63" stroke="#5a4e3f" strokeWidth={0.8} />
+    </G>
+  );
   return (
+    <View style={{ width, height }}>
     <Svg width={width} height={height} viewBox={`0 0 ${W} ${KICK_H}`}>
       <Rect x={0} y={0} width={W} height={KICK_H} fill={ink.bg} />
       <Defs>
@@ -586,14 +754,12 @@ export function KickStage({ width, height, front, damping, strike }: { width: nu
           <Line x1={x0 + 4} y1={y} x2={x0 + 30} y2={y} stroke={ink.metal} strokeWidth={2} />
         </G>
       ) : null))}
-      {/* pedal + beater */}
+      {/* pedal; the beater is drawn in the overlay so it can swing */}
       <Rect x={x1 + 18} y={yB + 10} width={70} height={6} rx={2} fill={ink.metalDark} />
       <Path d={`M${x1 + 30} ${yB + 10} L${x1 + 80} ${yB - 2}`} stroke={ink.metal} strokeWidth={3} />
       <Line x1={x1 + 30} y1={yB + 10} x2={x1 + 30} y2={yB - 70} stroke={ink.metal} strokeWidth={3} />
-      <G transform={`translate(${x1 + 30},${yB - 70}) rotate(${beaterA})`}>
-        <Line x1={0} y1={0} x2={0} y2={-56 + 10} stroke={ink.metalLight} strokeWidth={2.4} />
-        <Circle cx={0} cy={-56 + 6} r={9} fill="#8a7a63" stroke="#5a4e3f" strokeWidth={0.8} />
-      </G>
+      {/* the pitch ladder on the batter side */}
+      {batterHz != null ? <PitchLadder x={W - 16} top={yT + 14} bot={yB - 30} lo={40} hi={110} ticks={[{ hz: batterHz, label: `${batterHz.toFixed(0)}`, color: ink.cyan }]} /> : null}
       {/* labels */}
       <SvgText x={x1 + 2} y={yB + 30} fontSize={FONT} fill={ink.text} textAnchor="middle" fontFamily={fonts.barlowMedium}>batter</SvgText>
       <SvgText x={x0 - 2} y={yB + 30} fontSize={FONT} fill={ink.text} textAnchor="middle" fontFamily={fonts.barlowMedium}>{front === 'removed' ? 'front head off' : 'front head'}</SvgText>
@@ -601,6 +767,11 @@ export function KickStage({ width, height, front, damping, strike }: { width: nu
       <SvgText x={6} y={14} fontSize={FONT} fill={ink.amber} fontFamily={fonts.oswaldMedium}>22" BASS DRUM · SIDE VIEW</SvgText>
       <SvgText x={W / 2} y={KICK_H - 6} fontSize={FONT_S} fill={ink.dim} textAnchor="middle" fontFamily={fonts.barlowMedium}>{front === 'open' ? 'closed front head: full coupling, longest note' : front === 'ported' ? 'ported: less coupling, faster decay, a mic path' : 'no front head: the batter alone, shortest note'}</SvgText>
     </Svg>
+    <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: 0, top: 0, width, height }, swingStyle]}>
+      <Svg width={width} height={height} viewBox={`0 0 ${W} ${KICK_H}`}>{beater}</Svg>
+    </Animated.View>
+    <HeadGlow x={x1 - 2} y={yT - 4} w={8} h={yB - yT + 8} sync={sync} s={sc} />
+    </View>
   );
 }
 
@@ -609,9 +780,14 @@ export function KickStage({ width, height, front, damping, strike }: { width: nu
 export const KIT_H = 210;
 export const KIT_ASPECT = W / KIT_H;
 
+/** Which tom is sounding, for the glow: `both` plays the rack for the first
+ *  `switchAt` fraction of the clip, then the floor. */
+export type KitSounding = { which: 'rack' | 'floor' | 'both'; switchAt: number } | null;
+
 /** Rack and floor tom side by side with a semitone ladder: each drum's useful
- *  band, its current fundamental, and the interval between them. */
-export function KitStage({ width, height, rackHz, floorHz, verdict }: { width: number; height: number; rackHz: number; floorHz: number; verdict: 'distinct' | 'close' | 'unbalanced' }) {
+ *  band, its current fundamental, and the interval between them. The
+ *  sounding tom's head glows with the hit. */
+export function KitStage({ width, height, rackHz, floorHz, verdict, sounding, sync }: { width: number; height: number; rackHz: number; floorHz: number; verdict: 'distinct' | 'close' | 'unbalanced'; sounding?: KitSounding; sync?: SoundSync }) {
   const lx = 232; // ladder x
   const top = 26;
   const bot = KIT_H - 26;
@@ -619,6 +795,23 @@ export function KitStage({ width, height, rackHz, floorHz, verdict }: { width: n
   const hiHz = 320;
   const yOf = (hz: number) => bot - ((Math.log2(hz / loHz) / Math.log2(hiHz / loHz)) * (bot - top));
   const tint = verdict === 'distinct' ? ink.green : verdict === 'close' ? ink.amber : ink.red;
+  const sc = width / W;
+  const zero = useSharedValue(0);
+  const p = sync?.progress ?? zero;
+  const on = !!sync?.playing && !!sounding;
+  const env = sync?.envDb ?? [];
+  const which = sounding?.which ?? 'both';
+  const switchAt = sounding?.switchAt ?? 0.5;
+  const rackGlow = useAnimatedStyle(() => {
+    const t = p.value;
+    const lit = which === 'rack' || (which === 'both' && t < switchAt);
+    return { opacity: on && lit ? envAmpAt(env, t) * 0.75 : 0 };
+  });
+  const floorGlow = useAnimatedStyle(() => {
+    const t = p.value;
+    const lit = which === 'floor' || (which === 'both' && t >= switchAt);
+    return { opacity: on && lit ? envAmpAt(env, t) * 0.75 : 0 };
+  });
   const drum = (x: number, w: number, h: number, label: string, hz: number, legs: boolean) => {
     const y = 150 - h;
     return (
@@ -640,6 +833,7 @@ export function KitStage({ width, height, rackHz, floorHz, verdict }: { width: n
     );
   };
   return (
+    <View style={{ width, height }}>
     <Svg width={width} height={height} viewBox={`0 0 ${W} ${KIT_H}`}>
       <Rect x={0} y={0} width={W} height={KIT_H} fill={ink.bg} />
       <Defs>
@@ -674,5 +868,9 @@ export function KitStage({ width, height, rackHz, floorHz, verdict }: { width: n
       <SvgText x={6} y={14} fontSize={FONT} fill={ink.amber} fontFamily={fonts.oswaldMedium}>THE TOM RANGE · FUNDAMENTALS</SvgText>
       <SvgText x={W - 6} y={KIT_H - 6} fontSize={FONT} fill={tint} textAnchor="end" fontFamily={fonts.oswaldMedium}>{verdict.toUpperCase()}</SvgText>
     </Svg>
+    {/* the sounding tom's head glows with the hit (rack: x 22 w 64 h 44; floor: x 112 w 84 h 84; tops at 150 − h) */}
+    <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: 19 * sc, top: (150 - 44 - 4) * sc, width: 70 * sc, height: 6 * sc, borderRadius: 3 * sc, backgroundColor: '#fff3c4' }, rackGlow]} />
+    <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: 109 * sc, top: (150 - 84 - 4) * sc, width: 90 * sc, height: 6 * sc, borderRadius: 3 * sc, backgroundColor: '#fff3c4' }, floorGlow]} />
+    </View>
   );
 }

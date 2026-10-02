@@ -14,7 +14,8 @@
  * navigation).
  *
  * CREDIT: a chapter banks THE MOMENT its requirement is met — every
- * decision answered and, where the chapter has one, its interactive's
+ * decision brought to its RIGHT answer (a retry is free; merely tapping
+ * an option is not an answer) and, where the chapter has one, its interactive's
  * goal reached (the head tuned even, two sound goals met, the tom range
  * distinct, the five symptoms cleared, the checklist revealed, the three
  * relationships heard) — on the event itself, not on NEXT, so leaving by
@@ -122,7 +123,9 @@ export function DrumTuningLabScreen() {
 
   const onAnswered = useCallback(
     (scenarioId: string, correct: boolean) => {
-      // FIRST ANSWER WINS: a remounted card reports again; the first stays.
+      // A card reports once, when the RIGHT option is reached; `correct` says
+      // whether the first pick was right (kept for the REVIEW's "your run").
+      // A remounted card reports again; the first report stays.
       setAnswers((prev) => (scenarioId in prev ? prev : { ...prev, [scenarioId]: correct }));
       void updateDrumProgress((s) => {
         const m = s.modules[modId] ?? emptyDrumChapter();
@@ -252,20 +255,26 @@ export function DrumTuningLabScreen() {
     reset: { label: 'START OVER (PRACTICE)', run: confirmReset },
   });
 
-  const head = (
-    <View style={styles.objective}>
-      <Text style={styles.objectiveLabel}>OBJECTIVE · CHAPTER {mod.num} OF {DRUM_CHAPTERS.length}</Text>
-      <Text style={styles.objectiveText}>{mod.objective}</Text>
-    </View>
-  );
+  // ONE line at the top of a chapter's first step (the full objective is on
+  // CONTENTS and the REVIEW page): a rack well is short, and the prompt must
+  // not be pushed below the fold.
+  const head = <Text style={styles.objectiveLabel}>{`CHAPTER ${mod.num} GOAL · ${mod.goal}`}</Text>;
+  const standing = scenarios.length
+    ? `${answeredCount} of ${scenarios.length} decisions right${needsInteractive ? `, interactive ${interactive.has(mod.id) ? 'done' : 'not yet'}` : ''}`
+    : needsInteractive
+      ? interactive.has(mod.id) ? 'done' : 'not yet'
+      : '';
   const tail = (
     <>
       <TakeawayCard>{mod.takeaway}</TakeawayCard>
-      <Text style={styles.requirement}>
-        {done
-          ? 'This chapter is credited. Review it any time — practising never removes credit.'
-          : `Credit for this chapter: ${mod.credit}${scenarios.length ? ` (${answeredCount} of ${scenarios.length} decisions answered${needsInteractive ? `, interactive ${interactive.has(mod.id) ? 'done' : 'not yet'}` : ''})` : needsInteractive ? ` (${interactive.has(mod.id) ? 'done' : 'not yet'})` : ''}. Credit lands the moment it is met. NEXT still moves on; you can come back.`}
-      </Text>
+      {done ? (
+        <Text style={styles.requirement}>This chapter is credited. Review it any time — practising never removes credit.</Text>
+      ) : (
+        <>
+          <Text style={styles.requirement}>{`TO EARN CREDIT · ${mod.credit}${standing ? ` — ${standing}.` : ''}`}</Text>
+          <Text style={styles.requirement}>Credit lands the moment it is met. You can move on and come back any time.</Text>
+        </>
+      )}
     </>
   );
   const readWrap = (body: ReactNode) => (
@@ -306,7 +315,7 @@ export function DrumTuningLabScreen() {
         {end ?? (
           <View style={styles.body}>
             <StepHostContext.Provider value={host}>
-              <Component key={mod.id} onAnswered={onAnswered} onInteractive={onInteractive} notes={notes} onSaveNote={onSaveNote} onDeleteNote={onDeleteNote} guest={resolved && guest} preview={preview} />
+              <Component key={mod.id} onAnswered={onAnswered} onInteractive={onInteractive} answers={answers} notes={notes} onSaveNote={onSaveNote} onDeleteNote={onDeleteNote} guest={resolved && guest} preview={preview} />
             </StepHostContext.Provider>
           </View>
         )}
@@ -319,8 +328,6 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
   body: { flex: 1 },
   scroll: { paddingHorizontal: 16, paddingTop: 8, gap: 10 },
-  objective: { borderLeftWidth: 2, borderLeftColor: colors.amberLabel, paddingLeft: 10, gap: 2 },
-  objectiveLabel: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 2 },
-  objectiveText: { color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 19 },
+  objectiveLabel: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.6, lineHeight: 14 },
   requirement: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, textAlign: 'center', lineHeight: 16 },
 });

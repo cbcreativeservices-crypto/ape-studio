@@ -8,7 +8,7 @@
  * COLOURS: every LEVEL readout is tinted with levelColorForDb — the
  * MIDI-velocity ramp the whole app uses. A peak readout is PEAK_RED.
  */
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { Body, Card, KeyButton } from '../mastering/kit';
@@ -16,7 +16,16 @@ import type { DrumScenario } from './drumContent';
 
 export { Body, Card, Checklist, CompareTable, KeyButton, KeyTerms, Kicker, PEAK_RED, Point, SectionTitle, TakeawayCard, levelTint } from '../mastering/kit';
 
-/** Deterministic shuffle of option indices per scenario + mount. */
+/** A stable hash of a scenario id, so a card's option order is the same
+ *  every time it is opened (a learner who leaves and returns sees the card
+ *  as they left it). */
+function hashId(id: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < id.length; i++) h = Math.imul(h ^ id.charCodeAt(i), 16777619);
+  return h >>> 0;
+}
+
+/** Deterministic shuffle of option indices per scenario. */
 function shuffled(n: number, seed: number): number[] {
   const a = Array.from({ length: n }, (_, i) => i);
   let s = seed >>> 0 || 1;
@@ -29,17 +38,19 @@ function shuffled(n: number, seed: number): number[] {
 }
 
 /**
- * One scenario, one pick. Correct BY VALUE. The first pick is what the
- * chapter records (a retry is encouraged and explained, never penalised).
- * A wrong pick names THAT option as the one that does not fit and keeps the
- * card open; the full explanation is revealed by the correct pick.
+ * One scenario, one pick. Correct BY VALUE. The card reports ONCE, when the
+ * correct option is reached, and says whether the FIRST pick was right —
+ * so a chapter's credit needs the right answer, not merely an answer, while
+ * a retry stays free and explained. A wrong pick names THAT option as the
+ * one that does not fit and keeps the card open; the full explanation is
+ * revealed by the correct pick.
  */
-export function DrumScenarioCard({ s, onAnswered, keepOrder }: { s: DrumScenario; onAnswered?: (correct: boolean) => void; keepOrder?: boolean }) {
-  const seed = useRef(Math.floor(Math.random() * 0x7fffffff)).current;
-  const order = useMemo(() => (keepOrder ? s.options.map((_, i) => i) : shuffled(s.options.length, seed ^ s.id.length)), [s, seed, keepOrder]);
+export function DrumScenarioCard({ s, onAnswered, keepOrder }: { s: DrumScenario; onAnswered?: (firstPickCorrect: boolean) => void; keepOrder?: boolean }) {
+  const order = useMemo(() => (keepOrder ? s.options.map((_, i) => i) : shuffled(s.options.length, hashId(s.id))), [s, keepOrder]);
   const [picked, setPicked] = useState<string | null>(null);
   const [wrongPicks, setWrongPicks] = useState<string[]>([]);
   const reported = useRef(false);
+  const firstWrong = useRef(false);
   const correct = picked === s.correct;
   return (
     <Card tone="accent">
@@ -57,10 +68,13 @@ export function DrumScenarioCard({ s, onAnswered, keepOrder }: { s: DrumScenario
               onPress={() => {
                 const ok = o === s.correct;
                 setPicked(o);
-                if (!ok) setWrongPicks((w) => (w.includes(o) ? w : [...w, o]));
-                if (!reported.current) {
+                if (!ok) {
+                  setWrongPicks((w) => (w.includes(o) ? w : [...w, o]));
+                  firstWrong.current = true;
+                }
+                if (ok && !reported.current) {
                   reported.current = true;
-                  onAnswered?.(ok);
+                  onAnswered?.(!firstWrong.current);
                 }
                 AccessibilityInfo.announceForAccessibility?.(ok ? 'Correct.' : `${o}: not the best fit. Choose again.`);
               }}
@@ -99,7 +113,7 @@ export function DrumScenarioDeck({ scenarios, onAnswered, keepOrder, intro }: {
       {intro ? <Body>{intro}</Body> : null}
       <View style={styles.deckBar}>
         <Text style={styles.deckCount}>{`CARD ${i + 1} OF ${n}`}</Text>
-        <Text style={styles.deckRule}>Your FIRST answer on each card is the one recorded. A retry is explained, never penalised.</Text>
+        <Text style={styles.deckRule}>Your FIRST answer on each card is the one remembered; keep going until you find the one that fits — a retry is explained, never penalised.</Text>
       </View>
       {scenarios.map((s, k) => (
         <View key={s.id} style={k === i ? null : styles.hidden} accessibilityElementsHidden={k !== i} importantForAccessibility={k === i ? 'auto' : 'no-hide-descendants'}>
@@ -117,11 +131,64 @@ export function DrumScenarioDeck({ scenarios, onAnswered, keepOrder, intro }: {
 /** The HEAR page's STATUS LINE: the dock keys are the only transport; the
  *  well reports what is happening. One sentence, live. */
 export function DrumStatus({ playing, pending, rendering, idle, label }: { playing: boolean; pending: boolean; rendering: boolean; idle: string; label: string }) {
-  const text = rendering || pending ? `rendering ${label} — real offline synthesis, one moment…` : playing ? `sounding ${label}` : idle;
+  const text = rendering || pending ? `making the sound… one moment` : playing ? `sounding ${label} · tap the display to stop` : idle;
   return (
     <Text style={styles.status} accessibilityLiveRegion="polite">
       {text.toUpperCase()}
     </Text>
+  );
+}
+
+/** The one-line "what you are looking at" every rack page opens with, then
+ *  the prompt as its own sentence (owner rule: picture → what it is → what
+ *  to do → the prose). */
+export function Landing({ looking, prompt }: { looking: string; prompt: string }) {
+  return (
+    <View style={{ gap: 3 }}>
+      <Text style={styles.landing}>{`YOU ARE LOOKING AT: ${looking}`}</Text>
+      <Text style={styles.prompt}>{prompt}</Text>
+    </View>
+  );
+}
+
+/** A collapsible WHY card: the physics behind a page, closed by default so
+ *  the well points at the controls and the reading is there for whoever
+ *  wants it. */
+export function WhyCard({ title = 'WHY · the physics', children }: { title?: string; children: ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <View style={styles.why}>
+      <Pressable onPress={() => setOpen((o) => !o)} accessibilityRole="button" accessibilityState={{ expanded: open }} accessibilityLabel={title} style={styles.whyHead}>
+        <Text style={styles.whyTitle}>{title}</Text>
+        <Text style={styles.whyChevron}>{open ? '▾' : '▸'}</Text>
+      </Pressable>
+      {open ? <View style={{ gap: 8, paddingTop: 6 }}>{children}</View> : null}
+    </View>
+  );
+}
+
+/** A RETRIEVAL card for the REVIEW pages: a question, a moment to answer it
+ *  in your head, then the answer on a tap. Free — never credit. */
+export function RecallCard({ q, a }: { q: string; a: string }) {
+  const [shown, setShown] = useState(false);
+  return (
+    <Pressable onPress={() => setShown((s) => !s)} accessibilityRole="button" accessibilityLabel={shown ? `${q} Answer: ${a}` : `${q} Say it, then tap for the answer.`} style={styles.recall}>
+      <Text style={styles.recallQ}>{q}</Text>
+      {shown ? <Text style={styles.recallA}>{a}</Text> : <Text style={styles.recallHint}>SAY IT, THEN TAP</Text>}
+    </Pressable>
+  );
+}
+
+/** "YOUR RUN": what the learner actually did in this chapter, from live
+ *  state — the REVIEW page refers to it before the recall cards. */
+export function YourRun({ lines }: { lines: string[] }) {
+  return (
+    <View style={styles.run}>
+      <Text style={styles.runLabel}>YOUR RUN</Text>
+      {lines.map((l, i) => (
+        <Text key={i} style={styles.runLine}>{l}</Text>
+      ))}
+    </View>
   );
 }
 
@@ -163,4 +230,17 @@ const styles = StyleSheet.create({
   feedbackOk: { borderLeftColor: colors.green },
   feedbackWarn: { borderLeftColor: colors.gold },
   feedbackText: { color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 13.5, lineHeight: 18 },
+  landing: { color: colors.cyanBright, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.2, lineHeight: 15 },
+  prompt: { color: colors.textPrimary, fontFamily: fonts.barlowSemiBold, fontSize: 14.5, lineHeight: 19 },
+  why: { borderWidth: 1, borderColor: colors.hairline, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 8, backgroundColor: '#0e0e11' },
+  whyHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', minHeight: 28 },
+  whyTitle: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 2 },
+  whyChevron: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 14 },
+  recall: { borderWidth: 1, borderColor: colors.hairline, borderRadius: 8, padding: 12, gap: 6, backgroundColor: '#101013', minHeight: 44 },
+  recallQ: { color: colors.textPrimary, fontFamily: fonts.barlowSemiBold, fontSize: 14, lineHeight: 19 },
+  recallA: { color: colors.green, fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 18 },
+  recallHint: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 2 },
+  run: { borderLeftWidth: 2, borderLeftColor: colors.cyan, paddingLeft: 10, gap: 2 },
+  runLabel: { color: colors.cyanBright, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 2 },
+  runLine: { color: colors.textSecondary, fontFamily: fonts.barlowMedium, fontSize: 13.5, lineHeight: 18 },
 });

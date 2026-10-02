@@ -208,17 +208,106 @@ describe('rack + full screen on every live page', () => {
     assert.match(host, /onRollPrev: rollPrev/);
     assert.match(host, /DRUM_STEP_COUNTS\[prev\.id\] - 1/);
   });
-  it('stage text never falls under the 9 pt floor (≥ 10.5 design units at 360 wide); RN text ≥ 9 pt', () => {
-    for (const f of ['stagesDrum.tsx', 'stagesSignal.tsx']) {
-      const s = strip(read(`${DIR}/${f}`));
-      const sizes = [...s.matchAll(/fontSize=\{([\d.]+)\}/g)].map((m) => Number(m[1]));
-      assert.deepEqual(sizes.filter((n) => n < 10.5), [], `${f}: a literal SVG font size under 10.5 units`);
+  it('stage text never falls under the 9 pt floor ON THE PHONE: the real fit scale of every rack step at 375 and 390 wide; RN text ≥ 9 pt', () => {
+    const drum = strip(read(`${DIR}/stagesDrum.tsx`));
+    const signal = strip(read(`${DIR}/stagesSignal.tsx`));
+    const stages = drum + '\n' + signal;
+    const sizes = [...stages.matchAll(/fontSize=\{([\d.]+)\}/g)].map((m) => Number(m[1]));
+    assert.deepEqual(sizes.filter((n) => n < 10.5), [], 'a literal SVG font size under 10.5 units');
+    assert.match(drum, /export const FONT = 11;/);
+    assert.match(drum, /export const FONT_S = 10\.5;/);
+    const FONT_MIN = 10.5;
+    const DESIGN_W = 360;
+    // Every stage's aspect, from its exported height: `export const X_H = n`
+    // and `X_ASPECT = W / X_H`.
+    const heights = Object.fromEntries([...stages.matchAll(/export const (\w+)_H = (\d+);/g)].map((m) => [m[1], Number(m[2])]));
+    const aspectOf: Record<string, number> = {};
+    for (const m of stages.matchAll(/export const (\w+)_ASPECT = W \/ (\w+)_H;/g)) aspectOf[`${m[1]}_ASPECT`] = DESIGN_W / heights[m[2]];
+    assert.ok(Object.keys(aspectOf).length >= 8, 'the stage aspects were found');
+    // The rack's glass: STAGE_HEIGHTS by size (rack/rackTypes.ts), the
+    // glass is the window width minus the stage wrap's padding and border,
+    // StageFit pads 6 each side, and the drawing fits by WIDTH or by HEIGHT.
+    const rackTypes = read('src/screens/lab/rack/rackTypes.ts');
+    const hm = rackTypes.match(/STAGE_HEIGHTS[^=]*= \{ S: (\d+), M: (\d+), L: (\d+) \}/)!;
+    const STAGE_H: Record<string, number> = { S: Number(hm[1]), M: Number(hm[2]), L: Number(hm[3]) };
+    const PAD = 14;
+    const problems: string[] = [];
+    for (const f of MODULES) {
+      const s = strip(read(`${DIR}/modules/${f}`));
+      const blocks = s.split(/layout: 'rack'/).slice(1);
+      blocks.forEach((b, i) => {
+        const body = b.slice(0, b.indexOf('well:') > 0 ? b.indexOf('well:') : undefined);
+        const aspectExpr = body.match(/aspect: ([^\n]+)/)?.[1] ?? '';
+        const names = [...aspectExpr.matchAll(/(\w+_ASPECT)/g)].map((m) => m[1]);
+        assert.ok(names.length >= 1, `${f} rack ${i + 1}: aspect uses a named stage aspect`);
+        const aspect = Math.min(...names.map((n) => aspectOf[n] ?? NaN));
+        assert.ok(Number.isFinite(aspect), `${f} rack ${i + 1}: ${names.join(',')}`);
+        const size = body.match(/size: '([SML])'/)?.[1] ?? 'M';
+        const title = body.match(/title: '([^']+)'/)?.[1] ?? `rack ${i + 1}`;
+        for (const winW of [375, 390]) {
+          const glassW = winW - 22;
+          const drawW = Math.min(glassW - PAD, (STAGE_H[size] - PAD) * aspect);
+          const scale = drawW / DESIGN_W;
+          const pt = FONT_MIN * scale;
+          if (pt < 9) problems.push(`${f} "${title}" size ${size} aspect ${aspect.toFixed(2)} at ${winW} wide: ${pt.toFixed(1)} pt`);
+        }
+      });
     }
-    assert.match(strip(read(`${DIR}/stagesDrum.tsx`)), /export const FONT = 11;/);
-    assert.match(strip(read(`${DIR}/stagesDrum.tsx`)), /export const FONT_S = 10\.5;/);
+    assert.deepEqual(problems, [], 'stage text under 9 pt on a phone');
     for (const f of ['kit.tsx', 'DrumTuningLabScreen.tsx', 'modules/ch6Kit.tsx']) {
       const rn = [...strip(read(`${DIR}/${f}`)).matchAll(/fontSize: ([\d.]+)/g)].map((m) => Number(m[1]));
       assert.deepEqual(rn.filter((n) => n < 9), [], `${f}: text under 9 pt`);
+    }
+  });
+  it('glass captions fit the glass: the T60 label flips near the right edge, the last tick is end-anchored, captions are short', () => {
+    const st = strip(read(`${DIR}/stagesSignal.tsx`));
+    assert.match(st, /t60X > x1 - 78 \? 'end' : 'start'/, 'the T60 label never runs off the glass');
+    assert.match(st, /textAnchor=\{last \? 'end'/, 'the last time tick is anchored to its end');
+    // Bottom captions: ≤ 60 characters at FONT_S (≈ 5.5 units per character on a 330-unit line).
+    for (const m of st.matchAll(/fontSize=\{FONT_S\}[^>]*>([^<{]{20,})<\/SvgText>/g)) assert.ok(m[1].length <= 60, `caption too long to fit: "${m[1]}"`);
+    const drum = strip(read(`${DIR}/stagesDrum.tsx`));
+    for (const m of drum.matchAll(/fontSize=\{FONT_S\}[^>]*textAnchor="middle"[^>]*>([^<{]{20,})<\/SvgText>/g)) assert.ok(m[1].length <= 60, `caption too long to fit: "${m[1]}"`);
+  });
+  it('every rack page opens with a one-line "what you are looking at" and a prompt; no ■ STOP key on any dock (tapping the display stops); credit keys live on the dock', () => {
+    for (const f of MODULES) {
+      const s = strip(read(`${DIR}/modules/${f}`));
+      const racks = (s.match(/layout: 'rack'/g) ?? []).length;
+      const landings = (s.match(/<Landing looking=/g) ?? []).length;
+      assert.equal(landings, racks, `${f}: a Landing line per rack page`);
+      assert.doesNotMatch(s, /label: '■ STOP'/, `${f}: no STOP key on the dock`);
+      // Docks: at most six keys, and five where the page allows it.
+      for (const b of s.split(/params: \[/).slice(1)) {
+        const list = b.slice(0, b.indexOf('initialParam:'));
+        const keys = (list.match(/^\s{14}(faderParam|optionsParam|flipFader|\{ kind: '|stageKey)/gm) ?? []).length;
+        assert.ok(keys <= 6, `${f}: a dock with ${keys} keys`);
+      }
+    }
+    const ch2 = strip(read(`${DIR}/modules/ch2Prepare.tsx`));
+    assert.match(ch2, /id: 'reveal', label: revealed \? '✓ KEY SHOWN' : '✓ REVEAL THE KEY'/, 'REVEAL THE KEY is a dock action');
+    const ch5 = strip(read(`${DIR}/modules/ch5Types.tsx`));
+    assert.match(ch5, /id: 'check', label: '✓ CHECK'/, 'CHECK is a dock action');
+    assert.match(strip(read(`${DIR}/modules/ch7Trouble.tsx`)), /useState<StageView>\('drum'\)/, 'Chapter 7 lands on the drum');
+  });
+  it('dead controls are gone: TAP and STRIKE have a visible playing state; INSPECT reveals a fault only once looked at; the snare and kick faders draw', () => {
+    const drum = strip(read(`${DIR}/stagesDrum.tsx`));
+    assert.match(drum, /tapSync\?: SoundSync/);
+    assert.match(drum, /strikeSync\?: SoundSync/);
+    assert.match(drum, /useAnimatedStyle\(/);
+    assert.match(drum, /envAmpAt\(env, sp\.value\)/, 'the strike glow follows the measured envelope');
+    assert.match(drum, /look\?: LookAt/);
+    assert.match(drum, /scaleBySize/);
+    assert.match(drum, /<PitchLadder/, 'the snare and kick draw their heads\' pitches');
+    assert.match(drum, /stickA/, 'the snare stick follows the stroke');
+    assert.match(drum, /swingStyle/, 'the beater swings on the strike');
+    assert.match(drum, /fieldLevelColor\(/, 'the tension map rides the EVEN field ramp, not the meter plateau');
+    assert.match(strip(read(`${DIR}/stagesSignal.tsx`)), /<PartialBar/, 'partial bars fade with their own decay');
+    const ch2 = strip(read(`${DIR}/modules/ch2Prepare.tsx`));
+    assert.match(ch2, /inspected\.has\('head'\)/);
+    assert.match(ch2, /inspected\.has\(`lug\$\{faults\.looseLug\}`\)/);
+    assert.match(ch2, /inspected\.has\('edge'\)/);
+    for (const f of MODULES) {
+      const s = strip(read(`${DIR}/modules/${f}`));
+      if (/<DrumTopStage[^>]*tap=\{/.test(s) && /'▶ TAP'/.test(s)) assert.match(s, /tapSync=\{syncOf\(/, `${f}: ▶ TAP is seen as well as heard`);
     }
   });
   it('the playhead and the vibration view are SharedValue driven; the waveform is the real buffer on its time base', () => {
@@ -238,9 +327,10 @@ describe('level colours and the peak red', () => {
     for (const f of ['stagesDrum.tsx', 'stagesSignal.tsx']) {
       const s = strip(read(`${DIR}/${f}`));
       assert.match(s, /from '\.\.\/\.\.\/\.\.\/features\/tools\/levelColor'/, f);
-      assert.match(s, /levelColor\(/, f);
+      assert.match(s, /\blevelColor\(|fieldLevelColor\(/, f);
       assert.doesNotMatch(s, /#3fae52|#e8c341|#e6902f|#ff5f4e/, `${f}: ramp colours are sampled, never copied`);
     }
+    assert.match(strip(read(`${DIR}/stagesDrum.tsx`)), /mapTint = \(cents: number\): string => fieldLevelColor\(/, 'the map: equal cents = equal colour steps either side of even');
     assert.match(strip(read(`${DIR}/stagesSignal.tsx`)), /MIDLINE_BLUE/);
     assert.match(strip(read(`${DIR}/stagesSignal.tsx`)), /PEAK_RED/);
     assert.match(strip(read(`${DIR}/kit.tsx`)), /PEAK_RED/);
@@ -273,6 +363,66 @@ describe('guest rules, persistence and credit', () => {
       assert.match(s, /onInteractive\(\)/, f);
     }
     assert.match(strip(read(`${DIR}/modules/ch3Method.tsx`)), /useEffect\(\(\) => \{\s*if \(batterEven && !reported\.current\)/);
+  });
+  it('credit is not gameable: right flags, a seeded failing start, correct answers, a kit outside DISTINCT, a judgement after hearing, a hidden offset', () => {
+    const kit = strip(read(`${DIR}/kit.tsx`));
+    assert.match(kit, /if \(ok && !reported\.current\)/, 'a decision card reports only when the RIGHT option is reached');
+    assert.match(kit, /onAnswered\?\.\(!firstWrong\.current\)/, 'and remembers whether the first pick was right');
+    assert.match(kit, /shuffled\(s\.options\.length, hashId\(s\.id\)\)/, 'option order is stable per card');
+    const ch2 = strip(read(`${DIR}/modules/ch2Prepare.tsx`));
+    assert.match(ch2, /if \(perfect && !reported\.current\)/, 'Chapter 2 credit needs every flag right');
+    const ch3 = strip(read(`${DIR}/modules/ch3Method.tsx`));
+    assert.match(ch3, /const compose = \(base: HeadState, moved: number\[\]\)/, 'the practice head = hidden offsets + this run\'s moves');
+    assert.match(ch3, /value: pass\.moved\[lug\] \?\? 0/, 'the TURN fader shows only this run\'s move');
+    assert.doesNotMatch(ch3, /value: head\.turns\[lug\]/, 'the absolute offset is never on a fader');
+    assert.match(ch3, /showMap=\{mapShown \? true : 'hidden'\}/, 'the HEAR map is hidden until the learner has listened');
+    assert.match(ch3, /if \(tapped\.size < SPEC\.lugs\)/, 'REVEAL MAP needs every lug tapped');
+    assert.match(ch3, /which === 'batter' \? 'full' : 'brief'/, 'the resonant pass is independent');
+    assert.match(ch3, /SHOW ME A MOVE/, 'a worked example before independent practice');
+    const ch4 = strip(read(`${DIR}/modules/ch4Whole.tsx`));
+    assert.match(ch4, /if \(allHeard && longestRight && !reported\.current\)/, 'Chapter 4 credit needs the right judgement');
+    assert.match(ch4, /setTimeout\(\(\) => setHeard/, 'a relationship counts as heard only after it has sounded a while');
+    const ch5 = strip(read(`${DIR}/modules/ch5Types.tsx`));
+    assert.match(ch5, /if \(!touched\)/, 'Chapter 5 never credits an untouched drum');
+    assert.match(ch5, /function seedFor\(goal: GoalId, drum: DrumKind\)/, 'every goal starts from a state that fails it');
+    const ch6 = strip(read(`${DIR}/modules/ch6Kit.tsx`));
+    assert.match(ch6, /useState\(140\)/);
+    assert.match(ch6, /useState\(160\)/);
+    assert.equal(engine.tomInterval(140, 160).kind, 'unbalanced', 'Chapter 6 starts clearly outside DISTINCT');
+    const ch7 = strip(read(`${DIR}/modules/ch7Trouble.tsx`));
+    assert.match(ch7, /const investigated = struck && tappedEnough;/, 'Chapter 7: strike (and tap) before a hypothesis');
+    assert.match(ch7, /!investigated\s*\?[\s\S]*?: !hypothesised\s*\?[\s\S]*?optionsParam\(\{ id: 'where'/, 'then WHERE, then FIX');
+    assert.match(ch7, /label: !struck \? 'STRIKE 1ST'/, 'the FIX slot is locked until the drum has been struck');
+    assert.match(ch7, /k: 'VIEW'[^\n]*onPress: cycleView/, 'VIEW is a tap-to-cycle bezel cell, keeping the dock at five keys');
+    assert.match(ch7, /hypothesisRight/);
+    assert.match(ch7, /evidence\(\)/, 'the reply quotes the evidence');
+    assert.match(ch7, /RESET CASE puts it back/, 'a wrong fix names what it left behind');
+  });
+  it('REVIEW pages ask for retrieval and refer to the learner\'s run; jargon is defined at first use; the caution is on the seating and method pages', () => {
+    for (const f of MODULES) {
+      const s = strip(read(`${DIR}/modules/${f}`));
+      assert.ok((s.match(/<RecallCard /g) ?? []).length >= 3, `${f}: three recall cards`);
+      assert.match(s, /<YourRun lines=/, `${f}: a "your run" summary`);
+      assert.match(s, /TRY NEXT:/, `${f}: a try-next line`);
+    }
+    const ch1 = strip(read(`${DIR}/modules/ch1Sound.tsx`));
+    assert.doesNotMatch(ch1, /j₀₁|2πR|degenerate/, 'no formula or mode-theory vocabulary on the beginner pages');
+    assert.match(ch1, /the time it takes to fall 60 dB, which the lab calls T60/);
+    assert.match(ch1, /cents \(hundredths of a semitone\)/);
+    assert.match(ch1, /k: 'PITCH'/);
+    assert.match(ch1, /k: '1ST OVERTONE'/);
+    const content = read(`${DIR}/drumContent.ts`);
+    assert.match(content, /tuner app keeps jumping between two notes/, 'scenario s2 is a listening question, not a physics quiz');
+    assert.doesNotMatch(content, /Bessel/, 'no Bessel in the learner-facing content');
+    assert.match(content, /In this model, /, 'the relationships are the model\'s measurements');
+    assert.match(content, /describe the pitch bend of these two settings in opposite ways/);
+    assert.doesNotMatch(content, /deepest apparent|least apparent/);
+    assert.match(content, /never a wrench or pliers/, 'the caution');
+    assert.match(strip(read(`${DIR}/modules/ch2Prepare.tsx`)), /CAUTION_TITLE/);
+    assert.match(strip(read(`${DIR}/modules/ch3Method.tsx`)), /CAUTION_TITLE/);
+    const ch2 = strip(read(`${DIR}/modules/ch2Prepare.tsx`));
+    assert.match(ch2, /Hard hitters often choose thicker or two-ply batter heads/, 'no false universal about hard hitters');
+    assert.doesNotMatch(ch2, /Hard hitters want more tension/);
   });
   it('the pure progress logic: answers, interactive flag, done, reset keeps done + notes, notes cap', async () => {
     memory.clear();
@@ -339,11 +489,12 @@ describe('audio honours the gate', () => {
     assert.match(hook, /renderNow\(\);\s*\}, 120\)/);
     for (const f of MODULES) {
       const s = strip(read(`${DIR}/modules/${f}`));
-      // Chapter 2 (prepare) is the one silent chapter by design: inspection
-      // and the animated pattern, no strike.
-      if (f !== 'ch2Prepare.tsx') assert.ok(/useStrike\(|useTap\(|useDrumPlayback\(/.test(s), `${f}: plays through the gated hook`);
+      // Every chapter has a HEAR step through the engine — Chapter 2's is
+      // the known condition, struck (even rounds vs random turns).
+      assert.ok(/useStrike\(|useTap\(|useDrumPlayback\(/.test(s), `${f}: plays through the gated hook`);
       if (/'▶ (STRIKE|TAP|RACK|FLOOR|BOTH)/.test(s)) assert.ok(/useStrike\(|useTap\(|useDrumPlayback\(/.test(s), `${f}: a ▶ key without the hook`);
       assert.doesNotMatch(s, /requestAudioOutput|createAudioPlayer/, `${f}: never bypasses the hook`);
     }
+    assert.match(strip(read(`${DIR}/modules/ch2Prepare.tsx`)), /kind: 'HEAR', layout: 'rack'/, 'Chapter 2 has a HEAR step');
   });
 });

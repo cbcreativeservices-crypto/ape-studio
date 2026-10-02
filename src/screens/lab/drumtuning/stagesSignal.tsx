@@ -13,7 +13,7 @@
  */
 import { useMemo } from 'react';
 import { View } from 'react-native';
-import Animated, { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, type SharedValue } from 'react-native-reanimated';
 import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
 import { MIDLINE_BLUE, levelColor } from '../../../features/tools/levelColor';
@@ -34,7 +34,11 @@ export const WAVE_ASPECT = W / WAVE_H;
  * per column on the amplitude ramp; the measured RMS envelope (dB) drawn
  * over it; the T60 marker; the playhead riding the sounding clip.
  */
-export function WaveStage({ width, height, ov, envDb, t60, seconds, label, progress, playing, idle }: {
+/** A GOAL drawn on the time axis (Chapter 5): the sustain the goal asks for,
+ *  as a shaded zone the T60 mark has to land in. */
+export type WaveTarget = { kind: 'max' | 'min'; t: number; label: string; met: boolean | null };
+
+export function WaveStage({ width, height, ov, envDb, t60, seconds, label, progress, playing, idle, target }: {
   width: number;
   height: number;
   ov: Overview | null;
@@ -45,6 +49,7 @@ export function WaveStage({ width, height, ov, envDb, t60, seconds, label, progr
   progress: SharedValue<number>;
   playing: boolean;
   idle?: string;
+  target?: WaveTarget | null;
 }) {
   const top = 22;
   const bot = 150;
@@ -67,11 +72,21 @@ export function WaveStage({ width, height, ov, envDb, t60, seconds, label, progr
   }, [envDb]);
   const t60X = t60 != null ? x0 + Math.min(1, t60 / seconds) * (x1 - x0) : null;
   const ticks = Math.max(1, Math.floor(seconds * 2));
+  const tX = target ? x0 + Math.min(1, target.t / seconds) * (x1 - x0) : null;
+  const tTint = target ? (target.met == null ? ink.amber : target.met ? ink.green : ink.red) : ink.amber;
   return (
     <View style={{ width, height }}>
       <Svg width={width} height={height} viewBox={`0 0 ${W} ${WAVE_H}`}>
         <Rect x={0} y={0} width={W} height={WAVE_H} fill={ink.bg} />
         <Rect x={x0} y={top} width={x1 - x0} height={bot - top} fill="#0b0b0e" stroke={ink.stroke} strokeWidth={0.6} />
+        {/* the goal zone: where the T60 mark has to land */}
+        {target && tX != null ? (
+          <G>
+            <Rect x={target.kind === 'max' ? x0 : tX} y={top} width={target.kind === 'max' ? tX - x0 : x1 - tX} height={bot - top} fill={tTint} opacity={0.1} />
+            <Line x1={tX} y1={top} x2={tX} y2={bot} stroke={tTint} strokeWidth={0.9} strokeDasharray="2,2" />
+            <SvgText x={target.kind === 'max' ? Math.max(x0 + 3, tX - 3) : Math.min(tX + 3, x1 - 90)} y={bot - 5} fontSize={FONT_S} fill={tTint} textAnchor={target.kind === 'max' ? 'end' : 'start'} fontFamily={fonts.barlowMedium}>{target.label}</SvgText>
+          </G>
+        ) : null}
         {[0, -6, -12].map((db) => {
           const dy = half * Math.pow(10, db / 20);
           return (
@@ -95,23 +110,24 @@ export function WaveStage({ width, height, ov, envDb, t60, seconds, label, progr
         {t60X != null && ov ? (
           <G>
             <Line x1={t60X} y1={top} x2={t60X} y2={bot} stroke={ink.green} strokeWidth={0.9} strokeDasharray="3,2" />
-            <SvgText x={Math.min(t60X + 3, x1 - 60)} y={top + 11} fontSize={FONT} fill={ink.green} fontFamily={fonts.mono}>T60 ≈ {t60!.toFixed(2)} s</SvgText>
+            {/* the label never runs off the glass: it flips to the left of the mark near the right edge */}
+            <SvgText x={t60X > x1 - 78 ? t60X - 3 : t60X + 3} y={top + 11} fontSize={FONT} fill={ink.green} textAnchor={t60X > x1 - 78 ? 'end' : 'start'} fontFamily={fonts.mono}>T60 ≈ {t60!.toFixed(2)} s</SvgText>
           </G>
         ) : null}
-        {/* time axis */}
+        {/* time axis; the last tick's label is anchored to its end so it stays on the glass */}
         {Array.from({ length: ticks + 1 }, (_, k) => {
           const t = (k / ticks) * seconds;
           const x = x0 + (t / seconds) * (x1 - x0);
+          const last = k === ticks;
           return (
             <G key={k}>
               <Line x1={x} y1={bot} x2={x} y2={bot + 4} stroke={ink.dim} strokeWidth={0.8} />
-              <SvgText x={x} y={bot + 14} fontSize={FONT_S} fill={ink.dim} textAnchor="middle" fontFamily={fonts.mono}>{t.toFixed(1)}s</SvgText>
+              <SvgText x={x} y={bot + 14} fontSize={FONT_S} fill={ink.dim} textAnchor={last ? 'end' : k === 0 ? 'start' : 'middle'} fontFamily={fonts.mono}>{t.toFixed(1)}s</SvgText>
             </G>
           );
         })}
         <SvgText x={x0} y={WAVE_H - 20} fontSize={FONT} fill={ink.amber} fontFamily={fonts.oswaldMedium}>{label.toUpperCase()}</SvgText>
-        <SvgText x={x1} y={WAVE_H - 20} fontSize={FONT_S} fill={ink.dim} textAnchor="end" fontFamily={fonts.barlowMedium}>white line: RMS envelope, 10 ms blocks</SvgText>
-        <SvgText x={x0} y={WAVE_H - 5} fontSize={FONT_S} fill={ink.dim} fontFamily={fonts.barlowMedium}>columns: min/max of the synthesized buffer, real time base</SvgText>
+        <SvgText x={x0} y={WAVE_H - 5} fontSize={FONT_S} fill={ink.dim} fontFamily={fonts.barlowMedium}>real time base · white = loudness · green = died away</SvgText>
       </Svg>
       <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: 0, top: top * s, width: Math.max(1, 1.2 * s), height: (bot - top) * s, backgroundColor: colors.textPrimary }, headStyle]} />
     </View>
@@ -126,9 +142,21 @@ export const PART_ASPECT = W / PART_H;
 const LO_HZ = 40;
 const HI_HZ = 2500;
 
+/** One partial's bar, drawn as a view so it can FADE WITH ITS OWN DECAY while
+ *  the strike sounds (opacity = e^(−loss·t) at the clip position); at rest
+ *  it stands at its starting amplitude. */
+function PartialBar({ x, y, w, h, color, loss, seconds, progress, playing, s }: { x: number; y: number; w: number; h: number; color: string; loss: number; seconds: number; progress: SharedValue<number>; playing: boolean; s: number }) {
+  const style = useAnimatedStyle(() => {
+    const t = progress.value * seconds;
+    return { opacity: playing ? Math.max(0.04, Math.exp(-loss * t)) : 0.88 };
+  });
+  return <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: x * s, top: y * s, width: w * s, height: h * s, backgroundColor: color }, style]} />;
+}
+
 /** The strike's partials on a log frequency axis: height by amplitude,
- *  colour on the ramp, split pairs drawn as two bars with the beat rate. */
-export function PartialsStage({ width, height, partials, fb, label }: { width: number; height: number; partials: readonly Partial[]; fb: number; label: string }) {
+ *  colour on the ramp, split pairs drawn as two bars with the beat rate.
+ *  While the strike sounds, every bar fades with its own decay. */
+export function PartialsStage({ width, height, partials, fb, label, progress, playing, seconds }: { width: number; height: number; partials: readonly Partial[]; fb: number; label: string; progress?: SharedValue<number>; playing?: boolean; seconds?: number }) {
   const x0 = 24;
   const x1 = W - 8;
   const top = 24;
@@ -136,7 +164,15 @@ export function PartialsStage({ width, height, partials, fb, label }: { width: n
   const xOf = (hz: number) => x0 + (Math.log2(Math.max(LO_HZ, Math.min(HI_HZ, hz)) / LO_HZ) / Math.log2(HI_HZ / LO_HZ)) * (x1 - x0);
   const peak = Math.max(1e-6, ...partials.map((p) => p.amp));
   const pairs = partials.filter((p) => p.pairHz > 0);
+  const s = width / W;
+  const zero = useSharedValue(0);
+  const bars = partials.map((p) => {
+    const a = p.amp / peak;
+    const h = Math.max(2, a * (bot - top - 6));
+    return { x: xOf(p.hz) - 2.5, y: bot - h, w: 5, h, a, color: levelColor(a), loss: p.loss, label: p.label.replace(/[ab]$/, '') };
+  });
   return (
+    <View style={{ width, height }}>
     <Svg width={width} height={height} viewBox={`0 0 ${W} ${PART_H}`}>
       <Rect x={0} y={0} width={W} height={PART_H} fill={ink.bg} />
       <Rect x={x0} y={top} width={x1 - x0} height={bot - top} fill="#0b0b0e" stroke={ink.stroke} strokeWidth={0.6} />
@@ -146,17 +182,7 @@ export function PartialsStage({ width, height, partials, fb, label }: { width: n
           <SvgText x={xOf(hz)} y={bot + 12} fontSize={FONT_S} fill={ink.dim} textAnchor="middle" fontFamily={fonts.mono}>{hz >= 1000 ? `${hz / 1000}k` : hz}</SvgText>
         </G>
       ))}
-      {partials.map((p, i) => {
-        const a = p.amp / peak;
-        const h = Math.max(2, a * (bot - top - 6));
-        const x = xOf(p.hz);
-        return (
-          <G key={i}>
-            <Rect x={x - 2.5} y={bot - h} width={5} height={h} fill={levelColor(a)} opacity={p.pairHz ? 0.95 : 0.85} />
-            {a > 0.28 ? <SvgText x={x} y={bot - h - 4} fontSize={FONT_S} fill={ink.text} textAnchor="middle" fontFamily={fonts.mono}>{p.label.replace(/[ab]$/, '')}</SvgText> : null}
-          </G>
-        );
-      })}
+      {bars.map((b, i) => (b.a > 0.28 ? <SvgText key={i} x={b.x + 2.5} y={b.y - 4} fontSize={FONT_S} fill={ink.text} textAnchor="middle" fontFamily={fonts.mono}>{b.label}</SvgText> : null))}
       {/* beat annotations: one per split pair */}
       {pairs.filter((p) => p.pairHz > 0).slice(0, 2).map((p, k) => (
         <SvgText key={k} x={x1 - 4} y={top + 12 + k * 13} fontSize={FONT} fill={ink.amber} textAnchor="end" fontFamily={fonts.mono}>
@@ -165,10 +191,14 @@ export function PartialsStage({ width, height, partials, fb, label }: { width: n
       ))}
       {pairs.length === 0 ? <SvgText x={x1 - 4} y={top + 12} fontSize={FONT} fill={ink.green} textAnchor="end" fontFamily={fonts.mono}>no split pairs · even head</SvgText> : null}
       <Line x1={xOf(fb)} y1={top} x2={xOf(fb)} y2={bot} stroke={ink.cyan} strokeWidth={0.8} strokeDasharray="3,2" />
-      <SvgText x={xOf(fb) + 3} y={top + 12} fontSize={FONT_S} fill={ink.cyan} fontFamily={fonts.mono}>batter (0,1) {fb.toFixed(0)} Hz</SvgText>
+      <SvgText x={xOf(fb) + 3} y={top + 12} fontSize={FONT_S} fill={ink.cyan} fontFamily={fonts.mono}>batter pitch {fb.toFixed(0)} Hz</SvgText>
       <SvgText x={x0} y={PART_H - 20} fontSize={FONT} fill={ink.amber} fontFamily={fonts.oswaldMedium}>{label.toUpperCase()}</SvgText>
-      <SvgText x={x0} y={PART_H - 5} fontSize={FONT_S} fill={ink.dim} fontFamily={fonts.barlowMedium}>partials from the model that made the sound · height = starting amplitude · Hz</SvgText>
+      <SvgText x={x0} y={PART_H - 5} fontSize={FONT_S} fill={ink.dim} fontFamily={fonts.barlowMedium}>height = how loud it starts · bars fade with the hit</SvgText>
     </Svg>
+    {bars.map((b, i) => (
+      <PartialBar key={i} x={b.x} y={b.y} w={b.w} h={b.h} color={b.color} loss={b.loss} seconds={seconds ?? 1} progress={progress ?? zero} playing={!!playing} s={s} />
+    ))}
+    </View>
   );
 }
 
@@ -246,7 +276,7 @@ export function PitchStage({ width, height, traces, seconds, resoCents, progress
             <SvgText x={x1 - 3} y={yOf(resoCents) - 3} fontSize={FONT_S} fill={ink.green} textAnchor="end" fontFamily={fonts.mono}>reso head {resoCents >= 0 ? '+' : ''}{resoCents.toFixed(0)}¢</SvgText>
           </G>
         ) : null}
-        <SvgText x={x0 + 3} y={yOf(0) - 3} fontSize={FONT_S} fill={ink.cyan} fontFamily={fonts.mono}>batter (0,1) = 0¢</SvgText>
+        <SvgText x={x0 + 3} y={yOf(0) - 3} fontSize={FONT_S} fill={ink.cyan} fontFamily={fonts.mono}>batter's own pitch = 0¢</SvgText>
         {segs.length ? segs.map((tr) => tr.segs.map((sg, k) => <Path key={`${tr.label}${k}`} d={sg.d} stroke={ink.amber} strokeWidth={2} fill="none" opacity={0.12 + 0.88 * Math.min(1, sg.a)} />)) : (
           <SvgText x={(x0 + x1) / 2} y={(top + bot) / 2 + 4} fontSize={F2} fill={ink.dim} textAnchor="middle" fontFamily={fonts.barlowMedium}>press ▶ STRIKE — the pitch trace draws here</SvgText>
         )}
@@ -261,7 +291,7 @@ export function PitchStage({ width, height, traces, seconds, resoCents, progress
           );
         })}
         <SvgText x={x0} y={PITCH_H - 20} fontSize={FONT} fill={ink.amber} fontFamily={fonts.oswaldMedium}>{label.toUpperCase()}</SvgText>
-        <SvgText x={x0} y={PITCH_H - 5} fontSize={FONT_S} fill={ink.dim} fontFamily={fonts.barlowMedium}>cents vs the batter's own (0,1) · line brightness = that mode's loudness · from the model that made the sound</SvgText>
+        <SvgText x={x0} y={PITCH_H - 5} fontSize={FONT_S} fill={ink.dim} fontFamily={fonts.barlowMedium}>cents vs the batter's own pitch · brighter = louder</SvgText>
       </Svg>
       <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: 0, top: top * s, width: Math.max(1, 1.2 * s), height: (bot - top) * s, backgroundColor: colors.textPrimary }, headStyle]} />
     </View>
@@ -357,7 +387,7 @@ export function VibrationStage({ width, height, n, s, mix, hz, label, progress, 
       <Path d={paths.nodal} stroke={colors.textPrimary} strokeWidth={1.6} fill="none" />
       <SvgText x={6} y={14} fontSize={FONT} fill={ink.amber} fontFamily={fonts.oswaldMedium}>{label.toUpperCase()}</SvgText>
       <SvgText x={W - 6} y={14} fontSize={FONT} fill={ink.cyan} textAnchor="end" fontFamily={fonts.mono}>({n},{s}) · {hz.toFixed(0)} Hz</SvgText>
-      <SvgText x={W / 2} y={VIB_H - 6} fontSize={FONT_S} fill={ink.dim} textAnchor="middle" fontFamily={fonts.barlowMedium}>white = still lines (nodes) · the motion is strobed and fades with the hit's measured envelope</SvgText>
+      <SvgText x={W / 2} y={VIB_H - 6} fontSize={FONT_S} fill={ink.dim} textAnchor="middle" fontFamily={fonts.barlowMedium}>white = still lines · fades with the hit</SvgText>
     </Svg>
   );
   const over = (d: string[], color: string) => (
