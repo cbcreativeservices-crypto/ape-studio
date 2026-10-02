@@ -272,6 +272,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-02 10:29 · ccode · 67a2d5d9
+changed: Pattern hunt wave 1 (Option A shared fixes): central sound-start fence (A1, 29 sites), Supabase bounded fetch (A4), createLocalStore + registry (A2, 6 stores migrated) with G1-G4 ratchet guards
+affects other side: client only. NOTE for A: every supabase-js request now has a client-side deadline (30 s REST/auth, 45 s functions, 120 s storage); a slow server call past that now returns an error to the app
+needs: nothing
+
+
+### 2026-10-02 09:59 · ccode · b7005fdf
+changed: web: temporary public launch page at / (launch Mon Oct 12) + public /accessibility
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-10-02 09:56 · ccode · 29d84c05
 changed: Bug pattern catalog (phase 1 of the pattern-based hunt): 25 patterns, detection signatures, sweep plan, guard tests
 affects other side: nothing (doc only; P3/P6 server-side classes noted for A in its §A6)
