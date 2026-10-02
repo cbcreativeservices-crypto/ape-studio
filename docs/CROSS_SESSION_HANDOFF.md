@@ -250,6 +250,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-01 18:22 · ccode · 84d55652
+changed: Toddler pass 2 on the three new labs: Drum 8 (+2 corrections), Mastering 5 (+2), Room 8 (+3); room store never overwrites an unreadable store or lists a failed save
+affects other side: nothing (client-only lab fixes)
+needs: nothing
+
+
 ### 2026-10-01 18:01 · ccode · 0d1f56ea
 changed: Toddler pass 1 on the three new labs: Drum 12 + Room 10 (+3 corrections) + Mastering 7 (+4 corrections); room store reports a failed save
 affects other side: nothing (client-only lab fixes)
