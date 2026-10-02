@@ -64,11 +64,12 @@ const progress = await import('../src/screens/lab/drumtuning/drumProgress.ts');
 const engine = await import('../src/screens/lab/drumtuning/drumEngine.ts');
 
 describe('registration', () => {
-  it('the catalog lists it as a members-only Instruments & Recording lab with a real route', () => {
+  it('the catalog lists it as a members-only Pitch & Tuning lab with a real route (owner 2026-10-01)', () => {
     const cat = read('src/screens/lab/labCatalog.ts');
     assert.match(cat, /name: 'Drum Tuning Lab'[^\n]*route: 'DrumTuningLab', member: true/);
-    const block = cat.slice(cat.indexOf("id: 'instruments'"), cat.indexOf("route: 'DrumTuningLab'"));
-    assert.match(block, /section: 'training'/, 'it lives in the training section (Instruments & Recording)');
+    const block = cat.slice(cat.indexOf("id: 'pitch'"), cat.indexOf("route: 'DrumTuningLab'"));
+    assert.match(block, /section: 'training'/, 'it lives in the training section (Pitch & Tuning)');
+    assert.doesNotMatch(block, /id: '(visualization|instruments)'/, 'no other category sits between Pitch & Tuning and the drum entry');
   });
   it('the navigator registers it through withMembershipPreview', () => {
     const nav = strip(read('src/navigation/RootNavigator.tsx'));

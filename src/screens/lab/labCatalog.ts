@@ -351,7 +351,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     id: 'pitch',
     glyph: '🎵',
     name: 'Pitch & Tuning',
-    description: 'Pitch correction and tuning systems.',
+    description: 'Pitch correction, tuning systems and drum tuning.',
     section: 'training',
     kind: 'list',
     labs: [
@@ -359,6 +359,13 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       // LIVE (owner build spec 2026-09-02): the former 'Tunings Lab'
       // placeholder, built as the fourteen-chapter Tuning & Temperament Lab.
       { name: 'Tuning & Temperament Lab', blurb: 'How musical scales are built, heard, and compared — pure fifths, the comma, Just, meantone, and equal temperament.', route: 'TuningLab' },
+      // Drum Tuning Lab (owner spec 2026-10-01; moved here from Instruments &
+      // Recording by the owner the same day): prepare, tune, listen to and
+      // troubleshoot acoustic drums on a synthesized membrane model — seven
+      // chapters, each with a named interactive. Member-only like its
+      // neighbours (the training section); `member: true` stated anyway so
+      // the gate never depends on the section alone.
+      { name: 'Drum Tuning Lab', blurb: 'Prepare, tune, listen to and troubleshoot acoustic drums — turn one rod and hear the warble, even a head lug by lug, compare batter/resonant relationships, tune a snare, toms and a kick for a stated sound, build the tom range, diagnose by symptom.', route: 'DrumTuningLab', member: true },
     ],
   },
   {
@@ -399,12 +406,6 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       // optional mic-locker exercise. Selection & characteristics only — the
       // physics/technique labs stay separate.
       { name: 'Microphone Selection Lab', blurb: 'Read the specs, weigh the job, make a defensible choice — types, characteristics, patterns, and the Choose-the-Mic challenge.', route: 'MicSelectLab' },
-      // Drum Tuning Lab (owner spec 2026-10-01): prepare, tune, listen to and
-      // troubleshoot acoustic drums on a synthesized membrane model — seven
-      // chapters, each with a named interactive. Member-only like its
-      // neighbours (the training section); `member: true` stated anyway so
-      // the gate never depends on the section alone.
-      { name: 'Drum Tuning Lab', blurb: 'Prepare, tune, listen to and troubleshoot acoustic drums — turn one rod and hear the warble, even a head lug by lug, compare batter/resonant relationships, tune a snare, toms and a kick for a stated sound, build the tom range, diagnose by symptom.', route: 'DrumTuningLab', member: true },
     ],
   },
   // REMOVED 2026-09-17 (owner): the whole "Mixing & Production" category
