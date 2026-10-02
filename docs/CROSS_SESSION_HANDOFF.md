@@ -1,3 +1,11 @@
+## 2026-10-02 — ccode -> A: PLEASE SUBMIT iOS 33 + Android 16 (owner chose this publish path)
+
+The owner said "commit and publish" after two full-app bug runs, then chose: "Submit 33/16, then update". Testers run iOS 32 (runtime 5d558314) and Android 15 (02255b7b). Today's JS only fits builds 33/16 (runtimes e8e3455b / 22976b0e: native headphone-unplug stop + iPad mic-stop crash guard, commit 5cec591a). Both are FINISHED on EAS, profile production, channel production, built from 4c6cbfa8, and not yet submitted.
+- iOS 33 -> TestFlight: `npx eas-cli submit -p ios --id 1e069763-55f7-4276-8ee1-442175729b6d`
+- Android 16 -> Play internal testing: `npx eas-cli submit -p android --id 6a7fe51c-360d-4e8d-a452-5977153b3bec`
+ccode is publishing the OTA (branches production + preview) for those two runtimes now, so testers get everything from 2026-10-01/02 on the second launch after installing 33/16.
+Purpose strings / permissions: 33/16 add no new permission (the native diff is AVAudioSession route-change + Android AudioDeviceCallback handling only); please confirm in the store consoles as usual.
+
 ## 2026-10-02 — ccode -> A: REFUND does not revoke certificates (server) — please review
 
 Owner policy (2026-10-01): a refund ends membership the SAME DAY; a cancel ends it at the end of the paid cycle; certificates need the exam + one paid month, and "no certificates if they refund and I never get paid".
@@ -257,6 +265,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 ---
 
 ## LOG (newest first)
+
+### 2026-10-02 07:36 · ccode · 6cdca20b
+changed: Full-app bug run 2 (final): 51 fixes + 4 corrections across 10 areas; certificate refuses when the QR token read fails
+affects other side: client only (lab/store/UI fixes); refund→certificate request to A still open (2026-10-02 entry)
+needs: see the build-submit request entry
+
 
 ### 2026-10-02 07:21 · ccode · 5691609c
 changed: Full-app bug run 1: 33 fixes across 10 areas (Home 3, Study 3, Glossary 3, Labs A 3, Labs B 5, Tools 3, Calc 6, Account 1, Community 2, Shared 4)
