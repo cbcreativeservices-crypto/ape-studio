@@ -2384,9 +2384,15 @@ ${COPY.glossaryFreeAllowance}`,
   ensureDefsRef.current = ensureDefinitions;
 
   // A new corpus (sign-in swaps the table) invalidates what we have asked for.
+  // ⛔ …and so does a RELOADED one (full-app run 1, 2026-10-01). The 5-minute
+  // background release drops the cache while this screen can stay mounted (Σ to
+  // the Calculator Lab, a lab action, the Paywall); coming back re-loads fresh
+  // entries with blank definitions, and every id still in this set was skipped
+  // by queueDefinition — each term the reader had already scrolled past showed
+  // an empty definition for the rest of the visit.
   useEffect(() => {
     requestedDefsRef.current = new Set();
-  }, [table]);
+  }, [table, entries]);
 
   // A different reader (sign-out, a new account, joining mid-session) must not
   // keep the last one's definitions: the session cache is shared across mounts

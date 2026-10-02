@@ -72,7 +72,9 @@ test('LP5 Bass lab: ■ is never disabled, and the signed-URL fetch is bounded',
 
 test('LP2 Harmonics: the live tone auto-starts only into an open gate', () => {
   const s = read('src/screens/lab/HarmonicsView.tsx');
-  assert.match(s, /if \(feedbackAllowed && !genRunning && isAudioOutputEnabled\(\)\) void startTone\(\);/);
+  // Full run 1 (2026-10-01) added `&& AppState.currentState === 'active'`
+  // (test/labsAFullRun1_20261001.test.ts); the open-gate check stays.
+  assert.match(s, /if \(feedbackAllowed && !genRunning && isAudioOutputEnabled\(\)( && AppState\.currentState === 'active')?\) void startTone\(\);/);
 });
 
 test('LP4 shell: the entry audio prompt stays away under Low-Light / suppressed overlays', () => {

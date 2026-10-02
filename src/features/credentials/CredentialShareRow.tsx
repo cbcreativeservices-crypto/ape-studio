@@ -46,6 +46,8 @@ export function CredentialShareRow({
   const [token, setToken] = useState<string | null>(null);
   const [url, setUrl] = useState<string | null>(null);
   const [busy, setBusy] = useState<null | 'copy' | 'link' | 'qr'>(null);
+  /** Re-runs the reads below — SHARE QR asks for it when the token is missing. */
+  const [loadNonce, setLoadNonce] = useState(0);
 
   useEffect(() => {
     let alive = true;
@@ -62,7 +64,7 @@ export function CredentialShareRow({
     return () => {
       alive = false;
     };
-  }, []);
+  }, [loadNonce]);
 
   const copy = useCallback(async () => {
     setBusy('copy');
@@ -80,6 +82,19 @@ export function CredentialShareRow({
   }, [credentialName, onMessage]);
 
   const qr = useCallback(async () => {
+    /**
+     * NO TOKEN, NO CARD (full-app run 1, 2026-10-01). Tapped before the reads
+     * above landed — or after a read that came back empty — the card was
+     * photographed as it stood: no QR, "still being set up" for the address,
+     * and the placeholder 'Academy Member' in place of the member's name. That
+     * image went out through the share sheet as their credential. Say the
+     * honest thing and read again, so "try again shortly" actually works.
+     */
+    if (!token) {
+      setLoadNonce((n) => n + 1);
+      onMessage(shareOutcomeMessage({ ok: false, reason: 'no_token' }, 'QR'));
+      return;
+    }
     setBusy('qr');
     const ok = await captureAndShare(
       cardRef.current,
@@ -91,7 +106,7 @@ export function CredentialShareRow({
     // cancelled", so this cannot distinguish them — it says the one thing that
     // is true either way rather than guessing.
     onMessage(ok ? null : 'Could not share the QR image. You can copy the link instead.');
-  }, [url, onMessage]);
+  }, [token, url, onMessage]);
 
   const imageAvailable = canShareImage();
 

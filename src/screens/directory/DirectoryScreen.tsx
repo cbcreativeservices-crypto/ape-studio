@@ -10,7 +10,7 @@
  * showBrand=false (the pager already shows the logo up top). The old standalone
  * `Directory` modal route that wrapped it was unreachable and removed 2026-09-10.
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Image as ExpoImage } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -23,8 +23,7 @@ import { loadPublicProfile } from '../../features/profile/publicProfile';
 import { fetchMyQrToken } from '../../features/profile/api';
 import { REGISTRY_BASE_URL } from '../../features/profile/registry';
 import { CredentialQr } from '../../components/CredentialQr';
-import { useBundles } from '../../features/enrollment/enrolledBundlesStore';
-import { useEnrollmentProgress } from '../../features/enrollment/enrollmentProgress';
+import { fetchMyCredentials } from '../../features/credentials/api';
 import { readingColumn } from '../../theme/readingColumn';
 
 const DIRECTORY_INTRO_TITLE = 'Get Discovered';
@@ -111,6 +110,8 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
   // pending copy below then told a paid-up member their account was "still
   // setting up". Track the two apart and say which one it is.
   const [qrFailed, setQrFailed] = useState(false);
+  /** Earned (non-revoked) credentials; null = not known (guest, loading, failed). */
+  const [credCount, setCredCount] = useState<number | null>(null);
   useEffect(() => {
     // Neither promise carried a .catch — an AsyncStorage or RPC throw here was an
     // unhandled rejection that also froze the name at its empty default.
@@ -123,8 +124,18 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
     // fetch was out — and for good if that fetch threw, because the reject
     // arm only set `qrFailed` and the QR branch renders first.
     setQrToken(null);
+    setCredCount(null);
     let alive = true;
     if (accountConfirmed) {
+      // GRADUATE = an EARNED credential on the record (full-app run 1,
+      // 2026-10-01), never a proxy. A failed read leaves it unknown and the
+      // badge is not drawn, rather than guessing either way.
+      void fetchMyCredentials().then(
+        (rows) => {
+          if (alive) setCredCount(rows.length);
+        },
+        () => {},
+      );
       setQrFailed(false);
       void fetchMyQrToken().then(
         (t) => {
@@ -142,14 +153,17 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
     };
   }, [accountConfirmed]);
   // A member is listed as "User" until they earn their first certificate or
-  // program, then "Graduate" (user request 2026-07-22). Proxy: any enrolled
-  // cert/program bundle with all topics complete.
-  const bundles = useBundles();
-  const bundleGs = useMemo(() => Array.from(new Set(bundles.flatMap((b) => b.topics))), [bundles]);
-  const bundleProg = useEnrollmentProgress(bundleGs);
-  const isGraduate = bundles.some(
-    (b) => b.kind !== 'subject' && b.topics.length > 0 && b.topics.every((gs) => (bundleProg.get(gs)?.pct ?? 0) >= 100),
-  );
+  // program, then "Graduate" (user request 2026-07-22).
+  //
+  // ⛔ NOT A PROXY (full-app run 1, 2026-10-01). This was "any enrolled
+  // cert/program bundle with every topic at 100%", but finishing the topics
+  // does not earn a credential: the Final Exam has to be passed, and the
+  // award's required set also carries the four standing requirements the
+  // bundle does not list. So a learner who had only finished the study read
+  // GRADUATE above their Registry QR — a credential claim, shown as fact, that
+  // the Registry it links to would not back up. Now it reads the server's
+  // earned credentials (revoked ones excluded).
+  const isGraduate = credCount != null && credCount > 0;
   return (
     <>
     <ScrollView style={{ flex: 1 }} contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 28 }]}>
@@ -229,7 +243,7 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
           <Text style={styles.registryConfirmName}>{registryName || 'Add your Registry name — tap SET UP MY PROFILE below'}</Text>
           {/* Listed as "User" until the first earned certificate/program, then
               "Graduate" (user request 2026-07-22). */}
-          <Text style={styles.registryStatus}>{isGraduate ? 'GRADUATE' : 'USER'}</Text>
+          {credCount != null ? <Text style={styles.registryStatus}>{isGraduate ? 'GRADUATE' : 'USER'}</Text> : null}
           {qrToken ? (
             <Text style={styles.registryLink} numberOfLines={1}>
               Scan to verify, or enter your code at{' '}

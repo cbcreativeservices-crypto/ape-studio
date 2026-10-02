@@ -48,7 +48,7 @@ import { ApeDsp, GEN_MODES } from '../../../../modules/ape-dsp';
 import { GlassButton } from '../../../components/GlassButton';
 import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
-import { isAudioOutputEnabled, noteAudioActivity } from '../../../features/audio/audioOutputStore';
+import { getSoundStopEpoch, isAudioOutputEnabled, noteAudioActivity } from '../../../features/audio/audioOutputStore';
 import { guardAdditiveForEngine, guardToneLevelForEngine } from '../../../features/audio/speakerSafety';
 import { playWithHearingWarning } from '../../../features/audio/levelHearingWarning';
 import { EngineGate } from '../../tools/EngineGate';
@@ -184,11 +184,20 @@ export function useCourseTone(engineReady: boolean): ToneApi {
           levelDb: guardToneLevelForEngine(levelRef.current, freqRef.current),
         });
         try {
+          // Every sound stopped while the native start was in flight (leaving the app
+          // with "Mute audio when I leave the app" OFF stops voices but leaves the
+          // gate ON — full-app run 1, 2026-10-01): this start must not sound on.
+          const stopEpoch = getSoundStopEpoch();
           await ApeDsp.genStart();
           // A mute that landed while the native start was in flight wins — never
           // leave a tone sounding into a closed gate (owner 2026-09-29).
           if (gen !== genRef.current || !isAudioOutputEnabled()) {
             if (stopGenRef.current === genRef.current || !isAudioOutputEnabled()) void ApeDsp.genStop();
+            return;
+          }
+          // Every sound was stopped while the native start ran: stay quiet.
+          if (getSoundStopEpoch() !== stopEpoch) {
+            void ApeDsp.genStop();
             return;
           }
           setPlaying(true);
@@ -258,11 +267,20 @@ export function useCourseTone(engineReady: boolean): ToneApi {
           levelDb: db,
         });
         try {
+          // Every sound stopped while the native start was in flight (leaving the app
+          // with "Mute audio when I leave the app" OFF stops voices but leaves the
+          // gate ON — full-app run 1, 2026-10-01): this start must not sound on.
+          const stopEpoch = getSoundStopEpoch();
           await ApeDsp.genStart();
           // A mute that landed while the native start was in flight wins — never
           // leave a tone sounding into a closed gate (owner 2026-09-29).
           if (gen !== genRef.current || !isAudioOutputEnabled()) {
             if (stopGenRef.current === genRef.current || !isAudioOutputEnabled()) void ApeDsp.genStop();
+            return;
+          }
+          // Every sound was stopped while the native start ran: stay quiet.
+          if (getSoundStopEpoch() !== stopEpoch) {
+            void ApeDsp.genStop();
             return;
           }
           setPlaying(true);
@@ -296,11 +314,20 @@ export function useCourseTone(engineReady: boolean): ToneApi {
         ApeDsp.genSet({ mode: GEN_MODES.sine, frequency: fL, levelDb: db, stereo: { on: true, fL, fR } });
         stereoRef.current = true;
         try {
+          // Every sound stopped while the native start was in flight (leaving the app
+          // with "Mute audio when I leave the app" OFF stops voices but leaves the
+          // gate ON — full-app run 1, 2026-10-01): this start must not sound on.
+          const stopEpoch = getSoundStopEpoch();
           await ApeDsp.genStart();
           // A mute that landed while the native start was in flight wins — never
           // leave a tone sounding into a closed gate (owner 2026-09-29).
           if (gen !== genRef.current || !isAudioOutputEnabled()) {
             if (stopGenRef.current === genRef.current || !isAudioOutputEnabled()) void ApeDsp.genStop();
+            return;
+          }
+          // Every sound was stopped while the native start ran: stay quiet.
+          if (getSoundStopEpoch() !== stopEpoch) {
+            void ApeDsp.genStop();
             return;
           }
           setPlaying(true);

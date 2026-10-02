@@ -226,6 +226,7 @@ export function speedOfSoundAir(tempC: number): number {
  *   "10.5"        → 10.5
  *   "-3e-4"       → -0.0003
  *   "10,5"        → null     decimal comma or a typo'd group? do not guess
+ *   "0,500"       → null     a decimal comma (0.5) — never a thousands group
  *   "12abc"       → null     parseFloat said 12
  *   ""            → null
  */
@@ -250,13 +251,17 @@ export function parseQuantity(raw: string): number | null {
     // `10,00.5` had its comma stripped and came back as 15.3 / 1000.5.
     const g = grouping === '.' ? '\\.' : ',';
     const d = decimal === '.' ? '\\.' : ',';
-    if (!new RegExp(`^[+-]?\\d{1,3}(${g}\\d{3})+${d}\\d*([eE][+-]?\\d+)?$`).test(t)) return null;
+    // First group [1-9]: a group cannot lead with 0 (see the commas-only branch).
+    if (!new RegExp(`^[+-]?[1-9]\\d{0,2}(${g}\\d{3})+${d}\\d*([eE][+-]?\\d+)?$`).test(t)) return null;
     normalised = t.split(grouping).join('');
     if (decimal === ',') normalised = normalised.replace(',', '.');
   } else if (commas > 0) {
     // Commas only. Grouping if EVERY comma is followed by exactly three digits;
     // otherwise it is a decimal comma or a typo, and both are ambiguous here.
-    const groupsOk = /^[+-]?\d{1,3}(,\d{3})+$/.test(t);
+    // The FIRST group may not start with 0 (full-app run 1, 2026-10-01): no
+    // grouped number is written "0,500", but a decimal-comma user writes 0.5
+    // exactly that way — and `\d{1,3}` read it as 500, a silent 1000× error.
+    const groupsOk = /^[+-]?[1-9]\d{0,2}(,\d{3})+$/.test(t);
     if (!groupsOk) return null;
     normalised = t.split(',').join('');
   } else if (dots > 1) {

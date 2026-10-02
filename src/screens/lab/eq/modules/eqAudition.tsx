@@ -20,7 +20,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, EQ_BAND_TYPES, FX, FX_PARAM, GEN_MODES, type GenParams } from '../../../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../../../features/audio/AudioOutputGate';
-import { isAudioOutputEnabled, noteAudioActivity } from '../../../../features/audio/audioOutputStore';
+import { getSoundStopEpoch, isAudioOutputEnabled, noteAudioActivity } from '../../../../features/audio/audioOutputStore';
 import type { EqBandSpec } from '../../../../features/lab/fxViz';
 import { colors, fonts } from '../../../../theme/tokens';
 import { MiniBtn } from './eqBits';
@@ -111,6 +111,10 @@ export function EqAuditionBar({ bands }: { bands: EqBandSpec[] }) {
       ApeDsp.genSet({ levelDb: GEN_LEVEL_DB, ...src.gen });
       pushBands(bands);
       try {
+        // Every sound stopped while the native start was in flight (leaving the app
+        // with "Mute audio when I leave the app" OFF stops voices but leaves the
+        // gate ON — full-app run 1, 2026-10-01): this start must not sound on.
+        const stopEpoch = getSoundStopEpoch();
         await ApeDsp.genStart();
         // A mute that landed while the native start was in flight wins — never
         // leave a tone sounding into a closed gate (owner 2026-09-29).
@@ -121,6 +125,12 @@ export function EqAuditionBar({ bands }: { bands: EqBandSpec[] }) {
             void ApeDsp.genStop();
             ApeDsp.fxReset();
           }
+          return;
+        }
+        // Every sound was stopped while the native start ran: stay quiet.
+        if (getSoundStopEpoch() !== stopEpoch) {
+          void ApeDsp.genStop();
+          ApeDsp.fxReset();
           return;
         }
         if (sourceRef.current !== src.key) ApeDsp.genSet({ levelDb: GEN_LEVEL_DB, ...srcOf(sourceRef.current).gen });

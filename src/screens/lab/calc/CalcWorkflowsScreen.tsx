@@ -113,7 +113,9 @@ export function CalcWorkflowsScreen() {
   };
 
   const moveMine = (id: string, dir: -1 | 1) => {
-    void workflowStore.moveWorkflow(id, dir).then(setMine);
+    void workflowStore.moveWorkflow(id, dir).then((list) => {
+      if (list) setMine(list);
+    });
   };
 
   // One copy per tap (toddler pass 2026-09-30): a double-tapped DUPLICATE ran

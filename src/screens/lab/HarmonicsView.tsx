@@ -111,7 +111,7 @@
  * prior behavior and honesty notes (graceful fallback, nothing breaks).
  */
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactElement, type ReactNode } from 'react';
-import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, AppState, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Modal } from '../../components/DimModal';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import Svg, { Defs, Line, LinearGradient, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
@@ -1369,7 +1369,12 @@ export function HarmonicsView({
     // shake-to-mute / idle lock the tone stops but the mic keeps capturing,
     // and this effect re-ran startTone → the audio popup reappeared unasked.
     // The learner's own LIVE tap (onLiveStart) still asks the gate.
-    if (feedbackAllowed && !genRunning && isAudioOutputEnabled()) void startTone();
+    // …and ONLY while the app is in front (full run 1, 2026-10-01): with "Mute
+    // audio when I leave the app" OFF the gate stays open on leaving, and with
+    // "Release microphone in the background" OFF the mic keeps capturing — so
+    // stopAllSound's stopTone flipped genRunning and this effect restarted the
+    // tone behind the user.
+    if (feedbackAllowed && !genRunning && isAudioOutputEnabled() && AppState.currentState === 'active') void startTone();
     else if (!feedbackAllowed && genRunning) stopTone();
   }, [view, running, feedbackAllowed, genRunning, startTone, stopTone]);
 

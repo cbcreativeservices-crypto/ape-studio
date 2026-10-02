@@ -97,6 +97,20 @@ function closeStream(): Promise<void> {
   return p;
 }
 
+/**
+ * Was the session RELEASED while an acquire waited on a stop or an orphaned
+ * start (full run 1, 2026-10-01)? The forceRestart path already asked this
+ * (night pass 2); the three other waits did not. Back to a tool, then Home
+ * again inside the wait (releaseMicNow), and the acquire still opened the mic
+ * once the old stop settled — capture live in the BACKGROUND with the OS mic
+ * indicator lit, for an owner that had already gone, until its debounced
+ * release fired. A release bumps startGen and leaves nothing starting; a
+ * rival acquire that started meanwhile leaves 'starting', which is joined.
+ */
+function releasedWhileWaiting(genBefore: number): boolean {
+  return startGen !== genBefore && streamState === 'stopped' && !startInFlight;
+}
+
 function cancelPendingRelease(): void {
   if (releaseTimer) {
     clearTimeout(releaseTimer);
@@ -188,7 +202,9 @@ async function acquireInner(cfg: EngineConfig, forceRestart = false): Promise<vo
     // Tracked in stopInFlight (night pass 2): a second acquire landing inside
     // this await waits for the close instead of starting under it.
     streamState = 'stopped';
+    const genAtRestart = startGen;
     await closeStream();
+    if (releasedWhileWaiting(genAtRestart)) return;
     return acquireInner(cfg);
   }
   if (streamState === 'starting') return startInFlight ?? Promise.resolve();
@@ -198,17 +214,21 @@ async function acquireInner(cfg: EngineConfig, forceRestart = false): Promise<vo
     // `ApeDsp.stop()` land AFTER our start and kill the new stream, while we
     // flagged it 'open': a tool reading RUNNING over a dead mic. Let the orphan
     // close its stream first, then acquire afresh (re-checking the state).
+    const genAtOrphan = startGen;
     try {
       await startInFlight;
     } catch {
       /* the orphan's failure is not ours */
     }
+    if (releasedWhileWaiting(genAtOrphan)) return;
     return acquireInner(cfg);
   }
   if (stopInFlight) {
     // A stop is still closing the HAL (see stopInFlight). Let it finish, then
     // re-check from the top — whoever owned that stop may have started afresh.
+    const genAtStopWait = startGen;
     await stopInFlight;
+    if (releasedWhileWaiting(genAtStopWait)) return;
     return acquireInner(cfg);
   }
   streamState = 'starting';

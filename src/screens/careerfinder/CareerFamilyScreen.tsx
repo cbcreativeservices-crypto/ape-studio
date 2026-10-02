@@ -16,7 +16,7 @@ import type { RootStackParamList } from '../../navigation/types';
 import { colors, fonts } from '../../theme/tokens';
 import { sendFeedback } from '../../lib/feedback';
 import { officialTopicName } from '../../data/officialTopicNames';
-import { isRegulatedTitle } from '../../features/careerfinder/careerIndex';
+import { furtherEducationForTitle, isRegulatedTitle } from '../../features/careerfinder/careerIndex';
 import { fetchV3Curriculum, flattenV3 } from '../../data/v3Curriculum';
 import { toggleTopic, useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
@@ -188,7 +188,7 @@ export function CareerFamilyScreen() {
         {fam.examples.map((e) => (
           <Text key={e} style={styles.example}>
             ▸ {e}
-            {isRegulatedTitle(e) ? <Text style={styles.exampleGated}> ⚠</Text> : null}
+            {isRegulatedTitle(e) || furtherEducationForTitle(e) ? <Text style={styles.exampleGated}> ⚠</Text> : null}
           </Text>
         ))}
         {fam.examples.some(isRegulatedTitle) ? (
@@ -197,6 +197,15 @@ export function CareerFamilyScreen() {
             licence or credential — check what is required where you live.
           </Text>
         ) : null}
+        {/* Degrees and the PE licence too (full-app run 1, 2026-10-01). */}
+        {fam.examples.map((e) => {
+          const need = furtherEducationForTitle(e);
+          return need ? (
+            <Text key={`edu-${e}`} style={styles.exampleGatedNote}>
+              ⚠ {e}: {need} Academy study does not replace it — check what is required where you live.
+            </Text>
+          ) : null;
+        })}
         <SectionLabel>WHERE THE WORK HAPPENS</SectionLabel>
         <Body>{fam.settings.map((s, i) => (i === 0 ? s.charAt(0).toUpperCase() + s.slice(1) : s)).join(' · ')}</Body>
         <SectionLabel>HOW CENTRAL AUDIO IS</SectionLabel>

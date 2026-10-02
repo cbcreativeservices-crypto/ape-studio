@@ -61,6 +61,10 @@ const written = new Map<string, number>();
 const writers = new Map<string, SessionWriter<unknown>>();
 let flushing: Promise<void> | null = null;
 let flushAgain = false;
+/** Auth events noted / settles run (accountLocalSync pairs one settle with
+ *  each event, queued in order). */
+let noted = 0;
+let settled = 0;
 
 const isAccount = (o: string | null | undefined): o is string => typeof o === 'string' && o !== '';
 
@@ -84,7 +88,10 @@ export function registerSessionCarry<T>(key: string, writer: SessionWriter<T>): 
 export function holdSessionWork<T>(key: string, update: (prev: T | undefined) => T, opts: { guestOnly?: boolean } = {}): boolean {
   if (getLabPreview().active) return false; // PREVIEW EARNS NOTHING
   if (owner === null) return false; // signed out after an account: never carried
-  if (opts.guestOnly && isAccount(owner)) return false;
+  // …except while that account's sign-in wipe is still pending (full run 1,
+  // 2026-10-01): a unit recorded in that window is deleted by the wipe, so it
+  // is held and replayed after it like a guest's.
+  if (opts.guestOnly && isAccount(owner) && !syncPending) return false;
   held.set(key, update(held.get(key) as T | undefined));
   versions.set(key, (versions.get(key) ?? 0) + 1);
   if (isAccount(owner) && !syncPending) void flushSessionWork();
@@ -123,6 +130,7 @@ function drop(): void {
  * anonymous device-key session is '' too).
  */
 export function noteSessionIdentity(identity: string): void {
+  noted++;
   if (owner === undefined) {
     // The first answer of this launch: what was held before it is this
     // person's (a member's taps while the tier was still loading).
@@ -146,6 +154,14 @@ export function noteSessionIdentity(identity: string): void {
 
 /** accountLocalSync, after the identity's device sync (wipe) finished. */
 export async function settleSessionCarry(): Promise<void> {
+  settled++;
+  // ONLY THE LATEST EVENT'S SETTLE ends the wait (full run 1, 2026-10-01).
+  // Every auth event notes its identity at once and queues exactly one settle
+  // behind its own wipe, in order. When a second event (a different account)
+  // arrived before the first event's settle ran, that earlier settle cleared
+  // `syncPending` and wrote the new account's held work BEFORE the new
+  // account's wipe — which then deleted it, and it was marked written.
+  if (settled < noted) return;
   syncPending = false;
   if (isAccount(owner)) await flushSessionWork();
 }
@@ -180,7 +196,12 @@ export function flushSessionWork(): Promise<void> {
         } catch {
           ok = false;
         }
-        if (ep !== epoch) return; // the account changed mid-write: stop
+        // The account changed mid-write: stop this pass. NOT a return (full
+        // run 1, 2026-10-01): a flush asked for meanwhile (the new account's
+        // settle) only set `flushAgain` and is waiting on THIS promise, so the
+        // loop below must still run it, or that account's held work is never
+        // written until some later hold.
+        if (ep !== epoch) break;
         if (ok) written.set(key, version);
       }
     } while (flushAgain && isAccount(owner) && !syncPending);
@@ -201,4 +222,6 @@ export function __resetSessionCarryForTests(): void {
   epoch++; // never back to an old value: stores tag copies with it
   flushing = null;
   flushAgain = false;
+  noted = 0;
+  settled = 0;
 }

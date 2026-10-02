@@ -47,6 +47,7 @@ import { useFocusEffect, useIsFocused, useNavigation, useRoute, type RouteProp }
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { StudyStackParamList } from '../../navigation/types';
 import { slugify } from '../../navigation/linkPaths';
+import { navigationRef } from '../../navigation/navigationRef';
 import { animationsAllowed } from '../../features/settings/a11y';
 import Svg, { Circle, Rect, Defs, LinearGradient as SvgLinearGradient, Stop, Line } from 'react-native-svg';
 import { AppHeader } from '../../components/AppHeader';
@@ -583,6 +584,18 @@ async function signOutOrSay(onDone: () => void): Promise<void> {
     return;
   }
   onDone();
+}
+
+/**
+ * After a sign-out the login screen is the ROOT (full run 1, 2026-10-01), the
+ * way Settings › Log out and the session-expiry guard leave it. `navigate`
+ * from this nested stack PUSHED Auth over the old Main: Auth then showed
+ * RETURN ›, and RETURN (or Android BACK) put the signed-out person back into
+ * the previous account's still-mounted tabs — and into a guest session that
+ * never began as one, whose lab work the sign-in hand-off then refuses.
+ */
+function resetToLogin(): void {
+  if (navigationRef.isReady()) navigationRef.reset({ index: 0, routes: [{ name: 'Auth' as never }] });
 }
 
 export function DashboardScreen() {
@@ -1531,7 +1544,7 @@ export function DashboardScreen() {
                 'This signs you out of this device and returns to the login screen. Your saved progress stays with your account.',
                 'Sign out',
                 () => {
-                  void signOutOrSay(() => (navigation as any).navigate('Auth'));
+                  void signOutOrSay(resetToLogin);
                 },
               )
             }
@@ -1842,7 +1855,7 @@ export function DashboardScreen() {
                 variant="secondary"
                 small
                 onPress={() => {
-                  void signOutOrSay(() => (navigation as any).navigate('Auth'));
+                  void signOutOrSay(resetToLogin);
                 }}
               />
             </View>

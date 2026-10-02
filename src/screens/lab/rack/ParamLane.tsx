@@ -40,6 +40,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts } from '../../../theme/tokens';
 import { levelColor, rampColors } from '../../../features/tools/levelColor';
 import { usePulseStyle } from '../../../features/lab/attentionPulse';
+import { laneFingerAt, laneFingerDx, type LaneFinger } from './laneFinger';
 
 const DOUBLE_TAP_MS = 320;
 
@@ -84,6 +85,9 @@ export function ParamLane({
   labelRef.current = label;
   const lastTapRef = useRef(0);
   const movedRef = useRef(false);
+  // The finger that grabbed the lane (laneFinger.ts): a second finger on the
+  // glass never moves the fader.
+  const fingerRef = useRef<LaneFinger>({ id: undefined, px: 0 });
   const pulseStyle = usePulseStyle();
 
   const pan = useRef(
@@ -93,16 +97,19 @@ export function ParamLane({
       onPanResponderGrant: (e) => {
         onActiveRef.current?.(true);
         movedRef.current = false;
+        fingerRef.current = laneFingerAt(e.nativeEvent);
         if (wRef.current > 0) {
           const v = Math.max(0, Math.min(1, (e.nativeEvent.locationX - CAP_W / 2) / (wRef.current - CAP_W)));
           baseRef.current = v;
           onChangeRef.current(v);
         }
       },
-      onPanResponderMove: (_e, g) => {
-        if (Math.abs(g.dx) > 5) movedRef.current = true;
+      onPanResponderMove: (e, g) => {
+        const dx = laneFingerDx(e.nativeEvent, fingerRef.current, g.dx);
+        if (dx === 'lifted') return;
+        if (Math.abs(dx) > 5) movedRef.current = true;
         if (wRef.current > 0) {
-          onChangeRef.current(Math.max(0, Math.min(1, baseRef.current + g.dx / (wRef.current - CAP_W))));
+          onChangeRef.current(Math.max(0, Math.min(1, baseRef.current + dx / (wRef.current - CAP_W))));
         }
       },
       onPanResponderRelease: () => {

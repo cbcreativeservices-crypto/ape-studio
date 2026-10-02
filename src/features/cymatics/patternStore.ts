@@ -223,10 +223,24 @@ export type PatternStore = {
   deleteArtwork(patternId: string): Promise<boolean>;
 };
 
-async function loadList<T>(kv: KeyValueStore, key: string, normalise: (x: unknown) => T | null): Promise<T[]> {
+/**
+ * One collection, or `null` when it could not be READ (full-app run 1,
+ * 2026-10-01): a getItem that THREW (an oversized row on Android, a storage
+ * error) used to read as an empty list, and the very next save wrote a
+ * one-row list over every saved pattern — or, from DELETE, an empty artwork
+ * list over every colouring. A damaged blob is still set aside under
+ * `:damaged` and read as empty; if setting it aside fails, it is unreadable
+ * too (a write would destroy it).
+ */
+async function readList<T>(kv: KeyValueStore, key: string, normalise: (x: unknown) => T | null): Promise<T[] | null> {
+  let raw: string | null;
   try {
-    const raw = await kv.getItem(key);
-    if (raw == null) return [];
+    raw = await kv.getItem(key);
+  } catch {
+    return null;
+  }
+  if (raw == null) return [];
+  try {
     const parsed: unknown = JSON.parse(raw);
     if (!Array.isArray(parsed)) throw new Error('not an array');
     const good: T[] = [];
@@ -243,12 +257,17 @@ async function loadList<T>(kv: KeyValueStore, key: string, normalise: (x: unknow
     return good;
   } catch {
     try {
-      const raw = await kv.getItem(key);
-      if (raw != null) await kv.setItem(`${key}:damaged`, raw);
+      await kv.setItem(`${key}:damaged`, raw);
       await kv.removeItem(key);
-    } catch {}
+    } catch {
+      return null;
+    }
     return [];
   }
+}
+
+async function loadList<T>(kv: KeyValueStore, key: string, normalise: (x: unknown) => T | null): Promise<T[]> {
+  return (await readList(kv, key, normalise)) ?? [];
 }
 
 async function saveList<T>(kv: KeyValueStore, key: string, list: T[]): Promise<boolean> {
@@ -263,6 +282,10 @@ async function saveList<T>(kv: KeyValueStore, key: string, list: T[]): Promise<b
 export function createPatternStore(kv: KeyValueStore): PatternStore {
   const patterns = () => loadList<SavedPattern>(kv, PATTERN_KEYS.patterns, normalisePattern);
   const artworks = () => loadList<Artwork>(kv, PATTERN_KEYS.artwork, normaliseArtwork);
+  // The WRITE paths read with `readList`: an unreadable collection is never
+  // written over (null → the write reports failure).
+  const patternsRW = () => readList<SavedPattern>(kv, PATTERN_KEYS.patterns, normalisePattern);
+  const artworksRW = () => readList<Artwork>(kv, PATTERN_KEYS.artwork, normaliseArtwork);
   // Every write is a read-modify-write of a whole list, so two in flight at
   // once (a double-tapped SAVE, a favourite during an artwork autosave) could
   // each read the old list and the second would drop the first's row. Writes
@@ -279,7 +302,8 @@ export function createPatternStore(kv: KeyValueStore): PatternStore {
       return (await patterns()).find((p) => p.id === id) ?? null;
     },
     upsertPattern: (p) => serial(async () => {
-      const list = await patterns();
+      const list = await patternsRW();
+      if (!list) return false;
       const i = list.findIndex((x) => x.id === p.id);
       const row = { ...p, updatedAt: Date.now() };
       if (i >= 0) list[i] = row;
@@ -287,18 +311,19 @@ export function createPatternStore(kv: KeyValueStore): PatternStore {
       return saveList(kv, PATTERN_KEYS.patterns, list);
     }),
     deletePattern: (id) => serial(async () => {
-      const list = (await patterns()).filter((x) => x.id !== id);
-      const ok = await saveList(kv, PATTERN_KEYS.patterns, list);
-      const arts = (await artworks()).filter((a) => a.patternId !== id);
-      await saveList(kv, PATTERN_KEYS.artwork, arts);
+      const read = await patternsRW();
+      if (!read) return false;
+      const ok = await saveList(kv, PATTERN_KEYS.patterns, read.filter((x) => x.id !== id));
+      const arts = await artworksRW();
+      if (arts) await saveList(kv, PATTERN_KEYS.artwork, arts.filter((a) => a.patternId !== id));
       return ok;
     }),
     duplicatePattern: (id) => serial(async () => {
-      const src = (await patterns()).find((x) => x.id === id);
-      if (!src) return null;
+      const list = await patternsRW();
+      const src = list?.find((x) => x.id === id);
+      if (!list || !src) return null;
       const now = Date.now();
       const copy: SavedPattern = { ...src, id: newPatternId(), name: `${src.name} (copy)`, favourite: false, createdAt: now, updatedAt: now, state: JSON.parse(JSON.stringify(src.state)) };
-      const list = await patterns();
       list.unshift(copy);
       const ok = await saveList(kv, PATTERN_KEYS.patterns, list);
       return ok ? copy : null;
@@ -308,7 +333,8 @@ export function createPatternStore(kv: KeyValueStore): PatternStore {
     },
     loadArtworks: artworks,
     saveArtwork: (a) => serial(async () => {
-      const list = await artworks();
+      const list = await artworksRW();
+      if (!list) return false;
       const i = list.findIndex((x) => x.patternId === a.patternId);
       const row = { ...a, updatedAt: Date.now() };
       if (i >= 0) list[i] = row;
@@ -316,8 +342,9 @@ export function createPatternStore(kv: KeyValueStore): PatternStore {
       return saveList(kv, PATTERN_KEYS.artwork, list);
     }),
     deleteArtwork: (patternId) => serial(async () => {
-      const list = (await artworks()).filter((a) => a.patternId !== patternId);
-      return saveList(kv, PATTERN_KEYS.artwork, list);
+      const list = await artworksRW();
+      if (!list) return false;
+      return saveList(kv, PATTERN_KEYS.artwork, list.filter((a) => a.patternId !== patternId));
     }),
   };
 }

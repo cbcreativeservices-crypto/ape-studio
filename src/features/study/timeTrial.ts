@@ -50,6 +50,14 @@ export type TimeTrialResult = {
   correctCount: number;
   /** seconds the trial ran (always TIME_TRIAL_SECONDS at a natural finish). */
   seconds: number;
+  /**
+   * Has the server recorded the pass? (full-app run 1, 2026-10-01). The panel
+   * told the learner "This study method is cleared toward unlocking the quiz"
+   * the moment the clock hit 0:00, whether or not `credit_time_trial` ever
+   * landed — offline past the last retry, or with no account to credit, the
+   * claim was simply false. 'saving' until the credit settles. Unset on a fail.
+   */
+  credit?: 'saving' | 'saved' | 'failed';
 };
 
 /** The live snapshot the HUD renders from. */
@@ -208,13 +216,24 @@ function finalize(m: PaceMethodKey): void {
     passed,
     correctCount: st.correctCount,
     seconds: TIME_TRIAL_SECONDS,
+    ...(passed ? { credit: 'saving' as const } : {}),
   };
 
   states.set(m, { ...st, active: false, result });
   recompute(m);
   emit(m);
 
-  if (passed) creditWithRetry(m, st.topicId ?? '', st.correctCount, 0);
+  if (passed) creditWithRetry(m, st.topicId ?? '', st.correctCount, 0, result);
+}
+
+/** Settle the credit flag on THIS result only — a restarted or dismissed
+ *  trial has a different (or no) result and is left alone. */
+function markCredit(m: PaceMethodKey, result: TimeTrialResult, credit: 'saved' | 'failed'): void {
+  const st = states.get(m);
+  if (!st || st.result !== result) return;
+  states.set(m, { ...st, result: { ...result, credit } });
+  recompute(m);
+  emit(m);
 }
 
 /**
@@ -240,13 +259,27 @@ const creditRetries = new Set<ReturnType<typeof setTimeout>>();
  */
 let creditGeneration = 0;
 
-function creditWithRetry(m: PaceMethodKey, topicId: string, correctCount: number, attempt: number): void {
+function creditWithRetry(
+  m: PaceMethodKey,
+  topicId: string,
+  correctCount: number,
+  attempt: number,
+  result: TimeTrialResult,
+): void {
   const gen = creditGeneration;
   void recordTimeTrialPass({ topicId, method: m, correctCount, seconds: TIME_TRIAL_SECONDS }).then((ok) => {
-    if (ok || attempt >= CREDIT_RETRY_MS.length || gen !== creditGeneration) return;
+    if (gen !== creditGeneration) return;
+    if (ok) {
+      markCredit(m, result, 'saved');
+      return;
+    }
+    if (attempt >= CREDIT_RETRY_MS.length) {
+      markCredit(m, result, 'failed');
+      return;
+    }
     const t = setTimeout(() => {
       creditRetries.delete(t);
-      creditWithRetry(m, topicId, correctCount, attempt + 1);
+      creditWithRetry(m, topicId, correctCount, attempt + 1, result);
     }, CREDIT_RETRY_MS[attempt]);
     creditRetries.add(t);
   });

@@ -29,7 +29,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ApeDsp, GEN_MODES } from '../../../../../modules/ape-dsp';
 import { GlassButton } from '../../../../components/GlassButton';
 import { useAudioOutputGate } from '../../../../features/audio/AudioOutputGate';
-import { isAudioOutputEnabled, noteAudioActivity } from '../../../../features/audio/audioOutputStore';
+import { getSoundStopEpoch, isAudioOutputEnabled, noteAudioActivity } from '../../../../features/audio/audioOutputStore';
 import { guardToneLevelForEngine } from '../../../../features/audio/speakerSafety';
 import { DisplayGuideButton } from '../../../../features/lab/guidedLessons';
 import { levelColor } from '../../../../features/tools/levelColor';
@@ -438,6 +438,10 @@ function useAliasTone(engineReady: boolean, focused: boolean) {
           levelDb: guardToneLevelForEngine(LEVEL_DB, freqHz),
         });
         try {
+          // Every sound stopped while the native start was in flight (leaving the app
+          // with "Mute audio when I leave the app" OFF stops voices but leaves the
+          // gate ON — full-app run 1, 2026-10-01): this start must not sound on.
+          const stopEpoch = getSoundStopEpoch();
           await ApeDsp.genStart();
           // A mute that landed while the native start was in flight wins — never
           // leave a tone sounding into a closed gate (owner 2026-09-29).
@@ -447,6 +451,11 @@ function useAliasTone(engineReady: boolean, focused: boolean) {
           }
           if (gen !== genRef.current) {
             if (!wantRef.current) void ApeDsp.genStop(); // stopped/quieted meanwhile
+            return;
+          }
+          // Every sound was stopped while the native start ran: stay quiet.
+          if (getSoundStopEpoch() !== stopEpoch) {
+            void ApeDsp.genStop();
             return;
           }
           soundingRef.current = true;

@@ -225,10 +225,11 @@ async function resolveItemCounts(
         .range(from, from + PAGE - 1);
       // Bail on an error rather than looping: a partial tally read as a whole
       // one is the failure this comment exists to prevent.
-      if (error) {
-        counts.clear();
-        break;
-      }
+      // …and THROW, never fall through with nothing (full run 1, 2026-10-01):
+      // an empty tally reads as "0 terms", so every method showed 0%, every
+      // panel powered off, and the Dashboard CACHED that over a member's real
+      // progress. Thrown, the silent refresh keeps what is on screen.
+      if (error) throw new Error('item_counts_unavailable');
       const rows = (direct ?? []) as { achievement_id: string }[];
       for (const r of rows) counts.set(r.achievement_id, (counts.get(r.achievement_id) ?? 0) + 1);
       if (rows.length < PAGE) break;
@@ -245,7 +246,9 @@ async function resolveItemCounts(
   );
   if (names.length === 0) return counts;
 
-  const { data: sibs } = await supabase.from('achievements').select('id, name').in('name', names);
+  const { data: sibs, error: sibErr } = await supabase.from('achievements').select('id, name').in('name', names);
+  // A failed read is not "no siblings" (full run 1, 2026-10-01) — see the throw above.
+  if (sibErr) throw new Error('item_counts_unavailable');
   const nameByAch = new Map<string, string>();
   for (const s of (sibs ?? []) as { id: string; name: string }[]) nameByAch.set(s.id, s.name);
   const allSibIds = Array.from(nameByAch.keys());
@@ -268,7 +271,10 @@ async function resolveItemCounts(
       .order('achievement_id')
       .order('glossary_id')
       .range(from, from + SIB_PAGE - 1);
-    if (error) break;
+    // A failure on page 2+ kept page 1's PARTIAL union as the count — a short
+    // denominator, which studyDisplayPct clamps to a confident 100% on a topic
+    // that is not finished (full run 1, 2026-10-01). Never a partial tally.
+    if (error) throw new Error('item_counts_unavailable');
     const rows = (sibItems ?? []) as { achievement_id: string; glossary_id: string }[];
     for (const r of rows) {
       const name = nameByAch.get(r.achievement_id);

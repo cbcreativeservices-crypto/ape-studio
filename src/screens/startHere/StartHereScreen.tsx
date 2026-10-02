@@ -115,7 +115,12 @@ export function StartHereScreen() {
       }
       // Merge anything done before the load landed (a fast first tap) — or,
       // on a re-read after signing in, what the guest session held.
-      const extra = first ? progressRef.current.completed : (heldPaged(START_HERE_ID)?.completed ?? []);
+      // The held pages on the FIRST read too (full run 1, 2026-10-01): a guest
+      // who signs in and opens Start Here before the hand-off has written
+      // (it waits for the sign-in wipe) read the stored copy without them, so
+      // the pages they had just finished showed as not done.
+      const held = heldPaged(START_HERE_ID)?.completed ?? [];
+      const extra = first ? [...progressRef.current.completed, ...held] : held;
       const completed = [...new Set([...p.completed, ...extra])]
         .filter((i) => i < PAGES.length)
         .sort((a, b) => a - b);

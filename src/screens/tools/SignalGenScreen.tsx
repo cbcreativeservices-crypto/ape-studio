@@ -43,7 +43,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES, type GenModeName, type GenStatus } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { playWithHearingWarning } from '../../features/audio/levelHearingWarning';
-import { isAudioOutputEnabled, noteAudioActivity } from '../../features/audio/audioOutputStore';
+import { getSoundStopEpoch, isAudioOutputEnabled, noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { EngineGate } from './EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { MIDLINE_BLUE, WAVE_LEVEL_STOPS, levelColorForDb } from '../../features/tools/levelColor';
@@ -538,6 +538,12 @@ export function SignalGenScreen({ navigation }: Props) {
       const ok = await requestAudioOutput();
       if (!ok || gen !== genRef.current || !mountedRef.current) return;
       setGenError('');
+      // stopAllSound() (leaving the app with "Mute audio when I leave the
+      // app" OFF) leaves the gate ON, so the gate check below cannot see it.
+      // Like the mute, it lands while `running` is still false and
+      // useStopWhenSilenced skips it — the tone then started behind the user
+      // (full run 1, 2026-10-01). Follow the store's sound-stop counter too.
+      const stopEpoch = getSoundStopEpoch();
       try {
         const s = await ApeDsp.genStart();
         if (gen !== genRef.current || !mountedRef.current) {
@@ -549,6 +555,12 @@ export function SignalGenScreen({ navigation }: Props) {
         // screen, so it missed this edge and the transport read PLAYING with
         // the gate shut (bug hunt 2026-09-29). Honour the mute.
         if (!isAudioOutputEnabled()) {
+          void ApeDsp.genStop();
+          refreshStatus();
+          return;
+        }
+        // …and stopAllSound(), which leaves the gate on (see stopEpoch).
+        if (getSoundStopEpoch() !== stopEpoch) {
           void ApeDsp.genStop();
           refreshStatus();
           return;

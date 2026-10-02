@@ -60,6 +60,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { supabase } from '../../lib/supabase';
 import { safeSession } from '../../lib/getSessionSafe';
+import { softDeadline } from '../../lib/boundedCall';
 import { classifyMintError, singleFlight, type ConsentRecord } from './deviceKeyState';
 
 export * from './deviceKeyState';
@@ -117,17 +118,36 @@ const mintOnce = singleFlight<MintResult>();
  * Every extra key is a real row in auth.users that nobody is using and that
  * survives until the nightly purge.
  */
+/**
+ * ⛔ BOUNDED (full-app run 1, 2026-10-01). `mintOnce` hands every caller the
+ * SAME in-flight promise until it settles, so a sign-in request that stalled
+ * (rather than failed) poisoned minting for the rest of the app session: AGREE
+ * did nothing, the renewal never finished, and every later Glossary visit
+ * joined the same dead request. A stall now settles as a network failure, which
+ * the screen already fails open on, and frees the slot for the next attempt.
+ */
+const MINT_DEADLINE_MS = 15000;
+
 export function mintDeviceKey(): Promise<MintResult> {
-  return mintOnce(async () => {
-    try {
-      const { data } = await safeSession(supabase.auth.getSession(), 'deviceKey');
-      if (data.session) return { ok: true };
-      const { error } = await supabase.auth.signInAnonymously();
-      if (!error) return { ok: true };
-      return { ok: false, reason: classifyMintError(error.message), message: error.message };
-    } catch (e) {
-      const message = e instanceof Error ? e.message : String(e);
-      return { ok: false, reason: classifyMintError(message), message };
-    }
-  });
+  return mintOnce(() =>
+    softDeadline<MintResult>(
+      mintNow,
+      { ok: false, reason: 'network', message: 'device key mint timeout' },
+      'glossary device key mint',
+      MINT_DEADLINE_MS,
+    ),
+  );
+}
+
+async function mintNow(): Promise<MintResult> {
+  try {
+    const { data } = await safeSession(supabase.auth.getSession(), 'deviceKey');
+    if (data.session) return { ok: true };
+    const { error } = await supabase.auth.signInAnonymously();
+    if (!error) return { ok: true };
+    return { ok: false, reason: classifyMintError(error.message), message: error.message };
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    return { ok: false, reason: classifyMintError(message), message };
+  }
 }

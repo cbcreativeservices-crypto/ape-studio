@@ -810,7 +810,10 @@ const WS_LIMITER: Workspace = {
     { key: 'pwr', name: 'SPEAKER CONTINUOUS RATING', quantity: 'power', placeholder: '500', help: 'The CONTINUOUS (RMS/AES-style) power rating — not program, not peak.', warn: { test: (x) => x <= 0, msg: 'Power rating must be greater than zero.' } },
     { key: 'z', name: 'NOMINAL IMPEDANCE', quantity: 'impedance', placeholder: '8', help: 'The speaker’s nominal impedance; real impedance varies with frequency.', warn: { test: (x) => x <= 0, msg: 'Impedance must be greater than zero.' } },
     { key: 'ampGain', name: 'AMPLIFIER VOLTAGE GAIN', quantity: 'db', placeholder: '32', help: 'The amp’s voltage gain in dB (spec sheet; 26–44 dB typical).' },
-    { key: 'margin', name: 'SAFETY MARGIN', quantity: 'db', placeholder: '3', help: 'Extra dB below the computed clip-equivalent threshold — insurance for rating optimism and impedance dips.' },
+    // nonNegative (full-app run 1, 2026-10-01): the margin is SUBTRACTED, so a
+    // typed −3 ("3 dB below") set the threshold 3 dB ABOVE the rating and the
+    // result read "keeps continuous voltage -3 dB below the rating".
+    { key: 'margin', name: 'SAFETY MARGIN', quantity: 'db', nonNegative: true, placeholder: '3', help: 'Extra dB below the computed clip-equivalent threshold — insurance for rating optimism and impedance dips.' },
   ],
   functions: [
     {

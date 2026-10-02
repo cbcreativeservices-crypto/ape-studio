@@ -21,7 +21,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
 import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../../features/audio/useStopOnBlur';
-import { isAudioOutputEnabled } from '../../../features/audio/audioOutputStore';
+import { getSoundStopEpoch, isAudioOutputEnabled } from '../../../features/audio/audioOutputStore';
 import { navigationRef } from '../../../navigation/navigationRef';
 import { EarClipPlayer } from '../../../features/ear/earPlayer';
 import { Btn, Row, useMarkWhen } from '../tuning/components/primitives';
@@ -395,10 +395,17 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
     // Armed: replay the same variant on the new console. The queued play goes
     // through renderAll's own focus + open-gate checks; a blur or a mute
     // inside the pause forgets it here.
+    // …and so does leaving the app with "Mute audio when I leave the app" OFF
+    // (full run 1, 2026-10-01; the Mastering lab's useMasterPlayback fix):
+    // stopAllSound leaves the gate OPEN, and inside this pause `active` and
+    // `pending` are both null, so useStopWhenSilenced did not cancel it — the
+    // replay rendered and played behind the user.
+    const armedEpoch = getSoundStopEpoch();
     const t = setTimeout(() => {
       replayTimerRef.current = null;
       replayIdRef.current = null;
       if (!aliveRef.current || !focusedRef.current || !isAudioOutputEnabled()) return;
+      if (getSoundStopEpoch() !== armedEpoch) return; // every sound was stopped meanwhile: stay quiet
       pendingRef.current = again;
       setPending(again);
       void renderAllRef.current();

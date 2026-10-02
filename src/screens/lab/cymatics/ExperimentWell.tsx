@@ -55,8 +55,23 @@ async function loadTicks(id: string): Promise<number[]> {
 }
 
 async function saveTicks(id: string, ticks: number[]): Promise<void> {
+  // A read that THREW is not an empty store (full-app run 1, 2026-10-01):
+  // readAllTicks answers {} for it, and writing `{ [id]: ticks }` back wiped
+  // every OTHER experiment's tick-offs. Only a damaged blob starts empty.
+  let raw: string | null;
   try {
-    const all = await readAllTicks();
+    raw = await AsyncStorage.getItem(TICKS_KEY);
+  } catch {
+    return; // never written over ticks that could not be read
+  }
+  try {
+    let all: Record<string, number[]> = {};
+    try {
+      const parsed = raw ? (JSON.parse(raw) as unknown) : {};
+      if (parsed && typeof parsed === 'object') all = parsed as Record<string, number[]>;
+    } catch {
+      /* damaged → start empty, like a load */
+    }
     all[id] = ticks;
     await AsyncStorage.setItem(TICKS_KEY, JSON.stringify(all));
   } catch {

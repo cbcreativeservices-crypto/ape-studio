@@ -650,20 +650,48 @@ const RING_OPTS: WaterfallOpts = { room: 'classroom', damping01: 0.15, eqGains: 
 // mirror (clearLocalAccountData).
 const SOLVED_KEY = 'ape:detectiveSolved';
 let solvedCache: Set<string> | null = null;
+/** Bumped by resetLocal: a persist still reading when the wipe ran never
+ *  writes the departing user's set into the cleared key. */
+let solvedGen = 0;
+/** The stored ids; `null` when the read itself THREW (not a damaged blob). */
+async function readSolved(): Promise<string[] | null> {
+  let raw: string | null;
+  try {
+    raw = await AsyncStorage.getItem(SOLVED_KEY);
+  } catch {
+    return null;
+  }
+  try {
+    const arr = raw ? (JSON.parse(raw) as unknown) : null;
+    return Array.isArray(arr) ? arr.filter((x): x is string => typeof x === 'string') : [];
+  } catch {
+    return [];
+  }
+}
 async function hydrateSolved(): Promise<Set<string>> {
   if (solvedCache) return solvedCache;
-  try {
-    const raw = await AsyncStorage.getItem(SOLVED_KEY);
-    const arr = raw ? (JSON.parse(raw) as unknown) : null;
-    solvedCache = new Set(Array.isArray(arr) ? arr.filter((x): x is string => typeof x === 'string') : []);
-  } catch {
-    solvedCache = new Set();
-  }
+  const stored = await readSolved();
+  // An unreadable store is NOT cached as empty (full-app run 1, 2026-10-01):
+  // the next mount reads again.
+  if (!stored) return new Set();
+  solvedCache = new Set(stored);
   return solvedCache;
 }
+/** Adds to what is stored, never replaces it (full-app run 1, 2026-10-01): a
+ *  failed first read used to cache an EMPTY set, and the next solve wrote a
+ *  one-question list over every question solved before. A store that cannot
+ *  be read is never written. */
 function persistSolved(s: Set<string>): void {
   solvedCache = new Set(s);
-  void AsyncStorage.setItem(SOLVED_KEY, JSON.stringify([...s])).catch(() => {});
+  const gen = solvedGen;
+  void readSolved()
+    .then((stored) => {
+      if (!stored || gen !== solvedGen) return; // unreadable, or the account was wiped meanwhile
+      const all = new Set([...stored, ...s]);
+      solvedCache = all; // a remount sees what is stored too
+      return AsyncStorage.setItem(SOLVED_KEY, JSON.stringify([...all]));
+    })
+    .catch(() => {});
 }
 /** Reset the in-memory solved set on account switch / guest entry (called by
  *  resetAllLocalStores — B-154). Without this the next person's SOLVED count
@@ -671,6 +699,7 @@ function persistSolved(s: Set<string>): void {
  *  from the (now-cleared) key on the next mount. */
 export function resetLocal(): void {
   solvedCache = null;
+  solvedGen++;
 }
 
 // Options de-cued (learning pass 2026-08-31): the correct answer was

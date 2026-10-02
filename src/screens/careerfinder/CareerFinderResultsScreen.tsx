@@ -18,7 +18,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { sendFeedback } from '../../lib/feedback';
 import { DIMENSIONS } from '../../features/careerfinder/dimensions';
 import { CLARITY_LABEL, clarityCopy, computeResult, explainFamily, type FamilyScore } from '../../features/careerfinder/scoring';
-import { familyFieldOf, familyMetaOf, isRegulatedTitle } from '../../features/careerfinder/careerIndex';
+import { familyFieldOf, familyMetaOf, furtherEducationForTitle, isRegulatedTitle } from '../../features/careerfinder/careerIndex';
 import { FAMILY_COUNT } from '../../features/careerfinder/families';
 import { QUESTION_COUNT } from '../../features/careerfinder/questions';
 import { LAB_FOR_DIMENSION } from '../../features/careerfinder/labsForDimension';
@@ -101,7 +101,7 @@ export function CareerFinderResultsScreen() {
         <Text
           style={styles.examples}
           accessibilityLabel={`For example: ${f.examples
-            .map((e) => (isRegulatedTitle(e) ? `${e}, licensed or credentialed occupation` : e))
+            .map((e) => (isRegulatedTitle(e) ? `${e}, licensed or credentialed occupation` : furtherEducationForTitle(e) ? `${e}, further education required` : e))
             .join(', ')}`}
         >
           <Text style={styles.examplesLabel}>FOR EXAMPLE  </Text>
@@ -109,7 +109,7 @@ export function CareerFinderResultsScreen() {
             <Text key={e}>
               {i > 0 ? ' · ' : ''}
               {e}
-              {isRegulatedTitle(e) ? <Text style={styles.gated}> ⚠</Text> : null}
+              {isRegulatedTitle(e) || furtherEducationForTitle(e) ? <Text style={styles.gated}> ⚠</Text> : null}
             </Text>
           ))}
         </Text>
@@ -119,6 +119,16 @@ export function CareerFinderResultsScreen() {
             credential — check what is required where you live.
           </Text>
         ) : null}
+        {/* Degrees and the PE licence too, not only licensed titles (full-app
+            run 1, 2026-10-01) — see features/careerfinder/educationNote. */}
+        {f.examples.map((e) => {
+          const need = furtherEducationForTitle(e);
+          return need ? (
+            <Text key={`edu-${e}`} style={styles.gatedNote}>
+              ⚠ {e}: {need} Academy study does not replace it — check what is required where you live.
+            </Text>
+          ) : null;
+        })}
         <View style={styles.cardActions}>
           <Pressable onPress={() => openFamily(f.id)} style={[styles.actBtn, styles.actExplore]} accessibilityRole="button" accessibilityLabel={`Explore ${f.name}`}>
             <Text style={[styles.actText, { color: colors.green }]}>EXPLORE FAMILY ›</Text>

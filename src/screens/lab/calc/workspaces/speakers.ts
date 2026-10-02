@@ -16,6 +16,12 @@ const impedances = (v: number | number[]): number[] => {
   if (zs.some((z) => !(z > 0))) throw new Error('impedance must be greater than zero');
   return zs;
 };
+/** The AMPLIFIER LOAD WARNING says "below most amplifiers' 4 Ω rating", so it
+ *  fires below 4 Ω (full-app run 1, 2026-10-01) — it was `< 3`, and a 4 Ω box
+ *  paralleled with a 16 Ω box (3.2 Ω) went to a 4 Ω amp with no warning.
+ *  The 1e-9 keeps float noise (three 12 Ω boxes = 3.9999999999999996) from
+ *  flagging an exact 4 Ω load. */
+const belowFourOhms = (z: number) => z < 4 - 1e-9;
 
 /* ------------------------------------------------------------------ */
 /* 1 · Loudspeaker SPL & Amplifier Power                              */
@@ -324,7 +330,7 @@ const WS_IMPEDANCE: Workspace = {
             text: zs.map((z, i) => `${fmt(z)} Ω → ${fmt(shares[i] ?? 0, 3)}%`).join(' · '),
           },
         ];
-        if (ztot < 3) {
+        if (belowFourOhms(ztot)) {
           out.push({
             label: 'AMPLIFIER LOAD WARNING',
             text: `Ztot = ${fmt(ztot)} Ω is below most amplifiers’ 4 Ω rating — check the amp before wiring this.`,
@@ -396,7 +402,7 @@ const WS_IMPEDANCE: Workspace = {
           { label: 'PAIR A (Z1 ∥ Z2)', value: pairA, quantity: 'impedance', chainable: false },
           { label: 'PAIR B (Z3 ∥ Z4)', value: pairB, quantity: 'impedance', chainable: false },
         ];
-        if (ztot < 3) {
+        if (belowFourOhms(ztot)) {
           out.push({
             label: 'AMPLIFIER LOAD WARNING',
             text: `Ztot = ${fmt(ztot)} Ω is below most amplifiers’ 4 Ω rating — check the amp before wiring this.`,
@@ -438,8 +444,12 @@ const AWG_OHM_PER_M: Record<number, number> = {
 };
 const AWG_LIST = [10, 12, 14, 16, 18];
 
+// A TIE goes to the THINNER gauge (full-app run 1, 2026-10-01). Every odd gauge
+// sits exactly between two listed ones, and `<` kept the thicker — so 17 AWG
+// was costed as 16 AWG: less loss, fewer watts heating the cable, a longer
+// "max length" than the real wire allows. Thinner is the conservative side.
 const nearestAwg = (g: number): number =>
-  AWG_LIST.reduce((best, a) => (Math.abs(a - g) < Math.abs(best - g) ? a : best), 10);
+  AWG_LIST.reduce((best, a) => (Math.abs(a - g) <= Math.abs(best - g) ? a : best), 10);
 
 const WS_CABLE: Workspace = {
   id: 'cable',
@@ -734,6 +744,10 @@ const WS_CV70: Workspace = {
       key: 'hr',
       name: 'HEADROOM',
       quantity: 'db',
+      // A reserve cannot be negative (full-app run 1, 2026-10-01): −2 dB made
+      // the "usable budget" 158% of the amp, so MORE SPEAKERS THAT FIT filled
+      // past the rating, and a load above the rating lost its OVERLOADED flag.
+      nonNegative: true,
       placeholder: '2',
       help: 'Reserve factor: recommended amp = load × 10^(headroom/10). 1 dB ≈ 26% reserve, 2 dB ≈ 58%.',
     },

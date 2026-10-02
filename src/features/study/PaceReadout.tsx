@@ -499,8 +499,15 @@ function TrialHud({
           {passed ? 'PASS' : 'NOT THIS TIME'}
         </Text>
         <Text style={styles.resultBody}>
+          {/* The "cleared" claim waits for the server (full-app run 1,
+              2026-10-01): it was printed whether or not credit_time_trial
+              ever landed. */}
           {passed
-            ? `You held quiz pace — ${trial.result.correctCount} correct in 15:00. This study method is cleared toward unlocking the quiz.`
+            ? trial.result.credit === 'failed'
+              ? `You held quiz pace — ${trial.result.correctCount} correct in 15:00 — but the pass could not be saved to your account, so this study method is not cleared yet. Check your connection and run it again.`
+              : trial.result.credit === 'saving'
+                ? `You held quiz pace — ${trial.result.correctCount} correct in 15:00. Saving the pass to your account…`
+                : `You held quiz pace — ${trial.result.correctCount} correct in 15:00. This study method is cleared toward unlocking the quiz.`
             : `${trial.result.correctCount} correct in 15:00 — just short of quiz pace. No penalty. Keep at it and run it again.`}
         </Text>
 

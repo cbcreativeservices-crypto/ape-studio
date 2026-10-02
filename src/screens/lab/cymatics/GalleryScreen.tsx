@@ -35,7 +35,7 @@ import { ExportPanel } from './ExportPanel';
 import { GalleryArt } from './GalleryArt';
 import { CompareCanvas, CompareTable, type CompareItem } from './GalleryCompare';
 import { PatternFigure } from './PatternFigure';
-import { confirmDialog } from '../../../lib/confirm';
+import { confirmDialog, notify } from '../../../lib/confirm';
 import { goToCymatics } from './goToCymatics';
 
 type Mode = 'browse' | 'open' | 'art' | 'compare';
@@ -195,7 +195,15 @@ export function GalleryScreen() {
       `“${current.name}” and its artwork will be removed. This cannot be undone.`,
       'Delete',
       () => {
-        void remove(current.id).then(() => {
+        void remove(current.id).then((ok) => {
+          // A delete that did not reach the device leaves everything as it is
+          // and says so (full-app run 1, 2026-10-01): it used to drop the
+          // pattern's artwork from the grid and close it as if deleted, while
+          // the reload put the row straight back.
+          if (!ok) {
+            notify('Not deleted', `“${current.name}” could not be removed from this device. Try again.`);
+            return;
+          }
           setArtworks((m) => {
             const n = { ...m };
             delete n[current.id];

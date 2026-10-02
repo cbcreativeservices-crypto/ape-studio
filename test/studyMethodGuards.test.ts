@@ -10,7 +10,8 @@ const read = (...p: string[]) => readFileSync(join(process.cwd(), 'src', ...p), 
 
 test('Flashcards: tutorials wait for Low-Light, focus and fullscreen', () => {
   const src = read('screens', 'study', 'FlashcardsScreen.tsx');
-  assert.match(src, /const tutorialBlocked = overlaysSuppressed \|\| !isFocused \|\| fullscreen;/);
+  // Widened 2026-10-01 (full-app run 1) with the screen's own open Modals.
+  assert.match(src, /const tutorialBlocked =\s*overlaysSuppressed \|\| !isFocused \|\| fullscreen[ ;|]/);
   // Deferred, not consumed: the block check comes BEFORE the seen-flag write.
   const show = src.indexOf('const showTutorial = useCallback(');
   const blocked = src.indexOf('if (tutorialBlockedRef.current)', show);

@@ -13,6 +13,7 @@
 import raw from '../../data/careerIndex.json';
 import meta from '../../data/careerFamilies.json';
 import { FAMILIES, familyById, type CareerFamily } from './families';
+import { furtherEducation } from './educationNote';
 
 type RawCareer = { id: string; f: number; t: string; alt?: string[]; cls: number; st: number; rel: number; tier: number; ori: number; wm: number; prep: number; reg?: 1; pe?: 1 };
 type RawIndex = { version: string; families: string[]; enums: Record<'tier' | 'relationship' | 'orientation' | 'titleClass' | 'status' | 'workModel' | 'preparation', string[]>; careers: RawCareer[] };
@@ -158,6 +159,22 @@ export function isRegulatedTitle(title: string): boolean {
       c.regulated &&
       (c.title.toLowerCase() === t || c.alternates.some((a) => a.toLowerCase() === t)),
   );
+}
+
+/**
+ * The non-licence education an example title needs (a PE licence or a
+ * graduate degree), or null. See `educationNote.ts` for why this exists next
+ * to `isRegulatedTitle`, which covers licensed titles only.
+ */
+export function furtherEducationForTitle(title: string): string | null {
+  const t = title.trim().toLowerCase();
+  if (!t) return null;
+  for (const c of all()) {
+    if (c.title.toLowerCase() !== t && !c.alternates.some((a) => a.toLowerCase() === t)) continue;
+    const note = furtherEducation(c);
+    if (note) return note;
+  }
+  return null;
 }
 
 /** Case-insensitive title / alternate-title search across the whole index. */

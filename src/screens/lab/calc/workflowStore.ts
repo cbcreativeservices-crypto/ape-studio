@@ -47,9 +47,25 @@ export function workflowGeneration(): number {
 // ---------------------------------------------------------------------------
 
 async function loadList<T>(key: CollectionKey, validate: (x: unknown) => x is T): Promise<T[]> {
+  return (await readList(key, validate)) ?? [];
+}
+
+/** loadList, but `null` when the storage READ itself failed (full-app run 1,
+ *  2026-10-01). A failed getItem is not a damaged blob: it used to land in the
+ *  corruption branch, which REMOVED the key whenever the retry read succeeded,
+ *  and either way returned [] — so the next upsert wrote `[item]` over the
+ *  whole collection and reported "saved". (Android's AsyncStorage cannot read a
+ *  row past ~2 MB at all, so a large results list hit this on every save.)
+ *  Writers refuse on null; readers show empty without touching the data. */
+async function readList<T>(key: CollectionKey, validate: (x: unknown) => x is T): Promise<T[] | null> {
   const gen = generation;
+  let raw: string | null;
   try {
-    const raw = await AsyncStorage.getItem(key);
+    raw = await AsyncStorage.getItem(key);
+  } catch {
+    return null;
+  }
+  try {
     if (raw == null) return [];
     const parsed: unknown = JSON.parse(raw);
     if (!Array.isArray(parsed)) throw new Error('not an array');
@@ -63,11 +79,13 @@ async function loadList<T>(key: CollectionKey, validate: (x: unknown) => x is T)
     }
     return good;
   } catch {
-    // Whole blob unreadable — quarantine it and start empty.
+    // Whole blob unreadable (it was read, it is not JSON) — quarantine it and
+    // start empty. Removed only once the copy is safely set aside.
     try {
-      const raw = await AsyncStorage.getItem(key);
-      if (raw != null && gen === generation) await AsyncStorage.setItem(`${key}:damaged`, raw);
-      await AsyncStorage.removeItem(key);
+      if (gen === generation) {
+        await AsyncStorage.setItem(`${key}:damaged`, raw as string);
+        await AsyncStorage.removeItem(key);
+      }
     } catch {}
     return [];
   }
@@ -126,7 +144,8 @@ function upsert<T extends { id: string }>(
   gen = generation,
 ): Promise<boolean> {
   return serialWrite(async () => {
-    const list = await loadList(key, validate);
+    const list = await readList(key, validate);
+    if (list === null) return false; // could not read it — never overwrite it
     const at = keepPlace ? list.findIndex((w) => w.id === item.id) : -1;
     const next = at >= 0 ? list.map((w, i) => (i === at ? item : w)) : [item, ...list.filter((w) => w.id !== item.id)];
     return saveList(key, next, gen);
@@ -140,7 +159,8 @@ function removeById<T extends { id: string }>(
   gen = generation,
 ): Promise<boolean> {
   return serialWrite(async () => {
-    const list = await loadList(key, validate);
+    const list = await readList(key, validate);
+    if (list === null) return false; // could not read it — never overwrite it
     return saveList(key, list.filter((w) => w.id !== id), gen);
   });
 }
@@ -156,9 +176,10 @@ export const workflowStore = {
   deleteWorkflow: (id: string, gen = generation) => removeById(KEYS.workflows, isWorkflow, id, gen),
   /** Reorder My Workflows (owner 2026-08-06): swap the workflow with its
    *  neighbour; the stored order IS the display order. */
-  moveWorkflow(id: string, dir: -1 | 1, gen = generation): Promise<Workflow[]> {
+  moveWorkflow(id: string, dir: -1 | 1, gen = generation): Promise<Workflow[] | null> {
     return serialWrite(async () => {
-      const list = await loadList(KEYS.workflows, isWorkflow);
+      const list = await readList(KEYS.workflows, isWorkflow);
+      if (list === null) return null; // unreadable: change nothing; the screen keeps its list
       const i = list.findIndex((w) => w.id === id);
       const j = i + dir;
       if (i < 0 || j < 0 || j >= list.length) return list;

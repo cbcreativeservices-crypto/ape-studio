@@ -632,7 +632,13 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   // opens the moment the block lifts.
   const overlaysSuppressed = useOverlaysSuppressed();
   const isFocused = useIsFocused();
-  const tutorialBlocked = overlaysSuppressed || !isFocused || fullscreen;
+  // …and while this screen's own term-list or session-length Modal is up
+  // (full-app run 1, 2026-10-01): the 45 s tutorial and the session-expiry
+  // banner are Modals too, and a second Modal opened as a sibling of an open
+  // one is refused on iOS (nothing shows; the tutorial was still marked seen)
+  // and drawn BEHIND it on Android. They wait, exactly as for fullscreen.
+  const tutorialBlocked =
+    overlaysSuppressed || !isFocused || fullscreen || !!termList || sessionTimer.configOpen;
   const tutorialBlockedRef = useRef(tutorialBlocked);
   tutorialBlockedRef.current = tutorialBlocked;
   const [pendingTutorial, setPendingTutorial] = useState<

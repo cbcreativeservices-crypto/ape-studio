@@ -29,6 +29,10 @@ export type GatewayProbe = 'deployed' | 'absent';
 
 let PROBE: Promise<GatewayProbe> | null = null;
 
+/** A one-row read; long enough for a slow link, short of the screen's 9 s
+ *  "stuck" deadline so a stall resolves before the reader is told it failed. */
+const PROBE_DEADLINE_MS = 8000;
+
 /** Drop the cached answer (tests, and after the schema could have changed). */
 export function resetGatewayProbe(): void {
   PROBE = null;
@@ -54,7 +58,20 @@ export function resetGatewayProbe(): void {
 export function probeGateway(): Promise<GatewayProbe> {
   if (PROBE) return PROBE;
   const p = (async (): Promise<GatewayProbe> => {
-    const { error } = await supabase.from('glossary_browse_v').select('id').limit(1);
+    /**
+     * ⛔ BOUNDED (full-app run 1, 2026-10-01). This promise is cached for the
+     * whole app session, so a STALLED probe (a socket that stops answering —
+     * Android's RN fetch has no timeout of its own) never settled and never
+     * cleared: every Glossary visit sat on 'unknown' until the stuck card, and
+     * every lab / calculator term popup that awaits this span forever. A stall
+     * now reads as the transient fault it is — not cached, re-probed next time.
+     */
+    const { error } = await softDeadline<{ error: { code?: string | null; message?: string } | null }>(
+      async () => ({ error: (await supabase.from('glossary_browse_v').select('id').limit(1)).error }),
+      { error: { message: 'gateway probe timeout' } },
+      'glossary_browse_v probe',
+      PROBE_DEADLINE_MS,
+    );
     const fault = classifyGatewayError(error);
     if (fault === null || fault === 'denied') return 'deployed';
     if (fault === 'not-deployed') return 'absent';

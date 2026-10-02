@@ -952,7 +952,13 @@ export function RtaScreen({ navigation }: Props) {
       const meta = ApeDsp.getSpectrumMeta();
       const spec = ApeDsp.getSpectrum();
       if (!meta || meta.sampleRate <= 0 || meta.fftSize <= 0 || spec.length === 0) return;
-      const hz = detectPeakHz(spec, meta.sampleRate, meta.fftSize);
+      // A DEAD MIC LIGHTS NO KEY (full run 1, 2026-10-01). The bars blank on
+      // a stalled capture (frameIsLive, displayBands above), but this read the
+      // spectrum alone: a stalled engine keeps serving its LAST spectrum, the
+      // same note won every poll, and the piano held one key lit as a steady
+      // "detected pitch" over a mic that had stopped.
+      const live = frameIsLive(ApeDsp.getMeterFrame());
+      const hz = live ? detectPeakHz(spec, meta.sampleRate, meta.fftSize) : null;
       const ring = pitchRingRef.current;
       ring.push(hz != null ? hzToNoteIdx(hz) : null);
       if (ring.length > PITCH_WINDOW) ring.shift();

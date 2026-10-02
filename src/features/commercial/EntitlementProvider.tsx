@@ -11,7 +11,7 @@
  * runtime override persisted). Flag OFF ⇒ consumers render today's app.
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Platform } from 'react-native';
+import { AppState, Platform, type AppStateStatus } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { loadLastTier, saveLastTier } from './lastTierCache';
 import { devBypass } from '../../config/devMode';
@@ -272,6 +272,13 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
    *  overwrite a FRESHER answer the INITIAL_SESSION read already applied
    *  (2026-09-30 day pass). */
   const serverTierApplied = useRef(false);
+  /** Bumped each time `refreshEntitlement` applies a tier. A derive whose read
+   *  began before that answer is older than it and must not overwrite it
+   *  (full run 1, 2026-10-01): the foreground re-read below starts the moment
+   *  the app returns from the Play purchase sheet, before validate-purchase
+   *  has written the row, and its late 'free' replaced the 'academy' the
+   *  Paywall's refresh had just applied. */
+  const refreshApplied = useRef(0);
 
   // Server-driven entitlement (owner 2026-08-06): a no-account guest is
   // 'anonymous'; a signed-in account reads its real tier from the `entitlements`
@@ -301,7 +308,9 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
      */
     const deriveAndApply = async (hasSession: boolean, gen: number): Promise<boolean> => {
       if (!alive || devOverrode.current) return true;
-      const current = () => alive && generation === gen && !devOverrode.current;
+      const refreshSeen = refreshApplied.current;
+      const current = () =>
+        alive && generation === gen && !devOverrode.current && refreshApplied.current === refreshSeen;
       if (!hasSession) {
         if (current()) setEntitlementState('anonymous');
         return true;
@@ -523,9 +532,27 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
         void deriveWithRetry(isRealAccount(session));
       }
     });
+    /**
+     * RE-READ ON RETURN TO THE APP (full run 1, 2026-10-01). The tier was read
+     * only at a cold start or a sign-in/out, and phones keep an app suspended
+     * for days — so a REFUNDED member (owner 2026-10-01: a refund ends the
+     * membership the same day) and a cancelled one whose paid cycle had ended
+     * (`expires_at` passed) both stayed 'academy' until the app was killed.
+     * The labs, tools and paid topics are gated on this tier alone.
+     * Signed-in accounts only (`lastUid`, never a re-read of a session that
+     * may stall into "signed out"); a failed read keeps the tier as always.
+     */
+    let appState: AppStateStatus = AppState.currentState;
+    const appSub = AppState.addEventListener('change', (next: AppStateStatus) => {
+      const returning = appState === 'background' && next === 'active';
+      appState = next;
+      if (!returning || !alive || devOverrode.current || lastUid.current === null) return;
+      void deriveWithRetry(true);
+    });
     return () => {
       alive = false;
       sub.subscription.unsubscribe();
+      appSub.remove();
     };
   }, []);
 
@@ -596,6 +623,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
       }
       if (!devOverrode.current) {
         serverTierApplied.current = true;
+        refreshApplied.current += 1;
         setEntitlementState(tier);
         // A tier the server just answered IS known (2026-09-30). Without this,
         // a member whose boot read failed and whose retries ran out stayed
