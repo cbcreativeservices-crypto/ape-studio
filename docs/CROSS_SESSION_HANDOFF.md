@@ -250,6 +250,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-01 18:01 · ccode · 0d1f56ea
+changed: Toddler pass 1 on the three new labs: Drum 12 + Room 10 (+3 corrections) + Mastering 7 (+4 corrections); room store reports a failed save
+affects other side: nothing (client-only lab fixes)
+needs: nothing
+
+
 ### 2026-10-01 17:43 · ccode · c402d9d2
 changed: Drum Tuning Lab: design pass + standards audit — 9 pt on short phones (text boost), 5-key docks, numbered lug casings + hardware polish, key arrow never leaks the hidden offset, stop on step change, full-screen controls on the inspect figure
 affects other side: nothing (client-only lab work)
