@@ -283,6 +283,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-02 13:25 · ccode · d6caa5cc
+changed: Tighten G1 saved-data guard (AST: comments ignored, multiGet, per-read failure path); fix homeCardsStore (migrated) and onboardingFlow; 32 explicit opt-outs with reasons
+affects other side: client only
+needs: nothing
+
+
 ### 2026-10-02 13:08 · ccode · 6c1ee968
 changed: Evening hunt 1: 30 fixes across 10 areas (Home 2, Study 5, Glossary 2, Labs A 2, Labs B 1, Tools 3, Calc 1, Account 6, Community 5, Shared 3)
 affects other side: client only
