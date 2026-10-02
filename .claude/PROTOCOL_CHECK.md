@@ -6,3 +6,5 @@ PROTOCOL CHECK (read at the START of this response and again BEFORE you deliver 
 5. REPLIES FOR OTHER CHATS/COMPUTERS: paste them IN FULL in the chat, not as a file path.
 6. UI WORK: ask to turn on the Browser pane and load the design skills BEFORE building any UI.
 7. LOOK FIRST: search docs/, src/, and web/ before asking the owner something the project already answers.
+8. HOUSE HELPERS (AGENTS.md, governance D47): saved data → createLocalStore; sound start → startFenced; back → safeGoBack / useBackWhileFocused; dialog→modal → useModalHandoff; async button → useLatchedPress; tier → useTier; animation → useDecorativeMotion; value text → fitValue. Ratchet tests enforce them; allowlists only shrink.
+9. NEVER PUBLISH UNASKED. Pushing deploys the website (Vercel). Another ccode session may be active: check `git log origin/audio-tools-engine` before pushing and fill only your own sync stubs.

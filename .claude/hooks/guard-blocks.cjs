@@ -38,6 +38,14 @@ process.stdin.on('end', () => {
     );
   }
 
+  // 1b) PUBLISH RULE (owner, 2026-10-02 handoff) — an OTA reaches testers' phones; never unasked.
+  if (/\beas(?:-cli)?(?:@\S+)?\s+update\b/i.test(cmd) && !/\bupdate:(?:list|view)\b/i.test(cmd)) {
+    return emit(
+      'ask',
+      'PUBLISH RULE (owner): `eas update` publishes to testers. Run it ONLY when the owner has said "publish" for this change. Check channel, fingerprint and rollback first (reference_fast_dev_loop).',
+    );
+  }
+
   // 2) Never skip git hooks / signing.
   if (/--no-verify\b|--no-gpg-sign\b/.test(cmd)) {
     return emit('deny', 'Do not skip git hooks or signing (--no-verify / --no-gpg-sign). Fix the underlying issue instead.');
